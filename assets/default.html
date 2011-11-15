@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ja" style="margin: 0px; padding: 0px;">
+  <head>
+    <meta charset="utf-8" />
+    <title>車載UI</title>
+    <script type="text/javascript" src="jquery-1.7.min.js"></script>
+    <script type="text/javascript">
+      var TRANSITION_DURATION = 200;
+      var STATUS_DRIVING = 0;
+      var STATUS_STATION = 1;
+      var STATUS_PAUSE = 2;
+      var STATUS_STOP = 3;
+      var status = STATUS_DRIVING;
+      
+      $(document).resize(function() {
+          // スマフォっぽい比率で固定
+          $("body").css("font-size", $("body").width() / 7 + "%");
+      });
+      $(document).ready(function() {
+          $(document).resize();
+          start();
+      });
+
+      function showDefaultScreen() {
+          var selector = "";
+          if (status == STATUS_DRIVING) {
+              selector = "#drive_screen";
+          } else if (status == STATUS_STATION) {
+              selector = "#station_screen";
+          }
+          $(".screen").not(selector).hide(TRANSITION_DURATION);
+          $(selector).show(TRANSITION_DURATION);
+          $(".button_layout").css("background-color", "transparent");
+      }
+      
+      function toggleScreen(targetId) {
+          var result = true;
+          var showId = targetId;
+          if ($("#" + targetId).filter(":hidden").length == 0) {
+              if (status == STATUS_DRIVING) {
+                  showId = "drive_screen";
+              } else if (status == STATUS_STATION) {
+                  showId = "station_screen";
+              }
+              result = false;
+          }
+          $(".screen").not("#" + showId).hide(TRANSITION_DURATION);
+          $("#" + showId).show(TRANSITION_DURATION);
+          return result;
+      }
+
+      function toggleMapScreen() {
+          var selector = "#map_button_layout";
+          $(".button_layout").not(selector).css("background-color", "transparent");
+          if (toggleScreen("map_screen")) {
+              $(selector).css("background-color", "lavender");
+          } else {
+              $(selector).css("background-color", "transparent");
+          }
+      }
+
+      function toggleScheduleScreen() {
+          var selector = "#schedule_button_layout";
+          $(".button_layout").not(selector).css("background-color", "transparent");
+          if (toggleScreen("schedule_screen")) {
+              $(selector).css("background-color", "lavender");
+          } else {
+              $(selector).css("background-color", "transparent");
+          }
+      }
+
+      function showCheckStartOverlay() {
+          $("#check_start_overlay").show(TRANSITION_DURATION);
+      }
+
+      function showCheckStopOverlay() {
+          $("#check_stop_overlay").show(TRANSITION_DURATION);
+      }
+
+      function showOperatorMessageOverlay() {
+          $("#operator_message_overlay").show(TRANSITION_DURATION);
+      }
+
+      function showStopOverlay() {
+          $("#stop_overlay").show(TRANSITION_DURATION);
+      }
+
+      function showPauseOverlay() {
+          $("#pause_overlay").show(TRANSITION_DURATION);
+      }
+
+      function showAdminOverlay() {
+          $("#admin_overlay").show(TRANSITION_DURATION);
+      }
+
+      function start() {
+          closeOverlay();
+          status = STATUS_DRIVING;
+          $(".frame").css("background-color", "lightgreen");
+          $("#start_button_layout").hide();
+          $("#goal_button_layout").show();
+          $("#status_text").text("走行中");
+          showDefaultScreen();
+      }
+
+      function goal() {
+          status = STATUS_STATION;
+          $(".frame").css("background-color", "lightblue");
+          $("#start_button_layout").show();
+          $("#goal_button_layout").hide();
+          $("#status_text").text("停車中");
+          showDefaultScreen();
+      }
+
+      function closeOverlay() {
+          $(".overlay").hide(TRANSITION_DURATION);
+      }
+
+    </script>
+    <style>
+    <!--
+div.overlay {
+  width: 100%;
+  height: 100%;
+  vertical-align: middle;
+  position: absolute;
+  left: 0px;
+  bottom: 0px;
+  margin: 0px;
+  padding: 0px;
+  display: none;
+  background-color: lavender;
+  font-size: 200%;
+}
+
+div.screen {
+  width: 71%;
+  height: 82%;
+  vertical-align: middle;
+  position: absolute;
+  left: 0px;
+  bottom: 0px;
+  margin: 0px;
+  padding: 0px;
+  display: none;
+}
+
+div.screen#drive_screen {
+  display: block;
+}
+
+div.frame {
+  background-color: lightgreen;
+}
+
+body {
+  margin: 0px;
+  padding: 0px;
+  overflow: hidden;
+  font-weight: bold;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+html {
+  margin: 0px;
+  padding: 0px;
+}
+
+#goal_button_layout {
+  vertical-align: middle;
+  border: 0px;
+  height: 30%;
+}
+
+#start_button_layout {
+  display: none;
+  vertical-align: middle;
+  border: 0px;
+  height: 30%;
+}
+
+.positive_button {
+  position: absolute;
+  bottom: 10%;
+  left: 5%;
+  width: 30%;
+  border: white 3px solid;
+  text-align: center;
+  vertical-align: middle;
+  background-color: tomato;
+  border-radius: 7px;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+}
+
+.negative_button {
+  position: absolute;
+  bottom: 10%;
+  left: 39%;
+  width: 30%;
+  border: white 3px solid;
+  text-align: center;
+  vertical-align: middle;
+  background-color: skyblue;
+  border-radius: 7px;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+}
+
+    -->
+    </style>
+  </head>
+  <body>
+    <!-- 走行状態と時刻ペイン -->
+    <div class="frame" style="width: 71%; height: 18%; vertical-align: middle; position: absolute; left: 0px; top: 0px; margin: 0px; padding: 0px;"
+         onclick="showDefaultScreen();">
+      <table style="width: 100%; height: 100%; vertical-align: middle; border-collapse:collapse;">
+        <tr style="vertical-align: middle; border: 0px;">
+          <td style="border-right: 1px solid white; width: 20%; text-align: center; vertical-align: middle;"
+              onclick="showOperatorMessageOverlay()">
+            車
+          </td>
+          <td style="border-right: 1px solid white; width: 40%; text-align: center; vertical-align: middle;">
+            <span style="font-size: 200%;" id="status_text">走行中</span>
+          </td>
+          <td style="width: 40%; text-align: center; vertical-align: middle;">
+            <span style="padding-right: 5em;">現在時刻</span><br />
+            <span style="font-size: 210%;">14時26分</span>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- 横の操作ボタンペイン -->
+    <div class="frame" style="height: 100%; position: absolute; right: 0px; top: 0px; position: absolute; width: 29%; margin: 0px; padding: 0px;">
+      <table style="width: 100%; height: 100%; vertical-align: middle; border-collapse:collapse;">
+        <tr style="vertical-align: middle; border: 0px; height: 20%;" onclick="showAdminOverlay();">
+          <td style="border-bottom: 1px solid white; width: 20%; text-align: center; vertical-align: middle;">
+            運行管理
+          </td>
+        </tr>
+        <tr id="schedule_button_layout" class="button_layout"
+           style="vertical-align: middle; border: 0px; height: 20%;" onclick="toggleScheduleScreen();">
+          <td style="border-bottom: 1px solid white; width: 20%; text-align: center; vertical-align: middle;">
+            本日の運行予定
+          </td>
+        </tr>
+        <tr id="map_button_layout" class="button_layout"
+           style="vertical-align: middle; border: 0px; height: 30%;" onclick="toggleMapScreen();">
+          <td style="border-bottom: 1px solid white; width: 20%; text-align: center; vertical-align: middle;">
+            地図を表示
+          </td>
+        </tr>
+        <tr id="start_button_layout" class="button_layout" onclick="showCheckStartOverlay();">
+          <td style="border-bottom: 1px solid white; width: 20%; text-align: center; vertical-align: middle;">
+            出発します
+          </td>
+        </tr>
+        <tr id="goal_button_layout" class="button_layout" onclick="goal();">
+          <td style="border-bottom: 1px solid white; width: 20%; text-align: center; vertical-align: middle;">
+            到着しました
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- メイン表示 -->
+    <div class="screen" id="drive_screen" style="background-color: lightgreen;">
+      <div style="font-size: 200%;">次は</div>
+      <div style="font-size: 300%;">&nbsp;東大環境棟</div>
+      <br />
+      <div style="font-size: 300%;">&nbsp;15時40分</div>
+      <div style="font-size: 300%;">&nbsp;到着予定です</div>
+    </div>
+
+    <div class="screen" id="schedule_screen" style="background-color: lavender;">
+      予定表
+    </div>
+
+    <div class="screen" id="map_screen" style="background-color: lavender;">
+      地図
+    </div>
+
+    <div class="screen" id="station_screen" style="background-color: lightblue;">
+      停留所
+    </div>
+
+    <div class="overlay" id="check_start_overlay">
+      <!-- テキストを上下中央ぞろえにするためtableタグを使う -->
+      <table style="vertical-align: middle; top: 0%; position: absolute; height: 70%; width: 85%; left: 5%; padding: 0px; margin: 0px;">
+        <tr>
+          <td>
+            出発します。よろしいですか？<br />
+            乗られていないお客様がいます。<br />
+            未払いのお客様がいます。<br />
+            出発時刻を2分過ぎています.
+          </td>
+        <tr>
+      </table>
+      <div class="positive_button" onclick="start();">出発する</div>
+      <div class="negative_button" onclick="closeOverlay();">やめる</div>
+    </div>
+
+    <div class="overlay" id="admin_overlay">
+      <div style="position: absolute; top: 0%; font-size: 80%; padding: 1em;">
+        事故などのトラブルにより、営業時間内に運転再開できない場合はこちらを選択してください。
+      </div>
+      <div onclick="showCheckStopOverlay()"
+         class="positive_button" style="top: 25%; bottom: auto; font-size: 60%; overflow: hidden;">本日の運行を中止する</div>
+
+      <div style="position: absolute; top: 40%; font-size: 80%; padding: 1em;">
+        一時的な運行停止状態の場合、こちらを選択してください。
+      </div>
+      <div class="positive_button" style="padding-top: 0.5em; padding-bottom: 0.5em; background-color: lightgreen;" onclick="showPauseOverlay();">運行の<br />一次停止</div>
+      <div class="negative_button" style="padding-top: 1em; padding-bottom: 1em;" onclick="closeOverlay();">戻る</div>
+    </div>
+
+    <div class="overlay" id="pause_overlay">
+      <table style="position: absolute; height: 70%; left: 5%;">
+        <tr>
+          <td>現在、運行は一時停止中です</td>
+        <tr>
+      </table>
+      <div class="positive_button" style="width: 60%;" onclick="closeOverlay();">運行を再開する</div>
+    </div>
+
+    <div class="overlay" id="check_stop_overlay">
+      <table style="position: absolute; height: 70%; left: 5%;">
+        <tr>
+          <td>本当に本日の運行を中止しますか？<br />中止すると本日中は運行を再開できません</td>
+        <tr>
+      </table>
+      <div class="positive_button" onclick="showStopOverlay();">中止する</div>
+      <div class="negative_button" onclick="closeOverlay();">戻る</div>
+    </div>
+
+    <div class="overlay" id="stop_overlay">
+      <table style="position: absolute; height: 95%; left: 5%;">
+        <tr>
+          <td>本日の運行は中止されています</td>
+        <tr>
+      </table>
+    </div>
+
+    <div class="overlay" id="operator_message_overlay">
+      <div style="position: absolute; padding: 1em;">管理者から連絡があります</div>
+      <div style="position: absolute; border-radius: 10px; border: solid 3px black; margin: 1em; padding: 0.3em; height: 40%; width: 85%; background-color: white; top: 1.5em;">
+        鈴木さんは降りられましたか？ てすとてすとてすとてすとてすとてすとてすとてすとてすとてすとてすとてすとてすとてすとてすとてすと
+      </div>
+      <div class="positive_button" onclick="closeOverlay();">はい</div>
+      <div class="negative_button" onclick="closeOverlay();">いいえ</div>
+    </div>
+
+  </body>
+</html>
