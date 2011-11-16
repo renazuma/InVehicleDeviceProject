@@ -58,9 +58,11 @@
           var selector = "#map_button_layout";
           $(".button_layout").not(selector).css("background-color", "transparent");
           if (toggleScreen("map_screen")) {
-              $(selector).css("background-color", "white");
+              // $(selector).css("background-color", "white");
+              $(selector).fadeTo("fast", 0.2);
           } else {
-              $(selector).css("background-color", "transparent");
+              // $(selector).css("background-color", "transparent");
+              $(selector).fadeTo("fast", 1);
           }
       }
 
@@ -68,9 +70,11 @@
           var selector = "#schedule_button_layout";
           $(".button_layout").not(selector).css("background-color", "transparent");
           if (toggleScreen("schedule_screen")) {
-              $(selector).css("background-color", "white");
+              // $(selector).css("background-color", "white");
+              $(selector).fadeTo("fast", 0.2);
           } else {
-              $(selector).css("background-color", "transparent");
+              // $(selector).css("background-color", "transparent");
+              $(selector).fadeTo("fast", 1);
           }
       }
 
@@ -106,6 +110,12 @@
           closeOverlay();
           status = STATUS_DRIVING;
           $(".frame").css("background-color", "lightgreen");
+          $("#admin_button_bg").attr("src", "gs.png");
+          $("#map_button_bg").attr("src", "gs.png");
+          $("#schedule_button_bg").attr("src", "gb.png");
+          $("#start_button_bg").attr("src", "gb.png");
+          $("#goal_button_bg").attr("src", "gb.png");
+
           $("#start_button_layout").hide();
           $("#goal_button_layout").show();
           $("#status_text").text("走行中");
@@ -115,6 +125,12 @@
       function goal() {
           status = STATUS_STATION;
           $(".frame").css("background-color", "lightblue");
+          $("#admin_button_bg").attr("src", "bs.png");
+          $("#map_button_bg").attr("src", "bs.png");
+          $("#schedule_button_bg").attr("src", "bb.png");
+          $("#start_button_bg").attr("src", "bb.png");
+          $("#goal_button_bg").attr("src", "bb.png");
+
           $("#start_button_layout").show();
           $("#goal_button_layout").hide();
           $("#status_text").text("停車中");
@@ -583,7 +599,7 @@ html {
         <tr style="vertical-align: middle; border: 0px;">
           <td style="border-right: 1px solid white; width: 20%; text-align: center; vertical-align: middle;"
               onclick="showOperatorMessageOverlay()">
-            アイコン
+            (アイコン)
           </td>
           <td style="border-right: 1px solid white; width: 40%; text-align: center; vertical-align: middle;">
             <span style="font-size: 200%;" id="status_text">走行中</span>
@@ -596,35 +612,45 @@ html {
       </table>
     </div>
 
+    <img src="add.png" style="position: absolute; top: 21%; left: 45%" />
+
     <!-- 横の操作ボタンペイン -->
     <div class="frame" style="height: 100%; position: absolute; right: 0px; top: 0px; position: absolute; width: 29%; margin: 0px; padding: 0px; border-left: 1px white solid; font-size: 150%;">
       <table style="width: 100%; height: 100%; vertical-align: middle; border-collapse:collapse;">
-        <tr style="vertical-align: middle; border: 0px; height: 20%;" onclick="showAdminOverlay();">
+        <tr id="admin_button_layout"
+           style="vertical-align: middle; border: 0px; height: 20%;" onclick="showAdminOverlay();">
           <td style="border-bottom: 1px solid white; width: 20%; text-align: center; vertical-align: middle;">
-            運行管理
+            <img id="admin_button_bg" style="position: absolute; height: 20%; width: 100%; left: 0%; right: 0%; top: 0%;" src="gs.png" />
+            <div style="position: relative;">運行管理</div>
           </td>
         </tr>
         <tr id="map_button_layout" class="button_layout"
            style="vertical-align: middle; border: 0px; height: 20%;" onclick="toggleMapScreen();">
           <td style="border-bottom: 1px solid white; width: 20%; text-align: center; vertical-align: middle;">
-            地図
+            <img id="map_button_bg" style="position: absolute; height: 20%; width: 100%; left: 0%; right: 0%; top: 20%;" src="gs.png" />
+            <div style="position: relative;">地図</div>
           </td>
         </tr>
         <tr id="schedule_button_layout" class="button_layout"
            style="vertical-align: middle; border: 0px; height: 30%;" onclick="toggleScheduleScreen();">
           <td style="border-bottom: 1px solid white; width: 20%; text-align: center; vertical-align: middle;">
-            本日の運行予定
+            <img id="schedule_button_bg" style="position: absolute; height: 30%; width: 100%; left: 0%; right: 0%; top: 40%;" src="gb.png" />
+            <div style="position: relative;">本日の運行予定</div>
           </td>
         </tr>
         <tr id="start_button_layout" class="button_layout" onclick="showCheckStartOverlay();">
           <td style="border-bottom: 1px solid white; width: 20%; text-align: center; vertical-align: middle;">
-            出発します<br />
-            <span style="color: red; font-size: 80%;">未乗車：2名</span>
+            <img id="start_button_bg" style="position: absolute; height: 30%; width: 100%; left: 0%; right: 0%; top: 70%;" src="gb.png" />
+            <div style="position: relative;">
+              出発します<br />
+              <span style="color: red; font-size: 80%;">未乗車：2名</span>
+            </div>
           </td>
         </tr>
         <tr id="goal_button_layout" class="button_layout" onclick="goal();">
           <td style="width: 20%; text-align: center; vertical-align: middle;">
-            到着しました
+            <img id="goal_button_bg" style="position: absolute; height: 30%; width: 100%; left: 0%; right: 0%; top: 70%;" src="gb.png" />
+            <div style="position: relative;">到着しました</div>
           </td>
         </tr>
       </table>
@@ -699,11 +725,11 @@ html {
     <div class="overlay" id="memo_overlay">
       <div style="padding-left: 1em; font-size: 80%; padding: 1ex;">予約番号：1234 　はらたつのり 様</div>
       <div style="padding-left: 1em; font-size: 70%;">・乗車メモ</div>
-      <div style="border-radius: 10px; border: solid 1px black; margin: 1ex; padding: 0.3em; height: 20%; width: 88%; background-color: white; font-size: 60%; position: relative; left: 2%;">
+      <div style="border-radius: 10px; border: solid 1px black; margin: 1ex; padding: 0.3em; height: 19%; width: 88%; background-color: white; font-size: 60%; position: relative; left: 2%;">
         乗車メモ
       </div>
       <div style="padding-left: 1em; font-size: 70%;">・ご利用者メモ</div>
-      <div style="border-radius: 10px; border: solid 1px black; margin: 1ex; padding: 0.3em; height: 20%; width: 88%; background-color: white; font-size: 60%; position: relative; left: 2%;">
+      <div style="border-radius: 10px; border: solid 1px black; margin: 1ex; padding: 0.3em; height: 19%; width: 88%; background-color: white; font-size: 60%; position: relative; left: 2%;">
         ご利用者メモ
       </div>
       <div class="positive_button" style="bottom: 5%; width: 60%; background-color: lightblue;" onclick="closeOverlay();">閉じる</div>
