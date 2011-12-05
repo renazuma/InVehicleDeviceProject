@@ -24,6 +24,12 @@
               $("#drive_screen_image").attr("src", "d" + page + ".png");
               page = (page + 1) % 4;
           }, 5000);
+
+          $("#inbound_reserve_list td").click(function(e) {
+              $("#inbound_reserve_list td").not(this).parent().css("background-color", "transparent");
+              $(this).parent().css("background-color", "lightblue");
+              $("#inbound_reserve_button").css({"color": "black", "background-color": "tomato"});
+          });
       });
 
       function showDefaultScreen() {
@@ -133,6 +139,10 @@
 
       function showAdminOverlay() {
           $("#admin_overlay").show(TRANSITION_DURATION);
+      }
+
+      function showInboundOverlay() {
+          $("#inbound_overlay").show(TRANSITION_DURATION);
       }
 
       function start() {
@@ -260,7 +270,7 @@ html {
 
 .positive_button {
   position: absolute;
-  bottom: 10%;
+  bottom: 5%;
   left: 5%;
   width: 30%;
   border: white 3px solid;
@@ -274,7 +284,7 @@ html {
 
 .negative_button {
   position: absolute;
-  bottom: 10%;
+  bottom: 5%;
   left: 39%;
   width: 30%;
   border: white 3px solid;
@@ -316,6 +326,21 @@ html {
 }
 
 #normal_notify {
+}
+
+table#inbound_reserve_list {
+  border-collapse: collapse;
+/*  border-spacing: 10px; */
+}
+
+table#inbound_reserve_list td {
+  text-align: center;
+  border-top: 1px solid black;
+}
+
+#inbound_reserve_button {
+  color: gray;
+  background-color: lightgray;
 }
 
     -->
@@ -980,6 +1005,63 @@ html {
         ご利用者メモ
       </div>
       <div class="positive_button" style="bottom: 5%; width: 60%; background-color: lightblue;" onclick="closeOverlay();">閉じる</div>
+    </div>
+
+    <div class="overlay" id="inbound_overlay">
+      <div style="padding-left: 1em; font-size: 80%; padding: 1ex;">　予約番号：1234 　西山拓也 様 復路の予約</div>
+      <div style="padding-left: 1em; font-size: 70%; padding: 1ex;">　　流山おおたかの森　⇒　柏市光ヶ丘1-2-3</div>
+      <div style="padding-left: 1em; font-size: 70%;">　　
+        <select style="font-size: 130%;">
+          <option>13</option>
+          <option>14</option>
+          <option>15</option>
+          <option>16</option>
+          <option>17</option>
+          <option>18</option>
+          <option>19</option>          
+        </select>
+        時
+        <select style="font-size: 130%;">
+          <option>0</option>
+          <option>1</option>
+          <option>2</option>
+          <option>30</option>
+          <option>31</option>
+          <option>32</option>
+          <option>33</option>
+        </select>
+        分 出発の予約候補を表示
+      </div>
+      <div style="border-radius: 10px; border: solid 1px black; margin: 1ex; padding: 0.3em; height: 38%; width: 75%; background-color: white; font-size: 60%; position: relative; left: 2%;">
+        <table id="inbound_reserve_list" style="width: 100%; border: 1px;">
+          <tr>
+            <th>出発時刻</th>
+            <th>到着時刻</th>
+            <th>号車</th>
+          </tr>
+          
+          <tr>
+            <td>12時34分</td>
+            <td>13時45分</td>
+            <td>1号車</td>
+          </tr>
+
+          <tr>
+            <td>12時30分</td>
+            <td>13時50分</td>
+            <td>2号車</td>
+          </tr>
+
+          <tr>
+            <td>12時40分</td>
+            <td>13時60分</td>
+            <td>3号車</td>
+          </tr>
+        </table>
+      </div>
+
+      <div id="inbound_reserve_button" class="positive_button"  onclick="closeOverlay();">予約する</div>
+      <div class="negative_button" onclick="closeOverlay();">戻る</div>
     </div>
 
   </body>
