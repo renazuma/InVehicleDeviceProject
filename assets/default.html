@@ -13,12 +13,12 @@
       var status = STATUS_DRIVING;
       var page = 0;
       
-      $(document).resize(function() {
+      $(window).resize(function() {
           // スマフォっぽい比率で固定
           $("body").css("font-size", $("body").width() / 7 + "%");
       });
       $(document).ready(function() {
-          $(document).resize();
+          $(window).resize();
           start();
           setInterval(function() {
               $("#drive_screen_image").attr("src", "d" + page + ".png");
@@ -57,24 +57,52 @@
       function toggleMapScreen() {
           var selector = "#map_button_layout";
           $(".button_layout").not(selector).css("background-color", "transparent");
+          var bg = "";
           if (toggleScreen("map_screen")) {
-              // $(selector).css("background-color", "white");
-              $(selector).fadeTo("fast", 0.2);
+              if (status == STATUS_DRIVING) {
+                  bg = "gsp.png";
+              } else if (status == STATUS_STATION) {
+                  bg = "bsp.png";
+              }
           } else {
-              // $(selector).css("background-color", "transparent");
-              $(selector).fadeTo("fast", 1);
+              if (status == STATUS_DRIVING) {
+                  bg = "gs.png";
+              } else if (status == STATUS_STATION) {
+                  bg = "bs.png";
+              }
+          }
+          $("#map_button_bg").attr("src", bg);
+
+          if (status == STATUS_DRIVING) {
+              $("#schedule_button_bg").attr("src", "gs.png");
+          } else if (status == STATUS_STATION) {
+              $("#schedule_button_bg").attr("src", "bs.png");
           }
       }
 
       function toggleScheduleScreen() {
           var selector = "#schedule_button_layout";
           $(".button_layout").not(selector).css("background-color", "transparent");
+          var bg = "";
           if (toggleScreen("schedule_screen")) {
-              // $(selector).css("background-color", "white");
-              $(selector).fadeTo("fast", 0.2);
+              if (status == STATUS_DRIVING) {
+                  bg = "gsp.png";
+              } else if (status == STATUS_STATION) {
+                  bg = "bsp.png";
+              }
           } else {
-              // $(selector).css("background-color", "transparent");
-              $(selector).fadeTo("fast", 1);
+              if (status == STATUS_DRIVING) {
+                  bg = "gs.png";
+              } else if (status == STATUS_STATION) {
+                  bg = "bs.png";
+              }
+          }
+          $("#schedule_button_bg").attr("src", bg);
+
+          if (status == STATUS_DRIVING) {
+              $("#map_button_bg").attr("src", "gs.png");
+          } else if (status == STATUS_STATION) {
+              $("#map_button_bg").attr("src", "bs.png");
           }
       }
 
@@ -91,6 +119,7 @@
       }
 
       function showOperatorMessageOverlay() {
+          clearMessageNotify();
           $("#operator_message_overlay").show(TRANSITION_DURATION);
       }
 
@@ -142,11 +171,25 @@
       }
 
       function up() {
-        $("div.scroll").animate({scrollTop: $("div.scroll").scrollTop() - 300}, 'fast');
+          $("div.scroll").animate({scrollTop: $("div.scroll").scrollTop() - 300}, 'fast');
       }
 
       function down() {
-        $("div.scroll").animate({scrollTop: $("div.scroll").scrollTop() + 300}, 'fast');
+          $("div.scroll").animate({scrollTop: $("div.scroll").scrollTop() + 300}, 'fast');
+      }
+
+      var messageNotifyTimerId = 0;
+      
+      function startMessageNotify() {
+          clearMessageNotify();
+          messageNotifyTimerId = setInterval(function() {
+              $("#message_notify").toggle();
+          }, 800);
+      }
+
+      function clearMessageNotify() {
+          $("#message_notify").hide();
+          clearInterval(messageNotifyTimerId);
       }
 
     </script>
@@ -259,6 +302,20 @@ html {
   border-left: #6699FF 1px solid;
   background-color: lightblue;
   width: 100%;
+}
+
+#message_notify {
+  position: absolute;
+  left: 2ex;
+  top: 1ex;
+  display: none;
+}
+
+#message_notify img {
+  width: 4em;
+}
+
+#normal_notify {
 }
 
     -->
@@ -480,33 +537,24 @@ html {
         <span style="font-size: 180%; color: red;">2</span>分　
       </div>
       <div class="scroll" style="position: absolute; ; top: 24%; bottom: 11%; left: 1%; right: 1%; overflow-y: scroll;">
-        <table class="station_cell">
-          <tr style="border: 5px solid black;">
-            <td style="width: 10%; font-size: 120%; text-align: center;" rowspan="2">[降]</td>
-            <td rowspan="2">
-              予約番号:
-              <span style="font-size: 150%;">1234</span>
-              <span style="font-size: 150%;">はらたつのり</span>様　
-              <span style="font-size: 130%;">2</span>名</td>
-            <td><!-- TODO --> <span style="visibility: hidden; font-size: 1%;">.</span></td>
-          </tr>
-          <tr style="border: 5px solid black;">
-            <td><!-- TODO --> <span style="visibility: hidden; font-size: 1%;">.</span></td>
-          </tr>
-        </table>
 
         <table class="station_cell">
           <tr style="border: 5px solid black;">
             <td style="width: 10%; font-size: 120%; text-align: center;" rowspan="2">[降]</td>
-            <td rowspan="2">
-              予約番号:
-              <span style="font-size: 150%;">1234</span>
-              <span style="font-size: 150%;">じゅげむじゅ</span>様　
-              <span style="font-size: 130%;">2</span>名</td>
+            <td rowspan="2" style="position: relative;">
+              
+              No.<span style="font-size: 150%;">1234</span>
+              <span style="font-size: 150%;">西山拓也</span>様　
+              <span style="font-size: 130%;">2</span>名
               <div onclick="showMemoOverlay()"
-                 style="position: absolute; border: 3px solid gray; border-radius: 5px; background-color: white; right: 1%; top: 1%; font-size: 150%; padding: 0.5ex;">
+                 style="position: absolute; border: 3px solid gray; border-radius: 5px; background-color: white; right: 1%; top: 1%; font-size: 140%; padding: 0.5ex; right: 6ex;">
                 メモ
               </div>
+              <div onclick="showInboundOverlay()"
+                 style="position: absolute; border: 3px solid gray; border-radius: 5px; background-color: white; right: 1%; top: 1%; font-size: 140%; padding: 0.5ex; right: 0px;">
+                復路
+              </div>
+            </td>
             <td><!-- TODO --> <span style="visibility: hidden; font-size: 1%;">.</span></td>
           </tr>
           <tr style="border: 5px solid black;">
@@ -516,12 +564,21 @@ html {
 
         <table class="station_cell">
           <tr style="border: 5px solid black;">
-            <td style="width: 10%; font-size: 120%; text-align: center;" rowspan="2">[乗]</td>
-            <td rowspan="2">
-              予約番号:
-              <span style="font-size: 150%;">1234</span>
-              <span style="font-size: 150%;">はらたつのり</span>様　
-              <span style="font-size: 130%;">2</span>名</td>
+            <td style="width: 10%; font-size: 120%; text-align: center;" rowspan="2">[降]</td>
+            <td rowspan="2" style="position: relative;">
+              
+              No.<span style="font-size: 150%;">1234</span>
+              <span style="font-size: 150%;">宮坂桃子</span>様　
+              <span style="font-size: 130%;">2</span>名
+              <div onclick="showMemoOverlay()"
+                 style="position: absolute; border: 3px solid gray; border-radius: 5px; background-color: white; right: 1%; top: 1%; font-size: 140%; padding: 0.5ex; right: 6ex;">
+                メモ
+              </div>
+              <div onclick="showInboundOverlay()"
+                 style="position: absolute; border: 3px solid gray; border-radius: 5px; background-color: white; right: 1%; top: 1%; font-size: 140%; padding: 0.5ex; right: 0px;">
+                復路
+              </div>
+            </td>
             <td><!-- TODO --> <span style="visibility: hidden; font-size: 1%;">.</span></td>
           </tr>
           <tr style="border: 5px solid black;">
@@ -531,12 +588,21 @@ html {
 
         <table class="station_cell">
           <tr style="border: 5px solid black;">
-            <td style="width: 10%; font-size: 120%; text-align: center;" rowspan="2">[乗]</td>
-            <td rowspan="2">
-              予約番号:
-              <span style="font-size: 150%;">1234</span>
-              <span style="font-size: 150%;">はらたつのり</span>様　
-              <span style="font-size: 130%;">2</span>名</td>
+            <td style="width: 10%; font-size: 120%; text-align: center;" rowspan="2">[降]</td>
+            <td rowspan="2" style="position: relative;">
+              
+              No.<span style="font-size: 150%;">1234</span>
+              <span style="font-size: 150%;">西野春代</span>様　
+              <span style="font-size: 130%;">2</span>名
+              <div onclick="showMemoOverlay()"
+                 style="position: absolute; border: 3px solid gray; border-radius: 5px; background-color: white; right: 1%; top: 1%; font-size: 140%; padding: 0.5ex; right: 6ex;">
+                メモ
+              </div>
+              <div onclick="showInboundOverlay()"
+                 style="position: absolute; border: 3px solid gray; border-radius: 5px; background-color: white; right: 1%; top: 1%; font-size: 140%; padding: 0.5ex; right: 0px;">
+                復路
+              </div>
+            </td>
             <td><!-- TODO --> <span style="visibility: hidden; font-size: 1%;">.</span></td>
           </tr>
           <tr style="border: 5px solid black;">
@@ -546,12 +612,21 @@ html {
 
         <table class="station_cell">
           <tr style="border: 5px solid black;">
-            <td style="width: 10%; font-size: 120%; text-align: center;" rowspan="2">[乗]</td>
-            <td rowspan="2">
-              予約番号:
-              <span style="font-size: 150%;">1234</span>
-              <span style="font-size: 150%;">はらたつのり</span>様　
-              <span style="font-size: 130%;">2</span>名</td>
+            <td style="width: 10%; font-size: 120%; text-align: center;" rowspan="2">[降]</td>
+            <td rowspan="2" style="position: relative;">
+              
+              No.<span style="font-size: 150%;">1234</span>
+              <span style="font-size: 150%;">木原政信</span>様　
+              <span style="font-size: 130%;">2</span>名
+              <div onclick="showMemoOverlay()"
+                 style="position: absolute; border: 3px solid gray; border-radius: 5px; background-color: white; right: 1%; top: 1%; font-size: 140%; padding: 0.5ex; right: 6ex;">
+                メモ
+              </div>
+              <div onclick="showInboundOverlay()"
+                 style="position: absolute; border: 3px solid gray; border-radius: 5px; background-color: white; right: 1%; top: 1%; font-size: 140%; padding: 0.5ex; right: 0px;">
+                復路
+              </div>
+            </td>
             <td><!-- TODO --> <span style="visibility: hidden; font-size: 1%;">.</span></td>
           </tr>
           <tr style="border: 5px solid black;">
@@ -561,12 +636,21 @@ html {
 
         <table class="station_cell">
           <tr style="border: 5px solid black;">
-            <td style="width: 10%; font-size: 120%; text-align: center;" rowspan="2">[乗]</td>
-            <td rowspan="2">
-              予約番号:
-              <span style="font-size: 150%;">1234</span>
-              <span style="font-size: 150%;">はらたつのり</span>様　
-              <span style="font-size: 130%;">2</span>名</td>
+            <td style="width: 10%; font-size: 120%; text-align: center;" rowspan="2">[降]</td>
+            <td rowspan="2" style="position: relative;">
+              
+              No.<span style="font-size: 150%;">1234</span>
+              <span style="font-size: 150%;">亀田希美</span>様　
+              <span style="font-size: 130%;">2</span>名
+              <div onclick="showMemoOverlay()"
+                 style="position: absolute; border: 3px solid gray; border-radius: 5px; background-color: white; right: 1%; top: 1%; font-size: 140%; padding: 0.5ex; right: 6ex;">
+                メモ
+              </div>
+              <div onclick="showInboundOverlay()"
+                 style="position: absolute; border: 3px solid gray; border-radius: 5px; background-color: white; right: 1%; top: 1%; font-size: 140%; padding: 0.5ex; right: 0px;">
+                復路
+              </div>
+            </td>
             <td><!-- TODO --> <span style="visibility: hidden; font-size: 1%;">.</span></td>
           </tr>
           <tr style="border: 5px solid black;">
@@ -576,18 +660,172 @@ html {
 
         <table class="station_cell">
           <tr style="border: 5px solid black;">
-            <td style="width: 10%; font-size: 120%; text-align: center;" rowspan="2">[乗]</td>
-            <td rowspan="2">
-              予約番号:
-              <span style="font-size: 150%;">1234</span>
-              <span style="font-size: 150%;">はらたつのり</span>様　
-              <span style="font-size: 130%;">20</span>名</td>
+            <td style="width: 10%; font-size: 120%; text-align: center;" rowspan="2">[降]</td>
+            <td rowspan="2" style="position: relative;">
+              
+              No.<span style="font-size: 150%;">1234</span>
+              <span style="font-size: 150%;">久野晴彦</span>様　
+              <span style="font-size: 130%;">2</span>名
+              <div onclick="showMemoOverlay()"
+                 style="position: absolute; border: 3px solid gray; border-radius: 5px; background-color: white; right: 1%; top: 1%; font-size: 140%; padding: 0.5ex; right: 6ex;">
+                メモ
+              </div>
+              <div onclick="showInboundOverlay()"
+                 style="position: absolute; border: 3px solid gray; border-radius: 5px; background-color: white; right: 1%; top: 1%; font-size: 140%; padding: 0.5ex; right: 0px;">
+                復路
+              </div>
+            </td>
             <td><!-- TODO --> <span style="visibility: hidden; font-size: 1%;">.</span></td>
           </tr>
           <tr style="border: 5px solid black;">
             <td><!-- TODO --> <span style="visibility: hidden; font-size: 1%;">.</span></td>
           </tr>
         </table>
+
+        <table class="station_cell">
+          <tr style="border: 5px solid black;">
+            <td style="width: 10%; font-size: 120%; text-align: center;" rowspan="2">[降]</td>
+            <td rowspan="2" style="position: relative;">
+              
+              No.<span style="font-size: 150%;">1234</span>
+              <span style="font-size: 150%;">横井心優</span>様　
+              <span style="font-size: 130%;">2</span>名
+              <div onclick="showMemoOverlay()"
+                 style="position: absolute; border: 3px solid gray; border-radius: 5px; background-color: white; right: 1%; top: 1%; font-size: 140%; padding: 0.5ex; right: 6ex;">
+                メモ
+              </div>
+              <div onclick="showInboundOverlay()"
+                 style="position: absolute; border: 3px solid gray; border-radius: 5px; background-color: white; right: 1%; top: 1%; font-size: 140%; padding: 0.5ex; right: 0px;">
+                復路
+              </div>
+            </td>
+            <td><!-- TODO --> <span style="visibility: hidden; font-size: 1%;">.</span></td>
+          </tr>
+          <tr style="border: 5px solid black;">
+            <td><!-- TODO --> <span style="visibility: hidden; font-size: 1%;">.</span></td>
+          </tr>
+        </table>
+
+        <table class="station_cell">
+          <tr style="border: 5px solid black;">
+            <td style="width: 10%; font-size: 120%; text-align: center;" rowspan="2">[降]</td>
+            <td rowspan="2" style="position: relative;">
+              
+              No.<span style="font-size: 150%;">1234</span>
+              <span style="font-size: 150%;">金野美代</span>様　
+              <span style="font-size: 130%;">2</span>名
+              <div onclick="showMemoOverlay()"
+                 style="position: absolute; border: 3px solid gray; border-radius: 5px; background-color: white; right: 1%; top: 1%; font-size: 140%; padding: 0.5ex; right: 6ex;">
+                メモ
+              </div>
+              <div onclick="showInboundOverlay()"
+                 style="position: absolute; border: 3px solid gray; border-radius: 5px; background-color: white; right: 1%; top: 1%; font-size: 140%; padding: 0.5ex; right: 0px;">
+                復路
+              </div>
+            </td>
+            <td><!-- TODO --> <span style="visibility: hidden; font-size: 1%;">.</span></td>
+          </tr>
+          <tr style="border: 5px solid black;">
+            <td><!-- TODO --> <span style="visibility: hidden; font-size: 1%;">.</span></td>
+          </tr>
+        </table>
+
+        <table class="station_cell">
+          <tr style="border: 5px solid black;">
+            <td style="width: 10%; font-size: 120%; text-align: center;" rowspan="2">[降]</td>
+            <td rowspan="2" style="position: relative;">
+              
+              No.<span style="font-size: 150%;">1234</span>
+              <span style="font-size: 150%;">片野健</span>様　
+              <span style="font-size: 130%;">2</span>名
+              <div onclick="showMemoOverlay()"
+                 style="position: absolute; border: 3px solid gray; border-radius: 5px; background-color: white; right: 1%; top: 1%; font-size: 140%; padding: 0.5ex; right: 6ex;">
+                メモ
+              </div>
+              <div onclick="showInboundOverlay()"
+                 style="position: absolute; border: 3px solid gray; border-radius: 5px; background-color: white; right: 1%; top: 1%; font-size: 140%; padding: 0.5ex; right: 0px;">
+                復路
+              </div>
+            </td>
+            <td><!-- TODO --> <span style="visibility: hidden; font-size: 1%;">.</span></td>
+          </tr>
+          <tr style="border: 5px solid black;">
+            <td><!-- TODO --> <span style="visibility: hidden; font-size: 1%;">.</span></td>
+          </tr>
+        </table>
+
+        <table class="station_cell">
+          <tr style="border: 5px solid black;">
+            <td style="width: 10%; font-size: 120%; text-align: center;" rowspan="2">[降]</td>
+            <td rowspan="2" style="position: relative;">
+              
+              No.<span style="font-size: 150%;">1234</span>
+              <span style="font-size: 150%;">生田俊二</span>様　
+              <span style="font-size: 130%;">2</span>名
+              <div onclick="showMemoOverlay()"
+                 style="position: absolute; border: 3px solid gray; border-radius: 5px; background-color: white; right: 1%; top: 1%; font-size: 140%; padding: 0.5ex; right: 6ex;">
+                メモ
+              </div>
+              <div onclick="showInboundOverlay()"
+                 style="position: absolute; border: 3px solid gray; border-radius: 5px; background-color: white; right: 1%; top: 1%; font-size: 140%; padding: 0.5ex; right: 0px;">
+                復路
+              </div>
+            </td>
+            <td><!-- TODO --> <span style="visibility: hidden; font-size: 1%;">.</span></td>
+          </tr>
+          <tr style="border: 5px solid black;">
+            <td><!-- TODO --> <span style="visibility: hidden; font-size: 1%;">.</span></td>
+          </tr>
+        </table>
+
+        <table class="station_cell">
+          <tr style="border: 5px solid black;">
+            <td style="width: 10%; font-size: 120%; text-align: center;" rowspan="2">[降]</td>
+            <td rowspan="2" style="position: relative;">
+              
+              No.<span style="font-size: 150%;">1234</span>
+              <span style="font-size: 150%;">内山紳悟</span>様　
+              <span style="font-size: 130%;">2</span>名
+              <div onclick="showMemoOverlay()"
+                 style="position: absolute; border: 3px solid gray; border-radius: 5px; background-color: white; right: 1%; top: 1%; font-size: 140%; padding: 0.5ex; right: 6ex;">
+                メモ
+              </div>
+              <div onclick="showInboundOverlay()"
+                 style="position: absolute; border: 3px solid gray; border-radius: 5px; background-color: white; right: 1%; top: 1%; font-size: 140%; padding: 0.5ex; right: 0px;">
+                復路
+              </div>
+            </td>
+            <td><!-- TODO --> <span style="visibility: hidden; font-size: 1%;">.</span></td>
+          </tr>
+          <tr style="border: 5px solid black;">
+            <td><!-- TODO --> <span style="visibility: hidden; font-size: 1%;">.</span></td>
+          </tr>
+        </table>
+
+        <table class="station_cell">
+          <tr style="border: 5px solid black;">
+            <td style="width: 10%; font-size: 120%; text-align: center;" rowspan="2">[降]</td>
+            <td rowspan="2" style="position: relative;">
+              
+              No.<span style="font-size: 150%;">1234</span>
+              <span style="font-size: 150%;">岩谷奈緒子</span>様　
+              <span style="font-size: 130%;">2</span>名
+              <div onclick="showMemoOverlay()"
+                 style="position: absolute; border: 3px solid gray; border-radius: 5px; background-color: white; right: 1%; top: 1%; font-size: 140%; padding: 0.5ex; right: 6ex;">
+                メモ
+              </div>
+              <div onclick="showInboundOverlay()"
+                 style="position: absolute; border: 3px solid gray; border-radius: 5px; background-color: white; right: 1%; top: 1%; font-size: 140%; padding: 0.5ex; right: 0px;">
+                復路
+              </div>
+            </td>
+            <td><!-- TODO --> <span style="visibility: hidden; font-size: 1%;">.</span></td>
+          </tr>
+          <tr style="border: 5px solid black;">
+            <td><!-- TODO --> <span style="visibility: hidden; font-size: 1%;">.</span></td>
+          </tr>
+        </table>
+
 
         <hr style="border: 0px; border-top: solid 1px #6699FF; padding: 0px; margin: 0px;" />
 
@@ -601,9 +839,18 @@ html {
         <tr style="vertical-align: middle; border: 0px;">
           <td style="border-right: 1px solid white; width: 20%; text-align: center; vertical-align: middle;"
               onclick="showOperatorMessageOverlay()">
-            (アイコン)
+
+            <div id="normal_notify" class="notify">
+              (アイコン)
+            </div>
+            
+            <div id="message_notify" class="notify">
+              <img src="emblem-important-2.png" />
+            </div>
+
           </td>
-          <td style="border-right: 1px solid white; width: 40%; text-align: center; vertical-align: middle;">
+          <td style="border-right: 1px solid white; width: 40%; text-align: center; vertical-align: middle;"
+              onclick="startMessageNotify()">
             <span style="font-size: 200%;" id="status_text">走行中</span>
           </td>
           <td style="width: 40%; text-align: center; vertical-align: middle;">
@@ -716,14 +963,14 @@ html {
     <div class="overlay" id="operator_message_overlay">
       <div style="position: absolute; padding: 1em;">管理者から連絡があります</div>
       <div style="position: absolute; border-radius: 10px; border: solid 3px black; margin: 1em; padding: 0.3em; height: 40%; width: 85%; background-color: white; top: 1.5em;">
-        鈴木さんは降りられましたか？ てすとてすとてすとてすとてすとてすとてすとてすとてすとてすとてすとてすとてすとてすとてすとてすと
+        鈴木さんは降りられましたか？
       </div>
       <div class="positive_button" onclick="closeOverlay();">はい</div>
       <div class="negative_button" onclick="closeOverlay();">いいえ</div>
     </div>
 
     <div class="overlay" id="memo_overlay">
-      <div style="padding-left: 1em; font-size: 80%; padding: 1ex;">予約番号：1234 　はらたつのり 様</div>
+      <div style="padding-left: 1em; font-size: 80%; padding: 1ex;">予約番号：1234 　西山拓也 様</div>
       <div style="padding-left: 1em; font-size: 70%;">・乗車メモ</div>
       <div style="border-radius: 10px; border: solid 1px black; margin: 1ex; padding: 0.3em; height: 19%; width: 88%; background-color: white; font-size: 60%; position: relative; left: 2%;">
         乗車メモ
