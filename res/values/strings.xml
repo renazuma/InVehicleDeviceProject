@@ -2,6 +2,11 @@
 <resources>
 
     <string name="hello">Hello World, InVehicleDeviceActivity!</string>
-    <string name="app_name">InVehicleDevice</string>
+    <string name="app_name">In-Vehicle Device</string>
+    <string name="sample1">こんにちは</string>
+    <string name="sample2">次は 図書館前 図書館前</string>
+    <string name="sample3">次は 産技総合研筑波東事業所つくば研究支援センター入口 産技総合研筑波東事業所つくば研究支援センター入口</string>
+    <string name="sample4">鈴木さんは降りられましたか？</string>
+    <string name="sample5">黛さんは降りられましたか？</string>
 
 </resources>
