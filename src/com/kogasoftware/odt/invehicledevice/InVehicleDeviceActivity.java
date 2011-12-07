@@ -72,6 +72,13 @@ public class InVehicleDeviceActivity extends Activity {
 		webView.loadUrl("file:///android_asset/default.html");
 
 		speakAlertThread = new SpeakAlertThread(this, texts);
+		speakAlertThread.start();
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		speakAlertThread.interrupt();
 	}
 
 	@Override
@@ -81,6 +88,8 @@ public class InVehicleDeviceActivity extends Activity {
 		menu.add(0, R.string.sample3, 0, R.string.sample3);
 		menu.add(0, R.string.sample4, 0, R.string.sample4);
 		menu.add(0, R.string.sample5, 0, R.string.sample5);
+		menu.add(0, R.string.sample6, 0, R.string.sample6);
+		menu.add(0, R.string.sample7, 0, R.string.sample7);
 		return true;
 	}
 
@@ -92,6 +101,8 @@ public class InVehicleDeviceActivity extends Activity {
 		case R.string.sample3:
 		case R.string.sample4:
 		case R.string.sample5:
+		case R.string.sample6:
+		case R.string.sample7:
 			Toast.makeText(this, getString(item.getItemId()), Toast.LENGTH_LONG)
 					.show();
 			texts.add(getString(item.getItemId()));
