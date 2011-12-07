@@ -12,6 +12,7 @@
       var STATUS_STOP = 3;
       var status = STATUS_DRIVING;
       var page = 0;
+      var radio = 0;
       
       $(window).resize(function() {
           // スマフォっぽい比率で固定
@@ -22,7 +23,9 @@
           start();
           setInterval(function() {
               $("#drive_screen_image").attr("src", "d" + page + ".png");
+              $("#radio_image").attr("src", "radio" + radio + ".png");
               page = (page + 1) % 4;
+              radio = (radio + 1) % 4;
           }, 5000);
 
           $("#inbound_reserve_list td").click(function(e) {
@@ -876,7 +879,11 @@ table#inbound_reserve_list td {
           </td>
           <td style="border-right: 1px solid white; width: 40%; text-align: center; vertical-align: middle;"
               onclick="startMessageNotify()">
-            <span style="font-size: 200%;" id="status_text">走行中</span>
+
+            <div style="font-size: 200%;">
+            <img src="radio3.png" style="width: 1.5ex; height: 1.5ex; vertical-align: middle;" id="radio_image" />
+            <span id="status_text">走行中</span>
+            </div>
           </td>
           <td style="width: 40%; text-align: center; vertical-align: middle;">
             <span style="padding-right: 5em;">現在時刻</span><br />

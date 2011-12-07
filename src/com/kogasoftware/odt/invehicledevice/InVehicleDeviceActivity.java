@@ -1,12 +1,13 @@
 package com.kogasoftware.odt.invehicledevice;
 
 import java.util.Locale;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebChromeClient;
@@ -17,24 +18,21 @@ import android.widget.Toast;
 
 class SpeakAlertThread extends Thread {
 	private final TextToSpeech tts;
-	private final String text;
+	private final BlockingQueue<String> texts;
 
-	public SpeakAlertThread(Context context, String text) {
-		this.text = text;
+	public SpeakAlertThread(Context context, BlockingQueue<String> texts) {
+		this.texts = texts;
 		tts = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
 			@Override
 			public void onInit(int status) {
-				try {
-					if (status != TextToSpeech.SUCCESS) {
-						return;
-					}
-					Locale locale = Locale.JAPAN;
-					if (tts.isLanguageAvailable(locale) < TextToSpeech.LANG_AVAILABLE) {
-						return;
-					}
-					tts.setLanguage(locale);
-				} finally {
+				if (status != TextToSpeech.SUCCESS) {
+					return;
 				}
+				Locale locale = Locale.JAPAN;
+				if (tts.isLanguageAvailable(locale) < TextToSpeech.LANG_AVAILABLE) {
+					return;
+				}
+				tts.setLanguage(locale);
 			}
 		});
 	}
@@ -42,18 +40,14 @@ class SpeakAlertThread extends Thread {
 	@Override
 	public void run() {
 		try {
-			//Thread.sleep(2000);
-			// for (int i = 0; i < 10; ++i) {
-			if (tts.isSpeaking()) {
-				// 読み上げ中なら止める
-				tts.stop();
+			while (true) {
+				String text = texts.take();
+				if (tts.isSpeaking()) {
+					tts.stop();
+				}
+				tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
 			}
-			// 読み上げ開始
-			// tts.speak("こんにちは", TextToSpeech.QUEUE_FLUSH, null);
-			tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
-			// }
-			// } catch (InterruptedException e) {
-		} catch (IllegalMonitorStateException e) {
+		} catch (InterruptedException e) {
 		} finally {
 			tts.shutdown();
 		}
@@ -61,6 +55,9 @@ class SpeakAlertThread extends Thread {
 }
 
 public class InVehicleDeviceActivity extends Activity {
+	Thread speakAlertThread = new Thread();
+	private final BlockingQueue<String> texts = new LinkedBlockingQueue();
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -74,13 +71,7 @@ public class InVehicleDeviceActivity extends Activity {
 		webSettings.setJavaScriptEnabled(true);
 		webView.loadUrl("file:///android_asset/default.html");
 
-		new SpeakAlertThread(this, "Hello, World !").start();
-	}
-
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		openOptionsMenu();
-		return super.onKeyDown(keyCode, event);
+		speakAlertThread = new SpeakAlertThread(this, texts);
 	}
 
 	@Override
@@ -103,7 +94,7 @@ public class InVehicleDeviceActivity extends Activity {
 		case R.string.sample5:
 			Toast.makeText(this, getString(item.getItemId()), Toast.LENGTH_LONG)
 					.show();
-			new SpeakAlertThread(this, getString(item.getItemId())).start();
+			texts.add(getString(item.getItemId()));
 			break;
 		default:
 			break;
