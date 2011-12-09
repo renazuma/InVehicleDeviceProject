@@ -8,7 +8,7 @@ var page = 0;
 var radio = 0;
 
 $(window).resize(function() {
-    // ƒXƒ}ƒtƒH‚Á‚Û‚¢”ä—¦‚ÅŒÅ’è
+    // ã‚¹ãƒãƒ•ã‚©ã£ã½ã„æ¯”ç‡ã§å›ºå®š
     $("body").css("font-size", $("body").width() / 7 + "%");
 });
 $(document).ready(function() {
@@ -167,7 +167,7 @@ function start() {
 
     $("#start_button_layout").hide();
     $("#goal_button_layout").show();
-    $("#status_text").text("‘–s’†");
+    $("#status_text").text("èµ°è¡Œä¸­");
     showDefaultScreen();
     $(".station-cell").removeClass("station-cell-selected");
 }
@@ -183,7 +183,7 @@ function goal() {
 
     $("#start_button_layout").show();
     $("#goal_button_layout").hide();
-    $("#status_text").text("’âÔ’†");
+    $("#status_text").text("åœè»Šä¸­");
     showDefaultScreen();
 }
 
