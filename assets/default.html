@@ -192,17 +192,25 @@
       }
 
       var messageNotifyTimerId = 0;
+      var messageNotifyBlink = 0;
       
       function startMessageNotify() {
           clearMessageNotify();
+          var messageNotifyTimerId = 0;
           messageNotifyTimerId = setInterval(function() {
               $("#message_notify").toggle();
-          }, 800);
+              messageNotifyBlink++;
+              if (messageNotifyBlink < 6) {
+                  return;
+              }
+              $("#message_notify").hide();
+              clearInterval(messageNotifyTimerId);
+              messageNotifyBlink = 0;
+              $("#operator_message_overlay").show(TRANSITION_DURATION);
+          }, 350);
       }
 
       function clearMessageNotify() {
-          $("#message_notify").hide();
-          clearInterval(messageNotifyTimerId);
       }
 
     </script>
