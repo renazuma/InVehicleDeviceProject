@@ -236,3 +236,12 @@ function startScheduleChangedNotify() {
 function clearMessageNotify() {
 }
 
+function showInboundSearchResult() {
+    $("#inbound_search_result").show(TRANSITION_DURATION);
+}
+
+function hideInboundSearchResult() {
+    $("#inbound_search_result").hide(TRANSITION_DURATION);
+    $("#inbound_reserve_list td").parent().css("background-color", "transparent");
+    $("#inbound_reserve_button").css({"color": "gray", "background-color": "lightgray"});
+}

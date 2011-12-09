@@ -706,9 +706,14 @@
           <option>32</option>
           <option>33</option>
         </select>
-        分 出発の予約候補を表示
+        分 出発
+        <span style="border: white 3px solid; border-radius: 5px; background-color: lightgreen; padding: 0.5ex;"
+              onclick="showInboundSearchResult()"
+              >
+        予約候補を検索
+        </span>
       </div>
-      <div style="border-radius: 10px; border: solid 1px black; margin: 1ex; padding: 0.3em; height: 38%; width: 75%; background-color: white; font-size: 60%; position: relative; left: 2%;">
+      <div id="inbound_search_result" style="border-radius: 10px; border: solid 1px black; margin: 1ex; padding: 0.3em; height: 38%; width: 75%; background-color: white; font-size: 60%; position: relative; left: 2%; display: none;">
         <table id="inbound_reserve_list" style="width: 100%; border: 1px;">
           <tr>
             <th>出発時刻</th>
@@ -736,8 +741,8 @@
         </table>
       </div>
 
-      <div id="inbound_reserve_button" class="positive-button"  onclick="closeOverlay();">予約する</div>
-      <div class="negative-button" onclick="closeOverlay();">戻る</div>
+      <div id="inbound_reserve_button" class="positive-button"  onclick="closeOverlay(); hideInboundSearchResult();">予約する</div>
+      <div class="negative-button" onclick="closeOverlay(); hideInboundSearchResult();">戻る</div>
     </div>
 
   </body>
