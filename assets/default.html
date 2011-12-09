@@ -543,7 +543,9 @@
             <span id="status_text">走行中</span>
             </div>
           </td>
-          <td style="width: 40%; text-align: center; vertical-align: middle;">
+          <td style="width: 40%; text-align: center; vertical-align: middle;"
+              onclick="startScheduleChangedNotify()"
+              >
             <span style="padding-right: 5em;">現在時刻</span><br />
             <span style="font-size: 210%;">14時26分</span>
           </td>
@@ -657,6 +659,15 @@
       </div>
       <div class="positive-button" onclick="closeOverlay();">はい</div>
       <div class="negative-button" onclick="closeOverlay();">いいえ</div>
+    </div>
+
+    <div class="overlay" id="schedule_changed_overlay">
+      <div style="position: absolute; padding: 1em;">運行予定が変更されました。ご確認ください。</div>
+      <div style="position: absolute; border-radius: 10px; border: solid 3px black; margin: 1em; padding: 0.3em; height: 40%; width: 85%; background-color: white; top: 2.3em;">
+        変更の詳細
+      </div>
+      <div class="positive-button" onclick="closeOverlay(); showScheduleScreen();">運行予定表示</div>
+      <div class="negative-button" onclick="closeOverlay();">閉じる</div>
     </div>
 
     <div class="overlay" id="memo_overlay">
