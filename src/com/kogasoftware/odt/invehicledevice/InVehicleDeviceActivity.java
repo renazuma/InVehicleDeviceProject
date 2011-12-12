@@ -42,15 +42,27 @@ class SpeakAlertThread extends Thread {
 		try {
 			while (true) {
 				String text = texts.take();
-				if (tts.isSpeaking()) {
-					tts.stop();
-				}
-				tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
+				// if (tts.isSpeaking()) {
+				// tts.stop();
+				// }
+				tts.speak(text, TextToSpeech.QUEUE_ADD, null);
 			}
 		} catch (InterruptedException e) {
 		} finally {
 			tts.shutdown();
 		}
+	}
+}
+
+class WebViewSpeaker {
+	private final BlockingQueue<String> texts;
+
+	public WebViewSpeaker(BlockingQueue<String> texts) {
+		this.texts = texts;
+	}
+
+	public void speak(String text) {
+		texts.add(text);
 	}
 }
 
@@ -69,6 +81,7 @@ public class InVehicleDeviceActivity extends Activity {
 		webView.setWebChromeClient(new WebChromeClient());
 		WebSettings webSettings = webView.getSettings();
 		webSettings.setJavaScriptEnabled(true);
+		webView.addJavascriptInterface(new WebViewSpeaker(texts), "speaker");
 		webView.loadUrl("file:///android_asset/default.html");
 
 		speakAlertThread = new SpeakAlertThread(this, texts);

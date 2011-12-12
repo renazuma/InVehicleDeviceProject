@@ -482,7 +482,8 @@
 
     <div class="overlay" id="operator_message_overlay">
       <div style="position: absolute; padding: 1em;">管理者から連絡があります</div>
-      <div style="position: absolute; border-radius: 10px; border: solid 3px black; margin: 1em; padding: 0.3em; height: 40%; width: 85%; background-color: white; top: 1.5em;">
+      <div style="position: absolute; border-radius: 10px; border: solid 3px black; margin: 1em; padding: 0.3em; height: 40%; width: 85%; background-color: white; top: 1.5em;"
+           id="operator_message_text">
         鈴木さんは降りられましたか？
       </div>
       <div class="positive-button" onclick="closeOverlay();">はい</div>
@@ -490,9 +491,12 @@
     </div>
 
     <div class="overlay" id="schedule_changed_overlay">
-      <div style="position: absolute; padding: 1em;">運行予定が変更されました。ご確認ください。</div>
-      <div style="position: absolute; border-radius: 10px; border: solid 3px black; margin: 1em; padding: 0.3em; height: 40%; width: 85%; background-color: white; top: 2.3em;">
-        変更の詳細
+      <div style="position: absolute; padding: 1em;">
+        運行予定が変更されました。
+      </div>
+      <div style="position: absolute; border-radius: 10px; border: solid 3px black; margin: 1em; padding: 0.3em; height: 40%; width: 85%; background-color: white; top: 2.3em;"
+           id="schedule_changed_message_text">
+        つぎの目的地がケーヨーデーツーに変更されました。到着予定時刻は17時50分です。
       </div>
       <div class="positive-button" onclick="closeOverlay(); showScheduleScreen();">運行予定表示</div>
       <div class="negative-button" onclick="closeOverlay();">閉じる</div>

@@ -7,10 +7,16 @@ var status = STATUS_DRIVING;
 var page = 0;
 var radio = 0;
 
+if (!speaker) {
+	var speaker = { "speak": function(e) { alert(e); }};
+	// speaker.speak("no speaker");
+}
+
 $(window).resize(function() {
     // スマフォっぽい比率で固定
     $("body").css("font-size", $("body").width() / 7 + "%");
 });
+
 $(document).ready(function() {
     $(window).resize();
     start();
@@ -202,6 +208,7 @@ function down() {
 var notifyBlink = 0;
 
 function startMessageNotify() {
+	speaker.speak("管理者からメッセージがあります");
     clearMessageNotify();
     var messageNotifyTimerId = 0;
     messageNotifyTimerId = setInterval(function() {
@@ -214,10 +221,12 @@ function startMessageNotify() {
         clearInterval(messageNotifyTimerId);
         notifyBlink = 0;
         $("#operator_message_overlay").show(TRANSITION_DURATION);
+    	speaker.speak($("#operator_message_text").text());
     }, 350);
 }
 
 function startScheduleChangedNotify() {
+	speaker.speak("運行予定が変更されました");
     clearMessageNotify();
     var messageNotifyTimerId = 0;
     messageNotifyTimerId = setInterval(function() {
@@ -230,6 +239,7 @@ function startScheduleChangedNotify() {
         clearInterval(messageNotifyTimerId);
         notifyBlink = 0;
         $("#schedule_changed_overlay").show(TRANSITION_DURATION);
+        speaker.speak($("#schedule_changed_message_text").text());
     }, 350);
 }
 
