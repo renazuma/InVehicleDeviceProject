@@ -8,8 +8,11 @@ var page = 0;
 var radio = 0;
 
 if (!speaker) {
-	var speaker = { "speak": function(e) { alert(e); }};
-	// speaker.speak("no speaker");
+	var speaker = { "speak": function(e) { alert("speak:" + e); }};
+}
+
+if (!mapLauncher) {
+	var mapLauncher = { "launch": function() { alert("Map!"); }};
 }
 
 $(window).resize(function() {
@@ -77,29 +80,7 @@ function showScheduleScreen() {
 }
 
 function toggleMapScreen() {
-    var selector = "#map_button_layout";
-    $(".button_layout").not(selector).css("background-color", "transparent");
-    var bg = "";
-    if (toggleScreen("map_screen")) {
-        if (status == STATUS_DRIVING) {
-            bg = "gsp.png";
-        } else if (status == STATUS_STATION) {
-            bg = "bsp.png";
-        }
-    } else {
-        if (status == STATUS_DRIVING) {
-            bg = "gs.png";
-        } else if (status == STATUS_STATION) {
-            bg = "bs.png";
-        }
-    }
-    $("#map_button_bg").attr("src", bg);
-
-    if (status == STATUS_DRIVING) {
-        $("#schedule_button_bg").attr("src", "gs.png");
-    } else if (status == STATUS_STATION) {
-        $("#schedule_button_bg").attr("src", "bs.png");
-    }
+	mapLauncher.launch();
 }
 
 function toggleScheduleScreen() {
@@ -130,35 +111,43 @@ function toggleScheduleScreen() {
 
 function showCheckStartOverlay() {
     $("#check_start_overlay").show(TRANSITION_DURATION);
+    $("div#dummy_user_list").hide();
 }
 
 function showCheckStopOverlay() {
     $("#check_stop_overlay").show(TRANSITION_DURATION);
+    $("div#dummy_user_list").hide();
 }
 
 function showMemoOverlay() {
     $("#memo_overlay").show(TRANSITION_DURATION);
+    $("div#dummy_user_list").hide();
 }
 
 function showOperatorMessageOverlay() {
     clearMessageNotify();
     $("#operator_message_overlay").show(TRANSITION_DURATION);
+    $("div#dummy_user_list").hide();
 }
 
 function showStopOverlay() {
     $("#stop_overlay").show(TRANSITION_DURATION);
+    $("div#dummy_user_list").hide();
 }
 
 function showPauseOverlay() {
     $("#pause_overlay").show(TRANSITION_DURATION);
+    $("div#dummy_user_list").hide();
 }
 
 function showAdminOverlay() {
     $("#admin_overlay").show(TRANSITION_DURATION);
+    $("div#dummy_user_list").hide();
 }
 
 function showInboundOverlay() {
     $("#inbound_overlay").show(TRANSITION_DURATION);
+    $("div#dummy_user_list").hide();
 }
 
 function start() {
@@ -174,6 +163,7 @@ function start() {
     $("#start_button_layout").hide();
     $("#goal_button_layout").show();
     $("#status_text").text("走行中");
+    $("div#dummy_user_list").show();
     showDefaultScreen();
     $(".station-cell").removeClass("station-cell-selected");
 }
@@ -194,6 +184,7 @@ function goal() {
 }
 
 function closeOverlay() {
+    $("div#dummy_user_list").show(); // w/a
     $(".overlay").hide(TRANSITION_DURATION);
 }
 
@@ -220,6 +211,7 @@ function startMessageNotify() {
         $("#message_notify").hide();
         clearInterval(messageNotifyTimerId);
         notifyBlink = 0;
+        $("div#dummy_user_list").hide();
         $("#operator_message_overlay").show(TRANSITION_DURATION);
     	speaker.speak($("#operator_message_text").text());
     }, 350);
@@ -238,6 +230,7 @@ function startScheduleChangedNotify() {
         $("#message_notify").hide();
         clearInterval(messageNotifyTimerId);
         notifyBlink = 0;
+        $("div#dummy_user_list").hide();
         $("#schedule_changed_overlay").show(TRANSITION_DURATION);
         speaker.speak($("#schedule_changed_message_text").text());
     }, 350);

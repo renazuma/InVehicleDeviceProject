@@ -1,11 +1,14 @@
 package com.kogasoftware.odt.invehicledevice;
 
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.view.Menu;
@@ -15,6 +18,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
+
 
 class SpeakAlertThread extends Thread {
 	private final TextToSpeech tts;
@@ -45,7 +49,10 @@ class SpeakAlertThread extends Thread {
 				// if (tts.isSpeaking()) {
 				// tts.stop();
 				// }
-				tts.speak(text, TextToSpeech.QUEUE_ADD, null);
+				HashMap<String, String> myHashAlarm = new HashMap();
+				myHashAlarm.put(TextToSpeech.Engine.KEY_PARAM_STREAM,
+						String.valueOf(AudioManager.STREAM_ALARM));
+				tts.speak(text, TextToSpeech.QUEUE_ADD, myHashAlarm);
 			}
 		} catch (InterruptedException e) {
 		} finally {
@@ -66,15 +73,28 @@ class WebViewSpeaker {
 	}
 }
 
+class WebViewMapLauncher {
+	private final Context context;
+
+	public WebViewMapLauncher(Context context) {
+		this.context = context;
+	}
+
+	public void launch() {
+		Intent intent = new Intent(context, MainActivity.class);
+		context.startActivity(intent);
+	}
+}
+
 public class InVehicleDeviceActivity extends Activity {
 	Thread speakAlertThread = new Thread();
-	private final BlockingQueue<String> texts = new LinkedBlockingQueue();
+	private final BlockingQueue<String> texts = new LinkedBlockingQueue<String>();
 	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main);
+		setContentView(R.layout.invehicledevice);
 
 		WebView webView = (WebView) findViewById(R.id.webView);
 		webView.setWebViewClient(new WebViewClient());
@@ -82,10 +102,13 @@ public class InVehicleDeviceActivity extends Activity {
 		WebSettings webSettings = webView.getSettings();
 		webSettings.setJavaScriptEnabled(true);
 		webView.addJavascriptInterface(new WebViewSpeaker(texts), "speaker");
+		webView.addJavascriptInterface(new WebViewMapLauncher(this),
+				"mapLauncher");
 		webView.loadUrl("file:///android_asset/default.html");
 
 		speakAlertThread = new SpeakAlertThread(this, texts);
 		speakAlertThread.start();
+
 	}
 
 	@Override
