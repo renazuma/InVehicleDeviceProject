@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="latitude_arr">
+        <item>35.707893</item>
+        <item>35.607893</item>
+        <item>35.807893</item>
+        <item>35.507893</item>
+        <item>35.307893</item>
+    </string-array>
+    <string-array name="longlatitude_arr">
+        <item>139.774332</item>
+        <item>139.64332</item>
+        <item>139.574332</item>
+        <item>139.554332</item>
+        <item>139.684332</item>
+    </string-array>
+</resources>
