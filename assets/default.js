@@ -6,7 +6,7 @@ var STATUS_STOP = 3;
 var status = STATUS_DRIVING;
 var page = 0;
 var radio = 0;
-
+var dispstatus = 1;
 if (!speaker) {
 	var speaker = { "speak": function(e) { alert("speak:" + e); }};
 }
@@ -23,10 +23,15 @@ $(window).resize(function() {
 $(document).ready(function() {
     $(window).resize();
     start();
+
     setInterval(function() {
-        $("#drive_screen_image").attr("src", "d" + page + ".png");
+        if(dispstatus == 1) {
+           $("#drive_screen_image").attr("src", "d" + page + ".png");
+        } else {
+           $("#drive_screen_image").attr("src", "e" + page + ".png");
+        };
         $("#radio_image").attr("src", "radio" + radio + ".png");
-        page = (page + 1) % 4;
+        page = (page + 1) % 2;
         radio = (radio + 1) % 4;
     }, 5000);
 
@@ -112,6 +117,7 @@ function toggleScheduleScreen() {
 function showCheckStartOverlay() {
     $("#check_start_overlay").show(TRANSITION_DURATION);
     $("div#dummy_user_list").hide();
+    
 }
 
 function showCheckStopOverlay() {
@@ -168,6 +174,25 @@ function start() {
     $(".station-cell").removeClass("station-cell-selected");
 }
 
+function start1(){
+    dispstatus = 2;
+    closeOverlay();
+    status = STATUS_DRIVING;
+    $(".frame").css("background-color", "lightgreen");
+    $("#admin_button_bg").attr("src", "gs.png");
+    $("#map_button_bg").attr("src", "gs.png");
+    $("#schedule_button_bg").attr("src", "gb.png");
+    $("#start_button_bg").attr("src", "gb.png");
+    $("#goal_button_bg").attr("src", "gb.png");
+
+    $("#start_button_layout").hide();
+    $("#goal_button_layout").show();
+    $("#status_text").text("走行中");
+    $("div#dummy_user_list").show();
+    showDefaultScreen();
+
+}
+
 function goal() {
     status = STATUS_STATION;
     $(".frame").css("background-color", "lightblue");
@@ -181,6 +206,22 @@ function goal() {
     $("#goal_button_layout").hide();
     $("#status_text").text("停車中");
     showDefaultScreen();
+    if (dispstatus == 2) {
+      $("#aa").empty();
+      document.getElementById('aa').innerHTML = '[降] 予約番号';
+      
+      $("#bb").empty();
+      document.getElementById('bb').innerHTML = 'グッディ玉城店';
+      
+      $("#cc").empty();
+      document.getElementById('cc').innerHTML = '15時16';
+      
+      $("#ee").empty();
+      document.getElementById('ee').innerHTML = '15時14分';
+    }else {
+      $("#ee").empty();
+      document.getElementById('ee').innerHTML = '14時58分';
+    };
 }
 
 function closeOverlay() {
