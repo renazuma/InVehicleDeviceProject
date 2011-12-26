@@ -5,6 +5,7 @@ import java.util.Locale;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import net.gimite.jatts.JapaneseTextToSpeech;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -19,6 +20,33 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+class SpeakAlertThread2 extends Thread {
+	private final JapaneseTextToSpeech tts;
+	private final BlockingQueue<String> texts;
+
+	public SpeakAlertThread2(Context context, BlockingQueue<String> texts) {
+		this.texts = texts;
+		tts = new JapaneseTextToSpeech(context, null);
+	}
+
+	@Override
+	public void run() {
+		try {
+			while (true) {
+				String text = texts.take();
+				while (tts.isSpeaking()) {
+					// QUEUE_ADD未対応のため、自前で待つ
+					Thread.sleep(200);
+				}
+				HashMap<String, String> myHashAlarm = new HashMap<String, String>();
+				myHashAlarm.put(TextToSpeech.Engine.KEY_PARAM_STREAM,
+						String.valueOf(AudioManager.STREAM_ALARM));
+				tts.speak(text, TextToSpeech.QUEUE_FLUSH, myHashAlarm);
+			}
+		} catch (InterruptedException e) {
+		}
+	}
+}
 
 class SpeakAlertThread extends Thread {
 	private final TextToSpeech tts;
@@ -106,7 +134,7 @@ public class InVehicleDeviceActivity extends Activity {
 				"mapLauncher");
 		webView.loadUrl("file:///android_asset/default.html");
 
-		speakAlertThread = new SpeakAlertThread(this, texts);
+		speakAlertThread = new SpeakAlertThread2(this, texts);
 		speakAlertThread.start();
 
 	}

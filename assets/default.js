@@ -115,9 +115,8 @@ function toggleScheduleScreen() {
 }
 
 function showCheckStartOverlay() {
-    $("#check_start_overlay").show(TRANSITION_DURATION);
+	$("#check_start_overlay").show(TRANSITION_DURATION);
     $("div#dummy_user_list").hide();
-    
 }
 
 function showCheckStopOverlay() {
@@ -175,6 +174,8 @@ function start() {
 }
 
 function start1(){
+	speaker.speak("次は。アスピア玉城。アスピア玉城");
+	
     dispstatus = 2;
     closeOverlay();
     status = STATUS_DRIVING;
