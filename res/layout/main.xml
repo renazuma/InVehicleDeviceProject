@@ -14,13 +14,36 @@
 		<com.kogasoftware.odt.invehicledevice.MapViewRedirector
 			android:id="@+id/mapViewRedirector" android:layout_width="512px"
 			android:layout_height="512px" />
-
-		<Button android:id="@+id/backButton"
-		    android:layout_gravity="bottom"
-        	android:layout_width="fill_parent"
-        	android:layout_height="wrap_content"
-        	android:textSize="30dp"
-	        android:text="閉じる" />
+			
+		<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    		android:layout_width="fill_parent"
+    		android:layout_height="wrap_content"
+    		android:layout_gravity="bottom"
+    		android:stretchColumns="*"
+    		>
+		    <TableRow>
+			
+				<Button android:id="@+id/backButton"
+		        	android:layout_width="wrap_content"
+		        	android:layout_height="wrap_content"
+		        	android:textSize="30dp"
+			        android:text="閉じる" />
+				    
+				<Button android:id="@+id/zoomInButton"
+		        	android:layout_width="wrap_content"
+		        	android:layout_height="wrap_content"
+		        	android:textSize="30dp"
+			        android:text="拡大" />
+				
+				<Button android:id="@+id/zoomOutButton"
+		        	android:layout_width="wrap_content"
+		        	android:layout_height="wrap_content"
+		        	android:textSize="30dp"
+			        android:text="縮小" />
+								    
+			</TableRow>
+		</TableLayout>
+		
 	</FrameLayout>
 
 </com.kogasoftware.odt.invehicledevice.OnMeasureDetectableLinerLayout>

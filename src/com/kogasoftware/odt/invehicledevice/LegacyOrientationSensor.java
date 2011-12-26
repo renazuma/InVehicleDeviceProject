@@ -50,7 +50,7 @@ abstract public class LegacyOrientationSensor extends OrientationSensor {
 
 			// 再描画
 			float r = values[SensorManager.DATA_X];
-			onOrientationChanged(Math.toRadians(360.0f - r));
+			onOrientationChanged(Math.toRadians(360.0f - r - 90.0f));
 		}
 	}
 }

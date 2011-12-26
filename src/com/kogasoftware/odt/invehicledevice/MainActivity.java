@@ -83,6 +83,30 @@ public class MainActivity extends MapActivity implements LocationListener {
 			}
 		});
 
+		final MapController mapController = mapView.getController();
+		final Button zoomInButton = (Button) findViewById(R.id.zoomInButton);
+		final Button zoomOutButton = (Button) findViewById(R.id.zoomOutButton);
+
+		zoomInButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				if (!mapController.zoomIn()) {
+					zoomInButton.setEnabled(false);
+				}
+				zoomOutButton.setEnabled(true);
+			}
+		});
+
+		zoomOutButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				if (!mapController.zoomOut()) {
+					zoomOutButton.setEnabled(false);
+				}
+				zoomInButton.setEnabled(true);
+			}
+		});
+
 		mapView.setOnTouchListener(mapOnTouchListener);
 		mapRenderer = new MapRenderer(this, bitmapSynchronizer, mapView);
 
@@ -192,14 +216,16 @@ public class MainActivity extends MapActivity implements LocationListener {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		orientationSensor.create();
-		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0,
-				0, this);
-		// GeoPoint newCenter = new GeoPoint(35707067, 139771762);
-		// mapOnTouchListener.updateGeoPoint(newCenter);
+
+		GeoPoint newCenter = new GeoPoint(35901364, 139936004);
 		MapController mapController = mapView.getController();
 		mapController.setZoom(16);
-		// mapController.animateTo(newCenter);
+		mapController.animateTo(newCenter);
+
+		orientationSensor.create();
+		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+				1000,
+				0, this);
 	}
 
 	@Override
