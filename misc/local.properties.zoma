@@ -1,1 +1,2 @@
 sdk.dir=/var/lib/jenkins/tools/android-sdk
+findbugs.home=/usr/local/share/findbugs-2.0.0
