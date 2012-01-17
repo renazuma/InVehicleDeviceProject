@@ -1,1 +1,2 @@
 sdk.dir=c:\\opt\\android-sdk
+findbugs.home=c:\\opt\\findbugs-2.0.0
