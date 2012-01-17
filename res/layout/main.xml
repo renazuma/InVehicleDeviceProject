@@ -11,7 +11,7 @@
 		<android.opengl.GLSurfaceView android:id="@+id/glSurfaceView"
 			android:layout_width="fill_parent" android:layout_height="fill_parent" />
 
-		<com.kogasoftware.odt.invehicledevice.MapViewRedirector
+		<com.kogasoftware.odt.invehicledevice.map.MapViewRedirector
 			android:id="@+id/mapViewRedirector" android:layout_width="512px"
 			android:layout_height="512px" />
 			
