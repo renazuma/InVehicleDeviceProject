@@ -89,8 +89,8 @@
       <findbugs
           home="${findbugs.home}"
           output="xml"
-          outputFile="reports/findbugs.xml"
-          excludeFilter="misc/findbugs-exclude.xml"
+          outputFile="findbugs.xml"
+          excludeFilter="findbugs-exclude.xml"
           effort="max"
           reportLevel="low"
           >
