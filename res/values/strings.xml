@@ -2,7 +2,7 @@
 <resources>
 
     <string name="hello">Hello World, InVehicleDeviceActivity!</string>
-    <string name="app_name">In-Vehicle Device</string>
+    <string name="app_name">ODT 車載機</string>
     <string name="sample1">こんにちは</string>
     <string name="sample2">次は 図書館前 図書館前</string>
     <string name="sample3">次は 図書館前、図書館前</string>

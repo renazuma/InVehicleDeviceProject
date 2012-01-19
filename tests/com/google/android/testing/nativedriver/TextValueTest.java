@@ -47,6 +47,10 @@ public class TextValueTest extends TestCase {
 		return new AndroidNativeDriverBuilder().withDefaultServer().build();
 	}
 
+	public void testTextValue2() {
+
+	}
+
 	public void testTextValue() {
 		driver.startActivity("com.kogasoftware.odt.invehicledevice"
 				+ ".InVehicleDeviceActivity");
@@ -54,4 +58,5 @@ public class TextValueTest extends TestCase {
 		WebElement textView = driver.findElement(By.id("changeStatusButton"));
 		assertEquals("Go", textView.getText());
 	}
+
 }
