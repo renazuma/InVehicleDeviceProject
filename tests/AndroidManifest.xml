@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.kogasoftware.x.odt.invehicledevice.test"
+    package="com.kogasoftware.odt.invehicledevice.test"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -14,10 +14,10 @@
     
     <instrumentation
         android:name="android.test.InstrumentationTestRunner"
-        android:targetPackage="com.kogasoftware.x.odt.invehicledevice.test" />
+        android:targetPackage="com.kogasoftware.odt.invehicledevice.test" />
     <instrumentation
         android:name="pl.polidea.instrumentation.PolideaInstrumentationTestRunner"
-        android:targetPackage="com.kogasoftware.x.odt.invehicledevice.test" />
+        android:targetPackage="com.kogasoftware.odt.invehicledevice.test" />
 
     <application
         android:icon="@drawable/ic_launcher"

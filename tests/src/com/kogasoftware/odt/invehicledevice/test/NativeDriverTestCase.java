@@ -1,4 +1,4 @@
-package com.kogasoftware.x.odt.invehicledevice.test;
+package com.kogasoftware.odt.invehicledevice.test;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
