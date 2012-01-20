@@ -99,13 +99,14 @@
       </findbugs>
     </target>
 
-    <target name="test-and-pull-results" depends="test">
+    <target name="ci" depends="uninstall,clean,debug,instrument,findbugs,installt">
       <echo>adb forward tcp:54129 tcp:54129</echo>
       <exec executable="${adb}">
         <arg value="forward" />
         <arg value="tcp:54129" />
         <arg value="tcp:54129" />
       </exec>
+      <antcall target="test" />
       <echo>adb pull /data/data/${tested.manifest.package}/files/</echo>
       <exec executable="${adb}">
         <arg line="${adb.device.arg}" />
