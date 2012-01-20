@@ -100,13 +100,19 @@
     </target>
 
     <target name="test-and-pull-results" depends="test">
+      <echo>adb forward tcp:54129 tcp:54129</echo>
+      <exec executable="${adb}">
+        <arg value="forward" />
+        <arg value="tcp:54129" />
+        <arg value="tcp:54129" />
+      </exec>
       <echo>adb pull /data/data/${tested.manifest.package}/files/</echo>
       <exec executable="${adb}">
         <arg line="${adb.device.arg}" />
         <arg value="pull" />
         <arg value="/data/data/${tested.manifest.package}/files/" />
       </exec>
-      <echo>adb pull /data/data/${tested.manifest.package}/files/</echo>
+      <echo>adb pull /data/data/${manifest.package}/files/</echo>
       <exec executable="${adb}">
         <arg line="${adb.device.arg}" />
         <arg value="pull" />
