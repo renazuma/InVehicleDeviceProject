@@ -25,19 +25,19 @@ public class NativeDriverTestCase extends TestCase {
 									+ " com.kogasoftware.odt.invehicledevice/com.google.android.testing.nativedriver.server.ServerInstrumentation");
 					p.waitFor();
 					// テスト対象の起動を待つ
-					for (Integer retry = 0; retry < 10; ++retry) {
+					for (Integer retry = 0; retry < 100; ++retry) {
 						Socket s = new Socket();
 						try {
 							s.connect(new InetSocketAddress("localhost", 54129));
 
 							// no IOException
 							serverStarted.set(true);
-
+							break;
 						} catch (IOException e) {
 						} finally {
 							s.close();
 						}
-						Thread.sleep(100);
+						Thread.sleep(200);
 					}
 				}
 				if (!serverStarted.get()) {

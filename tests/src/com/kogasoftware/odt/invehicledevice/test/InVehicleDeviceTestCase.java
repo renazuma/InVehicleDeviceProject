@@ -31,7 +31,6 @@ public class InVehicleDeviceTestCase extends NativeDriverTestCase {
 	public void test到着ボタンを押すと停車中と表示() {
 		WebElement b = driver.findElement(By.id("changeStatusButton"));
 		b.click();
-
 		WebElement s = driver.findElement(By.id("statusTextView"));
 		assertEquals("停車中", s.getText());
 	}
