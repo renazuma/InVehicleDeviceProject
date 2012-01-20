@@ -3,7 +3,7 @@
     android:baselineAligned="false"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="horizontal" >
+    android:orientation="horizontal">
 
     <LinearLayout
         android:id="@+id/linearLayout1"
@@ -27,7 +27,7 @@
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <TextView
-                android:id="@+id/textView2"
+                android:id="@+id/statusTextView"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
@@ -84,7 +84,7 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
-            android:text="Go" />
+            android:text="到着しました" />
     </LinearLayout>
 
 </LinearLayout>

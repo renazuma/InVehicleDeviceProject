@@ -14,6 +14,8 @@ public class InVehicleDeviceTestCase extends NativeDriverTestCase {
 	@Override
 	protected void setUp() throws InterruptedException, IOException {
 		driver = getDriver();
+		driver.startActivity("com.kogasoftware.odt.invehicledevice"
+				+ ".InVehicleDeviceActivity");
 	}
 
 	@Override
@@ -21,19 +23,25 @@ public class InVehicleDeviceTestCase extends NativeDriverTestCase {
 		driver.quit();
 	}
 
-	public void testTextValue() {
-		driver.startActivity("com.kogasoftware.odt.invehicledevice"
-				+ ".InVehicleDeviceActivity");
-
-		WebElement textView = driver.findElement(By.id("changeStatusButton"));
-		assertEquals("Go", textView.getText());
+	public void test起動時は走行中と表示() {
+		WebElement s = driver.findElement(By.id("statusTextView"));
+		assertEquals("走行中", s.getText());
 	}
 
-	public void testTextValue2() {
-		driver.startActivity("com.kogasoftware.odt.invehicledevice"
-				+ ".InVehicleDeviceActivity");
+	public void test到着ボタンを押すと停車中と表示() {
+		WebElement b = driver.findElement(By.id("changeStatusButton"));
+		b.click();
 
-		WebElement textView = driver.findElement(By.id("changeStatusButton"));
-		assertEquals("Go", textView.getText());
+		WebElement s = driver.findElement(By.id("statusTextView"));
+		assertEquals("停車中", s.getText());
 	}
+
+	public void test停留所画面で出発ボタンを押すと走行中と表示() {
+		test到着ボタンを押すと停車中と表示(); // 停車状態にする
+		WebElement b = driver.findElement(By.id("changeStatusButton"));
+		b.click();
+		WebElement s = driver.findElement(By.id("statusTextView"));
+		assertEquals("走行中", s.getText());
+	}
+
 }

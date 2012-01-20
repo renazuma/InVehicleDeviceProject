@@ -7,13 +7,18 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class InVehicleDeviceActivity extends Activity {
 	Thread speakAlertThread = new Thread();
 	private final BlockingQueue<String> texts = new LinkedBlockingQueue<String>();
 
-	// Button changeStatusButton;
+	private Button changeStatusButton = null;
+	private TextView statusTextView = null;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -21,22 +26,25 @@ public class InVehicleDeviceActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.invehicledevice);
 
-		// final Button changeStatusButton = (Button)
-		// findViewById(R.id.changeStatusButton);
-		// changeStatusButton.setOnClickListener(new OnClickListener() {
-		// private Integer status = 0;
-		//
-		// @Override
-		// public void onClick(View view) {
-		// if (status.equals(0)) {
-		// changeStatusButton.setText("出発");
-		// status = 1;
-		// } else {
-		// changeStatusButton.setText("到着");
-		// status = 0;
-		// }
-		// }
-		// });
+		changeStatusButton = (Button) findViewById(R.id.changeStatusButton);
+		statusTextView = (TextView) findViewById(R.id.statusTextView);
+
+		changeStatusButton.setOnClickListener(new OnClickListener() {
+			private Integer status = 0;
+
+			@Override
+			public void onClick(View view) {
+				if (status.equals(0)) {
+					statusTextView.setText("停車中");
+					changeStatusButton.setText("出発");
+					status = 1;
+				} else {
+					statusTextView.setText("走行中");
+					changeStatusButton.setText("到着");
+					status = 0;
+				}
+			}
+		});
 	}
 
 	@Override
