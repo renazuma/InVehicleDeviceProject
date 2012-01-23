@@ -69,7 +69,7 @@ public class AsyncPostJSONTask extends AsyncTask<Void, Integer, JSONObject> {
 			}
 
 			JSONObject jsonRes = new JSONObject();
-			if (res >= 200 && res < 300) {
+			if (res / 100 == 2) {
 				Log.d(T, "response JSON: " + sb.toString());
 				jsonRes = new JSONObject(sb.toString());
 			} else {

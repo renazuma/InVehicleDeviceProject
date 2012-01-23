@@ -99,9 +99,10 @@
       </findbugs>
     </target>
 
-    <target name="ci" depends="uninstall,clean,debug,instrument,findbugs,installt">
+    <target name="ci-test">
       <echo>adb forward tcp:54129 tcp:54129</echo>
       <exec executable="${adb}">
+        <arg line="${adb.device.arg}" />
         <arg value="forward" />
         <arg value="tcp:54129" />
         <arg value="tcp:54129" />
