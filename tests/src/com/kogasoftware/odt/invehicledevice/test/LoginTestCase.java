@@ -17,7 +17,7 @@ public class LoginTestCase extends
 	}
 
 	public void testValidLogin() throws JSONException, InterruptedException {
-		String authUrl = "http://10.1.10.161/operators/sign_in.json";
+		String authUrl = "http://10.1.10.161:3001/operators/sign_in.json";
 
 		JSONObject user = new JSONObject();
 		user.put("login", "i_mogi");

@@ -15,6 +15,7 @@ public class InVehicleDeviceActivity extends Activity {
 
 	private Button changeStatusButton = null;
 	private TextView statusTextView = null;
+	private Integer status = 0;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -28,22 +29,39 @@ public class InVehicleDeviceActivity extends Activity {
 		statusTextView = (TextView) findViewById(R.id.status_text_view);
 
 		changeStatusButton.setOnClickListener(new OnClickListener() {
-			private Integer status = 0;
 
 			@Override
 			public void onClick(View view) {
 				if (status.equals(0)) {
+					findViewById(R.id.check_start_layout).setVisibility(
+							View.VISIBLE);
 					statusTextView.setText("停車中");
 					changeStatusButton.setText("出発");
-					status = 1;
 				} else {
-					statusTextView.setText("走行中");
-					changeStatusButton.setText("到着");
 					status = 0;
 				}
 			}
 		});
 
+		((Button) findViewById(R.id.start_button))
+				.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View view) {
+						status = 1;
+						statusTextView.setText("走行中");
+						changeStatusButton.setText("到着");
+						findViewById(R.id.check_start_layout).setVisibility(
+								View.GONE);
+					}
+				});
+		((Button) findViewById(R.id.start_cancel_button))
+				.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View view) {
+						findViewById(R.id.check_start_layout).setVisibility(
+								View.GONE);
+					}
+				});
 	}
 
 	private String authToken = "";

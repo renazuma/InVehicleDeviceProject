@@ -3,9 +3,9 @@ package com.kogasoftware.odt.invehicledevice.test;
 import java.io.IOException;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 
 import com.google.android.testing.nativedriver.client.AndroidNativeDriver;
+import com.google.android.testing.nativedriver.client.AndroidNativeElement;
 
 public class InVehicleDeviceTestCase extends NativeDriverTestCase {
 
@@ -24,42 +24,53 @@ public class InVehicleDeviceTestCase extends NativeDriverTestCase {
 	}
 
 	public void test起動時は走行中と表示() {
-		WebElement s = driver.findElement(By.id("status_text_view"));
+		AndroidNativeElement s = driver.findElement(By.id("status_text_view"));
 		assertEquals("走行中", s.getText());
 	}
 
 	public void test到着ボタンを押すと停車中と表示() {
-		WebElement b = driver.findElement(By.id("change_status_button"));
+		AndroidNativeElement b = driver.findElement(By
+				.id("change_status_button"));
 		b.click();
-		WebElement s = driver.findElement(By.id("status_text_view"));
+		AndroidNativeElement s = driver.findElement(By.id("status_text_view"));
 		assertEquals("停車中", s.getText());
 	}
 
 	public void xtest停留所画面で出発ボタンを押すと確認画面が表示() {
 		test到着ボタンを押すと停車中と表示(); // 停車状態にする
 
-		WebElement s = driver.findElement(By.id("check_start_overlay"));
-		assertFalse(s.isEnabled());
-		WebElement b = driver.findElement(By.id("change_status_button"));
+		AndroidNativeElement s = driver
+				.findElement(By.id("check_start_layout"));
+		String a = s.getAttribute("android:layout_width");
+		String bx = s.getAttribute("layout_width");
+		String c = s.getAttribute("android:id");
+		String d = s.getAttribute("id");
+
+		assertEquals("gone", s.getAttribute("visibility"));
+		AndroidNativeElement b = driver.findElement(By
+				.id("change_status_button"));
 		b.click();
-		assertTrue(s.isEnabled());
+		assertEquals("visible", s.getAttribute("android:visibility"));
 	}
 
 	public void xtest停留所画面で出発ボタンを押すと確認画面が表示ーはい() {
-		test到着ボタンを押すと停車中と表示(); // 停車状態にする
-		WebElement b = driver.findElement(By.id("start_button"));
+		xtest停留所画面で出発ボタンを押すと確認画面が表示();
+		AndroidNativeElement b = driver.findElement(By.id("start_button"));
 		b.click();
-		WebElement s = driver.findElement(By.id("status_text_view"));
+		AndroidNativeElement s = driver.findElement(By.id("status_text_view"));
 		assertEquals("走行中", s.getText());
-		assertFalse(driver.findElement(By.id("check_start_layout")).isEnabled());
+		assertEquals("gone", driver.findElement(By.id("check_start_layout"))
+				.getAttribute("android:visibility"));
 	}
 
 	public void xtest停留所画面で出発ボタンを押すと確認画面が表示ーいいえ() {
-		test到着ボタンを押すと停車中と表示(); // 停車状態にする
-		WebElement b = driver.findElement(By.id("start_cancel_button"));
+		xtest停留所画面で出発ボタンを押すと確認画面が表示();
+		AndroidNativeElement b = driver.findElement(By
+				.id("start_cancel_button"));
 		b.click();
-		WebElement s = driver.findElement(By.id("status_text_view"));
+		AndroidNativeElement s = driver.findElement(By.id("status_text_view"));
 		assertEquals("停車中", s.getText());
-		assertFalse(driver.findElement(By.id("check_start_layout")).isEnabled());
+		assertEquals("gone", driver.findElement(By.id("check_start_layout"))
+				.getAttribute("android:visibility"));
 	}
 }
