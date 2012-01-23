@@ -47,19 +47,19 @@ public class InVehicleDeviceTestCase extends NativeDriverTestCase {
 
 	public void test停留所画面で出発ボタンを押すと確認画面が表示ーはい() {
 		test到着ボタンを押すと停車中と表示(); // 停車状態にする
-		WebElement b = driver.findElement(By.id("changeStatusButton"));
+		WebElement b = driver.findElement(By.id("startButton"));
 		b.click();
 		WebElement s = driver.findElement(By.id("statusTextView"));
 		assertEquals("走行中", s.getText());
-		assertFalse(driver.findElement(By.id("checkStartOverlay")).isEnabled());
+		assertFalse(driver.findElement(By.id("checkStartLayout")).isEnabled());
 	}
 
 	public void test停留所画面で出発ボタンを押すと確認画面が表示ーいいえ() {
 		test到着ボタンを押すと停車中と表示(); // 停車状態にする
-		WebElement b = driver.findElement(By.id("changeStatusButton"));
+		WebElement b = driver.findElement(By.id("startCancelButton"));
 		b.click();
 		WebElement s = driver.findElement(By.id("statusTextView"));
 		assertEquals("停車中", s.getText());
-		assertFalse(driver.findElement(By.id("checkStartOverlay")).isEnabled());
+		assertFalse(driver.findElement(By.id("checkStartLayout")).isEnabled());
 	}
 }

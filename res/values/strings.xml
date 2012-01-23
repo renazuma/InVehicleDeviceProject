@@ -2,13 +2,13 @@
 <resources>
 
     <string name="hello">Hello World, InVehicleDeviceActivity!</string>
-    <string name="app_name">ODT 車載機</string>
-    <string name="sample1">こんにちは</string>
-    <string name="sample2">次は 図書館前 図書館前</string>
-    <string name="sample3">次は 図書館前、図書館前</string>
-    <string name="sample4">次は 図書館前。図書館前</string>
-    <string name="sample5">次は 産技総合研筑波東事業所つくば研究支援センター入口 産技総合研筑波東事業所つくば研究支援センター入口</string>
-    <string name="sample6">鈴木さんは降りられましたか？</string>
-    <string name="sample7">黛さんは降りられましたか？</string>
+    <string name="app_name">オンデマンド交通システム 車載機</string>
+    <string name="login_id">ID</string>
+    <string name="login_password">パスワード</string>
+    <string name="login_button">ログイン</string>
+    <string name="accept_send_toast">送信しました</string>
+    <string name="accept_login_toast">ログインしました</string>
+    <string name="fail_send_toast">送信失敗しました</string>
+    <string name="fail_login_toast">ログインできませんでした</string>
 
 </resources>

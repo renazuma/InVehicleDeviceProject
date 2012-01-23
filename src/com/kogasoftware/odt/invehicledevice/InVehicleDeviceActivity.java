@@ -1,21 +1,16 @@
 package com.kogasoftware.odt.invehicledevice;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-
 import android.app.Activity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class InVehicleDeviceActivity extends Activity {
+	private final String T = LogTag.get(InVehicleDeviceActivity.class);
 	Thread speakAlertThread = new Thread();
-	private final BlockingQueue<String> texts = new LinkedBlockingQueue<String>();
 
 	private Button changeStatusButton = null;
 	private TextView statusTextView = null;
@@ -26,8 +21,10 @@ public class InVehicleDeviceActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.invehicledevice);
 
-		changeStatusButton = (Button) findViewById(R.id.changeStatusButton);
-		statusTextView = (TextView) findViewById(R.id.statusTextView);
+		Log.v(T, "onCreate");
+
+		changeStatusButton = (Button) findViewById(R.id.change_status_button);
+		statusTextView = (TextView) findViewById(R.id.status_text_view);
 
 		changeStatusButton.setOnClickListener(new OnClickListener() {
 			private Integer status = 0;
@@ -50,37 +47,5 @@ public class InVehicleDeviceActivity extends Activity {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(0, R.string.sample1, 0, R.string.sample1);
-		menu.add(0, R.string.sample2, 0, R.string.sample2);
-		menu.add(0, R.string.sample3, 0, R.string.sample3);
-		menu.add(0, R.string.sample4, 0, R.string.sample4);
-		menu.add(0, R.string.sample5, 0, R.string.sample5);
-		menu.add(0, R.string.sample6, 0, R.string.sample6);
-		menu.add(0, R.string.sample7, 0, R.string.sample7);
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.string.sample1:
-		case R.string.sample2:
-		case R.string.sample3:
-		case R.string.sample4:
-		case R.string.sample5:
-		case R.string.sample6:
-		case R.string.sample7:
-			Toast.makeText(this, getString(item.getItemId()), Toast.LENGTH_LONG)
-					.show();
-			texts.add(getString(item.getItemId()));
-			break;
-		default:
-			break;
-		}
-		return false;
 	}
 }
