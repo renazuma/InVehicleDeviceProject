@@ -17,8 +17,6 @@ import org.json.JSONObject;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.google.common.base.Charsets;
-
 public class AsyncPostJSONTask extends AsyncTask<Void, Integer, JSONObject> {
 	private final String T = LogTag.get(AsyncPostJSONTask.class);
 
@@ -52,9 +50,9 @@ public class AsyncPostJSONTask extends AsyncTask<Void, Integer, JSONObject> {
 			request.setURI(uri);
 			request.setHeader("Content-type", "application/json");
 
-			StringEntity entity = new StringEntity(postData,
-					Charsets.UTF_8.toString());
-
+			// StringEntity entity = new StringEntity(postData,
+			// Charsets.UTF_8.toString());
+			StringEntity entity = new StringEntity(postData);
 			request.setEntity(entity);
 
 			HttpResponse response = httpClient.execute(request);
@@ -65,17 +63,16 @@ public class AsyncPostJSONTask extends AsyncTask<Void, Integer, JSONObject> {
 			StringBuilder sb = new StringBuilder();
 			BufferedReader br = new BufferedReader(new InputStreamReader(
 					response.getEntity().getContent()));
-			String l;
+			String l = "";
 			while ((l = br.readLine()) != null) {
 				sb.append(l).append("\n");
 			}
 
-			JSONObject jsonRes;
+			JSONObject jsonRes = new JSONObject();
 			if (res >= 200 && res < 300) {
 				Log.d(T, "response JSON: " + sb.toString());
 				jsonRes = new JSONObject(sb.toString());
 			} else {
-				jsonRes = new JSONObject();
 				jsonRes.put("code", res);
 				jsonRes.put("body", sb.toString());
 			}
@@ -91,15 +88,12 @@ public class AsyncPostJSONTask extends AsyncTask<Void, Integer, JSONObject> {
 			e.printStackTrace();
 		}
 
-		return null;
+		return new JSONObject();
 	}
 
 	@Override
 	protected void onPostExecute(JSONObject result) {
 		super.onPostExecute(result);
-
-		if (listener != null) {
-			listener.onJSONResult(result);
-		}
+		listener.onJSONResult(result);
 	}
 }

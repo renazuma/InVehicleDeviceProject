@@ -1,6 +1,7 @@
 package com.kogasoftware.odt.invehicledevice;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -42,6 +43,26 @@ public class InVehicleDeviceActivity extends Activity {
 				}
 			}
 		});
+
+	}
+
+	private String authToken = "";
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		// if (authToken.isEmpty()) {
+		// Intent intent = new Intent(this, LoginActivity.class);
+		// startActivityForResult(intent, 0);
+		// }
+	}
+
+	@Override
+	protected void onActivityResult(int req, int res, Intent data) {
+		super.onActivityResult(req, res, data);
+		if (res == RESULT_OK) {
+			authToken = data.getStringExtra("authToken");
+		}
 	}
 
 	@Override

@@ -19,7 +19,7 @@ import android.widget.Toast;
 import com.kogasoftware.odt.invehicledevice.AsyncPostJSONTask.OnJSONResultListener;
 
 public class LoginActivity extends Activity {
-	private String authUrl = "http://176.32.84.9/users/sign_in.json";
+	private String authUrl = "http://10.1.10.161/operators/sign_in.json";
 	private EditText loginIdEditText;
 	private EditText passwordEditText;
 
@@ -47,8 +47,9 @@ public class LoginActivity extends Activity {
 	private void submitAuth() {
 		try {
 			JSONObject user = new JSONObject();
-			user.put("name", loginIdEditText.getText().toString());
-			user.put("password", passwordEditText.getText().toString());
+			user.put("operator[login]", loginIdEditText.getText().toString());
+			user.put("operator[password]", passwordEditText.getText()
+					.toString());
 
 			JSONObject req = new JSONObject();
 			req.put("user", user);

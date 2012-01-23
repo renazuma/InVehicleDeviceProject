@@ -86,6 +86,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:visibility="gone"
         android:id="@+id/check_start_layout"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
