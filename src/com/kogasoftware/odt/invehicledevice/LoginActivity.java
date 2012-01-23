@@ -3,7 +3,6 @@ package com.kogasoftware.odt.invehicledevice;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.R;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -67,9 +66,9 @@ public class LoginActivity extends Activity {
 
 						Toast toast = new Toast(LoginActivity.this);
 						LayoutInflater inflater = getLayoutInflater();
-						View v = inflater.inflate(R.layout.accepttoast, null);
+						View v = inflater.inflate(R.layout.accept_toast, null);
 						TextView tv = (TextView) v
-								.findViewById(R.id.textViewMessage);
+								.findViewById(R.id.login_message_text_view);
 						tv.setText(R.string.accept_login_toast);
 						toast.setDuration(Toast.LENGTH_LONG);
 						toast.setView(v);
@@ -82,10 +81,10 @@ public class LoginActivity extends Activity {
 					} catch (JSONException e) {
 						Toast toast = new Toast(LoginActivity.this);
 						LayoutInflater inflater = getLayoutInflater();
-						View v = inflater.inflate(R.layout.failedtoast, null);
+						View v = inflater.inflate(R.layout.failed_toast, null);
 						TextView tv = (TextView) v
-								.findViewById(R.id.textViewMessage);
-						tv.setText(R.string.labelToastFailLogin);
+								.findViewById(R.id.login_message_text_view);
+						tv.setText(R.string.fail_login_toast);
 						toast.setDuration(Toast.LENGTH_LONG);
 						toast.setView(v);
 						toast.show();

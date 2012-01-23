@@ -19,7 +19,7 @@ public class InVehicleDeviceActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.invehicledevice);
+		setContentView(R.layout.in_vehicle_device);
 
 		Log.v(T, "onCreate");
 
