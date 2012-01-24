@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="gen"/>
-	<classpathentry kind="src" path="InVehicleDevice"/>
-	<classpathentry kind="src" path="src"/>
+	<classpathentry excluding="com/kogasoftware/odt/invehicledevice/test/NativeDriverTestCase.java|com/kogasoftware/odt/invehicledevice/test/InVehicleDeviceTestCase.java|com/kogasoftware/odt/invehicledevice/test/EmptyActivity.java" kind="src" path="src"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
-	<classpathentry kind="lib" path="libs/client-standalone.jar"/>
 	<classpathentry kind="lib" path="libs/polidea_test_runner_1.2.jar"/>
 	<classpathentry kind="lib" path="/InVehicleDevice/libs/guava-11.0.1.jar"/>
+	<classpathentry kind="lib" path="libs/robotium-solo-3.1.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/InVehicleDevice"/>
 	<classpathentry kind="lib" path="/InVehicleDevice/libs/commons-math-2.2.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>

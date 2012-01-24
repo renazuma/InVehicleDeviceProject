@@ -33,12 +33,12 @@ public class InVehicleDeviceActivity extends Activity {
 			@Override
 			public void onClick(View view) {
 				if (status.equals(0)) {
+					statusTextView.setText("停車中");
+					changeStatusButton.setText("出発します");
+					status = 1;
+				} else {
 					findViewById(R.id.check_start_layout).setVisibility(
 							View.VISIBLE);
-					statusTextView.setText("停車中");
-					changeStatusButton.setText("出発");
-				} else {
-					status = 0;
 				}
 			}
 		});
@@ -47,9 +47,9 @@ public class InVehicleDeviceActivity extends Activity {
 				.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View view) {
-						status = 1;
+						status = 0;
 						statusTextView.setText("走行中");
-						changeStatusButton.setText("到着");
+						changeStatusButton.setText("到着しました");
 						findViewById(R.id.check_start_layout).setVisibility(
 								View.GONE);
 					}

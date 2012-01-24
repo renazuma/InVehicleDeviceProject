@@ -45,17 +45,17 @@ public class AsyncPostJSONTask extends AsyncTask<Void, Integer, JSONObject> {
 	protected JSONObject doInBackground(Void... params) {
 		try {
 			HttpClient httpClient = new DefaultHttpClient();
-			HttpPost request = new HttpPost();
 			URI uri = new URI(postUrl);
-			request.setURI(uri);
-			request.setHeader("Content-type", "application/json");
 
+			HttpResponse response = null;
+			// request.setHeader("Content-type", "application/json");
 			// StringEntity entity = new StringEntity(postData,
 			// Charsets.UTF_8.toString());
+			HttpPost request = new HttpPost();
 			StringEntity entity = new StringEntity(postData);
+			request.setURI(uri);
 			request.setEntity(entity);
-
-			HttpResponse response = httpClient.execute(request);
+			response = httpClient.execute(request);
 
 			int res = response.getStatusLine().getStatusCode();
 			Log.d(T, "Status:" + res);
