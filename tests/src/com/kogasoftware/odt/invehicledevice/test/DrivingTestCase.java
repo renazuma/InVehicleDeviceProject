@@ -8,12 +8,12 @@ import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.R;
 
-public class InVehicleDeviceActivityTestCase extends
+public class DrivingTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 	private Solo solo;
 
-	public InVehicleDeviceActivityTestCase() {
+	public DrivingTestCase() {
 		super("com.kogasoftware.odt.invehicledevice",
 				InVehicleDeviceActivity.class);
 	}

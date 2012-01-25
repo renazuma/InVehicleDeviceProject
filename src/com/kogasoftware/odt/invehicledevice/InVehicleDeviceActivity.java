@@ -14,10 +14,28 @@ public class InVehicleDeviceActivity extends Activity {
 	Thread speakAlertThread = new Thread();
 
 	private Button changeStatusButton = null;
+	private Button scheduleToggleButton = null;
 	private TextView statusTextView = null;
 	private Integer status = 0;
 
-	/** Called when the activity is first created. */
+	private void showScheduleLayout() {
+		scheduleToggleButton.setText("予定を隠す");
+		findViewById(R.id.schedule_layout).setVisibility(View.VISIBLE);
+	}
+
+	private void hideScheduleLayout() {
+		scheduleToggleButton.setText("予定を表示");
+		findViewById(R.id.schedule_layout).setVisibility(View.GONE);
+	}
+
+	private void toggleScheduleLayout() {
+		if (findViewById(R.id.schedule_layout).getVisibility() == View.GONE) {
+			showScheduleLayout();
+		} else {
+			hideScheduleLayout();
+		}
+	}
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -25,14 +43,23 @@ public class InVehicleDeviceActivity extends Activity {
 
 		Log.v(T, "onCreate");
 
-		changeStatusButton = (Button) findViewById(R.id.change_status_button);
 		statusTextView = (TextView) findViewById(R.id.status_text_view);
 
+		scheduleToggleButton = (Button) findViewById(R.id.schedule_toggle_button);
+		scheduleToggleButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				toggleScheduleLayout();
+			}
+		});
+
+		changeStatusButton = (Button) findViewById(R.id.change_status_button);
 		changeStatusButton.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View view) {
 				if (status.equals(0)) {
+					hideScheduleLayout();
 					statusTextView.setText("停車中");
 					changeStatusButton.setText("出発します");
 					status = 1;
@@ -47,6 +74,7 @@ public class InVehicleDeviceActivity extends Activity {
 				.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View view) {
+						hideScheduleLayout();
 						status = 0;
 						statusTextView.setText("走行中");
 						changeStatusButton.setText("到着しました");
