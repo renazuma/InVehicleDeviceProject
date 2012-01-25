@@ -88,6 +88,7 @@
                 android:text="運行管理" />
 
             <Button
+                android:id="@+id/map_show_button"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
@@ -109,7 +110,7 @@
         </LinearLayout>
     </LinearLayout>
 
-    <LinearLayout
+    <com.kogasoftware.odt.invehicledevice.OverlayLinearLayout
         android:id="@+id/check_start_layout"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -131,12 +132,36 @@
             android:layout_weight="1"
             android:text="はい" />
 
-        <Button
+        <com.kogasoftware.odt.invehicledevice.OverlayCloseButton
             android:id="@+id/start_cancel_button"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
             android:text="いいえ" />
-    </LinearLayout>
+        
+    </com.kogasoftware.odt.invehicledevice.OverlayLinearLayout>
 
+    <com.kogasoftware.odt.invehicledevice.OverlayLinearLayout
+        android:id="@+id/map_overlay"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#000000"
+        android:orientation="vertical"
+        android:visibility="gone" >
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:text="地図"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <com.kogasoftware.odt.invehicledevice.OverlayCloseButton
+            android:id="@+id/map_hide_button"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:text="いいえ" />
+    </com.kogasoftware.odt.invehicledevice.OverlayLinearLayout>
+    
 </FrameLayout>
