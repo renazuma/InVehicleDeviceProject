@@ -1,101 +1,17 @@
 package com.kogasoftware.odt.invehicledevice.test;
 
-import java.net.URI;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import junit.framework.TestCase;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.util.Log;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.ByteStreams;
 import com.kogasoftware.odt.invehicledevice.LogTag;
-
-class OperatorApi {
-	static class BadStatusCodeException extends RuntimeException {
-		private static final long serialVersionUID = -375497023051947223L;
-		public final Integer statusCode;
-		public final String body;
-
-		public BadStatusCodeException(Integer statusCode, String body) {
-			this.statusCode = statusCode;
-			this.body = body;
-		}
-	}
-
-	static class AsyncCallback<ResultType> {
-		public void onError(Exception exception) {
-		}
-
-		public void onSuccess(ResultType result) {
-		}
-	}
-
-	private final String T = LogTag.get(OperatorApi.class);
-	private final Object threadLock = new Object();
-	private Thread thread = new Thread();
-	private final String baseUri = "http://10.1.10.161:3004";
-
-	public void join() throws InterruptedException {
-		synchronized (threadLock) {
-			thread.join();
-		}
-	}
-
-	void getAuthenticationToken(final String login, final String password,
-			final AsyncCallback<String> callback) {
-		synchronized (threadLock) {
-			thread.interrupt();
-			thread = new Thread() {
-				@Override
-				public void run() {
-					try {
-						JSONObject postJSON = new JSONObject();
-						JSONObject operator = new JSONObject();
-						operator.put("login", login);
-						operator.put("password", password);
-						postJSON.put("operator", operator);
-
-						HttpClient httpClient = new DefaultHttpClient();
-						HttpPost request = new HttpPost();
-						request.setHeader("Content-type", "application/json");
-						StringEntity entity = new StringEntity(
-								postJSON.toString());
-						// entity.setContentEncoding("UTF-8");
-						request.setURI(new URI(baseUri
-								+ "/operators/sign_in.json"));
-						request.setEntity(entity);
-						HttpResponse httpResponse = httpClient.execute(request);
-						int statusCode = httpResponse.getStatusLine()
-								.getStatusCode();
-						Log.d(T, "Status:" + statusCode);
-						String responseString = new String(
-								ByteStreams.toByteArray(httpResponse
-										.getEntity().getContent()),
-								Charsets.UTF_8);
-						JSONObject response = new JSONObject(responseString);
-						if (statusCode / 100 != 2) {
-							throw new BadStatusCodeException(statusCode,
-									responseString);
-						}
-						callback.onSuccess(response
-								.getString("authentication_token"));
-					} catch (Exception e) {
-						callback.onError(e);
-					}
-				}
-			};
-			thread.start();
-		}
-	}
-}
+import com.kogasoftware.odt.invehicledevice.OperatorApi;
+import com.kogasoftware.odt.invehicledevice.OperatorApi.BadStatusCodeException;
 
 public class LoginTestCase extends TestCase {
 	private final String T = LogTag.get(LoginTestCase.class);
@@ -107,7 +23,9 @@ public class LoginTestCase extends TestCase {
 				new OperatorApi.AsyncCallback<String>() {
 					@Override
 					public void onError(Exception exception) {
-						r.set(false);
+						if (exception instanceof BadStatusCodeException) {
+							r.set(false);
+						}
 					}
 				});
 		api.join();
@@ -122,7 +40,9 @@ public class LoginTestCase extends TestCase {
 				new OperatorApi.AsyncCallback<String>() {
 					@Override
 					public void onError(Exception exception) {
-						r.set(false);
+						if (exception instanceof BadStatusCodeException) {
+							r.set(false);
+						}
 					}
 				});
 		api.join();
@@ -152,4 +72,94 @@ public class LoginTestCase extends TestCase {
 		assertTrue(r.get());
 		assertFalse(token.toString().isEmpty());
 	}
+
+	private String getValidToken() throws InterruptedException {
+		final AtomicBoolean r = new AtomicBoolean(false);
+		OperatorApi api = new OperatorApi();
+		final StringBuilder token = new StringBuilder();
+
+		api.getAuthenticationToken("i_mogi", "i_mogi",
+				new OperatorApi.AsyncCallback<String>() {
+					@Override
+					public void onError(Exception exception) {
+						Log.e(T, "", exception);
+						exception.printStackTrace();
+					}
+
+					@Override
+					public void onSuccess(String asyncToken) {
+						r.set(true);
+						token.append(asyncToken);
+					}
+				});
+		api.join();
+		assertFalse(token.toString().isEmpty());
+		return token.toString();
+	}
+
+	public void testトークンを使って車載機情報を取得に成功() throws InterruptedException {
+		String token = getValidToken();
+		final AtomicBoolean r = new AtomicBoolean(false);
+		OperatorApi api = new OperatorApi(token);
+		JSONObject o = new JSONObject();
+		final StringBuilder typeNumber = new StringBuilder();
+		api.getInVehicleDevice(1, new OperatorApi.AsyncCallback<JSONObject>() {
+			@Override
+			public void onSuccess(JSONObject inVehicleDevice) {
+				try {
+					typeNumber.append(inVehicleDevice.get("type_number"));
+					r.set(true);
+				} catch (JSONException e) {
+				}
+			}
+		});
+		api.join();
+		assertTrue(r.get());
+		assertEquals("kataban", typeNumber.toString());
+	}
+
+	public void test無効なトークンを使って車載機情報を取得に失敗() throws InterruptedException {
+		{
+			String token = getValidToken().substring(1) + "x";
+			OperatorApi api = new OperatorApi(token);
+			final AtomicBoolean r = new AtomicBoolean(false);
+			api.getInVehicleDevice(1,
+					new OperatorApi.AsyncCallback<JSONObject>() {
+						@Override
+						public void onError(Exception e) {
+							r.set(true);
+						}
+					});
+			api.join();
+			assertTrue(r.get());
+		}
+		{
+			String token = getValidToken() + "x";
+			OperatorApi api = new OperatorApi(token);
+			final AtomicBoolean r = new AtomicBoolean(false);
+			api.getInVehicleDevice(1,
+					new OperatorApi.AsyncCallback<JSONObject>() {
+						@Override
+						public void onError(Exception e) {
+							r.set(true);
+						}
+					});
+			api.join();
+			assertTrue(r.get());
+		}
+	}
+
+	public void testトークンを使ってわず車載機情報を取得に失敗() throws InterruptedException {
+		OperatorApi api = new OperatorApi("");
+		final AtomicBoolean r = new AtomicBoolean(false);
+		api.getInVehicleDevice(1, new OperatorApi.AsyncCallback<JSONObject>() {
+			@Override
+			public void onError(Exception e) {
+				r.set(true);
+			}
+		});
+		api.join();
+		assertTrue(r.get());
+	}
+
 }

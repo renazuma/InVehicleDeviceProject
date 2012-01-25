@@ -6,9 +6,7 @@
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="lib" path="libs/polidea_test_runner_1.2.jar"/>
-	<classpathentry kind="lib" path="/InVehicleDevice/libs/guava-11.0.1.jar"/>
 	<classpathentry kind="lib" path="libs/robotium-solo-3.1.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/InVehicleDevice"/>
-	<classpathentry kind="lib" path="/InVehicleDevice/libs/commons-math-2.2.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
