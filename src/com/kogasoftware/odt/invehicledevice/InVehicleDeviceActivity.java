@@ -16,6 +16,7 @@ public class InVehicleDeviceActivity extends Activity {
 	private Button changeStatusButton = null;
 	private Button scheduleToggleButton = null;
 	private Button mapShowButton = null;
+	private Button configShowButton = null;
 
 	private TextView statusTextView = null;
 	private Integer status = 0;
@@ -77,6 +78,14 @@ public class InVehicleDeviceActivity extends Activity {
 			@Override
 			public void onClick(View view) {
 				findViewById(R.id.map_overlay).setVisibility(View.VISIBLE);
+			}
+		});
+
+		configShowButton = (Button) findViewById(R.id.config_show_button);
+		configShowButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				findViewById(R.id.config_overlay).setVisibility(View.VISIBLE);
 			}
 		});
 

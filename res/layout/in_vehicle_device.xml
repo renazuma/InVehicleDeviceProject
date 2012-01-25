@@ -82,6 +82,7 @@
             android:orientation="vertical" >
 
             <Button
+                android:id="@+id/config_show_button"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
@@ -161,7 +162,30 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
-            android:text="いいえ" />
+            android:text="閉じる" />
+    </com.kogasoftware.odt.invehicledevice.OverlayLinearLayout>
+
+    <com.kogasoftware.odt.invehicledevice.OverlayLinearLayout
+        android:id="@+id/config_overlay"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#000000"
+        android:orientation="vertical"
+        android:visibility="gone" >
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:text="運行管理画面"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <com.kogasoftware.odt.invehicledevice.OverlayCloseButton
+            android:id="@+id/config_hide_button"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:text="閉じる" />
     </com.kogasoftware.odt.invehicledevice.OverlayLinearLayout>
     
 </FrameLayout>
