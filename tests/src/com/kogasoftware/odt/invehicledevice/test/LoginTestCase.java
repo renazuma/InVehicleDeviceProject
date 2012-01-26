@@ -101,7 +101,6 @@ public class LoginTestCase extends TestCase {
 		String token = getValidToken();
 		final AtomicBoolean r = new AtomicBoolean(false);
 		OperatorApi api = new OperatorApi(token);
-		JSONObject o = new JSONObject();
 		final StringBuilder typeNumber = new StringBuilder();
 		api.getInVehicleDevice(1, new OperatorApi.AsyncCallback<JSONObject>() {
 			@Override
