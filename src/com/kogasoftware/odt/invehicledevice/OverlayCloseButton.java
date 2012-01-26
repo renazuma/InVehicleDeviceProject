@@ -3,21 +3,28 @@ package com.kogasoftware.odt.invehicledevice;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewParent;
 import android.widget.Button;
 
 public class OverlayCloseButton extends Button {
 	OnClickListener userOnClickListener = new OnClickListener() {
 		@Override
-		public void onClick(View v) {
+		public void onClick(View view) {
 		}
 	};
 
 	final OnClickListener defaultOnClickListener = new OnClickListener() {
+		final Integer MAX_DEPTH = 100;
+
 		@Override
 		public void onClick(View view) {
-			for (OverlayLinearLayout l : OverlayLinearLayout
-					.getAttachedInstances()) {
-				l.hide();
+			ViewParent parent = view.getParent();
+			for (Integer depth = 0; parent != null && depth < MAX_DEPTH; parent = parent
+					.getParent(), ++depth) {
+				if (parent instanceof OverlayLinearLayout) {
+					((OverlayLinearLayout) parent).hide();
+					break;
+				}
 			}
 			userOnClickListener.onClick(view);
 		}

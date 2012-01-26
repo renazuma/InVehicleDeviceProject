@@ -139,7 +139,6 @@
             android:layout_height="fill_parent"
             android:layout_weight="1"
             android:text="いいえ" />
-        
     </com.kogasoftware.odt.invehicledevice.OverlayLinearLayout>
 
     <com.kogasoftware.odt.invehicledevice.OverlayLinearLayout
@@ -180,6 +179,20 @@
             android:text="運行管理画面"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
+        <Button
+            android:id="@+id/stop_check_show_button"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:text="運行の一時停止" />
+
+        <Button
+            android:id="@+id/pause_check_show_button"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:text="本日の運行を中止する" />
+
         <com.kogasoftware.odt.invehicledevice.OverlayCloseButton
             android:id="@+id/config_hide_button"
             android:layout_width="fill_parent"
@@ -187,5 +200,5 @@
             android:layout_weight="1"
             android:text="閉じる" />
     </com.kogasoftware.odt.invehicledevice.OverlayLinearLayout>
-    
+
 </FrameLayout>

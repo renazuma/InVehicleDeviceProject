@@ -99,7 +99,7 @@
       </findbugs>
     </target>
 
-    <target name="ci-test" depends="test">
+    <target name="test-and-pull-results" depends="test">
       <echo>adb pull /data/data/${tested.manifest.package}/files/</echo>
       <exec executable="${adb}">
         <arg line="${adb.device.arg}" />
