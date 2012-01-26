@@ -101,12 +101,12 @@ public class LoginTestCase extends TestCase {
 		String token = getValidToken();
 		final AtomicBoolean r = new AtomicBoolean(false);
 		OperatorApi api = new OperatorApi(token);
-		final StringBuilder typeNumber = new StringBuilder();
+		final StringBuilder modelName = new StringBuilder();
 		api.getInVehicleDevice(1, new OperatorApi.AsyncCallback<JSONObject>() {
 			@Override
 			public void onSuccess(JSONObject inVehicleDevice) {
 				try {
-					typeNumber.append(inVehicleDevice.get("type_number"));
+					modelName.append(inVehicleDevice.get("model_name"));
 					r.set(true);
 				} catch (JSONException e) {
 				}
@@ -114,7 +114,7 @@ public class LoginTestCase extends TestCase {
 		});
 		api.join();
 		assertTrue(r.get());
-		assertEquals("kataban", typeNumber.toString());
+		assertEquals("車載機アプリ開発用車載機", modelName.toString());
 	}
 
 	public void test無効なトークンを使って車載機情報を取得に失敗() throws InterruptedException {

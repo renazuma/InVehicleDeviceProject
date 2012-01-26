@@ -95,7 +95,7 @@ public class OperatorApi {
 	private final String T = LogTag.get(OperatorApi.class);
 	private final Object threadLock = new Object();
 	private Thread thread = new Thread();
-	private final String baseUri = "http://10.1.10.161:3004";
+	private final String baseUri = "http://10.1.10.161";
 
 	public OperatorApi() {
 		this("");
