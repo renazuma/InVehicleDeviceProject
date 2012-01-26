@@ -15,10 +15,16 @@ public class InVehicleDeviceActivity extends Activity {
 
 	private Button changeStatusButton = null;
 	private Button scheduleToggleButton = null;
-	private Button mapShowButton = null;
-	private Button configShowButton = null;
+	private Button mapButton = null;
+	private Button configButton = null;
+	private Button stopCheckButton = null;
+	private Button stopButton = null;
+	private Button pauseButton = null;
+	private Button memoButton = null;
+	private Button returnPathButton = null;
 
 	private TextView statusTextView = null;
+
 	private Integer status = 0;
 
 	private void showScheduleLayout() {
@@ -62,6 +68,8 @@ public class InVehicleDeviceActivity extends Activity {
 			@Override
 			public void onClick(View view) {
 				if (status.equals(0)) {
+					findViewById(R.id.waiting_layout).setVisibility(
+							View.VISIBLE);
 					hideScheduleLayout();
 					statusTextView.setText("停車中");
 					changeStatusButton.setText("出発します");
@@ -73,19 +81,61 @@ public class InVehicleDeviceActivity extends Activity {
 			}
 		});
 
-		mapShowButton = (Button) findViewById(R.id.map_show_button);
-		mapShowButton.setOnClickListener(new OnClickListener() {
+		mapButton = (Button) findViewById(R.id.map_button);
+		mapButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				findViewById(R.id.map_overlay).setVisibility(View.VISIBLE);
 			}
 		});
 
-		configShowButton = (Button) findViewById(R.id.config_show_button);
-		configShowButton.setOnClickListener(new OnClickListener() {
+		configButton = (Button) findViewById(R.id.config_button);
+		configButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				findViewById(R.id.config_overlay).setVisibility(View.VISIBLE);
+			}
+		});
+
+		stopCheckButton = (Button) findViewById(R.id.stop_check_button);
+		stopCheckButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				findViewById(R.id.stop_check_overlay).setVisibility(
+						View.VISIBLE);
+			}
+		});
+
+		stopButton = (Button) findViewById(R.id.stop_button);
+		stopButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				findViewById(R.id.stop_overlay).setVisibility(View.VISIBLE);
+			}
+		});
+
+		pauseButton = (Button) findViewById(R.id.pause_button);
+		pauseButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				findViewById(R.id.pause_overlay).setVisibility(View.VISIBLE);
+			}
+		});
+
+		memoButton = (Button) findViewById(R.id.memo_button);
+		memoButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				findViewById(R.id.memo_overlay).setVisibility(View.VISIBLE);
+			}
+		});
+
+		returnPathButton = (Button) findViewById(R.id.return_path_button);
+		returnPathButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				findViewById(R.id.return_path_overlay).setVisibility(
+						View.VISIBLE);
 			}
 		});
 
@@ -98,6 +148,8 @@ public class InVehicleDeviceActivity extends Activity {
 						statusTextView.setText("走行中");
 						changeStatusButton.setText("到着しました");
 						findViewById(R.id.check_start_layout).setVisibility(
+								View.GONE);
+						findViewById(R.id.waiting_layout).setVisibility(
 								View.GONE);
 					}
 				});

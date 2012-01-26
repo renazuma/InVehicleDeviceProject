@@ -20,6 +20,7 @@ public class DrivingTestCase extends
 
 	@Override
 	public void setUp() throws Exception {
+		super.setUp();
 		solo = new Solo(getInstrumentation(), getActivity());
 	}
 
@@ -33,27 +34,7 @@ public class DrivingTestCase extends
 				.getVisibility());
 	}
 
-	public void test出発ボタンを押すと出発ダイアログ表示() {
-		test起動時は出発ダイアログは非表示();
-		test到着しましたボタンを押すと停車中表示();
-		solo.clickOnButton("出発します");
-		assertEquals(View.VISIBLE, solo.getView(R.id.check_start_layout)
-				.getVisibility());
-	}
 
-	public void test出発ダイアログはい選択で走行中() {
-		test出発ボタンを押すと出発ダイアログ表示();
-		solo.clickOnView(solo.getView(R.id.start_button));
-		TextView v = (TextView) solo.getView(R.id.status_text_view);
-		assertEquals("走行中", v.getText());
-	}
-
-	public void test出発ダイアログいいえ選択() {
-		test出発ボタンを押すと出発ダイアログ表示();
-		solo.clickOnView(solo.getView(R.id.start_cancel_button));
-		TextView v = (TextView) solo.getView(R.id.status_text_view);
-		assertEquals("停車中", v.getText());
-	}
 
 	public void test到着しましたボタンを押すと停車中表示() {
 		test起動時は走行中表示();
@@ -65,6 +46,7 @@ public class DrivingTestCase extends
 
 	@Override
 	public void tearDown() throws Exception {
+		// super.tearDown();
 		solo.finishOpenedActivities();
 	}
 }

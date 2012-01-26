@@ -19,6 +19,7 @@ public class MapTestCase extends
 
 	@Override
 	public void setUp() throws Exception {
+		super.setUp();
 		solo = new Solo(getInstrumentation(), getActivity());
 	}
 
@@ -28,7 +29,7 @@ public class MapTestCase extends
 
 	public void test地図ボタンを押したら表示() {
 		test起動時は非表示();
-		solo.clickOnView(solo.getView(R.id.map_show_button));
+		solo.clickOnView(solo.getView(R.id.map_button));
 		assertEquals(View.VISIBLE, solo.getView(R.id.map_overlay)
 				.getVisibility());
 	}
@@ -41,13 +42,14 @@ public class MapTestCase extends
 
 	public void test一回閉じてからもう地図ボタンを押したら表示() {
 		test閉じるボタンを押したら消える();
-		solo.clickOnView(solo.getView(R.id.map_show_button));
+		solo.clickOnView(solo.getView(R.id.map_button));
 		assertEquals(View.VISIBLE, solo.getView(R.id.map_overlay)
 				.getVisibility());
 	}
 
 	@Override
 	public void tearDown() throws Exception {
+		// super.tearDown();
 		solo.finishOpenedActivities();
 	}
 }
