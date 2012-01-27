@@ -8,8 +8,6 @@ ant $ant_arg uninstall findbugs
 ant $ant_arg all clean emma debug install test-and-pull-results
 
 cd ..
-cp AndroidManifest.xml AndroidManifest.xml.old
 ruby ../../dev/android/remove_debuggable.rb AndroidManifest.xml
-cp AndroidManifest.xml AndroidManifest.xml.release
+ruby ../../dev/android/remove_debuggable.rb ../OpenJTalk/AndroidManifest.xml
 ant $ant_arg clean release
-cp AndroidManifest.xml.old AndroidManifest.xml
