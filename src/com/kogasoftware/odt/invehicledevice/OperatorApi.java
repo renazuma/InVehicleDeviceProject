@@ -15,6 +15,7 @@ import android.util.Log;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.ByteStreams;
+import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 
 public class OperatorApi {
 	abstract class JSONRequest<ResultType> {
@@ -94,8 +95,8 @@ public class OperatorApi {
 	private final String authenticationToken;
 	private final String T = LogTag.get(OperatorApi.class);
 	private final Object threadLock = new Object();
-	private Thread thread = new Thread();
 	private final String baseUri = "http://10.1.10.161";
+	private Thread thread = new EmptyThread();
 
 	public OperatorApi() {
 		this("");
@@ -179,8 +180,6 @@ public class OperatorApi {
 				}
 			};
 			thread.start();
-
 		}
-
 	}
 }

@@ -8,8 +8,6 @@ import android.widget.Button;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyViewOnClickListener;
 
 public class AllOverlaysCloseButton extends Button {
-	OnClickListener userOnClickListener = new EmptyViewOnClickListener();
-
 	final OnClickListener defaultOnClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View view) {
@@ -20,6 +18,8 @@ public class AllOverlaysCloseButton extends Button {
 			userOnClickListener.onClick(view);
 		}
 	};
+
+	OnClickListener userOnClickListener = new EmptyViewOnClickListener();
 
 	@Override
 	public void setOnClickListener(OnClickListener onClickListener) {
