@@ -34,8 +34,6 @@ public class DrivingTestCase extends
 				.getVisibility());
 	}
 
-
-
 	public void test到着しましたボタンを押すと停車中表示() {
 		test起動時は走行中表示();
 
@@ -46,7 +44,7 @@ public class DrivingTestCase extends
 
 	@Override
 	public void tearDown() throws Exception {
-		// super.tearDown();
 		solo.finishOpenedActivities();
+		super.tearDown();
 	}
 }

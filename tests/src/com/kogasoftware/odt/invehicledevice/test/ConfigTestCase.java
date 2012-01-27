@@ -93,7 +93,7 @@ public class ConfigTestCase extends
 
 	@Override
 	public void tearDown() throws Exception {
-		// super.tearDown();
 		solo.finishOpenedActivities();
+		super.tearDown();
 	}
 }
