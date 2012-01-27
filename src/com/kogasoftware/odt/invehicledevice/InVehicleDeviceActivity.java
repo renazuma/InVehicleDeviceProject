@@ -1,7 +1,14 @@
 package com.kogasoftware.odt.invehicledevice;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -11,10 +18,52 @@ import android.widget.TextView;
 
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
+import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
+import com.kogasoftware.openjtalk.OpenJTalk;
+
+class VoiceThread extends Thread {
+	private final String T = LogTag.get(VoiceThread.class);
+	private final BlockingQueue<String> voices;
+
+	public VoiceThread(BlockingQueue<String> voices) {
+		this.voices = voices;
+	}
+
+	@Override
+	public void run() {
+		String s = File.separator;
+		String base = Environment.getExternalStorageDirectory() + s + ".odt"
+				+ s + "openjtalk";
+		File voiceDirectory = new File(base + s + "voice" + s + "mei_normal");
+		File dictionaryDirectory = new File(base + s + "dictionary");
+
+		try {
+			OpenJTalk openJTalk = new OpenJTalk(voiceDirectory,
+					dictionaryDirectory);
+			for (Integer serial = 0; true; ++serial) {
+				String voice = voices.take();
+				File output = new File(
+						Environment.getExternalStorageDirectory() + s + serial
+								+ ".wav");
+				openJTalk.synthesis(output, voice); // TODO
+													// ここのIOExceptionは無視して良いかも
+				MediaPlayer mediaPlayer = new MediaPlayer();
+				mediaPlayer.setDataSource(output.getAbsolutePath());
+				mediaPlayer.prepare();
+				mediaPlayer.start();
+			}
+		} catch (IOException e) {
+			Log.e(T, "IOException", e);
+		} catch (InterruptedException e) {
+		}
+	}
+}
 
 public class InVehicleDeviceActivity extends MapActivity {
 	private final String T = LogTag.get(InVehicleDeviceActivity.class);
-	Thread speakAlertThread = new Thread();
+	private final BlockingQueue<String> voices = new LinkedBlockingQueue<String>();
+	private Thread voiceThread = new EmptyThread();
+	private Integer status = 0;
 
 	private Button changeStatusButton = null;
 	private Button scheduleToggleButton = null;
@@ -27,8 +76,6 @@ public class InVehicleDeviceActivity extends MapActivity {
 	private Button returnPathButton = null;
 	private TextView statusTextView = null;
 	private MapView mapView = null;
-
-	private Integer status = 0;
 
 	private void showScheduleLayout() {
 		scheduleToggleButton.setText("予定を隠す");
@@ -54,6 +101,9 @@ public class InVehicleDeviceActivity extends MapActivity {
 		setContentView(R.layout.in_vehicle_device);
 
 		Log.v(T, "onCreate");
+
+		voiceThread = new VoiceThread(voices);
+		voiceThread.start();
 
 		statusTextView = (TextView) findViewById(R.id.status_text_view);
 
@@ -158,6 +208,9 @@ public class InVehicleDeviceActivity extends MapActivity {
 								View.GONE);
 						findViewById(R.id.waiting_layout).setVisibility(
 								View.GONE);
+						if (!voices.offer("出発します。次は、コガソフトウェア前。コガソフトウェア前。")) {
+							Log.w(T, "!voices.offer() failed");
+						}
 					}
 				});
 		((Button) findViewById(R.id.start_cancel_button))
@@ -178,7 +231,7 @@ public class InVehicleDeviceActivity extends MapActivity {
 		// if (authToken.isEmpty()) {
 		// Intent intent = new Intent(this, LoginActivity.class);
 		// startActivityForResult(intent, 0);
-		// }
+		// }　
 	}
 
 	@Override
@@ -192,6 +245,7 @@ public class InVehicleDeviceActivity extends MapActivity {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		voiceThread.interrupt();
 	}
 
 	@Override

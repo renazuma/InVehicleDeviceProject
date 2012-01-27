@@ -6,12 +6,10 @@ import android.view.View;
 import android.view.ViewParent;
 import android.widget.Button;
 
+import com.kogasoftware.odt.invehicledevice.empty.EmptyViewOnClickListener;
+
 public class OverlayCloseButton extends Button {
-	OnClickListener userOnClickListener = new OnClickListener() {
-		@Override
-		public void onClick(View view) {
-		}
-	};
+	OnClickListener userOnClickListener = new EmptyViewOnClickListener();
 
 	final OnClickListener defaultOnClickListener = new OnClickListener() {
 		final Integer MAX_DEPTH = 100;
