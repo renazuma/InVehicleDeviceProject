@@ -1,15 +1,18 @@
 package com.kogasoftware.odt.invehicledevice;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
-public class InVehicleDeviceActivity extends Activity {
+import com.google.android.maps.MapActivity;
+import com.google.android.maps.MapView;
+
+public class InVehicleDeviceActivity extends MapActivity {
 	private final String T = LogTag.get(InVehicleDeviceActivity.class);
 	Thread speakAlertThread = new Thread();
 
@@ -22,8 +25,8 @@ public class InVehicleDeviceActivity extends Activity {
 	private Button pauseButton = null;
 	private Button memoButton = null;
 	private Button returnPathButton = null;
-
 	private TextView statusTextView = null;
+	private MapView mapView = null;
 
 	private Integer status = 0;
 
@@ -139,6 +142,10 @@ public class InVehicleDeviceActivity extends Activity {
 			}
 		});
 
+		mapView = new MapView(this, "0_ZIi_adDM8WHxCX0OJTfcXhHO8jOsYOjLF7xow");
+
+		((FrameLayout) findViewById(R.id.map_layout)).addView(mapView, 0);
+
 		((Button) findViewById(R.id.start_button))
 				.setOnClickListener(new OnClickListener() {
 					@Override
@@ -185,5 +192,11 @@ public class InVehicleDeviceActivity extends Activity {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+	}
+
+	@Override
+	protected boolean isRouteDisplayed() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }
