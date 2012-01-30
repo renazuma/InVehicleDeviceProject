@@ -3,6 +3,7 @@
 /tests/bin
 /tests/gen
 /tests/coverage
+/tests/coverage.em
 AndroidManifest.xml.old
 AndroidManifest.xml.release
 common_build.xml
