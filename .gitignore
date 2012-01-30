@@ -4,10 +4,16 @@
 /tests/gen
 /tests/coverage
 /tests/coverage.em
+/tests/coverage.ec
+/tests/emma
+/tests/DATA_Tiles*
+/tests/DATA_Preferences
 AndroidManifest.xml.old
 AndroidManifest.xml.release
+.settings
 common_build.xml
 findbugs.xml
 findbugs_exclude.xml
 release.keystore
 local.properties
+-TEST.xml
