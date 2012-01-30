@@ -91,6 +91,11 @@ public class ConfigTestCase extends
 				.getVisibility());
 	}
 
+	public void test左にフリックすると非表示() {
+		test運行管理ボタンを押したら表示();
+
+	}
+
 	@Override
 	public void tearDown() throws Exception {
 		solo.finishOpenedActivities();

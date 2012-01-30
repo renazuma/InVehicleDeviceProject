@@ -52,6 +52,7 @@ public class ScheduleTestCase extends
 	public void test予定ボタンを3回押したら表示() {
 		test予定ボタンを2回押したら非表示();
 		solo.clickOnView(solo.getView(R.id.schedule_toggle_button));
+
 		assertEquals("予定を隠す",
 				((Button) solo.getView(R.id.schedule_toggle_button)).getText());
 		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_layout)
