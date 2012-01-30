@@ -3,7 +3,10 @@
 /tests/bin
 /tests/gen
 /tests/coverage
+AndroidManifest.xml.old
+AndroidManifest.xml.release
 common_build.xml
+findbugs.xml
 findbugs_exclude.xml
 release.keystore
 local.properties
