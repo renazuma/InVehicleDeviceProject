@@ -3,9 +3,11 @@ package com.kogasoftware.odt.invehicledevice;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import jp.tomorrowkey.android.vtextviewer.VTextView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -23,7 +25,7 @@ public class InVehicleDeviceActivity extends MapActivity {
 	private Integer status = 0;
 
 	private Button changeStatusButton = null;
-	private Button scheduleToggleButton = null;
+	private Button scheduleButton = null;
 	private Button mapButton = null;
 	private Button configButton = null;
 	private Button stopCheckButton = null;
@@ -33,24 +35,6 @@ public class InVehicleDeviceActivity extends MapActivity {
 	private Button returnPathButton = null;
 	private TextView statusTextView = null;
 	private MapView mapView = null;
-
-	private void showScheduleLayout() {
-		scheduleToggleButton.setText("予定を隠す");
-		findViewById(R.id.schedule_layout).setVisibility(View.VISIBLE);
-	}
-
-	private void hideScheduleLayout() {
-		scheduleToggleButton.setText("予定を表示");
-		findViewById(R.id.schedule_layout).setVisibility(View.GONE);
-	}
-
-	private void toggleScheduleLayout() {
-		if (findViewById(R.id.schedule_layout).getVisibility() == View.GONE) {
-			showScheduleLayout();
-		} else {
-			hideScheduleLayout();
-		}
-	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -64,14 +48,6 @@ public class InVehicleDeviceActivity extends MapActivity {
 
 		statusTextView = (TextView) findViewById(R.id.status_text_view);
 
-		scheduleToggleButton = (Button) findViewById(R.id.schedule_toggle_button);
-		scheduleToggleButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				toggleScheduleLayout();
-			}
-		});
-
 		changeStatusButton = (Button) findViewById(R.id.change_status_button);
 		changeStatusButton.setOnClickListener(new OnClickListener() {
 
@@ -80,9 +56,8 @@ public class InVehicleDeviceActivity extends MapActivity {
 				if (status.equals(0)) {
 					findViewById(R.id.waiting_layout).setVisibility(
 							View.VISIBLE);
-					hideScheduleLayout();
 					statusTextView.setText("停車中");
-					changeStatusButton.setText("出発します");
+					changeStatusButton.setText("出発");
 					status = 1;
 				} else {
 					findViewById(R.id.check_start_layout).setVisibility(
@@ -140,6 +115,14 @@ public class InVehicleDeviceActivity extends MapActivity {
 			}
 		});
 
+		scheduleButton = (Button) findViewById(R.id.schedule_button);
+		scheduleButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				findViewById(R.id.schedule_layout).setVisibility(View.VISIBLE);
+			}
+		});
+
 		returnPathButton = (Button) findViewById(R.id.return_path_button);
 		returnPathButton.setOnClickListener(new OnClickListener() {
 			@Override
@@ -150,6 +133,9 @@ public class InVehicleDeviceActivity extends MapActivity {
 		});
 
 		mapView = new MapView(this, "0_ZIi_adDM8WHxCX0OJTfcXhHO8jOsYOjLF7xow");
+		mapView.setClickable(true);
+
+		((VTextView) findViewById(R.id.next_text_view)).setText("日本語縦書きテスト");
 
 		((FrameLayout) findViewById(R.id.map_layout)).addView(mapView, 0);
 
@@ -157,10 +143,9 @@ public class InVehicleDeviceActivity extends MapActivity {
 				.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View view) {
-						hideScheduleLayout();
 						status = 0;
 						statusTextView.setText("走行中");
-						changeStatusButton.setText("到着しました");
+						changeStatusButton.setText("到着");
 						findViewById(R.id.check_start_layout).setVisibility(
 								View.GONE);
 						findViewById(R.id.waiting_layout).setVisibility(
@@ -209,5 +194,23 @@ public class InVehicleDeviceActivity extends MapActivity {
 	protected boolean isRouteDisplayed() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode != KeyEvent.KEYCODE_BACK) {
+			return super.onKeyDown(keyCode, event);
+		}
+		Boolean match = false;
+		for (OverlayLinearLayout l : OverlayLinearLayout.getAttachedInstances()) {
+			if (l.getVisibility() == View.VISIBLE) {
+				l.hide();
+				match = true;
+			}
+		}
+		if (match) {
+			return false;
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 }

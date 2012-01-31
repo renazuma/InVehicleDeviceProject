@@ -25,36 +25,36 @@ public class ScheduleTestCase extends
 	}
 
 	public void test起動時は非表示() {
-		assertEquals("予定を表示",
-				((Button) solo.getView(R.id.schedule_toggle_button)).getText());
+		assertEquals("予定",
+				((Button) solo.getView(R.id.schedule_button)).getText());
 		assertEquals(View.GONE, solo.getView(R.id.schedule_layout)
 				.getVisibility());
 	}
 
 	public void test予定ボタンを押したら表示() {
 		test起動時は非表示();
-		solo.clickOnView(solo.getView(R.id.schedule_toggle_button));
-		assertEquals("予定を隠す",
-				((Button) solo.getView(R.id.schedule_toggle_button)).getText());
+		solo.clickOnView(solo.getView(R.id.schedule_button));
+		assertEquals("予定",
+				((Button) solo.getView(R.id.schedule_button)).getText());
 		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_layout)
 				.getVisibility());
 	}
 
 	public void test予定ボタンを2回押したら非表示() {
 		test予定ボタンを押したら表示();
-		solo.clickOnView(solo.getView(R.id.schedule_toggle_button));
-		assertEquals("予定を表示",
-				((Button) solo.getView(R.id.schedule_toggle_button)).getText());
+		solo.clickOnView(solo.getView(R.id.schedule_button));
+		assertEquals("予定",
+				((Button) solo.getView(R.id.schedule_button)).getText());
 		assertEquals(View.GONE, solo.getView(R.id.schedule_layout)
 				.getVisibility());
 	}
 
 	public void test予定ボタンを3回押したら表示() {
 		test予定ボタンを2回押したら非表示();
-		solo.clickOnView(solo.getView(R.id.schedule_toggle_button));
+		solo.clickOnView(solo.getView(R.id.schedule_button));
 
-		assertEquals("予定を隠す",
-				((Button) solo.getView(R.id.schedule_toggle_button)).getText());
+		assertEquals("予定",
+				((Button) solo.getView(R.id.schedule_button)).getText());
 		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_layout)
 				.getVisibility());
 	}
@@ -62,8 +62,8 @@ public class ScheduleTestCase extends
 	public void test到着しましたボタンを押したら非表示() {
 		test予定ボタンを押したら表示();
 		solo.clickOnView(solo.getView(R.id.change_status_button));
-		assertEquals("予定を表示",
-				((Button) solo.getView(R.id.schedule_toggle_button)).getText());
+		assertEquals("予定",
+				((Button) solo.getView(R.id.schedule_button)).getText());
 		assertEquals(View.GONE, solo.getView(R.id.schedule_layout)
 				.getVisibility());
 	}
@@ -73,12 +73,12 @@ public class ScheduleTestCase extends
 		test予定ボタンを押したら表示();
 		solo.clickOnView(solo.getView(R.id.change_status_button));
 		assertEquals("予定を隠す",
-				((Button) solo.getView(R.id.schedule_toggle_button)).getText());
+				((Button) solo.getView(R.id.schedule_button)).getText());
 		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_layout)
 				.getVisibility());
 		solo.clickOnView(solo.getView(R.id.start_button));
 		assertEquals("予定を表示",
-				((Button) solo.getView(R.id.schedule_toggle_button)).getText());
+				((Button) solo.getView(R.id.schedule_button)).getText());
 		assertEquals(View.GONE, solo.getView(R.id.schedule_layout)
 				.getVisibility());
 	}

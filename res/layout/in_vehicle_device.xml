@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_height="fill_parent"
+    android:background="#ffffff" >
 
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -25,24 +26,50 @@
                 <TextView
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
+                    android:layout_margin="2px"
                     android:layout_weight="1"
+                    android:background="#aaffaa"
+                    android:gravity="center|center"
                     android:text="(アイコン)"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="#000000" />
 
                 <TextView
                     android:id="@+id/status_text_view"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
+                    android:layout_margin="2px"
                     android:layout_weight="1"
+                    android:background="#aaffaa"
+                    android:gravity="center|center"
                     android:text="走行中"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="#000000" />
 
-                <TextView
+                <LinearLayout
+                    xmlns:android="http://schemas.android.com/apk/res/android"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
+                    android:layout_margin="2px"
                     android:layout_weight="1"
-                    android:text="現在時刻 14時56分"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
+                    android:background="#aaffaa"
+                    android:orientation="vertical" >
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center|center"
+                        android:text="現在時刻"
+                        android:textColor="#000000" />
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center|center"
+                        android:text="14時56分"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textColor="#000000" />
+                </LinearLayout>
             </LinearLayout>
 
             <FrameLayout
@@ -55,33 +82,25 @@
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
-                    android:background="#000000"
-                    android:orientation="vertical"
-                    android:visibility="gone" >
+                    android:background="#ffffff"
+                    android:orientation="vertical" >
 
                     <TextView
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
                         android:layout_weight="1"
                         android:text="次は、玉城町役場前"
-                        android:textAppearance="?android:attr/textAppearanceLarge" />
-                </LinearLayout>
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textColor="#000000" />
 
-                <LinearLayout
-                    android:id="@+id/schedule_layout"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:layout_weight="1"
-                    android:background="#000000"
-                    android:orientation="vertical"
-                    android:visibility="gone" >
-
-                    <TextView
+                    <jp.tomorrowkey.android.vtextviewer.VTextView
+                        android:id="@+id/next_text_view"
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
                         android:layout_weight="1"
-                        android:text="今日の予定"
-                        android:textAppearance="?android:attr/textAppearanceLarge" />
+                        android:text="次は、玉城町役場前"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textColor="#000000" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -120,6 +139,7 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
+            android:background="#aaffaa"
             android:orientation="vertical" >
 
             <Button
@@ -127,30 +147,58 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
-                android:text="運行管理" />
+                android:text="管理"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <Button
                 android:id="@+id/map_button"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
-                android:text="地図" />
+                android:text="地図"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <Button
-                android:id="@+id/schedule_toggle_button"
+                android:id="@+id/schedule_button"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
-                android:text="予定を表示" />
+                android:text="予定"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <Button
                 android:id="@+id/change_status_button"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
-                android:text="到着しました" />
+                android:text="到着"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
         </LinearLayout>
     </LinearLayout>
+
+    <com.kogasoftware.odt.invehicledevice.OverlayLinearLayout
+        android:id="@+id/schedule_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:background="#000000"
+        android:orientation="vertical"
+        android:visibility="gone" >
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:text="今日の予定"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <com.kogasoftware.odt.invehicledevice.OverlayCloseButton
+            android:id="@+id/start_cancel_button"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:text="いいえ" />
+    </com.kogasoftware.odt.invehicledevice.OverlayLinearLayout>
 
     <com.kogasoftware.odt.invehicledevice.OverlayLinearLayout
         android:id="@+id/check_start_layout"

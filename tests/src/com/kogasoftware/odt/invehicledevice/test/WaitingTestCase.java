@@ -24,7 +24,7 @@ public class WaitingTestCase extends
 		solo = new Solo(getInstrumentation(), getActivity());
 
 		// デフォルトで停車中にする
-		solo.clickOnButton("到着しました");
+		solo.clickOnButton("到着");
 	}
 
 	public void testメモボタンを押すとメモ画面が表示() {

@@ -38,7 +38,7 @@ public class DrivingTestCase extends
 		test起動時は走行中表示();
 
 		TextView v = (TextView) solo.getView(R.id.status_text_view);
-		solo.clickOnButton("到着しました");
+		solo.clickOnButton("到着");
 		assertEquals("停車中", v.getText()); // TODO 画像ファイル名assertに書き換わる予定
 	}
 
