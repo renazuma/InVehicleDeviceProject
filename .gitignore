@@ -16,4 +16,5 @@ findbugs.xml
 findbugs_exclude.xml
 release.keystore
 local.properties
--TEST.xml
+*-TEST.xml
+*.so
