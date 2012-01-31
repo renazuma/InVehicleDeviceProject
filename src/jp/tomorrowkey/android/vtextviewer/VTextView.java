@@ -1,32 +1,21 @@
 package jp.tomorrowkey.android.vtextviewer;
 
-import java.io.File;
-
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
-import android.os.Environment;
 import android.util.AttributeSet;
 import android.view.View;
 
 public class VTextView extends View {
 
-	private static final String FONT_PATH = Environment
-			.getExternalStorageDirectory().getAbsolutePath()
-			+ File.separator
-			+ ".odt"
-			+ File.separator
-			+ "vtextview"
-			+ File.separator
-			+ "TakaoGothic.ttf";
-
-	private static final int TOP_SPACE = 18;
+	private static final int TOP_SPACE = 0;
 
 	private static final int BOTTOM_SPACE = 18;
 
-	private static final int FONT_SIZE = 18;
+	private static final int FONT_SIZE = 60;
 
 	private Typeface mFace;
 
@@ -40,7 +29,7 @@ public class VTextView extends View {
 
 	public VTextView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		mFace = Typeface.createFromFile(FONT_PATH);
+		mFace = Typeface.defaultFromStyle(Typeface.NORMAL);
 		mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		mPaint.setTextSize(FONT_SIZE);
 		mPaint.setColor(Color.BLACK);
@@ -61,16 +50,25 @@ public class VTextView extends View {
 	}
 
 	@Override
-	public void onDraw(Canvas canvas) {
-		float fontSpacing = mPaint.getFontSpacing();
-		float lineSpacing = fontSpacing * 2;
+	public void onDraw(Canvas targetCanvas) {
+		float fontSpacing = mPaint.getFontSpacing() * 0.8f;
+		float lineSpacing = fontSpacing;
 		float x = width - lineSpacing;
-		float y = TOP_SPACE + fontSpacing * 2;
+		float beginX = x;
+		float y = TOP_SPACE + fontSpacing;
 		String[] s = text.split("");
-		boolean newLine = false;
 
-		for (int i = 1; i <= text.length(); i++) {
-			newLine = false;
+		Bitmap bitmap = Bitmap.createBitmap(width, height,
+				Bitmap.Config.ARGB_8888);
+		Canvas canvas = new Canvas(bitmap);
+
+		boolean newLine = false;
+		for (int i = 1; i < s.length; i++) {
+			if (newLine) {
+				// 改行処理
+				x -= lineSpacing;
+				y = TOP_SPACE + fontSpacing;
+			}
 
 			CharSetting setting = CharSetting.getSetting(s[i]);
 			if (setting == null) {
@@ -89,18 +87,15 @@ public class VTextView extends View {
 				// もう文字が入らない場合
 				newLine = true;
 			} else {
-				// まだ文字が入る場合
 				newLine = false;
-			}
-
-			if (newLine) {
-				// 改行処理
-				x -= lineSpacing;
-				y = TOP_SPACE + fontSpacing;
-			} else {
 				// 文字を送る
 				y += fontSpacing;
 			}
 		}
+
+		// 中央揃え
+		float x2 = -(width - beginX + x - fontSpacing) / 2;
+		targetCanvas.drawBitmap(bitmap, x2, 0, mPaint);
+		bitmap.recycle();
 	}
 }

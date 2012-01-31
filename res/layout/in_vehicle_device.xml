@@ -77,38 +77,135 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent" >
 
-                <LinearLayout
+                <FrameLayout
+                    xmlns:android="http://schemas.android.com/apk/res/android"
                     android:id="@+id/driving_layout"
                     android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:layout_weight="1"
-                    android:background="#ffffff"
-                    android:orientation="vertical" >
-
-                    <TextView
+                    android:layout_height="fill_parent" >
+                    <LinearLayout
+                        android:id="@+id/driving_view1"
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
                         android:layout_weight="1"
-                        android:text="次は、玉城町役場前"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:textColor="#000000" />
+                        android:orientation="vertical" >
 
-                    <jp.tomorrowkey.android.vtextviewer.VTextView
-                        android:id="@+id/next_text_view"
+                        <LinearLayout
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:layout_weight="1"
+                            android:orientation="horizontal" >
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="fill_parent"
+                                android:text="次は、"
+                                android:textAppearance="?android:attr/textAppearanceLarge"
+                                android:textColor="#000000" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="fill_parent"
+                                android:layout_weight="1"
+                                android:gravity="left|center"
+                                android:text="たまきちょうやくばまえ"
+                                android:textColor="#000000"
+                                android:textSize="50dip" />
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:layout_weight="1"
+                            android:orientation="horizontal" >
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="fill_parent"
+                                android:text="12時34分"
+                                android:textSize="50dip"
+                                android:textColor="#000000" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="fill_parent"
+                                android:layout_weight="1"
+                                android:gravity="left|center"
+                                android:text="到着予定"
+                                android:textColor="#000000"
+                                android:textSize="50dip" />
+                        </LinearLayout>
+                        
+                    </LinearLayout>
+                    
+                    <LinearLayout
+                        android:id="@+id/driving_view2"
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
                         android:layout_weight="1"
-                        android:text="次は、玉城町役場前"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:textColor="#000000" />
-                </LinearLayout>
+                        android:orientation="vertical"
+                        android:visibility="gone" >
+
+                        <LinearLayout
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:layout_weight="1"
+                            android:orientation="horizontal" >
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="fill_parent"
+                                android:text="次は、"
+                                android:textAppearance="?android:attr/textAppearanceLarge"
+                                android:textColor="#000000" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="fill_parent"
+                                android:layout_weight="1"
+                                android:gravity="left|center"
+                                android:text="玉城町役場前"
+                                android:textColor="#000000"
+                                android:textSize="50dip" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:layout_weight="1"
+                            android:orientation="horizontal" >
+
+                            <jp.tomorrowkey.android.vtextviewer.VTextView
+                                android:id="@+id/next_stop_text_view"
+                                android:layout_width="fill_parent"
+                                android:layout_height="fill_parent"
+                                android:layout_weight="1"
+                                android:textAppearance="?android:attr/textAppearanceLarge"
+                                android:textColor="#000000" />
+
+                            <jp.tomorrowkey.android.vtextviewer.VTextView
+                                android:id="@+id/next_stop_but_one_text_view"
+                                android:layout_width="fill_parent"
+                                android:layout_height="fill_parent"
+                                android:layout_weight="1"
+                                android:textAppearance="?android:attr/textAppearanceLarge"
+                                android:textColor="#000000" />
+
+                            <jp.tomorrowkey.android.vtextviewer.VTextView
+                                android:id="@+id/next_stop_but_two_text_view"
+                                android:layout_width="fill_parent"
+                                android:layout_height="fill_parent"
+                                android:layout_weight="1"
+                                android:textAppearance="?android:attr/textAppearanceLarge"
+                                android:textColor="#000000" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </FrameLayout>
 
                 <LinearLayout
                     android:id="@+id/waiting_layout"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
-                    android:background="#000000"
+                    android:background="#ffffff"
                     android:orientation="vertical"
                     android:visibility="gone" >
 
@@ -117,6 +214,7 @@
                         android:layout_height="fill_parent"
                         android:layout_weight="1"
                         android:text="待っています"
+                        android:textColor="#000000"
                         android:textAppearance="?android:attr/textAppearanceLarge" />
 
                     <Button
@@ -181,7 +279,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
-        android:background="#000000"
+        android:background="#ffffff"
         android:orientation="vertical"
         android:visibility="gone" >
 
@@ -190,6 +288,7 @@
             android:layout_height="fill_parent"
             android:layout_weight="1"
             android:text="今日の予定"
+            android:textColor="#000000"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <com.kogasoftware.odt.invehicledevice.OverlayCloseButton
@@ -204,7 +303,7 @@
         android:id="@+id/check_start_layout"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="#000000"
+        android:background="#ffffff"
         android:orientation="vertical"
         android:visibility="gone" >
 
@@ -213,6 +312,7 @@
             android:layout_height="fill_parent"
             android:layout_weight="1"
             android:text="出発しますか？"
+            android:textColor="#000000"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <Button
@@ -234,7 +334,7 @@
         android:id="@+id/map_overlay"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="#000000"
+        android:background="#ffffff"
         android:orientation="vertical"
         android:visibility="gone" >
 
@@ -256,7 +356,7 @@
         android:id="@+id/config_overlay"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="#000000"
+        android:background="#ffffff"
         android:orientation="vertical"
         android:visibility="gone" >
 
@@ -265,6 +365,7 @@
             android:layout_height="fill_parent"
             android:layout_weight="1"
             android:text="運行管理画面"
+            android:textColor="#000000"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <Button
@@ -293,7 +394,7 @@
         android:id="@+id/stop_check_overlay"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="#000000"
+        android:background="#ffffff"
         android:orientation="vertical"
         android:visibility="gone" >
 
@@ -323,7 +424,7 @@
         android:id="@+id/stop_overlay"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="#000000"
+        android:background="#ffffff"
         android:orientation="vertical"
         android:visibility="gone" >
 
@@ -332,6 +433,7 @@
             android:layout_height="fill_parent"
             android:layout_weight="1"
             android:text="中止しています"
+            android:textColor="#000000"
             android:textAppearance="?android:attr/textAppearanceLarge" />
     </com.kogasoftware.odt.invehicledevice.OverlayLinearLayout>
 
@@ -339,7 +441,7 @@
         android:id="@+id/pause_overlay"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="#000000"
+        android:background="#ffffff"
         android:orientation="vertical"
         android:visibility="gone" >
 
@@ -348,6 +450,7 @@
             android:layout_height="fill_parent"
             android:layout_weight="1"
             android:text="運行一時停止中（昼休みとか）"
+            android:textColor="#000000"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <com.kogasoftware.odt.invehicledevice.AllOverlaysCloseButton
@@ -362,7 +465,7 @@
         android:id="@+id/memo_overlay"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="#000000"
+        android:background="#ffffff"
         android:orientation="vertical"
         android:visibility="gone" >
 
@@ -371,6 +474,7 @@
             android:layout_height="fill_parent"
             android:layout_weight="1"
             android:text="memoです"
+            android:textColor="#000000"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <com.kogasoftware.odt.invehicledevice.OverlayCloseButton
@@ -385,7 +489,7 @@
         android:id="@+id/return_path_overlay"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="#000000"
+        android:background="#ffffff"
         android:orientation="vertical"
         android:visibility="gone" >
 
@@ -394,6 +498,7 @@
             android:layout_height="fill_parent"
             android:layout_weight="1"
             android:text="復路です"
+            android:textColor="#000000"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <com.kogasoftware.odt.invehicledevice.OverlayCloseButton

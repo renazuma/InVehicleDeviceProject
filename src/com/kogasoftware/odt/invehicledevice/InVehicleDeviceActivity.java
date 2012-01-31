@@ -6,6 +6,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import jp.tomorrowkey.android.vtextviewer.VTextView;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -21,6 +22,23 @@ import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 public class InVehicleDeviceActivity extends MapActivity {
 	private final String T = LogTag.get(InVehicleDeviceActivity.class);
 	private final BlockingQueue<String> voices = new LinkedBlockingQueue<String>();
+	private final Integer DRIVING_VIEW_TOGGLE_INTERVAL = 5000;
+	private final Handler drivingViewToggleHandler = new Handler();
+	private final Runnable drivingViewToggleRunnable = new Runnable() {
+		@Override
+		public void run() {
+			if (drivingView1Layout.getVisibility() == View.VISIBLE) {
+				drivingView2Layout.setVisibility(View.VISIBLE);
+				drivingView1Layout.setVisibility(View.GONE);
+			} else {
+				drivingView1Layout.setVisibility(View.VISIBLE);
+				drivingView2Layout.setVisibility(View.GONE);
+			}
+			drivingViewToggleHandler.postDelayed(this,
+					DRIVING_VIEW_TOGGLE_INTERVAL);
+		}
+	};
+
 	private Thread voiceThread = new EmptyThread();
 	private Integer status = 0;
 
@@ -35,6 +53,8 @@ public class InVehicleDeviceActivity extends MapActivity {
 	private Button returnPathButton = null;
 	private TextView statusTextView = null;
 	private MapView mapView = null;
+	private View drivingView1Layout = null;
+	private View drivingView2Layout = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -135,7 +155,15 @@ public class InVehicleDeviceActivity extends MapActivity {
 		mapView = new MapView(this, "0_ZIi_adDM8WHxCX0OJTfcXhHO8jOsYOjLF7xow");
 		mapView.setClickable(true);
 
-		((VTextView) findViewById(R.id.next_text_view)).setText("日本語縦書きテスト");
+		drivingView1Layout = findViewById(R.id.driving_view1);
+		drivingView2Layout = findViewById(R.id.driving_view2);
+
+		((VTextView) findViewById(R.id.next_stop_text_view))
+				.setText("次の乗降場てすとて");
+		((VTextView) findViewById(R.id.next_stop_but_one_text_view))
+				.setText("次の次の乗降場てすと");
+		((VTextView) findViewById(R.id.next_stop_but_two_text_view))
+				.setText("次の次の次の乗降場てす");
 
 		((FrameLayout) findViewById(R.id.map_layout)).addView(mapView, 0);
 
@@ -163,6 +191,8 @@ public class InVehicleDeviceActivity extends MapActivity {
 								View.GONE);
 					}
 				});
+
+		drivingViewToggleHandler.post(drivingViewToggleRunnable);
 	}
 
 	private String authToken = "";
@@ -187,6 +217,7 @@ public class InVehicleDeviceActivity extends MapActivity {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		drivingViewToggleHandler.removeCallbacks(drivingViewToggleRunnable);
 		voiceThread.interrupt();
 	}
 
