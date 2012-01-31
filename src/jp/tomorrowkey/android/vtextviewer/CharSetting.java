@@ -33,7 +33,7 @@ public class CharSetting {
 		this.y = y;
 	}
 
-	public static final CharSetting[] settings = {
+	private static final CharSetting[] settings = {
 			new CharSetting("、", 0.0f, 0.7f, -0.6f),
 			new CharSetting("。", 0.0f, 0.7f, -0.6f),
 			new CharSetting("「", 90.0f, -1.0f, -0.3f),
