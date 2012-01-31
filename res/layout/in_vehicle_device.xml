@@ -26,7 +26,7 @@
                 <TextView
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    android:layout_margin="2px"
+                    android:layout_margin="2dp"
                     android:layout_weight="1"
                     android:background="#aaffaa"
                     android:gravity="center|center"
@@ -38,7 +38,7 @@
                     android:id="@+id/status_text_view"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    android:layout_margin="2px"
+                    android:layout_margin="2dp"
                     android:layout_weight="1"
                     android:background="#aaffaa"
                     android:gravity="center|center"
@@ -50,7 +50,7 @@
                     xmlns:android="http://schemas.android.com/apk/res/android"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    android:layout_margin="2px"
+                    android:layout_margin="2dp"
                     android:layout_weight="1"
                     android:background="#aaffaa"
                     android:orientation="vertical" >
@@ -87,7 +87,6 @@
                         android:id="@+id/driving_view1"
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
-                        android:layout_weight="1"
                         android:orientation="vertical" >
 
                         <LinearLayout
@@ -141,7 +140,6 @@
                         android:id="@+id/driving_view2"
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
-                        android:layout_weight="1"
                         android:orientation="vertical"
                         android:visibility="gone" >
 
@@ -592,7 +590,6 @@
         android:id="@+id/schedule_layout"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_weight="1"
         android:background="#ffffff"
         android:orientation="vertical"
         android:visibility="gone" >
@@ -606,11 +603,10 @@
             android:textColor="#000000" />
 
         <com.kogasoftware.odt.invehicledevice.OverlayCloseButton
-            android:id="@+id/start_cancel_button"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
-            android:text="いいえ" />
+            android:text="閉じる" />
     </com.kogasoftware.odt.invehicledevice.OverlayLinearLayout>
 
     <com.kogasoftware.odt.invehicledevice.OverlayLinearLayout

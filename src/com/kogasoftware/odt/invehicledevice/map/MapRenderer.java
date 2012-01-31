@@ -8,18 +8,18 @@ import java.util.Queue;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import org.apache.log4j.Logger;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
+import android.util.Log;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.common.io.Closeables;
+import com.kogasoftware.odt.invehicledevice.LogTag;
 
 /**
  * Mapを表示する。全てのpublicメソッドはsynchronized(this)でジャイアントロックを行う
@@ -28,7 +28,10 @@ import com.google.common.io.Closeables;
  * 
  */
 public class MapRenderer implements GLSurfaceView.Renderer {
-	private static final Logger logger = Logger.getLogger(MapRenderer.class);
+	public static final Integer MAP_TEXTURE_HEIGHT = 512;
+	public static final Integer MAP_TEXTURE_WIDTH = 512;
+
+	private static final String T = LogTag.get(MapRenderer.class);
 
 	public static Bitmap getBitmapResource(Context context, int id) {
 		InputStream inputStream = context.getResources().openRawResource(id);
@@ -90,13 +93,10 @@ public class MapRenderer implements GLSurfaceView.Renderer {
 			final Long millis = System.currentTimeMillis();
 			framesBy10s++;
 			if (millis - lastReportMillis > 10000) {
-				logger.debug("fps=" + (double) framesBy10s / 10);
+				Log.d(T, "fps=" + (double) framesBy10s / 10);
 				framesBy10s = 0l;
 				lastReportMillis = millis;
 			}
-
-			int lats = mapView.getLatitudeSpan();
-			int lons = mapView.getLongitudeSpan();
 
 			// 描画用バッファをクリア
 			gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
@@ -172,8 +172,8 @@ public class MapRenderer implements GLSurfaceView.Renderer {
 		GLU.gluLookAt(gl, eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX,
 				upY, upZ);
 
-		float l = (Property.MAP_TEXTURE_HEIGHT < Property.MAP_TEXTURE_WIDTH) ? Property.MAP_TEXTURE_HEIGHT
-				: Property.MAP_TEXTURE_WIDTH;
+		float l = (MapRenderer.MAP_TEXTURE_HEIGHT < MapRenderer.MAP_TEXTURE_WIDTH) ? MapRenderer.MAP_TEXTURE_HEIGHT
+				: MapRenderer.MAP_TEXTURE_WIDTH;
 		zoom = (width + height) / (Math.sqrt(2) * l);
 		zoom *= 1.05; // TODO
 	}

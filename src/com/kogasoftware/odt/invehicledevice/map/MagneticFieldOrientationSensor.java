@@ -2,16 +2,17 @@ package com.kogasoftware.odt.invehicledevice.map;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
+import android.util.Log;
+
+import com.kogasoftware.odt.invehicledevice.LogTag;
 
 abstract public class MagneticFieldOrientationSensor extends OrientationSensor {
-	private static final Logger logger = Logger
-			.getLogger(MagneticFieldOrientationSensor.class);
+	private static final String T = LogTag
+			.get(MagneticFieldOrientationSensor.class);
 
 	public MagneticFieldOrientationSensor(Context context) {
 		super(context);
@@ -29,7 +30,7 @@ abstract public class MagneticFieldOrientationSensor extends OrientationSensor {
 			// センサーにリスナ登録する
 			getSensorManager().registerListener(this, sensor,
 					SensorManager.SENSOR_DELAY_UI);
-			logger.debug("registered: Sensor.TYPE_MAGNETIC_FIELD");
+			Log.d(T, "registered: Sensor.TYPE_MAGNETIC_FIELD");
 		}
 	}
 

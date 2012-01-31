@@ -21,8 +21,7 @@ public class FrameState {
 	private final MapView mapView;
 
 	public FrameState(GL10 gl, Long milliSeconds, Double mapAngle,
-			GeoPoint mapCenter,
-			Double mapPixelZoom, MapView mapView) {
+			GeoPoint mapCenter, Double mapPixelZoom, MapView mapView) {
 		this.gl = gl;
 		this.milliSeconds = milliSeconds;
 		this.mapAngle = mapAngle;
@@ -56,7 +55,7 @@ public class FrameState {
 		GeoPoint newGeoPoint = new GeoPoint(oldGeoPoint.getLatitudeE6()
 				- oldCenter.getLatitudeE6() + newCenter.getLatitudeE6(),
 				oldGeoPoint.getLongitudeE6() - oldCenter.getLongitudeE6()
-				+ newCenter.getLongitudeE6());
+						+ newCenter.getLongitudeE6());
 		Projection projection = mapView.getProjection();
 		projection.toPixels(newGeoPoint, nearRoundedPoint);
 		// toPixels()により整数値に丸められてしまう.丸められたデータに対するGeoPointを取得
@@ -106,8 +105,8 @@ public class FrameState {
 		// Log.i("SpriteDraw", log);
 
 		// OpenGL上の地図テクスチャの座標に変換
-		ry = (double) Property.MAP_TEXTURE_HEIGHT / 2 - ry;
-		rx = rx - (double) Property.MAP_TEXTURE_WIDTH / 2;
+		ry = (double) MapRenderer.MAP_TEXTURE_HEIGHT / 2 - ry;
+		rx = rx - (double) MapRenderer.MAP_TEXTURE_WIDTH / 2;
 
 		// 回転する
 		Double fromAngle = Math.atan2(ry, rx);

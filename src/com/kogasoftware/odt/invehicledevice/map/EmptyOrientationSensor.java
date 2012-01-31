@@ -4,9 +4,9 @@ import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 
-public class NullOrientationSensor extends OrientationSensor {
+public class EmptyOrientationSensor extends OrientationSensor {
 
-	public NullOrientationSensor(Context context) {
+	public EmptyOrientationSensor(Context context) {
 		super(context);
 	}
 

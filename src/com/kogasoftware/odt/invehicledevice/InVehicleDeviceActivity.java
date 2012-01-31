@@ -12,11 +12,9 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.google.android.maps.MapActivity;
-import com.google.android.maps.MapView;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 import com.kogasoftware.odt.invehicledevice.map.MainActivity;
 
@@ -53,7 +51,7 @@ public class InVehicleDeviceActivity extends MapActivity {
 	private Button memoButton = null;
 	private Button returnPathButton = null;
 	private TextView statusTextView = null;
-	private MapView mapView = null;
+	// private MapView mapView = null;
 	private View drivingView1Layout = null;
 	private View drivingView2Layout = null;
 
@@ -171,7 +169,7 @@ public class InVehicleDeviceActivity extends MapActivity {
 		((VTextView) findViewById(R.id.next_stop_but_two_text_view))
 				.setText("次の次の次の乗降場てす");
 
-		((FrameLayout) findViewById(R.id.map_layout)).addView(mapView, 0);
+		// ((FrameLayout) findViewById(R.id.map_layout)).addView(mapView, 0);
 
 		((Button) findViewById(R.id.start_button))
 				.setOnClickListener(new OnClickListener() {
@@ -187,14 +185,6 @@ public class InVehicleDeviceActivity extends MapActivity {
 						if (!voices.offer("出発します。次は、コガソフトウェア前。コガソフトウェア前。")) {
 							Log.w(T, "!voices.offer() failed");
 						}
-					}
-				});
-		((Button) findViewById(R.id.start_cancel_button))
-				.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View view) {
-						findViewById(R.id.check_start_layout).setVisibility(
-								View.GONE);
 					}
 				});
 

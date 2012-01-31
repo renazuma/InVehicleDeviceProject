@@ -1,6 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.map;
 
-public class NullMapSynchronizer extends MapSynchronizer {
+public class EmptyMapSynchronizer extends MapSynchronizer {
 
 	@Override
 	public Boolean isDirty() {

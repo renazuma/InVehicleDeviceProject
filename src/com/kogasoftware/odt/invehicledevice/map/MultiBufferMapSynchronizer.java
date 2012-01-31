@@ -3,8 +3,6 @@ package com.kogasoftware.odt.invehicledevice.map;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import org.apache.log4j.Logger;
-
 import android.graphics.Bitmap;
 
 /**
@@ -18,9 +16,6 @@ public class MultiBufferMapSynchronizer extends MapSynchronizer {
 		MapSnapshot mapSnapshot = new MapSnapshot();
 	}
 
-	private static final Logger logger = Logger
-			.getLogger(MultiBufferMapSynchronizer.class);
-
 	private final Object lock = new Object();
 	private final Integer NUM_BUFFERS = 5;
 	private final Queue<MapSnapshotAndTime> writeQueue = new LinkedList<MapSnapshotAndTime>();
@@ -33,8 +28,8 @@ public class MultiBufferMapSynchronizer extends MapSynchronizer {
 		for (Integer index = 0; index < NUM_BUFFERS; ++index) {
 			MapSnapshotAndTime m = new MapSnapshotAndTime();
 			m.mapSnapshot.bitmap = Bitmap.createBitmap(
-					Property.MAP_TEXTURE_WIDTH, Property.MAP_TEXTURE_HEIGHT,
-					Bitmap.Config.RGB_565);
+					MapRenderer.MAP_TEXTURE_WIDTH,
+					MapRenderer.MAP_TEXTURE_HEIGHT, Bitmap.Config.RGB_565);
 			System.currentTimeMillis();
 			writeQueue.add(m);
 		}
@@ -67,7 +62,6 @@ public class MultiBufferMapSynchronizer extends MapSynchronizer {
 	@Override
 	public void write(Accessor accessor) {
 		MapSnapshotAndTime arg = null;
-		Long now = System.currentTimeMillis();
 		synchronized (lock) {
 			if (writeQueue.size() == 0) {
 				arg = readQueue.poll();

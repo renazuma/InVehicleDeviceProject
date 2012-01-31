@@ -2,16 +2,16 @@ package com.kogasoftware.odt.invehicledevice.map;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
+import android.util.Log;
+
+import com.kogasoftware.odt.invehicledevice.LogTag;
 
 abstract public class LegacyOrientationSensor extends OrientationSensor {
-	private static final Logger logger = Logger
-			.getLogger(LegacyOrientationSensor.class);
+	private static final String T = LogTag.get(LegacyOrientationSensor.class);
 
 	public LegacyOrientationSensor(Context context) {
 		super(context);
@@ -29,7 +29,7 @@ abstract public class LegacyOrientationSensor extends OrientationSensor {
 			// センサーにリスナ登録する
 			getSensorManager().registerListener(this, sensor,
 					SensorManager.SENSOR_DELAY_UI);
-			logger.debug("registered: Sensor.TYPE_ORIENTATION");
+			Log.d(T, "registered: Sensor.TYPE_ORIENTATION");
 		}
 	}
 

@@ -10,16 +10,20 @@ import android.widget.LinearLayout;
  * @author ksc
  * 
  */
+
+class EmptyOnMeasureListener implements
+		OnMeasureDetectableLinerLayout.OnMeasureListener {
+	@Override
+	public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+	}
+}
+
 public class OnMeasureDetectableLinerLayout extends LinearLayout {
 	public interface OnMeasureListener {
 		public void onMeasure(int widthMeasureSpec, int heightMeasureSpec);
 	};
 
-	private OnMeasureListener onMeasureListener = new OnMeasureListener() {
-		@Override
-		public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-		}
-	};
+	private OnMeasureListener onMeasureListener = new EmptyOnMeasureListener();
 
 	public OnMeasureDetectableLinerLayout(Context context, AttributeSet attrs) {
 		super(context, attrs);

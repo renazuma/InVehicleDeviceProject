@@ -1,12 +1,11 @@
 package com.kogasoftware.odt.invehicledevice.map;
 
-import org.apache.log4j.Logger;
-
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.View.OnClickListener;
@@ -18,15 +17,15 @@ import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
+import com.kogasoftware.odt.invehicledevice.LogTag;
 import com.kogasoftware.odt.invehicledevice.R;
 
 public class MainActivity extends MapActivity implements LocationListener {
-
-	private static final Logger logger = Logger.getLogger(MainActivity.class);
+	private static final String T = LogTag.get(MainActivity.class);
 
 	private final MapSynchronizer bitmapSynchronizer = MapSynchronizer
 			.getInstance();
-	private OrientationSensor orientationSensor = new NullOrientationSensor(
+	private OrientationSensor orientationSensor = new EmptyOrientationSensor(
 			this);
 
 	private LocationManager locationManager = null;
@@ -36,7 +35,6 @@ public class MainActivity extends MapActivity implements LocationListener {
 	private OnMeasureDetectableLinerLayout mainLayout = null;
 	private MapOnTouchListener mapOnTouchListener = null;
 	private MapRenderer mapRenderer = null;
-	private ScreenForceUnlocker screenForceUnlocker = null;
 
 	@Override
 	protected boolean isRouteDisplayed() {
@@ -61,11 +59,6 @@ public class MainActivity extends MapActivity implements LocationListener {
 		getWindow().setSoftInputMode(
 				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-		// スクリーンロックを解除
-		screenForceUnlocker = new ScreenForceUnlocker(this);
-
-		screenForceUnlocker.start();
-
 		setContentView(R.layout.main);
 
 		glSurfaceView = (GLSurfaceView) findViewById(R.id.glSurfaceView);
@@ -76,7 +69,7 @@ public class MainActivity extends MapActivity implements LocationListener {
 		Button backButton = (Button) findViewById(R.id.backButton);
 		backButton.setOnClickListener(new OnClickListener() {
 			@Override
-			public void onClick(View arg0) {
+			public void onClick(View view) {
 				MainActivity.this.finish();
 			}
 		});
@@ -127,8 +120,8 @@ public class MainActivity extends MapActivity implements LocationListener {
 		};
 
 		mapViewRedirector.init(bitmapSynchronizer, mapView);
-		mapViewRedirector.addView(mapView, Property.MAP_TEXTURE_WIDTH,
-				Property.MAP_TEXTURE_HEIGHT);
+		mapViewRedirector.addView(mapView, MapRenderer.MAP_TEXTURE_WIDTH,
+				MapRenderer.MAP_TEXTURE_HEIGHT);
 
 		locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
@@ -146,7 +139,6 @@ public class MainActivity extends MapActivity implements LocationListener {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		screenForceUnlocker.stop();
 	}
 
 	@Override
@@ -174,14 +166,6 @@ public class MainActivity extends MapActivity implements LocationListener {
 		mapRenderer.setLayout(width, height, width, height);
 	}
 
-	public static enum MenuItemId {
-		TOGGLE_HAZARD_RECEIVE, TOGGLE_SUB_VIEW,
-	};
-
-	public static enum SubViewStatus {
-		HIDDEN, HAZARD_SEND,
-	};
-
 	@Override
 	protected void onPause() {
 		super.onPause();
@@ -191,12 +175,12 @@ public class MainActivity extends MapActivity implements LocationListener {
 
 	@Override
 	public void onProviderDisabled(String provider) {
-		logger.debug("Provider disabled:" + provider);
+		Log.d(T, "Provider disabled:" + provider);
 	}
 
 	@Override
 	public void onProviderEnabled(String provider) {
-		logger.debug("Provider enabled:" + provider);
+		Log.d(T, "Provider enabled:" + provider);
 	}
 
 	@Override

@@ -1,7 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.map;
 
-import org.apache.log4j.Logger;
-
 import android.app.Activity;
 import android.os.Handler;
 import android.view.MotionEvent;
@@ -12,8 +10,6 @@ import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 
 public class MapOnTouchListener implements OnTouchListener {
-	private static final Logger logger = Logger
-			.getLogger(MapOnTouchListener.class);
 	private final MapView mapView;
 	private final Activity activity;
 	private Double orientation = 0d;

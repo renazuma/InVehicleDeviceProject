@@ -1,7 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.map;
 
-import org.apache.log4j.Logger;
-
 /**
  * 遅延を許して回転をスムーズにする
  * 
@@ -9,8 +7,6 @@ import org.apache.log4j.Logger;
  * 
  */
 public class LazyMotionSmoother extends MotionSmoother {
-	private static final Logger logger = Logger
-			.getLogger(LazyMotionSmoother.class);
 
 	private volatile Long lastMillis = 0l;
 	private volatile Double startOrientation = 0.0;

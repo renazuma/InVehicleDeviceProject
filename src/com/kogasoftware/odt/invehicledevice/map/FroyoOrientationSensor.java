@@ -2,17 +2,16 @@ package com.kogasoftware.odt.invehicledevice.map;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
-
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
+import android.util.Log;
+
+import com.kogasoftware.odt.invehicledevice.LogTag;
 
 public abstract class FroyoOrientationSensor extends OrientationSensor {
-	private static final Logger logger = Logger
-			.getLogger(FroyoOrientationSensor.class);
+	private static final String T = LogTag.get(FroyoOrientationSensor.class);
 	private static final Integer SENSOR_DELAY = SensorManager.SENSOR_DELAY_UI;
 	private static final Integer MATRIX_SIZE = 16;
 
@@ -72,7 +71,7 @@ public abstract class FroyoOrientationSensor extends OrientationSensor {
 	@Override
 	public void onSensorChanged(SensorEvent event) {
 		if (event.accuracy == SensorManager.SENSOR_STATUS_UNRELIABLE) {
-			logger.error("SensorManager.SENSOR_STATUS_UNRELIABLE");
+			Log.e(T, "SensorManager.SENSOR_STATUS_UNRELIABLE");
 			return;
 		}
 		switch (event.sensor.getType()) {
@@ -94,7 +93,7 @@ public abstract class FroyoOrientationSensor extends OrientationSensor {
 					SensorManager.AXIS_Z, outR);
 			SensorManager.getOrientation(outR, orientationValues);
 
-			logger.trace(String.valueOf(Math.toDegrees(orientationValues[0]))
+			Log.v(T, String.valueOf(Math.toDegrees(orientationValues[0]))
 					+ ", "
 					+ // Z軸方向,azmuth
 					String.valueOf(Math.toDegrees(orientationValues[1])) + ", "

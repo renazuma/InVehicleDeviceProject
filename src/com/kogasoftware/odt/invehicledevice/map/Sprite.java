@@ -3,7 +3,6 @@ package com.kogasoftware.odt.invehicledevice.map;
 import javax.microedition.khronos.opengles.GL10;
 
 import org.apache.commons.math.util.MathUtils;
-import org.apache.log4j.Logger;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -68,8 +67,6 @@ abstract public class Sprite extends FrameTask {
 			return this;
 		}
 	}
-
-	private static final Logger logger = Logger.getLogger(Sprite.class);
 
 	protected final Context context;
 	protected Bitmap bitmap = null;
