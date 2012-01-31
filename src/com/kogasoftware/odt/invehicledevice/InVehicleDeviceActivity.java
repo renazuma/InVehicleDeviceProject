@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
+import com.kogasoftware.odt.invehicledevice.map.MainActivity;
 
 public class InVehicleDeviceActivity extends MapActivity {
 	private final String T = LogTag.get(InVehicleDeviceActivity.class);
@@ -79,6 +80,10 @@ public class InVehicleDeviceActivity extends MapActivity {
 					statusTextView.setText("停車中");
 					changeStatusButton.setText("出発");
 					status = 1;
+
+					Intent intent = new Intent(InVehicleDeviceActivity.this,
+							MainActivity.class);
+					startActivity(intent);
 				} else {
 					findViewById(R.id.check_start_layout).setVisibility(
 							View.VISIBLE);
@@ -152,8 +157,9 @@ public class InVehicleDeviceActivity extends MapActivity {
 			}
 		});
 
-		mapView = new MapView(this, "0_ZIi_adDM8WHxCX0OJTfcXhHO8jOsYOjLF7xow");
-		mapView.setClickable(true);
+		// mapView = new MapView(this,
+		// "0_ZIi_adDM8WHxCX0OJTfcXhHO8jOsYOjLF7xow");
+		// mapView.setClickable(true);
 
 		drivingView1Layout = findViewById(R.id.driving_view1);
 		drivingView2Layout = findViewById(R.id.driving_view2);
