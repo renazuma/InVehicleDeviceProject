@@ -1,6 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.map;
 
-import android.app.Activity;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
@@ -11,11 +10,9 @@ import com.google.android.maps.MapView;
 
 public class MapOnTouchListener implements OnTouchListener {
 	private final MapView mapView;
-	private final Activity activity;
 	private Double orientation = 0d;
 	private Double lastX = 0d;
 	private Double lastY = 0d;
-	private Long downTime = 0l;
 	private Double downX = 0d;
 	private Double downY = 0d;
 	private final Double MOTION_SMOOTHER_LATENCY = 80.0;
@@ -47,17 +44,17 @@ public class MapOnTouchListener implements OnTouchListener {
 		longitudeMotionSmoother.addMotion((double) center.getLongitudeE6());
 	}
 
-	public MapOnTouchListener(MapView mapView, Activity activity) {
+	public MapOnTouchListener(MapView mapView) {
 		this.mapView = mapView;
-		this.activity = activity;
+		updateGeoPoint(mapView.getMapCenter());
 	}
 
 	public void onOrientationChanged(Double orientation) {
 		this.orientation = orientation;
 	}
 
-	int lastLatitude = 0;
-	int lastLongitude = 0;
+	private int lastLatitude = 0;
+	private int lastLongitude = 0;
 
 	@Override
 	public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -67,7 +64,6 @@ public class MapOnTouchListener implements OnTouchListener {
 		if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
 			lastX = x;
 			lastY = y;
-			downTime = motionEvent.getDownTime();
 			downX = x;
 			downY = y;
 			GeoPoint center = mapView.getMapCenter();
@@ -79,11 +75,6 @@ public class MapOnTouchListener implements OnTouchListener {
 		if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
 			Double dx = downX - x;
 			Double dy = downY - y;
-			if (Math.sqrt(dx * dx + dy * dy) < 50 /* TODO 定数 */
-					&& motionEvent.getEventTime() - downTime < 500 /* TODO 定数 */) {
-				activity.openOptionsMenu();
-				return true;
-			}
 		}
 
 		Double dx = lastX - x;
