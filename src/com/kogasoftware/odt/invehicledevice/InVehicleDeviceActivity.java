@@ -16,7 +16,6 @@ import android.widget.TextView;
 
 import com.google.android.maps.MapActivity;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
-import com.kogasoftware.odt.invehicledevice.map.MainActivity;
 
 public class InVehicleDeviceActivity extends MapActivity {
 	private final String T = LogTag.get(InVehicleDeviceActivity.class);
@@ -78,10 +77,6 @@ public class InVehicleDeviceActivity extends MapActivity {
 					statusTextView.setText("停車中");
 					changeStatusButton.setText("出発");
 					status = 1;
-
-					Intent intent = new Intent(InVehicleDeviceActivity.this,
-							MainActivity.class);
-					startActivity(intent);
 				} else {
 					findViewById(R.id.check_start_layout).setVisibility(
 							View.VISIBLE);

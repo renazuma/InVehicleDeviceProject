@@ -610,6 +610,28 @@
     </com.kogasoftware.odt.invehicledevice.OverlayLinearLayout>
 
     <com.kogasoftware.odt.invehicledevice.OverlayLinearLayout
+        android:id="@+id/map_overlay"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#ffffff"
+        android:orientation="vertical"
+        android:visibility="gone" >
+
+        <com.kogasoftware.odt.invehicledevice.map.NavigationView
+            android:id="@+id/navigationView"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" >
+
+            <com.kogasoftware.odt.invehicledevice.OverlayCloseButton
+                android:id="@+id/map_hide_button"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:text="閉じる" />
+        </com.kogasoftware.odt.invehicledevice.map.NavigationView>
+    </com.kogasoftware.odt.invehicledevice.OverlayLinearLayout>
+
+    <com.kogasoftware.odt.invehicledevice.OverlayLinearLayout
         android:id="@+id/check_start_layout"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -638,28 +660,6 @@
             android:layout_height="fill_parent"
             android:layout_weight="1"
             android:text="いいえ" />
-    </com.kogasoftware.odt.invehicledevice.OverlayLinearLayout>
-
-    <com.kogasoftware.odt.invehicledevice.OverlayLinearLayout
-        android:id="@+id/map_overlay"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="#ffffff"
-        android:orientation="vertical"
-        android:visibility="gone" >
-
-        <FrameLayout
-            android:id="@+id/map_layout"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent" >
-
-            <com.kogasoftware.odt.invehicledevice.OverlayCloseButton
-                android:id="@+id/map_hide_button"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:text="閉じる" />
-        </FrameLayout>
     </com.kogasoftware.odt.invehicledevice.OverlayLinearLayout>
 
     <com.kogasoftware.odt.invehicledevice.OverlayLinearLayout
