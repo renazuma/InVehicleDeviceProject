@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.map;
+package com.kogasoftware.odt.invehicledevice.navigation;
 
 import javax.microedition.khronos.opengles.GL10;
 

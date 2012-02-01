@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.map;
+package com.kogasoftware.odt.invehicledevice.navigation;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -16,6 +16,21 @@ import com.kogasoftware.odt.invehicledevice.LogTag;
  * @author ksc
  * 
  */
+class EmptyMapSynchronizer extends MapSynchronizer {
+	@Override
+	public Boolean isDirty() {
+		return false;
+	}
+
+	@Override
+	public void read(Accessor accessor) {
+	}
+
+	@Override
+	public void write(Accessor accessor) {
+	}
+}
+
 public class MapViewRedirector extends FrameLayout {
 	private static final String T = LogTag.get(MapViewRedirector.class);
 

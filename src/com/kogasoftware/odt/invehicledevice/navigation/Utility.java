@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.map;
+package com.kogasoftware.odt.invehicledevice.navigation;
 
 public class Utility {
 	public static final Double MAX_NEAREST_RADIAN = Math.PI * 1000;

@@ -617,7 +617,7 @@
         android:orientation="vertical"
         android:visibility="gone" >
 
-        <com.kogasoftware.odt.invehicledevice.map.NavigationView
+        <com.kogasoftware.odt.invehicledevice.navigation.NavigationView
             android:id="@+id/navigationView"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" >
@@ -628,7 +628,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:text="閉じる" />
-        </com.kogasoftware.odt.invehicledevice.map.NavigationView>
+        </com.kogasoftware.odt.invehicledevice.navigation.NavigationView>
     </com.kogasoftware.odt.invehicledevice.OverlayLinearLayout>
 
     <com.kogasoftware.odt.invehicledevice.OverlayLinearLayout

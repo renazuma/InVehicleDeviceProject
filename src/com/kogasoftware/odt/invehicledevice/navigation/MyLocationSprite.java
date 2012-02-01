@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.map;
+package com.kogasoftware.odt.invehicledevice.navigation;
 
 import java.io.InputStream;
 
@@ -9,23 +9,21 @@ import android.graphics.BitmapFactory;
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.R;
 
-public class DroidSprite extends Sprite {
-	private final Integer x;
-	private final Integer y;
+public class MyLocationSprite extends Sprite {
 
-	public DroidSprite(Context context, int x, int y) {
+	public MyLocationSprite(Context context) {
 		super(context);
-		this.x = x;
-		this.y = y;
 		InputStream inputStream = context.getResources().openRawResource(
-				R.drawable.droid);
+				R.drawable.point);
 		Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
 		Closeables.closeQuietly(inputStream);
 		setBitmap(bitmap);
 	}
 
 	@Override
-	public void onDraw(FrameState frameState) {
-		draw(frameState, x.doubleValue(), y.doubleValue());
+	void onDraw(FrameState frameState) {
+		Double alpha = (Math
+				.abs(Math.sin(frameState.getMilliSeconds() / 8000d)) / 2 + 0.5);
+		draw(new DrawParams(frameState).alpha(alpha));
 	}
 }

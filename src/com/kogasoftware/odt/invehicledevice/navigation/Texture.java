@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.map;
+package com.kogasoftware.odt.invehicledevice.navigation;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
