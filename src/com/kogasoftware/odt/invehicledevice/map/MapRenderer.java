@@ -11,7 +11,6 @@ import javax.microedition.khronos.opengles.GL10;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Point;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
 import android.util.Log;
@@ -48,15 +47,13 @@ public class MapRenderer implements GLSurfaceView.Renderer {
 			500.0, 0.02, 0.00005);
 
 	private Long framesBy10s = 0l;
-	private Integer width = 0;
-	private Integer height = 0;
-	private Integer parentWidth = 0;
-	private Integer parentHeight = 0;
 	private Long lastReportMillis = 0l;
 	private Boolean layoutChanged = false;
 	private Double zoom = 1.0;
 	private Long bitmapLastUpdated = 0l;
 	private GeoPoint lastMapCenter = new GeoPoint(0, 0);
+	private Integer width = 0;
+	private Integer height = 0;
 
 	public void addFrameTask(FrameTask newFrameTask) {
 		synchronized (this) {
@@ -139,43 +136,32 @@ public class MapRenderer implements GLSurfaceView.Renderer {
 
 	private void onLayoutChanged(GL10 gl) {
 		// ビューポートをサイズに合わせてセットしなおす
-		gl.glViewport(parentWidth - width, parentHeight - height, width, height);
+		gl.glViewport(0, 0, width, height);
 		// 射影行列を選択
 		gl.glMatrixMode(GL10.GL_PROJECTION);
 		// 現在選択されている行列(射影行列)に、単位行列をセット
 		gl.glLoadIdentity();
 
 		// 平行投影用のパラメータをセット
-		// GLU.gluOrtho2D(gl, 0.0f, width, 0.0f, height);
+		GLU.gluOrtho2D(gl, -width / 2, width / 2, -height / 2, height / 2);
 
 		// カメラの位置をセット
-		float eyeX = 0;
-		float eyeY = 0;
-		float eyeZ = 1024; // TODO 定数
-		float centerX = 0;
-		float centerY = 0;
-		float centerZ = 0;
-		float upX = 0;
-		float upY = 1;
-		float upZ = 0;
-
-		// 透視投影用の錐台のパラメーターにセット
-		float zNear = 512; // TODO 定数
-		float zFar = 1024 + 512; // TODO 定数
-
-		float left = -(float) width / 2 / eyeZ * zNear;
-		float right = (float) width / 2 / eyeZ * zNear;
-		float bottom = -(float) height / 2 / eyeZ * zNear;
-		float top = (float) height / 2 / eyeZ * zNear;
-
-		gl.glFrustumf(left, right, bottom, top, zNear, zFar);
+		Float eyeX = 0f;
+		Float eyeY = 0f;
+		Float eyeZ = 1f;
+		Float centerX = 0f;
+		Float centerY = 0f;
+		Float centerZ = 0f;
+		Float upX = 0f;
+		Float upY = 1f;
+		Float upZ = 0f;
 		GLU.gluLookAt(gl, eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX,
 				upY, upZ);
 
-		float l = (MapRenderer.MAP_TEXTURE_HEIGHT < MapRenderer.MAP_TEXTURE_WIDTH) ? MapRenderer.MAP_TEXTURE_HEIGHT
-				: MapRenderer.MAP_TEXTURE_WIDTH;
-		zoom = (width + height) / (Math.sqrt(2) * l);
-		zoom *= 1.05; // TODO
+		zoom = (width + height)
+				/ (Math.sqrt(2) * Math.min(MapRenderer.MAP_TEXTURE_HEIGHT,
+						MapRenderer.MAP_TEXTURE_WIDTH));
+		zoom *= 1.05; // 回転時に四隅に空きができてしまうため、少し拡大する
 	}
 
 	/**
@@ -225,23 +211,6 @@ public class MapRenderer implements GLSurfaceView.Renderer {
 	public void setOrientation(Double radian) {
 		synchronized (this) {
 			rotationSmoother.addMotion(radian);
-		}
-	}
-
-	public Point getLayout() {
-		synchronized (this) {
-			return new Point(width, height);
-		}
-	}
-
-	public void setLayout(Integer width, Integer height, Integer parentWidth,
-			Integer parentHeight) {
-		synchronized (this) {
-			this.width = width;
-			this.height = height;
-			this.parentWidth = parentWidth;
-			this.parentHeight = parentHeight;
-			layoutChanged = true;
 		}
 	}
 }

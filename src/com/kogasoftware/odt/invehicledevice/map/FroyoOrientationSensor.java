@@ -19,10 +19,10 @@ public abstract class FroyoOrientationSensor extends OrientationSensor {
 	private Boolean isAccSensor = false;
 
 	// 回転行列
-	float[] inR = new float[MATRIX_SIZE];
+	final float[] inR = new float[MATRIX_SIZE];
 
-	float[] outR = new float[MATRIX_SIZE];
-	float[] I = new float[MATRIX_SIZE];
+	final float[] outR = new float[MATRIX_SIZE];
+	final float[] I = new float[MATRIX_SIZE];
 	// センサーの値
 	float[] orientationValues = new float[3];
 	float[] magneticValues = new float[3];

@@ -7,11 +7,11 @@ import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.View.MeasureSpec;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
@@ -32,7 +32,7 @@ public class MainActivity extends MapActivity implements LocationListener {
 	private MapView mapView = null;
 	private GLSurfaceView glSurfaceView = null;
 	private MapViewRedirector mapViewRedirector = null;
-	private OnMeasureDetectableLinerLayout mainLayout = null;
+	private LinearLayout mainLayout = null;
 	private MapOnTouchListener mapOnTouchListener = null;
 	private MapRenderer mapRenderer = null;
 
@@ -63,7 +63,7 @@ public class MainActivity extends MapActivity implements LocationListener {
 
 		glSurfaceView = (GLSurfaceView) findViewById(R.id.glSurfaceView);
 		mapViewRedirector = (MapViewRedirector) findViewById(R.id.mapViewRedirector);
-		mainLayout = (OnMeasureDetectableLinerLayout) findViewById(R.id.mainLayout);
+		mainLayout = (LinearLayout) findViewById(R.id.mainLayout);
 		mapView = new MapView(this, "0_ZIi_adDM8WHxCX0OJTfcXhHO8jOsYOjLF7xow");
 		mapOnTouchListener = new MapOnTouchListener(mapView, this);
 		Button backButton = (Button) findViewById(R.id.backButton);
@@ -124,16 +124,6 @@ public class MainActivity extends MapActivity implements LocationListener {
 				MapRenderer.MAP_TEXTURE_HEIGHT);
 
 		locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-
-		mainLayout
-				.setOnMeasureListener(new OnMeasureDetectableLinerLayout.OnMeasureListener() {
-					@Override
-					public void onMeasure(int widthMeasureSpec,
-							int heightMeasureSpec) {
-						onMeasureMainLayout(widthMeasureSpec, heightMeasureSpec);
-					}
-				});
-
 	}
 
 	@Override
@@ -149,21 +139,6 @@ public class MainActivity extends MapActivity implements LocationListener {
 				(int) (longitude * 1E6));
 		mapOnTouchListener.updateGeoPoint(newCenter);
 		mapView.getController().animateTo(newCenter);
-	}
-
-	private int currentWidthMeasureSpec = 0;
-	private int currentHeightMeasureSpec = 0;
-
-	public void onMeasureMainLayout(int widthMeasureSpec, int heightMeasureSpec) {
-		if (currentWidthMeasureSpec == widthMeasureSpec
-				&& currentHeightMeasureSpec == heightMeasureSpec) {
-			return;
-		}
-		currentWidthMeasureSpec = widthMeasureSpec;
-		currentHeightMeasureSpec = heightMeasureSpec;
-		Integer width = MeasureSpec.getSize(widthMeasureSpec);
-		Integer height = MeasureSpec.getSize(heightMeasureSpec);
-		mapRenderer.setLayout(width, height, width, height);
 	}
 
 	@Override
