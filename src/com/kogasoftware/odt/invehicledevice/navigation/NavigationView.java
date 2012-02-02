@@ -63,23 +63,23 @@ public class NavigationView extends FrameLayout {
 	}
 
 	final private GLSurfaceView glSurfaceView;
+	final private MapSynchronizer mapSynchronizer;
 
 	public NavigationView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 
-		MapSynchronizer bitmapSynchronizer = new MapSynchronizer();
+		mapSynchronizer = new MapSynchronizer();
 
 		locationManager = (LocationManager) context
 				.getSystemService(Context.LOCATION_SERVICE);
 		mapView = new MapView(context,
 				"0_ZIi_adDM8WHxCX0OJTfcXhHO8jOsYOjLF7xow");
 		// mapOnTouchListener = new MapOnTouchListener(mapView);
-		glSurfaceView = new GLSurfaceView(context);
+		glSurfaceView = new GLSurfaceView(context.getApplicationContext());
 		// mapViewRedirector = new MapViewRedirector(context, null);
 		// mapView.setOnTouchListener(mapOnTouchListener);
-		// MapRenderer mapRenderer = new MapRenderer(context,
-		// bitmapSynchronizer,
-		// mapView);
+		MapRenderer mapRenderer = new MapRenderer(
+				context.getApplicationContext(), mapSynchronizer, mapView);
 		// glSurfaceView.setRenderer(mapRenderer);
 		glSurfaceView.setRenderer(new MyRenderer());
 
@@ -138,10 +138,12 @@ public class NavigationView extends FrameLayout {
 	}
 
 	public void onResumeActivity() {
+		mapSynchronizer.onResume();
 		glSurfaceView.onResume();
 	}
 
 	public void onPauseActivity() {
 		glSurfaceView.onPause();
+		mapSynchronizer.onPause();
 	}
 }

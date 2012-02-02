@@ -13,6 +13,12 @@ import android.graphics.PointF;
 import com.google.android.maps.GeoPoint;
 
 abstract public class Sprite extends FrameTask {
+	private final Context context;
+
+	public Sprite(Context context) {
+		this.context = context;
+	}
+
 	/**
 	 * Sprite.draw() メソッドで描画対象をどこに描くかを指定するため，引数として渡すクラス
 	 * 
@@ -68,17 +74,12 @@ abstract public class Sprite extends FrameTask {
 		}
 	}
 
-	protected final Context context;
 	protected Bitmap bitmap = null;
 	protected Integer textureId = null;
 	protected Integer originalBitmapWidth = 0;
 	protected Integer originalBitmapHeight = 0;
 	protected Integer bitmapWidth = 0;
 	protected Integer bitmapHeight = 0;
-
-	public Sprite(Context context) {
-		this.context = context;
-	}
 
 	public void draw(DrawParams drawParams) {
 		if (drawParams.useGeoPoint) {
@@ -149,7 +150,7 @@ abstract public class Sprite extends FrameTask {
 	 */
 	public void loadBitmap(GL10 gl) {
 		if (textureId == null) {
-			textureId = Texture.generate(gl, context);
+			textureId = Texture.generate(gl);
 		}
 		if (bitmap == null) {
 			return;
@@ -162,7 +163,7 @@ abstract public class Sprite extends FrameTask {
 						Math.max(originalBitmapWidth, originalBitmapHeight))));
 		if (bitmapWidth.equals(alignedLength)
 				&& bitmapHeight.equals(alignedLength)) {
-			Texture.update(gl, context, bitmap, textureId);
+			Texture.update(gl, bitmap, textureId);
 		} else {
 			bitmapWidth = alignedLength;
 			bitmapHeight = alignedLength;
@@ -172,7 +173,7 @@ abstract public class Sprite extends FrameTask {
 			Float top = (float) (bitmapHeight - originalBitmapHeight) / 2;
 			new Canvas(alignedBitmap)
 					.drawBitmap(bitmap, left, top, new Paint());
-			Texture.update(gl, context, alignedBitmap, textureId);
+			Texture.update(gl, alignedBitmap, textureId);
 			alignedBitmap.recycle();
 		}
 		bitmap = null; // 明示的に参照を外す。TODO recycle()を検討

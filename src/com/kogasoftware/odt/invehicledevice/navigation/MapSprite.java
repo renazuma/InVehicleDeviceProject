@@ -1,6 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.navigation;
 
-
 import android.content.Context;
 
 public class MapSprite extends Sprite {

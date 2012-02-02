@@ -28,17 +28,6 @@ public class MapSynchronizer {
 	private volatile MapSnapshot readingSnapshot = null;
 
 	public MapSynchronizer() {
-		for (Integer index = 0; index < NUM_BUFFERS; ++index) {
-			MapSnapshot m = new MapSnapshot();
-			if (m.bitmap != null) {
-				m.bitmap.recycle();
-			}
-			m.bitmap = Bitmap.createBitmap(MapRenderer.MAP_TEXTURE_WIDTH,
-					MapRenderer.MAP_TEXTURE_HEIGHT, Bitmap.Config.RGB_565);
-			System.currentTimeMillis();
-			writeQueue.add(m);
-		}
-		readingSnapshot = writeQueue.poll();
 	}
 
 	public Boolean isDirty() {
@@ -84,9 +73,25 @@ public class MapSynchronizer {
 		}
 	}
 
-	@Override
-	protected void finalize() throws Throwable {
-		try {
+	public void onResume() {
+		onPause();
+		synchronized (lock) {
+			for (Integer index = 0; index < NUM_BUFFERS; ++index) {
+				MapSnapshot m = new MapSnapshot();
+				if (m.bitmap != null) {
+					m.bitmap.recycle();
+				}
+				m.bitmap = Bitmap.createBitmap(MapRenderer.MAP_TEXTURE_WIDTH,
+						MapRenderer.MAP_TEXTURE_HEIGHT, Bitmap.Config.RGB_565);
+				System.currentTimeMillis();
+				writeQueue.add(m);
+			}
+			readingSnapshot = writeQueue.poll();
+		}
+	}
+
+	public void onPause() {
+		synchronized (lock) {
 			while (true) {
 				MapSnapshot s = readQueue.poll();
 				if (s == null) {
@@ -106,8 +111,6 @@ public class MapSynchronizer {
 				readingSnapshot = null;
 				temp.recycle();
 			}
-		} finally {
-			super.finalize();
 		}
 	}
 }

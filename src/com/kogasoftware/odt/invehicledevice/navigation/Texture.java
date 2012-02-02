@@ -6,7 +6,6 @@ import java.nio.IntBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.opengl.GLUtils;
 
@@ -106,13 +105,11 @@ public class Texture {
 	 * テクスチャを読み込む
 	 * 
 	 * @param gl
-	 * @param context
-	 *            アクティビティを渡す
 	 * @param resource_id
 	 *            読み込むリソースのIDを渡す
 	 * @return 生成したテクスチャのIDを返す
 	 */
-	static int generate(GL10 gl, Context context) {
+	static int generate(GL10 gl) {
 		int[] textures = new int[1];
 		// テクスチャを作成するための固有名を1つ作成
 		gl.glGenTextures(1, textures, 0);
@@ -128,7 +125,7 @@ public class Texture {
 		gl.glDeleteTextures(1, new int[] { textureId }, 0);
 	}
 
-	static void update(GL10 gl, Context context, Bitmap bitmap, int textureId) {
+	static void update(GL10 gl, Bitmap bitmap, int textureId) {
 		// 指定した固有名を持つテクスチャを作成
 		gl.glBindTexture(GL10.GL_TEXTURE_2D, textureId);
 

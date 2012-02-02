@@ -102,20 +102,20 @@ public class MapRenderer implements GLSurfaceView.Renderer {
 					- rotationSmoother.getSmoothMotion());
 
 			// 地図データの読み取り
-			bitmapSynchronizer.read(new MapSynchronizer.Accessor() {
-				@Override
-				public void run(MapSnapshot mapSnapshot) {
-					if (bitmapSynchronizer.isDirty()
-							|| millis > bitmapLastUpdated + 2000 /* TODO */) {
-						bitmapLastUpdated = millis;
-						mapSprite.setBitmap(mapSnapshot.bitmap);
-						mapSprite.loadBitmap(gl);
-						GeoPoint center = mapSnapshot.center;
-						lastMapCenter = new GeoPoint(center.getLatitudeE6(),
-								center.getLongitudeE6());
-					}
-				}
-			});
+			// bitmapSynchronizer.read(new MapSynchronizer.Accessor() {
+			// @Override
+			// public void run(MapSnapshot mapSnapshot) {
+			// if (bitmapSynchronizer.isDirty()
+			// || millis > bitmapLastUpdated + 2000 /* TODO */) {
+			// bitmapLastUpdated = millis;
+			// mapSprite.setBitmap(mapSnapshot.bitmap);
+			// mapSprite.loadBitmap(gl);
+			// GeoPoint center = mapSnapshot.center;
+			// lastMapCenter = new GeoPoint(center.getLatitudeE6(),
+			// center.getLongitudeE6());
+			// }
+			// }
+			// });
 
 			FrameState frameState = new FrameState(gl, millis, radian,
 					lastMapCenter, zoom, mapView);
