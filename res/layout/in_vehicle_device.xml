@@ -618,7 +618,7 @@
         android:visibility="gone" >
 
         <com.kogasoftware.odt.invehicledevice.navigation.NavigationView
-            android:id="@+id/navigationView"
+            android:id="@+id/navigation_view"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" >
 

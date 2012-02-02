@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.invehicledevice;
 
+import java.lang.ref.WeakReference;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -16,6 +17,7 @@ import android.widget.TextView;
 
 import com.google.android.maps.MapActivity;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
+import com.kogasoftware.odt.invehicledevice.navigation.NavigationView;
 
 public class InVehicleDeviceActivity extends MapActivity {
 	private final String T = LogTag.get(InVehicleDeviceActivity.class);
@@ -53,6 +55,8 @@ public class InVehicleDeviceActivity extends MapActivity {
 	// private MapView mapView = null;
 	private View drivingView1Layout = null;
 	private View drivingView2Layout = null;
+	// private GLSurfaceView glSurfaceView = null;
+	private NavigationView navigationView = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -61,8 +65,8 @@ public class InVehicleDeviceActivity extends MapActivity {
 
 		Log.v(T, "onCreate");
 
-		voiceThread = new VoiceThread(this, voices);
-		voiceThread.start();
+		// voiceThread = new VoiceThread(getApplicationContext(), voices);
+		// voiceThread.start();
 
 		statusTextView = (TextView) findViewById(R.id.status_text_view);
 
@@ -184,6 +188,10 @@ public class InVehicleDeviceActivity extends MapActivity {
 				});
 
 		drivingViewToggleHandler.post(drivingViewToggleRunnable);
+		// glSurfaceView = new GLSurfaceView(getApplicationContext());
+		// glSurfaceView = (GLSurfaceView) findViewById(R.id.gl_surface_view);
+		// glSurfaceView.setRenderer(new MyRenderer());
+		navigationView = (NavigationView) findViewById(R.id.navigation_view);
 	}
 
 	private String authToken = "";
@@ -191,10 +199,24 @@ public class InVehicleDeviceActivity extends MapActivity {
 	@Override
 	public void onResume() {
 		super.onResume();
-		// if (authToken.isEmpty()) {
-		// Intent intent = new Intent(this, LoginActivity.class);
-		// startActivityForResult(intent, 0);
-		// }　
+		navigationView.onResumeActivity();
+		// glSurfaceView.onResume();
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		navigationView.onPauseActivity();
+		// glSurfaceView.onPause();
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		drivingViewToggleHandler.removeCallbacks(drivingViewToggleRunnable);
+		// glSurfaceView = null;
+		// voiceThread.interrupt();
+		navigationView = null;
 	}
 
 	@Override
@@ -203,13 +225,6 @@ public class InVehicleDeviceActivity extends MapActivity {
 		if (res == RESULT_OK) {
 			authToken = data.getStringExtra("authToken");
 		}
-	}
-
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		drivingViewToggleHandler.removeCallbacks(drivingViewToggleRunnable);
-		voiceThread.interrupt();
 	}
 
 	@Override
@@ -224,7 +239,12 @@ public class InVehicleDeviceActivity extends MapActivity {
 			return super.onKeyDown(keyCode, event);
 		}
 		Boolean match = false;
-		for (OverlayLinearLayout l : OverlayLinearLayout.getAttachedInstances()) {
+		for (WeakReference<OverlayLinearLayout> r : OverlayLinearLayout
+				.getAttachedInstances()) {
+			OverlayLinearLayout l = r.get();
+			if (l == null) {
+				continue;
+			}
 			if (l.getVisibility() == View.VISIBLE) {
 				l.hide();
 				match = true;

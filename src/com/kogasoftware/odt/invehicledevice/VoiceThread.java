@@ -14,6 +14,7 @@ import com.kogasoftware.openjtalk.OpenJTalk;
 public class VoiceThread extends Thread {
 	private final String T = LogTag.get(VoiceThread.class);
 	private final BlockingQueue<String> voices;
+
 	private final Context context;
 
 	public VoiceThread(Context context, BlockingQueue<String> voices) {
@@ -21,8 +22,7 @@ public class VoiceThread extends Thread {
 		this.context = context;
 	}
 
-	@Override
-	public void run() {
+	public void run2() {
 		String s = File.separator;
 		String base = Environment.getExternalStorageDirectory() + s + ".odt"
 				+ s + "openjtalk";

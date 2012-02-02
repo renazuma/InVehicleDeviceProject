@@ -1,5 +1,7 @@
 package com.kogasoftware.odt.invehicledevice;
 
+import java.lang.ref.WeakReference;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
@@ -11,8 +13,12 @@ public class AllOverlaysCloseButton extends Button {
 	final OnClickListener defaultOnClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View view) {
-			for (OverlayLinearLayout l : OverlayLinearLayout
+			for (WeakReference<OverlayLinearLayout> r : OverlayLinearLayout
 					.getAttachedInstances()) {
+				OverlayLinearLayout l = r.get();
+				if (l == null) {
+					continue;
+				}
 				l.hide();
 			}
 			userOnClickListener.onClick(view);

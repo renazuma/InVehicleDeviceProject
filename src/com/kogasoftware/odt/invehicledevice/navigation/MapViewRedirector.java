@@ -77,6 +77,11 @@ public class MapViewRedirector extends FrameLayout {
 		});
 	}
 
+	@Override
+	protected void onDetachedFromWindow() {
+		super.onDetachedFromWindow();
+	}
+
 	public void init(MapSynchronizer mapSynchronizer, MapView mapView) {
 		this.mapView = mapView;
 		this.mapSynchronizer = mapSynchronizer;

@@ -146,22 +146,22 @@ public class MapRenderer implements GLSurfaceView.Renderer {
 		GLU.gluOrtho2D(gl, -width / 2, width / 2, -height / 2, height / 2);
 
 		// カメラの位置をセット
-		Float eyeX = 0f;
-		Float eyeY = 0f;
-		Float eyeZ = 1f;
-		Float centerX = 0f;
-		Float centerY = 0f;
-		Float centerZ = 0f;
-		Float upX = 0f;
-		Float upY = 1f;
-		Float upZ = 0f;
-		GLU.gluLookAt(gl, eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX,
-				upY, upZ);
+		// Float eyeX = 0f;
+		// Float eyeY = 0f;
+		// Float eyeZ = 1f;
+		// Float centerX = 0f;
+		// Float centerY = 0f;
+		// Float centerZ = 0f;
+		// Float upX = 0f;
+		// Float upY = 1f;
+		// Float upZ = 0f;
+		// GLU.gluLookAt(gl, eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX,
+		// upY, upZ);
 
 		zoom = (width + height)
 				/ (Math.sqrt(2) * Math.min(MapRenderer.MAP_TEXTURE_HEIGHT,
 						MapRenderer.MAP_TEXTURE_WIDTH));
-		zoom *= 1.05; // 回転時に四隅に空きができてしまうため、少し拡大する
+		zoom *= 1.05; // TODO 角の黒い部分がはみ出すのを微調整している係数
 	}
 
 	/**

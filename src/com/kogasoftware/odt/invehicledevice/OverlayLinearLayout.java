@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.invehicledevice;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -16,27 +17,31 @@ import com.google.common.collect.Lists;
 
 public class OverlayLinearLayout extends LinearLayout implements
 		OnTouchListener {
-	private static final Queue<OverlayLinearLayout> attachedInstances = new ConcurrentLinkedQueue<OverlayLinearLayout>();
 
-	public static List<OverlayLinearLayout> getAttachedInstances() {
+	// staticなメンバにViewを持つので、メモリリークを未然に防ぐためWeakReferenceを使う
+	private static final Queue<WeakReference<OverlayLinearLayout>> attachedInstances = new ConcurrentLinkedQueue<WeakReference<OverlayLinearLayout>>();
+	private final WeakReference<OverlayLinearLayout> thisWeakReference;
+
+	public static List<WeakReference<OverlayLinearLayout>> getAttachedInstances() {
 		return Lists.newLinkedList(attachedInstances);
 	}
 
 	public OverlayLinearLayout(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		thisWeakReference = new WeakReference<OverlayLinearLayout>(this);
 		setOnTouchListener(this);
 	}
 
 	@Override
 	protected void onAttachedToWindow() {
 		super.onAttachedToWindow();
-		attachedInstances.add(this);
+		attachedInstances.add(thisWeakReference);
 	}
 
 	@Override
 	protected void onDetachedFromWindow() {
+		attachedInstances.remove(thisWeakReference);
 		super.onDetachedFromWindow();
-		attachedInstances.remove(this);
 	}
 
 	public void hide() {
