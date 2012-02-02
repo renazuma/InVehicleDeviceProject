@@ -4,7 +4,6 @@ import javax.microedition.khronos.opengles.GL10;
 
 import org.apache.commons.math.util.MathUtils;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -13,12 +12,6 @@ import android.graphics.PointF;
 import com.google.android.maps.GeoPoint;
 
 abstract public class Sprite extends FrameTask {
-	private final Context context;
-
-	public Sprite(Context context) {
-		this.context = context;
-	}
-
 	/**
 	 * Sprite.draw() メソッドで描画対象をどこに描くかを指定するため，引数として渡すクラス
 	 * 

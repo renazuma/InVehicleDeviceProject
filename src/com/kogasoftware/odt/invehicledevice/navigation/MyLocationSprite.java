@@ -2,7 +2,7 @@ package com.kogasoftware.odt.invehicledevice.navigation;
 
 import java.io.InputStream;
 
-import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
@@ -11,10 +11,8 @@ import com.kogasoftware.odt.invehicledevice.R;
 
 public class MyLocationSprite extends Sprite {
 
-	public MyLocationSprite(Context context) {
-		super(context);
-		InputStream inputStream = context.getResources().openRawResource(
-				R.drawable.point);
+	public MyLocationSprite(Resources resources) {
+		InputStream inputStream = resources.openRawResource(R.drawable.point);
 		Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
 		Closeables.closeQuietly(inputStream);
 		setBitmap(bitmap);

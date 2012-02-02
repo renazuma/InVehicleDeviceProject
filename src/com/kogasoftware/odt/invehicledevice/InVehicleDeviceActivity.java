@@ -19,7 +19,8 @@ import com.google.android.maps.MapActivity;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 import com.kogasoftware.odt.invehicledevice.navigation.NavigationView;
 
-public class InVehicleDeviceActivity extends MapActivity {
+public class InVehicleDeviceActivity extends MapActivity implements
+		OnClickListener {
 	private final String T = LogTag.get(InVehicleDeviceActivity.class);
 	private final BlockingQueue<String> voices = new LinkedBlockingQueue<String>();
 	private final Integer DRIVING_VIEW_TOGGLE_INTERVAL = 5000;
@@ -51,6 +52,7 @@ public class InVehicleDeviceActivity extends MapActivity {
 	private Button pauseButton = null;
 	private Button memoButton = null;
 	private Button returnPathButton = null;
+	private Button startButton = null;
 	private TextView statusTextView = null;
 	// private MapView mapView = null;
 	private View drivingView1Layout = null;
@@ -71,6 +73,35 @@ public class InVehicleDeviceActivity extends MapActivity {
 		statusTextView = (TextView) findViewById(R.id.status_text_view);
 
 		changeStatusButton = (Button) findViewById(R.id.change_status_button);
+		mapButton = (Button) findViewById(R.id.map_button);
+		configButton = (Button) findViewById(R.id.config_button);
+		stopCheckButton = (Button) findViewById(R.id.stop_check_button);
+		stopButton = (Button) findViewById(R.id.stop_button);
+		pauseButton = (Button) findViewById(R.id.pause_button);
+		memoButton = (Button) findViewById(R.id.memo_button);
+		scheduleButton = (Button) findViewById(R.id.schedule_button);
+		returnPathButton = (Button) findViewById(R.id.return_path_button);
+
+		// mapView = new MapView(this,
+		// "0_ZIi_adDM8WHxCX0OJTfcXhHO8jOsYOjLF7xow");
+		// mapView.setClickable(true);
+
+		drivingView1Layout = findViewById(R.id.driving_view1);
+		drivingView2Layout = findViewById(R.id.driving_view2);
+
+		((VTextView) findViewById(R.id.next_stop_text_view))
+				.setText("次の乗降場てすとて");
+		((VTextView) findViewById(R.id.next_stop_but_one_text_view))
+				.setText("次の次の乗降場てすと");
+		((VTextView) findViewById(R.id.next_stop_but_two_text_view))
+				.setText("次の次の次の乗降場てす");
+
+		// ((FrameLayout) findViewById(R.id.map_layout)).addView(mapView, 0);
+		startButton = (Button) findViewById(R.id.start_button);
+
+		drivingViewToggleHandler.post(drivingViewToggleRunnable);
+		navigationView = (NavigationView) findViewById(R.id.navigation_view);
+
 		changeStatusButton.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -88,7 +119,6 @@ public class InVehicleDeviceActivity extends MapActivity {
 			}
 		});
 
-		mapButton = (Button) findViewById(R.id.map_button);
 		mapButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -96,7 +126,6 @@ public class InVehicleDeviceActivity extends MapActivity {
 			}
 		});
 
-		configButton = (Button) findViewById(R.id.config_button);
 		configButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -104,7 +133,6 @@ public class InVehicleDeviceActivity extends MapActivity {
 			}
 		});
 
-		stopCheckButton = (Button) findViewById(R.id.stop_check_button);
 		stopCheckButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -113,7 +141,6 @@ public class InVehicleDeviceActivity extends MapActivity {
 			}
 		});
 
-		stopButton = (Button) findViewById(R.id.stop_button);
 		stopButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -121,7 +148,6 @@ public class InVehicleDeviceActivity extends MapActivity {
 			}
 		});
 
-		pauseButton = (Button) findViewById(R.id.pause_button);
 		pauseButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -129,7 +155,6 @@ public class InVehicleDeviceActivity extends MapActivity {
 			}
 		});
 
-		memoButton = (Button) findViewById(R.id.memo_button);
 		memoButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -137,7 +162,6 @@ public class InVehicleDeviceActivity extends MapActivity {
 			}
 		});
 
-		scheduleButton = (Button) findViewById(R.id.schedule_button);
 		scheduleButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -145,7 +169,6 @@ public class InVehicleDeviceActivity extends MapActivity {
 			}
 		});
 
-		returnPathButton = (Button) findViewById(R.id.return_path_button);
 		returnPathButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -153,22 +176,6 @@ public class InVehicleDeviceActivity extends MapActivity {
 						View.VISIBLE);
 			}
 		});
-
-		// mapView = new MapView(this,
-		// "0_ZIi_adDM8WHxCX0OJTfcXhHO8jOsYOjLF7xow");
-		// mapView.setClickable(true);
-
-		drivingView1Layout = findViewById(R.id.driving_view1);
-		drivingView2Layout = findViewById(R.id.driving_view2);
-
-		((VTextView) findViewById(R.id.next_stop_text_view))
-				.setText("次の乗降場てすとて");
-		((VTextView) findViewById(R.id.next_stop_but_one_text_view))
-				.setText("次の次の乗降場てすと");
-		((VTextView) findViewById(R.id.next_stop_but_two_text_view))
-				.setText("次の次の次の乗降場てす");
-
-		// ((FrameLayout) findViewById(R.id.map_layout)).addView(mapView, 0);
 
 		((Button) findViewById(R.id.start_button))
 				.setOnClickListener(new OnClickListener() {
@@ -186,12 +193,6 @@ public class InVehicleDeviceActivity extends MapActivity {
 						}
 					}
 				});
-
-		drivingViewToggleHandler.post(drivingViewToggleRunnable);
-		// glSurfaceView = new GLSurfaceView(getApplicationContext());
-		// glSurfaceView = (GLSurfaceView) findViewById(R.id.gl_surface_view);
-		// glSurfaceView.setRenderer(new MyRenderer());
-		navigationView = (NavigationView) findViewById(R.id.navigation_view);
 	}
 
 	private String authToken = "";
@@ -200,14 +201,12 @@ public class InVehicleDeviceActivity extends MapActivity {
 	public void onResume() {
 		super.onResume();
 		navigationView.onResumeActivity();
-		// glSurfaceView.onResume();
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
 		navigationView.onPauseActivity();
-		// glSurfaceView.onPause();
 	}
 
 	@Override
@@ -216,6 +215,11 @@ public class InVehicleDeviceActivity extends MapActivity {
 		drivingViewToggleHandler.removeCallbacks(drivingViewToggleRunnable);
 		// glSurfaceView = null;
 		// voiceThread.interrupt();
+		// GLSurfaceView glSurfaceView = glSurfaceViewReference.get();
+		// if (glSurfaceView != null) {
+		// navigationView.removeView(glSurfaceView);
+		// }
+		// glSurfaceViewReference.clear();
 		navigationView = null;
 	}
 
@@ -254,5 +258,14 @@ public class InVehicleDeviceActivity extends MapActivity {
 			return false;
 		}
 		return super.onKeyDown(keyCode, event);
+	}
+
+	@Override
+	public void onClick(View view) {
+		switch (view.getId()) {
+		// case startButton:
+		// break;
+		}
+
 	}
 }

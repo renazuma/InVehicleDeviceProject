@@ -9,10 +9,13 @@ import android.widget.Button;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyViewOnClickListener;
 
 public class OverlayCloseButton extends Button {
-	OnClickListener userOnClickListener = new EmptyViewOnClickListener();
+	static class DefaultOnClickListener implements OnClickListener {
+		private final Integer MAX_DEPTH = 100;
+		private OnClickListener userOnClickListener = new EmptyViewOnClickListener();
 
-	final OnClickListener defaultOnClickListener = new OnClickListener() {
-		final Integer MAX_DEPTH = 100;
+		public void setOnClickListener(OnClickListener userOnClickListener) {
+			this.userOnClickListener = userOnClickListener;
+		}
 
 		@Override
 		public void onClick(View view) {
@@ -26,12 +29,13 @@ public class OverlayCloseButton extends Button {
 			}
 			userOnClickListener.onClick(view);
 		}
-	};
+	}
+
+	private final DefaultOnClickListener defaultOnClickListener = new DefaultOnClickListener();
 
 	@Override
-	public void setOnClickListener(OnClickListener onClickListener) {
-		userOnClickListener = onClickListener;
-		super.setOnClickListener(defaultOnClickListener);
+	public void setOnClickListener(OnClickListener userOnClickListener) {
+		defaultOnClickListener.setOnClickListener(userOnClickListener);
 	}
 
 	public OverlayCloseButton(Context context, AttributeSet attrs) {

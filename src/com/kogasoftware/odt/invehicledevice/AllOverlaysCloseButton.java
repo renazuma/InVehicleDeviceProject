@@ -10,7 +10,13 @@ import android.widget.Button;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyViewOnClickListener;
 
 public class AllOverlaysCloseButton extends Button {
-	final OnClickListener defaultOnClickListener = new OnClickListener() {
+	static class DefaultOnClickListener implements OnClickListener {
+		private OnClickListener userOnClickListener = new EmptyViewOnClickListener();
+
+		public void setOnClickListener(OnClickListener userOnClickListener) {
+			this.userOnClickListener = userOnClickListener;
+		}
+
 		@Override
 		public void onClick(View view) {
 			for (WeakReference<OverlayLinearLayout> r : OverlayLinearLayout
@@ -23,14 +29,13 @@ public class AllOverlaysCloseButton extends Button {
 			}
 			userOnClickListener.onClick(view);
 		}
-	};
+	}
 
-	OnClickListener userOnClickListener = new EmptyViewOnClickListener();
+	DefaultOnClickListener defaultOnClickListener = new DefaultOnClickListener();
 
 	@Override
-	public void setOnClickListener(OnClickListener onClickListener) {
-		userOnClickListener = onClickListener;
-		super.setOnClickListener(defaultOnClickListener);
+	public void setOnClickListener(OnClickListener userOnClickListener) {
+		defaultOnClickListener.setOnClickListener(userOnClickListener);
 	}
 
 	public AllOverlaysCloseButton(Context context, AttributeSet attrs) {

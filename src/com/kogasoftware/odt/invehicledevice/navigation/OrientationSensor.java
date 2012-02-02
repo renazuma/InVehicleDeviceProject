@@ -10,28 +10,12 @@ import android.hardware.SensorManager;
 import android.util.Log;
 
 import com.kogasoftware.odt.invehicledevice.LogTag;
-import com.kogasoftware.odt.invehicledevice.navigation.OrientationSensor.OrientationSensorListener;
-
-class EmptyOrientationSensorListener implements OrientationSensorListener {
-	@Override
-	public void onOrientationChanged(Double radian) {
-	}
-}
 
 public abstract class OrientationSensor implements SensorEventListener {
-	interface OrientationSensorListener {
-		void onOrientationChanged(Double radian);
-	}
 
 	private static final String T = LogTag.get(OrientationSensor.class);
 	private static final Integer SENSOR_DELAY = SensorManager.SENSOR_DELAY_UI;
 	private static final Integer MATRIX_SIZE = 16;
-
-	private OrientationSensorListener listener = new EmptyOrientationSensorListener();
-
-	public void setListener(OrientationSensorListener listener) {
-		this.listener = listener;
-	}
 
 	private Boolean isMagSensor = false;
 	private Boolean isAccSensor = false;
@@ -121,7 +105,9 @@ public abstract class OrientationSensor implements SensorEventListener {
 					String.valueOf(Math.toDegrees(orientationValues[1])) + ", "
 					+ // X軸方向,pitch
 					String.valueOf(Math.toDegrees(orientationValues[2]))); // Y軸方向,roll
-			listener.onOrientationChanged((double) orientationValues[0]);
+			onOrientationChanged((double) orientationValues[0]);
 		}
 	}
+
+	abstract public void onOrientationChanged(Double radian);
 }

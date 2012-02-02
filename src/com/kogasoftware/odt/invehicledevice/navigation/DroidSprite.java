@@ -2,7 +2,7 @@ package com.kogasoftware.odt.invehicledevice.navigation;
 
 import java.io.InputStream;
 
-import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
@@ -13,12 +13,10 @@ public class DroidSprite extends Sprite {
 	private final Integer x;
 	private final Integer y;
 
-	public DroidSprite(Context context, int x, int y) {
-		super(context);
+	public DroidSprite(Resources resources, int x, int y) {
 		this.x = x;
 		this.y = y;
-		InputStream inputStream = context.getResources().openRawResource(
-				R.drawable.droid);
+		InputStream inputStream = resources.openRawResource(R.drawable.droid);
 		Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
 		Closeables.closeQuietly(inputStream);
 		setBitmap(bitmap);

@@ -13,7 +13,6 @@ import org.json.JSONObject;
 
 import android.util.Log;
 
-import com.google.common.base.Charsets;
 import com.google.common.io.ByteStreams;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 
@@ -37,7 +36,8 @@ public class OperatorApi {
 		public HttpRequestBase createHttpRequest() throws Exception {
 			HttpGet request = new HttpGet();
 			String fullUri = baseUri + "/" + uri;
-			if (!authenticationToken.isEmpty()) {
+			if (/* !authenticationToken.isEmpty() */authenticationToken
+					.length() != 0) {
 				fullUri += "?authentication_token=" + authenticationToken;
 			}
 			request.setURI(new URI(fullUri));
@@ -60,7 +60,8 @@ public class OperatorApi {
 		public HttpRequestBase createHttpRequest() throws Exception {
 			HttpPost request = new HttpPost();
 			JSONObject requestJSON = createRequest();
-			if (!authenticationToken.isEmpty()) {
+			if (/* !authenticationToken.isEmpty() */authenticationToken
+					.length() != 0) {
 				requestJSON.put("authentication_token", authenticationToken);
 			}
 			request.setURI(new URI(baseUri + "/" + controller + "/" + action
@@ -164,8 +165,11 @@ public class OperatorApi {
 						Log.d(T, "Status:" + statusCode);
 						String responseString = new String(
 								ByteStreams.toByteArray(httpResponse
-										.getEntity().getContent()),
-								Charsets.UTF_8);
+										.getEntity().getContent()) /*
+																	 * ,
+																	 * Charsets
+																	 * .UTF_8
+																	 */);
 						JSONObject response = new JSONObject(responseString);
 						if (statusCode / 100 != 2) {
 							throw new BadStatusCodeException(statusCode,

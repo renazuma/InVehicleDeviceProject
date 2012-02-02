@@ -28,6 +28,7 @@ public class MapSynchronizer {
 	private volatile MapSnapshot readingSnapshot = null;
 
 	public MapSynchronizer() {
+		create();
 	}
 
 	public Boolean isDirty() {
@@ -73,9 +74,9 @@ public class MapSynchronizer {
 		}
 	}
 
-	public void onResume() {
-		onPause();
+	public void create() {
 		synchronized (lock) {
+			destroy();
 			for (Integer index = 0; index < NUM_BUFFERS; ++index) {
 				MapSnapshot m = new MapSnapshot();
 				if (m.bitmap != null) {
@@ -90,7 +91,7 @@ public class MapSynchronizer {
 		}
 	}
 
-	public void onPause() {
+	public void destroy() {
 		synchronized (lock) {
 			while (true) {
 				MapSnapshot s = readQueue.poll();

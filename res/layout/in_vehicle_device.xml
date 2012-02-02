@@ -620,20 +620,14 @@
         <com.kogasoftware.odt.invehicledevice.navigation.NavigationView
             android:id="@+id/navigation_view"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent" >
-<!-- 
-            <android.opengl.GLSurfaceView
-                android:id="@+id/gl_surface_view"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent" />
- -->
-            <com.kogasoftware.odt.invehicledevice.OverlayCloseButton
-                android:id="@+id/map_hide_button"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:text="閉じる" />
-        </com.kogasoftware.odt.invehicledevice.navigation.NavigationView>
+            android:layout_height="fill_parent" />
+
+        <com.kogasoftware.odt.invehicledevice.OverlayCloseButton
+            android:id="@+id/map_hide_button"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:text="閉じる" />
     </com.kogasoftware.odt.invehicledevice.OverlayLinearLayout>
 
     <com.kogasoftware.odt.invehicledevice.OverlayLinearLayout

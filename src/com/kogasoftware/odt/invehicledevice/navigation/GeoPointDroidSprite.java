@@ -2,7 +2,7 @@ package com.kogasoftware.odt.invehicledevice.navigation;
 
 import java.io.InputStream;
 
-import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
@@ -13,12 +13,10 @@ import com.kogasoftware.odt.invehicledevice.R;
 public class GeoPointDroidSprite extends Sprite {
 	private final GeoPoint geoPoint;
 
-	public GeoPointDroidSprite(Context context, GeoPoint geoPoint) {
-		super(context);
+	public GeoPointDroidSprite(Resources resources, GeoPoint geoPoint) {
 		this.geoPoint = geoPoint;
 
-		InputStream inputStream = context.getResources().openRawResource(
-				R.drawable.droid);
+		InputStream inputStream = resources.openRawResource(R.drawable.droid);
 		Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
 		Closeables.closeQuietly(inputStream);
 		setBitmap(bitmap);

@@ -9,6 +9,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.opengl.GLSurfaceView;
@@ -40,7 +41,7 @@ public class MapRenderer implements GLSurfaceView.Renderer {
 	}
 
 	private final MapSprite mapSprite;
-	private final MapSynchronizer bitmapSynchronizer;
+	private final MapSynchronizer mapSynchronizer;
 	private final MapView mapView;
 	private final Queue<FrameTask> frameTaskQueue = new LinkedList<FrameTask>();
 	private final MotionSmoother rotationSmoother = new LazyMotionSmoother(
@@ -62,16 +63,16 @@ public class MapRenderer implements GLSurfaceView.Renderer {
 		}
 	}
 
-	public MapRenderer(Context context, MapSynchronizer bitmapSynchronizer,
+	public MapRenderer(Resources resources, MapSynchronizer bitmapSynchronizer,
 			MapView mapView) {
 		synchronized (this) {
 			this.mapView = mapView;
-			this.bitmapSynchronizer = bitmapSynchronizer;
-			mapSprite = new MapSprite(context);
+			this.mapSynchronizer = bitmapSynchronizer;
+			mapSprite = new MapSprite();
 			frameTaskQueue.add(mapSprite);
-			frameTaskQueue.add(new GeoPointDroidSprite(context, new GeoPoint(
+			frameTaskQueue.add(new GeoPointDroidSprite(resources, new GeoPoint(
 					35703365, 139770004)));
-			frameTaskQueue.add(new MyLocationSprite(context));
+			frameTaskQueue.add(new MyLocationSprite(resources));
 		}
 	}
 
@@ -102,20 +103,20 @@ public class MapRenderer implements GLSurfaceView.Renderer {
 					- rotationSmoother.getSmoothMotion());
 
 			// 地図データの読み取り
-			// bitmapSynchronizer.read(new MapSynchronizer.Accessor() {
-			// @Override
-			// public void run(MapSnapshot mapSnapshot) {
-			// if (bitmapSynchronizer.isDirty()
-			// || millis > bitmapLastUpdated + 2000 /* TODO */) {
-			// bitmapLastUpdated = millis;
-			// mapSprite.setBitmap(mapSnapshot.bitmap);
-			// mapSprite.loadBitmap(gl);
-			// GeoPoint center = mapSnapshot.center;
-			// lastMapCenter = new GeoPoint(center.getLatitudeE6(),
-			// center.getLongitudeE6());
-			// }
-			// }
-			// });
+			mapSynchronizer.read(new MapSynchronizer.Accessor() {
+				@Override
+				public void run(MapSnapshot mapSnapshot) {
+					if (mapSynchronizer.isDirty()
+							|| millis > bitmapLastUpdated + 2000 /* TODO */) {
+						bitmapLastUpdated = millis;
+						mapSprite.setBitmap(mapSnapshot.bitmap);
+						mapSprite.loadBitmap(gl);
+						GeoPoint center = mapSnapshot.center;
+						lastMapCenter = new GeoPoint(center.getLatitudeE6(),
+								center.getLongitudeE6());
+					}
+				}
+			});
 
 			FrameState frameState = new FrameState(gl, millis, radian,
 					lastMapCenter, zoom, mapView);
