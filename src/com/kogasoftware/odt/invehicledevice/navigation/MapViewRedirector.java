@@ -67,7 +67,8 @@ public class MapViewRedirector extends FrameLayout {
 				} catch (NullPointerException e) {
 					// XXX アクティビティ終了時にこの例外が起こってしまうことがあるため、その場合ビューの動作を静かに停止する
 					Log.e(T,
-							"NullPointerException on MapViewRedirector.super.dispatchDraw(new Canvas(bitmap))");
+							"NullPointerException on MapViewRedirector.super.dispatchDraw(new Canvas(bitmap))",
+							e);
 					e.printStackTrace();
 					superThrownNullPointerException = true;
 					return;

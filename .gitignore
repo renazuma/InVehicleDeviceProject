@@ -1,5 +1,6 @@
 /bin
 /gen
+/libs/androidopenjtalk.jar
 /tests/bin
 /tests/gen
 /tests/coverage

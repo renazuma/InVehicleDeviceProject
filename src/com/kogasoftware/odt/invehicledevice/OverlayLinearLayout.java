@@ -29,7 +29,7 @@ public class OverlayLinearLayout extends LinearLayout implements
 	public OverlayLinearLayout(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		thisWeakReference = new WeakReference<OverlayLinearLayout>(this);
-		setOnTouchListener(this);
+		// setOnTouchListener(this);
 	}
 
 	@Override
