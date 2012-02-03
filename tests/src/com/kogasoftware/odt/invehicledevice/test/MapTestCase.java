@@ -36,7 +36,7 @@ public class MapTestCase extends
 
 	public void test閉じるボタンを押したら消える() {
 		test地図ボタンを押したら表示();
-		solo.clickOnView(solo.getView(R.id.map_hide_button));
+		solo.clickOnButton("閉じる");
 		assertEquals(View.GONE, solo.getView(R.id.map_overlay).getVisibility());
 	}
 

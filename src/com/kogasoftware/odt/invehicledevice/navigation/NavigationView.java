@@ -10,11 +10,14 @@ import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Gravity;
+import android.widget.Button;
 import android.widget.FrameLayout;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.kogasoftware.odt.invehicledevice.LogTag;
+import com.kogasoftware.odt.invehicledevice.OverlayCloseButton;
 
 public class NavigationView extends FrameLayout {
 	private static final String T = LogTag.get(NavigationView.class);
@@ -150,6 +153,13 @@ public class NavigationView extends FrameLayout {
 				glSurfaceView);
 		mapView.getController().animateTo(new GeoPoint(35899045, 139928656));
 		mapView.getController().setZoom(15);
+
+		Button closeButton = new OverlayCloseButton(getContext(), null);
+		closeButton.setText("閉じる");
+		addView(closeButton, new NavigationView.LayoutParams(
+				NavigationView.LayoutParams.FILL_PARENT,
+				NavigationView.LayoutParams.WRAP_CONTENT,
+				Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM));
 	}
 
 	@Override
