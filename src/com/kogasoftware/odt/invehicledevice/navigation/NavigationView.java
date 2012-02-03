@@ -66,7 +66,7 @@ class MyOrientationSensor extends OrientationSensor {
 		Double fixedOrientation = Utility.getNearestRadian(lastOrientation,
 				orientation);
 		mapRenderer.setOrientation(fixedOrientation);
-		mapOnTouchListener.onOrientationChanged(fixedOrientation);
+		// mapOnTouchListener.onOrientationChanged(fixedOrientation);
 		lastOrientation = fixedOrientation;
 	}
 }
@@ -74,11 +74,9 @@ class MyOrientationSensor extends OrientationSensor {
 public class NavigationView extends FrameLayout {
 	private static final String T = LogTag.get(NavigationView.class);
 	private final MapView mapView;
-
 	private final MapViewRedirector mapViewRedirector;
 	private final LocationManager locationManager;
 	private final MyLocationListener listener;
-
 	private final MapSynchronizer mapSynchronizer;
 	private final OrientationSensor orientationSensor;
 	private final MapOnTouchListener mapOnTouchListener;
@@ -94,6 +92,7 @@ public class NavigationView extends FrameLayout {
 		super(context, attrs);
 		mapView = new MapView(context,
 				"0_ZIi_adDM8WHxCX0OJTfcXhHO8jOsYOjLF7xow");
+		mapView.setClickable(true);
 		mapSynchronizer = new MapSynchronizer();
 		locationManager = (LocationManager) context
 				.getSystemService(Context.LOCATION_SERVICE);
@@ -118,13 +117,13 @@ public class NavigationView extends FrameLayout {
 				2000, 0, listener);
 		mapSynchronizer.create();
 		orientationSensor.create();
-		addView(mapViewRedirector, new NavigationView.LayoutParams(512, 512));
 
 		GLSurfaceView glSurfaceView = new GLSurfaceView(getContext());
 		// glSurfaceView.setRenderer(new MyRenderer());
 		glSurfaceView.setRenderer(mapRenderer);
 
-		// ICSのGLSurfaceView.GLThreadがその親Viewをメンバに保存するため、循環参照でリークすることある。
+		// ICSのGLSurfaceView.GLThreadがその親ViewをメンバmParentに保存する。
+		// そのため、Activity再構築などのタイミングで1/10程度の確率で循環参照でリークすることがある。
 		// それを防ぐために参照を極力減らしたFrameLayoutを間にはさむ
 		FrameLayout icsLeakAvoidanceFrameLayout = new FrameLayout(getContext());
 		addView(icsLeakAvoidanceFrameLayout, new NavigationView.LayoutParams(
@@ -134,8 +133,11 @@ public class NavigationView extends FrameLayout {
 				new FrameLayout.LayoutParams(
 						FrameLayout.LayoutParams.FILL_PARENT,
 						FrameLayout.LayoutParams.FILL_PARENT));
-		addView(mapView, new NavigationView.LayoutParams(512, 512));
 
+		mapViewRedirector.addView(mapView, new MapViewRedirector.LayoutParams(
+				MapRenderer.MAP_TEXTURE_WIDTH, MapRenderer.MAP_TEXTURE_HEIGHT));
+		addView(mapViewRedirector, new NavigationView.LayoutParams(
+				MapRenderer.MAP_TEXTURE_WIDTH, MapRenderer.MAP_TEXTURE_HEIGHT));
 		glSurfaceViewWeakReference = new WeakReference<GLSurfaceView>(
 				glSurfaceView);
 	}

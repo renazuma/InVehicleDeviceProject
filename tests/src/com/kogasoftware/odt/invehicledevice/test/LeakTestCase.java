@@ -25,6 +25,12 @@ public class LeakTestCase extends
 		solo.waitForActivity("InVehicleDeviceActivity");
 	}
 
+	@Override
+	public void tearDown() throws Exception {
+		solo.finishOpenedActivities();
+		super.tearDown();
+	}
+
 	public void test0001() {
 		a();
 	}
@@ -825,9 +831,4 @@ public class LeakTestCase extends
 		a();
 	}
 
-	@Override
-	public void tearDown() throws Exception {
-		solo.finishOpenedActivities();
-		super.tearDown();
-	}
 }

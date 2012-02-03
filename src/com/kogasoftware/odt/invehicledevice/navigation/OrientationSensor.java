@@ -48,7 +48,6 @@ public abstract class OrientationSensor implements SensorEventListener {
 
 		// センサマネージャへリスナーを登録
 		for (Sensor sensor : sensors) {
-
 			if (sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
 				getSensorManager().registerListener(this, sensor, SENSOR_DELAY);
 				isMagSensor = true;
@@ -99,12 +98,13 @@ public abstract class OrientationSensor implements SensorEventListener {
 					SensorManager.AXIS_Z, outR);
 			SensorManager.getOrientation(outR, orientationValues);
 
-			Log.v(T, String.valueOf(Math.toDegrees(orientationValues[0]))
-					+ ", "
-					+ // Z軸方向,azmuth
-					String.valueOf(Math.toDegrees(orientationValues[1])) + ", "
-					+ // X軸方向,pitch
-					String.valueOf(Math.toDegrees(orientationValues[2]))); // Y軸方向,roll
+			// Log.v(T, String.valueOf(Math.toDegrees(orientationValues[0]))
+			// + ", "
+			// + // Z軸方向,azmuth
+			// String.valueOf(Math.toDegrees(orientationValues[1])) + ", "
+			// + // X軸方向,pitch
+			// String.valueOf(Math.toDegrees(orientationValues[2]))); //
+			// Y軸方向,roll
 			onOrientationChanged((double) orientationValues[0]);
 		}
 	}

@@ -19,8 +19,7 @@ import com.google.android.maps.MapActivity;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 import com.kogasoftware.odt.invehicledevice.navigation.NavigationView;
 
-public class InVehicleDeviceActivity extends MapActivity implements
-		OnClickListener {
+public class InVehicleDeviceActivity extends MapActivity {
 	private final String T = LogTag.get(InVehicleDeviceActivity.class);
 	private final BlockingQueue<String> voices = new LinkedBlockingQueue<String>();
 	private final Integer DRIVING_VIEW_TOGGLE_INTERVAL = 5000;
@@ -54,10 +53,8 @@ public class InVehicleDeviceActivity extends MapActivity implements
 	private Button returnPathButton = null;
 	private Button startButton = null;
 	private TextView statusTextView = null;
-	// private MapView mapView = null;
 	private View drivingView1Layout = null;
 	private View drivingView2Layout = null;
-	// private GLSurfaceView glSurfaceView = null;
 	private NavigationView navigationView = null;
 
 	@Override
@@ -67,8 +64,8 @@ public class InVehicleDeviceActivity extends MapActivity implements
 
 		Log.v(T, "onCreate");
 
-		// voiceThread = new VoiceThread(getApplicationContext(), voices);
-		// voiceThread.start();
+		voiceThread = new VoiceThread(getApplicationContext(), voices);
+		voiceThread.start();
 
 		statusTextView = (TextView) findViewById(R.id.status_text_view);
 
@@ -82,10 +79,6 @@ public class InVehicleDeviceActivity extends MapActivity implements
 		scheduleButton = (Button) findViewById(R.id.schedule_button);
 		returnPathButton = (Button) findViewById(R.id.return_path_button);
 
-		// mapView = new MapView(this,
-		// "0_ZIi_adDM8WHxCX0OJTfcXhHO8jOsYOjLF7xow");
-		// mapView.setClickable(true);
-
 		drivingView1Layout = findViewById(R.id.driving_view1);
 		drivingView2Layout = findViewById(R.id.driving_view2);
 
@@ -96,7 +89,6 @@ public class InVehicleDeviceActivity extends MapActivity implements
 		((VTextView) findViewById(R.id.next_stop_but_two_text_view))
 				.setText("次の次の次の乗降場てす");
 
-		// ((FrameLayout) findViewById(R.id.map_layout)).addView(mapView, 0);
 		startButton = (Button) findViewById(R.id.start_button);
 
 		drivingViewToggleHandler.post(drivingViewToggleRunnable);
@@ -213,14 +205,6 @@ public class InVehicleDeviceActivity extends MapActivity implements
 	public void onDestroy() {
 		super.onDestroy();
 		drivingViewToggleHandler.removeCallbacks(drivingViewToggleRunnable);
-		// glSurfaceView = null;
-		// voiceThread.interrupt();
-		// GLSurfaceView glSurfaceView = glSurfaceViewReference.get();
-		// if (glSurfaceView != null) {
-		// navigationView.removeView(glSurfaceView);
-		// }
-		// glSurfaceViewReference.clear();
-		navigationView = null;
 	}
 
 	@Override
@@ -233,7 +217,6 @@ public class InVehicleDeviceActivity extends MapActivity implements
 
 	@Override
 	protected boolean isRouteDisplayed() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -258,14 +241,5 @@ public class InVehicleDeviceActivity extends MapActivity implements
 			return false;
 		}
 		return super.onKeyDown(keyCode, event);
-	}
-
-	@Override
-	public void onClick(View view) {
-		switch (view.getId()) {
-		// case startButton:
-		// break;
-		}
-
 	}
 }
