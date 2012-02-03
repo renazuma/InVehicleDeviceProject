@@ -71,7 +71,7 @@ public class MapRenderer implements GLSurfaceView.Renderer {
 			mapSprite = new MapSprite();
 			frameTaskQueue.add(mapSprite);
 			frameTaskQueue.add(new GeoPointDroidSprite(resources, new GeoPoint(
-					35703365, 139770004)));
+					35899975, 139935788)));
 			frameTaskQueue.add(new MyLocationSprite(resources));
 		}
 	}

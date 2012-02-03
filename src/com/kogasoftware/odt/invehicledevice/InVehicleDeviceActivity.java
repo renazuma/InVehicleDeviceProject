@@ -62,8 +62,6 @@ public class InVehicleDeviceActivity extends MapActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.in_vehicle_device);
 
-		Log.v(T, "onCreate");
-
 		voiceThread = new VoiceThread(getApplicationContext(), voices);
 		voiceThread.start();
 

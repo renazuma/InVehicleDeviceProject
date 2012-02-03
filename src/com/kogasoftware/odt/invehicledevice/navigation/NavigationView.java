@@ -148,6 +148,8 @@ public class NavigationView extends FrameLayout {
 				MapRenderer.MAP_TEXTURE_WIDTH, MapRenderer.MAP_TEXTURE_HEIGHT));
 		glSurfaceViewWeakReference = new WeakReference<GLSurfaceView>(
 				glSurfaceView);
+		mapView.getController().animateTo(new GeoPoint(35899045, 139928656));
+		mapView.getController().setZoom(15);
 	}
 
 	@Override
