@@ -5,6 +5,9 @@ ant $ant_arg findbugs
 
 cd tests
 ant $ant_arg uninstall findbugs
+tar xf $HOME/userContent/InVehicleDevice-sdcard.tar.xz
+adb $adb_arg shell mkdir /mnt/sdcard/.odt
+adb $adb_arg push .odt /mnt/sdcard/.odt
 ant $ant_arg all clean emma debug install test-and-pull-results
 
 cd ..
