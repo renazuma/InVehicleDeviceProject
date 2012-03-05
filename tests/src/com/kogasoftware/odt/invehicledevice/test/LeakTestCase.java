@@ -8,7 +8,7 @@ import com.kogasoftware.odt.invehicledevice.InVehicleDeviceActivity;
 public class LeakTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
-	private Solo solo;
+	// private Solo solo;
 
 	public LeakTestCase() {
 		super("com.kogasoftware.odt.invehicledevice",
@@ -18,16 +18,16 @@ public class LeakTestCase extends
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		solo = new Solo(getInstrumentation(), getActivity());
+		// solo = new Solo(getInstrumentation(), getActivity());
 	}
 
 	private void a() {
-		solo.waitForActivity("InVehicleDeviceActivity");
+		// solo.waitForActivity("InVehicleDeviceActivity");
 	}
 
 	@Override
 	public void tearDown() throws Exception {
-		solo.finishOpenedActivities();
+		// solo.finishOpenedActivities();
 		super.tearDown();
 	}
 
