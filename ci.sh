@@ -11,5 +11,5 @@ ant $ant_arg emma test-and-pull-results
 cd ..
 ruby ../../dev/android/remove_debuggable.rb AndroidManifest.xml
 ant $ant_arg clean release
-cp bin/classes.jar androidodtwebapi.jar
+cp bin/classes.jar bin/androidodtwebapi.jar
 
