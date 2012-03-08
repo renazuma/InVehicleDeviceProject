@@ -1,4 +1,6 @@
-sh `dirname $0`/../../dev/android/ci.sh $*
+#!/bin/sh
+
+. `dirname $0`/../../dev/android/ci_setup.sh $*
 
 cd `dirname $0`
 ant $ant_arg uninstall findbugs
