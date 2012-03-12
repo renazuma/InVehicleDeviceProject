@@ -8,10 +8,9 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
 import android.util.Log;
 
-import com.kogasoftware.odt.invehicledevice.LogTag;
-
 abstract public class LegacyOrientationSensor extends OrientationSensor {
-	private static final String T = LogTag.get(LegacyOrientationSensor.class);
+	private static final String TAG = LegacyOrientationSensor.class
+			.getSimpleName();
 
 	public LegacyOrientationSensor(Context context) {
 		super(context);
@@ -29,7 +28,7 @@ abstract public class LegacyOrientationSensor extends OrientationSensor {
 			// センサーにリスナ登録する
 			getSensorManager().registerListener(this, sensor,
 					SensorManager.SENSOR_DELAY_UI);
-			Log.d(T, "registered: Sensor.TYPE_ORIENTATION");
+			Log.d(TAG, "registered: Sensor.TYPE_ORIENTATION");
 		}
 	}
 

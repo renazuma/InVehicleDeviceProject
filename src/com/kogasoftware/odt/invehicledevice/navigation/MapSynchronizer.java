@@ -5,8 +5,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import android.graphics.Bitmap;
 
-import com.kogasoftware.odt.invehicledevice.LogTag;
-
 /**
  * 複数のバッファを使って表示をスムーズにした
  * 
@@ -18,7 +16,7 @@ public class MapSynchronizer {
 		public void run(MapSnapshot mapSnapshot);
 	}
 
-	private static final String T = LogTag.get(MapSynchronizer.class);
+	private static final String TAG = MapSynchronizer.class.getSimpleName();
 	private final Object lock = new Object();
 	private final Integer NUM_BUFFERS = 5;
 	private final Queue<MapSnapshot> writeQueue = new ConcurrentLinkedQueue<MapSnapshot>();

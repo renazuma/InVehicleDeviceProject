@@ -7,10 +7,9 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
 
-import com.kogasoftware.odt.invehicledevice.LogTag;
-
 abstract public class FroyoOrientationSensor extends OrientationSensor {
-	private static final String T = LogTag.get(FroyoOrientationSensor.class);
+	private static final String TAG = FroyoOrientationSensor.class
+			.getSimpleName();
 	private static final Integer SENSOR_DELAY = SensorManager.SENSOR_DELAY_UI;
 	private static final Integer MATRIX_SIZE = 16;
 

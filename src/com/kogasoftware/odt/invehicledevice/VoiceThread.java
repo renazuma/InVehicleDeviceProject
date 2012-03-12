@@ -14,7 +14,7 @@ import android.util.Log;
 import com.kogasoftware.openjtalk.OpenJTalk;
 
 public class VoiceThread extends Thread {
-	private final String T = LogTag.get(VoiceThread.class);
+	private final String TAG = VoiceThread.class.getSimpleName();
 	private final BlockingQueue<String> voices;
 	private final File cacheDirectory;
 	private final File voiceDirectory;
@@ -66,7 +66,7 @@ public class VoiceThread extends Thread {
 				}
 			}
 		} catch (IOException e) {
-			Log.e(T, "IOException", e);
+			Log.e(TAG, "IOException", e);
 		} catch (InterruptedException e) {
 		}
 	}

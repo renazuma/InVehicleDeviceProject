@@ -9,12 +9,11 @@ import org.json.JSONObject;
 
 import android.util.Log;
 
-import com.kogasoftware.odt.invehicledevice.LogTag;
 import com.kogasoftware.odt.invehicledevice.OperatorApi;
 import com.kogasoftware.odt.invehicledevice.OperatorApi.BadStatusCodeException;
 
 public class LoginTestCase extends TestCase {
-	private final String T = LogTag.get(LoginTestCase.class);
+	private final String TAG = LoginTestCase.class.getSimpleName();
 
 	public void testAuthenticationTokenユーザー名失敗() throws InterruptedException {
 		final AtomicBoolean r = new AtomicBoolean(true);
@@ -58,7 +57,7 @@ public class LoginTestCase extends TestCase {
 				new OperatorApi.AsyncCallback<String>() {
 					@Override
 					public void onError(Exception exception) {
-						Log.e(T, "", exception);
+						Log.e(TAG, "", exception);
 						exception.printStackTrace();
 					}
 
@@ -82,7 +81,7 @@ public class LoginTestCase extends TestCase {
 				new OperatorApi.AsyncCallback<String>() {
 					@Override
 					public void onError(Exception exception) {
-						Log.e(T, "", exception);
+						Log.e(TAG, "", exception);
 						exception.printStackTrace();
 					}
 

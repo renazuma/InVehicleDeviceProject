@@ -16,11 +16,10 @@ import android.widget.FrameLayout;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
-import com.kogasoftware.odt.invehicledevice.LogTag;
 import com.kogasoftware.odt.invehicledevice.OverlayCloseButton;
 
 public class NavigationView extends FrameLayout {
-	private static final String T = LogTag.get(NavigationView.class);
+	private static final String TAG = NavigationView.class.getSimpleName();
 	private final MapView mapView;
 	private final MapViewRedirector mapViewRedirector;
 	private final LocationManager locationManager;
@@ -33,8 +32,8 @@ public class NavigationView extends FrameLayout {
 	private WeakReference<MapOnTouchListener> mapOnTouchListenerWeakReference;
 
 	static class NavigationViewLocationListener implements LocationListener {
-		private static final String T = LogTag
-				.get(NavigationViewLocationListener.class);
+		private static final String TAG = NavigationViewLocationListener.class
+				.getSimpleName();
 		private final MapOnTouchListener mapOnTouchListener;
 		private final MapView mapView;
 
@@ -56,17 +55,17 @@ public class NavigationView extends FrameLayout {
 
 		@Override
 		public void onProviderDisabled(String provider) {
-			Log.d(T, "onProviderDisabled:" + provider);
+			Log.d(TAG, "onProviderDisabled:" + provider);
 		}
 
 		@Override
 		public void onProviderEnabled(String provider) {
-			Log.d(T, "onProviderEnabled:" + provider);
+			Log.d(TAG, "onProviderEnabled:" + provider);
 		}
 
 		@Override
 		public void onStatusChanged(String provider, int status, Bundle extras) {
-			Log.d(T, "onStatusChanged: " + provider + " " + status + " "
+			Log.d(TAG, "onStatusChanged: " + provider + " " + status + " "
 					+ extras);
 		}
 	}
@@ -106,7 +105,7 @@ public class NavigationView extends FrameLayout {
 					mapOnTouchListener.onOrientationChanged(fixedOrientation);
 				}
 				lastOrientation = fixedOrientation;
-				Log.v(T, T + "," + orientation + "," + fixedOrientation);
+				Log.v(TAG, TAG + "," + orientation + "," + fixedOrientation);
 			}
 		};
 		locationListener = new NavigationViewLocationListener(

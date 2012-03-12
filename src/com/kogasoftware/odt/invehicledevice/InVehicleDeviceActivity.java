@@ -20,7 +20,7 @@ import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 import com.kogasoftware.odt.invehicledevice.navigation.NavigationView;
 
 public class InVehicleDeviceActivity extends MapActivity {
-	private final String T = LogTag.get(InVehicleDeviceActivity.class);
+	private final String TAG = InVehicleDeviceActivity.class.getSimpleName();
 	private final BlockingQueue<String> voices = new LinkedBlockingQueue<String>();
 	private final Integer DRIVING_VIEW_TOGGLE_INTERVAL = 5000;
 	private final Handler drivingViewToggleHandler = new Handler();
@@ -179,7 +179,7 @@ public class InVehicleDeviceActivity extends MapActivity {
 						findViewById(R.id.waiting_layout).setVisibility(
 								View.GONE);
 						if (!voices.offer("出発します。次は、コガソフトウェア前。コガソフトウェア前。")) {
-							Log.w(T, "!voices.offer() failed");
+							Log.w(TAG, "!voices.offer() failed");
 						}
 					}
 				});

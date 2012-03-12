@@ -94,7 +94,7 @@ public class OperatorApi {
 	}
 
 	private final String authenticationToken;
-	private final String T = LogTag.get(OperatorApi.class);
+	private final String TAG = OperatorApi.class.getSimpleName();
 	private final Object threadLock = new Object();
 	private final String baseUri = "http://10.1.10.161";
 	private Thread thread = new EmptyThread();
@@ -162,7 +162,7 @@ public class OperatorApi {
 						HttpResponse httpResponse = httpClient.execute(request);
 						int statusCode = httpResponse.getStatusLine()
 								.getStatusCode();
-						Log.d(T, "Status:" + statusCode);
+						Log.d(TAG, "Status:" + statusCode);
 						String responseString = new String(
 								ByteStreams.toByteArray(httpResponse
 										.getEntity().getContent()) /*

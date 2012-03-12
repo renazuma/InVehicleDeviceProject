@@ -8,7 +8,6 @@ import android.util.Log;
 import android.widget.FrameLayout;
 
 import com.google.android.maps.MapView;
-import com.kogasoftware.odt.invehicledevice.LogTag;
 
 /**
  * 子Viewの画像をBitmapSynchronizerへ渡す
@@ -32,7 +31,7 @@ class EmptyMapSynchronizer extends MapSynchronizer {
 }
 
 public class MapViewRedirector extends FrameLayout {
-	private static final String T = LogTag.get(MapViewRedirector.class);
+	private static final String TAG = MapViewRedirector.class.getSimpleName();
 
 	private MapSynchronizer mapSynchronizer = new EmptyMapSynchronizer();
 	private MapView mapView = null;
@@ -66,7 +65,7 @@ public class MapViewRedirector extends FrameLayout {
 					MapViewRedirector.super.dispatchDraw(new Canvas(bitmap));
 				} catch (NullPointerException e) {
 					// XXX アクティビティ終了時にこの例外が起こってしまうことがあるため、その場合ビューの動作を静かに停止する
-					Log.e(T,
+					Log.e(TAG,
 							"NullPointerException on MapViewRedirector.super.dispatchDraw(new Canvas(bitmap))",
 							e);
 					e.printStackTrace();

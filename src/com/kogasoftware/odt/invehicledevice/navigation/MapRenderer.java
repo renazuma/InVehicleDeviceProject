@@ -19,7 +19,6 @@ import android.util.Log;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.common.io.Closeables;
-import com.kogasoftware.odt.invehicledevice.LogTag;
 
 /**
  * Mapを表示する。全てのpublicメソッドはsynchronized(this)でジャイアントロックを行う
@@ -31,7 +30,7 @@ public class MapRenderer implements GLSurfaceView.Renderer {
 	public static final Integer MAP_TEXTURE_HEIGHT = 512;
 	public static final Integer MAP_TEXTURE_WIDTH = 512;
 
-	private static final String T = LogTag.get(MapRenderer.class);
+	private static final String TAG = MapRenderer.class.getSimpleName();
 
 	public static Bitmap getBitmapResource(Context context, int id) {
 		InputStream inputStream = context.getResources().openRawResource(id);
@@ -91,7 +90,7 @@ public class MapRenderer implements GLSurfaceView.Renderer {
 			final Long millis = System.currentTimeMillis();
 			framesBy10s++;
 			if (millis - lastReportMillis > 10000) {
-				Log.d(T, "fps=" + (double) framesBy10s / 10);
+				Log.d(TAG, "fps=" + (double) framesBy10s / 10);
 				framesBy10s = 0l;
 				lastReportMillis = millis;
 			}
