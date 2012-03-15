@@ -9,8 +9,6 @@ obj/
 .odt/
 
 *-TEST.xml
-*.so
-*.so.*.gz
 AndroidManifest.xml.old
 AndroidManifest.xml.release
 DATA_Preferences
