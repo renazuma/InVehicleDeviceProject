@@ -7,6 +7,6 @@
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/AndroidWebAPI"/>
 	<classpathentry kind="lib" path="libs/the-missing-android-xml-junit-test-runner-release-1.3_2.jar"/>
-	<classpathentry kind="lib" path="/AndroidWebAPI/libs/guava-11.0.1.jar"/>
+	<classpathentry kind="lib" path="/AndroidWebAPI/libs/guava-11.0.2.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
