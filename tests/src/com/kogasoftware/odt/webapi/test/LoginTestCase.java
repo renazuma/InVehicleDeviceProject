@@ -12,7 +12,6 @@ import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.User;
 
 public class LoginTestCase extends TestCase {
-	private final String TAG = LoginTestCase.class.getSimpleName();
 	private String token = "";
 	private WebAPI api = new WebAPI();
 

@@ -41,7 +41,6 @@ import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.User;
 
 public class WebAPI {
-	private static final String TAG = WebAPI.class.getSimpleName();
 	private static final Integer MAX_REQUEST_RETRY = 5;
 	private static final Integer REQUEST_RETRY_EXPIRE_MINUTES = 5;
 	private static final String URI_SCHEME = "http";
