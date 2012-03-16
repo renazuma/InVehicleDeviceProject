@@ -35,7 +35,7 @@
 		<link>
 			<name>InVehicleDevice</name>
 			<type>2</type>
-			<location>/home/i_mogi/projects/odt/project/InVehicleDevice/src</location>
+			<location>C:/home/i_mogi/projects/odt/project/InVehicleDevice/src</location>
 		</link>
 	</linkedResources>
 </projectDescription>
