@@ -205,8 +205,7 @@
                     android:layout_height="fill_parent"
                     android:background="#ffffff"
                     android:orientation="vertical"
-                    android:visibility="gone" 
-                    >
+                    android:visibility="gone" >
 
                     <LinearLayout
                         android:layout_width="fill_parent"
@@ -272,11 +271,19 @@
                         android:layout_height="wrap_content"
                         android:text="上へスクロール" />
 
-                    <ScrollView
-                        android:id="@+id/users_view"
+                    <ListView
+                        android:id="@+id/users_list_view"
                         android:layout_width="fill_parent"
                         android:layout_height="0dip"
                         android:layout_weight="1" >
+                    </ListView>
+
+                    <ScrollView
+                        android:id="@+id/deprecated_users_view"
+                        android:layout_width="fill_parent"
+                        android:layout_height="0dip"
+                        android:layout_weight="1"
+                        android:visibility="gone" >
 
                         <LinearLayout
                             android:layout_width="fill_parent"
@@ -623,9 +630,6 @@
             android:id="@+id/navigation_view"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" />
-
-            
-        
     </com.kogasoftware.odt.invehicledevice.OverlayLinearLayout>
 
     <com.kogasoftware.odt.invehicledevice.OverlayLinearLayout

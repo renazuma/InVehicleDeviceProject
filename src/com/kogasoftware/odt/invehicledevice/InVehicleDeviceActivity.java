@@ -1,22 +1,57 @@
 package com.kogasoftware.odt.invehicledevice;
 
 import java.lang.ref.WeakReference;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import jp.tomorrowkey.android.vtextviewer.VTextView;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.android.maps.MapActivity;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 import com.kogasoftware.odt.invehicledevice.navigation.NavigationView;
+
+class Reservation {
+	public final String name = "Gates";
+}
+
+class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
+	private final LayoutInflater inflater;
+	private final int resourceId;
+
+	public ReservationArrayAdapter(Context context, int resourceId,
+			List<Reservation> items) {
+		super(context, resourceId, items);
+		this.inflater = (LayoutInflater) context
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		this.resourceId = resourceId;
+	}
+
+	@Override
+	public View getView(int position, View convertView, ViewGroup parent) {
+		if (convertView == null) {
+			convertView = inflater.inflate(resourceId, null);
+		}
+		Reservation hoge = getItem(position);
+		TextView t = (TextView) convertView.findViewById(R.id.reservation_row);
+		t.setText(hoge.name);
+		return convertView;
+	}
+}
 
 public class InVehicleDeviceActivity extends MapActivity {
 	private final String TAG = InVehicleDeviceActivity.class.getSimpleName();
@@ -47,6 +82,7 @@ public class InVehicleDeviceActivity extends MapActivity {
 	private Button configButton = null;
 	private Button stopCheckButton = null;
 	private Button stopButton = null;
+	private Button startButton = null;
 	private Button pauseButton = null;
 	private Button memoButton = null;
 	private Button returnPathButton = null;
@@ -54,6 +90,7 @@ public class InVehicleDeviceActivity extends MapActivity {
 	private View drivingView1Layout = null;
 	private View drivingView2Layout = null;
 	private NavigationView navigationView = null;
+	private ListView usersListView = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -163,22 +200,32 @@ public class InVehicleDeviceActivity extends MapActivity {
 			}
 		});
 
-		((Button) findViewById(R.id.start_button))
-				.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View view) {
-						status = 0;
-						statusTextView.setText("走行中");
-						changeStatusButton.setText("到着");
-						findViewById(R.id.check_start_layout).setVisibility(
-								View.GONE);
-						findViewById(R.id.waiting_layout).setVisibility(
-								View.GONE);
-						if (!voices.offer("出発します。次は、コガソフトウェア前。コガソフトウェア前。")) {
-							Log.w(TAG, "!voices.offer() failed");
-						}
-					}
-				});
+		startButton = (Button) findViewById(R.id.start_button);
+		startButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				status = 0;
+				statusTextView.setText("走行中");
+				changeStatusButton.setText("到着");
+				findViewById(R.id.check_start_layout).setVisibility(View.GONE);
+				findViewById(R.id.waiting_layout).setVisibility(View.GONE);
+				if (!voices.offer("出発します。次は、コガソフトウェア前。コガソフトウェア前。")) {
+					Log.w(TAG, "!voices.offer() failed");
+				}
+			}
+		});
+
+		// ArrayAdapter<String> usersAdapter = new ArrayAdapter<String>(this,
+		// android.R.layout.simple_list_item_1, new String[] { "ゲイツ",
+		// "ジョブズ", "ゴスリング" });
+		List<Reservation> l = new LinkedList<Reservation>();
+		l.add(new Reservation());
+		l.add(new Reservation());
+		l.add(new Reservation());
+		ReservationArrayAdapter usersAdapter = new ReservationArrayAdapter(
+				this, R.layout.reservation_raw, l);
+		usersListView = (ListView) findViewById(R.id.users_list_view);
+		usersListView.setAdapter(usersAdapter);
 	}
 
 	@Override
