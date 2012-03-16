@@ -75,13 +75,13 @@ public class MapOnTouchListener implements OnTouchListener {
 		Double dx = 0.0;
 		Double dy = 0.0;
 
-		if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-			dx = downX - x;
-			dy = downY - y;
-		} else {
-			dx = lastX - x;
-			dy = lastY - y;
-		}
+		// if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+		// dx = downX - x;
+		// dy = downY - y;
+		// } else {
+		dx = lastX - x;
+		dy = lastY - y;
+		// }
 
 		lastX = x;
 		lastY = y;
