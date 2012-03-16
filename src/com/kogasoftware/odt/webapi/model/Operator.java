@@ -1,6 +1,5 @@
 package com.kogasoftware.odt.webapi.model;
 
-import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
@@ -14,341 +13,346 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class Operator extends Model {
-    private static final long serialVersionUID = 7179667735933769245L;
-    public static final String JSON_NAME = "operator";
-    public static final String CONTROLLER_NAME = "operators";
-
-    public static class URL {
-        public static final String ROOT = "/" + CONTROLLER_NAME;
-    }
-
-    public Operator() {
-    }
-
-    public Operator(JSONObject jsonObject) throws JSONException, ParseException {
-        setAuthenticationToken(parseString(jsonObject, "authentication_token"));
-        setCreatedAt(parseDate(jsonObject, "created_at"));
-        setCurrentSignInAt(parseDate(jsonObject, "current_sign_in_at"));
-        setCurrentSignInIp(parseString(jsonObject, "current_sign_in_ip"));
-        setDeletedAt(parseDate(jsonObject, "deleted_at"));
-        setEmail(parseString(jsonObject, "email"));
-        setEncryptedPassword(parseString(jsonObject, "encrypted_password"));
-        setFamilyName(parseString(jsonObject, "family_name"));
-        setId(parseInteger(jsonObject, "id"));
-        setLastName(parseString(jsonObject, "last_name"));
-        setLastSignInAt(parseDate(jsonObject, "last_sign_in_at"));
-        setLastSignInIp(parseString(jsonObject, "last_sign_in_ip"));
-        setLogin(parseString(jsonObject, "login"));
-        setRememberCreatedAt(parseDate(jsonObject, "remember_created_at"));
-        setServiceProviderId(parseInteger(jsonObject, "service_provider_id"));
-        setSignInCount(parseInteger(jsonObject, "sign_in_count"));
-        setUpdatedAt(parseDate(jsonObject, "updated_at"));
-    }
-
-    public static class ResponseConverter implements
-            WebAPI.ResponseConverter<Operator> {
-        @Override
-        public Operator convert(byte[] rawResponse) throws JSONException, ParseException {
-            return new Operator(new JSONObject(new String(rawResponse)));
-        }
-    }
-
-    public static class ListResponseConverter implements
-            WebAPI.ResponseConverter<List<Operator>> {
-        @Override
-        public List<Operator> convert(byte[] rawResponse) throws JSONException,
-                ParseException {
-            JSONArray array = new JSONArray(new String(rawResponse));
-            List<Operator> models = new LinkedList<Operator>();
-            for (Integer i = 0; i < array.length(); ++i) {
-                if (array.isNull(i)) {
-                    continue;
-                }
-                JSONObject object = array.getJSONObject(i);
-                models.add(new Operator(object));
-            }
-            return models;
-        }
-    }
-
-    @Override
-    public JSONObject toJSONObject() throws JSONException {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("authentication_token", toJSON(getAuthenticationToken().orNull()));
-        jsonObject.put("created_at", toJSON(getCreatedAt()));
-        jsonObject.put("current_sign_in_at", toJSON(getCurrentSignInAt().orNull()));
-        jsonObject.put("current_sign_in_ip", toJSON(getCurrentSignInIp().orNull()));
-        jsonObject.put("deleted_at", toJSON(getDeletedAt().orNull()));
-        jsonObject.put("email", toJSON(getEmail().orNull()));
-        jsonObject.put("encrypted_password", toJSON(getEncryptedPassword()));
-        jsonObject.put("family_name", toJSON(getFamilyName()));
-        jsonObject.put("id", toJSON(getId()));
-        jsonObject.put("last_name", toJSON(getLastName()));
-        jsonObject.put("last_sign_in_at", toJSON(getLastSignInAt().orNull()));
-        jsonObject.put("last_sign_in_ip", toJSON(getLastSignInIp().orNull()));
-        jsonObject.put("login", toJSON(getLogin()));
-        jsonObject.put("remember_created_at", toJSON(getRememberCreatedAt().orNull()));
-        jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
-        jsonObject.put("sign_in_count", toJSON(getSignInCount().orNull()));
-        jsonObject.put("updated_at", toJSON(getUpdatedAt()));
-        return jsonObject;
-    }
-
-    private Optional<String> authenticationToken = Optional.<String>absent();
-
-    public Optional<String> getAuthenticationToken() {
-        return wrapNull(authenticationToken);
-    }
-
-    public void setAuthenticationToken(Optional<String> authenticationToken) {
-        this.authenticationToken = wrapNull(authenticationToken);
-    }
-
-    public void setAuthenticationToken(String authenticationToken) {
-        this.authenticationToken = Optional.fromNullable(authenticationToken);
-    }
-
-    public void clearAuthenticationToken() {
-        this.authenticationToken = Optional.<String>absent();
-    }
-
-    private Date createdAt = new Date();
-
-    public Date getCreatedAt() {
-        return wrapNull(createdAt);
-    }
+	private static final long serialVersionUID = 7179667735933769245L;
+	public static final String JSON_NAME = "operator";
+	public static final String CONTROLLER_NAME = "operators";
+
+	public static class URL {
+		public static final String ROOT = "/" + CONTROLLER_NAME;
+	}
+
+	public Operator() {
+	}
+
+	public Operator(JSONObject jsonObject) throws JSONException, ParseException {
+		setAuthenticationToken(parseString(jsonObject, "authentication_token"));
+		setCreatedAt(parseDate(jsonObject, "created_at"));
+		setCurrentSignInAt(parseDate(jsonObject, "current_sign_in_at"));
+		setCurrentSignInIp(parseString(jsonObject, "current_sign_in_ip"));
+		setDeletedAt(parseDate(jsonObject, "deleted_at"));
+		setEmail(parseString(jsonObject, "email"));
+		setEncryptedPassword(parseString(jsonObject, "encrypted_password"));
+		setFamilyName(parseString(jsonObject, "family_name"));
+		setId(parseInteger(jsonObject, "id"));
+		setLastName(parseString(jsonObject, "last_name"));
+		setLastSignInAt(parseDate(jsonObject, "last_sign_in_at"));
+		setLastSignInIp(parseString(jsonObject, "last_sign_in_ip"));
+		setLogin(parseString(jsonObject, "login"));
+		setRememberCreatedAt(parseDate(jsonObject, "remember_created_at"));
+		setServiceProviderId(parseInteger(jsonObject, "service_provider_id"));
+		setSignInCount(parseInteger(jsonObject, "sign_in_count"));
+		setUpdatedAt(parseDate(jsonObject, "updated_at"));
+	}
+
+	public static class ResponseConverter implements
+			WebAPI.ResponseConverter<Operator> {
+		@Override
+		public Operator convert(byte[] rawResponse) throws JSONException,
+				ParseException {
+			return new Operator(new JSONObject(new String(rawResponse)));
+		}
+	}
+
+	public static class ListResponseConverter implements
+			WebAPI.ResponseConverter<List<Operator>> {
+		@Override
+		public List<Operator> convert(byte[] rawResponse) throws JSONException,
+				ParseException {
+			JSONArray array = new JSONArray(new String(rawResponse));
+			List<Operator> models = new LinkedList<Operator>();
+			for (Integer i = 0; i < array.length(); ++i) {
+				if (array.isNull(i)) {
+					continue;
+				}
+				JSONObject object = array.getJSONObject(i);
+				models.add(new Operator(object));
+			}
+			return models;
+		}
+	}
+
+	@Override
+	public JSONObject toJSONObject() throws JSONException {
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("authentication_token", toJSON(getAuthenticationToken()
+				.orNull()));
+		jsonObject.put("created_at", toJSON(getCreatedAt()));
+		jsonObject.put("current_sign_in_at", toJSON(getCurrentSignInAt()
+				.orNull()));
+		jsonObject.put("current_sign_in_ip", toJSON(getCurrentSignInIp()
+				.orNull()));
+		jsonObject.put("deleted_at", toJSON(getDeletedAt().orNull()));
+		jsonObject.put("email", toJSON(getEmail().orNull()));
+		jsonObject.put("encrypted_password", toJSON(getEncryptedPassword()));
+		jsonObject.put("family_name", toJSON(getFamilyName()));
+		jsonObject.put("id", toJSON(getId()));
+		jsonObject.put("last_name", toJSON(getLastName()));
+		jsonObject.put("last_sign_in_at", toJSON(getLastSignInAt().orNull()));
+		jsonObject.put("last_sign_in_ip", toJSON(getLastSignInIp().orNull()));
+		jsonObject.put("login", toJSON(getLogin()));
+		jsonObject.put("remember_created_at", toJSON(getRememberCreatedAt()
+				.orNull()));
+		jsonObject.put("service_provider_id", toJSON(getServiceProviderId()
+				.orNull()));
+		jsonObject.put("sign_in_count", toJSON(getSignInCount().orNull()));
+		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
+		return jsonObject;
+	}
+
+	private Optional<String> authenticationToken = Optional.<String> absent();
+
+	public Optional<String> getAuthenticationToken() {
+		return wrapNull(authenticationToken);
+	}
+
+	public void setAuthenticationToken(Optional<String> authenticationToken) {
+		this.authenticationToken = wrapNull(authenticationToken);
+	}
+
+	public void setAuthenticationToken(String authenticationToken) {
+		this.authenticationToken = Optional.fromNullable(authenticationToken);
+	}
+
+	public void clearAuthenticationToken() {
+		this.authenticationToken = Optional.<String> absent();
+	}
 
-    public void setCreatedAt(Date createdAt) {
-        errorIfNull(createdAt);
-        this.createdAt = wrapNull(createdAt);
-    }
+	private Date createdAt = new Date();
 
-    private Optional<Date> currentSignInAt = Optional.<Date>absent();
+	public Date getCreatedAt() {
+		return wrapNull(createdAt);
+	}
 
-    public Optional<Date> getCurrentSignInAt() {
-        return wrapNull(currentSignInAt);
-    }
+	public void setCreatedAt(Date createdAt) {
+		errorIfNull(createdAt);
+		this.createdAt = wrapNull(createdAt);
+	}
 
-    public void setCurrentSignInAt(Optional<Date> currentSignInAt) {
-        this.currentSignInAt = wrapNull(currentSignInAt);
-    }
+	private Optional<Date> currentSignInAt = Optional.<Date> absent();
 
-    public void setCurrentSignInAt(Date currentSignInAt) {
-        this.currentSignInAt = Optional.fromNullable(currentSignInAt);
-    }
+	public Optional<Date> getCurrentSignInAt() {
+		return wrapNull(currentSignInAt);
+	}
 
-    public void clearCurrentSignInAt() {
-        this.currentSignInAt = Optional.<Date>absent();
-    }
+	public void setCurrentSignInAt(Optional<Date> currentSignInAt) {
+		this.currentSignInAt = wrapNull(currentSignInAt);
+	}
 
-    private Optional<String> currentSignInIp = Optional.<String>absent();
+	public void setCurrentSignInAt(Date currentSignInAt) {
+		this.currentSignInAt = Optional.fromNullable(currentSignInAt);
+	}
 
-    public Optional<String> getCurrentSignInIp() {
-        return wrapNull(currentSignInIp);
-    }
+	public void clearCurrentSignInAt() {
+		this.currentSignInAt = Optional.<Date> absent();
+	}
 
-    public void setCurrentSignInIp(Optional<String> currentSignInIp) {
-        this.currentSignInIp = wrapNull(currentSignInIp);
-    }
+	private Optional<String> currentSignInIp = Optional.<String> absent();
 
-    public void setCurrentSignInIp(String currentSignInIp) {
-        this.currentSignInIp = Optional.fromNullable(currentSignInIp);
-    }
+	public Optional<String> getCurrentSignInIp() {
+		return wrapNull(currentSignInIp);
+	}
 
-    public void clearCurrentSignInIp() {
-        this.currentSignInIp = Optional.<String>absent();
-    }
+	public void setCurrentSignInIp(Optional<String> currentSignInIp) {
+		this.currentSignInIp = wrapNull(currentSignInIp);
+	}
 
-    private Optional<Date> deletedAt = Optional.<Date>absent();
+	public void setCurrentSignInIp(String currentSignInIp) {
+		this.currentSignInIp = Optional.fromNullable(currentSignInIp);
+	}
 
-    public Optional<Date> getDeletedAt() {
-        return wrapNull(deletedAt);
-    }
+	public void clearCurrentSignInIp() {
+		this.currentSignInIp = Optional.<String> absent();
+	}
 
-    public void setDeletedAt(Optional<Date> deletedAt) {
-        this.deletedAt = wrapNull(deletedAt);
-    }
+	private Optional<Date> deletedAt = Optional.<Date> absent();
 
-    public void setDeletedAt(Date deletedAt) {
-        this.deletedAt = Optional.fromNullable(deletedAt);
-    }
+	public Optional<Date> getDeletedAt() {
+		return wrapNull(deletedAt);
+	}
 
-    public void clearDeletedAt() {
-        this.deletedAt = Optional.<Date>absent();
-    }
+	public void setDeletedAt(Optional<Date> deletedAt) {
+		this.deletedAt = wrapNull(deletedAt);
+	}
 
-    private Optional<String> email = Optional.<String>absent();
+	public void setDeletedAt(Date deletedAt) {
+		this.deletedAt = Optional.fromNullable(deletedAt);
+	}
 
-    public Optional<String> getEmail() {
-        return wrapNull(email);
-    }
+	public void clearDeletedAt() {
+		this.deletedAt = Optional.<Date> absent();
+	}
 
-    public void setEmail(Optional<String> email) {
-        this.email = wrapNull(email);
-    }
+	private Optional<String> email = Optional.<String> absent();
 
-    public void setEmail(String email) {
-        this.email = Optional.fromNullable(email);
-    }
+	public Optional<String> getEmail() {
+		return wrapNull(email);
+	}
 
-    public void clearEmail() {
-        this.email = Optional.<String>absent();
-    }
+	public void setEmail(Optional<String> email) {
+		this.email = wrapNull(email);
+	}
 
-    private String encryptedPassword = "";
+	public void setEmail(String email) {
+		this.email = Optional.fromNullable(email);
+	}
 
-    public String getEncryptedPassword() {
-        return wrapNull(encryptedPassword);
-    }
+	public void clearEmail() {
+		this.email = Optional.<String> absent();
+	}
 
-    public void setEncryptedPassword(String encryptedPassword) {
-        errorIfNull(encryptedPassword);
-        this.encryptedPassword = wrapNull(encryptedPassword);
-    }
+	private String encryptedPassword = "";
 
-    private String familyName = "";
+	public String getEncryptedPassword() {
+		return wrapNull(encryptedPassword);
+	}
 
-    public String getFamilyName() {
-        return wrapNull(familyName);
-    }
+	public void setEncryptedPassword(String encryptedPassword) {
+		errorIfNull(encryptedPassword);
+		this.encryptedPassword = wrapNull(encryptedPassword);
+	}
 
-    public void setFamilyName(String familyName) {
-        errorIfNull(familyName);
-        this.familyName = wrapNull(familyName);
-    }
+	private String familyName = "";
 
-    private Integer id = 0;
+	public String getFamilyName() {
+		return wrapNull(familyName);
+	}
 
-    public Integer getId() {
-        return wrapNull(id);
-    }
+	public void setFamilyName(String familyName) {
+		errorIfNull(familyName);
+		this.familyName = wrapNull(familyName);
+	}
 
-    public void setId(Integer id) {
-        errorIfNull(id);
-        this.id = wrapNull(id);
-    }
+	private Integer id = 0;
 
-    private String lastName = "";
+	public Integer getId() {
+		return wrapNull(id);
+	}
 
-    public String getLastName() {
-        return wrapNull(lastName);
-    }
+	public void setId(Integer id) {
+		errorIfNull(id);
+		this.id = wrapNull(id);
+	}
 
-    public void setLastName(String lastName) {
-        errorIfNull(lastName);
-        this.lastName = wrapNull(lastName);
-    }
+	private String lastName = "";
 
-    private Optional<Date> lastSignInAt = Optional.<Date>absent();
+	public String getLastName() {
+		return wrapNull(lastName);
+	}
 
-    public Optional<Date> getLastSignInAt() {
-        return wrapNull(lastSignInAt);
-    }
+	public void setLastName(String lastName) {
+		errorIfNull(lastName);
+		this.lastName = wrapNull(lastName);
+	}
 
-    public void setLastSignInAt(Optional<Date> lastSignInAt) {
-        this.lastSignInAt = wrapNull(lastSignInAt);
-    }
+	private Optional<Date> lastSignInAt = Optional.<Date> absent();
 
-    public void setLastSignInAt(Date lastSignInAt) {
-        this.lastSignInAt = Optional.fromNullable(lastSignInAt);
-    }
+	public Optional<Date> getLastSignInAt() {
+		return wrapNull(lastSignInAt);
+	}
 
-    public void clearLastSignInAt() {
-        this.lastSignInAt = Optional.<Date>absent();
-    }
+	public void setLastSignInAt(Optional<Date> lastSignInAt) {
+		this.lastSignInAt = wrapNull(lastSignInAt);
+	}
 
-    private Optional<String> lastSignInIp = Optional.<String>absent();
+	public void setLastSignInAt(Date lastSignInAt) {
+		this.lastSignInAt = Optional.fromNullable(lastSignInAt);
+	}
 
-    public Optional<String> getLastSignInIp() {
-        return wrapNull(lastSignInIp);
-    }
+	public void clearLastSignInAt() {
+		this.lastSignInAt = Optional.<Date> absent();
+	}
 
-    public void setLastSignInIp(Optional<String> lastSignInIp) {
-        this.lastSignInIp = wrapNull(lastSignInIp);
-    }
+	private Optional<String> lastSignInIp = Optional.<String> absent();
 
-    public void setLastSignInIp(String lastSignInIp) {
-        this.lastSignInIp = Optional.fromNullable(lastSignInIp);
-    }
+	public Optional<String> getLastSignInIp() {
+		return wrapNull(lastSignInIp);
+	}
 
-    public void clearLastSignInIp() {
-        this.lastSignInIp = Optional.<String>absent();
-    }
+	public void setLastSignInIp(Optional<String> lastSignInIp) {
+		this.lastSignInIp = wrapNull(lastSignInIp);
+	}
 
-    private String login = "";
+	public void setLastSignInIp(String lastSignInIp) {
+		this.lastSignInIp = Optional.fromNullable(lastSignInIp);
+	}
 
-    public String getLogin() {
-        return wrapNull(login);
-    }
+	public void clearLastSignInIp() {
+		this.lastSignInIp = Optional.<String> absent();
+	}
 
-    public void setLogin(String login) {
-        errorIfNull(login);
-        this.login = wrapNull(login);
-    }
+	private String login = "";
 
-    private Optional<Date> rememberCreatedAt = Optional.<Date>absent();
+	public String getLogin() {
+		return wrapNull(login);
+	}
 
-    public Optional<Date> getRememberCreatedAt() {
-        return wrapNull(rememberCreatedAt);
-    }
+	public void setLogin(String login) {
+		errorIfNull(login);
+		this.login = wrapNull(login);
+	}
 
-    public void setRememberCreatedAt(Optional<Date> rememberCreatedAt) {
-        this.rememberCreatedAt = wrapNull(rememberCreatedAt);
-    }
+	private Optional<Date> rememberCreatedAt = Optional.<Date> absent();
 
-    public void setRememberCreatedAt(Date rememberCreatedAt) {
-        this.rememberCreatedAt = Optional.fromNullable(rememberCreatedAt);
-    }
+	public Optional<Date> getRememberCreatedAt() {
+		return wrapNull(rememberCreatedAt);
+	}
 
-    public void clearRememberCreatedAt() {
-        this.rememberCreatedAt = Optional.<Date>absent();
-    }
+	public void setRememberCreatedAt(Optional<Date> rememberCreatedAt) {
+		this.rememberCreatedAt = wrapNull(rememberCreatedAt);
+	}
 
-    private Optional<Integer> serviceProviderId = Optional.<Integer>absent();
+	public void setRememberCreatedAt(Date rememberCreatedAt) {
+		this.rememberCreatedAt = Optional.fromNullable(rememberCreatedAt);
+	}
 
-    public Optional<Integer> getServiceProviderId() {
-        return wrapNull(serviceProviderId);
-    }
+	public void clearRememberCreatedAt() {
+		this.rememberCreatedAt = Optional.<Date> absent();
+	}
 
-    public void setServiceProviderId(Optional<Integer> serviceProviderId) {
-        this.serviceProviderId = wrapNull(serviceProviderId);
-    }
+	private Optional<Integer> serviceProviderId = Optional.<Integer> absent();
 
-    public void setServiceProviderId(Integer serviceProviderId) {
-        this.serviceProviderId = Optional.fromNullable(serviceProviderId);
-    }
+	public Optional<Integer> getServiceProviderId() {
+		return wrapNull(serviceProviderId);
+	}
 
-    public void clearServiceProviderId() {
-        this.serviceProviderId = Optional.<Integer>absent();
-    }
+	public void setServiceProviderId(Optional<Integer> serviceProviderId) {
+		this.serviceProviderId = wrapNull(serviceProviderId);
+	}
 
-    private Optional<Integer> signInCount = Optional.<Integer>absent();
+	public void setServiceProviderId(Integer serviceProviderId) {
+		this.serviceProviderId = Optional.fromNullable(serviceProviderId);
+	}
 
-    public Optional<Integer> getSignInCount() {
-        return wrapNull(signInCount);
-    }
+	public void clearServiceProviderId() {
+		this.serviceProviderId = Optional.<Integer> absent();
+	}
 
-    public void setSignInCount(Optional<Integer> signInCount) {
-        this.signInCount = wrapNull(signInCount);
-    }
+	private Optional<Integer> signInCount = Optional.<Integer> absent();
 
-    public void setSignInCount(Integer signInCount) {
-        this.signInCount = Optional.fromNullable(signInCount);
-    }
+	public Optional<Integer> getSignInCount() {
+		return wrapNull(signInCount);
+	}
 
-    public void clearSignInCount() {
-        this.signInCount = Optional.<Integer>absent();
-    }
+	public void setSignInCount(Optional<Integer> signInCount) {
+		this.signInCount = wrapNull(signInCount);
+	}
 
-    private Date updatedAt = new Date();
+	public void setSignInCount(Integer signInCount) {
+		this.signInCount = Optional.fromNullable(signInCount);
+	}
 
-    public Date getUpdatedAt() {
-        return wrapNull(updatedAt);
-    }
+	public void clearSignInCount() {
+		this.signInCount = Optional.<Integer> absent();
+	}
 
-    public void setUpdatedAt(Date updatedAt) {
-        errorIfNull(updatedAt);
-        this.updatedAt = wrapNull(updatedAt);
-    }
+	private Date updatedAt = new Date();
+
+	public Date getUpdatedAt() {
+		return wrapNull(updatedAt);
+	}
+
+	public void setUpdatedAt(Date updatedAt) {
+		errorIfNull(updatedAt);
+		this.updatedAt = wrapNull(updatedAt);
+	}
 }
-
