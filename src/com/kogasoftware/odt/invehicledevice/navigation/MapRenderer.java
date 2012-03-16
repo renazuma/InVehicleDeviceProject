@@ -143,7 +143,7 @@ public class MapRenderer implements GLSurfaceView.Renderer {
 		gl.glLoadIdentity();
 
 		// 平行投影用のパラメータをセット
-		GLU.gluOrtho2D(gl, -width / 2, width / 2, -height / 2, height / 2);
+		GLU.gluOrtho2D(gl, -width / 2f, width / 2f, -height / 2f, height / 2f);
 
 		// カメラの位置をセット
 		// Float eyeX = 0f;
