@@ -1,27 +1,30 @@
 package com.kogasoftware.odt.webapi.model;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedList;
+import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.base.Optional;
+import com.kogasoftware.odt.webapi.WebAPI;
 
 public class VehicleNotification extends Model {
+    private static final long serialVersionUID = 6046564506822777431L;
     public static final String JSON_NAME = "vehicle_notification";
     public static final String CONTROLLER_NAME = "vehicle_notifications";
 
-    public VehicleNotification() {
+    public static class URL {
+        public static final String ROOT = "/" + CONTROLLER_NAME;
+        public static final String CREATE = "/" + CONTROLLER_NAME + "/create";
+        public static final String INDEX = "/" + CONTROLLER_NAME + "/index";
     }
 
-    public static class URL {
-       public static final String ROOT = "/" + CONTROLLER_NAME + ".json";
-       public static final String CREATE = "/" + CONTROLLER_NAME + "/create.json";
-       public static final String GET_NEW_NOTIFICATIONS = "/" + CONTROLLER_NAME + "/get_new_notifications.json";
-       public static final String SEARCH = "/" + CONTROLLER_NAME + "/search.json";
+    public VehicleNotification() {
     }
 
     public VehicleNotification(JSONObject jsonObject) throws JSONException, ParseException {
@@ -32,6 +35,32 @@ public class VehicleNotification extends Model {
         setOperatorId(parseInteger(jsonObject, "operator_id"));
         setReadAt(parseDate(jsonObject, "read_at"));
         setUpdatedAt(parseDate(jsonObject, "updated_at"));
+    }
+
+    public static class ResponseConverter implements
+            WebAPI.ResponseConverter<VehicleNotification> {
+        @Override
+        public VehicleNotification convert(byte[] rawResponse) throws JSONException, ParseException {
+            return new VehicleNotification(new JSONObject(new String(rawResponse)));
+        }
+    }
+
+    public static class ListResponseConverter implements
+            WebAPI.ResponseConverter<List<VehicleNotification>> {
+        @Override
+        public List<VehicleNotification> convert(byte[] rawResponse) throws JSONException,
+                ParseException {
+            JSONArray array = new JSONArray(new String(rawResponse));
+            List<VehicleNotification> models = new LinkedList<VehicleNotification>();
+            for (Integer i = 0; i < array.length(); ++i) {
+                if (array.isNull(i)) {
+                    continue;
+                }
+                JSONObject object = array.getJSONObject(i);
+                models.add(new VehicleNotification(object));
+            }
+            return models;
+        }
     }
 
     @Override
@@ -61,6 +90,10 @@ public class VehicleNotification extends Model {
         this.body = Optional.fromNullable(body);
     }
 
+    public void clearBody() {
+        this.body = Optional.<String>absent();
+    }
+
     private Date createdAt = new Date();
 
     public Date getCreatedAt() {
@@ -68,6 +101,7 @@ public class VehicleNotification extends Model {
     }
 
     public void setCreatedAt(Date createdAt) {
+        errorIfNull(createdAt);
         this.createdAt = wrapNull(createdAt);
     }
 
@@ -78,6 +112,7 @@ public class VehicleNotification extends Model {
     }
 
     public void setId(Integer id) {
+        errorIfNull(id);
         this.id = wrapNull(id);
     }
 
@@ -88,6 +123,7 @@ public class VehicleNotification extends Model {
     }
 
     public void setInVehicleDeviceId(Integer inVehicleDeviceId) {
+        errorIfNull(inVehicleDeviceId);
         this.inVehicleDeviceId = wrapNull(inVehicleDeviceId);
     }
 
@@ -98,6 +134,7 @@ public class VehicleNotification extends Model {
     }
 
     public void setOperatorId(Integer operatorId) {
+        errorIfNull(operatorId);
         this.operatorId = wrapNull(operatorId);
     }
 
@@ -115,6 +152,10 @@ public class VehicleNotification extends Model {
         this.readAt = Optional.fromNullable(readAt);
     }
 
+    public void clearReadAt() {
+        this.readAt = Optional.<Date>absent();
+    }
+
     private Date updatedAt = new Date();
 
     public Date getUpdatedAt() {
@@ -122,6 +163,7 @@ public class VehicleNotification extends Model {
     }
 
     public void setUpdatedAt(Date updatedAt) {
+        errorIfNull(updatedAt);
         this.updatedAt = wrapNull(updatedAt);
     }
 }

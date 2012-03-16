@@ -1,31 +1,35 @@
 package com.kogasoftware.odt.webapi.model;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedList;
+import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.base.Optional;
+import com.kogasoftware.odt.webapi.WebAPI;
 
 public class InVehicleDevice extends Model {
+    private static final long serialVersionUID = 8953330848473833571L;
     public static final String JSON_NAME = "in_vehicle_device";
     public static final String CONTROLLER_NAME = "in_vehicle_devices";
 
-    public InVehicleDevice() {
+    public static class URL {
+        public static final String ROOT = "/" + CONTROLLER_NAME;
+        public static final String CREATE = "/" + CONTROLLER_NAME + "/create";
+        public static final String DESTROY = "/" + CONTROLLER_NAME + "/destroy";
+        public static final String EDIT = "/" + CONTROLLER_NAME + "/edit";
+        public static final String INDEX = "/" + CONTROLLER_NAME + "/index";
+        public static final String NEW = "/" + CONTROLLER_NAME + "/new";
+        public static final String SHOW = "/" + CONTROLLER_NAME + "/show";
+        public static final String UPDATE = "/" + CONTROLLER_NAME + "/update";
     }
 
-    public static class URL {
-       public static final String ROOT = "/" + CONTROLLER_NAME + ".json";
-       public static final String CREATE = "/" + CONTROLLER_NAME + "/create.json";
-       public static final String DESTROY = "/" + CONTROLLER_NAME + "/destroy.json";
-       public static final String EDIT = "/" + CONTROLLER_NAME + "/edit.json";
-       public static final String INDEX = "/" + CONTROLLER_NAME + "/index.json";
-       public static final String NEW = "/" + CONTROLLER_NAME + "/new.json";
-       public static final String SHOW = "/" + CONTROLLER_NAME + "/show.json";
-       public static final String UPDATE = "/" + CONTROLLER_NAME + "/update.json";
+    public InVehicleDevice() {
     }
 
     public InVehicleDevice(JSONObject jsonObject) throws JSONException, ParseException {
@@ -36,6 +40,32 @@ public class InVehicleDevice extends Model {
         setServiceProviderId(parseInteger(jsonObject, "service_provider_id"));
         setTypeNumber(parseString(jsonObject, "type_number"));
         setUpdatedAt(parseDate(jsonObject, "updated_at"));
+    }
+
+    public static class ResponseConverter implements
+            WebAPI.ResponseConverter<InVehicleDevice> {
+        @Override
+        public InVehicleDevice convert(byte[] rawResponse) throws JSONException, ParseException {
+            return new InVehicleDevice(new JSONObject(new String(rawResponse)));
+        }
+    }
+
+    public static class ListResponseConverter implements
+            WebAPI.ResponseConverter<List<InVehicleDevice>> {
+        @Override
+        public List<InVehicleDevice> convert(byte[] rawResponse) throws JSONException,
+                ParseException {
+            JSONArray array = new JSONArray(new String(rawResponse));
+            List<InVehicleDevice> models = new LinkedList<InVehicleDevice>();
+            for (Integer i = 0; i < array.length(); ++i) {
+                if (array.isNull(i)) {
+                    continue;
+                }
+                JSONObject object = array.getJSONObject(i);
+                models.add(new InVehicleDevice(object));
+            }
+            return models;
+        }
     }
 
     @Override
@@ -58,6 +88,7 @@ public class InVehicleDevice extends Model {
     }
 
     public void setCreatedAt(Date createdAt) {
+        errorIfNull(createdAt);
         this.createdAt = wrapNull(createdAt);
     }
 
@@ -75,6 +106,10 @@ public class InVehicleDevice extends Model {
         this.deletedAt = Optional.fromNullable(deletedAt);
     }
 
+    public void clearDeletedAt() {
+        this.deletedAt = Optional.<Date>absent();
+    }
+
     private Integer id = 0;
 
     public Integer getId() {
@@ -82,6 +117,7 @@ public class InVehicleDevice extends Model {
     }
 
     public void setId(Integer id) {
+        errorIfNull(id);
         this.id = wrapNull(id);
     }
 
@@ -92,6 +128,7 @@ public class InVehicleDevice extends Model {
     }
 
     public void setModelName(String modelName) {
+        errorIfNull(modelName);
         this.modelName = wrapNull(modelName);
     }
 
@@ -109,6 +146,10 @@ public class InVehicleDevice extends Model {
         this.serviceProviderId = Optional.fromNullable(serviceProviderId);
     }
 
+    public void clearServiceProviderId() {
+        this.serviceProviderId = Optional.<Integer>absent();
+    }
+
     private String typeNumber = "";
 
     public String getTypeNumber() {
@@ -116,6 +157,7 @@ public class InVehicleDevice extends Model {
     }
 
     public void setTypeNumber(String typeNumber) {
+        errorIfNull(typeNumber);
         this.typeNumber = wrapNull(typeNumber);
     }
 
@@ -126,6 +168,7 @@ public class InVehicleDevice extends Model {
     }
 
     public void setUpdatedAt(Date updatedAt) {
+        errorIfNull(updatedAt);
         this.updatedAt = wrapNull(updatedAt);
     }
 }

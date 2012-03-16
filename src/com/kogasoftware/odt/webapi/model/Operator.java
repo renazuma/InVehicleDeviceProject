@@ -1,24 +1,28 @@
 package com.kogasoftware.odt.webapi.model;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedList;
+import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.base.Optional;
+import com.kogasoftware.odt.webapi.WebAPI;
 
 public class Operator extends Model {
+    private static final long serialVersionUID = 7179667735933769245L;
     public static final String JSON_NAME = "operator";
     public static final String CONTROLLER_NAME = "operators";
 
-    public Operator() {
+    public static class URL {
+        public static final String ROOT = "/" + CONTROLLER_NAME;
     }
 
-    public static class URL {
-       public static final String ROOT = "/" + CONTROLLER_NAME + ".json";
+    public Operator() {
     }
 
     public Operator(JSONObject jsonObject) throws JSONException, ParseException {
@@ -39,6 +43,32 @@ public class Operator extends Model {
         setServiceProviderId(parseInteger(jsonObject, "service_provider_id"));
         setSignInCount(parseInteger(jsonObject, "sign_in_count"));
         setUpdatedAt(parseDate(jsonObject, "updated_at"));
+    }
+
+    public static class ResponseConverter implements
+            WebAPI.ResponseConverter<Operator> {
+        @Override
+        public Operator convert(byte[] rawResponse) throws JSONException, ParseException {
+            return new Operator(new JSONObject(new String(rawResponse)));
+        }
+    }
+
+    public static class ListResponseConverter implements
+            WebAPI.ResponseConverter<List<Operator>> {
+        @Override
+        public List<Operator> convert(byte[] rawResponse) throws JSONException,
+                ParseException {
+            JSONArray array = new JSONArray(new String(rawResponse));
+            List<Operator> models = new LinkedList<Operator>();
+            for (Integer i = 0; i < array.length(); ++i) {
+                if (array.isNull(i)) {
+                    continue;
+                }
+                JSONObject object = array.getJSONObject(i);
+                models.add(new Operator(object));
+            }
+            return models;
+        }
     }
 
     @Override
@@ -78,6 +108,10 @@ public class Operator extends Model {
         this.authenticationToken = Optional.fromNullable(authenticationToken);
     }
 
+    public void clearAuthenticationToken() {
+        this.authenticationToken = Optional.<String>absent();
+    }
+
     private Date createdAt = new Date();
 
     public Date getCreatedAt() {
@@ -85,6 +119,7 @@ public class Operator extends Model {
     }
 
     public void setCreatedAt(Date createdAt) {
+        errorIfNull(createdAt);
         this.createdAt = wrapNull(createdAt);
     }
 
@@ -102,6 +137,10 @@ public class Operator extends Model {
         this.currentSignInAt = Optional.fromNullable(currentSignInAt);
     }
 
+    public void clearCurrentSignInAt() {
+        this.currentSignInAt = Optional.<Date>absent();
+    }
+
     private Optional<String> currentSignInIp = Optional.<String>absent();
 
     public Optional<String> getCurrentSignInIp() {
@@ -114,6 +153,10 @@ public class Operator extends Model {
 
     public void setCurrentSignInIp(String currentSignInIp) {
         this.currentSignInIp = Optional.fromNullable(currentSignInIp);
+    }
+
+    public void clearCurrentSignInIp() {
+        this.currentSignInIp = Optional.<String>absent();
     }
 
     private Optional<Date> deletedAt = Optional.<Date>absent();
@@ -130,6 +173,10 @@ public class Operator extends Model {
         this.deletedAt = Optional.fromNullable(deletedAt);
     }
 
+    public void clearDeletedAt() {
+        this.deletedAt = Optional.<Date>absent();
+    }
+
     private Optional<String> email = Optional.<String>absent();
 
     public Optional<String> getEmail() {
@@ -144,6 +191,10 @@ public class Operator extends Model {
         this.email = Optional.fromNullable(email);
     }
 
+    public void clearEmail() {
+        this.email = Optional.<String>absent();
+    }
+
     private String encryptedPassword = "";
 
     public String getEncryptedPassword() {
@@ -151,6 +202,7 @@ public class Operator extends Model {
     }
 
     public void setEncryptedPassword(String encryptedPassword) {
+        errorIfNull(encryptedPassword);
         this.encryptedPassword = wrapNull(encryptedPassword);
     }
 
@@ -161,6 +213,7 @@ public class Operator extends Model {
     }
 
     public void setFamilyName(String familyName) {
+        errorIfNull(familyName);
         this.familyName = wrapNull(familyName);
     }
 
@@ -171,6 +224,7 @@ public class Operator extends Model {
     }
 
     public void setId(Integer id) {
+        errorIfNull(id);
         this.id = wrapNull(id);
     }
 
@@ -181,6 +235,7 @@ public class Operator extends Model {
     }
 
     public void setLastName(String lastName) {
+        errorIfNull(lastName);
         this.lastName = wrapNull(lastName);
     }
 
@@ -198,6 +253,10 @@ public class Operator extends Model {
         this.lastSignInAt = Optional.fromNullable(lastSignInAt);
     }
 
+    public void clearLastSignInAt() {
+        this.lastSignInAt = Optional.<Date>absent();
+    }
+
     private Optional<String> lastSignInIp = Optional.<String>absent();
 
     public Optional<String> getLastSignInIp() {
@@ -212,6 +271,10 @@ public class Operator extends Model {
         this.lastSignInIp = Optional.fromNullable(lastSignInIp);
     }
 
+    public void clearLastSignInIp() {
+        this.lastSignInIp = Optional.<String>absent();
+    }
+
     private String login = "";
 
     public String getLogin() {
@@ -219,6 +282,7 @@ public class Operator extends Model {
     }
 
     public void setLogin(String login) {
+        errorIfNull(login);
         this.login = wrapNull(login);
     }
 
@@ -236,6 +300,10 @@ public class Operator extends Model {
         this.rememberCreatedAt = Optional.fromNullable(rememberCreatedAt);
     }
 
+    public void clearRememberCreatedAt() {
+        this.rememberCreatedAt = Optional.<Date>absent();
+    }
+
     private Optional<Integer> serviceProviderId = Optional.<Integer>absent();
 
     public Optional<Integer> getServiceProviderId() {
@@ -248,6 +316,10 @@ public class Operator extends Model {
 
     public void setServiceProviderId(Integer serviceProviderId) {
         this.serviceProviderId = Optional.fromNullable(serviceProviderId);
+    }
+
+    public void clearServiceProviderId() {
+        this.serviceProviderId = Optional.<Integer>absent();
     }
 
     private Optional<Integer> signInCount = Optional.<Integer>absent();
@@ -264,6 +336,10 @@ public class Operator extends Model {
         this.signInCount = Optional.fromNullable(signInCount);
     }
 
+    public void clearSignInCount() {
+        this.signInCount = Optional.<Integer>absent();
+    }
+
     private Date updatedAt = new Date();
 
     public Date getUpdatedAt() {
@@ -271,6 +347,7 @@ public class Operator extends Model {
     }
 
     public void setUpdatedAt(Date updatedAt) {
+        errorIfNull(updatedAt);
         this.updatedAt = wrapNull(updatedAt);
     }
 }

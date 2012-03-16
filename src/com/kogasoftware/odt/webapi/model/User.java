@@ -1,31 +1,35 @@
 package com.kogasoftware.odt.webapi.model;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedList;
+import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.base.Optional;
+import com.kogasoftware.odt.webapi.WebAPI;
 
 public class User extends Model {
+    private static final long serialVersionUID = 4155452180628792928L;
     public static final String JSON_NAME = "user";
     public static final String CONTROLLER_NAME = "users";
 
-    public User() {
+    public static class URL {
+        public static final String ROOT = "/" + CONTROLLER_NAME;
+        public static final String CREATE = "/" + CONTROLLER_NAME + "/create";
+        public static final String DESTROY = "/" + CONTROLLER_NAME + "/destroy";
+        public static final String EDIT = "/" + CONTROLLER_NAME + "/edit";
+        public static final String INDEX = "/" + CONTROLLER_NAME + "/index";
+        public static final String NEW = "/" + CONTROLLER_NAME + "/new";
+        public static final String SHOW = "/" + CONTROLLER_NAME + "/show";
+        public static final String UPDATE = "/" + CONTROLLER_NAME + "/update";
     }
 
-    public static class URL {
-       public static final String ROOT = "/" + CONTROLLER_NAME + ".json";
-       public static final String CREATE = "/" + CONTROLLER_NAME + "/create.json";
-       public static final String DESTROY = "/" + CONTROLLER_NAME + "/destroy.json";
-       public static final String EDIT = "/" + CONTROLLER_NAME + "/edit.json";
-       public static final String INDEX = "/" + CONTROLLER_NAME + "/index.json";
-       public static final String NEW = "/" + CONTROLLER_NAME + "/new.json";
-       public static final String SHOW = "/" + CONTROLLER_NAME + "/show.json";
-       public static final String UPDATE = "/" + CONTROLLER_NAME + "/update.json";
+    public User() {
     }
 
     public User(JSONObject jsonObject) throws JSONException, ParseException {
@@ -62,6 +66,32 @@ public class User extends Model {
         setUpdateNotification(parseBoolean(jsonObject, "update_notification"));
         setUpdatedAt(parseDate(jsonObject, "updated_at"));
         setWheelchair(parseBoolean(jsonObject, "wheelchair"));
+    }
+
+    public static class ResponseConverter implements
+            WebAPI.ResponseConverter<User> {
+        @Override
+        public User convert(byte[] rawResponse) throws JSONException, ParseException {
+            return new User(new JSONObject(new String(rawResponse)));
+        }
+    }
+
+    public static class ListResponseConverter implements
+            WebAPI.ResponseConverter<List<User>> {
+        @Override
+        public List<User> convert(byte[] rawResponse) throws JSONException,
+                ParseException {
+            JSONArray array = new JSONArray(new String(rawResponse));
+            List<User> models = new LinkedList<User>();
+            for (Integer i = 0; i < array.length(); ++i) {
+                if (array.isNull(i)) {
+                    continue;
+                }
+                JSONObject object = array.getJSONObject(i);
+                models.add(new User(object));
+            }
+            return models;
+        }
     }
 
     @Override
@@ -110,6 +140,7 @@ public class User extends Model {
     }
 
     public void setAddress(String address) {
+        errorIfNull(address);
         this.address = wrapNull(address);
     }
 
@@ -120,6 +151,7 @@ public class User extends Model {
     }
 
     public void setAge(Integer age) {
+        errorIfNull(age);
         this.age = wrapNull(age);
     }
 
@@ -130,6 +162,7 @@ public class User extends Model {
     }
 
     public void setBirthday(Date birthday) {
+        errorIfNull(birthday);
         this.birthday = wrapNull(birthday);
     }
 
@@ -140,6 +173,7 @@ public class User extends Model {
     }
 
     public void setCreatedAt(Date createdAt) {
+        errorIfNull(createdAt);
         this.createdAt = wrapNull(createdAt);
     }
 
@@ -157,6 +191,10 @@ public class User extends Model {
         this.currentSignInAt = Optional.fromNullable(currentSignInAt);
     }
 
+    public void clearCurrentSignInAt() {
+        this.currentSignInAt = Optional.<Date>absent();
+    }
+
     private Optional<String> currentSignInIp = Optional.<String>absent();
 
     public Optional<String> getCurrentSignInIp() {
@@ -169,6 +207,10 @@ public class User extends Model {
 
     public void setCurrentSignInIp(String currentSignInIp) {
         this.currentSignInIp = Optional.fromNullable(currentSignInIp);
+    }
+
+    public void clearCurrentSignInIp() {
+        this.currentSignInIp = Optional.<String>absent();
     }
 
     private Optional<Date> deletedAt = Optional.<Date>absent();
@@ -185,6 +227,10 @@ public class User extends Model {
         this.deletedAt = Optional.fromNullable(deletedAt);
     }
 
+    public void clearDeletedAt() {
+        this.deletedAt = Optional.<Date>absent();
+    }
+
     private Optional<String> email = Optional.<String>absent();
 
     public Optional<String> getEmail() {
@@ -197,6 +243,10 @@ public class User extends Model {
 
     public void setEmail(String email) {
         this.email = Optional.fromNullable(email);
+    }
+
+    public void clearEmail() {
+        this.email = Optional.<String>absent();
     }
 
     private Optional<String> email2 = Optional.<String>absent();
@@ -213,6 +263,10 @@ public class User extends Model {
         this.email2 = Optional.fromNullable(email2);
     }
 
+    public void clearEmail2() {
+        this.email2 = Optional.<String>absent();
+    }
+
     private String encryptedPassword = "";
 
     public String getEncryptedPassword() {
@@ -220,6 +274,7 @@ public class User extends Model {
     }
 
     public void setEncryptedPassword(String encryptedPassword) {
+        errorIfNull(encryptedPassword);
         this.encryptedPassword = wrapNull(encryptedPassword);
     }
 
@@ -230,6 +285,7 @@ public class User extends Model {
     }
 
     public void setFamilyName(String familyName) {
+        errorIfNull(familyName);
         this.familyName = wrapNull(familyName);
     }
 
@@ -240,6 +296,7 @@ public class User extends Model {
     }
 
     public void setFamilyNameRuby(String familyNameRuby) {
+        errorIfNull(familyNameRuby);
         this.familyNameRuby = wrapNull(familyNameRuby);
     }
 
@@ -257,6 +314,10 @@ public class User extends Model {
         this.felicaId = Optional.fromNullable(felicaId);
     }
 
+    public void clearFelicaId() {
+        this.felicaId = Optional.<String>absent();
+    }
+
     private Optional<Boolean> handicapped = Optional.<Boolean>absent();
 
     public Optional<Boolean> getHandicapped() {
@@ -271,6 +332,10 @@ public class User extends Model {
         this.handicapped = Optional.fromNullable(handicapped);
     }
 
+    public void clearHandicapped() {
+        this.handicapped = Optional.<Boolean>absent();
+    }
+
     private Integer id = 0;
 
     public Integer getId() {
@@ -278,6 +343,7 @@ public class User extends Model {
     }
 
     public void setId(Integer id) {
+        errorIfNull(id);
         this.id = wrapNull(id);
     }
 
@@ -288,6 +354,7 @@ public class User extends Model {
     }
 
     public void setLastName(String lastName) {
+        errorIfNull(lastName);
         this.lastName = wrapNull(lastName);
     }
 
@@ -298,6 +365,7 @@ public class User extends Model {
     }
 
     public void setLastNameRuby(String lastNameRuby) {
+        errorIfNull(lastNameRuby);
         this.lastNameRuby = wrapNull(lastNameRuby);
     }
 
@@ -315,6 +383,10 @@ public class User extends Model {
         this.lastSignInAt = Optional.fromNullable(lastSignInAt);
     }
 
+    public void clearLastSignInAt() {
+        this.lastSignInAt = Optional.<Date>absent();
+    }
+
     private Optional<String> lastSignInIp = Optional.<String>absent();
 
     public Optional<String> getLastSignInIp() {
@@ -329,6 +401,10 @@ public class User extends Model {
         this.lastSignInIp = Optional.fromNullable(lastSignInIp);
     }
 
+    public void clearLastSignInIp() {
+        this.lastSignInIp = Optional.<String>absent();
+    }
+
     private String login = "";
 
     public String getLogin() {
@@ -336,6 +412,7 @@ public class User extends Model {
     }
 
     public void setLogin(String login) {
+        errorIfNull(login);
         this.login = wrapNull(login);
     }
 
@@ -353,6 +430,10 @@ public class User extends Model {
         this.neededCare = Optional.fromNullable(neededCare);
     }
 
+    public void clearNeededCare() {
+        this.neededCare = Optional.<Boolean>absent();
+    }
+
     private Optional<Boolean> recommendNotification = Optional.<Boolean>absent();
 
     public Optional<Boolean> getRecommendNotification() {
@@ -365,6 +446,10 @@ public class User extends Model {
 
     public void setRecommendNotification(Boolean recommendNotification) {
         this.recommendNotification = Optional.fromNullable(recommendNotification);
+    }
+
+    public void clearRecommendNotification() {
+        this.recommendNotification = Optional.<Boolean>absent();
     }
 
     private Optional<Boolean> recommendOk = Optional.<Boolean>absent();
@@ -381,6 +466,10 @@ public class User extends Model {
         this.recommendOk = Optional.fromNullable(recommendOk);
     }
 
+    public void clearRecommendOk() {
+        this.recommendOk = Optional.<Boolean>absent();
+    }
+
     private Optional<Date> rememberCreatedAt = Optional.<Date>absent();
 
     public Optional<Date> getRememberCreatedAt() {
@@ -393,6 +482,10 @@ public class User extends Model {
 
     public void setRememberCreatedAt(Date rememberCreatedAt) {
         this.rememberCreatedAt = Optional.fromNullable(rememberCreatedAt);
+    }
+
+    public void clearRememberCreatedAt() {
+        this.rememberCreatedAt = Optional.<Date>absent();
     }
 
     private Optional<Boolean> reserveNotification = Optional.<Boolean>absent();
@@ -409,6 +502,10 @@ public class User extends Model {
         this.reserveNotification = Optional.fromNullable(reserveNotification);
     }
 
+    public void clearReserveNotification() {
+        this.reserveNotification = Optional.<Boolean>absent();
+    }
+
     private Optional<Integer> serviceProviderId = Optional.<Integer>absent();
 
     public Optional<Integer> getServiceProviderId() {
@@ -423,6 +520,10 @@ public class User extends Model {
         this.serviceProviderId = Optional.fromNullable(serviceProviderId);
     }
 
+    public void clearServiceProviderId() {
+        this.serviceProviderId = Optional.<Integer>absent();
+    }
+
     private Integer sex = 0;
 
     public Integer getSex() {
@@ -430,6 +531,7 @@ public class User extends Model {
     }
 
     public void setSex(Integer sex) {
+        errorIfNull(sex);
         this.sex = wrapNull(sex);
     }
 
@@ -447,6 +549,10 @@ public class User extends Model {
         this.signInCount = Optional.fromNullable(signInCount);
     }
 
+    public void clearSignInCount() {
+        this.signInCount = Optional.<Integer>absent();
+    }
+
     private String telephoneNumber = "";
 
     public String getTelephoneNumber() {
@@ -454,6 +560,7 @@ public class User extends Model {
     }
 
     public void setTelephoneNumber(String telephoneNumber) {
+        errorIfNull(telephoneNumber);
         this.telephoneNumber = wrapNull(telephoneNumber);
     }
 
@@ -471,6 +578,10 @@ public class User extends Model {
         this.telephoneNumber2 = Optional.fromNullable(telephoneNumber2);
     }
 
+    public void clearTelephoneNumber2() {
+        this.telephoneNumber2 = Optional.<String>absent();
+    }
+
     private Optional<Boolean> updateNotification = Optional.<Boolean>absent();
 
     public Optional<Boolean> getUpdateNotification() {
@@ -485,6 +596,10 @@ public class User extends Model {
         this.updateNotification = Optional.fromNullable(updateNotification);
     }
 
+    public void clearUpdateNotification() {
+        this.updateNotification = Optional.<Boolean>absent();
+    }
+
     private Date updatedAt = new Date();
 
     public Date getUpdatedAt() {
@@ -492,6 +607,7 @@ public class User extends Model {
     }
 
     public void setUpdatedAt(Date updatedAt) {
+        errorIfNull(updatedAt);
         this.updatedAt = wrapNull(updatedAt);
     }
 
@@ -507,6 +623,10 @@ public class User extends Model {
 
     public void setWheelchair(Boolean wheelchair) {
         this.wheelchair = Optional.fromNullable(wheelchair);
+    }
+
+    public void clearWheelchair() {
+        this.wheelchair = Optional.<Boolean>absent();
     }
 }
 

@@ -1,33 +1,37 @@
 package com.kogasoftware.odt.webapi.model;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedList;
+import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.base.Optional;
+import com.kogasoftware.odt.webapi.WebAPI;
 
 public class Reservation extends Model {
+    private static final long serialVersionUID = 2928287505866204796L;
     public static final String JSON_NAME = "reservation";
     public static final String CONTROLLER_NAME = "reservations";
 
-    public Reservation() {
+    public static class URL {
+        public static final String ROOT = "/" + CONTROLLER_NAME;
+        public static final String CANCELED = "/" + CONTROLLER_NAME + "/canceled";
+        public static final String CREATE = "/" + CONTROLLER_NAME + "/create";
+        public static final String DESTROY = "/" + CONTROLLER_NAME + "/destroy";
+        public static final String EDIT = "/" + CONTROLLER_NAME + "/edit";
+        public static final String INDEX = "/" + CONTROLLER_NAME + "/index";
+        public static final String NEW = "/" + CONTROLLER_NAME + "/new";
+        public static final String SEARCH = "/" + CONTROLLER_NAME + "/search";
+        public static final String SHOW = "/" + CONTROLLER_NAME + "/show";
+        public static final String UPDATE = "/" + CONTROLLER_NAME + "/update";
     }
 
-    public static class URL {
-       public static final String ROOT = "/" + CONTROLLER_NAME + ".json";
-       public static final String CANCELED = "/" + CONTROLLER_NAME + "/canceled.json";
-       public static final String CREATE = "/" + CONTROLLER_NAME + "/create.json";
-       public static final String DESTROY = "/" + CONTROLLER_NAME + "/destroy.json";
-       public static final String EDIT = "/" + CONTROLLER_NAME + "/edit.json";
-       public static final String INDEX = "/" + CONTROLLER_NAME + "/index.json";
-       public static final String NEW = "/" + CONTROLLER_NAME + "/new.json";
-       public static final String SEARCH = "/" + CONTROLLER_NAME + "/search.json";
-       public static final String SHOW = "/" + CONTROLLER_NAME + "/show.json";
-       public static final String UPDATE = "/" + CONTROLLER_NAME + "/update.json";
+    public Reservation() {
     }
 
     public Reservation(JSONObject jsonObject) throws JSONException, ParseException {
@@ -52,6 +56,32 @@ public class Reservation extends Model {
         setUnitAssignmentId(parseInteger(jsonObject, "unit_assignment_id"));
         setUpdatedAt(parseDate(jsonObject, "updated_at"));
         setUserId(parseInteger(jsonObject, "user_id"));
+    }
+
+    public static class ResponseConverter implements
+            WebAPI.ResponseConverter<Reservation> {
+        @Override
+        public Reservation convert(byte[] rawResponse) throws JSONException, ParseException {
+            return new Reservation(new JSONObject(new String(rawResponse)));
+        }
+    }
+
+    public static class ListResponseConverter implements
+            WebAPI.ResponseConverter<List<Reservation>> {
+        @Override
+        public List<Reservation> convert(byte[] rawResponse) throws JSONException,
+                ParseException {
+            JSONArray array = new JSONArray(new String(rawResponse));
+            List<Reservation> models = new LinkedList<Reservation>();
+            for (Integer i = 0; i < array.length(); ++i) {
+                if (array.isNull(i)) {
+                    continue;
+                }
+                JSONObject object = array.getJSONObject(i);
+                models.add(new Reservation(object));
+            }
+            return models;
+        }
     }
 
     @Override
@@ -95,6 +125,10 @@ public class Reservation extends Model {
         this.arrivalLock = Optional.fromNullable(arrivalLock);
     }
 
+    public void clearArrivalLock() {
+        this.arrivalLock = Optional.<Boolean>absent();
+    }
+
     private Optional<Integer> arrivalPlatformId = Optional.<Integer>absent();
 
     public Optional<Integer> getArrivalPlatformId() {
@@ -107,6 +141,10 @@ public class Reservation extends Model {
 
     public void setArrivalPlatformId(Integer arrivalPlatformId) {
         this.arrivalPlatformId = Optional.fromNullable(arrivalPlatformId);
+    }
+
+    public void clearArrivalPlatformId() {
+        this.arrivalPlatformId = Optional.<Integer>absent();
     }
 
     private Optional<Integer> arrivalScheduleId = Optional.<Integer>absent();
@@ -123,6 +161,10 @@ public class Reservation extends Model {
         this.arrivalScheduleId = Optional.fromNullable(arrivalScheduleId);
     }
 
+    public void clearArrivalScheduleId() {
+        this.arrivalScheduleId = Optional.<Integer>absent();
+    }
+
     private Date arrivalTime = new Date();
 
     public Date getArrivalTime() {
@@ -130,6 +172,7 @@ public class Reservation extends Model {
     }
 
     public void setArrivalTime(Date arrivalTime) {
+        errorIfNull(arrivalTime);
         this.arrivalTime = wrapNull(arrivalTime);
     }
 
@@ -140,6 +183,7 @@ public class Reservation extends Model {
     }
 
     public void setCreatedAt(Date createdAt) {
+        errorIfNull(createdAt);
         this.createdAt = wrapNull(createdAt);
     }
 
@@ -157,6 +201,10 @@ public class Reservation extends Model {
         this.deletedAt = Optional.fromNullable(deletedAt);
     }
 
+    public void clearDeletedAt() {
+        this.deletedAt = Optional.<Date>absent();
+    }
+
     private Integer demandId = 0;
 
     public Integer getDemandId() {
@@ -164,6 +212,7 @@ public class Reservation extends Model {
     }
 
     public void setDemandId(Integer demandId) {
+        errorIfNull(demandId);
         this.demandId = wrapNull(demandId);
     }
 
@@ -181,6 +230,10 @@ public class Reservation extends Model {
         this.departureLock = Optional.fromNullable(departureLock);
     }
 
+    public void clearDepartureLock() {
+        this.departureLock = Optional.<Boolean>absent();
+    }
+
     private Optional<Integer> departurePlatformId = Optional.<Integer>absent();
 
     public Optional<Integer> getDeparturePlatformId() {
@@ -193,6 +246,10 @@ public class Reservation extends Model {
 
     public void setDeparturePlatformId(Integer departurePlatformId) {
         this.departurePlatformId = Optional.fromNullable(departurePlatformId);
+    }
+
+    public void clearDeparturePlatformId() {
+        this.departurePlatformId = Optional.<Integer>absent();
     }
 
     private Optional<Integer> departureScheduleId = Optional.<Integer>absent();
@@ -209,6 +266,10 @@ public class Reservation extends Model {
         this.departureScheduleId = Optional.fromNullable(departureScheduleId);
     }
 
+    public void clearDepartureScheduleId() {
+        this.departureScheduleId = Optional.<Integer>absent();
+    }
+
     private Date departureTime = new Date();
 
     public Date getDepartureTime() {
@@ -216,6 +277,7 @@ public class Reservation extends Model {
     }
 
     public void setDepartureTime(Date departureTime) {
+        errorIfNull(departureTime);
         this.departureTime = wrapNull(departureTime);
     }
 
@@ -226,6 +288,7 @@ public class Reservation extends Model {
     }
 
     public void setHead(Integer head) {
+        errorIfNull(head);
         this.head = wrapNull(head);
     }
 
@@ -236,6 +299,7 @@ public class Reservation extends Model {
     }
 
     public void setId(Integer id) {
+        errorIfNull(id);
         this.id = wrapNull(id);
     }
 
@@ -253,6 +317,10 @@ public class Reservation extends Model {
         this.memo = Optional.fromNullable(memo);
     }
 
+    public void clearMemo() {
+        this.memo = Optional.<String>absent();
+    }
+
     private Optional<Integer> operatorId = Optional.<Integer>absent();
 
     public Optional<Integer> getOperatorId() {
@@ -267,6 +335,10 @@ public class Reservation extends Model {
         this.operatorId = Optional.fromNullable(operatorId);
     }
 
+    public void clearOperatorId() {
+        this.operatorId = Optional.<Integer>absent();
+    }
+
     private Boolean payment = false;
 
     public Boolean getPayment() {
@@ -274,6 +346,7 @@ public class Reservation extends Model {
     }
 
     public void setPayment(Boolean payment) {
+        errorIfNull(payment);
         this.payment = wrapNull(payment);
     }
 
@@ -291,6 +364,10 @@ public class Reservation extends Model {
         this.serviceProviderId = Optional.fromNullable(serviceProviderId);
     }
 
+    public void clearServiceProviderId() {
+        this.serviceProviderId = Optional.<Integer>absent();
+    }
+
     private Integer status = 0;
 
     public Integer getStatus() {
@@ -298,6 +375,7 @@ public class Reservation extends Model {
     }
 
     public void setStatus(Integer status) {
+        errorIfNull(status);
         this.status = wrapNull(status);
     }
 
@@ -308,6 +386,7 @@ public class Reservation extends Model {
     }
 
     public void setUnitAssignmentId(Integer unitAssignmentId) {
+        errorIfNull(unitAssignmentId);
         this.unitAssignmentId = wrapNull(unitAssignmentId);
     }
 
@@ -318,6 +397,7 @@ public class Reservation extends Model {
     }
 
     public void setUpdatedAt(Date updatedAt) {
+        errorIfNull(updatedAt);
         this.updatedAt = wrapNull(updatedAt);
     }
 
@@ -328,6 +408,7 @@ public class Reservation extends Model {
     }
 
     public void setUserId(Integer userId) {
+        errorIfNull(userId);
         this.userId = wrapNull(userId);
     }
 }

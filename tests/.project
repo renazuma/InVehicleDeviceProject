@@ -3,7 +3,6 @@
 	<name>AndroidWebAPITest</name>
 	<comment></comment>
 	<projects>
-		<project>AndroidOpenJTalk</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

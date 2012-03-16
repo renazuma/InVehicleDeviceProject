@@ -1,31 +1,73 @@
 package com.kogasoftware.odt.webapi;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.text.ParseException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.concurrent.Callable;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.util.Log;
+import android.net.Uri;
 
+import com.google.common.base.Objects;
 import com.google.common.io.ByteStreams;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.Operator;
+import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.User;
 
 public class WebAPI {
+	private static final String TAG = WebAPI.class.getSimpleName();
+	private static final Integer MAX_REQUEST_RETRY = 5;
+	private static final Integer REQUEST_RETRY_EXPIRE_MINUTES = 5;
+	private static final String URI_SCHEME = "http";
+	private static final String URI_AUTHORITY = "10.1.10.161";
 
 	private final String authenticationToken;
-	private final String TAG = WebAPI.class.getSimpleName();
-	private final String BASE_URI = "http://10.1.10.161";
+
+	public interface ResponseConverter<T> {
+		public T convert(byte[] rawResponse) throws Exception;
+	}
+
+	public class JSONObjectResponseConverter implements
+			ResponseConverter<JSONObject> {
+		@Override
+		public JSONObject convert(byte[] rawResponse) throws JSONException {
+			return new JSONObject(new String(rawResponse));
+		}
+	}
+
+	public class JSONArrayResponseConverter implements
+			ResponseConverter<JSONArray> {
+		@Override
+		public JSONArray convert(byte[] rawResponse) throws JSONException {
+			return new JSONArray(new String(rawResponse));
+		}
+	}
 
 	public WebAPI() {
 		this("");
@@ -35,55 +77,268 @@ public class WebAPI {
 		this.authenticationToken = authenticationToken;
 	}
 
-	public class InVehicleDevices {
-		public InVehicleDevice create(final InVehicleDevice inVehicleDevice) {
+	protected static class CacheKey {
+		protected final String method;
+		protected final String uri;
+		protected final byte[] entity;
 
-			Callable<InVehicleDevice> callable = new Callable<InVehicleDevice>() {
-				@Override
-				public InVehicleDevice call() throws Exception {
-					// リクエストデータを作る（処理毎に固有）
-					JSONObject postJSON = new JSONObject();
-					JSONObject inVehicleDeviceJSON = inVehicleDevice
-							.toJSONObject();
-					postJSON.put(InVehicleDevice.JSON_NAME, inVehicleDeviceJSON);
-					if (authenticationToken.length() > 0) {
-						postJSON.put("authentication_token",
-								authenticationToken);
-					}
-
-					// リクエストデータを作る（メソッド毎に固有）
-					HttpPost httpPost = new HttpPost();
-					httpPost.setURI(new URI(BASE_URI + InVehicleDevice.URL.ROOT));
-					StringEntity entity = new StringEntity(postJSON.toString(),
-							"UTF-8");
-					entity.setContentType("application/json");
-					httpPost.setEntity(entity);
-					HttpRequestBase requestBase = httpPost;
-
-					// リクエストを送る（共通）
-					HttpClient httpClient = new DefaultHttpClient();
-					HttpResponse httpResponse = httpClient.execute(requestBase);
-					Integer statusCode = httpResponse.getStatusLine()
-							.getStatusCode();
-					String responseString = new String(
-							ByteStreams.toByteArray(httpResponse.getEntity()
-									.getContent()));
-
-					// レスポンスを解析する（処理毎に固有）
-					JSONObject responseJSON = new JSONObject(responseString);
-					Log.i(TAG, responseJSON.toString());
-					return new InVehicleDevice(responseJSON);
-				}
-			};
-
-			try {
-				return callable.call();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			return null;
+		public CacheKey(String method, String uri, byte[] entity) {
+			this.method = method;
+			this.uri = uri;
+			this.entity = entity;
 		}
 
+		@Override
+		public int hashCode() {
+			return Objects.hashCode(method, uri, entity);
+		}
+
+		@Override
+		public boolean equals(final Object object) {
+			if (!(object instanceof CacheKey)) {
+				return false;
+			}
+			CacheKey other = (CacheKey) object;
+			return Objects.equal(method, other.method)
+					&& Objects.equal(uri, other.uri)
+					&& Objects.equal(entity, other.entity);
+		}
+	}
+
+	protected static class RetryStatus {
+		private final Date lastRetry = new Date();
+		private final Integer retryCount;
+
+		protected RetryStatus(Integer retryCount) {
+			if (retryCount.intValue() >= MAX_REQUEST_RETRY) {
+				retryCount = MAX_REQUEST_RETRY;
+			}
+			this.retryCount = retryCount;
+		}
+
+		public RetryStatus() {
+			this(0);
+		}
+
+		public Boolean isRetryable() {
+			return !isExpired() && retryCount.intValue() < MAX_REQUEST_RETRY;
+		}
+
+		public Boolean isExpired() {
+			Calendar calendar = Calendar.getInstance();
+			calendar.add(Calendar.MINUTE, -REQUEST_RETRY_EXPIRE_MINUTES);
+			return calendar.getTime().after(lastRetry);
+		}
+
+		public RetryStatus update() {
+			return new RetryStatus(retryCount + 1);
+		}
+	}
+
+	protected Map<CacheKey, RetryStatus> retryStatuses = new HashMap<CacheKey, RetryStatus>();
+
+	/**
+	 * リトライすることでリクエストが成功するかどうかが曖昧なエラーが発生した際に、リトライ回数を制限する関数
+	 * この関数が同一のキーに対して、一定時間内に一定回数以上呼ばれるとfalseを返す
+	 * 。それまではtrueを返す。これらをWebAPIExceptionの引数とする
+	 * 
+	 * ネットワークエラーなど、リトライすることでリクエストが成功する可能性が高いエラーが発生した場合、 この関数は使わずリトライ可能決め打ちとする。
+	 * 
+	 * HTTP4XXが帰ってきた時のようなリトライしてもリクエストは成功しない可能性が高いエラーが発生した場合 リトライ不可の決め打ちとする
+	 */
+	protected Boolean calculateRetryable(CacheKey key) {
+		// 古いエントリを削除
+		for (Iterator<Entry<CacheKey, RetryStatus>> iterator = retryStatuses
+				.entrySet().iterator(); iterator.hasNext();) {
+			RetryStatus retryStatus = iterator.next().getValue();
+			if (retryStatus.isExpired()) {
+				iterator.remove();
+			}
+		}
+
+		// リトライ可能か判断
+		RetryStatus retryStatus = retryStatuses.get(key);
+		if (retryStatus == null) {
+			retryStatus = new RetryStatus();
+		}
+		retryStatuses.put(key, retryStatus.update());
+		return retryStatus.isRetryable();
+	}
+
+	protected <T> T doHttpSession(HttpRequestBase request,
+			ResponseConverter<T> responseConverter) throws WebAPIException {
+
+		CacheKey cacheKey;
+		{ // TODO: キャッシュ
+			String method = request.getMethod();
+			String uri = request.getURI().toString();
+			byte[] entity = new byte[] {};
+			if (request instanceof HttpEntityEnclosingRequestBase) {
+				try {
+					entity = ByteStreams
+							.toByteArray(((HttpEntityEnclosingRequestBase) request)
+									.getEntity().getContent());
+				} catch (IOException e) {
+					throw new WebAPIException(false, e);
+				}
+			}
+			cacheKey = new CacheKey(method, uri, entity);
+		}
+
+		HttpClient httpClient = new DefaultHttpClient();
+		HttpResponse httpResponse;
+		try {
+			httpResponse = httpClient.execute(request);
+		} catch (ClientProtocolException e) {
+			throw new WebAPIException(true, e);
+		} catch (IOException e) {
+			throw new WebAPIException(true, e);
+		}
+		Integer statusCode = httpResponse.getStatusLine().getStatusCode();
+		if (statusCode / 100 == 4) {
+			throw new WebAPIException(false, "Status Code = " + statusCode);
+		} else if (statusCode / 100 == 5) {
+			throw new WebAPIException(calculateRetryable(cacheKey),
+					"Status Code = " + statusCode);
+		}
+		byte[] response = new byte[] {};
+		try {
+			response = ByteStreams.toByteArray(httpResponse.getEntity()
+					.getContent());
+		} catch (IOException e) {
+			throw new WebAPIException(true, e);
+		}
+		try {
+			return responseConverter.convert(response);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new WebAPIException(false, e);
+		} catch (Exception e) {
+			throw new WebAPIException(calculateRetryable(cacheKey), e);
+		}
+	}
+
+	public <T> T get(String path, Map<String, String> params,
+			ResponseConverter<T> responseConverter) throws WebAPIException {
+
+		return doHttpRequestBase(path, params, responseConverter, new HttpGet());
+	}
+
+	public <T> T delete(String path, Map<String, String> params,
+			ResponseConverter<T> responseConverter) throws WebAPIException {
+
+		return doHttpRequestBase(path, params, responseConverter,
+				new HttpDelete());
+	}
+
+	protected <T> T doHttpRequestBase(String path, Map<String, String> params,
+			ResponseConverter<T> responseConverter, HttpRequestBase request)
+			throws WebAPIException {
+
+		Uri.Builder uriBuilder = new Uri.Builder();
+		uriBuilder.scheme(URI_SCHEME);
+		uriBuilder.authority(URI_AUTHORITY);
+		uriBuilder.path(path + ".json");
+		if (authenticationToken.length() > 0) {
+			uriBuilder.appendQueryParameter("authentication_token",
+					authenticationToken);
+		}
+		for (Entry<String, String> entry : (new TreeMap<String, String>(params))
+				.entrySet()) {
+			uriBuilder.appendQueryParameter(entry.getKey(), entry.getValue());
+		}
+		String uri = uriBuilder.toString();
+		try {
+			request.setURI(new URI(uri));
+		} catch (URISyntaxException e) {
+			throw new WebAPIException(false, e);
+		}
+		return doHttpSession(request, responseConverter);
+	}
+
+	protected <T> T doEntityEnclosingRequestBase(String path,
+			JSONObject entityJSON, ResponseConverter<T> responseConverter,
+			HttpEntityEnclosingRequestBase request) throws WebAPIException {
+		Uri.Builder uriBuilder = new Uri.Builder();
+		uriBuilder.scheme(URI_SCHEME);
+		uriBuilder.authority(URI_AUTHORITY);
+		uriBuilder.path(path + ".json");
+		String uri = uriBuilder.toString();
+		try {
+			if (authenticationToken.length() > 0) {
+				entityJSON.put("authentication_token", authenticationToken);
+			}
+			request.setURI(new URI(uri));
+			String entityString = entityJSON.toString();
+			StringEntity entity = new StringEntity(entityString, "UTF-8");
+			entity.setContentType("application/json");
+			request.setEntity(entity);
+			return doHttpSession(request, responseConverter);
+		} catch (JSONException e) {
+			throw new WebAPIException(false, e);
+		} catch (UnsupportedEncodingException e) {
+			throw new WebAPIException(false, e);
+		} catch (URISyntaxException e) {
+			throw new WebAPIException(false, e);
+		}
+	}
+
+	public <T> T post(String path, JSONObject entityJSON,
+			ResponseConverter<T> responseConverter) throws WebAPIException {
+		return doEntityEnclosingRequestBase(path, entityJSON,
+				responseConverter, new HttpPost());
+	}
+
+	public <T> T put(String path, JSONObject entityJSON,
+			ResponseConverter<T> responseConverter) throws WebAPIException {
+		return doEntityEnclosingRequestBase(path, entityJSON,
+				responseConverter, new HttpPut());
+	}
+
+	public void delete(String path, Integer id) {
+
+	}
+
+	public JSONArray get(String path, Map<String, String> params)
+			throws WebAPIException {
+		return get(path, params, new JSONArrayResponseConverter());
+	}
+
+	public JSONArray get(String path) throws WebAPIException {
+		return get(path, new HashMap<String, String>());
+	}
+
+	public class Platforms {
+		public Platform get(Integer id) throws WebAPIException {
+			return WebAPI.this.get(Platform.URL.ROOT, id,
+					new Platform.ResponseConverter());
+		}
+
+		public List<Platform> get(Map<String, String> params)
+				throws WebAPIException {
+			return WebAPI.this.get(Platform.URL.ROOT, params,
+					new Platform.ListResponseConverter());
+		}
+
+		public List<Platform> get() throws WebAPIException {
+			return get(new HashMap<String, String>());
+		}
+	}
+
+	public Platforms platforms = new Platforms();
+
+	public class InVehicleDevices {
+		public InVehicleDevice create(final InVehicleDevice inVehicleDevice)
+				throws JSONException, URISyntaxException,
+				ClientProtocolException, IOException, ParseException,
+				WebAPIException {
+
+			JSONObject postJSON = new JSONObject();
+			JSONObject inVehicleDeviceJSON = inVehicleDevice.toJSONObject();
+			postJSON.put(InVehicleDevice.JSON_NAME, inVehicleDeviceJSON);
+			return WebAPI.this.post(InVehicleDevice.URL.CREATE, postJSON,
+					new InVehicleDevice.ResponseConverter());
+		}
 	}
 
 	public InVehicleDevices inVehicleDevices = new InVehicleDevices();
@@ -109,52 +364,19 @@ public class WebAPI {
 			return new User();
 		}
 
-		public User create(final User user, final String password) {
+		public User create(final User user, final String password)
+				throws WebAPIException {
 
-			Callable<User> callable = new Callable<User>() {
-				@Override
-				public User call() throws Exception {
-					// リクエストデータを作る（処理毎に固有）
-					JSONObject postJSON = new JSONObject();
-					JSONObject userJSON = user.toJSONObject();
-					userJSON.put("password", password);
-					postJSON.put(User.JSON_NAME, userJSON);
-					if (authenticationToken.length() > 0) {
-						postJSON.put("authentication_token",
-								authenticationToken);
-					}
-
-					// リクエストデータを作る（メソッド毎に固有）
-					HttpPost httpPost = new HttpPost();
-					httpPost.setURI(new URI(BASE_URI + User.URL.ROOT));
-					StringEntity entity = new StringEntity(postJSON.toString(),
-							"UTF-8");
-					entity.setContentType("application/json");
-					httpPost.setEntity(entity);
-					HttpRequestBase requestBase = httpPost;
-
-					// リクエストを送る（共通）
-					HttpClient httpClient = new DefaultHttpClient();
-					HttpResponse httpResponse = httpClient.execute(requestBase);
-					Integer statusCode = httpResponse.getStatusLine()
-							.getStatusCode();
-					String responseString = new String(
-							ByteStreams.toByteArray(httpResponse.getEntity()
-									.getContent()));
-
-					// レスポンスを解析する（処理毎に固有）
-					JSONObject responseJSON = new JSONObject(responseString);
-					Log.i(TAG, responseJSON.toString());
-					return new User(responseJSON);
-				}
-			};
-
+			JSONObject postJSON = new JSONObject();
 			try {
-				return callable.call();
-			} catch (Exception e) {
-				e.printStackTrace();
+				JSONObject userJSON = user.toJSONObject();
+				userJSON.put("password", password);
+				postJSON.put(User.JSON_NAME, userJSON);
+			} catch (JSONException e) {
+				throw new WebAPIException(false, e);
 			}
-			return null;
+			return WebAPI.this.post(User.URL.CREATE, postJSON,
+					new User.ResponseConverter());
 		}
 
 		public User update(final User user) {
@@ -168,226 +390,40 @@ public class WebAPI {
 	public Users users = new Users();
 
 	public class Operators {
-		public String signIn(final String login, final String password) {
-
-			Callable<String> callable = new Callable<String>() {
-				@Override
-				public String call() throws Exception {
-					// リクエストデータを作る（処理毎に固有）
-					JSONObject postJSON = new JSONObject();
-					JSONObject operator = new JSONObject();
-					operator.put("login", login);
-					operator.put("password", password);
-					postJSON.put("operator", operator);
-
-					// リクエストデータを作る（メソッド毎に固有）
-					HttpPost httpPost = new HttpPost();
-					httpPost.setURI(new URI(BASE_URI + "/"
-							+ Operator.CONTROLLER_NAME + "/sign_in.json"));
-					StringEntity entity = new StringEntity(postJSON.toString(),
-							"UTF-8");
-					entity.setContentType("application/json");
-					httpPost.setEntity(entity);
-					HttpRequestBase requestBase = httpPost;
-
-					// リクエストを送る（共通）
-					HttpClient httpClient = new DefaultHttpClient();
-					HttpResponse httpResponse = httpClient.execute(requestBase);
-					Integer statusCode = httpResponse.getStatusLine()
-							.getStatusCode();
-					String responseString = new String(
-							ByteStreams.toByteArray(httpResponse.getEntity()
-									.getContent()));
-
-					// レスポンスを解析する（処理毎に固有）
-					JSONObject responseJSON = new JSONObject(responseString);
-					Log.i(TAG, responseJSON.toString());
-					return responseJSON.getString("authentication_token");
-				}
-			};
-
+		public String signIn(final String login, final String password)
+				throws WebAPIException {
+			JSONObject postJSON = new JSONObject();
 			try {
-				return callable.call();
-			} catch (Exception e) {
-				e.printStackTrace();
-				return "";
+				JSONObject operator = new JSONObject();
+				operator.put("login", login);
+				operator.put("password", password);
+				postJSON.put("operator", operator);
+			} catch (JSONException e) {
+				throw new WebAPIException(false, e);
 			}
+			return WebAPI.this.post(Operator.URL.ROOT + "/sign_in", postJSON,
+					new ResponseConverter<String>() {
+						@Override
+						public String convert(byte[] rawResponse)
+								throws Exception {
+							JSONObject j = new JSONObject(new String(
+									rawResponse));
+							String s = j.getString("authentication_token");
+							if (s == null) {
+								throw new RuntimeException(
+										"authentication_token not found");
+							}
+							return s;
+						}
+					});
 		}
-
 	}
 
 	public Operators operators = new Operators();
 
-	// static class EmptyThread extends Thread {
-	//
-	// }
-	//
-	// abstract class JSONRequest<ResultType> {
-	//
-	// abstract public HttpRequestBase createHttpRequest() throws Exception;
-	//
-	// abstract public ResultType parseResponse(JSONObject response)
-	// throws Exception;
-	// }
-	//
-	// abstract class JSONGETRequest<ResultType> extends JSONRequest<ResultType>
-	// {
-	// final protected String uri;
-	//
-	// public JSONGETRequest(String uri) {
-	// this.uri = uri;
-	// }
-	//
-	// @Override
-	// public HttpRequestBase createHttpRequest() throws Exception {
-	// HttpGet request = new HttpGet();
-	// String fullUri = baseUri + "/" + uri;
-	// if (/* !authenticationToken.isEmpty() */authenticationToken
-	// .length() != 0) {
-	// fullUri += "?authentication_token=" + authenticationToken;
-	// }
-	// request.setURI(new URI(fullUri));
-	// return request;
-	// }
-	// }
-	//
-	// abstract class JSONPOSTRequest<ResultType> extends
-	// JSONRequest<ResultType> {
-	// protected final String controller;
-	// protected final String action;
-	//
-	// public JSONPOSTRequest(String controller, String action) {
-	// this.controller = controller;
-	// this.action = action;
-	// }
-	//
-	// abstract protected JSONObject createRequest() throws Exception;
-	//
-	// @Override
-	// public HttpRequestBase createHttpRequest() throws Exception {
-	// HttpPost request = new HttpPost();
-	// JSONObject requestJSON = createRequest();
-	// if (/* !authenticationToken.isEmpty() */authenticationToken
-	// .length() != 0) {
-	// requestJSON.put("authentication_token", authenticationToken);
-	// }
-	// request.setURI(new URI(baseUri + "/" + controller + "/" + action
-	// + ".json"));
-	// StringEntity entity = new StringEntity(requestJSON.toString(),
-	// "UTF-8");
-	//
-	// request.setEntity(entity);
-	// return request;
-	// }
-	// }
-	//
-	// public static class BadStatusCodeException extends RuntimeException {
-	// private static final long serialVersionUID = -375497023051947223L;
-	// public final Integer statusCode;
-	// public final String body;
-	//
-	// public BadStatusCodeException(Integer statusCode, String body) {
-	// this.statusCode = statusCode;
-	// this.body = body;
-	// }
-	// }
-	//
-	// public static class AsyncCallback<ResultType> {
-	// public void onError(Exception exception) {
-	// }
-	//
-	// public void onSuccess(ResultType result) {
-	// }
-	// }
-	//
-	// private final Object threadLock = new Object();
-	// private Thread thread = new EmptyThread();
-	//
-	// public WebAPI() {
-	// this("");
-	// }
-	//
-	// public WebAPI(String authenticationToken) {
-	// this.authenticationToken = authenticationToken;
-	// }
-	//
-	// public void join() throws InterruptedException {
-	// synchronized (threadLock) {
-	// thread.join();
-	// }
-	// }
-	//
-	// public void getAuthenticationTokenXX(final String login,
-	// final String password, final AsyncCallback<String> callback) {
-	//
-	// startJSONRequest(new JSONPOSTRequest<String>("operators", "sign_in") {
-	// @Override
-	// protected JSONObject createRequest() throws Exception {
-	// JSONObject postJSON = new JSONObject();
-	// JSONObject operator = new JSONObject();
-	// operator.put("login", login);
-	// operator.put("password", password);
-	// postJSON.put("operator", operator);
-	// return postJSON;
-	// }
-	//
-	// @Override
-	// public String parseResponse(JSONObject response) throws Exception {
-	// return response.getString("authentication_token");
-	// }
-	// }, callback);
-	// }
-	//
-	// public void getInVehicleDevice(Integer id,
-	// AsyncCallback<JSONObject> callback) {
-	// startJSONRequest(new JSONGETRequest<JSONObject>("in_vehicle_devices/"
-	// + id + ".json") {
-	// @Override
-	// public JSONObject parseResponse(JSONObject response)
-	// throws Exception {
-	// return response;
-	// }
-	// }, callback);
-	// }
-	//
-	// private <ResultType> void startJSONRequest(
-	// final JSONRequest<ResultType> jsonRequest,
-	// final AsyncCallback<ResultType> callback) {
-	// synchronized (threadLock) {
-	// thread.interrupt();
-	// thread = new Thread() {
-	// @Override
-	// public void run() {
-	// try {
-	// HttpRequestBase request = jsonRequest
-	// .createHttpRequest();
-	// request.setHeader("Content-type", "application/json");
-	// HttpClient httpClient = new DefaultHttpClient();
-	// HttpResponse httpResponse = httpClient.execute(request);
-	// int statusCode = httpResponse.getStatusLine()
-	// .getStatusCode();
-	// Log.d(TAG, "Status:" + statusCode);
-	// String responseString = new String(
-	// ByteStreams.toByteArray(httpResponse
-	// .getEntity().getContent()) /*
-	// * ,
-	// * Charsets
-	// * .UTF_8
-	// */);
-	// JSONObject response = new JSONObject(responseString);
-	// if (statusCode / 100 != 2) {
-	// throw new BadStatusCodeException(statusCode,
-	// responseString);
-	// }
-	//
-	// ResultType result = jsonRequest.parseResponse(response);
-	// callback.onSuccess(result);
-	// } catch (Exception e) {
-	// callback.onError(e);
-	// }
-	// }
-	// };
-	// thread.start();
-	// }
-	// }
+	public <T> T get(String path, Integer id,
+			ResponseConverter<T> responseConverter) throws WebAPIException {
+		return get(path + "/" + id, new HashMap<String, String>(),
+				responseConverter);
+	}
 }
