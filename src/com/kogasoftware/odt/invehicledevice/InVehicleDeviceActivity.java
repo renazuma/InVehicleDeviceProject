@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.android.maps.MapActivity;
@@ -43,6 +44,13 @@ class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		if (convertView == null) {
 			convertView = inflater.inflate(resourceId, null);
 		}
+		Spinner spinner = (Spinner) convertView
+				.findViewById(R.id.change_head_spinner);
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
+				android.R.layout.simple_spinner_item, new String[] { "1名",
+						"2名", "3名" });
+		spinner.setAdapter(adapter);
+
 		Reservation reservation = getItem(position);
 		TextView userNameView = (TextView) convertView
 				.findViewById(R.id.user_name);
@@ -238,6 +246,15 @@ public class InVehicleDeviceActivity extends MapActivity {
 				this, R.layout.reservation_raw, l);
 		usersListView = (ListView) findViewById(R.id.users_list_view);
 		usersListView.setAdapter(usersAdapter);
+
+		View test = findViewById(R.id.status_text_view);
+		test.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				findViewById(R.id.vehicle_notification_overlay).setVisibility(
+						View.VISIBLE);
+			}
+		});
 	}
 
 	@Override
