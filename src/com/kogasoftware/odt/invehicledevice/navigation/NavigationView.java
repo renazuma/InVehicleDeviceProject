@@ -135,14 +135,18 @@ public class NavigationView extends FrameLayout {
 		// ICSのGLSurfaceView.GLThreadがその親ViewをメンバmParentに保存する。
 		// そのため、Activity再構築などのタイミングで1/10程度の確率で循環参照でリークすることがある。
 		// それを防ぐために参照を極力減らしたFrameLayoutを間にはさむ
-		FrameLayout icsLeakAvoidanceFrameLayout = new FrameLayout(getContext());
-		addView(icsLeakAvoidanceFrameLayout, new NavigationView.LayoutParams(
-				NavigationView.LayoutParams.FILL_PARENT,
-				NavigationView.LayoutParams.FILL_PARENT));
-		icsLeakAvoidanceFrameLayout.addView(glSurfaceView,
-				new FrameLayout.LayoutParams(
-						FrameLayout.LayoutParams.FILL_PARENT,
-						FrameLayout.LayoutParams.FILL_PARENT));
+		{
+			FrameLayout icsLeakAvoidanceFrameLayout = new FrameLayout(
+					getContext());
+			addView(icsLeakAvoidanceFrameLayout,
+					new NavigationView.LayoutParams(
+							NavigationView.LayoutParams.FILL_PARENT,
+							NavigationView.LayoutParams.FILL_PARENT));
+			icsLeakAvoidanceFrameLayout.addView(glSurfaceView,
+					new FrameLayout.LayoutParams(
+							FrameLayout.LayoutParams.FILL_PARENT,
+							FrameLayout.LayoutParams.FILL_PARENT));
+		}
 
 		mapViewRedirector.addView(mapView, new MapViewRedirector.LayoutParams(
 				MapRenderer.MAP_TEXTURE_WIDTH, MapRenderer.MAP_TEXTURE_HEIGHT));
