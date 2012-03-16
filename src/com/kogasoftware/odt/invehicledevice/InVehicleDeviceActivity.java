@@ -5,7 +5,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import jp.tomorrowkey.android.vtextviewer.VTextView;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -51,7 +50,6 @@ public class InVehicleDeviceActivity extends MapActivity {
 	private Button pauseButton = null;
 	private Button memoButton = null;
 	private Button returnPathButton = null;
-	private Button startButton = null;
 	private TextView statusTextView = null;
 	private View drivingView1Layout = null;
 	private View drivingView2Layout = null;
@@ -86,8 +84,6 @@ public class InVehicleDeviceActivity extends MapActivity {
 				.setText("次の次の乗降場てすと");
 		((VTextView) findViewById(R.id.next_stop_but_two_text_view))
 				.setText("次の次の次の乗降場てす");
-
-		startButton = (Button) findViewById(R.id.start_button);
 
 		drivingViewToggleHandler.post(drivingViewToggleRunnable);
 		navigationView = (NavigationView) findViewById(R.id.navigation_view);
@@ -185,8 +181,6 @@ public class InVehicleDeviceActivity extends MapActivity {
 				});
 	}
 
-	private String authToken = "";
-
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -203,14 +197,6 @@ public class InVehicleDeviceActivity extends MapActivity {
 	public void onDestroy() {
 		super.onDestroy();
 		drivingViewToggleHandler.removeCallbacks(drivingViewToggleRunnable);
-	}
-
-	@Override
-	protected void onActivityResult(int req, int res, Intent data) {
-		super.onActivityResult(req, res, data);
-		if (res == RESULT_OK) {
-			authToken = data.getStringExtra("authToken");
-		}
 	}
 
 	@Override

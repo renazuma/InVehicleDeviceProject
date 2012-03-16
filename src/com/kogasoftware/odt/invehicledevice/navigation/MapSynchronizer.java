@@ -16,7 +16,6 @@ public class MapSynchronizer {
 		public void run(MapSnapshot mapSnapshot);
 	}
 
-	private static final String TAG = MapSynchronizer.class.getSimpleName();
 	private final Object lock = new Object();
 	private final Integer NUM_BUFFERS = 5;
 	private final Queue<MapSnapshot> writeQueue = new ConcurrentLinkedQueue<MapSnapshot>();

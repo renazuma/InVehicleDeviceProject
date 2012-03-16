@@ -72,13 +72,17 @@ public class MapOnTouchListener implements OnTouchListener {
 			return true;
 		}
 
+		Double dx = 0.0;
+		Double dy = 0.0;
+
 		if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-			Double dx = downX - x;
-			Double dy = downY - y;
+			dx = downX - x;
+			dy = downY - y;
+		} else {
+			dx = lastX - x;
+			dy = lastY - y;
 		}
 
-		Double dx = lastX - x;
-		Double dy = lastY - y;
 		lastX = x;
 		lastY = y;
 		Double distance = Math.sqrt(dx * dx + dy * dy);

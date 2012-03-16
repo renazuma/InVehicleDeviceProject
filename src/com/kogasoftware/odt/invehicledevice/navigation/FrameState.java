@@ -91,17 +91,17 @@ public class FrameState {
 		Double rx = nearRoundedPoint.x + dx;
 		Double ry = nearRoundedPoint.y - dy;
 
-		String log = newGeoPoint.getLatitudeE6() + ","
-				+ nearRoundedGeoPoint.getLatitudeE6() + ","
-				+ farRoundedGeoPoint.getLatitudeE6() + "," + ry + ","
-				+ nearRoundedPoint.y + "," + farRoundedPoint.y + "," +
-				/* ------------------------------- */
-				newGeoPoint.getLongitudeE6() + ","
-				+ nearRoundedGeoPoint.getLongitudeE6() + ","
-				+ farRoundedGeoPoint.getLongitudeE6() + "," + rx + ","
-				+ +nearRoundedPoint.x + "," + farRoundedPoint.x + "," +
-				/* ------------------------------- */
-				"";
+		// String log = newGeoPoint.getLatitudeE6() + ","
+		// + nearRoundedGeoPoint.getLatitudeE6() + ","
+		// + farRoundedGeoPoint.getLatitudeE6() + "," + ry + ","
+		// + nearRoundedPoint.y + "," + farRoundedPoint.y + "," +
+		// /* ------------------------------- */
+		// newGeoPoint.getLongitudeE6() + ","
+		// + nearRoundedGeoPoint.getLongitudeE6() + ","
+		// + farRoundedGeoPoint.getLongitudeE6() + "," + rx + ","
+		// + +nearRoundedPoint.x + "," + farRoundedPoint.x + "," +
+		// /* ------------------------------- */
+		// "";
 		// Log.i("SpriteDraw", log);
 
 		// OpenGL上の地図テクスチャの座標に変換
