@@ -24,10 +24,7 @@ import android.widget.TextView;
 import com.google.android.maps.MapActivity;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 import com.kogasoftware.odt.invehicledevice.navigation.NavigationView;
-
-class Reservation {
-	public final String name = "Gates";
-}
+import com.kogasoftware.odt.webapi.model.Reservation;
 
 class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 	private final LayoutInflater inflater;
@@ -46,9 +43,31 @@ class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		if (convertView == null) {
 			convertView = inflater.inflate(resourceId, null);
 		}
-		Reservation hoge = getItem(position);
-		TextView t = (TextView) convertView.findViewById(R.id.reservation_row);
-		t.setText(hoge.name);
+		Reservation reservation = getItem(position);
+		TextView userNameView = (TextView) convertView
+				.findViewById(R.id.user_name);
+		userNameView.setText("ID=" + reservation.getUserId() + " 様");
+		TextView reservationIdView = (TextView) convertView
+				.findViewById(R.id.reservation_id);
+		reservationIdView.setText("[乗] 予約番号 " + reservation.getId());
+		Button memoButton = (Button) convertView.findViewById(R.id.memo_button);
+		memoButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				view.getRootView().findViewById(R.id.memo_overlay)
+						.setVisibility(View.VISIBLE);
+			}
+		});
+		Button returnPathButton = (Button) convertView
+				.findViewById(R.id.return_path_button);
+		returnPathButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				view.getRootView().findViewById(R.id.return_path_overlay)
+						.setVisibility(View.VISIBLE);
+			}
+		});
+
 		return convertView;
 	}
 }
@@ -84,8 +103,6 @@ public class InVehicleDeviceActivity extends MapActivity {
 	private Button stopButton = null;
 	private Button startButton = null;
 	private Button pauseButton = null;
-	private Button memoButton = null;
-	private Button returnPathButton = null;
 	private TextView statusTextView = null;
 	private View drivingView1Layout = null;
 	private View drivingView2Layout = null;
@@ -108,9 +125,7 @@ public class InVehicleDeviceActivity extends MapActivity {
 		stopCheckButton = (Button) findViewById(R.id.stop_check_button);
 		stopButton = (Button) findViewById(R.id.stop_button);
 		pauseButton = (Button) findViewById(R.id.pause_button);
-		memoButton = (Button) findViewById(R.id.memo_button);
 		scheduleButton = (Button) findViewById(R.id.schedule_button);
-		returnPathButton = (Button) findViewById(R.id.return_path_button);
 
 		drivingView1Layout = findViewById(R.id.driving_view1);
 		drivingView2Layout = findViewById(R.id.driving_view2);
@@ -178,25 +193,10 @@ public class InVehicleDeviceActivity extends MapActivity {
 			}
 		});
 
-		memoButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				findViewById(R.id.memo_overlay).setVisibility(View.VISIBLE);
-			}
-		});
-
 		scheduleButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				findViewById(R.id.schedule_layout).setVisibility(View.VISIBLE);
-			}
-		});
-
-		returnPathButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				findViewById(R.id.return_path_overlay).setVisibility(
-						View.VISIBLE);
 			}
 		});
 
@@ -219,9 +219,21 @@ public class InVehicleDeviceActivity extends MapActivity {
 		// android.R.layout.simple_list_item_1, new String[] { "ゲイツ",
 		// "ジョブズ", "ゴスリング" });
 		List<Reservation> l = new LinkedList<Reservation>();
-		l.add(new Reservation());
-		l.add(new Reservation());
-		l.add(new Reservation());
+		Reservation r = new Reservation();
+		r.setId(10);
+		r.setUserId(10);
+		l.add(r);
+
+		r = new Reservation();
+		r.setId(10);
+		r.setUserId(11);
+		l.add(r);
+
+		r = new Reservation();
+		r.setId(10);
+		r.setUserId(12);
+		l.add(r);
+
 		ReservationArrayAdapter usersAdapter = new ReservationArrayAdapter(
 				this, R.layout.reservation_raw, l);
 		usersListView = (ListView) findViewById(R.id.users_list_view);

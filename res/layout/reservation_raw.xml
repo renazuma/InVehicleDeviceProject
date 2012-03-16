@@ -1,9 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/reservation_row" 
-    >
-    
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:gravity="left|center"
+    android:orientation="horizontal"
+    android:background="#FFFFFF"
+     >
 
-</TextView>
+    <LinearLayout
+        android:layout_width="0dip"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="left|center"
+        android:orientation="vertical" >	
+
+        <TextView
+            android:id="@+id/reservation_id"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:text="[乗] 予約番号 1234"
+            android:textColor="#000000" />
+
+        <TextView
+            android:id="@+id/user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:text="じぇーむずごすりんぐ 様"
+            android:textColor="#000000"
+            android:textSize="30dip" />
+    </LinearLayout>
+
+    <Spinner
+        android:id="@+id/spinner1"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent" />
+
+    <Button
+        android:id="@+id/memo_button"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:text="メモ" />
+
+    <Button
+        android:id="@+id/return_path_button"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:text="復路" />
+
+</LinearLayout>
