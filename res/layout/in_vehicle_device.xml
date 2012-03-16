@@ -551,4 +551,32 @@
             android:text="閉じる" />
     </com.kogasoftware.odt.invehicledevice.OverlayLinearLayout>
 
+    <com.kogasoftware.odt.invehicledevice.OverlayLinearLayout
+        android:id="@+id/vehicle_notification_overlay"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#ffffff"
+        android:orientation="vertical"
+        android:visibility="gone" >
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:text="管理者から連絡があります。"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <com.kogasoftware.odt.invehicledevice.OverlayCloseButton
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:text="はい" />
+        
+        <com.kogasoftware.odt.invehicledevice.OverlayCloseButton
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:text="いいえ" />
+    </com.kogasoftware.odt.invehicledevice.OverlayLinearLayout>
+    
 </FrameLayout>
