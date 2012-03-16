@@ -20,6 +20,15 @@ public class OverlayLinearLayout extends LinearLayout implements
 
 	// staticなメンバにViewを持つので、メモリリークを未然に防ぐためWeakReferenceを使う
 	private static final Queue<WeakReference<OverlayLinearLayout>> attachedInstances = new ConcurrentLinkedQueue<WeakReference<OverlayLinearLayout>>();
+
+	private static void removeNullAttachedInstances() {
+		for (WeakReference<OverlayLinearLayout> attachedInstance : getAttachedInstances()) {
+			if (attachedInstance.get() == null) {
+				attachedInstances.remove(attachedInstance);
+			}
+		}
+	}
+
 	private final WeakReference<OverlayLinearLayout> thisWeakReference;
 
 	public static List<WeakReference<OverlayLinearLayout>> getAttachedInstances() {
@@ -41,6 +50,7 @@ public class OverlayLinearLayout extends LinearLayout implements
 	@Override
 	protected void onDetachedFromWindow() {
 		attachedInstances.remove(thisWeakReference);
+		removeNullAttachedInstances();
 		super.onDetachedFromWindow();
 	}
 
