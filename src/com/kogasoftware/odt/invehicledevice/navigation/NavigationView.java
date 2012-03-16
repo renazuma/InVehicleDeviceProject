@@ -11,8 +11,10 @@ import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
@@ -27,6 +29,9 @@ public class NavigationView extends FrameLayout {
 	private final MapSynchronizer mapSynchronizer;
 	private final OrientationSensor orientationSensor;
 	private final MapRenderer mapRenderer;
+	private final Button closeButton;
+	private final Button zoomInButton;
+	private final Button zoomOutButton;
 
 	private WeakReference<GLSurfaceView> glSurfaceViewWeakReference;
 	private WeakReference<MapOnTouchListener> mapOnTouchListenerWeakReference;
@@ -105,7 +110,7 @@ public class NavigationView extends FrameLayout {
 					mapOnTouchListener.onOrientationChanged(fixedOrientation);
 				}
 				lastOrientation = fixedOrientation;
-				Log.v(TAG, TAG + "," + orientation + "," + fixedOrientation);
+				// Log.v(TAG, TAG + "," + orientation + "," + fixedOrientation);
 			}
 		};
 		locationListener = new NavigationViewLocationListener(
@@ -113,6 +118,27 @@ public class NavigationView extends FrameLayout {
 		glSurfaceViewWeakReference = new WeakReference<GLSurfaceView>(null);
 		mapOnTouchListenerWeakReference = new WeakReference<MapOnTouchListener>(
 				mapOnTouchListener);
+
+		closeButton = new OverlayCloseButton(getContext(), null);
+		closeButton.setText("閉じる");
+
+		zoomInButton = new Button(getContext());
+		zoomInButton.setText("拡大");
+		zoomInButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				mapView.getController().zoomIn();
+			}
+		});
+
+		zoomOutButton = new Button(getContext());
+		zoomOutButton.setText("縮小");
+		zoomOutButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				mapView.getController().zoomOut();
+			}
+		});
 	}
 
 	@Override
@@ -152,17 +178,28 @@ public class NavigationView extends FrameLayout {
 				MapRenderer.MAP_TEXTURE_WIDTH, MapRenderer.MAP_TEXTURE_HEIGHT));
 		addView(mapViewRedirector, new NavigationView.LayoutParams(
 				MapRenderer.MAP_TEXTURE_WIDTH, MapRenderer.MAP_TEXTURE_HEIGHT));
+
+		LinearLayout buttons = new LinearLayout(getContext());
+
+		buttons.addView(closeButton, new LinearLayout.LayoutParams(
+				LinearLayout.LayoutParams.FILL_PARENT,
+				LinearLayout.LayoutParams.WRAP_CONTENT, 1));
+		buttons.addView(zoomInButton, new LinearLayout.LayoutParams(
+				LinearLayout.LayoutParams.FILL_PARENT,
+				LinearLayout.LayoutParams.WRAP_CONTENT, 1));
+		buttons.addView(zoomOutButton, new LinearLayout.LayoutParams(
+				LinearLayout.LayoutParams.FILL_PARENT,
+				LinearLayout.LayoutParams.WRAP_CONTENT, 1));
+
+		addView(buttons, new NavigationView.LayoutParams(
+				NavigationView.LayoutParams.FILL_PARENT,
+				NavigationView.LayoutParams.WRAP_CONTENT,
+				Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM));
+
 		glSurfaceViewWeakReference = new WeakReference<GLSurfaceView>(
 				glSurfaceView);
 		mapView.getController().animateTo(new GeoPoint(35899045, 139928656));
 		mapView.getController().setZoom(15);
-
-		Button closeButton = new OverlayCloseButton(getContext(), null);
-		closeButton.setText("閉じる");
-		addView(closeButton, new NavigationView.LayoutParams(
-				NavigationView.LayoutParams.FILL_PARENT,
-				NavigationView.LayoutParams.WRAP_CONTENT,
-				Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM));
 	}
 
 	@Override
