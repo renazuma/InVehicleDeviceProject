@@ -31,8 +31,6 @@ public class Modal extends LinearLayout implements
 	}
 
 	private final WeakReference<Modal> thisWeakReference;
-	private final int resourceId;
-	private final LayoutInflater layoutInflater;
 
 	public static List<WeakReference<Modal>> getAttachedInstances() {
 		return Lists.newLinkedList(attachedInstances);
@@ -40,17 +38,18 @@ public class Modal extends LinearLayout implements
 
 	public Modal(Context context, AttributeSet attrs, int resourceId) {
 		super(context, attrs);
-		this.resourceId = resourceId;
-		this.layoutInflater = (LayoutInflater) context
+
+		LayoutInflater layoutInflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		thisWeakReference = new WeakReference<Modal>(this);
 		// setOnTouchListener(this);
+		this.addView(layoutInflater.inflate(resourceId, null));
+				
 	}
 
 	@Override
 	protected void onAttachedToWindow() {		
 		super.onAttachedToWindow();
-		this.addView(layoutInflater.inflate(resourceId, null));
 		attachedInstances.add(thisWeakReference);
 	}
 
@@ -58,7 +57,7 @@ public class Modal extends LinearLayout implements
 	protected void onDetachedFromWindow() {
 		attachedInstances.remove(thisWeakReference);
 		removeNullAttachedInstances();
-		this.removeAllViews();
+		//this.removeAllViews();
 		super.onDetachedFromWindow();
 	}
 

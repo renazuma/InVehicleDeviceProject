@@ -29,7 +29,7 @@
         android:layout_weight="1"
         android:text="一時停止" />
 
-    <LinearLayout.ModalCloseButton
+    <com.kogasoftware.odt.invehicledevice.modal.ModalCloseButton
         android:id="@+id/config_hide_button"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"

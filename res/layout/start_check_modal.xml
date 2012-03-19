@@ -22,7 +22,7 @@
         android:layout_weight="1"
         android:text="はい" />
 
-    <LinearLayout.ModalCloseButton
+    <com.kogasoftware.odt.invehicledevice.modal.ModalCloseButton
         android:id="@+id/start_cancel_button"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"

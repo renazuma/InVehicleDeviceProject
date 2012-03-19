@@ -321,53 +321,49 @@
         </LinearLayout>
     </LinearLayout>
     
-<FrameLayout
-    android:id="@+id/modals"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:background="#ffffff" >
         
     <com.kogasoftware.odt.invehicledevice.modal.ScheduleModal
 	    android:layout_width="fill_parent"
     	android:layout_height="fill_parent"
-    	android:orientation="vertical" />
+    	android:orientation="vertical"
+    	android:visibility="gone" />
     <com.kogasoftware.odt.invehicledevice.modal.NavigationModal
 	    android:layout_width="fill_parent"
     	android:layout_height="fill_parent"
-    	android:orientation="vertical" />
+    	android:orientation="vertical" 
+    	android:visibility="gone"/>
     <com.kogasoftware.odt.invehicledevice.modal.ConfigModal
 	    android:layout_width="fill_parent"
     	android:layout_height="fill_parent"
-    	android:orientation="vertical" />
+    	android:orientation="vertical" android:visibility="gone"/>
     <com.kogasoftware.odt.invehicledevice.modal.StartCheckModal
 	    android:layout_width="fill_parent"
     	android:layout_height="fill_parent"
-    	android:orientation="vertical" />
+    	android:orientation="vertical" android:visibility="gone" />
     <com.kogasoftware.odt.invehicledevice.modal.StopCheckModal
 	    android:layout_width="fill_parent"
     	android:layout_height="fill_parent"
-    	android:orientation="vertical" />
+    	android:orientation="vertical" android:visibility="gone"/>
     <com.kogasoftware.odt.invehicledevice.modal.StopModal
 	    android:layout_width="fill_parent"
     	android:layout_height="fill_parent"
-    	android:orientation="vertical" />
+    	android:orientation="vertical" android:visibility="gone"/>
     <com.kogasoftware.odt.invehicledevice.modal.PauseModal
 	    android:layout_width="fill_parent"
     	android:layout_height="fill_parent"
-    	android:orientation="vertical" />
+    	android:orientation="vertical" android:visibility="gone"/>
     <com.kogasoftware.odt.invehicledevice.modal.MemoModal
 	    android:layout_width="fill_parent"
     	android:layout_height="fill_parent"
-    	android:orientation="vertical" />
+    	android:orientation="vertical" android:visibility="gone"/>
     <com.kogasoftware.odt.invehicledevice.modal.NotificationModal
 	    android:layout_width="fill_parent"
     	android:layout_height="fill_parent"
-    	android:orientation="vertical" />
+    	android:orientation="vertical" android:visibility="gone"/>
     <com.kogasoftware.odt.invehicledevice.modal.ReturnPathModal
 	    android:layout_width="fill_parent"
     	android:layout_height="fill_parent"
-    	android:orientation="vertical" />
-</FrameLayout>
-    
+    	android:orientation="vertical" android:visibility="gone"/>
+
 
 </FrameLayout>

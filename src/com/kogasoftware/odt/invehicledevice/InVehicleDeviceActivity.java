@@ -287,8 +287,7 @@ public class InVehicleDeviceActivity extends MapActivity {
 			return super.onKeyDown(keyCode, event);
 		}
 		Boolean match = false;
-		for (WeakReference<Modal> r : Modal
-				.getAttachedInstances()) {
+		for (WeakReference<Modal> r : Modal.getAttachedInstances()) {
 			Modal l = r.get();
 			if (l == null) {
 				continue;
