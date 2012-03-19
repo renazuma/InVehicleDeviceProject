@@ -16,8 +16,7 @@ import android.widget.Toast;
 
 import com.google.common.collect.Lists;
 
-public class Modal extends LinearLayout implements
-		OnTouchListener {
+public class Modal extends LinearLayout implements OnTouchListener {
 
 	// staticなメンバにViewを持つので、メモリリークを未然に防ぐためWeakReferenceを使う
 	private static final Queue<WeakReference<Modal>> attachedInstances = new ConcurrentLinkedQueue<WeakReference<Modal>>();
@@ -43,12 +42,14 @@ public class Modal extends LinearLayout implements
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		thisWeakReference = new WeakReference<Modal>(this);
 		// setOnTouchListener(this);
-		this.addView(layoutInflater.inflate(resourceId, null));
-				
+		this.addView(layoutInflater.inflate(resourceId, null),
+				new Modal.LayoutParams(Modal.LayoutParams.FILL_PARENT,
+						Modal.LayoutParams.FILL_PARENT));
+
 	}
 
 	@Override
-	protected void onAttachedToWindow() {		
+	protected void onAttachedToWindow() {
 		super.onAttachedToWindow();
 		attachedInstances.add(thisWeakReference);
 	}
@@ -57,7 +58,7 @@ public class Modal extends LinearLayout implements
 	protected void onDetachedFromWindow() {
 		attachedInstances.remove(thisWeakReference);
 		removeNullAttachedInstances();
-		//this.removeAllViews();
+		// this.removeAllViews();
 		super.onDetachedFromWindow();
 	}
 
