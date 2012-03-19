@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.kogasoftware.odt.invehicledevice.OverlayLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/config_overlay"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/check_start_layout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="#ffffff"
@@ -11,29 +11,22 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
-        android:text="運行管理画面"
+        android:text="出発しますか？"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="#000000" />
 
     <Button
-        android:id="@+id/stop_check_button"
+        android:id="@+id/start_button"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
-        android:text="本日の運行を中止する" />
+        android:text="はい" />
 
-    <Button
-        android:id="@+id/pause_button"
+    <LinearLayout.ModalCloseButton
+        android:id="@+id/start_cancel_button"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
-        android:text="一時停止" />
+        android:text="いいえ" />
 
-    <com.kogasoftware.odt.invehicledevice.OverlayCloseButton
-        android:id="@+id/config_hide_button"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_weight="1"
-        android:text="閉じる" />
-
-</com.kogasoftware.odt.invehicledevice.OverlayLinearLayout>
+</LinearLayout>

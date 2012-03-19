@@ -24,6 +24,7 @@ import android.widget.TextView;
 
 import com.google.android.maps.MapActivity;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
+import com.kogasoftware.odt.invehicledevice.modal.Modal;
 import com.kogasoftware.odt.invehicledevice.navigation.NavigationView;
 import com.kogasoftware.odt.webapi.model.Reservation;
 
@@ -243,7 +244,7 @@ public class InVehicleDeviceActivity extends MapActivity {
 		l.add(r);
 
 		ReservationArrayAdapter usersAdapter = new ReservationArrayAdapter(
-				this, R.layout.reservation_raw, l);
+				this, R.layout.reservation_list_row, l);
 		usersListView = (ListView) findViewById(R.id.users_list_view);
 		usersListView.setAdapter(usersAdapter);
 
@@ -286,9 +287,9 @@ public class InVehicleDeviceActivity extends MapActivity {
 			return super.onKeyDown(keyCode, event);
 		}
 		Boolean match = false;
-		for (WeakReference<OverlayLinearLayout> r : OverlayLinearLayout
+		for (WeakReference<Modal> r : Modal
 				.getAttachedInstances()) {
-			OverlayLinearLayout l = r.get();
+			Modal l = r.get();
 			if (l == null) {
 				continue;
 			}

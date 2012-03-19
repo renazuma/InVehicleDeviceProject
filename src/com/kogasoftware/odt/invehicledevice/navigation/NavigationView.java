@@ -18,7 +18,7 @@ import android.widget.LinearLayout;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
-import com.kogasoftware.odt.invehicledevice.OverlayCloseButton;
+import com.kogasoftware.odt.invehicledevice.modal.ModalCloseButton;
 
 public class NavigationView extends FrameLayout {
 	private static final String TAG = NavigationView.class.getSimpleName();
@@ -119,7 +119,7 @@ public class NavigationView extends FrameLayout {
 		mapOnTouchListenerWeakReference = new WeakReference<MapOnTouchListener>(
 				mapOnTouchListener);
 
-		closeButton = new OverlayCloseButton(getContext(), null);
+		closeButton = new ModalCloseButton(getContext(), null);
 		closeButton.setText("閉じる");
 
 		zoomInButton = new Button(getContext());

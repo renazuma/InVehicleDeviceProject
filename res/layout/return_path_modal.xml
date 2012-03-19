@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.kogasoftware.odt.invehicledevice.OverlayLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/return_path_overlay"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -63,17 +63,17 @@
             android:text="予約候補を検索" />
     </LinearLayout>
 
-    <com.kogasoftware.odt.invehicledevice.OverlayCloseButton
+    <LinearLayout.ModalCloseButton
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
         android:text="予約する" />
 
-    <com.kogasoftware.odt.invehicledevice.OverlayCloseButton
+    <LinearLayout.ModalCloseButton
         android:id="@+id/return_path_close_button"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
         android:text="戻る" />
 
-</com.kogasoftware.odt.invehicledevice.OverlayLinearLayout>
+</LinearLayout>

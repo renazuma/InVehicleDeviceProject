@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.kogasoftware.odt.invehicledevice.OverlayLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/memo_overlay"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/pause_overlay"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="#ffffff"
@@ -11,15 +11,15 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
-        android:text="memoです"
+        android:text="運行一時停止中（昼休みとか）"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="#000000" />
 
-    <com.kogasoftware.odt.invehicledevice.OverlayCloseButton
-        android:id="@+id/memo_close_button"
+    <com.kogasoftware.odt.invehicledevice.AllOverlaysCloseButton
+        android:id="@+id/pause_cancel_button"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
-        android:text="閉じる" />
+        android:text="運行再開" />
 
-</com.kogasoftware.odt.invehicledevice.OverlayLinearLayout>
+</LinearLayout>

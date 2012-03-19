@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.kogasoftware.odt.invehicledevice.OverlayLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/stop_check_overlay"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/vehicle_notification_overlay"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="#ffffff"
@@ -11,21 +11,20 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
-        android:text="本当に中止する？"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:text="管理者から連絡があります。"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#000000" />
 
-    <Button
-        android:id="@+id/stop_button"
+    <LinearLayout.ModalCloseButton
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
-        android:text="本当に中止する" />
+        android:text="はい" />
 
-    <com.kogasoftware.odt.invehicledevice.OverlayCloseButton
-        android:id="@+id/stop_cancel_button"
+    <LinearLayout.ModalCloseButton
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
-        android:text="閉じる" />
+        android:text="いいえ" />
 
-</com.kogasoftware.odt.invehicledevice.OverlayLinearLayout>
+</LinearLayout>
