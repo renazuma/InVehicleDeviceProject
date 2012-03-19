@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice;
+package com.kogasoftware.odt.invehicledevice.modal;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -15,21 +16,36 @@ import android.widget.Toast;
 
 import com.google.common.collect.Lists;
 
-public class OverlayLinearLayout extends LinearLayout implements
-		OnTouchListener {
+public class Modal extends LinearLayout implements OnTouchListener {
 
 	// staticなメンバにViewを持つので、メモリリークを未然に防ぐためWeakReferenceを使う
-	private static final Queue<WeakReference<OverlayLinearLayout>> attachedInstances = new ConcurrentLinkedQueue<WeakReference<OverlayLinearLayout>>();
-	private final WeakReference<OverlayLinearLayout> thisWeakReference;
+	private static final Queue<WeakReference<Modal>> attachedInstances = new ConcurrentLinkedQueue<WeakReference<Modal>>();
 
-	public static List<WeakReference<OverlayLinearLayout>> getAttachedInstances() {
+	private static void removeNullAttachedInstances() {
+		for (WeakReference<Modal> attachedInstance : getAttachedInstances()) {
+			if (attachedInstance.get() == null) {
+				attachedInstances.remove(attachedInstance);
+			}
+		}
+	}
+
+	private final WeakReference<Modal> thisWeakReference;
+
+	public static List<WeakReference<Modal>> getAttachedInstances() {
 		return Lists.newLinkedList(attachedInstances);
 	}
 
-	public OverlayLinearLayout(Context context, AttributeSet attrs) {
+	public Modal(Context context, AttributeSet attrs, int resourceId) {
 		super(context, attrs);
-		thisWeakReference = new WeakReference<OverlayLinearLayout>(this);
+
+		LayoutInflater layoutInflater = (LayoutInflater) context
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		thisWeakReference = new WeakReference<Modal>(this);
 		// setOnTouchListener(this);
+		this.addView(layoutInflater.inflate(resourceId, null),
+				new Modal.LayoutParams(Modal.LayoutParams.FILL_PARENT,
+						Modal.LayoutParams.FILL_PARENT));
+
 	}
 
 	@Override
@@ -41,6 +57,8 @@ public class OverlayLinearLayout extends LinearLayout implements
 	@Override
 	protected void onDetachedFromWindow() {
 		attachedInstances.remove(thisWeakReference);
+		removeNullAttachedInstances();
+		// this.removeAllViews();
 		super.onDetachedFromWindow();
 	}
 

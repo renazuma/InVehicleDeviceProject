@@ -71,11 +71,10 @@ public class LazyMotionSmoother extends MotionSmoother {
 			result = startOrientation + extraAngle;
 		}
 
-		String f = String
-				.format("diff=% 3dms, v=% 8.3f, add=% 8.3f, result=% 8.3f, target=% 8.3f",
-						millis - lastMillis, angularVelocity, extraAngle,
-						result, targetOrientation);
-
+		// String f = String
+		// .format("diff=% 3dms, v=% 8.3f, add=% 8.3f, result=% 8.3f, target=% 8.3f",
+		// millis - lastMillis, angularVelocity, extraAngle,
+		// result, targetOrientation);
 		// logger.trace(f);
 		return result;
 	}

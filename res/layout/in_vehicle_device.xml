@@ -5,7 +5,6 @@
     android:background="#ffffff" >
 
     <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:baselineAligned="false"
@@ -18,7 +17,6 @@
             android:orientation="vertical" >
 
             <LinearLayout
-                xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal" >
@@ -47,7 +45,6 @@
                     android:textColor="#000000" />
 
                 <LinearLayout
-                    xmlns:android="http://schemas.android.com/apk/res/android"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:layout_margin="2dp"
@@ -73,12 +70,10 @@
             </LinearLayout>
 
             <FrameLayout
-                xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent" >
 
                 <FrameLayout
-                    xmlns:android="http://schemas.android.com/apk/res/android"
                     android:id="@+id/driving_layout"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent" >
@@ -141,7 +136,7 @@
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
                         android:orientation="vertical"
-                        android:visibility="gone" >
+                         >
 
                         <LinearLayout
                             android:layout_width="fill_parent"
@@ -205,8 +200,8 @@
                     android:layout_height="fill_parent"
                     android:background="#ffffff"
                     android:orientation="vertical"
-                    android:visibility="gone" 
-                    >
+                    android:visibility="gone"
+                     >
 
                     <LinearLayout
                         android:layout_width="fill_parent"
@@ -272,273 +267,12 @@
                         android:layout_height="wrap_content"
                         android:text="上へスクロール" />
 
-                    <ScrollView
-                        android:id="@+id/users_view"
+                    <ListView
+                        android:id="@+id/users_list_view"
                         android:layout_width="fill_parent"
                         android:layout_height="0dip"
                         android:layout_weight="1" >
-
-                        <LinearLayout
-                            android:layout_width="fill_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical" >
-
-                            <LinearLayout
-                                android:layout_width="fill_parent"
-                                android:layout_height="wrap_content"
-                                android:gravity="left|center"
-                                android:orientation="horizontal" >
-
-                                <LinearLayout
-                                    android:layout_width="0dip"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:gravity="left|center"
-                                    android:orientation="vertical" >
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="fill_parent"
-                                        android:text="[乗] 予約番号 1234"
-                                        android:textColor="#000000" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="fill_parent"
-                                        android:text="じぇーむずごすりんぐ 様"
-                                        android:textColor="#000000"
-                                        android:textSize="30dip" />
-                                </LinearLayout>
-
-                                <Spinner
-                                    android:id="@+id/spinner1"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="fill_parent" />
-
-                                <Button
-                                    android:id="@+id/memo_button"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="fill_parent"
-                                    android:text="メモ" />
-
-                                <Button
-                                    android:id="@+id/return_path_button"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="fill_parent"
-                                    android:text="復路" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="fill_parent"
-                                android:layout_height="wrap_content"
-                                android:gravity="left|center"
-                                android:orientation="horizontal" >
-
-                                <LinearLayout
-                                    android:layout_width="0dip"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:gravity="left|center"
-                                    android:orientation="vertical" >
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="fill_parent"
-                                        android:text="[乗] 予約番号 1234"
-                                        android:textColor="#000000" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="fill_parent"
-                                        android:text="じぇーむずごすりんぐ 様"
-                                        android:textColor="#000000"
-                                        android:textSize="30dip" />
-                                </LinearLayout>
-
-                                <Spinner
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="fill_parent" />
-
-                                <Button
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="fill_parent"
-                                    android:text="メモ" />
-
-                                <Button
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="fill_parent"
-                                    android:text="復路" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="fill_parent"
-                                android:layout_height="wrap_content"
-                                android:gravity="left|center"
-                                android:orientation="horizontal" >
-
-                                <LinearLayout
-                                    android:layout_width="0dip"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:gravity="left|center"
-                                    android:orientation="vertical" >
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="fill_parent"
-                                        android:text="[乗] 予約番号 1234"
-                                        android:textColor="#000000" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="fill_parent"
-                                        android:text="じぇーむずごすりんぐ 様"
-                                        android:textColor="#000000"
-                                        android:textSize="30dip" />
-                                </LinearLayout>
-
-                                <Spinner
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="fill_parent" />
-
-                                <Button
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="fill_parent"
-                                    android:text="メモ" />
-
-                                <Button
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="fill_parent"
-                                    android:text="復路" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="fill_parent"
-                                android:layout_height="wrap_content"
-                                android:gravity="left|center"
-                                android:orientation="horizontal" >
-
-                                <LinearLayout
-                                    android:layout_width="0dip"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:gravity="left|center"
-                                    android:orientation="vertical" >
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="fill_parent"
-                                        android:text="[乗] 予約番号 1234"
-                                        android:textColor="#000000" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="fill_parent"
-                                        android:text="じぇーむずごすりんぐ 様"
-                                        android:textColor="#000000"
-                                        android:textSize="30dip" />
-                                </LinearLayout>
-
-                                <Spinner
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="fill_parent" />
-
-                                <Button
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="fill_parent"
-                                    android:text="メモ" />
-
-                                <Button
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="fill_parent"
-                                    android:text="復路" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="fill_parent"
-                                android:layout_height="wrap_content"
-                                android:gravity="left|center"
-                                android:orientation="horizontal" >
-
-                                <LinearLayout
-                                    android:layout_width="0dip"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:gravity="left|center"
-                                    android:orientation="vertical" >
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="fill_parent"
-                                        android:text="[乗] 予約番号 1234"
-                                        android:textColor="#000000" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="fill_parent"
-                                        android:text="じぇーむずごすりんぐ 様"
-                                        android:textColor="#000000"
-                                        android:textSize="30dip" />
-                                </LinearLayout>
-
-                                <Spinner
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="fill_parent" />
-
-                                <Button
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="fill_parent"
-                                    android:text="メモ" />
-
-                                <Button
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="fill_parent"
-                                    android:text="復路" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="fill_parent"
-                                android:layout_height="wrap_content"
-                                android:gravity="left|center"
-                                android:orientation="horizontal" >
-
-                                <LinearLayout
-                                    android:layout_width="0dip"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:gravity="left|center"
-                                    android:orientation="vertical" >
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="fill_parent"
-                                        android:text="[乗] 予約番号 1234"
-                                        android:textColor="#000000" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="fill_parent"
-                                        android:text="じぇーむずごすりんぐ 様"
-                                        android:textColor="#000000"
-                                        android:textSize="30dip" />
-                                </LinearLayout>
-
-                                <Spinner
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="fill_parent" />
-
-                                <Button
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="fill_parent"
-                                    android:text="メモ" />
-
-                                <Button
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="fill_parent"
-                                    android:text="復路" />
-                            </LinearLayout>
-                        </LinearLayout>
-                    </ScrollView>
+                    </ListView>
 
                     <Button
                         android:layout_width="fill_parent"
@@ -587,233 +321,49 @@
                 android:textAppearance="?android:attr/textAppearanceLarge" />
         </LinearLayout>
     </LinearLayout>
+    
+    <com.kogasoftware.odt.invehicledevice.modal.ScheduleModal
+	    android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
+    	android:orientation="vertical"
+    	 />
+    <com.kogasoftware.odt.invehicledevice.modal.NavigationModal
+	    android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
+    	android:orientation="vertical" 
+    	/>
+    <com.kogasoftware.odt.invehicledevice.modal.ConfigModal
+	    android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
+    	android:orientation="vertical" />
+    <com.kogasoftware.odt.invehicledevice.modal.StartCheckModal
+	    android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
+    	android:orientation="vertical"  />
+    <com.kogasoftware.odt.invehicledevice.modal.StopCheckModal
+	    android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
+    	android:orientation="vertical" />
+    <com.kogasoftware.odt.invehicledevice.modal.StopModal
+	    android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
+    	android:orientation="vertical" />
+    <com.kogasoftware.odt.invehicledevice.modal.PauseModal
+	    android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
+    	android:orientation="vertical" />
+    <com.kogasoftware.odt.invehicledevice.modal.MemoModal
+	    android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
+    	android:orientation="vertical" />
+    <com.kogasoftware.odt.invehicledevice.modal.NotificationModal
+	    android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
+    	android:orientation="vertical" />
+    <com.kogasoftware.odt.invehicledevice.modal.ReturnPathModal
+	    android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
+    	android:orientation="vertical" />
 
-    <com.kogasoftware.odt.invehicledevice.OverlayLinearLayout
-        android:id="@+id/schedule_layout"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="#ffffff"
-        android:orientation="vertical"
-        android:visibility="gone" >
-
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:text="今日の予定"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="#000000" />
-
-        <com.kogasoftware.odt.invehicledevice.OverlayCloseButton
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:text="閉じる" />
-    </com.kogasoftware.odt.invehicledevice.OverlayLinearLayout>
-
-    <com.kogasoftware.odt.invehicledevice.OverlayLinearLayout
-        android:id="@+id/map_overlay"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="#ffffff"
-        android:orientation="vertical"
-        android:visibility="gone" >
-
-        <com.kogasoftware.odt.invehicledevice.navigation.NavigationView
-            android:id="@+id/navigation_view"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent" />
-
-            
-        
-    </com.kogasoftware.odt.invehicledevice.OverlayLinearLayout>
-
-    <com.kogasoftware.odt.invehicledevice.OverlayLinearLayout
-        android:id="@+id/check_start_layout"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="#ffffff"
-        android:orientation="vertical"
-        android:visibility="gone" >
-
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:text="出発しますか？"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="#000000" />
-
-        <Button
-            android:id="@+id/start_button"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:text="はい" />
-
-        <com.kogasoftware.odt.invehicledevice.OverlayCloseButton
-            android:id="@+id/start_cancel_button"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:text="いいえ" />
-    </com.kogasoftware.odt.invehicledevice.OverlayLinearLayout>
-
-    <com.kogasoftware.odt.invehicledevice.OverlayLinearLayout
-        android:id="@+id/config_overlay"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="#ffffff"
-        android:orientation="vertical"
-        android:visibility="gone" >
-
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:text="運行管理画面"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="#000000" />
-
-        <Button
-            android:id="@+id/stop_check_button"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:text="本日の運行を中止する" />
-
-        <Button
-            android:id="@+id/pause_button"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:text="一時停止" />
-
-        <com.kogasoftware.odt.invehicledevice.OverlayCloseButton
-            android:id="@+id/config_hide_button"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:text="閉じる" />
-    </com.kogasoftware.odt.invehicledevice.OverlayLinearLayout>
-
-    <com.kogasoftware.odt.invehicledevice.OverlayLinearLayout
-        android:id="@+id/stop_check_overlay"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="#ffffff"
-        android:orientation="vertical"
-        android:visibility="gone" >
-
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:text="本当に中止する？"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
-
-        <Button
-            android:id="@+id/stop_button"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:text="本当に中止する" />
-
-        <com.kogasoftware.odt.invehicledevice.OverlayCloseButton
-            android:id="@+id/stop_cancel_button"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:text="閉じる" />
-    </com.kogasoftware.odt.invehicledevice.OverlayLinearLayout>
-
-    <com.kogasoftware.odt.invehicledevice.OverlayLinearLayout
-        android:id="@+id/stop_overlay"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="#ffffff"
-        android:orientation="vertical"
-        android:visibility="gone" >
-
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:text="中止しています"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="#000000" />
-    </com.kogasoftware.odt.invehicledevice.OverlayLinearLayout>
-
-    <com.kogasoftware.odt.invehicledevice.OverlayLinearLayout
-        android:id="@+id/pause_overlay"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="#ffffff"
-        android:orientation="vertical"
-        android:visibility="gone" >
-
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:text="運行一時停止中（昼休みとか）"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="#000000" />
-
-        <com.kogasoftware.odt.invehicledevice.AllOverlaysCloseButton
-            android:id="@+id/pause_cancel_button"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:text="運行再開" />
-    </com.kogasoftware.odt.invehicledevice.OverlayLinearLayout>
-
-    <com.kogasoftware.odt.invehicledevice.OverlayLinearLayout
-        android:id="@+id/memo_overlay"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="#ffffff"
-        android:orientation="vertical"
-        android:visibility="gone" >
-
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:text="memoです"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="#000000" />
-
-        <com.kogasoftware.odt.invehicledevice.OverlayCloseButton
-            android:id="@+id/memo_close_button"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:text="閉じる" />
-    </com.kogasoftware.odt.invehicledevice.OverlayLinearLayout>
-
-    <com.kogasoftware.odt.invehicledevice.OverlayLinearLayout
-        android:id="@+id/return_path_overlay"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="#ffffff"
-        android:orientation="vertical"
-        android:visibility="gone" >
-
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:text="復路です"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="#000000" />
-
-        <com.kogasoftware.odt.invehicledevice.OverlayCloseButton
-            android:id="@+id/return_path_close_button"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:text="閉じる" />
-    </com.kogasoftware.odt.invehicledevice.OverlayLinearLayout>
 
 </FrameLayout>

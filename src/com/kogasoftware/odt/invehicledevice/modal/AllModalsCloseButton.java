@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice;
+package com.kogasoftware.odt.invehicledevice.modal;
 
 import java.lang.ref.WeakReference;
 
@@ -9,7 +9,7 @@ import android.widget.Button;
 
 import com.kogasoftware.odt.invehicledevice.empty.EmptyViewOnClickListener;
 
-public class AllOverlaysCloseButton extends Button {
+public class AllModalsCloseButton extends Button {
 	static class DefaultOnClickListener implements OnClickListener {
 		private OnClickListener userOnClickListener = new EmptyViewOnClickListener();
 
@@ -19,9 +19,9 @@ public class AllOverlaysCloseButton extends Button {
 
 		@Override
 		public void onClick(View view) {
-			for (WeakReference<OverlayLinearLayout> r : OverlayLinearLayout
+			for (WeakReference<Modal> r : Modal
 					.getAttachedInstances()) {
-				OverlayLinearLayout l = r.get();
+				Modal l = r.get();
 				if (l == null) {
 					continue;
 				}
@@ -38,7 +38,7 @@ public class AllOverlaysCloseButton extends Button {
 		defaultOnClickListener.setOnClickListener(userOnClickListener);
 	}
 
-	public AllOverlaysCloseButton(Context context, AttributeSet attrs) {
+	public AllModalsCloseButton(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		super.setOnClickListener(defaultOnClickListener);
 	}

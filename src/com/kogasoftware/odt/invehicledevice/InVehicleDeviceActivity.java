@@ -1,23 +1,85 @@
 package com.kogasoftware.odt.invehicledevice;
 
 import java.lang.ref.WeakReference;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import jp.tomorrowkey.android.vtextviewer.VTextView;
-import android.content.Intent;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.android.maps.MapActivity;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
+import com.kogasoftware.odt.invehicledevice.modal.Modal;
 import com.kogasoftware.odt.invehicledevice.navigation.NavigationView;
+import com.kogasoftware.odt.webapi.model.Reservation;
+
+class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
+	private final LayoutInflater inflater;
+	private final int resourceId;
+
+	public ReservationArrayAdapter(Context context, int resourceId,
+			List<Reservation> items) {
+		super(context, resourceId, items);
+		this.inflater = (LayoutInflater) context
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		this.resourceId = resourceId;
+	}
+
+	@Override
+	public View getView(int position, View convertView, ViewGroup parent) {
+		if (convertView == null) {
+			convertView = inflater.inflate(resourceId, null);
+		}
+		Spinner spinner = (Spinner) convertView
+				.findViewById(R.id.change_head_spinner);
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
+				android.R.layout.simple_spinner_item, new String[] { "1名",
+						"2名", "3名" });
+		spinner.setAdapter(adapter);
+
+		Reservation reservation = getItem(position);
+		TextView userNameView = (TextView) convertView
+				.findViewById(R.id.user_name);
+		userNameView.setText("ID=" + reservation.getUserId() + " 様");
+		TextView reservationIdView = (TextView) convertView
+				.findViewById(R.id.reservation_id);
+		reservationIdView.setText("[乗] 予約番号 " + reservation.getId());
+		Button memoButton = (Button) convertView.findViewById(R.id.memo_button);
+		memoButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				view.getRootView().findViewById(R.id.memo_overlay)
+						.setVisibility(View.VISIBLE);
+			}
+		});
+		Button returnPathButton = (Button) convertView
+				.findViewById(R.id.return_path_button);
+		returnPathButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				view.getRootView().findViewById(R.id.return_path_overlay)
+						.setVisibility(View.VISIBLE);
+			}
+		});
+
+		return convertView;
+	}
+}
 
 public class InVehicleDeviceActivity extends MapActivity {
 	private final String TAG = InVehicleDeviceActivity.class.getSimpleName();
@@ -48,14 +110,13 @@ public class InVehicleDeviceActivity extends MapActivity {
 	private Button configButton = null;
 	private Button stopCheckButton = null;
 	private Button stopButton = null;
-	private Button pauseButton = null;
-	private Button memoButton = null;
-	private Button returnPathButton = null;
 	private Button startButton = null;
+	private Button pauseButton = null;
 	private TextView statusTextView = null;
 	private View drivingView1Layout = null;
 	private View drivingView2Layout = null;
 	private NavigationView navigationView = null;
+	private ListView usersListView = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -73,9 +134,7 @@ public class InVehicleDeviceActivity extends MapActivity {
 		stopCheckButton = (Button) findViewById(R.id.stop_check_button);
 		stopButton = (Button) findViewById(R.id.stop_button);
 		pauseButton = (Button) findViewById(R.id.pause_button);
-		memoButton = (Button) findViewById(R.id.memo_button);
 		scheduleButton = (Button) findViewById(R.id.schedule_button);
-		returnPathButton = (Button) findViewById(R.id.return_path_button);
 
 		drivingView1Layout = findViewById(R.id.driving_view1);
 		drivingView2Layout = findViewById(R.id.driving_view2);
@@ -86,8 +145,6 @@ public class InVehicleDeviceActivity extends MapActivity {
 				.setText("次の次の乗降場てすと");
 		((VTextView) findViewById(R.id.next_stop_but_two_text_view))
 				.setText("次の次の次の乗降場てす");
-
-		startButton = (Button) findViewById(R.id.start_button);
 
 		drivingViewToggleHandler.post(drivingViewToggleRunnable);
 		navigationView = (NavigationView) findViewById(R.id.navigation_view);
@@ -145,13 +202,6 @@ public class InVehicleDeviceActivity extends MapActivity {
 			}
 		});
 
-		memoButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				findViewById(R.id.memo_overlay).setVisibility(View.VISIBLE);
-			}
-		});
-
 		scheduleButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -159,33 +209,54 @@ public class InVehicleDeviceActivity extends MapActivity {
 			}
 		});
 
-		returnPathButton.setOnClickListener(new OnClickListener() {
+		startButton = (Button) findViewById(R.id.start_button);
+		startButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				findViewById(R.id.return_path_overlay).setVisibility(
-						View.VISIBLE);
+				status = 0;
+				statusTextView.setText("走行中");
+				changeStatusButton.setText("到着");
+				findViewById(R.id.check_start_layout).setVisibility(View.GONE);
+				findViewById(R.id.waiting_layout).setVisibility(View.GONE);
+				if (!voices.offer("出発します。次は、コガソフトウェア前。コガソフトウェア前。")) {
+					Log.w(TAG, "!voices.offer() failed");
+				}
 			}
 		});
 
-		((Button) findViewById(R.id.start_button))
-				.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View view) {
-						status = 0;
-						statusTextView.setText("走行中");
-						changeStatusButton.setText("到着");
-						findViewById(R.id.check_start_layout).setVisibility(
-								View.GONE);
-						findViewById(R.id.waiting_layout).setVisibility(
-								View.GONE);
-						if (!voices.offer("出発します。次は、コガソフトウェア前。コガソフトウェア前。")) {
-							Log.w(TAG, "!voices.offer() failed");
-						}
-					}
-				});
-	}
+		// ArrayAdapter<String> usersAdapter = new ArrayAdapter<String>(this,
+		// android.R.layout.simple_list_item_1, new String[] { "ゲイツ",
+		// "ジョブズ", "ゴスリング" });
+		List<Reservation> l = new LinkedList<Reservation>();
+		Reservation r = new Reservation();
+		r.setId(10);
+		r.setUserId(10);
+		l.add(r);
 
-	private String authToken = "";
+		r = new Reservation();
+		r.setId(10);
+		r.setUserId(11);
+		l.add(r);
+
+		r = new Reservation();
+		r.setId(10);
+		r.setUserId(12);
+		l.add(r);
+
+		ReservationArrayAdapter usersAdapter = new ReservationArrayAdapter(
+				this, R.layout.reservation_list_row, l);
+		usersListView = (ListView) findViewById(R.id.users_list_view);
+		usersListView.setAdapter(usersAdapter);
+
+		View test = findViewById(R.id.status_text_view);
+		test.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				findViewById(R.id.vehicle_notification_overlay).setVisibility(
+						View.VISIBLE);
+			}
+		});
+	}
 
 	@Override
 	public void onResume() {
@@ -206,14 +277,6 @@ public class InVehicleDeviceActivity extends MapActivity {
 	}
 
 	@Override
-	protected void onActivityResult(int req, int res, Intent data) {
-		super.onActivityResult(req, res, data);
-		if (res == RESULT_OK) {
-			authToken = data.getStringExtra("authToken");
-		}
-	}
-
-	@Override
 	protected boolean isRouteDisplayed() {
 		return false;
 	}
@@ -224,9 +287,8 @@ public class InVehicleDeviceActivity extends MapActivity {
 			return super.onKeyDown(keyCode, event);
 		}
 		Boolean match = false;
-		for (WeakReference<OverlayLinearLayout> r : OverlayLinearLayout
-				.getAttachedInstances()) {
-			OverlayLinearLayout l = r.get();
+		for (WeakReference<Modal> r : Modal.getAttachedInstances()) {
+			Modal l = r.get();
 			if (l == null) {
 				continue;
 			}

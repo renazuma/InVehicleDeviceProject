@@ -8,7 +8,6 @@ import java.util.concurrent.Semaphore;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
-import android.os.Environment;
 import android.util.Log;
 
 import com.kogasoftware.openjtalk.OpenJTalk;
@@ -25,8 +24,7 @@ public class VoiceThread extends Thread {
 		this.voices = voices;
 		cacheDirectory = context.getFilesDir();
 		String s = File.separator;
-		String base = Environment.getExternalStorageDirectory() + s + ".odt"
-				+ s + "open_jtalk";
+		File base = context.getExternalFilesDir("open_jtalk");
 		voiceDirectory = new File(base + s + "voice" + s + "mei_normal");
 		dictionaryDirectory = new File(base + s + "dictionary");
 		outputDirectory = new File(base + s + "output");

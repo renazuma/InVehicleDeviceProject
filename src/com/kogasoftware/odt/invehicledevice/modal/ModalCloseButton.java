@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice;
+package com.kogasoftware.odt.invehicledevice.modal;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -8,7 +8,7 @@ import android.widget.Button;
 
 import com.kogasoftware.odt.invehicledevice.empty.EmptyViewOnClickListener;
 
-public class OverlayCloseButton extends Button {
+public class ModalCloseButton extends Button {
 	static class DefaultOnClickListener implements OnClickListener {
 		private final Integer MAX_DEPTH = 100;
 		private OnClickListener userOnClickListener = new EmptyViewOnClickListener();
@@ -22,8 +22,8 @@ public class OverlayCloseButton extends Button {
 			ViewParent parent = view.getParent();
 			for (Integer depth = 0; parent != null && depth < MAX_DEPTH; parent = parent
 					.getParent(), ++depth) {
-				if (parent instanceof OverlayLinearLayout) {
-					((OverlayLinearLayout) parent).hide();
+				if (parent instanceof Modal) {
+					((Modal) parent).hide();
 					break;
 				}
 			}
@@ -38,7 +38,7 @@ public class OverlayCloseButton extends Button {
 		defaultOnClickListener.setOnClickListener(userOnClickListener);
 	}
 
-	public OverlayCloseButton(Context context, AttributeSet attrs) {
+	public ModalCloseButton(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		super.setOnClickListener(defaultOnClickListener);
 	}
