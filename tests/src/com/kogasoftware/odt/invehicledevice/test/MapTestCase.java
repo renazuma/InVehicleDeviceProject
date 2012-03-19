@@ -23,25 +23,25 @@ public class MapTestCase extends
 		solo = new Solo(getInstrumentation(), getActivity());
 	}
 
-	public void test起動時は非表示() {
+	public void test01起動時は非表示() {
 		assertEquals(View.GONE, solo.getView(R.id.map_overlay).getVisibility());
 	}
 
-	public void test地図ボタンを押したら表示() {
-		test起動時は非表示();
+	public void test02地図ボタンを押したら表示() {
+		test01起動時は非表示();
 		solo.clickOnView(solo.getView(R.id.map_button));
 		assertEquals(View.VISIBLE, solo.getView(R.id.map_overlay)
 				.getVisibility());
 	}
 
-	public void test閉じるボタンを押したら消える() {
-		test地図ボタンを押したら表示();
-		solo.clickOnButton("閉じる");
+	public void test03戻るボタンを押したら消える() {
+		test02地図ボタンを押したら表示();
+		solo.clickOnButton("戻る");
 		assertEquals(View.GONE, solo.getView(R.id.map_overlay).getVisibility());
 	}
 
-	public void test一回閉じてからもう地図ボタンを押したら表示() {
-		test閉じるボタンを押したら消える();
+	public void test04一回閉じてからもう地図ボタンを押したら表示() {
+		test03戻るボタンを押したら消える();
 		solo.clickOnView(solo.getView(R.id.map_button));
 		assertEquals(View.VISIBLE, solo.getView(R.id.map_overlay)
 				.getVisibility());

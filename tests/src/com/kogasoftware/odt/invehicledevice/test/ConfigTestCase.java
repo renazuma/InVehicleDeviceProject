@@ -23,34 +23,34 @@ public class ConfigTestCase extends
 		solo = new Solo(getInstrumentation(), getActivity());
 	}
 
-	public void test起動時は非表示() {
+	public void test01起動時は非表示() {
 		assertEquals(View.GONE, solo.getView(R.id.config_overlay)
 				.getVisibility());
 	}
 
-	public void test運行管理ボタンを押したら表示() {
-		test起動時は非表示();
+	public void test02運行管理ボタンを押したら表示() {
+		test01起動時は非表示();
 		solo.clickOnView(solo.getView(R.id.config_button));
 		assertEquals(View.VISIBLE, solo.getView(R.id.config_overlay)
 				.getVisibility());
 	}
 
-	public void test閉じるボタンを押したら消える() {
-		test運行管理ボタンを押したら表示();
+	public void test03戻るボタンを押したら消える() {
+		test02運行管理ボタンを押したら表示();
 		solo.clickOnView(solo.getView(R.id.config_hide_button));
 		assertEquals(View.GONE, solo.getView(R.id.config_overlay)
 				.getVisibility());
 	}
 
-	public void test一回閉じてからもう運行管理ボタンを押したら表示() {
-		test閉じるボタンを押したら消える();
+	public void test04一回閉じてからもう運行管理ボタンを押したら表示() {
+		test03戻るボタンを押したら消える();
 		solo.clickOnView(solo.getView(R.id.config_button));
 		assertEquals(View.VISIBLE, solo.getView(R.id.config_overlay)
 				.getVisibility());
 	}
 
-	public void test中止ボタンを押すと中止確認画面が表示() {
-		test運行管理ボタンを押したら表示();
+	public void test05中止ボタンを押すと中止確認画面が表示() {
+		test02運行管理ボタンを押したら表示();
 		assertEquals(View.GONE, solo.getView(R.id.stop_check_overlay)
 				.getVisibility());
 		solo.clickOnView(solo.getView(R.id.stop_check_button));
@@ -58,23 +58,23 @@ public class ConfigTestCase extends
 				.getVisibility());
 	}
 
-	public void test中止確認画面で中止ボタンを押すと中止画面が表示() {
-		test中止ボタンを押すと中止確認画面が表示();
+	public void test06中止確認画面で中止ボタンを押すと中止画面が表示() {
+		test05中止ボタンを押すと中止確認画面が表示();
 		assertEquals(View.GONE, solo.getView(R.id.stop_overlay).getVisibility());
 		solo.clickOnView(solo.getView(R.id.stop_button));
 		assertEquals(View.VISIBLE, solo.getView(R.id.stop_overlay)
 				.getVisibility());
 	}
 
-	public void test中止確認画面で中止しないボタンを押すと中止確認が消える() {
-		test中止ボタンを押すと中止確認画面が表示();
+	public void test07中止確認画面で戻るボタンを押すと中止確認が消える() {
+		test05中止ボタンを押すと中止確認画面が表示();
 		solo.clickOnView(solo.getView(R.id.stop_cancel_button));
 		assertEquals(View.GONE, solo.getView(R.id.stop_check_overlay)
 				.getVisibility());
 	}
 
-	public void test停止ボタンを押すと停止画面が表示() {
-		test運行管理ボタンを押したら表示();
+	public void test08停止ボタンを押すと停止画面が表示() {
+		test02運行管理ボタンを押したら表示();
 		assertEquals(View.GONE, solo.getView(R.id.pause_overlay)
 				.getVisibility());
 		solo.clickOnView(solo.getView(R.id.pause_button));
@@ -82,8 +82,8 @@ public class ConfigTestCase extends
 				.getVisibility());
 	}
 
-	public void test停止画面で運行開始ボタンを押すと停止画面と設定画面が非表示() {
-		test停止ボタンを押すと停止画面が表示();
+	public void test09停止画面で運行開始ボタンを押すと停止画面と設定画面が非表示() {
+		test08停止ボタンを押すと停止画面が表示();
 		solo.clickOnView(solo.getView(R.id.pause_cancel_button));
 		assertEquals(View.GONE, solo.getView(R.id.config_overlay)
 				.getVisibility());
@@ -91,10 +91,6 @@ public class ConfigTestCase extends
 				.getVisibility());
 	}
 
-	public void test左にフリックすると非表示() {
-		test運行管理ボタンを押したら表示();
-
-	}
 
 	@Override
 	public void tearDown() throws Exception {

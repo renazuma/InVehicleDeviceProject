@@ -24,26 +24,54 @@ public class ScheduleTestCase extends
 		solo = new Solo(getInstrumentation(), getActivity());
 	}
 
-	public void test起動時は非表示() {
-		assertEquals("予定",
+	public void test01起動時は非表示() {
+		assertEquals("本日の運行予定",
 				((Button) solo.getView(R.id.schedule_button)).getText());
 		assertEquals(View.GONE, solo.getView(R.id.schedule_layout)
 				.getVisibility());
 	}
 
-	public void test予定ボタンを押したら表示() {
-		test起動時は非表示();
+	public void test02予定ボタンを押したら表示() {
+		test01起動時は非表示();
 		solo.clickOnView(solo.getView(R.id.schedule_button));
-		assertEquals("予定",
-				((Button) solo.getView(R.id.schedule_button)).getText());
 		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_layout)
 				.getVisibility());
 	}
 
-	public void test予定ボタンを2回押したら非表示() {
-		test予定ボタンを押したら表示();
+	public void test03戻るボタンを押したら消える() {
+		test02予定ボタンを押したら表示();
+		solo.clickOnButton("戻る");
+		assertEquals(View.GONE, solo.getView(R.id.schedule_layout).getVisibility());
+	}
+
+	public void test04一回閉じてからもう一度予定ボタンを押したら表示() {
+		test03戻るボタンを押したら消える();
 		solo.clickOnView(solo.getView(R.id.schedule_button));
-		assertEquals("予定",
+		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_layout)
+				.getVisibility());
+	}
+
+	public void test05予定を表示してから上スクロール() {
+		test02予定ボタンを押したら表示();
+		// TODO 実装されたら修正
+		solo.clickOnView(solo.getView(R.id.schedule_button));
+		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_layout)
+				.getVisibility());
+	}
+
+	public void test06予定を表示してから下スクロール() {
+		test02予定ボタンを押したら表示();
+		// TODO 実装されたら修正
+		solo.clickOnView(solo.getView(R.id.schedule_button));
+		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_layout)
+				.getVisibility());
+	}
+
+	/* 全画面表示のためこれ以降は全部テスト削除
+	public void test03予定ボタンを2回押したら非表示() {
+		test02予定ボタンを押したら表示();
+		solo.clickOnView(solo.getView(R.id.schedule_button));
+		assertEquals("本日の運行予定",
 				((Button) solo.getView(R.id.schedule_button)).getText());
 		assertEquals(View.GONE, solo.getView(R.id.schedule_layout)
 				.getVisibility());
@@ -82,7 +110,7 @@ public class ScheduleTestCase extends
 		assertEquals(View.GONE, solo.getView(R.id.schedule_layout)
 				.getVisibility());
 	}
-
+*/
 	@Override
 	public void tearDown() throws Exception {
 		solo.finishOpenedActivities();
