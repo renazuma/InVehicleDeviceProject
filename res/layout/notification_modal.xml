@@ -8,10 +8,11 @@
     android:visibility="gone" >
 
     <TextView
+        android:id="@+id/vehicle_notification_body"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
-        android:text="管理者から連絡があります。"
+        android:text=""
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="#000000" />
 
