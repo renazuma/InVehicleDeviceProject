@@ -4,9 +4,12 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -38,7 +41,7 @@ abstract public class Model implements Serializable {
 		return value.toString();
 	}
 
-	protected static Object toJSON(Integer value) {
+	protected static Object toJSON(Long value) {
 		if (value == null) {
 			return JSONObject.NULL;
 		}
@@ -57,6 +60,24 @@ abstract public class Model implements Serializable {
 			return JSONObject.NULL;
 		}
 		return value;
+	}
+	
+	protected static Object toJSON(Optional<? extends Model> value) throws JSONException {
+		if (value == null || !value.isPresent()) {
+			return JSONObject.NULL;
+		}
+		return value.get().toJSONObject();
+	}
+	
+	protected static Object toJSON(List<? extends Model> value) throws JSONException {
+		if (value == null) {
+			return JSONObject.NULL;
+		}
+		JSONArray jsonArray = new JSONArray();
+		for (Model model : value) {
+			jsonArray.put(model.toJSONObject());
+		}
+		return jsonArray;
 	}
 
 	protected static Boolean parseBoolean(JSONObject jsonObject, String key)
@@ -79,12 +100,12 @@ abstract public class Model implements Serializable {
 		return date;
 	}
 
-	protected static Integer parseInteger(JSONObject jsonObject, String key)
+	protected static Long parseLong(JSONObject jsonObject, String key)
 			throws JSONException {
 		if (!jsonObject.has(key)) {
-			return 0;
+			return 0l;
 		}
-		return jsonObject.getInt(key);
+		return jsonObject.getLong(key);
 	}
 
 	protected static BigDecimal parseBigDecimal(JSONObject jsonObject,
@@ -116,8 +137,8 @@ abstract public class Model implements Serializable {
 		return value != null ? value : false;
 	}
 
-	protected static Integer wrapNull(Integer value) {
-		return value != null ? value : 0;
+	protected static Long wrapNull(Long value) {
+		return value != null ? value : 0l;
 	}
 
 	protected static Date wrapNull(Date value) {
@@ -134,5 +155,9 @@ abstract public class Model implements Serializable {
 
 	protected static <T> Optional<T> wrapNull(Optional<T> value) {
 		return value != null ? value : Optional.<T> absent();
+	}
+	
+	protected static <T> List<T> wrapNull(List<T> value) {
+		return value != null ? value : new LinkedList<T>();
 	}
 }

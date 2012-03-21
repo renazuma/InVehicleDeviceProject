@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.webapi.model;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
@@ -13,7 +14,7 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class InVehicleDevice extends Model {
-	private static final long serialVersionUID = 8953330848473833571L;
+	private static final long serialVersionUID = 7651487158057272391L;
 	public static final String JSON_NAME = "in_vehicle_device";
 	public static final String CONTROLLER_NAME = "in_vehicle_devices";
 
@@ -31,22 +32,37 @@ public class InVehicleDevice extends Model {
 	public InVehicleDevice() {
 	}
 
-	public InVehicleDevice(JSONObject jsonObject) throws JSONException,
-			ParseException {
+	public InVehicleDevice(JSONObject jsonObject) throws JSONException, ParseException {
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setDeletedAt(parseDate(jsonObject, "deleted_at"));
-		setId(parseInteger(jsonObject, "id"));
+		setId(parseLong(jsonObject, "id"));
 		setModelName(parseString(jsonObject, "model_name"));
-		setServiceProviderId(parseInteger(jsonObject, "service_provider_id"));
+		setServiceProviderId(parseLong(jsonObject, "service_provider_id"));
 		setTypeNumber(parseString(jsonObject, "type_number"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
+		setServiceUnit(ServiceUnit.parseList(jsonObject, "service_unit"));
+		setVehicleNotifications(VehicleNotification.parseList(jsonObject, "vehicle_notifications"));
+	}
+
+	public static List<InVehicleDevice> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
+		if (!jsonObject.has(key)) {
+			return new LinkedList<InVehicleDevice>();
+		}
+		JSONArray jsonArray = jsonObject.getJSONArray(key);
+		List<InVehicleDevice> models = new LinkedList<InVehicleDevice>();
+		for (Integer i = 0; i < jsonArray.length(); ++i) {
+			if (jsonArray.isNull(i)) {
+				continue;
+			}
+			models.add(new InVehicleDevice(jsonArray.getJSONObject(i)));
+		}
+		return models;
 	}
 
 	public static class ResponseConverter implements
 			WebAPI.ResponseConverter<InVehicleDevice> {
 		@Override
-		public InVehicleDevice convert(byte[] rawResponse)
-				throws JSONException, ParseException {
+		public InVehicleDevice convert(byte[] rawResponse) throws JSONException, ParseException {
 			return new InVehicleDevice(new JSONObject(new String(rawResponse)));
 		}
 	}
@@ -54,8 +70,8 @@ public class InVehicleDevice extends Model {
 	public static class ListResponseConverter implements
 			WebAPI.ResponseConverter<List<InVehicleDevice>> {
 		@Override
-		public List<InVehicleDevice> convert(byte[] rawResponse)
-				throws JSONException, ParseException {
+		public List<InVehicleDevice> convert(byte[] rawResponse) throws JSONException,
+				ParseException {
 			JSONArray array = new JSONArray(new String(rawResponse));
 			List<InVehicleDevice> models = new LinkedList<InVehicleDevice>();
 			for (Integer i = 0; i < array.length(); ++i) {
@@ -76,10 +92,11 @@ public class InVehicleDevice extends Model {
 		jsonObject.put("deleted_at", toJSON(getDeletedAt().orNull()));
 		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("model_name", toJSON(getModelName()));
-		jsonObject.put("service_provider_id", toJSON(getServiceProviderId()
-				.orNull()));
+		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
 		jsonObject.put("type_number", toJSON(getTypeNumber()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
+		jsonObject.put("service_unit", toJSON(getServiceUnit()));
+		jsonObject.put("vehicle_notifications", toJSON(getVehicleNotifications()));
 		return jsonObject;
 	}
 
@@ -90,11 +107,10 @@ public class InVehicleDevice extends Model {
 	}
 
 	public void setCreatedAt(Date createdAt) {
-		errorIfNull(createdAt);
 		this.createdAt = wrapNull(createdAt);
 	}
 
-	private Optional<Date> deletedAt = Optional.<Date> absent();
+	private Optional<Date> deletedAt = Optional.<Date>absent();
 
 	public Optional<Date> getDeletedAt() {
 		return wrapNull(deletedAt);
@@ -109,17 +125,16 @@ public class InVehicleDevice extends Model {
 	}
 
 	public void clearDeletedAt() {
-		this.deletedAt = Optional.<Date> absent();
+		this.deletedAt = Optional.<Date>absent();
 	}
 
-	private Integer id = 0;
+	private Long id = 0l;
 
-	public Integer getId() {
+	public Long getId() {
 		return wrapNull(id);
 	}
 
-	public void setId(Integer id) {
-		errorIfNull(id);
+	public void setId(Long id) {
 		this.id = wrapNull(id);
 	}
 
@@ -130,26 +145,25 @@ public class InVehicleDevice extends Model {
 	}
 
 	public void setModelName(String modelName) {
-		errorIfNull(modelName);
 		this.modelName = wrapNull(modelName);
 	}
 
-	private Optional<Integer> serviceProviderId = Optional.<Integer> absent();
+	private Optional<Long> serviceProviderId = Optional.<Long>absent();
 
-	public Optional<Integer> getServiceProviderId() {
+	public Optional<Long> getServiceProviderId() {
 		return wrapNull(serviceProviderId);
 	}
 
-	public void setServiceProviderId(Optional<Integer> serviceProviderId) {
+	public void setServiceProviderId(Optional<Long> serviceProviderId) {
 		this.serviceProviderId = wrapNull(serviceProviderId);
 	}
 
-	public void setServiceProviderId(Integer serviceProviderId) {
+	public void setServiceProviderId(Long serviceProviderId) {
 		this.serviceProviderId = Optional.fromNullable(serviceProviderId);
 	}
 
 	public void clearServiceProviderId() {
-		this.serviceProviderId = Optional.<Integer> absent();
+		this.serviceProviderId = Optional.<Long>absent();
 	}
 
 	private String typeNumber = "";
@@ -159,7 +173,6 @@ public class InVehicleDevice extends Model {
 	}
 
 	public void setTypeNumber(String typeNumber) {
-		errorIfNull(typeNumber);
 		this.typeNumber = wrapNull(typeNumber);
 	}
 
@@ -170,7 +183,34 @@ public class InVehicleDevice extends Model {
 	}
 
 	public void setUpdatedAt(Date updatedAt) {
-		errorIfNull(updatedAt);
 		this.updatedAt = wrapNull(updatedAt);
+	}
+
+	private List<ServiceUnit> serviceUnit = new LinkedList<ServiceUnit>();
+
+	public List<ServiceUnit> getServiceUnit() {
+		return new LinkedList<ServiceUnit>(wrapNull(serviceUnit));
+	}
+
+	public void setServiceUnit(List<ServiceUnit> serviceUnit) {
+		this.serviceUnit = wrapNull(serviceUnit);
+	}
+
+	public void clearServiceUnit() {
+		this.serviceUnit = new LinkedList<ServiceUnit>();
+	}
+
+	private List<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();
+
+	public List<VehicleNotification> getVehicleNotifications() {
+		return new LinkedList<VehicleNotification>(wrapNull(vehicleNotifications));
+	}
+
+	public void setVehicleNotifications(List<VehicleNotification> vehicleNotifications) {
+		this.vehicleNotifications = wrapNull(vehicleNotifications);
+	}
+
+	public void clearVehicleNotifications() {
+		this.vehicleNotifications = new LinkedList<VehicleNotification>();
 	}
 }

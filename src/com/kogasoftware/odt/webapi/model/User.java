@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.webapi.model;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
@@ -13,7 +14,7 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class User extends Model {
-	private static final long serialVersionUID = 4155452180628792928L;
+	private static final long serialVersionUID = 9098491579212830459L;
 	public static final String JSON_NAME = "user";
 	public static final String CONTROLLER_NAME = "users";
 
@@ -33,7 +34,7 @@ public class User extends Model {
 
 	public User(JSONObject jsonObject) throws JSONException, ParseException {
 		setAddress(parseString(jsonObject, "address"));
-		setAge(parseInteger(jsonObject, "age"));
+		setAge(parseLong(jsonObject, "age"));
 		setBirthday(parseDate(jsonObject, "birthday"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setCurrentSignInAt(parseDate(jsonObject, "current_sign_in_at"));
@@ -46,33 +47,47 @@ public class User extends Model {
 		setFamilyNameRuby(parseString(jsonObject, "family_name_ruby"));
 		setFelicaId(parseString(jsonObject, "felica_id"));
 		setHandicapped(parseBoolean(jsonObject, "handicapped"));
-		setId(parseInteger(jsonObject, "id"));
+		setId(parseLong(jsonObject, "id"));
 		setLastName(parseString(jsonObject, "last_name"));
 		setLastNameRuby(parseString(jsonObject, "last_name_ruby"));
 		setLastSignInAt(parseDate(jsonObject, "last_sign_in_at"));
 		setLastSignInIp(parseString(jsonObject, "last_sign_in_ip"));
 		setLogin(parseString(jsonObject, "login"));
 		setNeededCare(parseBoolean(jsonObject, "needed_care"));
-		setRecommendNotification(parseBoolean(jsonObject,
-				"recommend_notification"));
+		setRecommendNotification(parseBoolean(jsonObject, "recommend_notification"));
 		setRecommendOk(parseBoolean(jsonObject, "recommend_ok"));
 		setRememberCreatedAt(parseDate(jsonObject, "remember_created_at"));
 		setReserveNotification(parseBoolean(jsonObject, "reserve_notification"));
-		setServiceProviderId(parseInteger(jsonObject, "service_provider_id"));
-		setSex(parseInteger(jsonObject, "sex"));
-		setSignInCount(parseInteger(jsonObject, "sign_in_count"));
+		setServiceProviderId(parseLong(jsonObject, "service_provider_id"));
+		setSex(parseLong(jsonObject, "sex"));
+		setSignInCount(parseLong(jsonObject, "sign_in_count"));
 		setTelephoneNumber(parseString(jsonObject, "telephone_number"));
 		setTelephoneNumber2(parseString(jsonObject, "telephone_number2"));
 		setUpdateNotification(parseBoolean(jsonObject, "update_notification"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setWheelchair(parseBoolean(jsonObject, "wheelchair"));
+		setReservations(Reservation.parseList(jsonObject, "reservations"));
+	}
+
+	public static List<User> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
+		if (!jsonObject.has(key)) {
+			return new LinkedList<User>();
+		}
+		JSONArray jsonArray = jsonObject.getJSONArray(key);
+		List<User> models = new LinkedList<User>();
+		for (Integer i = 0; i < jsonArray.length(); ++i) {
+			if (jsonArray.isNull(i)) {
+				continue;
+			}
+			models.add(new User(jsonArray.getJSONObject(i)));
+		}
+		return models;
 	}
 
 	public static class ResponseConverter implements
 			WebAPI.ResponseConverter<User> {
 		@Override
-		public User convert(byte[] rawResponse) throws JSONException,
-				ParseException {
+		public User convert(byte[] rawResponse) throws JSONException, ParseException {
 			return new User(new JSONObject(new String(rawResponse)));
 		}
 	}
@@ -102,10 +117,8 @@ public class User extends Model {
 		jsonObject.put("age", toJSON(getAge()));
 		jsonObject.put("birthday", toJSON(getBirthday()));
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
-		jsonObject.put("current_sign_in_at", toJSON(getCurrentSignInAt()
-				.orNull()));
-		jsonObject.put("current_sign_in_ip", toJSON(getCurrentSignInIp()
-				.orNull()));
+		jsonObject.put("current_sign_in_at", toJSON(getCurrentSignInAt().orNull()));
+		jsonObject.put("current_sign_in_ip", toJSON(getCurrentSignInIp().orNull()));
 		jsonObject.put("deleted_at", toJSON(getDeletedAt().orNull()));
 		jsonObject.put("email", toJSON(getEmail().orNull()));
 		jsonObject.put("email2", toJSON(getEmail2().orNull()));
@@ -121,24 +134,19 @@ public class User extends Model {
 		jsonObject.put("last_sign_in_ip", toJSON(getLastSignInIp().orNull()));
 		jsonObject.put("login", toJSON(getLogin()));
 		jsonObject.put("needed_care", toJSON(getNeededCare().orNull()));
-		jsonObject.put("recommend_notification",
-				toJSON(getRecommendNotification().orNull()));
+		jsonObject.put("recommend_notification", toJSON(getRecommendNotification().orNull()));
 		jsonObject.put("recommend_ok", toJSON(getRecommendOk().orNull()));
-		jsonObject.put("remember_created_at", toJSON(getRememberCreatedAt()
-				.orNull()));
-		jsonObject.put("reserve_notification", toJSON(getReserveNotification()
-				.orNull()));
-		jsonObject.put("service_provider_id", toJSON(getServiceProviderId()
-				.orNull()));
+		jsonObject.put("remember_created_at", toJSON(getRememberCreatedAt().orNull()));
+		jsonObject.put("reserve_notification", toJSON(getReserveNotification().orNull()));
+		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
 		jsonObject.put("sex", toJSON(getSex()));
 		jsonObject.put("sign_in_count", toJSON(getSignInCount().orNull()));
 		jsonObject.put("telephone_number", toJSON(getTelephoneNumber()));
-		jsonObject.put("telephone_number2", toJSON(getTelephoneNumber2()
-				.orNull()));
-		jsonObject.put("update_notification", toJSON(getUpdateNotification()
-				.orNull()));
+		jsonObject.put("telephone_number2", toJSON(getTelephoneNumber2().orNull()));
+		jsonObject.put("update_notification", toJSON(getUpdateNotification().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
 		jsonObject.put("wheelchair", toJSON(getWheelchair().orNull()));
+		jsonObject.put("reservations", toJSON(getReservations()));
 		return jsonObject;
 	}
 
@@ -149,18 +157,16 @@ public class User extends Model {
 	}
 
 	public void setAddress(String address) {
-		errorIfNull(address);
 		this.address = wrapNull(address);
 	}
 
-	private Integer age = 0;
+	private Long age = 0l;
 
-	public Integer getAge() {
+	public Long getAge() {
 		return wrapNull(age);
 	}
 
-	public void setAge(Integer age) {
-		errorIfNull(age);
+	public void setAge(Long age) {
 		this.age = wrapNull(age);
 	}
 
@@ -171,7 +177,6 @@ public class User extends Model {
 	}
 
 	public void setBirthday(Date birthday) {
-		errorIfNull(birthday);
 		this.birthday = wrapNull(birthday);
 	}
 
@@ -182,11 +187,10 @@ public class User extends Model {
 	}
 
 	public void setCreatedAt(Date createdAt) {
-		errorIfNull(createdAt);
 		this.createdAt = wrapNull(createdAt);
 	}
 
-	private Optional<Date> currentSignInAt = Optional.<Date> absent();
+	private Optional<Date> currentSignInAt = Optional.<Date>absent();
 
 	public Optional<Date> getCurrentSignInAt() {
 		return wrapNull(currentSignInAt);
@@ -201,10 +205,10 @@ public class User extends Model {
 	}
 
 	public void clearCurrentSignInAt() {
-		this.currentSignInAt = Optional.<Date> absent();
+		this.currentSignInAt = Optional.<Date>absent();
 	}
 
-	private Optional<String> currentSignInIp = Optional.<String> absent();
+	private Optional<String> currentSignInIp = Optional.<String>absent();
 
 	public Optional<String> getCurrentSignInIp() {
 		return wrapNull(currentSignInIp);
@@ -219,10 +223,10 @@ public class User extends Model {
 	}
 
 	public void clearCurrentSignInIp() {
-		this.currentSignInIp = Optional.<String> absent();
+		this.currentSignInIp = Optional.<String>absent();
 	}
 
-	private Optional<Date> deletedAt = Optional.<Date> absent();
+	private Optional<Date> deletedAt = Optional.<Date>absent();
 
 	public Optional<Date> getDeletedAt() {
 		return wrapNull(deletedAt);
@@ -237,10 +241,10 @@ public class User extends Model {
 	}
 
 	public void clearDeletedAt() {
-		this.deletedAt = Optional.<Date> absent();
+		this.deletedAt = Optional.<Date>absent();
 	}
 
-	private Optional<String> email = Optional.<String> absent();
+	private Optional<String> email = Optional.<String>absent();
 
 	public Optional<String> getEmail() {
 		return wrapNull(email);
@@ -255,10 +259,10 @@ public class User extends Model {
 	}
 
 	public void clearEmail() {
-		this.email = Optional.<String> absent();
+		this.email = Optional.<String>absent();
 	}
 
-	private Optional<String> email2 = Optional.<String> absent();
+	private Optional<String> email2 = Optional.<String>absent();
 
 	public Optional<String> getEmail2() {
 		return wrapNull(email2);
@@ -273,7 +277,7 @@ public class User extends Model {
 	}
 
 	public void clearEmail2() {
-		this.email2 = Optional.<String> absent();
+		this.email2 = Optional.<String>absent();
 	}
 
 	private String encryptedPassword = "";
@@ -283,7 +287,6 @@ public class User extends Model {
 	}
 
 	public void setEncryptedPassword(String encryptedPassword) {
-		errorIfNull(encryptedPassword);
 		this.encryptedPassword = wrapNull(encryptedPassword);
 	}
 
@@ -294,7 +297,6 @@ public class User extends Model {
 	}
 
 	public void setFamilyName(String familyName) {
-		errorIfNull(familyName);
 		this.familyName = wrapNull(familyName);
 	}
 
@@ -305,11 +307,10 @@ public class User extends Model {
 	}
 
 	public void setFamilyNameRuby(String familyNameRuby) {
-		errorIfNull(familyNameRuby);
 		this.familyNameRuby = wrapNull(familyNameRuby);
 	}
 
-	private Optional<String> felicaId = Optional.<String> absent();
+	private Optional<String> felicaId = Optional.<String>absent();
 
 	public Optional<String> getFelicaId() {
 		return wrapNull(felicaId);
@@ -324,10 +325,10 @@ public class User extends Model {
 	}
 
 	public void clearFelicaId() {
-		this.felicaId = Optional.<String> absent();
+		this.felicaId = Optional.<String>absent();
 	}
 
-	private Optional<Boolean> handicapped = Optional.<Boolean> absent();
+	private Optional<Boolean> handicapped = Optional.<Boolean>absent();
 
 	public Optional<Boolean> getHandicapped() {
 		return wrapNull(handicapped);
@@ -342,17 +343,16 @@ public class User extends Model {
 	}
 
 	public void clearHandicapped() {
-		this.handicapped = Optional.<Boolean> absent();
+		this.handicapped = Optional.<Boolean>absent();
 	}
 
-	private Integer id = 0;
+	private Long id = 0l;
 
-	public Integer getId() {
+	public Long getId() {
 		return wrapNull(id);
 	}
 
-	public void setId(Integer id) {
-		errorIfNull(id);
+	public void setId(Long id) {
 		this.id = wrapNull(id);
 	}
 
@@ -363,7 +363,6 @@ public class User extends Model {
 	}
 
 	public void setLastName(String lastName) {
-		errorIfNull(lastName);
 		this.lastName = wrapNull(lastName);
 	}
 
@@ -374,11 +373,10 @@ public class User extends Model {
 	}
 
 	public void setLastNameRuby(String lastNameRuby) {
-		errorIfNull(lastNameRuby);
 		this.lastNameRuby = wrapNull(lastNameRuby);
 	}
 
-	private Optional<Date> lastSignInAt = Optional.<Date> absent();
+	private Optional<Date> lastSignInAt = Optional.<Date>absent();
 
 	public Optional<Date> getLastSignInAt() {
 		return wrapNull(lastSignInAt);
@@ -393,10 +391,10 @@ public class User extends Model {
 	}
 
 	public void clearLastSignInAt() {
-		this.lastSignInAt = Optional.<Date> absent();
+		this.lastSignInAt = Optional.<Date>absent();
 	}
 
-	private Optional<String> lastSignInIp = Optional.<String> absent();
+	private Optional<String> lastSignInIp = Optional.<String>absent();
 
 	public Optional<String> getLastSignInIp() {
 		return wrapNull(lastSignInIp);
@@ -411,7 +409,7 @@ public class User extends Model {
 	}
 
 	public void clearLastSignInIp() {
-		this.lastSignInIp = Optional.<String> absent();
+		this.lastSignInIp = Optional.<String>absent();
 	}
 
 	private String login = "";
@@ -421,11 +419,10 @@ public class User extends Model {
 	}
 
 	public void setLogin(String login) {
-		errorIfNull(login);
 		this.login = wrapNull(login);
 	}
 
-	private Optional<Boolean> neededCare = Optional.<Boolean> absent();
+	private Optional<Boolean> neededCare = Optional.<Boolean>absent();
 
 	public Optional<Boolean> getNeededCare() {
 		return wrapNull(neededCare);
@@ -440,11 +437,10 @@ public class User extends Model {
 	}
 
 	public void clearNeededCare() {
-		this.neededCare = Optional.<Boolean> absent();
+		this.neededCare = Optional.<Boolean>absent();
 	}
 
-	private Optional<Boolean> recommendNotification = Optional
-			.<Boolean> absent();
+	private Optional<Boolean> recommendNotification = Optional.<Boolean>absent();
 
 	public Optional<Boolean> getRecommendNotification() {
 		return wrapNull(recommendNotification);
@@ -455,15 +451,14 @@ public class User extends Model {
 	}
 
 	public void setRecommendNotification(Boolean recommendNotification) {
-		this.recommendNotification = Optional
-				.fromNullable(recommendNotification);
+		this.recommendNotification = Optional.fromNullable(recommendNotification);
 	}
 
 	public void clearRecommendNotification() {
-		this.recommendNotification = Optional.<Boolean> absent();
+		this.recommendNotification = Optional.<Boolean>absent();
 	}
 
-	private Optional<Boolean> recommendOk = Optional.<Boolean> absent();
+	private Optional<Boolean> recommendOk = Optional.<Boolean>absent();
 
 	public Optional<Boolean> getRecommendOk() {
 		return wrapNull(recommendOk);
@@ -478,10 +473,10 @@ public class User extends Model {
 	}
 
 	public void clearRecommendOk() {
-		this.recommendOk = Optional.<Boolean> absent();
+		this.recommendOk = Optional.<Boolean>absent();
 	}
 
-	private Optional<Date> rememberCreatedAt = Optional.<Date> absent();
+	private Optional<Date> rememberCreatedAt = Optional.<Date>absent();
 
 	public Optional<Date> getRememberCreatedAt() {
 		return wrapNull(rememberCreatedAt);
@@ -496,10 +491,10 @@ public class User extends Model {
 	}
 
 	public void clearRememberCreatedAt() {
-		this.rememberCreatedAt = Optional.<Date> absent();
+		this.rememberCreatedAt = Optional.<Date>absent();
 	}
 
-	private Optional<Boolean> reserveNotification = Optional.<Boolean> absent();
+	private Optional<Boolean> reserveNotification = Optional.<Boolean>absent();
 
 	public Optional<Boolean> getReserveNotification() {
 		return wrapNull(reserveNotification);
@@ -514,54 +509,53 @@ public class User extends Model {
 	}
 
 	public void clearReserveNotification() {
-		this.reserveNotification = Optional.<Boolean> absent();
+		this.reserveNotification = Optional.<Boolean>absent();
 	}
 
-	private Optional<Integer> serviceProviderId = Optional.<Integer> absent();
+	private Optional<Long> serviceProviderId = Optional.<Long>absent();
 
-	public Optional<Integer> getServiceProviderId() {
+	public Optional<Long> getServiceProviderId() {
 		return wrapNull(serviceProviderId);
 	}
 
-	public void setServiceProviderId(Optional<Integer> serviceProviderId) {
+	public void setServiceProviderId(Optional<Long> serviceProviderId) {
 		this.serviceProviderId = wrapNull(serviceProviderId);
 	}
 
-	public void setServiceProviderId(Integer serviceProviderId) {
+	public void setServiceProviderId(Long serviceProviderId) {
 		this.serviceProviderId = Optional.fromNullable(serviceProviderId);
 	}
 
 	public void clearServiceProviderId() {
-		this.serviceProviderId = Optional.<Integer> absent();
+		this.serviceProviderId = Optional.<Long>absent();
 	}
 
-	private Integer sex = 0;
+	private Long sex = 0l;
 
-	public Integer getSex() {
+	public Long getSex() {
 		return wrapNull(sex);
 	}
 
-	public void setSex(Integer sex) {
-		errorIfNull(sex);
+	public void setSex(Long sex) {
 		this.sex = wrapNull(sex);
 	}
 
-	private Optional<Integer> signInCount = Optional.<Integer> absent();
+	private Optional<Long> signInCount = Optional.<Long>absent();
 
-	public Optional<Integer> getSignInCount() {
+	public Optional<Long> getSignInCount() {
 		return wrapNull(signInCount);
 	}
 
-	public void setSignInCount(Optional<Integer> signInCount) {
+	public void setSignInCount(Optional<Long> signInCount) {
 		this.signInCount = wrapNull(signInCount);
 	}
 
-	public void setSignInCount(Integer signInCount) {
+	public void setSignInCount(Long signInCount) {
 		this.signInCount = Optional.fromNullable(signInCount);
 	}
 
 	public void clearSignInCount() {
-		this.signInCount = Optional.<Integer> absent();
+		this.signInCount = Optional.<Long>absent();
 	}
 
 	private String telephoneNumber = "";
@@ -571,11 +565,10 @@ public class User extends Model {
 	}
 
 	public void setTelephoneNumber(String telephoneNumber) {
-		errorIfNull(telephoneNumber);
 		this.telephoneNumber = wrapNull(telephoneNumber);
 	}
 
-	private Optional<String> telephoneNumber2 = Optional.<String> absent();
+	private Optional<String> telephoneNumber2 = Optional.<String>absent();
 
 	public Optional<String> getTelephoneNumber2() {
 		return wrapNull(telephoneNumber2);
@@ -590,10 +583,10 @@ public class User extends Model {
 	}
 
 	public void clearTelephoneNumber2() {
-		this.telephoneNumber2 = Optional.<String> absent();
+		this.telephoneNumber2 = Optional.<String>absent();
 	}
 
-	private Optional<Boolean> updateNotification = Optional.<Boolean> absent();
+	private Optional<Boolean> updateNotification = Optional.<Boolean>absent();
 
 	public Optional<Boolean> getUpdateNotification() {
 		return wrapNull(updateNotification);
@@ -608,7 +601,7 @@ public class User extends Model {
 	}
 
 	public void clearUpdateNotification() {
-		this.updateNotification = Optional.<Boolean> absent();
+		this.updateNotification = Optional.<Boolean>absent();
 	}
 
 	private Date updatedAt = new Date();
@@ -618,11 +611,10 @@ public class User extends Model {
 	}
 
 	public void setUpdatedAt(Date updatedAt) {
-		errorIfNull(updatedAt);
 		this.updatedAt = wrapNull(updatedAt);
 	}
 
-	private Optional<Boolean> wheelchair = Optional.<Boolean> absent();
+	private Optional<Boolean> wheelchair = Optional.<Boolean>absent();
 
 	public Optional<Boolean> getWheelchair() {
 		return wrapNull(wheelchair);
@@ -637,6 +629,20 @@ public class User extends Model {
 	}
 
 	public void clearWheelchair() {
-		this.wheelchair = Optional.<Boolean> absent();
+		this.wheelchair = Optional.<Boolean>absent();
+	}
+
+	private List<Reservation> reservations = new LinkedList<Reservation>();
+
+	public List<Reservation> getReservations() {
+		return new LinkedList<Reservation>(wrapNull(reservations));
+	}
+
+	public void setReservations(List<Reservation> reservations) {
+		this.reservations = wrapNull(reservations);
+	}
+
+	public void clearReservations() {
+		this.reservations = new LinkedList<Reservation>();
 	}
 }

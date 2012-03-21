@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.webapi.model;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
@@ -13,7 +14,7 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class Operator extends Model {
-	private static final long serialVersionUID = 7179667735933769245L;
+	private static final long serialVersionUID = 6769644920772185125L;
 	public static final String JSON_NAME = "operator";
 	public static final String CONTROLLER_NAME = "operators";
 
@@ -33,22 +34,37 @@ public class Operator extends Model {
 		setEmail(parseString(jsonObject, "email"));
 		setEncryptedPassword(parseString(jsonObject, "encrypted_password"));
 		setFamilyName(parseString(jsonObject, "family_name"));
-		setId(parseInteger(jsonObject, "id"));
+		setId(parseLong(jsonObject, "id"));
 		setLastName(parseString(jsonObject, "last_name"));
 		setLastSignInAt(parseDate(jsonObject, "last_sign_in_at"));
 		setLastSignInIp(parseString(jsonObject, "last_sign_in_ip"));
 		setLogin(parseString(jsonObject, "login"));
 		setRememberCreatedAt(parseDate(jsonObject, "remember_created_at"));
-		setServiceProviderId(parseInteger(jsonObject, "service_provider_id"));
-		setSignInCount(parseInteger(jsonObject, "sign_in_count"));
+		setServiceProviderId(parseLong(jsonObject, "service_provider_id"));
+		setSignInCount(parseLong(jsonObject, "sign_in_count"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
+		setReservations(Reservation.parseList(jsonObject, "reservations"));
+	}
+
+	public static List<Operator> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
+		if (!jsonObject.has(key)) {
+			return new LinkedList<Operator>();
+		}
+		JSONArray jsonArray = jsonObject.getJSONArray(key);
+		List<Operator> models = new LinkedList<Operator>();
+		for (Integer i = 0; i < jsonArray.length(); ++i) {
+			if (jsonArray.isNull(i)) {
+				continue;
+			}
+			models.add(new Operator(jsonArray.getJSONObject(i)));
+		}
+		return models;
 	}
 
 	public static class ResponseConverter implements
 			WebAPI.ResponseConverter<Operator> {
 		@Override
-		public Operator convert(byte[] rawResponse) throws JSONException,
-				ParseException {
+		public Operator convert(byte[] rawResponse) throws JSONException, ParseException {
 			return new Operator(new JSONObject(new String(rawResponse)));
 		}
 	}
@@ -74,13 +90,10 @@ public class Operator extends Model {
 	@Override
 	public JSONObject toJSONObject() throws JSONException {
 		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("authentication_token", toJSON(getAuthenticationToken()
-				.orNull()));
+		jsonObject.put("authentication_token", toJSON(getAuthenticationToken().orNull()));
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
-		jsonObject.put("current_sign_in_at", toJSON(getCurrentSignInAt()
-				.orNull()));
-		jsonObject.put("current_sign_in_ip", toJSON(getCurrentSignInIp()
-				.orNull()));
+		jsonObject.put("current_sign_in_at", toJSON(getCurrentSignInAt().orNull()));
+		jsonObject.put("current_sign_in_ip", toJSON(getCurrentSignInIp().orNull()));
 		jsonObject.put("deleted_at", toJSON(getDeletedAt().orNull()));
 		jsonObject.put("email", toJSON(getEmail().orNull()));
 		jsonObject.put("encrypted_password", toJSON(getEncryptedPassword()));
@@ -90,16 +103,15 @@ public class Operator extends Model {
 		jsonObject.put("last_sign_in_at", toJSON(getLastSignInAt().orNull()));
 		jsonObject.put("last_sign_in_ip", toJSON(getLastSignInIp().orNull()));
 		jsonObject.put("login", toJSON(getLogin()));
-		jsonObject.put("remember_created_at", toJSON(getRememberCreatedAt()
-				.orNull()));
-		jsonObject.put("service_provider_id", toJSON(getServiceProviderId()
-				.orNull()));
+		jsonObject.put("remember_created_at", toJSON(getRememberCreatedAt().orNull()));
+		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
 		jsonObject.put("sign_in_count", toJSON(getSignInCount().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
+		jsonObject.put("reservations", toJSON(getReservations()));
 		return jsonObject;
 	}
 
-	private Optional<String> authenticationToken = Optional.<String> absent();
+	private Optional<String> authenticationToken = Optional.<String>absent();
 
 	public Optional<String> getAuthenticationToken() {
 		return wrapNull(authenticationToken);
@@ -114,7 +126,7 @@ public class Operator extends Model {
 	}
 
 	public void clearAuthenticationToken() {
-		this.authenticationToken = Optional.<String> absent();
+		this.authenticationToken = Optional.<String>absent();
 	}
 
 	private Date createdAt = new Date();
@@ -124,11 +136,10 @@ public class Operator extends Model {
 	}
 
 	public void setCreatedAt(Date createdAt) {
-		errorIfNull(createdAt);
 		this.createdAt = wrapNull(createdAt);
 	}
 
-	private Optional<Date> currentSignInAt = Optional.<Date> absent();
+	private Optional<Date> currentSignInAt = Optional.<Date>absent();
 
 	public Optional<Date> getCurrentSignInAt() {
 		return wrapNull(currentSignInAt);
@@ -143,10 +154,10 @@ public class Operator extends Model {
 	}
 
 	public void clearCurrentSignInAt() {
-		this.currentSignInAt = Optional.<Date> absent();
+		this.currentSignInAt = Optional.<Date>absent();
 	}
 
-	private Optional<String> currentSignInIp = Optional.<String> absent();
+	private Optional<String> currentSignInIp = Optional.<String>absent();
 
 	public Optional<String> getCurrentSignInIp() {
 		return wrapNull(currentSignInIp);
@@ -161,10 +172,10 @@ public class Operator extends Model {
 	}
 
 	public void clearCurrentSignInIp() {
-		this.currentSignInIp = Optional.<String> absent();
+		this.currentSignInIp = Optional.<String>absent();
 	}
 
-	private Optional<Date> deletedAt = Optional.<Date> absent();
+	private Optional<Date> deletedAt = Optional.<Date>absent();
 
 	public Optional<Date> getDeletedAt() {
 		return wrapNull(deletedAt);
@@ -179,10 +190,10 @@ public class Operator extends Model {
 	}
 
 	public void clearDeletedAt() {
-		this.deletedAt = Optional.<Date> absent();
+		this.deletedAt = Optional.<Date>absent();
 	}
 
-	private Optional<String> email = Optional.<String> absent();
+	private Optional<String> email = Optional.<String>absent();
 
 	public Optional<String> getEmail() {
 		return wrapNull(email);
@@ -197,7 +208,7 @@ public class Operator extends Model {
 	}
 
 	public void clearEmail() {
-		this.email = Optional.<String> absent();
+		this.email = Optional.<String>absent();
 	}
 
 	private String encryptedPassword = "";
@@ -207,7 +218,6 @@ public class Operator extends Model {
 	}
 
 	public void setEncryptedPassword(String encryptedPassword) {
-		errorIfNull(encryptedPassword);
 		this.encryptedPassword = wrapNull(encryptedPassword);
 	}
 
@@ -218,18 +228,16 @@ public class Operator extends Model {
 	}
 
 	public void setFamilyName(String familyName) {
-		errorIfNull(familyName);
 		this.familyName = wrapNull(familyName);
 	}
 
-	private Integer id = 0;
+	private Long id = 0l;
 
-	public Integer getId() {
+	public Long getId() {
 		return wrapNull(id);
 	}
 
-	public void setId(Integer id) {
-		errorIfNull(id);
+	public void setId(Long id) {
 		this.id = wrapNull(id);
 	}
 
@@ -240,11 +248,10 @@ public class Operator extends Model {
 	}
 
 	public void setLastName(String lastName) {
-		errorIfNull(lastName);
 		this.lastName = wrapNull(lastName);
 	}
 
-	private Optional<Date> lastSignInAt = Optional.<Date> absent();
+	private Optional<Date> lastSignInAt = Optional.<Date>absent();
 
 	public Optional<Date> getLastSignInAt() {
 		return wrapNull(lastSignInAt);
@@ -259,10 +266,10 @@ public class Operator extends Model {
 	}
 
 	public void clearLastSignInAt() {
-		this.lastSignInAt = Optional.<Date> absent();
+		this.lastSignInAt = Optional.<Date>absent();
 	}
 
-	private Optional<String> lastSignInIp = Optional.<String> absent();
+	private Optional<String> lastSignInIp = Optional.<String>absent();
 
 	public Optional<String> getLastSignInIp() {
 		return wrapNull(lastSignInIp);
@@ -277,7 +284,7 @@ public class Operator extends Model {
 	}
 
 	public void clearLastSignInIp() {
-		this.lastSignInIp = Optional.<String> absent();
+		this.lastSignInIp = Optional.<String>absent();
 	}
 
 	private String login = "";
@@ -287,11 +294,10 @@ public class Operator extends Model {
 	}
 
 	public void setLogin(String login) {
-		errorIfNull(login);
 		this.login = wrapNull(login);
 	}
 
-	private Optional<Date> rememberCreatedAt = Optional.<Date> absent();
+	private Optional<Date> rememberCreatedAt = Optional.<Date>absent();
 
 	public Optional<Date> getRememberCreatedAt() {
 		return wrapNull(rememberCreatedAt);
@@ -306,43 +312,43 @@ public class Operator extends Model {
 	}
 
 	public void clearRememberCreatedAt() {
-		this.rememberCreatedAt = Optional.<Date> absent();
+		this.rememberCreatedAt = Optional.<Date>absent();
 	}
 
-	private Optional<Integer> serviceProviderId = Optional.<Integer> absent();
+	private Optional<Long> serviceProviderId = Optional.<Long>absent();
 
-	public Optional<Integer> getServiceProviderId() {
+	public Optional<Long> getServiceProviderId() {
 		return wrapNull(serviceProviderId);
 	}
 
-	public void setServiceProviderId(Optional<Integer> serviceProviderId) {
+	public void setServiceProviderId(Optional<Long> serviceProviderId) {
 		this.serviceProviderId = wrapNull(serviceProviderId);
 	}
 
-	public void setServiceProviderId(Integer serviceProviderId) {
+	public void setServiceProviderId(Long serviceProviderId) {
 		this.serviceProviderId = Optional.fromNullable(serviceProviderId);
 	}
 
 	public void clearServiceProviderId() {
-		this.serviceProviderId = Optional.<Integer> absent();
+		this.serviceProviderId = Optional.<Long>absent();
 	}
 
-	private Optional<Integer> signInCount = Optional.<Integer> absent();
+	private Optional<Long> signInCount = Optional.<Long>absent();
 
-	public Optional<Integer> getSignInCount() {
+	public Optional<Long> getSignInCount() {
 		return wrapNull(signInCount);
 	}
 
-	public void setSignInCount(Optional<Integer> signInCount) {
+	public void setSignInCount(Optional<Long> signInCount) {
 		this.signInCount = wrapNull(signInCount);
 	}
 
-	public void setSignInCount(Integer signInCount) {
+	public void setSignInCount(Long signInCount) {
 		this.signInCount = Optional.fromNullable(signInCount);
 	}
 
 	public void clearSignInCount() {
-		this.signInCount = Optional.<Integer> absent();
+		this.signInCount = Optional.<Long>absent();
 	}
 
 	private Date updatedAt = new Date();
@@ -352,7 +358,20 @@ public class Operator extends Model {
 	}
 
 	public void setUpdatedAt(Date updatedAt) {
-		errorIfNull(updatedAt);
 		this.updatedAt = wrapNull(updatedAt);
+	}
+
+	private List<Reservation> reservations = new LinkedList<Reservation>();
+
+	public List<Reservation> getReservations() {
+		return new LinkedList<Reservation>(wrapNull(reservations));
+	}
+
+	public void setReservations(List<Reservation> reservations) {
+		this.reservations = wrapNull(reservations);
+	}
+
+	public void clearReservations() {
+		this.reservations = new LinkedList<Reservation>();
 	}
 }
