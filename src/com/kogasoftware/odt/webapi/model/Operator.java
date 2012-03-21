@@ -14,7 +14,7 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class Operator extends Model {
-	private static final long serialVersionUID = 6769644920772185125L;
+	private static final long serialVersionUID = 1752858335537567146L;
 	public static final String JSON_NAME = "operator";
 	public static final String CONTROLLER_NAME = "operators";
 
@@ -231,7 +231,7 @@ public class Operator extends Model {
 		this.familyName = wrapNull(familyName);
 	}
 
-	private Long id = 0l;
+	private Long id = 0L;
 
 	public Long getId() {
 		return wrapNull(id);
@@ -368,7 +368,7 @@ public class Operator extends Model {
 	}
 
 	public void setReservations(List<Reservation> reservations) {
-		this.reservations = wrapNull(reservations);
+		this.reservations = new LinkedList<Reservation>(wrapNull(reservations));
 	}
 
 	public void clearReservations() {

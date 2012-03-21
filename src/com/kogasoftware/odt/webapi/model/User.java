@@ -14,7 +14,7 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class User extends Model {
-	private static final long serialVersionUID = 9098491579212830459L;
+	private static final long serialVersionUID = 8463885786237546425L;
 	public static final String JSON_NAME = "user";
 	public static final String CONTROLLER_NAME = "users";
 
@@ -160,7 +160,7 @@ public class User extends Model {
 		this.address = wrapNull(address);
 	}
 
-	private Long age = 0l;
+	private Long age = 0L;
 
 	public Long getAge() {
 		return wrapNull(age);
@@ -346,7 +346,7 @@ public class User extends Model {
 		this.handicapped = Optional.<Boolean>absent();
 	}
 
-	private Long id = 0l;
+	private Long id = 0L;
 
 	public Long getId() {
 		return wrapNull(id);
@@ -530,7 +530,7 @@ public class User extends Model {
 		this.serviceProviderId = Optional.<Long>absent();
 	}
 
-	private Long sex = 0l;
+	private Long sex = 0L;
 
 	public Long getSex() {
 		return wrapNull(sex);
@@ -639,7 +639,7 @@ public class User extends Model {
 	}
 
 	public void setReservations(List<Reservation> reservations) {
-		this.reservations = wrapNull(reservations);
+		this.reservations = new LinkedList<Reservation>(wrapNull(reservations));
 	}
 
 	public void clearReservations() {

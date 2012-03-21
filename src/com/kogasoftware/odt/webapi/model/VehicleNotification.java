@@ -14,7 +14,7 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class VehicleNotification extends Model {
-	private static final long serialVersionUID = 400282977247472122L;
+	private static final long serialVersionUID = 5951424486350273356L;
 	public static final String JSON_NAME = "vehicle_notification";
 	public static final String CONTROLLER_NAME = "vehicle_notifications";
 
@@ -35,13 +35,13 @@ public class VehicleNotification extends Model {
 		setOperatorId(parseLong(jsonObject, "operator_id"));
 		setReadAt(parseDate(jsonObject, "read_at"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
-		setOperator(new Operator(jsonObject.getJSONObject("operator")));
-		if (getOperator().isPresent()) {
-			setOperatorId(getOperator().get().getId());
-		}
 		setInVehicleDevice(new InVehicleDevice(jsonObject.getJSONObject("in_vehicle_device")));
 		if (getInVehicleDevice().isPresent()) {
 			setInVehicleDeviceId(getInVehicleDevice().get().getId());
+		}
+		setOperator(new Operator(jsonObject.getJSONObject("operator")));
+		if (getOperator().isPresent()) {
+			setOperatorId(getOperator().get().getId());
 		}
 	}
 
@@ -96,13 +96,13 @@ public class VehicleNotification extends Model {
 		jsonObject.put("operator_id", toJSON(getOperatorId()));
 		jsonObject.put("read_at", toJSON(getReadAt().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
-		jsonObject.put("operator", toJSON(getOperator()));
-		if (getOperator().isPresent()) {
-			jsonObject.put("operator_id", toJSON(getOperator().get().getId()));
-		}
 		jsonObject.put("in_vehicle_device", toJSON(getInVehicleDevice()));
 		if (getInVehicleDevice().isPresent()) {
 			jsonObject.put("in_vehicle_device_id", toJSON(getInVehicleDevice().get().getId()));
+		}
+		jsonObject.put("operator", toJSON(getOperator()));
+		if (getOperator().isPresent()) {
+			jsonObject.put("operator_id", toJSON(getOperator().get().getId()));
 		}
 		return jsonObject;
 	}
@@ -135,7 +135,7 @@ public class VehicleNotification extends Model {
 		this.createdAt = wrapNull(createdAt);
 	}
 
-	private Long id = 0l;
+	private Long id = 0L;
 
 	public Long getId() {
 		return wrapNull(id);
@@ -145,7 +145,7 @@ public class VehicleNotification extends Model {
 		this.id = wrapNull(id);
 	}
 
-	private Long inVehicleDeviceId = 0l;
+	private Long inVehicleDeviceId = 0L;
 
 	public Long getInVehicleDeviceId() {
 		return wrapNull(inVehicleDeviceId);
@@ -155,7 +155,7 @@ public class VehicleNotification extends Model {
 		this.inVehicleDeviceId = wrapNull(inVehicleDeviceId);
 	}
 
-	private Long operatorId = 0l;
+	private Long operatorId = 0L;
 
 	public Long getOperatorId() {
 		return wrapNull(operatorId);
@@ -193,23 +193,6 @@ public class VehicleNotification extends Model {
 		this.updatedAt = wrapNull(updatedAt);
 	}
 
-	private Optional<Operator> operator = Optional.<Operator>absent();
-
-	public Optional<Operator> getOperator() {
-		return wrapNull(operator);
-	}
-
-	public void setOperator(Optional<Operator> operator) {
-		this.operator = wrapNull(operator);
-	}
-	public void setOperator(Operator operator) {
-		this.operator = Optional.<Operator>fromNullable(operator);
-	}
-
-	public void clearOperator() {
-		this.operator = Optional.<Operator>absent();
-	}
-
 	private Optional<InVehicleDevice> inVehicleDevice = Optional.<InVehicleDevice>absent();
 
 	public Optional<InVehicleDevice> getInVehicleDevice() {
@@ -219,11 +202,30 @@ public class VehicleNotification extends Model {
 	public void setInVehicleDevice(Optional<InVehicleDevice> inVehicleDevice) {
 		this.inVehicleDevice = wrapNull(inVehicleDevice);
 	}
+
 	public void setInVehicleDevice(InVehicleDevice inVehicleDevice) {
 		this.inVehicleDevice = Optional.<InVehicleDevice>fromNullable(inVehicleDevice);
 	}
 
 	public void clearInVehicleDevice() {
 		this.inVehicleDevice = Optional.<InVehicleDevice>absent();
+	}
+
+	private Optional<Operator> operator = Optional.<Operator>absent();
+
+	public Optional<Operator> getOperator() {
+		return wrapNull(operator);
+	}
+
+	public void setOperator(Optional<Operator> operator) {
+		this.operator = wrapNull(operator);
+	}
+
+	public void setOperator(Operator operator) {
+		this.operator = Optional.<Operator>fromNullable(operator);
+	}
+
+	public void clearOperator() {
+		this.operator = Optional.<Operator>absent();
 	}
 }

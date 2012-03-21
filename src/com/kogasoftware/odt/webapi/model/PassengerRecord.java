@@ -14,7 +14,7 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class PassengerRecord extends Model {
-	private static final long serialVersionUID = 8781642503014358823L;
+	private static final long serialVersionUID = 680082804497708447L;
 	public static final String JSON_NAME = "passenger_record";
 	public static final String CONTROLLER_NAME = "passenger_records";
 
@@ -39,17 +39,17 @@ public class PassengerRecord extends Model {
 		setServiceProviderId(parseLong(jsonObject, "service_provider_id"));
 		setTimestamp(parseDate(jsonObject, "timestamp"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
-		setReservation(new Reservation(jsonObject.getJSONObject("reservation")));
-		if (getReservation().isPresent()) {
-			setReservationId(getReservation().get().getId());
+		setArrivalOperationSchedule(new OperationSchedule(jsonObject.getJSONObject("arrival_operation_schedule")));
+		if (getArrivalOperationSchedule().isPresent()) {
+			setArrivalOperationScheduleId(getArrivalOperationSchedule().get().getId());
 		}
 		setDepartureOperationSchedule(new OperationSchedule(jsonObject.getJSONObject("departure_operation_schedule")));
 		if (getDepartureOperationSchedule().isPresent()) {
 			setDepartureOperationScheduleId(getDepartureOperationSchedule().get().getId());
 		}
-		setArrivalOperationSchedule(new OperationSchedule(jsonObject.getJSONObject("arrival_operation_schedule")));
-		if (getArrivalOperationSchedule().isPresent()) {
-			setArrivalOperationScheduleId(getArrivalOperationSchedule().get().getId());
+		setReservation(new Reservation(jsonObject.getJSONObject("reservation")));
+		if (getReservation().isPresent()) {
+			setReservationId(getReservation().get().getId());
 		}
 	}
 
@@ -110,17 +110,17 @@ public class PassengerRecord extends Model {
 		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
 		jsonObject.put("timestamp", toJSON(getTimestamp().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
-		jsonObject.put("reservation", toJSON(getReservation()));
-		if (getReservation().isPresent()) {
-			jsonObject.put("reservation_id", toJSON(getReservation().get().getId()));
+		jsonObject.put("arrival_operation_schedule", toJSON(getArrivalOperationSchedule()));
+		if (getArrivalOperationSchedule().isPresent()) {
+			jsonObject.put("arrival_operation_schedule_id", toJSON(getArrivalOperationSchedule().get().getId()));
 		}
 		jsonObject.put("departure_operation_schedule", toJSON(getDepartureOperationSchedule()));
 		if (getDepartureOperationSchedule().isPresent()) {
 			jsonObject.put("departure_operation_schedule_id", toJSON(getDepartureOperationSchedule().get().getId()));
 		}
-		jsonObject.put("arrival_operation_schedule", toJSON(getArrivalOperationSchedule()));
-		if (getArrivalOperationSchedule().isPresent()) {
-			jsonObject.put("arrival_operation_schedule_id", toJSON(getArrivalOperationSchedule().get().getId()));
+		jsonObject.put("reservation", toJSON(getReservation()));
+		if (getReservation().isPresent()) {
+			jsonObject.put("reservation_id", toJSON(getReservation().get().getId()));
 		}
 		return jsonObject;
 	}
@@ -171,7 +171,7 @@ public class PassengerRecord extends Model {
 		this.deletedAt = Optional.<Date>absent();
 	}
 
-	private Long departureOperationScheduleId = 0l;
+	private Long departureOperationScheduleId = 0L;
 
 	public Long getDepartureOperationScheduleId() {
 		return wrapNull(departureOperationScheduleId);
@@ -209,7 +209,7 @@ public class PassengerRecord extends Model {
 		this.getOnTime = wrapNull(getOnTime);
 	}
 
-	private Long head = 0l;
+	private Long head = 0L;
 
 	public Long getHead() {
 		return wrapNull(head);
@@ -219,7 +219,7 @@ public class PassengerRecord extends Model {
 		this.head = wrapNull(head);
 	}
 
-	private Long id = 0l;
+	private Long id = 0L;
 
 	public Long getId() {
 		return wrapNull(id);
@@ -311,21 +311,22 @@ public class PassengerRecord extends Model {
 		this.updatedAt = wrapNull(updatedAt);
 	}
 
-	private Optional<Reservation> reservation = Optional.<Reservation>absent();
+	private Optional<OperationSchedule> arrivalOperationSchedule = Optional.<OperationSchedule>absent();
 
-	public Optional<Reservation> getReservation() {
-		return wrapNull(reservation);
+	public Optional<OperationSchedule> getArrivalOperationSchedule() {
+		return wrapNull(arrivalOperationSchedule);
 	}
 
-	public void setReservation(Optional<Reservation> reservation) {
-		this.reservation = wrapNull(reservation);
-	}
-	public void setReservation(Reservation reservation) {
-		this.reservation = Optional.<Reservation>fromNullable(reservation);
+	public void setArrivalOperationSchedule(Optional<OperationSchedule> arrivalOperationSchedule) {
+		this.arrivalOperationSchedule = wrapNull(arrivalOperationSchedule);
 	}
 
-	public void clearReservation() {
-		this.reservation = Optional.<Reservation>absent();
+	public void setArrivalOperationSchedule(OperationSchedule arrivalOperationSchedule) {
+		this.arrivalOperationSchedule = Optional.<OperationSchedule>fromNullable(arrivalOperationSchedule);
+	}
+
+	public void clearArrivalOperationSchedule() {
+		this.arrivalOperationSchedule = Optional.<OperationSchedule>absent();
 	}
 
 	private Optional<OperationSchedule> departureOperationSchedule = Optional.<OperationSchedule>absent();
@@ -337,6 +338,7 @@ public class PassengerRecord extends Model {
 	public void setDepartureOperationSchedule(Optional<OperationSchedule> departureOperationSchedule) {
 		this.departureOperationSchedule = wrapNull(departureOperationSchedule);
 	}
+
 	public void setDepartureOperationSchedule(OperationSchedule departureOperationSchedule) {
 		this.departureOperationSchedule = Optional.<OperationSchedule>fromNullable(departureOperationSchedule);
 	}
@@ -345,20 +347,21 @@ public class PassengerRecord extends Model {
 		this.departureOperationSchedule = Optional.<OperationSchedule>absent();
 	}
 
-	private Optional<OperationSchedule> arrivalOperationSchedule = Optional.<OperationSchedule>absent();
+	private Optional<Reservation> reservation = Optional.<Reservation>absent();
 
-	public Optional<OperationSchedule> getArrivalOperationSchedule() {
-		return wrapNull(arrivalOperationSchedule);
+	public Optional<Reservation> getReservation() {
+		return wrapNull(reservation);
 	}
 
-	public void setArrivalOperationSchedule(Optional<OperationSchedule> arrivalOperationSchedule) {
-		this.arrivalOperationSchedule = wrapNull(arrivalOperationSchedule);
-	}
-	public void setArrivalOperationSchedule(OperationSchedule arrivalOperationSchedule) {
-		this.arrivalOperationSchedule = Optional.<OperationSchedule>fromNullable(arrivalOperationSchedule);
+	public void setReservation(Optional<Reservation> reservation) {
+		this.reservation = wrapNull(reservation);
 	}
 
-	public void clearArrivalOperationSchedule() {
-		this.arrivalOperationSchedule = Optional.<OperationSchedule>absent();
+	public void setReservation(Reservation reservation) {
+		this.reservation = Optional.<Reservation>fromNullable(reservation);
+	}
+
+	public void clearReservation() {
+		this.reservation = Optional.<Reservation>absent();
 	}
 }

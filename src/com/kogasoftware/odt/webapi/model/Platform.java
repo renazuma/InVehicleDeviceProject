@@ -14,7 +14,7 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class Platform extends Model {
-	private static final long serialVersionUID = 6509583642897973107L;
+	private static final long serialVersionUID = 8751315272371901275L;
 	public static final String JSON_NAME = "platform";
 	public static final String CONTROLLER_NAME = "platforms";
 
@@ -52,8 +52,8 @@ public class Platform extends Model {
 		setStartAt(parseDate(jsonObject, "start_at"));
 		setTypeOfDemand(parseLong(jsonObject, "type_of_demand"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
-		setReservationsAsDeparture(Reservation.parseList(jsonObject, "reservations_as_departure"));
 		setReservationsAsArrival(Reservation.parseList(jsonObject, "reservations_as_arrival"));
+		setReservationsAsDeparture(Reservation.parseList(jsonObject, "reservations_as_departure"));
 	}
 
 	public static List<Platform> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -117,8 +117,8 @@ public class Platform extends Model {
 		jsonObject.put("start_at", toJSON(getStartAt().orNull()));
 		jsonObject.put("type_of_demand", toJSON(getTypeOfDemand().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
-		jsonObject.put("reservations_as_departure", toJSON(getReservationsAsDeparture()));
 		jsonObject.put("reservations_as_arrival", toJSON(getReservationsAsArrival()));
+		jsonObject.put("reservations_as_departure", toJSON(getReservationsAsDeparture()));
 		return jsonObject;
 	}
 
@@ -204,7 +204,7 @@ public class Platform extends Model {
 		this.endAt = Optional.<Date>absent();
 	}
 
-	private Long id = 0l;
+	private Long id = 0L;
 
 	public Long getId() {
 		return wrapNull(id);
@@ -372,20 +372,6 @@ public class Platform extends Model {
 		this.updatedAt = wrapNull(updatedAt);
 	}
 
-	private List<Reservation> reservationsAsDeparture = new LinkedList<Reservation>();
-
-	public List<Reservation> getReservationsAsDeparture() {
-		return new LinkedList<Reservation>(wrapNull(reservationsAsDeparture));
-	}
-
-	public void setReservationsAsDeparture(List<Reservation> reservationsAsDeparture) {
-		this.reservationsAsDeparture = wrapNull(reservationsAsDeparture);
-	}
-
-	public void clearReservationsAsDeparture() {
-		this.reservationsAsDeparture = new LinkedList<Reservation>();
-	}
-
 	private List<Reservation> reservationsAsArrival = new LinkedList<Reservation>();
 
 	public List<Reservation> getReservationsAsArrival() {
@@ -393,10 +379,24 @@ public class Platform extends Model {
 	}
 
 	public void setReservationsAsArrival(List<Reservation> reservationsAsArrival) {
-		this.reservationsAsArrival = wrapNull(reservationsAsArrival);
+		this.reservationsAsArrival = new LinkedList<Reservation>(wrapNull(reservationsAsArrival));
 	}
 
 	public void clearReservationsAsArrival() {
 		this.reservationsAsArrival = new LinkedList<Reservation>();
+	}
+
+	private List<Reservation> reservationsAsDeparture = new LinkedList<Reservation>();
+
+	public List<Reservation> getReservationsAsDeparture() {
+		return new LinkedList<Reservation>(wrapNull(reservationsAsDeparture));
+	}
+
+	public void setReservationsAsDeparture(List<Reservation> reservationsAsDeparture) {
+		this.reservationsAsDeparture = new LinkedList<Reservation>(wrapNull(reservationsAsDeparture));
+	}
+
+	public void clearReservationsAsDeparture() {
+		this.reservationsAsDeparture = new LinkedList<Reservation>();
 	}
 }

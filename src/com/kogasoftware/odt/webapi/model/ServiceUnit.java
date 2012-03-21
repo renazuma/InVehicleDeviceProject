@@ -14,7 +14,7 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class ServiceUnit extends Model {
-	private static final long serialVersionUID = 4495261676060158988L;
+	private static final long serialVersionUID = 528519435709748444L;
 	public static final String JSON_NAME = "service_unit";
 	public static final String CONTROLLER_NAME = "service_units";
 
@@ -154,7 +154,7 @@ public class ServiceUnit extends Model {
 		this.deletedAt = Optional.<Date>absent();
 	}
 
-	private Long driverId = 0l;
+	private Long driverId = 0L;
 
 	public Long getDriverId() {
 		return wrapNull(driverId);
@@ -164,7 +164,7 @@ public class ServiceUnit extends Model {
 		this.driverId = wrapNull(driverId);
 	}
 
-	private Long id = 0l;
+	private Long id = 0L;
 
 	public Long getId() {
 		return wrapNull(id);
@@ -220,7 +220,7 @@ public class ServiceUnit extends Model {
 		this.updatedAt = wrapNull(updatedAt);
 	}
 
-	private Long vehicleId = 0l;
+	private Long vehicleId = 0L;
 
 	public Long getVehicleId() {
 		return wrapNull(vehicleId);
@@ -239,6 +239,7 @@ public class ServiceUnit extends Model {
 	public void setInVehicleDevice(Optional<InVehicleDevice> inVehicleDevice) {
 		this.inVehicleDevice = wrapNull(inVehicleDevice);
 	}
+
 	public void setInVehicleDevice(InVehicleDevice inVehicleDevice) {
 		this.inVehicleDevice = Optional.<InVehicleDevice>fromNullable(inVehicleDevice);
 	}

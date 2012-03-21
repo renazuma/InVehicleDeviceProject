@@ -14,7 +14,7 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class Reservation extends Model {
-	private static final long serialVersionUID = 2497294770570287151L;
+	private static final long serialVersionUID = 6799863680012621705L;
 	public static final String JSON_NAME = "reservation";
 	public static final String CONTROLLER_NAME = "reservations";
 
@@ -57,29 +57,29 @@ public class Reservation extends Model {
 		setUnitAssignmentId(parseLong(jsonObject, "unit_assignment_id"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setUserId(parseLong(jsonObject, "user_id"));
-		setUser(new User(jsonObject.getJSONObject("user")));
-		if (getUser().isPresent()) {
-			setUserId(getUser().get().getId());
+		setArrivalPlatform(new Platform(jsonObject.getJSONObject("arrival_platform")));
+		if (getArrivalPlatform().isPresent()) {
+			setArrivalPlatformId(getArrivalPlatform().get().getId());
 		}
-		setOperator(new Operator(jsonObject.getJSONObject("operator")));
-		if (getOperator().isPresent()) {
-			setOperatorId(getOperator().get().getId());
+		setArrivalSchedule(new OperationSchedule(jsonObject.getJSONObject("arrival_schedule")));
+		if (getArrivalSchedule().isPresent()) {
+			setArrivalScheduleId(getArrivalSchedule().get().getId());
 		}
 		setDeparturePlatform(new Platform(jsonObject.getJSONObject("departure_platform")));
 		if (getDeparturePlatform().isPresent()) {
 			setDeparturePlatformId(getDeparturePlatform().get().getId());
 		}
-		setArrivalPlatform(new Platform(jsonObject.getJSONObject("arrival_platform")));
-		if (getArrivalPlatform().isPresent()) {
-			setArrivalPlatformId(getArrivalPlatform().get().getId());
-		}
 		setDepartureSchedule(new OperationSchedule(jsonObject.getJSONObject("departure_schedule")));
 		if (getDepartureSchedule().isPresent()) {
 			setDepartureScheduleId(getDepartureSchedule().get().getId());
 		}
-		setArrivalSchedule(new OperationSchedule(jsonObject.getJSONObject("arrival_schedule")));
-		if (getArrivalSchedule().isPresent()) {
-			setArrivalScheduleId(getArrivalSchedule().get().getId());
+		setOperator(new Operator(jsonObject.getJSONObject("operator")));
+		if (getOperator().isPresent()) {
+			setOperatorId(getOperator().get().getId());
+		}
+		setUser(new User(jsonObject.getJSONObject("user")));
+		if (getUser().isPresent()) {
+			setUserId(getUser().get().getId());
 		}
 	}
 
@@ -148,29 +148,29 @@ public class Reservation extends Model {
 		jsonObject.put("unit_assignment_id", toJSON(getUnitAssignmentId()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
 		jsonObject.put("user_id", toJSON(getUserId()));
-		jsonObject.put("user", toJSON(getUser()));
-		if (getUser().isPresent()) {
-			jsonObject.put("user_id", toJSON(getUser().get().getId()));
+		jsonObject.put("arrival_platform", toJSON(getArrivalPlatform()));
+		if (getArrivalPlatform().isPresent()) {
+			jsonObject.put("arrival_platform_id", toJSON(getArrivalPlatform().get().getId()));
 		}
-		jsonObject.put("operator", toJSON(getOperator()));
-		if (getOperator().isPresent()) {
-			jsonObject.put("operator_id", toJSON(getOperator().get().getId()));
+		jsonObject.put("arrival_schedule", toJSON(getArrivalSchedule()));
+		if (getArrivalSchedule().isPresent()) {
+			jsonObject.put("arrival_schedule_id", toJSON(getArrivalSchedule().get().getId()));
 		}
 		jsonObject.put("departure_platform", toJSON(getDeparturePlatform()));
 		if (getDeparturePlatform().isPresent()) {
 			jsonObject.put("departure_platform_id", toJSON(getDeparturePlatform().get().getId()));
 		}
-		jsonObject.put("arrival_platform", toJSON(getArrivalPlatform()));
-		if (getArrivalPlatform().isPresent()) {
-			jsonObject.put("arrival_platform_id", toJSON(getArrivalPlatform().get().getId()));
-		}
 		jsonObject.put("departure_schedule", toJSON(getDepartureSchedule()));
 		if (getDepartureSchedule().isPresent()) {
 			jsonObject.put("departure_schedule_id", toJSON(getDepartureSchedule().get().getId()));
 		}
-		jsonObject.put("arrival_schedule", toJSON(getArrivalSchedule()));
-		if (getArrivalSchedule().isPresent()) {
-			jsonObject.put("arrival_schedule_id", toJSON(getArrivalSchedule().get().getId()));
+		jsonObject.put("operator", toJSON(getOperator()));
+		if (getOperator().isPresent()) {
+			jsonObject.put("operator_id", toJSON(getOperator().get().getId()));
+		}
+		jsonObject.put("user", toJSON(getUser()));
+		if (getUser().isPresent()) {
+			jsonObject.put("user_id", toJSON(getUser().get().getId()));
 		}
 		return jsonObject;
 	}
@@ -267,7 +267,7 @@ public class Reservation extends Model {
 		this.deletedAt = Optional.<Date>absent();
 	}
 
-	private Long demandId = 0l;
+	private Long demandId = 0L;
 
 	public Long getDemandId() {
 		return wrapNull(demandId);
@@ -341,7 +341,7 @@ public class Reservation extends Model {
 		this.departureTime = wrapNull(departureTime);
 	}
 
-	private Long head = 0l;
+	private Long head = 0L;
 
 	public Long getHead() {
 		return wrapNull(head);
@@ -351,7 +351,7 @@ public class Reservation extends Model {
 		this.head = wrapNull(head);
 	}
 
-	private Long id = 0l;
+	private Long id = 0L;
 
 	public Long getId() {
 		return wrapNull(id);
@@ -425,7 +425,7 @@ public class Reservation extends Model {
 		this.serviceProviderId = Optional.<Long>absent();
 	}
 
-	private Long status = 0l;
+	private Long status = 0L;
 
 	public Long getStatus() {
 		return wrapNull(status);
@@ -435,7 +435,7 @@ public class Reservation extends Model {
 		this.status = wrapNull(status);
 	}
 
-	private Long unitAssignmentId = 0l;
+	private Long unitAssignmentId = 0L;
 
 	public Long getUnitAssignmentId() {
 		return wrapNull(unitAssignmentId);
@@ -455,7 +455,7 @@ public class Reservation extends Model {
 		this.updatedAt = wrapNull(updatedAt);
 	}
 
-	private Long userId = 0l;
+	private Long userId = 0L;
 
 	public Long getUserId() {
 		return wrapNull(userId);
@@ -463,57 +463,6 @@ public class Reservation extends Model {
 
 	public void setUserId(Long userId) {
 		this.userId = wrapNull(userId);
-	}
-
-	private Optional<User> user = Optional.<User>absent();
-
-	public Optional<User> getUser() {
-		return wrapNull(user);
-	}
-
-	public void setUser(Optional<User> user) {
-		this.user = wrapNull(user);
-	}
-	public void setUser(User user) {
-		this.user = Optional.<User>fromNullable(user);
-	}
-
-	public void clearUser() {
-		this.user = Optional.<User>absent();
-	}
-
-	private Optional<Operator> operator = Optional.<Operator>absent();
-
-	public Optional<Operator> getOperator() {
-		return wrapNull(operator);
-	}
-
-	public void setOperator(Optional<Operator> operator) {
-		this.operator = wrapNull(operator);
-	}
-	public void setOperator(Operator operator) {
-		this.operator = Optional.<Operator>fromNullable(operator);
-	}
-
-	public void clearOperator() {
-		this.operator = Optional.<Operator>absent();
-	}
-
-	private Optional<Platform> departurePlatform = Optional.<Platform>absent();
-
-	public Optional<Platform> getDeparturePlatform() {
-		return wrapNull(departurePlatform);
-	}
-
-	public void setDeparturePlatform(Optional<Platform> departurePlatform) {
-		this.departurePlatform = wrapNull(departurePlatform);
-	}
-	public void setDeparturePlatform(Platform departurePlatform) {
-		this.departurePlatform = Optional.<Platform>fromNullable(departurePlatform);
-	}
-
-	public void clearDeparturePlatform() {
-		this.departurePlatform = Optional.<Platform>absent();
 	}
 
 	private Optional<Platform> arrivalPlatform = Optional.<Platform>absent();
@@ -525,29 +474,13 @@ public class Reservation extends Model {
 	public void setArrivalPlatform(Optional<Platform> arrivalPlatform) {
 		this.arrivalPlatform = wrapNull(arrivalPlatform);
 	}
+
 	public void setArrivalPlatform(Platform arrivalPlatform) {
 		this.arrivalPlatform = Optional.<Platform>fromNullable(arrivalPlatform);
 	}
 
 	public void clearArrivalPlatform() {
 		this.arrivalPlatform = Optional.<Platform>absent();
-	}
-
-	private Optional<OperationSchedule> departureSchedule = Optional.<OperationSchedule>absent();
-
-	public Optional<OperationSchedule> getDepartureSchedule() {
-		return wrapNull(departureSchedule);
-	}
-
-	public void setDepartureSchedule(Optional<OperationSchedule> departureSchedule) {
-		this.departureSchedule = wrapNull(departureSchedule);
-	}
-	public void setDepartureSchedule(OperationSchedule departureSchedule) {
-		this.departureSchedule = Optional.<OperationSchedule>fromNullable(departureSchedule);
-	}
-
-	public void clearDepartureSchedule() {
-		this.departureSchedule = Optional.<OperationSchedule>absent();
 	}
 
 	private Optional<OperationSchedule> arrivalSchedule = Optional.<OperationSchedule>absent();
@@ -559,11 +492,84 @@ public class Reservation extends Model {
 	public void setArrivalSchedule(Optional<OperationSchedule> arrivalSchedule) {
 		this.arrivalSchedule = wrapNull(arrivalSchedule);
 	}
+
 	public void setArrivalSchedule(OperationSchedule arrivalSchedule) {
 		this.arrivalSchedule = Optional.<OperationSchedule>fromNullable(arrivalSchedule);
 	}
 
 	public void clearArrivalSchedule() {
 		this.arrivalSchedule = Optional.<OperationSchedule>absent();
+	}
+
+	private Optional<Platform> departurePlatform = Optional.<Platform>absent();
+
+	public Optional<Platform> getDeparturePlatform() {
+		return wrapNull(departurePlatform);
+	}
+
+	public void setDeparturePlatform(Optional<Platform> departurePlatform) {
+		this.departurePlatform = wrapNull(departurePlatform);
+	}
+
+	public void setDeparturePlatform(Platform departurePlatform) {
+		this.departurePlatform = Optional.<Platform>fromNullable(departurePlatform);
+	}
+
+	public void clearDeparturePlatform() {
+		this.departurePlatform = Optional.<Platform>absent();
+	}
+
+	private Optional<OperationSchedule> departureSchedule = Optional.<OperationSchedule>absent();
+
+	public Optional<OperationSchedule> getDepartureSchedule() {
+		return wrapNull(departureSchedule);
+	}
+
+	public void setDepartureSchedule(Optional<OperationSchedule> departureSchedule) {
+		this.departureSchedule = wrapNull(departureSchedule);
+	}
+
+	public void setDepartureSchedule(OperationSchedule departureSchedule) {
+		this.departureSchedule = Optional.<OperationSchedule>fromNullable(departureSchedule);
+	}
+
+	public void clearDepartureSchedule() {
+		this.departureSchedule = Optional.<OperationSchedule>absent();
+	}
+
+	private Optional<Operator> operator = Optional.<Operator>absent();
+
+	public Optional<Operator> getOperator() {
+		return wrapNull(operator);
+	}
+
+	public void setOperator(Optional<Operator> operator) {
+		this.operator = wrapNull(operator);
+	}
+
+	public void setOperator(Operator operator) {
+		this.operator = Optional.<Operator>fromNullable(operator);
+	}
+
+	public void clearOperator() {
+		this.operator = Optional.<Operator>absent();
+	}
+
+	private Optional<User> user = Optional.<User>absent();
+
+	public Optional<User> getUser() {
+		return wrapNull(user);
+	}
+
+	public void setUser(Optional<User> user) {
+		this.user = wrapNull(user);
+	}
+
+	public void setUser(User user) {
+		this.user = Optional.<User>fromNullable(user);
+	}
+
+	public void clearUser() {
+		this.user = Optional.<User>absent();
 	}
 }
