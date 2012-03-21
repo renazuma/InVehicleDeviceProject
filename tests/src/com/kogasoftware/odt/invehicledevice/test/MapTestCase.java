@@ -47,6 +47,20 @@ public class MapTestCase extends
 				.getVisibility());
 	}
 
+	public void test05拡大ボタンを押下で地図が拡大する() {
+		test02地図ボタンを押したら表示();
+		solo.clickOnButton("拡大");
+		assertEquals(View.VISIBLE, solo.getView(R.id.map_overlay)
+				.getVisibility());
+	}
+
+	public void test06縮小ボタンを押下で地図が縮小する() {
+		test02地図ボタンを押したら表示();
+		solo.clickOnButton("縮小");
+		assertEquals(View.VISIBLE, solo.getView(R.id.map_overlay)
+				.getVisibility());
+	}
+
 	@Override
 	public void tearDown() throws Exception {
 		solo.finishOpenedActivities();

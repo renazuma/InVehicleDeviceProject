@@ -67,6 +67,12 @@ public class ScheduleTestCase extends
 				.getVisibility());
 	}
 
+	public void test07二回目の予定ボタン押下で表示() {
+		test02予定ボタンを押したら表示();
+		solo.clickOnView(solo.getView(R.id.config_button));
+		test02予定ボタンを押したら表示();
+	}
+
 	/* 全画面表示のためこれ以降は全部テスト削除
 	public void test03予定ボタンを2回押したら非表示() {
 		test02予定ボタンを押したら表示();
