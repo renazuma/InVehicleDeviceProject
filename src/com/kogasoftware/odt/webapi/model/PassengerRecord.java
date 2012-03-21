@@ -14,7 +14,7 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class PassengerRecord extends Model {
-	private static final long serialVersionUID = 680082804497708447L;
+	private static final long serialVersionUID = 6946519258347734679L;
 	public static final String JSON_NAME = "passenger_record";
 	public static final String CONTROLLER_NAME = "passenger_records";
 
@@ -26,18 +26,18 @@ public class PassengerRecord extends Model {
 	}
 
 	public PassengerRecord(JSONObject jsonObject) throws JSONException, ParseException {
-		setArrivalOperationScheduleId(parseLong(jsonObject, "arrival_operation_schedule_id"));
+		setArrivalOperationScheduleId(parseOptionalLong(jsonObject, "arrival_operation_schedule_id"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
-		setDeletedAt(parseDate(jsonObject, "deleted_at"));
+		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
 		setDepartureOperationScheduleId(parseLong(jsonObject, "departure_operation_schedule_id"));
-		setGetOffTime(parseDate(jsonObject, "get_off_time"));
+		setGetOffTime(parseOptionalDate(jsonObject, "get_off_time"));
 		setGetOnTime(parseDate(jsonObject, "get_on_time"));
 		setHead(parseLong(jsonObject, "head"));
 		setId(parseLong(jsonObject, "id"));
-		setPayment(parseBoolean(jsonObject, "payment"));
-		setReservationId(parseLong(jsonObject, "reservation_id"));
-		setServiceProviderId(parseLong(jsonObject, "service_provider_id"));
-		setTimestamp(parseDate(jsonObject, "timestamp"));
+		setPayment(parseOptionalBoolean(jsonObject, "payment"));
+		setReservationId(parseOptionalLong(jsonObject, "reservation_id"));
+		setServiceProviderId(parseOptionalLong(jsonObject, "service_provider_id"));
+		setTimestamp(parseOptionalDate(jsonObject, "timestamp"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setArrivalOperationSchedule(new OperationSchedule(jsonObject.getJSONObject("arrival_operation_schedule")));
 		if (getArrivalOperationSchedule().isPresent()) {
@@ -51,6 +51,13 @@ public class PassengerRecord extends Model {
 		if (getReservation().isPresent()) {
 			setReservationId(getReservation().get().getId());
 		}
+	}
+
+	public static Optional<PassengerRecord> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
+		if (!jsonObject.has(key)) {
+			return Optional.<PassengerRecord>absent();
+		}
+		return Optional.<PassengerRecord>of(new PassengerRecord(jsonObject.getJSONObject(key)));
 	}
 
 	public static List<PassengerRecord> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {

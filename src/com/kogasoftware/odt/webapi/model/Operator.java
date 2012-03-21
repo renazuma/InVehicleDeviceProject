@@ -14,7 +14,7 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class Operator extends Model {
-	private static final long serialVersionUID = 1752858335537567146L;
+	private static final long serialVersionUID = 4739984880327987854L;
 	public static final String JSON_NAME = "operator";
 	public static final String CONTROLLER_NAME = "operators";
 
@@ -26,24 +26,31 @@ public class Operator extends Model {
 	}
 
 	public Operator(JSONObject jsonObject) throws JSONException, ParseException {
-		setAuthenticationToken(parseString(jsonObject, "authentication_token"));
+		setAuthenticationToken(parseOptionalString(jsonObject, "authentication_token"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
-		setCurrentSignInAt(parseDate(jsonObject, "current_sign_in_at"));
-		setCurrentSignInIp(parseString(jsonObject, "current_sign_in_ip"));
-		setDeletedAt(parseDate(jsonObject, "deleted_at"));
-		setEmail(parseString(jsonObject, "email"));
+		setCurrentSignInAt(parseOptionalDate(jsonObject, "current_sign_in_at"));
+		setCurrentSignInIp(parseOptionalString(jsonObject, "current_sign_in_ip"));
+		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
+		setEmail(parseOptionalString(jsonObject, "email"));
 		setEncryptedPassword(parseString(jsonObject, "encrypted_password"));
 		setFamilyName(parseString(jsonObject, "family_name"));
 		setId(parseLong(jsonObject, "id"));
 		setLastName(parseString(jsonObject, "last_name"));
-		setLastSignInAt(parseDate(jsonObject, "last_sign_in_at"));
-		setLastSignInIp(parseString(jsonObject, "last_sign_in_ip"));
+		setLastSignInAt(parseOptionalDate(jsonObject, "last_sign_in_at"));
+		setLastSignInIp(parseOptionalString(jsonObject, "last_sign_in_ip"));
 		setLogin(parseString(jsonObject, "login"));
-		setRememberCreatedAt(parseDate(jsonObject, "remember_created_at"));
-		setServiceProviderId(parseLong(jsonObject, "service_provider_id"));
-		setSignInCount(parseLong(jsonObject, "sign_in_count"));
+		setRememberCreatedAt(parseOptionalDate(jsonObject, "remember_created_at"));
+		setServiceProviderId(parseOptionalLong(jsonObject, "service_provider_id"));
+		setSignInCount(parseOptionalLong(jsonObject, "sign_in_count"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setReservations(Reservation.parseList(jsonObject, "reservations"));
+	}
+
+	public static Optional<Operator> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
+		if (!jsonObject.has(key)) {
+			return Optional.<Operator>absent();
+		}
+		return Optional.<Operator>of(new Operator(jsonObject.getJSONObject(key)));
 	}
 
 	public static List<Operator> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {

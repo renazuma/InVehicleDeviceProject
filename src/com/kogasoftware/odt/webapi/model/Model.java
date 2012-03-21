@@ -79,6 +79,7 @@ abstract public class Model implements Serializable {
 		}
 		return jsonArray;
 	}
+	
 
 	protected static Boolean parseBoolean(JSONObject jsonObject, String key)
 			throws JSONException {
@@ -106,6 +107,34 @@ abstract public class Model implements Serializable {
 			return 0l;
 		}
 		return jsonObject.getLong(key);
+	}
+	
+	protected static Optional<Long> parseOptionalLong(JSONObject jsonObject, String key) throws JSONException {
+		if (!jsonObject.has(key)) {
+			return Optional.<Long>absent();
+		}
+		return Optional.<Long>of(parseLong(jsonObject, key));
+	}
+	
+	protected static Optional<String> parseOptionalString(JSONObject jsonObject, String key) throws JSONException {
+		if (!jsonObject.has(key)) {
+			return Optional.<String>absent();
+		}
+		return Optional.<String>of(parseString(jsonObject, key));
+	}
+	
+	protected static Optional<Date> parseOptionalDate(JSONObject jsonObject, String key) throws JSONException, ParseException {
+		if (!jsonObject.has(key)) {
+			return Optional.<Date>absent();
+		}
+		return Optional.<Date>of(parseDate(jsonObject, key));
+	}
+
+	protected static Optional<Boolean> parseOptionalBoolean(JSONObject jsonObject, String key) throws JSONException, ParseException {
+		if (!jsonObject.has(key)) {
+			return Optional.<Boolean>absent();
+		}
+		return Optional.<Boolean>of(parseBoolean(jsonObject, key));
 	}
 
 	protected static BigDecimal parseBigDecimal(JSONObject jsonObject,

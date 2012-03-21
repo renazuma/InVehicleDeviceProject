@@ -14,7 +14,7 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class User extends Model {
-	private static final long serialVersionUID = 8463885786237546425L;
+	private static final long serialVersionUID = 4424471038476529200L;
 	public static final String JSON_NAME = "user";
 	public static final String CONTROLLER_NAME = "users";
 
@@ -37,36 +37,44 @@ public class User extends Model {
 		setAge(parseLong(jsonObject, "age"));
 		setBirthday(parseDate(jsonObject, "birthday"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
-		setCurrentSignInAt(parseDate(jsonObject, "current_sign_in_at"));
-		setCurrentSignInIp(parseString(jsonObject, "current_sign_in_ip"));
-		setDeletedAt(parseDate(jsonObject, "deleted_at"));
-		setEmail(parseString(jsonObject, "email"));
-		setEmail2(parseString(jsonObject, "email2"));
+		setCurrentSignInAt(parseOptionalDate(jsonObject, "current_sign_in_at"));
+		setCurrentSignInIp(parseOptionalString(jsonObject, "current_sign_in_ip"));
+		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
+		setEmail(parseOptionalString(jsonObject, "email"));
+		setEmail2(parseOptionalString(jsonObject, "email2"));
 		setEncryptedPassword(parseString(jsonObject, "encrypted_password"));
 		setFamilyName(parseString(jsonObject, "family_name"));
 		setFamilyNameRuby(parseString(jsonObject, "family_name_ruby"));
-		setFelicaId(parseString(jsonObject, "felica_id"));
-		setHandicapped(parseBoolean(jsonObject, "handicapped"));
+		setFelicaId(parseOptionalString(jsonObject, "felica_id"));
+		setHandicapped(parseOptionalBoolean(jsonObject, "handicapped"));
 		setId(parseLong(jsonObject, "id"));
 		setLastName(parseString(jsonObject, "last_name"));
 		setLastNameRuby(parseString(jsonObject, "last_name_ruby"));
-		setLastSignInAt(parseDate(jsonObject, "last_sign_in_at"));
-		setLastSignInIp(parseString(jsonObject, "last_sign_in_ip"));
+		setLastSignInAt(parseOptionalDate(jsonObject, "last_sign_in_at"));
+		setLastSignInIp(parseOptionalString(jsonObject, "last_sign_in_ip"));
 		setLogin(parseString(jsonObject, "login"));
-		setNeededCare(parseBoolean(jsonObject, "needed_care"));
-		setRecommendNotification(parseBoolean(jsonObject, "recommend_notification"));
-		setRecommendOk(parseBoolean(jsonObject, "recommend_ok"));
-		setRememberCreatedAt(parseDate(jsonObject, "remember_created_at"));
-		setReserveNotification(parseBoolean(jsonObject, "reserve_notification"));
-		setServiceProviderId(parseLong(jsonObject, "service_provider_id"));
+		setNeededCare(parseOptionalBoolean(jsonObject, "needed_care"));
+		setRecommendNotification(parseOptionalBoolean(jsonObject, "recommend_notification"));
+		setRecommendOk(parseOptionalBoolean(jsonObject, "recommend_ok"));
+		setRememberCreatedAt(parseOptionalDate(jsonObject, "remember_created_at"));
+		setReserveNotification(parseOptionalBoolean(jsonObject, "reserve_notification"));
+		setServiceProviderId(parseOptionalLong(jsonObject, "service_provider_id"));
 		setSex(parseLong(jsonObject, "sex"));
-		setSignInCount(parseLong(jsonObject, "sign_in_count"));
+		setSignInCount(parseOptionalLong(jsonObject, "sign_in_count"));
 		setTelephoneNumber(parseString(jsonObject, "telephone_number"));
-		setTelephoneNumber2(parseString(jsonObject, "telephone_number2"));
-		setUpdateNotification(parseBoolean(jsonObject, "update_notification"));
+		setTelephoneNumber2(parseOptionalString(jsonObject, "telephone_number2"));
+		setUpdateNotification(parseOptionalBoolean(jsonObject, "update_notification"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
-		setWheelchair(parseBoolean(jsonObject, "wheelchair"));
+		setWheelchair(parseOptionalBoolean(jsonObject, "wheelchair"));
+		setDemands(Demand.parseList(jsonObject, "demands"));
 		setReservations(Reservation.parseList(jsonObject, "reservations"));
+	}
+
+	public static Optional<User> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
+		if (!jsonObject.has(key)) {
+			return Optional.<User>absent();
+		}
+		return Optional.<User>of(new User(jsonObject.getJSONObject(key)));
 	}
 
 	public static List<User> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -146,6 +154,7 @@ public class User extends Model {
 		jsonObject.put("update_notification", toJSON(getUpdateNotification().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
 		jsonObject.put("wheelchair", toJSON(getWheelchair().orNull()));
+		jsonObject.put("demands", toJSON(getDemands()));
 		jsonObject.put("reservations", toJSON(getReservations()));
 		return jsonObject;
 	}
@@ -630,6 +639,20 @@ public class User extends Model {
 
 	public void clearWheelchair() {
 		this.wheelchair = Optional.<Boolean>absent();
+	}
+
+	private List<Demand> demands = new LinkedList<Demand>();
+
+	public List<Demand> getDemands() {
+		return new LinkedList<Demand>(wrapNull(demands));
+	}
+
+	public void setDemands(List<Demand> demands) {
+		this.demands = new LinkedList<Demand>(wrapNull(demands));
+	}
+
+	public void clearDemands() {
+		this.demands = new LinkedList<Demand>();
 	}
 
 	private List<Reservation> reservations = new LinkedList<Reservation>();

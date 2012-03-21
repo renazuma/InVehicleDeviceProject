@@ -14,7 +14,7 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class InVehicleDevice extends Model {
-	private static final long serialVersionUID = 8481162940689013574L;
+	private static final long serialVersionUID = 3207330366628441861L;
 	public static final String JSON_NAME = "in_vehicle_device";
 	public static final String CONTROLLER_NAME = "in_vehicle_devices";
 
@@ -34,14 +34,21 @@ public class InVehicleDevice extends Model {
 
 	public InVehicleDevice(JSONObject jsonObject) throws JSONException, ParseException {
 		setCreatedAt(parseDate(jsonObject, "created_at"));
-		setDeletedAt(parseDate(jsonObject, "deleted_at"));
+		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
 		setId(parseLong(jsonObject, "id"));
 		setModelName(parseString(jsonObject, "model_name"));
-		setServiceProviderId(parseLong(jsonObject, "service_provider_id"));
+		setServiceProviderId(parseOptionalLong(jsonObject, "service_provider_id"));
 		setTypeNumber(parseString(jsonObject, "type_number"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
-		setServiceUnit(ServiceUnit.parseList(jsonObject, "service_unit"));
+		setServiceUnits(ServiceUnit.parseList(jsonObject, "service_units"));
 		setVehicleNotifications(VehicleNotification.parseList(jsonObject, "vehicle_notifications"));
+	}
+
+	public static Optional<InVehicleDevice> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
+		if (!jsonObject.has(key)) {
+			return Optional.<InVehicleDevice>absent();
+		}
+		return Optional.<InVehicleDevice>of(new InVehicleDevice(jsonObject.getJSONObject(key)));
 	}
 
 	public static List<InVehicleDevice> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -95,7 +102,7 @@ public class InVehicleDevice extends Model {
 		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
 		jsonObject.put("type_number", toJSON(getTypeNumber()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
-		jsonObject.put("service_unit", toJSON(getServiceUnit()));
+		jsonObject.put("service_units", toJSON(getServiceUnits()));
 		jsonObject.put("vehicle_notifications", toJSON(getVehicleNotifications()));
 		return jsonObject;
 	}
@@ -186,18 +193,18 @@ public class InVehicleDevice extends Model {
 		this.updatedAt = wrapNull(updatedAt);
 	}
 
-	private List<ServiceUnit> serviceUnit = new LinkedList<ServiceUnit>();
+	private List<ServiceUnit> serviceUnits = new LinkedList<ServiceUnit>();
 
-	public List<ServiceUnit> getServiceUnit() {
-		return new LinkedList<ServiceUnit>(wrapNull(serviceUnit));
+	public List<ServiceUnit> getServiceUnits() {
+		return new LinkedList<ServiceUnit>(wrapNull(serviceUnits));
 	}
 
-	public void setServiceUnit(List<ServiceUnit> serviceUnit) {
-		this.serviceUnit = new LinkedList<ServiceUnit>(wrapNull(serviceUnit));
+	public void setServiceUnits(List<ServiceUnit> serviceUnits) {
+		this.serviceUnits = new LinkedList<ServiceUnit>(wrapNull(serviceUnits));
 	}
 
-	public void clearServiceUnit() {
-		this.serviceUnit = new LinkedList<ServiceUnit>();
+	public void clearServiceUnits() {
+		this.serviceUnits = new LinkedList<ServiceUnit>();
 	}
 
 	private List<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();

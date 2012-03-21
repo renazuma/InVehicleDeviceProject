@@ -14,7 +14,7 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class Platform extends Model {
-	private static final long serialVersionUID = 8751315272371901275L;
+	private static final long serialVersionUID = 757034498215307604L;
 	public static final String JSON_NAME = "platform";
 	public static final String CONTROLLER_NAME = "platforms";
 
@@ -23,6 +23,8 @@ public class Platform extends Model {
 		public static final String CREATE = "/" + CONTROLLER_NAME + "/create";
 		public static final String DESTROY = "/" + CONTROLLER_NAME + "/destroy";
 		public static final String EDIT = "/" + CONTROLLER_NAME + "/edit";
+		public static final String FIND_FULL_DEMAND_AREA = "/" + CONTROLLER_NAME + "/find_full_demand_area";
+		public static final String FIND_SEMI_DEMAND_AREA = "/" + CONTROLLER_NAME + "/find_semi_demand_area";
 		public static final String IMAGE = "/" + CONTROLLER_NAME + "/image";
 		public static final String INDEX = "/" + CONTROLLER_NAME + "/index";
 		public static final String NEW = "/" + CONTROLLER_NAME + "/new";
@@ -35,25 +37,34 @@ public class Platform extends Model {
 	}
 
 	public Platform(JSONObject jsonObject) throws JSONException, ParseException {
-		setAddress(parseString(jsonObject, "address"));
+		setAddress(parseOptionalString(jsonObject, "address"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
-		setDeletedAt(parseDate(jsonObject, "deleted_at"));
-		setDemandAreaId(parseLong(jsonObject, "demand_area_id"));
-		setEndAt(parseDate(jsonObject, "end_at"));
+		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
+		setDemandAreaId(parseOptionalLong(jsonObject, "demand_area_id"));
+		setEndAt(parseOptionalDate(jsonObject, "end_at"));
 		setId(parseLong(jsonObject, "id"));
-		setImage(parseString(jsonObject, "image"));
-		setKeyword(parseString(jsonObject, "keyword"));
+		setImage(parseOptionalString(jsonObject, "image"));
+		setKeyword(parseOptionalString(jsonObject, "keyword"));
 		setLatitude(parseBigDecimal(jsonObject, "latitude"));
 		setLongitude(parseBigDecimal(jsonObject, "longitude"));
-		setMemo(parseString(jsonObject, "memo"));
+		setMemo(parseOptionalString(jsonObject, "memo"));
 		setName(parseString(jsonObject, "name"));
 		setNameRuby(parseString(jsonObject, "name_ruby"));
-		setServiceProviderId(parseLong(jsonObject, "service_provider_id"));
-		setStartAt(parseDate(jsonObject, "start_at"));
-		setTypeOfDemand(parseLong(jsonObject, "type_of_demand"));
+		setServiceProviderId(parseOptionalLong(jsonObject, "service_provider_id"));
+		setStartAt(parseOptionalDate(jsonObject, "start_at"));
+		setTypeOfDemand(parseOptionalLong(jsonObject, "type_of_demand"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
+		setDemandsAsArrival(Demand.parseList(jsonObject, "demands_as_arrival"));
+		setDemandsAsDeparture(Demand.parseList(jsonObject, "demands_as_departure"));
 		setReservationsAsArrival(Reservation.parseList(jsonObject, "reservations_as_arrival"));
 		setReservationsAsDeparture(Reservation.parseList(jsonObject, "reservations_as_departure"));
+	}
+
+	public static Optional<Platform> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
+		if (!jsonObject.has(key)) {
+			return Optional.<Platform>absent();
+		}
+		return Optional.<Platform>of(new Platform(jsonObject.getJSONObject(key)));
 	}
 
 	public static List<Platform> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -117,6 +128,8 @@ public class Platform extends Model {
 		jsonObject.put("start_at", toJSON(getStartAt().orNull()));
 		jsonObject.put("type_of_demand", toJSON(getTypeOfDemand().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
+		jsonObject.put("demands_as_arrival", toJSON(getDemandsAsArrival()));
+		jsonObject.put("demands_as_departure", toJSON(getDemandsAsDeparture()));
 		jsonObject.put("reservations_as_arrival", toJSON(getReservationsAsArrival()));
 		jsonObject.put("reservations_as_departure", toJSON(getReservationsAsDeparture()));
 		return jsonObject;
@@ -370,6 +383,34 @@ public class Platform extends Model {
 
 	public void setUpdatedAt(Date updatedAt) {
 		this.updatedAt = wrapNull(updatedAt);
+	}
+
+	private List<Demand> demandsAsArrival = new LinkedList<Demand>();
+
+	public List<Demand> getDemandsAsArrival() {
+		return new LinkedList<Demand>(wrapNull(demandsAsArrival));
+	}
+
+	public void setDemandsAsArrival(List<Demand> demandsAsArrival) {
+		this.demandsAsArrival = new LinkedList<Demand>(wrapNull(demandsAsArrival));
+	}
+
+	public void clearDemandsAsArrival() {
+		this.demandsAsArrival = new LinkedList<Demand>();
+	}
+
+	private List<Demand> demandsAsDeparture = new LinkedList<Demand>();
+
+	public List<Demand> getDemandsAsDeparture() {
+		return new LinkedList<Demand>(wrapNull(demandsAsDeparture));
+	}
+
+	public void setDemandsAsDeparture(List<Demand> demandsAsDeparture) {
+		this.demandsAsDeparture = new LinkedList<Demand>(wrapNull(demandsAsDeparture));
+	}
+
+	public void clearDemandsAsDeparture() {
+		this.demandsAsDeparture = new LinkedList<Demand>();
 	}
 
 	private List<Reservation> reservationsAsArrival = new LinkedList<Reservation>();

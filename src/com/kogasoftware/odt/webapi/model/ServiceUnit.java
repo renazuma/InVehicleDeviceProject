@@ -14,7 +14,7 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class ServiceUnit extends Model {
-	private static final long serialVersionUID = 528519435709748444L;
+	private static final long serialVersionUID = 4316996978330344796L;
 	public static final String JSON_NAME = "service_unit";
 	public static final String CONTROLLER_NAME = "service_units";
 
@@ -33,19 +33,26 @@ public class ServiceUnit extends Model {
 	}
 
 	public ServiceUnit(JSONObject jsonObject) throws JSONException, ParseException {
-		setActivatedAt(parseDate(jsonObject, "activated_at"));
+		setActivatedAt(parseOptionalDate(jsonObject, "activated_at"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
-		setDeletedAt(parseDate(jsonObject, "deleted_at"));
+		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
 		setDriverId(parseLong(jsonObject, "driver_id"));
 		setId(parseLong(jsonObject, "id"));
-		setInVehicleDeviceId(parseLong(jsonObject, "in_vehicle_device_id"));
-		setUnitAssignmentId(parseLong(jsonObject, "unit_assignment_id"));
+		setInVehicleDeviceId(parseOptionalLong(jsonObject, "in_vehicle_device_id"));
+		setUnitAssignmentId(parseOptionalLong(jsonObject, "unit_assignment_id"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setVehicleId(parseLong(jsonObject, "vehicle_id"));
 		setInVehicleDevice(new InVehicleDevice(jsonObject.getJSONObject("in_vehicle_device")));
 		if (getInVehicleDevice().isPresent()) {
 			setInVehicleDeviceId(getInVehicleDevice().get().getId());
 		}
+	}
+
+	public static Optional<ServiceUnit> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
+		if (!jsonObject.has(key)) {
+			return Optional.<ServiceUnit>absent();
+		}
+		return Optional.<ServiceUnit>of(new ServiceUnit(jsonObject.getJSONObject(key)));
 	}
 
 	public static List<ServiceUnit> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {

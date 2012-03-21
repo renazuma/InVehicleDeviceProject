@@ -14,7 +14,7 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class VehicleNotification extends Model {
-	private static final long serialVersionUID = 5951424486350273356L;
+	private static final long serialVersionUID = 7331053154935266069L;
 	public static final String JSON_NAME = "vehicle_notification";
 	public static final String CONTROLLER_NAME = "vehicle_notifications";
 
@@ -28,12 +28,12 @@ public class VehicleNotification extends Model {
 	}
 
 	public VehicleNotification(JSONObject jsonObject) throws JSONException, ParseException {
-		setBody(parseString(jsonObject, "body"));
+		setBody(parseOptionalString(jsonObject, "body"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setId(parseLong(jsonObject, "id"));
 		setInVehicleDeviceId(parseLong(jsonObject, "in_vehicle_device_id"));
 		setOperatorId(parseLong(jsonObject, "operator_id"));
-		setReadAt(parseDate(jsonObject, "read_at"));
+		setReadAt(parseOptionalDate(jsonObject, "read_at"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setInVehicleDevice(new InVehicleDevice(jsonObject.getJSONObject("in_vehicle_device")));
 		if (getInVehicleDevice().isPresent()) {
@@ -43,6 +43,13 @@ public class VehicleNotification extends Model {
 		if (getOperator().isPresent()) {
 			setOperatorId(getOperator().get().getId());
 		}
+	}
+
+	public static Optional<VehicleNotification> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
+		if (!jsonObject.has(key)) {
+			return Optional.<VehicleNotification>absent();
+		}
+		return Optional.<VehicleNotification>of(new VehicleNotification(jsonObject.getJSONObject(key)));
 	}
 
 	public static List<VehicleNotification> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {

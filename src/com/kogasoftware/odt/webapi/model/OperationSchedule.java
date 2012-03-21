@@ -14,7 +14,7 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class OperationSchedule extends Model {
-	private static final long serialVersionUID = 3613715751713349602L;
+	private static final long serialVersionUID = 327408862296996870L;
 	public static final String JSON_NAME = "operation_schedule";
 	public static final String CONTROLLER_NAME = "operation_schedules";
 
@@ -29,15 +29,15 @@ public class OperationSchedule extends Model {
 
 	public OperationSchedule(JSONObject jsonObject) throws JSONException, ParseException {
 		setArrivalEstimate(parseDate(jsonObject, "arrival_estimate"));
-		setArrivedAt(parseDate(jsonObject, "arrived_at"));
+		setArrivedAt(parseOptionalDate(jsonObject, "arrived_at"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
-		setDeletedAt(parseDate(jsonObject, "deleted_at"));
-		setDepartedAt(parseDate(jsonObject, "departed_at"));
+		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
+		setDepartedAt(parseOptionalDate(jsonObject, "departed_at"));
 		setDepartureEstimate(parseDate(jsonObject, "departure_estimate"));
 		setId(parseLong(jsonObject, "id"));
-		setPlatformId(parseLong(jsonObject, "platform_id"));
-		setServiceProviderId(parseLong(jsonObject, "service_provider_id"));
-		setUnitAssignmentId(parseLong(jsonObject, "unit_assignment_id"));
+		setPlatformId(parseOptionalLong(jsonObject, "platform_id"));
+		setServiceProviderId(parseOptionalLong(jsonObject, "service_provider_id"));
+		setUnitAssignmentId(parseOptionalLong(jsonObject, "unit_assignment_id"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setPlatform(new Platform(jsonObject.getJSONObject("platform")));
 		if (getPlatform().isPresent()) {
@@ -45,6 +45,13 @@ public class OperationSchedule extends Model {
 		}
 		setReservationsAsArrival(Reservation.parseList(jsonObject, "reservations_as_arrival"));
 		setReservationsAsDeparture(Reservation.parseList(jsonObject, "reservations_as_departure"));
+	}
+
+	public static Optional<OperationSchedule> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
+		if (!jsonObject.has(key)) {
+			return Optional.<OperationSchedule>absent();
+		}
+		return Optional.<OperationSchedule>of(new OperationSchedule(jsonObject.getJSONObject(key)));
 	}
 
 	public static List<OperationSchedule> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {

@@ -14,7 +14,7 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class Reservation extends Model {
-	private static final long serialVersionUID = 6799863680012621705L;
+	private static final long serialVersionUID = 4024586764839910047L;
 	public static final String JSON_NAME = "reservation";
 	public static final String CONTROLLER_NAME = "reservations";
 
@@ -36,23 +36,23 @@ public class Reservation extends Model {
 	}
 
 	public Reservation(JSONObject jsonObject) throws JSONException, ParseException {
-		setArrivalLock(parseBoolean(jsonObject, "arrival_lock"));
-		setArrivalPlatformId(parseLong(jsonObject, "arrival_platform_id"));
-		setArrivalScheduleId(parseLong(jsonObject, "arrival_schedule_id"));
+		setArrivalLock(parseOptionalBoolean(jsonObject, "arrival_lock"));
+		setArrivalPlatformId(parseOptionalLong(jsonObject, "arrival_platform_id"));
+		setArrivalScheduleId(parseOptionalLong(jsonObject, "arrival_schedule_id"));
 		setArrivalTime(parseDate(jsonObject, "arrival_time"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
-		setDeletedAt(parseDate(jsonObject, "deleted_at"));
+		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
 		setDemandId(parseLong(jsonObject, "demand_id"));
-		setDepartureLock(parseBoolean(jsonObject, "departure_lock"));
-		setDeparturePlatformId(parseLong(jsonObject, "departure_platform_id"));
-		setDepartureScheduleId(parseLong(jsonObject, "departure_schedule_id"));
+		setDepartureLock(parseOptionalBoolean(jsonObject, "departure_lock"));
+		setDeparturePlatformId(parseOptionalLong(jsonObject, "departure_platform_id"));
+		setDepartureScheduleId(parseOptionalLong(jsonObject, "departure_schedule_id"));
 		setDepartureTime(parseDate(jsonObject, "departure_time"));
 		setHead(parseLong(jsonObject, "head"));
 		setId(parseLong(jsonObject, "id"));
-		setMemo(parseString(jsonObject, "memo"));
-		setOperatorId(parseLong(jsonObject, "operator_id"));
+		setMemo(parseOptionalString(jsonObject, "memo"));
+		setOperatorId(parseOptionalLong(jsonObject, "operator_id"));
 		setPayment(parseBoolean(jsonObject, "payment"));
-		setServiceProviderId(parseLong(jsonObject, "service_provider_id"));
+		setServiceProviderId(parseOptionalLong(jsonObject, "service_provider_id"));
 		setStatus(parseLong(jsonObject, "status"));
 		setUnitAssignmentId(parseLong(jsonObject, "unit_assignment_id"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
@@ -64,6 +64,10 @@ public class Reservation extends Model {
 		setArrivalSchedule(new OperationSchedule(jsonObject.getJSONObject("arrival_schedule")));
 		if (getArrivalSchedule().isPresent()) {
 			setArrivalScheduleId(getArrivalSchedule().get().getId());
+		}
+		setDemand(new Demand(jsonObject.getJSONObject("demand")));
+		if (getDemand().isPresent()) {
+			setDemandId(getDemand().get().getId());
 		}
 		setDeparturePlatform(new Platform(jsonObject.getJSONObject("departure_platform")));
 		if (getDeparturePlatform().isPresent()) {
@@ -81,6 +85,13 @@ public class Reservation extends Model {
 		if (getUser().isPresent()) {
 			setUserId(getUser().get().getId());
 		}
+	}
+
+	public static Optional<Reservation> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
+		if (!jsonObject.has(key)) {
+			return Optional.<Reservation>absent();
+		}
+		return Optional.<Reservation>of(new Reservation(jsonObject.getJSONObject(key)));
 	}
 
 	public static List<Reservation> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -155,6 +166,10 @@ public class Reservation extends Model {
 		jsonObject.put("arrival_schedule", toJSON(getArrivalSchedule()));
 		if (getArrivalSchedule().isPresent()) {
 			jsonObject.put("arrival_schedule_id", toJSON(getArrivalSchedule().get().getId()));
+		}
+		jsonObject.put("demand", toJSON(getDemand()));
+		if (getDemand().isPresent()) {
+			jsonObject.put("demand_id", toJSON(getDemand().get().getId()));
 		}
 		jsonObject.put("departure_platform", toJSON(getDeparturePlatform()));
 		if (getDeparturePlatform().isPresent()) {
@@ -499,6 +514,24 @@ public class Reservation extends Model {
 
 	public void clearArrivalSchedule() {
 		this.arrivalSchedule = Optional.<OperationSchedule>absent();
+	}
+
+	private Optional<Demand> demand = Optional.<Demand>absent();
+
+	public Optional<Demand> getDemand() {
+		return wrapNull(demand);
+	}
+
+	public void setDemand(Optional<Demand> demand) {
+		this.demand = wrapNull(demand);
+	}
+
+	public void setDemand(Demand demand) {
+		this.demand = Optional.<Demand>fromNullable(demand);
+	}
+
+	public void clearDemand() {
+		this.demand = Optional.<Demand>absent();
 	}
 
 	private Optional<Platform> departurePlatform = Optional.<Platform>absent();
