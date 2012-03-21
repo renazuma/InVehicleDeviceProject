@@ -1,10 +1,14 @@
 package com.kogasoftware.odt.invehicledevice;
 
 import java.lang.ref.WeakReference;
+import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import jp.tomorrowkey.android.vtextviewer.VTextView;
 import android.content.Context;
@@ -27,6 +31,7 @@ import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 import com.kogasoftware.odt.invehicledevice.modal.Modal;
 import com.kogasoftware.odt.invehicledevice.navigation.NavigationView;
 import com.kogasoftware.odt.webapi.model.Reservation;
+import com.kogasoftware.odt.webapi.model.User;
 
 class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 	private final LayoutInflater inflater;
@@ -55,7 +60,14 @@ class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		Reservation reservation = getItem(position);
 		TextView userNameView = (TextView) convertView
 				.findViewById(R.id.user_name);
-		userNameView.setText("ID=" + reservation.getUserId() + " 様");
+		
+		if (reservation.getUser().isPresent()) {
+			User user = reservation.getUser().get();
+			userNameView.setText(user.getFamilyName() + " " + user.getLastName() + " 様");
+		} else {
+			userNameView.setText("ID:" + reservation.getUserId() + " 様");
+		}
+		
 		TextView reservationIdView = (TextView) convertView
 				.findViewById(R.id.reservation_id);
 		reservationIdView.setText("[乗] 予約番号 " + reservation.getId());
@@ -224,24 +236,52 @@ public class InVehicleDeviceActivity extends MapActivity {
 			}
 		});
 
-		// ArrayAdapter<String> usersAdapter = new ArrayAdapter<String>(this,
-		// android.R.layout.simple_list_item_1, new String[] { "ゲイツ",
-		// "ジョブズ", "ゴスリング" });
 		List<Reservation> l = new LinkedList<Reservation>();
-		Reservation r = new Reservation();
-		r.setId(10);
-		r.setUserId(10);
-		l.add(r);
+		Reservation r1 = new Reservation();
+		User u1 = new User();
+		u1.setFamilyName("桜木");
+		u1.setLastName("花道");
+		r1.setId(10L);
+		r1.setUser(u1);
+		l.add(r1);
 
-		r = new Reservation();
-		r.setId(10);
-		r.setUserId(11);
-		l.add(r);
+		User u2 = new User();
+		u2.setFamilyName("流川");
+		u2.setLastName("楓");
+		Reservation r2 = new Reservation();
+		r2.setId(11L);
+		r2.setUser(u2);
+		l.add(r2);
 
-		r = new Reservation();
-		r.setId(10);
-		r.setUserId(12);
-		l.add(r);
+		User u3 = new User();
+		u3.setFamilyName("フリークス");
+		u3.setLastName("ゴン");
+		Reservation r3 = new Reservation();
+		r3.setId(12L);
+		r3.setUser(u3);
+		l.add(r3);
+
+		Reservation r4 = new Reservation();
+		r4.setId(13L);
+		try {
+			r4.setUser(new User(new JSONObject("{family_name: '越前', last_name: '康介'}")));
+		} catch (JSONException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		l.add(r4);
+
+		Reservation r5 = new Reservation();
+		r5.setId(13L);
+		try {
+			r5.setUser(new User(new JSONObject("{family_name: '荒木', last_name: '飛呂彦'}")));
+		} catch (JSONException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		l.add(r5);
 
 		ReservationArrayAdapter usersAdapter = new ReservationArrayAdapter(
 				this, R.layout.reservation_list_row, l);
