@@ -7,10 +7,11 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import jp.tomorrowkey.android.vtextviewer.VTextView;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import jp.tomorrowkey.android.vtextviewer.VTextView;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,12 +23,14 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.android.maps.MapActivity;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
+import com.kogasoftware.odt.invehicledevice.modal.MemoModal;
 import com.kogasoftware.odt.invehicledevice.modal.Modal;
 import com.kogasoftware.odt.invehicledevice.navigation.NavigationView;
 import com.kogasoftware.odt.webapi.model.Reservation;
@@ -54,38 +57,45 @@ class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 				.findViewById(R.id.change_head_spinner);
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
 				android.R.layout.simple_spinner_item, new String[] { "1名",
-						"2名", "3名" });
+			"2名", "3名" });
 		spinner.setAdapter(adapter);
 
-		Reservation reservation = getItem(position);
+		final Reservation reservation = getItem(position);
 		TextView userNameView = (TextView) convertView
 				.findViewById(R.id.user_name);
-		
+
 		if (reservation.getUser().isPresent()) {
 			User user = reservation.getUser().get();
-			userNameView.setText(user.getFamilyName() + " " + user.getLastName() + " 様");
+			userNameView.setText(user.getFamilyName() + " "
+					+ user.getLastName() + " 様");
 		} else {
 			userNameView.setText("ID:" + reservation.getUserId() + " 様");
 		}
-		
+
 		TextView reservationIdView = (TextView) convertView
 				.findViewById(R.id.reservation_id);
 		reservationIdView.setText("[乗] 予約番号 " + reservation.getId());
-		Button memoButton = (Button) convertView.findViewById(R.id.memo_button);
-		memoButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				view.getRootView().findViewById(R.id.memo_overlay)
-						.setVisibility(View.VISIBLE);
-			}
-		});
+		if (reservation.getMemo().isPresent()) {
+			Button memoButton = (Button) convertView
+					.findViewById(R.id.memo_button);
+			memoButton.setVisibility(View.VISIBLE);
+			final View rootView = parent.getRootView();
+			memoButton.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View view) {
+					FrameLayout modals = (FrameLayout) rootView
+							.findViewById(R.id.modal_layout);
+					modals.addView(new MemoModal(getContext(), reservation));
+				}
+			});
+		}
 		Button returnPathButton = (Button) convertView
 				.findViewById(R.id.return_path_button);
 		returnPathButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				view.getRootView().findViewById(R.id.return_path_overlay)
-						.setVisibility(View.VISIBLE);
+				.setVisibility(View.VISIBLE);
 			}
 		});
 
@@ -152,11 +162,11 @@ public class InVehicleDeviceActivity extends MapActivity {
 		drivingView2Layout = findViewById(R.id.driving_view2);
 
 		((VTextView) findViewById(R.id.next_stop_text_view))
-				.setText("次の乗降場てすとて");
+		.setText("次の乗降場てすとて");
 		((VTextView) findViewById(R.id.next_stop_but_one_text_view))
-				.setText("次の次の乗降場てすと");
+		.setText("次の次の乗降場てすと");
 		((VTextView) findViewById(R.id.next_stop_but_two_text_view))
-				.setText("次の次の次の乗降場てす");
+		.setText("次の次の次の乗降場てす");
 
 		drivingViewToggleHandler.post(drivingViewToggleRunnable);
 		navigationView = (NavigationView) findViewById(R.id.navigation_view);
@@ -251,6 +261,7 @@ public class InVehicleDeviceActivity extends MapActivity {
 		Reservation r2 = new Reservation();
 		r2.setId(11L);
 		r2.setUser(u2);
+		r2.setMemo("メモが存在します");
 		l.add(r2);
 
 		User u3 = new User();
@@ -264,7 +275,8 @@ public class InVehicleDeviceActivity extends MapActivity {
 		Reservation r4 = new Reservation();
 		r4.setId(13L);
 		try {
-			r4.setUser(new User(new JSONObject("{family_name: '越前', last_name: '康介'}")));
+			r4.setUser(new User(new JSONObject(
+					"{family_name: '越前', last_name: '康介'}")));
 		} catch (JSONException e) {
 			e.printStackTrace();
 		} catch (ParseException e) {
@@ -272,16 +284,16 @@ public class InVehicleDeviceActivity extends MapActivity {
 		}
 		l.add(r4);
 
-		Reservation r5 = new Reservation();
-		r5.setId(13L);
 		try {
-			r5.setUser(new User(new JSONObject("{family_name: '荒木', last_name: '飛呂彦'}")));
+			Reservation r5 = new Reservation(
+					new JSONObject(
+							"{id: 13, memo: 'メモメモ', user: {family_name: '荒木', last_name: '飛呂彦'}}"));
+			l.add(r5);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		l.add(r5);
 
 		ReservationArrayAdapter usersAdapter = new ReservationArrayAdapter(
 				this, R.layout.reservation_list_row, l);
