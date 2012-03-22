@@ -120,7 +120,7 @@ public class NavigationView extends FrameLayout {
 				mapOnTouchListener);
 
 		closeButton = new ModalCloseButton(getContext(), null);
-		closeButton.setText("閉じる");
+		closeButton.setText("戻る");
 
 		zoomInButton = new Button(getContext());
 		zoomInButton.setText("拡大");
