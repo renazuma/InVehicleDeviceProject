@@ -48,7 +48,6 @@ public class DrivingTestCase extends
 		solo.clickOnButton("出発する");
 		assertEquals(View.VISIBLE, solo.getView(R.id.check_start_layout)
 				.getVisibility());
-
 	}
 
 	public void test05出発確認画面でやめるボタンを押すと待機中画面表示() {
