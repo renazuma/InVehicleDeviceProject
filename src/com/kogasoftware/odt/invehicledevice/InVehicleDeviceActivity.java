@@ -34,13 +34,13 @@ import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.User;
 
 class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
-	private final LayoutInflater inflater;
+	private final LayoutInflater layoutInflater;
 	private final int resourceId;
 
 	public ReservationArrayAdapter(Context context, int resourceId,
 			List<Reservation> items) {
 		super(context, resourceId, items);
-		this.inflater = (LayoutInflater) context
+		this.layoutInflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.resourceId = resourceId;
 	}
@@ -48,7 +48,7 @@ class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		if (convertView == null) {
-			convertView = inflater.inflate(resourceId, null);
+			convertView = layoutInflater.inflate(resourceId, null);
 		}
 		Spinner spinner = (Spinner) convertView
 				.findViewById(R.id.change_head_spinner);
