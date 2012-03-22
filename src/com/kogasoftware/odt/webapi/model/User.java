@@ -14,7 +14,7 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class User extends Model {
-	private static final long serialVersionUID = 4424471038476529200L;
+	private static final long serialVersionUID = 3202353537798222907L;
 	public static final String JSON_NAME = "user";
 	public static final String CONTROLLER_NAME = "users";
 

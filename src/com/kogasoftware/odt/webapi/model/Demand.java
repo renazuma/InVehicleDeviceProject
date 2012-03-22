@@ -14,7 +14,7 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class Demand extends Model {
-	private static final long serialVersionUID = 3709778856078837812L;
+	private static final long serialVersionUID = 8256467706956261249L;
 	public static final String JSON_NAME = "demand";
 	public static final String CONTROLLER_NAME = "demands";
 
@@ -47,16 +47,16 @@ public class Demand extends Model {
 		setUnitAssignmentId(parseOptionalLong(jsonObject, "unit_assignment_id"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setUserId(parseLong(jsonObject, "user_id"));
-		setArrivalPlatform(new Platform(jsonObject.getJSONObject("arrival_platform")));
+		setArrivalPlatform(Platform.parse(jsonObject, "arrival_platform"));
 		if (getArrivalPlatform().isPresent()) {
 			setArrivalPlatformId(getArrivalPlatform().get().getId());
 		}
-		setDeparturePlatform(new Platform(jsonObject.getJSONObject("departure_platform")));
+		setDeparturePlatform(Platform.parse(jsonObject, "departure_platform"));
 		if (getDeparturePlatform().isPresent()) {
 			setDeparturePlatformId(getDeparturePlatform().get().getId());
 		}
-		setReservation(new Reservation(jsonObject.getJSONObject("reservation")));
-		setUser(new User(jsonObject.getJSONObject("user")));
+		setReservation(Reservation.parse(jsonObject, "reservation"));
+		setUser(User.parse(jsonObject, "user"));
 		if (getUser().isPresent()) {
 			setUserId(getUser().get().getId());
 		}
@@ -136,9 +136,6 @@ public class Demand extends Model {
 			jsonObject.put("departure_platform_id", toJSON(getDeparturePlatform().get().getId()));
 		}
 		jsonObject.put("reservation", toJSON(getReservation()));
-		if (getReservation().isPresent()) {
-			jsonObject.put("demand_id", toJSON(getReservation().get().getId()));
-		}
 		jsonObject.put("user", toJSON(getUser()));
 		if (getUser().isPresent()) {
 			jsonObject.put("user_id", toJSON(getUser().get().getId()));

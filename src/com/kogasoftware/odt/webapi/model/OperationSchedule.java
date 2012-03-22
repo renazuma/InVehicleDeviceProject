@@ -14,7 +14,7 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class OperationSchedule extends Model {
-	private static final long serialVersionUID = 327408862296996870L;
+	private static final long serialVersionUID = 4117763343500818638L;
 	public static final String JSON_NAME = "operation_schedule";
 	public static final String CONTROLLER_NAME = "operation_schedules";
 
@@ -39,7 +39,7 @@ public class OperationSchedule extends Model {
 		setServiceProviderId(parseOptionalLong(jsonObject, "service_provider_id"));
 		setUnitAssignmentId(parseOptionalLong(jsonObject, "unit_assignment_id"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
-		setPlatform(new Platform(jsonObject.getJSONObject("platform")));
+		setPlatform(Platform.parse(jsonObject, "platform"));
 		if (getPlatform().isPresent()) {
 			setPlatformId(getPlatform().get().getId());
 		}

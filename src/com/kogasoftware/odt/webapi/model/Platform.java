@@ -14,7 +14,7 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class Platform extends Model {
-	private static final long serialVersionUID = 757034498215307604L;
+	private static final long serialVersionUID = 2951036918286942724L;
 	public static final String JSON_NAME = "platform";
 	public static final String CONTROLLER_NAME = "platforms";
 

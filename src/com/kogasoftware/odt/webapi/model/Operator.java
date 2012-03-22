@@ -14,7 +14,7 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class Operator extends Model {
-	private static final long serialVersionUID = 4739984880327987854L;
+	private static final long serialVersionUID = 1046197662046012024L;
 	public static final String JSON_NAME = "operator";
 	public static final String CONTROLLER_NAME = "operators";
 

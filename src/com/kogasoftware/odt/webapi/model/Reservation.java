@@ -14,7 +14,7 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class Reservation extends Model {
-	private static final long serialVersionUID = 4024586764839910047L;
+	private static final long serialVersionUID = 6800749560519228504L;
 	public static final String JSON_NAME = "reservation";
 	public static final String CONTROLLER_NAME = "reservations";
 
@@ -57,31 +57,31 @@ public class Reservation extends Model {
 		setUnitAssignmentId(parseLong(jsonObject, "unit_assignment_id"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setUserId(parseLong(jsonObject, "user_id"));
-		setArrivalPlatform(new Platform(jsonObject.getJSONObject("arrival_platform")));
+		setArrivalPlatform(Platform.parse(jsonObject, "arrival_platform"));
 		if (getArrivalPlatform().isPresent()) {
 			setArrivalPlatformId(getArrivalPlatform().get().getId());
 		}
-		setArrivalSchedule(new OperationSchedule(jsonObject.getJSONObject("arrival_schedule")));
+		setArrivalSchedule(OperationSchedule.parse(jsonObject, "arrival_schedule"));
 		if (getArrivalSchedule().isPresent()) {
 			setArrivalScheduleId(getArrivalSchedule().get().getId());
 		}
-		setDemand(new Demand(jsonObject.getJSONObject("demand")));
+		setDemand(Demand.parse(jsonObject, "demand"));
 		if (getDemand().isPresent()) {
 			setDemandId(getDemand().get().getId());
 		}
-		setDeparturePlatform(new Platform(jsonObject.getJSONObject("departure_platform")));
+		setDeparturePlatform(Platform.parse(jsonObject, "departure_platform"));
 		if (getDeparturePlatform().isPresent()) {
 			setDeparturePlatformId(getDeparturePlatform().get().getId());
 		}
-		setDepartureSchedule(new OperationSchedule(jsonObject.getJSONObject("departure_schedule")));
+		setDepartureSchedule(OperationSchedule.parse(jsonObject, "departure_schedule"));
 		if (getDepartureSchedule().isPresent()) {
 			setDepartureScheduleId(getDepartureSchedule().get().getId());
 		}
-		setOperator(new Operator(jsonObject.getJSONObject("operator")));
+		setOperator(Operator.parse(jsonObject, "operator"));
 		if (getOperator().isPresent()) {
 			setOperatorId(getOperator().get().getId());
 		}
-		setUser(new User(jsonObject.getJSONObject("user")));
+		setUser(User.parse(jsonObject, "user"));
 		if (getUser().isPresent()) {
 			setUserId(getUser().get().getId());
 		}

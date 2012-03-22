@@ -14,7 +14,7 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class VehicleNotification extends Model {
-	private static final long serialVersionUID = 7331053154935266069L;
+	private static final long serialVersionUID = 8127759496081814497L;
 	public static final String JSON_NAME = "vehicle_notification";
 	public static final String CONTROLLER_NAME = "vehicle_notifications";
 
@@ -35,11 +35,11 @@ public class VehicleNotification extends Model {
 		setOperatorId(parseLong(jsonObject, "operator_id"));
 		setReadAt(parseOptionalDate(jsonObject, "read_at"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
-		setInVehicleDevice(new InVehicleDevice(jsonObject.getJSONObject("in_vehicle_device")));
+		setInVehicleDevice(InVehicleDevice.parse(jsonObject, "in_vehicle_device"));
 		if (getInVehicleDevice().isPresent()) {
 			setInVehicleDeviceId(getInVehicleDevice().get().getId());
 		}
-		setOperator(new Operator(jsonObject.getJSONObject("operator")));
+		setOperator(Operator.parse(jsonObject, "operator"));
 		if (getOperator().isPresent()) {
 			setOperatorId(getOperator().get().getId());
 		}
