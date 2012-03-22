@@ -328,48 +328,67 @@
         android:orientation="vertical" >
 
         <com.kogasoftware.odt.invehicledevice.modal.ScheduleModal
+            android:id="@+id/schedule_layout"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:orientation="vertical" />
+            android:orientation="vertical"
+            android:visibility="gone" />
 
         <com.kogasoftware.odt.invehicledevice.modal.NavigationModal
+            android:id="@+id/map_overlay"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:orientation="vertical" />
+            android:orientation="vertical"
+            android:visibility="gone"/>
 
         <com.kogasoftware.odt.invehicledevice.modal.ConfigModal
+            android:id="@+id/config_overlay"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:orientation="vertical" />
+            android:orientation="vertical"
+            android:visibility="gone"/>
 
         <com.kogasoftware.odt.invehicledevice.modal.StartCheckModal
+            android:id="@+id/check_start_layout"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:orientation="vertical" />
+            android:orientation="vertical"
+            android:visibility="gone"/>
 
         <com.kogasoftware.odt.invehicledevice.modal.StopCheckModal
+            android:id="@+id/stop_check_overlay"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:orientation="vertical" />
+            android:orientation="vertical"
+            android:visibility="gone"/>
 
         <com.kogasoftware.odt.invehicledevice.modal.StopModal
+            android:id="@+id/stop_overlay"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:orientation="vertical" />
+            android:orientation="vertical"
+            android:visibility="gone"/>
 
         <com.kogasoftware.odt.invehicledevice.modal.PauseModal
+            android:id="@+id/pause_overlay"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:orientation="vertical" />
+            android:orientation="vertical"
+            android:visibility="gone"/>
 
         <com.kogasoftware.odt.invehicledevice.modal.NotificationModal
+            android:id="@+id/vehicle_notification_overlay"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:orientation="vertical" />
+            android:orientation="vertical"
+            android:visibility="gone"/>
 
         <com.kogasoftware.odt.invehicledevice.modal.ReturnPathModal
+            android:id="@+id/return_path_overlay"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:orientation="vertical" />
+            android:orientation="vertical"
+            android:visibility="gone"/>
     </FrameLayout>
+
 </FrameLayout>
