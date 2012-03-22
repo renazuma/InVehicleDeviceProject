@@ -1,15 +1,13 @@
 package com.kogasoftware.odt.invehicledevice.modal;
 
-import com.kogasoftware.odt.invehicledevice.R;
-
 import android.content.Context;
-import android.util.AttributeSet;
+
+import com.kogasoftware.odt.invehicledevice.R;
 
 
 public class ScheduleChangedModal extends Modal {
-	public ScheduleChangedModal(Context context, AttributeSet attrs) {
-		super(context, attrs, R.layout.schedule_changed_modal);
-
+	public ScheduleChangedModal(Context context) {
+		super(context, R.layout.schedule_changed_modal);
 	}
 }
 

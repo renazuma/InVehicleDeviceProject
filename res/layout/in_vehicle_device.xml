@@ -22,6 +22,7 @@
                 android:orientation="horizontal" >
 
                 <TextView
+                    android:id="@+id/icon_text_view"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:layout_margin="2dp"

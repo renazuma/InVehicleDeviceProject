@@ -22,7 +22,7 @@ public class MemoModal extends Modal {
 		closeButton.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View view) {
-				MemoModal.this.remove();
+				MemoModal.this.close();
 			}});
 	}
 }

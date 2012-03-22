@@ -102,10 +102,16 @@ public class Modal extends LinearLayout implements OnTouchListener {
 		super.onDetachedFromWindow();
 	}
 
-	public void remove() {
+	public void close() {
 		FrameLayout modals = (FrameLayout) getRootView().findViewById(
 				R.id.modal_layout);
 		modals.removeView(this);
+	}
+
+	public void open(View rootView) {
+		FrameLayout modals = (FrameLayout) rootView
+				.findViewById(R.id.modal_layout);
+		modals.addView(this);
 	}
 
 	@Deprecated

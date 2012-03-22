@@ -32,6 +32,7 @@ import com.google.android.maps.MapActivity;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 import com.kogasoftware.odt.invehicledevice.modal.MemoModal;
 import com.kogasoftware.odt.invehicledevice.modal.Modal;
+import com.kogasoftware.odt.invehicledevice.modal.ScheduleChangedModal;
 import com.kogasoftware.odt.invehicledevice.navigation.NavigationView;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.User;
@@ -306,6 +307,14 @@ public class InVehicleDeviceActivity extends MapActivity {
 			public void onClick(View view) {
 				findViewById(R.id.vehicle_notification_overlay).setVisibility(
 						View.VISIBLE);
+			}
+		});
+
+		View test2 = findViewById(R.id.icon_text_view);
+		test2.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				new ScheduleChangedModal(InVehicleDeviceActivity.this).open(findViewById(android.R.id.content));
 			}
 		});
 	}
