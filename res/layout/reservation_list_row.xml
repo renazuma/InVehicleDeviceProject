@@ -29,6 +29,13 @@
             android:textSize="30dip" />
     </LinearLayout>
 
+    <Button
+        android:id="@+id/memo_button"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:visibility="invisible"
+        android:text="メモ" />
+    
     <ToggleButton
         android:id="@+id/paid_button"
         android:layout_width="wrap_content"
@@ -40,12 +47,6 @@
         android:id="@+id/change_head_spinner"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent" />
-
-    <Button
-        android:id="@+id/memo_button"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:text="メモ" />
 
     <Button
         android:id="@+id/return_path_button"
