@@ -27,6 +27,7 @@ public class WaitingTestCase extends
 		solo.clickOnButton("到着しました");
 	}
 
+
 	public void test01メモボタンを押すとメモ画面が表示() {
 		assertEquals(View.GONE, solo.getView(R.id.memo_overlay).getVisibility());
 		solo.clickOnButton("メモ");
