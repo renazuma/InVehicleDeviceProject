@@ -8,6 +8,7 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
@@ -17,7 +18,7 @@ public class MockDataSource implements DataSource {
 	@Override
 	public InVehicleDevice getInVehicleDevice() {
 		InVehicleDevice model = new InVehicleDevice();
-		model.setId(10L);
+		model.setId(10);
 		model.setTypeNumber("TYPENUMBER012345");
 		model.setModelName("MODELNAME67890");
 		return model;
@@ -99,5 +100,12 @@ public class MockDataSource implements DataSource {
 
 	@Override
 	public void putVehicleNotificationReadAt(Long id, Date readAt) {
+	}
+
+	@Override
+	public void putReservationTransferredAt(Long id, Date transferredAt)
+			throws WebAPIException {
+		// TODO Auto-generated method stub
+
 	}
 }

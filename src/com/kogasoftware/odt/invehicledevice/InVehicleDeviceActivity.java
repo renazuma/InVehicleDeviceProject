@@ -278,7 +278,7 @@ public class InVehicleDeviceActivity extends MapActivity {
 		User u1 = new User();
 		u1.setFamilyName("桜木");
 		u1.setLastName("花道");
-		r1.setId(10L);
+		r1.setId(10);
 		r1.setUser(u1);
 		l.add(r1);
 
@@ -286,7 +286,7 @@ public class InVehicleDeviceActivity extends MapActivity {
 		u2.setFamilyName("流川");
 		u2.setLastName("楓");
 		Reservation r2 = new Reservation();
-		r2.setId(11L);
+		r2.setId(11);
 		r2.setUser(u2);
 		r2.setMemo("メモが存在します");
 		l.add(r2);
@@ -295,12 +295,12 @@ public class InVehicleDeviceActivity extends MapActivity {
 		u3.setFamilyName("フリークス");
 		u3.setLastName("ゴン");
 		Reservation r3 = new Reservation();
-		r3.setId(12L);
+		r3.setId(12);
 		r3.setUser(u3);
 		l.add(r3);
 
 		Reservation r4 = new Reservation();
-		r4.setId(13L);
+		r4.setId(13);
 		try {
 			r4.setUser(new User(new JSONObject(
 					"{family_name: '越前', last_name: '康介'}")));
