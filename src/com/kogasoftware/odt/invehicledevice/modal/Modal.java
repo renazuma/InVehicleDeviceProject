@@ -1,10 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.modal;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -21,28 +17,10 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 
 public class Modal extends LinearLayout implements OnTouchListener {
-
-	// staticなメンバにViewを持つので、メモリリークを未然に防ぐためWeakReferenceを使う
-	private static final Queue<WeakReference<Modal>> attachedInstances = new ConcurrentLinkedQueue<WeakReference<Modal>>();
-
-	private static void removeNullAttachedInstances() {
-		for (WeakReference<Modal> attachedInstance : getAttachedInstances()) {
-			if (attachedInstance.get() == null) {
-				attachedInstances.remove(attachedInstance);
-			}
-		}
-	}
-
-	private final WeakReference<Modal> thisWeakReference;
-
-	public static List<WeakReference<Modal>> getAttachedInstances() {
-		return Lists.newLinkedList(attachedInstances);
-	}
-
+	@Deprecated
 	public static AttributeSet getDefaultAttributeSet(Resources resources) {
 		XmlPullParser parser = resources.getXml(R.xml.modal_attribute_set);
 		while (true) {
@@ -69,7 +47,6 @@ public class Modal extends LinearLayout implements OnTouchListener {
 		super(context);
 		LayoutInflater layoutInflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		thisWeakReference = new WeakReference<Modal>(this);
 		// setOnTouchListener(this);
 		this.addView(layoutInflater.inflate(resourceId, null),
 				new Modal.LayoutParams(Modal.LayoutParams.FILL_PARENT,
@@ -81,7 +58,6 @@ public class Modal extends LinearLayout implements OnTouchListener {
 		super(context, attrs);
 		LayoutInflater layoutInflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		thisWeakReference = new WeakReference<Modal>(this);
 		// setOnTouchListener(this);
 		this.addView(layoutInflater.inflate(resourceId, null),
 				new Modal.LayoutParams(Modal.LayoutParams.FILL_PARENT,
@@ -91,13 +67,10 @@ public class Modal extends LinearLayout implements OnTouchListener {
 	@Override
 	protected void onAttachedToWindow() {
 		super.onAttachedToWindow();
-		attachedInstances.add(thisWeakReference);
 	}
 
 	@Override
 	protected void onDetachedFromWindow() {
-		attachedInstances.remove(thisWeakReference);
-		removeNullAttachedInstances();
 		// this.removeAllViews();
 		super.onDetachedFromWindow();
 	}

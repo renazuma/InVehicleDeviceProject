@@ -1,6 +1,5 @@
 package com.kogasoftware.odt.invehicledevice;
 
-import java.lang.ref.WeakReference;
 import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,97 +11,22 @@ import jp.tomorrowkey.android.vtextviewer.VTextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ListView;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.android.maps.MapActivity;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
-import com.kogasoftware.odt.invehicledevice.modal.MemoModal;
-import com.kogasoftware.odt.invehicledevice.modal.Modal;
 import com.kogasoftware.odt.invehicledevice.modal.ScheduleChangedModal;
 import com.kogasoftware.odt.invehicledevice.navigation.NavigationView;
+import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.User;
-
-class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
-	private final LayoutInflater layoutInflater;
-	private final int resourceId;
-
-	public ReservationArrayAdapter(Context context, int resourceId,
-			List<Reservation> items) {
-		super(context, resourceId, items);
-		this.layoutInflater = (LayoutInflater) context
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		this.resourceId = resourceId;
-	}
-
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		if (convertView == null) {
-			convertView = layoutInflater.inflate(resourceId, null);
-		}
-		Spinner spinner = (Spinner) convertView
-				.findViewById(R.id.change_head_spinner);
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
-				android.R.layout.simple_spinner_item, new String[] { "1名",
-			"2名", "3名" });
-		spinner.setAdapter(adapter);
-
-		final Reservation reservation = getItem(position);
-		TextView userNameView = (TextView) convertView
-				.findViewById(R.id.user_name);
-
-		if (reservation.getUser().isPresent()) {
-			User user = reservation.getUser().get();
-			userNameView.setText(user.getFamilyName() + " "
-					+ user.getLastName() + " 様");
-		} else {
-			userNameView.setText("ID:" + reservation.getUserId() + " 様");
-		}
-
-		TextView reservationIdView = (TextView) convertView
-				.findViewById(R.id.reservation_id);
-		reservationIdView.setText("[乗] 予約番号 " + reservation.getId());
-		if (reservation.getMemo().isPresent()) {
-			Button memoButton = (Button) convertView
-					.findViewById(R.id.memo_button);
-			memoButton.setVisibility(View.VISIBLE);
-			final View rootView = parent.getRootView();
-			memoButton.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View view) {
-					FrameLayout modals = (FrameLayout) rootView
-							.findViewById(R.id.modal_layout);
-					modals.addView(new MemoModal(getContext(), reservation));
-				}
-			});
-		}
-		Button returnPathButton = (Button) convertView
-				.findViewById(R.id.return_path_button);
-		returnPathButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				view.getRootView().findViewById(R.id.return_path_overlay)
-				.setVisibility(View.VISIBLE);
-			}
-		});
-
-		return convertView;
-	}
-}
 
 public class InVehicleDeviceActivity extends MapActivity {
 	private final String TAG = InVehicleDeviceActivity.class.getSimpleName();
@@ -125,7 +49,12 @@ public class InVehicleDeviceActivity extends MapActivity {
 	};
 
 	private Thread voiceThread = new EmptyThread();
-	private Integer status = 0;
+
+	private enum Status {
+		DRIVE, PLATFORM,
+	};
+
+	private Status status = Status.DRIVE;
 
 	private Button changeStatusButton = null;
 	private Button scheduleButton = null;
@@ -176,12 +105,8 @@ public class InVehicleDeviceActivity extends MapActivity {
 
 			@Override
 			public void onClick(View view) {
-				if (status.equals(0)) {
-					findViewById(R.id.waiting_layout).setVisibility(
-							View.VISIBLE);
-					statusTextView.setText("停車中");
-					changeStatusButton.setText("出発");
-					status = 1;
+				if (status == Status.DRIVE) {
+					enterPlatformStatus();
 				} else {
 					findViewById(R.id.check_start_layout).setVisibility(
 							View.VISIBLE);
@@ -236,16 +161,91 @@ public class InVehicleDeviceActivity extends MapActivity {
 		startButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				status = 0;
-				statusTextView.setText("走行中");
-				changeStatusButton.setText("到着");
-				findViewById(R.id.check_start_layout).setVisibility(View.GONE);
-				findViewById(R.id.waiting_layout).setVisibility(View.GONE);
-				if (!voices.offer("出発します。次は、コガソフトウェア前。コガソフトウェア前。")) {
-					Log.w(TAG, "!voices.offer() failed");
-				}
+				enterDriveStatus();
 			}
 		});
+
+		usersListView = (ListView) findViewById(R.id.users_list_view);
+
+		createTestData();
+
+		View test = findViewById(R.id.status_text_view);
+		test.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				findViewById(R.id.vehicle_notification_overlay).setVisibility(
+						View.VISIBLE);
+			}
+		});
+
+		View test2 = findViewById(R.id.icon_text_view);
+		test2.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				new ScheduleChangedModal(InVehicleDeviceActivity.this)
+				.open(getWindow().getDecorView());
+			}
+		});
+	}
+
+	@Deprecated
+	private void createTestData() {
+		try {
+			List<OperationSchedule> l = new LinkedList<OperationSchedule>();
+			JSONObject j1 = new JSONObject(
+					"{"
+							+ "arrival_estimate: '2012-01-01T01:00:00.000+09:00', "
+							+ "departure_estimate: '2012-01-01T02:00:00.000+09:00', "
+							+ "platform: {name: 'コガソフトウェア前'}, "
+							+ "reservations_as_arrival: [{head: 5}, {head: 6}, {head: 7}] ,"
+							+ "reservations_as_departure: [{head: 15}, {head: 16}, {head: 17}]}");
+			l.add(new OperationSchedule(j1));
+
+			JSONObject j2 = new JSONObject("{"
+					+ "arrival_estimate: '2012-01-01T03:00:00.000+09:00', "
+					+ "departure_estimate: '2012-01-01T04:00:00.000+09:00', "
+					+ "platform: {name: '上野御徒町駅前'}, "
+					+ "reservations_as_arrival: [{head: 5}]}");
+			l.add(new OperationSchedule(j2));
+
+			JSONObject j3 = new JSONObject(
+					"{"
+							+ "arrival_estimate: '2012-01-01T05:00:00.000+09:00', "
+							+ "departure_estimate: '2012-01-01T06:00:00.000+09:00', "
+							+ "platform: {name: '上野動物園前'}, "
+							+ "reservations_as_departure: [{head: 5}, {head: 6}, {head: 7}]}");
+			l.add(new OperationSchedule(j3));
+
+			JSONObject j4 = new JSONObject("{"
+					+ "arrival_estimate: '2012-01-01T07:00:00.000+09:00', "
+					+ "departure_estimate: '2012-01-01T08:00:00.000+09:00', "
+					+ "platform: {name: '上野広小路前'}, "
+					+ "reservations_as_arrival: [] ,"
+					+ "reservations_as_departure: [{head: 7}]}");
+			l.add(new OperationSchedule(j4));
+
+			JSONObject j5 = new JSONObject("{"
+					+ "arrival_estimate: '2012-01-01T09:00:00.000+09:00', "
+					+ "departure_estimate: '2012-01-01T09:01:00.000+09:00', "
+					+ "platform: {name: '湯島天神前'}}");
+			l.add(new OperationSchedule(j5));
+
+			JSONObject j6 = new JSONObject(
+					"{"
+							+ "arrival_estimate: '2012-01-01T09:03:00.000+09:00', "
+							+ "departure_estimate: '2012-01-01T09:03:30.000+09:00', "
+							+ "platform: {name: 'コガソフトウェア前'}, "
+							+ "reservations_as_arrival: [{head: 50}, {head: 60}, {head: 70}] ,"
+							+ "reservations_as_departure: [{head: 150}, {head: 160}, {head: 170}]}");
+			l.add(new OperationSchedule(j6));
+
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		List<Reservation> l = new LinkedList<Reservation>();
 		Reservation r1 = new Reservation();
@@ -298,25 +298,7 @@ public class InVehicleDeviceActivity extends MapActivity {
 
 		ReservationArrayAdapter usersAdapter = new ReservationArrayAdapter(
 				this, R.layout.reservation_list_row, l);
-		usersListView = (ListView) findViewById(R.id.users_list_view);
 		usersListView.setAdapter(usersAdapter);
-
-		View test = findViewById(R.id.status_text_view);
-		test.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				findViewById(R.id.vehicle_notification_overlay).setVisibility(
-						View.VISIBLE);
-			}
-		});
-
-		View test2 = findViewById(R.id.icon_text_view);
-		test2.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				new ScheduleChangedModal(InVehicleDeviceActivity.this).open(findViewById(android.R.id.content));
-			}
-		});
 	}
 
 	@Override
@@ -342,25 +324,21 @@ public class InVehicleDeviceActivity extends MapActivity {
 		return false;
 	}
 
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (keyCode != KeyEvent.KEYCODE_BACK) {
-			return super.onKeyDown(keyCode, event);
+	private void enterPlatformStatus() {
+		status = Status.PLATFORM;
+		findViewById(R.id.waiting_layout).setVisibility(View.VISIBLE);
+		statusTextView.setText("停車中");
+		changeStatusButton.setText("出発");
+	}
+
+	private void enterDriveStatus() {
+		status = Status.DRIVE;
+		statusTextView.setText("走行中");
+		changeStatusButton.setText("到着しました");
+		findViewById(R.id.check_start_layout).setVisibility(View.GONE);
+		findViewById(R.id.waiting_layout).setVisibility(View.GONE);
+		if (!voices.offer("出発します。次は、コガソフトウェア前。コガソフトウェア前。")) {
+			Log.w(TAG, "!voices.offer() failed");
 		}
-		Boolean match = false;
-		for (WeakReference<Modal> r : Modal.getAttachedInstances()) {
-			Modal l = r.get();
-			if (l == null) {
-				continue;
-			}
-			if (l.getVisibility() == View.VISIBLE) {
-				l.hide();
-				match = true;
-			}
-		}
-		if (match) {
-			return false;
-		}
-		return super.onKeyDown(keyCode, event);
 	}
 }
