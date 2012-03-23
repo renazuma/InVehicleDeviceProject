@@ -82,16 +82,27 @@ class OperationScheduleArrayAdapter extends ArrayAdapter<OperationSchedule> {
 }
 
 public class ScheduleModal extends Modal {
-	public ScheduleModal(Context context, AttributeSet attrs) {
-		super(context, attrs, R.layout.schedule_modal);
+
+	final List<OperationSchedule> operationSchedules;
+
+	public ScheduleModal(Context context, List<OperationSchedule> operationSchedules) {
+		super(context, R.layout.schedule_modal);
+		this.operationSchedules = operationSchedules;
 	}
 
-	@Override
-	protected void onAttachedToWindow() {
-		super.onAttachedToWindow();
+	@Deprecated
+	public ScheduleModal(Context context, AttributeSet attrs) {
+		super(context, attrs, R.layout.schedule_modal);
 
-		List<OperationSchedule> l = new LinkedList<OperationSchedule>();
+		operationSchedules = new LinkedList<OperationSchedule>();
 
+		createTestData();
+
+	}
+
+	@Deprecated
+	private void createTestData() {
+		List<OperationSchedule> l = operationSchedules;
 		try {
 			JSONObject j1 = new JSONObject("{"
 					+ "arrival_estimate: '2012-01-01T01:00:00.000+09:00', "
@@ -144,9 +155,15 @@ public class ScheduleModal extends Modal {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	protected void onAttachedToWindow() {
+		super.onAttachedToWindow();
+
 
 		OperationScheduleArrayAdapter adapter = new OperationScheduleArrayAdapter(
-				getContext(), R.layout.operation_schedule_list_row, l);
+				getContext(), R.layout.operation_schedule_list_row, operationSchedules);
 		ListView operationScheduleListView = (ListView) findViewById(R.id.operation_schedule_list_view);
 		operationScheduleListView.setAdapter(adapter);
 	}
