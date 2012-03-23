@@ -90,7 +90,7 @@ public class MockDataSource implements DataSource {
 		if (nextNotifyDate.before(new Date())) {
 			return l;
 		}
-		nextNotifyDate = new Date(new Date().getTime() + 60 * 1000);
+		nextNotifyDate = new Date(new Date().getTime() + 6 * 1000);
 		VehicleNotification n = new VehicleNotification();
 		n.setBody("テスト通知が行われました");
 		l.add(n);

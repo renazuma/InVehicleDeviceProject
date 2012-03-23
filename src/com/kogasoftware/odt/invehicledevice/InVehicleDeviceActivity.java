@@ -21,19 +21,44 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.android.maps.MapActivity;
+import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
+import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 import com.kogasoftware.odt.invehicledevice.modal.ScheduleChangedModal;
 import com.kogasoftware.odt.invehicledevice.navigation.NavigationView;
+import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.User;
+import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class InVehicleDeviceActivity extends MapActivity {
 	private final String TAG = InVehicleDeviceActivity.class.getSimpleName();
+	private final DataSource dataSource = DataSourceFactory.newInstance();
 	private final BlockingQueue<String> voices = new LinkedBlockingQueue<String>();
-	private final Integer DRIVING_VIEW_TOGGLE_INTERVAL = 5000;
-	private final Handler drivingViewToggleHandler = new Handler();
-	private final Runnable drivingViewToggleRunnable = new Runnable() {
+	private final Integer POLL_VEHICLE_NOTIFICATION_INTERVAL = 10000;
+	private final Handler pollVehicleNotificationHandler = new Handler();
+	private final Runnable pollVehicleNotification = new Runnable() {
+		@Override
+		public void run() {
+			try {
+				List<VehicleNotification> vehicleNotifications = dataSource.getVehicleNotifications();
+				if (!vehicleNotifications.isEmpty()) {
+					findViewById(R.id.vehicle_notification_overlay).setVisibility(
+							View.VISIBLE);
+				}
+			} catch (WebAPIException e) {
+				Log.e(TAG, "", e);
+			}
+
+			pollVehicleNotificationHandler.postDelayed(this,
+					POLL_VEHICLE_NOTIFICATION_INTERVAL);
+		}
+	};
+
+	private final Integer TOGGLE_DRIVING_VIEW_INTERVAL = 5000;
+	private final Handler toggleDrivingViewHandler = new Handler();
+	private final Runnable toggleDrivingView = new Runnable() {
 		@Override
 		public void run() {
 			if (drivingView1Layout.getVisibility() == View.VISIBLE) {
@@ -43,8 +68,8 @@ public class InVehicleDeviceActivity extends MapActivity {
 				drivingView1Layout.setVisibility(View.VISIBLE);
 				drivingView2Layout.setVisibility(View.GONE);
 			}
-			drivingViewToggleHandler.postDelayed(this,
-					DRIVING_VIEW_TOGGLE_INTERVAL);
+			toggleDrivingViewHandler.postDelayed(this,
+					TOGGLE_DRIVING_VIEW_INTERVAL);
 		}
 	};
 
@@ -98,7 +123,9 @@ public class InVehicleDeviceActivity extends MapActivity {
 		((VTextView) findViewById(R.id.next_stop_but_two_text_view))
 		.setText("次の次の次の乗降場てす");
 
-		drivingViewToggleHandler.post(drivingViewToggleRunnable);
+		toggleDrivingViewHandler.post(toggleDrivingView);
+		pollVehicleNotificationHandler.post(pollVehicleNotification);
+
 		navigationView = (NavigationView) findViewById(R.id.navigation_view);
 
 		changeStatusButton.setOnClickListener(new OnClickListener() {
@@ -173,8 +200,7 @@ public class InVehicleDeviceActivity extends MapActivity {
 		test.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				findViewById(R.id.vehicle_notification_overlay).setVisibility(
-						View.VISIBLE);
+
 			}
 		});
 
@@ -316,7 +342,8 @@ public class InVehicleDeviceActivity extends MapActivity {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		drivingViewToggleHandler.removeCallbacks(drivingViewToggleRunnable);
+		toggleDrivingViewHandler.removeCallbacks(toggleDrivingView);
+		pollVehicleNotificationHandler.removeCallbacks(pollVehicleNotification);
 	}
 
 	@Override

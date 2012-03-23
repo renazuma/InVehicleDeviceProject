@@ -9,8 +9,12 @@ import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public interface DataSource {
-	public InVehicleDevice getInVehicleDevice() throws WebAPIException;
-	public List<OperationSchedule> getOperationSchedules() throws WebAPIException;
-	public List<VehicleNotification> getVehicleNotifications() throws WebAPIException;
-	public void putVehicleNotificationReadAt(Long id, Date readAt) throws WebAPIException;
+	InVehicleDevice getInVehicleDevice() throws WebAPIException;
+
+	List<OperationSchedule> getOperationSchedules() throws WebAPIException;
+
+	List<VehicleNotification> getVehicleNotifications() throws WebAPIException;
+
+	void putVehicleNotificationReadAt(Long id, Date readAt)
+			throws WebAPIException;
 }
