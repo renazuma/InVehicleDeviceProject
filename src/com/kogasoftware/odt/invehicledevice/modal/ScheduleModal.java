@@ -56,13 +56,13 @@ class OperationScheduleArrayAdapter extends ArrayAdapter<OperationSchedule> {
 		Long getOnHeads = 0L;
 		for (Reservation reservation : operationSchedule
 				.getReservationsAsArrival()) {
-			getOnHeads += reservation.getHead();
+			getOnHeads += reservation.getPassengerCount();
 		}
 
 		Long getOffHeads = 0L;
 		for (Reservation reservation : operationSchedule
 				.getReservationsAsDeparture()) {
-			getOffHeads += reservation.getHead();
+			getOffHeads += reservation.getPassengerCount();
 		}
 
 		TextView arrivalEstimateTextView = (TextView) convertView

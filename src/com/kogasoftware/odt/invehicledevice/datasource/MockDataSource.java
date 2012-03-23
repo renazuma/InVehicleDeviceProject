@@ -31,22 +31,22 @@ public class MockDataSource implements DataSource {
 					+ "arrival_estimate: '2012-01-01T01:00:00.000+09:00', "
 					+ "departure_estimate: '2012-01-01T02:00:00.000+09:00', "
 					+ "platform: {name: 'コガソフトウェア前'}, "
-					+ "reservations_as_arrival: [{head: 5}, {head: 6}, {head: 7}] ,"
-					+ "reservations_as_departure: [{head: 15}, {head: 16}, {head: 17}]}");
+					+ "reservations_as_arrival: [{passenger_count: 5}, {passenger_count: 6}, {passenger_count: 7}] ,"
+					+ "reservations_as_departure: [{passenger_count: 15}, {passenger_count: 16}, {passenger_count: 17}]}");
 			l.add(new OperationSchedule(j1));
 
 			JSONObject j2 = new JSONObject("{"
 					+ "arrival_estimate: '2012-01-01T03:00:00.000+09:00', "
 					+ "departure_estimate: '2012-01-01T04:00:00.000+09:00', "
 					+ "platform: {name: '上野御徒町駅前'}, "
-					+ "reservations_as_arrival: [{head: 5}]}");
+					+ "reservations_as_arrival: [{passenger_count: 5}]}");
 			l.add(new OperationSchedule(j2));
 
 			JSONObject j3 = new JSONObject("{"
 					+ "arrival_estimate: '2012-01-01T05:00:00.000+09:00', "
 					+ "departure_estimate: '2012-01-01T06:00:00.000+09:00', "
 					+ "platform: {name: '上野動物園前'}, "
-					+ "reservations_as_departure: [{head: 5}, {head: 6}, {head: 7}]}");
+					+ "reservations_as_departure: [{passenger_count: 5}, {passenger_count: 6}, {passenger_count: 7}]}");
 			l.add(new OperationSchedule(j3));
 
 			JSONObject j4 = new JSONObject("{"
@@ -54,7 +54,7 @@ public class MockDataSource implements DataSource {
 					+ "departure_estimate: '2012-01-01T08:00:00.000+09:00', "
 					+ "platform: {name: '上野広小路前'}, "
 					+ "reservations_as_arrival: [] ,"
-					+ "reservations_as_departure: [{head: 7}]}");
+					+ "reservations_as_departure: [{passenger_count: 7}]}");
 			l.add(new OperationSchedule(j4));
 
 			JSONObject j5 = new JSONObject("{"
@@ -67,8 +67,8 @@ public class MockDataSource implements DataSource {
 					+ "arrival_estimate: '2012-01-01T09:03:00.000+09:00', "
 					+ "departure_estimate: '2012-01-01T09:03:30.000+09:00', "
 					+ "platform: {name: 'コガソフトウェア前'}, "
-					+ "reservations_as_arrival: [{head: 50}, {head: 60}, {head: 70}] ,"
-					+ "reservations_as_departure: [{head: 150}, {head: 160}, {head: 170}]}");
+					+ "reservations_as_arrival: [{passenger_count: 50}, {passenger_count: 60}, {passenger_count: 70}] ,"
+					+ "reservations_as_departure: [{passenger_count: 150}, {passenger_count: 160}, {passenger_count: 170}]}");
 			l.add(new OperationSchedule(j6));
 
 		} catch (ParseException e) {
