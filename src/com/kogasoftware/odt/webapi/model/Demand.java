@@ -14,39 +14,28 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class Demand extends Model {
-	private static final long serialVersionUID = 1196565428281752463L;
+	private static final long serialVersionUID = 2556830875516026962L;
 	public static final String JSON_NAME = "demand";
 	public static final String CONTROLLER_NAME = "demands";
-
-	public static class URL {
-		public static final String ROOT = "/" + CONTROLLER_NAME;
-		public static final String CREATE = "/" + CONTROLLER_NAME + "/create";
-		public static final String DESTROY = "/" + CONTROLLER_NAME + "/destroy";
-		public static final String EDIT = "/" + CONTROLLER_NAME + "/edit";
-		public static final String INDEX = "/" + CONTROLLER_NAME + "/index";
-		public static final String NEW = "/" + CONTROLLER_NAME + "/new";
-		public static final String SHOW = "/" + CONTROLLER_NAME + "/show";
-		public static final String UPDATE = "/" + CONTROLLER_NAME + "/update";
-	}
 
 	public Demand() {
 	}
 
 	public Demand(JSONObject jsonObject) throws JSONException, ParseException {
-		setArrivalPlatformId(parseOptionalLong(jsonObject, "arrival_platform_id"));
+		setArrivalPlatformId(parseOptionalInteger(jsonObject, "arrival_platform_id"));
 		setArrivalTime(parseOptionalDate(jsonObject, "arrival_time"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
-		setDeparturePlatformId(parseOptionalLong(jsonObject, "departure_platform_id"));
+		setDeparturePlatformId(parseOptionalInteger(jsonObject, "departure_platform_id"));
 		setDepartureTime(parseOptionalDate(jsonObject, "departure_time"));
-		setId(parseLong(jsonObject, "id"));
+		setId(parseInteger(jsonObject, "id"));
 		setMemo(parseOptionalString(jsonObject, "memo"));
-		setPassengerCount(parseLong(jsonObject, "passenger_count"));
-		setServiceProviderId(parseOptionalLong(jsonObject, "service_provider_id"));
-		setStoppageTime(parseOptionalLong(jsonObject, "stoppage_time"));
-		setUnitAssignmentId(parseOptionalLong(jsonObject, "unit_assignment_id"));
+		setPassengerCount(parseInteger(jsonObject, "passenger_count"));
+		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
+		setStoppageTime(parseOptionalInteger(jsonObject, "stoppage_time"));
+		setUnitAssignmentId(parseOptionalInteger(jsonObject, "unit_assignment_id"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
-		setUserId(parseLong(jsonObject, "user_id"));
+		setUserId(parseInteger(jsonObject, "user_id"));
 		setArrivalPlatform(Platform.parse(jsonObject, "arrival_platform"));
 		if (getArrivalPlatform().isPresent()) {
 			setArrivalPlatformId(getArrivalPlatform().get().getId());
@@ -84,32 +73,6 @@ public class Demand extends Model {
 		return models;
 	}
 
-	public static class ResponseConverter implements
-			WebAPI.ResponseConverter<Demand> {
-		@Override
-		public Demand convert(byte[] rawResponse) throws JSONException, ParseException {
-			return new Demand(new JSONObject(new String(rawResponse)));
-		}
-	}
-
-	public static class ListResponseConverter implements
-			WebAPI.ResponseConverter<List<Demand>> {
-		@Override
-		public List<Demand> convert(byte[] rawResponse) throws JSONException,
-				ParseException {
-			JSONArray array = new JSONArray(new String(rawResponse));
-			List<Demand> models = new LinkedList<Demand>();
-			for (Integer i = 0; i < array.length(); ++i) {
-				if (array.isNull(i)) {
-					continue;
-				}
-				JSONObject object = array.getJSONObject(i);
-				models.add(new Demand(object));
-			}
-			return models;
-		}
-	}
-
 	@Override
 	public JSONObject toJSONObject() throws JSONException {
 		JSONObject jsonObject = new JSONObject();
@@ -143,22 +106,22 @@ public class Demand extends Model {
 		return jsonObject;
 	}
 
-	private Optional<Long> arrivalPlatformId = Optional.<Long>absent();
+	private Optional<Integer> arrivalPlatformId = Optional.<Integer>absent();
 
-	public Optional<Long> getArrivalPlatformId() {
+	public Optional<Integer> getArrivalPlatformId() {
 		return wrapNull(arrivalPlatformId);
 	}
 
-	public void setArrivalPlatformId(Optional<Long> arrivalPlatformId) {
+	public void setArrivalPlatformId(Optional<Integer> arrivalPlatformId) {
 		this.arrivalPlatformId = wrapNull(arrivalPlatformId);
 	}
 
-	public void setArrivalPlatformId(Long arrivalPlatformId) {
+	public void setArrivalPlatformId(Integer arrivalPlatformId) {
 		this.arrivalPlatformId = Optional.fromNullable(arrivalPlatformId);
 	}
 
 	public void clearArrivalPlatformId() {
-		this.arrivalPlatformId = Optional.<Long>absent();
+		this.arrivalPlatformId = Optional.<Integer>absent();
 	}
 
 	private Optional<Date> arrivalTime = Optional.<Date>absent();
@@ -207,22 +170,22 @@ public class Demand extends Model {
 		this.deletedAt = Optional.<Date>absent();
 	}
 
-	private Optional<Long> departurePlatformId = Optional.<Long>absent();
+	private Optional<Integer> departurePlatformId = Optional.<Integer>absent();
 
-	public Optional<Long> getDeparturePlatformId() {
+	public Optional<Integer> getDeparturePlatformId() {
 		return wrapNull(departurePlatformId);
 	}
 
-	public void setDeparturePlatformId(Optional<Long> departurePlatformId) {
+	public void setDeparturePlatformId(Optional<Integer> departurePlatformId) {
 		this.departurePlatformId = wrapNull(departurePlatformId);
 	}
 
-	public void setDeparturePlatformId(Long departurePlatformId) {
+	public void setDeparturePlatformId(Integer departurePlatformId) {
 		this.departurePlatformId = Optional.fromNullable(departurePlatformId);
 	}
 
 	public void clearDeparturePlatformId() {
-		this.departurePlatformId = Optional.<Long>absent();
+		this.departurePlatformId = Optional.<Integer>absent();
 	}
 
 	private Optional<Date> departureTime = Optional.<Date>absent();
@@ -243,13 +206,13 @@ public class Demand extends Model {
 		this.departureTime = Optional.<Date>absent();
 	}
 
-	private Long id = 0L;
+	private Integer id = 0;
 
-	public Long getId() {
+	public Integer getId() {
 		return wrapNull(id);
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = wrapNull(id);
 	}
 
@@ -271,68 +234,68 @@ public class Demand extends Model {
 		this.memo = Optional.<String>absent();
 	}
 
-	private Long passengerCount = 0L;
+	private Integer passengerCount = 0;
 
-	public Long getPassengerCount() {
+	public Integer getPassengerCount() {
 		return wrapNull(passengerCount);
 	}
 
-	public void setPassengerCount(Long passengerCount) {
+	public void setPassengerCount(Integer passengerCount) {
 		this.passengerCount = wrapNull(passengerCount);
 	}
 
-	private Optional<Long> serviceProviderId = Optional.<Long>absent();
+	private Optional<Integer> serviceProviderId = Optional.<Integer>absent();
 
-	public Optional<Long> getServiceProviderId() {
+	public Optional<Integer> getServiceProviderId() {
 		return wrapNull(serviceProviderId);
 	}
 
-	public void setServiceProviderId(Optional<Long> serviceProviderId) {
+	public void setServiceProviderId(Optional<Integer> serviceProviderId) {
 		this.serviceProviderId = wrapNull(serviceProviderId);
 	}
 
-	public void setServiceProviderId(Long serviceProviderId) {
+	public void setServiceProviderId(Integer serviceProviderId) {
 		this.serviceProviderId = Optional.fromNullable(serviceProviderId);
 	}
 
 	public void clearServiceProviderId() {
-		this.serviceProviderId = Optional.<Long>absent();
+		this.serviceProviderId = Optional.<Integer>absent();
 	}
 
-	private Optional<Long> stoppageTime = Optional.<Long>absent();
+	private Optional<Integer> stoppageTime = Optional.<Integer>absent();
 
-	public Optional<Long> getStoppageTime() {
+	public Optional<Integer> getStoppageTime() {
 		return wrapNull(stoppageTime);
 	}
 
-	public void setStoppageTime(Optional<Long> stoppageTime) {
+	public void setStoppageTime(Optional<Integer> stoppageTime) {
 		this.stoppageTime = wrapNull(stoppageTime);
 	}
 
-	public void setStoppageTime(Long stoppageTime) {
+	public void setStoppageTime(Integer stoppageTime) {
 		this.stoppageTime = Optional.fromNullable(stoppageTime);
 	}
 
 	public void clearStoppageTime() {
-		this.stoppageTime = Optional.<Long>absent();
+		this.stoppageTime = Optional.<Integer>absent();
 	}
 
-	private Optional<Long> unitAssignmentId = Optional.<Long>absent();
+	private Optional<Integer> unitAssignmentId = Optional.<Integer>absent();
 
-	public Optional<Long> getUnitAssignmentId() {
+	public Optional<Integer> getUnitAssignmentId() {
 		return wrapNull(unitAssignmentId);
 	}
 
-	public void setUnitAssignmentId(Optional<Long> unitAssignmentId) {
+	public void setUnitAssignmentId(Optional<Integer> unitAssignmentId) {
 		this.unitAssignmentId = wrapNull(unitAssignmentId);
 	}
 
-	public void setUnitAssignmentId(Long unitAssignmentId) {
+	public void setUnitAssignmentId(Integer unitAssignmentId) {
 		this.unitAssignmentId = Optional.fromNullable(unitAssignmentId);
 	}
 
 	public void clearUnitAssignmentId() {
-		this.unitAssignmentId = Optional.<Long>absent();
+		this.unitAssignmentId = Optional.<Integer>absent();
 	}
 
 	private Date updatedAt = new Date();
@@ -345,13 +308,13 @@ public class Demand extends Model {
 		this.updatedAt = wrapNull(updatedAt);
 	}
 
-	private Long userId = 0L;
+	private Integer userId = 0;
 
-	public Long getUserId() {
+	public Integer getUserId() {
 		return wrapNull(userId);
 	}
 
-	public void setUserId(Long userId) {
+	public void setUserId(Integer userId) {
 		this.userId = wrapNull(userId);
 	}
 

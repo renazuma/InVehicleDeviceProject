@@ -14,26 +14,22 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class ServiceUnitStatusLog extends Model {
-	private static final long serialVersionUID = 4948261639769588725L;
+	private static final long serialVersionUID = 2274498355958809986L;
 	public static final String JSON_NAME = "service_unit_status_log";
 	public static final String CONTROLLER_NAME = "service_unit_status_logs";
-
-	public static class URL {
-		public static final String ROOT = "/" + CONTROLLER_NAME;
-	}
 
 	public ServiceUnitStatusLog() {
 	}
 
 	public ServiceUnitStatusLog(JSONObject jsonObject) throws JSONException, ParseException {
 		setCreatedAt(parseDate(jsonObject, "created_at"));
-		setId(parseLong(jsonObject, "id"));
+		setId(parseInteger(jsonObject, "id"));
 		setLatitude(parseBigDecimal(jsonObject, "latitude"));
 		setLongitude(parseBigDecimal(jsonObject, "longitude"));
-		setOrientation(parseOptionalLong(jsonObject, "orientation"));
-		setServiceUnitId(parseOptionalLong(jsonObject, "service_unit_id"));
-		setStatus(parseOptionalLong(jsonObject, "status"));
-		setTemperature(parseOptionalLong(jsonObject, "temperature"));
+		setOrientation(parseOptionalInteger(jsonObject, "orientation"));
+		setServiceUnitId(parseOptionalInteger(jsonObject, "service_unit_id"));
+		setStatus(parseOptionalInteger(jsonObject, "status"));
+		setTemperature(parseOptionalInteger(jsonObject, "temperature"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setServiceUnit(ServiceUnit.parse(jsonObject, "service_unit"));
 		if (getServiceUnit().isPresent()) {
@@ -61,32 +57,6 @@ public class ServiceUnitStatusLog extends Model {
 			models.add(new ServiceUnitStatusLog(jsonArray.getJSONObject(i)));
 		}
 		return models;
-	}
-
-	public static class ResponseConverter implements
-			WebAPI.ResponseConverter<ServiceUnitStatusLog> {
-		@Override
-		public ServiceUnitStatusLog convert(byte[] rawResponse) throws JSONException, ParseException {
-			return new ServiceUnitStatusLog(new JSONObject(new String(rawResponse)));
-		}
-	}
-
-	public static class ListResponseConverter implements
-			WebAPI.ResponseConverter<List<ServiceUnitStatusLog>> {
-		@Override
-		public List<ServiceUnitStatusLog> convert(byte[] rawResponse) throws JSONException,
-				ParseException {
-			JSONArray array = new JSONArray(new String(rawResponse));
-			List<ServiceUnitStatusLog> models = new LinkedList<ServiceUnitStatusLog>();
-			for (Integer i = 0; i < array.length(); ++i) {
-				if (array.isNull(i)) {
-					continue;
-				}
-				JSONObject object = array.getJSONObject(i);
-				models.add(new ServiceUnitStatusLog(object));
-			}
-			return models;
-		}
 	}
 
 	@Override
@@ -118,13 +88,13 @@ public class ServiceUnitStatusLog extends Model {
 		this.createdAt = wrapNull(createdAt);
 	}
 
-	private Long id = 0L;
+	private Integer id = 0;
 
-	public Long getId() {
+	public Integer getId() {
 		return wrapNull(id);
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = wrapNull(id);
 	}
 
@@ -148,76 +118,76 @@ public class ServiceUnitStatusLog extends Model {
 		this.longitude = wrapNull(longitude);
 	}
 
-	private Optional<Long> orientation = Optional.<Long>absent();
+	private Optional<Integer> orientation = Optional.<Integer>absent();
 
-	public Optional<Long> getOrientation() {
+	public Optional<Integer> getOrientation() {
 		return wrapNull(orientation);
 	}
 
-	public void setOrientation(Optional<Long> orientation) {
+	public void setOrientation(Optional<Integer> orientation) {
 		this.orientation = wrapNull(orientation);
 	}
 
-	public void setOrientation(Long orientation) {
+	public void setOrientation(Integer orientation) {
 		this.orientation = Optional.fromNullable(orientation);
 	}
 
 	public void clearOrientation() {
-		this.orientation = Optional.<Long>absent();
+		this.orientation = Optional.<Integer>absent();
 	}
 
-	private Optional<Long> serviceUnitId = Optional.<Long>absent();
+	private Optional<Integer> serviceUnitId = Optional.<Integer>absent();
 
-	public Optional<Long> getServiceUnitId() {
+	public Optional<Integer> getServiceUnitId() {
 		return wrapNull(serviceUnitId);
 	}
 
-	public void setServiceUnitId(Optional<Long> serviceUnitId) {
+	public void setServiceUnitId(Optional<Integer> serviceUnitId) {
 		this.serviceUnitId = wrapNull(serviceUnitId);
 	}
 
-	public void setServiceUnitId(Long serviceUnitId) {
+	public void setServiceUnitId(Integer serviceUnitId) {
 		this.serviceUnitId = Optional.fromNullable(serviceUnitId);
 	}
 
 	public void clearServiceUnitId() {
-		this.serviceUnitId = Optional.<Long>absent();
+		this.serviceUnitId = Optional.<Integer>absent();
 	}
 
-	private Optional<Long> status = Optional.<Long>absent();
+	private Optional<Integer> status = Optional.<Integer>absent();
 
-	public Optional<Long> getStatus() {
+	public Optional<Integer> getStatus() {
 		return wrapNull(status);
 	}
 
-	public void setStatus(Optional<Long> status) {
+	public void setStatus(Optional<Integer> status) {
 		this.status = wrapNull(status);
 	}
 
-	public void setStatus(Long status) {
+	public void setStatus(Integer status) {
 		this.status = Optional.fromNullable(status);
 	}
 
 	public void clearStatus() {
-		this.status = Optional.<Long>absent();
+		this.status = Optional.<Integer>absent();
 	}
 
-	private Optional<Long> temperature = Optional.<Long>absent();
+	private Optional<Integer> temperature = Optional.<Integer>absent();
 
-	public Optional<Long> getTemperature() {
+	public Optional<Integer> getTemperature() {
 		return wrapNull(temperature);
 	}
 
-	public void setTemperature(Optional<Long> temperature) {
+	public void setTemperature(Optional<Integer> temperature) {
 		this.temperature = wrapNull(temperature);
 	}
 
-	public void setTemperature(Long temperature) {
+	public void setTemperature(Integer temperature) {
 		this.temperature = Optional.fromNullable(temperature);
 	}
 
 	public void clearTemperature() {
-		this.temperature = Optional.<Long>absent();
+		this.temperature = Optional.<Integer>absent();
 	}
 
 	private Date updatedAt = new Date();

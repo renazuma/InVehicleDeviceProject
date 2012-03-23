@@ -14,20 +14,9 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class InVehicleDevice extends Model {
-	private static final long serialVersionUID = 2051608828621861232L;
+	private static final long serialVersionUID = 6991546386595365984L;
 	public static final String JSON_NAME = "in_vehicle_device";
 	public static final String CONTROLLER_NAME = "in_vehicle_devices";
-
-	public static class URL {
-		public static final String ROOT = "/" + CONTROLLER_NAME;
-		public static final String CREATE = "/" + CONTROLLER_NAME + "/create";
-		public static final String DESTROY = "/" + CONTROLLER_NAME + "/destroy";
-		public static final String EDIT = "/" + CONTROLLER_NAME + "/edit";
-		public static final String INDEX = "/" + CONTROLLER_NAME + "/index";
-		public static final String NEW = "/" + CONTROLLER_NAME + "/new";
-		public static final String SHOW = "/" + CONTROLLER_NAME + "/show";
-		public static final String UPDATE = "/" + CONTROLLER_NAME + "/update";
-	}
 
 	public InVehicleDevice() {
 	}
@@ -35,9 +24,9 @@ public class InVehicleDevice extends Model {
 	public InVehicleDevice(JSONObject jsonObject) throws JSONException, ParseException {
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
-		setId(parseLong(jsonObject, "id"));
+		setId(parseInteger(jsonObject, "id"));
 		setModelName(parseString(jsonObject, "model_name"));
-		setServiceProviderId(parseOptionalLong(jsonObject, "service_provider_id"));
+		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
 		setTypeNumber(parseString(jsonObject, "type_number"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setServiceUnits(ServiceUnit.parseList(jsonObject, "service_units"));
@@ -64,32 +53,6 @@ public class InVehicleDevice extends Model {
 			models.add(new InVehicleDevice(jsonArray.getJSONObject(i)));
 		}
 		return models;
-	}
-
-	public static class ResponseConverter implements
-			WebAPI.ResponseConverter<InVehicleDevice> {
-		@Override
-		public InVehicleDevice convert(byte[] rawResponse) throws JSONException, ParseException {
-			return new InVehicleDevice(new JSONObject(new String(rawResponse)));
-		}
-	}
-
-	public static class ListResponseConverter implements
-			WebAPI.ResponseConverter<List<InVehicleDevice>> {
-		@Override
-		public List<InVehicleDevice> convert(byte[] rawResponse) throws JSONException,
-				ParseException {
-			JSONArray array = new JSONArray(new String(rawResponse));
-			List<InVehicleDevice> models = new LinkedList<InVehicleDevice>();
-			for (Integer i = 0; i < array.length(); ++i) {
-				if (array.isNull(i)) {
-					continue;
-				}
-				JSONObject object = array.getJSONObject(i);
-				models.add(new InVehicleDevice(object));
-			}
-			return models;
-		}
 	}
 
 	@Override
@@ -135,13 +98,13 @@ public class InVehicleDevice extends Model {
 		this.deletedAt = Optional.<Date>absent();
 	}
 
-	private Long id = 0L;
+	private Integer id = 0;
 
-	public Long getId() {
+	public Integer getId() {
 		return wrapNull(id);
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = wrapNull(id);
 	}
 
@@ -155,22 +118,22 @@ public class InVehicleDevice extends Model {
 		this.modelName = wrapNull(modelName);
 	}
 
-	private Optional<Long> serviceProviderId = Optional.<Long>absent();
+	private Optional<Integer> serviceProviderId = Optional.<Integer>absent();
 
-	public Optional<Long> getServiceProviderId() {
+	public Optional<Integer> getServiceProviderId() {
 		return wrapNull(serviceProviderId);
 	}
 
-	public void setServiceProviderId(Optional<Long> serviceProviderId) {
+	public void setServiceProviderId(Optional<Integer> serviceProviderId) {
 		this.serviceProviderId = wrapNull(serviceProviderId);
 	}
 
-	public void setServiceProviderId(Long serviceProviderId) {
+	public void setServiceProviderId(Integer serviceProviderId) {
 		this.serviceProviderId = Optional.fromNullable(serviceProviderId);
 	}
 
 	public void clearServiceProviderId() {
-		this.serviceProviderId = Optional.<Long>absent();
+		this.serviceProviderId = Optional.<Integer>absent();
 	}
 
 	private String typeNumber = "";

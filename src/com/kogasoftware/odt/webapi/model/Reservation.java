@@ -14,50 +14,36 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class Reservation extends Model {
-	private static final long serialVersionUID = 1578339946046565760L;
+	private static final long serialVersionUID = 7740644961600488228L;
 	public static final String JSON_NAME = "reservation";
 	public static final String CONTROLLER_NAME = "reservations";
-
-	public static class URL {
-		public static final String ROOT = "/" + CONTROLLER_NAME;
-		public static final String CANCELED = "/" + CONTROLLER_NAME + "/canceled";
-		public static final String CREATE = "/" + CONTROLLER_NAME + "/create";
-		public static final String DESTROY = "/" + CONTROLLER_NAME + "/destroy";
-		public static final String EDIT = "/" + CONTROLLER_NAME + "/edit";
-		public static final String HISTORY_FOR_CLUSTER = "/" + CONTROLLER_NAME + "/history_for_cluster";
-		public static final String INDEX = "/" + CONTROLLER_NAME + "/index";
-		public static final String NEW = "/" + CONTROLLER_NAME + "/new";
-		public static final String SEARCH = "/" + CONTROLLER_NAME + "/search";
-		public static final String SHOW = "/" + CONTROLLER_NAME + "/show";
-		public static final String UPDATE = "/" + CONTROLLER_NAME + "/update";
-	}
 
 	public Reservation() {
 	}
 
 	public Reservation(JSONObject jsonObject) throws JSONException, ParseException {
 		setArrivalLock(parseOptionalBoolean(jsonObject, "arrival_lock"));
-		setArrivalPlatformId(parseOptionalLong(jsonObject, "arrival_platform_id"));
-		setArrivalScheduleId(parseOptionalLong(jsonObject, "arrival_schedule_id"));
+		setArrivalPlatformId(parseOptionalInteger(jsonObject, "arrival_platform_id"));
+		setArrivalScheduleId(parseOptionalInteger(jsonObject, "arrival_schedule_id"));
 		setArrivalTime(parseDate(jsonObject, "arrival_time"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
-		setDemandId(parseLong(jsonObject, "demand_id"));
+		setDemandId(parseInteger(jsonObject, "demand_id"));
 		setDepartureLock(parseOptionalBoolean(jsonObject, "departure_lock"));
-		setDeparturePlatformId(parseOptionalLong(jsonObject, "departure_platform_id"));
-		setDepartureScheduleId(parseOptionalLong(jsonObject, "departure_schedule_id"));
+		setDeparturePlatformId(parseOptionalInteger(jsonObject, "departure_platform_id"));
+		setDepartureScheduleId(parseOptionalInteger(jsonObject, "departure_schedule_id"));
 		setDepartureTime(parseDate(jsonObject, "departure_time"));
-		setId(parseLong(jsonObject, "id"));
+		setId(parseInteger(jsonObject, "id"));
 		setMemo(parseOptionalString(jsonObject, "memo"));
-		setOperatorId(parseOptionalLong(jsonObject, "operator_id"));
-		setPassengerCount(parseLong(jsonObject, "passenger_count"));
-		setPayment(parseLong(jsonObject, "payment"));
-		setServiceProviderId(parseOptionalLong(jsonObject, "service_provider_id"));
-		setStatus(parseLong(jsonObject, "status"));
+		setOperatorId(parseOptionalInteger(jsonObject, "operator_id"));
+		setPassengerCount(parseInteger(jsonObject, "passenger_count"));
+		setPayment(parseInteger(jsonObject, "payment"));
+		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
+		setStatus(parseInteger(jsonObject, "status"));
 		setTransferredAt(parseOptionalDate(jsonObject, "transferred_at"));
-		setUnitAssignmentId(parseLong(jsonObject, "unit_assignment_id"));
+		setUnitAssignmentId(parseInteger(jsonObject, "unit_assignment_id"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
-		setUserId(parseLong(jsonObject, "user_id"));
+		setUserId(parseInteger(jsonObject, "user_id"));
 		setArrivalPlatform(Platform.parse(jsonObject, "arrival_platform"));
 		if (getArrivalPlatform().isPresent()) {
 			setArrivalPlatformId(getArrivalPlatform().get().getId());
@@ -108,32 +94,6 @@ public class Reservation extends Model {
 			models.add(new Reservation(jsonArray.getJSONObject(i)));
 		}
 		return models;
-	}
-
-	public static class ResponseConverter implements
-			WebAPI.ResponseConverter<Reservation> {
-		@Override
-		public Reservation convert(byte[] rawResponse) throws JSONException, ParseException {
-			return new Reservation(new JSONObject(new String(rawResponse)));
-		}
-	}
-
-	public static class ListResponseConverter implements
-			WebAPI.ResponseConverter<List<Reservation>> {
-		@Override
-		public List<Reservation> convert(byte[] rawResponse) throws JSONException,
-				ParseException {
-			JSONArray array = new JSONArray(new String(rawResponse));
-			List<Reservation> models = new LinkedList<Reservation>();
-			for (Integer i = 0; i < array.length(); ++i) {
-				if (array.isNull(i)) {
-					continue;
-				}
-				JSONObject object = array.getJSONObject(i);
-				models.add(new Reservation(object));
-			}
-			return models;
-		}
 	}
 
 	@Override
@@ -210,40 +170,40 @@ public class Reservation extends Model {
 		this.arrivalLock = Optional.<Boolean>absent();
 	}
 
-	private Optional<Long> arrivalPlatformId = Optional.<Long>absent();
+	private Optional<Integer> arrivalPlatformId = Optional.<Integer>absent();
 
-	public Optional<Long> getArrivalPlatformId() {
+	public Optional<Integer> getArrivalPlatformId() {
 		return wrapNull(arrivalPlatformId);
 	}
 
-	public void setArrivalPlatformId(Optional<Long> arrivalPlatformId) {
+	public void setArrivalPlatformId(Optional<Integer> arrivalPlatformId) {
 		this.arrivalPlatformId = wrapNull(arrivalPlatformId);
 	}
 
-	public void setArrivalPlatformId(Long arrivalPlatformId) {
+	public void setArrivalPlatformId(Integer arrivalPlatformId) {
 		this.arrivalPlatformId = Optional.fromNullable(arrivalPlatformId);
 	}
 
 	public void clearArrivalPlatformId() {
-		this.arrivalPlatformId = Optional.<Long>absent();
+		this.arrivalPlatformId = Optional.<Integer>absent();
 	}
 
-	private Optional<Long> arrivalScheduleId = Optional.<Long>absent();
+	private Optional<Integer> arrivalScheduleId = Optional.<Integer>absent();
 
-	public Optional<Long> getArrivalScheduleId() {
+	public Optional<Integer> getArrivalScheduleId() {
 		return wrapNull(arrivalScheduleId);
 	}
 
-	public void setArrivalScheduleId(Optional<Long> arrivalScheduleId) {
+	public void setArrivalScheduleId(Optional<Integer> arrivalScheduleId) {
 		this.arrivalScheduleId = wrapNull(arrivalScheduleId);
 	}
 
-	public void setArrivalScheduleId(Long arrivalScheduleId) {
+	public void setArrivalScheduleId(Integer arrivalScheduleId) {
 		this.arrivalScheduleId = Optional.fromNullable(arrivalScheduleId);
 	}
 
 	public void clearArrivalScheduleId() {
-		this.arrivalScheduleId = Optional.<Long>absent();
+		this.arrivalScheduleId = Optional.<Integer>absent();
 	}
 
 	private Date arrivalTime = new Date();
@@ -284,13 +244,13 @@ public class Reservation extends Model {
 		this.deletedAt = Optional.<Date>absent();
 	}
 
-	private Long demandId = 0L;
+	private Integer demandId = 0;
 
-	public Long getDemandId() {
+	public Integer getDemandId() {
 		return wrapNull(demandId);
 	}
 
-	public void setDemandId(Long demandId) {
+	public void setDemandId(Integer demandId) {
 		this.demandId = wrapNull(demandId);
 	}
 
@@ -312,40 +272,40 @@ public class Reservation extends Model {
 		this.departureLock = Optional.<Boolean>absent();
 	}
 
-	private Optional<Long> departurePlatformId = Optional.<Long>absent();
+	private Optional<Integer> departurePlatformId = Optional.<Integer>absent();
 
-	public Optional<Long> getDeparturePlatformId() {
+	public Optional<Integer> getDeparturePlatformId() {
 		return wrapNull(departurePlatformId);
 	}
 
-	public void setDeparturePlatformId(Optional<Long> departurePlatformId) {
+	public void setDeparturePlatformId(Optional<Integer> departurePlatformId) {
 		this.departurePlatformId = wrapNull(departurePlatformId);
 	}
 
-	public void setDeparturePlatformId(Long departurePlatformId) {
+	public void setDeparturePlatformId(Integer departurePlatformId) {
 		this.departurePlatformId = Optional.fromNullable(departurePlatformId);
 	}
 
 	public void clearDeparturePlatformId() {
-		this.departurePlatformId = Optional.<Long>absent();
+		this.departurePlatformId = Optional.<Integer>absent();
 	}
 
-	private Optional<Long> departureScheduleId = Optional.<Long>absent();
+	private Optional<Integer> departureScheduleId = Optional.<Integer>absent();
 
-	public Optional<Long> getDepartureScheduleId() {
+	public Optional<Integer> getDepartureScheduleId() {
 		return wrapNull(departureScheduleId);
 	}
 
-	public void setDepartureScheduleId(Optional<Long> departureScheduleId) {
+	public void setDepartureScheduleId(Optional<Integer> departureScheduleId) {
 		this.departureScheduleId = wrapNull(departureScheduleId);
 	}
 
-	public void setDepartureScheduleId(Long departureScheduleId) {
+	public void setDepartureScheduleId(Integer departureScheduleId) {
 		this.departureScheduleId = Optional.fromNullable(departureScheduleId);
 	}
 
 	public void clearDepartureScheduleId() {
-		this.departureScheduleId = Optional.<Long>absent();
+		this.departureScheduleId = Optional.<Integer>absent();
 	}
 
 	private Date departureTime = new Date();
@@ -358,13 +318,13 @@ public class Reservation extends Model {
 		this.departureTime = wrapNull(departureTime);
 	}
 
-	private Long id = 0L;
+	private Integer id = 0;
 
-	public Long getId() {
+	public Integer getId() {
 		return wrapNull(id);
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = wrapNull(id);
 	}
 
@@ -386,69 +346,69 @@ public class Reservation extends Model {
 		this.memo = Optional.<String>absent();
 	}
 
-	private Optional<Long> operatorId = Optional.<Long>absent();
+	private Optional<Integer> operatorId = Optional.<Integer>absent();
 
-	public Optional<Long> getOperatorId() {
+	public Optional<Integer> getOperatorId() {
 		return wrapNull(operatorId);
 	}
 
-	public void setOperatorId(Optional<Long> operatorId) {
+	public void setOperatorId(Optional<Integer> operatorId) {
 		this.operatorId = wrapNull(operatorId);
 	}
 
-	public void setOperatorId(Long operatorId) {
+	public void setOperatorId(Integer operatorId) {
 		this.operatorId = Optional.fromNullable(operatorId);
 	}
 
 	public void clearOperatorId() {
-		this.operatorId = Optional.<Long>absent();
+		this.operatorId = Optional.<Integer>absent();
 	}
 
-	private Long passengerCount = 0L;
+	private Integer passengerCount = 0;
 
-	public Long getPassengerCount() {
+	public Integer getPassengerCount() {
 		return wrapNull(passengerCount);
 	}
 
-	public void setPassengerCount(Long passengerCount) {
+	public void setPassengerCount(Integer passengerCount) {
 		this.passengerCount = wrapNull(passengerCount);
 	}
 
-	private Long payment = 0L;
+	private Integer payment = 0;
 
-	public Long getPayment() {
+	public Integer getPayment() {
 		return wrapNull(payment);
 	}
 
-	public void setPayment(Long payment) {
+	public void setPayment(Integer payment) {
 		this.payment = wrapNull(payment);
 	}
 
-	private Optional<Long> serviceProviderId = Optional.<Long>absent();
+	private Optional<Integer> serviceProviderId = Optional.<Integer>absent();
 
-	public Optional<Long> getServiceProviderId() {
+	public Optional<Integer> getServiceProviderId() {
 		return wrapNull(serviceProviderId);
 	}
 
-	public void setServiceProviderId(Optional<Long> serviceProviderId) {
+	public void setServiceProviderId(Optional<Integer> serviceProviderId) {
 		this.serviceProviderId = wrapNull(serviceProviderId);
 	}
 
-	public void setServiceProviderId(Long serviceProviderId) {
+	public void setServiceProviderId(Integer serviceProviderId) {
 		this.serviceProviderId = Optional.fromNullable(serviceProviderId);
 	}
 
 	public void clearServiceProviderId() {
-		this.serviceProviderId = Optional.<Long>absent();
+		this.serviceProviderId = Optional.<Integer>absent();
 	}
 
-	private Long status = 0L;
+	private Integer status = 0;
 
-	public Long getStatus() {
+	public Integer getStatus() {
 		return wrapNull(status);
 	}
 
-	public void setStatus(Long status) {
+	public void setStatus(Integer status) {
 		this.status = wrapNull(status);
 	}
 
@@ -470,13 +430,13 @@ public class Reservation extends Model {
 		this.transferredAt = Optional.<Date>absent();
 	}
 
-	private Long unitAssignmentId = 0L;
+	private Integer unitAssignmentId = 0;
 
-	public Long getUnitAssignmentId() {
+	public Integer getUnitAssignmentId() {
 		return wrapNull(unitAssignmentId);
 	}
 
-	public void setUnitAssignmentId(Long unitAssignmentId) {
+	public void setUnitAssignmentId(Integer unitAssignmentId) {
 		this.unitAssignmentId = wrapNull(unitAssignmentId);
 	}
 
@@ -490,13 +450,13 @@ public class Reservation extends Model {
 		this.updatedAt = wrapNull(updatedAt);
 	}
 
-	private Long userId = 0L;
+	private Integer userId = 0;
 
-	public Long getUserId() {
+	public Integer getUserId() {
 		return wrapNull(userId);
 	}
 
-	public void setUserId(Long userId) {
+	public void setUserId(Integer userId) {
 		this.userId = wrapNull(userId);
 	}
 

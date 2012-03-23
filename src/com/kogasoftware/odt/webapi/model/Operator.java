@@ -14,13 +14,9 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class Operator extends Model {
-	private static final long serialVersionUID = 297152026982029030L;
+	private static final long serialVersionUID = 7992065608436470550L;
 	public static final String JSON_NAME = "operator";
 	public static final String CONTROLLER_NAME = "operators";
-
-	public static class URL {
-		public static final String ROOT = "/" + CONTROLLER_NAME;
-	}
 
 	public Operator() {
 	}
@@ -34,14 +30,14 @@ public class Operator extends Model {
 		setEmail(parseOptionalString(jsonObject, "email"));
 		setEncryptedPassword(parseString(jsonObject, "encrypted_password"));
 		setFamilyName(parseString(jsonObject, "family_name"));
-		setId(parseLong(jsonObject, "id"));
+		setId(parseInteger(jsonObject, "id"));
 		setLastName(parseString(jsonObject, "last_name"));
 		setLastSignInAt(parseOptionalDate(jsonObject, "last_sign_in_at"));
 		setLastSignInIp(parseOptionalString(jsonObject, "last_sign_in_ip"));
 		setLogin(parseString(jsonObject, "login"));
 		setRememberCreatedAt(parseOptionalDate(jsonObject, "remember_created_at"));
-		setServiceProviderId(parseOptionalLong(jsonObject, "service_provider_id"));
-		setSignInCount(parseOptionalLong(jsonObject, "sign_in_count"));
+		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
+		setSignInCount(parseOptionalInteger(jsonObject, "sign_in_count"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setReservations(Reservation.parseList(jsonObject, "reservations"));
 	}
@@ -66,32 +62,6 @@ public class Operator extends Model {
 			models.add(new Operator(jsonArray.getJSONObject(i)));
 		}
 		return models;
-	}
-
-	public static class ResponseConverter implements
-			WebAPI.ResponseConverter<Operator> {
-		@Override
-		public Operator convert(byte[] rawResponse) throws JSONException, ParseException {
-			return new Operator(new JSONObject(new String(rawResponse)));
-		}
-	}
-
-	public static class ListResponseConverter implements
-			WebAPI.ResponseConverter<List<Operator>> {
-		@Override
-		public List<Operator> convert(byte[] rawResponse) throws JSONException,
-				ParseException {
-			JSONArray array = new JSONArray(new String(rawResponse));
-			List<Operator> models = new LinkedList<Operator>();
-			for (Integer i = 0; i < array.length(); ++i) {
-				if (array.isNull(i)) {
-					continue;
-				}
-				JSONObject object = array.getJSONObject(i);
-				models.add(new Operator(object));
-			}
-			return models;
-		}
 	}
 
 	@Override
@@ -238,13 +208,13 @@ public class Operator extends Model {
 		this.familyName = wrapNull(familyName);
 	}
 
-	private Long id = 0L;
+	private Integer id = 0;
 
-	public Long getId() {
+	public Integer getId() {
 		return wrapNull(id);
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = wrapNull(id);
 	}
 
@@ -322,40 +292,40 @@ public class Operator extends Model {
 		this.rememberCreatedAt = Optional.<Date>absent();
 	}
 
-	private Optional<Long> serviceProviderId = Optional.<Long>absent();
+	private Optional<Integer> serviceProviderId = Optional.<Integer>absent();
 
-	public Optional<Long> getServiceProviderId() {
+	public Optional<Integer> getServiceProviderId() {
 		return wrapNull(serviceProviderId);
 	}
 
-	public void setServiceProviderId(Optional<Long> serviceProviderId) {
+	public void setServiceProviderId(Optional<Integer> serviceProviderId) {
 		this.serviceProviderId = wrapNull(serviceProviderId);
 	}
 
-	public void setServiceProviderId(Long serviceProviderId) {
+	public void setServiceProviderId(Integer serviceProviderId) {
 		this.serviceProviderId = Optional.fromNullable(serviceProviderId);
 	}
 
 	public void clearServiceProviderId() {
-		this.serviceProviderId = Optional.<Long>absent();
+		this.serviceProviderId = Optional.<Integer>absent();
 	}
 
-	private Optional<Long> signInCount = Optional.<Long>absent();
+	private Optional<Integer> signInCount = Optional.<Integer>absent();
 
-	public Optional<Long> getSignInCount() {
+	public Optional<Integer> getSignInCount() {
 		return wrapNull(signInCount);
 	}
 
-	public void setSignInCount(Optional<Long> signInCount) {
+	public void setSignInCount(Optional<Integer> signInCount) {
 		this.signInCount = wrapNull(signInCount);
 	}
 
-	public void setSignInCount(Long signInCount) {
+	public void setSignInCount(Integer signInCount) {
 		this.signInCount = Optional.fromNullable(signInCount);
 	}
 
 	public void clearSignInCount() {
-		this.signInCount = Optional.<Long>absent();
+		this.signInCount = Optional.<Integer>absent();
 	}
 
 	private Date updatedAt = new Date();

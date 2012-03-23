@@ -41,7 +41,7 @@ abstract public class Model implements Serializable {
 		return value.toString();
 	}
 
-	protected static Object toJSON(Long value) {
+	protected static Object toJSON(Integer value) {
 		if (value == null) {
 			return JSONObject.NULL;
 		}
@@ -61,14 +61,14 @@ abstract public class Model implements Serializable {
 		}
 		return value;
 	}
-	
+
 	protected static Object toJSON(Optional<? extends Model> value) throws JSONException {
 		if (value == null || !value.isPresent()) {
 			return JSONObject.NULL;
 		}
 		return value.get().toJSONObject();
 	}
-	
+
 	protected static Object toJSON(List<? extends Model> value) throws JSONException {
 		if (value == null) {
 			return JSONObject.NULL;
@@ -79,7 +79,7 @@ abstract public class Model implements Serializable {
 		}
 		return jsonArray;
 	}
-	
+
 
 	protected static Boolean parseBoolean(JSONObject jsonObject, String key)
 			throws JSONException {
@@ -101,28 +101,28 @@ abstract public class Model implements Serializable {
 		return date;
 	}
 
-	protected static Long parseLong(JSONObject jsonObject, String key)
+	protected static Integer parseInteger(JSONObject jsonObject, String key)
 			throws JSONException {
 		if (!jsonObject.has(key)) {
-			return 0l;
+			return 0;
 		}
-		return jsonObject.getLong(key);
+		return jsonObject.getInt(key);
 	}
-	
-	protected static Optional<Long> parseOptionalLong(JSONObject jsonObject, String key) throws JSONException {
+
+	protected static Optional<Integer> parseOptionalInteger(JSONObject jsonObject, String key) throws JSONException {
 		if (!jsonObject.has(key)) {
-			return Optional.<Long>absent();
+			return Optional.<Integer>absent();
 		}
-		return Optional.<Long>of(parseLong(jsonObject, key));
+		return Optional.<Integer>of(parseInteger(jsonObject, key));
 	}
-	
+
 	protected static Optional<String> parseOptionalString(JSONObject jsonObject, String key) throws JSONException {
 		if (!jsonObject.has(key)) {
 			return Optional.<String>absent();
 		}
 		return Optional.<String>of(parseString(jsonObject, key));
 	}
-	
+
 	protected static Optional<Date> parseOptionalDate(JSONObject jsonObject, String key) throws JSONException, ParseException {
 		if (!jsonObject.has(key)) {
 			return Optional.<Date>absent();
@@ -166,8 +166,8 @@ abstract public class Model implements Serializable {
 		return value != null ? value : false;
 	}
 
-	protected static Long wrapNull(Long value) {
-		return value != null ? value : 0l;
+	protected static Integer wrapNull(Integer value) {
+		return value != null ? value : 0;
 	}
 
 	protected static Date wrapNull(Date value) {
@@ -185,7 +185,7 @@ abstract public class Model implements Serializable {
 	protected static <T> Optional<T> wrapNull(Optional<T> value) {
 		return value != null ? value : Optional.<T> absent();
 	}
-	
+
 	protected static <T> List<T> wrapNull(List<T> value) {
 		return value != null ? value : new LinkedList<T>();
 	}

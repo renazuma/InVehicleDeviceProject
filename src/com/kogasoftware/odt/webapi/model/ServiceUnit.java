@@ -14,20 +14,9 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class ServiceUnit extends Model {
-	private static final long serialVersionUID = 1500475076998125845L;
+	private static final long serialVersionUID = 5124974825597652587L;
 	public static final String JSON_NAME = "service_unit";
 	public static final String CONTROLLER_NAME = "service_units";
-
-	public static class URL {
-		public static final String ROOT = "/" + CONTROLLER_NAME;
-		public static final String CREATE = "/" + CONTROLLER_NAME + "/create";
-		public static final String DESTROY = "/" + CONTROLLER_NAME + "/destroy";
-		public static final String EDIT = "/" + CONTROLLER_NAME + "/edit";
-		public static final String INDEX = "/" + CONTROLLER_NAME + "/index";
-		public static final String NEW = "/" + CONTROLLER_NAME + "/new";
-		public static final String SHOW = "/" + CONTROLLER_NAME + "/show";
-		public static final String UPDATE = "/" + CONTROLLER_NAME + "/update";
-	}
 
 	public ServiceUnit() {
 	}
@@ -36,12 +25,12 @@ public class ServiceUnit extends Model {
 		setActivatedAt(parseOptionalDate(jsonObject, "activated_at"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
-		setDriverId(parseLong(jsonObject, "driver_id"));
-		setId(parseLong(jsonObject, "id"));
-		setInVehicleDeviceId(parseOptionalLong(jsonObject, "in_vehicle_device_id"));
-		setUnitAssignmentId(parseOptionalLong(jsonObject, "unit_assignment_id"));
+		setDriverId(parseInteger(jsonObject, "driver_id"));
+		setId(parseInteger(jsonObject, "id"));
+		setInVehicleDeviceId(parseOptionalInteger(jsonObject, "in_vehicle_device_id"));
+		setUnitAssignmentId(parseOptionalInteger(jsonObject, "unit_assignment_id"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
-		setVehicleId(parseLong(jsonObject, "vehicle_id"));
+		setVehicleId(parseInteger(jsonObject, "vehicle_id"));
 		setInVehicleDevice(InVehicleDevice.parse(jsonObject, "in_vehicle_device"));
 		if (getInVehicleDevice().isPresent()) {
 			setInVehicleDeviceId(getInVehicleDevice().get().getId());
@@ -68,32 +57,6 @@ public class ServiceUnit extends Model {
 			models.add(new ServiceUnit(jsonArray.getJSONObject(i)));
 		}
 		return models;
-	}
-
-	public static class ResponseConverter implements
-			WebAPI.ResponseConverter<ServiceUnit> {
-		@Override
-		public ServiceUnit convert(byte[] rawResponse) throws JSONException, ParseException {
-			return new ServiceUnit(new JSONObject(new String(rawResponse)));
-		}
-	}
-
-	public static class ListResponseConverter implements
-			WebAPI.ResponseConverter<List<ServiceUnit>> {
-		@Override
-		public List<ServiceUnit> convert(byte[] rawResponse) throws JSONException,
-				ParseException {
-			JSONArray array = new JSONArray(new String(rawResponse));
-			List<ServiceUnit> models = new LinkedList<ServiceUnit>();
-			for (Integer i = 0; i < array.length(); ++i) {
-				if (array.isNull(i)) {
-					continue;
-				}
-				JSONObject object = array.getJSONObject(i);
-				models.add(new ServiceUnit(object));
-			}
-			return models;
-		}
 	}
 
 	@Override
@@ -161,60 +124,60 @@ public class ServiceUnit extends Model {
 		this.deletedAt = Optional.<Date>absent();
 	}
 
-	private Long driverId = 0L;
+	private Integer driverId = 0;
 
-	public Long getDriverId() {
+	public Integer getDriverId() {
 		return wrapNull(driverId);
 	}
 
-	public void setDriverId(Long driverId) {
+	public void setDriverId(Integer driverId) {
 		this.driverId = wrapNull(driverId);
 	}
 
-	private Long id = 0L;
+	private Integer id = 0;
 
-	public Long getId() {
+	public Integer getId() {
 		return wrapNull(id);
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = wrapNull(id);
 	}
 
-	private Optional<Long> inVehicleDeviceId = Optional.<Long>absent();
+	private Optional<Integer> inVehicleDeviceId = Optional.<Integer>absent();
 
-	public Optional<Long> getInVehicleDeviceId() {
+	public Optional<Integer> getInVehicleDeviceId() {
 		return wrapNull(inVehicleDeviceId);
 	}
 
-	public void setInVehicleDeviceId(Optional<Long> inVehicleDeviceId) {
+	public void setInVehicleDeviceId(Optional<Integer> inVehicleDeviceId) {
 		this.inVehicleDeviceId = wrapNull(inVehicleDeviceId);
 	}
 
-	public void setInVehicleDeviceId(Long inVehicleDeviceId) {
+	public void setInVehicleDeviceId(Integer inVehicleDeviceId) {
 		this.inVehicleDeviceId = Optional.fromNullable(inVehicleDeviceId);
 	}
 
 	public void clearInVehicleDeviceId() {
-		this.inVehicleDeviceId = Optional.<Long>absent();
+		this.inVehicleDeviceId = Optional.<Integer>absent();
 	}
 
-	private Optional<Long> unitAssignmentId = Optional.<Long>absent();
+	private Optional<Integer> unitAssignmentId = Optional.<Integer>absent();
 
-	public Optional<Long> getUnitAssignmentId() {
+	public Optional<Integer> getUnitAssignmentId() {
 		return wrapNull(unitAssignmentId);
 	}
 
-	public void setUnitAssignmentId(Optional<Long> unitAssignmentId) {
+	public void setUnitAssignmentId(Optional<Integer> unitAssignmentId) {
 		this.unitAssignmentId = wrapNull(unitAssignmentId);
 	}
 
-	public void setUnitAssignmentId(Long unitAssignmentId) {
+	public void setUnitAssignmentId(Integer unitAssignmentId) {
 		this.unitAssignmentId = Optional.fromNullable(unitAssignmentId);
 	}
 
 	public void clearUnitAssignmentId() {
-		this.unitAssignmentId = Optional.<Long>absent();
+		this.unitAssignmentId = Optional.<Integer>absent();
 	}
 
 	private Date updatedAt = new Date();
@@ -227,13 +190,13 @@ public class ServiceUnit extends Model {
 		this.updatedAt = wrapNull(updatedAt);
 	}
 
-	private Long vehicleId = 0L;
+	private Integer vehicleId = 0;
 
-	public Long getVehicleId() {
+	public Integer getVehicleId() {
 		return wrapNull(vehicleId);
 	}
 
-	public void setVehicleId(Long vehicleId) {
+	public void setVehicleId(Integer vehicleId) {
 		this.vehicleId = wrapNull(vehicleId);
 	}
 

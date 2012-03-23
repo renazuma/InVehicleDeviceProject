@@ -4,17 +4,13 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
-import java.util.concurrent.Callable;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -35,10 +31,6 @@ import android.net.Uri;
 
 import com.google.common.base.Objects;
 import com.google.common.io.ByteStreams;
-import com.kogasoftware.odt.webapi.model.InVehicleDevice;
-import com.kogasoftware.odt.webapi.model.Operator;
-import com.kogasoftware.odt.webapi.model.Platform;
-import com.kogasoftware.odt.webapi.model.User;
 
 public class WebAPI {
 	private static final Integer MAX_REQUEST_RETRY = 5;
@@ -53,7 +45,7 @@ public class WebAPI {
 	}
 
 	public class JSONObjectResponseConverter implements
-			ResponseConverter<JSONObject> {
+	ResponseConverter<JSONObject> {
 		@Override
 		public JSONObject convert(byte[] rawResponse) throws JSONException {
 			return new JSONObject(new String(rawResponse));
@@ -61,7 +53,7 @@ public class WebAPI {
 	}
 
 	public class JSONArrayResponseConverter implements
-			ResponseConverter<JSONArray> {
+	ResponseConverter<JSONArray> {
 		@Override
 		public JSONArray convert(byte[] rawResponse) throws JSONException {
 			return new JSONArray(new String(rawResponse));
@@ -232,7 +224,7 @@ public class WebAPI {
 
 	protected <T> T doHttpRequestBase(String path, Map<String, String> params,
 			ResponseConverter<T> responseConverter, HttpRequestBase request)
-			throws WebAPIException {
+					throws WebAPIException {
 
 		Uri.Builder uriBuilder = new Uri.Builder();
 		uriBuilder.scheme(URI_SCHEME);
@@ -306,119 +298,6 @@ public class WebAPI {
 	public JSONArray get(String path) throws WebAPIException {
 		return get(path, new HashMap<String, String>());
 	}
-
-	public class Platforms {
-		public Platform get(Integer id) throws WebAPIException {
-			return WebAPI.this.get(Platform.URL.ROOT, id,
-					new Platform.ResponseConverter());
-		}
-
-		public List<Platform> get(Map<String, String> params)
-				throws WebAPIException {
-			return WebAPI.this.get(Platform.URL.ROOT, params,
-					new Platform.ListResponseConverter());
-		}
-
-		public List<Platform> get() throws WebAPIException {
-			return get(new HashMap<String, String>());
-		}
-	}
-
-	public Platforms platforms = new Platforms();
-
-	public class InVehicleDevices {
-		public InVehicleDevice create(final InVehicleDevice inVehicleDevice)
-				throws JSONException, URISyntaxException,
-				ClientProtocolException, IOException, ParseException,
-				WebAPIException {
-
-			JSONObject postJSON = new JSONObject();
-			JSONObject inVehicleDeviceJSON = inVehicleDevice.toJSONObject();
-			postJSON.put(InVehicleDevice.JSON_NAME, inVehicleDeviceJSON);
-			return WebAPI.this.post(InVehicleDevice.URL.CREATE, postJSON,
-					new InVehicleDevice.ResponseConverter());
-		}
-	}
-
-	public InVehicleDevices inVehicleDevices = new InVehicleDevices();
-
-	public class Users {
-		public List<User> index(final Map<String, String> params) {
-			Callable<List<User>> callable = new Callable<List<User>>() {
-				@Override
-				public List<User> call() throws Exception {
-					return new LinkedList<User>();
-				}
-			};
-
-			try {
-				return callable.call();
-			} catch (Exception e) {
-				e.printStackTrace();
-				return new LinkedList<User>();
-			}
-		}
-
-		public User show(final Integer id) {
-			return new User();
-		}
-
-		public User create(final User user, final String password)
-				throws WebAPIException {
-
-			JSONObject postJSON = new JSONObject();
-			try {
-				JSONObject userJSON = user.toJSONObject();
-				userJSON.put("password", password);
-				postJSON.put(User.JSON_NAME, userJSON);
-			} catch (JSONException e) {
-				throw new WebAPIException(false, e);
-			}
-			return WebAPI.this.post(User.URL.CREATE, postJSON,
-					new User.ResponseConverter());
-		}
-
-		public User update(final User user) {
-			return new User();
-		}
-
-		public void destroy(final Integer id) {
-		}
-	}
-
-	public Users users = new Users();
-
-	public class Operators {
-		public String signIn(final String login, final String password)
-				throws WebAPIException {
-			JSONObject postJSON = new JSONObject();
-			try {
-				JSONObject operator = new JSONObject();
-				operator.put("login", login);
-				operator.put("password", password);
-				postJSON.put("operator", operator);
-			} catch (JSONException e) {
-				throw new WebAPIException(false, e);
-			}
-			return WebAPI.this.post(Operator.URL.ROOT + "/sign_in", postJSON,
-					new ResponseConverter<String>() {
-						@Override
-						public String convert(byte[] rawResponse)
-								throws Exception {
-							JSONObject j = new JSONObject(new String(
-									rawResponse));
-							String s = j.getString("authentication_token");
-							if (s == null) {
-								throw new RuntimeException(
-										"authentication_token not found");
-							}
-							return s;
-						}
-					});
-		}
-	}
-
-	public Operators operators = new Operators();
 
 	public <T> T get(String path, Integer id,
 			ResponseConverter<T> responseConverter) throws WebAPIException {

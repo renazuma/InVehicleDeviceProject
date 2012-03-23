@@ -14,31 +14,27 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class ReservationCandidate extends Model {
-	private static final long serialVersionUID = 2513887995030438761L;
+	private static final long serialVersionUID = 9141976271286746197L;
 	public static final String JSON_NAME = "reservation_candidate";
 	public static final String CONTROLLER_NAME = "reservation_candidates";
-
-	public static class URL {
-		public static final String ROOT = "/" + CONTROLLER_NAME;
-	}
 
 	public ReservationCandidate() {
 	}
 
 	public ReservationCandidate(JSONObject jsonObject) throws JSONException, ParseException {
-		setArrivalPlatformId(parseLong(jsonObject, "arrival_platform_id"));
+		setArrivalPlatformId(parseInteger(jsonObject, "arrival_platform_id"));
 		setArrivalTime(parseDate(jsonObject, "arrival_time"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
-		setDemandId(parseOptionalLong(jsonObject, "demand_id"));
-		setDeparturePlatformId(parseLong(jsonObject, "departure_platform_id"));
+		setDemandId(parseOptionalInteger(jsonObject, "demand_id"));
+		setDeparturePlatformId(parseInteger(jsonObject, "departure_platform_id"));
 		setDepartureTime(parseDate(jsonObject, "departure_time"));
-		setId(parseLong(jsonObject, "id"));
-		setPassengerCount(parseLong(jsonObject, "passenger_count"));
-		setServiceProviderId(parseOptionalLong(jsonObject, "service_provider_id"));
-		setUnitAssignmentId(parseOptionalLong(jsonObject, "unit_assignment_id"));
+		setId(parseInteger(jsonObject, "id"));
+		setPassengerCount(parseInteger(jsonObject, "passenger_count"));
+		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
+		setUnitAssignmentId(parseOptionalInteger(jsonObject, "unit_assignment_id"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
-		setUserId(parseOptionalLong(jsonObject, "user_id"));
+		setUserId(parseOptionalInteger(jsonObject, "user_id"));
 		setArrivalPlatform(Platform.parse(jsonObject, "arrival_platform"));
 		if (getArrivalPlatform().isPresent()) {
 			setArrivalPlatformId(getArrivalPlatform().get().getId());
@@ -79,32 +75,6 @@ public class ReservationCandidate extends Model {
 		return models;
 	}
 
-	public static class ResponseConverter implements
-			WebAPI.ResponseConverter<ReservationCandidate> {
-		@Override
-		public ReservationCandidate convert(byte[] rawResponse) throws JSONException, ParseException {
-			return new ReservationCandidate(new JSONObject(new String(rawResponse)));
-		}
-	}
-
-	public static class ListResponseConverter implements
-			WebAPI.ResponseConverter<List<ReservationCandidate>> {
-		@Override
-		public List<ReservationCandidate> convert(byte[] rawResponse) throws JSONException,
-				ParseException {
-			JSONArray array = new JSONArray(new String(rawResponse));
-			List<ReservationCandidate> models = new LinkedList<ReservationCandidate>();
-			for (Integer i = 0; i < array.length(); ++i) {
-				if (array.isNull(i)) {
-					continue;
-				}
-				JSONObject object = array.getJSONObject(i);
-				models.add(new ReservationCandidate(object));
-			}
-			return models;
-		}
-	}
-
 	@Override
 	public JSONObject toJSONObject() throws JSONException {
 		JSONObject jsonObject = new JSONObject();
@@ -140,13 +110,13 @@ public class ReservationCandidate extends Model {
 		return jsonObject;
 	}
 
-	private Long arrivalPlatformId = 0L;
+	private Integer arrivalPlatformId = 0;
 
-	public Long getArrivalPlatformId() {
+	public Integer getArrivalPlatformId() {
 		return wrapNull(arrivalPlatformId);
 	}
 
-	public void setArrivalPlatformId(Long arrivalPlatformId) {
+	public void setArrivalPlatformId(Integer arrivalPlatformId) {
 		this.arrivalPlatformId = wrapNull(arrivalPlatformId);
 	}
 
@@ -188,31 +158,31 @@ public class ReservationCandidate extends Model {
 		this.deletedAt = Optional.<Date>absent();
 	}
 
-	private Optional<Long> demandId = Optional.<Long>absent();
+	private Optional<Integer> demandId = Optional.<Integer>absent();
 
-	public Optional<Long> getDemandId() {
+	public Optional<Integer> getDemandId() {
 		return wrapNull(demandId);
 	}
 
-	public void setDemandId(Optional<Long> demandId) {
+	public void setDemandId(Optional<Integer> demandId) {
 		this.demandId = wrapNull(demandId);
 	}
 
-	public void setDemandId(Long demandId) {
+	public void setDemandId(Integer demandId) {
 		this.demandId = Optional.fromNullable(demandId);
 	}
 
 	public void clearDemandId() {
-		this.demandId = Optional.<Long>absent();
+		this.demandId = Optional.<Integer>absent();
 	}
 
-	private Long departurePlatformId = 0L;
+	private Integer departurePlatformId = 0;
 
-	public Long getDeparturePlatformId() {
+	public Integer getDeparturePlatformId() {
 		return wrapNull(departurePlatformId);
 	}
 
-	public void setDeparturePlatformId(Long departurePlatformId) {
+	public void setDeparturePlatformId(Integer departurePlatformId) {
 		this.departurePlatformId = wrapNull(departurePlatformId);
 	}
 
@@ -226,60 +196,60 @@ public class ReservationCandidate extends Model {
 		this.departureTime = wrapNull(departureTime);
 	}
 
-	private Long id = 0L;
+	private Integer id = 0;
 
-	public Long getId() {
+	public Integer getId() {
 		return wrapNull(id);
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = wrapNull(id);
 	}
 
-	private Long passengerCount = 0L;
+	private Integer passengerCount = 0;
 
-	public Long getPassengerCount() {
+	public Integer getPassengerCount() {
 		return wrapNull(passengerCount);
 	}
 
-	public void setPassengerCount(Long passengerCount) {
+	public void setPassengerCount(Integer passengerCount) {
 		this.passengerCount = wrapNull(passengerCount);
 	}
 
-	private Optional<Long> serviceProviderId = Optional.<Long>absent();
+	private Optional<Integer> serviceProviderId = Optional.<Integer>absent();
 
-	public Optional<Long> getServiceProviderId() {
+	public Optional<Integer> getServiceProviderId() {
 		return wrapNull(serviceProviderId);
 	}
 
-	public void setServiceProviderId(Optional<Long> serviceProviderId) {
+	public void setServiceProviderId(Optional<Integer> serviceProviderId) {
 		this.serviceProviderId = wrapNull(serviceProviderId);
 	}
 
-	public void setServiceProviderId(Long serviceProviderId) {
+	public void setServiceProviderId(Integer serviceProviderId) {
 		this.serviceProviderId = Optional.fromNullable(serviceProviderId);
 	}
 
 	public void clearServiceProviderId() {
-		this.serviceProviderId = Optional.<Long>absent();
+		this.serviceProviderId = Optional.<Integer>absent();
 	}
 
-	private Optional<Long> unitAssignmentId = Optional.<Long>absent();
+	private Optional<Integer> unitAssignmentId = Optional.<Integer>absent();
 
-	public Optional<Long> getUnitAssignmentId() {
+	public Optional<Integer> getUnitAssignmentId() {
 		return wrapNull(unitAssignmentId);
 	}
 
-	public void setUnitAssignmentId(Optional<Long> unitAssignmentId) {
+	public void setUnitAssignmentId(Optional<Integer> unitAssignmentId) {
 		this.unitAssignmentId = wrapNull(unitAssignmentId);
 	}
 
-	public void setUnitAssignmentId(Long unitAssignmentId) {
+	public void setUnitAssignmentId(Integer unitAssignmentId) {
 		this.unitAssignmentId = Optional.fromNullable(unitAssignmentId);
 	}
 
 	public void clearUnitAssignmentId() {
-		this.unitAssignmentId = Optional.<Long>absent();
+		this.unitAssignmentId = Optional.<Integer>absent();
 	}
 
 	private Date updatedAt = new Date();
@@ -292,22 +262,22 @@ public class ReservationCandidate extends Model {
 		this.updatedAt = wrapNull(updatedAt);
 	}
 
-	private Optional<Long> userId = Optional.<Long>absent();
+	private Optional<Integer> userId = Optional.<Integer>absent();
 
-	public Optional<Long> getUserId() {
+	public Optional<Integer> getUserId() {
 		return wrapNull(userId);
 	}
 
-	public void setUserId(Optional<Long> userId) {
+	public void setUserId(Optional<Integer> userId) {
 		this.userId = wrapNull(userId);
 	}
 
-	public void setUserId(Long userId) {
+	public void setUserId(Integer userId) {
 		this.userId = Optional.fromNullable(userId);
 	}
 
 	public void clearUserId() {
-		this.userId = Optional.<Long>absent();
+		this.userId = Optional.<Integer>absent();
 	}
 
 	private Optional<Platform> arrivalPlatform = Optional.<Platform>absent();

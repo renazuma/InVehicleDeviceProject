@@ -14,15 +14,9 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class OperationSchedule extends Model {
-	private static final long serialVersionUID = 7480687709859897508L;
+	private static final long serialVersionUID = 4511002219572134754L;
 	public static final String JSON_NAME = "operation_schedule";
 	public static final String CONTROLLER_NAME = "operation_schedules";
-
-	public static class URL {
-		public static final String ROOT = "/" + CONTROLLER_NAME;
-		public static final String INDEX = "/" + CONTROLLER_NAME + "/index";
-		public static final String TOP = "/" + CONTROLLER_NAME + "/top";
-	}
 
 	public OperationSchedule() {
 	}
@@ -34,10 +28,10 @@ public class OperationSchedule extends Model {
 		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
 		setDepartedAt(parseOptionalDate(jsonObject, "departed_at"));
 		setDepartureEstimate(parseDate(jsonObject, "departure_estimate"));
-		setId(parseLong(jsonObject, "id"));
-		setPlatformId(parseOptionalLong(jsonObject, "platform_id"));
-		setServiceProviderId(parseOptionalLong(jsonObject, "service_provider_id"));
-		setUnitAssignmentId(parseOptionalLong(jsonObject, "unit_assignment_id"));
+		setId(parseInteger(jsonObject, "id"));
+		setPlatformId(parseOptionalInteger(jsonObject, "platform_id"));
+		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
+		setUnitAssignmentId(parseOptionalInteger(jsonObject, "unit_assignment_id"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setPlatform(Platform.parse(jsonObject, "platform"));
 		if (getPlatform().isPresent()) {
@@ -67,32 +61,6 @@ public class OperationSchedule extends Model {
 			models.add(new OperationSchedule(jsonArray.getJSONObject(i)));
 		}
 		return models;
-	}
-
-	public static class ResponseConverter implements
-			WebAPI.ResponseConverter<OperationSchedule> {
-		@Override
-		public OperationSchedule convert(byte[] rawResponse) throws JSONException, ParseException {
-			return new OperationSchedule(new JSONObject(new String(rawResponse)));
-		}
-	}
-
-	public static class ListResponseConverter implements
-			WebAPI.ResponseConverter<List<OperationSchedule>> {
-		@Override
-		public List<OperationSchedule> convert(byte[] rawResponse) throws JSONException,
-				ParseException {
-			JSONArray array = new JSONArray(new String(rawResponse));
-			List<OperationSchedule> models = new LinkedList<OperationSchedule>();
-			for (Integer i = 0; i < array.length(); ++i) {
-				if (array.isNull(i)) {
-					continue;
-				}
-				JSONObject object = array.getJSONObject(i);
-				models.add(new OperationSchedule(object));
-			}
-			return models;
-		}
 	}
 
 	@Override
@@ -202,68 +170,68 @@ public class OperationSchedule extends Model {
 		this.departureEstimate = wrapNull(departureEstimate);
 	}
 
-	private Long id = 0L;
+	private Integer id = 0;
 
-	public Long getId() {
+	public Integer getId() {
 		return wrapNull(id);
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = wrapNull(id);
 	}
 
-	private Optional<Long> platformId = Optional.<Long>absent();
+	private Optional<Integer> platformId = Optional.<Integer>absent();
 
-	public Optional<Long> getPlatformId() {
+	public Optional<Integer> getPlatformId() {
 		return wrapNull(platformId);
 	}
 
-	public void setPlatformId(Optional<Long> platformId) {
+	public void setPlatformId(Optional<Integer> platformId) {
 		this.platformId = wrapNull(platformId);
 	}
 
-	public void setPlatformId(Long platformId) {
+	public void setPlatformId(Integer platformId) {
 		this.platformId = Optional.fromNullable(platformId);
 	}
 
 	public void clearPlatformId() {
-		this.platformId = Optional.<Long>absent();
+		this.platformId = Optional.<Integer>absent();
 	}
 
-	private Optional<Long> serviceProviderId = Optional.<Long>absent();
+	private Optional<Integer> serviceProviderId = Optional.<Integer>absent();
 
-	public Optional<Long> getServiceProviderId() {
+	public Optional<Integer> getServiceProviderId() {
 		return wrapNull(serviceProviderId);
 	}
 
-	public void setServiceProviderId(Optional<Long> serviceProviderId) {
+	public void setServiceProviderId(Optional<Integer> serviceProviderId) {
 		this.serviceProviderId = wrapNull(serviceProviderId);
 	}
 
-	public void setServiceProviderId(Long serviceProviderId) {
+	public void setServiceProviderId(Integer serviceProviderId) {
 		this.serviceProviderId = Optional.fromNullable(serviceProviderId);
 	}
 
 	public void clearServiceProviderId() {
-		this.serviceProviderId = Optional.<Long>absent();
+		this.serviceProviderId = Optional.<Integer>absent();
 	}
 
-	private Optional<Long> unitAssignmentId = Optional.<Long>absent();
+	private Optional<Integer> unitAssignmentId = Optional.<Integer>absent();
 
-	public Optional<Long> getUnitAssignmentId() {
+	public Optional<Integer> getUnitAssignmentId() {
 		return wrapNull(unitAssignmentId);
 	}
 
-	public void setUnitAssignmentId(Optional<Long> unitAssignmentId) {
+	public void setUnitAssignmentId(Optional<Integer> unitAssignmentId) {
 		this.unitAssignmentId = wrapNull(unitAssignmentId);
 	}
 
-	public void setUnitAssignmentId(Long unitAssignmentId) {
+	public void setUnitAssignmentId(Integer unitAssignmentId) {
 		this.unitAssignmentId = Optional.fromNullable(unitAssignmentId);
 	}
 
 	public void clearUnitAssignmentId() {
-		this.unitAssignmentId = Optional.<Long>absent();
+		this.unitAssignmentId = Optional.<Integer>absent();
 	}
 
 	private Date updatedAt = new Date();

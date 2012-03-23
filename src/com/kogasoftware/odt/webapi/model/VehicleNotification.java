@@ -14,15 +14,9 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class VehicleNotification extends Model {
-	private static final long serialVersionUID = 3950203405001147414L;
+	private static final long serialVersionUID = 408187431091177044L;
 	public static final String JSON_NAME = "vehicle_notification";
 	public static final String CONTROLLER_NAME = "vehicle_notifications";
-
-	public static class URL {
-		public static final String ROOT = "/" + CONTROLLER_NAME;
-		public static final String CREATE = "/" + CONTROLLER_NAME + "/create";
-		public static final String INDEX = "/" + CONTROLLER_NAME + "/index";
-	}
 
 	public VehicleNotification() {
 	}
@@ -30,11 +24,11 @@ public class VehicleNotification extends Model {
 	public VehicleNotification(JSONObject jsonObject) throws JSONException, ParseException {
 		setBody(parseOptionalString(jsonObject, "body"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
-		setId(parseLong(jsonObject, "id"));
-		setInVehicleDeviceId(parseLong(jsonObject, "in_vehicle_device_id"));
-		setOperatorId(parseLong(jsonObject, "operator_id"));
+		setId(parseInteger(jsonObject, "id"));
+		setInVehicleDeviceId(parseInteger(jsonObject, "in_vehicle_device_id"));
+		setOperatorId(parseInteger(jsonObject, "operator_id"));
 		setReadAt(parseOptionalDate(jsonObject, "read_at"));
-		setResponse(parseOptionalLong(jsonObject, "response"));
+		setResponse(parseOptionalInteger(jsonObject, "response"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setInVehicleDevice(InVehicleDevice.parse(jsonObject, "in_vehicle_device"));
 		if (getInVehicleDevice().isPresent()) {
@@ -66,32 +60,6 @@ public class VehicleNotification extends Model {
 			models.add(new VehicleNotification(jsonArray.getJSONObject(i)));
 		}
 		return models;
-	}
-
-	public static class ResponseConverter implements
-			WebAPI.ResponseConverter<VehicleNotification> {
-		@Override
-		public VehicleNotification convert(byte[] rawResponse) throws JSONException, ParseException {
-			return new VehicleNotification(new JSONObject(new String(rawResponse)));
-		}
-	}
-
-	public static class ListResponseConverter implements
-			WebAPI.ResponseConverter<List<VehicleNotification>> {
-		@Override
-		public List<VehicleNotification> convert(byte[] rawResponse) throws JSONException,
-				ParseException {
-			JSONArray array = new JSONArray(new String(rawResponse));
-			List<VehicleNotification> models = new LinkedList<VehicleNotification>();
-			for (Integer i = 0; i < array.length(); ++i) {
-				if (array.isNull(i)) {
-					continue;
-				}
-				JSONObject object = array.getJSONObject(i);
-				models.add(new VehicleNotification(object));
-			}
-			return models;
-		}
 	}
 
 	@Override
@@ -144,33 +112,33 @@ public class VehicleNotification extends Model {
 		this.createdAt = wrapNull(createdAt);
 	}
 
-	private Long id = 0L;
+	private Integer id = 0;
 
-	public Long getId() {
+	public Integer getId() {
 		return wrapNull(id);
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = wrapNull(id);
 	}
 
-	private Long inVehicleDeviceId = 0L;
+	private Integer inVehicleDeviceId = 0;
 
-	public Long getInVehicleDeviceId() {
+	public Integer getInVehicleDeviceId() {
 		return wrapNull(inVehicleDeviceId);
 	}
 
-	public void setInVehicleDeviceId(Long inVehicleDeviceId) {
+	public void setInVehicleDeviceId(Integer inVehicleDeviceId) {
 		this.inVehicleDeviceId = wrapNull(inVehicleDeviceId);
 	}
 
-	private Long operatorId = 0L;
+	private Integer operatorId = 0;
 
-	public Long getOperatorId() {
+	public Integer getOperatorId() {
 		return wrapNull(operatorId);
 	}
 
-	public void setOperatorId(Long operatorId) {
+	public void setOperatorId(Integer operatorId) {
 		this.operatorId = wrapNull(operatorId);
 	}
 
@@ -192,22 +160,22 @@ public class VehicleNotification extends Model {
 		this.readAt = Optional.<Date>absent();
 	}
 
-	private Optional<Long> response = Optional.<Long>absent();
+	private Optional<Integer> response = Optional.<Integer>absent();
 
-	public Optional<Long> getResponse() {
+	public Optional<Integer> getResponse() {
 		return wrapNull(response);
 	}
 
-	public void setResponse(Optional<Long> response) {
+	public void setResponse(Optional<Integer> response) {
 		this.response = wrapNull(response);
 	}
 
-	public void setResponse(Long response) {
+	public void setResponse(Integer response) {
 		this.response = Optional.fromNullable(response);
 	}
 
 	public void clearResponse() {
-		this.response = Optional.<Long>absent();
+		this.response = Optional.<Integer>absent();
 	}
 
 	private Date updatedAt = new Date();

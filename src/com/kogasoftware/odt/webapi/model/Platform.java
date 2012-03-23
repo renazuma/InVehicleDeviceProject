@@ -14,24 +14,9 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class Platform extends Model {
-	private static final long serialVersionUID = 6254251768996376046L;
+	private static final long serialVersionUID = 7180762105162763951L;
 	public static final String JSON_NAME = "platform";
 	public static final String CONTROLLER_NAME = "platforms";
-
-	public static class URL {
-		public static final String ROOT = "/" + CONTROLLER_NAME;
-		public static final String CREATE = "/" + CONTROLLER_NAME + "/create";
-		public static final String DESTROY = "/" + CONTROLLER_NAME + "/destroy";
-		public static final String EDIT = "/" + CONTROLLER_NAME + "/edit";
-		public static final String FIND_FULL_DEMAND_AREA = "/" + CONTROLLER_NAME + "/find_full_demand_area";
-		public static final String FIND_SEMI_DEMAND_AREA = "/" + CONTROLLER_NAME + "/find_semi_demand_area";
-		public static final String IMAGE = "/" + CONTROLLER_NAME + "/image";
-		public static final String INDEX = "/" + CONTROLLER_NAME + "/index";
-		public static final String NEW = "/" + CONTROLLER_NAME + "/new";
-		public static final String SEARCH = "/" + CONTROLLER_NAME + "/search";
-		public static final String SHOW = "/" + CONTROLLER_NAME + "/show";
-		public static final String UPDATE = "/" + CONTROLLER_NAME + "/update";
-	}
 
 	public Platform() {
 	}
@@ -40,9 +25,9 @@ public class Platform extends Model {
 		setAddress(parseOptionalString(jsonObject, "address"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
-		setDemandAreaId(parseOptionalLong(jsonObject, "demand_area_id"));
+		setDemandAreaId(parseOptionalInteger(jsonObject, "demand_area_id"));
 		setEndAt(parseOptionalDate(jsonObject, "end_at"));
-		setId(parseLong(jsonObject, "id"));
+		setId(parseInteger(jsonObject, "id"));
 		setImage(parseOptionalString(jsonObject, "image"));
 		setKeyword(parseOptionalString(jsonObject, "keyword"));
 		setLatitude(parseBigDecimal(jsonObject, "latitude"));
@@ -50,10 +35,10 @@ public class Platform extends Model {
 		setMemo(parseOptionalString(jsonObject, "memo"));
 		setName(parseString(jsonObject, "name"));
 		setNameRuby(parseString(jsonObject, "name_ruby"));
-		setSemiDemandAreaId(parseOptionalLong(jsonObject, "semi_demand_area_id"));
-		setServiceProviderId(parseOptionalLong(jsonObject, "service_provider_id"));
+		setSemiDemandAreaId(parseOptionalInteger(jsonObject, "semi_demand_area_id"));
+		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
 		setStartAt(parseOptionalDate(jsonObject, "start_at"));
-		setTypeOfDemand(parseOptionalLong(jsonObject, "type_of_demand"));
+		setTypeOfDemand(parseOptionalInteger(jsonObject, "type_of_demand"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setDemandsAsArrival(Demand.parseList(jsonObject, "demands_as_arrival"));
 		setDemandsAsDeparture(Demand.parseList(jsonObject, "demands_as_departure"));
@@ -81,32 +66,6 @@ public class Platform extends Model {
 			models.add(new Platform(jsonArray.getJSONObject(i)));
 		}
 		return models;
-	}
-
-	public static class ResponseConverter implements
-			WebAPI.ResponseConverter<Platform> {
-		@Override
-		public Platform convert(byte[] rawResponse) throws JSONException, ParseException {
-			return new Platform(new JSONObject(new String(rawResponse)));
-		}
-	}
-
-	public static class ListResponseConverter implements
-			WebAPI.ResponseConverter<List<Platform>> {
-		@Override
-		public List<Platform> convert(byte[] rawResponse) throws JSONException,
-				ParseException {
-			JSONArray array = new JSONArray(new String(rawResponse));
-			List<Platform> models = new LinkedList<Platform>();
-			for (Integer i = 0; i < array.length(); ++i) {
-				if (array.isNull(i)) {
-					continue;
-				}
-				JSONObject object = array.getJSONObject(i);
-				models.add(new Platform(object));
-			}
-			return models;
-		}
 	}
 
 	@Override
@@ -183,22 +142,22 @@ public class Platform extends Model {
 		this.deletedAt = Optional.<Date>absent();
 	}
 
-	private Optional<Long> demandAreaId = Optional.<Long>absent();
+	private Optional<Integer> demandAreaId = Optional.<Integer>absent();
 
-	public Optional<Long> getDemandAreaId() {
+	public Optional<Integer> getDemandAreaId() {
 		return wrapNull(demandAreaId);
 	}
 
-	public void setDemandAreaId(Optional<Long> demandAreaId) {
+	public void setDemandAreaId(Optional<Integer> demandAreaId) {
 		this.demandAreaId = wrapNull(demandAreaId);
 	}
 
-	public void setDemandAreaId(Long demandAreaId) {
+	public void setDemandAreaId(Integer demandAreaId) {
 		this.demandAreaId = Optional.fromNullable(demandAreaId);
 	}
 
 	public void clearDemandAreaId() {
-		this.demandAreaId = Optional.<Long>absent();
+		this.demandAreaId = Optional.<Integer>absent();
 	}
 
 	private Optional<Date> endAt = Optional.<Date>absent();
@@ -219,13 +178,13 @@ public class Platform extends Model {
 		this.endAt = Optional.<Date>absent();
 	}
 
-	private Long id = 0L;
+	private Integer id = 0;
 
-	public Long getId() {
+	public Integer getId() {
 		return wrapNull(id);
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = wrapNull(id);
 	}
 
@@ -323,40 +282,40 @@ public class Platform extends Model {
 		this.nameRuby = wrapNull(nameRuby);
 	}
 
-	private Optional<Long> semiDemandAreaId = Optional.<Long>absent();
+	private Optional<Integer> semiDemandAreaId = Optional.<Integer>absent();
 
-	public Optional<Long> getSemiDemandAreaId() {
+	public Optional<Integer> getSemiDemandAreaId() {
 		return wrapNull(semiDemandAreaId);
 	}
 
-	public void setSemiDemandAreaId(Optional<Long> semiDemandAreaId) {
+	public void setSemiDemandAreaId(Optional<Integer> semiDemandAreaId) {
 		this.semiDemandAreaId = wrapNull(semiDemandAreaId);
 	}
 
-	public void setSemiDemandAreaId(Long semiDemandAreaId) {
+	public void setSemiDemandAreaId(Integer semiDemandAreaId) {
 		this.semiDemandAreaId = Optional.fromNullable(semiDemandAreaId);
 	}
 
 	public void clearSemiDemandAreaId() {
-		this.semiDemandAreaId = Optional.<Long>absent();
+		this.semiDemandAreaId = Optional.<Integer>absent();
 	}
 
-	private Optional<Long> serviceProviderId = Optional.<Long>absent();
+	private Optional<Integer> serviceProviderId = Optional.<Integer>absent();
 
-	public Optional<Long> getServiceProviderId() {
+	public Optional<Integer> getServiceProviderId() {
 		return wrapNull(serviceProviderId);
 	}
 
-	public void setServiceProviderId(Optional<Long> serviceProviderId) {
+	public void setServiceProviderId(Optional<Integer> serviceProviderId) {
 		this.serviceProviderId = wrapNull(serviceProviderId);
 	}
 
-	public void setServiceProviderId(Long serviceProviderId) {
+	public void setServiceProviderId(Integer serviceProviderId) {
 		this.serviceProviderId = Optional.fromNullable(serviceProviderId);
 	}
 
 	public void clearServiceProviderId() {
-		this.serviceProviderId = Optional.<Long>absent();
+		this.serviceProviderId = Optional.<Integer>absent();
 	}
 
 	private Optional<Date> startAt = Optional.<Date>absent();
@@ -377,22 +336,22 @@ public class Platform extends Model {
 		this.startAt = Optional.<Date>absent();
 	}
 
-	private Optional<Long> typeOfDemand = Optional.<Long>absent();
+	private Optional<Integer> typeOfDemand = Optional.<Integer>absent();
 
-	public Optional<Long> getTypeOfDemand() {
+	public Optional<Integer> getTypeOfDemand() {
 		return wrapNull(typeOfDemand);
 	}
 
-	public void setTypeOfDemand(Optional<Long> typeOfDemand) {
+	public void setTypeOfDemand(Optional<Integer> typeOfDemand) {
 		this.typeOfDemand = wrapNull(typeOfDemand);
 	}
 
-	public void setTypeOfDemand(Long typeOfDemand) {
+	public void setTypeOfDemand(Integer typeOfDemand) {
 		this.typeOfDemand = Optional.fromNullable(typeOfDemand);
 	}
 
 	public void clearTypeOfDemand() {
-		this.typeOfDemand = Optional.<Long>absent();
+		this.typeOfDemand = Optional.<Integer>absent();
 	}
 
 	private Date updatedAt = new Date();

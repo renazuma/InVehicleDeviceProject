@@ -14,27 +14,16 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class User extends Model {
-	private static final long serialVersionUID = 6993676013300007061L;
+	private static final long serialVersionUID = 198205451935412194L;
 	public static final String JSON_NAME = "user";
 	public static final String CONTROLLER_NAME = "users";
-
-	public static class URL {
-		public static final String ROOT = "/" + CONTROLLER_NAME;
-		public static final String CREATE = "/" + CONTROLLER_NAME + "/create";
-		public static final String DESTROY = "/" + CONTROLLER_NAME + "/destroy";
-		public static final String EDIT = "/" + CONTROLLER_NAME + "/edit";
-		public static final String INDEX = "/" + CONTROLLER_NAME + "/index";
-		public static final String NEW = "/" + CONTROLLER_NAME + "/new";
-		public static final String SHOW = "/" + CONTROLLER_NAME + "/show";
-		public static final String UPDATE = "/" + CONTROLLER_NAME + "/update";
-	}
 
 	public User() {
 	}
 
 	public User(JSONObject jsonObject) throws JSONException, ParseException {
 		setAddress(parseString(jsonObject, "address"));
-		setAge(parseLong(jsonObject, "age"));
+		setAge(parseInteger(jsonObject, "age"));
 		setBirthday(parseDate(jsonObject, "birthday"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setCurrentSignInAt(parseOptionalDate(jsonObject, "current_sign_in_at"));
@@ -47,7 +36,7 @@ public class User extends Model {
 		setFamilyNameRuby(parseString(jsonObject, "family_name_ruby"));
 		setFelicaId(parseOptionalString(jsonObject, "felica_id"));
 		setHandicapped(parseOptionalBoolean(jsonObject, "handicapped"));
-		setId(parseLong(jsonObject, "id"));
+		setId(parseInteger(jsonObject, "id"));
 		setLastName(parseString(jsonObject, "last_name"));
 		setLastNameRuby(parseString(jsonObject, "last_name_ruby"));
 		setLastSignInAt(parseOptionalDate(jsonObject, "last_sign_in_at"));
@@ -58,9 +47,9 @@ public class User extends Model {
 		setRecommendOk(parseOptionalBoolean(jsonObject, "recommend_ok"));
 		setRememberCreatedAt(parseOptionalDate(jsonObject, "remember_created_at"));
 		setReserveNotification(parseOptionalBoolean(jsonObject, "reserve_notification"));
-		setServiceProviderId(parseOptionalLong(jsonObject, "service_provider_id"));
-		setSex(parseLong(jsonObject, "sex"));
-		setSignInCount(parseOptionalLong(jsonObject, "sign_in_count"));
+		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
+		setSex(parseInteger(jsonObject, "sex"));
+		setSignInCount(parseOptionalInteger(jsonObject, "sign_in_count"));
 		setTelephoneNumber(parseString(jsonObject, "telephone_number"));
 		setTelephoneNumber2(parseOptionalString(jsonObject, "telephone_number2"));
 		setUpdateNotification(parseOptionalBoolean(jsonObject, "update_notification"));
@@ -90,32 +79,6 @@ public class User extends Model {
 			models.add(new User(jsonArray.getJSONObject(i)));
 		}
 		return models;
-	}
-
-	public static class ResponseConverter implements
-			WebAPI.ResponseConverter<User> {
-		@Override
-		public User convert(byte[] rawResponse) throws JSONException, ParseException {
-			return new User(new JSONObject(new String(rawResponse)));
-		}
-	}
-
-	public static class ListResponseConverter implements
-			WebAPI.ResponseConverter<List<User>> {
-		@Override
-		public List<User> convert(byte[] rawResponse) throws JSONException,
-				ParseException {
-			JSONArray array = new JSONArray(new String(rawResponse));
-			List<User> models = new LinkedList<User>();
-			for (Integer i = 0; i < array.length(); ++i) {
-				if (array.isNull(i)) {
-					continue;
-				}
-				JSONObject object = array.getJSONObject(i);
-				models.add(new User(object));
-			}
-			return models;
-		}
 	}
 
 	@Override
@@ -169,13 +132,13 @@ public class User extends Model {
 		this.address = wrapNull(address);
 	}
 
-	private Long age = 0L;
+	private Integer age = 0;
 
-	public Long getAge() {
+	public Integer getAge() {
 		return wrapNull(age);
 	}
 
-	public void setAge(Long age) {
+	public void setAge(Integer age) {
 		this.age = wrapNull(age);
 	}
 
@@ -355,13 +318,13 @@ public class User extends Model {
 		this.handicapped = Optional.<Boolean>absent();
 	}
 
-	private Long id = 0L;
+	private Integer id = 0;
 
-	public Long getId() {
+	public Integer getId() {
 		return wrapNull(id);
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = wrapNull(id);
 	}
 
@@ -521,50 +484,50 @@ public class User extends Model {
 		this.reserveNotification = Optional.<Boolean>absent();
 	}
 
-	private Optional<Long> serviceProviderId = Optional.<Long>absent();
+	private Optional<Integer> serviceProviderId = Optional.<Integer>absent();
 
-	public Optional<Long> getServiceProviderId() {
+	public Optional<Integer> getServiceProviderId() {
 		return wrapNull(serviceProviderId);
 	}
 
-	public void setServiceProviderId(Optional<Long> serviceProviderId) {
+	public void setServiceProviderId(Optional<Integer> serviceProviderId) {
 		this.serviceProviderId = wrapNull(serviceProviderId);
 	}
 
-	public void setServiceProviderId(Long serviceProviderId) {
+	public void setServiceProviderId(Integer serviceProviderId) {
 		this.serviceProviderId = Optional.fromNullable(serviceProviderId);
 	}
 
 	public void clearServiceProviderId() {
-		this.serviceProviderId = Optional.<Long>absent();
+		this.serviceProviderId = Optional.<Integer>absent();
 	}
 
-	private Long sex = 0L;
+	private Integer sex = 0;
 
-	public Long getSex() {
+	public Integer getSex() {
 		return wrapNull(sex);
 	}
 
-	public void setSex(Long sex) {
+	public void setSex(Integer sex) {
 		this.sex = wrapNull(sex);
 	}
 
-	private Optional<Long> signInCount = Optional.<Long>absent();
+	private Optional<Integer> signInCount = Optional.<Integer>absent();
 
-	public Optional<Long> getSignInCount() {
+	public Optional<Integer> getSignInCount() {
 		return wrapNull(signInCount);
 	}
 
-	public void setSignInCount(Optional<Long> signInCount) {
+	public void setSignInCount(Optional<Integer> signInCount) {
 		this.signInCount = wrapNull(signInCount);
 	}
 
-	public void setSignInCount(Long signInCount) {
+	public void setSignInCount(Integer signInCount) {
 		this.signInCount = Optional.fromNullable(signInCount);
 	}
 
 	public void clearSignInCount() {
-		this.signInCount = Optional.<Long>absent();
+		this.signInCount = Optional.<Integer>absent();
 	}
 
 	private String telephoneNumber = "";
