@@ -14,7 +14,7 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class Platform extends Model {
-	private static final long serialVersionUID = 2951036918286942724L;
+	private static final long serialVersionUID = 6254251768996376046L;
 	public static final String JSON_NAME = "platform";
 	public static final String CONTROLLER_NAME = "platforms";
 
@@ -50,6 +50,7 @@ public class Platform extends Model {
 		setMemo(parseOptionalString(jsonObject, "memo"));
 		setName(parseString(jsonObject, "name"));
 		setNameRuby(parseString(jsonObject, "name_ruby"));
+		setSemiDemandAreaId(parseOptionalLong(jsonObject, "semi_demand_area_id"));
 		setServiceProviderId(parseOptionalLong(jsonObject, "service_provider_id"));
 		setStartAt(parseOptionalDate(jsonObject, "start_at"));
 		setTypeOfDemand(parseOptionalLong(jsonObject, "type_of_demand"));
@@ -124,6 +125,7 @@ public class Platform extends Model {
 		jsonObject.put("memo", toJSON(getMemo().orNull()));
 		jsonObject.put("name", toJSON(getName()));
 		jsonObject.put("name_ruby", toJSON(getNameRuby()));
+		jsonObject.put("semi_demand_area_id", toJSON(getSemiDemandAreaId().orNull()));
 		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
 		jsonObject.put("start_at", toJSON(getStartAt().orNull()));
 		jsonObject.put("type_of_demand", toJSON(getTypeOfDemand().orNull()));
@@ -319,6 +321,24 @@ public class Platform extends Model {
 
 	public void setNameRuby(String nameRuby) {
 		this.nameRuby = wrapNull(nameRuby);
+	}
+
+	private Optional<Long> semiDemandAreaId = Optional.<Long>absent();
+
+	public Optional<Long> getSemiDemandAreaId() {
+		return wrapNull(semiDemandAreaId);
+	}
+
+	public void setSemiDemandAreaId(Optional<Long> semiDemandAreaId) {
+		this.semiDemandAreaId = wrapNull(semiDemandAreaId);
+	}
+
+	public void setSemiDemandAreaId(Long semiDemandAreaId) {
+		this.semiDemandAreaId = Optional.fromNullable(semiDemandAreaId);
+	}
+
+	public void clearSemiDemandAreaId() {
+		this.semiDemandAreaId = Optional.<Long>absent();
 	}
 
 	private Optional<Long> serviceProviderId = Optional.<Long>absent();

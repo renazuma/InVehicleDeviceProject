@@ -13,98 +13,93 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
-public class Demand extends Model {
-	private static final long serialVersionUID = 1196565428281752463L;
-	public static final String JSON_NAME = "demand";
-	public static final String CONTROLLER_NAME = "demands";
+public class ReservationCandidate extends Model {
+	private static final long serialVersionUID = 2513887995030438761L;
+	public static final String JSON_NAME = "reservation_candidate";
+	public static final String CONTROLLER_NAME = "reservation_candidates";
 
 	public static class URL {
 		public static final String ROOT = "/" + CONTROLLER_NAME;
-		public static final String CREATE = "/" + CONTROLLER_NAME + "/create";
-		public static final String DESTROY = "/" + CONTROLLER_NAME + "/destroy";
-		public static final String EDIT = "/" + CONTROLLER_NAME + "/edit";
-		public static final String INDEX = "/" + CONTROLLER_NAME + "/index";
-		public static final String NEW = "/" + CONTROLLER_NAME + "/new";
-		public static final String SHOW = "/" + CONTROLLER_NAME + "/show";
-		public static final String UPDATE = "/" + CONTROLLER_NAME + "/update";
 	}
 
-	public Demand() {
+	public ReservationCandidate() {
 	}
 
-	public Demand(JSONObject jsonObject) throws JSONException, ParseException {
-		setArrivalPlatformId(parseOptionalLong(jsonObject, "arrival_platform_id"));
-		setArrivalTime(parseOptionalDate(jsonObject, "arrival_time"));
+	public ReservationCandidate(JSONObject jsonObject) throws JSONException, ParseException {
+		setArrivalPlatformId(parseLong(jsonObject, "arrival_platform_id"));
+		setArrivalTime(parseDate(jsonObject, "arrival_time"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
-		setDeparturePlatformId(parseOptionalLong(jsonObject, "departure_platform_id"));
-		setDepartureTime(parseOptionalDate(jsonObject, "departure_time"));
+		setDemandId(parseOptionalLong(jsonObject, "demand_id"));
+		setDeparturePlatformId(parseLong(jsonObject, "departure_platform_id"));
+		setDepartureTime(parseDate(jsonObject, "departure_time"));
 		setId(parseLong(jsonObject, "id"));
-		setMemo(parseOptionalString(jsonObject, "memo"));
 		setPassengerCount(parseLong(jsonObject, "passenger_count"));
 		setServiceProviderId(parseOptionalLong(jsonObject, "service_provider_id"));
-		setStoppageTime(parseOptionalLong(jsonObject, "stoppage_time"));
 		setUnitAssignmentId(parseOptionalLong(jsonObject, "unit_assignment_id"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
-		setUserId(parseLong(jsonObject, "user_id"));
+		setUserId(parseOptionalLong(jsonObject, "user_id"));
 		setArrivalPlatform(Platform.parse(jsonObject, "arrival_platform"));
 		if (getArrivalPlatform().isPresent()) {
 			setArrivalPlatformId(getArrivalPlatform().get().getId());
+		}
+		setDemand(Demand.parse(jsonObject, "demand"));
+		if (getDemand().isPresent()) {
+			setDemandId(getDemand().get().getId());
 		}
 		setDeparturePlatform(Platform.parse(jsonObject, "departure_platform"));
 		if (getDeparturePlatform().isPresent()) {
 			setDeparturePlatformId(getDeparturePlatform().get().getId());
 		}
-		setReservation(Reservation.parse(jsonObject, "reservation"));
 		setUser(User.parse(jsonObject, "user"));
 		if (getUser().isPresent()) {
 			setUserId(getUser().get().getId());
 		}
 	}
 
-	public static Optional<Demand> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	public static Optional<ReservationCandidate> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
 		if (!jsonObject.has(key)) {
-			return Optional.<Demand>absent();
+			return Optional.<ReservationCandidate>absent();
 		}
-		return Optional.<Demand>of(new Demand(jsonObject.getJSONObject(key)));
+		return Optional.<ReservationCandidate>of(new ReservationCandidate(jsonObject.getJSONObject(key)));
 	}
 
-	public static List<Demand> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	public static List<ReservationCandidate> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
 		if (!jsonObject.has(key)) {
-			return new LinkedList<Demand>();
+			return new LinkedList<ReservationCandidate>();
 		}
 		JSONArray jsonArray = jsonObject.getJSONArray(key);
-		List<Demand> models = new LinkedList<Demand>();
+		List<ReservationCandidate> models = new LinkedList<ReservationCandidate>();
 		for (Integer i = 0; i < jsonArray.length(); ++i) {
 			if (jsonArray.isNull(i)) {
 				continue;
 			}
-			models.add(new Demand(jsonArray.getJSONObject(i)));
+			models.add(new ReservationCandidate(jsonArray.getJSONObject(i)));
 		}
 		return models;
 	}
 
 	public static class ResponseConverter implements
-			WebAPI.ResponseConverter<Demand> {
+			WebAPI.ResponseConverter<ReservationCandidate> {
 		@Override
-		public Demand convert(byte[] rawResponse) throws JSONException, ParseException {
-			return new Demand(new JSONObject(new String(rawResponse)));
+		public ReservationCandidate convert(byte[] rawResponse) throws JSONException, ParseException {
+			return new ReservationCandidate(new JSONObject(new String(rawResponse)));
 		}
 	}
 
 	public static class ListResponseConverter implements
-			WebAPI.ResponseConverter<List<Demand>> {
+			WebAPI.ResponseConverter<List<ReservationCandidate>> {
 		@Override
-		public List<Demand> convert(byte[] rawResponse) throws JSONException,
+		public List<ReservationCandidate> convert(byte[] rawResponse) throws JSONException,
 				ParseException {
 			JSONArray array = new JSONArray(new String(rawResponse));
-			List<Demand> models = new LinkedList<Demand>();
+			List<ReservationCandidate> models = new LinkedList<ReservationCandidate>();
 			for (Integer i = 0; i < array.length(); ++i) {
 				if (array.isNull(i)) {
 					continue;
 				}
 				JSONObject object = array.getJSONObject(i);
-				models.add(new Demand(object));
+				models.add(new ReservationCandidate(object));
 			}
 			return models;
 		}
@@ -113,29 +108,31 @@ public class Demand extends Model {
 	@Override
 	public JSONObject toJSONObject() throws JSONException {
 		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("arrival_platform_id", toJSON(getArrivalPlatformId().orNull()));
-		jsonObject.put("arrival_time", toJSON(getArrivalTime().orNull()));
+		jsonObject.put("arrival_platform_id", toJSON(getArrivalPlatformId()));
+		jsonObject.put("arrival_time", toJSON(getArrivalTime()));
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
 		jsonObject.put("deleted_at", toJSON(getDeletedAt().orNull()));
-		jsonObject.put("departure_platform_id", toJSON(getDeparturePlatformId().orNull()));
-		jsonObject.put("departure_time", toJSON(getDepartureTime().orNull()));
+		jsonObject.put("demand_id", toJSON(getDemandId().orNull()));
+		jsonObject.put("departure_platform_id", toJSON(getDeparturePlatformId()));
+		jsonObject.put("departure_time", toJSON(getDepartureTime()));
 		jsonObject.put("id", toJSON(getId()));
-		jsonObject.put("memo", toJSON(getMemo().orNull()));
 		jsonObject.put("passenger_count", toJSON(getPassengerCount()));
 		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
-		jsonObject.put("stoppage_time", toJSON(getStoppageTime().orNull()));
 		jsonObject.put("unit_assignment_id", toJSON(getUnitAssignmentId().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
-		jsonObject.put("user_id", toJSON(getUserId()));
+		jsonObject.put("user_id", toJSON(getUserId().orNull()));
 		jsonObject.put("arrival_platform", toJSON(getArrivalPlatform()));
 		if (getArrivalPlatform().isPresent()) {
 			jsonObject.put("arrival_platform_id", toJSON(getArrivalPlatform().get().getId()));
+		}
+		jsonObject.put("demand", toJSON(getDemand()));
+		if (getDemand().isPresent()) {
+			jsonObject.put("demand_id", toJSON(getDemand().get().getId()));
 		}
 		jsonObject.put("departure_platform", toJSON(getDeparturePlatform()));
 		if (getDeparturePlatform().isPresent()) {
 			jsonObject.put("departure_platform_id", toJSON(getDeparturePlatform().get().getId()));
 		}
-		jsonObject.put("reservation", toJSON(getReservation()));
 		jsonObject.put("user", toJSON(getUser()));
 		if (getUser().isPresent()) {
 			jsonObject.put("user_id", toJSON(getUser().get().getId()));
@@ -143,40 +140,24 @@ public class Demand extends Model {
 		return jsonObject;
 	}
 
-	private Optional<Long> arrivalPlatformId = Optional.<Long>absent();
+	private Long arrivalPlatformId = 0L;
 
-	public Optional<Long> getArrivalPlatformId() {
+	public Long getArrivalPlatformId() {
 		return wrapNull(arrivalPlatformId);
 	}
 
-	public void setArrivalPlatformId(Optional<Long> arrivalPlatformId) {
+	public void setArrivalPlatformId(Long arrivalPlatformId) {
 		this.arrivalPlatformId = wrapNull(arrivalPlatformId);
 	}
 
-	public void setArrivalPlatformId(Long arrivalPlatformId) {
-		this.arrivalPlatformId = Optional.fromNullable(arrivalPlatformId);
-	}
+	private Date arrivalTime = new Date();
 
-	public void clearArrivalPlatformId() {
-		this.arrivalPlatformId = Optional.<Long>absent();
-	}
-
-	private Optional<Date> arrivalTime = Optional.<Date>absent();
-
-	public Optional<Date> getArrivalTime() {
+	public Date getArrivalTime() {
 		return wrapNull(arrivalTime);
 	}
 
-	public void setArrivalTime(Optional<Date> arrivalTime) {
-		this.arrivalTime = wrapNull(arrivalTime);
-	}
-
 	public void setArrivalTime(Date arrivalTime) {
-		this.arrivalTime = Optional.fromNullable(arrivalTime);
-	}
-
-	public void clearArrivalTime() {
-		this.arrivalTime = Optional.<Date>absent();
+		this.arrivalTime = wrapNull(arrivalTime);
 	}
 
 	private Date createdAt = new Date();
@@ -207,40 +188,42 @@ public class Demand extends Model {
 		this.deletedAt = Optional.<Date>absent();
 	}
 
-	private Optional<Long> departurePlatformId = Optional.<Long>absent();
+	private Optional<Long> demandId = Optional.<Long>absent();
 
-	public Optional<Long> getDeparturePlatformId() {
+	public Optional<Long> getDemandId() {
+		return wrapNull(demandId);
+	}
+
+	public void setDemandId(Optional<Long> demandId) {
+		this.demandId = wrapNull(demandId);
+	}
+
+	public void setDemandId(Long demandId) {
+		this.demandId = Optional.fromNullable(demandId);
+	}
+
+	public void clearDemandId() {
+		this.demandId = Optional.<Long>absent();
+	}
+
+	private Long departurePlatformId = 0L;
+
+	public Long getDeparturePlatformId() {
 		return wrapNull(departurePlatformId);
 	}
 
-	public void setDeparturePlatformId(Optional<Long> departurePlatformId) {
+	public void setDeparturePlatformId(Long departurePlatformId) {
 		this.departurePlatformId = wrapNull(departurePlatformId);
 	}
 
-	public void setDeparturePlatformId(Long departurePlatformId) {
-		this.departurePlatformId = Optional.fromNullable(departurePlatformId);
-	}
+	private Date departureTime = new Date();
 
-	public void clearDeparturePlatformId() {
-		this.departurePlatformId = Optional.<Long>absent();
-	}
-
-	private Optional<Date> departureTime = Optional.<Date>absent();
-
-	public Optional<Date> getDepartureTime() {
+	public Date getDepartureTime() {
 		return wrapNull(departureTime);
 	}
 
-	public void setDepartureTime(Optional<Date> departureTime) {
-		this.departureTime = wrapNull(departureTime);
-	}
-
 	public void setDepartureTime(Date departureTime) {
-		this.departureTime = Optional.fromNullable(departureTime);
-	}
-
-	public void clearDepartureTime() {
-		this.departureTime = Optional.<Date>absent();
+		this.departureTime = wrapNull(departureTime);
 	}
 
 	private Long id = 0L;
@@ -251,24 +234,6 @@ public class Demand extends Model {
 
 	public void setId(Long id) {
 		this.id = wrapNull(id);
-	}
-
-	private Optional<String> memo = Optional.<String>absent();
-
-	public Optional<String> getMemo() {
-		return wrapNull(memo);
-	}
-
-	public void setMemo(Optional<String> memo) {
-		this.memo = wrapNull(memo);
-	}
-
-	public void setMemo(String memo) {
-		this.memo = Optional.fromNullable(memo);
-	}
-
-	public void clearMemo() {
-		this.memo = Optional.<String>absent();
 	}
 
 	private Long passengerCount = 0L;
@@ -299,24 +264,6 @@ public class Demand extends Model {
 		this.serviceProviderId = Optional.<Long>absent();
 	}
 
-	private Optional<Long> stoppageTime = Optional.<Long>absent();
-
-	public Optional<Long> getStoppageTime() {
-		return wrapNull(stoppageTime);
-	}
-
-	public void setStoppageTime(Optional<Long> stoppageTime) {
-		this.stoppageTime = wrapNull(stoppageTime);
-	}
-
-	public void setStoppageTime(Long stoppageTime) {
-		this.stoppageTime = Optional.fromNullable(stoppageTime);
-	}
-
-	public void clearStoppageTime() {
-		this.stoppageTime = Optional.<Long>absent();
-	}
-
 	private Optional<Long> unitAssignmentId = Optional.<Long>absent();
 
 	public Optional<Long> getUnitAssignmentId() {
@@ -345,14 +292,22 @@ public class Demand extends Model {
 		this.updatedAt = wrapNull(updatedAt);
 	}
 
-	private Long userId = 0L;
+	private Optional<Long> userId = Optional.<Long>absent();
 
-	public Long getUserId() {
+	public Optional<Long> getUserId() {
 		return wrapNull(userId);
 	}
 
-	public void setUserId(Long userId) {
+	public void setUserId(Optional<Long> userId) {
 		this.userId = wrapNull(userId);
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = Optional.fromNullable(userId);
+	}
+
+	public void clearUserId() {
+		this.userId = Optional.<Long>absent();
 	}
 
 	private Optional<Platform> arrivalPlatform = Optional.<Platform>absent();
@@ -373,6 +328,24 @@ public class Demand extends Model {
 		this.arrivalPlatform = Optional.<Platform>absent();
 	}
 
+	private Optional<Demand> demand = Optional.<Demand>absent();
+
+	public Optional<Demand> getDemand() {
+		return wrapNull(demand);
+	}
+
+	public void setDemand(Optional<Demand> demand) {
+		this.demand = wrapNull(demand);
+	}
+
+	public void setDemand(Demand demand) {
+		this.demand = Optional.<Demand>fromNullable(demand);
+	}
+
+	public void clearDemand() {
+		this.demand = Optional.<Demand>absent();
+	}
+
 	private Optional<Platform> departurePlatform = Optional.<Platform>absent();
 
 	public Optional<Platform> getDeparturePlatform() {
@@ -389,24 +362,6 @@ public class Demand extends Model {
 
 	public void clearDeparturePlatform() {
 		this.departurePlatform = Optional.<Platform>absent();
-	}
-
-	private Optional<Reservation> reservation = Optional.<Reservation>absent();
-
-	public Optional<Reservation> getReservation() {
-		return wrapNull(reservation);
-	}
-
-	public void setReservation(Optional<Reservation> reservation) {
-		this.reservation = wrapNull(reservation);
-	}
-
-	public void setReservation(Reservation reservation) {
-		this.reservation = Optional.<Reservation>fromNullable(reservation);
-	}
-
-	public void clearReservation() {
-		this.reservation = Optional.<Reservation>absent();
 	}
 
 	private Optional<User> user = Optional.<User>absent();

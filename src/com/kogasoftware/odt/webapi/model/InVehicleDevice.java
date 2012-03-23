@@ -14,7 +14,7 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class InVehicleDevice extends Model {
-	private static final long serialVersionUID = 6274991172861696535L;
+	private static final long serialVersionUID = 2051608828621861232L;
 	public static final String JSON_NAME = "in_vehicle_device";
 	public static final String CONTROLLER_NAME = "in_vehicle_devices";
 
@@ -40,6 +40,7 @@ public class InVehicleDevice extends Model {
 		setServiceProviderId(parseOptionalLong(jsonObject, "service_provider_id"));
 		setTypeNumber(parseString(jsonObject, "type_number"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
+		setServiceUnits(ServiceUnit.parseList(jsonObject, "service_units"));
 		setVehicleNotifications(VehicleNotification.parseList(jsonObject, "vehicle_notifications"));
 	}
 
@@ -101,6 +102,7 @@ public class InVehicleDevice extends Model {
 		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
 		jsonObject.put("type_number", toJSON(getTypeNumber()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
+		jsonObject.put("service_units", toJSON(getServiceUnits()));
 		jsonObject.put("vehicle_notifications", toJSON(getVehicleNotifications()));
 		return jsonObject;
 	}
@@ -189,6 +191,20 @@ public class InVehicleDevice extends Model {
 
 	public void setUpdatedAt(Date updatedAt) {
 		this.updatedAt = wrapNull(updatedAt);
+	}
+
+	private List<ServiceUnit> serviceUnits = new LinkedList<ServiceUnit>();
+
+	public List<ServiceUnit> getServiceUnits() {
+		return new LinkedList<ServiceUnit>(wrapNull(serviceUnits));
+	}
+
+	public void setServiceUnits(List<ServiceUnit> serviceUnits) {
+		this.serviceUnits = new LinkedList<ServiceUnit>(wrapNull(serviceUnits));
+	}
+
+	public void clearServiceUnits() {
+		this.serviceUnits = new LinkedList<ServiceUnit>();
 	}
 
 	private List<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();

@@ -14,7 +14,7 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class OperationSchedule extends Model {
-	private static final long serialVersionUID = 4117763343500818638L;
+	private static final long serialVersionUID = 7480687709859897508L;
 	public static final String JSON_NAME = "operation_schedule";
 	public static final String CONTROLLER_NAME = "operation_schedules";
 

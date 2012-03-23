@@ -14,7 +14,7 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class Reservation extends Model {
-	private static final long serialVersionUID = 6800749560519228504L;
+	private static final long serialVersionUID = 1578339946046565760L;
 	public static final String JSON_NAME = "reservation";
 	public static final String CONTROLLER_NAME = "reservations";
 
@@ -47,13 +47,14 @@ public class Reservation extends Model {
 		setDeparturePlatformId(parseOptionalLong(jsonObject, "departure_platform_id"));
 		setDepartureScheduleId(parseOptionalLong(jsonObject, "departure_schedule_id"));
 		setDepartureTime(parseDate(jsonObject, "departure_time"));
-		setHead(parseLong(jsonObject, "head"));
 		setId(parseLong(jsonObject, "id"));
 		setMemo(parseOptionalString(jsonObject, "memo"));
 		setOperatorId(parseOptionalLong(jsonObject, "operator_id"));
-		setPayment(parseBoolean(jsonObject, "payment"));
+		setPassengerCount(parseLong(jsonObject, "passenger_count"));
+		setPayment(parseLong(jsonObject, "payment"));
 		setServiceProviderId(parseOptionalLong(jsonObject, "service_provider_id"));
 		setStatus(parseLong(jsonObject, "status"));
+		setTransferredAt(parseOptionalDate(jsonObject, "transferred_at"));
 		setUnitAssignmentId(parseLong(jsonObject, "unit_assignment_id"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setUserId(parseLong(jsonObject, "user_id"));
@@ -149,13 +150,14 @@ public class Reservation extends Model {
 		jsonObject.put("departure_platform_id", toJSON(getDeparturePlatformId().orNull()));
 		jsonObject.put("departure_schedule_id", toJSON(getDepartureScheduleId().orNull()));
 		jsonObject.put("departure_time", toJSON(getDepartureTime()));
-		jsonObject.put("head", toJSON(getHead()));
 		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("memo", toJSON(getMemo().orNull()));
 		jsonObject.put("operator_id", toJSON(getOperatorId().orNull()));
+		jsonObject.put("passenger_count", toJSON(getPassengerCount()));
 		jsonObject.put("payment", toJSON(getPayment()));
 		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
 		jsonObject.put("status", toJSON(getStatus()));
+		jsonObject.put("transferred_at", toJSON(getTransferredAt().orNull()));
 		jsonObject.put("unit_assignment_id", toJSON(getUnitAssignmentId()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
 		jsonObject.put("user_id", toJSON(getUserId()));
@@ -356,16 +358,6 @@ public class Reservation extends Model {
 		this.departureTime = wrapNull(departureTime);
 	}
 
-	private Long head = 0L;
-
-	public Long getHead() {
-		return wrapNull(head);
-	}
-
-	public void setHead(Long head) {
-		this.head = wrapNull(head);
-	}
-
 	private Long id = 0L;
 
 	public Long getId() {
@@ -412,13 +404,23 @@ public class Reservation extends Model {
 		this.operatorId = Optional.<Long>absent();
 	}
 
-	private Boolean payment = false;
+	private Long passengerCount = 0L;
 
-	public Boolean getPayment() {
+	public Long getPassengerCount() {
+		return wrapNull(passengerCount);
+	}
+
+	public void setPassengerCount(Long passengerCount) {
+		this.passengerCount = wrapNull(passengerCount);
+	}
+
+	private Long payment = 0L;
+
+	public Long getPayment() {
 		return wrapNull(payment);
 	}
 
-	public void setPayment(Boolean payment) {
+	public void setPayment(Long payment) {
 		this.payment = wrapNull(payment);
 	}
 
@@ -448,6 +450,24 @@ public class Reservation extends Model {
 
 	public void setStatus(Long status) {
 		this.status = wrapNull(status);
+	}
+
+	private Optional<Date> transferredAt = Optional.<Date>absent();
+
+	public Optional<Date> getTransferredAt() {
+		return wrapNull(transferredAt);
+	}
+
+	public void setTransferredAt(Optional<Date> transferredAt) {
+		this.transferredAt = wrapNull(transferredAt);
+	}
+
+	public void setTransferredAt(Date transferredAt) {
+		this.transferredAt = Optional.fromNullable(transferredAt);
+	}
+
+	public void clearTransferredAt() {
+		this.transferredAt = Optional.<Date>absent();
 	}
 
 	private Long unitAssignmentId = 0L;

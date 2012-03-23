@@ -14,7 +14,7 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class VehicleNotification extends Model {
-	private static final long serialVersionUID = 8127759496081814497L;
+	private static final long serialVersionUID = 3950203405001147414L;
 	public static final String JSON_NAME = "vehicle_notification";
 	public static final String CONTROLLER_NAME = "vehicle_notifications";
 
@@ -34,6 +34,7 @@ public class VehicleNotification extends Model {
 		setInVehicleDeviceId(parseLong(jsonObject, "in_vehicle_device_id"));
 		setOperatorId(parseLong(jsonObject, "operator_id"));
 		setReadAt(parseOptionalDate(jsonObject, "read_at"));
+		setResponse(parseOptionalLong(jsonObject, "response"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setInVehicleDevice(InVehicleDevice.parse(jsonObject, "in_vehicle_device"));
 		if (getInVehicleDevice().isPresent()) {
@@ -102,6 +103,7 @@ public class VehicleNotification extends Model {
 		jsonObject.put("in_vehicle_device_id", toJSON(getInVehicleDeviceId()));
 		jsonObject.put("operator_id", toJSON(getOperatorId()));
 		jsonObject.put("read_at", toJSON(getReadAt().orNull()));
+		jsonObject.put("response", toJSON(getResponse().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
 		jsonObject.put("in_vehicle_device", toJSON(getInVehicleDevice()));
 		if (getInVehicleDevice().isPresent()) {
@@ -188,6 +190,24 @@ public class VehicleNotification extends Model {
 
 	public void clearReadAt() {
 		this.readAt = Optional.<Date>absent();
+	}
+
+	private Optional<Long> response = Optional.<Long>absent();
+
+	public Optional<Long> getResponse() {
+		return wrapNull(response);
+	}
+
+	public void setResponse(Optional<Long> response) {
+		this.response = wrapNull(response);
+	}
+
+	public void setResponse(Long response) {
+		this.response = Optional.fromNullable(response);
+	}
+
+	public void clearResponse() {
+		this.response = Optional.<Long>absent();
 	}
 
 	private Date updatedAt = new Date();

@@ -14,7 +14,7 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.WebAPI;
 
 public class PassengerRecord extends Model {
-	private static final long serialVersionUID = 1373556092440357354L;
+	private static final long serialVersionUID = 8758852460659023660L;
 	public static final String JSON_NAME = "passenger_record";
 	public static final String CONTROLLER_NAME = "passenger_records";
 
@@ -32,9 +32,9 @@ public class PassengerRecord extends Model {
 		setDepartureOperationScheduleId(parseLong(jsonObject, "departure_operation_schedule_id"));
 		setGetOffTime(parseOptionalDate(jsonObject, "get_off_time"));
 		setGetOnTime(parseDate(jsonObject, "get_on_time"));
-		setHead(parseLong(jsonObject, "head"));
 		setId(parseLong(jsonObject, "id"));
-		setPayment(parseOptionalBoolean(jsonObject, "payment"));
+		setPassengerCount(parseLong(jsonObject, "passenger_count"));
+		setPayment(parseOptionalLong(jsonObject, "payment"));
 		setReservationId(parseOptionalLong(jsonObject, "reservation_id"));
 		setServiceProviderId(parseOptionalLong(jsonObject, "service_provider_id"));
 		setTimestamp(parseOptionalDate(jsonObject, "timestamp"));
@@ -110,8 +110,8 @@ public class PassengerRecord extends Model {
 		jsonObject.put("departure_operation_schedule_id", toJSON(getDepartureOperationScheduleId()));
 		jsonObject.put("get_off_time", toJSON(getGetOffTime().orNull()));
 		jsonObject.put("get_on_time", toJSON(getGetOnTime()));
-		jsonObject.put("head", toJSON(getHead()));
 		jsonObject.put("id", toJSON(getId()));
+		jsonObject.put("passenger_count", toJSON(getPassengerCount()));
 		jsonObject.put("payment", toJSON(getPayment().orNull()));
 		jsonObject.put("reservation_id", toJSON(getReservationId().orNull()));
 		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
@@ -216,16 +216,6 @@ public class PassengerRecord extends Model {
 		this.getOnTime = wrapNull(getOnTime);
 	}
 
-	private Long head = 0L;
-
-	public Long getHead() {
-		return wrapNull(head);
-	}
-
-	public void setHead(Long head) {
-		this.head = wrapNull(head);
-	}
-
 	private Long id = 0L;
 
 	public Long getId() {
@@ -236,22 +226,32 @@ public class PassengerRecord extends Model {
 		this.id = wrapNull(id);
 	}
 
-	private Optional<Boolean> payment = Optional.<Boolean>absent();
+	private Long passengerCount = 0L;
 
-	public Optional<Boolean> getPayment() {
+	public Long getPassengerCount() {
+		return wrapNull(passengerCount);
+	}
+
+	public void setPassengerCount(Long passengerCount) {
+		this.passengerCount = wrapNull(passengerCount);
+	}
+
+	private Optional<Long> payment = Optional.<Long>absent();
+
+	public Optional<Long> getPayment() {
 		return wrapNull(payment);
 	}
 
-	public void setPayment(Optional<Boolean> payment) {
+	public void setPayment(Optional<Long> payment) {
 		this.payment = wrapNull(payment);
 	}
 
-	public void setPayment(Boolean payment) {
+	public void setPayment(Long payment) {
 		this.payment = Optional.fromNullable(payment);
 	}
 
 	public void clearPayment() {
-		this.payment = Optional.<Boolean>absent();
+		this.payment = Optional.<Long>absent();
 	}
 
 	private Optional<Long> reservationId = Optional.<Long>absent();
