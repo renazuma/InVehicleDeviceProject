@@ -42,9 +42,7 @@ public class Modal extends LinearLayout implements OnTouchListener {
 		}
 	}
 
-	public Modal(Context context, int resourceId) {
-		// super(context, getDefaultAttributeSet(context.getResources()));
-		super(context);
+	private void init(Context context, int resourceId) {
 		LayoutInflater layoutInflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		// setOnTouchListener(this);
@@ -53,26 +51,14 @@ public class Modal extends LinearLayout implements OnTouchListener {
 						Modal.LayoutParams.FILL_PARENT));
 	}
 
-	@Deprecated
+	public Modal(Context context, int resourceId) {
+		super(context);
+		init(context, resourceId);
+	}
+
 	public Modal(Context context, AttributeSet attrs, int resourceId) {
 		super(context, attrs);
-		LayoutInflater layoutInflater = (LayoutInflater) context
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		// setOnTouchListener(this);
-		this.addView(layoutInflater.inflate(resourceId, null),
-				new Modal.LayoutParams(Modal.LayoutParams.FILL_PARENT,
-						Modal.LayoutParams.FILL_PARENT));
-	}
-
-	@Override
-	protected void onAttachedToWindow() {
-		super.onAttachedToWindow();
-	}
-
-	@Override
-	protected void onDetachedFromWindow() {
-		// this.removeAllViews();
-		super.onDetachedFromWindow();
+		init(context, resourceId);
 	}
 
 	public void close() {
