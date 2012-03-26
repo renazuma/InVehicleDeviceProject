@@ -1,0 +1,84 @@
+package com.kogasoftware.odt.invehicledevice.test;
+
+import java.text.ParseException;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
+import com.kogasoftware.odt.webapi.WebAPIException;
+import com.kogasoftware.odt.webapi.model.InVehicleDevice;
+import com.kogasoftware.odt.webapi.model.OperationSchedule;
+import com.kogasoftware.odt.webapi.model.VehicleNotification;
+
+public class MockDataSourceTest implements DataSource {
+
+	@Override
+	public InVehicleDevice getInVehicleDevice() {
+		InVehicleDevice model = new InVehicleDevice();
+		model.setId(10);
+		model.setTypeNumber("TYPENUMBER543210");
+		model.setModelName("MODELNAME09876");
+		return model;
+	}
+
+	@Override
+	public List<OperationSchedule> getOperationSchedules() {
+		List<OperationSchedule> l = new LinkedList<OperationSchedule>();
+		try {
+			JSONObject j1 = new JSONObject("{"
+					+ "arrival_estimate: '2012-01-01T01:00:00.000+09:00', "
+					+ "departure_estimate: '2012-01-01T02:00:00.000+09:00', "
+					+ "platform: {name: 'テストコガソフトウェア前'}, "
+					+ "reservations_as_arrival: [{passenger_count: 5}, {passenger_count: 6}, {passenger_count: 7}] ,"
+					+ "reservations_as_departure: [{passenger_count: 15}, {passenger_count: 16}, {passenger_count: 17}]}");
+			l.add(new OperationSchedule(j1));
+
+			JSONObject j2 = new JSONObject("{"
+					+ "arrival_estimate: '2012-01-01T03:00:00.000+09:00', "
+					+ "departure_estimate: '2012-01-01T04:00:00.000+09:00', "
+					+ "platform: {name: 'テスト上野御徒町駅前'}, "
+					+ "reservations_as_arrival: [{passenger_count: 5}]}");
+			l.add(new OperationSchedule(j2));
+
+
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return l;
+	}
+
+	private Date nextNotifyDate = new Date();
+
+	@Override
+	public List<VehicleNotification> getVehicleNotifications() {
+		List<VehicleNotification> l = new LinkedList<VehicleNotification>();
+		if (nextNotifyDate.before(new Date())) {
+			return l;
+		}
+		nextNotifyDate = new Date(new Date().getTime() + 6 * 1000);
+		VehicleNotification n = new VehicleNotification();
+//		n.setBody("テスト通知が行われました");
+		l.add(n);
+		return l;
+	}
+
+	@Override
+	public void putVehicleNotificationReadAt(Long id, Date readAt) {
+	}
+
+	@Override
+	public void putReservationTransferredAt(Long id, Date transferredAt)
+			throws WebAPIException {
+		// TODO Auto-generated method stub
+
+	}
+}

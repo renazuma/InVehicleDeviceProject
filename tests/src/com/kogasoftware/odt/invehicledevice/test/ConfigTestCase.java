@@ -12,6 +12,10 @@ public class ConfigTestCase extends
 
 	private Solo solo;
 
+	public void dataset() {
+
+	}
+
 	public ConfigTestCase() {
 		super("com.kogasoftware.odt.invehicledevice",
 				InVehicleDeviceActivity.class);
@@ -22,6 +26,7 @@ public class ConfigTestCase extends
 		super.setUp();
 		solo = new Solo(getInstrumentation(), getActivity());
 	}
+
 
 	public void test01起動時は非表示() {
 		assertEquals(View.GONE, solo.getView(R.id.config_overlay)

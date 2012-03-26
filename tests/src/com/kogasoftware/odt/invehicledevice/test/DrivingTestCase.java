@@ -7,11 +7,21 @@ import android.widget.TextView;
 import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
 
 public class DrivingTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 	private Solo solo;
+
+	public void dataset() {
+
+		DataSourceFactory.newInstance();
+
+		MockDataSourceTest mdst = new MockDataSourceTest();
+		DataSourceFactory.setInstance(mdst);
+
+	}
 
 	public DrivingTestCase() {
 		super("com.kogasoftware.odt.invehicledevice",
@@ -20,6 +30,7 @@ public class DrivingTestCase extends
 
 	@Override
 	public void setUp() throws Exception {
+		dataset();
 		super.setUp();
 		solo = new Solo(getInstrumentation(), getActivity());
 	}
@@ -27,6 +38,7 @@ public class DrivingTestCase extends
 	public void test01起動時は走行中表示() {
 		TextView v = (TextView) solo.getView(R.id.status_text_view);
 		assertEquals("走行中", v.getText()); // TODO 画像ファイル名assertに書き換わる予定
+
 	}
 
 	public void test02起動時は出発ダイアログは非表示() {

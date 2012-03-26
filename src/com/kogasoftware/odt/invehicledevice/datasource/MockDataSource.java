@@ -19,7 +19,7 @@ public class MockDataSource implements DataSource {
 	public InVehicleDevice getInVehicleDevice() {
 		InVehicleDevice model = new InVehicleDevice();
 		model.setId(10);
-		model.setTypeNumber("TYPENUMBER012345");
+		model.setTypeNumber("TESTNUMBER012345");
 		model.setModelName("MODELNAME67890");
 		return model;
 	}
