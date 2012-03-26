@@ -15,11 +15,12 @@ public class ScheduleTestCase extends
 
 	private Solo solo;
 
-	public void dataset() {
+	public void dataset(Integer i) {
 
 		DataSourceFactory.newInstance();
-
 		MockDataSourceTest mdst = new MockDataSourceTest();
+
+		mdst.setOperationSchedules(i);
 		DataSourceFactory.setInstance(mdst);
 
 	}
@@ -31,7 +32,6 @@ public class ScheduleTestCase extends
 
 	@Override
 	public void setUp() throws Exception {
-		dataset();
 		super.setUp();
 		solo = new Solo(getInstrumentation(), getActivity());
 	}
@@ -44,6 +44,7 @@ public class ScheduleTestCase extends
 	}
 
 	public void test02予定ボタンを押したら表示() {
+		dataset(1);
 		test01起動時は非表示();
 		solo.clickOnView(solo.getView(R.id.schedule_button));
 		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_layout)
@@ -72,6 +73,7 @@ public class ScheduleTestCase extends
 	}
 
 	public void test06予定を表示してから下スクロール() {
+
 		test02予定ボタンを押したら表示();
 		// TODO 実装されたら修正
 		solo.clickOnView(solo.getView(R.id.schedule_button));
@@ -85,50 +87,6 @@ public class ScheduleTestCase extends
 		test02予定ボタンを押したら表示();
 	}
 
-	/* 全画面表示のためこれ以降は全部テスト削除
-	public void test03予定ボタンを2回押したら非表示() {
-		test02予定ボタンを押したら表示();
-		solo.clickOnView(solo.getView(R.id.schedule_button));
-		assertEquals("本日の運行予定",
-				((Button) solo.getView(R.id.schedule_button)).getText());
-		assertEquals(View.GONE, solo.getView(R.id.schedule_layout)
-				.getVisibility());
-	}
-
-	public void test予定ボタンを3回押したら表示() {
-		test予定ボタンを2回押したら非表示();
-		solo.clickOnView(solo.getView(R.id.schedule_button));
-
-		assertEquals("予定",
-				((Button) solo.getView(R.id.schedule_button)).getText());
-		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_layout)
-				.getVisibility());
-	}
-
-	public void test到着しましたボタンを押したら非表示() {
-		test予定ボタンを押したら表示();
-		solo.clickOnView(solo.getView(R.id.change_status_button));
-		assertEquals("予定",
-				((Button) solo.getView(R.id.schedule_button)).getText());
-		assertEquals(View.GONE, solo.getView(R.id.schedule_layout)
-				.getVisibility());
-	}
-
-	public void test出発しますボタンを押したら非表示() {
-		solo.clickOnView(solo.getView(R.id.change_status_button));
-		test予定ボタンを押したら表示();
-		solo.clickOnView(solo.getView(R.id.change_status_button));
-		assertEquals("予定を隠す",
-				((Button) solo.getView(R.id.schedule_button)).getText());
-		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_layout)
-				.getVisibility());
-		solo.clickOnView(solo.getView(R.id.start_button));
-		assertEquals("予定を表示",
-				((Button) solo.getView(R.id.schedule_button)).getText());
-		assertEquals(View.GONE, solo.getView(R.id.schedule_layout)
-				.getVisibility());
-	}
-*/
 	@Override
 	public void tearDown() throws Exception {
 		solo.finishOpenedActivities();
