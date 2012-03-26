@@ -11,12 +11,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.webapi.WebAPI;
 
 public class Operator extends Model {
-	private static final long serialVersionUID = 7992065608436470550L;
-	public static final String JSON_NAME = "operator";
-	public static final String CONTROLLER_NAME = "operators";
+	private static final long serialVersionUID = 7826395363386306714L;
 
 	public Operator() {
 	}

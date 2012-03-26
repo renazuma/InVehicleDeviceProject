@@ -11,12 +11,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.webapi.WebAPI;
 
 public class ServiceUnitStatusLog extends Model {
-	private static final long serialVersionUID = 2274498355958809986L;
-	public static final String JSON_NAME = "service_unit_status_log";
-	public static final String CONTROLLER_NAME = "service_unit_status_logs";
+	private static final long serialVersionUID = 3460173766900908400L;
 
 	public ServiceUnitStatusLog() {
 	}

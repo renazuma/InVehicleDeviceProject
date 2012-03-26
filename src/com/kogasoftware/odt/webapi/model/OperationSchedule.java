@@ -11,12 +11,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.webapi.WebAPI;
 
 public class OperationSchedule extends Model {
-	private static final long serialVersionUID = 4511002219572134754L;
-	public static final String JSON_NAME = "operation_schedule";
-	public static final String CONTROLLER_NAME = "operation_schedules";
+	private static final long serialVersionUID = 2288892347851726615L;
 
 	public OperationSchedule() {
 	}

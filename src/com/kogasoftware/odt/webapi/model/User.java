@@ -11,12 +11,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.webapi.WebAPI;
 
 public class User extends Model {
-	private static final long serialVersionUID = 198205451935412194L;
-	public static final String JSON_NAME = "user";
-	public static final String CONTROLLER_NAME = "users";
+	private static final long serialVersionUID = 6283643239497982902L;
 
 	public User() {
 	}

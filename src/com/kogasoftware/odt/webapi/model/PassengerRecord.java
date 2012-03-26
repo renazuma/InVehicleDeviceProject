@@ -11,12 +11,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.webapi.WebAPI;
 
 public class PassengerRecord extends Model {
-	private static final long serialVersionUID = 4222961431914074068L;
-	public static final String JSON_NAME = "passenger_record";
-	public static final String CONTROLLER_NAME = "passenger_records";
+	private static final long serialVersionUID = 7509385400151884688L;
 
 	public PassengerRecord() {
 	}

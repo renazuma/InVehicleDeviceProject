@@ -11,12 +11,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.webapi.WebAPI;
 
 public class InVehicleDevice extends Model {
-	private static final long serialVersionUID = 6991546386595365984L;
-	public static final String JSON_NAME = "in_vehicle_device";
-	public static final String CONTROLLER_NAME = "in_vehicle_devices";
+	private static final long serialVersionUID = 261788412967967859L;
 
 	public InVehicleDevice() {
 	}

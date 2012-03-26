@@ -11,12 +11,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.webapi.WebAPI;
 
 public class Platform extends Model {
-	private static final long serialVersionUID = 7180762105162763951L;
-	public static final String JSON_NAME = "platform";
-	public static final String CONTROLLER_NAME = "platforms";
+	private static final long serialVersionUID = 7355929177674550227L;
 
 	public Platform() {
 	}

@@ -11,12 +11,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.webapi.WebAPI;
 
 public class ReservationCandidate extends Model {
-	private static final long serialVersionUID = 9141976271286746197L;
-	public static final String JSON_NAME = "reservation_candidate";
-	public static final String CONTROLLER_NAME = "reservation_candidates";
+	private static final long serialVersionUID = 2907419671506574765L;
 
 	public ReservationCandidate() {
 	}

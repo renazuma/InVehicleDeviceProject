@@ -11,12 +11,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.webapi.WebAPI;
 
 public class Demand extends Model {
-	private static final long serialVersionUID = 2556830875516026962L;
-	public static final String JSON_NAME = "demand";
-	public static final String CONTROLLER_NAME = "demands";
+	private static final long serialVersionUID = 2378385232514933825L;
 
 	public Demand() {
 	}

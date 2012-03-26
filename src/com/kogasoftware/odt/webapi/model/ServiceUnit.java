@@ -11,12 +11,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.webapi.WebAPI;
 
 public class ServiceUnit extends Model {
-	private static final long serialVersionUID = 5124974825597652587L;
-	public static final String JSON_NAME = "service_unit";
-	public static final String CONTROLLER_NAME = "service_units";
+	private static final long serialVersionUID = 5731903411432861622L;
 
 	public ServiceUnit() {
 	}

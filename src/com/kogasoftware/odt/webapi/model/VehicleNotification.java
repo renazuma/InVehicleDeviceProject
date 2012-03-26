@@ -11,12 +11,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.webapi.WebAPI;
 
 public class VehicleNotification extends Model {
-	private static final long serialVersionUID = 408187431091177044L;
-	public static final String JSON_NAME = "vehicle_notification";
-	public static final String CONTROLLER_NAME = "vehicle_notifications";
+	private static final long serialVersionUID = 4728508456516881836L;
 
 	public VehicleNotification() {
 	}
