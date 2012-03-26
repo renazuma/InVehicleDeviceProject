@@ -107,11 +107,11 @@ public class MockDataSource implements DataSource {
 	}
 
 	@Override
-	public void putVehicleNotificationReadAt(Long id, Date readAt) {
+	public void putVehicleNotificationReadAt(Integer id, Date readAt) {
 	}
 
 	@Override
-	public void putReservationTransferredAt(Long id, Date transferredAt)
+	public void putReservationTransferredAt(Integer id, Date transferredAt)
 			throws WebAPIException {
 		// TODO Auto-generated method stub
 

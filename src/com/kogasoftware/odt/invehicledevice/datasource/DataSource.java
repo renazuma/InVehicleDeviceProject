@@ -15,8 +15,8 @@ public interface DataSource {
 
 	List<VehicleNotification> getVehicleNotifications() throws WebAPIException;
 
-	void putReservationTransferredAt(Long id, Date transferredAt) throws WebAPIException;
+	void putReservationTransferredAt(Integer id, Date transferredAt) throws WebAPIException;
 
-	void putVehicleNotificationReadAt(Long id, Date readAt)
+	void putVehicleNotificationReadAt(Integer id, Date readAt)
 			throws WebAPIException;
 }
