@@ -1,14 +1,30 @@
 package com.kogasoftware.odt.invehicledevice.modal;
 
-import com.kogasoftware.odt.invehicledevice.R;
+import android.app.Activity;
 
-import android.content.Context;
-import android.util.AttributeSet;
+import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.navigation.NavigationView;
 
 
 public class NavigationModal extends Modal {
-	public NavigationModal(Context context, AttributeSet attrs) {
-		super(context, attrs, R.layout.navigation_modal);
+	final NavigationView navigationView;
 
+	public NavigationModal(Activity activity) {
+		super(activity, R.layout.navigation_modal);
+		setId(R.id.map_overlay);
+		navigationView = (NavigationView)findViewById(R.id.navigation_view);
+	}
+
+	@Override
+	public void show() {
+		super.show();
+	}
+
+	public void onResumeActivity() {
+		navigationView.onResumeActivity();
+	}
+
+	public void onPauseActivity() {
+		navigationView.onPauseActivity();
 	}
 }

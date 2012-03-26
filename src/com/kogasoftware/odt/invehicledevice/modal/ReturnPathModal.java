@@ -1,14 +1,24 @@
 package com.kogasoftware.odt.invehicledevice.modal;
 
-import android.content.Context;
-import android.util.AttributeSet;
+import android.app.Activity;
+
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.webapi.model.Reservation;
 
 
 public class ReturnPathModal extends Modal {
-	public ReturnPathModal(Context context, AttributeSet attrs) {
-		super(context, attrs, R.layout.return_path_modal);
+	private Reservation currentReservation = new Reservation();
 
+	public ReturnPathModal(Activity activity) {
+		super(activity, R.layout.return_path_modal);
+		setId(R.id.return_path_overlay);
+	}
+
+	public void show(Reservation reservation) {
+		if (isShown()) {
+			return;
+		}
+		currentReservation = reservation;
 	}
 }
 

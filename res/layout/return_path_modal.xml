@@ -4,6 +4,7 @@
     android:layout_height="fill_parent"
     android:background="#ffffff"
     android:orientation="vertical"
+   
      >
 
     <TextView
@@ -62,13 +63,13 @@
             android:text="予約候補を検索" />
     </LinearLayout>
 
-    <com.kogasoftware.odt.invehicledevice.modal.ModalCloseButton
+    <com.kogasoftware.odt.invehicledevice.modal.HideModalButton
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
         android:text="予約する" />
 
-    <com.kogasoftware.odt.invehicledevice.modal.ModalCloseButton
+    <com.kogasoftware.odt.invehicledevice.modal.HideModalButton
         android:id="@+id/return_path_close_button"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"

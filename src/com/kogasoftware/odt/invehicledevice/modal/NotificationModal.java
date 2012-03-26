@@ -1,23 +1,56 @@
 package com.kogasoftware.odt.invehicledevice.modal;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+
+import android.app.Activity;
+import android.widget.TextView;
+
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
-import android.content.Context;
-import android.util.AttributeSet;
-import android.widget.TextView;
-
 
 public class NotificationModal extends Modal {
-	public NotificationModal(Context context, AttributeSet attrs) {
-		super(context, attrs, R.layout.notification_modal);
+	private final Queue<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();
+	private VehicleNotification currentVehicleNotification = new VehicleNotification();
 
-		VehicleNotification vehicleNotification = new VehicleNotification();
-		vehicleNotification.setBody("鈴木さんは乗車されましたか？");
-		// 
+	public NotificationModal(Activity activity) {
+		super(activity, R.layout.notification_modal);
+		setId(R.id.vehicle_notification_overlay);
+	}
+
+	private void refresh() {
+		currentVehicleNotification = vehicleNotifications.poll();
 		TextView bodyTextView = (TextView)findViewById(R.id.vehicle_notification_body);
-		if (vehicleNotification.getBody().isPresent()) {
-			bodyTextView.setText(vehicleNotification.getBody().get());
+		if (currentVehicleNotification.getBody().isPresent()) {
+			bodyTextView.setText(currentVehicleNotification.getBody().get());
+		}
+	}
+
+	@Override
+	public void show() {
+		show(new LinkedList<VehicleNotification>());
+	}
+
+	public void show(List<VehicleNotification> additionalVehicleNotifications) {
+		vehicleNotifications.addAll(additionalVehicleNotifications);
+		if (vehicleNotifications.isEmpty()) {
+			hide();
+			return;
+		}
+		if (!isShown()) {
+			refresh();
+			super.show();
+		}
+	}
+
+	@Override
+	public void hide() {
+		if (!vehicleNotifications.isEmpty()) {
+			refresh();
+		} else {
+			super.hide();
 		}
 	}
 }

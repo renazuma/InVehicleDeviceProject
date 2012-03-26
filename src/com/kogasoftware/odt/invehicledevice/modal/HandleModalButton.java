@@ -8,12 +8,15 @@ import android.widget.Button;
 
 import com.kogasoftware.odt.invehicledevice.empty.EmptyViewOnClickListener;
 
-public class ModalCloseButton extends Button {
-	static class DefaultOnClickListener implements OnClickListener {
+public class HandleModalButton extends Button {
+	class DefaultOnClickListener implements OnClickListener {
 		private final Integer MAX_DEPTH = 100;
 		private OnClickListener userOnClickListener = new EmptyViewOnClickListener();
 
-		public void setOnClickListener(OnClickListener userOnClickListener) {
+		public DefaultOnClickListener() {
+		}
+
+		public void setUserOnClickListener(OnClickListener userOnClickListener) {
 			this.userOnClickListener = userOnClickListener;
 		}
 
@@ -23,7 +26,7 @@ public class ModalCloseButton extends Button {
 			for (Integer depth = 0; parent != null && depth < MAX_DEPTH; parent = parent
 					.getParent(), ++depth) {
 				if (parent instanceof Modal) {
-					((Modal) parent).hide();
+					HandleModalButton.this.onHandleModalButtonClick(view, (Modal) parent);
 					break;
 				}
 			}
@@ -33,13 +36,25 @@ public class ModalCloseButton extends Button {
 
 	private final DefaultOnClickListener defaultOnClickListener = new DefaultOnClickListener();
 
-	@Override
-	public void setOnClickListener(OnClickListener userOnClickListener) {
-		defaultOnClickListener.setOnClickListener(userOnClickListener);
+	protected void onHandleModalButtonClick(View view, Modal modal) {
 	}
 
-	public ModalCloseButton(Context context, AttributeSet attrs) {
-		super(context, attrs);
+	@Override
+	public void setOnClickListener(OnClickListener userOnClickListener) {
+		defaultOnClickListener.setUserOnClickListener(userOnClickListener);
+	}
+
+	private void init() {
 		super.setOnClickListener(defaultOnClickListener);
+	}
+
+	public HandleModalButton(Context context) {
+		super(context);
+		init();
+	}
+
+	public HandleModalButton(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		init();
 	}
 }

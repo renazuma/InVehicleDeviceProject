@@ -3,7 +3,8 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="#ffffff"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    >
 
     <TextView
         android:layout_width="fill_parent"
@@ -27,7 +28,7 @@
         android:layout_weight="1"
         android:text="運行の一時停止" />
 
-    <com.kogasoftware.odt.invehicledevice.modal.ModalCloseButton
+    <com.kogasoftware.odt.invehicledevice.modal.HideModalButton
         android:id="@+id/config_hide_button"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"

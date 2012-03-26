@@ -4,13 +4,14 @@
     android:layout_height="fill_parent"
     android:background="#ffffff"
     android:orientation="vertical"
+
      >
 
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
-        android:text="本当に中止する？"
+        android:text="本当に中止しますか？"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <Button
@@ -18,13 +19,13 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
-        android:text="本当に中止する" />
+        android:text="中止する" />
 
-    <com.kogasoftware.odt.invehicledevice.modal.ModalCloseButton
+    <com.kogasoftware.odt.invehicledevice.modal.HideModalButton
         android:id="@+id/stop_cancel_button"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
-        android:text="閉じる" />
+        android:text="戻る" />
 
 </LinearLayout>

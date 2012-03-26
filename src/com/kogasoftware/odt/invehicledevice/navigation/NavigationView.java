@@ -18,7 +18,7 @@ import android.widget.LinearLayout;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
-import com.kogasoftware.odt.invehicledevice.modal.ModalCloseButton;
+import com.kogasoftware.odt.invehicledevice.modal.HideModalButton;
 
 public class NavigationView extends FrameLayout {
 	private static final String TAG = NavigationView.class.getSimpleName();
@@ -29,7 +29,7 @@ public class NavigationView extends FrameLayout {
 	private final MapSynchronizer mapSynchronizer;
 	private final OrientationSensor orientationSensor;
 	private final MapRenderer mapRenderer;
-	private final Button closeButton;
+	private final Button hideButton;
 	private final Button zoomInButton;
 	private final Button zoomOutButton;
 
@@ -119,8 +119,8 @@ public class NavigationView extends FrameLayout {
 		mapOnTouchListenerWeakReference = new WeakReference<MapOnTouchListener>(
 				mapOnTouchListener);
 
-		closeButton = new ModalCloseButton(getContext(), null);
-		closeButton.setText("戻る");
+		hideButton = new HideModalButton(getContext());
+		hideButton.setText("戻る");
 
 		zoomInButton = new Button(getContext());
 		zoomInButton.setText("拡大");
@@ -181,7 +181,7 @@ public class NavigationView extends FrameLayout {
 
 		LinearLayout buttons = new LinearLayout(getContext());
 
-		buttons.addView(closeButton, new LinearLayout.LayoutParams(
+		buttons.addView(hideButton, new LinearLayout.LayoutParams(
 				LinearLayout.LayoutParams.FILL_PARENT,
 				LinearLayout.LayoutParams.WRAP_CONTENT, 1));
 		buttons.addView(zoomInButton, new LinearLayout.LayoutParams(

@@ -1,16 +1,11 @@
 package com.kogasoftware.odt.invehicledevice;
 
-import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import jp.tomorrowkey.android.vtextviewer.VTextView;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -24,28 +19,37 @@ import com.google.android.maps.MapActivity;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
+import com.kogasoftware.odt.invehicledevice.modal.ConfigModal;
+import com.kogasoftware.odt.invehicledevice.modal.MemoModal;
+import com.kogasoftware.odt.invehicledevice.modal.NavigationModal;
+import com.kogasoftware.odt.invehicledevice.modal.NotificationModal;
+import com.kogasoftware.odt.invehicledevice.modal.PauseModal;
+import com.kogasoftware.odt.invehicledevice.modal.ReturnPathModal;
 import com.kogasoftware.odt.invehicledevice.modal.ScheduleChangedModal;
-import com.kogasoftware.odt.invehicledevice.navigation.NavigationView;
+import com.kogasoftware.odt.invehicledevice.modal.ScheduleModal;
+import com.kogasoftware.odt.invehicledevice.modal.StartCheckModal;
+import com.kogasoftware.odt.invehicledevice.modal.StopCheckModal;
+import com.kogasoftware.odt.invehicledevice.modal.StopModal;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Reservation;
-import com.kogasoftware.odt.webapi.model.User;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class InVehicleDeviceActivity extends MapActivity {
 	private final String TAG = InVehicleDeviceActivity.class.getSimpleName();
 	private final DataSource dataSource = DataSourceFactory.newInstance();
 	private final BlockingQueue<String> voices = new LinkedBlockingQueue<String>();
+	private final List<OperationSchedule> operationSchedules = new LinkedList<OperationSchedule>();
 	private final Integer POLL_VEHICLE_NOTIFICATION_INTERVAL = 10000;
 	private final Handler pollVehicleNotificationHandler = new Handler();
 	private final Runnable pollVehicleNotification = new Runnable() {
 		@Override
 		public void run() {
 			try {
-				List<VehicleNotification> vehicleNotifications = dataSource.getVehicleNotifications();
+				List<VehicleNotification> vehicleNotifications = dataSource
+						.getVehicleNotifications();
 				if (!vehicleNotifications.isEmpty()) {
-					findViewById(R.id.vehicle_notification_overlay).setVisibility(
-							View.VISIBLE);
+					notificationModal.show(vehicleNotifications);
 				}
 			} catch (WebAPIException e) {
 				Log.e(TAG, "", e);
@@ -85,15 +89,22 @@ public class InVehicleDeviceActivity extends MapActivity {
 	private Button scheduleButton = null;
 	private Button mapButton = null;
 	private Button configButton = null;
-	private Button stopCheckButton = null;
-	private Button stopButton = null;
-	private Button startButton = null;
-	private Button pauseButton = null;
 	private TextView statusTextView = null;
 	private View drivingView1Layout = null;
 	private View drivingView2Layout = null;
-	private NavigationView navigationView = null;
 	private ListView usersListView = null;
+
+	private NavigationModal navigationModal = null;
+	private ConfigModal configModal = null;
+	private NotificationModal notificationModal = null;
+	private ScheduleChangedModal scheduleChangedModal = null;
+	private ScheduleModal scheduleModal = null;
+	private StartCheckModal startCheckModal = null;
+	private MemoModal memoModal = null;
+	private PauseModal pauseModal = null;
+	private ReturnPathModal returnPathModal = null;
+	private StopCheckModal stopCheckModal = null;
+	private StopModal stopModal = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -104,17 +115,25 @@ public class InVehicleDeviceActivity extends MapActivity {
 		voiceThread.start();
 
 		statusTextView = (TextView) findViewById(R.id.status_text_view);
-
 		changeStatusButton = (Button) findViewById(R.id.change_status_button);
 		mapButton = (Button) findViewById(R.id.map_button);
 		configButton = (Button) findViewById(R.id.config_button);
-		stopCheckButton = (Button) findViewById(R.id.stop_check_button);
-		stopButton = (Button) findViewById(R.id.stop_button);
-		pauseButton = (Button) findViewById(R.id.pause_button);
 		scheduleButton = (Button) findViewById(R.id.schedule_button);
 
 		drivingView1Layout = findViewById(R.id.driving_view1);
 		drivingView2Layout = findViewById(R.id.driving_view2);
+
+		navigationModal = new NavigationModal(this);
+		configModal = new ConfigModal(this);
+		startCheckModal = new StartCheckModal(this);
+		scheduleModal = new ScheduleModal(this);
+		memoModal = new MemoModal(this);
+		pauseModal = new PauseModal(this);
+		returnPathModal = new ReturnPathModal(this);
+		stopCheckModal = new StopCheckModal(this);
+		stopModal = new StopModal(this);
+		notificationModal = new NotificationModal(this);
+		scheduleChangedModal = new ScheduleChangedModal(this);
 
 		((VTextView) findViewById(R.id.next_stop_text_view))
 		.setText("次の乗降場てすとて");
@@ -126,8 +145,6 @@ public class InVehicleDeviceActivity extends MapActivity {
 		toggleDrivingViewHandler.post(toggleDrivingView);
 		pollVehicleNotificationHandler.post(pollVehicleNotification);
 
-		navigationView = (NavigationView) findViewById(R.id.navigation_view);
-
 		changeStatusButton.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -135,8 +152,7 @@ public class InVehicleDeviceActivity extends MapActivity {
 				if (status == Status.DRIVE) {
 					enterPlatformStatus();
 				} else {
-					findViewById(R.id.check_start_layout).setVisibility(
-							View.VISIBLE);
+					startCheckModal.show();
 				}
 			}
 		});
@@ -144,63 +160,35 @@ public class InVehicleDeviceActivity extends MapActivity {
 		mapButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				findViewById(R.id.map_overlay).setVisibility(View.VISIBLE);
+				navigationModal.show();
 			}
 		});
 
 		configButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				findViewById(R.id.config_overlay).setVisibility(View.VISIBLE);
-			}
-		});
-
-		stopCheckButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				findViewById(R.id.stop_check_overlay).setVisibility(
-						View.VISIBLE);
-			}
-		});
-
-		stopButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				findViewById(R.id.stop_overlay).setVisibility(View.VISIBLE);
-			}
-		});
-
-		pauseButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				findViewById(R.id.pause_overlay).setVisibility(View.VISIBLE);
+				configModal.show();
 			}
 		});
 
 		scheduleButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				findViewById(R.id.schedule_layout).setVisibility(View.VISIBLE);
-			}
-		});
-
-		startButton = (Button) findViewById(R.id.start_button);
-		startButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				enterDriveStatus();
+				scheduleModal.show(operationSchedules);
 			}
 		});
 
 		usersListView = (ListView) findViewById(R.id.users_list_view);
 
-		createTestData();
-
 		View test = findViewById(R.id.status_text_view);
 		test.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-
+				VehicleNotification n = new VehicleNotification();
+				n.setBody("通知です");
+				List<VehicleNotification> l = new LinkedList<VehicleNotification>();
+				l.add(n);
+				notificationModal.show(l);
 			}
 		});
 
@@ -208,135 +196,32 @@ public class InVehicleDeviceActivity extends MapActivity {
 		test2.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				new ScheduleChangedModal(InVehicleDeviceActivity.this)
-				.open(getWindow().getDecorView());
+				VehicleNotification n = new VehicleNotification();
+				n.setBody("通知です");
+				List<VehicleNotification> l = new LinkedList<VehicleNotification>();
+				l.add(n);
+				scheduleChangedModal.show(l);
 			}
 		});
-	}
 
-	@Deprecated
-	private void createTestData() {
 		try {
-			List<OperationSchedule> l = new LinkedList<OperationSchedule>();
-			JSONObject j1 = new JSONObject(
-					"{"
-							+ "arrival_estimate: '2012-01-01T01:00:00.000+09:00', "
-							+ "departure_estimate: '2012-01-01T02:00:00.000+09:00', "
-							+ "platform: {name: 'コガソフトウェア前'}, "
-							+ "reservations_as_arrival: [{head: 5}, {head: 6}, {head: 7}] ,"
-							+ "reservations_as_departure: [{head: 15}, {head: 16}, {head: 17}]}");
-			l.add(new OperationSchedule(j1));
-
-			JSONObject j2 = new JSONObject("{"
-					+ "arrival_estimate: '2012-01-01T03:00:00.000+09:00', "
-					+ "departure_estimate: '2012-01-01T04:00:00.000+09:00', "
-					+ "platform: {name: '上野御徒町駅前'}, "
-					+ "reservations_as_arrival: [{head: 5}]}");
-			l.add(new OperationSchedule(j2));
-
-			JSONObject j3 = new JSONObject(
-					"{"
-							+ "arrival_estimate: '2012-01-01T05:00:00.000+09:00', "
-							+ "departure_estimate: '2012-01-01T06:00:00.000+09:00', "
-							+ "platform: {name: '上野動物園前'}, "
-							+ "reservations_as_departure: [{head: 5}, {head: 6}, {head: 7}]}");
-			l.add(new OperationSchedule(j3));
-
-			JSONObject j4 = new JSONObject("{"
-					+ "arrival_estimate: '2012-01-01T07:00:00.000+09:00', "
-					+ "departure_estimate: '2012-01-01T08:00:00.000+09:00', "
-					+ "platform: {name: '上野広小路前'}, "
-					+ "reservations_as_arrival: [] ,"
-					+ "reservations_as_departure: [{head: 7}]}");
-			l.add(new OperationSchedule(j4));
-
-			JSONObject j5 = new JSONObject("{"
-					+ "arrival_estimate: '2012-01-01T09:00:00.000+09:00', "
-					+ "departure_estimate: '2012-01-01T09:01:00.000+09:00', "
-					+ "platform: {name: '湯島天神前'}}");
-			l.add(new OperationSchedule(j5));
-
-			JSONObject j6 = new JSONObject(
-					"{"
-							+ "arrival_estimate: '2012-01-01T09:03:00.000+09:00', "
-							+ "departure_estimate: '2012-01-01T09:03:30.000+09:00', "
-							+ "platform: {name: 'コガソフトウェア前'}, "
-							+ "reservations_as_arrival: [{head: 50}, {head: 60}, {head: 70}] ,"
-							+ "reservations_as_departure: [{head: 150}, {head: 160}, {head: 170}]}");
-			l.add(new OperationSchedule(j6));
-
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JSONException e) {
+			operationSchedules.addAll(dataSource.getOperationSchedules());
+		} catch (WebAPIException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		List<Reservation> l = new LinkedList<Reservation>();
-		Reservation r1 = new Reservation();
-		User u1 = new User();
-		u1.setFamilyName("桜木");
-		u1.setLastName("花道");
-		r1.setId(10);
-		r1.setUser(u1);
-		l.add(r1);
-
-		User u2 = new User();
-		u2.setFamilyName("流川");
-		u2.setLastName("楓");
-		Reservation r2 = new Reservation();
-		r2.setId(11);
-		r2.setUser(u2);
-		r2.setMemo("メモが存在します");
-		l.add(r2);
-
-		User u3 = new User();
-		u3.setFamilyName("フリークス");
-		u3.setLastName("ゴン");
-		Reservation r3 = new Reservation();
-		r3.setId(12);
-		r3.setUser(u3);
-		l.add(r3);
-
-		Reservation r4 = new Reservation();
-		r4.setId(13);
-		try {
-			r4.setUser(new User(new JSONObject(
-					"{family_name: '越前', last_name: '康介'}")));
-		} catch (JSONException e) {
-			e.printStackTrace();
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		l.add(r4);
-
-		try {
-			Reservation r5 = new Reservation(
-					new JSONObject(
-							"{id: 13, memo: 'メモメモ', user: {family_name: '荒木', last_name: '飛呂彦'}}"));
-			l.add(r5);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-
-		ReservationArrayAdapter usersAdapter = new ReservationArrayAdapter(
-				this, R.layout.reservation_list_row, l);
-		usersListView.setAdapter(usersAdapter);
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		navigationView.onResumeActivity();
+		navigationModal.onResumeActivity();
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
-		navigationView.onPauseActivity();
+		navigationModal.onPauseActivity();
 	}
 
 	@Override
@@ -351,21 +236,59 @@ public class InVehicleDeviceActivity extends MapActivity {
 		return false;
 	}
 
-	private void enterPlatformStatus() {
+	public void enterPlatformStatus() { // TODO
+		List<Reservation> rl = new LinkedList<Reservation>();
+		if (!operationSchedules.isEmpty()) {
+			OperationSchedule o = operationSchedules.get(0);
+			rl.addAll(o.getReservationsAsArrival());
+			rl.addAll(o.getReservationsAsDeparture());
+		}
+
+		ReservationArrayAdapter usersAdapter = new ReservationArrayAdapter(
+				this, R.layout.reservation_list_row, rl);
+		usersListView.setAdapter(usersAdapter);
+
 		status = Status.PLATFORM;
 		findViewById(R.id.waiting_layout).setVisibility(View.VISIBLE);
 		statusTextView.setText("停車中");
-		changeStatusButton.setText("出発");
+		changeStatusButton.setText("出発する");
 	}
 
-	private void enterDriveStatus() {
+	public void enterDriveStatus() {
 		status = Status.DRIVE;
 		statusTextView.setText("走行中");
 		changeStatusButton.setText("到着しました");
-		findViewById(R.id.check_start_layout).setVisibility(View.GONE);
 		findViewById(R.id.waiting_layout).setVisibility(View.GONE);
 		if (!voices.offer("出発します。次は、コガソフトウェア前。コガソフトウェア前。")) {
 			Log.w(TAG, "!voices.offer() failed");
 		}
+	}
+
+	public void showMemoModal(Reservation reservation) {
+		memoModal.show(reservation);
+	}
+
+	public void showReturnPathModal(Reservation reservation) {
+		returnPathModal.show(reservation);
+	}
+
+	public void showPauseModal() {
+		pauseModal.show();
+	}
+
+	public void showStopModal() {
+		stopModal.show();
+	}
+
+	public void showStopCheckModal() {
+		stopCheckModal.show();
+	}
+
+	public void showScheduleModal() {
+		scheduleModal.show(operationSchedules);
+	}
+
+	public DataSource getDataSource() {
+		return dataSource;
 	}
 }

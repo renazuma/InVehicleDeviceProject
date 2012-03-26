@@ -13,6 +13,7 @@ import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
+@Deprecated
 public class MockDataSource implements DataSource {
 
 	@Override
@@ -28,12 +29,19 @@ public class MockDataSource implements DataSource {
 	public List<OperationSchedule> getOperationSchedules() {
 		List<OperationSchedule> l = new LinkedList<OperationSchedule>();
 		try {
+			String u1a = "user: {last_name: '名前a', family_name: '名字a'}";
+			String u1b = "user: {last_name: '名前b', family_name: '名字b'}";
+			String u1c = "user: {last_name: '名前c', family_name: '名字c'}";
+			String u1d = "user: {last_name: '名前d', family_name: '名字d'}";
+			String u1e = "user: {last_name: '名前e', family_name: '名字e'}";
+			String u1f = "user: {last_name: '名前f', family_name: '名字f'}";
+
 			JSONObject j1 = new JSONObject("{"
 					+ "arrival_estimate: '2012-01-01T01:00:00.000+09:00', "
 					+ "departure_estimate: '2012-01-01T02:00:00.000+09:00', "
 					+ "platform: {name: 'コガソフトウェア前'}, "
-					+ "reservations_as_arrival: [{passenger_count: 5}, {passenger_count: 6}, {passenger_count: 7}] ,"
-					+ "reservations_as_departure: [{passenger_count: 15}, {passenger_count: 16}, {passenger_count: 17}]}");
+					+ "reservations_as_arrival: [{passenger_count: 5, " + u1a + "}, {passenger_count: 6, " + u1b + "}, {passenger_count: 7, " + u1c + "}] ,"
+					+ "reservations_as_departure: [{passenger_count: 15, " + u1d + "}, {passenger_count: 16, " + u1e + "}, {passenger_count: 17, " + u1f + "}]}");
 			l.add(new OperationSchedule(j1));
 
 			JSONObject j2 = new JSONObject("{"

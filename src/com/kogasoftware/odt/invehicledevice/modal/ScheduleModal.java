@@ -1,16 +1,11 @@
 package com.kogasoftware.odt.invehicledevice.modal;
 
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.content.Context;
-import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.kogasoftware.odt.invehicledevice.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Reservation;
@@ -83,88 +79,21 @@ class OperationScheduleArrayAdapter extends ArrayAdapter<OperationSchedule> {
 
 public class ScheduleModal extends Modal {
 
-	final List<OperationSchedule> operationSchedules;
+	private final List<OperationSchedule> operationSchedules = new LinkedList<OperationSchedule>();
 
-	public ScheduleModal(Context context, List<OperationSchedule> operationSchedules) {
-		super(context, R.layout.schedule_modal);
-		this.operationSchedules = operationSchedules;
+	public ScheduleModal(InVehicleDeviceActivity inVehicleDeviceActivity) {
+		super(inVehicleDeviceActivity, R.layout.schedule_modal);
+		setId(R.id.schedule_layout);
 	}
 
-	@Deprecated
-	public ScheduleModal(Context context, AttributeSet attrs) {
-		super(context, attrs, R.layout.schedule_modal);
-
-		operationSchedules = new LinkedList<OperationSchedule>();
-
-		createTestData();
-
-	}
-
-	@Deprecated
-	private void createTestData() {
-		List<OperationSchedule> l = operationSchedules;
-		try {
-			JSONObject j1 = new JSONObject("{"
-					+ "arrival_estimate: '2012-01-01T01:00:00.000+09:00', "
-					+ "departure_estimate: '2012-01-01T02:00:00.000+09:00', "
-					+ "platform: {name: 'コガソフトウェア前'}, "
-					+ "reservations_as_arrival: [{head: 5}, {head: 6}, {head: 7}] ,"
-					+ "reservations_as_departure: [{head: 15}, {head: 16}, {head: 17}]}");
-			l.add(new OperationSchedule(j1));
-
-			JSONObject j2 = new JSONObject("{"
-					+ "arrival_estimate: '2012-01-01T03:00:00.000+09:00', "
-					+ "departure_estimate: '2012-01-01T04:00:00.000+09:00', "
-					+ "platform: {name: '上野御徒町駅前'}, "
-					+ "reservations_as_arrival: [{head: 5}]}");
-			l.add(new OperationSchedule(j2));
-
-			JSONObject j3 = new JSONObject("{"
-					+ "arrival_estimate: '2012-01-01T05:00:00.000+09:00', "
-					+ "departure_estimate: '2012-01-01T06:00:00.000+09:00', "
-					+ "platform: {name: '上野動物園前'}, "
-					+ "reservations_as_departure: [{head: 5}, {head: 6}, {head: 7}]}");
-			l.add(new OperationSchedule(j3));
-
-			JSONObject j4 = new JSONObject("{"
-					+ "arrival_estimate: '2012-01-01T07:00:00.000+09:00', "
-					+ "departure_estimate: '2012-01-01T08:00:00.000+09:00', "
-					+ "platform: {name: '上野広小路前'}, "
-					+ "reservations_as_arrival: [] ,"
-					+ "reservations_as_departure: [{head: 7}]}");
-			l.add(new OperationSchedule(j4));
-
-			JSONObject j5 = new JSONObject("{"
-					+ "arrival_estimate: '2012-01-01T09:00:00.000+09:00', "
-					+ "departure_estimate: '2012-01-01T09:01:00.000+09:00', "
-					+ "platform: {name: '湯島天神前'}}");
-			l.add(new OperationSchedule(j5));
-
-			JSONObject j6 = new JSONObject("{"
-					+ "arrival_estimate: '2012-01-01T09:03:00.000+09:00', "
-					+ "departure_estimate: '2012-01-01T09:03:30.000+09:00', "
-					+ "platform: {name: 'コガソフトウェア前'}, "
-					+ "reservations_as_arrival: [{head: 50}, {head: 60}, {head: 70}] ,"
-					+ "reservations_as_departure: [{head: 150}, {head: 160}, {head: 170}]}");
-			l.add(new OperationSchedule(j6));
-
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	@Override
-	protected void onAttachedToWindow() {
-		super.onAttachedToWindow();
-
-
+	public void show(List<OperationSchedule> operatioSchedules) {
+		super.hide();
+		this.operationSchedules.clear();
+		this.operationSchedules.addAll(operatioSchedules);
 		OperationScheduleArrayAdapter adapter = new OperationScheduleArrayAdapter(
 				getContext(), R.layout.operation_schedule_list_row, operationSchedules);
 		ListView operationScheduleListView = (ListView) findViewById(R.id.operation_schedule_list_view);
 		operationScheduleListView.setAdapter(adapter);
+		super.show();
 	}
 }

@@ -1,14 +1,18 @@
 package com.kogasoftware.odt.invehicledevice.modal;
 
-import com.kogasoftware.odt.invehicledevice.R;
+import android.app.Activity;
 
-import android.content.Context;
-import android.util.AttributeSet;
+import com.kogasoftware.odt.invehicledevice.R;
 
 
 public class StopModal extends Modal {
-	public StopModal(Context context, AttributeSet attrs) {
-		super(context, attrs, R.layout.stop_modal);
+	public StopModal(Activity activity) {
+		super(activity, R.layout.stop_modal);
+		setId(R.id.stop_overlay);
+	}
 
+	@Override
+	public void show() {
+		super.show();
 	}
 }

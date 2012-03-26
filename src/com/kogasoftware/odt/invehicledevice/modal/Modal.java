@@ -1,14 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.modal;
 
-import java.io.IOException;
-
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
+import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
-import android.util.AttributeSet;
-import android.util.Xml;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -20,60 +13,33 @@ import android.widget.Toast;
 import com.kogasoftware.odt.invehicledevice.R;
 
 public class Modal extends LinearLayout implements OnTouchListener {
-	@Deprecated
-	public static AttributeSet getDefaultAttributeSet(Resources resources) {
-		XmlPullParser parser = resources.getXml(R.xml.modal_attribute_set);
-		while (true) {
-			int state = 0;
-			try {
-				state = parser.next();
-			} catch (XmlPullParserException e) {
-				return null;
-			} catch (IOException e) {
-				return null;
-			}
-			if (state == XmlPullParser.END_DOCUMENT) {
-				return null;
-			}
-			if (state == XmlPullParser.START_TAG
-					&& parser.getName().equals("ModalAttributeSet")) {
-				return Xml.asAttributeSet(parser);
-			}
-		}
-	}
+	private final FrameLayout parent;
 
-	private void init(Context context, int resourceId) {
+	public Modal(Context context, View rootView, int resourceId) {
+		super(context);
 		LayoutInflater layoutInflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		// setOnTouchListener(this);
 		this.addView(layoutInflater.inflate(resourceId, null),
 				new Modal.LayoutParams(Modal.LayoutParams.FILL_PARENT,
 						Modal.LayoutParams.FILL_PARENT));
-	}
-
-	public Modal(Context context, int resourceId) {
-		super(context);
-		init(context, resourceId);
-	}
-
-	public Modal(Context context, AttributeSet attrs, int resourceId) {
-		super(context, attrs);
-		init(context, resourceId);
-	}
-
-	public void close() {
-		FrameLayout modals = (FrameLayout) getRootView().findViewById(
-				R.id.modal_layout);
-		modals.removeView(this);
-	}
-
-	public void open(View rootView) {
-		FrameLayout modals = (FrameLayout) rootView
+		parent = (FrameLayout) rootView
 				.findViewById(R.id.modal_layout);
-		modals.addView(this);
+		setVisibility(View.GONE);
+		parent.addView(this);
 	}
 
-	@Deprecated
+	public Modal(Activity activity, int resourceId) {
+		this(activity, activity.getWindow().getDecorView(), resourceId);
+	}
+
+	/**
+	 * 表示時にパラメーターを渡す必要がある場合、直接呼ばれると不都合がある場合もあるため
+	 * protectedとしサブクラスでオーバーライドさせる
+	 */
+	protected void show() {
+		setVisibility(View.VISIBLE);
+	}
+
 	public void hide() {
 		setVisibility(View.GONE);
 	}

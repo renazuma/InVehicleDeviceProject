@@ -5,28 +5,28 @@ import java.util.List;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.kogasoftware.odt.invehicledevice.modal.MemoModal;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.User;
 
 class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 	private final LayoutInflater layoutInflater;
 	private final int resourceId;
+	private final InVehicleDeviceActivity inVehicleDeviceActivity;
 
-	public ReservationArrayAdapter(Context context, int resourceId,
+	public ReservationArrayAdapter(InVehicleDeviceActivity inVehicleDeviceActivity, int resourceId,
 			List<Reservation> items) {
-		super(context, resourceId, items);
-		this.layoutInflater = (LayoutInflater) context
+		super(inVehicleDeviceActivity, resourceId, items);
+		this.layoutInflater = (LayoutInflater) inVehicleDeviceActivity
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.resourceId = resourceId;
+		this.inVehicleDeviceActivity = inVehicleDeviceActivity;
 	}
 
 	@Override
@@ -60,13 +60,10 @@ class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 			Button memoButton = (Button) convertView
 					.findViewById(R.id.memo_button);
 			memoButton.setVisibility(View.VISIBLE);
-			final View rootView = parent.getRootView();
 			memoButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View view) {
-					FrameLayout modals = (FrameLayout) rootView
-							.findViewById(R.id.modal_layout);
-					modals.addView(new MemoModal(getContext(), reservation));
+					inVehicleDeviceActivity.showMemoModal(reservation);
 				}
 			});
 		}
@@ -75,8 +72,7 @@ class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		returnPathButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				view.getRootView().findViewById(R.id.return_path_overlay)
-				.setVisibility(View.VISIBLE);
+				inVehicleDeviceActivity.showReturnPathModal(reservation);
 			}
 		});
 
