@@ -7,11 +7,22 @@ import android.widget.Button;
 import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
+import com.kogasoftware.odt.invehicledevice.test.MockDataSourceTest;
 
 public class ScheduleTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 	private Solo solo;
+
+	public void dataset() {
+
+		DataSourceFactory.newInstance();
+
+		MockDataSourceTest mdst = new MockDataSourceTest();
+		DataSourceFactory.setInstance(mdst);
+
+	}
 
 	public ScheduleTestCase() {
 		super("com.kogasoftware.odt.invehicledevice",
@@ -20,6 +31,7 @@ public class ScheduleTestCase extends
 
 	@Override
 	public void setUp() throws Exception {
+		dataset();
 		super.setUp();
 		solo = new Solo(getInstrumentation(), getActivity());
 	}
