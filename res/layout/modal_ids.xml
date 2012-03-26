@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="fill_parent" android:layout_height="fill_parent"
-	android:background="#ffffff" android:orientation="vertical">
-	<View android:id="@+id/config_overlay" />
-	<View android:id="@+id/memo_overlay" />
-	<View android:id="@+id/map_overlay" />
-	<View android:id="@+id/vehicle_notification_overlay" />
-	<View android:id="@+id/pause_overlay" />
-	<View android:id="@+id/return_path_overlay" />
-	<View android:id="@+id/schedule_changed_layout" />
-	<View android:id="@+id/schedule_layout" />
-	<View android:id="@+id/check_start_layout" />
-	<View android:id="@+id/stop_check_overlay" />
-	<View android:id="@+id/stop_overlay" />
-</LinearLayout>
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
 
+    <View android:id="@+id/config_modal" />
+    <View android:id="@+id/memo_modal" />
+    <View android:id="@+id/navigation_modal" />
+    <View android:id="@+id/notification_modal" />
+    <View android:id="@+id/pause_modal" />
+    <View android:id="@+id/return_path_modal" />
+    <View android:id="@+id/schedule_changed_modal" />
+    <View android:id="@+id/schedule_modal" />
+    <View android:id="@+id/start_check_modal" />
+    <View android:id="@+id/stop_check_modal" />
+    <View android:id="@+id/stop_modal" />
+
+</LinearLayout>

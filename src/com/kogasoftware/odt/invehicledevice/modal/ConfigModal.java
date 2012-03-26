@@ -10,7 +10,7 @@ import com.kogasoftware.odt.invehicledevice.R;
 public class ConfigModal extends Modal {
 	public ConfigModal(final InVehicleDeviceActivity inVehicleDeviceActivity) {
 		super(inVehicleDeviceActivity, R.layout.config_modal);
-		this.setId(R.id.config_overlay);
+		this.setId(R.id.config_modal);
 
 		Button stopCheckButton = (Button) findViewById(R.id.stop_check_button);
 		stopCheckButton.setOnClickListener(new OnClickListener() {

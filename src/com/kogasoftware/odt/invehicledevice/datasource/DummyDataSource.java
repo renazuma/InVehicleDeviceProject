@@ -14,7 +14,7 @@ import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 @Deprecated
-public class MockDataSource implements DataSource {
+public class DummyDataSource implements DataSource {
 
 	@Override
 	public InVehicleDevice getInVehicleDevice() {

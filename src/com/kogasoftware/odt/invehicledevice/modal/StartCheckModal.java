@@ -10,7 +10,7 @@ import com.kogasoftware.odt.invehicledevice.R;
 public class StartCheckModal extends Modal {
 	public StartCheckModal(final InVehicleDeviceActivity activity) {
 		super(activity, R.layout.start_check_modal);
-		setId(R.id.check_start_layout);
+		setId(R.id.start_check_modal);
 
 		Button startButton = (Button) findViewById(R.id.start_button);
 		startButton.setOnClickListener(new OnClickListener() {

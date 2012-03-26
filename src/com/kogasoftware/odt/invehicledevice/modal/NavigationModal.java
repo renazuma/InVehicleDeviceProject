@@ -11,7 +11,7 @@ public class NavigationModal extends Modal {
 
 	public NavigationModal(Activity activity) {
 		super(activity, R.layout.navigation_modal);
-		setId(R.id.map_overlay);
+		setId(R.id.navigation_modal);
 		navigationView = (NavigationView)findViewById(R.id.navigation_view);
 	}
 

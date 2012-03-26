@@ -15,7 +15,7 @@ import com.kogasoftware.odt.webapi.model.VehicleNotification;
 public class ScheduleChangedModal extends Modal {
 	public ScheduleChangedModal(final InVehicleDeviceActivity inVehicleDeviceActivity) {
 		super(inVehicleDeviceActivity, R.layout.schedule_changed_modal);
-		setId(R.id.schedule_changed_layout);
+		setId(R.id.schedule_changed_modal);
 		Button scheduleConfirmButton = (Button)findViewById(R.id.schedule_confirm_button);
 		scheduleConfirmButton.setOnClickListener(new OnClickListener() {
 			@Override

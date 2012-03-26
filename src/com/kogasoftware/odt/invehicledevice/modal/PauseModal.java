@@ -9,7 +9,7 @@ import com.kogasoftware.odt.invehicledevice.R;
 public class PauseModal extends Modal {
 	public PauseModal(Activity activity) {
 		super(activity, R.layout.pause_modal);
-		setId(R.id.pause_overlay);
+		setId(R.id.pause_modal);
 	}
 
 	@Override

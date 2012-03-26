@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice;
+package com.kogasoftware.odt.invehicledevice.arrayadapter;
 
 import java.util.List;
 
@@ -12,15 +12,18 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.kogasoftware.odt.invehicledevice.InVehicleDeviceActivity;
+import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.User;
 
-class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
+public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 	private final LayoutInflater layoutInflater;
 	private final int resourceId;
 	private final InVehicleDeviceActivity inVehicleDeviceActivity;
 
-	public ReservationArrayAdapter(InVehicleDeviceActivity inVehicleDeviceActivity, int resourceId,
+	public ReservationArrayAdapter(
+			InVehicleDeviceActivity inVehicleDeviceActivity, int resourceId,
 			List<Reservation> items) {
 		super(inVehicleDeviceActivity, resourceId, items);
 		this.layoutInflater = (LayoutInflater) inVehicleDeviceActivity

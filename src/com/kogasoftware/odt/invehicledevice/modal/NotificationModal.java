@@ -17,7 +17,7 @@ public class NotificationModal extends Modal {
 
 	public NotificationModal(Activity activity) {
 		super(activity, R.layout.notification_modal);
-		setId(R.id.vehicle_notification_overlay);
+		setId(R.id.notification_modal);
 	}
 
 	private void refresh() {

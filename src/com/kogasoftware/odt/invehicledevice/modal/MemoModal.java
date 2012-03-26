@@ -10,7 +10,7 @@ import com.kogasoftware.odt.webapi.model.Reservation;
 public class MemoModal extends Modal {
 	public MemoModal(Activity activity) {
 		super(activity, R.layout.memo_modal);
-		setId(R.id.memo_overlay);
+		setId(R.id.memo_modal);
 	}
 
 	public void show(Reservation reservation) {

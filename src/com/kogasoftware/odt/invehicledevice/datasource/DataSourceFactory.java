@@ -22,6 +22,6 @@ public class DataSourceFactory {
 				return dataSource.get();
 			}
 		}
-		return new MockDataSource();
+		return new DummyDataSource();
 	}
 }
