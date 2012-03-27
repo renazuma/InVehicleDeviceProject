@@ -36,8 +36,8 @@ public class ScheduleTestCase extends
 		solo = new Solo(getInstrumentation(), getActivity());
 	}
 
-	public void test00firstDaset() {
-		dataset(3);
+	public void test00データ初期設定6件() {
+		dataset(6);
 	}
 
 	public void test01起動時は非表示() {
@@ -67,12 +67,26 @@ public class ScheduleTestCase extends
 				.getVisibility());
 	}
 
-	public void test050set() {
-		dataset(6);
+	public void test05予定を表示してから下スクロール() {
+
+		test02予定ボタンを押したら表示();
+
+		// TODO 実装されたら修正
+		solo.clickOnView(solo.getView(R.id.schedule_button));
+		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_modal)
+				.getVisibility());
+
+		solo.clickOnButton("下へ移動");
+
+		assertFalse(solo.searchText("コガソフト", 0,false));
+		assertTrue(solo.searchText("ＪＲ", 0,false));
+
 	}
 
-	public void test05予定を表示してから上スクロール() {
-		test02予定ボタンを押したら表示();
+	public void test06予定を表示してから上スクロール() {
+
+		test05予定を表示してから下スクロール();
+
 		// TODO 実装されたら修正
 		solo.clickOnView(solo.getView(R.id.schedule_button));
 		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_modal)
@@ -80,18 +94,37 @@ public class ScheduleTestCase extends
 
 		solo.clickOnButton("上へ移動");
 
+		assertTrue(solo.searchText("コガソフト", 0,false));
+		assertFalse(solo.searchText("ＪＲ", 0,false));
+
 	}
 
-	public void test06予定を表示してから下スクロール() {
+	public void test07データ初期設定1件() {
+		dataset(1);
+	}
 
+	public void test08件数が少ないため上へ移動ボタンが存在しない() {
 		test02予定ボタンを押したら表示();
 		// TODO 実装されたら修正
 		solo.clickOnView(solo.getView(R.id.schedule_button));
 		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_modal)
 				.getVisibility());
 
-		solo.clickOnButton("下へ移動");
+		assertFalse(solo.searchButton("上へ移動"));
+
 	}
+
+	public void test09件数が少ないため下へ移動ボタンが存在しない() {
+		test02予定ボタンを押したら表示();
+		// TODO 実装されたら修正
+		solo.clickOnView(solo.getView(R.id.schedule_button));
+		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_modal)
+				.getVisibility());
+
+		assertFalse(solo.searchButton("下へ移動"));
+
+	}
+
 
 	@Override
 	public void tearDown() throws Exception {
