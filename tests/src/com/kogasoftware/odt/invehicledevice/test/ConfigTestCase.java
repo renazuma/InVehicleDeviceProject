@@ -96,7 +96,7 @@ public class ConfigTestCase extends
 				.getVisibility());
 	}
 
-	public void test08停止ボタンを押すと停止画面が表示() {
+	public void test08一時停止ボタンを押すと一時停止画面が表示() {
 		test02運行管理ボタンを押したら表示();
 		assertEquals(View.GONE, solo.getView(R.id.pause_modal)
 				.getVisibility());
@@ -108,14 +108,15 @@ public class ConfigTestCase extends
 				.getVisibility());
 	}
 
-	public void test09停止画面で運行管理ボタンを押すと停止画面と設定画面が非表示() {
-		test08停止ボタンを押すと停止画面が表示();
+	public void test09一時停止画面で運行管理ボタンを押すと一時停止画面と設定画面が非表示() {
+		test08一時停止ボタンを押すと一時停止画面が表示();
 		solo.clickOnView(solo.getView(R.id.pause_cancel_button));
 
 		getInstrumentation().waitForIdleSync();
 
 		assertEquals(View.GONE, solo.getView(R.id.config_modal)
 				.getVisibility());
+
 		assertEquals(View.GONE, solo.getView(R.id.pause_modal)
 				.getVisibility());
 	}

@@ -51,20 +51,29 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 				.getVisibility());
 	}
 
-	public void test05出発確認画面でやめるボタンを押すと待機中画面表示() {
+	public void test05出発確認画面でやめるボタンを押すと停車中画面表示() {
 		test04停車中から出発しますボタンを押すと出発確認画面表示();
 
-		solo.clickOnButton("やめる");
+		solo.clickOnView(solo.getView(R.id.stop_cancel_button));
 		assertEquals(View.VISIBLE, solo.getView(R.id.waiting_layout)
 				.getVisibility());
+
+		getInstrumentation().waitForIdleSync();
+
+		TextView v = (TextView) solo.getView(R.id.status_text_view);
+		assertEquals("停車中", v.getText()); // TODO 画像ファイル名assertに書き換わる予定
+
 	}
 
 	public void test06出発確認画面で出発するボタンを押すと運転中画面表示() {
 		test04停車中から出発しますボタンを押すと出発確認画面表示();
 
-		solo.clickOnButton("出発する");
+		solo.clickOnView(solo.getView(R.id.start_button));
 		assertEquals(View.VISIBLE, solo.getView(R.id.driving_layout)
 				.getVisibility());
+
+		getInstrumentation().waitForIdleSync();
+
 		TextView v = (TextView) solo.getView(R.id.status_text_view);
 		assertEquals("走行中", v.getText()); // TODO 画像ファイル名assertに書き換わる予定
 

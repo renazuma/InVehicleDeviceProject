@@ -36,6 +36,10 @@ public class ScheduleTestCase extends
 		solo = new Solo(getInstrumentation(), getActivity());
 	}
 
+	public void test00firstDaset() {
+		dataset(3);
+	}
+
 	public void test01起動時は非表示() {
 		assertEquals("本日の運行予定",
 				((Button) solo.getView(R.id.schedule_button)).getText());
@@ -44,7 +48,6 @@ public class ScheduleTestCase extends
 	}
 
 	public void test02予定ボタンを押したら表示() {
-		dataset(1);
 		test01起動時は非表示();
 		solo.clickOnView(solo.getView(R.id.schedule_button));
 		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_modal)
@@ -64,12 +67,19 @@ public class ScheduleTestCase extends
 				.getVisibility());
 	}
 
+	public void test050set() {
+		dataset(6);
+	}
+
 	public void test05予定を表示してから上スクロール() {
 		test02予定ボタンを押したら表示();
 		// TODO 実装されたら修正
 		solo.clickOnView(solo.getView(R.id.schedule_button));
 		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_modal)
 				.getVisibility());
+
+		solo.clickOnButton("上へ移動");
+
 	}
 
 	public void test06予定を表示してから下スクロール() {
@@ -79,12 +89,8 @@ public class ScheduleTestCase extends
 		solo.clickOnView(solo.getView(R.id.schedule_button));
 		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_modal)
 				.getVisibility());
-	}
 
-	public void test07二回目の予定ボタン押下で表示() {
-		test02予定ボタンを押したら表示();
-		solo.clickOnView(solo.getView(R.id.config_button));
-		test02予定ボタンを押したら表示();
+		solo.clickOnButton("下へ移動");
 	}
 
 	@Override
