@@ -30,7 +30,8 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 	public void test01メモボタンを押すとメモ画面が表示() {
 		assertEquals(View.GONE, solo.getView(R.id.memo_modal).getVisibility());
-		solo.clickOnButton("メモ");
+		solo.clickOnView(solo.getView(R.id.memo_button));
+//		solo.clickOnButton("メモ");
 		assertEquals(View.VISIBLE, solo.getView(R.id.memo_modal)
 				.getVisibility());
 	}
