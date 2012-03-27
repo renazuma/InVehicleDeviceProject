@@ -46,7 +46,7 @@ public class MockDataSourceTest implements DataSource {
 		}
 		nextNotifyDate = new Date(new Date().getTime() + 6 * 1000);
 		VehicleNotification n = new VehicleNotification();
-		//		n.setBody("テスト通知が行われました");
+		//n.setBody("テスト通知が行われました");
 		l.add(n);
 		return l;
 	}
@@ -66,14 +66,12 @@ public class MockDataSourceTest implements DataSource {
 
 		l = new LinkedList<OperationSchedule>();
 
-		String u1a = "user: {last_name: '名前a', family_name: '名字a'}";
-		String u1b = "user: {last_name: '名前b', family_name: '名字b'}";
-		String u1c = "user: {last_name: '名前c', family_name: '名字c'}";
-		String u1d = "user: {last_name: '名前d', family_name: '名字d'}";
-		String u1e = "user: {last_name: '名前e', family_name: '名字e'}";
-		String u1f = "user: {last_name: '名前f', family_name: '名字f'}";
-
-		System.out.println("Index:::: " + i);
+		String u1a = "id: 11,user: {last_name: '名前a', family_name: '名字a'},memo: 'テストメモ1'";
+		String u1b = "id: 12,user: {last_name: '名前b', family_name: '名字b'},memo: 'テストメモ2'";
+		String u1c = "id: 13,user: {last_name: '名前c', family_name: '名字c'}";
+		String u1d = "id: 14,user: {last_name: '名前d', family_name: '名字d'}";
+		String u1e = "id: 15,user: {last_name: '名前e', family_name: '名字e'}";
+		String u1f = "id: 16,user: {last_name: '名前f', family_name: '名字f'}";
 
 		try {
 
@@ -133,8 +131,6 @@ public class MockDataSourceTest implements DataSource {
 						+ "reservations_as_departure: [{passenger_count: 150}, {passenger_count: 160}, {passenger_count: 170}]}");
 				l.add(new OperationSchedule(j6));
 			}
-
-			System.out.println("Count:::: " + l.size());
 
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block

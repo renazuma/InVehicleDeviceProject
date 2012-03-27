@@ -7,11 +7,23 @@ import android.widget.TextView;
 import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
+import com.kogasoftware.odt.invehicledevice.test.MockDataSourceTest;
 
 public class WaitingTestCase extends
 ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 	private Solo solo;
+
+	public void dataset(Integer i) {
+
+		DataSourceFactory.newInstance();
+		MockDataSourceTest mdst = new MockDataSourceTest();
+
+		mdst.setOperationSchedules(i);
+		DataSourceFactory.setInstance(mdst);
+
+	}
 
 	public WaitingTestCase() {
 		super("com.kogasoftware.odt.invehicledevice",
@@ -20,6 +32,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 	@Override
 	public void setUp() throws Exception {
+		dataset(6);
 		super.setUp();
 		solo = new Solo(getInstrumentation(), getActivity());
 
