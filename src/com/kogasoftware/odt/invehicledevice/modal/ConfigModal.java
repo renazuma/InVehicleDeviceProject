@@ -17,7 +17,6 @@ public class ConfigModal extends Modal {
 			@Override
 			public void onClick(View view) {
 				inVehicleDeviceActivity.showStopCheckModal();
-				hide();
 			}
 		});
 
