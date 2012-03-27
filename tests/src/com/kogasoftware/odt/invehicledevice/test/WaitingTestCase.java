@@ -9,7 +9,7 @@ import com.kogasoftware.odt.invehicledevice.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.R;
 
 public class WaitingTestCase extends
-		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
+ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 	private Solo solo;
 
@@ -29,36 +29,36 @@ public class WaitingTestCase extends
 
 
 	public void test01メモボタンを押すとメモ画面が表示() {
-		assertEquals(View.GONE, solo.getView(R.id.memo_overlay).getVisibility());
+		assertEquals(View.GONE, solo.getView(R.id.memo_modal).getVisibility());
 		solo.clickOnButton("メモ");
-		assertEquals(View.VISIBLE, solo.getView(R.id.memo_overlay)
+		assertEquals(View.VISIBLE, solo.getView(R.id.memo_modal)
 				.getVisibility());
 	}
 
 	public void test02メモ画面で閉じるボタンを押すとメモ画面が非表示() {
 		test01メモボタンを押すとメモ画面が表示();
 		solo.clickOnView(solo.getView(R.id.memo_close_button));
-		assertEquals(View.GONE, solo.getView(R.id.memo_overlay).getVisibility());
+		assertEquals(View.GONE, solo.getView(R.id.memo_modal).getVisibility());
 	}
 
 	public void test03復路ボタンを押すと復路画面が表示() {
-		assertEquals(View.GONE, solo.getView(R.id.return_path_overlay)
+		assertEquals(View.GONE, solo.getView(R.id.return_path_modal)
 				.getVisibility());
 		solo.clickOnButton("復路");
-		assertEquals(View.VISIBLE, solo.getView(R.id.return_path_overlay)
+		assertEquals(View.VISIBLE, solo.getView(R.id.return_path_modal)
 				.getVisibility());
 	}
 
 	public void test04復路画面で戻るボタンを押すと復路画面が非表示() {
 		test03復路ボタンを押すと復路画面が表示();
 		solo.clickOnView(solo.getView(R.id.return_path_close_button));
-		assertEquals(View.GONE, solo.getView(R.id.return_path_overlay)
+		assertEquals(View.GONE, solo.getView(R.id.return_path_modal)
 				.getVisibility());
 	}
 
 	public void test05出発ボタンを押すと出発ダイアログ表示() {
 		solo.clickOnButton("出発する");
-		assertEquals(View.VISIBLE, solo.getView(R.id.check_start_layout)
+		assertEquals(View.VISIBLE, solo.getView(R.id.start_check_modal)
 				.getVisibility());
 	}
 
@@ -80,10 +80,10 @@ public class WaitingTestCase extends
 
 		test03復路ボタンを押すと復路画面が表示();
 
-		assertEquals(View.GONE, solo.getView(R.id.return_path_overlay)
+		assertEquals(View.GONE, solo.getView(R.id.return_path_modal)
 				.getVisibility());
 		solo.clickOnButton("予約情報を検索");
-		assertEquals(View.VISIBLE, solo.getView(R.id.return_path_overlay)
+		assertEquals(View.VISIBLE, solo.getView(R.id.return_path_modal)
 				.getVisibility());
 		assertEquals(View.VISIBLE, solo.getView(R.id.return_path_button)
 				.getVisibility());
@@ -94,7 +94,7 @@ public class WaitingTestCase extends
 
 		test08復路画面で予約候補を検索を押すと予約候補表示();
 
-		assertEquals(View.GONE, solo.getView(R.id.return_path_overlay)
+		assertEquals(View.GONE, solo.getView(R.id.return_path_modal)
 				.getVisibility());
 		solo.clickOnButton("予約する");
 		assertEquals(View.VISIBLE, solo.getView(R.id.waiting_layout)

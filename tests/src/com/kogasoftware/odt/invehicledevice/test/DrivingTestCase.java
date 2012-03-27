@@ -9,7 +9,7 @@ import com.kogasoftware.odt.invehicledevice.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.R;
 
 public class DrivingTestCase extends
-		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
+ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 	private Solo solo;
 
@@ -31,7 +31,7 @@ public class DrivingTestCase extends
 	}
 
 	public void test02起動時は出発ダイアログは非表示() {
-		assertEquals(View.GONE, solo.getView(R.id.check_start_layout)
+		assertEquals(View.GONE, solo.getView(R.id.start_check_modal)
 				.getVisibility());
 	}
 
@@ -47,7 +47,7 @@ public class DrivingTestCase extends
 		test03到着しましたボタンを押すと停車中表示();
 
 		solo.clickOnButton("出発する");
-		assertEquals(View.VISIBLE, solo.getView(R.id.check_start_layout)
+		assertEquals(View.VISIBLE, solo.getView(R.id.start_check_modal)
 				.getVisibility());
 	}
 

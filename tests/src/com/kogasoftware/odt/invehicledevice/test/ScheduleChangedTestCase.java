@@ -51,7 +51,7 @@ public class ScheduleChangedTestCase extends
 
 		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_text_view)
 				.getVisibility());
-		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_layout)
+		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_modal)
 				.getVisibility());
 
 	}
@@ -93,7 +93,7 @@ public class ScheduleChangedTestCase extends
 
 		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_text_view)
 				.getVisibility());
-		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_layout)
+		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_modal)
 				.getVisibility());
 
 	}
@@ -136,7 +136,7 @@ public class ScheduleChangedTestCase extends
 
 		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_text_view)
 				.getVisibility());
-		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_layout)
+		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_modal)
 				.getVisibility());
 
 	}
@@ -151,7 +151,7 @@ public class ScheduleChangedTestCase extends
 		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_text_view)
 				.getVisibility());
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.config_overlay)
+		assertEquals(View.VISIBLE, solo.getView(R.id.config_modal)
 				.getVisibility());
 	}
 
@@ -178,7 +178,7 @@ public class ScheduleChangedTestCase extends
 
 		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_text_view)
 				.getVisibility());
-		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_layout)
+		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_modal)
 				.getVisibility());
 
 	}
@@ -193,7 +193,7 @@ public class ScheduleChangedTestCase extends
 		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_text_view)
 				.getVisibility());
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.map_overlay)
+		assertEquals(View.VISIBLE, solo.getView(R.id.navigation_modal)
 				.getVisibility());
 	}
 

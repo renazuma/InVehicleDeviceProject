@@ -24,40 +24,40 @@ public class MapTestCase extends
 	}
 
 	public void test01起動時は非表示() {
-		assertEquals(View.GONE, solo.getView(R.id.map_overlay).getVisibility());
+		assertEquals(View.GONE, solo.getView(R.id.navigation_modal).getVisibility());
 	}
 
 	public void test02地図ボタンを押したら表示() {
 		test01起動時は非表示();
 		solo.clickOnView(solo.getView(R.id.map_button));
-		assertEquals(View.VISIBLE, solo.getView(R.id.map_overlay)
+		assertEquals(View.VISIBLE, solo.getView(R.id.navigation_modal)
 				.getVisibility());
 	}
 
 	public void test03戻るボタンを押したら消える() {
 		test02地図ボタンを押したら表示();
 		solo.clickOnButton("戻る");
-		assertEquals(View.GONE, solo.getView(R.id.map_overlay).getVisibility());
+		assertEquals(View.GONE, solo.getView(R.id.navigation_modal).getVisibility());
 	}
 
 	public void test04一回閉じてからもう地図ボタンを押したら表示() {
 		test03戻るボタンを押したら消える();
 		solo.clickOnView(solo.getView(R.id.map_button));
-		assertEquals(View.VISIBLE, solo.getView(R.id.map_overlay)
+		assertEquals(View.VISIBLE, solo.getView(R.id.navigation_modal)
 				.getVisibility());
 	}
 
 	public void test05拡大ボタンを押下で地図が拡大する() {
 		test02地図ボタンを押したら表示();
 		solo.clickOnButton("拡大");
-		assertEquals(View.VISIBLE, solo.getView(R.id.map_overlay)
+		assertEquals(View.VISIBLE, solo.getView(R.id.navigation_modal)
 				.getVisibility());
 	}
 
 	public void test06縮小ボタンを押下で地図が縮小する() {
 		test02地図ボタンを押したら表示();
 		solo.clickOnButton("縮小");
-		assertEquals(View.VISIBLE, solo.getView(R.id.map_overlay)
+		assertEquals(View.VISIBLE, solo.getView(R.id.navigation_modal)
 				.getVisibility());
 	}
 

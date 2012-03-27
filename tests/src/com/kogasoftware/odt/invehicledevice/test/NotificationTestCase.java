@@ -24,7 +24,7 @@ public class NotificationTestCase extends
 	}
 
 	public void test01起動時は非表示() {
-		assertEquals(View.GONE, solo.getView(R.id.vehicle_notification_overlay)
+		assertEquals(View.GONE, solo.getView(R.id.notification_modal)
 				.getVisibility());
 	}
 
@@ -36,7 +36,7 @@ public class NotificationTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.vehicle_notification_overlay)
+		assertEquals(View.VISIBLE, solo.getView(R.id.notification_modal)
 				.getVisibility());
 	}
 
@@ -47,7 +47,7 @@ public class NotificationTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.GONE, solo.getView(R.id.vehicle_notification_overlay)
+		assertEquals(View.GONE, solo.getView(R.id.notification_modal)
 				.getVisibility());
 		assertEquals(View.VISIBLE, solo.getView(R.id.driving_layout)
 				.getVisibility());
@@ -61,7 +61,7 @@ public class NotificationTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.GONE, solo.getView(R.id.vehicle_notification_overlay)
+		assertEquals(View.GONE, solo.getView(R.id.notification_modal)
 				.getVisibility());
 
 		assertEquals(View.VISIBLE, solo.getView(R.id.driving_layout)
@@ -78,7 +78,7 @@ public class NotificationTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.vehicle_notification_overlay)
+		assertEquals(View.VISIBLE, solo.getView(R.id.notification_modal)
 				.getVisibility());
 	}
 
@@ -89,7 +89,7 @@ public class NotificationTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.GONE, solo.getView(R.id.vehicle_notification_overlay)
+		assertEquals(View.GONE, solo.getView(R.id.notification_modal)
 				.getVisibility());
 		assertEquals(View.VISIBLE, solo.getView(R.id.waiting_layout)
 				.getVisibility());
@@ -103,7 +103,7 @@ public class NotificationTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.GONE, solo.getView(R.id.vehicle_notification_overlay)
+		assertEquals(View.GONE, solo.getView(R.id.notification_modal)
 				.getVisibility());
 
 		assertEquals(View.VISIBLE, solo.getView(R.id.waiting_layout)
@@ -121,7 +121,7 @@ public class NotificationTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.vehicle_notification_overlay)
+		assertEquals(View.VISIBLE, solo.getView(R.id.notification_modal)
 				.getVisibility());
 	}
 
@@ -132,9 +132,9 @@ public class NotificationTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.GONE, solo.getView(R.id.vehicle_notification_overlay)
+		assertEquals(View.GONE, solo.getView(R.id.notification_modal)
 				.getVisibility());
-		assertEquals(View.VISIBLE, solo.getView(R.id.config_overlay)
+		assertEquals(View.VISIBLE, solo.getView(R.id.config_modal)
 				.getVisibility());
 
 	}
@@ -146,10 +146,10 @@ public class NotificationTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.GONE, solo.getView(R.id.vehicle_notification_overlay)
+		assertEquals(View.GONE, solo.getView(R.id.notification_modal)
 				.getVisibility());
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.config_overlay)
+		assertEquals(View.VISIBLE, solo.getView(R.id.config_modal)
 				.getVisibility());
 	}
 	
@@ -163,7 +163,7 @@ public class NotificationTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.vehicle_notification_overlay)
+		assertEquals(View.VISIBLE, solo.getView(R.id.notification_modal)
 				.getVisibility());
 	}
 
@@ -174,9 +174,9 @@ public class NotificationTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.GONE, solo.getView(R.id.vehicle_notification_overlay)
+		assertEquals(View.GONE, solo.getView(R.id.notification_modal)
 				.getVisibility());
-		assertEquals(View.VISIBLE, solo.getView(R.id.map_overlay)
+		assertEquals(View.VISIBLE, solo.getView(R.id.navigation_modal)
 				.getVisibility());
 
 	}
@@ -188,10 +188,10 @@ public class NotificationTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.GONE, solo.getView(R.id.vehicle_notification_overlay)
+		assertEquals(View.GONE, solo.getView(R.id.notification_modal)
 				.getVisibility());
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.map_overlay)
+		assertEquals(View.VISIBLE, solo.getView(R.id.navigation_modal)
 				.getVisibility());
 	}
 	
