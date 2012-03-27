@@ -21,6 +21,7 @@ public class ScheduleChangedModal extends Modal {
 			@Override
 			public void onClick(View v) {
 				inVehicleDeviceActivity.showScheduleModal();
+				hide();
 			}
 		});
 	}
