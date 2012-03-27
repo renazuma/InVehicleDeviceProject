@@ -61,6 +61,16 @@
     </target>
 -->
 
+    <!-- http://code.google.com/p/android/issues/detail?id=21720#c16 -->
+    <target name="-post-compile">
+      <delete verbose="true">
+        <fileset dir="${out.classes.absolute.dir}" includes="${library.paths}" />
+      </delete>
+      <path id="out.dex.jar.input.ref">
+        <fileset dir="${jar.libs.absolute.dir}" includes="*.jar" />
+      </path>
+    </target>
+
     <!-- Import the actual build file.
 
          To customize existing targets, there are two options:
