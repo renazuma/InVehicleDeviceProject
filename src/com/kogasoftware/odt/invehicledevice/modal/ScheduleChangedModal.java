@@ -30,8 +30,8 @@ public class ScheduleChangedModal extends Modal {
 	private VehicleNotification currentVehicleNotification = new VehicleNotification();
 
 	private void refresh() {
+		TextView bodyTextView = (TextView)findViewById(R.id.schedule_changed_text_view);
 		currentVehicleNotification = vehicleNotifications.poll();
-		TextView bodyTextView = (TextView)findViewById(R.id.vehicle_notification_body);
 		if (currentVehicleNotification.getBody().isPresent()) {
 			bodyTextView.setText(currentVehicleNotification.getBody().get());
 		}

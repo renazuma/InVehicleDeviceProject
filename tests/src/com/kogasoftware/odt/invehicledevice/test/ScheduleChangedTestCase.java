@@ -8,7 +8,7 @@ import com.kogasoftware.odt.invehicledevice.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.R;
 
 public class ScheduleChangedTestCase extends
-		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
+ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 	private Solo solo;
 
@@ -25,7 +25,7 @@ public class ScheduleChangedTestCase extends
 
 	public void test01起動時は非表示() {
 
-		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_text_view)
+		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_modal)
 				.getVisibility());
 	}
 
@@ -37,7 +37,7 @@ public class ScheduleChangedTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_changed_text_view)
+		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_changed_modal)
 				.getVisibility());
 
 	}
@@ -49,7 +49,7 @@ public class ScheduleChangedTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_text_view)
+		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_modal)
 				.getVisibility());
 		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_modal)
 				.getVisibility());
@@ -63,7 +63,7 @@ public class ScheduleChangedTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_text_view)
+		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_modal)
 				.getVisibility());
 
 		assertEquals(View.VISIBLE, solo.getView(R.id.driving_layout)
@@ -80,7 +80,7 @@ public class ScheduleChangedTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_changed_text_view)
+		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_changed_modal)
 				.getVisibility());
 	}
 
@@ -91,7 +91,7 @@ public class ScheduleChangedTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_text_view)
+		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_modal)
 				.getVisibility());
 		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_modal)
 				.getVisibility());
@@ -105,7 +105,7 @@ public class ScheduleChangedTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_text_view)
+		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_modal)
 				.getVisibility());
 
 		assertEquals(View.VISIBLE, solo.getView(R.id.waiting_layout)
@@ -115,7 +115,7 @@ public class ScheduleChangedTestCase extends
 	public void test08管理画面中に管理者から連絡が来たら表示() {
 		test01起動時は非表示();
 
-//		solo.clickOnButton("運行管理");
+		//		solo.clickOnButton("運行管理");
 		solo.clickOnButton("管理");
 
 		//TODO 管理者からの連絡部分が実装されたら置き換える
@@ -123,7 +123,7 @@ public class ScheduleChangedTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_changed_text_view)
+		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_changed_modal)
 				.getVisibility());
 	}
 
@@ -134,7 +134,7 @@ public class ScheduleChangedTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_text_view)
+		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_modal)
 				.getVisibility());
 		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_modal)
 				.getVisibility());
@@ -148,7 +148,7 @@ public class ScheduleChangedTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_text_view)
+		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_modal)
 				.getVisibility());
 
 		assertEquals(View.VISIBLE, solo.getView(R.id.config_modal)
@@ -165,7 +165,7 @@ public class ScheduleChangedTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_changed_text_view)
+		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_changed_modal)
 				.getVisibility());
 	}
 
@@ -176,7 +176,7 @@ public class ScheduleChangedTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_text_view)
+		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_modal)
 				.getVisibility());
 		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_modal)
 				.getVisibility());
@@ -190,7 +190,7 @@ public class ScheduleChangedTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_text_view)
+		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_modal)
 				.getVisibility());
 
 		assertEquals(View.VISIBLE, solo.getView(R.id.navigation_modal)

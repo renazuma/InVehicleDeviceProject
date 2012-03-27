@@ -19,8 +19,6 @@ public class OperationScheduleArrayAdapter extends ArrayAdapter<OperationSchedul
 	private final LayoutInflater layoutInflater;
 	private final int resourceId;
 
-	private final DateFormat DISPLAY_DATE_FORMAT = new SimpleDateFormat("H時m分"); // staticにはしない
-
 	public OperationScheduleArrayAdapter(Context context, int resourceId,
 			List<OperationSchedule> items) {
 		super(context, resourceId, items);
@@ -31,6 +29,8 @@ public class OperationScheduleArrayAdapter extends ArrayAdapter<OperationSchedul
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
+		DateFormat displayDateFormat = new SimpleDateFormat("H時m分");
+
 		if (convertView == null) {
 			convertView = layoutInflater.inflate(resourceId, null);
 		}
@@ -46,13 +46,13 @@ public class OperationScheduleArrayAdapter extends ArrayAdapter<OperationSchedul
 		}
 		TextView getOnHeadsTextView = (TextView) convertView
 				.findViewById(R.id.operation_schedule_get_on_heads_text_view);
-		Long getOnHeads = 0L;
+		Integer getOnHeads = 0;
 		for (Reservation reservation : operationSchedule
 				.getReservationsAsArrival()) {
 			getOnHeads += reservation.getPassengerCount();
 		}
 
-		Long getOffHeads = 0L;
+		Integer getOffHeads = 0;
 		for (Reservation reservation : operationSchedule
 				.getReservationsAsDeparture()) {
 			getOffHeads += reservation.getPassengerCount();
@@ -64,11 +64,11 @@ public class OperationScheduleArrayAdapter extends ArrayAdapter<OperationSchedul
 		TextView getOffHeadsTextView = (TextView) convertView
 				.findViewById(R.id.operation_schedule_get_off_heads_text_view);
 		getOffHeadsTextView.setText(getOffHeads.toString());
-		arrivalEstimateTextView.setText(DISPLAY_DATE_FORMAT
+		arrivalEstimateTextView.setText(displayDateFormat
 				.format(operationSchedule.getArrivalEstimate()));
 		TextView departureEstimateTextView = (TextView) convertView
 				.findViewById(R.id.operation_schedule_departure_estimate_text_view);
-		departureEstimateTextView.setText(DISPLAY_DATE_FORMAT
+		departureEstimateTextView.setText(displayDateFormat
 				.format(operationSchedule.getDepartureEstimate()));
 		return convertView;
 	}

@@ -94,7 +94,7 @@ public class InVehicleDeviceActivity extends MapActivity {
 	private TextView statusTextView = null;
 	private View drivingView1Layout = null;
 	private View drivingView2Layout = null;
-	private ListView usersListView = null;
+	private ListView reservationListView = null;
 
 	private NavigationModal navigationModal = null;
 	private ConfigModal configModal = null;
@@ -180,7 +180,7 @@ public class InVehicleDeviceActivity extends MapActivity {
 			}
 		});
 
-		usersListView = (ListView) findViewById(R.id.users_list_view);
+		reservationListView = (ListView) findViewById(R.id.reservation_list_view);
 
 		View test = findViewById(R.id.status_text_view);
 		test.setOnClickListener(new OnClickListener() {
@@ -246,9 +246,9 @@ public class InVehicleDeviceActivity extends MapActivity {
 			rl.addAll(o.getReservationsAsDeparture());
 		}
 
-		ReservationArrayAdapter usersAdapter = new ReservationArrayAdapter(
+		ReservationArrayAdapter adapter = new ReservationArrayAdapter(
 				this, R.layout.reservation_list_row, rl);
-		usersListView.setAdapter(usersAdapter);
+		reservationListView.setAdapter(adapter);
 
 		status = Status.PLATFORM;
 		findViewById(R.id.waiting_layout).setVisibility(View.VISIBLE);

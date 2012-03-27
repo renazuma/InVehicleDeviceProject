@@ -12,6 +12,8 @@ import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
+import com.kogasoftware.odt.webapi.model.Reservation;
+import com.kogasoftware.odt.webapi.model.ReservationCandidate;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class MockDataSourceTest implements DataSource {
@@ -44,7 +46,7 @@ public class MockDataSourceTest implements DataSource {
 		}
 		nextNotifyDate = new Date(new Date().getTime() + 6 * 1000);
 		VehicleNotification n = new VehicleNotification();
-//		n.setBody("テスト通知が行われました");
+		//		n.setBody("テスト通知が行われました");
 		l.add(n);
 		return l;
 	}
@@ -70,7 +72,7 @@ public class MockDataSourceTest implements DataSource {
 		String u1d = "user: {last_name: '名前d', family_name: '名字d'}";
 		String u1e = "user: {last_name: '名前e', family_name: '名字e'}";
 		String u1f = "user: {last_name: '名前f', family_name: '名字f'}";
-		
+
 		System.out.println("Index:::: " + i);
 
 		try {
@@ -131,7 +133,7 @@ public class MockDataSourceTest implements DataSource {
 						+ "reservations_as_departure: [{passenger_count: 150}, {passenger_count: 160}, {passenger_count: 170}]}");
 				l.add(new OperationSchedule(j6));
 			}
-			
+
 			System.out.println("Count:::: " + l.size());
 
 		} catch (ParseException e) {
@@ -142,6 +144,20 @@ public class MockDataSourceTest implements DataSource {
 			e.printStackTrace();
 		}
 
+	}
+
+	@Override
+	public List<ReservationCandidate> postReservationCandidates(Integer userId,
+			Integer departurePlatformId, Integer arrivalPlatformId)
+					throws WebAPIException {
+		return new LinkedList<ReservationCandidate>();
+	}
+
+	@Override
+	public Reservation postReservation(Integer reservationCandidateId)
+			throws WebAPIException {
+
+		return new Reservation();
 	}
 
 }

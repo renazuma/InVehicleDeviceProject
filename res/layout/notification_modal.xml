@@ -7,7 +7,7 @@
      >
 
     <TextView
-        android:id="@+id/vehicle_notification_body"
+        android:id="@+id/notification_text_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
