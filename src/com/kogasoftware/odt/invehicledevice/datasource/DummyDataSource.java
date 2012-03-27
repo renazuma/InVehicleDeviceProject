@@ -71,7 +71,7 @@ public class DummyDataSource implements DataSource {
 					+ "arrival_estimate: '2012-01-01T01:00:00.000+09:00', "
 					+ "departure_estimate: '2012-01-01T02:00:00.000+09:00', "
 					+ "platform: {name: 'コガソフトウェア前'}, "
-					+ "reservations_as_arrival: [{passenger_count: 5, " + u1a
+					+ "reservations_as_arrival: [{passenger_count: 5, memo: 'テストメモ1', " + u1a
 					+ "}, {passenger_count: 6, " + u1b
 					+ "}, {passenger_count: 7, " + u1c + "}] ,"
 					+ "reservations_as_departure: [{passenger_count: 15, "
@@ -83,7 +83,7 @@ public class DummyDataSource implements DataSource {
 					+ "arrival_estimate: '2012-01-01T03:00:00.000+09:00', "
 					+ "departure_estimate: '2012-01-01T04:00:00.000+09:00', "
 					+ "platform: {name: '上野御徒町駅前'}, "
-					+ "reservations_as_arrival: [{passenger_count: 5}]}");
+					+ "reservations_as_arrival: [{passenger_count: 5, memo: 'テストメモ2'}]}");
 			l.add(new OperationSchedule(j2));
 
 			JSONObject j3 = new JSONObject(
