@@ -3,6 +3,8 @@ package com.kogasoftware.odt.invehicledevice.modal;
 import java.util.LinkedList;
 import java.util.List;
 
+import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
 
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceActivity;
@@ -26,8 +28,26 @@ public class ScheduleModal extends Modal {
 		this.operationSchedules.addAll(operatioSchedules);
 		OperationScheduleArrayAdapter adapter = new OperationScheduleArrayAdapter(
 				getContext(), R.layout.operation_schedule_list_row, operationSchedules);
-		ListView operationScheduleListView = (ListView) findViewById(R.id.operation_schedule_list_view);
+		final ListView operationScheduleListView = (ListView) findViewById(R.id.operation_schedule_list_view);
 		operationScheduleListView.setAdapter(adapter);
+
+		Button operationScheduleScrollUpButton = (Button) findViewById(R.id.operation_schedule_scroll_up_button);
+		operationScheduleScrollUpButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				Integer position = operationScheduleListView.getFirstVisiblePosition();
+				operationScheduleListView.smoothScrollToPosition(position);
+			}
+		});
+		Button operationScheduleScrollDownButton = (Button) findViewById(R.id.operation_schedule_scroll_down_button);
+		operationScheduleScrollDownButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				Integer position = operationScheduleListView.getLastVisiblePosition();
+				operationScheduleListView.smoothScrollToPosition(position);
+			}
+		});
+
 		super.show();
 	}
 }

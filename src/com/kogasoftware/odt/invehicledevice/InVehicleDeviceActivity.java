@@ -8,10 +8,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 import jp.tomorrowkey.android.vtextviewer.VTextView;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -36,9 +38,31 @@ import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
+class Utility {
+	public static Integer getListViewChildrenHeight(ListView listView) {
+		ListAdapter listAdapter = listView.getAdapter();
+		if (listAdapter == null) {
+			// pre-condition
+			return 0;
+		}
+
+		Integer totalHeight = 0;
+		for (Integer i = 0; i < listAdapter.getCount(); i++) {
+			View listItem = listAdapter.getView(i, null, listView);
+			listItem.measure(0, 0);
+			totalHeight += listItem.getMeasuredHeight();
+		}
+
+		Integer height = totalHeight
+				+ (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+		return height;
+	}
+}
 
 public class InVehicleDeviceActivity extends MapActivity {
-	private final String TAG = InVehicleDeviceActivity.class.getSimpleName();
+	private static final String TAG = InVehicleDeviceActivity.class
+			.getSimpleName();
+	private static final Integer RESERVATION_LIST_SCROLL_UNIT = 50;
 	private final DataSource dataSource = DataSourceFactory.newInstance();
 	private final BlockingQueue<String> voices = new LinkedBlockingQueue<String>();
 	private final List<OperationSchedule> operationSchedules = new LinkedList<OperationSchedule>();
@@ -181,6 +205,22 @@ public class InVehicleDeviceActivity extends MapActivity {
 		});
 
 		reservationListView = (ListView) findViewById(R.id.reservation_list_view);
+		Button reservationScrollUpButton = (Button) findViewById(R.id.reservation_scroll_up_button);
+		reservationScrollUpButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				Integer position = reservationListView.getFirstVisiblePosition();
+				reservationListView.smoothScrollToPosition(position);
+			}
+		});
+		Button reservationScrollDownButton = (Button) findViewById(R.id.reservation_scroll_down_button);
+		reservationScrollDownButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				Integer position = reservationListView.getLastVisiblePosition();
+				reservationListView.smoothScrollToPosition(position);
+			}
+		});
 
 		View test = findViewById(R.id.status_text_view);
 		test.setOnClickListener(new OnClickListener() {
@@ -246,8 +286,8 @@ public class InVehicleDeviceActivity extends MapActivity {
 			rl.addAll(o.getReservationsAsDeparture());
 		}
 
-		ReservationArrayAdapter adapter = new ReservationArrayAdapter(
-				this, R.layout.reservation_list_row, rl);
+		ReservationArrayAdapter adapter = new ReservationArrayAdapter(this,
+				R.layout.reservation_list_row, rl);
 		reservationListView.setAdapter(adapter);
 
 		status = Status.PLATFORM;
@@ -292,5 +332,11 @@ public class InVehicleDeviceActivity extends MapActivity {
 
 	public DataSource getDataSource() {
 		return dataSource;
+	}
+
+	protected Integer getReservationListScrollPixels() {
+		DisplayMetrics displayMetrics = new DisplayMetrics();
+		getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+		return (int) (RESERVATION_LIST_SCROLL_UNIT * displayMetrics.scaledDensity);
 	}
 }

@@ -8,6 +8,7 @@
     >
 
     <Button
+        android:id="@+id/operation_schedule_scroll_up_button"
         android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -20,6 +21,7 @@
         android:layout_weight="3" />
 
     <Button
+        android:id="@+id/operation_schedule_scroll_down_button"
         android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:layout_weight="1"

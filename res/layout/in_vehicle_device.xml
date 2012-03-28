@@ -262,6 +262,7 @@
                     </LinearLayout>
 
                     <Button
+                        android:id="@+id/reservation_scroll_up_button"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:text="上へ移動" />
@@ -273,6 +274,7 @@
                         android:layout_weight="1" />
 
                     <Button
+                        android:id="@+id/reservation_scroll_down_button"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:text="下へ移動" />
