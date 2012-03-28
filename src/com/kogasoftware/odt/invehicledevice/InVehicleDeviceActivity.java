@@ -13,7 +13,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -35,29 +34,9 @@ import com.kogasoftware.odt.invehicledevice.modal.StopCheckModal;
 import com.kogasoftware.odt.invehicledevice.modal.StopModal;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
+import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
-
-class Utility {
-	public static Integer getListViewChildrenHeight(ListView listView) {
-		ListAdapter listAdapter = listView.getAdapter();
-		if (listAdapter == null) {
-			// pre-condition
-			return 0;
-		}
-
-		Integer totalHeight = 0;
-		for (Integer i = 0; i < listAdapter.getCount(); i++) {
-			View listItem = listAdapter.getView(i, null, listView);
-			listItem.measure(0, 0);
-			totalHeight += listItem.getMeasuredHeight();
-		}
-
-		Integer height = totalHeight
-				+ (listView.getDividerHeight() * (listAdapter.getCount() - 1));
-		return height;
-	}
-}
 
 public class InVehicleDeviceActivity extends MapActivity {
 	private static final String TAG = InVehicleDeviceActivity.class
@@ -65,7 +44,7 @@ public class InVehicleDeviceActivity extends MapActivity {
 	private static final Integer RESERVATION_LIST_SCROLL_UNIT = 50;
 	private final DataSource dataSource = DataSourceFactory.newInstance();
 	private final BlockingQueue<String> voices = new LinkedBlockingQueue<String>();
-	private final List<OperationSchedule> operationSchedules = new LinkedList<OperationSchedule>();
+	private final InVehicleDeviceStatus status = new InVehicleDeviceStatus();
 	private final Integer POLL_VEHICLE_NOTIFICATION_INTERVAL = 10000;
 	private final Handler pollVehicleNotificationHandler = new Handler();
 	private final Runnable pollVehicleNotification = new Runnable() {
@@ -105,12 +84,6 @@ public class InVehicleDeviceActivity extends MapActivity {
 
 	private Thread voiceThread = new EmptyThread();
 
-	private enum Status {
-		DRIVE, PLATFORM,
-	};
-
-	private Status status = Status.DRIVE;
-
 	private Button changeStatusButton = null;
 	private Button scheduleButton = null;
 	private Button mapButton = null;
@@ -131,6 +104,11 @@ public class InVehicleDeviceActivity extends MapActivity {
 	private ReturnPathModal returnPathModal = null;
 	private StopCheckModal stopCheckModal = null;
 	private StopModal stopModal = null;
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -172,10 +150,9 @@ public class InVehicleDeviceActivity extends MapActivity {
 		pollVehicleNotificationHandler.post(pollVehicleNotification);
 
 		changeStatusButton.setOnClickListener(new OnClickListener() {
-
 			@Override
 			public void onClick(View view) {
-				if (status == Status.DRIVE) {
+				if (status.getStatus() == InVehicleDeviceStatus.Status.DRIVE) {
 					enterPlatformStatus();
 				} else {
 					startCheckModal.show();
@@ -200,7 +177,7 @@ public class InVehicleDeviceActivity extends MapActivity {
 		scheduleButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				scheduleModal.show(operationSchedules);
+				scheduleModal.show(status.getOperationSchedules());
 			}
 		});
 
@@ -209,7 +186,8 @@ public class InVehicleDeviceActivity extends MapActivity {
 		reservationScrollUpButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				Integer position = reservationListView.getFirstVisiblePosition();
+				Integer position = reservationListView
+						.getFirstVisiblePosition();
 				reservationListView.smoothScrollToPosition(position);
 			}
 		});
@@ -246,12 +224,8 @@ public class InVehicleDeviceActivity extends MapActivity {
 			}
 		});
 
-		try {
-			operationSchedules.addAll(dataSource.getOperationSchedules());
-		} catch (WebAPIException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		status.update(dataSource);
+		enterDriveStatus();
 	}
 
 	@Override
@@ -278,29 +252,46 @@ public class InVehicleDeviceActivity extends MapActivity {
 		return false;
 	}
 
-	public void enterPlatformStatus() { // TODO
-		List<Reservation> rl = new LinkedList<Reservation>();
-		if (!operationSchedules.isEmpty()) {
-			OperationSchedule o = operationSchedules.get(0);
-			rl.addAll(o.getReservationsAsArrival());
-			rl.addAll(o.getReservationsAsDeparture());
-			ReservationArrayAdapter adapter = new ReservationArrayAdapter(this,
-					R.layout.reservation_list_row, rl, o);
-			reservationListView.setAdapter(adapter);
+	public void enterPlatformStatus() {
+		if (!status.enterPlatformStatus()) {
+			return;
+		}
+		if (!status.hasCurrentOperationSchedule()) {
+			return;
 		}
 
-		status = Status.PLATFORM;
+		List<Reservation> rl = new LinkedList<Reservation>();
+		OperationSchedule o = status.getCurrentOperationSchedule();
+		rl.addAll(o.getReservationsAsArrival());
+		rl.addAll(o.getReservationsAsDeparture());
+		ReservationArrayAdapter adapter = new ReservationArrayAdapter(this,
+				R.layout.reservation_list_row, rl, o);
+		reservationListView.setAdapter(adapter);
+
 		findViewById(R.id.waiting_layout).setVisibility(View.VISIBLE);
 		statusTextView.setText("停車中");
 		changeStatusButton.setText("出発する");
 	}
 
 	public void enterDriveStatus() {
-		status = Status.DRIVE;
+		if (!status.enterDriveStatus()) {
+			return;
+		}
+		if (!status.hasCurrentOperationSchedule()) {
+			return;
+		}
+
+		OperationSchedule o = status.getCurrentOperationSchedule();
+		if (!o.getPlatform().isPresent()) {
+			return;
+		}
+		Platform p = o.getPlatform().get();
+
 		statusTextView.setText("走行中");
 		changeStatusButton.setText("到着しました");
 		findViewById(R.id.waiting_layout).setVisibility(View.GONE);
-		if (!voices.offer("出発します。次は、コガソフトウェア前。コガソフトウェア前。")) {
+		if (!voices.offer("出発します。次は、" + p.getNameRuby() + "。" + p.getNameRuby()
+				+ "。")) {
 			Log.w(TAG, "!voices.offer() failed");
 		}
 	}
@@ -326,7 +317,7 @@ public class InVehicleDeviceActivity extends MapActivity {
 	}
 
 	public void showScheduleModal() {
-		scheduleModal.show(operationSchedules);
+		scheduleModal.show(status.getOperationSchedules());
 	}
 
 	public DataSource getDataSource() {
