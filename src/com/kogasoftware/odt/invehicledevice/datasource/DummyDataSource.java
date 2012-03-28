@@ -41,6 +41,16 @@ public class DummyDataSource implements DataSource {
 			c3.setArrivalTime(f.parse("16:01"));
 			c3.setDepartureTime(f.parse("17:39"));
 			l.add(c3);
+
+			ReservationCandidate c4 = new ReservationCandidate();
+			c4.setArrivalTime(f.parse("18:01"));
+			c4.setDepartureTime(f.parse("18:39"));
+			l.add(c4);
+
+			ReservationCandidate c5 = new ReservationCandidate();
+			c5.setArrivalTime(f.parse("19:01"));
+			c5.setDepartureTime(f.parse("20:39"));
+			l.add(c5);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
@@ -150,8 +160,6 @@ public class DummyDataSource implements DataSource {
 	@Override
 	public void putReservationTransferredAt(Integer id, Date transferredAt)
 			throws WebAPIException {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override

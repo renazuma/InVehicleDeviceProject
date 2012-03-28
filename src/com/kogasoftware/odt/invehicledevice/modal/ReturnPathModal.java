@@ -47,22 +47,6 @@ public class ReturnPathModal extends Modal {
 		title += " 復路の予約";
 		returnPathTitleTextView.setText(title);
 
-		List<ReservationCandidate> l = new LinkedList<ReservationCandidate>();
-		try {
-			l = inVehicleDeviceActivity.getDataSource()
-					.postReservationCandidates(0, 0, 0);
-		} catch (WebAPIException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			Log.e(TAG, e.toString(), e);
-		}
-
-		ListView reservationCandidateListView = (ListView) findViewById(R.id.reservation_candidates_list_view);
-		ReservationCandidateArrayAdapter adapter = new ReservationCandidateArrayAdapter(
-				inVehicleDeviceActivity,
-				R.layout.reservation_candidate_list_row, l);
-		reservationCandidateListView.setAdapter(adapter);
-
 		Spinner hourSpinner = (Spinner) findViewById(R.id.reservation_candidate_hour_spinner);
 		String[] hours = new String[] { "9", "10", "11", "12", "13", "14", "20" };
 		ArrayAdapter<String> hourAdapter = new ArrayAdapter<String>(
@@ -81,7 +65,7 @@ public class ReturnPathModal extends Modal {
 				getContext(), android.R.layout.simple_spinner_item, inOrOut);
 		inOrOutSpinner.setAdapter(inOrOutAdapter);
 
-		Button doReservationButton = (Button) findViewById(R.id.do_reservation_button);
+		final Button doReservationButton = (Button) findViewById(R.id.do_reservation_button);
 		doReservationButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -92,6 +76,29 @@ public class ReturnPathModal extends Modal {
 					e.printStackTrace();
 					Log.e(TAG, e.toString(), e);
 				}
+			}
+		});
+
+		Button searchReturnPathButton = (Button) findViewById(R.id.search_return_path_button);
+		searchReturnPathButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				List<ReservationCandidate> l = new LinkedList<ReservationCandidate>();
+				try {
+					l = inVehicleDeviceActivity.getDataSource()
+							.postReservationCandidates(0, 0, 0);
+				} catch (WebAPIException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					Log.e(TAG, e.toString(), e);
+				}
+
+				ListView reservationCandidateListView = (ListView) findViewById(R.id.reservation_candidates_list_view);
+				ReservationCandidateArrayAdapter adapter = new ReservationCandidateArrayAdapter(
+						inVehicleDeviceActivity,
+						R.layout.reservation_candidate_list_row, l);
+				reservationCandidateListView.setAdapter(adapter);
+				doReservationButton.setVisibility(View.VISIBLE);
 			}
 		});
 

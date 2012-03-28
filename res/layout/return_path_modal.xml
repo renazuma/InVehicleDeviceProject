@@ -52,6 +52,7 @@
             android:layout_height="fill_parent" />
 
         <Button
+            android:id="@+id/search_return_path_button"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="予約候補を検索" />
@@ -66,6 +67,7 @@
         android:id="@+id/do_reservation_button"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         android:text="予約する" />
 
     <com.kogasoftware.odt.invehicledevice.modal.HideModalButton
