@@ -2,14 +2,13 @@ package com.kogasoftware.odt.invehicledevice.navigation;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import org.apache.commons.math.util.MathUtils;
-
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PointF;
 
 import com.google.android.maps.GeoPoint;
+import com.google.common.math.DoubleMath;
 
 abstract public class Sprite extends FrameTask {
 	/**
@@ -150,10 +149,8 @@ abstract public class Sprite extends FrameTask {
 		}
 		originalBitmapWidth = bitmap.getWidth();
 		originalBitmapHeight = bitmap.getHeight();
-		Integer alignedLength = (int) Math.pow(
-				2,
-				Math.ceil(MathUtils.log(2,
-						Math.max(originalBitmapWidth, originalBitmapHeight))));
+		Integer alignedLength = (int) Math.pow(2, Math.ceil(DoubleMath
+				.log2(Math.max(originalBitmapWidth, originalBitmapHeight))));
 		if (bitmapWidth.equals(alignedLength)
 				&& bitmapHeight.equals(alignedLength)) {
 			Texture.update(gl, bitmap, textureId);
@@ -165,7 +162,7 @@ abstract public class Sprite extends FrameTask {
 			Float left = (float) (bitmapWidth - originalBitmapWidth) / 2;
 			Float top = (float) (bitmapHeight - originalBitmapHeight) / 2;
 			new Canvas(alignedBitmap)
-					.drawBitmap(bitmap, left, top, new Paint());
+			.drawBitmap(bitmap, left, top, new Paint());
 			Texture.update(gl, alignedBitmap, textureId);
 			alignedBitmap.recycle();
 		}
