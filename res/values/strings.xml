@@ -1,14 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <string name="hello">Hello World, InVehicleDeviceActivity!</string>
-    <string name="app_name">オンデマンド交通システム 車載機</string>
-    <string name="login_id">ID</string>
-    <string name="login_password">パスワード</string>
-    <string name="login_button">ログイン</string>
-    <string name="accept_send_toast">送信しました</string>
-    <string name="accept_login_toast">ログインしました</string>
-    <string name="fail_send_toast">送信失敗しました</string>
-    <string name="fail_login_toast">ログインできませんでした</string>
-
+    <string name="app_name">オンデマンド交通システム車載機アプリケーション</string>
 </resources>

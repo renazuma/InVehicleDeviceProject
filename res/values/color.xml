@@ -1,6 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="toast_background">#eef4ee</color>
-    <color name="toast_border">#ffd98f6c</color>
-    
 </resources>
