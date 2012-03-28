@@ -64,7 +64,7 @@
     <!-- http://code.google.com/p/android/issues/detail?id=21720#c16 -->
     <target name="-post-compile">
       <delete verbose="true">
-        <fileset dir="${out.classes.absolute.dir}" includes="${library.paths}" />
+        <fileset dir="${out.classes.absolute.dir}" includes="${workaround.exclude.library.paths}" />
       </delete>
       <path id="out.dex.jar.input.ref">
         <fileset dir="${jar.libs.absolute.dir}" includes="*.jar" />
