@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.arrayadapter;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import android.content.Context;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.User;
 
@@ -21,15 +23,17 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 	private final LayoutInflater layoutInflater;
 	private final int resourceId;
 	private final InVehicleDeviceActivity inVehicleDeviceActivity;
+	private final OperationSchedule operationSchedule;
 
 	public ReservationArrayAdapter(
 			InVehicleDeviceActivity inVehicleDeviceActivity, int resourceId,
-			List<Reservation> items) {
+			List<Reservation> items, OperationSchedule operationSchedule) {
 		super(inVehicleDeviceActivity, resourceId, items);
 		this.layoutInflater = (LayoutInflater) inVehicleDeviceActivity
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.resourceId = resourceId;
 		this.inVehicleDeviceActivity = inVehicleDeviceActivity;
+		this.operationSchedule = operationSchedule;
 	}
 
 	@Override
@@ -37,14 +41,22 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		if (convertView == null) {
 			convertView = layoutInflater.inflate(resourceId, null);
 		}
-		Spinner spinner = (Spinner) convertView
-				.findViewById(R.id.change_head_spinner);
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
-				android.R.layout.simple_spinner_item, new String[] { "1名",
-			"2名", "3名" });
-		spinner.setAdapter(adapter);
 
 		final Reservation reservation = getItem(position);
+
+		Spinner spinner = (Spinner) convertView
+				.findViewById(R.id.change_head_spinner);
+
+		List<String> passengerCounts = new LinkedList<String>();
+		Integer max = reservation.getPassengerCount() + 10;
+		for (Integer i = 1; i <= max; ++i) {
+			passengerCounts.add(i + "名");
+		}
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
+				android.R.layout.simple_spinner_item, passengerCounts);
+		spinner.setAdapter(adapter);
+		spinner.setSelection(reservation.getPassengerCount() - 1, true);
+
 		TextView userNameView = (TextView) convertView
 				.findViewById(R.id.user_name);
 
@@ -56,9 +68,26 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 			userNameView.setText("ID:" + reservation.getUserId() + " 様");
 		}
 
+		String text = "";
+		Boolean getOn = false;
+		for (Reservation reservationAsArrival : operationSchedule.getReservationsAsArrival()) {
+			if (reservationAsArrival.getId().equals(reservation.getId())) {
+				getOn = true;
+				break;
+			}
+		}
+
+		if (getOn) {
+			text += "[乗]";
+		} else {
+			text += "[降]";
+		}
+
+		text += " 予約番号 " + reservation.getId();
+
 		TextView reservationIdView = (TextView) convertView
 				.findViewById(R.id.reservation_id);
-		reservationIdView.setText("[乗] 予約番号 " + reservation.getId());
+		reservationIdView.setText(text);
 		Button memoButton = (Button) convertView
 				.findViewById(R.id.memo_button);
 		if (reservation.getMemo().isPresent()) {
@@ -71,7 +100,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 			});
 		} else {
 			// Viewが再利用されることがあるため、明示的に消す
-			memoButton.setVisibility(View.VISIBLE);
+			memoButton.setVisibility(View.GONE);
 		}
 		Button returnPathButton = (Button) convertView
 				.findViewById(R.id.return_path_button);

@@ -284,11 +284,10 @@ public class InVehicleDeviceActivity extends MapActivity {
 			OperationSchedule o = operationSchedules.get(0);
 			rl.addAll(o.getReservationsAsArrival());
 			rl.addAll(o.getReservationsAsDeparture());
+			ReservationArrayAdapter adapter = new ReservationArrayAdapter(this,
+					R.layout.reservation_list_row, rl, o);
+			reservationListView.setAdapter(adapter);
 		}
-
-		ReservationArrayAdapter adapter = new ReservationArrayAdapter(this,
-				R.layout.reservation_list_row, rl);
-		reservationListView.setAdapter(adapter);
 
 		status = Status.PLATFORM;
 		findViewById(R.id.waiting_layout).setVisibility(View.VISIBLE);
