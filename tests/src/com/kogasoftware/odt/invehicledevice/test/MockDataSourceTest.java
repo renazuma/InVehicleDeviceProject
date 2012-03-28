@@ -62,7 +62,7 @@ public class MockDataSourceTest implements DataSource {
 
 	}
 
-	public void setOperationSchedules(Integer i) {
+	public void setOperationSchedules(Integer iOperationScheduleCount) {
 
 		l = new LinkedList<OperationSchedule>();
 
@@ -73,19 +73,24 @@ public class MockDataSourceTest implements DataSource {
 		String u1e = "id: 15,user: {last_name: '名前e', family_name: '名字e'}";
 		String u1f = "id: 16,user: {last_name: '名前f', family_name: '名字f'}";
 
+		String sOperationSchedule = new String();
+
 		try {
 
-			if (i > 0) {
-				JSONObject j1 = new JSONObject("{"
+			if (iOperationScheduleCount > 0) {
+
+				sOperationSchedule = "{"
 						+ "arrival_estimate: '2012-01-01T01:00:00.000+09:00', "
 						+ "departure_estimate: '2012-01-01T02:00:00.000+09:00', "
 						+ "platform: {name: 'テストコガソフトウェア前'}, "
 						+ "reservations_as_arrival: [{passenger_count: 5, " + u1a + "}, {passenger_count: 6, " + u1b + "}, {passenger_count: 7, " + u1c + "}] ,"
-						+ "reservations_as_departure: [{passenger_count: 15, " + u1d + "}, {passenger_count: 16, " + u1e + "}, {passenger_count: 17, " + u1f + "}]}");
+						+ "reservations_as_departure: [{passenger_count: 15, " + u1d + "}, {passenger_count: 16, " + u1e + "}, {passenger_count: 17, " + u1f + "}]}";
+
+				JSONObject j1 = new JSONObject(sOperationSchedule);
 				l.add(new OperationSchedule(j1));
 			}
 
-			if (i > 1) {
+			if (iOperationScheduleCount > 1) {
 				JSONObject j2 = new JSONObject("{"
 						+ "arrival_estimate: '2012-01-01T03:00:00.000+09:00', "
 						+ "departure_estimate: '2012-01-01T04:00:00.000+09:00', "
@@ -95,7 +100,7 @@ public class MockDataSourceTest implements DataSource {
 
 			}
 
-			if (i > 2) {
+			if (iOperationScheduleCount > 2) {
 				JSONObject j3 = new JSONObject("{"
 						+ "arrival_estimate: '2012-01-01T05:00:00.000+09:00', "
 						+ "departure_estimate: '2012-01-01T06:00:00.000+09:00', "
@@ -104,7 +109,7 @@ public class MockDataSourceTest implements DataSource {
 				l.add(new OperationSchedule(j3));
 			}
 
-			if (i > 3) {
+			if (iOperationScheduleCount > 3) {
 				JSONObject j4 = new JSONObject("{"
 						+ "arrival_estimate: '2012-01-01T07:00:00.000+09:00', "
 						+ "departure_estimate: '2012-01-01T08:00:00.000+09:00', "
@@ -114,7 +119,7 @@ public class MockDataSourceTest implements DataSource {
 				l.add(new OperationSchedule(j4));
 			}
 
-			if (i > 4) {
+			if (iOperationScheduleCount > 4) {
 				JSONObject j5 = new JSONObject("{"
 						+ "arrival_estimate: '2012-01-01T09:00:00.000+09:00', "
 						+ "departure_estimate: '2012-01-01T09:01:00.000+09:00', "
@@ -122,7 +127,7 @@ public class MockDataSourceTest implements DataSource {
 				l.add(new OperationSchedule(j5));
 			}
 
-			if (i > 5) {
+			if (iOperationScheduleCount > 5) {
 				JSONObject j6 = new JSONObject("{"
 						+ "arrival_estimate: '2012-01-01T09:03:00.000+09:00', "
 						+ "departure_estimate: '2012-01-01T09:03:30.000+09:00', "
@@ -131,6 +136,91 @@ public class MockDataSourceTest implements DataSource {
 						+ "reservations_as_departure: [{passenger_count: 150}, {passenger_count: 160}, {passenger_count: 170}]}");
 				l.add(new OperationSchedule(j6));
 			}
+
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	public void setReservation(Integer iReservation) {
+
+		l = new LinkedList<OperationSchedule>();
+
+		String u1a = "";
+		String u1b = "";
+		String u1c = "";
+		String u1d = "";
+		String u1e = "";
+		String u1f = "";
+
+		if (iReservation > 0) {
+			u1a = "{passenger_count: 5 ,id: 11,user: {last_name: 'テストa', family_name: '名字a'},memo: 'テストメモ1'}";
+		}
+		if (iReservation > 1) {
+			u1b = ", {passenger_count: 6,id: 12,user: {last_name: 'テストb', family_name: '名字b'}}";
+		}
+		if (iReservation > 2) {
+			u1c = ", {passenger_count: 7 ,id: 13,user: {last_name: 'テストc', family_name: '名字c'},memo: 'テストメモ3'}";
+		}
+		if (iReservation > 3) {
+			u1d = " {passenger_count: 15 ,id: 14,user: {last_name: 'テストd', family_name: '名字d'}}";
+		}
+		if (iReservation > 4) {
+			u1e = ", {passenger_count: 16 ,id: 15,user: {last_name: 'テストe', family_name: '名字e'}}";
+		}
+		if (iReservation > 5) {
+			u1f = ", {passenger_count: 17 ,id: 16,user: {last_name: 'テストf', family_name: '名字f'}}";
+		}
+		try {
+
+			JSONObject j1 = new JSONObject("{"
+					+ "arrival_estimate: '2012-01-01T01:00:00.000+09:00', "
+					+ "departure_estimate: '2012-01-01T02:00:00.000+09:00', "
+					+ "platform: {name: 'テストコガソフトウェア前'}, "
+					+ "reservations_as_arrival: [" + u1a  + u1b  + u1c + "] ,"
+					+ "reservations_as_departure: [ " + u1d + u1e + u1f + "]}");
+			l.add(new OperationSchedule(j1));
+
+			JSONObject j2 = new JSONObject("{"
+					+ "arrival_estimate: '2012-01-01T03:00:00.000+09:00', "
+					+ "departure_estimate: '2012-01-01T04:00:00.000+09:00', "
+					+ "platform: {name: 'テスト上野御徒町駅前'}, "
+					+ "reservations_as_arrival: [{passenger_count: 5}]}");
+			l.add(new OperationSchedule(j2));
+
+			JSONObject j3 = new JSONObject("{"
+					+ "arrival_estimate: '2012-01-01T05:00:00.000+09:00', "
+					+ "departure_estimate: '2012-01-01T06:00:00.000+09:00', "
+					+ "platform: {name: 'テスト上野動物園前'}, "
+					+ "reservations_as_departure: [{passenger_count: 5}, {passenger_count: 6}, {passenger_count: 7}]}");
+			l.add(new OperationSchedule(j3));
+
+			JSONObject j4 = new JSONObject("{"
+					+ "arrival_estimate: '2012-01-01T07:00:00.000+09:00', "
+					+ "departure_estimate: '2012-01-01T08:00:00.000+09:00', "
+					+ "platform: {name: 'テスト上野広小路前'}, "
+					+ "reservations_as_arrival: [] ,"
+					+ "reservations_as_departure: [{passenger_count: 7}]}");
+			l.add(new OperationSchedule(j4));
+
+			JSONObject j5 = new JSONObject("{"
+					+ "arrival_estimate: '2012-01-01T09:00:00.000+09:00', "
+					+ "departure_estimate: '2012-01-01T09:01:00.000+09:00', "
+					+ "platform: {name: 'テスト湯島天神前'}}");
+			l.add(new OperationSchedule(j5));
+
+			JSONObject j6 = new JSONObject("{"
+					+ "arrival_estimate: '2012-01-01T09:03:00.000+09:00', "
+					+ "departure_estimate: '2012-01-01T09:03:30.000+09:00', "
+					+ "platform: {name: 'テストＪＲ御徒町駅前'}, "
+					+ "reservations_as_arrival: [{passenger_count: 50}, {passenger_count: 60}, {passenger_count: 70}] ,"
+					+ "reservations_as_departure: [{passenger_count: 150}, {passenger_count: 160}, {passenger_count: 170}]}");
+			l.add(new OperationSchedule(j6));
 
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
