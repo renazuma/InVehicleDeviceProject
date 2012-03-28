@@ -59,9 +59,9 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		TextView reservationIdView = (TextView) convertView
 				.findViewById(R.id.reservation_id);
 		reservationIdView.setText("[乗] 予約番号 " + reservation.getId());
+		Button memoButton = (Button) convertView
+				.findViewById(R.id.memo_button);
 		if (reservation.getMemo().isPresent()) {
-			Button memoButton = (Button) convertView
-					.findViewById(R.id.memo_button);
 			memoButton.setVisibility(View.VISIBLE);
 			memoButton.setOnClickListener(new OnClickListener() {
 				@Override
@@ -69,6 +69,9 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 					inVehicleDeviceActivity.showMemoModal(reservation);
 				}
 			});
+		} else {
+			// Viewが再利用されることがあるため、明示的に消す
+			memoButton.setVisibility(View.VISIBLE);
 		}
 		Button returnPathButton = (Button) convertView
 				.findViewById(R.id.return_path_button);
