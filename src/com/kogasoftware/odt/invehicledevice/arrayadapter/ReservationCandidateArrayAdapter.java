@@ -11,14 +11,12 @@ import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.webapi.model.ReservationCandidate;
 
 public class ReservationCandidateArrayAdapter extends
 ArrayAdapter<ReservationCandidate> {
 	private final LayoutInflater layoutInflater;
 	private final int resourceId;
-	private final DataSource dataSource;
 
 	public ReservationCandidateArrayAdapter(InVehicleDeviceActivity inVehicleDeviceActivity, int resourceId,
 			List<ReservationCandidate> items) {
@@ -26,7 +24,6 @@ ArrayAdapter<ReservationCandidate> {
 		this.layoutInflater = (LayoutInflater) inVehicleDeviceActivity
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.resourceId = resourceId;
-		this.dataSource = inVehicleDeviceActivity.getDataSource();
 	}
 
 	@Override

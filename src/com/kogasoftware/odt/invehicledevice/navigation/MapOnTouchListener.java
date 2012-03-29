@@ -13,8 +13,6 @@ public class MapOnTouchListener implements OnTouchListener {
 	private Double orientation = 0d;
 	private Double lastX = 0d;
 	private Double lastY = 0d;
-	private Double downX = 0d;
-	private Double downY = 0d;
 	private final Double MOTION_SMOOTHER_LATENCY = 80.0;
 	private final MotionSmoother latitudeMotionSmoother = new LazyMotionSmoother(
 			MOTION_SMOOTHER_LATENCY);
@@ -64,24 +62,14 @@ public class MapOnTouchListener implements OnTouchListener {
 		if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
 			lastX = x;
 			lastY = y;
-			downX = x;
-			downY = y;
 			GeoPoint center = mapView.getMapCenter();
 			lastLatitude = center.getLatitudeE6();
 			lastLongitude = center.getLongitudeE6();
 			return true;
 		}
 
-		Double dx = 0.0;
-		Double dy = 0.0;
-
-		// if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-		// dx = downX - x;
-		// dy = downY - y;
-		// } else {
-		dx = lastX - x;
-		dy = lastY - y;
-		// }
+		Double dx = lastX - x;
+		Double dy = lastY - y;
 
 		lastX = x;
 		lastY = y;

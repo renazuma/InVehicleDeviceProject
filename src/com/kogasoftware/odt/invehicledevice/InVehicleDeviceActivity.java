@@ -1,14 +1,16 @@
 package com.kogasoftware.odt.invehicledevice;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import jp.tomorrowkey.android.vtextviewer.VTextView;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -17,6 +19,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.android.maps.MapActivity;
+import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.arrayadapter.ReservationArrayAdapter;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
@@ -32,7 +35,6 @@ import com.kogasoftware.odt.invehicledevice.modal.ScheduleModal;
 import com.kogasoftware.odt.invehicledevice.modal.StartCheckModal;
 import com.kogasoftware.odt.invehicledevice.modal.StopCheckModal;
 import com.kogasoftware.odt.invehicledevice.modal.StopModal;
-import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.Reservation;
@@ -41,23 +43,19 @@ import com.kogasoftware.odt.webapi.model.VehicleNotification;
 public class InVehicleDeviceActivity extends MapActivity {
 	private static final String TAG = InVehicleDeviceActivity.class
 			.getSimpleName();
-	private static final Integer RESERVATION_LIST_SCROLL_UNIT = 50;
-	private final DataSource dataSource = DataSourceFactory.newInstance();
 	private final BlockingQueue<String> voices = new LinkedBlockingQueue<String>();
-	private final InVehicleDeviceStatus status = new InVehicleDeviceStatus();
+	private final InVehicleDeviceLogic logic = new InVehicleDeviceLogic();
+	private final DataSource dataSource = DataSourceFactory.newInstance();
+	private final Integer CHECK_LOGIC_INITIALIZED_INTERVAL = 3000;
 	private final Integer POLL_VEHICLE_NOTIFICATION_INTERVAL = 10000;
 	private final Handler pollVehicleNotificationHandler = new Handler();
 	private final Runnable pollVehicleNotification = new Runnable() {
 		@Override
 		public void run() {
-			try {
-				List<VehicleNotification> vehicleNotifications = dataSource
-						.getVehicleNotifications();
-				if (!vehicleNotifications.isEmpty()) {
-					notificationModal.show(vehicleNotifications);
-				}
-			} catch (WebAPIException e) {
-				Log.e(TAG, "", e);
+			List<VehicleNotification> vehicleNotifications = logic
+					.pollVehicleNotifications();
+			if (!vehicleNotifications.isEmpty()) {
+				notificationModal.show(vehicleNotifications);
 			}
 
 			pollVehicleNotificationHandler.postDelayed(this,
@@ -88,10 +86,10 @@ public class InVehicleDeviceActivity extends MapActivity {
 	private Button scheduleButton = null;
 	private Button mapButton = null;
 	private Button configButton = null;
-	private TextView statusTextView = null;
 	private View drivingView1Layout = null;
 	private View drivingView2Layout = null;
 	private ListView reservationListView = null;
+	private TextView statusTextView = null;
 
 	private NavigationModal navigationModal = null;
 	private ConfigModal configModal = null;
@@ -104,6 +102,8 @@ public class InVehicleDeviceActivity extends MapActivity {
 	private ReturnPathModal returnPathModal = null;
 	private StopCheckModal stopCheckModal = null;
 	private StopModal stopModal = null;
+
+	private ProgressDialog waitForInitializeProgressDialog = null;
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
@@ -139,20 +139,16 @@ public class InVehicleDeviceActivity extends MapActivity {
 		notificationModal = new NotificationModal(this);
 		scheduleChangedModal = new ScheduleChangedModal(this);
 
-		((VTextView) findViewById(R.id.next_stop_text_view))
-		.setText("次の乗降場てすとて");
-		((VTextView) findViewById(R.id.next_stop_but_one_text_view))
-		.setText("次の次の乗降場てすと");
-		((VTextView) findViewById(R.id.next_stop_but_two_text_view))
-		.setText("次の次の次の乗降場てす");
-
 		toggleDrivingViewHandler.post(toggleDrivingView);
 		pollVehicleNotificationHandler.post(pollVehicleNotification);
 
 		changeStatusButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				if (status.getStatus() == InVehicleDeviceStatus.Status.DRIVE) {
+				if (logic.getRestOperationSchedules().isEmpty()) {
+					return;
+				}
+				if (logic.getStatus() == InVehicleDeviceStatus.Status.DRIVE) {
 					enterPlatformStatus();
 				} else {
 					startCheckModal.show();
@@ -177,7 +173,7 @@ public class InVehicleDeviceActivity extends MapActivity {
 		scheduleButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				scheduleModal.show(status.getOperationSchedules());
+				scheduleModal.show(logic.getOperationSchedules());
 			}
 		});
 
@@ -224,19 +220,53 @@ public class InVehicleDeviceActivity extends MapActivity {
 			}
 		});
 
-		status.update(dataSource);
-		enterDriveStatus();
+		waitForInitializeProgressDialog = new ProgressDialog(this);
+		waitForInitializeProgressDialog.setMessage("運行情報を受信しています");
+		waitForInitializeProgressDialog
+		.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
+		if (logic.isInitialized()) {
+			findViewById(R.id.root_frame_layout).setVisibility(
+					View.VISIBLE);
+			if (logic.getStatus() == InVehicleDeviceStatus.Status.PLATFORM) {
+				enterPlatformStatus();
+			} else {
+				enterDriveStatus();
+			}
+		} else {
+			waitForInitializeProgressDialog.show();
+			final Handler waitForInitHandler = new Handler();
+			final Runnable waitForInitRunnable = new Runnable() {
+				@Override
+				public void run() {
+					if (!waitForInitializeProgressDialog.isShowing()) {
+						finish();
+						return;
+					}
+					if (logic.isInitialized()) {
+						findViewById(R.id.root_frame_layout).setVisibility(
+								View.VISIBLE);
+						enterDriveStatus();
+						waitForInitializeProgressDialog.dismiss();
+						return;
+					}
+					waitForInitHandler.postDelayed(this,
+							CHECK_LOGIC_INITIALIZED_INTERVAL);
+				}
+			};
+			waitForInitHandler.post(waitForInitRunnable);
+		}
 		navigationModal.onResumeActivity();
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
+		waitForInitializeProgressDialog.dismiss();
 		navigationModal.onPauseActivity();
 	}
 
@@ -245,6 +275,7 @@ public class InVehicleDeviceActivity extends MapActivity {
 		super.onDestroy();
 		toggleDrivingViewHandler.removeCallbacks(toggleDrivingView);
 		pollVehicleNotificationHandler.removeCallbacks(pollVehicleNotification);
+		voiceThread.interrupt();
 	}
 
 	@Override
@@ -253,45 +284,96 @@ public class InVehicleDeviceActivity extends MapActivity {
 	}
 
 	public void enterPlatformStatus() {
-		if (!status.enterPlatformStatus()) {
-			return;
-		}
-		if (!status.hasCurrentOperationSchedule()) {
+		logic.enterPlatformStatus();
+
+		List<OperationSchedule> operationSchedules = logic
+				.getRestOperationSchedules();
+		if (operationSchedules.isEmpty()) {
 			return;
 		}
 
-		List<Reservation> rl = new LinkedList<Reservation>();
-		OperationSchedule o = status.getCurrentOperationSchedule();
-		rl.addAll(o.getReservationsAsArrival());
-		rl.addAll(o.getReservationsAsDeparture());
+		OperationSchedule operationSchedule = operationSchedules.get(0);
+		if (!operationSchedule.getPlatform().isPresent()) {
+			return;
+		}
+		DateFormat dateFormat = new SimpleDateFormat("H時m分"); // TODO
+		Platform platform = operationSchedule.getPlatform().get();
+		((TextView) findViewById(R.id.platform_name_text_view))
+		.setText(platform.getName());
+		((TextView) findViewById(R.id.platform_departure_time_text_view))
+		.setText(dateFormat.format(operationSchedule
+				.getDepartureEstimate()));
+
+		List<Reservation> reservations = new LinkedList<Reservation>();
+		reservations.addAll(operationSchedule.getReservationsAsArrival());
+		reservations.addAll(operationSchedule.getReservationsAsDeparture());
 		ReservationArrayAdapter adapter = new ReservationArrayAdapter(this,
-				R.layout.reservation_list_row, rl, o);
+				R.layout.reservation_list_row, reservations, operationSchedule);
 		reservationListView.setAdapter(adapter);
 
 		findViewById(R.id.waiting_layout).setVisibility(View.VISIBLE);
 		statusTextView.setText("停車中");
-		changeStatusButton.setText("出発する");
+		if (operationSchedules.size() > 1) {
+			changeStatusButton.setText("出発する");
+		} else {
+			changeStatusButton.setText("確定する");
+		}
 	}
 
 	public void enterDriveStatus() {
-		if (!status.enterDriveStatus()) {
-			return;
-		}
-		if (!status.hasCurrentOperationSchedule()) {
+		logic.enterDriveStatus();
+
+		List<OperationSchedule> operationSchedules = logic
+				.getRestOperationSchedules();
+		if (operationSchedules.isEmpty()) {
 			return;
 		}
 
-		OperationSchedule o = status.getCurrentOperationSchedule();
-		if (!o.getPlatform().isPresent()) {
+		OperationSchedule operationSchedule = operationSchedules.get(0);
+		if (!operationSchedule.getPlatform().isPresent()) {
 			return;
 		}
-		Platform p = o.getPlatform().get();
+
+		Platform platform = operationSchedule.getPlatform().get();
+		((TextView) findViewById(R.id.next_platform_name_text_view))
+		.setText(platform.getName());
+		((TextView) findViewById(R.id.next_platform_name_ruby_text_view))
+		.setText(platform.getNameRuby());
+
+		DateFormat dateFormat = new SimpleDateFormat("H時m分"); // TODO
+		((VTextView) findViewById(R.id.platform_name_1_beyond_text_view))
+		.setText(platform.getName());
+		((TextView) findViewById(R.id.platform_arrival_time_text_view))
+		.setText(dateFormat.format(operationSchedule
+				.getArrivalEstimate()));
+
+		VTextView platformName2BeyondTextView = ((VTextView) findViewById(R.id.platform_name_2_beyond_text_view));
+		platformName2BeyondTextView.setText("");
+		if (operationSchedules.size() > 1) {
+			Optional<Platform> optionalPlatform = operationSchedules.get(1)
+					.getPlatform();
+			if (optionalPlatform.isPresent()) {
+				platformName2BeyondTextView.setText(optionalPlatform.get()
+						.getName());
+			}
+		}
+
+		VTextView platformName3BeyondTextView = ((VTextView) findViewById(R.id.platform_name_3_beyond_text_view));
+		platformName3BeyondTextView.setText("");
+		if (operationSchedules.size() > 2) {
+			Optional<Platform> optionalPlatform = operationSchedules.get(2)
+					.getPlatform();
+			if (optionalPlatform.isPresent()) {
+				platformName3BeyondTextView.setText(optionalPlatform.get()
+						.getName());
+			}
+		}
 
 		statusTextView.setText("走行中");
 		changeStatusButton.setText("到着しました");
 		findViewById(R.id.waiting_layout).setVisibility(View.GONE);
-		if (!voices.offer("出発します。次は、" + p.getNameRuby() + "。" + p.getNameRuby()
-				+ "。")) {
+		if (!voices.offer("出発します。次は、" + platform.getNameRuby() + "。"
+				+ platform.getNameRuby() + "。")) {
 			Log.w(TAG, "!voices.offer() failed");
 		}
 	}
@@ -317,16 +399,19 @@ public class InVehicleDeviceActivity extends MapActivity {
 	}
 
 	public void showScheduleModal() {
-		scheduleModal.show(status.getOperationSchedules());
+		scheduleModal.show(logic.getOperationSchedules());
 	}
 
 	public DataSource getDataSource() {
 		return dataSource;
 	}
 
-	protected Integer getReservationListScrollPixels() {
-		DisplayMetrics displayMetrics = new DisplayMetrics();
-		getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-		return (int) (RESERVATION_LIST_SCROLL_UNIT * displayMetrics.scaledDensity);
+	@Override
+	protected void finalize() {
+		voiceThread.interrupt();
+		try {
+			super.finalize();
+		} catch (Throwable e) {
+		}
 	}
 }

@@ -73,26 +73,29 @@ abstract public class FroyoOrientationSensor extends OrientationSensor {
 		case Sensor.TYPE_ACCELEROMETER:
 			accelerometerValues = event.values.clone();
 			break;
+		default:
+			return;
 		}
 
-		if (magneticValues != null && accelerometerValues != null) {
-
-			SensorManager.getRotationMatrix(inR, I, accelerometerValues,
-					magneticValues);
-
-			// Activityの表示が縦固定の場合。横向きになる場合、修正が必要です
-			SensorManager.remapCoordinateSystem(inR, SensorManager.AXIS_X,
-					SensorManager.AXIS_Z, outR);
-			SensorManager.getOrientation(outR, orientationValues);
-
-			// logger.trace(String.valueOf(Math.toDegrees(orientationValues[0]))
-			// + ", "
-			// + // Z軸方向,azmuth
-			// String.valueOf(Math.toDegrees(orientationValues[1])) + ", "
-			// + // X軸方向,pitch
-			// String.valueOf(Math.toDegrees(orientationValues[2]))); //
-			// Y軸方向,roll
-			onOrientationChanged((double) orientationValues[0]);
+		if (magneticValues == null || accelerometerValues == null) {
+			return;
 		}
+
+		SensorManager.getRotationMatrix(inR, I, accelerometerValues,
+				magneticValues);
+
+		// Activityの表示が縦固定の場合。横向きになる場合、修正が必要です
+		SensorManager.remapCoordinateSystem(inR, SensorManager.AXIS_X,
+				SensorManager.AXIS_Z, outR);
+		SensorManager.getOrientation(outR, orientationValues);
+
+		// logger.trace(String.valueOf(Math.toDegrees(orientationValues[0]))
+		// + ", "
+		// + // Z軸方向,azmuth
+		// String.valueOf(Math.toDegrees(orientationValues[1])) + ", "
+		// + // X軸方向,pitch
+		// String.valueOf(Math.toDegrees(orientationValues[2]))); //
+		// Y軸方向,roll
+		onOrientationChanged((double) orientationValues[0]);
 	}
 }
