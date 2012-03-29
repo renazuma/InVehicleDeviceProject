@@ -1,6 +1,8 @@
 package com.kogasoftware.odt.invehicledevice.test;
 
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,7 +20,16 @@ import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class MockDataSourceTest implements DataSource {
 
-	private List<OperationSchedule> l = new LinkedList<OperationSchedule>();
+	private List<OperationSchedule> lOperationSchedule = new LinkedList<OperationSchedule>();
+	private List<ReservationCandidate> lReservationCandidate = new LinkedList<ReservationCandidate>();
+
+	@Override
+	public List<ReservationCandidate> postReservationCandidates(Integer userId,
+			Integer departurePlatformId, Integer arrivalPlatformId)
+					throws WebAPIException {
+		return lReservationCandidate;
+	}
+
 
 	@Override
 	public InVehicleDevice getInVehicleDevice() {
@@ -32,7 +43,7 @@ public class MockDataSourceTest implements DataSource {
 	@Override
 	public List<OperationSchedule> getOperationSchedules() {
 
-		return l;
+		return lOperationSchedule;
 
 	}
 
@@ -64,7 +75,7 @@ public class MockDataSourceTest implements DataSource {
 
 	public void setOperationSchedules(Integer iOperationScheduleCount) {
 
-		l = new LinkedList<OperationSchedule>();
+		lOperationSchedule = new LinkedList<OperationSchedule>();
 
 		String u1a = "id: 11,user: {last_name: '名前a', family_name: '名字a'},memo: 'テストメモ1'";
 		String u1b = "id: 12,user: {last_name: '名前b', family_name: '名字b'},memo: 'テストメモ2'";
@@ -87,7 +98,7 @@ public class MockDataSourceTest implements DataSource {
 						+ "reservations_as_departure: [{passenger_count: 15, " + u1d + "}, {passenger_count: 16, " + u1e + "}, {passenger_count: 17, " + u1f + "}]}";
 
 				JSONObject j1 = new JSONObject(sOperationSchedule);
-				l.add(new OperationSchedule(j1));
+				lOperationSchedule.add(new OperationSchedule(j1));
 			}
 
 			if (iOperationScheduleCount > 1) {
@@ -96,7 +107,7 @@ public class MockDataSourceTest implements DataSource {
 						+ "departure_estimate: '2012-01-01T04:00:00.000+09:00', "
 						+ "platform: {name: 'テスト上野御徒町駅前'}, "
 						+ "reservations_as_arrival: [{passenger_count: 5}]}");
-				l.add(new OperationSchedule(j2));
+				lOperationSchedule.add(new OperationSchedule(j2));
 
 			}
 
@@ -106,7 +117,7 @@ public class MockDataSourceTest implements DataSource {
 						+ "departure_estimate: '2012-01-01T06:00:00.000+09:00', "
 						+ "platform: {name: 'テスト上野動物園前'}, "
 						+ "reservations_as_departure: [{passenger_count: 5}, {passenger_count: 6}, {passenger_count: 7}]}");
-				l.add(new OperationSchedule(j3));
+				lOperationSchedule.add(new OperationSchedule(j3));
 			}
 
 			if (iOperationScheduleCount > 3) {
@@ -116,7 +127,7 @@ public class MockDataSourceTest implements DataSource {
 						+ "platform: {name: 'テスト上野広小路前'}, "
 						+ "reservations_as_arrival: [] ,"
 						+ "reservations_as_departure: [{passenger_count: 7}]}");
-				l.add(new OperationSchedule(j4));
+				lOperationSchedule.add(new OperationSchedule(j4));
 			}
 
 			if (iOperationScheduleCount > 4) {
@@ -124,7 +135,7 @@ public class MockDataSourceTest implements DataSource {
 						+ "arrival_estimate: '2012-01-01T09:00:00.000+09:00', "
 						+ "departure_estimate: '2012-01-01T09:01:00.000+09:00', "
 						+ "platform: {name: 'テスト湯島天神前'}}");
-				l.add(new OperationSchedule(j5));
+				lOperationSchedule.add(new OperationSchedule(j5));
 			}
 
 			if (iOperationScheduleCount > 5) {
@@ -134,7 +145,7 @@ public class MockDataSourceTest implements DataSource {
 						+ "platform: {name: 'テストＪＲ御徒町駅前'}, "
 						+ "reservations_as_arrival: [{passenger_count: 50}, {passenger_count: 60}, {passenger_count: 70}] ,"
 						+ "reservations_as_departure: [{passenger_count: 150}, {passenger_count: 160}, {passenger_count: 170}]}");
-				l.add(new OperationSchedule(j6));
+				lOperationSchedule.add(new OperationSchedule(j6));
 			}
 
 		} catch (ParseException e) {
@@ -149,7 +160,7 @@ public class MockDataSourceTest implements DataSource {
 
 	public void setReservation(Integer iReservation) {
 
-		l = new LinkedList<OperationSchedule>();
+		lOperationSchedule = new LinkedList<OperationSchedule>();
 
 		String u1a = "";
 		String u1b = "";
@@ -159,7 +170,7 @@ public class MockDataSourceTest implements DataSource {
 		String u1f = "";
 
 		if (iReservation > 0) {
-			u1a = "{passenger_count: 5 ,id: 11,user: {last_name: 'テストa', family_name: '名字a'},memo: 'テストメモ1'}";
+			u1a = "{passenger_count: 1 ,id: 11,user: {last_name: 'テストa', family_name: '名字a'},memo: 'テストメモ1'}";
 		}
 		if (iReservation > 1) {
 			u1b = ", {passenger_count: 6,id: 12,user: {last_name: 'テストb', family_name: '名字b'}}";
@@ -184,21 +195,21 @@ public class MockDataSourceTest implements DataSource {
 					+ "platform: {name: 'テストコガソフトウェア前'}, "
 					+ "reservations_as_arrival: [" + u1a  + u1b  + u1c + "] ,"
 					+ "reservations_as_departure: [ " + u1d + u1e + u1f + "]}");
-			l.add(new OperationSchedule(j1));
+			lOperationSchedule.add(new OperationSchedule(j1));
 
 			JSONObject j2 = new JSONObject("{"
 					+ "arrival_estimate: '2012-01-01T03:00:00.000+09:00', "
 					+ "departure_estimate: '2012-01-01T04:00:00.000+09:00', "
 					+ "platform: {name: 'テスト上野御徒町駅前'}, "
 					+ "reservations_as_arrival: [{passenger_count: 5}]}");
-			l.add(new OperationSchedule(j2));
+			lOperationSchedule.add(new OperationSchedule(j2));
 
 			JSONObject j3 = new JSONObject("{"
 					+ "arrival_estimate: '2012-01-01T05:00:00.000+09:00', "
 					+ "departure_estimate: '2012-01-01T06:00:00.000+09:00', "
 					+ "platform: {name: 'テスト上野動物園前'}, "
 					+ "reservations_as_departure: [{passenger_count: 5}, {passenger_count: 6}, {passenger_count: 7}]}");
-			l.add(new OperationSchedule(j3));
+			lOperationSchedule.add(new OperationSchedule(j3));
 
 			JSONObject j4 = new JSONObject("{"
 					+ "arrival_estimate: '2012-01-01T07:00:00.000+09:00', "
@@ -206,13 +217,13 @@ public class MockDataSourceTest implements DataSource {
 					+ "platform: {name: 'テスト上野広小路前'}, "
 					+ "reservations_as_arrival: [] ,"
 					+ "reservations_as_departure: [{passenger_count: 7}]}");
-			l.add(new OperationSchedule(j4));
+			lOperationSchedule.add(new OperationSchedule(j4));
 
 			JSONObject j5 = new JSONObject("{"
 					+ "arrival_estimate: '2012-01-01T09:00:00.000+09:00', "
 					+ "departure_estimate: '2012-01-01T09:01:00.000+09:00', "
 					+ "platform: {name: 'テスト湯島天神前'}}");
-			l.add(new OperationSchedule(j5));
+			lOperationSchedule.add(new OperationSchedule(j5));
 
 			JSONObject j6 = new JSONObject("{"
 					+ "arrival_estimate: '2012-01-01T09:03:00.000+09:00', "
@@ -220,7 +231,7 @@ public class MockDataSourceTest implements DataSource {
 					+ "platform: {name: 'テストＪＲ御徒町駅前'}, "
 					+ "reservations_as_arrival: [{passenger_count: 50}, {passenger_count: 60}, {passenger_count: 70}] ,"
 					+ "reservations_as_departure: [{passenger_count: 150}, {passenger_count: 160}, {passenger_count: 170}]}");
-			l.add(new OperationSchedule(j6));
+			lOperationSchedule.add(new OperationSchedule(j6));
 
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
@@ -232,12 +243,40 @@ public class MockDataSourceTest implements DataSource {
 
 	}
 
-	@Override
-	public List<ReservationCandidate> postReservationCandidates(Integer userId,
+	public void setReservationCandidate(Integer iCount,Integer userId,
 			Integer departurePlatformId, Integer arrivalPlatformId)
-					throws WebAPIException {
-		return new LinkedList<ReservationCandidate>();
+					 {
+		DateFormat f = new SimpleDateFormat("mm:ss");
+		try {
+			ReservationCandidate c1 = new ReservationCandidate();
+			c1.setDepartureTime(f.parse("12:34"));
+			c1.setArrivalTime(f.parse("12:35"));
+			lReservationCandidate.add(c1);
+
+			ReservationCandidate c2 = new ReservationCandidate();
+			c2.setDepartureTime(f.parse("13:45"));
+			c2.setArrivalTime(f.parse("15:12"));
+			lReservationCandidate.add(c2);
+
+			ReservationCandidate c3 = new ReservationCandidate();
+			c3.setDepartureTime(f.parse("16:01"));
+			c3.setArrivalTime(f.parse("17:39"));
+			lReservationCandidate.add(c3);
+
+			ReservationCandidate c4 = new ReservationCandidate();
+			c4.setDepartureTime(f.parse("18:01"));
+			c4.setArrivalTime(f.parse("18:39"));
+			lReservationCandidate.add(c4);
+
+			ReservationCandidate c5 = new ReservationCandidate();
+			c5.setDepartureTime(f.parse("19:01"));
+			c5.setArrivalTime(f.parse("20:39"));
+			lReservationCandidate.add(c5);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 	}
+
 
 	@Override
 	public Reservation postReservation(Integer reservationCandidateId)

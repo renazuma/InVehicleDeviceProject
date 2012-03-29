@@ -28,13 +28,13 @@ public class ConfigTestCase extends
 	}
 
 
-	public void test01起動時は非表示() {
+	public void test01_起動時は非表示() {
 		assertEquals(View.GONE, solo.getView(R.id.config_modal)
 				.getVisibility());
 	}
 
-	public void test02運行管理ボタンを押したら表示() {
-		test01起動時は非表示();
+	public void test02_運行管理ボタンを押したら表示() {
+		test01_起動時は非表示();
 		solo.clickOnView(solo.getView(R.id.config_button));
 
 		getInstrumentation().waitForIdleSync();
@@ -43,8 +43,8 @@ public class ConfigTestCase extends
 				.getVisibility());
 	}
 
-	public void test03戻るボタンを押したら消える() {
-		test02運行管理ボタンを押したら表示();
+	public void test03_戻るボタンを押したら消える() {
+		test02_運行管理ボタンを押したら表示();
 		solo.clickOnView(solo.getView(R.id.config_hide_button));
 
 		getInstrumentation().waitForIdleSync();
@@ -53,8 +53,8 @@ public class ConfigTestCase extends
 				.getVisibility());
 	}
 
-	public void test04一回閉じてからもう一度運行管理ボタンを押したら表示() {
-		test03戻るボタンを押したら消える();
+	public void test04_一回閉じてからもう一度運行管理ボタンを押したら表示() {
+		test03_戻るボタンを押したら消える();
 		solo.clickOnView(solo.getView(R.id.config_button));
 
 		getInstrumentation().waitForIdleSync();
@@ -63,8 +63,8 @@ public class ConfigTestCase extends
 				.getVisibility());
 	}
 
-	public void test05中止ボタンを押すと中止確認画面が表示() {
-		test02運行管理ボタンを押したら表示();
+	public void test05_中止ボタンを押すと中止確認画面が表示() {
+		test02_運行管理ボタンを押したら表示();
 		assertEquals(View.GONE, solo.getView(R.id.stop_check_modal)
 				.getVisibility());
 		solo.clickOnView(solo.getView(R.id.stop_check_button));
@@ -75,8 +75,8 @@ public class ConfigTestCase extends
 				.getVisibility());
 	}
 
-	public void test06中止確認画面で中止ボタンを押すと中止画面が表示() {
-		test05中止ボタンを押すと中止確認画面が表示();
+	public void test06_中止確認画面で中止ボタンを押すと中止画面が表示() {
+		test05_中止ボタンを押すと中止確認画面が表示();
 		assertEquals(View.GONE, solo.getView(R.id.stop_modal).getVisibility());
 		solo.clickOnView(solo.getView(R.id.stop_button));
 
@@ -86,8 +86,8 @@ public class ConfigTestCase extends
 				.getVisibility());
 	}
 
-	public void test07中止確認画面で戻るボタンを押すと中止確認が消える() {
-		test05中止ボタンを押すと中止確認画面が表示();
+	public void test07_中止確認画面で戻るボタンを押すと中止確認が消える() {
+		test05_中止ボタンを押すと中止確認画面が表示();
 		solo.clickOnView(solo.getView(R.id.stop_cancel_button));
 
 		getInstrumentation().waitForIdleSync();
@@ -96,8 +96,8 @@ public class ConfigTestCase extends
 				.getVisibility());
 	}
 
-	public void test08一時停止ボタンを押すと一時停止画面が表示() {
-		test02運行管理ボタンを押したら表示();
+	public void test08_一時停止ボタンを押すと一時停止画面が表示() {
+		test02_運行管理ボタンを押したら表示();
 		assertEquals(View.GONE, solo.getView(R.id.pause_modal)
 				.getVisibility());
 		solo.clickOnView(solo.getView(R.id.pause_button));
@@ -108,8 +108,8 @@ public class ConfigTestCase extends
 				.getVisibility());
 	}
 
-	public void test09一時停止画面で運行管理ボタンを押すと一時停止画面と設定画面が非表示() {
-		test08一時停止ボタンを押すと一時停止画面が表示();
+	public void test09_一時停止画面で運行管理ボタンを押すと一時停止画面と設定画面が非表示() {
+		test08_一時停止ボタンを押すと一時停止画面が表示();
 		solo.clickOnView(solo.getView(R.id.pause_cancel_button));
 
 		getInstrumentation().waitForIdleSync();
