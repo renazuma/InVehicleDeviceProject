@@ -23,14 +23,14 @@ public class NotificationTestCase extends
 		solo = new Solo(getInstrumentation(), getActivity());
 	}
 
-	public void test01起動時は非表示() {
+	public void test01_起動時は非表示() {
 		assertEquals(View.GONE, solo.getView(R.id.notification_modal)
 				.getVisibility());
 	}
 
-	public void test02走行中に管理者から連絡が来たら表示() {
-		test01起動時は非表示();
-		
+	public void test02_走行中に管理者から連絡が来たら表示() {
+		test01_起動時は非表示();
+
 		//TODO 管理者からの連絡部分が実装されたら置き換える
 		solo.clickOnView(solo.getView(R.id.status_text_view));
 
@@ -40,9 +40,9 @@ public class NotificationTestCase extends
 				.getVisibility());
 	}
 
-	public void test03はいを押下して閉じ走行中に戻る() {
-		test02走行中に管理者から連絡が来たら表示();
-		
+	public void test03_はいを押下して閉じ走行中に戻る() {
+		test02_走行中に管理者から連絡が来たら表示();
+
 		solo.clickOnButton("はい");
 
 		getInstrumentation().waitForIdleSync();
@@ -54,9 +54,9 @@ public class NotificationTestCase extends
 
 	}
 
-	public void test04いいえを押下して閉じ走行中に戻る() {
-		test02走行中に管理者から連絡が来たら表示();
-		
+	public void test04_いいえを押下して閉じ走行中に戻る() {
+		test02_走行中に管理者から連絡が来たら表示();
+
 		solo.clickOnButton("いいえ");
 
 		getInstrumentation().waitForIdleSync();
@@ -68,11 +68,11 @@ public class NotificationTestCase extends
 				.getVisibility());
 	}
 
-	public void test05停車中に管理者から連絡が来たら表示() {
-		test01起動時は非表示();
+	public void test05_停車中に管理者から連絡が来たら表示() {
+		test01_起動時は非表示();
 
 		solo.clickOnButton("到着しました");
-		
+
 		//TODO 管理者からの連絡部分が実装されたら置き換える
 		solo.clickOnView(solo.getView(R.id.status_text_view));
 
@@ -82,9 +82,9 @@ public class NotificationTestCase extends
 				.getVisibility());
 	}
 
-	public void test06はいを押下して閉じ停車中に戻る() {
-		test05停車中に管理者から連絡が来たら表示();
-		
+	public void test06_はいを押下して閉じ停車中に戻る() {
+		test05_停車中に管理者から連絡が来たら表示();
+
 		solo.clickOnButton("はい");
 
 		getInstrumentation().waitForIdleSync();
@@ -96,9 +96,9 @@ public class NotificationTestCase extends
 
 	}
 
-	public void test07いいえを押下して閉じ停車中に戻る() {
-		test05停車中に管理者から連絡が来たら表示();
-		
+	public void test07_いいえを押下して閉じ停車中に戻る() {
+		test05_停車中に管理者から連絡が来たら表示();
+
 		solo.clickOnButton("いいえ");
 
 		getInstrumentation().waitForIdleSync();
@@ -110,12 +110,11 @@ public class NotificationTestCase extends
 				.getVisibility());
 	}
 
-	public void test08管理画面中に管理者から連絡が来たら表示() {
-		test01起動時は非表示();
+	public void test08_管理画面中に管理者から連絡が来たら表示() {
+		test01_起動時は非表示();
 
-//		solo.clickOnButton("運行管理");
-		solo.clickOnButton("管理");
-		
+		solo.clickOnButton("運行管理");
+
 		//TODO 管理者からの連絡部分が実装されたら置き換える
 		solo.clickOnView(solo.getView(R.id.status_text_view));
 
@@ -125,9 +124,9 @@ public class NotificationTestCase extends
 				.getVisibility());
 	}
 
-	public void test09はいを押下して閉じ運行管理画面に戻る() {
-		test08管理画面中に管理者から連絡が来たら表示();
-		
+	public void test09_はいを押下して閉じ運行管理画面に戻る() {
+		test08_管理画面中に管理者から連絡が来たら表示();
+
 		solo.clickOnButton("はい");
 
 		getInstrumentation().waitForIdleSync();
@@ -139,9 +138,9 @@ public class NotificationTestCase extends
 
 	}
 
-	public void test10いいえを押下して閉じ運行管理画面に戻る() {
-		test08管理画面中に管理者から連絡が来たら表示();
-		
+	public void test10_いいえを押下して閉じ運行管理画面に戻る() {
+		test08_管理画面中に管理者から連絡が来たら表示();
+
 		solo.clickOnButton("いいえ");
 
 		getInstrumentation().waitForIdleSync();
@@ -152,12 +151,12 @@ public class NotificationTestCase extends
 		assertEquals(View.VISIBLE, solo.getView(R.id.config_modal)
 				.getVisibility());
 	}
-	
-	public void test11地図画面中に管理者から連絡が来たら表示() {
-		test01起動時は非表示();
+
+	public void test11_地図画面中に管理者から連絡が来たら表示() {
+		test01_起動時は非表示();
 
 		solo.clickOnButton("地図");
-		
+
 		//TODO 管理者からの連絡部分が実装されたら置き換える
 		solo.clickOnView(solo.getView(R.id.status_text_view));
 
@@ -167,9 +166,9 @@ public class NotificationTestCase extends
 				.getVisibility());
 	}
 
-	public void test12はいを押下して閉じ地図画面に戻る() {
-		test11地図画面中に管理者から連絡が来たら表示();
-		
+	public void test12_はいを押下して閉じ地図画面に戻る() {
+		test11_地図画面中に管理者から連絡が来たら表示();
+
 		solo.clickOnButton("はい");
 
 		getInstrumentation().waitForIdleSync();
@@ -181,9 +180,9 @@ public class NotificationTestCase extends
 
 	}
 
-	public void test12いいえを押下して閉じ地図画面に戻る() {
-		test11地図画面中に管理者から連絡が来たら表示();
-		
+	public void test12_いいえを押下して閉じ地図画面に戻る() {
+		test11_地図画面中に管理者から連絡が来たら表示();
+
 		solo.clickOnButton("いいえ");
 
 		getInstrumentation().waitForIdleSync();
@@ -194,7 +193,7 @@ public class NotificationTestCase extends
 		assertEquals(View.VISIBLE, solo.getView(R.id.navigation_modal)
 				.getVisibility());
 	}
-	
+
 	@Override
 	public void tearDown() throws Exception {
 		solo.finishOpenedActivities();

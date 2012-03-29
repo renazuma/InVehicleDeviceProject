@@ -23,14 +23,14 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 		solo = new Solo(getInstrumentation(), getActivity());
 	}
 
-	public void test01起動時は非表示() {
+	public void test01_起動時は非表示() {
 
 		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_modal)
 				.getVisibility());
 	}
 
-	public void test02走行中に管理者から連絡が来たら表示() {
-		test01起動時は非表示();
+	public void test02_走行中に管理者から連絡が来たら表示() {
+		test01_起動時は非表示();
 
 		//TODO 管理者からの連絡部分が実装されたら置き換える
 		solo.clickOnView(solo.getView(R.id.icon_text_view));
@@ -42,8 +42,8 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 	}
 
-	public void test03運行予定表示を押下して閉じ運行予定を表示する() {
-		test02走行中に管理者から連絡が来たら表示();
+	public void test03_運行予定表示を押下して閉じ運行予定を表示する() {
+		test02_走行中に管理者から連絡が来たら表示();
 
 		solo.clickOnButton("運行予定表示");
 
@@ -56,8 +56,8 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 	}
 
-	public void test04閉じるを押下して閉じ走行中に戻る() {
-		test02走行中に管理者から連絡が来たら表示();
+	public void test04_閉じるを押下して閉じ走行中に戻る() {
+		test02_走行中に管理者から連絡が来たら表示();
 
 		solo.clickOnButton("閉じる");
 
@@ -70,8 +70,8 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 				.getVisibility());
 	}
 
-	public void test05停車中に管理者から連絡が来たら表示() {
-		test01起動時は非表示();
+	public void test05_停車中に管理者から連絡が来たら表示() {
+		test01_起動時は非表示();
 
 		solo.clickOnButton("到着しました");
 
@@ -84,8 +84,8 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 				.getVisibility());
 	}
 
-	public void test06運行予定表示を押下して閉じ運行予定を表示する() {
-		test05停車中に管理者から連絡が来たら表示();
+	public void test06_運行予定表示を押下して閉じ運行予定を表示する() {
+		test05_停車中に管理者から連絡が来たら表示();
 
 		solo.clickOnButton("運行予定表示");
 
@@ -98,8 +98,8 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 	}
 
-	public void test07いいえを押下して閉じ停車中に戻る() {
-		test05停車中に管理者から連絡が来たら表示();
+	public void test07_いいえを押下して閉じ停車中に戻る() {
+		test05_停車中に管理者から連絡が来たら表示();
 
 		solo.clickOnButton("閉じる");
 
@@ -112,8 +112,8 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 				.getVisibility());
 	}
 
-	public void test08管理画面中に管理者から連絡が来たら表示() {
-		test01起動時は非表示();
+	public void test08_管理画面中に管理者から連絡が来たら表示() {
+		test01_起動時は非表示();
 
 		//		solo.clickOnButton("運行管理");
 		solo.clickOnButton("管理");
@@ -127,8 +127,8 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 				.getVisibility());
 	}
 
-	public void test09運行予定表示を押下して閉じ運行予定を表示する() {
-		test08管理画面中に管理者から連絡が来たら表示();
+	public void test09_運行予定表示を押下して閉じ運行予定を表示する() {
+		test08_管理画面中に管理者から連絡が来たら表示();
 
 		solo.clickOnButton("運行予定表示");
 
@@ -141,8 +141,8 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 	}
 
-	public void test10いいえを押下して閉じ運行管理画面に戻る() {
-		test08管理画面中に管理者から連絡が来たら表示();
+	public void test10_いいえを押下して閉じ運行管理画面に戻る() {
+		test08_管理画面中に管理者から連絡が来たら表示();
 
 		solo.clickOnButton("閉じる");
 
@@ -155,8 +155,8 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 				.getVisibility());
 	}
 
-	public void test11地図画面中に管理者から連絡が来たら表示() {
-		test01起動時は非表示();
+	public void test11_地図画面中に管理者から連絡が来たら表示() {
+		test01_起動時は非表示();
 
 		solo.clickOnButton("地図");
 
@@ -169,8 +169,8 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 				.getVisibility());
 	}
 
-	public void test12運行予定表示を押下して閉じ運行予定を表示する() {
-		test11地図画面中に管理者から連絡が来たら表示();
+	public void test12_運行予定表示を押下して閉じ運行予定を表示する() {
+		test11_地図画面中に管理者から連絡が来たら表示();
 
 		solo.clickOnButton("運行予定表示");
 
@@ -183,8 +183,8 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 	}
 
-	public void test12いいえを押下して閉じ地図画面に戻る() {
-		test11地図画面中に管理者から連絡が来たら表示();
+	public void test12_いいえを押下して閉じ地図画面に戻る() {
+		test11_地図画面中に管理者から連絡が来たら表示();
 
 		solo.clickOnButton("閉じる");
 
