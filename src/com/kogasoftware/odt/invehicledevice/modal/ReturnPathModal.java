@@ -41,8 +41,8 @@ public class ReturnPathModal extends Modal {
 		String title = "予約番号 " + currentReservation.getId();
 		Optional<User> user = currentReservation.getUser();
 		if (user.isPresent()) {
-			title += " " + user.get().getFamilyName() + " "
-					+ user.get().getLastName() + "様";
+			title += " " + user.get().getLastName() + " "
+					+ user.get().getFirstName() + "様";
 		}
 		title += " 復路の予約";
 		returnPathTitleTextView.setText(title);

@@ -24,32 +24,39 @@ public class DummyDataSource implements DataSource {
 	public List<ReservationCandidate> postReservationCandidates(Integer userId,
 			Integer departurePlatformId, Integer arrivalPlatformId)
 					throws WebAPIException {
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new WebAPIException(false, e);
+		}
+
 		DateFormat f = new SimpleDateFormat("mm:ss");
 		List<ReservationCandidate> l = new LinkedList<ReservationCandidate>();
 		try {
 			ReservationCandidate c1 = new ReservationCandidate();
-			c1.setArrivalTime(f.parse("12:34"));
 			c1.setDepartureTime(f.parse("12:35"));
+			c1.setArrivalTime(f.parse("13:34"));
 			l.add(c1);
 
 			ReservationCandidate c2 = new ReservationCandidate();
-			c2.setArrivalTime(f.parse("13:45"));
 			c2.setDepartureTime(f.parse("15:12"));
+			c2.setArrivalTime(f.parse("16:45"));
 			l.add(c2);
 
 			ReservationCandidate c3 = new ReservationCandidate();
-			c3.setArrivalTime(f.parse("16:01"));
 			c3.setDepartureTime(f.parse("17:39"));
+			c3.setArrivalTime(f.parse("18:01"));
 			l.add(c3);
 
 			ReservationCandidate c4 = new ReservationCandidate();
-			c4.setArrivalTime(f.parse("18:01"));
 			c4.setDepartureTime(f.parse("18:39"));
+			c4.setArrivalTime(f.parse("18:41"));
 			l.add(c4);
 
 			ReservationCandidate c5 = new ReservationCandidate();
-			c5.setArrivalTime(f.parse("19:01"));
-			c5.setDepartureTime(f.parse("20:39"));
+			c5.setDepartureTime(f.parse("19:01"));
+			c5.setArrivalTime(f.parse("20:39"));
 			l.add(c5);
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -58,7 +65,14 @@ public class DummyDataSource implements DataSource {
 	}
 
 	@Override
-	public InVehicleDevice getInVehicleDevice() {
+	public InVehicleDevice getInVehicleDevice() throws WebAPIException {
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new WebAPIException(false, e);
+		}
+
 		InVehicleDevice model = new InVehicleDevice();
 		model.setId(10);
 		model.setTypeNumber("TESTNUMBER012345");
@@ -67,15 +81,15 @@ public class DummyDataSource implements DataSource {
 	}
 
 	@Override
-	public List<OperationSchedule> getOperationSchedules() {
+	public List<OperationSchedule> getOperationSchedules() throws WebAPIException {
 		List<OperationSchedule> l = new LinkedList<OperationSchedule>();
 		try {
-			String u1 = "user: {id: 1, family_name: '勅使河原', last_name: '恭三郎'}";
-			String u2 = "user: {id: 2, family_name: '滝口', last_name: '遥奈'}";
-			String u3 = "user: {id: 3, family_name: '下村', last_name: '誠一'}";
-			String u4 = "user: {id: 4, family_name: '木本', last_name: '麻紀'}";
-			String u5 = "user: {id: 5, family_name: '永瀬', last_name: '直治'}";
-			String u6 = "user: {id: 6, family_name: '田川', last_name: '恭三郎'}";
+			String u1 = "user: {id: 1, last_name: '勅使河原', first_name: '恭三郎'}";
+			String u2 = "user: {id: 2, last_name: '滝口', first_name: '遥奈'}";
+			String u3 = "user: {id: 3, last_name: '下村', first_name: '誠一'}";
+			String u4 = "user: {id: 4, last_name: '木本', first_name: '麻紀'}";
+			String u5 = "user: {id: 5, last_name: '永瀬', first_name: '直治'}";
+			String u6 = "user: {id: 6, last_name: '田川', first_name: '恭三郎'}";
 
 			JSONObject j1 = new JSONObject("{"
 					+ "arrival_estimate: '2012-01-01T01:00:00.000+09:00', "
@@ -181,7 +195,14 @@ public class DummyDataSource implements DataSource {
 	private Date nextNotifyDate = new Date();
 
 	@Override
-	public List<VehicleNotification> getVehicleNotifications() {
+	public List<VehicleNotification> getVehicleNotifications() throws WebAPIException {
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new WebAPIException(false, e);
+		}
+
 		List<VehicleNotification> l = new LinkedList<VehicleNotification>();
 		if (nextNotifyDate.before(new Date())) {
 			return l;
@@ -194,17 +215,36 @@ public class DummyDataSource implements DataSource {
 	}
 
 	@Override
-	public void putVehicleNotificationReadAt(Integer id, Date readAt) {
+	public void putVehicleNotificationReadAt(Integer id, Date readAt) throws WebAPIException {
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new WebAPIException(false, e);
+		}
 	}
 
 	@Override
 	public void putReservationTransferredAt(Integer id, Date transferredAt)
 			throws WebAPIException {
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new WebAPIException(false, e);
+		}
 	}
 
 	@Override
 	public Reservation postReservation(Integer reservationCandidateId)
 			throws WebAPIException {
+
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new WebAPIException(false, e);
+		}
 
 		return new Reservation();
 	}

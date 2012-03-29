@@ -62,8 +62,8 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 
 		if (reservation.getUser().isPresent()) {
 			User user = reservation.getUser().get();
-			userNameView.setText(user.getFamilyName() + " "
-					+ user.getLastName() + " 様");
+			userNameView.setText(user.getLastName() + " "
+					+ user.getFirstName() + " 様");
 		} else {
 			userNameView.setText("ID:" + reservation.getUserId() + " 様");
 		}
