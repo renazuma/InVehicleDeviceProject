@@ -23,7 +23,7 @@ public class LoginTestCase extends TestCase {
 	}
 
 	public void testParseUser() throws JSONException, ParseException {
-		//		User user = new User(new JSONObject("{id: '10', last_name: '日本語'}"));
+		//		User user = new User(new JSONObject("{id: '10', first_name: '日本語'}"));
 		//		assertEquals(user.getId().longValue(), 10L);
 		//		assertEquals(user.getLastName(), "日本語");
 		//		assertFalse(user.getCurrentSignInAt().isPresent());
@@ -34,7 +34,7 @@ public class LoginTestCase extends TestCase {
 		//
 		//		assertTrue(user2.getCurrentSignInAt().isPresent());
 		//		User user3 = new User(new JSONObject(
-		//				"{id: 20, reservations: [{memo: '予約1'}, {user_id: '50'}, {user: {id: 60, last_name: 'にほんご'}}]}"));
+		//				"{id: 20, reservations: [{memo: '予約1'}, {user_id: '50'}, {user: {id: 60, first_name: 'にほんご'}}]}"));
 		//		assertEquals(user3.getId().longValue(), 20L);
 		//		assertEquals(user3.getReservations().size(), 3);
 		//

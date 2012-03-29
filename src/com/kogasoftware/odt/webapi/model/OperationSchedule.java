@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
-import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,17 +12,15 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class OperationSchedule extends Model {
-	private static final long serialVersionUID = 2288892347851726615L;
+	private static final long serialVersionUID = 5160611716473255738L;
 
 	public OperationSchedule() {
 	}
 
 	public OperationSchedule(JSONObject jsonObject) throws JSONException, ParseException {
 		setArrivalEstimate(parseDate(jsonObject, "arrival_estimate"));
-		setArrivedAt(parseOptionalDate(jsonObject, "arrived_at"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
-		setDepartedAt(parseOptionalDate(jsonObject, "departed_at"));
 		setDepartureEstimate(parseDate(jsonObject, "departure_estimate"));
 		setId(parseInteger(jsonObject, "id"));
 		setPlatformId(parseOptionalInteger(jsonObject, "platform_id"));
@@ -45,12 +42,12 @@ public class OperationSchedule extends Model {
 		return Optional.<OperationSchedule>of(new OperationSchedule(jsonObject.getJSONObject(key)));
 	}
 
-	public static List<OperationSchedule> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	public static LinkedList<OperationSchedule> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
 		if (!jsonObject.has(key)) {
 			return new LinkedList<OperationSchedule>();
 		}
 		JSONArray jsonArray = jsonObject.getJSONArray(key);
-		List<OperationSchedule> models = new LinkedList<OperationSchedule>();
+		LinkedList<OperationSchedule> models = new LinkedList<OperationSchedule>();
 		for (Integer i = 0; i < jsonArray.length(); ++i) {
 			if (jsonArray.isNull(i)) {
 				continue;
@@ -64,10 +61,8 @@ public class OperationSchedule extends Model {
 	public JSONObject toJSONObject() throws JSONException {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("arrival_estimate", toJSON(getArrivalEstimate()));
-		jsonObject.put("arrived_at", toJSON(getArrivedAt().orNull()));
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
 		jsonObject.put("deleted_at", toJSON(getDeletedAt().orNull()));
-		jsonObject.put("departed_at", toJSON(getDepartedAt().orNull()));
 		jsonObject.put("departure_estimate", toJSON(getDepartureEstimate()));
 		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("platform_id", toJSON(getPlatformId().orNull()));
@@ -91,24 +86,6 @@ public class OperationSchedule extends Model {
 
 	public void setArrivalEstimate(Date arrivalEstimate) {
 		this.arrivalEstimate = wrapNull(arrivalEstimate);
-	}
-
-	private Optional<Date> arrivedAt = Optional.<Date>absent();
-
-	public Optional<Date> getArrivedAt() {
-		return wrapNull(arrivedAt);
-	}
-
-	public void setArrivedAt(Optional<Date> arrivedAt) {
-		this.arrivedAt = wrapNull(arrivedAt);
-	}
-
-	public void setArrivedAt(Date arrivedAt) {
-		this.arrivedAt = Optional.fromNullable(arrivedAt);
-	}
-
-	public void clearArrivedAt() {
-		this.arrivedAt = Optional.<Date>absent();
 	}
 
 	private Date createdAt = new Date();
@@ -137,24 +114,6 @@ public class OperationSchedule extends Model {
 
 	public void clearDeletedAt() {
 		this.deletedAt = Optional.<Date>absent();
-	}
-
-	private Optional<Date> departedAt = Optional.<Date>absent();
-
-	public Optional<Date> getDepartedAt() {
-		return wrapNull(departedAt);
-	}
-
-	public void setDepartedAt(Optional<Date> departedAt) {
-		this.departedAt = wrapNull(departedAt);
-	}
-
-	public void setDepartedAt(Date departedAt) {
-		this.departedAt = Optional.fromNullable(departedAt);
-	}
-
-	public void clearDepartedAt() {
-		this.departedAt = Optional.<Date>absent();
 	}
 
 	private Date departureEstimate = new Date();
@@ -259,13 +218,13 @@ public class OperationSchedule extends Model {
 		this.platform = Optional.<Platform>absent();
 	}
 
-	private List<Reservation> reservationsAsArrival = new LinkedList<Reservation>();
+	private LinkedList<Reservation> reservationsAsArrival = new LinkedList<Reservation>();
 
-	public List<Reservation> getReservationsAsArrival() {
+	public LinkedList<Reservation> getReservationsAsArrival() {
 		return new LinkedList<Reservation>(wrapNull(reservationsAsArrival));
 	}
 
-	public void setReservationsAsArrival(List<Reservation> reservationsAsArrival) {
+	public void setReservationsAsArrival(LinkedList<Reservation> reservationsAsArrival) {
 		this.reservationsAsArrival = new LinkedList<Reservation>(wrapNull(reservationsAsArrival));
 	}
 
@@ -273,13 +232,13 @@ public class OperationSchedule extends Model {
 		this.reservationsAsArrival = new LinkedList<Reservation>();
 	}
 
-	private List<Reservation> reservationsAsDeparture = new LinkedList<Reservation>();
+	private LinkedList<Reservation> reservationsAsDeparture = new LinkedList<Reservation>();
 
-	public List<Reservation> getReservationsAsDeparture() {
+	public LinkedList<Reservation> getReservationsAsDeparture() {
 		return new LinkedList<Reservation>(wrapNull(reservationsAsDeparture));
 	}
 
-	public void setReservationsAsDeparture(List<Reservation> reservationsAsDeparture) {
+	public void setReservationsAsDeparture(LinkedList<Reservation> reservationsAsDeparture) {
 		this.reservationsAsDeparture = new LinkedList<Reservation>(wrapNull(reservationsAsDeparture));
 	}
 

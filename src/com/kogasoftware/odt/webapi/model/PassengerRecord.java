@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
-import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,7 +12,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class PassengerRecord extends Model {
-	private static final long serialVersionUID = 7509385400151884688L;
+	private static final long serialVersionUID = 3756377216263366053L;
 
 	public PassengerRecord() {
 	}
@@ -53,12 +52,12 @@ public class PassengerRecord extends Model {
 		return Optional.<PassengerRecord>of(new PassengerRecord(jsonObject.getJSONObject(key)));
 	}
 
-	public static List<PassengerRecord> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	public static LinkedList<PassengerRecord> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
 		if (!jsonObject.has(key)) {
 			return new LinkedList<PassengerRecord>();
 		}
 		JSONArray jsonArray = jsonObject.getJSONArray(key);
-		List<PassengerRecord> models = new LinkedList<PassengerRecord>();
+		LinkedList<PassengerRecord> models = new LinkedList<PassengerRecord>();
 		for (Integer i = 0; i < jsonArray.length(); ++i) {
 			if (jsonArray.isNull(i)) {
 				continue;

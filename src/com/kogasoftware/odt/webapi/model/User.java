@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
-import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,7 +12,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class User extends Model {
-	private static final long serialVersionUID = 6283643239497982902L;
+	private static final long serialVersionUID = 7852090135320302034L;
 
 	public User() {
 	}
@@ -29,9 +28,9 @@ public class User extends Model {
 		setEmail(parseOptionalString(jsonObject, "email"));
 		setEmail2(parseOptionalString(jsonObject, "email2"));
 		setEncryptedPassword(parseString(jsonObject, "encrypted_password"));
-		setFamilyName(parseString(jsonObject, "family_name"));
-		setFamilyNameRuby(parseString(jsonObject, "family_name_ruby"));
 		setFelicaId(parseOptionalString(jsonObject, "felica_id"));
+		setFirstName(parseString(jsonObject, "first_name"));
+		setFirstNameRuby(parseString(jsonObject, "first_name_ruby"));
 		setHandicapped(parseOptionalBoolean(jsonObject, "handicapped"));
 		setId(parseInteger(jsonObject, "id"));
 		setLastName(parseString(jsonObject, "last_name"));
@@ -53,6 +52,7 @@ public class User extends Model {
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setWheelchair(parseOptionalBoolean(jsonObject, "wheelchair"));
 		setDemands(Demand.parseList(jsonObject, "demands"));
+		setReservationCandidates(ReservationCandidate.parseList(jsonObject, "reservation_candidates"));
 		setReservations(Reservation.parseList(jsonObject, "reservations"));
 	}
 
@@ -63,12 +63,12 @@ public class User extends Model {
 		return Optional.<User>of(new User(jsonObject.getJSONObject(key)));
 	}
 
-	public static List<User> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	public static LinkedList<User> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
 		if (!jsonObject.has(key)) {
 			return new LinkedList<User>();
 		}
 		JSONArray jsonArray = jsonObject.getJSONArray(key);
-		List<User> models = new LinkedList<User>();
+		LinkedList<User> models = new LinkedList<User>();
 		for (Integer i = 0; i < jsonArray.length(); ++i) {
 			if (jsonArray.isNull(i)) {
 				continue;
@@ -91,9 +91,9 @@ public class User extends Model {
 		jsonObject.put("email", toJSON(getEmail().orNull()));
 		jsonObject.put("email2", toJSON(getEmail2().orNull()));
 		jsonObject.put("encrypted_password", toJSON(getEncryptedPassword()));
-		jsonObject.put("family_name", toJSON(getFamilyName()));
-		jsonObject.put("family_name_ruby", toJSON(getFamilyNameRuby()));
 		jsonObject.put("felica_id", toJSON(getFelicaId().orNull()));
+		jsonObject.put("first_name", toJSON(getFirstName()));
+		jsonObject.put("first_name_ruby", toJSON(getFirstNameRuby()));
 		jsonObject.put("handicapped", toJSON(getHandicapped().orNull()));
 		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("last_name", toJSON(getLastName()));
@@ -115,6 +115,7 @@ public class User extends Model {
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
 		jsonObject.put("wheelchair", toJSON(getWheelchair().orNull()));
 		jsonObject.put("demands", toJSON(getDemands()));
+		jsonObject.put("reservation_candidates", toJSON(getReservationCandidates()));
 		jsonObject.put("reservations", toJSON(getReservations()));
 		return jsonObject;
 	}
@@ -259,26 +260,6 @@ public class User extends Model {
 		this.encryptedPassword = wrapNull(encryptedPassword);
 	}
 
-	private String familyName = "";
-
-	public String getFamilyName() {
-		return wrapNull(familyName);
-	}
-
-	public void setFamilyName(String familyName) {
-		this.familyName = wrapNull(familyName);
-	}
-
-	private String familyNameRuby = "";
-
-	public String getFamilyNameRuby() {
-		return wrapNull(familyNameRuby);
-	}
-
-	public void setFamilyNameRuby(String familyNameRuby) {
-		this.familyNameRuby = wrapNull(familyNameRuby);
-	}
-
 	private Optional<String> felicaId = Optional.<String>absent();
 
 	public Optional<String> getFelicaId() {
@@ -295,6 +276,26 @@ public class User extends Model {
 
 	public void clearFelicaId() {
 		this.felicaId = Optional.<String>absent();
+	}
+
+	private String firstName = "";
+
+	public String getFirstName() {
+		return wrapNull(firstName);
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = wrapNull(firstName);
+	}
+
+	private String firstNameRuby = "";
+
+	public String getFirstNameRuby() {
+		return wrapNull(firstNameRuby);
+	}
+
+	public void setFirstNameRuby(String firstNameRuby) {
+		this.firstNameRuby = wrapNull(firstNameRuby);
 	}
 
 	private Optional<Boolean> handicapped = Optional.<Boolean>absent();
@@ -601,13 +602,13 @@ public class User extends Model {
 		this.wheelchair = Optional.<Boolean>absent();
 	}
 
-	private List<Demand> demands = new LinkedList<Demand>();
+	private LinkedList<Demand> demands = new LinkedList<Demand>();
 
-	public List<Demand> getDemands() {
+	public LinkedList<Demand> getDemands() {
 		return new LinkedList<Demand>(wrapNull(demands));
 	}
 
-	public void setDemands(List<Demand> demands) {
+	public void setDemands(LinkedList<Demand> demands) {
 		this.demands = new LinkedList<Demand>(wrapNull(demands));
 	}
 
@@ -615,13 +616,27 @@ public class User extends Model {
 		this.demands = new LinkedList<Demand>();
 	}
 
-	private List<Reservation> reservations = new LinkedList<Reservation>();
+	private LinkedList<ReservationCandidate> reservationCandidates = new LinkedList<ReservationCandidate>();
 
-	public List<Reservation> getReservations() {
+	public LinkedList<ReservationCandidate> getReservationCandidates() {
+		return new LinkedList<ReservationCandidate>(wrapNull(reservationCandidates));
+	}
+
+	public void setReservationCandidates(LinkedList<ReservationCandidate> reservationCandidates) {
+		this.reservationCandidates = new LinkedList<ReservationCandidate>(wrapNull(reservationCandidates));
+	}
+
+	public void clearReservationCandidates() {
+		this.reservationCandidates = new LinkedList<ReservationCandidate>();
+	}
+
+	private LinkedList<Reservation> reservations = new LinkedList<Reservation>();
+
+	public LinkedList<Reservation> getReservations() {
 		return new LinkedList<Reservation>(wrapNull(reservations));
 	}
 
-	public void setReservations(List<Reservation> reservations) {
+	public void setReservations(LinkedList<Reservation> reservations) {
 		this.reservations = new LinkedList<Reservation>(wrapNull(reservations));
 	}
 

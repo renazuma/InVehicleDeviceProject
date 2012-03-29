@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
-import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,7 +12,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Operator extends Model {
-	private static final long serialVersionUID = 7826395363386306714L;
+	private static final long serialVersionUID = 3902299720776440933L;
 
 	public Operator() {
 	}
@@ -26,7 +25,7 @@ public class Operator extends Model {
 		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
 		setEmail(parseOptionalString(jsonObject, "email"));
 		setEncryptedPassword(parseString(jsonObject, "encrypted_password"));
-		setFamilyName(parseString(jsonObject, "family_name"));
+		setFirstName(parseString(jsonObject, "first_name"));
 		setId(parseInteger(jsonObject, "id"));
 		setLastName(parseString(jsonObject, "last_name"));
 		setLastSignInAt(parseOptionalDate(jsonObject, "last_sign_in_at"));
@@ -46,12 +45,12 @@ public class Operator extends Model {
 		return Optional.<Operator>of(new Operator(jsonObject.getJSONObject(key)));
 	}
 
-	public static List<Operator> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	public static LinkedList<Operator> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
 		if (!jsonObject.has(key)) {
 			return new LinkedList<Operator>();
 		}
 		JSONArray jsonArray = jsonObject.getJSONArray(key);
-		List<Operator> models = new LinkedList<Operator>();
+		LinkedList<Operator> models = new LinkedList<Operator>();
 		for (Integer i = 0; i < jsonArray.length(); ++i) {
 			if (jsonArray.isNull(i)) {
 				continue;
@@ -71,7 +70,7 @@ public class Operator extends Model {
 		jsonObject.put("deleted_at", toJSON(getDeletedAt().orNull()));
 		jsonObject.put("email", toJSON(getEmail().orNull()));
 		jsonObject.put("encrypted_password", toJSON(getEncryptedPassword()));
-		jsonObject.put("family_name", toJSON(getFamilyName()));
+		jsonObject.put("first_name", toJSON(getFirstName()));
 		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("last_name", toJSON(getLastName()));
 		jsonObject.put("last_sign_in_at", toJSON(getLastSignInAt().orNull()));
@@ -195,14 +194,14 @@ public class Operator extends Model {
 		this.encryptedPassword = wrapNull(encryptedPassword);
 	}
 
-	private String familyName = "";
+	private String firstName = "";
 
-	public String getFamilyName() {
-		return wrapNull(familyName);
+	public String getFirstName() {
+		return wrapNull(firstName);
 	}
 
-	public void setFamilyName(String familyName) {
-		this.familyName = wrapNull(familyName);
+	public void setFirstName(String firstName) {
+		this.firstName = wrapNull(firstName);
 	}
 
 	private Integer id = 0;
@@ -335,13 +334,13 @@ public class Operator extends Model {
 		this.updatedAt = wrapNull(updatedAt);
 	}
 
-	private List<Reservation> reservations = new LinkedList<Reservation>();
+	private LinkedList<Reservation> reservations = new LinkedList<Reservation>();
 
-	public List<Reservation> getReservations() {
+	public LinkedList<Reservation> getReservations() {
 		return new LinkedList<Reservation>(wrapNull(reservations));
 	}
 
-	public void setReservations(List<Reservation> reservations) {
+	public void setReservations(LinkedList<Reservation> reservations) {
 		this.reservations = new LinkedList<Reservation>(wrapNull(reservations));
 	}
 

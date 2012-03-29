@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
-import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,7 +12,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Platform extends Model {
-	private static final long serialVersionUID = 7355929177674550227L;
+	private static final long serialVersionUID = 2447865111641210668L;
 
 	public Platform() {
 	}
@@ -39,6 +38,8 @@ public class Platform extends Model {
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setDemandsAsArrival(Demand.parseList(jsonObject, "demands_as_arrival"));
 		setDemandsAsDeparture(Demand.parseList(jsonObject, "demands_as_departure"));
+		setReservationCandidatesAsArrival(ReservationCandidate.parseList(jsonObject, "reservation_candidates_as_arrival"));
+		setReservationCandidatesAsDeparture(ReservationCandidate.parseList(jsonObject, "reservation_candidates_as_departure"));
 		setReservationsAsArrival(Reservation.parseList(jsonObject, "reservations_as_arrival"));
 		setReservationsAsDeparture(Reservation.parseList(jsonObject, "reservations_as_departure"));
 	}
@@ -50,12 +51,12 @@ public class Platform extends Model {
 		return Optional.<Platform>of(new Platform(jsonObject.getJSONObject(key)));
 	}
 
-	public static List<Platform> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	public static LinkedList<Platform> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
 		if (!jsonObject.has(key)) {
 			return new LinkedList<Platform>();
 		}
 		JSONArray jsonArray = jsonObject.getJSONArray(key);
-		List<Platform> models = new LinkedList<Platform>();
+		LinkedList<Platform> models = new LinkedList<Platform>();
 		for (Integer i = 0; i < jsonArray.length(); ++i) {
 			if (jsonArray.isNull(i)) {
 				continue;
@@ -88,6 +89,8 @@ public class Platform extends Model {
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
 		jsonObject.put("demands_as_arrival", toJSON(getDemandsAsArrival()));
 		jsonObject.put("demands_as_departure", toJSON(getDemandsAsDeparture()));
+		jsonObject.put("reservation_candidates_as_arrival", toJSON(getReservationCandidatesAsArrival()));
+		jsonObject.put("reservation_candidates_as_departure", toJSON(getReservationCandidatesAsDeparture()));
 		jsonObject.put("reservations_as_arrival", toJSON(getReservationsAsArrival()));
 		jsonObject.put("reservations_as_departure", toJSON(getReservationsAsDeparture()));
 		return jsonObject;
@@ -361,13 +364,13 @@ public class Platform extends Model {
 		this.updatedAt = wrapNull(updatedAt);
 	}
 
-	private List<Demand> demandsAsArrival = new LinkedList<Demand>();
+	private LinkedList<Demand> demandsAsArrival = new LinkedList<Demand>();
 
-	public List<Demand> getDemandsAsArrival() {
+	public LinkedList<Demand> getDemandsAsArrival() {
 		return new LinkedList<Demand>(wrapNull(demandsAsArrival));
 	}
 
-	public void setDemandsAsArrival(List<Demand> demandsAsArrival) {
+	public void setDemandsAsArrival(LinkedList<Demand> demandsAsArrival) {
 		this.demandsAsArrival = new LinkedList<Demand>(wrapNull(demandsAsArrival));
 	}
 
@@ -375,13 +378,13 @@ public class Platform extends Model {
 		this.demandsAsArrival = new LinkedList<Demand>();
 	}
 
-	private List<Demand> demandsAsDeparture = new LinkedList<Demand>();
+	private LinkedList<Demand> demandsAsDeparture = new LinkedList<Demand>();
 
-	public List<Demand> getDemandsAsDeparture() {
+	public LinkedList<Demand> getDemandsAsDeparture() {
 		return new LinkedList<Demand>(wrapNull(demandsAsDeparture));
 	}
 
-	public void setDemandsAsDeparture(List<Demand> demandsAsDeparture) {
+	public void setDemandsAsDeparture(LinkedList<Demand> demandsAsDeparture) {
 		this.demandsAsDeparture = new LinkedList<Demand>(wrapNull(demandsAsDeparture));
 	}
 
@@ -389,13 +392,41 @@ public class Platform extends Model {
 		this.demandsAsDeparture = new LinkedList<Demand>();
 	}
 
-	private List<Reservation> reservationsAsArrival = new LinkedList<Reservation>();
+	private LinkedList<ReservationCandidate> reservationCandidatesAsArrival = new LinkedList<ReservationCandidate>();
 
-	public List<Reservation> getReservationsAsArrival() {
+	public LinkedList<ReservationCandidate> getReservationCandidatesAsArrival() {
+		return new LinkedList<ReservationCandidate>(wrapNull(reservationCandidatesAsArrival));
+	}
+
+	public void setReservationCandidatesAsArrival(LinkedList<ReservationCandidate> reservationCandidatesAsArrival) {
+		this.reservationCandidatesAsArrival = new LinkedList<ReservationCandidate>(wrapNull(reservationCandidatesAsArrival));
+	}
+
+	public void clearReservationCandidatesAsArrival() {
+		this.reservationCandidatesAsArrival = new LinkedList<ReservationCandidate>();
+	}
+
+	private LinkedList<ReservationCandidate> reservationCandidatesAsDeparture = new LinkedList<ReservationCandidate>();
+
+	public LinkedList<ReservationCandidate> getReservationCandidatesAsDeparture() {
+		return new LinkedList<ReservationCandidate>(wrapNull(reservationCandidatesAsDeparture));
+	}
+
+	public void setReservationCandidatesAsDeparture(LinkedList<ReservationCandidate> reservationCandidatesAsDeparture) {
+		this.reservationCandidatesAsDeparture = new LinkedList<ReservationCandidate>(wrapNull(reservationCandidatesAsDeparture));
+	}
+
+	public void clearReservationCandidatesAsDeparture() {
+		this.reservationCandidatesAsDeparture = new LinkedList<ReservationCandidate>();
+	}
+
+	private LinkedList<Reservation> reservationsAsArrival = new LinkedList<Reservation>();
+
+	public LinkedList<Reservation> getReservationsAsArrival() {
 		return new LinkedList<Reservation>(wrapNull(reservationsAsArrival));
 	}
 
-	public void setReservationsAsArrival(List<Reservation> reservationsAsArrival) {
+	public void setReservationsAsArrival(LinkedList<Reservation> reservationsAsArrival) {
 		this.reservationsAsArrival = new LinkedList<Reservation>(wrapNull(reservationsAsArrival));
 	}
 
@@ -403,13 +434,13 @@ public class Platform extends Model {
 		this.reservationsAsArrival = new LinkedList<Reservation>();
 	}
 
-	private List<Reservation> reservationsAsDeparture = new LinkedList<Reservation>();
+	private LinkedList<Reservation> reservationsAsDeparture = new LinkedList<Reservation>();
 
-	public List<Reservation> getReservationsAsDeparture() {
+	public LinkedList<Reservation> getReservationsAsDeparture() {
 		return new LinkedList<Reservation>(wrapNull(reservationsAsDeparture));
 	}
 
-	public void setReservationsAsDeparture(List<Reservation> reservationsAsDeparture) {
+	public void setReservationsAsDeparture(LinkedList<Reservation> reservationsAsDeparture) {
 		this.reservationsAsDeparture = new LinkedList<Reservation>(wrapNull(reservationsAsDeparture));
 	}
 

@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
-import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,7 +12,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class ServiceUnitStatusLog extends Model {
-	private static final long serialVersionUID = 3460173766900908400L;
+	private static final long serialVersionUID = 8602413632451689935L;
 
 	public ServiceUnitStatusLog() {
 	}
@@ -41,12 +40,12 @@ public class ServiceUnitStatusLog extends Model {
 		return Optional.<ServiceUnitStatusLog>of(new ServiceUnitStatusLog(jsonObject.getJSONObject(key)));
 	}
 
-	public static List<ServiceUnitStatusLog> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	public static LinkedList<ServiceUnitStatusLog> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
 		if (!jsonObject.has(key)) {
 			return new LinkedList<ServiceUnitStatusLog>();
 		}
 		JSONArray jsonArray = jsonObject.getJSONArray(key);
-		List<ServiceUnitStatusLog> models = new LinkedList<ServiceUnitStatusLog>();
+		LinkedList<ServiceUnitStatusLog> models = new LinkedList<ServiceUnitStatusLog>();
 		for (Integer i = 0; i < jsonArray.length(); ++i) {
 			if (jsonArray.isNull(i)) {
 				continue;

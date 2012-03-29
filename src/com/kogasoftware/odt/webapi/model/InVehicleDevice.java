@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
-import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,7 +12,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class InVehicleDevice extends Model {
-	private static final long serialVersionUID = 261788412967967859L;
+	private static final long serialVersionUID = 6869197652221069050L;
 
 	public InVehicleDevice() {
 	}
@@ -37,12 +36,12 @@ public class InVehicleDevice extends Model {
 		return Optional.<InVehicleDevice>of(new InVehicleDevice(jsonObject.getJSONObject(key)));
 	}
 
-	public static List<InVehicleDevice> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	public static LinkedList<InVehicleDevice> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
 		if (!jsonObject.has(key)) {
 			return new LinkedList<InVehicleDevice>();
 		}
 		JSONArray jsonArray = jsonObject.getJSONArray(key);
-		List<InVehicleDevice> models = new LinkedList<InVehicleDevice>();
+		LinkedList<InVehicleDevice> models = new LinkedList<InVehicleDevice>();
 		for (Integer i = 0; i < jsonArray.length(); ++i) {
 			if (jsonArray.isNull(i)) {
 				continue;
@@ -153,13 +152,13 @@ public class InVehicleDevice extends Model {
 		this.updatedAt = wrapNull(updatedAt);
 	}
 
-	private List<ServiceUnit> serviceUnits = new LinkedList<ServiceUnit>();
+	private LinkedList<ServiceUnit> serviceUnits = new LinkedList<ServiceUnit>();
 
-	public List<ServiceUnit> getServiceUnits() {
+	public LinkedList<ServiceUnit> getServiceUnits() {
 		return new LinkedList<ServiceUnit>(wrapNull(serviceUnits));
 	}
 
-	public void setServiceUnits(List<ServiceUnit> serviceUnits) {
+	public void setServiceUnits(LinkedList<ServiceUnit> serviceUnits) {
 		this.serviceUnits = new LinkedList<ServiceUnit>(wrapNull(serviceUnits));
 	}
 
@@ -167,13 +166,13 @@ public class InVehicleDevice extends Model {
 		this.serviceUnits = new LinkedList<ServiceUnit>();
 	}
 
-	private List<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();
+	private LinkedList<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();
 
-	public List<VehicleNotification> getVehicleNotifications() {
+	public LinkedList<VehicleNotification> getVehicleNotifications() {
 		return new LinkedList<VehicleNotification>(wrapNull(vehicleNotifications));
 	}
 
-	public void setVehicleNotifications(List<VehicleNotification> vehicleNotifications) {
+	public void setVehicleNotifications(LinkedList<VehicleNotification> vehicleNotifications) {
 		this.vehicleNotifications = new LinkedList<VehicleNotification>(wrapNull(vehicleNotifications));
 	}
 

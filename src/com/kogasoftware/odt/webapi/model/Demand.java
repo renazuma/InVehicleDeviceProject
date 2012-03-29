@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
-import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,7 +12,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Demand extends Model {
-	private static final long serialVersionUID = 2378385232514933825L;
+	private static final long serialVersionUID = 935893529549189551L;
 
 	public Demand() {
 	}
@@ -28,6 +27,7 @@ public class Demand extends Model {
 		setId(parseInteger(jsonObject, "id"));
 		setMemo(parseOptionalString(jsonObject, "memo"));
 		setPassengerCount(parseInteger(jsonObject, "passenger_count"));
+		setRepeat(parseOptionalBoolean(jsonObject, "repeat"));
 		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
 		setStoppageTime(parseOptionalInteger(jsonObject, "stoppage_time"));
 		setUnitAssignmentId(parseOptionalInteger(jsonObject, "unit_assignment_id"));
@@ -42,6 +42,7 @@ public class Demand extends Model {
 			setDeparturePlatformId(getDeparturePlatform().get().getId());
 		}
 		setReservation(Reservation.parse(jsonObject, "reservation"));
+		setReservationCandidates(ReservationCandidate.parseList(jsonObject, "reservation_candidates"));
 		setUser(User.parse(jsonObject, "user"));
 		if (getUser().isPresent()) {
 			setUserId(getUser().get().getId());
@@ -55,12 +56,12 @@ public class Demand extends Model {
 		return Optional.<Demand>of(new Demand(jsonObject.getJSONObject(key)));
 	}
 
-	public static List<Demand> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	public static LinkedList<Demand> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
 		if (!jsonObject.has(key)) {
 			return new LinkedList<Demand>();
 		}
 		JSONArray jsonArray = jsonObject.getJSONArray(key);
-		List<Demand> models = new LinkedList<Demand>();
+		LinkedList<Demand> models = new LinkedList<Demand>();
 		for (Integer i = 0; i < jsonArray.length(); ++i) {
 			if (jsonArray.isNull(i)) {
 				continue;
@@ -82,6 +83,7 @@ public class Demand extends Model {
 		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("memo", toJSON(getMemo().orNull()));
 		jsonObject.put("passenger_count", toJSON(getPassengerCount()));
+		jsonObject.put("repeat", toJSON(getRepeat().orNull()));
 		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
 		jsonObject.put("stoppage_time", toJSON(getStoppageTime().orNull()));
 		jsonObject.put("unit_assignment_id", toJSON(getUnitAssignmentId().orNull()));
@@ -96,6 +98,7 @@ public class Demand extends Model {
 			jsonObject.put("departure_platform_id", toJSON(getDeparturePlatform().get().getId()));
 		}
 		jsonObject.put("reservation", toJSON(getReservation()));
+		jsonObject.put("reservation_candidates", toJSON(getReservationCandidates()));
 		jsonObject.put("user", toJSON(getUser()));
 		if (getUser().isPresent()) {
 			jsonObject.put("user_id", toJSON(getUser().get().getId()));
@@ -241,6 +244,24 @@ public class Demand extends Model {
 		this.passengerCount = wrapNull(passengerCount);
 	}
 
+	private Optional<Boolean> repeat = Optional.<Boolean>absent();
+
+	public Optional<Boolean> getRepeat() {
+		return wrapNull(repeat);
+	}
+
+	public void setRepeat(Optional<Boolean> repeat) {
+		this.repeat = wrapNull(repeat);
+	}
+
+	public void setRepeat(Boolean repeat) {
+		this.repeat = Optional.fromNullable(repeat);
+	}
+
+	public void clearRepeat() {
+		this.repeat = Optional.<Boolean>absent();
+	}
+
 	private Optional<Integer> serviceProviderId = Optional.<Integer>absent();
 
 	public Optional<Integer> getServiceProviderId() {
@@ -367,6 +388,20 @@ public class Demand extends Model {
 
 	public void clearReservation() {
 		this.reservation = Optional.<Reservation>absent();
+	}
+
+	private LinkedList<ReservationCandidate> reservationCandidates = new LinkedList<ReservationCandidate>();
+
+	public LinkedList<ReservationCandidate> getReservationCandidates() {
+		return new LinkedList<ReservationCandidate>(wrapNull(reservationCandidates));
+	}
+
+	public void setReservationCandidates(LinkedList<ReservationCandidate> reservationCandidates) {
+		this.reservationCandidates = new LinkedList<ReservationCandidate>(wrapNull(reservationCandidates));
+	}
+
+	public void clearReservationCandidates() {
+		this.reservationCandidates = new LinkedList<ReservationCandidate>();
 	}
 
 	private Optional<User> user = Optional.<User>absent();

@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
-import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,12 +12,13 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class ReservationCandidate extends Model {
-	private static final long serialVersionUID = 2907419671506574765L;
+	private static final long serialVersionUID = 7747157152042923142L;
 
 	public ReservationCandidate() {
 	}
 
 	public ReservationCandidate(JSONObject jsonObject) throws JSONException, ParseException {
+		setAccuracy(parseOptionalFloat(jsonObject, "accuracy"));
 		setArrivalPlatformId(parseInteger(jsonObject, "arrival_platform_id"));
 		setArrivalTime(parseDate(jsonObject, "arrival_time"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
@@ -57,12 +57,12 @@ public class ReservationCandidate extends Model {
 		return Optional.<ReservationCandidate>of(new ReservationCandidate(jsonObject.getJSONObject(key)));
 	}
 
-	public static List<ReservationCandidate> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	public static LinkedList<ReservationCandidate> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
 		if (!jsonObject.has(key)) {
 			return new LinkedList<ReservationCandidate>();
 		}
 		JSONArray jsonArray = jsonObject.getJSONArray(key);
-		List<ReservationCandidate> models = new LinkedList<ReservationCandidate>();
+		LinkedList<ReservationCandidate> models = new LinkedList<ReservationCandidate>();
 		for (Integer i = 0; i < jsonArray.length(); ++i) {
 			if (jsonArray.isNull(i)) {
 				continue;
@@ -75,6 +75,7 @@ public class ReservationCandidate extends Model {
 	@Override
 	public JSONObject toJSONObject() throws JSONException {
 		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("accuracy", toJSON(getAccuracy().orNull()));
 		jsonObject.put("arrival_platform_id", toJSON(getArrivalPlatformId()));
 		jsonObject.put("arrival_time", toJSON(getArrivalTime()));
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
@@ -105,6 +106,24 @@ public class ReservationCandidate extends Model {
 			jsonObject.put("user_id", toJSON(getUser().get().getId()));
 		}
 		return jsonObject;
+	}
+
+	private Optional<Float> accuracy = Optional.<Float>absent();
+
+	public Optional<Float> getAccuracy() {
+		return wrapNull(accuracy);
+	}
+
+	public void setAccuracy(Optional<Float> accuracy) {
+		this.accuracy = wrapNull(accuracy);
+	}
+
+	public void setAccuracy(Float accuracy) {
+		this.accuracy = Optional.fromNullable(accuracy);
+	}
+
+	public void clearAccuracy() {
+		this.accuracy = Optional.<Float>absent();
 	}
 
 	private Integer arrivalPlatformId = 0;
