@@ -88,9 +88,6 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 	}
 
 
-
-
-
 	public void test03_復路画面で予約を押すと待機中画面へ戻る() {
 
 		test02_復路画面で予約候補を検索を押すと予約候補表示();

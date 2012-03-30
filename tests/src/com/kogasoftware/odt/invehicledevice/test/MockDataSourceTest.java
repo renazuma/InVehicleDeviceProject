@@ -77,12 +77,12 @@ public class MockDataSourceTest implements DataSource {
 
 		lOperationSchedule = new LinkedList<OperationSchedule>();
 
-		String u1a = "id: 11,user: {last_name: '名前a', family_name: '名字a'},memo: 'テストメモ1'";
-		String u1b = "id: 12,user: {last_name: '名前b', family_name: '名字b'},memo: 'テストメモ2'";
-		String u1c = "id: 13,user: {last_name: '名前c', family_name: '名字c'}";
-		String u1d = "id: 14,user: {last_name: '名前d', family_name: '名字d'}";
-		String u1e = "id: 15,user: {last_name: '名前e', family_name: '名字e'}";
-		String u1f = "id: 16,user: {last_name: '名前f', family_name: '名字f'}";
+		String u1a = "id: 11,user: {first_name: '名前a', last_name: '名字a'},memo: 'テストメモ1'";
+		String u1b = "id: 12,user: {first_name: '名前b', last_name: '名字b'},memo: 'テストメモ2'";
+		String u1c = "id: 13,user: {first_name: '名前c', last_name: '名字c'}";
+		String u1d = "id: 14,user: {first_name: '名前d', last_name: '名字d'}";
+		String u1e = "id: 15,user: {first_name: '名前e', last_name: '名字e'}";
+		String u1f = "id: 16,user: {first_name: '名前f', last_name: '名字f'}";
 
 		String sOperationSchedule = new String();
 
@@ -170,22 +170,22 @@ public class MockDataSourceTest implements DataSource {
 		String u1f = "";
 
 		if (iReservation > 0) {
-			u1a = "{passenger_count: 1 ,id: 11,user: {last_name: 'テストa', family_name: '名字a'},memo: 'テストメモ1'}";
+			u1a = "{passenger_count: 1 ,id: 11,user: {first_name: 'テストa', last_name: '名字a'},memo: 'テストメモ1'}";
 		}
 		if (iReservation > 1) {
-			u1b = ", {passenger_count: 6,id: 12,user: {last_name: 'テストb', family_name: '名字b'}}";
+			u1b = ", {passenger_count: 6,id: 12,user: {first_name: 'テストb', last_name: '名字b'}}";
 		}
 		if (iReservation > 2) {
-			u1c = ", {passenger_count: 7 ,id: 13,user: {last_name: 'テストc', family_name: '名字c'},memo: 'テストメモ3'}";
+			u1c = ", {passenger_count: 7 ,id: 13,user: {first_name: 'テストc', last_name: '名字c'},memo: 'テストメモ3'}";
 		}
 		if (iReservation > 3) {
-			u1d = " {passenger_count: 15 ,id: 14,user: {last_name: 'テストd', family_name: '名字d'}}";
+			u1d = " {passenger_count: 15 ,id: 14,user: {first_name: 'テストd', last_name: '名字d'}}";
 		}
 		if (iReservation > 4) {
-			u1e = ", {passenger_count: 16 ,id: 15,user: {last_name: 'テストe', family_name: '名字e'}}";
+			u1e = ", {passenger_count: 16 ,id: 15,user: {first_name: 'テストe', last_name: '名字e'}}";
 		}
 		if (iReservation > 5) {
-			u1f = ", {passenger_count: 17 ,id: 16,user: {last_name: 'テストf', family_name: '名字f'}}";
+			u1f = ", {passenger_count: 17 ,id: 16,user: {first_name: 'テストf', last_name: '名字f'}}";
 		}
 		try {
 
