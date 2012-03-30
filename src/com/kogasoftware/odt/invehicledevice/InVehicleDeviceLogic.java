@@ -1,102 +1,113 @@
 package com.kogasoftware.odt.invehicledevice;
 
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.datasource.DummyDataSource;
+import com.kogasoftware.odt.invehicledevice.empty.EmptyFile;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class InVehicleDeviceLogic {
+	public static final Integer POLLING_PERIOD_MILLIS = 10 * 1000;
 	private static final Integer NUM_THREADS = 3;
-	private static final Integer POLLING_PERIOD_MILLIS = 10 * 1000;
-	private final InVehicleDeviceStatus status = new InVehicleDeviceStatus();
+	private final File statusFile;
 	private final ScheduledExecutorService executorService = Executors
 			.newScheduledThreadPool(NUM_THREADS);
 	private final DataSource dataSource = new DummyDataSource();
-	private final AtomicBoolean initialized = new AtomicBoolean(false);
+	private final InVehicleDeviceStatus status; // この変数を利用するときはロックする
+
+	class OperationScheduleReceiver implements Runnable {
+		@Override
+		public void run() {
+			List<OperationSchedule> operationSchedules = new LinkedList<OperationSchedule>();
+			while (true) {
+				try {
+					operationSchedules = dataSource.getOperationSchedules();
+					break;
+				} catch (WebAPIException e) {
+					e.printStackTrace(); // TODO
+				}
+				try {
+					Thread.sleep(InVehicleDeviceLogic.POLLING_PERIOD_MILLIS);
+				} catch (InterruptedException e) {
+					return;
+				}
+			}
+			synchronized (status) {
+				status.operationSchedules.clear();
+				status.operationSchedules.addAll(operationSchedules);
+				status.initialized.set(true);
+				saveStatus();
+			}
+		}
+	}
+
+	class VehicleNotificationReceiver implements Runnable {
+		@Override
+		public void run() {
+			try {
+				List<VehicleNotification> vehicleNotification = dataSource
+						.getVehicleNotifications();
+				synchronized (status) {
+					status.vehicleNotifications.addAll(vehicleNotification);
+					saveStatus();
+				}
+			} catch (WebAPIException e) {
+				return;
+			}
+		}
+	};
+
+	class ScheduleChangedReceiver implements Runnable {
+		@Override
+		public void run() {
+			try {
+				List<VehicleNotification> vehicleNotification = dataSource
+						.getVehicleNotifications();
+				synchronized (status) {
+					status.vehicleNotifications.addAll(vehicleNotification);
+					saveStatus();
+				}
+			} catch (WebAPIException e) {
+				return;
+			}
+		}
+	}
+
+	private void saveStatus() {
+		synchronized (status) {
+			status.save(statusFile);
+		}
+	}
+
 	public Boolean isInitialized() {
-		return initialized.get();
+		synchronized (status) {
+			return status.initialized.get();
+		}
 	}
 
 	public InVehicleDeviceLogic() {
-		// 初期データを受信する
-		final Runnable receiveOperationSchedule = new Runnable() {
-			@Override
-			public void run() {
-				List<OperationSchedule> operationSchedules = new LinkedList<OperationSchedule>();
-				while (true) {
-					try {
-						operationSchedules = dataSource.getOperationSchedules();
-						break;
-					} catch (WebAPIException e) {
-						e.printStackTrace(); // TODO
-					}
-					try {
-						Thread.sleep(POLLING_PERIOD_MILLIS);
-					} catch (InterruptedException e) {
-						return;
-					}
-				}
-				synchronized (status) {
-					status.operationSchedules.clear();
-					status.operationSchedules.addAll(operationSchedules);
-				}
-				initialized.set(true);
-			}
-		};
+		this.statusFile = new EmptyFile();
+		this.status = new InVehicleDeviceStatus();
+	}
 
-		try { // TODO
-			executorService.submit(receiveOperationSchedule).get(); // wait
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public InVehicleDeviceLogic(File statusFile) {
+		this.statusFile = statusFile;
+		this.status = InVehicleDeviceStatus.load(statusFile);
 
-		// 通知を一定時間ごとに受信する
-		final Runnable receiveVehicleNotification = new Runnable() {
-			@Override
-			public void run() {
-				try {
-					List<VehicleNotification> vehicleNotification = dataSource
-							.getVehicleNotifications();
-					synchronized (status) {
-						status.vehicleNotifications.addAll(vehicleNotification);
-					}
-				} catch (WebAPIException e) {
-					return;
-				}
-			}
-		};
-		executorService.scheduleWithFixedDelay(receiveVehicleNotification, 0,
-				POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
-
-		// スケジュール変更を一定時間ごとに受信する
-		final Runnable receiveScheduleChanged = new Runnable() {
-			@Override
-			public void run() {
-				try {
-					List<VehicleNotification> vehicleNotification = dataSource
-							.getVehicleNotifications();
-					synchronized (status) {
-						status.vehicleNotifications.addAll(vehicleNotification);
-					}
-				} catch (WebAPIException e) {
-					return;
-				}
-			}
-		};
-		executorService.scheduleWithFixedDelay(receiveScheduleChanged, 0,
-				POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
+		executorService.submit(new OperationScheduleReceiver());
+		executorService.scheduleWithFixedDelay(
+				new VehicleNotificationReceiver(), 0, POLLING_PERIOD_MILLIS,
+				TimeUnit.MILLISECONDS);
+		executorService.scheduleWithFixedDelay(new ScheduleChangedReceiver(),
+				0, POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
 	}
 
 	public void shutdown() {
@@ -161,7 +172,8 @@ public class InVehicleDeviceLogic {
 
 	public List<VehicleNotification> pollVehicleNotifications() {
 		synchronized (status) {
-			LinkedList<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>(status.vehicleNotifications);
+			LinkedList<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>(
+					status.vehicleNotifications);
 			status.vehicleNotifications.clear();
 			return vehicleNotifications;
 		}

@@ -82,6 +82,13 @@ public class DummyDataSource implements DataSource {
 
 	@Override
 	public List<OperationSchedule> getOperationSchedules() throws WebAPIException {
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new WebAPIException(false, e);
+		}
+
 		List<OperationSchedule> l = new LinkedList<OperationSchedule>();
 		try {
 			String u1 = "user: {id: 1, last_name: '勅使河原', first_name: '恭三郎'}";

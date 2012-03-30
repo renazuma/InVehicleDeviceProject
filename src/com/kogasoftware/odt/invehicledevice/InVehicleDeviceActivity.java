@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.invehicledevice;
 
+import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.LinkedList;
@@ -8,7 +9,10 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import jp.tomorrowkey.android.vtextviewer.VTextView;
+import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -43,8 +47,8 @@ import com.kogasoftware.odt.webapi.model.VehicleNotification;
 public class InVehicleDeviceActivity extends MapActivity {
 	private static final String TAG = InVehicleDeviceActivity.class
 			.getSimpleName();
+	private static final int WAIT_FOR_INITIALIZE_DIALOG_ID = 0;
 	private final BlockingQueue<String> voices = new LinkedBlockingQueue<String>();
-	private final InVehicleDeviceLogic logic = new InVehicleDeviceLogic();
 	private final DataSource dataSource = DataSourceFactory.newInstance();
 	private final Integer CHECK_LOGIC_INITIALIZED_INTERVAL = 3000;
 	private final Integer POLL_VEHICLE_NOTIFICATION_INTERVAL = 10000;
@@ -81,6 +85,7 @@ public class InVehicleDeviceActivity extends MapActivity {
 	};
 
 	private Thread voiceThread = new EmptyThread();
+	private InVehicleDeviceLogic logic = new InVehicleDeviceLogic();
 
 	private Button changeStatusButton = null;
 	private Button scheduleButton = null;
@@ -103,7 +108,9 @@ public class InVehicleDeviceActivity extends MapActivity {
 	private StopCheckModal stopCheckModal = null;
 	private StopModal stopModal = null;
 
-	private ProgressDialog waitForInitializeProgressDialog = null;
+	protected File getSavedStatusFile() {
+		return new File(getFilesDir() + File.separator + InVehicleDeviceStatus.class.getCanonicalName() + ".serialized");
+	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
@@ -114,6 +121,8 @@ public class InVehicleDeviceActivity extends MapActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.in_vehicle_device);
+
+		logic = new InVehicleDeviceLogic(getSavedStatusFile());
 
 		voiceThread = new VoiceThread(getApplicationContext(), voices);
 		voiceThread.start();
@@ -219,46 +228,56 @@ public class InVehicleDeviceActivity extends MapActivity {
 				scheduleChangedModal.show(l);
 			}
 		});
+	}
 
-		waitForInitializeProgressDialog = new ProgressDialog(this);
-		waitForInitializeProgressDialog.setMessage("運行情報を受信しています");
-		waitForInitializeProgressDialog
-		.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		switch (id) {
+		case WAIT_FOR_INITIALIZE_DIALOG_ID:
+			ProgressDialog dialog = new ProgressDialog(this);
+			dialog.setMessage("運行情報を受信しています");
+			dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			dialog.setOnDismissListener(new OnDismissListener() {
+				@Override
+				public void onDismiss(DialogInterface dialog) {
+					if (!logic.isInitialized()) {
+						finish();
+					}
+				}});
+			return dialog;
+		default:
+			return null;
+		}
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
 		if (logic.isInitialized()) {
-			findViewById(R.id.root_frame_layout).setVisibility(
-					View.VISIBLE);
+			findViewById(R.id.root_frame_layout).setVisibility(View.VISIBLE);
 			if (logic.getStatus() == InVehicleDeviceStatus.Status.PLATFORM) {
 				enterPlatformStatus();
 			} else {
 				enterDriveStatus();
 			}
 		} else {
-			waitForInitializeProgressDialog.show();
-			final Handler waitForInitHandler = new Handler();
-			final Runnable waitForInitRunnable = new Runnable() {
+			showDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
+			final Handler waitForInitializeHandler = new Handler();
+			final Runnable waitForInitializeRunnable = new Runnable() {
 				@Override
 				public void run() {
-					if (!waitForInitializeProgressDialog.isShowing()) {
-						finish();
-						return;
-					}
 					if (logic.isInitialized()) {
 						findViewById(R.id.root_frame_layout).setVisibility(
 								View.VISIBLE);
 						enterDriveStatus();
-						waitForInitializeProgressDialog.dismiss();
+						dismissDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
 						return;
 					}
-					waitForInitHandler.postDelayed(this,
+					waitForInitializeHandler.postDelayed(this,
 							CHECK_LOGIC_INITIALIZED_INTERVAL);
 				}
 			};
-			waitForInitHandler.post(waitForInitRunnable);
+			waitForInitializeHandler.post(waitForInitializeRunnable);
 		}
 		navigationModal.onResumeActivity();
 	}
@@ -266,7 +285,6 @@ public class InVehicleDeviceActivity extends MapActivity {
 	@Override
 	public void onPause() {
 		super.onPause();
-		waitForInitializeProgressDialog.dismiss();
 		navigationModal.onPauseActivity();
 	}
 
