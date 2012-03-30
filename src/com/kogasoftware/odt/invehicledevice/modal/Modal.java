@@ -22,8 +22,7 @@ public class Modal extends LinearLayout implements OnTouchListener {
 		this.addView(layoutInflater.inflate(resourceId, null),
 				new Modal.LayoutParams(Modal.LayoutParams.FILL_PARENT,
 						Modal.LayoutParams.FILL_PARENT));
-		parent = (FrameLayout) rootView
-				.findViewById(R.id.modal_layout);
+		parent = (FrameLayout) rootView.findViewById(R.id.modal_layout);
 		setVisibility(View.GONE);
 		parent.addView(this);
 	}
@@ -33,8 +32,7 @@ public class Modal extends LinearLayout implements OnTouchListener {
 	}
 
 	/**
-	 * 表示時にパラメーターを渡す必要がある場合、直接呼ばれると不都合がある場合もあるため
-	 * protectedとしサブクラスでオーバーライドさせる
+	 * 表示時にパラメーターを渡す必要がある場合、直接呼ばれると不都合がある場合もあるため protectedとしサブクラスでオーバーライドさせる
 	 */
 	protected void show() {
 		setVisibility(View.VISIBLE);
@@ -42,6 +40,16 @@ public class Modal extends LinearLayout implements OnTouchListener {
 
 	public void hide() {
 		setVisibility(View.GONE);
+	}
+
+	@Override
+	protected void onAttachedToWindow() {
+		super.onAttachedToWindow();
+	}
+
+	@Override
+	protected void onDetachedFromWindow() {
+		super.onDetachedFromWindow();
 	}
 
 	private Float lastMotionEventX = 0f;
