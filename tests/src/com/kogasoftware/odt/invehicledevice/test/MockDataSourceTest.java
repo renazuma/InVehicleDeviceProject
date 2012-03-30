@@ -248,30 +248,56 @@ public class MockDataSourceTest implements DataSource {
 					 {
 		DateFormat f = new SimpleDateFormat("mm:ss");
 		try {
-			ReservationCandidate c1 = new ReservationCandidate();
-			c1.setDepartureTime(f.parse("12:34"));
-			c1.setArrivalTime(f.parse("12:35"));
-			lReservationCandidate.add(c1);
 
-			ReservationCandidate c2 = new ReservationCandidate();
-			c2.setDepartureTime(f.parse("13:45"));
-			c2.setArrivalTime(f.parse("15:12"));
-			lReservationCandidate.add(c2);
+			if (iCount > 0) {
+				ReservationCandidate c1 = new ReservationCandidate();
+				c1.setDepartureTime(f.parse("12:34"));
+				c1.setArrivalTime(f.parse("12:35"));
+				lReservationCandidate.add(c1);
+			}
 
-			ReservationCandidate c3 = new ReservationCandidate();
-			c3.setDepartureTime(f.parse("16:01"));
-			c3.setArrivalTime(f.parse("17:39"));
-			lReservationCandidate.add(c3);
+			if (iCount > 1) {
+				ReservationCandidate c2 = new ReservationCandidate();
+				c2.setDepartureTime(f.parse("13:45"));
+				c2.setArrivalTime(f.parse("15:12"));
+				lReservationCandidate.add(c2);
+			}
 
-			ReservationCandidate c4 = new ReservationCandidate();
-			c4.setDepartureTime(f.parse("18:01"));
-			c4.setArrivalTime(f.parse("18:39"));
-			lReservationCandidate.add(c4);
+			if (iCount > 2) {
+				ReservationCandidate c3 = new ReservationCandidate();
+				c3.setDepartureTime(f.parse("16:01"));
+				c3.setArrivalTime(f.parse("17:39"));
+				lReservationCandidate.add(c3);
+			}
 
-			ReservationCandidate c5 = new ReservationCandidate();
-			c5.setDepartureTime(f.parse("19:01"));
-			c5.setArrivalTime(f.parse("20:39"));
-			lReservationCandidate.add(c5);
+			if (iCount > 3) {
+				ReservationCandidate c4 = new ReservationCandidate();
+				c4.setDepartureTime(f.parse("18:01"));
+				c4.setArrivalTime(f.parse("18:39"));
+				lReservationCandidate.add(c4);
+			}
+
+			if (iCount > 4) {
+				ReservationCandidate c5 = new ReservationCandidate();
+				c5.setDepartureTime(f.parse("19:01"));
+				c5.setArrivalTime(f.parse("19:15"));
+				lReservationCandidate.add(c5);
+			}
+
+			if (iCount > 5) {
+				ReservationCandidate c5 = new ReservationCandidate();
+				c5.setDepartureTime(f.parse("19:16"));
+				c5.setArrivalTime(f.parse("19:30"));
+				lReservationCandidate.add(c5);
+			}
+
+			if (iCount > 6) {
+				ReservationCandidate c5 = new ReservationCandidate();
+				c5.setDepartureTime(f.parse("19:31"));
+				c5.setArrivalTime(f.parse("20:39"));
+				lReservationCandidate.add(c5);
+			}
+
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
