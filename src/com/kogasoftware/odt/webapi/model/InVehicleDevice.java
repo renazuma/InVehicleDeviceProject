@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -12,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class InVehicleDevice extends Model {
-	private static final long serialVersionUID = 6869197652221069050L;
+	private static final long serialVersionUID = 4191609348559365939L;
 
 	public InVehicleDevice() {
 	}
@@ -154,11 +155,11 @@ public class InVehicleDevice extends Model {
 
 	private LinkedList<ServiceUnit> serviceUnits = new LinkedList<ServiceUnit>();
 
-	public LinkedList<ServiceUnit> getServiceUnits() {
+	public List<ServiceUnit> getServiceUnits() {
 		return new LinkedList<ServiceUnit>(wrapNull(serviceUnits));
 	}
 
-	public void setServiceUnits(LinkedList<ServiceUnit> serviceUnits) {
+	public void setServiceUnits(List<ServiceUnit> serviceUnits) {
 		this.serviceUnits = new LinkedList<ServiceUnit>(wrapNull(serviceUnits));
 	}
 
@@ -168,11 +169,11 @@ public class InVehicleDevice extends Model {
 
 	private LinkedList<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();
 
-	public LinkedList<VehicleNotification> getVehicleNotifications() {
+	public List<VehicleNotification> getVehicleNotifications() {
 		return new LinkedList<VehicleNotification>(wrapNull(vehicleNotifications));
 	}
 
-	public void setVehicleNotifications(LinkedList<VehicleNotification> vehicleNotifications) {
+	public void setVehicleNotifications(List<VehicleNotification> vehicleNotifications) {
 		this.vehicleNotifications = new LinkedList<VehicleNotification>(wrapNull(vehicleNotifications));
 	}
 

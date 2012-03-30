@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -12,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class ReservationCandidate extends Model {
-	private static final long serialVersionUID = 7747157152042923142L;
+	private static final long serialVersionUID = 2810934971351158807L;
 
 	public ReservationCandidate() {
 	}

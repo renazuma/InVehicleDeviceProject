@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -12,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class OperationSchedule extends Model {
-	private static final long serialVersionUID = 5160611716473255738L;
+	private static final long serialVersionUID = 4765061606433919132L;
 
 	public OperationSchedule() {
 	}
@@ -27,6 +28,7 @@ public class OperationSchedule extends Model {
 		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
 		setUnitAssignmentId(parseOptionalInteger(jsonObject, "unit_assignment_id"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
+		setOperationRecord(OperationRecord.parse(jsonObject, "operation_record"));
 		setPlatform(Platform.parse(jsonObject, "platform"));
 		if (getPlatform().isPresent()) {
 			setPlatformId(getPlatform().get().getId());
@@ -69,6 +71,7 @@ public class OperationSchedule extends Model {
 		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
 		jsonObject.put("unit_assignment_id", toJSON(getUnitAssignmentId().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
+		jsonObject.put("operation_record", toJSON(getOperationRecord()));
 		jsonObject.put("platform", toJSON(getPlatform()));
 		if (getPlatform().isPresent()) {
 			jsonObject.put("platform_id", toJSON(getPlatform().get().getId()));
@@ -200,6 +203,24 @@ public class OperationSchedule extends Model {
 		this.updatedAt = wrapNull(updatedAt);
 	}
 
+	private Optional<OperationRecord> operationRecord = Optional.<OperationRecord>absent();
+
+	public Optional<OperationRecord> getOperationRecord() {
+		return wrapNull(operationRecord);
+	}
+
+	public void setOperationRecord(Optional<OperationRecord> operationRecord) {
+		this.operationRecord = wrapNull(operationRecord);
+	}
+
+	public void setOperationRecord(OperationRecord operationRecord) {
+		this.operationRecord = Optional.<OperationRecord>fromNullable(operationRecord);
+	}
+
+	public void clearOperationRecord() {
+		this.operationRecord = Optional.<OperationRecord>absent();
+	}
+
 	private Optional<Platform> platform = Optional.<Platform>absent();
 
 	public Optional<Platform> getPlatform() {
@@ -220,11 +241,11 @@ public class OperationSchedule extends Model {
 
 	private LinkedList<Reservation> reservationsAsArrival = new LinkedList<Reservation>();
 
-	public LinkedList<Reservation> getReservationsAsArrival() {
+	public List<Reservation> getReservationsAsArrival() {
 		return new LinkedList<Reservation>(wrapNull(reservationsAsArrival));
 	}
 
-	public void setReservationsAsArrival(LinkedList<Reservation> reservationsAsArrival) {
+	public void setReservationsAsArrival(List<Reservation> reservationsAsArrival) {
 		this.reservationsAsArrival = new LinkedList<Reservation>(wrapNull(reservationsAsArrival));
 	}
 
@@ -234,11 +255,11 @@ public class OperationSchedule extends Model {
 
 	private LinkedList<Reservation> reservationsAsDeparture = new LinkedList<Reservation>();
 
-	public LinkedList<Reservation> getReservationsAsDeparture() {
+	public List<Reservation> getReservationsAsDeparture() {
 		return new LinkedList<Reservation>(wrapNull(reservationsAsDeparture));
 	}
 
-	public void setReservationsAsDeparture(LinkedList<Reservation> reservationsAsDeparture) {
+	public void setReservationsAsDeparture(List<Reservation> reservationsAsDeparture) {
 		this.reservationsAsDeparture = new LinkedList<Reservation>(wrapNull(reservationsAsDeparture));
 	}
 

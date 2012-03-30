@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -12,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Demand extends Model {
-	private static final long serialVersionUID = 935893529549189551L;
+	private static final long serialVersionUID = 7591276760376023010L;
 
 	public Demand() {
 	}
@@ -392,11 +393,11 @@ public class Demand extends Model {
 
 	private LinkedList<ReservationCandidate> reservationCandidates = new LinkedList<ReservationCandidate>();
 
-	public LinkedList<ReservationCandidate> getReservationCandidates() {
+	public List<ReservationCandidate> getReservationCandidates() {
 		return new LinkedList<ReservationCandidate>(wrapNull(reservationCandidates));
 	}
 
-	public void setReservationCandidates(LinkedList<ReservationCandidate> reservationCandidates) {
+	public void setReservationCandidates(List<ReservationCandidate> reservationCandidates) {
 		this.reservationCandidates = new LinkedList<ReservationCandidate>(wrapNull(reservationCandidates));
 	}
 

@@ -197,11 +197,11 @@ abstract public class Model implements Serializable {
 		return value != null ? value : 0;
 	}
 
-	protected static <T> List<T> wrapNull(List<T> value) {
+	protected static <T extends Serializable> List<T> wrapNull(List<T> value) {
 		return value != null ? value : new LinkedList<T>();
 	}
 
-	protected static <T> Optional<T> wrapNull(Optional<T> value) {
+	protected static <T extends Serializable> Optional<T> wrapNull(Optional<T> value) {
 		return value != null ? value : Optional.<T> absent();
 	}
 

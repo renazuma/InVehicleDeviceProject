@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -12,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class ServiceUnit extends Model {
-	private static final long serialVersionUID = 3314802946343888763L;
+	private static final long serialVersionUID = 4857291142972844048L;
 
 	public ServiceUnit() {
 	}
@@ -27,10 +28,15 @@ public class ServiceUnit extends Model {
 		setUnitAssignmentId(parseOptionalInteger(jsonObject, "unit_assignment_id"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setVehicleId(parseInteger(jsonObject, "vehicle_id"));
+		setDriver(Driver.parse(jsonObject, "driver"));
+		if (getDriver().isPresent()) {
+			setDriverId(getDriver().get().getId());
+		}
 		setInVehicleDevice(InVehicleDevice.parse(jsonObject, "in_vehicle_device"));
 		if (getInVehicleDevice().isPresent()) {
 			setInVehicleDeviceId(getInVehicleDevice().get().getId());
 		}
+		setOperationRecords(OperationRecord.parseList(jsonObject, "operation_records"));
 	}
 
 	public static Optional<ServiceUnit> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -67,10 +73,15 @@ public class ServiceUnit extends Model {
 		jsonObject.put("unit_assignment_id", toJSON(getUnitAssignmentId().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
 		jsonObject.put("vehicle_id", toJSON(getVehicleId()));
+		jsonObject.put("driver", toJSON(getDriver()));
+		if (getDriver().isPresent()) {
+			jsonObject.put("driver_id", toJSON(getDriver().get().getId()));
+		}
 		jsonObject.put("in_vehicle_device", toJSON(getInVehicleDevice()));
 		if (getInVehicleDevice().isPresent()) {
 			jsonObject.put("in_vehicle_device_id", toJSON(getInVehicleDevice().get().getId()));
 		}
+		jsonObject.put("operation_records", toJSON(getOperationRecords()));
 		return jsonObject;
 	}
 
@@ -196,6 +207,24 @@ public class ServiceUnit extends Model {
 		this.vehicleId = wrapNull(vehicleId);
 	}
 
+	private Optional<Driver> driver = Optional.<Driver>absent();
+
+	public Optional<Driver> getDriver() {
+		return wrapNull(driver);
+	}
+
+	public void setDriver(Optional<Driver> driver) {
+		this.driver = wrapNull(driver);
+	}
+
+	public void setDriver(Driver driver) {
+		this.driver = Optional.<Driver>fromNullable(driver);
+	}
+
+	public void clearDriver() {
+		this.driver = Optional.<Driver>absent();
+	}
+
 	private Optional<InVehicleDevice> inVehicleDevice = Optional.<InVehicleDevice>absent();
 
 	public Optional<InVehicleDevice> getInVehicleDevice() {
@@ -212,5 +241,19 @@ public class ServiceUnit extends Model {
 
 	public void clearInVehicleDevice() {
 		this.inVehicleDevice = Optional.<InVehicleDevice>absent();
+	}
+
+	private LinkedList<OperationRecord> operationRecords = new LinkedList<OperationRecord>();
+
+	public List<OperationRecord> getOperationRecords() {
+		return new LinkedList<OperationRecord>(wrapNull(operationRecords));
+	}
+
+	public void setOperationRecords(List<OperationRecord> operationRecords) {
+		this.operationRecords = new LinkedList<OperationRecord>(wrapNull(operationRecords));
+	}
+
+	public void clearOperationRecords() {
+		this.operationRecords = new LinkedList<OperationRecord>();
 	}
 }

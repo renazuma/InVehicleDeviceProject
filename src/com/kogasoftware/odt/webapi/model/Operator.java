@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -12,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Operator extends Model {
-	private static final long serialVersionUID = 3902299720776440933L;
+	private static final long serialVersionUID = 2717584520284259062L;
 
 	public Operator() {
 	}
@@ -336,11 +337,11 @@ public class Operator extends Model {
 
 	private LinkedList<Reservation> reservations = new LinkedList<Reservation>();
 
-	public LinkedList<Reservation> getReservations() {
+	public List<Reservation> getReservations() {
 		return new LinkedList<Reservation>(wrapNull(reservations));
 	}
 
-	public void setReservations(LinkedList<Reservation> reservations) {
+	public void setReservations(List<Reservation> reservations) {
 		this.reservations = new LinkedList<Reservation>(wrapNull(reservations));
 	}
 

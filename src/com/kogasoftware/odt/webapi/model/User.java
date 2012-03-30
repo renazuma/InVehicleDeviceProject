@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -12,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class User extends Model {
-	private static final long serialVersionUID = 7852090135320302034L;
+	private static final long serialVersionUID = 4132965726335002842L;
 
 	public User() {
 	}
@@ -604,11 +605,11 @@ public class User extends Model {
 
 	private LinkedList<Demand> demands = new LinkedList<Demand>();
 
-	public LinkedList<Demand> getDemands() {
+	public List<Demand> getDemands() {
 		return new LinkedList<Demand>(wrapNull(demands));
 	}
 
-	public void setDemands(LinkedList<Demand> demands) {
+	public void setDemands(List<Demand> demands) {
 		this.demands = new LinkedList<Demand>(wrapNull(demands));
 	}
 
@@ -618,11 +619,11 @@ public class User extends Model {
 
 	private LinkedList<ReservationCandidate> reservationCandidates = new LinkedList<ReservationCandidate>();
 
-	public LinkedList<ReservationCandidate> getReservationCandidates() {
+	public List<ReservationCandidate> getReservationCandidates() {
 		return new LinkedList<ReservationCandidate>(wrapNull(reservationCandidates));
 	}
 
-	public void setReservationCandidates(LinkedList<ReservationCandidate> reservationCandidates) {
+	public void setReservationCandidates(List<ReservationCandidate> reservationCandidates) {
 		this.reservationCandidates = new LinkedList<ReservationCandidate>(wrapNull(reservationCandidates));
 	}
 
@@ -632,11 +633,11 @@ public class User extends Model {
 
 	private LinkedList<Reservation> reservations = new LinkedList<Reservation>();
 
-	public LinkedList<Reservation> getReservations() {
+	public List<Reservation> getReservations() {
 		return new LinkedList<Reservation>(wrapNull(reservations));
 	}
 
-	public void setReservations(LinkedList<Reservation> reservations) {
+	public void setReservations(List<Reservation> reservations) {
 		this.reservations = new LinkedList<Reservation>(wrapNull(reservations));
 	}
 
