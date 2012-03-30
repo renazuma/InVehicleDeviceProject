@@ -47,7 +47,7 @@ import com.kogasoftware.odt.webapi.model.VehicleNotification;
 public class InVehicleDeviceActivity extends MapActivity {
 	private static final String TAG = InVehicleDeviceActivity.class
 			.getSimpleName();
-	private static final int WAIT_FOR_INITIALIZE_DIALOG_ID = 0;
+	private static final int WAIT_FOR_INITIALIZE_DIALOG_ID = 10;
 	private final BlockingQueue<String> voices = new LinkedBlockingQueue<String>();
 	private final DataSource dataSource = DataSourceFactory.newInstance();
 	private final Integer CHECK_LOGIC_INITIALIZED_INTERVAL = 3000;
@@ -270,7 +270,11 @@ public class InVehicleDeviceActivity extends MapActivity {
 						findViewById(R.id.root_frame_layout).setVisibility(
 								View.VISIBLE);
 						enterDriveStatus();
-						dismissDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
+						try {
+							dismissDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
+						} catch (IllegalArgumentException e) {
+							//Log.w(TAG, e);
+						}
 						return;
 					}
 					waitForInitializeHandler.postDelayed(this,
