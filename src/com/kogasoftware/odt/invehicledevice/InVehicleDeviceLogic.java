@@ -29,7 +29,7 @@ public class InVehicleDeviceLogic {
 			List<OperationSchedule> operationSchedules = new LinkedList<OperationSchedule>();
 			while (true) {
 				try {
-					operationSchedules = dataSource.getOperationSchedules();
+					operationSchedules.addAll(dataSource.getOperationSchedules());
 					break;
 				} catch (WebAPIException e) {
 					e.printStackTrace(); // TODO
