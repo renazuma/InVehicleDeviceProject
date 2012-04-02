@@ -181,6 +181,27 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 	}
 
+	public void test15_データ初期設定() {
+		// TODO userId,departurePlatformId,arrivalPlatformId部分は後で茂木さんの実装が出来たら実装する
+		dataset(6,1,1,1);
+	}
+
+	public void test16_条件により予約候補表示が変更される() {
+
+		// TODO 茂木さんが実装した記述する
+		assertFalse(solo.searchText("乗車時刻"));
+
+		solo.clickOnButton("予約候補を検索");
+		assertEquals(View.VISIBLE, solo.getView(R.id.return_path_modal)
+				.getVisibility());
+
+		assertTrue(solo.searchText("乗車時刻"));
+		assertTrue(solo.searchText("13時"));
+		assertTrue(solo.searchText("34分"));
+
+	}
+
+
 	@Override
 	public void tearDown() throws Exception {
 		solo.finishOpenedActivities();

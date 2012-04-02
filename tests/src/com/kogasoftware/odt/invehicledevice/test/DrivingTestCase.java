@@ -79,6 +79,35 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 	}
 
+	public void test07_乗降場の表示が遷移する() {
+
+		test01_起動時は走行中表示();
+
+		assertTrue("博物館前",solo.searchText("博物館前"));
+
+		test04_停車中から出発しますボタンを押すと出発確認画面表示();
+
+		assertTrue("御徒町駅前",solo.searchText("御徒町駅前"));
+
+	}
+
+	public void test08_最終乗降場についた時の挙動() {
+
+		// TODO 機能が確定していないので確定後実装する
+
+		test04_停車中から出発しますボタンを押すと出発確認画面表示();
+
+		solo.clickOnView(solo.getView(R.id.start_button));
+		assertEquals(View.VISIBLE, solo.getView(R.id.driving_layout)
+				.getVisibility());
+
+		getInstrumentation().waitForIdleSync();
+
+		TextView v = (TextView) solo.getView(R.id.status_text_view);
+		assertEquals("走行中", v.getText()); // TODO 画像ファイル名assertに書き換わる予定
+
+	}
+
 	@Override
 	public void tearDown() throws Exception {
 		solo.finishOpenedActivities();
