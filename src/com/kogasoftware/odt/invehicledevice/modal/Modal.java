@@ -2,19 +2,15 @@ package com.kogasoftware.odt.invehicledevice.modal;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.kogasoftware.odt.invehicledevice.R;
-
-public class Modal extends LinearLayout implements OnTouchListener {
-	private final FrameLayout parent;
-
+public class Modal extends FrameLayout implements OnTouchListener {
 	public Modal(Context context, View rootView, int resourceId) {
 		super(context);
 		LayoutInflater layoutInflater = (LayoutInflater) context
@@ -22,9 +18,12 @@ public class Modal extends LinearLayout implements OnTouchListener {
 		this.addView(layoutInflater.inflate(resourceId, null),
 				new Modal.LayoutParams(Modal.LayoutParams.FILL_PARENT,
 						Modal.LayoutParams.FILL_PARENT));
-		parent = (FrameLayout) rootView.findViewById(R.id.modal_layout);
+
+		// TypedArray typedArray = context.obtainStyledAttributes(new int[]
+		// {android.R.attr.background});
+		// setBackgroundColor(typedArray.getColor(0, android.R.color.white));
+		setBackgroundColor(Color.WHITE); // TODO: themeで指定
 		setVisibility(View.GONE);
-		parent.addView(this);
 	}
 
 	public Modal(Activity activity, int resourceId) {

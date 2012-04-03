@@ -1,27 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:background="#ffffff"
-    android:id="@+id/root_frame_layout"
-    android:visibility="invisible">
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:baselineAligned="false"
-        android:orientation="horizontal">
+        android:orientation="horizontal" >
 
         <LinearLayout
             android:layout_width="0dip"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="vertical" >
 
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal" >
 
                 <TextView
                     android:id="@+id/icon_text_view"
@@ -31,9 +26,9 @@
                     android:layout_weight="1"
                     android:background="#aaffaa"
                     android:gravity="center|center"
-                    android:text="(アイコン)"
+                    android:text="@string/icon"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="#000000" />
+                     />
 
                 <TextView
                     android:id="@+id/status_text_view"
@@ -45,7 +40,7 @@
                     android:gravity="center|center"
                     android:text=""
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="#000000" />
+                     />
 
                 <LinearLayout
                     android:layout_width="fill_parent"
@@ -53,14 +48,14 @@
                     android:layout_margin="2dp"
                     android:layout_weight="1"
                     android:background="#aaffaa"
-                    android:orientation="vertical">
+                    android:orientation="vertical" >
 
                     <TextView
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center|center"
-                        android:text="現在時刻"
-                        android:textColor="#000000" />
+                        android:text="@string/present_time"
+                         />
 
                     <TextView
                         android:layout_width="fill_parent"
@@ -68,18 +63,18 @@
                         android:gravity="center|center"
                         android:text="14時56分"
                         android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:textColor="#000000" />
+                         />
                 </LinearLayout>
             </LinearLayout>
 
             <FrameLayout
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
+                android:layout_height="fill_parent" >
 
                 <FrameLayout
                     android:id="@+id/driving_layout"
                     android:layout_width="fill_parent"
-                    android:layout_height="fill_parent">
+                    android:layout_height="fill_parent" >
 
                     <LinearLayout
                         android:id="@+id/driving_view1"
@@ -91,23 +86,23 @@
                             android:layout_width="fill_parent"
                             android:layout_height="fill_parent"
                             android:layout_weight="1"
-                            android:orientation="horizontal">
+                            android:orientation="horizontal" >
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="fill_parent"
-                                android:text="次は、"
+                                android:text="@string/next_platform_is"
                                 android:textAppearance="?android:attr/textAppearanceLarge"
-                                android:textColor="#000000" />
+                                 />
 
                             <TextView
                                 android:id="@+id/next_platform_name_ruby_text_view"
-                                android:layout_width="wrap_content"
+                                android:layout_width="0dip"
                                 android:layout_height="fill_parent"
                                 android:layout_weight="1"
                                 android:gravity="left|center"
                                 android:text=""
-                                android:textColor="#000000"
+                                
                                 android:textSize="50dip" />
                         </LinearLayout>
 
@@ -115,23 +110,23 @@
                             android:layout_width="fill_parent"
                             android:layout_height="fill_parent"
                             android:layout_weight="1"
-                            android:orientation="horizontal">
+                            android:orientation="horizontal" >
 
                             <TextView
                                 android:id="@+id/platform_arrival_time_text_view"
                                 android:layout_width="wrap_content"
                                 android:layout_height="fill_parent"
                                 android:text=""
-                                android:textColor="#000000"
+                                
                                 android:textSize="50dip" />
 
                             <TextView
-                                android:layout_width="wrap_content"
+                                android:layout_width="0dip"
                                 android:layout_height="fill_parent"
                                 android:layout_weight="1"
                                 android:gravity="left|center"
-                                android:text="到着予定"
-                                android:textColor="#000000"
+                                android:text="@string/arrival_schedule"
+                                
                                 android:textSize="50dip" />
                         </LinearLayout>
                     </LinearLayout>
@@ -146,22 +141,22 @@
                             android:layout_width="fill_parent"
                             android:layout_height="fill_parent"
                             android:layout_weight="1"
-                            android:orientation="horizontal">
+                            android:orientation="horizontal" >
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="fill_parent"
-                                android:text="次は、"
+                                android:text="@string/next_platform_is"
                                 android:textAppearance="?android:attr/textAppearanceLarge"
-                                android:textColor="#000000" />
+                                 />
 
                             <TextView
                                 android:id="@+id/next_platform_name_text_view"
-                                android:layout_width="wrap_content"
+                                android:layout_width="0dip"
                                 android:layout_height="fill_parent"
                                 android:layout_weight="1"
                                 android:gravity="left|center"
-                                android:textColor="#000000"
+                                
                                 android:textSize="50dip" />
                         </LinearLayout>
 
@@ -169,7 +164,7 @@
                             android:layout_width="fill_parent"
                             android:layout_height="fill_parent"
                             android:layout_weight="1"
-                            android:orientation="horizontal">
+                            android:orientation="horizontal" >
 
                             <jp.tomorrowkey.android.vtextviewer.VTextView
                                 android:id="@+id/platform_name_1_beyond_text_view"
@@ -177,7 +172,7 @@
                                 android:layout_height="fill_parent"
                                 android:layout_weight="1"
                                 android:textAppearance="?android:attr/textAppearanceLarge"
-                                android:textColor="#000000" />
+                                 />
 
                             <jp.tomorrowkey.android.vtextviewer.VTextView
                                 android:id="@+id/platform_name_2_beyond_text_view"
@@ -185,7 +180,7 @@
                                 android:layout_height="fill_parent"
                                 android:layout_weight="1"
                                 android:textAppearance="?android:attr/textAppearanceLarge"
-                                android:textColor="#000000" />
+                                 />
 
                             <jp.tomorrowkey.android.vtextviewer.VTextView
                                 android:id="@+id/platform_name_3_beyond_text_view"
@@ -193,7 +188,7 @@
                                 android:layout_height="fill_parent"
                                 android:layout_weight="1"
                                 android:textAppearance="?android:attr/textAppearanceLarge"
-                                android:textColor="#000000" />
+                                 />
                         </LinearLayout>
                     </LinearLayout>
                 </FrameLayout>
@@ -202,22 +197,20 @@
                     android:id="@+id/waiting_layout"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    android:background="#ffffff"
                     android:orientation="vertical"
-                    android:visibility="gone">
+                    android:visibility="gone" >
 
                     <LinearLayout
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:background="#ffffff"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal" >
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="fill_parent"
                             android:gravity="bottom"
-                            android:text="次は"
-                            android:textColor="#000000" />
+                            android:text="@string/next_platform_is"
+                             />
 
                         <TextView
                             android:id="@+id/platform_name_text_view"
@@ -225,15 +218,15 @@
                             android:layout_height="fill_parent"
                             android:gravity="bottom"
                             android:text=""
-                            android:textColor="#000000"
+                            
                             android:textSize="20dip" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="fill_parent"
                             android:gravity="bottom"
-                            android:text="出発時刻"
-                            android:textColor="#000000" />
+                            android:text="@string/departure_schedule"
+                             />
 
                         <TextView
                             android:id="@+id/platform_departure_time_text_view"
@@ -241,7 +234,7 @@
                             android:layout_height="fill_parent"
                             android:gravity="bottom"
                             android:text="15時00分"
-                            android:textColor="#000000"
+                            
                             android:textSize="20dip" />
 
                         <TextView
@@ -249,7 +242,7 @@
                             android:layout_height="fill_parent"
                             android:gravity="bottom"
                             android:text="あと"
-                            android:textColor="#000000" />
+                             />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -264,14 +257,14 @@
                             android:layout_height="fill_parent"
                             android:gravity="bottom"
                             android:text="分"
-                            android:textColor="#000000" />
+                             />
                     </LinearLayout>
 
                     <Button
                         android:id="@+id/reservation_scroll_up_button"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:text="上へ移動" />
+                        android:text="@string/scroll_up" />
 
                     <ListView
                         android:id="@+id/reservation_list_view"
@@ -283,7 +276,7 @@
                         android:id="@+id/reservation_scroll_down_button"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:text="下へ移動" />
+                        android:text="@string/scroll_down" />
                 </LinearLayout>
             </FrameLayout>
         </LinearLayout>
@@ -292,14 +285,14 @@
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:background="#aaffaa"
-            android:orientation="vertical">
+            android:orientation="vertical" >
 
             <Button
                 android:id="@+id/config_button"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
-                android:text="運行管理"
+                android:text="@string/operation_management"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <Button
@@ -307,7 +300,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
-                android:text="地図"
+                android:text="@string/map"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <Button
@@ -332,8 +325,7 @@
         android:id="@+id/modal_layout"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:orientation="vertical">
-
+        android:orientation="vertical" >
     </FrameLayout>
 
-</FrameLayout>
+</merge>

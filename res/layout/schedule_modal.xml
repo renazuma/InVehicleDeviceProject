@@ -1,18 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="#ffffff"
-    android:orientation="vertical"
-    >
+    android:orientation="vertical">
 
     <Button
         android:id="@+id/operation_schedule_scroll_up_button"
         android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:text="上へ移動" />
+        android:text="@string/scroll_up" />
 
     <ListView
         android:id="@+id/operation_schedule_list_view"
@@ -25,12 +22,12 @@
         android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:text="下へ移動" />
+        android:text="@string/scroll_down" />
 
     <com.kogasoftware.odt.invehicledevice.modal.HideModalButton
         android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:text="戻る" />
+        android:text="@string/it_returns" />
 
 </LinearLayout>

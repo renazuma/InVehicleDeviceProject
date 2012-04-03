@@ -8,7 +8,7 @@ import android.graphics.Bitmap;
 /**
  * 複数のバッファを使って表示をスムーズにした
  * 
- * @author saturday06
+ * @author ksc
  * 
  */
 public class MapSynchronizer {

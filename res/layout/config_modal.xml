@@ -2,17 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="#ffffff"
-    android:orientation="vertical"
-    >
+    android:orientation="vertical">
 
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
-        android:text="運行管理画面"
+        android:text="@string/operation_management"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="#000000" />
+         />
 
     <Button
         android:id="@+id/stop_check_button"
@@ -33,6 +31,6 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
-        android:text="戻る" />
+        android:text="@string/it_returns" />
 
 </LinearLayout>

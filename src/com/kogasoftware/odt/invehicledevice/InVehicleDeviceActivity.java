@@ -11,13 +11,19 @@ import java.util.concurrent.LinkedBlockingQueue;
 import jp.tomorrowkey.android.vtextviewer.VTextView;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
+import android.content.res.TypedArray;
+import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -108,8 +114,10 @@ public class InVehicleDeviceActivity extends MapActivity {
 	private StopCheckModal stopCheckModal = null;
 	private StopModal stopModal = null;
 
-	protected File getSavedStatusFile() {
-		return new File(getFilesDir() + File.separator + InVehicleDeviceStatus.class.getCanonicalName() + ".serialized");
+	protected static File getSavedStatusFile(Context context) {
+		return new File(context.getFilesDir() + File.separator
+				+ InVehicleDeviceStatus.class.getCanonicalName()
+				+ ".serialized");
 	}
 
 	@Override
@@ -121,8 +129,29 @@ public class InVehicleDeviceActivity extends MapActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.in_vehicle_device);
+		View contentView = findViewById(android.R.id.content);
+		contentView.setVisibility(View.INVISIBLE);
+		contentView.setBackgroundColor(Color.WHITE); // TODO XMLで指定
+		getWindow().getDecorView().setBackgroundColor(Color.BLACK); // TODO XML
 
-		logic = new InVehicleDeviceLogic(getSavedStatusFile());
+		if (BuildConfig.DEBUG) {
+			StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+			.detectAll().penaltyLog().build());
+			StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+			.detectAll().penaltyLog().penaltyDeath().build());
+		}
+
+		new AsyncTask<Void, Void, InVehicleDeviceLogic>() {
+			@Override
+			protected InVehicleDeviceLogic doInBackground(Void... arguments) {
+				return new InVehicleDeviceLogic(getSavedStatusFile(InVehicleDeviceActivity.this));
+			}
+
+			@Override
+			protected void onPostExecute(InVehicleDeviceLogic result) {
+				logic = result;
+			}
+		}.execute();
 
 		voiceThread = new VoiceThread(getApplicationContext(), voices);
 		voiceThread.start();
@@ -135,18 +164,35 @@ public class InVehicleDeviceActivity extends MapActivity {
 
 		drivingView1Layout = findViewById(R.id.driving_view1);
 		drivingView2Layout = findViewById(R.id.driving_view2);
+		TypedArray typedArray = obtainStyledAttributes(new int[] {android.R.attr.background});
+		int backgroundColor = typedArray.getColor(0, Color.WHITE);
+		drivingView1Layout.setBackgroundColor(backgroundColor); // TODO XMLで指定
+		drivingView2Layout.setBackgroundColor(backgroundColor); // TODO
+		findViewById(R.id.waiting_layout).setBackgroundColor(backgroundColor); // TODO
 
+		ViewGroup modals = (ViewGroup) findViewById(R.id.modal_layout);
 		navigationModal = new NavigationModal(this);
+		modals.addView(navigationModal);
 		configModal = new ConfigModal(this);
+		modals.addView(configModal);
 		startCheckModal = new StartCheckModal(this);
+		modals.addView(startCheckModal);
 		scheduleModal = new ScheduleModal(this);
+		modals.addView(scheduleModal);
 		memoModal = new MemoModal(this);
+		modals.addView(memoModal);
 		pauseModal = new PauseModal(this);
+		modals.addView(pauseModal);
 		returnPathModal = new ReturnPathModal(this);
+		modals.addView(returnPathModal);
 		stopCheckModal = new StopCheckModal(this);
+		modals.addView(stopCheckModal);
 		stopModal = new StopModal(this);
+		modals.addView(stopModal);
 		notificationModal = new NotificationModal(this);
+		modals.addView(notificationModal);
 		scheduleChangedModal = new ScheduleChangedModal(this);
+		modals.addView(scheduleChangedModal);
 
 		toggleDrivingViewHandler.post(toggleDrivingView);
 		pollVehicleNotificationHandler.post(pollVehicleNotification);
@@ -243,7 +289,8 @@ public class InVehicleDeviceActivity extends MapActivity {
 					if (!logic.isInitialized()) {
 						finish();
 					}
-				}});
+				}
+			});
 			return dialog;
 		default:
 			return null;
@@ -254,7 +301,7 @@ public class InVehicleDeviceActivity extends MapActivity {
 	public void onResume() {
 		super.onResume();
 		if (logic.isInitialized()) {
-			findViewById(R.id.root_frame_layout).setVisibility(View.VISIBLE);
+			findViewById(android.R.id.content).setVisibility(View.VISIBLE);
 			if (logic.getStatus() == InVehicleDeviceStatus.Status.PLATFORM) {
 				enterPlatformStatus();
 			} else {
@@ -267,13 +314,12 @@ public class InVehicleDeviceActivity extends MapActivity {
 				@Override
 				public void run() {
 					if (logic.isInitialized()) {
-						findViewById(R.id.root_frame_layout).setVisibility(
-								View.VISIBLE);
+						findViewById(android.R.id.content).setVisibility(View.VISIBLE);
 						enterDriveStatus();
 						try {
 							dismissDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
 						} catch (IllegalArgumentException e) {
-							//Log.w(TAG, e);
+							// Log.w(TAG, e);
 						}
 						return;
 					}

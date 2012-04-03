@@ -42,7 +42,7 @@ public class VTextView extends View {
 
 		bitmap.recycle();
 		bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-		canvas = new Canvas(bitmap);
+		canvas.setBitmap(bitmap);
 	}
 
 	@Override

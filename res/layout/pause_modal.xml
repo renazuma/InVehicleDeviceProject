@@ -2,24 +2,21 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="#ffffff"
-    android:orientation="vertical"
-    
-    >
+    android:orientation="vertical">
 
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
-        android:text="運行一時停止中"
+        android:text="@string/it_has_paused"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="#000000" />
+         />
 
     <com.kogasoftware.odt.invehicledevice.modal.HideModalButton
         android:id="@+id/pause_cancel_button"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
-        android:text="運行を再開する" />
+        android:text="@string/it_resumes" />
 
 </LinearLayout>

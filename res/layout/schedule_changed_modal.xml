@@ -2,7 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff"
     android:orientation="vertical" >
 
     <TextView
@@ -10,9 +9,9 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
-        android:text="運行予定が変更されました"
+        android:text="@string/operation_schedule_was_changed"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="#000000" />
+         />
 
     <com.kogasoftware.odt.invehicledevice.modal.HideModalButton
         android:id="@+id/schedule_confirm_button"
@@ -26,6 +25,6 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
-        android:text="戻る" />
+        android:text="@string/it_returns" />
 
 </LinearLayout>

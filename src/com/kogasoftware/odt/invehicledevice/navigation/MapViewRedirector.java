@@ -50,6 +50,9 @@ public class MapViewRedirector extends FrameLayout {
 		mapSynchronizer.write(new MapSynchronizer.Accessor() {
 			@Override
 			public void run(MapSnapshot mapSnapshot) {
+				if (!MapViewRedirector.this.isShown()) {
+					return;
+				}
 				if (mapSnapshot == null) {
 					throw new RuntimeException("mapSnapshot == null");
 				}
