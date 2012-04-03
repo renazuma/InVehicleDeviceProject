@@ -3,13 +3,11 @@ package com.kogasoftware.odt.invehicledevice.test;
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
-import com.kogasoftware.odt.invehicledevice.test.MockDataSourceTest;
 
 public class ReturnPathTestCase extends
 ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {

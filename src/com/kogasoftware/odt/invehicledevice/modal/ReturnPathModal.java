@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.AsyncTask;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -34,6 +35,7 @@ class MyAsyncTask extends AsyncTask<Void, Void, String> {
 
 public class ReturnPathModal extends Modal {
 	private static final String TAG = ReturnPathModal.class.getSimpleName();
+
 	private final InVehicleDeviceActivity inVehicleDeviceActivity;
 	private ProgressDialog searchingDialog;
 	private ProgressDialog sendingDialog;
@@ -113,14 +115,14 @@ public class ReturnPathModal extends Modal {
 				getContext(), android.R.layout.simple_spinner_item, inOrOut);
 		inOrOutSpinner.setAdapter(inOrOutAdapter);
 
-		final ListView reservationCandidateListView = (ListView) findViewById(R.id.reservation_candidates_list_view);
-		ReservationCandidateArrayAdapter adapter = new ReservationCandidateArrayAdapter(
-				inVehicleDeviceActivity,
-				R.layout.reservation_candidate_list_row, new LinkedList<ReservationCandidate>());
-		reservationCandidateListView.setAdapter(adapter);
-
+		final Button reservationCandidateScrollUpButton = (Button) findViewById(R.id.reservation_candidate_scroll_up_button);
+		final Button reservationCandidateScrollDownButton = (Button) findViewById(R.id.reservation_candidate_scroll_down_button);
+		reservationCandidateScrollUpButton.setVisibility(View.INVISIBLE);
+		reservationCandidateScrollDownButton.setVisibility(View.INVISIBLE);
 		final Button doReservationButton = (Button) findViewById(R.id.do_reservation_button);
-		doReservationButton.setVisibility(View.INVISIBLE);
+		doReservationButton.setEnabled(false);
+		final ListView reservationCandidateListView = (ListView) findViewById(R.id.reservation_candidates_list_view);
+
 		doReservationButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -178,14 +180,51 @@ public class ReturnPathModal extends Modal {
 						if (this.isCancelled()) {
 							return;
 						}
-						ReservationCandidateArrayAdapter adapter = new ReservationCandidateArrayAdapter(
+						final ReservationCandidateArrayAdapter adapter = new ReservationCandidateArrayAdapter(
 								inVehicleDeviceActivity,
 								R.layout.reservation_candidate_list_row, result);
+						reservationCandidateListView
+						.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+							@Override
+							public void onItemClick(
+									AdapterView<?> parent, View view,
+									int position, long id) {
+								adapter.setSelectedPosition(Optional
+										.<Integer> of(position));
+								doReservationButton.setEnabled(true);
+							}
+						});
+
 						reservationCandidateListView.setAdapter(adapter);
-						doReservationButton.setVisibility(View.VISIBLE);
+						reservationCandidateScrollUpButton
+						.setVisibility(View.VISIBLE);
+						reservationCandidateScrollDownButton
+						.setVisibility(View.VISIBLE);
 					}
 				};
 				task.execute();
+			}
+		});
+
+		reservationCandidateScrollUpButton
+		.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				Integer position = reservationCandidateListView
+						.getFirstVisiblePosition();
+				reservationCandidateListView
+				.smoothScrollToPosition(position);
+			}
+		});
+
+		reservationCandidateScrollDownButton
+		.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				Integer position = reservationCandidateListView
+						.getLastVisiblePosition();
+				reservationCandidateListView
+				.smoothScrollToPosition(position);
 			}
 		});
 
