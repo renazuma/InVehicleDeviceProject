@@ -14,6 +14,7 @@ import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
+import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.ReservationCandidate;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
@@ -27,6 +28,13 @@ public class MockDataSourceTest implements DataSource {
 	public List<ReservationCandidate> postReservationCandidates(Integer userId,
 			Integer departurePlatformId, Integer arrivalPlatformId)
 					throws WebAPIException {
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new WebAPIException(false, e);
+		}
+
 		return lReservationCandidate;
 	}
 
@@ -251,29 +259,53 @@ public class MockDataSourceTest implements DataSource {
 
 			if (iCount > 0) {
 				ReservationCandidate c1 = new ReservationCandidate();
-				c1.setDepartureTime(f.parse("12:34"));
-				c1.setArrivalTime(f.parse("12:35"));
+				c1.setDepartureTime(f.parse("12:35"));
+				c1.setArrivalTime(f.parse("13:34"));
+				Platform ap1 = new Platform();
+				ap1.setName("テスト駅1");
+				Platform dp1 = new Platform();
+				dp1.setName("テスト駅2");
+				c1.setArrivalPlatform(ap1);
+				c1.setDeparturePlatform(dp1);
 				lReservationCandidate.add(c1);
 			}
 
 			if (iCount > 1) {
 				ReservationCandidate c2 = new ReservationCandidate();
-				c2.setDepartureTime(f.parse("13:45"));
-				c2.setArrivalTime(f.parse("15:12"));
+				c2.setDepartureTime(f.parse("15:12"));
+				c2.setArrivalTime(f.parse("16:45"));
+				Platform ap2 = new Platform();
+				ap2.setName("テスト駅3");
+				Platform dp2 = new Platform();
+				dp2.setName("テスト駅4");
+				c2.setArrivalPlatform(ap2);
+				c2.setDeparturePlatform(dp2);
 				lReservationCandidate.add(c2);
 			}
 
 			if (iCount > 2) {
 				ReservationCandidate c3 = new ReservationCandidate();
-				c3.setDepartureTime(f.parse("16:01"));
-				c3.setArrivalTime(f.parse("17:39"));
+				c3.setDepartureTime(f.parse("17:39"));
+				c3.setArrivalTime(f.parse("18:01"));
+				Platform ap3 = new Platform();
+				ap3.setName("テスト駅5");
+				Platform dp3 = new Platform();
+				dp3.setName("テスト駅6");
+				c3.setArrivalPlatform(ap3);
+				c3.setDeparturePlatform(dp3);
 				lReservationCandidate.add(c3);
 			}
 
 			if (iCount > 3) {
 				ReservationCandidate c4 = new ReservationCandidate();
-				c4.setDepartureTime(f.parse("18:01"));
-				c4.setArrivalTime(f.parse("18:39"));
+				c4.setDepartureTime(f.parse("17:39"));
+				c4.setArrivalTime(f.parse("18:01"));
+				Platform ap4 = new Platform();
+				ap4.setName("テスト駅7");
+				Platform dp4 = new Platform();
+				dp4.setName("テスト駅8");
+				c4.setArrivalPlatform(ap4);
+				c4.setDeparturePlatform(dp4);
 				lReservationCandidate.add(c4);
 			}
 
@@ -281,21 +313,39 @@ public class MockDataSourceTest implements DataSource {
 				ReservationCandidate c5 = new ReservationCandidate();
 				c5.setDepartureTime(f.parse("19:01"));
 				c5.setArrivalTime(f.parse("19:15"));
+				Platform ap5 = new Platform();
+				ap5.setName("テスト駅9");
+				Platform dp5 = new Platform();
+				dp5.setName("テスト駅10");
+				c5.setArrivalPlatform(ap5);
+				c5.setDeparturePlatform(dp5);
 				lReservationCandidate.add(c5);
 			}
 
 			if (iCount > 5) {
-				ReservationCandidate c5 = new ReservationCandidate();
-				c5.setDepartureTime(f.parse("19:16"));
-				c5.setArrivalTime(f.parse("19:30"));
-				lReservationCandidate.add(c5);
+				ReservationCandidate c6 = new ReservationCandidate();
+				c6.setDepartureTime(f.parse("19:16"));
+				c6.setArrivalTime(f.parse("19:30"));
+				Platform ap6 = new Platform();
+				ap6.setName("テスト駅11");
+				Platform dp6 = new Platform();
+				dp6.setName("テスト駅12");
+				c6.setArrivalPlatform(ap6);
+				c6.setDeparturePlatform(dp6);
+				lReservationCandidate.add(c6);
 			}
 
 			if (iCount > 6) {
-				ReservationCandidate c5 = new ReservationCandidate();
-				c5.setDepartureTime(f.parse("19:31"));
-				c5.setArrivalTime(f.parse("20:39"));
-				lReservationCandidate.add(c5);
+				ReservationCandidate c7 = new ReservationCandidate();
+				c7.setDepartureTime(f.parse("19:31"));
+				c7.setArrivalTime(f.parse("20:39"));
+				Platform ap7 = new Platform();
+				ap7.setName("駅11");
+				Platform dp7 = new Platform();
+				dp7.setName("駅12");
+				c7.setArrivalPlatform(ap7);
+				c7.setDeparturePlatform(dp7);
+				lReservationCandidate.add(c7);
 			}
 
 		} catch (ParseException e) {
