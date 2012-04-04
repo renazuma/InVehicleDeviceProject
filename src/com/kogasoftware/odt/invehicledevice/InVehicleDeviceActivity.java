@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import jp.tomorrowkey.android.vtextviewer.VTextView;
@@ -18,7 +17,6 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.res.TypedArray;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
@@ -270,38 +268,38 @@ public class InVehicleDeviceActivity extends MapActivity {
 					.detectAll().penaltyLog().penaltyDeath().build());
 		}
 
-		try {
-			new AsyncTask<Void, Void, InVehicleDeviceLogic>() {
-				@Override
-				protected InVehicleDeviceLogic doInBackground(Void... arguments) {
-					return new InVehicleDeviceLogic(
-							getSavedStatusFile(InVehicleDeviceActivity.this));
-				}
+		// try {
+		// new AsyncTask<Void, Void, InVehicleDeviceLogic>() {
+		// @Override
+		// protected InVehicleDeviceLogic doInBackground(Void... arguments) {
+		// return new InVehicleDeviceLogic(
+		// getSavedStatusFile(InVehicleDeviceActivity.this));
+		// }
 
-				@Override
-				protected void onPostExecute(InVehicleDeviceLogic result) {
-					logic = result;
-					logic.register(InVehicleDeviceActivity.this);
-					for (int resourceId : new int[] { R.id.config_modal,
-							R.id.start_check_modal, R.id.schedule_modal,
-							R.id.memo_modal, R.id.pause_modal,
-							R.id.return_path_modal, R.id.stop_check_modal,
-							R.id.stop_modal, R.id.notification_modal,
-							R.id.schedule_changed_modal }) {
-						View view = findViewById(resourceId);
-						if (view instanceof Modal) {
-							((Modal) view).setLogic(logic);
-						} else {
-							Log.e(TAG, "!(view instanceof Modal)");
-						}
-					}
-				}
-			}.execute().get(); // TODO これを消してきちんと非同期に処理する
-		} catch (InterruptedException e) {
-			finish();
-		} catch (ExecutionException e) {
-			finish();
+		// @Override
+		// protected void onPostExecute(InVehicleDeviceLogic result) {
+		// logic = result;
+		logic = new InVehicleDeviceLogic(getSavedStatusFile(this)); // TODO
+		logic.register(InVehicleDeviceActivity.this);
+		for (int resourceId : new int[] { R.id.config_modal,
+				R.id.start_check_modal, R.id.schedule_modal, R.id.memo_modal,
+				R.id.pause_modal, R.id.return_path_modal,
+				R.id.stop_check_modal, R.id.stop_modal,
+				R.id.notification_modal, R.id.schedule_changed_modal }) {
+			View view = findViewById(resourceId);
+			if (view instanceof Modal) {
+				((Modal) view).setLogic(logic);
+			} else {
+				Log.e(TAG, "!(view instanceof Modal)");
+			}
 		}
+		// }
+		// }.execute().get(); // TODO これを消してきちんと非同期に処理する
+		// } catch (InterruptedException e) {
+		// finish();
+		// } catch (ExecutionException e) {
+		// finish();
+		// }
 
 		voiceThread = new VoiceThread(getApplicationContext(), voices);
 		voiceThread.start();
