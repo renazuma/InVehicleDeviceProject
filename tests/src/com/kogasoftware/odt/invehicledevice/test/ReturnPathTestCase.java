@@ -40,17 +40,23 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 		// デフォルトで復路画面にする
 		solo.clickOnButton("到着しました");
 		solo.clickOnButton("復路");
+		System.out.println("セットアップ");
 
 	}
 
 	public void test00_データ初期設定() {
 		// TODO userId,departurePlatformId,arrivalPlatformId部分は後で茂木さんの実装が出来たら実装する
 		dataset(6,1,1,1);
+
 	}
 
 	public void test01_復路画面で戻るボタンを押すと復路画面が非表示() {
 
-		solo.clickOnView(solo.getView(R.id.return_path_close_button));
+		assertEquals(View.VISIBLE, solo.getView(R.id.return_path_modal)
+				.getVisibility());
+
+		solo.clickOnButton("戻る");
+
 		assertEquals(View.GONE, solo.getView(R.id.return_path_modal)
 				.getVisibility());
 	}
@@ -199,10 +205,11 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 	}
 
-
 	@Override
 	public void tearDown() throws Exception {
 		solo.finishOpenedActivities();
 		super.tearDown();
+		System.out.println("ダウン");
+
 	}
 }

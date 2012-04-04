@@ -25,10 +25,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 	}
 
 	public void test01_起動時は走行中表示() {
-		
-		
-		
-		
+
 		TextView v = (TextView) solo.getView(R.id.status_text_view);
 		assertEquals("走行中", v.getText()); // TODO 画像ファイル名assertに書き換わる予定
 
