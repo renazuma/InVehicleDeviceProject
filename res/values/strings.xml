@@ -39,5 +39,5 @@
     <string name="show_operation_schedule">運行予定表示</string>
     <string name="today_operation_schedule">本日の運行予定</string>
     <string name="platform_arrival_time_format">H時m分</string>
-    
+    <string name="todays_operation_was_finished">本日の運行は終了しました</string>
 </resources>

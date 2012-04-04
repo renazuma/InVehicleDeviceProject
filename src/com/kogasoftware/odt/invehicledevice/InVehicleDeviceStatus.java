@@ -28,7 +28,7 @@ import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class InVehicleDeviceStatus implements Serializable {
 	public enum Status {
-		DRIVE, PLATFORM, INITIAL
+		DRIVE, PLATFORM, INITIAL, FINISH
 	}
 
 	private static final long serialVersionUID = 5617948505743182175L;

@@ -1,6 +1,7 @@
 package com.kogasoftware.odt.invehicledevice;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -31,6 +32,9 @@ import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class InVehicleDeviceLogic {
 	public static class EnterDriveStatusEvent {
+	}
+
+	public static class EnterFinishStatusEvent {
 	}
 
 	public static class EnterPlatformStatusEvent {
@@ -101,6 +105,7 @@ public class InVehicleDeviceLogic {
 	private static final Integer NUM_THREADS = 3;
 	private final File statusFile;
 	private final EventBus eventBus = new EventBus();
+	private final List<WeakReference<Object>> registeredObjectReferences = new LinkedList<WeakReference<Object>>();
 	private final ScheduledExecutorService executorService = Executors
 			.newScheduledThreadPool(NUM_THREADS);
 	private final DataSource dataSource = new DummyDataSource();
@@ -140,6 +145,16 @@ public class InVehicleDeviceLogic {
 			status.status = InVehicleDeviceStatus.Status.DRIVE;
 		}
 		eventBus.post(new EnterDriveStatusEvent());
+	}
+
+	public void enterFinishStatus() {
+		synchronized (status) {
+			if (status.status == InVehicleDeviceStatus.Status.FINISH) {
+				return;
+			}
+			status.status = InVehicleDeviceStatus.Status.FINISH;
+		}
+		eventBus.post(new EnterFinishStatusEvent());
 	}
 
 	public void enterPlatformStatus() {
@@ -211,6 +226,7 @@ public class InVehicleDeviceLogic {
 
 	public void register(Object object) {
 		eventBus.register(object);
+		registeredObjectReferences.add(new WeakReference<Object>(object));
 	}
 
 	private void saveStatus() {
@@ -262,7 +278,17 @@ public class InVehicleDeviceLogic {
 	}
 
 	public void shutdown() {
+		unregisterAll();
 		executorService.shutdown();
 	}
 
+	public void unregisterAll() {
+		for (WeakReference<Object> objectReference : registeredObjectReferences) {
+			Object object = objectReference.get();
+			if (object != null) {
+				eventBus.unregister(object);
+			}
+		}
+		registeredObjectReferences.clear();
+	}
 }

@@ -33,6 +33,7 @@ import com.google.android.maps.MapActivity;
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceLogic.EnterDriveStatusEvent;
+import com.kogasoftware.odt.invehicledevice.InVehicleDeviceLogic.EnterFinishStatusEvent;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceLogic.EnterPlatformStatusEvent;
 import com.kogasoftware.odt.invehicledevice.arrayadapter.ReservationArrayAdapter;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
@@ -56,9 +57,9 @@ public class InVehicleDeviceActivity extends MapActivity {
 
 	private final BlockingQueue<String> voices = new LinkedBlockingQueue<String>();
 
-	private final Integer CHECK_LOGIC_INITIALIZED_INTERVAL = 3000;
-	private final Integer UPDATE_TIME_INTERVAL = 5000;
+	private static final Integer CHECK_LOGIC_INITIALIZED_INTERVAL = 3000;
 
+	private static final Integer UPDATE_TIME_INTERVAL = 5000;
 	private final Handler updateTimeHandler = new Handler();
 	private final Runnable updateTime = new Runnable() {
 		@Override
@@ -69,8 +70,8 @@ public class InVehicleDeviceActivity extends MapActivity {
 			updateTimeHandler.postDelayed(this, UPDATE_TIME_INTERVAL);
 		}
 	};
-	private final Integer POLL_VEHICLE_NOTIFICATION_INTERVAL = 10000;
 
+	private static final Integer POLL_VEHICLE_NOTIFICATION_INTERVAL = 10000;
 	private final Handler pollVehicleNotificationHandler = new Handler();
 	private final Runnable pollVehicleNotification = new Runnable() {
 		@Override
@@ -85,10 +86,9 @@ public class InVehicleDeviceActivity extends MapActivity {
 					POLL_VEHICLE_NOTIFICATION_INTERVAL);
 		}
 	};
-	private final Integer TOGGLE_DRIVING_VIEW_INTERVAL = 5000;
 
+	private static final Integer TOGGLE_DRIVING_VIEW_INTERVAL = 5000;
 	private final Handler toggleDrivingViewHandler = new Handler();
-
 	private final Runnable toggleDrivingView = new Runnable() {
 		@Override
 		public void run() {
@@ -122,6 +122,9 @@ public class InVehicleDeviceActivity extends MapActivity {
 	private TextView statusTextView = null;
 	private View drivingView1Layout = null;
 	private View drivingView2Layout = null;
+	private View waitingLayout = null;
+	private View drivingLayout = null;
+	private View finishLayout = null;
 	private NavigationModal navigationModal = null;
 	private VTextView platformName1BeyondTextView = null;
 	private VTextView platformName2BeyondTextView = null;
@@ -132,12 +135,13 @@ public class InVehicleDeviceActivity extends MapActivity {
 		List<OperationSchedule> operationSchedules = logic
 				.getRestOperationSchedules();
 		if (operationSchedules.isEmpty()) {
+			logic.enterFinishStatus();
 			return;
 		}
 
 		OperationSchedule operationSchedule = operationSchedules.get(0);
 		if (!operationSchedule.getPlatform().isPresent()) {
-			return;
+			return; // TODO
 		}
 
 		Platform platform = operationSchedule.getPlatform().get();
@@ -173,20 +177,32 @@ public class InVehicleDeviceActivity extends MapActivity {
 
 		statusTextView.setText("走行中");
 		changeStatusButton.setText("到着しました");
-		findViewById(R.id.waiting_layout).setVisibility(View.GONE);
 		if (!voices.offer("出発します。次は、" + platform.getNameRuby() + "。"
 				+ platform.getNameRuby() + "。")) {
 			Log.w(TAG, "!voices.offer() failed");
 		}
+
+		waitingLayout.setVisibility(View.GONE);
+		drivingLayout.setVisibility(View.VISIBLE);
+		finishLayout.setVisibility(View.GONE);
+		changeStatusButton.setEnabled(true);
+	}
+
+	@Subscribe
+	public void enterFinishStatus(EnterFinishStatusEvent event) {
+		waitingLayout.setVisibility(View.GONE);
+		drivingLayout.setVisibility(View.GONE);
+		finishLayout.setVisibility(View.VISIBLE);
+		statusTextView.setText("");
+		changeStatusButton.setEnabled(false);
 	}
 
 	@Subscribe
 	public void enterPlatformStatus(EnterPlatformStatusEvent event) {
-		logic.enterPlatformStatus();
-
 		List<OperationSchedule> operationSchedules = logic
 				.getRestOperationSchedules();
 		if (operationSchedules.isEmpty()) {
+			logic.enterFinishStatus();
 			return;
 		}
 
@@ -208,13 +224,17 @@ public class InVehicleDeviceActivity extends MapActivity {
 				operationSchedule);
 		reservationListView.setAdapter(adapter);
 
-		findViewById(R.id.waiting_layout).setVisibility(View.VISIBLE);
 		statusTextView.setText("停車中");
 		if (operationSchedules.size() > 1) {
 			changeStatusButton.setText("出発する");
 		} else {
 			changeStatusButton.setText("確定する");
 		}
+
+		waitingLayout.setVisibility(View.VISIBLE);
+		drivingLayout.setVisibility(View.GONE);
+		finishLayout.setVisibility(View.GONE);
+		changeStatusButton.setEnabled(true);
 	}
 
 	@Override
@@ -245,9 +265,9 @@ public class InVehicleDeviceActivity extends MapActivity {
 
 		if (BuildConfig.DEBUG) {
 			StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-			.detectAll().penaltyLog().build());
+					.detectAll().penaltyLog().build());
 			StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-			.detectAll().penaltyLog().penaltyDeath().build());
+					.detectAll().penaltyLog().penaltyDeath().build());
 		}
 
 		try {
@@ -300,6 +320,9 @@ public class InVehicleDeviceActivity extends MapActivity {
 		platformNameTextView = (TextView) findViewById(R.id.platform_name_text_view);
 		platformDepartureTimeTextView = (TextView) findViewById(R.id.platform_departure_time_text_view);
 		platformArrivalTimeTextView = (TextView) findViewById(R.id.platform_arrival_time_text_view);
+		waitingLayout = findViewById(R.id.waiting_layout);
+		drivingLayout = findViewById(R.id.driving_layout);
+		finishLayout = findViewById(R.id.finish_layout);
 
 		drivingView1Layout = findViewById(R.id.driving_view1);
 		drivingView2Layout = findViewById(R.id.driving_view2);
@@ -307,7 +330,7 @@ public class InVehicleDeviceActivity extends MapActivity {
 		int backgroundColor = typedArray.getColor(0, Color.WHITE);
 		drivingView1Layout.setBackgroundColor(backgroundColor); // TODO XMLで指定
 		drivingView2Layout.setBackgroundColor(backgroundColor); // TODO
-		findViewById(R.id.waiting_layout).setBackgroundColor(backgroundColor); // TODO
+		waitingLayout.setBackgroundColor(backgroundColor); // TODO
 
 		navigationModal = (NavigationModal) findViewById(R.id.navigation_modal);
 

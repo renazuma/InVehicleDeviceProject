@@ -254,6 +254,20 @@
                         android:layout_height="wrap_content"
                         android:text="@string/scroll_down" />
                 </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/finish_layout"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:orientation="vertical"
+                    android:visibility="gone" >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:text="@string/todays_operation_was_finished" />
+                </LinearLayout>
             </FrameLayout>
         </LinearLayout>
 
