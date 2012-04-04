@@ -1,6 +1,7 @@
 package com.kogasoftware.odt.invehicledevice;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -19,7 +20,6 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -55,7 +55,25 @@ public class InVehicleDeviceActivity extends MapActivity {
 
 	private final BlockingQueue<String> voices = new LinkedBlockingQueue<String>();
 
-	private static final Integer CHECK_LOGIC_INITIALIZED_INTERVAL = 3000;
+	private static final Integer WAIT_FOR_INITIALIZE_INTERVAL = 3000;
+	final Handler waitForInitializeHandler = new Handler();
+	final Runnable waitForInitialize = new Runnable() {
+		@Override
+		public void run() {
+			if (!logic.isInitialized()) {
+				waitForInitializeHandler.postDelayed(this,
+						WAIT_FOR_INITIALIZE_INTERVAL);
+				return;
+			}
+			findViewById(android.R.id.content).setVisibility(View.VISIBLE);
+			logic.enterDriveStatus();
+			try {
+				dismissDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
+			} catch (IllegalArgumentException e) {
+				// Log.w(TAG, e);
+			}
+		}
+	};
 
 	private static final Integer UPDATE_TIME_INTERVAL = 5000;
 	private final Handler updateTimeHandler = new Handler();
@@ -123,7 +141,9 @@ public class InVehicleDeviceActivity extends MapActivity {
 	private View waitingLayout = null;
 	private View drivingLayout = null;
 	private View finishLayout = null;
-	private NavigationModal navigationModal = null;
+	private WeakReference<NavigationModal> navigationModalWeakReference = new WeakReference<NavigationModal>(
+			null); // TODO:
+	// 普通のメンバにする
 	private VTextView platformName1BeyondTextView = null;
 	private VTextView platformName2BeyondTextView = null;
 	private VTextView platformName3BeyondTextView = null;
@@ -261,12 +281,12 @@ public class InVehicleDeviceActivity extends MapActivity {
 		contentView.setBackgroundColor(Color.WHITE); // TODO XMLで指定
 		getWindow().getDecorView().setBackgroundColor(Color.BLACK); // TODO XML
 
-		if (BuildConfig.DEBUG) {
-			StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-					.detectAll().penaltyLog().build());
-			StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-					.detectAll().penaltyLog().penaltyDeath().build());
-		}
+		// if (BuildConfig.DEBUG) {
+		// StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+		// .detectAll().penaltyLog().build());
+		// StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+		// .detectAll().penaltyLog().penaltyDeath().build());
+		// }
 
 		// try {
 		// new AsyncTask<Void, Void, InVehicleDeviceLogic>() {
@@ -330,7 +350,8 @@ public class InVehicleDeviceActivity extends MapActivity {
 		drivingView2Layout.setBackgroundColor(backgroundColor); // TODO
 		waitingLayout.setBackgroundColor(backgroundColor); // TODO
 
-		navigationModal = (NavigationModal) findViewById(R.id.navigation_modal);
+		navigationModalWeakReference = new WeakReference<NavigationModal>(
+				(NavigationModal) findViewById(R.id.navigation_modal));
 
 		toggleDrivingViewHandler.post(toggleDrivingView);
 		pollVehicleNotificationHandler.post(pollVehicleNotification);
@@ -353,7 +374,11 @@ public class InVehicleDeviceActivity extends MapActivity {
 		mapButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				navigationModal.show();
+				NavigationModal navigationModal = navigationModalWeakReference
+						.get();
+				if (navigationModal != null) {
+					navigationModal.show();
+				}
 			}
 		});
 
@@ -441,6 +466,8 @@ public class InVehicleDeviceActivity extends MapActivity {
 		super.onDestroy();
 		toggleDrivingViewHandler.removeCallbacks(toggleDrivingView);
 		pollVehicleNotificationHandler.removeCallbacks(pollVehicleNotification);
+		updateTimeHandler.removeCallbacks(updateTime);
+		waitForInitializeHandler.removeCallbacks(waitForInitialize);
 		voiceThread.interrupt();
 		logic.shutdown();
 	}
@@ -448,13 +475,19 @@ public class InVehicleDeviceActivity extends MapActivity {
 	@Override
 	public void onPause() {
 		super.onPause();
-		navigationModal.onPauseActivity();
+		NavigationModal navigationModal = navigationModalWeakReference.get();
+		if (navigationModal != null) {
+			navigationModal.onPauseActivity();
+		}
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		navigationModal.onResumeActivity();
+		NavigationModal navigationModal = navigationModalWeakReference.get();
+		if (navigationModal != null) {
+			navigationModal.onResumeActivity();
+		}
 
 		if (logic.isInitialized()) {
 			findViewById(android.R.id.content).setVisibility(View.VISIBLE);
@@ -468,25 +501,7 @@ public class InVehicleDeviceActivity extends MapActivity {
 
 		// not initialized yet
 		showDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
-		final Handler waitForInitializeHandler = new Handler();
-		final Runnable waitForInitializeRunnable = new Runnable() {
-			@Override
-			public void run() {
-				if (!logic.isInitialized()) {
-					waitForInitializeHandler.postDelayed(this,
-							CHECK_LOGIC_INITIALIZED_INTERVAL);
-					return;
-				}
-				findViewById(android.R.id.content).setVisibility(View.VISIBLE);
-				logic.enterDriveStatus();
-				try {
-					dismissDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
-				} catch (IllegalArgumentException e) {
-					// Log.w(TAG, e);
-				}
-			}
-		};
-		waitForInitializeHandler.post(waitForInitializeRunnable);
+		waitForInitializeHandler.post(waitForInitialize);
 	}
 
 	@Override

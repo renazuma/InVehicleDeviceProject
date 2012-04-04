@@ -1,5 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.navigation;
 
+import java.lang.ref.WeakReference;
+
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
@@ -9,7 +11,8 @@ import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 
 public class MapOnTouchListener implements OnTouchListener {
-	private final MapView mapView;
+	private final WeakReference<MapView> mapViewWeakReference; // TODO:
+															// GLSurfaceView.GLThreadリーク対策のリファクタリング
 	private Double orientation = 0d;
 	private Double lastX = 0d;
 	private Double lastY = 0d;
@@ -23,6 +26,10 @@ public class MapOnTouchListener implements OnTouchListener {
 	private final Runnable motionRunnable = new Runnable() {
 		@Override
 		public void run() {
+			MapView mapView = mapViewWeakReference.get();
+			if (mapView == null) {
+				return;
+			}
 			Integer lat = latitudeMotionSmoother.getSmoothMotion().intValue();
 			Integer lon = longitudeMotionSmoother.getSmoothMotion().intValue();
 			// logger.error("lat=" + lat + ", lon=" + lon);
@@ -37,13 +44,12 @@ public class MapOnTouchListener implements OnTouchListener {
 		}
 	};
 
-	public void updateGeoPoint(GeoPoint center) {
-		latitudeMotionSmoother.addMotion((double) center.getLatitudeE6());
-		longitudeMotionSmoother.addMotion((double) center.getLongitudeE6());
-	}
+	private int lastLatitude = 0;
+
+	private int lastLongitude = 0;
 
 	public MapOnTouchListener(MapView mapView) {
-		this.mapView = mapView;
+		this.mapViewWeakReference = new WeakReference<MapView>(mapView);
 		updateGeoPoint(mapView.getMapCenter());
 	}
 
@@ -51,11 +57,13 @@ public class MapOnTouchListener implements OnTouchListener {
 		this.orientation = orientation;
 	}
 
-	private int lastLatitude = 0;
-	private int lastLongitude = 0;
-
 	@Override
 	public boolean onTouch(View view, MotionEvent motionEvent) {
+		MapView mapView = mapViewWeakReference.get();
+		if (mapView == null) {
+			return true;
+		}
+
 		Double x = (double) motionEvent.getX();
 		Double y = (double) motionEvent.getY();
 
@@ -86,5 +94,10 @@ public class MapOnTouchListener implements OnTouchListener {
 			motionHandler.post(motionRunnable);
 		}
 		return true;
+	}
+
+	public void updateGeoPoint(GeoPoint center) {
+		latitudeMotionSmoother.addMotion((double) center.getLatitudeE6());
+		longitudeMotionSmoother.addMotion((double) center.getLongitudeE6());
 	}
 }

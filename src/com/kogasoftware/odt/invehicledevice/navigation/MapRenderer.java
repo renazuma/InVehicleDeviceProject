@@ -1,6 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.navigation;
 
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -41,7 +42,8 @@ public class MapRenderer implements GLSurfaceView.Renderer {
 
 	private final MapSprite mapSprite;
 	private final MapSynchronizer mapSynchronizer;
-	private final MapView mapView;
+	private final WeakReference<MapView> mapViewWeakReference; // TODO:
+															// GLSurfaceView.GLThreadリーク対策のリファクタリング
 	private final Queue<FrameTask> frameTaskQueue = new LinkedList<FrameTask>();
 	private final MotionSmoother rotationSmoother = new LazyMotionSmoother(
 			500.0, 0.02, 0.00005);
@@ -55,23 +57,23 @@ public class MapRenderer implements GLSurfaceView.Renderer {
 	private Integer width = 0;
 	private Integer height = 0;
 
-	public void addFrameTask(FrameTask newFrameTask) {
-		synchronized (this) {
-			newFrameTask.onAdd(frameTaskQueue);
-			frameTaskQueue.add(newFrameTask);
-		}
-	}
-
 	public MapRenderer(Resources resources, MapSynchronizer bitmapSynchronizer,
 			MapView mapView) {
 		synchronized (this) {
-			this.mapView = mapView;
+			this.mapViewWeakReference = new WeakReference<MapView>(mapView);
 			this.mapSynchronizer = bitmapSynchronizer;
 			mapSprite = new MapSprite();
 			frameTaskQueue.add(mapSprite);
 			frameTaskQueue.add(new GeoPointDroidSprite(resources, new GeoPoint(
 					35899975, 139935788)));
 			frameTaskQueue.add(new MyLocationSprite(resources));
+		}
+	}
+
+	public void addFrameTask(FrameTask newFrameTask) {
+		synchronized (this) {
+			newFrameTask.onAdd(frameTaskQueue);
+			frameTaskQueue.add(newFrameTask);
 		}
 	}
 
@@ -117,6 +119,10 @@ public class MapRenderer implements GLSurfaceView.Renderer {
 				}
 			});
 
+			MapView mapView = mapViewWeakReference.get();
+			if (mapView == null) {
+				return;
+			}
 			FrameState frameState = new FrameState(gl, millis, radian,
 					lastMapCenter, zoom, mapView);
 

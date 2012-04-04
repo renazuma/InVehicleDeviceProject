@@ -1,6 +1,8 @@
 package jp.tomorrowkey.android.vtextviewer;
 
+import java.lang.ref.WeakReference;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -23,32 +25,62 @@ public class VTextView extends View {
 	/**
 	 * onLayoutをトリガーにしてbitmapを作成したいが、同スレッドで行うと重いメモリ確保が起きる(AndroidLintに指摘される)
 	 * ため別のスレッドで行うためのクラス. AsyncTaskはimmutableクラスなので結局newをする必要があるため自前で行うことにした
+	 * 
+	 * 親Viewの終了時onDetachedFromWindow()が呼ばれないことがあり、スレッドを終了できないことがあるため
+	 * 親Viewへの参照はWeakReferenceを使う
 	 */
-	class UpdateBitmapThread extends Thread {
+	private static class UpdateBitmapThread extends Thread {
+		private static final Integer TRY_ACQUIRE_TIMEOUT_MILLIS = 10000;
+		private final WeakReference<VTextView> parentWeakReference;
+		private final Semaphore updateBitmapStartSemaphore;
+
+		public UpdateBitmapThread(VTextView parent) {
+			this.updateBitmapStartSemaphore = parent.updateBitmapStartSemaphore;
+			this.parentWeakReference = new WeakReference<VTextView>(parent);
+		}
+
 		@Override
 		public void run() {
 			try {
 				while (true) {
-					updateBitmapStartSemaphore.acquire();
-					updateBitmapStartSemaphore.drainPermits();
-					int local_height = height; // widthとheightは途中で変更される可能性があるため、読み出しておく
-					int local_width = width;
-					if (local_height <= 0 || local_width <= 0) {
+					if (!updateBitmapStartSemaphore.tryAcquire(
+							TRY_ACQUIRE_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)) {
+						// 定期的に親クラスが生きているかチェック
+						if (parentWeakReference.get() == null) {
+							return;
+						}
 						continue;
 					}
-					final Bitmap newBitmap = Bitmap.createBitmap(local_width,
-							local_height, Bitmap.Config.ARGB_8888);
-					updateBitmapHandler.post(new Runnable() {
-						@Override
-						public void run() {
-							bitmap = newBitmap;
-							canvas.setBitmap(bitmap);
-							invalidate();
-						}
-					});
+					updateBitmapStartSemaphore.drainPermits();
+					if (!updateParentBitmap()) {
+						return;
+					}
 				}
 			} catch (InterruptedException e) {
 			}
+		}
+
+		private Boolean updateParentBitmap() {
+			final VTextView parent = parentWeakReference.get();
+			if (parent == null) {
+				return false;
+			}
+			int local_height = parent.height; // widthとheightは途中で変更される可能性があるため、読み出しておく
+			int local_width = parent.width;
+			if (local_height <= 0 || local_width <= 0) {
+				return true;
+			}
+			final Bitmap newBitmap = Bitmap.createBitmap(local_width,
+					local_height, Bitmap.Config.ARGB_8888);
+			parent.updateBitmapHandler.post(new Runnable() {
+				@Override
+				public void run() {
+					parent.bitmap = newBitmap;
+					parent.canvas.setBitmap(parent.bitmap);
+					parent.invalidate();
+				}
+			});
+			return true;
 		}
 	}
 
@@ -78,14 +110,18 @@ public class VTextView extends View {
 	protected void onAttachedToWindow() {
 		super.onAttachedToWindow();
 		updateBitmapThread.interrupt();
-		updateBitmapThread = new UpdateBitmapThread();
+		updateBitmapThread = new UpdateBitmapThread(this);
 		updateBitmapThread.start();
 	}
 
 	@Override
 	protected void onDetachedFromWindow() {
-		super.onDetachedFromWindow();
 		updateBitmapThread.interrupt();
+		try {
+			updateBitmapThread.join();
+		} catch (InterruptedException e) {
+		}
+		super.onDetachedFromWindow();
 	}
 
 	@Override

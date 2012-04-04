@@ -161,21 +161,21 @@ public class NavigationModal extends Modal {
 		mapSynchronizer.create();
 		orientationSensor.create();
 
-		GLSurfaceView glSurfaceView = new GLSurfaceView(getContext());
-		glSurfaceView.setRenderer(mapRenderer);
-
 		MapOnTouchListener mapOnTouchListener = mapOnTouchListenerWeakReference
 				.get();
-		if (mapOnTouchListener != null) {
-			glSurfaceView.setOnTouchListener(mapOnTouchListener);
-		}
 
 		// ICSのGLSurfaceView.GLThreadがその親ViewをメンバmParentに保存する。
 		// そのため、Activity再構築などのタイミングで1/10程度の確率で循環参照でリークすることがある。
 		// それを防ぐために参照を極力減らしたFrameLayoutを間にはさむ
 		{
 			FrameLayout icsLeakAvoidanceFrameLayout = new FrameLayout(
-					getContext());
+					getContext().getApplicationContext());
+			GLSurfaceView glSurfaceView = new GLSurfaceView(getContext()
+					.getApplicationContext());
+			if (mapOnTouchListener != null) {
+				glSurfaceView.setOnTouchListener(mapOnTouchListener);
+			}
+			glSurfaceView.setRenderer(mapRenderer);
 			addView(icsLeakAvoidanceFrameLayout,
 					new NavigationModal.LayoutParams(
 							NavigationModal.LayoutParams.FILL_PARENT,
@@ -184,7 +184,8 @@ public class NavigationModal extends Modal {
 					new FrameLayout.LayoutParams(
 							FrameLayout.LayoutParams.FILL_PARENT,
 							FrameLayout.LayoutParams.FILL_PARENT));
-
+			glSurfaceViewWeakReference = new WeakReference<GLSurfaceView>(
+					glSurfaceView);
 		}
 
 		mapViewRedirector.addView(mapView, new MapViewRedirector.LayoutParams(
@@ -209,8 +210,6 @@ public class NavigationModal extends Modal {
 				NavigationModal.LayoutParams.WRAP_CONTENT,
 				Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM));
 
-		glSurfaceViewWeakReference = new WeakReference<GLSurfaceView>(
-				glSurfaceView);
 		mapView.getController().animateTo(new GeoPoint(35899045, 139928656));
 		mapView.getController().setZoom(15);
 	}
@@ -221,8 +220,8 @@ public class NavigationModal extends Modal {
 		orientationSensor.destroy();
 		locationManager.removeUpdates(locationListener);
 		glSurfaceViewWeakReference.clear();
-		super.onDetachedFromWindow();
 		removeAllViews();
+		super.onDetachedFromWindow();
 	}
 
 	public void onPauseActivity() {
