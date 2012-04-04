@@ -30,6 +30,7 @@ public class VTextView extends View {
 			try {
 				while (true) {
 					updateBitmapStartSemaphore.acquire();
+					updateBitmapStartSemaphore.drainPermits();
 					int local_height = height; // widthとheightは途中で変更される可能性があるため、読み出しておく
 					int local_width = width;
 					if (local_height <= 0 || local_width <= 0) {
