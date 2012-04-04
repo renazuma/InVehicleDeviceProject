@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android">
+<merge xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -27,8 +27,7 @@
                     android:background="#aaffaa"
                     android:gravity="center|center"
                     android:text="@string/icon"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                     />
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <TextView
                     android:id="@+id/status_text_view"
@@ -38,9 +37,7 @@
                     android:layout_weight="1"
                     android:background="#aaffaa"
                     android:gravity="center|center"
-                    android:text=""
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                     />
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <LinearLayout
                     android:layout_width="fill_parent"
@@ -54,16 +51,14 @@
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center|center"
-                        android:text="@string/present_time"
-                         />
+                        android:text="@string/present_time" />
 
                     <TextView
+                        android:id="@+id/present_time_text_view"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center|center"
-                        android:text="14時56分"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                         />
+                        android:textAppearance="?android:attr/textAppearanceLarge" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -80,7 +75,7 @@
                         android:id="@+id/driving_view1"
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
-                        android:orientation="vertical">
+                        android:orientation="vertical" >
 
                         <LinearLayout
                             android:layout_width="fill_parent"
@@ -92,8 +87,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="fill_parent"
                                 android:text="@string/next_platform_is"
-                                android:textAppearance="?android:attr/textAppearanceLarge"
-                                 />
+                                android:textAppearance="?android:attr/textAppearanceLarge" />
 
                             <TextView
                                 android:id="@+id/next_platform_name_ruby_text_view"
@@ -101,8 +95,6 @@
                                 android:layout_height="fill_parent"
                                 android:layout_weight="1"
                                 android:gravity="left|center"
-                                android:text=""
-                                
                                 android:textSize="50dip" />
                         </LinearLayout>
 
@@ -116,8 +108,6 @@
                                 android:id="@+id/platform_arrival_time_text_view"
                                 android:layout_width="wrap_content"
                                 android:layout_height="fill_parent"
-                                android:text=""
-                                
                                 android:textSize="50dip" />
 
                             <TextView
@@ -126,7 +116,6 @@
                                 android:layout_weight="1"
                                 android:gravity="left|center"
                                 android:text="@string/arrival_schedule"
-                                
                                 android:textSize="50dip" />
                         </LinearLayout>
                     </LinearLayout>
@@ -135,7 +124,7 @@
                         android:id="@+id/driving_view2"
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
-                        android:orientation="vertical">
+                        android:orientation="vertical" >
 
                         <LinearLayout
                             android:layout_width="fill_parent"
@@ -147,8 +136,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="fill_parent"
                                 android:text="@string/next_platform_is"
-                                android:textAppearance="?android:attr/textAppearanceLarge"
-                                 />
+                                android:textAppearance="?android:attr/textAppearanceLarge" />
 
                             <TextView
                                 android:id="@+id/next_platform_name_text_view"
@@ -156,7 +144,6 @@
                                 android:layout_height="fill_parent"
                                 android:layout_weight="1"
                                 android:gravity="left|center"
-                                
                                 android:textSize="50dip" />
                         </LinearLayout>
 
@@ -171,24 +158,21 @@
                                 android:layout_width="fill_parent"
                                 android:layout_height="fill_parent"
                                 android:layout_weight="1"
-                                android:textAppearance="?android:attr/textAppearanceLarge"
-                                 />
+                                android:textAppearance="?android:attr/textAppearanceLarge" />
 
                             <jp.tomorrowkey.android.vtextviewer.VTextView
                                 android:id="@+id/platform_name_2_beyond_text_view"
                                 android:layout_width="fill_parent"
                                 android:layout_height="fill_parent"
                                 android:layout_weight="1"
-                                android:textAppearance="?android:attr/textAppearanceLarge"
-                                 />
+                                android:textAppearance="?android:attr/textAppearanceLarge" />
 
                             <jp.tomorrowkey.android.vtextviewer.VTextView
                                 android:id="@+id/platform_name_3_beyond_text_view"
                                 android:layout_width="fill_parent"
                                 android:layout_height="fill_parent"
                                 android:layout_weight="1"
-                                android:textAppearance="?android:attr/textAppearanceLarge"
-                                 />
+                                android:textAppearance="?android:attr/textAppearanceLarge" />
                         </LinearLayout>
                     </LinearLayout>
                 </FrameLayout>
@@ -209,46 +193,39 @@
                             android:layout_width="wrap_content"
                             android:layout_height="fill_parent"
                             android:gravity="bottom"
-                            android:text="@string/next_platform_is"
-                             />
+                            android:text="@string/next_platform_is" />
 
                         <TextView
                             android:id="@+id/platform_name_text_view"
                             android:layout_width="wrap_content"
                             android:layout_height="fill_parent"
                             android:gravity="bottom"
-                            android:text=""
-                            
                             android:textSize="20dip" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="fill_parent"
                             android:gravity="bottom"
-                            android:text="@string/departure_schedule"
-                             />
+                            android:text="@string/departure_schedule" />
 
                         <TextView
                             android:id="@+id/platform_departure_time_text_view"
                             android:layout_width="wrap_content"
                             android:layout_height="fill_parent"
                             android:gravity="bottom"
-                            android:text="15時00分"
-                            
                             android:textSize="20dip" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="fill_parent"
                             android:gravity="bottom"
-                            android:text="あと"
-                             />
+                            android:text="@string/remain" />
 
                         <TextView
+                            android:id="@+id/minutes_remaining"
                             android:layout_width="wrap_content"
                             android:layout_height="fill_parent"
                             android:gravity="bottom"
-                            android:text="2"
                             android:textColor="#ff0000"
                             android:textSize="20dip" />
 
@@ -256,8 +233,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="fill_parent"
                             android:gravity="bottom"
-                            android:text="分"
-                             />
+                            android:text="@string/minute" />
                     </LinearLayout>
 
                     <Button
@@ -308,7 +284,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
-                android:text="本日の運行予定"
+                android:text="@string/today_operation_schedule"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <Button
@@ -316,16 +292,70 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
-                android:text="到着しました"
+                android:text="@string/it_arrived"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
         </LinearLayout>
     </LinearLayout>
 
     <FrameLayout
-        android:id="@+id/modal_layout"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="vertical" >
+
+        <com.kogasoftware.odt.invehicledevice.modal.ConfigModal
+            android:id="@+id/config_modal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+
+        <com.kogasoftware.odt.invehicledevice.modal.NavigationModal
+            android:id="@+id/navigation_modal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+
+        <com.kogasoftware.odt.invehicledevice.modal.NotificationModal
+            android:id="@+id/notification_modal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+
+        <com.kogasoftware.odt.invehicledevice.modal.PauseModal
+            android:id="@+id/pause_modal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+
+        <com.kogasoftware.odt.invehicledevice.modal.ReturnPathModal
+            android:id="@+id/return_path_modal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+
+        <com.kogasoftware.odt.invehicledevice.modal.ScheduleModal
+            android:id="@+id/schedule_modal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+
+        <com.kogasoftware.odt.invehicledevice.modal.ScheduleChangedModal
+            android:id="@+id/schedule_changed_modal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+
+        <com.kogasoftware.odt.invehicledevice.modal.StartCheckModal
+            android:id="@+id/start_check_modal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+
+        <com.kogasoftware.odt.invehicledevice.modal.StopCheckModal
+            android:id="@+id/stop_check_modal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+
+        <com.kogasoftware.odt.invehicledevice.modal.MemoModal
+            android:id="@+id/memo_modal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+
+        <com.kogasoftware.odt.invehicledevice.modal.StopModal
+            android:id="@+id/stop_modal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
     </FrameLayout>
 
 </merge>

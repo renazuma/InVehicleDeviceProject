@@ -9,7 +9,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
-        android:text="予約番号:1234 古賀太郎様 復路の予約" />
+        />
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -26,7 +26,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
-            android:text="時" />
+            android:text="@string/hour" />
 
         <Spinner
             android:id="@+id/reservation_candidate_minute_spinner"
@@ -36,7 +36,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
-            android:text="分" />
+            android:text="@string/minute" />
 
         <Spinner
             android:id="@+id/reservation_candidate_in_or_out_spinner"
@@ -47,7 +47,7 @@
             android:id="@+id/search_return_path_button"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="予約候補を検索" />
+            android:text="@string/search_reservation_candidate" />
     </LinearLayout>
 
     <Button

@@ -1,6 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.navigation;
 
-
 /**
  * 遅延を許して回転をスムーズにする
  * 
@@ -8,7 +7,8 @@ package com.kogasoftware.odt.invehicledevice.navigation;
  * 
  */
 public class LazyMotionSmoother extends MotionSmoother {
-	private static final String TAG = LazyMotionSmoother.class.getSimpleName();
+	// private static final String TAG =
+	// LazyMotionSmoother.class.getSimpleName();
 	private volatile Long lastMillis = 0l;
 	private volatile Double startOrientation = 0.0;
 	private volatile Double targetOrientation = 0.0;

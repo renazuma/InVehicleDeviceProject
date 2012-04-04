@@ -13,7 +13,7 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.kogasoftware.odt.invehicledevice.InVehicleDeviceActivity;
+import com.kogasoftware.odt.invehicledevice.InVehicleDeviceLogic;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Reservation;
@@ -22,17 +22,17 @@ import com.kogasoftware.odt.webapi.model.User;
 public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 	private final LayoutInflater layoutInflater;
 	private final int resourceId;
-	private final InVehicleDeviceActivity inVehicleDeviceActivity;
+	private final InVehicleDeviceLogic logic;
 	private final OperationSchedule operationSchedule;
 
-	public ReservationArrayAdapter(
-			InVehicleDeviceActivity inVehicleDeviceActivity, int resourceId,
-			List<Reservation> items, OperationSchedule operationSchedule) {
-		super(inVehicleDeviceActivity, resourceId, items);
-		this.layoutInflater = (LayoutInflater) inVehicleDeviceActivity
+	public ReservationArrayAdapter(Context context, int resourceId,
+			List<Reservation> items, InVehicleDeviceLogic logic,
+			OperationSchedule operationSchedule) {
+		super(context, resourceId, items);
+		this.layoutInflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.resourceId = resourceId;
-		this.inVehicleDeviceActivity = inVehicleDeviceActivity;
+		this.logic = logic;
 		this.operationSchedule = operationSchedule;
 	}
 
@@ -62,15 +62,16 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 
 		if (reservation.getUser().isPresent()) {
 			User user = reservation.getUser().get();
-			userNameView.setText(user.getLastName() + " "
-					+ user.getFirstName() + " 様");
+			userNameView.setText(user.getLastName() + " " + user.getFirstName()
+					+ " 様");
 		} else {
 			userNameView.setText("ID:" + reservation.getUserId() + " 様");
 		}
 
 		String text = "";
 		Boolean getOn = false;
-		for (Reservation reservationAsArrival : operationSchedule.getReservationsAsArrival()) {
+		for (Reservation reservationAsArrival : operationSchedule
+				.getReservationsAsArrival()) {
 			if (reservationAsArrival.getId().equals(reservation.getId())) {
 				getOn = true;
 				break;
@@ -88,14 +89,13 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		TextView reservationIdView = (TextView) convertView
 				.findViewById(R.id.reservation_id);
 		reservationIdView.setText(text);
-		Button memoButton = (Button) convertView
-				.findViewById(R.id.memo_button);
+		Button memoButton = (Button) convertView.findViewById(R.id.memo_button);
 		if (reservation.getMemo().isPresent()) {
 			memoButton.setVisibility(View.VISIBLE);
 			memoButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View view) {
-					inVehicleDeviceActivity.showMemoModal(reservation);
+					logic.showMemoModal(reservation);
 				}
 			});
 		} else {
@@ -107,7 +107,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		returnPathButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				inVehicleDeviceActivity.showReturnPathModal(reservation);
+				logic.showReturnPathModal(reservation);
 			}
 		});
 

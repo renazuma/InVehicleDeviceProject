@@ -18,7 +18,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
-        android:text="運行予定表示" />
+        android:text="@string/show_operation_schedule" />
 
     <com.kogasoftware.odt.invehicledevice.modal.HideModalButton
         android:id="@+id/memo_close_button"

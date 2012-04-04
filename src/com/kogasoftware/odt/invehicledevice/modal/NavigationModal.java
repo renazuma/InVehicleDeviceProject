@@ -2,13 +2,13 @@ package com.kogasoftware.odt.invehicledevice.modal;
 
 import java.lang.ref.WeakReference;
 
-import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -28,21 +28,6 @@ import com.kogasoftware.odt.invehicledevice.navigation.OrientationSensor;
 import com.kogasoftware.odt.invehicledevice.navigation.Utility;
 
 public class NavigationModal extends Modal {
-
-	private static final String TAG = NavigationModal.class.getSimpleName();
-	private final MapView mapView;
-	private final MapViewRedirector mapViewRedirector;
-	private final LocationManager locationManager;
-	private final NavigationViewLocationListener locationListener;
-	private final MapSynchronizer mapSynchronizer;
-	private final OrientationSensor orientationSensor;
-	private final MapRenderer mapRenderer;
-	private final Button hideButton;
-	private final Button zoomInButton;
-	private final Button zoomOutButton;
-
-	private WeakReference<GLSurfaceView> glSurfaceViewWeakReference;
-	private WeakReference<MapOnTouchListener> mapOnTouchListenerWeakReference;
 
 	static class NavigationViewLocationListener implements LocationListener {
 		private static final String TAG = NavigationViewLocationListener.class
@@ -83,15 +68,23 @@ public class NavigationModal extends Modal {
 		}
 	}
 
-	public MapView getMapView() {
-		return mapView;
-	}
+	// private static final String TAG = NavigationModal.class.getSimpleName();
+	private final MapView mapView;
+	private final MapViewRedirector mapViewRedirector;
+	private final LocationManager locationManager;
+	private final NavigationViewLocationListener locationListener;
+	private final MapSynchronizer mapSynchronizer;
+	private final OrientationSensor orientationSensor;
+	private final MapRenderer mapRenderer;
+	private final Button hideButton;
+	private final Button zoomInButton;
+	private final Button zoomOutButton;
+	private WeakReference<GLSurfaceView> glSurfaceViewWeakReference;
+	private WeakReference<MapOnTouchListener> mapOnTouchListenerWeakReference;
 
-	public NavigationModal(Activity activity) {
-		super(activity, R.layout.navigation_modal);
-
-		setId(R.id.navigation_modal);
-		Context context = activity;
+	public NavigationModal(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		setContentView(R.layout.navigation_modal);
 
 		mapView = new MapView(context,
 				"0_ZIi_adDM8WHxCX0OJTfcXhHO8jOsYOjLF7xow");
@@ -153,6 +146,10 @@ public class NavigationModal extends Modal {
 			}
 		});
 
+	}
+
+	public MapView getMapView() {
+		return mapView;
 	}
 
 	@Override
@@ -228,17 +225,17 @@ public class NavigationModal extends Modal {
 		removeAllViews();
 	}
 
-	public void onResumeActivity() {
-		GLSurfaceView glSurfaceView = glSurfaceViewWeakReference.get();
-		if (glSurfaceView != null) {
-			glSurfaceView.onResume();
-		}
-	}
-
 	public void onPauseActivity() {
 		GLSurfaceView glSurfaceView = glSurfaceViewWeakReference.get();
 		if (glSurfaceView != null) {
 			glSurfaceView.onPause();
+		}
+	}
+
+	public void onResumeActivity() {
+		GLSurfaceView glSurfaceView = glSurfaceViewWeakReference.get();
+		if (glSurfaceView != null) {
+			glSurfaceView.onResume();
 		}
 	}
 

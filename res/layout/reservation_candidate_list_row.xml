@@ -9,8 +9,6 @@
         android:id="@+id/reservation_candidate_text_view"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text=""
-         />
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
 </LinearLayout>

@@ -4,9 +4,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.AsyncTask;
+import android.util.AttributeSet;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -16,7 +18,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.invehicledevice.InVehicleDeviceActivity;
+import com.google.common.base.Preconditions;
+import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.arrayadapter.ReservationCandidateArrayAdapter;
 import com.kogasoftware.odt.webapi.WebAPIException;
@@ -24,27 +27,24 @@ import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.ReservationCandidate;
 import com.kogasoftware.odt.webapi.model.User;
 
-class MyAsyncTask extends AsyncTask<Void, Void, String> {
-	final String TAG = MyAsyncTask.class.getSimpleName();
-
-	@Override
-	protected String doInBackground(Void... args) {
-		return "";
-	}
-}
-
 public class ReturnPathModal extends Modal {
-	private static final String TAG = ReturnPathModal.class.getSimpleName();
+	public static class ShowEvent {
+		public final Reservation reservation;
 
-	private final InVehicleDeviceActivity inVehicleDeviceActivity;
+		public ShowEvent(Reservation reservation) {
+			Preconditions.checkNotNull(reservation);
+			this.reservation = reservation;
+		}
+	}
+
+	// private static final String TAG = ReturnPathModal.class.getSimpleName();
 	private ProgressDialog searchingDialog;
 	private ProgressDialog sendingDialog;
 	private Reservation currentReservation = new Reservation();
 
-	public ReturnPathModal(InVehicleDeviceActivity inVehicleDeviceActivity) {
-		super(inVehicleDeviceActivity, R.layout.return_path_modal);
-		setId(R.id.return_path_modal);
-		this.inVehicleDeviceActivity = inVehicleDeviceActivity;
+	public ReturnPathModal(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		setContentView(R.layout.return_path_modal);
 
 		searchingDialog = new ProgressDialog(getContext());
 		searchingDialog.setMessage("予約情報を受信しています");
@@ -81,12 +81,12 @@ public class ReturnPathModal extends Modal {
 		}
 	}
 
-	public void show(Reservation reservation) {
+	@Subscribe
+	public void show(ShowEvent event) {
 		if (isShown()) {
 			return;
 		}
-
-		currentReservation = reservation;
+		currentReservation = event.reservation;
 		TextView returnPathTitleTextView = (TextView) findViewById(R.id.return_path_title_text_view);
 		String title = "予約番号 " + currentReservation.getId();
 		Optional<User> user = currentReservation.getUser();
@@ -131,8 +131,7 @@ public class ReturnPathModal extends Modal {
 					@Override
 					protected Void doInBackground(Void... params) {
 						try {
-							inVehicleDeviceActivity.getDataSource()
-							.postReservation(0);
+							getLogic().getDataSource().postReservation(0);
 							return null;
 						} catch (WebAPIException e) {
 							e.printStackTrace();
@@ -164,7 +163,7 @@ public class ReturnPathModal extends Modal {
 					protected List<ReservationCandidate> doInBackground(
 							Void... params) {
 						try {
-							return inVehicleDeviceActivity.getDataSource()
+							return getLogic().getDataSource()
 									.postReservationCandidates(0, 0, 0);
 						} catch (WebAPIException e) {
 							e.printStackTrace();
@@ -181,25 +180,25 @@ public class ReturnPathModal extends Modal {
 							return;
 						}
 						final ReservationCandidateArrayAdapter adapter = new ReservationCandidateArrayAdapter(
-								inVehicleDeviceActivity,
+								getContext(),
 								R.layout.reservation_candidate_list_row, result);
 						reservationCandidateListView
-						.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-							@Override
-							public void onItemClick(
-									AdapterView<?> parent, View view,
-									int position, long id) {
-								adapter.setSelectedPosition(Optional
-										.<Integer> of(position));
-								doReservationButton.setEnabled(true);
-							}
-						});
+								.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+									@Override
+									public void onItemClick(
+											AdapterView<?> parent, View view,
+											int position, long id) {
+										adapter.setSelectedPosition(Optional
+												.<Integer> of(position));
+										doReservationButton.setEnabled(true);
+									}
+								});
 
 						reservationCandidateListView.setAdapter(adapter);
 						reservationCandidateScrollUpButton
-						.setVisibility(View.VISIBLE);
+								.setVisibility(View.VISIBLE);
 						reservationCandidateScrollDownButton
-						.setVisibility(View.VISIBLE);
+								.setVisibility(View.VISIBLE);
 					}
 				};
 				task.execute();
@@ -207,26 +206,26 @@ public class ReturnPathModal extends Modal {
 		});
 
 		reservationCandidateScrollUpButton
-		.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				Integer position = reservationCandidateListView
-						.getFirstVisiblePosition();
-				reservationCandidateListView
-				.smoothScrollToPosition(position);
-			}
-		});
+				.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View view) {
+						Integer position = reservationCandidateListView
+								.getFirstVisiblePosition();
+						reservationCandidateListView
+								.smoothScrollToPosition(position);
+					}
+				});
 
 		reservationCandidateScrollDownButton
-		.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				Integer position = reservationCandidateListView
-						.getLastVisiblePosition();
-				reservationCandidateListView
-				.smoothScrollToPosition(position);
-			}
-		});
+				.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View view) {
+						Integer position = reservationCandidateListView
+								.getLastVisiblePosition();
+						reservationCandidateListView
+								.smoothScrollToPosition(position);
+					}
+				});
 
 		super.show();
 	}

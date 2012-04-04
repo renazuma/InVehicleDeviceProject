@@ -26,55 +26,14 @@ import com.google.common.io.Closeables;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
-public class InVehicleDeviceStatus implements Serializable, Cloneable {
+public class InVehicleDeviceStatus implements Serializable {
+	public enum Status {
+		DRIVE, PLATFORM, INITIAL
+	}
+
 	private static final long serialVersionUID = 5617948505743182175L;
 	private static final String TAG = InVehicleDeviceStatus.class
 			.getSimpleName();
-	public final ConcurrentLinkedQueue<VehicleNotification> vehicleNotifications = new ConcurrentLinkedQueue<VehicleNotification>();
-	public final ConcurrentLinkedQueue<OperationSchedule> operationSchedules = new ConcurrentLinkedQueue<OperationSchedule>();
-	public final AtomicBoolean initialized = new AtomicBoolean(false);
-	public final Date createdDate = new Date();
-	public Integer currentOperationScheduleIndex = 0;
-
-	public enum Status {
-		DRIVE, PLATFORM, INITIAL
-	};
-
-	public Status status = Status.INITIAL;
-
-	public void save(File file) {
-		FileOutputStream fileOutputStream = null;
-		ObjectOutputStream objectOutputStream = null;
-		FileLock fileLock = null;
-		try {
-			file.delete();
-			fileOutputStream = new FileOutputStream(file);
-			fileLock = fileOutputStream.getChannel().lock();
-			objectOutputStream = new ObjectOutputStream(fileOutputStream);
-			objectOutputStream.writeObject(clone());
-			objectOutputStream.flush();
-			fileOutputStream.flush();
-		} catch (NotSerializableException e) {
-			Log.e(TAG, e.toString(), e);
-		} catch (FileNotFoundException e) {
-			Log.e(TAG, e.toString(), e);
-		} catch (IOException e) {
-			Log.e(TAG, e.toString(), e);
-		} catch (CloneNotSupportedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			Closeables.closeQuietly(objectOutputStream);
-			Closeables.closeQuietly(fileOutputStream);
-			if (fileLock != null) {
-				try {
-					fileLock.release();
-				} catch (IOException e) {
-					//Log.w(TAG, e);
-				}
-			}
-		}
-	}
 
 	public static InVehicleDeviceStatus load(File file) {
 		InVehicleDeviceStatus status = new InVehicleDeviceStatus();
@@ -121,5 +80,44 @@ public class InVehicleDeviceStatus implements Serializable, Cloneable {
 			return new InVehicleDeviceStatus();
 		}
 		return status;
+	}
+
+	public final ConcurrentLinkedQueue<VehicleNotification> vehicleNotifications = new ConcurrentLinkedQueue<VehicleNotification>();
+	public final ConcurrentLinkedQueue<OperationSchedule> operationSchedules = new ConcurrentLinkedQueue<OperationSchedule>();
+	public final AtomicBoolean initialized = new AtomicBoolean(false);;
+	public final Date createdDate = new Date();
+	public Integer currentOperationScheduleIndex = 0;
+
+	public Status status = Status.INITIAL;
+
+	public void save(File file) {
+		FileOutputStream fileOutputStream = null;
+		ObjectOutputStream objectOutputStream = null;
+		FileLock fileLock = null;
+		try {
+			file.delete();
+			fileOutputStream = new FileOutputStream(file);
+			fileLock = fileOutputStream.getChannel().lock();
+			objectOutputStream = new ObjectOutputStream(fileOutputStream);
+			objectOutputStream.writeObject(this);
+			objectOutputStream.flush();
+			fileOutputStream.flush();
+		} catch (NotSerializableException e) {
+			Log.e(TAG, e.toString(), e);
+		} catch (FileNotFoundException e) {
+			Log.e(TAG, e.toString(), e);
+		} catch (IOException e) {
+			Log.e(TAG, e.toString(), e);
+		} finally {
+			Closeables.closeQuietly(objectOutputStream);
+			Closeables.closeQuietly(fileOutputStream);
+			if (fileLock != null) {
+				try {
+					fileLock.release();
+				} catch (IOException e) {
+					// Log.w(TAG, e);
+				}
+			}
+		}
 	}
 }

@@ -12,34 +12,24 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.invehicledevice.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.webapi.model.ReservationCandidate;
 
 public class ReservationCandidateArrayAdapter extends
-ArrayAdapter<ReservationCandidate> {
+		ArrayAdapter<ReservationCandidate> {
 	private final LayoutInflater layoutInflater;
 	private final int resourceId;
-	private final Context context;
-
-	public ReservationCandidateArrayAdapter(
-			InVehicleDeviceActivity inVehicleDeviceActivity, int resourceId,
-			List<ReservationCandidate> items) {
-		super(inVehicleDeviceActivity, resourceId, items);
-		this.layoutInflater = (LayoutInflater) inVehicleDeviceActivity
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		this.resourceId = resourceId;
-		inVehicleDeviceActivity.getApplicationContext();
-		setNotifyOnChange(true);
-		selectedPosition = Optional.<Integer> of(300);
-		context = inVehicleDeviceActivity;
-	}
 
 	private Optional<Integer> selectedPosition;
 
-	public void setSelectedPosition(Optional<Integer> selectedPosition) {
-		this.selectedPosition = selectedPosition;
-		notifyDataSetChanged();
+	public ReservationCandidateArrayAdapter(Context context, int resourceId,
+			List<ReservationCandidate> items) {
+		super(context, resourceId, items);
+		this.layoutInflater = (LayoutInflater) context
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		this.resourceId = resourceId;
+		setNotifyOnChange(true);
+		selectedPosition = Optional.<Integer> of(300);
 	}
 
 	public Optional<Integer> getSelectedPosition() {
@@ -54,8 +44,8 @@ ArrayAdapter<ReservationCandidate> {
 
 		if (selectedPosition.isPresent()
 				&& selectedPosition.get().equals(position)) {
-			//convertView.setBackgroundDrawable(context.getResources()
-			//		.getDrawable(android.R.drawable.list_selector_background));
+			// convertView.setBackgroundDrawable(context.getResources()
+			// .getDrawable(android.R.drawable.list_selector_background));
 			convertView.setBackgroundColor(Color.CYAN); // TODO テーマ
 		} else {
 			convertView.setBackgroundColor(Color.TRANSPARENT);
@@ -82,5 +72,10 @@ ArrayAdapter<ReservationCandidate> {
 				+ ":" + a.getMinutes();
 		v.setText(s);
 		return convertView;
+	}
+
+	public void setSelectedPosition(Optional<Integer> selectedPosition) {
+		this.selectedPosition = selectedPosition;
+		notifyDataSetChanged();
 	}
 }
