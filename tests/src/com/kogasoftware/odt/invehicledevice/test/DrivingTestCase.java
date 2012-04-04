@@ -25,6 +25,10 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 	}
 
 	public void test01_起動時は走行中表示() {
+		
+		
+		
+		
 		TextView v = (TextView) solo.getView(R.id.status_text_view);
 		assertEquals("走行中", v.getText()); // TODO 画像ファイル名assertに書き換わる予定
 
@@ -38,8 +42,9 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 	public void test03_到着しましたボタンを押すと停車中表示() {
 		test01_起動時は走行中表示();
 
-		TextView v = (TextView) solo.getView(R.id.status_text_view);
 		solo.clickOnButton("到着しました");
+
+		TextView v = (TextView) solo.getView(R.id.status_text_view);
 		assertEquals("停車中", v.getText()); // TODO 画像ファイル名assertに書き換わる予定
 	}
 

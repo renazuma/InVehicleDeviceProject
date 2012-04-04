@@ -35,8 +35,9 @@ public class ConfigTestCase extends
 
 	public void test02_運行管理ボタンを押したら表示() {
 		test01_起動時は非表示();
-		solo.clickOnView(solo.getView(R.id.config_button));
+//		solo.clickOnView(solo.getView(R.id.config_button));
 
+		solo.clickOnButton("運行管理");
 		getInstrumentation().waitForIdleSync();
 
 		assertEquals(View.VISIBLE, solo.getView(R.id.config_modal)
@@ -88,12 +89,14 @@ public class ConfigTestCase extends
 
 	public void test07_中止確認画面で戻るボタンを押すと中止確認が消える() {
 		test05_中止ボタンを押すと中止確認画面が表示();
-		solo.clickOnView(solo.getView(R.id.stop_cancel_button));
+
+		solo.clickOnButton("戻る");
 
 		getInstrumentation().waitForIdleSync();
 
 		assertEquals(View.GONE, solo.getView(R.id.stop_check_modal)
 				.getVisibility());
+
 	}
 
 	public void test08_一時停止ボタンを押すと一時停止画面が表示() {
