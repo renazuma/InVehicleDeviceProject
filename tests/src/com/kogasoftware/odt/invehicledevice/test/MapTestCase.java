@@ -23,8 +23,16 @@ public class MapTestCase extends
 		solo = new Solo(getInstrumentation(), getActivity());
 	}
 
+	@Override
+	public void tearDown() throws Exception {
+		solo.finishOpenedActivities();
+		solo = null;
+		super.tearDown();
+	}
+
 	public void test01_起動時は非表示() {
-		assertEquals(View.GONE, solo.getView(R.id.navigation_modal).getVisibility());
+		assertEquals(View.GONE, solo.getView(R.id.navigation_modal)
+				.getVisibility());
 	}
 
 	public void test02_地図ボタンを押したら表示() {
@@ -37,7 +45,8 @@ public class MapTestCase extends
 	public void test03_戻るボタンを押したら消える() {
 		test02_地図ボタンを押したら表示();
 		solo.clickOnButton("戻る");
-		assertEquals(View.GONE, solo.getView(R.id.navigation_modal).getVisibility());
+		assertEquals(View.GONE, solo.getView(R.id.navigation_modal)
+				.getVisibility());
 	}
 
 	public void test04_一回閉じてからもう地図ボタンを押したら表示() {
@@ -59,11 +68,5 @@ public class MapTestCase extends
 		solo.clickOnButton("縮小");
 		assertEquals(View.VISIBLE, solo.getView(R.id.navigation_modal)
 				.getVisibility());
-	}
-
-	@Override
-	public void tearDown() throws Exception {
-		solo.finishOpenedActivities();
-		super.tearDown();
 	}
 }

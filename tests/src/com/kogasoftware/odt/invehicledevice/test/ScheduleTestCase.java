@@ -8,12 +8,16 @@ import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
-import com.kogasoftware.odt.invehicledevice.test.MockDataSourceTest;
 
 public class ScheduleTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 	private Solo solo;
+
+	public ScheduleTestCase() {
+		super("com.kogasoftware.odt.invehicledevice",
+				InVehicleDeviceActivity.class);
+	}
 
 	public void dataset(Integer i) {
 
@@ -25,15 +29,18 @@ public class ScheduleTestCase extends
 
 	}
 
-	public ScheduleTestCase() {
-		super("com.kogasoftware.odt.invehicledevice",
-				InVehicleDeviceActivity.class);
-	}
-
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
 		solo = new Solo(getInstrumentation(), getActivity());
+		Thread.sleep(1 * 1000);
+	}
+
+	@Override
+	public void tearDown() throws Exception {
+		solo.finishOpenedActivities();
+		solo = null;
+		super.tearDown();
 	}
 
 	public void test00_データ初期設定6件() {
@@ -57,7 +64,8 @@ public class ScheduleTestCase extends
 	public void test03_戻るボタンを押したら消える() {
 		test02_予定ボタンを押したら表示();
 		solo.clickOnButton("戻る");
-		assertEquals(View.GONE, solo.getView(R.id.schedule_modal).getVisibility());
+		assertEquals(View.GONE, solo.getView(R.id.schedule_modal)
+				.getVisibility());
 	}
 
 	public void test04_一回閉じてからもう一度予定ボタンを押したら表示() {
@@ -71,7 +79,7 @@ public class ScheduleTestCase extends
 
 		test02_予定ボタンを押したら表示();
 
-		assertTrue(solo.searchText("コガソフト", 0,false));
+		assertTrue(solo.searchText("コガソフト", 0, false));
 
 		solo.clickOnView(solo.getView(R.id.schedule_button));
 		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_modal)
@@ -79,7 +87,7 @@ public class ScheduleTestCase extends
 
 		solo.clickOnButton("下へ移動");
 
-		assertFalse(solo.searchText("コガソフト", 0,false));
+		assertFalse(solo.searchText("コガソフト", 0, false));
 
 	}
 
@@ -93,7 +101,7 @@ public class ScheduleTestCase extends
 
 		solo.clickOnButton("上へ移動");
 
-		assertTrue(solo.searchText("コガソフト", 0,false));
+		assertTrue(solo.searchText("コガソフト", 0, false));
 
 	}
 
@@ -121,12 +129,5 @@ public class ScheduleTestCase extends
 
 		assertFalse(solo.searchButton("下へ移動"));
 
-	}
-
-
-	@Override
-	public void tearDown() throws Exception {
-		solo.finishOpenedActivities();
-		super.tearDown();
 	}
 }

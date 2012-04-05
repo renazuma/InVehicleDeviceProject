@@ -9,9 +9,9 @@ import com.kogasoftware.odt.invehicledevice.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.R;
 
 public class DrivingTestCase extends
-ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
+		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
-	private Solo solo;
+	private Solo solo = null;
 
 	public DrivingTestCase() {
 		super("com.kogasoftware.odt.invehicledevice",
@@ -22,6 +22,14 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 	public void setUp() throws Exception {
 		super.setUp();
 		solo = new Solo(getInstrumentation(), getActivity());
+		Thread.sleep(1 * 1000);
+	}
+
+	@Override
+	public void tearDown() throws Exception {
+		solo.finishOpenedActivities();
+		solo = null;
+		super.tearDown();
 	}
 
 	public void test01_起動時は走行中表示() {
@@ -85,11 +93,11 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 		test01_起動時は走行中表示();
 
-		assertTrue("博物館前",solo.searchText("博物館前"));
+		assertTrue("博物館前", solo.searchText("博物館前"));
 
 		test04_停車中から出発しますボタンを押すと出発確認画面表示();
 
-		assertTrue("御徒町駅前",solo.searchText("御徒町駅前"));
+		assertTrue("御徒町駅前", solo.searchText("御徒町駅前"));
 
 	}
 
@@ -108,11 +116,5 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 		TextView v = (TextView) solo.getView(R.id.status_text_view);
 		assertEquals("走行中", v.getText()); // TODO 画像ファイル名assertに書き換わる予定
 
-	}
-
-	@Override
-	public void tearDown() throws Exception {
-		solo.finishOpenedActivities();
-		super.tearDown();
 	}
 }

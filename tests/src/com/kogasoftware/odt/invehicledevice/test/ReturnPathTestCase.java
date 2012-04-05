@@ -10,38 +10,46 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
 
 public class ReturnPathTestCase extends
-ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
+		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 	private Solo solo;
-
-	public void dataset(Integer iCount,Integer userId,
-			Integer departurePlatformId, Integer arrivalPlatformId) {
-
-		DataSourceFactory.newInstance();
-		MockDataSourceTest mdst = new MockDataSourceTest();
-
-		mdst.setReservation(6);
-		mdst.setReservationCandidate(iCount,userId,departurePlatformId,arrivalPlatformId);
-
-		DataSourceFactory.setInstance(mdst);
-
-	}
 
 	public ReturnPathTestCase() {
 		super("com.kogasoftware.odt.invehicledevice",
 				InVehicleDeviceActivity.class);
 	}
 
+	public void dataset(Integer iCount, Integer userId,
+			Integer departurePlatformId, Integer arrivalPlatformId) {
+
+		DataSourceFactory.newInstance();
+		MockDataSourceTest mdst = new MockDataSourceTest();
+
+		mdst.setReservation(6);
+		mdst.setReservationCandidate(iCount, userId, departurePlatformId,
+				arrivalPlatformId);
+
+		DataSourceFactory.setInstance(mdst);
+
+	}
+
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
 		solo = new Solo(getInstrumentation(), getActivity());
+		Thread.sleep(1 * 1000);
 
 		// デフォルトで復路画面にする
 		solo.clickOnButton("到着しました");
 		solo.clickOnButton("復路");
 		System.out.println("セットアップ");
+	}
 
+	@Override
+	public void tearDown() throws Exception {
+		solo.finishOpenedActivities();
+		solo = null;
+		super.tearDown();
 	}
 
 	public void test00_データ初期設定() {
@@ -63,7 +71,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 	public void test02_予約候補表示前は予約ボタン非表示() {
 
-		assertFalse(solo.searchButton("予約する",true));
+		assertFalse(solo.searchButton("予約する", true));
 
 	}
 
@@ -85,7 +93,8 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 		test03_復路画面で予約候補を検索を押すと予約候補表示();
 
-		Button reserveButton = (Button) getActivity().findViewById(R.id.return_path_button);
+		Button reserveButton = (Button) getActivity().findViewById(
+				R.id.return_path_button);
 
 		assertFalse(reserveButton.isEnabled());
 
@@ -97,10 +106,10 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 		solo.clickOnText("15時");
 
-		Button reserveButton = (Button) getActivity().findViewById(R.id.return_path_button);
+		Button reserveButton = (Button) getActivity().findViewById(
+				R.id.return_path_button);
 
 		assertTrue(reserveButton.isEnabled());
-
 
 	}
 
@@ -128,7 +137,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 	public void test08_復路画面の予約条件分変更() {
 
-		solo.clickOnText("0",2);
+		solo.clickOnText("0", 2);
 
 		solo.clickOnText("51");
 
@@ -149,11 +158,11 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 	public void test10_下スクロール() {
 
 		// TODO
-		assertTrue(solo.searchText("13時", 0,false));
+		assertTrue(solo.searchText("13時", 0, false));
 
 		solo.clickOnButton("下へ移動");
 
-		assertFalse(solo.searchText("13時", 0,false));
+		assertFalse(solo.searchText("13時", 0, false));
 
 	}
 
@@ -163,14 +172,15 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 		solo.clickOnButton("上へ移動");
 
-		assertTrue(solo.searchText("13時", 0,false));
+		assertTrue(solo.searchText("13時", 0, false));
 
 	}
 
 	public void test12_データ初期設定1件() {
 
-		// TODO userId,departurePlatformId,arrivalPlatformId部分は後で茂木さんの実装が出来たら実装する
-		dataset(1,1,1,1);
+		// TODO
+		// userId,departurePlatformId,arrivalPlatformId部分は後で茂木さんの実装が出来たら実装する
+		dataset(1, 1, 1, 1);
 	}
 
 	public void test13_件数が少ないため上へ移動ボタンが存在しない() {
@@ -186,8 +196,9 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 	}
 
 	public void test15_データ初期設定() {
-		// TODO userId,departurePlatformId,arrivalPlatformId部分は後で茂木さんの実装が出来たら実装する
-		dataset(6,1,1,1);
+		// TODO
+		// userId,departurePlatformId,arrivalPlatformId部分は後で茂木さんの実装が出来たら実装する
+		dataset(6, 1, 1, 1);
 	}
 
 	public void test16_条件により予約候補表示が変更される() {
@@ -202,14 +213,6 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 		assertTrue(solo.searchText("乗車時刻"));
 		assertTrue(solo.searchText("13時"));
 		assertTrue(solo.searchText("34分"));
-
-	}
-
-	@Override
-	public void tearDown() throws Exception {
-		solo.finishOpenedActivities();
-		super.tearDown();
-		System.out.println("ダウン");
 
 	}
 }

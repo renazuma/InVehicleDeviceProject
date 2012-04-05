@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 import android.content.Context;
 import android.media.MediaPlayer;
@@ -13,7 +14,8 @@ import android.util.Log;
 import com.kogasoftware.openjtalk.OpenJTalk;
 
 public class VoiceThread extends Thread {
-	private final String TAG = VoiceThread.class.getSimpleName();
+	private static final String TAG = VoiceThread.class.getSimpleName();
+	private static final Integer TIMEOUT_MILLIS = 20 * 1000;
 	private final BlockingQueue<String> voices;
 	private final File cacheDirectory;
 	private final File voiceDirectory;
@@ -28,11 +30,13 @@ public class VoiceThread extends Thread {
 		voiceDirectory = new File(base + s + "voice" + s + "mei_normal");
 		dictionaryDirectory = new File(base + s + "dictionary");
 		outputDirectory = new File(base + s + "output");
+		setName("VoiceThread-" + getId() + "-constructed");
 	}
 
 	@Override
 	public void run() {
 		try {
+			setName("VoiceThread-" + getId() + "-working");
 			if (!outputDirectory.exists() && !outputDirectory.mkdirs()) {
 				throw new IOException("!\"" + outputDirectory + "\".mkdirs()");
 			}
@@ -58,7 +62,7 @@ public class VoiceThread extends Thread {
 								}
 							});
 					mediaPlayer.start();
-					semaphore.acquire();
+					semaphore.tryAcquire(TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
 				} finally {
 					mediaPlayer.release();
 				}
@@ -66,6 +70,8 @@ public class VoiceThread extends Thread {
 		} catch (IOException e) {
 			Log.e(TAG, "IOException", e);
 		} catch (InterruptedException e) {
+		} finally {
+			setName("VoiceThread-" + getId() + "-exit");
 		}
 	}
 }

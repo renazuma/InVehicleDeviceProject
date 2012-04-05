@@ -43,7 +43,7 @@ public class DummyDataSource implements DataSource {
 	public List<OperationSchedule> getOperationSchedules()
 			throws WebAPIException {
 		try {
-			Thread.sleep(0);
+			Thread.sleep(100);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			throw new WebAPIException(false, e);

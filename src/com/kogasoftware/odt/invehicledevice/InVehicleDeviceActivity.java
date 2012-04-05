@@ -1,7 +1,6 @@
 package com.kogasoftware.odt.invehicledevice;
 
 import java.io.File;
-import java.lang.ref.WeakReference;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -11,6 +10,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import jp.tomorrowkey.android.vtextviewer.VTextView;
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -27,12 +27,12 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.android.maps.MapActivity;
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceLogic.EnterDriveStatusEvent;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceLogic.EnterFinishStatusEvent;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceLogic.EnterPlatformStatusEvent;
+import com.kogasoftware.odt.invehicledevice.InVehicleDeviceStatus.Status;
 import com.kogasoftware.odt.invehicledevice.arrayadapter.ReservationArrayAdapter;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 import com.kogasoftware.odt.invehicledevice.modal.Modal;
@@ -42,7 +42,7 @@ import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
-public class InVehicleDeviceActivity extends MapActivity {
+public class InVehicleDeviceActivity extends Activity {
 	private static final String TAG = InVehicleDeviceActivity.class
 			.getSimpleName();
 	private static final int WAIT_FOR_INITIALIZE_DIALOG_ID = 10;
@@ -65,8 +65,12 @@ public class InVehicleDeviceActivity extends MapActivity {
 						WAIT_FOR_INITIALIZE_INTERVAL);
 				return;
 			}
+			if (logic.getStatus().equals(Status.PLATFORM)) {
+				logic.enterPlatformStatus();
+			} else {
+				logic.enterDriveStatus();
+			}
 			findViewById(android.R.id.content).setVisibility(View.VISIBLE);
-			logic.enterDriveStatus();
 			try {
 				dismissDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
 			} catch (IllegalArgumentException e) {
@@ -128,6 +132,8 @@ public class InVehicleDeviceActivity extends MapActivity {
 	private Button configButton = null;
 	private Button mapButton = null;
 	private Button scheduleButton = null;
+	private Button reservationScrollDownButton = null;
+	private Button reservationScrollUpButton = null;
 	private ListView reservationListView = null;
 	private TextView nextPlatformNameRubyTextView = null;
 	private TextView nextPlatformNameTextView = null;
@@ -141,9 +147,7 @@ public class InVehicleDeviceActivity extends MapActivity {
 	private View waitingLayout = null;
 	private View drivingLayout = null;
 	private View finishLayout = null;
-	private WeakReference<NavigationModal> navigationModalWeakReference = new WeakReference<NavigationModal>(
-			null); // TODO:
-	// 普通のメンバにする
+	private NavigationModal navigationModal = null;
 	private VTextView platformName1BeyondTextView = null;
 	private VTextView platformName2BeyondTextView = null;
 	private VTextView platformName3BeyondTextView = null;
@@ -255,75 +259,16 @@ public class InVehicleDeviceActivity extends MapActivity {
 		changeStatusButton.setEnabled(true);
 	}
 
-	@Override
-	protected void finalize() {
-		try {
-			voiceThread.interrupt();
-		} finally {
-			try {
-				super.finalize();
-			} catch (Throwable e) {
-			}
-		}
-	}
+	// @Override
+	// protected boolean isRouteDisplayed() {
+	// return false;
+	// }
 
 	@Override
-	protected boolean isRouteDisplayed() {
-		return false;
-	}
-
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setVisible(false);
 		setContentView(R.layout.in_vehicle_device);
-		View contentView = findViewById(android.R.id.content);
-		contentView.setVisibility(View.INVISIBLE);
-		contentView.setBackgroundColor(Color.WHITE); // TODO XMLで指定
-		getWindow().getDecorView().setBackgroundColor(Color.BLACK); // TODO XML
-
-		// if (BuildConfig.DEBUG) {
-		// StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-		// .detectAll().penaltyLog().build());
-		// StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-		// .detectAll().penaltyLog().penaltyDeath().build());
-		// }
-
-		// try {
-		// new AsyncTask<Void, Void, InVehicleDeviceLogic>() {
-		// @Override
-		// protected InVehicleDeviceLogic doInBackground(Void... arguments) {
-		// return new InVehicleDeviceLogic(
-		// getSavedStatusFile(InVehicleDeviceActivity.this));
-		// }
-
-		// @Override
-		// protected void onPostExecute(InVehicleDeviceLogic result) {
-		// logic = result;
-		logic = new InVehicleDeviceLogic(getSavedStatusFile(this)); // TODO
-		logic.register(InVehicleDeviceActivity.this);
-		for (int resourceId : new int[] { R.id.config_modal,
-				R.id.start_check_modal, R.id.schedule_modal, R.id.memo_modal,
-				R.id.pause_modal, R.id.return_path_modal,
-				R.id.stop_check_modal, R.id.stop_modal,
-				R.id.notification_modal, R.id.schedule_changed_modal }) {
-			View view = findViewById(resourceId);
-			if (view instanceof Modal) {
-				((Modal) view).setLogic(logic);
-			} else {
-				Log.e(TAG, "!(view instanceof Modal)");
-			}
-		}
-		// }
-		// }.execute().get(); // TODO これを消してきちんと非同期に処理する
-		// } catch (InterruptedException e) {
-		// finish();
-		// } catch (ExecutionException e) {
-		// finish();
-		// }
-
-		voiceThread = new VoiceThread(getApplicationContext(), voices);
-		voiceThread.start();
-
 		presentTimeTextView = (TextView) findViewById(R.id.present_time_text_view);
 		nextPlatformNameTextView = (TextView) findViewById(R.id.next_platform_name_text_view);
 		nextPlatformNameRubyTextView = (TextView) findViewById(R.id.next_platform_name_ruby_text_view);
@@ -341,7 +286,7 @@ public class InVehicleDeviceActivity extends MapActivity {
 		waitingLayout = findViewById(R.id.waiting_layout);
 		drivingLayout = findViewById(R.id.driving_layout);
 		finishLayout = findViewById(R.id.finish_layout);
-
+		navigationModal = (NavigationModal) findViewById(R.id.navigation_modal);
 		drivingView1Layout = findViewById(R.id.driving_view1);
 		drivingView2Layout = findViewById(R.id.driving_view2);
 		TypedArray typedArray = obtainStyledAttributes(new int[] { android.R.attr.background });
@@ -349,14 +294,7 @@ public class InVehicleDeviceActivity extends MapActivity {
 		drivingView1Layout.setBackgroundColor(backgroundColor); // TODO XMLで指定
 		drivingView2Layout.setBackgroundColor(backgroundColor); // TODO
 		waitingLayout.setBackgroundColor(backgroundColor); // TODO
-
-		navigationModalWeakReference = new WeakReference<NavigationModal>(
-				(NavigationModal) findViewById(R.id.navigation_modal));
-
-		toggleDrivingViewHandler.post(toggleDrivingView);
-		pollVehicleNotificationHandler.post(pollVehicleNotification);
-		updateTimeHandler.post(updateTime);
-
+		reservationListView = (ListView) findViewById(R.id.reservation_list_view);
 		changeStatusButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -370,34 +308,25 @@ public class InVehicleDeviceActivity extends MapActivity {
 				}
 			}
 		});
-
 		mapButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				NavigationModal navigationModal = navigationModalWeakReference
-						.get();
-				if (navigationModal != null) {
-					navigationModal.show();
-				}
+				navigationModal.show();
 			}
 		});
-
 		configButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				logic.showConfigModal();
 			}
 		});
-
 		scheduleButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				logic.showScheduleModal();
 			}
 		});
-
-		reservationListView = (ListView) findViewById(R.id.reservation_list_view);
-		Button reservationScrollUpButton = (Button) findViewById(R.id.reservation_scroll_up_button);
+		reservationScrollUpButton = (Button) findViewById(R.id.reservation_scroll_up_button);
 		reservationScrollUpButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -406,7 +335,7 @@ public class InVehicleDeviceActivity extends MapActivity {
 				reservationListView.smoothScrollToPosition(position);
 			}
 		});
-		Button reservationScrollDownButton = (Button) findViewById(R.id.reservation_scroll_down_button);
+		reservationScrollDownButton = (Button) findViewById(R.id.reservation_scroll_down_button);
 		reservationScrollDownButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -414,7 +343,6 @@ public class InVehicleDeviceActivity extends MapActivity {
 				reservationListView.smoothScrollToPosition(position);
 			}
 		});
-
 		View test = findViewById(R.id.status_text_view);
 		test.setOnClickListener(new OnClickListener() {
 			@Override
@@ -426,7 +354,6 @@ public class InVehicleDeviceActivity extends MapActivity {
 				logic.showNotificationModal(l);
 			}
 		});
-
 		View test2 = findViewById(R.id.icon_text_view);
 		test2.setOnClickListener(new OnClickListener() {
 			@Override
@@ -462,50 +389,94 @@ public class InVehicleDeviceActivity extends MapActivity {
 	}
 
 	@Override
-	public void onDestroy() {
-		super.onDestroy();
+	public void onPause() {
 		toggleDrivingViewHandler.removeCallbacks(toggleDrivingView);
 		pollVehicleNotificationHandler.removeCallbacks(pollVehicleNotification);
 		updateTimeHandler.removeCallbacks(updateTime);
 		waitForInitializeHandler.removeCallbacks(waitForInitialize);
 		voiceThread.interrupt();
 		logic.shutdown();
-	}
-
-	@Override
-	public void onPause() {
+		navigationModal.onPauseActivity();
 		super.onPause();
-		NavigationModal navigationModal = navigationModalWeakReference.get();
-		if (navigationModal != null) {
-			navigationModal.onPauseActivity();
-		}
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		NavigationModal navigationModal = navigationModalWeakReference.get();
-		if (navigationModal != null) {
-			navigationModal.onResumeActivity();
-		}
+		View contentView = findViewById(android.R.id.content);
+		contentView.setVisibility(View.INVISIBLE);
+		contentView.setBackgroundColor(Color.WHITE); // TODO XMLで指定
+		getWindow().getDecorView().setBackgroundColor(Color.BLACK); // TODO XML
 
-		if (logic.isInitialized()) {
-			findViewById(android.R.id.content).setVisibility(View.VISIBLE);
-			if (logic.getStatus() == InVehicleDeviceStatus.Status.PLATFORM) {
-				logic.enterPlatformStatus();
+		// if (BuildConfig.DEBUG) {
+		// StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+		// .detectAll().penaltyLog().build());
+		// StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+		// .detectAll().penaltyLog().penaltyDeath().build());
+		// }
+
+		voiceThread.interrupt();
+		voiceThread = new VoiceThread(getApplicationContext(), voices);
+		voiceThread.start();
+
+		toggleDrivingViewHandler.post(toggleDrivingView);
+		pollVehicleNotificationHandler.post(pollVehicleNotification);
+		updateTimeHandler.post(updateTime);
+		navigationModal.onResumeActivity();
+
+		// TODO sub thread
+		logic.shutdown();
+		logic = new InVehicleDeviceLogic(getSavedStatusFile(this));
+		logic.register(this);
+		for (int resourceId : new int[] { R.id.config_modal,
+				R.id.start_check_modal, R.id.schedule_modal, R.id.memo_modal,
+				R.id.pause_modal, R.id.return_path_modal,
+				R.id.stop_check_modal, R.id.stop_modal,
+				R.id.notification_modal, R.id.schedule_changed_modal }) {
+			View view = findViewById(resourceId);
+			if (view instanceof Modal) {
+				((Modal) view).setLogic(logic);
 			} else {
-				logic.enterDriveStatus();
+				Log.e(TAG, "!(view instanceof Modal)");
 			}
-			return;
 		}
+		if (logic.getStatus().equals(Status.PLATFORM)) {
+			logic.enterPlatformStatus();
+		} else {
+			logic.enterDriveStatus();
+		}
+		findViewById(android.R.id.content).setVisibility(View.VISIBLE);
 
-		// not initialized yet
-		showDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
-		waitForInitializeHandler.post(waitForInitialize);
-	}
-
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
+		// new AsyncTask<Void, Void, InVehicleDeviceLogic>() {
+		// @Override
+		// protected InVehicleDeviceLogic doInBackground(Void... arguments) {
+		// return new InVehicleDeviceLogic(
+		// getSavedStatusFile(InVehicleDeviceActivity.this));
+		// }
+		//
+		// @Override
+		// protected void onPostExecute(InVehicleDeviceLogic result) {
+		// logic.shutdown();
+		// logic = result;
+		// logic.register(InVehicleDeviceActivity.this);
+		// for (int resourceId : new int[] { R.id.config_modal,
+		// R.id.start_check_modal, R.id.schedule_modal,
+		// R.id.memo_modal, R.id.pause_modal,
+		// R.id.return_path_modal, R.id.stop_check_modal,
+		// R.id.stop_modal, R.id.notification_modal,
+		// R.id.schedule_changed_modal }) {
+		// View view = findViewById(resourceId);
+		// if (view instanceof Modal) {
+		// ((Modal) view).setLogic(logic);
+		// } else {
+		// Log.e(TAG, "!(view instanceof Modal)");
+		// }
+		// }
+		// }
+		// }.execute();
+		//
+		// showDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
+		// waitForInitializeHandler.post(waitForInitialize);
+		setVisible(true);
 	}
 }

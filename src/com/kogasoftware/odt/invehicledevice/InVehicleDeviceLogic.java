@@ -4,10 +4,6 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import android.util.Log;
 
@@ -40,13 +36,19 @@ public class InVehicleDeviceLogic {
 	public static class EnterPlatformStatusEvent {
 	}
 
-	class OperationScheduleReceiver implements Runnable {
+	private static class OperationScheduleReceiver implements Runnable {
+		private final InVehicleDeviceLogic logic;
+
+		public OperationScheduleReceiver(InVehicleDeviceLogic logic) {
+			this.logic = logic;
+		}
+
 		@Override
 		public void run() {
 			List<OperationSchedule> operationSchedules = new LinkedList<OperationSchedule>();
 			while (true) {
 				try {
-					operationSchedules.addAll(dataSource
+					operationSchedules.addAll(logic.getDataSource()
 							.getOperationSchedules());
 					break;
 				} catch (WebAPIException e) {
@@ -58,42 +60,58 @@ public class InVehicleDeviceLogic {
 					return;
 				}
 			}
-			synchronized (status) {
-				status.operationSchedules.clear();
-				status.operationSchedules.addAll(operationSchedules);
-				status.initialized.set(true);
-				saveStatus();
+			synchronized (logic.status) {
+				logic.status.operationSchedules.clear();
+				logic.status.operationSchedules.addAll(operationSchedules);
+				logic.status.initialized.set(true);
+				logic.saveStatus();
 			}
 		}
 	}
 
-	class ScheduleChangedReceiver implements Runnable {
+	private static class ScheduleChangedReceiver implements Runnable {
+		private final InVehicleDeviceLogic logic;
+
+		public ScheduleChangedReceiver(InVehicleDeviceLogic logic) {
+			this.logic = logic;
+		}
+
 		@Override
 		public void run() {
 			try {
-				List<VehicleNotification> vehicleNotification = dataSource
-						.getVehicleNotifications();
-				synchronized (status) {
-					status.vehicleNotifications.addAll(vehicleNotification);
-					saveStatus();
+				List<VehicleNotification> vehicleNotification = logic
+						.getDataSource().getVehicleNotifications();
+				synchronized (logic.status) {
+					logic.status.vehicleNotifications
+							.addAll(vehicleNotification);
+					logic.saveStatus();
 				}
 			} catch (WebAPIException e) {
+				Log.i(TAG, "ScheduleChangedReceiver exit", e);
 				return;
 			}
 		}
 	}
 
-	class VehicleNotificationReceiver implements Runnable {
+	private static class VehicleNotificationReceiver implements Runnable {
+		private final InVehicleDeviceLogic logic;
+
+		public VehicleNotificationReceiver(InVehicleDeviceLogic logic) {
+			this.logic = logic;
+		}
+
 		@Override
 		public void run() {
 			try {
-				List<VehicleNotification> vehicleNotification = dataSource
-						.getVehicleNotifications();
-				synchronized (status) {
-					status.vehicleNotifications.addAll(vehicleNotification);
-					saveStatus();
+				List<VehicleNotification> vehicleNotification = logic
+						.getDataSource().getVehicleNotifications();
+				synchronized (logic.status) {
+					logic.status.vehicleNotifications
+							.addAll(vehicleNotification);
+					logic.saveStatus();
 				}
 			} catch (WebAPIException e) {
+				Log.i(TAG, "VehicleNotificationReceiver exit", e);
 				return;
 			}
 		}
@@ -101,13 +119,13 @@ public class InVehicleDeviceLogic {
 
 	private static final String TAG = InVehicleDeviceLogic.class
 			.getSimpleName();
-	private static final Integer POLLING_PERIOD_MILLIS = 10 * 1000;
-	private static final Integer NUM_THREADS = 3;
+	private static final Integer POLLING_PERIOD_MILLIS = 30 * 1000;
+	private static final Integer NUM_THREADS = 10;
 	private final File statusFile;
 	private final EventBus eventBus = new EventBus();
 	private final List<WeakReference<Object>> registeredObjectReferences = new LinkedList<WeakReference<Object>>();
-	private final ScheduledExecutorService executorService = Executors
-			.newScheduledThreadPool(NUM_THREADS);
+	// private final ScheduledExecutorService executorService = Executors
+	// .newScheduledThreadPool(NUM_THREADS);
 	private final DataSource dataSource = new DummyDataSource();
 	private final InVehicleDeviceStatus status; // この変数を利用するときはロックする
 
@@ -120,18 +138,24 @@ public class InVehicleDeviceLogic {
 		this.statusFile = statusFile;
 		this.status = InVehicleDeviceStatus.load(statusFile);
 		try {
-			executorService.submit(new OperationScheduleReceiver()).get(); // TODO
-		} catch (InterruptedException e) {
-			return;
-		} catch (ExecutionException e) {
-			Log.w(TAG, e);
+			this.status.operationSchedules.addAll(getDataSource()
+					.getOperationSchedules());
+			this.status.initialized.set(true);
+		} catch (WebAPIException e) {
+			Log.e(TAG, "", e);
 			return;
 		}
-		executorService.scheduleWithFixedDelay(
-				new VehicleNotificationReceiver(), 0, POLLING_PERIOD_MILLIS,
-				TimeUnit.MILLISECONDS);
-		executorService.scheduleWithFixedDelay(new ScheduleChangedReceiver(),
-				0, POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
+
+		// try {
+		// executorService.submit(new OperationScheduleReceiver(this));
+		// executorService.scheduleWithFixedDelay(
+		// new VehicleNotificationReceiver(this), 0,
+		// POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
+		// executorService.scheduleWithFixedDelay(new ScheduleChangedReceiver(
+		// this), 0, POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
+		// } catch (RejectedExecutionException e) {
+		// Log.e(TAG, "Task Rejected", e);
+		// }
 	}
 
 	public void enterDriveStatus() {
@@ -225,8 +249,8 @@ public class InVehicleDeviceLogic {
 	}
 
 	public void register(Object object) {
-		eventBus.register(object);
-		registeredObjectReferences.add(new WeakReference<Object>(object));
+		// eventBus.register(object);
+		// registeredObjectReferences.add(new WeakReference<Object>(object));
 	}
 
 	private void saveStatus() {
@@ -279,7 +303,7 @@ public class InVehicleDeviceLogic {
 
 	public void shutdown() {
 		unregisterAll();
-		executorService.shutdown();
+		// executorService.shutdownNow();
 	}
 
 	public void unregisterAll() {
