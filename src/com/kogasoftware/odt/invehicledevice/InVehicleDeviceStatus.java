@@ -82,13 +82,9 @@ public class InVehicleDeviceStatus implements Serializable {
 		return status;
 	}
 
-	public static InVehicleDeviceStatus load3(File file) {
-		return new InVehicleDeviceStatus();
-	}
-
 	public final ConcurrentLinkedQueue<VehicleNotification> vehicleNotifications = new ConcurrentLinkedQueue<VehicleNotification>();
 	public final ConcurrentLinkedQueue<OperationSchedule> operationSchedules = new ConcurrentLinkedQueue<OperationSchedule>();
-	public final AtomicBoolean initialized = new AtomicBoolean(false);;
+	public final AtomicBoolean initialized = new AtomicBoolean(false);
 	public final Date createdDate = new Date();
 	public Integer currentOperationScheduleIndex = 0;
 

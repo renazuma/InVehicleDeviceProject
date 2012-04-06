@@ -152,9 +152,6 @@ public class InVehicleDeviceLogic {
 
 	public void enterDriveStatus() {
 		synchronized (status) {
-			if (status.status == InVehicleDeviceStatus.Status.DRIVE) {
-				return;
-			}
 			if (status.status == InVehicleDeviceStatus.Status.PLATFORM) {
 				status.currentOperationScheduleIndex++;
 			}
@@ -165,9 +162,6 @@ public class InVehicleDeviceLogic {
 
 	public void enterFinishStatus() {
 		synchronized (status) {
-			if (status.status == InVehicleDeviceStatus.Status.FINISH) {
-				return;
-			}
 			status.status = InVehicleDeviceStatus.Status.FINISH;
 		}
 		eventBus.post(new EnterFinishStatusEvent());
@@ -175,9 +169,6 @@ public class InVehicleDeviceLogic {
 
 	public void enterPlatformStatus() {
 		synchronized (status) {
-			if (status.status == InVehicleDeviceStatus.Status.PLATFORM) {
-				return;
-			}
 			status.status = InVehicleDeviceStatus.Status.PLATFORM;
 		}
 		eventBus.post(new EnterPlatformStatusEvent());

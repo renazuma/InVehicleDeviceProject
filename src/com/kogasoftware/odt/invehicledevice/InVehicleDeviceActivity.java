@@ -43,6 +43,52 @@ import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class InVehicleDeviceActivity extends Activity {
+	private class LoadLogicAsyncTask extends
+			AsyncTask<Void, Void, InVehicleDeviceLogic> {
+
+		@Override
+		protected InVehicleDeviceLogic doInBackground(Void... arguments) {
+			InVehicleDeviceLogic result = new InVehicleDeviceLogic(
+					getSavedStatusFile(InVehicleDeviceActivity.this));
+			result.register(InVehicleDeviceActivity.this);
+			for (int resourceId : new int[] { R.id.config_modal,
+					R.id.start_check_modal, R.id.schedule_modal,
+					R.id.memo_modal, R.id.pause_modal, R.id.return_path_modal,
+					R.id.stop_check_modal, R.id.stop_modal,
+					R.id.notification_modal, R.id.schedule_changed_modal,
+					R.id.navigation_modal }) {
+				View view = findViewById(resourceId);
+				if (view instanceof Modal) {
+					((Modal) view).setLogic(result);
+				} else {
+					Log.e(TAG, "!(view instanceof Modal)");
+				}
+			}
+			return result;
+		}
+
+		@Override
+		protected void onPostExecute(InVehicleDeviceLogic newLogic) {
+			logic.shutdown();
+			logic = newLogic;
+			if (isFinishing() || isCancelled()) {
+				logic.shutdown();
+				return;
+			}
+			if (logic.getStatus().equals(InVehicleDeviceStatus.Status.PLATFORM)) {
+				logic.enterPlatformStatus();
+			} else {
+				logic.enterDriveStatus();
+			}
+			contentView.setVisibility(View.VISIBLE);
+			try {
+				dismissDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
+			} catch (IllegalArgumentException e) {
+				// Log.w(TAG, e);
+			}
+		}
+	}
+
 	private static final String TAG = InVehicleDeviceActivity.class
 			.getSimpleName();
 	private static final int WAIT_FOR_INITIALIZE_DIALOG_ID = 10;
@@ -97,6 +143,7 @@ public class InVehicleDeviceActivity extends Activity {
 
 	private Thread voiceThread = new EmptyThread();
 	private InVehicleDeviceLogic logic = new InVehicleDeviceLogic();
+	private LoadLogicAsyncTask loadLogicAsyncTask = new LoadLogicAsyncTask();
 
 	// nullables
 	private View contentView = null;
@@ -379,9 +426,15 @@ public class InVehicleDeviceActivity extends Activity {
 		handler.removeCallbacks(toggleDrivingView);
 		handler.removeCallbacks(pollVehicleNotification);
 		handler.removeCallbacks(updateTime);
+
 		voiceThread.interrupt();
+
 		logic.shutdown();
+
+		loadLogicAsyncTask.cancel(true);
+
 		navigationModal.onPauseActivity();
+
 		super.onPause();
 
 		setVisible(false); // onCreate()とonResume()には非常に時間がかかるようなので、onResumeが終わるまでActivityを非表示
@@ -393,57 +446,17 @@ public class InVehicleDeviceActivity extends Activity {
 		super.onResume();
 		navigationModal.onResumeActivity();
 
-		voiceThread.interrupt();
-		voiceThread = new VoiceThread(this, voices);
-		voiceThread.start();
-
 		handler.post(toggleDrivingView);
 		handler.post(pollVehicleNotification);
 		handler.post(updateTime);
 
-		new AsyncTask<Void, Void, InVehicleDeviceLogic>() {
-			@Override
-			protected InVehicleDeviceLogic doInBackground(Void... arguments) {
-				return new InVehicleDeviceLogic(
-						getSavedStatusFile(InVehicleDeviceActivity.this));
-			}
+		voiceThread.interrupt();
+		voiceThread = new VoiceThread(this, voices);
+		voiceThread.start();
 
-			@Override
-			protected void onPostExecute(InVehicleDeviceLogic result) {
-				logic.shutdown();
-				if (isFinishing()) {
-					result.shutdown();
-					return;
-				}
-				logic = result;
-				logic.register(InVehicleDeviceActivity.this);
-				for (int resourceId : new int[] { R.id.config_modal,
-						R.id.start_check_modal, R.id.schedule_modal,
-						R.id.memo_modal, R.id.pause_modal,
-						R.id.return_path_modal, R.id.stop_check_modal,
-						R.id.stop_modal, R.id.notification_modal,
-						R.id.schedule_changed_modal, R.id.navigation_modal }) {
-					View view = findViewById(resourceId);
-					if (view instanceof Modal) {
-						((Modal) view).setLogic(logic);
-					} else {
-						Log.e(TAG, "!(view instanceof Modal)");
-					}
-				}
-				if (logic.getStatus().equals(
-						InVehicleDeviceStatus.Status.PLATFORM)) {
-					logic.enterPlatformStatus();
-				} else {
-					logic.enterDriveStatus();
-				}
-				contentView.setVisibility(View.VISIBLE);
-				try {
-					dismissDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
-				} catch (IllegalArgumentException e) {
-					// Log.w(TAG, e);
-				}
-			}
-		}.execute();
+		loadLogicAsyncTask.cancel(true);
+		loadLogicAsyncTask = new LoadLogicAsyncTask();
+		loadLogicAsyncTask.execute();
 
 		if (!isFinishing()) {
 			showDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
