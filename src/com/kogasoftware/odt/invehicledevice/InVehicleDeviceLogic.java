@@ -4,6 +4,10 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import android.util.Log;
 
@@ -87,8 +91,6 @@ public class InVehicleDeviceLogic {
 					logic.saveStatus();
 				}
 			} catch (WebAPIException e) {
-				Log.i(TAG, "ScheduleChangedReceiver exit", e);
-				return;
 			}
 		}
 	}
@@ -111,8 +113,6 @@ public class InVehicleDeviceLogic {
 					logic.saveStatus();
 				}
 			} catch (WebAPIException e) {
-				Log.i(TAG, "VehicleNotificationReceiver exit", e);
-				return;
 			}
 		}
 	}
@@ -124,8 +124,8 @@ public class InVehicleDeviceLogic {
 	private final File statusFile;
 	private final EventBus eventBus = new EventBus();
 	private final List<WeakReference<Object>> registeredObjectReferences = new LinkedList<WeakReference<Object>>();
-	// private final ScheduledExecutorService executorService = Executors
-	// .newScheduledThreadPool(NUM_THREADS);
+	private final ScheduledExecutorService executorService = Executors
+			.newScheduledThreadPool(NUM_THREADS);
 	private final DataSource dataSource = new DummyDataSource();
 	private final InVehicleDeviceStatus status; // この変数を利用するときはロックする
 
@@ -137,25 +137,17 @@ public class InVehicleDeviceLogic {
 	public InVehicleDeviceLogic(File statusFile) {
 		this.statusFile = statusFile;
 		this.status = InVehicleDeviceStatus.load(statusFile);
-		try {
-			this.status.operationSchedules.addAll(getDataSource()
-					.getOperationSchedules());
-			this.status.initialized.set(true);
-		} catch (WebAPIException e) {
-			Log.e(TAG, "", e);
-			return;
-		}
 
-		// try {
-		// executorService.submit(new OperationScheduleReceiver(this));
-		// executorService.scheduleWithFixedDelay(
-		// new VehicleNotificationReceiver(this), 0,
-		// POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
-		// executorService.scheduleWithFixedDelay(new ScheduleChangedReceiver(
-		// this), 0, POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
-		// } catch (RejectedExecutionException e) {
-		// Log.e(TAG, "Task Rejected", e);
-		// }
+		try {
+			executorService.submit(new OperationScheduleReceiver(this));
+			executorService.scheduleWithFixedDelay(
+					new VehicleNotificationReceiver(this), 0,
+					POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
+			executorService.scheduleWithFixedDelay(new ScheduleChangedReceiver(
+					this), 0, POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
+		} catch (RejectedExecutionException e) {
+			Log.e(TAG, "Task Rejected", e);
+		}
 	}
 
 	public void enterDriveStatus() {
@@ -249,8 +241,8 @@ public class InVehicleDeviceLogic {
 	}
 
 	public void register(Object object) {
-		// eventBus.register(object);
-		// registeredObjectReferences.add(new WeakReference<Object>(object));
+		eventBus.register(object);
+		registeredObjectReferences.add(new WeakReference<Object>(object));
 	}
 
 	private void saveStatus() {
@@ -303,7 +295,7 @@ public class InVehicleDeviceLogic {
 
 	public void shutdown() {
 		unregisterAll();
-		// executorService.shutdownNow();
+		executorService.shutdownNow();
 	}
 
 	public void unregisterAll() {

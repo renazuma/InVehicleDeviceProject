@@ -36,10 +36,6 @@ public class InVehicleDeviceStatus implements Serializable {
 			.getSimpleName();
 
 	public static InVehicleDeviceStatus load(File file) {
-		return new InVehicleDeviceStatus();
-	}
-
-	public static InVehicleDeviceStatus load2(File file) {
 		InVehicleDeviceStatus status = new InVehicleDeviceStatus();
 		FileInputStream fileInputStream = null;
 		ObjectInputStream objectInputStream = null;
@@ -62,7 +58,7 @@ public class InVehicleDeviceStatus implements Serializable {
 		} catch (ClassCastException e) {
 			Log.w(TAG, e);
 		} catch (FileNotFoundException e) {
-			Log.w(TAG, e);
+			// Log.w(TAG, e);
 		} catch (OptionalDataException e) {
 			Log.w(TAG, e);
 		} catch (ClassNotFoundException e) {
@@ -83,8 +79,11 @@ public class InVehicleDeviceStatus implements Serializable {
 		if (status.createdDate.before(calendar.getTime())) {
 			return new InVehicleDeviceStatus();
 		}
-		// return status;
-		return new InVehicleDeviceStatus(); // TODO
+		return status;
+	}
+
+	public static InVehicleDeviceStatus load3(File file) {
+		return new InVehicleDeviceStatus();
 	}
 
 	public final ConcurrentLinkedQueue<VehicleNotification> vehicleNotifications = new ConcurrentLinkedQueue<VehicleNotification>();

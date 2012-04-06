@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
+import android.media.MediaPlayer.OnErrorListener;
 import android.util.Log;
 
 import com.kogasoftware.openjtalk.OpenJTalk;
@@ -61,6 +62,14 @@ public class VoiceThread extends Thread {
 									semaphore.release();
 								}
 							});
+					mediaPlayer.setOnErrorListener(new OnErrorListener() {
+						@Override
+						public boolean onError(MediaPlayer mp, int what,
+								int extra) {
+							semaphore.release();
+							return false;
+						}
+					});
 					mediaPlayer.start();
 					semaphore.tryAcquire(TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
 				} finally {

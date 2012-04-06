@@ -1,8 +1,6 @@
 package jp.tomorrowkey.android.vtextviewer;
 
-import java.lang.ref.WeakReference;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -14,6 +12,8 @@ import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
+
 /**
  * 縦に文字を表示するためのクラス
  * 
@@ -23,67 +23,32 @@ public class VTextView extends View {
 	/**
 	 * onLayoutをトリガーにしてbitmapを作成したいが、同スレッドで行うと重いメモリ確保が起きる(AndroidLintに指摘される)
 	 * ため別のスレッドで行うためのクラス. AsyncTaskはimmutableクラスなので結局newをする必要があるため自前で行うことにした
-	 * 
-	 * 親Viewの終了時onDetachedFromWindow()が呼ばれないことがあり、スレッドを終了できないことがあるため
-	 * 親Viewへの参照はWeakReferenceを使う
 	 */
-	private static class UpdateBitmapThread extends Thread {
-		private static final Integer TRY_ACQUIRE_TIMEOUT_MILLIS = 10000;
-		private final WeakReference<VTextView> vtextViewWeakReference;
-		private final Semaphore updateBitmapStartSemaphore;
-
-		public UpdateBitmapThread(VTextView vtextView) {
-			this.updateBitmapStartSemaphore = vtextView.updateBitmapStartSemaphore;
-			this.vtextViewWeakReference = new WeakReference<VTextView>(
-					vtextView);
-			setName("UpdateBitmapThread-" + getId() + "-constructed");
-		}
-
+	class UpdateBitmapThread extends Thread {
 		@Override
 		public void run() {
 			try {
-				setName("UpdateBitmapThread-" + getId() + "-working");
 				while (true) {
-					if (!updateBitmapStartSemaphore.tryAcquire(
-							TRY_ACQUIRE_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)) {
-						// 定期的に親クラスが生きているかチェック
-						if (vtextViewWeakReference.get() == null) {
-							return;
-						}
+					updateBitmapStartSemaphore.acquire();
+					updateBitmapStartSemaphore.drainPermits();
+					int localHeight = height; // widthとheightは途中で変更される可能性があるため、読み出しておく
+					int localWidth = width;
+					if (localHeight <= 0 || localWidth <= 0) {
 						continue;
 					}
-					updateBitmapStartSemaphore.drainPermits();
-					if (!updateVTextViewBitmap()) {
-						return;
-					}
+					final Bitmap newBitmap = Bitmap.createBitmap(localWidth,
+							localHeight, Bitmap.Config.ARGB_8888);
+					updateBitmapHandler.post(new Runnable() {
+						@Override
+						public void run() {
+							bitmap = newBitmap;
+							canvas.setBitmap(bitmap);
+							invalidate();
+						}
+					});
 				}
 			} catch (InterruptedException e) {
-			} finally {
-				setName("UpdateBitmapThread-" + getId() + "-exit");
 			}
-		}
-
-		private Boolean updateVTextViewBitmap() {
-			final VTextView vtextView = vtextViewWeakReference.get();
-			if (vtextView == null) {
-				return false;
-			}
-			int local_height = vtextView.height; // widthとheightは途中で変更される可能性があるため、読み出しておく
-			int local_width = vtextView.width;
-			if (local_height <= 0 || local_width <= 0) {
-				return true;
-			}
-			final Bitmap newBitmap = Bitmap.createBitmap(local_width,
-					local_height, Bitmap.Config.ARGB_8888);
-			vtextView.updateBitmapHandler.post(new Runnable() {
-				@Override
-				public void run() {
-					vtextView.bitmap = newBitmap;
-					vtextView.canvas.setBitmap(vtextView.bitmap);
-					vtextView.invalidate();
-				}
-			});
-			return true;
 		}
 	}
 
@@ -91,28 +56,36 @@ public class VTextView extends View {
 	private static final int TOP_SPACE = 0;
 	private static final int BOTTOM_SPACE = 18;
 	private static final int FONT_SIZE = 60;
-	private final Semaphore updateBitmapStartSemaphore = new Semaphore(0);
-	private final Handler updateBitmapHandler = new Handler();
 	private Typeface typeFace = Typeface.defaultFromStyle(Typeface.NORMAL);
 	private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 	private String text = "";
 	private Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-	private final Canvas canvas = new Canvas(bitmap);
 	private volatile int width = 0; // 別スレッドから読み出すためvolatileをつける
 	private volatile int height = 0; // 別スレッドから読み出すためvolatileをつける
+	private Canvas canvas = new Canvas(bitmap);
+	private Semaphore updateBitmapStartSemaphore = new Semaphore(0);
+	private Thread updateBitmapThread = new EmptyThread();
+	private Handler updateBitmapHandler = new Handler();
 
 	public VTextView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		paint.setTextSize(FONT_SIZE);
 		paint.setColor(Color.BLACK);
 		paint.setTypeface(typeFace);
-		new UpdateBitmapThread(this).start();
+	}
+
+	@Override
+	protected void onAttachedToWindow() {
+		super.onAttachedToWindow();
+		updateBitmapThread.interrupt();
+		updateBitmapThread = new UpdateBitmapThread();
+		updateBitmapThread.start();
 	}
 
 	@Override
 	protected void onDetachedFromWindow() {
-		this.clearFocus();
 		super.onDetachedFromWindow();
+		updateBitmapThread.interrupt();
 	}
 
 	@Override
