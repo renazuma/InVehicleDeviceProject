@@ -8,16 +8,12 @@ import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
+import com.kogasoftware.odt.invehicledevice.test.MockDataSourceTest;
 
 public class WaitingTestCase extends
-		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
+ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 	private Solo solo;
-
-	public WaitingTestCase() {
-		super("com.kogasoftware.odt.invehicledevice",
-				InVehicleDeviceActivity.class);
-	}
 
 	public void dataset(Integer i) {
 
@@ -25,26 +21,24 @@ public class WaitingTestCase extends
 		MockDataSourceTest mdst = new MockDataSourceTest();
 
 		mdst.setReservation(i);
-		mdst.setReservationCandidate(6, 1, 1, 1);
+		mdst.setReservationCandidate(6,1,1,1);
 
 		DataSourceFactory.setInstance(mdst);
 
+	}
+
+	public WaitingTestCase() {
+		super("com.kogasoftware.odt.invehicledevice",
+				InVehicleDeviceActivity.class);
 	}
 
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
 		solo = new Solo(getInstrumentation(), getActivity());
-		Thread.sleep(1 * 1000);
+
 		// デフォルトで停車中にする
 		solo.clickOnButton("到着しました");
-	}
-
-	@Override
-	public void tearDown() throws Exception {
-		solo.finishOpenedActivities();
-		solo = null;
-		super.tearDown();
 	}
 
 	public void test00_データ初期設定() {
@@ -117,11 +111,11 @@ public class WaitingTestCase extends
 
 	public void test09_下スクロール() {
 
-		assertTrue(solo.searchText("予約番号11", 0, false));
+		assertTrue(solo.searchText("予約番号11", 0,false));
 
 		solo.clickOnButton("下へ移動");
 
-		assertFalse(solo.searchText("予約番号11", 0, false));
+		assertFalse(solo.searchText("予約番号11", 0,false));
 
 	}
 
@@ -131,7 +125,7 @@ public class WaitingTestCase extends
 
 		solo.clickOnButton("上へ移動");
 
-		assertTrue(solo.searchText("予約番号11", 0, false));
+		assertTrue(solo.searchText("予約番号11", 0,false));
 
 	}
 
@@ -187,5 +181,11 @@ public class WaitingTestCase extends
 
 		assertFalse(solo.searchButton("下へ移動"));
 
+	}
+
+	@Override
+	public void tearDown() throws Exception {
+		solo.finishOpenedActivities();
+		super.tearDown();
 	}
 }
