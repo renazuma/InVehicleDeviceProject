@@ -35,7 +35,6 @@ public class ConfigTestCase extends
 
 	public void test02_運行管理ボタンを押したら表示() {
 		test01_起動時は非表示();
-//		solo.clickOnView(solo.getView(R.id.config_button));
 
 		solo.clickOnButton("運行管理");
 		getInstrumentation().waitForIdleSync();
@@ -45,7 +44,16 @@ public class ConfigTestCase extends
 	}
 
 	public void test03_戻るボタンを押したら消える() {
-		test02_運行管理ボタンを押したら表示();
+
+		test01_起動時は非表示();
+
+		solo.clickOnButton("運行管理");
+		getInstrumentation().waitForIdleSync();
+
+		assertEquals(View.VISIBLE, solo.getView(R.id.config_modal)
+				.getVisibility());
+//		test02_運行管理ボタンを押したら表示();
+		
 		solo.clickOnView(solo.getView(R.id.config_hide_button));
 
 		getInstrumentation().waitForIdleSync();
