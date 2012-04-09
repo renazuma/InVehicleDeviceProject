@@ -4,6 +4,7 @@
 
 cd `dirname $0`
 ant $ant_arg findbugs
+ant $ant_arg sonar
 
 cd tests
 ant $ant_arg uninstall findbugs
