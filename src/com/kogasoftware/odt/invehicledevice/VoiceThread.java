@@ -29,13 +29,11 @@ public class VoiceThread extends Thread {
 		voiceDirectory = new File(base + s + "voice" + s + "mei_normal");
 		dictionaryDirectory = new File(base + s + "dictionary");
 		outputDirectory = new File(base + s + "output");
-		setName("VoiceThread-" + getId() + "-constructed");
 	}
 
 	@Override
 	public void run() {
 		try {
-			setName("VoiceThread-" + getId() + "-working");
 			if (!outputDirectory.exists() && !outputDirectory.mkdirs()) {
 				throw new IOException("!\"" + outputDirectory + "\".mkdirs()");
 			}
@@ -56,7 +54,7 @@ public class VoiceThread extends Thread {
 					mediaPlayer
 							.setOnCompletionListener(new OnCompletionListener() {
 								@Override
-								public void onCompletion(MediaPlayer arg0) {
+								public void onCompletion(MediaPlayer mp) {
 									semaphore.release();
 								}
 							});
@@ -77,8 +75,6 @@ public class VoiceThread extends Thread {
 		} catch (IOException e) {
 			Log.e(TAG, "IOException", e);
 		} catch (InterruptedException e) {
-		} finally {
-			setName("VoiceThread-" + getId() + "-exit");
 		}
 	}
 }
