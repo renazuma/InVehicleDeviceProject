@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
 
 import android.content.Context;
 import android.media.MediaPlayer;
@@ -16,7 +15,6 @@ import com.kogasoftware.openjtalk.OpenJTalk;
 
 public class VoiceThread extends Thread {
 	private static final String TAG = VoiceThread.class.getSimpleName();
-	private static final Integer TIMEOUT_MILLIS = 20 * 1000;
 	private final BlockingQueue<String> voices;
 	private final File cacheDirectory;
 	private final File voiceDirectory;
@@ -71,7 +69,7 @@ public class VoiceThread extends Thread {
 						}
 					});
 					mediaPlayer.start();
-					semaphore.tryAcquire(TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
+					semaphore.acquire();
 				} finally {
 					mediaPlayer.release();
 				}
