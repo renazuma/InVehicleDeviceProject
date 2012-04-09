@@ -17,6 +17,6 @@ adb $adb_arg push open_jtalk $d
 ant $ant_arg all clean emma debug install test-and-pull-results
 
 cd ..
-ruby ../../dev/android/remove_debuggable.rb AndroidManifest.xml
-ruby ../../dev/android/remove_debuggable.rb ../AndroidOpenJTalk/AndroidManifest.xml
+#ruby ../../dev/android/remove_debuggable.rb AndroidManifest.xml
+#ruby ../../dev/android/remove_debuggable.rb ../AndroidOpenJTalk/AndroidManifest.xml
 ant $ant_arg clean release
