@@ -7,6 +7,7 @@ libs/armeabi-v7a/
 libs/x86/
 obj/
 .odt/
+.sonar/
 
 *-TEST.xml
 AndroidManifest.xml.old
