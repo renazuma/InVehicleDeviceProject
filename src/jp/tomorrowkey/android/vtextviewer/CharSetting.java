@@ -33,7 +33,7 @@ public class CharSetting {
 		this.y = y;
 	}
 
-	private static final CharSetting[] settings = {
+	private static final CharSetting[] SETTINGS = {
 			new CharSetting("、", 0.0f, 0.7f, -0.6f),
 			new CharSetting("。", 0.0f, 0.7f, -0.6f),
 			new CharSetting("「", 90.0f, -1.0f, -0.3f),
@@ -171,9 +171,9 @@ public class CharSetting {
 			new CharSetting(".", 90.0f, 0.0f, -0.1f), };
 
 	public static CharSetting getSetting(String character) {
-		for (int i = 0; i < settings.length; i++) {
-			if (settings[i].charcter.equals(character)) {
-				return settings[i];
+		for (int i = 0; i < SETTINGS.length; i++) {
+			if (SETTINGS[i].charcter.equals(character)) {
+				return SETTINGS[i];
 			}
 		}
 		return null;
