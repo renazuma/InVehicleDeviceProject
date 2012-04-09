@@ -1,6 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.modal;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.view.View.OnTouchListener;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceLogic;
 
 public class Modal extends FrameLayout implements OnTouchListener {
@@ -69,12 +71,16 @@ public class Modal extends FrameLayout implements OnTouchListener {
 		this.addView(layoutInflater.inflate(resourceId, null),
 				new Modal.LayoutParams(Modal.LayoutParams.FILL_PARENT,
 						Modal.LayoutParams.FILL_PARENT));
-		setBackgroundColor(Color.WHITE); // TODO: themeで指定
+
+		TypedArray typedArray = getContext().obtainStyledAttributes(
+				new int[] { android.R.attr.background });
+		int backgroundColor = typedArray.getColor(0, Color.WHITE);
+		setBackgroundColor(backgroundColor);
 	}
 
-	public void setLogic(InVehicleDeviceLogic logic) {
-		this.logic = logic;
-		logic.register(this);
+	@Subscribe
+	public void setLogic(InVehicleDeviceLogic.LoadThread.CompleteEvent event) {
+		this.logic = event.logic;
 	}
 
 	/**

@@ -18,7 +18,6 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.res.TypedArray;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -35,7 +34,6 @@ import com.kogasoftware.odt.invehicledevice.InVehicleDeviceLogic.EnterFinishStat
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceLogic.EnterPlatformStatusEvent;
 import com.kogasoftware.odt.invehicledevice.arrayadapter.ReservationArrayAdapter;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
-import com.kogasoftware.odt.invehicledevice.modal.Modal;
 import com.kogasoftware.odt.invehicledevice.modal.NavigationModal;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
@@ -43,55 +41,14 @@ import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class InVehicleDeviceActivity extends Activity {
-	private class LoadLogicAsyncTask extends
-			AsyncTask<Void, Void, InVehicleDeviceLogic> {
-
-		@Override
-		protected InVehicleDeviceLogic doInBackground(Void... arguments) {
-			InVehicleDeviceLogic result = new InVehicleDeviceLogic(
-					getSavedStatusFile(InVehicleDeviceActivity.this));
-			result.register(InVehicleDeviceActivity.this);
-			for (int resourceId : new int[] { R.id.config_modal,
-					R.id.start_check_modal, R.id.schedule_modal,
-					R.id.memo_modal, R.id.pause_modal, R.id.return_path_modal,
-					R.id.stop_check_modal, R.id.stop_modal,
-					R.id.notification_modal, R.id.schedule_changed_modal,
-					R.id.navigation_modal }) {
-				View view = findViewById(resourceId);
-				if (view instanceof Modal) {
-					((Modal) view).setLogic(result);
-				} else {
-					Log.e(TAG, "!(view instanceof Modal)");
-				}
-			}
-			return result;
-		}
-
-		@Override
-		protected void onPostExecute(InVehicleDeviceLogic newLogic) {
-			logic.shutdown();
-			logic = newLogic;
-			if (isFinishing() || isCancelled()) {
-				logic.shutdown();
-				return;
-			}
-			if (logic.getStatus().equals(InVehicleDeviceStatus.Status.PLATFORM)) {
-				logic.enterPlatformStatus();
-			} else {
-				logic.enterDriveStatus();
-			}
-			contentView.setVisibility(View.VISIBLE);
-			try {
-				dismissDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
-			} catch (IllegalArgumentException e) {
-				// Log.w(TAG, e);
-			}
-		}
-	}
-
 	private static final String TAG = InVehicleDeviceActivity.class
 			.getSimpleName();
+
 	private static final int WAIT_FOR_INITIALIZE_DIALOG_ID = 10;
+
+	private static final Integer TOGGLE_DRIVING_VIEW_INTERVAL = 5000;
+
+	private static final Integer POLL_VEHICLE_NOTIFICATION_INTERVAL = 10000;
 
 	protected static File getSavedStatusFile(Context context) {
 		return new File(context.getFilesDir() + File.separator
@@ -102,8 +59,8 @@ public class InVehicleDeviceActivity extends Activity {
 	private final BlockingQueue<String> voices = new LinkedBlockingQueue<String>();
 
 	final Handler handler = new Handler();
-
 	private static final Integer UPDATE_TIME_INTERVAL = 5000;
+
 	private final Runnable updateTime = new Runnable() {
 		@Override
 		public void run() {
@@ -114,7 +71,6 @@ public class InVehicleDeviceActivity extends Activity {
 		}
 	};
 
-	private static final Integer POLL_VEHICLE_NOTIFICATION_INTERVAL = 10000;
 	private final Runnable pollVehicleNotification = new Runnable() {
 		@Override
 		public void run() {
@@ -127,8 +83,6 @@ public class InVehicleDeviceActivity extends Activity {
 			handler.postDelayed(this, POLL_VEHICLE_NOTIFICATION_INTERVAL);
 		}
 	};
-
-	private static final Integer TOGGLE_DRIVING_VIEW_INTERVAL = 5000;
 	private final Runnable toggleDrivingView = new Runnable() {
 		@Override
 		public void run() {
@@ -141,9 +95,9 @@ public class InVehicleDeviceActivity extends Activity {
 		}
 	};
 
-	private Thread voiceThread = new EmptyThread();
 	private InVehicleDeviceLogic logic = new InVehicleDeviceLogic();
-	private LoadLogicAsyncTask loadLogicAsyncTask = new LoadLogicAsyncTask();
+	private Thread logicLoadThread = new EmptyThread();
+	private Thread voiceThread = new EmptyThread();
 
 	// nullables
 	private View contentView = null;
@@ -280,7 +234,10 @@ public class InVehicleDeviceActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		setVisible(false); // onCreate()とonResume()には非常に時間がかかるようなので、onResumeが終わるまでActivityを非表示
+		if (!isFinishing()) {
+			showDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
+		}
+
 		super.onCreate(savedInstanceState);
 
 		// if (BuildConfig.DEBUG) {
@@ -295,7 +252,7 @@ public class InVehicleDeviceActivity extends Activity {
 		int backgroundColor = typedArray.getColor(0, Color.WHITE);
 
 		contentView = findViewById(android.R.id.content);
-		contentView.setVisibility(View.INVISIBLE); // onResume後のデータ準備が終わるまでcontentViewを非表示
+		contentView.setVisibility(View.GONE); // InVehicleDeviceLogicの準備が終わるまでcontentViewを非表示
 		contentView.setBackgroundColor(backgroundColor);
 		getWindow().getDecorView().setBackgroundColor(Color.BLACK); // ProgressDialogと親和性の高い色にする
 
@@ -323,6 +280,7 @@ public class InVehicleDeviceActivity extends Activity {
 		drivingView2Layout.setBackgroundColor(backgroundColor); // TODO
 		waitingLayout.setBackgroundColor(backgroundColor); // TODO
 		reservationListView = (ListView) findViewById(R.id.reservation_list_view);
+
 		changeStatusButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -428,17 +386,20 @@ public class InVehicleDeviceActivity extends Activity {
 		handler.removeCallbacks(updateTime);
 
 		voiceThread.interrupt();
-
 		logic.shutdown();
-
-		loadLogicAsyncTask.cancel(true);
+		logicLoadThread.interrupt();
 
 		navigationModal.onPauseActivity();
 
 		super.onPause();
 
-		setVisible(false); // onCreate()とonResume()には非常に時間がかかるようなので、onResumeが終わるまでActivityを非表示
-		contentView.setVisibility(View.INVISIBLE); // onResume後のデータ準備が終わるまでcontentViewを非表示
+		contentView.setVisibility(View.GONE); // InVehicleDeviceLogicの準備が終わるまでcontentViewを非表示
+		try {
+			dismissDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
+		} catch (IllegalArgumentException e) {
+			// Dialogが表示されていない場合はこの例外が発生
+			// Log.w(TAG, e);
+		}
 	}
 
 	@Override
@@ -454,13 +415,33 @@ public class InVehicleDeviceActivity extends Activity {
 		voiceThread = new VoiceThread(this, voices);
 		voiceThread.start();
 
-		loadLogicAsyncTask.cancel(true);
-		loadLogicAsyncTask = new LoadLogicAsyncTask();
-		loadLogicAsyncTask.execute();
+		logicLoadThread.interrupt();
+		logicLoadThread = new InVehicleDeviceLogic.LoadThread(this);
+		logicLoadThread.start();
 
-		if (!isFinishing()) {
-			showDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
+		logic.shutdown();
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+	}
+
+	@Subscribe
+	public void startUi(InVehicleDeviceLogic.LoadThread.CompleteEvent event) {
+		try {
+			dismissDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
+		} catch (IllegalArgumentException e) {
+			// Dialogが表示されていない場合はこの例外が発生
+			// Log.w(TAG, e);
 		}
-		setVisible(true);
+		logic.shutdown();
+		logic = event.logic;
+		if (isFinishing()) {
+			logic.shutdown();
+			return;
+		}
+		logic.restoreStatus();
+		contentView.setVisibility(View.VISIBLE);
 	}
 }

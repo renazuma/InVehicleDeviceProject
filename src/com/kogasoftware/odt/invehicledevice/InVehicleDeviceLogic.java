@@ -7,9 +7,12 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+import android.app.Activity;
 import android.util.Log;
+import android.view.View;
 
 import com.google.common.eventbus.EventBus;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
@@ -38,6 +41,57 @@ public class InVehicleDeviceLogic {
 	}
 
 	public static class EnterPlatformStatusEvent {
+	}
+
+	public static class LoadThread extends Thread {
+		public static class CompleteEvent {
+			public final InVehicleDeviceLogic logic;
+
+			public CompleteEvent(InVehicleDeviceLogic logic) {
+				this.logic = logic;
+			}
+		}
+
+		private final Activity activity;
+
+		public LoadThread(Activity activity) {
+			this.activity = activity;
+		}
+
+		@Override
+		public void run() {
+			InVehicleDeviceLogic logic = null;
+			try {
+				logic = new InVehicleDeviceLogic(
+						InVehicleDeviceActivity.getSavedStatusFile(activity));
+				Thread.sleep(0); // interruption point
+				logic.register(activity);
+				for (int resourceId : new int[] { R.id.config_modal,
+						R.id.start_check_modal, R.id.schedule_modal,
+						R.id.memo_modal, R.id.pause_modal,
+						R.id.return_path_modal, R.id.stop_check_modal,
+						R.id.stop_modal, R.id.notification_modal,
+						R.id.schedule_changed_modal }) {
+					Thread.sleep(0);
+					View view = activity.findViewById(resourceId);
+					logic.register(view);
+				}
+				final Semaphore semaphore = new Semaphore(0); // Runnable内容が実行される前にinterruptされた場合も確実にshutdownする用
+				final InVehicleDeviceLogic finalLogic = logic;
+				activity.runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						finalLogic.eventBus.post(new CompleteEvent(finalLogic));
+						semaphore.release();
+					}
+				});
+				semaphore.acquire();
+			} catch (InterruptedException e) {
+				if (logic != null) {
+					logic.shutdown();
+				}
+			}
+		}
 	}
 
 	private static class OperationScheduleReceiver implements Runnable {
@@ -136,7 +190,7 @@ public class InVehicleDeviceLogic {
 
 	public InVehicleDeviceLogic(File statusFile) {
 		this.statusFile = statusFile;
-		this.status = InVehicleDeviceStatus.load(statusFile);
+		this.status = InVehicleDeviceStatus.newInstance(statusFile);
 
 		try {
 			executorService.submit(new OperationScheduleReceiver(this));
@@ -172,18 +226,6 @@ public class InVehicleDeviceLogic {
 			status.status = InVehicleDeviceStatus.Status.PLATFORM;
 		}
 		eventBus.post(new EnterPlatformStatusEvent());
-	}
-
-	@Override
-	protected void finalize() {
-		try {
-			shutdown();
-		} finally {
-			try {
-				super.finalize();
-			} catch (Throwable e) {
-			}
-		}
 	}
 
 	public DataSource getDataSource() {
@@ -234,6 +276,14 @@ public class InVehicleDeviceLogic {
 	public void register(Object object) {
 		eventBus.register(object);
 		registeredObjectReferences.add(new WeakReference<Object>(object));
+	}
+
+	public void restoreStatus() {
+		if (getStatus() == InVehicleDeviceStatus.Status.PLATFORM) {
+			enterPlatformStatus();
+		} else {
+			enterDriveStatus();
+		}
 	}
 
 	private void saveStatus() {
