@@ -1,19 +1,14 @@
 package com.kogasoftware.odt.invehicledevice;
 
-import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InvalidClassException;
 import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OptionalDataException;
 import java.io.Serializable;
-import java.io.StreamCorruptedException;
-import java.io.UTFDataFormatException;
 import java.nio.channels.FileLock;
 import java.util.Calendar;
 import java.util.Date;
@@ -35,7 +30,7 @@ public class InVehicleDeviceStatus implements Serializable {
 	private static final String TAG = InVehicleDeviceStatus.class
 			.getSimpleName();
 
-	public static InVehicleDeviceStatus load(File file) {
+	public static InVehicleDeviceStatus newInstance(File file) {
 		InVehicleDeviceStatus status = new InVehicleDeviceStatus();
 		FileInputStream fileInputStream = null;
 		ObjectInputStream objectInputStream = null;
@@ -47,25 +42,15 @@ public class InVehicleDeviceStatus implements Serializable {
 				return status;
 			}
 			status = (InVehicleDeviceStatus) object;
-		} catch (UTFDataFormatException e) {
-			Log.w(TAG, e);
-		} catch (EOFException e) {
-			Log.w(TAG, e);
-		} catch (InvalidClassException e) {
-			Log.w(TAG, e);
-		} catch (StreamCorruptedException e) {
-			Log.w(TAG, e);
-		} catch (ClassCastException e) {
-			Log.w(TAG, e);
 		} catch (FileNotFoundException e) {
 			// Log.w(TAG, e);
-		} catch (OptionalDataException e) {
-			Log.w(TAG, e);
-		} catch (ClassNotFoundException e) {
-			Log.w(TAG, e);
 		} catch (IOException e) {
 			Log.w(TAG, e);
 		} catch (RuntimeException e) {
+			Log.w(TAG, e);
+		} catch (ClassNotFoundException e) {
+			Log.w(TAG, e);
+		} catch (Exception e) {
 			Log.w(TAG, e);
 		} finally {
 			Closeables.closeQuietly(objectInputStream);
@@ -95,7 +80,9 @@ public class InVehicleDeviceStatus implements Serializable {
 		ObjectOutputStream objectOutputStream = null;
 		FileLock fileLock = null;
 		try {
-			file.delete();
+			if (file.exists() && !file.delete()) {
+				throw new IOException("file.exists() && !file.delete()");
+			}
 			fileOutputStream = new FileOutputStream(file);
 			fileLock = fileOutputStream.getChannel().lock();
 			objectOutputStream = new ObjectOutputStream(fileOutputStream);
