@@ -21,6 +21,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -211,6 +212,9 @@ public class InVehicleDeviceActivity extends Activity {
 		platformDepartureTimeTextView.setText(dateFormat
 				.format(operationSchedule.getDepartureEstimate()));
 
+		LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		reservationListView.addFooterView(layoutInflater.inflate(
+				R.layout.reservation_list_footer, null));
 		List<Reservation> reservations = new LinkedList<Reservation>();
 		reservations.addAll(operationSchedule.getReservationsAsArrival());
 		reservations.addAll(operationSchedule.getReservationsAsDeparture());
@@ -280,6 +284,7 @@ public class InVehicleDeviceActivity extends Activity {
 		drivingView2Layout.setBackgroundColor(backgroundColor); // TODO
 		waitingLayout.setBackgroundColor(backgroundColor); // TODO
 		reservationListView = (ListView) findViewById(R.id.reservation_list_view);
+		reservationListView.removeAllViewsInLayout();
 
 		changeStatusButton.setOnClickListener(new OnClickListener() {
 			@Override
