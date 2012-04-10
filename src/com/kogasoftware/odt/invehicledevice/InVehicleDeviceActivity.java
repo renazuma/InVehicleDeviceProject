@@ -11,6 +11,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import jp.tomorrowkey.android.vtextviewer.VTextView;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -25,11 +26,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.ToggleButton;
+import android.widget.WrapperListAdapter;
 
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
+import com.kogasoftware.odt.invehicledevice.InVehicleDeviceLogic.AddUnexpectedReservationEvent;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceLogic.EnterDriveStatusEvent;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceLogic.EnterFinishStatusEvent;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceLogic.EnterPlatformStatusEvent;
@@ -38,7 +47,6 @@ import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 import com.kogasoftware.odt.invehicledevice.modal.NavigationModal;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
-import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class InVehicleDeviceActivity extends Activity {
@@ -46,6 +54,7 @@ public class InVehicleDeviceActivity extends Activity {
 			.getSimpleName();
 
 	private static final int WAIT_FOR_INITIALIZE_DIALOG_ID = 10;
+	private static final int ADD_UNEXPECTED_RESERVATION_DIALOG_ID = 11;
 
 	private static final Integer TOGGLE_DRIVING_VIEW_INTERVAL = 5000;
 
@@ -109,6 +118,7 @@ public class InVehicleDeviceActivity extends Activity {
 	private Button reservationScrollDownButton = null;
 	private Button reservationScrollUpButton = null;
 	private ListView reservationListView = null;
+	private View reservationListFooterView = null;
 	private TextView nextPlatformNameRubyTextView = null;
 	private TextView nextPlatformNameTextView = null;
 	private TextView platformArrivalTimeTextView = null;
@@ -125,11 +135,32 @@ public class InVehicleDeviceActivity extends Activity {
 	private VTextView platformName1BeyondTextView = null;
 	private VTextView platformName2BeyondTextView = null;
 	private VTextView platformName3BeyondTextView = null;
+	private ToggleButton showAllRidingReservationsButton = null;
+	private ToggleButton showFutureReservationsButton = null;
+	private ToggleButton showMissedReservationsButton = null;
+	private Button addUnexpectedReservationButton = null;
+
+	@Subscribe
+	public void addUnexpectedReservation(AddUnexpectedReservationEvent event) {
+		ListAdapter adapter = reservationListView.getAdapter();
+		if (!(adapter instanceof WrapperListAdapter)) {
+			Log.w(TAG, "!(adapter instanceof WrapperListAdapter)");
+			return;
+		}
+		if (!(((WrapperListAdapter) adapter).getWrappedAdapter() instanceof ReservationArrayAdapter)) {
+			Log.w(TAG,
+					"!(((WrapperListAdapter) adapter).getWrappedAdapter() instanceof ReservationArrayAdapter)");
+			return;
+		}
+		((ReservationArrayAdapter) ((WrapperListAdapter) adapter)
+				.getWrappedAdapter())
+				.addUnexpectedReservation(event.reservation);
+	}
 
 	@Subscribe
 	public void enterDriveStatus(EnterDriveStatusEvent event) {
 		List<OperationSchedule> operationSchedules = logic
-				.getRestOperationSchedules();
+				.getRemainingOperationSchedules();
 		if (operationSchedules.isEmpty()) {
 			logic.enterFinishStatus();
 			return;
@@ -196,7 +227,7 @@ public class InVehicleDeviceActivity extends Activity {
 	@Subscribe
 	public void enterPlatformStatus(EnterPlatformStatusEvent event) {
 		List<OperationSchedule> operationSchedules = logic
-				.getRestOperationSchedules();
+				.getRemainingOperationSchedules();
 		if (operationSchedules.isEmpty()) {
 			logic.enterFinishStatus();
 			return;
@@ -207,20 +238,13 @@ public class InVehicleDeviceActivity extends Activity {
 			return;
 		}
 		DateFormat dateFormat = new SimpleDateFormat("H時m分"); // TODO
-		Platform platform = operationSchedule.getPlatform().get();
+		final Platform platform = operationSchedule.getPlatform().get();
 		platformNameTextView.setText(platform.getName());
 		platformDepartureTimeTextView.setText(dateFormat
 				.format(operationSchedule.getDepartureEstimate()));
 
-		LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		reservationListView.addFooterView(layoutInflater.inflate(
-				R.layout.reservation_list_footer, null));
-		List<Reservation> reservations = new LinkedList<Reservation>();
-		reservations.addAll(operationSchedule.getReservationsAsArrival());
-		reservations.addAll(operationSchedule.getReservationsAsDeparture());
-		ReservationArrayAdapter adapter = new ReservationArrayAdapter(this,
-				R.layout.reservation_list_row, reservations, logic,
-				operationSchedule);
+		final ReservationArrayAdapter adapter = new ReservationArrayAdapter(
+				this, R.layout.reservation_list_row, logic);
 		reservationListView.setAdapter(adapter);
 
 		statusTextView.setText("停車中");
@@ -229,6 +253,53 @@ public class InVehicleDeviceActivity extends Activity {
 		} else {
 			changeStatusButton.setText("確定する");
 		}
+
+		showAllRidingReservationsButton
+				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+					@Override
+					public void onCheckedChanged(CompoundButton buttonView,
+							boolean isChecked) {
+						if (isChecked) {
+							adapter.showRidingAndNotGetOutReservations();
+						} else {
+							adapter.hideRidingAndNotGetOutReservations();
+						}
+					}
+				});
+		showFutureReservationsButton
+				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+					@Override
+					public void onCheckedChanged(CompoundButton buttonView,
+							boolean isChecked) {
+						if (isChecked) {
+							adapter.showFutureReservations();
+						} else {
+							adapter.hideFutureReservations();
+						}
+					}
+				});
+		showMissedReservationsButton
+				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+					@Override
+					public void onCheckedChanged(CompoundButton buttonView,
+							boolean isChecked) {
+						if (isChecked) {
+							adapter.showMissedReservations();
+						} else {
+							adapter.hideMissedReservations();
+						}
+					}
+				});
+
+		addUnexpectedReservationButton
+				.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View view) {
+						if (!isFinishing()) {
+							showDialog(ADD_UNEXPECTED_RESERVATION_DIALOG_ID);
+						}
+					}
+				});
 
 		waitingLayout.setVisibility(View.VISIBLE);
 		drivingLayout.setVisibility(View.GONE);
@@ -284,19 +355,23 @@ public class InVehicleDeviceActivity extends Activity {
 		drivingView2Layout.setBackgroundColor(backgroundColor); // TODO
 		waitingLayout.setBackgroundColor(backgroundColor); // TODO
 		reservationListView = (ListView) findViewById(R.id.reservation_list_view);
-		reservationListView.removeAllViewsInLayout();
+		LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		reservationListFooterView = layoutInflater.inflate(
+				R.layout.reservation_list_footer, null);
+		reservationListView.addFooterView(reservationListFooterView);
+
+		showAllRidingReservationsButton = (ToggleButton) reservationListFooterView
+				.findViewById(R.id.show_all_riding_reservations_button);
+		showFutureReservationsButton = (ToggleButton) reservationListFooterView
+				.findViewById(R.id.show_future_reservations_button);
+		showMissedReservationsButton = (ToggleButton) reservationListFooterView
+				.findViewById(R.id.show_missed_reservations_button);
+		addUnexpectedReservationButton = (Button) findViewById(R.id.add_unexpected_reservation_button);
 
 		changeStatusButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				if (logic.getRestOperationSchedules().isEmpty()) {
-					return;
-				}
-				if (logic.getStatus() == InVehicleDeviceStatus.Status.DRIVE) {
-					logic.enterPlatformStatus();
-				} else {
-					logic.showStartCheckModal();
-				}
+				logic.enterNextStatus();
 			}
 		});
 		mapButton.setOnClickListener(new OnClickListener() {
@@ -361,7 +436,7 @@ public class InVehicleDeviceActivity extends Activity {
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
-		case WAIT_FOR_INITIALIZE_DIALOG_ID:
+		case WAIT_FOR_INITIALIZE_DIALOG_ID: {
 			ProgressDialog dialog = new ProgressDialog(this);
 			dialog.setMessage("運行情報を取得しています");
 			dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -374,6 +449,49 @@ public class InVehicleDeviceActivity extends Activity {
 				}
 			});
 			return dialog;
+		}
+		case ADD_UNEXPECTED_RESERVATION_DIALOG_ID: {
+			final List<OperationSchedule> operationSchedules = logic
+					.getRemainingOperationSchedules();
+			if (operationSchedules.size() <= 1) {
+				Log.w(TAG,
+						"can't add unexpected reservation, !(operationSchedulfes.isEmpty())",
+						new Exception());
+				return null;
+			}
+			operationSchedules.remove(operationSchedules.get(0));
+
+			final CharSequence[] operationScheduleSelections = Lists.transform(
+					operationSchedules,
+					new Function<OperationSchedule, String>() {
+						@Override
+						public String apply(OperationSchedule operationSchedule) {
+							if (operationSchedule.getPlatform().isPresent()) {
+								return operationSchedule.getPlatform().get()
+										.getName();
+							} else {
+								// TODO
+								return "Operation Schedule ID: "
+										+ operationSchedule.getId();
+							}
+						}
+					}).toArray(new String[0]);
+			return new AlertDialog.Builder(this).setItems(
+					operationScheduleSelections,
+					new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							if (which >= operationSchedules.size()) {
+								// TODO warning
+								return;
+							}
+							OperationSchedule arrivalOperationSchedule = operationSchedules
+									.get(which);
+							logic.addUnexpectedReservation(arrivalOperationSchedule
+									.getId());
+						}
+					}).create();
+		}
 		default:
 			return null;
 		}

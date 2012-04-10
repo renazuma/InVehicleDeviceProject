@@ -34,6 +34,14 @@ import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class InVehicleDeviceLogic {
+	public static class AddUnexpectedReservationEvent {
+		public final Reservation reservation;
+
+		public AddUnexpectedReservationEvent(Reservation reservation) {
+			this.reservation = reservation;
+		}
+	}
+
 	public static class EnterDriveStatusEvent {
 	}
 
@@ -71,7 +79,7 @@ public class InVehicleDeviceLogic {
 						R.id.memo_modal, R.id.pause_modal,
 						R.id.return_path_modal, R.id.stop_check_modal,
 						R.id.stop_modal, R.id.notification_modal,
-						R.id.schedule_changed_modal }) {
+						R.id.schedule_changed_modal, R.id.navigation_modal }) {
 					Thread.sleep(0);
 					View view = activity.findViewById(resourceId);
 					logic.register(view);
@@ -181,7 +189,7 @@ public class InVehicleDeviceLogic {
 	private final ScheduledExecutorService executorService = Executors
 			.newScheduledThreadPool(NUM_THREADS);
 	private final DataSource dataSource = new DummyDataSource();
-	private final InVehicleDeviceStatus status; // この変数を利用するときはロックする
+	private final InVehicleDeviceStatus status; // 注意：別スレッドで書き換えが起こるため、この変数を利用するときはロックする
 
 	public InVehicleDeviceLogic() {
 		this.statusFile = new EmptyFile();
@@ -204,6 +212,25 @@ public class InVehicleDeviceLogic {
 		}
 	}
 
+	public void addUnexpectedReservation(Integer arrivalOperationScheduleId) {
+		List<OperationSchedule> operationSchedules = getOperationSchedules();
+		if (operationSchedules.isEmpty()) {
+			Log.w(TAG, "operationSchedules.isEmpty()", new Exception());
+			return;
+		}
+		OperationSchedule operationSchedule = operationSchedules.get(0);
+		Reservation reservation = new Reservation();
+		reservation.setId(12345); // TODO
+									// 未予約乗車の予約情報はどうするか
+		reservation.setDepartureScheduleId(operationSchedule.getId());
+		reservation.setArrivalScheduleId(arrivalOperationScheduleId);
+
+		synchronized (status) {
+			status.unexpectedReservations.add(reservation);
+		}
+		eventBus.post(new AddUnexpectedReservationEvent(reservation));
+	}
+
 	public void enterDriveStatus() {
 		synchronized (status) {
 			if (status.status == InVehicleDeviceStatus.Status.PLATFORM) {
@@ -221,6 +248,16 @@ public class InVehicleDeviceLogic {
 		eventBus.post(new EnterFinishStatusEvent());
 	}
 
+	public void enterNextStatus() {
+		synchronized (status) {
+			if (status.status == InVehicleDeviceStatus.Status.DRIVE) {
+				enterPlatformStatus();
+			} else {
+				showStartCheckModal();
+			}
+		}
+	}
+
 	public void enterPlatformStatus() {
 		synchronized (status) {
 			status.status = InVehicleDeviceStatus.Status.PLATFORM;
@@ -232,19 +269,25 @@ public class InVehicleDeviceLogic {
 		return dataSource;
 	}
 
+	public List<Reservation> getMissedReservations() {
+		synchronized (status) {
+			return new LinkedList<Reservation>(status.missedReservations);
+		}
+	}
+
 	public List<OperationSchedule> getOperationSchedules() {
 		synchronized (status) {
 			return new LinkedList<OperationSchedule>(status.operationSchedules);
 		}
 	}
 
-	public List<OperationSchedule> getRestOperationSchedules() {
+	public List<OperationSchedule> getRemainingOperationSchedules() {
 		try {
 			synchronized (status) {
-				List<OperationSchedule> rests = new LinkedList<OperationSchedule>(
+				List<OperationSchedule> remainings = new LinkedList<OperationSchedule>(
 						status.operationSchedules);
-				return rests.subList(status.currentOperationScheduleIndex,
-						rests.size());
+				return remainings.subList(status.currentOperationScheduleIndex,
+						remainings.size());
 			}
 		} catch (ArrayIndexOutOfBoundsException e) {
 		} catch (IllegalArgumentException e) {
@@ -252,9 +295,15 @@ public class InVehicleDeviceLogic {
 		return new LinkedList<OperationSchedule>();
 	}
 
-	public InVehicleDeviceStatus.Status getStatus() {
+	public List<Reservation> getRidingReservations() {
 		synchronized (status) {
-			return status.status;
+			return new LinkedList<Reservation>(status.ridingReservations);
+		}
+	}
+
+	public List<Reservation> getUnexpectedReservations() {
+		synchronized (status) {
+			return status.unexpectedReservations;
 		}
 	}
 
@@ -279,10 +328,12 @@ public class InVehicleDeviceLogic {
 	}
 
 	public void restoreStatus() {
-		if (getStatus() == InVehicleDeviceStatus.Status.PLATFORM) {
-			enterPlatformStatus();
-		} else {
-			enterDriveStatus();
+		synchronized (status) {
+			if (status.status == InVehicleDeviceStatus.Status.PLATFORM) {
+				enterPlatformStatus();
+			} else {
+				enterDriveStatus();
+			}
 		}
 	}
 
@@ -348,4 +399,5 @@ public class InVehicleDeviceLogic {
 		}
 		registeredObjectReferences.clear();
 	}
+
 }

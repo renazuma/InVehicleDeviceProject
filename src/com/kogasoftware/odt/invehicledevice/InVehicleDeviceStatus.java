@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.nio.channels.FileLock;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -19,6 +20,7 @@ import android.util.Log;
 
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
+import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class InVehicleDeviceStatus implements Serializable {
@@ -26,7 +28,7 @@ public class InVehicleDeviceStatus implements Serializable {
 		DRIVE, PLATFORM, INITIAL, FINISH
 	}
 
-	private static final long serialVersionUID = 5617948505743182175L;
+	private static final long serialVersionUID = 5617948505743182177L;
 	private static final String TAG = InVehicleDeviceStatus.class
 			.getSimpleName();
 
@@ -71,6 +73,10 @@ public class InVehicleDeviceStatus implements Serializable {
 	public final ConcurrentLinkedQueue<OperationSchedule> operationSchedules = new ConcurrentLinkedQueue<OperationSchedule>();
 	public final AtomicBoolean initialized = new AtomicBoolean(false);
 	public final Date createdDate = new Date();
+	public final LinkedList<Reservation> ridingReservations = new LinkedList<Reservation>();
+	public final LinkedList<Reservation> missedReservations = new LinkedList<Reservation>();
+	public final LinkedList<Reservation> unexpectedReservations = new LinkedList<Reservation>();
+
 	public Integer currentOperationScheduleIndex = 0;
 
 	public Status status = Status.INITIAL;

@@ -5,9 +5,10 @@
     android:orientation="vertical" >
 
     <Button
+        android:id="@+id/add_unexpected_reservation_button"
         android:layout_height="wrap_content"
         android:layout_width="fill_parent"
-        android:text="乗客の新規追加" />
+        android:text="@string/add_reservation" />
 
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -16,20 +17,29 @@
         android:orientation="horizontal" >
 
         <ToggleButton
-            android:id="@+id/reservation_list_show_only_actors_button"
+            android:id="@+id/show_all_riding_reservations_button"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textOff="降車予定者のみ表示"
-            android:textOn="＊降車予定者のみ表示" />
+            android:textOff="@string/show_all_riding_passengers"
+            android:textOn="@string/show_all_riding_passengers" />
+        
+        <ToggleButton
+            android:id="@+id/show_future_reservations_button"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textOff="@string/show_future_passengers"
+            android:textOn="@string/show_future_passengers" />
 
         <ToggleButton
-            android:id="@+id/reservation_list_show_all_button"
+            android:id="@+id/show_missed_reservations_button"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textOff="全乗客表示"
-            android:textOn="＊全乗客表示" />
+            android:textOff="@string/show_missed_passengers"
+            android:textOn="@string/show_missed_passengers" />
+        
     </LinearLayout>
 
 </LinearLayout>
