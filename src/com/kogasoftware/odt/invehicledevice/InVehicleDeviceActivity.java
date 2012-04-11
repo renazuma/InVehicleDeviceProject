@@ -34,9 +34,7 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 import android.widget.WrapperListAdapter;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceLogic.AddUnexpectedReservationEvent;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceLogic.EnterDriveStatusEvent;
@@ -69,8 +67,8 @@ public class InVehicleDeviceActivity extends Activity {
 	private final BlockingQueue<String> voices = new LinkedBlockingQueue<String>();
 
 	final Handler handler = new Handler();
-	private static final Integer UPDATE_TIME_INTERVAL = 5000;
 
+	private static final Integer UPDATE_TIME_INTERVAL = 5000;
 	private final Runnable updateTime = new Runnable() {
 		@Override
 		public void run() {
@@ -93,6 +91,7 @@ public class InVehicleDeviceActivity extends Activity {
 			handler.postDelayed(this, POLL_VEHICLE_NOTIFICATION_INTERVAL);
 		}
 	};
+
 	private final Runnable toggleDrivingView = new Runnable() {
 		@Override
 		public void run() {
@@ -104,13 +103,13 @@ public class InVehicleDeviceActivity extends Activity {
 			handler.postDelayed(this, TOGGLE_DRIVING_VIEW_INTERVAL);
 		}
 	};
-
 	private InVehicleDeviceLogic logic = new InVehicleDeviceLogic();
+
 	private Thread logicLoadThread = new EmptyThread();
 	private Thread voiceThread = new EmptyThread();
-
 	// nullables
 	private View contentView = null;
+
 	private Button changeStatusButton = null;
 	private Button configButton = null;
 	private Button mapButton = null;
@@ -460,27 +459,27 @@ public class InVehicleDeviceActivity extends Activity {
 				return null;
 			}
 			operationSchedules.remove(operationSchedules.get(0));
-
-			final CharSequence[] operationScheduleSelections = Lists.transform(
-					operationSchedules,
-					new Function<OperationSchedule, String>() {
-						@Override
-						public String apply(OperationSchedule operationSchedule) {
-							if (operationSchedule.getPlatform().isPresent()) {
-								return operationSchedule.getPlatform().get()
-										.getName();
-							} else {
-								// TODO
-								return "Operation Schedule ID: "
-										+ operationSchedule.getId();
-							}
-						}
-					}).toArray(new String[0]);
+			final String[] operationScheduleSelections = new String[operationSchedules
+					.size()];
+			for (Integer i = 0; i < operationScheduleSelections.length; ++i) {
+				OperationSchedule operationSchedule = operationSchedules.get(i);
+				String selection = "";
+				if (operationSchedule.getPlatform().isPresent()) {
+					selection += operationSchedule.getPlatform().get()
+							.getName();
+				} else {
+					// TODO
+					selection += "Operation Schedule ID: "
+							+ operationSchedules.get(i).getId();
+				}
+				operationScheduleSelections[i] = selection;
+			}
 			return new AlertDialog.Builder(this).setItems(
 					operationScheduleSelections,
 					new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
+							dialog.dismiss();
 							if (which >= operationSchedules.size()) {
 								// TODO warning
 								return;

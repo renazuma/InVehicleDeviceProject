@@ -84,9 +84,12 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 
 		for (Reservation unexpectedReservation : logic
 				.getUnexpectedReservations()) {
-			if (operationSchedule.getId().equals(
-					unexpectedReservation.getArrivalScheduleId())) {
+			if (unexpectedReservation.getArrivalScheduleId().isPresent()
+					&& operationSchedule.getId().equals(
+							unexpectedReservation.getArrivalScheduleId().get())) {
 				add(unexpectedReservation);
+			} else {
+				ridingAndNoGetOutReservations.add(unexpectedReservation);
 			}
 		}
 
@@ -128,13 +131,6 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		}
 
 		final Reservation reservation = getItem(position);
-		if (remainingOperationSchedules.isEmpty()) {
-			Log.w(TAG, "remainingOperationSchedules.isEmpty()");
-			return convertView;
-		}
-		OperationSchedule operationSchedule = remainingOperationSchedules
-				.get(0);
-
 		Spinner spinner = (Spinner) convertView
 				.findViewById(R.id.change_head_spinner);
 
@@ -161,22 +157,20 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 
 		String text = "";
 		Boolean getOn = false;
-		for (Reservation reservationAsArrival : operationSchedule
-				.getReservationsAsArrival()) {
-			if (reservationAsArrival.getId().equals(reservation.getId())) {
-				getOn = true;
-				break;
-			}
+		if (reservation.getDepartureScheduleId().isPresent()
+				&& reservation.getDepartureScheduleId().get()
+						.equals(operationSchedule.getId())) {
+			getOn = true;
 		}
 
 		if (isFuture(reservation)) {
 			text += "[＊乗]";
 		} else if (isMissed(reservation)) {
 			text += "[＊乗]";
-		} else if (isRidingAndNotGetOut(reservation)) {
-			text += "[＊降]";
 		} else if (getOn) {
 			text += "[乗]";
+		} else if (isRidingAndNotGetOut(reservation)) {
+			text += "[＊降]";
 		} else {
 			text += "[降]";
 		}
