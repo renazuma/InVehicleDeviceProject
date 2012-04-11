@@ -7,7 +7,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
 
-abstract public class FroyoOrientationSensor extends OrientationSensor {
+public abstract class FroyoOrientationSensor extends OrientationSensor {
 	private static final Integer SENSOR_DELAY = SensorManager.SENSOR_DELAY_UI;
 	private static final Integer MATRIX_SIZE = 16;
 
@@ -18,7 +18,7 @@ abstract public class FroyoOrientationSensor extends OrientationSensor {
 	float[] inR = new float[MATRIX_SIZE];
 
 	float[] outR = new float[MATRIX_SIZE];
-	float[] I = new float[MATRIX_SIZE];
+	float[] i = new float[MATRIX_SIZE];
 	// センサーの値
 	float[] orientationValues = new float[3];
 	float[] magneticValues = new float[3];
@@ -81,7 +81,7 @@ abstract public class FroyoOrientationSensor extends OrientationSensor {
 			return;
 		}
 
-		SensorManager.getRotationMatrix(inR, I, accelerometerValues,
+		SensorManager.getRotationMatrix(inR, i, accelerometerValues,
 				magneticValues);
 
 		// Activityの表示が縦固定の場合。横向きになる場合、修正が必要です

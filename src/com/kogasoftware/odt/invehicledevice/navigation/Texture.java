@@ -12,10 +12,10 @@ import android.opengl.GLUtils;
 public class Texture {
 
 	// 固定小数点値で1.0
-	static final int one = 0x10000;
+	static final int ONE = 0x10000;
 	// テクスチャ座標配列
-	static final int texCoords[] = { 0, one, one, one, 0, 0, one, 0, };
-	static final IntBuffer texCoordsIntBuffer = wrapNativeIntBuffer(texCoords);
+	static final int TEX_COORDS[] = { 0, ONE, ONE, ONE, 0, 0, ONE, 0, };
+	static final IntBuffer TEX_COORDS_INT_BUFFER = wrapNativeIntBuffer(TEX_COORDS);
 
 	/**
 	 * 2Dテクスチャを描画する
@@ -36,17 +36,17 @@ public class Texture {
 			int height, float angle, float scaleX, float scaleY, float alpha) {
 
 		// 頂点座標
-		int vertices[] = { -width * one / 2, //
-				-height * one / 2, //
+		int vertices[] = { -width * ONE / 2, //
+				-height * ONE / 2, //
 				0, //
-				width * one / 2, //
-				-height * one / 2, //
+				width * ONE / 2, //
+				-height * ONE / 2, //
 				0, //
-				-width * one / 2, //
-				height * one / 2, //
+				-width * ONE / 2, //
+				height * ONE / 2, //
 				0, //
-				width * one / 2, //
-				height * one / 2, //
+				width * ONE / 2, //
+				height * ONE / 2, //
 				0, //
 		};
 
@@ -89,7 +89,7 @@ public class Texture {
 		// 頂点座標配列をセット
 		gl.glVertexPointer(3, GL10.GL_FIXED, 0, wrapNativeIntBuffer(vertices));
 		// テクスチャ情報をセット
-		gl.glTexCoordPointer(2, GL10.GL_FIXED, 0, texCoordsIntBuffer);
+		gl.glTexCoordPointer(2, GL10.GL_FIXED, 0, TEX_COORDS_INT_BUFFER);
 		// セットした配列を元に描画
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
 		// さきほどプッシュした状態に行列スタックを戻す

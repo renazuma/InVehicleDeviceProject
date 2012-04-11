@@ -1,6 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.navigation;
 
-abstract public class MotionSmoother {
+public abstract class MotionSmoother {
 
 	public void addMotion(Double motion) {
 		addMotion(motion, System.currentTimeMillis());
@@ -12,7 +12,7 @@ abstract public class MotionSmoother {
 		}
 	}
 
-	abstract protected void calculateAndAddMotion(Double motion, Long millis);
+	protected abstract void calculateAndAddMotion(Double motion, Long millis);
 
 	public Double getSmoothMotion() {
 		return getSmoothMotion(System.currentTimeMillis());
@@ -24,5 +24,5 @@ abstract public class MotionSmoother {
 		}
 	}
 
-	abstract protected Double calculateAndGetSmoothMotion(Long millis);
+	protected abstract Double calculateAndGetSmoothMotion(Long millis);
 }

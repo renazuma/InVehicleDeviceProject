@@ -71,18 +71,12 @@ public class MapViewRedirector extends FrameLayout {
 					Log.e(TAG,
 							"NullPointerException on MapViewRedirector.super.dispatchDraw(new Canvas(bitmap))",
 							e);
-					e.printStackTrace();
 					superThrownNullPointerException = true;
 					return;
 				}
 				mapSnapshot.center = mapView.getMapCenter();
 			}
 		});
-	}
-
-	@Override
-	protected void onDetachedFromWindow() {
-		super.onDetachedFromWindow();
 	}
 
 	public void init(MapSynchronizer mapSynchronizer, MapView mapView) {

@@ -8,7 +8,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
 import android.util.Log;
 
-abstract public class LegacyOrientationSensor extends OrientationSensor {
+public abstract class LegacyOrientationSensor extends OrientationSensor {
 	private static final String TAG = LegacyOrientationSensor.class
 			.getSimpleName();
 

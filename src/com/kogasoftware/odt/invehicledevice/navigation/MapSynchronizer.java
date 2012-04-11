@@ -12,12 +12,12 @@ import android.graphics.Bitmap;
  * 
  */
 public class MapSynchronizer {
-	static public interface Accessor {
-		public void run(MapSnapshot mapSnapshot);
+	public interface Accessor {
+		void run(MapSnapshot mapSnapshot);
 	}
 
+	private static final Integer NUM_BUFFERS = 5;
 	private final Object lock = new Object();
-	private final Integer NUM_BUFFERS = 5;
 	private final Queue<MapSnapshot> writeQueue = new ConcurrentLinkedQueue<MapSnapshot>();
 	private final Queue<MapSnapshot> readQueue = new ConcurrentLinkedQueue<MapSnapshot>();
 

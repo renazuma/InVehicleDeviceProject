@@ -4,7 +4,7 @@ import android.content.Context;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
-abstract public class OrientationSensor implements SensorEventListener {
+public abstract class OrientationSensor implements SensorEventListener {
 	private final SensorManager sensorManager;
 
 	public OrientationSensor(Context context) {
@@ -12,13 +12,13 @@ abstract public class OrientationSensor implements SensorEventListener {
 				.getSystemService(Context.SENSOR_SERVICE);
 	}
 
-	abstract public void create();
+	public abstract void create();
 
-	abstract public void destroy();
+	public abstract void destroy();
 
 	protected SensorManager getSensorManager() {
 		return sensorManager;
 	}
 
-	abstract public void onOrientationChanged(Double orientation);
+	public abstract void onOrientationChanged(Double orientation);
 }

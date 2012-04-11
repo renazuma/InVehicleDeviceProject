@@ -56,6 +56,7 @@ public class VTextView extends View {
 	private static final int TOP_SPACE = 0;
 	private static final int BOTTOM_SPACE = 18;
 	private static final int FONT_SIZE = 60;
+	private static final float FONT_SPACING_RATE = 0.8f;
 	private Typeface typeFace = Typeface.defaultFromStyle(Typeface.NORMAL);
 	private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 	private String text = "";
@@ -95,7 +96,7 @@ public class VTextView extends View {
 			return;
 		}
 		bitmap.eraseColor(Color.WHITE);
-		float fontSpacing = paint.getFontSpacing() * 0.8f;
+		float fontSpacing = paint.getFontSpacing() * FONT_SPACING_RATE;
 		float lineSpacing = fontSpacing;
 		float x = width - lineSpacing;
 		float beginX = x;

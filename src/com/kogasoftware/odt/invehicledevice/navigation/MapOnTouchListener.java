@@ -11,12 +11,12 @@ import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 
 public class MapOnTouchListener implements OnTouchListener {
+	private static final Double MOTION_SMOOTHER_LATENCY = 80.0;
 	private final WeakReference<MapView> mapViewWeakReference; // TODO:
-															// GLSurfaceView.GLThreadリーク対策のリファクタリング
+	// GLSurfaceView.GLThreadリーク対策のリファクタリング
 	private Double orientation = 0d;
 	private Double lastX = 0d;
 	private Double lastY = 0d;
-	private final Double MOTION_SMOOTHER_LATENCY = 80.0;
 	private final MotionSmoother latitudeMotionSmoother = new LazyMotionSmoother(
 			MOTION_SMOOTHER_LATENCY);
 	private final MotionSmoother longitudeMotionSmoother = new LazyMotionSmoother(

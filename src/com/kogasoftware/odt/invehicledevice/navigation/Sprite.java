@@ -10,7 +10,7 @@ import android.graphics.PointF;
 import com.google.android.maps.GeoPoint;
 import com.google.common.math.DoubleMath;
 
-abstract public class Sprite extends FrameTask {
+public abstract class Sprite extends FrameTask {
 	/**
 	 * Sprite.draw() メソッドで描画対象をどこに描くかを指定するため，引数として渡すクラス
 	 * 
