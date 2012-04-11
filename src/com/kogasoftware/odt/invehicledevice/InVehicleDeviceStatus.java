@@ -40,6 +40,10 @@ public class InVehicleDeviceStatus implements Serializable {
 			void write(InVehicleDeviceStatus status);
 		}
 
+		public interface ReaderAndWriter<T> {
+			T readAndWrite(InVehicleDeviceStatus status);
+		}
+
 		final InVehicleDeviceStatus status;
 
 		public Access() {
@@ -53,6 +57,14 @@ public class InVehicleDeviceStatus implements Serializable {
 		public <T> T read(Reader<T> reader) {
 			synchronized (status.lock) {
 				return reader.read(status);
+			}
+		}
+
+		public <T> T readAndWrite(ReaderAndWriter<T> reader) {
+			synchronized (status.lock) {
+				T result = reader.readAndWrite(status);
+				status.save();
+				return result;
 			}
 		}
 

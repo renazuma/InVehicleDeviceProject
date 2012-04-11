@@ -9,7 +9,6 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import android.app.Activity;
 import android.util.Log;
@@ -248,15 +247,14 @@ public class InVehicleDeviceLogic {
 		OperationSchedule operationSchedule = operationSchedules.get(0);
 		final Reservation reservation = new Reservation();
 
-		final AtomicInteger id = new AtomicInteger(0);
-		statusAccess.write(new Access.Writer() {
-			@Override
-			public void write(InVehicleDeviceStatus status) {
-				status.unexpectedReservationSequence++;
-				id.set(status.unexpectedReservationSequence);
-			}
-		});
-		reservation.setId(id.get()); // TODO
+		Integer id = statusAccess
+				.readAndWrite(new Access.ReaderAndWriter<Integer>() {
+					@Override
+					public Integer readAndWrite(InVehicleDeviceStatus status) {
+						return status.unexpectedReservationSequence++;
+					}
+				});
+		reservation.setId(id); // TODO
 		// 未予約乗車の予約情報はどうするか
 		reservation.setDepartureScheduleId(operationSchedule.getId());
 		reservation.setArrivalScheduleId(arrivalOperationScheduleId);

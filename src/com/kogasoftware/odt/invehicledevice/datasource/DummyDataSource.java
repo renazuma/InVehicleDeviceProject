@@ -21,7 +21,7 @@ import com.kogasoftware.odt.webapi.model.VehicleNotification;
 @Deprecated
 public class DummyDataSource implements DataSource {
 
-	private Date nextNotifyDate = new Date();
+	private Date nextNotifyDate = new Date(new Date().getTime() + 60 * 1000);
 
 	@Override
 	public InVehicleDevice getInVehicleDevice() throws WebAPIException {
@@ -109,31 +109,31 @@ public class DummyDataSource implements DataSource {
 			JSONObject j4 = new JSONObject("{" + "id: 4, "
 
 			+ "arrival_estimate: '2012-01-01T01:00:00.000+09:00', "
-					+ "departure_estimate: '2012-01-01T02:00:00.000+09:00', "
-					+ "platform: {name: 'ヨドバシアキバ前', name_ruby: 'よどばしあきばまえ'}, "
-					+ "reservations_as_arrival: ["
-					+ "  {id: 19, passenger_count: 5, memo: 'テストメモ1', " + u1
-					+ "}, " + "  {id: 20, passenger_count: 6, " + u2 + "}, "
-					+ "  {id: 21, passenger_count: 7, " + u3 + "}],"
-					+ "reservations_as_departure: ["
-					+ "  {id: 22, passenger_count: 15, " + u4 + "}, "
-					+ "  {id: 23, passenger_count: 16, " + u5 + "}, "
-					+ "  {id: 24, passenger_count: 17, " + u6 + "}]" + "}");
+			+ "departure_estimate: '2012-01-01T02:00:00.000+09:00', "
+			+ "platform: {name: 'ヨドバシアキバ前', name_ruby: 'よどばしあきばまえ'}, "
+			+ "reservations_as_arrival: ["
+			+ "  {id: 19, passenger_count: 5, memo: 'テストメモ1', " + u1
+			+ "}, " + "  {id: 20, passenger_count: 6, " + u2 + "}, "
+			+ "  {id: 21, passenger_count: 7, " + u3 + "}],"
+			+ "reservations_as_departure: ["
+			+ "  {id: 22, passenger_count: 15, " + u4 + "}, "
+			+ "  {id: 23, passenger_count: 16, " + u5 + "}, "
+			+ "  {id: 24, passenger_count: 17, " + u6 + "}]" + "}");
 			l.add(new OperationSchedule(j4));
 
 			JSONObject j5 = new JSONObject("{" + "id: 5, "
 
 			+ "arrival_estimate: '2012-01-01T01:00:00.000+09:00', "
-					+ "departure_estimate: '2012-01-01T02:00:00.000+09:00', "
-					+ "platform: {name: '上野動物園前', name_ruby: 'うえのどうぶつえんまえ'}, "
-					+ "reservations_as_arrival: ["
-					+ "  {id: 25, passenger_count: 5, memo: 'テストメモ1', " + u1
-					+ "}, " + "  {id: 26, passenger_count: 6, " + u2 + "}, "
-					+ "  {id: 100, passenger_count: 7, " + u3 + "}],"
-					+ "reservations_as_departure: ["
-					+ "  {id: 101, passenger_count: 15, " + u4 + "}, "
-					+ "  {id: 102, passenger_count: 16, " + u5 + "}, "
-					+ "  {id: 103, passenger_count: 17, " + u6 + "}]" + "}");
+			+ "departure_estimate: '2012-01-01T02:00:00.000+09:00', "
+			+ "platform: {name: '上野動物園前', name_ruby: 'うえのどうぶつえんまえ'}, "
+			+ "reservations_as_arrival: ["
+			+ "  {id: 25, passenger_count: 5, memo: 'テストメモ1', " + u1
+			+ "}, " + "  {id: 26, passenger_count: 6, " + u2 + "}, "
+			+ "  {id: 100, passenger_count: 7, " + u3 + "}],"
+			+ "reservations_as_departure: ["
+			+ "  {id: 101, passenger_count: 15, " + u4 + "}, "
+			+ "  {id: 102, passenger_count: 16, " + u5 + "}, "
+			+ "  {id: 103, passenger_count: 17, " + u6 + "}]" + "}");
 			l.add(new OperationSchedule(j5));
 
 			JSONObject j6 = new JSONObject(
@@ -175,13 +175,13 @@ public class DummyDataSource implements DataSource {
 		}
 
 		List<VehicleNotification> l = new LinkedList<VehicleNotification>();
-		if (nextNotifyDate.before(new Date())) {
+		if (nextNotifyDate.after(new Date())) {
 			return l;
 		}
-		nextNotifyDate = new Date(new Date().getTime() + 6 * 1000);
+		nextNotifyDate = new Date(new Date().getTime() + 60 * 1000);
 		VehicleNotification n = new VehicleNotification();
 		n.setBody("テスト通知が行われました");
-		l.add(n);
+		// l.add(n); // TODO
 		return l;
 	}
 
@@ -202,7 +202,7 @@ public class DummyDataSource implements DataSource {
 	@Override
 	public List<ReservationCandidate> postReservationCandidates(Integer userId,
 			Integer departurePlatformId, Integer arrivalPlatformId)
-			throws WebAPIException {
+					throws WebAPIException {
 		try {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
