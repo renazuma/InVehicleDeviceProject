@@ -9,15 +9,16 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import android.app.Activity;
 import android.util.Log;
 import android.view.View;
 
 import com.google.common.eventbus.EventBus;
+import com.kogasoftware.odt.invehicledevice.InVehicleDeviceStatus.Access;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.datasource.DummyDataSource;
-import com.kogasoftware.odt.invehicledevice.empty.EmptyFile;
 import com.kogasoftware.odt.invehicledevice.modal.ConfigModal;
 import com.kogasoftware.odt.invehicledevice.modal.MemoModal;
 import com.kogasoftware.odt.invehicledevice.modal.NotificationModal;
@@ -111,7 +112,7 @@ public class InVehicleDeviceLogic {
 
 		@Override
 		public void run() {
-			List<OperationSchedule> operationSchedules = new LinkedList<OperationSchedule>();
+			final List<OperationSchedule> operationSchedules = new LinkedList<OperationSchedule>();
 			while (true) {
 				try {
 					operationSchedules.addAll(logic.getDataSource()
@@ -126,12 +127,14 @@ public class InVehicleDeviceLogic {
 					return;
 				}
 			}
-			synchronized (logic.status) {
-				logic.status.operationSchedules.clear();
-				logic.status.operationSchedules.addAll(operationSchedules);
-				logic.status.initialized.set(true);
-				logic.saveStatus();
-			}
+			logic.statusAccess.write(new Access.Writer() {
+				@Override
+				public void write(InVehicleDeviceStatus status) {
+					status.operationSchedules.clear();
+					status.operationSchedules.addAll(operationSchedules);
+					status.initialized.set(true);
+				}
+			});
 		}
 	}
 
@@ -145,13 +148,15 @@ public class InVehicleDeviceLogic {
 		@Override
 		public void run() {
 			try {
-				List<VehicleNotification> vehicleNotification = logic
+				final List<VehicleNotification> vehicleNotification = logic
 						.getDataSource().getVehicleNotifications();
-				synchronized (logic.status) {
-					logic.status.vehicleNotifications
-							.addAll(vehicleNotification);
-					logic.saveStatus();
-				}
+				logic.statusAccess.write(new Access.Writer() {
+					@Override
+					public void write(InVehicleDeviceStatus status) {
+						status.vehicleNotifications.addAll(vehicleNotification);
+					}
+				});
+
 			} catch (WebAPIException e) {
 			}
 		}
@@ -167,13 +172,14 @@ public class InVehicleDeviceLogic {
 		@Override
 		public void run() {
 			try {
-				List<VehicleNotification> vehicleNotification = logic
+				final List<VehicleNotification> vehicleNotification = logic
 						.getDataSource().getVehicleNotifications();
-				synchronized (logic.status) {
-					logic.status.vehicleNotifications
-							.addAll(vehicleNotification);
-					logic.saveStatus();
-				}
+				logic.statusAccess.write(new Access.Writer() {
+					@Override
+					public void write(InVehicleDeviceStatus status) {
+						status.vehicleNotifications.addAll(vehicleNotification);
+					}
+				});
 			} catch (WebAPIException e) {
 			}
 		}
@@ -183,22 +189,19 @@ public class InVehicleDeviceLogic {
 			.getSimpleName();
 	private static final Integer POLLING_PERIOD_MILLIS = 30 * 1000;
 	private static final Integer NUM_THREADS = 10;
-	private final File statusFile;
 	private final EventBus eventBus = new EventBus();
 	private final List<WeakReference<Object>> registeredObjectReferences = new LinkedList<WeakReference<Object>>();
 	private final ScheduledExecutorService executorService = Executors
 			.newScheduledThreadPool(NUM_THREADS);
 	private final DataSource dataSource = new DummyDataSource();
-	private final InVehicleDeviceStatus status; // 注意：別スレッドで書き換えが起こるため、この変数を利用するときはロックする
+	private final InVehicleDeviceStatus.Access statusAccess;
 
 	public InVehicleDeviceLogic() {
-		this.statusFile = new EmptyFile();
-		this.status = new InVehicleDeviceStatus();
+		this.statusAccess = new InVehicleDeviceStatus.Access();
 	}
 
 	public InVehicleDeviceLogic(File statusFile) {
-		this.statusFile = statusFile;
-		this.status = InVehicleDeviceStatus.newInstance(statusFile);
+		this.statusAccess = new InVehicleDeviceStatus.Access(statusFile);
 
 		try {
 			executorService.submit(new OperationScheduleReceiver(this));
@@ -213,55 +216,77 @@ public class InVehicleDeviceLogic {
 	}
 
 	public void addUnexpectedReservation(Integer arrivalOperationScheduleId) {
-		List<OperationSchedule> operationSchedules = getOperationSchedules();
+		List<OperationSchedule> operationSchedules = getRemainingOperationSchedules();
 		if (operationSchedules.isEmpty()) {
 			Log.w(TAG, "operationSchedules.isEmpty()", new Exception());
 			return;
 		}
 		OperationSchedule operationSchedule = operationSchedules.get(0);
-		Reservation reservation = new Reservation();
-		reservation.setId(12345); // TODO
-									// 未予約乗車の予約情報はどうするか
+		final Reservation reservation = new Reservation();
+
+		final AtomicInteger id = new AtomicInteger(0);
+		statusAccess.write(new Access.Writer() {
+			@Override
+			public void write(InVehicleDeviceStatus status) {
+				status.unexpectedReservationSequence++;
+				id.set(status.unexpectedReservationSequence);
+			}
+		});
+		reservation.setId(id.get()); // TODO
+		// 未予約乗車の予約情報はどうするか
 		reservation.setDepartureScheduleId(operationSchedule.getId());
 		reservation.setArrivalScheduleId(arrivalOperationScheduleId);
 
-		synchronized (status) {
-			status.unexpectedReservations.add(reservation);
-		}
+		statusAccess.write(new Access.Writer() {
+			@Override
+			public void write(InVehicleDeviceStatus status) {
+				status.unexpectedReservations.add(reservation);
+			}
+		});
 		eventBus.post(new AddUnexpectedReservationEvent(reservation));
 	}
 
 	public void enterDriveStatus() {
-		synchronized (status) {
-			if (status.status == InVehicleDeviceStatus.Status.PLATFORM) {
+		statusAccess.write(new Access.Writer() {
+			@Override
+			public void write(InVehicleDeviceStatus status) {
 				status.currentOperationScheduleIndex++;
+				status.status = InVehicleDeviceStatus.Status.DRIVE;
 			}
-			status.status = InVehicleDeviceStatus.Status.DRIVE;
-		}
+		});
 		eventBus.post(new EnterDriveStatusEvent());
 	}
 
 	public void enterFinishStatus() {
-		synchronized (status) {
-			status.status = InVehicleDeviceStatus.Status.FINISH;
-		}
+		statusAccess.write(new Access.Writer() {
+			@Override
+			public void write(InVehicleDeviceStatus status) {
+				status.status = InVehicleDeviceStatus.Status.FINISH;
+			}
+		});
 		eventBus.post(new EnterFinishStatusEvent());
 	}
 
 	public void enterNextStatus() {
-		synchronized (status) {
-			if (status.status == InVehicleDeviceStatus.Status.DRIVE) {
-				enterPlatformStatus();
-			} else {
-				showStartCheckModal();
+		statusAccess.write(new Access.Writer() {
+			@Override
+			public void write(InVehicleDeviceStatus status) {
+				if (status.status == InVehicleDeviceStatus.Status.DRIVE) {
+					enterPlatformStatus();
+				} else {
+					showStartCheckModal();
+				}
 			}
-		}
+		});
 	}
 
 	public void enterPlatformStatus() {
-		synchronized (status) {
-			status.status = InVehicleDeviceStatus.Status.PLATFORM;
-		}
+		statusAccess.write(new Access.Writer() {
+			@Override
+			public void write(InVehicleDeviceStatus status) {
+				status.status = InVehicleDeviceStatus.Status.PLATFORM;
+			}
+		});
 		eventBus.post(new EnterPlatformStatusEvent());
 	}
 
@@ -270,56 +295,83 @@ public class InVehicleDeviceLogic {
 	}
 
 	public List<Reservation> getMissedReservations() {
-		synchronized (status) {
-			return new LinkedList<Reservation>(status.missedReservations);
-		}
+		return statusAccess.read(new Access.Reader<List<Reservation>>() {
+			@Override
+			public List<Reservation> read(InVehicleDeviceStatus status) {
+				return new LinkedList<Reservation>(status.missedReservations);
+			}
+		});
 	}
 
 	public List<OperationSchedule> getOperationSchedules() {
-		synchronized (status) {
-			return new LinkedList<OperationSchedule>(status.operationSchedules);
-		}
+		return statusAccess.read(new Access.Reader<List<OperationSchedule>>() {
+			@Override
+			public List<OperationSchedule> read(InVehicleDeviceStatus status) {
+				return new LinkedList<OperationSchedule>(
+						status.operationSchedules);
+			}
+		});
 	}
 
 	public List<OperationSchedule> getRemainingOperationSchedules() {
-		try {
-			synchronized (status) {
-				List<OperationSchedule> remainings = new LinkedList<OperationSchedule>(
-						status.operationSchedules);
-				return remainings.subList(status.currentOperationScheduleIndex,
-						remainings.size());
+		return statusAccess.read(new Access.Reader<List<OperationSchedule>>() {
+			@Override
+			public List<OperationSchedule> read(InVehicleDeviceStatus status) {
+				try {
+					List<OperationSchedule> remainings = new LinkedList<OperationSchedule>(
+							status.operationSchedules);
+					return remainings.subList(
+							status.currentOperationScheduleIndex,
+							remainings.size());
+				} catch (ArrayIndexOutOfBoundsException e) {
+				} catch (IllegalArgumentException e) {
+				}
+				return new LinkedList<OperationSchedule>();
 			}
-		} catch (ArrayIndexOutOfBoundsException e) {
-		} catch (IllegalArgumentException e) {
-		}
-		return new LinkedList<OperationSchedule>();
+		});
 	}
 
 	public List<Reservation> getRidingReservations() {
-		synchronized (status) {
-			return new LinkedList<Reservation>(status.ridingReservations);
-		}
+		return statusAccess.read(new Access.Reader<List<Reservation>>() {
+			@Override
+			public List<Reservation> read(InVehicleDeviceStatus status) {
+
+				return new LinkedList<Reservation>(status.ridingReservations);
+			}
+		});
 	}
 
 	public List<Reservation> getUnexpectedReservations() {
-		synchronized (status) {
-			return status.unexpectedReservations;
-		}
+		return statusAccess.read(new Access.Reader<List<Reservation>>() {
+			@Override
+			public List<Reservation> read(InVehicleDeviceStatus status) {
+				return new LinkedList<Reservation>(
+						status.unexpectedReservations);
+			}
+		});
 	}
 
 	public Boolean isInitialized() {
-		synchronized (status) {
-			return status.initialized.get();
-		}
+		return statusAccess.read(new Access.Reader<Boolean>() {
+			@Override
+			public Boolean read(InVehicleDeviceStatus status) {
+				return status.initialized.get();
+			}
+		});
 	}
 
 	public List<VehicleNotification> pollVehicleNotifications() {
-		synchronized (status) {
-			LinkedList<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>(
-					status.vehicleNotifications);
-			status.vehicleNotifications.clear();
-			return vehicleNotifications;
-		}
+		return statusAccess
+				.read(new Access.Reader<List<VehicleNotification>>() {
+					@Override
+					public List<VehicleNotification> read(
+							InVehicleDeviceStatus status) {
+						LinkedList<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>(
+								status.vehicleNotifications);
+						status.vehicleNotifications.clear();
+						return vehicleNotifications;
+					}
+				});
 	}
 
 	public void register(Object object) {
@@ -328,19 +380,16 @@ public class InVehicleDeviceLogic {
 	}
 
 	public void restoreStatus() {
-		synchronized (status) {
-			if (status.status == InVehicleDeviceStatus.Status.PLATFORM) {
-				enterPlatformStatus();
-			} else {
-				enterDriveStatus();
+		statusAccess.write(new Access.Writer() {
+			@Override
+			public void write(InVehicleDeviceStatus status) {
+				if (status.status == InVehicleDeviceStatus.Status.PLATFORM) {
+					enterPlatformStatus();
+				} else {
+					enterDriveStatus();
+				}
 			}
-		}
-	}
-
-	private void saveStatus() {
-		synchronized (status) {
-			status.save(statusFile);
-		}
+		});
 	}
 
 	public void showConfigModal() {
@@ -399,5 +448,4 @@ public class InVehicleDeviceLogic {
 		}
 		registeredObjectReferences.clear();
 	}
-
 }
