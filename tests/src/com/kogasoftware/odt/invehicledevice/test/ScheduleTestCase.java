@@ -57,7 +57,12 @@ public class ScheduleTestCase extends
 	public void test03_戻るボタンを押したら消える() {
 		test02_予定ボタンを押したら表示();
 		solo.clickOnButton("戻る");
-		assertEquals(View.GONE, solo.getView(R.id.schedule_modal).getVisibility());
+		
+		assertFalse(solo.searchText("コガソフトウェア前"));
+		assertFalse(solo.searchText("上野御徒町駅前"));
+		//assertEquals(View.GONE, solo.getView(R.id.schedule_modal).getVisibility());
+		
+		
 	}
 
 	public void test04_一回閉じてからもう一度予定ボタンを押したら表示() {

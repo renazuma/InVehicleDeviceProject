@@ -39,6 +39,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 		// デフォルトで停車中にする
 		solo.clickOnButton("到着しました");
+
 	}
 
 	public void test00_データ初期設定() {
@@ -180,6 +181,42 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 	public void test17_件数が少ないため下へ移動ボタンが存在しない() {
 
 		assertFalse(solo.searchButton("下へ移動"));
+
+	}
+
+	public void test18_降車予定者のみ表示オンオフ() {
+
+		assertTrue(solo.searchText("降車予定者のみ表示"));
+		assertFalse(solo.searchText("*降車予定者のみ表示"));
+
+		solo.clickOnText("降車予定者のみ表示");
+
+		assertTrue(solo.searchText("*降車予定者のみ表示"));
+
+		solo.clickOnText("降車予定者のみ表示");
+
+		assertFalse(solo.searchText("*降車予定者のみ表示"));
+
+	}
+
+	public void test19_全乗客者表示オンオフ() {
+
+		assertTrue(solo.searchText("全乗客者表示"));
+		assertFalse(solo.searchText("*全乗客者表示"));
+
+		solo.clickOnText("全乗客者表示");
+
+		assertTrue(solo.searchText("*全乗客者表示"));
+
+		solo.clickOnText("全乗客者表示");
+
+		assertFalse(solo.searchText("*全乗客者表示"));
+
+	}
+
+	public void test20_乗客の新規追加ボタンが存在する() {
+
+		assertTrue(solo.searchButton("乗客の新規追加"));
 
 	}
 
