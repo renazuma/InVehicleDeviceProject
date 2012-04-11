@@ -6,8 +6,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import jp.tomorrowkey.android.vtextviewer.VTextView;
 import android.app.Activity;
@@ -64,8 +62,6 @@ public class InVehicleDeviceActivity extends Activity {
 				+ ".serialized");
 	}
 
-	private final BlockingQueue<String> voices = new LinkedBlockingQueue<String>();
-
 	final Handler handler = new Handler();
 
 	private static final Integer UPDATE_TIME_INTERVAL = 5000;
@@ -106,7 +102,7 @@ public class InVehicleDeviceActivity extends Activity {
 	private InVehicleDeviceLogic logic = new InVehicleDeviceLogic();
 
 	private Thread logicLoadThread = new EmptyThread();
-	private Thread voiceThread = new EmptyThread();
+
 	// nullables
 	private View contentView = null;
 
@@ -203,11 +199,8 @@ public class InVehicleDeviceActivity extends Activity {
 
 		statusTextView.setText("走行中");
 		changeStatusButton.setText("到着しました");
-		if (!voices.offer("出発します。次は、" + platform.getNameRuby() + "。"
-				+ platform.getNameRuby() + "。")) {
-			Log.w(TAG, "!voices.offer() failed");
-		}
-
+		logic.speak("出発します。次は、" + platform.getNameRuby() + "。"
+				+ platform.getNameRuby() + "。");
 		waitingLayout.setVisibility(View.GONE);
 		drivingLayout.setVisibility(View.VISIBLE);
 		finishLayout.setVisibility(View.GONE);
@@ -507,7 +500,6 @@ public class InVehicleDeviceActivity extends Activity {
 		handler.removeCallbacks(pollVehicleNotification);
 		handler.removeCallbacks(updateTime);
 
-		voiceThread.interrupt();
 		logic.shutdown();
 		logicLoadThread.interrupt();
 
@@ -532,10 +524,6 @@ public class InVehicleDeviceActivity extends Activity {
 		handler.post(toggleDrivingView);
 		handler.post(pollVehicleNotification);
 		handler.post(updateTime);
-
-		voiceThread.interrupt();
-		voiceThread = new VoiceThread(this, voices);
-		voiceThread.start();
 
 		logicLoadThread.interrupt();
 		logicLoadThread = new InVehicleDeviceLogic.LoadThread(this);

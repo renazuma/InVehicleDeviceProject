@@ -19,6 +19,7 @@ import com.google.common.eventbus.EventBus;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceStatus.Access;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.datasource.DummyDataSource;
+import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 import com.kogasoftware.odt.invehicledevice.modal.ConfigModal;
 import com.kogasoftware.odt.invehicledevice.modal.MemoModal;
 import com.kogasoftware.odt.invehicledevice.modal.NotificationModal;
@@ -71,20 +72,8 @@ public class InVehicleDeviceLogic {
 		public void run() {
 			InVehicleDeviceLogic logic = null;
 			try {
-				logic = new InVehicleDeviceLogic(
+				logic = new InVehicleDeviceLogic(activity,
 						InVehicleDeviceActivity.getSavedStatusFile(activity));
-				Thread.sleep(0); // interruption point
-				logic.register(activity);
-				for (int resourceId : new int[] { R.id.config_modal,
-						R.id.start_check_modal, R.id.schedule_modal,
-						R.id.memo_modal, R.id.pause_modal,
-						R.id.return_path_modal, R.id.stop_check_modal,
-						R.id.stop_modal, R.id.notification_modal,
-						R.id.schedule_changed_modal, R.id.navigation_modal }) {
-					Thread.sleep(0);
-					View view = activity.findViewById(resourceId);
-					logic.register(view);
-				}
 				final Semaphore semaphore = new Semaphore(0); // Runnable内容が実行される前にinterruptされた場合も確実にshutdownする用
 				final InVehicleDeviceLogic finalLogic = logic;
 				activity.runOnUiThread(new Runnable() {
@@ -162,6 +151,14 @@ public class InVehicleDeviceLogic {
 		}
 	}
 
+	public static class SpeakEvent {
+		public final String message;
+
+		public SpeakEvent(String message) {
+			this.message = message;
+		}
+	}
+
 	private static class VehicleNotificationReceiver implements Runnable {
 		private final InVehicleDeviceLogic logic;
 
@@ -195,23 +192,50 @@ public class InVehicleDeviceLogic {
 			.newScheduledThreadPool(NUM_THREADS);
 	private final DataSource dataSource = new DummyDataSource();
 	private final InVehicleDeviceStatus.Access statusAccess;
+	private Thread voiceThread = new EmptyThread();
 
 	public InVehicleDeviceLogic() {
 		this.statusAccess = new InVehicleDeviceStatus.Access();
 	}
 
-	public InVehicleDeviceLogic(File statusFile) {
-		this.statusAccess = new InVehicleDeviceStatus.Access(statusFile);
-
+	public InVehicleDeviceLogic(Activity activity, File statusFile)
+			throws InterruptedException {
 		try {
-			executorService.submit(new OperationScheduleReceiver(this));
-			executorService.scheduleWithFixedDelay(
-					new VehicleNotificationReceiver(this), 0,
-					POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
-			executorService.scheduleWithFixedDelay(new ScheduleChangedReceiver(
-					this), 0, POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
-		} catch (RejectedExecutionException e) {
-			Log.e(TAG, "Task Rejected", e);
+			Thread.sleep(0); // interruption point
+			this.statusAccess = new InVehicleDeviceStatus.Access(statusFile);
+
+			try {
+				executorService.submit(new OperationScheduleReceiver(this));
+				executorService.scheduleWithFixedDelay(
+						new VehicleNotificationReceiver(this), 0,
+						POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
+				executorService.scheduleWithFixedDelay(
+						new ScheduleChangedReceiver(this), 0,
+						POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
+			} catch (RejectedExecutionException e) {
+				Log.e(TAG, "Task Rejected", e);
+			}
+
+			register(activity);
+			Thread.sleep(0); // interruption point
+			voiceThread.interrupt();
+			voiceThread = new VoiceThread(activity);
+			voiceThread.start();
+			register(voiceThread);
+			Thread.sleep(0); // interruption point
+			for (int resourceId : new int[] { R.id.config_modal,
+					R.id.start_check_modal, R.id.schedule_modal,
+					R.id.memo_modal, R.id.pause_modal, R.id.return_path_modal,
+					R.id.stop_check_modal, R.id.stop_modal,
+					R.id.notification_modal, R.id.schedule_changed_modal,
+					R.id.navigation_modal }) {
+				View view = activity.findViewById(resourceId);
+				register(view);
+				Thread.sleep(0); // interruption point
+			}
+		} catch (InterruptedException e) {
+			shutdown();
+			throw e;
 		}
 	}
 
@@ -437,6 +461,11 @@ public class InVehicleDeviceLogic {
 	public void shutdown() {
 		unregisterAll();
 		executorService.shutdownNow();
+		voiceThread.interrupt();
+	}
+
+	public void speak(String message) {
+		eventBus.post(new SpeakEvent(message));
 	}
 
 	public void unregisterAll() {
