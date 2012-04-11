@@ -184,39 +184,17 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 	}
 
-	public void test18_降車予定者のみ表示オンオフ() {
+	public void test18_乗客の新規追加ボタンが存在する() {
 
-		assertTrue(solo.searchText("降車予定者のみ表示"));
-		assertFalse(solo.searchText("*降車予定者のみ表示"));
-
-		solo.clickOnText("降車予定者のみ表示");
-
-		assertTrue(solo.searchText("*降車予定者のみ表示"));
-
-		solo.clickOnText("降車予定者のみ表示");
-
-		assertFalse(solo.searchText("*降車予定者のみ表示"));
+		assertTrue(solo.searchButton("予約の新規追加"));
 
 	}
 
-	public void test19_全乗客者表示オンオフ() {
+	public void test19_乗客表示の切り替えボタンが存在する() {
 
-		assertTrue(solo.searchText("全乗客者表示"));
-		assertFalse(solo.searchText("*全乗客者表示"));
-
-		solo.clickOnText("全乗客者表示");
-
-		assertTrue(solo.searchText("*全乗客者表示"));
-
-		solo.clickOnText("全乗客者表示");
-
-		assertFalse(solo.searchText("*全乗客者表示"));
-
-	}
-
-	public void test20_乗客の新規追加ボタンが存在する() {
-
-		assertTrue(solo.searchButton("乗客の新規追加"));
+		assertTrue(solo.searchText("乗車中の乗客全員を表示"));
+		assertTrue(solo.searchText("未来の乗客を表示"));
+		assertTrue(solo.searchText("過去の乗降場で未乗車の乗客を表示"));
 
 	}
 
