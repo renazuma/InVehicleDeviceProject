@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +33,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 	private final List<Reservation> futureReservations = new LinkedList<Reservation>();
 	private final List<Reservation> missedReservations = new LinkedList<Reservation>();
 	private final OperationSchedule operationSchedule;
+	private final List<Integer> selectedPositions = new LinkedList<Integer>();
 
 	public ReservationArrayAdapter(Context context, int resourceId,
 			InVehicleDeviceLogic logic) {
@@ -180,6 +182,25 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		TextView reservationIdView = (TextView) convertView
 				.findViewById(R.id.reservation_id);
 		reservationIdView.setText(text);
+		View reservationChangeView = convertView
+				.findViewById(R.id.reservation_change_view);
+		final Integer finalPosition = position;
+		reservationChangeView.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				if (selectedPositions.contains(finalPosition)) {
+					selectedPositions.remove(finalPosition);
+				} else {
+					selectedPositions.add(finalPosition);
+				}
+				notifyDataSetChanged();
+			}
+		});
+		if (selectedPositions.contains(position)) {
+			convertView.setBackgroundColor(Color.CYAN); // TODO テーマ
+		} else {
+			convertView.setBackgroundColor(Color.TRANSPARENT);
+		}
 		Button memoButton = (Button) convertView.findViewById(R.id.memo_button);
 		if (reservation.getMemo().isPresent()) {
 			memoButton.setVisibility(View.VISIBLE);
