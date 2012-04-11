@@ -122,7 +122,9 @@ public class InVehicleDeviceStatus implements Serializable {
 		return status;
 	}
 
-	private final Integer lock = 0; // synchronized用にシリアライズ可能なオブジェクトを持っておく
+	private final Object lock = new Serializable() {
+		private static final long serialVersionUID = -8902504841122071697L;
+	}; // synchronized用にシリアライズ可能なオブジェクトを持っておく
 
 	public final ConcurrentLinkedQueue<VehicleNotification> vehicleNotifications = new ConcurrentLinkedQueue<VehicleNotification>();
 
