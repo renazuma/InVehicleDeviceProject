@@ -15,11 +15,7 @@ import java.util.TreeMap;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -209,19 +205,6 @@ public class WebAPI {
 		}
 	}
 
-	public <T> T get(String path, Map<String, String> params,
-			ResponseConverter<T> responseConverter) throws WebAPIException {
-
-		return doHttpRequestBase(path, params, responseConverter, new HttpGet());
-	}
-
-	public <T> T delete(String path, Map<String, String> params,
-			ResponseConverter<T> responseConverter) throws WebAPIException {
-
-		return doHttpRequestBase(path, params, responseConverter,
-				new HttpDelete());
-	}
-
 	protected <T> T doHttpRequestBase(String path, Map<String, String> params,
 			ResponseConverter<T> responseConverter, HttpRequestBase request)
 					throws WebAPIException {
@@ -273,35 +256,30 @@ public class WebAPI {
 			throw new WebAPIException(false, e);
 		}
 	}
+	
+	protected static final String OPERATORWEB_HOST = "192.168.56.3";
+	protected static final String PATH_PREFIX = "/in_vehicle_devices";
 
-	public <T> T post(String path, JSONObject entityJSON,
-			ResponseConverter<T> responseConverter) throws WebAPIException {
-		return doEntityEnclosingRequestBase(path, entityJSON,
-				responseConverter, new HttpPost());
+	public static final String PATH_LOGIN = "/sign_in";
+	public static final String PATH_NOTIFICATIONS = "/vehicle_notifications";
+	
+	public interface WebAPIListener {
+		public <T> void OnSucceed(int reqkey, T result);
+		public void OnFailed(int reqkey);
+		public void OnException(int reqkey, WebAPIException ex);
 	}
-
-	public <T> T put(String path, JSONObject entityJSON,
-			ResponseConverter<T> responseConverter) throws WebAPIException {
-		return doEntityEnclosingRequestBase(path, entityJSON,
-				responseConverter, new HttpPut());
+	
+	public int login() {
+		return -1;
 	}
-
-	public void delete(String path, Integer id) {
-
+	
+	public int get(String path) {
+		return -1;
 	}
-
-	public JSONArray get(String path, Map<String, String> params)
-			throws WebAPIException {
-		return get(path, params, new JSONArrayResponseConverter());
+	
+	public int getVehicleNotifications() {
+		return get(PATH_NOTIFICATIONS);
 	}
-
-	public JSONArray get(String path) throws WebAPIException {
-		return get(path, new HashMap<String, String>());
-	}
-
-	public <T> T get(String path, Integer id,
-			ResponseConverter<T> responseConverter) throws WebAPIException {
-		return get(path + "/" + id, new HashMap<String, String>(),
-				responseConverter);
-	}
+	
+	
 }
