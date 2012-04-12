@@ -18,6 +18,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -30,7 +31,9 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.common.base.Objects;
+import com.google.common.base.Optional;
 import com.google.common.io.ByteStreams;
+import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class WebAPI {
@@ -49,6 +52,10 @@ public class WebAPI {
 
 	public WebAPI(String authenticationToken) {
 		this.authenticationToken = authenticationToken;
+	}
+	
+	public String getAuthenticationToken() {
+		return authenticationToken;
 	}
 
 	protected static class CacheKey {
@@ -256,7 +263,7 @@ public class WebAPI {
 		protected void setEntityEnclosingRequestBase(String host, String path,
 				JSONObject entityJSON, HttpEntityEnclosingRequestBase request) throws WebAPIException {
 			Uri.Builder uriBuilder = Uri.parse(host).buildUpon();
-			uriBuilder.path(path);
+			uriBuilder.path(path + ".json");
 			String uri = uriBuilder.toString();
 			try {
 				if (authenticationToken.length() > 0) {
@@ -308,16 +315,25 @@ public class WebAPI {
 		
 	}
 
-	public int login() {
-		return -1;
-	}
-	
-	public <T> int get(String path, WebAPICallback<T> callback, ResponseConverter<T> conv) throws WebAPIException {
+	private <T> void get(String path, WebAPICallback<T> callback, ResponseConverter<T> conv) throws WebAPIException {
 		WebAPITask<T> task = new WebAPITask<T>(SERVER_HOST, PATH_PREFIX + path, null, conv, callback, new HttpGet());
 		task.execute();
-		return 0;
 	}
 	
+	private <T> void post(String path, JSONObject param, WebAPICallback<T> callback, ResponseConverter<T> conv)  throws WebAPIException {
+		WebAPITask<T> task = new WebAPITask<T>(SERVER_HOST, PATH_PREFIX + path, param, conv, callback, new HttpPost());
+		task.execute();		
+	}
+
+	protected JSONObject parseJSONObject(byte[] rawResponse) throws JSONException {
+		try {
+			return new JSONObject(new String(rawResponse, "iso-8859-1"));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 	protected JSONArray parseJSONArray(byte[] rawResponse) throws JSONException {
 		try {
 			return new JSONArray(new String(rawResponse, "iso-8859-1"));
@@ -327,21 +343,42 @@ public class WebAPI {
 		}
 	}
 	
-	public int getVehicleNotifications(WebAPICallback<List<VehicleNotification>> callback) {
-		try {
-			return get(PATH_NOTIFICATIONS, callback, new ResponseConverter<List<VehicleNotification>>() {
-				@Override
-				public List<VehicleNotification> convert(byte[] rawResponse)
-						throws Exception {
-					return VehicleNotification.parseList(parseJSONArray(rawResponse));
-				}
-			});
-		} catch (WebAPIException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	private JSONObject filterJSONKeys(JSONObject jsonObject, String[] keys) {
+		JSONObject res = new JSONObject();
+
+		for (String key : keys) {
+			try {
+				res.put(key, jsonObject.get(key));
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
 		}
 		
-		return -1;
+		return res;
+	}
+
+	public void login(InVehicleDevice login, WebAPICallback<InVehicleDevice> callback) throws WebAPIException, JSONException {
+		JSONObject ivd = filterJSONKeys(login.toJSONObject(), new String[] { "login", "password" });
+		JSONObject param = new JSONObject();
+		param.put("in_vehicle_device", ivd);
+
+		post(PATH_LOGIN, param, callback, new ResponseConverter<InVehicleDevice>() {
+			@Override
+			public InVehicleDevice convert(byte[] rawResponse)
+					throws Exception {
+				return InVehicleDevice.parse(parseJSONObject(rawResponse)).orNull();
+			}
+		});
+	}
+	
+	public void getVehicleNotifications(WebAPICallback<List<VehicleNotification>> callback) throws WebAPIException {
+		get(PATH_NOTIFICATIONS, callback, new ResponseConverter<List<VehicleNotification>>() {
+			@Override
+			public List<VehicleNotification> convert(byte[] rawResponse)
+					throws Exception {
+				return VehicleNotification.parseList(parseJSONArray(rawResponse));
+			}
+		});
 	}
 
 }

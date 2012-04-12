@@ -9,25 +9,57 @@ import android.test.ActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.webapi.WebAPI;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
+import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivity> {
 
-	public WebAPITestCase(String pkg, Class<DummyActivity> activityClass) {
-		super(pkg, activityClass);
+	public WebAPITestCase() {
+		super("com.kogasoftware.odt.webapi.test", DummyActivity.class);
+	}
+	
+	public void testLogin() throws Exception {
+		WebAPI api = new WebAPI();
+		final CountDownLatch latch = new CountDownLatch(1);
+		
+		InVehicleDevice ivd = new InVehicleDevice();
+		ivd.setLogin("d1");
+		ivd.setPassword("1");
+		api.login(ivd, new WebAPICallback<InVehicleDevice>() {
+
+			@Override
+			public void onSucceed(int reqkey, InVehicleDevice result) {
+				latch.countDown();
+			}
+
+			@Override
+			public void onFailed(int reqkey) {
+				latch.countDown();
+			}
+
+			@Override
+			public void onException(int reqkey, WebAPIException ex) {
+				latch.countDown();
+			}
+		});
+
+		latch.await(100, TimeUnit.SECONDS);
+		
+		assertNotNull(api.getAuthenticationToken());
+		assertTrue(api.getAuthenticationToken().length() > 0);
 	}
 
-	List<VehicleNotification> res;
+	List<VehicleNotification> notifications;
 
 	public void testGetVehicleNotifications() throws Exception {
 		WebAPI api = new WebAPI("7EhKVSpqMu4a2p8SKDrH");
 		final CountDownLatch latch = new CountDownLatch(1);
-		res = null;
+		notifications = null;
 		
 		api.getVehicleNotifications(new WebAPICallback<List<VehicleNotification>>() {
 			@Override
 			public void onSucceed(int reqkey, List<VehicleNotification> result) {
-				res = result;
+				notifications = result;
 				latch.countDown();
 			}
 			
@@ -42,10 +74,11 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 			}
 		});
 		
+		
 		latch.await(100, TimeUnit.SECONDS);
 		
-		assertNotNull(res);
-		assertEquals(1, res.size());
+		assertNotNull(notifications);
+		assertEquals(1, notifications.size());
 	}
 	
 }
