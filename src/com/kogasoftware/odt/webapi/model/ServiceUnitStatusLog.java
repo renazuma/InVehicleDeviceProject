@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class ServiceUnitStatusLog extends Model {
-	private static final long serialVersionUID = 4857928565376719206L;
+	private static final long serialVersionUID = 7819185935586980774L;
 
 	public ServiceUnitStatusLog() {
 	}
@@ -38,7 +38,11 @@ public class ServiceUnitStatusLog extends Model {
 		if (!jsonObject.has(key)) {
 			return Optional.<ServiceUnitStatusLog>absent();
 		}
-		return Optional.<ServiceUnitStatusLog>of(new ServiceUnitStatusLog(jsonObject.getJSONObject(key)));
+		return parse(jsonObject.getJSONObject(key));
+	}
+
+	public static Optional<ServiceUnitStatusLog> parse(JSONObject jsonObject) throws JSONException, ParseException {
+		return Optional.<ServiceUnitStatusLog>of(new ServiceUnitStatusLog(jsonObject));
 	}
 
 	public static LinkedList<ServiceUnitStatusLog> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {

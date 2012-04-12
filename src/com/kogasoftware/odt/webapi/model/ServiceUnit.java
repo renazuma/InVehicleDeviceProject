@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class ServiceUnit extends Model {
-	private static final long serialVersionUID = 7636887576707682923L;
+	private static final long serialVersionUID = 7192221878185125052L;
 
 	public ServiceUnit() {
 	}
@@ -43,7 +43,11 @@ public class ServiceUnit extends Model {
 		if (!jsonObject.has(key)) {
 			return Optional.<ServiceUnit>absent();
 		}
-		return Optional.<ServiceUnit>of(new ServiceUnit(jsonObject.getJSONObject(key)));
+		return parse(jsonObject.getJSONObject(key));
+	}
+
+	public static Optional<ServiceUnit> parse(JSONObject jsonObject) throws JSONException, ParseException {
+		return Optional.<ServiceUnit>of(new ServiceUnit(jsonObject));
 	}
 
 	public static LinkedList<ServiceUnit> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {

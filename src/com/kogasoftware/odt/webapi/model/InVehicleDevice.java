@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class InVehicleDevice extends Model {
-	private static final long serialVersionUID = 1318749105397980260L;
+	private static final long serialVersionUID = 9030137447940005233L;
 
 	public InVehicleDevice() {
 	}
@@ -43,7 +43,11 @@ public class InVehicleDevice extends Model {
 		if (!jsonObject.has(key)) {
 			return Optional.<InVehicleDevice>absent();
 		}
-		return Optional.<InVehicleDevice>of(new InVehicleDevice(jsonObject.getJSONObject(key)));
+		return parse(jsonObject.getJSONObject(key));
+	}
+
+	public static Optional<InVehicleDevice> parse(JSONObject jsonObject) throws JSONException, ParseException {
+		return Optional.<InVehicleDevice>of(new InVehicleDevice(jsonObject));
 	}
 
 	public static LinkedList<InVehicleDevice> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {

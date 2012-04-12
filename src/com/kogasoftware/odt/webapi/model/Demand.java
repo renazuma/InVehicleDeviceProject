@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Demand extends Model {
-	private static final long serialVersionUID = 1891393158042244376L;
+	private static final long serialVersionUID = 7454779470354707403L;
 
 	public Demand() {
 	}
@@ -54,7 +54,11 @@ public class Demand extends Model {
 		if (!jsonObject.has(key)) {
 			return Optional.<Demand>absent();
 		}
-		return Optional.<Demand>of(new Demand(jsonObject.getJSONObject(key)));
+		return parse(jsonObject.getJSONObject(key));
+	}
+
+	public static Optional<Demand> parse(JSONObject jsonObject) throws JSONException, ParseException {
+		return Optional.<Demand>of(new Demand(jsonObject));
 	}
 
 	public static LinkedList<Demand> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {

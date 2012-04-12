@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Reservation extends Model {
-	private static final long serialVersionUID = 2640317198891003290L;
+	private static final long serialVersionUID = 8010666993812922266L;
 
 	public Reservation() {
 	}
@@ -75,7 +75,11 @@ public class Reservation extends Model {
 		if (!jsonObject.has(key)) {
 			return Optional.<Reservation>absent();
 		}
-		return Optional.<Reservation>of(new Reservation(jsonObject.getJSONObject(key)));
+		return parse(jsonObject.getJSONObject(key));
+	}
+
+	public static Optional<Reservation> parse(JSONObject jsonObject) throws JSONException, ParseException {
+		return Optional.<Reservation>of(new Reservation(jsonObject));
 	}
 
 	public static LinkedList<Reservation> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {

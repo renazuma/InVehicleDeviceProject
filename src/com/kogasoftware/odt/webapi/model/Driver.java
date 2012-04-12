@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Driver extends Model {
-	private static final long serialVersionUID = 9082595422719500096L;
+	private static final long serialVersionUID = 3286830017145199074L;
 
 	public Driver() {
 	}
@@ -34,7 +34,11 @@ public class Driver extends Model {
 		if (!jsonObject.has(key)) {
 			return Optional.<Driver>absent();
 		}
-		return Optional.<Driver>of(new Driver(jsonObject.getJSONObject(key)));
+		return parse(jsonObject.getJSONObject(key));
+	}
+
+	public static Optional<Driver> parse(JSONObject jsonObject) throws JSONException, ParseException {
+		return Optional.<Driver>of(new Driver(jsonObject));
 	}
 
 	public static LinkedList<Driver> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {

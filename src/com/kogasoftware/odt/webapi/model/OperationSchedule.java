@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class OperationSchedule extends Model {
-	private static final long serialVersionUID = 5575883366767615542L;
+	private static final long serialVersionUID = 2379013959126865495L;
 
 	public OperationSchedule() {
 	}
@@ -41,7 +41,11 @@ public class OperationSchedule extends Model {
 		if (!jsonObject.has(key)) {
 			return Optional.<OperationSchedule>absent();
 		}
-		return Optional.<OperationSchedule>of(new OperationSchedule(jsonObject.getJSONObject(key)));
+		return parse(jsonObject.getJSONObject(key));
+	}
+
+	public static Optional<OperationSchedule> parse(JSONObject jsonObject) throws JSONException, ParseException {
+		return Optional.<OperationSchedule>of(new OperationSchedule(jsonObject));
 	}
 
 	public static LinkedList<OperationSchedule> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {

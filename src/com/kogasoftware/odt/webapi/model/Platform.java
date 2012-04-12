@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Platform extends Model {
-	private static final long serialVersionUID = 4352745917565742780L;
+	private static final long serialVersionUID = 3365173783283415894L;
 
 	public Platform() {
 	}
@@ -49,7 +49,11 @@ public class Platform extends Model {
 		if (!jsonObject.has(key)) {
 			return Optional.<Platform>absent();
 		}
-		return Optional.<Platform>of(new Platform(jsonObject.getJSONObject(key)));
+		return parse(jsonObject.getJSONObject(key));
+	}
+
+	public static Optional<Platform> parse(JSONObject jsonObject) throws JSONException, ParseException {
+		return Optional.<Platform>of(new Platform(jsonObject));
 	}
 
 	public static LinkedList<Platform> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
