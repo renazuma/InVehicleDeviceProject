@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Demand extends Model {
-	private static final long serialVersionUID = 7591276760376023010L;
+	private static final long serialVersionUID = 1891393158042244376L;
 
 	public Demand() {
 	}
@@ -62,6 +62,10 @@ public class Demand extends Model {
 			return new LinkedList<Demand>();
 		}
 		JSONArray jsonArray = jsonObject.getJSONArray(key);
+		return parseList(jsonArray);
+	}
+
+	public static LinkedList<Demand> parseList(JSONArray jsonArray) throws JSONException, ParseException {
 		LinkedList<Demand> models = new LinkedList<Demand>();
 		for (Integer i = 0; i < jsonArray.length(); ++i) {
 			if (jsonArray.isNull(i)) {

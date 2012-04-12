@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class OperationSchedule extends Model {
-	private static final long serialVersionUID = 4765061606433919132L;
+	private static final long serialVersionUID = 5575883366767615542L;
 
 	public OperationSchedule() {
 	}
@@ -49,6 +49,10 @@ public class OperationSchedule extends Model {
 			return new LinkedList<OperationSchedule>();
 		}
 		JSONArray jsonArray = jsonObject.getJSONArray(key);
+		return parseList(jsonArray);
+	}
+
+	public static LinkedList<OperationSchedule> parseList(JSONArray jsonArray) throws JSONException, ParseException {
 		LinkedList<OperationSchedule> models = new LinkedList<OperationSchedule>();
 		for (Integer i = 0; i < jsonArray.length(); ++i) {
 			if (jsonArray.isNull(i)) {

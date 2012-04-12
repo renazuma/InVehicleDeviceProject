@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class OperationRecord extends Model {
-	private static final long serialVersionUID = 8514805553981028048L;
+	private static final long serialVersionUID = 6926401320153111590L;
 
 	public OperationRecord() {
 	}
@@ -48,6 +48,10 @@ public class OperationRecord extends Model {
 			return new LinkedList<OperationRecord>();
 		}
 		JSONArray jsonArray = jsonObject.getJSONArray(key);
+		return parseList(jsonArray);
+	}
+
+	public static LinkedList<OperationRecord> parseList(JSONArray jsonArray) throws JSONException, ParseException {
 		LinkedList<OperationRecord> models = new LinkedList<OperationRecord>();
 		for (Integer i = 0; i < jsonArray.length(); ++i) {
 			if (jsonArray.isNull(i)) {
