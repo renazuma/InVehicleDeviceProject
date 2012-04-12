@@ -152,6 +152,8 @@ public class WebAPI {
 	public static final String PATH_LOGIN = PATH_PREFIX + "/sign_in";
 	public static final String PATH_NOTIFICATIONS = PATH_PREFIX + "/vehicle_notifications";
 	
+	protected static int reqkeyCounter = 0;
+	
 	public interface WebAPICallback<T> {
 		public void onSucceed(int reqkey, T result);
 		public void onFailed(int reqkey);
@@ -171,6 +173,10 @@ public class WebAPI {
 			this.responseConverter = responseConverter;
 			this.callback = callback;
 			this.request = request;
+			
+			synchronized(WebAPI.class) {
+				this.reqkey = reqkeyCounter++;
+			}
 		}
 
 		// Constructor for PUT, POST
@@ -180,6 +186,10 @@ public class WebAPI {
 			this.responseConverter = responseConverter;
 			this.callback = callback;
 			this.request = request;
+
+			synchronized(WebAPI.class) {
+				this.reqkey = reqkeyCounter++;
+			}
 		}
 		
 		protected T doHttpSession(HttpRequestBase request,
@@ -299,6 +309,9 @@ public class WebAPI {
 			} catch (WebAPIException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				if (callback != null) {
+					callback.onException(reqkey, e);
+				}
 				return null;
 			}
 		}
@@ -321,6 +334,10 @@ public class WebAPI {
 			// TODO Auto-generated method stub
 			super.onProgressUpdate(values);
 		}
+
+		public int getReqKey() {
+			return reqkey;
+		}
 		
 	}
 
@@ -328,14 +345,16 @@ public class WebAPI {
 		return SERVER_HOST;
 	}
 	
-	protected <T> void get(String path, WebAPICallback<T> callback, ResponseConverter<T> conv) throws WebAPIException {
+	protected <T> int get(String path, WebAPICallback<T> callback, ResponseConverter<T> conv) throws WebAPIException {
 		WebAPITask<T> task = new WebAPITask<T>(getServerHost(), path, null, conv, callback, new HttpGet());
 		task.execute();
+		return task.getReqKey();
 	}
 	
-	protected <T> void post(String path, JSONObject param, WebAPICallback<T> callback, ResponseConverter<T> conv)  throws WebAPIException {
+	protected <T> int post(String path, JSONObject param, WebAPICallback<T> callback, ResponseConverter<T> conv)  throws WebAPIException {
 		WebAPITask<T> task = new WebAPITask<T>(getServerHost(), path, param, conv, callback, new HttpPost());
 		task.execute();		
+		return task.getReqKey();
 	}
 
 	protected JSONObject parseJSONObject(byte[] rawResponse) throws JSONException {
