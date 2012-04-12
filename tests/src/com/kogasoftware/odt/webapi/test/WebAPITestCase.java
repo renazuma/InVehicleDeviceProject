@@ -5,6 +5,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import android.test.ActivityInstrumentationTestCase2;
+import android.util.Log;
 
 import com.kogasoftware.odt.webapi.WebAPI;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
@@ -13,18 +14,47 @@ import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivity> {
-
 	public WebAPITestCase() {
 		super("com.kogasoftware.odt.webapi.test", DummyActivity.class);
 	}
+		
+	CountDownLatch latch;
 	
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
+		
+		final WebTestAPI testAPI = new WebTestAPI();
+
+		new SyncCall<Void>() {
+			@Override
+			public int run() throws WebAPIException {
+				return testAPI.cleanDatabase(this);
+			}
+		};
+		
+		SyncCall<InVehicleDevice> c = new SyncCall<InVehicleDevice>() {
+			@Override
+			public int run() throws Exception {
+				InVehicleDevice ivd = new InVehicleDevice();
+				ivd.setLogin("ivd1");
+				ivd.setPassword("ivdpass");
+				ivd.setPasswordConfirmation("ivdpass");
+				
+				Log.d("WebAPITest", ivd.toJSONObject().toString());
+				return testAPI.createInVehicleDevice(ivd, this);
+			}
+		};
+		
+	}
+
 	public void testLogin() throws Exception {
 		WebAPI api = new WebAPI();
-		final CountDownLatch latch = new CountDownLatch(1);
+		latch = new CountDownLatch(1);
 		
 		InVehicleDevice ivd = new InVehicleDevice();
-		ivd.setLogin("d1");
-		ivd.setPassword("1");
+		ivd.setLogin("ivd1");
+		ivd.setPassword("ivdpass");
 		api.login(ivd, new WebAPICallback<InVehicleDevice>() {
 
 			@Override
