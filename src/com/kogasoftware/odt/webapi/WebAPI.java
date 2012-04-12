@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -16,6 +17,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -24,36 +26,21 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.util.Log;
 
 import com.google.common.base.Objects;
 import com.google.common.io.ByteStreams;
+import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class WebAPI {
 	private static final Integer MAX_REQUEST_RETRY = 5;
 	private static final Integer REQUEST_RETRY_EXPIRE_MINUTES = 5;
-	private static final String URI_SCHEME = "http";
-	private static final String URI_AUTHORITY = "10.1.10.161";
 
-	private final String authenticationToken;
+	private String authenticationToken;
 
 	public interface ResponseConverter<T> {
 		public T convert(byte[] rawResponse) throws Exception;
-	}
-
-	public class JSONObjectResponseConverter implements
-	ResponseConverter<JSONObject> {
-		@Override
-		public JSONObject convert(byte[] rawResponse) throws JSONException {
-			return new JSONObject(new String(rawResponse));
-		}
-	}
-
-	public class JSONArrayResponseConverter implements
-	ResponseConverter<JSONArray> {
-		@Override
-		public JSONArray convert(byte[] rawResponse) throws JSONException {
-			return new JSONArray(new String(rawResponse));
-		}
 	}
 
 	public WebAPI() {
@@ -152,134 +139,209 @@ public class WebAPI {
 		return retryStatus.isRetryable();
 	}
 
-	protected <T> T doHttpSession(HttpRequestBase request,
-			ResponseConverter<T> responseConverter) throws WebAPIException {
-
-		CacheKey cacheKey;
-		{ // TODO: キャッシュ
-			String method = request.getMethod();
-			String uri = request.getURI().toString();
-			byte[] entity = new byte[] {};
-			if (request instanceof HttpEntityEnclosingRequestBase) {
-				try {
-					entity = ByteStreams
-							.toByteArray(((HttpEntityEnclosingRequestBase) request)
-									.getEntity().getContent());
-				} catch (IOException e) {
-					throw new WebAPIException(false, e);
-				}
-			}
-			cacheKey = new CacheKey(method, uri, entity);
-		}
-
-		HttpClient httpClient = new DefaultHttpClient();
-		HttpResponse httpResponse;
-		try {
-			httpResponse = httpClient.execute(request);
-		} catch (ClientProtocolException e) {
-			throw new WebAPIException(true, e);
-		} catch (IOException e) {
-			throw new WebAPIException(true, e);
-		}
-		Integer statusCode = httpResponse.getStatusLine().getStatusCode();
-		if (statusCode / 100 == 4) {
-			throw new WebAPIException(false, "Status Code = " + statusCode);
-		} else if (statusCode / 100 == 5) {
-			throw new WebAPIException(calculateRetryable(cacheKey),
-					"Status Code = " + statusCode);
-		}
-		byte[] response = new byte[] {};
-		try {
-			response = ByteStreams.toByteArray(httpResponse.getEntity()
-					.getContent());
-		} catch (IOException e) {
-			throw new WebAPIException(true, e);
-		}
-		try {
-			return responseConverter.convert(response);
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			throw new WebAPIException(false, e);
-		} catch (Exception e) {
-			throw new WebAPIException(calculateRetryable(cacheKey), e);
-		}
-	}
-
-	protected <T> T doHttpRequestBase(String path, Map<String, String> params,
-			ResponseConverter<T> responseConverter, HttpRequestBase request)
-					throws WebAPIException {
-
-		Uri.Builder uriBuilder = new Uri.Builder();
-		uriBuilder.scheme(URI_SCHEME);
-		uriBuilder.authority(URI_AUTHORITY);
-		uriBuilder.path(path + ".json");
-		if (authenticationToken.length() > 0) {
-			uriBuilder.appendQueryParameter("authentication_token",
-					authenticationToken);
-		}
-		for (Entry<String, String> entry : (new TreeMap<String, String>(params))
-				.entrySet()) {
-			uriBuilder.appendQueryParameter(entry.getKey(), entry.getValue());
-		}
-		String uri = uriBuilder.toString();
-		try {
-			request.setURI(new URI(uri));
-		} catch (URISyntaxException e) {
-			throw new WebAPIException(false, e);
-		}
-		return doHttpSession(request, responseConverter);
-	}
-
-	protected <T> T doEntityEnclosingRequestBase(String path,
-			JSONObject entityJSON, ResponseConverter<T> responseConverter,
-			HttpEntityEnclosingRequestBase request) throws WebAPIException {
-		Uri.Builder uriBuilder = new Uri.Builder();
-		uriBuilder.scheme(URI_SCHEME);
-		uriBuilder.authority(URI_AUTHORITY);
-		uriBuilder.path(path + ".json");
-		String uri = uriBuilder.toString();
-		try {
-			if (authenticationToken.length() > 0) {
-				entityJSON.put("authentication_token", authenticationToken);
-			}
-			request.setURI(new URI(uri));
-			String entityString = entityJSON.toString();
-			StringEntity entity = new StringEntity(entityString, "UTF-8");
-			entity.setContentType("application/json");
-			request.setEntity(entity);
-			return doHttpSession(request, responseConverter);
-		} catch (JSONException e) {
-			throw new WebAPIException(false, e);
-		} catch (UnsupportedEncodingException e) {
-			throw new WebAPIException(false, e);
-		} catch (URISyntaxException e) {
-			throw new WebAPIException(false, e);
-		}
-	}
-	
-	protected static final String OPERATORWEB_HOST = "192.168.56.3";
+	protected static final String SERVER_HOST = "http://192.168.104.63:3000";
 	protected static final String PATH_PREFIX = "/in_vehicle_devices";
 
 	public static final String PATH_LOGIN = "/sign_in";
 	public static final String PATH_NOTIFICATIONS = "/vehicle_notifications";
 	
-	public interface WebAPIListener {
-		public <T> void OnSucceed(int reqkey, T result);
-		public void OnFailed(int reqkey);
-		public void OnException(int reqkey, WebAPIException ex);
+	public interface WebAPICallback<T> {
+		public void onSucceed(int reqkey, T result);
+		public void onFailed(int reqkey);
+		public void onException(int reqkey, WebAPIException ex);
 	}
 	
+	class WebAPITask<T> extends AsyncTask<Void, Integer, T> {
+		private WebAPICallback<T> callback;
+		private int reqkey;
+		private ResponseConverter<T> responseConverter;
+		private HttpRequestBase request;
+
+		// Constructor for GET, DELETE
+		public WebAPITask(String host, String path, Map<String, String> params,
+				ResponseConverter<T> responseConverter, WebAPICallback<T> callback, HttpRequestBase request) throws WebAPIException {
+			setHttpRequestBase(host, path, params, request);
+			this.responseConverter = responseConverter;
+			this.callback = callback;
+			this.request = request;
+		}
+
+		// Constructor for PUT, POST
+		public WebAPITask(String host, String path,
+				JSONObject entityJSON, ResponseConverter<T> responseConverter, WebAPICallback<T> callback, HttpEntityEnclosingRequestBase request) throws WebAPIException {
+			setEntityEnclosingRequestBase(host, path, entityJSON, request);
+			this.responseConverter = responseConverter;
+			this.request = request;
+		}
+		
+		protected T doHttpSession(HttpRequestBase request,
+				ResponseConverter<T> responseConverter) throws WebAPIException {
+
+			CacheKey cacheKey;
+			{ // TODO: キャッシュ
+				String method = request.getMethod();
+				String uri = request.getURI().toString();
+				byte[] entity = new byte[] {};
+				if (request instanceof HttpEntityEnclosingRequestBase) {
+					try {
+						entity = ByteStreams
+								.toByteArray(((HttpEntityEnclosingRequestBase) request)
+										.getEntity().getContent());
+					} catch (IOException e) {
+						throw new WebAPIException(false, e);
+					}
+				}
+				cacheKey = new CacheKey(method, uri, entity);
+			}
+
+			HttpClient httpClient = new DefaultHttpClient();
+			HttpResponse httpResponse;
+			try {
+				httpResponse = httpClient.execute(request);
+			} catch (ClientProtocolException e) {
+				throw new WebAPIException(true, e);
+			} catch (IOException e) {
+				throw new WebAPIException(true, e);
+			}
+			Integer statusCode = httpResponse.getStatusLine().getStatusCode();
+			if (statusCode / 100 == 4) {
+				throw new WebAPIException(false, "Status Code = " + statusCode);
+			} else if (statusCode / 100 == 5) {
+				throw new WebAPIException(false, "Status Code = " + statusCode);
+			}
+			byte[] response = new byte[] {};
+			try {
+				response = ByteStreams.toByteArray(httpResponse.getEntity()
+						.getContent());
+			} catch (IOException e) {
+				throw new WebAPIException(true, e);
+			}
+			try {
+				return responseConverter.convert(response);
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+				throw new WebAPIException(false, e);
+			} catch (Exception e) {
+				throw new WebAPIException(false, e);
+			}
+		}
+
+		protected void setHttpRequestBase(String host, String path, Map<String, String> params,
+				HttpRequestBase request)
+						throws WebAPIException {
+
+			Uri.Builder uriBuilder = Uri.parse(host).buildUpon();
+			uriBuilder.path(path + ".json");
+			
+			if (authenticationToken != null && authenticationToken.length() > 0) {
+				uriBuilder.appendQueryParameter("authentication_token",
+						authenticationToken);
+			}
+			if (params != null) {
+				for (Entry<String, String> entry : (new TreeMap<String, String>(params))
+						.entrySet()) {
+					uriBuilder.appendQueryParameter(entry.getKey(), entry.getValue());
+				}
+			}
+			String uri = uriBuilder.toString();
+			Log.d("WebAPI", uri);
+			
+			try {
+				request.setURI(new URI(uri));
+			} catch (URISyntaxException e) {
+				throw new WebAPIException(false, e);
+			}
+		}
+
+		protected void setEntityEnclosingRequestBase(String host, String path,
+				JSONObject entityJSON, HttpEntityEnclosingRequestBase request) throws WebAPIException {
+			Uri.Builder uriBuilder = Uri.parse(host).buildUpon();
+			uriBuilder.path(path);
+			String uri = uriBuilder.toString();
+			try {
+				if (authenticationToken.length() > 0) {
+					entityJSON.put("authentication_token", authenticationToken);
+				}
+				request.setURI(new URI(uri));
+				String entityString = entityJSON.toString();
+				StringEntity entity = new StringEntity(entityString, "UTF-8");
+				entity.setContentType("application/json");
+				request.setEntity(entity);
+			} catch (JSONException e) {
+				throw new WebAPIException(false, e);
+			} catch (UnsupportedEncodingException e) {
+				throw new WebAPIException(false, e);
+			} catch (URISyntaxException e) {
+				throw new WebAPIException(false, e);
+			}
+		}
+		
+		@Override
+		protected T doInBackground(Void... params) {
+			try {
+				return doHttpSession(request, responseConverter);
+			} catch (WebAPIException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return null;
+			}
+		}
+
+		@Override
+		protected void onPostExecute(T result) {
+			super.onPostExecute(result);
+
+			if (callback != null) {
+				if (result != null) {
+					callback.onSucceed(reqkey, result);
+				} else {
+					callback.onFailed(reqkey);
+				}
+			}
+		}
+
+		@Override
+		protected void onProgressUpdate(Integer... values) {
+			// TODO Auto-generated method stub
+			super.onProgressUpdate(values);
+		}
+		
+	}
+
 	public int login() {
 		return -1;
 	}
 	
-	public int get(String path) {
+	public <T> int get(String path, WebAPICallback<T> callback, ResponseConverter<T> conv) throws WebAPIException {
+		WebAPITask<T> task = new WebAPITask<T>(SERVER_HOST, PATH_PREFIX + path, null, conv, callback, new HttpGet());
+		task.execute();
+		return 0;
+	}
+	
+	protected JSONArray parseJSONArray(byte[] rawResponse) throws JSONException {
+		try {
+			return new JSONArray(new String(rawResponse, "iso-8859-1"));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public int getVehicleNotifications(WebAPICallback<List<VehicleNotification>> callback) {
+		try {
+			return get(PATH_NOTIFICATIONS, callback, new ResponseConverter<List<VehicleNotification>>() {
+				@Override
+				public List<VehicleNotification> convert(byte[] rawResponse)
+						throws Exception {
+					return VehicleNotification.parseList(parseJSONArray(rawResponse));
+				}
+			});
+		} catch (WebAPIException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		return -1;
 	}
-	
-	public int getVehicleNotifications() {
-		return get(PATH_NOTIFICATIONS);
-	}
-	
-	
+
 }
