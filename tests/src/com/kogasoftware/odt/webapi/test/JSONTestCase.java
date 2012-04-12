@@ -23,7 +23,7 @@ public class JSONTestCase extends TestCase {
 		 assertFalse(vn.getOperator().isPresent());
 	 }
 	 
-	 public void testOptional() throws Exception {
+	 public void testNull() throws Exception {
 		 String json = "{\"body\":null,\"created_at\":\"2012-04-11T18:23:45Z\",\"id\":2,\"in_vehicle_device_id\":1,\"operator_id\":1,\"read_at\":null,\"response\":null,\"updated_at\":\"2012-04-11T18:23:45Z\"}";
 		 
 		 JSONObject jsonObject = new JSONObject(json);
@@ -33,4 +33,27 @@ public class JSONTestCase extends TestCase {
 		 assertNull(vn.getReadAt().orNull());
 		 assertNull(vn.getResponse().orNull());
 	 }
+
+	 public void testOptional() throws Exception {
+		 String json = "{\"created_at\":\"2012-04-11T18:23:45Z\",\"id\":2,\"in_vehicle_device_id\":1,\"operator_id\":1,\"updated_at\":\"2012-04-11T18:23:45Z\"}";
+		 
+		 JSONObject jsonObject = new JSONObject(json);
+		 
+		 VehicleNotification vn = VehicleNotification.parse(jsonObject).orNull();
+		 assertNull(vn.getBody().orNull());
+		 assertNull(vn.getReadAt().orNull());
+		 assertNull(vn.getResponse().orNull());
+	 }
+
+	 public void testStringNull() throws Exception {
+		 String json = "{\"body\": \"null\",\"created_at\":\"2012-04-11T18:23:45Z\",\"id\":2,\"in_vehicle_device_id\":1,\"operator_id\":1,\"read_at\":null,\"response\":null,\"updated_at\":\"2012-04-11T18:23:45Z\"}";
+		 
+		 JSONObject jsonObject = new JSONObject(json);
+		 
+		 VehicleNotification vn = VehicleNotification.parse(jsonObject).orNull();
+		 assertEquals("null", vn.getBody().orNull());
+		 assertNull(vn.getReadAt().orNull());
+		 assertNull(vn.getResponse().orNull());
+	 }
+
 }
