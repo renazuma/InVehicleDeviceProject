@@ -149,8 +149,8 @@ public class WebAPI {
 	protected static final String SERVER_HOST = "http://192.168.104.63:3000";
 	protected static final String PATH_PREFIX = "/in_vehicle_devices";
 
-	public static final String PATH_LOGIN = "/sign_in";
-	public static final String PATH_NOTIFICATIONS = "/vehicle_notifications";
+	public static final String PATH_LOGIN = PATH_PREFIX + "/sign_in";
+	public static final String PATH_NOTIFICATIONS = PATH_PREFIX + "/vehicle_notifications";
 	
 	public interface WebAPICallback<T> {
 		public void onSucceed(int reqkey, T result);
@@ -234,12 +234,18 @@ public class WebAPI {
 			}
 		}
 
+		private Uri.Builder buildUri(String host, String path) {
+			Uri.Builder uriBuilder = Uri.parse(host).buildUpon();
+			uriBuilder.path(path + ".json");
+
+			return uriBuilder;
+		}
+
 		protected void setHttpRequestBase(String host, String path, Map<String, String> params,
 				HttpRequestBase request)
 						throws WebAPIException {
 
-			Uri.Builder uriBuilder = Uri.parse(host).buildUpon();
-			uriBuilder.path(path + ".json");
+			Uri.Builder uriBuilder = buildUri(host, path);
 			
 			if (authenticationToken != null && authenticationToken.length() > 0) {
 				uriBuilder.appendQueryParameter("authentication_token",
@@ -263,10 +269,12 @@ public class WebAPI {
 
 		protected void setEntityEnclosingRequestBase(String host, String path,
 				JSONObject entityJSON, HttpEntityEnclosingRequestBase request) throws WebAPIException {
-			Uri.Builder uriBuilder = Uri.parse(host).buildUpon();
-			uriBuilder.path(path + ".json");
-			String uri = uriBuilder.toString();
+			String uri = buildUri(host, path).toString();
 			try {
+				if (entityJSON == null) {
+					entityJSON = new JSONObject();
+				}
+				
 				if (authenticationToken.length() > 0) {
 					entityJSON.put("authentication_token", authenticationToken);
 				}
@@ -316,13 +324,17 @@ public class WebAPI {
 		
 	}
 
+	protected String getServerHost() {
+		return SERVER_HOST;
+	}
+	
 	protected <T> void get(String path, WebAPICallback<T> callback, ResponseConverter<T> conv) throws WebAPIException {
-		WebAPITask<T> task = new WebAPITask<T>(SERVER_HOST, PATH_PREFIX + path, null, conv, callback, new HttpGet());
+		WebAPITask<T> task = new WebAPITask<T>(getServerHost(), path, null, conv, callback, new HttpGet());
 		task.execute();
 	}
 	
 	protected <T> void post(String path, JSONObject param, WebAPICallback<T> callback, ResponseConverter<T> conv)  throws WebAPIException {
-		WebAPITask<T> task = new WebAPITask<T>(SERVER_HOST, PATH_PREFIX + path, param, conv, callback, new HttpPost());
+		WebAPITask<T> task = new WebAPITask<T>(getServerHost(), path, param, conv, callback, new HttpPost());
 		task.execute();		
 	}
 
