@@ -23,6 +23,16 @@ end
 gem 'jquery-rails'
 gem "therubyracer"
 
+gem "factory_girl_rails", ">= 1.0.1"
+gem "devise"
+gem "cancan"
+gem "kaminari"
+gem "meta_search"
+gem "acts_as_audited", "2.0.0"
+gem "rails3_acts_as_paranoid",  "~>0.2.0"
+
+gem "database_cleaner"
+
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
 
