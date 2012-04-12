@@ -17,9 +17,11 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -378,9 +380,21 @@ public class WebAPI {
 		task.execute();
 		return task.getReqKey();
 	}
-	
+
+	protected <T> int delete(String path, WebAPICallback<T> callback, ResponseConverter<T> conv) throws WebAPIException {
+		WebAPITask<T> task = new WebAPITask<T>(getServerHost(), path, null, conv, callback, new HttpDelete());
+		task.execute();
+		return task.getReqKey();
+	}
+
 	protected <T> int post(String path, JSONObject param, WebAPICallback<T> callback, ResponseConverter<T> conv)  throws WebAPIException {
 		WebAPITask<T> task = new WebAPITask<T>(getServerHost(), path, param, conv, callback, new HttpPost());
+		task.execute();		
+		return task.getReqKey();
+	}
+
+	protected <T> int put(String path, JSONObject param, WebAPICallback<T> callback, ResponseConverter<T> conv)  throws WebAPIException {
+		WebAPITask<T> task = new WebAPITask<T>(getServerHost(), path, param, conv, callback, new HttpPut());
 		task.execute();		
 		return task.getReqKey();
 	}
