@@ -15,7 +15,7 @@ class InVehicleDevice < ActiveRecord::Base
   devise :database_authenticatable, :rememberable, :trackable, :token_authenticatable
 
   # Setup accessible (or protected) attributes for your model
-  attr_accessible :login, :password, :password_confirmation, :remember_me, :authentication_token 
+  attr_accessible :id, :login, :password, :password_confirmation, :remember_me, :authentication_token, :model_name, :type_number, :service_provider_id, :service_units, :vehicle_notifications
 
   # Define Validation
   validates_presence_of :model_name, :type_number
