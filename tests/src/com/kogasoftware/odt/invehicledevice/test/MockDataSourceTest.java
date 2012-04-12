@@ -83,14 +83,16 @@ public class MockDataSourceTest implements DataSource {
 
 	public void setOperationSchedules(Integer iOperationScheduleCount) {
 
+		System.out.println("setOperationSchedules " + iOperationScheduleCount);
+
 		lOperationSchedule = new LinkedList<OperationSchedule>();
 
-		String u1a = "id: 11,user: {first_name: '名前a', last_name: '名字a'},memo: 'テストメモ1'";
-		String u1b = "id: 12,user: {first_name: '名前b', last_name: '名字b'},memo: 'テストメモ2'";
-		String u1c = "id: 13,user: {first_name: '名前c', last_name: '名字c'}";
-		String u1d = "id: 14,user: {first_name: '名前d', last_name: '名字d'}";
-		String u1e = "id: 15,user: {first_name: '名前e', last_name: '名字e'}";
-		String u1f = "id: 16,user: {first_name: '名前f', last_name: '名字f'}";
+		String u1a = "id: 1011,user: {first_name: '名前a', last_name: '名字a'},memo: 'テストメモ1'";
+		String u1b = "id: 1012,user: {first_name: '名前b', last_name: '名字b'},memo: 'テストメモ2'";
+		String u1c = "id: 1013,user: {first_name: '名前c', last_name: '名字c'}";
+		String u1d = "id: 1014,user: {first_name: '名前d', last_name: '名字d'}";
+		String u1e = "id: 1015,user: {first_name: '名前e', last_name: '名字e'}";
+		String u1f = "id: 1016,user: {first_name: '名前f', last_name: '名字f'}";
 
 		String sOperationSchedule = new String();
 
@@ -99,7 +101,7 @@ public class MockDataSourceTest implements DataSource {
 			if (iOperationScheduleCount > 0) {
 				sOperationSchedule = "{"
 						+ "arrival_estimate: '2012-01-01T09:00:00.000+09:00', "
-						+ "departure_estimate: '2012-01-01T9:15:00.000+09:00', "
+						+ "departure_estimate: '2012-01-01T09:15:00.000+09:00', "
 						+ "platform: {name: 'テストコガソフトウェア前'}, "
 						+ "reservations_as_arrival: [{passenger_count: 5, " + u1a + "}, {passenger_count: 6, " + u1b + "}, {passenger_count: 7, " + u1c + "}] ,"
 						+ "reservations_as_departure: [{passenger_count: 15, " + u1d + "}, {passenger_count: 16, " + u1e + "}, {passenger_count: 17, " + u1f + "}]}";
@@ -109,7 +111,7 @@ public class MockDataSourceTest implements DataSource {
 
 			if (iOperationScheduleCount > 1) {
 				JSONObject j2 = new JSONObject("{"
-						+ "arrival_estimate: '2012-01-01T:10:00.000+09:00', "
+						+ "arrival_estimate: '2012-01-01T:09:30:00.000+09:00', "
 						+ "departure_estimate: '2012-01-01T10:05:00.000+09:00', "
 						+ "platform: {name: 'テスト上野御徒町駅前'}, "
 						+ "reservations_as_arrival: [{passenger_count: 5}]}");
@@ -165,6 +167,8 @@ public class MockDataSourceTest implements DataSource {
 
 	public void setReservation(Integer iReservation) {
 
+		System.out.println("setReservation " + iReservation);
+
 		lOperationSchedule = new LinkedList<OperationSchedule>();
 
 		String u1a = "";
@@ -207,15 +211,15 @@ public class MockDataSourceTest implements DataSource {
 
 			JSONObject j1 = new JSONObject("{"
 					+ "arrival_estimate: '2012-01-01T09:00:00.000+09:00', "
-					+ "departure_estimate: '2012-01-01T9:15:00.000+09:00', "
+					+ "departure_estimate: '2012-01-01T09:01:00.000+09:00', "
 					+ "platform: {name: 'テストコガソフトウェア前'}, "
 					+ "reservations_as_arrival: [" + u1a  + u1b  + u1c + "] ,"
 					+ "reservations_as_departure: [ " + u1d + u1e + u1f + "]}");
 			lOperationSchedule.add(new OperationSchedule(j1));
 
 			JSONObject j2 = new JSONObject("{"
-					+ "arrival_estimate: '2012-01-01T:10:00.000+09:00', "
-					+ "departure_estimate: '2012-01-01T10:05:00.000+09:00', "
+					+ "arrival_estimate: '2012-01-01T09:02:00.000+09:00', "
+					+ "departure_estimate: '2012-01-01T09:05:00.000+09:00', "
 					+ "platform: {name: 'テスト上野御徒町駅前'}, "
 					+ "reservations_as_arrival: [{passenger_count: 5}]}");
 			lOperationSchedule.add(new OperationSchedule(j2));
@@ -262,6 +266,7 @@ public class MockDataSourceTest implements DataSource {
 	public void setReservationCandidate(Integer iCount,Integer userId,
 			Integer departurePlatformId, Integer arrivalPlatformId)
 					 {
+
 		DateFormat f = new SimpleDateFormat("mm:ss");
 		try {
 

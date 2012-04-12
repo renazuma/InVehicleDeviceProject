@@ -51,7 +51,7 @@ public class DummyDataSource implements DataSource {
 
 		List<OperationSchedule> l = new LinkedList<OperationSchedule>();
 		try {
-			String u1 = "user: {id: 1, last_name: '勅使河原', first_name: '恭三郎'}";
+			String u1 = "user: {id: 1, last_name: '河原', first_name: '恭三郎'}";
 			String u2 = "user: {id: 2, last_name: '滝口', first_name: '遥奈'}";
 			String u3 = "user: {id: 3, last_name: '下村', first_name: '誠一'}";
 			String u4 = "user: {id: 4, last_name: '木本', first_name: '麻紀'}";
@@ -63,7 +63,7 @@ public class DummyDataSource implements DataSource {
 							+ "id: 1, "
 							+ "arrival_estimate: '2012-01-01T01:00:00.000+09:00', "
 							+ "departure_estimate: '2012-01-01T02:00:00.000+09:00', "
-							+ "platform: {name: 'コガソフトウェア前', name_ruby: 'こがそふとうぇあまえ'}, "
+							+ "platform: {name: 'aコガソフトウェア前', name_ruby: 'こがそふとうぇあまえ'}, "
 							+ "reservations_as_arrival: ["
 							+ "  {id: 1, passenger_count: 5, memo: 'テストメモ1', "
 							+ u1 + "}, " + "  {id: 2, passenger_count: 6, "

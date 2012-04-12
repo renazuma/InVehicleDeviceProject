@@ -6,6 +6,7 @@ import android.widget.TextView;
 
 import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceActivity;
+import com.kogasoftware.odt.invehicledevice.InVehicleDeviceLogic;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
 import com.kogasoftware.odt.invehicledevice.test.MockDataSourceTest;
@@ -16,6 +17,8 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 	private Solo solo;
 
 	public void dataset(Integer i) {
+
+		System.out.println("dataset " + i);
 
 		DataSourceFactory.newInstance();
 		MockDataSourceTest mdst = new MockDataSourceTest();
@@ -34,7 +37,13 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 	@Override
 	public void setUp() throws Exception {
+
 		super.setUp();
+
+		InVehicleDeviceLogic.clearStatusFile();
+
+		dataset(6);
+
 		solo = new Solo(getInstrumentation(), getActivity());
 
 		// デフォルトで停車中にする
@@ -47,9 +56,8 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 		dataset(6);
 	}
 
-/*	public void test01_メモボタンを押すとメモ画面が表示() {
-		assertEquals(View.GONE, solo.getView(R.id.memo_modal).getVisibility());
-		solo.clickOnView(solo.getView(R.id.memo_button));
+	public void test01_メモボタンを押すとメモ画面が表示() {
+		solo.clickOnButton("メモ");
 		assertEquals(View.VISIBLE, solo.getView(R.id.memo_modal)
 				.getVisibility());
 		assertTrue(solo.searchText("テストメモ1"));
@@ -60,7 +68,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 		solo.clickOnView(solo.getView(R.id.memo_close_button));
 		assertEquals(View.GONE, solo.getView(R.id.memo_modal).getVisibility());
 	}
-
+/*
 	public void test03_復路ボタンを押すと復路画面が表示() {
 		assertEquals(View.GONE, solo.getView(R.id.return_path_modal)
 				.getVisibility());
