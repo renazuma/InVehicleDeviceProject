@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import junit.framework.TestCase;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
@@ -20,5 +21,16 @@ public class JSONTestCase extends TestCase {
 		 VehicleNotification vn = vl.getFirst();		 
 		 assertEquals("テストメッセージ", vn.getBody().get());
 		 assertFalse(vn.getOperator().isPresent());
+	 }
+	 
+	 public void testOptional() throws Exception {
+		 String json = "{\"body\":null,\"created_at\":\"2012-04-11T18:23:45Z\",\"id\":2,\"in_vehicle_device_id\":1,\"operator_id\":1,\"read_at\":null,\"response\":null,\"updated_at\":\"2012-04-11T18:23:45Z\"}";
+		 
+		 JSONObject jsonObject = new JSONObject(json);
+		 
+		 VehicleNotification vn = VehicleNotification.parse(jsonObject).orNull();
+		 assertNull(vn.getBody().orNull());
+		 assertNull(vn.getReadAt().orNull());
+		 assertNull(vn.getResponse().orNull());
 	 }
 }

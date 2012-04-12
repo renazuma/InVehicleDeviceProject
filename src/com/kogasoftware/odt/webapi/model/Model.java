@@ -81,6 +81,10 @@ abstract public class Model implements Serializable {
 		if (!jsonObject.has(key)) {
 			return Optional.<Boolean>absent();
 		}
+		String booleanString = jsonObject.getString(key);
+		if (booleanString.equalsIgnoreCase("null")) {
+			return Optional.<Boolean>absent();
+		}
 		return Optional.<Boolean>of(parseBoolean(jsonObject, key));
 	}
 
@@ -88,11 +92,20 @@ abstract public class Model implements Serializable {
 		if (!jsonObject.has(key)) {
 			return Optional.<Date>absent();
 		}
+		String dateString = jsonObject.getString(key);
+		if (dateString.equalsIgnoreCase("null")) {
+			return Optional.<Date>absent();
+		}
+
 		return Optional.<Date>of(parseDate(jsonObject, key));
 	}
 
 	protected static Optional<Float> parseOptionalFloat(JSONObject jsonObject, String key) throws JSONException, ParseException {
 		if (!jsonObject.has(key)) {
+			return Optional.<Float>absent();
+		}
+		String floatString = jsonObject.getString(key);
+		if (floatString.equalsIgnoreCase("null")) {
 			return Optional.<Float>absent();
 		}
 		return Optional.<Float>of(parseFloat(jsonObject, key));
@@ -103,11 +116,19 @@ abstract public class Model implements Serializable {
 		if (!jsonObject.has(key)) {
 			return Optional.<Integer>absent();
 		}
+		String integerString = jsonObject.getString(key);
+		if (integerString.equalsIgnoreCase("null")) {
+			return Optional.<Integer>absent();
+		}
 		return Optional.<Integer>of(parseInteger(jsonObject, key));
 	}
 
 	protected static Optional<String> parseOptionalString(JSONObject jsonObject, String key) throws JSONException {
 		if (!jsonObject.has(key)) {
+			return Optional.<String>absent();
+		}
+		String string = jsonObject.getString(key);
+		if (string.equalsIgnoreCase("null")) {
 			return Optional.<String>absent();
 		}
 		return Optional.<String>of(parseString(jsonObject, key));
