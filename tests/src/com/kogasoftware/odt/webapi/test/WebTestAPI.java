@@ -3,6 +3,7 @@ package com.kogasoftware.odt.webapi.test;
 import java.util.List;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.kogasoftware.odt.webapi.WebAPI;
 import com.kogasoftware.odt.webapi.WebAPIException;
@@ -102,7 +103,9 @@ public class WebTestAPI extends WebAPI {
 	 * @throws JSONException 
 	 */
 	public int createDemand(Demand obj, WebAPICallback<Demand> callback) throws WebAPIException, JSONException {
-		return post(TEST_PATH_DEMANDS, obj.toJSONObject(), callback, new ResponseConverter<Demand>() {
+		JSONObject body = new JSONObject();
+		body.put("demand", obj.toJSONObject());
+		return post(TEST_PATH_DEMANDS, body, callback, new ResponseConverter<Demand>() {
 			@Override
 			public Demand convert(byte[] rawResponse)
 					throws Exception {
@@ -166,7 +169,9 @@ public class WebTestAPI extends WebAPI {
 	 * @throws JSONException 
 	 */
 	public int createDriver(Driver obj, WebAPICallback<Driver> callback) throws WebAPIException, JSONException {
-		return post(TEST_PATH_DRIVERS, obj.toJSONObject(), callback, new ResponseConverter<Driver>() {
+		JSONObject body = new JSONObject();
+		body.put("driver", obj.toJSONObject());
+		return post(TEST_PATH_DRIVERS, body, callback, new ResponseConverter<Driver>() {
 			@Override
 			public Driver convert(byte[] rawResponse)
 					throws Exception {
@@ -230,7 +235,9 @@ public class WebTestAPI extends WebAPI {
 	 * @throws JSONException 
 	 */
 	public int createInVehicleDevice(InVehicleDevice obj, WebAPICallback<InVehicleDevice> callback) throws WebAPIException, JSONException {
-		return post(TEST_PATH_IN_VEHICLE_DEVICES, obj.toJSONObject(), callback, new ResponseConverter<InVehicleDevice>() {
+		JSONObject body = new JSONObject();
+		body.put("in_vehicle_device", obj.toJSONObject());
+		return post(TEST_PATH_IN_VEHICLE_DEVICES, body, callback, new ResponseConverter<InVehicleDevice>() {
 			@Override
 			public InVehicleDevice convert(byte[] rawResponse)
 					throws Exception {
@@ -294,7 +301,9 @@ public class WebTestAPI extends WebAPI {
 	 * @throws JSONException 
 	 */
 	public int createOperationRecord(OperationRecord obj, WebAPICallback<OperationRecord> callback) throws WebAPIException, JSONException {
-		return post(TEST_PATH_OPERATION_RECORDS, obj.toJSONObject(), callback, new ResponseConverter<OperationRecord>() {
+		JSONObject body = new JSONObject();
+		body.put("operation_record", obj.toJSONObject());
+		return post(TEST_PATH_OPERATION_RECORDS, body, callback, new ResponseConverter<OperationRecord>() {
 			@Override
 			public OperationRecord convert(byte[] rawResponse)
 					throws Exception {
@@ -358,7 +367,9 @@ public class WebTestAPI extends WebAPI {
 	 * @throws JSONException 
 	 */
 	public int createOperationSchedule(OperationSchedule obj, WebAPICallback<OperationSchedule> callback) throws WebAPIException, JSONException {
-		return post(TEST_PATH_OPERATION_SCHEDULES, obj.toJSONObject(), callback, new ResponseConverter<OperationSchedule>() {
+		JSONObject body = new JSONObject();
+		body.put("operation_schedule", obj.toJSONObject());
+		return post(TEST_PATH_OPERATION_SCHEDULES, body, callback, new ResponseConverter<OperationSchedule>() {
 			@Override
 			public OperationSchedule convert(byte[] rawResponse)
 					throws Exception {
@@ -422,7 +433,9 @@ public class WebTestAPI extends WebAPI {
 	 * @throws JSONException 
 	 */
 	public int createOperator(Operator obj, WebAPICallback<Operator> callback) throws WebAPIException, JSONException {
-		return post(TEST_PATH_OPERATORS, obj.toJSONObject(), callback, new ResponseConverter<Operator>() {
+		JSONObject body = new JSONObject();
+		body.put("operator", obj.toJSONObject());
+		return post(TEST_PATH_OPERATORS, body, callback, new ResponseConverter<Operator>() {
 			@Override
 			public Operator convert(byte[] rawResponse)
 					throws Exception {
@@ -486,7 +499,9 @@ public class WebTestAPI extends WebAPI {
 	 * @throws JSONException 
 	 */
 	public int createPassengerRecord(PassengerRecord obj, WebAPICallback<PassengerRecord> callback) throws WebAPIException, JSONException {
-		return post(TEST_PATH_PASSENGER_RECORDS, obj.toJSONObject(), callback, new ResponseConverter<PassengerRecord>() {
+		JSONObject body = new JSONObject();
+		body.put("passenger_record", obj.toJSONObject());
+		return post(TEST_PATH_PASSENGER_RECORDS, body, callback, new ResponseConverter<PassengerRecord>() {
 			@Override
 			public PassengerRecord convert(byte[] rawResponse)
 					throws Exception {
@@ -550,7 +565,9 @@ public class WebTestAPI extends WebAPI {
 	 * @throws JSONException 
 	 */
 	public int createPlatform(Platform obj, WebAPICallback<Platform> callback) throws WebAPIException, JSONException {
-		return post(TEST_PATH_PLATFORMS, obj.toJSONObject(), callback, new ResponseConverter<Platform>() {
+		JSONObject body = new JSONObject();
+		body.put("platform", obj.toJSONObject());
+		return post(TEST_PATH_PLATFORMS, body, callback, new ResponseConverter<Platform>() {
 			@Override
 			public Platform convert(byte[] rawResponse)
 					throws Exception {
@@ -614,7 +631,9 @@ public class WebTestAPI extends WebAPI {
 	 * @throws JSONException 
 	 */
 	public int createReservation(Reservation obj, WebAPICallback<Reservation> callback) throws WebAPIException, JSONException {
-		return post(TEST_PATH_RESERVATIONS, obj.toJSONObject(), callback, new ResponseConverter<Reservation>() {
+		JSONObject body = new JSONObject();
+		body.put("reservation", obj.toJSONObject());
+		return post(TEST_PATH_RESERVATIONS, body, callback, new ResponseConverter<Reservation>() {
 			@Override
 			public Reservation convert(byte[] rawResponse)
 					throws Exception {
@@ -678,7 +697,9 @@ public class WebTestAPI extends WebAPI {
 	 * @throws JSONException 
 	 */
 	public int createReservationCandidate(ReservationCandidate obj, WebAPICallback<ReservationCandidate> callback) throws WebAPIException, JSONException {
-		return post(TEST_PATH_RESERVATION_CANDIDATES, obj.toJSONObject(), callback, new ResponseConverter<ReservationCandidate>() {
+		JSONObject body = new JSONObject();
+		body.put("reservation_candidate", obj.toJSONObject());
+		return post(TEST_PATH_RESERVATION_CANDIDATES, body, callback, new ResponseConverter<ReservationCandidate>() {
 			@Override
 			public ReservationCandidate convert(byte[] rawResponse)
 					throws Exception {
@@ -742,7 +763,9 @@ public class WebTestAPI extends WebAPI {
 	 * @throws JSONException 
 	 */
 	public int createServiceUnit(ServiceUnit obj, WebAPICallback<ServiceUnit> callback) throws WebAPIException, JSONException {
-		return post(TEST_PATH_SERVICE_UNITS, obj.toJSONObject(), callback, new ResponseConverter<ServiceUnit>() {
+		JSONObject body = new JSONObject();
+		body.put("service_unit", obj.toJSONObject());
+		return post(TEST_PATH_SERVICE_UNITS, body, callback, new ResponseConverter<ServiceUnit>() {
 			@Override
 			public ServiceUnit convert(byte[] rawResponse)
 					throws Exception {
@@ -806,7 +829,9 @@ public class WebTestAPI extends WebAPI {
 	 * @throws JSONException 
 	 */
 	public int createServiceUnitStatusLog(ServiceUnitStatusLog obj, WebAPICallback<ServiceUnitStatusLog> callback) throws WebAPIException, JSONException {
-		return post(TEST_PATH_SERVICE_UNIT_STATUS_LOGS, obj.toJSONObject(), callback, new ResponseConverter<ServiceUnitStatusLog>() {
+		JSONObject body = new JSONObject();
+		body.put("service_unit_status_log", obj.toJSONObject());
+		return post(TEST_PATH_SERVICE_UNIT_STATUS_LOGS, body, callback, new ResponseConverter<ServiceUnitStatusLog>() {
 			@Override
 			public ServiceUnitStatusLog convert(byte[] rawResponse)
 					throws Exception {
@@ -870,7 +895,9 @@ public class WebTestAPI extends WebAPI {
 	 * @throws JSONException 
 	 */
 	public int createUser(User obj, WebAPICallback<User> callback) throws WebAPIException, JSONException {
-		return post(TEST_PATH_USERS, obj.toJSONObject(), callback, new ResponseConverter<User>() {
+		JSONObject body = new JSONObject();
+		body.put("user", obj.toJSONObject());
+		return post(TEST_PATH_USERS, body, callback, new ResponseConverter<User>() {
 			@Override
 			public User convert(byte[] rawResponse)
 					throws Exception {
@@ -934,7 +961,9 @@ public class WebTestAPI extends WebAPI {
 	 * @throws JSONException 
 	 */
 	public int createVehicleNotification(VehicleNotification obj, WebAPICallback<VehicleNotification> callback) throws WebAPIException, JSONException {
-		return post(TEST_PATH_VEHICLE_NOTIFICATIONS, obj.toJSONObject(), callback, new ResponseConverter<VehicleNotification>() {
+		JSONObject body = new JSONObject();
+		body.put("vehicle_notification", obj.toJSONObject());
+		return post(TEST_PATH_VEHICLE_NOTIFICATIONS, body, callback, new ResponseConverter<VehicleNotification>() {
 			@Override
 			public VehicleNotification convert(byte[] rawResponse)
 					throws Exception {
