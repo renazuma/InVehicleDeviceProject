@@ -25,4 +25,5 @@ local.properties
 release.keystore
 
 /tests/open_jtalk
+*_GIT_IGNORE_*
 
