@@ -18,7 +18,7 @@ import android.view.View;
 import com.google.common.eventbus.EventBus;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceStatus.Access;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
-import com.kogasoftware.odt.invehicledevice.datasource.DummyDataSource;
+import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 import com.kogasoftware.odt.invehicledevice.modal.ConfigModal;
 import com.kogasoftware.odt.invehicledevice.modal.MemoModal;
@@ -196,7 +196,7 @@ public class InVehicleDeviceLogic {
 	private final List<WeakReference<Object>> registeredObjectReferences = new LinkedList<WeakReference<Object>>();
 	private final ScheduledExecutorService executorService = Executors
 			.newScheduledThreadPool(NUM_THREADS);
-	private final DataSource dataSource = new DummyDataSource();
+	private final DataSource dataSource = DataSourceFactory.newInstance();
 	private final InVehicleDeviceStatus.Access statusAccess;
 	private Thread voiceThread = new EmptyThread();
 
@@ -206,14 +206,16 @@ public class InVehicleDeviceLogic {
 
 	public InVehicleDeviceLogic(Activity activity, File statusFile)
 			throws InterruptedException {
-		if (clearStatusFile.getAndSet(false)) {
-			if (statusFile.exists() && !statusFile.delete()) {
-				Log.e(TAG, "!(statusFile.exists() && !statusFile.delete())");
-			}
-		}
 		try {
 			Thread.sleep(0); // interruption point
-			this.statusAccess = new InVehicleDeviceStatus.Access(statusFile);
+			if (clearStatusFile.getAndSet(false)) {
+				this.statusAccess = new InVehicleDeviceStatus.Access();
+				if (statusFile.exists() && !statusFile.delete()) {
+					Log.e(TAG, "!(statusFile.exists() && !statusFile.delete())");
+				}
+			} else {
+				this.statusAccess = new InVehicleDeviceStatus.Access(statusFile);
+			}
 
 			try {
 				executorService.submit(new OperationScheduleReceiver(this));
