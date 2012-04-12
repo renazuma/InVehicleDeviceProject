@@ -178,6 +178,7 @@ public class WebAPI {
 				JSONObject entityJSON, ResponseConverter<T> responseConverter, WebAPICallback<T> callback, HttpEntityEnclosingRequestBase request) throws WebAPIException {
 			setEntityEnclosingRequestBase(host, path, entityJSON, request);
 			this.responseConverter = responseConverter;
+			this.callback = callback;
 			this.request = request;
 		}
 		
@@ -315,19 +316,21 @@ public class WebAPI {
 		
 	}
 
-	private <T> void get(String path, WebAPICallback<T> callback, ResponseConverter<T> conv) throws WebAPIException {
+	protected <T> void get(String path, WebAPICallback<T> callback, ResponseConverter<T> conv) throws WebAPIException {
 		WebAPITask<T> task = new WebAPITask<T>(SERVER_HOST, PATH_PREFIX + path, null, conv, callback, new HttpGet());
 		task.execute();
 	}
 	
-	private <T> void post(String path, JSONObject param, WebAPICallback<T> callback, ResponseConverter<T> conv)  throws WebAPIException {
+	protected <T> void post(String path, JSONObject param, WebAPICallback<T> callback, ResponseConverter<T> conv)  throws WebAPIException {
 		WebAPITask<T> task = new WebAPITask<T>(SERVER_HOST, PATH_PREFIX + path, param, conv, callback, new HttpPost());
 		task.execute();		
 	}
 
 	protected JSONObject parseJSONObject(byte[] rawResponse) throws JSONException {
 		try {
-			return new JSONObject(new String(rawResponse, "iso-8859-1"));
+			String json = new String(rawResponse, "iso-8859-1");
+			Log.d("WebAPI#parseJSONObject", json);
+			return new JSONObject(json);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 			return null;
@@ -336,7 +339,9 @@ public class WebAPI {
 
 	protected JSONArray parseJSONArray(byte[] rawResponse) throws JSONException {
 		try {
-			return new JSONArray(new String(rawResponse, "iso-8859-1"));
+			String json = new String(rawResponse, "iso-8859-1");
+			Log.d("WebAPI#parseJSONArray", json);
+			return new JSONArray(json);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 			return null;
@@ -357,12 +362,33 @@ public class WebAPI {
 		return res;
 	}
 
-	public void login(InVehicleDevice login, WebAPICallback<InVehicleDevice> callback) throws WebAPIException, JSONException {
+	public void login(InVehicleDevice login, final WebAPICallback<InVehicleDevice> callback) throws WebAPIException, JSONException {
 		JSONObject ivd = filterJSONKeys(login.toJSONObject(), new String[] { "login", "password" });
 		JSONObject param = new JSONObject();
 		param.put("in_vehicle_device", ivd);
 
-		post(PATH_LOGIN, param, callback, new ResponseConverter<InVehicleDevice>() {
+		post(PATH_LOGIN, param, new WebAPICallback<InVehicleDevice>() {
+
+			@Override
+			public void onSucceed(int reqkey, InVehicleDevice result) {
+				if (result.getAuthenticationToken().isPresent()) {
+					WebAPI.this.authenticationToken = result.getAuthenticationToken().get();
+					Log.d("WebAPI", "onSucceed : " + WebAPI.this.authenticationToken);
+					callback.onSucceed(reqkey, result);
+				}
+			}
+
+			@Override
+			public void onFailed(int reqkey) {
+				callback.onFailed(reqkey);
+			}
+
+			@Override
+			public void onException(int reqkey, WebAPIException ex) {
+				callback.onException(reqkey, ex);
+			}			
+			
+		}, new ResponseConverter<InVehicleDevice>() {
 			@Override
 			public InVehicleDevice convert(byte[] rawResponse)
 					throws Exception {
