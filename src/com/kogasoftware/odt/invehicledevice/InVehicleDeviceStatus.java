@@ -92,12 +92,6 @@ public class InVehicleDeviceStatus implements Serializable {
 	private static InVehicleDeviceStatus newInstance(File file) {
 		InVehicleDeviceStatus status = new InVehicleDeviceStatus();
 		status.file = file;
-		return status;
-	}
-
-	private static InVehicleDeviceStatus newInstance2(File file) {
-		InVehicleDeviceStatus status = new InVehicleDeviceStatus();
-		status.file = file;
 		FileInputStream fileInputStream = null;
 		ObjectInputStream objectInputStream = null;
 		try {

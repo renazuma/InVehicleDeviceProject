@@ -9,6 +9,7 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.app.Activity;
 import android.util.Log;
@@ -41,6 +42,12 @@ public class InVehicleDeviceLogic {
 		public AddUnexpectedReservationEvent(Reservation reservation) {
 			this.reservation = reservation;
 		}
+	}
+
+	private static AtomicBoolean clearStatusFile = new AtomicBoolean(false);
+
+	public static void clearStatusFile() {
+		clearStatusFile.set(true);
 	}
 
 	public static class EnterDriveStatusEvent {
@@ -199,6 +206,11 @@ public class InVehicleDeviceLogic {
 
 	public InVehicleDeviceLogic(Activity activity, File statusFile)
 			throws InterruptedException {
+		if (clearStatusFile.getAndSet(false)) {
+			if (statusFile.exists() && !statusFile.delete()) {
+				Log.e(TAG, "!(statusFile.exists() && !statusFile.delete())");
+			}
+		}
 		try {
 			Thread.sleep(0); // interruption point
 			this.statusAccess = new InVehicleDeviceStatus.Access(statusFile);
@@ -227,7 +239,7 @@ public class InVehicleDeviceLogic {
 					R.id.memo_modal, R.id.pause_modal, R.id.return_path_modal,
 					R.id.stop_check_modal, R.id.stop_modal,
 					R.id.notification_modal, R.id.schedule_changed_modal,
-					R.id.navigation_modal }) {
+					R.id.navigation_modal, R.id.login_modal }) {
 				View view = activity.findViewById(resourceId);
 				register(view);
 				Thread.sleep(0); // interruption point
@@ -272,7 +284,9 @@ public class InVehicleDeviceLogic {
 		statusAccess.write(new Access.Writer() {
 			@Override
 			public void write(InVehicleDeviceStatus status) {
-				status.currentOperationScheduleIndex++;
+				if (status.status == InVehicleDeviceStatus.Status.PLATFORM) {
+					status.currentOperationScheduleIndex++;
+				}
 				status.status = InVehicleDeviceStatus.Status.DRIVE;
 			}
 		});
