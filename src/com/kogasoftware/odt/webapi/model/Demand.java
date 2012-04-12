@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Demand extends Model {
-	private static final long serialVersionUID = 7454779470354707403L;
+	private static final long serialVersionUID = 4476844050229044278L;
 
 	public Demand() {
 	}

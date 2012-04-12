@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class InVehicleDevice extends Model {
-	private static final long serialVersionUID = 9030137447940005233L;
+	private static final long serialVersionUID = 6146868114469739799L;
 
 	public InVehicleDevice() {
 	}
@@ -35,6 +35,10 @@ public class InVehicleDevice extends Model {
 		setSignInCount(parseOptionalInteger(jsonObject, "sign_in_count"));
 		setTypeNumber(parseString(jsonObject, "type_number"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
+		setAuditComment(parseOptionalString(jsonObject, "audit_comment"));
+		setPassword(parseOptionalString(jsonObject, "password"));
+		setPasswordConfirmation(parseOptionalString(jsonObject, "password_confirmation"));
+		setRememberMe(parseOptionalString(jsonObject, "remember_me"));
 		setServiceUnits(ServiceUnit.parseList(jsonObject, "service_units"));
 		setVehicleNotifications(VehicleNotification.parseList(jsonObject, "vehicle_notifications"));
 	}
@@ -88,6 +92,10 @@ public class InVehicleDevice extends Model {
 		jsonObject.put("sign_in_count", toJSON(getSignInCount().orNull()));
 		jsonObject.put("type_number", toJSON(getTypeNumber()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
+		jsonObject.put("audit_comment", toJSON(getAuditComment().orNull()));
+		jsonObject.put("password", toJSON(getPassword().orNull()));
+		jsonObject.put("password_confirmation", toJSON(getPasswordConfirmation().orNull()));
+		jsonObject.put("remember_me", toJSON(getRememberMe().orNull()));
 		jsonObject.put("service_units", toJSON(getServiceUnits()));
 		jsonObject.put("vehicle_notifications", toJSON(getVehicleNotifications()));
 		return jsonObject;
@@ -323,6 +331,78 @@ public class InVehicleDevice extends Model {
 
 	public void setUpdatedAt(Date updatedAt) {
 		this.updatedAt = wrapNull(updatedAt);
+	}
+
+	private Optional<String> auditComment = Optional.<String>absent();
+
+	public Optional<String> getAuditComment() {
+		return wrapNull(auditComment);
+	}
+
+	public void setAuditComment(Optional<String> auditComment) {
+		this.auditComment = wrapNull(auditComment);
+	}
+
+	public void setAuditComment(String auditComment) {
+		this.auditComment = Optional.fromNullable(auditComment);
+	}
+
+	public void clearAuditComment() {
+		this.auditComment = Optional.<String>absent();
+	}
+
+	private Optional<String> password = Optional.<String>absent();
+
+	public Optional<String> getPassword() {
+		return wrapNull(password);
+	}
+
+	public void setPassword(Optional<String> password) {
+		this.password = wrapNull(password);
+	}
+
+	public void setPassword(String password) {
+		this.password = Optional.fromNullable(password);
+	}
+
+	public void clearPassword() {
+		this.password = Optional.<String>absent();
+	}
+
+	private Optional<String> passwordConfirmation = Optional.<String>absent();
+
+	public Optional<String> getPasswordConfirmation() {
+		return wrapNull(passwordConfirmation);
+	}
+
+	public void setPasswordConfirmation(Optional<String> passwordConfirmation) {
+		this.passwordConfirmation = wrapNull(passwordConfirmation);
+	}
+
+	public void setPasswordConfirmation(String passwordConfirmation) {
+		this.passwordConfirmation = Optional.fromNullable(passwordConfirmation);
+	}
+
+	public void clearPasswordConfirmation() {
+		this.passwordConfirmation = Optional.<String>absent();
+	}
+
+	private Optional<String> rememberMe = Optional.<String>absent();
+
+	public Optional<String> getRememberMe() {
+		return wrapNull(rememberMe);
+	}
+
+	public void setRememberMe(Optional<String> rememberMe) {
+		this.rememberMe = wrapNull(rememberMe);
+	}
+
+	public void setRememberMe(String rememberMe) {
+		this.rememberMe = Optional.fromNullable(rememberMe);
+	}
+
+	public void clearRememberMe() {
+		this.rememberMe = Optional.<String>absent();
 	}
 
 	private LinkedList<ServiceUnit> serviceUnits = new LinkedList<ServiceUnit>();

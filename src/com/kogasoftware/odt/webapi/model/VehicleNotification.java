@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class VehicleNotification extends Model {
-	private static final long serialVersionUID = 5504219504700488989L;
+	private static final long serialVersionUID = 8746793454322159861L;
 
 	public VehicleNotification() {
 	}

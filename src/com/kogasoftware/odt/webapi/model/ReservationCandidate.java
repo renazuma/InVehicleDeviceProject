@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class ReservationCandidate extends Model {
-	private static final long serialVersionUID = 2633876405886505117L;
+	private static final long serialVersionUID = 5368034311208846427L;
 
 	public ReservationCandidate() {
 	}

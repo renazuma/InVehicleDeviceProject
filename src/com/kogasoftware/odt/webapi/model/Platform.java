@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Platform extends Model {
-	private static final long serialVersionUID = 3365173783283415894L;
+	private static final long serialVersionUID = 330299336509521936L;
 
 	public Platform() {
 	}

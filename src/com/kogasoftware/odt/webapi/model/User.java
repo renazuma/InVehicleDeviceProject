@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class User extends Model {
-	private static final long serialVersionUID = 2576230592624720354L;
+	private static final long serialVersionUID = 3229618804378177802L;
 
 	public User() {
 	}
@@ -52,6 +52,12 @@ public class User extends Model {
 		setUpdateNotification(parseOptionalBoolean(jsonObject, "update_notification"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setWheelchair(parseOptionalBoolean(jsonObject, "wheelchair"));
+		setAuditComment(parseOptionalString(jsonObject, "audit_comment"));
+		setFullname(parseOptionalString(jsonObject, "fullname"));
+		setFullnameRuby(parseOptionalString(jsonObject, "fullname_ruby"));
+		setPassword(parseOptionalString(jsonObject, "password"));
+		setPasswordConfirmation(parseOptionalString(jsonObject, "password_confirmation"));
+		setRememberMe(parseOptionalString(jsonObject, "remember_me"));
 		setDemands(Demand.parseList(jsonObject, "demands"));
 		setReservationCandidates(ReservationCandidate.parseList(jsonObject, "reservation_candidates"));
 		setReservations(Reservation.parseList(jsonObject, "reservations"));
@@ -123,6 +129,12 @@ public class User extends Model {
 		jsonObject.put("update_notification", toJSON(getUpdateNotification().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
 		jsonObject.put("wheelchair", toJSON(getWheelchair().orNull()));
+		jsonObject.put("audit_comment", toJSON(getAuditComment().orNull()));
+		jsonObject.put("fullname", toJSON(getFullname().orNull()));
+		jsonObject.put("fullname_ruby", toJSON(getFullnameRuby().orNull()));
+		jsonObject.put("password", toJSON(getPassword().orNull()));
+		jsonObject.put("password_confirmation", toJSON(getPasswordConfirmation().orNull()));
+		jsonObject.put("remember_me", toJSON(getRememberMe().orNull()));
 		jsonObject.put("demands", toJSON(getDemands()));
 		jsonObject.put("reservation_candidates", toJSON(getReservationCandidates()));
 		jsonObject.put("reservations", toJSON(getReservations()));
@@ -609,6 +621,114 @@ public class User extends Model {
 
 	public void clearWheelchair() {
 		this.wheelchair = Optional.<Boolean>absent();
+	}
+
+	private Optional<String> auditComment = Optional.<String>absent();
+
+	public Optional<String> getAuditComment() {
+		return wrapNull(auditComment);
+	}
+
+	public void setAuditComment(Optional<String> auditComment) {
+		this.auditComment = wrapNull(auditComment);
+	}
+
+	public void setAuditComment(String auditComment) {
+		this.auditComment = Optional.fromNullable(auditComment);
+	}
+
+	public void clearAuditComment() {
+		this.auditComment = Optional.<String>absent();
+	}
+
+	private Optional<String> fullname = Optional.<String>absent();
+
+	public Optional<String> getFullname() {
+		return wrapNull(fullname);
+	}
+
+	public void setFullname(Optional<String> fullname) {
+		this.fullname = wrapNull(fullname);
+	}
+
+	public void setFullname(String fullname) {
+		this.fullname = Optional.fromNullable(fullname);
+	}
+
+	public void clearFullname() {
+		this.fullname = Optional.<String>absent();
+	}
+
+	private Optional<String> fullnameRuby = Optional.<String>absent();
+
+	public Optional<String> getFullnameRuby() {
+		return wrapNull(fullnameRuby);
+	}
+
+	public void setFullnameRuby(Optional<String> fullnameRuby) {
+		this.fullnameRuby = wrapNull(fullnameRuby);
+	}
+
+	public void setFullnameRuby(String fullnameRuby) {
+		this.fullnameRuby = Optional.fromNullable(fullnameRuby);
+	}
+
+	public void clearFullnameRuby() {
+		this.fullnameRuby = Optional.<String>absent();
+	}
+
+	private Optional<String> password = Optional.<String>absent();
+
+	public Optional<String> getPassword() {
+		return wrapNull(password);
+	}
+
+	public void setPassword(Optional<String> password) {
+		this.password = wrapNull(password);
+	}
+
+	public void setPassword(String password) {
+		this.password = Optional.fromNullable(password);
+	}
+
+	public void clearPassword() {
+		this.password = Optional.<String>absent();
+	}
+
+	private Optional<String> passwordConfirmation = Optional.<String>absent();
+
+	public Optional<String> getPasswordConfirmation() {
+		return wrapNull(passwordConfirmation);
+	}
+
+	public void setPasswordConfirmation(Optional<String> passwordConfirmation) {
+		this.passwordConfirmation = wrapNull(passwordConfirmation);
+	}
+
+	public void setPasswordConfirmation(String passwordConfirmation) {
+		this.passwordConfirmation = Optional.fromNullable(passwordConfirmation);
+	}
+
+	public void clearPasswordConfirmation() {
+		this.passwordConfirmation = Optional.<String>absent();
+	}
+
+	private Optional<String> rememberMe = Optional.<String>absent();
+
+	public Optional<String> getRememberMe() {
+		return wrapNull(rememberMe);
+	}
+
+	public void setRememberMe(Optional<String> rememberMe) {
+		this.rememberMe = wrapNull(rememberMe);
+	}
+
+	public void setRememberMe(String rememberMe) {
+		this.rememberMe = Optional.fromNullable(rememberMe);
+	}
+
+	public void clearRememberMe() {
+		this.rememberMe = Optional.<String>absent();
 	}
 
 	private LinkedList<Demand> demands = new LinkedList<Demand>();

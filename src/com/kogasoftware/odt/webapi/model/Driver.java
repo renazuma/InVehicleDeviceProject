@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Driver extends Model {
-	private static final long serialVersionUID = 3286830017145199074L;
+	private static final long serialVersionUID = 7009132757571303089L;
 
 	public Driver() {
 	}

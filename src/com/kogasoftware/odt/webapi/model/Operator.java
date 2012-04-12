@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Operator extends Model {
-	private static final long serialVersionUID = 1713318088857524442L;
+	private static final long serialVersionUID = 4270259938479785548L;
 
 	public Operator() {
 	}
@@ -36,6 +36,11 @@ public class Operator extends Model {
 		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
 		setSignInCount(parseOptionalInteger(jsonObject, "sign_in_count"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
+		setAuditComment(parseOptionalString(jsonObject, "audit_comment"));
+		setPassword(parseOptionalString(jsonObject, "password"));
+		setPasswordConfirmation(parseOptionalString(jsonObject, "password_confirmation"));
+		setRememberMe(parseOptionalString(jsonObject, "remember_me"));
+		setServiceProvider(parseOptionalString(jsonObject, "service_provider"));
 		setReservations(Reservation.parseList(jsonObject, "reservations"));
 	}
 
@@ -89,6 +94,11 @@ public class Operator extends Model {
 		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
 		jsonObject.put("sign_in_count", toJSON(getSignInCount().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
+		jsonObject.put("audit_comment", toJSON(getAuditComment().orNull()));
+		jsonObject.put("password", toJSON(getPassword().orNull()));
+		jsonObject.put("password_confirmation", toJSON(getPasswordConfirmation().orNull()));
+		jsonObject.put("remember_me", toJSON(getRememberMe().orNull()));
+		jsonObject.put("service_provider", toJSON(getServiceProvider().orNull()));
 		jsonObject.put("reservations", toJSON(getReservations()));
 		return jsonObject;
 	}
@@ -341,6 +351,96 @@ public class Operator extends Model {
 
 	public void setUpdatedAt(Date updatedAt) {
 		this.updatedAt = wrapNull(updatedAt);
+	}
+
+	private Optional<String> auditComment = Optional.<String>absent();
+
+	public Optional<String> getAuditComment() {
+		return wrapNull(auditComment);
+	}
+
+	public void setAuditComment(Optional<String> auditComment) {
+		this.auditComment = wrapNull(auditComment);
+	}
+
+	public void setAuditComment(String auditComment) {
+		this.auditComment = Optional.fromNullable(auditComment);
+	}
+
+	public void clearAuditComment() {
+		this.auditComment = Optional.<String>absent();
+	}
+
+	private Optional<String> password = Optional.<String>absent();
+
+	public Optional<String> getPassword() {
+		return wrapNull(password);
+	}
+
+	public void setPassword(Optional<String> password) {
+		this.password = wrapNull(password);
+	}
+
+	public void setPassword(String password) {
+		this.password = Optional.fromNullable(password);
+	}
+
+	public void clearPassword() {
+		this.password = Optional.<String>absent();
+	}
+
+	private Optional<String> passwordConfirmation = Optional.<String>absent();
+
+	public Optional<String> getPasswordConfirmation() {
+		return wrapNull(passwordConfirmation);
+	}
+
+	public void setPasswordConfirmation(Optional<String> passwordConfirmation) {
+		this.passwordConfirmation = wrapNull(passwordConfirmation);
+	}
+
+	public void setPasswordConfirmation(String passwordConfirmation) {
+		this.passwordConfirmation = Optional.fromNullable(passwordConfirmation);
+	}
+
+	public void clearPasswordConfirmation() {
+		this.passwordConfirmation = Optional.<String>absent();
+	}
+
+	private Optional<String> rememberMe = Optional.<String>absent();
+
+	public Optional<String> getRememberMe() {
+		return wrapNull(rememberMe);
+	}
+
+	public void setRememberMe(Optional<String> rememberMe) {
+		this.rememberMe = wrapNull(rememberMe);
+	}
+
+	public void setRememberMe(String rememberMe) {
+		this.rememberMe = Optional.fromNullable(rememberMe);
+	}
+
+	public void clearRememberMe() {
+		this.rememberMe = Optional.<String>absent();
+	}
+
+	private Optional<String> serviceProvider = Optional.<String>absent();
+
+	public Optional<String> getServiceProvider() {
+		return wrapNull(serviceProvider);
+	}
+
+	public void setServiceProvider(Optional<String> serviceProvider) {
+		this.serviceProvider = wrapNull(serviceProvider);
+	}
+
+	public void setServiceProvider(String serviceProvider) {
+		this.serviceProvider = Optional.fromNullable(serviceProvider);
+	}
+
+	public void clearServiceProvider() {
+		this.serviceProvider = Optional.<String>absent();
 	}
 
 	private LinkedList<Reservation> reservations = new LinkedList<Reservation>();

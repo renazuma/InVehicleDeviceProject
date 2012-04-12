@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class OperationSchedule extends Model {
-	private static final long serialVersionUID = 2379013959126865495L;
+	private static final long serialVersionUID = 2754148628276252546L;
 
 	public OperationSchedule() {
 	}
