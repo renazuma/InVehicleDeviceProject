@@ -28,12 +28,12 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 		api.login(ivd, new WebAPICallback<InVehicleDevice>() {
 
 			@Override
-			public void onSucceed(int reqkey, InVehicleDevice result) {
+			public void onSucceed(int reqkey, int statusCode, InVehicleDevice result) {
 				latch.countDown();
 			}
 
 			@Override
-			public void onFailed(int reqkey) {
+			public void onFailed(int reqkey, int statusCode) {
 				latch.countDown();
 			}
 
@@ -58,13 +58,13 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 		
 		api.getVehicleNotifications(new WebAPICallback<List<VehicleNotification>>() {
 			@Override
-			public void onSucceed(int reqkey, List<VehicleNotification> result) {
+			public void onSucceed(int reqkey, int statusCode, List<VehicleNotification> result) {
 				notifications = result;
 				latch.countDown();
 			}
 			
 			@Override
-			public void onFailed(int reqkey) {
+			public void onFailed(int reqkey, int statusCode) {
 				latch.countDown();
 			}
 

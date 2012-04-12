@@ -20,12 +20,12 @@ public class WebTestAPITestCase extends
 
 		api.cleanDatabase(new WebAPICallback<Void>() {
 			@Override
-			public void onSucceed(int reqkey, Void result) {
+			public void onSucceed(int reqkey, int statusCode, Void result) {
 				latch.countDown();
 			}
 			
 			@Override
-			public void onFailed(int reqkey) {
+			public void onFailed(int reqkey, int statusCode) {
 				latch.countDown();
 			}
 			

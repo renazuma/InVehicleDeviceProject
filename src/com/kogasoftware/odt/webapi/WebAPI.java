@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -155,8 +156,8 @@ public class WebAPI {
 	protected static int reqkeyCounter = 0;
 	
 	public interface WebAPICallback<T> {
-		public void onSucceed(int reqkey, T result);
-		public void onFailed(int reqkey);
+		public void onSucceed(int reqkey, int statusCode, T result);
+		public void onFailed(int reqkey, int statusCode);
 		public void onException(int reqkey, WebAPIException ex);
 	}
 	
@@ -165,6 +166,8 @@ public class WebAPI {
 		private int reqkey;
 		private ResponseConverter<T> responseConverter;
 		private HttpRequestBase request;
+		private int statusCode = -1;
+		private boolean succeed = false;
 
 		// Constructor for GET, DELETE
 		public WebAPITask(String host, String path, Map<String, String> params,
@@ -221,7 +224,8 @@ public class WebAPI {
 			} catch (IOException e) {
 				throw new WebAPIException(true, e);
 			}
-			Integer statusCode = httpResponse.getStatusLine().getStatusCode();
+			
+			statusCode = httpResponse.getStatusLine().getStatusCode();
 			if (statusCode / 100 == 4) {
 				throw new WebAPIException(false, "Status Code = " + statusCode);
 			} else if (statusCode / 100 == 5) {
@@ -229,8 +233,11 @@ public class WebAPI {
 			}
 			byte[] response = new byte[] {};
 			try {
-				response = ByteStreams.toByteArray(httpResponse.getEntity()
-						.getContent());
+				HttpEntity entity = httpResponse.getEntity();
+				if (entity != null) {
+					response = ByteStreams.toByteArray(entity.getContent());
+				}
+				succeed = true;
 			} catch (IOException e) {
 				throw new WebAPIException(true, e);
 			}
@@ -321,10 +328,14 @@ public class WebAPI {
 			super.onPostExecute(result);
 
 			if (callback != null) {
-				if (result != null) {
-					callback.onSucceed(reqkey, result);
+				if (succeed) {
+					callback.onSucceed(reqkey, statusCode, result);
 				} else {
-					callback.onFailed(reqkey);
+					if (statusCode > 0) {
+						callback.onFailed(reqkey, statusCode);
+					} else {
+						callback.onException(reqkey, new WebAPIException(false, "Illegal status"));
+					}
 				}
 			}
 		}
@@ -401,17 +412,17 @@ public class WebAPI {
 		post(PATH_LOGIN, param, new WebAPICallback<InVehicleDevice>() {
 
 			@Override
-			public void onSucceed(int reqkey, InVehicleDevice result) {
+			public void onSucceed(int reqkey, int statusCode, InVehicleDevice result) {
 				if (result.getAuthenticationToken().isPresent()) {
 					WebAPI.this.authenticationToken = result.getAuthenticationToken().get();
 					Log.d("WebAPI", "onSucceed : " + WebAPI.this.authenticationToken);
-					callback.onSucceed(reqkey, result);
+					callback.onSucceed(reqkey, statusCode, result);
 				}
 			}
 
 			@Override
-			public void onFailed(int reqkey) {
-				callback.onFailed(reqkey);
+			public void onFailed(int reqkey, int statusCode) {
+				callback.onFailed(reqkey, statusCode);
 			}
 
 			@Override
