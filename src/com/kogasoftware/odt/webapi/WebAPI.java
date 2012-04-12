@@ -32,7 +32,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.common.base.Objects;
-import com.google.common.base.Optional;
 import com.google.common.io.ByteStreams;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
@@ -156,8 +155,26 @@ public class WebAPI {
 	protected static int reqkeyCounter = 0;
 	
 	public interface WebAPICallback<T> {
+		/** 
+		 * リクエスト成功時のコールバック
+		 * @param reqkey リクエスト時の reqkey
+		 * @param statusCode HTTPステータス
+		 * @param result 結果のオブジェクト
+		 */
 		public void onSucceed(int reqkey, int statusCode, T result);
+
+		/**
+		 * リクエスト失敗時のコールバック
+		 * @param reqkey リクエスト時の reqkey
+		 * @param statusCode HTTPステータス
+		 */
 		public void onFailed(int reqkey, int statusCode);
+		
+		/**
+		 * 例外発生時のコールバック
+		 * @param reqkey リクエスト時の reqkey
+		 * @param ex 例外オブジェクト
+		 */
 		public void onException(int reqkey, WebAPIException ex);
 	}
 	
@@ -404,12 +421,20 @@ public class WebAPI {
 		return res;
 	}
 
-	public void login(InVehicleDevice login, final WebAPICallback<InVehicleDevice> callback) throws WebAPIException, JSONException {
+	/**
+	 * OperatorWeb へログインして authorization_token を取得
+	 * @param login　ログイン情報(login, password のみ設定必要)
+	 * @param callback 処理完了時のコールバック
+	 * @return reqkey
+	 * @throws WebAPIException
+	 * @throws JSONException
+	 */
+	public int login(InVehicleDevice login, final WebAPICallback<InVehicleDevice> callback) throws WebAPIException, JSONException {
 		JSONObject ivd = filterJSONKeys(login.toJSONObject(), new String[] { "login", "password" });
 		JSONObject param = new JSONObject();
 		param.put("in_vehicle_device", ivd);
 
-		post(PATH_LOGIN, param, new WebAPICallback<InVehicleDevice>() {
+		return post(PATH_LOGIN, param, new WebAPICallback<InVehicleDevice>() {
 
 			@Override
 			public void onSucceed(int reqkey, int statusCode, InVehicleDevice result) {
@@ -439,8 +464,14 @@ public class WebAPI {
 		});
 	}
 	
-	public void getVehicleNotifications(WebAPICallback<List<VehicleNotification>> callback) throws WebAPIException {
-		get(PATH_NOTIFICATIONS, callback, new ResponseConverter<List<VehicleNotification>>() {
+	/**
+	 * 自車への通知を取得
+	 * @param callback
+	 * @return reqkey
+	 * @throws WebAPIException
+	 */
+	public int getVehicleNotifications(WebAPICallback<List<VehicleNotification>> callback) throws WebAPIException {
+		return get(PATH_NOTIFICATIONS, callback, new ResponseConverter<List<VehicleNotification>>() {
 			@Override
 			public List<VehicleNotification> convert(byte[] rawResponse)
 					throws Exception {

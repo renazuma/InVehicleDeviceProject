@@ -1,14 +1,7 @@
 package com.kogasoftware.odt.webapi.test;
 
-import java.util.List;
-
-import org.json.JSONObject;
-
 import com.kogasoftware.odt.webapi.WebAPI;
 import com.kogasoftware.odt.webapi.WebAPIException;
-import com.kogasoftware.odt.webapi.WebAPI.ResponseConverter;
-import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
-import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class WebTestAPI extends WebAPI {
 
@@ -20,14 +13,20 @@ public class WebTestAPI extends WebAPI {
 		return TEST_SERVER_HOST;
 	}
 
-	public void cleanDatabase(WebAPICallback<Void> callback) throws WebAPIException {
-		post(PATH_CLEAN, null, callback, new ResponseConverter<Void>() {
+	/**
+	 * DatabaseCleaner を呼び出してDBを全クリアする
+	 * @param callback
+	 * @return reqkey
+	 * @throws WebAPIException
+	 */
+	public int cleanDatabase(WebAPICallback<Void> callback) throws WebAPIException {
+		return post(PATH_CLEAN, null, callback, new ResponseConverter<Void>() {
 			@Override
 			public Void convert(byte[] rawResponse)
 					throws Exception {
 				return null;
 			}
 		});
-	}
-
+	}	
+	
 }
