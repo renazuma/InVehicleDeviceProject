@@ -7,8 +7,8 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,8 +22,8 @@ abstract public class Model implements Serializable {
 
 	private static final long serialVersionUID = -5513333240346057624L;
 
-	protected static final DateTimeFormatter DATE_TIME_FORMATTER = ISODateTimeFormat
-			.dateTime();
+	protected static final DateTimeFormatter DATE_TIME_FORMATTER = 
+			DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
 
 	protected static void errorIfNull(Object value) {
 		if (value != null) {

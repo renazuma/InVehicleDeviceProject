@@ -49,6 +49,10 @@ public class VehicleNotification extends Model {
 			return new LinkedList<VehicleNotification>();
 		}
 		JSONArray jsonArray = jsonObject.getJSONArray(key);
+		return parseList(jsonArray);
+	}
+
+	public static LinkedList<VehicleNotification> parseList(JSONArray jsonArray) throws JSONException, ParseException {
 		LinkedList<VehicleNotification> models = new LinkedList<VehicleNotification>();
 		for (Integer i = 0; i < jsonArray.length(); ++i) {
 			if (jsonArray.isNull(i)) {
