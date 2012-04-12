@@ -63,7 +63,7 @@ public class DummyDataSource implements DataSource {
 							+ "id: 1, "
 							+ "arrival_estimate: '2012-01-01T01:00:00.000+09:00', "
 							+ "departure_estimate: '2012-01-01T02:00:00.000+09:00', "
-							+ "platform: {name: 'aコガソフトウェア前', name_ruby: 'こがそふとうぇあまえ'}, "
+							+ "platform: {name: 'コガソフトウェア前', name_ruby: 'こがそふとうぇあまえ'}, "
 							+ "reservations_as_arrival: ["
 							+ "  {id: 1, passenger_count: 5, memo: 'テストメモ1', "
 							+ u1 + "}, " + "  {id: 2, passenger_count: 6, "

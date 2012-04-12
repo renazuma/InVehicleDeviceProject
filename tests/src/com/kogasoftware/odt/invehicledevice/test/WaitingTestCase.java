@@ -18,8 +18,6 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 	public void dataset(Integer i) {
 
-		System.out.println("dataset " + i);
-
 		DataSourceFactory.newInstance();
 		MockDataSourceTest mdst = new MockDataSourceTest();
 
@@ -42,8 +40,6 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 		InVehicleDeviceLogic.clearStatusFile();
 
-		dataset(6);
-
 		solo = new Solo(getInstrumentation(), getActivity());
 
 		// デフォルトで停車中にする
@@ -57,6 +53,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 	}
 
 	public void test01_メモボタンを押すとメモ画面が表示() {
+
 		solo.clickOnButton("メモ");
 		assertEquals(View.VISIBLE, solo.getView(R.id.memo_modal)
 				.getVisibility());
