@@ -1,4 +1,7 @@
 WebAPITest::Application.routes.draw do
+  post 'clean' => 'db#clean'
+  resources :vehicle_notifications
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
