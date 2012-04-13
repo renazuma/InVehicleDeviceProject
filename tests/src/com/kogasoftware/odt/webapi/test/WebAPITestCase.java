@@ -40,6 +40,8 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 				ivd.setLogin("ivd1");
 				ivd.setPassword("ivdpass");
 				ivd.setPasswordConfirmation("ivdpass");
+				ivd.setModelName("モデル名");
+				ivd.setTypeNumber("車種");
 				
 				Log.d("WebAPITest", ivd.toJSONObject().toString());
 				return testAPI.createInVehicleDevice(ivd, this);
