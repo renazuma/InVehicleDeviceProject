@@ -1,7 +1,6 @@
 package com.kogasoftware.odt.invehicledevice;
 
 import java.io.File;
-import java.lang.ref.WeakReference;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -192,8 +191,7 @@ public class InVehicleDeviceLogic {
 			.getSimpleName();
 	private static final Integer POLLING_PERIOD_MILLIS = 30 * 1000;
 	private static final Integer NUM_THREADS = 10;
-	private final EventBus eventBus = new EventBus();
-	private final List<WeakReference<Object>> registeredObjectReferences = new LinkedList<WeakReference<Object>>();
+	private final DisposableEventBus eventBus = new DisposableEventBus();
 	private final ScheduledExecutorService executorService = Executors
 			.newScheduledThreadPool(NUM_THREADS);
 	private final DataSource dataSource = DataSourceFactory.newInstance();
@@ -414,7 +412,6 @@ public class InVehicleDeviceLogic {
 
 	public void register(Object object) {
 		eventBus.register(object);
-		registeredObjectReferences.add(new WeakReference<Object>(object));
 	}
 
 	public void restoreStatus() {
@@ -473,7 +470,7 @@ public class InVehicleDeviceLogic {
 	}
 
 	public void shutdown() {
-		unregisterAll();
+		eventBus.dispose();
 		executorService.shutdownNow();
 		voiceThread.interrupt();
 	}
@@ -481,14 +478,30 @@ public class InVehicleDeviceLogic {
 	public void speak(String message) {
 		eventBus.post(new SpeakEvent(message));
 	}
+}
 
-	public void unregisterAll() {
-		for (WeakReference<Object> objectReference : registeredObjectReferences) {
-			Object object = objectReference.get();
-			if (object != null) {
-				eventBus.unregister(object);
+class DisposableEventBus extends EventBus {
+	private static final String TAG = DisposableEventBus.class.getSimpleName();
+	private final List<Object> registeredObjects = new LinkedList<Object>();
+	private Boolean disposed = false;
+
+	@Override
+	public void register(Object object) {
+		if (disposed) {
+			return;
+		}
+		super.register(object);
+		registeredObjects.add(object);
+	}
+
+	public void dispose() {
+		for (Object object : registeredObjects) {
+			try {
+				unregister(object);
+			} catch (IllegalArgumentException e) {
+				Log.w(TAG, e);
 			}
 		}
-		registeredObjectReferences.clear();
+		registeredObjects.clear();
 	}
 }
