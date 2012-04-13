@@ -101,6 +101,7 @@ public class InVehicleDeviceActivity extends Activity {
 
 	private final CountDownLatch waitForStartUiLatch = new CountDownLatch(1);
 	private final Handler handler = new Handler();
+	private final List<View> statusColoredViews = new LinkedList<View>();
 	private InVehicleDeviceLogic logic = new InVehicleDeviceLogic();
 	private Thread logicLoadThread = new EmptyThread();
 
@@ -206,6 +207,10 @@ public class InVehicleDeviceActivity extends Activity {
 		drivingLayout.setVisibility(View.VISIBLE);
 		finishLayout.setVisibility(View.GONE);
 		changeStatusButton.setEnabled(true);
+
+		for (View view : statusColoredViews) {
+			view.setBackgroundColor(Color.rgb(0xAA, 0xFF, 0xAA)); // TODO 定数
+		}
 	}
 
 	@Subscribe
@@ -298,6 +303,10 @@ public class InVehicleDeviceActivity extends Activity {
 		drivingLayout.setVisibility(View.GONE);
 		finishLayout.setVisibility(View.GONE);
 		changeStatusButton.setEnabled(true);
+
+		for (View view : statusColoredViews) {
+			view.setBackgroundColor(Color.rgb(0xAA, 0xAA, 0xFF)); // TODO 定数
+		}
 	}
 
 	@Override
@@ -424,6 +433,17 @@ public class InVehicleDeviceActivity extends Activity {
 				logic.showScheduleChangedModal(l);
 			}
 		});
+
+		for (int resourceId : new int[] { R.id.icon_text_view,
+				R.id.status_text_view, R.id.present_time_layout,
+				R.id.side_button_view }) {
+			View view = findViewById(resourceId);
+			if (view != null) {
+				statusColoredViews.add(findViewById(resourceId));
+			} else {
+				Log.w(TAG, "view != null, resourceId=" + resourceId);
+			}
+		}
 
 		handler.post(toggleDrivingView);
 		handler.post(pollVehicleNotification);
