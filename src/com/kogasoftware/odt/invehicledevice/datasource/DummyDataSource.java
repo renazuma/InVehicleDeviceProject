@@ -178,9 +178,9 @@ public class DummyDataSource implements DataSource {
 		if (nextNotifyDate.after(new Date())) {
 			return l;
 		}
-		nextNotifyDate = new Date(new Date().getTime() + 60 * 1000);
+		nextNotifyDate = new Date(new Date().getTime() + 10 * 1000);
 		VehicleNotification n = new VehicleNotification();
-		n.setBody("テスト通知が行われました");
+		n.setBody("テスト通知が行われました " + new Date());
 		// l.add(n); // TODO
 		return l;
 	}

@@ -261,13 +261,12 @@ public class InVehicleDeviceLogic {
 		OperationSchedule operationSchedule = operationSchedules.get(0);
 		final Reservation reservation = new Reservation();
 
-		Integer id = statusAccess
-				.readAndWrite(new ReaderAndWriter<Integer>() {
-					@Override
-					public Integer readAndWrite(InVehicleDeviceStatus status) {
-						return status.unexpectedReservationSequence++;
-					}
-				});
+		Integer id = statusAccess.readAndWrite(new ReaderAndWriter<Integer>() {
+			@Override
+			public Integer readAndWrite(InVehicleDeviceStatus status) {
+				return status.unexpectedReservationSequence++;
+			}
+		});
 		reservation.setId(id); // TODO
 		// 未予約乗車の予約情報はどうするか
 		reservation.setDepartureScheduleId(operationSchedule.getId());
@@ -400,16 +399,29 @@ public class InVehicleDeviceLogic {
 
 	public List<VehicleNotification> pollVehicleNotifications() {
 		return statusAccess
-				.read(new Reader<List<VehicleNotification>>() {
+				.readAndWrite(new ReaderAndWriter<List<VehicleNotification>>() {
 					@Override
-					public List<VehicleNotification> read(
+					public List<VehicleNotification> readAndWrite(
 							InVehicleDeviceStatus status) {
 						LinkedList<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>(
 								status.vehicleNotifications);
+						status.processingVehicleNotifications
+						.addAll(status.vehicleNotifications);
 						status.vehicleNotifications.clear();
 						return vehicleNotifications;
 					}
 				});
+	}
+
+	public void replyVehicleNotification(
+			final VehicleNotification vehicleNotification, Boolean answer) {
+		statusAccess.write(new Writer() {
+			@Override
+			public void write(InVehicleDeviceStatus status) {
+				status.processingVehicleNotifications
+				.remove(vehicleNotification);
+			}
+		});
 	}
 
 	public void register(Object object) {
@@ -431,6 +443,14 @@ public class InVehicleDeviceLogic {
 				if (status.stopped) {
 					stop();
 				}
+
+				status.processingVehicleNotifications
+						.addAll(status.vehicleNotifications);
+				status.vehicleNotifications.clear();
+				status.vehicleNotifications
+						.addAll(new LinkedList<VehicleNotification>(
+								status.processingVehicleNotifications));
+				status.processingVehicleNotifications.clear();
 			}
 		});
 	}

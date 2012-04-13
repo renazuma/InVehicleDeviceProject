@@ -136,6 +136,8 @@ public class InVehicleDeviceStatus implements Serializable {
 	public final Date createdDate = new Date();
 	// Serializableにするため、LinkedListのままにしておく
 	public final LinkedList<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();
+	public final LinkedList<VehicleNotification> processingVehicleNotifications = new LinkedList<VehicleNotification>();
+
 	public final LinkedList<OperationSchedule> operationSchedules = new LinkedList<OperationSchedule>();
 	public final LinkedList<Reservation> ridingReservations = new LinkedList<Reservation>();
 	public final LinkedList<Reservation> missedReservations = new LinkedList<Reservation>();

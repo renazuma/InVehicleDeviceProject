@@ -6,6 +6,7 @@ import java.util.Queue;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.TextView;
 
 import com.google.common.base.Preconditions;
@@ -29,6 +30,22 @@ public class NotificationModal extends Modal {
 	public NotificationModal(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		setContentView(R.layout.notification_modal);
+		findViewById(R.id.reply_yes_button).setOnClickListener(
+				new OnClickListener() {
+					@Override
+					public void onClick(View view) {
+						getLogic().replyVehicleNotification(
+								currentVehicleNotification, true);
+					}
+				});
+		findViewById(R.id.reply_no_button).setOnClickListener(
+				new OnClickListener() {
+					@Override
+					public void onClick(View view) {
+						getLogic().replyVehicleNotification(
+								currentVehicleNotification, false);
+					}
+				});
 	}
 
 	@Override
