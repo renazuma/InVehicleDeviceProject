@@ -19,11 +19,17 @@
         android:layout_weight="1"
         android:text="@string/it_leaves" />
 
+	<ListView
+        android:id="@+id/error_reservation_list_view"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1" />
+    
     <com.kogasoftware.odt.invehicledevice.modal.HideModalButton
         android:id="@+id/start_cancel_button"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
         android:text="@string/cancel" />
-
+    
 </LinearLayout>

@@ -6,7 +6,6 @@
     android:orientation="horizontal" >
 
     <LinearLayout
-        android:id="@+id/reservation_change_view"
         android:layout_width="0dip"
         android:layout_height="wrap_content"
         android:layout_weight="1"

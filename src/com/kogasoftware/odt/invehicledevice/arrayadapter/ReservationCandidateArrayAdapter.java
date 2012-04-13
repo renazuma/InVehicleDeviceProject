@@ -16,7 +16,7 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.webapi.model.ReservationCandidate;
 
 public class ReservationCandidateArrayAdapter extends
-		ArrayAdapter<ReservationCandidate> {
+ArrayAdapter<ReservationCandidate> {
 	private final LayoutInflater layoutInflater;
 	private final int resourceId;
 
@@ -38,20 +38,19 @@ public class ReservationCandidateArrayAdapter extends
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		if (convertView == null) {
-			convertView = layoutInflater.inflate(resourceId, null);
-		}
+		final View view = convertView != null ? convertView : layoutInflater
+				.inflate(resourceId, null);
 
 		if (selectedPosition.isPresent()
 				&& selectedPosition.get().equals(position)) {
 			// convertView.setBackgroundDrawable(context.getResources()
 			// .getDrawable(android.R.drawable.list_selector_background));
-			convertView.setBackgroundColor(Color.CYAN); // TODO テーマ
+			view.setBackgroundColor(Color.CYAN); // TODO テーマ
 		} else {
-			convertView.setBackgroundColor(Color.TRANSPARENT);
+			view.setBackgroundColor(Color.TRANSPARENT);
 		}
 
-		TextView v = (TextView) convertView
+		TextView v = (TextView) view
 				.findViewById(R.id.reservation_candidate_text_view);
 		ReservationCandidate c = getItem(position);
 		String s = "";
@@ -71,7 +70,7 @@ public class ReservationCandidateArrayAdapter extends
 		s += " / " + d.getHours() + ":" + d.getMinutes() + " → " + a.getHours()
 				+ ":" + a.getMinutes();
 		v.setText(s);
-		return convertView;
+		return view;
 	}
 
 	public void setSelectedPosition(Optional<Integer> selectedPosition) {

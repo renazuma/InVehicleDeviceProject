@@ -18,6 +18,7 @@ import com.google.common.eventbus.EventBus;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceStatus.Access.Reader;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceStatus.Access.ReaderAndWriter;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceStatus.Access.Writer;
+import com.kogasoftware.odt.invehicledevice.arrayadapter.ReservationArrayAdapter;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
@@ -304,19 +305,6 @@ public class InVehicleDeviceLogic {
 		eventBus.post(new EnterFinishStatusEvent());
 	}
 
-	public void enterNextStatus() {
-		statusAccess.write(new Writer() {
-			@Override
-			public void write(InVehicleDeviceStatus status) {
-				if (status.status == InVehicleDeviceStatus.Status.DRIVE) {
-					enterPlatformStatus();
-				} else {
-					showStartCheckModal();
-				}
-			}
-		});
-	}
-
 	public void enterPlatformStatus() {
 		statusAccess.write(new Writer() {
 			@Override
@@ -372,7 +360,6 @@ public class InVehicleDeviceLogic {
 		return statusAccess.read(new Reader<List<Reservation>>() {
 			@Override
 			public List<Reservation> read(InVehicleDeviceStatus status) {
-
 				return new LinkedList<Reservation>(status.ridingReservations);
 			}
 		});
@@ -424,6 +411,24 @@ public class InVehicleDeviceLogic {
 		});
 	}
 
+	public void getOnReservation(final List<Reservation> reservations) {
+		statusAccess.write(new Writer() {
+			@Override
+			public void write(InVehicleDeviceStatus status) {
+				status.ridingReservations.addAll(reservations);
+			}
+		});
+	}
+
+	public void getOutReservation(final List<Reservation> reservations) {
+		statusAccess.write(new Writer() {
+			@Override
+			public void write(InVehicleDeviceStatus status) {
+				status.ridingReservations.removeAll(reservations);
+			}
+		});
+	}
+
 	public void register(Object object) {
 		eventBus.register(object);
 	}
@@ -445,11 +450,11 @@ public class InVehicleDeviceLogic {
 				}
 
 				status.processingVehicleNotifications
-						.addAll(status.vehicleNotifications);
+				.addAll(status.vehicleNotifications);
 				status.vehicleNotifications.clear();
 				status.vehicleNotifications
-						.addAll(new LinkedList<VehicleNotification>(
-								status.processingVehicleNotifications));
+				.addAll(new LinkedList<VehicleNotification>(
+						status.processingVehicleNotifications));
 				status.processingVehicleNotifications.clear();
 			}
 		});
@@ -500,8 +505,8 @@ public class InVehicleDeviceLogic {
 		eventBus.post(new ScheduleModal.ShowEvent());
 	}
 
-	public void showStartCheckModal() {
-		eventBus.post(new StartCheckModal.ShowEvent());
+	public void showStartCheckModal(ReservationArrayAdapter adapter) {
+		eventBus.post(new StartCheckModal.ShowEvent(adapter));
 	}
 
 	public void showStopCheckModal() {
@@ -526,6 +531,16 @@ public class InVehicleDeviceLogic {
 
 	public void speak(String message) {
 		eventBus.post(new SpeakEvent(message));
+	}
+
+	public void addMissedReservations(List<Reservation> reservations) {
+		final List<Reservation> finalReservations = reservations;
+		statusAccess.write(new Writer() {
+			@Override
+			public void write(InVehicleDeviceStatus status) {
+				status.missedReservations.addAll(finalReservations);
+			}
+		});
 	}
 }
 

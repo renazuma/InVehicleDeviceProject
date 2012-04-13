@@ -3,7 +3,6 @@ package com.kogasoftware.odt.invehicledevice;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,8 +18,13 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
+import android.telephony.PhoneStateListener;
+import android.telephony.SignalStrength;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +32,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -64,19 +69,41 @@ public class InVehicleDeviceActivity extends Activity {
 				+ ".serialized");
 	}
 
+	private final PhoneStateListener updateSignalStrength = new PhoneStateListener() {
+		private int getImageResourceId(SignalStrength signalStrength) { // TODO
+			NetworkInfo networkInfo = connectivityManager
+					.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+			if (!networkInfo.isAvailable()) {
+				return R.drawable.network_strength_0;
+			}
+			if (signalStrength.isGsm()) {
+				Integer value = signalStrength.getGsmSignalStrength();
+				if (value == 99 || value <= 2) {
+					return R.drawable.network_strength_0;
+				} else if (value <= 4) {
+					return R.drawable.network_strength_1;
+				} else if (value <= 7) {
+					return R.drawable.network_strength_2;
+				} else if (value <= 11) {
+					return R.drawable.network_strength_3;
+				}
+				return R.drawable.network_strength_4;
+			}
+			return R.drawable.network_strength_0;
+		}
+
+		@Override
+		public void onSignalStrengthsChanged(SignalStrength signalStrength) {
+			networkStrengthImageView
+			.setImageResource(getImageResourceId(signalStrength));
+		};
+	};
+
 	private static final Integer UPDATE_TIME_INTERVAL = 5000;
 	private final Runnable updateTime = new Runnable() {
 		@Override
 		public void run() {
-			// Date now = new Date();
-			// TODO 以下はDummyDataSourceにあわせている
-			Calendar c = Calendar.getInstance();
-			c.set(Calendar.YEAR, 2012);
-			c.set(Calendar.MONTH, 0);
-			c.set(Calendar.DAY_OF_MONTH, 1);
-			c.add(Calendar.HOUR_OF_DAY, -9);
-			Date now = c.getTime();
-
+			Date now = new Date();
 			DateFormat f = new SimpleDateFormat(getResources().getString(
 					R.string.present_time_format));
 			presentTimeTextView.setText(f.format(now));
@@ -87,22 +114,13 @@ public class InVehicleDeviceActivity extends Activity {
 	};
 
 	private void updateMinutesRemaining() {
-		// Date now = new Date();
-		// TODO 以下はDummyDataSourceにあわせている
-		Calendar c = Calendar.getInstance();
-		c.set(Calendar.YEAR, 2012);
-		c.set(Calendar.MONTH, 0);
-		c.set(Calendar.DAY_OF_MONTH, 1);
-		c.add(Calendar.HOUR_OF_DAY, -9);
-		Date now = c.getTime();
-
+		Date now = new Date();
 		List<OperationSchedule> operationSchedules = logic
 				.getRemainingOperationSchedules();
 		if (operationSchedules.isEmpty()) {
 			minutesRemainingTextView.setText("");
 		} else {
-			Date departure = operationSchedules.get(0)
-					.getDepartureEstimate();
+			Date departure = operationSchedules.get(0).getDepartureEstimate();
 			Long milliGap = departure.getTime() - now.getTime();
 			minutesRemainingTextView.setText("" + (milliGap / 1000 / 60));
 		}
@@ -140,8 +158,9 @@ public class InVehicleDeviceActivity extends Activity {
 	private Thread logicLoadThread = new EmptyThread();
 
 	// nullables
+	private TelephonyManager telephonyManager = null;
+	private ConnectivityManager connectivityManager = null;
 	private View contentView = null;
-
 	private Button changeStatusButton = null;
 	private Button configButton = null;
 	private Button mapButton = null;
@@ -171,6 +190,7 @@ public class InVehicleDeviceActivity extends Activity {
 	private ToggleButton showFutureReservationsButton = null;
 	private ToggleButton showMissedReservationsButton = null;
 	private Button addUnexpectedReservationButton = null;
+	private ImageView networkStrengthImageView = null;
 
 	@Subscribe
 	public void addUnexpectedReservation(AddUnexpectedReservationEvent event) {
@@ -202,6 +222,10 @@ public class InVehicleDeviceActivity extends Activity {
 		if (!operationSchedule.getPlatform().isPresent()) {
 			return; // TODO
 		}
+
+		TextView numRidingReservationsTextView = (TextView) findViewById(R.id.num_riding_reservations_text_view);
+		numRidingReservationsTextView.setText(logic.getRidingReservations()
+				.size() + "名乗車中");
 
 		Platform platform = operationSchedule.getPlatform().get();
 		nextPlatformNameTextView.setText(platform.getName());
@@ -236,6 +260,13 @@ public class InVehicleDeviceActivity extends Activity {
 
 		statusTextView.setText("走行中");
 		changeStatusButton.setText("到着しました");
+		changeStatusButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				logic.enterPlatformStatus();
+			}
+		});
+
 		logic.speak("出発します。次は、" + platform.getNameRuby() + "。"
 				+ platform.getNameRuby() + "。");
 		waitingLayout.setVisibility(View.GONE);
@@ -275,8 +306,6 @@ public class InVehicleDeviceActivity extends Activity {
 			return;
 		}
 		DateFormat dateFormat = new SimpleDateFormat("H時m分"); // TODO
-		final Platform platform = operationSchedule.getPlatform().get();
-		platformNameTextView.setText(platform.getName());
 		platformDepartureTimeTextView.setText(dateFormat
 				.format(operationSchedule.getDepartureEstimate()));
 
@@ -286,9 +315,30 @@ public class InVehicleDeviceActivity extends Activity {
 
 		statusTextView.setText("停車中");
 		if (operationSchedules.size() > 1) {
+			OperationSchedule nextOperationSchedule = operationSchedules.get(1);
+			if (nextOperationSchedule.getPlatform().isPresent()) {
+				platformNameTextView.setText(nextOperationSchedule
+						.getPlatform().get().getName());
+			} else {
+				platformNameTextView.setText("「ID: "
+						+ nextOperationSchedule.getId() + "」");
+			}
 			changeStatusButton.setText("出発する");
+			changeStatusButton.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View view) {
+					logic.showStartCheckModal(adapter);
+				}
+			});
 		} else {
+			platformNameTextView.setText("");
 			changeStatusButton.setText("確定する");
+			changeStatusButton.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View view) {
+					logic.enterFinishStatus();
+				}
+			});
 		}
 
 		showAllRidingReservationsButton
@@ -297,12 +347,14 @@ public class InVehicleDeviceActivity extends Activity {
 			public void onCheckedChanged(CompoundButton buttonView,
 					boolean isChecked) {
 				if (isChecked) {
-					adapter.showRidingAndNotGetOutReservations();
+					adapter.showRidingAndNoOutgoingReservations();
 				} else {
 					adapter.hideRidingAndNotGetOutReservations();
 				}
 			}
 		});
+		showAllRidingReservationsButton.setChecked(false);
+
 		showFutureReservationsButton
 		.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
@@ -315,6 +367,8 @@ public class InVehicleDeviceActivity extends Activity {
 				}
 			}
 		});
+		showFutureReservationsButton.setChecked(false);
+
 		showMissedReservationsButton
 		.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
@@ -327,6 +381,7 @@ public class InVehicleDeviceActivity extends Activity {
 				}
 			}
 		});
+		showMissedReservationsButton.setChecked(false);
 
 		addUnexpectedReservationButton
 		.setOnClickListener(new OnClickListener() {
@@ -363,6 +418,9 @@ public class InVehicleDeviceActivity extends Activity {
 		// .detectAll().penaltyLog().penaltyDeath().build());
 		// }
 		setContentView(R.layout.in_vehicle_device);
+
+		telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+		connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
 		TypedArray typedArray = obtainStyledAttributes(new int[] { android.R.attr.background });
 		int backgroundColor = typedArray.getColor(0, Color.WHITE);
@@ -409,13 +467,8 @@ public class InVehicleDeviceActivity extends Activity {
 				.findViewById(R.id.show_missed_reservations_button);
 		addUnexpectedReservationButton = (Button) findViewById(R.id.add_unexpected_reservation_button);
 		minutesRemainingTextView = (TextView) findViewById(R.id.minutes_remaining);
+		networkStrengthImageView = (ImageView) findViewById(R.id.network_strength_image_view);
 
-		changeStatusButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				logic.enterNextStatus();
-			}
-		});
 		mapButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -475,7 +528,7 @@ public class InVehicleDeviceActivity extends Activity {
 		});
 
 		for (int resourceId : new int[] { R.id.icon_text_view,
-				R.id.status_text_view, R.id.present_time_layout,
+				R.id.operation_status_layout, R.id.present_time_layout,
 				R.id.side_button_view }) {
 			View view = findViewById(resourceId);
 			if (view != null) {
@@ -488,6 +541,9 @@ public class InVehicleDeviceActivity extends Activity {
 		handler.post(toggleDrivingView);
 		handler.post(pollVehicleNotification);
 		handler.post(updateTime);
+
+		telephonyManager.listen(updateSignalStrength,
+				PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
 
 		logicLoadThread = new InVehicleDeviceLogic.LoadThread(this);
 		logicLoadThread.start();
@@ -569,6 +625,9 @@ public class InVehicleDeviceActivity extends Activity {
 		logicLoadThread.interrupt();
 
 		waitForStartUiLatch.countDown();
+
+		telephonyManager.listen(updateSignalStrength,
+				PhoneStateListener.LISTEN_NONE);
 
 		try {
 			dismissDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
