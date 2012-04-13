@@ -32,32 +32,32 @@ public class ScheduleModal extends Modal {
 		this.operationSchedules.addAll(getLogic().getOperationSchedules());
 		OperationScheduleArrayAdapter adapter = new OperationScheduleArrayAdapter(
 				getContext(), R.layout.operation_schedule_list_row,
-				operationSchedules);
+				operationSchedules, getLogic());
 		final ListView operationScheduleListView = (ListView) findViewById(R.id.operation_schedule_list_view);
 		operationScheduleListView.setAdapter(adapter);
 
 		Button operationScheduleScrollUpButton = (Button) findViewById(R.id.operation_schedule_scroll_up_button);
 		operationScheduleScrollUpButton
-				.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View view) {
-						Integer position = operationScheduleListView
-								.getFirstVisiblePosition();
-						operationScheduleListView
-								.smoothScrollToPosition(position);
-					}
-				});
+		.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				Integer position = operationScheduleListView
+						.getFirstVisiblePosition();
+				operationScheduleListView
+				.smoothScrollToPosition(position);
+			}
+		});
 		Button operationScheduleScrollDownButton = (Button) findViewById(R.id.operation_schedule_scroll_down_button);
 		operationScheduleScrollDownButton
-				.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View view) {
-						Integer position = operationScheduleListView
-								.getLastVisiblePosition();
-						operationScheduleListView
-								.smoothScrollToPosition(position);
-					}
-				});
+		.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				Integer position = operationScheduleListView
+						.getLastVisiblePosition();
+				operationScheduleListView
+				.smoothScrollToPosition(position);
+			}
+		});
 
 		super.show();
 	}

@@ -5,12 +5,14 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.kogasoftware.odt.invehicledevice.InVehicleDeviceLogic;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Reservation;
@@ -18,13 +20,15 @@ import com.kogasoftware.odt.webapi.model.Reservation;
 public class OperationScheduleArrayAdapter extends ArrayAdapter<OperationSchedule> {
 	private final LayoutInflater layoutInflater;
 	private final int resourceId;
+	private final InVehicleDeviceLogic logic;
 
 	public OperationScheduleArrayAdapter(Context context, int resourceId,
-			List<OperationSchedule> items) {
+			List<OperationSchedule> items, InVehicleDeviceLogic logic) {
 		super(context, resourceId, items);
 		this.layoutInflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.resourceId = resourceId;
+		this.logic = logic;
 	}
 
 	@Override
@@ -70,6 +74,12 @@ public class OperationScheduleArrayAdapter extends ArrayAdapter<OperationSchedul
 				.findViewById(R.id.operation_schedule_departure_estimate_text_view);
 		departureEstimateTextView.setText(displayDateFormat
 				.format(operationSchedule.getDepartureEstimate()));
+
+		if (logic.getRemainingOperationSchedules().contains(operationSchedule)) {
+			convertView.setBackgroundColor(Color.TRANSPARENT);
+		} else {
+			convertView.setBackgroundColor(Color.GRAY);
+		}
 		return convertView;
 	}
 }
