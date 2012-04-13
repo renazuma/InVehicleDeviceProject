@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import jp.tomorrowkey.android.vtextviewer.VTextView;
 import android.app.Activity;
@@ -62,8 +63,6 @@ public class InVehicleDeviceActivity extends Activity {
 				+ ".serialized");
 	}
 
-	final Handler handler = new Handler();
-
 	private static final Integer UPDATE_TIME_INTERVAL = 5000;
 	private final Runnable updateTime = new Runnable() {
 		@Override
@@ -99,8 +98,10 @@ public class InVehicleDeviceActivity extends Activity {
 			handler.postDelayed(this, TOGGLE_DRIVING_VIEW_INTERVAL);
 		}
 	};
-	private InVehicleDeviceLogic logic = new InVehicleDeviceLogic();
 
+	private final CountDownLatch waitForStartUiLatch = new CountDownLatch(1);
+	private final Handler handler = new Handler();
+	private InVehicleDeviceLogic logic = new InVehicleDeviceLogic();
 	private Thread logicLoadThread = new EmptyThread();
 
 	// nullables
@@ -247,51 +248,51 @@ public class InVehicleDeviceActivity extends Activity {
 		}
 
 		showAllRidingReservationsButton
-				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-					@Override
-					public void onCheckedChanged(CompoundButton buttonView,
-							boolean isChecked) {
-						if (isChecked) {
-							adapter.showRidingAndNotGetOutReservations();
-						} else {
-							adapter.hideRidingAndNotGetOutReservations();
-						}
-					}
-				});
+		.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView,
+					boolean isChecked) {
+				if (isChecked) {
+					adapter.showRidingAndNotGetOutReservations();
+				} else {
+					adapter.hideRidingAndNotGetOutReservations();
+				}
+			}
+		});
 		showFutureReservationsButton
-				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-					@Override
-					public void onCheckedChanged(CompoundButton buttonView,
-							boolean isChecked) {
-						if (isChecked) {
-							adapter.showFutureReservations();
-						} else {
-							adapter.hideFutureReservations();
-						}
-					}
-				});
+		.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView,
+					boolean isChecked) {
+				if (isChecked) {
+					adapter.showFutureReservations();
+				} else {
+					adapter.hideFutureReservations();
+				}
+			}
+		});
 		showMissedReservationsButton
-				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-					@Override
-					public void onCheckedChanged(CompoundButton buttonView,
-							boolean isChecked) {
-						if (isChecked) {
-							adapter.showMissedReservations();
-						} else {
-							adapter.hideMissedReservations();
-						}
-					}
-				});
+		.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView,
+					boolean isChecked) {
+				if (isChecked) {
+					adapter.showMissedReservations();
+				} else {
+					adapter.hideMissedReservations();
+				}
+			}
+		});
 
 		addUnexpectedReservationButton
-				.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View view) {
-						if (!isFinishing()) {
-							showDialog(ADD_UNEXPECTED_RESERVATION_DIALOG_ID);
-						}
-					}
-				});
+		.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				if (!isFinishing()) {
+					showDialog(ADD_UNEXPECTED_RESERVATION_DIALOG_ID);
+				}
+			}
+		});
 
 		waitingLayout.setVisibility(View.VISIBLE);
 		drivingLayout.setVisibility(View.GONE);
@@ -423,6 +424,13 @@ public class InVehicleDeviceActivity extends Activity {
 				logic.showScheduleChangedModal(l);
 			}
 		});
+
+		handler.post(toggleDrivingView);
+		handler.post(pollVehicleNotification);
+		handler.post(updateTime);
+
+		logicLoadThread = new InVehicleDeviceLogic.LoadThread(this);
+		logicLoadThread.start();
 	}
 
 	@Override
@@ -453,7 +461,7 @@ public class InVehicleDeviceActivity extends Activity {
 			}
 			operationSchedules.remove(operationSchedules.get(0));
 			final String[] operationScheduleSelections = new String[operationSchedules
-					.size()];
+			                                                        .size()];
 			for (Integer i = 0; i < operationScheduleSelections.length; ++i) {
 				OperationSchedule operationSchedule = operationSchedules.get(i);
 				String selection = "";
@@ -492,10 +500,7 @@ public class InVehicleDeviceActivity extends Activity {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-	}
 
-	@Override
-	public void onPause() {
 		handler.removeCallbacks(toggleDrivingView);
 		handler.removeCallbacks(pollVehicleNotification);
 		handler.removeCallbacks(updateTime);
@@ -503,11 +508,8 @@ public class InVehicleDeviceActivity extends Activity {
 		logic.shutdown();
 		logicLoadThread.interrupt();
 
-		navigationModal.onPauseActivity();
+		waitForStartUiLatch.countDown();
 
-		super.onPause();
-
-		contentView.setVisibility(View.GONE); // InVehicleDeviceLogicの準備が終わるまでcontentViewを非表示
 		try {
 			dismissDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
 		} catch (IllegalArgumentException e) {
@@ -517,19 +519,15 @@ public class InVehicleDeviceActivity extends Activity {
 	}
 
 	@Override
+	public void onPause() {
+		super.onPause();
+		navigationModal.onPauseActivity();
+	}
+
+	@Override
 	public void onResume() {
 		super.onResume();
 		navigationModal.onResumeActivity();
-
-		handler.post(toggleDrivingView);
-		handler.post(pollVehicleNotification);
-		handler.post(updateTime);
-
-		logicLoadThread.interrupt();
-		logicLoadThread = new InVehicleDeviceLogic.LoadThread(this);
-		logicLoadThread.start();
-
-		logic.shutdown();
 	}
 
 	@Override
@@ -553,5 +551,16 @@ public class InVehicleDeviceActivity extends Activity {
 		}
 		logic.restoreStatus();
 		contentView.setVisibility(View.VISIBLE);
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		waitForStartUiLatch.countDown();
+	}
+
+	public void waitForStartUi() throws InterruptedException {
+		waitForStartUiLatch.await();
 	}
 }
