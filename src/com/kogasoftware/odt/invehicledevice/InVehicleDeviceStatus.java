@@ -13,7 +13,6 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.util.Log;
@@ -80,7 +79,7 @@ public class InVehicleDeviceStatus implements Serializable {
 		DRIVE, PLATFORM, INITIAL, FINISH
 	}
 
-	private static final long serialVersionUID = 5617948505743182170L;
+	private static final long serialVersionUID = 5617948505743182171L;
 
 	private static final String TAG = InVehicleDeviceStatus.class
 			.getSimpleName();
@@ -132,12 +131,12 @@ public class InVehicleDeviceStatus implements Serializable {
 		private static final long serialVersionUID = -8902504841122071697L;
 	}; // synchronized用にシリアライズ可能なオブジェクトを持っておく
 
-	public final ConcurrentLinkedQueue<VehicleNotification> vehicleNotifications = new ConcurrentLinkedQueue<VehicleNotification>();
-
-	public final ConcurrentLinkedQueue<OperationSchedule> operationSchedules = new ConcurrentLinkedQueue<OperationSchedule>();
 
 	public final AtomicBoolean initialized = new AtomicBoolean(false);
 	public final Date createdDate = new Date();
+	// Serializableにするため、LinkedListのままにしておく
+	public final LinkedList<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();
+	public final LinkedList<OperationSchedule> operationSchedules = new LinkedList<OperationSchedule>();
 	public final LinkedList<Reservation> ridingReservations = new LinkedList<Reservation>();
 	public final LinkedList<Reservation> missedReservations = new LinkedList<Reservation>();
 	public final LinkedList<Reservation> unexpectedReservations = new LinkedList<Reservation>();
