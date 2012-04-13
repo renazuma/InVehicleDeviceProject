@@ -143,6 +143,8 @@ public class InVehicleDeviceStatus implements Serializable {
 	public Integer currentOperationScheduleIndex = 0;
 	public File file = new EmptyFile();
 	public Integer unexpectedReservationSequence = 1000;
+	public Boolean stopped = false;
+	public Boolean paused = false;
 
 	public Status status = Status.INITIAL;
 

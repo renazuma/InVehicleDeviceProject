@@ -27,7 +27,7 @@ public class ConfigModal extends Modal {
 		pauseButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				getLogic().showPauseModal();
+				getLogic().pause();
 				hide();
 			}
 		});

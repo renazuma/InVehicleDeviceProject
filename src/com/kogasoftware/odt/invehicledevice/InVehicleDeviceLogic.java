@@ -15,7 +15,9 @@ import android.util.Log;
 import android.view.View;
 
 import com.google.common.eventbus.EventBus;
-import com.kogasoftware.odt.invehicledevice.InVehicleDeviceStatus.Access;
+import com.kogasoftware.odt.invehicledevice.InVehicleDeviceStatus.Access.Reader;
+import com.kogasoftware.odt.invehicledevice.InVehicleDeviceStatus.Access.ReaderAndWriter;
+import com.kogasoftware.odt.invehicledevice.InVehicleDeviceStatus.Access.Writer;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
@@ -121,7 +123,7 @@ public class InVehicleDeviceLogic {
 					return;
 				}
 			}
-			logic.statusAccess.write(new Access.Writer() {
+			logic.statusAccess.write(new Writer() {
 				@Override
 				public void write(InVehicleDeviceStatus status) {
 					status.operationSchedules.clear();
@@ -144,7 +146,7 @@ public class InVehicleDeviceLogic {
 			try {
 				final List<VehicleNotification> vehicleNotification = logic
 						.getDataSource().getVehicleNotifications();
-				logic.statusAccess.write(new Access.Writer() {
+				logic.statusAccess.write(new Writer() {
 					@Override
 					public void write(InVehicleDeviceStatus status) {
 						status.vehicleNotifications.addAll(vehicleNotification);
@@ -176,7 +178,7 @@ public class InVehicleDeviceLogic {
 			try {
 				final List<VehicleNotification> vehicleNotification = logic
 						.getDataSource().getVehicleNotifications();
-				logic.statusAccess.write(new Access.Writer() {
+				logic.statusAccess.write(new Writer() {
 					@Override
 					public void write(InVehicleDeviceStatus status) {
 						status.vehicleNotifications.addAll(vehicleNotification);
@@ -260,7 +262,7 @@ public class InVehicleDeviceLogic {
 		final Reservation reservation = new Reservation();
 
 		Integer id = statusAccess
-				.readAndWrite(new Access.ReaderAndWriter<Integer>() {
+				.readAndWrite(new ReaderAndWriter<Integer>() {
 					@Override
 					public Integer readAndWrite(InVehicleDeviceStatus status) {
 						return status.unexpectedReservationSequence++;
@@ -271,7 +273,7 @@ public class InVehicleDeviceLogic {
 		reservation.setDepartureScheduleId(operationSchedule.getId());
 		reservation.setArrivalScheduleId(arrivalOperationScheduleId);
 
-		statusAccess.write(new Access.Writer() {
+		statusAccess.write(new Writer() {
 			@Override
 			public void write(InVehicleDeviceStatus status) {
 				status.unexpectedReservations.add(reservation);
@@ -281,7 +283,7 @@ public class InVehicleDeviceLogic {
 	}
 
 	public void enterDriveStatus() {
-		statusAccess.write(new Access.Writer() {
+		statusAccess.write(new Writer() {
 			@Override
 			public void write(InVehicleDeviceStatus status) {
 				if (status.status == InVehicleDeviceStatus.Status.PLATFORM) {
@@ -294,7 +296,7 @@ public class InVehicleDeviceLogic {
 	}
 
 	public void enterFinishStatus() {
-		statusAccess.write(new Access.Writer() {
+		statusAccess.write(new Writer() {
 			@Override
 			public void write(InVehicleDeviceStatus status) {
 				status.status = InVehicleDeviceStatus.Status.FINISH;
@@ -304,7 +306,7 @@ public class InVehicleDeviceLogic {
 	}
 
 	public void enterNextStatus() {
-		statusAccess.write(new Access.Writer() {
+		statusAccess.write(new Writer() {
 			@Override
 			public void write(InVehicleDeviceStatus status) {
 				if (status.status == InVehicleDeviceStatus.Status.DRIVE) {
@@ -317,7 +319,7 @@ public class InVehicleDeviceLogic {
 	}
 
 	public void enterPlatformStatus() {
-		statusAccess.write(new Access.Writer() {
+		statusAccess.write(new Writer() {
 			@Override
 			public void write(InVehicleDeviceStatus status) {
 				status.status = InVehicleDeviceStatus.Status.PLATFORM;
@@ -331,7 +333,7 @@ public class InVehicleDeviceLogic {
 	}
 
 	public List<Reservation> getMissedReservations() {
-		return statusAccess.read(new Access.Reader<List<Reservation>>() {
+		return statusAccess.read(new Reader<List<Reservation>>() {
 			@Override
 			public List<Reservation> read(InVehicleDeviceStatus status) {
 				return new LinkedList<Reservation>(status.missedReservations);
@@ -340,7 +342,7 @@ public class InVehicleDeviceLogic {
 	}
 
 	public List<OperationSchedule> getOperationSchedules() {
-		return statusAccess.read(new Access.Reader<List<OperationSchedule>>() {
+		return statusAccess.read(new Reader<List<OperationSchedule>>() {
 			@Override
 			public List<OperationSchedule> read(InVehicleDeviceStatus status) {
 				return new LinkedList<OperationSchedule>(
@@ -350,7 +352,7 @@ public class InVehicleDeviceLogic {
 	}
 
 	public List<OperationSchedule> getRemainingOperationSchedules() {
-		return statusAccess.read(new Access.Reader<List<OperationSchedule>>() {
+		return statusAccess.read(new Reader<List<OperationSchedule>>() {
 			@Override
 			public List<OperationSchedule> read(InVehicleDeviceStatus status) {
 				try {
@@ -368,7 +370,7 @@ public class InVehicleDeviceLogic {
 	}
 
 	public List<Reservation> getRidingReservations() {
-		return statusAccess.read(new Access.Reader<List<Reservation>>() {
+		return statusAccess.read(new Reader<List<Reservation>>() {
 			@Override
 			public List<Reservation> read(InVehicleDeviceStatus status) {
 
@@ -378,7 +380,7 @@ public class InVehicleDeviceLogic {
 	}
 
 	public List<Reservation> getUnexpectedReservations() {
-		return statusAccess.read(new Access.Reader<List<Reservation>>() {
+		return statusAccess.read(new Reader<List<Reservation>>() {
 			@Override
 			public List<Reservation> read(InVehicleDeviceStatus status) {
 				return new LinkedList<Reservation>(
@@ -388,7 +390,7 @@ public class InVehicleDeviceLogic {
 	}
 
 	public Boolean isInitialized() {
-		return statusAccess.read(new Access.Reader<Boolean>() {
+		return statusAccess.read(new Reader<Boolean>() {
 			@Override
 			public Boolean read(InVehicleDeviceStatus status) {
 				return status.initialized.get();
@@ -398,7 +400,7 @@ public class InVehicleDeviceLogic {
 
 	public List<VehicleNotification> pollVehicleNotifications() {
 		return statusAccess
-				.read(new Access.Reader<List<VehicleNotification>>() {
+				.read(new Reader<List<VehicleNotification>>() {
 					@Override
 					public List<VehicleNotification> read(
 							InVehicleDeviceStatus status) {
@@ -415,13 +417,19 @@ public class InVehicleDeviceLogic {
 	}
 
 	public void restoreStatus() {
-		statusAccess.write(new Access.Writer() {
+		statusAccess.write(new Writer() {
 			@Override
 			public void write(InVehicleDeviceStatus status) {
 				if (status.status == InVehicleDeviceStatus.Status.PLATFORM) {
 					enterPlatformStatus();
 				} else {
 					enterDriveStatus();
+				}
+				if (status.paused) {
+					pause();
+				}
+				if (status.stopped) {
+					stop();
 				}
 			}
 		});
@@ -440,8 +448,23 @@ public class InVehicleDeviceLogic {
 		eventBus.post(new NotificationModal.ShowEvent(vehicleNotifications));
 	}
 
-	public void showPauseModal() {
+	public void pause() {
+		statusAccess.write(new Writer() {
+			@Override
+			public void write(InVehicleDeviceStatus status) {
+				status.paused = true;
+			}
+		});
 		eventBus.post(new PauseModal.ShowEvent());
+	}
+
+	public void cancelPause() {
+		statusAccess.write(new Writer() {
+			@Override
+			public void write(InVehicleDeviceStatus status) {
+				status.paused = false;
+			}
+		});
 	}
 
 	public void showReturnPathModal(Reservation reservation) {
@@ -465,7 +488,13 @@ public class InVehicleDeviceLogic {
 		eventBus.post(new StopCheckModal.ShowEvent());
 	}
 
-	public void showStopModal() {
+	public void stop() {
+		statusAccess.write(new Writer() {
+			@Override
+			public void write(InVehicleDeviceStatus status) {
+				status.stopped = true;
+			}
+		});
 		eventBus.post(new StopModal.ShowEvent());
 	}
 

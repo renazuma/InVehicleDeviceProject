@@ -20,7 +20,7 @@ public class StopCheckModal extends Modal {
 		stopButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				getLogic().showStopModal();
+				getLogic().stop();
 			}
 		});
 	}
