@@ -3,6 +3,7 @@ package com.kogasoftware.odt.invehicledevice;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -67,12 +68,45 @@ public class InVehicleDeviceActivity extends Activity {
 	private final Runnable updateTime = new Runnable() {
 		@Override
 		public void run() {
+			// Date now = new Date();
+			// TODO 以下はDummyDataSourceにあわせている
+			Calendar c = Calendar.getInstance();
+			c.set(Calendar.YEAR, 2012);
+			c.set(Calendar.MONTH, 0);
+			c.set(Calendar.DAY_OF_MONTH, 1);
+			c.add(Calendar.HOUR_OF_DAY, -9);
+			Date now = c.getTime();
+
 			DateFormat f = new SimpleDateFormat(getResources().getString(
 					R.string.present_time_format));
-			presentTimeTextView.setText(f.format(new Date()));
+			presentTimeTextView.setText(f.format(now));
+			updateMinutesRemaining();
+
 			handler.postDelayed(this, UPDATE_TIME_INTERVAL);
 		}
 	};
+
+	private void updateMinutesRemaining() {
+		// Date now = new Date();
+		// TODO 以下はDummyDataSourceにあわせている
+		Calendar c = Calendar.getInstance();
+		c.set(Calendar.YEAR, 2012);
+		c.set(Calendar.MONTH, 0);
+		c.set(Calendar.DAY_OF_MONTH, 1);
+		c.add(Calendar.HOUR_OF_DAY, -9);
+		Date now = c.getTime();
+
+		List<OperationSchedule> operationSchedules = logic
+				.getRemainingOperationSchedules();
+		if (operationSchedules.isEmpty()) {
+			minutesRemainingTextView.setText("");
+		} else {
+			Date departure = operationSchedules.get(0)
+					.getDepartureEstimate();
+			Long milliGap = departure.getTime() - now.getTime();
+			minutesRemainingTextView.setText("" + (milliGap / 1000 / 60));
+		}
+	}
 
 	private final Runnable pollVehicleNotification = new Runnable() {
 		@Override
@@ -122,6 +156,7 @@ public class InVehicleDeviceActivity extends Activity {
 	private TextView platformDepartureTimeTextView = null;
 	private TextView platformNameTextView = null;
 	private TextView presentTimeTextView = null;
+	private TextView minutesRemainingTextView = null;
 	private TextView statusTextView = null;
 	private View drivingView1Layout = null;
 	private View drivingView2Layout = null;
@@ -220,10 +255,14 @@ public class InVehicleDeviceActivity extends Activity {
 		finishLayout.setVisibility(View.VISIBLE);
 		statusTextView.setText("");
 		changeStatusButton.setEnabled(false);
+		for (View view : statusColoredViews) {
+			view.setBackgroundColor(Color.rgb(0xAA, 0xAA, 0xAA)); // TODO 定数
+		}
 	}
 
 	@Subscribe
 	public void enterPlatformStatus(EnterPlatformStatusEvent event) {
+		updateMinutesRemaining();
 		List<OperationSchedule> operationSchedules = logic
 				.getRemainingOperationSchedules();
 		if (operationSchedules.isEmpty()) {
@@ -369,6 +408,7 @@ public class InVehicleDeviceActivity extends Activity {
 		showMissedReservationsButton = (ToggleButton) reservationListFooterView
 				.findViewById(R.id.show_missed_reservations_button);
 		addUnexpectedReservationButton = (Button) findViewById(R.id.add_unexpected_reservation_button);
+		minutesRemainingTextView = (TextView) findViewById(R.id.minutes_remaining);
 
 		changeStatusButton.setOnClickListener(new OnClickListener() {
 			@Override
