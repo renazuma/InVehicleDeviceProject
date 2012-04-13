@@ -15,7 +15,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnDismissListener;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
@@ -405,10 +405,6 @@ public class InVehicleDeviceActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		if (!isFinishing()) {
-			showDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
-		}
-
 		super.onCreate(savedInstanceState);
 
 		// if (BuildConfig.DEBUG) {
@@ -556,9 +552,9 @@ public class InVehicleDeviceActivity extends Activity {
 			ProgressDialog dialog = new ProgressDialog(this);
 			dialog.setMessage("運行情報を取得しています");
 			dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			dialog.setOnDismissListener(new OnDismissListener() {
+			dialog.setOnCancelListener(new OnCancelListener() {
 				@Override
-				public void onDismiss(DialogInterface dialog) {
+				public void onCancel(DialogInterface dialogInterface) {
 					if (!logic.isInitialized()) {
 						finish();
 					}
@@ -628,7 +624,12 @@ public class InVehicleDeviceActivity extends Activity {
 
 		telephonyManager.listen(updateSignalStrength,
 				PhoneStateListener.LISTEN_NONE);
+	}
 
+	@Override
+	public void onPause() {
+		super.onPause();
+		navigationModal.onPauseActivity();
 		try {
 			dismissDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
 		} catch (IllegalArgumentException e) {
@@ -638,20 +639,12 @@ public class InVehicleDeviceActivity extends Activity {
 	}
 
 	@Override
-	public void onPause() {
-		super.onPause();
-		navigationModal.onPauseActivity();
-	}
-
-	@Override
 	public void onResume() {
 		super.onResume();
 		navigationModal.onResumeActivity();
-	}
-
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
+		if (!isFinishing() && waitForStartUiLatch.getCount() > 0) {
+			showDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
+		}
 	}
 
 	@Subscribe
