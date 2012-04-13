@@ -41,6 +41,7 @@ public class VTextView extends View {
 					updateBitmapHandler.post(new Runnable() {
 						@Override
 						public void run() {
+							bitmap.recycle();
 							bitmap = newBitmap;
 							canvas.setBitmap(bitmap);
 							invalidate();
@@ -78,7 +79,6 @@ public class VTextView extends View {
 	@Override
 	protected void onAttachedToWindow() {
 		super.onAttachedToWindow();
-		updateBitmapThread.interrupt();
 		updateBitmapThread = new UpdateBitmapThread();
 		updateBitmapThread.start();
 	}
