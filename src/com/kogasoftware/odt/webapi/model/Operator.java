@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Operator extends Model {
-	private static final long serialVersionUID = 7882716135635807127L;
+	private static final long serialVersionUID = 7197304711883609768L;
 
 	public Operator() {
 	}
@@ -73,7 +73,6 @@ public class Operator extends Model {
 		jsonObject.put("authentication_token", toJSON(getAuthenticationToken().orNull()));
 		jsonObject.put("email", toJSON(getEmail().orNull()));
 		jsonObject.put("first_name", toJSON(getFirstName()));
-		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("last_name", toJSON(getLastName()));
 		jsonObject.put("login", toJSON(getLogin()));
 		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));

@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Platform extends Model {
-	private static final long serialVersionUID = 4312274746129437533L;
+	private static final long serialVersionUID = 1807372476958976351L;
 
 	public Platform() {
 	}
@@ -87,7 +87,6 @@ public class Platform extends Model {
 		jsonObject.put("deleted_at", toJSON(getDeletedAt().orNull()));
 		jsonObject.put("demand_area_id", toJSON(getDemandAreaId().orNull()));
 		jsonObject.put("end_at", toJSON(getEndAt().orNull()));
-		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("image", toJSON(getImage().orNull()));
 		jsonObject.put("keyword", toJSON(getKeyword().orNull()));
 		jsonObject.put("latitude", toJSON(getLatitude()));

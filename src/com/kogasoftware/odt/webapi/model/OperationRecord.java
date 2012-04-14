@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class OperationRecord extends Model {
-	private static final long serialVersionUID = 7959583963359190895L;
+	private static final long serialVersionUID = 6304691470080501261L;
 
 	public OperationRecord() {
 	}
@@ -72,7 +72,6 @@ public class OperationRecord extends Model {
 		jsonObject.put("arrived_at", toJSON(getArrivedAt()));
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
 		jsonObject.put("departed_at", toJSON(getDepartedAt()));
-		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("operation_schedule_id", toJSON(getOperationScheduleId().orNull()));
 		jsonObject.put("service_unit_id", toJSON(getServiceUnitId().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));

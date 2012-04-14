@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class User extends Model {
-	private static final long serialVersionUID = 8989306652616075310L;
+	private static final long serialVersionUID = 3082163235276016117L;
 
 	public User() {
 	}
@@ -99,7 +99,6 @@ public class User extends Model {
 		jsonObject.put("first_name", toJSON(getFirstName()));
 		jsonObject.put("first_name_ruby", toJSON(getFirstNameRuby()));
 		jsonObject.put("handicapped", toJSON(getHandicapped().orNull()));
-		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("last_name", toJSON(getLastName()));
 		jsonObject.put("last_name_ruby", toJSON(getLastNameRuby()));
 		jsonObject.put("login", toJSON(getLogin()));

@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class ServiceProvider extends Model {
-	private static final long serialVersionUID = 6085160808310966205L;
+	private static final long serialVersionUID = 6604759185581261590L;
 
 	public ServiceProvider() {
 	}
@@ -78,7 +78,6 @@ public class ServiceProvider extends Model {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
 		jsonObject.put("deleted_at", toJSON(getDeletedAt().orNull()));
-		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("must_contact_gap", toJSON(getMustContactGap()));
 		jsonObject.put("name", toJSON(getName()));
 		jsonObject.put("recommend", toJSON(getRecommend()));

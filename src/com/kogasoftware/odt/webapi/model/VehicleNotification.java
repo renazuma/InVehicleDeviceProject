@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class VehicleNotification extends Model {
-	private static final long serialVersionUID = 5169972644387679523L;
+	private static final long serialVersionUID = 8251518718401550331L;
 
 	public VehicleNotification() {
 	}
@@ -72,7 +72,6 @@ public class VehicleNotification extends Model {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("body", toJSON(getBody().orNull()));
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
-		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("in_vehicle_device_id", toJSON(getInVehicleDeviceId()));
 		jsonObject.put("operator_id", toJSON(getOperatorId()));
 		jsonObject.put("read_at", toJSON(getReadAt().orNull()));

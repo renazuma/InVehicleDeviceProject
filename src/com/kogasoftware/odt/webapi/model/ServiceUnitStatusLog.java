@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class ServiceUnitStatusLog extends Model {
-	private static final long serialVersionUID = 7663241163512938834L;
+	private static final long serialVersionUID = 2589381151816526199L;
 
 	public ServiceUnitStatusLog() {
 	}
@@ -68,7 +68,6 @@ public class ServiceUnitStatusLog extends Model {
 	public JSONObject toJSONObject() throws JSONException {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
-		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("latitude", toJSON(getLatitude()));
 		jsonObject.put("longitude", toJSON(getLongitude()));
 		jsonObject.put("orientation", toJSON(getOrientation().orNull()));
