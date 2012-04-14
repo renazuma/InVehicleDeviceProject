@@ -8,6 +8,7 @@ ant $ant_arg findbugs
 
 cd tests
 ant $ant_arg uninstall findbugs
+ant $ant_arg all clean emma instrument install
 
 tar xf $HOME/userContent/OpenJTalk-sdcard.tar.xz
 p=com.kogasoftware.odt.invehicledevice
