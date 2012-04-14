@@ -19,35 +19,18 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 	}
 		
 	CountDownLatch latch;
+	private GenerateMaster master;
 	
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		
-		final WebTestAPI testAPI = new WebTestAPI();
-
-		new SyncCall<Void>() {
-			@Override
-			public int run() throws WebAPIException {
-				return testAPI.cleanDatabase(this);
-			}
-		};
-		
-		SyncCall<InVehicleDevice> c = new SyncCall<InVehicleDevice>() {
-			@Override
-			public int run() throws Exception {
-				InVehicleDevice ivd = new InVehicleDevice();
-				ivd.setLogin("ivd1");
-				ivd.setPassword("ivdpass");
-				ivd.setPasswordConfirmation("ivdpass");
-				ivd.setModelName("モデル名");
-				ivd.setTypeNumber("車種");
-				
-				Log.d("WebAPITest", ivd.toJSONObject().toString());
-				return testAPI.createInVehicleDevice(ivd, this);
-			}
-		};
-		
+		// マスタ生成
+		master = new GenerateMaster();
+		master.cleanDatabase();
+		master.createServiceProvider();
+		master.createInVehicleDevice();
+		master.createOperator();		
 	}
 
 	public void testLogin() throws Exception {
