@@ -6,6 +6,7 @@ WebAPITest::Application.routes.draw do
   resources :service_providers
   resources :operation_schedules
   resources :platforms
+  resources :unit_assignments
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
