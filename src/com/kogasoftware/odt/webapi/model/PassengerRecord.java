@@ -13,19 +13,22 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class PassengerRecord extends Model {
-	private static final long serialVersionUID = 4418993305956797584L;
+	private static final long serialVersionUID = 6962549826715367159L;
 
 	public PassengerRecord() {
 	}
 
 	public PassengerRecord(JSONObject jsonObject) throws JSONException, ParseException {
+		setArrivalOperationScheduleId(parseOptionalInteger(jsonObject, "arrival_operation_schedule_id"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
+		setDepartureOperationScheduleId(parseInteger(jsonObject, "departure_operation_schedule_id"));
 		setGetOffTime(parseOptionalDate(jsonObject, "get_off_time"));
 		setGetOnTime(parseDate(jsonObject, "get_on_time"));
 		setId(parseInteger(jsonObject, "id"));
 		setPassengerCount(parseInteger(jsonObject, "passenger_count"));
 		setPayment(parseOptionalInteger(jsonObject, "payment"));
+		setReservationId(parseOptionalInteger(jsonObject, "reservation_id"));
 		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
 		setTimestamp(parseOptionalDate(jsonObject, "timestamp"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
@@ -76,29 +79,56 @@ public class PassengerRecord extends Model {
 	@Override
 	public JSONObject toJSONObject() throws JSONException {
 		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("arrival_operation_schedule_id", toJSON(getArrivalOperationScheduleId().orNull()));
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
 		jsonObject.put("deleted_at", toJSON(getDeletedAt().orNull()));
+		jsonObject.put("departure_operation_schedule_id", toJSON(getDepartureOperationScheduleId()));
 		jsonObject.put("get_off_time", toJSON(getGetOffTime().orNull()));
 		jsonObject.put("get_on_time", toJSON(getGetOnTime()));
 		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("passenger_count", toJSON(getPassengerCount()));
 		jsonObject.put("payment", toJSON(getPayment().orNull()));
+		jsonObject.put("reservation_id", toJSON(getReservationId().orNull()));
 		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
 		jsonObject.put("timestamp", toJSON(getTimestamp().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
-		jsonObject.put("arrival_operation_schedule", toJSON(getArrivalOperationSchedule()));
-		if (getArrivalOperationSchedule().isPresent()) {
-			jsonObject.put("arrival_operation_schedule_id", toJSON(getArrivalOperationSchedule().get().getId()));
-		}
-		jsonObject.put("departure_operation_schedule", toJSON(getDepartureOperationSchedule()));
-		if (getDepartureOperationSchedule().isPresent()) {
-			jsonObject.put("departure_operation_schedule_id", toJSON(getDepartureOperationSchedule().get().getId()));
-		}
-		jsonObject.put("reservation", toJSON(getReservation()));
-		if (getReservation().isPresent()) {
-			jsonObject.put("reservation_id", toJSON(getReservation().get().getId()));
-		}
+
+	   		jsonObject.put("arrival_operation_schedule", toJSON(getArrivalOperationSchedule()));
+	   		if (getArrivalOperationSchedule().isPresent()) {
+				jsonObject.put("arrival_operation_schedule_id", toJSON(getArrivalOperationSchedule().get().getId()));
+			}
+
+
+	   		jsonObject.put("departure_operation_schedule", toJSON(getDepartureOperationSchedule()));
+	   		if (getDepartureOperationSchedule().isPresent()) {
+				jsonObject.put("departure_operation_schedule_id", toJSON(getDepartureOperationSchedule().get().getId()));
+			}
+
+
+	   		jsonObject.put("reservation", toJSON(getReservation()));
+	   		if (getReservation().isPresent()) {
+				jsonObject.put("reservation_id", toJSON(getReservation().get().getId()));
+			}
+
 		return jsonObject;
+	}
+
+	private Optional<Integer> arrivalOperationScheduleId = Optional.<Integer>absent();
+
+	public Optional<Integer> getArrivalOperationScheduleId() {
+		return wrapNull(arrivalOperationScheduleId);
+	}
+
+	public void setArrivalOperationScheduleId(Optional<Integer> arrivalOperationScheduleId) {
+		this.arrivalOperationScheduleId = wrapNull(arrivalOperationScheduleId);
+	}
+
+	public void setArrivalOperationScheduleId(Integer arrivalOperationScheduleId) {
+		this.arrivalOperationScheduleId = Optional.fromNullable(arrivalOperationScheduleId);
+	}
+
+	public void clearArrivalOperationScheduleId() {
+		this.arrivalOperationScheduleId = Optional.<Integer>absent();
 	}
 
 	private Date createdAt = new Date();
@@ -127,6 +157,16 @@ public class PassengerRecord extends Model {
 
 	public void clearDeletedAt() {
 		this.deletedAt = Optional.<Date>absent();
+	}
+
+	private Integer departureOperationScheduleId = 0;
+
+	public Integer getDepartureOperationScheduleId() {
+		return wrapNull(departureOperationScheduleId);
+	}
+
+	public void setDepartureOperationScheduleId(Integer departureOperationScheduleId) {
+		this.departureOperationScheduleId = wrapNull(departureOperationScheduleId);
 	}
 
 	private Optional<Date> getOffTime = Optional.<Date>absent();
@@ -193,6 +233,24 @@ public class PassengerRecord extends Model {
 
 	public void clearPayment() {
 		this.payment = Optional.<Integer>absent();
+	}
+
+	private Optional<Integer> reservationId = Optional.<Integer>absent();
+
+	public Optional<Integer> getReservationId() {
+		return wrapNull(reservationId);
+	}
+
+	public void setReservationId(Optional<Integer> reservationId) {
+		this.reservationId = wrapNull(reservationId);
+	}
+
+	public void setReservationId(Integer reservationId) {
+		this.reservationId = Optional.fromNullable(reservationId);
+	}
+
+	public void clearReservationId() {
+		this.reservationId = Optional.<Integer>absent();
 	}
 
 	private Optional<Integer> serviceProviderId = Optional.<Integer>absent();

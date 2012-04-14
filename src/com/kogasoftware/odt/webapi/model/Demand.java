@@ -13,15 +13,17 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Demand extends Model {
-	private static final long serialVersionUID = 4243679255869744502L;
+	private static final long serialVersionUID = 493929111581782217L;
 
 	public Demand() {
 	}
 
 	public Demand(JSONObject jsonObject) throws JSONException, ParseException {
+		setArrivalPlatformId(parseOptionalInteger(jsonObject, "arrival_platform_id"));
 		setArrivalTime(parseOptionalDate(jsonObject, "arrival_time"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
+		setDeparturePlatformId(parseOptionalInteger(jsonObject, "departure_platform_id"));
 		setDepartureTime(parseOptionalDate(jsonObject, "departure_time"));
 		setId(parseInteger(jsonObject, "id"));
 		setMemo(parseOptionalString(jsonObject, "memo"));
@@ -31,6 +33,7 @@ public class Demand extends Model {
 		setStoppageTime(parseOptionalInteger(jsonObject, "stoppage_time"));
 		setUnitAssignmentId(parseOptionalInteger(jsonObject, "unit_assignment_id"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
+		setUserId(parseInteger(jsonObject, "user_id"));
 		setArrivalPlatform(Platform.parse(jsonObject, "arrival_platform"));
 		if (getArrivalPlatform().isPresent()) {
 			setArrivalPlatformId(getArrivalPlatform().get().getId());
@@ -80,9 +83,11 @@ public class Demand extends Model {
 	@Override
 	public JSONObject toJSONObject() throws JSONException {
 		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("arrival_platform_id", toJSON(getArrivalPlatformId().orNull()));
 		jsonObject.put("arrival_time", toJSON(getArrivalTime().orNull()));
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
 		jsonObject.put("deleted_at", toJSON(getDeletedAt().orNull()));
+		jsonObject.put("departure_platform_id", toJSON(getDeparturePlatformId().orNull()));
 		jsonObject.put("departure_time", toJSON(getDepartureTime().orNull()));
 		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("memo", toJSON(getMemo().orNull()));
@@ -92,21 +97,52 @@ public class Demand extends Model {
 		jsonObject.put("stoppage_time", toJSON(getStoppageTime().orNull()));
 		jsonObject.put("unit_assignment_id", toJSON(getUnitAssignmentId().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
-		jsonObject.put("arrival_platform", toJSON(getArrivalPlatform()));
-		if (getArrivalPlatform().isPresent()) {
-			jsonObject.put("arrival_platform_id", toJSON(getArrivalPlatform().get().getId()));
+		jsonObject.put("user_id", toJSON(getUserId()));
+
+	   		jsonObject.put("arrival_platform", toJSON(getArrivalPlatform()));
+	   		if (getArrivalPlatform().isPresent()) {
+				jsonObject.put("arrival_platform_id", toJSON(getArrivalPlatform().get().getId()));
+			}
+
+
+	   		jsonObject.put("departure_platform", toJSON(getDeparturePlatform()));
+	   		if (getDeparturePlatform().isPresent()) {
+				jsonObject.put("departure_platform_id", toJSON(getDeparturePlatform().get().getId()));
+			}
+
+
+	   		jsonObject.put("reservation", toJSON(getReservation()));
+
+		if (getReservationCandidates().size() > 0) {
+
+	   		jsonObject.put("reservation_candidates", toJSON(getReservationCandidates()));
 		}
-		jsonObject.put("departure_platform", toJSON(getDeparturePlatform()));
-		if (getDeparturePlatform().isPresent()) {
-			jsonObject.put("departure_platform_id", toJSON(getDeparturePlatform().get().getId()));
-		}
-		jsonObject.put("reservation", toJSON(getReservation()));
-		jsonObject.put("reservation_candidates", toJSON(getReservationCandidates()));
-		jsonObject.put("user", toJSON(getUser()));
-		if (getUser().isPresent()) {
-			jsonObject.put("user_id", toJSON(getUser().get().getId()));
-		}
+
+
+	   		jsonObject.put("user", toJSON(getUser()));
+	   		if (getUser().isPresent()) {
+				jsonObject.put("user_id", toJSON(getUser().get().getId()));
+			}
+
 		return jsonObject;
+	}
+
+	private Optional<Integer> arrivalPlatformId = Optional.<Integer>absent();
+
+	public Optional<Integer> getArrivalPlatformId() {
+		return wrapNull(arrivalPlatformId);
+	}
+
+	public void setArrivalPlatformId(Optional<Integer> arrivalPlatformId) {
+		this.arrivalPlatformId = wrapNull(arrivalPlatformId);
+	}
+
+	public void setArrivalPlatformId(Integer arrivalPlatformId) {
+		this.arrivalPlatformId = Optional.fromNullable(arrivalPlatformId);
+	}
+
+	public void clearArrivalPlatformId() {
+		this.arrivalPlatformId = Optional.<Integer>absent();
 	}
 
 	private Optional<Date> arrivalTime = Optional.<Date>absent();
@@ -153,6 +189,24 @@ public class Demand extends Model {
 
 	public void clearDeletedAt() {
 		this.deletedAt = Optional.<Date>absent();
+	}
+
+	private Optional<Integer> departurePlatformId = Optional.<Integer>absent();
+
+	public Optional<Integer> getDeparturePlatformId() {
+		return wrapNull(departurePlatformId);
+	}
+
+	public void setDeparturePlatformId(Optional<Integer> departurePlatformId) {
+		this.departurePlatformId = wrapNull(departurePlatformId);
+	}
+
+	public void setDeparturePlatformId(Integer departurePlatformId) {
+		this.departurePlatformId = Optional.fromNullable(departurePlatformId);
+	}
+
+	public void clearDeparturePlatformId() {
+		this.departurePlatformId = Optional.<Integer>absent();
 	}
 
 	private Optional<Date> departureTime = Optional.<Date>absent();
@@ -291,6 +345,16 @@ public class Demand extends Model {
 
 	public void setUpdatedAt(Date updatedAt) {
 		this.updatedAt = wrapNull(updatedAt);
+	}
+
+	private Integer userId = 0;
+
+	public Integer getUserId() {
+		return wrapNull(userId);
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = wrapNull(userId);
 	}
 
 	private Optional<Platform> arrivalPlatform = Optional.<Platform>absent();

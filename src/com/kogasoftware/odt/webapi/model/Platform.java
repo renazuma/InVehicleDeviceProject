@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Platform extends Model {
-	private static final long serialVersionUID = 330299336509521936L;
+	private static final long serialVersionUID = 7663819639761284564L;
 
 	public Platform() {
 	}
@@ -96,12 +96,36 @@ public class Platform extends Model {
 		jsonObject.put("start_at", toJSON(getStartAt().orNull()));
 		jsonObject.put("type_of_demand", toJSON(getTypeOfDemand().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
-		jsonObject.put("demands_as_arrival", toJSON(getDemandsAsArrival()));
-		jsonObject.put("demands_as_departure", toJSON(getDemandsAsDeparture()));
-		jsonObject.put("reservation_candidates_as_arrival", toJSON(getReservationCandidatesAsArrival()));
-		jsonObject.put("reservation_candidates_as_departure", toJSON(getReservationCandidatesAsDeparture()));
-		jsonObject.put("reservations_as_arrival", toJSON(getReservationsAsArrival()));
-		jsonObject.put("reservations_as_departure", toJSON(getReservationsAsDeparture()));
+		if (getDemandsAsArrival().size() > 0) {
+
+	   		jsonObject.put("demands_as_arrival", toJSON(getDemandsAsArrival()));
+		}
+
+		if (getDemandsAsDeparture().size() > 0) {
+
+	   		jsonObject.put("demands_as_departure", toJSON(getDemandsAsDeparture()));
+		}
+
+		if (getReservationCandidatesAsArrival().size() > 0) {
+
+	   		jsonObject.put("reservation_candidates_as_arrival", toJSON(getReservationCandidatesAsArrival()));
+		}
+
+		if (getReservationCandidatesAsDeparture().size() > 0) {
+
+	   		jsonObject.put("reservation_candidates_as_departure", toJSON(getReservationCandidatesAsDeparture()));
+		}
+
+		if (getReservationsAsArrival().size() > 0) {
+
+	   		jsonObject.put("reservations_as_arrival", toJSON(getReservationsAsArrival()));
+		}
+
+		if (getReservationsAsDeparture().size() > 0) {
+
+	   		jsonObject.put("reservations_as_departure", toJSON(getReservationsAsDeparture()));
+		}
+
 		return jsonObject;
 	}
 

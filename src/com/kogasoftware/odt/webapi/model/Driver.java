@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Driver extends Model {
-	private static final long serialVersionUID = 7009132757571303089L;
+	private static final long serialVersionUID = 9063765567653884206L;
 
 	public Driver() {
 	}
@@ -71,7 +71,11 @@ public class Driver extends Model {
 		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
 		jsonObject.put("telephone_number", toJSON(getTelephoneNumber()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
-		jsonObject.put("service_units", toJSON(getServiceUnits()));
+		if (getServiceUnits().size() > 0) {
+
+	   		jsonObject.put("service_units", toJSON(getServiceUnits()));
+		}
+
 		return jsonObject;
 	}
 

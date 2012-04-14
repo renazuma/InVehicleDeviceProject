@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class VehicleNotification extends Model {
-	private static final long serialVersionUID = 5881265057696116771L;
+	private static final long serialVersionUID = 1423433801275957053L;
 
 	public VehicleNotification() {
 	}
@@ -22,6 +22,8 @@ public class VehicleNotification extends Model {
 		setBody(parseOptionalString(jsonObject, "body"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setId(parseInteger(jsonObject, "id"));
+		setInVehicleDeviceId(parseInteger(jsonObject, "in_vehicle_device_id"));
+		setOperatorId(parseInteger(jsonObject, "operator_id"));
 		setReadAt(parseOptionalDate(jsonObject, "read_at"));
 		setResponse(parseOptionalInteger(jsonObject, "response"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
@@ -71,17 +73,23 @@ public class VehicleNotification extends Model {
 		jsonObject.put("body", toJSON(getBody().orNull()));
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
 		jsonObject.put("id", toJSON(getId()));
+		jsonObject.put("in_vehicle_device_id", toJSON(getInVehicleDeviceId()));
+		jsonObject.put("operator_id", toJSON(getOperatorId()));
 		jsonObject.put("read_at", toJSON(getReadAt().orNull()));
 		jsonObject.put("response", toJSON(getResponse().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
-		jsonObject.put("in_vehicle_device", toJSON(getInVehicleDevice()));
-		if (getInVehicleDevice().isPresent()) {
-			jsonObject.put("in_vehicle_device_id", toJSON(getInVehicleDevice().get().getId()));
-		}
-		jsonObject.put("operator", toJSON(getOperator()));
-		if (getOperator().isPresent()) {
-			jsonObject.put("operator_id", toJSON(getOperator().get().getId()));
-		}
+
+	   		jsonObject.put("in_vehicle_device", toJSON(getInVehicleDevice()));
+	   		if (getInVehicleDevice().isPresent()) {
+				jsonObject.put("in_vehicle_device_id", toJSON(getInVehicleDevice().get().getId()));
+			}
+
+
+	   		jsonObject.put("operator", toJSON(getOperator()));
+	   		if (getOperator().isPresent()) {
+				jsonObject.put("operator_id", toJSON(getOperator().get().getId()));
+			}
+
 		return jsonObject;
 	}
 
@@ -121,6 +129,26 @@ public class VehicleNotification extends Model {
 
 	public void setId(Integer id) {
 		this.id = wrapNull(id);
+	}
+
+	private Integer inVehicleDeviceId = 0;
+
+	public Integer getInVehicleDeviceId() {
+		return wrapNull(inVehicleDeviceId);
+	}
+
+	public void setInVehicleDeviceId(Integer inVehicleDeviceId) {
+		this.inVehicleDeviceId = wrapNull(inVehicleDeviceId);
+	}
+
+	private Integer operatorId = 0;
+
+	public Integer getOperatorId() {
+		return wrapNull(operatorId);
+	}
+
+	public void setOperatorId(Integer operatorId) {
+		this.operatorId = wrapNull(operatorId);
 	}
 
 	private Optional<Date> readAt = Optional.<Date>absent();

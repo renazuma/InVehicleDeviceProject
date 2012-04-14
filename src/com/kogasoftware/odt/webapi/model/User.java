@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class User extends Model {
-	private static final long serialVersionUID = 1797786012285423542L;
+	private static final long serialVersionUID = 1038406216429234903L;
 
 	public User() {
 	}
@@ -28,6 +28,7 @@ public class User extends Model {
 		setFirstName(parseString(jsonObject, "first_name"));
 		setFirstNameRuby(parseString(jsonObject, "first_name_ruby"));
 		setHandicapped(parseOptionalBoolean(jsonObject, "handicapped"));
+		setId(parseInteger(jsonObject, "id"));
 		setLastName(parseString(jsonObject, "last_name"));
 		setLastNameRuby(parseString(jsonObject, "last_name_ruby"));
 		setLogin(parseString(jsonObject, "login"));
@@ -93,6 +94,7 @@ public class User extends Model {
 		jsonObject.put("first_name", toJSON(getFirstName()));
 		jsonObject.put("first_name_ruby", toJSON(getFirstNameRuby()));
 		jsonObject.put("handicapped", toJSON(getHandicapped().orNull()));
+		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("last_name", toJSON(getLastName()));
 		jsonObject.put("last_name_ruby", toJSON(getLastNameRuby()));
 		jsonObject.put("login", toJSON(getLogin()));
@@ -111,9 +113,21 @@ public class User extends Model {
 		jsonObject.put("password", toJSON(getPassword().orNull()));
 		jsonObject.put("password_confirmation", toJSON(getPasswordConfirmation().orNull()));
 		jsonObject.put("remember_me", toJSON(getRememberMe().orNull()));
-		jsonObject.put("demands", toJSON(getDemands()));
-		jsonObject.put("reservation_candidates", toJSON(getReservationCandidates()));
-		jsonObject.put("reservations", toJSON(getReservations()));
+		if (getDemands().size() > 0) {
+
+	   		jsonObject.put("demands", toJSON(getDemands()));
+		}
+
+		if (getReservationCandidates().size() > 0) {
+
+	   		jsonObject.put("reservation_candidates", toJSON(getReservationCandidates()));
+		}
+
+		if (getReservations().size() > 0) {
+
+	   		jsonObject.put("reservations", toJSON(getReservations()));
+		}
+
 		return jsonObject;
 	}
 
@@ -237,6 +251,16 @@ public class User extends Model {
 
 	public void clearHandicapped() {
 		this.handicapped = Optional.<Boolean>absent();
+	}
+
+	private Integer id = 0;
+
+	public Integer getId() {
+		return wrapNull(id);
+	}
+
+	public void setId(Integer id) {
+		this.id = wrapNull(id);
 	}
 
 	private String lastName = "";

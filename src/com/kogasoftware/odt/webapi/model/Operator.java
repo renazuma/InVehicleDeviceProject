@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Operator extends Model {
-	private static final long serialVersionUID = 7908478778502020576L;
+	private static final long serialVersionUID = 7345980188319097970L;
 
 	public Operator() {
 	}
@@ -22,13 +22,13 @@ public class Operator extends Model {
 		setAuthenticationToken(parseOptionalString(jsonObject, "authentication_token"));
 		setEmail(parseOptionalString(jsonObject, "email"));
 		setFirstName(parseString(jsonObject, "first_name"));
+		setId(parseInteger(jsonObject, "id"));
 		setLastName(parseString(jsonObject, "last_name"));
 		setLogin(parseString(jsonObject, "login"));
 		setAuditComment(parseOptionalString(jsonObject, "audit_comment"));
 		setPassword(parseOptionalString(jsonObject, "password"));
 		setPasswordConfirmation(parseOptionalString(jsonObject, "password_confirmation"));
 		setRememberMe(parseOptionalString(jsonObject, "remember_me"));
-		setServiceProvider(parseOptionalString(jsonObject, "service_provider"));
 		setReservations(Reservation.parseList(jsonObject, "reservations"));
 	}
 
@@ -68,14 +68,18 @@ public class Operator extends Model {
 		jsonObject.put("authentication_token", toJSON(getAuthenticationToken().orNull()));
 		jsonObject.put("email", toJSON(getEmail().orNull()));
 		jsonObject.put("first_name", toJSON(getFirstName()));
+		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("last_name", toJSON(getLastName()));
 		jsonObject.put("login", toJSON(getLogin()));
 		jsonObject.put("audit_comment", toJSON(getAuditComment().orNull()));
 		jsonObject.put("password", toJSON(getPassword().orNull()));
 		jsonObject.put("password_confirmation", toJSON(getPasswordConfirmation().orNull()));
 		jsonObject.put("remember_me", toJSON(getRememberMe().orNull()));
-		jsonObject.put("service_provider", toJSON(getServiceProvider().orNull()));
-		jsonObject.put("reservations", toJSON(getReservations()));
+		if (getReservations().size() > 0) {
+
+	   		jsonObject.put("reservations", toJSON(getReservations()));
+		}
+
 		return jsonObject;
 	}
 
@@ -123,6 +127,16 @@ public class Operator extends Model {
 
 	public void setFirstName(String firstName) {
 		this.firstName = wrapNull(firstName);
+	}
+
+	private Integer id = 0;
+
+	public Integer getId() {
+		return wrapNull(id);
+	}
+
+	public void setId(Integer id) {
+		this.id = wrapNull(id);
 	}
 
 	private String lastName = "";
@@ -215,24 +229,6 @@ public class Operator extends Model {
 
 	public void clearRememberMe() {
 		this.rememberMe = Optional.<String>absent();
-	}
-
-	private Optional<String> serviceProvider = Optional.<String>absent();
-
-	public Optional<String> getServiceProvider() {
-		return wrapNull(serviceProvider);
-	}
-
-	public void setServiceProvider(Optional<String> serviceProvider) {
-		this.serviceProvider = wrapNull(serviceProvider);
-	}
-
-	public void setServiceProvider(String serviceProvider) {
-		this.serviceProvider = Optional.fromNullable(serviceProvider);
-	}
-
-	public void clearServiceProvider() {
-		this.serviceProvider = Optional.<String>absent();
 	}
 
 	private LinkedList<Reservation> reservations = new LinkedList<Reservation>();

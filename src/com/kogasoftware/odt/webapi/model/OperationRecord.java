@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class OperationRecord extends Model {
-	private static final long serialVersionUID = 5595063844305914151L;
+	private static final long serialVersionUID = 6836690223362728225L;
 
 	public OperationRecord() {
 	}
@@ -23,6 +23,8 @@ public class OperationRecord extends Model {
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setDepartedAt(parseDate(jsonObject, "departed_at"));
 		setId(parseInteger(jsonObject, "id"));
+		setOperationScheduleId(parseOptionalInteger(jsonObject, "operation_schedule_id"));
+		setServiceUnitId(parseOptionalInteger(jsonObject, "service_unit_id"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setOperationSchedule(OperationSchedule.parse(jsonObject, "operation_schedule"));
 		if (getOperationSchedule().isPresent()) {
@@ -71,15 +73,21 @@ public class OperationRecord extends Model {
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
 		jsonObject.put("departed_at", toJSON(getDepartedAt()));
 		jsonObject.put("id", toJSON(getId()));
+		jsonObject.put("operation_schedule_id", toJSON(getOperationScheduleId().orNull()));
+		jsonObject.put("service_unit_id", toJSON(getServiceUnitId().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
-		jsonObject.put("operation_schedule", toJSON(getOperationSchedule()));
-		if (getOperationSchedule().isPresent()) {
-			jsonObject.put("operation_schedule_id", toJSON(getOperationSchedule().get().getId()));
-		}
-		jsonObject.put("service_unit", toJSON(getServiceUnit()));
-		if (getServiceUnit().isPresent()) {
-			jsonObject.put("service_unit_id", toJSON(getServiceUnit().get().getId()));
-		}
+
+	   		jsonObject.put("operation_schedule", toJSON(getOperationSchedule()));
+	   		if (getOperationSchedule().isPresent()) {
+				jsonObject.put("operation_schedule_id", toJSON(getOperationSchedule().get().getId()));
+			}
+
+
+	   		jsonObject.put("service_unit", toJSON(getServiceUnit()));
+	   		if (getServiceUnit().isPresent()) {
+				jsonObject.put("service_unit_id", toJSON(getServiceUnit().get().getId()));
+			}
+
 		return jsonObject;
 	}
 
@@ -121,6 +129,42 @@ public class OperationRecord extends Model {
 
 	public void setId(Integer id) {
 		this.id = wrapNull(id);
+	}
+
+	private Optional<Integer> operationScheduleId = Optional.<Integer>absent();
+
+	public Optional<Integer> getOperationScheduleId() {
+		return wrapNull(operationScheduleId);
+	}
+
+	public void setOperationScheduleId(Optional<Integer> operationScheduleId) {
+		this.operationScheduleId = wrapNull(operationScheduleId);
+	}
+
+	public void setOperationScheduleId(Integer operationScheduleId) {
+		this.operationScheduleId = Optional.fromNullable(operationScheduleId);
+	}
+
+	public void clearOperationScheduleId() {
+		this.operationScheduleId = Optional.<Integer>absent();
+	}
+
+	private Optional<Integer> serviceUnitId = Optional.<Integer>absent();
+
+	public Optional<Integer> getServiceUnitId() {
+		return wrapNull(serviceUnitId);
+	}
+
+	public void setServiceUnitId(Optional<Integer> serviceUnitId) {
+		this.serviceUnitId = wrapNull(serviceUnitId);
+	}
+
+	public void setServiceUnitId(Integer serviceUnitId) {
+		this.serviceUnitId = Optional.fromNullable(serviceUnitId);
+	}
+
+	public void clearServiceUnitId() {
+		this.serviceUnitId = Optional.<Integer>absent();
 	}
 
 	private Date updatedAt = new Date();

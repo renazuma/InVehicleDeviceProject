@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class ServiceUnitStatusLog extends Model {
-	private static final long serialVersionUID = 9168989751275436772L;
+	private static final long serialVersionUID = 5386529339429227887L;
 
 	public ServiceUnitStatusLog() {
 	}
@@ -24,6 +24,7 @@ public class ServiceUnitStatusLog extends Model {
 		setLatitude(parseBigDecimal(jsonObject, "latitude"));
 		setLongitude(parseBigDecimal(jsonObject, "longitude"));
 		setOrientation(parseOptionalInteger(jsonObject, "orientation"));
+		setServiceUnitId(parseOptionalInteger(jsonObject, "service_unit_id"));
 		setStatus(parseOptionalInteger(jsonObject, "status"));
 		setTemperature(parseOptionalInteger(jsonObject, "temperature"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
@@ -71,13 +72,16 @@ public class ServiceUnitStatusLog extends Model {
 		jsonObject.put("latitude", toJSON(getLatitude()));
 		jsonObject.put("longitude", toJSON(getLongitude()));
 		jsonObject.put("orientation", toJSON(getOrientation().orNull()));
+		jsonObject.put("service_unit_id", toJSON(getServiceUnitId().orNull()));
 		jsonObject.put("status", toJSON(getStatus().orNull()));
 		jsonObject.put("temperature", toJSON(getTemperature().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
-		jsonObject.put("service_unit", toJSON(getServiceUnit()));
-		if (getServiceUnit().isPresent()) {
-			jsonObject.put("service_unit_id", toJSON(getServiceUnit().get().getId()));
-		}
+
+	   		jsonObject.put("service_unit", toJSON(getServiceUnit()));
+	   		if (getServiceUnit().isPresent()) {
+				jsonObject.put("service_unit_id", toJSON(getServiceUnit().get().getId()));
+			}
+
 		return jsonObject;
 	}
 
@@ -137,6 +141,24 @@ public class ServiceUnitStatusLog extends Model {
 
 	public void clearOrientation() {
 		this.orientation = Optional.<Integer>absent();
+	}
+
+	private Optional<Integer> serviceUnitId = Optional.<Integer>absent();
+
+	public Optional<Integer> getServiceUnitId() {
+		return wrapNull(serviceUnitId);
+	}
+
+	public void setServiceUnitId(Optional<Integer> serviceUnitId) {
+		this.serviceUnitId = wrapNull(serviceUnitId);
+	}
+
+	public void setServiceUnitId(Integer serviceUnitId) {
+		this.serviceUnitId = Optional.fromNullable(serviceUnitId);
+	}
+
+	public void clearServiceUnitId() {
+		this.serviceUnitId = Optional.<Integer>absent();
 	}
 
 	private Optional<Integer> status = Optional.<Integer>absent();
