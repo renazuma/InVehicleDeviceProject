@@ -296,7 +296,7 @@ public class InVehicleDeviceLogic {
 			voiceThread.start();
 			register(voiceThread);
 			Thread.sleep(0); // interruption point
-			for (Integer resourceId : new int[] { R.id.config_modal,
+			for (Integer resourceId : new Integer[] { R.id.config_modal,
 					R.id.start_check_modal, R.id.schedule_modal,
 					R.id.memo_modal, R.id.pause_modal, R.id.return_path_modal,
 					R.id.stop_check_modal, R.id.stop_modal,
