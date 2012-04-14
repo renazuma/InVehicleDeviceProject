@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class User extends Model {
-	private static final long serialVersionUID = 1038406216429234903L;
+	private static final long serialVersionUID = 1891290045071187172L;
 
 	public User() {
 	}
@@ -36,6 +36,7 @@ public class User extends Model {
 		setRecommendNotification(parseOptionalBoolean(jsonObject, "recommend_notification"));
 		setRecommendOk(parseOptionalBoolean(jsonObject, "recommend_ok"));
 		setReserveNotification(parseOptionalBoolean(jsonObject, "reserve_notification"));
+		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
 		setSex(parseInteger(jsonObject, "sex"));
 		setTelephoneNumber(parseString(jsonObject, "telephone_number"));
 		setTelephoneNumber2(parseOptionalString(jsonObject, "telephone_number2"));
@@ -50,6 +51,10 @@ public class User extends Model {
 		setDemands(Demand.parseList(jsonObject, "demands"));
 		setReservationCandidates(ReservationCandidate.parseList(jsonObject, "reservation_candidates"));
 		setReservations(Reservation.parseList(jsonObject, "reservations"));
+		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
+		if (getServiceProvider().isPresent()) {
+			setServiceProviderId(getServiceProvider().get().getId());
+		}
 	}
 
 	public static Optional<User> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -102,6 +107,7 @@ public class User extends Model {
 		jsonObject.put("recommend_notification", toJSON(getRecommendNotification().orNull()));
 		jsonObject.put("recommend_ok", toJSON(getRecommendOk().orNull()));
 		jsonObject.put("reserve_notification", toJSON(getReserveNotification().orNull()));
+		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
 		jsonObject.put("sex", toJSON(getSex()));
 		jsonObject.put("telephone_number", toJSON(getTelephoneNumber()));
 		jsonObject.put("telephone_number2", toJSON(getTelephoneNumber2().orNull()));
@@ -127,6 +133,12 @@ public class User extends Model {
 
 	   		jsonObject.put("reservations", toJSON(getReservations()));
 		}
+
+
+	   		jsonObject.put("service_provider", toJSON(getServiceProvider()));
+	   		if (getServiceProvider().isPresent()) {
+				jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
+			}
 
 		return jsonObject;
 	}
@@ -365,6 +377,24 @@ public class User extends Model {
 		this.reserveNotification = Optional.<Boolean>absent();
 	}
 
+	private Optional<Integer> serviceProviderId = Optional.<Integer>absent();
+
+	public Optional<Integer> getServiceProviderId() {
+		return wrapNull(serviceProviderId);
+	}
+
+	public void setServiceProviderId(Optional<Integer> serviceProviderId) {
+		this.serviceProviderId = wrapNull(serviceProviderId);
+	}
+
+	public void setServiceProviderId(Integer serviceProviderId) {
+		this.serviceProviderId = Optional.fromNullable(serviceProviderId);
+	}
+
+	public void clearServiceProviderId() {
+		this.serviceProviderId = Optional.<Integer>absent();
+	}
+
 	private Integer sex = 0;
 
 	public Integer getSex() {
@@ -587,5 +617,23 @@ public class User extends Model {
 
 	public void clearReservations() {
 		this.reservations = new LinkedList<Reservation>();
+	}
+
+	private Optional<ServiceProvider> serviceProvider = Optional.<ServiceProvider>absent();
+
+	public Optional<ServiceProvider> getServiceProvider() {
+		return wrapNull(serviceProvider);
+	}
+
+	public void setServiceProvider(Optional<ServiceProvider> serviceProvider) {
+		this.serviceProvider = wrapNull(serviceProvider);
+	}
+
+	public void setServiceProvider(ServiceProvider serviceProvider) {
+		this.serviceProvider = Optional.<ServiceProvider>fromNullable(serviceProvider);
+	}
+
+	public void clearServiceProvider() {
+		this.serviceProvider = Optional.<ServiceProvider>absent();
 	}
 }

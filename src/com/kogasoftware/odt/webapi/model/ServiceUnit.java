@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class ServiceUnit extends Model {
-	private static final long serialVersionUID = 5478446858861752465L;
+	private static final long serialVersionUID = 3816649979171915916L;
 
 	public ServiceUnit() {
 	}
@@ -25,6 +25,7 @@ public class ServiceUnit extends Model {
 		setDriverId(parseInteger(jsonObject, "driver_id"));
 		setId(parseInteger(jsonObject, "id"));
 		setInVehicleDeviceId(parseOptionalInteger(jsonObject, "in_vehicle_device_id"));
+		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
 		setUnitAssignmentId(parseOptionalInteger(jsonObject, "unit_assignment_id"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setVehicleId(parseInteger(jsonObject, "vehicle_id"));
@@ -37,6 +38,10 @@ public class ServiceUnit extends Model {
 			setInVehicleDeviceId(getInVehicleDevice().get().getId());
 		}
 		setOperationRecords(OperationRecord.parseList(jsonObject, "operation_records"));
+		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
+		if (getServiceProvider().isPresent()) {
+			setServiceProviderId(getServiceProvider().get().getId());
+		}
 	}
 
 	public static Optional<ServiceUnit> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -78,6 +83,7 @@ public class ServiceUnit extends Model {
 		jsonObject.put("driver_id", toJSON(getDriverId()));
 		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("in_vehicle_device_id", toJSON(getInVehicleDeviceId().orNull()));
+		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
 		jsonObject.put("unit_assignment_id", toJSON(getUnitAssignmentId().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
 		jsonObject.put("vehicle_id", toJSON(getVehicleId()));
@@ -97,6 +103,12 @@ public class ServiceUnit extends Model {
 
 	   		jsonObject.put("operation_records", toJSON(getOperationRecords()));
 		}
+
+
+	   		jsonObject.put("service_provider", toJSON(getServiceProvider()));
+	   		if (getServiceProvider().isPresent()) {
+				jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
+			}
 
 		return jsonObject;
 	}
@@ -185,6 +197,24 @@ public class ServiceUnit extends Model {
 		this.inVehicleDeviceId = Optional.<Integer>absent();
 	}
 
+	private Optional<Integer> serviceProviderId = Optional.<Integer>absent();
+
+	public Optional<Integer> getServiceProviderId() {
+		return wrapNull(serviceProviderId);
+	}
+
+	public void setServiceProviderId(Optional<Integer> serviceProviderId) {
+		this.serviceProviderId = wrapNull(serviceProviderId);
+	}
+
+	public void setServiceProviderId(Integer serviceProviderId) {
+		this.serviceProviderId = Optional.fromNullable(serviceProviderId);
+	}
+
+	public void clearServiceProviderId() {
+		this.serviceProviderId = Optional.<Integer>absent();
+	}
+
 	private Optional<Integer> unitAssignmentId = Optional.<Integer>absent();
 
 	public Optional<Integer> getUnitAssignmentId() {
@@ -271,5 +301,23 @@ public class ServiceUnit extends Model {
 
 	public void clearOperationRecords() {
 		this.operationRecords = new LinkedList<OperationRecord>();
+	}
+
+	private Optional<ServiceProvider> serviceProvider = Optional.<ServiceProvider>absent();
+
+	public Optional<ServiceProvider> getServiceProvider() {
+		return wrapNull(serviceProvider);
+	}
+
+	public void setServiceProvider(Optional<ServiceProvider> serviceProvider) {
+		this.serviceProvider = wrapNull(serviceProvider);
+	}
+
+	public void setServiceProvider(ServiceProvider serviceProvider) {
+		this.serviceProvider = Optional.<ServiceProvider>fromNullable(serviceProvider);
+	}
+
+	public void clearServiceProvider() {
+		this.serviceProvider = Optional.<ServiceProvider>absent();
 	}
 }

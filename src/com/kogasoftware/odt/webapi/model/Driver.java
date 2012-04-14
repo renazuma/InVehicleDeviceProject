@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Driver extends Model {
-	private static final long serialVersionUID = 9063765567653884206L;
+	private static final long serialVersionUID = 2902433349060989753L;
 
 	public Driver() {
 	}
@@ -27,6 +27,10 @@ public class Driver extends Model {
 		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
 		setTelephoneNumber(parseString(jsonObject, "telephone_number"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
+		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
+		if (getServiceProvider().isPresent()) {
+			setServiceProviderId(getServiceProvider().get().getId());
+		}
 		setServiceUnits(ServiceUnit.parseList(jsonObject, "service_units"));
 	}
 
@@ -71,6 +75,12 @@ public class Driver extends Model {
 		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
 		jsonObject.put("telephone_number", toJSON(getTelephoneNumber()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
+
+	   		jsonObject.put("service_provider", toJSON(getServiceProvider()));
+	   		if (getServiceProvider().isPresent()) {
+				jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
+			}
+
 		if (getServiceUnits().size() > 0) {
 
 	   		jsonObject.put("service_units", toJSON(getServiceUnits()));
@@ -173,6 +183,24 @@ public class Driver extends Model {
 
 	public void setUpdatedAt(Date updatedAt) {
 		this.updatedAt = wrapNull(updatedAt);
+	}
+
+	private Optional<ServiceProvider> serviceProvider = Optional.<ServiceProvider>absent();
+
+	public Optional<ServiceProvider> getServiceProvider() {
+		return wrapNull(serviceProvider);
+	}
+
+	public void setServiceProvider(Optional<ServiceProvider> serviceProvider) {
+		this.serviceProvider = wrapNull(serviceProvider);
+	}
+
+	public void setServiceProvider(ServiceProvider serviceProvider) {
+		this.serviceProvider = Optional.<ServiceProvider>fromNullable(serviceProvider);
+	}
+
+	public void clearServiceProvider() {
+		this.serviceProvider = Optional.<ServiceProvider>absent();
 	}
 
 	private LinkedList<ServiceUnit> serviceUnits = new LinkedList<ServiceUnit>();

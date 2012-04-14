@@ -17,6 +17,7 @@ import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.ReservationCandidate;
+import com.kogasoftware.odt.webapi.model.ServiceProvider;
 import com.kogasoftware.odt.webapi.model.ServiceUnit;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.webapi.model.User;
@@ -37,6 +38,7 @@ public class WebTestAPI extends WebAPI {
 	protected static final String TEST_PATH_PLATFORMS = "/platforms";
 	protected static final String TEST_PATH_RESERVATIONS = "/reservations";
 	protected static final String TEST_PATH_RESERVATION_CANDIDATES = "/reservation_candidates";
+	protected static final String TEST_PATH_SERVICE_PROVIDERS = "/service_providers";
 	protected static final String TEST_PATH_SERVICE_UNITS = "/service_units";
 	protected static final String TEST_PATH_SERVICE_UNIT_STATUS_LOGS = "/service_unit_status_logs";
 	protected static final String TEST_PATH_USERS = "/users";
@@ -716,6 +718,72 @@ public class WebTestAPI extends WebAPI {
 	 */
 	public int deleteReservationCandidate(int id, WebAPICallback<Void> callback) throws WebAPIException {
 		return delete(TEST_PATH_RESERVATION_CANDIDATES + "/" + id, callback, new ResponseConverter<Void>() {
+			@Override
+			public Void convert(byte[] rawResponse)
+					throws Exception {
+				return null;
+			}
+		});
+	}
+	/**
+	 * 自治体をすべて取得
+	 * @param callback
+	 * @return reqkey
+	 * @throws WebAPIException
+	 */
+	public int getAllServiceProviders(WebAPICallback<List<ServiceProvider>> callback) throws WebAPIException {
+		return get(TEST_PATH_SERVICE_PROVIDERS, callback, new ResponseConverter<List<ServiceProvider>>() {
+			@Override
+			public List<ServiceProvider> convert(byte[] rawResponse)
+					throws Exception {
+				return ServiceProvider.parseList(parseJSONArray(rawResponse));
+			}
+		});
+	}
+
+	/**
+	 * 自治体をひとつ取得
+	 * @param callback
+	 * @return reqkey
+	 * @throws WebAPIException
+	 */
+	public int getServiceProvider(int id, WebAPICallback<ServiceProvider> callback) throws WebAPIException {
+		return get(TEST_PATH_SERVICE_PROVIDERS + "/" + id, callback, new ResponseConverter<ServiceProvider>() {
+			@Override
+			public ServiceProvider convert(byte[] rawResponse)
+					throws Exception {
+				return ServiceProvider.parse(parseJSONObject(rawResponse)).orNull();
+			}
+		});
+	}
+
+	/**
+	 * 自治体を生成
+	 * @param callback
+	 * @return reqkey
+	 * @throws WebAPIException
+	 * @throws JSONException 
+	 */
+	public int createServiceProvider(ServiceProvider obj, WebAPICallback<ServiceProvider> callback) throws WebAPIException, JSONException {
+		JSONObject body = new JSONObject();
+		body.put("service_provider", obj.toJSONObject());
+		return post(TEST_PATH_SERVICE_PROVIDERS, body, callback, new ResponseConverter<ServiceProvider>() {
+			@Override
+			public ServiceProvider convert(byte[] rawResponse)
+					throws Exception {
+				return ServiceProvider.parse(parseJSONObject(rawResponse)).orNull();
+			}
+		});
+	}
+
+	/**
+	 * 自治体をひとつ削除
+	 * @param callback
+	 * @return reqkey
+	 * @throws WebAPIException
+	 */
+	public int deleteServiceProvider(int id, WebAPICallback<Void> callback) throws WebAPIException {
+		return delete(TEST_PATH_SERVICE_PROVIDERS + "/" + id, callback, new ResponseConverter<Void>() {
 			@Override
 			public Void convert(byte[] rawResponse)
 					throws Exception {

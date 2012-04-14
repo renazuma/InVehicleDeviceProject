@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class ReservationCandidate extends Model {
-	private static final long serialVersionUID = 4938990060584386777L;
+	private static final long serialVersionUID = 3246937508220864603L;
 
 	public ReservationCandidate() {
 	}
@@ -44,6 +44,10 @@ public class ReservationCandidate extends Model {
 		setDeparturePlatform(Platform.parse(jsonObject, "departure_platform"));
 		if (getDeparturePlatform().isPresent()) {
 			setDeparturePlatformId(getDeparturePlatform().get().getId());
+		}
+		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
+		if (getServiceProvider().isPresent()) {
+			setServiceProviderId(getServiceProvider().get().getId());
 		}
 		setUser(User.parse(jsonObject, "user"));
 		if (getUser().isPresent()) {
@@ -114,6 +118,12 @@ public class ReservationCandidate extends Model {
 	   		jsonObject.put("departure_platform", toJSON(getDeparturePlatform()));
 	   		if (getDeparturePlatform().isPresent()) {
 				jsonObject.put("departure_platform_id", toJSON(getDeparturePlatform().get().getId()));
+			}
+
+
+	   		jsonObject.put("service_provider", toJSON(getServiceProvider()));
+	   		if (getServiceProvider().isPresent()) {
+				jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
 			}
 
 
@@ -365,6 +375,24 @@ public class ReservationCandidate extends Model {
 
 	public void clearDeparturePlatform() {
 		this.departurePlatform = Optional.<Platform>absent();
+	}
+
+	private Optional<ServiceProvider> serviceProvider = Optional.<ServiceProvider>absent();
+
+	public Optional<ServiceProvider> getServiceProvider() {
+		return wrapNull(serviceProvider);
+	}
+
+	public void setServiceProvider(Optional<ServiceProvider> serviceProvider) {
+		this.serviceProvider = wrapNull(serviceProvider);
+	}
+
+	public void setServiceProvider(ServiceProvider serviceProvider) {
+		this.serviceProvider = Optional.<ServiceProvider>fromNullable(serviceProvider);
+	}
+
+	public void clearServiceProvider() {
+		this.serviceProvider = Optional.<ServiceProvider>absent();
 	}
 
 	private Optional<User> user = Optional.<User>absent();

@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Platform extends Model {
-	private static final long serialVersionUID = 7663819639761284564L;
+	private static final long serialVersionUID = 917577502184198558L;
 
 	public Platform() {
 	}
@@ -43,6 +43,10 @@ public class Platform extends Model {
 		setReservationCandidatesAsDeparture(ReservationCandidate.parseList(jsonObject, "reservation_candidates_as_departure"));
 		setReservationsAsArrival(Reservation.parseList(jsonObject, "reservations_as_arrival"));
 		setReservationsAsDeparture(Reservation.parseList(jsonObject, "reservations_as_departure"));
+		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
+		if (getServiceProvider().isPresent()) {
+			setServiceProviderId(getServiceProvider().get().getId());
+		}
 	}
 
 	public static Optional<Platform> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -125,6 +129,12 @@ public class Platform extends Model {
 
 	   		jsonObject.put("reservations_as_departure", toJSON(getReservationsAsDeparture()));
 		}
+
+
+	   		jsonObject.put("service_provider", toJSON(getServiceProvider()));
+	   		if (getServiceProvider().isPresent()) {
+				jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
+			}
 
 		return jsonObject;
 	}
@@ -479,5 +489,23 @@ public class Platform extends Model {
 
 	public void clearReservationsAsDeparture() {
 		this.reservationsAsDeparture = new LinkedList<Reservation>();
+	}
+
+	private Optional<ServiceProvider> serviceProvider = Optional.<ServiceProvider>absent();
+
+	public Optional<ServiceProvider> getServiceProvider() {
+		return wrapNull(serviceProvider);
+	}
+
+	public void setServiceProvider(Optional<ServiceProvider> serviceProvider) {
+		this.serviceProvider = wrapNull(serviceProvider);
+	}
+
+	public void setServiceProvider(ServiceProvider serviceProvider) {
+		this.serviceProvider = Optional.<ServiceProvider>fromNullable(serviceProvider);
+	}
+
+	public void clearServiceProvider() {
+		this.serviceProvider = Optional.<ServiceProvider>absent();
 	}
 }

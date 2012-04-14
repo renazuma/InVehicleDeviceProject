@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Reservation extends Model {
-	private static final long serialVersionUID = 8066737711904297701L;
+	private static final long serialVersionUID = 6218079090300922183L;
 
 	public Reservation() {
 	}
@@ -64,6 +64,10 @@ public class Reservation extends Model {
 		setOperator(Operator.parse(jsonObject, "operator"));
 		if (getOperator().isPresent()) {
 			setOperatorId(getOperator().get().getId());
+		}
+		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
+		if (getServiceProvider().isPresent()) {
+			setServiceProviderId(getServiceProvider().get().getId());
 		}
 		setUser(User.parse(jsonObject, "user"));
 		if (getUser().isPresent()) {
@@ -160,6 +164,12 @@ public class Reservation extends Model {
 	   		jsonObject.put("operator", toJSON(getOperator()));
 	   		if (getOperator().isPresent()) {
 				jsonObject.put("operator_id", toJSON(getOperator().get().getId()));
+			}
+
+
+	   		jsonObject.put("service_provider", toJSON(getServiceProvider()));
+	   		if (getServiceProvider().isPresent()) {
+				jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
 			}
 
 
@@ -585,6 +595,24 @@ public class Reservation extends Model {
 
 	public void clearOperator() {
 		this.operator = Optional.<Operator>absent();
+	}
+
+	private Optional<ServiceProvider> serviceProvider = Optional.<ServiceProvider>absent();
+
+	public Optional<ServiceProvider> getServiceProvider() {
+		return wrapNull(serviceProvider);
+	}
+
+	public void setServiceProvider(Optional<ServiceProvider> serviceProvider) {
+		this.serviceProvider = wrapNull(serviceProvider);
+	}
+
+	public void setServiceProvider(ServiceProvider serviceProvider) {
+		this.serviceProvider = Optional.<ServiceProvider>fromNullable(serviceProvider);
+	}
+
+	public void clearServiceProvider() {
+		this.serviceProvider = Optional.<ServiceProvider>absent();
 	}
 
 	private Optional<User> user = Optional.<User>absent();

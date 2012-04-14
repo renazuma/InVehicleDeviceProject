@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class InVehicleDevice extends Model {
-	private static final long serialVersionUID = 3104709993057628201L;
+	private static final long serialVersionUID = 4998713565467314809L;
 
 	public InVehicleDevice() {
 	}
@@ -29,6 +29,10 @@ public class InVehicleDevice extends Model {
 		setPassword(parseOptionalString(jsonObject, "password"));
 		setPasswordConfirmation(parseOptionalString(jsonObject, "password_confirmation"));
 		setRememberMe(parseOptionalString(jsonObject, "remember_me"));
+		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
+		if (getServiceProvider().isPresent()) {
+			setServiceProviderId(getServiceProvider().get().getId());
+		}
 		setServiceUnits(ServiceUnit.parseList(jsonObject, "service_units"));
 		setVehicleNotifications(VehicleNotification.parseList(jsonObject, "vehicle_notifications"));
 	}
@@ -76,6 +80,12 @@ public class InVehicleDevice extends Model {
 		jsonObject.put("password", toJSON(getPassword().orNull()));
 		jsonObject.put("password_confirmation", toJSON(getPasswordConfirmation().orNull()));
 		jsonObject.put("remember_me", toJSON(getRememberMe().orNull()));
+
+	   		jsonObject.put("service_provider", toJSON(getServiceProvider()));
+	   		if (getServiceProvider().isPresent()) {
+				jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
+			}
+
 		if (getServiceUnits().size() > 0) {
 
 	   		jsonObject.put("service_units", toJSON(getServiceUnits()));
@@ -235,6 +245,24 @@ public class InVehicleDevice extends Model {
 
 	public void clearRememberMe() {
 		this.rememberMe = Optional.<String>absent();
+	}
+
+	private Optional<ServiceProvider> serviceProvider = Optional.<ServiceProvider>absent();
+
+	public Optional<ServiceProvider> getServiceProvider() {
+		return wrapNull(serviceProvider);
+	}
+
+	public void setServiceProvider(Optional<ServiceProvider> serviceProvider) {
+		this.serviceProvider = wrapNull(serviceProvider);
+	}
+
+	public void setServiceProvider(ServiceProvider serviceProvider) {
+		this.serviceProvider = Optional.<ServiceProvider>fromNullable(serviceProvider);
+	}
+
+	public void clearServiceProvider() {
+		this.serviceProvider = Optional.<ServiceProvider>absent();
 	}
 
 	private LinkedList<ServiceUnit> serviceUnits = new LinkedList<ServiceUnit>();
