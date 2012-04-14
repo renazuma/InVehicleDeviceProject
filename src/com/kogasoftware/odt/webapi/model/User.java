@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class User extends Model {
-	private static final long serialVersionUID = 3229618804378177802L;
+	private static final long serialVersionUID = 1797786012285423542L;
 
 	public User() {
 	}
@@ -22,35 +22,23 @@ public class User extends Model {
 		setAddress(parseString(jsonObject, "address"));
 		setAge(parseInteger(jsonObject, "age"));
 		setBirthday(parseDate(jsonObject, "birthday"));
-		setCreatedAt(parseDate(jsonObject, "created_at"));
-		setCurrentSignInAt(parseOptionalDate(jsonObject, "current_sign_in_at"));
-		setCurrentSignInIp(parseOptionalString(jsonObject, "current_sign_in_ip"));
-		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
 		setEmail(parseOptionalString(jsonObject, "email"));
 		setEmail2(parseOptionalString(jsonObject, "email2"));
-		setEncryptedPassword(parseString(jsonObject, "encrypted_password"));
 		setFelicaId(parseOptionalString(jsonObject, "felica_id"));
 		setFirstName(parseString(jsonObject, "first_name"));
 		setFirstNameRuby(parseString(jsonObject, "first_name_ruby"));
 		setHandicapped(parseOptionalBoolean(jsonObject, "handicapped"));
-		setId(parseInteger(jsonObject, "id"));
 		setLastName(parseString(jsonObject, "last_name"));
 		setLastNameRuby(parseString(jsonObject, "last_name_ruby"));
-		setLastSignInAt(parseOptionalDate(jsonObject, "last_sign_in_at"));
-		setLastSignInIp(parseOptionalString(jsonObject, "last_sign_in_ip"));
 		setLogin(parseString(jsonObject, "login"));
 		setNeededCare(parseOptionalBoolean(jsonObject, "needed_care"));
 		setRecommendNotification(parseOptionalBoolean(jsonObject, "recommend_notification"));
 		setRecommendOk(parseOptionalBoolean(jsonObject, "recommend_ok"));
-		setRememberCreatedAt(parseOptionalDate(jsonObject, "remember_created_at"));
 		setReserveNotification(parseOptionalBoolean(jsonObject, "reserve_notification"));
-		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
 		setSex(parseInteger(jsonObject, "sex"));
-		setSignInCount(parseOptionalInteger(jsonObject, "sign_in_count"));
 		setTelephoneNumber(parseString(jsonObject, "telephone_number"));
 		setTelephoneNumber2(parseOptionalString(jsonObject, "telephone_number2"));
 		setUpdateNotification(parseOptionalBoolean(jsonObject, "update_notification"));
-		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setWheelchair(parseOptionalBoolean(jsonObject, "wheelchair"));
 		setAuditComment(parseOptionalString(jsonObject, "audit_comment"));
 		setFullname(parseOptionalString(jsonObject, "fullname"));
@@ -99,35 +87,23 @@ public class User extends Model {
 		jsonObject.put("address", toJSON(getAddress()));
 		jsonObject.put("age", toJSON(getAge()));
 		jsonObject.put("birthday", toJSON(getBirthday()));
-		jsonObject.put("created_at", toJSON(getCreatedAt()));
-		jsonObject.put("current_sign_in_at", toJSON(getCurrentSignInAt().orNull()));
-		jsonObject.put("current_sign_in_ip", toJSON(getCurrentSignInIp().orNull()));
-		jsonObject.put("deleted_at", toJSON(getDeletedAt().orNull()));
 		jsonObject.put("email", toJSON(getEmail().orNull()));
 		jsonObject.put("email2", toJSON(getEmail2().orNull()));
-		jsonObject.put("encrypted_password", toJSON(getEncryptedPassword()));
 		jsonObject.put("felica_id", toJSON(getFelicaId().orNull()));
 		jsonObject.put("first_name", toJSON(getFirstName()));
 		jsonObject.put("first_name_ruby", toJSON(getFirstNameRuby()));
 		jsonObject.put("handicapped", toJSON(getHandicapped().orNull()));
-		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("last_name", toJSON(getLastName()));
 		jsonObject.put("last_name_ruby", toJSON(getLastNameRuby()));
-		jsonObject.put("last_sign_in_at", toJSON(getLastSignInAt().orNull()));
-		jsonObject.put("last_sign_in_ip", toJSON(getLastSignInIp().orNull()));
 		jsonObject.put("login", toJSON(getLogin()));
 		jsonObject.put("needed_care", toJSON(getNeededCare().orNull()));
 		jsonObject.put("recommend_notification", toJSON(getRecommendNotification().orNull()));
 		jsonObject.put("recommend_ok", toJSON(getRecommendOk().orNull()));
-		jsonObject.put("remember_created_at", toJSON(getRememberCreatedAt().orNull()));
 		jsonObject.put("reserve_notification", toJSON(getReserveNotification().orNull()));
-		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
 		jsonObject.put("sex", toJSON(getSex()));
-		jsonObject.put("sign_in_count", toJSON(getSignInCount().orNull()));
 		jsonObject.put("telephone_number", toJSON(getTelephoneNumber()));
 		jsonObject.put("telephone_number2", toJSON(getTelephoneNumber2().orNull()));
 		jsonObject.put("update_notification", toJSON(getUpdateNotification().orNull()));
-		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
 		jsonObject.put("wheelchair", toJSON(getWheelchair().orNull()));
 		jsonObject.put("audit_comment", toJSON(getAuditComment().orNull()));
 		jsonObject.put("fullname", toJSON(getFullname().orNull()));
@@ -171,70 +147,6 @@ public class User extends Model {
 		this.birthday = wrapNull(birthday);
 	}
 
-	private Date createdAt = new Date();
-
-	public Date getCreatedAt() {
-		return wrapNull(createdAt);
-	}
-
-	public void setCreatedAt(Date createdAt) {
-		this.createdAt = wrapNull(createdAt);
-	}
-
-	private Optional<Date> currentSignInAt = Optional.<Date>absent();
-
-	public Optional<Date> getCurrentSignInAt() {
-		return wrapNull(currentSignInAt);
-	}
-
-	public void setCurrentSignInAt(Optional<Date> currentSignInAt) {
-		this.currentSignInAt = wrapNull(currentSignInAt);
-	}
-
-	public void setCurrentSignInAt(Date currentSignInAt) {
-		this.currentSignInAt = Optional.fromNullable(currentSignInAt);
-	}
-
-	public void clearCurrentSignInAt() {
-		this.currentSignInAt = Optional.<Date>absent();
-	}
-
-	private Optional<String> currentSignInIp = Optional.<String>absent();
-
-	public Optional<String> getCurrentSignInIp() {
-		return wrapNull(currentSignInIp);
-	}
-
-	public void setCurrentSignInIp(Optional<String> currentSignInIp) {
-		this.currentSignInIp = wrapNull(currentSignInIp);
-	}
-
-	public void setCurrentSignInIp(String currentSignInIp) {
-		this.currentSignInIp = Optional.fromNullable(currentSignInIp);
-	}
-
-	public void clearCurrentSignInIp() {
-		this.currentSignInIp = Optional.<String>absent();
-	}
-
-	private Optional<Date> deletedAt = Optional.<Date>absent();
-
-	public Optional<Date> getDeletedAt() {
-		return wrapNull(deletedAt);
-	}
-
-	public void setDeletedAt(Optional<Date> deletedAt) {
-		this.deletedAt = wrapNull(deletedAt);
-	}
-
-	public void setDeletedAt(Date deletedAt) {
-		this.deletedAt = Optional.fromNullable(deletedAt);
-	}
-
-	public void clearDeletedAt() {
-		this.deletedAt = Optional.<Date>absent();
-	}
-
 	private Optional<String> email = Optional.<String>absent();
 
 	public Optional<String> getEmail() {
@@ -269,16 +181,6 @@ public class User extends Model {
 
 	public void clearEmail2() {
 		this.email2 = Optional.<String>absent();
-	}
-
-	private String encryptedPassword = "";
-
-	public String getEncryptedPassword() {
-		return wrapNull(encryptedPassword);
-	}
-
-	public void setEncryptedPassword(String encryptedPassword) {
-		this.encryptedPassword = wrapNull(encryptedPassword);
 	}
 
 	private Optional<String> felicaId = Optional.<String>absent();
@@ -337,16 +239,6 @@ public class User extends Model {
 		this.handicapped = Optional.<Boolean>absent();
 	}
 
-	private Integer id = 0;
-
-	public Integer getId() {
-		return wrapNull(id);
-	}
-
-	public void setId(Integer id) {
-		this.id = wrapNull(id);
-	}
-
 	private String lastName = "";
 
 	public String getLastName() {
@@ -365,42 +257,6 @@ public class User extends Model {
 
 	public void setLastNameRuby(String lastNameRuby) {
 		this.lastNameRuby = wrapNull(lastNameRuby);
-	}
-
-	private Optional<Date> lastSignInAt = Optional.<Date>absent();
-
-	public Optional<Date> getLastSignInAt() {
-		return wrapNull(lastSignInAt);
-	}
-
-	public void setLastSignInAt(Optional<Date> lastSignInAt) {
-		this.lastSignInAt = wrapNull(lastSignInAt);
-	}
-
-	public void setLastSignInAt(Date lastSignInAt) {
-		this.lastSignInAt = Optional.fromNullable(lastSignInAt);
-	}
-
-	public void clearLastSignInAt() {
-		this.lastSignInAt = Optional.<Date>absent();
-	}
-
-	private Optional<String> lastSignInIp = Optional.<String>absent();
-
-	public Optional<String> getLastSignInIp() {
-		return wrapNull(lastSignInIp);
-	}
-
-	public void setLastSignInIp(Optional<String> lastSignInIp) {
-		this.lastSignInIp = wrapNull(lastSignInIp);
-	}
-
-	public void setLastSignInIp(String lastSignInIp) {
-		this.lastSignInIp = Optional.fromNullable(lastSignInIp);
-	}
-
-	public void clearLastSignInIp() {
-		this.lastSignInIp = Optional.<String>absent();
 	}
 
 	private String login = "";
@@ -467,24 +323,6 @@ public class User extends Model {
 		this.recommendOk = Optional.<Boolean>absent();
 	}
 
-	private Optional<Date> rememberCreatedAt = Optional.<Date>absent();
-
-	public Optional<Date> getRememberCreatedAt() {
-		return wrapNull(rememberCreatedAt);
-	}
-
-	public void setRememberCreatedAt(Optional<Date> rememberCreatedAt) {
-		this.rememberCreatedAt = wrapNull(rememberCreatedAt);
-	}
-
-	public void setRememberCreatedAt(Date rememberCreatedAt) {
-		this.rememberCreatedAt = Optional.fromNullable(rememberCreatedAt);
-	}
-
-	public void clearRememberCreatedAt() {
-		this.rememberCreatedAt = Optional.<Date>absent();
-	}
-
 	private Optional<Boolean> reserveNotification = Optional.<Boolean>absent();
 
 	public Optional<Boolean> getReserveNotification() {
@@ -503,24 +341,6 @@ public class User extends Model {
 		this.reserveNotification = Optional.<Boolean>absent();
 	}
 
-	private Optional<Integer> serviceProviderId = Optional.<Integer>absent();
-
-	public Optional<Integer> getServiceProviderId() {
-		return wrapNull(serviceProviderId);
-	}
-
-	public void setServiceProviderId(Optional<Integer> serviceProviderId) {
-		this.serviceProviderId = wrapNull(serviceProviderId);
-	}
-
-	public void setServiceProviderId(Integer serviceProviderId) {
-		this.serviceProviderId = Optional.fromNullable(serviceProviderId);
-	}
-
-	public void clearServiceProviderId() {
-		this.serviceProviderId = Optional.<Integer>absent();
-	}
-
 	private Integer sex = 0;
 
 	public Integer getSex() {
@@ -529,24 +349,6 @@ public class User extends Model {
 
 	public void setSex(Integer sex) {
 		this.sex = wrapNull(sex);
-	}
-
-	private Optional<Integer> signInCount = Optional.<Integer>absent();
-
-	public Optional<Integer> getSignInCount() {
-		return wrapNull(signInCount);
-	}
-
-	public void setSignInCount(Optional<Integer> signInCount) {
-		this.signInCount = wrapNull(signInCount);
-	}
-
-	public void setSignInCount(Integer signInCount) {
-		this.signInCount = Optional.fromNullable(signInCount);
-	}
-
-	public void clearSignInCount() {
-		this.signInCount = Optional.<Integer>absent();
 	}
 
 	private String telephoneNumber = "";
@@ -593,16 +395,6 @@ public class User extends Model {
 
 	public void clearUpdateNotification() {
 		this.updateNotification = Optional.<Boolean>absent();
-	}
-
-	private Date updatedAt = new Date();
-
-	public Date getUpdatedAt() {
-		return wrapNull(updatedAt);
-	}
-
-	public void setUpdatedAt(Date updatedAt) {
-		this.updatedAt = wrapNull(updatedAt);
 	}
 
 	private Optional<Boolean> wheelchair = Optional.<Boolean>absent();

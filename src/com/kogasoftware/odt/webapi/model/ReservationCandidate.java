@@ -13,26 +13,22 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class ReservationCandidate extends Model {
-	private static final long serialVersionUID = 5368034311208846427L;
+	private static final long serialVersionUID = 1966218585481216735L;
 
 	public ReservationCandidate() {
 	}
 
 	public ReservationCandidate(JSONObject jsonObject) throws JSONException, ParseException {
 		setAccuracy(parseOptionalFloat(jsonObject, "accuracy"));
-		setArrivalPlatformId(parseInteger(jsonObject, "arrival_platform_id"));
 		setArrivalTime(parseDate(jsonObject, "arrival_time"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
-		setDemandId(parseOptionalInteger(jsonObject, "demand_id"));
-		setDeparturePlatformId(parseInteger(jsonObject, "departure_platform_id"));
 		setDepartureTime(parseDate(jsonObject, "departure_time"));
 		setId(parseInteger(jsonObject, "id"));
 		setPassengerCount(parseInteger(jsonObject, "passenger_count"));
 		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
 		setUnitAssignmentId(parseOptionalInteger(jsonObject, "unit_assignment_id"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
-		setUserId(parseOptionalInteger(jsonObject, "user_id"));
 		setArrivalPlatform(Platform.parse(jsonObject, "arrival_platform"));
 		if (getArrivalPlatform().isPresent()) {
 			setArrivalPlatformId(getArrivalPlatform().get().getId());
@@ -85,19 +81,15 @@ public class ReservationCandidate extends Model {
 	public JSONObject toJSONObject() throws JSONException {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("accuracy", toJSON(getAccuracy().orNull()));
-		jsonObject.put("arrival_platform_id", toJSON(getArrivalPlatformId()));
 		jsonObject.put("arrival_time", toJSON(getArrivalTime()));
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
 		jsonObject.put("deleted_at", toJSON(getDeletedAt().orNull()));
-		jsonObject.put("demand_id", toJSON(getDemandId().orNull()));
-		jsonObject.put("departure_platform_id", toJSON(getDeparturePlatformId()));
 		jsonObject.put("departure_time", toJSON(getDepartureTime()));
 		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("passenger_count", toJSON(getPassengerCount()));
 		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
 		jsonObject.put("unit_assignment_id", toJSON(getUnitAssignmentId().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
-		jsonObject.put("user_id", toJSON(getUserId().orNull()));
 		jsonObject.put("arrival_platform", toJSON(getArrivalPlatform()));
 		if (getArrivalPlatform().isPresent()) {
 			jsonObject.put("arrival_platform_id", toJSON(getArrivalPlatform().get().getId()));
@@ -133,16 +125,6 @@ public class ReservationCandidate extends Model {
 
 	public void clearAccuracy() {
 		this.accuracy = Optional.<Float>absent();
-	}
-
-	private Integer arrivalPlatformId = 0;
-
-	public Integer getArrivalPlatformId() {
-		return wrapNull(arrivalPlatformId);
-	}
-
-	public void setArrivalPlatformId(Integer arrivalPlatformId) {
-		this.arrivalPlatformId = wrapNull(arrivalPlatformId);
 	}
 
 	private Date arrivalTime = new Date();
@@ -181,34 +163,6 @@ public class ReservationCandidate extends Model {
 
 	public void clearDeletedAt() {
 		this.deletedAt = Optional.<Date>absent();
-	}
-
-	private Optional<Integer> demandId = Optional.<Integer>absent();
-
-	public Optional<Integer> getDemandId() {
-		return wrapNull(demandId);
-	}
-
-	public void setDemandId(Optional<Integer> demandId) {
-		this.demandId = wrapNull(demandId);
-	}
-
-	public void setDemandId(Integer demandId) {
-		this.demandId = Optional.fromNullable(demandId);
-	}
-
-	public void clearDemandId() {
-		this.demandId = Optional.<Integer>absent();
-	}
-
-	private Integer departurePlatformId = 0;
-
-	public Integer getDeparturePlatformId() {
-		return wrapNull(departurePlatformId);
-	}
-
-	public void setDeparturePlatformId(Integer departurePlatformId) {
-		this.departurePlatformId = wrapNull(departurePlatformId);
 	}
 
 	private Date departureTime = new Date();
@@ -285,24 +239,6 @@ public class ReservationCandidate extends Model {
 
 	public void setUpdatedAt(Date updatedAt) {
 		this.updatedAt = wrapNull(updatedAt);
-	}
-
-	private Optional<Integer> userId = Optional.<Integer>absent();
-
-	public Optional<Integer> getUserId() {
-		return wrapNull(userId);
-	}
-
-	public void setUserId(Optional<Integer> userId) {
-		this.userId = wrapNull(userId);
-	}
-
-	public void setUserId(Integer userId) {
-		this.userId = Optional.fromNullable(userId);
-	}
-
-	public void clearUserId() {
-		this.userId = Optional.<Integer>absent();
 	}
 
 	private Optional<Platform> arrivalPlatform = Optional.<Platform>absent();

@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class OperationSchedule extends Model {
-	private static final long serialVersionUID = 2754148628276252546L;
+	private static final long serialVersionUID = 2436009102535772854L;
 
 	public OperationSchedule() {
 	}
@@ -24,7 +24,6 @@ public class OperationSchedule extends Model {
 		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
 		setDepartureEstimate(parseDate(jsonObject, "departure_estimate"));
 		setId(parseInteger(jsonObject, "id"));
-		setPlatformId(parseOptionalInteger(jsonObject, "platform_id"));
 		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
 		setUnitAssignmentId(parseOptionalInteger(jsonObject, "unit_assignment_id"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
@@ -75,7 +74,6 @@ public class OperationSchedule extends Model {
 		jsonObject.put("deleted_at", toJSON(getDeletedAt().orNull()));
 		jsonObject.put("departure_estimate", toJSON(getDepartureEstimate()));
 		jsonObject.put("id", toJSON(getId()));
-		jsonObject.put("platform_id", toJSON(getPlatformId().orNull()));
 		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
 		jsonObject.put("unit_assignment_id", toJSON(getUnitAssignmentId().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
@@ -145,24 +143,6 @@ public class OperationSchedule extends Model {
 
 	public void setId(Integer id) {
 		this.id = wrapNull(id);
-	}
-
-	private Optional<Integer> platformId = Optional.<Integer>absent();
-
-	public Optional<Integer> getPlatformId() {
-		return wrapNull(platformId);
-	}
-
-	public void setPlatformId(Optional<Integer> platformId) {
-		this.platformId = wrapNull(platformId);
-	}
-
-	public void setPlatformId(Integer platformId) {
-		this.platformId = Optional.fromNullable(platformId);
-	}
-
-	public void clearPlatformId() {
-		this.platformId = Optional.<Integer>absent();
 	}
 
 	private Optional<Integer> serviceProviderId = Optional.<Integer>absent();

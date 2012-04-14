@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class ServiceUnit extends Model {
-	private static final long serialVersionUID = 5610572846125652000L;
+	private static final long serialVersionUID = 1044403248402443893L;
 
 	public ServiceUnit() {
 	}
@@ -22,9 +22,7 @@ public class ServiceUnit extends Model {
 		setActivatedAt(parseOptionalDate(jsonObject, "activated_at"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
-		setDriverId(parseInteger(jsonObject, "driver_id"));
 		setId(parseInteger(jsonObject, "id"));
-		setInVehicleDeviceId(parseOptionalInteger(jsonObject, "in_vehicle_device_id"));
 		setUnitAssignmentId(parseOptionalInteger(jsonObject, "unit_assignment_id"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setVehicleId(parseInteger(jsonObject, "vehicle_id"));
@@ -75,9 +73,7 @@ public class ServiceUnit extends Model {
 		jsonObject.put("activated_at", toJSON(getActivatedAt().orNull()));
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
 		jsonObject.put("deleted_at", toJSON(getDeletedAt().orNull()));
-		jsonObject.put("driver_id", toJSON(getDriverId()));
 		jsonObject.put("id", toJSON(getId()));
-		jsonObject.put("in_vehicle_device_id", toJSON(getInVehicleDeviceId().orNull()));
 		jsonObject.put("unit_assignment_id", toJSON(getUnitAssignmentId().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
 		jsonObject.put("vehicle_id", toJSON(getVehicleId()));
@@ -139,16 +135,6 @@ public class ServiceUnit extends Model {
 		this.deletedAt = Optional.<Date>absent();
 	}
 
-	private Integer driverId = 0;
-
-	public Integer getDriverId() {
-		return wrapNull(driverId);
-	}
-
-	public void setDriverId(Integer driverId) {
-		this.driverId = wrapNull(driverId);
-	}
-
 	private Integer id = 0;
 
 	public Integer getId() {
@@ -157,24 +143,6 @@ public class ServiceUnit extends Model {
 
 	public void setId(Integer id) {
 		this.id = wrapNull(id);
-	}
-
-	private Optional<Integer> inVehicleDeviceId = Optional.<Integer>absent();
-
-	public Optional<Integer> getInVehicleDeviceId() {
-		return wrapNull(inVehicleDeviceId);
-	}
-
-	public void setInVehicleDeviceId(Optional<Integer> inVehicleDeviceId) {
-		this.inVehicleDeviceId = wrapNull(inVehicleDeviceId);
-	}
-
-	public void setInVehicleDeviceId(Integer inVehicleDeviceId) {
-		this.inVehicleDeviceId = Optional.fromNullable(inVehicleDeviceId);
-	}
-
-	public void clearInVehicleDeviceId() {
-		this.inVehicleDeviceId = Optional.<Integer>absent();
 	}
 
 	private Optional<Integer> unitAssignmentId = Optional.<Integer>absent();
