@@ -13,6 +13,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.location.Location;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
@@ -130,6 +133,33 @@ public class InVehicleDeviceLogic {
 					logic.shutdown();
 				}
 			}
+		}
+	}
+
+	private static class LocationSender implements Runnable {
+		private final InVehicleDeviceLogic logic;
+
+		public LocationSender(InVehicleDeviceLogic logic) {
+			this.logic = logic;
+		}
+
+		@Override
+		public void run() {
+			Optional<Location> location = logic.statusAccess
+					.read(new Reader<Optional<Location>>() {
+						@Override
+						public Optional<Location> read(
+								InVehicleDeviceStatus status) {
+							return status.location;
+						}
+					});
+			if (!location.isPresent()) {
+				return;
+			}
+			// try {
+			//
+			// } catch (WebAPIException e) {
+			// }
 		}
 	}
 
@@ -274,8 +304,13 @@ public class InVehicleDeviceLogic {
 	public InVehicleDeviceLogic(Activity activity) throws InterruptedException {
 		try {
 			Thread.sleep(0); // interruption point
+			Intent intent = activity.getIntent();
+			Bundle extras = intent.getExtras();
+			if (extras == null) {
+				extras = new Bundle();
+			}
 			this.statusAccess = new InVehicleDeviceStatus.Access(activity,
-					willClearStatusFile.getAndSet(false));
+					willClearStatusFile.getAndSet(false), extras);
 			Future<?> receiveOperationSchedule = null;
 			try {
 				receiveOperationSchedule = executorService
@@ -286,6 +321,9 @@ public class InVehicleDeviceLogic {
 				executorService.scheduleWithFixedDelay(
 						new ScheduleChangedReceiver(this), 0,
 						POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
+				executorService.scheduleWithFixedDelay(
+						new LocationSender(this), 0, POLLING_PERIOD_MILLIS,
+						TimeUnit.MILLISECONDS);
 			} catch (RejectedExecutionException e) {
 				Log.e(TAG, "Task Rejected", e);
 			}
@@ -477,6 +515,15 @@ public class InVehicleDeviceLogic {
 		});
 	}
 
+	public String getToken() {
+		return statusAccess.read(new Reader<String>() {
+			@Override
+			public String read(InVehicleDeviceStatus status) {
+				return status.token;
+			}
+		});
+	}
+
 	public List<Reservation> getUnexpectedReservations() {
 		return statusAccess.read(new Reader<List<Reservation>>() {
 			@Override
@@ -560,6 +607,15 @@ public class InVehicleDeviceLogic {
 						.addAll(new LinkedList<VehicleNotification>(
 								status.processingVehicleNotifications));
 				status.processingVehicleNotifications.clear();
+			}
+		});
+	}
+
+	public void setLocation(final Location location) {
+		statusAccess.write(new Writer() {
+			@Override
+			public void write(InVehicleDeviceStatus status) {
+				status.location = Optional.of(location);
 			}
 		});
 	}

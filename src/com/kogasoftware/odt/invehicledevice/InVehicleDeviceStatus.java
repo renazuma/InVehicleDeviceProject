@@ -16,8 +16,11 @@ import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
+import android.location.Location;
+import android.os.Bundle;
 import android.util.Log;
 
+import com.google.common.base.Optional;
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyFile;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
@@ -50,8 +53,9 @@ public class InVehicleDeviceStatus implements Serializable {
 			status = InVehicleDeviceStatus.newInstance();
 		}
 
-		public Access(Context context, Boolean isClear) {
-			status = InVehicleDeviceStatus.newInstance(context, isClear);
+		public Access(Context context, Boolean isClear, Bundle extras) {
+			status = InVehicleDeviceStatus
+					.newInstance(context, isClear, extras);
 		}
 
 		public <T> T read(Reader<T> reader) {
@@ -90,48 +94,56 @@ public class InVehicleDeviceStatus implements Serializable {
 	}
 
 	private static InVehicleDeviceStatus newInstance(Context context,
-			Boolean isClear) {
+			Boolean isClear, Bundle extras) {
+
 		File file = new File(context.getFilesDir() + File.separator
 				+ InVehicleDeviceStatus.class.getCanonicalName()
 				+ ".serialized");
 		InVehicleDeviceStatus status = new InVehicleDeviceStatus();
-		status.file = file;
-		if (isClear) {
-			return status;
-		}
-		FileInputStream fileInputStream = null;
-		ObjectInputStream objectInputStream = null;
-		try {
-			fileInputStream = new FileInputStream(file);
-			objectInputStream = new ObjectInputStream(fileInputStream);
-			Object object = objectInputStream.readObject();
-			if (object == null) {
-				return status;
+		if (!isClear) {
+			FileInputStream fileInputStream = null;
+			ObjectInputStream objectInputStream = null;
+			try {
+				fileInputStream = new FileInputStream(file);
+				objectInputStream = new ObjectInputStream(fileInputStream);
+				Object object = objectInputStream.readObject();
+				if (object == null) {
+					return status;
+				}
+				status = (InVehicleDeviceStatus) object;
+			} catch (FileNotFoundException e) {
+				// Log.w(TAG, e);
+			} catch (IOException e) {
+				Log.w(TAG, e);
+			} catch (RuntimeException e) {
+				Log.w(TAG, e);
+			} catch (ClassNotFoundException e) {
+				Log.w(TAG, e);
+			} catch (Exception e) {
+				Log.w(TAG, e);
+			} finally {
+				Closeables.closeQuietly(objectInputStream);
+				Closeables.closeQuietly(fileInputStream);
 			}
-			status = (InVehicleDeviceStatus) object;
-		} catch (FileNotFoundException e) {
-			// Log.w(TAG, e);
-		} catch (IOException e) {
-			Log.w(TAG, e);
-		} catch (RuntimeException e) {
-			Log.w(TAG, e);
-		} catch (ClassNotFoundException e) {
-			Log.w(TAG, e);
-		} catch (Exception e) {
-			Log.w(TAG, e);
-		} finally {
-			Closeables.closeQuietly(objectInputStream);
-			Closeables.closeQuietly(fileInputStream);
+
+			Date now = InVehicleDeviceLogic.getDate();
+			Calendar calendar = Calendar.getInstance();
+			calendar.clear();
+			calendar.set(now.getYear(), now.getMonth(), now.getDay(), 3, 0); // TODO
+			if (status.createdDate.before(calendar.getTime())) {
+				status = new InVehicleDeviceStatus();
+			}
+		}
+		status.file = file;
+		String token = extras.getString("token");
+		if (token != null) {
+			status.token = token;
+		}
+		String url = extras.getString("url");
+		if (url != null) {
+			status.url = url;
 		}
 
-		Date now = InVehicleDeviceLogic.getDate();
-		Calendar calendar = Calendar.getInstance();
-		calendar.clear();
-		calendar.set(now.getYear(), now.getMonth(), now.getDay(), 3, 0); // TODO
-		if (status.createdDate.before(calendar.getTime())) {
-			status = new InVehicleDeviceStatus();
-		}
-		status.file = file;
 		return status;
 	}
 
@@ -153,9 +165,12 @@ public class InVehicleDeviceStatus implements Serializable {
 	public Boolean stopped = false;
 	public final LinkedList<Reservation> unexpectedReservations = new LinkedList<Reservation>();
 	public Integer unexpectedReservationSequence = 1000;
+	public Optional<Location> location = Optional.<Location> absent();
 
 	// Serializableにするため、LinkedListのままにしておく
 	public final LinkedList<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();
+	public String token = "";
+	public String url = "";
 
 	private InVehicleDeviceStatus() {
 	}
