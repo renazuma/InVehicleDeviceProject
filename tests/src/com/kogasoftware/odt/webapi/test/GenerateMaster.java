@@ -118,6 +118,7 @@ public class GenerateMaster {
 		
 		this.inVehicleDevice = c.getResult();
 		Log.d("GenerateMaster", "recv:" + this.inVehicleDevice.toJSONObject().toString());
+		Log.d("GenerateMaster", "token:" + this.inVehicleDevice.getAuthenticationToken().orNull());
 		return this.inVehicleDevice;
 	}
 

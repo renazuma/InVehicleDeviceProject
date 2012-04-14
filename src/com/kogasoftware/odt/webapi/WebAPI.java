@@ -252,6 +252,7 @@ public class WebAPI {
 				if (entity != null) {
 					response = ByteStreams.toByteArray(entity.getContent());
 					responseString = new String(response, "iso8859-1");
+					Log.d("WebAPI", "response body:" + responseString);
 				}
 			} catch (IOException e) {
 				throw new WebAPIException(true, e);
