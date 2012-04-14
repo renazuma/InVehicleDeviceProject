@@ -28,7 +28,7 @@ class Operator < ActiveRecord::Base
          :rememberable, :trackable, :token_authenticatable
 
   # Setup accessible (or protected) attributes for your model
-  attr_accessible :id, :login, :email, :last_name, :first_name, :password, :password_confirmation, :remember_me, :authentication_token, :service_provider
+  attr_accessible :id, :login, :email, :last_name, :first_name, :password, :password_confirmation, :remember_me, :authentication_token, :service_provider, :service_provider_id
 
   # Define Validation
   validates_presence_of :login, :last_name, :first_name, :service_provider
