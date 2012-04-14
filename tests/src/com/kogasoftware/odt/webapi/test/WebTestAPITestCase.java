@@ -16,8 +16,8 @@ public class WebTestAPITestCase extends
 	}
 
 	GenerateMaster master = new GenerateMaster();
+	GenerateRecord record = new GenerateRecord(master);
 	
-	private ServiceProvider serviceProvider;
 	public void testCleanDatabase() throws Exception {
 		assertTrue(master.cleanDatabase());
 	}
@@ -37,38 +37,15 @@ public class WebTestAPITestCase extends
 	public void testVehicleNotifications() throws Exception {
 		master.cleanDatabase();
 		master.createServiceProvider();
-
-		final Operator operator = master.createOperator();
+		master.createOperator();
 		
 		final WebTestAPI api = new WebTestAPI();
 
 		// オブジェクトをひとつ生成
-		SyncCall<VehicleNotification> sc = new SyncCall<VehicleNotification>() {
-			@Override
-			public int run() throws Exception {
-				VehicleNotification obj = new VehicleNotification();
-				obj.setInVehicleDeviceId(1);
-				obj.setOperator(operator);
-				obj.setBody("車載器への通知1です");
-
-				return api.createVehicleNotification(obj, this);
-			}
-		};
-		assertEquals(SyncCall.SUCCEED, sc.getCallback());
+		assertNotNull(record.createVehicleNotification("車載器への通知1です"));
 		
 		// オブジェクトをひとつ生成
-		sc = new SyncCall<VehicleNotification>() {
-			@Override
-			public int run() throws Exception {
-				VehicleNotification obj = new VehicleNotification();
-				obj.setInVehicleDeviceId(1);
-				obj.setOperator(operator);
-				obj.setBody("車載器への通知2です");
-
-				return api.createVehicleNotification(obj, this);
-			}
-		};		
-		assertEquals(SyncCall.SUCCEED, sc.getCallback());
+		assertNotNull(record.createVehicleNotification("車載器への通知2です"));
 
 		// オブジェクト数を確認
 		SyncCall<List<VehicleNotification>>scl = new SyncCall<List<VehicleNotification>>() {
@@ -82,7 +59,7 @@ public class WebTestAPITestCase extends
 		
 		final int id = scl.getResult().get(1).getId();
 		// 2つめのオブジェクト取得
-		sc = new SyncCall<VehicleNotification>() {
+		SyncCall<VehicleNotification> sc = new SyncCall<VehicleNotification>() {
 			@Override
 			public int run() throws Exception {
 				return api.getVehicleNotification(id, this);

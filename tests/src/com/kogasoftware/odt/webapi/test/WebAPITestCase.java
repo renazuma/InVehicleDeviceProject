@@ -20,6 +20,7 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 		
 	CountDownLatch latch;
 	private GenerateMaster master;
+	private GenerateRecord record;
 	
 	@Override
 	protected void setUp() throws Exception {
@@ -30,10 +31,12 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 		master.cleanDatabase();
 		master.createServiceProvider();
 		master.createInVehicleDevice();
-		master.createOperator();		
+		master.createOperator();
+		
+		record = new GenerateRecord(master);
 	}
 
-	public void testLogin() throws Exception {
+	public void testPasswordLogin() throws Exception {
 		WebAPI api = new WebAPI();
 		latch = new CountDownLatch(1);
 		
@@ -67,9 +70,12 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 	List<VehicleNotification> notifications;
 
 	public void testGetVehicleNotifications() throws Exception {
-		WebAPI api = new WebAPI("7EhKVSpqMu4a2p8SKDrH");
+		WebAPI api = new WebAPI(master.getInVehicleDevice().getAuthenticationToken().orNull());
 		final CountDownLatch latch = new CountDownLatch(1);
 		notifications = null;
+		
+		record.createVehicleNotification("テスト通知メッセージ1です。");
+		record.createVehicleNotification("テスト通知メッセージ2です。");
 		
 		api.getVehicleNotifications(new WebAPICallback<List<VehicleNotification>>() {
 			@Override
@@ -93,7 +99,7 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 		latch.await(100, TimeUnit.SECONDS);
 		
 		assertNotNull(notifications);
-		assertEquals(1, notifications.size());
+		assertEquals(2, notifications.size());
 	}
 	
 }

@@ -21,6 +21,10 @@ public class GenerateMaster {
 		api = new WebTestAPI();
 	}
 	
+	public WebTestAPI getTestAPI() {
+		return api;
+	}
+
 	public ServiceProvider getServiceProvider() {
 		return serviceProvider;
 	}
@@ -107,12 +111,14 @@ public class GenerateMaster {
 				ivd.setModelName("モデル名");
 				ivd.setTypeNumber("車種");
 				
-				Log.d("WebAPITest", ivd.toJSONObject().toString());
+				Log.d("GenerateMaster", "send:" + ivd.toJSONObject().toString());
 				return api.createInVehicleDevice(ivd, this);
 			}
 		};
 		
 		this.inVehicleDevice = c.getResult();
+		Log.d("GenerateMaster", "recv:" + this.inVehicleDevice.toJSONObject().toString());
 		return this.inVehicleDevice;
 	}
+
 }
