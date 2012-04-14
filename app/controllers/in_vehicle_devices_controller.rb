@@ -9,11 +9,11 @@ class InVehicleDevicesController < ApplicationController
   end
 
   def show
-    @in_vehicle_devices = InVehicleDevice.find(params[:id])
+    @in_vehicle_device = InVehicleDevice.find(params[:id])
 
     respond_to do |format|
       format.json do
-        render json: @in_vehicle_devices.to_json
+        render json: @in_vehicle_device.to_json
       end
     end
   end
