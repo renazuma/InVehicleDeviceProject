@@ -19,7 +19,7 @@
 #  repeat                :boolean(1)      default(FALSE)
 #
 
-require "odt/reservation_generator"
+#require "odt/reservation_generator"
 
 class Demand < ActiveRecord::Base
   # Define Validation
