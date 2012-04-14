@@ -23,7 +23,11 @@ class InVehicleDevicesController < ApplicationController
 
     respond_to do |format|
       if @in_vehicle_device.save
-        format.json { render json: @in_vehicle_device, status: :created}
+        format.json { render json: @in_vehicle_device.to_json(:force_except => [:encrypted_password, :login]), status: :created}
+puts "before: #{@in_vehicle_device.authentication_token}"
+@in_vehicle_device.reload
+puts "after reload: #{@in_vehicle_device.authentication_token}"
+
       else
         format.json { render json: @in_vehicle_device.errors, status: :unprocessable_entity }
       end
