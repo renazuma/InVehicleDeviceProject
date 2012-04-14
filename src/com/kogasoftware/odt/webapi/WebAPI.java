@@ -170,7 +170,7 @@ public class WebAPI {
 		 * @param reqkey リクエスト時の reqkey
 		 * @param statusCode HTTPステータス
 		 */
-		public void onFailed(int reqkey, int statusCode);
+		public void onFailed(int reqkey, int statusCode, String response);
 		
 		/**
 		 * 例外発生時のコールバック
@@ -187,6 +187,7 @@ public class WebAPI {
 		private HttpRequestBase request;
 		private int statusCode = -1;
 		private boolean succeed = false;
+		private String responseString;
 
 		// Constructor for GET, DELETE
 		public WebAPITask(String host, String path, Map<String, String> params,
@@ -245,22 +246,23 @@ public class WebAPI {
 			}
 			
 			statusCode = httpResponse.getStatusLine().getStatusCode();
-			if (statusCode / 100 == 4) {
-				throw new WebAPIException(false, "Status Code = " + statusCode);
-			} else if (statusCode / 100 == 5) {
-				throw new WebAPIException(false, "Status Code = " + statusCode);
-			}
 			byte[] response = new byte[] {};
 			try {
 				HttpEntity entity = httpResponse.getEntity();
 				if (entity != null) {
 					response = ByteStreams.toByteArray(entity.getContent());
+					responseString = new String(response, "iso8859-1");
 				}
-				succeed = true;
 			} catch (IOException e) {
 				throw new WebAPIException(true, e);
 			}
+
+			if (statusCode / 100 == 4 || statusCode / 100 == 5) {
+				return null;
+			}
+			
 			try {
+				succeed = true;
 				return responseConverter.convert(response);
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
@@ -351,7 +353,7 @@ public class WebAPI {
 					callback.onSucceed(reqkey, statusCode, result);
 				} else {
 					if (statusCode > 0) {
-						callback.onFailed(reqkey, statusCode);
+						callback.onFailed(reqkey, statusCode, responseString);
 					} else {
 						callback.onException(reqkey, new WebAPIException(false, "Illegal status"));
 					}
@@ -460,8 +462,8 @@ public class WebAPI {
 			}
 
 			@Override
-			public void onFailed(int reqkey, int statusCode) {
-				callback.onFailed(reqkey, statusCode);
+			public void onFailed(int reqkey, int statusCode, String response) {
+				callback.onFailed(reqkey, statusCode, response);
 			}
 
 			@Override

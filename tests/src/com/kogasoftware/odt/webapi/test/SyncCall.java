@@ -18,6 +18,7 @@ public abstract class SyncCall<T> implements WebAPICallback<T> {
 	protected Exception exception;
 
 	CountDownLatch latch;
+	private String responseString;
 	
 	abstract public int run() throws Exception;
 
@@ -55,6 +56,10 @@ public abstract class SyncCall<T> implements WebAPICallback<T> {
 	public Exception getException() {
 		return exception;
 	}
+	
+	public String getResponseString() {
+		return responseString;
+	}
 
 	@Override
 	public void onSucceed(int reqkey, int statusCode, T result) {
@@ -65,9 +70,10 @@ public abstract class SyncCall<T> implements WebAPICallback<T> {
 	}
 
 	@Override
-	public void onFailed(int reqkey, int statusCode) {
+	public void onFailed(int reqkey, int statusCode, String response) {
 		this.callback = FAILED;
 		this.statusCode = statusCode;
+		this.responseString = response;
 		latch.countDown();
 	}
 

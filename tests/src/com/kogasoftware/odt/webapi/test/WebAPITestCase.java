@@ -65,7 +65,7 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 			}
 
 			@Override
-			public void onFailed(int reqkey, int statusCode) {
+			public void onFailed(int reqkey, int statusCode, String response) {
 				latch.countDown();
 			}
 
@@ -96,7 +96,7 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 			}
 			
 			@Override
-			public void onFailed(int reqkey, int statusCode) {
+			public void onFailed(int reqkey, int statusCode, String response) {
 				latch.countDown();
 			}
 
