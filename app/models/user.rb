@@ -44,7 +44,7 @@ class User < ActiveRecord::Base
   devise :database_authenticatable
 
   # Setup accessible (or protected) attributes for your model
-  attr_accessible :login, :last_name, :first_name, :last_name_ruby, :first_name_ruby, :fullname, :fullname_ruby, :birthday, :age, :sex, :email, :email2, :password, :password_confirmation, :remember_me, :address, :telephone_number, :telephone_number2, :felica_id, :needed_care, :handicapped, :wheelchair, :recommend_ok, :update_notification, :recommend_notification, :reserve_notification
+  attr_accessible :id, :login, :last_name, :first_name, :last_name_ruby, :first_name_ruby, :fullname, :fullname_ruby, :birthday, :age, :sex, :email, :email2, :password, :password_confirmation, :remember_me, :address, :telephone_number, :telephone_number2, :felica_id, :needed_care, :handicapped, :wheelchair, :recommend_ok, :update_notification, :recommend_notification, :reserve_notification
 
   # Operation Audit
   acts_as_audited :except => [:password]
