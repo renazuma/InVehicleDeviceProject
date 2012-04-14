@@ -39,12 +39,5 @@ class InVehicleDevicesController < ApplicationController
     end
   end
 
-  def truncate
-    InVehicleDevice.truncate
-
-    respond_to do |format|
-      format.json { head :no_content }
-    end
-  end
 end
 
