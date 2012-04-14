@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class ReservationCandidate extends Model {
-	private static final long serialVersionUID = 3246937508220864603L;
+	private static final long serialVersionUID = 8523482133843352485L;
 
 	public ReservationCandidate() {
 	}
@@ -103,35 +103,25 @@ public class ReservationCandidate extends Model {
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
 		jsonObject.put("user_id", toJSON(getUserId().orNull()));
 
-	   		jsonObject.put("arrival_platform", toJSON(getArrivalPlatform()));
-	   		if (getArrivalPlatform().isPresent()) {
-				jsonObject.put("arrival_platform_id", toJSON(getArrivalPlatform().get().getId()));
-			}
+		if (getArrivalPlatform().isPresent()) {
+			jsonObject.put("arrival_platform_id", toJSON(getArrivalPlatform().get().getId()));
+		}
 
+		if (getDemand().isPresent()) {
+			jsonObject.put("demand_id", toJSON(getDemand().get().getId()));
+		}
 
-	   		jsonObject.put("demand", toJSON(getDemand()));
-	   		if (getDemand().isPresent()) {
-				jsonObject.put("demand_id", toJSON(getDemand().get().getId()));
-			}
+		if (getDeparturePlatform().isPresent()) {
+			jsonObject.put("departure_platform_id", toJSON(getDeparturePlatform().get().getId()));
+		}
 
+		if (getServiceProvider().isPresent()) {
+			jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
+		}
 
-	   		jsonObject.put("departure_platform", toJSON(getDeparturePlatform()));
-	   		if (getDeparturePlatform().isPresent()) {
-				jsonObject.put("departure_platform_id", toJSON(getDeparturePlatform().get().getId()));
-			}
-
-
-	   		jsonObject.put("service_provider", toJSON(getServiceProvider()));
-	   		if (getServiceProvider().isPresent()) {
-				jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
-			}
-
-
-	   		jsonObject.put("user", toJSON(getUser()));
-	   		if (getUser().isPresent()) {
-				jsonObject.put("user_id", toJSON(getUser().get().getId()));
-			}
-
+		if (getUser().isPresent()) {
+			jsonObject.put("user_id", toJSON(getUser().get().getId()));
+		}
 		return jsonObject;
 	}
 

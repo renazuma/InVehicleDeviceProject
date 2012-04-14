@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class ServiceUnit extends Model {
-	private static final long serialVersionUID = 3816649979171915916L;
+	private static final long serialVersionUID = 4259165937865035165L;
 
 	public ServiceUnit() {
 	}
@@ -88,28 +88,21 @@ public class ServiceUnit extends Model {
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
 		jsonObject.put("vehicle_id", toJSON(getVehicleId()));
 
-	   		jsonObject.put("driver", toJSON(getDriver()));
-	   		if (getDriver().isPresent()) {
-				jsonObject.put("driver_id", toJSON(getDriver().get().getId()));
-			}
+		if (getDriver().isPresent()) {
+			jsonObject.put("driver_id", toJSON(getDriver().get().getId()));
+		}
 
-
-	   		jsonObject.put("in_vehicle_device", toJSON(getInVehicleDevice()));
-	   		if (getInVehicleDevice().isPresent()) {
-				jsonObject.put("in_vehicle_device_id", toJSON(getInVehicleDevice().get().getId()));
-			}
-
+		if (getInVehicleDevice().isPresent()) {
+			jsonObject.put("in_vehicle_device_id", toJSON(getInVehicleDevice().get().getId()));
+		}
 		if (getOperationRecords().size() > 0) {
-
 	   		jsonObject.put("operation_records", toJSON(getOperationRecords()));
 		}
 
 
-	   		jsonObject.put("service_provider", toJSON(getServiceProvider()));
-	   		if (getServiceProvider().isPresent()) {
-				jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
-			}
-
+		if (getServiceProvider().isPresent()) {
+			jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
+		}
 		return jsonObject;
 	}
 

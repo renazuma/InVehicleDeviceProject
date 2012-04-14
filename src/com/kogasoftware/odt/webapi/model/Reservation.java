@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Reservation extends Model {
-	private static final long serialVersionUID = 6218079090300922183L;
+	private static final long serialVersionUID = 3533707807287674142L;
 
 	public Reservation() {
 	}
@@ -131,53 +131,37 @@ public class Reservation extends Model {
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
 		jsonObject.put("user_id", toJSON(getUserId()));
 
-	   		jsonObject.put("arrival_platform", toJSON(getArrivalPlatform()));
-	   		if (getArrivalPlatform().isPresent()) {
-				jsonObject.put("arrival_platform_id", toJSON(getArrivalPlatform().get().getId()));
-			}
+		if (getArrivalPlatform().isPresent()) {
+			jsonObject.put("arrival_platform_id", toJSON(getArrivalPlatform().get().getId()));
+		}
 
+		if (getArrivalSchedule().isPresent()) {
+			jsonObject.put("arrival_schedule_id", toJSON(getArrivalSchedule().get().getId()));
+		}
 
-	   		jsonObject.put("arrival_schedule", toJSON(getArrivalSchedule()));
-	   		if (getArrivalSchedule().isPresent()) {
-				jsonObject.put("arrival_schedule_id", toJSON(getArrivalSchedule().get().getId()));
-			}
+		if (getDemand().isPresent()) {
+			jsonObject.put("demand_id", toJSON(getDemand().get().getId()));
+		}
 
+		if (getDeparturePlatform().isPresent()) {
+			jsonObject.put("departure_platform_id", toJSON(getDeparturePlatform().get().getId()));
+		}
 
-	   		jsonObject.put("demand", toJSON(getDemand()));
-	   		if (getDemand().isPresent()) {
-				jsonObject.put("demand_id", toJSON(getDemand().get().getId()));
-			}
+		if (getDepartureSchedule().isPresent()) {
+			jsonObject.put("departure_schedule_id", toJSON(getDepartureSchedule().get().getId()));
+		}
 
+		if (getOperator().isPresent()) {
+			jsonObject.put("operator_id", toJSON(getOperator().get().getId()));
+		}
 
-	   		jsonObject.put("departure_platform", toJSON(getDeparturePlatform()));
-	   		if (getDeparturePlatform().isPresent()) {
-				jsonObject.put("departure_platform_id", toJSON(getDeparturePlatform().get().getId()));
-			}
+		if (getServiceProvider().isPresent()) {
+			jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
+		}
 
-
-	   		jsonObject.put("departure_schedule", toJSON(getDepartureSchedule()));
-	   		if (getDepartureSchedule().isPresent()) {
-				jsonObject.put("departure_schedule_id", toJSON(getDepartureSchedule().get().getId()));
-			}
-
-
-	   		jsonObject.put("operator", toJSON(getOperator()));
-	   		if (getOperator().isPresent()) {
-				jsonObject.put("operator_id", toJSON(getOperator().get().getId()));
-			}
-
-
-	   		jsonObject.put("service_provider", toJSON(getServiceProvider()));
-	   		if (getServiceProvider().isPresent()) {
-				jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
-			}
-
-
-	   		jsonObject.put("user", toJSON(getUser()));
-	   		if (getUser().isPresent()) {
-				jsonObject.put("user_id", toJSON(getUser().get().getId()));
-			}
-
+		if (getUser().isPresent()) {
+			jsonObject.put("user_id", toJSON(getUser().get().getId()));
+		}
 		return jsonObject;
 	}
 

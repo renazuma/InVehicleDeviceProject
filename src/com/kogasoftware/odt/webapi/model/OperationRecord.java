@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class OperationRecord extends Model {
-	private static final long serialVersionUID = 7076604970535326929L;
+	private static final long serialVersionUID = 7959583963359190895L;
 
 	public OperationRecord() {
 	}
@@ -77,17 +77,13 @@ public class OperationRecord extends Model {
 		jsonObject.put("service_unit_id", toJSON(getServiceUnitId().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
 
-	   		jsonObject.put("operation_schedule", toJSON(getOperationSchedule()));
-	   		if (getOperationSchedule().isPresent()) {
-				jsonObject.put("operation_schedule_id", toJSON(getOperationSchedule().get().getId()));
-			}
+		if (getOperationSchedule().isPresent()) {
+			jsonObject.put("operation_schedule_id", toJSON(getOperationSchedule().get().getId()));
+		}
 
-
-	   		jsonObject.put("service_unit", toJSON(getServiceUnit()));
-	   		if (getServiceUnit().isPresent()) {
-				jsonObject.put("service_unit_id", toJSON(getServiceUnit().get().getId()));
-			}
-
+		if (getServiceUnit().isPresent()) {
+			jsonObject.put("service_unit_id", toJSON(getServiceUnit().get().getId()));
+		}
 		return jsonObject;
 	}
 

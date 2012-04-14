@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class InVehicleDevice extends Model {
-	private static final long serialVersionUID = 4998713565467314809L;
+	private static final long serialVersionUID = 6247635034701761180L;
 
 	public InVehicleDevice() {
 	}
@@ -81,18 +81,14 @@ public class InVehicleDevice extends Model {
 		jsonObject.put("password_confirmation", toJSON(getPasswordConfirmation().orNull()));
 		jsonObject.put("remember_me", toJSON(getRememberMe().orNull()));
 
-	   		jsonObject.put("service_provider", toJSON(getServiceProvider()));
-	   		if (getServiceProvider().isPresent()) {
-				jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
-			}
-
+		if (getServiceProvider().isPresent()) {
+			jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
+		}
 		if (getServiceUnits().size() > 0) {
-
 	   		jsonObject.put("service_units", toJSON(getServiceUnits()));
 		}
 
 		if (getVehicleNotifications().size() > 0) {
-
 	   		jsonObject.put("vehicle_notifications", toJSON(getVehicleNotifications()));
 		}
 

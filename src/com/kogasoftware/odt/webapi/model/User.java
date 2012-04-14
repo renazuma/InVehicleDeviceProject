@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class User extends Model {
-	private static final long serialVersionUID = 1891290045071187172L;
+	private static final long serialVersionUID = 8989306652616075310L;
 
 	public User() {
 	}
@@ -120,26 +120,21 @@ public class User extends Model {
 		jsonObject.put("password_confirmation", toJSON(getPasswordConfirmation().orNull()));
 		jsonObject.put("remember_me", toJSON(getRememberMe().orNull()));
 		if (getDemands().size() > 0) {
-
 	   		jsonObject.put("demands", toJSON(getDemands()));
 		}
 
 		if (getReservationCandidates().size() > 0) {
-
 	   		jsonObject.put("reservation_candidates", toJSON(getReservationCandidates()));
 		}
 
 		if (getReservations().size() > 0) {
-
 	   		jsonObject.put("reservations", toJSON(getReservations()));
 		}
 
 
-	   		jsonObject.put("service_provider", toJSON(getServiceProvider()));
-	   		if (getServiceProvider().isPresent()) {
-				jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
-			}
-
+		if (getServiceProvider().isPresent()) {
+			jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
+		}
 		return jsonObject;
 	}
 

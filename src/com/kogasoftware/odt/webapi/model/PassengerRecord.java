@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class PassengerRecord extends Model {
-	private static final long serialVersionUID = 7368373528520777184L;
+	private static final long serialVersionUID = 3313537838839574741L;
 
 	public PassengerRecord() {
 	}
@@ -97,29 +97,21 @@ public class PassengerRecord extends Model {
 		jsonObject.put("timestamp", toJSON(getTimestamp().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
 
-	   		jsonObject.put("arrival_operation_schedule", toJSON(getArrivalOperationSchedule()));
-	   		if (getArrivalOperationSchedule().isPresent()) {
-				jsonObject.put("arrival_operation_schedule_id", toJSON(getArrivalOperationSchedule().get().getId()));
-			}
+		if (getArrivalOperationSchedule().isPresent()) {
+			jsonObject.put("arrival_operation_schedule_id", toJSON(getArrivalOperationSchedule().get().getId()));
+		}
 
+		if (getDepartureOperationSchedule().isPresent()) {
+			jsonObject.put("departure_operation_schedule_id", toJSON(getDepartureOperationSchedule().get().getId()));
+		}
 
-	   		jsonObject.put("departure_operation_schedule", toJSON(getDepartureOperationSchedule()));
-	   		if (getDepartureOperationSchedule().isPresent()) {
-				jsonObject.put("departure_operation_schedule_id", toJSON(getDepartureOperationSchedule().get().getId()));
-			}
+		if (getReservation().isPresent()) {
+			jsonObject.put("reservation_id", toJSON(getReservation().get().getId()));
+		}
 
-
-	   		jsonObject.put("reservation", toJSON(getReservation()));
-	   		if (getReservation().isPresent()) {
-				jsonObject.put("reservation_id", toJSON(getReservation().get().getId()));
-			}
-
-
-	   		jsonObject.put("service_provider", toJSON(getServiceProvider()));
-	   		if (getServiceProvider().isPresent()) {
-				jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
-			}
-
+		if (getServiceProvider().isPresent()) {
+			jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
+		}
 		return jsonObject;
 	}
 

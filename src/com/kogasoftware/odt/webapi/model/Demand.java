@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Demand extends Model {
-	private static final long serialVersionUID = 7185192743011099586L;
+	private static final long serialVersionUID = 1754958272951907451L;
 
 	public Demand() {
 	}
@@ -103,37 +103,26 @@ public class Demand extends Model {
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
 		jsonObject.put("user_id", toJSON(getUserId()));
 
-	   		jsonObject.put("arrival_platform", toJSON(getArrivalPlatform()));
-	   		if (getArrivalPlatform().isPresent()) {
-				jsonObject.put("arrival_platform_id", toJSON(getArrivalPlatform().get().getId()));
-			}
+		if (getArrivalPlatform().isPresent()) {
+			jsonObject.put("arrival_platform_id", toJSON(getArrivalPlatform().get().getId()));
+		}
 
-
-	   		jsonObject.put("departure_platform", toJSON(getDeparturePlatform()));
-	   		if (getDeparturePlatform().isPresent()) {
-				jsonObject.put("departure_platform_id", toJSON(getDeparturePlatform().get().getId()));
-			}
-
-
-	   		jsonObject.put("reservation", toJSON(getReservation()));
+		if (getDeparturePlatform().isPresent()) {
+			jsonObject.put("departure_platform_id", toJSON(getDeparturePlatform().get().getId()));
+		}
 
 		if (getReservationCandidates().size() > 0) {
-
 	   		jsonObject.put("reservation_candidates", toJSON(getReservationCandidates()));
 		}
 
 
-	   		jsonObject.put("service_provider", toJSON(getServiceProvider()));
-	   		if (getServiceProvider().isPresent()) {
-				jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
-			}
+		if (getServiceProvider().isPresent()) {
+			jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
+		}
 
-
-	   		jsonObject.put("user", toJSON(getUser()));
-	   		if (getUser().isPresent()) {
-				jsonObject.put("user_id", toJSON(getUser().get().getId()));
-			}
-
+		if (getUser().isPresent()) {
+			jsonObject.put("user_id", toJSON(getUser().get().getId()));
+		}
 		return jsonObject;
 	}
 

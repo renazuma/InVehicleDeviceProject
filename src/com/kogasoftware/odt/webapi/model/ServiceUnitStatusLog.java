@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class ServiceUnitStatusLog extends Model {
-	private static final long serialVersionUID = 4680686820591061297L;
+	private static final long serialVersionUID = 7663241163512938834L;
 
 	public ServiceUnitStatusLog() {
 	}
@@ -77,11 +77,9 @@ public class ServiceUnitStatusLog extends Model {
 		jsonObject.put("temperature", toJSON(getTemperature().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
 
-	   		jsonObject.put("service_unit", toJSON(getServiceUnit()));
-	   		if (getServiceUnit().isPresent()) {
-				jsonObject.put("service_unit_id", toJSON(getServiceUnit().get().getId()));
-			}
-
+		if (getServiceUnit().isPresent()) {
+			jsonObject.put("service_unit_id", toJSON(getServiceUnit().get().getId()));
+		}
 		return jsonObject;
 	}
 
