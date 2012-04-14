@@ -17,6 +17,9 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -35,6 +38,7 @@ import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 import android.widget.WrapperListAdapter;
 
@@ -139,6 +143,25 @@ public class InVehicleDeviceActivity extends Activity {
 		};
 	};
 
+	private LocationListener locationListener = new LocationListener() {
+		@Override
+		public void onLocationChanged(Location location) {
+			logic.setLocation(location);
+		}
+
+		@Override
+		public void onProviderDisabled(String provider) {
+		}
+
+		@Override
+		public void onProviderEnabled(String provider) {
+		}
+
+		@Override
+		public void onStatusChanged(String provider, int status, Bundle extras) {
+		}
+	};
+
 	// nullables
 	private Button addUnexpectedReservationButton = null;
 	private Button changePhaseButton = null;
@@ -173,6 +196,7 @@ public class InVehicleDeviceActivity extends Activity {
 	private TextView statusTextView = null;
 	private ConnectivityManager connectivityManager = null;
 	private TelephonyManager telephonyManager = null;
+	private LocationManager locationManager = null;
 
 	@Subscribe
 	public void addUnexpectedReservation(AddUnexpectedReservationEvent event) {
@@ -393,6 +417,7 @@ public class InVehicleDeviceActivity extends Activity {
 
 		telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 		connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		contentView = findViewById(android.R.id.content);
 		presentTimeTextView = (TextView) findViewById(R.id.present_time_text_view);
 		nextPlatformNameTextView = (TextView) findViewById(R.id.next_platform_name_text_view);
@@ -520,6 +545,9 @@ public class InVehicleDeviceActivity extends Activity {
 		telephonyManager.listen(updateSignalStrength,
 				PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
 
+		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+				2000, 0, locationListener);
+
 		logicLoadThread = new InVehicleDeviceLogic.LoadThread(this);
 		logicLoadThread.start();
 	}
@@ -603,6 +631,7 @@ public class InVehicleDeviceActivity extends Activity {
 
 		telephonyManager.listen(updateSignalStrength,
 				PhoneStateListener.LISTEN_NONE);
+		locationManager.removeUpdates(locationListener);
 	}
 
 	@Override
@@ -649,6 +678,8 @@ public class InVehicleDeviceActivity extends Activity {
 		logic.restoreStatus();
 		contentView.setVisibility(View.VISIBLE);
 		waitForStartUiLatch.countDown();
+		Toast.makeText(this, "token=" + logic.getToken(), Toast.LENGTH_LONG)
+				.show();
 	}
 
 	private void updateMinutesRemaining() {
