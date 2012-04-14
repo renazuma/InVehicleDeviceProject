@@ -15,9 +15,9 @@ import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceLogic;
 
 public class Modal extends FrameLayout implements OnTouchListener {
-	private InVehicleDeviceLogic logic = new InVehicleDeviceLogic();
-
 	private Float lastMotionEventX = 0f;
+
+	private InVehicleDeviceLogic logic = new InVehicleDeviceLogic();
 
 	public Modal(Context context, AttributeSet attrs) {
 		super(context, attrs);

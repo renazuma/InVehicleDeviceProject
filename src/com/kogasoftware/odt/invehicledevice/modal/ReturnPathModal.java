@@ -37,10 +37,10 @@ public class ReturnPathModal extends Modal {
 		}
 	}
 
+	private Reservation currentReservation = new Reservation();
 	// private static final String TAG = ReturnPathModal.class.getSimpleName();
 	private ProgressDialog searchingDialog;
 	private ProgressDialog sendingDialog;
-	private Reservation currentReservation = new Reservation();
 
 	public ReturnPathModal(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -123,9 +123,9 @@ public class ReturnPathModal extends Modal {
 		doReservationButton.setEnabled(false);
 		final ListView reservationCandidateListView = (ListView) findViewById(R.id.reservation_candidates_list_view);
 		reservationCandidateListView
-		.setAdapter(new ReservationCandidateArrayAdapter(getContext(),
-				R.layout.reservation_candidate_list_row,
-				new LinkedList<ReservationCandidate>()));
+				.setAdapter(new ReservationCandidateArrayAdapter(getContext(),
+						R.layout.reservation_candidate_list_row,
+						new LinkedList<ReservationCandidate>()));
 
 		doReservationButton.setOnClickListener(new OnClickListener() {
 			@Override
@@ -187,22 +187,22 @@ public class ReturnPathModal extends Modal {
 								getContext(),
 								R.layout.reservation_candidate_list_row, result);
 						reservationCandidateListView
-						.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-							@Override
-							public void onItemClick(
-									AdapterView<?> parent, View view,
-									int position, long id) {
-								adapter.setSelectedPosition(Optional
-										.<Integer> of(position));
-								doReservationButton.setEnabled(true);
-							}
-						});
+								.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+									@Override
+									public void onItemClick(
+											AdapterView<?> parent, View view,
+											int position, long id) {
+										adapter.setSelectedPosition(Optional
+												.<Integer> of(position));
+										doReservationButton.setEnabled(true);
+									}
+								});
 
 						reservationCandidateListView.setAdapter(adapter);
 						reservationCandidateScrollUpButton
-						.setVisibility(View.VISIBLE);
+								.setVisibility(View.VISIBLE);
 						reservationCandidateScrollDownButton
-						.setVisibility(View.VISIBLE);
+								.setVisibility(View.VISIBLE);
 					}
 				};
 				task.execute();
@@ -210,26 +210,26 @@ public class ReturnPathModal extends Modal {
 		});
 
 		reservationCandidateScrollUpButton
-		.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				Integer position = reservationCandidateListView
-						.getFirstVisiblePosition();
-				reservationCandidateListView
-				.smoothScrollToPosition(position);
-			}
-		});
+				.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View view) {
+						Integer position = reservationCandidateListView
+								.getFirstVisiblePosition();
+						reservationCandidateListView
+								.smoothScrollToPosition(position);
+					}
+				});
 
 		reservationCandidateScrollDownButton
-		.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				Integer position = reservationCandidateListView
-						.getLastVisiblePosition();
-				reservationCandidateListView
-				.smoothScrollToPosition(position);
-			}
-		});
+				.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View view) {
+						Integer position = reservationCandidateListView
+								.getLastVisiblePosition();
+						reservationCandidateListView
+								.smoothScrollToPosition(position);
+					}
+				});
 
 		super.show();
 	}

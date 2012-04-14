@@ -5,6 +5,7 @@ import android.view.View;
 
 import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceActivity;
+import com.kogasoftware.odt.invehicledevice.InVehicleDeviceLogic;
 import com.kogasoftware.odt.invehicledevice.R;
 
 public class NotificationTestCase extends
@@ -20,6 +21,7 @@ public class NotificationTestCase extends
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
+		InVehicleDeviceLogic.clearStatusFile();
 		solo = new Solo(getInstrumentation(), getActivity());
 	}
 
@@ -32,7 +34,7 @@ public class NotificationTestCase extends
 		test01_起動時は非表示();
 
 		//TODO 管理者からの連絡部分が実装されたら置き換える
-		solo.clickOnView(solo.getView(R.id.status_text_view));
+		solo.clickOnView(solo.getView(R.id.phase_text_view));
 
 		getInstrumentation().waitForIdleSync();
 
@@ -74,7 +76,7 @@ public class NotificationTestCase extends
 		solo.clickOnButton("到着しました");
 
 		//TODO 管理者からの連絡部分が実装されたら置き換える
-		solo.clickOnView(solo.getView(R.id.status_text_view));
+		solo.clickOnView(solo.getView(R.id.phase_text_view));
 
 		getInstrumentation().waitForIdleSync();
 
@@ -116,7 +118,7 @@ public class NotificationTestCase extends
 		solo.clickOnButton("運行管理");
 
 		//TODO 管理者からの連絡部分が実装されたら置き換える
-		solo.clickOnView(solo.getView(R.id.status_text_view));
+		solo.clickOnView(solo.getView(R.id.phase_text_view));
 
 		getInstrumentation().waitForIdleSync();
 
@@ -158,7 +160,7 @@ public class NotificationTestCase extends
 		solo.clickOnButton("地図");
 
 		//TODO 管理者からの連絡部分が実装されたら置き換える
-		solo.clickOnView(solo.getView(R.id.status_text_view));
+		solo.clickOnView(solo.getView(R.id.phase_text_view));
 
 		getInstrumentation().waitForIdleSync();
 

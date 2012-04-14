@@ -29,7 +29,7 @@
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <LinearLayout
-                    android:id="@+id/operation_status_layout"
+                    android:id="@+id/operation_phase_layout"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:layout_margin="2dp"
@@ -45,7 +45,7 @@
                         android:src="@drawable/network_strength_0" />
 
                     <TextView
-                        android:id="@+id/status_text_view"
+                        android:id="@+id/phase_text_view"
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
                         android:gravity="center|center"
@@ -323,7 +323,7 @@
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <Button
-                android:id="@+id/change_status_button"
+                android:id="@+id/change_phase_button"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"

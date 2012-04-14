@@ -6,6 +6,7 @@ import android.widget.TextView;
 
 import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceActivity;
+import com.kogasoftware.odt.invehicledevice.InVehicleDeviceLogic;
 import com.kogasoftware.odt.invehicledevice.R;
 
 public class DrivingTestCase extends
@@ -21,6 +22,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
+		InVehicleDeviceLogic.clearStatusFile();
 		solo = new Solo(getInstrumentation(), getActivity());
 	}
 
@@ -28,7 +30,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 		
 		
-		TextView v = (TextView) solo.getView(R.id.status_text_view);
+		TextView v = (TextView) solo.getView(R.id.phase_text_view);
 		assertEquals("走行中", v.getText()); // TODO 画像ファイル名assertに書き換わる予定
 
 	}
@@ -43,7 +45,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 		solo.clickOnButton("到着しました");
 
-		TextView v = (TextView) solo.getView(R.id.status_text_view);
+		TextView v = (TextView) solo.getView(R.id.phase_text_view);
 		assertEquals("停車中", v.getText()); // TODO 画像ファイル名assertに書き換わる予定
 	}
 
@@ -64,7 +66,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 		getInstrumentation().waitForIdleSync();
 
-		TextView v = (TextView) solo.getView(R.id.status_text_view);
+		TextView v = (TextView) solo.getView(R.id.phase_text_view);
 		assertEquals("停車中", v.getText()); // TODO 画像ファイル名assertに書き換わる予定
 
 	}
@@ -78,7 +80,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 		getInstrumentation().waitForIdleSync();
 
-		TextView v = (TextView) solo.getView(R.id.status_text_view);
+		TextView v = (TextView) solo.getView(R.id.phase_text_view);
 		assertEquals("走行中", v.getText()); // TODO 画像ファイル名assertに書き換わる予定
 
 	}
@@ -107,7 +109,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 		getInstrumentation().waitForIdleSync();
 
-		TextView v = (TextView) solo.getView(R.id.status_text_view);
+		TextView v = (TextView) solo.getView(R.id.phase_text_view);
 		assertEquals("走行中", v.getText()); // TODO 画像ファイル名assertに書き換わる予定
 
 	}

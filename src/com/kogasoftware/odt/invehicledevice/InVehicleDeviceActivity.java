@@ -1,6 +1,5 @@
 package com.kogasoftware.odt.invehicledevice;
 
-import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -42,9 +41,9 @@ import android.widget.WrapperListAdapter;
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceLogic.AddUnexpectedReservationEvent;
-import com.kogasoftware.odt.invehicledevice.InVehicleDeviceLogic.EnterDriveStatusEvent;
-import com.kogasoftware.odt.invehicledevice.InVehicleDeviceLogic.EnterFinishStatusEvent;
-import com.kogasoftware.odt.invehicledevice.InVehicleDeviceLogic.EnterPlatformStatusEvent;
+import com.kogasoftware.odt.invehicledevice.InVehicleDeviceLogic.EnterDrivePhaseEvent;
+import com.kogasoftware.odt.invehicledevice.InVehicleDeviceLogic.EnterFinishPhaseEvent;
+import com.kogasoftware.odt.invehicledevice.InVehicleDeviceLogic.EnterPlatformPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.arrayadapter.ReservationArrayAdapter;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 import com.kogasoftware.odt.invehicledevice.modal.NavigationModal;
@@ -56,50 +55,22 @@ public class InVehicleDeviceActivity extends Activity {
 	private static final String TAG = InVehicleDeviceActivity.class
 			.getSimpleName();
 
+	private static final int POLL_VEHICLE_NOTIFICATION_INTERVAL = 10000;
+	private static final int TOGGLE_DRIVING_VIEW_INTERVAL = 5000;
+	private static final int UPDATE_TIME_INTERVAL = 5000;
+
 	private static final int WAIT_FOR_INITIALIZE_DIALOG_ID = 10;
 	private static final int ADD_UNEXPECTED_RESERVATION_DIALOG_ID = 11;
 
-	private static final Integer TOGGLE_DRIVING_VIEW_INTERVAL = 5000;
+	private static final int PLATFORM_PHASE_COLOR = Color.rgb(0xAA, 0xAA, 0xFF);
+	private static final int FINISH_PHASE_COLOR = Color.rgb(0xAA, 0xAA, 0xAA);
+	private static final int DRIVE_PHASE_COLOR = Color.rgb(0xAA, 0xFF, 0xAA);
 
-	private static final Integer POLL_VEHICLE_NOTIFICATION_INTERVAL = 10000;
-
-	protected static File getSavedStatusFile(Context context) {
-		return new File(context.getFilesDir() + File.separator
-				+ InVehicleDeviceStatus.class.getCanonicalName()
-				+ ".serialized");
-	}
-
-	private final PhoneStateListener updateSignalStrength = new PhoneStateListener() {
-		private int getImageResourceId(SignalStrength signalStrength) { // TODO
-			NetworkInfo networkInfo = connectivityManager
-					.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-			if (!networkInfo.isAvailable()) {
-				return R.drawable.network_strength_0;
-			}
-			if (signalStrength.isGsm()) {
-				Integer value = signalStrength.getGsmSignalStrength();
-				if (value == 99 || value <= 2) {
-					return R.drawable.network_strength_0;
-				} else if (value <= 4) {
-					return R.drawable.network_strength_1;
-				} else if (value <= 7) {
-					return R.drawable.network_strength_2;
-				} else if (value <= 11) {
-					return R.drawable.network_strength_3;
-				}
-				return R.drawable.network_strength_4;
-			}
-			return R.drawable.network_strength_0;
-		}
-
-		@Override
-		public void onSignalStrengthsChanged(SignalStrength signalStrength) {
-			networkStrengthImageView
-			.setImageResource(getImageResourceId(signalStrength));
-		};
-	};
-
-	private static final Integer UPDATE_TIME_INTERVAL = 5000;
+	private final Handler handler = new Handler();
+	private final CountDownLatch waitForStartUiLatch = new CountDownLatch(1);
+	private final List<View> phaseColoredViews = new LinkedList<View>();
+	private Thread logicLoadThread = new EmptyThread();
+	private InVehicleDeviceLogic logic = new InVehicleDeviceLogic();
 	private final Runnable updateTime = new Runnable() {
 		@Override
 		public void run() {
@@ -112,20 +83,6 @@ public class InVehicleDeviceActivity extends Activity {
 			handler.postDelayed(this, UPDATE_TIME_INTERVAL);
 		}
 	};
-
-	private void updateMinutesRemaining() {
-		Date now = InVehicleDeviceLogic.getDate();
-		;
-		List<OperationSchedule> operationSchedules = logic
-				.getRemainingOperationSchedules();
-		if (operationSchedules.isEmpty()) {
-			minutesRemainingTextView.setText("");
-		} else {
-			Date departure = operationSchedules.get(0).getDepartureEstimate();
-			Long milliGap = departure.getTime() - now.getTime();
-			minutesRemainingTextView.setText("" + (milliGap / 1000 / 60));
-		}
-	}
 
 	private final Runnable pollVehicleNotification = new Runnable() {
 		@Override
@@ -152,46 +109,70 @@ public class InVehicleDeviceActivity extends Activity {
 		}
 	};
 
-	private final CountDownLatch waitForStartUiLatch = new CountDownLatch(1);
-	private final Handler handler = new Handler();
-	private final List<View> statusColoredViews = new LinkedList<View>();
-	private InVehicleDeviceLogic logic = new InVehicleDeviceLogic();
-	private Thread logicLoadThread = new EmptyThread();
+	private final PhoneStateListener updateSignalStrength = new PhoneStateListener() {
+		private Integer getImageResourceId(SignalStrength signalStrength) { // TODO
+			NetworkInfo networkInfo = connectivityManager
+					.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+			if (!networkInfo.isAvailable()) {
+				return R.drawable.network_strength_0;
+			}
+			if (signalStrength.isGsm()) {
+				Integer value = signalStrength.getGsmSignalStrength();
+				if (value == 99 || value <= 2) {
+					return R.drawable.network_strength_0;
+				} else if (value <= 4) {
+					return R.drawable.network_strength_1;
+				} else if (value <= 7) {
+					return R.drawable.network_strength_2;
+				} else if (value <= 11) {
+					return R.drawable.network_strength_3;
+				}
+				return R.drawable.network_strength_4;
+			}
+			return R.drawable.network_strength_0;
+		}
+
+		@Override
+		public void onSignalStrengthsChanged(SignalStrength signalStrength) {
+			networkStrengthImageView
+					.setImageResource(getImageResourceId(signalStrength));
+		};
+	};
 
 	// nullables
-	private TelephonyManager telephonyManager = null;
-	private ConnectivityManager connectivityManager = null;
-	private View contentView = null;
-	private Button changeStatusButton = null;
+	private Button addUnexpectedReservationButton = null;
+	private Button changePhaseButton = null;
 	private Button configButton = null;
+	private View contentView = null;
+	private View drivingLayout = null;
+	private View drivingView1Layout = null;
+	private View drivingView2Layout = null;
+	private View finishLayout = null;
+	private View waitingLayout = null;
 	private Button mapButton = null;
-	private Button scheduleButton = null;
-	private Button reservationScrollDownButton = null;
-	private Button reservationScrollUpButton = null;
-	private ListView reservationListView = null;
-	private View reservationListFooterView = null;
+	private TextView minutesRemainingTextView = null;
+	private NavigationModal navigationModal = null;
+	private ImageView networkStrengthImageView = null;
 	private TextView nextPlatformNameRubyTextView = null;
 	private TextView nextPlatformNameTextView = null;
 	private TextView platformArrivalTimeTextView = null;
 	private TextView platformDepartureTimeTextView = null;
-	private TextView platformNameTextView = null;
-	private TextView presentTimeTextView = null;
-	private TextView minutesRemainingTextView = null;
-	private TextView statusTextView = null;
-	private View drivingView1Layout = null;
-	private View drivingView2Layout = null;
-	private View waitingLayout = null;
-	private View drivingLayout = null;
-	private View finishLayout = null;
-	private NavigationModal navigationModal = null;
 	private VTextView platformName1BeyondTextView = null;
 	private VTextView platformName2BeyondTextView = null;
 	private VTextView platformName3BeyondTextView = null;
+	private TextView platformNameTextView = null;
+	private TextView presentTimeTextView = null;
+	private View reservationListFooterView = null;
+	private ListView reservationListView = null;
+	private Button reservationScrollDownButton = null;
+	private Button reservationScrollUpButton = null;
+	private Button scheduleButton = null;
 	private ToggleButton showAllRidingReservationsButton = null;
 	private ToggleButton showFutureReservationsButton = null;
 	private ToggleButton showMissedReservationsButton = null;
-	private Button addUnexpectedReservationButton = null;
-	private ImageView networkStrengthImageView = null;
+	private TextView statusTextView = null;
+	private ConnectivityManager connectivityManager = null;
+	private TelephonyManager telephonyManager = null;
 
 	@Subscribe
 	public void addUnexpectedReservation(AddUnexpectedReservationEvent event) {
@@ -211,11 +192,11 @@ public class InVehicleDeviceActivity extends Activity {
 	}
 
 	@Subscribe
-	public void enterDriveStatus(EnterDriveStatusEvent event) {
+	public void enterDrivePhase(EnterDrivePhaseEvent event) {
 		List<OperationSchedule> operationSchedules = logic
 				.getRemainingOperationSchedules();
 		if (operationSchedules.isEmpty()) {
-			logic.enterFinishStatus();
+			logic.enterFinishPhase();
 			return;
 		}
 
@@ -260,11 +241,11 @@ public class InVehicleDeviceActivity extends Activity {
 		}
 
 		statusTextView.setText("走行中");
-		changeStatusButton.setText("到着しました");
-		changeStatusButton.setOnClickListener(new OnClickListener() {
+		changePhaseButton.setText("到着しました");
+		changePhaseButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				logic.enterPlatformStatus();
+				logic.enterPlatformPhase();
 			}
 		});
 
@@ -273,32 +254,28 @@ public class InVehicleDeviceActivity extends Activity {
 		waitingLayout.setVisibility(View.GONE);
 		drivingLayout.setVisibility(View.VISIBLE);
 		finishLayout.setVisibility(View.GONE);
-		changeStatusButton.setEnabled(true);
+		changePhaseButton.setEnabled(true);
 
-		for (View view : statusColoredViews) {
-			view.setBackgroundColor(Color.rgb(0xAA, 0xFF, 0xAA)); // TODO 定数
-		}
+		setPhaseColor(DRIVE_PHASE_COLOR);
 	}
 
 	@Subscribe
-	public void enterFinishStatus(EnterFinishStatusEvent event) {
+	public void enterFinishPhase(EnterFinishPhaseEvent event) {
 		waitingLayout.setVisibility(View.GONE);
 		drivingLayout.setVisibility(View.GONE);
 		finishLayout.setVisibility(View.VISIBLE);
 		statusTextView.setText("");
-		changeStatusButton.setEnabled(false);
-		for (View view : statusColoredViews) {
-			view.setBackgroundColor(Color.rgb(0xAA, 0xAA, 0xAA)); // TODO 定数
-		}
+		changePhaseButton.setEnabled(false);
+		setPhaseColor(FINISH_PHASE_COLOR);
 	}
 
 	@Subscribe
-	public void enterPlatformStatus(EnterPlatformStatusEvent event) {
+	public void enterPlatformPhase(EnterPlatformPhaseEvent event) {
 		updateMinutesRemaining();
 		List<OperationSchedule> operationSchedules = logic
 				.getRemainingOperationSchedules();
 		if (operationSchedules.isEmpty()) {
-			logic.enterFinishStatus();
+			logic.enterFinishPhase();
 			return;
 		}
 
@@ -324,8 +301,8 @@ public class InVehicleDeviceActivity extends Activity {
 				platformNameTextView.setText("「ID: "
 						+ nextOperationSchedule.getId() + "」");
 			}
-			changeStatusButton.setText("出発する");
-			changeStatusButton.setOnClickListener(new OnClickListener() {
+			changePhaseButton.setText("出発する");
+			changePhaseButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View view) {
 					logic.showStartCheckModal(adapter);
@@ -333,75 +310,73 @@ public class InVehicleDeviceActivity extends Activity {
 			});
 		} else {
 			platformNameTextView.setText("");
-			changeStatusButton.setText("確定する");
-			changeStatusButton.setOnClickListener(new OnClickListener() {
+			changePhaseButton.setText("確定する");
+			changePhaseButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View view) {
-					logic.enterFinishStatus();
+					logic.enterFinishPhase();
 				}
 			});
 		}
 
 		showAllRidingReservationsButton
-		.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView,
-					boolean isChecked) {
-				if (isChecked) {
-					adapter.showRidingAndNoOutgoingReservations();
-				} else {
-					adapter.hideRidingAndNotGetOutReservations();
-				}
-			}
-		});
+				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+					@Override
+					public void onCheckedChanged(CompoundButton buttonView,
+							boolean isChecked) {
+						if (isChecked) {
+							adapter.showRidingAndNoOutgoingReservations();
+						} else {
+							adapter.hideRidingAndNotGetOutReservations();
+						}
+					}
+				});
 		showAllRidingReservationsButton.setChecked(false);
 
 		showFutureReservationsButton
-		.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView,
-					boolean isChecked) {
-				if (isChecked) {
-					adapter.showFutureReservations();
-				} else {
-					adapter.hideFutureReservations();
-				}
-			}
-		});
+				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+					@Override
+					public void onCheckedChanged(CompoundButton buttonView,
+							boolean isChecked) {
+						if (isChecked) {
+							adapter.showFutureReservations();
+						} else {
+							adapter.hideFutureReservations();
+						}
+					}
+				});
 		showFutureReservationsButton.setChecked(false);
 
 		showMissedReservationsButton
-		.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView,
-					boolean isChecked) {
-				if (isChecked) {
-					adapter.showMissedReservations();
-				} else {
-					adapter.hideMissedReservations();
-				}
-			}
-		});
+				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+					@Override
+					public void onCheckedChanged(CompoundButton buttonView,
+							boolean isChecked) {
+						if (isChecked) {
+							adapter.showMissedReservations();
+						} else {
+							adapter.hideMissedReservations();
+						}
+					}
+				});
 		showMissedReservationsButton.setChecked(false);
 
 		addUnexpectedReservationButton
-		.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				if (!isFinishing()) {
-					showDialog(ADD_UNEXPECTED_RESERVATION_DIALOG_ID);
-				}
-			}
-		});
+				.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View view) {
+						if (!isFinishing()) {
+							showDialog(ADD_UNEXPECTED_RESERVATION_DIALOG_ID);
+						}
+					}
+				});
 
 		waitingLayout.setVisibility(View.VISIBLE);
 		drivingLayout.setVisibility(View.GONE);
 		finishLayout.setVisibility(View.GONE);
-		changeStatusButton.setEnabled(true);
+		changePhaseButton.setEnabled(true);
 
-		for (View view : statusColoredViews) {
-			view.setBackgroundColor(Color.rgb(0xAA, 0xAA, 0xFF)); // TODO 定数
-		}
+		setPhaseColor(PLATFORM_PHASE_COLOR); // TODO 定数
 	}
 
 	@Override
@@ -418,20 +393,12 @@ public class InVehicleDeviceActivity extends Activity {
 
 		telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 		connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-
-		TypedArray typedArray = obtainStyledAttributes(new int[] { android.R.attr.background });
-		int backgroundColor = typedArray.getColor(0, Color.WHITE);
-
 		contentView = findViewById(android.R.id.content);
-		contentView.setVisibility(View.GONE); // InVehicleDeviceLogicの準備が終わるまでcontentViewを非表示
-		contentView.setBackgroundColor(backgroundColor);
-		getWindow().getDecorView().setBackgroundColor(Color.BLACK); // ProgressDialogと親和性の高い色にする
-
 		presentTimeTextView = (TextView) findViewById(R.id.present_time_text_view);
 		nextPlatformNameTextView = (TextView) findViewById(R.id.next_platform_name_text_view);
 		nextPlatformNameRubyTextView = (TextView) findViewById(R.id.next_platform_name_ruby_text_view);
-		statusTextView = (TextView) findViewById(R.id.status_text_view);
-		changeStatusButton = (Button) findViewById(R.id.change_status_button);
+		statusTextView = (TextView) findViewById(R.id.phase_text_view);
+		changePhaseButton = (Button) findViewById(R.id.change_phase_button);
 		mapButton = (Button) findViewById(R.id.map_button);
 		configButton = (Button) findViewById(R.id.config_button);
 		scheduleButton = (Button) findViewById(R.id.schedule_button);
@@ -447,24 +414,36 @@ public class InVehicleDeviceActivity extends Activity {
 		navigationModal = (NavigationModal) findViewById(R.id.navigation_modal);
 		drivingView1Layout = findViewById(R.id.driving_view1);
 		drivingView2Layout = findViewById(R.id.driving_view2);
+		reservationListView = (ListView) findViewById(R.id.reservation_list_view);
+		minutesRemainingTextView = (TextView) findViewById(R.id.minutes_remaining);
+		networkStrengthImageView = (ImageView) findViewById(R.id.network_strength_image_view);
+		reservationScrollUpButton = (Button) findViewById(R.id.reservation_scroll_up_button);
+		reservationScrollDownButton = (Button) findViewById(R.id.reservation_scroll_down_button);
+
+		contentView.setVisibility(View.GONE); // InVehicleDeviceLogicの準備が終わるまでcontentViewを非表示
+		getWindow().getDecorView().setBackgroundColor(Color.BLACK); // ProgressDialogと親和性の高い色にする
+
+		LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		TypedArray typedArray = obtainStyledAttributes(new int[] { android.R.attr.background });
+		Integer backgroundColor = typedArray.getColor(0, Color.WHITE);
+
+		contentView.setBackgroundColor(backgroundColor);
 		drivingView1Layout.setBackgroundColor(backgroundColor); // TODO XMLで指定
 		drivingView2Layout.setBackgroundColor(backgroundColor); // TODO
 		waitingLayout.setBackgroundColor(backgroundColor); // TODO
-		reservationListView = (ListView) findViewById(R.id.reservation_list_view);
-		LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
 		reservationListFooterView = layoutInflater.inflate(
 				R.layout.reservation_list_footer, null);
-		reservationListView.addFooterView(reservationListFooterView);
-
 		showAllRidingReservationsButton = (ToggleButton) reservationListFooterView
 				.findViewById(R.id.show_all_riding_reservations_button);
 		showFutureReservationsButton = (ToggleButton) reservationListFooterView
 				.findViewById(R.id.show_future_reservations_button);
 		showMissedReservationsButton = (ToggleButton) reservationListFooterView
 				.findViewById(R.id.show_missed_reservations_button);
-		addUnexpectedReservationButton = (Button) findViewById(R.id.add_unexpected_reservation_button);
-		minutesRemainingTextView = (TextView) findViewById(R.id.minutes_remaining);
-		networkStrengthImageView = (ImageView) findViewById(R.id.network_strength_image_view);
+		addUnexpectedReservationButton = (Button) reservationListFooterView
+				.findViewById(R.id.add_unexpected_reservation_button);
+
+		reservationListView.addFooterView(reservationListFooterView);
 
 		mapButton.setOnClickListener(new OnClickListener() {
 			@Override
@@ -484,7 +463,6 @@ public class InVehicleDeviceActivity extends Activity {
 				logic.showScheduleModal();
 			}
 		});
-		reservationScrollUpButton = (Button) findViewById(R.id.reservation_scroll_up_button);
 		reservationScrollUpButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -493,7 +471,6 @@ public class InVehicleDeviceActivity extends Activity {
 				reservationListView.smoothScrollToPosition(position);
 			}
 		});
-		reservationScrollDownButton = (Button) findViewById(R.id.reservation_scroll_down_button);
 		reservationScrollDownButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -501,7 +478,8 @@ public class InVehicleDeviceActivity extends Activity {
 				reservationListView.smoothScrollToPosition(position);
 			}
 		});
-		View test = findViewById(R.id.status_text_view);
+
+		View test = findViewById(R.id.phase_text_view);
 		test.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -524,12 +502,12 @@ public class InVehicleDeviceActivity extends Activity {
 			}
 		});
 
-		for (int resourceId : new int[] { R.id.icon_text_view,
-				R.id.operation_status_layout, R.id.present_time_layout,
+		for (Integer resourceId : new Integer[] { R.id.icon_text_view,
+				R.id.operation_phase_layout, R.id.present_time_layout,
 				R.id.side_button_view }) {
 			View view = findViewById(resourceId);
 			if (view != null) {
-				statusColoredViews.add(findViewById(resourceId));
+				phaseColoredViews.add(findViewById(resourceId));
 			} else {
 				Log.w(TAG, "view != null, resourceId=" + resourceId);
 			}
@@ -574,7 +552,7 @@ public class InVehicleDeviceActivity extends Activity {
 			}
 			operationSchedules.remove(operationSchedules.get(0));
 			final String[] operationScheduleSelections = new String[operationSchedules
-			                                                        .size()];
+					.size()];
 			for (Integer i = 0; i < operationScheduleSelections.length; ++i) {
 				OperationSchedule operationSchedule = operationSchedules.get(i);
 				String selection = "";
@@ -648,6 +626,12 @@ public class InVehicleDeviceActivity extends Activity {
 		}
 	}
 
+	private void setPhaseColor(Integer color) {
+		for (View view : phaseColoredViews) {
+			view.setBackgroundColor(color);
+		}
+	}
+
 	@Subscribe
 	public void startUi(InVehicleDeviceLogic.LoadThread.CompleteEvent event) {
 		try {
@@ -665,6 +649,20 @@ public class InVehicleDeviceActivity extends Activity {
 		logic.restoreStatus();
 		contentView.setVisibility(View.VISIBLE);
 		waitForStartUiLatch.countDown();
+	}
+
+	private void updateMinutesRemaining() {
+		Date now = InVehicleDeviceLogic.getDate();
+		;
+		List<OperationSchedule> operationSchedules = logic
+				.getRemainingOperationSchedules();
+		if (operationSchedules.isEmpty()) {
+			minutesRemainingTextView.setText("");
+		} else {
+			Date departure = operationSchedules.get(0).getDepartureEstimate();
+			Long milliGap = departure.getTime() - now.getTime();
+			minutesRemainingTextView.setText("" + (milliGap / 1000 / 60));
+		}
 	}
 
 	public void waitForStartUi() throws InterruptedException {

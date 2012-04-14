@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.google.common.io.Closeables;
@@ -35,12 +36,12 @@ public class InVehicleDeviceStatus implements Serializable {
 			T read(InVehicleDeviceStatus status);
 		}
 
-		public interface Writer {
-			void write(InVehicleDeviceStatus status);
-		}
-
 		public interface ReaderAndWriter<T> {
 			T readAndWrite(InVehicleDeviceStatus status);
+		}
+
+		public interface Writer {
+			void write(InVehicleDeviceStatus status);
 		}
 
 		final InVehicleDeviceStatus status;
@@ -49,8 +50,8 @@ public class InVehicleDeviceStatus implements Serializable {
 			status = InVehicleDeviceStatus.newInstance();
 		}
 
-		public Access(File file) {
-			status = InVehicleDeviceStatus.newInstance(file);
+		public Access(Context context, Boolean isClear) {
+			status = InVehicleDeviceStatus.newInstance(context, isClear);
 		}
 
 		public <T> T read(Reader<T> reader) {
@@ -75,11 +76,11 @@ public class InVehicleDeviceStatus implements Serializable {
 		}
 	}
 
-	public enum Status {
-		DRIVE, PLATFORM, INITIAL, FINISH
+	public enum Phase {
+		DRIVE, FINISH, INITIAL, PLATFORM
 	}
 
-	private static final long serialVersionUID = 5617948505743182171L;
+	private static final long serialVersionUID = 5617948505743182173L;
 
 	private static final String TAG = InVehicleDeviceStatus.class
 			.getSimpleName();
@@ -88,9 +89,16 @@ public class InVehicleDeviceStatus implements Serializable {
 		return new InVehicleDeviceStatus();
 	}
 
-	private static InVehicleDeviceStatus newInstance(File file) {
+	private static InVehicleDeviceStatus newInstance(Context context,
+			Boolean isClear) {
+		File file = new File(context.getFilesDir() + File.separator
+				+ InVehicleDeviceStatus.class.getCanonicalName()
+				+ ".serialized");
 		InVehicleDeviceStatus status = new InVehicleDeviceStatus();
 		status.file = file;
+		if (isClear) {
+			return status;
+		}
 		FileInputStream fileInputStream = null;
 		ObjectInputStream objectInputStream = null;
 		try {
@@ -127,28 +135,27 @@ public class InVehicleDeviceStatus implements Serializable {
 		return status;
 	}
 
+	public final Date createdDate = new Date();
+
+	public Integer currentOperationScheduleIndex = 0;
+	public File file = new EmptyFile();
+	public final AtomicBoolean initialized = new AtomicBoolean(false);
 	private final Object lock = new Serializable() {
 		private static final long serialVersionUID = -8902504841122071697L;
 	}; // synchronized用にシリアライズ可能なオブジェクトを持っておく
 
+	public final LinkedList<Reservation> missedReservations = new LinkedList<Reservation>();
+	public final LinkedList<OperationSchedule> operationSchedules = new LinkedList<OperationSchedule>();
+	public Boolean paused = false;
+	public final LinkedList<VehicleNotification> processingVehicleNotifications = new LinkedList<VehicleNotification>();
+	public final LinkedList<Reservation> ridingReservations = new LinkedList<Reservation>();
+	public Phase phase = Phase.INITIAL;
+	public Boolean stopped = false;
+	public final LinkedList<Reservation> unexpectedReservations = new LinkedList<Reservation>();
+	public Integer unexpectedReservationSequence = 1000;
 
-	public final AtomicBoolean initialized = new AtomicBoolean(false);
-	public final Date createdDate = new Date();
 	// Serializableにするため、LinkedListのままにしておく
 	public final LinkedList<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();
-	public final LinkedList<VehicleNotification> processingVehicleNotifications = new LinkedList<VehicleNotification>();
-
-	public final LinkedList<OperationSchedule> operationSchedules = new LinkedList<OperationSchedule>();
-	public final LinkedList<Reservation> ridingReservations = new LinkedList<Reservation>();
-	public final LinkedList<Reservation> missedReservations = new LinkedList<Reservation>();
-	public final LinkedList<Reservation> unexpectedReservations = new LinkedList<Reservation>();
-	public Integer currentOperationScheduleIndex = 0;
-	public File file = new EmptyFile();
-	public Integer unexpectedReservationSequence = 1000;
-	public Boolean stopped = false;
-	public Boolean paused = false;
-
-	public Status status = Status.INITIAL;
 
 	private InVehicleDeviceStatus() {
 	}
@@ -163,8 +170,10 @@ public class InVehicleDeviceStatus implements Serializable {
 		synchronized (lock) {
 			ObjectOutputStream objectOutputStream = null;
 			try {
-				if (file.exists() && !file.delete()) {
-					throw new IOException("file.exists() && !file.delete()");
+				if (!file.equals(new EmptyFile()) && file.exists()
+						&& !file.delete()) {
+					throw new IOException(
+							"file.exists() && !file.delete(), file=" + file);
 				}
 				objectOutputStream = new ObjectOutputStream(
 						byteArrayOutputStream);

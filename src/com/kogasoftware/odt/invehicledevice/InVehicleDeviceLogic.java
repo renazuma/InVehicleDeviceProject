@@ -1,10 +1,11 @@
 package com.kogasoftware.odt.invehicledevice;
 
-import java.io.File;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.Semaphore;
@@ -20,6 +21,7 @@ import com.google.common.eventbus.EventBus;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceStatus.Access.Reader;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceStatus.Access.ReaderAndWriter;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceStatus.Access.Writer;
+import com.kogasoftware.odt.invehicledevice.InVehicleDeviceStatus.Phase;
 import com.kogasoftware.odt.invehicledevice.arrayadapter.ReservationArrayAdapter;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
@@ -39,7 +41,13 @@ import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
+/**
+ * 車載機の内部ロジック
+ */
 public class InVehicleDeviceLogic {
+	/**
+	 * 飛び乗り予約が追加されたことを通知
+	 */
 	public static class AddUnexpectedReservationEvent {
 		public final Reservation reservation;
 
@@ -48,42 +56,43 @@ public class InVehicleDeviceLogic {
 		}
 	}
 
-	private static AtomicBoolean willClearStatusFile = new AtomicBoolean(false);
+	/**
+	 * com.google.common.eventbus.EventBusクラスに、登録されたリスナーを全削除する機能を追加
+	 */
+	public static class DisposableEventBus extends EventBus {
+		private static final String TAG = DisposableEventBus.class
+				.getSimpleName();
+		private Boolean disposed = false;
+		private final List<Object> registeredObjects = new LinkedList<Object>();
 
-	private static final Object defaultDateLock = new Object();
-	private static Optional<Date> defaultDate = Optional.<Date> absent();
-
-	public static void setDate(Date date) {
-		if (BuildConfig.DEBUG) {
-			synchronized (defaultDateLock) {
-				defaultDate = Optional.of(date);
+		public void dispose() {
+			for (Object object : registeredObjects) {
+				try {
+					unregister(object);
+				} catch (IllegalArgumentException e) {
+					Log.w(TAG, e);
+				}
 			}
+			registeredObjects.clear();
 		}
-	}
 
-	public static Date getDate() {
-		if (!BuildConfig.DEBUG) {
-			return new Date();
-		}
-		synchronized (defaultDateLock) {
-			if (defaultDate.isPresent()) {
-				return defaultDate.get();
+		@Override
+		public void register(Object object) {
+			if (disposed) {
+				return;
 			}
+			super.register(object);
+			registeredObjects.add(object);
 		}
-		return new Date();
 	}
 
-	public static void clearStatusFile() {
-		willClearStatusFile.set(true);
+	public static class EnterDrivePhaseEvent {
 	}
 
-	public static class EnterDriveStatusEvent {
+	public static class EnterFinishPhaseEvent {
 	}
 
-	public static class EnterFinishStatusEvent {
-	}
-
-	public static class EnterPlatformStatusEvent {
+	public static class EnterPlatformPhaseEvent {
 	}
 
 	public static class LoadThread extends Thread {
@@ -105,8 +114,7 @@ public class InVehicleDeviceLogic {
 		public void run() {
 			InVehicleDeviceLogic logic = null;
 			try {
-				logic = new InVehicleDeviceLogic(activity,
-						InVehicleDeviceActivity.getSavedStatusFile(activity));
+				logic = new InVehicleDeviceLogic(activity);
 				final Semaphore semaphore = new Semaphore(0); // Runnable内容が実行される前にinterruptされた場合も確実にshutdownする用
 				final InVehicleDeviceLogic finalLogic = logic;
 				activity.runOnUiThread(new Runnable() {
@@ -215,14 +223,47 @@ public class InVehicleDeviceLogic {
 		}
 	}
 
+	private static Optional<Date> defaultDate = Optional.<Date> absent();
+
+	private static final Object defaultDateLock = new Object();
+
+	private static final Integer NUM_THREADS = 10;
+
+	private static final Integer POLLING_PERIOD_MILLIS = 30 * 1000;
+
 	private static final String TAG = InVehicleDeviceLogic.class
 			.getSimpleName();
-	private static final Integer POLLING_PERIOD_MILLIS = 30 * 1000;
-	private static final Integer NUM_THREADS = 10;
+
+	private static AtomicBoolean willClearStatusFile = new AtomicBoolean(true);
+
+	public static void clearStatusFile() {
+		willClearStatusFile.set(true);
+	}
+
+	public static Date getDate() {
+		if (!BuildConfig.DEBUG) {
+			return new Date();
+		}
+		synchronized (defaultDateLock) {
+			if (defaultDate.isPresent()) {
+				return defaultDate.get();
+			}
+		}
+		return new Date();
+	}
+
+	public static void setDate(Date date) {
+		if (BuildConfig.DEBUG) {
+			synchronized (defaultDateLock) {
+				defaultDate = Optional.of(date);
+			}
+		}
+	}
+
+	private final DataSource dataSource = DataSourceFactory.newInstance();
 	private final DisposableEventBus eventBus = new DisposableEventBus();
 	private final ScheduledExecutorService executorService = Executors
 			.newScheduledThreadPool(NUM_THREADS);
-	private final DataSource dataSource = DataSourceFactory.newInstance();
 	private final InVehicleDeviceStatus.Access statusAccess;
 	private Thread voiceThread = new EmptyThread();
 
@@ -230,21 +271,15 @@ public class InVehicleDeviceLogic {
 		this.statusAccess = new InVehicleDeviceStatus.Access();
 	}
 
-	public InVehicleDeviceLogic(Activity activity, File statusFile)
-			throws InterruptedException {
+	public InVehicleDeviceLogic(Activity activity) throws InterruptedException {
 		try {
 			Thread.sleep(0); // interruption point
-			if (willClearStatusFile.getAndSet(false)) {
-				this.statusAccess = new InVehicleDeviceStatus.Access();
-				if (statusFile.exists() && !statusFile.delete()) {
-					Log.e(TAG, "!(statusFile.exists() && !statusFile.delete())");
-				}
-			} else {
-				this.statusAccess = new InVehicleDeviceStatus.Access(statusFile);
-			}
-
+			this.statusAccess = new InVehicleDeviceStatus.Access(activity,
+					willClearStatusFile.getAndSet(false));
+			Future<?> receiveOperationSchedule = null;
 			try {
-				executorService.submit(new OperationScheduleReceiver(this));
+				receiveOperationSchedule = executorService
+						.submit(new OperationScheduleReceiver(this));
 				executorService.scheduleWithFixedDelay(
 						new VehicleNotificationReceiver(this), 0,
 						POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
@@ -257,12 +292,11 @@ public class InVehicleDeviceLogic {
 
 			register(activity);
 			Thread.sleep(0); // interruption point
-			voiceThread.interrupt();
 			voiceThread = new VoiceThread(activity);
 			voiceThread.start();
 			register(voiceThread);
 			Thread.sleep(0); // interruption point
-			for (int resourceId : new int[] { R.id.config_modal,
+			for (Integer resourceId : new int[] { R.id.config_modal,
 					R.id.start_check_modal, R.id.schedule_modal,
 					R.id.memo_modal, R.id.pause_modal, R.id.return_path_modal,
 					R.id.stop_check_modal, R.id.stop_modal,
@@ -272,10 +306,27 @@ public class InVehicleDeviceLogic {
 				register(view);
 				Thread.sleep(0); // interruption point
 			}
+			if (receiveOperationSchedule != null && getPhase() != Phase.FINISH
+					&& getOperationSchedules().isEmpty()) {
+				try {
+					receiveOperationSchedule.get();
+				} catch (ExecutionException e) {
+				}
+			}
 		} catch (InterruptedException e) {
 			shutdown();
 			throw e;
 		}
+	}
+
+	public void addMissedReservations(List<Reservation> reservations) {
+		final List<Reservation> finalReservations = reservations;
+		statusAccess.write(new Writer() {
+			@Override
+			public void write(InVehicleDeviceStatus status) {
+				status.missedReservations.addAll(finalReservations);
+			}
+		});
 	}
 
 	public void addUnexpectedReservation(Integer arrivalOperationScheduleId) {
@@ -307,37 +358,46 @@ public class InVehicleDeviceLogic {
 		eventBus.post(new AddUnexpectedReservationEvent(reservation));
 	}
 
-	public void enterDriveStatus() {
+	public void cancelPause() {
 		statusAccess.write(new Writer() {
 			@Override
 			public void write(InVehicleDeviceStatus status) {
-				if (status.status == InVehicleDeviceStatus.Status.PLATFORM) {
+				status.paused = false;
+			}
+		});
+	}
+
+	public void enterDrivePhase() {
+		statusAccess.write(new Writer() {
+			@Override
+			public void write(InVehicleDeviceStatus status) {
+				if (status.phase == InVehicleDeviceStatus.Phase.PLATFORM) {
 					status.currentOperationScheduleIndex++;
 				}
-				status.status = InVehicleDeviceStatus.Status.DRIVE;
+				status.phase = InVehicleDeviceStatus.Phase.DRIVE;
 			}
 		});
-		eventBus.post(new EnterDriveStatusEvent());
+		eventBus.post(new EnterDrivePhaseEvent());
 	}
 
-	public void enterFinishStatus() {
+	public void enterFinishPhase() {
 		statusAccess.write(new Writer() {
 			@Override
 			public void write(InVehicleDeviceStatus status) {
-				status.status = InVehicleDeviceStatus.Status.FINISH;
+				status.phase = InVehicleDeviceStatus.Phase.FINISH;
 			}
 		});
-		eventBus.post(new EnterFinishStatusEvent());
+		eventBus.post(new EnterFinishPhaseEvent());
 	}
 
-	public void enterPlatformStatus() {
+	public void enterPlatformPhase() {
 		statusAccess.write(new Writer() {
 			@Override
 			public void write(InVehicleDeviceStatus status) {
-				status.status = InVehicleDeviceStatus.Status.PLATFORM;
+				status.phase = InVehicleDeviceStatus.Phase.PLATFORM;
 			}
 		});
-		eventBus.post(new EnterPlatformStatusEvent());
+		eventBus.post(new EnterPlatformPhaseEvent());
 	}
 
 	public DataSource getDataSource() {
@@ -353,12 +413,39 @@ public class InVehicleDeviceLogic {
 		});
 	}
 
+	public void getOnReservation(final List<Reservation> reservations) {
+		statusAccess.write(new Writer() {
+			@Override
+			public void write(InVehicleDeviceStatus status) {
+				status.ridingReservations.addAll(reservations);
+			}
+		});
+	}
+
 	public List<OperationSchedule> getOperationSchedules() {
 		return statusAccess.read(new Reader<List<OperationSchedule>>() {
 			@Override
 			public List<OperationSchedule> read(InVehicleDeviceStatus status) {
 				return new LinkedList<OperationSchedule>(
 						status.operationSchedules);
+			}
+		});
+	}
+
+	public void getOutReservation(final List<Reservation> reservations) {
+		statusAccess.write(new Writer() {
+			@Override
+			public void write(InVehicleDeviceStatus status) {
+				status.ridingReservations.removeAll(reservations);
+			}
+		});
+	}
+
+	public Phase getPhase() {
+		return statusAccess.read(new Reader<Phase>() {
+			@Override
+			public Phase read(InVehicleDeviceStatus status) {
+				return status.phase;
 			}
 		});
 	}
@@ -409,6 +496,16 @@ public class InVehicleDeviceLogic {
 		});
 	}
 
+	public void pause() {
+		statusAccess.write(new Writer() {
+			@Override
+			public void write(InVehicleDeviceStatus status) {
+				status.paused = true;
+			}
+		});
+		eventBus.post(new PauseModal.ShowEvent());
+	}
+
 	public List<VehicleNotification> pollVehicleNotifications() {
 		return statusAccess
 				.readAndWrite(new ReaderAndWriter<List<VehicleNotification>>() {
@@ -418,11 +515,15 @@ public class InVehicleDeviceLogic {
 						LinkedList<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>(
 								status.vehicleNotifications);
 						status.processingVehicleNotifications
-						.addAll(status.vehicleNotifications);
+								.addAll(status.vehicleNotifications);
 						status.vehicleNotifications.clear();
 						return vehicleNotifications;
 					}
 				});
+	}
+
+	public void register(Object object) {
+		eventBus.register(object);
 	}
 
 	public void replyVehicleNotification(
@@ -431,41 +532,19 @@ public class InVehicleDeviceLogic {
 			@Override
 			public void write(InVehicleDeviceStatus status) {
 				status.processingVehicleNotifications
-				.remove(vehicleNotification);
+						.remove(vehicleNotification);
 			}
 		});
-	}
-
-	public void getOnReservation(final List<Reservation> reservations) {
-		statusAccess.write(new Writer() {
-			@Override
-			public void write(InVehicleDeviceStatus status) {
-				status.ridingReservations.addAll(reservations);
-			}
-		});
-	}
-
-	public void getOutReservation(final List<Reservation> reservations) {
-		statusAccess.write(new Writer() {
-			@Override
-			public void write(InVehicleDeviceStatus status) {
-				status.ridingReservations.removeAll(reservations);
-			}
-		});
-	}
-
-	public void register(Object object) {
-		eventBus.register(object);
 	}
 
 	public void restoreStatus() {
 		statusAccess.write(new Writer() {
 			@Override
 			public void write(InVehicleDeviceStatus status) {
-				if (status.status == InVehicleDeviceStatus.Status.PLATFORM) {
-					enterPlatformStatus();
+				if (status.phase == InVehicleDeviceStatus.Phase.PLATFORM) {
+					enterPlatformPhase();
 				} else {
-					enterDriveStatus();
+					enterDrivePhase();
 				}
 				if (status.paused) {
 					pause();
@@ -475,11 +554,11 @@ public class InVehicleDeviceLogic {
 				}
 
 				status.processingVehicleNotifications
-				.addAll(status.vehicleNotifications);
+						.addAll(status.vehicleNotifications);
 				status.vehicleNotifications.clear();
 				status.vehicleNotifications
-				.addAll(new LinkedList<VehicleNotification>(
-						status.processingVehicleNotifications));
+						.addAll(new LinkedList<VehicleNotification>(
+								status.processingVehicleNotifications));
 				status.processingVehicleNotifications.clear();
 			}
 		});
@@ -496,25 +575,6 @@ public class InVehicleDeviceLogic {
 	public void showNotificationModal(
 			List<VehicleNotification> vehicleNotifications) {
 		eventBus.post(new NotificationModal.ShowEvent(vehicleNotifications));
-	}
-
-	public void pause() {
-		statusAccess.write(new Writer() {
-			@Override
-			public void write(InVehicleDeviceStatus status) {
-				status.paused = true;
-			}
-		});
-		eventBus.post(new PauseModal.ShowEvent());
-	}
-
-	public void cancelPause() {
-		statusAccess.write(new Writer() {
-			@Override
-			public void write(InVehicleDeviceStatus status) {
-				status.paused = false;
-			}
-		});
 	}
 
 	public void showReturnPathModal(Reservation reservation) {
@@ -538,16 +598,6 @@ public class InVehicleDeviceLogic {
 		eventBus.post(new StopCheckModal.ShowEvent());
 	}
 
-	public void stop() {
-		statusAccess.write(new Writer() {
-			@Override
-			public void write(InVehicleDeviceStatus status) {
-				status.stopped = true;
-			}
-		});
-		eventBus.post(new StopModal.ShowEvent());
-	}
-
 	public void shutdown() {
 		eventBus.dispose();
 		executorService.shutdownNow();
@@ -558,39 +608,13 @@ public class InVehicleDeviceLogic {
 		eventBus.post(new SpeakEvent(message));
 	}
 
-	public void addMissedReservations(List<Reservation> reservations) {
-		final List<Reservation> finalReservations = reservations;
+	public void stop() {
 		statusAccess.write(new Writer() {
 			@Override
 			public void write(InVehicleDeviceStatus status) {
-				status.missedReservations.addAll(finalReservations);
+				status.stopped = true;
 			}
 		});
-	}
-}
-
-class DisposableEventBus extends EventBus {
-	private static final String TAG = DisposableEventBus.class.getSimpleName();
-	private final List<Object> registeredObjects = new LinkedList<Object>();
-	private Boolean disposed = false;
-
-	@Override
-	public void register(Object object) {
-		if (disposed) {
-			return;
-		}
-		super.register(object);
-		registeredObjects.add(object);
-	}
-
-	public void dispose() {
-		for (Object object : registeredObjects) {
-			try {
-				unregister(object);
-			} catch (IllegalArgumentException e) {
-				Log.w(TAG, e);
-			}
-		}
-		registeredObjects.clear();
+		eventBus.post(new StopModal.ShowEvent());
 	}
 }

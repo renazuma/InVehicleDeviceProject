@@ -25,9 +25,9 @@ public class ScheduleChangedModal extends Modal {
 		}
 	}
 
-	private final Queue<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();
-
 	private VehicleNotification currentVehicleNotification = new VehicleNotification();
+
+	private final Queue<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();
 
 	public ScheduleChangedModal(Context context, AttributeSet attrs) {
 		super(context, attrs);

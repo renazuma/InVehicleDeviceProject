@@ -53,21 +53,21 @@ public class VTextView extends View {
 		}
 	}
 
-	// private static final String TAG = VTextView.class.getSimpleName();
-	private static final int TOP_SPACE = 0;
 	private static final int BOTTOM_SPACE = 18;
 	private static final int FONT_SIZE = 60;
 	private static final float FONT_SPACING_RATE = 0.8f;
-	private Typeface typeFace = Typeface.defaultFromStyle(Typeface.NORMAL);
+	// private static final String TAG = VTextView.class.getSimpleName();
+	private static final int TOP_SPACE = 0;
+	private Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+	private Canvas canvas = new Canvas(bitmap);
+	private volatile int height = 0; // 別スレッドから読み出すためvolatileをつける
 	private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 	private String text = "";
-	private Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-	private volatile int width = 0; // 別スレッドから読み出すためvolatileをつける
-	private volatile int height = 0; // 別スレッドから読み出すためvolatileをつける
-	private Canvas canvas = new Canvas(bitmap);
+	private Typeface typeFace = Typeface.defaultFromStyle(Typeface.NORMAL);
+	private Handler updateBitmapHandler = new Handler();
 	private Semaphore updateBitmapStartSemaphore = new Semaphore(0);
 	private Thread updateBitmapThread = new EmptyThread();
-	private Handler updateBitmapHandler = new Handler();
+	private volatile int width = 0; // 別スレッドから読み出すためvolatileをつける
 
 	public VTextView(Context context, AttributeSet attrs) {
 		super(context, attrs);

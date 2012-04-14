@@ -83,14 +83,14 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 	public void test05_出発ダイアログはい選択で走行中() {
 		test04_出発ボタンを押すと出発ダイアログ表示();
 		solo.clickOnView(solo.getView(R.id.start_button));
-		TextView v = (TextView) solo.getView(R.id.status_text_view);
+		TextView v = (TextView) solo.getView(R.id.phase_text_view);
 		assertEquals("走行中", v.getText());
 	}
 
 	public void test06_出発ダイアログいいえ選択で停車中に戻る() {
 		test04_出発ボタンを押すと出発ダイアログ表示();
 		solo.clickOnView(solo.getView(R.id.start_cancel_button));
-		TextView v = (TextView) solo.getView(R.id.status_text_view);
+		TextView v = (TextView) solo.getView(R.id.phase_text_view);
 		assertEquals("停車中", v.getText());
 	}
 

@@ -11,16 +11,18 @@ import com.kogasoftware.odt.webapi.model.ReservationCandidate;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public interface DataSource {
-	List<ReservationCandidate> postReservationCandidates(Integer userId,
-			Integer departurePlatformId, Integer arrivalPlatformId)
-					throws WebAPIException;
-	Reservation postReservation(Integer reservationCandidateId) throws WebAPIException;
-
 	InVehicleDevice getInVehicleDevice() throws WebAPIException;
 
 	List<OperationSchedule> getOperationSchedules() throws WebAPIException;
 
 	List<VehicleNotification> getVehicleNotifications() throws WebAPIException;
+
+	Reservation postReservation(Integer reservationCandidateId)
+			throws WebAPIException;
+
+	List<ReservationCandidate> postReservationCandidates(Integer userId,
+			Integer departurePlatformId, Integer arrivalPlatformId)
+			throws WebAPIException;
 
 	void putReservationTransferredAt(Integer id, Date transferredAt)
 			throws WebAPIException;

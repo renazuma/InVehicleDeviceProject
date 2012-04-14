@@ -6,6 +6,7 @@ import android.widget.Button;
 
 import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceActivity;
+import com.kogasoftware.odt.invehicledevice.InVehicleDeviceLogic;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
 import com.kogasoftware.odt.invehicledevice.test.MockDataSourceTest;
@@ -33,6 +34,7 @@ public class ScheduleTestCase extends
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
+		InVehicleDeviceLogic.clearStatusFile();
 		solo = new Solo(getInstrumentation(), getActivity());
 	}
 

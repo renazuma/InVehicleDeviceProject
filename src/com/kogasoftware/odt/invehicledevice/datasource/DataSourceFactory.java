@@ -7,15 +7,6 @@ public class DataSourceFactory {
 			.<DataSource> absent();
 	private static Object dataSourceLock = new Object();
 
-	/**
-	 * TODO: DIなどで書き換え
-	 */
-	public static void setInstance(DataSource dataSource) {
-		synchronized (dataSourceLock) {
-			DataSourceFactory.dataSource = Optional.<DataSource> of(dataSource);
-		}
-	}
-
 	public static DataSource newInstance() {
 		synchronized (dataSourceLock) {
 			if (dataSource.isPresent()) {
@@ -23,5 +14,14 @@ public class DataSourceFactory {
 			}
 		}
 		return new DummyDataSource();
+	}
+
+	/**
+	 * TODO: DIなどで書き換え
+	 */
+	public static void setInstance(DataSource dataSource) {
+		synchronized (dataSourceLock) {
+			DataSourceFactory.dataSource = Optional.<DataSource> of(dataSource);
+		}
 	}
 }

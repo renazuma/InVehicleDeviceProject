@@ -18,11 +18,11 @@ import com.kogasoftware.openjtalk.OpenJTalk;
 
 public class VoiceThread extends Thread {
 	private static final String TAG = VoiceThread.class.getSimpleName();
-	private final BlockingQueue<String> voices = new LinkedBlockingQueue<String>();
 	private final File cacheDirectory;
-	private final File voiceDirectory;
 	private final File dictionaryDirectory;
 	private final File outputDirectory;
+	private final File voiceDirectory;
+	private final BlockingQueue<String> voices = new LinkedBlockingQueue<String>();
 
 	public VoiceThread(Context context) {
 		cacheDirectory = context.getFilesDir();

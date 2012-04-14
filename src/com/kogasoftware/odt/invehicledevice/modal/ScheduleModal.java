@@ -38,26 +38,26 @@ public class ScheduleModal extends Modal {
 
 		Button operationScheduleScrollUpButton = (Button) findViewById(R.id.operation_schedule_scroll_up_button);
 		operationScheduleScrollUpButton
-		.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				Integer position = operationScheduleListView
-						.getFirstVisiblePosition();
-				operationScheduleListView
-				.smoothScrollToPosition(position);
-			}
-		});
+				.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View view) {
+						Integer position = operationScheduleListView
+								.getFirstVisiblePosition();
+						operationScheduleListView
+								.smoothScrollToPosition(position);
+					}
+				});
 		Button operationScheduleScrollDownButton = (Button) findViewById(R.id.operation_schedule_scroll_down_button);
 		operationScheduleScrollDownButton
-		.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				Integer position = operationScheduleListView
-						.getLastVisiblePosition();
-				operationScheduleListView
-				.smoothScrollToPosition(position);
-			}
-		});
+				.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View view) {
+						Integer position = operationScheduleListView
+								.getLastVisiblePosition();
+						operationScheduleListView
+								.smoothScrollToPosition(position);
+					}
+				});
 
 		super.show();
 	}

@@ -16,7 +16,7 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.webapi.model.ReservationCandidate;
 
 public class ReservationCandidateArrayAdapter extends
-ArrayAdapter<ReservationCandidate> {
+		ArrayAdapter<ReservationCandidate> {
 	private final LayoutInflater layoutInflater;
 	private final int resourceId;
 

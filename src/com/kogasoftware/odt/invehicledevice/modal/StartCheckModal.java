@@ -26,11 +26,6 @@ public class StartCheckModal extends Modal {
 		}
 	}
 
-	public StartCheckModal(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		setContentView(R.layout.start_check_modal);
-	}
-
 	private static String getUserName(Reservation reservation) {
 		if (reservation.getUser().isPresent()) {
 			User user = reservation.getUser().get();
@@ -40,21 +35,23 @@ public class StartCheckModal extends Modal {
 		}
 	}
 
+	public StartCheckModal(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		setContentView(R.layout.start_check_modal);
+	}
+
 	@Subscribe
 	public void show(ShowEvent event) {
 		final ReservationArrayAdapter adapter = event.reservationArrayAdapter;
 		ListView errorReservationListView = (ListView) findViewById(R.id.error_reservation_list_view);
 		List<String> messages = new LinkedList<String>();
-		for (Reservation reservation : adapter
-				.getNoGettingOnReservations()) {
+		for (Reservation reservation : adapter.getNoGettingOnReservations()) {
 			messages.add(getUserName(reservation) + "様が未乗車です");
 		}
-		for (Reservation reservation : adapter
-				.getNoGettingOutReservations()) {
+		for (Reservation reservation : adapter.getNoGettingOutReservations()) {
 			messages.add(getUserName(reservation) + "様が未降車です");
 		}
-		for (Reservation reservation : adapter
-				.getNoPaymentReservations()) {
+		for (Reservation reservation : adapter.getNoPaymentReservations()) {
 			messages.add(getUserName(reservation) + "様が料金未払いです");
 		}
 
@@ -71,7 +68,7 @@ public class StartCheckModal extends Modal {
 						.getCheckedOutgoingReservations());
 				logic.addMissedReservations(adapter
 						.getNoGettingOnReservations());
-				logic.enterDriveStatus();
+				logic.enterDrivePhase();
 			}
 		});
 

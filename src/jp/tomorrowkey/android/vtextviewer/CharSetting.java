@@ -1,38 +1,7 @@
 package jp.tomorrowkey.android.vtextviewer;
 
 public class CharSetting {
-	/**
-	 * 文字
-	 */
-	public final String charcter;
-
-	/**
-	 * 回転角度
-	 */
-	public final float angle;
-
-	/**
-	 * xの差分<br />
-	 * Paint#getFontSpacing() * xが足される<br />
-	 * -0.5fが設定された場合、1/2文字分左にずれる
-	 */
-	public final float x;
-
-	/**
-	 * xの差分<br />
-	 * Paint#getFontSpacing() * yが足される<br />
-	 * -0.5fが設定された場合、1/2文字分上にずれる
-	 */
-	public final float y;
-
-	public CharSetting(String charcter, float angle, float x, float y) {
-		super();
-		this.charcter = charcter;
-		this.angle = angle;
-		this.x = x;
-		this.y = y;
-	}
-
+	private static final String[] PUNCTUATION_MARK = { "、", "。", "「", "」" };
 	private static final CharSetting[] SETTINGS = {
 			new CharSetting("、", 0.0f, 0.7f, -0.6f),
 			new CharSetting("。", 0.0f, 0.7f, -0.6f),
@@ -179,8 +148,6 @@ public class CharSetting {
 		return null;
 	}
 
-	private static final String[] PUNCTUATION_MARK = { "、", "。", "「", "」" };
-
 	public static boolean isPunctuationMark(String s) {
 		for (String functuantionMark : PUNCTUATION_MARK) {
 			if (functuantionMark.equals(s)) {
@@ -188,6 +155,38 @@ public class CharSetting {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * 回転角度
+	 */
+	public final float angle;
+
+	/**
+	 * 文字
+	 */
+	public final String charcter;
+
+	/**
+	 * xの差分<br />
+	 * Paint#getFontSpacing() * xが足される<br />
+	 * -0.5fが設定された場合、1/2文字分左にずれる
+	 */
+	public final float x;
+
+	/**
+	 * xの差分<br />
+	 * Paint#getFontSpacing() * yが足される<br />
+	 * -0.5fが設定された場合、1/2文字分上にずれる
+	 */
+	public final float y;
+
+	public CharSetting(String charcter, float angle, float x, float y) {
+		super();
+		this.charcter = charcter;
+		this.angle = angle;
+		this.x = x;
+		this.y = y;
 	}
 
 }

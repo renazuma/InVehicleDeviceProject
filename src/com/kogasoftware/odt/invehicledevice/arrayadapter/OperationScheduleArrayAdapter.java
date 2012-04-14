@@ -17,10 +17,11 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Reservation;
 
-public class OperationScheduleArrayAdapter extends ArrayAdapter<OperationSchedule> {
+public class OperationScheduleArrayAdapter extends
+		ArrayAdapter<OperationSchedule> {
 	private final LayoutInflater layoutInflater;
-	private final int resourceId;
 	private final InVehicleDeviceLogic logic;
+	private final int resourceId;
 
 	public OperationScheduleArrayAdapter(Context context, int resourceId,
 			List<OperationSchedule> items, InVehicleDeviceLogic logic) {
