@@ -103,7 +103,7 @@ public class InVehicleDeviceActivity extends Activity {
 	private final Runnable updateTime = new Runnable() {
 		@Override
 		public void run() {
-			Date now = new Date();
+			Date now = InVehicleDeviceLogic.getDate();
 			DateFormat f = new SimpleDateFormat(getResources().getString(
 					R.string.present_time_format));
 			presentTimeTextView.setText(f.format(now));
@@ -114,7 +114,8 @@ public class InVehicleDeviceActivity extends Activity {
 	};
 
 	private void updateMinutesRemaining() {
-		Date now = new Date();
+		Date now = InVehicleDeviceLogic.getDate();
+		;
 		List<OperationSchedule> operationSchedules = logic
 				.getRemainingOperationSchedules();
 		if (operationSchedules.isEmpty()) {

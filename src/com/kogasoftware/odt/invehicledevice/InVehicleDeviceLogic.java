@@ -1,6 +1,7 @@
 package com.kogasoftware.odt.invehicledevice;
 
 import java.io.File;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -14,6 +15,7 @@ import android.app.Activity;
 import android.util.Log;
 import android.view.View;
 
+import com.google.common.base.Optional;
 import com.google.common.eventbus.EventBus;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceStatus.Access.Reader;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceStatus.Access.ReaderAndWriter;
@@ -46,10 +48,33 @@ public class InVehicleDeviceLogic {
 		}
 	}
 
-	private static AtomicBoolean clearStatusFile = new AtomicBoolean(false);
+	private static AtomicBoolean willClearStatusFile = new AtomicBoolean(false);
+
+	private static final Object defaultDateLock = new Object();
+	private static Optional<Date> defaultDate = Optional.<Date> absent();
+
+	public static void setDate(Date date) {
+		if (BuildConfig.DEBUG) {
+			synchronized (defaultDateLock) {
+				defaultDate = Optional.of(date);
+			}
+		}
+	}
+
+	public static Date getDate() {
+		if (!BuildConfig.DEBUG) {
+			return new Date();
+		}
+		synchronized (defaultDateLock) {
+			if (defaultDate.isPresent()) {
+				return defaultDate.get();
+			}
+		}
+		return new Date();
+	}
 
 	public static void clearStatusFile() {
-		clearStatusFile.set(true);
+		willClearStatusFile.set(true);
 	}
 
 	public static class EnterDriveStatusEvent {
@@ -209,7 +234,7 @@ public class InVehicleDeviceLogic {
 			throws InterruptedException {
 		try {
 			Thread.sleep(0); // interruption point
-			if (clearStatusFile.getAndSet(false)) {
+			if (willClearStatusFile.getAndSet(false)) {
 				this.statusAccess = new InVehicleDeviceStatus.Access();
 				if (statusFile.exists() && !statusFile.delete()) {
 					Log.e(TAG, "!(statusFile.exists() && !statusFile.delete())");

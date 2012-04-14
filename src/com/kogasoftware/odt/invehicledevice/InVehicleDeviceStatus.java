@@ -116,7 +116,7 @@ public class InVehicleDeviceStatus implements Serializable {
 			Closeables.closeQuietly(fileInputStream);
 		}
 
-		Date now = new Date();
+		Date now = InVehicleDeviceLogic.getDate();
 		Calendar calendar = Calendar.getInstance();
 		calendar.clear();
 		calendar.set(now.getYear(), now.getMonth(), now.getDay(), 3, 0); // TODO
