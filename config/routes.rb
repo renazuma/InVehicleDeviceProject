@@ -3,6 +3,7 @@ WebAPITest::Application.routes.draw do
   resources :vehicle_notifications
   resources :in_vehicle_devices
   resources :operators
+  resources :service_providers
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
