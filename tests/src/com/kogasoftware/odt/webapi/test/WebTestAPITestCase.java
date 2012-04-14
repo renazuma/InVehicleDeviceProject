@@ -5,6 +5,8 @@ import java.util.concurrent.CountDownLatch;
 
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
+import com.kogasoftware.odt.webapi.model.Operator;
+import com.kogasoftware.odt.webapi.model.ServiceProvider;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 import android.test.ActivityInstrumentationTestCase2;
@@ -18,6 +20,7 @@ public class WebTestAPITestCase extends
 	}
 
 	boolean succeed = false;
+	private ServiceProvider serviceProvider;
 	public void testCleanDatabase() throws Exception {
 		WebTestAPI api = new WebTestAPI();
 		final CountDownLatch latch = new CountDownLatch(1);
@@ -44,8 +47,57 @@ public class WebTestAPITestCase extends
 		
 		assertTrue(succeed);
 	}
+
+	public void testServiceProviders() throws Exception {
+		testCleanDatabase();
+		
+		final WebTestAPI api = new WebTestAPI();
+
+		// オブジェクトをひとつ生成
+		SyncCall<ServiceProvider> sc = new SyncCall<ServiceProvider>() {
+			@Override
+			public int run() throws Exception {
+				ServiceProvider obj = new ServiceProvider();
+				obj.setName("もぎ市");
+				
+				return api.createServiceProvider(obj, this);
+			}
+		};
+		assertEquals(SyncCall.SUCCEED, sc.getCallback());
+		this.serviceProvider = sc.getResult();
+	
+	}
+
+	public void testOperators() throws Exception {
+		testCleanDatabase();
+		testServiceProviders();
+		
+		final WebTestAPI api = new WebTestAPI();
+
+		// オブジェクトをひとつ生成
+		SyncCall<Operator> sc = new SyncCall<Operator>() {
+			@Override
+			public int run() throws Exception {
+				Operator obj = new Operator();
+				obj.setLogin("operator1");
+				obj.setPassword("pass");
+				obj.setPasswordConfirmation("pass");
+				obj.setFirstName("もぎ");
+				obj.setLastName("もぎぞう");
+				obj.setServiceProvider(serviceProvider);
+				
+				return api.createOperator(obj, this);
+			}
+		};
+		assertEquals(SyncCall.SUCCEED, sc.getCallback());
+	
+	}
 	
 	public void testVehicleNotifications() throws Exception {
+		testCleanDatabase();
+		testServiceProviders();
+		testOperators();
+		
 		final WebTestAPI api = new WebTestAPI();
 
 		// オブジェクトをひとつ生成
