@@ -50,7 +50,7 @@ class Platform < ActiveRecord::Base
   acts_as_paranoid
 
   # Define Uploader
-  mount_uploader :image, PlatformImageUploader
+#  mount_uploader :image, PlatformImageUploader
 
   # Operation Audit
   acts_as_audited
