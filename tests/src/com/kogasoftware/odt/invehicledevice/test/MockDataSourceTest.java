@@ -11,6 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
+import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
@@ -27,7 +28,7 @@ public class MockDataSourceTest implements DataSource {
 	@Override
 	public List<ReservationCandidate> postReservationCandidates(Integer userId,
 			Integer departurePlatformId, Integer arrivalPlatformId)
-					throws WebAPIException {
+			throws WebAPIException {
 		try {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
@@ -37,7 +38,6 @@ public class MockDataSourceTest implements DataSource {
 
 		return lReservationCandidate;
 	}
-
 
 	@Override
 	public InVehicleDevice getInVehicleDevice() {
@@ -103,55 +103,64 @@ public class MockDataSourceTest implements DataSource {
 						+ "arrival_estimate: '2012-01-01T09:00:00.000+09:00', "
 						+ "departure_estimate: '2012-01-01T09:15:00.000+09:00', "
 						+ "platform: {name: 'テストコガソフトウェア前', name_ruby: 'てすとこがそふとうぇあまえ'} "
-						+ "reservations_as_arrival: [{passenger_count: 5, " + u1a + "}, {passenger_count: 6, " + u1b + "}, {passenger_count: 7, " + u1c + "}] ,"
-						+ "reservations_as_departure: [{passenger_count: 15, " + u1d + "}, {passenger_count: 16, " + u1e + "}, {passenger_count: 17, " + u1f + "}]}";
+						+ "reservations_as_arrival: [{passenger_count: 5, "
+						+ u1a + "}, {passenger_count: 6, " + u1b
+						+ "}, {passenger_count: 7, " + u1c + "}] ,"
+						+ "reservations_as_departure: [{passenger_count: 15, "
+						+ u1d + "}, {passenger_count: 16, " + u1e
+						+ "}, {passenger_count: 17, " + u1f + "}]}";
 				JSONObject j1 = new JSONObject(sOperationSchedule);
 				lOperationSchedule.add(new OperationSchedule(j1));
 			}
 
 			if (iOperationScheduleCount > 1) {
-				JSONObject j2 = new JSONObject("{"
-						+ "arrival_estimate: '2012-01-01T:09:30:00.000+09:00', "
-						+ "departure_estimate: '2012-01-01T10:05:00.000+09:00', "
-						+ "platform: {name: 'テスト上野御徒町駅前',name_ruby: 'てすとうえのおかちまちえきまえ'}, "
-						+ "reservations_as_arrival: [{passenger_count: 5}]}");
+				JSONObject j2 = new JSONObject(
+						"{"
+								+ "arrival_estimate: '2012-01-01T:09:30:00.000+09:00', "
+								+ "departure_estimate: '2012-01-01T10:05:00.000+09:00', "
+								+ "platform: {name: 'テスト上野御徒町駅前',name_ruby: 'てすとうえのおかちまちえきまえ'}, "
+								+ "reservations_as_arrival: [{passenger_count: 5}]}");
 				lOperationSchedule.add(new OperationSchedule(j2));
 			}
 
 			if (iOperationScheduleCount > 2) {
-				JSONObject j3 = new JSONObject("{"
-						+ "arrival_estimate: '2012-01-01T10:30:00.000+09:00', "
-						+ "departure_estimate: '2012-01-01T10:33:00.000+09:00', "
-						+ "platform: {name: 'テスト上野動物園前', name_ruby: 'てすとうえのどうぶつえんまえ'}, "
-						+ "reservations_as_departure: [{passenger_count: 5}, {passenger_count: 6}, {passenger_count: 7}]}");
+				JSONObject j3 = new JSONObject(
+						"{"
+								+ "arrival_estimate: '2012-01-01T10:30:00.000+09:00', "
+								+ "departure_estimate: '2012-01-01T10:33:00.000+09:00', "
+								+ "platform: {name: 'テスト上野動物園前', name_ruby: 'てすとうえのどうぶつえんまえ'}, "
+								+ "reservations_as_departure: [{passenger_count: 5}, {passenger_count: 6}, {passenger_count: 7}]}");
 				lOperationSchedule.add(new OperationSchedule(j3));
 			}
 
 			if (iOperationScheduleCount > 3) {
-				JSONObject j4 = new JSONObject("{"
-						+ "arrival_estimate: '2012-01-01T11:10:00.000+09:00', "
-						+ "departure_estimate: '2012-01-01T11:15:00.000+09:00', "
-						+ "platform: {name: 'テスト上野広小路前', name_ruby: 'てすとうえのひろこうじまえ'}, "
-						+ "reservations_as_arrival: [] ,"
-						+ "reservations_as_departure: [{passenger_count: 7}]}");
+				JSONObject j4 = new JSONObject(
+						"{"
+								+ "arrival_estimate: '2012-01-01T11:10:00.000+09:00', "
+								+ "departure_estimate: '2012-01-01T11:15:00.000+09:00', "
+								+ "platform: {name: 'テスト上野広小路前', name_ruby: 'てすとうえのひろこうじまえ'}, "
+								+ "reservations_as_arrival: [] ,"
+								+ "reservations_as_departure: [{passenger_count: 7}]}");
 				lOperationSchedule.add(new OperationSchedule(j4));
 			}
 
 			if (iOperationScheduleCount > 4) {
-				JSONObject j5 = new JSONObject("{"
-						+ "arrival_estimate: '2012-01-01T12:00:00.000+09:00', "
-						+ "departure_estimate: '2012-01-01T12:05:00.000+09:00', "
-						+ "platform: {name: 'テスト湯島天神前', name_ruby: 'てすとゆしまてんじんまえ'}}");
+				JSONObject j5 = new JSONObject(
+						"{"
+								+ "arrival_estimate: '2012-01-01T12:00:00.000+09:00', "
+								+ "departure_estimate: '2012-01-01T12:05:00.000+09:00', "
+								+ "platform: {name: 'テスト湯島天神前', name_ruby: 'てすとゆしまてんじんまえ'}}");
 				lOperationSchedule.add(new OperationSchedule(j5));
 			}
 
 			if (iOperationScheduleCount > 5) {
-				JSONObject j6 = new JSONObject("{"
-						+ "arrival_estimate: '2012-01-01T13:03:00.000+09:00', "
-						+ "departure_estimate: '2012-01-01T13:10:30.000+09:00', "
-						+ "platform: {name: 'テストＪＲ御徒町駅前', name_ruby: 'てすとじぇいあーるおかちまちえきまえ'}, "
-						+ "reservations_as_arrival: [{passenger_count: 50}, {passenger_count: 60}, {passenger_count: 70}] ,"
-						+ "reservations_as_departure: [{passenger_count: 150}, {passenger_count: 160}, {passenger_count: 170}]}");
+				JSONObject j6 = new JSONObject(
+						"{"
+								+ "arrival_estimate: '2012-01-01T13:03:00.000+09:00', "
+								+ "departure_estimate: '2012-01-01T13:10:30.000+09:00', "
+								+ "platform: {name: 'テストＪＲ御徒町駅前', name_ruby: 'てすとじぇいあーるおかちまちえきまえ'}, "
+								+ "reservations_as_arrival: [{passenger_count: 50}, {passenger_count: 60}, {passenger_count: 70}] ,"
+								+ "reservations_as_departure: [{passenger_count: 150}, {passenger_count: 160}, {passenger_count: 170}]}");
 				lOperationSchedule.add(new OperationSchedule(j6));
 			}
 
@@ -209,52 +218,58 @@ public class MockDataSourceTest implements DataSource {
 
 		try {
 
-			JSONObject j1 = new JSONObject("{"
-					+ "arrival_estimate: '2012-01-01T09:00:00.000+09:00', "
-					+ "departure_estimate: '2012-01-01T09:01:00.000+09:00', "
-					+ "platform: {name: 'テストコガソフトウェア前', name_ruby: 'てすとこがそふとうぇあまえ'}, "
-					+ "reservations_as_arrival: [], "
-					+ "reservations_as_departure: []}");
+			JSONObject j1 = new JSONObject(
+					"{"
+							+ "arrival_estimate: '2012-01-01T09:00:00.000+09:00', "
+							+ "departure_estimate: '2012-01-01T09:01:00.000+09:00', "
+							+ "platform: {name: 'テストコガソフトウェア前', name_ruby: 'てすとこがそふとうぇあまえ'}, "
+							+ "reservations_as_arrival: [], "
+							+ "reservations_as_departure: []}");
 			lOperationSchedule.add(new OperationSchedule(j1));
 
-			JSONObject j2 = new JSONObject("{"
-					+ "arrival_estimate: '2012-01-01T09:30:00.000+09:00', "
-					+ "departure_estimate: '2012-01-01T09:35:00.000+09:00', "
-					+ "platform: {name: 'テスト上野御徒町駅前',name_ruby: 'てすとうえのおかちまちえきまえ'}, "
-					+ "reservations_as_arrival: [], "
-					+ "reservations_as_departure: []}");
+			JSONObject j2 = new JSONObject(
+					"{"
+							+ "arrival_estimate: '2012-01-01T09:30:00.000+09:00', "
+							+ "departure_estimate: '2012-01-01T09:35:00.000+09:00', "
+							+ "platform: {name: 'テスト上野御徒町駅前',name_ruby: 'てすとうえのおかちまちえきまえ'}, "
+							+ "reservations_as_arrival: [], "
+							+ "reservations_as_departure: []}");
 			lOperationSchedule.add(new OperationSchedule(j2));
 
-			JSONObject j3 = new JSONObject("{"
-					+ "arrival_estimate: '2012-01-01T10:30:00.000+09:00', "
-					+ "departure_estimate: '2012-01-01T10:33:00.000+09:00', "
-					+ "platform: {name: 'テスト上野動物園前', name_ruby: 'てすとうえのどうぶつえんまえ'}, "
-					+ "reservations_as_arrival: [], "
-					+ "reservations_as_departure: []}");
+			JSONObject j3 = new JSONObject(
+					"{"
+							+ "arrival_estimate: '2012-01-01T10:30:00.000+09:00', "
+							+ "departure_estimate: '2012-01-01T10:33:00.000+09:00', "
+							+ "platform: {name: 'テスト上野動物園前', name_ruby: 'てすとうえのどうぶつえんまえ'}, "
+							+ "reservations_as_arrival: [], "
+							+ "reservations_as_departure: []}");
 			lOperationSchedule.add(new OperationSchedule(j3));
 
-			JSONObject j4 = new JSONObject("{"
-					+ "arrival_estimate: '2012-01-01T11:10:00.000+09:00', "
-					+ "departure_estimate: '2012-01-01T11:15:00.000+09:00', "
-					+ "platform: {name: 'テスト上野広小路前', name_ruby: 'てすとうえのひろこうじまえ'}, "
-					+ "reservations_as_arrival: [], "
-					+ "reservations_as_departure: []}");
+			JSONObject j4 = new JSONObject(
+					"{"
+							+ "arrival_estimate: '2012-01-01T11:10:00.000+09:00', "
+							+ "departure_estimate: '2012-01-01T11:15:00.000+09:00', "
+							+ "platform: {name: 'テスト上野広小路前', name_ruby: 'てすとうえのひろこうじまえ'}, "
+							+ "reservations_as_arrival: [], "
+							+ "reservations_as_departure: []}");
 			lOperationSchedule.add(new OperationSchedule(j4));
 
-			JSONObject j5 = new JSONObject("{"
-					+ "arrival_estimate: '2012-01-01T12:00:00.000+09:00', "
-					+ "departure_estimate: '2012-01-01T12:05:00.000+09:00', "
-					+ "platform: {name: 'テスト湯島天神前', name_ruby: 'てすとゆしまてんじんまえ'}}"
-					+ "reservations_as_arrival: [], "
-					+ "reservations_as_departure: []}");
+			JSONObject j5 = new JSONObject(
+					"{"
+							+ "arrival_estimate: '2012-01-01T12:00:00.000+09:00', "
+							+ "departure_estimate: '2012-01-01T12:05:00.000+09:00', "
+							+ "platform: {name: 'テスト湯島天神前', name_ruby: 'てすとゆしまてんじんまえ'}}"
+							+ "reservations_as_arrival: [], "
+							+ "reservations_as_departure: []}");
 			lOperationSchedule.add(new OperationSchedule(j5));
 
-			JSONObject j6 = new JSONObject("{"
-					+ "arrival_estimate: '2012-01-01T13:03:00.000+09:00', "
-					+ "departure_estimate: '2012-01-01T13:10:30.000+09:00', "
-					+ "platform: {name: 'テストＪＲ御徒町駅前', name_ruby: 'てすとじぇいあーるおかちまちえきまえ'}, "
-					+ "reservations_as_arrival: [], "
-					+ "reservations_as_departure: []}");
+			JSONObject j6 = new JSONObject(
+					"{"
+							+ "arrival_estimate: '2012-01-01T13:03:00.000+09:00', "
+							+ "departure_estimate: '2012-01-01T13:10:30.000+09:00', "
+							+ "platform: {name: 'テストＪＲ御徒町駅前', name_ruby: 'てすとじぇいあーるおかちまちえきまえ'}, "
+							+ "reservations_as_arrival: [], "
+							+ "reservations_as_departure: []}");
 			lOperationSchedule.add(new OperationSchedule(j6));
 
 		} catch (ParseException e) {
@@ -267,9 +282,8 @@ public class MockDataSourceTest implements DataSource {
 
 	}
 
-	public void setReservationCandidate(Integer iCount,Integer userId,
-			Integer departurePlatformId, Integer arrivalPlatformId)
-					 {
+	public void setReservationCandidate(Integer iCount, Integer userId,
+			Integer departurePlatformId, Integer arrivalPlatformId) {
 
 		DateFormat f = new SimpleDateFormat("mm:ss");
 		try {
@@ -370,12 +384,19 @@ public class MockDataSourceTest implements DataSource {
 		}
 	}
 
-
 	@Override
 	public Reservation postReservation(Integer reservationCandidateId)
 			throws WebAPIException {
 
 		return new Reservation();
+	}
+
+	@Override
+	public void responseVehicleNotification(VehicleNotification vn,
+			int response, WebAPICallback<VehicleNotification> callback)
+			throws WebAPIException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -5,8 +5,9 @@ import android.view.View;
 
 import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceActivity;
-import com.kogasoftware.odt.invehicledevice.InVehicleDeviceLogic;
+
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.logic.Logic;
 
 public class ConfigTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
@@ -25,7 +26,7 @@ public class ConfigTestCase extends
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		InVehicleDeviceLogic.clearStatusFile();
+		Logic.clearStatusFile();
 		solo = new Solo(getInstrumentation(), getActivity());
 	}
 
