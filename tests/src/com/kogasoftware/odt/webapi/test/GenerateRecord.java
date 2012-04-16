@@ -2,10 +2,12 @@ package com.kogasoftware.odt.webapi.test;
 
 import java.util.Date;
 
+import com.kogasoftware.odt.webapi.model.Demand;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.UnitAssignment;
+import com.kogasoftware.odt.webapi.model.User;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class GenerateRecord {
@@ -50,13 +52,15 @@ public class GenerateRecord {
 		return sc.getResult();		
 	}
 
-	public Reservation createReservation(final UnitAssignment unitAssignment, 
+	public Reservation createReservation(final User user, final Demand demand, final UnitAssignment unitAssignment, 
 			final Platform arrivalPlatform, final OperationSchedule arrivalSchedule, final Date arrivalTime, 
 			final Platform departurePlatform, final OperationSchedule departureSchedule, final Date departureTime, final int payment) throws Exception {
 		SyncCall<Reservation> sc = new SyncCall<Reservation>() {
 			@Override
 			public int run() throws Exception {
 				Reservation obj = new Reservation();
+				obj.setUser(user);
+				obj.setDemand(demand);
 				obj.setUnitAssignment(unitAssignment);
 				obj.setArrivalPlatform(arrivalPlatform);
 				obj.setArrivalTime(arrivalTime);
@@ -77,6 +81,28 @@ public class GenerateRecord {
 		return sc.getResult();		
 	}
 	
+	public Demand createDemand(final User user, final UnitAssignment unitAssignment, 
+			final Platform arrivalPlatform, final Date arrivalTime, 
+			final Platform departurePlatform, final Date departureTime, final int payment) throws Exception {
+		SyncCall<Demand> sc = new SyncCall<Demand>() {
+			@Override
+			public int run() throws Exception {
+				Demand obj = new Demand();
+				obj.setUser(user);
+				obj.setUnitAssignment(unitAssignment);
+				obj.setArrivalPlatform(arrivalPlatform);
+				obj.setArrivalTime(arrivalTime);
+				obj.setDeparturePlatform(departurePlatform);
+				obj.setDepartureTime(departureTime);
+				obj.setServiceProvider(master.getServiceProvider());
+				
+				return api.createDemand(obj, this);
+			}
+		};
+
+		return sc.getResult();		
+	}
+	
 	public UnitAssignment createUnitAssignment(final String name) throws Exception {
 		SyncCall<UnitAssignment> sc = new SyncCall<UnitAssignment>() {
 			@Override
@@ -90,6 +116,6 @@ public class GenerateRecord {
 		};
 
 		return sc.getResult();		
-	}	
+	}
 
 } 

@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.webapi.test;
 
+import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 
 import android.util.Log;
@@ -11,6 +12,7 @@ import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Operator;
 import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.ServiceProvider;
+import com.kogasoftware.odt.webapi.model.User;
 
 public class GenerateMaster {
 	private WebTestAPI api;
@@ -135,6 +137,28 @@ public class GenerateMaster {
 				obj.setServiceProvider(serviceProvider);
 
 				return api.createPlatform(obj, this);
+			}
+		};
+
+		return sc.getResult();		
+	}
+
+	public User createUser(final String login, final String firstName, final String lastName) throws Exception {
+		SyncCall<User> sc = new SyncCall<User>() {
+			@Override
+			public int run() throws Exception {
+				User obj = new User();
+				obj.setLogin(login);
+				obj.setFirstName(firstName);
+				obj.setLastName(lastName);
+				obj.setFirstNameRuby("よみ");
+				obj.setLastNameRuby("よみ");
+				obj.setBirthday(new Date());
+				obj.setAddress("住所");
+				obj.setTelephoneNumber("000");
+				obj.setServiceProvider(serviceProvider);
+
+				return api.createUser(obj, this);
 			}
 		};
 

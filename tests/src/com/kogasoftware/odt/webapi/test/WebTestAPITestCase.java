@@ -6,11 +6,13 @@ import java.util.List;
 import android.test.ActivityInstrumentationTestCase2;
 import android.text.format.DateUtils;
 
+import com.kogasoftware.odt.webapi.model.Demand;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Operator;
 import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.ServiceProvider;
 import com.kogasoftware.odt.webapi.model.UnitAssignment;
+import com.kogasoftware.odt.webapi.model.User;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class WebTestAPITestCase extends
@@ -132,13 +134,35 @@ public class WebTestAPITestCase extends
 		master.createServiceProvider();
 		
 		Date dt = new Date();
-		UnitAssignment u = record.createUnitAssignment("1号車");
+		User user = master.createUser("login1", "もぎ", "たろう");
+		UnitAssignment ua = record.createUnitAssignment("1号車");
 		Platform p1 = master.createPlatform("乗降場1", "じょうこうじょう1");
-		OperationSchedule os1 = record.createOperationSchedule(u, p1, dt, dt);
+		OperationSchedule os1 = record.createOperationSchedule(ua, p1, dt, dt);
 		Platform p2 = master.createPlatform("乗降場2", "じょうこうじょう2");
-		OperationSchedule os2 = record.createOperationSchedule(u, p2, dt, dt);
+		OperationSchedule os2 = record.createOperationSchedule(ua, p2, dt, dt);
 		
-		record.createReservation(u, p1, os1, dt, p2, os2, dt, 0);
+		Demand demand = record.createDemand(user, ua, p1, dt, p2, dt, 0);
+		assertNotNull(record.createReservation(user, demand, ua, p1, os1, dt, p2, os2, dt, 0));
 		
+	}
+	
+	public void testDemand() throws Exception {
+		master.cleanDatabase();
+		master.createServiceProvider();
+		
+		Date dt = new Date();
+		User user = master.createUser("login1", "もぎ", "たろう");
+		UnitAssignment ua = record.createUnitAssignment("1号車");
+		Platform p1 = master.createPlatform("乗降場1", "じょうこうじょう1");
+		Platform p2 = master.createPlatform("乗降場2", "じょうこうじょう2");
+		
+		assertNotNull(record.createDemand(user, ua, p1, dt, p2, dt, 0));
+	}
+	
+	public void testUser() throws Exception {
+		master.cleanDatabase();
+		master.createServiceProvider();
+
+		assertNotNull(master.createUser("login1", "モギー", "司郎"));
 	}
 }

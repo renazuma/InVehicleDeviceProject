@@ -36,6 +36,7 @@ import android.util.Log;
 import com.google.common.base.Objects;
 import com.google.common.io.ByteStreams;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
+import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class WebAPI {
@@ -153,7 +154,7 @@ public class WebAPI {
 
 	public static final String PATH_LOGIN = PATH_PREFIX + "/sign_in";
 	public static final String PATH_NOTIFICATIONS = PATH_PREFIX + "/vehicle_notifications";
-	
+	public static final String PATH_SCHEDULES = PATH_PREFIX + "/operation_schedules";
 	protected static int reqkeyCounter = 0;
 	
 	public interface WebAPICallback<T> {
@@ -518,4 +519,18 @@ public class WebAPI {
 			}
 		});
 	}
+	
+	/**
+	 * 運行情報を取得する
+	 */
+	public int getOperationSchedules(WebAPICallback<List<OperationSchedule>> callback) throws WebAPIException {
+		return get(PATH_SCHEDULES, callback, new ResponseConverter<List<OperationSchedule>>() {
+			@Override
+			public List<OperationSchedule> convert(byte[] rawResponse)
+					throws Exception {
+				return OperationSchedule.parseList(parseJSONArray(rawResponse));
+			}
+		});		
+	}
+	
 }
