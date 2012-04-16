@@ -50,6 +50,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 	public void test00_データ初期設定() {
 		dataset(6);
+		
 	}
 
 	public void test01_メモボタンを押すとメモ画面が表示() {
