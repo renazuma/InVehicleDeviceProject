@@ -7,7 +7,9 @@ import android.util.Log;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
+import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Operator;
+import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.ServiceProvider;
 
 public class GenerateMaster {
@@ -110,6 +112,7 @@ public class GenerateMaster {
 				ivd.setPasswordConfirmation("ivdpass");
 				ivd.setModelName("モデル名");
 				ivd.setTypeNumber("車種");
+				ivd.setServiceProvider(serviceProvider);
 				
 				Log.d("GenerateMaster", "send:" + ivd.toJSONObject().toString());
 				return api.createInVehicleDevice(ivd, this);
@@ -122,4 +125,20 @@ public class GenerateMaster {
 		return this.inVehicleDevice;
 	}
 
+	public Platform createPlatform(final String name, final String nameRuby) throws Exception {
+		SyncCall<Platform> sc = new SyncCall<Platform>() {
+			@Override
+			public int run() throws Exception {
+				Platform obj = new Platform();
+				obj.setName(name);
+				obj.setNameRuby(nameRuby);
+				obj.setServiceProvider(serviceProvider);
+
+				return api.createPlatform(obj, this);
+			}
+		};
+
+		return sc.getResult();		
+	}
+	
 }

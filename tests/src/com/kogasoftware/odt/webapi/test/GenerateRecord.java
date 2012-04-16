@@ -1,5 +1,11 @@
 package com.kogasoftware.odt.webapi.test;
 
+import java.util.Date;
+
+import com.kogasoftware.odt.webapi.model.OperationSchedule;
+import com.kogasoftware.odt.webapi.model.Platform;
+import com.kogasoftware.odt.webapi.model.Reservation;
+import com.kogasoftware.odt.webapi.model.UnitAssignment;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class GenerateRecord {
@@ -26,4 +32,64 @@ public class GenerateRecord {
 
 		return sc.getResult();
 	}
-}
+	
+	public OperationSchedule createOperationSchedule(final UnitAssignment unitAssignment, final Platform platform, final Date arrivalEstimate, final Date departureEstimate) throws Exception {
+		SyncCall<OperationSchedule> sc = new SyncCall<OperationSchedule>() {
+			@Override
+			public int run() throws Exception {
+				OperationSchedule obj = new OperationSchedule();
+				obj.setUnitAssignment(unitAssignment);
+				obj.setPlatform(platform);
+				obj.setArrivalEstimate(arrivalEstimate);
+				obj.setDepartureEstimate(departureEstimate);
+
+				return api.createOperationSchedule(obj, this);
+			}
+		};
+
+		return sc.getResult();		
+	}
+
+	public Reservation createReservation(final UnitAssignment unitAssignment, 
+			final Platform arrivalPlatform, final OperationSchedule arrivalSchedule, final Date arrivalTime, 
+			final Platform departurePlatform, final OperationSchedule departureSchedule, final Date departureTime, final int payment) throws Exception {
+		SyncCall<Reservation> sc = new SyncCall<Reservation>() {
+			@Override
+			public int run() throws Exception {
+				Reservation obj = new Reservation();
+				obj.setUnitAssignment(unitAssignment);
+				obj.setArrivalPlatform(arrivalPlatform);
+				obj.setArrivalTime(arrivalTime);
+				obj.setArrivalSchedule(arrivalSchedule);
+				obj.setDeparturePlatform(departurePlatform);
+				obj.setDepartureTime(departureTime);
+				obj.setDepartureSchedule(departureSchedule);
+				if (payment > 0) {
+					obj.setPayment(payment);
+				}
+				obj.setServiceProvider(master.getServiceProvider());
+				obj.setOperator(master.getOperator());
+				
+				return api.createReservation(obj, this);
+			}
+		};
+
+		return sc.getResult();		
+	}
+	
+	public UnitAssignment createUnitAssignment(final String name) throws Exception {
+		SyncCall<UnitAssignment> sc = new SyncCall<UnitAssignment>() {
+			@Override
+			public int run() throws Exception {
+				UnitAssignment obj = new UnitAssignment();
+				obj.setName(name);
+				obj.setServiceProvider(master.getServiceProvider());
+
+				return api.createUnitAssignment(obj, this);
+			}
+		};
+
+		return sc.getResult();		
+	}	
+
+} 
