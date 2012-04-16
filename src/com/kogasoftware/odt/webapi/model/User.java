@@ -113,11 +113,8 @@ public class User extends Model {
 		jsonObject.put("update_notification", toJSON(getUpdateNotification().orNull()));
 		jsonObject.put("wheelchair", toJSON(getWheelchair().orNull()));
 		jsonObject.put("audit_comment", toJSON(getAuditComment().orNull()));
-		jsonObject.put("fullname", toJSON(getFullname().orNull()));
-		jsonObject.put("fullname_ruby", toJSON(getFullnameRuby().orNull()));
 		jsonObject.put("password", toJSON(getPassword().orNull()));
 		jsonObject.put("password_confirmation", toJSON(getPasswordConfirmation().orNull()));
-		jsonObject.put("remember_me", toJSON(getRememberMe().orNull()));
 		if (getDemands().size() > 0) {
 	   		jsonObject.put("demands", toJSON(getDemands()));
 		}

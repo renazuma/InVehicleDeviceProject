@@ -24,6 +24,8 @@ abstract public class Model implements Serializable {
 
 	protected static final DateTimeFormatter DATE_TIME_FORMATTER = 
 			DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
+	protected static final DateTimeFormatter DATE_FORMATTER = 
+			DateTimeFormat.forPattern("yyyy-MM-dd");
 
 	protected static void errorIfNull(Object value) {
 		if (value != null) {
@@ -57,8 +59,14 @@ abstract public class Model implements Serializable {
 		}
 
 		String dateString = jsonObject.getString(key);
-		Date date = new Date(DATE_TIME_FORMATTER.parseDateTime(dateString)
+		Date date;
+		try {
+			date = new Date(DATE_TIME_FORMATTER.parseDateTime(dateString)
 				.getMillis());
+		} catch (IllegalArgumentException ex) {
+			date = new Date(DATE_FORMATTER.parseDateTime(dateString)
+					.getMillis());
+		}
 		return date;
 	}
 

@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class OperationSchedule extends Model {
-	private static final long serialVersionUID = 772960645335983575L;
+	private static final long serialVersionUID = 4234594180113051153L;
 
 	public OperationSchedule() {
 	}
@@ -38,6 +38,10 @@ public class OperationSchedule extends Model {
 		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
 		if (getServiceProvider().isPresent()) {
 			setServiceProviderId(getServiceProvider().get().getId());
+		}
+		setUnitAssignment(UnitAssignment.parse(jsonObject, "unit_assignment"));
+		if (getUnitAssignment().isPresent()) {
+			setUnitAssignmentId(getUnitAssignment().get().getId());
 		}
 	}
 
@@ -98,6 +102,10 @@ public class OperationSchedule extends Model {
 
 		if (getServiceProvider().isPresent()) {
 			jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
+		}
+
+		if (getUnitAssignment().isPresent()) {
+			jsonObject.put("unit_assignment_id", toJSON(getUnitAssignment().get().getId()));
 		}
 		return jsonObject;
 	}
@@ -304,5 +312,23 @@ public class OperationSchedule extends Model {
 
 	public void clearServiceProvider() {
 		this.serviceProvider = Optional.<ServiceProvider>absent();
+	}
+
+	private Optional<UnitAssignment> unitAssignment = Optional.<UnitAssignment>absent();
+
+	public Optional<UnitAssignment> getUnitAssignment() {
+		return wrapNull(unitAssignment);
+	}
+
+	public void setUnitAssignment(Optional<UnitAssignment> unitAssignment) {
+		this.unitAssignment = wrapNull(unitAssignment);
+	}
+
+	public void setUnitAssignment(UnitAssignment unitAssignment) {
+		this.unitAssignment = Optional.<UnitAssignment>fromNullable(unitAssignment);
+	}
+
+	public void clearUnitAssignment() {
+		this.unitAssignment = Optional.<UnitAssignment>absent();
 	}
 }

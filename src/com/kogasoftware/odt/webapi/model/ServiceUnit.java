@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class ServiceUnit extends Model {
-	private static final long serialVersionUID = 2385617775381515152L;
+	private static final long serialVersionUID = 4375928557279973895L;
 
 	public ServiceUnit() {
 	}
@@ -41,6 +41,14 @@ public class ServiceUnit extends Model {
 		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
 		if (getServiceProvider().isPresent()) {
 			setServiceProviderId(getServiceProvider().get().getId());
+		}
+		setUnitAssignment(UnitAssignment.parse(jsonObject, "unit_assignment"));
+		if (getUnitAssignment().isPresent()) {
+			setUnitAssignmentId(getUnitAssignment().get().getId());
+		}
+		setVehicle(Vehicle.parse(jsonObject, "vehicle"));
+		if (getVehicle().isPresent()) {
+			setVehicleId(getVehicle().get().getId());
 		}
 	}
 
@@ -101,6 +109,14 @@ public class ServiceUnit extends Model {
 
 		if (getServiceProvider().isPresent()) {
 			jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
+		}
+
+		if (getUnitAssignment().isPresent()) {
+			jsonObject.put("unit_assignment_id", toJSON(getUnitAssignment().get().getId()));
+		}
+
+		if (getVehicle().isPresent()) {
+			jsonObject.put("vehicle_id", toJSON(getVehicle().get().getId()));
 		}
 		return jsonObject;
 	}
@@ -311,5 +327,41 @@ public class ServiceUnit extends Model {
 
 	public void clearServiceProvider() {
 		this.serviceProvider = Optional.<ServiceProvider>absent();
+	}
+
+	private Optional<UnitAssignment> unitAssignment = Optional.<UnitAssignment>absent();
+
+	public Optional<UnitAssignment> getUnitAssignment() {
+		return wrapNull(unitAssignment);
+	}
+
+	public void setUnitAssignment(Optional<UnitAssignment> unitAssignment) {
+		this.unitAssignment = wrapNull(unitAssignment);
+	}
+
+	public void setUnitAssignment(UnitAssignment unitAssignment) {
+		this.unitAssignment = Optional.<UnitAssignment>fromNullable(unitAssignment);
+	}
+
+	public void clearUnitAssignment() {
+		this.unitAssignment = Optional.<UnitAssignment>absent();
+	}
+
+	private Optional<Vehicle> vehicle = Optional.<Vehicle>absent();
+
+	public Optional<Vehicle> getVehicle() {
+		return wrapNull(vehicle);
+	}
+
+	public void setVehicle(Optional<Vehicle> vehicle) {
+		this.vehicle = wrapNull(vehicle);
+	}
+
+	public void setVehicle(Vehicle vehicle) {
+		this.vehicle = Optional.<Vehicle>fromNullable(vehicle);
+	}
+
+	public void clearVehicle() {
+		this.vehicle = Optional.<Vehicle>absent();
 	}
 }

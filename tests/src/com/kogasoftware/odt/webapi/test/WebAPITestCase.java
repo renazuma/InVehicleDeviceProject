@@ -1,5 +1,7 @@
 package com.kogasoftware.odt.webapi.test;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -10,7 +12,13 @@ import android.util.Log;
 import com.kogasoftware.odt.webapi.WebAPI;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
+import com.kogasoftware.odt.webapi.model.Demand;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
+import com.kogasoftware.odt.webapi.model.OperationSchedule;
+import com.kogasoftware.odt.webapi.model.Platform;
+import com.kogasoftware.odt.webapi.model.ServiceUnit;
+import com.kogasoftware.odt.webapi.model.UnitAssignment;
+import com.kogasoftware.odt.webapi.model.User;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivity> {
@@ -21,7 +29,7 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 	CountDownLatch latch;
 	private GenerateMaster master;
 	private GenerateRecord record;
-	
+
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -30,6 +38,8 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 		master = new GenerateMaster();
 		master.cleanDatabase();
 		master.createServiceProvider();
+		master.createDriver("もぎ", "しゅーまっは", "011");
+		master.createVehicle("ちば90も 99-91", "F1");
 		master.createInVehicleDevice();
 		master.createOperator();
 		
@@ -173,5 +183,51 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 		assertNotNull(notifications);
 		assertEquals(1, notifications.size());
 		assertEquals("テスト通知メッセージ2です。", notifications.get(0).getBody().orNull());
+	}
+	
+	List<OperationSchedule> schedules;
+	public void testGetOperationSchedules() throws Exception {
+		WebAPI api = new WebAPI(master.getInVehicleDevice().getAuthenticationToken().orNull());
+		latch = new CountDownLatch(1);
+		schedules = null;
+		
+		Date dt = new Date();
+		User user = master.createUser("login1", "もぎ", "けんた");
+		UnitAssignment ua = record.createUnitAssignment("1号車");
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.MONTH, 1);
+		record.createServiceUnit(master.getDriver(), master.getVehicle(), master.getInVehicleDevice(), ua, 
+				cal.getTime());
+		
+		Platform p1 = master.createPlatform("乗降場1", "じょうこうじょう1");
+		OperationSchedule os1 = record.createOperationSchedule(ua, p1, dt, dt);
+		Platform p2 = master.createPlatform("乗降場2", "じょうこうじょう2");
+		OperationSchedule os2 = record.createOperationSchedule(ua, p2, dt, dt);
+		
+		Demand demand = record.createDemand(user, ua, p1, dt, p2, dt, 0);
+		assertNotNull(record.createReservation(user, demand, ua, p1, os1, dt, p2, os2, dt, 0));
+		
+		api.getOperationSchedules(new WebAPICallback<List<OperationSchedule>>() {
+			@Override
+			public void onSucceed(int reqkey, int statusCode, List<OperationSchedule> result) {
+				schedules = result;
+				latch.countDown();
+			}
+			
+			@Override
+			public void onFailed(int reqkey, int statusCode, String response) {
+				latch.countDown();
+			}
+
+			@Override
+			public void onException(int reqkey, WebAPIException ex) {
+				latch.countDown();
+			}
+		});
+		latch.await(100, TimeUnit.SECONDS);
+		
+		assertNotNull(schedules);
+		assertEquals(2, schedules.size());
+		
 	}
 }
