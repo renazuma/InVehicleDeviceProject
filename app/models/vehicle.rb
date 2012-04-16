@@ -31,7 +31,7 @@ class Vehicle < ActiveRecord::Base
   acts_as_paranoid
 
   # Define Uploader
-  mount_uploader :image, VehicleImageUploader
+#  mount_uploader :image, VehicleImageUploader
 
   def number_and_model
     number + " " + model_name
