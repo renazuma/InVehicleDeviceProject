@@ -23,6 +23,7 @@ public class MapTestCase extends
 		super.setUp();
 		InVehicleDeviceLogic.clearStatusFile();
 		solo = new Solo(getInstrumentation(), getActivity());
+
 	}
 
 	public void test01_起動時は非表示() {

@@ -54,8 +54,6 @@ public class ConfigTestCase extends
 
 		assertEquals(View.VISIBLE, solo.getView(R.id.config_modal)
 				.getVisibility());
-		
-		test02_運行管理ボタンを押したら表示();
 
 		solo.clickOnView(solo.getView(R.id.config_hide_button));
 
@@ -111,6 +109,7 @@ public class ConfigTestCase extends
 	}
 
 	public void test08_一時停止ボタンを押すと一時停止画面が表示() {
+
 		test02_運行管理ボタンを押したら表示();
 		assertEquals(View.GONE, solo.getView(R.id.pause_modal)
 				.getVisibility());
@@ -122,9 +121,18 @@ public class ConfigTestCase extends
 				.getVisibility());
 	}
 
-	public void test09_一時停止画面で運行管理ボタンを押すと一時停止画面と設定画面が非表示() {
-		test08_一時停止ボタンを押すと一時停止画面が表示();
-		solo.clickOnView(solo.getView(R.id.pause_cancel_button));
+	public void test09_一時停止画面で運行再開ボタンを押すと一時停止画面と設定画面が非表示() {
+
+		test02_運行管理ボタンを押したら表示();
+		
+		solo.clickOnView(solo.getView(R.id.pause_button));
+
+		getInstrumentation().waitForIdleSync();
+
+		assertEquals(View.VISIBLE, solo.getView(R.id.pause_modal)
+				.getVisibility());
+
+		solo.clickOnButton("運行を再開する");
 
 		getInstrumentation().waitForIdleSync();
 

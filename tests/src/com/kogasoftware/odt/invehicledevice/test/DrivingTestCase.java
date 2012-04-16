@@ -22,16 +22,25 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
+		
 		InVehicleDeviceLogic.clearStatusFile();
+		
 		solo = new Solo(getInstrumentation(), getActivity());
+		
+		if (solo.searchText("停車中")) {
+			
+			solo.clickOnButton("出発する");
+			getInstrumentation().waitForIdleSync();
+			solo.clickOnButton("出発する");
+			getInstrumentation().waitForIdleSync();
+			
+		}
+		
 	}
 
 	public void test01_起動時は走行中表示() {
-
 		
-		
-		TextView v = (TextView) solo.getView(R.id.phase_text_view);
-		assertEquals("走行中", v.getText()); // TODO 画像ファイル名assertに書き換わる予定
+		assertTrue(solo.searchText("走行中")); // TODO 画像ファイル名assertに書き換わる予定
 
 	}
 
@@ -45,16 +54,27 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 		solo.clickOnButton("到着しました");
 
-		TextView v = (TextView) solo.getView(R.id.phase_text_view);
-		assertEquals("停車中", v.getText()); // TODO 画像ファイル名assertに書き換わる予定
+		getInstrumentation().waitForIdleSync();
+
+		assertTrue(solo.searchText("停車中")); // TODO 画像ファイル名assertに書き換わる予定
+
 	}
 
 	public void test04_停車中から出発しますボタンを押すと出発確認画面表示() {
-		test03_到着しましたボタンを押すと停車中表示();
+		
+		solo.clickOnButton("到着しました");
+
+		getInstrumentation().waitForIdleSync();
+
+		assertTrue(solo.searchText("停車中")); // TODO 画像ファイル名assertに書き換わる予定
 
 		solo.clickOnButton("出発する");
+
+		getInstrumentation().waitForIdleSync();
+
 		assertEquals(View.VISIBLE, solo.getView(R.id.start_check_modal)
 				.getVisibility());
+		
 	}
 
 	public void test05_出発確認画面でやめるボタンを押すと停車中画面表示() {
