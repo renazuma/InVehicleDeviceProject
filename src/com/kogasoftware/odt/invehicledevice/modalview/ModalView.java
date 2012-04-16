@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.modal;
+package com.kogasoftware.odt.invehicledevice.modalview;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -12,19 +12,20 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.google.common.eventbus.Subscribe;
-import com.kogasoftware.odt.invehicledevice.InVehicleDeviceLogic;
+import com.kogasoftware.odt.invehicledevice.logic.Logic;
+import com.kogasoftware.odt.invehicledevice.logic.LogicLoadThread;
 
-public class Modal extends FrameLayout implements OnTouchListener {
+public class ModalView extends FrameLayout implements OnTouchListener {
 	private Float lastMotionEventX = 0f;
 
-	private InVehicleDeviceLogic logic = new InVehicleDeviceLogic();
+	private Logic logic = new Logic();
 
-	public Modal(Context context, AttributeSet attrs) {
+	public ModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		setVisibility(View.GONE);
 	}
 
-	protected InVehicleDeviceLogic getLogic() {
+	protected Logic getLogic() {
 		return logic;
 	}
 
@@ -69,8 +70,8 @@ public class Modal extends FrameLayout implements OnTouchListener {
 		LayoutInflater layoutInflater = (LayoutInflater) getContext()
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.addView(layoutInflater.inflate(resourceId, null),
-				new Modal.LayoutParams(Modal.LayoutParams.FILL_PARENT,
-						Modal.LayoutParams.FILL_PARENT));
+				new ModalView.LayoutParams(ModalView.LayoutParams.FILL_PARENT,
+						ModalView.LayoutParams.FILL_PARENT));
 
 		TypedArray typedArray = getContext().obtainStyledAttributes(
 				new int[] { android.R.attr.background });
@@ -79,7 +80,7 @@ public class Modal extends FrameLayout implements OnTouchListener {
 	}
 
 	@Subscribe
-	public void setLogic(InVehicleDeviceLogic.LoadThread.CompleteEvent event) {
+	public void setLogic(LogicLoadThread.CompleteEvent event) {
 		this.logic = event.logic;
 	}
 

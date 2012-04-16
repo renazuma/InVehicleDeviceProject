@@ -12,7 +12,7 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
          />
 
-    <com.kogasoftware.odt.invehicledevice.modal.HideModalButton
+    <com.kogasoftware.odt.invehicledevice.modalview.HideModalButton
         android:id="@+id/start_button"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -25,7 +25,7 @@
         android:layout_height="fill_parent"
         android:layout_weight="1" />
     
-    <com.kogasoftware.odt.invehicledevice.modal.HideModalButton
+    <com.kogasoftware.odt.invehicledevice.modalview.HideModalButton
         android:id="@+id/start_cancel_button"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"

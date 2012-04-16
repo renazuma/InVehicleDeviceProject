@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.modal;
+package com.kogasoftware.odt.invehicledevice.modalview;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -7,11 +7,11 @@ import android.view.View;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
 
-public class PauseModal extends Modal {
+public class PauseModalView extends ModalView {
 	public static class ShowEvent {
 	}
 
-	public PauseModal(Context context, AttributeSet attrs) {
+	public PauseModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		setContentView(R.layout.pause_modal);
 		findViewById(R.id.pause_cancel_button).setOnClickListener(

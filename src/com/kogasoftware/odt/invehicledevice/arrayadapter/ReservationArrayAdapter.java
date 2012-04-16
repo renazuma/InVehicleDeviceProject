@@ -19,8 +19,8 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.google.common.collect.Lists;
-import com.kogasoftware.odt.invehicledevice.InVehicleDeviceLogic;
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.logic.Logic;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.User;
@@ -32,7 +32,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 	private final List<Reservation> incomingReservations = new LinkedList<Reservation>();
 	private final LayoutInflater layoutInflater = (LayoutInflater) getContext()
 			.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-	private final InVehicleDeviceLogic logic;
+	private final Logic logic;
 	private final List<Reservation> missedReservations = new LinkedList<Reservation>();
 	private final OperationSchedule operationSchedule;
 	private final List<Reservation> outgoingReservations = new LinkedList<Reservation>();
@@ -43,7 +43,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 	private final List<Reservation> ridingReservations = new LinkedList<Reservation>();
 
 	public ReservationArrayAdapter(Context context, int resourceId,
-			InVehicleDeviceLogic logic) {
+			Logic logic) {
 		super(context, resourceId);
 		this.resourceId = resourceId;
 		this.logic = logic;
@@ -268,7 +268,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 			memoButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View view) {
-					logic.showMemoModal(reservation);
+					logic.showMemoModalView(reservation);
 				}
 			});
 		} else {
@@ -280,7 +280,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		returnPathButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				logic.showReturnPathModal(reservation);
+				logic.showReturnPathModalView(reservation);
 			}
 		});
 

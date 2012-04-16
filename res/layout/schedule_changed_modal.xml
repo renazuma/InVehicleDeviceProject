@@ -13,14 +13,14 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
          />
 
-    <com.kogasoftware.odt.invehicledevice.modal.HideModalButton
+    <com.kogasoftware.odt.invehicledevice.modalview.HideModalButton
         android:id="@+id/schedule_confirm_button"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
         android:text="@string/show_operation_schedule" />
 
-    <com.kogasoftware.odt.invehicledevice.modal.HideModalButton
+    <com.kogasoftware.odt.invehicledevice.modalview.HideModalButton
         android:id="@+id/memo_close_button"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"

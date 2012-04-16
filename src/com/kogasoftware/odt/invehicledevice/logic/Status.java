@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice;
+package com.kogasoftware.odt.invehicledevice.logic;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -31,74 +31,23 @@ import com.kogasoftware.odt.webapi.model.VehicleNotification;
 /**
  * 現在の状態を保存しておくクラス
  */
-public class InVehicleDeviceStatus implements Serializable {
-	/**
-	 * InVehicleDeviceStatusのアクセスに対し 書き込みがあったら自動で保存. 読み書き時synchronizedを実行を行う
-	 */
-	public static class Access {
-		public interface Reader<T> {
-			T read(InVehicleDeviceStatus status);
-		}
-
-		public interface ReaderAndWriter<T> {
-			T readAndWrite(InVehicleDeviceStatus status);
-		}
-
-		public interface Writer {
-			void write(InVehicleDeviceStatus status);
-		}
-
-		final InVehicleDeviceStatus status;
-
-		public Access() {
-			status = InVehicleDeviceStatus.newInstance();
-		}
-
-		public Access(Context context, Boolean isClear) {
-			status = InVehicleDeviceStatus.newInstance(context, isClear);
-		}
-
-		public <T> T read(Reader<T> reader) {
-			synchronized (status.lock) {
-				return reader.read(status);
-			}
-		}
-
-		public <T> T readAndWrite(ReaderAndWriter<T> reader) {
-			synchronized (status.lock) {
-				T result = reader.readAndWrite(status);
-				status.save();
-				return result;
-			}
-		}
-
-		public void write(Writer writer) {
-			synchronized (status.lock) {
-				writer.write(status);
-			}
-			status.save();
-		}
-	}
-
+public class Status implements Serializable {
 	public enum Phase {
 		DRIVE, FINISH, INITIAL, PLATFORM
 	}
 
 	private static final long serialVersionUID = 5617948505743182173L;
 
-	private static final String TAG = InVehicleDeviceStatus.class
-			.getSimpleName();
+	private static final String TAG = Status.class.getSimpleName();
 
-	private static InVehicleDeviceStatus newInstance() {
-		return new InVehicleDeviceStatus();
+	public static Status newInstance() {
+		return new Status();
 	}
 
-	private static InVehicleDeviceStatus newInstance(Context context,
-			Boolean isClear) {
+	public static Status newInstance(Context context, Boolean isClear) {
 		File file = new File(context.getFilesDir() + File.separator
-				+ InVehicleDeviceStatus.class.getCanonicalName()
-				+ ".serialized");
-		InVehicleDeviceStatus status = new InVehicleDeviceStatus();
+				+ Status.class.getCanonicalName() + ".serialized");
+		Status status = new Status();
 		if (!isClear) {
 			FileInputStream fileInputStream = null;
 			ObjectInputStream objectInputStream = null;
@@ -109,7 +58,7 @@ public class InVehicleDeviceStatus implements Serializable {
 				if (object == null) {
 					return status;
 				}
-				status = (InVehicleDeviceStatus) object;
+				status = (Status) object;
 			} catch (FileNotFoundException e) {
 				// Log.w(TAG, e);
 			} catch (IOException e) {
@@ -125,12 +74,12 @@ public class InVehicleDeviceStatus implements Serializable {
 				Closeables.closeQuietly(fileInputStream);
 			}
 
-			Date now = InVehicleDeviceLogic.getDate();
+			Date now = Logic.getDate();
 			Calendar calendar = Calendar.getInstance();
 			calendar.clear();
 			calendar.set(now.getYear(), now.getMonth(), now.getDay(), 3, 0); // TODO
 			if (status.createdDate.before(calendar.getTime())) {
-				status = new InVehicleDeviceStatus();
+				status = new Status();
 			}
 		}
 		status.file = file;
@@ -147,14 +96,13 @@ public class InVehicleDeviceStatus implements Serializable {
 	public Integer currentOperationScheduleIndex = 0;
 	public File file = new EmptyFile();
 	public final AtomicBoolean initialized = new AtomicBoolean(false);
-	private final Object lock = new Serializable() {
+	public final Object lock = new Serializable() {
 		private static final long serialVersionUID = -8902504841122071697L;
 	}; // synchronized用にシリアライズ可能なオブジェクトを持っておく
 
 	public final LinkedList<Reservation> missedReservations = new LinkedList<Reservation>();
 	public final LinkedList<OperationSchedule> operationSchedules = new LinkedList<OperationSchedule>();
 	public Boolean paused = false;
-	public final LinkedList<VehicleNotification> processingVehicleNotifications = new LinkedList<VehicleNotification>();
 	public final LinkedList<Reservation> ridingReservations = new LinkedList<Reservation>();
 	public Phase phase = Phase.INITIAL;
 	public Boolean stopped = false;
@@ -164,10 +112,12 @@ public class InVehicleDeviceStatus implements Serializable {
 
 	// Serializableにするため、LinkedListのままにしておく
 	public final LinkedList<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();
+	public final LinkedList<VehicleNotification> repliedVehicleNotifications = new LinkedList<VehicleNotification>();
+
 	public String token = "";
 	public String url = "";
 
-	private InVehicleDeviceStatus() {
+	private Status() {
 	}
 
 	public void save() {

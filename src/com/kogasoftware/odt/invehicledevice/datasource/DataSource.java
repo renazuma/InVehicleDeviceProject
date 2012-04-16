@@ -3,6 +3,7 @@ package com.kogasoftware.odt.invehicledevice.datasource;
 import java.util.Date;
 import java.util.List;
 
+import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
@@ -28,5 +29,9 @@ public interface DataSource {
 			throws WebAPIException;
 
 	void putVehicleNotificationReadAt(Integer id, Date readAt)
+			throws WebAPIException;
+
+	public void responseVehicleNotification(VehicleNotification vn,
+			int response, WebAPICallback<VehicleNotification> callback)
 			throws WebAPIException;
 }

@@ -79,216 +79,22 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent" >
 
-                <FrameLayout
+                <com.kogasoftware.odt.invehicledevice.phaseview.DrivePhaseView
                     android:id="@+id/driving_layout"
                     android:layout_width="fill_parent"
-                    android:layout_height="fill_parent" >
+                    android:layout_height="fill_parent" />
 
-                    <LinearLayout
-                        android:id="@+id/driving_view1"
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent"
-                        android:orientation="vertical" >
-
-                        <LinearLayout
-                            android:layout_width="fill_parent"
-                            android:layout_height="fill_parent"
-                            android:layout_weight="1"
-                            android:orientation="horizontal" >
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="fill_parent"
-                                android:text="@string/next_platform_is"
-                                android:textAppearance="?android:attr/textAppearanceLarge" />
-
-                            <TextView
-                                android:id="@+id/next_platform_name_ruby_text_view"
-                                android:layout_width="0dip"
-                                android:layout_height="fill_parent"
-                                android:layout_weight="1"
-                                android:gravity="left|center"
-                                android:textSize="50dip" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="fill_parent"
-                            android:layout_height="fill_parent"
-                            android:layout_weight="1"
-                            android:orientation="horizontal" >
-
-                            <TextView
-                                android:id="@+id/platform_arrival_time_text_view"
-                                android:layout_width="wrap_content"
-                                android:layout_height="fill_parent"
-                                android:textSize="50dip" />
-
-                            <TextView
-                                android:layout_width="0dip"
-                                android:layout_height="fill_parent"
-                                android:layout_weight="1"
-                                android:gravity="left|center"
-                                android:text="@string/arrival_schedule"
-                                android:textSize="50dip" />
-                        </LinearLayout>
-
-                        <TextView
-                            android:id="@+id/num_riding_reservations_text_view"
-                            android:layout_width="fill_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="right"
-                            android:textSize="20dip" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/driving_view2"
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent"
-                        android:orientation="vertical" >
-
-                        <LinearLayout
-                            android:layout_width="fill_parent"
-                            android:layout_height="fill_parent"
-                            android:layout_weight="1"
-                            android:orientation="horizontal" >
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="fill_parent"
-                                android:text="@string/next_platform_is"
-                                android:textAppearance="?android:attr/textAppearanceLarge" />
-
-                            <TextView
-                                android:id="@+id/next_platform_name_text_view"
-                                android:layout_width="0dip"
-                                android:layout_height="fill_parent"
-                                android:layout_weight="1"
-                                android:gravity="left|center"
-                                android:textSize="50dip" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="fill_parent"
-                            android:layout_height="fill_parent"
-                            android:layout_weight="1"
-                            android:orientation="horizontal" >
-
-                            <jp.tomorrowkey.android.vtextviewer.VTextView
-                                android:id="@+id/platform_name_1_beyond_text_view"
-                                android:layout_width="fill_parent"
-                                android:layout_height="fill_parent"
-                                android:layout_weight="1"
-                                android:textAppearance="?android:attr/textAppearanceLarge" />
-
-                            <jp.tomorrowkey.android.vtextviewer.VTextView
-                                android:id="@+id/platform_name_2_beyond_text_view"
-                                android:layout_width="fill_parent"
-                                android:layout_height="fill_parent"
-                                android:layout_weight="1"
-                                android:textAppearance="?android:attr/textAppearanceLarge" />
-
-                            <jp.tomorrowkey.android.vtextviewer.VTextView
-                                android:id="@+id/platform_name_3_beyond_text_view"
-                                android:layout_width="fill_parent"
-                                android:layout_height="fill_parent"
-                                android:layout_weight="1"
-                                android:textAppearance="?android:attr/textAppearanceLarge" />
-                        </LinearLayout>
-                    </LinearLayout>
-                </FrameLayout>
-
-                <LinearLayout
+                <com.kogasoftware.odt.invehicledevice.phaseview.PlatformPhaseView
                     android:id="@+id/waiting_layout"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    android:orientation="vertical"
-                    android:visibility="gone" >
+                    android:visibility="gone" />
 
-                    <LinearLayout
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal" >
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="fill_parent"
-                            android:gravity="bottom"
-                            android:text="@string/next_platform_is" />
-
-                        <TextView
-                            android:id="@+id/platform_name_text_view"
-                            android:layout_width="wrap_content"
-                            android:layout_height="fill_parent"
-                            android:gravity="bottom"
-                            android:textSize="20dip" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="fill_parent"
-                            android:gravity="bottom"
-                            android:text="@string/departure_schedule" />
-
-                        <TextView
-                            android:id="@+id/platform_departure_time_text_view"
-                            android:layout_width="wrap_content"
-                            android:layout_height="fill_parent"
-                            android:gravity="bottom"
-                            android:textSize="20dip" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="fill_parent"
-                            android:gravity="bottom"
-                            android:text="@string/remain" />
-
-                        <TextView
-                            android:id="@+id/minutes_remaining"
-                            android:layout_width="wrap_content"
-                            android:layout_height="fill_parent"
-                            android:gravity="bottom"
-                            android:textColor="#ff0000"
-                            android:textSize="20dip" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="fill_parent"
-                            android:gravity="bottom"
-                            android:text="@string/minute" />
-                    </LinearLayout>
-
-                    <Button
-                        android:id="@+id/reservation_scroll_up_button"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/scroll_up" />
-
-                    <ListView
-                        android:id="@+id/reservation_list_view"
-                        android:layout_width="fill_parent"
-                        android:layout_height="0dip"
-                        android:layout_weight="1" />
-
-                    <Button
-                        android:id="@+id/reservation_scroll_down_button"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/scroll_down" />
-                </LinearLayout>
-
-                <LinearLayout
+                <com.kogasoftware.odt.invehicledevice.phaseview.FinishPhaseView
                     android:id="@+id/finish_layout"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    android:orientation="vertical"
-                    android:visibility="gone" >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="fill_parent"
-                        android:text="@string/todays_operation_was_finished"
-                        android:textAppearance="?android:attr/textAppearanceLarge" />
-                </LinearLayout>
+                    android:visibility="gone" />
             </FrameLayout>
         </LinearLayout>
 
@@ -332,62 +138,62 @@
         </LinearLayout>
     </LinearLayout>
 
-    <com.kogasoftware.odt.invehicledevice.modal.ConfigModal
+    <com.kogasoftware.odt.invehicledevice.modalview.ConfigModalView
         android:id="@+id/config_modal"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 
-    <com.kogasoftware.odt.invehicledevice.modal.NavigationModal
+    <com.kogasoftware.odt.invehicledevice.modalview.NavigationModalView
         android:id="@+id/navigation_modal"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 
-    <com.kogasoftware.odt.invehicledevice.modal.NotificationModal
+    <com.kogasoftware.odt.invehicledevice.modalview.NotificationModalView
         android:id="@+id/notification_modal"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 
-    <com.kogasoftware.odt.invehicledevice.modal.PauseModal
+    <com.kogasoftware.odt.invehicledevice.modalview.PauseModalView
         android:id="@+id/pause_modal"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 
-    <com.kogasoftware.odt.invehicledevice.modal.ReturnPathModal
+    <com.kogasoftware.odt.invehicledevice.modalview.ReturnPathModalView
         android:id="@+id/return_path_modal"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 
-    <com.kogasoftware.odt.invehicledevice.modal.ScheduleModal
+    <com.kogasoftware.odt.invehicledevice.modalview.ScheduleModalView
         android:id="@+id/schedule_modal"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 
-    <com.kogasoftware.odt.invehicledevice.modal.ScheduleChangedModal
+    <com.kogasoftware.odt.invehicledevice.modalview.ScheduleChangedModalView
         android:id="@+id/schedule_changed_modal"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 
-    <com.kogasoftware.odt.invehicledevice.modal.StartCheckModal
+    <com.kogasoftware.odt.invehicledevice.modalview.StartCheckModalView
         android:id="@+id/start_check_modal"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 
-    <com.kogasoftware.odt.invehicledevice.modal.StopCheckModal
+    <com.kogasoftware.odt.invehicledevice.modalview.StopCheckModalView
         android:id="@+id/stop_check_modal"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 
-    <com.kogasoftware.odt.invehicledevice.modal.MemoModal
+    <com.kogasoftware.odt.invehicledevice.modalview.MemoModalView
         android:id="@+id/memo_modal"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 
-    <com.kogasoftware.odt.invehicledevice.modal.StopModal
+    <com.kogasoftware.odt.invehicledevice.modalview.StopModalView
         android:id="@+id/stop_modal"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 
-    <com.kogasoftware.odt.invehicledevice.modal.LoginModal
+    <com.kogasoftware.odt.invehicledevice.modalview.LoginModalView
         android:id="@+id/login_modal"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />

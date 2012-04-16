@@ -28,16 +28,17 @@ import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class WebAPIDataSource implements DataSource {
 	abstract static class WebAPICaller<T> {
-		abstract public void call(WebAPICallback<T> callback)
-				throws WebAPIException;
+		abstract public void call(WebAPICallback<T> wrappedCallback)
+				throws WebAPIException, JSONException;
 
 		public void onException(int reqkey, WebAPIException ex) {
 		}
 
 		public void onFailed(int reqkey, int statusCode, String response) {
-		};
+		}
 
-		abstract public void onSucceed(int reqkey, int statusCode, T result);;
+		public void onSucceed(int reqkey, int statusCode, T result) {
+		}
 	}
 
 	private Date nextNotifyDate = new Date(new Date().getTime() + 60 * 1000);
@@ -49,18 +50,19 @@ public class WebAPIDataSource implements DataSource {
 		api = new WebAPI(token);
 	}
 
-	public <T> void callWebAPISynchronusly(final WebAPICaller<T> caller)
-			throws WebAPIException {
+	public <T> void callWebAPISynchronously(final WebAPICaller<T> caller,
+			final WebAPICallback<T> extraCallback) throws WebAPIException {
 		final Set<Runnable> mutableRunnable = new CopyOnWriteArraySet<Runnable>();
 		final Set<WebAPIException> mutableException = new CopyOnWriteArraySet<WebAPIException>();
 		final CountDownLatch latch = new CountDownLatch(1);
-		final WebAPICallback<T> callback = new WebAPICallback<T>() {
+		final WebAPICallback<T> synchronousCallback = new WebAPICallback<T>() {
 			@Override
 			public void onException(final int reqkey, final WebAPIException ex) {
 				mutableRunnable.add(new Runnable() {
 					@Override
 					public void run() {
 						caller.onException(reqkey, ex);
+						extraCallback.onException(reqkey, ex);
 					}
 				});
 				latch.countDown();
@@ -73,6 +75,7 @@ public class WebAPIDataSource implements DataSource {
 					@Override
 					public void run() {
 						caller.onFailed(reqkey, statusCode, response);
+						extraCallback.onFailed(reqkey, statusCode, response);
 					}
 				});
 				latch.countDown();
@@ -85,6 +88,7 @@ public class WebAPIDataSource implements DataSource {
 					@Override
 					public void run() {
 						caller.onSucceed(reqkey, statusCode, result);
+						extraCallback.onSucceed(reqkey, statusCode, result);
 					}
 				});
 				latch.countDown();
@@ -94,7 +98,9 @@ public class WebAPIDataSource implements DataSource {
 			@Override
 			public void run() {
 				try {
-					caller.call(callback);
+					caller.call(synchronousCallback);
+				} catch (JSONException e) {
+					mutableException.add(new WebAPIException(true, e));
 				} catch (WebAPIException e) {
 					mutableException.add(e);
 					latch.countDown();
@@ -119,6 +125,23 @@ public class WebAPIDataSource implements DataSource {
 		if (!mutableRunnable.isEmpty()) {
 			mutableRunnable.iterator().next().run();
 		}
+	}
+
+	public <T> void callWebAPISynchronusly(final WebAPICaller<T> caller)
+			throws WebAPIException {
+		callWebAPISynchronously(caller, new WebAPICallback<T>() {
+			@Override
+			public void onException(int reqkey, WebAPIException ex) {
+			}
+
+			@Override
+			public void onFailed(int reqkey, int statusCode, String response) {
+			}
+
+			@Override
+			public void onSucceed(int reqkey, int statusCode, T result) {
+			}
+		});
 	}
 
 	@Override
@@ -393,5 +416,18 @@ public class WebAPIDataSource implements DataSource {
 			Thread.currentThread().interrupt();
 			throw new WebAPIException(false, e);
 		}
+	}
+
+	@Override
+	public void responseVehicleNotification(final VehicleNotification vn,
+			final int response, WebAPICallback<VehicleNotification> callback)
+			throws WebAPIException {
+		callWebAPISynchronusly(new WebAPICaller<VehicleNotification>() {
+			@Override
+			public void call(WebAPICallback<VehicleNotification> wrappedCallback)
+					throws WebAPIException, JSONException {
+				api.responseVehicleNotification(vn, response, wrappedCallback);
+			}
+		});
 	}
 }

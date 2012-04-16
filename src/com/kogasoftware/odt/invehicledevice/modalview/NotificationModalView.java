@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.modal;
+package com.kogasoftware.odt.invehicledevice.modalview;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -7,15 +7,16 @@ import java.util.Queue;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.logic.Status;
+import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
-public class ScheduleChangedModal extends Modal {
+public class NotificationModalView extends ModalView {
 	public static class ShowEvent {
 		public final List<VehicleNotification> vehicleNotifications;
 
@@ -26,20 +27,27 @@ public class ScheduleChangedModal extends Modal {
 	}
 
 	private VehicleNotification currentVehicleNotification = new VehicleNotification();
-
 	private final Queue<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();
 
-	public ScheduleChangedModal(Context context, AttributeSet attrs) {
+	public NotificationModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		setContentView(R.layout.schedule_changed_modal);
-		Button scheduleConfirmButton = (Button) findViewById(R.id.schedule_confirm_button);
-		scheduleConfirmButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				getLogic().showScheduleModal();
-				hide();
-			}
-		});
+		setContentView(R.layout.notification_modal);
+		findViewById(R.id.reply_yes_button).setOnClickListener(
+				new OnClickListener() {
+					@Override
+					public void onClick(View view) {
+						currentVehicleNotification.setResponse(1);
+						reply();
+					}
+				});
+		findViewById(R.id.reply_no_button).setOnClickListener(
+				new OnClickListener() {
+					@Override
+					public void onClick(View view) {
+						currentVehicleNotification.setResponse(0);
+						reply();
+					}
+				});
 	}
 
 	@Override
@@ -52,11 +60,21 @@ public class ScheduleChangedModal extends Modal {
 	}
 
 	private void refresh() {
-		TextView bodyTextView = (TextView) findViewById(R.id.schedule_changed_text_view);
 		currentVehicleNotification = vehicleNotifications.poll();
+		TextView bodyTextView = (TextView) findViewById(R.id.notification_text_view);
 		if (currentVehicleNotification.getBody().isPresent()) {
 			bodyTextView.setText(currentVehicleNotification.getBody().get());
 		}
+	}
+
+	private void reply() {
+		getLogic().getStatusAccess().write(new Writer() {
+			@Override
+			public void write(Status status) {
+				status.repliedVehicleNotifications
+						.add(currentVehicleNotification);
+			}
+		});
 	}
 
 	@Subscribe

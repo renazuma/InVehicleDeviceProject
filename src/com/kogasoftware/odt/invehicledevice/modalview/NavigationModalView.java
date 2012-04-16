@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.modal;
+package com.kogasoftware.odt.invehicledevice.modalview;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -10,7 +10,7 @@ import android.widget.LinearLayout;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
 
-public class NavigationModal extends Modal {
+public class NavigationModalView extends ModalView {
 
 	// static class NavigationViewLocationListener implements LocationListener {
 	// private static final String TAG = NavigationViewLocationListener.class
@@ -55,7 +55,7 @@ public class NavigationModal extends Modal {
 	}
 
 	//
-	// private static final String TAG = NavigationModal.class.getSimpleName();
+	// private static final String TAG = NavigationModalView.class.getSimpleName();
 	// private final MapView mapView;
 	// private final MapViewRedirector mapViewRedirector;
 	// private final LocationManager locationManager;
@@ -101,9 +101,9 @@ public class NavigationModal extends Modal {
 	// }
 	// glSurfaceView.setRenderer(mapRenderer);
 	// addView(icsLeakAvoidanceFrameLayout,
-	// new NavigationModal.LayoutParams(
-	// NavigationModal.LayoutParams.FILL_PARENT,
-	// NavigationModal.LayoutParams.FILL_PARENT));
+	// new NavigationModalView.LayoutParams(
+	// NavigationModalView.LayoutParams.FILL_PARENT,
+	// NavigationModalView.LayoutParams.FILL_PARENT));
 	// icsLeakAvoidanceFrameLayout.addView(glSurfaceView,
 	// new FrameLayout.LayoutParams(
 	// FrameLayout.LayoutParams.FILL_PARENT,
@@ -114,10 +114,10 @@ public class NavigationModal extends Modal {
 	//
 	// mapViewRedirector.addView(mapView, new MapViewRedirector.LayoutParams(
 	// MapRenderer.MAP_TEXTURE_WIDTH, MapRenderer.MAP_TEXTURE_HEIGHT));
-	// addView(mapViewRedirector, new NavigationModal.LayoutParams(
+	// addView(mapViewRedirector, new NavigationModalView.LayoutParams(
 	// MapRenderer.MAP_TEXTURE_WIDTH, MapRenderer.MAP_TEXTURE_HEIGHT));
 	//
-	public NavigationModal(Context context, AttributeSet attrs) {
+	public NavigationModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		setContentView(R.layout.navigation_modal);
 		//
@@ -196,9 +196,9 @@ public class NavigationModal extends Modal {
 				LinearLayout.LayoutParams.FILL_PARENT,
 				LinearLayout.LayoutParams.WRAP_CONTENT, 1));
 
-		addView(buttons, new NavigationModal.LayoutParams(
-				NavigationModal.LayoutParams.FILL_PARENT,
-				NavigationModal.LayoutParams.WRAP_CONTENT,
+		addView(buttons, new NavigationModalView.LayoutParams(
+				NavigationModalView.LayoutParams.FILL_PARENT,
+				NavigationModalView.LayoutParams.WRAP_CONTENT,
 				Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM));
 
 		// mapView.getController().animateTo(new GeoPoint(35899045, 139928656));

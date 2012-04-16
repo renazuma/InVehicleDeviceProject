@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.modal;
+package com.kogasoftware.odt.invehicledevice.modalview;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -11,13 +11,13 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import com.google.common.eventbus.Subscribe;
-import com.kogasoftware.odt.invehicledevice.InVehicleDeviceLogic;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.arrayadapter.ReservationArrayAdapter;
+import com.kogasoftware.odt.invehicledevice.logic.Logic;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.User;
 
-public class StartCheckModal extends Modal {
+public class StartCheckModalView extends ModalView {
 	public static class ShowEvent {
 		public final ReservationArrayAdapter reservationArrayAdapter;
 
@@ -35,7 +35,7 @@ public class StartCheckModal extends Modal {
 		}
 	}
 
-	public StartCheckModal(Context context, AttributeSet attrs) {
+	public StartCheckModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		setContentView(R.layout.start_check_modal);
 	}
@@ -59,10 +59,15 @@ public class StartCheckModal extends Modal {
 				getContext(), android.R.layout.simple_list_item_1, messages));
 
 		Button startButton = (Button) findViewById(R.id.start_button);
+		if (getLogic().getRemainingOperationSchedules().isEmpty()) {
+			startButton.setText("確定する");
+		} else {
+			startButton.setText("出発する");
+		}
 		startButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				InVehicleDeviceLogic logic = getLogic();
+				Logic logic = getLogic();
 				logic.getOnReservation(adapter.getCheckedIncomingReservations());
 				logic.getOutReservation(adapter
 						.getCheckedOutgoingReservations());

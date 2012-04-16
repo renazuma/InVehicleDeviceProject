@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice;
+package com.kogasoftware.odt.invehicledevice.logic;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,15 +13,23 @@ import android.media.MediaPlayer.OnErrorListener;
 import android.util.Log;
 
 import com.google.common.eventbus.Subscribe;
-import com.kogasoftware.odt.invehicledevice.InVehicleDeviceLogic.SpeakEvent;
 import com.kogasoftware.openjtalk.OpenJTalk;
 
 public class VoiceThread extends Thread {
+	public static class SpeakEvent {
+		public final String message;
+
+		public SpeakEvent(String message) {
+			this.message = message;
+		}
+	}
+
 	private static final String TAG = VoiceThread.class.getSimpleName();
 	private final File cacheDirectory;
 	private final File dictionaryDirectory;
 	private final File outputDirectory;
 	private final File voiceDirectory;
+
 	private final BlockingQueue<String> voices = new LinkedBlockingQueue<String>();
 
 	public VoiceThread(Context context) {

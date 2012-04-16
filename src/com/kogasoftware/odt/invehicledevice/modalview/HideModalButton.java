@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.modal;
+package com.kogasoftware.odt.invehicledevice.modalview;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -17,8 +17,8 @@ public class HideModalButton extends Button {
 			ViewParent parent = view.getParent();
 			for (Integer depth = 0; parent != null && depth < MAX_VIEW_DEPTH; parent = parent
 					.getParent(), ++depth) {
-				if (parent instanceof Modal) {
-					((Modal) parent).hide();
+				if (parent instanceof ModalView) {
+					((ModalView) parent).hide();
 					break;
 				}
 			}

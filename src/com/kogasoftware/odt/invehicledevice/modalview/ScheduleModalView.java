@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.modal;
+package com.kogasoftware.odt.invehicledevice.modalview;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -14,13 +14,13 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.arrayadapter.OperationScheduleArrayAdapter;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 
-public class ScheduleModal extends Modal {
+public class ScheduleModalView extends ModalView {
 	public static class ShowEvent {
 	}
 
 	private final List<OperationSchedule> operationSchedules = new LinkedList<OperationSchedule>();
 
-	public ScheduleModal(Context context, AttributeSet attrs) {
+	public ScheduleModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		setContentView(R.layout.schedule_modal);
 	}

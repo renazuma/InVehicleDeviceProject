@@ -10,6 +10,7 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
@@ -297,4 +298,13 @@ public class DummyDataSource implements DataSource {
 			throw new WebAPIException(false, e);
 		}
 	}
+
+	@Override
+	public void responseVehicleNotification(VehicleNotification vn,
+			int response, WebAPICallback<VehicleNotification> callback)
+			throws WebAPIException {
+		// TODO Auto-generated method stub
+
+	}
+
 }

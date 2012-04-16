@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.modal;
+package com.kogasoftware.odt.invehicledevice.modalview;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -8,18 +8,18 @@ import android.widget.Button;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
 
-public class ConfigModal extends Modal {
+public class ConfigModalView extends ModalView {
 	public static class ShowEvent {
 	}
 
-	public ConfigModal(Context context, AttributeSet attrs) {
+	public ConfigModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		this.setContentView(R.layout.config_modal);
 		Button stopCheckButton = (Button) findViewById(R.id.stop_check_button);
 		stopCheckButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				getLogic().showStopCheckModal();
+				getLogic().showStopCheckModalView();
 			}
 		});
 

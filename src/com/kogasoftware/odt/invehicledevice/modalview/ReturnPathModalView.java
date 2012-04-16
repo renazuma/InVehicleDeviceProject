@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.modal;
+package com.kogasoftware.odt.invehicledevice.modalview;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -27,7 +27,7 @@ import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.ReservationCandidate;
 import com.kogasoftware.odt.webapi.model.User;
 
-public class ReturnPathModal extends Modal {
+public class ReturnPathModalView extends ModalView {
 	public static class ShowEvent {
 		public final Reservation reservation;
 
@@ -38,11 +38,11 @@ public class ReturnPathModal extends Modal {
 	}
 
 	private Reservation currentReservation = new Reservation();
-	// private static final String TAG = ReturnPathModal.class.getSimpleName();
+	// private static final String TAG = ReturnPathModalView.class.getSimpleName();
 	private ProgressDialog searchingDialog;
 	private ProgressDialog sendingDialog;
 
-	public ReturnPathModal(Context context, AttributeSet attrs) {
+	public ReturnPathModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		setContentView(R.layout.return_path_modal);
 

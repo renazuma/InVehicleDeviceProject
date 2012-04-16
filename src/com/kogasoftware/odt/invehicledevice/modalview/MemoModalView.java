@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.modal;
+package com.kogasoftware.odt.invehicledevice.modalview;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -9,7 +9,7 @@ import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.webapi.model.Reservation;
 
-public class MemoModal extends Modal {
+public class MemoModalView extends ModalView {
 	public static class ShowEvent {
 		public final Reservation reservation;
 
@@ -19,7 +19,7 @@ public class MemoModal extends Modal {
 		}
 	}
 
-	public MemoModal(Context context, AttributeSet attrs) {
+	public MemoModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		setContentView(R.layout.memo_modal);
 	}

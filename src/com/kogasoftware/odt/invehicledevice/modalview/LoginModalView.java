@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.modal;
+package com.kogasoftware.odt.invehicledevice.modalview;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -6,13 +6,13 @@ import android.util.AttributeSet;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
 
-public class StopModal extends Modal {
+public class LoginModalView extends ModalView {
 	public static class ShowEvent {
 	}
 
-	public StopModal(Context context, AttributeSet attrs) {
+	public LoginModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		setContentView(R.layout.stop_modal);
+		setContentView(R.layout.pause_modal);
 	}
 
 	@Subscribe
