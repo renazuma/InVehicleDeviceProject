@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class ServiceProvider extends Model {
-	private static final long serialVersionUID = 6604759185581261590L;
+	private static final long serialVersionUID = 8973453101668320117L;
 
 	public ServiceProvider() {
 	}
@@ -40,6 +40,7 @@ public class ServiceProvider extends Model {
 		setReservationCandidates(ReservationCandidate.parseList(jsonObject, "reservation_candidates"));
 		setReservations(Reservation.parseList(jsonObject, "reservations"));
 		setServiceUnits(ServiceUnit.parseList(jsonObject, "service_units"));
+		setUnitAssignments(UnitAssignment.parseList(jsonObject, "unit_assignments"));
 		setUsers(User.parseList(jsonObject, "users"));
 	}
 
@@ -124,6 +125,10 @@ public class ServiceProvider extends Model {
 
 		if (getServiceUnits().size() > 0) {
 	   		jsonObject.put("service_units", toJSON(getServiceUnits()));
+		}
+
+		if (getUnitAssignments().size() > 0) {
+	   		jsonObject.put("unit_assignments", toJSON(getUnitAssignments()));
 		}
 
 		if (getUsers().size() > 0) {
@@ -389,6 +394,20 @@ public class ServiceProvider extends Model {
 
 	public void clearServiceUnits() {
 		this.serviceUnits = new LinkedList<ServiceUnit>();
+	}
+
+	private LinkedList<UnitAssignment> unitAssignments = new LinkedList<UnitAssignment>();
+
+	public List<UnitAssignment> getUnitAssignments() {
+		return new LinkedList<UnitAssignment>(wrapNull(unitAssignments));
+	}
+
+	public void setUnitAssignments(List<UnitAssignment> unitAssignments) {
+		this.unitAssignments = new LinkedList<UnitAssignment>(wrapNull(unitAssignments));
+	}
+
+	public void clearUnitAssignments() {
+		this.unitAssignments = new LinkedList<UnitAssignment>();
 	}
 
 	private LinkedList<User> users = new LinkedList<User>();

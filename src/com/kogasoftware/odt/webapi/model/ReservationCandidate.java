@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class ReservationCandidate extends Model {
-	private static final long serialVersionUID = 8918659537950001052L;
+	private static final long serialVersionUID = 478977478598608960L;
 
 	public ReservationCandidate() {
 	}
@@ -48,6 +48,10 @@ public class ReservationCandidate extends Model {
 		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
 		if (getServiceProvider().isPresent()) {
 			setServiceProviderId(getServiceProvider().get().getId());
+		}
+		setUnitAssignment(UnitAssignment.parse(jsonObject, "unit_assignment"));
+		if (getUnitAssignment().isPresent()) {
+			setUnitAssignmentId(getUnitAssignment().get().getId());
 		}
 		setUser(User.parse(jsonObject, "user"));
 		if (getUser().isPresent()) {
@@ -116,6 +120,10 @@ public class ReservationCandidate extends Model {
 
 		if (getServiceProvider().isPresent()) {
 			jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
+		}
+
+		if (getUnitAssignment().isPresent()) {
+			jsonObject.put("unit_assignment_id", toJSON(getUnitAssignment().get().getId()));
 		}
 
 		if (getUser().isPresent()) {
@@ -382,6 +390,24 @@ public class ReservationCandidate extends Model {
 
 	public void clearServiceProvider() {
 		this.serviceProvider = Optional.<ServiceProvider>absent();
+	}
+
+	private Optional<UnitAssignment> unitAssignment = Optional.<UnitAssignment>absent();
+
+	public Optional<UnitAssignment> getUnitAssignment() {
+		return wrapNull(unitAssignment);
+	}
+
+	public void setUnitAssignment(Optional<UnitAssignment> unitAssignment) {
+		this.unitAssignment = wrapNull(unitAssignment);
+	}
+
+	public void setUnitAssignment(UnitAssignment unitAssignment) {
+		this.unitAssignment = Optional.<UnitAssignment>fromNullable(unitAssignment);
+	}
+
+	public void clearUnitAssignment() {
+		this.unitAssignment = Optional.<UnitAssignment>absent();
 	}
 
 	private Optional<User> user = Optional.<User>absent();

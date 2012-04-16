@@ -21,6 +21,7 @@ import com.kogasoftware.odt.webapi.model.ServiceProvider;
 import com.kogasoftware.odt.webapi.model.ServiceUnit;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.webapi.model.User;
+import com.kogasoftware.odt.webapi.model.UnitAssignment;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class WebTestAPI extends WebAPI {
@@ -42,6 +43,7 @@ public class WebTestAPI extends WebAPI {
 	protected static final String TEST_PATH_SERVICE_UNITS = "/service_units";
 	protected static final String TEST_PATH_SERVICE_UNIT_STATUS_LOGS = "/service_unit_status_logs";
 	protected static final String TEST_PATH_USERS = "/users";
+	protected static final String TEST_PATH_UNIT_ASSIGNMENTS = "/unit_assignments";
 	protected static final String TEST_PATH_VEHICLE_NOTIFICATIONS = "/vehicle_notifications";
 
 	@Override
@@ -982,6 +984,72 @@ public class WebTestAPI extends WebAPI {
 	 */
 	public int deleteUser(int id, WebAPICallback<Void> callback) throws WebAPIException {
 		return delete(TEST_PATH_USERS + "/" + id, callback, new ResponseConverter<Void>() {
+			@Override
+			public Void convert(byte[] rawResponse)
+					throws Exception {
+				return null;
+			}
+		});
+	}
+	/**
+	 * 号車をすべて取得
+	 * @param callback
+	 * @return reqkey
+	 * @throws WebAPIException
+	 */
+	public int getAllUnitAssignments(WebAPICallback<List<UnitAssignment>> callback) throws WebAPIException {
+		return get(TEST_PATH_UNIT_ASSIGNMENTS, callback, new ResponseConverter<List<UnitAssignment>>() {
+			@Override
+			public List<UnitAssignment> convert(byte[] rawResponse)
+					throws Exception {
+				return UnitAssignment.parseList(parseJSONArray(rawResponse));
+			}
+		});
+	}
+
+	/**
+	 * 号車をひとつ取得
+	 * @param callback
+	 * @return reqkey
+	 * @throws WebAPIException
+	 */
+	public int getUnitAssignment(int id, WebAPICallback<UnitAssignment> callback) throws WebAPIException {
+		return get(TEST_PATH_UNIT_ASSIGNMENTS + "/" + id, callback, new ResponseConverter<UnitAssignment>() {
+			@Override
+			public UnitAssignment convert(byte[] rawResponse)
+					throws Exception {
+				return UnitAssignment.parse(parseJSONObject(rawResponse)).orNull();
+			}
+		});
+	}
+
+	/**
+	 * 号車を生成
+	 * @param callback
+	 * @return reqkey
+	 * @throws WebAPIException
+	 * @throws JSONException 
+	 */
+	public int createUnitAssignment(UnitAssignment obj, WebAPICallback<UnitAssignment> callback) throws WebAPIException, JSONException {
+		JSONObject body = new JSONObject();
+		body.put("unit_assignment", obj.toJSONObject());
+		return post(TEST_PATH_UNIT_ASSIGNMENTS, body, callback, new ResponseConverter<UnitAssignment>() {
+			@Override
+			public UnitAssignment convert(byte[] rawResponse)
+					throws Exception {
+				return UnitAssignment.parse(parseJSONObject(rawResponse)).orNull();
+			}
+		});
+	}
+
+	/**
+	 * 号車をひとつ削除
+	 * @param callback
+	 * @return reqkey
+	 * @throws WebAPIException
+	 */
+	public int deleteUnitAssignment(int id, WebAPICallback<Void> callback) throws WebAPIException {
+		return delete(TEST_PATH_UNIT_ASSIGNMENTS + "/" + id, callback, new ResponseConverter<Void>() {
 			@Override
 			public Void convert(byte[] rawResponse)
 					throws Exception {
