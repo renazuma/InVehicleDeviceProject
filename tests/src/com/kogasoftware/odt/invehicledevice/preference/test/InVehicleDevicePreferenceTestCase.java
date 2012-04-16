@@ -1,19 +1,19 @@
-package com.kogasoftware.odt.invehicledevice.setup.test;
+package com.kogasoftware.odt.invehicledevice.preference.test;
 
 import java.util.concurrent.CountDownLatch;
 
 import android.test.ActivityInstrumentationTestCase2;
 
 import com.jayway.android.robotium.solo.Solo;
-import com.kogasoftware.odt.invehicledevice.setup.InVehicleDeviceSetupActivity;
+import com.kogasoftware.odt.invehicledevice.preference.InVehicleDevicePreferenceActivity;
 
-public class InVehicleDeviceSetupTestCase extends
-		ActivityInstrumentationTestCase2<InVehicleDeviceSetupActivity> {
+public class InVehicleDevicePreferenceTestCase extends
+		ActivityInstrumentationTestCase2<InVehicleDevicePreferenceActivity> {
 
 	private Solo solo;
 
-	public InVehicleDeviceSetupTestCase() {
-		super("com.kogasoftware.odt.invehicledevice.setup", InVehicleDeviceSetupActivity.class);
+	public InVehicleDevicePreferenceTestCase() {
+		super("com.kogasoftware.odt.invehicledevice.preference", InVehicleDevicePreferenceActivity.class);
 	}
 
 	@Override
