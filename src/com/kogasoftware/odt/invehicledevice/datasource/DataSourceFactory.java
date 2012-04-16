@@ -7,6 +7,7 @@ public class DataSourceFactory {
 			.<DataSource> absent();
 	private static Object dataSourceLock = new Object();
 
+	@Deprecated
 	public static DataSource newInstance() {
 		synchronized (dataSourceLock) {
 			if (dataSource.isPresent()) {
@@ -14,6 +15,15 @@ public class DataSourceFactory {
 			}
 		}
 		return new DummyDataSource();
+	}
+
+	public static DataSource newInstance(String url, String token) {
+		synchronized (dataSourceLock) {
+			if (dataSource.isPresent()) {
+				return dataSource.get();
+			}
+		}
+		return new WebAPIDataSource(url, token);
 	}
 
 	/**

@@ -13,9 +13,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.app.Activity;
-import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
-import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 
@@ -56,36 +58,6 @@ public class InVehicleDeviceLogic {
 
 		public AddUnexpectedReservationEvent(Reservation reservation) {
 			this.reservation = reservation;
-		}
-	}
-
-	/**
-	 * com.google.common.eventbus.EventBusクラスに、登録されたリスナーを全削除する機能を追加
-	 */
-	public static class DisposableEventBus extends EventBus {
-		private static final String TAG = DisposableEventBus.class
-				.getSimpleName();
-		private Boolean disposed = false;
-		private final List<Object> registeredObjects = new LinkedList<Object>();
-
-		public void dispose() {
-			for (Object object : registeredObjects) {
-				try {
-					unregister(object);
-				} catch (IllegalArgumentException e) {
-					Log.w(TAG, e);
-				}
-			}
-			registeredObjects.clear();
-		}
-
-		@Override
-		public void register(Object object) {
-			if (disposed) {
-				return;
-			}
-			super.register(object);
-			registeredObjects.add(object);
 		}
 	}
 
@@ -230,6 +202,53 @@ public class InVehicleDeviceLogic {
 		}
 	}
 
+	/**
+	 * com.google.common.eventbus.EventBusクラスに、UIスレッド上でハンドラを実行する機能を追加
+	 */
+	public static class UiEventBus extends EventBus {
+		private static final String TAG = UiEventBus.class.getSimpleName();
+		private final List<Object> registeredObjects = new LinkedList<Object>();
+		private final AtomicBoolean disposed = new AtomicBoolean(false);
+		private final Handler uiHandler = new Handler(Looper.getMainLooper());
+		private final Long uiThreadId = uiHandler.getLooper().getThread()
+				.getId();
+
+		public void dispose() {
+			disposed.set(true);
+			for (Object object : registeredObjects) {
+				try {
+					unregister(object);
+				} catch (IllegalArgumentException e) {
+					Log.w(TAG, e);
+				}
+			}
+			registeredObjects.clear();
+		}
+
+		@Override
+		public void post(final Object object) {
+			if (uiThreadId.equals(Thread.currentThread().getId())) {
+				super.post(object);
+				return;
+			}
+			uiHandler.post(new Runnable() {
+				@Override
+				public void run() {
+					UiEventBus.super.post(object);
+				}
+			});
+		}
+
+		@Override
+		public void register(Object object) {
+			if (disposed.get()) {
+				return;
+			}
+			super.register(object);
+			registeredObjects.add(object);
+		}
+	}
+
 	private static class VehicleNotificationReceiver implements Runnable {
 		private final InVehicleDeviceLogic logic;
 
@@ -290,8 +309,8 @@ public class InVehicleDeviceLogic {
 		}
 	}
 
-	private final DataSource dataSource = DataSourceFactory.newInstance();
-	private final DisposableEventBus eventBus = new DisposableEventBus();
+	private final DataSource dataSource;
+	private final UiEventBus eventBus = new UiEventBus();
 	private final ScheduledExecutorService executorService = Executors
 			.newScheduledThreadPool(NUM_THREADS);
 	private final InVehicleDeviceStatus.Access statusAccess;
@@ -299,18 +318,20 @@ public class InVehicleDeviceLogic {
 
 	public InVehicleDeviceLogic() {
 		this.statusAccess = new InVehicleDeviceStatus.Access();
+		this.dataSource = DataSourceFactory.newInstance("http://127.0.0.1", "");
 	}
 
 	public InVehicleDeviceLogic(Activity activity) throws InterruptedException {
+		SharedPreferences preferences = PreferenceManager
+				.getDefaultSharedPreferences(activity);
+
+		dataSource = DataSourceFactory.newInstance(
+				preferences.getString("url", "http://127.0.0.1"),
+				preferences.getString("token", ""));
 		try {
 			Thread.sleep(0); // interruption point
-			Intent intent = activity.getIntent();
-			Bundle extras = intent.getExtras();
-			if (extras == null) {
-				extras = new Bundle();
-			}
 			this.statusAccess = new InVehicleDeviceStatus.Access(activity,
-					willClearStatusFile.getAndSet(false), extras);
+					willClearStatusFile.getAndSet(false));
 			Future<?> receiveOperationSchedule = null;
 			try {
 				receiveOperationSchedule = executorService

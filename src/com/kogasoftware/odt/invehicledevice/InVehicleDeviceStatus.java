@@ -16,8 +16,9 @@ import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.location.Location;
-import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.common.base.Optional;
@@ -53,9 +54,8 @@ public class InVehicleDeviceStatus implements Serializable {
 			status = InVehicleDeviceStatus.newInstance();
 		}
 
-		public Access(Context context, Boolean isClear, Bundle extras) {
-			status = InVehicleDeviceStatus
-					.newInstance(context, isClear, extras);
+		public Access(Context context, Boolean isClear) {
+			status = InVehicleDeviceStatus.newInstance(context, isClear);
 		}
 
 		public <T> T read(Reader<T> reader) {
@@ -94,8 +94,7 @@ public class InVehicleDeviceStatus implements Serializable {
 	}
 
 	private static InVehicleDeviceStatus newInstance(Context context,
-			Boolean isClear, Bundle extras) {
-
+			Boolean isClear) {
 		File file = new File(context.getFilesDir() + File.separator
 				+ InVehicleDeviceStatus.class.getCanonicalName()
 				+ ".serialized");
@@ -135,14 +134,10 @@ public class InVehicleDeviceStatus implements Serializable {
 			}
 		}
 		status.file = file;
-		String token = extras.getString("token");
-		if (token != null) {
-			status.token = token;
-		}
-		String url = extras.getString("url");
-		if (url != null) {
-			status.url = url;
-		}
+		SharedPreferences preferences = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		status.token = preferences.getString("token", "");
+		status.url = preferences.getString("url", "");
 
 		return status;
 	}
