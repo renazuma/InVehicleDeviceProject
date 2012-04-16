@@ -6,6 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.CountDownLatch;
 
 import org.json.JSONException;
@@ -25,12 +27,98 @@ import com.kogasoftware.odt.webapi.model.ReservationCandidate;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class WebAPIDataSource implements DataSource {
+	abstract static class WebAPICaller<T> {
+		abstract public void call(WebAPICallback<T> callback)
+				throws WebAPIException;
+
+		public void onException(int reqkey, WebAPIException ex) {
+		}
+
+		public void onFailed(int reqkey, int statusCode, String response) {
+		};
+
+		abstract public void onSucceed(int reqkey, int statusCode, T result);;
+	}
 
 	private Date nextNotifyDate = new Date(new Date().getTime() + 60 * 1000);
-	private final Handler uiThreadHandler = new Handler(Looper.getMainLooper());
-	private WebAPI api = new WebAPI();
+
+	private final Handler uiHandler = new Handler(Looper.getMainLooper());
+	private final WebAPI api;
 
 	public WebAPIDataSource(String url, String token) {
+		api = new WebAPI(token);
+	}
+
+	public <T> void callWebAPISynchronusly(final WebAPICaller<T> caller)
+			throws WebAPIException {
+		final Set<Runnable> mutableRunnable = new CopyOnWriteArraySet<Runnable>();
+		final Set<WebAPIException> mutableException = new CopyOnWriteArraySet<WebAPIException>();
+		final CountDownLatch latch = new CountDownLatch(1);
+		final WebAPICallback<T> callback = new WebAPICallback<T>() {
+			@Override
+			public void onException(final int reqkey, final WebAPIException ex) {
+				mutableRunnable.add(new Runnable() {
+					@Override
+					public void run() {
+						caller.onException(reqkey, ex);
+					}
+				});
+				latch.countDown();
+			}
+
+			@Override
+			public void onFailed(final int reqkey, final int statusCode,
+					final String response) {
+				mutableRunnable.add(new Runnable() {
+					@Override
+					public void run() {
+						caller.onFailed(reqkey, statusCode, response);
+					}
+				});
+				latch.countDown();
+			}
+
+			@Override
+			public void onSucceed(final int reqkey, final int statusCode,
+					final T result) {
+				mutableRunnable.add(new Runnable() {
+					@Override
+					public void run() {
+						caller.onSucceed(reqkey, statusCode, result);
+					}
+				});
+				latch.countDown();
+			}
+		};
+		Boolean postResult = uiHandler.post(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					caller.call(callback);
+				} catch (WebAPIException e) {
+					mutableException.add(e);
+					latch.countDown();
+				}
+			}
+		});
+
+		if (!postResult) {
+			return;
+		}
+
+		try {
+			latch.await();
+		} catch (InterruptedException e) {
+			throw new WebAPIException(true, e);
+		}
+
+		if (!mutableException.isEmpty()) {
+			throw mutableException.iterator().next();
+		}
+
+		if (!mutableRunnable.isEmpty()) {
+			mutableRunnable.iterator().next().run();
+		}
 	}
 
 	@Override
@@ -178,42 +266,19 @@ public class WebAPIDataSource implements DataSource {
 	public List<VehicleNotification> getVehicleNotifications()
 			throws WebAPIException {
 		final List<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();
-		final CountDownLatch latch = new CountDownLatch(1);
-		uiThreadHandler.post(new Runnable() {
+		callWebAPISynchronusly(new WebAPICaller<List<VehicleNotification>>() {
 			@Override
-			public void run() {
-				try {
-					api.getVehicleNotifications(new WebAPICallback<List<VehicleNotification>>() {
-						@Override
-						public void onException(int reqkey, WebAPIException ex) {
-							latch.countDown();
-						}
+			public void call(WebAPICallback<List<VehicleNotification>> callback)
+					throws WebAPIException {
+				api.getVehicleNotifications(callback);
+			}
 
-						@Override
-						public void onFailed(int reqkey, int statusCode,
-								String response) {
-							latch.countDown();
-						}
-
-						@Override
-						public void onSucceed(int reqkey, int statusCode,
-								List<VehicleNotification> result) {
-							vehicleNotifications.addAll(result);
-							latch.countDown();
-						}
-					});
-				} catch (WebAPIException e) {
-					e.printStackTrace();
-				}
+			@Override
+			public void onSucceed(int reqkey, int statusCode,
+					List<VehicleNotification> result) {
+				vehicleNotifications.addAll(result);
 			}
 		});
-
-		try {
-			latch.await();
-		} catch (InterruptedException e) {
-			throw new WebAPIException(true, e);
-		}
-
 		return vehicleNotifications;
 	}
 
