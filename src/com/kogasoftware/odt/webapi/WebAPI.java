@@ -497,4 +497,25 @@ public class WebAPI {
 		});
 	}
 
+	/**
+	 * 自車への通知への応答
+	 * @param vn 通知オブジェクト
+	 * @param response 応答
+	 * @throws JSONException 
+	 */
+	public int responseVehicleNotification(VehicleNotification vn, int response, WebAPICallback<VehicleNotification> callback) throws WebAPIException, JSONException {
+		vn.setResponse(response);
+		JSONObject vnJson = filterJSONKeys(vn.toJSONObject(), new String[] { "id", "response" });
+		vnJson.put("id", vn.getId());
+		JSONObject param = new JSONObject();
+		param.put("vehicle_notification", vnJson);
+		
+		return put(PATH_NOTIFICATIONS + "/" + vn.getId(), param, callback, new ResponseConverter<VehicleNotification>() {
+			@Override
+			public VehicleNotification convert(byte[] rawResponse)
+					throws Exception {
+				return VehicleNotification.parse(parseJSONObject(rawResponse)).orNull();
+			}
+		});
+	}
 }

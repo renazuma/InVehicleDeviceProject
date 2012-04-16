@@ -71,7 +71,7 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 
 	public void testGetVehicleNotifications() throws Exception {
 		WebAPI api = new WebAPI(master.getInVehicleDevice().getAuthenticationToken().orNull());
-		final CountDownLatch latch = new CountDownLatch(1);
+		latch = new CountDownLatch(1);
 		notifications = null;
 		
 		record.createVehicleNotification("テスト通知メッセージ1です。");
@@ -94,12 +94,84 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 				latch.countDown();
 			}
 		});
-		
-		
 		latch.await(100, TimeUnit.SECONDS);
 		
 		assertNotNull(notifications);
 		assertEquals(2, notifications.size());
+		assertEquals("テスト通知メッセージ2です。", notifications.get(1).getBody());
 	}
 	
+	public void testResponseVehicleNotification() throws Exception {
+		WebAPI api = new WebAPI(master.getInVehicleDevice().getAuthenticationToken().orNull());
+		latch = new CountDownLatch(1);
+		notifications = null;
+		
+		record.createVehicleNotification("テスト通知メッセージ1です。");
+		record.createVehicleNotification("テスト通知メッセージ2です。");
+		
+		api.getVehicleNotifications(new WebAPICallback<List<VehicleNotification>>() {
+			@Override
+			public void onSucceed(int reqkey, int statusCode, List<VehicleNotification> result) {
+				notifications = result;
+				latch.countDown();
+			}
+			
+			@Override
+			public void onFailed(int reqkey, int statusCode, String response) {
+				latch.countDown();
+			}
+
+			@Override
+			public void onException(int reqkey, WebAPIException ex) {
+				latch.countDown();
+			}
+		});
+		latch.await(100, TimeUnit.SECONDS);
+		
+		assertNotNull(notifications);
+		assertEquals(2, notifications.size());
+		
+		latch = new CountDownLatch(1);
+		api.responseVehicleNotification(notifications.get(0), 1, new WebAPICallback<VehicleNotification>() {
+			@Override
+			public void onSucceed(int reqkey, int statusCode, VehicleNotification result) {
+				latch.countDown();
+			}
+			
+			@Override
+			public void onFailed(int reqkey, int statusCode, String response) {
+				latch.countDown();
+			}
+
+			@Override
+			public void onException(int reqkey, WebAPIException ex) {
+				latch.countDown();
+			}
+		});
+		latch.await(100, TimeUnit.SECONDS);
+
+		latch = new CountDownLatch(1);
+		api.getVehicleNotifications(new WebAPICallback<List<VehicleNotification>>() {
+			@Override
+			public void onSucceed(int reqkey, int statusCode, List<VehicleNotification> result) {
+				notifications = result;
+				latch.countDown();
+			}
+			
+			@Override
+			public void onFailed(int reqkey, int statusCode, String response) {
+				latch.countDown();
+			}
+
+			@Override
+			public void onException(int reqkey, WebAPIException ex) {
+				latch.countDown();
+			}
+		});
+		latch.await(100, TimeUnit.SECONDS);
+		
+		assertNotNull(notifications);
+		assertEquals(1, notifications.size());
+		assertEquals("テスト通知メッセージ2です。", notifications.get(0).getBody().orNull());
+	}
 }
