@@ -7,12 +7,14 @@ import android.util.Log;
 
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
+import com.kogasoftware.odt.webapi.model.Driver;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Operator;
 import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.ServiceProvider;
 import com.kogasoftware.odt.webapi.model.User;
+import com.kogasoftware.odt.webapi.model.Vehicle;
 
 public class GenerateMaster {
 	private WebTestAPI api;
@@ -20,6 +22,8 @@ public class GenerateMaster {
 	private ServiceProvider serviceProvider;
 	private Operator operator;
 	private InVehicleDevice inVehicleDevice;
+	private Driver driver;
+	private Vehicle vehicle;
 
 	public GenerateMaster() {
 		api = new WebTestAPI();
@@ -39,6 +43,14 @@ public class GenerateMaster {
 	
 	public InVehicleDevice getInVehicleDevice() {
 		return inVehicleDevice;
+	}
+	
+	public Driver getDriver() {
+		return driver;
+	}
+	
+	public Vehicle getVehicle() {
+		return vehicle;
 	}
 	
 	public boolean cleanDatabase() throws Exception {
@@ -122,8 +134,6 @@ public class GenerateMaster {
 		};
 		
 		this.inVehicleDevice = c.getResult();
-		Log.d("GenerateMaster", "recv:" + this.inVehicleDevice.toJSONObject().toString());
-		Log.d("GenerateMaster", "token:" + this.inVehicleDevice.getAuthenticationToken().orNull());
 		return this.inVehicleDevice;
 	}
 
@@ -163,6 +173,42 @@ public class GenerateMaster {
 		};
 
 		return sc.getResult();		
+	}
+
+	public Driver createDriver(final String firstName, final String lastName, final String telephoneNumber) throws Exception {
+		SyncCall<Driver> sc = new SyncCall<Driver>() {
+			@Override
+			public int run() throws Exception {
+				Driver obj = new Driver();
+				obj.setFirstName(firstName);
+				obj.setLastName(lastName);
+				obj.setTelephoneNumber(telephoneNumber);
+				obj.setServiceProvider(serviceProvider);
+
+				return api.createDriver(obj, this);
+			}
+		};
+
+		this.driver = sc.getResult();
+		return this.driver;		
+	}
+
+	public Vehicle createVehicle(final String number, final String modelName) throws Exception {
+		SyncCall<Vehicle> sc = new SyncCall<Vehicle>() {
+			@Override
+			public int run() throws Exception {
+				Vehicle obj = new Vehicle();
+				obj.setNumber(number);
+				obj.setModelName(modelName);
+				obj.setCapacity(9);
+				obj.setServiceProvider(serviceProvider);
+
+				return api.createVehicle(obj, this);
+			}
+		};
+
+		this.vehicle = sc.getResult();
+		return this.vehicle;
 	}
 	
 }

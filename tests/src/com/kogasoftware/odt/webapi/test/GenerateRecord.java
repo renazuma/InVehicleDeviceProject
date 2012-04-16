@@ -3,11 +3,15 @@ package com.kogasoftware.odt.webapi.test;
 import java.util.Date;
 
 import com.kogasoftware.odt.webapi.model.Demand;
+import com.kogasoftware.odt.webapi.model.Driver;
+import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.Reservation;
+import com.kogasoftware.odt.webapi.model.ServiceUnit;
 import com.kogasoftware.odt.webapi.model.UnitAssignment;
 import com.kogasoftware.odt.webapi.model.User;
+import com.kogasoftware.odt.webapi.model.Vehicle;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class GenerateRecord {
@@ -112,6 +116,26 @@ public class GenerateRecord {
 				obj.setServiceProvider(master.getServiceProvider());
 
 				return api.createUnitAssignment(obj, this);
+			}
+		};
+
+		return sc.getResult();		
+	}
+
+	public ServiceUnit createServiceUnit(final Driver driver, final Vehicle vehicle, final InVehicleDevice inVehicleDevice, 
+			final UnitAssignment unitAssignment, final Date activatedAt) throws Exception {
+		SyncCall<ServiceUnit> sc = new SyncCall<ServiceUnit>() {
+			@Override
+			public int run() throws Exception {
+				ServiceUnit obj = new ServiceUnit();
+				obj.setDriver(driver);
+				obj.setVehicle(vehicle);
+				obj.setInVehicleDevice(inVehicleDevice);
+				obj.setUnitAssignment(unitAssignment);
+				obj.setActivatedAt(activatedAt);
+				obj.setServiceProvider(master.getServiceProvider());
+				
+				return api.createServiceUnit(obj, this);
 			}
 		};
 

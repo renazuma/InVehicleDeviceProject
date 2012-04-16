@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.webapi.test;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -15,6 +16,7 @@ import com.kogasoftware.odt.webapi.model.Demand;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
+import com.kogasoftware.odt.webapi.model.ServiceUnit;
 import com.kogasoftware.odt.webapi.model.UnitAssignment;
 import com.kogasoftware.odt.webapi.model.User;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
@@ -27,7 +29,7 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 	CountDownLatch latch;
 	private GenerateMaster master;
 	private GenerateRecord record;
-	
+
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -36,6 +38,8 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 		master = new GenerateMaster();
 		master.cleanDatabase();
 		master.createServiceProvider();
+		master.createDriver("もぎ", "しゅーまっは", "011");
+		master.createVehicle("ちば90も 99-91", "F1");
 		master.createInVehicleDevice();
 		master.createOperator();
 		
@@ -190,6 +194,11 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 		Date dt = new Date();
 		User user = master.createUser("login1", "もぎ", "けんた");
 		UnitAssignment ua = record.createUnitAssignment("1号車");
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.MONTH, 1);
+		record.createServiceUnit(master.getDriver(), master.getVehicle(), master.getInVehicleDevice(), ua, 
+				cal.getTime());
+		
 		Platform p1 = master.createPlatform("乗降場1", "じょうこうじょう1");
 		OperationSchedule os1 = record.createOperationSchedule(ua, p1, dt, dt);
 		Platform p2 = master.createPlatform("乗降場2", "じょうこうじょう2");

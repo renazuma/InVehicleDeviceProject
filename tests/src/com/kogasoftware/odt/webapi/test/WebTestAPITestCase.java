@@ -7,12 +7,15 @@ import android.test.ActivityInstrumentationTestCase2;
 import android.text.format.DateUtils;
 
 import com.kogasoftware.odt.webapi.model.Demand;
+import com.kogasoftware.odt.webapi.model.Driver;
+import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Operator;
 import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.ServiceProvider;
 import com.kogasoftware.odt.webapi.model.UnitAssignment;
 import com.kogasoftware.odt.webapi.model.User;
+import com.kogasoftware.odt.webapi.model.Vehicle;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class WebTestAPITestCase extends
@@ -164,5 +167,34 @@ public class WebTestAPITestCase extends
 		master.createServiceProvider();
 
 		assertNotNull(master.createUser("login1", "モギー", "司郎"));
+	}
+
+	public void testDriver() throws Exception {
+		master.cleanDatabase();
+		master.createServiceProvider();
+
+		Driver d = master.createDriver("もぎぎ", "けんいち", "001");
+		assertNotNull(d);
+		assertTrue(d.getId() != 0);
+		
+	}
+
+	public void testVehicle() throws Exception {
+		master.cleanDatabase();
+		master.createServiceProvider();
+
+		assertNotNull(master.createVehicle("ちば 90 も 99-99", "もぎ号"));
+	}
+	
+	public void testServiceUnit() throws Exception {
+		master.cleanDatabase();
+		master.createServiceProvider();
+
+		Driver d = master.createDriver("もぎぎ", "けんいち", "001");
+		Vehicle v = master.createVehicle("ちば 90 も 99-99", "もぎ号");
+		InVehicleDevice i = master.createInVehicleDevice();
+		UnitAssignment u = record.createUnitAssignment("星");
+		
+		assertNotNull(record.createServiceUnit(d, v, i, u, new Date()));
 	}
 }
