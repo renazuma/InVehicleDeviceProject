@@ -23,6 +23,7 @@ import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.webapi.model.User;
 import com.kogasoftware.odt.webapi.model.UnitAssignment;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
+import com.kogasoftware.odt.webapi.model.Vehicle;
 
 public class WebTestAPI extends WebAPI {
 
@@ -45,6 +46,7 @@ public class WebTestAPI extends WebAPI {
 	protected static final String TEST_PATH_USERS = "/users";
 	protected static final String TEST_PATH_UNIT_ASSIGNMENTS = "/unit_assignments";
 	protected static final String TEST_PATH_VEHICLE_NOTIFICATIONS = "/vehicle_notifications";
+	protected static final String TEST_PATH_VEHICLES = "/vehicles";
 
 	@Override
 	protected String getServerHost() {
@@ -1116,6 +1118,72 @@ public class WebTestAPI extends WebAPI {
 	 */
 	public int deleteVehicleNotification(int id, WebAPICallback<Void> callback) throws WebAPIException {
 		return delete(TEST_PATH_VEHICLE_NOTIFICATIONS + "/" + id, callback, new ResponseConverter<Void>() {
+			@Override
+			public Void convert(byte[] rawResponse)
+					throws Exception {
+				return null;
+			}
+		});
+	}
+	/**
+	 * 車両をすべて取得
+	 * @param callback
+	 * @return reqkey
+	 * @throws WebAPIException
+	 */
+	public int getAllVehicles(WebAPICallback<List<Vehicle>> callback) throws WebAPIException {
+		return get(TEST_PATH_VEHICLES, callback, new ResponseConverter<List<Vehicle>>() {
+			@Override
+			public List<Vehicle> convert(byte[] rawResponse)
+					throws Exception {
+				return Vehicle.parseList(parseJSONArray(rawResponse));
+			}
+		});
+	}
+
+	/**
+	 * 車両をひとつ取得
+	 * @param callback
+	 * @return reqkey
+	 * @throws WebAPIException
+	 */
+	public int getVehicle(int id, WebAPICallback<Vehicle> callback) throws WebAPIException {
+		return get(TEST_PATH_VEHICLES + "/" + id, callback, new ResponseConverter<Vehicle>() {
+			@Override
+			public Vehicle convert(byte[] rawResponse)
+					throws Exception {
+				return Vehicle.parse(parseJSONObject(rawResponse)).orNull();
+			}
+		});
+	}
+
+	/**
+	 * 車両を生成
+	 * @param callback
+	 * @return reqkey
+	 * @throws WebAPIException
+	 * @throws JSONException 
+	 */
+	public int createVehicle(Vehicle obj, WebAPICallback<Vehicle> callback) throws WebAPIException, JSONException {
+		JSONObject body = new JSONObject();
+		body.put("vehicle", obj.toJSONObject());
+		return post(TEST_PATH_VEHICLES, body, callback, new ResponseConverter<Vehicle>() {
+			@Override
+			public Vehicle convert(byte[] rawResponse)
+					throws Exception {
+				return Vehicle.parse(parseJSONObject(rawResponse)).orNull();
+			}
+		});
+	}
+
+	/**
+	 * 車両をひとつ削除
+	 * @param callback
+	 * @return reqkey
+	 * @throws WebAPIException
+	 */
+	public int deleteVehicle(int id, WebAPICallback<Void> callback) throws WebAPIException {
+		return delete(TEST_PATH_VEHICLES + "/" + id, callback, new ResponseConverter<Void>() {
 			@Override
 			public Void convert(byte[] rawResponse)
 					throws Exception {

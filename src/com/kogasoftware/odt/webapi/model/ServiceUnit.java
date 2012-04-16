@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class ServiceUnit extends Model {
-	private static final long serialVersionUID = 610258108817822392L;
+	private static final long serialVersionUID = 4375928557279973895L;
 
 	public ServiceUnit() {
 	}
@@ -45,6 +45,10 @@ public class ServiceUnit extends Model {
 		setUnitAssignment(UnitAssignment.parse(jsonObject, "unit_assignment"));
 		if (getUnitAssignment().isPresent()) {
 			setUnitAssignmentId(getUnitAssignment().get().getId());
+		}
+		setVehicle(Vehicle.parse(jsonObject, "vehicle"));
+		if (getVehicle().isPresent()) {
+			setVehicleId(getVehicle().get().getId());
 		}
 	}
 
@@ -109,6 +113,10 @@ public class ServiceUnit extends Model {
 
 		if (getUnitAssignment().isPresent()) {
 			jsonObject.put("unit_assignment_id", toJSON(getUnitAssignment().get().getId()));
+		}
+
+		if (getVehicle().isPresent()) {
+			jsonObject.put("vehicle_id", toJSON(getVehicle().get().getId()));
 		}
 		return jsonObject;
 	}
@@ -337,5 +345,23 @@ public class ServiceUnit extends Model {
 
 	public void clearUnitAssignment() {
 		this.unitAssignment = Optional.<UnitAssignment>absent();
+	}
+
+	private Optional<Vehicle> vehicle = Optional.<Vehicle>absent();
+
+	public Optional<Vehicle> getVehicle() {
+		return wrapNull(vehicle);
+	}
+
+	public void setVehicle(Optional<Vehicle> vehicle) {
+		this.vehicle = wrapNull(vehicle);
+	}
+
+	public void setVehicle(Vehicle vehicle) {
+		this.vehicle = Optional.<Vehicle>fromNullable(vehicle);
+	}
+
+	public void clearVehicle() {
+		this.vehicle = Optional.<Vehicle>absent();
 	}
 }
