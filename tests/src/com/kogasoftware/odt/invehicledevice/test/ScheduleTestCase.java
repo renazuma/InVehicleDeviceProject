@@ -68,6 +68,7 @@ public class ScheduleTestCase extends
 		
 	}
 
+	
 	public void test04_一回閉じてからもう一度予定ボタンを押したら表示() {
 		test03_戻るボタンを押したら消える();
 		solo.clickOnView(solo.getView(R.id.schedule_button));
@@ -90,7 +91,7 @@ public class ScheduleTestCase extends
 		assertFalse(solo.searchText("コガソフト", 0,false));
 
 	}
-
+/*
 	public void test06_予定を表示してから上スクロール() {
 
 		test05_予定を表示してから下スクロール();
@@ -130,7 +131,7 @@ public class ScheduleTestCase extends
 		assertFalse(solo.searchButton("下へ移動"));
 
 	}
-
+*/
 
 	@Override
 	public void tearDown() throws Exception {

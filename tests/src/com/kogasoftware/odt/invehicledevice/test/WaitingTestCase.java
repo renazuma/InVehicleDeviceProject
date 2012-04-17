@@ -39,7 +39,8 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 		super.setUp();
 
-		
+		dataset(6);
+
 		Logic.clearStatusFile();
 
 		solo = new Solo(getInstrumentation(), getActivity());
@@ -52,7 +53,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 	public void test00_データ初期設定() {
 		dataset(6);
-		
+
 	}
 
 	public void test01_メモボタンを押すとメモ画面が表示() {
@@ -68,7 +69,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 		solo.clickOnView(solo.getView(R.id.memo_close_button));
 		assertEquals(View.GONE, solo.getView(R.id.memo_modal).getVisibility());
 	}
-/*
+
 	public void test03_復路ボタンを押すと復路画面が表示() {
 		assertEquals(View.GONE, solo.getView(R.id.return_path_modal)
 				.getVisibility());
@@ -192,7 +193,6 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 		assertFalse(solo.searchButton("下へ移動"));
 
 	}
-*/
 	public void test18_乗客の新規追加ボタンが存在する() {
 
 		assertTrue(solo.searchText("予約の新規追加"));
