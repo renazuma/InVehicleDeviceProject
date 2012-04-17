@@ -8,7 +8,7 @@ import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 
 public class OperationScheduleReceiver implements Runnable {
-	private final Logic logic;
+	final Logic logic;
 
 	public OperationScheduleReceiver(Logic logic) {
 		this.logic = logic;
@@ -24,6 +24,11 @@ public class OperationScheduleReceiver implements Runnable {
 				break;
 			} catch (WebAPIException e) {
 				e.printStackTrace(); // TODO
+			}
+			try {
+				Thread.sleep(5000); // TODO
+			} catch (InterruptedException e) {
+				return;
 			}
 		}
 		logic.getStatusAccess().write(new Writer() {

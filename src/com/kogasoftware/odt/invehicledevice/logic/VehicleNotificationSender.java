@@ -9,15 +9,13 @@ import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
-public class VehicleNotificationSender implements Runnable {
-	private final Logic logic;
-
-	public VehicleNotificationSender(final Logic logic) {
-		this.logic = logic;
-	}
-
+public class VehicleNotificationSender extends LogicUser implements Runnable {
 	@Override
 	public void run() {
+		if (!getLogic().isPresent()) {
+			return;
+		}
+		final Logic logic = getLogic().get();
 		List<VehicleNotification> repliedVehicleNotifications = logic
 				.getStatusAccess().read(
 						new Reader<List<VehicleNotification>>() {
