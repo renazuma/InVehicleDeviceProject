@@ -27,9 +27,12 @@ public class VehicleNotificationSender implements Runnable {
 										status.repliedVehicleNotifications);
 							}
 						});
+		if (repliedVehicleNotifications.isEmpty()) {
+			return;
+		}
 		try {
 			for (final VehicleNotification vehicleNotification : repliedVehicleNotifications) {
-				if (vehicleNotification.getResponse().isPresent()) {
+				if (!vehicleNotification.getResponse().isPresent()) {
 					continue;
 				}
 				logic.getDataSource().responseVehicleNotification(
