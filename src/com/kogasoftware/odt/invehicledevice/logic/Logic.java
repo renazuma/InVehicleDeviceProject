@@ -56,7 +56,7 @@ import com.kogasoftware.odt.webapi.model.VehicleNotification;
 public class Logic {
 	private static Optional<Date> defaultDate = Optional.<Date> absent();
 	private static final Object DEFAULT_DATE_LOCK = new Object();
-	private static final Integer NUM_THREADS = 10;
+	private static final Integer NUM_THREADS = 3;
 	private static final Integer POLLING_PERIOD_MILLIS = 30 * 1000;
 	private static final String TAG = Logic.class.getSimpleName();
 
