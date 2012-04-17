@@ -59,7 +59,7 @@ public class StartCheckModalView extends ModalView {
 				getContext(), android.R.layout.simple_list_item_1, messages));
 
 		Button startButton = (Button) findViewById(R.id.start_button);
-		if (getLogic().getRemainingOperationSchedules().isEmpty()) {
+		if (getLogic().getRemainingOperationSchedules().size() <= 1) {
 			startButton.setText("確定する");
 		} else {
 			startButton.setText("出発する");
