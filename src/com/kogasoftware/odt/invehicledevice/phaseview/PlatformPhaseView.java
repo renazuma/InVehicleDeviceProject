@@ -235,6 +235,7 @@ public class PlatformPhaseView extends PhaseView {
 					}
 				});
 		dialog = Optional.of(builder.create());
+		dialog.get().show();
 	}
 
 	@Subscribe
