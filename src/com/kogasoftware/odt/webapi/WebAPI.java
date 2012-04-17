@@ -9,8 +9,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.http.HttpEntity;
@@ -37,6 +39,7 @@ import com.google.common.base.Objects;
 import com.google.common.io.ByteStreams;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
+import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class WebAPI {
@@ -528,7 +531,19 @@ public class WebAPI {
 			@Override
 			public List<OperationSchedule> convert(byte[] rawResponse)
 					throws Exception {
-				return OperationSchedule.parseList(parseJSONArray(rawResponse));
+				List<OperationSchedule> operationSchedules = OperationSchedule.parseList(parseJSONArray(rawResponse));
+				Map<Integer, Reservation> reservations = new HashMap<Integer, Reservation>();
+				for (OperationSchedule os : operationSchedules) {
+					for (ListIterator<Reservation> rit = os.getReservationsAsArrival().listIterator(); rit.hasNext(); ) {
+						Reservation r = rit.next();
+						if (reservations.containsKey(r.getId())) {
+							rit.set(reservations.get(r.getId()));
+						} else {
+							reservations.put(r.getId(), r);
+						}
+					}
+				}
+				return operationSchedules;
 			}
 		});		
 	}
