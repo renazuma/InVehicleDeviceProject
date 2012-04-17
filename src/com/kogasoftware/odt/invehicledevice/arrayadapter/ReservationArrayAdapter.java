@@ -5,7 +5,6 @@ import java.util.List;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -42,8 +41,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 	private final List<Reservation> ridingAndNoOutgoingReservations = new LinkedList<Reservation>();
 	private final List<Reservation> ridingReservations = new LinkedList<Reservation>();
 
-	public ReservationArrayAdapter(Context context, int resourceId,
-			Logic logic) {
+	public ReservationArrayAdapter(Context context, int resourceId, Logic logic) {
 		super(context, resourceId);
 		this.resourceId = resourceId;
 		this.logic = logic;
@@ -54,8 +52,6 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 			operationSchedule = this.remainingOperationSchedules.get(0);
 		} else {
 			operationSchedule = new OperationSchedule();
-			Log.e(TAG, "remainingOperationSchedules.isEmpty()",
-					new RuntimeException());
 			return;
 		}
 		ridingReservations.addAll(logic.getRidingReservations());
