@@ -13,15 +13,15 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class OperationRecord extends Model {
-	private static final long serialVersionUID = 6304691470080501261L;
+	private static final long serialVersionUID = 4235853883804977389L;
 
 	public OperationRecord() {
 	}
 
 	public OperationRecord(JSONObject jsonObject) throws JSONException, ParseException {
-		setArrivedAt(parseDate(jsonObject, "arrived_at"));
+		setArrivedAt(parseOptionalDate(jsonObject, "arrived_at"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
-		setDepartedAt(parseDate(jsonObject, "departed_at"));
+		setDepartedAt(parseOptionalDate(jsonObject, "departed_at"));
 		setId(parseInteger(jsonObject, "id"));
 		setOperationScheduleId(parseOptionalInteger(jsonObject, "operation_schedule_id"));
 		setServiceUnitId(parseOptionalInteger(jsonObject, "service_unit_id"));
@@ -69,9 +69,9 @@ public class OperationRecord extends Model {
 	@Override
 	public JSONObject toJSONObject() throws JSONException {
 		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("arrived_at", toJSON(getArrivedAt()));
+		jsonObject.put("arrived_at", toJSON(getArrivedAt().orNull()));
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
-		jsonObject.put("departed_at", toJSON(getDepartedAt()));
+		jsonObject.put("departed_at", toJSON(getDepartedAt().orNull()));
 		jsonObject.put("operation_schedule_id", toJSON(getOperationScheduleId().orNull()));
 		jsonObject.put("service_unit_id", toJSON(getServiceUnitId().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
@@ -86,14 +86,22 @@ public class OperationRecord extends Model {
 		return jsonObject;
 	}
 
-	private Date arrivedAt = new Date();
+	private Optional<Date> arrivedAt = Optional.<Date>absent();
 
-	public Date getArrivedAt() {
+	public Optional<Date> getArrivedAt() {
 		return wrapNull(arrivedAt);
 	}
 
-	public void setArrivedAt(Date arrivedAt) {
+	public void setArrivedAt(Optional<Date> arrivedAt) {
 		this.arrivedAt = wrapNull(arrivedAt);
+	}
+
+	public void setArrivedAt(Date arrivedAt) {
+		this.arrivedAt = Optional.fromNullable(arrivedAt);
+	}
+
+	public void clearArrivedAt() {
+		this.arrivedAt = Optional.<Date>absent();
 	}
 
 	private Date createdAt = new Date();
@@ -106,14 +114,22 @@ public class OperationRecord extends Model {
 		this.createdAt = wrapNull(createdAt);
 	}
 
-	private Date departedAt = new Date();
+	private Optional<Date> departedAt = Optional.<Date>absent();
 
-	public Date getDepartedAt() {
+	public Optional<Date> getDepartedAt() {
 		return wrapNull(departedAt);
 	}
 
-	public void setDepartedAt(Date departedAt) {
+	public void setDepartedAt(Optional<Date> departedAt) {
 		this.departedAt = wrapNull(departedAt);
+	}
+
+	public void setDepartedAt(Date departedAt) {
+		this.departedAt = Optional.fromNullable(departedAt);
+	}
+
+	public void clearDepartedAt() {
+		this.departedAt = Optional.<Date>absent();
 	}
 
 	private Integer id = 0;
