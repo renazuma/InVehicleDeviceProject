@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -183,6 +185,16 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 				android.R.layout.simple_spinner_item, passengerCounts);
 		spinner.setAdapter(adapter);
 		spinner.setSelection(reservation.getPassengerCount() - 1, true);
+		spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view,
+					int position, long id) {
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+			}
+		});
 
 		TextView userNameView = (TextView) view.findViewById(R.id.user_name);
 
@@ -216,7 +228,8 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 
 		final ToggleButton paidButton = (ToggleButton) view
 				.findViewById(R.id.paid_button);
-		if (ridingReservations.contains(reservation)) {
+		if (ridingReservations.contains(reservation)
+				|| !reservation.getPayment().equals(0)) { // TODO null?
 			paidButton.setVisibility(View.VISIBLE);
 		} else {
 			paidButton.setVisibility(View.GONE);
