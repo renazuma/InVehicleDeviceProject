@@ -191,21 +191,36 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 		latch = new CountDownLatch(1);
 		schedules = null;
 		
-		Date dt = new Date();
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.MINUTE, 20);
+		Date dtArrival1 = cal.getTime();
+
+		cal = Calendar.getInstance();
+		cal.add(Calendar.MINUTE, 22);
+		Date dtDeparture1 = cal.getTime();
+
+		cal = Calendar.getInstance();
+		cal.add(Calendar.MINUTE, 40);
+		Date dtArrival2 = cal.getTime();
+
+		cal = Calendar.getInstance();
+		cal.add(Calendar.MINUTE, 45);
+		Date dtDeparture2 = cal.getTime();
+
 		User user = master.createUser("login1", "もぎ", "けんた");
 		UnitAssignment ua = record.createUnitAssignment("1号車");
-		Calendar cal = Calendar.getInstance();
-		cal.set(Calendar.MONTH, 1);
+		cal = Calendar.getInstance();
+		cal.add(Calendar.MONTH, -1);
 		record.createServiceUnit(master.getDriver(), master.getVehicle(), master.getInVehicleDevice(), ua, 
 				cal.getTime());
 		
 		Platform p1 = master.createPlatform("乗降場1", "じょうこうじょう1");
-		OperationSchedule os1 = record.createOperationSchedule(ua, p1, dt, dt);
+		OperationSchedule os1 = record.createOperationSchedule(ua, p1, dtArrival1, dtDeparture1);
 		Platform p2 = master.createPlatform("乗降場2", "じょうこうじょう2");
-		OperationSchedule os2 = record.createOperationSchedule(ua, p2, dt, dt);
+		OperationSchedule os2 = record.createOperationSchedule(ua, p2, dtArrival2, dtDeparture2);
 		
-		Demand demand = record.createDemand(user, ua, p1, dt, p2, dt, 0);
-		assertNotNull(record.createReservation(user, demand, ua, p1, os1, dt, p2, os2, dt, 0));
+		Demand demand = record.createDemand(user, ua, p1, dtDeparture1, p2, dtArrival2, 0);
+		assertNotNull(record.createReservation(user, demand, ua, p1, os1, dtDeparture1, p2, os2, dtArrival2, 0));
 		
 		api.getOperationSchedules(new WebAPICallback<List<OperationSchedule>>() {
 			@Override
@@ -229,5 +244,6 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 		assertNotNull(schedules);
 		assertEquals(2, schedules.size());
 		
+		assertNotNull(schedules.get(1).getReservationsAsArrival().get(0).getUser().orNull());
 	}
 }

@@ -57,8 +57,8 @@ public class GenerateRecord {
 	}
 
 	public Reservation createReservation(final User user, final Demand demand, final UnitAssignment unitAssignment, 
-			final Platform arrivalPlatform, final OperationSchedule arrivalSchedule, final Date arrivalTime, 
-			final Platform departurePlatform, final OperationSchedule departureSchedule, final Date departureTime, final int payment) throws Exception {
+			final Platform departurePlatform, final OperationSchedule departureSchedule, final Date departureTime, 
+			final Platform arrivalPlatform, final OperationSchedule arrivalSchedule, final Date arrivalTime, final int payment) throws Exception {
 		SyncCall<Reservation> sc = new SyncCall<Reservation>() {
 			@Override
 			public int run() throws Exception {
@@ -86,8 +86,8 @@ public class GenerateRecord {
 	}
 	
 	public Demand createDemand(final User user, final UnitAssignment unitAssignment, 
-			final Platform arrivalPlatform, final Date arrivalTime, 
-			final Platform departurePlatform, final Date departureTime, final int payment) throws Exception {
+			final Platform departurePlatform, final Date departureTime, 
+			final Platform arrivalPlatform, final Date arrivalTime, final int payment) throws Exception {
 		SyncCall<Demand> sc = new SyncCall<Demand>() {
 			@Override
 			public int run() throws Exception {

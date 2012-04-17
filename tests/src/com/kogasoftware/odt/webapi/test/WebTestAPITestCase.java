@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.webapi.test;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -136,16 +137,31 @@ public class WebTestAPITestCase extends
 		master.cleanDatabase();
 		master.createServiceProvider();
 		
-		Date dt = new Date();
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.MINUTE, 20);
+		Date dtArrival1 = cal.getTime();
+
+		cal = Calendar.getInstance();
+		cal.add(Calendar.MINUTE, 22);
+		Date dtDeparture1 = cal.getTime();
+
+		cal = Calendar.getInstance();
+		cal.add(Calendar.MINUTE, 40);
+		Date dtArrival2 = cal.getTime();
+
+		cal = Calendar.getInstance();
+		cal.add(Calendar.MINUTE, 45);
+		Date dtDeparture2 = cal.getTime();
+
 		User user = master.createUser("login1", "もぎ", "たろう");
 		UnitAssignment ua = record.createUnitAssignment("1号車");
 		Platform p1 = master.createPlatform("乗降場1", "じょうこうじょう1");
-		OperationSchedule os1 = record.createOperationSchedule(ua, p1, dt, dt);
+		OperationSchedule os1 = record.createOperationSchedule(ua, p1, dtArrival1, dtDeparture1);
 		Platform p2 = master.createPlatform("乗降場2", "じょうこうじょう2");
-		OperationSchedule os2 = record.createOperationSchedule(ua, p2, dt, dt);
+		OperationSchedule os2 = record.createOperationSchedule(ua, p2, dtArrival2, dtDeparture2);
 		
-		Demand demand = record.createDemand(user, ua, p1, dt, p2, dt, 0);
-		assertNotNull(record.createReservation(user, demand, ua, p1, os1, dt, p2, os2, dt, 0));
+		Demand demand = record.createDemand(user, ua, p1, dtDeparture1, p2, dtArrival1, 0);
+		assertNotNull(record.createReservation(user, demand, ua, p1, os1, dtDeparture2, p2, os2, dtArrival1, 0));
 		
 	}
 	

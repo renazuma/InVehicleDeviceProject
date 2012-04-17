@@ -548,4 +548,10 @@ public class WebAPI {
 		});		
 	}
 	
+	/**
+	 * 到着時のサーバへの通知
+	 * @param os 運行スケジュールオブジェクト
+	 * @throws JSONException 
+	 */
+
 }
