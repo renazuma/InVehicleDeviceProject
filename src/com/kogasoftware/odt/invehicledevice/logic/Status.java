@@ -48,7 +48,10 @@ public class Status implements Serializable {
 		File file = new File(context.getFilesDir() + File.separator
 				+ Status.class.getCanonicalName() + ".serialized");
 		Status status = new Status();
-		if (!isClear) {
+		SharedPreferences preferences = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		if (!isClear && !preferences.getBoolean("update", false)) {
+			preferences.edit().putBoolean("update", false).commit();
 			FileInputStream fileInputStream = null;
 			ObjectInputStream objectInputStream = null;
 			try {
@@ -83,8 +86,6 @@ public class Status implements Serializable {
 			}
 		}
 		status.file = file;
-		SharedPreferences preferences = PreferenceManager
-				.getDefaultSharedPreferences(context);
 		status.token = preferences.getString("token", "");
 		status.url = preferences.getString("url", "");
 
@@ -113,7 +114,8 @@ public class Status implements Serializable {
 	// Serializableにするため、LinkedListのままにしておく
 	public final LinkedList<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();
 	public final LinkedList<VehicleNotification> repliedVehicleNotifications = new LinkedList<VehicleNotification>();
-
+	public final LinkedList<OperationSchedule> arrivalOperationSchedule = new LinkedList<OperationSchedule>();
+	public final LinkedList<OperationSchedule> departureOperationSchedule = new LinkedList<OperationSchedule>();
 	public String token = "";
 	public String url = "";
 

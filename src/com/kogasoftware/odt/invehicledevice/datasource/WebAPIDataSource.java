@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.json.JSONException;
 
@@ -47,15 +48,30 @@ public class WebAPIDataSource implements DataSource {
 		api = new WebAPI(token);
 	}
 
-	public <T> void callWebAPISynchronously(final WebAPICaller<T> caller,
+	@Override
+	public int arrivalOperationSchedule(final OperationSchedule os,
+			final WebAPICallback<OperationSchedule> callback)
+			throws WebAPIException {
+		return callWebAPISynchronously(new WebAPICaller<OperationSchedule>() {
+			@Override
+			public void call(WebAPICallback<OperationSchedule> wrappedCallback)
+					throws WebAPIException, JSONException {
+				api.arrivalOperationSchedule(os, wrappedCallback);
+			}
+		}, callback);
+	}
+
+	public <T> int callWebAPISynchronously(final WebAPICaller<T> caller,
 			final WebAPICallback<T> extraCallback) throws WebAPIException {
-		final Set<Runnable> mutableRunnable = new CopyOnWriteArraySet<Runnable>();
-		final Set<WebAPIException> mutableException = new CopyOnWriteArraySet<WebAPIException>();
+		final AtomicInteger outputReqkey = new AtomicInteger(-1);
+		final Set<Runnable> outputRunnable = new CopyOnWriteArraySet<Runnable>();
+		final Set<WebAPIException> outputException = new CopyOnWriteArraySet<WebAPIException>();
 		final CountDownLatch latch = new CountDownLatch(1);
 		final WebAPICallback<T> synchronousCallback = new WebAPICallback<T>() {
 			@Override
 			public void onException(final int reqkey, final WebAPIException ex) {
-				mutableRunnable.add(new Runnable() {
+				outputReqkey.set(reqkey);
+				outputRunnable.add(new Runnable() {
 					@Override
 					public void run() {
 						caller.onException(reqkey, ex);
@@ -68,7 +84,8 @@ public class WebAPIDataSource implements DataSource {
 			@Override
 			public void onFailed(final int reqkey, final int statusCode,
 					final String response) {
-				mutableRunnable.add(new Runnable() {
+				outputReqkey.set(reqkey);
+				outputRunnable.add(new Runnable() {
 					@Override
 					public void run() {
 						caller.onFailed(reqkey, statusCode, response);
@@ -81,7 +98,8 @@ public class WebAPIDataSource implements DataSource {
 			@Override
 			public void onSucceed(final int reqkey, final int statusCode,
 					final T result) {
-				mutableRunnable.add(new Runnable() {
+				outputReqkey.set(reqkey);
+				outputRunnable.add(new Runnable() {
 					@Override
 					public void run() {
 						caller.onSucceed(reqkey, statusCode, result);
@@ -97,16 +115,16 @@ public class WebAPIDataSource implements DataSource {
 				try {
 					caller.call(synchronousCallback);
 				} catch (JSONException e) {
-					mutableException.add(new WebAPIException(true, e));
+					outputException.add(new WebAPIException(true, e));
 				} catch (WebAPIException e) {
-					mutableException.add(e);
+					outputException.add(e);
 					latch.countDown();
 				}
 			}
 		});
 
 		if (!postResult) {
-			return;
+			return outputReqkey.get();
 		}
 
 		try {
@@ -115,18 +133,19 @@ public class WebAPIDataSource implements DataSource {
 			throw new WebAPIException(true, e);
 		}
 
-		if (!mutableException.isEmpty()) {
-			throw mutableException.iterator().next();
+		if (!outputException.isEmpty()) {
+			throw outputException.iterator().next();
 		}
 
-		if (!mutableRunnable.isEmpty()) {
-			mutableRunnable.iterator().next().run();
+		if (!outputRunnable.isEmpty()) {
+			outputRunnable.iterator().next().run();
 		}
+		return outputReqkey.get();
 	}
 
-	public <T> void callWebAPISynchronusly(final WebAPICaller<T> caller)
+	public <T> int callWebAPISynchronusly(final WebAPICaller<T> caller)
 			throws WebAPIException {
-		callWebAPISynchronously(caller, new WebAPICallback<T>() {
+		return callWebAPISynchronously(caller, new WebAPICallback<T>() {
 			@Override
 			public void onException(int reqkey, WebAPIException ex) {
 			}
@@ -139,6 +158,19 @@ public class WebAPIDataSource implements DataSource {
 			public void onSucceed(int reqkey, int statusCode, T result) {
 			}
 		});
+	}
+
+	@Override
+	public int departureOperationSchedule(final OperationSchedule os,
+			final WebAPICallback<OperationSchedule> callback)
+			throws WebAPIException {
+		return callWebAPISynchronously(new WebAPICaller<OperationSchedule>() {
+			@Override
+			public void call(WebAPICallback<OperationSchedule> wrappedCallback)
+					throws WebAPIException, JSONException {
+				api.departureOperationSchedule(os, wrappedCallback);
+			}
+		}, callback);
 	}
 
 	@Override
@@ -315,11 +347,11 @@ public class WebAPIDataSource implements DataSource {
 	}
 
 	@Override
-	public void responseVehicleNotification(final VehicleNotification vn,
+	public int responseVehicleNotification(final VehicleNotification vn,
 			final int response,
 			final WebAPICallback<VehicleNotification> callback)
 			throws WebAPIException {
-		callWebAPISynchronously(new WebAPICaller<VehicleNotification>() {
+		return callWebAPISynchronously(new WebAPICaller<VehicleNotification>() {
 			@Override
 			public void call(WebAPICallback<VehicleNotification> wrappedCallback)
 					throws WebAPIException, JSONException {
@@ -327,4 +359,5 @@ public class WebAPIDataSource implements DataSource {
 			}
 		}, callback);
 	}
+
 }
