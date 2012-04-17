@@ -392,11 +392,25 @@ public class MockDataSourceTest implements DataSource {
 	}
 
 	@Override
-	public void responseVehicleNotification(VehicleNotification vn,
+	public int responseVehicleNotification(VehicleNotification vn,
 			int response, WebAPICallback<VehicleNotification> callback)
 			throws WebAPIException {
 		// TODO Auto-generated method stub
-		
+		return 0;
+	}
+
+	@Override
+	public int arrivalOperationSchedule(OperationSchedule os,
+			WebAPICallback<OperationSchedule> callback) throws WebAPIException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int departureOperationSchedule(OperationSchedule os,
+			WebAPICallback<OperationSchedule> callback) throws WebAPIException {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }
