@@ -25,6 +25,20 @@ public class DummyDataSource implements DataSource {
 	private Date nextNotifyDate = new Date(new Date().getTime() + 60 * 1000);
 
 	@Override
+	public int arrivalOperationSchedule(OperationSchedule os,
+			WebAPICallback<OperationSchedule> callback) throws WebAPIException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int departureOperationSchedule(OperationSchedule os,
+			WebAPICallback<OperationSchedule> callback) throws WebAPIException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
 	public InVehicleDevice getInVehicleDevice() throws WebAPIException {
 		try {
 			Thread.sleep(5000);
@@ -300,11 +314,11 @@ public class DummyDataSource implements DataSource {
 	}
 
 	@Override
-	public void responseVehicleNotification(VehicleNotification vn,
+	public int responseVehicleNotification(VehicleNotification vn,
 			int response, WebAPICallback<VehicleNotification> callback)
 			throws WebAPIException {
 		// TODO Auto-generated method stub
-
+		return 0;
 	}
 
 }
