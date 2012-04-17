@@ -8,6 +8,8 @@ import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceActivity;
 
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
+import com.kogasoftware.odt.invehicledevice.datasource.DummyDataSource;
 import com.kogasoftware.odt.invehicledevice.logic.Logic;
 
 public class DrivingTestCase extends
@@ -18,6 +20,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 	public DrivingTestCase() {
 		super("com.kogasoftware.odt.invehicledevice",
 				InVehicleDeviceActivity.class);
+		DataSourceFactory.setInstance(new DummyDataSource());
 	}
 
 	@Override

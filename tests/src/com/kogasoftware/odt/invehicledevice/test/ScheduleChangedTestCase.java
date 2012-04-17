@@ -7,6 +7,8 @@ import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceActivity;
 
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
+import com.kogasoftware.odt.invehicledevice.datasource.DummyDataSource;
 import com.kogasoftware.odt.invehicledevice.logic.Logic;
 
 public class ScheduleChangedTestCase extends
@@ -17,6 +19,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 	public ScheduleChangedTestCase() {
 		super("com.kogasoftware.odt.invehicledevice",
 				InVehicleDeviceActivity.class);
+		DataSourceFactory.setInstance(new DummyDataSource());
 	}
 
 	@Override

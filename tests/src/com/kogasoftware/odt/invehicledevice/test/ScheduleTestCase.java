@@ -9,6 +9,7 @@ import com.kogasoftware.odt.invehicledevice.InVehicleDeviceActivity;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
+import com.kogasoftware.odt.invehicledevice.datasource.DummyDataSource;
 import com.kogasoftware.odt.invehicledevice.logic.Logic;
 import com.kogasoftware.odt.invehicledevice.test.MockDataSourceTest;
 
@@ -30,6 +31,7 @@ public class ScheduleTestCase extends
 	public ScheduleTestCase() {
 		super("com.kogasoftware.odt.invehicledevice",
 				InVehicleDeviceActivity.class);
+		DataSourceFactory.setInstance(new DummyDataSource());
 	}
 
 	@Override
