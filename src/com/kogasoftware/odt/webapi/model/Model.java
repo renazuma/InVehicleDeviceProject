@@ -16,8 +16,9 @@ import org.json.JSONObject;
 import android.util.Log;
 
 import com.google.common.base.Optional;
+import com.kogasoftware.odt.webapi.Identifiable;
 
-abstract public class Model implements Serializable {
+abstract public class Model implements Serializable, Identifiable {
 	public static final String TAG = Model.class.getSimpleName();
 
 	private static final long serialVersionUID = -5513333240346057624L;
