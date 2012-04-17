@@ -76,8 +76,8 @@ public class DummyDataSource implements DataSource {
 			JSONObject j1 = new JSONObject(
 					"{"
 							+ "id: 1, "
-							+ "arrival_estimate: '2012-01-01T01:00:00.000+09:00', "
-							+ "departure_estimate: '2012-01-01T02:00:00.000+09:00', "
+							+ "arrival_estimate: '2012-01-01T01:00:00+09:00', "
+							+ "departure_estimate: '2012-01-01T02:00:00+09:00', "
 							+ "platform: {name: 'コガソフトウェア前', name_ruby: 'こがそふとうぇあまえ'}, "
 							+ "reservations_as_arrival: ["
 							+ "  {id: 1, passenger_count: 5, memo: 'テストメモ1', "
@@ -93,8 +93,8 @@ public class DummyDataSource implements DataSource {
 			JSONObject j2 = new JSONObject(
 					"{"
 							+ "id: 2, "
-							+ "arrival_estimate: '2012-01-01T01:00:00.000+09:00', "
-							+ "departure_estimate: '2012-01-01T02:00:00.000+09:00', "
+							+ "arrival_estimate: '2012-01-01T01:00:00+09:00', "
+							+ "departure_estimate: '2012-01-01T02:00:00+09:00', "
 							+ "platform: {name: '上野御徒町駅前', name_ruby: 'うえのおかちまちえきまえ'}, "
 							+ "reservations_as_arrival: ["
 							+ "  {id: 7, passenger_count: 5, memo: 'テストメモ1', "
@@ -108,8 +108,8 @@ public class DummyDataSource implements DataSource {
 			l.add(new OperationSchedule(j2));
 
 			JSONObject j3 = new JSONObject("{" + "id: 3, "
-					+ "arrival_estimate: '2012-01-01T01:00:00.000+09:00', "
-					+ "departure_estimate: '2012-01-01T02:00:00.000+09:00', "
+					+ "arrival_estimate: '2012-01-01T01:00:00+09:00', "
+					+ "departure_estimate: '2012-01-01T02:00:00+09:00', "
 					+ "platform: {name: '上野広小路前', name_ruby: 'うえのひろこうじまえ'}, "
 					+ "reservations_as_arrival: ["
 					+ "  {id: 13, passenger_count: 5, memo: 'テストメモ1', " + u1
@@ -123,8 +123,8 @@ public class DummyDataSource implements DataSource {
 
 			JSONObject j4 = new JSONObject("{" + "id: 4, "
 
-			+ "arrival_estimate: '2012-01-01T01:00:00.000+09:00', "
-					+ "departure_estimate: '2012-01-01T02:00:00.000+09:00', "
+			+ "arrival_estimate: '2012-01-01T01:00:00+09:00', "
+					+ "departure_estimate: '2012-01-01T02:00:00+09:00', "
 					+ "platform: {name: 'ヨドバシアキバ前', name_ruby: 'よどばしあきばまえ'}, "
 					+ "reservations_as_arrival: ["
 					+ "  {id: 19, passenger_count: 5, memo: 'テストメモ1', " + u1
@@ -138,8 +138,8 @@ public class DummyDataSource implements DataSource {
 
 			JSONObject j5 = new JSONObject("{" + "id: 5, "
 
-			+ "arrival_estimate: '2012-01-01T01:00:00.000+09:00', "
-					+ "departure_estimate: '2012-01-01T02:00:00.000+09:00', "
+			+ "arrival_estimate: '2012-01-01T01:00:00+09:00', "
+					+ "departure_estimate: '2012-01-01T02:00:00+09:00', "
 					+ "platform: {name: '上野動物園前', name_ruby: 'うえのどうぶつえんまえ'}, "
 					+ "reservations_as_arrival: ["
 					+ "  {id: 25, passenger_count: 5, memo: 'テストメモ1', " + u1
@@ -154,8 +154,8 @@ public class DummyDataSource implements DataSource {
 			JSONObject j6 = new JSONObject(
 					"{"
 							+ "id: 6, "
-							+ "arrival_estimate: '2012-01-01T01:00:00.000+09:00', "
-							+ "departure_estimate: '2012-01-01T02:00:00.000+09:00', "
+							+ "arrival_estimate: '2012-01-01T01:00:00+09:00', "
+							+ "departure_estimate: '2012-01-01T02:00:00+09:00', "
 							+ "platform: {name: '国立科学博物館前', name_ruby: 'こくりつかがくはくぶつかんまえ'}, "
 							+ "reservations_as_arrival: ["
 							+ "  {id: 104, passenger_count: 5, memo: 'テストメモ1', "
