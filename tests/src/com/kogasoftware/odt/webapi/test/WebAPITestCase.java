@@ -186,6 +186,7 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 	}
 	
 	List<OperationSchedule> schedules;
+	protected OperationSchedule schedule;
 	public void testGetOperationSchedules() throws Exception {
 		WebAPI api = new WebAPI(master.getInVehicleDevice().getAuthenticationToken().orNull());
 		latch = new CountDownLatch(1);
@@ -245,5 +246,51 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 		assertEquals(2, schedules.size());
 		
 		assertNotNull(schedules.get(1).getReservationsAsArrival().get(0).getUser().orNull());
-	}
+		
+		latch = new CountDownLatch(1);
+		api.departureOperationSchedule(schedules.get(0), new WebAPICallback<OperationSchedule>() {
+			@Override
+			public void onSucceed(int reqkey, int statusCode, OperationSchedule result) {
+				schedule = result;
+				latch.countDown();
+			}
+			
+			@Override
+			public void onFailed(int reqkey, int statusCode, String response) {
+				latch.countDown();
+			}
+
+			@Override
+			public void onException(int reqkey, WebAPIException ex) {
+				latch.countDown();
+			}
+		});
+		latch.await(100, TimeUnit.SECONDS);
+		
+		assertNotNull(schedule.getOperationRecord());
+		assertNotNull(schedule.getOperationRecord().orNull().getDepartedAt().orNull());
+
+		latch = new CountDownLatch(1);
+		api.arrivalOperationSchedule(schedules.get(1), new WebAPICallback<OperationSchedule>() {
+			@Override
+			public void onSucceed(int reqkey, int statusCode, OperationSchedule result) {
+				schedule = result;
+				latch.countDown();
+			}
+			
+			@Override
+			public void onFailed(int reqkey, int statusCode, String response) {
+				latch.countDown();
+			}
+
+			@Override
+			public void onException(int reqkey, WebAPIException ex) {
+				latch.countDown();
+			}
+		});
+		latch.await(100, TimeUnit.SECONDS);
+		
+		assertNotNull(schedule.getOperationRecord());
+		assertNotNull(schedule.getOperationRecord().orNull().getArrivedAt().orNull());
+}
 }

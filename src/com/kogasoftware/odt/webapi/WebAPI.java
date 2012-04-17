@@ -553,5 +553,30 @@ public class WebAPI {
 	 * @param os 運行スケジュールオブジェクト
 	 * @throws JSONException 
 	 */
-
+	public int arrivalOperationSchedule(OperationSchedule os, WebAPICallback<OperationSchedule> callback) throws WebAPIException, JSONException {
+		return put(PATH_SCHEDULES + "/" + os.getId() + "/arrival", null, callback, new ResponseConverter<OperationSchedule>() {
+			@Override
+			public OperationSchedule convert(byte[] rawResponse)
+					throws Exception {
+				return OperationSchedule.parse(parseJSONObject(rawResponse)).orNull();
+			}
+		});
+	}
+	
+	/**
+	 * 出発時のサーバへの通知
+	 * @param os 運行スケジュールオブジェクト
+	 * @throws JSONException 
+	 */
+	public int departureOperationSchedule(OperationSchedule os, WebAPICallback<OperationSchedule> callback) throws WebAPIException, JSONException {
+		return put(PATH_SCHEDULES + "/" + os.getId() + "/departure", null, callback, new ResponseConverter<OperationSchedule>() {
+			@Override
+			public OperationSchedule convert(byte[] rawResponse)
+					throws Exception {
+				return OperationSchedule.parse(parseJSONObject(rawResponse)).orNull();
+			}
+		});
+	}
+	
+	
 }
