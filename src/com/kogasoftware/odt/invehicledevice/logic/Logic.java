@@ -66,7 +66,7 @@ public class Logic {
 	private static final String TAG = Logic.class.getSimpleName();
 
 	private static final AtomicBoolean willClearStatusFile = new AtomicBoolean(
-			true);
+			false);
 
 	public static void clearStatusFile() {
 		willClearStatusFile.set(true);
