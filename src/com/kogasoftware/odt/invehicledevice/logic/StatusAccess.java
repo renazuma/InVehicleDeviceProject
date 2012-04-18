@@ -1,6 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.logic;
 
-
 import android.content.Context;
 
 /**
@@ -30,23 +29,32 @@ public class StatusAccess {
 	}
 
 	public <T> T read(Reader<T> reader) {
-		synchronized (status.lock) {
+		try {
+			status.reentrantReadWriteLock.readLock().lock();
 			return reader.read(status);
+		} finally {
+			status.reentrantReadWriteLock.readLock().unlock();
 		}
 	}
 
 	public <T> T readAndWrite(ReaderAndWriter<T> reader) {
-		synchronized (status.lock) {
+		try {
+			status.reentrantReadWriteLock.writeLock().lock();
 			T result = reader.readAndWrite(status);
 			status.save();
 			return result;
+		} finally {
+			status.reentrantReadWriteLock.writeLock().unlock();
 		}
 	}
 
 	public void write(Writer writer) {
-		synchronized (status.lock) {
+		try {
+			status.reentrantReadWriteLock.writeLock().lock();
 			writer.write(status);
+			status.save();
+		} finally {
+			status.reentrantReadWriteLock.writeLock().unlock();
 		}
-		status.save();
 	}
 }

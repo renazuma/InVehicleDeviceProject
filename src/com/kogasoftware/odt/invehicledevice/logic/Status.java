@@ -14,6 +14,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -36,7 +37,7 @@ public class Status implements Serializable {
 		DRIVE, FINISH, INITIAL, PLATFORM
 	}
 
-	private static final long serialVersionUID = 5617948505743182173L;
+	private static final long serialVersionUID = 5617948505743182174L;
 
 	private static final String TAG = Status.class.getSimpleName();
 
@@ -92,14 +93,13 @@ public class Status implements Serializable {
 		return status;
 	}
 
+	public transient final ReentrantReadWriteLock reentrantReadWriteLock = new ReentrantReadWriteLock();
+
 	public final Date createdDate = new Date();
 
 	public Integer currentOperationScheduleIndex = 0;
 	public File file = new EmptyFile();
 	public final AtomicBoolean initialized = new AtomicBoolean(false);
-	public final Object lock = new Serializable() {
-		private static final long serialVersionUID = -8902504841122071697L;
-	}; // synchronized用にシリアライズ可能なオブジェクトを持っておく
 
 	public final LinkedList<Reservation> missedReservations = new LinkedList<Reservation>();
 	public final LinkedList<OperationSchedule> operationSchedules = new LinkedList<OperationSchedule>();
@@ -130,29 +130,23 @@ public class Status implements Serializable {
 	public void save(final File file) {
 		// ByteArrayへの変換を呼び出し元スレッドで行う
 		final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-		synchronized (lock) {
-			ObjectOutputStream objectOutputStream = null;
-			try {
-				if (!file.equals(new EmptyFile()) && file.exists()
-						&& !file.delete()) {
-					throw new IOException(
-							"file.exists() && !file.delete(), file=" + file);
-				}
-				objectOutputStream = new ObjectOutputStream(
-						byteArrayOutputStream);
-				objectOutputStream.writeObject(this);
-				objectOutputStream.flush();
-			} catch (NotSerializableException e) {
-				Log.e(TAG, e.toString(), e);
-				return;
-			} catch (IOException e) {
-				Log.w(TAG, e);
-				return;
-			} finally {
-				Closeables.closeQuietly(objectOutputStream);
-				Closeables.closeQuietly(byteArrayOutputStream);
-			}
+		ObjectOutputStream objectOutputStream = null;
+		try {
+			reentrantReadWriteLock.readLock().lock();
+			objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+			objectOutputStream.writeObject(this);
+		} catch (NotSerializableException e) {
+			Log.e(TAG, e.toString(), e);
+			return;
+		} catch (IOException e) {
+			Log.w(TAG, e);
+			return;
+		} finally {
+			reentrantReadWriteLock.readLock().unlock();
+			Closeables.closeQuietly(objectOutputStream);
+			Closeables.closeQuietly(byteArrayOutputStream);
 		}
+
 		// ByteArrayへの変換後は、呼び出し元スレッドでのファイルIOを避けるため新しいスレッドでデータを書き込む
 		new Thread() {
 			@Override
