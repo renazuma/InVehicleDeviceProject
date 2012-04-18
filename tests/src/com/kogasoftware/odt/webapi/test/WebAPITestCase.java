@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.webapi.test;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -19,6 +20,7 @@ import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.ServiceUnit;
+import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.webapi.model.UnitAssignment;
 import com.kogasoftware.odt.webapi.model.User;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
@@ -190,6 +192,7 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 	List<OperationSchedule> schedules;
 	protected OperationSchedule schedule;
 	protected PassengerRecord passengerRecord;
+	protected ServiceUnitStatusLog serviceUnitStatusLog;
 	public void testGetOperationSchedules() throws Exception {
 		WebAPI api = new WebAPI(master.getInVehicleDevice().getAuthenticationToken().orNull());
 		latch = new CountDownLatch(1);
@@ -461,6 +464,46 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 		assertEquals(os1.getId(), passengerRecord.getDepartureOperationScheduleId());
 		assertEquals(os2.getId(), passengerRecord.getArrivalOperationScheduleId().orNull());
 
+	}
+	
+	public void testSendServiceUnitStatusLog() throws Exception {
+		WebAPI api = new WebAPI(master.getInVehicleDevice().getAuthenticationToken().orNull());
+		latch = new CountDownLatch(1);
+		schedules = null;
+		
+		UnitAssignment ua = record.createUnitAssignment("1号車");
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.MONTH, -1);
+		record.createServiceUnit(master.getDriver(), master.getVehicle(), master.getInVehicleDevice(), ua, 
+				cal.getTime());
+
+		ServiceUnitStatusLog log = new ServiceUnitStatusLog();
+		log.setLatitude(new BigDecimal(35.2));
+		log.setLongitude(new BigDecimal(135.8));
+		api.sendServiceUnitStatusLog(log, new WebAPICallback<ServiceUnitStatusLog>() {
+
+			@Override
+			public void onSucceed(int reqkey, int statusCode,
+					ServiceUnitStatusLog result) {
+				serviceUnitStatusLog = result;
+				latch.countDown();
+			}
+
+			@Override
+			public void onFailed(int reqkey, int statusCode, String response) {
+				latch.countDown();
+			}
+
+			@Override
+			public void onException(int reqkey, WebAPIException ex) {
+				latch.countDown();
+			}
+			
+		});
+		
+		latch.await();
+		assertNotNull(serviceUnitStatusLog);
+		assertEquals(new BigDecimal(35.2), serviceUnitStatusLog.getLatitude());
 	}
 	
 }
