@@ -45,7 +45,7 @@ public class WebAPIDataSource implements DataSource {
 	private final WebAPI api;
 
 	public WebAPIDataSource(String url, String token) {
-		api = new WebAPI(token);
+		api = new WebAPI(url, token);
 	}
 
 	@Override
