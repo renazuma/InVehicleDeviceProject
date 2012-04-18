@@ -4,11 +4,14 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.util.Log;
 
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
 
 public class OrientationSensorEventListener extends LogicUser implements
 		SensorEventListener {
+	private static final String TAG = OrientationSensorEventListener.class
+			.getSimpleName();
 
 	@Override
 	public void onAccuracyChanged(Sensor arg0, int arg1) {
@@ -36,5 +39,6 @@ public class OrientationSensorEventListener extends LogicUser implements
 				status.orientation = Math.toRadians(360.0f - degree);
 			}
 		});
+		Log.i(TAG, "orientation changed=" + degree);
 	}
 }
