@@ -123,8 +123,10 @@ public class InVehicleDeviceActivity extends Activity {
 		@Override
 		public void onSharedPreferenceChanged(
 				SharedPreferences sharedPreferences, String key) {
-			if (key == "update" && sharedPreferences.getBoolean(key, false)) { // TODO
-																				// 文字列定数
+			if (key.equals("update")
+					&& sharedPreferences.getBoolean(key, false)) { // TODO
+				// 文字列定数
+				Log.e(TAG, "SharedPreferences changed finish!"); // TODO
 				finish();
 			}
 		}
