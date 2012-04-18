@@ -13,6 +13,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.location.LocationManager;
@@ -20,6 +22,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
@@ -116,6 +119,16 @@ public class InVehicleDeviceActivity extends Activity {
 	private LocationManager locationManager = null;
 	private Button changePhaseButton = null;
 	private View waitingLayout = null;
+	private OnSharedPreferenceChangeListener onSharedPreferenceChangeListener = new OnSharedPreferenceChangeListener() {
+		@Override
+		public void onSharedPreferenceChanged(
+				SharedPreferences sharedPreferences, String key) {
+			if (key == "update" && sharedPreferences.getBoolean(key, false)) { // TODO
+																				// 文字列定数
+				finish();
+			}
+		}
+	};
 
 	@Subscribe
 	public void enterDrivePhase(EnterDrivePhaseEvent event) {
@@ -261,6 +274,10 @@ public class InVehicleDeviceActivity extends Activity {
 		telephonyManager.listen(updateSignalStrength,
 				PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
 
+		PreferenceManager.getDefaultSharedPreferences(this)
+				.registerOnSharedPreferenceChangeListener(
+						onSharedPreferenceChangeListener);
+
 		logicLoadThread = new LogicLoadThread(this);
 		logicLoadThread.start();
 	}
@@ -301,6 +318,10 @@ public class InVehicleDeviceActivity extends Activity {
 
 		telephonyManager.listen(updateSignalStrength,
 				PhoneStateListener.LISTEN_NONE);
+
+		PreferenceManager.getDefaultSharedPreferences(this)
+				.registerOnSharedPreferenceChangeListener(
+						onSharedPreferenceChangeListener);
 	}
 
 	@Override
