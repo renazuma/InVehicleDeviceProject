@@ -10,6 +10,7 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
@@ -56,7 +57,7 @@ public class VTextView extends View {
 	private static final int BOTTOM_SPACE = 18;
 	private static final int FONT_SIZE = 60;
 	private static final float FONT_SPACING_RATE = 0.8f;
-	// private static final String TAG = VTextView.class.getSimpleName();
+	private static final String TAG = VTextView.class.getSimpleName();
 	private static final int TOP_SPACE = 0;
 	private Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
 	private Canvas canvas = new Canvas(bitmap);
@@ -124,7 +125,17 @@ public class VTextView extends View {
 				canvas.restore();
 			}
 
-			if (y + fontSpacing > height - BOTTOM_SPACE) {
+			boolean cond = false;
+			try {
+				cond = y + fontSpacing > height - BOTTOM_SPACE;
+				// TODO: 上行でなぜかArrayIndexOutOfBoundsException発生報告がlogcatに出力されることがある。
+				// 再現しないようなら削除する
+			} catch (ArrayIndexOutOfBoundsException e) {
+				Log.e(TAG, e.toString(), e);
+				return;
+			}
+
+			if (cond) {
 				// もう文字が入らない場合
 				newLine = true;
 			} else {
