@@ -106,6 +106,7 @@ public class Logic {
 			.<SensorManager> absent();
 	private Thread voiceThread = new EmptyThread();
 	private TemperatureSensorEventListener temperatureSensorEventListener = new TemperatureSensorEventListener();
+	private OrientationSensorEventListener orientationSensorEventListener = new OrientationSensorEventListener();
 	private VehicleNotificationReceiver vehicleNotificationReceiver = new VehicleNotificationReceiver();
 	private VehicleNotificationSender vehicleNotificationSender = new VehicleNotificationSender();
 	private ScheduleChangedReceiver scheduleChangedReceiver = new ScheduleChangedReceiver();
@@ -178,7 +179,8 @@ public class Logic {
 			for (LogicUser logicUser : new LogicUser[] { locationSender,
 					temperatureSensorEventListener,
 					vehicleNotificationReceiver, vehicleNotificationSender,
-					scheduleChangedReceiver, operationScheduleSender }) {
+					scheduleChangedReceiver, operationScheduleSender,
+					orientationSensorEventListener }) {
 				eventBus.register(logicUser);
 			}
 
@@ -412,23 +414,28 @@ public class Logic {
 	}
 
 	private void onLooperStart() {
-		try {
+		if (locationManager.isPresent()) {
 			locationManager.get().requestLocationUpdates(
 					LocationManager.GPS_PROVIDER, 2000, 0, locationSender);
-		} catch (RuntimeException e) {
-			e.printStackTrace();
 		}
 
-		List<Sensor> sensors = sensorManager.get().getSensorList(
-				Sensor.TYPE_TEMPERATURE);
-		if (sensors.size() > 0) {
-			Sensor sensor = sensors.get(0);
-			try {
+		if (sensorManager.isPresent()) {
+			List<Sensor> temperatureSensors = sensorManager.get()
+					.getSensorList(Sensor.TYPE_TEMPERATURE);
+			if (temperatureSensors.size() > 0) {
+				Sensor sensor = temperatureSensors.get(0);
 				sensorManager.get().registerListener(
 						temperatureSensorEventListener, sensor,
 						SensorManager.SENSOR_DELAY_UI);
-			} catch (RuntimeException e) {
-				e.printStackTrace();
+			}
+
+			List<Sensor> orientationSensors = sensorManager.get()
+					.getSensorList(Sensor.TYPE_TEMPERATURE);
+			if (orientationSensors.size() > 0) {
+				Sensor sensor = orientationSensors.get(0);
+				sensorManager.get().registerListener(
+						orientationSensorEventListener, sensor,
+						SensorManager.SENSOR_DELAY_UI);
 			}
 		}
 	}
@@ -440,6 +447,8 @@ public class Logic {
 		if (sensorManager.isPresent()) {
 			sensorManager.get().unregisterListener(
 					temperatureSensorEventListener);
+			sensorManager.get().unregisterListener(
+					orientationSensorEventListener);
 		}
 	}
 
