@@ -62,10 +62,10 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 	}
 
-	public void test04_閉じるを押下して閉じ走行中に戻る() {
+	public void test04_戻るを押下して閉じ走行中に戻る() {
 		test02_走行中に管理者から連絡が来たら表示();
 
-		solo.clickOnButton("閉じる");
+		solo.clickOnButton("戻る");
 
 		getInstrumentation().waitForIdleSync();
 
@@ -107,7 +107,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 	public void test07_いいえを押下して閉じ停車中に戻る() {
 		test05_停車中に管理者から連絡が来たら表示();
 
-		solo.clickOnButton("閉じる");
+		solo.clickOnButton("戻る");
 
 		getInstrumentation().waitForIdleSync();
 
@@ -121,8 +121,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 	public void test08_管理画面中に管理者から連絡が来たら表示() {
 		test01_起動時は非表示();
 
-		//		solo.clickOnButton("運行管理");
-		solo.clickOnButton("管理");
+		solo.clickOnButton("運行管理");
 
 		//TODO 管理者からの連絡部分が実装されたら置き換える
 		solo.clickOnView(solo.getView(R.id.icon_text_view));
@@ -150,7 +149,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 	public void test10_いいえを押下して閉じ運行管理画面に戻る() {
 		test08_管理画面中に管理者から連絡が来たら表示();
 
-		solo.clickOnButton("閉じる");
+		solo.clickOnButton("戻る");
 
 		getInstrumentation().waitForIdleSync();
 
@@ -192,7 +191,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 	public void test12_いいえを押下して閉じ地図画面に戻る() {
 		test11_地図画面中に管理者から連絡が来たら表示();
 
-		solo.clickOnButton("閉じる");
+		solo.clickOnButton("戻る");
 
 		getInstrumentation().waitForIdleSync();
 

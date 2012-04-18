@@ -111,28 +111,39 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 		test01_起動時は走行中表示();
 
-		assertTrue("博物館前",solo.searchText("博物館前"));
+		assertTrue("コガソフトウェア前",solo.searchText("コガソフトウェア前"));
 
-		test04_停車中から出発しますボタンを押すと出発確認画面表示();
+		test06_出発確認画面で出発するボタンを押すと運転中画面表示();
 
-		assertTrue("御徒町駅前",solo.searchText("御徒町駅前"));
+		assertFalse("コガソフトウェア前",solo.searchText("コガソフトウェア前"));
+		assertTrue("上野御徒町駅前",solo.searchText("上野御徒町駅前"));
 
 	}
 
 	public void test08_最終乗降場についた時の挙動() {
-
-		// TODO 機能が確定していないので確定後実装する
-
-		test04_停車中から出発しますボタンを押すと出発確認画面表示();
-
-		solo.clickOnView(solo.getView(R.id.start_button));
-		assertEquals(View.VISIBLE, solo.getView(R.id.driving_layout)
+		for (Integer i = 0; i < 50; ++i) {
+			 test06_出発確認画面で出発するボタンを押すと運転中画面表示();
+			 
+			 if (solo.searchText("国立科学博物館前")) { // TODO 最終乗降場
+				 break;
+			 }
+		}
+		
+		solo.clickOnButton("到着しました");
+		getInstrumentation().waitForIdleSync();
+		
+		solo.clickOnButton("確定する");
+		getInstrumentation().waitForIdleSync();
+		assertEquals(View.VISIBLE, solo.getView(R.id.start_check_modal)
+				.getVisibility());
+		
+		solo.clickOnButton("確定する");
+		getInstrumentation().waitForIdleSync();
+		assertEquals(View.VISIBLE, solo.getView(R.id.finish_layout)
 				.getVisibility());
 
-		getInstrumentation().waitForIdleSync();
-
 		TextView v = (TextView) solo.getView(R.id.phase_text_view);
-		assertEquals("走行中", v.getText()); // TODO 画像ファイル名assertに書き換わる予定
+		assertEquals("", v.getText());
 
 	}
 
