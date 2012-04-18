@@ -39,6 +39,9 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
+		
+		assertTrue(false); // TODO: 内部データを修正するまでこのテストはペンディング
+		
 		Logic.clearStatusFile();
 		solo = new Solo(getInstrumentation(), getActivity());
 

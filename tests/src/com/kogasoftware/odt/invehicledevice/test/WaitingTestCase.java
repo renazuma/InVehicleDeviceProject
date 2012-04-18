@@ -40,6 +40,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 	public void setUp() throws Exception {
 
 		super.setUp();
+		assertTrue(false); // TODO: 内部データを修正するまでこのテストはペンディング
 
 		dataset(6);
 
@@ -66,7 +67,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 		assertTrue(solo.searchText("テストメモ1"));
 	}
 
-	public void test02_メモ画面で閉じるボタンを押すとメモ画面が非表示() {
+	public void test02_メモ画面で戻るボタンを押すとメモ画面が非表示() {
 		test01_メモボタンを押すとメモ画面が表示();
 		solo.clickOnView(solo.getView(R.id.memo_close_button));
 		assertEquals(View.GONE, solo.getView(R.id.memo_modal).getVisibility());
