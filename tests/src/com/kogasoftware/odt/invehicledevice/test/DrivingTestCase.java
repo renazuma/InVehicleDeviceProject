@@ -98,11 +98,10 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 		test04_停車中から出発しますボタンを押すと出発確認画面表示();
 
 		solo.clickOnView(solo.getView(R.id.start_button));
-		assertEquals(View.VISIBLE, solo.getView(R.id.driving_layout)
-				.getVisibility());
-
 		getInstrumentation().waitForIdleSync();
 
+		assertEquals(View.VISIBLE, solo.getView(R.id.driving_layout)
+				.getVisibility());
 		TextView v = (TextView) solo.getView(R.id.phase_text_view);
 		assertEquals("走行中", v.getText()); // TODO 画像ファイル名assertに書き換わる予定
 
