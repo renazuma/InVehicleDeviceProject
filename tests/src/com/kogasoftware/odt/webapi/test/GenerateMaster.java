@@ -26,7 +26,7 @@ public class GenerateMaster {
 	private Vehicle vehicle;
 
 	public GenerateMaster() {
-		api = new WebTestAPI();
+		api = new WebTestAPI(WebTestAPITestCase.TEST_SERVER_HOST);
 	}
 	
 	public WebTestAPI getTestAPI() {

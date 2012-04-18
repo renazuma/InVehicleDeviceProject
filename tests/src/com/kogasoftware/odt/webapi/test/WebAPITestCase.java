@@ -26,10 +26,12 @@ import com.kogasoftware.odt.webapi.model.User;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivity> {
+	public static final String SERVER_HOST = "http://192.168.104.63:3000";
+
 	public WebAPITestCase() {
 		super("com.kogasoftware.odt.webapi.test", DummyActivity.class);
 	}
-		
+	
 	CountDownLatch latch;
 	private GenerateMaster master;
 	private GenerateRecord record;
@@ -51,7 +53,7 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 	}
 
 	public void testPasswordLogin() throws Exception {
-		WebAPI api = new WebAPI();
+		WebAPI api = new WebAPI(SERVER_HOST);
 		latch = new CountDownLatch(1);
 		
 		InVehicleDevice ivd = new InVehicleDevice();
@@ -84,7 +86,7 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 	List<VehicleNotification> notifications;
 
 	public void testGetVehicleNotifications() throws Exception {
-		WebAPI api = new WebAPI(master.getInVehicleDevice().getAuthenticationToken().orNull());
+		WebAPI api = new WebAPI(SERVER_HOST, master.getInVehicleDevice().getAuthenticationToken().orNull());
 		latch = new CountDownLatch(1);
 		notifications = null;
 		
@@ -116,7 +118,7 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 	}
 	
 	public void testResponseVehicleNotification() throws Exception {
-		WebAPI api = new WebAPI(master.getInVehicleDevice().getAuthenticationToken().orNull());
+		WebAPI api = new WebAPI(SERVER_HOST, master.getInVehicleDevice().getAuthenticationToken().orNull());
 		latch = new CountDownLatch(1);
 		notifications = null;
 		
@@ -194,7 +196,7 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 	protected PassengerRecord passengerRecord;
 	protected ServiceUnitStatusLog serviceUnitStatusLog;
 	public void testGetOperationSchedules() throws Exception {
-		WebAPI api = new WebAPI(master.getInVehicleDevice().getAuthenticationToken().orNull());
+		WebAPI api = new WebAPI(SERVER_HOST, master.getInVehicleDevice().getAuthenticationToken().orNull());
 		latch = new CountDownLatch(1);
 		schedules = null;
 		
@@ -301,7 +303,7 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 	}
 
 	public void testPassengerGetOn() throws Exception {
-		WebAPI api = new WebAPI(master.getInVehicleDevice().getAuthenticationToken().orNull());
+		WebAPI api = new WebAPI(SERVER_HOST, master.getInVehicleDevice().getAuthenticationToken().orNull());
 		latch = new CountDownLatch(1);
 		schedules = null;
 		
@@ -467,7 +469,7 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 	}
 	
 	public void testSendServiceUnitStatusLog() throws Exception {
-		WebAPI api = new WebAPI(master.getInVehicleDevice().getAuthenticationToken().orNull());
+		WebAPI api = new WebAPI(SERVER_HOST, master.getInVehicleDevice().getAuthenticationToken().orNull());
 		latch = new CountDownLatch(1);
 		schedules = null;
 		

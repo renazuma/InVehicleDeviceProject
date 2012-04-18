@@ -49,16 +49,18 @@ public class WebAPI {
 	private static final Integer REQUEST_RETRY_EXPIRE_MINUTES = 5;
 
 	private String authenticationToken;
+	private String host;
 
 	public interface ResponseConverter<T> {
 		public T convert(byte[] rawResponse) throws Exception;
 	}
 
-	public WebAPI() {
-		this("");
+	public WebAPI(String host) {
+		this(host, "");
 	}
 
-	public WebAPI(String authenticationToken) {
+	public WebAPI(String host, String authenticationToken) {
+		this.host = host;
 		this.authenticationToken = authenticationToken;
 	}
 	
@@ -154,7 +156,6 @@ public class WebAPI {
 		return retryStatus.isRetryable();
 	}
 
-	protected static final String SERVER_HOST = "http://192.168.104.63:3000";
 	protected static final String PATH_PREFIX = "/in_vehicle_devices";
 
 	public static final String PATH_LOGIN = PATH_PREFIX + "/sign_in";
@@ -382,7 +383,7 @@ public class WebAPI {
 	}
 
 	protected String getServerHost() {
-		return SERVER_HOST;
+		return host;
 	}
 	
 	protected <T> int get(String path, WebAPICallback<T> callback, ResponseConverter<T> conv) throws WebAPIException {
