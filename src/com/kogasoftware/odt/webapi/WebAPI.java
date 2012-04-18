@@ -39,6 +39,7 @@ import com.google.common.base.Objects;
 import com.google.common.io.ByteStreams;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
+import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
@@ -577,6 +578,45 @@ public class WebAPI {
 			}
 		});
 	}
+	
+	/**
+	 * 乗車のサーバへの通知
+	 * @param operationSchedule 運行スケジュールオブジェクト
+	 * @throws JSONException 
+	 */
+	public int getOnPassenger(OperationSchedule operationSchedule, Reservation reservation, PassengerRecord passengerRecord, WebAPICallback<PassengerRecord> callback) throws WebAPIException, JSONException {
+		JSONObject vnJson = filterJSONKeys(passengerRecord.toJSONObject(), new String[] { "id", "payment", "passenger_count" });
+		vnJson.put("id", passengerRecord.getId());
+		JSONObject param = new JSONObject();
+		param.put("passenger_record", vnJson);
+		return put(PATH_SCHEDULES + "/" + operationSchedule.getId() + "/reservations/" + reservation.getId() + "/geton", param, callback, new ResponseConverter<PassengerRecord>() {
+			@Override
+			public PassengerRecord convert(byte[] rawResponse)
+					throws Exception {
+				return PassengerRecord.parse(parseJSONObject(rawResponse)).orNull();
+			}
+		});
+	}
+	
+	/**
+	 * 降車のサーバへの通知
+	 * @param operationSchedule 運行スケジュールオブジェクト
+	 * @throws JSONException 
+	 */
+	public int getOffPassenger(OperationSchedule operationSchedule, Reservation reservation, PassengerRecord passengerRecord, WebAPICallback<PassengerRecord> callback) throws WebAPIException, JSONException {
+		JSONObject vnJson = filterJSONKeys(passengerRecord.toJSONObject(), new String[] { "id", "payment", "passenger_count" });
+		vnJson.put("id", passengerRecord.getId());
+		JSONObject param = new JSONObject();
+		param.put("passenger_record", vnJson);
+		return put(PATH_SCHEDULES + "/" + operationSchedule.getId() + "/reservations/" + reservation.getId() + "/getoff", param, callback, new ResponseConverter<PassengerRecord>() {
+			@Override
+			public PassengerRecord convert(byte[] rawResponse)
+					throws Exception {
+				return PassengerRecord.parse(parseJSONObject(rawResponse)).orNull();
+			}
+		});
+	}
+	
 	
 	
 }
