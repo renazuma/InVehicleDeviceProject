@@ -27,7 +27,10 @@ import com.kogasoftware.odt.webapi.model.Vehicle;
 
 public class WebTestAPI extends WebAPI {
 
-	protected static final String TEST_SERVER_HOST = "http://192.168.104.63:3333";
+	public WebTestAPI(String host) {
+		super(host);
+	}
+
 	protected static final String TEST_PATH_CLEAN = "/clean";
 
 	protected static final String TEST_PATH_DEMANDS = "/demands";
@@ -47,11 +50,6 @@ public class WebTestAPI extends WebAPI {
 	protected static final String TEST_PATH_UNIT_ASSIGNMENTS = "/unit_assignments";
 	protected static final String TEST_PATH_VEHICLE_NOTIFICATIONS = "/vehicle_notifications";
 	protected static final String TEST_PATH_VEHICLES = "/vehicles";
-
-	@Override
-	protected String getServerHost() {
-		return TEST_SERVER_HOST;
-	}
 
 	/**
 	 * DatabaseCleaner を呼び出してDBを全クリアする

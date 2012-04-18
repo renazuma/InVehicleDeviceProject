@@ -21,6 +21,7 @@ import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class WebTestAPITestCase extends
 		ActivityInstrumentationTestCase2<DummyActivity> {
+	public static final String TEST_SERVER_HOST = "http://192.168.104.63:3333";
 
 	public WebTestAPITestCase() {
 		super("com.kogasoftware.odt.webapi.test", DummyActivity.class);
@@ -50,7 +51,7 @@ public class WebTestAPITestCase extends
 		master.createServiceProvider();
 		master.createOperator();
 		
-		final WebTestAPI api = new WebTestAPI();
+		final WebTestAPI api = new WebTestAPI(TEST_SERVER_HOST);
 
 		// オブジェクトをひとつ生成
 		assertNotNull(record.createVehicleNotification("車載器への通知1です"));
