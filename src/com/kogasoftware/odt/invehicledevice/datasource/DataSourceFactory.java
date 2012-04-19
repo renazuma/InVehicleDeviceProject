@@ -3,8 +3,7 @@ package com.kogasoftware.odt.invehicledevice.datasource;
 import com.google.common.base.Optional;
 
 public class DataSourceFactory {
-	private static Optional<DataSource> dataSource = Optional
-			.<DataSource> absent();
+	private static Optional<DataSource> dataSource = Optional.absent();
 	private static Object dataSourceLock = new Object();
 
 	@Deprecated

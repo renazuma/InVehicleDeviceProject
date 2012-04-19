@@ -17,11 +17,9 @@ public class LooperThread extends Thread {
 	private static final String TAG = LooperThread.class.getSimpleName();
 	private static final long POLLING_PERIOD_MILLIS = 5000;
 	private final Object myLooperLock = new Object();
-	private Optional<Looper> myLooper = Optional.<Looper> absent();
-	private Optional<LocationManager> locationManager = Optional
-			.<LocationManager> absent();
-	private Optional<SensorManager> sensorManager = Optional
-			.<SensorManager> absent();
+	private Optional<Looper> myLooper = Optional.absent();
+	private Optional<LocationManager> locationManager = Optional.absent();
+	private Optional<SensorManager> sensorManager = Optional.absent();
 	private final LocationSender locationSender = new LocationSender();
 	private final TemperatureSensorEventListener temperatureSensorEventListener = new TemperatureSensorEventListener();
 	private final OrientationSensorEventListener orientationSensorEventListener = new OrientationSensorEventListener();

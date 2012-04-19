@@ -26,6 +26,7 @@ import com.google.common.base.Optional;
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyFile;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
+import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
@@ -37,7 +38,7 @@ public class Status implements Serializable {
 		DRIVE, FINISH, INITIAL, PLATFORM
 	}
 
-	private static final long serialVersionUID = 5617948505743182174L;
+	private static final long serialVersionUID = 5617948505743182175L;
 
 	private static final String TAG = Status.class.getSimpleName();
 
@@ -103,13 +104,14 @@ public class Status implements Serializable {
 
 	public final LinkedList<Reservation> missedReservations = new LinkedList<Reservation>();
 	public final LinkedList<OperationSchedule> operationSchedules = new LinkedList<OperationSchedule>();
+	public final LinkedList<PassengerRecord> passengerRecords = new LinkedList<PassengerRecord>();
 	public Boolean paused = false;
 	public final LinkedList<Reservation> ridingReservations = new LinkedList<Reservation>();
 	public Phase phase = Phase.INITIAL;
 	public Boolean stopped = false;
 	public final LinkedList<Reservation> unexpectedReservations = new LinkedList<Reservation>();
 	public Integer unexpectedReservationSequence = 1000;
-	public Optional<Location> location = Optional.<Location> absent();
+	public Optional<Location> location = Optional.absent();
 
 	// Serializableにするため、LinkedListのままにしておく
 	public final LinkedList<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();
@@ -118,8 +120,8 @@ public class Status implements Serializable {
 	public final LinkedList<OperationSchedule> departureOperationSchedule = new LinkedList<OperationSchedule>();
 	public String token = "";
 	public String url = "";
-	public Optional<Integer> orientation = Optional.<Integer> absent();
-	public Optional<Integer> temperature = Optional.<Integer> absent();
+	public Optional<Integer> orientation = Optional.absent();
+	public Optional<Integer> temperature = Optional.absent();
 
 	private Status() {
 	}

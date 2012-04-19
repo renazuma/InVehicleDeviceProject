@@ -4,7 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 
 public class LogicUser {
-	private Optional<Logic> logic = Optional.<Logic> absent();
+	private Optional<Logic> logic = Optional.absent();
 	private final Object logicLock = new Object();
 
 	protected Optional<Logic> getLogic() {

@@ -45,7 +45,7 @@ public class PlatformPhaseView extends PhaseView {
 	private ReservationArrayAdapter adapter = new ReservationArrayAdapter(
 			getContext(), R.layout.reservation_list_row, getLogic());
 
-	private Optional<AlertDialog> dialog = Optional.<AlertDialog> absent();
+	private Optional<AlertDialog> dialog = Optional.absent();
 
 	public PlatformPhaseView(Context context, AttributeSet attrs) {
 		super(context, attrs);

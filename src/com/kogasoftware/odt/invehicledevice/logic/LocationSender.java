@@ -48,7 +48,7 @@ public class LocationSender extends LogicUser implements Runnable,
 					@Override
 					public Optional<ServiceUnitStatusLog> read(Status status) {
 						if (!status.location.isPresent()) {
-							return Optional.<ServiceUnitStatusLog> absent();
+							return Optional.absent();
 						}
 						ServiceUnitStatusLog log = new ServiceUnitStatusLog();
 						log.setLatitude(new BigDecimal(status.location.get()
