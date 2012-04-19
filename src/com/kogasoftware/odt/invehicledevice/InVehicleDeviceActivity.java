@@ -126,7 +126,7 @@ public class InVehicleDeviceActivity extends Activity {
 			if (key.equals("update")
 					&& sharedPreferences.getBoolean(key, false)) { // TODO
 				// 文字列定数
-				Log.e(TAG, "SharedPreferences changed finish!"); // TODO
+				Log.i(TAG, "SharedPreferences changed finish!"); // TODO
 				finish();
 			}
 		}

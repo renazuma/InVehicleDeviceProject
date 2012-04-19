@@ -29,7 +29,7 @@ public class VehicleNotificationReceiver extends LogicUser implements Runnable {
 						if (!Utility.contains(
 								status.repliedVehicleNotifications,
 								vehicleNotification)) {
-							Utility.merge(status.vehicleNotifications,
+							Utility.mergeById(status.vehicleNotifications,
 									vehicleNotification);
 						}
 					}

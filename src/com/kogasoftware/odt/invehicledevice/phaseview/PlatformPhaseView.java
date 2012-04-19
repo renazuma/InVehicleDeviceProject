@@ -22,6 +22,7 @@ import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.arrayadapter.ReservationArrayAdapter;
+import com.kogasoftware.odt.invehicledevice.arrayadapter.ReservationArrayAdapter.ItemType;
 import com.kogasoftware.odt.invehicledevice.event.AddUnexpectedReservationEvent;
 import com.kogasoftware.odt.invehicledevice.event.EnterPlatformPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.Logic;
@@ -136,9 +137,9 @@ public class PlatformPhaseView extends PhaseView {
 					public void onCheckedChanged(CompoundButton buttonView,
 							boolean isChecked) {
 						if (isChecked) {
-							adapter.showRidingAndNoOutgoingReservations();
+							adapter.show(ItemType.RIDING_AND_NO_GET_OFF);
 						} else {
-							adapter.hideRidingAndNotGetOutReservations();
+							adapter.hide(ItemType.RIDING_AND_NO_GET_OFF);
 						}
 					}
 				});
@@ -150,9 +151,9 @@ public class PlatformPhaseView extends PhaseView {
 					public void onCheckedChanged(CompoundButton buttonView,
 							boolean isChecked) {
 						if (isChecked) {
-							adapter.showFutureReservations();
+							adapter.show(ItemType.FUTURE_GET_ON);
 						} else {
-							adapter.hideFutureReservations();
+							adapter.hide(ItemType.FUTURE_GET_ON);
 						}
 					}
 				});
@@ -164,9 +165,9 @@ public class PlatformPhaseView extends PhaseView {
 					public void onCheckedChanged(CompoundButton buttonView,
 							boolean isChecked) {
 						if (isChecked) {
-							adapter.showMissedReservations();
+							adapter.show(ItemType.MISSED);
 						} else {
-							adapter.hideMissedReservations();
+							adapter.hide(ItemType.MISSED);
 						}
 					}
 				});

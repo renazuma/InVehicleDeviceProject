@@ -26,18 +26,18 @@ public class OperationScheduleSender extends LogicUser implements Runnable {
 								public List<OperationSchedule> read(
 										Status status) {
 									return new LinkedList<OperationSchedule>(
-											status.arrivalOperationSchedule);
+											status.arrivalOperationSchedules);
 								}
 							}));
 			send(logic,
-					true,
+					false,
 					logic.getStatusAccess().read(
 							new Reader<List<OperationSchedule>>() {
 								@Override
 								public List<OperationSchedule> read(
 										Status status) {
 									return new LinkedList<OperationSchedule>(
-											status.departureOperationSchedule);
+											status.departureOperationSchedules);
 								}
 							}));
 
@@ -83,10 +83,10 @@ public class OperationScheduleSender extends LogicUser implements Runnable {
 				@Override
 				public void write(Status status) {
 					if (arrival) {
-						status.arrivalOperationSchedule
+						status.arrivalOperationSchedules
 								.remove(operationSchedule);
 					} else {
-						status.departureOperationSchedule
+						status.departureOperationSchedules
 								.remove(operationSchedule);
 					}
 				}

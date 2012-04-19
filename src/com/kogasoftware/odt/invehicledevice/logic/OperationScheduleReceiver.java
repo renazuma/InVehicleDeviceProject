@@ -6,6 +6,8 @@ import java.util.List;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
+import com.kogasoftware.odt.webapi.model.PassengerRecord;
+import com.kogasoftware.odt.webapi.model.Reservation;
 
 public class OperationScheduleReceiver implements Runnable {
 	final Logic logic;
@@ -36,7 +38,17 @@ public class OperationScheduleReceiver implements Runnable {
 			public void write(Status status) {
 				status.operationSchedules.clear();
 				status.operationSchedules.addAll(operationSchedules);
-				status.initialized.set(true);
+				status.unhandledPassengerRecords.clear();
+				status.ridingPassengerRecords.clear();
+				for (OperationSchedule operationSchedule : operationSchedules) {
+					for (Reservation reservation : operationSchedule
+							.getReservationsAsDeparture()) {
+						PassengerRecord passengerRecord = new PassengerRecord();
+						passengerRecord.setReservation(reservation);
+						status.unhandledPassengerRecords.add(passengerRecord);
+					}
+				}
+				status.initialized = true;
 			}
 		});
 	}

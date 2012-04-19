@@ -10,10 +10,13 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
+import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.arrayadapter.ReservationArrayAdapter;
 import com.kogasoftware.odt.invehicledevice.logic.Logic;
+import com.kogasoftware.odt.webapi.model.OperationSchedule;
+import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.User;
 
@@ -26,12 +29,16 @@ public class StartCheckModalView extends ModalView {
 		}
 	}
 
-	private static String getUserName(Reservation reservation) {
+	private static Optional<String> getUserName(PassengerRecord passengerRecord) {
+		if (!passengerRecord.getReservation().isPresent()) {
+			return Optional.absent();
+		}
+		Reservation reservation = passengerRecord.getReservation().get();
 		if (reservation.getUser().isPresent()) {
 			User user = reservation.getUser().get();
-			return user.getLastName() + user.getFirstName();
+			return Optional.of(user.getLastName() + user.getFirstName());
 		} else {
-			return "「ID: " + reservation.getId() + "」";
+			return Optional.of("「予約ID: " + reservation.getId() + "」");
 		}
 	}
 
@@ -45,14 +52,26 @@ public class StartCheckModalView extends ModalView {
 		final ReservationArrayAdapter adapter = event.reservationArrayAdapter;
 		ListView errorReservationListView = (ListView) findViewById(R.id.error_reservation_list_view);
 		List<String> messages = new LinkedList<String>();
-		for (Reservation reservation : adapter.getNoGettingOnReservations()) {
-			messages.add(getUserName(reservation) + "様が未乗車です");
+		for (PassengerRecord passengerRecord : adapter
+				.getNoGettingOnPassengerRecords()) {
+			Optional<String> userName = getUserName(passengerRecord);
+			if (userName.isPresent()) {
+				messages.add(userName.get() + "様が未乗車です");
+			}
 		}
-		for (Reservation reservation : adapter.getNoGettingOutReservations()) {
-			messages.add(getUserName(reservation) + "様が未降車です");
+		for (PassengerRecord passengerRecord : adapter
+				.getNoGettingOffPassengerRecords()) {
+			Optional<String> userName = getUserName(passengerRecord);
+			if (userName.isPresent()) {
+				messages.add(userName.get() + "様が未降車です");
+			}
 		}
-		for (Reservation reservation : adapter.getNoPaymentReservations()) {
-			messages.add(getUserName(reservation) + "様が料金未払いです");
+		for (PassengerRecord passengerRecord : adapter
+				.getNoPaymentReservations()) {
+			Optional<String> userName = getUserName(passengerRecord);
+			if (userName.isPresent()) {
+				messages.add(userName.get() + "様が料金未払いです");
+			}
 		}
 
 		errorReservationListView.setAdapter(new ArrayAdapter<String>(
@@ -68,11 +87,14 @@ public class StartCheckModalView extends ModalView {
 			@Override
 			public void onClick(View view) {
 				Logic logic = getLogic();
-				logic.getOnReservation(adapter.getCheckedIncomingReservations());
-				logic.getOutReservation(adapter
-						.getCheckedOutgoingReservations());
-				logic.addMissedReservations(adapter
-						.getNoGettingOnReservations());
+				Optional<OperationSchedule> operationSchedule = logic
+						.getCurrentOperationSchedule();
+				if (operationSchedule.isPresent()) {
+					logic.getOnPassengerRecords(operationSchedule.get(),
+							adapter.getSelectedGetOnPassengerRecords());
+					logic.getOffPassengerRecords(operationSchedule.get(),
+							adapter.getSelectedGetOffPassengerRecords());
+				}
 				logic.enterDrivePhase();
 			}
 		});

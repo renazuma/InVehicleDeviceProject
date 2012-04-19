@@ -21,6 +21,7 @@ import android.view.View;
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.BuildConfig;
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.Utility;
 import com.kogasoftware.odt.invehicledevice.arrayadapter.ReservationArrayAdapter;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
@@ -32,7 +33,6 @@ import com.kogasoftware.odt.invehicledevice.event.EnterPlatformPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.event.UiEventBus;
 import com.kogasoftware.odt.invehicledevice.logic.Status.Phase;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Reader;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.ReaderAndWriter;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
 import com.kogasoftware.odt.invehicledevice.logic.VoiceThread.SpeakEvent;
 import com.kogasoftware.odt.invehicledevice.modalview.ConfigModalView;
@@ -47,6 +47,7 @@ import com.kogasoftware.odt.invehicledevice.modalview.StopCheckModalView;
 import com.kogasoftware.odt.invehicledevice.modalview.StopModalView;
 import com.kogasoftware.odt.invehicledevice.phaseview.PlatformPhaseView;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
+import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
@@ -54,7 +55,7 @@ import com.kogasoftware.odt.webapi.model.VehicleNotification;
  * 車載機の内部ロジック
  */
 public class Logic {
-	private static Optional<Date> defaultDate = Optional.<Date> absent();
+	private static Optional<Date> defaultDate = Optional.absent();
 	private static final Object DEFAULT_DATE_LOCK = new Object();
 	private static final Integer NUM_THREADS = 3;
 	private static final Integer POLLING_PERIOD_MILLIS = 30 * 1000;
@@ -62,6 +63,7 @@ public class Logic {
 
 	private static final AtomicBoolean willClearStatusFile = new AtomicBoolean(
 			false);
+	public static final Integer UNEXPECTED_RESERVATION_ID = -1;
 
 	public static void clearStatusFile() {
 		willClearStatusFile.set(true);
@@ -98,6 +100,7 @@ public class Logic {
 	private VehicleNotificationSender vehicleNotificationSender = new VehicleNotificationSender();
 	private ScheduleChangedReceiver scheduleChangedReceiver = new ScheduleChangedReceiver();
 	private OperationScheduleSender operationScheduleSender = new OperationScheduleSender();
+	private PassengerRecordSender passengerRecordSender = new PassengerRecordSender();
 
 	public Logic() {
 		this.statusAccess = new StatusAccess();
@@ -129,6 +132,8 @@ public class Logic {
 						0, POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
 				executorService.scheduleWithFixedDelay(operationScheduleSender,
 						0, POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
+				executorService.scheduleWithFixedDelay(passengerRecordSender,
+						0, POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
 			} catch (RejectedExecutionException e) {
 				Log.e(TAG, "Task Rejected", e);
 			}
@@ -143,9 +148,10 @@ public class Logic {
 			Thread.sleep(0); // interruption point
 			for (Integer resourceId : new Integer[] { R.id.config_modal_view,
 					R.id.start_check_modal_view, R.id.schedule_modal_view,
-					R.id.memo_modal_view, R.id.pause_modal_view, R.id.return_path_modal_view,
-					R.id.stop_check_modal_view, R.id.stop_modal_view,
-					R.id.notification_modal_view, R.id.schedule_changed_modal_view,
+					R.id.memo_modal_view, R.id.pause_modal_view,
+					R.id.return_path_modal_view, R.id.stop_check_modal_view,
+					R.id.stop_modal_view, R.id.notification_modal_view,
+					R.id.schedule_changed_modal_view,
 					R.id.navigation_modal_view, R.id.login_modal_view,
 					R.id.phase_text_view, R.id.drive_phase_view,
 					R.id.platform_phase_view, R.id.finish_phase_view }) {
@@ -155,9 +161,9 @@ public class Logic {
 			}
 
 			for (LogicUser logicUser : new LogicUser[] {
-
-			vehicleNotificationReceiver, vehicleNotificationSender,
-					scheduleChangedReceiver, operationScheduleSender, }) {
+					vehicleNotificationReceiver, vehicleNotificationSender,
+					scheduleChangedReceiver, operationScheduleSender,
+					passengerRecordSender }) {
 				eventBus.register(logicUser);
 			}
 
@@ -193,23 +199,11 @@ public class Logic {
 		OperationSchedule operationSchedule = operationSchedules.get(0);
 		final Reservation reservation = new Reservation();
 
-		Integer id = statusAccess.readAndWrite(new ReaderAndWriter<Integer>() {
-			@Override
-			public Integer readAndWrite(Status status) {
-				return status.unexpectedReservationSequence++;
-			}
-		});
-		reservation.setId(id); // TODO
+		reservation.setId(UNEXPECTED_RESERVATION_ID);
 		// 未予約乗車の予約情報はどうするか
 		reservation.setDepartureScheduleId(operationSchedule.getId());
 		reservation.setArrivalScheduleId(arrivalOperationScheduleId);
 
-		statusAccess.write(new Writer() {
-			@Override
-			public void write(Status status) {
-				status.unexpectedReservations.add(reservation);
-			}
-		});
 		eventBus.post(new AddUnexpectedReservationEvent(reservation));
 	}
 
@@ -226,18 +220,18 @@ public class Logic {
 		statusAccess.write(new Writer() {
 			@Override
 			public void write(Status status) {
-				if (status.phase == Status.Phase.PLATFORM) {
-					status.currentOperationScheduleIndex++;
-				}
-				status.phase = Status.Phase.DRIVE;
 				if (status.operationSchedules.size() <= status.currentOperationScheduleIndex) {
 					// TODO warning
-				} else {
-					OperationSchedule operationSchedule = status.operationSchedules
-							.get(status.currentOperationScheduleIndex);
-					status.departureOperationSchedule.add(operationSchedule); // TODO
-																				// コピーしなくて良い？
+					return;
 				}
+				OperationSchedule operationSchedule = status.operationSchedules
+						.get(status.currentOperationScheduleIndex);
+				if (status.phase == Status.Phase.PLATFORM) {
+					status.currentOperationScheduleIndex++;
+					Utility.mergeById(status.departureOperationSchedules,
+							operationSchedule);
+				}
+				status.phase = Status.Phase.DRIVE;
 			}
 		});
 		eventBus.post(new EnterDrivePhaseEvent());
@@ -260,15 +254,30 @@ public class Logic {
 				status.phase = Status.Phase.PLATFORM;
 				if (status.operationSchedules.size() <= status.currentOperationScheduleIndex) {
 					// TODO warning
-				} else {
-					OperationSchedule operationSchedule = status.operationSchedules
-							.get(status.currentOperationScheduleIndex);
-					status.arrivalOperationSchedule.add(operationSchedule); // TODO
-																			// コピーしなくて良い？
+					return;
 				}
+				OperationSchedule operationSchedule = status.operationSchedules
+						.get(status.currentOperationScheduleIndex);
+				Utility.mergeById(status.arrivalOperationSchedules,
+						operationSchedule);
+
 			}
 		});
 		eventBus.post(new EnterPlatformPhaseEvent());
+	}
+
+	public Optional<OperationSchedule> getCurrentOperationSchedule() {
+		return statusAccess.read(new Reader<Optional<OperationSchedule>>() {
+			@Override
+			public Optional<OperationSchedule> read(Status status) {
+				if (status.operationSchedules.size() <= status.currentOperationScheduleIndex) {
+					return Optional.absent();
+				} else {
+					return Optional.of(status.operationSchedules
+							.get(status.currentOperationScheduleIndex));
+				}
+			}
+		});
 	}
 
 	public DataSource getDataSource() {
@@ -292,11 +301,38 @@ public class Logic {
 		});
 	}
 
-	public void getOnReservation(final List<Reservation> reservations) {
+	public void getOffPassengerRecords(OperationSchedule operationSchedule,
+			final List<PassengerRecord> selectedGetOffPassengerRecords) {
+		Date now = getDate();
+		for (PassengerRecord passengerRecord : selectedGetOffPassengerRecords) {
+			passengerRecord.setGetOffTime(now);
+			passengerRecord.setArrivalOperationScheduleId(operationSchedule
+					.getId());
+			passengerRecord.setArrivalOperationSchedule(operationSchedule);
+		}
 		statusAccess.write(new Writer() {
 			@Override
 			public void write(Status status) {
-				status.ridingReservations.addAll(reservations);
+				status.getOffPassengerRecords
+						.addAll(selectedGetOffPassengerRecords);
+			}
+		});
+	}
+
+	public void getOnPassengerRecords(OperationSchedule operationSchedule,
+			final List<PassengerRecord> selectedGetOnPassengerRecords) {
+		Date now = getDate();
+		for (PassengerRecord passengerRecord : selectedGetOnPassengerRecords) {
+			passengerRecord.setGetOnTime(now);
+			passengerRecord.setDepartureOperationScheduleId(operationSchedule
+					.getId());
+			passengerRecord.setDepartureOperationSchedule(operationSchedule);
+		}
+		statusAccess.write(new Writer() {
+			@Override
+			public void write(Status status) {
+				status.getOnPassengerRecords
+						.addAll(selectedGetOnPassengerRecords);
 			}
 		});
 	}
@@ -307,15 +343,6 @@ public class Logic {
 			public List<OperationSchedule> read(Status status) {
 				return new LinkedList<OperationSchedule>(
 						status.operationSchedules);
-			}
-		});
-	}
-
-	public void getOutReservation(final List<Reservation> reservations) {
-		statusAccess.write(new Writer() {
-			@Override
-			public void write(Status status) {
-				status.ridingReservations.removeAll(reservations);
 			}
 		});
 	}
@@ -369,21 +396,11 @@ public class Logic {
 		});
 	}
 
-	public List<Reservation> getUnexpectedReservations() {
-		return statusAccess.read(new Reader<List<Reservation>>() {
-			@Override
-			public List<Reservation> read(Status status) {
-				return new LinkedList<Reservation>(
-						status.unexpectedReservations);
-			}
-		});
-	}
-
 	public Boolean isInitialized() {
 		return statusAccess.read(new Reader<Boolean>() {
 			@Override
 			public Boolean read(Status status) {
-				return status.initialized.get();
+				return status.initialized;
 			}
 		});
 	}

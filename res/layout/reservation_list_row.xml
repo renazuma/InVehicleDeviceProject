@@ -39,7 +39,7 @@
         android:textOn="支払済" />
 
     <Spinner
-        android:id="@+id/change_head_spinner"
+        android:id="@+id/change_passenger_count_spinner"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent" />
 
