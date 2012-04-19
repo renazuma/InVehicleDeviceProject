@@ -12,13 +12,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.SharedPreferences;
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
 import android.location.Location;
-import android.location.LocationManager;
-import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
@@ -97,23 +92,12 @@ public class Logic {
 	private final ScheduledExecutorService executorService = Executors
 			.newScheduledThreadPool(NUM_THREADS);
 	private final StatusAccess statusAccess;
-	private final LocationSender locationSender = new LocationSender();
-	private final AtomicBoolean shutdowning = new AtomicBoolean(false);
-
-	private Optional<LocationManager> locationManager = Optional
-			.<LocationManager> absent();
-	private Optional<SensorManager> sensorManager = Optional
-			.<SensorManager> absent();
 	private Thread voiceThread = new EmptyThread();
-	private TemperatureSensorEventListener temperatureSensorEventListener = new TemperatureSensorEventListener();
-	private OrientationSensorEventListener orientationSensorEventListener = new OrientationSensorEventListener();
+	private Thread handlerThread = new EmptyThread();
 	private VehicleNotificationReceiver vehicleNotificationReceiver = new VehicleNotificationReceiver();
 	private VehicleNotificationSender vehicleNotificationSender = new VehicleNotificationSender();
 	private ScheduleChangedReceiver scheduleChangedReceiver = new ScheduleChangedReceiver();
 	private OperationScheduleSender operationScheduleSender = new OperationScheduleSender();
-
-	private final Object myLooperLock = new Object();
-	private Optional<Looper> myLooper = Optional.<Looper> absent();
 
 	public Logic() {
 		this.statusAccess = new StatusAccess();
@@ -123,12 +107,6 @@ public class Logic {
 	public Logic(Activity activity) throws InterruptedException {
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(activity);
-
-		locationManager = Optional.of((LocationManager) activity
-				.getSystemService(Context.LOCATION_SERVICE));
-
-		sensorManager = Optional.of((SensorManager) activity
-				.getSystemService(Context.SENSOR_SERVICE));
 
 		dataSource = DataSourceFactory.newInstance(
 				preferences.getString("url", "http://127.0.0.1"),
@@ -149,8 +127,6 @@ public class Logic {
 						TimeUnit.MILLISECONDS);
 				executorService.scheduleWithFixedDelay(scheduleChangedReceiver,
 						0, POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
-				executorService.scheduleWithFixedDelay(locationSender, 0,
-						POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
 				executorService.scheduleWithFixedDelay(operationScheduleSender,
 						0, POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
 			} catch (RejectedExecutionException e) {
@@ -161,6 +137,8 @@ public class Logic {
 			Thread.sleep(0); // interruption point
 			voiceThread = new VoiceThread(activity);
 			voiceThread.start();
+			handlerThread = new LooperThread(this, activity);
+			handlerThread.start();
 			eventBus.register(voiceThread);
 			Thread.sleep(0); // interruption point
 			for (Integer resourceId : new Integer[] { R.id.config_modal,
@@ -176,11 +154,10 @@ public class Logic {
 				Thread.sleep(0); // interruption point
 			}
 
-			for (LogicUser logicUser : new LogicUser[] { locationSender,
-					temperatureSensorEventListener,
-					vehicleNotificationReceiver, vehicleNotificationSender,
-					scheduleChangedReceiver, operationScheduleSender,
-					orientationSensorEventListener }) {
+			for (LogicUser logicUser : new LogicUser[] {
+
+			vehicleNotificationReceiver, vehicleNotificationSender,
+					scheduleChangedReceiver, operationScheduleSender, }) {
 				eventBus.register(logicUser);
 			}
 
@@ -191,12 +168,6 @@ public class Logic {
 				} catch (ExecutionException e) {
 				}
 			}
-			new Thread() {
-				@Override
-				public void run() {
-					runLooperThread();
-				}
-			}.start();
 		} catch (InterruptedException e) {
 			shutdown();
 			throw e;
@@ -308,6 +279,10 @@ public class Logic {
 		return eventBus;
 	}
 
+	public ScheduledExecutorService getExecutorService() {
+		return executorService;
+	}
+
 	public List<Reservation> getMissedReservations() {
 		return statusAccess.read(new Reader<List<Reservation>>() {
 			@Override
@@ -413,45 +388,6 @@ public class Logic {
 		});
 	}
 
-	private void onLooperStart() {
-		if (locationManager.isPresent()) {
-			locationManager.get().requestLocationUpdates(
-					LocationManager.GPS_PROVIDER, 2000, 0, locationSender);
-		}
-
-		if (sensorManager.isPresent()) {
-			List<Sensor> temperatureSensors = sensorManager.get()
-					.getSensorList(Sensor.TYPE_TEMPERATURE);
-			if (temperatureSensors.size() > 0) {
-				Sensor sensor = temperatureSensors.get(0);
-				sensorManager.get().registerListener(
-						temperatureSensorEventListener, sensor,
-						SensorManager.SENSOR_DELAY_UI);
-			}
-
-			List<Sensor> orientationSensors = sensorManager.get()
-					.getSensorList(Sensor.TYPE_TEMPERATURE);
-			if (orientationSensors.size() > 0) {
-				Sensor sensor = orientationSensors.get(0);
-				sensorManager.get().registerListener(
-						orientationSensorEventListener, sensor,
-						SensorManager.SENSOR_DELAY_UI);
-			}
-		}
-	}
-
-	private void onLooperStop() {
-		if (locationManager.isPresent()) {
-			locationManager.get().removeUpdates(locationSender);
-		}
-		if (sensorManager.isPresent()) {
-			sensorManager.get().unregisterListener(
-					temperatureSensorEventListener);
-			sensorManager.get().unregisterListener(
-					orientationSensorEventListener);
-		}
-	}
-
 	public void pause() {
 		statusAccess.write(new Writer() {
 			@Override
@@ -479,18 +415,6 @@ public class Logic {
 				}
 			}
 		});
-	}
-
-	private void runLooperThread() {
-		Looper.prepare();
-		synchronized (myLooperLock) { // TODO: shutdowningとの同期の順番
-			myLooper = Optional.of(Looper.myLooper());
-		}
-		onLooperStart();
-		if (!shutdowning.get()) {
-			Looper.loop();
-		}
-		onLooperStop();
 	}
 
 	public void setLocation(final Location location) {
@@ -545,13 +469,7 @@ public class Logic {
 		eventBus.dispose();
 		executorService.shutdownNow();
 		voiceThread.interrupt();
-
-		shutdowning.set(true); // TODO 順番
-		synchronized (myLooperLock) { // TODO 順番
-			if (myLooper.isPresent()) {
-				myLooper.get().quit();
-			}
-		}
+		handlerThread.interrupt();
 	}
 
 	public void speak(String message) {

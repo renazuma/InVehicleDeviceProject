@@ -1,11 +1,18 @@
 package com.kogasoftware.odt.invehicledevice.logic;
 
+import java.math.BigDecimal;
+
+import org.json.JSONException;
+
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
 
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Reader;
+import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
+import com.kogasoftware.odt.webapi.WebAPIException;
+import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 
 public class LocationSender extends LogicUser implements Runnable,
 		LocationListener {
@@ -36,15 +43,46 @@ public class LocationSender extends LogicUser implements Runnable,
 		}
 		final Logic logic = getLogic().get();
 
-		Optional<Location> location = logic.getStatusAccess().read(
-				new Reader<Optional<Location>>() {
+		final Optional<ServiceUnitStatusLog> log = logic.getStatusAccess()
+				.read(new Reader<Optional<ServiceUnitStatusLog>>() {
 					@Override
-					public Optional<Location> read(Status status) {
-						return status.location;
+					public Optional<ServiceUnitStatusLog> read(Status status) {
+						if (!status.location.isPresent()) {
+							return Optional.<ServiceUnitStatusLog> absent();
+						}
+						ServiceUnitStatusLog log = new ServiceUnitStatusLog();
+						log.setLatitude(new BigDecimal(status.location.get()
+								.getLatitude()));
+						log.setLongitude(new BigDecimal(status.location.get()
+								.getLongitude()));
+						log.setTemperature(status.temperature);
+						log.setOrientation(status.orientation);
+						return Optional.of(log);
 					}
 				});
-		if (!location.isPresent()) {
+		if (!log.isPresent()) {
 			return;
+		}
+
+		try {
+			logic.getDataSource().sendServiceUnitStatusLog(log.get(),
+					new WebAPICallback<ServiceUnitStatusLog>() {
+						@Override
+						public void onException(int reqkey, WebAPIException ex) {
+						}
+
+						@Override
+						public void onFailed(int reqkey, int statusCode,
+								String response) {
+						}
+
+						@Override
+						public void onSucceed(int reqkey, int statusCode,
+								ServiceUnitStatusLog result) {
+						}
+					});
+		} catch (WebAPIException e) {
+		} catch (JSONException e) {
 		}
 	}
 }

@@ -118,7 +118,8 @@ public class Status implements Serializable {
 	public final LinkedList<OperationSchedule> departureOperationSchedule = new LinkedList<OperationSchedule>();
 	public String token = "";
 	public String url = "";
-	public Double orientation = 0.0;
+	public Optional<Integer> orientation = Optional.<Integer> absent();
+	public Optional<Integer> temperature = Optional.<Integer> absent();
 
 	private Status() {
 	}

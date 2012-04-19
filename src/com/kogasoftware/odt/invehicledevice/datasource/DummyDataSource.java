@@ -14,9 +14,11 @@ import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
+import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.ReservationCandidate;
+import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 @Deprecated
@@ -52,6 +54,22 @@ public class DummyDataSource implements DataSource {
 		model.setTypeNumber("TESTNUMBER012345");
 		model.setModelName("MODELNAME67890");
 		return model;
+	}
+
+	@Override
+	public int getOffPassenger(OperationSchedule operationSchedule,
+			Reservation reservation, PassengerRecord passengerRecord,
+			WebAPICallback<PassengerRecord> callback) throws WebAPIException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getOnPassenger(OperationSchedule operationSchedule,
+			Reservation reservation, PassengerRecord passengerRecord,
+			WebAPICallback<PassengerRecord> callback) throws WebAPIException {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 	@Override
@@ -317,6 +335,14 @@ public class DummyDataSource implements DataSource {
 	public int responseVehicleNotification(VehicleNotification vn,
 			int response, WebAPICallback<VehicleNotification> callback)
 			throws WebAPIException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int sendServiceUnitStatusLog(ServiceUnitStatusLog log,
+			WebAPICallback<ServiceUnitStatusLog> callback)
+			throws WebAPIException, JSONException {
 		// TODO Auto-generated method stub
 		return 0;
 	}

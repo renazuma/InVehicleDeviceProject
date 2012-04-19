@@ -21,9 +21,11 @@ import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
+import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.ReservationCandidate;
+import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class WebAPIDataSource implements DataSource {
@@ -50,8 +52,7 @@ public class WebAPIDataSource implements DataSource {
 
 	@Override
 	public int arrivalOperationSchedule(final OperationSchedule os,
-			final WebAPICallback<OperationSchedule> callback)
-			throws WebAPIException {
+			WebAPICallback<OperationSchedule> callback) throws WebAPIException {
 		return callWebAPISynchronously(new WebAPICaller<OperationSchedule>() {
 			@Override
 			public void call(WebAPICallback<OperationSchedule> wrappedCallback)
@@ -162,8 +163,7 @@ public class WebAPIDataSource implements DataSource {
 
 	@Override
 	public int departureOperationSchedule(final OperationSchedule os,
-			final WebAPICallback<OperationSchedule> callback)
-			throws WebAPIException {
+			WebAPICallback<OperationSchedule> callback) throws WebAPIException {
 		return callWebAPISynchronously(new WebAPICaller<OperationSchedule>() {
 			@Override
 			public void call(WebAPICallback<OperationSchedule> wrappedCallback)
@@ -175,18 +175,41 @@ public class WebAPIDataSource implements DataSource {
 
 	@Override
 	public InVehicleDevice getInVehicleDevice() throws WebAPIException {
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			throw new WebAPIException(false, e);
-		}
-
 		InVehicleDevice model = new InVehicleDevice();
 		model.setId(10);
 		model.setTypeNumber("TESTNUMBER012345");
 		model.setModelName("MODELNAME67890");
 		return model;
+	}
+
+	@Override
+	public int getOffPassenger(final OperationSchedule operationSchedule,
+			final Reservation reservation,
+			final PassengerRecord passengerRecord,
+			WebAPICallback<PassengerRecord> callback) throws WebAPIException {
+		return callWebAPISynchronously(new WebAPICaller<PassengerRecord>() {
+			@Override
+			public void call(WebAPICallback<PassengerRecord> wrappedCallback)
+					throws WebAPIException, JSONException {
+				api.getOffPassenger(operationSchedule, reservation,
+						passengerRecord, wrappedCallback);
+			}
+		}, callback);
+	}
+
+	@Override
+	public int getOnPassenger(final OperationSchedule operationSchedule,
+			final Reservation reservation,
+			final PassengerRecord passengerRecord,
+			WebAPICallback<PassengerRecord> callback) throws WebAPIException {
+		return callWebAPISynchronously(new WebAPICaller<PassengerRecord>() {
+			@Override
+			public void call(WebAPICallback<PassengerRecord> wrappedCallback)
+					throws WebAPIException, JSONException {
+				api.getOnPassenger(operationSchedule, reservation,
+						passengerRecord, wrappedCallback);
+			}
+		}, callback);
 	}
 
 	@Override
@@ -348,8 +371,7 @@ public class WebAPIDataSource implements DataSource {
 
 	@Override
 	public int responseVehicleNotification(final VehicleNotification vn,
-			final int response,
-			final WebAPICallback<VehicleNotification> callback)
+			final int response, WebAPICallback<VehicleNotification> callback)
 			throws WebAPIException {
 		return callWebAPISynchronously(new WebAPICaller<VehicleNotification>() {
 			@Override
@@ -360,4 +382,18 @@ public class WebAPIDataSource implements DataSource {
 		}, callback);
 	}
 
+	@Override
+	public int sendServiceUnitStatusLog(final ServiceUnitStatusLog log,
+			WebAPICallback<ServiceUnitStatusLog> callback)
+			throws WebAPIException, JSONException {
+		return callWebAPISynchronously(
+				new WebAPICaller<ServiceUnitStatusLog>() {
+					@Override
+					public void call(
+							WebAPICallback<ServiceUnitStatusLog> wrappedCallback)
+							throws WebAPIException, JSONException {
+						api.sendServiceUnitStatusLog(log, wrappedCallback);
+					}
+				}, callback);
+	}
 }

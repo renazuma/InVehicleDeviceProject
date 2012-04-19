@@ -5,6 +5,9 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.util.Log;
 
+import com.google.common.base.Optional;
+import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
+
 public class TemperatureSensorEventListener extends LogicUser implements
 		SensorEventListener {
 	private static final String TAG = TemperatureSensorEventListener.class
@@ -24,7 +27,15 @@ public class TemperatureSensorEventListener extends LogicUser implements
 		if (event.sensor.getType() != Sensor.TYPE_TEMPERATURE) {
 			return;
 		}
-		Float celsius = event.values[0];
+
+		final float celsius = event.values[0];
+		logic.getStatusAccess().write(new Writer() {
+			@Override
+			public void write(Status status) {
+				status.temperature = Optional.of((int) celsius);
+			}
+		});
+
 		Log.i(TAG, "temperature changed=" + celsius);
 	}
 }

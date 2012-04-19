@@ -15,9 +15,11 @@ import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
+import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.ReservationCandidate;
+import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class MockDataSourceTest implements DataSource {
@@ -409,6 +411,30 @@ public class MockDataSourceTest implements DataSource {
 	@Override
 	public int departureOperationSchedule(OperationSchedule os,
 			WebAPICallback<OperationSchedule> callback) throws WebAPIException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getOffPassenger(OperationSchedule operationSchedule,
+			Reservation reservation, PassengerRecord passengerRecord,
+			WebAPICallback<PassengerRecord> callback) throws WebAPIException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getOnPassenger(OperationSchedule operationSchedule,
+			Reservation reservation, PassengerRecord passengerRecord,
+			WebAPICallback<PassengerRecord> callback) throws WebAPIException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int sendServiceUnitStatusLog(ServiceUnitStatusLog log,
+			WebAPICallback<ServiceUnitStatusLog> callback)
+			throws WebAPIException, JSONException {
 		// TODO Auto-generated method stub
 		return 0;
 	}

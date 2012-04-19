@@ -3,12 +3,16 @@ package com.kogasoftware.odt.invehicledevice.datasource;
 import java.util.Date;
 import java.util.List;
 
+import org.json.JSONException;
+
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
+import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.ReservationCandidate;
+import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public interface DataSource {
@@ -19,6 +23,14 @@ public interface DataSource {
 			WebAPICallback<OperationSchedule> callback) throws WebAPIException;
 
 	InVehicleDevice getInVehicleDevice() throws WebAPIException;
+
+	int getOffPassenger(OperationSchedule operationSchedule,
+			Reservation reservation, PassengerRecord passengerRecord,
+			WebAPICallback<PassengerRecord> callback) throws WebAPIException;
+
+	int getOnPassenger(OperationSchedule operationSchedule,
+			Reservation reservation, PassengerRecord passengerRecord,
+			WebAPICallback<PassengerRecord> callback) throws WebAPIException;
 
 	List<OperationSchedule> getOperationSchedules() throws WebAPIException;
 
@@ -40,4 +52,8 @@ public interface DataSource {
 	public int responseVehicleNotification(VehicleNotification vn,
 			int response, WebAPICallback<VehicleNotification> callback)
 			throws WebAPIException;
+
+	int sendServiceUnitStatusLog(ServiceUnitStatusLog log,
+			WebAPICallback<ServiceUnitStatusLog> callback)
+			throws WebAPIException, JSONException;
 }

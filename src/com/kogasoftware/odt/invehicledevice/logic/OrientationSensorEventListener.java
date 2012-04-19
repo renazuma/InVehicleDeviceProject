@@ -6,6 +6,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
 
+import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
 
 public class OrientationSensorEventListener extends LogicUser implements
@@ -36,7 +37,9 @@ public class OrientationSensorEventListener extends LogicUser implements
 		logic.getStatusAccess().write(new Writer() {
 			@Override
 			public void write(Status status) {
-				status.orientation = Math.toRadians(360.0f - degree);
+				// status.orientation = Optional.of(Math.toRadians(360 -
+				// degree));
+				status.orientation = Optional.of((int) (360 - degree));
 			}
 		});
 		Log.i(TAG, "orientation changed=" + degree);
