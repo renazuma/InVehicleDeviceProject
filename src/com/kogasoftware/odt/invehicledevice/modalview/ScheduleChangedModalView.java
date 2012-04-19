@@ -31,7 +31,7 @@ public class ScheduleChangedModalView extends ModalView {
 
 	public ScheduleChangedModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		setContentView(R.layout.schedule_changed_modal);
+		setContentView(R.layout.schedule_changed_modal_view);
 		Button scheduleConfirmButton = (Button) findViewById(R.id.schedule_confirm_button);
 		scheduleConfirmButton.setOnClickListener(new OnClickListener() {
 			@Override

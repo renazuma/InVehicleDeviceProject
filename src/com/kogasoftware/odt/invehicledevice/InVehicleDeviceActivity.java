@@ -204,8 +204,8 @@ public class InVehicleDeviceActivity extends Activity {
 		mapButton = (Button) findViewById(R.id.map_button);
 		configButton = (Button) findViewById(R.id.config_button);
 		scheduleButton = (Button) findViewById(R.id.schedule_button);
-		waitingLayout = findViewById(R.id.waiting_layout);
-		navigationModalView = (NavigationModalView) findViewById(R.id.navigation_modal);
+		waitingLayout = findViewById(R.id.platform_phase_view);
+		navigationModalView = (NavigationModalView) findViewById(R.id.navigation_modal_view);
 		minutesRemainingTextView = (TextView) findViewById(R.id.minutes_remaining);
 		networkStrengthImageView = (ImageView) findViewById(R.id.network_strength_image_view);
 

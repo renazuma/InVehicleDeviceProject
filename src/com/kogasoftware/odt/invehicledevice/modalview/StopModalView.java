@@ -12,7 +12,7 @@ public class StopModalView extends ModalView {
 
 	public StopModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		setContentView(R.layout.stop_modal);
+		setContentView(R.layout.stop_modal_view);
 	}
 
 	@Subscribe

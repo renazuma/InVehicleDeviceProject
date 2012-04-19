@@ -22,7 +22,7 @@ public class ScheduleModalView extends ModalView {
 
 	public ScheduleModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		setContentView(R.layout.schedule_modal);
+		setContentView(R.layout.schedule_modal_view);
 	}
 
 	@Subscribe

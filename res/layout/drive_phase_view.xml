@@ -4,7 +4,7 @@
     android:layout_height="fill_parent" >
 
     <LinearLayout
-        android:id="@+id/driving_view1"
+        android:id="@+id/drive_view1"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="vertical" >
@@ -61,7 +61,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/driving_view2"
+        android:id="@+id/drive_view2"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="vertical" >

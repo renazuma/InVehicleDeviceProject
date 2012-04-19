@@ -37,7 +37,7 @@ public class StartCheckModalView extends ModalView {
 
 	public StartCheckModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		setContentView(R.layout.start_check_modal);
+		setContentView(R.layout.start_check_modal_view);
 	}
 
 	@Subscribe
@@ -76,7 +76,6 @@ public class StartCheckModalView extends ModalView {
 				logic.enterDrivePhase();
 			}
 		});
-
 		super.show();
 	}
 }

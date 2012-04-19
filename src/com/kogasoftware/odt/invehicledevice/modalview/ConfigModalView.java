@@ -14,7 +14,7 @@ public class ConfigModalView extends ModalView {
 
 	public ConfigModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		this.setContentView(R.layout.config_modal);
+		this.setContentView(R.layout.config_modal_view);
 		Button stopCheckButton = (Button) findViewById(R.id.stop_check_button);
 		stopCheckButton.setOnClickListener(new OnClickListener() {
 			@Override

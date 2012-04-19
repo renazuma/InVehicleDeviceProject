@@ -31,7 +31,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 	public void test01_起動時は非表示() {
 
-		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_modal)
+		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_modal_view)
 				.getVisibility());
 	}
 
@@ -43,7 +43,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_changed_modal)
+		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_changed_modal_view)
 				.getVisibility());
 
 	}
@@ -55,9 +55,9 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_modal)
+		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_modal_view)
 				.getVisibility());
-		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_modal)
+		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_modal_view)
 				.getVisibility());
 
 	}
@@ -69,10 +69,10 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_modal)
+		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_modal_view)
 				.getVisibility());
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.driving_layout)
+		assertEquals(View.VISIBLE, solo.getView(R.id.drive_phase_view)
 				.getVisibility());
 	}
 
@@ -86,7 +86,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_changed_modal)
+		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_changed_modal_view)
 				.getVisibility());
 	}
 
@@ -97,9 +97,9 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_modal)
+		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_modal_view)
 				.getVisibility());
-		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_modal)
+		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_modal_view)
 				.getVisibility());
 
 	}
@@ -111,10 +111,10 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_modal)
+		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_modal_view)
 				.getVisibility());
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.waiting_layout)
+		assertEquals(View.VISIBLE, solo.getView(R.id.platform_phase_view)
 				.getVisibility());
 	}
 
@@ -128,7 +128,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_changed_modal)
+		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_changed_modal_view)
 				.getVisibility());
 	}
 
@@ -139,9 +139,9 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_modal)
+		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_modal_view)
 				.getVisibility());
-		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_modal)
+		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_modal_view)
 				.getVisibility());
 
 	}
@@ -153,10 +153,10 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_modal)
+		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_modal_view)
 				.getVisibility());
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.config_modal)
+		assertEquals(View.VISIBLE, solo.getView(R.id.config_modal_view)
 				.getVisibility());
 	}
 
@@ -170,7 +170,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_changed_modal)
+		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_changed_modal_view)
 				.getVisibility());
 	}
 
@@ -181,9 +181,9 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_modal)
+		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_modal_view)
 				.getVisibility());
-		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_modal)
+		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_modal_view)
 				.getVisibility());
 
 	}
@@ -195,10 +195,10 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_modal)
+		assertEquals(View.GONE, solo.getView(R.id.schedule_changed_modal_view)
 				.getVisibility());
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.navigation_modal)
+		assertEquals(View.VISIBLE, solo.getView(R.id.navigation_modal_view)
 				.getVisibility());
 	}
 

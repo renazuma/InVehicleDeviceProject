@@ -62,7 +62,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 	public void test01_メモボタンを押すとメモ画面が表示() {
 
 		solo.clickOnButton("メモ");
-		assertEquals(View.VISIBLE, solo.getView(R.id.memo_modal)
+		assertEquals(View.VISIBLE, solo.getView(R.id.memo_modal_view)
 				.getVisibility());
 		assertTrue(solo.searchText("テストメモ1"));
 	}
@@ -70,20 +70,20 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 	public void test02_メモ画面で戻るボタンを押すとメモ画面が非表示() {
 		test01_メモボタンを押すとメモ画面が表示();
 		solo.clickOnView(solo.getView(R.id.memo_close_button));
-		assertEquals(View.GONE, solo.getView(R.id.memo_modal).getVisibility());
+		assertEquals(View.GONE, solo.getView(R.id.memo_modal_view).getVisibility());
 	}
 
 	public void test03_復路ボタンを押すと復路画面が表示() {
-		assertEquals(View.GONE, solo.getView(R.id.return_path_modal)
+		assertEquals(View.GONE, solo.getView(R.id.return_path_modal_view)
 				.getVisibility());
 		solo.clickOnButton("復路");
-		assertEquals(View.VISIBLE, solo.getView(R.id.return_path_modal)
+		assertEquals(View.VISIBLE, solo.getView(R.id.return_path_modal_view)
 				.getVisibility());
 	}
 
 	public void test04_出発ボタンを押すと出発ダイアログ表示() {
 		solo.clickOnButton("出発する");
-		assertEquals(View.VISIBLE, solo.getView(R.id.start_check_modal)
+		assertEquals(View.VISIBLE, solo.getView(R.id.start_check_modal_view)
 				.getVisibility());
 	}
 
@@ -106,7 +106,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 		test03_復路ボタンを押すと復路画面が表示();
 
 		solo.clickOnButton("予約候補を検索");
-		assertEquals(View.VISIBLE, solo.getView(R.id.return_path_modal)
+		assertEquals(View.VISIBLE, solo.getView(R.id.return_path_modal_view)
 				.getVisibility());
 		assertEquals(View.VISIBLE, solo.getView(R.id.return_path_button)
 				.getVisibility());
@@ -118,7 +118,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 		test07_復路画面で予約候補を検索を押すと予約候補表示();
 
 		solo.clickOnButton("予約する");
-		assertEquals(View.VISIBLE, solo.getView(R.id.waiting_layout)
+		assertEquals(View.VISIBLE, solo.getView(R.id.platform_phase_view)
 				.getVisibility());
 
 	}

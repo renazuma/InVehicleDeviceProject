@@ -56,8 +56,8 @@ public class DrivePhaseView extends PhaseView {
 		platformName2BeyondTextView = (VTextView) findViewById(R.id.platform_name_2_beyond_text_view);
 		platformName3BeyondTextView = (VTextView) findViewById(R.id.platform_name_3_beyond_text_view);
 		platformArrivalTimeTextView = (TextView) findViewById(R.id.platform_arrival_time_text_view);
-		drivingView1Layout = findViewById(R.id.driving_view1);
-		drivingView2Layout = findViewById(R.id.driving_view2);
+		drivingView1Layout = findViewById(R.id.drive_view1);
+		drivingView2Layout = findViewById(R.id.drive_view2);
 
 		TypedArray typedArray = getContext().obtainStyledAttributes(
 				new int[] { android.R.attr.background });

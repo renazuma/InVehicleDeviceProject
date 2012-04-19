@@ -12,7 +12,7 @@ public class LoginModalView extends ModalView {
 
 	public LoginModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		setContentView(R.layout.pause_modal);
+		setContentView(R.layout.pause_modal_view);
 	}
 
 	@Subscribe

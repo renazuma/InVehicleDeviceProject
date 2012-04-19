@@ -44,7 +44,7 @@ public class ReturnPathModalView extends ModalView {
 
 	public ReturnPathModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		setContentView(R.layout.return_path_modal);
+		setContentView(R.layout.return_path_modal_view);
 
 		searchingDialog = new ProgressDialog(getContext());
 		searchingDialog.setMessage("予約情報を受信しています");

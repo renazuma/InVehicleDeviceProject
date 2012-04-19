@@ -60,12 +60,12 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 	public void test01_復路画面で戻るボタンを押すと復路画面が非表示() {
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.return_path_modal)
+		assertEquals(View.VISIBLE, solo.getView(R.id.return_path_modal_view)
 				.getVisibility());
 
 		solo.clickOnButton("戻る");
 
-		assertEquals(View.GONE, solo.getView(R.id.return_path_modal)
+		assertEquals(View.GONE, solo.getView(R.id.return_path_modal_view)
 				.getVisibility());
 	}
 
@@ -80,7 +80,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 		assertFalse(solo.searchText("乗車時刻"));
 
 		solo.clickOnButton("予約候補を検索");
-		assertEquals(View.VISIBLE, solo.getView(R.id.return_path_modal)
+		assertEquals(View.VISIBLE, solo.getView(R.id.return_path_modal_view)
 				.getVisibility());
 
 		assertTrue(solo.searchText("乗車時刻"));
@@ -119,7 +119,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 		solo.clickOnText("15時");
 
 		solo.clickOnButton("予約する");
-		assertEquals(View.VISIBLE, solo.getView(R.id.waiting_layout)
+		assertEquals(View.VISIBLE, solo.getView(R.id.platform_phase_view)
 				.getVisibility());
 
 	}
@@ -204,7 +204,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 		assertFalse(solo.searchText("乗車時刻"));
 
 		solo.clickOnButton("予約候補を検索");
-		assertEquals(View.VISIBLE, solo.getView(R.id.return_path_modal)
+		assertEquals(View.VISIBLE, solo.getView(R.id.return_path_modal_view)
 				.getVisibility());
 
 		assertTrue(solo.searchText("乗車時刻"));

@@ -119,7 +119,7 @@ public class NavigationModalView extends ModalView {
 	//
 	public NavigationModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		setContentView(R.layout.navigation_modal);
+		setContentView(R.layout.navigation_modal_view);
 		//
 		// mapView = new MapView(context,
 		// "0_ZIi_adDM8WHxCX0OJTfcXhHO8jOsYOjLF7xow");

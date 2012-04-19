@@ -48,7 +48,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 	}
 
 	public void test02_起動時は出発ダイアログは非表示() {
-		assertEquals(View.GONE, solo.getView(R.id.start_check_modal)
+		assertEquals(View.GONE, solo.getView(R.id.start_check_modal_view)
 				.getVisibility());
 	}
 
@@ -75,7 +75,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.start_check_modal)
+		assertEquals(View.VISIBLE, solo.getView(R.id.start_check_modal_view)
 				.getVisibility());
 		
 	}
@@ -84,7 +84,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 		test04_停車中から出発しますボタンを押すと出発確認画面表示();
 
 		solo.clickOnView(solo.getView(R.id.stop_cancel_button));
-		assertEquals(View.VISIBLE, solo.getView(R.id.waiting_layout)
+		assertEquals(View.VISIBLE, solo.getView(R.id.platform_phase_view)
 				.getVisibility());
 
 		getInstrumentation().waitForIdleSync();
@@ -100,7 +100,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 		solo.clickOnView(solo.getView(R.id.start_button));
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.driving_layout)
+		assertEquals(View.VISIBLE, solo.getView(R.id.drive_phase_view)
 				.getVisibility());
 		TextView v = (TextView) solo.getView(R.id.phase_text_view);
 		assertEquals("走行中", v.getText()); // TODO 画像ファイル名assertに書き換わる予定
@@ -134,12 +134,12 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 		
 		solo.clickOnButton("確定する");
 		getInstrumentation().waitForIdleSync();
-		assertEquals(View.VISIBLE, solo.getView(R.id.start_check_modal)
+		assertEquals(View.VISIBLE, solo.getView(R.id.start_check_modal_view)
 				.getVisibility());
 		
 		solo.clickOnButton("確定する");
 		getInstrumentation().waitForIdleSync();
-		assertEquals(View.VISIBLE, solo.getView(R.id.finish_layout)
+		assertEquals(View.VISIBLE, solo.getView(R.id.finish_phase_view)
 				.getVisibility());
 
 		TextView v = (TextView) solo.getView(R.id.phase_text_view);

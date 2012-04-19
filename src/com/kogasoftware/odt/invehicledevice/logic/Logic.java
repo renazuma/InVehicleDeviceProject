@@ -141,14 +141,14 @@ public class Logic {
 			handlerThread.start();
 			eventBus.register(voiceThread);
 			Thread.sleep(0); // interruption point
-			for (Integer resourceId : new Integer[] { R.id.config_modal,
-					R.id.start_check_modal, R.id.schedule_modal,
-					R.id.memo_modal, R.id.pause_modal, R.id.return_path_modal,
-					R.id.stop_check_modal, R.id.stop_modal,
-					R.id.notification_modal, R.id.schedule_changed_modal,
-					R.id.navigation_modal, R.id.login_modal,
-					R.id.phase_text_view, R.id.driving_layout,
-					R.id.waiting_layout, R.id.finish_layout }) {
+			for (Integer resourceId : new Integer[] { R.id.config_modal_view,
+					R.id.start_check_modal_view, R.id.schedule_modal_view,
+					R.id.memo_modal_view, R.id.pause_modal_view, R.id.return_path_modal_view,
+					R.id.stop_check_modal_view, R.id.stop_modal_view,
+					R.id.notification_modal_view, R.id.schedule_changed_modal_view,
+					R.id.navigation_modal_view, R.id.login_modal_view,
+					R.id.phase_text_view, R.id.drive_phase_view,
+					R.id.platform_phase_view, R.id.finish_phase_view }) {
 				View view = activity.findViewById(resourceId);
 				eventBus.register(view);
 				Thread.sleep(0); // interruption point

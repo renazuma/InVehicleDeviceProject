@@ -14,7 +14,7 @@ public class StopCheckModalView extends ModalView {
 
 	public StopCheckModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		setContentView(R.layout.stop_check_modal);
+		setContentView(R.layout.stop_check_modal_view);
 
 		Button stopButton = (Button) findViewById(R.id.stop_button);
 		stopButton.setOnClickListener(new OnClickListener() {

@@ -13,7 +13,7 @@ public class PauseModalView extends ModalView {
 
 	public PauseModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		setContentView(R.layout.pause_modal);
+		setContentView(R.layout.pause_modal_view);
 		findViewById(R.id.pause_cancel_button).setOnClickListener(
 				new OnClickListener() {
 					@Override

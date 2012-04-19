@@ -30,7 +30,7 @@ public class NotificationTestCase extends
 	}
 
 	public void test01_起動時は非表示() {
-		assertEquals(View.GONE, solo.getView(R.id.notification_modal)
+		assertEquals(View.GONE, solo.getView(R.id.notification_modal_view)
 				.getVisibility());
 	}
 
@@ -42,7 +42,7 @@ public class NotificationTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.notification_modal)
+		assertEquals(View.VISIBLE, solo.getView(R.id.notification_modal_view)
 				.getVisibility());
 	}
 
@@ -53,9 +53,9 @@ public class NotificationTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.GONE, solo.getView(R.id.notification_modal)
+		assertEquals(View.GONE, solo.getView(R.id.notification_modal_view)
 				.getVisibility());
-		assertEquals(View.VISIBLE, solo.getView(R.id.driving_layout)
+		assertEquals(View.VISIBLE, solo.getView(R.id.drive_phase_view)
 				.getVisibility());
 
 	}
@@ -67,10 +67,10 @@ public class NotificationTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.GONE, solo.getView(R.id.notification_modal)
+		assertEquals(View.GONE, solo.getView(R.id.notification_modal_view)
 				.getVisibility());
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.driving_layout)
+		assertEquals(View.VISIBLE, solo.getView(R.id.drive_phase_view)
 				.getVisibility());
 	}
 
@@ -84,7 +84,7 @@ public class NotificationTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.notification_modal)
+		assertEquals(View.VISIBLE, solo.getView(R.id.notification_modal_view)
 				.getVisibility());
 	}
 
@@ -95,9 +95,9 @@ public class NotificationTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.GONE, solo.getView(R.id.notification_modal)
+		assertEquals(View.GONE, solo.getView(R.id.notification_modal_view)
 				.getVisibility());
-		assertEquals(View.VISIBLE, solo.getView(R.id.waiting_layout)
+		assertEquals(View.VISIBLE, solo.getView(R.id.platform_phase_view)
 				.getVisibility());
 
 	}
@@ -109,10 +109,10 @@ public class NotificationTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.GONE, solo.getView(R.id.notification_modal)
+		assertEquals(View.GONE, solo.getView(R.id.notification_modal_view)
 				.getVisibility());
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.waiting_layout)
+		assertEquals(View.VISIBLE, solo.getView(R.id.platform_phase_view)
 				.getVisibility());
 	}
 
@@ -126,7 +126,7 @@ public class NotificationTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.notification_modal)
+		assertEquals(View.VISIBLE, solo.getView(R.id.notification_modal_view)
 				.getVisibility());
 	}
 
@@ -137,9 +137,9 @@ public class NotificationTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.GONE, solo.getView(R.id.notification_modal)
+		assertEquals(View.GONE, solo.getView(R.id.notification_modal_view)
 				.getVisibility());
-		assertEquals(View.VISIBLE, solo.getView(R.id.config_modal)
+		assertEquals(View.VISIBLE, solo.getView(R.id.config_modal_view)
 				.getVisibility());
 
 	}
@@ -151,10 +151,10 @@ public class NotificationTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.GONE, solo.getView(R.id.notification_modal)
+		assertEquals(View.GONE, solo.getView(R.id.notification_modal_view)
 				.getVisibility());
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.config_modal)
+		assertEquals(View.VISIBLE, solo.getView(R.id.config_modal_view)
 				.getVisibility());
 	}
 
@@ -168,7 +168,7 @@ public class NotificationTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.notification_modal)
+		assertEquals(View.VISIBLE, solo.getView(R.id.notification_modal_view)
 				.getVisibility());
 	}
 
@@ -179,9 +179,9 @@ public class NotificationTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.GONE, solo.getView(R.id.notification_modal)
+		assertEquals(View.GONE, solo.getView(R.id.notification_modal_view)
 				.getVisibility());
-		assertEquals(View.VISIBLE, solo.getView(R.id.navigation_modal)
+		assertEquals(View.VISIBLE, solo.getView(R.id.navigation_modal_view)
 				.getVisibility());
 
 	}
@@ -193,10 +193,10 @@ public class NotificationTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.GONE, solo.getView(R.id.notification_modal)
+		assertEquals(View.GONE, solo.getView(R.id.notification_modal_view)
 				.getVisibility());
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.navigation_modal)
+		assertEquals(View.VISIBLE, solo.getView(R.id.navigation_modal_view)
 				.getVisibility());
 	}
 

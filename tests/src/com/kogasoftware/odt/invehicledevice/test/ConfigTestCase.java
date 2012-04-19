@@ -35,7 +35,7 @@ public class ConfigTestCase extends
 
 
 	public void test01_起動時は非表示() {
-		assertEquals(View.GONE, solo.getView(R.id.config_modal)
+		assertEquals(View.GONE, solo.getView(R.id.config_modal_view)
 				.getVisibility());
 	}
 
@@ -45,7 +45,7 @@ public class ConfigTestCase extends
 		solo.clickOnButton("運行管理");
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.config_modal)
+		assertEquals(View.VISIBLE, solo.getView(R.id.config_modal_view)
 				.getVisibility());
 	}
 
@@ -56,14 +56,14 @@ public class ConfigTestCase extends
 		solo.clickOnButton("運行管理");
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.config_modal)
+		assertEquals(View.VISIBLE, solo.getView(R.id.config_modal_view)
 				.getVisibility());
 
 		solo.clickOnView(solo.getView(R.id.config_hide_button));
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.GONE, solo.getView(R.id.config_modal)
+		assertEquals(View.GONE, solo.getView(R.id.config_modal_view)
 				.getVisibility());
 	}
 
@@ -73,30 +73,30 @@ public class ConfigTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.config_modal)
+		assertEquals(View.VISIBLE, solo.getView(R.id.config_modal_view)
 				.getVisibility());
 	}
 
 	public void test05_中止ボタンを押すと中止確認画面が表示() {
 		test02_運行管理ボタンを押したら表示();
-		assertEquals(View.GONE, solo.getView(R.id.stop_check_modal)
+		assertEquals(View.GONE, solo.getView(R.id.stop_check_modal_view)
 				.getVisibility());
 		solo.clickOnView(solo.getView(R.id.stop_check_button));
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.stop_check_modal)
+		assertEquals(View.VISIBLE, solo.getView(R.id.stop_check_modal_view)
 				.getVisibility());
 	}
 
 	public void test06_中止確認画面で中止ボタンを押すと中止画面が表示() {
 		test05_中止ボタンを押すと中止確認画面が表示();
-		assertEquals(View.GONE, solo.getView(R.id.stop_modal).getVisibility());
+		assertEquals(View.GONE, solo.getView(R.id.stop_modal_view).getVisibility());
 		solo.clickOnView(solo.getView(R.id.stop_button));
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.stop_modal)
+		assertEquals(View.VISIBLE, solo.getView(R.id.stop_modal_view)
 				.getVisibility());
 	}
 
@@ -107,7 +107,7 @@ public class ConfigTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.GONE, solo.getView(R.id.stop_check_modal)
+		assertEquals(View.GONE, solo.getView(R.id.stop_check_modal_view)
 				.getVisibility());
 
 	}
@@ -115,13 +115,13 @@ public class ConfigTestCase extends
 	public void test08_一時停止ボタンを押すと一時停止画面が表示() {
 
 		test02_運行管理ボタンを押したら表示();
-		assertEquals(View.GONE, solo.getView(R.id.pause_modal)
+		assertEquals(View.GONE, solo.getView(R.id.pause_modal_view)
 				.getVisibility());
 		solo.clickOnView(solo.getView(R.id.pause_button));
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.pause_modal)
+		assertEquals(View.VISIBLE, solo.getView(R.id.pause_modal_view)
 				.getVisibility());
 	}
 
@@ -133,17 +133,17 @@ public class ConfigTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.pause_modal)
+		assertEquals(View.VISIBLE, solo.getView(R.id.pause_modal_view)
 				.getVisibility());
 
 		solo.clickOnButton("運行を再開する");
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.GONE, solo.getView(R.id.config_modal)
+		assertEquals(View.GONE, solo.getView(R.id.config_modal_view)
 				.getVisibility());
 
-		assertEquals(View.GONE, solo.getView(R.id.pause_modal)
+		assertEquals(View.GONE, solo.getView(R.id.pause_modal_view)
 				.getVisibility());
 	}
 

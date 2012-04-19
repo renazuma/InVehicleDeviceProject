@@ -31,7 +31,7 @@ public class NotificationModalView extends ModalView {
 
 	public NotificationModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		setContentView(R.layout.notification_modal);
+		setContentView(R.layout.notification_modal_view);
 		findViewById(R.id.reply_yes_button).setOnClickListener(
 				new OnClickListener() {
 					@Override
