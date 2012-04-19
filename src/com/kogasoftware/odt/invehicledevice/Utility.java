@@ -1,12 +1,14 @@
 package com.kogasoftware.odt.invehicledevice;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.LinkedList;
 
 import com.kogasoftware.odt.webapi.model.Model;
 
 public class Utility {
+	/**
+	 * getId()が同一のものが含まれるかのチェック
+	 */
 	public static <T extends Model> Boolean contains(Collection<T> models,
 			T extraModel) {
 		for (T model : models) {
@@ -17,25 +19,26 @@ public class Utility {
 		return false;
 	}
 
-	public static <T extends Model> void merge(Collection<T> models,
-			Collection<T> extraModels) {
-		models.addAll(extraModels);
-		uniquify(models);
-	}
-
-	public static <T extends Model> void merge(Collection<T> models, T model) {
-		models.add(model);
-		uniquify(models);
-	}
-
-	public static <T extends Model> void uniquify(Collection<T> models) {
-		Map<Integer, T> uniqueMap = new LinkedHashMap<Integer, T>();
-		for (T model : models) {
-			if (uniqueMap.get(model.getId()) == null) {
-				uniqueMap.put(model.getId(), model);
+	/**
+	 * getId()の結果でマージする。merge([1,7,5], [3,5,6,6]) => [1,7,5,3,6,6]
+	 */
+	public static <T extends Model> void mergeById(Collection<T> models,
+			Collection<T> additionalModels) {
+		Collection<T> baseModels = new LinkedList<T>(models);
+		for (T additionalModel : additionalModels) {
+			if (!contains(baseModels, additionalModel)) {
+				models.add(additionalModel);
 			}
 		}
-		models.clear();
-		models.addAll(uniqueMap.values());
+	}
+
+	/**
+	 * getId()の結果でマージする。
+	 */
+	public static <T extends Model> void mergeById(Collection<T> models,
+			T additionalModel) {
+		if (!contains(models, additionalModel)) {
+			models.add(additionalModel);
+		}
 	}
 }
