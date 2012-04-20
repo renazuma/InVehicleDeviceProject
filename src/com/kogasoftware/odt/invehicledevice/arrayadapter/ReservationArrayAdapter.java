@@ -35,7 +35,8 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 		RIDING_AND_NO_GET_OFF, FUTURE_GET_ON, MISSED,
 	}
 
-	private static final String TAG = ReservationArrayAdapter.class.getName();
+	private static final String TAG = ReservationArrayAdapter.class
+			.getSimpleName();
 
 	private final LayoutInflater layoutInflater = (LayoutInflater) getContext()
 			.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -163,8 +164,10 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		final View view = convertView != null ? convertView : layoutInflater
-				.inflate(resourceId, null);
+		Log.i(TAG, "getView() position=" + position + " convertView="
+				+ (convertView == null ? "null" : convertView.toString()));
+		View view = convertView != null ? convertView : layoutInflater.inflate(
+				resourceId, null);
 		final PassengerRecord passengerRecord = getItem(position);
 		if (!passengerRecord.getReservation().isPresent()) {
 			return view;
@@ -285,10 +288,14 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 			public void onClick(View view) {
 				if (selectedPassengerRecords.contains(passengerRecord)) {
 					selectedPassengerRecords.remove(passengerRecord);
-					paidButton.setChecked(false);
+					if (paidButton.isShown()) {
+						paidButton.setChecked(false);
+					}
 				} else {
 					selectedPassengerRecords.add(passengerRecord);
-					paidButton.setChecked(true);
+					if (paidButton.isShown()) {
+						paidButton.setChecked(true);
+					}
 				}
 				notifyDataSetChanged();
 			}

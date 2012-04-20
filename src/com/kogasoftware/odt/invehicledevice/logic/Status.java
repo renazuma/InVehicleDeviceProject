@@ -30,14 +30,13 @@ public class Status implements Serializable {
 		public final LinkedList<OperationSchedule> departureOperationSchedules = new LinkedList<OperationSchedule>();
 	}
 
-	private static final long serialVersionUID = 5617948505743183179L;
+	private static final long serialVersionUID = 5617948505743183178L;
 
 	public final SendLists sendLists = new SendLists();
 	public final Date createdDate = new Date();
 	public Boolean initialized = false;
 	public String token = "";
 	public String url = "";
-	public Integer currentOperationScheduleIndex = 0;
 	public File file = new EmptyFile();
 	public Boolean paused = false;
 	public Phase phase = Phase.INITIAL;
@@ -45,8 +44,10 @@ public class Status implements Serializable {
 	public Optional<Location> location = Optional.absent();
 	public Optional<Integer> orientation = Optional.absent();
 	public Optional<Integer> temperature = Optional.absent();
-	public final LinkedList<OperationSchedule> operationSchedules = new LinkedList<OperationSchedule>();
+	public final LinkedList<OperationSchedule> remainingOperationSchedules = new LinkedList<OperationSchedule>();
+	public final LinkedList<OperationSchedule> finishedOperationSchedules = new LinkedList<OperationSchedule>();
 	public final LinkedList<PassengerRecord> unhandledPassengerRecords = new LinkedList<PassengerRecord>();
 	public final LinkedList<PassengerRecord> ridingPassengerRecords = new LinkedList<PassengerRecord>();
+	public final LinkedList<PassengerRecord> finishedPassengerRecords = new LinkedList<PassengerRecord>();
 	public final LinkedList<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();;
 }

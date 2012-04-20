@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.google.common.base.Optional;
+import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.BuildConfig;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.Utility;
@@ -30,6 +31,7 @@ import com.kogasoftware.odt.invehicledevice.event.EnterDrivePhaseEvent;
 import com.kogasoftware.odt.invehicledevice.event.EnterFinishPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.event.EnterPlatformPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.event.UiEventBus;
+import com.kogasoftware.odt.invehicledevice.event.UpdateOperationScheduleCompleteEvent;
 import com.kogasoftware.odt.invehicledevice.logic.Status.Phase;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Reader;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
@@ -135,6 +137,9 @@ public class Logic {
 				Log.e(TAG, "Task Rejected", e);
 			}
 
+			Thread.sleep(0); // interruption point
+			eventBus.register(this);
+			Thread.sleep(0); // interruption point
 			eventBus.register(activity);
 			Thread.sleep(0); // interruption point
 			voiceThread = new VoiceThread(activity);
@@ -164,7 +169,8 @@ public class Logic {
 				eventBus.register(logicUser);
 			}
 
-			if (getPhase() != Phase.FINISH && getOperationSchedules().isEmpty()) {
+			if (getPhase() != Phase.FINISH
+					&& getRemainingOperationSchedules().isEmpty()) {
 				try {
 					executorService.submit(new OperationScheduleReceiver(this))
 							.get();
@@ -208,14 +214,16 @@ public class Logic {
 		statusAccess.write(new Writer() {
 			@Override
 			public void write(Status status) {
-				if (status.operationSchedules.size() <= status.currentOperationScheduleIndex) {
-					// TODO warning
+				if (status.remainingOperationSchedules.isEmpty()) {
+					enterFinishPhase();
 					return;
 				}
-				OperationSchedule operationSchedule = status.operationSchedules
-						.get(status.currentOperationScheduleIndex);
+				OperationSchedule operationSchedule = status.remainingOperationSchedules
+						.get(0);
 				if (status.phase == Status.Phase.PLATFORM) {
-					status.currentOperationScheduleIndex++;
+					status.remainingOperationSchedules
+							.remove(operationSchedule);
+					status.finishedOperationSchedules.add(operationSchedule);
 					Utility.mergeById(
 							status.sendLists.departureOperationSchedules,
 							operationSchedule);
@@ -241,15 +249,14 @@ public class Logic {
 			@Override
 			public void write(Status status) {
 				status.phase = Status.Phase.PLATFORM;
-				if (status.operationSchedules.size() <= status.currentOperationScheduleIndex) {
-					// TODO warning
+				if (status.remainingOperationSchedules.isEmpty()) {
+					enterFinishPhase();
 					return;
 				}
-				OperationSchedule operationSchedule = status.operationSchedules
-						.get(status.currentOperationScheduleIndex);
+				OperationSchedule operationSchedule = status.remainingOperationSchedules
+						.get(0);
 				Utility.mergeById(status.sendLists.arrivalOperationSchedules,
 						operationSchedule);
-
 			}
 		});
 		eventBus.post(new EnterPlatformPhaseEvent());
@@ -259,11 +266,11 @@ public class Logic {
 		return statusAccess.read(new Reader<Optional<OperationSchedule>>() {
 			@Override
 			public Optional<OperationSchedule> read(Status status) {
-				if (status.operationSchedules.size() <= status.currentOperationScheduleIndex) {
+				if (status.remainingOperationSchedules.isEmpty()) {
 					return Optional.absent();
 				} else {
-					return Optional.of(status.operationSchedules
-							.get(status.currentOperationScheduleIndex));
+					return Optional.of(status.remainingOperationSchedules
+							.get(0));
 				}
 			}
 		});
@@ -279,6 +286,16 @@ public class Logic {
 
 	public ScheduledExecutorService getExecutorService() {
 		return executorService;
+	}
+
+	public List<OperationSchedule> getFinishedOperationSchedules() {
+		return statusAccess.read(new Reader<List<OperationSchedule>>() {
+			@Override
+			public List<OperationSchedule> read(Status status) {
+				return new LinkedList<OperationSchedule>(
+						status.finishedOperationSchedules);
+			}
+		});
 	}
 
 	public void getOffPassengerRecords(OperationSchedule operationSchedule,
@@ -297,6 +314,8 @@ public class Logic {
 						.addAll(selectedGetOffPassengerRecords);
 				status.ridingPassengerRecords
 						.removeAll(selectedGetOffPassengerRecords);
+				status.finishedPassengerRecords
+						.addAll(selectedGetOffPassengerRecords);
 			}
 		});
 	}
@@ -315,18 +334,10 @@ public class Logic {
 			public void write(Status status) {
 				status.sendLists.getOnPassengerRecords
 						.addAll(selectedGetOnPassengerRecords);
+				status.unhandledPassengerRecords
+						.removeAll(selectedGetOnPassengerRecords);
 				status.ridingPassengerRecords
 						.addAll(selectedGetOnPassengerRecords);
-			}
-		});
-	}
-
-	public List<OperationSchedule> getOperationSchedules() {
-		return statusAccess.read(new Reader<List<OperationSchedule>>() {
-			@Override
-			public List<OperationSchedule> read(Status status) {
-				return new LinkedList<OperationSchedule>(
-						status.operationSchedules);
 			}
 		});
 	}
@@ -344,16 +355,8 @@ public class Logic {
 		return statusAccess.read(new Reader<List<OperationSchedule>>() {
 			@Override
 			public List<OperationSchedule> read(Status status) {
-				try {
-					List<OperationSchedule> remainings = new LinkedList<OperationSchedule>(
-							status.operationSchedules);
-					return remainings.subList(
-							status.currentOperationScheduleIndex,
-							remainings.size());
-				} catch (ArrayIndexOutOfBoundsException e) {
-				} catch (IllegalArgumentException e) {
-				}
-				return new LinkedList<OperationSchedule>();
+				return new LinkedList<OperationSchedule>(
+						status.remainingOperationSchedules);
 			}
 		});
 	}
@@ -411,6 +414,11 @@ public class Logic {
 			enterFinishPhase();
 			break;
 		}
+	}
+
+	@Subscribe
+	public void restoreStatus(UpdateOperationScheduleCompleteEvent event) {
+		restoreStatus();
 	}
 
 	public void setLocation(final Location location) {

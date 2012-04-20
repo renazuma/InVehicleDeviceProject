@@ -29,7 +29,10 @@ public class ScheduleModalView extends ModalView {
 	public void show(ShowEvent event) {
 		super.hide();
 		this.operationSchedules.clear();
-		this.operationSchedules.addAll(getLogic().getOperationSchedules());
+		this.operationSchedules.addAll(getLogic()
+				.getFinishedOperationSchedules());
+		this.operationSchedules.addAll(getLogic()
+				.getRemainingOperationSchedules());
 		OperationScheduleArrayAdapter adapter = new OperationScheduleArrayAdapter(
 				getContext(), R.layout.operation_schedule_list_row,
 				operationSchedules, getLogic());
