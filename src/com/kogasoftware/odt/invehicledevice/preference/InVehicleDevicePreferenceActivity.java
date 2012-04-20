@@ -45,11 +45,10 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 				Context context = InVehicleDevicePreferenceActivity.this;
 				SharedPreferences preferences = PreferenceManager
 						.getDefaultSharedPreferences(InVehicleDevicePreferenceActivity.this);
-				WebAPI api = new WebAPI();
-				InVehicleDevice ivd = new InVehicleDevice();
-
 				String url = preferences.getString("connection_url",
 						"http://localhost");
+				WebAPI api = new WebAPI(url);
+				InVehicleDevice ivd = new InVehicleDevice();
 				ivd.setLogin(preferences.getString("login", "ivd1"));
 				ivd.setPassword(preferences.getString("password", "ivdpass"));
 
