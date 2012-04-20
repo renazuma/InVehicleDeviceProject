@@ -96,7 +96,7 @@ public class Logic {
 			.newScheduledThreadPool(NUM_THREADS);
 	private final StatusAccess statusAccess;
 	private Thread voiceThread = new EmptyThread();
-	private Thread handlerThread = new EmptyThread();
+	private Thread looperThread = new EmptyThread();
 	private VehicleNotificationReceiver vehicleNotificationReceiver = new VehicleNotificationReceiver();
 	private VehicleNotificationSender vehicleNotificationSender = new VehicleNotificationSender();
 	private ScheduleChangedReceiver scheduleChangedReceiver = new ScheduleChangedReceiver();
@@ -144,8 +144,8 @@ public class Logic {
 			Thread.sleep(0); // interruption point
 			voiceThread = new VoiceThread(activity);
 			voiceThread.start();
-			handlerThread = new LooperThread(this, activity);
-			handlerThread.start();
+			looperThread = new LooperThread(this, activity);
+			looperThread.start();
 			eventBus.register(voiceThread);
 			Thread.sleep(0); // interruption point
 			for (Integer resourceId : new Integer[] { R.id.config_modal_view,
@@ -473,7 +473,7 @@ public class Logic {
 		eventBus.dispose();
 		executorService.shutdownNow();
 		voiceThread.interrupt();
-		handlerThread.interrupt();
+		looperThread.interrupt();
 	}
 
 	public void speak(String message) {
