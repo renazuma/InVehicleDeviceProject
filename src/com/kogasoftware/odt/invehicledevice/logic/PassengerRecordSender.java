@@ -21,9 +21,11 @@ public class PassengerRecordSender extends LogicUser implements Runnable {
 				@Override
 				public void write(Status status) {
 					if (getOn) {
-						status.getOnPassengerRecords.remove(passengerRecord);
+						status.sendLists.getOnPassengerRecords
+								.remove(passengerRecord);
 					} else {
-						status.getOffPassengerRecords.remove(passengerRecord);
+						status.sendLists.getOffPassengerRecords
+								.remove(passengerRecord);
 					}
 				}
 			});
@@ -41,7 +43,7 @@ public class PassengerRecordSender extends LogicUser implements Runnable {
 					@Override
 					public List<PassengerRecord> read(Status status) {
 						return new LinkedList<PassengerRecord>(
-								status.getOnPassengerRecords);
+								status.sendLists.getOnPassengerRecords);
 					}
 				});
 		List<PassengerRecord> getOffPassengerRecords = logic.getStatusAccess()
@@ -49,7 +51,7 @@ public class PassengerRecordSender extends LogicUser implements Runnable {
 					@Override
 					public List<PassengerRecord> read(Status status) {
 						return new LinkedList<PassengerRecord>(
-								status.getOffPassengerRecords);
+								status.sendLists.getOffPassengerRecords);
 					}
 				});
 		send(logic, getOnPassengerRecords, true);

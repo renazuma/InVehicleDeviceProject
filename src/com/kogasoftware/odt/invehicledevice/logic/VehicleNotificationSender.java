@@ -22,7 +22,7 @@ public class VehicleNotificationSender extends LogicUser implements Runnable {
 							@Override
 							public List<VehicleNotification> read(Status status) {
 								return new LinkedList<VehicleNotification>(
-										status.repliedVehicleNotifications);
+										status.sendLists.repliedVehicleNotifications);
 							}
 						});
 		if (repliedVehicleNotifications.isEmpty()) {
@@ -53,7 +53,7 @@ public class VehicleNotificationSender extends LogicUser implements Runnable {
 								logic.getStatusAccess().write(new Writer() {
 									@Override
 									public void write(Status status) {
-										status.repliedVehicleNotifications
+										status.sendLists.repliedVehicleNotifications
 												.remove(vehicleNotification);
 									}
 								});

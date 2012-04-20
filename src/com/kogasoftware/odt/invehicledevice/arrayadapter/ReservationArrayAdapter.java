@@ -66,7 +66,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 			public void read(Status status) {
 				unhandledPassengerRecords
 						.addAll(status.unhandledPassengerRecords);
-				ridingPassengerRecords.addAll(ridingPassengerRecords);
+				ridingPassengerRecords.addAll(status.ridingPassengerRecords);
 			}
 		});
 
@@ -77,16 +77,11 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 		if (!passengerRecord.getReservation().isPresent()) {
 			return;
 		}
-		Reservation reservation = passengerRecord.getReservation().get();
-		if (reservation.getArrivalScheduleId().isPresent()
-				&& operationSchedule.getId().equals(
-						reservation.getArrivalScheduleId().get())) {
+		if (isGetOn(passengerRecord)) {
 			add(passengerRecord);
 			return;
 		}
-		if (reservation.getDepartureScheduleId().isPresent()
-				&& operationSchedule.getId().equals(
-						reservation.getDepartureScheduleId().get())) {
+		if (isGetOff(passengerRecord)) {
 			add(passengerRecord);
 			return;
 		}
@@ -96,7 +91,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 			return;
 		}
 		if (visibleItemTypes.contains(ItemType.RIDING_AND_NO_GET_OFF)
-				&& isRidingAndNotGetOut(passengerRecord)) {
+				&& isRidingAndNotGetOff(passengerRecord)) {
 			add(passengerRecord);
 			return;
 		}
@@ -149,8 +144,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 	public List<PassengerRecord> getSelectedGetOffPassengerRecords() {
 		List<PassengerRecord> passengerRecords = new LinkedList<PassengerRecord>();
 		for (PassengerRecord passengerRecord : ridingPassengerRecords) {
-			if (isGetOff(passengerRecord)
-					&& selectedPassengerRecords.contains(passengerRecord)) {
+			if (selectedPassengerRecords.contains(passengerRecord)) {
 				passengerRecords.add(passengerRecord);
 			}
 		}
@@ -160,8 +154,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 	public List<PassengerRecord> getSelectedGetOnPassengerRecords() {
 		List<PassengerRecord> passengerRecords = new LinkedList<PassengerRecord>();
 		for (PassengerRecord passengerRecord : unhandledPassengerRecords) {
-			if (isGetOn(passengerRecord)
-					&& selectedPassengerRecords.contains(passengerRecord)) {
+			if (selectedPassengerRecords.contains(passengerRecord)) {
 				passengerRecords.add(passengerRecord);
 			}
 		}
@@ -186,13 +179,14 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 		for (Integer i = 1; i <= max; ++i) {
 			passengerCounts.add(i + "名");
 		}
-		try {
-			spinner.setSelection(passengerRecord.getPassengerCount() - 1);
-		} catch (RuntimeException e) {
-			Log.e(TAG, e.toString(), e); // TODO
-		}
 		spinner.setAdapter(new ArrayAdapter<String>(getContext(),
 				android.R.layout.simple_list_item_1, passengerCounts));
+		try {
+			Integer count = passengerRecord.getPassengerCount() - 1;
+			spinner.setSelection(count);
+		} catch (RuntimeException e) {
+			Log.w(TAG, e);
+		}
 		spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view,
@@ -228,7 +222,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 				} else {
 					passengerRecord.clearPayment();
 				}
-				updateDataSet();
+				notifyDataSetChanged();
 			}
 		});
 
@@ -273,7 +267,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 			text += "[*乗]";
 		} else if (isGetOn(passengerRecord)) {
 			text += "[乗]";
-		} else if (isRidingAndNotGetOut(passengerRecord)) {
+		} else if (isRidingAndNotGetOff(passengerRecord)) {
 			text += "[*降]";
 		} else {
 			text += "[降]";
@@ -296,7 +290,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 					selectedPassengerRecords.add(passengerRecord);
 					paidButton.setChecked(true);
 				}
-				updateDataSet();
+				notifyDataSetChanged();
 			}
 		});
 		if (selectedPassengerRecords.contains(passengerRecord)) {
@@ -332,6 +326,9 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 	}
 
 	private Boolean isGetOff(PassengerRecord passengerRecord) {
+		if (!ridingPassengerRecords.contains(passengerRecord)) {
+			return false;
+		}
 		if (!passengerRecord.getReservation().isPresent()
 				|| !passengerRecord.getReservation().get()
 						.getArrivalScheduleId().isPresent()) {
@@ -343,6 +340,9 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 	}
 
 	private Boolean isGetOn(PassengerRecord passengerRecord) {
+		if (!unhandledPassengerRecords.contains(passengerRecord)) {
+			return false;
+		}
 		if (!passengerRecord.getReservation().isPresent()
 				|| !passengerRecord.getReservation().get()
 						.getDepartureScheduleId().isPresent()) {
@@ -371,7 +371,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 		return true;
 	}
 
-	private Boolean isRidingAndNotGetOut(PassengerRecord passengerRecord) {
+	private Boolean isRidingAndNotGetOff(PassengerRecord passengerRecord) {
 		return ridingPassengerRecords.contains(passengerRecord)
 				&& !isGetOff(passengerRecord);
 	}

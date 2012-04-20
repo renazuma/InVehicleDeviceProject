@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -118,10 +117,8 @@ public class Logic {
 			Thread.sleep(0); // interruption point
 			this.statusAccess = new StatusAccess(activity,
 					willClearStatusFile.getAndSet(false));
-			Future<?> receiveOperationSchedule = null;
+
 			try {
-				receiveOperationSchedule = executorService
-						.submit(new OperationScheduleReceiver(this));
 				executorService.scheduleWithFixedDelay(
 						vehicleNotificationReceiver, 0, POLLING_PERIOD_MILLIS,
 						TimeUnit.MILLISECONDS);
@@ -167,27 +164,18 @@ public class Logic {
 				eventBus.register(logicUser);
 			}
 
-			if (receiveOperationSchedule != null && getPhase() != Phase.FINISH
-					&& getOperationSchedules().isEmpty()) {
+			if (getPhase() != Phase.FINISH && getOperationSchedules().isEmpty()) {
 				try {
-					receiveOperationSchedule.get(); // wait for initialize
+					executorService.submit(new OperationScheduleReceiver(this))
+							.get();
 				} catch (ExecutionException e) {
+					Log.w(TAG, e);
 				}
 			}
 		} catch (InterruptedException e) {
 			shutdown();
 			throw e;
 		}
-	}
-
-	public void addMissedReservations(List<Reservation> reservations) {
-		final List<Reservation> finalReservations = reservations;
-		statusAccess.write(new Writer() {
-			@Override
-			public void write(Status status) {
-				status.missedReservations.addAll(finalReservations);
-			}
-		});
 	}
 
 	public void addUnexpectedReservation(Integer arrivalOperationScheduleId) {
@@ -228,7 +216,8 @@ public class Logic {
 						.get(status.currentOperationScheduleIndex);
 				if (status.phase == Status.Phase.PLATFORM) {
 					status.currentOperationScheduleIndex++;
-					Utility.mergeById(status.departureOperationSchedules,
+					Utility.mergeById(
+							status.sendLists.departureOperationSchedules,
 							operationSchedule);
 				}
 				status.phase = Status.Phase.DRIVE;
@@ -258,7 +247,7 @@ public class Logic {
 				}
 				OperationSchedule operationSchedule = status.operationSchedules
 						.get(status.currentOperationScheduleIndex);
-				Utility.mergeById(status.arrivalOperationSchedules,
+				Utility.mergeById(status.sendLists.arrivalOperationSchedules,
 						operationSchedule);
 
 			}
@@ -292,15 +281,6 @@ public class Logic {
 		return executorService;
 	}
 
-	public List<Reservation> getMissedReservations() {
-		return statusAccess.read(new Reader<List<Reservation>>() {
-			@Override
-			public List<Reservation> read(Status status) {
-				return new LinkedList<Reservation>(status.missedReservations);
-			}
-		});
-	}
-
 	public void getOffPassengerRecords(OperationSchedule operationSchedule,
 			final List<PassengerRecord> selectedGetOffPassengerRecords) {
 		Date now = getDate();
@@ -313,8 +293,10 @@ public class Logic {
 		statusAccess.write(new Writer() {
 			@Override
 			public void write(Status status) {
-				status.getOffPassengerRecords
+				status.sendLists.getOffPassengerRecords
 						.addAll(selectedGetOffPassengerRecords);
+				status.ridingPassengerRecords
+						.removeAll(selectedGetOffPassengerRecords);
 			}
 		});
 	}
@@ -331,7 +313,9 @@ public class Logic {
 		statusAccess.write(new Writer() {
 			@Override
 			public void write(Status status) {
-				status.getOnPassengerRecords
+				status.sendLists.getOnPassengerRecords
+						.addAll(selectedGetOnPassengerRecords);
+				status.ridingPassengerRecords
 						.addAll(selectedGetOnPassengerRecords);
 			}
 		});
@@ -374,15 +358,6 @@ public class Logic {
 		});
 	}
 
-	public List<Reservation> getRidingReservations() {
-		return statusAccess.read(new Reader<List<Reservation>>() {
-			@Override
-			public List<Reservation> read(Status status) {
-				return new LinkedList<Reservation>(status.ridingReservations);
-			}
-		});
-	}
-
 	public StatusAccess getStatusAccess() {
 		return statusAccess;
 	}
@@ -416,22 +391,26 @@ public class Logic {
 	}
 
 	public void restoreStatus() {
-		statusAccess.write(new Writer() {
+		Phase phase = statusAccess.read(new Reader<Phase>() {
 			@Override
-			public void write(Status status) {
-				if (status.phase == Status.Phase.PLATFORM) {
-					enterPlatformPhase();
-				} else {
-					enterDrivePhase();
-				}
-				if (status.paused) {
-					pause();
-				}
-				if (status.stopped) {
-					stop();
-				}
+			public Phase read(Status status) {
+				return status.phase;
 			}
 		});
+		switch (phase) {
+		case INITIAL:
+			enterDrivePhase();
+			break;
+		case DRIVE:
+			enterDrivePhase();
+			break;
+		case PLATFORM:
+			enterPlatformPhase();
+			break;
+		case FINISH:
+			enterFinishPhase();
+			break;
+		}
 	}
 
 	public void setLocation(final Location location) {

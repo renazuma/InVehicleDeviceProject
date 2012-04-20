@@ -71,7 +71,7 @@ public class NotificationModalView extends ModalView {
 		getLogic().getStatusAccess().write(new Writer() {
 			@Override
 			public void write(Status status) {
-				status.repliedVehicleNotifications
+				status.sendLists.repliedVehicleNotifications
 						.add(currentVehicleNotification);
 			}
 		});

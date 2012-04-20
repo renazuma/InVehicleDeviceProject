@@ -48,8 +48,10 @@ public class StatusAccess {
 				+ Status.class.getCanonicalName() + ".serialized");
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(context);
-		if (!isClear && !preferences.getBoolean("update", false)) {
+		if (isClear) {
+		} else if (preferences.getBoolean("update", false)) {
 			preferences.edit().putBoolean("update", false).commit();
+		} else {
 			FileInputStream fileInputStream = null;
 			ObjectInputStream objectInputStream = null;
 			try {
@@ -84,7 +86,7 @@ public class StatusAccess {
 		}
 		status.file = file;
 		status.token = preferences.getString("token", "");
-		status.url = preferences.getString("url", "");
+		status.url = preferences.getString("url", "http://127.0.0.1");
 		return status;
 	}
 
