@@ -19,6 +19,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.common.io.Closeables;
+import com.kogasoftware.odt.invehicledevice.datasource.WebAPIDataSource;
 
 /**
  * InVehicleDeviceStatusのアクセスに対し 書き込みがあったら自動で保存. 読み書き時synchronizedを実行を行う
@@ -58,7 +59,7 @@ public class StatusAccess {
 				fileInputStream = new FileInputStream(file);
 				objectInputStream = new ObjectInputStream(fileInputStream);
 				Object object = objectInputStream.readObject();
-				if (object != null) {
+				if (object instanceof Status) {
 					status = (Status) object;
 				}
 			} catch (FileNotFoundException e) {
@@ -86,7 +87,7 @@ public class StatusAccess {
 		}
 		status.file = file;
 		status.token = preferences.getString("token", "");
-		status.url = preferences.getString("url", "http://127.0.0.1");
+		status.url = preferences.getString("url", WebAPIDataSource.DEFAULT_URL);
 		return status;
 	}
 

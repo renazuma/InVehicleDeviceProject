@@ -53,9 +53,9 @@ import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 /**
- * 車載機の内部ロジック
+ * 車載機の内部ロジック サブクラスのコンストラクタ実行前にスレッドを開始しているため、finalクラスにする
  */
-public class Logic {
+public final class Logic {
 	private static Optional<Date> defaultDate = Optional.absent();
 	private static final Object DEFAULT_DATE_LOCK = new Object();
 	private static final Integer NUM_THREADS = 3;

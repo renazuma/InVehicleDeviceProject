@@ -46,7 +46,7 @@ public class PlatformPhaseView extends PhaseView {
 	private final View reservationListFooterView;
 	private final Button reservationScrollDownButton;
 	private final Button reservationScrollUpButton;
-	private TextView minutesRemainingTextView = null;
+	private final TextView minutesRemainingTextView;
 	private ReservationArrayAdapter adapter = new ReservationArrayAdapter(
 			getContext(), R.layout.reservation_list_row, getLogic());
 	private final Handler handler = new Handler();

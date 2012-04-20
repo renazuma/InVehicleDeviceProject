@@ -43,6 +43,8 @@ public class WebAPIDataSource implements DataSource {
 		}
 	}
 
+	public static final String DEFAULT_URL = "http://127.0.0.1";
+
 	private final Handler uiHandler = new Handler(Looper.getMainLooper());
 	private final WebAPI api;
 
