@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
@@ -78,9 +79,12 @@ public class StartCheckModalView extends ModalView {
 				getContext(), android.R.layout.simple_list_item_1, messages));
 
 		Button startButton = (Button) findViewById(R.id.start_button);
+		TextView doesItLeaveTextView = (TextView) findViewById(R.id.does_it_leave_text_view);
 		if (getLogic().getRemainingOperationSchedules().size() <= 1) {
+			doesItLeaveTextView.setText("確定しますか？");
 			startButton.setText("確定する");
 		} else {
+			doesItLeaveTextView.setText("出発しますか？");
 			startButton.setText("出発する");
 		}
 		startButton.setOnClickListener(new OnClickListener() {
