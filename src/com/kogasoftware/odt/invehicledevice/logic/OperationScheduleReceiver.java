@@ -45,6 +45,8 @@ public class OperationScheduleReceiver implements Runnable {
 							.getReservationsAsDeparture()) {
 						PassengerRecord passengerRecord = new PassengerRecord();
 						passengerRecord.setReservation(reservation);
+						passengerRecord.setPassengerCount(reservation
+								.getPassengerCount());
 						status.unhandledPassengerRecords.add(passengerRecord);
 					}
 				}
