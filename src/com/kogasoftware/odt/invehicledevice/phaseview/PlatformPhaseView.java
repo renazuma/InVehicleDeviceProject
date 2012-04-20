@@ -2,11 +2,13 @@ package com.kogasoftware.odt.invehicledevice.phaseview;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,6 +35,7 @@ public class PlatformPhaseView extends PhaseView {
 	}
 
 	private static final String TAG = PlatformPhaseView.class.getSimpleName();
+	private static final long UPDATE_MINUTES_REMAINING_INTERVAL_MILLIS = 5;
 	private final TextView platformDepartureTimeTextView;
 	private final ListView reservationListView;
 	private final TextView platformNameTextView;
@@ -43,10 +46,31 @@ public class PlatformPhaseView extends PhaseView {
 	private final View reservationListFooterView;
 	private final Button reservationScrollDownButton;
 	private final Button reservationScrollUpButton;
+	private TextView minutesRemainingTextView = null;
 	private ReservationArrayAdapter adapter = new ReservationArrayAdapter(
 			getContext(), R.layout.reservation_list_row, getLogic());
+	private final Handler handler = new Handler();
 
 	private Optional<AlertDialog> dialog = Optional.absent();
+
+	private Runnable updateMinutesRemaining = new Runnable() {
+		@Override
+		public void run() {
+			Date now = Logic.getDate();
+			List<OperationSchedule> operationSchedules = getLogic()
+					.getRemainingOperationSchedules();
+			if (operationSchedules.size() <= 1) {
+				minutesRemainingTextView.setText("");
+			} else {
+				Date departure = operationSchedules.get(0)
+						.getDepartureEstimate();
+				Long milliGap = departure.getTime() - now.getTime();
+				minutesRemainingTextView.setText("" + (milliGap / 1000 / 60));
+			}
+			handler.postDelayed(updateMinutesRemaining,
+					UPDATE_MINUTES_REMAINING_INTERVAL_MILLIS);
+		}
+	};
 
 	public PlatformPhaseView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -69,6 +93,7 @@ public class PlatformPhaseView extends PhaseView {
 				.findViewById(R.id.show_missed_reservations_button);
 		addUnexpectedReservationButton = (Button) reservationListFooterView
 				.findViewById(R.id.add_unexpected_reservation_button);
+		minutesRemainingTextView = (TextView) findViewById(R.id.minutes_remaining);
 
 		reservationListView.addFooterView(reservationListFooterView);
 
@@ -110,15 +135,14 @@ public class PlatformPhaseView extends PhaseView {
 		if (!operationSchedule.getPlatform().isPresent()) {
 			return;
 		}
-		DateFormat dateFormat = new SimpleDateFormat("H時m分"); // TODO
-		platformDepartureTimeTextView.setText(dateFormat
-				.format(operationSchedule.getDepartureEstimate()));
-
 		adapter = new ReservationArrayAdapter(getContext(),
 				R.layout.reservation_list_row, logic);
 		reservationListView.setAdapter(adapter);
 
 		if (operationSchedules.size() > 1) {
+			DateFormat dateFormat = new SimpleDateFormat("H時m分"); // TODO
+			platformDepartureTimeTextView.setText(dateFormat
+					.format(operationSchedule.getDepartureEstimate()));
 			OperationSchedule nextOperationSchedule = operationSchedules.get(1);
 			if (nextOperationSchedule.getPlatform().isPresent()) {
 				platformNameTextView.setText(nextOperationSchedule
@@ -129,6 +153,7 @@ public class PlatformPhaseView extends PhaseView {
 			}
 		} else {
 			platformNameTextView.setText("");
+			platformDepartureTimeTextView.setText("");
 		}
 
 		showAllRidingReservationsButton
@@ -183,8 +208,15 @@ public class PlatformPhaseView extends PhaseView {
 	}
 
 	@Override
+	protected void onAttachedToWindow() {
+		super.onAttachedToWindow();
+		handler.post(updateMinutesRemaining);
+	}
+
+	@Override
 	protected void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
+		handler.removeCallbacks(updateMinutesRemaining);
 		if (dialog.isPresent()) {
 			dialog.get().cancel();
 		}

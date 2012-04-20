@@ -68,8 +68,6 @@ public class InVehicleDeviceActivity extends Activity {
 			DateFormat f = new SimpleDateFormat(getResources().getString(
 					R.string.present_time_format));
 			presentTimeTextView.setText(f.format(now));
-			updateMinutesRemaining();
-
 			handler.postDelayed(this, UPDATE_TIME_INTERVAL);
 		}
 	};
@@ -109,7 +107,6 @@ public class InVehicleDeviceActivity extends Activity {
 	private Button configButton = null;
 	private View contentView = null;
 	private Button mapButton = null;
-	private TextView minutesRemainingTextView = null;
 	private NavigationModalView navigationModalView = null;
 	private ImageView networkStrengthImageView = null;
 	private TextView presentTimeTextView = null;
@@ -156,7 +153,6 @@ public class InVehicleDeviceActivity extends Activity {
 
 	@Subscribe
 	public void enterPlatformPhase(EnterPlatformPhaseEvent event) {
-		updateMinutesRemaining();
 		List<OperationSchedule> operationSchedules = logic
 				.getRemainingOperationSchedules();
 		if (operationSchedules.isEmpty()) {
@@ -206,7 +202,6 @@ public class InVehicleDeviceActivity extends Activity {
 		scheduleButton = (Button) findViewById(R.id.schedule_button);
 		waitingLayout = findViewById(R.id.platform_phase_view);
 		navigationModalView = (NavigationModalView) findViewById(R.id.navigation_modal_view);
-		minutesRemainingTextView = (TextView) findViewById(R.id.minutes_remaining);
 		networkStrengthImageView = (ImageView) findViewById(R.id.network_strength_image_view);
 
 		contentView.setVisibility(View.GONE); // InVehicleDeviceLogicの準備が終わるまでcontentViewを非表示
@@ -370,19 +365,6 @@ public class InVehicleDeviceActivity extends Activity {
 		logic.restoreStatus();
 		contentView.setVisibility(View.VISIBLE);
 		waitForStartUiLatch.countDown();
-	}
-
-	private void updateMinutesRemaining() {
-		Date now = Logic.getDate();
-		List<OperationSchedule> operationSchedules = logic
-				.getRemainingOperationSchedules();
-		if (operationSchedules.isEmpty()) {
-			minutesRemainingTextView.setText("");
-		} else {
-			Date departure = operationSchedules.get(0).getDepartureEstimate();
-			Long milliGap = departure.getTime() - now.getTime();
-			minutesRemainingTextView.setText("" + (milliGap / 1000 / 60));
-		}
 	}
 
 	public void waitForStartUi() throws InterruptedException {
