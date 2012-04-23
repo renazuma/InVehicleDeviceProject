@@ -164,8 +164,6 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		Log.i(TAG, "getView() position=" + position + " convertView="
-				+ (convertView == null ? "null" : convertView.toString()));
 		View view = convertView != null ? convertView : layoutInflater.inflate(
 				resourceId, null);
 		final PassengerRecord passengerRecord = getItem(position);
