@@ -22,7 +22,7 @@ import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.datasource.WebAPIDataSource;
 
 /**
- * InVehicleDeviceStatusのアクセスに対し 書き込みがあったら自動で保存. 読み書き時synchronizedを実行を行う
+ * InVehicleDeviceStatusのアクセスに対し 書き込みがあったら自動で保存. 読み書き時にロックを実行を行う
  */
 public class StatusAccess {
 	public interface Reader<T> {
@@ -42,6 +42,10 @@ public class StatusAccess {
 	}
 
 	private static final String TAG = StatusAccess.class.getSimpleName();
+
+	private static Status newStatusInstance() {
+		return new Status();
+	}
 
 	private static Status newStatusInstance(Context context, Boolean isClear) {
 		Status status = new Status();
@@ -96,7 +100,7 @@ public class StatusAccess {
 	private final Status status;
 
 	public StatusAccess() {
-		status = new Status();
+		status = newStatusInstance();
 	}
 
 	public StatusAccess(Context context, Boolean isClear) {
