@@ -9,7 +9,7 @@ public class Utility {
 	/**
 	 * getId()が同一のものが含まれるかのチェック
 	 */
-	public static <T extends Model> Boolean contains(Collection<T> models,
+	public static <T extends Model> Boolean containsById(Collection<T> models,
 			T extraModel) {
 		for (T model : models) {
 			if (model.getId().equals(extraModel.getId())) {
@@ -26,7 +26,7 @@ public class Utility {
 			Collection<T> additionalModels) {
 		Collection<T> baseModels = new LinkedList<T>(models);
 		for (T additionalModel : additionalModels) {
-			if (!contains(baseModels, additionalModel)) {
+			if (!containsById(baseModels, additionalModel)) {
 				models.add(additionalModel);
 			}
 		}
@@ -37,7 +37,7 @@ public class Utility {
 	 */
 	public static <T extends Model> void mergeById(Collection<T> models,
 			T additionalModel) {
-		if (!contains(models, additionalModel)) {
+		if (!containsById(models, additionalModel)) {
 			models.add(additionalModel);
 		}
 	}
