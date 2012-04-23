@@ -10,22 +10,13 @@ import java.util.concurrent.CountDownLatch;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.TypedArray;
 import android.graphics.Color;
-import android.location.LocationManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
-import android.telephony.PhoneStateListener;
-import android.telephony.SignalStrength;
-import android.telephony.TelephonyManager;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -38,6 +29,8 @@ import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 import com.kogasoftware.odt.invehicledevice.event.EnterDrivePhaseEvent;
 import com.kogasoftware.odt.invehicledevice.event.EnterFinishPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.event.EnterPlatformPhaseEvent;
+import com.kogasoftware.odt.invehicledevice.event.ExitEvent;
+import com.kogasoftware.odt.invehicledevice.event.SignalStrengthChangedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.Logic;
 import com.kogasoftware.odt.invehicledevice.logic.LogicLoadThread;
 import com.kogasoftware.odt.invehicledevice.modalview.NavigationModalView;
@@ -48,7 +41,7 @@ public class InVehicleDeviceActivity extends Activity {
 	private static final String TAG = InVehicleDeviceActivity.class
 			.getSimpleName();
 
-	private static final int UPDATE_TIME_INTERVAL = 5000;
+	private static final int UPDATE_TIME_INTERVAL = 3000;
 
 	private static final int WAIT_FOR_INITIALIZE_DIALOG_ID = 10;
 
@@ -72,62 +65,31 @@ public class InVehicleDeviceActivity extends Activity {
 		}
 	};
 
-	private final PhoneStateListener updateSignalStrength = new PhoneStateListener() {
-		private Integer getImageResourceId(SignalStrength signalStrength) { // TODO
-			NetworkInfo networkInfo = connectivityManager
-					.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-			if (!networkInfo.isAvailable()) {
-				return R.drawable.network_strength_0;
-			}
-			if (signalStrength.isGsm()) {
-				Integer value = signalStrength.getGsmSignalStrength();
-				if (value == 99 || value <= 2) {
-					return R.drawable.network_strength_0;
-				} else if (value <= 4) {
-					return R.drawable.network_strength_1;
-				} else if (value <= 7) {
-					return R.drawable.network_strength_2;
-				} else if (value <= 11) {
-					return R.drawable.network_strength_3;
-				}
-				return R.drawable.network_strength_4;
-			}
-			return R.drawable.network_strength_0;
-		}
-
-		@Override
-		public void onSignalStrengthsChanged(SignalStrength signalStrength) {
-			networkStrengthImageView
-					.setImageResource(getImageResourceId(signalStrength));
-		};
-	};
-
 	// nullables
 	private TextView statusTextView = null;
-	private Button configButton = null;
-	private View contentView = null;
-	private Button mapButton = null;
-	private NavigationModalView navigationModalView = null;
 	private ImageView networkStrengthImageView = null;
 	private TextView presentTimeTextView = null;
+	private View contentView = null;
+	private Button mapButton = null;
+	private Button configButton = null;
 	private Button scheduleButton = null;
-	private ConnectivityManager connectivityManager = null;
-	private TelephonyManager telephonyManager = null;
-	private LocationManager locationManager = null;
 	private Button changePhaseButton = null;
-	private View waitingLayout = null;
-	private OnSharedPreferenceChangeListener onSharedPreferenceChangeListener = new OnSharedPreferenceChangeListener() {
-		@Override
-		public void onSharedPreferenceChanged(
-				SharedPreferences sharedPreferences, String key) {
-			if (key.equals("update")
-					&& sharedPreferences.getBoolean(key, false)) { // TODO
-				// 文字列定数
-				Log.i(TAG, "SharedPreferences changed finish!"); // TODO
-				finish();
-			}
+	private NavigationModalView navigationModalView = null;
+
+	@Subscribe
+	public void changeNetworkStrengthImage(SignalStrengthChangedEvent e) {
+		int imageResourceId = R.drawable.network_strength_4;
+		if (e.signalStrengthPercentage == 0) {
+			imageResourceId = R.drawable.network_strength_0;
+		} else if (e.signalStrengthPercentage <= 25) {
+			imageResourceId = R.drawable.network_strength_1;
+		} else if (e.signalStrengthPercentage <= 50) {
+			imageResourceId = R.drawable.network_strength_2;
+		} else if (e.signalStrengthPercentage <= 75) {
+			imageResourceId = R.drawable.network_strength_3;
 		}
-	};
+		networkStrengthImageView.setImageResource(imageResourceId);
+	}
 
 	@Subscribe
 	public void enterDrivePhase(EnterDrivePhaseEvent event) {
@@ -178,20 +140,22 @@ public class InVehicleDeviceActivity extends Activity {
 		setPhaseColor(PLATFORM_PHASE_COLOR); // TODO 定数
 	}
 
+	@Subscribe
+	public void finish(ExitEvent exitEvent) {
+		finish();
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		// if (BuildConfig.DEBUG) {
-		// StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-		// .detectAll().penaltyLog().build());
-		// StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-		// .detectAll().penaltyLog().penaltyDeath().build());
-		// }
+		if (BuildConfig.DEBUG) {
+			StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+					.detectAll().penaltyLog().build());
+			StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+					.detectAll().penaltyLog().penaltyDeath().build());
+		}
 		setContentView(R.layout.in_vehicle_device);
-
-		telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-		connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
 		contentView = findViewById(android.R.id.content);
 		presentTimeTextView = (TextView) findViewById(R.id.present_time_text_view);
@@ -200,7 +164,6 @@ public class InVehicleDeviceActivity extends Activity {
 		mapButton = (Button) findViewById(R.id.map_button);
 		configButton = (Button) findViewById(R.id.config_button);
 		scheduleButton = (Button) findViewById(R.id.schedule_button);
-		waitingLayout = findViewById(R.id.platform_phase_view);
 		navigationModalView = (NavigationModalView) findViewById(R.id.navigation_modal_view);
 		networkStrengthImageView = (ImageView) findViewById(R.id.network_strength_image_view);
 
@@ -211,7 +174,6 @@ public class InVehicleDeviceActivity extends Activity {
 		Integer backgroundColor = typedArray.getColor(0, Color.WHITE);
 
 		contentView.setBackgroundColor(backgroundColor);
-		waitingLayout.setBackgroundColor(backgroundColor); // TODO
 
 		mapButton.setOnClickListener(new OnClickListener() {
 			@Override
@@ -243,17 +205,6 @@ public class InVehicleDeviceActivity extends Activity {
 				logic.showNotificationModalView(l);
 			}
 		});
-		View test2 = findViewById(R.id.icon_text_view);
-		test2.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				VehicleNotification n = new VehicleNotification();
-				n.setBody("通知です");
-				List<VehicleNotification> l = new LinkedList<VehicleNotification>();
-				l.add(n);
-				logic.showScheduleChangedModalView(l);
-			}
-		});
 
 		for (Integer resourceId : new Integer[] { R.id.icon_text_view,
 				R.id.operation_phase_layout, R.id.present_time_layout,
@@ -267,13 +218,6 @@ public class InVehicleDeviceActivity extends Activity {
 		}
 
 		handler.post(updateTime);
-
-		telephonyManager.listen(updateSignalStrength,
-				PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
-
-		PreferenceManager.getDefaultSharedPreferences(this)
-				.registerOnSharedPreferenceChangeListener(
-						onSharedPreferenceChangeListener);
 
 		logicLoadThread = new LogicLoadThread(this);
 		logicLoadThread.start();
@@ -312,13 +256,6 @@ public class InVehicleDeviceActivity extends Activity {
 		logicLoadThread.interrupt();
 
 		waitForStartUiLatch.countDown();
-
-		telephonyManager.listen(updateSignalStrength,
-				PhoneStateListener.LISTEN_NONE);
-
-		PreferenceManager.getDefaultSharedPreferences(this)
-				.registerOnSharedPreferenceChangeListener(
-						onSharedPreferenceChangeListener);
 	}
 
 	@Override

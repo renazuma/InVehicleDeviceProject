@@ -41,7 +41,6 @@ import com.kogasoftware.odt.invehicledevice.modalview.MemoModalView;
 import com.kogasoftware.odt.invehicledevice.modalview.NotificationModalView;
 import com.kogasoftware.odt.invehicledevice.modalview.PauseModalView;
 import com.kogasoftware.odt.invehicledevice.modalview.ReturnPathModalView;
-import com.kogasoftware.odt.invehicledevice.modalview.ScheduleChangedModalView;
 import com.kogasoftware.odt.invehicledevice.modalview.ScheduleModalView;
 import com.kogasoftware.odt.invehicledevice.modalview.StartCheckModalView;
 import com.kogasoftware.odt.invehicledevice.modalview.StopCheckModalView;
@@ -99,7 +98,6 @@ public final class Logic {
 	private Thread looperThread = new EmptyThread();
 	private VehicleNotificationReceiver vehicleNotificationReceiver = new VehicleNotificationReceiver();
 	private VehicleNotificationSender vehicleNotificationSender = new VehicleNotificationSender();
-	private ScheduleChangedReceiver scheduleChangedReceiver = new ScheduleChangedReceiver();
 	private OperationScheduleSender operationScheduleSender = new OperationScheduleSender();
 	private PassengerRecordSender passengerRecordSender = new PassengerRecordSender();
 
@@ -127,8 +125,6 @@ public final class Logic {
 				executorService.scheduleWithFixedDelay(
 						vehicleNotificationSender, 0, POLLING_PERIOD_MILLIS,
 						TimeUnit.MILLISECONDS);
-				executorService.scheduleWithFixedDelay(scheduleChangedReceiver,
-						0, POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
 				executorService.scheduleWithFixedDelay(operationScheduleSender,
 						0, POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
 				executorService.scheduleWithFixedDelay(passengerRecordSender,
@@ -164,8 +160,7 @@ public final class Logic {
 
 			for (LogicUser logicUser : new LogicUser[] {
 					vehicleNotificationReceiver, vehicleNotificationSender,
-					scheduleChangedReceiver, operationScheduleSender,
-					passengerRecordSender }) {
+					operationScheduleSender, passengerRecordSender }) {
 				eventBus.register(logicUser);
 			}
 
@@ -394,13 +389,7 @@ public final class Logic {
 	}
 
 	public void restoreStatus() {
-		Phase phase = statusAccess.read(new Reader<Phase>() {
-			@Override
-			public Phase read(Status status) {
-				return status.phase;
-			}
-		});
-		switch (phase) {
+		switch (getPhase()) {
 		case INITIAL:
 			enterDrivePhase();
 			break;
@@ -445,12 +434,6 @@ public final class Logic {
 
 	public void showReturnPathModalView(Reservation reservation) {
 		eventBus.post(new ReturnPathModalView.ShowEvent(reservation));
-	}
-
-	public void showScheduleChangedModalView(
-			List<VehicleNotification> vehicleNotification) {
-		eventBus.post(new ScheduleChangedModalView.ShowEvent(
-				vehicleNotification));
 	}
 
 	public void showScheduleModalView() {
