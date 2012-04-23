@@ -17,41 +17,49 @@ public class UiEventBus extends EventBus {
 	private static final String TAG = UiEventBus.class.getSimpleName();
 	private final List<Object> registeredObjects = new LinkedList<Object>();
 	private final AtomicBoolean disposed = new AtomicBoolean(false);
+	private final Object registerAndDisposeLock = new Object(); // registeredObjectsと実際にEventBusにregisterされたオブジェクトの整合性のためのロック
 	private final Handler uiHandler = new Handler(Looper.getMainLooper());
-	private final Long uiThreadId = uiHandler.getLooper().getThread().getId();
 
 	public void dispose() {
-		disposed.set(true);
-		for (Object object : registeredObjects) {
-			try {
-				unregister(object);
-			} catch (IllegalArgumentException e) {
-				Log.w(TAG, e);
+		synchronized (registerAndDisposeLock) {
+			disposed.set(true);
+			for (Object object : registeredObjects) {
+				try {
+					unregister(object);
+				} catch (IllegalArgumentException e) {
+					Log.w(TAG, e);
+				}
 			}
+			registeredObjects.clear();
 		}
-		registeredObjects.clear();
 	}
 
 	@Override
 	public void post(final Object object) {
-		if (uiThreadId.equals(Thread.currentThread().getId())) {
+		if (disposed.get()) {
+			return;
+		}
+		if (uiHandler.getLooper().getThread().getId() == Thread.currentThread()
+				.getId()) {
 			super.post(object);
 			return;
 		}
 		uiHandler.post(new Runnable() {
 			@Override
 			public void run() {
-				UiEventBus.super.post(object);
+				UiEventBus.this.post(object);
 			}
 		});
 	}
 
 	@Override
 	public void register(Object object) {
-		if (disposed.get()) {
-			return;
+		synchronized (registerAndDisposeLock) {
+			if (disposed.get()) {
+				return;
+			}
+			registeredObjects.add(object);
+			super.register(object);
 		}
-		super.register(object);
-		registeredObjects.add(object);
 	}
 }
