@@ -11,7 +11,7 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
 import com.kogasoftware.odt.invehicledevice.datasource.DummyDataSource;
 import com.kogasoftware.odt.invehicledevice.logic.Logic;
-import com.kogasoftware.odt.invehicledevice.test.MockDataSourceTest;
+import com.kogasoftware.odt.invehicledevice.test.MockDataSource;
 
 public class WaitingTestCase extends
 ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
@@ -21,12 +21,12 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 	public void dataset(Integer i) {
 
 		DataSourceFactory.newInstance();
-		MockDataSourceTest mdst = new MockDataSourceTest();
+		MockDataSource mds = new MockDataSource();
 
-		mdst.setReservation(i);
-		mdst.setReservationCandidate(6,1,1,1);
+		mds.setReservation(i);
+		mds.setReservationCandidate(6,1,1,1);
 
-		DataSourceFactory.setInstance(mdst);
+		DataSourceFactory.setInstance(mds);
 
 	}
 

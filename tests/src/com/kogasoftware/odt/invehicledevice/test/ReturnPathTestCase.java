@@ -21,12 +21,12 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 			Integer departurePlatformId, Integer arrivalPlatformId) {
 
 		DataSourceFactory.newInstance();
-		MockDataSourceTest mdst = new MockDataSourceTest();
+		MockDataSource mds = new MockDataSource();
 
-		mdst.setReservation(6);
-		mdst.setReservationCandidate(iCount,userId,departurePlatformId,arrivalPlatformId);
+		mds.setReservation(6);
+		mds.setReservationCandidate(iCount,userId,departurePlatformId,arrivalPlatformId);
 
-		DataSourceFactory.setInstance(mdst);
+		DataSourceFactory.setInstance(mds);
 
 	}
 

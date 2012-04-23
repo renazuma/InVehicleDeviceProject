@@ -11,7 +11,7 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
 import com.kogasoftware.odt.invehicledevice.datasource.DummyDataSource;
 import com.kogasoftware.odt.invehicledevice.logic.Logic;
-import com.kogasoftware.odt.invehicledevice.test.MockDataSourceTest;
+import com.kogasoftware.odt.invehicledevice.test.MockDataSource;
 
 public class ScheduleTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
@@ -21,10 +21,10 @@ public class ScheduleTestCase extends
 	public void dataset(Integer i) {
 
 		DataSourceFactory.newInstance();
-		MockDataSourceTest mdst = new MockDataSourceTest();
+		MockDataSource mds = new MockDataSource();
 
-		mdst.setOperationSchedules(i);
-		DataSourceFactory.setInstance(mdst);
+		mds.setOperationSchedules(i);
+		DataSourceFactory.setInstance(mds);
 
 	}
 
