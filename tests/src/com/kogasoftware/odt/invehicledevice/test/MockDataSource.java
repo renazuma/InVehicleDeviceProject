@@ -22,7 +22,7 @@ import com.kogasoftware.odt.webapi.model.ReservationCandidate;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
-public class MockDataSourceTest implements DataSource {
+public class MockDataSource implements DataSource {
 
 	private List<OperationSchedule> lOperationSchedule = new LinkedList<OperationSchedule>();
 	private List<ReservationCandidate> lReservationCandidate = new LinkedList<ReservationCandidate>();
