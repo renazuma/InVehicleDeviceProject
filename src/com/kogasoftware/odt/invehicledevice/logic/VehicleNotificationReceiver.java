@@ -1,8 +1,8 @@
 package com.kogasoftware.odt.invehicledevice.logic;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.Utility;
@@ -14,7 +14,7 @@ public class VehicleNotificationReceiver extends LogicUser implements Runnable {
 
 	@Override
 	public void run() {
-		if (getLogic().isPresent()) {
+		if (!getLogic().isPresent()) {
 			return;
 		}
 		final Logic logic = getLogic().get();
@@ -24,27 +24,34 @@ public class VehicleNotificationReceiver extends LogicUser implements Runnable {
 			if (vehicleNotifications.isEmpty()) {
 				return;
 			}
-			final AtomicBoolean updateOperationSchedule = new AtomicBoolean(
-					false);
+
+			Boolean scheduleChanged = false;
+			for (Iterator<VehicleNotification> iterator = vehicleNotifications
+					.iterator(); iterator.hasNext();) {
+				VehicleNotification vehicleNotification = iterator.next();
+				if (vehicleNotification.getBody().isPresent()
+						&& vehicleNotification.getBody().get() == "#schedule_changed") {
+					scheduleChanged = true;
+					iterator.remove();
+				}
+			}
+
 			logic.getStatusAccess().write(new Writer() {
 				@Override
 				public void write(Status status) {
 					for (VehicleNotification vehicleNotification : vehicleNotifications) {
-						if (Utility.contains(
+						if (Utility.containsById(
 								status.sendLists.repliedVehicleNotifications,
 								vehicleNotification)) {
 							continue;
 						}
 						Utility.mergeById(status.vehicleNotifications,
 								vehicleNotification);
-						// if (false) {
-						// updateOperationSchedule.set(true);
-						// }
 					}
 				}
 			});
 			logic.showNotificationModalView(vehicleNotifications);
-			if (updateOperationSchedule.get()) {
+			if (scheduleChanged) {
 				logic.getExecutorService().submit(
 						new OperationScheduleReceiver(logic));
 			}

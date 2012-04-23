@@ -3,6 +3,7 @@ package com.kogasoftware.odt.invehicledevice.logic;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.kogasoftware.odt.invehicledevice.Utility;
 import com.kogasoftware.odt.invehicledevice.event.UpdateOperationScheduleCompleteEvent;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
 import com.kogasoftware.odt.webapi.WebAPIException;
@@ -65,9 +66,6 @@ public class OperationScheduleReceiver extends LogicUser implements Runnable {
 			return;
 		}
 
-		// 状態を強制的に運行中に設定
-		status.phase = Status.Phase.DRIVE;
-
 		// OperationScheduleの巻き戻し
 		LinkedList<OperationSchedule> newRemainingOperationSchedules = new LinkedList<OperationSchedule>(
 				newOperationSchedules);
@@ -76,15 +74,22 @@ public class OperationScheduleReceiver extends LogicUser implements Runnable {
 			if (newRemainingOperationSchedules.isEmpty()) {
 				break;
 			}
-			OperationSchedule newRemainingOperationSchedule = newRemainingOperationSchedules
-					.pop();
-			if (newRemainingOperationSchedule.getId().equals(
-					finishedOperationSchedule.getId())) {
-				newFinishedOperationSchedules
-						.add(newRemainingOperationSchedule);
+			if (!newRemainingOperationSchedules.get(0).getId()
+					.equals(finishedOperationSchedule.getId())) {
+				break;
 			}
-			break;
+			newFinishedOperationSchedules.add(newRemainingOperationSchedules
+					.pop());
 		}
+
+		// 現在乗降場待機画面で、現在のOperationScheduleが無効になった場合強制的に運行中に設定
+		if (status.phase == Status.Phase.PLATFORM
+				&& !status.remainingOperationSchedules.isEmpty()
+				&& !Utility.containsById(newRemainingOperationSchedules,
+						status.remainingOperationSchedules.get(0))) {
+			status.phase = Status.Phase.DRIVE;
+		}
+
 		status.remainingOperationSchedules.clear();
 		status.remainingOperationSchedules
 				.addAll(newRemainingOperationSchedules);
