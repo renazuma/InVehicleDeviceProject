@@ -168,7 +168,6 @@ public class StatusAccess {
 		final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		ObjectOutputStream objectOutputStream = null;
 		readLock.lock();
-		long serializeStartTime = System.currentTimeMillis();
 		try {
 			objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
 			objectOutputStream.writeObject(status);
@@ -179,15 +178,12 @@ public class StatusAccess {
 			Log.w(TAG, e);
 			return;
 		} finally {
-			long serializeStopTime = System.currentTimeMillis();
 			readLock.unlock();
 			Closeables.closeQuietly(objectOutputStream);
 			Closeables.closeQuietly(byteArrayOutputStream);
 			long stopTime = System.currentTimeMillis();
-			long serializeRunTime = serializeStopTime - serializeStartTime;
 			long runTime = stopTime - startTime;
-			Log.d(TAG, "StatusAccess.save() " + serializeRunTime + " ms / "
-					+ runTime + " ms");
+			Log.d(TAG, "StatusAccess.save() " + runTime + " ms");
 		}
 
 		// ByteArrayへの変換後は、呼び出し元スレッドでのファイルIOを避けるため新しいスレッドでデータを書き込む
