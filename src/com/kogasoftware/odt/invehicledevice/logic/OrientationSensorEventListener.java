@@ -10,6 +10,9 @@ import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
 
 public class OrientationSensorEventListener extends LogicUser implements
 		SensorEventListener {
+	private static final Long SAVE_PERIOD_MILLIS = 10 * 1000L;
+	private Long lastSavedMillis = System.currentTimeMillis();
+
 	private static final String TAG = OrientationSensorEventListener.class
 			.getSimpleName();
 
@@ -30,9 +33,13 @@ public class OrientationSensorEventListener extends LogicUser implements
 
 		// 方位から回転角を設定
 		float[] values = event.values;
-
-		// 再描画
 		final Float degree = values[SensorManager.DATA_X];
+		long now = System.currentTimeMillis();
+		if (lastSavedMillis + SAVE_PERIOD_MILLIS > now) {
+			return;
+		}
+		lastSavedMillis = now;
+
 		logic.getStatusAccess().write(new Writer() {
 			@Override
 			public void write(Status status) {
