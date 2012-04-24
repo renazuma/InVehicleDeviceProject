@@ -84,7 +84,7 @@ public class LooperThread extends Thread {
 		logic.getEventBus().register(signalStrengthListener.get());
 
 		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-				2000, 0, locationSender);
+				2000, 1, locationSender);
 
 		List<Sensor> temperatureSensors = sensorManager
 				.getSensorList(Sensor.TYPE_TEMPERATURE);
@@ -95,7 +95,7 @@ public class LooperThread extends Thread {
 		}
 
 		List<Sensor> orientationSensors = sensorManager
-				.getSensorList(Sensor.TYPE_TEMPERATURE);
+				.getSensorList(Sensor.TYPE_ORIENTATION);
 		if (orientationSensors.size() > 0) {
 			Sensor sensor = orientationSensors.get(0);
 			sensorManager.registerListener(orientationSensorEventListener,
