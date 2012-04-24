@@ -1,7 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.logic;
 
-import java.math.BigDecimal;
-
 import org.json.JSONException;
 
 import android.location.Location;
@@ -47,14 +45,13 @@ public class LocationSender extends LogicUser implements Runnable,
 				.read(new Reader<Optional<ServiceUnitStatusLog>>() {
 					@Override
 					public Optional<ServiceUnitStatusLog> read(Status status) {
-						if (!status.location.isPresent()) {
+						if (!status.latitude.isPresent()
+								|| !status.longitude.isPresent()) {
 							return Optional.absent();
 						}
 						ServiceUnitStatusLog log = new ServiceUnitStatusLog();
-						log.setLatitude(new BigDecimal(status.location.get()
-								.getLatitude()));
-						log.setLongitude(new BigDecimal(status.location.get()
-								.getLongitude()));
+						log.setLatitude(status.latitude.get());
+						log.setLongitude(status.longitude.get());
 						log.setTemperature(status.temperature);
 						log.setOrientation(status.orientation);
 						return Optional.of(log);

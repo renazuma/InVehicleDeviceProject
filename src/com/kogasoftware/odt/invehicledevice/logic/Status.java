@@ -2,10 +2,9 @@ package com.kogasoftware.odt.invehicledevice.logic;
 
 import java.io.File;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.LinkedList;
-
-import android.location.Location;
 
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyFile;
@@ -30,7 +29,7 @@ public class Status implements Serializable {
 		public final LinkedList<OperationSchedule> departureOperationSchedules = new LinkedList<OperationSchedule>();
 	}
 
-	private static final long serialVersionUID = 5617948505743183178L;
+	private static final long serialVersionUID = 5617948505743183179L;
 
 	public final SendLists sendLists = new SendLists();
 	public final Date createdDate = new Date();
@@ -41,7 +40,8 @@ public class Status implements Serializable {
 	public Boolean paused = false;
 	public Phase phase = Phase.INITIAL;
 	public Boolean stopped = false;
-	public Optional<Location> location = Optional.absent();
+	public Optional<BigDecimal> latitude = Optional.absent();
+	public Optional<BigDecimal> longitude = Optional.absent();
 	public Optional<Integer> orientation = Optional.absent();
 	public Optional<Integer> temperature = Optional.absent();
 	public final LinkedList<OperationSchedule> remainingOperationSchedules = new LinkedList<OperationSchedule>();

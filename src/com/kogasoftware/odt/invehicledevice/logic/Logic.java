@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.logic;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -414,7 +415,10 @@ public final class Logic {
 		statusAccess.write(new Writer() {
 			@Override
 			public void write(Status status) {
-				status.location = Optional.of(location);
+				status.latitude = Optional.of(new BigDecimal(location
+						.getLatitude()));
+				status.longitude = Optional.of(new BigDecimal(location
+						.getLongitude()));
 			}
 		});
 	}
