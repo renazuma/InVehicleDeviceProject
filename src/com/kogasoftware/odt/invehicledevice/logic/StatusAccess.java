@@ -13,6 +13,7 @@ import java.nio.channels.ClosedChannelException;
 import java.nio.channels.FileLock;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import android.content.Context;
@@ -29,10 +30,6 @@ import com.kogasoftware.odt.invehicledevice.datasource.WebAPIDataSource;
 public class StatusAccess {
 	public interface Reader<T> {
 		T read(Status status);
-	}
-
-	public interface ReaderAndWriter<T> {
-		T readAndWrite(Status status);
 	}
 
 	private static class SaveThread extends Thread {
@@ -96,11 +93,9 @@ public class StatusAccess {
 			preferences.edit().putBoolean("update", false).commit();
 		} else {
 			FileInputStream fileInputStream = null;
-			FileLock lock = null;
 			ObjectInputStream objectInputStream = null;
 			try {
 				fileInputStream = new FileInputStream(file);
-				lock = fileInputStream.getChannel().lock();
 				objectInputStream = new ObjectInputStream(fileInputStream);
 				Object object = objectInputStream.readObject();
 				if (object instanceof Status) {
@@ -119,15 +114,6 @@ public class StatusAccess {
 			} finally {
 				Closeables.closeQuietly(objectInputStream);
 				Closeables.closeQuietly(fileInputStream);
-				if (lock != null) {
-					try {
-						lock.release();
-					} catch (ClosedChannelException e) {
-						// do nothing
-					} catch (IOException e) {
-						Log.w(TAG, e);
-					}
-				}
 			}
 
 			Date now = Logic.getDate();
@@ -144,8 +130,9 @@ public class StatusAccess {
 		return status;
 	}
 
-	private final ReentrantReadWriteLock reentrantReadWriteLock = new ReentrantReadWriteLock(
-			true);
+	private final ReentrantReadWriteLock reentrantReadWriteLock = new ReentrantReadWriteLock();
+	private final Lock readLock = reentrantReadWriteLock.readLock();
+	private final Lock writeLock = reentrantReadWriteLock.writeLock();
 
 	private final Status status;
 
@@ -158,40 +145,31 @@ public class StatusAccess {
 	}
 
 	public <T> T read(Reader<T> reader) {
+		readLock.lock();
 		try {
-			reentrantReadWriteLock.readLock().lock();
 			return reader.read(status);
 		} finally {
-			reentrantReadWriteLock.readLock().unlock();
+			readLock.unlock();
 		}
 	}
 
 	public void read(VoidReader reader) {
+		readLock.lock();
 		try {
-			reentrantReadWriteLock.readLock().lock();
 			reader.read(status);
 		} finally {
-			reentrantReadWriteLock.readLock().unlock();
-		}
-	}
-
-	public <T> T readAndWrite(ReaderAndWriter<T> reader) {
-		try {
-			reentrantReadWriteLock.writeLock().lock();
-			T result = reader.readAndWrite(status);
-			save(status.file);
-			return result;
-		} finally {
-			reentrantReadWriteLock.writeLock().unlock();
+			readLock.unlock();
 		}
 	}
 
 	private void save(final File file) {
 		// ByteArrayへの変換を呼び出し元スレッドで行う
+		long startTime = System.currentTimeMillis();
 		final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		ObjectOutputStream objectOutputStream = null;
+		readLock.lock();
+		long serializeStartTime = System.currentTimeMillis();
 		try {
-			reentrantReadWriteLock.readLock().lock();
 			objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
 			objectOutputStream.writeObject(status);
 		} catch (NotSerializableException e) {
@@ -201,9 +179,15 @@ public class StatusAccess {
 			Log.w(TAG, e);
 			return;
 		} finally {
-			reentrantReadWriteLock.readLock().unlock();
+			long serializeStopTime = System.currentTimeMillis();
+			readLock.unlock();
 			Closeables.closeQuietly(objectOutputStream);
 			Closeables.closeQuietly(byteArrayOutputStream);
+			long stopTime = System.currentTimeMillis();
+			long serializeRunTime = serializeStopTime - serializeStartTime;
+			long runTime = stopTime - startTime;
+			Log.d(TAG, "StatusAccess.save() " + serializeRunTime + " ms / "
+					+ runTime + " ms");
 		}
 
 		// ByteArrayへの変換後は、呼び出し元スレッドでのファイルIOを避けるため新しいスレッドでデータを書き込む
@@ -211,12 +195,25 @@ public class StatusAccess {
 	}
 
 	public void write(Writer writer) {
+		boolean unlockWriteLockRequired = true;
+		writeLock.lock();
 		try {
-			reentrantReadWriteLock.writeLock().lock();
-			writer.write(status);
-			save(status.file);
+			readLock.lock();
+			try {
+				writer.write(status);
+				try {
+					writeLock.unlock(); // downgrade lock
+				} finally {
+					unlockWriteLockRequired = false;
+				}
+				save(status.file);
+			} finally {
+				readLock.unlock();
+			}
 		} finally {
-			reentrantReadWriteLock.writeLock().unlock();
+			if (unlockWriteLockRequired) {
+				writeLock.unlock();
+			}
 		}
 	}
 }
