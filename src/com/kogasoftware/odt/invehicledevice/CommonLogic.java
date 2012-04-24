@@ -1,14 +1,9 @@
-package com.kogasoftware.odt.invehicledevice.logic;
+package com.kogasoftware.odt.invehicledevice;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.app.Activity;
@@ -20,23 +15,19 @@ import android.view.View;
 
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
-import com.kogasoftware.odt.invehicledevice.BuildConfig;
-import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.Utility;
+import com.kogasoftware.odt.invehicledevice.Status.Phase;
+import com.kogasoftware.odt.invehicledevice.StatusAccess.Reader;
+import com.kogasoftware.odt.invehicledevice.StatusAccess.Writer;
 import com.kogasoftware.odt.invehicledevice.arrayadapter.ReservationArrayAdapter;
+import com.kogasoftware.odt.invehicledevice.backgroundtask.VoiceThread.SpeakEvent;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
-import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 import com.kogasoftware.odt.invehicledevice.event.AddUnexpectedReservationEvent;
 import com.kogasoftware.odt.invehicledevice.event.EnterDrivePhaseEvent;
 import com.kogasoftware.odt.invehicledevice.event.EnterFinishPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.event.EnterPlatformPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.event.UiEventBus;
 import com.kogasoftware.odt.invehicledevice.event.UpdateOperationScheduleCompleteEvent;
-import com.kogasoftware.odt.invehicledevice.logic.Status.Phase;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Reader;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
-import com.kogasoftware.odt.invehicledevice.logic.VoiceThread.SpeakEvent;
 import com.kogasoftware.odt.invehicledevice.modalview.ConfigModalView;
 import com.kogasoftware.odt.invehicledevice.modalview.MemoModalView;
 import com.kogasoftware.odt.invehicledevice.modalview.NotificationModalView;
@@ -53,15 +44,12 @@ import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 /**
- * 車載機の内部ロジック サブクラスのコンストラクタ実行前にスレッドを開始しているため、finalクラスにする
+ * 車載機の内部共通ロジック
  */
-public final class Logic {
-	private static Optional<Date> defaultDate = Optional.absent();
+public class CommonLogic {
+	private static final String TAG = CommonLogic.class.getSimpleName();
 	private static final Object DEFAULT_DATE_LOCK = new Object();
-	private static final Integer NUM_THREADS = 3;
-	private static final Integer POLLING_PERIOD_MILLIS = 30 * 1000;
-	private static final String TAG = Logic.class.getSimpleName();
-
+	private static Optional<Date> defaultDate = Optional.absent();
 	private static final AtomicBoolean willClearStatusFile = new AtomicBoolean(
 			false);
 	public static final Integer UNEXPECTED_RESERVATION_ID = -1;
@@ -92,91 +80,36 @@ public final class Logic {
 
 	private final DataSource dataSource;
 	private final UiEventBus eventBus = new UiEventBus();
-	private final ScheduledExecutorService executorService = Executors
-			.newScheduledThreadPool(NUM_THREADS);
 	private final StatusAccess statusAccess;
-	private Thread voiceThread = new EmptyThread();
-	private Thread looperThread = new EmptyThread();
-	private VehicleNotificationReceiver vehicleNotificationReceiver = new VehicleNotificationReceiver();
-	private VehicleNotificationSender vehicleNotificationSender = new VehicleNotificationSender();
-	private OperationScheduleSender operationScheduleSender = new OperationScheduleSender();
-	private PassengerRecordSender passengerRecordSender = new PassengerRecordSender();
 
-	public Logic() {
+	public CommonLogic() {
 		this.statusAccess = new StatusAccess();
 		this.dataSource = DataSourceFactory.newInstance("http://127.0.0.1", "");
 	}
 
-	public Logic(Activity activity) throws InterruptedException {
+	public CommonLogic(Activity activity) {
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(activity);
 
 		dataSource = DataSourceFactory.newInstance(
 				preferences.getString("url", "http://127.0.0.1"),
 				preferences.getString("token", ""));
-		try {
-			Thread.sleep(0); // interruption point
-			this.statusAccess = new StatusAccess(activity,
-					willClearStatusFile.getAndSet(false));
 
-			try {
-				executorService.scheduleWithFixedDelay(
-						vehicleNotificationReceiver, 0, POLLING_PERIOD_MILLIS,
-						TimeUnit.MILLISECONDS);
-				executorService.scheduleWithFixedDelay(
-						vehicleNotificationSender, 0, POLLING_PERIOD_MILLIS,
-						TimeUnit.MILLISECONDS);
-				executorService.scheduleWithFixedDelay(operationScheduleSender,
-						0, POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
-				executorService.scheduleWithFixedDelay(passengerRecordSender,
-						0, POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
-			} catch (RejectedExecutionException e) {
-				Log.e(TAG, "Task Rejected", e);
-			}
-
-			Thread.sleep(0); // interruption point
-			eventBus.register(this);
-			Thread.sleep(0); // interruption point
-			eventBus.register(activity);
-			Thread.sleep(0); // interruption point
-			voiceThread = new VoiceThread(activity);
-			voiceThread.start();
-			looperThread = new LooperThread(this, activity);
-			looperThread.start();
-			eventBus.register(voiceThread);
-			Thread.sleep(0); // interruption point
-			for (Integer resourceId : new Integer[] { R.id.config_modal_view,
-					R.id.start_check_modal_view, R.id.schedule_modal_view,
-					R.id.memo_modal_view, R.id.pause_modal_view,
-					R.id.return_path_modal_view, R.id.stop_check_modal_view,
-					R.id.stop_modal_view, R.id.notification_modal_view,
-					R.id.schedule_changed_modal_view,
-					R.id.navigation_modal_view, R.id.login_modal_view,
-					R.id.phase_text_view, R.id.drive_phase_view,
-					R.id.platform_phase_view, R.id.finish_phase_view }) {
-				View view = activity.findViewById(resourceId);
-				eventBus.register(view);
-				Thread.sleep(0); // interruption point
-			}
-
-			for (LogicUser logicUser : new LogicUser[] {
-					vehicleNotificationReceiver, vehicleNotificationSender,
-					operationScheduleSender, passengerRecordSender }) {
-				eventBus.register(logicUser);
-			}
-
-			if (getPhase() != Phase.FINISH
-					&& getRemainingOperationSchedules().isEmpty()) {
-				try {
-					executorService.submit(new OperationScheduleReceiver(this))
-							.get();
-				} catch (ExecutionException e) {
-					Log.w(TAG, e);
-				}
-			}
-		} catch (InterruptedException e) {
-			shutdown();
-			throw e;
+		this.statusAccess = new StatusAccess(activity,
+				willClearStatusFile.getAndSet(false));
+		eventBus.register(this);
+		eventBus.register(activity);
+		for (Integer resourceId : new Integer[] { R.id.config_modal_view,
+				R.id.start_check_modal_view, R.id.schedule_modal_view,
+				R.id.memo_modal_view, R.id.pause_modal_view,
+				R.id.return_path_modal_view, R.id.stop_check_modal_view,
+				R.id.stop_modal_view, R.id.notification_modal_view,
+				R.id.schedule_changed_modal_view, R.id.navigation_modal_view,
+				R.id.login_modal_view, R.id.phase_text_view,
+				R.id.drive_phase_view, R.id.platform_phase_view,
+				R.id.finish_phase_view }) {
+			View view = activity.findViewById(resourceId);
+			eventBus.register(view);
 		}
 	}
 
@@ -204,6 +137,10 @@ public final class Logic {
 				status.paused = false;
 			}
 		});
+	}
+
+	public void dispose() {
+		eventBus.dispose();
 	}
 
 	public void enterDrivePhase() {
@@ -278,10 +215,6 @@ public final class Logic {
 
 	public UiEventBus getEventBus() {
 		return eventBus;
-	}
-
-	public ScheduledExecutorService getExecutorService() {
-		return executorService;
 	}
 
 	public List<OperationSchedule> getFinishedOperationSchedules() {
@@ -454,13 +387,6 @@ public final class Logic {
 
 	public void showStopCheckModalView() {
 		eventBus.post(new StopCheckModalView.ShowEvent());
-	}
-
-	public void shutdown() {
-		eventBus.dispose();
-		executorService.shutdownNow();
-		voiceThread.interrupt();
-		looperThread.interrupt();
 	}
 
 	public void speak(String message) {

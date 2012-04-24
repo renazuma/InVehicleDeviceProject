@@ -15,11 +15,11 @@ import android.widget.TextView;
 
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
+import com.kogasoftware.odt.invehicledevice.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.Status;
+import com.kogasoftware.odt.invehicledevice.StatusAccess.Reader;
 import com.kogasoftware.odt.invehicledevice.event.EnterDrivePhaseEvent;
-import com.kogasoftware.odt.invehicledevice.logic.Logic;
-import com.kogasoftware.odt.invehicledevice.logic.Status;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Reader;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Platform;
@@ -71,18 +71,18 @@ public class DrivePhaseView extends PhaseView {
 	@Override
 	@Subscribe
 	public void enterDrivePhase(EnterDrivePhaseEvent event) {
-		Logic logic = getLogic();
-		List<OperationSchedule> operationSchedules = logic
+		CommonLogic commonLogic = getLogic();
+		List<OperationSchedule> operationSchedules = commonLogic
 				.getRemainingOperationSchedules();
 		if (operationSchedules.isEmpty()) {
-			logic.enterFinishPhase();
+			commonLogic.enterFinishPhase();
 			return;
 		}
 
 		OperationSchedule operationSchedule = operationSchedules.get(0);
 		TextView totalPassengerCountTextView = (TextView) findViewById(R.id.total_passenger_count_text_view);
 		Integer totalPassengerCount = 0;
-		List<PassengerRecord> ridingPassengerRecords = logic.getStatusAccess()
+		List<PassengerRecord> ridingPassengerRecords = commonLogic.getStatusAccess()
 				.read(new Reader<List<PassengerRecord>>() {
 					@Override
 					public List<PassengerRecord> read(Status status) {
@@ -128,7 +128,7 @@ public class DrivePhaseView extends PhaseView {
 			}
 		}
 
-		logic.speak("出発します。次は、" + platform.getNameRuby() + "。"
+		commonLogic.speak("出発します。次は、" + platform.getNameRuby() + "。"
 				+ platform.getNameRuby() + "。");
 
 		setVisibility(View.VISIBLE);

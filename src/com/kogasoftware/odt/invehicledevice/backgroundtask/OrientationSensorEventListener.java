@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.logic;
+package com.kogasoftware.odt.invehicledevice.backgroundtask;
 
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -6,15 +6,21 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
+import com.kogasoftware.odt.invehicledevice.CommonLogic;
+import com.kogasoftware.odt.invehicledevice.Status;
+import com.kogasoftware.odt.invehicledevice.StatusAccess.Writer;
 
-public class OrientationSensorEventListener extends LogicUser implements
-		SensorEventListener {
+public class OrientationSensorEventListener implements SensorEventListener {
 	private static final Long SAVE_PERIOD_MILLIS = 10 * 1000L;
 	private Long lastSavedMillis = System.currentTimeMillis();
-
 	private static final String TAG = OrientationSensorEventListener.class
 			.getSimpleName();
+
+	private final CommonLogic commonLogic;
+
+	public OrientationSensorEventListener(CommonLogic commonLogic) {
+		this.commonLogic = commonLogic;
+	}
 
 	@Override
 	public void onAccuracyChanged(Sensor arg0, int arg1) {
@@ -22,11 +28,6 @@ public class OrientationSensorEventListener extends LogicUser implements
 
 	@Override
 	public void onSensorChanged(SensorEvent event) {
-		if (!getLogic().isPresent()) {
-			return;
-		}
-		final Logic logic = getLogic().get();
-
 		if (event.sensor.getType() != Sensor.TYPE_ORIENTATION) {
 			return;
 		}
@@ -40,7 +41,7 @@ public class OrientationSensorEventListener extends LogicUser implements
 		}
 		lastSavedMillis = now;
 
-		logic.getStatusAccess().write(new Writer() {
+		commonLogic.getStatusAccess().write(new Writer() {
 			@Override
 			public void write(Status status) {
 				// status.orientation = Optional.of(Math.toRadians(360 -

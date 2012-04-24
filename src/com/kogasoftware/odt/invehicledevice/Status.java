@@ -1,10 +1,11 @@
-package com.kogasoftware.odt.invehicledevice.logic;
+package com.kogasoftware.odt.invehicledevice;
 
 import java.io.File;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.concurrent.Semaphore;
 
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyFile;
@@ -50,4 +51,5 @@ public class Status implements Serializable {
 	public final LinkedList<PassengerRecord> ridingPassengerRecords = new LinkedList<PassengerRecord>();
 	public final LinkedList<PassengerRecord> finishedPassengerRecords = new LinkedList<PassengerRecord>();
 	public final LinkedList<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();;
+	public final Semaphore operationScheduleChanged = new Semaphore(0);
 }

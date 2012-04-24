@@ -12,8 +12,8 @@ import android.widget.TextView;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.logic.Status;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
+import com.kogasoftware.odt.invehicledevice.Status;
+import com.kogasoftware.odt.invehicledevice.StatusAccess.Writer;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class NotificationModalView extends ModalView {

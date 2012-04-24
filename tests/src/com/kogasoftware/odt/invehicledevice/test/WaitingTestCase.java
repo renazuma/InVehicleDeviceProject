@@ -6,11 +6,11 @@ import android.widget.TextView;
 
 import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceActivity;
+import com.kogasoftware.odt.invehicledevice.CommonLogic;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
 import com.kogasoftware.odt.invehicledevice.datasource.DummyDataSource;
-import com.kogasoftware.odt.invehicledevice.logic.Logic;
 import com.kogasoftware.odt.invehicledevice.test.MockDataSource;
 
 public class WaitingTestCase extends
@@ -44,7 +44,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 		dataset(6);
 
-		Logic.clearStatusFile();
+		CommonLogic.clearStatusFile();
 
 		solo = new Solo(getInstrumentation(), getActivity());
 

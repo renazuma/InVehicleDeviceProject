@@ -9,15 +9,15 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import com.google.common.eventbus.Subscribe;
+import com.kogasoftware.odt.invehicledevice.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.event.EnterDrivePhaseEvent;
 import com.kogasoftware.odt.invehicledevice.event.EnterFinishPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.event.EnterPlatformPhaseEvent;
-import com.kogasoftware.odt.invehicledevice.logic.Logic;
-import com.kogasoftware.odt.invehicledevice.logic.LogicLoadThread;
+import com.kogasoftware.odt.invehicledevice.event.CommonLogicLoadCompleteEvent;
 import com.kogasoftware.odt.invehicledevice.modalview.ModalView;
 
 public class PhaseView extends FrameLayout {
-	private Logic logic = new Logic();
+	private CommonLogic commonLogic = new CommonLogic();
 
 	public PhaseView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -38,8 +38,8 @@ public class PhaseView extends FrameLayout {
 		setVisibility(View.GONE);
 	}
 
-	protected Logic getLogic() {
-		return logic;
+	protected CommonLogic getLogic() {
+		return commonLogic;
 	}
 
 	protected void setContentView(int resourceId) {
@@ -56,7 +56,7 @@ public class PhaseView extends FrameLayout {
 	}
 
 	@Subscribe
-	public void setLogic(LogicLoadThread.CompleteEvent event) {
-		this.logic = event.logic;
+	public void setLogic(CommonLogicLoadCompleteEvent event) {
+		this.commonLogic = event.commonLogic;
 	}
 }

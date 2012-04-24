@@ -1,22 +1,26 @@
-package com.kogasoftware.odt.invehicledevice.logic;
+package com.kogasoftware.odt.invehicledevice.backgroundtask;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Reader;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
+import com.kogasoftware.odt.invehicledevice.CommonLogic;
+import com.kogasoftware.odt.invehicledevice.Status;
+import com.kogasoftware.odt.invehicledevice.StatusAccess.Reader;
+import com.kogasoftware.odt.invehicledevice.StatusAccess.Writer;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
-public class VehicleNotificationSender extends LogicUser implements Runnable {
+public class VehicleNotificationSender implements Runnable {
+	private final CommonLogic commonLogic;
+
+	public VehicleNotificationSender(CommonLogic commonLogic) {
+		this.commonLogic = commonLogic;
+	}
+
 	@Override
 	public void run() {
-		if (!getLogic().isPresent()) {
-			return;
-		}
-		final Logic logic = getLogic().get();
-		List<VehicleNotification> repliedVehicleNotifications = logic
+		List<VehicleNotification> repliedVehicleNotifications = commonLogic
 				.getStatusAccess().read(
 						new Reader<List<VehicleNotification>>() {
 							@Override
@@ -33,7 +37,7 @@ public class VehicleNotificationSender extends LogicUser implements Runnable {
 				if (!vehicleNotification.getResponse().isPresent()) {
 					continue;
 				}
-				logic.getDataSource().responseVehicleNotification(
+				commonLogic.getDataSource().responseVehicleNotification(
 						vehicleNotification,
 						vehicleNotification.getResponse().get(),
 						new WebAPICallback<VehicleNotification>() {
@@ -50,7 +54,7 @@ public class VehicleNotificationSender extends LogicUser implements Runnable {
 							@Override
 							public void onSucceed(int reqkey, int statusCode,
 									VehicleNotification result) {
-								logic.getStatusAccess().write(new Writer() {
+								commonLogic.getStatusAccess().write(new Writer() {
 									@Override
 									public void write(Status status) {
 										status.sendLists.repliedVehicleNotifications

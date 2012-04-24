@@ -13,9 +13,9 @@ import android.widget.TextView;
 
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
+import com.kogasoftware.odt.invehicledevice.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.arrayadapter.ReservationArrayAdapter;
-import com.kogasoftware.odt.invehicledevice.logic.Logic;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
@@ -90,16 +90,16 @@ public class StartCheckModalView extends ModalView {
 		startButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				Logic logic = getLogic();
-				Optional<OperationSchedule> operationSchedule = logic
+				CommonLogic commonLogic = getLogic();
+				Optional<OperationSchedule> operationSchedule = commonLogic
 						.getCurrentOperationSchedule();
 				if (operationSchedule.isPresent()) {
-					logic.getOnPassengerRecords(operationSchedule.get(),
+					commonLogic.getOnPassengerRecords(operationSchedule.get(),
 							adapter.getSelectedGetOnPassengerRecords());
-					logic.getOffPassengerRecords(operationSchedule.get(),
+					commonLogic.getOffPassengerRecords(operationSchedule.get(),
 							adapter.getSelectedGetOffPassengerRecords());
 				}
-				logic.enterDrivePhase();
+				commonLogic.enterDrivePhase();
 			}
 		});
 		super.show();

@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.logic;
+package com.kogasoftware.odt.invehicledevice.backgroundtask;
 
 import org.json.JSONException;
 
@@ -7,19 +7,24 @@ import android.location.LocationListener;
 import android.os.Bundle;
 
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Reader;
+import com.kogasoftware.odt.invehicledevice.CommonLogic;
+import com.kogasoftware.odt.invehicledevice.Status;
+import com.kogasoftware.odt.invehicledevice.StatusAccess.Reader;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 
-public class LocationSender extends LogicUser implements Runnable,
-		LocationListener {
+public class LocationSender implements Runnable, LocationListener {
+
+	private final CommonLogic commonLogic;
+
+	public LocationSender(CommonLogic commonLogic) {
+		this.commonLogic = commonLogic;
+	}
 
 	@Override
 	public void onLocationChanged(Location location) {
-		if (getLogic().isPresent()) {
-			getLogic().get().setLocation(location);
-		}
+		commonLogic.setLocation(location);
 	}
 
 	@Override
@@ -36,12 +41,7 @@ public class LocationSender extends LogicUser implements Runnable,
 
 	@Override
 	public void run() {
-		if (!getLogic().isPresent()) {
-			return;
-		}
-		final Logic logic = getLogic().get();
-
-		final Optional<ServiceUnitStatusLog> log = logic.getStatusAccess()
+		final Optional<ServiceUnitStatusLog> log = commonLogic.getStatusAccess()
 				.read(new Reader<Optional<ServiceUnitStatusLog>>() {
 					@Override
 					public Optional<ServiceUnitStatusLog> read(Status status) {
@@ -62,7 +62,7 @@ public class LocationSender extends LogicUser implements Runnable,
 		}
 
 		try {
-			logic.getDataSource().sendServiceUnitStatusLog(log.get(),
+			commonLogic.getDataSource().sendServiceUnitStatusLog(log.get(),
 					new WebAPICallback<ServiceUnitStatusLog>() {
 						@Override
 						public void onException(int reqkey, WebAPIException ex) {

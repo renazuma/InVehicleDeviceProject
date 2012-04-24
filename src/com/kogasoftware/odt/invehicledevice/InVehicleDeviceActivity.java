@@ -16,7 +16,6 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -25,14 +24,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.common.eventbus.Subscribe;
+import com.kogasoftware.odt.invehicledevice.backgroundtask.BackgroundTaskThread;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
+import com.kogasoftware.odt.invehicledevice.event.CommonLogicLoadCompleteEvent;
 import com.kogasoftware.odt.invehicledevice.event.EnterDrivePhaseEvent;
 import com.kogasoftware.odt.invehicledevice.event.EnterFinishPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.event.EnterPlatformPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.event.ExitEvent;
 import com.kogasoftware.odt.invehicledevice.event.SignalStrengthChangedEvent;
-import com.kogasoftware.odt.invehicledevice.logic.Logic;
-import com.kogasoftware.odt.invehicledevice.logic.LogicLoadThread;
 import com.kogasoftware.odt.invehicledevice.modalview.NavigationModalView;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
@@ -52,12 +51,12 @@ public class InVehicleDeviceActivity extends Activity {
 	private final Handler handler = new Handler();
 	private final CountDownLatch waitForStartUiLatch = new CountDownLatch(1);
 	private final List<View> phaseColoredViews = new LinkedList<View>();
-	private Thread logicLoadThread = new EmptyThread();
-	private Logic logic = new Logic();
+	private Thread backgroundThread = new EmptyThread();
+	private CommonLogic commonLogic = new CommonLogic();
 	private final Runnable updateTime = new Runnable() {
 		@Override
 		public void run() {
-			Date now = Logic.getDate();
+			Date now = CommonLogic.getDate();
 			DateFormat f = new SimpleDateFormat(getResources().getString(
 					R.string.present_time_format));
 			presentTimeTextView.setText(f.format(now));
@@ -101,7 +100,7 @@ public class InVehicleDeviceActivity extends Activity {
 		changePhaseButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				logic.enterPlatformPhase();
+				commonLogic.enterPlatformPhase();
 			}
 		});
 	}
@@ -115,10 +114,10 @@ public class InVehicleDeviceActivity extends Activity {
 
 	@Subscribe
 	public void enterPlatformPhase(EnterPlatformPhaseEvent event) {
-		List<OperationSchedule> operationSchedules = logic
+		List<OperationSchedule> operationSchedules = commonLogic
 				.getRemainingOperationSchedules();
 		if (operationSchedules.isEmpty()) {
-			logic.enterFinishPhase();
+			commonLogic.enterFinishPhase();
 			return;
 		}
 
@@ -133,7 +132,7 @@ public class InVehicleDeviceActivity extends Activity {
 		changePhaseButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				logic.showStartCheckModalView();
+				commonLogic.showStartCheckModalView();
 			}
 		});
 		changePhaseButton.setEnabled(true);
@@ -150,10 +149,10 @@ public class InVehicleDeviceActivity extends Activity {
 		super.onCreate(savedInstanceState);
 
 		if (BuildConfig.DEBUG) {
-			StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-					.detectAll().penaltyLog().build());
-			StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-					.detectAll().penaltyLog().penaltyDeath().build());
+			// StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+			// .detectAll().penaltyLog().build());
+			// StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+			// .detectAll().penaltyLog().penaltyDeath().build());
 		}
 		setContentView(R.layout.in_vehicle_device);
 
@@ -184,13 +183,13 @@ public class InVehicleDeviceActivity extends Activity {
 		configButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				logic.showConfigModalView();
+				commonLogic.showConfigModalView();
 			}
 		});
 		scheduleButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				logic.showScheduleModalView();
+				commonLogic.showScheduleModalView();
 			}
 		});
 
@@ -202,7 +201,7 @@ public class InVehicleDeviceActivity extends Activity {
 				n.setBody("通知です");
 				List<VehicleNotification> l = new LinkedList<VehicleNotification>();
 				l.add(n);
-				logic.showNotificationModalView(l);
+				commonLogic.showNotificationModalView(l);
 			}
 		});
 
@@ -219,8 +218,8 @@ public class InVehicleDeviceActivity extends Activity {
 
 		handler.post(updateTime);
 
-		logicLoadThread = new LogicLoadThread(this);
-		logicLoadThread.start();
+		backgroundThread = new BackgroundTaskThread(this);
+		backgroundThread.start();
 	}
 
 	@Override
@@ -233,7 +232,7 @@ public class InVehicleDeviceActivity extends Activity {
 			dialog.setOnCancelListener(new OnCancelListener() {
 				@Override
 				public void onCancel(DialogInterface dialogInterface) {
-					if (!logic.isInitialized()) {
+					if (!commonLogic.isInitialized()) {
 						finish();
 					}
 				}
@@ -252,8 +251,8 @@ public class InVehicleDeviceActivity extends Activity {
 
 		handler.removeCallbacks(updateTime);
 
-		logic.shutdown();
-		logicLoadThread.interrupt();
+		commonLogic.dispose();
+		backgroundThread.interrupt();
 
 		waitForStartUiLatch.countDown();
 	}
@@ -286,20 +285,20 @@ public class InVehicleDeviceActivity extends Activity {
 	}
 
 	@Subscribe
-	public void startUi(LogicLoadThread.CompleteEvent event) {
+	public void startUi(CommonLogicLoadCompleteEvent event) {
 		try {
 			dismissDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
 		} catch (IllegalArgumentException e) {
 			// Dialogが表示されていない場合はこの例外が発生
 			// Log.w(TAG, e);
 		}
-		logic.shutdown();
-		logic = event.logic;
+		commonLogic.dispose();
+		commonLogic = event.commonLogic;
 		if (isFinishing()) {
-			logic.shutdown();
+			commonLogic.dispose();
 			return;
 		}
-		logic.restoreStatus();
+		commonLogic.restoreStatus();
 		contentView.setVisibility(View.VISIBLE);
 		waitForStartUiLatch.countDown();
 	}

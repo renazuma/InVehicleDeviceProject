@@ -6,11 +6,11 @@ import android.widget.Button;
 
 import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceActivity;
+import com.kogasoftware.odt.invehicledevice.CommonLogic;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
 import com.kogasoftware.odt.invehicledevice.datasource.DummyDataSource;
-import com.kogasoftware.odt.invehicledevice.logic.Logic;
 
 public class ReturnPathTestCase extends
 ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
@@ -42,7 +42,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 		
 		assertTrue(false); // TODO: 内部データを修正するまでこのテストはペンディング
 		
-		Logic.clearStatusFile();
+		CommonLogic.clearStatusFile();
 		solo = new Solo(getInstrumentation(), getActivity());
 
 		// デフォルトで復路画面にする

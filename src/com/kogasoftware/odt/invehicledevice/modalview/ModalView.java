@@ -12,21 +12,21 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.google.common.eventbus.Subscribe;
-import com.kogasoftware.odt.invehicledevice.logic.Logic;
-import com.kogasoftware.odt.invehicledevice.logic.LogicLoadThread;
+import com.kogasoftware.odt.invehicledevice.CommonLogic;
+import com.kogasoftware.odt.invehicledevice.event.CommonLogicLoadCompleteEvent;
 
 public class ModalView extends FrameLayout implements OnTouchListener {
 	private Float lastMotionEventX = 0f;
 
-	private Logic logic = new Logic();
+	private CommonLogic commonLogic = new CommonLogic();
 
 	public ModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		setVisibility(View.GONE);
 	}
 
-	protected Logic getLogic() {
-		return logic;
+	protected CommonLogic getLogic() {
+		return commonLogic;
 	}
 
 	public void hide() {
@@ -80,8 +80,8 @@ public class ModalView extends FrameLayout implements OnTouchListener {
 	}
 
 	@Subscribe
-	public void setLogic(LogicLoadThread.CompleteEvent event) {
-		this.logic = event.logic;
+	public void setLogic(CommonLogicLoadCompleteEvent event) {
+		this.commonLogic = event.commonLogic;
 	}
 
 	/**

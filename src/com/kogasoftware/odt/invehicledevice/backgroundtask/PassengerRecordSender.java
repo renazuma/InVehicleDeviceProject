@@ -1,44 +1,47 @@
-package com.kogasoftware.odt.invehicledevice.logic;
+package com.kogasoftware.odt.invehicledevice.backgroundtask;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Reader;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
+import com.kogasoftware.odt.invehicledevice.CommonLogic;
+import com.kogasoftware.odt.invehicledevice.Status;
+import com.kogasoftware.odt.invehicledevice.StatusAccess.Reader;
+import com.kogasoftware.odt.invehicledevice.StatusAccess.Writer;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
 
-public class PassengerRecordSender extends LogicUser implements Runnable {
+public class PassengerRecordSender implements Runnable {
+	private final CommonLogic commonLogic;
+
+	public PassengerRecordSender(CommonLogic commonLogic) {
+		this.commonLogic = commonLogic;
+	}
 
 	private void remove(final PassengerRecord passengerRecord,
 			final Boolean getOn) {
-		if (getLogic().isPresent()) {
-			getLogic().get().getStatusAccess().write(new Writer() {
-				@Override
-				public void write(Status status) {
-					if (getOn) {
-						status.sendLists.getOnPassengerRecords
-								.remove(passengerRecord);
-					} else {
-						status.sendLists.getOffPassengerRecords
-								.remove(passengerRecord);
-					}
+
+		commonLogic.getStatusAccess().write(new Writer() {
+			@Override
+			public void write(Status status) {
+				if (getOn) {
+					status.sendLists.getOnPassengerRecords
+							.remove(passengerRecord);
+				} else {
+					status.sendLists.getOffPassengerRecords
+							.remove(passengerRecord);
 				}
-			});
-		}
+			}
+		});
+
 	}
 
 	@Override
 	public void run() {
-		if (!getLogic().isPresent()) {
-			return;
-		}
-		final Logic logic = getLogic().get();
-		List<PassengerRecord> getOnPassengerRecords = logic.getStatusAccess()
+		List<PassengerRecord> getOnPassengerRecords = commonLogic.getStatusAccess()
 				.read(new Reader<List<PassengerRecord>>() {
 					@Override
 					public List<PassengerRecord> read(Status status) {
@@ -46,7 +49,7 @@ public class PassengerRecordSender extends LogicUser implements Runnable {
 								status.sendLists.getOnPassengerRecords);
 					}
 				});
-		List<PassengerRecord> getOffPassengerRecords = logic.getStatusAccess()
+		List<PassengerRecord> getOffPassengerRecords = commonLogic.getStatusAccess()
 				.read(new Reader<List<PassengerRecord>>() {
 					@Override
 					public List<PassengerRecord> read(Status status) {
@@ -54,11 +57,11 @@ public class PassengerRecordSender extends LogicUser implements Runnable {
 								status.sendLists.getOffPassengerRecords);
 					}
 				});
-		send(logic, getOnPassengerRecords, true);
-		send(logic, getOffPassengerRecords, false);
+		send(commonLogic, getOnPassengerRecords, true);
+		send(commonLogic, getOffPassengerRecords, false);
 	}
 
-	void send(Logic logic, List<PassengerRecord> passengerRecords,
+	void send(CommonLogic commonLogic, List<PassengerRecord> passengerRecords,
 			final Boolean getOn) {
 		for (final PassengerRecord passengerRecord : passengerRecords) {
 			Optional<Reservation> reservation = passengerRecord
@@ -95,11 +98,11 @@ public class PassengerRecordSender extends LogicUser implements Runnable {
 
 			try {
 				if (getOn) {
-					logic.getDataSource().getOnPassenger(
+					commonLogic.getDataSource().getOnPassenger(
 							operationSchedule.get(), reservation.get(),
 							passengerRecord, callback);
 				} else {
-					logic.getDataSource().getOffPassenger(
+					commonLogic.getDataSource().getOffPassenger(
 							operationSchedule.get(), reservation.get(),
 							passengerRecord, callback);
 				}

@@ -22,12 +22,12 @@ import android.widget.ToggleButton;
 
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
+import com.kogasoftware.odt.invehicledevice.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.arrayadapter.ReservationArrayAdapter;
 import com.kogasoftware.odt.invehicledevice.arrayadapter.ReservationArrayAdapter.ItemType;
 import com.kogasoftware.odt.invehicledevice.event.AddUnexpectedReservationEvent;
 import com.kogasoftware.odt.invehicledevice.event.EnterPlatformPhaseEvent;
-import com.kogasoftware.odt.invehicledevice.logic.Logic;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 
 public class PlatformPhaseView extends PhaseView {
@@ -56,7 +56,7 @@ public class PlatformPhaseView extends PhaseView {
 	private Runnable updateMinutesRemaining = new Runnable() {
 		@Override
 		public void run() {
-			Date now = Logic.getDate();
+			Date now = CommonLogic.getDate();
 			List<OperationSchedule> operationSchedules = getLogic()
 					.getRemainingOperationSchedules();
 			if (operationSchedules.size() <= 1) {
@@ -123,11 +123,11 @@ public class PlatformPhaseView extends PhaseView {
 	@Override
 	@Subscribe
 	public void enterPlatformPhase(EnterPlatformPhaseEvent event) {
-		Logic logic = getLogic();
-		List<OperationSchedule> operationSchedules = logic
+		CommonLogic commonLogic = getLogic();
+		List<OperationSchedule> operationSchedules = commonLogic
 				.getRemainingOperationSchedules();
 		if (operationSchedules.isEmpty()) {
-			logic.enterFinishPhase();
+			commonLogic.enterFinishPhase();
 			return;
 		}
 
@@ -136,7 +136,7 @@ public class PlatformPhaseView extends PhaseView {
 			return;
 		}
 		adapter = new ReservationArrayAdapter(getContext(),
-				R.layout.reservation_list_row, logic);
+				R.layout.reservation_list_row, commonLogic);
 		reservationListView.setAdapter(adapter);
 
 		if (operationSchedules.size() > 1) {

@@ -5,11 +5,11 @@ import android.view.View;
 
 import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceActivity;
+import com.kogasoftware.odt.invehicledevice.CommonLogic;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
 import com.kogasoftware.odt.invehicledevice.datasource.DummyDataSource;
-import com.kogasoftware.odt.invehicledevice.logic.Logic;
 
 public class MapTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
@@ -25,7 +25,7 @@ public class MapTestCase extends
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		Logic.clearStatusFile();
+		CommonLogic.clearStatusFile();
 		solo = new Solo(getInstrumentation(), getActivity());
 
 	}

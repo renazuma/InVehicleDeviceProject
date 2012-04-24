@@ -1,21 +1,23 @@
-package com.kogasoftware.odt.invehicledevice.logic;
+package com.kogasoftware.odt.invehicledevice.backgroundtask;
 
 import java.util.LinkedList;
 import java.util.List;
 
+import com.kogasoftware.odt.invehicledevice.CommonLogic;
+import com.kogasoftware.odt.invehicledevice.Status;
 import com.kogasoftware.odt.invehicledevice.Utility;
+import com.kogasoftware.odt.invehicledevice.StatusAccess.Writer;
 import com.kogasoftware.odt.invehicledevice.event.UpdateOperationScheduleCompleteEvent;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
 
-public class OperationScheduleReceiver extends LogicUser implements Runnable {
-	final Logic logic;
+public class OperationScheduleReceiver implements Runnable {
+	private final CommonLogic commonLogic;
 
-	public OperationScheduleReceiver(Logic logic) {
-		this.logic = logic;
+	public OperationScheduleReceiver(CommonLogic commonLogic) {
+		this.commonLogic = commonLogic;
 	}
 
 	@Override
@@ -23,7 +25,7 @@ public class OperationScheduleReceiver extends LogicUser implements Runnable {
 		final List<OperationSchedule> operationSchedules = new LinkedList<OperationSchedule>();
 		while (true) {
 			try {
-				operationSchedules.addAll(logic.getDataSource()
+				operationSchedules.addAll(commonLogic.getDataSource()
 						.getOperationSchedules());
 				break;
 			} catch (WebAPIException e) {
@@ -35,15 +37,15 @@ public class OperationScheduleReceiver extends LogicUser implements Runnable {
 				return;
 			}
 		}
-		logic.getStatusAccess().write(new Writer() {
+		commonLogic.getStatusAccess().write(new Writer() {
 			@Override
 			public void write(Status status) {
-				update(status, logic, operationSchedules);
+				update(status, commonLogic, operationSchedules);
 			}
 		});
 	}
 
-	private void update(Status status, Logic logic,
+	private void update(Status status, CommonLogic commonLogic,
 			List<OperationSchedule> newOperationSchedules) {
 
 		// 未乗車のPassengerRecordは削除
@@ -96,7 +98,7 @@ public class OperationScheduleReceiver extends LogicUser implements Runnable {
 		status.finishedOperationSchedules.clear();
 		status.finishedOperationSchedules.addAll(newFinishedOperationSchedules);
 
-		logic.getEventBus().post(new UpdateOperationScheduleCompleteEvent());
+		commonLogic.getEventBus().post(new UpdateOperationScheduleCompleteEvent());
 	}
 
 	private void updateReservation(Status status, Reservation reservation) {

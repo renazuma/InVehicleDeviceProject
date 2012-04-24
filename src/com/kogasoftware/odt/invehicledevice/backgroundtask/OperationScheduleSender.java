@@ -1,26 +1,30 @@
-package com.kogasoftware.odt.invehicledevice.logic;
+package com.kogasoftware.odt.invehicledevice.backgroundtask;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Reader;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
+import com.kogasoftware.odt.invehicledevice.CommonLogic;
+import com.kogasoftware.odt.invehicledevice.Status;
+import com.kogasoftware.odt.invehicledevice.StatusAccess.Reader;
+import com.kogasoftware.odt.invehicledevice.StatusAccess.Writer;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 
-public class OperationScheduleSender extends LogicUser implements Runnable {
+public class OperationScheduleSender implements Runnable {
+	private final CommonLogic commonLogic;
+
+	public OperationScheduleSender(CommonLogic commonLogic) {
+		this.commonLogic = commonLogic;
+	}
+
 	@Override
 	public void run() {
-		if (!getLogic().isPresent()) {
-			return;
-		}
-		final Logic logic = getLogic().get();
 		try {
-			send(logic,
+			send(commonLogic,
 					true,
-					logic.getStatusAccess().read(
+					commonLogic.getStatusAccess().read(
 							new Reader<List<OperationSchedule>>() {
 								@Override
 								public List<OperationSchedule> read(
@@ -29,9 +33,9 @@ public class OperationScheduleSender extends LogicUser implements Runnable {
 											status.sendLists.arrivalOperationSchedules);
 								}
 							}));
-			send(logic,
+			send(commonLogic,
 					false,
-					logic.getStatusAccess().read(
+					commonLogic.getStatusAccess().read(
 							new Reader<List<OperationSchedule>>() {
 								@Override
 								public List<OperationSchedule> read(
@@ -48,7 +52,7 @@ public class OperationScheduleSender extends LogicUser implements Runnable {
 
 	}
 
-	private void send(Logic logic, final Boolean arrival,
+	private void send(CommonLogic commonLogic, final Boolean arrival,
 			final List<OperationSchedule> operationSchedules)
 			throws WebAPIException {
 		for (final OperationSchedule operationSchedule : operationSchedules) {
@@ -69,17 +73,17 @@ public class OperationScheduleSender extends LogicUser implements Runnable {
 				}
 			};
 			if (arrival) {
-				logic.getDataSource().arrivalOperationSchedule(
+				commonLogic.getDataSource().arrivalOperationSchedule(
 						operationSchedule, callback);
 			} else {
-				logic.getDataSource().departureOperationSchedule(
+				commonLogic.getDataSource().departureOperationSchedule(
 						operationSchedule, callback);
 			}
 			if (!succeed.get()) {
 				return;
 			}
 
-			logic.getStatusAccess().write(new Writer() {
+			commonLogic.getStatusAccess().write(new Writer() {
 				@Override
 				public void write(Status status) {
 					if (arrival) {

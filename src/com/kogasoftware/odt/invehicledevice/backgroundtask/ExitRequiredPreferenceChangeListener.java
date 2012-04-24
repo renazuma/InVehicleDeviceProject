@@ -1,19 +1,20 @@
-package com.kogasoftware.odt.invehicledevice.logic;
+package com.kogasoftware.odt.invehicledevice.backgroundtask;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.util.Log;
 
+import com.kogasoftware.odt.invehicledevice.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.event.ExitEvent;
 
 public class ExitRequiredPreferenceChangeListener implements
 		OnSharedPreferenceChangeListener {
 	private static final String TAG = ExitRequiredPreferenceChangeListener.class
 			.getSimpleName();
-	private final Logic logic;
+	private final CommonLogic commonLogic;
 
-	public ExitRequiredPreferenceChangeListener(Logic logic) {
-		this.logic = logic;
+	public ExitRequiredPreferenceChangeListener(CommonLogic commonLogic) {
+		this.commonLogic = commonLogic;
 	}
 
 	@Override
@@ -22,7 +23,7 @@ public class ExitRequiredPreferenceChangeListener implements
 		if (key.equals("update") && sharedPreferences.getBoolean(key, false)) { // TODO
 			// 文字列定数
 			Log.i(TAG, "SharedPreferences changed, exit!"); // TODO
-			logic.getEventBus().post(new ExitEvent());
+			commonLogic.getEventBus().post(new ExitEvent());
 		}
 	}
 }

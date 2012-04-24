@@ -1,19 +1,20 @@
-package com.kogasoftware.odt.invehicledevice.logic;
+package com.kogasoftware.odt.invehicledevice.backgroundtask;
 
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
 
+import com.kogasoftware.odt.invehicledevice.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.event.SignalStrengthChangedEvent;
 
 public class SignalStrengthListener extends PhoneStateListener {
-	private final Logic logic;
+	private final CommonLogic commonLogic;
 	private final ConnectivityManager connectivityManager;
 
-	public SignalStrengthListener(Logic logic,
+	public SignalStrengthListener(CommonLogic commonLogic,
 			ConnectivityManager connectivityManager) {
-		this.logic = logic;
+		this.commonLogic = commonLogic;
 		this.connectivityManager = connectivityManager;
 	}
 
@@ -41,7 +42,7 @@ public class SignalStrengthListener extends PhoneStateListener {
 
 	@Override
 	public void onSignalStrengthsChanged(SignalStrength signalStrength) {
-		logic.getEventBus().post(
+		commonLogic.getEventBus().post(
 				new SignalStrengthChangedEvent(
 						getSignalStrengthPercentage(signalStrength)));
 	};

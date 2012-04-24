@@ -21,10 +21,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import com.kogasoftware.odt.invehicledevice.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.logic.Logic;
-import com.kogasoftware.odt.invehicledevice.logic.Status;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.VoidReader;
+import com.kogasoftware.odt.invehicledevice.Status;
+import com.kogasoftware.odt.invehicledevice.StatusAccess.VoidReader;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
@@ -40,7 +40,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 
 	private final LayoutInflater layoutInflater = (LayoutInflater) getContext()
 			.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-	private final Logic logic;
+	private final CommonLogic commonLogic;
 	private final int resourceId;
 	private final List<PassengerRecord> unhandledPassengerRecords = new LinkedList<PassengerRecord>();
 	private final List<PassengerRecord> ridingPassengerRecords = new LinkedList<PassengerRecord>();
@@ -50,19 +50,19 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 	private final EnumSet<ItemType> visibleItemTypes = EnumSet
 			.noneOf(ItemType.class);
 
-	public ReservationArrayAdapter(Context context, int resourceId, Logic logic) {
+	public ReservationArrayAdapter(Context context, int resourceId, CommonLogic commonLogic) {
 		super(context, resourceId);
 		this.resourceId = resourceId;
-		this.logic = logic;
+		this.commonLogic = commonLogic;
 
-		remainingOperationSchedules.addAll(logic
+		remainingOperationSchedules.addAll(commonLogic
 				.getRemainingOperationSchedules());
 		if (remainingOperationSchedules.isEmpty()) {
 			operationSchedule = new OperationSchedule();
 			return;
 		}
 		operationSchedule = remainingOperationSchedules.get(0);
-		logic.getStatusAccess().read(new VoidReader() {
+		commonLogic.getStatusAccess().read(new VoidReader() {
 			@Override
 			public void read(Status status) {
 				unhandledPassengerRecords
@@ -234,7 +234,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 			memoButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View view) {
-					logic.showMemoModalView(reservation);
+					commonLogic.showMemoModalView(reservation);
 				}
 			});
 		} else {
@@ -247,7 +247,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 		returnPathButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				logic.showReturnPathModalView(reservation);
+				commonLogic.showReturnPathModalView(reservation);
 			}
 		});
 
@@ -257,7 +257,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 			User user = reservation.getUser().get();
 			userNameView.setText(user.getLastName() + " " + user.getFirstName()
 					+ " 様");
-		} else if (reservation.getId().equals(Logic.UNEXPECTED_RESERVATION_ID)) {
+		} else if (reservation.getId().equals(CommonLogic.UNEXPECTED_RESERVATION_ID)) {
 			userNameView.setText("飛び乗りユーザー 様");
 		} else {
 			userNameView.setText("ID:" + reservation.getUserId() + " 様");
@@ -274,7 +274,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 			text += "[降]";
 		}
 
-		if (reservation.getId().equals(Logic.UNEXPECTED_RESERVATION_ID)) {
+		if (reservation.getId().equals(CommonLogic.UNEXPECTED_RESERVATION_ID)) {
 			text += " 予約番号 " + reservation.getId();
 		}
 		TextView reservationIdView = (TextView) view

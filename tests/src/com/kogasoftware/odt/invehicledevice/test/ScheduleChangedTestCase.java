@@ -10,13 +10,13 @@ import android.view.View;
 
 import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceActivity;
+import com.kogasoftware.odt.invehicledevice.CommonLogic;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
 import com.kogasoftware.odt.invehicledevice.datasource.DummyDataSource;
 import com.kogasoftware.odt.invehicledevice.datasource.ScheduleChangedTestDataSource;
-import com.kogasoftware.odt.invehicledevice.logic.Logic;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
@@ -36,7 +36,7 @@ ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 		super("com.kogasoftware.odt.invehicledevice",
 				InVehicleDeviceActivity.class);
 		DataSourceFactory.setInstance(new ScheduleChangedTestDataSource());
-		Logic.clearStatusFile();
+		CommonLogic.clearStatusFile();
 	}
 
 	@Override

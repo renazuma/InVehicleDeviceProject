@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.logic;
+package com.kogasoftware.odt.invehicledevice;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -116,7 +116,7 @@ public class StatusAccess {
 				Closeables.closeQuietly(fileInputStream);
 			}
 
-			Date now = Logic.getDate();
+			Date now = CommonLogic.getDate();
 			Calendar calendar = Calendar.getInstance();
 			calendar.clear();
 			calendar.set(now.getYear(), now.getMonth(), now.getDay(), 3, 0); // TODO
@@ -191,25 +191,19 @@ public class StatusAccess {
 	}
 
 	public void write(Writer writer) {
-		boolean unlockWriteLockRequired = true;
 		writeLock.lock();
 		try {
-			readLock.lock();
-			try {
-				writer.write(status);
-				try {
-					writeLock.unlock(); // downgrade lock
-				} finally {
-					unlockWriteLockRequired = false;
-				}
-				save(status.file);
-			} finally {
-				readLock.unlock();
-			}
+			writer.write(status);
 		} finally {
-			if (unlockWriteLockRequired) {
-				writeLock.unlock();
-			}
+			writeLock.unlock();
+		}
+
+		// Lockのダウングレードをするとfindbugsの警告回避ができないため、個別にロックする
+		readLock.lock();
+		try {
+			save(status.file);
+		} finally {
+			readLock.unlock();
 		}
 	}
 }

@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.logic;
+package com.kogasoftware.odt.invehicledevice.backgroundtask;
 
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -6,12 +6,19 @@ import android.hardware.SensorEventListener;
 import android.util.Log;
 
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
+import com.kogasoftware.odt.invehicledevice.CommonLogic;
+import com.kogasoftware.odt.invehicledevice.Status;
+import com.kogasoftware.odt.invehicledevice.StatusAccess.Writer;
 
-public class TemperatureSensorEventListener extends LogicUser implements
-		SensorEventListener {
+public class TemperatureSensorEventListener implements SensorEventListener {
 	private static final String TAG = TemperatureSensorEventListener.class
 			.getSimpleName();
+
+	private final CommonLogic commonLogic;
+
+	public TemperatureSensorEventListener(CommonLogic commonLogic) {
+		this.commonLogic = commonLogic;
+	}
 
 	@Override
 	public void onAccuracyChanged(Sensor sensor, int accuracy) {
@@ -19,17 +26,13 @@ public class TemperatureSensorEventListener extends LogicUser implements
 
 	@Override
 	public void onSensorChanged(SensorEvent event) {
-		if (!getLogic().isPresent()) {
-			return;
-		}
-		final Logic logic = getLogic().get();
 
 		if (event.sensor.getType() != Sensor.TYPE_TEMPERATURE) {
 			return;
 		}
 
 		final float celsius = event.values[0];
-		logic.getStatusAccess().write(new Writer() {
+		commonLogic.getStatusAccess().write(new Writer() {
 			@Override
 			public void write(Status status) {
 				status.temperature = Optional.of((int) celsius);
