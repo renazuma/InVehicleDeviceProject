@@ -9,8 +9,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
+import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
@@ -56,9 +56,9 @@ public class ScheduleChangedTestDataSource implements DataSource {
 	@Override
 	public List<OperationSchedule> getOperationSchedules()
 			throws WebAPIException {
-		String r1 = "{id: 51, departure_schedule_id: 1, arrival_schedule_id: 2, user: {id: 1, last_name: '乗客', first_name: 'いちごう'}}";
-		String r2 = "{id: 52, departure_schedule_id: 1, arrival_schedule_id: 2, user: {id: 2, last_name: '滝口', first_name: 'にごう'}}";
-		String r3 = "{id: 53, departure_schedule_id: 1, arrival_schedule_id: 2, user: {id: 3, last_name: '下村', first_name: 'さんごう'}}";
+		String r1 = "{id: 51, departure_schedule_id: 1, arrival_schedule_id: 2, user: {id: 1, last_name: 'ああああ', first_name: 'いちごう'}}";
+		String r2 = "{id: 52, departure_schedule_id: 1, arrival_schedule_id: 2, user: {id: 2, last_name: 'いいいい', first_name: 'にごう'}}";
+		String r3 = "{id: 53, departure_schedule_id: 1, arrival_schedule_id: 3, user: {id: 3, last_name: 'うううう', first_name: 'さんごう'}}";
 		String r4 = "{id: 54, departure_schedule_id: 1, arrival_schedule_id: 2, user: {id: 4, last_name: '木本', first_name: '麻紀'}}";
 		String r5 = "{id: 55, departure_schedule_id: 1, arrival_schedule_id: 2, user: {id: 5, last_name: '永瀬', first_name: '直治'}}";
 		String r6 = "{id: 56, departure_schedule_id: 1, arrival_schedule_id: 2, user: {id: 6, last_name: '田川', first_name: '恭三郎'}}";
@@ -82,7 +82,8 @@ public class ScheduleChangedTestDataSource implements DataSource {
 								+ "reservations_as_arrival: ["
 								+ r1
 								+ ","
-								+ r2 + "]}");
+								+ r2
+								+ "]}");
 				l.add(new OperationSchedule(j2));
 				return l;
 			} else if (phase.compareAndSet(2, 3)) {
@@ -93,21 +94,19 @@ public class ScheduleChangedTestDataSource implements DataSource {
 								+ "reservations_as_departure: ["
 								+ r1
 								+ ","
-								+ r2 + "]}");
+								+ r3 + "]}");
 				l.add(new OperationSchedule(j1));
 
 				JSONObject j2 = new JSONObject(
 						"{id:3, arrival_estimate: '2012-01-01T02:00:00+09:00', departure_estimate: '2012-01-01T02:00:00+09:00', "
-								+ "platform: {name: '乗降場C', name_ruby: 'のりおりばしー'}}");
+								+ "platform: {name: '乗降場C', name_ruby: 'のりおりばしー'}, reservations_as_arrival: [ "
+								+ r3 + " ]}");
 				l.add(new OperationSchedule(j2));
-				
+
 				JSONObject j3 = new JSONObject(
 						"{id:2, arrival_estimate: '2012-01-01T03:00:00+09:00', departure_estimate: '2012-01-01T02:00:00+09:00', "
 								+ "platform: {name: '乗降場B', name_ruby: 'のりおりばびー'}, "
-								+ "reservations_as_arrival: ["
-								+ r1
-								+ ","
-								+ r2 + "]}");
+								+ "reservations_as_arrival: [" + r1 + "]}");
 				l.add(new OperationSchedule(j3));
 				return l;
 			}
