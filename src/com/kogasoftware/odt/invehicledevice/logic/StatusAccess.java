@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.nio.channels.ClosedChannelException;
+import java.nio.channels.FileLock;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -31,6 +33,42 @@ public class StatusAccess {
 
 	public interface ReaderAndWriter<T> {
 		T readAndWrite(Status status);
+	}
+
+	private static class SaveThread extends Thread {
+		private final File file;
+		private final ByteArrayOutputStream byteArrayOutputStream;
+
+		public SaveThread(File file, ByteArrayOutputStream byteArrayOutputStream) {
+			this.file = file;
+			this.byteArrayOutputStream = byteArrayOutputStream;
+		}
+
+		@Override
+		public void run() {
+			FileOutputStream fileOutputStream = null;
+			FileLock lock = null;
+			try {
+				fileOutputStream = new FileOutputStream(file);
+				lock = fileOutputStream.getChannel().lock();
+				fileOutputStream.write(byteArrayOutputStream.toByteArray());
+			} catch (FileNotFoundException e) {
+				Log.w(TAG, e);
+			} catch (IOException e) {
+				Log.w(TAG, e);
+			} finally {
+				Closeables.closeQuietly(fileOutputStream);
+				if (lock != null) {
+					try {
+						lock.release();
+					} catch (ClosedChannelException e) {
+						// do nothing
+					} catch (IOException e) {
+						Log.w(TAG, e);
+					}
+				}
+			}
+		}
 	}
 
 	public interface VoidReader {
@@ -58,9 +96,11 @@ public class StatusAccess {
 			preferences.edit().putBoolean("update", false).commit();
 		} else {
 			FileInputStream fileInputStream = null;
+			FileLock lock = null;
 			ObjectInputStream objectInputStream = null;
 			try {
 				fileInputStream = new FileInputStream(file);
+				lock = fileInputStream.getChannel().lock();
 				objectInputStream = new ObjectInputStream(fileInputStream);
 				Object object = objectInputStream.readObject();
 				if (object instanceof Status) {
@@ -79,6 +119,15 @@ public class StatusAccess {
 			} finally {
 				Closeables.closeQuietly(objectInputStream);
 				Closeables.closeQuietly(fileInputStream);
+				if (lock != null) {
+					try {
+						lock.release();
+					} catch (ClosedChannelException e) {
+						// do nothing
+					} catch (IOException e) {
+						Log.w(TAG, e);
+					}
+				}
 			}
 
 			Date now = Logic.getDate();
@@ -97,6 +146,7 @@ public class StatusAccess {
 
 	private final ReentrantReadWriteLock reentrantReadWriteLock = new ReentrantReadWriteLock(
 			true);
+
 	private final Status status;
 
 	public StatusAccess() {
@@ -157,24 +207,7 @@ public class StatusAccess {
 		}
 
 		// ByteArrayへの変換後は、呼び出し元スレッドでのファイルIOを避けるため新しいスレッドでデータを書き込む
-		new Thread() {
-			@Override
-			public void run() {
-				FileOutputStream fileOutputStream = null;
-				try {
-					fileOutputStream = new FileOutputStream(file);
-					fileOutputStream.getChannel().lock();
-					fileOutputStream.write(byteArrayOutputStream.toByteArray());
-					fileOutputStream.close();
-				} catch (FileNotFoundException e) {
-					Log.w(TAG, e);
-				} catch (IOException e) {
-					Log.w(TAG, e);
-				} finally {
-					Closeables.closeQuietly(fileOutputStream);
-				}
-			}
-		}.start();
+		(new SaveThread(file, byteArrayOutputStream)).start();
 	}
 
 	public void write(Writer writer) {
