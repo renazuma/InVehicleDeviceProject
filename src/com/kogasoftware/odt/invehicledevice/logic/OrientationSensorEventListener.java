@@ -4,7 +4,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.util.Log;
 
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
@@ -42,6 +41,6 @@ public class OrientationSensorEventListener extends LogicUser implements
 				status.orientation = Optional.of((int) (360 - degree));
 			}
 		});
-		Log.i(TAG, "orientation changed=" + degree);
+		// Log.i(TAG, "orientation changed=" + degree);
 	}
 }
