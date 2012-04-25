@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">オンデマンド交通車載器設定アプリ</string>
+    <string name="app_name">オンデマンド交通システム車載機アプリケーション設定</string>
     <string name="connection_config">接続設定</string>
     <string name="connection_url">接続先URL</string>
     <string name="connection_url_summary">接続先URL</string>
@@ -10,6 +10,5 @@
     <string name="password">パスワード</string>
     <string name="password_summary">パスワード</string>
     <string name="ok">OK</string>
-    <string name="test_connection">接続のテスト</string>
 
 </resources>

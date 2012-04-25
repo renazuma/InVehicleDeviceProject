@@ -32,4 +32,21 @@ public class InVehicleDevicePreferenceTestCase extends
 		l.await();
 		assertTrue(true);
 	}
+	
+	public void testBar() throws Exception {
+		final CountDownLatch l = new CountDownLatch(1);
+		getActivity().runOnUiThread(new Runnable(){
+			public void run() {
+				l.countDown();
+			}
+		});
+		l.await();
+		assertTrue(true);
+	}
+	
+	@Override
+	public void tearDown() throws Exception {
+		solo.finishOpenedActivities();
+		super.tearDown();
+	}
 }
