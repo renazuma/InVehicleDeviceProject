@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class ReservationCandidate extends Model {
-	private static final long serialVersionUID = 478977478598608960L;
+	private static final long serialVersionUID = 2805023088374230941L;
 
 	public ReservationCandidate() {
 	}
@@ -100,6 +100,7 @@ public class ReservationCandidate extends Model {
 		jsonObject.put("demand_id", toJSON(getDemandId().orNull()));
 		jsonObject.put("departure_platform_id", toJSON(getDeparturePlatformId()));
 		jsonObject.put("departure_time", toJSON(getDepartureTime()));
+		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("passenger_count", toJSON(getPassengerCount()));
 		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
 		jsonObject.put("unit_assignment_id", toJSON(getUnitAssignmentId().orNull()));

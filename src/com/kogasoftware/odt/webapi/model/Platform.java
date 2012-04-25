@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Platform extends Model {
-	private static final long serialVersionUID = 1807372476958976351L;
+	private static final long serialVersionUID = 8108355781890211950L;
 
 	public Platform() {
 	}
@@ -32,6 +32,7 @@ public class Platform extends Model {
 		setMemo(parseOptionalString(jsonObject, "memo"));
 		setName(parseString(jsonObject, "name"));
 		setNameRuby(parseString(jsonObject, "name_ruby"));
+		setReportingRegionId(parseInteger(jsonObject, "reporting_region_id"));
 		setSemiDemandAreaId(parseOptionalInteger(jsonObject, "semi_demand_area_id"));
 		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
 		setStartAt(parseOptionalDate(jsonObject, "start_at"));
@@ -87,6 +88,7 @@ public class Platform extends Model {
 		jsonObject.put("deleted_at", toJSON(getDeletedAt().orNull()));
 		jsonObject.put("demand_area_id", toJSON(getDemandAreaId().orNull()));
 		jsonObject.put("end_at", toJSON(getEndAt().orNull()));
+		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("image", toJSON(getImage().orNull()));
 		jsonObject.put("keyword", toJSON(getKeyword().orNull()));
 		jsonObject.put("latitude", toJSON(getLatitude()));
@@ -94,6 +96,7 @@ public class Platform extends Model {
 		jsonObject.put("memo", toJSON(getMemo().orNull()));
 		jsonObject.put("name", toJSON(getName()));
 		jsonObject.put("name_ruby", toJSON(getNameRuby()));
+		jsonObject.put("reporting_region_id", toJSON(getReportingRegionId()));
 		jsonObject.put("semi_demand_area_id", toJSON(getSemiDemandAreaId().orNull()));
 		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
 		jsonObject.put("start_at", toJSON(getStartAt().orNull()));
@@ -314,6 +317,16 @@ public class Platform extends Model {
 
 	public void setNameRuby(String nameRuby) {
 		this.nameRuby = wrapNull(nameRuby);
+	}
+
+	private Integer reportingRegionId = 0;
+
+	public Integer getReportingRegionId() {
+		return wrapNull(reportingRegionId);
+	}
+
+	public void setReportingRegionId(Integer reportingRegionId) {
+		this.reportingRegionId = wrapNull(reportingRegionId);
 	}
 
 	private Optional<Integer> semiDemandAreaId = Optional.<Integer>absent();

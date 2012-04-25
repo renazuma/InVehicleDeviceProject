@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Vehicle extends Model {
-	private static final long serialVersionUID = 5315922442506255047L;
+	private static final long serialVersionUID = 6488423981759487012L;
 
 	public Vehicle() {
 	}
@@ -71,6 +71,7 @@ public class Vehicle extends Model {
 		jsonObject.put("capacity", toJSON(getCapacity()));
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
 		jsonObject.put("deleted_at", toJSON(getDeletedAt().orNull()));
+		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("image", toJSON(getImage().orNull()));
 		jsonObject.put("model_name", toJSON(getModelName()));
 		jsonObject.put("number", toJSON(getNumber()));

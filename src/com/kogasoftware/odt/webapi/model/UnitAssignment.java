@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class UnitAssignment extends Model {
-	private static final long serialVersionUID = 8061778112449598376L;
+	private static final long serialVersionUID = 3032381982894658769L;
 
 	public UnitAssignment() {
 	}
@@ -71,6 +71,7 @@ public class UnitAssignment extends Model {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
 		jsonObject.put("deleted_at", toJSON(getDeletedAt().orNull()));
+		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("name", toJSON(getName()));
 		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));

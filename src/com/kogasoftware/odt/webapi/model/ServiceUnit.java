@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class ServiceUnit extends Model {
-	private static final long serialVersionUID = 4375928557279973895L;
+	private static final long serialVersionUID = 3598731629176379344L;
 
 	public ServiceUnit() {
 	}
@@ -22,13 +22,13 @@ public class ServiceUnit extends Model {
 		setActivatedAt(parseOptionalDate(jsonObject, "activated_at"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
-		setDriverId(parseInteger(jsonObject, "driver_id"));
+		setDriverId(parseOptionalInteger(jsonObject, "driver_id"));
 		setId(parseInteger(jsonObject, "id"));
 		setInVehicleDeviceId(parseOptionalInteger(jsonObject, "in_vehicle_device_id"));
 		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
 		setUnitAssignmentId(parseOptionalInteger(jsonObject, "unit_assignment_id"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
-		setVehicleId(parseInteger(jsonObject, "vehicle_id"));
+		setVehicleId(parseOptionalInteger(jsonObject, "vehicle_id"));
 		setDriver(Driver.parse(jsonObject, "driver"));
 		if (getDriver().isPresent()) {
 			setDriverId(getDriver().get().getId());
@@ -88,12 +88,13 @@ public class ServiceUnit extends Model {
 		jsonObject.put("activated_at", toJSON(getActivatedAt().orNull()));
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
 		jsonObject.put("deleted_at", toJSON(getDeletedAt().orNull()));
-		jsonObject.put("driver_id", toJSON(getDriverId()));
+		jsonObject.put("driver_id", toJSON(getDriverId().orNull()));
+		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("in_vehicle_device_id", toJSON(getInVehicleDeviceId().orNull()));
 		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
 		jsonObject.put("unit_assignment_id", toJSON(getUnitAssignmentId().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
-		jsonObject.put("vehicle_id", toJSON(getVehicleId()));
+		jsonObject.put("vehicle_id", toJSON(getVehicleId().orNull()));
 
 		if (getDriver().isPresent()) {
 			jsonObject.put("driver_id", toJSON(getDriver().get().getId()));
@@ -167,14 +168,22 @@ public class ServiceUnit extends Model {
 		this.deletedAt = Optional.<Date>absent();
 	}
 
-	private Integer driverId = 0;
+	private Optional<Integer> driverId = Optional.<Integer>absent();
 
-	public Integer getDriverId() {
+	public Optional<Integer> getDriverId() {
 		return wrapNull(driverId);
 	}
 
-	public void setDriverId(Integer driverId) {
+	public void setDriverId(Optional<Integer> driverId) {
 		this.driverId = wrapNull(driverId);
+	}
+
+	public void setDriverId(Integer driverId) {
+		this.driverId = Optional.fromNullable(driverId);
+	}
+
+	public void clearDriverId() {
+		this.driverId = Optional.<Integer>absent();
 	}
 
 	private Integer id = 0;
@@ -251,14 +260,22 @@ public class ServiceUnit extends Model {
 		this.updatedAt = wrapNull(updatedAt);
 	}
 
-	private Integer vehicleId = 0;
+	private Optional<Integer> vehicleId = Optional.<Integer>absent();
 
-	public Integer getVehicleId() {
+	public Optional<Integer> getVehicleId() {
 		return wrapNull(vehicleId);
 	}
 
-	public void setVehicleId(Integer vehicleId) {
+	public void setVehicleId(Optional<Integer> vehicleId) {
 		this.vehicleId = wrapNull(vehicleId);
+	}
+
+	public void setVehicleId(Integer vehicleId) {
+		this.vehicleId = Optional.fromNullable(vehicleId);
+	}
+
+	public void clearVehicleId() {
+		this.vehicleId = Optional.<Integer>absent();
 	}
 
 	private Optional<Driver> driver = Optional.<Driver>absent();

@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Demand extends Model {
-	private static final long serialVersionUID = 6944216176577813487L;
+	private static final long serialVersionUID = 535459490985223026L;
 
 	public Demand() {
 	}
@@ -97,6 +97,7 @@ public class Demand extends Model {
 		jsonObject.put("deleted_at", toJSON(getDeletedAt().orNull()));
 		jsonObject.put("departure_platform_id", toJSON(getDeparturePlatformId().orNull()));
 		jsonObject.put("departure_time", toJSON(getDepartureTime().orNull()));
+		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("memo", toJSON(getMemo().orNull()));
 		jsonObject.put("passenger_count", toJSON(getPassengerCount()));
 		jsonObject.put("repeat", toJSON(getRepeat().orNull()));

@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class User extends Model {
-	private static final long serialVersionUID = 3082163235276016117L;
+	private static final long serialVersionUID = 3240869499278741503L;
 
 	public User() {
 	}
@@ -99,6 +99,7 @@ public class User extends Model {
 		jsonObject.put("first_name", toJSON(getFirstName()));
 		jsonObject.put("first_name_ruby", toJSON(getFirstNameRuby()));
 		jsonObject.put("handicapped", toJSON(getHandicapped().orNull()));
+		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("last_name", toJSON(getLastName()));
 		jsonObject.put("last_name_ruby", toJSON(getLastNameRuby()));
 		jsonObject.put("login", toJSON(getLogin()));
@@ -113,8 +114,11 @@ public class User extends Model {
 		jsonObject.put("update_notification", toJSON(getUpdateNotification().orNull()));
 		jsonObject.put("wheelchair", toJSON(getWheelchair().orNull()));
 		jsonObject.put("audit_comment", toJSON(getAuditComment().orNull()));
+		jsonObject.put("fullname", toJSON(getFullname().orNull()));
+		jsonObject.put("fullname_ruby", toJSON(getFullnameRuby().orNull()));
 		jsonObject.put("password", toJSON(getPassword().orNull()));
 		jsonObject.put("password_confirmation", toJSON(getPasswordConfirmation().orNull()));
+		jsonObject.put("remember_me", toJSON(getRememberMe().orNull()));
 		if (getDemands().size() > 0) {
 	   		jsonObject.put("demands", toJSON(getDemands()));
 		}

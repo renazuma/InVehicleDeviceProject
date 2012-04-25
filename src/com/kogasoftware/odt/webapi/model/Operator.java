@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Operator extends Model {
-	private static final long serialVersionUID = 6505812433528049082L;
+	private static final long serialVersionUID = 5881805683720720681L;
 
 	public Operator() {
 	}
@@ -70,8 +70,10 @@ public class Operator extends Model {
 	@Override
 	public JSONObject toJSONObject() throws JSONException {
 		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("authentication_token", toJSON(getAuthenticationToken().orNull()));
 		jsonObject.put("email", toJSON(getEmail().orNull()));
 		jsonObject.put("first_name", toJSON(getFirstName()));
+		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("last_name", toJSON(getLastName()));
 		jsonObject.put("login", toJSON(getLogin()));
 		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));

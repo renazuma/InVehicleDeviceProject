@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class ServiceProvider extends Model {
-	private static final long serialVersionUID = 8973453101668320117L;
+	private static final long serialVersionUID = 3248195029264079524L;
 
 	public ServiceProvider() {
 	}
@@ -30,6 +30,7 @@ public class ServiceProvider extends Model {
 		setSemiDemand(parseBoolean(jsonObject, "semi_demand"));
 		setSemiDemandExtentLimit(parseInteger(jsonObject, "semi_demand_extent_limit"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
+		setUserLoginLength(parseInteger(jsonObject, "user_login_length"));
 		setDemands(Demand.parseList(jsonObject, "demands"));
 		setDrivers(Driver.parseList(jsonObject, "drivers"));
 		setInVehicleDevices(InVehicleDevice.parseList(jsonObject, "in_vehicle_devices"));
@@ -42,6 +43,7 @@ public class ServiceProvider extends Model {
 		setServiceUnits(ServiceUnit.parseList(jsonObject, "service_units"));
 		setUnitAssignments(UnitAssignment.parseList(jsonObject, "unit_assignments"));
 		setUsers(User.parseList(jsonObject, "users"));
+		setVehicles(Vehicle.parseList(jsonObject, "vehicles"));
 	}
 
 	public static Optional<ServiceProvider> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -79,6 +81,7 @@ public class ServiceProvider extends Model {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
 		jsonObject.put("deleted_at", toJSON(getDeletedAt().orNull()));
+		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("must_contact_gap", toJSON(getMustContactGap()));
 		jsonObject.put("name", toJSON(getName()));
 		jsonObject.put("recommend", toJSON(getRecommend()));
@@ -87,6 +90,7 @@ public class ServiceProvider extends Model {
 		jsonObject.put("semi_demand", toJSON(getSemiDemand()));
 		jsonObject.put("semi_demand_extent_limit", toJSON(getSemiDemandExtentLimit()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
+		jsonObject.put("user_login_length", toJSON(getUserLoginLength()));
 		if (getDemands().size() > 0) {
 	   		jsonObject.put("demands", toJSON(getDemands()));
 		}
@@ -133,6 +137,10 @@ public class ServiceProvider extends Model {
 
 		if (getUsers().size() > 0) {
 	   		jsonObject.put("users", toJSON(getUsers()));
+		}
+
+		if (getVehicles().size() > 0) {
+	   		jsonObject.put("vehicles", toJSON(getVehicles()));
 		}
 
 		return jsonObject;
@@ -254,6 +262,16 @@ public class ServiceProvider extends Model {
 
 	public void setUpdatedAt(Date updatedAt) {
 		this.updatedAt = wrapNull(updatedAt);
+	}
+
+	private Integer userLoginLength = 0;
+
+	public Integer getUserLoginLength() {
+		return wrapNull(userLoginLength);
+	}
+
+	public void setUserLoginLength(Integer userLoginLength) {
+		this.userLoginLength = wrapNull(userLoginLength);
 	}
 
 	private LinkedList<Demand> demands = new LinkedList<Demand>();
@@ -422,5 +440,19 @@ public class ServiceProvider extends Model {
 
 	public void clearUsers() {
 		this.users = new LinkedList<User>();
+	}
+
+	private LinkedList<Vehicle> vehicles = new LinkedList<Vehicle>();
+
+	public List<Vehicle> getVehicles() {
+		return new LinkedList<Vehicle>(wrapNull(vehicles));
+	}
+
+	public void setVehicles(List<Vehicle> vehicles) {
+		this.vehicles = new LinkedList<Vehicle>(wrapNull(vehicles));
+	}
+
+	public void clearVehicles() {
+		this.vehicles = new LinkedList<Vehicle>();
 	}
 }

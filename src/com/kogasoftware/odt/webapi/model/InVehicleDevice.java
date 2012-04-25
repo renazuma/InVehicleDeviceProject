@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class InVehicleDevice extends Model {
-	private static final long serialVersionUID = 5684022278133341585L;
+	private static final long serialVersionUID = 5783120736657183716L;
 
 	public InVehicleDevice() {
 	}
@@ -70,6 +70,8 @@ public class InVehicleDevice extends Model {
 	@Override
 	public JSONObject toJSONObject() throws JSONException {
 		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("authentication_token", toJSON(getAuthenticationToken().orNull()));
+		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("login", toJSON(getLogin()));
 		jsonObject.put("model_name", toJSON(getModelName()));
 		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
