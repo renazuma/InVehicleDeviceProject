@@ -59,7 +59,7 @@ class BackgroundTask {
 		Looper.prepare();
 		myLooper = Looper.myLooper();
 
-		this.commonLogic = new CommonLogic(activity);
+		commonLogic = new CommonLogic(activity);
 
 		locationManager = (LocationManager) activity
 				.getSystemService(Context.LOCATION_SERVICE);
