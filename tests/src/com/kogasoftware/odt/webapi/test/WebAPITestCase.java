@@ -24,9 +24,12 @@ import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.webapi.model.UnitAssignment;
 import com.kogasoftware.odt.webapi.model.User;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
+import com.kogasoftware.odt.webtestapi.GenerateMaster;
+import com.kogasoftware.odt.webtestapi.GenerateRecord;
 
 public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivity> {
 	public static final String SERVER_HOST = "http://192.168.104.63:3000";
+	public static final String TEST_SERVER_HOST = "http://192.168.104.63:3333";
 
 	public WebAPITestCase() {
 		super("com.kogasoftware.odt.webapi.test", DummyActivity.class);
@@ -41,7 +44,7 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 		super.setUp();
 		
 		// マスタ生成
-		master = new GenerateMaster();
+		master = new GenerateMaster(TEST_SERVER_HOST);
 		master.cleanDatabase();
 		master.createServiceProvider();
 		master.createDriver("もぎ", "しゅーまっは", "011");
