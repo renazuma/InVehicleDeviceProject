@@ -56,12 +56,12 @@ public class ScheduleChangedTestDataSource implements DataSource {
 	@Override
 	public List<OperationSchedule> getOperationSchedules()
 			throws WebAPIException {
-		String r1 = "{id: 51, departure_schedule_id: 1, arrival_schedule_id: 2, user: {id: 1, last_name: 'ああああ', first_name: 'いちごう'}}";
-		String r2 = "{id: 52, departure_schedule_id: 1, arrival_schedule_id: 2, user: {id: 2, last_name: 'いいいい', first_name: 'にごう'}}";
-		String r3 = "{id: 53, departure_schedule_id: 1, arrival_schedule_id: 3, user: {id: 3, last_name: 'うううう', first_name: 'さんごう'}}";
-		String r4 = "{id: 54, departure_schedule_id: 1, arrival_schedule_id: 2, user: {id: 4, last_name: '木本', first_name: '麻紀'}}";
-		String r5 = "{id: 55, departure_schedule_id: 1, arrival_schedule_id: 2, user: {id: 5, last_name: '永瀬', first_name: '直治'}}";
-		String r6 = "{id: 56, departure_schedule_id: 1, arrival_schedule_id: 2, user: {id: 6, last_name: '田川', first_name: '恭三郎'}}";
+		String r1 = "{id: 51, departure_schedule_id: 1, arrival_schedule_id: 2, payment: 100, user: {id: 1, last_name: 'ああああ', first_name: 'いちごう'}}";
+		String r2 = "{id: 52, departure_schedule_id: 1, arrival_schedule_id: 2, payment:   0, user: {id: 2, last_name: 'いいいい', first_name: 'にごう'}}";
+		String r3 = "{id: 53, departure_schedule_id: 1, arrival_schedule_id: 3, payment: 500, user: {id: 3, last_name: 'うううう', first_name: 'さんごう'}}";
+		String r4 = "{id: 54, departure_schedule_id: 1, arrival_schedule_id: 2, payment:   0, user: {id: 4, last_name: '木本', first_name: '麻紀'}}";
+		String r5 = "{id: 55, departure_schedule_id: 1, arrival_schedule_id: 2, payment:   0, user: {id: 5, last_name: '永瀬', first_name: '直治'}}";
+		String r6 = "{id: 56, departure_schedule_id: 1, arrival_schedule_id: 2, payment:   0, user: {id: 6, last_name: '田川', first_name: '恭三郎'}}";
 
 		List<OperationSchedule> l = new LinkedList<OperationSchedule>();
 		try {

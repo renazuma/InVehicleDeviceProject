@@ -35,6 +35,10 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 		RIDING_AND_NO_GET_OFF, FUTURE_GET_ON, MISSED,
 	}
 
+	public static enum PayTiming {
+		GET_ON, GET_OFF,
+	}
+
 	private static final String TAG = ReservationArrayAdapter.class
 			.getSimpleName();
 
@@ -49,12 +53,14 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 	private final OperationSchedule operationSchedule;
 	private final EnumSet<ItemType> visibleItemTypes = EnumSet
 			.noneOf(ItemType.class);
+	private final EnumSet<PayTiming> payTiming;
 
-	public ReservationArrayAdapter(Context context, int resourceId, CommonLogic commonLogic) {
+	public ReservationArrayAdapter(Context context, int resourceId,
+			CommonLogic commonLogic) {
 		super(context, resourceId);
 		this.resourceId = resourceId;
 		this.commonLogic = commonLogic;
-
+		payTiming = EnumSet.of(PayTiming.GET_ON);
 		remainingOperationSchedules.addAll(commonLogic
 				.getRemainingOperationSchedules());
 		if (remainingOperationSchedules.isEmpty()) {
@@ -134,7 +140,15 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 
 	public List<PassengerRecord> getNoPaymentReservations() {
 		List<PassengerRecord> passengerRecords = new LinkedList<PassengerRecord>();
-		for (PassengerRecord passengerRecord : getSelectedGetOffPassengerRecords()) {
+		List<PassengerRecord> shouldPayPassengerRecords = new LinkedList<PassengerRecord>();
+		if (payTiming.contains(PayTiming.GET_OFF)) {
+			shouldPayPassengerRecords
+					.addAll(getSelectedGetOffPassengerRecords());
+		} else if (payTiming.contains(PayTiming.GET_ON)) {
+			shouldPayPassengerRecords
+					.addAll(getSelectedGetOnPassengerRecords());
+		}
+		for (PassengerRecord passengerRecord : shouldPayPassengerRecords) {
 			if (!passengerRecord.getPayment().isPresent()) {
 				passengerRecords.add(passengerRecord);
 			}
@@ -203,12 +217,18 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 		// 支払いボタン
 		final ToggleButton paidButton = (ToggleButton) view
 				.findViewById(R.id.paid_button);
-		if (ridingPassengerRecords.contains(passengerRecord)
-				|| !reservation.getPayment().equals(0)) {
+		if (reservation.getPayment().equals(0)) {
+			paidButton.setVisibility(View.GONE);
+		} else if (payTiming.contains(PayTiming.GET_ON)
+				&& !ridingPassengerRecords.contains(passengerRecord)) {
+			paidButton.setVisibility(View.VISIBLE);
+		} else if (payTiming.contains(PayTiming.GET_OFF)
+				&& ridingPassengerRecords.contains(passengerRecord)) {
 			paidButton.setVisibility(View.VISIBLE);
 		} else {
 			paidButton.setVisibility(View.GONE);
 		}
+
 		if (passengerRecord.getPayment().isPresent()) {
 			paidButton.setChecked(true);
 		} else {
@@ -257,7 +277,8 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 			User user = reservation.getUser().get();
 			userNameView.setText(user.getLastName() + " " + user.getFirstName()
 					+ " 様");
-		} else if (reservation.getId().equals(CommonLogic.UNEXPECTED_RESERVATION_ID)) {
+		} else if (reservation.getId().equals(
+				CommonLogic.UNEXPECTED_RESERVATION_ID)) {
 			userNameView.setText("飛び乗りユーザー 様");
 		} else {
 			userNameView.setText("ID:" + reservation.getUserId() + " 様");
