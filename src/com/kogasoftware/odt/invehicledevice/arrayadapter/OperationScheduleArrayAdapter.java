@@ -49,34 +49,39 @@ public class OperationScheduleArrayAdapter extends
 		} else {
 			platformNameView.setText("ID:" + operationSchedule.getId());
 		}
-		TextView getOnHeadsTextView = (TextView) convertView
-				.findViewById(R.id.operation_schedule_get_on_heads_text_view);
-		Integer getOnHeads = 0;
-		for (Reservation reservation : operationSchedule
-				.getReservationsAsArrival()) {
-			getOnHeads += reservation.getPassengerCount();
-		}
+		TextView getOnPassengerCountTextView = (TextView) convertView
+				.findViewById(R.id.operation_schedule_get_on_passenger_count_text_view);
 
-		Integer getOffHeads = 0;
+		Integer getOnPassengerCount = 0;
 		for (Reservation reservation : operationSchedule
 				.getReservationsAsDeparture()) {
-			getOffHeads += reservation.getPassengerCount();
+			getOnPassengerCount += reservation.getPassengerCount();
 		}
+
+		Integer getOffPassengerCount = 0;
+		for (Reservation reservation : operationSchedule
+				.getReservationsAsArrival()) {
+			getOffPassengerCount += reservation.getPassengerCount();
+		}
+
+		getOnPassengerCountTextView.setText("降車" + getOnPassengerCount + "名");
+
+		TextView getOffPassengerCountTextView = (TextView) convertView
+				.findViewById(R.id.operation_schedule_get_off_passenger_count_text_view);
+		getOffPassengerCountTextView.setText("乗車" + getOffPassengerCount + "名");
 
 		TextView arrivalEstimateTextView = (TextView) convertView
 				.findViewById(R.id.operation_schedule_arrival_estimate_text_view);
-		getOnHeadsTextView.setText(getOnHeads.toString());
-		TextView getOffHeadsTextView = (TextView) convertView
-				.findViewById(R.id.operation_schedule_get_off_heads_text_view);
-		getOffHeadsTextView.setText(getOffHeads.toString());
 		arrivalEstimateTextView.setText(displayDateFormat
-				.format(operationSchedule.getArrivalEstimate()));
+				.format(operationSchedule.getArrivalEstimate()) + " 到着");
+
 		TextView departureEstimateTextView = (TextView) convertView
 				.findViewById(R.id.operation_schedule_departure_estimate_text_view);
 		departureEstimateTextView.setText(displayDateFormat
-				.format(operationSchedule.getDepartureEstimate()));
+				.format(operationSchedule.getDepartureEstimate()) + " 出発");
 
-		if (commonLogic.getRemainingOperationSchedules().contains(operationSchedule)) {
+		if (commonLogic.getRemainingOperationSchedules().contains(
+				operationSchedule)) {
 			convertView.setBackgroundColor(Color.TRANSPARENT);
 		} else {
 			convertView.setBackgroundColor(Color.GRAY);
