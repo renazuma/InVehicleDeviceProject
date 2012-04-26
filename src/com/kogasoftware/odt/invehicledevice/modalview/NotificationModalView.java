@@ -63,6 +63,7 @@ public class NotificationModalView extends ModalView {
 		currentVehicleNotification = vehicleNotifications.poll();
 		TextView bodyTextView = (TextView) findViewById(R.id.notification_text_view);
 		bodyTextView.setText(currentVehicleNotification.getBody());
+		getLogic().speak(currentVehicleNotification.getBody());
 	}
 
 	private void reply() {

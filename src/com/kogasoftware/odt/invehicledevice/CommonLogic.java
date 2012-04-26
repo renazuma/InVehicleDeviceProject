@@ -412,6 +412,7 @@ public class CommonLogic {
 
 	public void showNotificationModalView(
 			List<VehicleNotification> vehicleNotifications) {
+		speak("管理者から連絡があります");
 		eventBus.post(new NotificationModalView.ShowEvent(vehicleNotifications));
 	}
 

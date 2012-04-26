@@ -5,8 +5,8 @@ import java.util.List;
 
 import com.kogasoftware.odt.invehicledevice.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.Status;
-import com.kogasoftware.odt.invehicledevice.Utility;
 import com.kogasoftware.odt.invehicledevice.StatusAccess.Writer;
+import com.kogasoftware.odt.invehicledevice.Utility;
 import com.kogasoftware.odt.invehicledevice.event.UpdateOperationScheduleCompleteEvent;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
@@ -98,7 +98,9 @@ public class OperationScheduleReceiver implements Runnable {
 		status.finishedOperationSchedules.clear();
 		status.finishedOperationSchedules.addAll(newFinishedOperationSchedules);
 
-		commonLogic.getEventBus().post(new UpdateOperationScheduleCompleteEvent());
+		commonLogic.speak("運行予定が変更されました");
+		commonLogic.getEventBus().post(
+				new UpdateOperationScheduleCompleteEvent());
 	}
 
 	private void updateReservation(Status status, Reservation reservation) {
