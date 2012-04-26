@@ -98,6 +98,7 @@ public class StartCheckModalView extends ModalView {
 							adapter.getSelectedGetOnPassengerRecords());
 					commonLogic.getOffPassengerRecords(operationSchedule.get(),
 							adapter.getSelectedGetOffPassengerRecords());
+					commonLogic.clearSelectedPassengerRecords();
 				}
 				commonLogic.enterDrivePhase();
 			}

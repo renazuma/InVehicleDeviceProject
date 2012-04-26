@@ -59,7 +59,7 @@ public class CommonLogic {
 	private static Optional<Date> defaultDate = Optional.absent();
 	private static final AtomicBoolean willClearStatusFile = new AtomicBoolean(
 			false);
-	public static final Integer UNEXPECTED_RESERVATION_ID = -1;
+	private static final Integer UNEXPECTED_RESERVATION_ID = -1;
 
 	public static final Integer VEHICLE_NOTIFICATION_TYPE_SCHEDULE_CHANGED = 2;
 
@@ -151,6 +151,7 @@ public class CommonLogic {
 		statusAccess.write(new Writer() {
 			@Override
 			public void write(Status status) {
+				status.unexpectedPassengerRecords.add(passengerRecord);
 				status.unhandledPassengerRecords.add(passengerRecord);
 			}
 		});
@@ -162,6 +163,15 @@ public class CommonLogic {
 			@Override
 			public void write(Status status) {
 				status.paused = false;
+			}
+		});
+	}
+
+	public void clearSelectedPassengerRecords() {
+		statusAccess.write(new Writer() {
+			@Override
+			public void write(Status status) {
+				status.selectedPassengerRecords.clear();
 			}
 		});
 	}
@@ -356,6 +366,17 @@ public class CommonLogic {
 			public Boolean read(Status status) {
 				return (status.operationScheduleInitializedSign
 						.availablePermits() > 0);
+			}
+		});
+	}
+
+	public Boolean isUnexpectedPassengerRecord(
+			final PassengerRecord passengerRecord) {
+		return statusAccess.read(new Reader<Boolean>() {
+			@Override
+			public Boolean read(Status status) {
+				return status.unexpectedPassengerRecords
+						.contains(passengerRecord);
 			}
 		});
 	}

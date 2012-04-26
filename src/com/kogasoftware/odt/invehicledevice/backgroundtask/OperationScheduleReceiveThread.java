@@ -108,8 +108,9 @@ public class OperationScheduleReceiveThread extends Thread {
 			List<OperationSchedule> newOperationSchedules,
 			List<VehicleNotification> vehicleNotifications) {
 
-		// 未乗車のPassengerRecordは削除
-		status.unhandledPassengerRecords.clear();
+		// 飛び乗り予約以外の未乗車のPassengerRecordは削除
+		status.unhandledPassengerRecords
+				.retainAll(status.unexpectedPassengerRecords);
 
 		// 予約の追加、書き換え
 		for (OperationSchedule operationSchedule : newOperationSchedules) {
@@ -118,6 +119,47 @@ public class OperationScheduleReceiveThread extends Thread {
 				updateReservation(status, reservation);
 			}
 		}
+
+		// 飛び乗り予約はリストの後ろに移動
+		for (PassengerRecord passengerRecord : new LinkedList<PassengerRecord>(
+				status.unhandledPassengerRecords)) {
+			if (status.unexpectedPassengerRecords.contains(passengerRecord)) {
+				status.unhandledPassengerRecords.remove(passengerRecord);
+				status.unhandledPassengerRecords.add(passengerRecord);
+			}
+		}
+
+		// 選択状態のPassengerRecordの更新
+		List<PassengerRecord> newSelectedPassengerRecords = new LinkedList<PassengerRecord>();
+		List<PassengerRecord> selectablePassengerRecords = new LinkedList<PassengerRecord>();
+		selectablePassengerRecords.addAll(status.unhandledPassengerRecords);
+		selectablePassengerRecords.addAll(status.ridingPassengerRecords);
+		for (PassengerRecord selectedPassengerRecord : status.selectedPassengerRecords) {
+			if (!selectedPassengerRecord.getReservation().isPresent()) {
+				continue;
+			}
+			Reservation selectedReservation = selectedPassengerRecord
+					.getReservation().get();
+			// 飛び乗り予約の場合は選択状態のまま
+			if (commonLogic
+					.isUnexpectedPassengerRecord(selectedPassengerRecord)) {
+				newSelectedPassengerRecords.add(selectedPassengerRecord);
+			}
+			// IDが一致する予約が存在する場合は選択状態のまま
+			for (PassengerRecord selectablePassengerRecord : selectablePassengerRecords) {
+				if (!selectablePassengerRecord.getReservation().isPresent()) {
+					continue;
+				}
+				Reservation selectableReservation = selectablePassengerRecord
+						.getReservation().get();
+				if (selectableReservation.getId().equals(
+						selectedReservation.getId())) {
+					newSelectedPassengerRecords.add(selectablePassengerRecord);
+				}
+			}
+		}
+		status.selectedPassengerRecords.clear();
+		status.selectedPassengerRecords.addAll(newSelectedPassengerRecords);
 
 		// 新規の場合はスケジュールを全て交換して終了
 		if (!commonLogic.isOperationScheduleInitialized()) {

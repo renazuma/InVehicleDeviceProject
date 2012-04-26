@@ -25,7 +25,9 @@ import com.kogasoftware.odt.invehicledevice.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.CommonLogic.PayTiming;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.Status;
+import com.kogasoftware.odt.invehicledevice.StatusAccess.Reader;
 import com.kogasoftware.odt.invehicledevice.StatusAccess.VoidReader;
+import com.kogasoftware.odt.invehicledevice.StatusAccess.Writer;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
@@ -45,7 +47,6 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 	private final int resourceId;
 	private final List<PassengerRecord> unhandledPassengerRecords = new LinkedList<PassengerRecord>();
 	private final List<PassengerRecord> ridingPassengerRecords = new LinkedList<PassengerRecord>();
-	private final List<PassengerRecord> selectedPassengerRecords = new LinkedList<PassengerRecord>();
 	private final List<OperationSchedule> remainingOperationSchedules = new LinkedList<OperationSchedule>();
 	private final OperationSchedule operationSchedule;
 	private final EnumSet<ItemType> visibleItemTypes = EnumSet
@@ -117,7 +118,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 				.getUnhandledPassengerRecords()) {
 			if (!unhandledPassengerRecords.contains(passengerRecord)) {
 				unhandledPassengerRecords.add(passengerRecord);
-				selectedPassengerRecords.add(passengerRecord);
+				selectPassengerRecord(passengerRecord);
 			}
 		}
 		updateDataSet();
@@ -127,7 +128,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 		List<PassengerRecord> passengerRecords = new LinkedList<PassengerRecord>();
 		for (PassengerRecord passengerRecord : ridingPassengerRecords) {
 			if (isGetOff(passengerRecord)
-					&& !selectedPassengerRecords.contains(passengerRecord)) {
+					&& !isSelectedPassengerRecord(passengerRecord)) {
 				passengerRecords.add(passengerRecord);
 			}
 		}
@@ -138,7 +139,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 		List<PassengerRecord> passengerRecords = new LinkedList<PassengerRecord>();
 		for (PassengerRecord passengerRecord : unhandledPassengerRecords) {
 			if (isGetOn(passengerRecord)
-					&& !selectedPassengerRecords.contains(passengerRecord)) {
+					&& !isSelectedPassengerRecord(passengerRecord)) {
 				passengerRecords.add(passengerRecord);
 			}
 		}
@@ -162,7 +163,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 	public List<PassengerRecord> getSelectedGetOffPassengerRecords() {
 		List<PassengerRecord> passengerRecords = new LinkedList<PassengerRecord>();
 		for (PassengerRecord passengerRecord : ridingPassengerRecords) {
-			if (selectedPassengerRecords.contains(passengerRecord)) {
+			if (isSelectedPassengerRecord(passengerRecord)) {
 				passengerRecords.add(passengerRecord);
 			}
 		}
@@ -172,7 +173,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 	public List<PassengerRecord> getSelectedGetOnPassengerRecords() {
 		List<PassengerRecord> passengerRecords = new LinkedList<PassengerRecord>();
 		for (PassengerRecord passengerRecord : unhandledPassengerRecords) {
-			if (selectedPassengerRecords.contains(passengerRecord)) {
+			if (isSelectedPassengerRecord(passengerRecord)) {
 				passengerRecords.add(passengerRecord);
 			}
 		}
@@ -278,13 +279,13 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 		view.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				if (selectedPassengerRecords.contains(passengerRecord)) {
-					selectedPassengerRecords.remove(passengerRecord);
+				if (isSelectedPassengerRecord(passengerRecord)) {
+					unselectPassengerRecord(passengerRecord);
 					if (paidButton.isShown()) {
 						paidButton.setChecked(false);
 					}
 				} else {
-					selectedPassengerRecords.add(passengerRecord);
+					selectPassengerRecord(passengerRecord);
 					if (paidButton.isShown()) {
 						paidButton.setChecked(true);
 					}
@@ -312,7 +313,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 			text += "[降]";
 		}
 
-		if (reservation.getId().equals(CommonLogic.UNEXPECTED_RESERVATION_ID)) {
+		if (commonLogic.isUnexpectedPassengerRecord(passengerRecord)) {
 			text += " 飛び乗り ";
 		} else {
 			text += " 予約番号 " + reservation.getId();
@@ -321,7 +322,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 				.findViewById(R.id.reservation_id);
 		reservationIdView.setText(text);
 
-		if (selectedPassengerRecords.contains(passengerRecord)) {
+		if (isSelectedPassengerRecord(passengerRecord)) {
 			view.setBackgroundColor(Color.CYAN); // TODO テーマ
 		} else {
 			view.setBackgroundColor(Color.TRANSPARENT);
@@ -404,9 +405,38 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 				&& !isGetOff(passengerRecord);
 	}
 
+	public Boolean isSelectedPassengerRecord(
+			final PassengerRecord passengerRecord) {
+		return commonLogic.getStatusAccess().read(new Reader<Boolean>() {
+			@Override
+			public Boolean read(Status status) {
+				return status.selectedPassengerRecords
+						.contains(passengerRecord);
+			}
+		});
+	}
+
+	public void selectPassengerRecord(final PassengerRecord passengerRecord) {
+		commonLogic.getStatusAccess().write(new Writer() {
+			@Override
+			public void write(Status status) {
+				status.selectedPassengerRecords.add(passengerRecord);
+			}
+		});
+	}
+
 	public void show(ItemType itemType) {
 		visibleItemTypes.add(itemType);
 		updateDataSet();
+	}
+
+	public void unselectPassengerRecord(final PassengerRecord passengerRecord) {
+		commonLogic.getStatusAccess().write(new Writer() {
+			@Override
+			public void write(Status status) {
+				status.selectedPassengerRecords.remove(passengerRecord);
+			}
+		});
 	}
 
 	private void updateDataSet() {
