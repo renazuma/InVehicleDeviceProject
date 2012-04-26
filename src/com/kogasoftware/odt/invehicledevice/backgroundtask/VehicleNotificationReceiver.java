@@ -33,11 +33,8 @@ public class VehicleNotificationReceiver implements Runnable {
 			for (Iterator<VehicleNotification> iterator = vehicleNotifications
 					.iterator(); iterator.hasNext();) {
 				VehicleNotification vehicleNotification = iterator.next();
-				if (vehicleNotification.getNotificationType().isPresent()
-						&& vehicleNotification
-								.getNotificationType()
-								.get()
-								.equals(CommonLogic.VEHICLE_NOTIFICATION_TYPE_SCHEDULE_CHANGED)) {
+				if (vehicleNotification.getNotificationType().equals(
+						CommonLogic.VEHICLE_NOTIFICATION_TYPE_SCHEDULE_CHANGED)) {
 					scheduleChanged = true;
 					iterator.remove();
 				}
