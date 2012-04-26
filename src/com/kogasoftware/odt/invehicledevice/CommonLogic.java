@@ -2,6 +2,7 @@ package com.kogasoftware.odt.invehicledevice;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -47,12 +48,18 @@ import com.kogasoftware.odt.webapi.model.VehicleNotification;
  * 車載機の内部共通ロジック
  */
 public class CommonLogic {
+	public static enum PayTiming {
+		GET_ON, GET_OFF,
+	}
+
 	private static final String TAG = CommonLogic.class.getSimpleName();
 	private static final Object DEFAULT_DATE_LOCK = new Object();
 	private static Optional<Date> defaultDate = Optional.absent();
 	private static final AtomicBoolean willClearStatusFile = new AtomicBoolean(
 			false);
 	public static final Integer UNEXPECTED_RESERVATION_ID = -1;
+
+	public static final Integer VEHICLE_NOTIFICATION_TYPE_SCHEDULE_CHANGED = 2;
 
 	public static void clearStatusFile() {
 		willClearStatusFile.set(true);
@@ -257,6 +264,12 @@ public class CommonLogic {
 			passengerRecord.setDepartureOperationScheduleId(operationSchedule
 					.getId());
 			passengerRecord.setDepartureOperationSchedule(operationSchedule);
+			if (!getPayTiming().contains(PayTiming.GET_OFF)
+					&& getPayTiming().contains(PayTiming.GET_ON)
+					&& passengerRecord.getReservation().isPresent()) {
+				passengerRecord.setPayment(passengerRecord.getReservation()
+						.get().getPayment());
+			}
 		}
 		statusAccess.write(new Writer() {
 			@Override
@@ -269,6 +282,10 @@ public class CommonLogic {
 						.addAll(selectedGetOnPassengerRecords);
 			}
 		});
+	}
+
+	public EnumSet<PayTiming> getPayTiming() {
+		return EnumSet.of(PayTiming.GET_ON);
 	}
 
 	public Phase getPhase() {

@@ -5,6 +5,7 @@
     android:orientation="vertical" >
 
     <LinearLayout
+        android:id="@+id/next_operation_schedule_layout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal" >
@@ -54,6 +55,21 @@
             android:layout_height="fill_parent"
             android:gravity="bottom"
             android:text="@string/minute" />
+    </LinearLayout>
+    
+    <LinearLayout
+        android:id="@+id/last_operation_schedule_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone"
+         >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:gravity="bottom"
+            android:text="現在最終乗降場です" />
     </LinearLayout>
 
     <Button

@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.ToggleButton;
@@ -47,6 +48,9 @@ public class PlatformPhaseView extends PhaseView {
 	private final Button reservationScrollDownButton;
 	private final Button reservationScrollUpButton;
 	private final TextView minutesRemainingTextView;
+	private final LinearLayout lastOperationScheduleLayout;
+	private final LinearLayout nextOperationScheduleLayout;
+
 	private ReservationArrayAdapter adapter = new ReservationArrayAdapter(
 			getContext(), R.layout.reservation_list_row, getLogic());
 	private final Handler handler = new Handler();
@@ -94,6 +98,8 @@ public class PlatformPhaseView extends PhaseView {
 		addUnexpectedReservationButton = (Button) reservationListFooterView
 				.findViewById(R.id.add_unexpected_reservation_button);
 		minutesRemainingTextView = (TextView) findViewById(R.id.minutes_remaining);
+		lastOperationScheduleLayout = (LinearLayout) findViewById(R.id.last_operation_schedule_layout);
+		nextOperationScheduleLayout = (LinearLayout) findViewById(R.id.next_operation_schedule_layout);
 
 		reservationListView.addFooterView(reservationListFooterView);
 
@@ -135,6 +141,20 @@ public class PlatformPhaseView extends PhaseView {
 		if (!operationSchedule.getPlatform().isPresent()) {
 			return;
 		}
+
+		Boolean last = (operationSchedules.size() <= 1);
+		if (last) {
+			nextOperationScheduleLayout.setVisibility(GONE);
+			lastOperationScheduleLayout.setVisibility(VISIBLE);
+			showFutureReservationsButton.setVisibility(INVISIBLE);
+			showMissedReservationsButton.setVisibility(INVISIBLE);
+		} else {
+			nextOperationScheduleLayout.setVisibility(VISIBLE);
+			lastOperationScheduleLayout.setVisibility(GONE);
+			showFutureReservationsButton.setVisibility(VISIBLE);
+			showMissedReservationsButton.setVisibility(VISIBLE);
+		}
+
 		adapter = new ReservationArrayAdapter(getContext(),
 				R.layout.reservation_list_row, commonLogic);
 		reservationListView.setAdapter(adapter);
