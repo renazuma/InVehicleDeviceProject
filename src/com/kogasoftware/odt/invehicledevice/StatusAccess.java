@@ -198,12 +198,7 @@ public class StatusAccess {
 			writeLock.unlock();
 		}
 
-		// Lockのダウングレードをするとfindbugsの警告回避ができないため、個別にロックする
-		readLock.lock();
-		try {
-			save(status.file);
-		} finally {
-			readLock.unlock();
-		}
+		// findbugsの警告回避ができないため、Lockのダウングレードはしないでおく
+		save(status.file);
 	}
 }
