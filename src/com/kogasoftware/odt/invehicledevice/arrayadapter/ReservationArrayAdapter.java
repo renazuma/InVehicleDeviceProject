@@ -22,6 +22,7 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.kogasoftware.odt.invehicledevice.CommonLogic;
+import com.kogasoftware.odt.invehicledevice.CommonLogic.PayTiming;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.Status;
 import com.kogasoftware.odt.invehicledevice.StatusAccess.VoidReader;
@@ -33,10 +34,6 @@ import com.kogasoftware.odt.webapi.model.User;
 public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 	public static enum ItemType {
 		RIDING_AND_NO_GET_OFF, FUTURE_GET_ON, MISSED,
-	}
-
-	public static enum PayTiming {
-		GET_ON, GET_OFF,
 	}
 
 	private static final String TAG = ReservationArrayAdapter.class
@@ -54,15 +51,17 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 	private final EnumSet<ItemType> visibleItemTypes = EnumSet
 			.noneOf(ItemType.class);
 	private final EnumSet<PayTiming> payTiming;
+	private final Boolean isLastOperationSchedule;
 
 	public ReservationArrayAdapter(Context context, int resourceId,
 			CommonLogic commonLogic) {
 		super(context, resourceId);
 		this.resourceId = resourceId;
 		this.commonLogic = commonLogic;
-		payTiming = EnumSet.of(PayTiming.GET_ON);
+		payTiming = commonLogic.getPayTiming();
 		remainingOperationSchedules.addAll(commonLogic
 				.getRemainingOperationSchedules());
+		isLastOperationSchedule = (remainingOperationSchedules.size() <= 1);
 		if (remainingOperationSchedules.isEmpty()) {
 			operationSchedule = new OperationSchedule();
 			return;
@@ -77,6 +76,10 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 			}
 		});
 
+		if (isLastOperationSchedule) {
+			unhandledPassengerRecords.clear();
+			visibleItemTypes.add(ItemType.RIDING_AND_NO_GET_OFF);
+		}
 		updateDataSet();
 	}
 
@@ -140,15 +143,11 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 
 	public List<PassengerRecord> getNoPaymentReservations() {
 		List<PassengerRecord> passengerRecords = new LinkedList<PassengerRecord>();
-		List<PassengerRecord> shouldPayPassengerRecords = new LinkedList<PassengerRecord>();
-		if (payTiming.contains(PayTiming.GET_OFF)) {
-			shouldPayPassengerRecords
-					.addAll(getSelectedGetOffPassengerRecords());
-		} else if (payTiming.contains(PayTiming.GET_ON)) {
-			shouldPayPassengerRecords
-					.addAll(getSelectedGetOnPassengerRecords());
+		if (!payTiming.contains(PayTiming.GET_OFF)
+				&& payTiming.contains(PayTiming.GET_ON)) {
+			return passengerRecords;
 		}
-		for (PassengerRecord passengerRecord : shouldPayPassengerRecords) {
+		for (PassengerRecord passengerRecord : getSelectedGetOffPassengerRecords()) {
 			if (!passengerRecord.getPayment().isPresent()) {
 				passengerRecords.add(passengerRecord);
 			}
@@ -214,13 +213,37 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 			}
 		});
 
+		// メモボタン
+		Button memoButton = (Button) view.findViewById(R.id.memo_button);
+		if (reservation.getMemo().isPresent()) {
+			memoButton.setVisibility(View.VISIBLE);
+			memoButton.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View view) {
+					commonLogic.showMemoModalView(reservation);
+				}
+			});
+		} else {
+			memoButton.setVisibility(View.GONE);
+		}
+
+		// 復路ボタン
+		Button returnPathButton = (Button) view
+				.findViewById(R.id.return_path_button);
+		returnPathButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				commonLogic.showReturnPathModalView(reservation);
+			}
+		});
+
 		// 支払いボタン
 		final ToggleButton paidButton = (ToggleButton) view
 				.findViewById(R.id.paid_button);
 		if (reservation.getPayment().equals(0)) {
 			paidButton.setVisibility(View.GONE);
-		} else if (payTiming.contains(PayTiming.GET_ON)
-				&& !ridingPassengerRecords.contains(passengerRecord)) {
+		} else if (payTiming.contains(PayTiming.GET_OFF)
+				&& payTiming.contains(PayTiming.GET_ON)) {
 			paidButton.setVisibility(View.VISIBLE);
 		} else if (payTiming.contains(PayTiming.GET_OFF)
 				&& ridingPassengerRecords.contains(passengerRecord)) {
@@ -247,31 +270,24 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 			}
 		});
 
-		// メモボタン
-		Button memoButton = (Button) view.findViewById(R.id.memo_button);
-		if (reservation.getMemo().isPresent()) {
-			memoButton.setVisibility(View.VISIBLE);
-			memoButton.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View view) {
-					commonLogic.showMemoModalView(reservation);
-				}
-			});
-		} else {
-			memoButton.setVisibility(View.GONE);
-		}
-
-		// 復路ボタン
-		Button returnPathButton = (Button) view
-				.findViewById(R.id.return_path_button);
-		returnPathButton.setOnClickListener(new OnClickListener() {
+		// 行の表示
+		view.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				commonLogic.showReturnPathModalView(reservation);
+				if (selectedPassengerRecords.contains(passengerRecord)) {
+					selectedPassengerRecords.remove(passengerRecord);
+					if (paidButton.isShown()) {
+						paidButton.setChecked(false);
+					}
+				} else {
+					selectedPassengerRecords.add(passengerRecord);
+					if (paidButton.isShown()) {
+						paidButton.setChecked(true);
+					}
+				}
+				notifyDataSetChanged();
 			}
 		});
-
-		// 行の表示
 		TextView userNameView = (TextView) view.findViewById(R.id.user_name);
 		if (reservation.getUser().isPresent()) {
 			User user = reservation.getUser().get();
@@ -302,23 +318,6 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 				.findViewById(R.id.reservation_id);
 		reservationIdView.setText(text);
 
-		view.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				if (selectedPassengerRecords.contains(passengerRecord)) {
-					selectedPassengerRecords.remove(passengerRecord);
-					if (paidButton.isShown()) {
-						paidButton.setChecked(false);
-					}
-				} else {
-					selectedPassengerRecords.add(passengerRecord);
-					if (paidButton.isShown()) {
-						paidButton.setChecked(true);
-					}
-				}
-				notifyDataSetChanged();
-			}
-		});
 		if (selectedPassengerRecords.contains(passengerRecord)) {
 			view.setBackgroundColor(Color.CYAN); // TODO テーマ
 		} else {
