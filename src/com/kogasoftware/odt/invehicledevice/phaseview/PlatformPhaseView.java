@@ -27,7 +27,7 @@ import com.kogasoftware.odt.invehicledevice.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.arrayadapter.ReservationArrayAdapter;
 import com.kogasoftware.odt.invehicledevice.arrayadapter.ReservationArrayAdapter.ItemType;
-import com.kogasoftware.odt.invehicledevice.event.AddUnexpectedReservationEvent;
+import com.kogasoftware.odt.invehicledevice.event.UnexpectedReservationAddedEvent;
 import com.kogasoftware.odt.invehicledevice.event.EnterPlatformPhaseEvent;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 
@@ -122,8 +122,8 @@ public class PlatformPhaseView extends PhaseView {
 	}
 
 	@Subscribe
-	public void addUnexpectedReservation(AddUnexpectedReservationEvent event) {
-		adapter.addUnexpectedReservation(event.reservation);
+	public void addUnexpectedReservation(UnexpectedReservationAddedEvent event) {
+		adapter.addUnexpectedReservation();
 	}
 
 	@Override
@@ -260,9 +260,13 @@ public class PlatformPhaseView extends PhaseView {
 		operationSchedules.remove(operationSchedules.get(0));
 		final String[] operationScheduleSelections = new String[operationSchedules
 				.size()];
+		DateFormat displayDateFormat = new SimpleDateFormat("H時m分");
 		for (Integer i = 0; i < operationScheduleSelections.length; ++i) {
 			OperationSchedule operationSchedule = operationSchedules.get(i);
 			String selection = "";
+			selection += displayDateFormat.format(operationSchedule
+					.getArrivalEstimate()) + "着予定 / ";
+
 			if (operationSchedule.getPlatform().isPresent()) {
 				selection += operationSchedule.getPlatform().get().getName();
 			} else {
@@ -274,6 +278,7 @@ public class PlatformPhaseView extends PhaseView {
 		}
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+		builder.setTitle("降車予定の乗降場を選択してください");
 		builder.setItems(operationScheduleSelections,
 				new DialogInterface.OnClickListener() {
 					@Override

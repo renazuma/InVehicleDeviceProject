@@ -4,12 +4,6 @@
     android:layout_height="wrap_content"
     android:orientation="vertical" >
 
-    <Button
-        android:id="@+id/add_unexpected_reservation_button"
-        android:layout_height="wrap_content"
-        android:layout_width="fill_parent"
-        android:text="@string/add_reservation" />
-
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
@@ -41,5 +35,11 @@
             android:textOn="@string/show_missed_passengers" />
         
     </LinearLayout>
+
+    <Button
+        android:id="@+id/add_unexpected_reservation_button"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:text="@string/add_unexpected_reservation" />
 
 </LinearLayout>

@@ -42,6 +42,6 @@
     <string name="todays_operation_was_finished">本日の運行は終了しました</string>
     <string name="show_all_riding_passengers">乗車中の乗客全員を表示</string>
     <string name="show_future_passengers">未来の乗客を表示</string>
-    <string name="add_reservation">予約の新規追加</string>
+    <string name="add_unexpected_reservation">飛び乗り予約の新規追加</string>
     <string name="show_missed_passengers">過去の乗降場で未乗車の乗客を表示</string>
 </resources>

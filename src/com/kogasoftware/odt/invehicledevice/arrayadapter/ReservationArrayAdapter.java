@@ -112,10 +112,14 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 		}
 	}
 
-	public void addUnexpectedReservation(Reservation reservation) {
-		PassengerRecord passengerRecord = new PassengerRecord();
-		passengerRecord.setReservation(reservation);
-		unhandledPassengerRecords.add(passengerRecord);
+	public void addUnexpectedReservation() {
+		for (PassengerRecord passengerRecord : commonLogic
+				.getUnhandledPassengerRecords()) {
+			if (!unhandledPassengerRecords.contains(passengerRecord)) {
+				unhandledPassengerRecords.add(passengerRecord);
+				selectedPassengerRecords.add(passengerRecord);
+			}
+		}
 		updateDataSet();
 	}
 
@@ -293,9 +297,6 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 			User user = reservation.getUser().get();
 			userNameView.setText(user.getLastName() + " " + user.getFirstName()
 					+ " 様");
-		} else if (reservation.getId().equals(
-				CommonLogic.UNEXPECTED_RESERVATION_ID)) {
-			userNameView.setText("飛び乗りユーザー 様");
 		} else {
 			userNameView.setText("ID:" + reservation.getUserId() + " 様");
 		}
@@ -312,6 +313,8 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 		}
 
 		if (reservation.getId().equals(CommonLogic.UNEXPECTED_RESERVATION_ID)) {
+			text += " 飛び乗り ";
+		} else {
 			text += " 予約番号 " + reservation.getId();
 		}
 		TextView reservationIdView = (TextView) view

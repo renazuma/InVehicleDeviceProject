@@ -30,7 +30,7 @@ public class Status implements Serializable {
 		public final LinkedList<OperationSchedule> departureOperationSchedules = new LinkedList<OperationSchedule>();
 	}
 
-	private static final long serialVersionUID = 5617948505743183179L;
+	private static final long serialVersionUID = 5617948505743183170L;
 
 	public final SendLists sendLists = new SendLists();
 	public final Date createdDate = new Date();
@@ -45,6 +45,7 @@ public class Status implements Serializable {
 	public Optional<BigDecimal> longitude = Optional.absent();
 	public Optional<Integer> orientation = Optional.absent();
 	public Optional<Integer> temperature = Optional.absent();
+	public Integer unexpectedReservationSequence = 1;
 	public final LinkedList<OperationSchedule> remainingOperationSchedules = new LinkedList<OperationSchedule>();
 	public final LinkedList<OperationSchedule> finishedOperationSchedules = new LinkedList<OperationSchedule>();
 	public final LinkedList<PassengerRecord> unhandledPassengerRecords = new LinkedList<PassengerRecord>();

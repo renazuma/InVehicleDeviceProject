@@ -23,11 +23,11 @@ import com.kogasoftware.odt.invehicledevice.arrayadapter.ReservationArrayAdapter
 import com.kogasoftware.odt.invehicledevice.backgroundtask.VoiceThread.SpeakEvent;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
-import com.kogasoftware.odt.invehicledevice.event.AddUnexpectedReservationEvent;
 import com.kogasoftware.odt.invehicledevice.event.EnterDrivePhaseEvent;
 import com.kogasoftware.odt.invehicledevice.event.EnterFinishPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.event.EnterPlatformPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.event.UiEventBus;
+import com.kogasoftware.odt.invehicledevice.event.UnexpectedReservationAddedEvent;
 import com.kogasoftware.odt.invehicledevice.event.UpdateOperationScheduleCompleteEvent;
 import com.kogasoftware.odt.invehicledevice.modalview.ConfigModalView;
 import com.kogasoftware.odt.invehicledevice.modalview.MemoModalView;
@@ -42,6 +42,7 @@ import com.kogasoftware.odt.invehicledevice.phaseview.PlatformPhaseView;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
+import com.kogasoftware.odt.webapi.model.User;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 /**
@@ -133,8 +134,26 @@ public class CommonLogic {
 		// 未予約乗車の予約情報はどうするか
 		reservation.setDepartureScheduleId(operationSchedule.getId());
 		reservation.setArrivalScheduleId(arrivalOperationScheduleId);
-
-		eventBus.post(new AddUnexpectedReservationEvent(reservation));
+		final User user = new User();
+		statusAccess.write(new Writer() {
+			@Override
+			public void write(Status status) {
+				user.setFirstName("飛び乗りユーザー"
+						+ status.unexpectedReservationSequence);
+				status.unexpectedReservationSequence++;
+			}
+		});
+		reservation.setUser(user);
+		final PassengerRecord passengerRecord = new PassengerRecord();
+		passengerRecord.setReservationId(reservation.getId());
+		passengerRecord.setReservation(reservation);
+		statusAccess.write(new Writer() {
+			@Override
+			public void write(Status status) {
+				status.unhandledPassengerRecords.add(passengerRecord);
+			}
+		});
+		eventBus.post(new UnexpectedReservationAddedEvent());
 	}
 
 	public void cancelPause() {
@@ -316,6 +335,16 @@ public class CommonLogic {
 			@Override
 			public String read(Status status) {
 				return status.token;
+			}
+		});
+	}
+
+	public List<PassengerRecord> getUnhandledPassengerRecords() {
+		return statusAccess.read(new Reader<List<PassengerRecord>>() {
+			@Override
+			public List<PassengerRecord> read(Status status) {
+				return new LinkedList<PassengerRecord>(
+						status.unhandledPassengerRecords);
 			}
 		});
 	}
