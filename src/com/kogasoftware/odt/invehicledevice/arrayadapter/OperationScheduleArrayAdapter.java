@@ -82,8 +82,12 @@ public class OperationScheduleArrayAdapter extends
 
 		TextView departureEstimateTextView = (TextView) convertView
 				.findViewById(R.id.operation_schedule_departure_estimate_text_view);
-		departureEstimateTextView.setText(displayDateFormat
-				.format(operationSchedule.getDepartureEstimate()) + " 出発");
+		if (getCount() == position + 1) {
+			departureEstimateTextView.setText("");
+		} else {
+			departureEstimateTextView.setText(displayDateFormat
+					.format(operationSchedule.getDepartureEstimate()) + " 出発");
+		}
 
 		if (commonLogic.getRemainingOperationSchedules().contains(
 				operationSchedule)) {
