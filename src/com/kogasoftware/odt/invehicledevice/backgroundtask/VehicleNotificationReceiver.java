@@ -7,8 +7,8 @@ import java.util.concurrent.RejectedExecutionException;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.Status;
-import com.kogasoftware.odt.invehicledevice.Utility;
 import com.kogasoftware.odt.invehicledevice.StatusAccess.Writer;
+import com.kogasoftware.odt.invehicledevice.Utility;
 import com.kogasoftware.odt.invehicledevice.event.CommonLogicLoadCompleteEvent;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
@@ -33,8 +33,11 @@ public class VehicleNotificationReceiver implements Runnable {
 			for (Iterator<VehicleNotification> iterator = vehicleNotifications
 					.iterator(); iterator.hasNext();) {
 				VehicleNotification vehicleNotification = iterator.next();
-				if (vehicleNotification.getBody().isPresent()
-						&& vehicleNotification.getBody().get() == "#schedule_changed") {
+				if (vehicleNotification.getNotificationType().isPresent()
+						&& vehicleNotification
+								.getNotificationType()
+								.get()
+								.equals(CommonLogic.VEHICLE_NOTIFICATION_TYPE_SCHEDULE_CHANGED)) {
 					scheduleChanged = true;
 					iterator.remove();
 				}
@@ -69,7 +72,8 @@ public class VehicleNotificationReceiver implements Runnable {
 	}
 
 	@Subscribe
-	public void showAllNotificationModalView(final CommonLogicLoadCompleteEvent event) {
+	public void showAllNotificationModalView(
+			final CommonLogicLoadCompleteEvent event) {
 		event.commonLogic.getStatusAccess().write(new Writer() {
 			@Override
 			public void write(Status status) {
