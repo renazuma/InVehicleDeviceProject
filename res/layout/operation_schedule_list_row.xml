@@ -41,18 +41,19 @@
         android:orientation="vertical" >
 
         <TextView
+            android:id="@+id/operation_schedule_get_off_passenger_count_text_view"
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="@string/alighting_number" />
+        
+        <TextView
             android:id="@+id/operation_schedule_get_on_passenger_count_text_view"
             android:layout_width="fill_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:text="@string/entrainment_number" />
 
-        <TextView
-            android:id="@+id/operation_schedule_get_off_passenger_count_text_view"
-            android:layout_width="fill_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:text="@string/alighting_number" />
     </LinearLayout>
 
 </LinearLayout>

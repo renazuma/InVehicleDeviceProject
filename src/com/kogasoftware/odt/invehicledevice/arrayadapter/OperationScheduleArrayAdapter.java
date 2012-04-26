@@ -49,8 +49,6 @@ public class OperationScheduleArrayAdapter extends
 		} else {
 			platformNameView.setText("ID:" + operationSchedule.getId());
 		}
-		TextView getOnPassengerCountTextView = (TextView) convertView
-				.findViewById(R.id.operation_schedule_get_on_passenger_count_text_view);
 
 		Integer getOnPassengerCount = 0;
 		for (Reservation reservation : operationSchedule
@@ -64,11 +62,18 @@ public class OperationScheduleArrayAdapter extends
 			getOffPassengerCount += reservation.getPassengerCount();
 		}
 
-		getOnPassengerCountTextView.setText("降車" + getOnPassengerCount + "名");
+		TextView getOnPassengerCountTextView = (TextView) convertView
+				.findViewById(R.id.operation_schedule_get_on_passenger_count_text_view);
+		getOnPassengerCountTextView.setText("乗車" + getOnPassengerCount + "名");
+		getOnPassengerCountTextView
+				.setVisibility(getOnPassengerCount.equals(0) ? View.INVISIBLE
+						: View.VISIBLE);
 
 		TextView getOffPassengerCountTextView = (TextView) convertView
 				.findViewById(R.id.operation_schedule_get_off_passenger_count_text_view);
-		getOffPassengerCountTextView.setText("乗車" + getOffPassengerCount + "名");
+		getOffPassengerCountTextView.setText("降車" + getOffPassengerCount + "名");
+		getOffPassengerCountTextView.setVisibility(getOffPassengerCount
+				.equals(0) ? View.INVISIBLE : View.VISIBLE);
 
 		TextView arrivalEstimateTextView = (TextView) convertView
 				.findViewById(R.id.operation_schedule_arrival_estimate_text_view);
