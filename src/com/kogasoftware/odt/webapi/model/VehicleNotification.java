@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class VehicleNotification extends Model {
-	private static final long serialVersionUID = 4216109498236643843L;
+	private static final long serialVersionUID = 270615885075205969L;
 
 	public VehicleNotification() {
 	}
@@ -23,7 +23,7 @@ public class VehicleNotification extends Model {
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setId(parseInteger(jsonObject, "id"));
 		setInVehicleDeviceId(parseInteger(jsonObject, "in_vehicle_device_id"));
-		setNotificationType(parseOptionalInteger(jsonObject, "notification_type"));
+		setNotificationType(parseInteger(jsonObject, "notification_type"));
 		setOperatorId(parseInteger(jsonObject, "operator_id"));
 		setReadAt(parseOptionalDate(jsonObject, "read_at"));
 		setResponse(parseOptionalInteger(jsonObject, "response"));
@@ -75,7 +75,7 @@ public class VehicleNotification extends Model {
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
 		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("in_vehicle_device_id", toJSON(getInVehicleDeviceId()));
-		jsonObject.put("notification_type", toJSON(getNotificationType().orNull()));
+		jsonObject.put("notification_type", toJSON(getNotificationType()));
 		jsonObject.put("operator_id", toJSON(getOperatorId()));
 		jsonObject.put("read_at", toJSON(getReadAt().orNull()));
 		jsonObject.put("response", toJSON(getResponse().orNull()));
@@ -131,22 +131,14 @@ public class VehicleNotification extends Model {
 		this.inVehicleDeviceId = wrapNull(inVehicleDeviceId);
 	}
 
-	private Optional<Integer> notificationType = Optional.<Integer>absent();
+	private Integer notificationType = 0;
 
-	public Optional<Integer> getNotificationType() {
+	public Integer getNotificationType() {
 		return wrapNull(notificationType);
 	}
 
-	public void setNotificationType(Optional<Integer> notificationType) {
-		this.notificationType = wrapNull(notificationType);
-	}
-
 	public void setNotificationType(Integer notificationType) {
-		this.notificationType = Optional.fromNullable(notificationType);
-	}
-
-	public void clearNotificationType() {
-		this.notificationType = Optional.<Integer>absent();
+		this.notificationType = wrapNull(notificationType);
 	}
 
 	private Integer operatorId = 0;
