@@ -129,7 +129,7 @@ public class ScheduleChangedTestDataSource implements DataSource {
 		List<VehicleNotification> l = new LinkedList<VehicleNotification>();
 		if (phase.compareAndSet(1, 2)) {
 			VehicleNotification v = new VehicleNotification();
-			v.setBody("schedule changed");
+			v.setBody("運行スケジュールが変更されました");
 			v.setNotificationType(CommonLogic.VEHICLE_NOTIFICATION_TYPE_SCHEDULE_CHANGED);
 			l.add(v);
 			return l;

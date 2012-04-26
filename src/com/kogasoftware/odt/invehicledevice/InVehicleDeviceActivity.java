@@ -232,7 +232,7 @@ public class InVehicleDeviceActivity extends Activity {
 			dialog.setOnCancelListener(new OnCancelListener() {
 				@Override
 				public void onCancel(DialogInterface dialogInterface) {
-					if (!commonLogic.isInitialized()) {
+					if (!commonLogic.isOperationScheduleInitialized()) {
 						finish();
 					}
 				}

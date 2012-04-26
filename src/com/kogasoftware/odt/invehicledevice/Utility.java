@@ -22,23 +22,29 @@ public class Utility {
 	/**
 	 * getId()の結果でマージする。merge([1,7,5], [3,5,6,6]) => [1,7,5,3,6,6]
 	 */
-	public static <T extends Model> void mergeById(Collection<T> models,
+	public static <T extends Model> Boolean mergeById(Collection<T> models,
 			Collection<T> additionalModels) {
+		Boolean merged = false;
 		Collection<T> baseModels = new LinkedList<T>(models);
 		for (T additionalModel : additionalModels) {
 			if (!containsById(baseModels, additionalModel)) {
 				models.add(additionalModel);
+				merged = true;
 			}
 		}
+		return merged;
 	}
 
 	/**
 	 * getId()の結果でマージする。
 	 */
-	public static <T extends Model> void mergeById(Collection<T> models,
+	public static <T extends Model> Boolean mergeById(Collection<T> models,
 			T additionalModel) {
 		if (!containsById(models, additionalModel)) {
 			models.add(additionalModel);
+			return true;
+		} else {
+			return false;
 		}
 	}
 }

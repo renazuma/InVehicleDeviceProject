@@ -30,11 +30,11 @@ public class Status implements Serializable {
 		public final LinkedList<OperationSchedule> departureOperationSchedules = new LinkedList<OperationSchedule>();
 	}
 
-	private static final long serialVersionUID = 5617948505743183170L;
+	private static final long serialVersionUID = 5617948505743183179L;
 
 	public final SendLists sendLists = new SendLists();
 	public final Date createdDate = new Date();
-	public Boolean initialized = false;
+	public final Semaphore operationScheduleInitializedSign = new Semaphore(0); // パーミットが0以上の場合は初期化済み。0以上になるまで待つためにacquireしたら必ずreleaseする。CountDownLatchがSerializableではないためこれを使用
 	public String token = "";
 	public String url = "";
 	public File file = new EmptyFile();
@@ -52,5 +52,5 @@ public class Status implements Serializable {
 	public final LinkedList<PassengerRecord> ridingPassengerRecords = new LinkedList<PassengerRecord>();
 	public final LinkedList<PassengerRecord> finishedPassengerRecords = new LinkedList<PassengerRecord>();
 	public final LinkedList<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();;
-	public final Semaphore operationScheduleChanged = new Semaphore(0);
+	public final LinkedList<VehicleNotification> operationScheduleChangedVehicleNotifications = new LinkedList<VehicleNotification>();
 }

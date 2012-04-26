@@ -53,6 +53,7 @@ class BackgroundTask {
 	private final SignalStrengthListener signalStrengthListener;
 	private final CommonLogic commonLogic;
 	private final Thread voiceThread;
+	private final Thread operationScheduleReceiveThread;
 	private final Looper myLooper;
 
 	public BackgroundTask(Activity activity) {
@@ -87,6 +88,8 @@ class BackgroundTask {
 		signalStrengthListener = new SignalStrengthListener(commonLogic,
 				connectivityManager);
 		voiceThread = new VoiceThread(activity);
+		operationScheduleReceiveThread = new OperationScheduleReceiveThread(
+				commonLogic);
 	}
 
 	public void loop() {
@@ -120,19 +123,19 @@ class BackgroundTask {
 		executorService.scheduleWithFixedDelay(locationSender, 0,
 				POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
 
+		voiceThread.start();
+		operationScheduleReceiveThread.start();
+
 		if (commonLogic.getPhase() != Phase.FINISH
 				&& commonLogic.getRemainingOperationSchedules().isEmpty()) {
-
-			executorService.submit(new OperationScheduleReceiver(commonLogic))
-					.get();
+			commonLogic.waitForOperationScheduleInitialize();
 		}
-
-		voiceThread.start();
 
 		EventBus eventBus = commonLogic.getEventBus();
 		for (Object object : new Object[] { voiceThread,
-				vehicleNotificationReceiver, vehicleNotificationSender,
-				operationScheduleSender, passengerRecordSender, locationSender,
+				operationScheduleReceiveThread, vehicleNotificationReceiver,
+				vehicleNotificationSender, operationScheduleSender,
+				passengerRecordSender, locationSender,
 				temperatureSensorEventListener, orientationSensorEventListener,
 				exitRequiredPreferenceChangeListener, signalStrengthListener }) {
 			eventBus.register(object);
@@ -177,6 +180,7 @@ class BackgroundTask {
 
 	private void onLoopStop() {
 		voiceThread.interrupt();
+		operationScheduleReceiveThread.interrupt();
 		sharedPreferences
 				.unregisterOnSharedPreferenceChangeListener(exitRequiredPreferenceChangeListener);
 		locationManager.removeUpdates(locationSender);

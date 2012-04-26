@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.app.Activity;
@@ -349,11 +350,12 @@ public class CommonLogic {
 		});
 	}
 
-	public Boolean isInitialized() {
+	public Boolean isOperationScheduleInitialized() {
 		return statusAccess.read(new Reader<Boolean>() {
 			@Override
 			public Boolean read(Status status) {
-				return status.initialized;
+				return (status.operationScheduleInitializedSign
+						.availablePermits() > 0);
 			}
 		});
 	}
@@ -398,6 +400,15 @@ public class CommonLogic {
 						.getLatitude()));
 				status.longitude = Optional.of(new BigDecimal(location
 						.getLongitude()));
+			}
+		});
+	}
+
+	public void setOperationScheduleInitialized() {
+		statusAccess.write(new Writer() {
+			@Override
+			public void write(Status status) {
+				status.operationScheduleInitializedSign.release();
 			}
 		});
 	}
@@ -448,5 +459,18 @@ public class CommonLogic {
 			}
 		});
 		eventBus.post(new StopModalView.ShowEvent());
+	}
+
+	public void waitForOperationScheduleInitialize()
+			throws InterruptedException {
+		Semaphore operationScheduleInitializedSign = statusAccess
+				.read(new Reader<Semaphore>() {
+					@Override
+					public Semaphore read(Status status) {
+						return status.operationScheduleInitializedSign;
+					}
+				});
+		operationScheduleInitializedSign.acquire();
+		operationScheduleInitializedSign.release();
 	}
 }
