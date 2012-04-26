@@ -167,10 +167,14 @@ public class StatusAccess {
 		long startTime = System.currentTimeMillis();
 		final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		ObjectOutputStream objectOutputStream = null;
-		readLock.lock();
 		try {
 			objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
-			objectOutputStream.writeObject(status);
+			readLock.lock();
+			try {
+				objectOutputStream.writeObject(status);
+			} finally {
+				readLock.unlock();
+			}
 		} catch (NotSerializableException e) {
 			Log.e(TAG, e.toString(), e);
 			return;
@@ -178,7 +182,6 @@ public class StatusAccess {
 			Log.w(TAG, e);
 			return;
 		} finally {
-			readLock.unlock();
 			Closeables.closeQuietly(objectOutputStream);
 			Closeables.closeQuietly(byteArrayOutputStream);
 			long stopTime = System.currentTimeMillis();
