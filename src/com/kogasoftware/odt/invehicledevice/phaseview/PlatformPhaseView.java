@@ -27,8 +27,8 @@ import com.kogasoftware.odt.invehicledevice.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.arrayadapter.ReservationArrayAdapter;
 import com.kogasoftware.odt.invehicledevice.arrayadapter.ReservationArrayAdapter.ItemType;
-import com.kogasoftware.odt.invehicledevice.event.UnexpectedReservationAddedEvent;
 import com.kogasoftware.odt.invehicledevice.event.EnterPlatformPhaseEvent;
+import com.kogasoftware.odt.invehicledevice.event.UnexpectedReservationAddedEvent;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 
 public class PlatformPhaseView extends PhaseView {
@@ -190,7 +190,7 @@ public class PlatformPhaseView extends PhaseView {
 						}
 					}
 				});
-		showAllRidingReservationsButton.setChecked(false);
+		showAllRidingReservationsButton.setChecked(last);
 
 		showFutureReservationsButton
 				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
