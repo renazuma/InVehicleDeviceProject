@@ -148,11 +148,13 @@ public class PlatformPhaseView extends PhaseView {
 			lastOperationScheduleLayout.setVisibility(VISIBLE);
 			showFutureReservationsButton.setVisibility(INVISIBLE);
 			showMissedReservationsButton.setVisibility(INVISIBLE);
+			addUnexpectedReservationButton.setVisibility(GONE);
 		} else {
 			nextOperationScheduleLayout.setVisibility(VISIBLE);
 			lastOperationScheduleLayout.setVisibility(GONE);
 			showFutureReservationsButton.setVisibility(VISIBLE);
 			showMissedReservationsButton.setVisibility(VISIBLE);
+			addUnexpectedReservationButton.setVisibility(VISIBLE);
 		}
 
 		adapter = new ReservationArrayAdapter(getContext(),
