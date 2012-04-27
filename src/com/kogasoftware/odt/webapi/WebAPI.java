@@ -446,6 +446,27 @@ public class WebAPI {
 		return res;
 	}
 
+	private JSONObject removeJSONKeys(JSONObject jsonObject, String[] keys) {
+		JSONObject res = new JSONObject();
+
+		Iterator<?> it = jsonObject.keys();
+		while (it.hasNext()) {
+			String key = (String)it.next();
+			try {
+				res.put(key, jsonObject.get(key));
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		for (String key : keys) {
+			res.remove(key);
+		}
+		
+		return res;
+	}
+
 	/**
 	 * OperatorWeb へログインして authorization_token を取得
 	 * @param login　ログイン情報(login, password のみ設定必要)
