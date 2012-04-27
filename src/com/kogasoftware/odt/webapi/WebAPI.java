@@ -432,7 +432,7 @@ public class WebAPI {
 		}
 	}
 	
-	private JSONObject filterJSONKeys(JSONObject jsonObject, String[] keys) {
+	protected JSONObject filterJSONKeys(JSONObject jsonObject, String[] keys) {
 		JSONObject res = new JSONObject();
 
 		for (String key : keys) {
@@ -446,7 +446,7 @@ public class WebAPI {
 		return res;
 	}
 
-	private JSONObject removeJSONKeys(JSONObject jsonObject, String[] keys) {
+	protected JSONObject removeJSONKeys(JSONObject jsonObject, String[] keys) {
 		JSONObject res = new JSONObject();
 
 		Iterator<?> it = jsonObject.keys();
