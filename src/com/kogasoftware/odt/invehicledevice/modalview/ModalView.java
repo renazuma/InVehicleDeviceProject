@@ -1,28 +1,44 @@
 package com.kogasoftware.odt.invehicledevice.modalview;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.CommonLogic;
+import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.event.CommonLogicLoadCompleteEvent;
 
-public class ModalView extends FrameLayout implements OnTouchListener {
-	private Float lastMotionEventX = 0f;
+public class ModalView extends FrameLayout implements AnimationListener {
+	private enum AnimationTarget {
+		NONE, SHOW, HIDE
+	}
+
+	private final AtomicReference<AnimationTarget> animationTarget = new AtomicReference<AnimationTarget>(
+			AnimationTarget.NONE);
+	private final Animation showAnimation;
+	private final Animation hideAnimation;
 
 	private CommonLogic commonLogic = new CommonLogic();
 
 	public ModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		setVisibility(View.GONE);
+		showAnimation = AnimationUtils.loadAnimation(getContext(),
+				R.anim.show_modal_view);
+		showAnimation.setAnimationListener(this);
+		hideAnimation = AnimationUtils.loadAnimation(getContext(),
+				R.anim.hide_modal_view);
+		hideAnimation.setAnimationListener(this);
 	}
 
 	protected CommonLogic getLogic() {
@@ -30,40 +46,41 @@ public class ModalView extends FrameLayout implements OnTouchListener {
 	}
 
 	public void hide() {
-		setVisibility(View.GONE);
-	}
-
-	@Override
-	protected void onAttachedToWindow() {
-		super.onAttachedToWindow();
-	}
-
-	@Override
-	protected void onDetachedFromWindow() {
-		super.onDetachedFromWindow();
-	}
-
-	@Override
-	public boolean onTouch(View view, MotionEvent motionEvent) {
-		Toast.makeText(getContext(), "Hello", Toast.LENGTH_LONG).show();
-
-		switch (motionEvent.getAction()) {
-		case MotionEvent.ACTION_DOWN:
-			lastMotionEventX = motionEvent.getX();
-			break;
-		case MotionEvent.ACTION_MOVE:
-			layout((int) (getLeft() - lastMotionEventX + motionEvent.getX()),
-					getTop(), getWidth(), getBottom());
-			lastMotionEventX = motionEvent.getX();
-			break;
-		case MotionEvent.ACTION_UP:
-			// layout(0, getTop(), getWidth(), getBottom());
-			break;
-		case MotionEvent.ACTION_CANCEL:
-			// layout(0, getTop(), getWidth(), getBottom());
-			break;
+		if (!isShown()) {
+			return;
 		}
-		return true;
+		if (animationTarget.getAndSet(AnimationTarget.HIDE) == AnimationTarget.NONE) {
+			startAnimation(hideAnimation);
+		}
+	}
+
+	@Override
+	public void onAnimationEnd(Animation animation) {
+		if (animation == hideAnimation) {
+			if (animationTarget.get() == AnimationTarget.SHOW) {
+				startAnimation(showAnimation);
+			} else {
+				setVisibility(GONE);
+				animationTarget.set(AnimationTarget.NONE);
+			}
+		} else if (animation == showAnimation) {
+			if (animationTarget.get() == AnimationTarget.HIDE) {
+				startAnimation(hideAnimation);
+			} else {
+				animationTarget.set(AnimationTarget.NONE);
+			}
+		}
+	}
+
+	@Override
+	public void onAnimationRepeat(Animation animation) {
+	}
+
+	@Override
+	public void onAnimationStart(Animation animation) {
+		if (animation == showAnimation || animation == hideAnimation) {
+			setVisibility(VISIBLE);
+		}
 	}
 
 	protected void setContentView(int resourceId) {
@@ -88,6 +105,11 @@ public class ModalView extends FrameLayout implements OnTouchListener {
 	 * 表示時にパラメーターを渡す必要がある場合、直接呼ばれると不都合がある場合もあるため protectedとしサブクラスでオーバーライドさせる
 	 */
 	protected void show() {
-		setVisibility(View.VISIBLE);
+		if (isShown()) {
+			return;
+		}
+		if (animationTarget.getAndSet(AnimationTarget.SHOW) == AnimationTarget.NONE) {
+			startAnimation(showAnimation);
+		}
 	}
 }

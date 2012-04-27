@@ -11,6 +11,9 @@ import android.graphics.Color;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import com.google.common.base.Optional;
@@ -18,13 +21,15 @@ import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.Status;
+import com.kogasoftware.odt.invehicledevice.Status.Phase;
 import com.kogasoftware.odt.invehicledevice.StatusAccess.Reader;
 import com.kogasoftware.odt.invehicledevice.event.EnterDrivePhaseEvent;
+import com.kogasoftware.odt.invehicledevice.event.EnterPlatformPhaseEvent;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Platform;
 
-public class DrivePhaseView extends PhaseView {
+public class DrivePhaseView extends PhaseView implements AnimationListener {
 	private static final int TOGGLE_DRIVING_VIEW_INTERVAL = 5000;
 
 	private final Runnable toggleDrivingView = new Runnable() {
@@ -47,6 +52,7 @@ public class DrivePhaseView extends PhaseView {
 	private final View drivingView1Layout;
 	private final View drivingView2Layout;
 	private final Handler handler = new Handler();
+	private final Animation hideAnimation;
 
 	public DrivePhaseView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -66,11 +72,17 @@ public class DrivePhaseView extends PhaseView {
 		Integer backgroundColor = typedArray.getColor(0, Color.WHITE);
 		drivingView1Layout.setBackgroundColor(backgroundColor); // TODO XMLで指定
 		drivingView2Layout.setBackgroundColor(backgroundColor); // TODO
+
+		hideAnimation = AnimationUtils.loadAnimation(getContext(),
+				R.anim.hide_drive_phase_view);
+		hideAnimation.setAnimationListener(this);
 	}
 
 	@Override
 	@Subscribe
 	public void enterDrivePhase(EnterDrivePhaseEvent event) {
+		hideAnimation.cancel();
+
 		CommonLogic commonLogic = getLogic();
 		List<OperationSchedule> operationSchedules = commonLogic
 				.getRemainingOperationSchedules();
@@ -82,8 +94,8 @@ public class DrivePhaseView extends PhaseView {
 		OperationSchedule operationSchedule = operationSchedules.get(0);
 		TextView totalPassengerCountTextView = (TextView) findViewById(R.id.total_passenger_count_text_view);
 		Integer totalPassengerCount = 0;
-		List<PassengerRecord> ridingPassengerRecords = commonLogic.getStatusAccess()
-				.read(new Reader<List<PassengerRecord>>() {
+		List<PassengerRecord> ridingPassengerRecords = commonLogic
+				.getStatusAccess().read(new Reader<List<PassengerRecord>>() {
 					@Override
 					public List<PassengerRecord> read(Status status) {
 						return status.ridingPassengerRecords;
@@ -132,6 +144,29 @@ public class DrivePhaseView extends PhaseView {
 				+ platform.getNameRuby() + "。");
 
 		setVisibility(View.VISIBLE);
+	}
+
+	@Override
+	@Subscribe
+	public void enterPlatformPhase(EnterPlatformPhaseEvent event) {
+		startAnimation(hideAnimation);
+	}
+
+	@Override
+	public void onAnimationEnd(Animation animation) {
+		if (animation == hideAnimation) {
+			if (getLogic().getPhase() != Phase.DRIVE) {
+				setVisibility(GONE);
+			}
+		}
+	}
+
+	@Override
+	public void onAnimationRepeat(Animation animation) {
+	}
+
+	@Override
+	public void onAnimationStart(Animation animation) {
 	}
 
 	@Override

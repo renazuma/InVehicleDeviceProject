@@ -79,16 +79,16 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent" >
 
-                <com.kogasoftware.odt.invehicledevice.phaseview.DrivePhaseView
-                    android:id="@+id/drive_phase_view"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent" />
-
                 <com.kogasoftware.odt.invehicledevice.phaseview.PlatformPhaseView
                     android:id="@+id/platform_phase_view"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:visibility="gone" />
+
+                <com.kogasoftware.odt.invehicledevice.phaseview.DrivePhaseView
+                    android:id="@+id/drive_phase_view"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent" />
 
                 <com.kogasoftware.odt.invehicledevice.phaseview.FinishPhaseView
                     android:id="@+id/finish_phase_view"
