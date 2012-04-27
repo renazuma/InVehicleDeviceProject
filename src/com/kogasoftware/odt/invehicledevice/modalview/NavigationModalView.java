@@ -164,7 +164,7 @@ public class NavigationModalView extends ModalView {
 		// WeakReference<MapOnTouchListener>(
 		// mapOnTouchListener);
 		//
-		hideButton = new HideModalButton(getContext());
+		hideButton = new HideModalViewButton(getContext());
 		hideButton.setText("戻る");
 
 		zoomInButton = new Button(getContext());

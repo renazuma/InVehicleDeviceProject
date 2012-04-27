@@ -8,7 +8,7 @@ import android.widget.Button;
 
 import com.kogasoftware.odt.invehicledevice.empty.EmptyViewOnClickListener;
 
-public class HideModalButton extends Button {
+public class HideModalViewButton extends Button {
 	static class DefaultOnClickListener implements OnClickListener {
 		private OnClickListener userOnClickListener = new EmptyViewOnClickListener();
 
@@ -34,12 +34,12 @@ public class HideModalButton extends Button {
 
 	private final DefaultOnClickListener defaultOnClickListener = new DefaultOnClickListener();
 
-	public HideModalButton(Context context) {
+	public HideModalViewButton(Context context) {
 		super(context);
 		super.setOnClickListener(defaultOnClickListener);
 	}
 
-	public HideModalButton(Context context, AttributeSet attrs) {
+	public HideModalViewButton(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		super.setOnClickListener(defaultOnClickListener);
 	}

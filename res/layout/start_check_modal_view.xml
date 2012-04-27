@@ -18,14 +18,14 @@
         android:layout_height="fill_parent"
         android:layout_weight="1" />
     
-    <com.kogasoftware.odt.invehicledevice.modalview.HideModalButton
+    <com.kogasoftware.odt.invehicledevice.modalview.HideModalViewButton
         android:id="@+id/start_button"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
         android:text="@string/it_leaves" />
     
-    <com.kogasoftware.odt.invehicledevice.modalview.HideModalButton
+    <com.kogasoftware.odt.invehicledevice.modalview.HideModalViewButton
         android:id="@+id/start_cancel_button"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"

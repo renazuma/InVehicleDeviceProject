@@ -24,7 +24,7 @@
         android:layout_weight="1"
         android:text="@string/scroll_down" />
 
-    <com.kogasoftware.odt.invehicledevice.modalview.HideModalButton
+    <com.kogasoftware.odt.invehicledevice.modalview.HideModalViewButton
         android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
