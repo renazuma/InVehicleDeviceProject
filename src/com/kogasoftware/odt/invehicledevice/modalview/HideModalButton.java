@@ -14,6 +14,7 @@ public class HideModalButton extends Button {
 
 		@Override
 		public void onClick(View view) {
+			userOnClickListener.onClick(view);
 			ViewParent parent = view.getParent();
 			for (Integer depth = 0; parent != null && depth < MAX_VIEW_DEPTH; parent = parent
 					.getParent(), ++depth) {
@@ -22,7 +23,6 @@ public class HideModalButton extends Button {
 					break;
 				}
 			}
-			userOnClickListener.onClick(view);
 		}
 
 		public void setUserOnClickListener(OnClickListener userOnClickListener) {

@@ -1,7 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.modalview;
 
 import java.util.LinkedList;
-import java.util.Queue;
+import java.util.List;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -24,7 +24,7 @@ public class NotificationModalView extends ModalView {
 	}
 
 	private VehicleNotification currentVehicleNotification = new VehicleNotification();
-	private final Queue<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();
+	private final List<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();
 
 	public NotificationModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -57,13 +57,17 @@ public class NotificationModalView extends ModalView {
 	}
 
 	private void refresh() {
-		currentVehicleNotification = vehicleNotifications.poll();
+		if (vehicleNotifications.isEmpty()) {
+			return;
+		}
+		currentVehicleNotification = vehicleNotifications.get(0);
 		TextView bodyTextView = (TextView) findViewById(R.id.notification_text_view);
 		bodyTextView.setText(currentVehicleNotification.getBody());
 		getLogic().speak(currentVehicleNotification.getBody());
 	}
 
 	private void reply() {
+		vehicleNotifications.remove(currentVehicleNotification);
 		getLogic().getStatusAccess().write(new Writer() {
 			@Override
 			public void write(Status status) {
