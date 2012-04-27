@@ -4,7 +4,7 @@
 
 cd `dirname $0`
 
-tar xf $HOME/userContent/OpenJTalk-sdcard.tar.xz
+unzip $HOME/userContent/OpenJTalk-sdcard.zip
 p=com.kogasoftware.odt.invehicledevice
 d=/mnt/sdcard/Android/data/$p/files/open_jtalk
 #adb $adb_arg shell mkdir $d
