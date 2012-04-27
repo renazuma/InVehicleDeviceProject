@@ -13,19 +13,26 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class InVehicleDevice extends Model {
-	private static final long serialVersionUID = 4191609348559365939L;
+	private static final long serialVersionUID = 5783120736657183716L;
 
 	public InVehicleDevice() {
 	}
 
 	public InVehicleDevice(JSONObject jsonObject) throws JSONException, ParseException {
-		setCreatedAt(parseDate(jsonObject, "created_at"));
-		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
+		setAuthenticationToken(parseOptionalString(jsonObject, "authentication_token"));
 		setId(parseInteger(jsonObject, "id"));
+		setLogin(parseString(jsonObject, "login"));
 		setModelName(parseString(jsonObject, "model_name"));
 		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
 		setTypeNumber(parseString(jsonObject, "type_number"));
-		setUpdatedAt(parseDate(jsonObject, "updated_at"));
+		setAuditComment(parseOptionalString(jsonObject, "audit_comment"));
+		setPassword(parseOptionalString(jsonObject, "password"));
+		setPasswordConfirmation(parseOptionalString(jsonObject, "password_confirmation"));
+		setRememberMe(parseOptionalString(jsonObject, "remember_me"));
+		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
+		if (getServiceProvider().isPresent()) {
+			setServiceProviderId(getServiceProvider().get().getId());
+		}
 		setServiceUnits(ServiceUnit.parseList(jsonObject, "service_units"));
 		setVehicleNotifications(VehicleNotification.parseList(jsonObject, "vehicle_notifications"));
 	}
@@ -34,7 +41,11 @@ public class InVehicleDevice extends Model {
 		if (!jsonObject.has(key)) {
 			return Optional.<InVehicleDevice>absent();
 		}
-		return Optional.<InVehicleDevice>of(new InVehicleDevice(jsonObject.getJSONObject(key)));
+		return parse(jsonObject.getJSONObject(key));
+	}
+
+	public static Optional<InVehicleDevice> parse(JSONObject jsonObject) throws JSONException, ParseException {
+		return Optional.<InVehicleDevice>of(new InVehicleDevice(jsonObject));
 	}
 
 	public static LinkedList<InVehicleDevice> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -42,6 +53,10 @@ public class InVehicleDevice extends Model {
 			return new LinkedList<InVehicleDevice>();
 		}
 		JSONArray jsonArray = jsonObject.getJSONArray(key);
+		return parseList(jsonArray);
+	}
+
+	public static LinkedList<InVehicleDevice> parseList(JSONArray jsonArray) throws JSONException, ParseException {
 		LinkedList<InVehicleDevice> models = new LinkedList<InVehicleDevice>();
 		for (Integer i = 0; i < jsonArray.length(); ++i) {
 			if (jsonArray.isNull(i)) {
@@ -55,44 +70,47 @@ public class InVehicleDevice extends Model {
 	@Override
 	public JSONObject toJSONObject() throws JSONException {
 		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("created_at", toJSON(getCreatedAt()));
-		jsonObject.put("deleted_at", toJSON(getDeletedAt().orNull()));
+		jsonObject.put("authentication_token", toJSON(getAuthenticationToken().orNull()));
 		jsonObject.put("id", toJSON(getId()));
+		jsonObject.put("login", toJSON(getLogin()));
 		jsonObject.put("model_name", toJSON(getModelName()));
 		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
 		jsonObject.put("type_number", toJSON(getTypeNumber()));
-		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
-		jsonObject.put("service_units", toJSON(getServiceUnits()));
-		jsonObject.put("vehicle_notifications", toJSON(getVehicleNotifications()));
+		jsonObject.put("audit_comment", toJSON(getAuditComment().orNull()));
+		jsonObject.put("password", toJSON(getPassword().orNull()));
+		jsonObject.put("password_confirmation", toJSON(getPasswordConfirmation().orNull()));
+		jsonObject.put("remember_me", toJSON(getRememberMe().orNull()));
+
+		if (getServiceProvider().isPresent()) {
+			jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
+		}
+		if (getServiceUnits().size() > 0) {
+	   		jsonObject.put("service_units", toJSON(getServiceUnits()));
+		}
+
+		if (getVehicleNotifications().size() > 0) {
+	   		jsonObject.put("vehicle_notifications", toJSON(getVehicleNotifications()));
+		}
+
 		return jsonObject;
 	}
 
-	private Date createdAt = new Date();
+	private Optional<String> authenticationToken = Optional.<String>absent();
 
-	public Date getCreatedAt() {
-		return wrapNull(createdAt);
+	public Optional<String> getAuthenticationToken() {
+		return wrapNull(authenticationToken);
 	}
 
-	public void setCreatedAt(Date createdAt) {
-		this.createdAt = wrapNull(createdAt);
+	public void setAuthenticationToken(Optional<String> authenticationToken) {
+		this.authenticationToken = wrapNull(authenticationToken);
 	}
 
-	private Optional<Date> deletedAt = Optional.<Date>absent();
-
-	public Optional<Date> getDeletedAt() {
-		return wrapNull(deletedAt);
+	public void setAuthenticationToken(String authenticationToken) {
+		this.authenticationToken = Optional.fromNullable(authenticationToken);
 	}
 
-	public void setDeletedAt(Optional<Date> deletedAt) {
-		this.deletedAt = wrapNull(deletedAt);
-	}
-
-	public void setDeletedAt(Date deletedAt) {
-		this.deletedAt = Optional.fromNullable(deletedAt);
-	}
-
-	public void clearDeletedAt() {
-		this.deletedAt = Optional.<Date>absent();
+	public void clearAuthenticationToken() {
+		this.authenticationToken = Optional.<String>absent();
 	}
 
 	private Integer id = 0;
@@ -103,6 +121,16 @@ public class InVehicleDevice extends Model {
 
 	public void setId(Integer id) {
 		this.id = wrapNull(id);
+	}
+
+	private String login = "";
+
+	public String getLogin() {
+		return wrapNull(login);
+	}
+
+	public void setLogin(String login) {
+		this.login = wrapNull(login);
 	}
 
 	private String modelName = "";
@@ -143,14 +171,94 @@ public class InVehicleDevice extends Model {
 		this.typeNumber = wrapNull(typeNumber);
 	}
 
-	private Date updatedAt = new Date();
+	private Optional<String> auditComment = Optional.<String>absent();
 
-	public Date getUpdatedAt() {
-		return wrapNull(updatedAt);
+	public Optional<String> getAuditComment() {
+		return wrapNull(auditComment);
 	}
 
-	public void setUpdatedAt(Date updatedAt) {
-		this.updatedAt = wrapNull(updatedAt);
+	public void setAuditComment(Optional<String> auditComment) {
+		this.auditComment = wrapNull(auditComment);
+	}
+
+	public void setAuditComment(String auditComment) {
+		this.auditComment = Optional.fromNullable(auditComment);
+	}
+
+	public void clearAuditComment() {
+		this.auditComment = Optional.<String>absent();
+	}
+
+	private Optional<String> password = Optional.<String>absent();
+
+	public Optional<String> getPassword() {
+		return wrapNull(password);
+	}
+
+	public void setPassword(Optional<String> password) {
+		this.password = wrapNull(password);
+	}
+
+	public void setPassword(String password) {
+		this.password = Optional.fromNullable(password);
+	}
+
+	public void clearPassword() {
+		this.password = Optional.<String>absent();
+	}
+
+	private Optional<String> passwordConfirmation = Optional.<String>absent();
+
+	public Optional<String> getPasswordConfirmation() {
+		return wrapNull(passwordConfirmation);
+	}
+
+	public void setPasswordConfirmation(Optional<String> passwordConfirmation) {
+		this.passwordConfirmation = wrapNull(passwordConfirmation);
+	}
+
+	public void setPasswordConfirmation(String passwordConfirmation) {
+		this.passwordConfirmation = Optional.fromNullable(passwordConfirmation);
+	}
+
+	public void clearPasswordConfirmation() {
+		this.passwordConfirmation = Optional.<String>absent();
+	}
+
+	private Optional<String> rememberMe = Optional.<String>absent();
+
+	public Optional<String> getRememberMe() {
+		return wrapNull(rememberMe);
+	}
+
+	public void setRememberMe(Optional<String> rememberMe) {
+		this.rememberMe = wrapNull(rememberMe);
+	}
+
+	public void setRememberMe(String rememberMe) {
+		this.rememberMe = Optional.fromNullable(rememberMe);
+	}
+
+	public void clearRememberMe() {
+		this.rememberMe = Optional.<String>absent();
+	}
+
+	private Optional<ServiceProvider> serviceProvider = Optional.<ServiceProvider>absent();
+
+	public Optional<ServiceProvider> getServiceProvider() {
+		return wrapNull(serviceProvider);
+	}
+
+	public void setServiceProvider(Optional<ServiceProvider> serviceProvider) {
+		this.serviceProvider = wrapNull(serviceProvider);
+	}
+
+	public void setServiceProvider(ServiceProvider serviceProvider) {
+		this.serviceProvider = Optional.<ServiceProvider>fromNullable(serviceProvider);
+	}
+
+	public void clearServiceProvider() {
+		this.serviceProvider = Optional.<ServiceProvider>absent();
 	}
 
 	private LinkedList<ServiceUnit> serviceUnits = new LinkedList<ServiceUnit>();

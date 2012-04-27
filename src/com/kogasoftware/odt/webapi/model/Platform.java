@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Platform extends Model {
-	private static final long serialVersionUID = 4611909959706312425L;
+	private static final long serialVersionUID = 8108355781890211950L;
 
 	public Platform() {
 	}
@@ -32,6 +32,7 @@ public class Platform extends Model {
 		setMemo(parseOptionalString(jsonObject, "memo"));
 		setName(parseString(jsonObject, "name"));
 		setNameRuby(parseString(jsonObject, "name_ruby"));
+		setReportingRegionId(parseInteger(jsonObject, "reporting_region_id"));
 		setSemiDemandAreaId(parseOptionalInteger(jsonObject, "semi_demand_area_id"));
 		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
 		setStartAt(parseOptionalDate(jsonObject, "start_at"));
@@ -43,13 +44,21 @@ public class Platform extends Model {
 		setReservationCandidatesAsDeparture(ReservationCandidate.parseList(jsonObject, "reservation_candidates_as_departure"));
 		setReservationsAsArrival(Reservation.parseList(jsonObject, "reservations_as_arrival"));
 		setReservationsAsDeparture(Reservation.parseList(jsonObject, "reservations_as_departure"));
+		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
+		if (getServiceProvider().isPresent()) {
+			setServiceProviderId(getServiceProvider().get().getId());
+		}
 	}
 
 	public static Optional<Platform> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
 		if (!jsonObject.has(key)) {
 			return Optional.<Platform>absent();
 		}
-		return Optional.<Platform>of(new Platform(jsonObject.getJSONObject(key)));
+		return parse(jsonObject.getJSONObject(key));
+	}
+
+	public static Optional<Platform> parse(JSONObject jsonObject) throws JSONException, ParseException {
+		return Optional.<Platform>of(new Platform(jsonObject));
 	}
 
 	public static LinkedList<Platform> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -57,6 +66,10 @@ public class Platform extends Model {
 			return new LinkedList<Platform>();
 		}
 		JSONArray jsonArray = jsonObject.getJSONArray(key);
+		return parseList(jsonArray);
+	}
+
+	public static LinkedList<Platform> parseList(JSONArray jsonArray) throws JSONException, ParseException {
 		LinkedList<Platform> models = new LinkedList<Platform>();
 		for (Integer i = 0; i < jsonArray.length(); ++i) {
 			if (jsonArray.isNull(i)) {
@@ -83,17 +96,40 @@ public class Platform extends Model {
 		jsonObject.put("memo", toJSON(getMemo().orNull()));
 		jsonObject.put("name", toJSON(getName()));
 		jsonObject.put("name_ruby", toJSON(getNameRuby()));
+		jsonObject.put("reporting_region_id", toJSON(getReportingRegionId()));
 		jsonObject.put("semi_demand_area_id", toJSON(getSemiDemandAreaId().orNull()));
 		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
 		jsonObject.put("start_at", toJSON(getStartAt().orNull()));
 		jsonObject.put("type_of_demand", toJSON(getTypeOfDemand().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
-		jsonObject.put("demands_as_arrival", toJSON(getDemandsAsArrival()));
-		jsonObject.put("demands_as_departure", toJSON(getDemandsAsDeparture()));
-		jsonObject.put("reservation_candidates_as_arrival", toJSON(getReservationCandidatesAsArrival()));
-		jsonObject.put("reservation_candidates_as_departure", toJSON(getReservationCandidatesAsDeparture()));
-		jsonObject.put("reservations_as_arrival", toJSON(getReservationsAsArrival()));
-		jsonObject.put("reservations_as_departure", toJSON(getReservationsAsDeparture()));
+		if (getDemandsAsArrival().size() > 0) {
+	   		jsonObject.put("demands_as_arrival", toJSON(getDemandsAsArrival()));
+		}
+
+		if (getDemandsAsDeparture().size() > 0) {
+	   		jsonObject.put("demands_as_departure", toJSON(getDemandsAsDeparture()));
+		}
+
+		if (getReservationCandidatesAsArrival().size() > 0) {
+	   		jsonObject.put("reservation_candidates_as_arrival", toJSON(getReservationCandidatesAsArrival()));
+		}
+
+		if (getReservationCandidatesAsDeparture().size() > 0) {
+	   		jsonObject.put("reservation_candidates_as_departure", toJSON(getReservationCandidatesAsDeparture()));
+		}
+
+		if (getReservationsAsArrival().size() > 0) {
+	   		jsonObject.put("reservations_as_arrival", toJSON(getReservationsAsArrival()));
+		}
+
+		if (getReservationsAsDeparture().size() > 0) {
+	   		jsonObject.put("reservations_as_departure", toJSON(getReservationsAsDeparture()));
+		}
+
+
+		if (getServiceProvider().isPresent()) {
+			jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
+		}
 		return jsonObject;
 	}
 
@@ -283,6 +319,16 @@ public class Platform extends Model {
 		this.nameRuby = wrapNull(nameRuby);
 	}
 
+	private Integer reportingRegionId = 0;
+
+	public Integer getReportingRegionId() {
+		return wrapNull(reportingRegionId);
+	}
+
+	public void setReportingRegionId(Integer reportingRegionId) {
+		this.reportingRegionId = wrapNull(reportingRegionId);
+	}
+
 	private Optional<Integer> semiDemandAreaId = Optional.<Integer>absent();
 
 	public Optional<Integer> getSemiDemandAreaId() {
@@ -447,5 +493,23 @@ public class Platform extends Model {
 
 	public void clearReservationsAsDeparture() {
 		this.reservationsAsDeparture = new LinkedList<Reservation>();
+	}
+
+	private Optional<ServiceProvider> serviceProvider = Optional.<ServiceProvider>absent();
+
+	public Optional<ServiceProvider> getServiceProvider() {
+		return wrapNull(serviceProvider);
+	}
+
+	public void setServiceProvider(Optional<ServiceProvider> serviceProvider) {
+		this.serviceProvider = wrapNull(serviceProvider);
+	}
+
+	public void setServiceProvider(ServiceProvider serviceProvider) {
+		this.serviceProvider = Optional.<ServiceProvider>fromNullable(serviceProvider);
+	}
+
+	public void clearServiceProvider() {
+		this.serviceProvider = Optional.<ServiceProvider>absent();
 	}
 }

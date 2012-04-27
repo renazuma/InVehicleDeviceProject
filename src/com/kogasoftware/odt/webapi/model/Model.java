@@ -7,8 +7,8 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,14 +16,17 @@ import org.json.JSONObject;
 import android.util.Log;
 
 import com.google.common.base.Optional;
+import com.kogasoftware.odt.webapi.Identifiable;
 
-abstract public class Model implements Serializable {
+abstract public class Model implements Serializable, Identifiable {
 	public static final String TAG = Model.class.getSimpleName();
 
 	private static final long serialVersionUID = -5513333240346057624L;
 
-	protected static final DateTimeFormatter DATE_TIME_FORMATTER = ISODateTimeFormat
-			.dateTime();
+	protected static final DateTimeFormatter DATE_TIME_FORMATTER = 
+			DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
+	protected static final DateTimeFormatter DATE_FORMATTER = 
+			DateTimeFormat.forPattern("yyyy-MM-dd");
 
 	protected static void errorIfNull(Object value) {
 		if (value != null) {
@@ -57,8 +60,14 @@ abstract public class Model implements Serializable {
 		}
 
 		String dateString = jsonObject.getString(key);
-		Date date = new Date(DATE_TIME_FORMATTER.parseDateTime(dateString)
+		Date date;
+		try {
+			date = new Date(DATE_TIME_FORMATTER.parseDateTime(dateString)
 				.getMillis());
+		} catch (IllegalArgumentException ex) {
+			date = new Date(DATE_FORMATTER.parseDateTime(dateString)
+					.getMillis());
+		}
 		return date;
 	}
 
@@ -78,21 +87,21 @@ abstract public class Model implements Serializable {
 	}
 
 	protected static Optional<Boolean> parseOptionalBoolean(JSONObject jsonObject, String key) throws JSONException, ParseException {
-		if (!jsonObject.has(key)) {
+		if (jsonObject.isNull(key)) {
 			return Optional.<Boolean>absent();
 		}
 		return Optional.<Boolean>of(parseBoolean(jsonObject, key));
 	}
 
 	protected static Optional<Date> parseOptionalDate(JSONObject jsonObject, String key) throws JSONException, ParseException {
-		if (!jsonObject.has(key)) {
+		if (jsonObject.isNull(key)) {
 			return Optional.<Date>absent();
 		}
 		return Optional.<Date>of(parseDate(jsonObject, key));
 	}
 
 	protected static Optional<Float> parseOptionalFloat(JSONObject jsonObject, String key) throws JSONException, ParseException {
-		if (!jsonObject.has(key)) {
+		if (jsonObject.isNull(key)) {
 			return Optional.<Float>absent();
 		}
 		return Optional.<Float>of(parseFloat(jsonObject, key));
@@ -100,14 +109,14 @@ abstract public class Model implements Serializable {
 
 
 	protected static Optional<Integer> parseOptionalInteger(JSONObject jsonObject, String key) throws JSONException {
-		if (!jsonObject.has(key)) {
+		if (jsonObject.isNull(key)) {
 			return Optional.<Integer>absent();
 		}
 		return Optional.<Integer>of(parseInteger(jsonObject, key));
 	}
 
 	protected static Optional<String> parseOptionalString(JSONObject jsonObject, String key) throws JSONException {
-		if (!jsonObject.has(key)) {
+		if (jsonObject.isNull(key)) {
 			return Optional.<String>absent();
 		}
 		return Optional.<String>of(parseString(jsonObject, key));

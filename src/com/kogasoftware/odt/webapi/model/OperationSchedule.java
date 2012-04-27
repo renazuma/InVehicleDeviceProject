@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class OperationSchedule extends Model {
-	private static final long serialVersionUID = 4765061606433919132L;
+	private static final long serialVersionUID = 7385206914989571077L;
 
 	public OperationSchedule() {
 	}
@@ -35,13 +35,25 @@ public class OperationSchedule extends Model {
 		}
 		setReservationsAsArrival(Reservation.parseList(jsonObject, "reservations_as_arrival"));
 		setReservationsAsDeparture(Reservation.parseList(jsonObject, "reservations_as_departure"));
+		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
+		if (getServiceProvider().isPresent()) {
+			setServiceProviderId(getServiceProvider().get().getId());
+		}
+		setUnitAssignment(UnitAssignment.parse(jsonObject, "unit_assignment"));
+		if (getUnitAssignment().isPresent()) {
+			setUnitAssignmentId(getUnitAssignment().get().getId());
+		}
 	}
 
 	public static Optional<OperationSchedule> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
 		if (!jsonObject.has(key)) {
 			return Optional.<OperationSchedule>absent();
 		}
-		return Optional.<OperationSchedule>of(new OperationSchedule(jsonObject.getJSONObject(key)));
+		return parse(jsonObject.getJSONObject(key));
+	}
+
+	public static Optional<OperationSchedule> parse(JSONObject jsonObject) throws JSONException, ParseException {
+		return Optional.<OperationSchedule>of(new OperationSchedule(jsonObject));
 	}
 
 	public static LinkedList<OperationSchedule> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -49,6 +61,10 @@ public class OperationSchedule extends Model {
 			return new LinkedList<OperationSchedule>();
 		}
 		JSONArray jsonArray = jsonObject.getJSONArray(key);
+		return parseList(jsonArray);
+	}
+
+	public static LinkedList<OperationSchedule> parseList(JSONArray jsonArray) throws JSONException, ParseException {
 		LinkedList<OperationSchedule> models = new LinkedList<OperationSchedule>();
 		for (Integer i = 0; i < jsonArray.length(); ++i) {
 			if (jsonArray.isNull(i)) {
@@ -71,13 +87,27 @@ public class OperationSchedule extends Model {
 		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
 		jsonObject.put("unit_assignment_id", toJSON(getUnitAssignmentId().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
-		jsonObject.put("operation_record", toJSON(getOperationRecord()));
-		jsonObject.put("platform", toJSON(getPlatform()));
+
+
 		if (getPlatform().isPresent()) {
 			jsonObject.put("platform_id", toJSON(getPlatform().get().getId()));
 		}
-		jsonObject.put("reservations_as_arrival", toJSON(getReservationsAsArrival()));
-		jsonObject.put("reservations_as_departure", toJSON(getReservationsAsDeparture()));
+		if (getReservationsAsArrival().size() > 0) {
+	   		jsonObject.put("reservations_as_arrival", toJSON(getReservationsAsArrival()));
+		}
+
+		if (getReservationsAsDeparture().size() > 0) {
+	   		jsonObject.put("reservations_as_departure", toJSON(getReservationsAsDeparture()));
+		}
+
+
+		if (getServiceProvider().isPresent()) {
+			jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
+		}
+
+		if (getUnitAssignment().isPresent()) {
+			jsonObject.put("unit_assignment_id", toJSON(getUnitAssignment().get().getId()));
+		}
 		return jsonObject;
 	}
 
@@ -265,5 +295,41 @@ public class OperationSchedule extends Model {
 
 	public void clearReservationsAsDeparture() {
 		this.reservationsAsDeparture = new LinkedList<Reservation>();
+	}
+
+	private Optional<ServiceProvider> serviceProvider = Optional.<ServiceProvider>absent();
+
+	public Optional<ServiceProvider> getServiceProvider() {
+		return wrapNull(serviceProvider);
+	}
+
+	public void setServiceProvider(Optional<ServiceProvider> serviceProvider) {
+		this.serviceProvider = wrapNull(serviceProvider);
+	}
+
+	public void setServiceProvider(ServiceProvider serviceProvider) {
+		this.serviceProvider = Optional.<ServiceProvider>fromNullable(serviceProvider);
+	}
+
+	public void clearServiceProvider() {
+		this.serviceProvider = Optional.<ServiceProvider>absent();
+	}
+
+	private Optional<UnitAssignment> unitAssignment = Optional.<UnitAssignment>absent();
+
+	public Optional<UnitAssignment> getUnitAssignment() {
+		return wrapNull(unitAssignment);
+	}
+
+	public void setUnitAssignment(Optional<UnitAssignment> unitAssignment) {
+		this.unitAssignment = wrapNull(unitAssignment);
+	}
+
+	public void setUnitAssignment(UnitAssignment unitAssignment) {
+		this.unitAssignment = Optional.<UnitAssignment>fromNullable(unitAssignment);
+	}
+
+	public void clearUnitAssignment() {
+		this.unitAssignment = Optional.<UnitAssignment>absent();
 	}
 }

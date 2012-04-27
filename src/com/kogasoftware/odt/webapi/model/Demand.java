@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Demand extends Model {
-	private static final long serialVersionUID = 7591276760376023010L;
+	private static final long serialVersionUID = 535459490985223026L;
 
 	public Demand() {
 	}
@@ -44,6 +44,14 @@ public class Demand extends Model {
 		}
 		setReservation(Reservation.parse(jsonObject, "reservation"));
 		setReservationCandidates(ReservationCandidate.parseList(jsonObject, "reservation_candidates"));
+		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
+		if (getServiceProvider().isPresent()) {
+			setServiceProviderId(getServiceProvider().get().getId());
+		}
+		setUnitAssignment(UnitAssignment.parse(jsonObject, "unit_assignment"));
+		if (getUnitAssignment().isPresent()) {
+			setUnitAssignmentId(getUnitAssignment().get().getId());
+		}
 		setUser(User.parse(jsonObject, "user"));
 		if (getUser().isPresent()) {
 			setUserId(getUser().get().getId());
@@ -54,7 +62,11 @@ public class Demand extends Model {
 		if (!jsonObject.has(key)) {
 			return Optional.<Demand>absent();
 		}
-		return Optional.<Demand>of(new Demand(jsonObject.getJSONObject(key)));
+		return parse(jsonObject.getJSONObject(key));
+	}
+
+	public static Optional<Demand> parse(JSONObject jsonObject) throws JSONException, ParseException {
+		return Optional.<Demand>of(new Demand(jsonObject));
 	}
 
 	public static LinkedList<Demand> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -62,6 +74,10 @@ public class Demand extends Model {
 			return new LinkedList<Demand>();
 		}
 		JSONArray jsonArray = jsonObject.getJSONArray(key);
+		return parseList(jsonArray);
+	}
+
+	public static LinkedList<Demand> parseList(JSONArray jsonArray) throws JSONException, ParseException {
 		LinkedList<Demand> models = new LinkedList<Demand>();
 		for (Integer i = 0; i < jsonArray.length(); ++i) {
 			if (jsonArray.isNull(i)) {
@@ -90,17 +106,28 @@ public class Demand extends Model {
 		jsonObject.put("unit_assignment_id", toJSON(getUnitAssignmentId().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
 		jsonObject.put("user_id", toJSON(getUserId()));
-		jsonObject.put("arrival_platform", toJSON(getArrivalPlatform()));
+
 		if (getArrivalPlatform().isPresent()) {
 			jsonObject.put("arrival_platform_id", toJSON(getArrivalPlatform().get().getId()));
 		}
-		jsonObject.put("departure_platform", toJSON(getDeparturePlatform()));
+
 		if (getDeparturePlatform().isPresent()) {
 			jsonObject.put("departure_platform_id", toJSON(getDeparturePlatform().get().getId()));
 		}
-		jsonObject.put("reservation", toJSON(getReservation()));
-		jsonObject.put("reservation_candidates", toJSON(getReservationCandidates()));
-		jsonObject.put("user", toJSON(getUser()));
+
+		if (getReservationCandidates().size() > 0) {
+	   		jsonObject.put("reservation_candidates", toJSON(getReservationCandidates()));
+		}
+
+
+		if (getServiceProvider().isPresent()) {
+			jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
+		}
+
+		if (getUnitAssignment().isPresent()) {
+			jsonObject.put("unit_assignment_id", toJSON(getUnitAssignment().get().getId()));
+		}
+
 		if (getUser().isPresent()) {
 			jsonObject.put("user_id", toJSON(getUser().get().getId()));
 		}
@@ -403,6 +430,42 @@ public class Demand extends Model {
 
 	public void clearReservationCandidates() {
 		this.reservationCandidates = new LinkedList<ReservationCandidate>();
+	}
+
+	private Optional<ServiceProvider> serviceProvider = Optional.<ServiceProvider>absent();
+
+	public Optional<ServiceProvider> getServiceProvider() {
+		return wrapNull(serviceProvider);
+	}
+
+	public void setServiceProvider(Optional<ServiceProvider> serviceProvider) {
+		this.serviceProvider = wrapNull(serviceProvider);
+	}
+
+	public void setServiceProvider(ServiceProvider serviceProvider) {
+		this.serviceProvider = Optional.<ServiceProvider>fromNullable(serviceProvider);
+	}
+
+	public void clearServiceProvider() {
+		this.serviceProvider = Optional.<ServiceProvider>absent();
+	}
+
+	private Optional<UnitAssignment> unitAssignment = Optional.<UnitAssignment>absent();
+
+	public Optional<UnitAssignment> getUnitAssignment() {
+		return wrapNull(unitAssignment);
+	}
+
+	public void setUnitAssignment(Optional<UnitAssignment> unitAssignment) {
+		this.unitAssignment = wrapNull(unitAssignment);
+	}
+
+	public void setUnitAssignment(UnitAssignment unitAssignment) {
+		this.unitAssignment = Optional.<UnitAssignment>fromNullable(unitAssignment);
+	}
+
+	public void clearUnitAssignment() {
+		this.unitAssignment = Optional.<UnitAssignment>absent();
 	}
 
 	private Optional<User> user = Optional.<User>absent();

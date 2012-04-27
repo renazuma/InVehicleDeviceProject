@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class ServiceUnitStatusLog extends Model {
-	private static final long serialVersionUID = 8039605775286477543L;
+	private static final long serialVersionUID = 2198726136175473299L;
 
 	public ServiceUnitStatusLog() {
 	}
@@ -38,7 +38,11 @@ public class ServiceUnitStatusLog extends Model {
 		if (!jsonObject.has(key)) {
 			return Optional.<ServiceUnitStatusLog>absent();
 		}
-		return Optional.<ServiceUnitStatusLog>of(new ServiceUnitStatusLog(jsonObject.getJSONObject(key)));
+		return parse(jsonObject.getJSONObject(key));
+	}
+
+	public static Optional<ServiceUnitStatusLog> parse(JSONObject jsonObject) throws JSONException, ParseException {
+		return Optional.<ServiceUnitStatusLog>of(new ServiceUnitStatusLog(jsonObject));
 	}
 
 	public static LinkedList<ServiceUnitStatusLog> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -46,6 +50,10 @@ public class ServiceUnitStatusLog extends Model {
 			return new LinkedList<ServiceUnitStatusLog>();
 		}
 		JSONArray jsonArray = jsonObject.getJSONArray(key);
+		return parseList(jsonArray);
+	}
+
+	public static LinkedList<ServiceUnitStatusLog> parseList(JSONArray jsonArray) throws JSONException, ParseException {
 		LinkedList<ServiceUnitStatusLog> models = new LinkedList<ServiceUnitStatusLog>();
 		for (Integer i = 0; i < jsonArray.length(); ++i) {
 			if (jsonArray.isNull(i)) {
@@ -68,7 +76,7 @@ public class ServiceUnitStatusLog extends Model {
 		jsonObject.put("status", toJSON(getStatus().orNull()));
 		jsonObject.put("temperature", toJSON(getTemperature().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
-		jsonObject.put("service_unit", toJSON(getServiceUnit()));
+
 		if (getServiceUnit().isPresent()) {
 			jsonObject.put("service_unit_id", toJSON(getServiceUnit().get().getId()));
 		}

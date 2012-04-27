@@ -11,7 +11,7 @@ import com.kogasoftware.odt.webapi.model.User;
 
 public class LoginTestCase extends TestCase {
 	private String token = "";
-	private WebAPI api = new WebAPI();
+	private WebAPI api = new WebAPI(WebAPITestCase.SERVER_HOST);
 
 	@Override
 	public void setUp() throws Exception {

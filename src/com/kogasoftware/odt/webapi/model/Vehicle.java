@@ -12,20 +12,21 @@ import org.json.JSONObject;
 
 import com.google.common.base.Optional;
 
-public class Driver extends Model {
-	private static final long serialVersionUID = 1306623082054917421L;
+public class Vehicle extends Model {
+	private static final long serialVersionUID = 6488423981759487012L;
 
-	public Driver() {
+	public Vehicle() {
 	}
 
-	public Driver(JSONObject jsonObject) throws JSONException, ParseException {
+	public Vehicle(JSONObject jsonObject) throws JSONException, ParseException {
+		setCapacity(parseInteger(jsonObject, "capacity"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
-		setFirstName(parseString(jsonObject, "first_name"));
 		setId(parseInteger(jsonObject, "id"));
-		setLastName(parseString(jsonObject, "last_name"));
+		setImage(parseOptionalString(jsonObject, "image"));
+		setModelName(parseString(jsonObject, "model_name"));
+		setNumber(parseString(jsonObject, "number"));
 		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
-		setTelephoneNumber(parseString(jsonObject, "telephone_number"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
 		if (getServiceProvider().isPresent()) {
@@ -34,32 +35,32 @@ public class Driver extends Model {
 		setServiceUnits(ServiceUnit.parseList(jsonObject, "service_units"));
 	}
 
-	public static Optional<Driver> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	public static Optional<Vehicle> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
 		if (!jsonObject.has(key)) {
-			return Optional.<Driver>absent();
+			return Optional.<Vehicle>absent();
 		}
 		return parse(jsonObject.getJSONObject(key));
 	}
 
-	public static Optional<Driver> parse(JSONObject jsonObject) throws JSONException, ParseException {
-		return Optional.<Driver>of(new Driver(jsonObject));
+	public static Optional<Vehicle> parse(JSONObject jsonObject) throws JSONException, ParseException {
+		return Optional.<Vehicle>of(new Vehicle(jsonObject));
 	}
 
-	public static LinkedList<Driver> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	public static LinkedList<Vehicle> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
 		if (!jsonObject.has(key)) {
-			return new LinkedList<Driver>();
+			return new LinkedList<Vehicle>();
 		}
 		JSONArray jsonArray = jsonObject.getJSONArray(key);
 		return parseList(jsonArray);
 	}
 
-	public static LinkedList<Driver> parseList(JSONArray jsonArray) throws JSONException, ParseException {
-		LinkedList<Driver> models = new LinkedList<Driver>();
+	public static LinkedList<Vehicle> parseList(JSONArray jsonArray) throws JSONException, ParseException {
+		LinkedList<Vehicle> models = new LinkedList<Vehicle>();
 		for (Integer i = 0; i < jsonArray.length(); ++i) {
 			if (jsonArray.isNull(i)) {
 				continue;
 			}
-			models.add(new Driver(jsonArray.getJSONObject(i)));
+			models.add(new Vehicle(jsonArray.getJSONObject(i)));
 		}
 		return models;
 	}
@@ -67,13 +68,14 @@ public class Driver extends Model {
 	@Override
 	public JSONObject toJSONObject() throws JSONException {
 		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("capacity", toJSON(getCapacity()));
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
 		jsonObject.put("deleted_at", toJSON(getDeletedAt().orNull()));
-		jsonObject.put("first_name", toJSON(getFirstName()));
 		jsonObject.put("id", toJSON(getId()));
-		jsonObject.put("last_name", toJSON(getLastName()));
+		jsonObject.put("image", toJSON(getImage().orNull()));
+		jsonObject.put("model_name", toJSON(getModelName()));
+		jsonObject.put("number", toJSON(getNumber()));
 		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
-		jsonObject.put("telephone_number", toJSON(getTelephoneNumber()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
 
 		if (getServiceProvider().isPresent()) {
@@ -84,6 +86,16 @@ public class Driver extends Model {
 		}
 
 		return jsonObject;
+	}
+
+	private Integer capacity = 0;
+
+	public Integer getCapacity() {
+		return wrapNull(capacity);
+	}
+
+	public void setCapacity(Integer capacity) {
+		this.capacity = wrapNull(capacity);
 	}
 
 	private Date createdAt = new Date();
@@ -114,16 +126,6 @@ public class Driver extends Model {
 		this.deletedAt = Optional.<Date>absent();
 	}
 
-	private String firstName = "";
-
-	public String getFirstName() {
-		return wrapNull(firstName);
-	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = wrapNull(firstName);
-	}
-
 	private Integer id = 0;
 
 	public Integer getId() {
@@ -134,14 +136,42 @@ public class Driver extends Model {
 		this.id = wrapNull(id);
 	}
 
-	private String lastName = "";
+	private Optional<String> image = Optional.<String>absent();
 
-	public String getLastName() {
-		return wrapNull(lastName);
+	public Optional<String> getImage() {
+		return wrapNull(image);
 	}
 
-	public void setLastName(String lastName) {
-		this.lastName = wrapNull(lastName);
+	public void setImage(Optional<String> image) {
+		this.image = wrapNull(image);
+	}
+
+	public void setImage(String image) {
+		this.image = Optional.fromNullable(image);
+	}
+
+	public void clearImage() {
+		this.image = Optional.<String>absent();
+	}
+
+	private String modelName = "";
+
+	public String getModelName() {
+		return wrapNull(modelName);
+	}
+
+	public void setModelName(String modelName) {
+		this.modelName = wrapNull(modelName);
+	}
+
+	private String number = "";
+
+	public String getNumber() {
+		return wrapNull(number);
+	}
+
+	public void setNumber(String number) {
+		this.number = wrapNull(number);
 	}
 
 	private Optional<Integer> serviceProviderId = Optional.<Integer>absent();
@@ -160,16 +190,6 @@ public class Driver extends Model {
 
 	public void clearServiceProviderId() {
 		this.serviceProviderId = Optional.<Integer>absent();
-	}
-
-	private String telephoneNumber = "";
-
-	public String getTelephoneNumber() {
-		return wrapNull(telephoneNumber);
-	}
-
-	public void setTelephoneNumber(String telephoneNumber) {
-		this.telephoneNumber = wrapNull(telephoneNumber);
 	}
 
 	private Date updatedAt = new Date();

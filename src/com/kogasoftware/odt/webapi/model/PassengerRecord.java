@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class PassengerRecord extends Model {
-	private static final long serialVersionUID = 3416828961776058175L;
+	private static final long serialVersionUID = 2851308127290202318L;
 
 	public PassengerRecord() {
 	}
@@ -44,13 +44,21 @@ public class PassengerRecord extends Model {
 		if (getReservation().isPresent()) {
 			setReservationId(getReservation().get().getId());
 		}
+		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
+		if (getServiceProvider().isPresent()) {
+			setServiceProviderId(getServiceProvider().get().getId());
+		}
 	}
 
 	public static Optional<PassengerRecord> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
 		if (!jsonObject.has(key)) {
 			return Optional.<PassengerRecord>absent();
 		}
-		return Optional.<PassengerRecord>of(new PassengerRecord(jsonObject.getJSONObject(key)));
+		return parse(jsonObject.getJSONObject(key));
+	}
+
+	public static Optional<PassengerRecord> parse(JSONObject jsonObject) throws JSONException, ParseException {
+		return Optional.<PassengerRecord>of(new PassengerRecord(jsonObject));
 	}
 
 	public static LinkedList<PassengerRecord> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -58,6 +66,10 @@ public class PassengerRecord extends Model {
 			return new LinkedList<PassengerRecord>();
 		}
 		JSONArray jsonArray = jsonObject.getJSONArray(key);
+		return parseList(jsonArray);
+	}
+
+	public static LinkedList<PassengerRecord> parseList(JSONArray jsonArray) throws JSONException, ParseException {
 		LinkedList<PassengerRecord> models = new LinkedList<PassengerRecord>();
 		for (Integer i = 0; i < jsonArray.length(); ++i) {
 			if (jsonArray.isNull(i)) {
@@ -84,17 +96,21 @@ public class PassengerRecord extends Model {
 		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
 		jsonObject.put("timestamp", toJSON(getTimestamp().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
-		jsonObject.put("arrival_operation_schedule", toJSON(getArrivalOperationSchedule()));
+
 		if (getArrivalOperationSchedule().isPresent()) {
 			jsonObject.put("arrival_operation_schedule_id", toJSON(getArrivalOperationSchedule().get().getId()));
 		}
-		jsonObject.put("departure_operation_schedule", toJSON(getDepartureOperationSchedule()));
+
 		if (getDepartureOperationSchedule().isPresent()) {
 			jsonObject.put("departure_operation_schedule_id", toJSON(getDepartureOperationSchedule().get().getId()));
 		}
-		jsonObject.put("reservation", toJSON(getReservation()));
+
 		if (getReservation().isPresent()) {
 			jsonObject.put("reservation_id", toJSON(getReservation().get().getId()));
+		}
+
+		if (getServiceProvider().isPresent()) {
+			jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
 		}
 		return jsonObject;
 	}
@@ -337,5 +353,23 @@ public class PassengerRecord extends Model {
 
 	public void clearReservation() {
 		this.reservation = Optional.<Reservation>absent();
+	}
+
+	private Optional<ServiceProvider> serviceProvider = Optional.<ServiceProvider>absent();
+
+	public Optional<ServiceProvider> getServiceProvider() {
+		return wrapNull(serviceProvider);
+	}
+
+	public void setServiceProvider(Optional<ServiceProvider> serviceProvider) {
+		this.serviceProvider = wrapNull(serviceProvider);
+	}
+
+	public void setServiceProvider(ServiceProvider serviceProvider) {
+		this.serviceProvider = Optional.<ServiceProvider>fromNullable(serviceProvider);
+	}
+
+	public void clearServiceProvider() {
+		this.serviceProvider = Optional.<ServiceProvider>absent();
 	}
 }

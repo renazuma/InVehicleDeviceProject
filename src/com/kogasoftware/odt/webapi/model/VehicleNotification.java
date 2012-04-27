@@ -13,16 +13,17 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class VehicleNotification extends Model {
-	private static final long serialVersionUID = 3383113656645715911L;
+	private static final long serialVersionUID = 270615885075205969L;
 
 	public VehicleNotification() {
 	}
 
 	public VehicleNotification(JSONObject jsonObject) throws JSONException, ParseException {
-		setBody(parseOptionalString(jsonObject, "body"));
+		setBody(parseString(jsonObject, "body"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setId(parseInteger(jsonObject, "id"));
 		setInVehicleDeviceId(parseInteger(jsonObject, "in_vehicle_device_id"));
+		setNotificationType(parseInteger(jsonObject, "notification_type"));
 		setOperatorId(parseInteger(jsonObject, "operator_id"));
 		setReadAt(parseOptionalDate(jsonObject, "read_at"));
 		setResponse(parseOptionalInteger(jsonObject, "response"));
@@ -41,7 +42,11 @@ public class VehicleNotification extends Model {
 		if (!jsonObject.has(key)) {
 			return Optional.<VehicleNotification>absent();
 		}
-		return Optional.<VehicleNotification>of(new VehicleNotification(jsonObject.getJSONObject(key)));
+		return parse(jsonObject.getJSONObject(key));
+	}
+
+	public static Optional<VehicleNotification> parse(JSONObject jsonObject) throws JSONException, ParseException {
+		return Optional.<VehicleNotification>of(new VehicleNotification(jsonObject));
 	}
 
 	public static LinkedList<VehicleNotification> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -49,6 +54,10 @@ public class VehicleNotification extends Model {
 			return new LinkedList<VehicleNotification>();
 		}
 		JSONArray jsonArray = jsonObject.getJSONArray(key);
+		return parseList(jsonArray);
+	}
+
+	public static LinkedList<VehicleNotification> parseList(JSONArray jsonArray) throws JSONException, ParseException {
 		LinkedList<VehicleNotification> models = new LinkedList<VehicleNotification>();
 		for (Integer i = 0; i < jsonArray.length(); ++i) {
 			if (jsonArray.isNull(i)) {
@@ -62,41 +71,34 @@ public class VehicleNotification extends Model {
 	@Override
 	public JSONObject toJSONObject() throws JSONException {
 		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("body", toJSON(getBody().orNull()));
+		jsonObject.put("body", toJSON(getBody()));
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
 		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("in_vehicle_device_id", toJSON(getInVehicleDeviceId()));
+		jsonObject.put("notification_type", toJSON(getNotificationType()));
 		jsonObject.put("operator_id", toJSON(getOperatorId()));
 		jsonObject.put("read_at", toJSON(getReadAt().orNull()));
 		jsonObject.put("response", toJSON(getResponse().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
-		jsonObject.put("in_vehicle_device", toJSON(getInVehicleDevice()));
+
 		if (getInVehicleDevice().isPresent()) {
 			jsonObject.put("in_vehicle_device_id", toJSON(getInVehicleDevice().get().getId()));
 		}
-		jsonObject.put("operator", toJSON(getOperator()));
+
 		if (getOperator().isPresent()) {
 			jsonObject.put("operator_id", toJSON(getOperator().get().getId()));
 		}
 		return jsonObject;
 	}
 
-	private Optional<String> body = Optional.<String>absent();
+	private String body = "";
 
-	public Optional<String> getBody() {
+	public String getBody() {
 		return wrapNull(body);
 	}
 
-	public void setBody(Optional<String> body) {
-		this.body = wrapNull(body);
-	}
-
 	public void setBody(String body) {
-		this.body = Optional.fromNullable(body);
-	}
-
-	public void clearBody() {
-		this.body = Optional.<String>absent();
+		this.body = wrapNull(body);
 	}
 
 	private Date createdAt = new Date();
@@ -127,6 +129,16 @@ public class VehicleNotification extends Model {
 
 	public void setInVehicleDeviceId(Integer inVehicleDeviceId) {
 		this.inVehicleDeviceId = wrapNull(inVehicleDeviceId);
+	}
+
+	private Integer notificationType = 0;
+
+	public Integer getNotificationType() {
+		return wrapNull(notificationType);
+	}
+
+	public void setNotificationType(Integer notificationType) {
+		this.notificationType = wrapNull(notificationType);
 	}
 
 	private Integer operatorId = 0;

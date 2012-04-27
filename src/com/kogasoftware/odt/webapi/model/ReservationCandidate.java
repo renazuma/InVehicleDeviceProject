@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class ReservationCandidate extends Model {
-	private static final long serialVersionUID = 2810934971351158807L;
+	private static final long serialVersionUID = 2805023088374230941L;
 
 	public ReservationCandidate() {
 	}
@@ -45,6 +45,14 @@ public class ReservationCandidate extends Model {
 		if (getDeparturePlatform().isPresent()) {
 			setDeparturePlatformId(getDeparturePlatform().get().getId());
 		}
+		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
+		if (getServiceProvider().isPresent()) {
+			setServiceProviderId(getServiceProvider().get().getId());
+		}
+		setUnitAssignment(UnitAssignment.parse(jsonObject, "unit_assignment"));
+		if (getUnitAssignment().isPresent()) {
+			setUnitAssignmentId(getUnitAssignment().get().getId());
+		}
 		setUser(User.parse(jsonObject, "user"));
 		if (getUser().isPresent()) {
 			setUserId(getUser().get().getId());
@@ -55,7 +63,11 @@ public class ReservationCandidate extends Model {
 		if (!jsonObject.has(key)) {
 			return Optional.<ReservationCandidate>absent();
 		}
-		return Optional.<ReservationCandidate>of(new ReservationCandidate(jsonObject.getJSONObject(key)));
+		return parse(jsonObject.getJSONObject(key));
+	}
+
+	public static Optional<ReservationCandidate> parse(JSONObject jsonObject) throws JSONException, ParseException {
+		return Optional.<ReservationCandidate>of(new ReservationCandidate(jsonObject));
 	}
 
 	public static LinkedList<ReservationCandidate> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -63,6 +75,10 @@ public class ReservationCandidate extends Model {
 			return new LinkedList<ReservationCandidate>();
 		}
 		JSONArray jsonArray = jsonObject.getJSONArray(key);
+		return parseList(jsonArray);
+	}
+
+	public static LinkedList<ReservationCandidate> parseList(JSONArray jsonArray) throws JSONException, ParseException {
 		LinkedList<ReservationCandidate> models = new LinkedList<ReservationCandidate>();
 		for (Integer i = 0; i < jsonArray.length(); ++i) {
 			if (jsonArray.isNull(i)) {
@@ -90,19 +106,27 @@ public class ReservationCandidate extends Model {
 		jsonObject.put("unit_assignment_id", toJSON(getUnitAssignmentId().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
 		jsonObject.put("user_id", toJSON(getUserId().orNull()));
-		jsonObject.put("arrival_platform", toJSON(getArrivalPlatform()));
+
 		if (getArrivalPlatform().isPresent()) {
 			jsonObject.put("arrival_platform_id", toJSON(getArrivalPlatform().get().getId()));
 		}
-		jsonObject.put("demand", toJSON(getDemand()));
+
 		if (getDemand().isPresent()) {
 			jsonObject.put("demand_id", toJSON(getDemand().get().getId()));
 		}
-		jsonObject.put("departure_platform", toJSON(getDeparturePlatform()));
+
 		if (getDeparturePlatform().isPresent()) {
 			jsonObject.put("departure_platform_id", toJSON(getDeparturePlatform().get().getId()));
 		}
-		jsonObject.put("user", toJSON(getUser()));
+
+		if (getServiceProvider().isPresent()) {
+			jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
+		}
+
+		if (getUnitAssignment().isPresent()) {
+			jsonObject.put("unit_assignment_id", toJSON(getUnitAssignment().get().getId()));
+		}
+
 		if (getUser().isPresent()) {
 			jsonObject.put("user_id", toJSON(getUser().get().getId()));
 		}
@@ -349,6 +373,42 @@ public class ReservationCandidate extends Model {
 
 	public void clearDeparturePlatform() {
 		this.departurePlatform = Optional.<Platform>absent();
+	}
+
+	private Optional<ServiceProvider> serviceProvider = Optional.<ServiceProvider>absent();
+
+	public Optional<ServiceProvider> getServiceProvider() {
+		return wrapNull(serviceProvider);
+	}
+
+	public void setServiceProvider(Optional<ServiceProvider> serviceProvider) {
+		this.serviceProvider = wrapNull(serviceProvider);
+	}
+
+	public void setServiceProvider(ServiceProvider serviceProvider) {
+		this.serviceProvider = Optional.<ServiceProvider>fromNullable(serviceProvider);
+	}
+
+	public void clearServiceProvider() {
+		this.serviceProvider = Optional.<ServiceProvider>absent();
+	}
+
+	private Optional<UnitAssignment> unitAssignment = Optional.<UnitAssignment>absent();
+
+	public Optional<UnitAssignment> getUnitAssignment() {
+		return wrapNull(unitAssignment);
+	}
+
+	public void setUnitAssignment(Optional<UnitAssignment> unitAssignment) {
+		this.unitAssignment = wrapNull(unitAssignment);
+	}
+
+	public void setUnitAssignment(UnitAssignment unitAssignment) {
+		this.unitAssignment = Optional.<UnitAssignment>fromNullable(unitAssignment);
+	}
+
+	public void clearUnitAssignment() {
+		this.unitAssignment = Optional.<UnitAssignment>absent();
 	}
 
 	private Optional<User> user = Optional.<User>absent();
