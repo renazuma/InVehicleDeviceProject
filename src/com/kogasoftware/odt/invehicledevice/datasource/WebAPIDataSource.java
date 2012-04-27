@@ -6,10 +6,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.json.JSONException;
 
@@ -67,14 +66,14 @@ public class WebAPIDataSource implements DataSource {
 	public <T> int callWebAPISynchronously(final WebAPICaller<T> caller,
 			final WebAPICallback<T> extraCallback) throws WebAPIException {
 		final AtomicInteger outputReqkey = new AtomicInteger(-1);
-		final Set<Runnable> outputRunnable = new CopyOnWriteArraySet<Runnable>();
-		final Set<WebAPIException> outputException = new CopyOnWriteArraySet<WebAPIException>();
+		final AtomicReference<Runnable> outputRunnable = new AtomicReference<Runnable>();
+		final AtomicReference<WebAPIException> outputException = new AtomicReference<WebAPIException>();
 		final CountDownLatch latch = new CountDownLatch(1);
 		final WebAPICallback<T> synchronousCallback = new WebAPICallback<T>() {
 			@Override
 			public void onException(final int reqkey, final WebAPIException ex) {
 				outputReqkey.set(reqkey);
-				outputRunnable.add(new Runnable() {
+				outputRunnable.set(new Runnable() {
 					@Override
 					public void run() {
 						caller.onException(reqkey, ex);
@@ -88,7 +87,7 @@ public class WebAPIDataSource implements DataSource {
 			public void onFailed(final int reqkey, final int statusCode,
 					final String response) {
 				outputReqkey.set(reqkey);
-				outputRunnable.add(new Runnable() {
+				outputRunnable.set(new Runnable() {
 					@Override
 					public void run() {
 						caller.onFailed(reqkey, statusCode, response);
@@ -102,7 +101,7 @@ public class WebAPIDataSource implements DataSource {
 			public void onSucceed(final int reqkey, final int statusCode,
 					final T result) {
 				outputReqkey.set(reqkey);
-				outputRunnable.add(new Runnable() {
+				outputRunnable.set(new Runnable() {
 					@Override
 					public void run() {
 						caller.onSucceed(reqkey, statusCode, result);
@@ -118,9 +117,9 @@ public class WebAPIDataSource implements DataSource {
 				try {
 					caller.call(synchronousCallback);
 				} catch (JSONException e) {
-					outputException.add(new WebAPIException(true, e));
+					outputException.set(new WebAPIException(true, e));
 				} catch (WebAPIException e) {
-					outputException.add(e);
+					outputException.set(e);
 					latch.countDown();
 				}
 			}
@@ -136,12 +135,12 @@ public class WebAPIDataSource implements DataSource {
 			throw new WebAPIException(true, e);
 		}
 
-		if (!outputException.isEmpty()) {
-			throw outputException.iterator().next();
+		if (outputException.get() != null) {
+			throw outputException.get();
 		}
 
-		if (!outputRunnable.isEmpty()) {
-			outputRunnable.iterator().next().run();
+		if (outputRunnable.get() != null) {
+			outputRunnable.get().run();
 		}
 		return outputReqkey.get();
 	}
