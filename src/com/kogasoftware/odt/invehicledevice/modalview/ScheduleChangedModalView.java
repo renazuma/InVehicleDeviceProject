@@ -59,6 +59,7 @@ public class ScheduleChangedModalView extends ModalView {
 
 		TextView scheduleChangedTextView = (TextView) findViewById(R.id.schedule_changed_text_view);
 		scheduleChangedTextView.setText(message);
+		getLogic().speak(message.toString());
 
 		// 表示したスケジュール変更通知を、responseを指定して返信リストへ追加
 		for (VehicleNotification vehicleNotification : vehicleNotifications) {

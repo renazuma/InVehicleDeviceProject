@@ -17,7 +17,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import com.google.common.base.Optional;
-import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.Status;
@@ -79,7 +78,6 @@ public class DrivePhaseView extends PhaseView implements AnimationListener {
 	}
 
 	@Override
-	@Subscribe
 	public void enterDrivePhase(EnterDrivePhaseEvent event) {
 		hideAnimation.cancel();
 
@@ -147,7 +145,6 @@ public class DrivePhaseView extends PhaseView implements AnimationListener {
 	}
 
 	@Override
-	@Subscribe
 	public void enterPlatformPhase(EnterPlatformPhaseEvent event) {
 		if (isShown()) {
 			startAnimation(hideAnimation);
