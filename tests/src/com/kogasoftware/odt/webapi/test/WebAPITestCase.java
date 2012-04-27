@@ -191,7 +191,7 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 		
 		assertNotNull(notifications);
 		assertEquals(1, notifications.size());
-		assertEquals("テスト通知メッセージ2です。", notifications.get(0).getBody().orNull());
+		assertEquals("テスト通知メッセージ2です。", notifications.get(0).getBody());
 	}
 	
 	List<OperationSchedule> schedules;
