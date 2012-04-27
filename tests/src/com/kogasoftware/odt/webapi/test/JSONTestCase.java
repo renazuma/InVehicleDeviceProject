@@ -19,7 +19,7 @@ public class JSONTestCase extends TestCase {
 		 assertEquals(1, vl.size());
 		 
 		 VehicleNotification vn = vl.getFirst();		 
-		 assertEquals("テストメッセージ", vn.getBody().get());
+		 assertEquals("テストメッセージ", vn.getBody());
 		 assertFalse(vn.getOperator().isPresent());
 	 }
 	 
@@ -29,7 +29,7 @@ public class JSONTestCase extends TestCase {
 		 JSONObject jsonObject = new JSONObject(json);
 		 
 		 VehicleNotification vn = VehicleNotification.parse(jsonObject).orNull();
-		 assertNull(vn.getBody().orNull());
+		 assertNull(vn.getBody());
 		 assertNull(vn.getReadAt().orNull());
 		 assertNull(vn.getResponse().orNull());
 	 }
@@ -40,7 +40,7 @@ public class JSONTestCase extends TestCase {
 		 JSONObject jsonObject = new JSONObject(json);
 		 
 		 VehicleNotification vn = VehicleNotification.parse(jsonObject).orNull();
-		 assertNull(vn.getBody().orNull());
+		 assertNull(vn.getBody());
 		 assertNull(vn.getReadAt().orNull());
 		 assertNull(vn.getResponse().orNull());
 	 }
@@ -51,7 +51,7 @@ public class JSONTestCase extends TestCase {
 		 JSONObject jsonObject = new JSONObject(json);
 		 
 		 VehicleNotification vn = VehicleNotification.parse(jsonObject).orNull();
-		 assertEquals("null", vn.getBody().orNull());
+		 assertEquals("null", vn.getBody());
 		 assertNull(vn.getReadAt().orNull());
 		 assertNull(vn.getResponse().orNull());
 	 }
