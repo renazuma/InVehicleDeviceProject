@@ -33,10 +33,6 @@ bundle install
 bundle exec rails server -d -p 3333
 cd ..
 
-cd AndroidWebTestAPI
-git checkout fix_ci_script
-cd ..
-
 sed 's%^\(.*/AndroidWebTestAPI\)$%#\1%' --in-place tests/project.properties
 cat tests/project.properties
 cp -ru AndroidWebTestAPI/src tests/src
