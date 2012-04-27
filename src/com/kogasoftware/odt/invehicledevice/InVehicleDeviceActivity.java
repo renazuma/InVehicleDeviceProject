@@ -32,15 +32,17 @@ import com.kogasoftware.odt.invehicledevice.event.EnterFinishPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.event.EnterPlatformPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.event.ExitEvent;
 import com.kogasoftware.odt.invehicledevice.event.SignalStrengthChangedEvent;
+import com.kogasoftware.odt.invehicledevice.event.UpdatedOperationScheduleReceivedEvent;
+import com.kogasoftware.odt.invehicledevice.event.VehicleNotificationReceivedEvent;
 import com.kogasoftware.odt.invehicledevice.modalview.NavigationModalView;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
-import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class InVehicleDeviceActivity extends Activity {
 	private static final String TAG = InVehicleDeviceActivity.class
 			.getSimpleName();
 
-	private static final int UPDATE_TIME_INTERVAL = 3000;
+	private static final int UPDATE_TIME_INTERVAL_MILLIS = 3000;
+	private static final int ALERT_SHOW_INTERVAL_MILLIS = 500;
 
 	private static final int WAIT_FOR_INITIALIZE_DIALOG_ID = 10;
 
@@ -60,7 +62,41 @@ public class InVehicleDeviceActivity extends Activity {
 			DateFormat f = new SimpleDateFormat(getResources().getString(
 					R.string.present_time_format));
 			presentTimeTextView.setText(f.format(now));
-			handler.postDelayed(this, UPDATE_TIME_INTERVAL);
+			handler.postDelayed(this, UPDATE_TIME_INTERVAL_MILLIS);
+		}
+	};
+
+	private final Runnable alertVehicleNotification = new Runnable() {
+		private Integer count = 0;
+
+		@Override
+		public void run() {
+			if (count > 10) { // TODO 定数
+				count = 0;
+				alertImageView.setVisibility(View.GONE);
+				return;
+			}
+			count++;
+			alertImageView.setVisibility(count % 2 == 0 ? View.VISIBLE
+					: View.GONE);
+			handler.postDelayed(this, ALERT_SHOW_INTERVAL_MILLIS);
+		}
+	};
+
+	private final Runnable alertOperationScheduleChanged = new Runnable() {
+		private Integer count = 0;
+
+		@Override
+		public void run() {
+			if (count > 10) { // TODO 定数
+				count = 0;
+				alertImageView.setVisibility(View.GONE);
+				return;
+			}
+			count++;
+			alertImageView.setVisibility(count % 2 == 0 ? View.VISIBLE
+					: View.GONE);
+			handler.postDelayed(this, ALERT_SHOW_INTERVAL_MILLIS);
 		}
 	};
 
@@ -73,6 +109,7 @@ public class InVehicleDeviceActivity extends Activity {
 	private Button configButton = null;
 	private Button scheduleButton = null;
 	private Button changePhaseButton = null;
+	private ImageView alertImageView = null;
 	private NavigationModalView navigationModalView = null;
 
 	@Subscribe
@@ -165,6 +202,7 @@ public class InVehicleDeviceActivity extends Activity {
 		scheduleButton = (Button) findViewById(R.id.schedule_button);
 		navigationModalView = (NavigationModalView) findViewById(R.id.navigation_modal_view);
 		networkStrengthImageView = (ImageView) findViewById(R.id.network_strength_image_view);
+		alertImageView = (ImageView) findViewById(R.id.alert_image_view);
 
 		contentView.setVisibility(View.GONE); // InVehicleDeviceLogicの準備が終わるまでcontentViewを非表示
 		getWindow().getDecorView().setBackgroundColor(Color.BLACK); // ProgressDialogと親和性の高い色にする
@@ -190,18 +228,6 @@ public class InVehicleDeviceActivity extends Activity {
 			@Override
 			public void onClick(View view) {
 				commonLogic.showScheduleModalView();
-			}
-		});
-
-		View test = findViewById(R.id.phase_text_view);
-		test.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				VehicleNotification n = new VehicleNotification();
-				n.setBody("通知です");
-				List<VehicleNotification> l = new LinkedList<VehicleNotification>();
-				l.add(n);
-				commonLogic.showNotificationModalView(l);
 			}
 		});
 
@@ -250,6 +276,8 @@ public class InVehicleDeviceActivity extends Activity {
 		super.onDestroy();
 
 		handler.removeCallbacks(updateTime);
+		handler.removeCallbacks(alertOperationScheduleChanged);
+		handler.removeCallbacks(alertVehicleNotification);
 
 		commonLogic.dispose();
 		backgroundThread.interrupt();
@@ -285,6 +313,21 @@ public class InVehicleDeviceActivity extends Activity {
 	}
 
 	@Subscribe
+	public void startAlertOperationScheduleChanged(
+			UpdatedOperationScheduleReceivedEvent e) {
+		if (!isFinishing()) {
+			handler.post(alertOperationScheduleChanged);
+		}
+	}
+
+	@Subscribe
+	public void startAlertVehicleNotification(VehicleNotificationReceivedEvent e) {
+		if (!isFinishing()) {
+			handler.post(alertVehicleNotification);
+		}
+	}
+
+	@Subscribe
 	public void startUi(CommonLogicLoadCompleteEvent event) {
 		try {
 			dismissDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
@@ -306,5 +349,4 @@ public class InVehicleDeviceActivity extends Activity {
 	public void waitForStartUi() throws InterruptedException {
 		waitForStartUiLatch.await();
 	}
-
 }

@@ -29,12 +29,13 @@ import com.kogasoftware.odt.invehicledevice.event.EnterFinishPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.event.EnterPlatformPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.event.UiEventBus;
 import com.kogasoftware.odt.invehicledevice.event.UnexpectedReservationAddedEvent;
-import com.kogasoftware.odt.invehicledevice.event.UpdateOperationScheduleCompleteEvent;
+import com.kogasoftware.odt.invehicledevice.event.UpdatedOperationScheduleMergedEvent;
 import com.kogasoftware.odt.invehicledevice.modalview.ConfigModalView;
 import com.kogasoftware.odt.invehicledevice.modalview.MemoModalView;
 import com.kogasoftware.odt.invehicledevice.modalview.NotificationModalView;
 import com.kogasoftware.odt.invehicledevice.modalview.PauseModalView;
 import com.kogasoftware.odt.invehicledevice.modalview.ReturnPathModalView;
+import com.kogasoftware.odt.invehicledevice.modalview.ScheduleChangedModalView;
 import com.kogasoftware.odt.invehicledevice.modalview.ScheduleModalView;
 import com.kogasoftware.odt.invehicledevice.modalview.StartCheckModalView;
 import com.kogasoftware.odt.invehicledevice.modalview.StopCheckModalView;
@@ -44,7 +45,6 @@ import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.User;
-import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 /**
  * 車載機の内部共通ロジック
@@ -409,7 +409,7 @@ public class CommonLogic {
 	}
 
 	@Subscribe
-	public void restoreStatus(UpdateOperationScheduleCompleteEvent event) {
+	public void restoreStatus(UpdatedOperationScheduleMergedEvent event) {
 		restoreStatus();
 	}
 
@@ -442,14 +442,16 @@ public class CommonLogic {
 		eventBus.post(new MemoModalView.ShowEvent(reservation));
 	}
 
-	public void showNotificationModalView(
-			List<VehicleNotification> vehicleNotifications) {
-		speak("管理者から連絡があります");
-		eventBus.post(new NotificationModalView.ShowEvent(vehicleNotifications));
+	public void showNotificationModalView() {
+		eventBus.post(new NotificationModalView.ShowEvent());
 	}
 
 	public void showReturnPathModalView(Reservation reservation) {
 		eventBus.post(new ReturnPathModalView.ShowEvent(reservation));
+	}
+
+	public void showScheduleChangedModalView() {
+		eventBus.post(new ScheduleChangedModalView.ShowEvent());
 	}
 
 	public void showScheduleModalView() {

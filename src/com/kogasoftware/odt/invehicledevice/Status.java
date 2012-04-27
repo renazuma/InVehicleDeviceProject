@@ -54,5 +54,6 @@ public class Status implements Serializable {
 	public final LinkedList<PassengerRecord> selectedPassengerRecords = new LinkedList<PassengerRecord>();
 	public final LinkedList<PassengerRecord> unexpectedPassengerRecords = new LinkedList<PassengerRecord>();
 	public final LinkedList<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();;
-	public final LinkedList<VehicleNotification> operationScheduleChangedVehicleNotifications = new LinkedList<VehicleNotification>();
+	public final LinkedList<VehicleNotification> receivingOperationScheduleChangedVehicleNotifications = new LinkedList<VehicleNotification>();
+	public final LinkedList<VehicleNotification> receivedOperationScheduleChangedVehicleNotifications = new LinkedList<VehicleNotification>();
 }

@@ -129,9 +129,36 @@ public class ScheduleChangedTestDataSource implements DataSource {
 		List<VehicleNotification> l = new LinkedList<VehicleNotification>();
 		if (phase.compareAndSet(1, 2)) {
 			VehicleNotification v = new VehicleNotification();
+			v.setId(1);
 			v.setBody("運行スケジュールが変更されました");
 			v.setNotificationType(CommonLogic.VEHICLE_NOTIFICATION_TYPE_SCHEDULE_CHANGED);
 			l.add(v);
+			return l;
+		} else if (phase.compareAndSet(3, 4)) {
+			try {
+				Thread.sleep(15000);
+			} catch (InterruptedException e) {
+				return l;
+			}
+			VehicleNotification v = new VehicleNotification();
+			v.setId(2);
+			v.setBody("のてぃふぃけーしょん1");
+			l.add(v);
+			return l;
+		} else if (phase.compareAndSet(4, 5)) {
+			try {
+				Thread.sleep(15000);
+			} catch (InterruptedException e) {
+				return l;
+			}
+			VehicleNotification v1 = new VehicleNotification();
+			v1.setId(3);
+			v1.setBody("のてぃふぃけーしょん2");
+			l.add(v1);
+			VehicleNotification v2 = new VehicleNotification();
+			v2.setId(4);
+			v2.setBody("のてぃふぃけーしょん3");
+			l.add(v2);
 			return l;
 		}
 		return l;

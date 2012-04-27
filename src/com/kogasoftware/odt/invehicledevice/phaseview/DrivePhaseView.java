@@ -149,7 +149,9 @@ public class DrivePhaseView extends PhaseView implements AnimationListener {
 	@Override
 	@Subscribe
 	public void enterPlatformPhase(EnterPlatformPhaseEvent event) {
-		startAnimation(hideAnimation);
+		if (isShown()) {
+			startAnimation(hideAnimation);
+		}
 	}
 
 	@Override

@@ -12,7 +12,8 @@ import com.kogasoftware.odt.invehicledevice.StatusAccess.VoidReader;
 import com.kogasoftware.odt.invehicledevice.StatusAccess.Writer;
 import com.kogasoftware.odt.invehicledevice.Utility;
 import com.kogasoftware.odt.invehicledevice.event.StartOperationScheduleUpdateEvent;
-import com.kogasoftware.odt.invehicledevice.event.UpdateOperationScheduleCompleteEvent;
+import com.kogasoftware.odt.invehicledevice.event.UpdatedOperationScheduleMergedEvent;
+import com.kogasoftware.odt.invehicledevice.event.UpdatedOperationScheduleReceivedEvent;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
@@ -29,11 +30,18 @@ public class OperationScheduleReceiveThread extends Thread {
 	}
 
 	private void receive(final List<VehicleNotification> vehicleNotifications)
-			throws WebAPIException {
+			throws WebAPIException, InterruptedException {
 		final List<OperationSchedule> operationSchedules = new LinkedList<OperationSchedule>();
 		operationSchedules.addAll(commonLogic.getDataSource()
 				.getOperationSchedules());
 
+		// 受信成功
+		if (!vehicleNotifications.isEmpty()) {
+			commonLogic.getEventBus().post(
+					new UpdatedOperationScheduleReceivedEvent());
+			Thread.sleep(5000); // TODO 定数
+			commonLogic.speak("運行予定が変更されました");
+		}
 		commonLogic.getStatusAccess().write(new Writer() {
 			@Override
 			public void write(Status status) {
@@ -47,8 +55,9 @@ public class OperationScheduleReceiveThread extends Thread {
 		commonLogic.getStatusAccess().read(new VoidReader() {
 			@Override
 			public void read(Status status) {
-				Utility.mergeById(queuedVehicleNotifications,
-						status.operationScheduleChangedVehicleNotifications);
+				Utility.mergeById(
+						queuedVehicleNotifications,
+						status.receivingOperationScheduleChangedVehicleNotifications);
 			}
 		});
 	}
@@ -107,6 +116,12 @@ public class OperationScheduleReceiveThread extends Thread {
 	private void update(Status status, CommonLogic commonLogic,
 			List<OperationSchedule> newOperationSchedules,
 			List<VehicleNotification> vehicleNotifications) {
+
+		// 通知を受信済みリストに移動
+		status.receivingOperationScheduleChangedVehicleNotifications
+				.removeAll(vehicleNotifications);
+		status.receivedOperationScheduleChangedVehicleNotifications
+				.addAll(vehicleNotifications);
 
 		// 飛び乗り予約以外の未乗車のPassengerRecordは削除
 		status.unhandledPassengerRecords
@@ -200,9 +215,8 @@ public class OperationScheduleReceiveThread extends Thread {
 		status.finishedOperationSchedules.clear();
 		status.finishedOperationSchedules.addAll(newFinishedOperationSchedules);
 
-		commonLogic.speak("運行予定が変更されました");
 		commonLogic.getEventBus().post(
-				new UpdateOperationScheduleCompleteEvent(vehicleNotifications));
+				new UpdatedOperationScheduleMergedEvent());
 	}
 
 	private void updateReservation(Status status, Reservation reservation) {

@@ -5,13 +5,12 @@ import java.util.List;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.Status;
 import com.kogasoftware.odt.invehicledevice.StatusAccess.Writer;
 import com.kogasoftware.odt.invehicledevice.Utility;
-import com.kogasoftware.odt.invehicledevice.event.CommonLogicLoadCompleteEvent;
 import com.kogasoftware.odt.invehicledevice.event.StartOperationScheduleUpdateEvent;
+import com.kogasoftware.odt.invehicledevice.event.VehicleNotificationReceivedEvent;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
@@ -41,21 +40,28 @@ public class VehicleNotificationReceiver implements Runnable {
 							.iterator(); iterator.hasNext();) {
 						VehicleNotification vehicleNotification = iterator
 								.next();
+						if (!vehicleNotification
+								.getNotificationType()
+								.equals(CommonLogic.VEHICLE_NOTIFICATION_TYPE_SCHEDULE_CHANGED)) {
+							continue;
+						}
+						iterator.remove();
 						if (Utility.containsById(
 								status.sendLists.repliedVehicleNotifications,
 								vehicleNotification)) {
 							continue;
 						}
-						if (vehicleNotification
-								.getNotificationType()
-								.equals(CommonLogic.VEHICLE_NOTIFICATION_TYPE_SCHEDULE_CHANGED)) {
-							if (Utility
-									.mergeById(
-											status.operationScheduleChangedVehicleNotifications,
-											vehicleNotification)) {
-								operationScheduleChanged.set(true);
-							}
-							iterator.remove();
+						if (Utility
+								.containsById(
+										status.receivedOperationScheduleChangedVehicleNotifications,
+										vehicleNotification)) {
+							continue;
+						}
+						if (Utility
+								.mergeById(
+										status.receivingOperationScheduleChangedVehicleNotifications,
+										vehicleNotification)) {
+							operationScheduleChanged.set(true);
 						}
 					}
 				}
@@ -67,6 +73,7 @@ public class VehicleNotificationReceiver implements Runnable {
 			}
 
 			// 一般通知の処理
+			final AtomicBoolean added = new AtomicBoolean(false);
 			commonLogic.getStatusAccess().write(new Writer() {
 				@Override
 				public void write(Status status) {
@@ -76,29 +83,23 @@ public class VehicleNotificationReceiver implements Runnable {
 								vehicleNotification)) {
 							continue;
 						}
-						Utility.mergeById(status.vehicleNotifications,
-								vehicleNotification);
+						if (Utility.mergeById(status.vehicleNotifications,
+								vehicleNotification)) {
+							added.set(true);
+						}
 					}
 				}
 			});
-			commonLogic.showNotificationModalView(vehicleNotifications);
+			if (added.get()) {
+				commonLogic.getEventBus().post(
+						new VehicleNotificationReceivedEvent());
+				commonLogic.speak("管理者から連絡があります");
+				Thread.sleep(5000); // TODO 定数
+				commonLogic.showNotificationModalView();
+			}
 		} catch (RejectedExecutionException e) {
 		} catch (WebAPIException e) {
+		} catch (InterruptedException e) {
 		}
-	}
-
-	@Subscribe
-	public void showAllNotificationModalView(
-			final CommonLogicLoadCompleteEvent event) {
-		event.commonLogic.getStatusAccess().write(new Writer() {
-			@Override
-			public void write(Status status) {
-				if (status.vehicleNotifications.isEmpty()) {
-					return;
-				}
-				event.commonLogic
-						.showNotificationModalView(status.vehicleNotifications);
-			}
-		});
 	}
 }
