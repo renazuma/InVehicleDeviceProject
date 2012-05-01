@@ -24,11 +24,11 @@ import android.util.Log;
 import com.google.common.base.Function;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.kogasoftware.odt.invehicledevice.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.Status.Phase;
-import com.kogasoftware.odt.invehicledevice.event.CommonLogicLoadCompleteEvent;
+import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
+import com.kogasoftware.odt.invehicledevice.logic.Status.Phase;
+import com.kogasoftware.odt.invehicledevice.logic.event.CommonLogicLoadCompleteEvent;
 
-class BackgroundTask {
+public class BackgroundTask {
 	private static final String TAG = BackgroundTaskThread.class
 			.getSimpleName();
 	private static final long POLLING_PERIOD_MILLIS = 5000;
@@ -92,6 +92,10 @@ class BackgroundTask {
 				commonLogic);
 	}
 
+	/**
+	 * Looper.loop()のループに入る。 Looper.loop()が始まる前にスレッドがinterruptされていた場合は終了する。
+	 * interruptされていなかった場合はquitの実行で終了する
+	 */
 	public void loop() {
 		try {
 			Thread.sleep(0); // interruption point
@@ -192,6 +196,9 @@ class BackgroundTask {
 		executorService.shutdownNow();
 	}
 
+	/**
+	 * loop()を終了する。loop()に入っていない状態でもloop()は終了する。
+	 */
 	public void quit() {
 		myLooper.quit();
 	}

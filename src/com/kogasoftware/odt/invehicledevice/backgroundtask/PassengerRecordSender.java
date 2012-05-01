@@ -4,16 +4,22 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.invehicledevice.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.Status;
-import com.kogasoftware.odt.invehicledevice.StatusAccess.Reader;
-import com.kogasoftware.odt.invehicledevice.StatusAccess.Writer;
+import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
+import com.kogasoftware.odt.invehicledevice.logic.Status;
+import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Reader;
+import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
 
+/**
+ * PassengerRecordをサーバーに送信す
+ * 
+ * @deprecated WebAPIのリトライ機能により不必要になる予定
+ */
+@Deprecated
 public class PassengerRecordSender implements Runnable {
 	private final CommonLogic commonLogic;
 
@@ -41,16 +47,16 @@ public class PassengerRecordSender implements Runnable {
 
 	@Override
 	public void run() {
-		List<PassengerRecord> getOnPassengerRecords = commonLogic.getStatusAccess()
-				.read(new Reader<List<PassengerRecord>>() {
+		List<PassengerRecord> getOnPassengerRecords = commonLogic
+				.getStatusAccess().read(new Reader<List<PassengerRecord>>() {
 					@Override
 					public List<PassengerRecord> read(Status status) {
 						return new LinkedList<PassengerRecord>(
 								status.sendLists.getOnPassengerRecords);
 					}
 				});
-		List<PassengerRecord> getOffPassengerRecords = commonLogic.getStatusAccess()
-				.read(new Reader<List<PassengerRecord>>() {
+		List<PassengerRecord> getOffPassengerRecords = commonLogic
+				.getStatusAccess().read(new Reader<List<PassengerRecord>>() {
 					@Override
 					public List<PassengerRecord> read(Status status) {
 						return new LinkedList<PassengerRecord>(

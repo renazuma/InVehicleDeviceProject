@@ -5,8 +5,8 @@ import android.net.NetworkInfo;
 import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
 
-import com.kogasoftware.odt.invehicledevice.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.event.SignalStrengthChangedEvent;
+import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
+import com.kogasoftware.odt.invehicledevice.logic.event.SignalStrengthChangedEvent;
 
 public class SignalStrengthListener extends PhoneStateListener {
 	private final CommonLogic commonLogic;
@@ -40,6 +40,9 @@ public class SignalStrengthListener extends PhoneStateListener {
 		return 0;
 	}
 
+	/**
+	 * SignalStrengthから電波状況を判断しSignalStrengthChangedEventを送信する
+	 */
 	@Override
 	public void onSignalStrengthsChanged(SignalStrength signalStrength) {
 		commonLogic.getEventBus().post(

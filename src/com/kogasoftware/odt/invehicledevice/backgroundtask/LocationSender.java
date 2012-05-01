@@ -7,9 +7,9 @@ import android.location.LocationListener;
 import android.os.Bundle;
 
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.invehicledevice.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.Status;
-import com.kogasoftware.odt.invehicledevice.StatusAccess.Reader;
+import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
+import com.kogasoftware.odt.invehicledevice.logic.Status;
+import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Reader;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
@@ -39,24 +39,24 @@ public class LocationSender implements Runnable, LocationListener {
 	public void onStatusChanged(String provider, int status, Bundle extras) {
 	}
 
+	/**
+	 * 現在のServiceUnitStatusLogをサーバーへ送信。
+	 * ただしserviceUnitStatusLogLocationEnabledがfalseの場合は送信しない
+	 */
 	@Override
 	public void run() {
-		final Optional<ServiceUnitStatusLog> log = commonLogic.getStatusAccess()
-				.read(new Reader<Optional<ServiceUnitStatusLog>>() {
-					@Override
-					public Optional<ServiceUnitStatusLog> read(Status status) {
-						if (!status.latitude.isPresent()
-								|| !status.longitude.isPresent()) {
-							return Optional.absent();
-						}
-						ServiceUnitStatusLog log = new ServiceUnitStatusLog();
-						log.setLatitude(status.latitude.get());
-						log.setLongitude(status.longitude.get());
-						log.setTemperature(status.temperature);
-						log.setOrientation(status.orientation);
-						return Optional.of(log);
-					}
-				});
+		final Optional<ServiceUnitStatusLog> log = commonLogic
+				.getStatusAccess().read(
+						new Reader<Optional<ServiceUnitStatusLog>>() {
+							@Override
+							public Optional<ServiceUnitStatusLog> read(
+									Status status) {
+								if (!status.serviceUnitStatusLogLocationEnabled) {
+									return Optional.absent();
+								}
+								return Optional.of(status.serviceUnitStatusLog);
+							}
+						});
 		if (!log.isPresent()) {
 			return;
 		}

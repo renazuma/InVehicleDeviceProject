@@ -54,7 +54,6 @@ public class VoiceThread extends Thread {
 				File outputFile = new File(outputDirectory + File.separator
 						+ serial + ".wav");
 				openJTalk.synthesis(outputFile, voice); // TODO
-				// ここのIOExceptionは無視して良いかも
 				MediaPlayer mediaPlayer = new MediaPlayer();
 				try {
 					mediaPlayer.setDataSource(outputFile.getAbsolutePath());
@@ -78,6 +77,8 @@ public class VoiceThread extends Thread {
 					});
 					mediaPlayer.start();
 					semaphore.acquire();
+				} catch (IOException e) {
+					Log.w(TAG, e);
 				} finally {
 					mediaPlayer.release();
 				}

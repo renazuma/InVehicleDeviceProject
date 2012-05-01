@@ -79,18 +79,18 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent" >
 
-                <com.kogasoftware.odt.invehicledevice.phaseview.PlatformPhaseView
+                <com.kogasoftware.odt.invehicledevice.ui.phaseview.PlatformPhaseView
                     android:id="@+id/platform_phase_view"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:visibility="gone" />
 
-                <com.kogasoftware.odt.invehicledevice.phaseview.DrivePhaseView
+                <com.kogasoftware.odt.invehicledevice.ui.phaseview.DrivePhaseView
                     android:id="@+id/drive_phase_view"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent" />
 
-                <com.kogasoftware.odt.invehicledevice.phaseview.FinishPhaseView
+                <com.kogasoftware.odt.invehicledevice.ui.phaseview.FinishPhaseView
                     android:id="@+id/finish_phase_view"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
@@ -138,62 +138,62 @@
         </LinearLayout>
     </LinearLayout>
 
-    <com.kogasoftware.odt.invehicledevice.modalview.ConfigModalView
+    <com.kogasoftware.odt.invehicledevice.ui.modalview.ConfigModalView
         android:id="@+id/config_modal_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 
-    <com.kogasoftware.odt.invehicledevice.modalview.NavigationModalView
+    <com.kogasoftware.odt.invehicledevice.ui.modalview.NavigationModalView
         android:id="@+id/navigation_modal_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 
-    <com.kogasoftware.odt.invehicledevice.modalview.NotificationModalView
+    <com.kogasoftware.odt.invehicledevice.ui.modalview.NotificationModalView
         android:id="@+id/notification_modal_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 
-    <com.kogasoftware.odt.invehicledevice.modalview.PauseModalView
+    <com.kogasoftware.odt.invehicledevice.ui.modalview.PauseModalView
         android:id="@+id/pause_modal_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 
-    <com.kogasoftware.odt.invehicledevice.modalview.ReturnPathModalView
+    <com.kogasoftware.odt.invehicledevice.ui.modalview.ReturnPathModalView
         android:id="@+id/return_path_modal_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 
-    <com.kogasoftware.odt.invehicledevice.modalview.ScheduleModalView
+    <com.kogasoftware.odt.invehicledevice.ui.modalview.ScheduleModalView
         android:id="@+id/schedule_modal_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 
-    <com.kogasoftware.odt.invehicledevice.modalview.ScheduleChangedModalView
+    <com.kogasoftware.odt.invehicledevice.ui.modalview.ScheduleChangedModalView
         android:id="@+id/schedule_changed_modal_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 
-    <com.kogasoftware.odt.invehicledevice.modalview.StartCheckModalView
+    <com.kogasoftware.odt.invehicledevice.ui.modalview.StartCheckModalView
         android:id="@+id/start_check_modal_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 
-    <com.kogasoftware.odt.invehicledevice.modalview.StopCheckModalView
+    <com.kogasoftware.odt.invehicledevice.ui.modalview.StopCheckModalView
         android:id="@+id/stop_check_modal_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 
-    <com.kogasoftware.odt.invehicledevice.modalview.MemoModalView
+    <com.kogasoftware.odt.invehicledevice.ui.modalview.MemoModalView
         android:id="@+id/memo_modal_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 
-    <com.kogasoftware.odt.invehicledevice.modalview.StopModalView
+    <com.kogasoftware.odt.invehicledevice.ui.modalview.StopModalView
         android:id="@+id/stop_modal_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 
-    <com.kogasoftware.odt.invehicledevice.modalview.LoginModalView
+    <com.kogasoftware.odt.invehicledevice.ui.modalview.LoginModalView
         android:id="@+id/login_modal_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />

@@ -20,6 +20,8 @@ public class BackgroundTaskThread extends Thread {
 			if (optionalBackgroundTask.isPresent()) {
 				optionalBackgroundTask.get().quit();
 			}
+			// この位置に、別スレッドでのoptionalBackgroundTaskメンバを代入している処理が挟まると
+			// optionalBackgroundTaskが終了しなくなるため、注意してsynchronizedする
 			super.interrupt();
 		}
 	}
@@ -30,6 +32,6 @@ public class BackgroundTaskThread extends Thread {
 		synchronized (backgroundTaskQuitLock) {
 			optionalBackgroundTask = Optional.of(backgroundTask);
 		}
-		optionalBackgroundTask.get().loop();
+		backgroundTask.loop();
 	}
 }

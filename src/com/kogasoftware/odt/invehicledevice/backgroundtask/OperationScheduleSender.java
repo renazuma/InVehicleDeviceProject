@@ -4,14 +4,20 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.kogasoftware.odt.invehicledevice.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.Status;
-import com.kogasoftware.odt.invehicledevice.StatusAccess.Reader;
-import com.kogasoftware.odt.invehicledevice.StatusAccess.Writer;
+import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
+import com.kogasoftware.odt.invehicledevice.logic.Status;
+import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Reader;
+import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 
+/**
+ * 出発、到着情報を送信
+ * 
+ * @deprecated WebAPIのリトライ機能により不必要になる予定
+ */
+@Deprecated
 public class OperationScheduleSender implements Runnable {
 	private final CommonLogic commonLogic;
 

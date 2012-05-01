@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.kogasoftware.odt.invehicledevice"
-    android:installLocation="preferExternal"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -22,9 +21,9 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name" >
         <activity
-            android:name=".InVehicleDeviceActivity"
+            android:name=".ui.activity.InVehicleDeviceActivity"
             android:label="@string/app_name"
-            android:screenOrientation="reverseLandscape"
+            android:screenOrientation="landscape"
             android:theme="@style/InVehicleDevice.Default" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,7 +32,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SavePreferencesActivity"
+            android:name=".ui.activity.SavePreferencesActivitysActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />

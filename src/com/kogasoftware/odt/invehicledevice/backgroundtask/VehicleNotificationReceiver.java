@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.kogasoftware.odt.invehicledevice.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.Status;
-import com.kogasoftware.odt.invehicledevice.StatusAccess.Writer;
-import com.kogasoftware.odt.invehicledevice.Utility;
-import com.kogasoftware.odt.invehicledevice.event.StartOperationScheduleUpdateEvent;
-import com.kogasoftware.odt.invehicledevice.event.VehicleNotificationReceivedEvent;
+import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
+import com.kogasoftware.odt.invehicledevice.logic.Status;
+import com.kogasoftware.odt.invehicledevice.logic.Identifiables;
+import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
+import com.kogasoftware.odt.invehicledevice.logic.event.StartOperationScheduleUpdateEvent;
+import com.kogasoftware.odt.invehicledevice.logic.event.VehicleNotificationReceivedEvent;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
@@ -46,19 +46,19 @@ public class VehicleNotificationReceiver implements Runnable {
 							continue;
 						}
 						iterator.remove();
-						if (Utility.containsById(
+						if (Identifiables.contains(
 								status.sendLists.repliedVehicleNotifications,
 								vehicleNotification)) {
 							continue;
 						}
-						if (Utility
-								.containsById(
+						if (Identifiables
+								.contains(
 										status.receivedOperationScheduleChangedVehicleNotifications,
 										vehicleNotification)) {
 							continue;
 						}
-						if (Utility
-								.mergeById(
+						if (Identifiables
+								.merge(
 										status.receivingOperationScheduleChangedVehicleNotifications,
 										vehicleNotification)) {
 							operationScheduleChanged.set(true);
@@ -78,12 +78,12 @@ public class VehicleNotificationReceiver implements Runnable {
 				@Override
 				public void write(Status status) {
 					for (VehicleNotification vehicleNotification : vehicleNotifications) {
-						if (Utility.containsById(
+						if (Identifiables.contains(
 								status.sendLists.repliedVehicleNotifications,
 								vehicleNotification)) {
 							continue;
 						}
-						if (Utility.mergeById(status.vehicleNotifications,
+						if (Identifiables.merge(status.vehicleNotifications,
 								vehicleNotification)) {
 							added.set(true);
 						}

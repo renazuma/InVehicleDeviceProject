@@ -11,14 +11,14 @@
         android:layout_weight="1"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
-    <com.kogasoftware.odt.invehicledevice.modalview.HideModalViewButton
+    <com.kogasoftware.odt.invehicledevice.ui.modalview.HideModalViewButton
         android:id="@+id/reply_yes_button"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
         android:text="@string/yes" />
 
-    <com.kogasoftware.odt.invehicledevice.modalview.HideModalViewButton
+    <com.kogasoftware.odt.invehicledevice.ui.modalview.HideModalViewButton
         android:id="@+id/reply_no_button"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"

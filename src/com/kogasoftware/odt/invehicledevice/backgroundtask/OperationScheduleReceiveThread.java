@@ -6,14 +6,14 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.google.common.eventbus.Subscribe;
-import com.kogasoftware.odt.invehicledevice.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.Status;
-import com.kogasoftware.odt.invehicledevice.StatusAccess.VoidReader;
-import com.kogasoftware.odt.invehicledevice.StatusAccess.Writer;
-import com.kogasoftware.odt.invehicledevice.Utility;
-import com.kogasoftware.odt.invehicledevice.event.StartOperationScheduleUpdateEvent;
-import com.kogasoftware.odt.invehicledevice.event.UpdatedOperationScheduleMergedEvent;
-import com.kogasoftware.odt.invehicledevice.event.UpdatedOperationScheduleReceivedEvent;
+import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
+import com.kogasoftware.odt.invehicledevice.logic.Identifiables;
+import com.kogasoftware.odt.invehicledevice.logic.Status;
+import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.VoidReader;
+import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
+import com.kogasoftware.odt.invehicledevice.logic.event.StartOperationScheduleUpdateEvent;
+import com.kogasoftware.odt.invehicledevice.logic.event.UpdatedOperationScheduleMergedEvent;
+import com.kogasoftware.odt.invehicledevice.logic.event.UpdatedOperationScheduleReceivedEvent;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
@@ -30,7 +30,7 @@ public class OperationScheduleReceiveThread extends Thread {
 	}
 
 	private void receive(final List<VehicleNotification> vehicleNotifications)
-			throws WebAPIException, InterruptedException {
+			throws WebAPIException {
 		final List<OperationSchedule> operationSchedules = new LinkedList<OperationSchedule>();
 		operationSchedules.addAll(commonLogic.getDataSource()
 				.getOperationSchedules());
@@ -39,8 +39,13 @@ public class OperationScheduleReceiveThread extends Thread {
 		if (!vehicleNotifications.isEmpty()) {
 			commonLogic.getEventBus().post(
 					new UpdatedOperationScheduleReceivedEvent());
-			Thread.sleep(5000); // TODO 定数
-			commonLogic.speak("運行予定が変更されました");
+			try {
+				Thread.sleep(5000); // TODO 定数
+				commonLogic.speak("運行予定が変更されました");
+			} catch (InterruptedException e) {
+				// 割り込み状態を有効へ戻してから以降の処理を続行する。早めに終了しておきたいため音声再生はしないでおく。
+				Thread.currentThread().interrupt();
+			}
 		}
 		commonLogic.getStatusAccess().write(new Writer() {
 			@Override
@@ -55,9 +60,9 @@ public class OperationScheduleReceiveThread extends Thread {
 		commonLogic.getStatusAccess().read(new VoidReader() {
 			@Override
 			public void read(Status status) {
-				Utility.mergeById(
-						queuedVehicleNotifications,
-						status.receivingOperationScheduleChangedVehicleNotifications);
+				Identifiables
+						.merge(queuedVehicleNotifications,
+								status.receivingOperationScheduleChangedVehicleNotifications);
 			}
 		});
 	}
@@ -95,7 +100,7 @@ public class OperationScheduleReceiveThread extends Thread {
 					try {
 						// 新しいスケジュール変更通知があるかもしれないので、一定時間待ってからマージしておく
 						Thread.sleep(500);
-						Utility.mergeById(workingVehicleNotification,
+						Identifiables.merge(workingVehicleNotification,
 								queuedVehicleNotifications);
 
 						receive(workingVehicleNotification);
@@ -204,7 +209,7 @@ public class OperationScheduleReceiveThread extends Thread {
 		// 現在乗降場待機画面で、現在のOperationScheduleが無効になった場合強制的に運行中に設定
 		if (status.phase == Status.Phase.PLATFORM
 				&& !status.remainingOperationSchedules.isEmpty()
-				&& !Utility.containsById(newRemainingOperationSchedules,
+				&& !Identifiables.contains(newRemainingOperationSchedules,
 						status.remainingOperationSchedules.get(0))) {
 			status.phase = Status.Phase.DRIVE;
 		}
