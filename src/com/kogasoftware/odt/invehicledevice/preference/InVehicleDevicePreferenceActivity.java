@@ -91,7 +91,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		intent.putExtra("token", token);
 		String packageName = "com.kogasoftware.odt.invehicledevice";
 		intent.setClassName(packageName, packageName
-				+ ".SavePreferencesActivity");
+				+ ".ui.activity.SavePreferencesActivity");
 		startActivity(intent);
 		finish();
 	}
