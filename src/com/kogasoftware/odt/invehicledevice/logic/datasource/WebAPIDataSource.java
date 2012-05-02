@@ -231,9 +231,6 @@ public class WebAPIDataSource implements DataSource {
 				result.addAll(operationSchedules);
 			}
 		});
-		if (result.isEmpty()) { // TODO
-			throw new WebAPIException(true, "operation schedule not found");
-		}
 		return result;
 	}
 
