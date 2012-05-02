@@ -39,6 +39,8 @@ public class ModalView extends FrameLayout implements AnimationListener {
 		hideAnimation = AnimationUtils.loadAnimation(getContext(),
 				R.anim.hide_modal_view);
 		hideAnimation.setAnimationListener(this);
+		
+		setVisibility(GONE);
 	}
 
 	protected CommonLogic getCommonLogic() {
