@@ -25,10 +25,11 @@ public class ExitRequiredPreferenceChangeListener implements
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
 		if (key.equals(EXIT_REQUIRED_SHARED_PREFERENCE_KEY)
-				&& sharedPreferences.getBoolean(key, false)) { // TODO
+				&& sharedPreferences.getBoolean(key, false)) {
 			// 文字列定数
-			Log.i(TAG, "SharedPreferences changed, exit!"); // TODO
+			Log.i(TAG, "SharedPreferences changed, exit!");
 			commonLogic.getEventBus().post(new ExitEvent());
+			sharedPreferences.edit().putBoolean(EXIT_REQUIRED_SHARED_PREFERENCE_KEY, true).commit();
 		}
 	}
 }
