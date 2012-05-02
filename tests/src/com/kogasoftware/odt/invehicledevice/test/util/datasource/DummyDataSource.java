@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.common.datasource;
+package com.kogasoftware.odt.invehicledevice.test.util.datasource;
 
 import java.text.DateFormat;
 import java.text.ParseException;

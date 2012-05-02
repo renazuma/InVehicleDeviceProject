@@ -1,18 +1,13 @@
-package com.kogasoftware.odt.invehicledevice.test.common;
+package com.kogasoftware.odt.invehicledevice.test.util;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.View;
 import android.widget.Button;
-
-import com.kogasoftware.odt.invehicledevice.test.R;
 
 public class MockActivityUnitTestCaseTestCase extends MockActivityUnitTestCase {
 	@Override
@@ -43,7 +38,6 @@ public class MockActivityUnitTestCaseTestCase extends MockActivityUnitTestCase {
 				.getId());
 
 		// Handler上でUIを触っても大丈夫か
-		final AtomicBoolean quit = new AtomicBoolean(false);
 		new Thread() { // テストスレッドはUIスレッドにアクセス可能なため、さらに別のスレッドを立てる
 			@Override
 			public void run() {
@@ -105,26 +99,5 @@ public class MockActivityUnitTestCaseTestCase extends MockActivityUnitTestCase {
 		loop();
 		state.compareAndSet(1, 2);
 		assertEquals(2, state.get());
-	}
-
-	public void testShown() {
-		Intent intent = new Intent();
-		intent.setAction(Intent.ACTION_VIEW);
-
-		MockActivity a = startActivity(intent, null, null);
-		i = getInstrumentation();
-		i.callActivityOnCreate(a, null);
-		i.callActivityOnStart(a);
-		i.callActivityOnResume(a);
-		myLooper = Looper.myLooper();
-
-		a.test();
-		if (Looper.myLooper() == null) {
-			Looper.prepare();
-		}
-
-		View v = getActivity().findViewById(R.id.mock_config_modal_view);
-		v.setVisibility(View.VISIBLE);
-		assertTrue(v.isShown());
 	}
 }

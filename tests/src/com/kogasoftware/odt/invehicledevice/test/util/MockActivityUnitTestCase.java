@@ -1,8 +1,9 @@
-package com.kogasoftware.odt.invehicledevice.test.common;
+package com.kogasoftware.odt.invehicledevice.test.util;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
+import android.app.Activity;
 import android.app.Instrumentation;
 import android.os.Handler;
 import android.os.Looper;
@@ -14,9 +15,27 @@ public class MockActivityUnitTestCase extends
 		ActivityUnitTestCase<MockActivity> {
 
 	static class QuitLooperWorkaroundException extends RuntimeException {
+		private static final long serialVersionUID = 6589002041806964185L;
+	}
+
+	public static Handler getActivityHandler(Activity activity)
+			throws InterruptedException {
+		final CountDownLatch latch = new CountDownLatch(1);
+		final AtomicReference<Handler> handler = new AtomicReference<Handler>();
+		activity.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				handler.set(new Handler());
+				latch.countDown();
+			}
+		});
+		latch.await();
+		Preconditions.checkNotNull(handler.get());
+		return handler.get();
 	}
 
 	MockActivity a;
+
 	Instrumentation i;
 
 	Looper myLooper;
@@ -29,18 +48,7 @@ public class MockActivityUnitTestCase extends
 	 * Activityに関連付くたHandlerを取得
 	 */
 	protected Handler getActivityHandler() throws InterruptedException {
-		final CountDownLatch latch = new CountDownLatch(1);
-		final AtomicReference<Handler> handler = new AtomicReference<Handler>();
-		getActivity().runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				handler.set(new Handler());
-				latch.countDown();
-			}
-		});
-		latch.await();
-		Preconditions.checkNotNull(handler.get());
-		return handler.get();
+		return getActivityHandler(getActivity());
 	}
 
 	protected void loop() {
@@ -72,6 +80,10 @@ public class MockActivityUnitTestCase extends
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
+		if (Looper.myLooper() == null) {
+			Looper.prepare();
+		}
+		myLooper = Looper.myLooper();
 	}
 
 	@Override
