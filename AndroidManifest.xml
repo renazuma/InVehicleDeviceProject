@@ -32,12 +32,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.activity.SavePreferencesActivitysActivity"
+            android:name=".ui.activity.SavePreferencesActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.activity.EmptyActivity" />
     </application>
 
 </manifest>
