@@ -6,9 +6,9 @@ import java.util.concurrent.TimeUnit;
 import android.os.Handler;
 
 import com.kogasoftware.odt.invehicledevice.backgroundtask.BackgroundTask;
-import com.kogasoftware.odt.invehicledevice.test.common.MockActivityUnitTestCase;
+import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 
-public class BackgroundTaskTestCase extends MockActivityUnitTestCase {
+public class BackgroundTaskTestCase extends EmptyActivityInstrumentationTestCase2 {
 	/**
 	 * スレッドが割り込まれていた場合はループせず終了
 	 */

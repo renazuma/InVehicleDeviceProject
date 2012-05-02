@@ -7,10 +7,11 @@ import android.view.View;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.event.CommonLogicLoadCompleteEvent;
 import com.kogasoftware.odt.invehicledevice.test.R;
-import com.kogasoftware.odt.invehicledevice.test.common.MockActivityUnitTestCase;
+import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.ConfigModalView;
 
-public class ConfigModalViewTestCase extends MockActivityUnitTestCase {
+public class ConfigModalViewTestCase extends
+		EmptyActivityInstrumentationTestCase2 {
 	CommonLogic cl;
 	ConfigModalView cmv;
 
@@ -37,7 +38,7 @@ public class ConfigModalViewTestCase extends MockActivityUnitTestCase {
 	public void testShowEvent() throws InterruptedException {
 		cmv.setVisibility(View.GONE);
 		cl.getEventBus().post(new ConfigModalView.ShowEvent());
-		loop(500);
+		getInstrumentation().waitForIdleSync();
 		cmv.setVisibility(View.VISIBLE);
 		assertEquals(cmv.getVisibility(), View.VISIBLE);
 		assertTrue(cmv.isShown());

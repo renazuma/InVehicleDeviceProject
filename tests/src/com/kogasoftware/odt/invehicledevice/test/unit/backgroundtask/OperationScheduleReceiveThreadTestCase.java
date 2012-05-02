@@ -1,9 +1,9 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.backgroundtask;
 
-import com.kogasoftware.odt.invehicledevice.test.common.MockActivityUnitTestCase;
+import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 
 public class OperationScheduleReceiveThreadTestCase extends
-		MockActivityUnitTestCase {
+		EmptyActivityInstrumentationTestCase2 {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();

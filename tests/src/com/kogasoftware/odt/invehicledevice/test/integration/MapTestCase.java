@@ -8,7 +8,7 @@ import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSourceFactory;
-import com.kogasoftware.odt.invehicledevice.test.common.datasource.DummyDataSource;
+import com.kogasoftware.odt.invehicledevice.test.util.datasource.DummyDataSource;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
 public class MapTestCase extends

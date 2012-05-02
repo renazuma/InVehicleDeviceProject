@@ -1,9 +1,9 @@
 package jp.tomorrowkey.android.vtextviewer.test.unit;
 
 import com.jayway.android.robotium.solo.Solo;
-import com.kogasoftware.odt.invehicledevice.test.common.MockActivityUnitTestCase;
+import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 
-public class VTextViewTestCase extends MockActivityUnitTestCase {
+public class VTextViewTestCase extends EmptyActivityInstrumentationTestCase2 {
 	Solo solo;
 
 	@Override

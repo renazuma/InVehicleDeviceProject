@@ -1,8 +1,8 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.backgroundtask;
 
-import com.kogasoftware.odt.invehicledevice.test.common.MockActivityUnitTestCase;
+import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 
-public class PassengerRecordSenderTestCase extends MockActivityUnitTestCase {
+public class PassengerRecordSenderTestCase extends EmptyActivityInstrumentationTestCase2 {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();

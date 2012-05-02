@@ -4,10 +4,10 @@ import android.accounts.AccountAuthenticatorActivity;
 import android.content.Context;
 import android.util.AttributeSet;
 
-import com.kogasoftware.odt.invehicledevice.test.common.MockActivityUnitTestCase;
+import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.ScheduleChangedModalView;
 
-public class ScheduleChangedModalViewTestCase extends MockActivityUnitTestCase {
+public class ScheduleChangedModalViewTestCase extends EmptyActivityInstrumentationTestCase2 {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();

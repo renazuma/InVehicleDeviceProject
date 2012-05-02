@@ -5,12 +5,12 @@ import java.util.ArrayList;
 import android.accounts.AccountAuthenticatorActivity;
 import android.content.Context;
 
-import com.kogasoftware.odt.invehicledevice.test.common.MockActivityUnitTestCase;
+import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationCandidateArrayAdapter;
 import com.kogasoftware.odt.webapi.model.ReservationCandidate;
 
 public class ReservationCandidateArrayAdapterTestCase extends
-		MockActivityUnitTestCase {
+		EmptyActivityInstrumentationTestCase2 {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();

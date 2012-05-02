@@ -4,10 +4,10 @@ import android.accounts.AccountAuthenticatorActivity;
 import android.content.Context;
 
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.test.common.MockActivityUnitTestCase;
+import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter;
 
-public class ReservationArrayAdapterTestCase extends MockActivityUnitTestCase {
+public class ReservationArrayAdapterTestCase extends EmptyActivityInstrumentationTestCase2 {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();

@@ -6,12 +6,12 @@ import android.accounts.AccountAuthenticatorActivity;
 import android.content.Context;
 
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.test.common.MockActivityUnitTestCase;
+import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.OperationScheduleArrayAdapter;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 
 public class OperationScheduleArrayAdapterTestCase extends
-		MockActivityUnitTestCase {
+		EmptyActivityInstrumentationTestCase2 {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();

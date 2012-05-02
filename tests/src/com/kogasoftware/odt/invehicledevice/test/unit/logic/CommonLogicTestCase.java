@@ -3,9 +3,9 @@ package com.kogasoftware.odt.invehicledevice.test.unit.logic;
 import java.util.Date;
 
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.test.common.MockActivityUnitTestCase;
+import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 
-public class CommonLogicTestCase extends MockActivityUnitTestCase {
+public class CommonLogicTestCase extends EmptyActivityInstrumentationTestCase2 {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();

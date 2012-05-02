@@ -10,9 +10,9 @@ import android.os.Handler;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.logic.event.UiEventBus;
-import com.kogasoftware.odt.invehicledevice.test.common.MockActivityUnitTestCase;
+import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 
-public class UiEventBusTestCase extends MockActivityUnitTestCase {
+public class UiEventBusTestCase extends EmptyActivityInstrumentationTestCase2 {
 	interface Test {
 		void test(Object object);
 	}
@@ -44,7 +44,9 @@ public class UiEventBusTestCase extends MockActivityUnitTestCase {
 	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
-		ueb.dispose();
+		if (ueb != null) {
+			ueb.dispose();
+		}
 	}
 
 	/**
@@ -64,12 +66,13 @@ public class UiEventBusTestCase extends MockActivityUnitTestCase {
 
 		final AtomicLong executedThreadId = new AtomicLong(0);
 		final AtomicBoolean quit = new AtomicBoolean(false);
+		final CountDownLatch cdl2 = new CountDownLatch(1);
 		ueb.register(new Test() {
 			@Subscribe
 			@Override
 			public void test(Object object) {
 				executedThreadId.set(Thread.currentThread().getId());
-				quitLoop();
+				cdl2.countDown();
 			}
 		});
 
@@ -80,7 +83,7 @@ public class UiEventBusTestCase extends MockActivityUnitTestCase {
 			}
 		}.start();
 
-		loop();
+		cdl2.await();
 
 		assertEquals(uiThreadId.get(), executedThreadId.get());
 	}

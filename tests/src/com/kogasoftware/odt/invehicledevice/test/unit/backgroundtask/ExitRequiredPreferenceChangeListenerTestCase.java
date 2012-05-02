@@ -11,10 +11,10 @@ import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.backgroundtask.ExitRequiredPreferenceChangeListener;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.event.ExitEvent;
-import com.kogasoftware.odt.invehicledevice.test.common.MockActivityUnitTestCase;
+import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 
 public class ExitRequiredPreferenceChangeListenerTestCase extends
-		MockActivityUnitTestCase {
+		EmptyActivityInstrumentationTestCase2 {
 
 	static class ExitEventWaiter {
 		CountDownLatch cdl = new CountDownLatch(1);

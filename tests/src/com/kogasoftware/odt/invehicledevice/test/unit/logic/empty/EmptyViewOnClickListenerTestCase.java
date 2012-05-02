@@ -7,9 +7,9 @@ import android.view.View.OnClickListener;
 
 import com.google.common.util.concurrent.SimpleTimeLimiter;
 import com.kogasoftware.odt.invehicledevice.logic.empty.EmptyViewOnClickListener;
-import com.kogasoftware.odt.invehicledevice.test.common.MockActivityUnitTestCase;
+import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 
-public class EmptyViewOnClickListenerTestCase extends MockActivityUnitTestCase {
+public class EmptyViewOnClickListenerTestCase extends EmptyActivityInstrumentationTestCase2 {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();

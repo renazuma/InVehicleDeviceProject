@@ -8,12 +8,12 @@ import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Reader;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.VoidReader;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
-import com.kogasoftware.odt.invehicledevice.test.common.MockActivityUnitTestCase;
+import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
-public class StatusAccessTestCase extends MockActivityUnitTestCase {
+public class StatusAccessTestCase extends EmptyActivityInstrumentationTestCase2 {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();

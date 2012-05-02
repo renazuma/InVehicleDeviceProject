@@ -3,9 +3,9 @@ package com.kogasoftware.odt.invehicledevice.test.unit.backgroundtask;
 import android.os.Handler;
 
 import com.kogasoftware.odt.invehicledevice.backgroundtask.BackgroundTaskThread;
-import com.kogasoftware.odt.invehicledevice.test.common.MockActivityUnitTestCase;
+import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 
-public class BackgroundTaskThreadTestCase extends MockActivityUnitTestCase {
+public class BackgroundTaskThreadTestCase extends EmptyActivityInstrumentationTestCase2 {
 
 	/**
 	 * interruptで確実に終了させることができるか確認

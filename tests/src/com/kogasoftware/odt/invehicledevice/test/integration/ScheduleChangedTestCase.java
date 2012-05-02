@@ -6,7 +6,7 @@ import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSourceFactory;
-import com.kogasoftware.odt.invehicledevice.test.common.datasource.ScheduleChangedTestDataSource;
+import com.kogasoftware.odt.invehicledevice.test.util.datasource.ScheduleChangedTestDataSource;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
 public class ScheduleChangedTestCase extends

@@ -5,11 +5,11 @@ import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.Status;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSourceFactory;
-import com.kogasoftware.odt.invehicledevice.test.common.MockActivityUnitTestCase;
-import com.kogasoftware.odt.invehicledevice.test.common.datasource.DummyDataSource;
+import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
+import com.kogasoftware.odt.invehicledevice.test.util.datasource.DummyDataSource;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 
-public class LocationSenderTestCase extends MockActivityUnitTestCase {
+public class LocationSenderTestCase extends EmptyActivityInstrumentationTestCase2 {
 	CommonLogic cl;
 	DummyDataSource dds;
 	LocationSender ls;
