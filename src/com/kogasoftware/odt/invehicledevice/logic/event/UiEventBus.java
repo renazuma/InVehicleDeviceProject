@@ -33,14 +33,15 @@ public class UiEventBus extends EventBus {
 	public UiEventBus(Handler uiHandler) {
 		this.uiHandler = uiHandler;
 	}
-	
+
 	/**
 	 * 登録された全てのObjectをunregisterし、以降の登録もできなくする
 	 */
 	public void dispose() {
 		synchronized (registerAndDisposeLock) {
 			disposed.set(true);
-			for (Object object : registeredObjects) {
+			for (Object object : new LinkedList<Object>(registeredObjects)
+			/* unregister内でregisteredObjectsが変更される可能性があるためコピーしておく */) {
 				try {
 					unregister(object);
 				} catch (IllegalArgumentException e) {
@@ -85,7 +86,7 @@ public class UiEventBus extends EventBus {
 			super.register(object);
 		}
 	}
-	
+
 	/**
 	 * 内部で独自に保持しているオブジェクトを削除する
 	 */

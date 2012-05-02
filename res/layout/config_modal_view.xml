@@ -27,7 +27,7 @@
         android:text="@string/pause" />
 
     <com.kogasoftware.odt.invehicledevice.ui.modalview.HideModalViewButton
-        android:id="@+id/config_hide_button"
+        android:id="@+id/config_close_button"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"

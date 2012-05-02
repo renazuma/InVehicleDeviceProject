@@ -7,6 +7,7 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
@@ -32,7 +33,6 @@ public class ModalView extends FrameLayout implements AnimationListener {
 
 	public ModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		setVisibility(View.GONE);
 		showAnimation = AnimationUtils.loadAnimation(getContext(),
 				R.anim.show_modal_view);
 		showAnimation.setAnimationListener(this);
@@ -101,10 +101,7 @@ public class ModalView extends FrameLayout implements AnimationListener {
 		this.commonLogic = event.commonLogic;
 	}
 
-	/**
-	 * 表示時にパラメーターを渡す必要がある場合、直接呼ばれると不都合がある場合もあるため protectedとしサブクラスでオーバーライドさせる
-	 */
-	protected void show() {
+	public void show() {
 		if (getVisibility() == VISIBLE) {
 			return;
 		}

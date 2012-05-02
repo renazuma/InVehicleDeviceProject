@@ -4,7 +4,6 @@ import android.test.ActivityInstrumentationTestCase2;
 import android.view.View;
 
 import com.jayway.android.robotium.solo.Solo;
-
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSourceFactory;
@@ -16,14 +15,14 @@ public class ConfigTestCase extends
 
 	private Solo solo;
 
-	public void dataset() {
-
-	}
-
 	public ConfigTestCase() {
 		super("com.kogasoftware.odt.invehicledevice.ui.activity",
 				InVehicleDeviceActivity.class);
 		DataSourceFactory.setInstance(new DummyDataSource());
+	}
+
+	public void dataset() {
+
 	}
 
 	@Override
@@ -33,6 +32,11 @@ public class ConfigTestCase extends
 		solo = new Solo(getInstrumentation(), getActivity());
 	}
 
+	@Override
+	public void tearDown() throws Exception {
+		solo.finishOpenedActivities();
+		super.tearDown();
+	}
 
 	public void test01_起動時は非表示() {
 		assertEquals(View.GONE, solo.getView(R.id.config_modal_view)
@@ -59,7 +63,7 @@ public class ConfigTestCase extends
 		assertEquals(View.VISIBLE, solo.getView(R.id.config_modal_view)
 				.getVisibility());
 
-		solo.clickOnView(solo.getView(R.id.config_hide_button));
+		solo.clickOnView(solo.getView(R.id.config_close_button));
 
 		getInstrumentation().waitForIdleSync();
 
@@ -91,7 +95,8 @@ public class ConfigTestCase extends
 
 	public void test06_中止確認画面で中止ボタンを押すと中止画面が表示() {
 		test05_中止ボタンを押すと中止確認画面が表示();
-		assertEquals(View.GONE, solo.getView(R.id.stop_modal_view).getVisibility());
+		assertEquals(View.GONE, solo.getView(R.id.stop_modal_view)
+				.getVisibility());
 		solo.clickOnView(solo.getView(R.id.stop_button));
 
 		getInstrumentation().waitForIdleSync();
@@ -128,7 +133,7 @@ public class ConfigTestCase extends
 	public void test09_一時停止画面で運行再開ボタンを押すと一時停止画面と設定画面が非表示() {
 
 		test02_運行管理ボタンを押したら表示();
-		
+
 		solo.clickOnView(solo.getView(R.id.pause_button));
 
 		getInstrumentation().waitForIdleSync();
@@ -145,11 +150,5 @@ public class ConfigTestCase extends
 
 		assertEquals(View.GONE, solo.getView(R.id.pause_modal_view)
 				.getVisibility());
-	}
-
-	@Override
-	public void tearDown() throws Exception {
-		solo.finishOpenedActivities();
-		super.tearDown();
 	}
 }

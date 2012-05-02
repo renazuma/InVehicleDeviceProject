@@ -5,10 +5,12 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import android.app.Activity;
 import android.app.Instrumentation;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.test.ActivityUnitTestCase;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 
 public class MockActivityUnitTestCase extends
@@ -34,6 +36,22 @@ public class MockActivityUnitTestCase extends
 		return handler.get();
 	}
 
+	public static void runOnUiThreadSync(Activity activity,
+			final Runnable runnable) throws InterruptedException {
+		final CountDownLatch cdl = new CountDownLatch(1);
+		activity.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					runnable.run();
+				} finally {
+					cdl.countDown();
+				}
+			}
+		});
+		cdl.await();
+	}
+
 	MockActivity a;
 
 	Instrumentation i;
@@ -42,6 +60,11 @@ public class MockActivityUnitTestCase extends
 
 	public MockActivityUnitTestCase() {
 		super(MockActivity.class);
+	}
+
+	protected MockActivity getActivity2() {
+		return Objects.firstNonNull(getActivity(),
+				startActivity(new Intent(), null, null));
 	}
 
 	/**
@@ -75,6 +98,11 @@ public class MockActivityUnitTestCase extends
 				throw new QuitLooperWorkaroundException();
 			}
 		});
+	}
+
+	public void runOnUiThreadSync(Runnable runnable)
+			throws InterruptedException {
+		runOnUiThreadSync(getActivity2(), runnable);
 	}
 
 	@Override
