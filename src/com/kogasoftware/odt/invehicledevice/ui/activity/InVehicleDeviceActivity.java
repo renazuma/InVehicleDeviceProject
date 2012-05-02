@@ -104,16 +104,16 @@ public class InVehicleDeviceActivity extends Activity {
 	};
 
 	// nullables
-	private TextView statusTextView = null;
-	private ImageView networkStrengthImageView = null;
-	private TextView presentTimeTextView = null;
 	private View contentView = null;
 	private Button mapButton = null;
 	private Button configButton = null;
 	private Button scheduleButton = null;
 	private Button changePhaseButton = null;
+	private ImageView networkStrengthImageView = null;
 	private ImageView alertImageView = null;
 	private NavigationModalView navigationModalView = null;
+	private TextView statusTextView = null;
+	private TextView presentTimeTextView = null;
 
 	@Subscribe
 	public void changeNetworkStrengthImage(SignalStrengthChangedEvent e) {
@@ -247,7 +247,7 @@ public class InVehicleDeviceActivity extends Activity {
 
 		handler.post(updateTime);
 
-		backgroundThread = new BackgroundTaskThread(this);
+		backgroundThread = new BackgroundTaskThread(this, new Handler());
 		backgroundThread.start();
 	}
 

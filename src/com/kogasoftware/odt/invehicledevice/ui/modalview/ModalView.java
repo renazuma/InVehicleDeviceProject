@@ -46,7 +46,7 @@ public class ModalView extends FrameLayout implements AnimationListener {
 	}
 
 	public void hide() {
-		if (!isShown()) {
+		if (getVisibility() != VISIBLE) {
 			return;
 		}
 		if (animationTarget.getAndSet(AnimationTarget.HIDE) == AnimationTarget.NONE) {
@@ -97,7 +97,7 @@ public class ModalView extends FrameLayout implements AnimationListener {
 	}
 
 	@Subscribe
-	public void setLogic(CommonLogicLoadCompleteEvent event) {
+	public void setCommonLogic(CommonLogicLoadCompleteEvent event) {
 		this.commonLogic = event.commonLogic;
 	}
 
@@ -105,7 +105,7 @@ public class ModalView extends FrameLayout implements AnimationListener {
 	 * 表示時にパラメーターを渡す必要がある場合、直接呼ばれると不都合がある場合もあるため protectedとしサブクラスでオーバーライドさせる
 	 */
 	protected void show() {
-		if (isShown()) {
+		if (getVisibility() == VISIBLE) {
 			return;
 		}
 		if (animationTarget.getAndSet(AnimationTarget.SHOW) == AnimationTarget.NONE) {

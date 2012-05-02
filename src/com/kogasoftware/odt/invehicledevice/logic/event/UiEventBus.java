@@ -18,8 +18,22 @@ public class UiEventBus extends EventBus {
 	private final List<Object> registeredObjects = new LinkedList<Object>();
 	private final AtomicBoolean disposed = new AtomicBoolean(false);
 	private final Object registerAndDisposeLock = new Object(); // registeredObjectsと実際にEventBusにregisterされたオブジェクトの整合性のためのロック
-	private final Handler uiHandler = new Handler(Looper.getMainLooper());
+	private final Handler uiHandler;
 
+	/**
+	 * 実行対象ハンドラをMainLooperのHandlerを指定
+	 */
+	public UiEventBus() {
+		this(new Handler(Looper.getMainLooper()));
+	}
+
+	/**
+	 * 実行対象ハンドラを指定
+	 */
+	public UiEventBus(Handler uiHandler) {
+		this.uiHandler = uiHandler;
+	}
+	
 	/**
 	 * 登録された全てのObjectをunregisterし、以降の登録もできなくする
 	 */

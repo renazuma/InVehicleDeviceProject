@@ -8,6 +8,9 @@ import android.widget.Button;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
 
+/**
+ * 運行状態の設定画面
+ */
 public class ConfigModalView extends ModalView {
 	public static class ShowEvent {
 	}

@@ -7,10 +7,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.location.Location;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
@@ -88,26 +88,27 @@ public class CommonLogic {
 			}
 		}
 	}
-
+	
 	private final DataSource dataSource;
-	private final UiEventBus eventBus = new UiEventBus();
+	private final UiEventBus eventBus;
 	private final StatusAccess statusAccess;
 
 	public CommonLogic() {
 		this.statusAccess = new StatusAccess();
 		this.dataSource = DataSourceFactory.newInstance("http://127.0.0.1", "");
+		this.eventBus = new UiEventBus();
 	}
 
-	public CommonLogic(Activity activity) {
+	public CommonLogic(Activity activity, Handler activityHandler) {
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(activity);
 
 		dataSource = DataSourceFactory.newInstance(
 				preferences.getString("url", "http://127.0.0.1"),
 				preferences.getString("token", ""));
-
-		this.statusAccess = new StatusAccess(activity,
+		statusAccess = new StatusAccess(activity,
 				willClearStatusFile.getAndSet(false));
+		eventBus = new UiEventBus(activityHandler);
 		eventBus.register(this);
 		eventBus.register(activity);
 		for (Integer resourceId : new Integer[] { R.id.config_modal_view,

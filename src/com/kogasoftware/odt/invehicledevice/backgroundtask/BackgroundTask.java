@@ -15,6 +15,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
+import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.telephony.PhoneStateListener;
@@ -56,11 +57,11 @@ public class BackgroundTask {
 	private final Thread operationScheduleReceiveThread;
 	private final Looper myLooper;
 
-	public BackgroundTask(Activity activity) {
+	public BackgroundTask(Activity activity, Handler activityHandler) {
 		Looper.prepare();
 		myLooper = Looper.myLooper();
 
-		commonLogic = new CommonLogic(activity);
+		commonLogic = new CommonLogic(activity, activityHandler);
 
 		locationManager = (LocationManager) activity
 				.getSystemService(Context.LOCATION_SERVICE);
