@@ -73,7 +73,7 @@ public class UiEventBus extends EventBus {
 	}
 
 	/**
-	 * 登録と同時に、一括削除用に内部でオブジェクトを保持しておくようにした
+	 * 登録と同時に、一括削除用に内部で独自にオブジェクトを保持しておくようにした
 	 */
 	@Override
 	public void register(Object object) {
@@ -83,6 +83,17 @@ public class UiEventBus extends EventBus {
 			}
 			registeredObjects.add(object);
 			super.register(object);
+		}
+	}
+	
+	/**
+	 * 内部で独自に保持しているオブジェクトを削除する
+	 */
+	@Override
+	public void unregister(Object object) {
+		synchronized (registerAndDisposeLock) {
+			registeredObjects.remove(object);
+			super.unregister(object);
 		}
 	}
 }
