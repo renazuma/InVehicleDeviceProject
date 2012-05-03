@@ -7,9 +7,9 @@ import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSourceFactory;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.test.util.datasource.DummyDataSource;
-import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 
-public class LocationSenderTestCase extends EmptyActivityInstrumentationTestCase2 {
+public class LocationSenderTestCase extends
+		EmptyActivityInstrumentationTestCase2 {
 	CommonLogic cl;
 	DummyDataSource dds;
 	LocationSender ls;
@@ -32,25 +32,24 @@ public class LocationSenderTestCase extends EmptyActivityInstrumentationTestCase
 	 * 現在のServiceUnitStatusLogをサーバーへ送信
 	 */
 	public void testRun_1() throws Exception {
-		final ServiceUnitStatusLog l = new ServiceUnitStatusLog();
 		cl.getStatusAccess().write(new Writer() {
 			@Override
 			public void write(Status status) {
 				status.serviceUnitStatusLogLocationEnabled = true;
-				status.serviceUnitStatusLog = l;
+				status.serviceUnitStatusLog.setTemperature(500);
 			}
 		});
 		assertTrue(dds.sendServiceUnitStatusLogArgs.isEmpty());
 		ls.run();
 		assertEquals(dds.sendServiceUnitStatusLogArgs.size(), 1);
-		assertEquals(l, dds.sendServiceUnitStatusLogArgs.get(0));
+		assertEquals(dds.sendServiceUnitStatusLogArgs.get(0).getTemperature()
+				.get().intValue(), 500);
 	}
 
 	/**
 	 * serviceUnitStatusLogLocationEnabledがfalseの場合は送信しない
 	 */
 	public void testRun_2() throws Exception {
-		final ServiceUnitStatusLog l = new ServiceUnitStatusLog();
 		assertTrue(dds.sendServiceUnitStatusLogArgs.isEmpty());
 		cl.getStatusAccess().write(new Writer() {
 			@Override
@@ -63,12 +62,13 @@ public class LocationSenderTestCase extends EmptyActivityInstrumentationTestCase
 			@Override
 			public void write(Status status) {
 				status.serviceUnitStatusLogLocationEnabled = true;
-				status.serviceUnitStatusLog = l;
+				status.serviceUnitStatusLog.setOrientation(123);
 			}
 		});
 		ls.run();
 		assertEquals(dds.sendServiceUnitStatusLogArgs.size(), 1);
-		assertEquals(l, dds.sendServiceUnitStatusLogArgs.get(0));
+		assertEquals(dds.sendServiceUnitStatusLogArgs.get(0).getOrientation()
+				.get().intValue(), 123);
 		cl.getStatusAccess().write(new Writer() {
 			@Override
 			public void write(Status status) {

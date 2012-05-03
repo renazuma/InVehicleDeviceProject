@@ -1,5 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.logic;
 
+import java.util.Date;
+
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
@@ -29,16 +31,16 @@ public class StatusAccessTestCase extends EmptyActivityInstrumentationTestCase2 
 	 */
 	public void testConstructor_1() throws Exception {
 		StatusAccess sa = new StatusAccess();
-		sa.read(new Reader<Boolean>() {
+		sa.read(new Reader<Date>() {
 			@Override
-			public Boolean read(Status status) {
-				return status.stopped;
+			public Date read(Status status) {
+				return status.createdDate;
 			}
 		});
 		sa.write(new Writer() {
 			@Override
 			public void write(Status status) {
-				status.stopped = true;
+				status.vehicleNotifications.clear();
 			}
 		});
 	}

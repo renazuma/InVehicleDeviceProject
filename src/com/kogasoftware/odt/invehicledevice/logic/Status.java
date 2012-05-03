@@ -32,19 +32,18 @@ public class Status implements Serializable {
 	private static final long serialVersionUID = 5617948505743183985L;
 
 	public final SendLists sendLists = new SendLists();
+
 	public final Date createdDate = new Date();
 	public final Semaphore operationScheduleInitializedSign = new Semaphore(0); // パーミットが0以上の場合は初期化済み。0以上になるまで待つためにacquireしたら必ずreleaseする。CountDownLatchがSerializableではないためこれを使用
 	public String token = "";
 	public String url = "";
 	public File file = new EmptyFile();
-	public Boolean paused = false;
 	public Phase phase = Phase.INITIAL;
-	public Boolean stopped = false;
-
 	public Boolean serviceUnitStatusLogLocationEnabled = false; // serviceUnitStatusLogの位置メンバが有効な場合true
-	public ServiceUnitStatusLog serviceUnitStatusLog = new ServiceUnitStatusLog();
 
+	public final ServiceUnitStatusLog serviceUnitStatusLog = new ServiceUnitStatusLog();
 	public Integer unexpectedReservationSequence = 1;
+
 	public final LinkedList<OperationSchedule> remainingOperationSchedules = new LinkedList<OperationSchedule>();
 	public final LinkedList<OperationSchedule> finishedOperationSchedules = new LinkedList<OperationSchedule>();
 	public final LinkedList<PassengerRecord> unhandledPassengerRecords = new LinkedList<PassengerRecord>();
@@ -52,7 +51,11 @@ public class Status implements Serializable {
 	public final LinkedList<PassengerRecord> finishedPassengerRecords = new LinkedList<PassengerRecord>();
 	public final LinkedList<PassengerRecord> selectedPassengerRecords = new LinkedList<PassengerRecord>();
 	public final LinkedList<PassengerRecord> unexpectedPassengerRecords = new LinkedList<PassengerRecord>();
-	public final LinkedList<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();;
+	public final LinkedList<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();
 	public final LinkedList<VehicleNotification> receivingOperationScheduleChangedVehicleNotifications = new LinkedList<VehicleNotification>();
 	public final LinkedList<VehicleNotification> receivedOperationScheduleChangedVehicleNotifications = new LinkedList<VehicleNotification>();
+
+	public Status() {
+		serviceUnitStatusLog.setStatus(ServiceUnitStatusLogs.Status.OPERATION);
+	}
 }

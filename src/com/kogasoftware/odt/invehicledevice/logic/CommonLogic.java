@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
+
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.location.Location;
@@ -88,7 +89,7 @@ public class CommonLogic {
 			}
 		}
 	}
-	
+
 	private final DataSource dataSource;
 	private final UiEventBus eventBus;
 	private final StatusAccess statusAccess;
@@ -167,7 +168,8 @@ public class CommonLogic {
 		statusAccess.write(new Writer() {
 			@Override
 			public void write(Status status) {
-				status.paused = false;
+				status.serviceUnitStatusLog
+						.setStatus(ServiceUnitStatusLogs.Status.OPERATION);
 			}
 		});
 	}
@@ -230,8 +232,7 @@ public class CommonLogic {
 				}
 				OperationSchedule operationSchedule = status.remainingOperationSchedules
 						.get(0);
-				Identifiables.merge(
-						status.sendLists.arrivalOperationSchedules,
+				Identifiables.merge(status.sendLists.arrivalOperationSchedules,
 						operationSchedule);
 			}
 		});
@@ -391,7 +392,8 @@ public class CommonLogic {
 		statusAccess.write(new Writer() {
 			@Override
 			public void write(Status status) {
-				status.paused = true;
+				status.serviceUnitStatusLog
+						.setStatus(ServiceUnitStatusLogs.Status.PAUSE);
 			}
 		});
 		eventBus.post(new PauseModalView.ShowEvent());
@@ -485,7 +487,8 @@ public class CommonLogic {
 		statusAccess.write(new Writer() {
 			@Override
 			public void write(Status status) {
-				status.stopped = true;
+				status.serviceUnitStatusLog
+						.setStatus(ServiceUnitStatusLogs.Status.STOP);
 			}
 		});
 		eventBus.post(new StopModalView.ShowEvent());
