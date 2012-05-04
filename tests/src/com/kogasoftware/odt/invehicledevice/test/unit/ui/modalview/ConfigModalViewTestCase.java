@@ -1,17 +1,12 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.ui.modalview;
 
-import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
-import android.content.res.Resources;
+import android.app.Activity;
 import android.content.res.XmlResourceParser;
-import android.util.AttributeSet;
-import android.util.Xml;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.FrameLayout;
+import android.view.ViewGroup;
 
 import com.google.common.base.Function;
 import com.google.common.eventbus.Subscribe;
@@ -28,30 +23,6 @@ public class ConfigModalViewTestCase extends
 	CommonLogic cl;
 	ConfigModalView cmv;
 
-	protected AttributeSet getDefaultAttributeSet() {
-		AttributeSet as = null;
-		Resources r = getInstrumentation().getContext().getResources();
-		XmlResourceParser parser = r
-				.getLayout(com.kogasoftware.odt.invehicledevice.test.R.layout.testcameraoverlay);
-		int state = 0;
-		do {
-			try {
-				state = parser.next();
-			} catch (XmlPullParserException e1) {
-				e1.printStackTrace();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-			if (state == XmlPullParser.START_TAG) {
-				if (parser.getName().equals("TextView")) {
-					as = Xml.asAttributeSet(parser);
-					break;
-				}
-			}
-		} while (state != XmlPullParser.END_DOCUMENT);
-		return as;
-	}
-
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -59,14 +30,18 @@ public class ConfigModalViewTestCase extends
 		runOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
-				FrameLayout fl = (FrameLayout) getActivity().findViewById(
-						android.R.id.content);
-				cmv = new ConfigModalView(getActivity(),
-						getDefaultAttributeSet());
-				fl.addView(cmv);
-				cmv.setVisibility(View.VISIBLE);
+				Activity a = getActivity();
+				LayoutInflater li = a.getLayoutInflater(); // Activity用のLayoutInflaterを使う
+				XmlResourceParser p = getInstrumentation()
+						.getContext()
+						.getResources()
+						.getXml(com.kogasoftware.odt.invehicledevice.test.R.layout.test_config_modal_view);
+				cmv = (ConfigModalView) li.inflate(p, null);
+				ViewGroup vg = (ViewGroup) a.findViewById(android.R.id.content);
+				vg.addView(cmv);
 			}
 		});
+		cl.getEventBus().register(cmv);
 		cmv.setCommonLogic(new CommonLogicLoadCompleteEvent(cl));
 	}
 
@@ -79,21 +54,14 @@ public class ConfigModalViewTestCase extends
 	}
 
 	public void testShowEvent() throws InterruptedException {
-		runOnUiThreadSync(new Runnable() {
-			@Override
-			public void run() {
-				cmv.setVisibility(View.GONE);
-			}
-		});
-		Thread.sleep(500);
 		cl.getEventBus().post(new ConfigModalView.ShowEvent());
 		getInstrumentation().waitForIdleSync();
-		Thread.sleep(500);
 		assertTrue(cmv.isShown());
 		assertEquals(cmv.getVisibility(), View.VISIBLE);
 	}
 
 	public void test中止ボタンを押すとStopCheckModalView_ShowEvent通知() throws Exception {
+		testShowEvent();
 		final CountDownLatch cdl = new CountDownLatch(1);
 		cl.getEventBus().register(
 				new Function<StopCheckModalView.ShowEvent, Void>() {
@@ -109,6 +77,7 @@ public class ConfigModalViewTestCase extends
 	}
 
 	public void test停止ボタンを押すとPauseModalView_ShowEvent通知() throws Exception {
+		testShowEvent();
 		final CountDownLatch cdl = new CountDownLatch(1);
 		cl.getEventBus().register(
 				new Function<PauseModalView.ShowEvent, Void>() {
@@ -124,6 +93,7 @@ public class ConfigModalViewTestCase extends
 	}
 
 	public void test戻るボタンを押すと消える() throws Exception {
+		testShowEvent();
 		solo.clickOnView(solo.getView(R.id.config_close_button));
 		getInstrumentation().waitForIdleSync();
 		assertFalse(cmv.isShown());
