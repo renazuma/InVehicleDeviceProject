@@ -109,6 +109,7 @@ public class ModalView extends FrameLayout implements AnimationListener {
 		}
 		if (animationTarget.getAndSet(AnimationTarget.SHOW) == AnimationTarget.NONE) {
 			startAnimation(showAnimation);
+			setVisibility(VISIBLE); // GONEやINVISIBLE状態だとアニメーションが始まらないことがあるため、明示的にVISIBLEとする
 		}
 	}
 }
