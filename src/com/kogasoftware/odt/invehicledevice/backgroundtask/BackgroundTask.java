@@ -94,8 +94,8 @@ public class BackgroundTask {
 	}
 
 	/**
-	 * Looper.loop()のループに入る。 Looper.loop()が始まる前にスレッドがinterruptされていた場合は終了する。
-	 * interruptされていなかった場合はquitの実行で終了する
+	 * Looper.loop()のループに入る。
+	 * quitの実行で終了する。またLooper.loop()が始まる前にスレッドがinterruptされていた場合も終了する。
 	 */
 	public void loop() {
 		try {
