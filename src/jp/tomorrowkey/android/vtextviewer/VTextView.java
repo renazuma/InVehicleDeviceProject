@@ -22,8 +22,10 @@ import com.kogasoftware.odt.invehicledevice.logic.empty.EmptyThread;
  */
 public class VTextView extends View {
 	/**
-	 * onLayoutをトリガーにしてbitmapを作成したいが、同スレッドで行うと重いメモリ確保が起きる(AndroidLintに指摘される)
-	 * ため別のスレッドで行うためのクラス. AsyncTaskはimmutableクラスなので結局newをする必要があるため自前で行うことにした
+	 * onLayoutをトリガーにしてbitmapを作成したいが、
+	 * 同スレッドでnewなどのメモリ確保をするとAndroidLintのwarningがおきる。
+	 * そのため、別のスレッドでbitmap作成を行うためのクラス。
+	 * AsyncTaskはimmutableクラスなので結局newをする必要があるため自前で作ることにした
 	 */
 	class UpdateBitmapThread extends Thread {
 		@Override
@@ -60,13 +62,14 @@ public class VTextView extends View {
 	private static final String TAG = VTextView.class.getSimpleName();
 	private static final int TOP_SPACE = 0;
 	private Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-	private Canvas canvas = new Canvas(bitmap);
+	private final Canvas canvas = new Canvas(bitmap);
 	private volatile int height = 0; // 別スレッドから読み出すためvolatileをつける
-	private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+	private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 	private String text = "";
-	private Typeface typeFace = Typeface.defaultFromStyle(Typeface.NORMAL);
-	private Handler updateBitmapHandler = new Handler();
-	private Semaphore updateBitmapStartSemaphore = new Semaphore(0);
+	private final Typeface typeFace = Typeface
+			.defaultFromStyle(Typeface.NORMAL);
+	private final Handler updateBitmapHandler = new Handler();
+	private final Semaphore updateBitmapStartSemaphore = new Semaphore(0);
 	private Thread updateBitmapThread = new EmptyThread();
 	private volatile int width = 0; // 別スレッドから読み出すためvolatileをつける
 
@@ -128,7 +131,8 @@ public class VTextView extends View {
 			boolean cond = false;
 			try {
 				cond = y + fontSpacing > height - BOTTOM_SPACE;
-				// TODO: 上行でなぜかArrayIndexOutOfBoundsException発生報告がlogcatに出力されることがある。
+				// TODO:
+				// 上行でなぜかArrayIndexOutOfBoundsException発生報告がlogcatに出力されることがある。
 				// 再現しないようなら削除する
 			} catch (ArrayIndexOutOfBoundsException e) {
 				Log.e(TAG, e.toString(), e);

@@ -38,9 +38,10 @@ public class ReturnPathModalView extends ModalView {
 	}
 
 	private Reservation currentReservation = new Reservation();
-	// private static final String TAG = ReturnPathModalView.class.getSimpleName();
-	private ProgressDialog searchingDialog;
-	private ProgressDialog sendingDialog;
+	// private static final String TAG =
+	// ReturnPathModalView.class.getSimpleName();
+	private final ProgressDialog searchingDialog;
+	private final ProgressDialog sendingDialog;
 
 	public ReturnPathModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -63,11 +64,6 @@ public class ReturnPathModalView extends ModalView {
 			public void onDismiss(DialogInterface dialog) {
 			}
 		});
-	}
-
-	@Override
-	protected void onAttachedToWindow() {
-		super.onAttachedToWindow();
 	}
 
 	@Override
