@@ -29,6 +29,7 @@ import com.kogasoftware.odt.invehicledevice.logic.event.EnterPlatformPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.UnexpectedReservationAddedEvent;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter.ItemType;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.StartCheckModalView;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 
 public class PlatformPhaseView extends PhaseView {
@@ -57,7 +58,7 @@ public class PlatformPhaseView extends PhaseView {
 
 	private Optional<AlertDialog> dialog = Optional.absent();
 
-	private Runnable updateMinutesRemaining = new Runnable() {
+	private final Runnable updateMinutesRemaining = new Runnable() {
 		@Override
 		public void run() {
 			Date now = CommonLogic.getDate();
@@ -300,6 +301,6 @@ public class PlatformPhaseView extends PhaseView {
 
 	@Subscribe
 	public void showStartCheckModalView(StartCheckEvent e) {
-		getCommonLogic().showStartCheckModalView(adapter);
+		getCommonLogic().postEvent(new StartCheckModalView.ShowEvent(adapter));
 	}
 }

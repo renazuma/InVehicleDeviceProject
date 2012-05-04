@@ -6,11 +6,9 @@ import android.view.View;
 
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.logic.event.PauseEvent;
 
 public class PauseModalView extends ModalView {
-	public static class ShowEvent {
-	}
-
 	public PauseModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		setContentView(R.layout.pause_modal_view);
@@ -24,7 +22,7 @@ public class PauseModalView extends ModalView {
 	}
 
 	@Subscribe
-	public void show(ShowEvent event) {
+	public void show(PauseEvent event) {
 		super.show();
 	}
 }

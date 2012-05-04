@@ -23,7 +23,6 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.google.common.base.Function;
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.Status.Phase;
@@ -136,26 +135,26 @@ public class BackgroundTask {
 			commonLogic.waitForOperationScheduleInitialize();
 		}
 
-		EventBus eventBus = commonLogic.getEventBus();
 		for (Object object : new Object[] { voiceThread,
 				operationScheduleReceiveThread, vehicleNotificationReceiver,
 				vehicleNotificationSender, operationScheduleSender,
 				passengerRecordSender, locationSender,
 				temperatureSensorEventListener, orientationSensorEventListener,
 				exitRequiredPreferenceChangeListener, signalStrengthListener }) {
-			eventBus.register(object);
+			commonLogic.registerEventListener(object);
 		}
 
-		eventBus.register(new Function<CommonLogicLoadCompleteEvent, Void>() {
-			@Subscribe
-			@Override
-			public Void apply(CommonLogicLoadCompleteEvent e) {
-				completeLatch.countDown();
-				return null;
-			}
-		});
+		commonLogic
+				.registerEventListener(new Function<CommonLogicLoadCompleteEvent, Void>() {
+					@Subscribe
+					@Override
+					public Void apply(CommonLogicLoadCompleteEvent e) {
+						completeLatch.countDown();
+						return null;
+					}
+				});
 
-		eventBus.post(new CommonLogicLoadCompleteEvent(commonLogic));
+		commonLogic.postEvent(new CommonLogicLoadCompleteEvent(commonLogic));
 		completeLatch.await();
 
 		sharedPreferences

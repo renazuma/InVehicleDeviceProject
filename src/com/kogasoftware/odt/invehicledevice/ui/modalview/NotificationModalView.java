@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.backgroundtask.VoiceThread.SpeakEvent;
 import com.kogasoftware.odt.invehicledevice.logic.Identifiables;
 import com.kogasoftware.odt.invehicledevice.logic.Status;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.VoidReader;
@@ -63,7 +64,8 @@ public class NotificationModalView extends ModalView {
 		currentVehicleNotification = vehicleNotifications.get(0);
 		TextView bodyTextView = (TextView) findViewById(R.id.notification_text_view);
 		bodyTextView.setText(currentVehicleNotification.getBody());
-		getCommonLogic().speak(currentVehicleNotification.getBody());
+		getCommonLogic().postEvent(
+				new SpeakEvent(currentVehicleNotification.getBody()));
 	}
 
 	private void reply() {

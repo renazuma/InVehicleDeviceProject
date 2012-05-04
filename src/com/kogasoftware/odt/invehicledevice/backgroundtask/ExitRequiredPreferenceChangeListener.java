@@ -28,7 +28,7 @@ public class ExitRequiredPreferenceChangeListener implements
 				&& sharedPreferences.getBoolean(key, false)) {
 			// 文字列定数
 			Log.i(TAG, "SharedPreferences changed, exit!");
-			commonLogic.getEventBus().post(new ExitEvent());
+			commonLogic.postEvent(new ExitEvent());
 			sharedPreferences.edit().putBoolean(EXIT_REQUIRED_SHARED_PREFERENCE_KEY, true).commit();
 		}
 	}

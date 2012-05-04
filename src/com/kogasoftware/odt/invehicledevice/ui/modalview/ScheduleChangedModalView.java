@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.backgroundtask.VoiceThread.SpeakEvent;
 import com.kogasoftware.odt.invehicledevice.logic.Status;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.VoidReader;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
@@ -28,15 +29,10 @@ public class ScheduleChangedModalView extends ModalView {
 		scheduleConfirmButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				getCommonLogic().showScheduleModalView();
+				getCommonLogic().postEvent(new ScheduleModalView.ShowEvent());
 				hide();
 			}
 		});
-	}
-
-	@Override
-	public void hide() {
-		super.hide();
 	}
 
 	@Subscribe
@@ -54,12 +50,12 @@ public class ScheduleChangedModalView extends ModalView {
 		StringBuilder message = new StringBuilder();
 		for (VehicleNotification vehicleNotification : vehicleNotifications) {
 			message.append(vehicleNotification.getBody());
-			message.append("\n");
+			message.append('\n');
 		}
 
 		TextView scheduleChangedTextView = (TextView) findViewById(R.id.schedule_changed_text_view);
 		scheduleChangedTextView.setText(message);
-		getCommonLogic().speak(message.toString());
+		getCommonLogic().postEvent(new SpeakEvent(message.toString()));
 
 		// 表示したスケジュール変更通知を、responseを指定して返信リストへ追加
 		for (VehicleNotification vehicleNotification : vehicleNotifications) {

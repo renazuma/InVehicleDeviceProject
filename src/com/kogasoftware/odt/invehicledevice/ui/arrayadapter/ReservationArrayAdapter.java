@@ -23,11 +23,13 @@ import android.widget.ToggleButton;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.logic.Status;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic.PayTiming;
+import com.kogasoftware.odt.invehicledevice.logic.Status;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Reader;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.VoidReader;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.MemoModalView;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.ReturnPathModalView;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
@@ -225,7 +227,8 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 			memoButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View view) {
-					commonLogic.showMemoModalView(reservation);
+					commonLogic.postEvent(new MemoModalView.ShowEvent(
+							reservation));
 				}
 			});
 		} else {
@@ -238,7 +241,8 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 		returnPathButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				commonLogic.showReturnPathModalView(reservation);
+				commonLogic.postEvent(new ReturnPathModalView.ShowEvent(
+						reservation));
 			}
 		});
 

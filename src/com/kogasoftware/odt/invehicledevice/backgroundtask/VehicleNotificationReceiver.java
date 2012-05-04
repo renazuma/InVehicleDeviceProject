@@ -5,12 +5,14 @@ import java.util.List;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.kogasoftware.odt.invehicledevice.backgroundtask.VoiceThread.SpeakEvent;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.logic.Status;
 import com.kogasoftware.odt.invehicledevice.logic.Identifiables;
+import com.kogasoftware.odt.invehicledevice.logic.Status;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
 import com.kogasoftware.odt.invehicledevice.logic.event.StartOperationScheduleUpdateEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.VehicleNotificationReceivedEvent;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.NotificationModalView;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
@@ -58,8 +60,7 @@ public class VehicleNotificationReceiver implements Runnable {
 							continue;
 						}
 						if (Identifiables
-								.merge(
-										status.receivingOperationScheduleChangedVehicleNotifications,
+								.merge(status.receivingOperationScheduleChangedVehicleNotifications,
 										vehicleNotification)) {
 							operationScheduleChanged.set(true);
 						}
@@ -68,7 +69,7 @@ public class VehicleNotificationReceiver implements Runnable {
 			});
 
 			if (operationScheduleChanged.get()) {
-				commonLogic.getEventBus().post(
+				commonLogic.postEvent(
 						new StartOperationScheduleUpdateEvent());
 			}
 
@@ -91,11 +92,11 @@ public class VehicleNotificationReceiver implements Runnable {
 				}
 			});
 			if (added.get()) {
-				commonLogic.getEventBus().post(
+				commonLogic.postEvent(
 						new VehicleNotificationReceivedEvent());
-				commonLogic.speak("管理者から連絡があります");
+				commonLogic.postEvent(new SpeakEvent("管理者から連絡があります"));
 				Thread.sleep(5000); // TODO 定数
-				commonLogic.showNotificationModalView();
+				commonLogic.postEvent(new NotificationModalView.ShowEvent());
 			}
 		} catch (RejectedExecutionException e) {
 		} catch (WebAPIException e) {

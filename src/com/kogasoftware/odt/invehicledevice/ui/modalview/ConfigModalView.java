@@ -7,6 +7,7 @@ import android.widget.Button;
 
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.logic.event.PauseEvent;
 
 /**
  * 運行状態の設定画面
@@ -22,7 +23,8 @@ public class ConfigModalView extends ModalView {
 		stopCheckButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				getCommonLogic().showStopCheckModalView();
+				getCommonLogic().postEvent(
+						new StopCheckModalView.ShowEvent());
 			}
 		});
 
@@ -30,7 +32,7 @@ public class ConfigModalView extends ModalView {
 		pauseButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				getCommonLogic().pause();
+				getCommonLogic().postEvent(new PauseEvent());
 				hide();
 			}
 		});

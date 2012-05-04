@@ -7,6 +7,7 @@ import android.widget.Button;
 
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.logic.event.StopEvent;
 
 public class StopCheckModalView extends ModalView {
 	public static class ShowEvent {
@@ -20,7 +21,7 @@ public class StopCheckModalView extends ModalView {
 		stopButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				getCommonLogic().stop();
+				getCommonLogic().postEvent(new StopEvent());
 			}
 		});
 	}

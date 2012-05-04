@@ -37,7 +37,10 @@ import com.kogasoftware.odt.invehicledevice.logic.event.ExitEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.SignalStrengthChangedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.UpdatedOperationScheduleReceivedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.VehicleNotificationReceivedEvent;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.ConfigModalView;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.NavigationModalView;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.ScheduleModalView;
+import com.kogasoftware.odt.invehicledevice.ui.phaseview.PlatformPhaseView;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 
 public class InVehicleDeviceActivity extends Activity {
@@ -172,7 +175,7 @@ public class InVehicleDeviceActivity extends Activity {
 		changePhaseButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				commonLogic.showStartCheckModalView();
+				commonLogic.postEvent(new PlatformPhaseView.StartCheckEvent());
 			}
 		});
 		changePhaseButton.setEnabled(true);
@@ -224,13 +227,13 @@ public class InVehicleDeviceActivity extends Activity {
 		configButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				commonLogic.showConfigModalView();
+				commonLogic.postEvent(new ConfigModalView.ShowEvent());
 			}
 		});
 		scheduleButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				commonLogic.showScheduleModalView();
+				commonLogic.postEvent(new ScheduleModalView.ShowEvent());
 			}
 		});
 

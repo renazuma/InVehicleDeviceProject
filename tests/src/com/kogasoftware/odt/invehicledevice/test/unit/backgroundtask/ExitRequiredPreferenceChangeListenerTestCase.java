@@ -41,7 +41,7 @@ public class ExitRequiredPreferenceChangeListenerTestCase extends
 		eew = new ExitEventWaiter();
 		a = getActivity();
 		cl = new CommonLogic(a, getActivityHandler());
-		cl.getEventBus().register(eew);
+		cl.registerEventListener(eew);
 		erpcl = new ExitRequiredPreferenceChangeListener(cl);
 		sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
 

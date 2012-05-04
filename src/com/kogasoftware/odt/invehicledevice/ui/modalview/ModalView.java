@@ -7,8 +7,6 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-
-import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
@@ -39,7 +37,7 @@ public class ModalView extends FrameLayout implements AnimationListener {
 		hideAnimation = AnimationUtils.loadAnimation(getContext(),
 				R.anim.hide_modal_view);
 		hideAnimation.setAnimationListener(this);
-		
+
 		setVisibility(GONE);
 	}
 
@@ -85,6 +83,11 @@ public class ModalView extends FrameLayout implements AnimationListener {
 		}
 	}
 
+	@Subscribe
+	public void setCommonLogicAndEventBus(CommonLogicLoadCompleteEvent event) {
+		this.commonLogic = event.commonLogic;
+	}
+
 	protected void setContentView(int resourceId) {
 		LayoutInflater layoutInflater = (LayoutInflater) getContext()
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -98,12 +101,7 @@ public class ModalView extends FrameLayout implements AnimationListener {
 		setBackgroundColor(backgroundColor);
 	}
 
-	@Subscribe
-	public void setCommonLogic(CommonLogicLoadCompleteEvent event) {
-		this.commonLogic = event.commonLogic;
-	}
-
-	public void show() {
+	protected void show() {
 		if (getVisibility() == VISIBLE) {
 			return;
 		}

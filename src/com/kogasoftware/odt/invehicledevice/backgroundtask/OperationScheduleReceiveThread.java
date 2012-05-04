@@ -6,6 +6,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.google.common.eventbus.Subscribe;
+import com.kogasoftware.odt.invehicledevice.backgroundtask.VoiceThread.SpeakEvent;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.Identifiables;
 import com.kogasoftware.odt.invehicledevice.logic.Status;
@@ -37,11 +38,11 @@ public class OperationScheduleReceiveThread extends Thread {
 
 		// 受信成功
 		if (!vehicleNotifications.isEmpty()) {
-			commonLogic.getEventBus().post(
+			commonLogic.postEvent(
 					new UpdatedOperationScheduleReceivedEvent());
 			try {
 				Thread.sleep(5000); // TODO 定数
-				commonLogic.speak("運行予定が変更されました");
+				commonLogic.postEvent(new SpeakEvent("運行予定が変更されました"));
 			} catch (InterruptedException e) {
 				// 割り込み状態を有効へ戻してから以降の処理を続行する。早めに終了しておきたいため音声再生はしないでおく。
 				Thread.currentThread().interrupt();
@@ -220,7 +221,7 @@ public class OperationScheduleReceiveThread extends Thread {
 		status.finishedOperationSchedules.clear();
 		status.finishedOperationSchedules.addAll(newFinishedOperationSchedules);
 
-		commonLogic.getEventBus().post(
+		commonLogic.postEvent(
 				new UpdatedOperationScheduleMergedEvent());
 	}
 

@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.backgroundtask.VoiceThread.SpeakEvent;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.Status;
 import com.kogasoftware.odt.invehicledevice.logic.Status.Phase;
@@ -138,8 +139,8 @@ public class DrivePhaseView extends PhaseView implements AnimationListener {
 			}
 		}
 
-		commonLogic.speak("出発します。次は、" + platform.getNameRuby() + "。"
-				+ platform.getNameRuby() + "。");
+		commonLogic.postEvent(new SpeakEvent("出発します。次は、"
+				+ platform.getNameRuby() + "。" + platform.getNameRuby() + "。"));
 
 		setVisibility(View.VISIBLE);
 	}

@@ -20,7 +20,6 @@ import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.BuildConfig;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.backgroundtask.VoiceThread.SpeakEvent;
 import com.kogasoftware.odt.invehicledevice.logic.Status.Phase;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Reader;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
@@ -29,21 +28,11 @@ import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSourceFactory;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterDrivePhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterFinishPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterPlatformPhaseEvent;
+import com.kogasoftware.odt.invehicledevice.logic.event.PauseEvent;
+import com.kogasoftware.odt.invehicledevice.logic.event.StopEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.UiEventBus;
 import com.kogasoftware.odt.invehicledevice.logic.event.UnexpectedReservationAddedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.UpdatedOperationScheduleMergedEvent;
-import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.ConfigModalView;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.MemoModalView;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.NotificationModalView;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.PauseModalView;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.ReturnPathModalView;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.ScheduleChangedModalView;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.ScheduleModalView;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.StartCheckModalView;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.StopCheckModalView;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.StopModalView;
-import com.kogasoftware.odt.invehicledevice.ui.phaseview.PlatformPhaseView;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
@@ -52,6 +41,7 @@ import com.kogasoftware.odt.webapi.model.User;
 /**
  * 車載機の内部共通ロジック
  */
+@UiEventBus.HighPriority
 public class CommonLogic {
 	public static enum PayTiming {
 		GET_ON, GET_OFF,
@@ -118,9 +108,8 @@ public class CommonLogic {
 				R.id.return_path_modal_view, R.id.stop_check_modal_view,
 				R.id.stop_modal_view, R.id.notification_modal_view,
 				R.id.schedule_changed_modal_view, R.id.navigation_modal_view,
-				R.id.login_modal_view, R.id.phase_text_view,
-				R.id.drive_phase_view, R.id.platform_phase_view,
-				R.id.finish_phase_view }) {
+				R.id.phase_text_view, R.id.drive_phase_view,
+				R.id.platform_phase_view, R.id.finish_phase_view }) {
 			View view = activity.findViewById(resourceId);
 			if (view != null) {
 				eventBus.register(view);
@@ -257,10 +246,6 @@ public class CommonLogic {
 		return dataSource;
 	}
 
-	public UiEventBus getEventBus() {
-		return eventBus;
-	}
-
 	public List<OperationSchedule> getFinishedOperationSchedules() {
 		return statusAccess.read(new Reader<List<OperationSchedule>>() {
 			@Override
@@ -388,7 +373,8 @@ public class CommonLogic {
 		});
 	}
 
-	public void pause() {
+	@Subscribe
+	public void pause(PauseEvent e) {
 		statusAccess.write(new Writer() {
 			@Override
 			public void write(Status status) {
@@ -396,7 +382,14 @@ public class CommonLogic {
 						.setStatus(ServiceUnitStatusLogs.Status.PAUSE);
 			}
 		});
-		eventBus.post(new PauseModalView.ShowEvent());
+	}
+
+	public void postEvent(Object event) {
+		eventBus.post(event);
+	}
+
+	public void registerEventListener(Object eventListener) {
+		eventBus.register(eventListener);
 	}
 
 	public void restoreStatus() {
@@ -443,47 +436,8 @@ public class CommonLogic {
 		});
 	}
 
-	public void showConfigModalView() {
-		eventBus.post(new ConfigModalView.ShowEvent());
-	}
-
-	public void showMemoModalView(Reservation reservation) {
-		eventBus.post(new MemoModalView.ShowEvent(reservation));
-	}
-
-	public void showNotificationModalView() {
-		eventBus.post(new NotificationModalView.ShowEvent());
-	}
-
-	public void showReturnPathModalView(Reservation reservation) {
-		eventBus.post(new ReturnPathModalView.ShowEvent(reservation));
-	}
-
-	public void showScheduleChangedModalView() {
-		eventBus.post(new ScheduleChangedModalView.ShowEvent());
-	}
-
-	public void showScheduleModalView() {
-		eventBus.post(new ScheduleModalView.ShowEvent());
-	}
-
-	public void showStartCheckModalView() {
-		eventBus.post(new PlatformPhaseView.StartCheckEvent());
-	}
-
-	public void showStartCheckModalView(ReservationArrayAdapter adapter) {
-		eventBus.post(new StartCheckModalView.ShowEvent(adapter));
-	}
-
-	public void showStopCheckModalView() {
-		eventBus.post(new StopCheckModalView.ShowEvent());
-	}
-
-	public void speak(String message) {
-		eventBus.post(new SpeakEvent(message));
-	}
-
-	public void stop() {
+	@Subscribe
+	public void stop(StopEvent e) {
 		statusAccess.write(new Writer() {
 			@Override
 			public void write(Status status) {
@@ -491,7 +445,6 @@ public class CommonLogic {
 						.setStatus(ServiceUnitStatusLogs.Status.STOP);
 			}
 		});
-		eventBus.post(new StopModalView.ShowEvent());
 	}
 
 	public void waitForOperationScheduleInitialize()

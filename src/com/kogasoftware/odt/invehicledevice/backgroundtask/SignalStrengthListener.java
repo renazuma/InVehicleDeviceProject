@@ -45,7 +45,7 @@ public class SignalStrengthListener extends PhoneStateListener {
 	 */
 	@Override
 	public void onSignalStrengthsChanged(SignalStrength signalStrength) {
-		commonLogic.getEventBus().post(
+		commonLogic.postEvent(
 				new SignalStrengthChangedEvent(
 						getSignalStrengthPercentage(signalStrength)));
 	};
