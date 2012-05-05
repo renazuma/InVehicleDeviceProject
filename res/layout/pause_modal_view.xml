@@ -12,7 +12,7 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
          />
 
-    <com.kogasoftware.odt.invehicledevice.ui.modalview.HideModalViewButton
+    <Button
         android:id="@+id/pause_cancel_button"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
