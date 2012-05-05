@@ -8,14 +8,12 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
-import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.telephony.PhoneStateListener;
@@ -28,6 +26,11 @@ import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.Status.Phase;
 import com.kogasoftware.odt.invehicledevice.logic.event.CommonLogicLoadCompleteEvent;
 
+/**
+ * バックグランドでの処理を管理するクラス
+ * 
+ * 注意: quit以外のメソッドは全て同じスレッドで実行する
+ */
 public class BackgroundTask {
 	private static final String TAG = BackgroundTaskThread.class
 			.getSimpleName();
@@ -56,22 +59,22 @@ public class BackgroundTask {
 	private final Thread operationScheduleReceiveThread;
 	private final Looper myLooper;
 
-	public BackgroundTask(Activity activity, Handler activityHandler) {
-		Looper.prepare();
+	public BackgroundTask(CommonLogic commonLogic, Context context) {
+		if (Looper.myLooper() == null) {
+			Looper.prepare();
+		}
 		myLooper = Looper.myLooper();
-
-		commonLogic = new CommonLogic(activity, activityHandler);
-
-		locationManager = (LocationManager) activity
+		this.commonLogic = commonLogic;
+		locationManager = (LocationManager) context
 				.getSystemService(Context.LOCATION_SERVICE);
-		sensorManager = (SensorManager) activity
+		sensorManager = (SensorManager) context
 				.getSystemService(Context.SENSOR_SERVICE);
-		telephonyManager = (TelephonyManager) activity
+		telephonyManager = (TelephonyManager) context
 				.getSystemService(Context.TELEPHONY_SERVICE);
-		connectivityManager = (ConnectivityManager) activity
+		connectivityManager = (ConnectivityManager) context
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
 		sharedPreferences = PreferenceManager
-				.getDefaultSharedPreferences(activity);
+				.getDefaultSharedPreferences(context);
 
 		exitRequiredPreferenceChangeListener = new ExitRequiredPreferenceChangeListener(
 				commonLogic);
@@ -87,7 +90,7 @@ public class BackgroundTask {
 				commonLogic);
 		signalStrengthListener = new SignalStrengthListener(commonLogic,
 				connectivityManager);
-		voiceThread = new VoiceThread(activity);
+		voiceThread = new VoiceThread(context);
 		operationScheduleReceiveThread = new OperationScheduleReceiveThread(
 				commonLogic);
 	}
@@ -192,7 +195,6 @@ public class BackgroundTask {
 		sensorManager.unregisterListener(orientationSensorEventListener);
 		telephonyManager.listen(signalStrengthListener,
 				PhoneStateListener.LISTEN_NONE);
-		commonLogic.dispose();
 		executorService.shutdownNow();
 	}
 

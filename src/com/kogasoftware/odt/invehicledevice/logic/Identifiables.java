@@ -10,11 +10,17 @@ import com.kogasoftware.odt.webapi.Identifiable;
 public class Identifiables {
 	/**
 	 * getId()が同一のものが含まれるかのチェック
+	 * 
+	 * @param collection
+	 *            対象のCollection.
+	 * @param searchElement
+	 *            探す要素.
+	 * @return Boolean collectionと同一のものが含まれていたらtrue.
 	 */
 	public static <T extends Identifiable> Boolean contains(
-			Collection<T> collection, T extraElement) {
+			Collection<T> collection, T searchElement) {
 		for (Identifiable element : collection) {
-			if (element.getId().equals(extraElement.getId())) {
+			if (element.getId().equals(searchElement.getId())) {
 				return true;
 			}
 		}
@@ -22,8 +28,13 @@ public class Identifiables {
 	}
 
 	/**
-	 * コレクションに要素を追加する。ただしgetId()が同一のものが存在する場合追加しない
-	 * 追加された場合はtrueを返す
+	 * コレクションに要素を追加する. ただしgetId()が同一のものが存在する場合追加しない. 追加された場合はtrueを返す
+	 * 
+	 * @param collection
+	 *            マージ対象のCollection
+	 * @param additionalCollection
+	 *            collection引数にマージする要素
+	 * @return Boolean マージが一度でも発生したらtrue
 	 */
 	public static <T extends Identifiable> Boolean merge(
 			Collection<T> collection, Collection<T> additionalCollection) {
@@ -38,8 +49,13 @@ public class Identifiables {
 	}
 
 	/**
-	 * コレクションに要素を追加する。ただしgetId()が同一のものが存在する場合追加しない
-	 * 追加された場合はtrueを返す
+	 * コレクションに要素を追加する. ただしgetId()が同一のものが存在する場合追加しない. 追加された場合はtrueを返す
+	 * 
+	 * @param collection
+	 *            マージ対象のCollection
+	 * @param additionalElement
+	 *            collection引数にマージする要素
+	 * @return Boolean マージが発生したらtrue
 	 */
 	public static <T extends Identifiable> Boolean merge(
 			Collection<T> collection, T additionalElement) {

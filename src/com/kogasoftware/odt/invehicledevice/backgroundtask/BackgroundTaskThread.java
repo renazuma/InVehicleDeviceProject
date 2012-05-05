@@ -2,19 +2,19 @@ package com.kogasoftware.odt.invehicledevice.backgroundtask;
 
 import android.app.Activity;
 import android.os.Handler;
+import android.os.Looper;
 
 import com.google.common.base.Optional;
+import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 
 public class BackgroundTaskThread extends Thread {
 	private final Activity activity;
-	private final Handler activityHandler;
 	private final Object backgroundTaskQuitLock = new Object();
 	private volatile Optional<BackgroundTask> optionalBackgroundTask = Optional
 			.absent();
 
-	public BackgroundTaskThread(Activity activity, Handler activityHandler) {
+	public BackgroundTaskThread(Activity activity) {
 		this.activity = activity;
-		this.activityHandler = activityHandler;
 	}
 
 	@Override
@@ -29,12 +29,29 @@ public class BackgroundTaskThread extends Thread {
 		}
 	}
 
+	/**
+	 * CommonLogicを作り、それを引数にしてBackgroundTaskを開始する. 直接は呼ばない.
+	 */
 	@Override
 	public void run() {
-		BackgroundTask backgroundTask = new BackgroundTask(activity, activityHandler);
-		synchronized (backgroundTaskQuitLock) {
-			optionalBackgroundTask = Optional.of(backgroundTask);
+		Looper.prepare();
+
+		Handler activityHandler = new Handler();
+		try {
+			activityHandler = CommonLogic.getActivityHandler(activity);
+		} catch (InterruptedException e) {
+			return;
 		}
-		backgroundTask.loop();
+		CommonLogic commonLogic = new CommonLogic(activity, activityHandler);
+		try {
+			BackgroundTask backgroundTask = new BackgroundTask(commonLogic,
+					activity);
+			synchronized (backgroundTaskQuitLock) {
+				optionalBackgroundTask = Optional.of(backgroundTask);
+			}
+			backgroundTask.loop();
+		} finally {
+			commonLogic.dispose();
+		}
 	}
 }

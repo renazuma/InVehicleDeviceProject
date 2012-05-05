@@ -36,6 +36,7 @@ public class NotificationModalView extends ModalView {
 					public void onClick(View view) {
 						currentVehicleNotification.setResponse(1);
 						reply();
+						hide();
 					}
 				});
 		findViewById(R.id.reply_no_button).setOnClickListener(
@@ -44,6 +45,7 @@ public class NotificationModalView extends ModalView {
 					public void onClick(View view) {
 						currentVehicleNotification.setResponse(0);
 						reply();
+						hide();
 					}
 				});
 	}

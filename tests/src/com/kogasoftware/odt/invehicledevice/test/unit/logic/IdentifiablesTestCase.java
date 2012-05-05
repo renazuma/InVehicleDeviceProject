@@ -39,18 +39,18 @@ public class IdentifiablesTestCase extends TestCase {
 	 * getId()が同一のものが存在しなければfalseを返す
 	 */
 	public void testContains_1() throws Exception {
-		// 空の場合
+		// 空
 		List<Test> l = new LinkedList<Test>();
 		Test t = new Test(1);
 		assertFalse(Identifiables.contains(l, t));
 		assertEquals(l.size(), 0);
 
-		// 単数の場合
+		// 単数
 		l.add(new Test(2));
 		assertFalse(Identifiables.contains(l, t));
 		assertEquals(l.size(), 1);
 
-		// 複数の場合
+		// 複数
 		l.add(new Test(3));
 		assertFalse(Identifiables.contains(l, t));
 		assertEquals(l.size(), 2);
@@ -60,14 +60,20 @@ public class IdentifiablesTestCase extends TestCase {
 	 * getId()が同一のものが存在すればtrueを返す
 	 */
 	public void testContains_2() throws Exception {
-		// 別のオブジェクトの場合
 		List<Test> l = new LinkedList<Test>();
-		Test t = new Test(12345);
-		l.add(t);
-		assertFalse(l.contains(new Test(12345)));
+
+		// 単数
+		l.add(new Test(12345));
+		assertFalse(l.contains(new Test(12345))); // 別のオブジェクトと判定されfalse
 		assertTrue(Identifiables.contains(l, new Test(12345)));
 		assertEquals(l.size(), 1);
 
+		// 複数
+		l.add(new Test(123));
+		assertFalse(l.contains(new Test(123))); // 別のオブジェクトと判定されfalse
+		assertTrue(Identifiables.contains(l, new Test(12345)));
+		assertTrue(Identifiables.contains(l, new Test(123)));
+		assertEquals(l.size(), 1);
 	}
 
 	/**

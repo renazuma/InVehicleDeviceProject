@@ -15,6 +15,7 @@ import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
+import com.kogasoftware.odt.invehicledevice.logic.event.EnterDrivePhaseEvent;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
@@ -46,6 +47,7 @@ public class StartCheckModalView extends ModalView {
 	public StartCheckModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		setContentView(R.layout.start_check_modal_view);
+		setCloseOnClick(R.id.start_check_close_button);
 	}
 
 	@Subscribe
@@ -100,7 +102,7 @@ public class StartCheckModalView extends ModalView {
 							adapter.getSelectedGetOffPassengerRecords());
 					commonLogic.clearSelectedPassengerRecords();
 				}
-				commonLogic.enterDrivePhase();
+				commonLogic.postEvent(new EnterDrivePhaseEvent());
 			}
 		});
 		super.show();

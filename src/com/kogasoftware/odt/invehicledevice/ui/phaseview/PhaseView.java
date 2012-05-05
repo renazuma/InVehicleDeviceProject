@@ -42,6 +42,11 @@ public class PhaseView extends FrameLayout {
 		return commonLogic;
 	}
 
+	@Subscribe
+	public void setCommonLogic(CommonLogicLoadCompleteEvent event) {
+		this.commonLogic = event.commonLogic;
+	}
+
 	protected void setContentView(int resourceId) {
 		LayoutInflater layoutInflater = (LayoutInflater) getContext()
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -53,10 +58,5 @@ public class PhaseView extends FrameLayout {
 				new int[] { android.R.attr.background });
 		int backgroundColor = typedArray.getColor(0, Color.WHITE);
 		setBackgroundColor(backgroundColor);
-	}
-
-	@Subscribe
-	public void setLogic(CommonLogicLoadCompleteEvent event) {
-		this.commonLogic = event.commonLogic;
 	}
 }

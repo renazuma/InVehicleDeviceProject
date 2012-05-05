@@ -143,7 +143,7 @@ public class InVehicleDeviceActivity extends Activity {
 		changePhaseButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				commonLogic.enterPlatformPhase();
+				commonLogic.postEvent(new EnterPlatformPhaseEvent());
 			}
 		});
 	}
@@ -160,7 +160,7 @@ public class InVehicleDeviceActivity extends Activity {
 		List<OperationSchedule> operationSchedules = commonLogic
 				.getRemainingOperationSchedules();
 		if (operationSchedules.isEmpty()) {
-			commonLogic.enterFinishPhase();
+			commonLogic.postEvent(new EnterFinishPhaseEvent());
 			return;
 		}
 
@@ -250,7 +250,7 @@ public class InVehicleDeviceActivity extends Activity {
 
 		handler.post(updateTime);
 
-		backgroundThread = new BackgroundTaskThread(this, new Handler());
+		backgroundThread = new BackgroundTaskThread(this);
 		backgroundThread.start();
 	}
 

@@ -51,13 +51,27 @@ public class UiEventBus {
 	}
 
 	/**
+	 * 登録されているオブジェクトから、与えられたクラスのインスタンスの数を返す
+	 */
+	public Integer countRegisteredClass(Class<?> c) {
+		Integer count = 0;
+		for (Object object : new LinkedList<Object>(registeredObjects)
+		/* unregisterでregisteredObjectsが変更される可能性があるためコピーしておく */) {
+			if (c.isInstance(object)) {
+				count++;
+			}
+		}
+		return count;
+	}
+
+	/**
 	 * 登録された全てのObjectをunregisterし、以降の登録もできなくする
 	 */
 	public void dispose() {
 		synchronized (registerAndDisposeLock) {
 			disposed.set(true);
 			for (Object object : new LinkedList<Object>(registeredObjects)
-			/* unregister内でregisteredObjectsが変更される可能性があるためコピーしておく */) {
+			/* unregisterでregisteredObjectsが変更される可能性があるためコピーしておく */) {
 				try {
 					unregister(object);
 				} catch (IllegalArgumentException e) {
@@ -69,7 +83,6 @@ public class UiEventBus {
 	}
 
 	private final EventBus getEventBusForObject(Object object) {
-		Class<?> c = object.getClass();
 		for (Annotation annotation : object.getClass().getAnnotations()) {
 			annotation.toString();
 		}

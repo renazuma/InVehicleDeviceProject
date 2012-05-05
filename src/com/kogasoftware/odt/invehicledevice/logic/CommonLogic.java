@@ -5,8 +5,10 @@ import java.util.Date;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -17,6 +19,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.BuildConfig;
 import com.kogasoftware.odt.invehicledevice.R;
@@ -60,6 +63,23 @@ public class CommonLogic {
 		willClearStatusFile.set(true);
 	}
 
+	public static Handler getActivityHandler(Activity activity)
+			throws InterruptedException {
+		final CountDownLatch latch = new CountDownLatch(1);
+		final AtomicReference<Handler> handler = new AtomicReference<Handler>();
+		activity.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				handler.set(new Handler());
+				latch.countDown();
+			}
+		});
+		latch.await();
+		Preconditions.checkNotNull(handler.get());
+		return handler.get();
+
+	}
+
 	public static Date getDate() {
 		if (!BuildConfig.DEBUG) {
 			return new Date();
@@ -82,6 +102,7 @@ public class CommonLogic {
 
 	private final DataSource dataSource;
 	private final UiEventBus eventBus;
+
 	private final StatusAccess statusAccess;
 
 	public CommonLogic() {
@@ -99,6 +120,7 @@ public class CommonLogic {
 				preferences.getString("token", ""));
 		statusAccess = new StatusAccess(activity,
 				willClearStatusFile.getAndSet(false));
+
 		eventBus = new UiEventBus(activityHandler);
 		eventBus.register(this);
 		eventBus.register(activity);
@@ -172,16 +194,21 @@ public class CommonLogic {
 		});
 	}
 
+	public Integer countRegisteredClass(Class<?> c) {
+		return eventBus.countRegisteredClass(c);
+	}
+
 	public void dispose() {
 		eventBus.dispose();
 	}
 
-	public void enterDrivePhase() {
+	@Subscribe
+	public void enterDrivePhase(EnterDrivePhaseEvent e) {
 		statusAccess.write(new Writer() {
 			@Override
 			public void write(Status status) {
 				if (status.remainingOperationSchedules.isEmpty()) {
-					enterFinishPhase();
+					eventBus.post(new EnterFinishPhaseEvent());
 					return;
 				}
 				OperationSchedule operationSchedule = status.remainingOperationSchedules
@@ -197,26 +224,26 @@ public class CommonLogic {
 				status.phase = Status.Phase.DRIVE;
 			}
 		});
-		eventBus.post(new EnterDrivePhaseEvent());
 	}
 
-	public void enterFinishPhase() {
+	@Subscribe
+	public void enterFinishPhase(EnterFinishPhaseEvent e) {
 		statusAccess.write(new Writer() {
 			@Override
 			public void write(Status status) {
 				status.phase = Status.Phase.FINISH;
 			}
 		});
-		eventBus.post(new EnterFinishPhaseEvent());
 	}
 
-	public void enterPlatformPhase() {
+	@Subscribe
+	public void enterPlatformPhase(EnterPlatformPhaseEvent e) {
 		statusAccess.write(new Writer() {
 			@Override
 			public void write(Status status) {
 				status.phase = Status.Phase.PLATFORM;
 				if (status.remainingOperationSchedules.isEmpty()) {
-					enterFinishPhase();
+					eventBus.post(new EnterFinishPhaseEvent());
 					return;
 				}
 				OperationSchedule operationSchedule = status.remainingOperationSchedules
@@ -225,7 +252,6 @@ public class CommonLogic {
 						operationSchedule);
 			}
 		});
-		eventBus.post(new EnterPlatformPhaseEvent());
 	}
 
 	public Optional<OperationSchedule> getCurrentOperationSchedule() {
@@ -395,16 +421,16 @@ public class CommonLogic {
 	public void restoreStatus() {
 		switch (getPhase()) {
 		case INITIAL:
-			enterDrivePhase();
+			postEvent(new EnterDrivePhaseEvent());
 			break;
 		case DRIVE:
-			enterDrivePhase();
+			postEvent(new EnterDrivePhaseEvent());
 			break;
 		case PLATFORM:
-			enterPlatformPhase();
+			postEvent(new EnterPlatformPhaseEvent());
 			break;
 		case FINISH:
-			enterFinishPhase();
+			postEvent(new EnterFinishPhaseEvent());
 			break;
 		}
 	}

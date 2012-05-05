@@ -1,5 +1,8 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.backgroundtask;
 
+import java.util.concurrent.atomic.AtomicReference;
+
+import com.kogasoftware.odt.invehicledevice.backgroundtask.BackgroundTask;
 import com.kogasoftware.odt.invehicledevice.backgroundtask.LocationSender;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.Status;
@@ -26,6 +29,22 @@ public class LocationSenderTestCase extends
 	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
+	}
+
+	public void testBackgroundTaskによってUiEventBusに登録される() throws Exception {
+		final AtomicReference<BackgroundTask> bt = new AtomicReference<BackgroundTask>();
+		Thread t = new Thread() {
+			@Override
+			public void run() {
+				bt.set(new BackgroundTask(cl, getInstrumentation().getContext()));
+				bt.get().loop();
+			}
+		};
+		t.start();
+		Thread.sleep(1000);
+		assertEquals(cl.countRegisteredClass(LocationSender.class).intValue(),
+				1);
+		bt.get().quit();
 	}
 
 	/**

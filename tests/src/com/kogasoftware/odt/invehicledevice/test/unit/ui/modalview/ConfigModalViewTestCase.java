@@ -17,15 +17,15 @@ import com.kogasoftware.odt.invehicledevice.ui.modalview.StopCheckModalView;
 public class ConfigModalViewTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 	CommonLogic cl;
-	ConfigModalView cmv;
+	ConfigModalView mv;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		cl = new CommonLogic(getActivity(), getActivityHandler());
-		cmv = (ConfigModalView) inflateAndAddTestLayout(com.kogasoftware.odt.invehicledevice.test.R.layout.test_config_modal_view);
-		cl.registerEventListener(cmv);
-		cmv.setCommonLogicAndEventBus(new CommonLogicLoadCompleteEvent(cl));
+		mv = (ConfigModalView) inflateAndAddTestLayout(com.kogasoftware.odt.invehicledevice.test.R.layout.test_config_modal_view);
+		cl.registerEventListener(mv);
+		mv.setCommonLogic(new CommonLogicLoadCompleteEvent(cl));
 	}
 
 	@Override
@@ -36,25 +36,47 @@ public class ConfigModalViewTestCase extends
 		}
 	}
 
+	public void testEventBusに自動で登録される() throws Exception {
+		runOnUiThreadSync(new Runnable() {
+			@Override
+			public void run() {
+				getActivity().setContentView(R.layout.in_vehicle_device);
+			}
+		});
+		CommonLogic cl2 = new CommonLogic(getActivity(), getActivityHandler());
+		try {
+			assertEquals(cl2.countRegisteredClass(ConfigModalView.class)
+					.intValue(), 1);
+		} finally {
+			cl2.dispose();
+		}
+	}
+
+	/**
+	 * ShowEventを受け取ると表示される
+	 */
 	public void testShowEvent() throws InterruptedException {
+		assertFalse(mv.isShown());
+		assertNotSame(mv.getVisibility(), View.VISIBLE);
+
 		cl.postEvent(new ConfigModalView.ShowEvent());
 		getInstrumentation().waitForIdleSync();
-		assertTrue(cmv.isShown());
-		assertEquals(cmv.getVisibility(), View.VISIBLE);
+
+		assertTrue(mv.isShown());
+		assertEquals(mv.getVisibility(), View.VISIBLE);
 	}
 
 	public void test中止ボタンを押すとStopCheckModalView_ShowEvent通知() throws Exception {
 		testShowEvent();
 		final CountDownLatch cdl = new CountDownLatch(1);
-		cl.registerEventListener(
-				new Function<StopCheckModalView.ShowEvent, Void>() {
-					@Subscribe
-					@Override
-					public Void apply(StopCheckModalView.ShowEvent e) {
-						cdl.countDown();
-						return null;
-					}
-				});
+		cl.registerEventListener(new Function<StopCheckModalView.ShowEvent, Void>() {
+			@Subscribe
+			@Override
+			public Void apply(StopCheckModalView.ShowEvent e) {
+				cdl.countDown();
+				return null;
+			}
+		});
 		solo.clickOnView(solo.getView(R.id.stop_check_button));
 		cdl.await();
 	}
@@ -78,6 +100,6 @@ public class ConfigModalViewTestCase extends
 		testShowEvent();
 		solo.clickOnView(solo.getView(R.id.config_close_button));
 		getInstrumentation().waitForIdleSync();
-		assertFalse(cmv.isShown());
+		assertFalse(mv.isShown());
 	}
 }

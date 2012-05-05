@@ -4,8 +4,6 @@ import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 
 public class VTextViewTestCase extends EmptyActivityInstrumentationTestCase2 {
-	Solo solo;
-
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();

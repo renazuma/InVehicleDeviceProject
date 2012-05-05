@@ -24,6 +24,7 @@ import com.kogasoftware.odt.invehicledevice.logic.Status;
 import com.kogasoftware.odt.invehicledevice.logic.Status.Phase;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Reader;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterDrivePhaseEvent;
+import com.kogasoftware.odt.invehicledevice.logic.event.EnterFinishPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterPlatformPhaseEvent;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
@@ -86,7 +87,7 @@ public class DrivePhaseView extends PhaseView implements AnimationListener {
 		List<OperationSchedule> operationSchedules = commonLogic
 				.getRemainingOperationSchedules();
 		if (operationSchedules.isEmpty()) {
-			commonLogic.enterFinishPhase();
+			commonLogic.postEvent(new EnterFinishPhaseEvent());
 			return;
 		}
 

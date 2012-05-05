@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.jayway.android.robotium.solo.Solo;
+import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.ui.activity.EmptyActivity;
 
 public class EmptyActivityInstrumentationTestCase2 extends
@@ -23,9 +24,12 @@ public class EmptyActivityInstrumentationTestCase2 extends
 	}
 
 	public Handler getActivityHandler() throws InterruptedException {
-		return MockActivityUnitTestCase.getActivityHandler(getActivity());
+		return CommonLogic.getActivityHandler(getActivity());
 	}
 
+	/**
+	 * テストプロジェクト内のリソースIDからレイアウトを読み込みActivityへ配置する。読み込まれたレイアウトを返す。
+	 */
 	protected View inflateAndAddTestLayout(final int testLayoutResourceId)
 			throws InterruptedException {
 		final AtomicReference<View> v = new AtomicReference<View>();

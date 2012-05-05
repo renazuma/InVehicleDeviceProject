@@ -22,6 +22,7 @@ public class MemoModalView extends ModalView {
 	public MemoModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		setContentView(R.layout.memo_modal_view);
+		setCloseOnClick(R.id.memo_close_button);
 	}
 
 	@Subscribe

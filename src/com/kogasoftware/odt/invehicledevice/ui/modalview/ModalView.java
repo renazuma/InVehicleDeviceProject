@@ -7,6 +7,7 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
@@ -83,8 +84,22 @@ public class ModalView extends FrameLayout implements AnimationListener {
 		}
 	}
 
+	/**
+	 * 指定したリソースに、ModalViewを閉じるOnClickListenerをセット
+	 * 
+	 * @param resourceId
+	 */
+	protected void setCloseOnClick(Integer resourceId) {
+		findViewById(resourceId).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				hide();
+			}
+		});
+	}
+
 	@Subscribe
-	public void setCommonLogicAndEventBus(CommonLogicLoadCompleteEvent event) {
+	public void setCommonLogic(CommonLogicLoadCompleteEvent event) {
 		this.commonLogic = event.commonLogic;
 	}
 

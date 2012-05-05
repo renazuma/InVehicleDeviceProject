@@ -45,8 +45,8 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 
 	private final LayoutInflater layoutInflater = (LayoutInflater) getContext()
 			.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	private static final Integer RESOURCE_ID = R.layout.reservation_list_row;
 	private final CommonLogic commonLogic;
-	private final int resourceId;
 	private final List<PassengerRecord> unhandledPassengerRecords = new LinkedList<PassengerRecord>();
 	private final List<PassengerRecord> ridingPassengerRecords = new LinkedList<PassengerRecord>();
 	private final List<OperationSchedule> remainingOperationSchedules = new LinkedList<OperationSchedule>();
@@ -56,10 +56,8 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 	private final EnumSet<PayTiming> payTiming;
 	private final Boolean isLastOperationSchedule;
 
-	public ReservationArrayAdapter(Context context, int resourceId,
-			CommonLogic commonLogic) {
-		super(context, resourceId);
-		this.resourceId = resourceId;
+	public ReservationArrayAdapter(Context context, CommonLogic commonLogic) {
+		super(context, RESOURCE_ID);
 		this.commonLogic = commonLogic;
 		payTiming = commonLogic.getPayTiming();
 		remainingOperationSchedules.addAll(commonLogic
@@ -185,7 +183,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View view = convertView != null ? convertView : layoutInflater.inflate(
-				resourceId, null);
+				RESOURCE_ID, null);
 		final PassengerRecord passengerRecord = getItem(position);
 		if (!passengerRecord.getReservation().isPresent()) {
 			return view;

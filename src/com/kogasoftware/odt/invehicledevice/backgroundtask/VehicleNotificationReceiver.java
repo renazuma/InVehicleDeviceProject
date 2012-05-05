@@ -10,6 +10,7 @@ import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.Identifiables;
 import com.kogasoftware.odt.invehicledevice.logic.Status;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
+import com.kogasoftware.odt.invehicledevice.logic.VehicleNotifications;
 import com.kogasoftware.odt.invehicledevice.logic.event.StartOperationScheduleUpdateEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.VehicleNotificationReceivedEvent;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.NotificationModalView;
@@ -44,7 +45,7 @@ public class VehicleNotificationReceiver implements Runnable {
 								.next();
 						if (!vehicleNotification
 								.getNotificationType()
-								.equals(CommonLogic.VEHICLE_NOTIFICATION_TYPE_SCHEDULE_CHANGED)) {
+								.equals(VehicleNotifications.NotificationType.SCHEDULE_CHANGED)) {
 							continue;
 						}
 						iterator.remove();
@@ -69,8 +70,7 @@ public class VehicleNotificationReceiver implements Runnable {
 			});
 
 			if (operationScheduleChanged.get()) {
-				commonLogic.postEvent(
-						new StartOperationScheduleUpdateEvent());
+				commonLogic.postEvent(new StartOperationScheduleUpdateEvent());
 			}
 
 			// 一般通知の処理
@@ -92,8 +92,7 @@ public class VehicleNotificationReceiver implements Runnable {
 				}
 			});
 			if (added.get()) {
-				commonLogic.postEvent(
-						new VehicleNotificationReceivedEvent());
+				commonLogic.postEvent(new VehicleNotificationReceivedEvent());
 				commonLogic.postEvent(new SpeakEvent("管理者から連絡があります"));
 				Thread.sleep(5000); // TODO 定数
 				commonLogic.postEvent(new NotificationModalView.ShowEvent());

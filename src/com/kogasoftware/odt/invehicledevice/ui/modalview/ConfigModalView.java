@@ -19,12 +19,13 @@ public class ConfigModalView extends ModalView {
 	public ConfigModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		setContentView(R.layout.config_modal_view);
+		setCloseOnClick(R.id.config_close_button);
+
 		Button stopCheckButton = (Button) findViewById(R.id.stop_check_button);
 		stopCheckButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				getCommonLogic().postEvent(
-						new StopCheckModalView.ShowEvent());
+				getCommonLogic().postEvent(new StopCheckModalView.ShowEvent());
 			}
 		});
 

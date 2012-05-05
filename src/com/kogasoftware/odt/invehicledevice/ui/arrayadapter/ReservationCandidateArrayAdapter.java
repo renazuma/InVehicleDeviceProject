@@ -18,16 +18,15 @@ import com.kogasoftware.odt.webapi.model.ReservationCandidate;
 public class ReservationCandidateArrayAdapter extends
 		ArrayAdapter<ReservationCandidate> {
 	private final LayoutInflater layoutInflater;
-	private final int resourceId;
+	private static final Integer RESOURCE_ID = R.layout.reservation_candidate_list_row;
 
 	private Optional<Integer> selectedPosition;
 
-	public ReservationCandidateArrayAdapter(Context context, int resourceId,
+	public ReservationCandidateArrayAdapter(Context context,
 			List<ReservationCandidate> items) {
-		super(context, resourceId, items);
+		super(context, RESOURCE_ID, items);
 		this.layoutInflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		this.resourceId = resourceId;
 		setNotifyOnChange(true);
 		selectedPosition = Optional.<Integer> of(300);
 	}
@@ -39,7 +38,7 @@ public class ReservationCandidateArrayAdapter extends
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		final View view = convertView != null ? convertView : layoutInflater
-				.inflate(resourceId, null);
+				.inflate(RESOURCE_ID, null);
 
 		if (selectedPosition.isPresent()
 				&& selectedPosition.get().equals(position)) {

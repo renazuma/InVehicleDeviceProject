@@ -19,12 +19,11 @@ import com.kogasoftware.odt.invehicledevice.logic.event.UpdatedOperationSchedule
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class ScheduleChangedModalView extends ModalView {
-	public static class ShowEvent {
-	}
-
 	public ScheduleChangedModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		setContentView(R.layout.schedule_changed_modal_view);
+		setCloseOnClick(R.id.schedule_changed_close_button);
+
 		Button scheduleConfirmButton = (Button) findViewById(R.id.schedule_confirm_button);
 		scheduleConfirmButton.setOnClickListener(new OnClickListener() {
 			@Override

@@ -33,6 +33,65 @@ public class UiEventBusTestCase extends EmptyActivityInstrumentationTestCase2 {
 	}
 
 	/**
+	 * unregisterしたらオブジェクトにイベントが渡らなくなる
+	 */
+	public void testCountRegeisteredClass() throws Exception {
+		final Semaphore s1 = new Semaphore(0);
+		final Semaphore s2 = new Semaphore(0);
+
+		Test t1 = new Test() {
+			@Subscribe
+			@Override
+			public void test(Object object) {
+				s1.release();
+			}
+		};
+		Test t2 = new Test() {
+			@Subscribe
+			@Override
+			public void test(Object object) {
+				s2.release();
+			}
+		};
+
+		assertEquals(ueb.countRegisteredClass(t1.getClass()).intValue(), 0);
+		assertEquals(ueb.countRegisteredClass(t2.getClass()).intValue(), 0);
+		assertEquals(ueb.countRegisteredClass(Test.class).intValue(), 0);
+		assertEquals(ueb.countRegisteredClass(Object.class).intValue(), 0);
+
+		ueb.register(t1);
+		ueb.register(t2);
+		ueb.post(new Object());
+		assertTrue(s1.tryAcquire(500, TimeUnit.MILLISECONDS));
+		assertTrue(s2.tryAcquire(500, TimeUnit.MILLISECONDS));
+
+		assertEquals(ueb.countRegisteredClass(t1.getClass()).intValue(), 1);
+		assertEquals(ueb.countRegisteredClass(t2.getClass()).intValue(), 1);
+		assertEquals(ueb.countRegisteredClass(Test.class).intValue(), 2);
+		assertEquals(ueb.countRegisteredClass(Object.class).intValue(), 2);
+
+		ueb.unregister(t2);
+		ueb.post(new Object());
+		assertTrue(s1.tryAcquire(500, TimeUnit.MILLISECONDS));
+		assertFalse(s2.tryAcquire(500, TimeUnit.MILLISECONDS));
+
+		assertEquals(ueb.countRegisteredClass(t1.getClass()).intValue(), 1);
+		assertEquals(ueb.countRegisteredClass(t2.getClass()).intValue(), 0);
+		assertEquals(ueb.countRegisteredClass(Test.class).intValue(), 1);
+		assertEquals(ueb.countRegisteredClass(Object.class).intValue(), 1);
+
+		ueb.register(t2);
+		ueb.post(new Object());
+		assertTrue(s1.tryAcquire(500, TimeUnit.MILLISECONDS));
+		assertTrue(s2.tryAcquire(500, TimeUnit.MILLISECONDS));
+
+		assertEquals(ueb.countRegisteredClass(t1.getClass()).intValue(), 1);
+		assertEquals(ueb.countRegisteredClass(t2.getClass()).intValue(), 1);
+		assertEquals(ueb.countRegisteredClass(Test.class).intValue(), 2);
+		assertEquals(ueb.countRegisteredClass(Object.class).intValue(), 2);
+	}
+
+	/**
 	 * disposeしたらオブジェクトにイベントが渡らなくなる。新規登録もできない
 	 */
 	public void testDispose_1() throws Exception {
@@ -308,5 +367,33 @@ public class UiEventBusTestCase extends EmptyActivityInstrumentationTestCase2 {
 		assertTrue(s2.tryAcquire(500, TimeUnit.MILLISECONDS));
 		assertEquals(ai1.get(), 3);
 		assertEquals(ai2.get(), 2);
+	}
+
+	public void testオーバーライドされたメソッドがSubscribeしているとオーバーライドした側はSubscribeする必要は無い() {
+		class FooEvent {
+		}
+
+		class FooHandler {
+			@Subscribe
+			public void foo(FooEvent e) {
+			}
+		}
+
+		class ExtendedFooHandler extends FooHandler {
+			public final AtomicInteger extendedFooCounter = new AtomicInteger(0);
+
+			@Override
+			// @Subscribeは要らない
+			public void foo(FooEvent e) {
+				super.foo(e);
+				extendedFooCounter.addAndGet(1);
+			}
+		}
+
+		ExtendedFooHandler efh = new ExtendedFooHandler();
+		ueb.register(efh);
+		ueb.post(new FooEvent());
+		getInstrumentation().waitForIdleSync();
+		assertEquals(1, efh.extendedFooCounter.get());
 	}
 }

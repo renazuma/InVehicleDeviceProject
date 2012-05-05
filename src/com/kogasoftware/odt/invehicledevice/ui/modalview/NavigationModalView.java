@@ -2,10 +2,8 @@ package com.kogasoftware.odt.invehicledevice.ui.modalview;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
 
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
@@ -55,7 +53,8 @@ public class NavigationModalView extends ModalView {
 	}
 
 	//
-	// private static final String TAG = NavigationModalView.class.getSimpleName();
+	// private static final String TAG =
+	// NavigationModalView.class.getSimpleName();
 	// private final MapView mapView;
 	// private final MapViewRedirector mapViewRedirector;
 	// private final LocationManager locationManager;
@@ -120,6 +119,7 @@ public class NavigationModalView extends ModalView {
 	public NavigationModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		setContentView(R.layout.navigation_modal_view);
+		setCloseOnClick(R.id.navigation_close_button);
 		//
 		// mapView = new MapView(context,
 		// "0_ZIi_adDM8WHxCX0OJTfcXhHO8jOsYOjLF7xow");
@@ -164,10 +164,9 @@ public class NavigationModalView extends ModalView {
 		// WeakReference<MapOnTouchListener>(
 		// mapOnTouchListener);
 		//
-		hideButton = new HideModalViewButton(getContext());
-		hideButton.setText("戻る");
+		hideButton = (Button) findViewById(R.id.navigation_close_button);
 
-		zoomInButton = new Button(getContext());
+		zoomInButton = (Button) findViewById(R.id.navigation_zoom_in_button);
 		zoomInButton.setText("拡大");
 		zoomInButton.setOnClickListener(new OnClickListener() {
 			@Override
@@ -176,7 +175,7 @@ public class NavigationModalView extends ModalView {
 			}
 		});
 
-		zoomOutButton = new Button(getContext());
+		zoomOutButton = (Button) findViewById(R.id.navigation_zoom_out_button);
 		zoomOutButton.setText("縮小");
 		zoomOutButton.setOnClickListener(new OnClickListener() {
 			@Override
@@ -184,22 +183,6 @@ public class NavigationModalView extends ModalView {
 				// mapView.getController().zoomOut();
 			}
 		});
-
-		LinearLayout buttons = new LinearLayout(getContext());
-		buttons.addView(hideButton, new LinearLayout.LayoutParams(
-				LinearLayout.LayoutParams.FILL_PARENT,
-				LinearLayout.LayoutParams.WRAP_CONTENT, 1));
-		buttons.addView(zoomInButton, new LinearLayout.LayoutParams(
-				LinearLayout.LayoutParams.FILL_PARENT,
-				LinearLayout.LayoutParams.WRAP_CONTENT, 1));
-		buttons.addView(zoomOutButton, new LinearLayout.LayoutParams(
-				LinearLayout.LayoutParams.FILL_PARENT,
-				LinearLayout.LayoutParams.WRAP_CONTENT, 1));
-
-		addView(buttons, new NavigationModalView.LayoutParams(
-				NavigationModalView.LayoutParams.FILL_PARENT,
-				NavigationModalView.LayoutParams.WRAP_CONTENT,
-				Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM));
 
 		// mapView.getController().animateTo(new GeoPoint(35899045, 139928656));
 		// mapView.getController().setZoom(15);

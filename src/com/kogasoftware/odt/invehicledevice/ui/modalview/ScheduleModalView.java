@@ -23,6 +23,7 @@ public class ScheduleModalView extends ModalView {
 	public ScheduleModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		setContentView(R.layout.schedule_modal_view);
+		setCloseOnClick(R.id.schedule_close_button);
 	}
 
 	@Subscribe
@@ -34,8 +35,7 @@ public class ScheduleModalView extends ModalView {
 		this.operationSchedules.addAll(getCommonLogic()
 				.getRemainingOperationSchedules());
 		OperationScheduleArrayAdapter adapter = new OperationScheduleArrayAdapter(
-				getContext(), R.layout.operation_schedule_list_row,
-				operationSchedules, getCommonLogic());
+				getContext(), operationSchedules, getCommonLogic());
 		final ListView operationScheduleListView = (ListView) findViewById(R.id.operation_schedule_list_view);
 		operationScheduleListView.setAdapter(adapter);
 

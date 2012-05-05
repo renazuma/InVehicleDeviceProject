@@ -21,23 +21,21 @@ public class OperationScheduleArrayAdapter extends
 		ArrayAdapter<OperationSchedule> {
 	private final LayoutInflater layoutInflater;
 	private final CommonLogic commonLogic;
-	private final int resourceId;
+	private static final Integer RESOURCE_ID = R.layout.operation_schedule_list_row;
 
-	public OperationScheduleArrayAdapter(Context context, int resourceId,
+	public OperationScheduleArrayAdapter(Context context,
 			List<OperationSchedule> items, CommonLogic commonLogic) {
-		super(context, resourceId, items);
+		super(context, RESOURCE_ID, items);
 		this.layoutInflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		this.resourceId = resourceId;
 		this.commonLogic = commonLogic;
 	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		DateFormat displayDateFormat = new SimpleDateFormat("H時m分");
-
 		if (convertView == null) {
-			convertView = layoutInflater.inflate(resourceId, null);
+			convertView = layoutInflater.inflate(RESOURCE_ID, null);
 		}
 
 		OperationSchedule operationSchedule = getItem(position);

@@ -46,6 +46,7 @@ public class ReturnPathModalView extends ModalView {
 	public ReturnPathModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		setContentView(R.layout.return_path_modal_view);
+		setCloseOnClick(R.id.return_path_close_button);
 
 		searchingDialog = new ProgressDialog(getContext());
 		searchingDialog.setMessage("予約情報を受信しています");
@@ -120,7 +121,6 @@ public class ReturnPathModalView extends ModalView {
 		final ListView reservationCandidateListView = (ListView) findViewById(R.id.reservation_candidates_list_view);
 		reservationCandidateListView
 				.setAdapter(new ReservationCandidateArrayAdapter(getContext(),
-						R.layout.reservation_candidate_list_row,
 						new LinkedList<ReservationCandidate>()));
 
 		doReservationButton.setOnClickListener(new OnClickListener() {
@@ -180,8 +180,7 @@ public class ReturnPathModalView extends ModalView {
 							return;
 						}
 						final ReservationCandidateArrayAdapter adapter = new ReservationCandidateArrayAdapter(
-								getContext(),
-								R.layout.reservation_candidate_list_row, result);
+								getContext(), result);
 						reservationCandidateListView
 								.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 									@Override

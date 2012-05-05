@@ -25,6 +25,7 @@ import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
+import com.kogasoftware.odt.invehicledevice.logic.event.EnterFinishPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterPlatformPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.UnexpectedReservationAddedEvent;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter;
@@ -53,7 +54,7 @@ public class PlatformPhaseView extends PhaseView {
 	private final LinearLayout nextOperationScheduleLayout;
 
 	private ReservationArrayAdapter adapter = new ReservationArrayAdapter(
-			getContext(), R.layout.reservation_list_row, getCommonLogic());
+			getContext(), getCommonLogic());
 	private final Handler handler = new Handler();
 
 	private Optional<AlertDialog> dialog = Optional.absent();
@@ -128,13 +129,12 @@ public class PlatformPhaseView extends PhaseView {
 	}
 
 	@Override
-	@Subscribe
 	public void enterPlatformPhase(EnterPlatformPhaseEvent event) {
 		CommonLogic commonLogic = getCommonLogic();
 		List<OperationSchedule> operationSchedules = commonLogic
 				.getRemainingOperationSchedules();
 		if (operationSchedules.isEmpty()) {
-			commonLogic.enterFinishPhase();
+			commonLogic.postEvent(new EnterFinishPhaseEvent());
 			return;
 		}
 
@@ -158,8 +158,7 @@ public class PlatformPhaseView extends PhaseView {
 			addUnexpectedReservationButton.setVisibility(VISIBLE);
 		}
 
-		adapter = new ReservationArrayAdapter(getContext(),
-				R.layout.reservation_list_row, commonLogic);
+		adapter = new ReservationArrayAdapter(getContext(), commonLogic);
 		reservationListView.setAdapter(adapter);
 
 		if (operationSchedules.size() > 1) {

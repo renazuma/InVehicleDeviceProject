@@ -100,7 +100,7 @@ public class WaitingTestCase extends
 
 	public void test06_出発ダイアログいいえ選択で停車中に戻る() {
 		test04_出発ボタンを押すと出発ダイアログ表示();
-		solo.clickOnView(solo.getView(R.id.start_cancel_button));
+		solo.clickOnView(solo.getView(R.id.start_check_close_button));
 		TextView v = (TextView) solo.getView(R.id.phase_text_view);
 		assertEquals("停車中", v.getText());
 	}

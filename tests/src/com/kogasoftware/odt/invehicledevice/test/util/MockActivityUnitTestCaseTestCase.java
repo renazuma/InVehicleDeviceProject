@@ -20,8 +20,6 @@ public class MockActivityUnitTestCaseTestCase extends MockActivityUnitTestCase {
 	 */
 	public void testGetActivityHandler() throws InterruptedException {
 		final Handler handler = getActivityHandler();
-		assertNotSame(handler.getLooper().getThread().getId(), Thread
-				.currentThread().getId());
 
 		// ActivityのスレッドIDと一致しているか
 		final CountDownLatch cdl1 = new CountDownLatch(1);
