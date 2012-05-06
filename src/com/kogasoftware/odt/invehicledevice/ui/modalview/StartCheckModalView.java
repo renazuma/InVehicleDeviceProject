@@ -105,6 +105,7 @@ public class StartCheckModalView extends ModalView {
 					adapter.clearSelectedPassengerRecords();
 				}
 				commonLogic.postEvent(new EnterDrivePhaseEvent());
+				hide();
 			}
 		});
 		super.show();
