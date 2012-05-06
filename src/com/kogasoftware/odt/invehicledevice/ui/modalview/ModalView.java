@@ -47,7 +47,8 @@ public class ModalView extends FrameLayout implements AnimationListener {
 	}
 
 	public void hide() {
-		if (getVisibility() != VISIBLE) {
+		if (getVisibility() != VISIBLE
+				&& animationTarget.get() != AnimationTarget.SHOW) {
 			return;
 		}
 		if (animationTarget.getAndSet(AnimationTarget.HIDE) == AnimationTarget.NONE) {
@@ -117,7 +118,8 @@ public class ModalView extends FrameLayout implements AnimationListener {
 	}
 
 	protected void show() {
-		if (getVisibility() == VISIBLE) {
+		if (getVisibility() == VISIBLE
+				&& animationTarget.get() != AnimationTarget.HIDE) {
 			return;
 		}
 		if (animationTarget.getAndSet(AnimationTarget.SHOW) == AnimationTarget.NONE) {
