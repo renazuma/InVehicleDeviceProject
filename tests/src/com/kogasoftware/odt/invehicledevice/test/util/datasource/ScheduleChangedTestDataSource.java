@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
+import com.kogasoftware.odt.invehicledevice.logic.VehicleNotifications;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSource;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
@@ -128,7 +128,7 @@ public class ScheduleChangedTestDataSource implements DataSource {
 			VehicleNotification v = new VehicleNotification();
 			v.setId(1);
 			v.setBody("運行スケジュールが変更されました");
-			v.setNotificationType(CommonLogic.VEHICLE_NOTIFICATION_TYPE_SCHEDULE_CHANGED);
+			v.setNotificationType(VehicleNotifications.NotificationType.SCHEDULE_CHANGED);
 			l.add(v);
 			return l;
 		} else if (phase.compareAndSet(3, 4)) {
