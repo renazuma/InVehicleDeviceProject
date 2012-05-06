@@ -65,13 +65,13 @@ public class OperationScheduleReceiveThread extends Thread {
 			}
 
 			// 初回以降のスケジュールの受信
-			while (true) {
+			while (!Thread.currentThread().isInterrupted()) {
 				// スケジュール変更通知があるまで待つ
 				startUpdatedOperationScheduleReceiveSemaphore.acquire();
 				startUpdatedOperationScheduleReceiveSemaphore.drainPermits();
 
 				final List<VehicleNotification> workingVehicleNotification = new LinkedList<VehicleNotification>();
-				while (true) {
+				while (!Thread.currentThread().isInterrupted()) {
 					try {
 						Identifiables
 								.merge(workingVehicleNotification,
