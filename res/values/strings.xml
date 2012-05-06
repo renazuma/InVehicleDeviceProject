@@ -44,4 +44,6 @@
     <string name="show_future_passengers">未来の乗客を表示</string>
     <string name="add_unexpected_reservation">飛び乗り予約の新規追加</string>
     <string name="show_missed_passengers">過去の乗降場で未乗車の乗客を表示</string>
+    <string name="zoom_in">拡大</string>
+    <string name="zoom_out">縮小</string>
 </resources>

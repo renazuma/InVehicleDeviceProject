@@ -62,7 +62,6 @@ public class NavigationModalView extends ModalView {
 	// private final MapSynchronizer mapSynchronizer;
 	// private final OrientationSensor orientationSensor;
 	// private final MapRenderer mapRenderer;
-	private final Button hideButton;
 	private final Button zoomInButton;
 
 	// private WeakReference<GLSurfaceView> glSurfaceViewWeakReference;
@@ -164,10 +163,8 @@ public class NavigationModalView extends ModalView {
 		// WeakReference<MapOnTouchListener>(
 		// mapOnTouchListener);
 		//
-		hideButton = (Button) findViewById(R.id.navigation_close_button);
 
 		zoomInButton = (Button) findViewById(R.id.navigation_zoom_in_button);
-		zoomInButton.setText("拡大");
 		zoomInButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -176,7 +173,6 @@ public class NavigationModalView extends ModalView {
 		});
 
 		zoomOutButton = (Button) findViewById(R.id.navigation_zoom_out_button);
-		zoomOutButton.setText("縮小");
 		zoomOutButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
