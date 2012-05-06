@@ -14,7 +14,7 @@ AndroidManifest.xml.old
 AndroidManifest.xml.release
 DATA_Preferences
 DATA_Tiles*
-common_build.xml
+custom_rules.xml
 coverage.ec
 coverage.em
 findbugs.xml
