@@ -3,6 +3,7 @@ package com.kogasoftware.odt.invehicledevice.backgroundtask;
 import java.util.List;
 
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
+import com.kogasoftware.odt.invehicledevice.logic.event.VehicleNotificationReceivedEvent;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
@@ -21,6 +22,8 @@ public class VehicleNotificationReceiver implements Runnable {
 			if (vehicleNotifications.isEmpty()) {
 				return;
 			}
+			commonLogic.postEvent(new VehicleNotificationReceivedEvent(
+					vehicleNotifications));
 		} catch (WebAPIException e) {
 		}
 	}

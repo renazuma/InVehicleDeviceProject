@@ -270,8 +270,7 @@ public class CommonEventSubscriber {
 	 * 受信したVehicleNotificationを内部にマージ
 	 */
 	@Subscribe
-	public void mergeVehicleNotification(
-			final VehicleNotificationReceivedEvent e) {
+	public void mergeVehicleNotification(VehicleNotificationReceivedEvent e) {
 
 		final List<VehicleNotification> scheduleChangedVehicleNotifications = new LinkedList<VehicleNotification>();
 		final List<VehicleNotification> normalVehicleNotifications = new LinkedList<VehicleNotification>();
@@ -319,7 +318,7 @@ public class CommonEventSubscriber {
 		statusAccess.write(new Writer() {
 			@Override
 			public void write(Status status) {
-				for (VehicleNotification vehicleNotification : e.vehicleNotifications) {
+				for (VehicleNotification vehicleNotification : normalVehicleNotifications) {
 					if (Identifiables.contains(
 							status.sendLists.repliedVehicleNotifications,
 							vehicleNotification)) {
@@ -466,18 +465,24 @@ public class CommonEventSubscriber {
 
 	/**
 	 * VehicleNotificationをReply用リストへ移動
+	 * 未replyのVehicleNotificationが存在する場合はNotificationModalView.ShowEvent送信
 	 */
 	@Subscribe
 	public void setVehicleNotificationReplied(
 			final VehicleNotificationRepliedEvent e) {
+		final AtomicBoolean empty = new AtomicBoolean(false);
 		statusAccess.write(new Writer() {
 			@Override
 			public void write(Status status) {
 				status.vehicleNotifications.remove(e.vehicleNotification);
 				status.sendLists.repliedVehicleNotifications
 						.add(e.vehicleNotification);
+				empty.set(status.vehicleNotifications.isEmpty());
 			}
 		});
+		if (!empty.get()) {
+			commonLogic.postEvent(new NotificationModalView.ShowEvent());
+		}
 	}
 
 	/**

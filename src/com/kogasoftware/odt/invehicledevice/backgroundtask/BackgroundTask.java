@@ -26,6 +26,7 @@ import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.Status.Phase;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
 import com.kogasoftware.odt.invehicledevice.logic.event.CommonLogicLoadCompleteEvent;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.NotificationModalView;
 
 /**
  * バックグランドでの処理を管理するクラス
@@ -185,6 +186,8 @@ public class BackgroundTask {
 
 		telephonyManager.listen(signalStrengthListener,
 				PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
+
+		commonLogic.postEvent(new NotificationModalView.ShowEvent());
 	}
 
 	private void onLoopStop() {

@@ -11,14 +11,11 @@ import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.backgroundtask.VoiceThread.SpeakEvent;
 import com.kogasoftware.odt.invehicledevice.logic.VehicleNotifications;
-import com.kogasoftware.odt.invehicledevice.logic.event.CommonLogicLoadCompleteEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.VehicleNotificationRepliedEvent;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class NotificationModalView extends ModalView {
 	public static class ShowEvent {
-		public ShowEvent() {
-		}
 	}
 
 	private VehicleNotification currentVehicleNotification = new VehicleNotification();
@@ -33,7 +30,6 @@ public class NotificationModalView extends ModalView {
 						currentVehicleNotification
 								.setResponse(VehicleNotifications.Response.YES);
 						reply();
-						hide();
 					}
 				});
 		findViewById(R.id.reply_no_button).setOnClickListener(
@@ -43,12 +39,12 @@ public class NotificationModalView extends ModalView {
 						currentVehicleNotification
 								.setResponse(VehicleNotifications.Response.NO);
 						reply();
-						hide();
 					}
 				});
 	}
 
 	private void reply() {
+		hide();
 		getCommonLogic()
 				.postEvent(
 						new VehicleNotificationRepliedEvent(
@@ -71,11 +67,6 @@ public class NotificationModalView extends ModalView {
 				new SpeakEvent(currentVehicleNotification.getBody()));
 
 		super.show();
-	}
-
-	@Subscribe
-	public void show(CommonLogicLoadCompleteEvent event) {
-		show();
 	}
 
 	@Subscribe
