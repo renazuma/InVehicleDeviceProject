@@ -8,9 +8,14 @@ import com.kogasoftware.odt.webapi.model.ReservationCandidate;
 
 public class ReservationCandidateArrayAdapterTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
+
+	ReservationCandidateArrayAdapter rcaa;
+
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
+		rcaa = new ReservationCandidateArrayAdapter(getInstrumentation()
+				.getContext(), new LinkedList<ReservationCandidate>());
 	}
 
 	@Override
@@ -18,8 +23,7 @@ public class ReservationCandidateArrayAdapterTestCase extends
 		super.tearDown();
 	}
 
-	public void testReservationCandidateArrayAdapter_1() throws Exception {
-		new ReservationCandidateArrayAdapter(getInstrumentation().getContext(),
-				new LinkedList<ReservationCandidate>());
+	public void testReservationCandidateが表示される() throws Exception {
+		fail("stub!");
 	}
 }

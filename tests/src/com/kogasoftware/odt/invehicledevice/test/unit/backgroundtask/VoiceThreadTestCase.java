@@ -5,15 +5,20 @@ import java.util.concurrent.atomic.AtomicReference;
 import com.kogasoftware.odt.invehicledevice.backgroundtask.BackgroundTask;
 import com.kogasoftware.odt.invehicledevice.backgroundtask.VoiceThread;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
+import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 
 public class VoiceThreadTestCase extends EmptyActivityInstrumentationTestCase2 {
 	VoiceThread vt;
+	CommonLogic cl;
+	StatusAccess sa;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		vt = new VoiceThread(getActivity());
+		sa = new StatusAccess(getActivity());
+		cl = new CommonLogic(getActivity(), getActivityHandler(), sa);
 	}
 
 	@Override
@@ -22,13 +27,12 @@ public class VoiceThreadTestCase extends EmptyActivityInstrumentationTestCase2 {
 	}
 
 	public void testBackgroundTaskによってUiEventBusに自分が登録される() throws Exception {
-		final CommonLogic cl = new CommonLogic(getActivity(),
-				getActivityHandler());
 		final AtomicReference<BackgroundTask> bt = new AtomicReference<BackgroundTask>();
 		Thread t = new Thread() {
 			@Override
 			public void run() {
-				bt.set(new BackgroundTask(cl, getInstrumentation().getContext()));
+				bt.set(new BackgroundTask(cl,
+						getInstrumentation().getContext(), sa));
 				bt.get().loop();
 			}
 		};

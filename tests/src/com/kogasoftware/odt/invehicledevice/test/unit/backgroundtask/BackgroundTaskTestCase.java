@@ -5,17 +5,20 @@ import java.util.concurrent.TimeUnit;
 
 import com.kogasoftware.odt.invehicledevice.backgroundtask.BackgroundTask;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
+import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 
 public class BackgroundTaskTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 
+	StatusAccess sa;
 	CommonLogic cl;
 
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		cl = new CommonLogic(getActivity(), getActivityHandler());
+		sa = new StatusAccess(getActivity());
+		cl = new CommonLogic(getActivity(), getActivityHandler(), sa);
 	}
 
 	/**
@@ -27,7 +30,7 @@ public class BackgroundTaskTestCase extends
 			@Override
 			public void run() {
 				BackgroundTask bt = new BackgroundTask(cl, getInstrumentation()
-						.getContext());
+						.getContext(), sa);
 				Thread.currentThread().interrupt();
 				bt.loop();
 				cdl.countDown();
@@ -46,7 +49,7 @@ public class BackgroundTaskTestCase extends
 			public void run() {
 				Thread.currentThread().interrupt();
 				BackgroundTask bt = new BackgroundTask(cl, getInstrumentation()
-						.getContext());
+						.getContext(), sa);
 				bt.loop();
 				cdl.countDown();
 			}
@@ -63,7 +66,7 @@ public class BackgroundTaskTestCase extends
 			@Override
 			public void run() {
 				final BackgroundTask bt = new BackgroundTask(cl,
-						getInstrumentation().getContext());
+						getInstrumentation().getContext(), sa);
 				new Thread() {
 					@Override
 					public void run() {
@@ -86,7 +89,7 @@ public class BackgroundTaskTestCase extends
 			@Override
 			public void run() {
 				final BackgroundTask bt = new BackgroundTask(cl,
-						getInstrumentation().getContext());
+						getInstrumentation().getContext(), sa);
 				new Thread() {
 					@Override
 					public void run() {
@@ -109,7 +112,7 @@ public class BackgroundTaskTestCase extends
 			@Override
 			public void run() {
 				BackgroundTask bt = new BackgroundTask(cl, getInstrumentation()
-						.getContext());
+						.getContext(), sa);
 				bt.quit();
 				bt.loop();
 				cdl.countDown();

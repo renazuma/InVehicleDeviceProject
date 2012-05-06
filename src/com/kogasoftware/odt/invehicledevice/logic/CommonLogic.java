@@ -1,67 +1,50 @@
 package com.kogasoftware.odt.invehicledevice.logic;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
-import android.location.Location;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.View;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.BuildConfig;
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.backgroundtask.CommonEventSubscriber;
+import com.kogasoftware.odt.invehicledevice.backgroundtask.PassengerRecordEventSubscriber;
 import com.kogasoftware.odt.invehicledevice.logic.Status.Phase;
+import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.ReadOnlyStatusAccess;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Reader;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSourceFactory;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterDrivePhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterFinishPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterPlatformPhaseEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.PauseEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.StopEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.UiEventBus;
-import com.kogasoftware.odt.invehicledevice.logic.event.UnexpectedReservationAddedEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.UpdatedOperationScheduleMergedEvent;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
-import com.kogasoftware.odt.webapi.model.Reservation;
-import com.kogasoftware.odt.webapi.model.User;
+import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
+import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 /**
  * 車載機の内部共通ロジック
  */
-@UiEventBus.HighPriority
 public class CommonLogic {
 	public static enum PayTiming {
 		GET_ON, GET_OFF,
 	}
 
-	private static final String TAG = CommonLogic.class.getSimpleName();
 	private static final Object DEFAULT_DATE_LOCK = new Object();
 	private static Optional<Date> defaultDate = Optional.absent();
-	private static final AtomicBoolean willClearStatusFile = new AtomicBoolean(
-			false);
-	private static final Integer UNEXPECTED_RESERVATION_ID = -1;
-
 	public static final Integer VEHICLE_NOTIFICATION_TYPE_SCHEDULE_CHANGED = 2;
-
-	public static void clearStatusFile() {
-		willClearStatusFile.set(true);
-	}
 
 	public static Handler getActivityHandler(Activity activity)
 			throws InterruptedException {
@@ -102,28 +85,41 @@ public class CommonLogic {
 
 	private final DataSource dataSource;
 	private final UiEventBus eventBus;
-
-	private final StatusAccess statusAccess;
+	@Deprecated
+	private final StatusAccess statusAccessDeprecated;
+	private final ReadOnlyStatusAccess statusAccess;
+	private final CommonEventSubscriber commonEventSubscriber;
+	private final PassengerRecordEventSubscriber passengerRecordEventSubscriber;
 
 	public CommonLogic() {
-		this.statusAccess = new StatusAccess();
-		this.dataSource = DataSourceFactory.newInstance("http://127.0.0.1", "");
-		this.eventBus = new UiEventBus();
+		statusAccessDeprecated = new StatusAccess();
+		this.statusAccess = statusAccessDeprecated.getReadOnlyStatusAccess();
+		dataSource = DataSourceFactory.newInstance("http://127.0.0.1", "");
+		eventBus = new UiEventBus();
+		commonEventSubscriber = new CommonEventSubscriber(this,
+				statusAccessDeprecated);
+		passengerRecordEventSubscriber = new PassengerRecordEventSubscriber(
+				this, statusAccessDeprecated);
 	}
 
-	public CommonLogic(Activity activity, Handler activityHandler) {
+	public CommonLogic(Activity activity, Handler activityHandler,
+			StatusAccess statusAccess) {
+		this.statusAccessDeprecated = statusAccess;
+		this.statusAccess = statusAccess.getReadOnlyStatusAccess();
+		commonEventSubscriber = new CommonEventSubscriber(this, statusAccess);
+		passengerRecordEventSubscriber = new PassengerRecordEventSubscriber(
+				this, statusAccess);
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(activity);
-
 		dataSource = DataSourceFactory.newInstance(
 				preferences.getString("url", "http://127.0.0.1"),
 				preferences.getString("token", ""));
-		statusAccess = new StatusAccess(activity,
-				willClearStatusFile.getAndSet(false));
 
 		eventBus = new UiEventBus(activityHandler);
-		eventBus.register(this);
-		eventBus.register(activity);
+		for (Object object : new Object[] { activity, commonEventSubscriber,
+				passengerRecordEventSubscriber }) {
+			eventBus.register(object);
+		}
 		for (Integer resourceId : new Integer[] { R.id.config_modal_view,
 				R.id.start_check_modal_view, R.id.schedule_modal_view,
 				R.id.memo_modal_view, R.id.pause_modal_view,
@@ -139,119 +135,12 @@ public class CommonLogic {
 		}
 	}
 
-	public void addUnexpectedReservation(Integer arrivalOperationScheduleId) {
-		List<OperationSchedule> operationSchedules = getRemainingOperationSchedules();
-		if (operationSchedules.isEmpty()) {
-			Log.w(TAG, "operationSchedules.isEmpty()", new Exception());
-			return;
-		}
-		OperationSchedule operationSchedule = operationSchedules.get(0);
-		final Reservation reservation = new Reservation();
-
-		reservation.setId(UNEXPECTED_RESERVATION_ID);
-		// 未予約乗車の予約情報はどうするか
-		reservation.setDepartureScheduleId(operationSchedule.getId());
-		reservation.setArrivalScheduleId(arrivalOperationScheduleId);
-		final User user = new User();
-		statusAccess.write(new Writer() {
-			@Override
-			public void write(Status status) {
-				user.setFirstName("飛び乗りユーザー"
-						+ status.unexpectedReservationSequence);
-				status.unexpectedReservationSequence++;
-			}
-		});
-		reservation.setUser(user);
-		final PassengerRecord passengerRecord = new PassengerRecord();
-		passengerRecord.setReservationId(reservation.getId());
-		passengerRecord.setReservation(reservation);
-		statusAccess.write(new Writer() {
-			@Override
-			public void write(Status status) {
-				status.unexpectedPassengerRecords.add(passengerRecord);
-				status.unhandledPassengerRecords.add(passengerRecord);
-			}
-		});
-		eventBus.post(new UnexpectedReservationAddedEvent());
-	}
-
-	public void cancelPause() {
-		statusAccess.write(new Writer() {
-			@Override
-			public void write(Status status) {
-				status.serviceUnitStatusLog
-						.setStatus(ServiceUnitStatusLogs.Status.OPERATION);
-			}
-		});
-	}
-
-	public void clearSelectedPassengerRecords() {
-		statusAccess.write(new Writer() {
-			@Override
-			public void write(Status status) {
-				status.selectedPassengerRecords.clear();
-			}
-		});
-	}
-
 	public Integer countRegisteredClass(Class<?> c) {
 		return eventBus.countRegisteredClass(c);
 	}
 
 	public void dispose() {
 		eventBus.dispose();
-	}
-
-	@Subscribe
-	public void enterDrivePhase(EnterDrivePhaseEvent e) {
-		statusAccess.write(new Writer() {
-			@Override
-			public void write(Status status) {
-				if (status.remainingOperationSchedules.isEmpty()) {
-					eventBus.post(new EnterFinishPhaseEvent());
-					return;
-				}
-				OperationSchedule operationSchedule = status.remainingOperationSchedules
-						.get(0);
-				if (status.phase == Status.Phase.PLATFORM) {
-					status.remainingOperationSchedules
-							.remove(operationSchedule);
-					status.finishedOperationSchedules.add(operationSchedule);
-					Identifiables.merge(
-							status.sendLists.departureOperationSchedules,
-							operationSchedule);
-				}
-				status.phase = Status.Phase.DRIVE;
-			}
-		});
-	}
-
-	@Subscribe
-	public void enterFinishPhase(EnterFinishPhaseEvent e) {
-		statusAccess.write(new Writer() {
-			@Override
-			public void write(Status status) {
-				status.phase = Status.Phase.FINISH;
-			}
-		});
-	}
-
-	@Subscribe
-	public void enterPlatformPhase(EnterPlatformPhaseEvent e) {
-		statusAccess.write(new Writer() {
-			@Override
-			public void write(Status status) {
-				status.phase = Status.Phase.PLATFORM;
-				if (status.remainingOperationSchedules.isEmpty()) {
-					eventBus.post(new EnterFinishPhaseEvent());
-					return;
-				}
-				OperationSchedule operationSchedule = status.remainingOperationSchedules
-						.get(0);
-				Identifiables.merge(status.sendLists.arrivalOperationSchedules,
-						operationSchedule);
-			}
-		});
 	}
 
 	public Optional<OperationSchedule> getCurrentOperationSchedule() {
@@ -282,52 +171,22 @@ public class CommonLogic {
 		});
 	}
 
-	public void getOffPassengerRecords(OperationSchedule operationSchedule,
-			final List<PassengerRecord> selectedGetOffPassengerRecords) {
-		Date now = getDate();
-		for (PassengerRecord passengerRecord : selectedGetOffPassengerRecords) {
-			passengerRecord.setGetOffTime(now);
-			passengerRecord.setArrivalOperationScheduleId(operationSchedule
-					.getId());
-			passengerRecord.setArrivalOperationSchedule(operationSchedule);
-		}
-		statusAccess.write(new Writer() {
+	public List<PassengerRecord> getGetOffPassengerRecords() {
+		return statusAccess.read(new Reader<List<PassengerRecord>>() {
 			@Override
-			public void write(Status status) {
-				status.sendLists.getOffPassengerRecords
-						.addAll(selectedGetOffPassengerRecords);
-				status.ridingPassengerRecords
-						.removeAll(selectedGetOffPassengerRecords);
-				status.finishedPassengerRecords
-						.addAll(selectedGetOffPassengerRecords);
+			public List<PassengerRecord> read(Status status) {
+				return new LinkedList<PassengerRecord>(
+						status.sendLists.getOffPassengerRecords);
 			}
 		});
 	}
 
-	public void getOnPassengerRecords(OperationSchedule operationSchedule,
-			final List<PassengerRecord> selectedGetOnPassengerRecords) {
-		Date now = getDate();
-		for (PassengerRecord passengerRecord : selectedGetOnPassengerRecords) {
-			passengerRecord.setGetOnTime(now);
-			passengerRecord.setDepartureOperationScheduleId(operationSchedule
-					.getId());
-			passengerRecord.setDepartureOperationSchedule(operationSchedule);
-			if (!getPayTiming().contains(PayTiming.GET_OFF)
-					&& getPayTiming().contains(PayTiming.GET_ON)
-					&& passengerRecord.getReservation().isPresent()) {
-				passengerRecord.setPayment(passengerRecord.getReservation()
-						.get().getPayment());
-			}
-		}
-		statusAccess.write(new Writer() {
+	public List<PassengerRecord> getGetOnPassengerRecords() {
+		return statusAccess.read(new Reader<List<PassengerRecord>>() {
 			@Override
-			public void write(Status status) {
-				status.sendLists.getOnPassengerRecords
-						.addAll(selectedGetOnPassengerRecords);
-				status.unhandledPassengerRecords
-						.removeAll(selectedGetOnPassengerRecords);
-				status.ridingPassengerRecords
-						.addAll(selectedGetOnPassengerRecords);
+			public List<PassengerRecord> read(Status status) {
+				return new LinkedList<PassengerRecord>(
+						status.sendLists.getOnPassengerRecords);
 			}
 		});
 	}
@@ -345,6 +204,16 @@ public class CommonLogic {
 		});
 	}
 
+	public List<VehicleNotification> getReceivingOperationScheduleChangedVehicleNotifications() {
+		return statusAccess.read(new Reader<List<VehicleNotification>>() {
+			@Override
+			public List<VehicleNotification> read(Status status) {
+				return new LinkedList<VehicleNotification>(
+						status.receivingOperationScheduleChangedVehicleNotifications);
+			}
+		});
+	}
+
 	public List<OperationSchedule> getRemainingOperationSchedules() {
 		return statusAccess.read(new Reader<List<OperationSchedule>>() {
 			@Override
@@ -355,8 +224,35 @@ public class CommonLogic {
 		});
 	}
 
-	public StatusAccess getStatusAccess() {
+	public List<PassengerRecord> getRidingPassengerRecords() {
+		return statusAccess.read(new Reader<List<PassengerRecord>>() {
+			@Override
+			public List<PassengerRecord> read(Status status) {
+				return new LinkedList<PassengerRecord>(
+						status.ridingPassengerRecords);
+			}
+		});
+	}
+
+	public Optional<ServiceUnitStatusLog> getServiceUnitStatusLog() {
+		return statusAccess.read(new Reader<Optional<ServiceUnitStatusLog>>() {
+			@Override
+			public Optional<ServiceUnitStatusLog> read(Status status) {
+				if (!status.serviceUnitStatusLogLocationEnabled) {
+					return Optional.absent();
+				}
+				return Optional.of(status.serviceUnitStatusLog);
+			}
+		});
+	}
+
+	public ReadOnlyStatusAccess getStatusAccess() {
 		return statusAccess;
+	}
+
+	@Deprecated
+	public StatusAccess getStatusAccessDeprecated() {
+		return statusAccessDeprecated;
 	}
 
 	public String getToken() {
@@ -378,6 +274,16 @@ public class CommonLogic {
 		});
 	}
 
+	public List<VehicleNotification> getVehicleNotifications() {
+		return statusAccess.read(new Reader<List<VehicleNotification>>() {
+			@Override
+			public List<VehicleNotification> read(Status status) {
+				return new LinkedList<VehicleNotification>(
+						status.vehicleNotifications);
+			}
+		});
+	}
+
 	public Boolean isOperationScheduleInitialized() {
 		return statusAccess.read(new Reader<Boolean>() {
 			@Override
@@ -395,17 +301,6 @@ public class CommonLogic {
 			public Boolean read(Status status) {
 				return status.unexpectedPassengerRecords
 						.contains(passengerRecord);
-			}
-		});
-	}
-
-	@Subscribe
-	public void pause(PauseEvent e) {
-		statusAccess.write(new Writer() {
-			@Override
-			public void write(Status status) {
-				status.serviceUnitStatusLog
-						.setStatus(ServiceUnitStatusLogs.Status.PAUSE);
 			}
 		});
 	}
@@ -433,44 +328,6 @@ public class CommonLogic {
 			postEvent(new EnterFinishPhaseEvent());
 			break;
 		}
-	}
-
-	@Subscribe
-	public void restoreStatus(UpdatedOperationScheduleMergedEvent event) {
-		restoreStatus();
-	}
-
-	public void setLocation(final Location location) {
-		statusAccess.write(new Writer() {
-			@Override
-			public void write(Status status) {
-				status.serviceUnitStatusLogLocationEnabled = true;
-				status.serviceUnitStatusLog.setLatitude(new BigDecimal(location
-						.getLatitude()));
-				status.serviceUnitStatusLog.setLongitude(new BigDecimal(
-						location.getLongitude()));
-			}
-		});
-	}
-
-	public void setOperationScheduleInitialized() {
-		statusAccess.write(new Writer() {
-			@Override
-			public void write(Status status) {
-				status.operationScheduleInitializedSign.release();
-			}
-		});
-	}
-
-	@Subscribe
-	public void stop(StopEvent e) {
-		statusAccess.write(new Writer() {
-			@Override
-			public void write(Status status) {
-				status.serviceUnitStatusLog
-						.setStatus(ServiceUnitStatusLogs.Status.STOP);
-			}
-		});
 	}
 
 	public void waitForOperationScheduleInitialize()

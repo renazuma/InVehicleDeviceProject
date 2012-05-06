@@ -8,24 +8,44 @@ import com.google.common.base.Function;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
+import com.kogasoftware.odt.invehicledevice.logic.Status;
+import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
+import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
 import com.kogasoftware.odt.invehicledevice.logic.event.CommonLogicLoadCompleteEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterDrivePhaseEvent;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
-import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter;
+import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordArrayAdapter;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.StartCheckModalView;
+import com.kogasoftware.odt.webapi.model.OperationSchedule;
+import com.kogasoftware.odt.webapi.model.Platform;
 
 public class StartCheckModalViewTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 	CommonLogic cl;
+	StatusAccess sa;
 	StartCheckModalView mv;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		cl = new CommonLogic(getActivity(), getActivityHandler());
+		sa = new StatusAccess(getActivity());
+		cl = new CommonLogic(getActivity(), getActivityHandler(), sa);
 		mv = (StartCheckModalView) inflateAndAddTestLayout(com.kogasoftware.odt.invehicledevice.test.R.layout.test_start_check_modal_view);
 		cl.registerEventListener(mv);
 		mv.setCommonLogic(new CommonLogicLoadCompleteEvent(cl));
+
+		sa.write(new Writer() { // TODO もっとスマートにする
+			@Override
+			public void write(Status status) {
+				OperationSchedule os1 = new OperationSchedule();
+				OperationSchedule os2 = new OperationSchedule();
+				os1.setPlatform(new Platform());
+				os2.setPlatform(new Platform());
+				status.remainingOperationSchedules.clear();
+				status.remainingOperationSchedules.add(os1);
+				status.remainingOperationSchedules.add(os2);
+			}
+		});
 	}
 
 	@Override
@@ -43,7 +63,7 @@ public class StartCheckModalViewTestCase extends
 				getActivity().setContentView(R.layout.in_vehicle_device);
 			}
 		});
-		CommonLogic cl2 = new CommonLogic(getActivity(), getActivityHandler());
+		CommonLogic cl2 = newCommonLogic();
 		try {
 			assertEquals(cl2.countRegisteredClass(StartCheckModalView.class)
 					.intValue(), 1);
@@ -60,8 +80,8 @@ public class StartCheckModalViewTestCase extends
 		assertNotSame(mv.getVisibility(), View.VISIBLE);
 
 		cl.postEvent(new StartCheckModalView.ShowEvent(
-				new ReservationArrayAdapter(getInstrumentation().getContext(),
-						cl)));
+				new PassengerRecordArrayAdapter(getInstrumentation()
+						.getContext(), cl)));
 		getInstrumentation().waitForIdleSync();
 
 		assertTrue(mv.isShown());

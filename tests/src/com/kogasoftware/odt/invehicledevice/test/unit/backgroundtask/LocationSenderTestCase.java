@@ -6,6 +6,7 @@ import com.kogasoftware.odt.invehicledevice.backgroundtask.BackgroundTask;
 import com.kogasoftware.odt.invehicledevice.backgroundtask.LocationSender;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.Status;
+import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSourceFactory;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
@@ -13,6 +14,7 @@ import com.kogasoftware.odt.invehicledevice.test.util.datasource.DummyDataSource
 
 public class LocationSenderTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
+	StatusAccess sa;
 	CommonLogic cl;
 	DummyDataSource dds;
 	LocationSender ls;
@@ -22,7 +24,8 @@ public class LocationSenderTestCase extends
 		super.setUp();
 		dds = new DummyDataSource();
 		DataSourceFactory.setInstance(dds);
-		cl = new CommonLogic(getActivity(), getActivityHandler());
+		sa = new StatusAccess(getActivity());
+		cl = new CommonLogic(getActivity(), getActivityHandler(), sa);
 		ls = new LocationSender(cl);
 	}
 
@@ -36,7 +39,8 @@ public class LocationSenderTestCase extends
 		Thread t = new Thread() {
 			@Override
 			public void run() {
-				bt.set(new BackgroundTask(cl, getInstrumentation().getContext()));
+				bt.set(new BackgroundTask(cl,
+						getInstrumentation().getContext(), sa));
 				bt.get().loop();
 			}
 		};
@@ -51,7 +55,7 @@ public class LocationSenderTestCase extends
 	 * 現在のServiceUnitStatusLogをサーバーへ送信
 	 */
 	public void testRun_1() throws Exception {
-		cl.getStatusAccess().write(new Writer() {
+		sa.write(new Writer() {
 			@Override
 			public void write(Status status) {
 				status.serviceUnitStatusLogLocationEnabled = true;
@@ -70,14 +74,14 @@ public class LocationSenderTestCase extends
 	 */
 	public void testRun_2() throws Exception {
 		assertTrue(dds.sendServiceUnitStatusLogArgs.isEmpty());
-		cl.getStatusAccess().write(new Writer() {
+		sa.write(new Writer() {
 			@Override
 			public void write(Status status) {
 				status.serviceUnitStatusLogLocationEnabled = false;
 			}
 		});
 		assertTrue(dds.sendServiceUnitStatusLogArgs.isEmpty());
-		cl.getStatusAccess().write(new Writer() {
+		sa.write(new Writer() {
 			@Override
 			public void write(Status status) {
 				status.serviceUnitStatusLogLocationEnabled = true;
@@ -88,7 +92,7 @@ public class LocationSenderTestCase extends
 		assertEquals(dds.sendServiceUnitStatusLogArgs.size(), 1);
 		assertEquals(dds.sendServiceUnitStatusLogArgs.get(0).getOrientation()
 				.get().intValue(), 123);
-		cl.getStatusAccess().write(new Writer() {
+		sa.write(new Writer() {
 			@Override
 			public void write(Status status) {
 				status.serviceUnitStatusLogLocationEnabled = false;

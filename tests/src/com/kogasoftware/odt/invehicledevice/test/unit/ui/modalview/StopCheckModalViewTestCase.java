@@ -21,7 +21,7 @@ public class StopCheckModalViewTestCase extends
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		cl = new CommonLogic(getActivity(), getActivityHandler());
+		cl = newCommonLogic();
 		mv = (StopCheckModalView) inflateAndAddTestLayout(com.kogasoftware.odt.invehicledevice.test.R.layout.test_stop_check_modal_view);
 		cl.registerEventListener(mv);
 		mv.setCommonLogic(new CommonLogicLoadCompleteEvent(cl));
@@ -42,7 +42,7 @@ public class StopCheckModalViewTestCase extends
 				getActivity().setContentView(R.layout.in_vehicle_device);
 			}
 		});
-		CommonLogic cl2 = new CommonLogic(getActivity(), getActivityHandler());
+		CommonLogic cl2 = newCommonLogic();
 		try {
 			assertEquals(cl2.countRegisteredClass(StopCheckModalView.class)
 					.intValue(), 1);

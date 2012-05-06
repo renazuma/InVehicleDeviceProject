@@ -22,7 +22,7 @@ public class ConfigModalViewTestCase extends
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		cl = new CommonLogic(getActivity(), getActivityHandler());
+		cl = newCommonLogic();
 		mv = (ConfigModalView) inflateAndAddTestLayout(com.kogasoftware.odt.invehicledevice.test.R.layout.test_config_modal_view);
 		cl.registerEventListener(mv);
 		mv.setCommonLogic(new CommonLogicLoadCompleteEvent(cl));
@@ -43,7 +43,7 @@ public class ConfigModalViewTestCase extends
 				getActivity().setContentView(R.layout.in_vehicle_device);
 			}
 		});
-		CommonLogic cl2 = new CommonLogic(getActivity(), getActivityHandler());
+		CommonLogic cl2 = newCommonLogic();
 		try {
 			assertEquals(cl2.countRegisteredClass(ConfigModalView.class)
 					.intValue(), 1);

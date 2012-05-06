@@ -28,9 +28,6 @@ public class MemoModalView extends ModalView {
 	@Subscribe
 	public void show(ShowEvent event) {
 		Reservation reservation = event.reservation;
-		if (this.isShown()) {
-			return;
-		}
 		TextView textView = (TextView) findViewById(R.id.reservation_memo_text_view);
 		if (reservation.getMemo().isPresent()) {
 			textView.setText(reservation.getMemo().get());

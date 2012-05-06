@@ -35,8 +35,8 @@ import com.kogasoftware.odt.invehicledevice.logic.event.EnterFinishPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterPlatformPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.ExitEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.SignalStrengthChangedEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.UpdatedOperationScheduleReceivedEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.VehicleNotificationReceivedEvent;
+import com.kogasoftware.odt.invehicledevice.logic.event.UpdatedOperationScheduleAlertEvent;
+import com.kogasoftware.odt.invehicledevice.logic.event.VehicleNotificationReceivedAlertEvent;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.ConfigModalView;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.NavigationModalView;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.ScheduleModalView;
@@ -221,7 +221,7 @@ public class InVehicleDeviceActivity extends Activity {
 		mapButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				navigationModalView.show();
+				commonLogic.postEvent(new NavigationModalView.ShowEvent());
 			}
 		});
 		configButton.setOnClickListener(new OnClickListener() {
@@ -320,14 +320,14 @@ public class InVehicleDeviceActivity extends Activity {
 
 	@Subscribe
 	public void startAlertOperationScheduleChanged(
-			UpdatedOperationScheduleReceivedEvent e) {
+			UpdatedOperationScheduleAlertEvent e) {
 		if (!isFinishing()) {
 			handler.post(alertOperationScheduleChanged);
 		}
 	}
 
 	@Subscribe
-	public void startAlertVehicleNotification(VehicleNotificationReceivedEvent e) {
+	public void startAlertVehicleNotification(VehicleNotificationReceivedAlertEvent e) {
 		if (!isFinishing()) {
 			handler.post(alertVehicleNotification);
 		}

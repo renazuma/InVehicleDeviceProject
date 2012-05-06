@@ -1,6 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.ui.modalview;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import android.content.Context;
@@ -11,11 +10,9 @@ import android.widget.TextView;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.backgroundtask.VoiceThread.SpeakEvent;
-import com.kogasoftware.odt.invehicledevice.logic.Identifiables;
-import com.kogasoftware.odt.invehicledevice.logic.Status;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.VoidReader;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
+import com.kogasoftware.odt.invehicledevice.logic.VehicleNotifications;
 import com.kogasoftware.odt.invehicledevice.logic.event.CommonLogicLoadCompleteEvent;
+import com.kogasoftware.odt.invehicledevice.logic.event.VehicleNotificationRepliedEvent;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class NotificationModalView extends ModalView {
@@ -25,7 +22,6 @@ public class NotificationModalView extends ModalView {
 	}
 
 	private VehicleNotification currentVehicleNotification = new VehicleNotification();
-	private final List<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();
 
 	public NotificationModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -34,7 +30,8 @@ public class NotificationModalView extends ModalView {
 				new OnClickListener() {
 					@Override
 					public void onClick(View view) {
-						currentVehicleNotification.setResponse(1);
+						currentVehicleNotification
+								.setResponse(VehicleNotifications.Response.YES);
 						reply();
 						hide();
 					}
@@ -43,63 +40,37 @@ public class NotificationModalView extends ModalView {
 				new OnClickListener() {
 					@Override
 					public void onClick(View view) {
-						currentVehicleNotification.setResponse(0);
+						currentVehicleNotification
+								.setResponse(VehicleNotifications.Response.NO);
 						reply();
 						hide();
 					}
 				});
 	}
 
-	@Override
-	public void hide() {
-		if (!vehicleNotifications.isEmpty()) {
-			refresh();
-		} else {
-			super.hide();
-		}
+	private void reply() {
+		getCommonLogic()
+				.postEvent(
+						new VehicleNotificationRepliedEvent(
+								currentVehicleNotification));
 	}
 
-	private void refresh() {
+	@Override
+	public void show() {
+		List<VehicleNotification> vehicleNotifications = getCommonLogic()
+				.getVehicleNotifications();
 		if (vehicleNotifications.isEmpty()) {
+			hide();
 			return;
 		}
+
 		currentVehicleNotification = vehicleNotifications.get(0);
 		TextView bodyTextView = (TextView) findViewById(R.id.notification_text_view);
 		bodyTextView.setText(currentVehicleNotification.getBody());
 		getCommonLogic().postEvent(
 				new SpeakEvent(currentVehicleNotification.getBody()));
-	}
 
-	private void reply() {
-		vehicleNotifications.remove(currentVehicleNotification);
-		getCommonLogic().getStatusAccess().write(new Writer() {
-			@Override
-			public void write(Status status) {
-				status.vehicleNotifications.remove(currentVehicleNotification);
-				status.sendLists.repliedVehicleNotifications
-						.add(currentVehicleNotification);
-			}
-		});
-	}
-
-	@Override
-	public void show() {
-		getCommonLogic().getStatusAccess().read(new VoidReader() {
-			@Override
-			public void read(Status status) {
-				Identifiables.merge(vehicleNotifications,
-						status.vehicleNotifications);
-			}
-		});
-
-		if (vehicleNotifications.isEmpty()) {
-			hide();
-			return;
-		}
-		if (!isShown()) {
-			refresh();
-			super.show();
-		}
+		super.show();
 	}
 
 	@Subscribe

@@ -11,11 +11,14 @@ public class OperationScheduleArrayAdapterTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 
 	CommonLogic cl;
+	OperationScheduleArrayAdapter osaa;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		cl = new CommonLogic(getActivity(), getActivityHandler());
+		cl = newCommonLogic();
+		osaa = new OperationScheduleArrayAdapter(getInstrumentation()
+				.getContext(), new ArrayList<OperationSchedule>(), cl);
 	}
 
 	@Override
@@ -26,8 +29,23 @@ public class OperationScheduleArrayAdapterTestCase extends
 		}
 	}
 
-	public void testOperationScheduleArrayAdapter_1() throws Exception {
-		new OperationScheduleArrayAdapter(getInstrumentation().getContext(),
-				new ArrayList<OperationSchedule>(), cl);
+	public void testOperationScheduleが表示される() {
+		fail("stub!");
+	}
+
+	public void testOperationScheduleが変更されたら変更後の表示になる() {
+		fail("stub!");
+	}
+
+	public void test最後のOperationScheduleの出発時刻は表示されない() {
+		fail("stub!");
+	}
+
+	public void test最初のOperationScheduleの到着時刻は表示されない() {
+		fail("stub!");
+	}
+
+	public void test終了したOperationScheduleは表示色が変更される() {
+		fail("stub!");
 	}
 }

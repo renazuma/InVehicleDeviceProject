@@ -20,6 +20,11 @@ public class VTextViewTestCase extends EmptyActivityInstrumentationTestCase2 {
 
 	public void test1() throws Exception {
 		vtv.setText("吾輩は猫である。名前はまだ無い。");
+		getInstrumentation().waitForIdleSync();
+		Thread.sleep(500);
+	}
+
+	public void test2() throws Exception {
 		fail("stub! / physical test required");
 	}
 }

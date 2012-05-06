@@ -1,12 +1,10 @@
 package com.kogasoftware.odt.invehicledevice.backgroundtask;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.Status;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Reader;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
@@ -30,7 +28,7 @@ public class PassengerRecordSender implements Runnable {
 	private void remove(final PassengerRecord passengerRecord,
 			final Boolean getOn) {
 
-		commonLogic.getStatusAccess().write(new Writer() {
+		commonLogic.getStatusAccessDeprecated().write(new Writer() {
 			@Override
 			public void write(Status status) {
 				if (getOn) {
@@ -48,21 +46,10 @@ public class PassengerRecordSender implements Runnable {
 	@Override
 	public void run() {
 		List<PassengerRecord> getOnPassengerRecords = commonLogic
-				.getStatusAccess().read(new Reader<List<PassengerRecord>>() {
-					@Override
-					public List<PassengerRecord> read(Status status) {
-						return new LinkedList<PassengerRecord>(
-								status.sendLists.getOnPassengerRecords);
-					}
-				});
+				.getGetOnPassengerRecords();
+
 		List<PassengerRecord> getOffPassengerRecords = commonLogic
-				.getStatusAccess().read(new Reader<List<PassengerRecord>>() {
-					@Override
-					public List<PassengerRecord> read(Status status) {
-						return new LinkedList<PassengerRecord>(
-								status.sendLists.getOffPassengerRecords);
-					}
-				});
+				.getGetOffPassengerRecords();
 		send(commonLogic, getOnPassengerRecords, true);
 		send(commonLogic, getOffPassengerRecords, false);
 	}

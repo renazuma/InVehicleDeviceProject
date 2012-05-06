@@ -5,11 +5,11 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.util.Log;
 
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
+import com.kogasoftware.odt.invehicledevice.logic.SharedPreferencesKey;
 import com.kogasoftware.odt.invehicledevice.logic.event.ExitEvent;
 
 public class ExitRequiredPreferenceChangeListener implements
 		OnSharedPreferenceChangeListener {
-	public static final String EXIT_REQUIRED_SHARED_PREFERENCE_KEY = "exit_required";
 	private static final String TAG = ExitRequiredPreferenceChangeListener.class
 			.getSimpleName();
 	private final CommonLogic commonLogic;
@@ -24,12 +24,14 @@ public class ExitRequiredPreferenceChangeListener implements
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
-		if (key.equals(EXIT_REQUIRED_SHARED_PREFERENCE_KEY)
+		if (key.equals(SharedPreferencesKey.EXIT_REQUIRED)
 				&& sharedPreferences.getBoolean(key, false)) {
 			// 文字列定数
 			Log.i(TAG, "SharedPreferences changed, exit!");
 			commonLogic.postEvent(new ExitEvent());
-			sharedPreferences.edit().putBoolean(EXIT_REQUIRED_SHARED_PREFERENCE_KEY, true).commit();
+			sharedPreferences.edit()
+					.putBoolean(SharedPreferencesKey.EXIT_REQUIRED, true)
+					.commit();
 		}
 	}
 }

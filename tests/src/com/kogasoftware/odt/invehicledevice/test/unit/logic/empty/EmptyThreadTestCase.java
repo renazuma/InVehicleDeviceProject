@@ -9,16 +9,6 @@ import com.google.common.util.concurrent.SimpleTimeLimiter;
 import com.kogasoftware.odt.invehicledevice.logic.empty.EmptyThread;
 
 public class EmptyThreadTestCase extends TestCase {
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-	}
-
-	@Override
-	protected void tearDown() throws Exception {
-		super.tearDown();
-	}
-
 	public void testRun() throws Exception {
 		(new SimpleTimeLimiter()).callWithTimeout(new Callable<Void>() {
 			@Override
@@ -34,6 +24,7 @@ public class EmptyThreadTestCase extends TestCase {
 	public void testStart() throws Exception {
 		Thread t = new EmptyThread();
 		t.start();
-		t.join(200); // 即座にjoinする
+		t.join(200); // 即座に終了する
+		assertFalse(t.isAlive());
 	}
 }

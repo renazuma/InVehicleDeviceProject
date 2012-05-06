@@ -6,8 +6,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.logic.Status;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
+import com.kogasoftware.odt.invehicledevice.logic.event.OrientationChangedEvent;
 
 public class OrientationSensorEventListener implements SensorEventListener {
 	private static final Long SAVE_PERIOD_MILLIS = 10 * 1000L;
@@ -20,7 +19,7 @@ public class OrientationSensorEventListener implements SensorEventListener {
 	}
 
 	@Override
-	public void onAccuracyChanged(Sensor arg0, int arg1) {
+	public void onAccuracyChanged(Sensor sensor, int accuracy) {
 	}
 
 	@Override
@@ -38,13 +37,6 @@ public class OrientationSensorEventListener implements SensorEventListener {
 		}
 		lastSavedMillis = now;
 
-		commonLogic.getStatusAccess().write(new Writer() {
-			@Override
-			public void write(Status status) {
-				status.serviceUnitStatusLog
-						.setOrientation((int) (360 - degree));
-			}
-		});
-		// Log.i(TAG, "orientation changed=" + degree);
+		commonLogic.postEvent(new OrientationChangedEvent(360 - degree));
 	}
 }

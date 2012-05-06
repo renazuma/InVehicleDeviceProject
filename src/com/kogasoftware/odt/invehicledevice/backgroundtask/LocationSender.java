@@ -8,8 +8,7 @@ import android.os.Bundle;
 
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.logic.Status;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Reader;
+import com.kogasoftware.odt.invehicledevice.logic.event.LocationReceivedEvent;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
@@ -24,7 +23,7 @@ public class LocationSender implements Runnable, LocationListener {
 
 	@Override
 	public void onLocationChanged(Location location) {
-		commonLogic.setLocation(location);
+		commonLogic.postEvent(new LocationReceivedEvent(location));
 	}
 
 	@Override
@@ -45,24 +44,15 @@ public class LocationSender implements Runnable, LocationListener {
 	 */
 	@Override
 	public void run() {
-		final Optional<ServiceUnitStatusLog> log = commonLogic
-				.getStatusAccess().read(
-						new Reader<Optional<ServiceUnitStatusLog>>() {
-							@Override
-							public Optional<ServiceUnitStatusLog> read(
-									Status status) {
-								if (!status.serviceUnitStatusLogLocationEnabled) {
-									return Optional.absent();
-								}
-								return Optional.of(status.serviceUnitStatusLog);
-							}
-						});
-		if (!log.isPresent()) {
+		final Optional<ServiceUnitStatusLog> serviceUnitStatusLog = commonLogic
+				.getServiceUnitStatusLog();
+		if (!serviceUnitStatusLog.isPresent()) {
 			return;
 		}
 
 		try {
-			commonLogic.getDataSource().sendServiceUnitStatusLog(log.get(),
+			commonLogic.getDataSource().sendServiceUnitStatusLog(
+					serviceUnitStatusLog.get(),
 					new WebAPICallback<ServiceUnitStatusLog>() {
 						@Override
 						public void onException(int reqkey, WebAPIException ex) {

@@ -89,7 +89,7 @@ public class OperationScheduleSender implements Runnable {
 				return;
 			}
 
-			commonLogic.getStatusAccess().write(new Writer() {
+			commonLogic.getStatusAccessDeprecated().write(new Writer() {
 				@Override
 				public void write(Status status) {
 					if (arrival) {

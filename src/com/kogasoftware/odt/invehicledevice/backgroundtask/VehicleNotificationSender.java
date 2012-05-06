@@ -60,7 +60,7 @@ public class VehicleNotificationSender implements Runnable {
 							@Override
 							public void onSucceed(int reqkey, int statusCode,
 									VehicleNotification result) {
-								commonLogic.getStatusAccess().write(
+								commonLogic.getStatusAccessDeprecated().write(
 										new Writer() {
 											@Override
 											public void write(Status status) {

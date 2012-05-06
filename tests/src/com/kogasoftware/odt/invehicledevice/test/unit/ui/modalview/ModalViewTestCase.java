@@ -19,7 +19,7 @@ public class ModalViewTestCase extends EmptyActivityInstrumentationTestCase2 {
 
 		fail("TestModalViewのinflateにAnimationResourceが必要のため失敗する");
 
-		cl = new CommonLogic(getActivity(), getActivityHandler());
+		cl = newCommonLogic();
 
 		LayoutInflater li = (LayoutInflater) getInstrumentation().getContext()
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -41,7 +41,7 @@ public class ModalViewTestCase extends EmptyActivityInstrumentationTestCase2 {
 		}
 	}
 
-	public void XtestCommonLogicLoadCompleteEventでCommonLogicを取得() {
+	public void testCommonLogicLoadCompleteEventでCommonLogicを取得() {
 		assertNotSame(cl, mv.getCommonLogic());
 		cl.postEvent(new CommonLogicLoadCompleteEvent(cl));
 		getInstrumentation().waitForIdleSync();

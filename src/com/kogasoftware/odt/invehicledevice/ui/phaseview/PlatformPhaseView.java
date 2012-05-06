@@ -28,8 +28,8 @@ import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterFinishPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterPlatformPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.UnexpectedReservationAddedEvent;
-import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter;
-import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter.ItemType;
+import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordArrayAdapter;
+import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordArrayAdapter.ItemType;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.StartCheckModalView;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 
@@ -53,7 +53,7 @@ public class PlatformPhaseView extends PhaseView {
 	private final LinearLayout lastOperationScheduleLayout;
 	private final LinearLayout nextOperationScheduleLayout;
 
-	private ReservationArrayAdapter adapter = new ReservationArrayAdapter(
+	private PassengerRecordArrayAdapter adapter = new PassengerRecordArrayAdapter(
 			getContext(), getCommonLogic());
 	private final Handler handler = new Handler();
 
@@ -158,7 +158,7 @@ public class PlatformPhaseView extends PhaseView {
 			addUnexpectedReservationButton.setVisibility(VISIBLE);
 		}
 
-		adapter = new ReservationArrayAdapter(getContext(), commonLogic);
+		adapter = new PassengerRecordArrayAdapter(getContext(), commonLogic);
 		reservationListView.setAdapter(adapter);
 
 		if (operationSchedules.size() > 1) {
@@ -290,8 +290,9 @@ public class PlatformPhaseView extends PhaseView {
 						}
 						OperationSchedule arrivalOperationSchedule = operationSchedules
 								.get(which);
-						getCommonLogic().addUnexpectedReservation(
-								arrivalOperationSchedule.getId());
+						getCommonLogic().postEvent(
+								new UnexpectedReservationAddedEvent(
+										arrivalOperationSchedule.getId()));
 					}
 				});
 		dialog = Optional.of(builder.create());

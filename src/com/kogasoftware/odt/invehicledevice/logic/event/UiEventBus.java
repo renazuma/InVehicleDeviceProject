@@ -1,6 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.logic.event;
 
-import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -83,9 +82,6 @@ public class UiEventBus {
 	}
 
 	private final EventBus getEventBusForObject(Object object) {
-		for (Annotation annotation : object.getClass().getAnnotations()) {
-			annotation.toString();
-		}
 		if (object.getClass().isAnnotationPresent(HighPriority.class)) {
 			return highPriorityEventBus;
 		} else {

@@ -28,15 +28,6 @@ public class EmptyFileTestCase extends TestCase {
 	}
 
 	/**
-	 * 何もしない
-	 */
-	public void testDeleteOnExit() {
-		File f = new EmptyFile();
-		f.deleteOnExit();
-		fail("stub!");
-	}
-
-	/**
 	 * 普通の使い方をして非検査例外がおきないことをチェック
 	 */
 	public void testEmptyFile() throws Exception {
@@ -60,5 +51,14 @@ public class EmptyFileTestCase extends TestCase {
 		assertFalse(f.renameTo(f2));
 		assertEquals(e, f.exists());
 		assertFalse(f2.exists());
+	}
+
+	/**
+	 * 何もしない
+	 */
+	public void testDeleteOnExit() {
+		File f = new EmptyFile();
+		f.deleteOnExit();
+		fail("stub!");
 	}
 }

@@ -19,7 +19,7 @@ public class FinishPhaseViewTestCase extends
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		cl = new CommonLogic(getActivity(), getActivityHandler());
+		cl = newCommonLogic();
 		pv = (FinishPhaseView) inflateAndAddTestLayout(com.kogasoftware.odt.invehicledevice.test.R.layout.test_finish_phase_view);
 		cl.registerEventListener(pv);
 		pv.setCommonLogic(new CommonLogicLoadCompleteEvent(cl));

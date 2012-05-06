@@ -2,17 +2,20 @@ package com.kogasoftware.odt.invehicledevice.test.unit.ui.arrayadapter;
 
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
-import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter;
+import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordArrayAdapter;
 
-public class ReservationArrayAdapterTestCase extends
+public class PassengerRecordArrayAdapterTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 
 	CommonLogic cl;
+	PassengerRecordArrayAdapter raa;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		cl = new CommonLogic(getActivity(), getActivityHandler());
+		cl = newCommonLogic();
+		raa = new PassengerRecordArrayAdapter(
+				getInstrumentation().getContext(), cl);
 	}
 
 	@Override
@@ -23,7 +26,7 @@ public class ReservationArrayAdapterTestCase extends
 		}
 	}
 
-	public void testReservationArrayAdapter_1() throws Exception {
-		new ReservationArrayAdapter(getInstrumentation().getContext(), cl);
+	public void testPassengerRecordが表示される() throws Exception {
+		fail("stub!");
 	}
 }

@@ -6,6 +6,7 @@ import android.os.Looper;
 
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
+import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
 
 public class BackgroundTaskThread extends Thread {
 	private final Activity activity;
@@ -42,10 +43,12 @@ public class BackgroundTaskThread extends Thread {
 		} catch (InterruptedException e) {
 			return;
 		}
-		CommonLogic commonLogic = new CommonLogic(activity, activityHandler);
+		StatusAccess statusAccess = new StatusAccess(activity);
+		CommonLogic commonLogic = new CommonLogic(activity, activityHandler,
+				statusAccess);
 		try {
 			BackgroundTask backgroundTask = new BackgroundTask(commonLogic,
-					activity);
+					activity, statusAccess);
 			synchronized (backgroundTaskQuitLock) {
 				optionalBackgroundTask = Optional.of(backgroundTask);
 			}

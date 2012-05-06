@@ -2,7 +2,7 @@ package com.kogasoftware.odt.invehicledevice.test.unit.logic.event;
 
 import junit.framework.TestCase;
 
-import com.kogasoftware.odt.invehicledevice.logic.event.UpdatedOperationScheduleReceivedEvent;
+import com.kogasoftware.odt.invehicledevice.logic.event.UpdatedOperationScheduleAlertEvent;
 
 public class UpdatedOperationScheduleReceivedEventTestCase extends TestCase {
 	@Override
@@ -16,6 +16,6 @@ public class UpdatedOperationScheduleReceivedEventTestCase extends TestCase {
 	}
 
 	public void testConstructor() throws Exception {
-		new UpdatedOperationScheduleReceivedEvent();
+		new UpdatedOperationScheduleAlertEvent();
 	}
 }

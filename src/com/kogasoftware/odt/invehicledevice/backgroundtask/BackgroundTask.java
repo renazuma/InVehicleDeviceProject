@@ -24,6 +24,7 @@ import com.google.common.base.Function;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.Status.Phase;
+import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
 import com.kogasoftware.odt.invehicledevice.logic.event.CommonLogicLoadCompleteEvent;
 
 /**
@@ -59,7 +60,8 @@ public class BackgroundTask {
 	private final Thread operationScheduleReceiveThread;
 	private final Looper myLooper;
 
-	public BackgroundTask(CommonLogic commonLogic, Context context) {
+	public BackgroundTask(CommonLogic commonLogic, Context context,
+			StatusAccess statusAccess) {
 		if (Looper.myLooper() == null) {
 			Looper.prepare();
 		}
@@ -143,7 +145,7 @@ public class BackgroundTask {
 				vehicleNotificationSender, operationScheduleSender,
 				passengerRecordSender, locationSender,
 				temperatureSensorEventListener, orientationSensorEventListener,
-				exitRequiredPreferenceChangeListener, signalStrengthListener }) {
+				exitRequiredPreferenceChangeListener, signalStrengthListener, }) {
 			commonLogic.registerEventListener(object);
 		}
 

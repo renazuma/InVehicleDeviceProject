@@ -17,7 +17,7 @@ public class TemperatureSensorEventListenerTestCase extends
 		super.setUp();
 		dds = new DummyDataSource();
 		DataSourceFactory.setInstance(dds);
-		cl = new CommonLogic(getActivity(), getActivityHandler());
+		cl = newCommonLogic();
 		osel = new OrientationSensorEventListener(cl);
 	}
 

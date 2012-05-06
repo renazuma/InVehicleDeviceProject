@@ -20,9 +20,7 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.backgroundtask.VoiceThread.SpeakEvent;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.logic.Status;
 import com.kogasoftware.odt.invehicledevice.logic.Status.Phase;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Reader;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterDrivePhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterFinishPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterPlatformPhaseEvent;
@@ -95,12 +93,7 @@ public class DrivePhaseView extends PhaseView implements AnimationListener {
 		TextView totalPassengerCountTextView = (TextView) findViewById(R.id.total_passenger_count_text_view);
 		Integer totalPassengerCount = 0;
 		List<PassengerRecord> ridingPassengerRecords = commonLogic
-				.getStatusAccess().read(new Reader<List<PassengerRecord>>() {
-					@Override
-					public List<PassengerRecord> read(Status status) {
-						return status.ridingPassengerRecords;
-					}
-				});
+				.getRidingPassengerRecords();
 		for (PassengerRecord passengerRecord : ridingPassengerRecords) {
 			totalPassengerCount += passengerRecord.getPassengerCount();
 		}

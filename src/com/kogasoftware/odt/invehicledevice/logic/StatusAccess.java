@@ -13,6 +13,7 @@ import java.nio.channels.ClosedChannelException;
 import java.nio.channels.FileLock;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -28,10 +29,24 @@ import com.kogasoftware.odt.invehicledevice.logic.datasource.WebAPIDataSource;
  * InVehicleDeviceStatusのアクセスに対し 書き込みがあったら自動で保存. 読み書き時にロックを実行を行う
  */
 public class StatusAccess {
-	public static final String CLEAR_REQUIRED_SHARED_PREFERENCE_KEY = "clear_required";
-	
 	public interface Reader<T> {
 		T read(Status status);
+	}
+
+	public static class ReadOnlyStatusAccess {
+		private final StatusAccess statusAccess;
+
+		private ReadOnlyStatusAccess(StatusAccess statusAccess) {
+			this.statusAccess = statusAccess;
+		}
+
+		public <T> T read(Reader<T> reader) {
+			return statusAccess.read(reader);
+		}
+
+		public void read(VoidReader reader) {
+			statusAccess.read(reader);
+		}
 	}
 
 	private static class SaveThread extends Thread {
@@ -78,20 +93,29 @@ public class StatusAccess {
 		void write(Status status);
 	}
 
+	private static final AtomicBoolean willClearStatusFile = new AtomicBoolean(
+			false);
+
 	private static final String TAG = StatusAccess.class.getSimpleName();
+
+	public static void clearStatusFile() {
+		willClearStatusFile.set(true);
+	}
 
 	private static Status newStatusInstance() {
 		return new Status();
 	}
 
 	/**
-	 * isClearがtrueか、SharedPreferenceのCLEAR_REQUIRED_SHARED_PREFERENCE_KEYがtrueの場合
+	 * isClearがtrueか、
+	 * SharedPreferenceのCLEAR_REQUIRED_SHARED_PREFERENCE_KEYがtrueの場合
 	 * 新しいStatusオブジェクトを作る。それ以外の場合はファイルからStatusオブジェクトを作る。
 	 * 
 	 * CLEAR_REQUIRED_SHARED_PREFERENCE_KEYにより新しいオブジェクトが作られた場合、
 	 * CLEAR_REQUIRED_SHARED_PREFERENCE_KEYはfalseに設定する
 	 */
-	private static Status newStatusInstance(Context context, Boolean isClear) {
+	private static Status newStatusInstance(Context context) {
+		Boolean isClear = willClearStatusFile.getAndSet(false);
 		Status status = new Status();
 		File file = new File(context.getFilesDir() + File.separator
 				+ Status.class.getCanonicalName() + ".serialized");
@@ -99,9 +123,12 @@ public class StatusAccess {
 				.getDefaultSharedPreferences(context);
 		if (isClear) {
 			file.delete();
-		} else if (preferences.getBoolean(CLEAR_REQUIRED_SHARED_PREFERENCE_KEY, false)) {
+		} else if (preferences.getBoolean(SharedPreferencesKey.CLEAR_REQUIRED,
+				false)) {
 			file.delete();
-			preferences.edit().putBoolean(CLEAR_REQUIRED_SHARED_PREFERENCE_KEY, false).commit();
+			preferences.edit()
+					.putBoolean(SharedPreferencesKey.CLEAR_REQUIRED, false)
+					.commit();
 		} else {
 			FileInputStream fileInputStream = null;
 			ObjectInputStream objectInputStream = null;
@@ -136,15 +163,19 @@ public class StatusAccess {
 			}
 		}
 		status.file = file;
-		status.token = preferences.getString("token", "");
-		status.url = preferences.getString("url", WebAPIDataSource.DEFAULT_URL);
+		status.token = preferences
+				.getString(
+						SharedPreferencesKey.SERVER_IN_VEHICLE_DEVICE_TOKEN,
+						"");
+		status.url = preferences.getString(SharedPreferencesKey.SERVER_URL,
+				WebAPIDataSource.DEFAULT_URL);
 		return status;
 	}
 
 	private final ReentrantReadWriteLock reentrantReadWriteLock = new ReentrantReadWriteLock();
+
 	private final Lock readLock = reentrantReadWriteLock.readLock();
 	private final Lock writeLock = reentrantReadWriteLock.writeLock();
-
 	private final Status status;
 
 	/**
@@ -154,8 +185,12 @@ public class StatusAccess {
 		status = newStatusInstance();
 	}
 
-	public StatusAccess(Context context, Boolean clear) {
-		status = newStatusInstance(context, clear);
+	public StatusAccess(Context context) {
+		status = newStatusInstance(context);
+	}
+
+	public ReadOnlyStatusAccess getReadOnlyStatusAccess() {
+		return new ReadOnlyStatusAccess(this);
 	}
 
 	public <T> T read(Reader<T> reader) {
@@ -167,13 +202,14 @@ public class StatusAccess {
 		}
 	}
 
-	public void read(VoidReader reader) {
-		readLock.lock();
-		try {
-			reader.read(status);
-		} finally {
-			readLock.unlock();
-		}
+	public void read(final VoidReader reader) {
+		read(new Reader<Void>() {
+			@Override
+			public Void read(Status status) {
+				reader.read(status);
+				return null;
+			}
+		});
 	}
 
 	private void save(final File file) {

@@ -25,9 +25,8 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic.PayTiming;
 import com.kogasoftware.odt.invehicledevice.logic.Status;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Reader;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.VoidReader;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
+import com.kogasoftware.odt.invehicledevice.logic.event.SelectedPassengerRecordsUpdateEvent;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.MemoModalView;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.ReturnPathModalView;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
@@ -35,12 +34,12 @@ import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.User;
 
-public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
+public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 	public static enum ItemType {
 		RIDING_AND_NO_GET_OFF, FUTURE_GET_ON, MISSED,
 	}
 
-	private static final String TAG = ReservationArrayAdapter.class
+	private static final String TAG = PassengerRecordArrayAdapter.class
 			.getSimpleName();
 
 	private final LayoutInflater layoutInflater = (LayoutInflater) getContext()
@@ -49,6 +48,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 	private final CommonLogic commonLogic;
 	private final List<PassengerRecord> unhandledPassengerRecords = new LinkedList<PassengerRecord>();
 	private final List<PassengerRecord> ridingPassengerRecords = new LinkedList<PassengerRecord>();
+	private final List<PassengerRecord> selectedPassengerRecords = new LinkedList<PassengerRecord>();
 	private final List<OperationSchedule> remainingOperationSchedules = new LinkedList<OperationSchedule>();
 	private final OperationSchedule operationSchedule;
 	private final EnumSet<ItemType> visibleItemTypes = EnumSet
@@ -56,7 +56,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 	private final EnumSet<PayTiming> payTiming;
 	private final Boolean isLastOperationSchedule;
 
-	public ReservationArrayAdapter(Context context, CommonLogic commonLogic) {
+	public PassengerRecordArrayAdapter(Context context, CommonLogic commonLogic) {
 		super(context, RESOURCE_ID);
 		this.commonLogic = commonLogic;
 		payTiming = commonLogic.getPayTiming();
@@ -74,6 +74,8 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 				unhandledPassengerRecords
 						.addAll(status.unhandledPassengerRecords);
 				ridingPassengerRecords.addAll(status.ridingPassengerRecords);
+				selectedPassengerRecords
+						.addAll(status.selectedPassengerRecords);
 			}
 		});
 
@@ -122,6 +124,12 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 			}
 		}
 		updateDataSet();
+	}
+
+	public void clearSelectedPassengerRecords() {
+		selectedPassengerRecords.clear();
+		commonLogic.postEvent(new SelectedPassengerRecordsUpdateEvent(
+				selectedPassengerRecords));
 	}
 
 	public List<PassengerRecord> getNoGettingOffPassengerRecords() {
@@ -409,22 +417,13 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 
 	public Boolean isSelectedPassengerRecord(
 			final PassengerRecord passengerRecord) {
-		return commonLogic.getStatusAccess().read(new Reader<Boolean>() {
-			@Override
-			public Boolean read(Status status) {
-				return status.selectedPassengerRecords
-						.contains(passengerRecord);
-			}
-		});
+		return selectedPassengerRecords.contains(passengerRecord);
 	}
 
 	public void selectPassengerRecord(final PassengerRecord passengerRecord) {
-		commonLogic.getStatusAccess().write(new Writer() {
-			@Override
-			public void write(Status status) {
-				status.selectedPassengerRecords.add(passengerRecord);
-			}
-		});
+		selectedPassengerRecords.add(passengerRecord);
+		commonLogic.postEvent(new SelectedPassengerRecordsUpdateEvent(
+				selectedPassengerRecords));
 	}
 
 	public void show(ItemType itemType) {
@@ -433,12 +432,9 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 	}
 
 	public void unselectPassengerRecord(final PassengerRecord passengerRecord) {
-		commonLogic.getStatusAccess().write(new Writer() {
-			@Override
-			public void write(Status status) {
-				status.selectedPassengerRecords.remove(passengerRecord);
-			}
-		});
+		selectedPassengerRecords.remove(passengerRecord);
+		commonLogic.postEvent(new SelectedPassengerRecordsUpdateEvent(
+				selectedPassengerRecords));
 	}
 
 	private void updateDataSet() {

@@ -16,7 +16,7 @@ import com.kogasoftware.odt.webapi.model.VehicleNotification;
  * 現在の状態を保存しておくクラス
  */
 public class Status implements Serializable {
-	public enum Phase {
+	public static enum Phase {
 		DRIVE, FINISH, INITIAL, PLATFORM
 	}
 
@@ -29,7 +29,7 @@ public class Status implements Serializable {
 		public final LinkedList<OperationSchedule> departureOperationSchedules = new LinkedList<OperationSchedule>();
 	}
 
-	private static final long serialVersionUID = 5617948505743183985L;
+	private static final long serialVersionUID = 5617948505743183986L;
 
 	public final SendLists sendLists = new SendLists();
 
@@ -40,10 +40,9 @@ public class Status implements Serializable {
 	public File file = new EmptyFile();
 	public Phase phase = Phase.INITIAL;
 	public Boolean serviceUnitStatusLogLocationEnabled = false; // serviceUnitStatusLogの位置メンバが有効な場合true
-
-	public final ServiceUnitStatusLog serviceUnitStatusLog = new ServiceUnitStatusLog();
 	public Integer unexpectedReservationSequence = 1;
 
+	public final ServiceUnitStatusLog serviceUnitStatusLog = new ServiceUnitStatusLog();
 	public final LinkedList<OperationSchedule> remainingOperationSchedules = new LinkedList<OperationSchedule>();
 	public final LinkedList<OperationSchedule> finishedOperationSchedules = new LinkedList<OperationSchedule>();
 	public final LinkedList<PassengerRecord> unhandledPassengerRecords = new LinkedList<PassengerRecord>();

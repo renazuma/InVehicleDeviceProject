@@ -16,7 +16,7 @@ public class NavigationModalViewTestCase extends
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		cl = new CommonLogic(getActivity(), getActivityHandler());
+		cl = newCommonLogic();
 		mv = (NavigationModalView) inflateAndAddTestLayout(com.kogasoftware.odt.invehicledevice.test.R.layout.test_navigation_modal_view);
 		cl.registerEventListener(mv);
 		mv.setCommonLogic(new CommonLogicLoadCompleteEvent(cl));
@@ -37,7 +37,7 @@ public class NavigationModalViewTestCase extends
 				getActivity().setContentView(R.layout.in_vehicle_device);
 			}
 		});
-		CommonLogic cl2 = new CommonLogic(getActivity(), getActivityHandler());
+		CommonLogic cl2 = newCommonLogic();
 		try {
 			assertEquals(cl2.countRegisteredClass(NavigationModalView.class)
 					.intValue(), 1);
@@ -65,5 +65,19 @@ public class NavigationModalViewTestCase extends
 		solo.clickOnView(solo.getView(R.id.navigation_close_button));
 		getInstrumentation().waitForIdleSync();
 		assertFalse(mv.isShown());
+	}
+
+	public void test拡大ボタンを押すと拡大() throws Exception {
+		testShowEvent();
+		solo.clickOnView(solo.getView(R.id.navigation_zoom_in_button));
+		getInstrumentation().waitForIdleSync();
+		fail("stub!");
+	}
+
+	public void test縮小ボタンを押すと縮小() throws Exception {
+		testShowEvent();
+		solo.clickOnView(solo.getView(R.id.navigation_zoom_out_button));
+		getInstrumentation().waitForIdleSync();
+		fail("stub!");
 	}
 }

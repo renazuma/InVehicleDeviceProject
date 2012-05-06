@@ -9,6 +9,7 @@ import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.Status;
+import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
 import com.kogasoftware.odt.invehicledevice.logic.VehicleNotifications;
 import com.kogasoftware.odt.invehicledevice.logic.event.CommonLogicLoadCompleteEvent;
@@ -21,13 +22,16 @@ import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class ScheduleChangedModalViewTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
+	StatusAccess sa;
 	CommonLogic cl;
 	ScheduleChangedModalView mv;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		cl = new CommonLogic(getActivity(), getActivityHandler());
+		sa = new StatusAccess(getActivity());
+		cl = new CommonLogic(getActivity(), getActivityHandler(), sa);
+
 		mv = (ScheduleChangedModalView) inflateAndAddTestLayout(com.kogasoftware.odt.invehicledevice.test.R.layout.test_schedule_changed_modal_view);
 		cl.registerEventListener(mv);
 		mv.setCommonLogic(new CommonLogicLoadCompleteEvent(cl));
@@ -48,7 +52,7 @@ public class ScheduleChangedModalViewTestCase extends
 				getActivity().setContentView(R.layout.in_vehicle_device);
 			}
 		});
-		CommonLogic cl2 = new CommonLogic(getActivity(), getActivityHandler());
+		CommonLogic cl2 = newCommonLogic();
 		try {
 			assertEquals(
 					cl2.countRegisteredClass(ScheduleChangedModalView.class)
@@ -64,19 +68,19 @@ public class ScheduleChangedModalViewTestCase extends
 	public void testUpdatedOperationScheduleMergedEvent_1()
 			throws InterruptedException {
 		final String body = "Hello";
-		cl.getStatusAccess().write(new Writer() { // TODO: イベントで書き直し
-					@Override
-					public void write(Status status) {
-						VehicleNotification vn = new VehicleNotification();
-						vn.setBody(body);
-						vn.setNotificationType(VehicleNotifications.NotificationType.SCHEDULE_CHANGED);
-						status.sendLists.repliedVehicleNotifications.clear();
-						status.receivedOperationScheduleChangedVehicleNotifications
-								.clear();
-						status.receivedOperationScheduleChangedVehicleNotifications
-								.add(vn);
-					}
-				});
+		sa.write(new Writer() { // TODO: イベントで書き直し
+			@Override
+			public void write(Status status) {
+				VehicleNotification vn = new VehicleNotification();
+				vn.setBody(body);
+				vn.setNotificationType(VehicleNotifications.NotificationType.SCHEDULE_CHANGED);
+				status.sendLists.repliedVehicleNotifications.clear();
+				status.receivedOperationScheduleChangedVehicleNotifications
+						.clear();
+				status.receivedOperationScheduleChangedVehicleNotifications
+						.add(vn);
+			}
+		});
 
 		assertFalse(mv.isShown());
 		assertNotSame(mv.getVisibility(), View.VISIBLE);
@@ -94,13 +98,13 @@ public class ScheduleChangedModalViewTestCase extends
 	 */
 	public void testUpdatedOperationScheduleMergedEvent_2()
 			throws InterruptedException {
-		cl.getStatusAccess().write(new Writer() { // TODO: イベントで書き直し
-					@Override
-					public void write(Status status) {
-						status.receivedOperationScheduleChangedVehicleNotifications
-								.clear();
-					}
-				});
+		sa.write(new Writer() { // TODO: イベントで書き直し
+			@Override
+			public void write(Status status) {
+				status.receivedOperationScheduleChangedVehicleNotifications
+						.clear();
+			}
+		});
 
 		assertFalse(mv.isShown());
 		assertNotSame(mv.getVisibility(), View.VISIBLE);

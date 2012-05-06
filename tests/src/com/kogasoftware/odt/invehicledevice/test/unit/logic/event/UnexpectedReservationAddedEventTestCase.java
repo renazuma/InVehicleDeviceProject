@@ -16,6 +16,9 @@ public class UnexpectedReservationAddedEventTestCase extends TestCase {
 	}
 
 	public void testConstructor() throws Exception {
-		new UnexpectedReservationAddedEvent();
+		Integer id = 100;
+		UnexpectedReservationAddedEvent e = new UnexpectedReservationAddedEvent(
+				id);
+		assertEquals(e.arrivalOperationScheduleId, id);
 	}
 }

@@ -5,6 +5,7 @@ import java.util.Date;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.kogasoftware.odt.invehicledevice.logic.SharedPreferencesKey;
 import com.kogasoftware.odt.invehicledevice.logic.Status;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Reader;
@@ -46,11 +47,11 @@ public class StatusAccessTestCase extends EmptyActivityInstrumentationTestCase2 
 	}
 
 	/**
-	 * コンストラクタ。clear引数が指定されたら内容をクリア
+	 * コンストラクタ。clearStatusFileが呼ばれたら内容をクリア
 	 */
 	public void testConstructor_2() throws Exception {
 		// 保存
-		StatusAccess sa1 = new StatusAccess(getActivity(), true);
+		StatusAccess sa1 = new StatusAccess(getActivity());
 		sa1.write(new Writer() {
 			@Override
 			public void write(Status status) {
@@ -62,7 +63,7 @@ public class StatusAccessTestCase extends EmptyActivityInstrumentationTestCase2 
 		Thread.sleep(500); // 保存されるのを待つ
 
 		// クリアされていないことを確認
-		StatusAccess sa2 = new StatusAccess(getActivity(), false);
+		StatusAccess sa2 = new StatusAccess(getActivity());
 		sa2.read(new VoidReader() {
 			@Override
 			public void read(Status status) {
@@ -73,7 +74,8 @@ public class StatusAccessTestCase extends EmptyActivityInstrumentationTestCase2 
 		});
 
 		// クリアされることを確認
-		StatusAccess sa3 = new StatusAccess(getActivity(), true);
+		StatusAccess.clearStatusFile();
+		StatusAccess sa3 = new StatusAccess(getActivity());
 		sa3.read(new VoidReader() {
 			@Override
 			public void read(Status status) {
@@ -83,8 +85,8 @@ public class StatusAccessTestCase extends EmptyActivityInstrumentationTestCase2 
 			}
 		});
 
-		// 一度クリアされたら、falseを指定してもデータが復活しないことを確認
-		StatusAccess sa4 = new StatusAccess(getActivity(), false);
+		// 復活しないことを確認
+		StatusAccess sa4 = new StatusAccess(getActivity());
 		sa4.read(new VoidReader() {
 			@Override
 			public void read(Status status) {
@@ -96,12 +98,12 @@ public class StatusAccessTestCase extends EmptyActivityInstrumentationTestCase2 
 	}
 
 	/**
-	 * コンストラクタ。SharedPreferenceのCLEAR_REQUIRED_SHARED_PREFERENCE_KEYがtrueの場合
-	 * 内容をクリア
+	 * コンストラクタ。SharedPreferencesKeyのCLEAR_REQUIREDがtrueの場合 内容をクリア
 	 */
 	public void testConstructor_3() throws Exception {
 		// 保存
-		StatusAccess sa1 = new StatusAccess(getActivity(), true);
+		StatusAccess.clearStatusFile();
+		StatusAccess sa1 = new StatusAccess(getActivity());
 		sa1.write(new Writer() {
 			@Override
 			public void write(Status status) {
@@ -113,7 +115,7 @@ public class StatusAccessTestCase extends EmptyActivityInstrumentationTestCase2 
 		Thread.sleep(500); // 保存されるのを待つ
 
 		// クリアされていないことを確認
-		StatusAccess sa2 = new StatusAccess(getActivity(), false);
+		StatusAccess sa2 = new StatusAccess(getActivity());
 		sa2.read(new VoidReader() {
 			@Override
 			public void read(Status status) {
@@ -124,13 +126,11 @@ public class StatusAccessTestCase extends EmptyActivityInstrumentationTestCase2 
 
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(getActivity());
-		preferences
-				.edit()
-				.putBoolean(StatusAccess.CLEAR_REQUIRED_SHARED_PREFERENCE_KEY,
-						true).commit();
+		preferences.edit()
+				.putBoolean(SharedPreferencesKey.CLEAR_REQUIRED, true).commit();
 
 		// クリアされることを確認
-		StatusAccess sa3 = new StatusAccess(getActivity(), false);
+		StatusAccess sa3 = new StatusAccess(getActivity());
 		sa3.read(new VoidReader() {
 			@Override
 			public void read(Status status) {
@@ -140,12 +140,12 @@ public class StatusAccessTestCase extends EmptyActivityInstrumentationTestCase2 
 			}
 		});
 
-		// CLEAR_REQUIRED_SHARED_PREFERENCE_KEYがfalseになっていることを確認
-		assertFalse(preferences.getBoolean(
-				StatusAccess.CLEAR_REQUIRED_SHARED_PREFERENCE_KEY, true));
+		// SharedPreferencesKey.CLEAR_REQUIREDがfalseになっていることを確認
+		assertFalse(preferences.getBoolean(SharedPreferencesKey.CLEAR_REQUIRED,
+				true));
 
-		// 一度クリアされたら、falseでもデータが復活しないことを確認
-		StatusAccess sa4 = new StatusAccess(getActivity(), false);
+		// データが復活しないことを確認
+		StatusAccess sa4 = new StatusAccess(getActivity());
 		sa4.read(new VoidReader() {
 			@Override
 			public void read(Status status) {

@@ -16,7 +16,7 @@ public class ScheduleModalViewTestCase extends
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		cl = new CommonLogic(getActivity(), getActivityHandler());
+		cl = newCommonLogic();
 		mv = (ScheduleModalView) inflateAndAddTestLayout(com.kogasoftware.odt.invehicledevice.test.R.layout.test_schedule_modal_view);
 		cl.registerEventListener(mv);
 		mv.setCommonLogic(new CommonLogicLoadCompleteEvent(cl));
@@ -37,7 +37,7 @@ public class ScheduleModalViewTestCase extends
 				getActivity().setContentView(R.layout.in_vehicle_device);
 			}
 		});
-		CommonLogic cl2 = new CommonLogic(getActivity(), getActivityHandler());
+		CommonLogic cl2 = newCommonLogic();
 		try {
 			assertEquals(cl2.countRegisteredClass(ScheduleModalView.class)
 					.intValue(), 1);
@@ -65,5 +65,20 @@ public class ScheduleModalViewTestCase extends
 		solo.clickOnView(solo.getView(R.id.schedule_close_button));
 		getInstrumentation().waitForIdleSync();
 		assertFalse(mv.isShown());
+	}
+
+	public void test下ボタンを押すと下へスクロール() throws Exception {
+		testShowEvent();
+		solo.clickOnView(solo
+				.getView(R.id.operation_schedule_scroll_down_button));
+		getInstrumentation().waitForIdleSync();
+		fail("stub!");
+	}
+
+	public void test上ボタンを押すと上へスクロール() throws Exception {
+		testShowEvent();
+		solo.clickOnView(solo.getView(R.id.operation_schedule_scroll_up_button));
+		getInstrumentation().waitForIdleSync();
+		fail("stub!");
 	}
 }

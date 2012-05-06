@@ -6,8 +6,7 @@ import android.hardware.SensorEventListener;
 import android.util.Log;
 
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.logic.Status;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
+import com.kogasoftware.odt.invehicledevice.logic.event.TemperatureChangedEvent;
 
 public class TemperatureSensorEventListener implements SensorEventListener {
 	private static final String TAG = TemperatureSensorEventListener.class
@@ -29,14 +28,8 @@ public class TemperatureSensorEventListener implements SensorEventListener {
 			return;
 		}
 
-		final float celsius = event.values[0];
-		commonLogic.getStatusAccess().write(new Writer() {
-			@Override
-			public void write(Status status) {
-				status.serviceUnitStatusLog.setTemperature((int) celsius);
-			}
-		});
-
-		Log.i(TAG, "temperature changed=" + celsius);
+		float celsius = event.values[0];
+		commonLogic.postEvent(new TemperatureChangedEvent(celsius));
+		Log.v(TAG, "temperature changed=" + celsius);
 	}
 }

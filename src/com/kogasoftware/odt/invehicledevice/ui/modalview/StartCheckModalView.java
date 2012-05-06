@@ -16,7 +16,9 @@ import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterDrivePhaseEvent;
-import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter;
+import com.kogasoftware.odt.invehicledevice.logic.event.GetOffEvent;
+import com.kogasoftware.odt.invehicledevice.logic.event.GetOnEvent;
+import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordArrayAdapter;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
@@ -24,9 +26,9 @@ import com.kogasoftware.odt.webapi.model.User;
 
 public class StartCheckModalView extends ModalView {
 	public static class ShowEvent {
-		public final ReservationArrayAdapter reservationArrayAdapter;
+		public final PassengerRecordArrayAdapter reservationArrayAdapter;
 
-		public ShowEvent(ReservationArrayAdapter reservationArrayAdapter) {
+		public ShowEvent(PassengerRecordArrayAdapter reservationArrayAdapter) {
 			this.reservationArrayAdapter = reservationArrayAdapter;
 		}
 	}
@@ -52,7 +54,7 @@ public class StartCheckModalView extends ModalView {
 
 	@Subscribe
 	public void show(ShowEvent event) {
-		final ReservationArrayAdapter adapter = event.reservationArrayAdapter;
+		final PassengerRecordArrayAdapter adapter = event.reservationArrayAdapter;
 		ListView errorReservationListView = (ListView) findViewById(R.id.error_reservation_list_view);
 		List<String> messages = new LinkedList<String>();
 		for (PassengerRecord passengerRecord : adapter
@@ -96,11 +98,11 @@ public class StartCheckModalView extends ModalView {
 				Optional<OperationSchedule> operationSchedule = commonLogic
 						.getCurrentOperationSchedule();
 				if (operationSchedule.isPresent()) {
-					commonLogic.getOnPassengerRecords(operationSchedule.get(),
-							adapter.getSelectedGetOnPassengerRecords());
-					commonLogic.getOffPassengerRecords(operationSchedule.get(),
-							adapter.getSelectedGetOffPassengerRecords());
-					commonLogic.clearSelectedPassengerRecords();
+					commonLogic.postEvent(new GetOnEvent(operationSchedule
+							.get(), adapter.getSelectedGetOnPassengerRecords()));
+					commonLogic.postEvent(new GetOffEvent(operationSchedule
+							.get(), adapter.getSelectedGetOffPassengerRecords()));
+					adapter.clearSelectedPassengerRecords();
 				}
 				commonLogic.postEvent(new EnterDrivePhaseEvent());
 			}

@@ -14,7 +14,8 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.backgroundtask.VoiceThread.SpeakEvent;
 import com.kogasoftware.odt.invehicledevice.logic.Status;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.VoidReader;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
+import com.kogasoftware.odt.invehicledevice.logic.VehicleNotifications;
+import com.kogasoftware.odt.invehicledevice.logic.event.ReceivedOperationScheduleChangedVehicleNotificationsReplyEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.UpdatedOperationScheduleMergedEvent;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
@@ -58,16 +59,11 @@ public class ScheduleChangedModalView extends ModalView {
 
 		// 表示したスケジュール変更通知を、responseを指定して返信リストへ追加
 		for (VehicleNotification vehicleNotification : vehicleNotifications) {
-			vehicleNotification.setResponse(0); // TODO
+			vehicleNotification.setResponse(VehicleNotifications.Response.YES); // TODO
 		}
-		getCommonLogic().getStatusAccess().write(new Writer() {
-			@Override
-			public void write(Status status) {
-				status.receivedOperationScheduleChangedVehicleNotifications
-						.removeAll(vehicleNotifications);
-				status.sendLists.repliedVehicleNotifications
-						.addAll(vehicleNotifications);
-			}
-		});
+		getCommonLogic()
+				.postEvent(
+						new ReceivedOperationScheduleChangedVehicleNotificationsReplyEvent(
+								vehicleNotifications));
 	}
 }

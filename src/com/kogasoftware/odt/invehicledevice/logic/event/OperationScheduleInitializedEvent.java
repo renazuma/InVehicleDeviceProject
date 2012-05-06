@@ -1,5 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.logic.event;
 
+public class OperationScheduleInitializedEvent {
 
-public class StartOperationScheduleUpdateEvent {
 }

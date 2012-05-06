@@ -212,11 +212,6 @@ public class NavigationModalView extends ModalView {
 		// glSurfaceView.onResume();
 	}
 
-	@Override
-	public void show() {
-		show(new ShowEvent());
-	}
-
 	@Subscribe
 	public void show(ShowEvent event) {
 		super.show();

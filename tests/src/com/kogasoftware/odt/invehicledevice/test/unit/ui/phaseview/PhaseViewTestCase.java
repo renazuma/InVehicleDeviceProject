@@ -16,7 +16,7 @@ public class PhaseViewTestCase extends EmptyActivityInstrumentationTestCase2 {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		cl = new CommonLogic(getActivity(), getActivityHandler());
+		cl = newCommonLogic();
 
 		LayoutInflater li = (LayoutInflater) getInstrumentation().getContext()
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

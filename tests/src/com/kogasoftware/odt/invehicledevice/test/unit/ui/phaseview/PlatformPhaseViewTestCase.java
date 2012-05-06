@@ -4,6 +4,7 @@ import android.view.View;
 
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.Status;
+import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
 import com.kogasoftware.odt.invehicledevice.logic.event.CommonLogicLoadCompleteEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterDrivePhaseEvent;
@@ -18,26 +19,28 @@ public class PlatformPhaseViewTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 
 	CommonLogic cl;
+	StatusAccess sa;
 	PlatformPhaseView pv;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		cl = new CommonLogic(getActivity(), getActivityHandler());
+		sa = new StatusAccess(getActivity());
+		cl = new CommonLogic(getActivity(), getActivityHandler(), sa);
 		pv = (PlatformPhaseView) inflateAndAddTestLayout(com.kogasoftware.odt.invehicledevice.test.R.layout.test_platform_phase_view);
 		cl.registerEventListener(pv);
-		cl.getStatusAccess().write(new Writer() { // TODO もっとスマートにする
-					@Override
-					public void write(Status status) {
-						OperationSchedule os1 = new OperationSchedule();
-						OperationSchedule os2 = new OperationSchedule();
-						os1.setPlatform(new Platform());
-						os2.setPlatform(new Platform());
-						status.remainingOperationSchedules.clear();
-						status.remainingOperationSchedules.add(os1);
-						status.remainingOperationSchedules.add(os2);
-					}
-				});
+		sa.write(new Writer() { // TODO もっとスマートにする
+			@Override
+			public void write(Status status) {
+				OperationSchedule os1 = new OperationSchedule();
+				OperationSchedule os2 = new OperationSchedule();
+				os1.setPlatform(new Platform());
+				os2.setPlatform(new Platform());
+				status.remainingOperationSchedules.clear();
+				status.remainingOperationSchedules.add(os1);
+				status.remainingOperationSchedules.add(os2);
+			}
+		});
 		pv.setCommonLogic(new CommonLogicLoadCompleteEvent(cl));
 
 	}

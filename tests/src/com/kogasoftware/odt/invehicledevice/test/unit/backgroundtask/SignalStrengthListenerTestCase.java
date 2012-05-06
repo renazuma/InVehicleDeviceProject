@@ -9,7 +9,8 @@ import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSourceFactory;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.test.util.datasource.DummyDataSource;
 
-public class SignalStrengthListenerTestCase extends EmptyActivityInstrumentationTestCase2 {
+public class SignalStrengthListenerTestCase extends
+		EmptyActivityInstrumentationTestCase2 {
 	CommonLogic cl;
 	ConnectivityManager cm;
 	DummyDataSource dds;
@@ -22,7 +23,7 @@ public class SignalStrengthListenerTestCase extends EmptyActivityInstrumentation
 				Context.CONNECTIVITY_SERVICE);
 		dds = new DummyDataSource();
 		DataSourceFactory.setInstance(dds);
-		cl = new CommonLogic(getActivity(), getActivityHandler());
+		cl = newCommonLogic();
 		ssl = new SignalStrengthListener(cl, cm);
 	}
 
