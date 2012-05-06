@@ -4,9 +4,8 @@ import android.test.ActivityInstrumentationTestCase2;
 import android.view.View;
 
 import com.jayway.android.robotium.solo.Solo;
-
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
+import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSourceFactory;
 import com.kogasoftware.odt.invehicledevice.test.util.datasource.DummyDataSource;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
@@ -25,8 +24,14 @@ public class NotificationTestCase extends
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		CommonLogic.clearStatusFile();
+		StatusAccess.clearSavedFile();
 		solo = new Solo(getInstrumentation(), getActivity());
+	}
+
+	@Override
+	public void tearDown() throws Exception {
+		solo.finishOpenedActivities();
+		super.tearDown();
 	}
 
 	public void test01_起動時は非表示() {
@@ -37,7 +42,7 @@ public class NotificationTestCase extends
 	public void test02_走行中に管理者から連絡が来たら表示() {
 		test01_起動時は非表示();
 
-		//TODO 管理者からの連絡部分が実装されたら置き換える
+		// TODO 管理者からの連絡部分が実装されたら置き換える
 		solo.clickOnView(solo.getView(R.id.phase_text_view));
 
 		getInstrumentation().waitForIdleSync();
@@ -79,7 +84,7 @@ public class NotificationTestCase extends
 
 		solo.clickOnButton("到着しました");
 
-		//TODO 管理者からの連絡部分が実装されたら置き換える
+		// TODO 管理者からの連絡部分が実装されたら置き換える
 		solo.clickOnView(solo.getView(R.id.phase_text_view));
 
 		getInstrumentation().waitForIdleSync();
@@ -121,7 +126,7 @@ public class NotificationTestCase extends
 
 		solo.clickOnButton("運行管理");
 
-		//TODO 管理者からの連絡部分が実装されたら置き換える
+		// TODO 管理者からの連絡部分が実装されたら置き換える
 		solo.clickOnView(solo.getView(R.id.phase_text_view));
 
 		getInstrumentation().waitForIdleSync();
@@ -163,27 +168,13 @@ public class NotificationTestCase extends
 
 		solo.clickOnButton("地図");
 
-		//TODO 管理者からの連絡部分が実装されたら置き換える
+		// TODO 管理者からの連絡部分が実装されたら置き換える
 		solo.clickOnView(solo.getView(R.id.phase_text_view));
 
 		getInstrumentation().waitForIdleSync();
 
 		assertEquals(View.VISIBLE, solo.getView(R.id.notification_modal_view)
 				.getVisibility());
-	}
-
-	public void test12_はいを押下して閉じ地図画面に戻る() {
-		test11_地図画面中に管理者から連絡が来たら表示();
-
-		solo.clickOnButton("はい");
-
-		getInstrumentation().waitForIdleSync();
-
-		assertEquals(View.GONE, solo.getView(R.id.notification_modal_view)
-				.getVisibility());
-		assertEquals(View.VISIBLE, solo.getView(R.id.navigation_modal_view)
-				.getVisibility());
-
 	}
 
 	public void test12_いいえを押下して閉じ地図画面に戻る() {
@@ -200,9 +191,17 @@ public class NotificationTestCase extends
 				.getVisibility());
 	}
 
-	@Override
-	public void tearDown() throws Exception {
-		solo.finishOpenedActivities();
-		super.tearDown();
+	public void test12_はいを押下して閉じ地図画面に戻る() {
+		test11_地図画面中に管理者から連絡が来たら表示();
+
+		solo.clickOnButton("はい");
+
+		getInstrumentation().waitForIdleSync();
+
+		assertEquals(View.GONE, solo.getView(R.id.notification_modal_view)
+				.getVisibility());
+		assertEquals(View.VISIBLE, solo.getView(R.id.navigation_modal_view)
+				.getVisibility());
+
 	}
 }

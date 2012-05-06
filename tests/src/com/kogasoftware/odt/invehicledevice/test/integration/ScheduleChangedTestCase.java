@@ -4,7 +4,7 @@ import android.test.ActivityInstrumentationTestCase2;
 
 import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
+import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSourceFactory;
 import com.kogasoftware.odt.invehicledevice.test.util.datasource.ScheduleChangedTestDataSource;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
@@ -18,7 +18,7 @@ public class ScheduleChangedTestCase extends
 		super("com.kogasoftware.odt.invehicledevice.ui.activity",
 				InVehicleDeviceActivity.class);
 		DataSourceFactory.setInstance(new ScheduleChangedTestDataSource());
-		CommonLogic.clearStatusFile();
+		StatusAccess.clearSavedFile();
 	}
 
 	@Override

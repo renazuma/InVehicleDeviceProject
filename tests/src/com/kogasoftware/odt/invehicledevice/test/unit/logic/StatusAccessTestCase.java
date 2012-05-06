@@ -74,7 +74,7 @@ public class StatusAccessTestCase extends EmptyActivityInstrumentationTestCase2 
 		});
 
 		// クリアされることを確認
-		StatusAccess.clearStatusFile();
+		StatusAccess.clearSavedFile();
 		StatusAccess sa3 = new StatusAccess(getActivity());
 		sa3.read(new VoidReader() {
 			@Override
@@ -102,7 +102,7 @@ public class StatusAccessTestCase extends EmptyActivityInstrumentationTestCase2 
 	 */
 	public void testConstructor_3() throws Exception {
 		// 保存
-		StatusAccess.clearStatusFile();
+		StatusAccess.clearSavedFile();
 		StatusAccess sa1 = new StatusAccess(getActivity());
 		sa1.write(new Writer() {
 			@Override

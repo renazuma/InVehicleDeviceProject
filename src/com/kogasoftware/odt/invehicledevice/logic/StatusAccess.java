@@ -98,7 +98,7 @@ public class StatusAccess {
 
 	private static final String TAG = StatusAccess.class.getSimpleName();
 
-	public static void clearStatusFile() {
+	public static void clearSavedFile() {
 		willClearStatusFile.set(true);
 	}
 
