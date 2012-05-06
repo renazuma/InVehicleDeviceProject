@@ -66,14 +66,12 @@ public class IdentifiablesTestCase extends TestCase {
 		l.add(new Test(12345));
 		assertFalse(l.contains(new Test(12345))); // 別のオブジェクトと判定されfalse
 		assertTrue(Identifiables.contains(l, new Test(12345)));
-		assertEquals(l.size(), 1);
 
 		// 複数
 		l.add(new Test(123));
 		assertFalse(l.contains(new Test(123))); // 別のオブジェクトと判定されfalse
 		assertTrue(Identifiables.contains(l, new Test(12345)));
 		assertTrue(Identifiables.contains(l, new Test(123)));
-		assertEquals(l.size(), 1);
 	}
 
 	/**
