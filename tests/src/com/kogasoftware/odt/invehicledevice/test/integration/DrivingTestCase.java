@@ -88,7 +88,7 @@ public class DrivingTestCase extends
 	public void test05_出発確認画面でやめるボタンを押すと停車中画面表示() {
 		test04_停車中から出発しますボタンを押すと出発確認画面表示();
 
-		solo.clickOnView(solo.getView(R.id.stop_check_close_button));
+		solo.clickOnView(solo.getView(R.id.start_check_close_button));
 		assertEquals(View.VISIBLE, solo.getView(R.id.platform_phase_view)
 				.getVisibility());
 
