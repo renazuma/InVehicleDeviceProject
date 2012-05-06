@@ -44,7 +44,6 @@ public class CommonLogic {
 
 	private static final Object DEFAULT_DATE_LOCK = new Object();
 	private static Optional<Date> defaultDate = Optional.absent();
-	public static final Integer VEHICLE_NOTIFICATION_TYPE_SCHEDULE_CHANGED = 2;
 
 	public static Handler getActivityHandler(Activity activity)
 			throws InterruptedException {
