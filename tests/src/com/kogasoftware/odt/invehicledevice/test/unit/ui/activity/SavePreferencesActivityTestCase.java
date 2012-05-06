@@ -39,7 +39,12 @@ public class SavePreferencesActivityTestCase extends
 		super.tearDown();
 	}
 
-	public void testSharedPreferenceにデータが保存される() throws Exception {
+	public void xtestBundleを渡さなくてもエラーは発生しない() throws Exception {
+		getActivity();
+		getInstrumentation().waitForIdleSync();
+	}
+
+	public void xtestSharedPreferenceにデータが保存される() throws Exception {
 		String u = "http://example.com/foo/bar";
 		String t = "token12345678";
 		Bundle bundle = new Bundle();
@@ -57,11 +62,6 @@ public class SavePreferencesActivityTestCase extends
 
 		assertTrue(sp.getBoolean(SharedPreferencesKey.EXIT_REQUIRED, false));
 		assertTrue(sp.getBoolean(SharedPreferencesKey.CLEAR_REQUIRED, false));
-	}
-
-	public void xtestBundleを渡さなくてもエラーは発生しない() throws Exception {
-		getActivity();
-		getInstrumentation().waitForIdleSync();
 	}
 
 	public void xtest空データを渡してもエラーは発生しない() throws Exception {
