@@ -19,11 +19,14 @@ public class OperationScheduleReceiveThreadTestCase extends
 
 	@Override
 	protected void tearDown() throws Exception {
-		super.tearDown();
+		if (cl != null) {
+			cl.dispose();
+		}
 		if (osrt != null) {
 			osrt.interrupt();
 			osrt.join();
 		}
+		super.tearDown();
 	}
 
 	public void test1() throws Exception {

@@ -24,6 +24,9 @@ public class VehicleNotificationReceiverTestCase extends
 
 	@Override
 	protected void tearDown() throws Exception {
+		if (cl != null) {
+			cl.dispose();
+		}
 		super.tearDown();
 	}
 

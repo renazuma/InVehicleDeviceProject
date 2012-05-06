@@ -21,6 +21,14 @@ public class BackgroundTaskTestCase extends
 		cl = new CommonLogic(getActivity(), getActivityHandler(), sa);
 	}
 
+	@Override
+	public void tearDown() throws Exception {
+		if (cl != null) {
+			cl.dispose();
+		}
+		super.tearDown();
+	}
+
 	/**
 	 * スレッドが割り込まれていた場合はループせず終了
 	 */

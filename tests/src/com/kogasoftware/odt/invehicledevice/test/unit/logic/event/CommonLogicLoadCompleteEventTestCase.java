@@ -18,7 +18,12 @@ public class CommonLogicLoadCompleteEventTestCase extends TestCase {
 
 	public void testConstructor() throws Exception {
 		CommonLogic cl = new CommonLogic();
-		CommonLogicLoadCompleteEvent e = new CommonLogicLoadCompleteEvent(cl);
-		assertEquals(cl, e.commonLogic);
+		try {
+			CommonLogicLoadCompleteEvent e = new CommonLogicLoadCompleteEvent(
+					cl);
+			assertEquals(cl, e.commonLogic);
+		} finally {
+			cl.dispose();
+		}
 	}
 }

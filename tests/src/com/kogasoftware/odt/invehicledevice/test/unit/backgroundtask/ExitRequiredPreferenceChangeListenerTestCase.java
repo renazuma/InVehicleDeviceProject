@@ -45,6 +45,14 @@ public class ExitRequiredPreferenceChangeListenerTestCase extends
 
 	}
 
+	@Override
+	public void tearDown() throws Exception {
+		if (cl != null) {
+			cl.dispose();
+		}
+		super.tearDown();
+	}
+
 	/**
 	 * EXIT_REQUIREDがtrueの場合、ExitEventを発生させる
 	 */

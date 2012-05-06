@@ -23,6 +23,12 @@ public class VoiceThreadTestCase extends EmptyActivityInstrumentationTestCase2 {
 
 	@Override
 	protected void tearDown() throws Exception {
+		if (vt != null) {
+			vt.interrupt();
+		}
+		if (cl != null) {
+			cl.dispose();
+		}
 		super.tearDown();
 	}
 
