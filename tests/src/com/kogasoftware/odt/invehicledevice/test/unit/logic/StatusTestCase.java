@@ -12,6 +12,8 @@ public class StatusTestCase extends EmptyActivityInstrumentationTestCase2 {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
+		
+		Thread.sleep(10 * 1000); // 別のアプリがStatusを保存するかもしれないため、一定時間待つ
 	}
 
 	@Override

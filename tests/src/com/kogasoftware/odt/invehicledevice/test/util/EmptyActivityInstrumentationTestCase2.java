@@ -83,6 +83,7 @@ public class EmptyActivityInstrumentationTestCase2 extends
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
+		Thread.sleep(2000); // 別タスクがStatusを保存するかもしれないため、一定時間待つ
 		solo = new Solo(getInstrumentation(), getActivity());
 	}
 
