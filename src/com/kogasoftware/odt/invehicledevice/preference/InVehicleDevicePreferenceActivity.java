@@ -7,7 +7,9 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.view.View;
@@ -22,9 +24,11 @@ import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 
 public class InVehicleDevicePreferenceActivity extends PreferenceActivity
-		implements WebAPICallback<InVehicleDevice> {
+		implements WebAPICallback<InVehicleDevice>,
+		OnSharedPreferenceChangeListener {
 	private final int CONNECTING_DIALOG_ID = 100;
 	private int latestReqKey = 0;
+	private SharedPreferences preferences = null;
 	private Button saveConfigButton = null;
 
 	@Override
@@ -32,6 +36,11 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		addPreferencesFromResource(R.xml.preference);
+
+		preferences = PreferenceManager
+				.getDefaultSharedPreferences(InVehicleDevicePreferenceActivity.this);
+
+		preferences.registerOnSharedPreferenceChangeListener(this);
 
 		saveConfigButton = (Button) findViewById(R.id.save_config_button);
 		saveConfigButton.setOnClickListener(new OnClickListener() {
@@ -42,8 +51,6 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 				}
 				showDialog(CONNECTING_DIALOG_ID);
 				Context context = InVehicleDevicePreferenceActivity.this;
-				SharedPreferences preferences = PreferenceManager
-						.getDefaultSharedPreferences(InVehicleDevicePreferenceActivity.this);
 				String url = preferences.getString("connection_url",
 						"http://localhost");
 				WebAPI api = new WebAPI(url);
@@ -63,6 +70,8 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 				}
 			}
 		});
+
+		updateSummary();
 	}
 
 	@Override
@@ -76,6 +85,11 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		}
 		}
 		return null;
+	}
+
+	@Override
+	public void onDestroy() {
+		preferences.unregisterOnSharedPreferenceChangeListener(this);
 	}
 
 	@Override
@@ -120,6 +134,12 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 	}
 
 	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
+			String key) {
+		updateSummary();
+	}
+
+	@Override
 	public void onSucceed(int reqKey, int statusCode, InVehicleDevice result) {
 		if (reqKey != latestReqKey) {
 			return;
@@ -147,5 +167,13 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 				+ ".ui.activity.SavePreferencesActivity");
 		startActivity(intent);
 		finish();
+	}
+
+	private void updateSummary() {
+		EditTextPreference connectionUrl = (EditTextPreference) findPreference("connection_url");
+		connectionUrl.setSummary(preferences.getString("connection_url", ""));
+
+		EditTextPreference login = (EditTextPreference) findPreference("login");
+		login.setSummary(preferences.getString("login", ""));
 	}
 }
