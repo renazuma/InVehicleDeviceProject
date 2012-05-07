@@ -14,7 +14,7 @@ public class PassengerRecordSenderTestCase extends
 		super.tearDown();
 	}
 
-	public void testPassengerRecordSender_1() throws Exception {
+	public void xtestPassengerRecordSender_1() throws Exception {
 		fail("deprecated");
 	}
 }

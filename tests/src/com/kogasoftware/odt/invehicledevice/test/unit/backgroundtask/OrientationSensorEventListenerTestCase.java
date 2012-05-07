@@ -30,7 +30,7 @@ public class OrientationSensorEventListenerTestCase extends
 		super.tearDown();
 	}
 
-	public void testOnSensorChanged() throws Exception {
+	public void xtestOnSensorChanged() throws Exception {
 		fail("stub!");
 	}
 }

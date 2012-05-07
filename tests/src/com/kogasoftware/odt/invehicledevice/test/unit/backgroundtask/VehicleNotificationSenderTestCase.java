@@ -14,7 +14,7 @@ public class VehicleNotificationSenderTestCase extends
 		super.tearDown();
 	}
 
-	public void testVehicleNotificationSender_1() throws Exception {
+	public void xtestVehicleNotificationSender_1() throws Exception {
 		fail("deprecated!");
 	}
 }

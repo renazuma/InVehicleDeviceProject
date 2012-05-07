@@ -23,7 +23,7 @@ public class ReservationCandidateArrayAdapterTestCase extends
 		super.tearDown();
 	}
 
-	public void testReservationCandidateが表示される() throws Exception {
+	public void xtestReservationCandidateが表示される() throws Exception {
 		fail("stub!");
 	}
 }

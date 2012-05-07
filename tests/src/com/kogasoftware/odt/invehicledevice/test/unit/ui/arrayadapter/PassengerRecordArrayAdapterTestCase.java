@@ -26,7 +26,7 @@ public class PassengerRecordArrayAdapterTestCase extends
 		}
 	}
 
-	public void testPassengerRecordが表示される() throws Exception {
+	public void xtestPassengerRecordが表示される() throws Exception {
 		fail("stub!");
 	}
 }

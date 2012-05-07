@@ -29,23 +29,23 @@ public class OperationScheduleArrayAdapterTestCase extends
 		}
 	}
 
-	public void testOperationScheduleが表示される() {
+	public void xtestOperationScheduleが表示される() {
 		fail("stub!");
 	}
 
-	public void testOperationScheduleが変更されたら変更後の表示になる() {
+	public void xtestOperationScheduleが変更されたら変更後の表示になる() {
 		fail("stub!");
 	}
 
-	public void test最後のOperationScheduleの出発時刻は表示されない() {
+	public void xtest最後のOperationScheduleの出発時刻は表示されない() {
 		fail("stub!");
 	}
 
-	public void test最初のOperationScheduleの到着時刻は表示されない() {
+	public void xtest最初のOperationScheduleの到着時刻は表示されない() {
 		fail("stub!");
 	}
 
-	public void test終了したOperationScheduleは表示色が変更される() {
+	public void xtest終了したOperationScheduleは表示色が変更される() {
 		fail("stub!");
 	}
 }

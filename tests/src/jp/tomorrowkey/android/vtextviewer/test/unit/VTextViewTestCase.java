@@ -24,7 +24,7 @@ public class VTextViewTestCase extends EmptyActivityInstrumentationTestCase2 {
 		Thread.sleep(500);
 	}
 
-	public void test2() throws Exception {
+	public void xtest2() throws Exception {
 		fail("stub! / physical test required");
 	}
 }

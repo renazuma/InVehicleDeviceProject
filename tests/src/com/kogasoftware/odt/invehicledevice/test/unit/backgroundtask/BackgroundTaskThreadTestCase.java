@@ -23,7 +23,7 @@ public class BackgroundTaskThreadTestCase extends
 	/**
 	 * runは直接呼ばない！
 	 */
-	public void testRun() throws Exception {
+	public void xtestRun() throws Exception {
 		fail("stub !");
 	}
 }
