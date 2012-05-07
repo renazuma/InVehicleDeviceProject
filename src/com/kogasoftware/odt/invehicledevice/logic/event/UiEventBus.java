@@ -93,19 +93,14 @@ public class UiEventBus {
 	 * UIのスレッドでObjectをポストする
 	 */
 	public void post(final Object object) {
-		if (disposed.get()) {
-			return;
-		}
-		if (uiHandler.getLooper().getThread().getId() == Thread.currentThread()
-				.getId()) {
-			highPriorityEventBus.post(object);
-			lowPriorityEventBus.post(object);
-			return;
-		}
 		uiHandler.post(new Runnable() {
 			@Override
 			public void run() {
-				UiEventBus.this.post(object);
+				if (disposed.get()) {
+					return;
+				}
+				highPriorityEventBus.post(object);
+				lowPriorityEventBus.post(object);
 			}
 		});
 	}
