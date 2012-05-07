@@ -1,6 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.test.util;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import android.app.Activity;
 import android.app.Instrumentation;
@@ -32,7 +33,9 @@ public class MockActivityUnitTestCase extends
 				}
 			}
 		});
-		cdl.await();
+		if (!cdl.await(10, TimeUnit.SECONDS)) {
+			throw new RuntimeException("runOnUiThreadSync Timeout!");
+		}
 	}
 
 	MockActivity a;

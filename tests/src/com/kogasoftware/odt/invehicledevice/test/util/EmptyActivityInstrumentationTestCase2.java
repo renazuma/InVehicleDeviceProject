@@ -1,5 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.test.util;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import android.app.Activity;
@@ -25,7 +27,25 @@ public class EmptyActivityInstrumentationTestCase2 extends
 	}
 
 	public Handler getActivityHandler() throws InterruptedException {
-		return CommonLogic.getActivityHandler(getActivity());
+		// 一定時間取れなかったらInterruptする
+		final Thread t = Thread.currentThread();
+		final CountDownLatch cdl = new CountDownLatch(1);
+		(new Thread() {
+			@Override
+			public void run() {
+				try {
+					if (cdl.await(10, TimeUnit.SECONDS)) {
+						return;
+					}
+				} catch (InterruptedException e) {
+				}
+				t.interrupt();
+			}
+		}).start();
+		
+		Handler h = CommonLogic.getActivityHandler(getActivity());
+		cdl.countDown();
+		return h;
 	}
 
 	/**
