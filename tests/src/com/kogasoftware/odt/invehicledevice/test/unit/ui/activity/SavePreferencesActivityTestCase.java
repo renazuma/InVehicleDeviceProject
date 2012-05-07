@@ -14,7 +14,7 @@ public class SavePreferencesActivityTestCase extends
 	SharedPreferences sp;
 
 	public SavePreferencesActivityTestCase() {
-		super(SavePreferencesActivity.class);
+		super("com.kogasoftware.odt.invehicledevice", SavePreferencesActivity.class);
 	}
 
 	@Override

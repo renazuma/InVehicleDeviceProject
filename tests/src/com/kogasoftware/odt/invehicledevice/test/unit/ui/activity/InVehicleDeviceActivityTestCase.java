@@ -8,7 +8,7 @@ public class InVehicleDeviceActivityTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 	public InVehicleDeviceActivityTestCase() {
-		super(InVehicleDeviceActivity.class);
+		super("com.kogasoftware.odt.invehicledevice", InVehicleDeviceActivity.class);
 	}
 
 	@Override
