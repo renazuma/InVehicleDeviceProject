@@ -55,7 +55,9 @@ public class StatusAccessTestCase extends EmptyActivityInstrumentationTestCase2 
 		sa1.write(new Writer() {
 			@Override
 			public void write(Status status) {
+				status.unhandledPassengerRecords.clear();
 				status.unhandledPassengerRecords.add(new PassengerRecord());
+				status.sendLists.repliedVehicleNotifications.clear();
 				status.sendLists.repliedVehicleNotifications
 						.add(new VehicleNotification());
 			}
