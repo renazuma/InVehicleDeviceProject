@@ -89,6 +89,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 
 	@Override
 	public void onDestroy() {
+		super.onDestroy();
 		preferences.unregisterOnSharedPreferenceChangeListener(this);
 	}
 
