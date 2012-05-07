@@ -237,7 +237,7 @@ public class InVehicleDeviceActivity extends Activity {
 			}
 		});
 
-		for (Integer resourceId : new Integer[] { R.id.icon_text_view,
+		for (Integer resourceId : new Integer[] { R.id.icon_layout,
 				R.id.operation_phase_layout, R.id.present_time_layout,
 				R.id.side_button_view }) {
 			View view = findViewById(resourceId);
@@ -327,7 +327,8 @@ public class InVehicleDeviceActivity extends Activity {
 	}
 
 	@Subscribe
-	public void startAlertVehicleNotification(VehicleNotificationReceivedAlertEvent e) {
+	public void startAlertVehicleNotification(
+			VehicleNotificationReceivedAlertEvent e) {
 		if (!isFinishing()) {
 			handler.post(alertVehicleNotification);
 		}
