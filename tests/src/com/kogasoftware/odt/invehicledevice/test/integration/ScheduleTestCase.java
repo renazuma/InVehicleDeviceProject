@@ -58,19 +58,24 @@ public class ScheduleTestCase extends
 	public void test02_予定ボタンを押したら表示() {
 		test01_起動時は非表示();
 		solo.clickOnView(solo.getView(R.id.schedule_button));
+		getInstrumentation().waitForIdleSync();
 		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_modal_view)
 				.getVisibility());
+		assertTrue(solo.searchText("上野御徒町駅前"));
+		assertTrue(solo.searchText("上野動物園前"));
+
 	}
 
 	public void test03_戻るボタンを押したら消える() {
 		test02_予定ボタンを押したら表示();
 		solo.clickOnButton("戻る");
 
-		assertFalse(solo.searchText("コガソフトウェア前"));
-		assertFalse(solo.searchText("上野御徒町駅前"));
-		// assertEquals(View.GONE,
-		// solo.getView(R.id.schedule_modal_view).getVisibility());
-
+		getInstrumentation().waitForIdleSync();
+		assertEquals(View.GONE, solo.getView(R.id.schedule_modal_view)
+				.getVisibility());
+		
+		assertFalse(solo.searchText("上野御徒町駅前", true));
+		assertFalse(solo.searchText("上野動物園前", true));
 	}
 
 	public void test04_一回閉じてからもう一度予定ボタンを押したら表示() {
@@ -91,45 +96,48 @@ public class ScheduleTestCase extends
 				.getVisibility());
 
 		solo.clickOnButton("下へ移動");
+		solo.clickOnButton("下へ移動");
 
 		assertFalse(solo.searchText("コガソフト", 0, false));
 
 	}
-	/*
-	 * public void test06_予定を表示してから上スクロール() {
-	 * 
-	 * test05_予定を表示してから下スクロール();
-	 * 
-	 * solo.clickOnView(solo.getView(R.id.schedule_button));
-	 * assertEquals(View.VISIBLE, solo.getView(R.id.schedule_modal_view)
-	 * .getVisibility());
-	 * 
-	 * solo.clickOnButton("上へ移動");
-	 * 
-	 * assertTrue(solo.searchText("コガソフト", 0,false));
-	 * 
-	 * }
-	 * 
-	 * public void test07_データ初期設定1件() { dataset(1); }
-	 * 
-	 * public void test08_件数が少ないため上へ移動ボタンが存在しない() { test02_予定ボタンを押したら表示();
-	 * 
-	 * solo.clickOnView(solo.getView(R.id.schedule_button));
-	 * assertEquals(View.VISIBLE, solo.getView(R.id.schedule_modal_view)
-	 * .getVisibility());
-	 * 
-	 * assertFalse(solo.searchButton("上へ移動"));
-	 * 
-	 * }
-	 * 
-	 * public void test09_件数が少ないため下へ移動ボタンが存在しない() { test02_予定ボタンを押したら表示();
-	 * 
-	 * solo.clickOnView(solo.getView(R.id.schedule_button));
-	 * assertEquals(View.VISIBLE, solo.getView(R.id.schedule_modal_view)
-	 * .getVisibility());
-	 * 
-	 * assertFalse(solo.searchButton("下へ移動"));
-	 * 
-	 * }
-	 */
+
+	public void test06_予定を表示してから上スクロール() {
+
+		test05_予定を表示してから下スクロール();
+
+		solo.clickOnView(solo.getView(R.id.schedule_button));
+		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_modal_view)
+				.getVisibility());
+
+		solo.clickOnButton("上へ移動");
+
+		assertTrue(solo.searchText("コガソフト", 0, false));
+
+	}
+
+	public void test07_データ初期設定1件() {
+		dataset(1);
+	}
+
+	public void test08_件数が少ないため上へ移動ボタンが存在しない() {
+		test02_予定ボタンを押したら表示();
+
+		solo.clickOnView(solo.getView(R.id.schedule_button));
+		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_modal_view)
+				.getVisibility());
+
+		assertFalse(solo.searchButton("上へ移動"));
+	}
+
+	public void test09_件数が少ないため下へ移動ボタンが存在しない() {
+		test02_予定ボタンを押したら表示();
+
+		solo.clickOnView(solo.getView(R.id.schedule_button));
+		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_modal_view)
+				.getVisibility());
+
+		assertFalse(solo.searchButton("下へ移動"));
+
+	}
 }
