@@ -14,12 +14,16 @@ public class SavePreferencesActivityTestCase extends
 	SharedPreferences sp;
 
 	public SavePreferencesActivityTestCase() {
-		super("com.kogasoftware.odt.invehicledevice", SavePreferencesActivity.class);
+		super("com.kogasoftware.odt.invehicledevice",
+				SavePreferencesActivity.class);
 	}
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
+
+		Thread.sleep(10 * 1000);
+
 		sp = PreferenceManager.getDefaultSharedPreferences(getInstrumentation()
 				.getTargetContext());
 
@@ -39,12 +43,12 @@ public class SavePreferencesActivityTestCase extends
 		super.tearDown();
 	}
 
-	public void xtestBundleを渡さなくてもエラーは発生しない() throws Exception {
+	public void testBundleを渡さなくてもエラーは発生しない() throws Exception {
 		getActivity();
 		getInstrumentation().waitForIdleSync();
 	}
 
-	public void xtestSharedPreferenceにデータが保存される() throws Exception {
+	public void testSharedPreferenceにデータが保存される() throws Exception {
 		String u = "http://example.com/foo/bar";
 		String t = "token12345678";
 		Bundle bundle = new Bundle();
@@ -64,7 +68,7 @@ public class SavePreferencesActivityTestCase extends
 		assertTrue(sp.getBoolean(SharedPreferencesKey.CLEAR_REQUIRED, false));
 	}
 
-	public void xtest空データを渡してもエラーは発生しない() throws Exception {
+	public void test空データを渡してもエラーは発生しない() throws Exception {
 		Intent intent = new Intent(Intent.ACTION_SEND);
 		intent.putExtras(new Bundle());
 		setActivityIntent(intent);
