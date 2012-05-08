@@ -30,14 +30,13 @@ public class DummyDataSource implements DataSource {
 
 	@Override
 	public int arrivalOperationSchedule(OperationSchedule os,
-			WebAPICallback<OperationSchedule> callback) throws WebAPIException {
-		// TODO Auto-generated method stub
+			WebAPICallback<OperationSchedule> callback) {
 		return 0;
 	}
 
 	@Override
 	public int departureOperationSchedule(OperationSchedule os,
-			WebAPICallback<OperationSchedule> callback) throws WebAPIException {
+			WebAPICallback<OperationSchedule> callback) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
@@ -61,7 +60,7 @@ public class DummyDataSource implements DataSource {
 	@Override
 	public int getOffPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, PassengerRecord passengerRecord,
-			WebAPICallback<PassengerRecord> callback) throws WebAPIException {
+			WebAPICallback<PassengerRecord> callback) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
@@ -69,7 +68,7 @@ public class DummyDataSource implements DataSource {
 	@Override
 	public int getOnPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, PassengerRecord passengerRecord,
-			WebAPICallback<PassengerRecord> callback) throws WebAPIException {
+			WebAPICallback<PassengerRecord> callback) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
@@ -267,16 +266,14 @@ public class DummyDataSource implements DataSource {
 
 	@Override
 	public int responseVehicleNotification(VehicleNotification vn,
-			int response, WebAPICallback<VehicleNotification> callback)
-			throws WebAPIException {
+			int response, WebAPICallback<VehicleNotification> callback) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public int sendServiceUnitStatusLog(ServiceUnitStatusLog log,
-			WebAPICallback<ServiceUnitStatusLog> callback)
-			throws WebAPIException, JSONException {
+			WebAPICallback<ServiceUnitStatusLog> callback) {
 		sendServiceUnitStatusLogArgs.add(log);
 		return 0;
 	}

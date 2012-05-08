@@ -38,41 +38,37 @@ public class VehicleNotificationSender implements Runnable {
 		if (repliedVehicleNotifications.isEmpty()) {
 			return;
 		}
-		try {
-			for (final VehicleNotification vehicleNotification : repliedVehicleNotifications) {
-				if (!vehicleNotification.getResponse().isPresent()) {
-					continue;
-				}
-				commonLogic.getDataSource().responseVehicleNotification(
-						vehicleNotification,
-						vehicleNotification.getResponse().get(),
-						new WebAPICallback<VehicleNotification>() {
-							@Override
-							public void onException(int reqkey,
-									WebAPIException ex) {
-							}
 
-							@Override
-							public void onFailed(int reqkey, int statusCode,
-									String response) {
-							}
-
-							@Override
-							public void onSucceed(int reqkey, int statusCode,
-									VehicleNotification result) {
-								commonLogic.getStatusAccessDeprecated().write(
-										new Writer() {
-											@Override
-											public void write(Status status) {
-												status.sendLists.repliedVehicleNotifications
-														.remove(vehicleNotification);
-											}
-										});
-							}
-						});
+		for (final VehicleNotification vehicleNotification : repliedVehicleNotifications) {
+			if (!vehicleNotification.getResponse().isPresent()) {
+				continue;
 			}
+			commonLogic.getDataSource().responseVehicleNotification(
+					vehicleNotification,
+					vehicleNotification.getResponse().get(),
+					new WebAPICallback<VehicleNotification>() {
+						@Override
+						public void onException(int reqkey, WebAPIException ex) {
+						}
 
-		} catch (WebAPIException e) {
+						@Override
+						public void onFailed(int reqkey, int statusCode,
+								String response) {
+						}
+
+						@Override
+						public void onSucceed(int reqkey, int statusCode,
+								VehicleNotification result) {
+							commonLogic.getStatusAccessDeprecated().write(
+									new Writer() {
+										@Override
+										public void write(Status status) {
+											status.sendLists.repliedVehicleNotifications
+													.remove(vehicleNotification);
+										}
+									});
+						}
+					});
 		}
 	}
 }

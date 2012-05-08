@@ -17,20 +17,20 @@ import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public interface DataSource {
 	int arrivalOperationSchedule(OperationSchedule os,
-			WebAPICallback<OperationSchedule> callback) throws WebAPIException;
+			WebAPICallback<OperationSchedule> callback);
 
 	int departureOperationSchedule(OperationSchedule os,
-			WebAPICallback<OperationSchedule> callback) throws WebAPIException;
+			WebAPICallback<OperationSchedule> callback);
 
 	InVehicleDevice getInVehicleDevice() throws WebAPIException;
 
 	int getOffPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, PassengerRecord passengerRecord,
-			WebAPICallback<PassengerRecord> callback) throws WebAPIException;
+			WebAPICallback<PassengerRecord> callback);
 
 	int getOnPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, PassengerRecord passengerRecord,
-			WebAPICallback<PassengerRecord> callback) throws WebAPIException;
+			WebAPICallback<PassengerRecord> callback);
 
 	List<OperationSchedule> getOperationSchedules() throws WebAPIException;
 
@@ -50,10 +50,8 @@ public interface DataSource {
 			throws WebAPIException;
 
 	public int responseVehicleNotification(VehicleNotification vn,
-			int response, WebAPICallback<VehicleNotification> callback)
-			throws WebAPIException;
+			int response, WebAPICallback<VehicleNotification> callback);
 
 	int sendServiceUnitStatusLog(ServiceUnitStatusLog log,
-			WebAPICallback<ServiceUnitStatusLog> callback)
-			throws WebAPIException, JSONException;
+			WebAPICallback<ServiceUnitStatusLog> callback);
 }

@@ -9,6 +9,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
+
 import com.kogasoftware.odt.invehicledevice.logic.VehicleNotifications;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSource;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
@@ -22,18 +24,21 @@ import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class ScheduleChangedTestDataSource implements DataSource {
+	private static final String TAG = ScheduleChangedTestDataSource.class.getSimpleName();
 	private final AtomicInteger phase = new AtomicInteger(0);
 
 	@Override
 	public int arrivalOperationSchedule(OperationSchedule os,
-			WebAPICallback<OperationSchedule> callback) throws WebAPIException {
-		throw new WebAPIException(true, "not implemented");
+			WebAPICallback<OperationSchedule> callback) {
+		Log.w(TAG, "not implemented");
+		return 0;
 	}
 
 	@Override
 	public int departureOperationSchedule(OperationSchedule os,
-			WebAPICallback<OperationSchedule> callback) throws WebAPIException {
-		throw new WebAPIException(true, "not implemented");
+			WebAPICallback<OperationSchedule> callback) {
+		Log.w(TAG, "not implemented");
+		return 0;
 	}
 
 	@Override
@@ -44,15 +49,17 @@ public class ScheduleChangedTestDataSource implements DataSource {
 	@Override
 	public int getOffPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, PassengerRecord passengerRecord,
-			WebAPICallback<PassengerRecord> callback) throws WebAPIException {
-		throw new WebAPIException(true, "not implemented");
+			WebAPICallback<PassengerRecord> callback) {
+		Log.w(TAG, "not implemented");
+		return 0;
 	}
 
 	@Override
 	public int getOnPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, PassengerRecord passengerRecord,
-			WebAPICallback<PassengerRecord> callback) throws WebAPIException {
-		throw new WebAPIException(true, "not implemented");
+			WebAPICallback<PassengerRecord> callback) {
+		Log.w(TAG, "not implemented");
+		return 0;
 	}
 
 	@Override
@@ -191,16 +198,16 @@ public class ScheduleChangedTestDataSource implements DataSource {
 
 	@Override
 	public int responseVehicleNotification(VehicleNotification vn,
-			int response, WebAPICallback<VehicleNotification> callback)
-			throws WebAPIException {
-		throw new WebAPIException(true, "not implemented");
+			int response, WebAPICallback<VehicleNotification> callback) {
+		Log.w(TAG, "not implemented");
+		return 0;
 	}
 
 	@Override
 	public int sendServiceUnitStatusLog(ServiceUnitStatusLog log,
-			WebAPICallback<ServiceUnitStatusLog> callback)
-			throws WebAPIException, JSONException {
+			WebAPICallback<ServiceUnitStatusLog> callback) {
 		// TODO Auto-generated method stub
-		throw new WebAPIException(true, "not implemented");
+		Log.w(TAG, "not implemented");
+		return 0;
 	}
 }

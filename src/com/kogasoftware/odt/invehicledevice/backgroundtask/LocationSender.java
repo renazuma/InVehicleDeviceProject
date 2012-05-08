@@ -1,7 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.backgroundtask;
 
-import org.json.JSONException;
-
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
@@ -50,26 +48,22 @@ public class LocationSender implements Runnable, LocationListener {
 			return;
 		}
 
-		try {
-			commonLogic.getDataSource().sendServiceUnitStatusLog(
-					serviceUnitStatusLog.get(),
-					new WebAPICallback<ServiceUnitStatusLog>() {
-						@Override
-						public void onException(int reqkey, WebAPIException ex) {
-						}
+		commonLogic.getDataSource().sendServiceUnitStatusLog(
+				serviceUnitStatusLog.get(),
+				new WebAPICallback<ServiceUnitStatusLog>() {
+					@Override
+					public void onException(int reqkey, WebAPIException ex) {
+					}
 
-						@Override
-						public void onFailed(int reqkey, int statusCode,
-								String response) {
-						}
+					@Override
+					public void onFailed(int reqkey, int statusCode,
+							String response) {
+					}
 
-						@Override
-						public void onSucceed(int reqkey, int statusCode,
-								ServiceUnitStatusLog result) {
-						}
-					});
-		} catch (WebAPIException e) {
-		} catch (JSONException e) {
-		}
+					@Override
+					public void onSucceed(int reqkey, int statusCode,
+							ServiceUnitStatusLog result) {
+					}
+				});
 	}
 }

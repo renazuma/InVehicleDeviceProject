@@ -31,13 +31,13 @@ public class MockDataSource implements DataSource {
 
 	@Override
 	public int arrivalOperationSchedule(OperationSchedule os,
-			WebAPICallback<OperationSchedule> callback) throws WebAPIException {
+			WebAPICallback<OperationSchedule> callback) {
 		return 0;
 	}
 
 	@Override
 	public int departureOperationSchedule(OperationSchedule os,
-			WebAPICallback<OperationSchedule> callback) throws WebAPIException {
+			WebAPICallback<OperationSchedule> callback) {
 		return 0;
 	}
 
@@ -53,14 +53,14 @@ public class MockDataSource implements DataSource {
 	@Override
 	public int getOffPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, PassengerRecord passengerRecord,
-			WebAPICallback<PassengerRecord> callback) throws WebAPIException {
+			WebAPICallback<PassengerRecord> callback) {
 		return 0;
 	}
 
 	@Override
 	public int getOnPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, PassengerRecord passengerRecord,
-			WebAPICallback<PassengerRecord> callback) throws WebAPIException {
+			WebAPICallback<PassengerRecord> callback) {
 		return 0;
 	}
 
@@ -116,15 +116,13 @@ public class MockDataSource implements DataSource {
 
 	@Override
 	public int responseVehicleNotification(VehicleNotification vn,
-			int response, WebAPICallback<VehicleNotification> callback)
-			throws WebAPIException {
+			int response, WebAPICallback<VehicleNotification> callback) {
 		return 0;
 	}
 
 	@Override
 	public int sendServiceUnitStatusLog(ServiceUnitStatusLog log,
-			WebAPICallback<ServiceUnitStatusLog> callback)
-			throws WebAPIException, JSONException {
+			WebAPICallback<ServiceUnitStatusLog> callback) {
 		return 0;
 	}
 
@@ -150,12 +148,9 @@ public class MockDataSource implements DataSource {
 						+ "arrival_estimate: '2012-01-01T09:00:00+09:00', "
 						+ "departure_estimate: '2012-01-01T09:15:00+09:00', "
 						+ "platform: {name: 'テストコガソフトウェア前', name_ruby: 'てすとこがそふとうぇあまえ'}, "
-						+ "reservations_as_arrival: ["
-						+  "],"
-						+ "reservations_as_departure: ["
-						+ u1a + "," + u1b
-						+ "," + u1c +u1d + "," + u1e
-						+ ", " + u1f + "]}";
+						+ "reservations_as_arrival: [" + "],"
+						+ "reservations_as_departure: [" + u1a + "," + u1b
+						+ "," + u1c + u1d + "," + u1e + ", " + u1f + "]}";
 				JSONObject j1 = new JSONObject(sOperationSchedule);
 				lOperationSchedule.add(new OperationSchedule(j1));
 			}
@@ -252,7 +247,7 @@ public class MockDataSource implements DataSource {
 							+ "arrival_estimate: '2012-01-01T09:00:00+09:00', "
 							+ "departure_estimate: '2012-01-01T09:15:00+09:00', "
 							+ "platform: {name: 'テストコガソフトウェア前', name_ruby: 'てすとこがそふとうぇあまえ'}, "
-							+ "reservations_as_arrival: [], " 
+							+ "reservations_as_arrival: [], "
 							+ "reservations_as_departure: [" + u1a + "," + u1b
 							+ "]}");
 			lOperationSchedule.add(new OperationSchedule(j1));

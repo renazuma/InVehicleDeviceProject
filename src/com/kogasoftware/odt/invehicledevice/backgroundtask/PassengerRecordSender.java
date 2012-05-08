@@ -89,19 +89,16 @@ public class PassengerRecordSender implements Runnable {
 				}
 			};
 
-			try {
-				if (getOn) {
-					commonLogic.getDataSource().getOnPassenger(
-							operationSchedule.get(), reservation.get(),
-							passengerRecord, callback);
-				} else {
-					commonLogic.getDataSource().getOffPassenger(
-							operationSchedule.get(), reservation.get(),
-							passengerRecord, callback);
-				}
-				remove(passengerRecord, getOn);
-			} catch (WebAPIException e) {
+			if (getOn) {
+				commonLogic.getDataSource().getOnPassenger(
+						operationSchedule.get(), reservation.get(),
+						passengerRecord, callback);
+			} else {
+				commonLogic.getDataSource().getOffPassenger(
+						operationSchedule.get(), reservation.get(),
+						passengerRecord, callback);
 			}
+			remove(passengerRecord, getOn);
 		}
 	}
 }
