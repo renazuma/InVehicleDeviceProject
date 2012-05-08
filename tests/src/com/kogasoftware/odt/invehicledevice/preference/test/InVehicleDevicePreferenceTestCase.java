@@ -23,6 +23,7 @@ public class InVehicleDevicePreferenceTestCase extends
 	}
 
 	private void setConnectionUrl(String url) {
+		getInstrumentation().waitForIdleSync();
 		solo.clickOnText(getInstrumentation().getTargetContext().getResources()
 				.getString(R.string.connection_url));
 		solo.clearEditText(0);
@@ -32,6 +33,7 @@ public class InVehicleDevicePreferenceTestCase extends
 	}
 
 	private void setLogin(String login) {
+		getInstrumentation().waitForIdleSync();
 		solo.clickOnText(getInstrumentation().getTargetContext().getResources()
 				.getString(R.string.login));
 		solo.clearEditText(0);
@@ -41,12 +43,23 @@ public class InVehicleDevicePreferenceTestCase extends
 	}
 
 	private void setPassword(String password) {
+		getInstrumentation().waitForIdleSync();
 		solo.clickOnText(getInstrumentation().getTargetContext().getResources()
 				.getString(R.string.password));
 		solo.clearEditText(0);
 		solo.typeText(0, password);
 		solo.clickOnButton(getInstrumentation().getTargetContext()
 				.getResources().getString(android.R.string.ok));
+	}
+
+	private boolean searchTextLongWait(int resourceId) {
+		for (int i = 0; i < 5; ++i) {
+			if (solo.searchText(getInstrumentation().getTargetContext()
+					.getResources().getString(resourceId))) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void test不正なサーバーを入力() throws InterruptedException {
@@ -56,8 +69,7 @@ public class InVehicleDevicePreferenceTestCase extends
 
 		solo.clickOnText(getInstrumentation().getTargetContext().getResources()
 				.getString(R.string.ok));
-		assertTrue(solo.searchText(getInstrumentation().getTargetContext()
-				.getResources().getString(R.string.an_error_occurred)));
+		assertTrue(searchTextLongWait(R.string.an_error_occurred));
 		Thread.sleep(1000);
 		assertFalse(getActivity().isFinishing());
 	}
@@ -69,8 +81,7 @@ public class InVehicleDevicePreferenceTestCase extends
 
 		solo.clickOnText(getInstrumentation().getTargetContext().getResources()
 				.getString(R.string.ok));
-		assertTrue(solo.searchText(getInstrumentation().getTargetContext()
-				.getResources().getString(R.string.an_error_occurred)));
+		assertTrue(searchTextLongWait(R.string.an_error_occurred));
 		Thread.sleep(1000);
 		assertFalse(getActivity().isFinishing());
 	}
@@ -82,8 +93,7 @@ public class InVehicleDevicePreferenceTestCase extends
 
 		solo.clickOnText(getInstrumentation().getTargetContext().getResources()
 				.getString(R.string.ok));
-		assertTrue(solo.searchText(getInstrumentation().getTargetContext()
-				.getResources().getString(R.string.an_error_occurred)));
+		assertTrue(searchTextLongWait(R.string.an_error_occurred));
 		Thread.sleep(1000);
 		assertFalse(getActivity().isFinishing());
 	}
@@ -134,10 +144,9 @@ public class InVehicleDevicePreferenceTestCase extends
 
 		solo.clickOnText(getInstrumentation().getTargetContext().getResources()
 				.getString(R.string.ok));
-		
-		assertFalse(solo.searchText(getInstrumentation().getTargetContext()
-				.getResources().getString(R.string.an_error_occurred)));
-		
+
+		assertFalse(searchTextLongWait(R.string.an_error_occurred));
+
 		Thread.sleep(1000);
 		assertTrue(getActivity().isFinishing());
 	}
