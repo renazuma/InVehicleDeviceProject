@@ -9,16 +9,6 @@ import com.kogasoftware.odt.invehicledevice.logic.event.VehicleNotificationRecei
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class VehicleNotificationReceivedEventTestCase extends TestCase {
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-	}
-
-	@Override
-	protected void tearDown() throws Exception {
-		super.tearDown();
-	}
-
 	public void testConstructor() throws Exception {
 		List<VehicleNotification> vns = new LinkedList<VehicleNotification>();
 		VehicleNotification vn = new VehicleNotification();
