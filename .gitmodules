@@ -4,3 +4,6 @@
 [submodule "InVehicleDevice"]
 	path = InVehicleDevice
 	url = git@github.com:odt/InVehicleDevice.git
+[submodule "AndroidWebAPI"]
+	path = AndroidWebAPI
+	url = git@github.com:odt/AndroidWebAPI.git
