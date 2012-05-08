@@ -32,14 +32,12 @@ public class MockDataSource implements DataSource {
 	@Override
 	public int arrivalOperationSchedule(OperationSchedule os,
 			WebAPICallback<OperationSchedule> callback) throws WebAPIException {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public int departureOperationSchedule(OperationSchedule os,
 			WebAPICallback<OperationSchedule> callback) throws WebAPIException {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
@@ -56,7 +54,6 @@ public class MockDataSource implements DataSource {
 	public int getOffPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, PassengerRecord passengerRecord,
 			WebAPICallback<PassengerRecord> callback) throws WebAPIException {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
@@ -64,7 +61,6 @@ public class MockDataSource implements DataSource {
 	public int getOnPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, PassengerRecord passengerRecord,
 			WebAPICallback<PassengerRecord> callback) throws WebAPIException {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
@@ -112,8 +108,6 @@ public class MockDataSource implements DataSource {
 	@Override
 	public void putReservationTransferredAt(Integer id, Date transferredAt)
 			throws WebAPIException {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -124,7 +118,6 @@ public class MockDataSource implements DataSource {
 	public int responseVehicleNotification(VehicleNotification vn,
 			int response, WebAPICallback<VehicleNotification> callback)
 			throws WebAPIException {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
@@ -132,7 +125,6 @@ public class MockDataSource implements DataSource {
 	public int sendServiceUnitStatusLog(ServiceUnitStatusLog log,
 			WebAPICallback<ServiceUnitStatusLog> callback)
 			throws WebAPIException, JSONException {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
@@ -142,36 +134,36 @@ public class MockDataSource implements DataSource {
 
 		lOperationSchedule = new LinkedList<OperationSchedule>();
 
-		String u1a = "id: 1011,user: {first_name: '名前a', last_name: '名字a'},memo: 'テストメモ1'";
-		String u1b = "id: 1012,user: {first_name: '名前b', last_name: '名字b'},memo: 'テストメモ2'";
-		String u1c = "id: 1013,user: {first_name: '名前c', last_name: '名字c'}";
-		String u1d = "id: 1014,user: {first_name: '名前d', last_name: '名字d'}";
-		String u1e = "id: 1015,user: {first_name: '名前e', last_name: '名字e'}";
-		String u1f = "id: 1016,user: {first_name: '名前f', last_name: '名字f'}";
+		String r1a = "{id: 1011, departure_schedule_id: 1, arrival_schedule_id: 2 ,passenger_count:5, user: {first_name: '名前a', last_name: '名字a'},memo: 'テストメモ1'}";
+		String r1b = "{id: 1012, departure_schedule_id: 1, arrival_schedule_id: 3 ,passenger_count:6, user: {first_name: '名前b', last_name: '名字b'},memo: 'テストメモ2'}";
+		String r1c = "{id: 1013, departure_schedule_id: 1, arrival_schedule_id: 4 ,passenger_count:7, user: {first_name: '名前c', last_name: '名字c'}}";
+		String r1d = "{id: 1014, departure_schedule_id: 1, arrival_schedule_id: 5 ,passenger_count:16, user: {first_name: '名前d', last_name: '名字d'}}";
+		String r1e = "{id: 1015, departure_schedule_id: 1, arrival_schedule_id: 6 ,passenger_count:15, user: {first_name: '名前e', last_name: '名字e'}}";
+		String r1f = "{id: 1016, departure_schedule_id: 1, arrival_schedule_id: 6 ,passenger_count:17, user: {first_name: '名前f', last_name: '名字f'}}";
 
 		String sOperationSchedule = new String();
 
 		try {
 
 			if (iOperationScheduleCount > 0) {
-				sOperationSchedule = "{"
+				sOperationSchedule = "{ id: 1,"
 						+ "arrival_estimate: '2012-01-01T09:00:00+09:00', "
 						+ "departure_estimate: '2012-01-01T09:15:00+09:00', "
-						+ "platform: {name: 'テストコガソフトウェア前', name_ruby: 'てすとこがそふとうぇあまえ'} "
-						+ "reservations_as_arrival: [{passenger_count: 5, "
-						+ u1a + "}, {passenger_count: 6, " + u1b
-						+ "}, {passenger_count: 7, " + u1c + "}] ,"
-						+ "reservations_as_departure: [{passenger_count: 15, "
-						+ u1d + "}, {passenger_count: 16, " + u1e
-						+ "}, {passenger_count: 17, " + u1f + "}]}";
+						+ "platform: {name: 'テストコガソフトウェア前', name_ruby: 'てすとこがそふとうぇあまえ'}, "
+						+ "reservations_as_arrival: ["
+						+ r1a + ", " + r1b
+						+ "," + r1c + "],"
+						+ "reservations_as_departure: ["
+						+ r1d + "," + r1e
+						+ ", " + r1f + "]}";
 				JSONObject j1 = new JSONObject(sOperationSchedule);
 				lOperationSchedule.add(new OperationSchedule(j1));
 			}
 
 			if (iOperationScheduleCount > 1) {
 				JSONObject j2 = new JSONObject(
-						"{"
-								+ "arrival_estimate: '2012-01-01T:09:30:00+09:00', "
+						"{ id: 2,"
+								+ "arrival_estimate: '2012-01-01T09:30:00+09:00', "
 								+ "departure_estimate: '2012-01-01T10:05:00+09:00', "
 								+ "platform: {name: 'テスト上野御徒町駅前',name_ruby: 'てすとうえのおかちまちえきまえ'}, "
 								+ "reservations_as_arrival: [{passenger_count: 5}]}");
@@ -180,7 +172,7 @@ public class MockDataSource implements DataSource {
 
 			if (iOperationScheduleCount > 2) {
 				JSONObject j3 = new JSONObject(
-						"{"
+						"{ id: 3,"
 								+ "arrival_estimate: '2012-01-01T10:30:00+09:00', "
 								+ "departure_estimate: '2012-01-01T10:33:00+09:00', "
 								+ "platform: {name: 'テスト上野動物園前', name_ruby: 'てすとうえのどうぶつえんまえ'}, "
@@ -190,7 +182,7 @@ public class MockDataSource implements DataSource {
 
 			if (iOperationScheduleCount > 3) {
 				JSONObject j4 = new JSONObject(
-						"{"
+						"{ id: 4,"
 								+ "arrival_estimate: '2012-01-01T11:10:00+09:00', "
 								+ "departure_estimate: '2012-01-01T11:15:00+09:00', "
 								+ "platform: {name: 'テスト上野広小路前', name_ruby: 'てすとうえのひろこうじまえ'}, "
@@ -201,7 +193,7 @@ public class MockDataSource implements DataSource {
 
 			if (iOperationScheduleCount > 4) {
 				JSONObject j5 = new JSONObject(
-						"{"
+						"{ id: 5,"
 								+ "arrival_estimate: '2012-01-01T12:00:00+09:00', "
 								+ "departure_estimate: '2012-01-01T12:05:00+09:00', "
 								+ "platform: {name: 'テスト湯島天神前', name_ruby: 'てすとゆしまてんじんまえ'}}");
@@ -210,7 +202,7 @@ public class MockDataSource implements DataSource {
 
 			if (iOperationScheduleCount > 5) {
 				JSONObject j6 = new JSONObject(
-						"{"
+						"{ id: 6,"
 								+ "arrival_estimate: '2012-01-01T13:03:00+09:00', "
 								+ "departure_estimate: '2012-01-01T13:10:30+09:00', "
 								+ "platform: {name: 'テストＪＲ御徒町駅前', name_ruby: 'てすとじぇいあーるおかちまちえきまえ'}, "
