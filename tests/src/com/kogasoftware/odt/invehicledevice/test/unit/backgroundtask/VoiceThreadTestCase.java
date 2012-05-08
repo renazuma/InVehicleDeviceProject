@@ -18,7 +18,7 @@ public class VoiceThreadTestCase extends EmptyActivityInstrumentationTestCase2 {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		vt = new VoiceThread(getActivity());
+		vt = new VoiceThread(getInstrumentation().getTargetContext());
 		sa = new StatusAccess(getActivity());
 		cl = new CommonLogic(getActivity(), getActivityHandler(), sa);
 	}
