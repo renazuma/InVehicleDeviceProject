@@ -31,9 +31,9 @@ public class DrivingTestCase extends
 
 		if (solo.searchText("停車中")) {
 
-			solo.clickOnButton("出発する");
+			solo.clickOnView(solo.getView(R.id.change_phase_button));
 			getInstrumentation().waitForIdleSync();
-			solo.clickOnButton("出発する");
+			solo.clickOnView(solo.getView(R.id.change_phase_button));
 			getInstrumentation().waitForIdleSync();
 
 		}
@@ -60,8 +60,8 @@ public class DrivingTestCase extends
 	public void test03_到着しましたボタンを押すと停車中表示() {
 		test01_起動時は走行中表示();
 
-		solo.clickOnButton("到着しました");
-
+		solo.clickOnView(solo.getView(R.id.change_phase_button));
+		
 		getInstrumentation().waitForIdleSync();
 
 		assertTrue(solo.searchText("停車中")); // TODO 画像ファイル名assertに書き換わる予定
@@ -70,14 +70,14 @@ public class DrivingTestCase extends
 
 	public void test04_停車中から出発しますボタンを押すと出発確認画面表示() {
 
-		solo.clickOnButton("到着しました");
-
+		solo.clickOnView(solo.getView(R.id.change_phase_button));
+		
 		getInstrumentation().waitForIdleSync();
 
 		assertTrue(solo.searchText("停車中")); // TODO 画像ファイル名assertに書き換わる予定
 
-		solo.clickOnButton("出発する");
-
+		solo.clickOnView(solo.getView(R.id.change_phase_button));
+		
 		getInstrumentation().waitForIdleSync();
 
 		assertEquals(View.VISIBLE, solo.getView(R.id.start_check_modal_view)
@@ -116,33 +116,33 @@ public class DrivingTestCase extends
 
 		test01_起動時は走行中表示();
 
-		assertTrue("コガソフトウェア前", solo.searchText("コガソフトウェア前"));
+		assertTrue(solo.searchText("乗降場A"));
 
 		test06_出発確認画面で出発するボタンを押すと運転中画面表示();
 
-		assertFalse("コガソフトウェア前", solo.searchText("コガソフトウェア前"));
-		assertTrue("上野御徒町駅前", solo.searchText("上野御徒町駅前"));
+		assertFalse(solo.searchText("乗降場A"));
+		assertTrue(solo.searchText("乗降場B"));		
 
 	}
 
 	public void test08_最終乗降場についた時の挙動() {
-		for (Integer i = 0; i < 50; ++i) {
+		for (Integer i = 0; i < 2; ++i) {
 			test06_出発確認画面で出発するボタンを押すと運転中画面表示();
 
-			if (solo.searchText("国立科学博物館前")) { // TODO 最終乗降場
+			if (solo.searchText("乗降場C")) {
 				break;
 			}
 		}
 
-		solo.clickOnButton("到着しました");
+		solo.clickOnView(solo.getView(R.id.change_phase_button));
 		getInstrumentation().waitForIdleSync();
 
-		solo.clickOnButton("確定する");
+		solo.clickOnView(solo.getView(R.id.change_phase_button));
 		getInstrumentation().waitForIdleSync();
 		assertEquals(View.VISIBLE, solo.getView(R.id.start_check_modal_view)
 				.getVisibility());
 
-		solo.clickOnButton("確定する");
+		solo.clickOnView(solo.getView(R.id.start_button));
 		getInstrumentation().waitForIdleSync();
 		assertEquals(View.VISIBLE, solo.getView(R.id.finish_phase_view)
 				.getVisibility());
