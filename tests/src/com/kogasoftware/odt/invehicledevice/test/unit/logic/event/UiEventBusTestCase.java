@@ -62,8 +62,8 @@ public class UiEventBusTestCase extends EmptyActivityInstrumentationTestCase2 {
 		ueb.register(t1);
 		ueb.register(t2);
 		ueb.post(new Object());
-		assertTrue(s1.tryAcquire(500, TimeUnit.MILLISECONDS));
-		assertTrue(s2.tryAcquire(500, TimeUnit.MILLISECONDS));
+		assertTrue(s1.tryAcquire(2, TimeUnit.SECONDS));
+		assertTrue(s2.tryAcquire(1, TimeUnit.SECONDS));
 
 		assertEquals(ueb.countRegisteredClass(t1.getClass()).intValue(), 1);
 		assertEquals(ueb.countRegisteredClass(t2.getClass()).intValue(), 1);
@@ -72,8 +72,8 @@ public class UiEventBusTestCase extends EmptyActivityInstrumentationTestCase2 {
 
 		ueb.unregister(t2);
 		ueb.post(new Object());
-		assertTrue(s1.tryAcquire(500, TimeUnit.MILLISECONDS));
-		assertFalse(s2.tryAcquire(500, TimeUnit.MILLISECONDS));
+		assertTrue(s1.tryAcquire(2, TimeUnit.SECONDS));
+		assertFalse(s2.tryAcquire(1, TimeUnit.SECONDS));
 
 		assertEquals(ueb.countRegisteredClass(t1.getClass()).intValue(), 1);
 		assertEquals(ueb.countRegisteredClass(t2.getClass()).intValue(), 0);
@@ -82,8 +82,8 @@ public class UiEventBusTestCase extends EmptyActivityInstrumentationTestCase2 {
 
 		ueb.register(t2);
 		ueb.post(new Object());
-		assertTrue(s1.tryAcquire(500, TimeUnit.MILLISECONDS));
-		assertTrue(s2.tryAcquire(500, TimeUnit.MILLISECONDS));
+		assertTrue(s1.tryAcquire(2, TimeUnit.SECONDS));
+		assertTrue(s2.tryAcquire(1, TimeUnit.SECONDS));
 
 		assertEquals(ueb.countRegisteredClass(t1.getClass()).intValue(), 1);
 		assertEquals(ueb.countRegisteredClass(t2.getClass()).intValue(), 1);
@@ -119,17 +119,17 @@ public class UiEventBusTestCase extends EmptyActivityInstrumentationTestCase2 {
 		ueb.register(t1);
 		assertEquals(ai1.get(), 0);
 		ueb.post(new Object());
-		assertTrue(s1.tryAcquire(500, TimeUnit.MILLISECONDS));
+		assertTrue(s1.tryAcquire(2, TimeUnit.SECONDS));
 		assertEquals(ai1.get(), 1);
 		ueb.dispose();
 		ueb.post(new Object());
-		assertFalse(s1.tryAcquire(500, TimeUnit.MILLISECONDS));
+		assertFalse(s1.tryAcquire(2, TimeUnit.SECONDS));
 		assertEquals(ai1.get(), 1);
 		ueb.register(t1);
 		ueb.register(t2);
 		ueb.post(new Object());
-		assertFalse(s1.tryAcquire(500, TimeUnit.MILLISECONDS));
-		assertFalse(s2.tryAcquire(500, TimeUnit.MILLISECONDS));
+		assertFalse(s1.tryAcquire(2, TimeUnit.SECONDS));
+		assertFalse(s2.tryAcquire(1, TimeUnit.SECONDS));
 		assertEquals(ai1.get(), 1);
 		assertEquals(ai2.get(), 0);
 	}
@@ -202,8 +202,8 @@ public class UiEventBusTestCase extends EmptyActivityInstrumentationTestCase2 {
 		ueb.register(t2);
 		assertEquals(ai.get(), 0);
 		ueb.post(new Object());
-		assertTrue(s1.tryAcquire(500, TimeUnit.MILLISECONDS));
-		assertTrue(s2.tryAcquire(500, TimeUnit.MILLISECONDS));
+		assertTrue(s1.tryAcquire(2, TimeUnit.SECONDS));
+		assertTrue(s2.tryAcquire(1, TimeUnit.SECONDS));
 		assertEquals(ai.get(), 2);
 
 		// t3は最後に追加されたが、t2よりも先に実行される
@@ -211,9 +211,9 @@ public class UiEventBusTestCase extends EmptyActivityInstrumentationTestCase2 {
 		ueb.register(t3);
 		assertEquals(ai.get(), 0);
 		ueb.post(new Object());
-		assertTrue(s1.tryAcquire(500, TimeUnit.MILLISECONDS));
-		assertTrue(s2.tryAcquire(500, TimeUnit.MILLISECONDS));
-		assertTrue(s3.tryAcquire(500, TimeUnit.MILLISECONDS));
+		assertTrue(s1.tryAcquire(2, TimeUnit.SECONDS));
+		assertTrue(s2.tryAcquire(1, TimeUnit.SECONDS));
+		assertTrue(s3.tryAcquire(1, TimeUnit.SECONDS));
 		assertEquals(ai.get(), 3);
 
 		// t4は最後に追加されたが、t1,t3よりも後に実行される
@@ -221,10 +221,10 @@ public class UiEventBusTestCase extends EmptyActivityInstrumentationTestCase2 {
 		ueb.register(t4);
 		assertEquals(ai.get(), 0);
 		ueb.post(new Object());
-		assertTrue(s1.tryAcquire(500, TimeUnit.MILLISECONDS));
-		assertTrue(s2.tryAcquire(500, TimeUnit.MILLISECONDS));
-		assertTrue(s3.tryAcquire(500, TimeUnit.MILLISECONDS));
-		assertTrue(s4.tryAcquire(500, TimeUnit.MILLISECONDS));
+		assertTrue(s1.tryAcquire(2, TimeUnit.SECONDS));
+		assertTrue(s2.tryAcquire(1, TimeUnit.SECONDS));
+		assertTrue(s3.tryAcquire(1, TimeUnit.SECONDS));
+		assertTrue(s4.tryAcquire(1, TimeUnit.SECONDS));
 		assertEquals(ai.get(), 4);
 
 		ai.set(0);
@@ -232,15 +232,15 @@ public class UiEventBusTestCase extends EmptyActivityInstrumentationTestCase2 {
 		ueb.unregister(t4);
 		assertEquals(ai.get(), 0);
 		ueb.post(new Object());
-		assertTrue(s2.tryAcquire(500, TimeUnit.MILLISECONDS));
-		assertTrue(s3.tryAcquire(500, TimeUnit.MILLISECONDS));
+		assertTrue(s2.tryAcquire(2, TimeUnit.SECONDS));
+		assertTrue(s3.tryAcquire(1, TimeUnit.SECONDS));
 		assertEquals(ai.get(), 3);
 
 		ai.set(1);
 		ueb.unregister(t3);
 		assertEquals(ai.get(), 1);
 		ueb.post(new Object());
-		assertTrue(s2.tryAcquire(500, TimeUnit.MILLISECONDS));
+		assertTrue(s2.tryAcquire(1, TimeUnit.SECONDS));
 		assertEquals(ai.get(), 2);
 	}
 
@@ -349,22 +349,22 @@ public class UiEventBusTestCase extends EmptyActivityInstrumentationTestCase2 {
 		assertEquals(ai1.get(), 0);
 		assertEquals(ai2.get(), 0);
 		ueb.post(new Object());
-		assertTrue(s1.tryAcquire(500, TimeUnit.MILLISECONDS));
-		assertTrue(s2.tryAcquire(500, TimeUnit.MILLISECONDS));
+		assertTrue(s1.tryAcquire(2, TimeUnit.SECONDS));
+		assertTrue(s2.tryAcquire(1, TimeUnit.SECONDS));
 		assertEquals(ai1.get(), 1);
 		assertEquals(ai2.get(), 1);
 		ueb.unregister(t2);
 		ueb.post(new Object());
-		assertTrue(s1.tryAcquire(500, TimeUnit.MILLISECONDS));
-		assertFalse(s2.tryAcquire(500, TimeUnit.MILLISECONDS));
+		assertTrue(s1.tryAcquire(2, TimeUnit.SECONDS));
+		assertFalse(s2.tryAcquire(1, TimeUnit.SECONDS));
 		assertEquals(ai1.get(), 2);
 		assertEquals(ai2.get(), 1);
 
 		// 一度unregisterしてももう一度registerでイベントが渡る
 		ueb.register(t2);
 		ueb.post(new Object());
-		assertTrue(s1.tryAcquire(500, TimeUnit.MILLISECONDS));
-		assertTrue(s2.tryAcquire(500, TimeUnit.MILLISECONDS));
+		assertTrue(s1.tryAcquire(2, TimeUnit.SECONDS));
+		assertTrue(s2.tryAcquire(1, TimeUnit.SECONDS));
 		assertEquals(ai1.get(), 3);
 		assertEquals(ai2.get(), 2);
 	}
