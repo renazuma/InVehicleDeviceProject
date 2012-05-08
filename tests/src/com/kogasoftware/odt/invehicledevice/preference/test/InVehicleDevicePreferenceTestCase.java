@@ -30,6 +30,7 @@ public class InVehicleDevicePreferenceTestCase extends
 		solo.typeText(0, url);
 		solo.clickOnButton(getInstrumentation().getTargetContext()
 				.getResources().getString(android.R.string.ok));
+		getInstrumentation().waitForIdleSync();
 	}
 
 	private void setLogin(String login) {
@@ -40,6 +41,7 @@ public class InVehicleDevicePreferenceTestCase extends
 		solo.typeText(0, login);
 		solo.clickOnButton(getInstrumentation().getTargetContext()
 				.getResources().getString(android.R.string.ok));
+		getInstrumentation().waitForIdleSync();
 	}
 
 	private void setPassword(String password) {
@@ -50,9 +52,11 @@ public class InVehicleDevicePreferenceTestCase extends
 		solo.typeText(0, password);
 		solo.clickOnButton(getInstrumentation().getTargetContext()
 				.getResources().getString(android.R.string.ok));
+		getInstrumentation().waitForIdleSync();
 	}
 
 	private boolean searchTextLongWait(int resourceId) {
+		getInstrumentation().waitForIdleSync();
 		for (int i = 0; i < 5; ++i) {
 			if (solo.searchText(getInstrumentation().getTargetContext()
 					.getResources().getString(resourceId))) {
