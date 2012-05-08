@@ -102,7 +102,7 @@ public class DummyDataSource implements DataSource {
 
 			JSONObject j2 = new JSONObject(
 					"{id:2, arrival_estimate: '2012-01-01T02:00:00+09:00', departure_estimate: '2012-01-01T02:00:00+09:00', "
-							+ "platform: {name: '乗降場C', name_ruby: 'のりおりばしー'}, reservations_as_arrival: [ "
+							+ "platform: {name: '乗降場B', name_ruby: 'のりおりばびー'}, reservations_as_arrival: [ "
 							+ r1
 							+ " ], "
 							+ "reservations_as_departure: ["
@@ -112,7 +112,7 @@ public class DummyDataSource implements DataSource {
 
 			JSONObject j3 = new JSONObject(
 					"{id:3, arrival_estimate: '2012-01-01T03:00:00+09:00', departure_estimate: '2012-01-01T02:00:00+09:00', "
-							+ "platform: {name: '乗降場B', name_ruby: 'のりおりばびー'}, "
+							+ "platform: {name: '乗降場C', name_ruby: 'のりおりばしー'}, "
 							+ "reservations_as_arrival: ["
 							+ r2
 							+ ","
