@@ -1,13 +1,20 @@
 package com.kogasoftware.odt.invehicledevice.preference.test;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.test.ActivityInstrumentationTestCase2;
 
 import com.jayway.android.robotium.solo.Solo;
+import com.kogasoftware.odt.invehicledevice.logic.SharedPreferencesKey;
 import com.kogasoftware.odt.invehicledevice.preference.InVehicleDevicePreferenceActivity;
 import com.kogasoftware.odt.invehicledevice.preference.R;
 
 public class InVehicleDevicePreferenceTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDevicePreferenceActivity> {
+	
+	private static final String URL = "http://10.1.10.161";
+	private static final String LOGIN = "admin";
+	private static final String PASSWORD = "admin";
 
 	private Solo solo;
 
@@ -68,8 +75,8 @@ public class InVehicleDevicePreferenceTestCase extends
 
 	public void test不正なサーバーを入力() throws InterruptedException {
 		setConnectionUrl("https://localhost:43123");
-		setLogin("admin");
-		setPassword("admin");
+		setLogin(LOGIN);
+		setPassword(PASSWORD);
 
 		solo.clickOnText(getInstrumentation().getTargetContext().getResources()
 				.getString(R.string.ok));
@@ -79,9 +86,9 @@ public class InVehicleDevicePreferenceTestCase extends
 	}
 
 	public void test不正なログイン名を入力() throws InterruptedException {
-		setConnectionUrl("http://10.0.2.2");
+		setConnectionUrl(URL);
 		setLogin("asdf");
-		setPassword("admin");
+		setPassword(PASSWORD);
 
 		solo.clickOnText(getInstrumentation().getTargetContext().getResources()
 				.getString(R.string.ok));
@@ -91,8 +98,8 @@ public class InVehicleDevicePreferenceTestCase extends
 	}
 
 	public void test不正なパスワードを入力() throws InterruptedException {
-		setConnectionUrl("http://10.0.2.2");
-		setLogin("admin");
+		setConnectionUrl(URL);
+		setLogin(LOGIN);
 		setPassword("hjkl");
 
 		solo.clickOnText(getInstrumentation().getTargetContext().getResources()
@@ -142,9 +149,9 @@ public class InVehicleDevicePreferenceTestCase extends
 	}
 
 	public void test正しい設定を行うと終了する() throws InterruptedException {
-		setConnectionUrl("http://10.1.10.161");
-		setLogin("admin");
-		setPassword("admin");
+		setConnectionUrl(URL);
+		setLogin(LOGIN);
+		setPassword(PASSWORD);
 
 		solo.clickOnText(getInstrumentation().getTargetContext().getResources()
 				.getString(R.string.ok));
@@ -155,9 +162,20 @@ public class InVehicleDevicePreferenceTestCase extends
 		assertTrue(getActivity().isFinishing());
 	}
 
-	public void xtest正しい設定を行うとInVehicleDeviceActivityへIntentを渡す()
+	public void xtest正しい設定を行うとSavePreferencesActivityへIntentを渡す()
 			throws InterruptedException {
-		fail("stub!");
+		
+		test正しい設定を行うと終了する();
+		
+		for (Activity a : solo.getAllOpenedActivities()) {
+			if (a.getClass().getName().equals("com.kogasoftware.odt.invehicledevice.ui.activity.SavePreferencesActivity")) {
+				Intent intent = a.getIntent();
+				assertEquals(intent.getStringExtra(SharedPreferencesKey.SERVER_URL), URL);
+				assertTrue(intent.getStringExtra(SharedPreferencesKey.SERVER_IN_VEHICLE_DEVICE_TOKEN).length() > 0);
+				return;
+			}
+		}
+		fail();
 	}
 
 	@Override
