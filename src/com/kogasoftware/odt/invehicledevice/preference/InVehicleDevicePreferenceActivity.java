@@ -26,7 +26,7 @@ import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		implements WebAPICallback<InVehicleDevice>,
 		OnSharedPreferenceChangeListener {
-	private final int CONNECTING_DIALOG_ID = 100;
+	private static final int CONNECTING_DIALOG_ID = 100;
 	private int latestReqKey = 0;
 	private SharedPreferences preferences = null;
 	private Button saveConfigButton = null;
