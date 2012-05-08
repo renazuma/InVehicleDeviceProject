@@ -17,6 +17,7 @@ public class BackgroundTaskTestCase extends
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
+		Thread.sleep(10 * 1000);
 		sa = new StatusAccess(getActivity());
 		cl = new CommonLogic(getActivity(), getActivityHandler(), sa);
 	}

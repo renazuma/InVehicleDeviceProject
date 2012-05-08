@@ -5,6 +5,11 @@ import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentati
 
 public class BackgroundTaskThreadTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
+	
+	public void setUp() throws Exception {
+		super.setUp();
+		Thread.sleep(10 * 1000);
+	}
 
 	/**
 	 * interruptで確実に終了させることができるか確認

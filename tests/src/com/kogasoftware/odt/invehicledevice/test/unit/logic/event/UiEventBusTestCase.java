@@ -21,6 +21,7 @@ public class UiEventBusTestCase extends EmptyActivityInstrumentationTestCase2 {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
+		Thread.sleep(10 * 1000);
 		ueb = new UiEventBus(getActivityHandler());
 	}
 
