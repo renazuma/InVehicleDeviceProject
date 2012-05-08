@@ -50,6 +50,7 @@ public class MapTestCase extends
 	public void test03_戻るボタンを押したら消える() {
 		test02_地図ボタンを押したら表示();
 		solo.clickOnButton("戻る");
+		getInstrumentation().waitForIdleSync();
 		assertEquals(View.GONE, solo.getView(R.id.navigation_modal_view)
 				.getVisibility());
 	}
