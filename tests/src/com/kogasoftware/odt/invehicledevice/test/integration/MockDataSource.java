@@ -320,7 +320,7 @@ public class MockDataSource implements DataSource {
 	public void setReservationCandidate(Integer iCount, Integer userId,
 			Integer departurePlatformId, Integer arrivalPlatformId) {
 
-		DateFormat f = new SimpleDateFormat("mm:ss");
+		DateFormat f = new SimpleDateFormat("HH:mm");
 		try {
 
 			if (iCount > 0) {

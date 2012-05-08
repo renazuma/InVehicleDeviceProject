@@ -85,6 +85,7 @@ public class ScheduleChangedTestDataSource implements DataSource {
 				l.add(new OperationSchedule(j2));
 				return l;
 			} else if (phase.compareAndSet(2, 3)) {
+				Thread.sleep(10000);
 				// 変更後のスケジュール
 				JSONObject j1 = new JSONObject(
 						"{id:1, arrival_estimate: '2012-01-01T01:00:00+09:00', departure_estimate: '2012-01-01T02:00:00+09:00', "
@@ -114,6 +115,9 @@ public class ScheduleChangedTestDataSource implements DataSource {
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 		throw new WebAPIException(true, "not implemented");
@@ -131,7 +135,7 @@ public class ScheduleChangedTestDataSource implements DataSource {
 			v.setNotificationType(VehicleNotifications.NotificationType.SCHEDULE_CHANGED);
 			l.add(v);
 			return l;
-		} else if (phase.compareAndSet(3, 4)) {
+		} else if (phase.compareAndSet(30, 4)) {
 			try {
 				Thread.sleep(15000);
 			} catch (InterruptedException e) {

@@ -19,7 +19,6 @@ public class ReturnPathTestCase extends
 	public ReturnPathTestCase() {
 		super("com.kogasoftware.odt.invehicledevice.ui.activity",
 				InVehicleDeviceActivity.class);
-		DataSourceFactory.setInstance(new DummyDataSource());
 	}
 
 	public void dataset(Integer iCount, Integer userId,
@@ -39,16 +38,15 @@ public class ReturnPathTestCase extends
 	public void setUp() throws Exception {
 		super.setUp();
 
-		assertTrue(false); // TODO: 内部データを修正するまでこのテストはペンディング
-
 		StatusAccess.clearSavedFile();
 		solo = new Solo(getInstrumentation(), getActivity());
 
 		// デフォルトで復路画面にする
-		solo.clickOnButton("到着しました");
-		solo.clickOnButton("復路");
-		System.out.println("セットアップ");
-
+		if (DataSourceFactory.newInstance("http://localhost", "") instanceof MockDataSource) {
+			solo.clickOnButton("到着しました");
+			solo.clickOnButton("復路");
+			System.out.println("セットアップ");
+		}
 	}
 
 	@Override
@@ -62,6 +60,7 @@ public class ReturnPathTestCase extends
 	public void test00_データ初期設定() {
 		// TODO
 		// userId,departurePlatformId,arrivalPlatformId部分は後で茂木さんの実装が出来たら実装する
+		StatusAccess.clearSavedFile();
 		dataset(6, 1, 1, 1);
 
 	}
@@ -72,56 +71,59 @@ public class ReturnPathTestCase extends
 				.getVisibility());
 
 		solo.clickOnButton("戻る");
+		getInstrumentation().waitForIdleSync();
 
 		assertEquals(View.GONE, solo.getView(R.id.return_path_modal_view)
 				.getVisibility());
 	}
 
-	public void test02_予約候補表示前は予約ボタン非表示() {
-
-		assertFalse(solo.searchButton("予約する", true));
-
-	}
-
-	public void test03_復路画面で予約候補を検索を押すと予約候補表示() {
-
-		assertFalse(solo.searchText("乗車時刻"));
-
-		solo.clickOnButton("予約候補を検索");
-		assertEquals(View.VISIBLE, solo.getView(R.id.return_path_modal_view)
-				.getVisibility());
-
-		assertTrue(solo.searchText("乗車時刻"));
-		assertTrue(solo.searchText("13時"));
-		assertTrue(solo.searchText("34分"));
-
-	}
-
-	public void test04_予約候補表示後で予約選択前は予約ボタン使用不可() {
-
-		test03_復路画面で予約候補を検索を押すと予約候補表示();
+	public void test02_予約候補表示前は予約ボタン使用不可() {
 
 		Button reserveButton = (Button) getActivity().findViewById(
-				R.id.return_path_button);
+				R.id.do_reservation_button);
 
 		assertFalse(reserveButton.isEnabled());
 
 	}
 
-	public void test05_復路画面で予約候補をタッチすると予約ボタンが使用可能になる() {
+	public void test03_復路画面で予約候補を検索を押すと予約候補表示() throws Exception {
+		assertFalse(solo.searchText("テスト駅2"));
+
+		solo.clickOnButton("予約候補を検索");
+		assertEquals(View.VISIBLE, solo.getView(R.id.return_path_modal_view)
+				.getVisibility());
+		Thread.sleep(5000);
+		assertTrue(solo.searchText("テスト駅2"));
+		assertTrue(solo.searchText("13時"));
+		assertTrue(solo.searchText("34分"));
+
+	}
+
+	public void test04_予約候補表示後で予約選択前は予約ボタン使用不可() throws Exception {
+
+		test03_復路画面で予約候補を検索を押すと予約候補表示();
+
+		Button reserveButton = (Button) getActivity().findViewById(
+				R.id.do_reservation_button);
+
+		assertFalse(reserveButton.isEnabled());
+
+	}
+
+	public void test05_復路画面で予約候補をタッチすると予約ボタンが使用可能になる() throws Exception {
 
 		test03_復路画面で予約候補を検索を押すと予約候補表示();
 
 		solo.clickOnText("15時");
-
+		getInstrumentation().waitForIdleSync();
 		Button reserveButton = (Button) getActivity().findViewById(
-				R.id.return_path_button);
+				R.id.do_reservation_button);
 
 		assertTrue(reserveButton.isEnabled());
 
 	}
 
-	public void test06_復路画面で予約を押すと待機中画面へ戻る() {
+	public void test06_復路画面で予約を押すと待機中画面へ戻る() throws Exception {
 
 		test03_復路画面で予約候補を検索を押すと予約候補表示();
 
@@ -212,13 +214,13 @@ public class ReturnPathTestCase extends
 	public void test16_条件により予約候補表示が変更される() {
 
 		// TODO 茂木さんが実装した記述する
-		assertFalse(solo.searchText("乗車時刻"));
+		assertFalse(solo.searchText("テスト駅2"));
 
 		solo.clickOnButton("予約候補を検索");
 		assertEquals(View.VISIBLE, solo.getView(R.id.return_path_modal_view)
 				.getVisibility());
 
-		assertTrue(solo.searchText("乗車時刻"));
+		assertTrue(solo.searchText("テスト駅2"));
 		assertTrue(solo.searchText("13時"));
 		assertTrue(solo.searchText("34分"));
 

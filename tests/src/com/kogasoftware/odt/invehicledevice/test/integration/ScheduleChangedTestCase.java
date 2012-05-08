@@ -25,12 +25,6 @@ public class ScheduleChangedTestCase extends
 	public void setUp() throws Exception {
 		super.setUp();
 		solo = new Solo(getInstrumentation(), getActivity());
-		sync();
-	}
-
-	private void sync() throws InterruptedException {
-		getInstrumentation().waitForIdleSync();
-		Thread.sleep(500);
 	}
 
 	@Override
@@ -39,31 +33,31 @@ public class ScheduleChangedTestCase extends
 		super.tearDown();
 	}
 
-	public void test01_テスト起動() throws Exception {
+	public void test01_テスト() throws Exception {
 		assertTrue(solo.searchText("乗降場A"));
 
 		solo.clickOnButton("到着しました");
-		sync();
-		solo.clickOnView(solo.getView(R.id.change_phase_button));
-		sync();
-		solo.clickOnView(solo.getView(R.id.start_button));
-		sync();
+		getInstrumentation().waitForIdleSync();
+		solo.clickOnButton("出発する");
+		getInstrumentation().waitForIdleSync();
+		solo.clickOnView(solo.getButton("出発する", true));
+		getInstrumentation().waitForIdleSync();
 
 		assertFalse(solo.searchText("乗降場A"));
 		assertTrue(solo.searchText("乗降場B"));
-		Thread.sleep(50 * 1000); // 通知を待つ
-
-		assertFalse(solo.searchText("乗降場B"));
+		
+		Thread.sleep(20 * 1000); // 通知を待つ
+		solo.clickOnButton("戻る");
+		assertFalse(solo.searchText("乗降場B", true));
 		assertTrue(solo.searchText("乗降場C"));
 
 		solo.clickOnButton("到着しました");
-		sync();
+		getInstrumentation().waitForIdleSync();
 		solo.clickOnView(solo.getView(R.id.change_phase_button));
-		sync();
+		getInstrumentation().waitForIdleSync();
 		solo.clickOnView(solo.getView(R.id.start_button));
-		sync();
 
 		assertFalse(solo.searchText("乗降場C"));
-		assertTrue(solo.searchText("乗降場B"));
+		assertTrue(solo.searchText("乗降場B", true));
 	}
 }
