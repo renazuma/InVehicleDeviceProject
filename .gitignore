@@ -24,6 +24,6 @@ jni/*/*.a
 local.properties
 release.keystore
 
-/tests/open_jtalk
+open_jtalk
 *_GIT_IGNORE_*
 
