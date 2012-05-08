@@ -1,0 +1,6 @@
+[submodule "AndroidCommon"]
+	path = AndroidCommon
+	url = git@github.com:odt/AndroidCommon.git
+[submodule "InVehicleDevice"]
+	path = InVehicleDevice
+	url = git@github.com:odt/InVehicleDevice.git
