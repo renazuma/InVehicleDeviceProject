@@ -66,8 +66,8 @@ public class ReservationCandidateArrayAdapter extends
 		} else {
 			s += "ID:" + c.getArrivalPlatformId();
 		}
-		s += " / " + d.getHours() + ":" + d.getMinutes() + " → " + a.getHours()
-				+ ":" + a.getMinutes();
+		s += " / " + d.getHours() + "時" + d.getMinutes() + "分 → " + a.getHours()
+				+ "時" + a.getMinutes() + "分";
 		v.setText(s);
 		return view;
 	}
