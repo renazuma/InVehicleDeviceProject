@@ -134,12 +134,12 @@ public class MockDataSource implements DataSource {
 
 		lOperationSchedule = new LinkedList<OperationSchedule>();
 
-		String r1a = "{id: 1011, departure_schedule_id: 1, arrival_schedule_id: 2 ,passenger_count:5, user: {first_name: '名前a', last_name: '名字a'},memo: 'テストメモ1'}";
-		String r1b = "{id: 1012, departure_schedule_id: 1, arrival_schedule_id: 3 ,passenger_count:6, user: {first_name: '名前b', last_name: '名字b'},memo: 'テストメモ2'}";
-		String r1c = "{id: 1013, departure_schedule_id: 1, arrival_schedule_id: 4 ,passenger_count:7, user: {first_name: '名前c', last_name: '名字c'}}";
-		String r1d = "{id: 1014, departure_schedule_id: 1, arrival_schedule_id: 5 ,passenger_count:16, user: {first_name: '名前d', last_name: '名字d'}}";
-		String r1e = "{id: 1015, departure_schedule_id: 1, arrival_schedule_id: 6 ,passenger_count:15, user: {first_name: '名前e', last_name: '名字e'}}";
-		String r1f = "{id: 1016, departure_schedule_id: 1, arrival_schedule_id: 6 ,passenger_count:17, user: {first_name: '名前f', last_name: '名字f'}}";
+		String u1a = "{id: 1011, departure_schedule_id: 1, arrival_schedule_id: 2 ,passenger_count:5, user: {first_name: '名前a', last_name: '名字a'},memo: 'テストメモ1'}";
+		String u1b = "{id: 1012, departure_schedule_id: 1, arrival_schedule_id: 3 ,passenger_count:6, user: {first_name: '名前b', last_name: '名字b'},memo: 'テストメモ2'}";
+		String u1c = "{id: 1013, departure_schedule_id: 1, arrival_schedule_id: 4 ,passenger_count:7, user: {first_name: '名前c', last_name: '名字c'}}";
+		String u1d = "{id: 1014, departure_schedule_id: 1, arrival_schedule_id: 5 ,passenger_count:16, user: {first_name: '名前d', last_name: '名字d'}}";
+		String u1e = "{id: 1015, departure_schedule_id: 1, arrival_schedule_id: 6 ,passenger_count:15, user: {first_name: '名前e', last_name: '名字e'}}";
+		String u1f = "{id: 1016, departure_schedule_id: 1, arrival_schedule_id: 6 ,passenger_count:17, user: {first_name: '名前f', last_name: '名字f'}}";
 
 		String sOperationSchedule = new String();
 
@@ -151,11 +151,11 @@ public class MockDataSource implements DataSource {
 						+ "departure_estimate: '2012-01-01T09:15:00+09:00', "
 						+ "platform: {name: 'テストコガソフトウェア前', name_ruby: 'てすとこがそふとうぇあまえ'}, "
 						+ "reservations_as_arrival: ["
-						+ r1a + ", " + r1b
-						+ "," + r1c + "],"
+						+  "],"
 						+ "reservations_as_departure: ["
-						+ r1d + "," + r1e
-						+ ", " + r1f + "]}";
+						+ u1a + "," + u1b
+						+ "," + u1c +u1d + "," + u1e
+						+ ", " + u1f + "]}";
 				JSONObject j1 = new JSONObject(sOperationSchedule);
 				lOperationSchedule.add(new OperationSchedule(j1));
 			}
@@ -230,10 +230,10 @@ public class MockDataSource implements DataSource {
 		String u1a = "";
 		String u1b = "";
 		if (iReservation > 0) {
-			u1a = "{passenger_count: 1 ,id: 1011,user: {first_name: 'テストa', last_name: '名字a'},memo: 'テストメモ1'}";
+			u1a = "{passenger_count: 1 ,id: 1011,departure_schedule_id: 101,arrival_schedule_id: 102,user: {first_name: 'テストa', last_name: '名字a'},memo: 'テストメモ1'}";
 		}
 		if (iReservation > 1) {
-			u1b = ", {passenger_count: 2,id: 1012,user: {first_name: 'テストb', last_name: '名字b'}}";
+			u1b = ", {passenger_count: 2,id: 1012,departure_schedule_id: 101,arrival_schedule_id: 103,user: {first_name: 'テストb', last_name: '名字b'}}";
 		}
 		if (iReservation > 2) {
 		}
@@ -248,15 +248,18 @@ public class MockDataSource implements DataSource {
 
 			JSONObject j1 = new JSONObject(
 					"{"
+							+ "id: 101, "
 							+ "arrival_estimate: '2012-01-01T09:00:00+09:00', "
 							+ "departure_estimate: '2012-01-01T09:15:00+09:00', "
 							+ "platform: {name: 'テストコガソフトウェア前', name_ruby: 'てすとこがそふとうぇあまえ'}, "
-							+ "reservations_as_arrival: [" + u1a + "," + u1b
-							+ "], " + "reservations_as_departure: []}");
+							+ "reservations_as_arrival: [], " 
+							+ "reservations_as_departure: [" + u1a + "," + u1b
+							+ "]}");
 			lOperationSchedule.add(new OperationSchedule(j1));
 
 			JSONObject j2 = new JSONObject(
 					"{"
+							+ "id: 102, "
 							+ "arrival_estimate: '2012-01-01T09:30:00+09:00', "
 							+ "departure_estimate: '2012-01-01T09:35:00+09:00', "
 							+ "platform: {name: 'テスト上野御徒町駅前',name_ruby: 'てすとうえのおかちまちえきまえ'}, "
@@ -266,6 +269,7 @@ public class MockDataSource implements DataSource {
 
 			JSONObject j3 = new JSONObject(
 					"{"
+							+ "id: 103, "
 							+ "arrival_estimate: '2012-01-01T10:30:00+09:00', "
 							+ "departure_estimate: '2012-01-01T10:33:00+09:00', "
 							+ "platform: {name: 'テスト上野動物園前', name_ruby: 'てすとうえのどうぶつえんまえ'}, "
@@ -275,6 +279,7 @@ public class MockDataSource implements DataSource {
 
 			JSONObject j4 = new JSONObject(
 					"{"
+							+ "id: 104, "
 							+ "arrival_estimate: '2012-01-01T11:10:00+09:00', "
 							+ "departure_estimate: '2012-01-01T11:15:00+09:00', "
 							+ "platform: {name: 'テスト上野広小路前', name_ruby: 'てすとうえのひろこうじまえ'}, "
@@ -284,6 +289,7 @@ public class MockDataSource implements DataSource {
 
 			JSONObject j5 = new JSONObject(
 					"{"
+							+ "id: 105, "
 							+ "arrival_estimate: '2012-01-01T12:00:00+09:00', "
 							+ "departure_estimate: '2012-01-01T12:05:00+09:00', "
 							+ "platform: {name: 'テスト湯島天神前', name_ruby: 'てすとゆしまてんじんまえ'}}"
@@ -293,6 +299,7 @@ public class MockDataSource implements DataSource {
 
 			JSONObject j6 = new JSONObject(
 					"{"
+							+ "id: 106, "
 							+ "arrival_estimate: '2012-01-01T13:03:00+09:00', "
 							+ "departure_estimate: '2012-01-01T13:10:30+09:00', "
 							+ "platform: {name: 'テストＪＲ御徒町駅前', name_ruby: 'てすとじぇいあーるおかちまちえきまえ'}, "
