@@ -7,5 +7,6 @@
     <string name="login">ログイン</string>
     <string name="password">パスワード</string>
     <string name="ok">OK</string>
-
+    <string name="an_error_occurred">エラーが発生しました</string>
+    
 </resources>

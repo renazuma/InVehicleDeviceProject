@@ -108,6 +108,9 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 					dismissDialog(CONNECTING_DIALOG_ID);
 				} catch (IllegalArgumentException e) {
 				}
+				Toast.makeText(InVehicleDevicePreferenceActivity.this,
+						getResources().getString(R.string.an_error_occurred),
+						Toast.LENGTH_LONG).show();
 				Toast.makeText(InVehicleDevicePreferenceActivity.this, message,
 						Toast.LENGTH_LONG).show();
 			}
@@ -128,6 +131,9 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 					dismissDialog(CONNECTING_DIALOG_ID);
 				} catch (IllegalArgumentException e) {
 				}
+				Toast.makeText(InVehicleDevicePreferenceActivity.this,
+						getResources().getString(R.string.an_error_occurred),
+						Toast.LENGTH_LONG).show();
 				Toast.makeText(InVehicleDevicePreferenceActivity.this, message,
 						Toast.LENGTH_LONG).show();
 			}
