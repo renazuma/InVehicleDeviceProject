@@ -300,4 +300,9 @@ public class IdentifiablesTestCase extends TestCase {
 		assertEquals(c.get(9).getId().intValue(), 5);
 		assertEquals(c.get(10).getId().intValue(), -5);
 	}
+
+	public void testConstructor() {
+		// カバレッジを満たすためのコード.今のところコンストラクタを使うことは無い.
+		new Identifiables();
+	}
 }

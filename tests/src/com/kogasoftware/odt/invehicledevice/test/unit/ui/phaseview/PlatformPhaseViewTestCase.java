@@ -1,7 +1,12 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.ui.phaseview;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
 import android.view.View;
 
+import com.google.common.base.Function;
+import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.Status;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
@@ -11,6 +16,7 @@ import com.kogasoftware.odt.invehicledevice.logic.event.EnterDrivePhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterFinishPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterPlatformPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.StartCheckModalView;
 import com.kogasoftware.odt.invehicledevice.ui.phaseview.PlatformPhaseView;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
@@ -86,5 +92,20 @@ public class PlatformPhaseViewTestCase extends
 
 		assertTrue(pv.isShown());
 		assertEquals(pv.getVisibility(), View.VISIBLE);
+	}
+
+	public void testStartCheckEventを送るとStartCheckModalView_ShowEventを送出()
+			throws Exception {
+		cl.postEvent(new PlatformPhaseView.StartCheckEvent());
+		final CountDownLatch cdl = new CountDownLatch(1);
+		cl.registerEventListener(new Function<StartCheckModalView.ShowEvent, Void>() {
+			@Subscribe
+			@Override
+			public Void apply(StartCheckModalView.ShowEvent e) {
+				cdl.countDown();
+				return null;
+			}
+		});
+		assertTrue(cdl.await(10, TimeUnit.SECONDS));
 	}
 }

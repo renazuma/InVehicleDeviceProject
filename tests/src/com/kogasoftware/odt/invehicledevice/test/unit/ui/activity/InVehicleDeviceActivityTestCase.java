@@ -8,7 +8,8 @@ public class InVehicleDeviceActivityTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 	public InVehicleDeviceActivityTestCase() {
-		super("com.kogasoftware.odt.invehicledevice", InVehicleDeviceActivity.class);
+		super("com.kogasoftware.odt.invehicledevice",
+				InVehicleDeviceActivity.class);
 	}
 
 	@Override
@@ -21,8 +22,11 @@ public class InVehicleDeviceActivityTestCase extends
 		super.tearDown();
 	}
 
-	public void xtestInVehicleDeviceActivity() throws Exception {
+	public void test起動時にいきなり落ちないかだけ確認() throws Exception {
 		getActivity();
+	}
+
+	public void test2() {
 		fail("stub! / 単体でのテストは難しいので、結合試験を利用する");
 	}
 }
