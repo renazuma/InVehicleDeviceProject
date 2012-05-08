@@ -19,7 +19,6 @@ public class WaitingTestCase extends
 	public WaitingTestCase() {
 		super("com.kogasoftware.odt.invehicledevice.ui.activity",
 				InVehicleDeviceActivity.class);
-		DataSourceFactory.setInstance(new DummyDataSource());
 	}
 
 	public void dataset(Integer i) {
@@ -37,7 +36,6 @@ public class WaitingTestCase extends
 	public void setUp() throws Exception {
 
 		super.setUp();
-		assertTrue(false); // TODO: 内部データを修正するまでこのテストはペンディング
 
 		dataset(6);
 
@@ -73,6 +71,7 @@ public class WaitingTestCase extends
 	public void test02_メモ画面で戻るボタンを押すとメモ画面が非表示() {
 		test01_メモボタンを押すとメモ画面が表示();
 		solo.clickOnView(solo.getView(R.id.memo_close_button));
+		getInstrumentation().waitForIdleSync();
 		assertEquals(View.GONE, solo.getView(R.id.memo_modal_view)
 				.getVisibility());
 	}
@@ -94,6 +93,7 @@ public class WaitingTestCase extends
 	public void test05_出発ダイアログはい選択で走行中() {
 		test04_出発ボタンを押すと出発ダイアログ表示();
 		solo.clickOnView(solo.getView(R.id.start_button));
+		getInstrumentation().waitForIdleSync();
 		TextView v = (TextView) solo.getView(R.id.phase_text_view);
 		assertEquals("走行中", v.getText());
 	}
@@ -147,16 +147,16 @@ public class WaitingTestCase extends
 
 	}
 
-	public void test11_未払ボタンを押すと支払済に変更() {
+	public void xtest11_未払ボタンを押すと支払済に変更() { // TODO: 支払UIは瀬戸内では利用しない
 
 		solo.clickOnToggleButton("未払");
 		assertTrue(solo.searchToggleButton("支払済"));
 
 	}
 
-	public void test12_支払済ボタンを押すと未払に変更() {
+	public void xtest12_支払済ボタンを押すと未払に変更() { // TODO: 支払UIは瀬戸内では利用しない
 
-		test11_未払ボタンを押すと支払済に変更();
+		xtest11_未払ボタンを押すと支払済に変更();
 
 		solo.clickOnToggleButton("支払済");
 		assertTrue(solo.searchToggleButton("未払"));
@@ -201,7 +201,7 @@ public class WaitingTestCase extends
 
 	}
 
-	public void test18_乗客の新規追加ボタンが存在する() {
+	public void xtest18_乗客の新規追加ボタンが存在する() { // TODO: 予約の新規追加UIは瀬戸内では利用しない
 
 		assertTrue(solo.searchText("予約の新規追加"));
 
