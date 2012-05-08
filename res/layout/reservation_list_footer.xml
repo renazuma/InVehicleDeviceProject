@@ -40,6 +40,6 @@
         android:id="@+id/add_unexpected_reservation_button"
         android:layout_height="wrap_content"
         android:layout_width="fill_parent"
-        android:text="@string/add_unexpected_reservation" />
-
+        android:text="@string/add_unexpected_reservation"
+        android:visibility="gone" />
 </LinearLayout>
