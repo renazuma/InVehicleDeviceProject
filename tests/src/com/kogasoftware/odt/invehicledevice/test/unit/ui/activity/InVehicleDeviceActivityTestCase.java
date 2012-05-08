@@ -26,7 +26,7 @@ public class InVehicleDeviceActivityTestCase extends
 		getActivity();
 	}
 
-	public void test2() {
+	public void xtest2() {
 		fail("stub! / 単体でのテストは難しいので、結合試験を利用する");
 	}
 }
