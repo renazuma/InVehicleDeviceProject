@@ -61,15 +61,17 @@ public class WebAPIDataSource implements DataSource {
 
 	public <T> int callWebAPISynchronously(final WebAPICaller<T> caller,
 			final WebAPICallback<T> extraCallback) {
-		final AtomicInteger outputReqkey = new AtomicInteger(-1);
-		final AtomicReference<Runnable> outputRunnable = new AtomicReference<Runnable>();
+		final AtomicInteger returnedReqkey = new AtomicInteger(-1);
+		final AtomicReference<Runnable> outputRunnable = new AtomicReference<Runnable>(); // TODO:複数回コールバック仕様確認
 		final AtomicReference<WebAPIException> outputException = new AtomicReference<WebAPIException>();
 		final CountDownLatch latch = new CountDownLatch(1);
 		final WebAPICallback<T> synchronousCallback = new WebAPICallback<T>() {
 			@Override
 			public void onException(final int reqkey, final WebAPIException ex) {
-				outputReqkey.set(reqkey);
-				outputRunnable.set(new Runnable() {
+				if (returnedReqkey.get() != reqkey) {
+					return;
+				}
+				outputRunnable.compareAndSet(null, new Runnable() {
 					@Override
 					public void run() {
 						caller.onException(reqkey, ex);
@@ -82,8 +84,10 @@ public class WebAPIDataSource implements DataSource {
 			@Override
 			public void onFailed(final int reqkey, final int statusCode,
 					final String response) {
-				outputReqkey.set(reqkey);
-				outputRunnable.set(new Runnable() {
+				if (returnedReqkey.get() != reqkey) {
+					return;
+				}
+				outputRunnable.compareAndSet(null, new Runnable() {
 					@Override
 					public void run() {
 						caller.onFailed(reqkey, statusCode, response);
@@ -96,8 +100,10 @@ public class WebAPIDataSource implements DataSource {
 			@Override
 			public void onSucceed(final int reqkey, final int statusCode,
 					final T result) {
-				outputReqkey.set(reqkey);
-				outputRunnable.set(new Runnable() {
+				if (returnedReqkey.get() != reqkey) {
+					return;
+				}
+				outputRunnable.compareAndSet(null, new Runnable() {
 					@Override
 					public void run() {
 						caller.onSucceed(reqkey, statusCode, result);
@@ -111,9 +117,10 @@ public class WebAPIDataSource implements DataSource {
 			@Override
 			public void run() {
 				try {
-					outputReqkey.set(caller.call(synchronousCallback));
+					returnedReqkey.set(caller.call(synchronousCallback));
 				} catch (JSONException e) {
 					outputException.set(new WebAPIException(true, e));
+					latch.countDown();
 				} catch (WebAPIException e) {
 					outputException.set(e);
 					latch.countDown();
@@ -122,28 +129,28 @@ public class WebAPIDataSource implements DataSource {
 		});
 
 		if (!postResult) {
-			return outputReqkey.get();
+			return returnedReqkey.get();
 		}
 
 		try {
 			latch.await();
 		} catch (InterruptedException e) {
-			synchronousCallback.onException(outputReqkey.get(),
+			synchronousCallback.onException(returnedReqkey.get(),
 					new WebAPIException(false, e));
 			Thread.currentThread().interrupt();
-			return outputReqkey.get();
+			return returnedReqkey.get();
 		}
 
 		if (outputException.get() != null) {
-			synchronousCallback.onException(outputReqkey.get(),
+			synchronousCallback.onException(returnedReqkey.get(),
 					new WebAPIException(false, outputException.get()));
-			return outputReqkey.get();
+			return returnedReqkey.get();
 		}
 
 		if (outputRunnable.get() != null) {
 			outputRunnable.get().run();
 		}
-		return outputReqkey.get();
+		return returnedReqkey.get();
 	}
 
 	public <T> int callWebAPISynchronusly(final WebAPICaller<T> caller) {
