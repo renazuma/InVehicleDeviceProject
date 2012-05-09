@@ -46,7 +46,9 @@ public class ReturnPathTestCase extends
 		// デフォルトで復路画面にする
 		if (DataSourceFactory.newInstance("http://localhost", "") instanceof MockDataSource) {
 			solo.clickOnButton("到着しました");
+			getInstrumentation().waitForIdleSync();
 			solo.clickOnButton("復路");
+			getInstrumentation().waitForIdleSync();
 			System.out.println("セットアップ");
 		}
 	}
