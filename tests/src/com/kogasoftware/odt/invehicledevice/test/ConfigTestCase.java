@@ -128,7 +128,7 @@ public class ConfigTestCase extends
 	public void test09_一時停止画面で運行再開ボタンを押すと一時停止画面と設定画面が非表示() {
 
 		test02_運行管理ボタンを押したら表示();
-		
+
 		solo.clickOnView(solo.getView(R.id.pause_button));
 
 		getInstrumentation().waitForIdleSync();
