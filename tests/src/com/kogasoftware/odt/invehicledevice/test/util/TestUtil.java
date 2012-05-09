@@ -1,7 +1,10 @@
 package com.kogasoftware.odt.invehicledevice.test.util;
 
+import java.util.concurrent.TimeUnit;
+
 import android.view.View;
 
+import com.google.common.util.concurrent.Uninterruptibles;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
 public class TestUtil {
@@ -10,6 +13,7 @@ public class TestUtil {
 			@Override
 			public void run() {
 				while (!Thread.currentThread().isInterrupted()) {
+					Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 					if (activity.findViewById(android.R.id.content).getVisibility() == View.VISIBLE) {
 						return;
 					}
