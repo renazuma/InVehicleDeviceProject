@@ -3,8 +3,6 @@ package com.kogasoftware.odt.invehicledevice.test.unit.ui.arrayadapter;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.view.View;
-
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.OperationScheduleArrayAdapter;
@@ -61,7 +59,7 @@ public class OperationScheduleArrayAdapterTestCase extends
 				getActivity().setContentView(osaa.getView(0, null, null));
 			}
 		});
-		solo.searchText(platformName0);
+		assertTrue(solo.searchText(platformName0));
 		
 		runOnUiThreadSync(new Runnable() {
 			@Override
@@ -69,7 +67,7 @@ public class OperationScheduleArrayAdapterTestCase extends
 				getActivity().setContentView(osaa.getView(1, null, null));
 			}
 		});
-		solo.searchText(platformName1);
+		assertTrue(solo.searchText(platformName1));
 	}
 
 	public void xtestOperationScheduleが変更されたら変更後の表示になる() {
