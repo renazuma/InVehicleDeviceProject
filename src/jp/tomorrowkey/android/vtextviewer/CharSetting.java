@@ -1,7 +1,6 @@
 package jp.tomorrowkey.android.vtextviewer;
 
 public class CharSetting {
-	private static final String[] PUNCTUATION_MARK = { "、", "。", "「", "」" };
 	private static final CharSetting[] SETTINGS = {
 			new CharSetting("、", 0.0f, 0.7f, -0.6f),
 			new CharSetting("。", 0.0f, 0.7f, -0.6f),
@@ -146,15 +145,6 @@ public class CharSetting {
 			}
 		}
 		return null;
-	}
-
-	public static boolean isPunctuationMark(String s) {
-		for (String functuantionMark : PUNCTUATION_MARK) {
-			if (functuantionMark.equals(s)) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	/**

@@ -10,9 +10,10 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
-import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
+import com.kogasoftware.odt.invehicledevice.logic.empty.EmptyThread;
 
 /**
  * 縦に文字を表示するためのクラス
@@ -21,8 +22,10 @@ import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
  */
 public class VTextView extends View {
 	/**
-	 * onLayoutをトリガーにしてbitmapを作成したいが、同スレッドで行うと重いメモリ確保が起きる(AndroidLintに指摘される)
-	 * ため別のスレッドで行うためのクラス. AsyncTaskはimmutableクラスなので結局newをする必要があるため自前で行うことにした
+	 * onLayoutをトリガーにしてbitmapを作成したいが、
+	 * 同スレッドでnewなどのメモリ確保をするとAndroidLintのwarningがおきる。
+	 * そのため、別のスレッドでbitmap作成を行うためのクラス。
+	 * AsyncTaskはimmutableクラスなので結局newをする必要があるため自前で作ることにした
 	 */
 	class UpdateBitmapThread extends Thread {
 		@Override
@@ -56,16 +59,17 @@ public class VTextView extends View {
 	private static final int BOTTOM_SPACE = 18;
 	private static final int FONT_SIZE = 60;
 	private static final float FONT_SPACING_RATE = 0.8f;
-	// private static final String TAG = VTextView.class.getSimpleName();
+	private static final String TAG = VTextView.class.getSimpleName();
 	private static final int TOP_SPACE = 0;
 	private Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-	private Canvas canvas = new Canvas(bitmap);
+	private final Canvas canvas = new Canvas(bitmap);
 	private volatile int height = 0; // 別スレッドから読み出すためvolatileをつける
-	private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+	private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 	private String text = "";
-	private Typeface typeFace = Typeface.defaultFromStyle(Typeface.NORMAL);
-	private Handler updateBitmapHandler = new Handler();
-	private Semaphore updateBitmapStartSemaphore = new Semaphore(0);
+	private final Typeface typeFace = Typeface
+			.defaultFromStyle(Typeface.NORMAL);
+	private final Handler updateBitmapHandler = new Handler();
+	private final Semaphore updateBitmapStartSemaphore = new Semaphore(0);
 	private Thread updateBitmapThread = new EmptyThread();
 	private volatile int width = 0; // 別スレッドから読み出すためvolatileをつける
 
@@ -124,7 +128,18 @@ public class VTextView extends View {
 				canvas.restore();
 			}
 
-			if (y + fontSpacing > height - BOTTOM_SPACE) {
+			boolean cond = false;
+			try {
+				cond = y + fontSpacing > height - BOTTOM_SPACE;
+				// TODO:
+				// 上行でなぜかArrayIndexOutOfBoundsException発生報告がlogcatに出力されることがある。
+				// 再現しないようなら削除する
+			} catch (ArrayIndexOutOfBoundsException e) {
+				Log.e(TAG, e.toString(), e);
+				return;
+			}
+
+			if (cond) {
 				// もう文字が入らない場合
 				newLine = true;
 			} else {

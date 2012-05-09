@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="alighting_number">降車人数</string>
-    <string name="app_name">オンデマンド交通システム車載機アプリケーション</string>
+    <string name="app_name">ODT車載機アプリケーション</string>
     <string name="arrival_schedule">到着予定</string>
     <string name="departure_schedule">出発時刻</string>
     <string name="does_it_leave">出発しますか？</string>
@@ -42,6 +42,8 @@
     <string name="todays_operation_was_finished">本日の運行は終了しました</string>
     <string name="show_all_riding_passengers">乗車中の乗客全員を表示</string>
     <string name="show_future_passengers">未来の乗客を表示</string>
-    <string name="add_reservation">予約の新規追加</string>
+    <string name="add_unexpected_reservation">飛び乗り予約の新規追加</string>
     <string name="show_missed_passengers">過去の乗降場で未乗車の乗客を表示</string>
+    <string name="zoom_in">拡大</string>
+    <string name="zoom_out">縮小</string>
 </resources>

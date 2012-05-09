@@ -14,7 +14,7 @@ AndroidManifest.xml.old
 AndroidManifest.xml.release
 DATA_Preferences
 DATA_Tiles*
-common_build.xml
+custom_rules.xml
 coverage.ec
 coverage.em
 findbugs.xml
@@ -24,6 +24,6 @@ jni/*/*.a
 local.properties
 release.keystore
 
-/tests/open_jtalk
+open_jtalk
 *_GIT_IGNORE_*
 

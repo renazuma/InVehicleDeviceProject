@@ -4,22 +4,16 @@
     android:layout_height="wrap_content"
     android:orientation="vertical" >
 
-    <Button
-        android:id="@+id/add_unexpected_reservation_button"
-        android:layout_height="wrap_content"
-        android:layout_width="fill_parent"
-        android:text="@string/add_reservation" />
-
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="80dip"
         android:orientation="horizontal" >
 
         <ToggleButton
             android:id="@+id/show_all_riding_reservations_button"
             android:layout_width="0dip"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
             android:layout_weight="1"
             android:textOff="@string/show_all_riding_passengers"
             android:textOn="@string/show_all_riding_passengers" />
@@ -27,7 +21,7 @@
         <ToggleButton
             android:id="@+id/show_future_reservations_button"
             android:layout_width="0dip"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
             android:layout_weight="1"
             android:textOff="@string/show_future_passengers"
             android:textOn="@string/show_future_passengers" />
@@ -35,11 +29,17 @@
         <ToggleButton
             android:id="@+id/show_missed_reservations_button"
             android:layout_width="0dip"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
             android:layout_weight="1"
             android:textOff="@string/show_missed_passengers"
             android:textOn="@string/show_missed_passengers" />
         
     </LinearLayout>
 
+    <Button
+        android:id="@+id/add_unexpected_reservation_button"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:text="@string/add_unexpected_reservation"
+        android:visibility="gone" />
 </LinearLayout>
