@@ -17,7 +17,7 @@ public class TestUtil {
 			}
 		};
 		t.start();
-		t.join(20 * 1000);
+		t.join(60 * 1000);
 		if (t.isAlive()) {
 			t.interrupt();
 			return false;
