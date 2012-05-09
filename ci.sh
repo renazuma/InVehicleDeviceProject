@@ -19,7 +19,6 @@ development:
 EOF
 
 cd OperatorWeb
-git checkout add_invehicledevices_api
 cp ../database.yml config/database.yml
 bundle install
 bundle exec rake db:drop db:create db:migrate
