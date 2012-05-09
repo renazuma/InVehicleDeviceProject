@@ -8,6 +8,7 @@ import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSourceFactory;
+import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.test.util.datasource.DummyDataSource;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
@@ -40,7 +41,8 @@ public class ReturnPathTestCase extends
 
 		StatusAccess.clearSavedFile();
 		solo = new Solo(getInstrumentation(), getActivity());
-
+		assertTrue(TestUtil.waitForStartUi(getActivity()));
+		
 		// デフォルトで復路画面にする
 		if (DataSourceFactory.newInstance("http://localhost", "") instanceof MockDataSource) {
 			solo.clickOnButton("到着しました");

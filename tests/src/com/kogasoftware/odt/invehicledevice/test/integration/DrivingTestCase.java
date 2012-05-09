@@ -8,6 +8,7 @@ import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSourceFactory;
+import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.test.util.datasource.DummyDataSource;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
@@ -28,16 +29,7 @@ public class DrivingTestCase extends
 		StatusAccess.clearSavedFile();
 
 		solo = new Solo(getInstrumentation(), getActivity());
-
-		if (solo.searchText("停車中")) {
-
-			solo.clickOnView(solo.getView(R.id.change_phase_button));
-			getInstrumentation().waitForIdleSync();
-			solo.clickOnView(solo.getView(R.id.change_phase_button));
-			getInstrumentation().waitForIdleSync();
-
-		}
-
+		assertTrue(TestUtil.waitForStartUi(getActivity()));
 	}
 
 	@Override
@@ -49,7 +41,6 @@ public class DrivingTestCase extends
 	public void test01_起動時は走行中表示() {
 
 		assertTrue(solo.searchText("走行中")); // TODO 画像ファイル名assertに書き換わる予定
-
 	}
 
 	public void test02_起動時は出発ダイアログは非表示() {
