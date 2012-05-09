@@ -25,6 +25,7 @@ import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.ReadOnlyStatusAcc
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Reader;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSourceFactory;
+import com.kogasoftware.odt.invehicledevice.logic.datasource.WebAPIDataSource;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterDrivePhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterFinishPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterPlatformPhaseEvent;
@@ -110,9 +111,11 @@ public class CommonLogic {
 				this, statusAccess);
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(activity);
-		dataSource = DataSourceFactory.newInstance(
-				preferences.getString("url", "http://127.0.0.1"),
-				preferences.getString("token", ""));
+		String url = preferences.getString(SharedPreferencesKey.SERVER_URL,
+				WebAPIDataSource.DEFAULT_URL);
+		String token = preferences.getString(
+				SharedPreferencesKey.SERVER_IN_VEHICLE_DEVICE_TOKEN, "");
+		dataSource = DataSourceFactory.newInstance(url, token);
 
 		eventBus = new UiEventBus(activityHandler);
 		for (Object object : new Object[] { activity, commonEventSubscriber,
