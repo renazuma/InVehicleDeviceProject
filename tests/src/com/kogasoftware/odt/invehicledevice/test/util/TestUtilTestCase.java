@@ -4,10 +4,10 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.google.common.util.concurrent.Uninterruptibles;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSourceFactory;
+import com.kogasoftware.odt.invehicledevice.test.util.datasource.DummyDataSource;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
@@ -30,6 +30,7 @@ public class TestUtilTestCase extends
 
 	public void testWaitForStartUi() throws Exception {
 		StatusAccess.clearSavedFile();
+		DataSourceFactory.setInstance(new DummyDataSource());
 		assertTrue(TestUtil.waitForStartUi(getActivity()));
 	}
 	
