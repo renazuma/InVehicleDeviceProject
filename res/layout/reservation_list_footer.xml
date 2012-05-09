@@ -17,7 +17,7 @@
             android:layout_weight="1"
             android:textOff="@string/show_all_riding_passengers"
             android:textOn="@string/show_all_riding_passengers" />
-        
+
         <ToggleButton
             android:id="@+id/show_future_reservations_button"
             android:layout_width="0dip"
@@ -33,13 +33,15 @@
             android:layout_weight="1"
             android:textOff="@string/show_missed_passengers"
             android:textOn="@string/show_missed_passengers" />
-        
     </LinearLayout>
 
+    <!--
     <Button
         android:id="@+id/add_unexpected_reservation_button"
         android:layout_height="wrap_content"
         android:layout_width="fill_parent"
         android:text="@string/add_unexpected_reservation"
         android:visibility="gone" />
+    -->
+
 </LinearLayout>
