@@ -181,7 +181,7 @@ public class OperationScheduleReceiveThreadTestCase extends
 		cl.registerEventListener(osrt);
 		cl.postEvent(new UpdatedOperationScheduleReceiveStartEvent());
 		cl.postEvent(new UpdatedOperationScheduleReceiveStartEvent());
-		Thread.sleep(2 * 1000);
+		Thread.sleep(2 * 1000 * 2);
 		assertEquals(3, seq.get());
 		assertEquals(3, s.s.availablePermits());
 	}
