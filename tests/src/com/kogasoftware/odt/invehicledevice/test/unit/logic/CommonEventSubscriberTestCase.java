@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import android.location.Location;
+
 import com.google.common.base.Function;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.backgroundtask.CommonEventSubscriber;
@@ -16,6 +18,7 @@ import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Reader;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.VoidReader;
 import com.kogasoftware.odt.invehicledevice.logic.VehicleNotifications;
+import com.kogasoftware.odt.invehicledevice.logic.event.LocationReceivedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.OrientationChangedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.PauseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.StopEvent;
@@ -476,5 +479,25 @@ public class CommonEventSubscriberTestCase extends
 				assertTrue(status.receivedOperationScheduleChangedVehicleNotifications.isEmpty());
 			}
 		});
+	}
+	
+	public void testSetLocation() {
+		String provider = "test";
+		for (Integer i = 0; i < 20; ++i) {
+			final Integer lat = 10 + i * 2; // TODO:値が丸まっていないかのテスト
+			final Integer lon = 45 + i;
+			Location l = new Location(provider);
+			l.setLatitude(lat);
+			l.setLongitude(lon);
+			cl.postEvent(new LocationReceivedEvent(l));
+			getInstrumentation().waitForIdleSync();
+			sa.read(new VoidReader() {
+				@Override
+				public void read(Status status) {
+					assertEquals(status.serviceUnitStatusLog.getLatitude().intValue(), lat.intValue());
+					assertEquals(status.serviceUnitStatusLog.getLongitude().intValue(), lon.intValue());
+				}
+			});
+		}
 	}
 }

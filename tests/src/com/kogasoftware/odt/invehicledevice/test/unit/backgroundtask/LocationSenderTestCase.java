@@ -1,6 +1,13 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.backgroundtask;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
+
+import android.content.Context;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
+import android.os.Looper;
 
 import com.kogasoftware.odt.invehicledevice.backgroundtask.BackgroundTask;
 import com.kogasoftware.odt.invehicledevice.backgroundtask.LocationSender;
@@ -9,7 +16,9 @@ import com.kogasoftware.odt.invehicledevice.logic.Status;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSourceFactory;
+import com.kogasoftware.odt.invehicledevice.logic.event.LocationReceivedEvent;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
+import com.kogasoftware.odt.invehicledevice.test.util.Subscriber;
 import com.kogasoftware.odt.invehicledevice.test.util.datasource.DummyDataSource;
 
 public class LocationSenderTestCase extends
@@ -103,5 +112,64 @@ public class LocationSenderTestCase extends
 		});
 		ls.run();
 		assertEquals(dds.sendServiceUnitStatusLogArgs.size(), 1);
+	}
+
+	/**
+	 * 位置情報を受信したらLocationReceivedEvent送出
+	 */
+	public void testOnLocationChanged() throws Exception {
+		for (Integer i = 0; i < 3; ++i) {
+			final Integer lat = 10 + i * 20; // TODO:値が丸まっていないかのテスト
+			final Integer lon = 45 + i * 5;
+			Subscriber<LocationReceivedEvent> s = Subscriber.of(
+					LocationReceivedEvent.class, cl);
+			final AtomicReference<Location> location = new AtomicReference<Location>();
+			final CountDownLatch cdl = new CountDownLatch(1);
+			Thread t = new Thread() {
+				Looper looper;
+
+				@Override
+				public void run() {
+					String provider = "Test";
+					Looper.prepare();
+					looper = Looper.myLooper();
+					LocationManager locationManager = (LocationManager) getInstrumentation()
+							.getContext().getSystemService(
+									Context.LOCATION_SERVICE);
+					locationManager.addTestProvider("Test", false, false,
+							false, false, false, false, false,
+							Criteria.POWER_LOW, Criteria.ACCURACY_FINE);
+					locationManager.setTestProviderEnabled(provider, true);
+					try {
+						locationManager.requestLocationUpdates(
+								provider, 0, 0, ls);
+						Location l = new Location(provider);
+						l.setLatitude(lat);
+						l.setLongitude(lon);
+						locationManager.setTestProviderLocation(provider, l);
+						location.set(l);
+						cdl.countDown();
+						Looper.loop();
+					} finally {
+						locationManager.removeUpdates(ls);
+						locationManager.removeTestProvider(provider);
+					}
+				}
+
+				@Override
+				public void interrupt() {
+					looper.quit();
+					super.interrupt();
+				}
+			};
+			t.start();
+			cdl.await();
+			Thread.sleep(1000);
+			t.interrupt();
+			assertEquals(1, s.l.size());
+			assertEquals((int) location.get().getLatitude(), lat.intValue());
+			assertEquals((int) location.get().getLongitude(), lon.intValue());
+			t.join();
+		}
 	}
 }
