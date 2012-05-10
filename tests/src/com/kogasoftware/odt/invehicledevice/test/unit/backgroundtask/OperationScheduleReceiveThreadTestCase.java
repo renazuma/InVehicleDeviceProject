@@ -130,7 +130,7 @@ public class OperationScheduleReceiveThreadTestCase extends
 				UpdatedOperationScheduleReceivedEvent.class, cl);
 		cl.registerEventListener(osrt);
 		osrt.start();
-		Thread.sleep(2 * 1000);
+		Thread.sleep(10 * 1000);
 		assertEquals(1, seq.get());
 		assertEquals(1, s.s.availablePermits());
 	}
@@ -155,7 +155,7 @@ public class OperationScheduleReceiveThreadTestCase extends
 		cl.registerEventListener(osrt);
 		osrt.start();
 		cl.postEvent(new UpdatedOperationScheduleReceiveStartEvent());
-		Thread.sleep(2 * 1000);
+		Thread.sleep(10 * 1000);
 		assertEquals(2, seq.get());
 		assertEquals(2, s.s.availablePermits());
 	}
@@ -181,7 +181,7 @@ public class OperationScheduleReceiveThreadTestCase extends
 		cl.registerEventListener(osrt);
 		cl.postEvent(new UpdatedOperationScheduleReceiveStartEvent());
 		cl.postEvent(new UpdatedOperationScheduleReceiveStartEvent());
-		Thread.sleep(2 * 1000 * 2);
+		Thread.sleep(10 * 1000);
 		assertEquals(3, seq.get());
 		assertEquals(3, s.s.availablePermits());
 	}
