@@ -68,7 +68,6 @@ public class OperationScheduleReceiveThread extends Thread {
 			while (!Thread.currentThread().isInterrupted()) {
 				// スケジュール変更通知があるまで待つ
 				startUpdatedOperationScheduleReceiveSemaphore.acquire();
-				startUpdatedOperationScheduleReceiveSemaphore.drainPermits();
 
 				final List<VehicleNotification> workingVehicleNotification = new LinkedList<VehicleNotification>();
 				while (!Thread.currentThread().isInterrupted()) {
