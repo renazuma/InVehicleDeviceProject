@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Reservation extends Model {
-	private static final long serialVersionUID = 3581431585501943084L;
+	private static final long serialVersionUID = 1612039563158938679L;
 
 	public Reservation() {
 	}
@@ -25,11 +25,12 @@ public class Reservation extends Model {
 		setArrivalTime(parseDate(jsonObject, "arrival_time"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
-		setDemandId(parseInteger(jsonObject, "demand_id"));
+		setDemandId(parseOptionalInteger(jsonObject, "demand_id"));
 		setDepartureLock(parseOptionalBoolean(jsonObject, "departure_lock"));
 		setDeparturePlatformId(parseOptionalInteger(jsonObject, "departure_platform_id"));
 		setDepartureScheduleId(parseOptionalInteger(jsonObject, "departure_schedule_id"));
 		setDepartureTime(parseDate(jsonObject, "departure_time"));
+		setDummy(parseOptionalBoolean(jsonObject, "dummy"));
 		setId(parseInteger(jsonObject, "id"));
 		setMemo(parseOptionalString(jsonObject, "memo"));
 		setOperatorId(parseOptionalInteger(jsonObject, "operator_id"));
@@ -40,7 +41,7 @@ public class Reservation extends Model {
 		setTransferredAt(parseOptionalDate(jsonObject, "transferred_at"));
 		setUnitAssignmentId(parseInteger(jsonObject, "unit_assignment_id"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
-		setUserId(parseInteger(jsonObject, "user_id"));
+		setUserId(parseOptionalInteger(jsonObject, "user_id"));
 		setArrivalPlatform(Platform.parse(jsonObject, "arrival_platform"));
 		if (getArrivalPlatform().isPresent()) {
 			setArrivalPlatformId(getArrivalPlatform().get().getId());
@@ -118,11 +119,12 @@ public class Reservation extends Model {
 		jsonObject.put("arrival_time", toJSON(getArrivalTime()));
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
 		jsonObject.put("deleted_at", toJSON(getDeletedAt().orNull()));
-		jsonObject.put("demand_id", toJSON(getDemandId()));
+		jsonObject.put("demand_id", toJSON(getDemandId().orNull()));
 		jsonObject.put("departure_lock", toJSON(getDepartureLock().orNull()));
 		jsonObject.put("departure_platform_id", toJSON(getDeparturePlatformId().orNull()));
 		jsonObject.put("departure_schedule_id", toJSON(getDepartureScheduleId().orNull()));
 		jsonObject.put("departure_time", toJSON(getDepartureTime()));
+		jsonObject.put("dummy", toJSON(getDummy().orNull()));
 		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("memo", toJSON(getMemo().orNull()));
 		jsonObject.put("operator_id", toJSON(getOperatorId().orNull()));
@@ -133,7 +135,7 @@ public class Reservation extends Model {
 		jsonObject.put("transferred_at", toJSON(getTransferredAt().orNull()));
 		jsonObject.put("unit_assignment_id", toJSON(getUnitAssignmentId()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
-		jsonObject.put("user_id", toJSON(getUserId()));
+		jsonObject.put("user_id", toJSON(getUserId().orNull()));
 
 		if (getArrivalPlatform().isPresent()) {
 			jsonObject.put("arrival_platform_id", toJSON(getArrivalPlatform().get().getId()));
@@ -265,14 +267,22 @@ public class Reservation extends Model {
 		this.deletedAt = Optional.<Date>absent();
 	}
 
-	private Integer demandId = 0;
+	private Optional<Integer> demandId = Optional.<Integer>absent();
 
-	public Integer getDemandId() {
+	public Optional<Integer> getDemandId() {
 		return wrapNull(demandId);
 	}
 
-	public void setDemandId(Integer demandId) {
+	public void setDemandId(Optional<Integer> demandId) {
 		this.demandId = wrapNull(demandId);
+	}
+
+	public void setDemandId(Integer demandId) {
+		this.demandId = Optional.fromNullable(demandId);
+	}
+
+	public void clearDemandId() {
+		this.demandId = Optional.<Integer>absent();
 	}
 
 	private Optional<Boolean> departureLock = Optional.<Boolean>absent();
@@ -337,6 +347,24 @@ public class Reservation extends Model {
 
 	public void setDepartureTime(Date departureTime) {
 		this.departureTime = wrapNull(departureTime);
+	}
+
+	private Optional<Boolean> dummy = Optional.<Boolean>absent();
+
+	public Optional<Boolean> getDummy() {
+		return wrapNull(dummy);
+	}
+
+	public void setDummy(Optional<Boolean> dummy) {
+		this.dummy = wrapNull(dummy);
+	}
+
+	public void setDummy(Boolean dummy) {
+		this.dummy = Optional.fromNullable(dummy);
+	}
+
+	public void clearDummy() {
+		this.dummy = Optional.<Boolean>absent();
 	}
 
 	private Integer id = 0;
@@ -471,14 +499,22 @@ public class Reservation extends Model {
 		this.updatedAt = wrapNull(updatedAt);
 	}
 
-	private Integer userId = 0;
+	private Optional<Integer> userId = Optional.<Integer>absent();
 
-	public Integer getUserId() {
+	public Optional<Integer> getUserId() {
 		return wrapNull(userId);
 	}
 
-	public void setUserId(Integer userId) {
+	public void setUserId(Optional<Integer> userId) {
 		this.userId = wrapNull(userId);
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = Optional.fromNullable(userId);
+	}
+
+	public void clearUserId() {
+		this.userId = Optional.<Integer>absent();
 	}
 
 	private Optional<Platform> arrivalPlatform = Optional.<Platform>absent();

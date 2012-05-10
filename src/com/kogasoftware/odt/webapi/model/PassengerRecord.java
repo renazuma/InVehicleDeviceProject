@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class PassengerRecord extends Model {
-	private static final long serialVersionUID = 2851308127290202318L;
+	private static final long serialVersionUID = 884293892892163950L;
 
 	public PassengerRecord() {
 	}
@@ -22,9 +22,9 @@ public class PassengerRecord extends Model {
 		setArrivalOperationScheduleId(parseOptionalInteger(jsonObject, "arrival_operation_schedule_id"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
-		setDepartureOperationScheduleId(parseInteger(jsonObject, "departure_operation_schedule_id"));
+		setDepartureOperationScheduleId(parseOptionalInteger(jsonObject, "departure_operation_schedule_id"));
 		setGetOffTime(parseOptionalDate(jsonObject, "get_off_time"));
-		setGetOnTime(parseDate(jsonObject, "get_on_time"));
+		setGetOnTime(parseOptionalDate(jsonObject, "get_on_time"));
 		setId(parseInteger(jsonObject, "id"));
 		setPassengerCount(parseInteger(jsonObject, "passenger_count"));
 		setPayment(parseOptionalInteger(jsonObject, "payment"));
@@ -86,9 +86,9 @@ public class PassengerRecord extends Model {
 		jsonObject.put("arrival_operation_schedule_id", toJSON(getArrivalOperationScheduleId().orNull()));
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
 		jsonObject.put("deleted_at", toJSON(getDeletedAt().orNull()));
-		jsonObject.put("departure_operation_schedule_id", toJSON(getDepartureOperationScheduleId()));
+		jsonObject.put("departure_operation_schedule_id", toJSON(getDepartureOperationScheduleId().orNull()));
 		jsonObject.put("get_off_time", toJSON(getGetOffTime().orNull()));
-		jsonObject.put("get_on_time", toJSON(getGetOnTime()));
+		jsonObject.put("get_on_time", toJSON(getGetOnTime().orNull()));
 		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("passenger_count", toJSON(getPassengerCount()));
 		jsonObject.put("payment", toJSON(getPayment().orNull()));
@@ -161,14 +161,22 @@ public class PassengerRecord extends Model {
 		this.deletedAt = Optional.<Date>absent();
 	}
 
-	private Integer departureOperationScheduleId = 0;
+	private Optional<Integer> departureOperationScheduleId = Optional.<Integer>absent();
 
-	public Integer getDepartureOperationScheduleId() {
+	public Optional<Integer> getDepartureOperationScheduleId() {
 		return wrapNull(departureOperationScheduleId);
 	}
 
-	public void setDepartureOperationScheduleId(Integer departureOperationScheduleId) {
+	public void setDepartureOperationScheduleId(Optional<Integer> departureOperationScheduleId) {
 		this.departureOperationScheduleId = wrapNull(departureOperationScheduleId);
+	}
+
+	public void setDepartureOperationScheduleId(Integer departureOperationScheduleId) {
+		this.departureOperationScheduleId = Optional.fromNullable(departureOperationScheduleId);
+	}
+
+	public void clearDepartureOperationScheduleId() {
+		this.departureOperationScheduleId = Optional.<Integer>absent();
 	}
 
 	private Optional<Date> getOffTime = Optional.<Date>absent();
@@ -189,14 +197,22 @@ public class PassengerRecord extends Model {
 		this.getOffTime = Optional.<Date>absent();
 	}
 
-	private Date getOnTime = new Date();
+	private Optional<Date> getOnTime = Optional.<Date>absent();
 
-	public Date getGetOnTime() {
+	public Optional<Date> getGetOnTime() {
 		return wrapNull(getOnTime);
 	}
 
-	public void setGetOnTime(Date getOnTime) {
+	public void setGetOnTime(Optional<Date> getOnTime) {
 		this.getOnTime = wrapNull(getOnTime);
+	}
+
+	public void setGetOnTime(Date getOnTime) {
+		this.getOnTime = Optional.fromNullable(getOnTime);
+	}
+
+	public void clearGetOnTime() {
+		this.getOnTime = Optional.<Date>absent();
 	}
 
 	private Integer id = 0;

@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Platform extends Model {
-	private static final long serialVersionUID = 8108355781890211950L;
+	private static final long serialVersionUID = 4292765494347812294L;
 
 	public Platform() {
 	}
@@ -32,14 +32,17 @@ public class Platform extends Model {
 		setMemo(parseOptionalString(jsonObject, "memo"));
 		setName(parseString(jsonObject, "name"));
 		setNameRuby(parseString(jsonObject, "name_ruby"));
+		setPlatformCategoryId(parseOptionalInteger(jsonObject, "platform_category_id"));
 		setReportingRegionId(parseInteger(jsonObject, "reporting_region_id"));
 		setSemiDemandAreaId(parseOptionalInteger(jsonObject, "semi_demand_area_id"));
 		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
 		setStartAt(parseOptionalDate(jsonObject, "start_at"));
 		setTypeOfDemand(parseOptionalInteger(jsonObject, "type_of_demand"));
+		setTypeOfPlatform(parseInteger(jsonObject, "type_of_platform"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setDemandsAsArrival(Demand.parseList(jsonObject, "demands_as_arrival"));
 		setDemandsAsDeparture(Demand.parseList(jsonObject, "demands_as_departure"));
+		setOperationSchedules(OperationSchedule.parseList(jsonObject, "operation_schedules"));
 		setReservationCandidatesAsArrival(ReservationCandidate.parseList(jsonObject, "reservation_candidates_as_arrival"));
 		setReservationCandidatesAsDeparture(ReservationCandidate.parseList(jsonObject, "reservation_candidates_as_departure"));
 		setReservationsAsArrival(Reservation.parseList(jsonObject, "reservations_as_arrival"));
@@ -96,11 +99,13 @@ public class Platform extends Model {
 		jsonObject.put("memo", toJSON(getMemo().orNull()));
 		jsonObject.put("name", toJSON(getName()));
 		jsonObject.put("name_ruby", toJSON(getNameRuby()));
+		jsonObject.put("platform_category_id", toJSON(getPlatformCategoryId().orNull()));
 		jsonObject.put("reporting_region_id", toJSON(getReportingRegionId()));
 		jsonObject.put("semi_demand_area_id", toJSON(getSemiDemandAreaId().orNull()));
 		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
 		jsonObject.put("start_at", toJSON(getStartAt().orNull()));
 		jsonObject.put("type_of_demand", toJSON(getTypeOfDemand().orNull()));
+		jsonObject.put("type_of_platform", toJSON(getTypeOfPlatform()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
 		if (getDemandsAsArrival().size() > 0) {
 	   		jsonObject.put("demands_as_arrival", toJSON(getDemandsAsArrival()));
@@ -108,6 +113,10 @@ public class Platform extends Model {
 
 		if (getDemandsAsDeparture().size() > 0) {
 	   		jsonObject.put("demands_as_departure", toJSON(getDemandsAsDeparture()));
+		}
+
+		if (getOperationSchedules().size() > 0) {
+	   		jsonObject.put("operation_schedules", toJSON(getOperationSchedules()));
 		}
 
 		if (getReservationCandidatesAsArrival().size() > 0) {
@@ -319,6 +328,24 @@ public class Platform extends Model {
 		this.nameRuby = wrapNull(nameRuby);
 	}
 
+	private Optional<Integer> platformCategoryId = Optional.<Integer>absent();
+
+	public Optional<Integer> getPlatformCategoryId() {
+		return wrapNull(platformCategoryId);
+	}
+
+	public void setPlatformCategoryId(Optional<Integer> platformCategoryId) {
+		this.platformCategoryId = wrapNull(platformCategoryId);
+	}
+
+	public void setPlatformCategoryId(Integer platformCategoryId) {
+		this.platformCategoryId = Optional.fromNullable(platformCategoryId);
+	}
+
+	public void clearPlatformCategoryId() {
+		this.platformCategoryId = Optional.<Integer>absent();
+	}
+
 	private Integer reportingRegionId = 0;
 
 	public Integer getReportingRegionId() {
@@ -401,6 +428,16 @@ public class Platform extends Model {
 		this.typeOfDemand = Optional.<Integer>absent();
 	}
 
+	private Integer typeOfPlatform = 0;
+
+	public Integer getTypeOfPlatform() {
+		return wrapNull(typeOfPlatform);
+	}
+
+	public void setTypeOfPlatform(Integer typeOfPlatform) {
+		this.typeOfPlatform = wrapNull(typeOfPlatform);
+	}
+
 	private Date updatedAt = new Date();
 
 	public Date getUpdatedAt() {
@@ -437,6 +474,20 @@ public class Platform extends Model {
 
 	public void clearDemandsAsDeparture() {
 		this.demandsAsDeparture = new LinkedList<Demand>();
+	}
+
+	private LinkedList<OperationSchedule> operationSchedules = new LinkedList<OperationSchedule>();
+
+	public List<OperationSchedule> getOperationSchedules() {
+		return new LinkedList<OperationSchedule>(wrapNull(operationSchedules));
+	}
+
+	public void setOperationSchedules(List<OperationSchedule> operationSchedules) {
+		this.operationSchedules = new LinkedList<OperationSchedule>(wrapNull(operationSchedules));
+	}
+
+	public void clearOperationSchedules() {
+		this.operationSchedules = new LinkedList<OperationSchedule>();
 	}
 
 	private LinkedList<ReservationCandidate> reservationCandidatesAsArrival = new LinkedList<ReservationCandidate>();

@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class VehicleNotification extends Model {
-	private static final long serialVersionUID = 270615885075205969L;
+	private static final long serialVersionUID = 6639729513655457756L;
 
 	public VehicleNotification() {
 	}
@@ -21,11 +21,13 @@ public class VehicleNotification extends Model {
 	public VehicleNotification(JSONObject jsonObject) throws JSONException, ParseException {
 		setBody(parseString(jsonObject, "body"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
+		setEventAt(parseOptionalDate(jsonObject, "event_at"));
 		setId(parseInteger(jsonObject, "id"));
 		setInVehicleDeviceId(parseInteger(jsonObject, "in_vehicle_device_id"));
-		setNotificationType(parseInteger(jsonObject, "notification_type"));
+		setNotificationKind(parseInteger(jsonObject, "notification_kind"));
 		setOperatorId(parseInteger(jsonObject, "operator_id"));
 		setReadAt(parseOptionalDate(jsonObject, "read_at"));
+		setReservationId(parseOptionalInteger(jsonObject, "reservation_id"));
 		setResponse(parseOptionalInteger(jsonObject, "response"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setInVehicleDevice(InVehicleDevice.parse(jsonObject, "in_vehicle_device"));
@@ -35,6 +37,10 @@ public class VehicleNotification extends Model {
 		setOperator(Operator.parse(jsonObject, "operator"));
 		if (getOperator().isPresent()) {
 			setOperatorId(getOperator().get().getId());
+		}
+		setReservation(Reservation.parse(jsonObject, "reservation"));
+		if (getReservation().isPresent()) {
+			setReservationId(getReservation().get().getId());
 		}
 	}
 
@@ -73,11 +79,13 @@ public class VehicleNotification extends Model {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("body", toJSON(getBody()));
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
+		jsonObject.put("event_at", toJSON(getEventAt().orNull()));
 		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("in_vehicle_device_id", toJSON(getInVehicleDeviceId()));
-		jsonObject.put("notification_type", toJSON(getNotificationType()));
+		jsonObject.put("notification_kind", toJSON(getNotificationKind()));
 		jsonObject.put("operator_id", toJSON(getOperatorId()));
 		jsonObject.put("read_at", toJSON(getReadAt().orNull()));
+		jsonObject.put("reservation_id", toJSON(getReservationId().orNull()));
 		jsonObject.put("response", toJSON(getResponse().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
 
@@ -87,6 +95,10 @@ public class VehicleNotification extends Model {
 
 		if (getOperator().isPresent()) {
 			jsonObject.put("operator_id", toJSON(getOperator().get().getId()));
+		}
+
+		if (getReservation().isPresent()) {
+			jsonObject.put("reservation_id", toJSON(getReservation().get().getId()));
 		}
 		return jsonObject;
 	}
@@ -111,6 +123,24 @@ public class VehicleNotification extends Model {
 		this.createdAt = wrapNull(createdAt);
 	}
 
+	private Optional<Date> eventAt = Optional.<Date>absent();
+
+	public Optional<Date> getEventAt() {
+		return wrapNull(eventAt);
+	}
+
+	public void setEventAt(Optional<Date> eventAt) {
+		this.eventAt = wrapNull(eventAt);
+	}
+
+	public void setEventAt(Date eventAt) {
+		this.eventAt = Optional.fromNullable(eventAt);
+	}
+
+	public void clearEventAt() {
+		this.eventAt = Optional.<Date>absent();
+	}
+
 	private Integer id = 0;
 
 	public Integer getId() {
@@ -131,14 +161,14 @@ public class VehicleNotification extends Model {
 		this.inVehicleDeviceId = wrapNull(inVehicleDeviceId);
 	}
 
-	private Integer notificationType = 0;
+	private Integer notificationKind = 0;
 
-	public Integer getNotificationType() {
-		return wrapNull(notificationType);
+	public Integer getNotificationKind() {
+		return wrapNull(notificationKind);
 	}
 
-	public void setNotificationType(Integer notificationType) {
-		this.notificationType = wrapNull(notificationType);
+	public void setNotificationKind(Integer notificationKind) {
+		this.notificationKind = wrapNull(notificationKind);
 	}
 
 	private Integer operatorId = 0;
@@ -167,6 +197,24 @@ public class VehicleNotification extends Model {
 
 	public void clearReadAt() {
 		this.readAt = Optional.<Date>absent();
+	}
+
+	private Optional<Integer> reservationId = Optional.<Integer>absent();
+
+	public Optional<Integer> getReservationId() {
+		return wrapNull(reservationId);
+	}
+
+	public void setReservationId(Optional<Integer> reservationId) {
+		this.reservationId = wrapNull(reservationId);
+	}
+
+	public void setReservationId(Integer reservationId) {
+		this.reservationId = Optional.fromNullable(reservationId);
+	}
+
+	public void clearReservationId() {
+		this.reservationId = Optional.<Integer>absent();
 	}
 
 	private Optional<Integer> response = Optional.<Integer>absent();
@@ -231,5 +279,23 @@ public class VehicleNotification extends Model {
 
 	public void clearOperator() {
 		this.operator = Optional.<Operator>absent();
+	}
+
+	private Optional<Reservation> reservation = Optional.<Reservation>absent();
+
+	public Optional<Reservation> getReservation() {
+		return wrapNull(reservation);
+	}
+
+	public void setReservation(Optional<Reservation> reservation) {
+		this.reservation = wrapNull(reservation);
+	}
+
+	public void setReservation(Reservation reservation) {
+		this.reservation = Optional.<Reservation>fromNullable(reservation);
+	}
+
+	public void clearReservation() {
+		this.reservation = Optional.<Reservation>absent();
 	}
 }
