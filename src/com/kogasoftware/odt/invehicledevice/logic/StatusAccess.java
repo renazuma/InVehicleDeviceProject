@@ -163,10 +163,8 @@ public class StatusAccess {
 			}
 		}
 		status.file = file;
-		status.token = preferences
-				.getString(
-						SharedPreferencesKey.SERVER_IN_VEHICLE_DEVICE_TOKEN,
-						"");
+		status.token = preferences.getString(
+				SharedPreferencesKey.SERVER_IN_VEHICLE_DEVICE_TOKEN, "");
 		status.url = preferences.getString(SharedPreferencesKey.SERVER_URL,
 				WebAPIDataSource.DEFAULT_URL);
 		return status;
