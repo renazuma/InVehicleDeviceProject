@@ -6,16 +6,6 @@ public class DataSourceFactory {
 	private static Optional<DataSource> dataSource = Optional.absent();
 	private static Object dataSourceLock = new Object();
 
-	@Deprecated
-	public static DataSource newInstance() {
-		synchronized (dataSourceLock) {
-			if (dataSource.isPresent()) {
-				return dataSource.get();
-			}
-		}
-		return newInstance("http://localhost", "");
-	}
-
 	public static DataSource newInstance(String url, String token) {
 		synchronized (dataSourceLock) {
 			if (dataSource.isPresent()) {
