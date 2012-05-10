@@ -122,10 +122,14 @@ public class StatusAccess {
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		if (isClear) {
-			file.delete();
+			if (!file.delete()) {
+				Log.e(TAG, "!\"" + file + "\".delete()");
+			}
 		} else if (preferences.getBoolean(SharedPreferencesKey.CLEAR_REQUIRED,
 				false)) {
-			file.delete();
+			if (!file.delete()) {
+				Log.e(TAG, "!\"" + file + "\".delete()");
+			}
 			preferences.edit()
 					.putBoolean(SharedPreferencesKey.CLEAR_REQUIRED, false)
 					.commit();
