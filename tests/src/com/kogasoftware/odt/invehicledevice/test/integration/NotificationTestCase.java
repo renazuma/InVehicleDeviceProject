@@ -21,6 +21,8 @@ public class NotificationTestCase extends
 	private Solo solo;
 
 	MockDataSource mdst = new MockDataSource();
+	
+	final Integer WAIT_MILLIS = 7000;
 
 	public NotificationTestCase() {
 		super("com.kogasoftware.odt.invehicledevice.ui.activity",
@@ -56,7 +58,6 @@ public class NotificationTestCase extends
 		assertEquals(View.GONE, solo.getView(R.id.notification_modal_view)
 				.getVisibility());
 
-		solo.sleep(5000);
 
 	}
 
@@ -78,7 +79,7 @@ public class NotificationTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		solo.sleep(1000);
+		solo.sleep(WAIT_MILLIS);
 
 		assertEquals(View.VISIBLE, solo.getView(R.id.notification_modal_view)
 				.getVisibility());
@@ -93,7 +94,7 @@ public class NotificationTestCase extends
 
 		solo.clickOnButton("はい");
 
-		solo.sleep(1000);
+		solo.sleep(WAIT_MILLIS);
 
 		getInstrumentation().waitForIdleSync();
 
@@ -112,7 +113,7 @@ public class NotificationTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		solo.sleep(1000);
+		solo.sleep(WAIT_MILLIS);
 
 		assertEquals(View.GONE, solo.getView(R.id.notification_modal_view)
 				.getVisibility());
@@ -140,7 +141,7 @@ public class NotificationTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		solo.sleep(1000);
+		solo.sleep(WAIT_MILLIS);
 
 		assertEquals(View.VISIBLE, solo.getView(R.id.notification_modal_view)
 				.getVisibility());
@@ -154,7 +155,7 @@ public class NotificationTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		solo.sleep(1000);
+		solo.sleep(WAIT_MILLIS);
 
 		assertEquals(View.GONE, solo.getView(R.id.notification_modal_view)
 				.getVisibility());
@@ -196,6 +197,8 @@ public class NotificationTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
+		solo.sleep(WAIT_MILLIS);
+
 		assertEquals(View.VISIBLE, solo.getView(R.id.notification_modal_view)
 				.getVisibility());
 	}
@@ -220,7 +223,7 @@ public class NotificationTestCase extends
 		solo.clickOnButton("いいえ");
 
 		getInstrumentation().waitForIdleSync();
-
+		
 		assertEquals(View.GONE, solo.getView(R.id.notification_modal_view)
 				.getVisibility());
 
@@ -247,7 +250,7 @@ public class NotificationTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		solo.sleep(1000);
+		solo.sleep(WAIT_MILLIS);
 
 		assertEquals(View.VISIBLE, solo.getView(R.id.notification_modal_view)
 				.getVisibility());
