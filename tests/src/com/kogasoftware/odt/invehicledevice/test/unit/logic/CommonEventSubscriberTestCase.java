@@ -217,7 +217,7 @@ public class CommonEventSubscriberTestCase extends
 	
 	public void testMergeVehicleNotification_一般notification追加() throws Exception {
 		final VehicleNotification vn = new VehicleNotification();
-		vn.setNotificationType(VehicleNotifications.NotificationType.NORMAL);
+		vn.setNotificationKind(VehicleNotifications.NotificationKind.NORMAL);
 		List<VehicleNotification> vns = new LinkedList<VehicleNotification>();
 		vns.add(vn);
 		cl.postEvent(new VehicleNotificationReceivedEvent(vns));
@@ -238,10 +238,10 @@ public class CommonEventSubscriberTestCase extends
 		final VehicleNotification vn1a = new VehicleNotification();
 		final VehicleNotification vn1b = new VehicleNotification();
 		final VehicleNotification vn2 = new VehicleNotification();
-		vn0.setNotificationType(VehicleNotifications.NotificationType.NORMAL);
-		vn1a.setNotificationType(VehicleNotifications.NotificationType.NORMAL);
-		vn1b.setNotificationType(VehicleNotifications.NotificationType.NORMAL);
-		vn2.setNotificationType(VehicleNotifications.NotificationType.NORMAL);
+		vn0.setNotificationKind(VehicleNotifications.NotificationKind.NORMAL);
+		vn1a.setNotificationKind(VehicleNotifications.NotificationKind.NORMAL);
+		vn1b.setNotificationKind(VehicleNotifications.NotificationKind.NORMAL);
+		vn2.setNotificationKind(VehicleNotifications.NotificationKind.NORMAL);
 		vn0.setId(100);
 		vn1a.setId(101);
 		vn1b.setId(101);
@@ -276,10 +276,10 @@ public class CommonEventSubscriberTestCase extends
 		final VehicleNotification vn1 = new VehicleNotification();
 		final VehicleNotification vn2a = new VehicleNotification();
 		final VehicleNotification vn2b = new VehicleNotification();
-		vn0.setNotificationType(VehicleNotifications.NotificationType.NORMAL);
-		vn1.setNotificationType(VehicleNotifications.NotificationType.NORMAL);
-		vn2a.setNotificationType(VehicleNotifications.NotificationType.NORMAL);
-		vn2b.setNotificationType(VehicleNotifications.NotificationType.NORMAL);
+		vn0.setNotificationKind(VehicleNotifications.NotificationKind.NORMAL);
+		vn1.setNotificationKind(VehicleNotifications.NotificationKind.NORMAL);
+		vn2a.setNotificationKind(VehicleNotifications.NotificationKind.NORMAL);
+		vn2b.setNotificationKind(VehicleNotifications.NotificationKind.NORMAL);
 		vn0.setId(10);
 		vn1.setId(11);
 		vn2a.setId(12);
@@ -311,7 +311,7 @@ public class CommonEventSubscriberTestCase extends
 	
 	public void testMergeVehicleNotification_スケジュールnotification追加() throws Exception {
 		final VehicleNotification vn = new VehicleNotification();
-		vn.setNotificationType(VehicleNotifications.NotificationType.SCHEDULE_CHANGED);
+		vn.setNotificationKind(VehicleNotifications.NotificationKind.SCHEDULE_CHANGED);
 		List<VehicleNotification> vns = new LinkedList<VehicleNotification>();
 		vns.add(vn);
 		cl.postEvent(new VehicleNotificationReceivedEvent(vns));
@@ -331,10 +331,10 @@ public class CommonEventSubscriberTestCase extends
 		final VehicleNotification vn1a = new VehicleNotification();
 		final VehicleNotification vn1b = new VehicleNotification();
 		final VehicleNotification vn2 = new VehicleNotification();
-		vn0.setNotificationType(VehicleNotifications.NotificationType.SCHEDULE_CHANGED);
-		vn1a.setNotificationType(VehicleNotifications.NotificationType.SCHEDULE_CHANGED);
-		vn1b.setNotificationType(VehicleNotifications.NotificationType.SCHEDULE_CHANGED);
-		vn2.setNotificationType(VehicleNotifications.NotificationType.SCHEDULE_CHANGED);
+		vn0.setNotificationKind(VehicleNotifications.NotificationKind.SCHEDULE_CHANGED);
+		vn1a.setNotificationKind(VehicleNotifications.NotificationKind.SCHEDULE_CHANGED);
+		vn1b.setNotificationKind(VehicleNotifications.NotificationKind.SCHEDULE_CHANGED);
+		vn2.setNotificationKind(VehicleNotifications.NotificationKind.SCHEDULE_CHANGED);
 		vn0.setId(20);
 		vn1a.setId(21);
 		vn1b.setId(21);
@@ -369,10 +369,10 @@ public class CommonEventSubscriberTestCase extends
 		final VehicleNotification vn1 = new VehicleNotification();
 		final VehicleNotification vn2a = new VehicleNotification();
 		final VehicleNotification vn2b = new VehicleNotification();
-		vn0.setNotificationType(VehicleNotifications.NotificationType.SCHEDULE_CHANGED);
-		vn1.setNotificationType(VehicleNotifications.NotificationType.SCHEDULE_CHANGED);
-		vn2a.setNotificationType(VehicleNotifications.NotificationType.SCHEDULE_CHANGED);
-		vn2b.setNotificationType(VehicleNotifications.NotificationType.SCHEDULE_CHANGED);
+		vn0.setNotificationKind(VehicleNotifications.NotificationKind.SCHEDULE_CHANGED);
+		vn1.setNotificationKind(VehicleNotifications.NotificationKind.SCHEDULE_CHANGED);
+		vn2a.setNotificationKind(VehicleNotifications.NotificationKind.SCHEDULE_CHANGED);
+		vn2b.setNotificationKind(VehicleNotifications.NotificationKind.SCHEDULE_CHANGED);
 		vn0.setId(200);
 		vn1.setId(201);
 		vn2a.setId(202);
@@ -409,10 +409,10 @@ public class CommonEventSubscriberTestCase extends
 		final VehicleNotification vn0b = new VehicleNotification();
 		final VehicleNotification vn1 = new VehicleNotification();
 		final VehicleNotification vn2 = new VehicleNotification();
-		vn0a.setNotificationType(VehicleNotifications.NotificationType.SCHEDULE_CHANGED);
-		vn0b.setNotificationType(VehicleNotifications.NotificationType.SCHEDULE_CHANGED);
-		vn1.setNotificationType(VehicleNotifications.NotificationType.SCHEDULE_CHANGED);
-		vn2.setNotificationType(VehicleNotifications.NotificationType.SCHEDULE_CHANGED);
+		vn0a.setNotificationKind(VehicleNotifications.NotificationKind.SCHEDULE_CHANGED);
+		vn0b.setNotificationKind(VehicleNotifications.NotificationKind.SCHEDULE_CHANGED);
+		vn1.setNotificationKind(VehicleNotifications.NotificationKind.SCHEDULE_CHANGED);
+		vn2.setNotificationKind(VehicleNotifications.NotificationKind.SCHEDULE_CHANGED);
 		vn0a.setId(1000);
 		vn0b.setId(1000);
 		vn1.setId(1001);
@@ -449,10 +449,10 @@ public class CommonEventSubscriberTestCase extends
 		final VehicleNotification vn1 = new VehicleNotification();
 		final VehicleNotification vn2 = new VehicleNotification();
 		final VehicleNotification vn3 = new VehicleNotification();
-		vn0.setNotificationType(VehicleNotifications.NotificationType.SCHEDULE_CHANGED);
-		vn1.setNotificationType(VehicleNotifications.NotificationType.NORMAL);
-		vn2.setNotificationType(VehicleNotifications.NotificationType.SCHEDULE_CHANGED);
-		vn3.setNotificationType(VehicleNotifications.NotificationType.NORMAL);
+		vn0.setNotificationKind(VehicleNotifications.NotificationKind.SCHEDULE_CHANGED);
+		vn1.setNotificationKind(VehicleNotifications.NotificationKind.NORMAL);
+		vn2.setNotificationKind(VehicleNotifications.NotificationKind.SCHEDULE_CHANGED);
+		vn3.setNotificationKind(VehicleNotifications.NotificationKind.NORMAL);
 		vn0.setId(200);
 		vn1.setId(201);
 		vn2.setId(202);

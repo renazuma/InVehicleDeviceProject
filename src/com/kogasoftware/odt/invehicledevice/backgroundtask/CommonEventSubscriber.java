@@ -275,8 +275,8 @@ public class CommonEventSubscriber {
 		final List<VehicleNotification> scheduleChangedVehicleNotifications = new LinkedList<VehicleNotification>();
 		final List<VehicleNotification> normalVehicleNotifications = new LinkedList<VehicleNotification>();
 		for (VehicleNotification vehicleNotification : e.vehicleNotifications) {
-			if (vehicleNotification.getNotificationType().equals(
-					VehicleNotifications.NotificationType.SCHEDULE_CHANGED)) {
+			if (vehicleNotification.getNotificationKind().equals(
+					VehicleNotifications.NotificationKind.SCHEDULE_CHANGED)) {
 				scheduleChangedVehicleNotifications.add(vehicleNotification);
 			} else {
 				normalVehicleNotifications.add(vehicleNotification);
