@@ -349,8 +349,15 @@ public class InVehicleDeviceActivity extends Activity {
 			return;
 		}
 		commonLogic.restoreStatus();
-		contentView.setVisibility(View.VISIBLE);
 		waitForStartUiLatch.countDown();
+
+		// UI開始時に、各部品が出たり消えたりするのでそれを隠すためViewの表示を遅延させる
+		(new Handler()).post(new Runnable() {
+			@Override
+			public void run() {
+				contentView.setVisibility(View.VISIBLE);
+			}
+		});
 	}
 
 	public void waitForStartUi() throws InterruptedException {
