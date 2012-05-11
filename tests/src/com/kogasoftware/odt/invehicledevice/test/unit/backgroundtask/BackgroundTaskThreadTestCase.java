@@ -1,7 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.backgroundtask;
 
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
@@ -13,6 +12,7 @@ import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentati
 public class BackgroundTaskThreadTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 
+	@Override
 	public void setUp() throws Exception {
 		super.setUp();
 		Thread.sleep(10 * 1000);
@@ -36,8 +36,11 @@ public class BackgroundTaskThreadTestCase extends
 	 * BackgroundTaskを大量に発生させても致命的なエラーは発生しない
 	 */
 	public void testMultipleInstances() throws Exception {
+		getActivity().moveTaskToBack(true); // ANRが起きないようにActivityをバックグラウンドへ退避
+		Thread.sleep(5000);
+
 		final Queue<Thread> ts = new ConcurrentLinkedQueue<Thread>();
-		for (int i = 0; i < 100; ++i) {
+		for (int i = 0; i < 100; i += 5) {
 			final int fi = i;
 			Thread t = new Thread() {
 				@Override
@@ -60,7 +63,7 @@ public class BackgroundTaskThreadTestCase extends
 			}
 			t.interrupt();
 		}
-		for (int i = 0; i < 100; ++i) {
+		for (int i = 0; i < 100; i += 5) {
 			final int fi = i;
 			Thread t = new Thread() {
 				@Override
