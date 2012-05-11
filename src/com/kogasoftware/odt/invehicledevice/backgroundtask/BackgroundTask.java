@@ -127,17 +127,6 @@ public class BackgroundTask {
 	private void onLoopStart() throws InterruptedException,
 			RejectedExecutionException, ExecutionException {
 
-		executorService.scheduleWithFixedDelay(vehicleNotificationReceiver, 0,
-				POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
-		executorService.scheduleWithFixedDelay(vehicleNotificationSender, 0,
-				POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
-		executorService.scheduleWithFixedDelay(operationScheduleSender, 0,
-				POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
-		executorService.scheduleWithFixedDelay(passengerRecordSender, 0,
-				POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
-		executorService.scheduleWithFixedDelay(locationSender, 0,
-				POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
-
 		voiceThread.start();
 		operationScheduleReceiveThread.start();
 
@@ -208,6 +197,17 @@ public class BackgroundTask {
 				}
 			}
 		});
+
+		executorService.scheduleWithFixedDelay(vehicleNotificationReceiver, 0,
+				POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
+		executorService.scheduleWithFixedDelay(vehicleNotificationSender, 0,
+				POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
+		executorService.scheduleWithFixedDelay(operationScheduleSender, 0,
+				POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
+		executorService.scheduleWithFixedDelay(passengerRecordSender, 0,
+				POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
+		executorService.scheduleWithFixedDelay(locationSender, 0,
+				POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
 	}
 
 	private void onLoopStop() {
