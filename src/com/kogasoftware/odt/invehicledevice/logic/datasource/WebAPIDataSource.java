@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -118,13 +119,22 @@ public class WebAPIDataSource implements DataSource {
 			public void run() {
 				try {
 					returnedReqkey.set(caller.call(synchronousCallback));
+					return;
+				} catch (RejectedExecutionException e) {
+					// TODO WebAPIに取り込み
+					// java.util.concurrent.RejectedExecutionException:pool=128/128,queue=10/10
+					// java.util.concurrent.ThreadPoolExecutor$AbortPolicy.rejectedExecution(ThreadPoolExecutor.java:1961)
+					// java.util.concurrent.ThreadPoolExecutor.reject(ThreadPoolExecutor.java:794)
+					// java.util.concurrent.ThreadPoolExecutor.execute(ThreadPoolExecutor.java:1315)
+					// android.os.AsyncTask.execute(AsyncTask.java:394)
+					// com.kogasoftware.odt.webapi.WebAPI.get(WebAPI.java:391)
+					outputException.set(new WebAPIException(true, e));
 				} catch (JSONException e) {
 					outputException.set(new WebAPIException(true, e));
-					latch.countDown();
 				} catch (WebAPIException e) {
 					outputException.set(e);
-					latch.countDown();
 				}
+				latch.countDown();
 			}
 		});
 

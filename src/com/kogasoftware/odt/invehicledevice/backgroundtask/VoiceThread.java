@@ -25,24 +25,27 @@ public class VoiceThread extends Thread {
 	}
 
 	private static final String TAG = VoiceThread.class.getSimpleName();
+	private final File dataDirectory;
 	private final File cacheDirectory;
-	private final File dictionaryDirectory;
-	private final File outputDirectory;
-	private final File voiceDirectory;
-
 	private final BlockingQueue<String> voices = new LinkedBlockingQueue<String>();
 
 	public VoiceThread(Context context) {
+		dataDirectory = context.getExternalFilesDir("open_jtalk");
 		cacheDirectory = context.getFilesDir();
-		String s = File.separator;
-		File base = context.getExternalFilesDir("open_jtalk");
-		voiceDirectory = new File(base + s + "voice" + s + "mei_normal");
-		dictionaryDirectory = new File(base + s + "dictionary");
-		outputDirectory = new File(base + s + "output");
 	}
 
 	@Override
 	public void run() {
+		if (!dataDirectory.isDirectory()) {
+			Log.w(TAG, "!(" + dataDirectory + ").isDirectory()");
+			return;
+		}
+		String s = File.separator;
+		File voiceDirectory = new File(dataDirectory + s + "voice" + s
+				+ "mei_normal");
+		File dictionaryDirectory = new File(dataDirectory + s + "dictionary");
+		File outputDirectory = new File(dataDirectory + s + "output");
+
 		try {
 			if (!outputDirectory.exists() && !outputDirectory.mkdirs()) {
 				throw new IOException("!\"" + outputDirectory + "\".mkdirs()");

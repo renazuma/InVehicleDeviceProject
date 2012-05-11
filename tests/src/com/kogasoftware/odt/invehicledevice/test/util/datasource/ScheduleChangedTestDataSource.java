@@ -139,7 +139,7 @@ public class ScheduleChangedTestDataSource implements DataSource {
 			VehicleNotification v = new VehicleNotification();
 			v.setId(1);
 			v.setBody("運行スケジュールが変更されました");
-			v.setNotificationType(VehicleNotifications.NotificationType.SCHEDULE_CHANGED);
+			v.setNotificationKind(VehicleNotifications.NotificationKind.SCHEDULE_CHANGED);
 			l.add(v);
 			return l;
 		} else if (phase.compareAndSet(30, 4)) {

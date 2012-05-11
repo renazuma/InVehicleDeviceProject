@@ -122,10 +122,14 @@ public class StatusAccess {
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		if (isClear) {
-			file.delete();
+			if (!file.delete()) {
+				Log.e(TAG, "!\"" + file + "\".delete()");
+			}
 		} else if (preferences.getBoolean(SharedPreferencesKey.CLEAR_REQUIRED,
 				false)) {
-			file.delete();
+			if (!file.delete()) {
+				Log.e(TAG, "!\"" + file + "\".delete()");
+			}
 			preferences.edit()
 					.putBoolean(SharedPreferencesKey.CLEAR_REQUIRED, false)
 					.commit();
@@ -163,10 +167,8 @@ public class StatusAccess {
 			}
 		}
 		status.file = file;
-		status.token = preferences
-				.getString(
-						SharedPreferencesKey.SERVER_IN_VEHICLE_DEVICE_TOKEN,
-						"");
+		status.token = preferences.getString(
+				SharedPreferencesKey.SERVER_IN_VEHICLE_DEVICE_TOKEN, "");
 		status.url = preferences.getString(SharedPreferencesKey.SERVER_URL,
 				WebAPIDataSource.DEFAULT_URL);
 		return status;

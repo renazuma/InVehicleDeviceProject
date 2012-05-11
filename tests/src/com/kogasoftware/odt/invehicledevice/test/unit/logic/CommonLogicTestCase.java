@@ -28,36 +28,4 @@ public class CommonLogicTestCase extends EmptyActivityInstrumentationTestCase2 {
 			cl.dispose();
 		}
 	}
-
-	/**
-	 * PauseEventを受信すると状態がStatus.PAUSEとなる
-	 */
-	public void testPauseEvent() throws Exception {
-		ServiceUnitStatusLog sul = sa.read(new Reader<ServiceUnitStatusLog>() {
-			@Override
-			public ServiceUnitStatusLog read(Status status) {
-				return status.serviceUnitStatusLog;
-			}
-		});
-		assertNotSame(sul.getStatus().get(), ServiceUnitStatusLogs.Status.PAUSE);
-		cl.postEvent(new PauseEvent());
-		getInstrumentation().waitForIdleSync();
-		assertEquals(sul.getStatus().get(), ServiceUnitStatusLogs.Status.PAUSE);
-	}
-
-	/**
-	 * StopEventを受信すると状態がStatus.STOPとなる
-	 */
-	public void testStopEvent() throws Exception {
-		ServiceUnitStatusLog sul = sa.read(new Reader<ServiceUnitStatusLog>() {
-			@Override
-			public ServiceUnitStatusLog read(Status status) {
-				return status.serviceUnitStatusLog;
-			}
-		});
-		assertNotSame(sul.getStatus().get(), ServiceUnitStatusLogs.Status.STOP);
-		cl.postEvent(new StopEvent());
-		getInstrumentation().waitForIdleSync();
-		assertEquals(sul.getStatus().get(), ServiceUnitStatusLogs.Status.STOP);
-	}
 }

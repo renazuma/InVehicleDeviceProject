@@ -45,7 +45,7 @@ public class PlatformPhaseView extends PhaseView {
 	private final ToggleButton showAllRidingReservationsButton;
 	private final ToggleButton showFutureReservationsButton;
 	private final ToggleButton showMissedReservationsButton;
-	private final Button addUnexpectedReservationButton;
+	// private final Button addUnexpectedReservationButton;
 	private final View reservationListFooterView;
 	private final Button reservationScrollDownButton;
 	private final Button reservationScrollUpButton;
@@ -97,8 +97,8 @@ public class PlatformPhaseView extends PhaseView {
 				.findViewById(R.id.show_future_reservations_button);
 		showMissedReservationsButton = (ToggleButton) reservationListFooterView
 				.findViewById(R.id.show_missed_reservations_button);
-		addUnexpectedReservationButton = (Button) reservationListFooterView
-				.findViewById(R.id.add_unexpected_reservation_button);
+		// addUnexpectedReservationButton = (Button) reservationListFooterView
+		// .findViewById(R.id.add_unexpected_reservation_button);
 		minutesRemainingTextView = (TextView) findViewById(R.id.minutes_remaining);
 		lastOperationScheduleLayout = (LinearLayout) findViewById(R.id.last_operation_schedule_layout);
 		nextOperationScheduleLayout = (LinearLayout) findViewById(R.id.next_operation_schedule_layout);
@@ -149,13 +149,13 @@ public class PlatformPhaseView extends PhaseView {
 			lastOperationScheduleLayout.setVisibility(VISIBLE);
 			showFutureReservationsButton.setVisibility(INVISIBLE);
 			showMissedReservationsButton.setVisibility(INVISIBLE);
-			addUnexpectedReservationButton.setVisibility(GONE);
+			// addUnexpectedReservationButton.setVisibility(GONE);
 		} else {
 			nextOperationScheduleLayout.setVisibility(VISIBLE);
 			lastOperationScheduleLayout.setVisibility(GONE);
 			showFutureReservationsButton.setVisibility(VISIBLE);
 			showMissedReservationsButton.setVisibility(VISIBLE);
-			addUnexpectedReservationButton.setVisibility(VISIBLE);
+			// addUnexpectedReservationButton.setVisibility(VISIBLE);
 		}
 
 		adapter = new PassengerRecordArrayAdapter(getContext(), commonLogic);
@@ -219,13 +219,13 @@ public class PlatformPhaseView extends PhaseView {
 					}
 				});
 		showMissedReservationsButton.setChecked(false);
-		addUnexpectedReservationButton
-				.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View view) {
-						showAddUnexpectedReservationDialog();
-					}
-				});
+		// addUnexpectedReservationButton
+		// .setOnClickListener(new OnClickListener() {
+		// @Override
+		// public void onClick(View view) {
+		// showAddUnexpectedReservationDialog();
+		// }
+		// });
 		setVisibility(View.VISIBLE);
 	}
 
