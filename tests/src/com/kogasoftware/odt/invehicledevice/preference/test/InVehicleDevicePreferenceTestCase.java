@@ -122,8 +122,8 @@ public class InVehicleDevicePreferenceTestCase extends
 		assertFalse(solo.searchText(url2));
 
 		setConnectionUrl(url2);
-		assertFalse(solo.searchText(url1));
 		assertTrue(solo.searchText(url2));
+		assertFalse(solo.searchText(url1));
 	}
 
 	public void testログイン名の入力内容が表示される() throws Exception {
@@ -135,8 +135,8 @@ public class InVehicleDevicePreferenceTestCase extends
 		assertFalse(solo.searchText(login2));
 
 		setLogin(login2);
-		assertFalse(solo.searchText(login1));
 		assertTrue(solo.searchText(login2));
+		assertFalse(solo.searchText(login1));
 	}
 
 	public void testパスワードの入力内容は表示されない() throws Exception {
