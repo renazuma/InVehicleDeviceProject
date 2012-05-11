@@ -7,6 +7,8 @@ import com.kogasoftware.odt.invehicledevice.backgroundtask.BackgroundTask;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
+import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
+import com.kogasoftware.odt.invehicledevice.test.util.datasource.DummyDataSource;
 
 public class BackgroundTaskTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
@@ -18,6 +20,7 @@ public class BackgroundTaskTestCase extends
 	public void setUp() throws Exception {
 		super.setUp();
 		Thread.sleep(10 * 1000);
+		TestUtil.setDataSource(new DummyDataSource());
 		sa = new StatusAccess(getActivity());
 		cl = new CommonLogic(getActivity(), getActivityHandler(), sa);
 	}
