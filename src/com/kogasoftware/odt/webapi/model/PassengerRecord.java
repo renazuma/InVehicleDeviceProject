@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class PassengerRecord extends Model {
-	private static final long serialVersionUID = 1908351716433248602L;
+	private static final long serialVersionUID = 7135870307320291502L;
 
 	public PassengerRecord() {
 	}
@@ -32,6 +32,7 @@ public class PassengerRecord extends Model {
 		setPayment(parseOptionalInteger(jsonObject, "payment"));
 		setReservationId(parseOptionalInteger(jsonObject, "reservation_id"));
 		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
+		setStatus(parseInteger(jsonObject, "status"));
 		setTimestamp(parseOptionalDate(jsonObject, "timestamp"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setArrivalOperationSchedule(OperationSchedule.parse(jsonObject, "arrival_operation_schedule"));
@@ -98,6 +99,7 @@ public class PassengerRecord extends Model {
 		jsonObject.put("payment", toJSON(getPayment().orNull()));
 		jsonObject.put("reservation_id", toJSON(getReservationId().orNull()));
 		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
+		jsonObject.put("status", toJSON(getStatus()));
 		jsonObject.put("timestamp", toJSON(getTimestamp().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
 
@@ -327,6 +329,16 @@ public class PassengerRecord extends Model {
 
 	public void clearServiceProviderId() {
 		this.serviceProviderId = Optional.<Integer>absent();
+	}
+
+	private Integer status = 0;
+
+	public Integer getStatus() {
+		return wrapNull(status);
+	}
+
+	public void setStatus(Integer status) {
+		this.status = wrapNull(status);
 	}
 
 	private Optional<Date> timestamp = Optional.<Date>absent();
