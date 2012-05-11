@@ -32,6 +32,9 @@ public class NotificationTestCase extends
 	public void setUp() throws Exception {
 		super.setUp();
 
+		mdst.setReservation(6);
+		mdst.setReservationCandidate(6,1,1,1);
+
 		DataSourceFactory.setInstance(mdst);
 
 		StatusAccess.clearSavedFile();
@@ -47,8 +50,13 @@ public class NotificationTestCase extends
 
 	public void test01_起動時は非表示() {
 
+		assertEquals(View.VISIBLE, solo.getView(R.id.drive_phase_view)
+				.getVisibility());
+
 		assertEquals(View.GONE, solo.getView(R.id.notification_modal_view)
 				.getVisibility());
+
+		solo.sleep(5000);
 
 	}
 
@@ -65,13 +73,12 @@ public class NotificationTestCase extends
 		}
 
 		if (vehicleNotifications.isEmpty()) {
-			System.out.println("vehicleNotifications Empty");
 			return;
 		}
 
 		getInstrumentation().waitForIdleSync();
 
-		System.out.println("vehicleNotifications Display");
+		solo.sleep(1000);
 
 		assertEquals(View.VISIBLE, solo.getView(R.id.notification_modal_view)
 				.getVisibility());
@@ -85,6 +92,8 @@ public class NotificationTestCase extends
 		getInstrumentation().waitForIdleSync();
 
 		solo.clickOnButton("はい");
+
+		solo.sleep(1000);
 
 		getInstrumentation().waitForIdleSync();
 
@@ -102,6 +111,8 @@ public class NotificationTestCase extends
 		solo.clickOnButton("いいえ");
 
 		getInstrumentation().waitForIdleSync();
+
+		solo.sleep(1000);
 
 		assertEquals(View.GONE, solo.getView(R.id.notification_modal_view)
 				.getVisibility());
@@ -124,14 +135,16 @@ public class NotificationTestCase extends
 		}
 
 		if (vehicleNotifications.isEmpty()) {
-			System.out.println("vehicleNotifications Empty");
 			return;
 		}
 
 		getInstrumentation().waitForIdleSync();
 
+		solo.sleep(1000);
+
 		assertEquals(View.VISIBLE, solo.getView(R.id.notification_modal_view)
 				.getVisibility());
+
 	}
 
 	public void test06_はいを押下して閉じ停車中に戻る() {
@@ -140,6 +153,8 @@ public class NotificationTestCase extends
 		solo.clickOnButton("はい");
 
 		getInstrumentation().waitForIdleSync();
+
+		solo.sleep(1000);
 
 		assertEquals(View.GONE, solo.getView(R.id.notification_modal_view)
 				.getVisibility());
@@ -176,7 +191,6 @@ public class NotificationTestCase extends
 		}
 
 		if (vehicleNotifications.isEmpty()) {
-			System.out.println("vehicleNotifications Empty");
 			return;
 		}
 
@@ -228,11 +242,12 @@ public class NotificationTestCase extends
 		}
 
 		if (vehicleNotifications.isEmpty()) {
-			System.out.println("vehicleNotifications Empty");
 			return;
 		}
 
 		getInstrumentation().waitForIdleSync();
+
+		solo.sleep(1000);
 
 		assertEquals(View.VISIBLE, solo.getView(R.id.notification_modal_view)
 				.getVisibility());
