@@ -21,6 +21,7 @@ public class EmptyActivityInstrumentationTestCase2 extends
 		ActivityInstrumentationTestCase2<EmptyActivity> {
 
 	public Solo solo;
+	private EmptyActivity a;
 
 	public EmptyActivityInstrumentationTestCase2() {
 		super("com.kogasoftware.odt.invehicledevice", EmptyActivity.class);
@@ -42,7 +43,7 @@ public class EmptyActivityInstrumentationTestCase2 extends
 				t.interrupt();
 			}
 		}).start();
-		
+
 		Handler h = CommonLogic.getActivityHandler(getActivity());
 		cdl.countDown();
 		return h;
@@ -84,12 +85,20 @@ public class EmptyActivityInstrumentationTestCase2 extends
 	protected void setUp() throws Exception {
 		super.setUp();
 		Thread.sleep(2000); // 別タスクがStatusを保存するかもしれないため、一定時間待つ
-		solo = new Solo(getInstrumentation(), getActivity());
+		a = getActivity();
+		solo = new Solo(getInstrumentation(), a);
 	}
 
 	@Override
 	protected void tearDown() throws Exception {
-		solo.finishInactiveActivities();
-		super.tearDown();
+		try {
+			if (solo != null) {
+				solo.finishOpenedActivities();
+			} else if (a != null) {
+				a.finish();
+			}
+		} finally {
+			super.tearDown();
+		}
 	}
 }
