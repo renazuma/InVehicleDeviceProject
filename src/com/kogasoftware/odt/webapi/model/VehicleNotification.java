@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class VehicleNotification extends Model {
-	private static final long serialVersionUID = 6639729513655457756L;
+	private static final long serialVersionUID = 3060550483008757877L;
 
 	public VehicleNotification() {
 	}
@@ -25,6 +25,7 @@ public class VehicleNotification extends Model {
 		setId(parseInteger(jsonObject, "id"));
 		setInVehicleDeviceId(parseInteger(jsonObject, "in_vehicle_device_id"));
 		setNotificationKind(parseInteger(jsonObject, "notification_kind"));
+		setOffline(parseOptionalBoolean(jsonObject, "offline"));
 		setOperatorId(parseInteger(jsonObject, "operator_id"));
 		setReadAt(parseOptionalDate(jsonObject, "read_at"));
 		setReservationId(parseOptionalInteger(jsonObject, "reservation_id"));
@@ -83,6 +84,7 @@ public class VehicleNotification extends Model {
 		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("in_vehicle_device_id", toJSON(getInVehicleDeviceId()));
 		jsonObject.put("notification_kind", toJSON(getNotificationKind()));
+		jsonObject.put("offline", toJSON(getOffline().orNull()));
 		jsonObject.put("operator_id", toJSON(getOperatorId()));
 		jsonObject.put("read_at", toJSON(getReadAt().orNull()));
 		jsonObject.put("reservation_id", toJSON(getReservationId().orNull()));
@@ -169,6 +171,24 @@ public class VehicleNotification extends Model {
 
 	public void setNotificationKind(Integer notificationKind) {
 		this.notificationKind = wrapNull(notificationKind);
+	}
+
+	private Optional<Boolean> offline = Optional.<Boolean>absent();
+
+	public Optional<Boolean> getOffline() {
+		return wrapNull(offline);
+	}
+
+	public void setOffline(Optional<Boolean> offline) {
+		this.offline = wrapNull(offline);
+	}
+
+	public void setOffline(Boolean offline) {
+		this.offline = Optional.fromNullable(offline);
+	}
+
+	public void clearOffline() {
+		this.offline = Optional.<Boolean>absent();
 	}
 
 	private Integer operatorId = 0;

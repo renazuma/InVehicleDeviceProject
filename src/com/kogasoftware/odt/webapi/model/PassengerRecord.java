@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class PassengerRecord extends Model {
-	private static final long serialVersionUID = 884293892892163950L;
+	private static final long serialVersionUID = 1908351716433248602L;
 
 	public PassengerRecord() {
 	}
@@ -24,7 +24,9 @@ public class PassengerRecord extends Model {
 		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
 		setDepartureOperationScheduleId(parseOptionalInteger(jsonObject, "departure_operation_schedule_id"));
 		setGetOffTime(parseOptionalDate(jsonObject, "get_off_time"));
+		setGetOffTimeOffline(parseOptionalBoolean(jsonObject, "get_off_time_offline"));
 		setGetOnTime(parseOptionalDate(jsonObject, "get_on_time"));
+		setGetOnTimeOffline(parseOptionalBoolean(jsonObject, "get_on_time_offline"));
 		setId(parseInteger(jsonObject, "id"));
 		setPassengerCount(parseInteger(jsonObject, "passenger_count"));
 		setPayment(parseOptionalInteger(jsonObject, "payment"));
@@ -88,7 +90,9 @@ public class PassengerRecord extends Model {
 		jsonObject.put("deleted_at", toJSON(getDeletedAt().orNull()));
 		jsonObject.put("departure_operation_schedule_id", toJSON(getDepartureOperationScheduleId().orNull()));
 		jsonObject.put("get_off_time", toJSON(getGetOffTime().orNull()));
+		jsonObject.put("get_off_time_offline", toJSON(getGetOffTimeOffline().orNull()));
 		jsonObject.put("get_on_time", toJSON(getGetOnTime().orNull()));
+		jsonObject.put("get_on_time_offline", toJSON(getGetOnTimeOffline().orNull()));
 		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("passenger_count", toJSON(getPassengerCount()));
 		jsonObject.put("payment", toJSON(getPayment().orNull()));
@@ -197,6 +201,24 @@ public class PassengerRecord extends Model {
 		this.getOffTime = Optional.<Date>absent();
 	}
 
+	private Optional<Boolean> getOffTimeOffline = Optional.<Boolean>absent();
+
+	public Optional<Boolean> getGetOffTimeOffline() {
+		return wrapNull(getOffTimeOffline);
+	}
+
+	public void setGetOffTimeOffline(Optional<Boolean> getOffTimeOffline) {
+		this.getOffTimeOffline = wrapNull(getOffTimeOffline);
+	}
+
+	public void setGetOffTimeOffline(Boolean getOffTimeOffline) {
+		this.getOffTimeOffline = Optional.fromNullable(getOffTimeOffline);
+	}
+
+	public void clearGetOffTimeOffline() {
+		this.getOffTimeOffline = Optional.<Boolean>absent();
+	}
+
 	private Optional<Date> getOnTime = Optional.<Date>absent();
 
 	public Optional<Date> getGetOnTime() {
@@ -213,6 +235,24 @@ public class PassengerRecord extends Model {
 
 	public void clearGetOnTime() {
 		this.getOnTime = Optional.<Date>absent();
+	}
+
+	private Optional<Boolean> getOnTimeOffline = Optional.<Boolean>absent();
+
+	public Optional<Boolean> getGetOnTimeOffline() {
+		return wrapNull(getOnTimeOffline);
+	}
+
+	public void setGetOnTimeOffline(Optional<Boolean> getOnTimeOffline) {
+		this.getOnTimeOffline = wrapNull(getOnTimeOffline);
+	}
+
+	public void setGetOnTimeOffline(Boolean getOnTimeOffline) {
+		this.getOnTimeOffline = Optional.fromNullable(getOnTimeOffline);
+	}
+
+	public void clearGetOnTimeOffline() {
+		this.getOnTimeOffline = Optional.<Boolean>absent();
 	}
 
 	private Integer id = 0;

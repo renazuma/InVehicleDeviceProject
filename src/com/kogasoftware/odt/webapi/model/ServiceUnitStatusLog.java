@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class ServiceUnitStatusLog extends Model {
-	private static final long serialVersionUID = 2198726136175473299L;
+	private static final long serialVersionUID = 414793974615313669L;
 
 	public ServiceUnitStatusLog() {
 	}
@@ -23,6 +23,7 @@ public class ServiceUnitStatusLog extends Model {
 		setId(parseInteger(jsonObject, "id"));
 		setLatitude(parseBigDecimal(jsonObject, "latitude"));
 		setLongitude(parseBigDecimal(jsonObject, "longitude"));
+		setOffline(parseOptionalBoolean(jsonObject, "offline"));
 		setOrientation(parseOptionalInteger(jsonObject, "orientation"));
 		setServiceUnitId(parseOptionalInteger(jsonObject, "service_unit_id"));
 		setStatus(parseOptionalInteger(jsonObject, "status"));
@@ -71,6 +72,7 @@ public class ServiceUnitStatusLog extends Model {
 		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("latitude", toJSON(getLatitude()));
 		jsonObject.put("longitude", toJSON(getLongitude()));
+		jsonObject.put("offline", toJSON(getOffline().orNull()));
 		jsonObject.put("orientation", toJSON(getOrientation().orNull()));
 		jsonObject.put("service_unit_id", toJSON(getServiceUnitId().orNull()));
 		jsonObject.put("status", toJSON(getStatus().orNull()));
@@ -121,6 +123,24 @@ public class ServiceUnitStatusLog extends Model {
 
 	public void setLongitude(BigDecimal longitude) {
 		this.longitude = wrapNull(longitude);
+	}
+
+	private Optional<Boolean> offline = Optional.<Boolean>absent();
+
+	public Optional<Boolean> getOffline() {
+		return wrapNull(offline);
+	}
+
+	public void setOffline(Optional<Boolean> offline) {
+		this.offline = wrapNull(offline);
+	}
+
+	public void setOffline(Boolean offline) {
+		this.offline = Optional.fromNullable(offline);
+	}
+
+	public void clearOffline() {
+		this.offline = Optional.<Boolean>absent();
 	}
 
 	private Optional<Integer> orientation = Optional.<Integer>absent();

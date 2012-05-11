@@ -13,15 +13,17 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class OperationRecord extends Model {
-	private static final long serialVersionUID = 7091919714359503235L;
+	private static final long serialVersionUID = 511710840269911056L;
 
 	public OperationRecord() {
 	}
 
 	public OperationRecord(JSONObject jsonObject) throws JSONException, ParseException {
 		setArrivedAt(parseOptionalDate(jsonObject, "arrived_at"));
+		setArrivedAtOffline(parseOptionalBoolean(jsonObject, "arrived_at_offline"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setDepartedAt(parseOptionalDate(jsonObject, "departed_at"));
+		setDepartedAtOffline(parseOptionalBoolean(jsonObject, "departed_at_offline"));
 		setId(parseInteger(jsonObject, "id"));
 		setOperationScheduleId(parseOptionalInteger(jsonObject, "operation_schedule_id"));
 		setServiceUnitId(parseOptionalInteger(jsonObject, "service_unit_id"));
@@ -70,8 +72,10 @@ public class OperationRecord extends Model {
 	public JSONObject toJSONObject() throws JSONException {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("arrived_at", toJSON(getArrivedAt().orNull()));
+		jsonObject.put("arrived_at_offline", toJSON(getArrivedAtOffline().orNull()));
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
 		jsonObject.put("departed_at", toJSON(getDepartedAt().orNull()));
+		jsonObject.put("departed_at_offline", toJSON(getDepartedAtOffline().orNull()));
 		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("operation_schedule_id", toJSON(getOperationScheduleId().orNull()));
 		jsonObject.put("service_unit_id", toJSON(getServiceUnitId().orNull()));
@@ -105,6 +109,24 @@ public class OperationRecord extends Model {
 		this.arrivedAt = Optional.<Date>absent();
 	}
 
+	private Optional<Boolean> arrivedAtOffline = Optional.<Boolean>absent();
+
+	public Optional<Boolean> getArrivedAtOffline() {
+		return wrapNull(arrivedAtOffline);
+	}
+
+	public void setArrivedAtOffline(Optional<Boolean> arrivedAtOffline) {
+		this.arrivedAtOffline = wrapNull(arrivedAtOffline);
+	}
+
+	public void setArrivedAtOffline(Boolean arrivedAtOffline) {
+		this.arrivedAtOffline = Optional.fromNullable(arrivedAtOffline);
+	}
+
+	public void clearArrivedAtOffline() {
+		this.arrivedAtOffline = Optional.<Boolean>absent();
+	}
+
 	private Date createdAt = new Date();
 
 	public Date getCreatedAt() {
@@ -131,6 +153,24 @@ public class OperationRecord extends Model {
 
 	public void clearDepartedAt() {
 		this.departedAt = Optional.<Date>absent();
+	}
+
+	private Optional<Boolean> departedAtOffline = Optional.<Boolean>absent();
+
+	public Optional<Boolean> getDepartedAtOffline() {
+		return wrapNull(departedAtOffline);
+	}
+
+	public void setDepartedAtOffline(Optional<Boolean> departedAtOffline) {
+		this.departedAtOffline = wrapNull(departedAtOffline);
+	}
+
+	public void setDepartedAtOffline(Boolean departedAtOffline) {
+		this.departedAtOffline = Optional.fromNullable(departedAtOffline);
+	}
+
+	public void clearDepartedAtOffline() {
+		this.departedAtOffline = Optional.<Boolean>absent();
 	}
 
 	private Integer id = 0;
