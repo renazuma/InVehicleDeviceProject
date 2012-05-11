@@ -41,7 +41,7 @@ import com.kogasoftware.odt.invehicledevice.ui.modalview.NotificationModalView;
 public class BackgroundTask {
 	private static final String TAG = BackgroundTaskThread.class
 			.getSimpleName();
-	private static final long POLLING_PERIOD_MILLIS = 5000;
+	private static final long POLLING_PERIOD_MILLIS = 30 * 1000;
 	private static final Integer NUM_THREADS = 3;
 
 	private final LocationManager locationManager;
