@@ -132,13 +132,16 @@ public class DummyDataSource implements DataSource {
 
 	@Override
 	public List<VehicleNotification> getVehicleNotifications()
-			throws WebAPIException {
+
+		throws WebAPIException {
+
 		try {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			throw new WebAPIException(false, e);
 		}
+
 
 		List<VehicleNotification> l = new LinkedList<VehicleNotification>();
 		if (nextNotifyDate.after(new Date())) {
@@ -147,8 +150,9 @@ public class DummyDataSource implements DataSource {
 		nextNotifyDate = new Date(new Date().getTime() + 10 * 1000);
 		VehicleNotification n = new VehicleNotification();
 		n.setBody("テスト通知が行われました " + new Date());
-		// l.add(n); // TODO
+//		l.add(n);
 		return l;
+
 	}
 
 	@Override

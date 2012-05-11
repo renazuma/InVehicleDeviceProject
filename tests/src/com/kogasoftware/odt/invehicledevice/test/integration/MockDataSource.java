@@ -72,16 +72,26 @@ public class MockDataSource implements DataSource {
 	}
 
 	@Override
-	public List<VehicleNotification> getVehicleNotifications() {
-		List<VehicleNotification> l = new LinkedList<VehicleNotification>();
-		if (nextNotifyDate.before(new Date())) {
-			return l;
+	public List<VehicleNotification> getVehicleNotifications()
+		throws WebAPIException {
+
+		try {
+			Thread.sleep(1);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new WebAPIException(false, e);
 		}
-		nextNotifyDate = new Date(new Date().getTime() + 6 * 1000);
+
+
+		List<VehicleNotification> l = new LinkedList<VehicleNotification>();
+
+		nextNotifyDate = new Date(new Date().getTime() + 10 * 1000);
 		VehicleNotification n = new VehicleNotification();
-		n.setBody("テスト通知が行われました");
+		n.setBody("テスト通知が行われました " + new Date());
+
 		l.add(n);
 		return l;
+
 	}
 
 	@Override
