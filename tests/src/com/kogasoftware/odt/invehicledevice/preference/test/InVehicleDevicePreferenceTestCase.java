@@ -70,7 +70,7 @@ public class InVehicleDevicePreferenceTestCase extends
 		getInstrumentation().waitForIdleSync();
 		for (int i = 0; i < 5; ++i) {
 			if (solo.searchText(getInstrumentation().getTargetContext()
-					.getResources().getString(resourceId))) {
+					.getResources().getString(resourceId), true)) {
 				return true;
 			}
 		}
@@ -118,12 +118,12 @@ public class InVehicleDevicePreferenceTestCase extends
 		String url2 = "http://localhost:54321";
 
 		setConnectionUrl(url1);
-		assertTrue(solo.searchText(url1));
-		assertFalse(solo.searchText(url2));
+		assertTrue(solo.searchText(url1, true));
+		assertFalse(solo.searchText(url2, true));
 
 		setConnectionUrl(url2);
-		assertTrue(solo.searchText(url2));
-		assertFalse(solo.searchText(url1));
+		assertTrue(solo.searchText(url2, true));
+		assertFalse(solo.searchText(url1, true));
 	}
 
 	public void testログイン名の入力内容が表示される() throws Exception {
@@ -131,12 +131,12 @@ public class InVehicleDevicePreferenceTestCase extends
 		String login2 = "World";
 
 		setLogin(login1);
-		assertTrue(solo.searchText(login1));
-		assertFalse(solo.searchText(login2));
+		assertTrue(solo.searchText(login1, true));
+		assertFalse(solo.searchText(login2, true));
 
 		setLogin(login2);
-		assertTrue(solo.searchText(login2));
-		assertFalse(solo.searchText(login1));
+		assertTrue(solo.searchText(login2, true));
+		assertFalse(solo.searchText(login1, true));
 	}
 
 	public void testパスワードの入力内容は表示されない() throws Exception {
@@ -144,12 +144,12 @@ public class InVehicleDevicePreferenceTestCase extends
 		String password2 = "abcde";
 
 		setPassword(password1);
-		assertFalse(solo.searchText(password1));
-		assertFalse(solo.searchText(password2));
+		assertFalse(solo.searchText(password1, true));
+		assertFalse(solo.searchText(password2, true));
 
 		setPassword(password2);
-		assertFalse(solo.searchText(password1));
-		assertFalse(solo.searchText(password2));
+		assertFalse(solo.searchText(password1, true));
+		assertFalse(solo.searchText(password2, true));
 	}
 
 	public void test正しい設定を行うと終了する() throws Exception {
