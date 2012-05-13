@@ -57,6 +57,8 @@
             -post-build
             -pre-clean
     -->
+    <target name="-pre-ci" depends="push-openjtalk-files">
+    </target>
     <import file="custom_rules.xml" optional="true" />
 
     <!-- Import the actual build file.
