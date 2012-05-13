@@ -57,6 +57,13 @@
             -post-build
             -pre-clean
     -->
+    <target name="-pre-build">
+      <copy todir=".">
+        <fileset dir="InVehicleDevice">
+          <include name="src/com/kogasoftware/odt/invehicledevice/logic/SharedPreferencesKey.java"/>
+        </fileset>
+      </copy>
+    </target>    
     <import file="custom_rules.xml" optional="true" />
 
     <!-- Import the actual build file.
