@@ -1,0 +1,12 @@
+[submodule "AndroidCommon"]
+	path = AndroidCommon
+	url = git@github.com:odt/AndroidCommon.git
+[submodule "InVehicleDeviceTestWeb"]
+	path = InVehicleDeviceTestWeb
+	url = git@github.com:odt/InVehicleDeviceTestWeb.git
+[submodule "OperatorWeb"]
+	path = OperatorWeb
+	url = git@github.com:odt/OperatorWeb.git
+[submodule "AndroidWebTestAPI"]
+	path = AndroidWebTestAPI
+	url = git@github.com:odt/AndroidWebTestAPI.git

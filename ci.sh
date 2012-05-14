@@ -2,9 +2,14 @@
 
 PATH=$PATH:/usr/local/bin
 
-for repo in AndroidCommon AndroidWebTestAPI InVehicleDeviceTestWeb OperatorWeb ; do
-    rm -fr $repo
-    git clone -b master git@github.com:odt/$repo.git
+git submodule update --init
+git submodule foreach 'git checkout master; git pull'
+
+for mysql_socket in \
+  /var/lib/mysql/mysql.sock /var/run/mysqld/mysqld.sock; do
+  if [ -e $mysql_socket ]; then
+    break
+  fi
 done
 
 cat <<EOF >> database.yml
@@ -15,20 +20,20 @@ development:
   database: odt_webapi_development
   pool: 5
   username: root
-  socket: /var/lib/mysql/mysql.sock
+  socket: $mysql_socket
 EOF
 
 cd OperatorWeb
 cp ../database.yml config/database.yml
 bundle install
-bundle exec rake db:drop db:create db:migrate
+#bundle exec rake db:migrate:reset
+bundle exec rake db:migrate
 bundle exec rails server -d -p 3334
 cd ..
 
 cd InVehicleDeviceTestWeb
 cp ../database.yml config/database.yml
 bundle install
-#bundle exec rake db:drop db:create db:migrate
 bundle exec rails server -d -p 3333
 cd ..
 
@@ -44,10 +49,21 @@ sed 's/192\.168\.104\.63:3000/10.0.2.2:3334/' --in-place tests/src/com/kogasoftw
 sed 's/192\.168\.104\.63:3333/10.0.2.2:3333/' --in-place tests/src/com/kogasoftware/odt/webapi/test/WebAPITestCase.java
 sed 's/192\.168\.104\.63:3333/10.0.2.2:3333/' --in-place AndroidWebTestAPI/tests/src/com/kogasoftware/odt/webtestapi/test/WebTestAPITestCase.java
 
-. AndroidCommon/ci_setup.sh $*
+# android sdkへのパスを追加
+if [ "$1" != "" ]; then
+    export PATH="$1/tools:$1/platform-tools:$PATH"
+    echo PATH=$PATH
+fi
 
-cd `dirname $0`
-ant $ant_arg lib-ci
+# adbやantに渡す引数を設定
+if [ "$2" != "" ]; then
+    adb_arg="-s $2"
+    ant_arg="-Dadb.device.arg=\"$adb_arg\""
+    echo adb_arg=$adb_arg
+    echo ant_arg=$ant_arg
+fi
+
+ant $ant_arg -f AndroidCommon/ci.xml
 
 cd OperatorWeb
 (kill -INT $(cat tmp/pids/server.pid)) || true
