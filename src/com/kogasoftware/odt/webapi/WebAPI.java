@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.http.HttpEntity;
@@ -225,23 +224,6 @@ public class WebAPI {
 		
 		protected T doHttpSession(HttpRequestBase request,
 				ResponseConverter<T> responseConverter) throws WebAPIException {
-
-			CacheKey cacheKey;
-			{ // TODO: キャッシュ
-				String method = request.getMethod();
-				String uri = request.getURI().toString();
-				byte[] entity = new byte[] {};
-				if (request instanceof HttpEntityEnclosingRequestBase) {
-					try {
-						entity = ByteStreams
-								.toByteArray(((HttpEntityEnclosingRequestBase) request)
-										.getEntity().getContent());
-					} catch (IOException e) {
-						throw new WebAPIException(false, e);
-					}
-				}
-				cacheKey = new CacheKey(method, uri, entity);
-			}
 
 			HttpClient httpClient = new DefaultHttpClient();
 			HttpResponse httpResponse;
