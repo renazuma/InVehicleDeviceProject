@@ -10,9 +10,9 @@ import android.widget.TextView;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.backgroundtask.VoiceThread.SpeakEvent;
-import com.kogasoftware.odt.invehicledevice.logic.VehicleNotifications;
 import com.kogasoftware.odt.invehicledevice.logic.event.VehicleNotificationRepliedEvent;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
+import com.kogasoftware.odt.webapi.model.VehicleNotifications;
 
 public class NotificationModalView extends ModalView {
 	public static class ShowEvent {

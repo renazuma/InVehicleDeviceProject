@@ -8,12 +8,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.backgroundtask.VoiceThread.SpeakEvent;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.logic.Identifiables;
-import com.kogasoftware.odt.invehicledevice.logic.ServiceUnitStatusLogs;
 import com.kogasoftware.odt.invehicledevice.logic.Status;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
-import com.kogasoftware.odt.invehicledevice.logic.VehicleNotifications;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterDrivePhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterFinishPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterPlatformPhaseEvent;
@@ -34,10 +31,13 @@ import com.kogasoftware.odt.invehicledevice.logic.event.VehicleNotificationRecei
 import com.kogasoftware.odt.invehicledevice.logic.event.VehicleNotificationReceivedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.VehicleNotificationRepliedEvent;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.NotificationModalView;
+import com.kogasoftware.odt.webapi.Identifiables;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
+import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLogs;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
+import com.kogasoftware.odt.webapi.model.VehicleNotifications;
 
 /**
  * 共通の内部データ処理

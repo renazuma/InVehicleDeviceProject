@@ -8,7 +8,6 @@ import android.util.Log;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic.PayTiming;
-import com.kogasoftware.odt.invehicledevice.logic.Reservations;
 import com.kogasoftware.odt.invehicledevice.logic.Status;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
@@ -19,6 +18,7 @@ import com.kogasoftware.odt.invehicledevice.logic.event.UnexpectedReservationAdd
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
+import com.kogasoftware.odt.webapi.model.Reservations;
 import com.kogasoftware.odt.webapi.model.User;
 
 /**
