@@ -9,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -42,7 +43,12 @@ public class VTextView extends View {
 					Bitmap newBitmap = Bitmap.createBitmap(localWidth,
 							localHeight, Bitmap.Config.ARGB_8888);
 					Bitmap oldBitmap = baseBitmap.getAndSet(newBitmap);
-					invalidate();
+					invalidateHandler.post(new Runnable() {
+						@Override
+						public void run() {
+							invalidate();
+						}
+					});
 					oldBitmap.recycle();
 				}
 			} catch (InterruptedException e) {
@@ -55,17 +61,18 @@ public class VTextView extends View {
 	private static final float FONT_SPACING_RATE = 0.8f;
 	private static final String TAG = VTextView.class.getSimpleName();
 	private static final int TOP_SPACE = 0;
-	private AtomicReference<Bitmap> baseBitmap = new AtomicReference<Bitmap>(
+	private final AtomicReference<Bitmap> baseBitmap = new AtomicReference<Bitmap>(
 			Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888));
+	private final Handler invalidateHandler = new Handler();
 	private final Canvas canvas = new Canvas(baseBitmap.get());
-	private volatile int height = 0; // 別スレッドから読み出すためvolatileをつける
 	private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-	private String text = "";
 	private final Typeface typeFace = Typeface
 			.defaultFromStyle(Typeface.NORMAL);
 	private final Semaphore updateBitmapStartSemaphore = new Semaphore(0);
+	private String text = "";
 	private Thread updateBitmapThread = new EmptyThread();
 	private volatile int width = 0; // 別スレッドから読み出すためvolatileをつける
+	private volatile int height = 0; // 別スレッドから読み出すためvolatileをつける
 
 	public VTextView(Context context, AttributeSet attrs) {
 		super(context, attrs);
