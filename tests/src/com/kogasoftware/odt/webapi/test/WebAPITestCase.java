@@ -28,8 +28,8 @@ import com.kogasoftware.odt.webtestapi.GenerateMaster;
 import com.kogasoftware.odt.webtestapi.GenerateRecord;
 
 public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivity> {
-	public static final String SERVER_HOST = "http://192.168.104.63:3000";
-	public static final String TEST_SERVER_HOST = "http://192.168.104.63:3333";
+	public static final String SERVER_HOST = "http://192.168.104.173:3334";
+	public static final String TEST_SERVER_HOST = "http://192.168.104.173:3333";
 
 	public WebAPITestCase() {
 		super("com.kogasoftware.odt.webapi.test", DummyActivity.class);
