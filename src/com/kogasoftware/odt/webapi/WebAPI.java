@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -44,9 +42,6 @@ import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class WebAPI {
-	private static final Integer MAX_REQUEST_RETRY = 5;
-	private static final Integer REQUEST_RETRY_EXPIRE_MINUTES = 5;
-
 	private String authenticationToken;
 	private String host;
 
@@ -95,68 +90,7 @@ public class WebAPI {
 		}
 	}
 
-	protected static class RetryStatus {
-		private final Date lastRetry = new Date();
-		private final Integer retryCount;
-
-		protected RetryStatus(Integer retryCount) {
-			if (retryCount.intValue() >= MAX_REQUEST_RETRY) {
-				retryCount = MAX_REQUEST_RETRY;
-			}
-			this.retryCount = retryCount;
-		}
-
-		public RetryStatus() {
-			this(0);
-		}
-
-		public Boolean isRetryable() {
-			return !isExpired() && retryCount.intValue() < MAX_REQUEST_RETRY;
-		}
-
-		public Boolean isExpired() {
-			Calendar calendar = Calendar.getInstance();
-			calendar.add(Calendar.MINUTE, -REQUEST_RETRY_EXPIRE_MINUTES);
-			return calendar.getTime().after(lastRetry);
-		}
-
-		public RetryStatus update() {
-			return new RetryStatus(retryCount + 1);
-		}
-	}
-
-	protected Map<CacheKey, RetryStatus> retryStatuses = new HashMap<CacheKey, RetryStatus>();
-
-	/**
-	 * リトライすることでリクエストが成功するかどうかが曖昧なエラーが発生した際に、リトライ回数を制限する関数
-	 * この関数が同一のキーに対して、一定時間内に一定回数以上呼ばれるとfalseを返す
-	 * 。それまではtrueを返す。これらをWebAPIExceptionの引数とする
-	 * 
-	 * ネットワークエラーなど、リトライすることでリクエストが成功する可能性が高いエラーが発生した場合、 この関数は使わずリトライ可能決め打ちとする。
-	 * 
-	 * HTTP4XXが帰ってきた時のようなリトライしてもリクエストは成功しない可能性が高いエラーが発生した場合 リトライ不可の決め打ちとする
-	 */
-	protected Boolean calculateRetryable(CacheKey key) {
-		// 古いエントリを削除
-		for (Iterator<Entry<CacheKey, RetryStatus>> iterator = retryStatuses
-				.entrySet().iterator(); iterator.hasNext();) {
-			RetryStatus retryStatus = iterator.next().getValue();
-			if (retryStatus.isExpired()) {
-				iterator.remove();
-			}
-		}
-
-		// リトライ可能か判断
-		RetryStatus retryStatus = retryStatuses.get(key);
-		if (retryStatus == null) {
-			retryStatus = new RetryStatus();
-		}
-		retryStatuses.put(key, retryStatus.update());
-		return retryStatus.isRetryable();
-	}
-
 	protected static final String PATH_PREFIX = "/in_vehicle_devices";
-
 	public static final String PATH_LOGIN = PATH_PREFIX + "/sign_in";
 	public static final String PATH_NOTIFICATIONS = PATH_PREFIX + "/vehicle_notifications";
 	public static final String PATH_SCHEDULES = PATH_PREFIX + "/operation_schedules";
