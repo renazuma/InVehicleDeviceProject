@@ -21,7 +21,7 @@ public class NotificationTestCase extends
 	private Solo solo;
 
 	MockDataSource mdst = new MockDataSource();
-	
+
 	final Integer WAIT_MILLIS = 7000;
 
 	public NotificationTestCase() {
@@ -34,6 +34,7 @@ public class NotificationTestCase extends
 	public void setUp() throws Exception {
 		super.setUp();
 
+		mdst.setNotificationFlag(true);
 		mdst.setReservation(6);
 		mdst.setReservationCandidate(6,1,1,1);
 
@@ -223,7 +224,7 @@ public class NotificationTestCase extends
 		solo.clickOnButton("いいえ");
 
 		getInstrumentation().waitForIdleSync();
-		
+
 		assertEquals(View.GONE, solo.getView(R.id.notification_modal_view)
 				.getVisibility());
 

@@ -44,7 +44,7 @@ public class WaitingTestCase extends
 
 		solo = new Solo(getInstrumentation(), getActivity());
 		assertTrue(TestUtil.waitForStartUi(getActivity()));
-		
+
 		// デフォルトで停車中にする
 		if (solo.searchButton("到着しました")) {
 			solo.clickOnButton("到着しました");
@@ -61,7 +61,6 @@ public class WaitingTestCase extends
 		dataset(6);
 
 	}
-
 	public void test01_メモボタンを押すとメモ画面が表示() {
 
 		solo.clickOnButton("メモ");
@@ -131,11 +130,13 @@ public class WaitingTestCase extends
 
 	public void test09_下スクロール() {
 
-		assertTrue(solo.searchText("予約番号11", 0, false));
+		assertTrue(solo.searchText("名字a", 0, false));
+		assertTrue(solo.searchText("1011", 0, false));
 
 		solo.clickOnButton("下へ移動");
 
-		assertFalse(solo.searchText("予約番号11", 0, false));
+		assertFalse(solo.searchText("名字a", 0, false));
+		assertFalse(solo.searchText("1011", 0, false));
 
 	}
 
@@ -145,7 +146,8 @@ public class WaitingTestCase extends
 
 		solo.clickOnButton("上へ移動");
 
-		assertTrue(solo.searchText("予約番号11", 0, false));
+		assertTrue(solo.searchText("名字a", 0, false));
+		assertTrue(solo.searchText("1011", 0, false));
 
 	}
 
@@ -222,6 +224,22 @@ public class WaitingTestCase extends
 		assertTrue(solo.searchText("乗車中の乗客全員を表示"));
 
 		solo.clickOnText("乗車中の乗客全員を表示");
+
+	}
+
+	public void test22_過去の乗降場で未乗車の乗客を表示オンオフ() {
+
+		assertTrue(solo.searchText("過去の乗降場で未乗車の乗客を表示"));
+
+		solo.clickOnText("過去の乗降場で未乗車の乗客を表示");
+
+	}
+
+	public void test21_未来の乗客を表示オンオフ() {
+
+		assertTrue(solo.searchText("未来の乗客を表示"));
+
+		solo.clickOnText("未来の乗客を表示");
 
 	}
 }
