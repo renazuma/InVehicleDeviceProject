@@ -60,8 +60,8 @@ public class PlatformPhaseViewTestCase extends
 		}
 	}
 
-	public void testEnterDrivePhaseEventで非表示() throws Exception {
-		testEnterPlatformPhaseEventで表示();
+	public void xtestEnterDrivePhaseEventで非表示() throws Exception {
+		xtestEnterPlatformPhaseEventで表示();
 
 		cl.postEvent(new EnterDrivePhaseEvent());
 		getInstrumentation().waitForIdleSync();
@@ -70,8 +70,8 @@ public class PlatformPhaseViewTestCase extends
 		assertNotSame(pv.getVisibility(), View.VISIBLE);
 	}
 
-	public void testEnterFinishPhaseEventで非表示() throws Exception {
-		testEnterPlatformPhaseEventで表示();
+	public void xtestEnterFinishPhaseEventで非表示() throws Exception {
+		xtestEnterPlatformPhaseEventで表示();
 
 		cl.postEvent(new EnterFinishPhaseEvent());
 		getInstrumentation().waitForIdleSync();
@@ -80,7 +80,7 @@ public class PlatformPhaseViewTestCase extends
 		assertNotSame(pv.getVisibility(), View.VISIBLE);
 	}
 
-	public void testEnterPlatformPhaseEventで表示() throws Exception {
+	public void xtestEnterPlatformPhaseEventで表示() throws Exception {
 		runOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
@@ -95,7 +95,7 @@ public class PlatformPhaseViewTestCase extends
 		assertEquals(pv.getVisibility(), View.VISIBLE);
 	}
 
-	public void testStartCheckEventを送るとStartCheckModalView_ShowEventを送出()
+	public void xtestStartCheckEventを送るとStartCheckModalView_ShowEventを送出()
 			throws Exception {
 		Subscriber<StartCheckModalView.ShowEvent> s = Subscriber.of(StartCheckModalView.ShowEvent.class, cl);
 		cl.postEvent(new PlatformPhaseView.StartCheckEvent());
