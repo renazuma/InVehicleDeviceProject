@@ -26,6 +26,7 @@ public class SavePreferencesActivity extends Activity {
 			return;
 		}
 		SharedPreferences.Editor editor = preferences.edit();
+		editor.clear();
 		editor.putString(SharedPreferencesKey.SERVER_URL, Objects.firstNonNull(
 				bundle.getString(SharedPreferencesKey.SERVER_URL),
 				WebAPIDataSource.DEFAULT_URL));

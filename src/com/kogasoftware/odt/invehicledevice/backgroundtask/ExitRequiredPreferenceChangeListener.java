@@ -30,7 +30,7 @@ public class ExitRequiredPreferenceChangeListener implements
 			Log.i(TAG, "SharedPreferences changed, exit!");
 			commonLogic.postEvent(new ExitEvent());
 			sharedPreferences.edit()
-					.putBoolean(SharedPreferencesKey.EXIT_REQUIRED, true)
+					.putBoolean(SharedPreferencesKey.EXIT_REQUIRED, false)
 					.commit();
 		}
 	}

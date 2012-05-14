@@ -12,37 +12,23 @@ import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.SharedPreferencesKey;
 import com.kogasoftware.odt.invehicledevice.logic.event.ExitEvent;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
+import com.kogasoftware.odt.invehicledevice.test.util.Subscriber;
 
 public class ExitRequiredPreferenceChangeListenerTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 
-	static class ExitEventWaiter {
-		CountDownLatch cdl = new CountDownLatch(1);
-
-		public Boolean await() throws InterruptedException {
-			return cdl.await(5, TimeUnit.SECONDS);
-		}
-
-		@Subscribe
-		public void exit(ExitEvent e) {
-			cdl.countDown();
-		}
-	}
-
 	CommonLogic cl;
-	ExitEventWaiter eew;
+	Subscriber<ExitEvent> s;
 	ExitRequiredPreferenceChangeListener erpcl;
 	SharedPreferences sp;
 
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		eew = new ExitEventWaiter();
 		cl = newCommonLogic();
-		cl.registerEventListener(eew);
+		s = Subscriber.of(ExitEvent.class, cl);
 		erpcl = new ExitRequiredPreferenceChangeListener(cl);
 		sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
-
 	}
 
 	@Override
@@ -59,7 +45,8 @@ public class ExitRequiredPreferenceChangeListenerTestCase extends
 	public void testOnSharedPreferenceChanged1() throws Exception {
 		sp.edit().putBoolean(SharedPreferencesKey.EXIT_REQUIRED, true).commit();
 		erpcl.onSharedPreferenceChanged(sp, SharedPreferencesKey.EXIT_REQUIRED);
-		assertTrue(eew.await());
+		assertTrue(s.cdl.await(3, TimeUnit.SECONDS));
+		assertFalse(sp.getBoolean(SharedPreferencesKey.EXIT_REQUIRED, true));
 	}
 
 	/**
@@ -69,7 +56,7 @@ public class ExitRequiredPreferenceChangeListenerTestCase extends
 		sp.edit().putBoolean(SharedPreferencesKey.EXIT_REQUIRED, false)
 				.commit();
 		erpcl.onSharedPreferenceChanged(sp, SharedPreferencesKey.EXIT_REQUIRED);
-		assertFalse(eew.await());
+		assertFalse(s.cdl.await(3, TimeUnit.SECONDS));
 	}
 
 	/**
@@ -79,6 +66,6 @@ public class ExitRequiredPreferenceChangeListenerTestCase extends
 		sp.edit().putBoolean(SharedPreferencesKey.EXIT_REQUIRED, true).commit();
 		erpcl.onSharedPreferenceChanged(sp, SharedPreferencesKey.EXIT_REQUIRED
 				+ "X");
-		assertFalse(eew.await());
+		assertFalse(s.cdl.await(3, TimeUnit.SECONDS));
 	}
 }
