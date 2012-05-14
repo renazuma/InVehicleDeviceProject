@@ -28,6 +28,8 @@ public class MockDataSource implements DataSource {
 	private final List<ReservationCandidate> lReservationCandidate = new LinkedList<ReservationCandidate>();
 
 	private Date nextNotifyDate = new Date();
+	private boolean NotificationFlag = false;
+
 
 	@Override
 	public int arrivalOperationSchedule(OperationSchedule os,
@@ -82,14 +84,15 @@ public class MockDataSource implements DataSource {
 			throw new WebAPIException(false, e);
 		}
 
-
 		List<VehicleNotification> l = new LinkedList<VehicleNotification>();
 
-		nextNotifyDate = new Date(new Date().getTime() + 10 * 1000);
-		VehicleNotification n = new VehicleNotification();
-		n.setBody("テスト通知が行われました " + new Date());
+		if (NotificationFlag) {
+			nextNotifyDate = new Date(new Date().getTime() + 10 * 1000);
+			VehicleNotification n = new VehicleNotification();
+			n.setBody("テスト通知が行われました " + new Date());
+			l.add(n);
+		}
 
-		l.add(n);
 		return l;
 
 	}
@@ -136,6 +139,11 @@ public class MockDataSource implements DataSource {
 		return 0;
 	}
 
+	public void setNotificationFlag(boolean bNotificationFlag) {
+
+		NotificationFlag = bNotificationFlag;
+
+	}
 	public void setOperationSchedules(Integer iOperationScheduleCount) {
 
 		System.out.println("setOperationSchedules " + iOperationScheduleCount);
