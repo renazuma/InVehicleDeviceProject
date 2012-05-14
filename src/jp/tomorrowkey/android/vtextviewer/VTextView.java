@@ -1,6 +1,7 @@
 package jp.tomorrowkey.android.vtextviewer;
 
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicReference;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -8,7 +9,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
-import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -39,17 +39,11 @@ public class VTextView extends View {
 					if (localHeight <= 0 || localWidth <= 0) {
 						continue;
 					}
-					final Bitmap newBitmap = Bitmap.createBitmap(localWidth,
+					Bitmap newBitmap = Bitmap.createBitmap(localWidth,
 							localHeight, Bitmap.Config.ARGB_8888);
-					updateBitmapHandler.post(new Runnable() {
-						@Override
-						public void run() {
-							bitmap.recycle();
-							bitmap = newBitmap;
-							canvas.setBitmap(bitmap);
-							invalidate();
-						}
-					});
+					Bitmap oldBitmap = baseBitmap.getAndSet(newBitmap);
+					invalidate();
+					oldBitmap.recycle();
 				}
 			} catch (InterruptedException e) {
 			}
@@ -61,14 +55,14 @@ public class VTextView extends View {
 	private static final float FONT_SPACING_RATE = 0.8f;
 	private static final String TAG = VTextView.class.getSimpleName();
 	private static final int TOP_SPACE = 0;
-	private Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-	private final Canvas canvas = new Canvas(bitmap);
+	private AtomicReference<Bitmap> baseBitmap = new AtomicReference<Bitmap>(
+			Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888));
+	private final Canvas canvas = new Canvas(baseBitmap.get());
 	private volatile int height = 0; // 別スレッドから読み出すためvolatileをつける
 	private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 	private String text = "";
 	private final Typeface typeFace = Typeface
 			.defaultFromStyle(Typeface.NORMAL);
-	private final Handler updateBitmapHandler = new Handler();
 	private final Semaphore updateBitmapStartSemaphore = new Semaphore(0);
 	private Thread updateBitmapThread = new EmptyThread();
 	private volatile int width = 0; // 別スレッドから読み出すためvolatileをつける
@@ -95,10 +89,12 @@ public class VTextView extends View {
 
 	@Override
 	public void onDraw(Canvas targetCanvas) {
+		Bitmap bitmap = baseBitmap.get();
 		if (bitmap.getWidth() != width || bitmap.getHeight() != height) {
-			targetCanvas.drawColor(Color.WHITE);
+			updateBitmapStartSemaphore.release(); // 別スレッドでビットマップを再作成
 			return;
 		}
+		canvas.setBitmap(bitmap);
 		bitmap.eraseColor(Color.WHITE);
 		float fontSpacing = paint.getFontSpacing() * FONT_SPACING_RATE;
 		float lineSpacing = fontSpacing;
