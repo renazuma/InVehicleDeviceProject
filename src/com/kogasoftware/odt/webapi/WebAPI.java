@@ -32,7 +32,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.google.common.base.Objects;
 import com.google.common.io.ByteStreams;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
@@ -60,34 +59,6 @@ public class WebAPI {
 	
 	public String getAuthenticationToken() {
 		return authenticationToken;
-	}
-
-	protected static class CacheKey {
-		protected final String method;
-		protected final String uri;
-		protected final byte[] entity;
-
-		public CacheKey(String method, String uri, byte[] entity) {
-			this.method = method;
-			this.uri = uri;
-			this.entity = entity;
-		}
-
-		@Override
-		public int hashCode() {
-			return Objects.hashCode(method, uri, entity);
-		}
-
-		@Override
-		public boolean equals(final Object object) {
-			if (!(object instanceof CacheKey)) {
-				return false;
-			}
-			CacheKey other = (CacheKey) object;
-			return Objects.equal(method, other.method)
-					&& Objects.equal(uri, other.uri)
-					&& Objects.equal(entity, other.entity);
-		}
 	}
 
 	protected static final String PATH_PREFIX = "/in_vehicle_devices";
