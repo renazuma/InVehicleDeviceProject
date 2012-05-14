@@ -226,6 +226,12 @@ public class CommonEventSubscriber {
 			status.phase = Status.Phase.DRIVE;
 		}
 
+		// 現在運行終了状態で、新しい運行スケジュールが存在する場合は強制的に運行中に設定
+		if (status.phase == Status.Phase.FINISH
+				&& !newRemainingOperationSchedules.isEmpty()) {
+			status.phase = Status.Phase.DRIVE;
+		}
+
 		status.remainingOperationSchedules.clear();
 		status.remainingOperationSchedules
 				.addAll(newRemainingOperationSchedules);
