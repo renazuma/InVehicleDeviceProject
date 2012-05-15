@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class ServiceProvider extends Model {
-	private static final long serialVersionUID = 3248195029264079524L;
+	private static final long serialVersionUID = 2895510103478243224L;
 
 	public ServiceProvider() {
 	}
@@ -22,6 +22,8 @@ public class ServiceProvider extends Model {
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
 		setId(parseInteger(jsonObject, "id"));
+		setLatitude(parseBigDecimal(jsonObject, "latitude"));
+		setLongitude(parseBigDecimal(jsonObject, "longitude"));
 		setMustContactGap(parseInteger(jsonObject, "must_contact_gap"));
 		setName(parseString(jsonObject, "name"));
 		setRecommend(parseBoolean(jsonObject, "recommend"));
@@ -82,6 +84,8 @@ public class ServiceProvider extends Model {
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
 		jsonObject.put("deleted_at", toJSON(getDeletedAt().orNull()));
 		jsonObject.put("id", toJSON(getId()));
+		jsonObject.put("latitude", toJSON(getLatitude()));
+		jsonObject.put("longitude", toJSON(getLongitude()));
 		jsonObject.put("must_contact_gap", toJSON(getMustContactGap()));
 		jsonObject.put("name", toJSON(getName()));
 		jsonObject.put("recommend", toJSON(getRecommend()));
@@ -182,6 +186,26 @@ public class ServiceProvider extends Model {
 
 	public void setId(Integer id) {
 		this.id = wrapNull(id);
+	}
+
+	private BigDecimal latitude = BigDecimal.ZERO;
+
+	public BigDecimal getLatitude() {
+		return wrapNull(latitude);
+	}
+
+	public void setLatitude(BigDecimal latitude) {
+		this.latitude = wrapNull(latitude);
+	}
+
+	private BigDecimal longitude = BigDecimal.ZERO;
+
+	public BigDecimal getLongitude() {
+		return wrapNull(longitude);
+	}
+
+	public void setLongitude(BigDecimal longitude) {
+		this.longitude = wrapNull(longitude);
 	}
 
 	private Integer mustContactGap = 0;

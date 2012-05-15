@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class PassengerRecord extends Model {
-	private static final long serialVersionUID = 7135870307320291502L;
+	private static final long serialVersionUID = 989747689505110929L;
 
 	public PassengerRecord() {
 	}
