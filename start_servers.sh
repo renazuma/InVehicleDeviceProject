@@ -24,8 +24,8 @@ EOF
 cd OperatorWeb
 cp ../database.yml config/database.yml
 bundle install
-#bundle exec rake db:migrate:reset
-bundle exec rake db:migrate
+bundle exec rake db:migrate:reset
+#bundle exec rake db:migrate
 bundle exec rails server -d -p 3334
 cd ..
 
