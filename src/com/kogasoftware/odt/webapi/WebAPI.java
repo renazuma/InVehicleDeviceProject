@@ -120,17 +120,17 @@ public class WebAPI implements Closeable {
 
 	protected final ScheduledExecutorService executorService = Executors
 			.newScheduledThreadPool(NUM_THREADS);
-	protected final String host;
 	protected final BlockingQueue<WebAPIRequest<?>> requests = new LinkedBlockingQueue<WebAPIRequest<?>>();
-	private String authenticationToken = "";
+	protected volatile String serverHost = "http://127.0.0.1"; // 複数スレッドから参照の書きかえがありうるためvolatile
+	protected volatile String authenticationToken = ""; // 複数スレッドから参照の書きかえがありうるためvolatile
 
-	public WebAPI(String host) {
-		this(host, "");
+	public WebAPI(String serverHost) {
+		this(serverHost, "");
 	}
 
-	public WebAPI(String host, String authenticationToken) {
-		this.host = host;
+	public WebAPI(String serverHost, String authenticationToken) {
 		this.authenticationToken = authenticationToken;
+		setServerHost(serverHost);
 		for (int i = 0; i < NUM_THREADS; ++i) {
 			executorService.scheduleWithFixedDelay(new WebAPISessionRunner(),
 					0, 10, TimeUnit.SECONDS);
@@ -360,7 +360,7 @@ public class WebAPI implements Closeable {
 	}
 
 	protected String getServerHost() {
-		return host;
+		return serverHost;
 	}
 
 	/**
@@ -544,5 +544,9 @@ public class WebAPI implements Closeable {
 								parseJSONObject(rawResponse)).orNull();
 					}
 				});
+	}
+
+	public void setServerHost(String serverHost) {
+		this.serverHost = serverHost;
 	}
 }
