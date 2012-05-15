@@ -27,6 +27,9 @@ public class InVehicleDevicePreferenceTestCase extends
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
+		
+		Thread.sleep(20 * 1000); // Toastが消えるのを待つ
+		
 		solo = new Solo(getInstrumentation(), getActivity());
 	}
 	
