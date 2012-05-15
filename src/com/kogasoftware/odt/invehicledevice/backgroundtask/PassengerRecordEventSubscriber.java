@@ -11,6 +11,7 @@ import com.kogasoftware.odt.invehicledevice.logic.CommonLogic.PayTiming;
 import com.kogasoftware.odt.invehicledevice.logic.Status;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
+import com.kogasoftware.odt.invehicledevice.logic.empty.EmptyWebAPICallback;
 import com.kogasoftware.odt.invehicledevice.logic.event.GetOffEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.GetOnEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.UiEventBus;
@@ -85,16 +86,21 @@ public class PassengerRecordEventSubscriber {
 	public void getOff(final GetOffEvent e) {
 		Date now = CommonLogic.getDate();
 		for (PassengerRecord passengerRecord : e.getOffPassengerRecords) {
+			if (!passengerRecord.getReservation().isPresent()) {
+				continue;
+			}
+			Reservation reservation = passengerRecord.getReservation().get();
 			passengerRecord.setGetOffTime(now);
 			passengerRecord.setArrivalOperationScheduleId(e.operationSchedule
 					.getId());
 			passengerRecord.setArrivalOperationSchedule(e.operationSchedule);
+			commonLogic.getDataSource().getOffPassenger(e.operationSchedule,
+					reservation, passengerRecord,
+					new EmptyWebAPICallback<PassengerRecord>());
 		}
 		statusAccess.write(new Writer() {
 			@Override
 			public void write(Status status) {
-				status.sendLists.getOffPassengerRecords
-						.addAll(e.getOffPassengerRecords);
 				status.ridingPassengerRecords
 						.removeAll(e.getOffPassengerRecords);
 				status.finishedPassengerRecords
@@ -110,6 +116,10 @@ public class PassengerRecordEventSubscriber {
 	public void getOn(final GetOnEvent e) {
 		Date now = CommonLogic.getDate();
 		for (PassengerRecord passengerRecord : e.getOnPassengerRecords) {
+			if (!passengerRecord.getReservation().isPresent()) {
+				continue;
+			}
+			Reservation reservation = passengerRecord.getReservation().get();
 			passengerRecord.setGetOnTime(now);
 			passengerRecord.setDepartureOperationScheduleId(e.operationSchedule
 					.getId());
@@ -120,12 +130,13 @@ public class PassengerRecordEventSubscriber {
 				passengerRecord.setPayment(passengerRecord.getReservation()
 						.get().getPayment());
 			}
+			commonLogic.getDataSource().getOnPassenger(e.operationSchedule,
+					reservation, passengerRecord,
+					new EmptyWebAPICallback<PassengerRecord>());
 		}
 		statusAccess.write(new Writer() {
 			@Override
 			public void write(Status status) {
-				status.sendLists.getOnPassengerRecords
-						.addAll(e.getOnPassengerRecords);
 				status.unhandledPassengerRecords
 						.removeAll(e.getOnPassengerRecords);
 				status.ridingPassengerRecords.addAll(e.getOnPassengerRecords);

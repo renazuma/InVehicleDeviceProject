@@ -178,26 +178,6 @@ public class CommonLogic {
 		});
 	}
 
-	public List<PassengerRecord> getGetOffPassengerRecords() {
-		return statusAccess.read(new Reader<List<PassengerRecord>>() {
-			@Override
-			public List<PassengerRecord> read(Status status) {
-				return new LinkedList<PassengerRecord>(
-						status.sendLists.getOffPassengerRecords);
-			}
-		});
-	}
-
-	public List<PassengerRecord> getGetOnPassengerRecords() {
-		return statusAccess.read(new Reader<List<PassengerRecord>>() {
-			@Override
-			public List<PassengerRecord> read(Status status) {
-				return new LinkedList<PassengerRecord>(
-						status.sendLists.getOnPassengerRecords);
-			}
-		});
-	}
-
 	public EnumSet<PayTiming> getPayTiming() {
 		return EnumSet.of(PayTiming.GET_ON);
 	}

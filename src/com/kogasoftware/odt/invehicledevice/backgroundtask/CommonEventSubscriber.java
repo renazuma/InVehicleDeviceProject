@@ -1,6 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.backgroundtask;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -11,6 +12,7 @@ import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.Status;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
+import com.kogasoftware.odt.invehicledevice.logic.empty.EmptyWebAPICallback;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterDrivePhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterFinishPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterPlatformPhaseEvent;
@@ -85,9 +87,9 @@ public class CommonEventSubscriber {
 					status.remainingOperationSchedules
 							.remove(operationSchedule);
 					status.finishedOperationSchedules.add(operationSchedule);
-					Identifiables.merge(
-							status.sendLists.departureOperationSchedules,
-							operationSchedule);
+					commonLogic.getDataSource().departureOperationSchedule(
+							operationSchedule,
+							new EmptyWebAPICallback<OperationSchedule>());
 				}
 				status.phase = Status.Phase.DRIVE;
 			}
@@ -122,8 +124,9 @@ public class CommonEventSubscriber {
 				}
 				OperationSchedule operationSchedule = status.remainingOperationSchedules
 						.get(0);
-				Identifiables.merge(status.sendLists.arrivalOperationSchedules,
-						operationSchedule);
+				commonLogic.getDataSource().arrivalOperationSchedule(
+						operationSchedule,
+						new EmptyWebAPICallback<OperationSchedule>());
 			}
 		});
 	}
@@ -277,7 +280,22 @@ public class CommonEventSubscriber {
 	 */
 	@Subscribe
 	public void mergeVehicleNotification(VehicleNotificationReceivedEvent e) {
-
+		// 古いVehicleNotificationを削除
+		statusAccess.write(new Writer() {
+			@Override
+			public void write(Status status) {
+				final Calendar calendar = Calendar.getInstance();
+				calendar.add(Calendar.DATE, -3); // TODO:定数
+				for (VehicleNotification vehicleNotification : new LinkedList<VehicleNotification>(
+						status.repliedVehicleNotifications)) {
+					if (vehicleNotification.getCreatedAt().before(
+							calendar.getTime())) {
+						status.repliedVehicleNotifications
+								.remove(vehicleNotification);
+					}
+				}
+			}
+		});
 		final List<VehicleNotification> scheduleChangedVehicleNotifications = new LinkedList<VehicleNotification>();
 		final List<VehicleNotification> normalVehicleNotifications = new LinkedList<VehicleNotification>();
 		for (VehicleNotification vehicleNotification : e.vehicleNotifications) {
@@ -296,7 +314,7 @@ public class CommonEventSubscriber {
 			public void write(Status status) {
 				for (VehicleNotification vehicleNotification : scheduleChangedVehicleNotifications) {
 					if (Identifiables.contains(
-							status.sendLists.repliedVehicleNotifications,
+							status.repliedVehicleNotifications,
 							vehicleNotification)) {
 						continue;
 					}
@@ -326,7 +344,7 @@ public class CommonEventSubscriber {
 			public void write(Status status) {
 				for (VehicleNotification vehicleNotification : normalVehicleNotifications) {
 					if (Identifiables.contains(
-							status.sendLists.repliedVehicleNotifications,
+							status.repliedVehicleNotifications,
 							vehicleNotification)) {
 						continue;
 					}
@@ -458,12 +476,18 @@ public class CommonEventSubscriber {
 	@Subscribe
 	public void setVehicleNotificationReplied(
 			final ReceivedOperationScheduleChangedVehicleNotificationsReplyEvent e) {
+		for (VehicleNotification vehicleNotification : e.vehicleNotifications) {
+			commonLogic.getDataSource().responseVehicleNotification(
+					vehicleNotification, VehicleNotifications.Response.YES,
+					new EmptyWebAPICallback<VehicleNotification>());
+		}
+
 		statusAccess.write(new Writer() {
 			@Override
 			public void write(Status status) {
 				status.receivedOperationScheduleChangedVehicleNotifications
 						.removeAll(e.vehicleNotifications);
-				status.sendLists.repliedVehicleNotifications
+				status.repliedVehicleNotifications
 						.addAll(e.vehicleNotifications);
 			}
 		});
@@ -476,13 +500,18 @@ public class CommonEventSubscriber {
 	@Subscribe
 	public void setVehicleNotificationReplied(
 			final VehicleNotificationRepliedEvent e) {
+		if (e.vehicleNotification.getResponse().isPresent()) {
+			Integer response = e.vehicleNotification.getResponse().get();
+			commonLogic.getDataSource().responseVehicleNotification(
+					e.vehicleNotification, response,
+					new EmptyWebAPICallback<VehicleNotification>());
+		}
 		final AtomicBoolean empty = new AtomicBoolean(false);
 		statusAccess.write(new Writer() {
 			@Override
 			public void write(Status status) {
 				status.vehicleNotifications.remove(e.vehicleNotification);
-				status.sendLists.repliedVehicleNotifications
-						.add(e.vehicleNotification);
+				status.repliedVehicleNotifications.add(e.vehicleNotification);
 				empty.set(status.vehicleNotifications.isEmpty());
 			}
 		});

@@ -74,7 +74,7 @@ public class ScheduleChangedModalViewTestCase extends
 				VehicleNotification vn = new VehicleNotification();
 				vn.setBody(body);
 				vn.setNotificationKind(VehicleNotifications.NotificationKind.SCHEDULE_CHANGED);
-				status.sendLists.repliedVehicleNotifications.clear();
+				status.repliedVehicleNotifications.clear();
 				status.receivedOperationScheduleChangedVehicleNotifications
 						.clear();
 				status.receivedOperationScheduleChangedVehicleNotifications

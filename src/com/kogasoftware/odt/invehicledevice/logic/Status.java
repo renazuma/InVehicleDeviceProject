@@ -21,18 +21,7 @@ public class Status implements Serializable {
 		DRIVE, FINISH, INITIAL, PLATFORM
 	}
 
-	public static class SendLists implements Serializable {
-		private static final long serialVersionUID = Status.serialVersionUID ^ 1;
-		public final LinkedList<PassengerRecord> getOnPassengerRecords = new LinkedList<PassengerRecord>();
-		public final LinkedList<PassengerRecord> getOffPassengerRecords = new LinkedList<PassengerRecord>();
-		public final LinkedList<VehicleNotification> repliedVehicleNotifications = new LinkedList<VehicleNotification>();
-		public final LinkedList<OperationSchedule> arrivalOperationSchedules = new LinkedList<OperationSchedule>();
-		public final LinkedList<OperationSchedule> departureOperationSchedules = new LinkedList<OperationSchedule>();
-	}
-
 	private static final long serialVersionUID = 5617948505743183986L;
-
-	public final SendLists sendLists = new SendLists();
 
 	public final Date createdDate = new Date();
 	public final Semaphore operationScheduleInitializedSign = new Semaphore(0); // パーミットが0以上の場合は初期化済み。0以上になるまで待つためにacquireしたら必ずreleaseする。CountDownLatchがSerializableではないためこれを使用
@@ -57,6 +46,7 @@ public class Status implements Serializable {
 	public final LinkedList<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();
 	public final LinkedList<VehicleNotification> receivingOperationScheduleChangedVehicleNotifications = new LinkedList<VehicleNotification>();
 	public final LinkedList<VehicleNotification> receivedOperationScheduleChangedVehicleNotifications = new LinkedList<VehicleNotification>();
+	public final LinkedList<VehicleNotification> repliedVehicleNotifications = new LinkedList<VehicleNotification>();
 
 	public Status() {
 		serviceUnitStatusLog.setStatus(ServiceUnitStatusLogs.Status.OPERATION);

@@ -43,7 +43,7 @@ public class CommonEventSubscriberTestCase extends
 			@Override
 			public void write(Status status) {
 				status.vehicleNotifications.clear();
-				status.sendLists.repliedVehicleNotifications.clear();
+				status.repliedVehicleNotifications.clear();
 				status.receivingOperationScheduleChangedVehicleNotifications.clear();
 				status.receivedOperationScheduleChangedVehicleNotifications.clear();
 			}
@@ -155,7 +155,7 @@ public class CommonEventSubscriberTestCase extends
 			@Override
 			public void write(Status status) {
 				status.vehicleNotifications.add(vn1);
-				status.sendLists.repliedVehicleNotifications.add(vn2);
+				status.repliedVehicleNotifications.add(vn2);
 			}
 		});
 		cl.postEvent(new VehicleNotificationRepliedEvent(vn1));
@@ -165,12 +165,12 @@ public class CommonEventSubscriberTestCase extends
 			public void read(Status status) {
 				assertTrue(status.vehicleNotifications.isEmpty());
 				assertEquals(
-						status.sendLists.repliedVehicleNotifications.size(), 2);
+						status.repliedVehicleNotifications.size(), 2);
 				assertEquals(
-						status.sendLists.repliedVehicleNotifications.get(0),
+						status.repliedVehicleNotifications.get(0),
 						vn2);
 				assertEquals(
-						status.sendLists.repliedVehicleNotifications.get(1),
+						status.repliedVehicleNotifications.get(1),
 						vn1);
 			}
 		});
@@ -207,9 +207,9 @@ public class CommonEventSubscriberTestCase extends
 				assertFalse(status.vehicleNotifications.isEmpty());
 				assertEquals(status.vehicleNotifications.get(0), vn2);
 				assertEquals(
-						status.sendLists.repliedVehicleNotifications.size(), 1);
+						status.repliedVehicleNotifications.size(), 1);
 				assertEquals(
-						status.sendLists.repliedVehicleNotifications.get(0),
+						status.repliedVehicleNotifications.get(0),
 						vn1);
 			}
 		});
@@ -227,7 +227,7 @@ public class CommonEventSubscriberTestCase extends
 			public void read(Status status) {
 				assertEquals(1, status.vehicleNotifications.size());
 				assertEquals(vn, status.vehicleNotifications.get(0));
-				assertTrue(status.sendLists.repliedVehicleNotifications.isEmpty());
+				assertTrue(status.repliedVehicleNotifications.isEmpty());
 				assertTrue(status.receivingOperationScheduleChangedVehicleNotifications.isEmpty());
 			}
 		});
@@ -265,7 +265,7 @@ public class CommonEventSubscriberTestCase extends
 				assertEquals(vn1b, status.vehicleNotifications.get(0));
 				assertEquals(vn0, status.vehicleNotifications.get(1));
 				assertEquals(vn2, status.vehicleNotifications.get(2));
-				assertTrue(status.sendLists.repliedVehicleNotifications.isEmpty());
+				assertTrue(status.repliedVehicleNotifications.isEmpty());
 				assertTrue(status.receivingOperationScheduleChangedVehicleNotifications.isEmpty());
 			}
 		});
@@ -291,7 +291,7 @@ public class CommonEventSubscriberTestCase extends
 		sa.write(new Writer() {
 			@Override
 			public void write(Status status) {
-				status.sendLists.repliedVehicleNotifications.add(vn2b);
+				status.repliedVehicleNotifications.add(vn2b);
 			}
 		});
 		cl.postEvent(new VehicleNotificationReceivedEvent(vns));
@@ -302,8 +302,8 @@ public class CommonEventSubscriberTestCase extends
 				assertEquals(2, status.vehicleNotifications.size());
 				assertEquals(vn0, status.vehicleNotifications.get(0));
 				assertEquals(vn1, status.vehicleNotifications.get(1));
-				assertEquals(1, status.sendLists.repliedVehicleNotifications.size());
-				assertEquals(vn2b, status.sendLists.repliedVehicleNotifications.get(0));
+				assertEquals(1, status.repliedVehicleNotifications.size());
+				assertEquals(vn2b, status.repliedVehicleNotifications.get(0));
 				assertTrue(status.receivingOperationScheduleChangedVehicleNotifications.isEmpty());
 			}
 		});
@@ -358,7 +358,7 @@ public class CommonEventSubscriberTestCase extends
 				assertEquals(vn1b, status.receivingOperationScheduleChangedVehicleNotifications.get(0));
 				assertEquals(vn0, status.receivingOperationScheduleChangedVehicleNotifications.get(1));
 				assertEquals(vn2, status.receivingOperationScheduleChangedVehicleNotifications.get(2));
-				assertTrue(status.sendLists.repliedVehicleNotifications.isEmpty());
+				assertTrue(status.repliedVehicleNotifications.isEmpty());
 				assertTrue(status.vehicleNotifications.isEmpty());
 			}
 		});
@@ -384,7 +384,7 @@ public class CommonEventSubscriberTestCase extends
 		sa.write(new Writer() {
 			@Override
 			public void write(Status status) {
-				status.sendLists.repliedVehicleNotifications.add(vn2b);
+				status.repliedVehicleNotifications.add(vn2b);
 			}
 		});
 		cl.postEvent(new VehicleNotificationReceivedEvent(vns));
@@ -396,8 +396,8 @@ public class CommonEventSubscriberTestCase extends
 				assertEquals(vn0, status.receivingOperationScheduleChangedVehicleNotifications.get(0));
 				assertEquals(vn1, status.receivingOperationScheduleChangedVehicleNotifications.get(1));
 
-				assertEquals(1, status.sendLists.repliedVehicleNotifications.size());
-				assertEquals(vn2b, status.sendLists.repliedVehicleNotifications.get(0));
+				assertEquals(1, status.repliedVehicleNotifications.size());
+				assertEquals(vn2b, status.repliedVehicleNotifications.get(0));
 
 				assertTrue(status.vehicleNotifications.isEmpty());
 			}
@@ -475,7 +475,7 @@ public class CommonEventSubscriberTestCase extends
 				assertEquals(vn0, status.receivingOperationScheduleChangedVehicleNotifications.get(0));
 				assertEquals(vn2, status.receivingOperationScheduleChangedVehicleNotifications.get(1));
 				
-				assertTrue(status.sendLists.repliedVehicleNotifications.isEmpty());
+				assertTrue(status.repliedVehicleNotifications.isEmpty());
 				assertTrue(status.receivedOperationScheduleChangedVehicleNotifications.isEmpty());
 			}
 		});

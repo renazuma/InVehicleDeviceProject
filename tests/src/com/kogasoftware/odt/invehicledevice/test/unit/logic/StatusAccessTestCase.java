@@ -57,8 +57,8 @@ public class StatusAccessTestCase extends EmptyActivityInstrumentationTestCase2 
 			public void write(Status status) {
 				status.unhandledPassengerRecords.clear();
 				status.unhandledPassengerRecords.add(new PassengerRecord());
-				status.sendLists.repliedVehicleNotifications.clear();
-				status.sendLists.repliedVehicleNotifications
+				status.repliedVehicleNotifications.clear();
+				status.repliedVehicleNotifications
 						.add(new VehicleNotification());
 			}
 		});
@@ -71,7 +71,7 @@ public class StatusAccessTestCase extends EmptyActivityInstrumentationTestCase2 
 			public void read(Status status) {
 				assertEquals(status.unhandledPassengerRecords.size(), 1);
 				assertEquals(
-						status.sendLists.repliedVehicleNotifications.size(), 1);
+						status.repliedVehicleNotifications.size(), 1);
 			}
 		});
 
@@ -82,7 +82,7 @@ public class StatusAccessTestCase extends EmptyActivityInstrumentationTestCase2 
 			@Override
 			public void read(Status status) {
 				assertTrue(status.unhandledPassengerRecords.isEmpty());
-				assertTrue(status.sendLists.repliedVehicleNotifications
+				assertTrue(status.repliedVehicleNotifications
 						.isEmpty());
 			}
 		});
@@ -93,7 +93,7 @@ public class StatusAccessTestCase extends EmptyActivityInstrumentationTestCase2 
 			@Override
 			public void read(Status status) {
 				assertTrue(status.unhandledPassengerRecords.isEmpty());
-				assertTrue(status.sendLists.repliedVehicleNotifications
+				assertTrue(status.repliedVehicleNotifications
 						.isEmpty());
 			}
 		});
@@ -110,8 +110,6 @@ public class StatusAccessTestCase extends EmptyActivityInstrumentationTestCase2 
 			@Override
 			public void write(Status status) {
 				status.remainingOperationSchedules.add(new OperationSchedule());
-				status.sendLists.getOnPassengerRecords
-						.add(new PassengerRecord());
 			}
 		});
 		Thread.sleep(500); // 保存されるのを待つ
@@ -122,7 +120,6 @@ public class StatusAccessTestCase extends EmptyActivityInstrumentationTestCase2 
 			@Override
 			public void read(Status status) {
 				assertEquals(status.remainingOperationSchedules.size(), 1);
-				assertEquals(status.sendLists.getOnPassengerRecords.size(), 1);
 			}
 		});
 
@@ -137,7 +134,7 @@ public class StatusAccessTestCase extends EmptyActivityInstrumentationTestCase2 
 			@Override
 			public void read(Status status) {
 				assertTrue(status.unhandledPassengerRecords.isEmpty());
-				assertTrue(status.sendLists.repliedVehicleNotifications
+				assertTrue(status.repliedVehicleNotifications
 						.isEmpty());
 			}
 		});
@@ -152,7 +149,7 @@ public class StatusAccessTestCase extends EmptyActivityInstrumentationTestCase2 
 			@Override
 			public void read(Status status) {
 				assertTrue(status.unhandledPassengerRecords.isEmpty());
-				assertTrue(status.sendLists.repliedVehicleNotifications
+				assertTrue(status.repliedVehicleNotifications
 						.isEmpty());
 			}
 		});

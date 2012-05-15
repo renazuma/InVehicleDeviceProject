@@ -57,9 +57,6 @@ public class BackgroundTask {
 	private final ScheduledExecutorService executorService = Executors
 			.newScheduledThreadPool(NUM_THREADS);
 	private final VehicleNotificationReceiver vehicleNotificationReceiver;
-	private final VehicleNotificationSender vehicleNotificationSender;
-	private final OperationScheduleSender operationScheduleSender;
-	private final PassengerRecordSender passengerRecordSender;
 	private final SignalStrengthListener signalStrengthListener;
 	private final CommonLogic commonLogic;
 	private final Thread voiceThread;
@@ -91,9 +88,6 @@ public class BackgroundTask {
 				commonLogic);
 		vehicleNotificationReceiver = new VehicleNotificationReceiver(
 				commonLogic);
-		vehicleNotificationSender = new VehicleNotificationSender(commonLogic);
-		operationScheduleSender = new OperationScheduleSender(commonLogic);
-		passengerRecordSender = new PassengerRecordSender(commonLogic);
 		temperatureSensorEventListener = new TemperatureSensorEventListener(
 				commonLogic);
 		signalStrengthListener = new SignalStrengthListener(commonLogic,
@@ -137,9 +131,9 @@ public class BackgroundTask {
 
 		for (Object object : new Object[] { voiceThread,
 				operationScheduleReceiveThread, vehicleNotificationReceiver,
-				vehicleNotificationSender, operationScheduleSender,
-				passengerRecordSender, locationSender,
-				temperatureSensorEventListener, orientationSensorEventListener,
+
+				locationSender, temperatureSensorEventListener,
+				orientationSensorEventListener,
 				exitRequiredPreferenceChangeListener, signalStrengthListener, }) {
 			commonLogic.registerEventListener(object);
 		}
@@ -199,12 +193,6 @@ public class BackgroundTask {
 		});
 
 		executorService.scheduleWithFixedDelay(vehicleNotificationReceiver, 0,
-				POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
-		executorService.scheduleWithFixedDelay(vehicleNotificationSender, 0,
-				POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
-		executorService.scheduleWithFixedDelay(operationScheduleSender, 0,
-				POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
-		executorService.scheduleWithFixedDelay(passengerRecordSender, 0,
 				POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
 		executorService.scheduleWithFixedDelay(locationSender, 0,
 				POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
