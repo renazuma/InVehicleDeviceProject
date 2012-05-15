@@ -1,6 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.logic.datasource;
 
 import com.google.common.base.Optional;
+import com.google.common.io.Closeables;
 
 public class DataSourceFactory {
 	private static Optional<DataSource> dataSource = Optional.absent();
@@ -21,6 +22,7 @@ public class DataSourceFactory {
 	 */
 	public static void setInstance(DataSource dataSource) {
 		synchronized (dataSourceLock) {
+			Closeables.closeQuietly(DataSourceFactory.dataSource.orNull());
 			DataSourceFactory.dataSource = Optional.<DataSource> of(dataSource);
 		}
 	}
