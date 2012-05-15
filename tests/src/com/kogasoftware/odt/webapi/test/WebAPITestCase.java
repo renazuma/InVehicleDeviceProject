@@ -8,8 +8,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import android.test.ActivityInstrumentationTestCase2;
-import android.util.Log;
 
+import com.google.common.io.Closeables;
 import com.kogasoftware.odt.webapi.WebAPI;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
@@ -19,7 +19,6 @@ import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.Reservation;
-import com.kogasoftware.odt.webapi.model.ServiceUnit;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.webapi.model.UnitAssignment;
 import com.kogasoftware.odt.webapi.model.User;
@@ -58,9 +57,7 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 	
 	@Override
 	protected void tearDown() throws Exception {
-		if (api != null) {
-			api.shutdown();
-		}
+		Closeables.closeQuietly(api);
 		super.tearDown();
 	}
 
@@ -89,7 +86,7 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 			}
 		});
 
-		latch.await(100, TimeUnit.SECONDS);
+		assertTrue(latch.await(100, TimeUnit.SECONDS));
 		
 		assertNotNull(api.getAuthenticationToken());
 		assertTrue(api.getAuthenticationToken().length() > 0);
@@ -122,7 +119,7 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 				latch.countDown();
 			}
 		});
-		latch.await(100, TimeUnit.SECONDS);
+		assertTrue(latch.await(100, TimeUnit.SECONDS));
 		
 		assertNotNull(notifications);
 		assertEquals(2, notifications.size());
@@ -154,7 +151,7 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 				latch.countDown();
 			}
 		});
-		latch.await(100, TimeUnit.SECONDS);
+		assertTrue(latch.await(100, TimeUnit.SECONDS));
 		
 		assertNotNull(notifications);
 		assertEquals(2, notifications.size());
@@ -176,7 +173,7 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 				latch.countDown();
 			}
 		});
-		latch.await(100, TimeUnit.SECONDS);
+		assertTrue(latch.await(100, TimeUnit.SECONDS));
 
 		latch = new CountDownLatch(1);
 		api.getVehicleNotifications(new WebAPICallback<List<VehicleNotification>>() {
@@ -196,7 +193,7 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 				latch.countDown();
 			}
 		});
-		latch.await(100, TimeUnit.SECONDS);
+		assertTrue(latch.await(100, TimeUnit.SECONDS));
 		
 		assertNotNull(notifications);
 		assertEquals(1, notifications.size());
@@ -260,7 +257,7 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 				latch.countDown();
 			}
 		});
-		latch.await(100, TimeUnit.SECONDS);
+		assertTrue(latch.await(100, TimeUnit.SECONDS));
 		
 		assertNotNull(schedules);
 		assertEquals(2, schedules.size());
@@ -285,7 +282,7 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 				latch.countDown();
 			}
 		});
-		latch.await(100, TimeUnit.SECONDS);
+		assertTrue(latch.await(100, TimeUnit.SECONDS));
 		
 		assertNotNull(schedule.getOperationRecord());
 		assertNotNull(schedule.getOperationRecord().orNull().getDepartedAt().orNull());
@@ -308,7 +305,7 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 				latch.countDown();
 			}
 		});
-		latch.await(100, TimeUnit.SECONDS);
+		assertTrue(latch.await(100, TimeUnit.SECONDS));
 		
 		assertNotNull(schedule.getOperationRecord());
 		assertNotNull(schedule.getOperationRecord().orNull().getArrivedAt().orNull());
@@ -367,7 +364,7 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 				latch.countDown();
 			}
 		});
-		latch.await(100, TimeUnit.SECONDS);
+		assertTrue(latch.await(100, TimeUnit.SECONDS));
 		
 		assertNotNull(schedules);
 		assertEquals(2, schedules.size());
@@ -398,7 +395,7 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 			}
 			
 		});
-		latch.await(100, TimeUnit.SECONDS);
+		assertTrue(latch.await(100, TimeUnit.SECONDS));
 		assertNotNull(passengerRecord);
 		assertEquals(os1.getId(), passengerRecord.getDepartureOperationScheduleId());
 		
@@ -420,7 +417,7 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 				latch.countDown();
 			}
 		});
-		latch.await(100, TimeUnit.SECONDS);
+		assertTrue(latch.await(100, TimeUnit.SECONDS));
 		
 		assertNotNull(schedule.getOperationRecord());
 		assertNotNull(schedule.getOperationRecord().orNull().getDepartedAt().orNull());
@@ -444,7 +441,7 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 				latch.countDown();
 			}
 		});
-		latch.await(100, TimeUnit.SECONDS);
+		assertTrue(latch.await(100, TimeUnit.SECONDS));
 		
 		assertNotNull(schedule.getOperationRecord());
 		assertNotNull(schedule.getOperationRecord().orNull().getArrivedAt().orNull());
@@ -473,7 +470,7 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 			}
 			
 		});
-		latch.await(100, TimeUnit.SECONDS);
+		assertTrue(latch.await(100, TimeUnit.SECONDS));
 		assertNotNull(passengerRecord);
 		assertEquals(os1.getId(), passengerRecord.getDepartureOperationScheduleId());
 		assertEquals(os2.getId(), passengerRecord.getArrivalOperationScheduleId().orNull());
@@ -515,7 +512,7 @@ public class WebAPITestCase extends ActivityInstrumentationTestCase2<DummyActivi
 			
 		});
 		
-		latch.await();
+		assertTrue(latch.await(100, TimeUnit.SECONDS));
 		assertNotNull(serviceUnitStatusLog);
 		assertEquals(new BigDecimal(35.2), serviceUnitStatusLog.getLatitude());
 	}
