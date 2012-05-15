@@ -24,12 +24,12 @@ public class JSONTestCase extends TestCase {
 	 }
 	 
 	 public void testNull() throws Exception {
-		 String json = "{\"body\":null,\"created_at\":\"2012-04-11T18:23:45Z\",\"id\":2,\"in_vehicle_device_id\":1,\"operator_id\":1,\"read_at\":null,\"response\":null,\"updated_at\":\"2012-04-11T18:23:45Z\"}";
+		 String json = "{\"event_at\":null,\"created_at\":\"2012-04-11T18:23:45Z\",\"id\":2,\"in_vehicle_device_id\":1,\"operator_id\":1,\"read_at\":null,\"response\":null,\"updated_at\":\"2012-04-11T18:23:45Z\"}";
 		 
 		 JSONObject jsonObject = new JSONObject(json);
 		 
 		 VehicleNotification vn = VehicleNotification.parse(jsonObject).orNull();
-		 assertNull(vn.getBody());
+		 assertNull(vn.getEventAt().orNull());
 		 assertNull(vn.getReadAt().orNull());
 		 assertNull(vn.getResponse().orNull());
 	 }
@@ -40,7 +40,7 @@ public class JSONTestCase extends TestCase {
 		 JSONObject jsonObject = new JSONObject(json);
 		 
 		 VehicleNotification vn = VehicleNotification.parse(jsonObject).orNull();
-		 assertNull(vn.getBody());
+		 assertNull(vn.getEventAt().orNull());
 		 assertNull(vn.getReadAt().orNull());
 		 assertNull(vn.getResponse().orNull());
 	 }

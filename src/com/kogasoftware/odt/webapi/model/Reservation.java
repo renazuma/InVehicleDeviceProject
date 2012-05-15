@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Reservation extends Model {
-	private static final long serialVersionUID = 1612039563158938679L;
+	private static final long serialVersionUID = 8584188154882815277L;
 
 	public Reservation() {
 	}
@@ -66,6 +66,7 @@ public class Reservation extends Model {
 		if (getOperator().isPresent()) {
 			setOperatorId(getOperator().get().getId());
 		}
+		setPassengerRecord(PassengerRecord.parse(jsonObject, "passenger_record"));
 		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
 		if (getServiceProvider().isPresent()) {
 			setServiceProviderId(getServiceProvider().get().getId());
@@ -160,6 +161,7 @@ public class Reservation extends Model {
 		if (getOperator().isPresent()) {
 			jsonObject.put("operator_id", toJSON(getOperator().get().getId()));
 		}
+
 
 		if (getServiceProvider().isPresent()) {
 			jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
@@ -623,6 +625,24 @@ public class Reservation extends Model {
 
 	public void clearOperator() {
 		this.operator = Optional.<Operator>absent();
+	}
+
+	private Optional<PassengerRecord> passengerRecord = Optional.<PassengerRecord>absent();
+
+	public Optional<PassengerRecord> getPassengerRecord() {
+		return wrapNull(passengerRecord);
+	}
+
+	public void setPassengerRecord(Optional<PassengerRecord> passengerRecord) {
+		this.passengerRecord = wrapNull(passengerRecord);
+	}
+
+	public void setPassengerRecord(PassengerRecord passengerRecord) {
+		this.passengerRecord = Optional.<PassengerRecord>fromNullable(passengerRecord);
+	}
+
+	public void clearPassengerRecord() {
+		this.passengerRecord = Optional.<PassengerRecord>absent();
 	}
 
 	private Optional<ServiceProvider> serviceProvider = Optional.<ServiceProvider>absent();

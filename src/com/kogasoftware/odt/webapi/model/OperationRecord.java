@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class OperationRecord extends Model {
-	private static final long serialVersionUID = 511710840269911056L;
+	private static final long serialVersionUID = 7597346461293798905L;
 
 	public OperationRecord() {
 	}

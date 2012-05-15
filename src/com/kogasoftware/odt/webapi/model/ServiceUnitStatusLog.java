@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class ServiceUnitStatusLog extends Model {
-	private static final long serialVersionUID = 414793974615313669L;
+	private static final long serialVersionUID = 5851169027075753423L;
 
 	public ServiceUnitStatusLog() {
 	}
