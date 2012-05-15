@@ -1,92 +1,115 @@
 package com.kogasoftware.odt.webapi;
 
-import java.nio.ByteBuffer;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import org.apache.http.client.methods.HttpRequestBase;
 
-import com.kogasoftware.odt.webapi.WebAPI.EmptyWebAPICallback;
+import android.util.Log;
+
 import com.kogasoftware.odt.webapi.WebAPI.ResponseConverter;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 
-class WebAPIRequest implements Serializable {
+class WebAPIRequest<T> implements Serializable {
 	private static final long serialVersionUID = -8451453777378477195L;
+	private static final String TAG = WebAPIRequest.class.getSimpleName();
 	protected static final AtomicInteger reqkeyCounter = new AtomicInteger(0);
 	protected final HttpRequestBase firstRequest;
 	protected final HttpRequestBase retryRequest;
 	protected final int reqkey = reqkeyCounter.incrementAndGet();
 	protected boolean retry = false;
-	protected boolean succeed = false;
+	protected boolean callbackAndResponseConverterSerialized = false;
 
-	transient protected WebAPICallback<ByteBuffer> callback = new EmptyWebAPICallback<ByteBuffer>();
+	transient protected WebAPICallback<T> callback;
+	transient protected ResponseConverter<T> responseConverter;
 
-	public boolean isSucceed() {
-		return succeed;
+	public WebAPIRequest(HttpRequestBase firstRequest,
+			HttpRequestBase retryRequest, WebAPICallback<T> callback,
+			ResponseConverter<T> responseConverter) {
+		this.firstRequest = firstRequest;
+		this.retryRequest = retryRequest;
+		this.callback = callback;
+		this.responseConverter = responseConverter;
+	}
+
+	public int getReqKey() {
+		return reqkey;
 	}
 
 	public HttpRequestBase getRequest() {
 		return retry ? retryRequest : firstRequest;
 	}
 
-	protected void readObject(ObjectInputStream stream) throws IOException,
-			ClassNotFoundException {
-		try {
-			stream.defaultReadObject();
-		} finally {
-			callback = new EmptyWebAPICallback<ByteBuffer>();
+	public void onException(WebAPIException e) {
+		if (callback != null) {
+			callback.onException(reqkey, e);
 		}
-	}
-
-	public void onSucceed(int statusCode, byte[] rawResult) {
-		callback.onSucceed(reqkey, statusCode, ByteBuffer.wrap(rawResult));
+		retry = true;
 	}
 
 	public void onFailed(int statusCode, String response) {
-		succeed = false;
+		if (callback != null) {
+			callback.onFailed(reqkey, statusCode, response);
+		}
 		retry = true;
-		callback.onFailed(reqkey, statusCode, response);
 	}
 
-	public void onException(WebAPIException e) {
-		succeed = false;
-		retry = true;
-		callback.onException(reqkey, e);
+	public void onSucceed(int statusCode, byte[] rawResult) throws Exception {
+		if (responseConverter != null && callback != null) {
+			callback.onSucceed(reqkey, statusCode,
+					responseConverter.convert(rawResult));
+		}
 	}
 
-	public <T> WebAPIRequest(HttpRequestBase firstRequest,
-			HttpRequestBase retryRequest,
-			final WebAPICallback<T> defaultCallback,
-			final ResponseConverter<T> responseConverter) {
-		this.firstRequest = firstRequest;
-		this.retryRequest = retryRequest;
-		this.callback = new WebAPICallback<ByteBuffer>() {
-			@Override
-			public void onSucceed(int reqkey, int statusCode,
-					ByteBuffer rawResult) {
-				try {
-					defaultCallback.onSucceed(reqkey, statusCode,
-							responseConverter.convert(rawResult.array()));
-				} catch (Exception e) {
-					WebAPIRequest.this
-							.onException(new WebAPIException(false, e));
-				}
-			}
+	protected void readObject(ObjectInputStream stream) throws IOException,
+			ClassNotFoundException {
 
-			@Override
-			public void onFailed(int reqkey, int statusCode, String response) {
-				defaultCallback.onFailed(reqkey, statusCode, response);
+		stream.defaultReadObject();
+		if (!callbackAndResponseConverterSerialized) {
+			return;
+		}
+		try {
+			Object callbackObject = stream.readObject();
+			if (!(callbackObject instanceof WebAPICallback<?>)) {
+				Log.w(TAG, "!(callbackObject instanceof WebAPICallback<?>)");
+				return;
 			}
-
-			@Override
-			public void onException(int reqkey, WebAPIException ex) {
-				defaultCallback.onException(reqkey, ex);
+			callback = (WebAPICallback<T>) callbackObject; // TODO:warning
+			Object responseConverterObject = stream.readObject();
+			if (!(responseConverterObject instanceof ResponseConverter<?>)) {
+				Log.w(TAG,
+						"!(responseConverterObject instanceof ResponseConverter<?>)");
+				return;
 			}
-		};
+			responseConverter = (ResponseConverter<T>) responseConverterObject; // TODO:warning
+		} catch (ClassNotFoundException e) {
+			Log.w(TAG, e);
+			throw e;
+		} catch (IOException e) {
+			Log.w(TAG, e);
+			throw e;
+		}
 	}
 
-	public int getReqKey() {
-		return reqkey;
+	protected void writeObject(ObjectOutputStream stream) throws IOException {
+		stream.defaultWriteObject();
+		if (!(callback instanceof Serializable)) {
+			return;
+		}
+		if (!(responseConverter instanceof Serializable)) {
+			return;
+		}
+
+		try {
+			stream.writeObject(callback);
+			stream.writeObject(responseConverter);
+		} catch (IOException e) {
+			Log.w(TAG, e);
+			throw e;
+		}
+		callbackAndResponseConverterSerialized = true;
 	}
 }
