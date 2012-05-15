@@ -17,6 +17,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.logic.SharedPreferencesKey;
 import com.kogasoftware.odt.webapi.WebAPI;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
@@ -27,14 +28,18 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		implements WebAPICallback<InVehicleDevice>,
 		OnSharedPreferenceChangeListener {
 	private static final int CONNECTING_DIALOG_ID = 100;
+	private static final String DEFAULT_URL = "http://127.0.0.1";
 	private int latestReqKey = 0;
 	private SharedPreferences preferences = null;
 	private Button saveConfigButton = null;
+	private WebAPI api = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+		api = new WebAPI(DEFAULT_URL);
+
 		addPreferencesFromResource(R.xml.preference);
 
 		preferences = PreferenceManager
@@ -51,13 +56,12 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 				}
 				showDialog(CONNECTING_DIALOG_ID);
 				Context context = InVehicleDevicePreferenceActivity.this;
-				String url = preferences.getString("connection_url",
-						"http://localhost");
-				WebAPI api = new WebAPI(url);
+				api.setServerHost(preferences.getString("connection_url",
+						DEFAULT_URL));
+
 				InVehicleDevice ivd = new InVehicleDevice();
 				ivd.setLogin(preferences.getString("login", "ivd1"));
 				ivd.setPassword(preferences.getString("password", "ivdpass"));
-
 				try {
 					latestReqKey = api.login(ivd,
 							InVehicleDevicePreferenceActivity.this);
@@ -91,6 +95,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 	public void onDestroy() {
 		super.onDestroy();
 		preferences.unregisterOnSharedPreferenceChangeListener(this);
+		Closeables.closeQuietly(api);
 	}
 
 	@Override
