@@ -1,6 +1,7 @@
 package com.kogasoftware.odt.webapi;
 
 import java.io.Closeable;
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -8,9 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -120,7 +119,7 @@ public class WebAPI implements Closeable {
 
 	protected final ScheduledExecutorService executorService = Executors
 			.newScheduledThreadPool(NUM_THREADS);
-	protected final BlockingQueue<WebAPIRequest<?>> requests = new LinkedBlockingQueue<WebAPIRequest<?>>();
+	protected final WebAPIRequestQueue requests;
 	protected volatile String serverHost = "http://127.0.0.1"; // 複数スレッドから参照の書きかえがありうるためvolatile
 	protected volatile String authenticationToken = ""; // 複数スレッドから参照の書きかえがありうるためvolatile
 
@@ -129,6 +128,11 @@ public class WebAPI implements Closeable {
 	}
 
 	public WebAPI(String serverHost, String authenticationToken) {
+		this(serverHost, authenticationToken, null);
+	}
+
+	public WebAPI(String serverHost, String authenticationToken, File backupFile) {
+		requests = new WebAPIRequestQueue(backupFile);
 		this.authenticationToken = authenticationToken;
 		setServerHost(serverHost);
 		for (int i = 0; i < NUM_THREADS; ++i) {
@@ -240,8 +244,10 @@ public class WebAPI implements Closeable {
 		} catch (WebAPIException e) {
 			request.onException(e);
 		}
-		if (!succeed) {
-			requests.add(request);
+		if (succeed) {
+			requests.remove(request);
+		} else {
+			requests.retry(request);
 		}
 	}
 
@@ -489,6 +495,10 @@ public class WebAPI implements Closeable {
 		return res;
 	}
 
+	protected void removeRequest(WebAPIRequest<?> request) {
+		requests.remove(request);
+	}
+
 	/**
 	 * 自車への通知への応答
 	 * 
@@ -548,5 +558,9 @@ public class WebAPI implements Closeable {
 
 	public void setServerHost(String serverHost) {
 		this.serverHost = serverHost;
+	}
+
+	protected WebAPIRequest<?> takeRequest() throws InterruptedException {
+		return requests.take();
 	}
 }
