@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.test.util;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,7 +26,8 @@ public class TestUtilTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 	public TestUtilTestCase() {
-		super("com.kogasoftware.odt.invehicledevice", InVehicleDeviceActivity.class);
+		super("com.kogasoftware.odt.invehicledevice",
+				InVehicleDeviceActivity.class);
 	}
 
 	public void testWaitForStartUi() throws Exception {
@@ -33,7 +35,7 @@ public class TestUtilTestCase extends
 		DataSourceFactory.setInstance(new DummyDataSource());
 		assertTrue(TestUtil.waitForStartUi(getActivity()));
 	}
-	
+
 	public void testWaitForStartUiTimeout() throws Exception {
 		StatusAccess.clearSavedFile();
 		DataSourceFactory.setInstance(new NoOperationScheduleDataSource());
@@ -96,15 +98,15 @@ class NoOperationScheduleDataSource implements DataSource {
 	}
 
 	@Override
-	public List<ReservationCandidate> postReservationCandidates(
-			Integer userId, Integer departurePlatformId,
-			Integer arrivalPlatformId) throws WebAPIException {
+	public List<ReservationCandidate> postReservationCandidates(Integer userId,
+			Integer departurePlatformId, Integer arrivalPlatformId)
+			throws WebAPIException {
 		return new LinkedList<ReservationCandidate>();
 	}
 
 	@Override
-	public void putReservationTransferredAt(Integer id,
-			Date transferredAt) throws WebAPIException {
+	public void putReservationTransferredAt(Integer id, Date transferredAt)
+			throws WebAPIException {
 	}
 
 	@Override
@@ -122,4 +124,9 @@ class NoOperationScheduleDataSource implements DataSource {
 	public int sendServiceUnitStatusLog(ServiceUnitStatusLog log,
 			WebAPICallback<ServiceUnitStatusLog> callback) {
 		return 0;
-	}};
+	}
+
+	@Override
+	public void close() {
+	}
+};

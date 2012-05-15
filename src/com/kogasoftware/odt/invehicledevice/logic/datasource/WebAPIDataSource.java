@@ -13,6 +13,7 @@ import org.json.JSONException;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.google.common.io.Closeables;
 import com.kogasoftware.odt.webapi.WebAPI;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
@@ -320,5 +321,10 @@ public class WebAPIDataSource implements DataSource {
 								wrappedCallback);
 					}
 				}, callback);
+	}
+
+	@Override
+	public void close() {
+		Closeables.closeQuietly(api);
 	}
 }

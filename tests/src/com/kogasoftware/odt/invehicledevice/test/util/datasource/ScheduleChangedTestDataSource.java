@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.test.util.datasource;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
@@ -209,5 +210,9 @@ public class ScheduleChangedTestDataSource implements DataSource {
 		// TODO Auto-generated method stub
 		Log.w(TAG, "not implemented");
 		return 0;
+	}
+
+	@Override
+	public void close() {
 	}
 }

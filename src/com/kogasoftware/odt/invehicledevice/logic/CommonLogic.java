@@ -16,6 +16,7 @@ import android.view.View;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.BuildConfig;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.backgroundtask.CommonEventSubscriber;
@@ -142,6 +143,7 @@ public class CommonLogic {
 	}
 
 	public void dispose() {
+		Closeables.closeQuietly(dataSource);
 		eventBus.dispose();
 	}
 

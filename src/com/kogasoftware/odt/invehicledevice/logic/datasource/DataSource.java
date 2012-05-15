@@ -1,9 +1,8 @@
 package com.kogasoftware.odt.invehicledevice.logic.datasource;
 
+import java.io.Closeable;
 import java.util.Date;
 import java.util.List;
-
-import org.json.JSONException;
 
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
@@ -15,7 +14,7 @@ import com.kogasoftware.odt.webapi.model.ReservationCandidate;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
-public interface DataSource {
+public interface DataSource extends Closeable {
 	int arrivalOperationSchedule(OperationSchedule os,
 			WebAPICallback<OperationSchedule> callback);
 
