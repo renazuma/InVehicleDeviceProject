@@ -1,4 +1,6 @@
-package com.kogasoftware.odt.webapi.model;
+package com.kogasoftware.odt.webapi.test.model;
+
+import com.kogasoftware.odt.webapi.model.VehicleNotifications;
 
 import junit.framework.TestCase;
 
