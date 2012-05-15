@@ -2,9 +2,8 @@ package com.kogasoftware.odt.webapi;
 
 import java.util.Collection;
 
-
 /**
- * Identifiableに関連する処理 TODO: WebAPIへ移動
+ * Identifiableに関連する処理
  */
 public class Identifiables {
 	/**
