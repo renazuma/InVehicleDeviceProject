@@ -1,5 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.logic.datasource;
 
+import java.io.File;
+
 import com.google.common.base.Optional;
 import com.google.common.io.Closeables;
 
@@ -7,14 +9,14 @@ public class DataSourceFactory {
 	private static Optional<DataSource> dataSource = Optional.absent();
 	private static Object dataSourceLock = new Object();
 
-	public static DataSource newInstance(String url, String token) {
+	public static DataSource newInstance(String url, String token, File file) {
 		synchronized (dataSourceLock) {
 			if (dataSource.isPresent()) {
 				return dataSource.get();
 			}
 		}
 		// return new DummyDataSource();
-		return new WebAPIDataSource(url, token);
+		return new WebAPIDataSource(url, token, file);
 	}
 
 	/**

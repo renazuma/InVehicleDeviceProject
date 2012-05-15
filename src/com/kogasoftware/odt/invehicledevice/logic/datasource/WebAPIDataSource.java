@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.logic.datasource;
 
+import java.io.File;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -45,8 +46,8 @@ public class WebAPIDataSource implements DataSource {
 	private final Handler uiHandler = new Handler(Looper.getMainLooper());
 	private final WebAPI api;
 
-	public WebAPIDataSource(String url, String token) {
-		api = new WebAPI(url, token);
+	public WebAPIDataSource(String url, String token, File file) {
+		api = new WebAPI(url, token, file);
 	}
 
 	@Override
