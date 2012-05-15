@@ -23,7 +23,6 @@ import android.util.Log;
 import com.google.common.base.Function;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.logic.ServiceUnitStatusLogs;
 import com.kogasoftware.odt.invehicledevice.logic.Status;
 import com.kogasoftware.odt.invehicledevice.logic.Status.Phase;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
@@ -32,6 +31,7 @@ import com.kogasoftware.odt.invehicledevice.logic.event.CommonLogicLoadCompleteE
 import com.kogasoftware.odt.invehicledevice.logic.event.PauseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.StopEvent;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.NotificationModalView;
+import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLogs;
 
 /**
  * バックグランドでの処理を管理するクラス

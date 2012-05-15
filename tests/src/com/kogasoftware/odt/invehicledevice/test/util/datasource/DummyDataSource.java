@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.test.util.datasource;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -282,4 +283,7 @@ public class DummyDataSource implements DataSource {
 		return 0;
 	}
 
+	@Override
+	public void close() {
+	}
 }

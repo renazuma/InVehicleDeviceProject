@@ -10,6 +10,7 @@ import com.kogasoftware.odt.invehicledevice.logic.empty.EmptyFile;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
+import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLogs;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 /**
@@ -45,11 +46,14 @@ public class Status implements Serializable {
 	public final ServiceUnitStatusLog serviceUnitStatusLog = new ServiceUnitStatusLog();
 	public final LinkedList<OperationSchedule> remainingOperationSchedules = new LinkedList<OperationSchedule>();
 	public final LinkedList<OperationSchedule> finishedOperationSchedules = new LinkedList<OperationSchedule>();
+
 	public final LinkedList<PassengerRecord> unhandledPassengerRecords = new LinkedList<PassengerRecord>();
 	public final LinkedList<PassengerRecord> ridingPassengerRecords = new LinkedList<PassengerRecord>();
 	public final LinkedList<PassengerRecord> finishedPassengerRecords = new LinkedList<PassengerRecord>();
+
 	public final LinkedList<PassengerRecord> selectedPassengerRecords = new LinkedList<PassengerRecord>();
 	public final LinkedList<PassengerRecord> unexpectedPassengerRecords = new LinkedList<PassengerRecord>();
+
 	public final LinkedList<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();
 	public final LinkedList<VehicleNotification> receivingOperationScheduleChangedVehicleNotifications = new LinkedList<VehicleNotification>();
 	public final LinkedList<VehicleNotification> receivedOperationScheduleChangedVehicleNotifications = new LinkedList<VehicleNotification>();

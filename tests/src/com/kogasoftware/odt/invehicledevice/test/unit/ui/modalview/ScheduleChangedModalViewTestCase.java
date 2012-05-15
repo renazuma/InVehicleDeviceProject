@@ -11,7 +11,6 @@ import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.Status;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
-import com.kogasoftware.odt.invehicledevice.logic.VehicleNotifications;
 import com.kogasoftware.odt.invehicledevice.logic.event.CommonLogicLoadCompleteEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.UpdatedOperationScheduleMergedEvent;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
@@ -19,6 +18,7 @@ import com.kogasoftware.odt.invehicledevice.ui.modalview.NotificationModalView;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.ScheduleChangedModalView;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.ScheduleModalView;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
+import com.kogasoftware.odt.webapi.model.VehicleNotifications;
 
 public class ScheduleChangedModalViewTestCase extends
 		EmptyActivityInstrumentationTestCase2 {

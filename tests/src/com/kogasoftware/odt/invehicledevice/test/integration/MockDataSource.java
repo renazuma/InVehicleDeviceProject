@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.test.integration;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -432,4 +433,7 @@ public class MockDataSource implements DataSource {
 		}
 	}
 
+	@Override
+	public void close() {
+	}
 }

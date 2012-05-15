@@ -16,6 +16,7 @@ import android.view.View;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.BuildConfig;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.backgroundtask.CommonEventSubscriber;
@@ -26,6 +27,7 @@ import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Reader;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSourceFactory;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.WebAPIDataSource;
+import com.kogasoftware.odt.invehicledevice.logic.empty.EmptyFile;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterDrivePhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterFinishPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterPlatformPhaseEvent;
@@ -94,7 +96,8 @@ public class CommonLogic {
 	public CommonLogic() {
 		statusAccessDeprecated = new StatusAccess();
 		this.statusAccess = statusAccessDeprecated.getReadOnlyStatusAccess();
-		dataSource = DataSourceFactory.newInstance("http://127.0.0.1", "");
+		dataSource = DataSourceFactory.newInstance("http://127.0.0.1", "",
+				new EmptyFile());
 		eventBus = new UiEventBus();
 		commonEventSubscriber = new CommonEventSubscriber(this,
 				statusAccessDeprecated);
@@ -115,7 +118,8 @@ public class CommonLogic {
 				WebAPIDataSource.DEFAULT_URL);
 		String token = preferences.getString(
 				SharedPreferencesKey.SERVER_IN_VEHICLE_DEVICE_TOKEN, "");
-		dataSource = DataSourceFactory.newInstance(url, token);
+		dataSource = DataSourceFactory.newInstance(url, token,
+				activity.getFileStreamPath("webapi.serialized"));
 
 		eventBus = new UiEventBus(activityHandler);
 		for (Object object : new Object[] { activity, commonEventSubscriber,
@@ -142,6 +146,7 @@ public class CommonLogic {
 	}
 
 	public void dispose() {
+		Closeables.closeQuietly(dataSource);
 		eventBus.dispose();
 	}
 

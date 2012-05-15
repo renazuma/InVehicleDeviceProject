@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.test.util.datasource;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
@@ -11,7 +12,6 @@ import org.json.JSONObject;
 
 import android.util.Log;
 
-import com.kogasoftware.odt.invehicledevice.logic.VehicleNotifications;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSource;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
@@ -22,6 +22,7 @@ import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.ReservationCandidate;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
+import com.kogasoftware.odt.webapi.model.VehicleNotifications;
 
 public class ScheduleChangedTestDataSource implements DataSource {
 	private static final String TAG = ScheduleChangedTestDataSource.class.getSimpleName();
@@ -209,5 +210,9 @@ public class ScheduleChangedTestDataSource implements DataSource {
 		// TODO Auto-generated method stub
 		Log.w(TAG, "not implemented");
 		return 0;
+	}
+
+	@Override
+	public void close() {
 	}
 }

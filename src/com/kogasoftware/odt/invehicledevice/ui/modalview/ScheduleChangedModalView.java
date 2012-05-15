@@ -14,10 +14,10 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.backgroundtask.VoiceThread.SpeakEvent;
 import com.kogasoftware.odt.invehicledevice.logic.Status;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.VoidReader;
-import com.kogasoftware.odt.invehicledevice.logic.VehicleNotifications;
 import com.kogasoftware.odt.invehicledevice.logic.event.ReceivedOperationScheduleChangedVehicleNotificationsReplyEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.UpdatedOperationScheduleMergedEvent;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
+import com.kogasoftware.odt.webapi.model.VehicleNotifications;
 
 public class ScheduleChangedModalView extends ModalView {
 	public ScheduleChangedModalView(Context context, AttributeSet attrs) {
