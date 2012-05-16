@@ -71,10 +71,9 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 
 		if (remainingOperationSchedules.isEmpty()) {
 			operationSchedule = new OperationSchedule();
-			updateDataSet();
-			return;
+		} else {
+			operationSchedule = remainingOperationSchedules.get(0);
 		}
-		operationSchedule = remainingOperationSchedules.get(0);
 		updateDataSet();
 	}
 
@@ -149,16 +148,6 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		return noPaymentReservations;
 	}
 
-	public List<Reservation> getSelectedRidingReservations() {
-		List<Reservation> selectedGetOffReservations = new LinkedList<Reservation>();
-		for (Reservation reservation : selectedReservations) {
-			if (PassengerRecords.isRiding(reservation)) {
-				selectedGetOffReservations.add(reservation);
-			}
-		}
-		return selectedGetOffReservations;
-	}
-
 	public List<Reservation> getSelectedGetOnReservations() {
 		List<Reservation> selectedGetOnreservations = new LinkedList<Reservation>();
 		for (Reservation reservation : selectedReservations) {
@@ -167,6 +156,16 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 			}
 		}
 		return selectedGetOnreservations;
+	}
+
+	public List<Reservation> getSelectedRidingReservations() {
+		List<Reservation> selectedGetOffReservations = new LinkedList<Reservation>();
+		for (Reservation reservation : selectedReservations) {
+			if (PassengerRecords.isRiding(reservation)) {
+				selectedGetOffReservations.add(reservation);
+			}
+		}
+		return selectedGetOffReservations;
 	}
 
 	@Override
