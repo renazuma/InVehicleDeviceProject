@@ -169,7 +169,7 @@ public class MockDataSource implements DataSource {
 						+ "platform: {name: 'テストコガソフトウェア前', name_ruby: 'てすとこがそふとうぇあまえ'}, "
 						+ "reservations_as_arrival: [" + "],"
 						+ "reservations_as_departure: [" + u1a + "," + u1b
-						+ "," + u1c + u1d + "," + u1e + ", " + u1f + "]}";
+						+ "," + u1c + "," + u1d + "," + u1e + ", " + u1f + "]}";
 				JSONObject j1 = new JSONObject(sOperationSchedule);
 				lOperationSchedule.add(new OperationSchedule(j1));
 			}
