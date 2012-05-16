@@ -61,6 +61,7 @@ public class WaitingTestCase extends
 		dataset(6);
 
 	}
+
 	public void test01_メモボタンを押すとメモ画面が表示() {
 
 		solo.clickOnButton("メモ");
@@ -134,6 +135,7 @@ public class WaitingTestCase extends
 		assertTrue(solo.searchText("1011", 0, false));
 
 		solo.clickOnButton("下へ移動");
+		solo.clickOnButton("下へ移動");
 
 		assertFalse(solo.searchText("名字a", 0, false));
 		assertFalse(solo.searchText("1011", 0, false));
@@ -144,6 +146,7 @@ public class WaitingTestCase extends
 
 		test09_下スクロール();
 
+		solo.clickOnButton("上へ移動");
 		solo.clickOnButton("上へ移動");
 
 		assertTrue(solo.searchText("名字a", 0, false));
@@ -167,7 +170,14 @@ public class WaitingTestCase extends
 
 	}
 
-	public void test13_人数を1名から2名に変更() {
+	public void test13_人数が正しく表示されている() {
+
+		assertTrue(solo.searchText("1名"));
+		assertTrue(solo.searchText("2名"));
+
+	}
+
+	public void Xtest13_人数を1名から2名に変更() { // TODO: 瀬戸内では人数変更を行わない
 
 		solo.clickOnText("1名");
 
@@ -177,9 +187,9 @@ public class WaitingTestCase extends
 
 	}
 
-	public void test14_人数を2名から3名に変更() {
+	public void Xtest14_人数を2名から3名に変更() { // TODO: 瀬戸内では人数変更を行わない
 
-		test13_人数を1名から2名に変更();
+		Xtest13_人数を1名から2名に変更();
 
 		solo.clickOnText("2名");
 
