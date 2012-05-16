@@ -281,17 +281,6 @@ public class CommonLogic {
 		});
 	}
 
-	public Boolean isUnexpectedPassengerRecord(
-			final PassengerRecord passengerRecord) {
-		return statusAccess.read(new Reader<Boolean>() {
-			@Override
-			public Boolean read(Status status) {
-				return status.unexpectedPassengerRecords
-						.contains(passengerRecord);
-			}
-		});
-	}
-
 	public void postEvent(Object event) {
 		eventBus.post(event);
 	}

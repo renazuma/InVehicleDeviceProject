@@ -323,11 +323,7 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 			text += "[降]";
 		}
 
-		if (commonLogic.isUnexpectedPassengerRecord(passengerRecord)) {
-			text += " 飛び乗り ";
-		} else {
-			text += " 予約番号 " + reservation.getId();
-		}
+		text += " 予約番号 " + reservation.getId();
 		TextView reservationIdView = (TextView) view
 				.findViewById(R.id.reservation_id);
 		reservationIdView.setText(text);

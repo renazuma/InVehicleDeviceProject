@@ -143,24 +143,14 @@ public class CommonEventSubscriber {
 		status.receivedOperationScheduleChangedVehicleNotifications
 				.addAll(triggerVehicleNotifications);
 
-		// 飛び乗り予約以外の未乗車のPassengerRecordは削除
-		status.unhandledPassengerRecords
-				.retainAll(status.unexpectedPassengerRecords);
+		// 未乗車のPassengerRecordは削除
+		status.unhandledPassengerRecords.clear();
 
 		// 予約の追加、書き換え
 		for (OperationSchedule operationSchedule : newOperationSchedules) {
 			for (Reservation reservation : operationSchedule
 					.getReservationsAsDeparture()) {
 				mergeUpdatedReservationOnWriteLock(status, reservation);
-			}
-		}
-
-		// 飛び乗り予約はリストの後ろに移動
-		for (PassengerRecord passengerRecord : new LinkedList<PassengerRecord>(
-				status.unhandledPassengerRecords)) {
-			if (status.unexpectedPassengerRecords.contains(passengerRecord)) {
-				status.unhandledPassengerRecords.remove(passengerRecord);
-				status.unhandledPassengerRecords.add(passengerRecord);
 			}
 		}
 
@@ -175,11 +165,6 @@ public class CommonEventSubscriber {
 			}
 			Reservation selectedReservation = selectedPassengerRecord
 					.getReservation().get();
-			// 飛び乗り予約の場合は選択状態のまま
-			if (commonLogic
-					.isUnexpectedPassengerRecord(selectedPassengerRecord)) {
-				newSelectedPassengerRecords.add(selectedPassengerRecord);
-			}
 			// IDが一致する予約が存在する場合は選択状態のまま
 			for (PassengerRecord selectablePassengerRecord : selectablePassengerRecords) {
 				if (!selectablePassengerRecord.getReservation().isPresent()) {
