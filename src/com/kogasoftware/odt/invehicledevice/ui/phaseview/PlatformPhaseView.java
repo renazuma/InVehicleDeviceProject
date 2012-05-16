@@ -7,10 +7,8 @@ import java.util.List;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Handler;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -27,7 +25,6 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterFinishPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterPlatformPhaseEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.UnexpectedReservationAddedEvent;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordArrayAdapter;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordArrayAdapter.ItemType;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.StartCheckModalView;
@@ -123,11 +120,6 @@ public class PlatformPhaseView extends PhaseView {
 
 	}
 
-	@Subscribe
-	public void addUnexpectedReservation(UnexpectedReservationAddedEvent event) {
-		adapter.addUnexpectedReservation();
-	}
-
 	@Override
 	public void enterPlatformPhase(EnterPlatformPhaseEvent event) {
 		CommonLogic commonLogic = getCommonLogic();
@@ -219,13 +211,6 @@ public class PlatformPhaseView extends PhaseView {
 					}
 				});
 		showMissedReservationsButton.setChecked(false);
-		// addUnexpectedReservationButton
-		// .setOnClickListener(new OnClickListener() {
-		// @Override
-		// public void onClick(View view) {
-		// showAddUnexpectedReservationDialog();
-		// }
-		// });
 		setVisibility(View.VISIBLE);
 	}
 
@@ -244,60 +229,63 @@ public class PlatformPhaseView extends PhaseView {
 		}
 	}
 
-	private void showAddUnexpectedReservationDialog() {
-		if (!isShown()) {
-			return;
-		}
-
-		final List<OperationSchedule> operationSchedules = getCommonLogic()
-				.getRemainingOperationSchedules();
-		if (operationSchedules.size() <= 1) {
-			Log.w(TAG,
-					"can't add unexpected reservation, !(operationSchedulfes.isEmpty())",
-					new Exception());
-			return;
-		}
-		operationSchedules.remove(operationSchedules.get(0));
-		final String[] operationScheduleSelections = new String[operationSchedules
-				.size()];
-		DateFormat displayDateFormat = new SimpleDateFormat("H時m分");
-		for (Integer i = 0; i < operationScheduleSelections.length; ++i) {
-			OperationSchedule operationSchedule = operationSchedules.get(i);
-			String selection = "";
-			selection += displayDateFormat.format(operationSchedule
-					.getArrivalEstimate()) + "着予定 / ";
-
-			if (operationSchedule.getPlatform().isPresent()) {
-				selection += operationSchedule.getPlatform().get().getName();
-			} else {
-				// TODO
-				selection += "Operation Schedule ID: "
-						+ operationSchedules.get(i).getId();
-			}
-			operationScheduleSelections[i] = selection;
-		}
-
-		AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-		builder.setTitle("降車予定の乗降場を選択してください");
-		builder.setItems(operationScheduleSelections,
-				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-						if (which >= operationSchedules.size()) {
-							// TODO warning
-							return;
-						}
-						OperationSchedule arrivalOperationSchedule = operationSchedules
-								.get(which);
-						getCommonLogic().postEvent(
-								new UnexpectedReservationAddedEvent(
-										arrivalOperationSchedule.getId()));
-					}
-				});
-		dialog = Optional.of(builder.create());
-		dialog.get().show();
-	}
+	// 飛び乗り予約ダイアログ表示
+	// 飛び乗り予約機能復活時のすぐに参考可能なようにコメントアウトにしておく
+	// private void showAddUnexpectedReservationDialog() {
+	// if (!isShown()) {
+	// return;
+	// }
+	//
+	// final List<OperationSchedule> operationSchedules = getCommonLogic()
+	// .getRemainingOperationSchedules();
+	// if (operationSchedules.size() <= 1) {
+	// Log.w(TAG,
+	// "can't add unexpected reservation, !(operationSchedulfes.isEmpty())",
+	// new Exception());
+	// return;
+	// }
+	// operationSchedules.remove(operationSchedules.get(0));
+	// final String[] operationScheduleSelections = new
+	// String[operationSchedules
+	// .size()];
+	// DateFormat displayDateFormat = new SimpleDateFormat("H時m分");
+	// for (Integer i = 0; i < operationScheduleSelections.length; ++i) {
+	// OperationSchedule operationSchedule = operationSchedules.get(i);
+	// String selection = "";
+	// selection += displayDateFormat.format(operationSchedule
+	// .getArrivalEstimate()) + "着予定 / ";
+	//
+	// if (operationSchedule.getPlatform().isPresent()) {
+	// selection += operationSchedule.getPlatform().get().getName();
+	// } else {
+	// // TODO
+	// selection += "Operation Schedule ID: "
+	// + operationSchedules.get(i).getId();
+	// }
+	// operationScheduleSelections[i] = selection;
+	// }
+	//
+	// AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+	// builder.setTitle("降車予定の乗降場を選択してください");
+	// builder.setItems(operationScheduleSelections,
+	// new DialogInterface.OnClickListener() {
+	// @Override
+	// public void onClick(DialogInterface dialog, int which) {
+	// dialog.dismiss();
+	// if (which >= operationSchedules.size()) {
+	// // TODO warning
+	// return;
+	// }
+	// OperationSchedule arrivalOperationSchedule = operationSchedules
+	// .get(which);
+	// getCommonLogic().postEvent(
+	// new UnexpectedReservationAddedEvent(
+	// arrivalOperationSchedule.getId()));
+	// }
+	// });
+	// dialog = Optional.of(builder.create());
+	// dialog.get().show();
+	// }
 
 	@Subscribe
 	public void showStartCheckModalView(StartCheckEvent e) {
