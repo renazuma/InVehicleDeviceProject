@@ -7,6 +7,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -62,6 +63,7 @@ public class BackgroundTask {
 	private final Thread voiceThread;
 	private final Thread operationScheduleReceiveThread;
 	private final Looper myLooper;
+	private final AtomicBoolean quitCalled = new AtomicBoolean(false);
 
 	public BackgroundTask(CommonLogic commonLogic, Context context,
 			StatusAccess statusAccess) {
@@ -215,6 +217,9 @@ public class BackgroundTask {
 	 * loop()を終了する。loop()に入っていない状態でもloop()は終了する。
 	 */
 	public void quit() {
-		myLooper.quit();
+		// 二回以上呼ばれないようにする
+		if (!quitCalled.getAndSet(true)) {
+			myLooper.quit();
+		}
 	}
 }
