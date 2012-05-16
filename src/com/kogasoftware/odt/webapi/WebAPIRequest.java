@@ -14,13 +14,14 @@ import android.util.Log;
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.webapi.WebAPI.ResponseConverter;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
+import com.kogasoftware.odt.webapi.serializablehttprequestbasesupplier.SerializableHttpRequestBaseSupplier;
 
 class WebAPIRequest<T> implements Serializable {
 	private static final long serialVersionUID = -8451453777378477195L;
 	private static final String TAG = WebAPIRequest.class.getSimpleName();
 	protected static final AtomicInteger reqkeyCounter = new AtomicInteger(0);
-	protected final HttpRequestBase firstRequest;
-	protected final HttpRequestBase retryRequest;
+	protected final SerializableHttpRequestBaseSupplier firstRequest;
+	protected final SerializableHttpRequestBaseSupplier retryRequest;
 	protected final int reqkey = reqkeyCounter.incrementAndGet();
 	protected boolean retry = false;
 	protected boolean callbackAndResponseConverterSerializable = false;
@@ -28,9 +29,9 @@ class WebAPIRequest<T> implements Serializable {
 	transient protected WebAPICallback<T> callback;
 	transient protected ResponseConverter<T> responseConverter;
 
-	public WebAPIRequest(HttpRequestBase firstRequest,
-			HttpRequestBase retryRequest, WebAPICallback<T> callback,
-			ResponseConverter<T> responseConverter) {
+	public WebAPIRequest(SerializableHttpRequestBaseSupplier firstRequest,
+			SerializableHttpRequestBaseSupplier retryRequest,
+			WebAPICallback<T> callback, ResponseConverter<T> responseConverter) {
 		this.firstRequest = firstRequest;
 		this.retryRequest = retryRequest;
 		this.callback = callback;
@@ -45,8 +46,8 @@ class WebAPIRequest<T> implements Serializable {
 		return reqkey;
 	}
 
-	public HttpRequestBase getRequest() {
-		return retry ? retryRequest : firstRequest;
+	public HttpRequestBase getRequest() throws WebAPIException {
+		return retry ? retryRequest.get() : firstRequest.get();
 	}
 
 	public void onException(WebAPIException e) {

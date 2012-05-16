@@ -17,10 +17,6 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,6 +32,11 @@ import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
+import com.kogasoftware.odt.webapi.serializablehttprequestbasesupplier.SerializableHttpDeleteSupplier;
+import com.kogasoftware.odt.webapi.serializablehttprequestbasesupplier.SerializableHttpGetSupplier;
+import com.kogasoftware.odt.webapi.serializablehttprequestbasesupplier.SerializableHttpPostSupplier;
+import com.kogasoftware.odt.webapi.serializablehttprequestbasesupplier.SerializableHttpPutSupplier;
+import com.kogasoftware.odt.webapi.serializablehttprequestbasesupplier.SerializableHttpRequestBaseSupplier;
 
 public class WebAPI implements Closeable {
 	public static class EmptyWebAPICallback<T> implements WebAPICallback<T> {
@@ -169,9 +170,9 @@ public class WebAPI implements Closeable {
 
 	protected <T> int delete(String path, WebAPICallback<T> callback,
 			ResponseConverter<T> conv) throws WebAPIException {
-		WebAPIRequest<?> request = WebAPIRequestFactory.newInstance(
-				getServerHost(), path, null, new HttpDelete(), callback, conv,
-				authenticationToken);
+		SerializableHttpRequestBaseSupplier s = new SerializableHttpDeleteSupplier(
+				getServerHost(), path, null, authenticationToken);
+		WebAPIRequest<?> request = new WebAPIRequest<T>(s, s, callback, conv);
 		requests.add(request);
 		return request.getReqKey();
 	}
@@ -267,9 +268,9 @@ public class WebAPI implements Closeable {
 
 	protected <T> int get(String path, WebAPICallback<T> callback,
 			ResponseConverter<T> conv) throws WebAPIException {
-		WebAPIRequest<?> request = WebAPIRequestFactory.newInstance(
-				getServerHost(), path, null, new HttpGet(), callback, conv,
-				authenticationToken);
+		SerializableHttpRequestBaseSupplier s = new SerializableHttpGetSupplier(
+				getServerHost(), path, null, authenticationToken);
+		WebAPIRequest<?> request = new WebAPIRequest<T>(s, s, callback, conv);
 		requests.add(request);
 		return request.getReqKey();
 	}
@@ -457,9 +458,9 @@ public class WebAPI implements Closeable {
 	protected <T> int post(String path, JSONObject param,
 			WebAPICallback<T> callback, ResponseConverter<T> conv)
 			throws WebAPIException {
-		WebAPIRequest<?> request = WebAPIRequestFactory.newInstance(
-				getServerHost(), path, param, new HttpPost(), callback, conv,
-				authenticationToken);
+		SerializableHttpRequestBaseSupplier s = new SerializableHttpPostSupplier(
+				getServerHost(), path, param, authenticationToken);
+		WebAPIRequest<?> request = new WebAPIRequest<T>(s, s, callback, conv);
 		requests.add(request);
 		return request.getReqKey();
 	}
@@ -467,9 +468,9 @@ public class WebAPI implements Closeable {
 	protected <T> int put(String path, JSONObject param,
 			WebAPICallback<T> callback, ResponseConverter<T> conv)
 			throws WebAPIException {
-		WebAPIRequest<?> request = WebAPIRequestFactory.newInstance(
-				getServerHost(), path, param, new HttpPut(), callback, conv,
-				authenticationToken);
+		SerializableHttpRequestBaseSupplier s = new SerializableHttpPutSupplier(
+				getServerHost(), path, param, authenticationToken);
+		WebAPIRequest<?> request = new WebAPIRequest<T>(s, s, callback, conv);
 		requests.add(request);
 		return request.getReqKey();
 	}
