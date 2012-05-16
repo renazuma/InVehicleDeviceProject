@@ -243,20 +243,47 @@ public class MockDataSource implements DataSource {
 
 		String u1a = "";
 		String u1b = "";
+		String u1c = "";
+		String u1d = "";
+		String u1e = "";
+		String u1f = "";
+		String u1g = "";
+		String u1h = "";
+		String u1i = "";
+		String u1j = "";
+		String u1k = "";
+		String u1l = "";
+		String u1m = "";
+		String u1n = "";
+		String u1o = "";
 		if (iReservation > 0) {
-			u1a = "{passenger_count: 1 ,id: 1011,departure_schedule_id: 101,arrival_schedule_id: 102,user: {first_name: 'テストa', last_name: '名字a'},memo: 'テストメモ1'}";
+			u1a = "{passenger_count: 1 ,id: 1011,departure_schedule_id: 101,arrival_schedule_id: 106,user: {first_name: 'テストa', last_name: '名字a'},memo: 'テストメモ1'}";
 		}
 		if (iReservation > 1) {
-			u1b = ", {passenger_count: 2,id: 1012,departure_schedule_id: 101,arrival_schedule_id: 103,user: {first_name: 'テストb', last_name: '名字b'}}";
+			u1b = ", {passenger_count: 2,id: 1012,departure_schedule_id: 101,arrival_schedule_id: 104,user: {first_name: 'テストb', last_name: '名字b'}}";
 		}
 		if (iReservation > 2) {
+			u1c = ", {passenger_count: 3,id: 1013,departure_schedule_id: 101,arrival_schedule_id: 103,user: {first_name: 'テストc', last_name: '名字c'}}";
 		}
 		if (iReservation > 3) {
+			u1d = ", {passenger_count: 4,id: 1014,departure_schedule_id: 101,arrival_schedule_id: 102,user: {first_name: 'テストd', last_name: '名字d'}}";
 		}
 		if (iReservation > 4) {
+			u1e = ", {passenger_count: 5,id: 1015,departure_schedule_id: 101,arrival_schedule_id: 105,user: {first_name: 'テストe', last_name: '名字e'}}";
 		}
 		if (iReservation > 5) {
+			u1f = ", {passenger_count: 6,id: 1016,departure_schedule_id: 101,arrival_schedule_id: 104,user: {first_name: 'テストf', last_name: '名字f'}}";
 		}
+
+		u1g = ", {passenger_count: 1,id: 1017,departure_schedule_id: 102,arrival_schedule_id: 103,user: {first_name: 'テストg', last_name: '名字g'}}";
+		u1h = ", {passenger_count: 1,id: 1018,departure_schedule_id: 103,arrival_schedule_id: 104,user: {first_name: 'テストh', last_name: '名字h'}}";
+		u1i = ", {passenger_count: 1,id: 1019,departure_schedule_id: 104,arrival_schedule_id: 106,user: {first_name: 'テストi', last_name: '名字i'}}";
+		u1j = ", {passenger_count: 1,id: 1020,departure_schedule_id: 102,arrival_schedule_id: 105,user: {first_name: 'テストj', last_name: '名字j'}}";
+		u1k = ", {passenger_count: 1,id: 1021,departure_schedule_id: 103,arrival_schedule_id: 104,user: {first_name: 'テストk', last_name: '名字k'}}";
+		u1l = ", {passenger_count: 1,id: 1022,departure_schedule_id: 102,arrival_schedule_id: 106,user: {first_name: 'テストl', last_name: '名字l'}}";
+		u1m = ", {passenger_count: 1,id: 1023,departure_schedule_id: 103,arrival_schedule_id: 105,user: {first_name: 'テストm', last_name: '名字m'}}";
+		u1n = ", {passenger_count: 1,id: 1024,departure_schedule_id: 104,arrival_schedule_id: 106,user: {first_name: 'テストn', last_name: '名字n'}}";
+		u1o = ", {passenger_count: 1,id: 1025,departure_schedule_id: 104,arrival_schedule_id: 105,user: {first_name: 'テストo', last_name: '名字o'}}";
 
 		try {
 
@@ -267,7 +294,7 @@ public class MockDataSource implements DataSource {
 							+ "departure_estimate: '2012-01-01T09:15:00+09:00', "
 							+ "platform: {name: 'テストコガソフトウェア前', name_ruby: 'てすとこがそふとうぇあまえ'}, "
 							+ "reservations_as_arrival: [], "
-							+ "reservations_as_departure: [" + u1a + "," + u1b
+							+ "reservations_as_departure: [" + u1a + "," + u1b + "," + u1c + "," + u1d + "," + u1e + "," + u1f
 							+ "]}");
 			lOperationSchedule.add(new OperationSchedule(j1));
 
@@ -277,8 +304,8 @@ public class MockDataSource implements DataSource {
 							+ "arrival_estimate: '2012-01-01T09:30:00+09:00', "
 							+ "departure_estimate: '2012-01-01T09:35:00+09:00', "
 							+ "platform: {name: 'テスト上野御徒町駅前',name_ruby: 'てすとうえのおかちまちえきまえ'}, "
-							+ "reservations_as_arrival: [], "
-							+ "reservations_as_departure: []}");
+							+ "reservations_as_arrival: [" +  u1d + "], "
+							+ "reservations_as_departure: [" + u1g + "," + u1j + "," + u1l + "]}");
 			lOperationSchedule.add(new OperationSchedule(j2));
 
 			JSONObject j3 = new JSONObject(
