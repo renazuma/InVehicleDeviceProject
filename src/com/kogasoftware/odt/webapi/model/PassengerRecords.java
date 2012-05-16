@@ -8,11 +8,11 @@ public class PassengerRecords {
 	}
 
 	public static Boolean isGotOff(Reservation reservation) {
-		return isStatus(reservation, Status.UNHANDLED);
+		return isStatus(reservation, Status.GOT_OFF);
 	}
 
 	public static Boolean isRiding(Reservation reservation) {
-		return isStatus(reservation, Status.UNHANDLED);
+		return isStatus(reservation, Status.RIDING);
 	}
 
 	private static Boolean isStatus(Reservation reservation, Integer status) {
