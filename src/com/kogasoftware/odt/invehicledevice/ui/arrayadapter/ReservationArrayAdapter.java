@@ -62,17 +62,19 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		payTiming = commonLogic.getPayTiming();
 		remainingOperationSchedules.addAll(commonLogic
 				.getRemainingOperationSchedules());
-		isLastOperationSchedule = (remainingOperationSchedules.size() <= 1);
-		if (remainingOperationSchedules.isEmpty()) {
-			operationSchedule = new OperationSchedule();
-			return;
-		}
-		operationSchedule = remainingOperationSchedules.get(0);
 		reservations.addAll(commonLogic.getReservations());
 
+		isLastOperationSchedule = (remainingOperationSchedules.size() <= 1);
 		if (isLastOperationSchedule) {
 			visibleItemTypes.add(ItemType.RIDING_AND_NO_GET_OFF);
 		}
+
+		if (remainingOperationSchedules.isEmpty()) {
+			operationSchedule = new OperationSchedule();
+			updateDataSet();
+			return;
+		}
+		operationSchedule = remainingOperationSchedules.get(0);
 		updateDataSet();
 	}
 
