@@ -143,6 +143,7 @@ public class CommonEventSubscriber {
 				status.reservations)) {
 			if (!reservation.getPassengerRecord().isPresent()) {
 				status.reservations.remove(reservation);
+				continue;
 			}
 			if (reservation.getPassengerRecord().get().getStatus()
 					.equals(PassengerRecords.Status.UNHANDLED)) {
