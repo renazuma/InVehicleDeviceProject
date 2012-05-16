@@ -18,26 +18,21 @@ import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterDrivePhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.GetOffEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.GetOnEvent;
-import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordArrayAdapter;
+import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
-import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.User;
 
 public class StartCheckModalView extends ModalView {
 	public static class ShowEvent {
-		public final PassengerRecordArrayAdapter reservationArrayAdapter;
+		public final ReservationArrayAdapter reservationArrayAdapter;
 
-		public ShowEvent(PassengerRecordArrayAdapter reservationArrayAdapter) {
+		public ShowEvent(ReservationArrayAdapter reservationArrayAdapter) {
 			this.reservationArrayAdapter = reservationArrayAdapter;
 		}
 	}
 
-	private static Optional<String> getUserName(PassengerRecord passengerRecord) {
-		if (!passengerRecord.getReservation().isPresent()) {
-			return Optional.absent();
-		}
-		Reservation reservation = passengerRecord.getReservation().get();
+	private static Optional<String> getUserName(Reservation reservation) {
 		if (reservation.getUser().isPresent()) {
 			User user = reservation.getUser().get();
 			return Optional.of(user.getLastName() + user.getFirstName());
@@ -54,26 +49,24 @@ public class StartCheckModalView extends ModalView {
 
 	@Subscribe
 	public void show(ShowEvent event) {
-		final PassengerRecordArrayAdapter adapter = event.reservationArrayAdapter;
+		final ReservationArrayAdapter adapter = event.reservationArrayAdapter;
 		ListView errorReservationListView = (ListView) findViewById(R.id.error_reservation_list_view);
 		List<String> messages = new LinkedList<String>();
-		for (PassengerRecord passengerRecord : adapter
-				.getNoGettingOnPassengerRecords()) {
-			Optional<String> userName = getUserName(passengerRecord);
+		for (Reservation reservation : adapter.getNoGettingOnReservations()) {
+			Optional<String> userName = getUserName(reservation);
 			if (userName.isPresent()) {
 				messages.add(userName.get() + "様が未乗車です");
 			}
 		}
-		for (PassengerRecord passengerRecord : adapter
-				.getNoGettingOffPassengerRecords()) {
-			Optional<String> userName = getUserName(passengerRecord);
+		for (Reservation reservation : adapter
+				.getNoGettingOffReservations()) {
+			Optional<String> userName = getUserName(reservation);
 			if (userName.isPresent()) {
 				messages.add(userName.get() + "様が未降車です");
 			}
 		}
-		for (PassengerRecord passengerRecord : adapter
-				.getNoPaymentReservations()) {
-			Optional<String> userName = getUserName(passengerRecord);
+		for (Reservation reservation : adapter.getNoPaymentReservations()) {
+			Optional<String> userName = getUserName(reservation);
 			if (userName.isPresent()) {
 				messages.add(userName.get() + "様が料金未払いです");
 			}
@@ -99,10 +92,10 @@ public class StartCheckModalView extends ModalView {
 						.getCurrentOperationSchedule();
 				if (operationSchedule.isPresent()) {
 					commonLogic.postEvent(new GetOnEvent(operationSchedule
-							.get(), adapter.getSelectedGetOnPassengerRecords()));
+							.get(), adapter.getSelectedGetOnReservations()));
 					commonLogic.postEvent(new GetOffEvent(operationSchedule
-							.get(), adapter.getSelectedGetOffPassengerRecords()));
-					adapter.clearSelectedPassengerRecords();
+							.get(), adapter.getSelectedRidingReservations()));
+					adapter.clearSelectedReservations();
 				}
 				commonLogic.postEvent(new EnterDrivePhaseEvent());
 				hide();

@@ -26,7 +26,9 @@ import com.kogasoftware.odt.invehicledevice.logic.event.EnterFinishPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterPlatformPhaseEvent;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
+import com.kogasoftware.odt.webapi.model.PassengerRecords;
 import com.kogasoftware.odt.webapi.model.Platform;
+import com.kogasoftware.odt.webapi.model.Reservation;
 
 public class DrivePhaseView extends PhaseView implements AnimationListener {
 	private static final int TOGGLE_DRIVING_VIEW_INTERVAL = 5000;
@@ -92,10 +94,15 @@ public class DrivePhaseView extends PhaseView implements AnimationListener {
 		OperationSchedule operationSchedule = operationSchedules.get(0);
 		TextView totalPassengerCountTextView = (TextView) findViewById(R.id.total_passenger_count_text_view);
 		Integer totalPassengerCount = 0;
-		List<PassengerRecord> ridingPassengerRecords = commonLogic
-				.getRidingPassengerRecords();
-		for (PassengerRecord passengerRecord : ridingPassengerRecords) {
-			totalPassengerCount += passengerRecord.getPassengerCount();
+		for (Reservation reservation : commonLogic.getReservations()) {
+			if (reservation.getPassengerRecord().isPresent()) {
+				PassengerRecord passengerRecord = reservation
+						.getPassengerRecord().get();
+				if (passengerRecord.getStatus().equals(
+						PassengerRecords.Status.RIDING)) {
+					totalPassengerCount += passengerRecord.getPassengerCount();
+				}
+			}
 		}
 		totalPassengerCountTextView.setText(totalPassengerCount + "名乗車中");
 

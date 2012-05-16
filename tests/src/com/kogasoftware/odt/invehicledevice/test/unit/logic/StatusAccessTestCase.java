@@ -14,6 +14,7 @@ import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
+import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class StatusAccessTestCase extends EmptyActivityInstrumentationTestCase2 {
@@ -55,8 +56,8 @@ public class StatusAccessTestCase extends EmptyActivityInstrumentationTestCase2 
 		sa1.write(new Writer() {
 			@Override
 			public void write(Status status) {
-				status.unhandledPassengerRecords.clear();
-				status.unhandledPassengerRecords.add(new PassengerRecord());
+				status.reservations.clear();
+				status.reservations.add(new Reservation());
 				status.repliedVehicleNotifications.clear();
 				status.repliedVehicleNotifications
 						.add(new VehicleNotification());
@@ -69,7 +70,7 @@ public class StatusAccessTestCase extends EmptyActivityInstrumentationTestCase2 
 		sa2.read(new VoidReader() {
 			@Override
 			public void read(Status status) {
-				assertEquals(status.unhandledPassengerRecords.size(), 1);
+				assertEquals(status.reservations.size(), 1);
 				assertEquals(
 						status.repliedVehicleNotifications.size(), 1);
 			}
@@ -81,7 +82,7 @@ public class StatusAccessTestCase extends EmptyActivityInstrumentationTestCase2 
 		sa3.read(new VoidReader() {
 			@Override
 			public void read(Status status) {
-				assertTrue(status.unhandledPassengerRecords.isEmpty());
+				assertTrue(status.reservations.isEmpty());
 				assertTrue(status.repliedVehicleNotifications
 						.isEmpty());
 			}
@@ -92,7 +93,7 @@ public class StatusAccessTestCase extends EmptyActivityInstrumentationTestCase2 
 		sa4.read(new VoidReader() {
 			@Override
 			public void read(Status status) {
-				assertTrue(status.unhandledPassengerRecords.isEmpty());
+				assertTrue(status.reservations.isEmpty());
 				assertTrue(status.repliedVehicleNotifications
 						.isEmpty());
 			}
@@ -133,9 +134,7 @@ public class StatusAccessTestCase extends EmptyActivityInstrumentationTestCase2 
 		sa3.read(new VoidReader() {
 			@Override
 			public void read(Status status) {
-				assertTrue(status.unhandledPassengerRecords.isEmpty());
-				assertTrue(status.repliedVehicleNotifications
-						.isEmpty());
+				assertTrue(status.remainingOperationSchedules.isEmpty());
 			}
 		});
 
@@ -148,9 +147,7 @@ public class StatusAccessTestCase extends EmptyActivityInstrumentationTestCase2 
 		sa4.read(new VoidReader() {
 			@Override
 			public void read(Status status) {
-				assertTrue(status.unhandledPassengerRecords.isEmpty());
-				assertTrue(status.repliedVehicleNotifications
-						.isEmpty());
+				assertTrue(status.remainingOperationSchedules.isEmpty());
 			}
 		});
 	}

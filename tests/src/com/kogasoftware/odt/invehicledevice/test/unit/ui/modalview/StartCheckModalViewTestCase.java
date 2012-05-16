@@ -14,7 +14,7 @@ import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
 import com.kogasoftware.odt.invehicledevice.logic.event.CommonLogicLoadCompleteEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterDrivePhaseEvent;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
-import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordArrayAdapter;
+import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.StartCheckModalView;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
@@ -80,7 +80,7 @@ public class StartCheckModalViewTestCase extends
 		assertNotSame(mv.getVisibility(), View.VISIBLE);
 
 		cl.postEvent(new StartCheckModalView.ShowEvent(
-				new PassengerRecordArrayAdapter(getInstrumentation()
+				new ReservationArrayAdapter(getInstrumentation()
 						.getContext(), cl)));
 		getInstrumentation().waitForIdleSync();
 

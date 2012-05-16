@@ -1,13 +1,11 @@
 package com.kogasoftware.odt.invehicledevice.backgroundtask;
 
 import java.math.BigDecimal;
-import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.google.common.eventbus.Subscribe;
-import com.kogasoftware.odt.invehicledevice.backgroundtask.VoiceThread.SpeakEvent;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.Status;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
@@ -21,25 +19,17 @@ import com.kogasoftware.odt.invehicledevice.logic.event.OperationScheduleInitial
 import com.kogasoftware.odt.invehicledevice.logic.event.OrientationChangedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.PauseCancelledEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.PauseEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.ReceivedOperationScheduleChangedVehicleNotificationsReplyEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.SelectedPassengerRecordsUpdateEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.StopEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.TemperatureChangedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.UiEventBus;
 import com.kogasoftware.odt.invehicledevice.logic.event.UpdatedOperationScheduleMergedEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.UpdatedOperationScheduleReceiveStartEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.UpdatedOperationScheduleReceivedEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.VehicleNotificationReceivedAlertEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.VehicleNotificationReceivedEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.VehicleNotificationRepliedEvent;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.NotificationModalView;
 import com.kogasoftware.odt.webapi.Identifiables;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
-import com.kogasoftware.odt.webapi.model.PassengerRecord;
+import com.kogasoftware.odt.webapi.model.PassengerRecords;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLogs;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
-import com.kogasoftware.odt.webapi.model.VehicleNotifications;
 
 /**
  * 共通の内部データ処理
@@ -143,8 +133,22 @@ public class CommonEventSubscriber {
 		status.receivedOperationScheduleChangedVehicleNotifications
 				.addAll(triggerVehicleNotifications);
 
-		// 未乗車のPassengerRecordは削除
-		status.unhandledPassengerRecords.clear();
+		// 新規の場合Reservationは削除
+		if (!commonLogic.isOperationScheduleInitialized()) {
+			status.reservations.clear();
+		}
+
+		// 未乗車のReservationは削除
+		for (Reservation reservation : new LinkedList<Reservation>(
+				status.reservations)) {
+			if (!reservation.getPassengerRecord().isPresent()) {
+				status.reservations.remove(reservation);
+			}
+			if (reservation.getPassengerRecord().get().getStatus()
+					.equals(PassengerRecords.Status.UNHANDLED)) {
+				status.reservations.remove(reservation);
+			}
+		}
 
 		// 予約の追加、書き換え
 		for (OperationSchedule operationSchedule : newOperationSchedules) {
@@ -154,32 +158,18 @@ public class CommonEventSubscriber {
 			}
 		}
 
-		// 選択状態のPassengerRecordの更新
-		List<PassengerRecord> newSelectedPassengerRecords = new LinkedList<PassengerRecord>();
-		List<PassengerRecord> selectablePassengerRecords = new LinkedList<PassengerRecord>();
-		selectablePassengerRecords.addAll(status.unhandledPassengerRecords);
-		selectablePassengerRecords.addAll(status.ridingPassengerRecords);
-		for (PassengerRecord selectedPassengerRecord : status.selectedPassengerRecords) {
-			if (!selectedPassengerRecord.getReservation().isPresent()) {
-				continue;
-			}
-			Reservation selectedReservation = selectedPassengerRecord
-					.getReservation().get();
-			// IDが一致する予約が存在する場合は選択状態のまま
-			for (PassengerRecord selectablePassengerRecord : selectablePassengerRecords) {
-				if (!selectablePassengerRecord.getReservation().isPresent()) {
-					continue;
-				}
-				Reservation selectableReservation = selectablePassengerRecord
-						.getReservation().get();
-				if (selectableReservation.getId().equals(
-						selectedReservation.getId())) {
-					newSelectedPassengerRecords.add(selectablePassengerRecord);
+		// 選択状態のReservationの更新
+		List<Reservation> newSelectedReservations = new LinkedList<Reservation>();
+		for (Reservation reservation : new LinkedList<Reservation>(
+				status.reservations)) {
+			for (Reservation selectedReservation : status.selectedReservations) {
+				if (selectedReservation.getId().equals(reservation.getId())) {
+					newSelectedReservations.add(reservation);
 				}
 			}
 		}
-		status.selectedPassengerRecords.clear();
-		status.selectedPassengerRecords.addAll(newSelectedPassengerRecords);
+		status.selectedReservations.clear();
+		status.selectedReservations.addAll(newSelectedReservations);
 
 		// 新規の場合はスケジュールを全て交換して終了
 		if (!commonLogic.isOperationScheduleInitialized()) {
@@ -233,132 +223,44 @@ public class CommonEventSubscriber {
 	 * 更新されたReservationを現在のものにマージする処理(Statusがロックされた状態内)
 	 */
 	private void mergeUpdatedReservationOnWriteLock(Status status,
-			Reservation reservation) {
-		// Reservationに対応するPassengerRecordを新規作成し、未乗車のものと交換
+			Reservation serverReservation) {
 		// 乗車済み、降車済みのPassengerRecordの中に既に対応するものが存在する場合、それのReservationを交換
-		for (PassengerRecord passengerRecord : status.ridingPassengerRecords) {
-			if (passengerRecord.getReservation().isPresent()) {
-				if (passengerRecord.getReservation().get().getId()
-						.equals(reservation.getId())) {
-					passengerRecord.setReservation(reservation);
-					return;
-				}
+		for (Reservation localReservation : new LinkedList<Reservation>(
+				status.reservations)) {
+			if (!localReservation.getId().equals(serverReservation.getId())) {
+				continue;
 			}
-		}
-		for (PassengerRecord passengerRecord : status.finishedPassengerRecords) {
-			if (passengerRecord.getReservation().isPresent()) {
-				if (passengerRecord.getReservation().get().getId()
-						.equals(reservation.getId())) {
-					passengerRecord.setReservation(reservation);
-					return;
-				}
-			}
-		}
-		PassengerRecord passengerRecord = new PassengerRecord();
-		passengerRecord.setReservation(reservation);
-		passengerRecord.setPassengerCount(reservation.getPassengerCount());
-		status.unhandledPassengerRecords.add(passengerRecord);
-	}
 
-	/**
-	 * 受信したVehicleNotificationを内部にマージ
-	 */
-	@Subscribe
-	public void mergeVehicleNotification(VehicleNotificationReceivedEvent e) {
-		// 古いVehicleNotificationを削除
-		statusAccess.write(new Writer() {
-			@Override
-			public void write(Status status) {
-				final Calendar calendar = Calendar.getInstance();
-				calendar.add(Calendar.DATE, -3); // TODO:定数
-				for (VehicleNotification vehicleNotification : new LinkedList<VehicleNotification>(
-						status.repliedVehicleNotifications)) {
-					if (vehicleNotification.getCreatedAt().before(
-							calendar.getTime())) {
-						status.repliedVehicleNotifications
-								.remove(vehicleNotification);
-					}
-				}
+			// IDが一致した場合、予約を交換
+			status.reservations.remove(localReservation);
+			// 予約の削除
+			if (serverReservation.getDeletedAt().isPresent()) {
+				return;
 			}
-		});
-		final List<VehicleNotification> scheduleChangedVehicleNotifications = new LinkedList<VehicleNotification>();
-		final List<VehicleNotification> normalVehicleNotifications = new LinkedList<VehicleNotification>();
-		for (VehicleNotification vehicleNotification : e.vehicleNotifications) {
-			if (vehicleNotification.getNotificationKind().equals(
-					VehicleNotifications.NotificationKind.SCHEDULE_CHANGED)) {
-				scheduleChangedVehicleNotifications.add(vehicleNotification);
-			} else {
-				normalVehicleNotifications.add(vehicleNotification);
-			}
-		}
+			status.reservations.add(serverReservation);
 
-		final AtomicBoolean operationScheduleChanged = new AtomicBoolean(false);
-		// スケジュール変更通知の処理
-		statusAccess.write(new Writer() {
-			@Override
-			public void write(Status status) {
-				for (VehicleNotification vehicleNotification : scheduleChangedVehicleNotifications) {
-					if (Identifiables.contains(
-							status.repliedVehicleNotifications,
-							vehicleNotification)) {
-						continue;
-					}
-					if (Identifiables
-							.contains(
-									status.receivedOperationScheduleChangedVehicleNotifications,
-									vehicleNotification)) {
-						continue;
-					}
-					if (Identifiables
-							.merge(status.receivingOperationScheduleChangedVehicleNotifications,
-									vehicleNotification)) {
-						operationScheduleChanged.set(true);
-					}
-				}
+			// 新しい乗車実績を反映
+			if (!localReservation.getPassengerRecord().isPresent()) {
+				return;
 			}
-		});
-		if (operationScheduleChanged.get()) {
-			commonLogic
-					.postEvent(new UpdatedOperationScheduleReceiveStartEvent());
-		}
-
-		// 一般通知の処理
-		final AtomicBoolean normalsMerged = new AtomicBoolean(false);
-		statusAccess.write(new Writer() {
-			@Override
-			public void write(Status status) {
-				for (VehicleNotification vehicleNotification : normalVehicleNotifications) {
-					if (Identifiables.contains(
-							status.repliedVehicleNotifications,
-							vehicleNotification)) {
-						continue;
-					}
-					if (Identifiables.merge(status.vehicleNotifications,
-							vehicleNotification)) {
-						normalsMerged.set(true);
-					}
-				}
+			if (!serverReservation.getPassengerRecord().isPresent()) {
+				serverReservation.setPassengerRecord(localReservation
+						.getPassengerRecord());
+				return;
 			}
-		});
-		if (!normalsMerged.get()) {
+			Date serverUpdatedAt = serverReservation.getPassengerRecord().get()
+					.getUpdatedAt();
+			Date localUpdatedAt = localReservation.getPassengerRecord().get()
+					.getUpdatedAt();
+			if (serverUpdatedAt.before(localUpdatedAt)) {
+				serverReservation.setPassengerRecord(localReservation
+						.getPassengerRecord());
+			}
 			return;
 		}
 
-		// 一般通知がマージされた場合別スレッドでUIに対して通知処理
-		(new Thread() {
-			@Override
-			public void run() {
-				commonLogic
-						.postEvent(new VehicleNotificationReceivedAlertEvent());
-				commonLogic.postEvent(new SpeakEvent("管理者から連絡があります"));
-				try {
-					Thread.sleep(5000);
-					commonLogic
-							.postEvent(new NotificationModalView.ShowEvent());
-				} catch (InterruptedException e) {
-				}
-			}
-		}).start();
+		// IDが一致した予約が存在しない場合、無変更で追加する
+		status.reservations.add(serverReservation);
 	}
 
 	/**
@@ -426,23 +328,7 @@ public class CommonEventSubscriber {
 	}
 
 	/**
-	 * 選択済みのPassengerRecordのReservationIdを保存
-	 */
-	@Subscribe
-	public void setSelectedPassengerRecords(
-			final SelectedPassengerRecordsUpdateEvent e) {
-		statusAccess.write(new Writer() {
-			@Override
-			public void write(Status status) {
-				status.selectedPassengerRecords.clear();
-				status.selectedPassengerRecords
-						.addAll(e.selectedPassengerRecords);
-			}
-		});
-	}
-
-	/**
-	 * 温度を保存する
+	 * 温度を保存
 	 */
 	@Subscribe
 	public void setTemperature(final TemperatureChangedEvent e) {
@@ -453,56 +339,6 @@ public class CommonEventSubscriber {
 						.intValue());
 			}
 		});
-	}
-
-	/**
-	 * VehicleNotificationをReply用リストへ移動
-	 */
-	@Subscribe
-	public void setVehicleNotificationReplied(
-			final ReceivedOperationScheduleChangedVehicleNotificationsReplyEvent e) {
-		for (VehicleNotification vehicleNotification : e.vehicleNotifications) {
-			commonLogic.getDataSource().responseVehicleNotification(
-					vehicleNotification, VehicleNotifications.Response.YES,
-					new EmptyWebAPICallback<VehicleNotification>());
-		}
-
-		statusAccess.write(new Writer() {
-			@Override
-			public void write(Status status) {
-				status.receivedOperationScheduleChangedVehicleNotifications
-						.removeAll(e.vehicleNotifications);
-				status.repliedVehicleNotifications
-						.addAll(e.vehicleNotifications);
-			}
-		});
-	}
-
-	/**
-	 * VehicleNotificationをReply用リストへ移動
-	 * 未replyのVehicleNotificationが存在する場合はNotificationModalView.ShowEvent送信
-	 */
-	@Subscribe
-	public void setVehicleNotificationReplied(
-			final VehicleNotificationRepliedEvent e) {
-		if (e.vehicleNotification.getResponse().isPresent()) {
-			Integer response = e.vehicleNotification.getResponse().get();
-			commonLogic.getDataSource().responseVehicleNotification(
-					e.vehicleNotification, response,
-					new EmptyWebAPICallback<VehicleNotification>());
-		}
-		final AtomicBoolean empty = new AtomicBoolean(false);
-		statusAccess.write(new Writer() {
-			@Override
-			public void write(Status status) {
-				status.vehicleNotifications.remove(e.vehicleNotification);
-				status.repliedVehicleNotifications.add(e.vehicleNotification);
-				empty.set(status.vehicleNotifications.isEmpty());
-			}
-		});
-		if (!empty.get()) {
-			commonLogic.postEvent(new NotificationModalView.ShowEvent());
-		}
 	}
 
 	/**

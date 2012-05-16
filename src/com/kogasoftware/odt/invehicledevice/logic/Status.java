@@ -8,13 +8,13 @@ import java.util.concurrent.Semaphore;
 
 import com.kogasoftware.odt.invehicledevice.logic.empty.EmptyFile;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
-import com.kogasoftware.odt.webapi.model.PassengerRecord;
+import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLogs;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 /**
- * 現在の状態を保存しておくクラス
+ * 現在の状態を保存しておくクラス リストのメンバははSerializableであることをわかりやすくするためLinkedListにしておく
  */
 public class Status implements Serializable {
 	public static enum Phase {
@@ -36,11 +36,8 @@ public class Status implements Serializable {
 	public final LinkedList<OperationSchedule> remainingOperationSchedules = new LinkedList<OperationSchedule>();
 	public final LinkedList<OperationSchedule> finishedOperationSchedules = new LinkedList<OperationSchedule>();
 
-	public final LinkedList<PassengerRecord> unhandledPassengerRecords = new LinkedList<PassengerRecord>();
-	public final LinkedList<PassengerRecord> ridingPassengerRecords = new LinkedList<PassengerRecord>();
-	public final LinkedList<PassengerRecord> finishedPassengerRecords = new LinkedList<PassengerRecord>();
-
-	public final LinkedList<PassengerRecord> selectedPassengerRecords = new LinkedList<PassengerRecord>();
+	public final LinkedList<Reservation> reservations = new LinkedList<Reservation>();
+	public final LinkedList<Reservation> selectedReservations = new LinkedList<Reservation>();
 
 	public final LinkedList<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();
 	public final LinkedList<VehicleNotification> receivingOperationScheduleChangedVehicleNotifications = new LinkedList<VehicleNotification>();

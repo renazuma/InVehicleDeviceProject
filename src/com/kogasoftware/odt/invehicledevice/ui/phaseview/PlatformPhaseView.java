@@ -25,8 +25,8 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterFinishPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterPlatformPhaseEvent;
-import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordArrayAdapter;
-import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordArrayAdapter.ItemType;
+import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter;
+import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter.ItemType;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.StartCheckModalView;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 
@@ -50,7 +50,7 @@ public class PlatformPhaseView extends PhaseView {
 	private final LinearLayout lastOperationScheduleLayout;
 	private final LinearLayout nextOperationScheduleLayout;
 
-	private PassengerRecordArrayAdapter adapter = new PassengerRecordArrayAdapter(
+	private ReservationArrayAdapter adapter = new ReservationArrayAdapter(
 			getContext(), getCommonLogic());
 	private final Handler handler = new Handler();
 
@@ -150,7 +150,7 @@ public class PlatformPhaseView extends PhaseView {
 			// addUnexpectedReservationButton.setVisibility(VISIBLE);
 		}
 
-		adapter = new PassengerRecordArrayAdapter(getContext(), commonLogic);
+		adapter = new ReservationArrayAdapter(getContext(), commonLogic);
 		reservationListView.setAdapter(adapter);
 
 		if (operationSchedules.size() > 1) {

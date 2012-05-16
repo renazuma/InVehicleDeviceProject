@@ -2,7 +2,7 @@ package com.kogasoftware.odt.invehicledevice.test.unit.ui.arrayadapter;
 
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
-import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordArrayAdapter;
+import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.User;
@@ -11,13 +11,13 @@ public class PassengerRecordArrayAdapterTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 
 	CommonLogic cl;
-	PassengerRecordArrayAdapter praa;
+	ReservationArrayAdapter praa;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		cl = newCommonLogic();
-		praa = new PassengerRecordArrayAdapter(getInstrumentation()
+		praa = new ReservationArrayAdapter(getInstrumentation()
 				.getTargetContext(), cl);
 	}
 
@@ -30,7 +30,7 @@ public class PassengerRecordArrayAdapterTestCase extends
 	}
 
 	public void testPassengerRecordが表示される() throws Exception {
-		praa = new PassengerRecordArrayAdapter(getInstrumentation()
+		praa = new ReservationArrayAdapter(getInstrumentation()
 				.getTargetContext(), cl);
 
 		String userName0 = "上野駅前";
@@ -41,8 +41,8 @@ public class PassengerRecordArrayAdapterTestCase extends
 			User u = new User();
 			u.setLastName(userName0);
 			r.setUser(u);
-			pr.setReservation(r);
-			praa.add(pr);
+			r.setPassengerRecord(pr);
+			praa.add(r);
 		}
 
 		{
@@ -51,8 +51,8 @@ public class PassengerRecordArrayAdapterTestCase extends
 			User u = new User();
 			u.setLastName(userName1);
 			r.setUser(u);
-			pr.setReservation(r);
-			praa.add(pr);
+			r.setPassengerRecord(pr);
+			praa.add(r);
 		}
 
 		runOnUiThreadSync(new Runnable() {

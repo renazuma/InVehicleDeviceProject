@@ -3,15 +3,15 @@ package com.kogasoftware.odt.invehicledevice.logic.event;
 import java.util.List;
 
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
-import com.kogasoftware.odt.webapi.model.PassengerRecord;
+import com.kogasoftware.odt.webapi.model.Reservation;
 
 public class GetOffEvent {
 	public final OperationSchedule operationSchedule;
-	public final List<PassengerRecord> getOffPassengerRecords;
+	public final List<Reservation> reservations;
 
 	public GetOffEvent(OperationSchedule operationSchedule,
-			List<PassengerRecord> selectedGetOffPassengerRecords) {
+			List<Reservation> reservations) {
 		this.operationSchedule = operationSchedule;
-		this.getOffPassengerRecords = selectedGetOffPassengerRecords;
+		this.reservations = reservations;
 	}
 }

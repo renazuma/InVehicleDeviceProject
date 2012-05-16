@@ -20,7 +20,8 @@ import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.BuildConfig;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.backgroundtask.CommonEventSubscriber;
-import com.kogasoftware.odt.invehicledevice.backgroundtask.PassengerRecordEventSubscriber;
+import com.kogasoftware.odt.invehicledevice.backgroundtask.ReservationEventSubscriber;
+import com.kogasoftware.odt.invehicledevice.backgroundtask.VehicleNotificationEventSubscriber;
 import com.kogasoftware.odt.invehicledevice.logic.Status.Phase;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.ReadOnlyStatusAccess;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Reader;
@@ -33,7 +34,7 @@ import com.kogasoftware.odt.invehicledevice.logic.event.EnterFinishPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterPlatformPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.UiEventBus;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
-import com.kogasoftware.odt.webapi.model.PassengerRecord;
+import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
@@ -87,31 +88,32 @@ public class CommonLogic {
 
 	private final DataSource dataSource;
 	private final UiEventBus eventBus;
-	@Deprecated
-	private final StatusAccess statusAccessDeprecated;
 	private final ReadOnlyStatusAccess statusAccess;
 	private final CommonEventSubscriber commonEventSubscriber;
-	private final PassengerRecordEventSubscriber passengerRecordEventSubscriber;
+	private final ReservationEventSubscriber reservationEventSubscriber;
+	private final VehicleNotificationEventSubscriber vehicleNotificationEventSubscriber;
 
 	public CommonLogic() {
-		statusAccessDeprecated = new StatusAccess();
-		this.statusAccess = statusAccessDeprecated.getReadOnlyStatusAccess();
+		StatusAccess statusAccess = new StatusAccess();
+		this.statusAccess = statusAccess.getReadOnlyStatusAccess();
 		dataSource = DataSourceFactory.newInstance("http://127.0.0.1", "",
 				new EmptyFile());
 		eventBus = new UiEventBus();
-		commonEventSubscriber = new CommonEventSubscriber(this,
-				statusAccessDeprecated);
-		passengerRecordEventSubscriber = new PassengerRecordEventSubscriber(
-				this, statusAccessDeprecated);
+		commonEventSubscriber = new CommonEventSubscriber(this, statusAccess);
+		reservationEventSubscriber = new ReservationEventSubscriber(this,
+				statusAccess);
+		vehicleNotificationEventSubscriber = new VehicleNotificationEventSubscriber(
+				this, statusAccess);
 	}
 
 	public CommonLogic(Activity activity, Handler activityHandler,
 			StatusAccess statusAccess) {
-		this.statusAccessDeprecated = statusAccess;
-		this.statusAccess = statusAccess.getReadOnlyStatusAccess();
 		commonEventSubscriber = new CommonEventSubscriber(this, statusAccess);
-		passengerRecordEventSubscriber = new PassengerRecordEventSubscriber(
+		reservationEventSubscriber = new ReservationEventSubscriber(this,
+				statusAccess);
+		vehicleNotificationEventSubscriber = new VehicleNotificationEventSubscriber(
 				this, statusAccess);
+		this.statusAccess = statusAccess.getReadOnlyStatusAccess();
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(activity);
 		String url = preferences.getString(SharedPreferencesKey.SERVER_URL,
@@ -123,7 +125,7 @@ public class CommonLogic {
 
 		eventBus = new UiEventBus(activityHandler);
 		for (Object object : new Object[] { activity, commonEventSubscriber,
-				passengerRecordEventSubscriber }) {
+				reservationEventSubscriber, vehicleNotificationEventSubscriber }) {
 			eventBus.register(object);
 		}
 		for (Integer resourceId : new Integer[] { R.id.config_modal_view,
@@ -211,12 +213,11 @@ public class CommonLogic {
 		});
 	}
 
-	public List<PassengerRecord> getRidingPassengerRecords() {
-		return statusAccess.read(new Reader<List<PassengerRecord>>() {
+	public List<Reservation> getReservations() {
+		return statusAccess.read(new Reader<List<Reservation>>() {
 			@Override
-			public List<PassengerRecord> read(Status status) {
-				return new LinkedList<PassengerRecord>(
-						status.ridingPassengerRecords);
+			public List<Reservation> read(Status status) {
+				return new LinkedList<Reservation>(status.reservations);
 			}
 		});
 	}
@@ -237,26 +238,11 @@ public class CommonLogic {
 		return statusAccess;
 	}
 
-	@Deprecated
-	public StatusAccess getStatusAccessDeprecated() {
-		return statusAccessDeprecated;
-	}
-
 	public String getToken() {
 		return statusAccess.read(new Reader<String>() {
 			@Override
 			public String read(Status status) {
 				return status.token;
-			}
-		});
-	}
-
-	public List<PassengerRecord> getUnhandledPassengerRecords() {
-		return statusAccess.read(new Reader<List<PassengerRecord>>() {
-			@Override
-			public List<PassengerRecord> read(Status status) {
-				return new LinkedList<PassengerRecord>(
-						status.unhandledPassengerRecords);
 			}
 		});
 	}

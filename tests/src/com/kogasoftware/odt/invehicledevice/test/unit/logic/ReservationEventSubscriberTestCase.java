@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.google.common.base.Function;
 import com.google.common.eventbus.Subscribe;
-import com.kogasoftware.odt.invehicledevice.backgroundtask.PassengerRecordEventSubscriber;
+import com.kogasoftware.odt.invehicledevice.backgroundtask.ReservationEventSubscriber;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.Status;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
@@ -23,7 +23,7 @@ import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLogs;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
-public class PassengerRecordEventSubscriberTestCase extends
+public class ReservationEventSubscriberTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 	CommonLogic cl;
 	StatusAccess sa;
@@ -35,7 +35,7 @@ public class PassengerRecordEventSubscriberTestCase extends
 		cl = new CommonLogic(getActivity(), getActivityHandler(), sa);
 
 		assertEquals(
-				cl.countRegisteredClass(PassengerRecordEventSubscriber.class)
+				cl.countRegisteredClass(ReservationEventSubscriber.class)
 						.intValue(), 1);
 	}
 
