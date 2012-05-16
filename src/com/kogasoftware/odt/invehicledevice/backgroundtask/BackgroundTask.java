@@ -22,6 +22,7 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.Status;
@@ -47,8 +48,8 @@ public class BackgroundTask {
 
 	private final LocationManager locationManager;
 	private final SensorManager sensorManager;
-	private final TelephonyManager telephonyManager;
 	private final ConnectivityManager connectivityManager;
+	private final Optional<TelephonyManager> telephonyManager;
 	private final SharedPreferences sharedPreferences;
 	private final LocationSender locationSender;
 	private final ExitRequiredPreferenceChangeListener exitRequiredPreferenceChangeListener;
@@ -72,14 +73,33 @@ public class BackgroundTask {
 		}
 		myLooper = Looper.myLooper();
 		this.commonLogic = commonLogic;
+
 		locationManager = (LocationManager) context
 				.getSystemService(Context.LOCATION_SERVICE);
 		sensorManager = (SensorManager) context
 				.getSystemService(Context.SENSOR_SERVICE);
-		telephonyManager = (TelephonyManager) context
-				.getSystemService(Context.TELEPHONY_SERVICE);
 		connectivityManager = (ConnectivityManager) context
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+		// TODO:内容精査
+		// TelephonyManagerはNullPointerExceptionを発生させる
+		// E/AndroidRuntime(24190):FATAL EXCEPTION: Thread-4030
+		// E/AndroidRuntime(24190):java.lang.NullPointerException
+		// E/AndroidRuntime(24190):at_android.telephony.TelephonyManager.<init>(TelephonyManager.java:71)
+		// E/AndroidRuntime(24190):at_android.app.ContextImpl$26.createService(ContextImpl.java:410)
+		// E/AndroidRuntime(24190):at_android.app.ContextImpl$ServiceFetcher.getService(ContextImpl.java:198)
+		// E/AndroidRuntime(24190):at_android.app.ContextImpl.getSystemService(ContextImpl.java:1176)
+		// E/AndroidRuntime(24190):at_com.kogasoftware.odt.invehicledevice.backgroundtask.BackgroundTask.<init>(BackgroundTask.java:78)
+		// E/AndroidRuntime(24190):at_com.kogasoftware.odt.invehicledevice.test.unit.backgroundtask.BackgroundTaskTestCase$1.run(BackgroundTaskTestCase.java:44)
+		Optional<TelephonyManager> tempTelephonyManager = Optional.absent();
+		try {
+			tempTelephonyManager = Optional.of((TelephonyManager) context
+					.getSystemService(Context.TELEPHONY_SERVICE));
+		} catch (NullPointerException e) {
+			Log.w(TAG, e);
+		}
+		telephonyManager = tempTelephonyManager;
+
 		sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(context);
 
@@ -174,8 +194,10 @@ public class BackgroundTask {
 					sensor, SensorManager.SENSOR_DELAY_UI);
 		}
 
-		telephonyManager.listen(signalStrengthListener,
-				PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
+		if (telephonyManager.isPresent()) {
+			telephonyManager.get().listen(signalStrengthListener,
+					PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
+		}
 		commonLogic.postEvent(new NotificationModalView.ShowEvent());
 		commonLogic.getStatusAccess().read(new VoidReader() {
 			@Override
@@ -208,8 +230,10 @@ public class BackgroundTask {
 		locationManager.removeUpdates(locationSender);
 		sensorManager.unregisterListener(temperatureSensorEventListener);
 		sensorManager.unregisterListener(orientationSensorEventListener);
-		telephonyManager.listen(signalStrengthListener,
-				PhoneStateListener.LISTEN_NONE);
+		if (telephonyManager.isPresent()) {
+			telephonyManager.get().listen(signalStrengthListener,
+					PhoneStateListener.LISTEN_NONE);
+		}
 		executorService.shutdownNow();
 	}
 
