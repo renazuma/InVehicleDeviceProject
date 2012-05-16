@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.webapi;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -10,6 +11,7 @@ import org.apache.http.client.methods.HttpRequestBase;
 
 import android.util.Log;
 
+import com.google.common.io.Closeables;
 import com.kogasoftware.odt.webapi.WebAPI.ResponseConverter;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 
@@ -21,7 +23,7 @@ class WebAPIRequest<T> implements Serializable {
 	protected final HttpRequestBase retryRequest;
 	protected final int reqkey = reqkeyCounter.incrementAndGet();
 	protected boolean retry = false;
-	protected boolean callbackAndResponseConverterSerialized = false;
+	protected boolean callbackAndResponseConverterSerializable = false;
 
 	transient protected WebAPICallback<T> callback;
 	transient protected ResponseConverter<T> responseConverter;
@@ -33,6 +35,10 @@ class WebAPIRequest<T> implements Serializable {
 		this.retryRequest = retryRequest;
 		this.callback = callback;
 		this.responseConverter = responseConverter;
+		if ((callback instanceof Serializable)
+				&& (responseConverter instanceof Serializable)) {
+			callbackAndResponseConverterSerializable = true;
+		}
 	}
 
 	public int getReqKey() {
@@ -64,11 +70,11 @@ class WebAPIRequest<T> implements Serializable {
 		}
 	}
 
-	protected void readObject(ObjectInputStream stream) throws IOException,
+	private void readObject(ObjectInputStream stream) throws IOException,
 			ClassNotFoundException {
 
 		stream.defaultReadObject();
-		if (!callbackAndResponseConverterSerialized) {
+		if (!callbackAndResponseConverterSerializable) {
 			return;
 		}
 		try {
@@ -94,22 +100,35 @@ class WebAPIRequest<T> implements Serializable {
 		}
 	}
 
-	protected void writeObject(ObjectOutputStream stream) throws IOException {
+	/**
+	 * TODO:汚い
+	 */
+	private void writeObject(ObjectOutputStream stream) throws IOException {
+		byte[] serializedCallbackAndResponseConverter = new byte[0];
+		if (callbackAndResponseConverterSerializable) {
+			ByteArrayOutputStream baos = null;
+			ObjectOutputStream oos = null;
+			try {
+				baos = new ByteArrayOutputStream();
+				oos = new ObjectOutputStream(baos);
+				oos.writeObject(callback);
+				serializedCallbackAndResponseConverter = baos.toByteArray();
+			} catch (IOException e) {
+				callbackAndResponseConverterSerializable = false;
+			} finally {
+				Closeables.closeQuietly(baos);
+				Closeables.closeQuietly(oos);
+			}
+		}
 		stream.defaultWriteObject();
-		if (!(callback instanceof Serializable)) {
+		if (!callbackAndResponseConverterSerializable) {
 			return;
 		}
-		if (!(responseConverter instanceof Serializable)) {
-			return;
-		}
-
 		try {
-			stream.writeObject(callback);
-			stream.writeObject(responseConverter);
+			stream.write(serializedCallbackAndResponseConverter);
 		} catch (IOException e) {
 			Log.w(TAG, e);
 			throw e;
 		}
-		callbackAndResponseConverterSerialized = true;
 	}
 }
