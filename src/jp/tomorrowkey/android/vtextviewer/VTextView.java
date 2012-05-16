@@ -43,13 +43,15 @@ public class VTextView extends View {
 					Bitmap newBitmap = Bitmap.createBitmap(localWidth,
 							localHeight, Bitmap.Config.ARGB_8888);
 					Bitmap oldBitmap = preparedBitmap.getAndSet(newBitmap);
+					if (oldBitmap != null) {
+						oldBitmap.recycle();
+					}
 					invalidateHandler.post(new Runnable() {
 						@Override
 						public void run() {
 							invalidate();
 						}
 					});
-					oldBitmap.recycle();
 				}
 			} catch (InterruptedException e) {
 			}
