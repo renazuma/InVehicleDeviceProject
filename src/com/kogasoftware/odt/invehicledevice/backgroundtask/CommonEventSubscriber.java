@@ -26,6 +26,7 @@ import com.kogasoftware.odt.invehicledevice.logic.event.UpdatedOperationSchedule
 import com.kogasoftware.odt.invehicledevice.logic.event.UpdatedOperationScheduleReceivedEvent;
 import com.kogasoftware.odt.webapi.Identifiables;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
+import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.PassengerRecords;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLogs;
@@ -156,6 +157,9 @@ public class CommonEventSubscriber {
 			for (Reservation reservation : operationSchedule
 					.getReservationsAsDeparture()) {
 				mergeUpdatedReservationOnWriteLock(status, reservation);
+				// マージ完了後もPassengerRecordが存在しない予約には空のPassengerRecordを割り当て
+				reservation.setPassengerRecord(reservation.getPassengerRecord()
+						.or(new PassengerRecord()));
 			}
 		}
 
