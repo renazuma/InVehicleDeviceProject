@@ -42,7 +42,7 @@ public class VTextView extends View {
 					}
 					Bitmap newBitmap = Bitmap.createBitmap(localWidth,
 							localHeight, Bitmap.Config.ARGB_8888);
-					Bitmap oldBitmap = baseBitmap.getAndSet(newBitmap);
+					Bitmap oldBitmap = preparedBitmap.getAndSet(newBitmap);
 					invalidateHandler.post(new Runnable() {
 						@Override
 						public void run() {
@@ -61,10 +61,11 @@ public class VTextView extends View {
 	private static final float FONT_SPACING_RATE = 0.8f;
 	private static final String TAG = VTextView.class.getSimpleName();
 	private static final int TOP_SPACE = 0;
-	private final AtomicReference<Bitmap> baseBitmap = new AtomicReference<Bitmap>(
+	private final AtomicReference<Bitmap> preparedBitmap = new AtomicReference<Bitmap>(
 			Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888));
+	private Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+	private final Canvas canvas = new Canvas(bitmap);
 	private final Handler invalidateHandler = new Handler();
-	private final Canvas canvas = new Canvas(baseBitmap.get());
 	private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 	private final Typeface typeFace = Typeface
 			.defaultFromStyle(Typeface.NORMAL);
@@ -96,7 +97,13 @@ public class VTextView extends View {
 
 	@Override
 	public void onDraw(Canvas targetCanvas) {
-		Bitmap bitmap = baseBitmap.get();
+		{ // 新しいビットマップがある場合交換する
+			Bitmap newBitmap = preparedBitmap.getAndSet(null);
+			if (newBitmap != null) {
+				bitmap.recycle();
+				bitmap = newBitmap;
+			}
+		}
 		if (bitmap.getWidth() != width || bitmap.getHeight() != height) {
 			updateBitmapStartSemaphore.release(); // 別スレッドでビットマップを再作成
 			return;
