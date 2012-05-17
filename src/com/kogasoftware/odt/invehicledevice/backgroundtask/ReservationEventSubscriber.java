@@ -80,6 +80,9 @@ public class ReservationEventSubscriber {
 					}
 					PassengerRecord passengerRecord = reservation
 							.getPassengerRecord().get();
+					passengerRecord.setPassengerCount(reservation
+							.getPassengerCount());
+					passengerRecord.setPayment(reservation.getPayment());
 					passengerRecord.setStatus(PassengerRecords.Status.RIDING);
 					passengerRecord.setUpdatedAt(now);
 					passengerRecord.setGetOnTime(now);
