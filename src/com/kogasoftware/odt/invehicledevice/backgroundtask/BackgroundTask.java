@@ -143,21 +143,20 @@ public class BackgroundTask {
 	private void onLoopStart() throws InterruptedException,
 			RejectedExecutionException, ExecutionException {
 
+		for (Object object : new Object[] { voiceThread,
+				operationScheduleReceiveThread, vehicleNotificationReceiver,
+				locationSender, temperatureSensorEventListener,
+				orientationSensorEventListener,
+				exitRequiredPreferenceChangeListener, signalStrengthListener, }) {
+			commonLogic.registerEventListener(object);
+		}
+
 		voiceThread.start();
 		operationScheduleReceiveThread.start();
 
 		if (commonLogic.getPhase() != Phase.FINISH
 				&& commonLogic.getRemainingOperationSchedules().isEmpty()) {
 			commonLogic.waitForOperationScheduleInitialize();
-		}
-
-		for (Object object : new Object[] { voiceThread,
-				operationScheduleReceiveThread, vehicleNotificationReceiver,
-
-				locationSender, temperatureSensorEventListener,
-				orientationSensorEventListener,
-				exitRequiredPreferenceChangeListener, signalStrengthListener, }) {
-			commonLogic.registerEventListener(object);
 		}
 
 		commonLogic
