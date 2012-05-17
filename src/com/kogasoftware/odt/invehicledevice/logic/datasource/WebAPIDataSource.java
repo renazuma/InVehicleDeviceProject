@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import org.json.JSONException;
 
@@ -46,8 +47,7 @@ public class WebAPIDataSource implements DataSource {
 		}, callback);
 	}
 
-	public <T> int callWebAPI(WebAPICaller caller,
-			WebAPICallback<T> callback) {
+	public <T> int callWebAPI(WebAPICaller caller, WebAPICallback<T> callback) {
 		try {
 			return caller.call();
 		} catch (JSONException e) {
@@ -114,20 +114,24 @@ public class WebAPIDataSource implements DataSource {
 
 	@Override
 	public List<OperationSchedule> getOperationSchedules() {
+		final CountDownLatch countDownLatch = new CountDownLatch(1);
 		final List<OperationSchedule> result = new LinkedList<OperationSchedule>();
 		final WebAPICallback<List<OperationSchedule>> callback = new WebAPICallback<List<OperationSchedule>>() {
 			@Override
 			public void onSucceed(final int reqkey, final int statusCode,
 					final List<OperationSchedule> operationSchedules) {
 				result.addAll(operationSchedules);
+				countDownLatch.countDown();
 			}
 
 			@Override
 			public void onException(int reqkey, WebAPIException ex) {
+				countDownLatch.countDown();
 			}
 
 			@Override
 			public void onFailed(int reqkey, int statusCode, String response) {
+				countDownLatch.countDown();
 			}
 		};
 		callWebAPI(new WebAPICaller() {
@@ -136,25 +140,34 @@ public class WebAPIDataSource implements DataSource {
 				return api.getOperationSchedules(callback);
 			}
 		});
+		try {
+			countDownLatch.await();
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
 		return result;
 	}
 
 	@Override
 	public List<VehicleNotification> getVehicleNotifications() {
+		final CountDownLatch countDownLatch = new CountDownLatch(1);
 		final List<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();
 		final WebAPICallback<List<VehicleNotification>> callback = new WebAPICallback<List<VehicleNotification>>() {
 			@Override
 			public void onException(int reqkey, WebAPIException ex) {
+				countDownLatch.countDown();
 			}
 
 			@Override
 			public void onFailed(int reqkey, int statusCode, String response) {
+				countDownLatch.countDown();
 			}
 
 			@Override
 			public void onSucceed(int reqkey, int statusCode,
 					List<VehicleNotification> result) {
 				vehicleNotifications.addAll(result);
+				countDownLatch.countDown();
 			}
 		};
 		callWebAPI(new WebAPICaller() {
@@ -163,6 +176,11 @@ public class WebAPIDataSource implements DataSource {
 				return api.getVehicleNotifications(callback);
 			}
 		});
+		try {
+			countDownLatch.await();
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
 		return vehicleNotifications;
 	}
 
