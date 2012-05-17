@@ -6,6 +6,7 @@ import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter;
+import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.User;
@@ -39,6 +40,12 @@ public class ReservationArrayAdapterTestCase extends
 			@Override
 			public void write(Status status) {
 				status.reservations.clear();
+				OperationSchedule os1 = new OperationSchedule();
+				os1.setId(0);
+				OperationSchedule os2 = new OperationSchedule();
+				os2.setId(100);
+				status.remainingOperationSchedules.add(os1);
+				status.remainingOperationSchedules.add(os2);
 				{
 					PassengerRecord pr = new PassengerRecord();
 					Reservation r = new Reservation();
@@ -46,6 +53,8 @@ public class ReservationArrayAdapterTestCase extends
 					u.setLastName(userName0);
 					r.setUser(u);
 					r.setPassengerRecord(pr);
+					r.setDepartureScheduleId(os1.getId());
+					r.setArrivalScheduleId(os2.getId());
 					status.reservations.add(r);
 				}
 
@@ -56,6 +65,8 @@ public class ReservationArrayAdapterTestCase extends
 					u.setLastName(userName1);
 					r.setUser(u);
 					r.setPassengerRecord(pr);
+					r.setDepartureScheduleId(os1.getId());
+					r.setArrivalScheduleId(os2.getId());
 					status.reservations.add(r);
 				}
 			}
