@@ -9,7 +9,7 @@ class OperationRecordsController < ApplicationController
   end
 
   def show
-    @operation_record = OperationRecorde.find(params[:id])
+    @operation_record = OperationRecord.find(params[:id])
 
     respond_to do |format|
       format.json do
