@@ -249,6 +249,7 @@ public class PassengerControlTestCase extends
 
 		solo.searchText("3名乗車中");
 
+
 	}
 
 
