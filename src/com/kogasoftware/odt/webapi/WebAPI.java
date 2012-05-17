@@ -4,6 +4,7 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -27,6 +28,7 @@ import android.util.Log;
 import com.google.common.base.Charsets;
 import com.google.common.io.ByteStreams;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
+import com.kogasoftware.odt.webapi.model.OperationRecord;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
@@ -36,7 +38,6 @@ import com.kogasoftware.odt.webapi.serializablehttprequestbasesupplier.Serializa
 import com.kogasoftware.odt.webapi.serializablehttprequestbasesupplier.SerializableHttpGetSupplier;
 import com.kogasoftware.odt.webapi.serializablehttprequestbasesupplier.SerializableHttpPostSupplier;
 import com.kogasoftware.odt.webapi.serializablehttprequestbasesupplier.SerializableHttpPutSupplier;
-import com.kogasoftware.odt.webapi.serializablehttprequestbasesupplier.SerializableHttpRequestBaseSupplier;
 
 public class WebAPI implements Closeable {
 	public static class EmptyWebAPICallback<T> implements WebAPICallback<T> {
@@ -152,8 +153,23 @@ public class WebAPI implements Closeable {
 	public int arrivalOperationSchedule(OperationSchedule os,
 			WebAPICallback<OperationSchedule> callback) throws WebAPIException,
 			JSONException {
-		return put(PATH_SCHEDULES + "/" + os.getId() + "/arrival", null,
-				callback, new ResponseConverter<OperationSchedule>() {
+		Date now = new Date();
+		OperationRecord or = os.getOperationRecord().or(new OperationRecord());
+		or.setUpdatedAt(now);
+		or.setArrivedAt(now);
+
+		JSONObject orJson = or.toJSONObject();
+		JSONObject retryOrJson = or.toJSONObject();
+		retryOrJson.put("arrived_at_offline", true);
+
+		JSONObject param = new JSONObject();
+		param.put("operation_record", orJson);
+		JSONObject retryParam = new JSONObject();
+		retryParam.put("operation_record", retryOrJson);
+
+		return put(PATH_SCHEDULES + "/" + os.getId() + "/arrival", param,
+				retryParam, callback,
+				new ResponseConverter<OperationSchedule>() {
 					@Override
 					public OperationSchedule convert(byte[] rawResponse)
 							throws Exception {
@@ -170,9 +186,10 @@ public class WebAPI implements Closeable {
 
 	protected <T> int delete(String path, WebAPICallback<T> callback,
 			ResponseConverter<T> conv) throws WebAPIException {
-		SerializableHttpRequestBaseSupplier s = new SerializableHttpDeleteSupplier(
+		SerializableHttpDeleteSupplier supplier = new SerializableHttpDeleteSupplier(
 				getServerHost(), path, null, authenticationToken);
-		WebAPIRequest<?> request = new WebAPIRequest<T>(s, s, callback, conv);
+		WebAPIRequest<?> request = new WebAPIRequest<T>(supplier, supplier,
+				callback, conv);
 		requests.add(request);
 		return request.getReqKey();
 	}
@@ -187,8 +204,23 @@ public class WebAPI implements Closeable {
 	public int departureOperationSchedule(OperationSchedule os,
 			WebAPICallback<OperationSchedule> callback) throws WebAPIException,
 			JSONException {
-		return put(PATH_SCHEDULES + "/" + os.getId() + "/departure", null,
-				callback, new ResponseConverter<OperationSchedule>() {
+		Date now = new Date();
+		OperationRecord or = os.getOperationRecord().or(new OperationRecord());
+		or.setUpdatedAt(now);
+		or.setDepartedAt(now);
+
+		JSONObject orJson = or.toJSONObject();
+		JSONObject retryOrJson = or.toJSONObject();
+		retryOrJson.put("departed_at_offline", true);
+
+		JSONObject param = new JSONObject();
+		param.put("operation_record", orJson);
+		JSONObject retryParam = new JSONObject();
+		retryParam.put("operation_record", retryOrJson);
+
+		return put(PATH_SCHEDULES + "/" + os.getId() + "/departure", param,
+				retryParam, callback,
+				new ResponseConverter<OperationSchedule>() {
 					@Override
 					public OperationSchedule convert(byte[] rawResponse)
 							throws Exception {
@@ -268,9 +300,10 @@ public class WebAPI implements Closeable {
 
 	protected <T> int get(String path, WebAPICallback<T> callback,
 			ResponseConverter<T> conv) throws WebAPIException {
-		SerializableHttpRequestBaseSupplier s = new SerializableHttpGetSupplier(
+		SerializableHttpGetSupplier supplier = new SerializableHttpGetSupplier(
 				getServerHost(), path, null, authenticationToken);
-		WebAPIRequest<?> request = new WebAPIRequest<T>(s, s, callback, conv);
+		WebAPIRequest<?> request = new WebAPIRequest<T>(supplier, supplier,
+				callback, conv);
 		requests.add(request);
 		return request.getReqKey();
 	}
@@ -290,14 +323,25 @@ public class WebAPI implements Closeable {
 			Reservation reservation, PassengerRecord passengerRecord,
 			WebAPICallback<PassengerRecord> callback) throws WebAPIException,
 			JSONException {
-		JSONObject vnJson = filterJSONKeys(passengerRecord.toJSONObject(),
-				new String[] { "id", "payment", "passenger_count" });
-		vnJson.put("id", passengerRecord.getId());
+		Date now = new Date();
+		passengerRecord.setUpdatedAt(now);
+		passengerRecord.setGetOffTime(now);
+
+		JSONObject prJson = filterJSONKeys(passengerRecord.toJSONObject(),
+				new String[] { "id", "payment", "passenger_count",
+						"get_off_time", "updated_at" });
+		prJson.put("id", passengerRecord.getId());
+		JSONObject retryPrJson = new JSONObject(prJson.toString());
+		retryPrJson.put("get_off_time_offline", true);
+
 		JSONObject param = new JSONObject();
-		param.put("passenger_record", vnJson);
+		JSONObject retryParam = new JSONObject();
+		param.put("passenger_record", prJson);
+		retryParam.put("passenger_record", retryPrJson);
+
 		return put(PATH_SCHEDULES + "/" + operationSchedule.getId()
 				+ "/reservations/" + reservation.getId() + "/getoff", param,
-				callback, new ResponseConverter<PassengerRecord>() {
+				retryParam, callback, new ResponseConverter<PassengerRecord>() {
 					@Override
 					public PassengerRecord convert(byte[] rawResponse)
 							throws Exception {
@@ -318,14 +362,25 @@ public class WebAPI implements Closeable {
 			Reservation reservation, PassengerRecord passengerRecord,
 			WebAPICallback<PassengerRecord> callback) throws WebAPIException,
 			JSONException {
-		JSONObject vnJson = filterJSONKeys(passengerRecord.toJSONObject(),
-				new String[] { "id", "payment", "passenger_count" });
-		vnJson.put("id", passengerRecord.getId());
+		Date now = new Date();
+		passengerRecord.setUpdatedAt(now);
+		passengerRecord.setGetOnTime(now);
+
+		JSONObject prJson = filterJSONKeys(passengerRecord.toJSONObject(),
+				new String[] { "id", "payment", "passenger_count",
+						"get_on_time", "updated_at" });
+		prJson.put("id", passengerRecord.getId());
+		JSONObject retryPrJson = new JSONObject(prJson.toString());
+		retryPrJson.put("get_on_time_offline", true);
+
 		JSONObject param = new JSONObject();
-		param.put("passenger_record", vnJson);
+		JSONObject retryParam = new JSONObject();
+		param.put("passenger_record", prJson);
+		retryParam.put("passenger_record", retryPrJson);
+
 		return put(PATH_SCHEDULES + "/" + operationSchedule.getId()
 				+ "/reservations/" + reservation.getId() + "/geton", param,
-				callback, new ResponseConverter<PassengerRecord>() {
+				retryParam, callback, new ResponseConverter<PassengerRecord>() {
 					@Override
 					public PassengerRecord convert(byte[] rawResponse)
 							throws Exception {
@@ -456,11 +511,33 @@ public class WebAPI implements Closeable {
 	}
 
 	protected <T> int post(String path, JSONObject param,
+			JSONObject retryParam, WebAPICallback<T> callback,
+			ResponseConverter<T> conv) throws WebAPIException {
+		SerializableHttpPostSupplier first = new SerializableHttpPostSupplier(
+				getServerHost(), path, param, authenticationToken);
+		SerializableHttpPostSupplier retry = new SerializableHttpPostSupplier(
+				getServerHost(), path, param, authenticationToken);
+		WebAPIRequest<?> request = new WebAPIRequest<T>(first, retry, callback,
+				conv);
+		requests.add(request);
+		return request.getReqKey();
+	}
+
+	protected <T> int post(String path, JSONObject param,
 			WebAPICallback<T> callback, ResponseConverter<T> conv)
 			throws WebAPIException {
-		SerializableHttpRequestBaseSupplier s = new SerializableHttpPostSupplier(
+		return post(path, param, param, callback, conv);
+	}
+
+	protected <T> int put(String path, JSONObject param, JSONObject retryParam,
+			WebAPICallback<T> callback, ResponseConverter<T> conv)
+			throws WebAPIException {
+		SerializableHttpPutSupplier first = new SerializableHttpPutSupplier(
 				getServerHost(), path, param, authenticationToken);
-		WebAPIRequest<?> request = new WebAPIRequest<T>(s, s, callback, conv);
+		SerializableHttpPutSupplier retry = new SerializableHttpPutSupplier(
+				getServerHost(), path, retryParam, authenticationToken);
+		WebAPIRequest<?> request = new WebAPIRequest<T>(first, retry, callback,
+				conv);
 		requests.add(request);
 		return request.getReqKey();
 	}
@@ -468,11 +545,7 @@ public class WebAPI implements Closeable {
 	protected <T> int put(String path, JSONObject param,
 			WebAPICallback<T> callback, ResponseConverter<T> conv)
 			throws WebAPIException {
-		SerializableHttpRequestBaseSupplier s = new SerializableHttpPutSupplier(
-				getServerHost(), path, param, authenticationToken);
-		WebAPIRequest<?> request = new WebAPIRequest<T>(s, s, callback, conv);
-		requests.add(request);
-		return request.getReqKey();
+		return put(path, param, param, callback, conv);
 	}
 
 	protected JSONObject removeJSONKeys(JSONObject jsonObject, String[] keys) {
@@ -543,10 +616,18 @@ public class WebAPI implements Closeable {
 	public int sendServiceUnitStatusLog(ServiceUnitStatusLog log,
 			WebAPICallback<ServiceUnitStatusLog> callback)
 			throws WebAPIException, JSONException {
+		log.setUpdatedAt(new Date());
+
 		JSONObject logJson = log.toJSONObject();
+		JSONObject retryLogJson = log.toJSONObject();
+		retryLogJson.put("offline", true);
+
 		JSONObject param = new JSONObject();
+		JSONObject retryParam = new JSONObject();
 		param.put("service_unit_status_log", logJson);
-		return post(PATH_STATUSLOGS, param, callback,
+		retryParam.put("service_unit_status_log", retryLogJson);
+
+		return post(PATH_STATUSLOGS, param, retryParam, callback,
 				new ResponseConverter<ServiceUnitStatusLog>() {
 					@Override
 					public ServiceUnitStatusLog convert(byte[] rawResponse)
