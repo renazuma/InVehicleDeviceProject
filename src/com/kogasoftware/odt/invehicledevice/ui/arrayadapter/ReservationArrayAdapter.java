@@ -6,18 +6,14 @@ import java.util.List;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -115,7 +111,11 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 	public List<Reservation> getNoGettingOffReservations() {
 		List<Reservation> getNoGettingOffReservations = new LinkedList<Reservation>();
 		for (Reservation reservation : reservations) {
-			if (isGetOff(reservation) && !isSelected(reservation)) {
+			if (isSelected(reservation)
+					|| !PassengerRecords.isRiding(reservation)) {
+				continue;
+			}
+			if (isLastOperationSchedule || isGetOff(reservation)) {
 				getNoGettingOffReservations.add(reservation);
 			}
 		}
@@ -179,33 +179,37 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		final PassengerRecord passengerRecord = reservation
 				.getPassengerRecord().get();
 
-		// 人数変更UI
-		Spinner spinner = (Spinner) view
-				.findViewById(R.id.change_passenger_count_spinner);
-		List<String> passengerCounts = new LinkedList<String>();
-		Integer max = reservation.getPassengerCount() + 10;
-		for (Integer i = 1; i <= max; ++i) {
-			passengerCounts.add(i + "名");
-		}
-		spinner.setAdapter(new ArrayAdapter<String>(getContext(),
-				android.R.layout.simple_list_item_1, passengerCounts));
-		try {
-			Integer count = passengerRecord.getPassengerCount() - 1;
-			spinner.setSelection(count);
-		} catch (RuntimeException e) {
-			Log.w(TAG, e);
-		}
-		spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view,
-					int position, long id) {
-				passengerRecord.setPassengerCount(position + 1);
-			}
+		TextView passengerCountTextView = (TextView) view
+				.findViewById(R.id.passenger_count_text_view);
+		passengerCountTextView.setText(reservation.getPassengerCount() + "名");
 
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {
-			}
-		});
+		// 人数変更UI
+		// Spinner spinner = (Spinner) view
+		// .findViewById(R.id.change_passenger_count_spinner);
+		// List<String> passengerCounts = new LinkedList<String>();
+		// Integer max = reservation.getPassengerCount() + 10;
+		// for (Integer i = 1; i <= max; ++i) {
+		// passengerCounts.add(i + "名");
+		// }
+		// spinner.setAdapter(new ArrayAdapter<String>(getContext(),
+		// android.R.layout.simple_list_item_1, passengerCounts));
+		// try {
+		// Integer count = passengerRecord.getPassengerCount() - 1;
+		// spinner.setSelection(count);
+		// } catch (RuntimeException e) {
+		// Log.w(TAG, e);
+		// }
+		// spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+		// @Override
+		// public void onItemSelected(AdapterView<?> parent, View view,
+		// int position, long id) {
+		// passengerRecord.setPassengerCount(position + 1);
+		// }
+		//
+		// @Override
+		// public void onNothingSelected(AdapterView<?> parent) {
+		// }
+		// });
 
 		// メモボタン
 		Button memoButton = (Button) view.findViewById(R.id.memo_button);
