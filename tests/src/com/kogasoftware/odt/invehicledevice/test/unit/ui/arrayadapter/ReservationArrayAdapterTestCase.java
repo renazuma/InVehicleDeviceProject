@@ -63,6 +63,8 @@ public class ReservationArrayAdapterTestCase extends
 
 		raa = new ReservationArrayAdapter(getInstrumentation()
 				.getTargetContext(), cl);
+		getInstrumentation().waitForIdleSync();
+		assertEquals(raa.getCount(), 2);
 		runOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
