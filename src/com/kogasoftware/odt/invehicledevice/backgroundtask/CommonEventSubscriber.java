@@ -5,9 +5,11 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.Status;
+import com.kogasoftware.odt.invehicledevice.logic.Status.Phase;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
 import com.kogasoftware.odt.invehicledevice.logic.empty.EmptyWebAPICallback;
@@ -24,7 +26,7 @@ import com.kogasoftware.odt.invehicledevice.logic.event.TemperatureChangedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.UiEventBus;
 import com.kogasoftware.odt.invehicledevice.logic.event.UpdatedOperationScheduleMergedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.UpdatedOperationScheduleReceivedEvent;
-import com.kogasoftware.odt.webapi.Identifiables;
+import com.kogasoftware.odt.webapi.model.OperationRecord;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.PassengerRecords;
@@ -154,6 +156,8 @@ public class CommonEventSubscriber {
 
 		// 予約の追加、書き換え
 		for (OperationSchedule operationSchedule : newOperationSchedules) {
+			operationSchedule.setOperationRecord(operationSchedule
+					.getOperationRecord().or(new OperationRecord()));
 			for (Reservation reservation : operationSchedule
 					.getReservationsAsDeparture()) {
 				mergeUpdatedReservationOnWriteLock(status, reservation);
@@ -176,43 +180,36 @@ public class CommonEventSubscriber {
 		status.selectedReservations.clear();
 		status.selectedReservations.addAll(newSelectedReservations);
 
-		// 新規の場合はスケジュールを全て交換して終了
-		if (!commonLogic.isOperationScheduleInitialized()) {
-			status.remainingOperationSchedules.clear();
-			status.finishedOperationSchedules.clear();
-			status.remainingOperationSchedules.addAll(newOperationSchedules);
-			commonLogic.postEvent(new OperationScheduleInitializedEvent());
-			return;
-		}
-
-		// OperationScheduleの巻き戻し
+		// OperationScheduleの再生
 		LinkedList<OperationSchedule> newRemainingOperationSchedules = new LinkedList<OperationSchedule>(
 				newOperationSchedules);
 		List<OperationSchedule> newFinishedOperationSchedules = new LinkedList<OperationSchedule>();
-		for (OperationSchedule finishedOperationSchedule : status.finishedOperationSchedules) {
-			if (newRemainingOperationSchedules.isEmpty()) {
+		for (OperationSchedule operationSchedule : new LinkedList<OperationSchedule>(
+				newRemainingOperationSchedules)) {
+			if (!operationSchedule.getOperationRecord().isPresent()) {
 				break;
 			}
-			if (!newRemainingOperationSchedules.get(0).getId()
-					.equals(finishedOperationSchedule.getId())) {
+			OperationRecord operationRecord = operationSchedule
+					.getOperationRecord().get();
+			if (!operationRecord.getDepartedAt().isPresent()) {
 				break;
 			}
-			newFinishedOperationSchedules.add(newRemainingOperationSchedules
-					.pop());
+			newFinishedOperationSchedules.add(operationSchedule);
+			newRemainingOperationSchedules.remove(operationSchedule);
 		}
 
-		// 現在乗降場待機画面で、現在のOperationScheduleが無効になった場合強制的に運行中に設定
-		if (status.phase == Status.Phase.PLATFORM
-				&& !status.remainingOperationSchedules.isEmpty()
-				&& !Identifiables.contains(newRemainingOperationSchedules,
-						status.remainingOperationSchedules.get(0))) {
-			status.phase = Status.Phase.DRIVE;
-		}
-
-		// 現在運行終了状態で、新しい運行スケジュールが存在する場合は強制的に運行中に設定
-		if (status.phase == Status.Phase.FINISH
-				&& !newRemainingOperationSchedules.isEmpty()) {
-			status.phase = Status.Phase.DRIVE;
+		if (newRemainingOperationSchedules.isEmpty()) {
+			status.phase = Phase.FINISH;
+		} else {
+			Optional<OperationRecord> operationRecord = newRemainingOperationSchedules
+					.get(0).getOperationRecord();
+			if (!operationRecord.isPresent()) {
+				status.phase = Phase.FINISH;
+			} else if (operationRecord.get().getArrivedAt().isPresent()) {
+				status.phase = Phase.PLATFORM;
+			} else {
+				status.phase = Phase.DRIVE;
+			}
 		}
 
 		status.remainingOperationSchedules.clear();
@@ -221,7 +218,11 @@ public class CommonEventSubscriber {
 		status.finishedOperationSchedules.clear();
 		status.finishedOperationSchedules.addAll(newFinishedOperationSchedules);
 
-		commonLogic.postEvent(new UpdatedOperationScheduleMergedEvent());
+		if (commonLogic.isOperationScheduleInitialized()) {
+			commonLogic.postEvent(new UpdatedOperationScheduleMergedEvent());
+		} else {
+			commonLogic.postEvent(new OperationScheduleInitializedEvent());
+		}
 	}
 
 	/**
