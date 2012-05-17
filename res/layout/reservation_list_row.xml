@@ -38,10 +38,18 @@
         android:textOff="未払"
         android:textOn="支払済" />
 
+    <TextView
+        android:id="@+id/passenger_count_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:gravity="center_vertical"
+        android:textSize="25dip" />
+    <!--
     <Spinner
         android:id="@+id/change_passenger_count_spinner"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent" />
+    -->
 
     <Button
         android:id="@+id/return_path_button"
