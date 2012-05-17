@@ -1,6 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.backgroundtask;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import android.content.Context;
@@ -48,16 +49,19 @@ public class LocationSenderTestCase extends
 
 	public void testBackgroundTaskによってUiEventBusに登録される() throws Exception {
 		final AtomicReference<BackgroundTask> bt = new AtomicReference<BackgroundTask>();
+		final CountDownLatch cdl = new CountDownLatch(1);
 		Thread t = new Thread() {
 			@Override
 			public void run() {
 				bt.set(new BackgroundTask(cl,
 						getInstrumentation().getContext(), sa));
+				cdl.countDown();
 				bt.get().loop();
 			}
 		};
 		t.start();
-		Thread.sleep(1000);
+		assertTrue(cdl.await(5, TimeUnit.SECONDS));
+		Thread.sleep(5000);
 		assertEquals(cl.countRegisteredClass(LocationSender.class).intValue(),
 				1);
 		bt.get().quit();
