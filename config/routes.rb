@@ -5,6 +5,7 @@ WebAPITest::Application.routes.draw do
   resources :operators
   resources :service_providers
   resources :operation_schedules
+  resources :operation_records
   resources :passenger_records
   resources :platforms
   resources :reservations
