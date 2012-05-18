@@ -127,7 +127,7 @@ public class StatusAccessTestCase extends EmptyActivityInstrumentationTestCase2 
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(getActivity());
 		preferences.edit()
-				.putBoolean(SharedPreferencesKey.CLEAR_REQUIRED, true).commit();
+				.putBoolean(SharedPreferencesKey.CLEAR_STATUS_BACKUP_REQUIRED, true).commit();
 
 		// クリアされることを確認
 		StatusAccess sa3 = new StatusAccess(getActivity());
@@ -139,7 +139,7 @@ public class StatusAccessTestCase extends EmptyActivityInstrumentationTestCase2 
 		});
 
 		// SharedPreferencesKey.CLEAR_REQUIREDがfalseになっていることを確認
-		assertFalse(preferences.getBoolean(SharedPreferencesKey.CLEAR_REQUIRED,
+		assertFalse(preferences.getBoolean(SharedPreferencesKey.CLEAR_STATUS_BACKUP_REQUIRED,
 				true));
 
 		// データが復活しないことを確認

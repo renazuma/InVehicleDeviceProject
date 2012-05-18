@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.logic;
 
+import java.io.File;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.LinkedList;
@@ -12,6 +13,7 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 
 import com.google.common.base.Optional;
@@ -47,6 +49,7 @@ public class CommonLogic {
 	}
 
 	private static final Object DEFAULT_DATE_LOCK = new Object();
+	private static final String TAG = CommonLogic.class.getSimpleName();
 	private static Optional<Date> defaultDate = Optional.absent();
 
 	public static Handler getActivityHandler(Activity activity)
@@ -120,8 +123,20 @@ public class CommonLogic {
 				WebAPIDataSource.DEFAULT_URL);
 		String token = preferences.getString(
 				SharedPreferencesKey.SERVER_IN_VEHICLE_DEVICE_TOKEN, "");
-		dataSource = DataSourceFactory.newInstance(url, token,
-				activity.getFileStreamPath("webapi.serialized"));
+		File webAPIBackupFile = activity.getFileStreamPath("webapi.serialized");
+		if (preferences.getBoolean(
+				SharedPreferencesKey.CLEAR_WEBAPI_BACKUP_REQUIRED, false)) {
+			if (webAPIBackupFile.exists() && !webAPIBackupFile.delete()) {
+				Log.w(TAG, "!\"" + webAPIBackupFile + "\".delete()");
+			}
+			SharedPreferences.Editor editor = preferences.edit();
+			editor.putBoolean(
+					SharedPreferencesKey.CLEAR_WEBAPI_BACKUP_REQUIRED, false);
+			editor.commit();
+		}
+
+		dataSource = DataSourceFactory
+				.newInstance(url, token, webAPIBackupFile);
 
 		eventBus = new UiEventBus(activityHandler);
 		for (Object object : new Object[] { activity, commonEventSubscriber,
