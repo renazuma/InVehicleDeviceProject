@@ -4,6 +4,7 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -102,6 +103,8 @@ public class WebAPI implements Closeable {
 			}
 		}
 	}
+
+	public static final Integer REQUEST_EXPIRE_DAY = 3;
 
 	private static final String TAG = WebAPI.class.getSimpleName();
 	protected static final int NUM_THREADS = 3;
@@ -272,6 +275,16 @@ public class WebAPI implements Closeable {
 	protected void doWebAPISession() throws InterruptedException {
 		WebAPIRequest<?> request = requests.take();
 		boolean succeed = false;
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.DATE, -REQUEST_EXPIRE_DAY);
+		if (calendar.getTime().after(request.getCreatedDate())) {
+			Log.i(TAG, "Request (" + request + ") is expired. createdDate: "
+					+ request.getCreatedDate());
+			requests.remove(request);
+			return;
+		}
+
 		try {
 			succeed = doHttpSession(request);
 		} catch (WebAPIException e) {

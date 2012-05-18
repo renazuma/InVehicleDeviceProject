@@ -1,6 +1,7 @@
 package com.kogasoftware.odt.webapi;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.http.client.methods.HttpRequestBase;
@@ -16,6 +17,7 @@ public class WebAPIRequest<T> implements Serializable {
 	protected final SerializableHttpRequestBaseSupplier firstRequest;
 	protected final SerializableHttpRequestBaseSupplier retryRequest;
 	protected final int reqkey = reqkeyCounter.incrementAndGet();
+	protected final Date createdDate = new Date();
 	protected boolean retry = false;
 
 	transient protected WebAPICallback<T> callback;
@@ -28,6 +30,10 @@ public class WebAPIRequest<T> implements Serializable {
 		this.retryRequest = retryRequest;
 		this.callback = callback;
 		this.responseConverter = responseConverter;
+	}
+
+	public Date getCreatedDate() {
+		return createdDate;
 	}
 
 	public int getReqKey() {
