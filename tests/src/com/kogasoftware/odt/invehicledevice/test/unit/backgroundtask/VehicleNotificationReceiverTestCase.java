@@ -50,7 +50,7 @@ public class VehicleNotificationReceiverTestCase extends
 		VehicleNotificationReceiver vnr = new VehicleNotificationReceiver(cl);
 		Subscriber<VehicleNotificationReceivedEvent> s = Subscriber.of(VehicleNotificationReceivedEvent.class, cl);
 		vnr.run();
-		Thread.sleep(1000);
+		Thread.sleep(5000);
 		assertEquals(1, s.l.size());
 		assertEquals(vn0, s.l.get(0).vehicleNotifications.get(0));
 		assertEquals(vn1, s.l.get(0).vehicleNotifications.get(1));
@@ -69,7 +69,7 @@ public class VehicleNotificationReceiverTestCase extends
 		VehicleNotificationReceiver vnr = new VehicleNotificationReceiver(cl);
 		Subscriber<VehicleNotificationReceivedEvent> s = Subscriber.of(VehicleNotificationReceivedEvent.class, cl);
 		vnr.run();
-		Thread.sleep(1000);
+		Thread.sleep(5000);
 		assertTrue(s.l.isEmpty());
 	}
 	
@@ -86,7 +86,7 @@ public class VehicleNotificationReceiverTestCase extends
 		VehicleNotificationReceiver vnr = new VehicleNotificationReceiver(cl);
 		Subscriber<VehicleNotificationReceivedEvent> s = Subscriber.of(VehicleNotificationReceivedEvent.class, cl);
 		vnr.run();
-		Thread.sleep(1000);
+		Thread.sleep(5000);
 		assertTrue(s.l.isEmpty());
 	}
 }

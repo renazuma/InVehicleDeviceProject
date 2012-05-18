@@ -168,7 +168,7 @@ public class LocationSenderTestCase extends
 			};
 			t.start();
 			cdl.await();
-			Thread.sleep(1000);
+			Thread.sleep(5000);
 			t.interrupt();
 			assertEquals(1, s.l.size());
 			assertEquals((int) location.get().getLatitude(), lat.intValue());
