@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.test.integration;
 
+import jp.tomorrowkey.android.vtextviewer.VTextView;
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.View;
 import android.widget.TextView;
@@ -107,12 +108,22 @@ public class DrivingTestCase extends
 
 		test01_起動時は走行中表示();
 
-		assertTrue(solo.searchText("乗降場A"));
+		VTextView next1 = (VTextView) solo.getView(R.id.platform_name_1_beyond_text_view);
+		VTextView next2 = (VTextView) solo.getView(R.id.platform_name_2_beyond_text_view);
+		VTextView next3 = (VTextView) solo.getView(R.id.platform_name_3_beyond_text_view);
 
+		assertTrue(solo.searchText("乗降場A"));
+		assertEquals("乗降場A", next1.getText());
+		assertEquals("乗降場B", next2.getText());
+		assertEquals("乗降場C", next3.getText());
+		
 		test06_出発確認画面で出発するボタンを押すと運転中画面表示();
 
 		assertFalse(solo.searchText("乗降場A"));
-		assertTrue(solo.searchText("乗降場B"));		
+		assertTrue(solo.searchText("乗降場B"));
+		assertEquals("乗降場B", next1.getText());
+		assertEquals("乗降場C", next2.getText());
+		assertEquals("", next3.getText());
 
 	}
 
