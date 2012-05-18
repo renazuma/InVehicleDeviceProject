@@ -2,7 +2,6 @@ package com.kogasoftware.odt.webapi;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -44,6 +43,9 @@ public class WebAPIRequestQueue {
 		if (backupFile == null) {
 			return;
 		}
+		if (!backupFile.exists()) {
+			return;
+		}
 		FileInputStream fileInputStream = null;
 		ObjectInputStream objectInputStream = null;
 		try {
@@ -60,8 +62,6 @@ public class WebAPIRequestQueue {
 					waitingQueue.add((WebAPIRequest<?>) element);
 				}
 			}
-		} catch (FileNotFoundException e) {
-			return;
 		} catch (IOException e) {
 			Log.w(TAG, e);
 		} catch (ClassNotFoundException e) {
