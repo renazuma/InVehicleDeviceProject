@@ -263,14 +263,12 @@ public class WebAPITestCase extends
 		}.getResult();
 		assertNotNull(serverNotification);
 		if (offlineTest) {
-			assertEquals(true, serverNotification.getOffline().or(false)
-					.booleanValue());
+			assertTrue(serverNotification.getOffline().or(false));
 		} else {
-			assertTrue(interval.contains(serverNotification.getUpdatedAt()
-					.getTime()));
-			assertEquals(false, serverNotification.getOffline().isPresent());
+			assertFalse(serverNotification.getOffline().isPresent());
 		}
-
+		assertEquals(offlineTest, interval.contains(serverNotification.getUpdatedAt().getTime()));
+		
 		latch = new CountDownLatch(1);
 		api.getVehicleNotifications(new WebAPICallback<List<VehicleNotification>>() {
 			@Override
@@ -422,21 +420,14 @@ public class WebAPITestCase extends
 		}.getResult();
 		assertNotNull(serverOperationRecord);
 		if (offlineTest) {
-			assertTrue(serverOperationRecord.getDepartedAtOffline().isPresent());
-			assertEquals(true,
-					serverOperationRecord.getDepartedAtOffline().or(false)
-							.booleanValue());
-			assertEquals(true, schedule.getOperationRecord().get()
-					.getDepartedAtOffline().or(false).booleanValue());
+			assertTrue(serverOperationRecord.getDepartedAtOffline().or(false));
+			assertTrue(schedule.getOperationRecord().get().getDepartedAtOffline().or(false));
 		} else {
-			assertEquals(false, serverOperationRecord.getDepartedAtOffline()
-					.isPresent());
-			assertEquals(false, schedule.getOperationRecord().get()
-					.getDepartedAtOffline().isPresent());
-			assertTrue(interval.contains(serverOperationRecord.getDepartedAt()
-					.get().getTime()));
+			assertFalse(serverOperationRecord.getDepartedAtOffline().isPresent());
+			assertFalse(schedule.getOperationRecord().get().getDepartedAtOffline().isPresent());
 		}
-
+		assertEquals(offlineTest, interval.contains(serverOperationRecord.getDepartedAt().get().getTime()));
+		
 		interval = new Interval(DateTime.now(), Period.seconds(1));
 		if (offlineTest) {
 			offline = true;
@@ -478,19 +469,13 @@ public class WebAPITestCase extends
 		}.getResult();
 		assertNotNull(serverOperationRecord);
 		if (offlineTest) {
-			assertEquals(true,
-					serverOperationRecord.getArrivedAtOffline().or(false)
-							.booleanValue());
-			assertEquals(true, schedule.getOperationRecord().get()
-					.getArrivedAtOffline().or(false).booleanValue());
+			assertTrue(serverOperationRecord.getArrivedAtOffline().or(false));
+			assertTrue(schedule.getOperationRecord().get().getArrivedAtOffline().or(false));
 		} else {
-			assertEquals(false, serverOperationRecord.getArrivedAtOffline()
-					.isPresent());
-			assertEquals(false, schedule.getOperationRecord().get()
-					.getArrivedAtOffline().isPresent());
-			assertTrue(interval.contains(serverOperationRecord.getArrivedAt()
-					.get().getTime()));
+			assertFalse(serverOperationRecord.getArrivedAtOffline().isPresent());
+			assertFalse(schedule.getOperationRecord().get().getArrivedAtOffline().isPresent());
 		}
+		assertEquals(offlineTest, interval.contains(serverOperationRecord.getArrivedAt().get().getTime()));
 	}
 
 	public void testPassengerGetOnOffline() throws Exception {
@@ -613,19 +598,13 @@ public class WebAPITestCase extends
 		}.getResult();
 		assertNotNull(serverPassengerRecord);
 		if (offlineTest) {
-			assertEquals(true, passengerRecord.getGetOnTimeOffline().or(false)
-					.booleanValue());
-			assertEquals(true,
-					serverPassengerRecord.getGetOnTimeOffline().or(false)
-							.booleanValue());
+			assertTrue(passengerRecord.getGetOnTimeOffline().or(false));
+			assertTrue(serverPassengerRecord.getGetOnTimeOffline().or(false));
 		} else {
-			assertEquals(false, passengerRecord.getGetOnTimeOffline()
-					.isPresent());
-			assertEquals(false, serverPassengerRecord.getGetOnTimeOffline()
-					.isPresent());
-			assertTrue(interval.contains(serverPassengerRecord.getGetOnTime()
-					.get().getTime()));
+			assertFalse(passengerRecord.getGetOnTimeOffline().isPresent());
+			assertFalse(serverPassengerRecord.getGetOnTimeOffline().isPresent());
 		}
+		assertEquals(offlineTest, interval.contains(serverPassengerRecord.getGetOnTime().get().getTime()));
 		assertEquals(os1.getId(), passengerRecord
 				.getDepartureOperationScheduleId().orNull());
 
@@ -727,20 +706,13 @@ public class WebAPITestCase extends
 		}.getResult();
 		assertNotNull(serverPassengerRecord);
 		if (offlineTest) {
-			assertEquals(true, passengerRecord.getGetOffTimeOffline().or(false)
-					.booleanValue());
-			assertEquals(true,
-					serverPassengerRecord.getGetOffTimeOffline().or(false)
-							.booleanValue());
+			assertTrue(passengerRecord.getGetOffTimeOffline().or(false));
+			assertTrue(serverPassengerRecord.getGetOffTimeOffline().or(false));
 		} else {
-			assertEquals(false, passengerRecord.getGetOffTimeOffline()
-					.isPresent());
-			assertEquals(false, serverPassengerRecord.getGetOffTimeOffline()
-					.isPresent());
-			assertTrue(interval.contains(serverPassengerRecord.getGetOffTime()
-					.get().getTime()));
+			assertFalse(passengerRecord.getGetOffTimeOffline().isPresent());
+			assertFalse(serverPassengerRecord.getGetOffTimeOffline().isPresent());
 		}
-
+		assertEquals(offlineTest, interval.contains(serverPassengerRecord.getGetOffTime().get().getTime()));
 		assertEquals(offlineTest, passengerRecord.getGetOffTimeOffline()
 				.isPresent());
 		assertEquals(os1.getId(), passengerRecord
@@ -816,23 +788,21 @@ public class WebAPITestCase extends
 		}.getResult();
 		assertNotNull(serverServiceUnitStatusLog);
 		if (offlineTest) {
-			assertEquals(true, serviceUnitStatusLog.getOffline().or(false)
-					.booleanValue());
-			assertEquals(true, serverServiceUnitStatusLog.getOffline()
-					.or(false).booleanValue());
+			assertTrue(serviceUnitStatusLog.getOffline().or(false));
+			assertTrue(serverServiceUnitStatusLog.getOffline().or(false));
 		} else {
-			assertEquals(false, serviceUnitStatusLog.getOffline().isPresent());
-			assertEquals(false, serverServiceUnitStatusLog.getOffline()
-					.isPresent());
-			assertTrue(interval.contains(serverServiceUnitStatusLog
-					.getUpdatedAt().getTime()));
+			assertFalse(serviceUnitStatusLog.getOffline().isPresent());
+			assertFalse(serverServiceUnitStatusLog.getOffline().isPresent());
 		}
+		assertEquals(offlineTest, interval.contains(serverServiceUnitStatusLog.getUpdatedAt().getTime()));
 	}
 
 	public void testRestoreRequest() throws Exception {
-		File backupFile = getInstrumentation().getContext().getFileStreamPath("backup.serialized");
+		File backupFile = getInstrumentation().getContext().getFileStreamPath(
+				"backup.serialized");
 		offline = true;
-		api = new OfflineTestWebAPI(SERVER_HOST, master.getInVehicleDevice().getAuthenticationToken().orNull(), backupFile);
+		api = new OfflineTestWebAPI(SERVER_HOST, master.getInVehicleDevice()
+				.getAuthenticationToken().orNull(), backupFile);
 		latch = new CountDownLatch(1);
 		schedules = null;
 
@@ -846,7 +816,7 @@ public class WebAPITestCase extends
 		log.setStatus(ServiceUnitStatusLogs.Status.PAUSE);
 		log.setOrientation(10);
 		log.setTemperature(20);
-		
+
 		api.sendServiceUnitStatusLog(log, null);
 		api.close();
 		Thread.sleep(10 * 1000);
@@ -859,7 +829,8 @@ public class WebAPITestCase extends
 		}.getResult();
 		assertTrue(serverServiceUnitStatusLogs.isEmpty());
 
-		api = new WebAPI(SERVER_HOST, master.getInVehicleDevice().getAuthenticationToken().orNull(), backupFile);
+		api = new WebAPI(SERVER_HOST, master.getInVehicleDevice()
+				.getAuthenticationToken().orNull(), backupFile);
 		Thread.sleep(10 * 1000);
 		serverServiceUnitStatusLogs = new SyncCall<List<ServiceUnitStatusLog>>() {
 			@Override
@@ -868,8 +839,11 @@ public class WebAPITestCase extends
 			}
 		}.getResult();
 		assertEquals(1, serverServiceUnitStatusLogs.size());
-		assertEquals(ServiceUnitStatusLogs.Status.PAUSE, serverServiceUnitStatusLogs.get(0).getStatus().get());
-		assertEquals(10, serverServiceUnitStatusLogs.get(0).getOrientation().get().intValue());
-		assertEquals(20, serverServiceUnitStatusLogs.get(0).getTemperature().get().intValue());
+		assertEquals(ServiceUnitStatusLogs.Status.PAUSE,
+				serverServiceUnitStatusLogs.get(0).getStatus().get());
+		assertEquals(10, serverServiceUnitStatusLogs.get(0).getOrientation()
+				.get().intValue());
+		assertEquals(20, serverServiceUnitStatusLogs.get(0).getTemperature()
+				.get().intValue());
 	}
 }
