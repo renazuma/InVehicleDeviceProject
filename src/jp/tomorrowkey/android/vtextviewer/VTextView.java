@@ -1,6 +1,7 @@
 package jp.tomorrowkey.android.vtextviewer;
 
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import android.content.Context;
@@ -14,6 +15,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
+import com.google.common.base.Strings;
 import com.kogasoftware.odt.invehicledevice.logic.empty.EmptyThread;
 
 /**
@@ -22,72 +24,26 @@ import com.kogasoftware.odt.invehicledevice.logic.empty.EmptyThread;
  * @see http://code.google.com/p/tomorrowkey
  */
 public class VTextView extends View {
-	/**
-	 * onLayoutをトリガーにしてbitmapを作成したいが、
-	 * 同スレッドでnewなどのメモリ確保をするとAndroidLintのwarningがおきる。
-	 * そのため、別のスレッドでbitmap作成を行うためのクラス。
-	 * AsyncTaskはimmutableクラスなので結局newをする必要があるため自前で作ることにした
-	 */
-	class UpdateBitmapThread extends Thread {
-		@Override
-		public void run() {
-			try {
-				while (true) {
-					updateBitmapStartSemaphore.acquire();
-					updateBitmapStartSemaphore.drainPermits();
-					int localHeight = height; // widthとheightは途中で変更される可能性があるため、読み出しておく
-					int localWidth = width;
-					if (localHeight <= 0 || localWidth <= 0) {
-						continue;
-					}
-					Bitmap newBitmap = Bitmap.createBitmap(localWidth,
-							localHeight, Bitmap.Config.ARGB_8888);
-					Bitmap oldBitmap = preparedBitmap.getAndSet(newBitmap);
-					if (oldBitmap != null) {
-						oldBitmap.recycle();
-					}
-					invalidateHandler.post(new Runnable() {
-						@Override
-						public void run() {
-							invalidate();
-						}
-					});
-				}
-			} catch (InterruptedException e) {
-			}
-		}
-	}
+	static final Bitmap.Config BITMAP_CONFIG = Bitmap.Config.ARGB_8888;
+	final AtomicInteger width = new AtomicInteger(0);
+	final AtomicInteger height = new AtomicInteger(0);
+	final Semaphore updateBitmapStartSemaphore = new Semaphore(0);
+	final AtomicReference<Bitmap> preparedBitmap = new AtomicReference<Bitmap>(
+			Bitmap.createBitmap(1, 1, BITMAP_CONFIG));
+	final Handler handler = new Handler();
 
-	private static final int BOTTOM_SPACE = 18;
-	private static final int FONT_SIZE = 60;
-	private static final float FONT_SPACING_RATE = 0.8f;
-	private static final String TAG = VTextView.class.getSimpleName();
-	private static final int TOP_SPACE = 0;
-	private final AtomicReference<Bitmap> preparedBitmap = new AtomicReference<Bitmap>(
-			Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888));
-	private Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-	private final Canvas canvas = new Canvas(bitmap);
-	private final Handler invalidateHandler = new Handler();
-	private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-	private final Typeface typeFace = Typeface
-			.defaultFromStyle(Typeface.NORMAL);
-	private final Semaphore updateBitmapStartSemaphore = new Semaphore(0);
-	private String text = "";
-	private Thread updateBitmapThread = new EmptyThread();
-	private volatile int width = 0; // 別スレッドから読み出すためvolatileをつける
-	private volatile int height = 0; // 別スレッドから読み出すためvolatileをつける
+	protected Bitmap bitmap = Bitmap.createBitmap(1, 1, BITMAP_CONFIG);
+	protected String text = "";
+	protected Thread updateBitmapThread = new EmptyThread();
 
 	public VTextView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		paint.setTextSize(FONT_SIZE);
-		paint.setColor(Color.BLACK);
-		paint.setTypeface(typeFace);
 	}
 
 	@Override
 	protected void onAttachedToWindow() {
 		super.onAttachedToWindow();
-		updateBitmapThread = new UpdateBitmapThread();
+		updateBitmapThread = new VTextViewDrawThread(this);
 		updateBitmapThread.start();
 	}
 
@@ -99,25 +55,103 @@ public class VTextView extends View {
 
 	@Override
 	public void onDraw(Canvas targetCanvas) {
-		{ // 新しいビットマップがある場合交換する
-			Bitmap newBitmap = preparedBitmap.getAndSet(null);
-			if (newBitmap != null) {
-				bitmap.recycle();
-				bitmap = newBitmap;
+		// ビットマップの大きさがあわないばあい別スレッドでビットマップを作成
+		if (bitmap.getWidth() != width.get()
+				|| bitmap.getHeight() != height.get()) {
+			updateBitmapStartSemaphore.release();
+		}
+		// 新しいビットマップがある場合交換する
+		Bitmap newBitmap = preparedBitmap.getAndSet(null);
+		if (newBitmap != null) {
+			bitmap.recycle();
+			bitmap = newBitmap;
+		}
+		targetCanvas.drawBitmap(bitmap, 0, 0, new Paint());
+	}
+
+	@Override
+	public void onLayout(boolean changed, int left, int top, int right,
+			int bottom) {
+		super.onLayout(changed, left, top, right, bottom);
+		width.set(getWidth());
+		height.set(getHeight());
+		updateBitmapStartSemaphore.release(); // 別スレッドでビットマップを再作成
+	}
+
+	public void setText(String text) {
+		this.text = Strings.nullToEmpty(text);
+	}
+
+	public String getText() {
+		return text;
+	}
+}
+
+/**
+ * onLayoutをトリガーにしてbitmapを作成したいが、 同スレッドでnewなどのメモリ確保をするとAndroidLintのwarningがおきる。
+ * そのため、別のスレッドでbitmap作成を行うためのクラス。
+ * AsyncTaskはimmutableクラスなので結局newをする必要があるため自前で作ることにした
+ */
+class VTextViewDrawThread extends Thread {
+	private static final int BOTTOM_SPACE = 18;
+	private static final float FONT_SPACING_RATE = 0.8f;
+	private static final String TAG = VTextViewDrawThread.class.getSimpleName();
+	private static final int FONT_SIZE = 60;
+	private static final int TOP_SPACE = 0;
+	private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+	private final Typeface typeFace = Typeface
+			.defaultFromStyle(Typeface.NORMAL);
+	private final VTextView vtextView;
+
+	public VTextViewDrawThread(VTextView vtextView) {
+		this.vtextView = vtextView;
+		paint.setTextSize(FONT_SIZE);
+		paint.setColor(Color.BLACK);
+		paint.setTypeface(typeFace);
+	}
+
+	@Override
+	public void run() {
+		try {
+			while (true) {
+				vtextView.updateBitmapStartSemaphore.acquire();
+				vtextView.updateBitmapStartSemaphore.drainPermits();
+				int localHeight = vtextView.height.get(); // widthとheightは途中で変更される可能性があるため、読み出しておく
+				int localWidth = vtextView.width.get();
+				if (localHeight <= 0 || localWidth <= 0) {
+					continue;
+				}
+				Bitmap newBitmap = Bitmap.createBitmap(localWidth, localHeight,
+						VTextView.BITMAP_CONFIG);
+				draw(newBitmap);
+				Bitmap oldBitmap = vtextView.preparedBitmap
+						.getAndSet(newBitmap);
+				if (oldBitmap != null) {
+					oldBitmap.recycle();
+				}
+				vtextView.handler.post(new Runnable() {
+					@Override
+					public void run() {
+						vtextView.invalidate();
+					}
+				});
 			}
+		} catch (InterruptedException e) {
 		}
-		if (bitmap.getWidth() != width || bitmap.getHeight() != height) {
-			updateBitmapStartSemaphore.release(); // 別スレッドでビットマップを再作成
-			return;
-		}
-		canvas.setBitmap(bitmap);
-		bitmap.eraseColor(Color.WHITE);
+	}
+
+	protected void draw(Bitmap targetBitmap) {
+		int height = targetBitmap.getHeight();
+		int width = targetBitmap.getWidth();
+		Bitmap tempBitmap = targetBitmap.copy(VTextView.BITMAP_CONFIG, true);
+		Canvas tempCanvas = new Canvas(tempBitmap);
+		tempBitmap.eraseColor(Color.WHITE);
 		float fontSpacing = paint.getFontSpacing() * FONT_SPACING_RATE;
 		float lineSpacing = fontSpacing;
 		float x = width - lineSpacing;
 		float beginX = x;
 		float y = TOP_SPACE + fontSpacing;
-		String[] s = text.split("");
+		String[] s = vtextView.text.split("");
 
 		boolean newLine = false;
 		for (int i = 1; i < s.length; i++) {
@@ -130,24 +164,25 @@ public class VTextView extends View {
 			CharSetting setting = CharSetting.getSetting(s[i]);
 			if (setting == null) {
 				// 文字設定がない場合、そのまま描画
-				canvas.drawText(s[i], x, y, paint);
+				tempCanvas.drawText(s[i], x, y, paint);
 			} else {
 				// 文字設定が見つかったので、設定に従い描画
-				canvas.save();
-				canvas.rotate(setting.angle, x, y);
-				canvas.drawText(s[i], x + fontSpacing * setting.x, y
+				tempCanvas.save();
+				tempCanvas.rotate(setting.angle, x, y);
+				tempCanvas.drawText(s[i], x + fontSpacing * setting.x, y
 						+ fontSpacing * setting.y, paint);
-				canvas.restore();
+				tempCanvas.restore();
 			}
 
 			boolean cond = false;
 			try {
 				cond = y + fontSpacing > height - BOTTOM_SPACE;
 				// TODO:
-				// 上行でなぜかArrayIndexOutOfBoundsException発生報告がlogcatに出力されることがある。
+				// 上行でなぜかArrayIndexOutOfBoundsException発生することがある。
 				// 再現しないようなら削除する
 			} catch (ArrayIndexOutOfBoundsException e) {
 				Log.e(TAG, e.toString(), e);
+				tempBitmap.recycle();
 				return;
 			}
 
@@ -163,23 +198,8 @@ public class VTextView extends View {
 
 		// 中央揃え
 		float x2 = -(width - beginX + x - fontSpacing) / 2;
-		targetCanvas.drawBitmap(bitmap, x2, 0, paint);
-	}
-
-	@Override
-	public void onLayout(boolean changed, int left, int top, int right,
-			int bottom) {
-		super.onLayout(changed, left, top, right, bottom);
-
-		if (width == getWidth() && height == getHeight()) {
-			return;
-		}
-		width = getWidth();
-		height = getHeight();
-		updateBitmapStartSemaphore.release(); // 別スレッドでビットマップを再作成
-	}
-
-	public void setText(String text) {
-		this.text = text;
+		Canvas targetCanvas = new Canvas(targetBitmap);
+		targetCanvas.drawBitmap(tempBitmap, x2, 0, paint);
+		tempBitmap.recycle();
 	}
 }
