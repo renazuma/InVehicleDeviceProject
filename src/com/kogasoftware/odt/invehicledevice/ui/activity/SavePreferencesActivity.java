@@ -35,7 +35,10 @@ public class SavePreferencesActivity extends Activity {
 				Strings.nullToEmpty(bundle
 						.getString(SharedPreferencesKey.SERVER_IN_VEHICLE_DEVICE_TOKEN)));
 		editor.putBoolean(SharedPreferencesKey.EXIT_REQUIRED, true);
-		editor.putBoolean(SharedPreferencesKey.CLEAR_STATUS_BACKUP_REQUIRED, true);
+		editor.putBoolean(SharedPreferencesKey.CLEAR_STATUS_BACKUP_REQUIRED,
+				true);
+		editor.putBoolean(SharedPreferencesKey.CLEAR_WEBAPI_BACKUP_REQUIRED,
+				true);
 		editor.commit();
 		Toast.makeText(this, "設定を保存しました", Toast.LENGTH_LONG).show();
 	}
