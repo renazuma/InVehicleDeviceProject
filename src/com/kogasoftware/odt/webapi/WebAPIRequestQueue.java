@@ -8,11 +8,13 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.Semaphore;
 
 import android.util.Log;
 
+import com.google.common.base.Optional;
 import com.google.common.io.Closeables;
 
 /**
@@ -30,34 +32,35 @@ public class WebAPIRequestQueue {
 	// 各キューの整合性を保つためのロック
 	protected final Object queueLock = new Object();
 	// バックアップ先ファイル名
-	protected final File backupFile;
+	protected final Optional<File> optionalBackupFile;
+
+	public WebAPIRequestQueue() {
+		optionalBackupFile = Optional.absent();
+	}
 
 	/**
-	 * コンストラクタ saveFileが指定されている場合はそのファイルからデータを読み出す
+	 * コンストラクタ backupFileが指定されている場合はそのファイルからデータを読み出す
 	 * 
-	 * @param savedFile
+	 * @param backupFile
 	 *            データを読み出すファイル
 	 */
-	public WebAPIRequestQueue(File savedFile) {
-		this.backupFile = savedFile;
-		if (backupFile == null) {
-			return;
-		}
+	public WebAPIRequestQueue(File backupFile) {
+		this.optionalBackupFile = Optional.of(backupFile);
 		if (!backupFile.exists()) {
 			return;
 		}
 		FileInputStream fileInputStream = null;
 		ObjectInputStream objectInputStream = null;
 		try {
-			fileInputStream = new FileInputStream(savedFile);
+			fileInputStream = new FileInputStream(backupFile);
 			objectInputStream = new ObjectInputStream(fileInputStream);
 			Object object = objectInputStream.readObject();
 			if (!(object instanceof ArrayList<?>)) {
 				Log.w(TAG, "!(" + object + " instanceof ArrayList<?>)");
 				return;
 			}
-			ArrayList<?> arrayList = (ArrayList<?>) object;
-			for (Object element : arrayList) {
+			List<?> list = (List<?>) object;
+			for (Object element : list) {
 				if (element instanceof WebAPIRequest<?>) {
 					waitingQueue.add((WebAPIRequest<?>) element);
 				}
@@ -90,9 +93,12 @@ public class WebAPIRequestQueue {
 	 * 現在のリクエストの保存
 	 */
 	protected void backup() {
-		if (backupFile == null) {
-			return;
+		for (File backupFile : optionalBackupFile.asSet()) {
+			backup(backupFile);
 		}
+	}
+
+	protected void backup(File backupFile) {
 		ArrayList<WebAPIRequest<?>> list = new ArrayList<WebAPIRequest<?>>();
 		synchronized (queueLock) {
 			list.addAll(waitingQueue);
