@@ -21,8 +21,8 @@ public class BackgroundTaskThread extends Thread {
 	@Override
 	public void interrupt() {
 		synchronized (backgroundTaskQuitLock) {
-			if (optionalBackgroundTask.isPresent()) {
-				optionalBackgroundTask.get().quit();
+			for (BackgroundTask backgroundTask : optionalBackgroundTask.asSet()) {
+				backgroundTask.quit();
 			}
 			// この位置に、別スレッドでのoptionalBackgroundTaskメンバを代入している処理が挟まると
 			// optionalBackgroundTaskが終了しなくなるため、注意してsynchronizedする

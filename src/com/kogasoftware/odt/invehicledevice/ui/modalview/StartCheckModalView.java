@@ -11,7 +11,6 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
@@ -32,12 +31,12 @@ public class StartCheckModalView extends ModalView {
 		}
 	}
 
-	private static Optional<String> getUserName(Reservation reservation) {
+	private static String getUserName(Reservation reservation) {
 		if (reservation.getUser().isPresent()) {
 			User user = reservation.getUser().get();
-			return Optional.of(user.getLastName() + user.getFirstName());
+			return user.getLastName() + user.getFirstName();
 		} else {
-			return Optional.of("「予約ID: " + reservation.getId() + "」");
+			return "「予約ID: " + reservation.getId() + "」";
 		}
 	}
 
@@ -53,23 +52,13 @@ public class StartCheckModalView extends ModalView {
 		ListView errorReservationListView = (ListView) findViewById(R.id.error_reservation_list_view);
 		List<String> messages = new LinkedList<String>();
 		for (Reservation reservation : adapter.getNoGettingOnReservations()) {
-			Optional<String> userName = getUserName(reservation);
-			if (userName.isPresent()) {
-				messages.add(userName.get() + "様が未乗車です");
-			}
+			messages.add(getUserName(reservation) + "様が未乗車です");
 		}
-		for (Reservation reservation : adapter
-				.getNoGettingOffReservations()) {
-			Optional<String> userName = getUserName(reservation);
-			if (userName.isPresent()) {
-				messages.add(userName.get() + "様が未降車です");
-			}
+		for (Reservation reservation : adapter.getNoGettingOffReservations()) {
+			messages.add(getUserName(reservation) + "様が未降車です");
 		}
 		for (Reservation reservation : adapter.getNoPaymentReservations()) {
-			Optional<String> userName = getUserName(reservation);
-			if (userName.isPresent()) {
-				messages.add(userName.get() + "様が料金未払いです");
-			}
+			messages.add(getUserName(reservation) + "様が料金未払いです");
 		}
 
 		errorReservationListView.setAdapter(new ArrayAdapter<String>(
@@ -88,13 +77,12 @@ public class StartCheckModalView extends ModalView {
 			@Override
 			public void onClick(View view) {
 				CommonLogic commonLogic = getCommonLogic();
-				Optional<OperationSchedule> operationSchedule = commonLogic
-						.getCurrentOperationSchedule();
-				if (operationSchedule.isPresent()) {
-					commonLogic.postEvent(new GetOnEvent(operationSchedule
-							.get(), adapter.getSelectedGetOnReservations()));
-					commonLogic.postEvent(new GetOffEvent(operationSchedule
-							.get(), adapter.getSelectedRidingReservations()));
+				for (OperationSchedule operationSchedule : commonLogic
+						.getCurrentOperationSchedule().asSet()) {
+					commonLogic.postEvent(new GetOnEvent(operationSchedule,
+							adapter.getSelectedGetOnReservations()));
+					commonLogic.postEvent(new GetOffEvent(operationSchedule,
+							adapter.getSelectedRidingReservations()));
 					adapter.clearSelectedReservations();
 				}
 				commonLogic.postEvent(new EnterDrivePhaseEvent());

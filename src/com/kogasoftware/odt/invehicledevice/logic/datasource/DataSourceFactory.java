@@ -11,12 +11,9 @@ public class DataSourceFactory {
 
 	public static DataSource newInstance(String url, String token, File file) {
 		synchronized (dataSourceLock) {
-			if (dataSource.isPresent()) {
-				return dataSource.get();
-			}
+			// return dataSource.or(new ScheduleChangedTestDataSource());
+			return dataSource.or(new WebAPIDataSource(url, token, file));
 		}
-		// return new DummyDataSource();
-		return new WebAPIDataSource(url, token, file);
 	}
 
 	/**

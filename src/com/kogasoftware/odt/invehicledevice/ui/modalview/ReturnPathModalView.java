@@ -86,10 +86,8 @@ public class ReturnPathModalView extends ModalView {
 		currentReservation = event.reservation;
 		TextView returnPathTitleTextView = (TextView) findViewById(R.id.return_path_title_text_view);
 		String title = "予約番号 " + currentReservation.getId();
-		Optional<User> user = currentReservation.getUser();
-		if (user.isPresent()) {
-			title += " " + user.get().getLastName() + " "
-					+ user.get().getFirstName() + "様";
+		for (User user : currentReservation.getUser().asSet()) {
+			title += " " + user.getLastName() + " " + user.getFirstName() + "様";
 		}
 		title += " 復路の予約";
 		returnPathTitleTextView.setText(title);
