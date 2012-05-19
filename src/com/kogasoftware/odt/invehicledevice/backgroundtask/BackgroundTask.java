@@ -49,7 +49,7 @@ public class BackgroundTask {
 	private final LocationManager locationManager;
 	private final SensorManager sensorManager;
 	private final ConnectivityManager connectivityManager;
-	private final Optional<TelephonyManager> telephonyManager;
+	private final Optional<TelephonyManager> optionalTelephonyManager;
 	private final SharedPreferences sharedPreferences;
 	private final LocationSender locationSender;
 	private final ExitRequiredPreferenceChangeListener exitRequiredPreferenceChangeListener;
@@ -98,7 +98,7 @@ public class BackgroundTask {
 		} catch (NullPointerException e) {
 			Log.w(TAG, e);
 		}
-		telephonyManager = tempTelephonyManager;
+		optionalTelephonyManager = tempTelephonyManager;
 
 		sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(context);
@@ -193,24 +193,24 @@ public class BackgroundTask {
 					sensor, SensorManager.SENSOR_DELAY_UI);
 		}
 
-		if (telephonyManager.isPresent()) {
-			telephonyManager.get().listen(signalStrengthListener,
+		for (TelephonyManager telephonyManager : optionalTelephonyManager
+				.asSet()) {
+			telephonyManager.listen(signalStrengthListener,
 					PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
 		}
 		commonLogic.postEvent(new NotificationModalView.ShowEvent());
 		commonLogic.getStatusAccess().read(new VoidReader() {
 			@Override
 			public void read(Status status) {
-				if (!status.serviceUnitStatusLog.getStatus().isPresent()) {
-					return;
-				}
-
-				if (status.serviceUnitStatusLog.getStatus().get()
-						.equals(ServiceUnitStatusLogs.Status.STOP)) {
-					commonLogic.postEvent(new StopEvent());
-				} else if (status.serviceUnitStatusLog.getStatus().get()
-						.equals(ServiceUnitStatusLogs.Status.PAUSE)) {
-					commonLogic.postEvent(new PauseEvent());
+				for (Integer serviceUnitStatusLogStatus : status.serviceUnitStatusLog
+						.getStatus().asSet()) {
+					if (serviceUnitStatusLogStatus
+							.equals(ServiceUnitStatusLogs.Status.STOP)) {
+						commonLogic.postEvent(new StopEvent());
+					} else if (serviceUnitStatusLogStatus
+							.equals(ServiceUnitStatusLogs.Status.PAUSE)) {
+						commonLogic.postEvent(new PauseEvent());
+					}
 				}
 			}
 		});
@@ -229,8 +229,9 @@ public class BackgroundTask {
 		locationManager.removeUpdates(locationSender);
 		sensorManager.unregisterListener(temperatureSensorEventListener);
 		sensorManager.unregisterListener(orientationSensorEventListener);
-		if (telephonyManager.isPresent()) {
-			telephonyManager.get().listen(signalStrengthListener,
+		for (TelephonyManager telephonyManager : optionalTelephonyManager
+				.asSet()) {
+			telephonyManager.listen(signalStrengthListener,
 					PhoneStateListener.LISTEN_NONE);
 		}
 		executorService.shutdownNow();

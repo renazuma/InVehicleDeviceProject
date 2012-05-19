@@ -29,8 +29,8 @@ public class MemoModalView extends ModalView {
 	public void show(ShowEvent event) {
 		Reservation reservation = event.reservation;
 		TextView textView = (TextView) findViewById(R.id.reservation_memo_text_view);
-		if (reservation.getMemo().isPresent()) {
-			textView.setText(reservation.getMemo().get());
+		for (String memo : reservation.getMemo().asSet()) {
+			textView.setText(memo);
 		}
 		super.show();
 	}

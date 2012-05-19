@@ -171,8 +171,7 @@ public class VehicleNotificationEventSubscriber {
 	@Subscribe
 	public void setVehicleNotificationReplied(
 			final VehicleNotificationRepliedEvent e) {
-		if (e.vehicleNotification.getResponse().isPresent()) {
-			Integer response = e.vehicleNotification.getResponse().get();
+		for (Integer response : e.vehicleNotification.getResponse().asSet()) {
 			commonLogic.getDataSource().responseVehicleNotification(
 					e.vehicleNotification, response,
 					new EmptyWebAPICallback<VehicleNotification>());

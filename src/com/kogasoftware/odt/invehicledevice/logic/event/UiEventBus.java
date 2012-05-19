@@ -55,7 +55,7 @@ public class UiEventBus {
 	public Integer countRegisteredClass(Class<?> c) {
 		Integer count = 0;
 		for (Object object : new LinkedList<Object>(registeredObjects)
-		/* unregisterでregisteredObjectsが変更される可能性があるためコピーしておく */) {
+		/* unregisterでregisteredObjectsが変更されるためコピーしておく */) {
 			if (c.isInstance(object)) {
 				count++;
 			}
@@ -70,7 +70,7 @@ public class UiEventBus {
 		synchronized (registerAndDisposeLock) {
 			disposed.set(true);
 			for (Object object : new LinkedList<Object>(registeredObjects)
-			/* unregisterでregisteredObjectsが変更される可能性があるためコピーしておく */) {
+			/* unregisterでregisteredObjectsが変更されるためコピーしておく */) {
 				try {
 					unregister(object);
 				} catch (IllegalArgumentException e) {

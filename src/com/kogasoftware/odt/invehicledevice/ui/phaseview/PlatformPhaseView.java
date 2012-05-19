@@ -29,6 +29,7 @@ import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdap
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter.ItemType;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.StartCheckModalView;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
+import com.kogasoftware.odt.webapi.model.Platform;
 
 public class PlatformPhaseView extends PhaseView {
 	public static class StartCheckEvent {
@@ -131,9 +132,6 @@ public class PlatformPhaseView extends PhaseView {
 		}
 
 		OperationSchedule operationSchedule = operationSchedules.get(0);
-		if (!operationSchedule.getPlatform().isPresent()) {
-			return;
-		}
 
 		Boolean last = (operationSchedules.size() <= 1);
 		if (last) {
@@ -158,12 +156,9 @@ public class PlatformPhaseView extends PhaseView {
 			platformDepartureTimeTextView.setText(dateFormat
 					.format(operationSchedule.getDepartureEstimate()));
 			OperationSchedule nextOperationSchedule = operationSchedules.get(1);
-			if (nextOperationSchedule.getPlatform().isPresent()) {
-				platformNameTextView.setText(nextOperationSchedule
-						.getPlatform().get().getName());
-			} else {
-				platformNameTextView.setText("「ID: "
-						+ nextOperationSchedule.getId() + "」");
+			for (Platform platform : nextOperationSchedule.getPlatform()
+					.asSet()) {
+				platformNameTextView.setText(platform.getName());
 			}
 		} else {
 			platformNameTextView.setText("");

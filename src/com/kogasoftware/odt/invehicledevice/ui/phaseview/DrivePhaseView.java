@@ -16,7 +16,6 @@ import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
-import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.backgroundtask.VoiceThread.SpeakEvent;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
@@ -95,9 +94,8 @@ public class DrivePhaseView extends PhaseView implements AnimationListener {
 		TextView totalPassengerCountTextView = (TextView) findViewById(R.id.total_passenger_count_text_view);
 		Integer totalPassengerCount = 0;
 		for (Reservation reservation : commonLogic.getReservations()) {
-			if (reservation.getPassengerRecord().isPresent()) {
-				PassengerRecord passengerRecord = reservation
-						.getPassengerRecord().get();
+			for (PassengerRecord passengerRecord : reservation
+					.getPassengerRecord().asSet()) {
 				if (passengerRecord.getStatus().equals(
 						PassengerRecords.Status.RIDING)) {
 					totalPassengerCount += passengerRecord.getPassengerCount();
@@ -122,21 +120,17 @@ public class DrivePhaseView extends PhaseView implements AnimationListener {
 
 		platformName2BeyondTextView.setText("");
 		if (operationSchedules.size() > 1) {
-			Optional<Platform> optionalPlatform = operationSchedules.get(1)
-					.getPlatform();
-			if (optionalPlatform.isPresent()) {
-				platformName2BeyondTextView.setText(optionalPlatform.get()
-						.getName());
+			for (Platform platform2 : operationSchedules.get(1).getPlatform()
+					.asSet()) {
+				platformName2BeyondTextView.setText(platform2.getName());
 			}
 		}
 
 		platformName3BeyondTextView.setText("");
 		if (operationSchedules.size() > 2) {
-			Optional<Platform> optionalPlatform = operationSchedules.get(2)
-					.getPlatform();
-			if (optionalPlatform.isPresent()) {
-				platformName3BeyondTextView.setText(optionalPlatform.get()
-						.getName());
+			for (Platform platform3 : operationSchedules.get(2).getPlatform()
+					.asSet()) {
+				platformName3BeyondTextView.setText(platform3.getName());
 			}
 		}
 

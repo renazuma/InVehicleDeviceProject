@@ -74,11 +74,8 @@ public class CommonLogic {
 			return new Date();
 		}
 		synchronized (DEFAULT_DATE_LOCK) {
-			if (defaultDate.isPresent()) {
-				return defaultDate.get();
-			}
+			return defaultDate.or(new Date());
 		}
-		return new Date();
 	}
 
 	public static void setDate(Date date) {
