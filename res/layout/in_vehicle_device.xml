@@ -161,11 +161,6 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 
-    <com.kogasoftware.odt.invehicledevice.ui.modalview.NotificationModalView
-        android:id="@+id/notification_modal_view"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
-
     <com.kogasoftware.odt.invehicledevice.ui.modalview.PauseModalView
         android:id="@+id/pause_modal_view"
         android:layout_width="fill_parent"
@@ -178,11 +173,6 @@
 
     <com.kogasoftware.odt.invehicledevice.ui.modalview.ScheduleModalView
         android:id="@+id/schedule_modal_view"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
-
-    <com.kogasoftware.odt.invehicledevice.ui.modalview.ScheduleChangedModalView
-        android:id="@+id/schedule_changed_modal_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 
@@ -206,6 +196,16 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 
+	<com.kogasoftware.odt.invehicledevice.ui.modalview.ScheduleChangedModalView
+        android:id="@+id/schedule_changed_modal_view"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
+
+    <com.kogasoftware.odt.invehicledevice.ui.modalview.NotificationModalView
+        android:id="@+id/notification_modal_view"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
+    
     <ImageView
         android:id="@+id/alert_image_view"
         android:layout_width="50dip"
