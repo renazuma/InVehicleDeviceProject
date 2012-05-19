@@ -88,7 +88,7 @@ public class VoiceCacheTestCase extends EmptyActivityInstrumentationTestCase2 {
 					.getDefaultSharedPreferences(c)
 					.edit()
 					.putBoolean(
-							SharedPreferencesKey.CLEAR_VOICE_CACHE_REQUIRED,
+							SharedPreferencesKey.CLEAR_VOICE_CACHE,
 							true).commit();
 			new VoiceCache(c, Integer.MAX_VALUE);
 		}

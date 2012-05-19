@@ -13,7 +13,6 @@ import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.VoidReader;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
-import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
@@ -71,8 +70,7 @@ public class StatusAccessTestCase extends EmptyActivityInstrumentationTestCase2 
 			@Override
 			public void read(Status status) {
 				assertEquals(status.reservations.size(), 1);
-				assertEquals(
-						status.repliedVehicleNotifications.size(), 1);
+				assertEquals(status.repliedVehicleNotifications.size(), 1);
 			}
 		});
 
@@ -83,8 +81,7 @@ public class StatusAccessTestCase extends EmptyActivityInstrumentationTestCase2 
 			@Override
 			public void read(Status status) {
 				assertTrue(status.reservations.isEmpty());
-				assertTrue(status.repliedVehicleNotifications
-						.isEmpty());
+				assertTrue(status.repliedVehicleNotifications.isEmpty());
 			}
 		});
 
@@ -94,8 +91,7 @@ public class StatusAccessTestCase extends EmptyActivityInstrumentationTestCase2 
 			@Override
 			public void read(Status status) {
 				assertTrue(status.reservations.isEmpty());
-				assertTrue(status.repliedVehicleNotifications
-						.isEmpty());
+				assertTrue(status.repliedVehicleNotifications.isEmpty());
 			}
 		});
 	}
@@ -127,8 +123,8 @@ public class StatusAccessTestCase extends EmptyActivityInstrumentationTestCase2 
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(getActivity());
 		preferences.edit()
-				.putBoolean(SharedPreferencesKey.CLEAR_STATUS_BACKUP_REQUIRED, true).commit();
-
+				.putBoolean(SharedPreferencesKey.CLEAR_STATUS_BACKUP, true)
+				.commit();
 		// クリアされることを確認
 		StatusAccess sa3 = new StatusAccess(getActivity());
 		sa3.read(new VoidReader() {
@@ -139,8 +135,8 @@ public class StatusAccessTestCase extends EmptyActivityInstrumentationTestCase2 
 		});
 
 		// SharedPreferencesKey.CLEAR_REQUIREDがfalseになっていることを確認
-		assertFalse(preferences.getBoolean(SharedPreferencesKey.CLEAR_STATUS_BACKUP_REQUIRED,
-				true));
+		assertFalse(preferences.getBoolean(
+				SharedPreferencesKey.CLEAR_STATUS_BACKUP, true));
 
 		// データが復活しないことを確認
 		StatusAccess sa4 = new StatusAccess(getActivity());

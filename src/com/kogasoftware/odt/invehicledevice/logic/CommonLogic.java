@@ -124,14 +124,13 @@ public class CommonLogic {
 		String token = preferences.getString(
 				SharedPreferencesKey.SERVER_IN_VEHICLE_DEVICE_TOKEN, "");
 		File webAPIBackupFile = activity.getFileStreamPath("webapi.serialized");
-		if (preferences.getBoolean(
-				SharedPreferencesKey.CLEAR_WEBAPI_BACKUP_REQUIRED, false)) {
+		if (preferences.getBoolean(SharedPreferencesKey.CLEAR_WEBAPI_BACKUP,
+				false)) {
 			if (webAPIBackupFile.exists() && !webAPIBackupFile.delete()) {
 				Log.w(TAG, "!\"" + webAPIBackupFile + "\".delete()");
 			}
 			SharedPreferences.Editor editor = preferences.edit();
-			editor.putBoolean(
-					SharedPreferencesKey.CLEAR_WEBAPI_BACKUP_REQUIRED, false);
+			editor.putBoolean(SharedPreferencesKey.CLEAR_WEBAPI_BACKUP, false);
 			editor.commit();
 		}
 

@@ -126,12 +126,11 @@ public class VoiceCache {
 		Boolean clear = false;
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(context);
-		clear = preferences.getBoolean(
-				SharedPreferencesKey.CLEAR_VOICE_CACHE_REQUIRED, false);
+		clear = preferences.getBoolean(SharedPreferencesKey.CLEAR_VOICE_CACHE,
+				false);
 		if (clear) {
 			SharedPreferences.Editor editor = preferences.edit();
-			editor.putBoolean(SharedPreferencesKey.CLEAR_VOICE_CACHE_REQUIRED,
-					false);
+			editor.putBoolean(SharedPreferencesKey.CLEAR_VOICE_CACHE, false);
 			editor.commit();
 			if (!cacheIndexFile.delete()) {
 				throw new IOException("!\"" + cacheIndexFile + "\".delete()");

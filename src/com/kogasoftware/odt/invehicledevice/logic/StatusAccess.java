@@ -125,13 +125,14 @@ public class StatusAccess {
 			if (!file.delete()) {
 				Log.e(TAG, "!\"" + file + "\".delete()");
 			}
-		} else if (preferences.getBoolean(SharedPreferencesKey.CLEAR_STATUS_BACKUP_REQUIRED,
-				false)) {
+		} else if (preferences.getBoolean(
+				SharedPreferencesKey.CLEAR_STATUS_BACKUP, false)) {
 			if (!file.delete()) {
 				Log.e(TAG, "!\"" + file + "\".delete()");
 			}
-			preferences.edit()
-					.putBoolean(SharedPreferencesKey.CLEAR_STATUS_BACKUP_REQUIRED, false)
+			preferences
+					.edit()
+					.putBoolean(SharedPreferencesKey.CLEAR_STATUS_BACKUP, false)
 					.commit();
 		} else {
 			FileInputStream fileInputStream = null;

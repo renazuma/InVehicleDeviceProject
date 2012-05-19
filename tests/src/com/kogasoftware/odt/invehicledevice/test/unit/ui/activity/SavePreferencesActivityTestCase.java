@@ -32,7 +32,7 @@ public class SavePreferencesActivityTestCase extends
 		editor.putString(SharedPreferencesKey.SERVER_IN_VEHICLE_DEVICE_TOKEN,
 				"");
 		editor.putBoolean(SharedPreferencesKey.EXIT_REQUIRED, false);
-		editor.putBoolean(SharedPreferencesKey.CLEAR_STATUS_BACKUP_REQUIRED, false);
+		editor.putBoolean(SharedPreferencesKey.CLEAR_STATUS_BACKUP, false);
 		editor.commit();
 	}
 
@@ -65,7 +65,7 @@ public class SavePreferencesActivityTestCase extends
 				SharedPreferencesKey.SERVER_IN_VEHICLE_DEVICE_TOKEN, ""), t);
 
 		assertTrue(sp.getBoolean(SharedPreferencesKey.EXIT_REQUIRED, false));
-		assertTrue(sp.getBoolean(SharedPreferencesKey.CLEAR_STATUS_BACKUP_REQUIRED, false));
+		assertTrue(sp.getBoolean(SharedPreferencesKey.CLEAR_STATUS_BACKUP, false));
 	}
 
 	public void test空データを渡してもエラーは発生しない() throws Exception {
@@ -75,6 +75,6 @@ public class SavePreferencesActivityTestCase extends
 		getActivity();
 
 		assertTrue(sp.getBoolean(SharedPreferencesKey.EXIT_REQUIRED, false));
-		assertTrue(sp.getBoolean(SharedPreferencesKey.CLEAR_STATUS_BACKUP_REQUIRED, false));
+		assertTrue(sp.getBoolean(SharedPreferencesKey.CLEAR_STATUS_BACKUP, false));
 	}
 }
