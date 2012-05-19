@@ -105,7 +105,6 @@ public class WebAPI implements Closeable {
 	}
 
 	public static final Integer REQUEST_EXPIRE_DAY = 3;
-
 	private static final String TAG = WebAPI.class.getSimpleName();
 	protected static final int NUM_THREADS = 3;
 	protected static final String PATH_PREFIX = "/in_vehicle_devices";
@@ -133,11 +132,17 @@ public class WebAPI implements Closeable {
 	}
 
 	public WebAPI(String serverHost, String authenticationToken) {
-		this(serverHost, authenticationToken, null);
+		this(serverHost, authenticationToken, new WebAPIRequestQueue());
 	}
 
 	public WebAPI(String serverHost, String authenticationToken, File backupFile) {
-		requests = new WebAPIRequestQueue(backupFile);
+		this(serverHost, authenticationToken,
+				new WebAPIRequestQueue(backupFile));
+	}
+
+	protected WebAPI(String serverHost, String authenticationToken,
+			WebAPIRequestQueue requests) {
+		this.requests = requests;
 		this.authenticationToken = authenticationToken;
 		setServerHost(serverHost);
 		for (int i = 0; i < NUM_THREADS; ++i) {
@@ -190,9 +195,9 @@ public class WebAPI implements Closeable {
 	protected <T> int delete(String path, WebAPICallback<T> callback,
 			ResponseConverter<T> conv) throws WebAPIException {
 		SerializableHttpDeleteSupplier supplier = new SerializableHttpDeleteSupplier(
-				getServerHost(), path, null, authenticationToken);
-		WebAPIRequest<?> request = new WebAPIRequest<T>(supplier, supplier,
-				callback, conv);
+				getServerHost(), path, authenticationToken);
+		WebAPIRequest<?> request = new WebAPIRequest<T>(callback, conv,
+				supplier);
 		requests.add(request);
 		return request.getReqKey();
 	}
@@ -275,7 +280,6 @@ public class WebAPI implements Closeable {
 	protected void doWebAPISession() throws InterruptedException {
 		WebAPIRequest<?> request = requests.take();
 		boolean succeed = false;
-
 		Calendar calendar = Calendar.getInstance();
 		calendar.add(Calendar.DATE, -REQUEST_EXPIRE_DAY);
 		if (calendar.getTime().after(request.getCreatedDate())) {
@@ -290,7 +294,7 @@ public class WebAPI implements Closeable {
 		} catch (WebAPIException e) {
 			request.onException(e);
 		}
-		if (succeed) {
+		if (succeed || !request.isRetryable()) {
 			requests.remove(request);
 		} else {
 			requests.retry(request);
@@ -314,9 +318,9 @@ public class WebAPI implements Closeable {
 	protected <T> int get(String path, WebAPICallback<T> callback,
 			ResponseConverter<T> conv) throws WebAPIException {
 		SerializableHttpGetSupplier supplier = new SerializableHttpGetSupplier(
-				getServerHost(), path, null, authenticationToken);
-		WebAPIRequest<?> request = new WebAPIRequest<T>(supplier, supplier,
-				callback, conv);
+				getServerHost(), path, authenticationToken);
+		WebAPIRequest<?> request = new WebAPIRequest<T>(callback, conv,
+				supplier);
 		requests.add(request);
 		return request.getReqKey();
 	}
@@ -493,9 +497,9 @@ public class WebAPI implements Closeable {
 			@Override
 			public void onSucceed(int reqkey, int statusCode,
 					InVehicleDevice result) {
-				if (result.getAuthenticationToken().isPresent()) {
-					WebAPI.this.authenticationToken = result
-							.getAuthenticationToken().get();
+				for (String authenticationToken : result
+						.getAuthenticationToken().asSet()) {
+					WebAPI.this.authenticationToken = authenticationToken;
 					Log.d(TAG, "onSucceed : " + WebAPI.this.authenticationToken);
 					callback.onSucceed(reqkey, statusCode, result);
 				}
@@ -526,12 +530,19 @@ public class WebAPI implements Closeable {
 	protected <T> int post(String path, JSONObject param,
 			JSONObject retryParam, WebAPICallback<T> callback,
 			ResponseConverter<T> conv) throws WebAPIException {
+		return post(path, param, retryParam, callback, conv, true);
+	}
+
+	protected <T> int post(String path, JSONObject param,
+			JSONObject retryParam, WebAPICallback<T> callback,
+			ResponseConverter<T> conv, boolean retryable)
+			throws WebAPIException {
 		SerializableHttpPostSupplier first = new SerializableHttpPostSupplier(
 				getServerHost(), path, param, authenticationToken);
 		SerializableHttpPostSupplier retry = new SerializableHttpPostSupplier(
-				getServerHost(), path, param, authenticationToken);
-		WebAPIRequest<?> request = new WebAPIRequest<T>(first, retry, callback,
-				conv);
+				getServerHost(), path, retryParam, authenticationToken);
+		WebAPIRequest<?> request = new WebAPIRequest<T>(callback, conv, first,
+				retry);
 		requests.add(request);
 		return request.getReqKey();
 	}
@@ -539,18 +550,24 @@ public class WebAPI implements Closeable {
 	protected <T> int post(String path, JSONObject param,
 			WebAPICallback<T> callback, ResponseConverter<T> conv)
 			throws WebAPIException {
-		return post(path, param, param, callback, conv);
+		return post(path, param, param, callback, conv, false);
 	}
 
 	protected <T> int put(String path, JSONObject param, JSONObject retryParam,
 			WebAPICallback<T> callback, ResponseConverter<T> conv)
 			throws WebAPIException {
+		return put(path, param, retryParam, callback, conv, true);
+	}
+
+	protected <T> int put(String path, JSONObject param, JSONObject retryParam,
+			WebAPICallback<T> callback, ResponseConverter<T> conv,
+			boolean retryable) throws WebAPIException {
 		SerializableHttpPutSupplier first = new SerializableHttpPutSupplier(
 				getServerHost(), path, param, authenticationToken);
 		SerializableHttpPutSupplier retry = new SerializableHttpPutSupplier(
 				getServerHost(), path, retryParam, authenticationToken);
-		WebAPIRequest<?> request = new WebAPIRequest<T>(first, retry, callback,
-				conv);
+		WebAPIRequest<?> request = new WebAPIRequest<T>(callback, conv, first,
+				retry, retryable);
 		requests.add(request);
 		return request.getReqKey();
 	}
@@ -558,7 +575,7 @@ public class WebAPI implements Closeable {
 	protected <T> int put(String path, JSONObject param,
 			WebAPICallback<T> callback, ResponseConverter<T> conv)
 			throws WebAPIException {
-		return put(path, param, param, callback, conv);
+		return put(path, param, param, callback, conv, false);
 	}
 
 	protected JSONObject removeJSONKeys(JSONObject jsonObject, String[] keys) {

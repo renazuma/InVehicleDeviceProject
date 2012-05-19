@@ -12,6 +12,11 @@ public class SerializableHttpGetSupplier extends
 	private static final long serialVersionUID = -3731243816173414926L;
 
 	public SerializableHttpGetSupplier(String host, String path,
+			String authenticationToken) {
+		this(host, path, new TreeMap<String, String>(), authenticationToken);
+	}
+
+	public SerializableHttpGetSupplier(String host, String path,
 			TreeMap<String, String> params, String authenticationToken) {
 		super(host, path, params, authenticationToken);
 	}

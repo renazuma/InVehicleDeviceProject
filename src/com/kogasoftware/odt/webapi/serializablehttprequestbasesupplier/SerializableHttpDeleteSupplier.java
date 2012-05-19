@@ -11,6 +11,12 @@ public class SerializableHttpDeleteSupplier extends
 		SerializableHttpRequestBaseSupplier {
 	private static final long serialVersionUID = -2445701098599698093L;
 
+	public SerializableHttpDeleteSupplier(String serverHost, String path,
+			String authenticationToken) {
+		this(serverHost, path, new TreeMap<String, String>(),
+				authenticationToken);
+	}
+
 	public SerializableHttpDeleteSupplier(String host, String path,
 			TreeMap<String, String> params, String authenticationToken) {
 		super(host, path, params, authenticationToken);

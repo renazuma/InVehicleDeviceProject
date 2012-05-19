@@ -18,18 +18,40 @@ public class WebAPIRequest<T> implements Serializable {
 	protected final SerializableHttpRequestBaseSupplier retryRequest;
 	protected final int reqkey = reqkeyCounter.incrementAndGet();
 	protected final Date createdDate = new Date();
+	protected final boolean retryable;
 	protected boolean retry = false;
 
 	transient protected WebAPICallback<T> callback;
 	transient protected ResponseConverter<T> responseConverter;
 
-	public WebAPIRequest(SerializableHttpRequestBaseSupplier firstRequest,
-			SerializableHttpRequestBaseSupplier retryRequest,
-			WebAPICallback<T> callback, ResponseConverter<T> responseConverter) {
-		this.firstRequest = firstRequest;
-		this.retryRequest = retryRequest;
+	public WebAPIRequest(WebAPICallback<T> callback,
+			ResponseConverter<T> responseConverter,
+			SerializableHttpRequestBaseSupplier request) {
+		this(callback, responseConverter, request, false);
+	}
+
+	public WebAPIRequest(WebAPICallback<T> callback,
+			ResponseConverter<T> responseConverter,
+			SerializableHttpRequestBaseSupplier request, Boolean retryable) {
+		this(callback, responseConverter, request, request, retryable);
+	}
+
+	public WebAPIRequest(WebAPICallback<T> callback,
+			ResponseConverter<T> responseConverter,
+			SerializableHttpRequestBaseSupplier firstRequest,
+			SerializableHttpRequestBaseSupplier retryRequest) {
+		this(callback, responseConverter, firstRequest, retryRequest, true);
+	}
+
+	protected WebAPIRequest(WebAPICallback<T> callback,
+			ResponseConverter<T> responseConverter,
+			SerializableHttpRequestBaseSupplier firstRequest,
+			SerializableHttpRequestBaseSupplier retryRequest, Boolean retryable) {
 		this.callback = callback;
 		this.responseConverter = responseConverter;
+		this.firstRequest = firstRequest;
+		this.retryRequest = retryRequest;
+		this.retryable = retryable;
 	}
 
 	public Date getCreatedDate() {
@@ -42,6 +64,10 @@ public class WebAPIRequest<T> implements Serializable {
 
 	public HttpRequestBase getRequest() throws WebAPIException {
 		return retry ? retryRequest.get() : firstRequest.get();
+	}
+
+	public boolean isRetryable() {
+		return retryable;
 	}
 
 	public void onException(WebAPIException e) {
