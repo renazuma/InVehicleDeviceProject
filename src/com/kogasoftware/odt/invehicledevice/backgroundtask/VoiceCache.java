@@ -15,6 +15,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.common.cache.Cache;
@@ -23,6 +25,7 @@ import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
 import com.google.common.cache.Weigher;
 import com.google.common.io.Closeables;
+import com.kogasoftware.odt.invehicledevice.logic.SharedPreferencesKey;
 import com.kogasoftware.openjtalk.OpenJTalk;
 
 /**
@@ -87,11 +90,6 @@ public class VoiceCache {
 	private final AtomicBoolean dirty = new AtomicBoolean(false);
 
 	public VoiceCache(Context context, Integer maxBytes) throws IOException {
-		this(context, maxBytes, false);
-	}
-
-	public VoiceCache(Context context, Integer maxBytes, Boolean clear)
-			throws IOException {
 		cache = CacheBuilder.newBuilder().weigher(new Weigher<String, File>() {
 			@Override
 			public int weigh(String voice, File file) {
@@ -125,7 +123,16 @@ public class VoiceCache {
 		openJTalk = new OpenJTalk(voiceDirectory, dictionaryDirectory,
 				libraryDirectory);
 
+		Boolean clear = false;
+		SharedPreferences preferences = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		clear = preferences.getBoolean(
+				SharedPreferencesKey.CLEAR_VOICE_CACHE_REQUIRED, false);
 		if (clear) {
+			SharedPreferences.Editor editor = preferences.edit();
+			editor.putBoolean(SharedPreferencesKey.CLEAR_VOICE_CACHE_REQUIRED,
+					false);
+			editor.commit();
 			if (!cacheIndexFile.delete()) {
 				throw new IOException("!\"" + cacheIndexFile + "\".delete()");
 			}

@@ -39,6 +39,7 @@ public class SavePreferencesActivity extends Activity {
 				true);
 		editor.putBoolean(SharedPreferencesKey.CLEAR_WEBAPI_BACKUP_REQUIRED,
 				true);
+		editor.putBoolean(SharedPreferencesKey.CLEAR_VOICE_CACHE_REQUIRED, true);
 		editor.commit();
 		Toast.makeText(this, "設定を保存しました", Toast.LENGTH_LONG).show();
 	}

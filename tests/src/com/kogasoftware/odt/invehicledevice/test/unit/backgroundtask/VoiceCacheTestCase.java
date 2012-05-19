@@ -4,9 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import android.content.Context;
 import android.media.MediaPlayer;
+import android.preference.PreferenceManager;
 
 import com.kogasoftware.odt.invehicledevice.backgroundtask.VoiceCache;
+import com.kogasoftware.odt.invehicledevice.logic.SharedPreferencesKey;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 
 public class VoiceCacheTestCase extends EmptyActivityInstrumentationTestCase2 {
@@ -77,12 +80,17 @@ public class VoiceCacheTestCase extends EmptyActivityInstrumentationTestCase2 {
 		super.setUp();
 
 		if (once.getAndSet(false)) {
-			VoiceCache vc = new VoiceCache(getInstrumentation()
-					.getTargetContext(), Integer.MAX_VALUE);
+			Context c = getInstrumentation().getTargetContext();
+			VoiceCache vc = new VoiceCache(c, Integer.MAX_VALUE);
 			File f = vc.get("こんにちは");
 			bytes = (int) f.length();
-			new VoiceCache(getInstrumentation().getTargetContext(),
-					Integer.MAX_VALUE, true);
+			PreferenceManager
+					.getDefaultSharedPreferences(c)
+					.edit()
+					.putBoolean(
+							SharedPreferencesKey.CLEAR_VOICE_CACHE_REQUIRED,
+							true).commit();
+			new VoiceCache(c, Integer.MAX_VALUE);
 		}
 	}
 
