@@ -139,11 +139,9 @@ public class CommonLogic {
 				reservationEventSubscriber, vehicleNotificationEventSubscriber }) {
 			eventBus.register(object);
 		}
-		for (Integer resourceId : new Integer[] { R.id.config_modal_view,
-				R.id.start_check_modal_view, R.id.schedule_modal_view,
-				R.id.memo_modal_view, R.id.pause_modal_view,
-				R.id.return_path_modal_view, R.id.stop_check_modal_view,
-				R.id.stop_modal_view, R.id.notification_modal_view,
+		for (Integer resourceId : new Integer[] { R.id.start_check_modal_view,
+				R.id.schedule_modal_view, R.id.memo_modal_view,
+				R.id.return_path_modal_view, R.id.notification_modal_view,
 				R.id.schedule_changed_modal_view, R.id.navigation_modal_view,
 				R.id.phase_text_view, R.id.drive_phase_view,
 				R.id.platform_phase_view, R.id.finish_phase_view }) {

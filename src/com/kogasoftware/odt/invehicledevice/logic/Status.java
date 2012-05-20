@@ -10,7 +10,6 @@ import com.kogasoftware.odt.invehicledevice.logic.empty.EmptyFile;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
-import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLogs;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 /**
@@ -21,7 +20,7 @@ public class Status implements Serializable {
 		DRIVE, FINISH, INITIAL, PLATFORM
 	}
 
-	private static final long serialVersionUID = 5617948505743183986L;
+	private static final long serialVersionUID = 5617948505743183987L;
 
 	public final Date createdDate = new Date();
 	public final Semaphore operationScheduleInitializedSign = new Semaphore(0); // パーミットが0以上の場合は初期化済み。0以上になるまで待つためにacquireしたら必ずreleaseする。CountDownLatchがSerializableではないためこれを使用
@@ -43,8 +42,4 @@ public class Status implements Serializable {
 	public final LinkedList<VehicleNotification> receivingOperationScheduleChangedVehicleNotifications = new LinkedList<VehicleNotification>();
 	public final LinkedList<VehicleNotification> receivedOperationScheduleChangedVehicleNotifications = new LinkedList<VehicleNotification>();
 	public final LinkedList<VehicleNotification> repliedVehicleNotifications = new LinkedList<VehicleNotification>();
-
-	public Status() {
-		serviceUnitStatusLog.setStatus(ServiceUnitStatusLogs.Status.OPERATION);
-	}
 }

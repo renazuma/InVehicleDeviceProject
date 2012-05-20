@@ -13,8 +13,6 @@ import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Reader;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.VoidReader;
 import com.kogasoftware.odt.invehicledevice.logic.event.OrientationChangedEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.PauseEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.StopEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.TemperatureChangedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.VehicleNotificationRepliedEvent;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
