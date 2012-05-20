@@ -6,6 +6,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
 import android.media.MediaPlayer;
@@ -14,6 +15,7 @@ import android.media.MediaPlayer.OnErrorListener;
 import android.util.Log;
 
 import com.google.common.eventbus.Subscribe;
+import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
 public class VoiceThread extends Thread {
 	public static class SpeakEvent {
@@ -28,6 +30,8 @@ public class VoiceThread extends Thread {
 	private static final Integer MAX_CACHE_BYTES = 100 * 1024 * 1024;
 	private final BlockingQueue<String> voices = new LinkedBlockingQueue<String>();
 	private final Context context;
+	private final Semaphore speakableSemaphore = new Semaphore(0); // TODO:ソースが複雑すぎる
+	private final AtomicBoolean speakable = new AtomicBoolean(true);
 
 	public VoiceThread(Context context) {
 		this.context = context;
@@ -52,8 +56,23 @@ public class VoiceThread extends Thread {
 		}
 	}
 
+	@Subscribe
+	public void pause(InVehicleDeviceActivity.PausedEvent e) {
+		speakableSemaphore.drainPermits();
+		speakable.set(false);
+	}
+
+	@Subscribe
+	public void resume(InVehicleDeviceActivity.ResumedEvent e) {
+		speakable.set(true);
+		speakableSemaphore.release();
+	}
+
 	private void speak(VoiceCache voiceLoader, String voice)
 			throws InterruptedException {
+		if (!speakable.get()) {
+			speakableSemaphore.acquire();
+		}
 		MediaPlayer mediaPlayer = new MediaPlayer();
 		try {
 			try {

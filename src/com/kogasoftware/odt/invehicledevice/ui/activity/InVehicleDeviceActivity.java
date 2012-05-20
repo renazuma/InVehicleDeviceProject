@@ -105,6 +105,12 @@ public class InVehicleDeviceActivity extends Activity {
 		}
 	};
 
+	public static class ResumedEvent {
+	}
+
+	public static class PausedEvent {
+	}
+
 	// nullables
 	private View contentView = null;
 	private Button mapButton = null;
@@ -292,6 +298,8 @@ public class InVehicleDeviceActivity extends Activity {
 			// Dialogが表示されていない場合はこの例外が発生
 			// Log.w(TAG, e);
 		}
+
+		commonLogic.postEvent(new PausedEvent());
 	}
 
 	@Override
@@ -301,6 +309,8 @@ public class InVehicleDeviceActivity extends Activity {
 		if (!isFinishing() && waitForStartUiLatch.getCount() > 0) {
 			showDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
 		}
+
+		commonLogic.postEvent(new ResumedEvent());
 	}
 
 	private void setPhaseColor(Integer color) {
