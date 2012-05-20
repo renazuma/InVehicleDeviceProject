@@ -13,9 +13,9 @@ import com.kogasoftware.odt.invehicledevice.preference.R;
 public class InVehicleDevicePreferenceTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDevicePreferenceActivity> {
 
-	private static final String URL = "http://10.1.10.161";
-	private static final String LOGIN = "admin";
-	private static final String PASSWORD = "admin";
+	private static final String URL = "http://10.0.2.2";
+	private static final String LOGIN = "odtodt";
+	private static final String PASSWORD = "odtodt";
 
 	private Solo solo;
 
@@ -27,9 +27,7 @@ public class InVehicleDevicePreferenceTestCase extends
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		
-		Thread.sleep(20 * 1000); // Toastが消えるのを待つ
-		
+
 		solo = new Solo(getInstrumentation(), getActivity());
 	}
 	
@@ -88,7 +86,12 @@ public class InVehicleDevicePreferenceTestCase extends
 		solo.clickOnText(getInstrumentation().getTargetContext().getResources()
 				.getString(R.string.ok));
 		assertTrue(searchTextLongWait(R.string.an_error_occurred));
-		Thread.sleep(1000);
+		while (solo.searchText(getInstrumentation().getTargetContext()
+				.getResources().getString(R.string.an_error_occurred), true)) {
+			// Toastが消えるのを待つ
+			Thread.sleep(1000);
+		}
+		
 		assertFalse(getActivity().isFinishing());
 	}
 
@@ -100,7 +103,11 @@ public class InVehicleDevicePreferenceTestCase extends
 		solo.clickOnText(getInstrumentation().getTargetContext().getResources()
 				.getString(R.string.ok));
 		assertTrue(searchTextLongWait(R.string.an_error_occurred));
-		Thread.sleep(1000);
+		while (solo.searchText(getInstrumentation().getTargetContext()
+				.getResources().getString(R.string.an_error_occurred), true)) {
+			// Toastが消えるのを待つ
+			Thread.sleep(1000);
+		}
 		assertFalse(getActivity().isFinishing());
 	}
 
@@ -112,7 +119,11 @@ public class InVehicleDevicePreferenceTestCase extends
 		solo.clickOnText(getInstrumentation().getTargetContext().getResources()
 				.getString(R.string.ok));
 		assertTrue(searchTextLongWait(R.string.an_error_occurred));
-		Thread.sleep(1000);
+		while (solo.searchText(getInstrumentation().getTargetContext()
+				.getResources().getString(R.string.an_error_occurred), true)) {
+			// Toastが消えるのを待つ
+			Thread.sleep(1000);
+		}
 		assertFalse(getActivity().isFinishing());
 	}
 
