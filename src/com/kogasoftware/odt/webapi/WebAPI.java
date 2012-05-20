@@ -272,6 +272,9 @@ public class WebAPI implements Closeable {
 		try {
 			request.onSucceed(statusCode, response);
 			return true;
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new WebAPIException(false, e);
 		} catch (Exception e) {
 			throw new WebAPIException(false, e);
 		}
