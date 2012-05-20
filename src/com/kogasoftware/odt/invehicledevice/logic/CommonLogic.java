@@ -30,7 +30,6 @@ import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Reader;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSourceFactory;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.WebAPIDataSource;
-import com.kogasoftware.odt.invehicledevice.logic.empty.EmptyFile;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterDrivePhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterFinishPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterPlatformPhaseEvent;
@@ -96,8 +95,7 @@ public class CommonLogic {
 	public CommonLogic() {
 		StatusAccess statusAccess = new StatusAccess();
 		this.statusAccess = statusAccess.getReadOnlyStatusAccess();
-		dataSource = DataSourceFactory.newInstance("http://127.0.0.1", "",
-				new EmptyFile());
+		dataSource = DataSourceFactory.newInstance();
 		eventBus = new UiEventBus();
 		commonEventSubscriber = new CommonEventSubscriber(this, statusAccess);
 		reservationEventSubscriber = new ReservationEventSubscriber(this,

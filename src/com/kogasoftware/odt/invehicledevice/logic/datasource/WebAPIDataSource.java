@@ -28,6 +28,10 @@ public class WebAPIDataSource implements DataSource {
 	public static final String DEFAULT_URL = "http://127.0.0.1";
 	private final WebAPI api;
 
+	public WebAPIDataSource() {
+		api = new WebAPI(DEFAULT_URL);
+	}
+
 	public WebAPIDataSource(String url, String token, File file) {
 		api = new WebAPI(url, token, file);
 	}

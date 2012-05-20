@@ -9,6 +9,13 @@ public class DataSourceFactory {
 	private static Optional<DataSource> dataSource = Optional.absent();
 	private static Object dataSourceLock = new Object();
 
+	public static DataSource newInstance() {
+		synchronized (dataSourceLock) {
+			// return dataSource.or(new ScheduleChangedTestDataSource());
+			return dataSource.or(new WebAPIDataSource());
+		}
+	}
+
 	public static DataSource newInstance(String url, String token, File file) {
 		synchronized (dataSourceLock) {
 			// return dataSource.or(new ScheduleChangedTestDataSource());
