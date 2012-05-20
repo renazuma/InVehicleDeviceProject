@@ -15,6 +15,7 @@ WebAPITest::Application.routes.draw do
   resources :service_units
   resources :drivers
   resources :vehicles
+  resources :service_unit_status_logs
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
