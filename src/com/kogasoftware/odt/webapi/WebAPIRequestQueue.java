@@ -22,6 +22,7 @@ import com.google.common.io.Closeables;
  */
 public class WebAPIRequestQueue {
 	private static final String TAG = WebAPIRequestQueue.class.getSimpleName();
+	private static final Object FILE_ACCESS_LOCK = new Object(); // ファイルアクセス中のスレッドを一つに制限するためのロック。将来的にはロックの粒度をファイル毎にする必要があるかもしれない。
 
 	// 作業中リクエスト
 	protected final Queue<WebAPIRequest<?>> processingQueue = new LinkedList<WebAPIRequest<?>>();
@@ -49,30 +50,32 @@ public class WebAPIRequestQueue {
 		if (!backupFile.exists()) {
 			return;
 		}
-		FileInputStream fileInputStream = null;
-		ObjectInputStream objectInputStream = null;
-		try {
-			fileInputStream = new FileInputStream(backupFile);
-			objectInputStream = new ObjectInputStream(fileInputStream);
-			Object object = objectInputStream.readObject();
-			if (!(object instanceof ArrayList<?>)) {
-				Log.w(TAG, "!(" + object + " instanceof ArrayList<?>)");
-				return;
-			}
-			List<?> list = (List<?>) object;
-			for (Object element : list) {
-				if (element instanceof WebAPIRequest<?>) {
-					waitingQueue.add((WebAPIRequest<?>) element);
+		synchronized (FILE_ACCESS_LOCK) {
+			FileInputStream fileInputStream = null;
+			ObjectInputStream objectInputStream = null;
+			try {
+				fileInputStream = new FileInputStream(backupFile);
+				objectInputStream = new ObjectInputStream(fileInputStream);
+				Object object = objectInputStream.readObject();
+				if (!(object instanceof ArrayList<?>)) {
+					Log.w(TAG, "!(" + object + " instanceof ArrayList<?>)");
+					return;
 				}
+				List<?> list = (List<?>) object;
+				for (Object element : list) {
+					if (element instanceof WebAPIRequest<?>) {
+						waitingQueue.add((WebAPIRequest<?>) element);
+					}
+				}
+			} catch (IOException e) {
+				Log.w(TAG, e);
+			} catch (ClassNotFoundException e) {
+				Log.w(TAG, e);
+			} finally {
+				waitingQueuePollPermissions.release(waitingQueue.size());
+				Closeables.closeQuietly(objectInputStream);
+				Closeables.closeQuietly(fileInputStream);
 			}
-		} catch (IOException e) {
-			Log.w(TAG, e);
-		} catch (ClassNotFoundException e) {
-			Log.w(TAG, e);
-		} finally {
-			waitingQueuePollPermissions.release(waitingQueue.size());
-			Closeables.closeQuietly(objectInputStream);
-			Closeables.closeQuietly(fileInputStream);
 		}
 	}
 
@@ -105,17 +108,20 @@ public class WebAPIRequestQueue {
 			list.addAll(processingQueue);
 		}
 
-		ObjectOutputStream objectOutputStream = null;
-		FileOutputStream fileOutputStream = null;
-		try {
-			fileOutputStream = new FileOutputStream(backupFile);
-			objectOutputStream = new ObjectOutputStream(fileOutputStream);
-			objectOutputStream.writeObject(list);
-		} catch (IOException e) {
-			Log.w(TAG, e);
-		} finally {
-			Closeables.closeQuietly(objectOutputStream);
-			Closeables.closeQuietly(fileOutputStream);
+		synchronized (FILE_ACCESS_LOCK) {
+			ObjectOutputStream objectOutputStream = null;
+			FileOutputStream fileOutputStream = null;
+			try {
+				fileOutputStream = new FileOutputStream(backupFile);
+				fileOutputStream.getChannel().lock();
+				objectOutputStream = new ObjectOutputStream(fileOutputStream);
+				objectOutputStream.writeObject(list);
+			} catch (IOException e) {
+				Log.w(TAG, e);
+			} finally {
+				Closeables.closeQuietly(objectOutputStream);
+				Closeables.closeQuietly(fileOutputStream);
+			}
 		}
 	}
 
