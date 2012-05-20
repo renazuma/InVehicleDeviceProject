@@ -9,8 +9,6 @@ import java.io.IOException;
 import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.nio.channels.ClosedChannelException;
-import java.nio.channels.FileLock;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -29,6 +27,8 @@ import com.kogasoftware.odt.invehicledevice.logic.datasource.WebAPIDataSource;
  * InVehicleDeviceStatusのアクセスに対し 書き込みがあったら自動で保存. 読み書き時にロックを実行を行う
  */
 public class StatusAccess {
+	private static final Object FILE_ACCESS_LOCK = new Object(); // ファイルアクセス中のスレッドを一つに制限するためのロック。将来的にはロックの粒度をファイル毎にする必要があるかもしれない。
+
 	public interface Reader<T> {
 		T read(Status status);
 	}
@@ -60,26 +60,18 @@ public class StatusAccess {
 
 		@Override
 		public void run() {
-			FileOutputStream fileOutputStream = null;
-			FileLock lock = null;
-			try {
-				fileOutputStream = new FileOutputStream(file);
-				lock = fileOutputStream.getChannel().lock();
-				fileOutputStream.write(byteArrayOutputStream.toByteArray());
-			} catch (FileNotFoundException e) {
-				Log.w(TAG, e);
-			} catch (IOException e) {
-				Log.w(TAG, e);
-			} finally {
-				Closeables.closeQuietly(fileOutputStream);
-				if (lock != null) {
-					try {
-						lock.release();
-					} catch (ClosedChannelException e) {
-						// do nothing
-					} catch (IOException e) {
-						Log.w(TAG, e);
-					}
+			synchronized (FILE_ACCESS_LOCK) {
+				FileOutputStream fileOutputStream = null;
+				try {
+					fileOutputStream = new FileOutputStream(file);
+					fileOutputStream.getChannel().lock();
+					fileOutputStream.write(byteArrayOutputStream.toByteArray());
+				} catch (FileNotFoundException e) {
+					Log.w(TAG, e);
+				} catch (IOException e) {
+					Log.w(TAG, e);
+				} finally {
+					Closeables.closeQuietly(fileOutputStream);
 				}
 			}
 		}
@@ -122,41 +114,46 @@ public class StatusAccess {
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		if (isClear) {
-			if (!file.delete()) {
-				Log.e(TAG, "!\"" + file + "\".delete()");
+			synchronized (FILE_ACCESS_LOCK) {
+				if (!file.delete()) {
+					Log.e(TAG, "!\"" + file + "\".delete()");
+				}
 			}
 		} else if (preferences.getBoolean(
 				SharedPreferencesKey.CLEAR_STATUS_BACKUP, false)) {
-			if (!file.delete()) {
-				Log.e(TAG, "!\"" + file + "\".delete()");
+			synchronized (FILE_ACCESS_LOCK) {
+				if (!file.delete()) {
+					Log.e(TAG, "!\"" + file + "\".delete()");
+				}
 			}
 			preferences
 					.edit()
 					.putBoolean(SharedPreferencesKey.CLEAR_STATUS_BACKUP, false)
 					.commit();
+		} else if (!file.exists()) {
 		} else {
-			FileInputStream fileInputStream = null;
-			ObjectInputStream objectInputStream = null;
-			try {
-				fileInputStream = new FileInputStream(file);
-				objectInputStream = new ObjectInputStream(fileInputStream);
-				Object object = objectInputStream.readObject();
-				if (object instanceof Status) {
-					status = (Status) object;
+			synchronized (FILE_ACCESS_LOCK) {
+				FileInputStream fileInputStream = null;
+				ObjectInputStream objectInputStream = null;
+				try {
+					fileInputStream = new FileInputStream(file);
+					objectInputStream = new ObjectInputStream(fileInputStream);
+					Object object = objectInputStream.readObject();
+					if (object instanceof Status) {
+						status = (Status) object;
+					}
+				} catch (IOException e) {
+					Log.w(TAG, e);
+				} catch (RuntimeException e) {
+					Log.w(TAG, e);
+				} catch (ClassNotFoundException e) {
+					Log.w(TAG, e);
+				} catch (Exception e) {
+					Log.w(TAG, e);
+				} finally {
+					Closeables.closeQuietly(objectInputStream);
+					Closeables.closeQuietly(fileInputStream);
 				}
-			} catch (FileNotFoundException e) {
-				// Log.w(TAG, e);
-			} catch (IOException e) {
-				Log.w(TAG, e);
-			} catch (RuntimeException e) {
-				Log.w(TAG, e);
-			} catch (ClassNotFoundException e) {
-				Log.w(TAG, e);
-			} catch (Exception e) {
-				Log.w(TAG, e);
-			} finally {
-				Closeables.closeQuietly(objectInputStream);
-				Closeables.closeQuietly(fileInputStream);
 			}
 
 			Date now = CommonLogic.getDate();
