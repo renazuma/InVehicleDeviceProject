@@ -25,15 +25,10 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.logic.Status;
 import com.kogasoftware.odt.invehicledevice.logic.Status.Phase;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.VoidReader;
 import com.kogasoftware.odt.invehicledevice.logic.event.CommonLogicLoadCompleteEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.PauseEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.StopEvent;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.NotificationModalView;
-import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLogs;
 
 /**
  * バックグランドでの処理を管理するクラス
@@ -199,21 +194,6 @@ public class BackgroundTask {
 					PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
 		}
 		commonLogic.postEvent(new NotificationModalView.ShowEvent());
-		commonLogic.getStatusAccess().read(new VoidReader() {
-			@Override
-			public void read(Status status) {
-				for (Integer serviceUnitStatusLogStatus : status.serviceUnitStatusLog
-						.getStatus().asSet()) {
-					if (serviceUnitStatusLogStatus
-							.equals(ServiceUnitStatusLogs.Status.STOP)) {
-						commonLogic.postEvent(new StopEvent());
-					} else if (serviceUnitStatusLogStatus
-							.equals(ServiceUnitStatusLogs.Status.PAUSE)) {
-						commonLogic.postEvent(new PauseEvent());
-					}
-				}
-			}
-		});
 
 		executorService.scheduleWithFixedDelay(vehicleNotificationReceiver, 0,
 				POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);

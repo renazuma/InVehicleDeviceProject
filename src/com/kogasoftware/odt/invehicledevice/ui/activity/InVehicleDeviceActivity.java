@@ -37,7 +37,6 @@ import com.kogasoftware.odt.invehicledevice.logic.event.ExitEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.SignalStrengthChangedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.UpdatedOperationScheduleAlertEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.VehicleNotificationReceivedAlertEvent;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.ConfigModalView;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.NavigationModalView;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.ScheduleModalView;
 import com.kogasoftware.odt.invehicledevice.ui.phaseview.PlatformPhaseView;
@@ -109,7 +108,6 @@ public class InVehicleDeviceActivity extends Activity {
 	// nullables
 	private View contentView = null;
 	private Button mapButton = null;
-	private Button configButton = null;
 	private Button scheduleButton = null;
 	private Button changePhaseButton = null;
 	private ImageView networkStrengthImageView = null;
@@ -204,7 +202,6 @@ public class InVehicleDeviceActivity extends Activity {
 		statusTextView = (TextView) findViewById(R.id.phase_text_view);
 		changePhaseButton = (Button) findViewById(R.id.change_phase_button);
 		mapButton = (Button) findViewById(R.id.map_button);
-		configButton = (Button) findViewById(R.id.config_button);
 		scheduleButton = (Button) findViewById(R.id.schedule_button);
 		navigationModalView = (NavigationModalView) findViewById(R.id.navigation_modal_view);
 		networkStrengthImageView = (ImageView) findViewById(R.id.network_strength_image_view);
@@ -222,12 +219,6 @@ public class InVehicleDeviceActivity extends Activity {
 			@Override
 			public void onClick(View view) {
 				commonLogic.postEvent(new NavigationModalView.ShowEvent());
-			}
-		});
-		configButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				commonLogic.postEvent(new ConfigModalView.ShowEvent());
 			}
 		});
 		scheduleButton.setOnClickListener(new OnClickListener() {

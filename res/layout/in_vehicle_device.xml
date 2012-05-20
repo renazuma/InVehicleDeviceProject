@@ -115,17 +115,6 @@
             android:orientation="vertical" >
 
             <Button
-                android:id="@+id/config_button"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_weight="1"
-                android:text="@string/operation_management"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:visibility="gone"
-                android:enabled="false"
-                />
-
-            <Button
                 android:id="@+id/map_button"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
@@ -151,18 +140,8 @@
         </LinearLayout>
     </LinearLayout>
 
-    <com.kogasoftware.odt.invehicledevice.ui.modalview.ConfigModalView
-        android:id="@+id/config_modal_view"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
-
     <com.kogasoftware.odt.invehicledevice.ui.modalview.NavigationModalView
         android:id="@+id/navigation_modal_view"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
-
-    <com.kogasoftware.odt.invehicledevice.ui.modalview.PauseModalView
-        android:id="@+id/pause_modal_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 
@@ -181,18 +160,8 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 
-    <com.kogasoftware.odt.invehicledevice.ui.modalview.StopCheckModalView
-        android:id="@+id/stop_check_modal_view"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
-
     <com.kogasoftware.odt.invehicledevice.ui.modalview.MemoModalView
         android:id="@+id/memo_modal_view"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
-
-    <com.kogasoftware.odt.invehicledevice.ui.modalview.StopModalView
-        android:id="@+id/stop_modal_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 

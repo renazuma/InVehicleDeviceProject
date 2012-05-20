@@ -1,34 +1,17 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.logic;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
 import android.location.Location;
 
-import com.google.common.base.Function;
-import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.backgroundtask.CommonEventSubscriber;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.Status;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Reader;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.VoidReader;
+import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
 import com.kogasoftware.odt.invehicledevice.logic.event.LocationReceivedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.OrientationChangedEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.PauseEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.StopEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.TemperatureChangedEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.VehicleNotificationReceivedEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.VehicleNotificationRepliedEvent;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.NotificationModalView;
-import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
-import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLogs;
-import com.kogasoftware.odt.webapi.model.VehicleNotification;
-import com.kogasoftware.odt.webapi.model.VehicleNotifications;
 
 public class CommonEventSubscriberTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
@@ -44,8 +27,10 @@ public class CommonEventSubscriberTestCase extends
 			public void write(Status status) {
 				status.vehicleNotifications.clear();
 				status.repliedVehicleNotifications.clear();
-				status.receivingOperationScheduleChangedVehicleNotifications.clear();
-				status.receivedOperationScheduleChangedVehicleNotifications.clear();
+				status.receivingOperationScheduleChangedVehicleNotifications
+						.clear();
+				status.receivedOperationScheduleChangedVehicleNotifications
+						.clear();
 			}
 		});
 
@@ -63,36 +48,26 @@ public class CommonEventSubscriberTestCase extends
 		}
 	}
 
-	/**
-	 * PauseEventを受信すると状態がStatus.PAUSEとなる
-	 */
-	public void testPauseEvent() throws Exception {
-		ServiceUnitStatusLog sul = sa.read(new Reader<ServiceUnitStatusLog>() {
-			@Override
-			public ServiceUnitStatusLog read(Status status) {
-				return status.serviceUnitStatusLog;
-			}
-		});
-		assertNotSame(sul.getStatus().get(), ServiceUnitStatusLogs.Status.PAUSE);
-		cl.postEvent(new PauseEvent());
-		getInstrumentation().waitForIdleSync();
-		assertEquals(sul.getStatus().get(), ServiceUnitStatusLogs.Status.PAUSE);
-	}
-
-	/**
-	 * StopEventを受信すると状態がStatus.STOPとなる
-	 */
-	public void testStopEvent() throws Exception {
-		ServiceUnitStatusLog sul = sa.read(new Reader<ServiceUnitStatusLog>() {
-			@Override
-			public ServiceUnitStatusLog read(Status status) {
-				return status.serviceUnitStatusLog;
-			}
-		});
-		assertNotSame(sul.getStatus().get(), ServiceUnitStatusLogs.Status.STOP);
-		cl.postEvent(new StopEvent());
-		getInstrumentation().waitForIdleSync();
-		assertEquals(sul.getStatus().get(), ServiceUnitStatusLogs.Status.STOP);
+	public void testSetLocation() {
+		String provider = "test";
+		for (Integer i = 0; i < 20; ++i) {
+			final Integer lat = 10 + i * 2; // TODO:値が丸まっていないかのテスト
+			final Integer lon = 45 + i;
+			Location l = new Location(provider);
+			l.setLatitude(lat);
+			l.setLongitude(lon);
+			cl.postEvent(new LocationReceivedEvent(l));
+			getInstrumentation().waitForIdleSync();
+			sa.read(new VoidReader() {
+				@Override
+				public void read(Status status) {
+					assertEquals(status.serviceUnitStatusLog.getLatitude()
+							.intValue(), lat.intValue());
+					assertEquals(status.serviceUnitStatusLog.getLongitude()
+							.intValue(), lon.intValue());
+				}
+			});
+		}
 	}
 
 	public void testSetOrientation() {
@@ -143,25 +118,5 @@ public class CommonEventSubscriberTestCase extends
 						.intValue(), f2.intValue());
 			}
 		});
-	}
-		
-	public void testSetLocation() {
-		String provider = "test";
-		for (Integer i = 0; i < 20; ++i) {
-			final Integer lat = 10 + i * 2; // TODO:値が丸まっていないかのテスト
-			final Integer lon = 45 + i;
-			Location l = new Location(provider);
-			l.setLatitude(lat);
-			l.setLongitude(lon);
-			cl.postEvent(new LocationReceivedEvent(l));
-			getInstrumentation().waitForIdleSync();
-			sa.read(new VoidReader() {
-				@Override
-				public void read(Status status) {
-					assertEquals(status.serviceUnitStatusLog.getLatitude().intValue(), lat.intValue());
-					assertEquals(status.serviceUnitStatusLog.getLongitude().intValue(), lon.intValue());
-				}
-			});
-		}
 	}
 }

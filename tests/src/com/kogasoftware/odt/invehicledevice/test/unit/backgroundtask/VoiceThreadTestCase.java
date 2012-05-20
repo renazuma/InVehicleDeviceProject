@@ -5,16 +5,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.kogasoftware.odt.invehicledevice.backgroundtask.BackgroundTask;
-import com.kogasoftware.odt.invehicledevice.backgroundtask.LocationSender;
 import com.kogasoftware.odt.invehicledevice.backgroundtask.VoiceThread;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 
 public class VoiceThreadTestCase extends EmptyActivityInstrumentationTestCase2 {
-	VoiceThread vt;
 	CommonLogic cl;
 	StatusAccess sa;
+	VoiceThread vt;
 
 	@Override
 	protected void setUp() throws Exception {
@@ -50,8 +49,7 @@ public class VoiceThreadTestCase extends EmptyActivityInstrumentationTestCase2 {
 		t.start();
 		assertTrue(cdl.await(5, TimeUnit.SECONDS));
 		Thread.sleep(5000);
-		assertEquals(cl.countRegisteredClass(VoiceThread.class).intValue(),
-				1);
+		assertEquals(cl.countRegisteredClass(VoiceThread.class).intValue(), 1);
 		bt.get().quit();
 	}
 

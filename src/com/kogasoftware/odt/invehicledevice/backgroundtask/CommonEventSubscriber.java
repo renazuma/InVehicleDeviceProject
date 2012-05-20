@@ -19,9 +19,6 @@ import com.kogasoftware.odt.invehicledevice.logic.event.EnterPlatformPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.LocationReceivedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.OperationScheduleInitializedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.OrientationChangedEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.PauseCancelledEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.PauseEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.StopEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.TemperatureChangedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.UiEventBus;
 import com.kogasoftware.odt.invehicledevice.logic.event.UpdatedOperationScheduleMergedEvent;
@@ -31,7 +28,6 @@ import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.PassengerRecords;
 import com.kogasoftware.odt.webapi.model.Reservation;
-import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLogs;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 /**
@@ -46,20 +42,6 @@ public class CommonEventSubscriber {
 			StatusAccess statusAccess) {
 		this.commonLogic = commonLogic;
 		this.statusAccess = statusAccess;
-	}
-
-	/**
-	 * 停止状態をキャンセル
-	 */
-	@Subscribe
-	public void cancelPause(PauseCancelledEvent e) {
-		statusAccess.write(new Writer() {
-			@Override
-			public void write(Status status) {
-				status.serviceUnitStatusLog
-						.setStatus(ServiceUnitStatusLogs.Status.OPERATION);
-			}
-		});
 	}
 
 	/**
@@ -269,20 +251,6 @@ public class CommonEventSubscriber {
 		status.reservations.add(serverReservation);
 	}
 
-	/**
-	 * 停止状態へ移行
-	 */
-	@Subscribe
-	public void pause(PauseEvent e) {
-		statusAccess.write(new Writer() {
-			@Override
-			public void write(Status status) {
-				status.serviceUnitStatusLog
-						.setStatus(ServiceUnitStatusLogs.Status.PAUSE);
-			}
-		});
-	}
-
 	@Subscribe
 	public void restoreStatus(UpdatedOperationScheduleMergedEvent event) {
 		commonLogic.restoreStatus();
@@ -343,20 +311,6 @@ public class CommonEventSubscriber {
 			public void write(Status status) {
 				status.serviceUnitStatusLog.setTemperature(e.celciusTemperature
 						.intValue());
-			}
-		});
-	}
-
-	/**
-	 * 中止状態へ移行
-	 */
-	@Subscribe
-	public void stop(StopEvent e) {
-		statusAccess.write(new Writer() {
-			@Override
-			public void write(Status status) {
-				status.serviceUnitStatusLog
-						.setStatus(ServiceUnitStatusLogs.Status.STOP);
 			}
 		});
 	}

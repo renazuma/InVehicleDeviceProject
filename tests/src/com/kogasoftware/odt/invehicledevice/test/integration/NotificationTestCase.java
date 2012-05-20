@@ -179,59 +179,6 @@ public class NotificationTestCase extends
 				.getVisibility());
 	}
 
-	public void test08_管理画面中に管理者から連絡が来たら表示() {
-		test01_起動時は非表示();
-
-		solo.clickOnButton("運行管理");
-
-		List<VehicleNotification> vehicleNotifications = null;
-		try {
-			vehicleNotifications = mdst.getVehicleNotifications();
-		} catch (WebAPIException e) {
-			// TODO 自動生成された catch ブロック
-			e.printStackTrace();
-		}
-
-		if (vehicleNotifications.isEmpty()) {
-			return;
-		}
-
-		getInstrumentation().waitForIdleSync();
-
-		solo.sleep(WAIT_MILLIS);
-
-		assertEquals(View.VISIBLE, solo.getView(R.id.notification_modal_view)
-				.getVisibility());
-	}
-
-	public void test09_はいを押下して閉じ運行管理画面に戻る() {
-		test08_管理画面中に管理者から連絡が来たら表示();
-
-		solo.clickOnButton("はい");
-
-		getInstrumentation().waitForIdleSync();
-
-		assertEquals(View.GONE, solo.getView(R.id.notification_modal_view)
-				.getVisibility());
-		assertEquals(View.VISIBLE, solo.getView(R.id.config_modal_view)
-				.getVisibility());
-
-	}
-
-	public void test10_いいえを押下して閉じ運行管理画面に戻る() {
-		test08_管理画面中に管理者から連絡が来たら表示();
-
-		solo.clickOnButton("いいえ");
-
-		getInstrumentation().waitForIdleSync();
-
-		assertEquals(View.GONE, solo.getView(R.id.notification_modal_view)
-				.getVisibility());
-
-		assertEquals(View.VISIBLE, solo.getView(R.id.config_modal_view)
-				.getVisibility());
-	}
-
 	public void test11_地図画面中に管理者から連絡が来たら表示() {
 		test01_起動時は非表示();
 
