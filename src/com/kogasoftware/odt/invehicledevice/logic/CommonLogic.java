@@ -92,6 +92,9 @@ public class CommonLogic {
 	private final ReservationEventSubscriber reservationEventSubscriber;
 	private final VehicleNotificationEventSubscriber vehicleNotificationEventSubscriber;
 
+	/**
+	 * Nullオブジェクトパターン用のコンストラクタ
+	 */
 	public CommonLogic() {
 		StatusAccess statusAccess = new StatusAccess();
 		this.statusAccess = statusAccess.getReadOnlyStatusAccess();
@@ -102,8 +105,13 @@ public class CommonLogic {
 				statusAccess);
 		vehicleNotificationEventSubscriber = new VehicleNotificationEventSubscriber(
 				this, statusAccess);
+
+		dispose();
 	}
 
+	/**
+	 * コンストラクタ
+	 */
 	public CommonLogic(Activity activity, Handler activityHandler,
 			StatusAccess statusAccess) {
 		commonEventSubscriber = new CommonEventSubscriber(this, statusAccess);

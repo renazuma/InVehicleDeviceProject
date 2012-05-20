@@ -44,7 +44,8 @@ public class PhaseView extends FrameLayout {
 
 	@Subscribe
 	public void setCommonLogic(CommonLogicLoadCompleteEvent event) {
-		this.commonLogic = event.commonLogic;
+		commonLogic.dispose();
+		commonLogic = event.commonLogic;
 	}
 
 	protected void setContentView(int resourceId) {

@@ -12,14 +12,18 @@ public class DataSourceFactory {
 	public static DataSource newInstance() {
 		synchronized (dataSourceLock) {
 			// return dataSource.or(new ScheduleChangedTestDataSource());
-			return dataSource.or(new WebAPIDataSource());
+			return dataSource.or(new EmptyDataSource());
 		}
 	}
 
 	public static DataSource newInstance(String url, String token, File file) {
 		synchronized (dataSourceLock) {
 			// return dataSource.or(new ScheduleChangedTestDataSource());
-			return dataSource.or(new WebAPIDataSource(url, token, file));
+			if (dataSource.isPresent()) {
+				return dataSource.get();
+			}
+			// 厳密にclose()する必要があるため、Optional.or()は使わない
+			return new WebAPIDataSource(url, token, file);
 		}
 	}
 
