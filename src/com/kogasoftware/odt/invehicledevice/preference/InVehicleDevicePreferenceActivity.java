@@ -1,5 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.preference;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.json.JSONException;
 
 import android.app.Dialog;
@@ -30,6 +32,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 	private static final int CONNECTING_DIALOG_ID = 100;
 	private static final String DEFAULT_URL = "http://127.0.0.1";
 	private int latestReqKey = 0;
+	private AtomicBoolean callbackReceived = new AtomicBoolean(false);
 	private SharedPreferences preferences = null;
 	private Button saveConfigButton = null;
 	private WebAPI api = null;
@@ -62,6 +65,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 				InVehicleDevice ivd = new InVehicleDevice();
 				ivd.setLogin(preferences.getString("login", "ivd1"));
 				ivd.setPassword(preferences.getString("password", "ivdpass"));
+				callbackReceived.set(false);
 				try {
 					latestReqKey = api.login(ivd,
 							InVehicleDevicePreferenceActivity.this);
@@ -103,6 +107,9 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		if (reqKey != latestReqKey) {
 			return;
 		}
+		if (callbackReceived.getAndSet(true)) {
+			return;
+		}
 		final String message = "onException: reqKey=" + reqKey + ", exception="
 				+ ex;
 
@@ -125,6 +132,9 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 	@Override
 	public void onFailed(int reqKey, int statusCode, String response) {
 		if (reqKey != latestReqKey) {
+			return;
+		}
+		if (callbackReceived.getAndSet(true)) {
 			return;
 		}
 		final String message = "onFailed: reqKey=" + reqKey + ", statusCode="
@@ -154,6 +164,9 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 	@Override
 	public void onSucceed(int reqKey, int statusCode, InVehicleDevice result) {
 		if (reqKey != latestReqKey) {
+			return;
+		}
+		if (callbackReceived.getAndSet(true)) {
 			return;
 		}
 		try {
