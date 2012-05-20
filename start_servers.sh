@@ -26,11 +26,11 @@ cp ../database.yml config/database.yml
 bundle install
 bundle exec rake db:migrate:reset
 #bundle exec rake db:migrate
-bundle exec rails server -d -p 3334
+bundle exec rails server --daemon --environment=development --port=3334
 cd ..
 
 cd InVehicleDeviceTestWeb
 cp ../database.yml config/database.yml
 bundle install
-bundle exec rails server -d -p 3333
+bundle exec rails server --daemon --environment=development --port=3333
 cd ..
