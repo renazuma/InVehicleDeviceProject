@@ -2,6 +2,7 @@
 
 PATH=$PATH:/usr/local/bin
 
+./stop_servers.sh
 ./start_servers.sh
 
 sed 's%^\(.*/AndroidWebTestAPI\)$%#\1%' --in-place tests/project.properties
