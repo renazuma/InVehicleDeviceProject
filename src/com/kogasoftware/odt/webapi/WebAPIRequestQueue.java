@@ -22,6 +22,9 @@ import com.google.common.base.Optional;
 public class WebAPIRequestQueue {
 	private static final String TAG = WebAPIRequestQueue.class.getSimpleName();
 	private static final Object FILE_ACCESS_LOCK = new Object(); // ファイルアクセス中のスレッドを一つに制限するためのロック。将来的にはロックの粒度をファイル毎にする必要があるかもしれない。
+	private static class SerializationList extends LinkedList<WebAPIRequest<?>> {
+		private static final long serialVersionUID = 6728979449299498099L;
+	}
 
 	// 作業中リクエスト
 	protected final Queue<WebAPIRequest<?>> processingQueue = new LinkedList<WebAPIRequest<?>>();
@@ -52,16 +55,11 @@ public class WebAPIRequestQueue {
 		synchronized (FILE_ACCESS_LOCK) {
 			try {
 				Object object = SerializationUtils.deserialize(new FileInputStream(backupFile));
-				if (!(object instanceof List<?>)) {
-					Log.w(TAG, "!(" + object + " instanceof ArrayList<?>)");
+				if (!(object instanceof SerializationList)) {
+					Log.w(TAG, "!(" + object + " instanceof SerializationList)");
 					return;
 				}
-				List<?> list = (List<?>) object;
-				for (Object element : list) {
-					if (element instanceof WebAPIRequest<?>) {
-						waitingQueue.add((WebAPIRequest<?>) element);
-					}
-				}
+				waitingQueue.addAll((SerializationList) object);
 			} catch (IOException e) {
 				Log.w(TAG, e);
 			} catch (SerializationException e) {
@@ -95,7 +93,7 @@ public class WebAPIRequestQueue {
 	}
 
 	protected void backup(File backupFile) {
-		LinkedList<WebAPIRequest<?>> list = new LinkedList<WebAPIRequest<?>>();
+		SerializationList list = new SerializationList();
 		synchronized (queueLock) {
 			list.addAll(waitingQueue);
 			list.addAll(processingQueue);
