@@ -1,19 +1,18 @@
 package com.kogasoftware.odt.invehicledevice.logic;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.NotSerializableException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import org.apache.commons.lang3.SerializationException;
+import org.apache.commons.lang3.SerializationUtils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -51,11 +50,11 @@ public class StatusAccess {
 
 	private static class SaveThread extends Thread {
 		private final File file;
-		private final ByteArrayOutputStream byteArrayOutputStream;
+		private final byte[] serialized;
 
-		public SaveThread(File file, ByteArrayOutputStream byteArrayOutputStream) {
+		public SaveThread(File file, byte[] serialized) {
 			this.file = file;
-			this.byteArrayOutputStream = byteArrayOutputStream;
+			this.serialized = serialized;
 		}
 
 		@Override
@@ -65,7 +64,7 @@ public class StatusAccess {
 				try {
 					fileOutputStream = new FileOutputStream(file);
 					fileOutputStream.getChannel().lock();
-					fileOutputStream.write(byteArrayOutputStream.toByteArray());
+					fileOutputStream.write(serialized);
 				} catch (FileNotFoundException e) {
 					Log.w(TAG, e);
 				} catch (IOException e) {
@@ -133,26 +132,16 @@ public class StatusAccess {
 		} else if (!file.exists()) {
 		} else {
 			synchronized (FILE_ACCESS_LOCK) {
-				FileInputStream fileInputStream = null;
-				ObjectInputStream objectInputStream = null;
 				try {
-					fileInputStream = new FileInputStream(file);
-					objectInputStream = new ObjectInputStream(fileInputStream);
-					Object object = objectInputStream.readObject();
+					Object object = SerializationUtils
+							.deserialize(new FileInputStream(file));
 					if (object instanceof Status) {
 						status = (Status) object;
 					}
+				} catch (SerializationException e) {
+					Log.e(TAG, e.toString(), e);
 				} catch (IOException e) {
 					Log.w(TAG, e);
-				} catch (RuntimeException e) {
-					Log.w(TAG, e);
-				} catch (ClassNotFoundException e) {
-					Log.w(TAG, e);
-				} catch (Exception e) {
-					Log.w(TAG, e);
-				} finally {
-					Closeables.closeQuietly(objectInputStream);
-					Closeables.closeQuietly(fileInputStream);
 				}
 			}
 
@@ -215,32 +204,25 @@ public class StatusAccess {
 	private void save(final File file) {
 		// ByteArrayへの変換を呼び出し元スレッドで行う
 		long startTime = System.currentTimeMillis();
-		final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-		ObjectOutputStream objectOutputStream = null;
+		byte[] serialized = new byte[0];
 		try {
-			objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
 			readLock.lock();
 			try {
-				objectOutputStream.writeObject(status);
+				serialized = SerializationUtils.serialize(status);
 			} finally {
 				readLock.unlock();
 			}
-		} catch (NotSerializableException e) {
+		} catch (SerializationException e) {
 			Log.e(TAG, e.toString(), e);
 			return;
-		} catch (IOException e) {
-			Log.w(TAG, e);
-			return;
 		} finally {
-			Closeables.closeQuietly(objectOutputStream);
-			Closeables.closeQuietly(byteArrayOutputStream);
 			long stopTime = System.currentTimeMillis();
 			long runTime = stopTime - startTime;
 			Log.d(TAG, "StatusAccess.save() " + runTime + " ms");
 		}
 
 		// ByteArrayへの変換後は、呼び出し元スレッドでのファイルIOを避けるため新しいスレッドでデータを書き込む
-		(new SaveThread(file, byteArrayOutputStream)).start();
+		(new SaveThread(file, serialized)).start();
 	}
 
 	public void write(Writer writer) {

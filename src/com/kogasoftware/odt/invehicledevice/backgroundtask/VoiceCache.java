@@ -4,15 +4,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.apache.commons.lang3.SerializationException;
+import org.apache.commons.lang3.SerializationUtils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -24,7 +25,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
 import com.google.common.cache.Weigher;
-import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.logic.SharedPreferencesKey;
 import com.kogasoftware.openjtalk.OpenJTalk;
 
@@ -33,6 +33,12 @@ import com.kogasoftware.openjtalk.OpenJTalk;
  */
 public class VoiceCache {
 	private static final String TAG = VoiceCache.class.getSimpleName();
+
+	private static class CacheIndex implements Serializable {
+		private static final long serialVersionUID = -8533398684555140766L;
+		public AtomicInteger sequence = new AtomicInteger(0);
+		public TreeMap<String, File> map = new TreeMap<String, File>();
+	}
 
 	/**
 	 * キャッシュのインデックスをファイルから読み取る。コンストラクタから使うため、staticメソッドにしておく。
@@ -44,36 +50,26 @@ public class VoiceCache {
 	protected static Map<String, File> loadCacheIndex(File cacheIndexFile,
 			AtomicInteger sequence) {
 		Map<String, File> result = new TreeMap<String, File>();
-		FileInputStream fileInputStream = null;
-		ObjectInputStream objectInputStream = null;
+		if (!cacheIndexFile.exists()) {
+			return result;
+		}
 		Boolean succeed = false;
 		try {
-			fileInputStream = new FileInputStream(cacheIndexFile);
-			objectInputStream = new ObjectInputStream(fileInputStream);
-			sequence.set(objectInputStream.readInt());
-			Object object = objectInputStream.readObject();
-			if (!(object instanceof TreeMap<?, ?>)) {
+			Object object = SerializationUtils.deserialize(new FileInputStream(
+					cacheIndexFile));
+			if (!(object instanceof CacheIndex)) {
 				Log.w(TAG, "!(" + object + " instanceof TreeMap<?, ?>)");
 				return new TreeMap<String, File>();
 			}
-			Map<String, File> map = new TreeMap<String, File>();
-			for (Entry<?, ?> entry : ((Map<?, ?>) object).entrySet()) {
-				if (!(entry.getKey() instanceof String)) {
-					Log.w(TAG, "!(" + entry + ".getKey() instanceof String)");
-				}
-				if (!(entry.getValue() instanceof File)) {
-					Log.w(TAG, "!(" + entry + ".getValue() instanceof File)");
-				}
-				map.put((String) entry.getKey(), (File) entry.getValue());
-			}
+			CacheIndex cacheIndex = (CacheIndex) object;
+			sequence.set(cacheIndex.sequence.get());
+			result.putAll(cacheIndex.map);
 			succeed = true;
 		} catch (IOException e) {
 			Log.w(TAG, e);
-		} catch (ClassNotFoundException e) {
-			Log.w(TAG, e);
+		} catch (SerializationException e) {
+			Log.e(TAG, e.toString(), e);
 		} finally {
-			Closeables.closeQuietly(objectInputStream);
-			Closeables.closeQuietly(fileInputStream);
 			if (!succeed && !cacheIndexFile.delete()) {
 				Log.w(TAG, "!\"" + cacheIndexFile + "\".delete()");
 				return new TreeMap<String, File>();
@@ -170,19 +166,16 @@ public class VoiceCache {
 	}
 
 	protected void saveCacheIndex() throws ExecutionException {
-		FileOutputStream fileOutputStream = null;
-		ObjectOutputStream objectOutputStream = null;
 		try {
-			fileOutputStream = new FileOutputStream(cacheIndexFile);
-			objectOutputStream = new ObjectOutputStream(fileOutputStream);
-			objectOutputStream.writeInt(sequence.get());
-			objectOutputStream.writeObject(new TreeMap<String, File>(cache
-					.asMap()));
+			CacheIndex cacheIndex = new CacheIndex();
+			cacheIndex.sequence = sequence;
+			cacheIndex.map = new TreeMap<String, File>(cache.asMap());
+			SerializationUtils.serialize(cacheIndex, new FileOutputStream(
+					cacheIndexFile));
 		} catch (IOException e) {
 			throw new ExecutionException(e);
-		} finally {
-			Closeables.closeQuietly(objectOutputStream);
-			Closeables.closeQuietly(fileOutputStream);
+		} catch (SerializationException e) {
+			throw new ExecutionException(e);
 		}
 	}
 }
