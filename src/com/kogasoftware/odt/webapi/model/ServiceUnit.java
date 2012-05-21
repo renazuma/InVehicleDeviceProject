@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,7 +14,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class ServiceUnit extends Model {
-	private static final long serialVersionUID = 3598731629176379344L;
+	private static final long serialVersionUID = 8448516197874819477L;
 
 	public ServiceUnit() {
 	}
@@ -54,13 +55,13 @@ public class ServiceUnit extends Model {
 
 	public static Optional<ServiceUnit> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
 		if (!jsonObject.has(key)) {
-			return Optional.<ServiceUnit>absent();
+			return Optional.absent();
 		}
 		return parse(jsonObject.getJSONObject(key));
 	}
 
 	public static Optional<ServiceUnit> parse(JSONObject jsonObject) throws JSONException, ParseException {
-		return Optional.<ServiceUnit>of(new ServiceUnit(jsonObject));
+		return Optional.of(new ServiceUnit(jsonObject));
 	}
 
 	public static LinkedList<ServiceUnit> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -122,7 +123,12 @@ public class ServiceUnit extends Model {
 		return jsonObject;
 	}
 
-	private Optional<Date> activatedAt = Optional.<Date>absent();
+	@Override
+	public ServiceUnit clone() {
+		return SerializationUtils.clone(this);
+	}
+
+	private Optional<Date> activatedAt = Optional.absent();
 
 	public Optional<Date> getActivatedAt() {
 		return wrapNull(activatedAt);
@@ -137,7 +143,7 @@ public class ServiceUnit extends Model {
 	}
 
 	public void clearActivatedAt() {
-		this.activatedAt = Optional.<Date>absent();
+		this.activatedAt = Optional.absent();
 	}
 
 	private Date createdAt = new Date();
@@ -150,7 +156,7 @@ public class ServiceUnit extends Model {
 		this.createdAt = wrapNull(createdAt);
 	}
 
-	private Optional<Date> deletedAt = Optional.<Date>absent();
+	private Optional<Date> deletedAt = Optional.absent();
 
 	public Optional<Date> getDeletedAt() {
 		return wrapNull(deletedAt);
@@ -165,10 +171,10 @@ public class ServiceUnit extends Model {
 	}
 
 	public void clearDeletedAt() {
-		this.deletedAt = Optional.<Date>absent();
+		this.deletedAt = Optional.absent();
 	}
 
-	private Optional<Integer> driverId = Optional.<Integer>absent();
+	private Optional<Integer> driverId = Optional.absent();
 
 	public Optional<Integer> getDriverId() {
 		return wrapNull(driverId);
@@ -183,7 +189,7 @@ public class ServiceUnit extends Model {
 	}
 
 	public void clearDriverId() {
-		this.driverId = Optional.<Integer>absent();
+		this.driverId = Optional.absent();
 	}
 
 	private Integer id = 0;
@@ -196,7 +202,7 @@ public class ServiceUnit extends Model {
 		this.id = wrapNull(id);
 	}
 
-	private Optional<Integer> inVehicleDeviceId = Optional.<Integer>absent();
+	private Optional<Integer> inVehicleDeviceId = Optional.absent();
 
 	public Optional<Integer> getInVehicleDeviceId() {
 		return wrapNull(inVehicleDeviceId);
@@ -211,10 +217,10 @@ public class ServiceUnit extends Model {
 	}
 
 	public void clearInVehicleDeviceId() {
-		this.inVehicleDeviceId = Optional.<Integer>absent();
+		this.inVehicleDeviceId = Optional.absent();
 	}
 
-	private Optional<Integer> serviceProviderId = Optional.<Integer>absent();
+	private Optional<Integer> serviceProviderId = Optional.absent();
 
 	public Optional<Integer> getServiceProviderId() {
 		return wrapNull(serviceProviderId);
@@ -229,10 +235,10 @@ public class ServiceUnit extends Model {
 	}
 
 	public void clearServiceProviderId() {
-		this.serviceProviderId = Optional.<Integer>absent();
+		this.serviceProviderId = Optional.absent();
 	}
 
-	private Optional<Integer> unitAssignmentId = Optional.<Integer>absent();
+	private Optional<Integer> unitAssignmentId = Optional.absent();
 
 	public Optional<Integer> getUnitAssignmentId() {
 		return wrapNull(unitAssignmentId);
@@ -247,7 +253,7 @@ public class ServiceUnit extends Model {
 	}
 
 	public void clearUnitAssignmentId() {
-		this.unitAssignmentId = Optional.<Integer>absent();
+		this.unitAssignmentId = Optional.absent();
 	}
 
 	private Date updatedAt = new Date();
@@ -260,7 +266,7 @@ public class ServiceUnit extends Model {
 		this.updatedAt = wrapNull(updatedAt);
 	}
 
-	private Optional<Integer> vehicleId = Optional.<Integer>absent();
+	private Optional<Integer> vehicleId = Optional.absent();
 
 	public Optional<Integer> getVehicleId() {
 		return wrapNull(vehicleId);
@@ -275,10 +281,10 @@ public class ServiceUnit extends Model {
 	}
 
 	public void clearVehicleId() {
-		this.vehicleId = Optional.<Integer>absent();
+		this.vehicleId = Optional.absent();
 	}
 
-	private Optional<Driver> driver = Optional.<Driver>absent();
+	private Optional<Driver> driver = Optional.absent();
 
 	public Optional<Driver> getDriver() {
 		return wrapNull(driver);
@@ -289,14 +295,14 @@ public class ServiceUnit extends Model {
 	}
 
 	public void setDriver(Driver driver) {
-		this.driver = Optional.<Driver>fromNullable(driver);
+		this.driver = Optional.fromNullable(driver);
 	}
 
 	public void clearDriver() {
-		this.driver = Optional.<Driver>absent();
+		this.driver = Optional.absent();
 	}
 
-	private Optional<InVehicleDevice> inVehicleDevice = Optional.<InVehicleDevice>absent();
+	private Optional<InVehicleDevice> inVehicleDevice = Optional.absent();
 
 	public Optional<InVehicleDevice> getInVehicleDevice() {
 		return wrapNull(inVehicleDevice);
@@ -307,11 +313,11 @@ public class ServiceUnit extends Model {
 	}
 
 	public void setInVehicleDevice(InVehicleDevice inVehicleDevice) {
-		this.inVehicleDevice = Optional.<InVehicleDevice>fromNullable(inVehicleDevice);
+		this.inVehicleDevice = Optional.fromNullable(inVehicleDevice);
 	}
 
 	public void clearInVehicleDevice() {
-		this.inVehicleDevice = Optional.<InVehicleDevice>absent();
+		this.inVehicleDevice = Optional.absent();
 	}
 
 	private LinkedList<OperationRecord> operationRecords = new LinkedList<OperationRecord>();
@@ -328,7 +334,7 @@ public class ServiceUnit extends Model {
 		this.operationRecords = new LinkedList<OperationRecord>();
 	}
 
-	private Optional<ServiceProvider> serviceProvider = Optional.<ServiceProvider>absent();
+	private Optional<ServiceProvider> serviceProvider = Optional.absent();
 
 	public Optional<ServiceProvider> getServiceProvider() {
 		return wrapNull(serviceProvider);
@@ -339,14 +345,14 @@ public class ServiceUnit extends Model {
 	}
 
 	public void setServiceProvider(ServiceProvider serviceProvider) {
-		this.serviceProvider = Optional.<ServiceProvider>fromNullable(serviceProvider);
+		this.serviceProvider = Optional.fromNullable(serviceProvider);
 	}
 
 	public void clearServiceProvider() {
-		this.serviceProvider = Optional.<ServiceProvider>absent();
+		this.serviceProvider = Optional.absent();
 	}
 
-	private Optional<UnitAssignment> unitAssignment = Optional.<UnitAssignment>absent();
+	private Optional<UnitAssignment> unitAssignment = Optional.absent();
 
 	public Optional<UnitAssignment> getUnitAssignment() {
 		return wrapNull(unitAssignment);
@@ -357,14 +363,14 @@ public class ServiceUnit extends Model {
 	}
 
 	public void setUnitAssignment(UnitAssignment unitAssignment) {
-		this.unitAssignment = Optional.<UnitAssignment>fromNullable(unitAssignment);
+		this.unitAssignment = Optional.fromNullable(unitAssignment);
 	}
 
 	public void clearUnitAssignment() {
-		this.unitAssignment = Optional.<UnitAssignment>absent();
+		this.unitAssignment = Optional.absent();
 	}
 
-	private Optional<Vehicle> vehicle = Optional.<Vehicle>absent();
+	private Optional<Vehicle> vehicle = Optional.absent();
 
 	public Optional<Vehicle> getVehicle() {
 		return wrapNull(vehicle);
@@ -375,10 +381,10 @@ public class ServiceUnit extends Model {
 	}
 
 	public void setVehicle(Vehicle vehicle) {
-		this.vehicle = Optional.<Vehicle>fromNullable(vehicle);
+		this.vehicle = Optional.fromNullable(vehicle);
 	}
 
 	public void clearVehicle() {
-		this.vehicle = Optional.<Vehicle>absent();
+		this.vehicle = Optional.absent();
 	}
 }

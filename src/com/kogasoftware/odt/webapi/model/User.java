@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,7 +14,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class User extends Model {
-	private static final long serialVersionUID = 3240869499278741503L;
+	private static final long serialVersionUID = 2970814859174092693L;
 
 	public User() {
 	}
@@ -59,13 +60,13 @@ public class User extends Model {
 
 	public static Optional<User> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
 		if (!jsonObject.has(key)) {
-			return Optional.<User>absent();
+			return Optional.absent();
 		}
 		return parse(jsonObject.getJSONObject(key));
 	}
 
 	public static Optional<User> parse(JSONObject jsonObject) throws JSONException, ParseException {
-		return Optional.<User>of(new User(jsonObject));
+		return Optional.of(new User(jsonObject));
 	}
 
 	public static LinkedList<User> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -138,6 +139,11 @@ public class User extends Model {
 		return jsonObject;
 	}
 
+	@Override
+	public User clone() {
+		return SerializationUtils.clone(this);
+	}
+
 	private String address = "";
 
 	public String getAddress() {
@@ -168,7 +174,7 @@ public class User extends Model {
 		this.birthday = wrapNull(birthday);
 	}
 
-	private Optional<String> email = Optional.<String>absent();
+	private Optional<String> email = Optional.absent();
 
 	public Optional<String> getEmail() {
 		return wrapNull(email);
@@ -183,10 +189,10 @@ public class User extends Model {
 	}
 
 	public void clearEmail() {
-		this.email = Optional.<String>absent();
+		this.email = Optional.absent();
 	}
 
-	private Optional<String> email2 = Optional.<String>absent();
+	private Optional<String> email2 = Optional.absent();
 
 	public Optional<String> getEmail2() {
 		return wrapNull(email2);
@@ -201,10 +207,10 @@ public class User extends Model {
 	}
 
 	public void clearEmail2() {
-		this.email2 = Optional.<String>absent();
+		this.email2 = Optional.absent();
 	}
 
-	private Optional<String> felicaId = Optional.<String>absent();
+	private Optional<String> felicaId = Optional.absent();
 
 	public Optional<String> getFelicaId() {
 		return wrapNull(felicaId);
@@ -219,7 +225,7 @@ public class User extends Model {
 	}
 
 	public void clearFelicaId() {
-		this.felicaId = Optional.<String>absent();
+		this.felicaId = Optional.absent();
 	}
 
 	private String firstName = "";
@@ -242,7 +248,7 @@ public class User extends Model {
 		this.firstNameRuby = wrapNull(firstNameRuby);
 	}
 
-	private Optional<Boolean> handicapped = Optional.<Boolean>absent();
+	private Optional<Boolean> handicapped = Optional.absent();
 
 	public Optional<Boolean> getHandicapped() {
 		return wrapNull(handicapped);
@@ -257,7 +263,7 @@ public class User extends Model {
 	}
 
 	public void clearHandicapped() {
-		this.handicapped = Optional.<Boolean>absent();
+		this.handicapped = Optional.absent();
 	}
 
 	private Integer id = 0;
@@ -300,7 +306,7 @@ public class User extends Model {
 		this.login = wrapNull(login);
 	}
 
-	private Optional<Boolean> neededCare = Optional.<Boolean>absent();
+	private Optional<Boolean> neededCare = Optional.absent();
 
 	public Optional<Boolean> getNeededCare() {
 		return wrapNull(neededCare);
@@ -315,10 +321,10 @@ public class User extends Model {
 	}
 
 	public void clearNeededCare() {
-		this.neededCare = Optional.<Boolean>absent();
+		this.neededCare = Optional.absent();
 	}
 
-	private Optional<Boolean> recommendNotification = Optional.<Boolean>absent();
+	private Optional<Boolean> recommendNotification = Optional.absent();
 
 	public Optional<Boolean> getRecommendNotification() {
 		return wrapNull(recommendNotification);
@@ -333,10 +339,10 @@ public class User extends Model {
 	}
 
 	public void clearRecommendNotification() {
-		this.recommendNotification = Optional.<Boolean>absent();
+		this.recommendNotification = Optional.absent();
 	}
 
-	private Optional<Boolean> recommendOk = Optional.<Boolean>absent();
+	private Optional<Boolean> recommendOk = Optional.absent();
 
 	public Optional<Boolean> getRecommendOk() {
 		return wrapNull(recommendOk);
@@ -351,10 +357,10 @@ public class User extends Model {
 	}
 
 	public void clearRecommendOk() {
-		this.recommendOk = Optional.<Boolean>absent();
+		this.recommendOk = Optional.absent();
 	}
 
-	private Optional<Boolean> reserveNotification = Optional.<Boolean>absent();
+	private Optional<Boolean> reserveNotification = Optional.absent();
 
 	public Optional<Boolean> getReserveNotification() {
 		return wrapNull(reserveNotification);
@@ -369,10 +375,10 @@ public class User extends Model {
 	}
 
 	public void clearReserveNotification() {
-		this.reserveNotification = Optional.<Boolean>absent();
+		this.reserveNotification = Optional.absent();
 	}
 
-	private Optional<Integer> serviceProviderId = Optional.<Integer>absent();
+	private Optional<Integer> serviceProviderId = Optional.absent();
 
 	public Optional<Integer> getServiceProviderId() {
 		return wrapNull(serviceProviderId);
@@ -387,7 +393,7 @@ public class User extends Model {
 	}
 
 	public void clearServiceProviderId() {
-		this.serviceProviderId = Optional.<Integer>absent();
+		this.serviceProviderId = Optional.absent();
 	}
 
 	private Integer sex = 0;
@@ -410,7 +416,7 @@ public class User extends Model {
 		this.telephoneNumber = wrapNull(telephoneNumber);
 	}
 
-	private Optional<String> telephoneNumber2 = Optional.<String>absent();
+	private Optional<String> telephoneNumber2 = Optional.absent();
 
 	public Optional<String> getTelephoneNumber2() {
 		return wrapNull(telephoneNumber2);
@@ -425,10 +431,10 @@ public class User extends Model {
 	}
 
 	public void clearTelephoneNumber2() {
-		this.telephoneNumber2 = Optional.<String>absent();
+		this.telephoneNumber2 = Optional.absent();
 	}
 
-	private Optional<Boolean> updateNotification = Optional.<Boolean>absent();
+	private Optional<Boolean> updateNotification = Optional.absent();
 
 	public Optional<Boolean> getUpdateNotification() {
 		return wrapNull(updateNotification);
@@ -443,10 +449,10 @@ public class User extends Model {
 	}
 
 	public void clearUpdateNotification() {
-		this.updateNotification = Optional.<Boolean>absent();
+		this.updateNotification = Optional.absent();
 	}
 
-	private Optional<Boolean> wheelchair = Optional.<Boolean>absent();
+	private Optional<Boolean> wheelchair = Optional.absent();
 
 	public Optional<Boolean> getWheelchair() {
 		return wrapNull(wheelchair);
@@ -461,10 +467,10 @@ public class User extends Model {
 	}
 
 	public void clearWheelchair() {
-		this.wheelchair = Optional.<Boolean>absent();
+		this.wheelchair = Optional.absent();
 	}
 
-	private Optional<String> auditComment = Optional.<String>absent();
+	private Optional<String> auditComment = Optional.absent();
 
 	public Optional<String> getAuditComment() {
 		return wrapNull(auditComment);
@@ -479,10 +485,10 @@ public class User extends Model {
 	}
 
 	public void clearAuditComment() {
-		this.auditComment = Optional.<String>absent();
+		this.auditComment = Optional.absent();
 	}
 
-	private Optional<String> fullname = Optional.<String>absent();
+	private Optional<String> fullname = Optional.absent();
 
 	public Optional<String> getFullname() {
 		return wrapNull(fullname);
@@ -497,10 +503,10 @@ public class User extends Model {
 	}
 
 	public void clearFullname() {
-		this.fullname = Optional.<String>absent();
+		this.fullname = Optional.absent();
 	}
 
-	private Optional<String> fullnameRuby = Optional.<String>absent();
+	private Optional<String> fullnameRuby = Optional.absent();
 
 	public Optional<String> getFullnameRuby() {
 		return wrapNull(fullnameRuby);
@@ -515,10 +521,10 @@ public class User extends Model {
 	}
 
 	public void clearFullnameRuby() {
-		this.fullnameRuby = Optional.<String>absent();
+		this.fullnameRuby = Optional.absent();
 	}
 
-	private Optional<String> password = Optional.<String>absent();
+	private Optional<String> password = Optional.absent();
 
 	public Optional<String> getPassword() {
 		return wrapNull(password);
@@ -533,10 +539,10 @@ public class User extends Model {
 	}
 
 	public void clearPassword() {
-		this.password = Optional.<String>absent();
+		this.password = Optional.absent();
 	}
 
-	private Optional<String> passwordConfirmation = Optional.<String>absent();
+	private Optional<String> passwordConfirmation = Optional.absent();
 
 	public Optional<String> getPasswordConfirmation() {
 		return wrapNull(passwordConfirmation);
@@ -551,10 +557,10 @@ public class User extends Model {
 	}
 
 	public void clearPasswordConfirmation() {
-		this.passwordConfirmation = Optional.<String>absent();
+		this.passwordConfirmation = Optional.absent();
 	}
 
-	private Optional<String> rememberMe = Optional.<String>absent();
+	private Optional<String> rememberMe = Optional.absent();
 
 	public Optional<String> getRememberMe() {
 		return wrapNull(rememberMe);
@@ -569,7 +575,7 @@ public class User extends Model {
 	}
 
 	public void clearRememberMe() {
-		this.rememberMe = Optional.<String>absent();
+		this.rememberMe = Optional.absent();
 	}
 
 	private LinkedList<Demand> demands = new LinkedList<Demand>();
@@ -614,7 +620,7 @@ public class User extends Model {
 		this.reservations = new LinkedList<Reservation>();
 	}
 
-	private Optional<ServiceProvider> serviceProvider = Optional.<ServiceProvider>absent();
+	private Optional<ServiceProvider> serviceProvider = Optional.absent();
 
 	public Optional<ServiceProvider> getServiceProvider() {
 		return wrapNull(serviceProvider);
@@ -625,10 +631,10 @@ public class User extends Model {
 	}
 
 	public void setServiceProvider(ServiceProvider serviceProvider) {
-		this.serviceProvider = Optional.<ServiceProvider>fromNullable(serviceProvider);
+		this.serviceProvider = Optional.fromNullable(serviceProvider);
 	}
 
 	public void clearServiceProvider() {
-		this.serviceProvider = Optional.<ServiceProvider>absent();
+		this.serviceProvider = Optional.absent();
 	}
 }

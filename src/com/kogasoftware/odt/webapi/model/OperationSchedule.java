@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,7 +14,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class OperationSchedule extends Model {
-	private static final long serialVersionUID = 7385206914989571077L;
+	private static final long serialVersionUID = 1958768855141365188L;
 
 	public OperationSchedule() {
 	}
@@ -47,13 +48,13 @@ public class OperationSchedule extends Model {
 
 	public static Optional<OperationSchedule> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
 		if (!jsonObject.has(key)) {
-			return Optional.<OperationSchedule>absent();
+			return Optional.absent();
 		}
 		return parse(jsonObject.getJSONObject(key));
 	}
 
 	public static Optional<OperationSchedule> parse(JSONObject jsonObject) throws JSONException, ParseException {
-		return Optional.<OperationSchedule>of(new OperationSchedule(jsonObject));
+		return Optional.of(new OperationSchedule(jsonObject));
 	}
 
 	public static LinkedList<OperationSchedule> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -111,6 +112,11 @@ public class OperationSchedule extends Model {
 		return jsonObject;
 	}
 
+	@Override
+	public OperationSchedule clone() {
+		return SerializationUtils.clone(this);
+	}
+
 	private Date arrivalEstimate = new Date();
 
 	public Date getArrivalEstimate() {
@@ -131,7 +137,7 @@ public class OperationSchedule extends Model {
 		this.createdAt = wrapNull(createdAt);
 	}
 
-	private Optional<Date> deletedAt = Optional.<Date>absent();
+	private Optional<Date> deletedAt = Optional.absent();
 
 	public Optional<Date> getDeletedAt() {
 		return wrapNull(deletedAt);
@@ -146,7 +152,7 @@ public class OperationSchedule extends Model {
 	}
 
 	public void clearDeletedAt() {
-		this.deletedAt = Optional.<Date>absent();
+		this.deletedAt = Optional.absent();
 	}
 
 	private Date departureEstimate = new Date();
@@ -169,7 +175,7 @@ public class OperationSchedule extends Model {
 		this.id = wrapNull(id);
 	}
 
-	private Optional<Integer> platformId = Optional.<Integer>absent();
+	private Optional<Integer> platformId = Optional.absent();
 
 	public Optional<Integer> getPlatformId() {
 		return wrapNull(platformId);
@@ -184,10 +190,10 @@ public class OperationSchedule extends Model {
 	}
 
 	public void clearPlatformId() {
-		this.platformId = Optional.<Integer>absent();
+		this.platformId = Optional.absent();
 	}
 
-	private Optional<Integer> serviceProviderId = Optional.<Integer>absent();
+	private Optional<Integer> serviceProviderId = Optional.absent();
 
 	public Optional<Integer> getServiceProviderId() {
 		return wrapNull(serviceProviderId);
@@ -202,10 +208,10 @@ public class OperationSchedule extends Model {
 	}
 
 	public void clearServiceProviderId() {
-		this.serviceProviderId = Optional.<Integer>absent();
+		this.serviceProviderId = Optional.absent();
 	}
 
-	private Optional<Integer> unitAssignmentId = Optional.<Integer>absent();
+	private Optional<Integer> unitAssignmentId = Optional.absent();
 
 	public Optional<Integer> getUnitAssignmentId() {
 		return wrapNull(unitAssignmentId);
@@ -220,7 +226,7 @@ public class OperationSchedule extends Model {
 	}
 
 	public void clearUnitAssignmentId() {
-		this.unitAssignmentId = Optional.<Integer>absent();
+		this.unitAssignmentId = Optional.absent();
 	}
 
 	private Date updatedAt = new Date();
@@ -233,7 +239,7 @@ public class OperationSchedule extends Model {
 		this.updatedAt = wrapNull(updatedAt);
 	}
 
-	private Optional<OperationRecord> operationRecord = Optional.<OperationRecord>absent();
+	private Optional<OperationRecord> operationRecord = Optional.absent();
 
 	public Optional<OperationRecord> getOperationRecord() {
 		return wrapNull(operationRecord);
@@ -244,14 +250,14 @@ public class OperationSchedule extends Model {
 	}
 
 	public void setOperationRecord(OperationRecord operationRecord) {
-		this.operationRecord = Optional.<OperationRecord>fromNullable(operationRecord);
+		this.operationRecord = Optional.fromNullable(operationRecord);
 	}
 
 	public void clearOperationRecord() {
-		this.operationRecord = Optional.<OperationRecord>absent();
+		this.operationRecord = Optional.absent();
 	}
 
-	private Optional<Platform> platform = Optional.<Platform>absent();
+	private Optional<Platform> platform = Optional.absent();
 
 	public Optional<Platform> getPlatform() {
 		return wrapNull(platform);
@@ -262,11 +268,11 @@ public class OperationSchedule extends Model {
 	}
 
 	public void setPlatform(Platform platform) {
-		this.platform = Optional.<Platform>fromNullable(platform);
+		this.platform = Optional.fromNullable(platform);
 	}
 
 	public void clearPlatform() {
-		this.platform = Optional.<Platform>absent();
+		this.platform = Optional.absent();
 	}
 
 	private LinkedList<Reservation> reservationsAsArrival = new LinkedList<Reservation>();
@@ -297,7 +303,7 @@ public class OperationSchedule extends Model {
 		this.reservationsAsDeparture = new LinkedList<Reservation>();
 	}
 
-	private Optional<ServiceProvider> serviceProvider = Optional.<ServiceProvider>absent();
+	private Optional<ServiceProvider> serviceProvider = Optional.absent();
 
 	public Optional<ServiceProvider> getServiceProvider() {
 		return wrapNull(serviceProvider);
@@ -308,14 +314,14 @@ public class OperationSchedule extends Model {
 	}
 
 	public void setServiceProvider(ServiceProvider serviceProvider) {
-		this.serviceProvider = Optional.<ServiceProvider>fromNullable(serviceProvider);
+		this.serviceProvider = Optional.fromNullable(serviceProvider);
 	}
 
 	public void clearServiceProvider() {
-		this.serviceProvider = Optional.<ServiceProvider>absent();
+		this.serviceProvider = Optional.absent();
 	}
 
-	private Optional<UnitAssignment> unitAssignment = Optional.<UnitAssignment>absent();
+	private Optional<UnitAssignment> unitAssignment = Optional.absent();
 
 	public Optional<UnitAssignment> getUnitAssignment() {
 		return wrapNull(unitAssignment);
@@ -326,10 +332,10 @@ public class OperationSchedule extends Model {
 	}
 
 	public void setUnitAssignment(UnitAssignment unitAssignment) {
-		this.unitAssignment = Optional.<UnitAssignment>fromNullable(unitAssignment);
+		this.unitAssignment = Optional.fromNullable(unitAssignment);
 	}
 
 	public void clearUnitAssignment() {
-		this.unitAssignment = Optional.<UnitAssignment>absent();
+		this.unitAssignment = Optional.absent();
 	}
 }

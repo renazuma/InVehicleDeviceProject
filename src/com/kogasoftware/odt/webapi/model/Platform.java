@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,7 +14,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Platform extends Model {
-	private static final long serialVersionUID = 4292765494347812294L;
+	private static final long serialVersionUID = 6110775933408506834L;
 
 	public Platform() {
 	}
@@ -55,13 +56,13 @@ public class Platform extends Model {
 
 	public static Optional<Platform> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
 		if (!jsonObject.has(key)) {
-			return Optional.<Platform>absent();
+			return Optional.absent();
 		}
 		return parse(jsonObject.getJSONObject(key));
 	}
 
 	public static Optional<Platform> parse(JSONObject jsonObject) throws JSONException, ParseException {
-		return Optional.<Platform>of(new Platform(jsonObject));
+		return Optional.of(new Platform(jsonObject));
 	}
 
 	public static LinkedList<Platform> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -142,7 +143,12 @@ public class Platform extends Model {
 		return jsonObject;
 	}
 
-	private Optional<String> address = Optional.<String>absent();
+	@Override
+	public Platform clone() {
+		return SerializationUtils.clone(this);
+	}
+
+	private Optional<String> address = Optional.absent();
 
 	public Optional<String> getAddress() {
 		return wrapNull(address);
@@ -157,7 +163,7 @@ public class Platform extends Model {
 	}
 
 	public void clearAddress() {
-		this.address = Optional.<String>absent();
+		this.address = Optional.absent();
 	}
 
 	private Date createdAt = new Date();
@@ -170,7 +176,7 @@ public class Platform extends Model {
 		this.createdAt = wrapNull(createdAt);
 	}
 
-	private Optional<Date> deletedAt = Optional.<Date>absent();
+	private Optional<Date> deletedAt = Optional.absent();
 
 	public Optional<Date> getDeletedAt() {
 		return wrapNull(deletedAt);
@@ -185,10 +191,10 @@ public class Platform extends Model {
 	}
 
 	public void clearDeletedAt() {
-		this.deletedAt = Optional.<Date>absent();
+		this.deletedAt = Optional.absent();
 	}
 
-	private Optional<Integer> demandAreaId = Optional.<Integer>absent();
+	private Optional<Integer> demandAreaId = Optional.absent();
 
 	public Optional<Integer> getDemandAreaId() {
 		return wrapNull(demandAreaId);
@@ -203,10 +209,10 @@ public class Platform extends Model {
 	}
 
 	public void clearDemandAreaId() {
-		this.demandAreaId = Optional.<Integer>absent();
+		this.demandAreaId = Optional.absent();
 	}
 
-	private Optional<Date> endAt = Optional.<Date>absent();
+	private Optional<Date> endAt = Optional.absent();
 
 	public Optional<Date> getEndAt() {
 		return wrapNull(endAt);
@@ -221,7 +227,7 @@ public class Platform extends Model {
 	}
 
 	public void clearEndAt() {
-		this.endAt = Optional.<Date>absent();
+		this.endAt = Optional.absent();
 	}
 
 	private Integer id = 0;
@@ -234,7 +240,7 @@ public class Platform extends Model {
 		this.id = wrapNull(id);
 	}
 
-	private Optional<String> image = Optional.<String>absent();
+	private Optional<String> image = Optional.absent();
 
 	public Optional<String> getImage() {
 		return wrapNull(image);
@@ -249,10 +255,10 @@ public class Platform extends Model {
 	}
 
 	public void clearImage() {
-		this.image = Optional.<String>absent();
+		this.image = Optional.absent();
 	}
 
-	private Optional<String> keyword = Optional.<String>absent();
+	private Optional<String> keyword = Optional.absent();
 
 	public Optional<String> getKeyword() {
 		return wrapNull(keyword);
@@ -267,7 +273,7 @@ public class Platform extends Model {
 	}
 
 	public void clearKeyword() {
-		this.keyword = Optional.<String>absent();
+		this.keyword = Optional.absent();
 	}
 
 	private BigDecimal latitude = BigDecimal.ZERO;
@@ -290,7 +296,7 @@ public class Platform extends Model {
 		this.longitude = wrapNull(longitude);
 	}
 
-	private Optional<String> memo = Optional.<String>absent();
+	private Optional<String> memo = Optional.absent();
 
 	public Optional<String> getMemo() {
 		return wrapNull(memo);
@@ -305,7 +311,7 @@ public class Platform extends Model {
 	}
 
 	public void clearMemo() {
-		this.memo = Optional.<String>absent();
+		this.memo = Optional.absent();
 	}
 
 	private String name = "";
@@ -328,7 +334,7 @@ public class Platform extends Model {
 		this.nameRuby = wrapNull(nameRuby);
 	}
 
-	private Optional<Integer> platformCategoryId = Optional.<Integer>absent();
+	private Optional<Integer> platformCategoryId = Optional.absent();
 
 	public Optional<Integer> getPlatformCategoryId() {
 		return wrapNull(platformCategoryId);
@@ -343,7 +349,7 @@ public class Platform extends Model {
 	}
 
 	public void clearPlatformCategoryId() {
-		this.platformCategoryId = Optional.<Integer>absent();
+		this.platformCategoryId = Optional.absent();
 	}
 
 	private Integer reportingRegionId = 0;
@@ -356,7 +362,7 @@ public class Platform extends Model {
 		this.reportingRegionId = wrapNull(reportingRegionId);
 	}
 
-	private Optional<Integer> semiDemandAreaId = Optional.<Integer>absent();
+	private Optional<Integer> semiDemandAreaId = Optional.absent();
 
 	public Optional<Integer> getSemiDemandAreaId() {
 		return wrapNull(semiDemandAreaId);
@@ -371,10 +377,10 @@ public class Platform extends Model {
 	}
 
 	public void clearSemiDemandAreaId() {
-		this.semiDemandAreaId = Optional.<Integer>absent();
+		this.semiDemandAreaId = Optional.absent();
 	}
 
-	private Optional<Integer> serviceProviderId = Optional.<Integer>absent();
+	private Optional<Integer> serviceProviderId = Optional.absent();
 
 	public Optional<Integer> getServiceProviderId() {
 		return wrapNull(serviceProviderId);
@@ -389,10 +395,10 @@ public class Platform extends Model {
 	}
 
 	public void clearServiceProviderId() {
-		this.serviceProviderId = Optional.<Integer>absent();
+		this.serviceProviderId = Optional.absent();
 	}
 
-	private Optional<Date> startAt = Optional.<Date>absent();
+	private Optional<Date> startAt = Optional.absent();
 
 	public Optional<Date> getStartAt() {
 		return wrapNull(startAt);
@@ -407,10 +413,10 @@ public class Platform extends Model {
 	}
 
 	public void clearStartAt() {
-		this.startAt = Optional.<Date>absent();
+		this.startAt = Optional.absent();
 	}
 
-	private Optional<Integer> typeOfDemand = Optional.<Integer>absent();
+	private Optional<Integer> typeOfDemand = Optional.absent();
 
 	public Optional<Integer> getTypeOfDemand() {
 		return wrapNull(typeOfDemand);
@@ -425,7 +431,7 @@ public class Platform extends Model {
 	}
 
 	public void clearTypeOfDemand() {
-		this.typeOfDemand = Optional.<Integer>absent();
+		this.typeOfDemand = Optional.absent();
 	}
 
 	private Integer typeOfPlatform = 0;
@@ -546,7 +552,7 @@ public class Platform extends Model {
 		this.reservationsAsDeparture = new LinkedList<Reservation>();
 	}
 
-	private Optional<ServiceProvider> serviceProvider = Optional.<ServiceProvider>absent();
+	private Optional<ServiceProvider> serviceProvider = Optional.absent();
 
 	public Optional<ServiceProvider> getServiceProvider() {
 		return wrapNull(serviceProvider);
@@ -557,10 +563,10 @@ public class Platform extends Model {
 	}
 
 	public void setServiceProvider(ServiceProvider serviceProvider) {
-		this.serviceProvider = Optional.<ServiceProvider>fromNullable(serviceProvider);
+		this.serviceProvider = Optional.fromNullable(serviceProvider);
 	}
 
 	public void clearServiceProvider() {
-		this.serviceProvider = Optional.<ServiceProvider>absent();
+		this.serviceProvider = Optional.absent();
 	}
 }

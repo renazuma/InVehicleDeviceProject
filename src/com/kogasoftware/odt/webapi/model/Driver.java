@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,7 +14,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Driver extends Model {
-	private static final long serialVersionUID = 1306623082054917421L;
+	private static final long serialVersionUID = 6951241086202488163L;
 
 	public Driver() {
 	}
@@ -36,13 +37,13 @@ public class Driver extends Model {
 
 	public static Optional<Driver> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
 		if (!jsonObject.has(key)) {
-			return Optional.<Driver>absent();
+			return Optional.absent();
 		}
 		return parse(jsonObject.getJSONObject(key));
 	}
 
 	public static Optional<Driver> parse(JSONObject jsonObject) throws JSONException, ParseException {
-		return Optional.<Driver>of(new Driver(jsonObject));
+		return Optional.of(new Driver(jsonObject));
 	}
 
 	public static LinkedList<Driver> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -86,6 +87,11 @@ public class Driver extends Model {
 		return jsonObject;
 	}
 
+	@Override
+	public Driver clone() {
+		return SerializationUtils.clone(this);
+	}
+
 	private Date createdAt = new Date();
 
 	public Date getCreatedAt() {
@@ -96,7 +102,7 @@ public class Driver extends Model {
 		this.createdAt = wrapNull(createdAt);
 	}
 
-	private Optional<Date> deletedAt = Optional.<Date>absent();
+	private Optional<Date> deletedAt = Optional.absent();
 
 	public Optional<Date> getDeletedAt() {
 		return wrapNull(deletedAt);
@@ -111,7 +117,7 @@ public class Driver extends Model {
 	}
 
 	public void clearDeletedAt() {
-		this.deletedAt = Optional.<Date>absent();
+		this.deletedAt = Optional.absent();
 	}
 
 	private String firstName = "";
@@ -144,7 +150,7 @@ public class Driver extends Model {
 		this.lastName = wrapNull(lastName);
 	}
 
-	private Optional<Integer> serviceProviderId = Optional.<Integer>absent();
+	private Optional<Integer> serviceProviderId = Optional.absent();
 
 	public Optional<Integer> getServiceProviderId() {
 		return wrapNull(serviceProviderId);
@@ -159,7 +165,7 @@ public class Driver extends Model {
 	}
 
 	public void clearServiceProviderId() {
-		this.serviceProviderId = Optional.<Integer>absent();
+		this.serviceProviderId = Optional.absent();
 	}
 
 	private String telephoneNumber = "";
@@ -182,7 +188,7 @@ public class Driver extends Model {
 		this.updatedAt = wrapNull(updatedAt);
 	}
 
-	private Optional<ServiceProvider> serviceProvider = Optional.<ServiceProvider>absent();
+	private Optional<ServiceProvider> serviceProvider = Optional.absent();
 
 	public Optional<ServiceProvider> getServiceProvider() {
 		return wrapNull(serviceProvider);
@@ -193,11 +199,11 @@ public class Driver extends Model {
 	}
 
 	public void setServiceProvider(ServiceProvider serviceProvider) {
-		this.serviceProvider = Optional.<ServiceProvider>fromNullable(serviceProvider);
+		this.serviceProvider = Optional.fromNullable(serviceProvider);
 	}
 
 	public void clearServiceProvider() {
-		this.serviceProvider = Optional.<ServiceProvider>absent();
+		this.serviceProvider = Optional.absent();
 	}
 
 	private LinkedList<ServiceUnit> serviceUnits = new LinkedList<ServiceUnit>();

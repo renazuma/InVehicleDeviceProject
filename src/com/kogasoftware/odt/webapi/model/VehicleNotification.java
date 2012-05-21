@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,7 +14,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class VehicleNotification extends Model {
-	private static final long serialVersionUID = 3884014866461246228L;
+	private static final long serialVersionUID = 61059005000556646L;
 
 	public VehicleNotification() {
 	}
@@ -47,13 +48,13 @@ public class VehicleNotification extends Model {
 
 	public static Optional<VehicleNotification> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
 		if (!jsonObject.has(key)) {
-			return Optional.<VehicleNotification>absent();
+			return Optional.absent();
 		}
 		return parse(jsonObject.getJSONObject(key));
 	}
 
 	public static Optional<VehicleNotification> parse(JSONObject jsonObject) throws JSONException, ParseException {
-		return Optional.<VehicleNotification>of(new VehicleNotification(jsonObject));
+		return Optional.of(new VehicleNotification(jsonObject));
 	}
 
 	public static LinkedList<VehicleNotification> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -105,6 +106,11 @@ public class VehicleNotification extends Model {
 		return jsonObject;
 	}
 
+	@Override
+	public VehicleNotification clone() {
+		return SerializationUtils.clone(this);
+	}
+
 	private String body = "";
 
 	public String getBody() {
@@ -125,7 +131,7 @@ public class VehicleNotification extends Model {
 		this.createdAt = wrapNull(createdAt);
 	}
 
-	private Optional<Date> eventAt = Optional.<Date>absent();
+	private Optional<Date> eventAt = Optional.absent();
 
 	public Optional<Date> getEventAt() {
 		return wrapNull(eventAt);
@@ -140,7 +146,7 @@ public class VehicleNotification extends Model {
 	}
 
 	public void clearEventAt() {
-		this.eventAt = Optional.<Date>absent();
+		this.eventAt = Optional.absent();
 	}
 
 	private Integer id = 0;
@@ -173,7 +179,7 @@ public class VehicleNotification extends Model {
 		this.notificationKind = wrapNull(notificationKind);
 	}
 
-	private Optional<Boolean> offline = Optional.<Boolean>absent();
+	private Optional<Boolean> offline = Optional.absent();
 
 	public Optional<Boolean> getOffline() {
 		return wrapNull(offline);
@@ -188,7 +194,7 @@ public class VehicleNotification extends Model {
 	}
 
 	public void clearOffline() {
-		this.offline = Optional.<Boolean>absent();
+		this.offline = Optional.absent();
 	}
 
 	private Integer operatorId = 0;
@@ -201,7 +207,7 @@ public class VehicleNotification extends Model {
 		this.operatorId = wrapNull(operatorId);
 	}
 
-	private Optional<Date> readAt = Optional.<Date>absent();
+	private Optional<Date> readAt = Optional.absent();
 
 	public Optional<Date> getReadAt() {
 		return wrapNull(readAt);
@@ -216,10 +222,10 @@ public class VehicleNotification extends Model {
 	}
 
 	public void clearReadAt() {
-		this.readAt = Optional.<Date>absent();
+		this.readAt = Optional.absent();
 	}
 
-	private Optional<Integer> reservationId = Optional.<Integer>absent();
+	private Optional<Integer> reservationId = Optional.absent();
 
 	public Optional<Integer> getReservationId() {
 		return wrapNull(reservationId);
@@ -234,10 +240,10 @@ public class VehicleNotification extends Model {
 	}
 
 	public void clearReservationId() {
-		this.reservationId = Optional.<Integer>absent();
+		this.reservationId = Optional.absent();
 	}
 
-	private Optional<Integer> response = Optional.<Integer>absent();
+	private Optional<Integer> response = Optional.absent();
 
 	public Optional<Integer> getResponse() {
 		return wrapNull(response);
@@ -252,7 +258,7 @@ public class VehicleNotification extends Model {
 	}
 
 	public void clearResponse() {
-		this.response = Optional.<Integer>absent();
+		this.response = Optional.absent();
 	}
 
 	private Date updatedAt = new Date();
@@ -265,7 +271,7 @@ public class VehicleNotification extends Model {
 		this.updatedAt = wrapNull(updatedAt);
 	}
 
-	private Optional<InVehicleDevice> inVehicleDevice = Optional.<InVehicleDevice>absent();
+	private Optional<InVehicleDevice> inVehicleDevice = Optional.absent();
 
 	public Optional<InVehicleDevice> getInVehicleDevice() {
 		return wrapNull(inVehicleDevice);
@@ -276,14 +282,14 @@ public class VehicleNotification extends Model {
 	}
 
 	public void setInVehicleDevice(InVehicleDevice inVehicleDevice) {
-		this.inVehicleDevice = Optional.<InVehicleDevice>fromNullable(inVehicleDevice);
+		this.inVehicleDevice = Optional.fromNullable(inVehicleDevice);
 	}
 
 	public void clearInVehicleDevice() {
-		this.inVehicleDevice = Optional.<InVehicleDevice>absent();
+		this.inVehicleDevice = Optional.absent();
 	}
 
-	private Optional<Operator> operator = Optional.<Operator>absent();
+	private Optional<Operator> operator = Optional.absent();
 
 	public Optional<Operator> getOperator() {
 		return wrapNull(operator);
@@ -294,14 +300,14 @@ public class VehicleNotification extends Model {
 	}
 
 	public void setOperator(Operator operator) {
-		this.operator = Optional.<Operator>fromNullable(operator);
+		this.operator = Optional.fromNullable(operator);
 	}
 
 	public void clearOperator() {
-		this.operator = Optional.<Operator>absent();
+		this.operator = Optional.absent();
 	}
 
-	private Optional<Reservation> reservation = Optional.<Reservation>absent();
+	private Optional<Reservation> reservation = Optional.absent();
 
 	public Optional<Reservation> getReservation() {
 		return wrapNull(reservation);
@@ -312,10 +318,10 @@ public class VehicleNotification extends Model {
 	}
 
 	public void setReservation(Reservation reservation) {
-		this.reservation = Optional.<Reservation>fromNullable(reservation);
+		this.reservation = Optional.fromNullable(reservation);
 	}
 
 	public void clearReservation() {
-		this.reservation = Optional.<Reservation>absent();
+		this.reservation = Optional.absent();
 	}
 }

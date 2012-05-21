@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,7 +14,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class ServiceUnitStatusLog extends Model {
-	private static final long serialVersionUID = 5851169027075753423L;
+	private static final long serialVersionUID = 532978084928861612L;
 
 	public ServiceUnitStatusLog() {
 	}
@@ -37,13 +38,13 @@ public class ServiceUnitStatusLog extends Model {
 
 	public static Optional<ServiceUnitStatusLog> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
 		if (!jsonObject.has(key)) {
-			return Optional.<ServiceUnitStatusLog>absent();
+			return Optional.absent();
 		}
 		return parse(jsonObject.getJSONObject(key));
 	}
 
 	public static Optional<ServiceUnitStatusLog> parse(JSONObject jsonObject) throws JSONException, ParseException {
-		return Optional.<ServiceUnitStatusLog>of(new ServiceUnitStatusLog(jsonObject));
+		return Optional.of(new ServiceUnitStatusLog(jsonObject));
 	}
 
 	public static LinkedList<ServiceUnitStatusLog> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -83,6 +84,11 @@ public class ServiceUnitStatusLog extends Model {
 			jsonObject.put("service_unit_id", toJSON(getServiceUnit().get().getId()));
 		}
 		return jsonObject;
+	}
+
+	@Override
+	public ServiceUnitStatusLog clone() {
+		return SerializationUtils.clone(this);
 	}
 
 	private Date createdAt = new Date();
@@ -125,7 +131,7 @@ public class ServiceUnitStatusLog extends Model {
 		this.longitude = wrapNull(longitude);
 	}
 
-	private Optional<Boolean> offline = Optional.<Boolean>absent();
+	private Optional<Boolean> offline = Optional.absent();
 
 	public Optional<Boolean> getOffline() {
 		return wrapNull(offline);
@@ -140,10 +146,10 @@ public class ServiceUnitStatusLog extends Model {
 	}
 
 	public void clearOffline() {
-		this.offline = Optional.<Boolean>absent();
+		this.offline = Optional.absent();
 	}
 
-	private Optional<Integer> orientation = Optional.<Integer>absent();
+	private Optional<Integer> orientation = Optional.absent();
 
 	public Optional<Integer> getOrientation() {
 		return wrapNull(orientation);
@@ -158,10 +164,10 @@ public class ServiceUnitStatusLog extends Model {
 	}
 
 	public void clearOrientation() {
-		this.orientation = Optional.<Integer>absent();
+		this.orientation = Optional.absent();
 	}
 
-	private Optional<Integer> serviceUnitId = Optional.<Integer>absent();
+	private Optional<Integer> serviceUnitId = Optional.absent();
 
 	public Optional<Integer> getServiceUnitId() {
 		return wrapNull(serviceUnitId);
@@ -176,10 +182,10 @@ public class ServiceUnitStatusLog extends Model {
 	}
 
 	public void clearServiceUnitId() {
-		this.serviceUnitId = Optional.<Integer>absent();
+		this.serviceUnitId = Optional.absent();
 	}
 
-	private Optional<Integer> status = Optional.<Integer>absent();
+	private Optional<Integer> status = Optional.absent();
 
 	public Optional<Integer> getStatus() {
 		return wrapNull(status);
@@ -194,10 +200,10 @@ public class ServiceUnitStatusLog extends Model {
 	}
 
 	public void clearStatus() {
-		this.status = Optional.<Integer>absent();
+		this.status = Optional.absent();
 	}
 
-	private Optional<Integer> temperature = Optional.<Integer>absent();
+	private Optional<Integer> temperature = Optional.absent();
 
 	public Optional<Integer> getTemperature() {
 		return wrapNull(temperature);
@@ -212,7 +218,7 @@ public class ServiceUnitStatusLog extends Model {
 	}
 
 	public void clearTemperature() {
-		this.temperature = Optional.<Integer>absent();
+		this.temperature = Optional.absent();
 	}
 
 	private Date updatedAt = new Date();
@@ -225,7 +231,7 @@ public class ServiceUnitStatusLog extends Model {
 		this.updatedAt = wrapNull(updatedAt);
 	}
 
-	private Optional<ServiceUnit> serviceUnit = Optional.<ServiceUnit>absent();
+	private Optional<ServiceUnit> serviceUnit = Optional.absent();
 
 	public Optional<ServiceUnit> getServiceUnit() {
 		return wrapNull(serviceUnit);
@@ -236,10 +242,10 @@ public class ServiceUnitStatusLog extends Model {
 	}
 
 	public void setServiceUnit(ServiceUnit serviceUnit) {
-		this.serviceUnit = Optional.<ServiceUnit>fromNullable(serviceUnit);
+		this.serviceUnit = Optional.fromNullable(serviceUnit);
 	}
 
 	public void clearServiceUnit() {
-		this.serviceUnit = Optional.<ServiceUnit>absent();
+		this.serviceUnit = Optional.absent();
 	}
 }

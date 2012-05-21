@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,7 +14,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class ServiceProvider extends Model {
-	private static final long serialVersionUID = 2895510103478243224L;
+	private static final long serialVersionUID = 5370939264325870288L;
 
 	public ServiceProvider() {
 	}
@@ -50,13 +51,13 @@ public class ServiceProvider extends Model {
 
 	public static Optional<ServiceProvider> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
 		if (!jsonObject.has(key)) {
-			return Optional.<ServiceProvider>absent();
+			return Optional.absent();
 		}
 		return parse(jsonObject.getJSONObject(key));
 	}
 
 	public static Optional<ServiceProvider> parse(JSONObject jsonObject) throws JSONException, ParseException {
-		return Optional.<ServiceProvider>of(new ServiceProvider(jsonObject));
+		return Optional.of(new ServiceProvider(jsonObject));
 	}
 
 	public static LinkedList<ServiceProvider> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -150,6 +151,11 @@ public class ServiceProvider extends Model {
 		return jsonObject;
 	}
 
+	@Override
+	public ServiceProvider clone() {
+		return SerializationUtils.clone(this);
+	}
+
 	private Date createdAt = new Date();
 
 	public Date getCreatedAt() {
@@ -160,7 +166,7 @@ public class ServiceProvider extends Model {
 		this.createdAt = wrapNull(createdAt);
 	}
 
-	private Optional<Date> deletedAt = Optional.<Date>absent();
+	private Optional<Date> deletedAt = Optional.absent();
 
 	public Optional<Date> getDeletedAt() {
 		return wrapNull(deletedAt);
@@ -175,7 +181,7 @@ public class ServiceProvider extends Model {
 	}
 
 	public void clearDeletedAt() {
-		this.deletedAt = Optional.<Date>absent();
+		this.deletedAt = Optional.absent();
 	}
 
 	private Integer id = 0;

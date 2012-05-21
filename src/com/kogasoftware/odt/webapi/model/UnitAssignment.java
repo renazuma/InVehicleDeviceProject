@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,7 +14,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class UnitAssignment extends Model {
-	private static final long serialVersionUID = 3032381982894658769L;
+	private static final long serialVersionUID = 2203710356313815201L;
 
 	public UnitAssignment() {
 	}
@@ -38,13 +39,13 @@ public class UnitAssignment extends Model {
 
 	public static Optional<UnitAssignment> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
 		if (!jsonObject.has(key)) {
-			return Optional.<UnitAssignment>absent();
+			return Optional.absent();
 		}
 		return parse(jsonObject.getJSONObject(key));
 	}
 
 	public static Optional<UnitAssignment> parse(JSONObject jsonObject) throws JSONException, ParseException {
-		return Optional.<UnitAssignment>of(new UnitAssignment(jsonObject));
+		return Optional.of(new UnitAssignment(jsonObject));
 	}
 
 	public static LinkedList<UnitAssignment> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -99,6 +100,11 @@ public class UnitAssignment extends Model {
 		return jsonObject;
 	}
 
+	@Override
+	public UnitAssignment clone() {
+		return SerializationUtils.clone(this);
+	}
+
 	private Date createdAt = new Date();
 
 	public Date getCreatedAt() {
@@ -109,7 +115,7 @@ public class UnitAssignment extends Model {
 		this.createdAt = wrapNull(createdAt);
 	}
 
-	private Optional<Date> deletedAt = Optional.<Date>absent();
+	private Optional<Date> deletedAt = Optional.absent();
 
 	public Optional<Date> getDeletedAt() {
 		return wrapNull(deletedAt);
@@ -124,7 +130,7 @@ public class UnitAssignment extends Model {
 	}
 
 	public void clearDeletedAt() {
-		this.deletedAt = Optional.<Date>absent();
+		this.deletedAt = Optional.absent();
 	}
 
 	private Integer id = 0;
@@ -147,7 +153,7 @@ public class UnitAssignment extends Model {
 		this.name = wrapNull(name);
 	}
 
-	private Optional<Integer> serviceProviderId = Optional.<Integer>absent();
+	private Optional<Integer> serviceProviderId = Optional.absent();
 
 	public Optional<Integer> getServiceProviderId() {
 		return wrapNull(serviceProviderId);
@@ -162,7 +168,7 @@ public class UnitAssignment extends Model {
 	}
 
 	public void clearServiceProviderId() {
-		this.serviceProviderId = Optional.<Integer>absent();
+		this.serviceProviderId = Optional.absent();
 	}
 
 	private Date updatedAt = new Date();
@@ -227,7 +233,7 @@ public class UnitAssignment extends Model {
 		this.reservations = new LinkedList<Reservation>();
 	}
 
-	private Optional<ServiceProvider> serviceProvider = Optional.<ServiceProvider>absent();
+	private Optional<ServiceProvider> serviceProvider = Optional.absent();
 
 	public Optional<ServiceProvider> getServiceProvider() {
 		return wrapNull(serviceProvider);
@@ -238,11 +244,11 @@ public class UnitAssignment extends Model {
 	}
 
 	public void setServiceProvider(ServiceProvider serviceProvider) {
-		this.serviceProvider = Optional.<ServiceProvider>fromNullable(serviceProvider);
+		this.serviceProvider = Optional.fromNullable(serviceProvider);
 	}
 
 	public void clearServiceProvider() {
-		this.serviceProvider = Optional.<ServiceProvider>absent();
+		this.serviceProvider = Optional.absent();
 	}
 
 	private LinkedList<ServiceUnit> serviceUnits = new LinkedList<ServiceUnit>();

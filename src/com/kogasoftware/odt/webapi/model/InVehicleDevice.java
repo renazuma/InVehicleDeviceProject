@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,7 +14,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class InVehicleDevice extends Model {
-	private static final long serialVersionUID = 5783120736657183716L;
+	private static final long serialVersionUID = 9051211010065926586L;
 
 	public InVehicleDevice() {
 	}
@@ -39,13 +40,13 @@ public class InVehicleDevice extends Model {
 
 	public static Optional<InVehicleDevice> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
 		if (!jsonObject.has(key)) {
-			return Optional.<InVehicleDevice>absent();
+			return Optional.absent();
 		}
 		return parse(jsonObject.getJSONObject(key));
 	}
 
 	public static Optional<InVehicleDevice> parse(JSONObject jsonObject) throws JSONException, ParseException {
-		return Optional.<InVehicleDevice>of(new InVehicleDevice(jsonObject));
+		return Optional.of(new InVehicleDevice(jsonObject));
 	}
 
 	public static LinkedList<InVehicleDevice> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -95,7 +96,12 @@ public class InVehicleDevice extends Model {
 		return jsonObject;
 	}
 
-	private Optional<String> authenticationToken = Optional.<String>absent();
+	@Override
+	public InVehicleDevice clone() {
+		return SerializationUtils.clone(this);
+	}
+
+	private Optional<String> authenticationToken = Optional.absent();
 
 	public Optional<String> getAuthenticationToken() {
 		return wrapNull(authenticationToken);
@@ -110,7 +116,7 @@ public class InVehicleDevice extends Model {
 	}
 
 	public void clearAuthenticationToken() {
-		this.authenticationToken = Optional.<String>absent();
+		this.authenticationToken = Optional.absent();
 	}
 
 	private Integer id = 0;
@@ -143,7 +149,7 @@ public class InVehicleDevice extends Model {
 		this.modelName = wrapNull(modelName);
 	}
 
-	private Optional<Integer> serviceProviderId = Optional.<Integer>absent();
+	private Optional<Integer> serviceProviderId = Optional.absent();
 
 	public Optional<Integer> getServiceProviderId() {
 		return wrapNull(serviceProviderId);
@@ -158,7 +164,7 @@ public class InVehicleDevice extends Model {
 	}
 
 	public void clearServiceProviderId() {
-		this.serviceProviderId = Optional.<Integer>absent();
+		this.serviceProviderId = Optional.absent();
 	}
 
 	private String typeNumber = "";
@@ -171,7 +177,7 @@ public class InVehicleDevice extends Model {
 		this.typeNumber = wrapNull(typeNumber);
 	}
 
-	private Optional<String> auditComment = Optional.<String>absent();
+	private Optional<String> auditComment = Optional.absent();
 
 	public Optional<String> getAuditComment() {
 		return wrapNull(auditComment);
@@ -186,10 +192,10 @@ public class InVehicleDevice extends Model {
 	}
 
 	public void clearAuditComment() {
-		this.auditComment = Optional.<String>absent();
+		this.auditComment = Optional.absent();
 	}
 
-	private Optional<String> password = Optional.<String>absent();
+	private Optional<String> password = Optional.absent();
 
 	public Optional<String> getPassword() {
 		return wrapNull(password);
@@ -204,10 +210,10 @@ public class InVehicleDevice extends Model {
 	}
 
 	public void clearPassword() {
-		this.password = Optional.<String>absent();
+		this.password = Optional.absent();
 	}
 
-	private Optional<String> passwordConfirmation = Optional.<String>absent();
+	private Optional<String> passwordConfirmation = Optional.absent();
 
 	public Optional<String> getPasswordConfirmation() {
 		return wrapNull(passwordConfirmation);
@@ -222,10 +228,10 @@ public class InVehicleDevice extends Model {
 	}
 
 	public void clearPasswordConfirmation() {
-		this.passwordConfirmation = Optional.<String>absent();
+		this.passwordConfirmation = Optional.absent();
 	}
 
-	private Optional<String> rememberMe = Optional.<String>absent();
+	private Optional<String> rememberMe = Optional.absent();
 
 	public Optional<String> getRememberMe() {
 		return wrapNull(rememberMe);
@@ -240,10 +246,10 @@ public class InVehicleDevice extends Model {
 	}
 
 	public void clearRememberMe() {
-		this.rememberMe = Optional.<String>absent();
+		this.rememberMe = Optional.absent();
 	}
 
-	private Optional<ServiceProvider> serviceProvider = Optional.<ServiceProvider>absent();
+	private Optional<ServiceProvider> serviceProvider = Optional.absent();
 
 	public Optional<ServiceProvider> getServiceProvider() {
 		return wrapNull(serviceProvider);
@@ -254,11 +260,11 @@ public class InVehicleDevice extends Model {
 	}
 
 	public void setServiceProvider(ServiceProvider serviceProvider) {
-		this.serviceProvider = Optional.<ServiceProvider>fromNullable(serviceProvider);
+		this.serviceProvider = Optional.fromNullable(serviceProvider);
 	}
 
 	public void clearServiceProvider() {
-		this.serviceProvider = Optional.<ServiceProvider>absent();
+		this.serviceProvider = Optional.absent();
 	}
 
 	private LinkedList<ServiceUnit> serviceUnits = new LinkedList<ServiceUnit>();

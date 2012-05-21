@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.json.JSONArray;
@@ -18,7 +19,7 @@ import android.util.Log;
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.webapi.Identifiable;
 
-abstract public class Model implements Serializable, Identifiable {
+abstract public class Model implements Serializable, Identifiable, Cloneable {
 	public static final String TAG = Model.class.getSimpleName();
 
 	private static final long serialVersionUID = -5513333240346057624L;
@@ -219,4 +220,6 @@ abstract public class Model implements Serializable, Identifiable {
 	}
 
 	abstract public JSONObject toJSONObject() throws JSONException;
+	
+	abstract protected Model clone();
 }
