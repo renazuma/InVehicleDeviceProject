@@ -35,7 +35,7 @@ public class WebAPIRequest<T> implements Serializable {
 	public WebAPIRequest(WebAPICallback<T> callback,
 			ResponseConverter<T> responseConverter,
 			SerializableHttpRequestBaseSupplier request) {
-		this(callback, responseConverter, request, false);
+		this(callback, responseConverter, request, true);
 	}
 
 	public WebAPIRequest(WebAPICallback<T> callback,

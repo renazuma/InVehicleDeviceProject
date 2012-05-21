@@ -12,6 +12,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
@@ -20,6 +21,7 @@ import org.joda.time.PeriodType;
 import org.joda.time.Seconds;
 
 import android.test.ActivityInstrumentationTestCase2;
+import android.util.Log;
 
 import com.google.common.base.Preconditions;
 import com.google.common.io.Closeables;
@@ -49,6 +51,7 @@ public class WebAPITestCase extends
 		ActivityInstrumentationTestCase2<DummyActivity> {
 	public static final String SERVER_HOST = "http://10.0.2.2:3334";
 	public static final String TEST_SERVER_HOST = "http://10.0.2.2:3333";
+	private static final String TAG = null;
 
 	public WebAPITestCase() {
 		super("com.kogasoftware.odt.webapi.test", DummyActivity.class);
@@ -79,7 +82,7 @@ public class WebAPITestCase extends
 
 	WebAPI api;
 	CountDownLatch latch;
-	Interval interval;
+	Semaphore semaphore;
 	volatile boolean offline;
 	private GenerateMaster master;
 	private GenerateRecord record;
@@ -110,34 +113,57 @@ public class WebAPITestCase extends
 
 	public void testPasswordLogin() throws Exception {
 		api = new WebAPI(SERVER_HOST);
-		latch = new CountDownLatch(1);
+		callTestPasswordLogin(false);
+	}
+	
+	public void testPasswordLoginNoRetry() throws Exception {
+		api = new OfflineTestWebAPI(SERVER_HOST);
+		callTestPasswordLogin(true);
+	}
+	
+	public void callTestPasswordLogin(boolean retryTest) throws Exception {
+		semaphore = new Semaphore(0);
 
 		InVehicleDevice ivd = new InVehicleDevice();
 		ivd.setLogin("ivd1");
 		ivd.setPassword("ivdpass");
-		api.login(ivd, new WebAPICallback<InVehicleDevice>() {
+		
+		final AtomicBoolean succeed = new AtomicBoolean(false);
+		
+		if (retryTest) {
+			offline = true;
+		}
 
+		api.login(ivd, new WebAPICallback<InVehicleDevice>() {
 			@Override
 			public void onSucceed(int reqkey, int statusCode,
 					InVehicleDevice result) {
-				latch.countDown();
+				semaphore.release();
+				succeed.set(true);
 			}
 
 			@Override
 			public void onFailed(int reqkey, int statusCode, String response) {
-				latch.countDown();
+				semaphore.release();
 			}
 
 			@Override
 			public void onException(int reqkey, WebAPIException ex) {
-				latch.countDown();
+				semaphore.release();
 			}
 		});
-
-		assertTrue(latch.await(100, TimeUnit.SECONDS));
-
-		assertNotNull(api.getAuthenticationToken());
-		assertTrue(api.getAuthenticationToken().length() > 0);
+		
+		assertTrue(semaphore.tryAcquire(20, TimeUnit.SECONDS));
+		if (!retryTest) {
+			assertTrue(succeed.get());
+			assertNotNull(api.getAuthenticationToken());
+			assertTrue(api.getAuthenticationToken().length() > 0);
+		} else {
+			assertFalse(succeed.get());
+			offline = false;
+			assertFalse(semaphore.tryAcquire(20, TimeUnit.SECONDS)); // エラーでも再送信しない
+			assertFalse(succeed.get());
+		}
 	}
 
 	List<VehicleNotification> notifications;
@@ -153,7 +179,7 @@ public class WebAPITestCase extends
 				master.getInVehicleDevice(), ua, new Date());
 		record.createVehicleNotification("テスト通知メッセージ1です。");
 		record.createVehicleNotification("テスト通知メッセージ2です。");
-
+		
 		api.getVehicleNotifications(new WebAPICallback<List<VehicleNotification>>() {
 			@Override
 			public void onSucceed(int reqkey, int statusCode,
@@ -226,7 +252,6 @@ public class WebAPITestCase extends
 		assertNotNull(notifications);
 		assertEquals(2, notifications.size());
 
-		interval = new Interval(DateTime.now(), Period.seconds(1));
 		if (offlineTest) {
 			offline = true;
 		}
@@ -262,12 +287,12 @@ public class WebAPITestCase extends
 			}
 		}.getResult();
 		assertNotNull(serverNotification);
+		assertTrue(serverNotification.getReadAt().isPresent());
 		if (offlineTest) {
 			assertTrue(serverNotification.getOffline().or(false));
 		} else {
-			assertFalse(serverNotification.getOffline().isPresent());
+			assertFalse(serverNotification.getOffline().or(false));
 		}
-		assertEquals(offlineTest, interval.contains(serverNotification.getUpdatedAt().getTime()));
 		
 		latch = new CountDownLatch(1);
 		api.getVehicleNotifications(new WebAPICallback<List<VehicleNotification>>() {
@@ -378,7 +403,6 @@ public class WebAPITestCase extends
 		assertNotNull(schedules.get(1).getReservationsAsArrival().get(0)
 				.getUser().orNull());
 
-		interval = new Interval(DateTime.now(), Period.seconds(1));
 		if (offlineTest) {
 			offline = true;
 		}
@@ -423,12 +447,10 @@ public class WebAPITestCase extends
 			assertTrue(serverOperationRecord.getDepartedAtOffline().or(false));
 			assertTrue(schedule.getOperationRecord().get().getDepartedAtOffline().or(false));
 		} else {
-			assertFalse(serverOperationRecord.getDepartedAtOffline().isPresent());
-			assertFalse(schedule.getOperationRecord().get().getDepartedAtOffline().isPresent());
+			assertFalse(serverOperationRecord.getDepartedAtOffline().or(false));
+			assertFalse(schedule.getOperationRecord().get().getDepartedAtOffline().or(false));
 		}
-		assertEquals(offlineTest, interval.contains(serverOperationRecord.getDepartedAt().get().getTime()));
 		
-		interval = new Interval(DateTime.now(), Period.seconds(1));
 		if (offlineTest) {
 			offline = true;
 		}
@@ -458,8 +480,6 @@ public class WebAPITestCase extends
 		assertTrue(latch.await(20, TimeUnit.SECONDS));
 
 		assertNotNull(schedule.getOperationRecord());
-		assertNotNull(schedule.getOperationRecord().orNull().getArrivedAt()
-				.orNull());
 		serverOperationRecord = new SyncCall<OperationRecord>() {
 			@Override
 			public int run() throws Exception {
@@ -468,14 +488,14 @@ public class WebAPITestCase extends
 			}
 		}.getResult();
 		assertNotNull(serverOperationRecord);
+		assertTrue(serverOperationRecord.getArrivedAt().isPresent());
 		if (offlineTest) {
 			assertTrue(serverOperationRecord.getArrivedAtOffline().or(false));
 			assertTrue(schedule.getOperationRecord().get().getArrivedAtOffline().or(false));
 		} else {
-			assertFalse(serverOperationRecord.getArrivedAtOffline().isPresent());
-			assertFalse(schedule.getOperationRecord().get().getArrivedAtOffline().isPresent());
+			assertFalse(serverOperationRecord.getArrivedAtOffline().or(false));
+			assertFalse(schedule.getOperationRecord().get().getArrivedAtOffline().or(false));
 		}
-		assertEquals(offlineTest, interval.contains(serverOperationRecord.getArrivedAt().get().getTime()));
 	}
 
 	public void testPassengerGetOnOffline() throws Exception {
@@ -559,7 +579,7 @@ public class WebAPITestCase extends
 		PassengerRecord prec = new PassengerRecord();
 		prec.setPayment(res.getPayment());
 		prec.setPassengerCount(3);
-		interval = new Interval(DateTime.now(), Period.seconds(1));
+
 		latch = new CountDownLatch(1);
 		if (offlineTest) {
 			offline = true;
@@ -597,15 +617,14 @@ public class WebAPITestCase extends
 			}
 		}.getResult();
 		assertNotNull(serverPassengerRecord);
+		assertTrue(serverPassengerRecord.getGetOnTime().isPresent());
 		if (offlineTest) {
-			assertTrue(passengerRecord.getGetOnTimeOffline().or(false));
 			assertTrue(serverPassengerRecord.getGetOnTimeOffline().or(false));
 		} else {
-			assertFalse(passengerRecord.getGetOnTimeOffline().isPresent());
-			assertFalse(serverPassengerRecord.getGetOnTimeOffline().isPresent());
+			assertFalse(serverPassengerRecord.getGetOnTimeOffline().or(false));
 		}
-		assertEquals(offlineTest, interval.contains(serverPassengerRecord.getGetOnTime().get().getTime()));
-		assertEquals(os1.getId(), passengerRecord
+
+		assertEquals(os1.getId(), serverPassengerRecord
 				.getDepartureOperationScheduleId().orNull());
 
 		latch = new CountDownLatch(1);
@@ -666,7 +685,7 @@ public class WebAPITestCase extends
 		prec = new PassengerRecord();
 		prec.setPayment(res.getPayment());
 		prec.setPassengerCount(3);
-		interval = new Interval(DateTime.now(), Period.seconds(1));
+
 		latch = new CountDownLatch(1);
 		if (offlineTest) {
 			offline = true;
@@ -705,21 +724,17 @@ public class WebAPITestCase extends
 			}
 		}.getResult();
 		assertNotNull(serverPassengerRecord);
+		assertTrue(serverPassengerRecord.getGetOffTime().isPresent());
 		if (offlineTest) {
-			assertTrue(passengerRecord.getGetOffTimeOffline().or(false));
 			assertTrue(serverPassengerRecord.getGetOffTimeOffline().or(false));
 		} else {
-			assertFalse(passengerRecord.getGetOffTimeOffline().isPresent());
-			assertFalse(serverPassengerRecord.getGetOffTimeOffline().isPresent());
+			assertFalse(serverPassengerRecord.getGetOffTimeOffline().or(false));
 		}
-		assertEquals(offlineTest, interval.contains(serverPassengerRecord.getGetOffTime().get().getTime()));
-		assertEquals(offlineTest, passengerRecord.getGetOffTimeOffline()
-				.isPresent());
-		assertEquals(os1.getId(), passengerRecord
-				.getDepartureOperationScheduleId().orNull());
-		assertEquals(os2.getId(), passengerRecord
-				.getArrivalOperationScheduleId().orNull());
 
+		assertEquals(os1.getId(), serverPassengerRecord
+				.getDepartureOperationScheduleId().orNull());
+		assertEquals(os2.getId(), serverPassengerRecord
+				.getArrivalOperationScheduleId().orNull());
 	}
 
 	public void testSendServiceUnitStatusLog() throws Exception {
@@ -751,7 +766,7 @@ public class WebAPITestCase extends
 		if (offlineTest) {
 			offline = true;
 		}
-		interval = new Interval(DateTime.now(), Period.seconds(1));
+
 		api.sendServiceUnitStatusLog(log,
 				new WebAPICallback<ServiceUnitStatusLog>() {
 
@@ -791,10 +806,9 @@ public class WebAPITestCase extends
 			assertTrue(serviceUnitStatusLog.getOffline().or(false));
 			assertTrue(serverServiceUnitStatusLog.getOffline().or(false));
 		} else {
-			assertFalse(serviceUnitStatusLog.getOffline().isPresent());
-			assertFalse(serverServiceUnitStatusLog.getOffline().isPresent());
+			assertFalse(serviceUnitStatusLog.getOffline().or(false));
+			assertFalse(serverServiceUnitStatusLog.getOffline().or(false));
 		}
-		assertEquals(offlineTest, interval.contains(serverServiceUnitStatusLog.getUpdatedAt().getTime()));
 	}
 
 	public void testRestoreRequest() throws Exception {

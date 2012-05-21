@@ -4,18 +4,17 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.Semaphore;
 
+import org.apache.commons.lang3.SerializationException;
+import org.apache.commons.lang3.SerializationUtils;
+
 import android.util.Log;
 
 import com.google.common.base.Optional;
-import com.google.common.io.Closeables;
 
 /**
  * WebAPIRequestを管理するクラス
@@ -51,13 +50,9 @@ public class WebAPIRequestQueue {
 			return;
 		}
 		synchronized (FILE_ACCESS_LOCK) {
-			FileInputStream fileInputStream = null;
-			ObjectInputStream objectInputStream = null;
 			try {
-				fileInputStream = new FileInputStream(backupFile);
-				objectInputStream = new ObjectInputStream(fileInputStream);
-				Object object = objectInputStream.readObject();
-				if (!(object instanceof ArrayList<?>)) {
+				Object object = SerializationUtils.deserialize(new FileInputStream(backupFile));
+				if (!(object instanceof List<?>)) {
 					Log.w(TAG, "!(" + object + " instanceof ArrayList<?>)");
 					return;
 				}
@@ -69,12 +64,10 @@ public class WebAPIRequestQueue {
 				}
 			} catch (IOException e) {
 				Log.w(TAG, e);
-			} catch (ClassNotFoundException e) {
-				Log.w(TAG, e);
+			} catch (SerializationException e) {
+				Log.e(TAG, e.toString(), e);
 			} finally {
 				waitingQueuePollPermissions.release(waitingQueue.size());
-				Closeables.closeQuietly(objectInputStream);
-				Closeables.closeQuietly(fileInputStream);
 			}
 		}
 	}
@@ -102,25 +95,19 @@ public class WebAPIRequestQueue {
 	}
 
 	protected void backup(File backupFile) {
-		ArrayList<WebAPIRequest<?>> list = new ArrayList<WebAPIRequest<?>>();
+		LinkedList<WebAPIRequest<?>> list = new LinkedList<WebAPIRequest<?>>();
 		synchronized (queueLock) {
 			list.addAll(waitingQueue);
 			list.addAll(processingQueue);
 		}
 
 		synchronized (FILE_ACCESS_LOCK) {
-			ObjectOutputStream objectOutputStream = null;
-			FileOutputStream fileOutputStream = null;
 			try {
-				fileOutputStream = new FileOutputStream(backupFile);
-				fileOutputStream.getChannel().lock();
-				objectOutputStream = new ObjectOutputStream(fileOutputStream);
-				objectOutputStream.writeObject(list);
+				SerializationUtils.serialize(list, new FileOutputStream(backupFile));
+			} catch (SerializationException e) {
+				Log.e(TAG, e.toString(), e);
 			} catch (IOException e) {
 				Log.w(TAG, e);
-			} finally {
-				Closeables.closeQuietly(objectOutputStream);
-				Closeables.closeQuietly(fileOutputStream);
 			}
 		}
 	}
