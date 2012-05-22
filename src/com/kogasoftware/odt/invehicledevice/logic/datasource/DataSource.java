@@ -4,6 +4,7 @@ import java.io.Closeable;
 import java.util.Date;
 import java.util.List;
 
+import com.kogasoftware.odt.invehicledevice.logic.empty.EmptyWebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
@@ -53,4 +54,10 @@ public interface DataSource extends Closeable {
 
 	int sendServiceUnitStatusLog(ServiceUnitStatusLog log,
 			WebAPICallback<ServiceUnitStatusLog> callback);
+
+	void cancelGetOnPassenger(Reservation reservation,
+			EmptyWebAPICallback<PassengerRecord> callback);
+
+	void cancelGetOffPassenger(Reservation reservation,
+			EmptyWebAPICallback<PassengerRecord> callback);
 }

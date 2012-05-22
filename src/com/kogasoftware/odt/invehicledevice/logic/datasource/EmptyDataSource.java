@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.kogasoftware.odt.invehicledevice.logic.empty.EmptyWebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
@@ -97,5 +98,19 @@ public class EmptyDataSource implements DataSource {
 	public int sendServiceUnitStatusLog(ServiceUnitStatusLog log,
 			WebAPICallback<ServiceUnitStatusLog> callback) {
 		return 0;
+	}
+
+	@Override
+	public void cancelGetOnPassenger(Reservation reservation,
+			EmptyWebAPICallback<PassengerRecord> callback) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void cancelGetOffPassenger(Reservation reservation,
+			EmptyWebAPICallback<PassengerRecord> callback) {
+		// TODO Auto-generated method stub
+
 	}
 }

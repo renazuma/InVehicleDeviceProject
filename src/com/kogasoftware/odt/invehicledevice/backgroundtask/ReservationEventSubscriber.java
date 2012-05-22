@@ -11,7 +11,6 @@ import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
 import com.kogasoftware.odt.invehicledevice.logic.empty.EmptyWebAPICallback;
 import com.kogasoftware.odt.invehicledevice.logic.event.GetOffEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.GetOnEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.SelectedReservationsUpdateEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.UiEventBus;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.PassengerRecords;
@@ -102,20 +101,6 @@ public class ReservationEventSubscriber {
 							e.operationSchedule, reservation, passengerRecord,
 							new EmptyWebAPICallback<PassengerRecord>());
 				}
-			}
-		});
-	}
-
-	/**
-	 * 選択済みのReservationを保存
-	 */
-	@Subscribe
-	public void setSelectedReservations(final SelectedReservationsUpdateEvent e) {
-		statusAccess.write(new Writer() {
-			@Override
-			public void write(Status status) {
-				status.selectedReservations.clear();
-				status.selectedReservations.addAll(e.reservations);
 			}
 		});
 	}

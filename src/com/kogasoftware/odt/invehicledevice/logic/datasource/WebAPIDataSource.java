@@ -242,4 +242,18 @@ public class WebAPIDataSource implements DataSource {
 	public void close() {
 		Closeables.closeQuietly(api);
 	}
+
+	@Override
+	public void cancelGetOnPassenger(Reservation reservation,
+			EmptyWebAPICallback<PassengerRecord> callback) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void cancelGetOffPassenger(Reservation reservation,
+			EmptyWebAPICallback<PassengerRecord> callback) {
+		// TODO Auto-generated method stub
+
+	}
 }

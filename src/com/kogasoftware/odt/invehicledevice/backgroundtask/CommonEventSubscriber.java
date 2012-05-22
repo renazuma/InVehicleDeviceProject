@@ -149,19 +149,6 @@ public class CommonEventSubscriber {
 			}
 		}
 
-		// 選択状態のReservationの更新
-		List<Reservation> newSelectedReservations = new LinkedList<Reservation>();
-		for (Reservation reservation : new LinkedList<Reservation>(
-				status.reservations)) {
-			for (Reservation selectedReservation : status.selectedReservations) {
-				if (selectedReservation.getId().equals(reservation.getId())) {
-					newSelectedReservations.add(reservation);
-				}
-			}
-		}
-		status.selectedReservations.clear();
-		status.selectedReservations.addAll(newSelectedReservations);
-
 		// OperationScheduleの再生
 		LinkedList<OperationSchedule> newRemainingOperationSchedules = new LinkedList<OperationSchedule>(
 				newOperationSchedules);
