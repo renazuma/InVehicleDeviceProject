@@ -15,10 +15,7 @@ import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterDrivePhaseEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.GetOffEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.GetOnEvent;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter;
-import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.User;
 
@@ -77,14 +74,6 @@ public class StartCheckModalView extends ModalView {
 			@Override
 			public void onClick(View view) {
 				CommonLogic commonLogic = getCommonLogic();
-				for (OperationSchedule operationSchedule : commonLogic
-						.getCurrentOperationSchedule().asSet()) {
-					commonLogic.postEvent(new GetOnEvent(operationSchedule,
-							adapter.getSelectedGetOnReservations()));
-					commonLogic.postEvent(new GetOffEvent(operationSchedule,
-							adapter.getSelectedRidingReservations()));
-					adapter.clearSelectedReservations();
-				}
 				commonLogic.postEvent(new EnterDrivePhaseEvent());
 				hide();
 			}

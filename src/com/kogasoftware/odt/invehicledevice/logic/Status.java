@@ -20,7 +20,7 @@ public class Status implements Serializable {
 		DRIVE, FINISH, INITIAL, PLATFORM
 	}
 
-	private static final long serialVersionUID = 5617948505743183987L;
+	private static final long serialVersionUID = 561794850588831831L;
 
 	public final Date createdDate = new Date();
 	public final Semaphore operationScheduleInitializedSign = new Semaphore(0); // パーミットが0以上の場合は初期化済み。0以上になるまで待つためにacquireしたら必ずreleaseする。CountDownLatchがSerializableではないためこれを使用
@@ -36,7 +36,6 @@ public class Status implements Serializable {
 	public final LinkedList<OperationSchedule> finishedOperationSchedules = new LinkedList<OperationSchedule>();
 
 	public final LinkedList<Reservation> reservations = new LinkedList<Reservation>();
-	public final LinkedList<Reservation> selectedReservations = new LinkedList<Reservation>();
 
 	public final LinkedList<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();
 	public final LinkedList<VehicleNotification> receivingOperationScheduleChangedVehicleNotifications = new LinkedList<VehicleNotification>();

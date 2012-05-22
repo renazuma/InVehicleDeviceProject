@@ -187,7 +187,7 @@ public class PassengerControlTestCase extends
 
 	}
 
-	public void test05_手前の乗降場で降車() {
+	public void test05_手前の乗降場で降車() throws Exception {
 
 		test01_乗車人数_全員乗車();
 
@@ -201,7 +201,11 @@ public class PassengerControlTestCase extends
 
 		assertTrue(solo.searchToggleButton("乗車中の乗客全員を表示"));
 		solo.clickOnToggleButton("乗車中の乗客全員を表示");
-
+		
+		solo.scrollUpList(0);
+		solo.scrollUpList(0);
+		solo.scrollUpList(0);
+		
 		assertTrue(solo.searchText("名字b", 0, true));
 		solo.clickOnText("名字b", 0, true);
 

@@ -12,15 +12,11 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.logic.CommonLogic.PayTiming;
-import com.kogasoftware.odt.invehicledevice.logic.event.SelectedReservationsUpdateEvent;
+import com.kogasoftware.odt.invehicledevice.logic.empty.EmptyWebAPICallback;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.MemoModalView;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.ReturnPathModalView;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
@@ -43,19 +39,18 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 	private final CommonLogic commonLogic;
 
 	private final List<Reservation> reservations = new LinkedList<Reservation>();
-	private final List<Reservation> selectedReservations = new LinkedList<Reservation>();
 
 	private final List<OperationSchedule> remainingOperationSchedules = new LinkedList<OperationSchedule>();
 	private final OperationSchedule operationSchedule;
 	private final EnumSet<ItemType> visibleItemTypes = EnumSet
 			.noneOf(ItemType.class);
-	private final EnumSet<PayTiming> payTiming;
+	// private final EnumSet<PayTiming> payTiming;
 	private final Boolean isLastOperationSchedule;
 
 	public ReservationArrayAdapter(Context context, CommonLogic commonLogic) {
 		super(context, RESOURCE_ID);
 		this.commonLogic = commonLogic;
-		payTiming = commonLogic.getPayTiming();
+		// payTiming = commonLogic.getPayTiming();
 		remainingOperationSchedules.addAll(commonLogic
 				.getRemainingOperationSchedules());
 		reservations.addAll(commonLogic.getReservations());
@@ -78,11 +73,11 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		if (!reservation.getPassengerRecord().isPresent()) {
 			return;
 		}
-		if (isGetOn(reservation)) {
+		if (canGetOn(reservation) && isGetOnScheduled(reservation)) {
 			super.add(reservation);
 			return;
 		}
-		if (isGetOff(reservation)) {
+		if (canGetOff(reservation) && isGetOffScheduled(reservation)) {
 			super.add(reservation);
 			return;
 		}
@@ -92,7 +87,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 			return;
 		}
 		if (visibleItemTypes.contains(ItemType.RIDING_AND_NO_GET_OFF)
-				&& isRidingAndNotGetOff(reservation)) {
+				&& isRidingAndNoGetOff(reservation)) {
 			super.add(reservation);
 			return;
 		}
@@ -102,20 +97,13 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		}
 	}
 
-	public void clearSelectedReservations() {
-		selectedReservations.clear();
-		commonLogic.postEvent(new SelectedReservationsUpdateEvent(
-				selectedReservations));
-	}
-
 	public List<Reservation> getNoGettingOffReservations() {
 		List<Reservation> getNoGettingOffReservations = new LinkedList<Reservation>();
 		for (Reservation reservation : reservations) {
-			if (isSelected(reservation)
-					|| !PassengerRecords.isRiding(reservation)) {
+			if (isSelected(reservation) || !canGetOff(reservation)) {
 				continue;
 			}
-			if (isLastOperationSchedule || isGetOff(reservation)) {
+			if (isLastOperationSchedule || isGetOffScheduled(reservation)) {
 				getNoGettingOffReservations.add(reservation);
 			}
 		}
@@ -125,7 +113,8 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 	public List<Reservation> getNoGettingOnReservations() {
 		List<Reservation> getNoGettingOnReservations = new LinkedList<Reservation>();
 		for (Reservation reservation : reservations) {
-			if (isGetOn(reservation) && !isSelected(reservation)) {
+			if (canGetOn(reservation) && isGetOnScheduled(reservation)
+					&& !isSelected(reservation)) {
 				getNoGettingOnReservations.add(reservation);
 			}
 		}
@@ -134,38 +123,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 
 	public List<Reservation> getNoPaymentReservations() {
 		List<Reservation> noPaymentReservations = new LinkedList<Reservation>();
-		if (!payTiming.contains(PayTiming.GET_OFF)
-				&& payTiming.contains(PayTiming.GET_ON)) {
-			return noPaymentReservations;
-		}
-		for (Reservation reservation : getSelectedRidingReservations()) {
-			if (reservation.getPassengerRecord().isPresent()
-					&& !reservation.getPassengerRecord().get().getPayment()
-							.isPresent()) {
-				noPaymentReservations.add(reservation);
-			}
-		}
 		return noPaymentReservations;
-	}
-
-	public List<Reservation> getSelectedGetOnReservations() {
-		List<Reservation> selectedGetOnreservations = new LinkedList<Reservation>();
-		for (Reservation reservation : selectedReservations) {
-			if (PassengerRecords.isUnhandled(reservation)) {
-				selectedGetOnreservations.add(reservation);
-			}
-		}
-		return selectedGetOnreservations;
-	}
-
-	public List<Reservation> getSelectedRidingReservations() {
-		List<Reservation> selectedGetOffReservations = new LinkedList<Reservation>();
-		for (Reservation reservation : selectedReservations) {
-			if (PassengerRecords.isRiding(reservation)) {
-				selectedGetOffReservations.add(reservation);
-			}
-		}
-		return selectedGetOffReservations;
 	}
 
 	@Override
@@ -173,43 +131,9 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		View view = convertView != null ? convertView : layoutInflater.inflate(
 				RESOURCE_ID, null);
 		final Reservation reservation = getItem(position);
-		if (!reservation.getPassengerRecord().isPresent()) {
-			return view;
-		}
-		final PassengerRecord passengerRecord = reservation
-				.getPassengerRecord().get();
-
 		TextView passengerCountTextView = (TextView) view
 				.findViewById(R.id.passenger_count_text_view);
 		passengerCountTextView.setText(reservation.getPassengerCount() + "名");
-
-		// 人数変更UI
-		// Spinner spinner = (Spinner) view
-		// .findViewById(R.id.change_passenger_count_spinner);
-		// List<String> passengerCounts = new LinkedList<String>();
-		// Integer max = reservation.getPassengerCount() + 10;
-		// for (Integer i = 1; i <= max; ++i) {
-		// passengerCounts.add(i + "名");
-		// }
-		// spinner.setAdapter(new ArrayAdapter<String>(getContext(),
-		// android.R.layout.simple_list_item_1, passengerCounts));
-		// try {
-		// Integer count = passengerRecord.getPassengerCount() - 1;
-		// spinner.setSelection(count);
-		// } catch (RuntimeException e) {
-		// Log.w(TAG, e);
-		// }
-		// spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-		// @Override
-		// public void onItemSelected(AdapterView<?> parent, View view,
-		// int position, long id) {
-		// passengerRecord.setPassengerCount(position + 1);
-		// }
-		//
-		// @Override
-		// public void onNothingSelected(AdapterView<?> parent) {
-		// }
-		// });
 
 		// メモボタン
 		Button memoButton = (Button) view.findViewById(R.id.memo_button);
@@ -237,53 +161,14 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 			}
 		});
 
-		// 支払いボタン
-		final ToggleButton paidButton = (ToggleButton) view
-				.findViewById(R.id.paid_button);
-		if (reservation.getPayment().equals(0)) {
-			paidButton.setVisibility(View.GONE);
-		} else if (payTiming.contains(PayTiming.GET_OFF)
-				&& payTiming.contains(PayTiming.GET_ON)) {
-			paidButton.setVisibility(View.VISIBLE);
-		} else if (payTiming.contains(PayTiming.GET_OFF)
-				&& PassengerRecords.isRiding(reservation)) {
-			paidButton.setVisibility(View.VISIBLE);
-		} else {
-			paidButton.setVisibility(View.GONE);
-		}
-
-		if (passengerRecord.getPayment().isPresent()) {
-			paidButton.setChecked(true);
-		} else {
-			paidButton.setChecked(false);
-		}
-		paidButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView,
-					boolean isChecked) {
-				if (isChecked) {
-					passengerRecord.setPayment(reservation.getPayment());
-				} else {
-					passengerRecord.clearPayment();
-				}
-				notifyDataSetChanged();
-			}
-		});
-
 		// 行の表示
 		view.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				if (isSelected(reservation)) {
 					unselect(reservation);
-					if (paidButton.isShown()) {
-						paidButton.setChecked(false);
-					}
 				} else {
 					select(reservation);
-					if (paidButton.isShown()) {
-						paidButton.setChecked(true);
-					}
 				}
 				notifyDataSetChanged();
 			}
@@ -298,14 +183,18 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		}
 
 		String text = "";
-		if (isFutureGetOn(reservation) || isMissed(reservation)) {
-			text += "[*乗]";
-		} else if (isGetOn(reservation)) {
-			text += "[乗]";
-		} else if (isRidingAndNotGetOff(reservation)) {
-			text += "[*降]";
+		if (canGetOn(reservation)) {
+			if (isGetOnScheduled(reservation)) {
+				text += "[乗]";
+			} else {
+				text += "[*乗]";
+			}
 		} else {
-			text += "[降]";
+			if (isGetOffScheduled(reservation)) {
+				text += "[降]";
+			} else {
+				text += "[*降]";
+			}
 		}
 
 		text += " 予約番号 " + reservation.getId();
@@ -327,6 +216,9 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 	}
 
 	private Boolean isFutureGetOn(Reservation reservation) {
+		if (!canGetOn(reservation)) {
+			return false;
+		}
 		if (remainingOperationSchedules.size() <= 1) {
 			return false;
 		}
@@ -341,40 +233,51 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		return false;
 	}
 
-	private Boolean isGetOff(Reservation reservation) {
-		// 乗車中でない場合false
-		if (!PassengerRecords.isRiding(reservation)) {
-			return false;
+	private Boolean canGetOn(Reservation reservation) {
+		if (isSelected(reservation)) {
+			if (PassengerRecords.isRiding(reservation)) {
+				return true;
+			}
+		} else {
+			if (PassengerRecords.isUnhandled(reservation)) {
+				return true;
+			}
 		}
-		// 乗車中の場合は、乗車予定かどうかを返す
+		return false;
+	}
+
+	private Boolean canGetOff(Reservation reservation) {
+		if (isSelected(reservation)) {
+			if (PassengerRecords.isGotOff(reservation)) {
+				return true;
+			}
+		} else {
+			if (PassengerRecords.isRiding(reservation)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private Boolean isGetOffScheduled(Reservation reservation) {
+		// 乗車予定かどうかを返す
 		return reservation.getArrivalScheduleId().isPresent()
 				&& reservation.getArrivalScheduleId().get()
 						.equals(operationSchedule.getId());
 	}
 
-	private Boolean isGetOn(Reservation reservation) {
-		// 未乗車では無い場合はfalse
-		if (!PassengerRecords.isUnhandled(reservation)) {
-			return false;
-		}
-		// 未乗車の場合は、乗車予定かどうかを返す
+	private Boolean isGetOnScheduled(Reservation reservation) {
+		// 乗車予定かどうか
 		return reservation.getDepartureScheduleId().isPresent()
 				&& reservation.getDepartureScheduleId().get()
 						.equals(operationSchedule.getId());
 	}
 
 	private Boolean isMissed(Reservation reservation) {
-		if (!reservation.getPassengerRecord().isPresent()) {
+		if (!canGetOn(reservation)) {
 			return false;
 		}
-		// 未乗車では無い場合はfalse
-		PassengerRecord passengerRecord = reservation.getPassengerRecord()
-				.get();
-		if (!passengerRecord.getStatus().equals(
-				PassengerRecords.Status.UNHANDLED)) {
-			return false;
-		}
-		// 未乗車の場合かつ、現在以降で乗車予定の場合はfalse
+		// 現在以降で乗車予定の場合はfalse
 		for (OperationSchedule operationSchedule : remainingOperationSchedules) {
 			if (reservation.getDepartureScheduleId().isPresent()
 					&& reservation.getDepartureScheduleId().get()
@@ -385,29 +288,82 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		return true;
 	}
 
-	private Boolean isRidingAndNotGetOff(Reservation reservation) {
-		return PassengerRecords.isRiding(reservation) && !isGetOff(reservation);
+	private Boolean isRidingAndNoGetOff(Reservation reservation) {
+		return canGetOff(reservation) && !isGetOffScheduled(reservation);
 	}
 
 	public Boolean isSelected(Reservation reservation) {
-		return selectedReservations.contains(reservation);
+		for (PassengerRecord passengerRecord : reservation.getPassengerRecord()
+				.asSet()) {
+			if (passengerRecord.getStatus().equals(
+					PassengerRecords.Status.RIDING)) {
+				return operationSchedule.getId().equals(
+						passengerRecord.getDepartureOperationScheduleId()
+								.orNull());
+			} else if (passengerRecord.getStatus().equals(
+					PassengerRecords.Status.GOT_OFF)) {
+				return operationSchedule.getId().equals(
+						passengerRecord.getArrivalOperationScheduleId()
+								.orNull());
+			}
+		}
+		return false;
 	}
 
 	public void select(Reservation reservation) {
-		selectedReservations.add(reservation);
-		commonLogic.postEvent(new SelectedReservationsUpdateEvent(
-				selectedReservations));
+		reservation.setPassengerRecord(reservation.getPassengerRecord().or(
+				new PassengerRecord()));
+		for (PassengerRecord passengerRecord : reservation.getPassengerRecord()
+				.asSet()) {
+			passengerRecord.setPassengerCount(reservation.getPassengerCount());
+			if (passengerRecord.getStatus().equals(
+					PassengerRecords.Status.UNHANDLED)) {
+				passengerRecord.setStatus(PassengerRecords.Status.RIDING);
+				passengerRecord
+						.setDepartureOperationSchedule(operationSchedule);
+				passengerRecord
+						.setDepartureOperationScheduleId(operationSchedule
+								.getId());
+				commonLogic.getDataSource().getOnPassenger(operationSchedule,
+						reservation, passengerRecord,
+						new EmptyWebAPICallback<PassengerRecord>());
+			} else if (passengerRecord.getStatus().equals(
+					PassengerRecords.Status.RIDING)) {
+				passengerRecord.setStatus(PassengerRecords.Status.GOT_OFF);
+				passengerRecord.setArrivalOperationSchedule(operationSchedule);
+				passengerRecord.setArrivalOperationScheduleId(operationSchedule
+						.getId());
+				commonLogic.getDataSource().getOffPassenger(operationSchedule,
+						reservation, passengerRecord,
+						new EmptyWebAPICallback<PassengerRecord>());
+			}
+		}
+	}
+
+	public void unselect(Reservation reservation) {
+		reservation.setPassengerRecord(reservation.getPassengerRecord().or(
+				new PassengerRecord()));
+		for (PassengerRecord passengerRecord : reservation.getPassengerRecord()
+				.asSet()) {
+			if (passengerRecord.getStatus().equals(
+					PassengerRecords.Status.RIDING)) {
+				passengerRecord.setStatus(PassengerRecords.Status.UNHANDLED);
+				commonLogic.getDataSource().getOnPassenger(operationSchedule,
+						reservation, passengerRecord,
+						new EmptyWebAPICallback<PassengerRecord>());
+			} else if (passengerRecord.getStatus().equals(
+					PassengerRecords.Status.GOT_OFF)) {
+				passengerRecord.setStatus(PassengerRecords.Status.RIDING);
+				commonLogic.getDataSource().getOffPassenger(operationSchedule,
+						reservation, passengerRecord,
+						new EmptyWebAPICallback<PassengerRecord>());
+			}
+		}
 	}
 
 	public void show(ItemType itemType) {
 		visibleItemTypes.add(itemType);
 		updateDataSet();
-	}
-
-	public void unselect(Reservation reservation) {
-		selectedReservations.remove(reservation);
-		commonLogic.postEvent(new SelectedReservationsUpdateEvent(
-				selectedReservations));
 	}
 
 	private void updateDataSet() {

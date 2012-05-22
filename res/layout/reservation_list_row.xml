@@ -30,13 +30,14 @@
         android:layout_height="fill_parent"
         android:text="@string/memo"
         android:visibility="invisible" />
-
+    <!--
     <ToggleButton
         android:id="@+id/paid_button"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:textOff="未払"
         android:textOn="支払済" />
+    -->
 
     <TextView
         android:id="@+id/passenger_count_text_view"

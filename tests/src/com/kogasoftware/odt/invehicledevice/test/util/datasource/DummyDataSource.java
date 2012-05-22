@@ -12,6 +12,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSource;
+import com.kogasoftware.odt.invehicledevice.logic.empty.EmptyWebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
@@ -285,5 +286,19 @@ public class DummyDataSource implements DataSource {
 
 	@Override
 	public void close() {
+	}
+
+	@Override
+	public void cancelGetOnPassenger(Reservation reservation,
+			EmptyWebAPICallback<PassengerRecord> callback) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void cancelGetOffPassenger(Reservation reservation,
+			EmptyWebAPICallback<PassengerRecord> callback) {
+		// TODO Auto-generated method stub
+		
 	}
 }

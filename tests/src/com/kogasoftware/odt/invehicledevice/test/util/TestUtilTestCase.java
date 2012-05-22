@@ -8,6 +8,7 @@ import java.util.List;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSourceFactory;
+import com.kogasoftware.odt.invehicledevice.logic.empty.EmptyWebAPICallback;
 import com.kogasoftware.odt.invehicledevice.test.util.datasource.DummyDataSource;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
@@ -128,5 +129,19 @@ class NoOperationScheduleDataSource implements DataSource {
 
 	@Override
 	public void close() {
+	}
+
+	@Override
+	public void cancelGetOnPassenger(Reservation reservation,
+			EmptyWebAPICallback<PassengerRecord> callback) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void cancelGetOffPassenger(Reservation reservation,
+			EmptyWebAPICallback<PassengerRecord> callback) {
+		// TODO Auto-generated method stub
+		
 	}
 };
