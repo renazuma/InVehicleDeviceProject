@@ -513,64 +513,14 @@ public class WebAPITestCase extends
 	protected void callTestPassengerGetOn(boolean offlineTest) throws Exception {
 		latch = new CountDownLatch(1);
 		schedules = null;
-
-		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.MINUTE, 20);
-		Date dtArrival1 = cal.getTime();
-
-		cal = Calendar.getInstance();
-		cal.add(Calendar.MINUTE, 22);
-		Date dtDeparture1 = cal.getTime();
-
-		cal = Calendar.getInstance();
-		cal.add(Calendar.MINUTE, 40);
-		Date dtArrival2 = cal.getTime();
-
-		cal = Calendar.getInstance();
-		cal.add(Calendar.MINUTE, 45);
-		Date dtDeparture2 = cal.getTime();
-
-		User user = master.createUser("login1", "もぎ", "けんた");
-		UnitAssignment ua = record.createUnitAssignment("1号車");
-		cal = Calendar.getInstance();
-		cal.add(Calendar.MONTH, -1);
-		record.createServiceUnit(master.getDriver(), master.getVehicle(),
-				master.getInVehicleDevice(), ua, cal.getTime());
-
-		Platform p1 = master.createPlatform("乗降場1", "じょうこうじょう1");
-		OperationSchedule os1 = record.createOperationSchedule(ua, p1,
-				dtArrival1, dtDeparture1);
-		Platform p2 = master.createPlatform("乗降場2", "じょうこうじょう2");
-		OperationSchedule os2 = record.createOperationSchedule(ua, p2,
-				dtArrival2, dtDeparture2);
-
-		Demand demand = record.createDemand(user, ua, p1, dtDeparture1, p2,
-				dtArrival2, 0);
-		Reservation res = record.createReservation(user, demand, ua, p1, os1,
-				dtDeparture1, p2, os2, dtArrival2, 500);
-
-		api.getOperationSchedules(new WebAPICallback<List<OperationSchedule>>() {
-			@Override
-			public void onSucceed(int reqkey, int statusCode,
-					List<OperationSchedule> result) {
-				schedules = result;
-				latch.countDown();
-			}
-
-			@Override
-			public void onFailed(int reqkey, int statusCode, String response) {
-				latch.countDown();
-			}
-
-			@Override
-			public void onException(int reqkey, WebAPIException ex) {
-				latch.countDown();
-			}
-		});
-		assertTrue(latch.await(100, TimeUnit.SECONDS));
-
+		createTestOperationSchedules();
+		
 		assertNotNull(schedules);
 		assertEquals(2, schedules.size());
+
+		OperationSchedule os1 = schedules.get(0);
+		OperationSchedule os2 = schedules.get(1);
+		Reservation res = os1.getReservationsAsDeparture().get(0);
 
 		assertNotNull(schedules.get(1).getReservationsAsArrival().get(0)
 				.getUser().orNull());
@@ -737,6 +687,64 @@ public class WebAPITestCase extends
 				.getArrivalOperationScheduleId().orNull());
 	}
 
+	private void createTestOperationSchedules() throws Exception {
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.MINUTE, 20);
+		Date dtArrival1 = cal.getTime();
+
+		cal = Calendar.getInstance();
+		cal.add(Calendar.MINUTE, 22);
+		Date dtDeparture1 = cal.getTime();
+
+		cal = Calendar.getInstance();
+		cal.add(Calendar.MINUTE, 40);
+		Date dtArrival2 = cal.getTime();
+
+		cal = Calendar.getInstance();
+		cal.add(Calendar.MINUTE, 45);
+		Date dtDeparture2 = cal.getTime();
+
+		User user = master.createUser("login1", "もぎ", "けんた");
+		UnitAssignment ua = record.createUnitAssignment("1号車");
+		cal = Calendar.getInstance();
+		cal.add(Calendar.MONTH, -1);
+		record.createServiceUnit(master.getDriver(), master.getVehicle(),
+				master.getInVehicleDevice(), ua, cal.getTime());
+
+		Platform p1 = master.createPlatform("乗降場1", "じょうこうじょう1");
+		OperationSchedule os1 = record.createOperationSchedule(ua, p1,
+				dtArrival1, dtDeparture1);
+		Platform p2 = master.createPlatform("乗降場2", "じょうこうじょう2");
+		OperationSchedule os2 = record.createOperationSchedule(ua, p2,
+				dtArrival2, dtDeparture2);
+
+		Demand demand = record.createDemand(user, ua, p1, dtDeparture1, p2,
+				dtArrival2, 0);
+		Reservation res = record.createReservation(user, demand, ua, p1, os1,
+				dtDeparture1, p2, os2, dtArrival2, 500);
+
+		
+		api.getOperationSchedules(new WebAPICallback<List<OperationSchedule>>() {
+			@Override
+			public void onSucceed(int reqkey, int statusCode,
+					List<OperationSchedule> result) {
+				schedules = result;
+				latch.countDown();
+			}
+
+			@Override
+			public void onFailed(int reqkey, int statusCode, String response) {
+				latch.countDown();
+			}
+
+			@Override
+			public void onException(int reqkey, WebAPIException ex) {
+				latch.countDown();
+			}
+		});
+		assertTrue(latch.await(100, TimeUnit.SECONDS));
+	}
+
 	public void testSendServiceUnitStatusLog() throws Exception {
 		api = new WebAPI(SERVER_HOST, master.getInVehicleDevice()
 				.getAuthenticationToken().orNull());
@@ -802,11 +810,10 @@ public class WebAPITestCase extends
 			}
 		}.getResult();
 		assertNotNull(serverServiceUnitStatusLog);
+		assertTrue(serverServiceUnitStatusLog.getOfflineTime().isPresent());
 		if (offlineTest) {
-			assertTrue(serviceUnitStatusLog.getOffline().or(false));
 			assertTrue(serverServiceUnitStatusLog.getOffline().or(false));
 		} else {
-			assertFalse(serviceUnitStatusLog.getOffline().or(false));
 			assertFalse(serverServiceUnitStatusLog.getOffline().or(false));
 		}
 	}
@@ -827,7 +834,6 @@ public class WebAPITestCase extends
 				master.getInVehicleDevice(), ua, cal.getTime());
 
 		ServiceUnitStatusLog log = new ServiceUnitStatusLog();
-		log.setStatus(ServiceUnitStatusLogs.Status.PAUSE);
 		log.setOrientation(10);
 		log.setTemperature(20);
 
@@ -853,8 +859,6 @@ public class WebAPITestCase extends
 			}
 		}.getResult();
 		assertEquals(1, serverServiceUnitStatusLogs.size());
-		assertEquals(ServiceUnitStatusLogs.Status.PAUSE,
-				serverServiceUnitStatusLogs.get(0).getStatus().get());
 		assertEquals(10, serverServiceUnitStatusLogs.get(0).getOrientation()
 				.get().intValue());
 		assertEquals(20, serverServiceUnitStatusLogs.get(0).getTemperature()
