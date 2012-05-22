@@ -140,18 +140,8 @@
         </LinearLayout>
     </LinearLayout>
 
-    <com.kogasoftware.odt.invehicledevice.ui.modalview.NavigationModalView
-        android:id="@+id/navigation_modal_view"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
-
     <com.kogasoftware.odt.invehicledevice.ui.modalview.ReturnPathModalView
         android:id="@+id/return_path_modal_view"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
-
-    <com.kogasoftware.odt.invehicledevice.ui.modalview.ScheduleModalView
-        android:id="@+id/schedule_modal_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 
@@ -165,7 +155,17 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 
-	<com.kogasoftware.odt.invehicledevice.ui.modalview.ScheduleChangedModalView
+    <com.kogasoftware.odt.invehicledevice.ui.modalview.NavigationModalView
+        android:id="@+id/navigation_modal_view"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
+
+    <com.kogasoftware.odt.invehicledevice.ui.modalview.ScheduleModalView
+        android:id="@+id/schedule_modal_view"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
+
+   	<com.kogasoftware.odt.invehicledevice.ui.modalview.ScheduleChangedModalView
         android:id="@+id/schedule_changed_modal_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
