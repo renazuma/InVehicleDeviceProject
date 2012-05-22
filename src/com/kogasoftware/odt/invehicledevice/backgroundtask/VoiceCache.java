@@ -35,9 +35,14 @@ public class VoiceCache {
 	private static final String TAG = VoiceCache.class.getSimpleName();
 
 	private static class CacheIndex implements Serializable {
+		public CacheIndex(AtomicInteger sequence, Map<String, File> map) {
+			this.sequence = new AtomicInteger(sequence.get());
+			this.map = new TreeMap<String, File>(map);
+		}
+
 		private static final long serialVersionUID = -8533398684555140766L;
-		public AtomicInteger sequence = new AtomicInteger(0);
-		public TreeMap<String, File> map = new TreeMap<String, File>();
+		private final AtomicInteger sequence;
+		private final TreeMap<String, File> map;
 	}
 
 	/**
@@ -167,9 +172,7 @@ public class VoiceCache {
 
 	protected void saveCacheIndex() throws ExecutionException {
 		try {
-			CacheIndex cacheIndex = new CacheIndex();
-			cacheIndex.sequence = sequence;
-			cacheIndex.map = new TreeMap<String, File>(cache.asMap());
+			CacheIndex cacheIndex = new CacheIndex(sequence, cache.asMap());
 			SerializationUtils.serialize(cacheIndex, new FileOutputStream(
 					cacheIndexFile));
 		} catch (IOException e) {
