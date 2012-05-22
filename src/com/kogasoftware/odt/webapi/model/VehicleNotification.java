@@ -14,7 +14,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class VehicleNotification extends Model {
-	private static final long serialVersionUID = 61059005000556646L;
+	private static final long serialVersionUID = 7221079311819113904L;
 
 	public VehicleNotification() {
 	}
@@ -27,7 +27,7 @@ public class VehicleNotification extends Model {
 		setInVehicleDeviceId(parseInteger(jsonObject, "in_vehicle_device_id"));
 		setNotificationKind(parseInteger(jsonObject, "notification_kind"));
 		setOffline(parseOptionalBoolean(jsonObject, "offline"));
-		setOperatorId(parseInteger(jsonObject, "operator_id"));
+		setOperatorId(parseOptionalInteger(jsonObject, "operator_id"));
 		setReadAt(parseOptionalDate(jsonObject, "read_at"));
 		setReservationId(parseOptionalInteger(jsonObject, "reservation_id"));
 		setResponse(parseOptionalInteger(jsonObject, "response"));
@@ -86,7 +86,7 @@ public class VehicleNotification extends Model {
 		jsonObject.put("in_vehicle_device_id", toJSON(getInVehicleDeviceId()));
 		jsonObject.put("notification_kind", toJSON(getNotificationKind()));
 		jsonObject.put("offline", toJSON(getOffline().orNull()));
-		jsonObject.put("operator_id", toJSON(getOperatorId()));
+		jsonObject.put("operator_id", toJSON(getOperatorId().orNull()));
 		jsonObject.put("read_at", toJSON(getReadAt().orNull()));
 		jsonObject.put("reservation_id", toJSON(getReservationId().orNull()));
 		jsonObject.put("response", toJSON(getResponse().orNull()));
@@ -197,14 +197,22 @@ public class VehicleNotification extends Model {
 		this.offline = Optional.absent();
 	}
 
-	private Integer operatorId = 0;
+	private Optional<Integer> operatorId = Optional.absent();
 
-	public Integer getOperatorId() {
+	public Optional<Integer> getOperatorId() {
 		return wrapNull(operatorId);
 	}
 
-	public void setOperatorId(Integer operatorId) {
+	public void setOperatorId(Optional<Integer> operatorId) {
 		this.operatorId = wrapNull(operatorId);
+	}
+
+	public void setOperatorId(Integer operatorId) {
+		this.operatorId = Optional.fromNullable(operatorId);
+	}
+
+	public void clearOperatorId() {
+		this.operatorId = Optional.absent();
 	}
 
 	private Optional<Date> readAt = Optional.absent();

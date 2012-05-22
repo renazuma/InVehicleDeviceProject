@@ -14,7 +14,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class ServiceUnitStatusLog extends Model {
-	private static final long serialVersionUID = 532978084928861612L;
+	private static final long serialVersionUID = 4519572694175730796L;
 
 	public ServiceUnitStatusLog() {
 	}
@@ -25,9 +25,9 @@ public class ServiceUnitStatusLog extends Model {
 		setLatitude(parseBigDecimal(jsonObject, "latitude"));
 		setLongitude(parseBigDecimal(jsonObject, "longitude"));
 		setOffline(parseOptionalBoolean(jsonObject, "offline"));
+		setOfflineTime(parseOptionalDate(jsonObject, "offline_time"));
 		setOrientation(parseOptionalInteger(jsonObject, "orientation"));
 		setServiceUnitId(parseOptionalInteger(jsonObject, "service_unit_id"));
-		setStatus(parseOptionalInteger(jsonObject, "status"));
 		setTemperature(parseOptionalInteger(jsonObject, "temperature"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setServiceUnit(ServiceUnit.parse(jsonObject, "service_unit"));
@@ -74,9 +74,9 @@ public class ServiceUnitStatusLog extends Model {
 		jsonObject.put("latitude", toJSON(getLatitude()));
 		jsonObject.put("longitude", toJSON(getLongitude()));
 		jsonObject.put("offline", toJSON(getOffline().orNull()));
+		jsonObject.put("offline_time", toJSON(getOfflineTime().orNull()));
 		jsonObject.put("orientation", toJSON(getOrientation().orNull()));
 		jsonObject.put("service_unit_id", toJSON(getServiceUnitId().orNull()));
-		jsonObject.put("status", toJSON(getStatus().orNull()));
 		jsonObject.put("temperature", toJSON(getTemperature().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
 
@@ -149,6 +149,24 @@ public class ServiceUnitStatusLog extends Model {
 		this.offline = Optional.absent();
 	}
 
+	private Optional<Date> offlineTime = Optional.absent();
+
+	public Optional<Date> getOfflineTime() {
+		return wrapNull(offlineTime);
+	}
+
+	public void setOfflineTime(Optional<Date> offlineTime) {
+		this.offlineTime = wrapNull(offlineTime);
+	}
+
+	public void setOfflineTime(Date offlineTime) {
+		this.offlineTime = Optional.fromNullable(offlineTime);
+	}
+
+	public void clearOfflineTime() {
+		this.offlineTime = Optional.absent();
+	}
+
 	private Optional<Integer> orientation = Optional.absent();
 
 	public Optional<Integer> getOrientation() {
@@ -183,24 +201,6 @@ public class ServiceUnitStatusLog extends Model {
 
 	public void clearServiceUnitId() {
 		this.serviceUnitId = Optional.absent();
-	}
-
-	private Optional<Integer> status = Optional.absent();
-
-	public Optional<Integer> getStatus() {
-		return wrapNull(status);
-	}
-
-	public void setStatus(Optional<Integer> status) {
-		this.status = wrapNull(status);
-	}
-
-	public void setStatus(Integer status) {
-		this.status = Optional.fromNullable(status);
-	}
-
-	public void clearStatus() {
-		this.status = Optional.absent();
 	}
 
 	private Optional<Integer> temperature = Optional.absent();
