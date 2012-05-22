@@ -640,7 +640,7 @@ public class WebAPI implements Closeable {
 	public int sendServiceUnitStatusLog(ServiceUnitStatusLog log,
 			WebAPICallback<ServiceUnitStatusLog> callback)
 			throws WebAPIException, JSONException {
-		log.setUpdatedAt(new Date());
+		log.setOfflineTime(new Date());
 		ServiceUnitStatusLog retryLogJson = log.clone();
 		retryLogJson.setOffline(true);
 		
