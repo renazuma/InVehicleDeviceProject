@@ -1,47 +1,33 @@
 package com.kogasoftware.odt.webapi.test;
 
 import java.io.File;
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.joda.time.DateTime;
-import org.joda.time.Interval;
-import org.joda.time.Period;
-import org.joda.time.PeriodType;
-import org.joda.time.Seconds;
-
 import android.test.ActivityInstrumentationTestCase2;
-import android.util.Log;
 
-import com.google.common.base.Preconditions;
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.webapi.WebAPI;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.WebAPIRequest;
 import com.kogasoftware.odt.webapi.model.Demand;
-import com.kogasoftware.odt.webapi.model.Driver;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationRecord;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
+import com.kogasoftware.odt.webapi.model.PassengerRecords;
 import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
-import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLogs;
 import com.kogasoftware.odt.webapi.model.UnitAssignment;
 import com.kogasoftware.odt.webapi.model.User;
-import com.kogasoftware.odt.webapi.model.Vehicle;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 import com.kogasoftware.odt.webtestapi.GenerateMaster;
 import com.kogasoftware.odt.webtestapi.GenerateRecord;
@@ -51,7 +37,7 @@ public class WebAPITestCase extends
 		ActivityInstrumentationTestCase2<DummyActivity> {
 	public static final String SERVER_HOST = "http://10.0.2.2:3334";
 	public static final String TEST_SERVER_HOST = "http://10.0.2.2:3333";
-	private static final String TAG = null;
+	private static final String TAG = WebAPITestCase.class.getSimpleName();
 
 	public WebAPITestCase() {
 		super("com.kogasoftware.odt.webapi.test", DummyActivity.class);
@@ -79,6 +65,20 @@ public class WebAPITestCase extends
 			return super.doHttpSession(request);
 		}
 	}
+
+	class EmptyWebAPICallback<T> implements WebAPICallback<T> {
+		@Override
+		public void onException(int reqkey, WebAPIException ex) {
+		}
+
+		@Override
+		public void onFailed(int reqkey, int statusCode, String response) {
+		}
+
+		@Override
+		public void onSucceed(int reqkey, int statusCode, T result) {
+		}
+	};
 
 	WebAPI api;
 	CountDownLatch latch;
@@ -115,21 +115,21 @@ public class WebAPITestCase extends
 		api = new WebAPI(SERVER_HOST);
 		callTestPasswordLogin(false);
 	}
-	
+
 	public void testPasswordLoginNoRetry() throws Exception {
 		api = new OfflineTestWebAPI(SERVER_HOST);
 		callTestPasswordLogin(true);
 	}
-	
+
 	public void callTestPasswordLogin(boolean retryTest) throws Exception {
 		semaphore = new Semaphore(0);
 
 		InVehicleDevice ivd = new InVehicleDevice();
 		ivd.setLogin("ivd1");
 		ivd.setPassword("ivdpass");
-		
+
 		final AtomicBoolean succeed = new AtomicBoolean(false);
-		
+
 		if (retryTest) {
 			offline = true;
 		}
@@ -152,7 +152,7 @@ public class WebAPITestCase extends
 				semaphore.release();
 			}
 		});
-		
+
 		assertTrue(semaphore.tryAcquire(20, TimeUnit.SECONDS));
 		if (!retryTest) {
 			assertTrue(succeed.get());
@@ -179,7 +179,7 @@ public class WebAPITestCase extends
 				master.getInVehicleDevice(), ua, new Date());
 		record.createVehicleNotification("テスト通知メッセージ1です。");
 		record.createVehicleNotification("テスト通知メッセージ2です。");
-		
+
 		api.getVehicleNotifications(new WebAPICallback<List<VehicleNotification>>() {
 			@Override
 			public void onSucceed(int reqkey, int statusCode,
@@ -293,7 +293,7 @@ public class WebAPITestCase extends
 		} else {
 			assertFalse(serverNotification.getOffline().or(false));
 		}
-		
+
 		latch = new CountDownLatch(1);
 		api.getVehicleNotifications(new WebAPICallback<List<VehicleNotification>>() {
 			@Override
@@ -445,12 +445,14 @@ public class WebAPITestCase extends
 		assertNotNull(serverOperationRecord);
 		if (offlineTest) {
 			assertTrue(serverOperationRecord.getDepartedAtOffline().or(false));
-			assertTrue(schedule.getOperationRecord().get().getDepartedAtOffline().or(false));
+			assertTrue(schedule.getOperationRecord().get()
+					.getDepartedAtOffline().or(false));
 		} else {
 			assertFalse(serverOperationRecord.getDepartedAtOffline().or(false));
-			assertFalse(schedule.getOperationRecord().get().getDepartedAtOffline().or(false));
+			assertFalse(schedule.getOperationRecord().get()
+					.getDepartedAtOffline().or(false));
 		}
-		
+
 		if (offlineTest) {
 			offline = true;
 		}
@@ -491,10 +493,12 @@ public class WebAPITestCase extends
 		assertTrue(serverOperationRecord.getArrivedAt().isPresent());
 		if (offlineTest) {
 			assertTrue(serverOperationRecord.getArrivedAtOffline().or(false));
-			assertTrue(schedule.getOperationRecord().get().getArrivedAtOffline().or(false));
+			assertTrue(schedule.getOperationRecord().get()
+					.getArrivedAtOffline().or(false));
 		} else {
 			assertFalse(serverOperationRecord.getArrivedAtOffline().or(false));
-			assertFalse(schedule.getOperationRecord().get().getArrivedAtOffline().or(false));
+			assertFalse(schedule.getOperationRecord().get()
+					.getArrivedAtOffline().or(false));
 		}
 	}
 
@@ -514,7 +518,7 @@ public class WebAPITestCase extends
 		latch = new CountDownLatch(1);
 		schedules = null;
 		createTestOperationSchedules();
-		
+
 		assertNotNull(schedules);
 		assertEquals(2, schedules.size());
 
@@ -568,14 +572,14 @@ public class WebAPITestCase extends
 		}.getResult();
 		assertNotNull(serverPassengerRecord);
 		assertTrue(serverPassengerRecord.getGetOnTime().isPresent());
+		assertEquals(os1.getId(), serverPassengerRecord
+				.getDepartureOperationScheduleId().orNull());
+		assertEquals(PassengerRecords.Status.RIDING, serverPassengerRecord.getStatus());		
 		if (offlineTest) {
 			assertTrue(serverPassengerRecord.getGetOnTimeOffline().or(false));
 		} else {
 			assertFalse(serverPassengerRecord.getGetOnTimeOffline().or(false));
 		}
-
-		assertEquals(os1.getId(), serverPassengerRecord
-				.getDepartureOperationScheduleId().orNull());
 
 		latch = new CountDownLatch(1);
 		api.departureOperationSchedule(schedules.get(0),
@@ -675,16 +679,167 @@ public class WebAPITestCase extends
 		}.getResult();
 		assertNotNull(serverPassengerRecord);
 		assertTrue(serverPassengerRecord.getGetOffTime().isPresent());
+		assertEquals(os1.getId(), serverPassengerRecord
+				.getDepartureOperationScheduleId().orNull());
+		assertEquals(os2.getId(), serverPassengerRecord
+				.getArrivalOperationScheduleId().orNull());
+		assertEquals(PassengerRecords.Status.GOT_OFF, serverPassengerRecord.getStatus());
+
 		if (offlineTest) {
 			assertTrue(serverPassengerRecord.getGetOffTimeOffline().or(false));
 		} else {
 			assertFalse(serverPassengerRecord.getGetOffTimeOffline().or(false));
 		}
+	}
 
+	public void testPassengerCancelGetOn() throws Exception {
+		api = new WebAPI(SERVER_HOST, master.getInVehicleDevice()
+				.getAuthenticationToken().orNull());		
+		schedules = null;
+		createTestOperationSchedules();
+
+		assertNotNull(schedules);
+		assertEquals(2, schedules.size());
+
+		OperationSchedule os1 = schedules.get(0);
+		OperationSchedule os2 = schedules.get(1);
+		Reservation res = os1.getReservationsAsDeparture().get(0);
+
+		assertNotNull(schedules.get(1).getReservationsAsArrival().get(0)
+				.getUser().orNull());
+
+		passengerRecord = null;
+		PassengerRecord prec = new PassengerRecord();
+		prec.setPayment(res.getPayment());
+		prec.setPassengerCount(3);
+
+		latch = new CountDownLatch(1);
+
+		api.getOnPassenger(os1, res, prec,
+				new EmptyWebAPICallback<PassengerRecord>());
+		api.cancelGetOnPassenger(os1, res,
+				new EmptyWebAPICallback<PassengerRecord>() {
+					@Override
+					public void onSucceed(int reqkey, int statusCode,
+							PassengerRecord result) {
+						passengerRecord = result;
+						latch.countDown();
+					}
+				});
+
+		assertTrue(latch.await(20, TimeUnit.SECONDS));
+		assertNotNull(passengerRecord);
+		PassengerRecord serverPassengerRecord = new SyncCall<PassengerRecord>() {
+			@Override
+			public int run() throws Exception {
+				return master.getTestAPI().getPassengerRecord(
+						passengerRecord.getId(), this);
+			}
+		}.getResult();
+		assertNotNull(serverPassengerRecord);
+		assertFalse(serverPassengerRecord.getGetOnTime().isPresent());
+		assertFalse(serverPassengerRecord
+				.getDepartureOperationScheduleId().isPresent());
+		assertEquals(PassengerRecords.Status.UNHANDLED, serverPassengerRecord.getStatus());
+
+		latch = new CountDownLatch(1);
+		api.getOnPassenger(os1, res, prec,
+				new EmptyWebAPICallback<PassengerRecord>() {
+					@Override
+					public void onSucceed(int reqkey, int statusCode,
+							PassengerRecord result) {
+						latch.countDown();
+					}
+				});
+		latch.await();
+		
+		latch = new CountDownLatch(1);
+		api.departureOperationSchedule(schedules.get(0),
+				new WebAPICallback<OperationSchedule>() {
+					@Override
+					public void onSucceed(int reqkey, int statusCode,
+							OperationSchedule result) {
+						schedule = result;
+						latch.countDown();
+					}
+
+					@Override
+					public void onFailed(int reqkey, int statusCode,
+							String response) {
+						latch.countDown();
+					}
+
+					@Override
+					public void onException(int reqkey, WebAPIException ex) {
+						latch.countDown();
+					}
+				});
+		assertTrue(latch.await(200, TimeUnit.SECONDS));
+		
+		assertNotNull(schedule.getOperationRecord());
+		assertNotNull(schedule.getOperationRecord().orNull().getDepartedAt()
+				.orNull());
+
+		latch = new CountDownLatch(1);
+		api.arrivalOperationSchedule(schedules.get(1),
+				new WebAPICallback<OperationSchedule>() {
+					@Override
+					public void onSucceed(int reqkey, int statusCode,
+							OperationSchedule result) {
+						schedule = result;
+						latch.countDown();
+					}
+
+					@Override
+					public void onFailed(int reqkey, int statusCode,
+							String response) {
+						latch.countDown();
+					}
+
+					@Override
+					public void onException(int reqkey, WebAPIException ex) {
+						latch.countDown();
+					}
+				});
+		assertTrue(latch.await(100, TimeUnit.SECONDS));
+
+		assertNotNull(schedule.getOperationRecord());
+		assertNotNull(schedule.getOperationRecord().orNull().getArrivedAt()
+				.orNull());
+
+		passengerRecord = null;
+		prec = new PassengerRecord();
+		prec.setPayment(res.getPayment());
+		prec.setPassengerCount(3);
+
+		latch = new CountDownLatch(1);
+		api.getOffPassenger(os2, res, prec, new EmptyWebAPICallback<PassengerRecord>());
+		api.cancelGetOffPassenger(os1, res,
+				new EmptyWebAPICallback<PassengerRecord>() {
+					@Override
+					public void onSucceed(int reqkey, int statusCode,
+							PassengerRecord result) {
+						passengerRecord = result;
+						latch.countDown();
+					}
+				});
+		
+		assertTrue(latch.await(20, TimeUnit.SECONDS));
+		assertNotNull(passengerRecord);
+		serverPassengerRecord = new SyncCall<PassengerRecord>() {
+			@Override
+			public int run() throws Exception {
+				return master.getTestAPI().getPassengerRecord(
+						passengerRecord.getId(), this);
+			}
+		}.getResult();
+		assertNotNull(serverPassengerRecord);
+		assertFalse(serverPassengerRecord.getGetOffTime().isPresent());
 		assertEquals(os1.getId(), serverPassengerRecord
 				.getDepartureOperationScheduleId().orNull());
-		assertEquals(os2.getId(), serverPassengerRecord
-				.getArrivalOperationScheduleId().orNull());
+		assertFalse(serverPassengerRecord
+				.getArrivalOperationScheduleId().isPresent());
+		assertEquals(PassengerRecords.Status.RIDING, serverPassengerRecord.getStatus());
 	}
 
 	private void createTestOperationSchedules() throws Exception {
@@ -723,7 +878,7 @@ public class WebAPITestCase extends
 		Reservation res = record.createReservation(user, demand, ua, p1, os1,
 				dtDeparture1, p2, os2, dtArrival2, 500);
 
-		
+		latch = new CountDownLatch(1);
 		api.getOperationSchedules(new WebAPICallback<List<OperationSchedule>>() {
 			@Override
 			public void onSucceed(int reqkey, int statusCode,
