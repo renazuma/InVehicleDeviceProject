@@ -244,16 +244,28 @@ public class WebAPIDataSource implements DataSource {
 	}
 
 	@Override
-	public void cancelGetOnPassenger(Reservation reservation,
-			EmptyWebAPICallback<PassengerRecord> callback) {
-		// TODO Auto-generated method stub
-
+	public int cancelGetOnPassenger(final OperationSchedule operationSchedule,
+			final Reservation reservation,
+			final WebAPICallback<PassengerRecord> callback) {
+		return callWebAPI(new WebAPICaller() {
+			@Override
+			public int call() throws WebAPIException, JSONException {
+				return api.cancelGetOnPassenger(operationSchedule, reservation,
+						callback);
+			}
+		}, callback);
 	}
 
 	@Override
-	public void cancelGetOffPassenger(Reservation reservation,
-			EmptyWebAPICallback<PassengerRecord> callback) {
-		// TODO Auto-generated method stub
-
+	public int cancelGetOffPassenger(final OperationSchedule operationSchedule,
+			final Reservation reservation,
+			final WebAPICallback<PassengerRecord> callback) {
+		return callWebAPI(new WebAPICaller() {
+			@Override
+			public int call() throws WebAPIException, JSONException {
+				return api.cancelGetOffPassenger(operationSchedule,
+						reservation, callback);
+			}
+		}, callback);
 	}
 }

@@ -348,14 +348,14 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 			if (passengerRecord.getStatus().equals(
 					PassengerRecords.Status.RIDING)) {
 				passengerRecord.setStatus(PassengerRecords.Status.UNHANDLED);
-				commonLogic.getDataSource().getOnPassenger(operationSchedule,
-						reservation, passengerRecord,
+				commonLogic.getDataSource().cancelGetOnPassenger(
+						operationSchedule, reservation,
 						new EmptyWebAPICallback<PassengerRecord>());
 			} else if (passengerRecord.getStatus().equals(
 					PassengerRecords.Status.GOT_OFF)) {
 				passengerRecord.setStatus(PassengerRecords.Status.RIDING);
-				commonLogic.getDataSource().getOffPassenger(operationSchedule,
-						reservation, passengerRecord,
+				commonLogic.getDataSource().cancelGetOffPassenger(
+						operationSchedule, reservation,
 						new EmptyWebAPICallback<PassengerRecord>());
 			}
 		}
