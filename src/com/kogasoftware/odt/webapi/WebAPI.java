@@ -355,6 +355,9 @@ public class WebAPI implements Closeable {
 		retryParam.put("passenger_record",
 				filterJSONKeys(retryPassengerRecord.toJSONObject(), filter));
 
+		String group = WebAPIRequestQueue.getReservationGetOnOrOffGroup(
+				operationSchedule.getId(), reservation.getId());
+
 		return put(PATH_SCHEDULES + "/" + operationSchedule.getId()
 				+ "/reservations/" + reservation.getId() + "/getoff", param,
 				retryParam, callback, new ResponseConverter<PassengerRecord>() {
@@ -364,7 +367,7 @@ public class WebAPI implements Closeable {
 						return PassengerRecord.parse(
 								parseJSONObject(rawResponse)).orNull();
 					}
-				});
+				}, true, group);
 	}
 
 	/**
@@ -386,13 +389,16 @@ public class WebAPI implements Closeable {
 		JSONObject retryParam = new JSONObject();
 
 		String[] filter = new String[] { "id", "payment", "passenger_count",
-				"get_on_time", "get_on_time_offline"};
+				"get_on_time", "get_on_time_offline" };
 
 		param.put("passenger_record",
 				filterJSONKeys(passengerRecord.toJSONObject(), filter));
 		retryParam.put("passenger_record",
 				filterJSONKeys(retryPassengerRecord.toJSONObject(), filter));
 
+		String group = WebAPIRequestQueue.getReservationGetOnOrOffGroup(
+				operationSchedule.getId(), reservation.getId());
+		
 		return put(PATH_SCHEDULES + "/" + operationSchedule.getId()
 				+ "/reservations/" + reservation.getId() + "/geton", param,
 				retryParam, callback, new ResponseConverter<PassengerRecord>() {
@@ -402,7 +408,57 @@ public class WebAPI implements Closeable {
 						return PassengerRecord.parse(
 								parseJSONObject(rawResponse)).orNull();
 					}
-				});
+				}, true, group);
+	}
+
+	/**
+	 * 乗車のキャンセル
+	 * 
+	 * @param operationSchedule
+	 *            運行スケジュールオブジェクト
+	 * @throws JSONException
+	 */
+	public int cancelGetOnPassenger(OperationSchedule operationSchedule,
+			Reservation reservation, WebAPICallback<PassengerRecord> callback)
+			throws WebAPIException, JSONException {
+		String group = WebAPIRequestQueue.getReservationGetOnOrOffGroup(
+				operationSchedule.getId(), reservation.getId());
+		return put(PATH_SCHEDULES + "/" + operationSchedule.getId()
+				+ "/reservations/" + reservation.getId() + "/cancel_geton",
+				new JSONObject(), new JSONObject(), callback,
+				new ResponseConverter<PassengerRecord>() {
+					@Override
+					public PassengerRecord convert(byte[] rawResponse)
+							throws Exception {
+						return PassengerRecord.parse(
+								parseJSONObject(rawResponse)).orNull();
+					}
+				}, true, group);
+	}
+
+	/**
+	 * 降車のキャンセル
+	 * 
+	 * @param operationSchedule
+	 *            運行スケジュールオブジェクト
+	 * @throws JSONException
+	 */
+	public int cancelGetOffPassenger(OperationSchedule operationSchedule,
+			Reservation reservation, WebAPICallback<PassengerRecord> callback)
+			throws WebAPIException, JSONException {
+		String group = WebAPIRequestQueue.getReservationGetOnOrOffGroup(
+				operationSchedule.getId(), reservation.getId());
+		return put(PATH_SCHEDULES + "/" + operationSchedule.getId()
+				+ "/reservations/" + reservation.getId() + "/cancel_getoff",
+				new JSONObject(), new JSONObject(), callback,
+				new ResponseConverter<PassengerRecord>() {
+					@Override
+					public PassengerRecord convert(byte[] rawResponse)
+							throws Exception {
+						return PassengerRecord.parse(
+								parseJSONObject(rawResponse)).orNull();
+					}
+				}, true, group);
 	}
 
 	/**
@@ -562,13 +618,20 @@ public class WebAPI implements Closeable {
 	protected <T> int put(String path, JSONObject param, JSONObject retryParam,
 			WebAPICallback<T> callback, ResponseConverter<T> conv,
 			boolean retryable) throws WebAPIException {
+		return put(path, param, retryParam, callback, conv, retryable,
+				WebAPIRequestQueue.DEFAULT_GROUP);
+	}
+
+	protected <T> int put(String path, JSONObject param, JSONObject retryParam,
+			WebAPICallback<T> callback, ResponseConverter<T> conv,
+			boolean retryable, String requestGroup) throws WebAPIException {
 		SerializableHttpPutSupplier first = new SerializableHttpPutSupplier(
 				getServerHost(), path, param, authenticationToken);
 		SerializableHttpPutSupplier retry = new SerializableHttpPutSupplier(
 				getServerHost(), path, retryParam, authenticationToken);
 		WebAPIRequest<?> request = new WebAPIRequest<T>(callback, conv, first,
 				retry, retryable);
-		requests.add(request);
+		requests.add(request, requestGroup);
 		return request.getReqKey();
 	}
 
@@ -612,16 +675,18 @@ public class WebAPI implements Closeable {
 			int response, WebAPICallback<VehicleNotification> callback)
 			throws WebAPIException, JSONException {
 		vn.setResponse(response);
-		vn.setReadAt(new Date());		
+		vn.setReadAt(new Date());
 		VehicleNotification retryVn = vn.clone();
 		retryVn.setOffline(true);
-		
+
 		String[] filter = new String[] { "id", "response", "read_at", "offline" };
 
 		JSONObject param = new JSONObject();
 		JSONObject retryParam = new JSONObject();
-		param.put("vehicle_notification", filterJSONKeys(vn.toJSONObject(), filter));
-		retryParam.put("vehicle_notification", filterJSONKeys(retryVn.toJSONObject(), filter));
+		param.put("vehicle_notification",
+				filterJSONKeys(vn.toJSONObject(), filter));
+		retryParam.put("vehicle_notification",
+				filterJSONKeys(retryVn.toJSONObject(), filter));
 
 		return put(PATH_NOTIFICATIONS + "/" + vn.getId(), param, retryParam,
 				callback, new ResponseConverter<VehicleNotification>() {
@@ -643,7 +708,7 @@ public class WebAPI implements Closeable {
 		log.setOfflineTime(new Date());
 		ServiceUnitStatusLog retryLogJson = log.clone();
 		retryLogJson.setOffline(true);
-		
+
 		JSONObject param = new JSONObject();
 		JSONObject retryParam = new JSONObject();
 		param.put("service_unit_status_log", log.toJSONObject());

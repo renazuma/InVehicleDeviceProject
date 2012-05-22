@@ -15,13 +15,29 @@ public class PassengerRecords {
 		return isStatus(reservation, Status.RIDING);
 	}
 
+	public static Boolean isGotOff(PassengerRecord passengerRecord) {
+		return isStatus(passengerRecord, Status.GOT_OFF);
+	}
+
+	public static Boolean isRiding(PassengerRecord passengerRecord) {
+		return isStatus(passengerRecord, Status.RIDING);
+	}
+	
 	private static Boolean isStatus(Reservation reservation, Integer status) {
 		return reservation.getPassengerRecord().isPresent()
-				&& reservation.getPassengerRecord().get().getStatus()
-						.equals(status);
+				&& isStatus(reservation.getPassengerRecord().get(), status);
+	}
+
+	private static Boolean isStatus(PassengerRecord passengerRecord,
+			Integer status) {
+		return passengerRecord.getStatus().equals(status);
 	}
 
 	public static Boolean isUnhandled(Reservation reservation) {
 		return isStatus(reservation, Status.UNHANDLED);
+	}
+	
+	public static Boolean isUnhandled(PassengerRecord passengerRecord) {
+		return isStatus(passengerRecord, Status.UNHANDLED);
 	}
 }

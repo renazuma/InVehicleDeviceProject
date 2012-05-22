@@ -39,6 +39,12 @@ public class WebAPIRequestQueue {
 		}
 	}
 
+	public static String getReservationGetOnOrOffGroup(Integer operationScheduleId,
+			Integer reservationId) {
+		return "ReservationGetOnOrOffGroup/operationScheduleId="
+				+ operationScheduleId + "/reservationId=" + reservationId;
+	}
+
 	// 作業中のグループ
 	protected final Set<String> processingGroups = new HashSet<String>();
 	// グループ毎作業待ちリクエスト
@@ -144,9 +150,11 @@ public class WebAPIRequestQueue {
 				}
 				String group = entry.getKey();
 				processingGroups.remove(group);
-				requestsByGroup.removeAll(group);
+				requestsByGroup.remove(group, request);
+				backup();
+				waitingQueuePollPermissions.release(requestsByGroup.get(group).size());
+				break;
 			}
-			backup();
 		}
 	}
 
@@ -172,7 +180,7 @@ public class WebAPIRequestQueue {
 					requestsByGroup.put(group, request);
 				}
 				backup();
-				waitingQueuePollPermissions.release();
+				waitingQueuePollPermissions.release(requestsByGroup.get(group).size());
 				break;
 			}
 		}
