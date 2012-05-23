@@ -91,7 +91,7 @@ public class ReservationArrayAdapterTestCase extends
 	protected void sync() throws Exception {
 		Thread.sleep(500);
 		getInstrumentation().waitForIdleSync();
-		Thread.sleep(500);
+		Thread.sleep(5000);
 	}
 
 	public void testReservationが表示される() throws Exception {
