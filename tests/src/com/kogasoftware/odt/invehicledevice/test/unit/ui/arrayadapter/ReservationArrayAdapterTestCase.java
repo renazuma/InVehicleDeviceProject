@@ -100,7 +100,7 @@ public class ReservationArrayAdapterTestCase extends
 	public void testReservationGetOn() throws Exception {
 		final String userName0 = "上野駅前";
 		final String userName1 = "御徒町駅前";
-		final Integer T = 50;
+		final Integer T = 300;
 		sa.write(new Writer() {
 			@Override
 			public void write(Status status) {
