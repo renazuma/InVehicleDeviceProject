@@ -466,16 +466,16 @@ public class MockDataSource implements DataSource {
 	}
 
 	@Override
-	public void cancelGetOnPassenger(Reservation reservation,
-			EmptyWebAPICallback<PassengerRecord> callback) {
+	public int cancelGetOffPassenger(OperationSchedule operationSchedule,
+			Reservation reservation, WebAPICallback<PassengerRecord> callback) {
 		// TODO Auto-generated method stub
-		
+		return 0;
 	}
 
 	@Override
-	public void cancelGetOffPassenger(Reservation reservation,
-			EmptyWebAPICallback<PassengerRecord> callback) {
+	public int cancelGetOnPassenger(OperationSchedule operationSchedule,
+			Reservation reservation, WebAPICallback<PassengerRecord> callback) {
 		// TODO Auto-generated method stub
-		
+		return 0;
 	}
 }
