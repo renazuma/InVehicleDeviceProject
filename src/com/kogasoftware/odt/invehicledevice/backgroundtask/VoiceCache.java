@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -34,8 +35,12 @@ import com.kogasoftware.openjtalk.OpenJTalk;
 public class VoiceCache {
 	private static final String TAG = VoiceCache.class.getSimpleName();
 
-	private static class CacheIndex implements Serializable {
-		public CacheIndex(AtomicInteger sequence, Map<String, File> map) {
+	private static class InstanceState implements Serializable {
+		public InstanceState() {
+			this(new AtomicInteger(0), new TreeMap<String, File>());
+		}
+
+		public InstanceState(AtomicInteger sequence, Map<String, File> map) {
 			this.sequence = new AtomicInteger(sequence.get());
 			this.map = new TreeMap<String, File>(map);
 		}
@@ -46,39 +51,37 @@ public class VoiceCache {
 	}
 
 	/**
-	 * キャッシュのインデックスをファイルから読み取る。コンストラクタから使うため、staticメソッドにしておく。
+	 * キャッシュの状態をファイルから読み取る。コンストラクタから使うため、staticメソッドにしておく。
 	 * 
-	 * @param cacheIndexFile
+	 * @param instanceStateFile
 	 * @param sequence
 	 * @return
 	 */
-	protected static Map<String, File> loadCacheIndex(File cacheIndexFile,
-			AtomicInteger sequence) {
-		Map<String, File> result = new TreeMap<String, File>();
-		if (!cacheIndexFile.exists()) {
+	protected static InstanceState loadInstanceState(File instanceStateFile) {
+		InstanceState result = new InstanceState();
+		if (!instanceStateFile.exists()) {
 			return result;
 		}
 		Boolean succeed = false;
 		try {
 			Object object = SerializationUtils.deserialize(new FileInputStream(
-					cacheIndexFile));
-			if (!(object instanceof CacheIndex)) {
-				Log.w(TAG, "!(" + object + " instanceof TreeMap<?, ?>)");
-				return new TreeMap<String, File>();
+					instanceStateFile));
+			if (!(object instanceof InstanceState)) {
+				Log.w(TAG, "!(" + object + " instanceof InstanceState)");
+				return new InstanceState();
 			}
-			CacheIndex cacheIndex = (CacheIndex) object;
-			sequence.set(cacheIndex.sequence.get());
-			result.putAll(cacheIndex.map);
+			result = (InstanceState) object;
 			succeed = true;
 		} catch (IOException e) {
 			Log.w(TAG, e);
 		} catch (SerializationException e) {
 			Log.e(TAG, e.toString(), e);
-		} finally {
-			if (!succeed && !cacheIndexFile.delete()) {
-				Log.w(TAG, "!\"" + cacheIndexFile + "\".delete()");
-				return new TreeMap<String, File>();
+		}
+		if (!succeed) {
+			if (!instanceStateFile.delete()) {
+				Log.w(TAG, "!\"" + instanceStateFile + "\".delete()");
 			}
+			return new InstanceState();
 		}
 		return result;
 	}
@@ -86,7 +89,7 @@ public class VoiceCache {
 	private final OpenJTalk openJTalk;
 	private final AtomicInteger sequence = new AtomicInteger(0);
 	private final File outputDirectory;
-	private final File cacheIndexFile;
+	private final File instanceStateFile;
 	private final Cache<String, File> cache;
 	private final AtomicBoolean dirty = new AtomicBoolean(false);
 
@@ -119,7 +122,7 @@ public class VoiceCache {
 		if (!outputDirectory.exists() && !outputDirectory.mkdirs()) {
 			throw new IOException("!\"" + outputDirectory + "\".mkdirs()");
 		}
-		cacheIndexFile = new File(outputDirectory + s + "index.serialized");
+		instanceStateFile = new File(outputDirectory + s + "index.serialized");
 
 		openJTalk = new OpenJTalk(voiceDirectory, dictionaryDirectory,
 				libraryDirectory);
@@ -133,11 +136,15 @@ public class VoiceCache {
 			SharedPreferences.Editor editor = preferences.edit();
 			editor.putBoolean(SharedPreferencesKey.CLEAR_VOICE_CACHE, false);
 			editor.commit();
-			if (!cacheIndexFile.delete()) {
-				throw new IOException("!\"" + cacheIndexFile + "\".delete()");
+			if (!instanceStateFile.delete()) {
+				throw new IOException("!\"" + instanceStateFile + "\".delete()");
 			}
 		} else {
-			cache.putAll(loadCacheIndex(cacheIndexFile, sequence));
+			InstanceState instanceState = loadInstanceState(instanceStateFile);
+			sequence.set(instanceState.sequence.get());
+			for (Entry<String, File> entry : instanceState.map.entrySet()) {
+				cache.put(entry.getKey(), entry.getValue());
+			}
 		}
 	}
 
@@ -157,7 +164,7 @@ public class VoiceCache {
 		});
 
 		if (dirty.getAndSet(false)) {
-			saveCacheIndex();
+			saveInstanceState();
 		}
 		return result;
 	}
@@ -170,11 +177,12 @@ public class VoiceCache {
 		return file;
 	}
 
-	protected void saveCacheIndex() throws ExecutionException {
+	protected void saveInstanceState() throws ExecutionException {
 		try {
-			CacheIndex cacheIndex = new CacheIndex(sequence, cache.asMap());
-			SerializationUtils.serialize(cacheIndex, new FileOutputStream(
-					cacheIndexFile));
+			InstanceState instanceState = new InstanceState(sequence,
+					cache.asMap());
+			SerializationUtils.serialize(instanceState, new FileOutputStream(
+					instanceStateFile));
 		} catch (IOException e) {
 			throw new ExecutionException(e);
 		} catch (SerializationException e) {
