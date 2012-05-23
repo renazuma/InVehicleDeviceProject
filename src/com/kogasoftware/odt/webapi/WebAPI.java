@@ -104,7 +104,7 @@ public class WebAPI implements Closeable {
 		}
 	}
 
-	public static final Integer REQUEST_EXPIRE_DAY = 3;
+	public static final Integer REQUEST_EXPIRE_DAYS = 3;
 	private static final String TAG = WebAPI.class.getSimpleName();
 	protected static final int NUM_THREADS = 3;
 	protected static final String PATH_PREFIX = "/in_vehicle_devices";
@@ -276,7 +276,7 @@ public class WebAPI implements Closeable {
 		WebAPIRequest<?> request = requests.take();
 		boolean succeed = false;
 		Calendar calendar = Calendar.getInstance();
-		calendar.add(Calendar.DATE, -REQUEST_EXPIRE_DAY);
+		calendar.add(Calendar.DATE, -REQUEST_EXPIRE_DAYS);
 		if (calendar.getTime().after(request.getCreatedDate())) {
 			Log.i(TAG, "Request (" + request + ") is expired. createdDate: "
 					+ request.getCreatedDate());
