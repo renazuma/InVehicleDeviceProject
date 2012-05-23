@@ -87,6 +87,12 @@ public class ReservationArrayAdapterTestCase extends
 			cl.dispose();
 		}
 	}
+	
+	protected void sync() throws Exception {
+		Thread.sleep(500);
+		getInstrumentation().waitForIdleSync();
+		Thread.sleep(500);
+	}
 
 	public void testReservationが表示される() throws Exception {
 		final String userName0 = "上野駅前";
@@ -99,6 +105,7 @@ public class ReservationArrayAdapterTestCase extends
 				os1.setId(0);
 				OperationSchedule os2 = new OperationSchedule();
 				os2.setId(100);
+				status.remainingOperationSchedules.clear();
 				status.remainingOperationSchedules.add(os1);
 				status.remainingOperationSchedules.add(os2);
 				{
@@ -129,7 +136,7 @@ public class ReservationArrayAdapterTestCase extends
 
 		raa = new ReservationArrayAdapter(getInstrumentation()
 				.getTargetContext(), cl);
-		getInstrumentation().waitForIdleSync();
+		sync();
 		assertEquals(raa.getCount(), 2);
 		final List<View> columns = new LinkedList<View>();
 		final LinearLayout ll = new LinearLayout(getInstrumentation().getTargetContext());
@@ -145,12 +152,12 @@ public class ReservationArrayAdapterTestCase extends
 		solo.searchText(userName0);
 		
 		solo.clickOnView(columns.get(0));
-		getInstrumentation().waitForIdleSync();
+		sync();
 		assertEquals(1, getOnReservations.size());
 		assertEquals(userName0, getOnReservations.get(0).getUser().get().getLastName());
 		
 		solo.clickOnView(columns.get(0));
-		getInstrumentation().waitForIdleSync();
+		sync();
 		assertEquals(1, cancelGetOnReservations.size());
 		assertEquals(userName0, cancelGetOnReservations.get(0).getUser().get().getLastName());
 		
@@ -165,33 +172,33 @@ public class ReservationArrayAdapterTestCase extends
 		solo.searchText(userName1);
 		
 		solo.clickOnView(columns.get(1));
-		getInstrumentation().waitForIdleSync();
+		sync();
 		assertEquals(2, getOnReservations.size());
 		assertEquals(userName1, getOnReservations.get(1).getUser().get().getLastName());
 		
 		solo.clickOnView(columns.get(1));
-		getInstrumentation().waitForIdleSync();
+		sync();
 		assertEquals(2, cancelGetOnReservations.size());
 		assertEquals(userName1, cancelGetOnReservations.get(1).getUser().get().getLastName());
 
 		
 		solo.clickOnView(columns.get(0));
-		getInstrumentation().waitForIdleSync();
+		sync();
 		assertEquals(3, getOnReservations.size());
 		assertEquals(userName0, getOnReservations.get(0).getUser().get().getLastName());
 		
 		solo.clickOnView(columns.get(1));
-		getInstrumentation().waitForIdleSync();
+		sync();
 		assertEquals(4, getOnReservations.size());
 		assertEquals(userName1, getOnReservations.get(1).getUser().get().getLastName());
 		
 		solo.clickOnView(columns.get(0));
-		getInstrumentation().waitForIdleSync();
+		sync();
 		assertEquals(3, cancelGetOnReservations.size());
 		assertEquals(userName0, cancelGetOnReservations.get(0).getUser().get().getLastName());
 		
 		solo.clickOnView(columns.get(1));
-		getInstrumentation().waitForIdleSync();
+		sync();
 		assertEquals(4, cancelGetOnReservations.size());
 		assertEquals(userName1, cancelGetOnReservations.get(1).getUser().get().getLastName());
 	}
