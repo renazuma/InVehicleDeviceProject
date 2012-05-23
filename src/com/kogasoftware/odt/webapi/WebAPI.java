@@ -28,11 +28,13 @@ import android.util.Log;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.ByteStreams;
+import com.kogasoftware.odt.webapi.model.Demand;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationRecord;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
+import com.kogasoftware.odt.webapi.model.ReservationCandidate;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 import com.kogasoftware.odt.webapi.serializablehttprequestbasesupplier.SerializableHttpDeleteSupplier;
@@ -107,6 +109,7 @@ public class WebAPI implements Closeable {
 	public static final Integer REQUEST_EXPIRE_DAYS = 3;
 	private static final String TAG = WebAPI.class.getSimpleName();
 	protected static final int NUM_THREADS = 3;
+
 	protected static final String PATH_PREFIX = "/in_vehicle_devices";
 	public static final String PATH_LOGIN = PATH_PREFIX + "/sign_in";
 	public static final String PATH_NOTIFICATIONS = PATH_PREFIX
@@ -115,6 +118,8 @@ public class WebAPI implements Closeable {
 			+ "/operation_schedules";
 	public static final String PATH_STATUSLOGS = PATH_PREFIX
 			+ "/service_unit_status_logs";
+	public static final String PATH_RESERVATIONS = PATH_PREFIX
+			+ "/reservations";
 
 	protected static String decodeByteArray(byte[] byteArray) {
 		return Charsets.ISO_8859_1.decode(ByteBuffer.wrap(byteArray))
@@ -229,46 +234,50 @@ public class WebAPI implements Closeable {
 					}
 				});
 	}
-
-	protected boolean doHttpSession(WebAPIRequest<?> request)
-			throws WebAPIException {
-		HttpClient httpClient = new DefaultHttpClient();
-		HttpResponse httpResponse;
+	
+	protected boolean doHttpSessionAndCallback(WebAPIRequest<?> request) {
 		try {
-			httpResponse = httpClient.execute(request.getRequest());
-		} catch (ClientProtocolException e) {
-			throw new WebAPIException(true, e);
-		} catch (IOException e) {
-			throw new WebAPIException(true, e);
-		}
-
-		int statusCode = httpResponse.getStatusLine().getStatusCode();
-		byte[] response = new byte[] {};
-		String responseString = "";
-		try {
-			HttpEntity entity = httpResponse.getEntity();
-			if (entity != null) {
-				response = ByteStreams.toByteArray(entity.getContent());
-				responseString = decodeByteArray(response);
-				Log.d(TAG, "response body:" + responseString);
+			HttpClient httpClient = new DefaultHttpClient();
+			HttpResponse httpResponse;
+			try {
+				httpResponse = httpClient.execute(request.getRequest());
+			} catch (ClientProtocolException e) {
+				throw new WebAPIException(true, e);
+			} catch (IOException e) {
+				throw new WebAPIException(true, e);
 			}
-		} catch (IOException e) {
-			throw new WebAPIException(true, e);
-		}
 
-		if (statusCode / 100 == 4 || statusCode / 100 == 5) {
-			request.onFailed(statusCode, responseString);
+			int statusCode = httpResponse.getStatusLine().getStatusCode();
+			byte[] response = new byte[] {};
+			String responseString = "";
+			try {
+				HttpEntity entity = httpResponse.getEntity();
+				if (entity != null) {
+					response = ByteStreams.toByteArray(entity.getContent());
+					responseString = decodeByteArray(response);
+					Log.d(TAG, "response body:" + responseString);
+				}
+			} catch (IOException e) {
+				throw new WebAPIException(true, e);
+			}
+
+			if (statusCode / 100 == 4 || statusCode / 100 == 5) {
+				request.onFailed(statusCode, responseString);
+				return false;
+			}
+
+			try {
+				request.onSucceed(statusCode, response);
+				return true;
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+				throw new WebAPIException(false, e);
+			} catch (Exception e) {
+				throw new WebAPIException(false, e);
+			}
+		} catch (WebAPIException e) {
+			request.onException(e);
 			return false;
-		}
-
-		try {
-			request.onSucceed(statusCode, response);
-			return true;
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			throw new WebAPIException(false, e);
-		} catch (Exception e) {
-			throw new WebAPIException(false, e);
 		}
 	}
 
@@ -284,11 +293,7 @@ public class WebAPI implements Closeable {
 			return;
 		}
 
-		try {
-			succeed = doHttpSession(request);
-		} catch (WebAPIException e) {
-			request.onException(e);
-		}
+		succeed = doHttpSessionAndCallback(request);
 		if (succeed || !request.isRetryable()) {
 			requests.remove(request);
 		} else {
@@ -660,6 +665,28 @@ public class WebAPI implements Closeable {
 		}
 
 		return res;
+	}
+
+	/**
+	 * 予約候補を取得
+	 * 
+	 * @throws JSONException
+	 */
+	public int searchReservationCandidate(Demand demand,
+			WebAPICallback<List<ReservationCandidate>> callback)
+			throws JSONException {
+		return 0;
+	}
+
+	/**
+	 * 予約の実行
+	 * 
+	 * @throws JSONException
+	 */
+	public int createReservation(ReservationCandidate reservationCandidate,
+			WebAPICallback<List<ReservationCandidate>> callback)
+			throws JSONException {
+		return 0;
 	}
 
 	/**
