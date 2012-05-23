@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.ui.arrayadapter;
 
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -295,13 +296,11 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 	public Boolean isSelected(Reservation reservation) {
 		for (PassengerRecord passengerRecord : reservation.getPassengerRecord()
 				.asSet()) {
-			if (passengerRecord.getStatus().equals(
-					PassengerRecords.Status.RIDING)) {
+			if (PassengerRecords.isRiding(passengerRecord)) {
 				return operationSchedule.getId().equals(
 						passengerRecord.getDepartureOperationScheduleId()
 								.orNull());
-			} else if (passengerRecord.getStatus().equals(
-					PassengerRecords.Status.GOT_OFF)) {
+			} else if (PassengerRecords.isGotOff(passengerRecord)) {
 				return operationSchedule.getId().equals(
 						passengerRecord.getArrivalOperationScheduleId()
 								.orNull());
@@ -316,9 +315,8 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		for (PassengerRecord passengerRecord : reservation.getPassengerRecord()
 				.asSet()) {
 			passengerRecord.setPassengerCount(reservation.getPassengerCount());
-			if (passengerRecord.getStatus().equals(
-					PassengerRecords.Status.UNHANDLED)) {
-				passengerRecord.setStatus(PassengerRecords.Status.RIDING);
+			if (PassengerRecords.isUnhandled(passengerRecord)) {
+				passengerRecord.setGetOnTime(new Date());
 				passengerRecord
 						.setDepartureOperationSchedule(operationSchedule);
 				passengerRecord
@@ -327,9 +325,8 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 				commonLogic.getDataSource().getOnPassenger(operationSchedule,
 						reservation, passengerRecord,
 						new EmptyWebAPICallback<PassengerRecord>());
-			} else if (passengerRecord.getStatus().equals(
-					PassengerRecords.Status.RIDING)) {
-				passengerRecord.setStatus(PassengerRecords.Status.GOT_OFF);
+			} else if (PassengerRecords.isRiding(passengerRecord)) {
+				passengerRecord.setGetOffTime(new Date());
 				passengerRecord.setArrivalOperationSchedule(operationSchedule);
 				passengerRecord.setArrivalOperationScheduleId(operationSchedule
 						.getId());
@@ -345,15 +342,17 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 				new PassengerRecord()));
 		for (PassengerRecord passengerRecord : reservation.getPassengerRecord()
 				.asSet()) {
-			if (passengerRecord.getStatus().equals(
-					PassengerRecords.Status.RIDING)) {
-				passengerRecord.setStatus(PassengerRecords.Status.UNHANDLED);
+			if (PassengerRecords.isRiding(passengerRecord)) {
+				passengerRecord.clearGetOnTime();
+				passengerRecord.clearDepartureOperationSchedule();
+				passengerRecord.clearDepartureOperationScheduleId();
 				commonLogic.getDataSource().cancelGetOnPassenger(
 						operationSchedule, reservation,
 						new EmptyWebAPICallback<PassengerRecord>());
-			} else if (passengerRecord.getStatus().equals(
-					PassengerRecords.Status.GOT_OFF)) {
-				passengerRecord.setStatus(PassengerRecords.Status.RIDING);
+			} else if (PassengerRecords.isGotOff(passengerRecord)) {
+				passengerRecord.clearGetOffTime();
+				passengerRecord.clearArrivalOperationSchedule();
+				passengerRecord.clearArrivalOperationScheduleId();
 				commonLogic.getDataSource().cancelGetOffPassenger(
 						operationSchedule, reservation,
 						new EmptyWebAPICallback<PassengerRecord>());

@@ -96,8 +96,7 @@ public class DrivePhaseView extends PhaseView implements AnimationListener {
 		for (Reservation reservation : commonLogic.getReservations()) {
 			for (PassengerRecord passengerRecord : reservation
 					.getPassengerRecord().asSet()) {
-				if (passengerRecord.getStatus().equals(
-						PassengerRecords.Status.RIDING)) {
+				if (PassengerRecords.isRiding(passengerRecord)) {
 					totalPassengerCount += passengerRecord.getPassengerCount();
 				}
 			}

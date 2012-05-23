@@ -130,8 +130,7 @@ public class CommonEventSubscriber {
 				status.reservations.remove(reservation);
 				continue;
 			}
-			if (reservation.getPassengerRecord().get().getStatus()
-					.equals(PassengerRecords.Status.UNHANDLED)) {
+			if (PassengerRecords.isUnhandled(reservation)) {
 				status.reservations.remove(reservation);
 			}
 		}
