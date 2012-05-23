@@ -97,7 +97,7 @@ public class ReservationArrayAdapterTestCase extends
 		getInstrumentation().waitForIdleSync();
 	}
 
-	public void testReservationGetOn() throws Exception {
+	public void xtestReservationGetOn() throws Exception {
 		final String userName0 = "上野駅前";
 		final String userName1 = "御徒町駅前";
 		final Integer T = 300;
