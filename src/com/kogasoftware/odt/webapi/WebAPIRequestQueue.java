@@ -39,12 +39,6 @@ public class WebAPIRequestQueue {
 		}
 	}
 
-	public static String getReservationGetOnOrOffGroup(Integer operationScheduleId,
-			Integer reservationId) {
-		return "ReservationGetOnOrOffGroup/operationScheduleId="
-				+ operationScheduleId + "/reservationId=" + reservationId;
-	}
-
 	// 作業中のグループ
 	protected final Set<String> processingGroups = new HashSet<String>();
 	// グループ毎作業待ちリクエスト

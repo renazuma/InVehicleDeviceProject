@@ -355,8 +355,8 @@ public class WebAPI implements Closeable {
 		retryParam.put("passenger_record",
 				filterJSONKeys(retryPassengerRecord.toJSONObject(), filter));
 
-		String group = WebAPIRequestQueue.getReservationGetOnOrOffGroup(
-				operationSchedule.getId(), reservation.getId());
+		String group = getReservationGetOffGroup(operationSchedule.getId(),
+				reservation.getId());
 
 		return put(PATH_SCHEDULES + "/" + operationSchedule.getId()
 				+ "/reservations/" + reservation.getId() + "/getoff", param,
@@ -396,9 +396,9 @@ public class WebAPI implements Closeable {
 		retryParam.put("passenger_record",
 				filterJSONKeys(retryPassengerRecord.toJSONObject(), filter));
 
-		String group = WebAPIRequestQueue.getReservationGetOnOrOffGroup(
-				operationSchedule.getId(), reservation.getId());
-		
+		String group = getReservationGetOnGroup(operationSchedule.getId(),
+				reservation.getId());
+
 		return put(PATH_SCHEDULES + "/" + operationSchedule.getId()
 				+ "/reservations/" + reservation.getId() + "/geton", param,
 				retryParam, callback, new ResponseConverter<PassengerRecord>() {
@@ -421,8 +421,8 @@ public class WebAPI implements Closeable {
 	public int cancelGetOnPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, WebAPICallback<PassengerRecord> callback)
 			throws WebAPIException, JSONException {
-		String group = WebAPIRequestQueue.getReservationGetOnOrOffGroup(
-				operationSchedule.getId(), reservation.getId());
+		String group = getReservationGetOnGroup(operationSchedule.getId(),
+				reservation.getId());
 		return put(PATH_SCHEDULES + "/" + operationSchedule.getId()
 				+ "/reservations/" + reservation.getId() + "/cancel_geton",
 				new JSONObject(), new JSONObject(), callback,
@@ -446,8 +446,8 @@ public class WebAPI implements Closeable {
 	public int cancelGetOffPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, WebAPICallback<PassengerRecord> callback)
 			throws WebAPIException, JSONException {
-		String group = WebAPIRequestQueue.getReservationGetOnOrOffGroup(
-				operationSchedule.getId(), reservation.getId());
+		String group = getReservationGetOffGroup(operationSchedule.getId(),
+				reservation.getId());
 		return put(PATH_SCHEDULES + "/" + operationSchedule.getId()
 				+ "/reservations/" + reservation.getId() + "/cancel_getoff",
 				new JSONObject(), new JSONObject(), callback,
@@ -727,5 +727,17 @@ public class WebAPI implements Closeable {
 
 	public void setServerHost(String serverHost) {
 		this.serverHost = serverHost;
+	}
+
+	protected String getReservationGetOnGroup(Integer operationScheduleId,
+			Integer reservationId) {
+		return "ReservationGetOnGroup/operationScheduleId="
+				+ operationScheduleId + "/reservationId=" + reservationId;
+	}
+
+	protected String getReservationGetOffGroup(Integer operationScheduleId,
+			Integer reservationId) {
+		return "ReservationGetOffGroup/operationScheduleId="
+				+ operationScheduleId + "/reservationId=" + reservationId;
 	}
 }
