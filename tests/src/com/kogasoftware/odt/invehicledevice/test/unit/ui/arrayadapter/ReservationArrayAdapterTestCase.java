@@ -1,7 +1,12 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.ui.arrayadapter;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 import android.view.View;
 import android.widget.FrameLayout;
@@ -29,10 +34,10 @@ public class ReservationArrayAdapterTestCase extends
 	ReservationArrayAdapter raa;
 	StatusAccess sa;
 	
-	List<Reservation> getOnReservations = new LinkedList<Reservation>();
-	List<Reservation> getOffReservations = new LinkedList<Reservation>();
-	List<Reservation> cancelGetOnReservations = new LinkedList<Reservation>();
-	List<Reservation> cancelGetOffReservations = new LinkedList<Reservation>();
+	BlockingQueue<Reservation> getOnReservations = new LinkedBlockingQueue<Reservation>();
+	BlockingQueue<Reservation> getOffReservations = new LinkedBlockingQueue<Reservation>();
+	BlockingQueue<Reservation> cancelGetOnReservations = new LinkedBlockingQueue<Reservation>();
+	BlockingQueue<Reservation> cancelGetOffReservations = new LinkedBlockingQueue<Reservation>();
 	
 	DataSource dataSource = new EmptyDataSource() {
 		@Override
@@ -89,22 +94,25 @@ public class ReservationArrayAdapterTestCase extends
 	}
 	
 	protected void sync() throws Exception {
-		Thread.sleep(500);
 		getInstrumentation().waitForIdleSync();
-		Thread.sleep(5000);
 	}
 
-	public void testReservationが表示される() throws Exception {
+	public void testReservationGetOn() throws Exception {
 		final String userName0 = "上野駅前";
 		final String userName1 = "御徒町駅前";
+		final Integer T = 50;
 		sa.write(new Writer() {
 			@Override
 			public void write(Status status) {
 				status.reservations.clear();
+				OperationSchedule os0 = new OperationSchedule();
+				os0.setId(200);
 				OperationSchedule os1 = new OperationSchedule();
 				os1.setId(0);
 				OperationSchedule os2 = new OperationSchedule();
 				os2.setId(100);
+				status.finishedOperationSchedules.clear();
+				status.finishedOperationSchedules.add(os0);
 				status.remainingOperationSchedules.clear();
 				status.remainingOperationSchedules.add(os1);
 				status.remainingOperationSchedules.add(os2);
@@ -122,13 +130,15 @@ public class ReservationArrayAdapterTestCase extends
 
 				{
 					PassengerRecord pr = new PassengerRecord();
+					pr.setGetOnTime(new Date());
+					pr.setDepartureOperationScheduleId(os0.getId());
 					Reservation r = new Reservation();
 					User u = new User();
 					u.setLastName(userName1);
 					r.setUser(u);
 					r.setPassengerRecord(pr);
-					r.setDepartureScheduleId(os1.getId());
-					r.setArrivalScheduleId(os2.getId());
+					r.setDepartureScheduleId(os0.getId());
+					r.setArrivalScheduleId(os1.getId());
 					status.reservations.add(r);
 				}
 			}
@@ -149,17 +159,17 @@ public class ReservationArrayAdapterTestCase extends
 				ll.addView(v);
 			}
 		});
-		solo.searchText(userName0);
+		assertTrue(solo.searchText(userName0, true));
+		
+		Reservation r;
+
+		solo.clickOnView(columns.get(0));
+		r = getOnReservations.poll(T, TimeUnit.SECONDS);
+		assertEquals(userName0, r.getUser().get().getLastName());
 		
 		solo.clickOnView(columns.get(0));
-		sync();
-		assertEquals(1, getOnReservations.size());
-		assertEquals(userName0, getOnReservations.get(0).getUser().get().getLastName());
-		
-		solo.clickOnView(columns.get(0));
-		sync();
-		assertEquals(1, cancelGetOnReservations.size());
-		assertEquals(userName0, cancelGetOnReservations.get(0).getUser().get().getLastName());
+		r = cancelGetOnReservations.poll(T, TimeUnit.SECONDS);
+		assertEquals(userName0, r.getUser().get().getLastName());
 		
 		runOnUiThreadSync(new Runnable() {
 			@Override
@@ -169,37 +179,31 @@ public class ReservationArrayAdapterTestCase extends
 				ll.addView(v);
 			}
 		});
-		solo.searchText(userName1);
+		assertTrue(solo.searchText(userName1, true));
 		
 		solo.clickOnView(columns.get(1));
-		sync();
-		assertEquals(2, getOnReservations.size());
-		assertEquals(userName1, getOnReservations.get(1).getUser().get().getLastName());
+		r = getOffReservations.poll(T, TimeUnit.SECONDS);
+		assertEquals(userName1, r.getUser().get().getLastName());
 		
 		solo.clickOnView(columns.get(1));
-		sync();
-		assertEquals(2, cancelGetOnReservations.size());
-		assertEquals(userName1, cancelGetOnReservations.get(1).getUser().get().getLastName());
-
+		r = cancelGetOffReservations.poll(T, TimeUnit.SECONDS);
+		assertEquals(userName1, r.getUser().get().getLastName());
+		
 		
 		solo.clickOnView(columns.get(0));
-		sync();
-		assertEquals(3, getOnReservations.size());
-		assertEquals(userName0, getOnReservations.get(0).getUser().get().getLastName());
+		r = getOnReservations.poll(T, TimeUnit.SECONDS);
+		assertEquals(userName0, r.getUser().get().getLastName());
 		
 		solo.clickOnView(columns.get(1));
-		sync();
-		assertEquals(4, getOnReservations.size());
-		assertEquals(userName1, getOnReservations.get(1).getUser().get().getLastName());
+		r = getOffReservations.poll(T, TimeUnit.SECONDS);
+		assertEquals(userName1, r.getUser().get().getLastName());
 		
 		solo.clickOnView(columns.get(0));
-		sync();
-		assertEquals(3, cancelGetOnReservations.size());
-		assertEquals(userName0, cancelGetOnReservations.get(0).getUser().get().getLastName());
+		r = cancelGetOnReservations.poll(T, TimeUnit.SECONDS);
+		assertEquals(userName0, r.getUser().get().getLastName());
 		
 		solo.clickOnView(columns.get(1));
-		sync();
-		assertEquals(4, cancelGetOnReservations.size());
-		assertEquals(userName1, cancelGetOnReservations.get(1).getUser().get().getLastName());
+		r = cancelGetOffReservations.poll(T, TimeUnit.SECONDS);
+		assertEquals(userName1, r.getUser().get().getLastName());
 	}
 }
