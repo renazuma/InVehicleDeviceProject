@@ -169,6 +169,10 @@ public class VoiceCache {
 		return result;
 	}
 
+	public void invalidate(String voice) {
+		cache.invalidate(voice);
+	}
+
 	protected File load(String voice) throws IOException {
 		File file = new File(outputDirectory + File.separator
 				+ sequence.getAndIncrement() + ".wav");

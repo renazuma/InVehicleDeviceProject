@@ -101,6 +101,7 @@ public class VoiceThread extends Thread {
 			mediaPlayer.start();
 			semaphore.acquire();
 		} catch (IOException e) {
+			voiceCache.invalidate(voice);
 			Log.w(TAG, e);
 		} finally {
 			mediaPlayer.release();
