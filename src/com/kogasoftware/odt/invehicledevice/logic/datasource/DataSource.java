@@ -65,5 +65,5 @@ public interface DataSource extends Closeable {
 			WebAPICallback<List<ReservationCandidate>> callback);
 
 	int createReservation(ReservationCandidate reservationCandidate,
-			WebAPICallback<List<ReservationCandidate>> callback);
+			WebAPICallback<Reservation> callback);
 }

@@ -1,6 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.test.integration;
 
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,7 +11,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSource;
-import com.kogasoftware.odt.invehicledevice.logic.empty.EmptyWebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.Demand;
@@ -32,7 +30,6 @@ public class MockDataSource implements DataSource {
 
 	private Date nextNotifyDate = new Date();
 	private boolean NotificationFlag = false;
-
 
 	@Override
 	public int arrivalOperationSchedule(OperationSchedule os,
@@ -78,7 +75,7 @@ public class MockDataSource implements DataSource {
 
 	@Override
 	public List<VehicleNotification> getVehicleNotifications()
-		throws WebAPIException {
+			throws WebAPIException {
 
 		try {
 			Thread.sleep(1);
@@ -147,6 +144,7 @@ public class MockDataSource implements DataSource {
 		NotificationFlag = bNotificationFlag;
 
 	}
+
 	public void setOperationSchedules(Integer iOperationScheduleCount) {
 
 		System.out.println("setOperationSchedules " + iOperationScheduleCount);
@@ -296,7 +294,8 @@ public class MockDataSource implements DataSource {
 							+ "departure_estimate: '2012-01-01T09:15:00+09:00', "
 							+ "platform: {name: 'テストコガソフトウェア前', name_ruby: 'てすとこがそふとうぇあまえ'}, "
 							+ "reservations_as_arrival: [], "
-							+ "reservations_as_departure: [" + u1a + "," + u1b + "," + u1c + "," + u1d + "," + u1e + "," + u1f
+							+ "reservations_as_departure: [" + u1a + "," + u1b
+							+ "," + u1c + "," + u1d + "," + u1e + "," + u1f
 							+ "]}");
 			lOperationSchedule.add(new OperationSchedule(j1));
 
@@ -306,8 +305,9 @@ public class MockDataSource implements DataSource {
 							+ "arrival_estimate: '2012-01-01T09:30:00+09:00', "
 							+ "departure_estimate: '2012-01-01T09:35:00+09:00', "
 							+ "platform: {name: 'テスト上野御徒町駅前',name_ruby: 'てすとうえのおかちまちえきまえ'}, "
-							+ "reservations_as_arrival: [" +  u1d + "], "
-							+ "reservations_as_departure: [" + u1g + "," + u1j + "," + u1l + "]}");
+							+ "reservations_as_arrival: [" + u1d + "], "
+							+ "reservations_as_departure: [" + u1g + "," + u1j
+							+ "," + u1l + "]}");
 			lOperationSchedule.add(new OperationSchedule(j2));
 
 			JSONObject j3 = new JSONObject(
@@ -316,8 +316,9 @@ public class MockDataSource implements DataSource {
 							+ "arrival_estimate: '2012-01-01T10:30:00+09:00', "
 							+ "departure_estimate: '2012-01-01T10:33:00+09:00', "
 							+ "platform: {name: 'テスト上野動物園前', name_ruby: 'てすとうえのどうぶつえんまえ'}, "
-							+ "reservations_as_arrival: [" + u1c + "," + u1g + ","+ "], "
-							+ "reservations_as_departure: [" + u1h + "," + u1k + "," + u1m  + "]}");
+							+ "reservations_as_arrival: [" + u1c + "," + u1g
+							+ "," + "], " + "reservations_as_departure: ["
+							+ u1h + "," + u1k + "," + u1m + "]}");
 			lOperationSchedule.add(new OperationSchedule(j3));
 
 			JSONObject j4 = new JSONObject(
@@ -326,8 +327,10 @@ public class MockDataSource implements DataSource {
 							+ "arrival_estimate: '2012-01-01T11:10:00+09:00', "
 							+ "departure_estimate: '2012-01-01T11:15:00+09:00', "
 							+ "platform: {name: 'テスト上野広小路前', name_ruby: 'てすとうえのひろこうじまえ'}, "
-							+ "reservations_as_arrival: [" + u1b + "," + u1f + "," + u1h + "," + u1k + "], "
-							+ "reservations_as_departure: [" + u1i + "," + u1n + "," + u1o + "]}");
+							+ "reservations_as_arrival: [" + u1b + "," + u1f
+							+ "," + u1h + "," + u1k + "], "
+							+ "reservations_as_departure: [" + u1i + "," + u1n
+							+ "," + u1o + "]}");
 			lOperationSchedule.add(new OperationSchedule(j4));
 
 			JSONObject j5 = new JSONObject(
@@ -336,7 +339,8 @@ public class MockDataSource implements DataSource {
 							+ "arrival_estimate: '2012-01-01T12:00:00+09:00', "
 							+ "departure_estimate: '2012-01-01T12:05:00+09:00', "
 							+ "platform: {name: 'テスト湯島天神前', name_ruby: 'てすとゆしまてんじんまえ'}}"
-							+ "reservations_as_arrival: [" + u1e + "," + u1j + "," + u1m + "," + u1o + "], "
+							+ "reservations_as_arrival: [" + u1e + "," + u1j
+							+ "," + u1m + "," + u1o + "], "
 							+ "reservations_as_departure: []}");
 			lOperationSchedule.add(new OperationSchedule(j5));
 
@@ -346,7 +350,8 @@ public class MockDataSource implements DataSource {
 							+ "arrival_estimate: '2012-01-01T13:03:00+09:00', "
 							+ "departure_estimate: '2012-01-01T13:10:30+09:00', "
 							+ "platform: {name: 'テストＪＲ御徒町駅前', name_ruby: 'てすとじぇいあーるおかちまちえきまえ'}, "
-							+ "reservations_as_arrival: [" + u1a + "," + u1i + ","  + u1l + ","  + u1n + "], "
+							+ "reservations_as_arrival: [" + u1a + "," + u1i
+							+ "," + u1l + "," + u1n + "], "
 							+ "reservations_as_departure: []}");
 			lOperationSchedule.add(new OperationSchedule(j6));
 
@@ -489,8 +494,9 @@ public class MockDataSource implements DataSource {
 
 	@Override
 	public int createReservation(ReservationCandidate reservationCandidate,
-			WebAPICallback<List<ReservationCandidate>> callback) {
+			WebAPICallback<Reservation> callback) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
 }

@@ -1,6 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.test.util.datasource;
 
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,7 +11,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSource;
-import com.kogasoftware.odt.invehicledevice.logic.empty.EmptyWebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.Demand;
@@ -136,7 +134,7 @@ public class DummyDataSource implements DataSource {
 	@Override
 	public List<VehicleNotification> getVehicleNotifications()
 
-		throws WebAPIException {
+	throws WebAPIException {
 
 		try {
 			Thread.sleep(5000);
@@ -145,7 +143,6 @@ public class DummyDataSource implements DataSource {
 			throw new WebAPIException(false, e);
 		}
 
-
 		List<VehicleNotification> l = new LinkedList<VehicleNotification>();
 		if (nextNotifyDate.after(new Date())) {
 			return l;
@@ -153,7 +150,7 @@ public class DummyDataSource implements DataSource {
 		nextNotifyDate = new Date(new Date().getTime() + 10 * 1000);
 		VehicleNotification n = new VehicleNotification();
 		n.setBody("テスト通知が行われました " + new Date());
-//		l.add(n);
+		// l.add(n);
 		return l;
 
 	}
@@ -312,7 +309,7 @@ public class DummyDataSource implements DataSource {
 
 	@Override
 	public int createReservation(ReservationCandidate reservationCandidate,
-			WebAPICallback<List<ReservationCandidate>> callback) {
+			WebAPICallback<Reservation> callback) {
 		// TODO Auto-generated method stub
 		return 0;
 	}

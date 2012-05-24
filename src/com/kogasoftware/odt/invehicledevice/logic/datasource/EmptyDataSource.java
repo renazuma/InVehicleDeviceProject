@@ -121,8 +121,9 @@ public class EmptyDataSource implements DataSource {
 
 	@Override
 	public int createReservation(ReservationCandidate reservationCandidate,
-			WebAPICallback<List<ReservationCandidate>> callback) {
+			WebAPICallback<Reservation> callback) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
 }

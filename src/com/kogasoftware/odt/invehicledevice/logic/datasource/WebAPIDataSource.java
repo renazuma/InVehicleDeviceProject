@@ -269,7 +269,7 @@ public class WebAPIDataSource implements DataSource {
 			}
 		}, callback);
 	}
-	
+
 	@Override
 	public int searchReservationCandidate(final Demand demand,
 			final WebAPICallback<List<ReservationCandidate>> callback) {
@@ -280,10 +280,11 @@ public class WebAPIDataSource implements DataSource {
 			}
 		});
 	}
-	
+
 	@Override
-	public int createReservation(final ReservationCandidate reservationCandidate,
-			final WebAPICallback<List<ReservationCandidate>> callback) {
+	public int createReservation(
+			final ReservationCandidate reservationCandidate,
+			final WebAPICallback<Reservation> callback) {
 		return callWebAPI(new WebAPICaller() {
 			@Override
 			public int call() throws JSONException, WebAPIException {

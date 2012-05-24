@@ -1,6 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.test.util.datasource;
 
-import java.io.IOException;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
@@ -13,7 +12,6 @@ import org.json.JSONObject;
 import android.util.Log;
 
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSource;
-import com.kogasoftware.odt.invehicledevice.logic.empty.EmptyWebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.Demand;
@@ -27,7 +25,8 @@ import com.kogasoftware.odt.webapi.model.VehicleNotification;
 import com.kogasoftware.odt.webapi.model.VehicleNotifications;
 
 public class ScheduleChangedTestDataSource implements DataSource {
-	private static final String TAG = ScheduleChangedTestDataSource.class.getSimpleName();
+	private static final String TAG = ScheduleChangedTestDataSource.class
+			.getSimpleName();
 	private final AtomicInteger phase = new AtomicInteger(0);
 
 	@Override
@@ -241,8 +240,9 @@ public class ScheduleChangedTestDataSource implements DataSource {
 
 	@Override
 	public int createReservation(ReservationCandidate reservationCandidate,
-			WebAPICallback<List<ReservationCandidate>> callback) {
+			WebAPICallback<Reservation> callback) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
 }
