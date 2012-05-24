@@ -45,10 +45,10 @@ public class VoiceThread extends Thread {
 	@Override
 	public void run() {
 		try {
-			VoiceCache voiceLoader = new VoiceCache(context, MAX_CACHE_BYTES);
+			VoiceCache voiceCache = new VoiceCache(context, MAX_CACHE_BYTES);
 			while (true) {
 				String voice = voices.take();
-				speak(voiceLoader, voice);
+				speak(voiceCache, voice);
 			}
 		} catch (IOException e) {
 			Log.e(TAG, "IOException", e);
@@ -68,7 +68,7 @@ public class VoiceThread extends Thread {
 		speakableSemaphore.release();
 	}
 
-	private void speak(VoiceCache voiceLoader, String voice)
+	private void speak(VoiceCache voiceCache, String voice)
 			throws InterruptedException {
 		if (!speakable.get()) {
 			speakableSemaphore.acquire();
@@ -76,7 +76,7 @@ public class VoiceThread extends Thread {
 		MediaPlayer mediaPlayer = new MediaPlayer();
 		try {
 			try {
-				File voicePath = voiceLoader.get(voice);
+				File voicePath = voiceCache.get(voice);
 				mediaPlayer.setDataSource(voicePath.getAbsolutePath());
 			} catch (ExecutionException e) {
 				Log.w(TAG, e);
