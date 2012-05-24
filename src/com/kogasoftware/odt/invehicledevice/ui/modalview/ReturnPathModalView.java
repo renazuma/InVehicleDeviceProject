@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.ui.modalview;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -21,6 +22,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationCandidateArrayAdapter;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.Reservation;
@@ -91,19 +93,29 @@ public class ReturnPathModalView extends ModalView {
 		}
 		title += " 復路の予約";
 		returnPathTitleTextView.setText(title);
+		
+		Date now = CommonLogic.getDate();
 
 		Spinner hourSpinner = (Spinner) findViewById(R.id.reservation_candidate_hour_spinner);
-		String[] hours = new String[] { "9", "10", "11", "12", "13", "14", "20" };
+		List<String> hours = new LinkedList<String>();
+		for (Integer hour = now.getHours(); hour < 24; ++hour) {
+			hours.add(hour.toString());
+		}
 		ArrayAdapter<String> hourAdapter = new ArrayAdapter<String>(
 				getContext(), android.R.layout.simple_spinner_item, hours);
 		hourSpinner.setAdapter(hourAdapter);
+		hourSpinner.setSelection(0); // 必ず一つは要素が入る
 
-		String[] minutes = new String[] { "0", "1", "2", "50", "51", "53", "59" };
+		List<String> minutes = new LinkedList<String>();
+		for (Integer minute = 0; minute < 60; ++minute) {
+			minutes.add(minute.toString());
+		}
 		Spinner minuteSpinner = (Spinner) findViewById(R.id.reservation_candidate_minute_spinner);
 		ArrayAdapter<String> minuteAdapter = new ArrayAdapter<String>(
 				getContext(), android.R.layout.simple_spinner_item, minutes);
 		minuteSpinner.setAdapter(minuteAdapter);
-
+		minuteSpinner.setSelection(now.getMinutes());
+		
 		String[] inOrOut = { "乗車", "降車" };
 		Spinner inOrOutSpinner = (Spinner) findViewById(R.id.reservation_candidate_in_or_out_spinner);
 		ArrayAdapter<String> inOrOutAdapter = new ArrayAdapter<String>(

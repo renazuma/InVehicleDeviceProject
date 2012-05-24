@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
+import com.kogasoftware.odt.webapi.model.Demand;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
@@ -108,6 +109,20 @@ public class EmptyDataSource implements DataSource {
 	@Override
 	public int cancelGetOnPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, WebAPICallback<PassengerRecord> callback) {
+		return 0;
+	}
+
+	@Override
+	public int searchReservationCandidate(Demand demand,
+			WebAPICallback<List<ReservationCandidate>> callback) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int createReservation(ReservationCandidate reservationCandidate,
+			WebAPICallback<List<ReservationCandidate>> callback) {
+		// TODO Auto-generated method stub
 		return 0;
 	}
 }

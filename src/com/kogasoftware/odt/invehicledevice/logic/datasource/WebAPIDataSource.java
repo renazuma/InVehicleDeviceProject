@@ -15,6 +15,7 @@ import com.kogasoftware.odt.invehicledevice.logic.empty.EmptyWebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPI;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
+import com.kogasoftware.odt.webapi.model.Demand;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
@@ -267,5 +268,27 @@ public class WebAPIDataSource implements DataSource {
 						reservation, callback);
 			}
 		}, callback);
+	}
+	
+	@Override
+	public int searchReservationCandidate(final Demand demand,
+			final WebAPICallback<List<ReservationCandidate>> callback) {
+		return callWebAPI(new WebAPICaller() {
+			@Override
+			public int call() throws JSONException, WebAPIException {
+				return api.searchReservationCandidate(demand, callback);
+			}
+		});
+	}
+	
+	@Override
+	public int createReservation(final ReservationCandidate reservationCandidate,
+			final WebAPICallback<List<ReservationCandidate>> callback) {
+		return callWebAPI(new WebAPICaller() {
+			@Override
+			public int call() throws JSONException, WebAPIException {
+				return api.createReservation(reservationCandidate, callback);
+			}
+		});
 	}
 }

@@ -1,10 +1,14 @@
 package com.kogasoftware.odt.invehicledevice.test.util;
 
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
+
+import org.joda.time.DateTime;
 
 import android.view.View;
 
 import com.google.common.util.concurrent.Uninterruptibles;
+import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSourceFactory;
@@ -13,6 +17,10 @@ import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 public class TestUtil {
 	public static void setDataSource(DataSource ds) {
 		DataSourceFactory.setInstance(ds);
+	}
+	
+	public static void setDate(DateTime date) {
+		CommonLogic.setDate(new Date(date.getMillis()));
 	}
 	
 	public static void clearStatus() {
