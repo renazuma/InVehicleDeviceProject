@@ -8,9 +8,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.Status;
@@ -30,6 +32,7 @@ import com.kogasoftware.odt.webapi.model.User;
 public class ReservationArrayAdapterTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 
+	private static final String TAG = ReservationArrayAdapterTestCase.class.getSimpleName();
 	CommonLogic cl;
 	ReservationArrayAdapter raa;
 	StatusAccess sa;
@@ -94,10 +97,12 @@ public class ReservationArrayAdapterTestCase extends
 	}
 	
 	protected void sync() throws Exception {
+		Log.i(TAG, "sync start");
 		getInstrumentation().waitForIdleSync();
+		Log.i(TAG, "sync complete");
 	}
 
-	public void xtestReservationGetOn() throws Exception {
+	public void testReservationGetOn() throws Exception {
 		final String userName0 = "上野駅前";
 		final String userName1 = "御徒町駅前";
 		final Integer T = 300;
@@ -148,61 +153,49 @@ public class ReservationArrayAdapterTestCase extends
 				.getTargetContext(), cl);
 		sync();
 		assertEquals(raa.getCount(), 2);
-		final List<View> columns = new LinkedList<View>();
-		final LinearLayout ll = new LinearLayout(getInstrumentation().getTargetContext());
 		runOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
-				View v = raa.getView(0, null, null);
-				columns.add(v);
-				getActivity().setContentView(ll);
-				ll.addView(v);
+				ListView lv = new ListView(getInstrumentation().getTargetContext());
+				lv.setAdapter(raa);
+				getActivity().setContentView(lv);
 			}
 		});
 		assertTrue(solo.searchText(userName0, true));
 		
 		Reservation r;
-
-		solo.clickOnView(columns.get(0));
+		solo.clickOnText(userName0);
 		r = getOnReservations.poll(T, TimeUnit.SECONDS);
 		assertEquals(userName0, r.getUser().get().getLastName());
 		
-		solo.clickOnView(columns.get(0));
+		solo.clickOnText(userName0);
 		r = cancelGetOnReservations.poll(T, TimeUnit.SECONDS);
 		assertEquals(userName0, r.getUser().get().getLastName());
 		
-		runOnUiThreadSync(new Runnable() {
-			@Override
-			public void run() {
-				View v = raa.getView(1, null, null);
-				columns.add(v);
-				ll.addView(v);
-			}
-		});
 		assertTrue(solo.searchText(userName1, true));
 		
-		solo.clickOnView(columns.get(1));
+		solo.clickOnText(userName1);
 		r = getOffReservations.poll(T, TimeUnit.SECONDS);
 		assertEquals(userName1, r.getUser().get().getLastName());
 		
-		solo.clickOnView(columns.get(1));
+		solo.clickOnText(userName1);
 		r = cancelGetOffReservations.poll(T, TimeUnit.SECONDS);
 		assertEquals(userName1, r.getUser().get().getLastName());
 		
 		
-		solo.clickOnView(columns.get(0));
+		solo.clickOnText(userName0);
 		r = getOnReservations.poll(T, TimeUnit.SECONDS);
 		assertEquals(userName0, r.getUser().get().getLastName());
 		
-		solo.clickOnView(columns.get(1));
+		solo.clickOnText(userName1);
 		r = getOffReservations.poll(T, TimeUnit.SECONDS);
 		assertEquals(userName1, r.getUser().get().getLastName());
 		
-		solo.clickOnView(columns.get(0));
+		solo.clickOnText(userName0);
 		r = cancelGetOnReservations.poll(T, TimeUnit.SECONDS);
 		assertEquals(userName0, r.getUser().get().getLastName());
 		
-		solo.clickOnView(columns.get(1));
+		solo.clickOnText(userName1);
 		r = cancelGetOffReservations.poll(T, TimeUnit.SECONDS);
 		assertEquals(userName1, r.getUser().get().getLastName());
 	}
