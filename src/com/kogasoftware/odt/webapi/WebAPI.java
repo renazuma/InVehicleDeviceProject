@@ -684,8 +684,7 @@ public class WebAPI implements Closeable {
 	 * @throws JSONException
 	 */
 	public int createReservation(ReservationCandidate reservationCandidate,
-			WebAPICallback<List<ReservationCandidate>> callback)
-			throws JSONException {
+			WebAPICallback<Reservation> callback) throws JSONException {
 		return 0;
 	}
 
