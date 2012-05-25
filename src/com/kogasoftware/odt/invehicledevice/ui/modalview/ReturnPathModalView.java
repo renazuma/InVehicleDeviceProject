@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -52,7 +53,7 @@ public class ReturnPathModalView extends ModalView {
 	private final Button doReservationButton;
 	private final Button reservationCandidateScrollUpButton;
 	private final Button reservationCandidateScrollDownButton;
-	
+
 	public ReturnPathModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		setContentView(R.layout.return_path_modal_view);
@@ -186,15 +187,16 @@ public class ReturnPathModalView extends ModalView {
 		searchingDialog.show();
 		Date now = new Date();
 		Calendar calendar = Calendar.getInstance();
-		calendar.set(now.getYear(), now.getMonth(), now.getDay(), now.getHours(), now.getMinutes());
-		
+		calendar.set(now.getYear(), now.getMonth(), now.getDay(),
+				now.getHours(), now.getMinutes());
+
 		final Demand demand = new Demand();
 		demand.setDepartureTime(calendar.getTime());
 		demand.setDeparturePlatformId(currentReservation.getArrivalPlatformId());
 		demand.setDeparturePlatform(currentReservation.getArrivalPlatform());
 		demand.setArrivalPlatformId(currentReservation.getDeparturePlatformId());
 		demand.setArrivalPlatform(currentReservation.getDeparturePlatform());
-		
+
 		AsyncTask<Void, Void, List<ReservationCandidate>> task = new AsyncTask<Void, Void, List<ReservationCandidate>>() {
 			@Override
 			protected List<ReservationCandidate> doInBackground(Void... params) {
@@ -224,7 +226,7 @@ public class ReturnPathModalView extends ModalView {
 			@Override
 			protected void onPostExecute(List<ReservationCandidate> result) {
 				searchingDialog.dismiss();
-				if (this.isCancelled()) {
+				if (isCancelled()) {
 					return;
 				}
 				setReservationCandidates(result);
@@ -235,23 +237,41 @@ public class ReturnPathModalView extends ModalView {
 
 	protected void onDoReservationButtonClick() {
 		sendingDialog.show();
-		AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+		AsyncTask<Void, Void, Reservation> task = new AsyncTask<Void, Void, Reservation>() {
 			@Override
-			protected Void doInBackground(Void... params) {
-				try {
-					getCommonLogic().getDataSource().postReservation(0);
-					return null;
-				} catch (WebAPIException e) {
-					e.printStackTrace();
+			protected Reservation doInBackground(Void... params) {
+				ReservationCandidate reservationCandidate = new ReservationCandidate();
+				final AtomicReference<Reservation> outputReservation = new AtomicReference<Reservation>();
+
+				getCommonLogic().getDataSource().createReservation(
+						reservationCandidate,
+						new WebAPICallback<Reservation>() {
+							@Override
+							public void onException(int reqkey,
+									WebAPIException ex) {
+							}
+
+							@Override
+							public void onFailed(int reqkey, int statusCode,
+									String response) {
+							}
+
+							@Override
+							public void onSucceed(int reqkey, int statusCode,
+									Reservation result) {
+								outputReservation.set(result);
+							}
+						});
+				if (outputReservation.get() == null) {
+					cancel(true);
 				}
-				cancel(true);
-				return null;
+				return outputReservation.get();
 			}
 
 			@Override
-			protected void onPostExecute(Void result) {
+			protected void onPostExecute(Reservation result) {
 				sendingDialog.dismiss();
-				if (this.isCancelled()) {
+				if (isCancelled()) {
 					return;
 				}
 				hide();
@@ -264,8 +284,8 @@ public class ReturnPathModalView extends ModalView {
 			List<ReservationCandidate> reservationCandidates) {
 		if (reservationCandidates.isEmpty()) {
 			Toast.makeText(getContext(),
-				getResources().getString(R.string.an_error_occurred),
-				Toast.LENGTH_LONG).show();
+					getResources().getString(R.string.an_error_occurred),
+					Toast.LENGTH_LONG).show();
 			return;
 		}
 		final ReservationCandidateArrayAdapter adapter = new ReservationCandidateArrayAdapter(
