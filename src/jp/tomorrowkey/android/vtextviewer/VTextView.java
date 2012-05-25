@@ -43,6 +43,9 @@ public class VTextView extends View {
 	@Override
 	protected void onAttachedToWindow() {
 		super.onAttachedToWindow();
+		if (updateBitmapThread.isAlive()) {
+			updateBitmapThread.interrupt();
+		}
 		updateBitmapThread = new VTextViewDrawThread(this);
 		updateBitmapThread.start();
 	}
@@ -55,17 +58,21 @@ public class VTextView extends View {
 
 	@Override
 	public void onDraw(Canvas targetCanvas) {
-		// ビットマップの大きさがあわないばあい別スレッドでビットマップを作成
-		if (bitmap.getWidth() != width.get()
-				|| bitmap.getHeight() != height.get()) {
-			updateBitmapStartSemaphore.release();
-		}
+		super.onDraw(targetCanvas);
+		
 		// 新しいビットマップがある場合交換する
 		Bitmap newBitmap = preparedBitmap.getAndSet(null);
 		if (newBitmap != null) {
 			bitmap.recycle();
 			bitmap = newBitmap;
 		}
+
+		// ビットマップの大きさがあわないばあい別スレッドでビットマップを作成開始
+		if (bitmap.getWidth() != width.get()
+				|| bitmap.getHeight() != height.get()) {
+			updateBitmapStartSemaphore.release();
+		}
+
 		targetCanvas.drawBitmap(bitmap, 0, 0, new Paint());
 	}
 
@@ -73,13 +80,17 @@ public class VTextView extends View {
 	public void onLayout(boolean changed, int left, int top, int right,
 			int bottom) {
 		super.onLayout(changed, left, top, right, bottom);
+		if (width.get() == getWidth() && height.get() == getHeight()) {
+			return;
+		}
 		width.set(getWidth());
 		height.set(getHeight());
-		updateBitmapStartSemaphore.release(); // 別スレッドでビットマップを再作成
+		updateBitmapStartSemaphore.release();
 	}
 
 	public void setText(String text) {
 		this.text = Strings.nullToEmpty(text);
+		updateBitmapStartSemaphore.release();
 	}
 
 	public String getText() {
