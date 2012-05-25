@@ -3,10 +3,10 @@ package com.kogasoftware.odt.invehicledevice.backgroundtask;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
 import android.media.MediaPlayer;
@@ -30,8 +30,7 @@ public class VoiceThread extends Thread {
 	private static final Integer MAX_CACHE_BYTES = 100 * 1024 * 1024;
 	private final BlockingQueue<String> voices = new LinkedBlockingQueue<String>();
 	private final Context context;
-	private final Semaphore speakableSemaphore = new Semaphore(0); // TODO:ソースが複雑すぎる
-	private final AtomicBoolean speakable = new AtomicBoolean(true);
+	private volatile CountDownLatch speakableLatch = new CountDownLatch(0); // 参照書き換え可能な状態で複数スレッドから読まれるためvolatileをつける
 
 	public VoiceThread(Context context) {
 		this.context = context;
@@ -58,21 +57,19 @@ public class VoiceThread extends Thread {
 
 	@Subscribe
 	public void pause(InVehicleDeviceActivity.PausedEvent e) {
-		speakableSemaphore.drainPermits();
-		speakable.set(false);
+		speakableLatch.countDown();
+		speakableLatch = new CountDownLatch(1);
 	}
 
 	@Subscribe
 	public void resume(InVehicleDeviceActivity.ResumedEvent e) {
-		speakable.set(true);
-		speakableSemaphore.release();
+		speakableLatch.countDown();
 	}
 
 	private void speak(VoiceCache voiceCache, String voice)
 			throws InterruptedException {
-		if (!speakable.get()) {
-			speakableSemaphore.acquire();
-		}
+		speakableLatch.await();
+
 		MediaPlayer mediaPlayer = new MediaPlayer();
 		try {
 			try {
