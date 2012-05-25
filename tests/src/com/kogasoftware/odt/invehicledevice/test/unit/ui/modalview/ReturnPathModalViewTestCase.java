@@ -11,6 +11,8 @@ import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
 import android.view.View;
+import android.widget.Button;
+import android.widget.ListView;
 import android.widget.Spinner;
 
 import com.kogasoftware.odt.invehicledevice.R;
@@ -32,13 +34,16 @@ public class ReturnPathModalViewTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 	CommonLogic cl;
 	ReturnPathModalView mv;
+	ListView lv;
 	Reservation r;
+	Button doReservation;
 
 	BlockingQueue<Demand> searchRequests = new LinkedBlockingQueue<Demand>();
-
 	BlockingQueue<List<ReservationCandidate>> searchResponses = new LinkedBlockingQueue<List<ReservationCandidate>>();
 	BlockingQueue<ReservationCandidate> createRequests = new LinkedBlockingQueue<ReservationCandidate>();
 	BlockingQueue<Reservation> createResponses = new LinkedBlockingQueue<Reservation>();
+	
+	List<ReservationCandidate> expectedSearchResponses = new LinkedList<ReservationCandidate>();
 
 	Boolean searchFailed;
 	Boolean searchExceptioned;
@@ -122,17 +127,22 @@ public class ReturnPathModalViewTestCase extends
 		mv = (ReturnPathModalView) inflateAndAddTestLayout(com.kogasoftware.odt.invehicledevice.test.R.layout.test_return_path_modal_view);
 		cl.registerEventListener(mv);
 		mv.setCommonLogic(new CommonLogicLoadCompleteEvent(cl));
+		lv = (ListView) mv.findViewById(R.id.reservation_candidates_list_view);
+		doReservation = (Button)mv.findViewById(R.id.do_reservation_button);
 	}
 
 	@Override
-	public void setUp() {
-		Reservation r = new Reservation();
+	public void setUp() throws Exception {
+		super.setUp();
+
+		r = new Reservation();
 		User u = new User();
 		r.setUser(u);
 		searchFailed = false;
 		searchExceptioned = false;
 		createFailed = false;
 		createExceptioned = false;
+		expectedSearchResponses.clear();
 	}
 
 	@Override
@@ -142,34 +152,182 @@ public class ReturnPathModalViewTestCase extends
 			cl.dispose();
 		}
 	}
-
-	public void testUIで入力した検索条件が送信される() throws Exception {
-		TestUtil.setDate(DateTime.now().withHourOfDay(10).withMinuteOfHour(3));
+	
+	public void testUIで入力した検索条件が送信される1() throws Exception {
+		DateTime now = DateTime.now().withHourOfDay(0).withMinuteOfHour(40);
+		DateTime date = DateTime.now().withHourOfDay(12).withMinuteOfHour(34);
 		r.setDeparturePlatformId(10);
+		r.setArrivalPlatformId(11);
+		callTestUIで入力した検索条件が送信される(now, date, true);
+	}
+	
+	public void testUIで入力した検索条件が送信される2() throws Exception {
+		DateTime now = DateTime.now().withHourOfDay(10).withMinuteOfHour(3);
+		DateTime date = DateTime.now().withHourOfDay(23).withMinuteOfHour(59);
+		r.setDeparturePlatformId(100);
+		r.setArrivalPlatformId(110);
+		callTestUIで入力した検索条件が送信される(now, date, false);
+	}
+	
+	public void testUIで入力した検索条件が送信される3() throws Exception {
+		DateTime now = DateTime.now().withHourOfDay(10).withMinuteOfHour(0);
+		DateTime date = DateTime.now().withHourOfDay(10).withMinuteOfHour(0);
+		r.setDeparturePlatformId(10);
+		r.setArrivalPlatformId(11);
+		callTestUIで入力した検索条件が送信される(now, date, true);
+	}
+	
+	protected void assertErrorMessage(boolean value) {
+		String s = solo.getString(R.string.an_error_occurred);
+		boolean e = solo.searchText(s, true);
+		if (e) {
+			for (int i = 0; i < 10; ++i) {
+				if (!solo.searchText(s, true)) {
+					break;
+				}
+			}
+		}
+		assertEquals(value, e);
+	}
+
+	public void test検索失敗した場合_エラーステータス() throws Exception {
+		DateTime now = DateTime.now().withHourOfDay(10).withMinuteOfHour(3);
+		DateTime date = DateTime.now().withHourOfDay(23).withMinuteOfHour(59);
+		r.setDeparturePlatformId(100);
+		r.setArrivalPlatformId(110);
+
+		expectedSearchResponses.add(new ReservationCandidate());
+		searchFailed = true;
+		callTestUIで入力した検索条件が送信される(now, date, true);
+		assertErrorMessage(true);
+		assertEquals(0, lv.getCount());
+	}
+
+	public void test検索失敗した場合_内部例外() throws Exception {
+		DateTime now = DateTime.now().withHourOfDay(10).withMinuteOfHour(3);
+		DateTime date = DateTime.now().withHourOfDay(23).withMinuteOfHour(59);
+		r.setDeparturePlatformId(100);
+		r.setArrivalPlatformId(110);
+		
+		expectedSearchResponses.add(new ReservationCandidate());
+		searchExceptioned = true;
+		callTestUIで入力した検索条件が送信される(now, date, true);
+		assertErrorMessage(true);
+		assertEquals(0, lv.getCount());
+	}
+
+	public void test検索失敗した場合_候補が一件もない() throws Exception {
+		DateTime now = DateTime.now().withHourOfDay(10).withMinuteOfHour(3);
+		DateTime date = DateTime.now().withHourOfDay(23).withMinuteOfHour(59);
+		r.setDeparturePlatformId(100);
+		r.setArrivalPlatformId(110);
+		
+		callTestUIで入力した検索条件が送信される(now, date, false);
+		assertErrorMessage(true);
+		assertEquals(0, lv.getCount());
+	}
+	
+	public void test検索成功した場合候補が出現_1件() throws Exception {
+		DateTime now = DateTime.now().withHourOfDay(10).withMinuteOfHour(3);
+		DateTime date = DateTime.now().withHourOfDay(23).withMinuteOfHour(59);
+		r.setDeparturePlatformId(100);
+		r.setArrivalPlatformId(110);
+		
+		expectedSearchResponses.add(new ReservationCandidate());
+		callTestUIで入力した検索条件が送信される(now, date, false);
+		assertErrorMessage(false);
+		assertEquals(1, lv.getCount());
+	}
+
+	public void test検索成功した場合候補が出現_2件() throws Exception {
+		DateTime now = DateTime.now().withHourOfDay(10).withMinuteOfHour(3);
+		DateTime date = DateTime.now().withHourOfDay(23).withMinuteOfHour(59);
+		r.setDeparturePlatformId(100);
+		r.setArrivalPlatformId(110);
+		
+		expectedSearchResponses.add(new ReservationCandidate());
+		expectedSearchResponses.add(new ReservationCandidate());
+		callTestUIで入力した検索条件が送信される(now, date, false);
+		assertErrorMessage(false);
+		assertEquals(1, lv.getCount());
+	}
+
+	public void test予約確定失敗_エラーステータス() throws Exception {
+		test検索成功した場合候補が出現_2件();
+		assertFalse(doReservation.isEnabled());
+		solo.clickInList(1);
+		getInstrumentation().waitForIdleSync();
+		assertTrue(doReservation.isEnabled());
+		createFailed = true;
+		solo.clickOnView(doReservation);
+		assertErrorMessage(true);
+	}
+
+	public void test予約確定失敗_内部例外() throws Exception {
+		test検索成功した場合候補が出現_1件();
+		assertFalse(doReservation.isEnabled());
+		solo.clickInList(0);
+		getInstrumentation().waitForIdleSync();
+		assertTrue(doReservation.isEnabled());
+		createExceptioned = true;
+		solo.clickOnView(doReservation);
+		assertErrorMessage(true);
+	}
+
+	public void test予約確定失敗_無効なダミーReservationCandidate() throws Exception {
+		fail();
+		// assertErrorMessage(true);
+	}
+
+	public void test予約確定失敗_すでに無効になったReservationCandidate() throws Exception {
+		fail();
+		// assertErrorMessage(true);
+	}
+
+	public void test予約確定成功() throws Exception {
+		fail();
+		// assertErrorMessage(false);
+		Thread.sleep(2000);
+		assertFalse(mv.isShown());
+	}
+	
+	protected void scrollUpToTop() {
+		for (Integer i = 0; i < 20; ++i) {
+			solo.scrollUp();
+		}
+	}
+
+	public void callTestUIで入力した検索条件が送信される(DateTime now, DateTime date, Boolean on) throws Exception {
+		TestUtil.setDataSource(dataSource);
+		TestUtil.setDate(now);
 		xtestShowEvent();
 
-		DateTime date = DateTime.now().withHourOfDay(12).withMinuteOfHour(34);
-
 		solo.clickOnView(solo.getView(R.id.reservation_candidate_hour_spinner));
+		scrollUpToTop();
 		solo.clickOnText("" + date.getHourOfDay());
 
 		solo.clickOnView(solo
 				.getView(R.id.reservation_candidate_minute_spinner));
+		scrollUpToTop();
 		solo.clickOnText("" + date.getMinuteOfHour());
 
 		solo.clickOnView(solo
 				.getView(R.id.reservation_candidate_in_or_out_spinner));
-		solo.clickOnText("乗車");
+		solo.clickOnText(on ? "乗車" : "降車");
 
 		solo.clickOnButton(solo
 				.getString(R.string.search_reservation_candidate));
 
-		Demand d = searchRequests.poll(5, TimeUnit.SECONDS);
+		Demand d = searchRequests.poll(500, TimeUnit.SECONDS);
+		assertNotNull(d);
 		assertTrue(d.getDepartureTime().isPresent());
 		(new Interval(date.minusSeconds(1), date.plusSeconds(1))).contains(d
 				.getDepartureTime().get().getTime());
-		assertTrue(d.getDeparturePlatformId().isPresent());
-		assertEquals(10, d.getDeparturePlatformId().get().intValue());
+		
+		// 予約と逆
+		assertTrue(d.getArrivalPlatformId().isPresent());
+		assertEquals(r.getDeparturePlatformId(), d.getArrivalPlatformId());
+		assertEquals(r.getArrivalPlatformId(), d.getDeparturePlatformId());
 	}
 
 	public void callTestユーザー名が表示される(String f, String l) throws Exception {
