@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -31,6 +32,8 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		OnSharedPreferenceChangeListener {
 	private static final int CONNECTING_DIALOG_ID = 100;
 	private static final String DEFAULT_URL = "http://127.0.0.1";
+	private static final String TAG = InVehicleDevicePreferenceActivity.class
+			.getSimpleName();
 	private int latestReqKey = 0;
 	private AtomicBoolean callbackReceived = new AtomicBoolean(false);
 	private SharedPreferences preferences = null;
@@ -162,7 +165,8 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 	}
 
 	@Override
-	public void onSucceed(int reqKey, int statusCode, InVehicleDevice result) {
+	public void onSucceed(int reqKey, int statusCode,
+			InVehicleDevice inVehicleDevice) {
 		if (reqKey != latestReqKey) {
 			return;
 		}
@@ -173,11 +177,21 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 			dismissDialog(CONNECTING_DIALOG_ID);
 		} catch (IllegalArgumentException e) {
 		}
-		if (!result.getAuthenticationToken().isPresent()) {
-			Toast.makeText(this, "token not found", Toast.LENGTH_LONG).show();
+		if (!inVehicleDevice.getAuthenticationToken().isPresent()) {
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					Toast.makeText(InVehicleDevicePreferenceActivity.this,
+							getResources().getString(R.string.an_error_occurred),
+							Toast.LENGTH_LONG).show();
+					Toast.makeText(InVehicleDevicePreferenceActivity.this,
+							"token not found", Toast.LENGTH_LONG).show();
+				}
+			});
 			finish();
+			return;
 		}
-		String token = result.getAuthenticationToken().get();
+		String token = inVehicleDevice.getAuthenticationToken().get();
 		SharedPreferences preference = PreferenceManager
 				.getDefaultSharedPreferences(InVehicleDevicePreferenceActivity.this);
 		String url = preference.getString("connection_url", "");
@@ -187,6 +201,24 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		intent.putExtra(SharedPreferencesKey.SERVER_URL, url);
 		intent.putExtra(SharedPreferencesKey.SERVER_IN_VEHICLE_DEVICE_TOKEN,
 				token);
+		intent.putExtra(SharedPreferencesKey.IN_VEHICLE_DEVICE, inVehicleDevice);
+//		if (!inVehicleDevice.getServiceProvider().isPresent()) {
+//			runOnUiThread(new Runnable() {
+//				@Override
+//				public void run() {
+//					Toast.makeText(InVehicleDevicePreferenceActivity.this,
+//							getResources().getString(R.string.an_error_occurred),
+//							Toast.LENGTH_LONG).show();
+//					Toast.makeText(InVehicleDevicePreferenceActivity.this,
+//							"in_vehicle_device.service_provider not found",
+//							Toast.LENGTH_LONG).show();
+//				}
+//			});
+//			finish();
+//			return;
+//		}
+		intent.putExtra(SharedPreferencesKey.SERVICE_PROVIDER,
+				inVehicleDevice.getServiceProvider());
 		String packageName = "com.kogasoftware.odt.invehicledevice";
 		intent.setClassName(packageName, packageName
 				+ ".ui.activity.SavePreferencesActivity");
