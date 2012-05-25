@@ -5,14 +5,19 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InvalidClassException;
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.lang3.SerializationException;
 import org.apache.commons.lang3.SerializationUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -20,7 +25,12 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.common.io.Closeables;
+import com.kogasoftware.odt.invehicledevice.logic.Status.Phase;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.WebAPIDataSource;
+import com.kogasoftware.odt.webapi.model.InVehicleDevice;
+import com.kogasoftware.odt.webapi.model.ServiceProvider;
+import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
+import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 /**
  * InVehicleDeviceStatusのアクセスに対し 書き込みがあったら自動で保存. 読み書き時にロックを実行を行う
@@ -149,8 +159,17 @@ public class StatusAccess {
 			Calendar calendar = Calendar.getInstance();
 			calendar.clear();
 			calendar.set(now.getYear(), now.getMonth(), now.getDay(), 3, 0); // TODO
-			if (status.createdDate.before(calendar.getTime())) {
-				status = new Status();
+			if (status.updatedDate.before(calendar.getTime())) {
+				status.remainingOperationSchedules.clear();
+				status.finishedOperationSchedules.clear();
+				status.operationScheduleInitializedSign.drainPermits();
+				status.receivingOperationScheduleChangedVehicleNotifications
+						.clear();
+				status.receivedOperationScheduleChangedVehicleNotifications
+						.clear();
+				status.phase = Phase.INITIAL;
+				status.reservations.clear();
+				status.updatedDate = now;
 			}
 		}
 		status.file = file;
@@ -158,6 +177,25 @@ public class StatusAccess {
 				SharedPreferencesKey.SERVER_IN_VEHICLE_DEVICE_TOKEN, "");
 		status.url = preferences.getString(SharedPreferencesKey.SERVER_URL,
 				WebAPIDataSource.DEFAULT_URL);
+		try {
+			status.inVehicleDevice = new InVehicleDevice(new JSONObject(
+					preferences.getString(
+							SharedPreferencesKey.SERVICE_PROVIDER, "{}")));
+		} catch (JSONException e) {
+			Log.e(TAG, "parse JSON failed", e);
+		} catch (ParseException e) {
+			Log.e(TAG, "parse JSON failed", e);
+		}
+		try {
+			status.serviceProvider = new ServiceProvider(new JSONObject(
+					preferences.getString(
+							SharedPreferencesKey.IN_VEHICLE_DEVICE, "{}")));
+		} catch (JSONException e) {
+			Log.e(TAG, "parse JSON failed", e);
+		} catch (ParseException e) {
+			Log.e(TAG, "parse JSON failed", e);
+		}
+
 		return status;
 	}
 
