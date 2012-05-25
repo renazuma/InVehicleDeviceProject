@@ -1,0 +1,37 @@
+package com.kogasoftware.odt.webapi.model;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public class ServiceProviders {
+	public static class ReservationTimeLimit {
+		protected Integer operatorWeb = 0;
+		protected Integer androidApp = 0;
+
+		public Integer getAndroidApp() {
+			return Model.wrapNull(androidApp);
+		}
+
+		public void setAndroidApp(Integer androidApp) {
+			this.androidApp = Model.wrapNull(androidApp);
+		}
+
+		public Integer getOperatorWeb() {
+			return Model.wrapNull(operatorWeb);
+		}
+
+		public void setOperatorWeb(Integer operatorWeb) {
+			this.operatorWeb = Model.wrapNull(operatorWeb);
+		}
+	}
+
+	public static ReservationTimeLimit parseReservationTimeLimit(
+			ServiceProvider serviceProvider) throws JSONException {
+		JSONObject jsonObject = new JSONObject(
+				serviceProvider.getReservationTimeLimit());
+		ReservationTimeLimit reservationTimeLimit = new ReservationTimeLimit();
+		reservationTimeLimit.setAndroidApp(jsonObject.getInt("android_app"));
+		reservationTimeLimit.setOperatorWeb(jsonObject.getInt("operator_web"));
+		return reservationTimeLimit;
+	}
+}
