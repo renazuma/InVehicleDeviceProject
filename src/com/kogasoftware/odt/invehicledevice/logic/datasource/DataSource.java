@@ -1,7 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.logic.datasource;
 
 import java.io.Closeable;
-import java.util.Date;
 import java.util.List;
 
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
@@ -36,21 +35,8 @@ public interface DataSource extends Closeable {
 
 	List<VehicleNotification> getVehicleNotifications() throws WebAPIException;
 
-	Reservation postReservation(Integer reservationCandidateId)
-			throws WebAPIException;
-
-	List<ReservationCandidate> postReservationCandidates(Integer userId,
-			Integer departurePlatformId, Integer arrivalPlatformId)
-			throws WebAPIException;
-
-	void putReservationTransferredAt(Integer id, Date transferredAt)
-			throws WebAPIException;
-
-	void putVehicleNotificationReadAt(Integer id, Date readAt)
-			throws WebAPIException;
-
-	public int responseVehicleNotification(VehicleNotification vn,
-			int response, WebAPICallback<VehicleNotification> callback);
+	int responseVehicleNotification(VehicleNotification vn, int response,
+			WebAPICallback<VehicleNotification> callback);
 
 	int sendServiceUnitStatusLog(ServiceUnitStatusLog log,
 			WebAPICallback<ServiceUnitStatusLog> callback);

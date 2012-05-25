@@ -1,7 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.logic.datasource;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -63,29 +62,6 @@ public class EmptyDataSource implements DataSource {
 	public List<VehicleNotification> getVehicleNotifications()
 			throws WebAPIException {
 		return new LinkedList<VehicleNotification>();
-	}
-
-	@Override
-	public Reservation postReservation(Integer reservationCandidateId)
-			throws WebAPIException {
-		throw new WebAPIException(false, "not implemented");
-	}
-
-	@Override
-	public List<ReservationCandidate> postReservationCandidates(Integer userId,
-			Integer departurePlatformId, Integer arrivalPlatformId)
-			throws WebAPIException {
-		return new LinkedList<ReservationCandidate>();
-	}
-
-	@Override
-	public void putReservationTransferredAt(Integer id, Date transferredAt)
-			throws WebAPIException {
-	}
-
-	@Override
-	public void putVehicleNotificationReadAt(Integer id, Date readAt)
-			throws WebAPIException {
 	}
 
 	@Override

@@ -1,7 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.logic.datasource;
 
 import java.io.File;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -187,31 +186,6 @@ public class WebAPIDataSource implements DataSource {
 			Thread.currentThread().interrupt();
 		}
 		return vehicleNotifications;
-	}
-
-	@Override
-	public Reservation postReservation(Integer reservationCandidateId)
-			throws WebAPIException {
-		throw new WebAPIException(false, "deprecated");
-	}
-
-	@Override
-	public List<ReservationCandidate> postReservationCandidates(Integer userId,
-			Integer departurePlatformId, Integer arrivalPlatformId)
-			throws WebAPIException {
-		throw new WebAPIException(false, "deprecated");
-	}
-
-	@Override
-	public void putReservationTransferredAt(Integer id, Date transferredAt)
-			throws WebAPIException {
-		throw new WebAPIException(false, "deprecated");
-	}
-
-	@Override
-	public void putVehicleNotificationReadAt(Integer id, Date readAt)
-			throws WebAPIException {
-		throw new WebAPIException(false, "deprecated");
 	}
 
 	@Override

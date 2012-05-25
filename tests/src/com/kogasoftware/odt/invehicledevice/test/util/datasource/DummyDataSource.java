@@ -156,28 +156,45 @@ public class DummyDataSource implements DataSource {
 	}
 
 	@Override
-	public Reservation postReservation(Integer reservationCandidateId)
-			throws WebAPIException {
-
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			throw new WebAPIException(false, e);
-		}
-
-		return new Reservation();
+	public int responseVehicleNotification(VehicleNotification vn,
+			int response, WebAPICallback<VehicleNotification> callback) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 	@Override
-	public List<ReservationCandidate> postReservationCandidates(Integer userId,
-			Integer departurePlatformId, Integer arrivalPlatformId)
-			throws WebAPIException {
+	public int sendServiceUnitStatusLog(ServiceUnitStatusLog log,
+			WebAPICallback<ServiceUnitStatusLog> callback) {
+		sendServiceUnitStatusLogArgs.add(log);
+		return 0;
+	}
+
+	@Override
+	public void close() {
+	}
+
+	@Override
+	public int cancelGetOffPassenger(OperationSchedule operationSchedule,
+			Reservation reservation, WebAPICallback<PassengerRecord> callback) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int cancelGetOnPassenger(OperationSchedule operationSchedule,
+			Reservation reservation, WebAPICallback<PassengerRecord> callback) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int searchReservationCandidate(Demand demand,
+			WebAPICallback<List<ReservationCandidate>> callback) {
+
 		try {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
-			throw new WebAPIException(false, e);
 		}
 
 		DateFormat f = new SimpleDateFormat("HH:mm");
@@ -243,74 +260,19 @@ public class DummyDataSource implements DataSource {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		return l;
-	}
-
-	@Override
-	public void putReservationTransferredAt(Integer id, Date transferredAt)
-			throws WebAPIException {
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			throw new WebAPIException(false, e);
-		}
-	}
-
-	@Override
-	public void putVehicleNotificationReadAt(Integer id, Date readAt)
-			throws WebAPIException {
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			throw new WebAPIException(false, e);
-		}
-	}
-
-	@Override
-	public int responseVehicleNotification(VehicleNotification vn,
-			int response, WebAPICallback<VehicleNotification> callback) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int sendServiceUnitStatusLog(ServiceUnitStatusLog log,
-			WebAPICallback<ServiceUnitStatusLog> callback) {
-		sendServiceUnitStatusLogArgs.add(log);
-		return 0;
-	}
-
-	@Override
-	public void close() {
-	}
-
-	@Override
-	public int cancelGetOffPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, WebAPICallback<PassengerRecord> callback) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int cancelGetOnPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, WebAPICallback<PassengerRecord> callback) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int searchReservationCandidate(Demand demand,
-			WebAPICallback<List<ReservationCandidate>> callback) {
-		// TODO Auto-generated method stub
+		callback.onSucceed(0, 200, l);
 		return 0;
 	}
 
 	@Override
 	public int createReservation(ReservationCandidate reservationCandidate,
 			WebAPICallback<Reservation> callback) {
-		// TODO Auto-generated method stub
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
+		callback.onSucceed(0, 200, new Reservation());
 		return 0;
 	}
 
