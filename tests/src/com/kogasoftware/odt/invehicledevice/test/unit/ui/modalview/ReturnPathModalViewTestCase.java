@@ -2,7 +2,9 @@ package com.kogasoftware.odt.invehicledevice.test.unit.ui.modalview;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -43,7 +45,7 @@ public class ReturnPathModalViewTestCase extends
 	BlockingQueue<ReservationCandidate> createRequests = new LinkedBlockingQueue<ReservationCandidate>();
 	BlockingQueue<Reservation> createResponses = new LinkedBlockingQueue<Reservation>();
 	
-	List<ReservationCandidate> expectedSearchResponses = new LinkedList<ReservationCandidate>();
+	Queue<ReservationCandidate> expectedSearchResponses = new ConcurrentLinkedQueue<ReservationCandidate>();
 
 	Boolean searchFailed;
 	Boolean searchExceptioned;
@@ -75,6 +77,8 @@ public class ReturnPathModalViewTestCase extends
 			int rk = seq.incrementAndGet();
 			searchRequests.add(demand);
 			List<ReservationCandidate> l = new LinkedList<ReservationCandidate>();
+			l.addAll(expectedSearchResponses);
+			expectedSearchResponses.clear();
 			if (searchFailed) {
 				callback.onFailed(rk, 500, "mock");
 			} else if (searchExceptioned) {
@@ -249,7 +253,7 @@ public class ReturnPathModalViewTestCase extends
 		expectedSearchResponses.add(new ReservationCandidate());
 		callTestUIで入力した検索条件が送信される(now, date, false);
 		assertErrorMessage(false);
-		assertEquals(1, lv.getCount());
+		assertEquals(2, lv.getCount());
 	}
 
 	public void test予約確定失敗_エラーステータス() throws Exception {
