@@ -28,6 +28,7 @@ import com.kogasoftware.odt.invehicledevice.ui.modalview.ReturnPathModalView;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.Demand;
+import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.ReservationCandidate;
 import com.kogasoftware.odt.webapi.model.User;
@@ -44,7 +45,7 @@ public class ReturnPathModalViewTestCase extends
 	BlockingQueue<List<ReservationCandidate>> searchResponses = new LinkedBlockingQueue<List<ReservationCandidate>>();
 	BlockingQueue<ReservationCandidate> createRequests = new LinkedBlockingQueue<ReservationCandidate>();
 	BlockingQueue<Reservation> createResponses = new LinkedBlockingQueue<Reservation>();
-	
+
 	Queue<ReservationCandidate> expectedSearchResponses = new ConcurrentLinkedQueue<ReservationCandidate>();
 
 	Boolean searchFailed;
@@ -60,9 +61,9 @@ public class ReturnPathModalViewTestCase extends
 				WebAPICallback<Reservation> callback) {
 			int rk = seq.incrementAndGet();
 			createRequests.add(reservationCandidate);
-			if (searchFailed) {
+			if (createFailed) {
 				callback.onFailed(rk, 500, "mock");
-			} else if (searchExceptioned) {
+			} else if (createExceptioned) {
 				callback.onException(rk, new WebAPIException(false, "mock"));
 			} else {
 				Reservation r = new Reservation();
@@ -93,7 +94,7 @@ public class ReturnPathModalViewTestCase extends
 	public void callTest現在時刻が表示される(DateTime now) throws Exception { // TODO:日付の変わり目で失敗する
 		TestUtil.setDate(now);
 
-		xtestShowEvent();
+		testShowEvent();
 		Spinner h = (Spinner) solo
 				.getView(R.id.reservation_candidate_hour_spinner);
 		assertTrue(h.getSelectedItem() instanceof String);
@@ -132,7 +133,7 @@ public class ReturnPathModalViewTestCase extends
 		cl.registerEventListener(mv);
 		mv.setCommonLogic(new CommonLogicLoadCompleteEvent(cl));
 		lv = (ListView) mv.findViewById(R.id.reservation_candidates_list_view);
-		doReservation = (Button)mv.findViewById(R.id.do_reservation_button);
+		doReservation = (Button) mv.findViewById(R.id.do_reservation_button);
 	}
 
 	@Override
@@ -156,7 +157,7 @@ public class ReturnPathModalViewTestCase extends
 			cl.dispose();
 		}
 	}
-	
+
 	public void testUIで入力した検索条件が送信される1() throws Exception {
 		DateTime now = DateTime.now().withHourOfDay(0).withMinuteOfHour(40);
 		DateTime date = DateTime.now().withHourOfDay(12).withMinuteOfHour(34);
@@ -164,7 +165,7 @@ public class ReturnPathModalViewTestCase extends
 		r.setArrivalPlatformId(11);
 		callTestUIで入力した検索条件が送信される(now, date, true);
 	}
-	
+
 	public void testUIで入力した検索条件が送信される2() throws Exception {
 		DateTime now = DateTime.now().withHourOfDay(10).withMinuteOfHour(3);
 		DateTime date = DateTime.now().withHourOfDay(23).withMinuteOfHour(59);
@@ -172,7 +173,7 @@ public class ReturnPathModalViewTestCase extends
 		r.setArrivalPlatformId(110);
 		callTestUIで入力した検索条件が送信される(now, date, false);
 	}
-	
+
 	public void testUIで入力した検索条件が送信される3() throws Exception {
 		DateTime now = DateTime.now().withHourOfDay(10).withMinuteOfHour(0);
 		DateTime date = DateTime.now().withHourOfDay(10).withMinuteOfHour(0);
@@ -180,7 +181,7 @@ public class ReturnPathModalViewTestCase extends
 		r.setArrivalPlatformId(11);
 		callTestUIで入力した検索条件が送信される(now, date, true);
 	}
-	
+
 	protected void assertErrorMessage(boolean value) {
 		String s = solo.getString(R.string.an_error_occurred);
 		boolean e = solo.searchText(s, true);
@@ -212,7 +213,7 @@ public class ReturnPathModalViewTestCase extends
 		DateTime date = DateTime.now().withHourOfDay(23).withMinuteOfHour(59);
 		r.setDeparturePlatformId(100);
 		r.setArrivalPlatformId(110);
-		
+
 		expectedSearchResponses.add(new ReservationCandidate());
 		searchExceptioned = true;
 		callTestUIで入力した検索条件が送信される(now, date, true);
@@ -225,18 +226,18 @@ public class ReturnPathModalViewTestCase extends
 		DateTime date = DateTime.now().withHourOfDay(23).withMinuteOfHour(59);
 		r.setDeparturePlatformId(100);
 		r.setArrivalPlatformId(110);
-		
+
 		callTestUIで入力した検索条件が送信される(now, date, false);
 		assertErrorMessage(true);
 		assertEquals(0, lv.getCount());
 	}
-	
+
 	public void test検索成功した場合候補が出現_1件() throws Exception {
 		DateTime now = DateTime.now().withHourOfDay(10).withMinuteOfHour(3);
 		DateTime date = DateTime.now().withHourOfDay(23).withMinuteOfHour(59);
 		r.setDeparturePlatformId(100);
 		r.setArrivalPlatformId(110);
-		
+
 		expectedSearchResponses.add(new ReservationCandidate());
 		callTestUIで入力した検索条件が送信される(now, date, false);
 		assertErrorMessage(false);
@@ -248,9 +249,27 @@ public class ReturnPathModalViewTestCase extends
 		DateTime date = DateTime.now().withHourOfDay(23).withMinuteOfHour(59);
 		r.setDeparturePlatformId(100);
 		r.setArrivalPlatformId(110);
-		
-		expectedSearchResponses.add(new ReservationCandidate());
-		expectedSearchResponses.add(new ReservationCandidate());
+
+		Platform p1d = new Platform();
+		p1d.setName("プラットフォーム1d");
+		Platform p1a = new Platform();
+		p1a.setName("プラットフォーム1a");
+
+		Platform p2d = new Platform();
+		p2d.setName("プラットフォーム2d");
+		Platform p2a = new Platform();
+		p2a.setName("プラットフォーム2a");
+
+		ReservationCandidate rc1 = new ReservationCandidate();
+		rc1.setDeparturePlatform(p1d);
+		rc1.setArrivalPlatform(p1a);
+
+		ReservationCandidate rc2 = new ReservationCandidate();
+		rc2.setDeparturePlatform(p2d);
+		rc2.setArrivalPlatform(p2a);
+
+		expectedSearchResponses.add(rc1);
+		expectedSearchResponses.add(rc2);
 		callTestUIで入力した検索条件が送信される(now, date, false);
 		assertErrorMessage(false);
 		assertEquals(2, lv.getCount());
@@ -259,8 +278,9 @@ public class ReturnPathModalViewTestCase extends
 	public void test予約確定失敗_エラーステータス() throws Exception {
 		test検索成功した場合候補が出現_2件();
 		assertFalse(doReservation.isEnabled());
-		solo.clickInList(1);
+		solo.clickOnText("プラットフォーム2d");
 		getInstrumentation().waitForIdleSync();
+		Thread.sleep(200);
 		assertTrue(doReservation.isEnabled());
 		createFailed = true;
 		solo.clickOnView(doReservation);
@@ -268,43 +288,41 @@ public class ReturnPathModalViewTestCase extends
 	}
 
 	public void test予約確定失敗_内部例外() throws Exception {
-		test検索成功した場合候補が出現_1件();
+		test検索成功した場合候補が出現_2件();
 		assertFalse(doReservation.isEnabled());
-		solo.clickInList(0);
+		solo.clickOnText("プラットフォーム2d");
 		getInstrumentation().waitForIdleSync();
+		Thread.sleep(200);
 		assertTrue(doReservation.isEnabled());
 		createExceptioned = true;
 		solo.clickOnView(doReservation);
 		assertErrorMessage(true);
 	}
 
-	public void test予約確定失敗_無効なダミーReservationCandidate() throws Exception {
-		fail();
-		// assertErrorMessage(true);
-	}
-
-	public void test予約確定失敗_すでに無効になったReservationCandidate() throws Exception {
-		fail();
-		// assertErrorMessage(true);
-	}
-
 	public void test予約確定成功() throws Exception {
-		fail();
-		// assertErrorMessage(false);
-		Thread.sleep(2000);
+		test検索成功した場合候補が出現_2件();
+		assertFalse(doReservation.isEnabled());
+		solo.clickOnText("プラットフォーム2a");
+		getInstrumentation().waitForIdleSync();
+		Thread.sleep(200);
+		assertTrue(doReservation.isEnabled());
+		solo.clickOnView(doReservation);
+		assertErrorMessage(false);
+		getInstrumentation().waitForIdleSync();
 		assertFalse(mv.isShown());
 	}
-	
+
 	protected void scrollUpToTop() {
 		for (Integer i = 0; i < 20; ++i) {
 			solo.scrollUp();
 		}
 	}
 
-	public void callTestUIで入力した検索条件が送信される(DateTime now, DateTime date, Boolean on) throws Exception {
+	public void callTestUIで入力した検索条件が送信される(DateTime now, DateTime date,
+			Boolean on) throws Exception {
 		TestUtil.setDataSource(dataSource);
 		TestUtil.setDate(now);
-		xtestShowEvent();
+		testShowEvent();
 
 		solo.clickOnView(solo.getView(R.id.reservation_candidate_hour_spinner));
 		scrollUpToTop();
@@ -327,7 +345,7 @@ public class ReturnPathModalViewTestCase extends
 		assertTrue(d.getDepartureTime().isPresent());
 		(new Interval(date.minusSeconds(1), date.plusSeconds(1))).contains(d
 				.getDepartureTime().get().getTime());
-		
+
 		// 予約と逆
 		assertTrue(d.getArrivalPlatformId().isPresent());
 		assertEquals(r.getDeparturePlatformId(), d.getArrivalPlatformId());
@@ -337,7 +355,7 @@ public class ReturnPathModalViewTestCase extends
 	public void callTestユーザー名が表示される(String f, String l) throws Exception {
 		r.getUser().get().setFirstName(f);
 		r.getUser().get().setLastName(l);
-		xtestShowEvent();
+		testShowEvent();
 		assertTrue(solo.searchText(f));
 		assertTrue(solo.searchText(l));
 	}
@@ -354,7 +372,7 @@ public class ReturnPathModalViewTestCase extends
 		callTestユーザー名が表示される("ビル", "ゲイツ");
 	}
 
-	public void xtestEventBusに自動で登録される() throws Exception {
+	public void testEventBusに自動で登録される() throws Exception {
 		runOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
@@ -366,7 +384,7 @@ public class ReturnPathModalViewTestCase extends
 				.intValue(), 1);
 	}
 
-	public void xtestShowEvent() throws Exception {
+	public void testShowEvent() throws Exception {
 		createView();
 
 		assertFalse(mv.isShown());
@@ -378,15 +396,7 @@ public class ReturnPathModalViewTestCase extends
 		assertEquals(mv.getVisibility(), View.VISIBLE);
 	}
 
-	public void xtest下ボタンを押すと下へスクロール() throws Exception {
-		xtest予約候補検索ボタンを押すと予約候補が入る();
-		solo.clickOnView(solo
-				.getView(R.id.reservation_candidate_scroll_down_button));
-		getInstrumentation().waitForIdleSync();
-		fail("stub!");
-	}
-
-	public void xtest既に表示されている状態で再度ShowEventしても古いほうが表示されたまま() throws Exception {
+	public void test既に表示されている状態で再度ShowEventしても古いほうが表示されたまま() throws Exception {
 		createView();
 
 		Reservation r1 = new Reservation();
@@ -413,60 +423,28 @@ public class ReturnPathModalViewTestCase extends
 		assertFalse(solo.searchText(u2.getFirstName()));
 	}
 
-	public void xtest現在時刻が表示される00_00() throws Exception {
+	public void test現在時刻が表示される00_00() throws Exception {
 		callTest現在時刻が表示される(DateTime.now().withHourOfDay(0).withMinuteOfHour(0));
 	}
 
-	public void xtest現在時刻が表示される11_59() throws Exception {
+	public void test現在時刻が表示される11_59() throws Exception {
 		callTest現在時刻が表示される(DateTime.now().withHourOfDay(11)
 				.withMinuteOfHour(59));
 	}
 
-	public void xtest現在時刻が表示される23_59() throws Exception {
+	public void test現在時刻が表示される23_59() throws Exception {
 		callTest現在時刻が表示される(DateTime.now().withHourOfDay(23)
 				.withMinuteOfHour(59));
 	}
 
-	public void xtest現在時刻が表示されるnow() throws Exception {
+	public void test現在時刻が表示されるnow() throws Exception {
 		callTest現在時刻が表示される(DateTime.now());
 	}
 
-	public void xtest上ボタンを押すと上へスクロール() throws Exception {
-		xtest予約候補検索ボタンを押すと予約候補が入る();
-		solo.clickOnView(solo
-				.getView(R.id.reservation_candidate_scroll_up_button));
-		getInstrumentation().waitForIdleSync();
-		fail("stub!");
-	}
-
-	public void xtest人数はReservationの人数と同じ1() {
-		callTest人数はReservationの人数と同じ(1);
-	}
-
-	public void xtest人数はReservationの人数と同じ50() {
-		callTest人数はReservationの人数と同じ(50);
-	}
-
-	public void xtest戻るボタンを押すと消える() throws Exception {
-		xtestShowEvent();
+	public void test戻るボタンを押すと消える() throws Exception {
+		testShowEvent();
 		solo.clickOnView(solo.getView(R.id.return_path_close_button));
 		getInstrumentation().waitForIdleSync();
 		assertFalse(mv.isShown());
 	}
-
-	public void xtest予約ボタンを押すと予約が起きて閉じる() throws Exception {
-		xtest予約候補検索ボタンを押すと予約候補が入る();
-		solo.clickOnView(solo.getView(R.id.do_reservation_button));
-		getInstrumentation().waitForIdleSync();
-		assertFalse(mv.isShown());
-		fail("stub!");
-	}
-
-	public void xtest予約候補検索ボタンを押すと予約候補が入る() throws Exception {
-		xtestShowEvent();
-		solo.clickOnView(solo.getView(R.id.search_return_path_button));
-		getInstrumentation().waitForIdleSync();
-		fail("stub!");
-	}
-
 }

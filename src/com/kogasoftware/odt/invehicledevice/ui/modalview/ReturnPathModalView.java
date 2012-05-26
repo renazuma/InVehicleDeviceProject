@@ -60,6 +60,7 @@ public class ReturnPathModalView extends ModalView {
 		setCloseOnClick(R.id.return_path_close_button);
 
 		reservationCandidateListView = (ListView) findViewById(R.id.reservation_candidates_list_view);
+		reservationCandidateListView.scrollTo(0, 0);
 		doReservationButton = (Button) findViewById(R.id.do_reservation_button);
 		reservationCandidateScrollUpButton = (Button) findViewById(R.id.reservation_candidate_scroll_up_button);
 		reservationCandidateScrollDownButton = (Button) findViewById(R.id.reservation_candidate_scroll_down_button);
@@ -237,9 +238,9 @@ public class ReturnPathModalView extends ModalView {
 
 	protected void onDoReservationButtonClick() {
 		sendingDialog.show();
-		AsyncTask<Void, Void, Reservation> task = new AsyncTask<Void, Void, Reservation>() {
+		AsyncTask<Void, Void, Optional<Reservation>> task = new AsyncTask<Void, Void, Optional<Reservation>>() {
 			@Override
-			protected Reservation doInBackground(Void... params) {
+			protected Optional<Reservation> doInBackground(Void... params) {
 				ReservationCandidate reservationCandidate = new ReservationCandidate();
 				final AtomicReference<Reservation> outputReservation = new AtomicReference<Reservation>();
 
@@ -262,16 +263,21 @@ public class ReturnPathModalView extends ModalView {
 								outputReservation.set(result);
 							}
 						});
-				if (outputReservation.get() == null) {
-					cancel(true);
-				}
-				return outputReservation.get();
+				return Optional.fromNullable(outputReservation.get());
 			}
 
 			@Override
-			protected void onPostExecute(Reservation result) {
+			protected void onPostExecute(Optional<Reservation> result) {
 				sendingDialog.dismiss();
 				if (isCancelled()) {
+					return;
+				}
+				if (!result.isPresent()) {
+					Toast.makeText(
+							getContext(),
+							getResources()
+									.getString(R.string.an_error_occurred),
+							Toast.LENGTH_LONG).show();
 					return;
 				}
 				hide();
