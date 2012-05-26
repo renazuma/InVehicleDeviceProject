@@ -7,7 +7,6 @@ import java.nio.ByteBuffer;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -234,7 +233,7 @@ public class WebAPI implements Closeable {
 					}
 				});
 	}
-	
+
 	protected boolean doHttpSessionAndCallback(WebAPIRequest<?> request) {
 		try {
 			HttpClient httpClient = new DefaultHttpClient();
@@ -308,7 +307,7 @@ public class WebAPI implements Closeable {
 			try {
 				res.put(key, jsonObject.get(key));
 			} catch (JSONException e) {
-				e.printStackTrace();
+				Log.w(TAG, e);
 			}
 		}
 
@@ -646,46 +645,42 @@ public class WebAPI implements Closeable {
 		return put(path, param, param, callback, conv, true);
 	}
 
-	protected JSONObject removeJSONKeys(JSONObject jsonObject, String[] keys) {
-		JSONObject res = new JSONObject();
-
-		Iterator<?> it = jsonObject.keys();
-		while (it.hasNext()) {
-			String key = (String) it.next();
-			try {
-				res.put(key, jsonObject.get(key));
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
-		for (String key : keys) {
-			res.remove(key);
-		}
-
-		return res;
-	}
-
 	/**
-	 * 予約候補を取得
-	 * 
-	 * @throws JSONException
+	 * 予約候補を取得。このAPIは失敗時にリトライしない。
 	 */
 	public int searchReservationCandidate(Demand demand,
 			WebAPICallback<List<ReservationCandidate>> callback)
-			throws JSONException {
-		return 0;
+			throws JSONException, WebAPIException {
+		JSONObject param = new JSONObject();
+		param.put("demand", demand.toJSONObject());
+		return post(PATH_RESERVATIONS, param, param, callback,
+				new ResponseConverter<List<ReservationCandidate>>() {
+					@Override
+					public List<ReservationCandidate> convert(byte[] rawResponse)
+							throws Exception {
+						return ReservationCandidate
+								.parseList(parseJSONArray(rawResponse));
+					}
+				}, false);
 	}
 
 	/**
-	 * 予約の実行
-	 * 
-	 * @throws JSONException
+	 * 予約の実行。このAPIは失敗時にリトライしない。
 	 */
 	public int createReservation(ReservationCandidate reservationCandidate,
-			WebAPICallback<Reservation> callback) throws JSONException {
-		return 0;
+			WebAPICallback<Reservation> callback) throws JSONException,
+			WebAPIException {
+		JSONObject param = new JSONObject();
+		param.put("reservation_candidate", reservationCandidate.toJSONObject());
+		return post(PATH_RESERVATIONS, param, param, callback,
+				new ResponseConverter<Reservation>() {
+					@Override
+					public Reservation convert(byte[] rawResponse)
+							throws Exception {
+						return Reservation.parse(parseJSONObject(rawResponse))
+								.orNull();
+					}
+				}, false);
 	}
 
 	/**
