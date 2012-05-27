@@ -1,6 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.test.util.datasource;
 
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,9 +11,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSource;
-import com.kogasoftware.odt.invehicledevice.logic.empty.EmptyWebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
+import com.kogasoftware.odt.webapi.model.Demand;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
@@ -135,7 +134,7 @@ public class DummyDataSource implements DataSource {
 	@Override
 	public List<VehicleNotification> getVehicleNotifications()
 
-		throws WebAPIException {
+	throws WebAPIException {
 
 		try {
 			Thread.sleep(5000);
@@ -143,7 +142,6 @@ public class DummyDataSource implements DataSource {
 			Thread.currentThread().interrupt();
 			throw new WebAPIException(false, e);
 		}
-
 
 		List<VehicleNotification> l = new LinkedList<VehicleNotification>();
 		if (nextNotifyDate.after(new Date())) {
@@ -152,34 +150,51 @@ public class DummyDataSource implements DataSource {
 		nextNotifyDate = new Date(new Date().getTime() + 10 * 1000);
 		VehicleNotification n = new VehicleNotification();
 		n.setBody("テスト通知が行われました " + new Date());
-//		l.add(n);
+		// l.add(n);
 		return l;
 
 	}
 
 	@Override
-	public Reservation postReservation(Integer reservationCandidateId)
-			throws WebAPIException {
-
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			throw new WebAPIException(false, e);
-		}
-
-		return new Reservation();
+	public int responseVehicleNotification(VehicleNotification vn,
+			int response, WebAPICallback<VehicleNotification> callback) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 	@Override
-	public List<ReservationCandidate> postReservationCandidates(Integer userId,
-			Integer departurePlatformId, Integer arrivalPlatformId)
-			throws WebAPIException {
+	public int sendServiceUnitStatusLog(ServiceUnitStatusLog log,
+			WebAPICallback<ServiceUnitStatusLog> callback) {
+		sendServiceUnitStatusLogArgs.add(log);
+		return 0;
+	}
+
+	@Override
+	public void close() {
+	}
+
+	@Override
+	public int cancelGetOffPassenger(OperationSchedule operationSchedule,
+			Reservation reservation, WebAPICallback<PassengerRecord> callback) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int cancelGetOnPassenger(OperationSchedule operationSchedule,
+			Reservation reservation, WebAPICallback<PassengerRecord> callback) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int searchReservationCandidate(Demand demand,
+			WebAPICallback<List<ReservationCandidate>> callback) {
+
 		try {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
-			throw new WebAPIException(false, e);
 		}
 
 		DateFormat f = new SimpleDateFormat("HH:mm");
@@ -245,60 +260,19 @@ public class DummyDataSource implements DataSource {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		return l;
+		callback.onSucceed(0, 200, l);
+		return 0;
 	}
 
 	@Override
-	public void putReservationTransferredAt(Integer id, Date transferredAt)
-			throws WebAPIException {
+	public int createReservation(ReservationCandidate reservationCandidate,
+			WebAPICallback<Reservation> callback) {
 		try {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
-			throw new WebAPIException(false, e);
 		}
-	}
-
-	@Override
-	public void putVehicleNotificationReadAt(Integer id, Date readAt)
-			throws WebAPIException {
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			throw new WebAPIException(false, e);
-		}
-	}
-
-	@Override
-	public int responseVehicleNotification(VehicleNotification vn,
-			int response, WebAPICallback<VehicleNotification> callback) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int sendServiceUnitStatusLog(ServiceUnitStatusLog log,
-			WebAPICallback<ServiceUnitStatusLog> callback) {
-		sendServiceUnitStatusLogArgs.add(log);
-		return 0;
-	}
-
-	@Override
-	public void close() {
-	}
-
-	@Override
-	public int cancelGetOffPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, WebAPICallback<PassengerRecord> callback) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int cancelGetOnPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, WebAPICallback<PassengerRecord> callback) {
-		// TODO Auto-generated method stub
+		callback.onSucceed(0, 200, new Reservation());
 		return 0;
 	}
 

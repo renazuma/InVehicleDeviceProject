@@ -4,12 +4,16 @@ import java.io.File;
 
 import com.google.common.base.Optional;
 import com.google.common.io.Closeables;
+import com.kogasoftware.odt.invehicledevice.BuildConfig;
 
 public class DataSourceFactory {
 	private static Optional<DataSource> dataSource = Optional.absent();
 	private static Object dataSourceLock = new Object();
 
 	public static DataSource newInstance() {
+		if (!BuildConfig.DEBUG) {
+			return new EmptyDataSource();
+		}
 		synchronized (dataSourceLock) {
 			// return dataSource.or(new ScheduleChangedTestDataSource());
 			return dataSource.or(new EmptyDataSource());
@@ -17,13 +21,16 @@ public class DataSourceFactory {
 	}
 
 	public static DataSource newInstance(String url, String token, File file) {
+		if (!BuildConfig.DEBUG) {
+			return new WebAPIDataSource(url, token, file);
+		}
 		synchronized (dataSourceLock) {
-			// return dataSource.or(new ScheduleChangedTestDataSource());
 			if (dataSource.isPresent()) {
 				return dataSource.get();
 			}
 			// 厳密にclose()する必要があるため、Optional.or()は使わない
 			return new WebAPIDataSource(url, token, file);
+			// return new ScheduleChangedTestDataSource();
 		}
 	}
 

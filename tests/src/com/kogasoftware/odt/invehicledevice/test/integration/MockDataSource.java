@@ -1,6 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.test.integration;
 
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,9 +11,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSource;
-import com.kogasoftware.odt.invehicledevice.logic.empty.EmptyWebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
+import com.kogasoftware.odt.webapi.model.Demand;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
@@ -31,7 +30,6 @@ public class MockDataSource implements DataSource {
 
 	private Date nextNotifyDate = new Date();
 	private boolean NotificationFlag = false;
-
 
 	@Override
 	public int arrivalOperationSchedule(OperationSchedule os,
@@ -77,7 +75,7 @@ public class MockDataSource implements DataSource {
 
 	@Override
 	public List<VehicleNotification> getVehicleNotifications()
-		throws WebAPIException {
+			throws WebAPIException {
 
 		try {
 			Thread.sleep(1);
@@ -100,36 +98,6 @@ public class MockDataSource implements DataSource {
 	}
 
 	@Override
-	public Reservation postReservation(Integer reservationCandidateId)
-			throws WebAPIException {
-
-		return new Reservation();
-	}
-
-	@Override
-	public List<ReservationCandidate> postReservationCandidates(Integer userId,
-			Integer departurePlatformId, Integer arrivalPlatformId)
-			throws WebAPIException {
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			throw new WebAPIException(false, e);
-		}
-
-		return lReservationCandidate;
-	}
-
-	@Override
-	public void putReservationTransferredAt(Integer id, Date transferredAt)
-			throws WebAPIException {
-	}
-
-	@Override
-	public void putVehicleNotificationReadAt(Integer id, Date readAt) {
-	}
-
-	@Override
 	public int responseVehicleNotification(VehicleNotification vn,
 			int response, WebAPICallback<VehicleNotification> callback) {
 		return 0;
@@ -146,6 +114,7 @@ public class MockDataSource implements DataSource {
 		NotificationFlag = bNotificationFlag;
 
 	}
+
 	public void setOperationSchedules(Integer iOperationScheduleCount) {
 
 		System.out.println("setOperationSchedules " + iOperationScheduleCount);
@@ -295,7 +264,8 @@ public class MockDataSource implements DataSource {
 							+ "departure_estimate: '2012-01-01T09:15:00+09:00', "
 							+ "platform: {name: 'テストコガソフトウェア前', name_ruby: 'てすとこがそふとうぇあまえ'}, "
 							+ "reservations_as_arrival: [], "
-							+ "reservations_as_departure: [" + u1a + "," + u1b + "," + u1c + "," + u1d + "," + u1e + "," + u1f
+							+ "reservations_as_departure: [" + u1a + "," + u1b
+							+ "," + u1c + "," + u1d + "," + u1e + "," + u1f
 							+ "]}");
 			lOperationSchedule.add(new OperationSchedule(j1));
 
@@ -305,8 +275,9 @@ public class MockDataSource implements DataSource {
 							+ "arrival_estimate: '2012-01-01T09:30:00+09:00', "
 							+ "departure_estimate: '2012-01-01T09:35:00+09:00', "
 							+ "platform: {name: 'テスト上野御徒町駅前',name_ruby: 'てすとうえのおかちまちえきまえ'}, "
-							+ "reservations_as_arrival: [" +  u1d + "], "
-							+ "reservations_as_departure: [" + u1g + "," + u1j + "," + u1l + "]}");
+							+ "reservations_as_arrival: [" + u1d + "], "
+							+ "reservations_as_departure: [" + u1g + "," + u1j
+							+ "," + u1l + "]}");
 			lOperationSchedule.add(new OperationSchedule(j2));
 
 			JSONObject j3 = new JSONObject(
@@ -315,8 +286,9 @@ public class MockDataSource implements DataSource {
 							+ "arrival_estimate: '2012-01-01T10:30:00+09:00', "
 							+ "departure_estimate: '2012-01-01T10:33:00+09:00', "
 							+ "platform: {name: 'テスト上野動物園前', name_ruby: 'てすとうえのどうぶつえんまえ'}, "
-							+ "reservations_as_arrival: [" + u1c + "," + u1g + ","+ "], "
-							+ "reservations_as_departure: [" + u1h + "," + u1k + "," + u1m  + "]}");
+							+ "reservations_as_arrival: [" + u1c + "," + u1g
+							+ "," + "], " + "reservations_as_departure: ["
+							+ u1h + "," + u1k + "," + u1m + "]}");
 			lOperationSchedule.add(new OperationSchedule(j3));
 
 			JSONObject j4 = new JSONObject(
@@ -325,8 +297,10 @@ public class MockDataSource implements DataSource {
 							+ "arrival_estimate: '2012-01-01T11:10:00+09:00', "
 							+ "departure_estimate: '2012-01-01T11:15:00+09:00', "
 							+ "platform: {name: 'テスト上野広小路前', name_ruby: 'てすとうえのひろこうじまえ'}, "
-							+ "reservations_as_arrival: [" + u1b + "," + u1f + "," + u1h + "," + u1k + "], "
-							+ "reservations_as_departure: [" + u1i + "," + u1n + "," + u1o + "]}");
+							+ "reservations_as_arrival: [" + u1b + "," + u1f
+							+ "," + u1h + "," + u1k + "], "
+							+ "reservations_as_departure: [" + u1i + "," + u1n
+							+ "," + u1o + "]}");
 			lOperationSchedule.add(new OperationSchedule(j4));
 
 			JSONObject j5 = new JSONObject(
@@ -335,7 +309,8 @@ public class MockDataSource implements DataSource {
 							+ "arrival_estimate: '2012-01-01T12:00:00+09:00', "
 							+ "departure_estimate: '2012-01-01T12:05:00+09:00', "
 							+ "platform: {name: 'テスト湯島天神前', name_ruby: 'てすとゆしまてんじんまえ'}}"
-							+ "reservations_as_arrival: [" + u1e + "," + u1j + "," + u1m + "," + u1o + "], "
+							+ "reservations_as_arrival: [" + u1e + "," + u1j
+							+ "," + u1m + "," + u1o + "], "
 							+ "reservations_as_departure: []}");
 			lOperationSchedule.add(new OperationSchedule(j5));
 
@@ -345,7 +320,8 @@ public class MockDataSource implements DataSource {
 							+ "arrival_estimate: '2012-01-01T13:03:00+09:00', "
 							+ "departure_estimate: '2012-01-01T13:10:30+09:00', "
 							+ "platform: {name: 'テストＪＲ御徒町駅前', name_ruby: 'てすとじぇいあーるおかちまちえきまえ'}, "
-							+ "reservations_as_arrival: [" + u1a + "," + u1i + ","  + u1l + ","  + u1n + "], "
+							+ "reservations_as_arrival: [" + u1a + "," + u1i
+							+ "," + u1l + "," + u1n + "], "
 							+ "reservations_as_departure: []}");
 			lOperationSchedule.add(new OperationSchedule(j6));
 
@@ -476,6 +452,95 @@ public class MockDataSource implements DataSource {
 	public int cancelGetOnPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, WebAPICallback<PassengerRecord> callback) {
 		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int searchReservationCandidate(Demand demand,
+			WebAPICallback<List<ReservationCandidate>> callback) {
+
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
+
+		DateFormat f = new SimpleDateFormat("HH:mm");
+		List<ReservationCandidate> l = new LinkedList<ReservationCandidate>();
+		try {
+			ReservationCandidate c1 = new ReservationCandidate();
+			c1.setDepartureTime(f.parse("12:35"));
+			c1.setArrivalTime(f.parse("13:34"));
+			Platform ap1 = new Platform();
+			ap1.setName("駅1");
+			Platform dp1 = new Platform();
+			dp1.setName("駅2");
+			c1.setArrivalPlatform(ap1);
+			c1.setDeparturePlatform(dp1);
+			l.add(c1);
+
+			ReservationCandidate c2 = new ReservationCandidate();
+			c2.setDepartureTime(f.parse("15:12"));
+			c2.setArrivalTime(f.parse("16:45"));
+			Platform ap2 = new Platform();
+			ap2.setName("駅3");
+			Platform dp2 = new Platform();
+			dp2.setName("駅4");
+			c2.setArrivalPlatform(ap2);
+			c2.setDeparturePlatform(dp2);
+			l.add(c2);
+
+			ReservationCandidate c3 = new ReservationCandidate();
+			c3.setDepartureTime(f.parse("17:39"));
+			c3.setArrivalTime(f.parse("18:01"));
+			Platform ap3 = new Platform();
+			ap3.setName("駅5");
+			Platform dp3 = new Platform();
+			dp3.setName("駅6");
+			c3.setArrivalPlatform(ap3);
+			c3.setDeparturePlatform(dp3);
+			l.add(c3);
+
+			ReservationCandidate c4 = new ReservationCandidate();
+			c4.setDepartureTime(f.parse("18:39"));
+			c4.setArrivalTime(f.parse("18:41"));
+			l.add(c4);
+
+			ReservationCandidate c5 = new ReservationCandidate();
+			c5.setDepartureTime(f.parse("19:01"));
+			c5.setArrivalTime(f.parse("20:39"));
+			l.add(c5);
+
+			ReservationCandidate c6 = new ReservationCandidate();
+			c6.setDepartureTime(f.parse("19:01"));
+			c6.setArrivalTime(f.parse("20:39"));
+			l.add(c6);
+
+			ReservationCandidate c7 = new ReservationCandidate();
+			c7.setDepartureTime(f.parse("19:01"));
+			c7.setArrivalTime(f.parse("20:39"));
+			l.add(c7);
+
+			ReservationCandidate c8 = new ReservationCandidate();
+			c8.setDepartureTime(f.parse("19:01"));
+			c8.setArrivalTime(f.parse("20:39"));
+			l.add(c8);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		callback.onSucceed(0, 200, l);
+		return 0;
+	}
+
+	@Override
+	public int createReservation(ReservationCandidate reservationCandidate,
+			WebAPICallback<Reservation> callback) {
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
+		callback.onSucceed(0, 200, new Reservation());
 		return 0;
 	}
 }

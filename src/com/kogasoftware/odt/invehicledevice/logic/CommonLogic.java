@@ -78,10 +78,11 @@ public class CommonLogic {
 	}
 
 	public static void setDate(Date date) {
-		if (BuildConfig.DEBUG) {
-			synchronized (DEFAULT_DATE_LOCK) {
-				defaultDate = Optional.of(date);
-			}
+		if (!BuildConfig.DEBUG) {
+			return;
+		}
+		synchronized (DEFAULT_DATE_LOCK) {
+			defaultDate = Optional.of(date);
 		}
 	}
 

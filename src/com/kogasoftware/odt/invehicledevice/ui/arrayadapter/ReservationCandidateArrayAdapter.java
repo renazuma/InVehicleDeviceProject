@@ -20,7 +20,7 @@ public class ReservationCandidateArrayAdapter extends
 	private final LayoutInflater layoutInflater;
 	private static final Integer RESOURCE_ID = R.layout.reservation_candidate_list_row;
 
-	private Optional<Integer> selectedPosition;
+	private Optional<Integer> selectedPosition = Optional.absent();
 
 	public ReservationCandidateArrayAdapter(Context context,
 			List<ReservationCandidate> items) {
@@ -28,7 +28,6 @@ public class ReservationCandidateArrayAdapter extends
 		this.layoutInflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		setNotifyOnChange(true);
-		selectedPosition = Optional.<Integer> of(300);
 	}
 
 	public Optional<Integer> getSelectedPosition() {
@@ -66,8 +65,8 @@ public class ReservationCandidateArrayAdapter extends
 		} else {
 			s += "ID:" + c.getArrivalPlatformId();
 		}
-		s += " / " + d.getHours() + "時" + d.getMinutes() + "分 → " + a.getHours()
-				+ "時" + a.getMinutes() + "分";
+		s += " / " + d.getHours() + "時" + d.getMinutes() + "分 → "
+				+ a.getHours() + "時" + a.getMinutes() + "分";
 		v.setText(s);
 		return view;
 	}

@@ -35,7 +35,7 @@ public class StatusAccessTestCase extends EmptyActivityInstrumentationTestCase2 
 		sa.read(new Reader<Date>() {
 			@Override
 			public Date read(Status status) {
-				return status.createdDate;
+				return status.updatedDate;
 			}
 		});
 		sa.write(new Writer() {

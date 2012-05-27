@@ -1,7 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.logic.datasource;
 
 import java.io.File;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -15,6 +14,7 @@ import com.kogasoftware.odt.invehicledevice.logic.empty.EmptyWebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPI;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
+import com.kogasoftware.odt.webapi.model.Demand;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
@@ -189,31 +189,6 @@ public class WebAPIDataSource implements DataSource {
 	}
 
 	@Override
-	public Reservation postReservation(Integer reservationCandidateId)
-			throws WebAPIException {
-		throw new WebAPIException(false, "deprecated");
-	}
-
-	@Override
-	public List<ReservationCandidate> postReservationCandidates(Integer userId,
-			Integer departurePlatformId, Integer arrivalPlatformId)
-			throws WebAPIException {
-		throw new WebAPIException(false, "deprecated");
-	}
-
-	@Override
-	public void putReservationTransferredAt(Integer id, Date transferredAt)
-			throws WebAPIException {
-		throw new WebAPIException(false, "deprecated");
-	}
-
-	@Override
-	public void putVehicleNotificationReadAt(Integer id, Date readAt)
-			throws WebAPIException {
-		throw new WebAPIException(false, "deprecated");
-	}
-
-	@Override
 	public int responseVehicleNotification(final VehicleNotification vn,
 			final int response,
 			final WebAPICallback<VehicleNotification> callback) {
@@ -267,5 +242,28 @@ public class WebAPIDataSource implements DataSource {
 						reservation, callback);
 			}
 		}, callback);
+	}
+
+	@Override
+	public int searchReservationCandidate(final Demand demand,
+			final WebAPICallback<List<ReservationCandidate>> callback) {
+		return callWebAPI(new WebAPICaller() {
+			@Override
+			public int call() throws JSONException, WebAPIException {
+				return api.searchReservationCandidate(demand, callback);
+			}
+		});
+	}
+
+	@Override
+	public int createReservation(
+			final ReservationCandidate reservationCandidate,
+			final WebAPICallback<Reservation> callback) {
+		return callWebAPI(new WebAPICaller() {
+			@Override
+			public int call() throws JSONException, WebAPIException {
+				return api.createReservation(reservationCandidate, callback);
+			}
+		});
 	}
 }

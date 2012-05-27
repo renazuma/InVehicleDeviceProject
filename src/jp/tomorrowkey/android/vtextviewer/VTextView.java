@@ -31,7 +31,8 @@ public class VTextView extends View {
 	final AtomicReference<Bitmap> preparedBitmap = new AtomicReference<Bitmap>(
 			Bitmap.createBitmap(1, 1, BITMAP_CONFIG));
 	final Handler handler = new Handler();
-
+	
+	protected final Paint paint = new Paint();
 	protected Bitmap bitmap = Bitmap.createBitmap(1, 1, BITMAP_CONFIG);
 	protected String text = "";
 	protected Thread updateBitmapThread = new EmptyThread();
@@ -73,7 +74,7 @@ public class VTextView extends View {
 			updateBitmapStartSemaphore.release();
 		}
 
-		targetCanvas.drawBitmap(bitmap, 0, 0, new Paint());
+		targetCanvas.drawBitmap(bitmap, 0, 0, paint);
 	}
 
 	@Override
