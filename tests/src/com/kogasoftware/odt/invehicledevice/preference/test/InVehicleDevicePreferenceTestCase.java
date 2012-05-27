@@ -30,7 +30,7 @@ public class InVehicleDevicePreferenceTestCase extends
 
 		solo = new Solo(getInstrumentation(), getActivity());
 	}
-	
+
 	private void setConnectionUrl(String url) throws Exception {
 		getInstrumentation().waitForIdleSync();
 		solo.clickOnText(getInstrumentation().getTargetContext().getResources()
@@ -67,15 +67,23 @@ public class InVehicleDevicePreferenceTestCase extends
 		getInstrumentation().waitForIdleSync();
 	}
 
-	private boolean searchTextLongWait(int resourceId) {
+	private void assertToast(boolean expected, int resourceId) {
 		getInstrumentation().waitForIdleSync();
+		String s = getInstrumentation().getTargetContext().getResources()
+				.getString(resourceId);
+		boolean actual = false;
 		for (int i = 0; i < 5; ++i) {
-			if (solo.searchText(getInstrumentation().getTargetContext()
-					.getResources().getString(resourceId), true)) {
-				return true;
+			if (solo.searchText(s, true)) {
+				actual = true;
+				break;
 			}
 		}
-		return false;
+		for (int i = 0; i < 5; ++i) {
+			if (!solo.searchText(s, true)) {
+				break;
+			}
+		}
+		assertEquals(expected, actual);
 	}
 
 	public void test不正なサーバーを入力() throws Exception {
@@ -85,7 +93,7 @@ public class InVehicleDevicePreferenceTestCase extends
 
 		solo.clickOnText(getInstrumentation().getTargetContext().getResources()
 				.getString(R.string.ok));
-		assertTrue(searchTextLongWait(R.string.an_error_occurred));
+		assertToast(true, R.string.an_error_occurred);
 		while (solo.searchText(getInstrumentation().getTargetContext()
 				.getResources().getString(R.string.an_error_occurred), true)) {
 			// Toastが消えるのを待つ
@@ -102,7 +110,7 @@ public class InVehicleDevicePreferenceTestCase extends
 
 		solo.clickOnText(getInstrumentation().getTargetContext().getResources()
 				.getString(R.string.ok));
-		assertTrue(searchTextLongWait(R.string.an_error_occurred));
+		assertToast(true, R.string.an_error_occurred);
 		while (solo.searchText(getInstrumentation().getTargetContext()
 				.getResources().getString(R.string.an_error_occurred), true)) {
 			// Toastが消えるのを待つ
@@ -118,7 +126,7 @@ public class InVehicleDevicePreferenceTestCase extends
 
 		solo.clickOnText(getInstrumentation().getTargetContext().getResources()
 				.getString(R.string.ok));
-		assertTrue(searchTextLongWait(R.string.an_error_occurred));
+		assertToast(true, R.string.an_error_occurred);
 		while (solo.searchText(getInstrumentation().getTargetContext()
 				.getResources().getString(R.string.an_error_occurred), true)) {
 			// Toastが消えるのを待つ
@@ -174,7 +182,7 @@ public class InVehicleDevicePreferenceTestCase extends
 		solo.clickOnText(getInstrumentation().getTargetContext().getResources()
 				.getString(R.string.ok));
 
-		assertFalse(searchTextLongWait(R.string.an_error_occurred));
+		assertToast(false, R.string.an_error_occurred);
 
 		Thread.sleep(1000);
 		assertTrue(getActivity().isFinishing());
