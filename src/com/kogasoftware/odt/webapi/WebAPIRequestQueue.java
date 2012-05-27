@@ -31,7 +31,7 @@ public class WebAPIRequestQueue {
 	public static final String DEFAULT_GROUP = "default_group";
 
 	private static class InstanceState implements Serializable {
-		private static final long serialVersionUID = 672897944999498099L;
+		private static final long serialVersionUID = 672897944999498098L;
 		private final LinkedListMultimap<String, WebAPIRequest<?>> requests;
 
 		public InstanceState(Multimap<String, WebAPIRequest<?>> requests) {
