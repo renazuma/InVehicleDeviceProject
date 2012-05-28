@@ -168,7 +168,11 @@ public class WebAPIRequestQueue {
 				}
 				String group = entry.getKey();
 				processingGroups.remove(group);
-				requestsByGroup.putAll(group, requestsByGroup.removeAll(group));
+				List<WebAPIRequest<?>> retryRequests = requestsByGroup.removeAll(group);
+				for (WebAPIRequest<?> retryRequest : retryRequests) {
+					retryRequest.setRetry(true);
+				}
+				requestsByGroup.putAll(group, retryRequests);
 				if (group.equals(DEFAULT_GROUP)) {
 					requestsByGroup.remove(group, request);
 					requestsByGroup.put(group, request);

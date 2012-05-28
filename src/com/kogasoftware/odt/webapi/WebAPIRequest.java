@@ -82,14 +82,12 @@ public class WebAPIRequest<T> implements Serializable {
 		if (callback != null) {
 			callback.onException(reqkey, e);
 		}
-		retry = true;
 	}
 
 	public void onFailed(int statusCode, String response) {
 		if (callback != null) {
 			callback.onFailed(reqkey, statusCode, response);
 		}
-		retry = true;
 	}
 
 	public void onSucceed(int statusCode, byte[] rawResult) throws Exception {
@@ -97,5 +95,9 @@ public class WebAPIRequest<T> implements Serializable {
 			callback.onSucceed(reqkey, statusCode,
 					responseConverter.convert(rawResult));
 		}
+	}
+
+	public void setRetry(boolean retry) {
+		this.retry = retry;
 	}
 }
