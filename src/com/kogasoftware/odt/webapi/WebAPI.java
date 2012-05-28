@@ -7,6 +7,7 @@ import java.nio.ByteBuffer;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -309,6 +310,26 @@ public class WebAPI implements Closeable {
 			} catch (JSONException e) {
 				Log.w(TAG, e);
 			}
+		}
+
+		return res;
+	}
+
+	protected JSONObject removeJSONKeys(JSONObject jsonObject, String[] keys) {
+		JSONObject res = new JSONObject();
+
+		Iterator<?> it = jsonObject.keys();
+		while (it.hasNext()) {
+			String key = (String) it.next();
+			try {
+				res.put(key, jsonObject.get(key));
+			} catch (JSONException e) {
+				Log.w(TAG, e);
+			}
+		}
+
+		for (String key : keys) {
+			res.remove(key);
 		}
 
 		return res;
