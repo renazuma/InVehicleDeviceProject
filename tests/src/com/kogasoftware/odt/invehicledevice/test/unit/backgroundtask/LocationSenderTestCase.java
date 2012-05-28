@@ -74,7 +74,6 @@ public class LocationSenderTestCase extends
 		sa.write(new Writer() {
 			@Override
 			public void write(Status status) {
-				status.serviceUnitStatusLogLocationEnabled = true;
 				status.serviceUnitStatusLog.setTemperature(500);
 			}
 		});
@@ -83,39 +82,6 @@ public class LocationSenderTestCase extends
 		assertEquals(dds.sendServiceUnitStatusLogArgs.size(), 1);
 		assertEquals(dds.sendServiceUnitStatusLogArgs.get(0).getTemperature()
 				.get().intValue(), 500);
-	}
-
-	/**
-	 * serviceUnitStatusLogLocationEnabledがfalseの場合は送信しない
-	 */
-	public void testRun_2() throws Exception {
-		assertTrue(dds.sendServiceUnitStatusLogArgs.isEmpty());
-		sa.write(new Writer() {
-			@Override
-			public void write(Status status) {
-				status.serviceUnitStatusLogLocationEnabled = false;
-			}
-		});
-		assertTrue(dds.sendServiceUnitStatusLogArgs.isEmpty());
-		sa.write(new Writer() {
-			@Override
-			public void write(Status status) {
-				status.serviceUnitStatusLogLocationEnabled = true;
-				status.serviceUnitStatusLog.setOrientation(123);
-			}
-		});
-		ls.run();
-		assertEquals(dds.sendServiceUnitStatusLogArgs.size(), 1);
-		assertEquals(dds.sendServiceUnitStatusLogArgs.get(0).getOrientation()
-				.get().intValue(), 123);
-		sa.write(new Writer() {
-			@Override
-			public void write(Status status) {
-				status.serviceUnitStatusLogLocationEnabled = false;
-			}
-		});
-		ls.run();
-		assertEquals(dds.sendServiceUnitStatusLogArgs.size(), 1);
 	}
 
 	/**

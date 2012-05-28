@@ -22,20 +22,19 @@ public class Status implements Serializable {
 		DRIVE, FINISH, INITIAL, PLATFORM
 	}
 
-	private static final long serialVersionUID = 561794850588831830L;
+	private static final long serialVersionUID = 561794850588831831L;
 	
 	public final Semaphore operationScheduleInitializedSign = new Semaphore(0); // パーミットが0以上の場合は初期化済み。0以上になるまで待つためにacquireしたら必ずreleaseする。CountDownLatchがSerializableではないためこれを使用
 	public Date updatedDate = new Date();
 	public File file = new EmptyFile();
 	public Phase phase = Phase.INITIAL;
-	public Boolean serviceUnitStatusLogLocationEnabled = false; // serviceUnitStatusLogの位置メンバが有効な場合true
 
 	public String token = "";
 	public String url = "";
 	public InVehicleDevice inVehicleDevice;
 	public ServiceProvider serviceProvider;
+	public ServiceUnitStatusLog serviceUnitStatusLog = new ServiceUnitStatusLog();
 
-	public final ServiceUnitStatusLog serviceUnitStatusLog = new ServiceUnitStatusLog();
 	public final LinkedList<OperationSchedule> remainingOperationSchedules = new LinkedList<OperationSchedule>();
 	public final LinkedList<OperationSchedule> finishedOperationSchedules = new LinkedList<OperationSchedule>();
 

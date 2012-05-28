@@ -238,14 +238,11 @@ public class CommonLogic {
 		});
 	}
 
-	public Optional<ServiceUnitStatusLog> getServiceUnitStatusLog() {
-		return statusAccess.read(new Reader<Optional<ServiceUnitStatusLog>>() {
+	public ServiceUnitStatusLog getServiceUnitStatusLog() {
+		return statusAccess.read(new Reader<ServiceUnitStatusLog>() {
 			@Override
-			public Optional<ServiceUnitStatusLog> read(Status status) {
-				if (!status.serviceUnitStatusLogLocationEnabled) {
-					return Optional.absent();
-				}
-				return Optional.of(status.serviceUnitStatusLog);
+			public ServiceUnitStatusLog read(Status status) {
+				return status.serviceUnitStatusLog;
 			}
 		});
 	}

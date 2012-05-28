@@ -252,7 +252,6 @@ public class CommonEventSubscriber {
 		statusAccess.write(new Writer() {
 			@Override
 			public void write(Status status) {
-				status.serviceUnitStatusLogLocationEnabled = true;
 				status.serviceUnitStatusLog.setLatitude(new BigDecimal(
 						e.location.getLatitude()));
 				status.serviceUnitStatusLog.setLongitude(new BigDecimal(

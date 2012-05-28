@@ -42,14 +42,11 @@ public class LocationSender implements Runnable, LocationListener {
 	 */
 	@Override
 	public void run() {
-		final Optional<ServiceUnitStatusLog> serviceUnitStatusLog = commonLogic
+		final ServiceUnitStatusLog serviceUnitStatusLog = commonLogic
 				.getServiceUnitStatusLog();
-		if (!serviceUnitStatusLog.isPresent()) {
-			return;
-		}
 
 		commonLogic.getDataSource().sendServiceUnitStatusLog(
-				serviceUnitStatusLog.get(),
+				serviceUnitStatusLog,
 				new WebAPICallback<ServiceUnitStatusLog>() {
 					@Override
 					public void onException(int reqkey, WebAPIException ex) {

@@ -160,6 +160,7 @@ public class StatusAccess {
 			calendar.clear();
 			calendar.set(now.getYear(), now.getMonth(), now.getDay(), 3, 0); // TODO
 			if (status.updatedDate.before(calendar.getTime())) {
+				status.serviceUnitStatusLog = new ServiceUnitStatusLog();
 				status.remainingOperationSchedules.clear();
 				status.finishedOperationSchedules.clear();
 				status.operationScheduleInitializedSign.drainPermits();
