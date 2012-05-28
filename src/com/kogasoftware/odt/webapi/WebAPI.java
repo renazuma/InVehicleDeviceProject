@@ -748,13 +748,13 @@ public class WebAPI implements Closeable {
 			WebAPICallback<ServiceUnitStatusLog> callback)
 			throws WebAPIException, JSONException {
 		log.setOfflineTime(new Date());
-		ServiceUnitStatusLog retryLogJson = log.clone();
-		retryLogJson.setOffline(true);
+		ServiceUnitStatusLog retryLog = log.clone();
+		retryLog.setOffline(true);
 
 		JSONObject param = new JSONObject();
 		JSONObject retryParam = new JSONObject();
 		param.put("service_unit_status_log", log.toJSONObject());
-		retryParam.put("service_unit_status_log", retryLogJson.toJSONObject());
+		retryParam.put("service_unit_status_log", retryLog.toJSONObject());
 
 		return post(PATH_STATUSLOGS, param, retryParam, callback,
 				new ResponseConverter<ServiceUnitStatusLog>() {
