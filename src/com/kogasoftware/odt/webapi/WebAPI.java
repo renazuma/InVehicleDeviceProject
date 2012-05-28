@@ -674,7 +674,7 @@ public class WebAPI implements Closeable {
 			throws JSONException, WebAPIException {
 		JSONObject param = new JSONObject();
 		param.put("demand", demand.toJSONObject());
-		return post(PATH_RESERVATIONS, param, param, callback,
+		return post(PATH_RESERVATIONS + "/search", param, param, callback,
 				new ResponseConverter<List<ReservationCandidate>>() {
 					@Override
 					public List<ReservationCandidate> convert(byte[] rawResponse)
