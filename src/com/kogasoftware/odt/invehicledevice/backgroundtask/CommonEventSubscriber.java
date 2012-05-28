@@ -92,16 +92,18 @@ public class CommonEventSubscriber {
 		statusAccess.write(new Writer() {
 			@Override
 			public void write(Status status) {
-				status.phase = Status.Phase.PLATFORM;
 				if (status.remainingOperationSchedules.isEmpty()) {
 					commonLogic.postEvent(new EnterFinishPhaseEvent());
 					return;
 				}
-				OperationSchedule operationSchedule = status.remainingOperationSchedules
-						.get(0);
-				commonLogic.getDataSource().arrivalOperationSchedule(
+				if (status.phase == Status.Phase.DRIVE) {
+					OperationSchedule operationSchedule = status.remainingOperationSchedules
+							.get(0);
+					commonLogic.getDataSource().arrivalOperationSchedule(
 						operationSchedule,
 						new EmptyWebAPICallback<OperationSchedule>());
+				}
+				status.phase = Status.Phase.PLATFORM;
 			}
 		});
 	}
