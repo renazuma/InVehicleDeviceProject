@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.SerializationException;
 import org.apache.commons.lang3.SerializationUtils;
@@ -28,7 +29,9 @@ import com.google.common.collect.Multimap;
 public class WebAPIRequestQueue {
 	private static final String TAG = WebAPIRequestQueue.class.getSimpleName();
 	private static final Object FILE_ACCESS_LOCK = new Object(); // ファイルアクセス中のスレッドを一つに制限するためのロック。将来的にはロックの粒度をファイル毎にする必要があるかもしれない。
-	public static final String DEFAULT_GROUP = "default_group";
+	public static final String UNIQUE_GROUP = "";
+	private final AtomicInteger uniqueGroupSequence = new AtomicInteger(0);
+
 
 	private static class InstanceState implements Serializable {
 		private static final long serialVersionUID = 672897944999498098L;
@@ -92,6 +95,16 @@ public class WebAPIRequestQueue {
 	 */
 	public void add(WebAPIRequest<?> request, String group) {
 		synchronized (queueLock) {
+			if (group.equals(UNIQUE_GROUP)) {
+				// ユニークなグループ名を作成
+				while (true) {
+					Integer s = uniqueGroupSequence.getAndIncrement();
+					group = "group-" + s;
+					if (!requestsByGroup.containsKey(group)) {
+						break;
+					}
+				}
+			}
 			requestsByGroup.put(group, request);
 			backup();
 			waitingQueuePollPermissions.release();
@@ -99,7 +112,7 @@ public class WebAPIRequestQueue {
 	}
 
 	public void add(WebAPIRequest<?> request) {
-		add(request, DEFAULT_GROUP);
+		add(request, UNIQUE_GROUP);
 	}
 
 	/**
@@ -154,7 +167,6 @@ public class WebAPIRequestQueue {
 
 	/**
 	 * 指定したリクエストに対応するグループを作業中から削除し、グループ全体の処理順を最後に移動。
-	 * 指定したリクエストがデフォルトグループの場合、さらにグループ内の処理順を最後に移動。
 	 * 
 	 * @param request
 	 *            リトライ対象のリクエスト
@@ -173,10 +185,6 @@ public class WebAPIRequestQueue {
 					retryRequest.setRetry(true);
 				}
 				requestsByGroup.putAll(group, retryRequests);
-				if (group.equals(DEFAULT_GROUP)) {
-					requestsByGroup.remove(group, request);
-					requestsByGroup.put(group, request);
-				}
 				backup();
 				waitingQueuePollPermissions.release(requestsByGroup.get(group).size());
 				break;
@@ -196,12 +204,11 @@ public class WebAPIRequestQueue {
 			synchronized (queueLock) {
 				for (String group : new LinkedList<String>(
 						requestsByGroup.keys())) {
-					if (!group.equals(DEFAULT_GROUP)) {
-						if (processingGroups.contains(group)) {
-							continue;
-						}
-						processingGroups.add(group);
+					if (processingGroups.contains(group)) {
+						continue;
 					}
+					processingGroups.add(group);
+
 					List<WebAPIRequest<?>> requests = requestsByGroup
 							.get(group);
 					if (requests == null || requests.isEmpty()) {

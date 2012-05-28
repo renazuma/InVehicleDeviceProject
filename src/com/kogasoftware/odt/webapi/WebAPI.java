@@ -644,7 +644,7 @@ public class WebAPI implements Closeable {
 			WebAPICallback<T> callback, ResponseConverter<T> conv,
 			boolean retryable) throws WebAPIException {
 		return put(path, param, retryParam, callback, conv, retryable,
-				WebAPIRequestQueue.DEFAULT_GROUP);
+				WebAPIRequestQueue.UNIQUE_GROUP);
 	}
 
 	protected <T> int put(String path, JSONObject param, JSONObject retryParam,
