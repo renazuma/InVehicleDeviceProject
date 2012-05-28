@@ -170,7 +170,7 @@ public class BackgroundTask {
 		sharedPreferences
 				.registerOnSharedPreferenceChangeListener(exitRequiredPreferenceChangeListener);
 		locationManager.requestLocationUpdates(
-				LocationManager.NETWORK_PROVIDER, 2000, 1, locationSender);
+				LocationManager.GPS_PROVIDER, 2000, 1, locationSender);
 
 		List<Sensor> temperatureSensors = sensorManager
 				.getSensorList(Sensor.TYPE_TEMPERATURE);
