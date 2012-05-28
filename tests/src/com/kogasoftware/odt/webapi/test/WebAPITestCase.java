@@ -1209,39 +1209,15 @@ public class WebAPITestCase extends
 				.get().intValue());
 	}
 
-	public void testSearchReservationCandidate() throws Exception {
-		final String[] responses = { "{}", // 空
-				"not json{{[[", // エラー
-				"{reservation_candidates: [{foo: 'bar'}]}", // 正常1件
-				"}", // エラー
-				"{reservation_candidates: [{foo: 'bar'}, {foo: 'bar'}]}", // 正常1件
-		};
-
-		final AtomicReference<HttpRequestBase> httpRequest = new AtomicReference<HttpRequestBase>();
-		api = new WebAPI(SERVER_HOST, master.getInVehicleDevice()
-				.getAuthenticationToken().orNull()) {
-			int index = 0;
-
-			@Override
-			protected boolean doHttpSessionAndCallback(WebAPIRequest<?> request) {
-				try {
-					httpRequest.set(request.getRequest());
-					request.onSucceed(200, responses[index++].getBytes());
-				} catch (Exception e) {
-					request.onException(new WebAPIException(true, e));
-				}
-				return super.doHttpSessionAndCallback(request);
-			}
-		};
-
+	public void testSearchReservationCandidateAndCreateReservation() throws Exception {
+		api = new WebAPI(TEST_SERVER_HOST, master.getInVehicleDevice()
+				.getAuthenticationToken().orNull());
+		
 		final List<ReservationCandidate> rc = new LinkedList<ReservationCandidate>();
-
-		// 1件目
-		rc.clear();
 		latch = new CountDownLatch(1);
-		Demand demand1 = new Demand();
-		demand1.setDepartureTime(new Date());
-		api.searchReservationCandidate(demand1,
+		Demand d = new Demand();
+		d.setDepartureTime(new Date());
+		api.searchReservationCandidate(d,
 				new EmptyWebAPICallback<List<ReservationCandidate>>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
@@ -1251,92 +1227,19 @@ public class WebAPITestCase extends
 					}
 				});
 		assertTrue(latch.await(20, TimeUnit.SECONDS));
-		assertTrue(httpRequest.get() instanceof HttpPost);
-		HttpPost post1 = (HttpPost) httpRequest.get();
-		new JSONObject(EntityUtils.toString(post1.getEntity())); // 例外投げない
+		assertTrue(rc.size() > 0);
 		
-		// 2件目
-		rc.clear();
+		final AtomicReference<Reservation> r = new AtomicReference<Reservation>();
 		latch = new CountDownLatch(1);
-		Demand demand2 = new Demand();
-		demand2.setArrivalTime(new Date());
-		api.searchReservationCandidate(demand2,
-				new EmptyWebAPICallback<List<ReservationCandidate>>() {
-					@Override
-					public void onSucceed(int reqkey, int statusCode,
-							List<ReservationCandidate> result) {
-						rc.addAll(result);
-						latch.countDown();
-					}
-				});
-		assertTrue(latch.await(20, TimeUnit.SECONDS));
-		assertTrue(httpRequest.get() instanceof HttpPost);
-		HttpPost post2 = (HttpPost) httpRequest.get();
-		assertNotSame(EntityUtils.toString(post2.getEntity()),
-				EntityUtils.toString(post2.getEntity()));
-		new JSONObject(EntityUtils.toString(post2.getEntity())); // 例外投げない
-		
-		// 3件目
-		rc.clear();
-		latch = new CountDownLatch(1);
-		Demand demand3 = demand1.clone(); // demand1と同じにしてみる
-		demand3.setDeparturePlatformId(1);
-		api.searchReservationCandidate(demand3,
-				new EmptyWebAPICallback<List<ReservationCandidate>>() {
-					@Override
-					public void onSucceed(int reqkey, int statusCode,
-							List<ReservationCandidate> result) {
-						rc.addAll(result);
-						latch.countDown();
-					}
-				});
-		assertTrue(latch.await(20, TimeUnit.SECONDS));
-		assertTrue(httpRequest.get() instanceof HttpPost);
-		HttpPost post3 = (HttpPost) httpRequest.get();
-		assertEquals(EntityUtils.toString(post1.getEntity()),
-				EntityUtils.toString(post3.getEntity()));
-		new JSONObject(EntityUtils.toString(post3.getEntity())); // 例外投げない
-		
-		// 4件目
-		rc.clear();
-		latch = new CountDownLatch(1);
-		Demand demand4 = new Demand();
-		demand4.setDeparturePlatformId(2);
-		api.searchReservationCandidate(demand4,
-				new EmptyWebAPICallback<List<ReservationCandidate>>() {
-					@Override
-					public void onSucceed(int reqkey, int statusCode,
-							List<ReservationCandidate> result) {
-						rc.addAll(result);
-						latch.countDown();
-					}
-				});
-		assertTrue(latch.await(20, TimeUnit.SECONDS));
-		assertTrue(httpRequest.get() instanceof HttpPost);
-		HttpPost post4 = (HttpPost) httpRequest.get();
-		new JSONObject(EntityUtils.toString(post4.getEntity())); // 例外投げない
-		
-		// 5件目
-		rc.clear();
-		latch = new CountDownLatch(1);
-		Demand demand5 = new Demand();
-		demand5.setDeparturePlatformId(3);
-		api.searchReservationCandidate(demand5,
-				new EmptyWebAPICallback<List<ReservationCandidate>>() {
-					@Override
-					public void onSucceed(int reqkey, int statusCode,
-							List<ReservationCandidate> result) {
-						rc.addAll(result);
-						latch.countDown();
-					}
-				});
-		assertTrue(latch.await(20, TimeUnit.SECONDS));
-		assertTrue(httpRequest.get() instanceof HttpPost);
-		HttpPost post5 = (HttpPost) httpRequest.get();
-		new JSONObject(EntityUtils.toString(post5.getEntity())); // 例外投げない		
-	}
-
-	public void testCreateReservation() {
-
+		api.createReservation(rc.get(0), new EmptyWebAPICallback<Reservation>(){
+			@Override
+			public void onSucceed(int reqkey, int statusCode,
+					Reservation result) {
+				latch.countDown();
+				r.set(result);
+			}
+		});
+		assertTrue(latch.await(2000, TimeUnit.SECONDS));
+		assertNotNull(r.get());
 	}
 }
