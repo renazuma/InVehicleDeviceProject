@@ -19,6 +19,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -201,6 +202,7 @@ public class InVehicleDeviceActivity extends Activity {
 			// StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
 			// .detectAll().penaltyLog().penaltyDeath().build());
 		}
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		setContentView(R.layout.in_vehicle_device);
 
 		contentView = findViewById(android.R.id.content);
@@ -277,7 +279,9 @@ public class InVehicleDeviceActivity extends Activity {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-
+		
+		getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		
 		handler.removeCallbacks(updateTime);
 		handler.removeCallbacks(alertOperationScheduleChanged);
 		handler.removeCallbacks(alertVehicleNotification);
