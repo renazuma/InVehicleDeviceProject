@@ -692,7 +692,7 @@ public class WebAPI implements Closeable {
 			WebAPICallback<Reservation> callback) throws JSONException,
 			WebAPIException {
 		JSONObject param = new JSONObject();
-		param.put("reservation_candidate", reservationCandidate.toJSONObject());
+		param.put("reservation_candidate_id", reservationCandidate.getId());
 		return post(PATH_RESERVATIONS, param, param, callback,
 				new ResponseConverter<Reservation>() {
 					@Override
