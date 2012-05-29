@@ -47,9 +47,10 @@ public class CommonLogic {
 		GET_ON, GET_OFF,
 	}
 
+	public static final Integer NEW_SCHEDULE_DOWNLOAD_HOUR = 3;
 	private static final Object DEFAULT_DATE_LOCK = new Object();
 	private static final String TAG = CommonLogic.class.getSimpleName();
-	private static Optional<Date> defaultDate = Optional.absent();
+	private static Optional<Long> mockDateOffset = Optional.absent();
 
 	public static Handler getActivityHandler(Activity activity)
 			throws InterruptedException {
@@ -73,7 +74,10 @@ public class CommonLogic {
 			return new Date();
 		}
 		synchronized (DEFAULT_DATE_LOCK) {
-			return defaultDate.or(new Date());
+			if (mockDateOffset.isPresent()) {
+				return new Date(new Date().getTime() + mockDateOffset.get());
+			}
+			return new Date();
 		}
 	}
 
@@ -82,7 +86,8 @@ public class CommonLogic {
 			return;
 		}
 		synchronized (DEFAULT_DATE_LOCK) {
-			defaultDate = Optional.of(date);
+			Date now = new Date();
+			mockDateOffset = Optional.of(date.getTime() - now.getTime());
 		}
 	}
 

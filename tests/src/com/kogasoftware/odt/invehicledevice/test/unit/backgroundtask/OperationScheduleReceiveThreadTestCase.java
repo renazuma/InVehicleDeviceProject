@@ -7,6 +7,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -184,5 +185,39 @@ public class OperationScheduleReceiveThreadTestCase extends
 		Thread.sleep(10 * 1000);
 		assertEquals(3, seq.get());
 		assertEquals(3, s.s.availablePermits());
+	}
+
+	public void testしきい時間を過ぎると自動で新しいOperationScheduleを受信() throws Exception {
+		class TestDataSource extends DummyDataSource {
+			public List<OperationSchedule> getOperationSchedules()
+					throws WebAPIException {
+				return getDummyOperationSchedules();
+			}
+		}
+		TestUtil.clearStatus();
+		TestUtil.setDataSource(new TestDataSource());
+		TestUtil.setDate(new DateTime(2012, 1, 23, CommonLogic.NEW_SCHEDULE_DOWNLOAD_HOUR - 1, 50, 0));
+		
+		cl = newCommonLogic();
+		osrt = new OperationScheduleReceiveThread(cl);
+		Subscriber<UpdatedOperationScheduleReceivedEvent> s = Subscriber.of(
+				UpdatedOperationScheduleReceivedEvent.class, cl);
+		cl.registerEventListener(s);
+		cl.registerEventListener(osrt);
+		osrt.start();
+
+		assertTrue(s.s.tryAcquire(5, TimeUnit.SECONDS));
+		assertFalse(s.s.tryAcquire(5, TimeUnit.SECONDS));
+		TestUtil.setDate(new DateTime(2012, 1, 23, CommonLogic.NEW_SCHEDULE_DOWNLOAD_HOUR, 0, 0));
+		assertTrue(s.s.tryAcquire(5, TimeUnit.SECONDS));
+
+		TestUtil.setDate(new DateTime(2012, 1, 23, CommonLogic.NEW_SCHEDULE_DOWNLOAD_HOUR + 1, 0, 0));
+		assertFalse(s.s.tryAcquire(5, TimeUnit.SECONDS));
+		
+		TestUtil.setDate(new DateTime(2012, 1, 24, CommonLogic.NEW_SCHEDULE_DOWNLOAD_HOUR - 2, 0, 0));
+		assertFalse(s.s.tryAcquire(5, TimeUnit.SECONDS));
+		
+		TestUtil.setDate(new DateTime(2012, 1, 30, 0, 0, 0));
+		assertTrue(s.s.tryAcquire(5, TimeUnit.SECONDS));
 	}
 }

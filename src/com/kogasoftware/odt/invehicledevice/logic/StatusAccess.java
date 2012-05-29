@@ -155,10 +155,13 @@ public class StatusAccess {
 				}
 			}
 
-			Date now = CommonLogic.getDate();
+			Calendar now = Calendar.getInstance();
+			now.setTime(CommonLogic.getDate());
 			Calendar calendar = Calendar.getInstance();
 			calendar.clear();
-			calendar.set(now.getYear(), now.getMonth(), now.getDay(), 3, 0); // TODO
+			calendar.set(now.get(Calendar.YEAR), now.get(Calendar.MONTH),
+					now.get(Calendar.DAY_OF_MONTH),
+					CommonLogic.NEW_SCHEDULE_DOWNLOAD_HOUR, 0);
 			if (status.updatedDate.before(calendar.getTime())) {
 				status.serviceUnitStatusLog = new ServiceUnitStatusLog();
 				status.remainingOperationSchedules.clear();
@@ -170,7 +173,7 @@ public class StatusAccess {
 						.clear();
 				status.phase = Phase.INITIAL;
 				status.reservations.clear();
-				status.updatedDate = now;
+				status.updatedDate = now.getTime();
 			}
 		}
 		status.file = file;
