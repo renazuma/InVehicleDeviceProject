@@ -21,13 +21,13 @@ public class DrivingTestCase extends
 	public DrivingTestCase() {
 		super("com.kogasoftware.odt.invehicledevice.ui.activity",
 				InVehicleDeviceActivity.class);
-		DataSourceFactory.setInstance(new DummyDataSource());
+		TestUtil.setDataSource(new DummyDataSource());
 	}
 
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		StatusAccess.clearSavedFile();
+		TestUtil.clearStatus();
 
 		solo = new Solo(getInstrumentation(), getActivity());
 		assertTrue(TestUtil.waitForStartUi(getActivity()));

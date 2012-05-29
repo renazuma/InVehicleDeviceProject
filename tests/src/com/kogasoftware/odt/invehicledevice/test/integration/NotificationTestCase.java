@@ -38,9 +38,9 @@ public class NotificationTestCase extends
 		mdst.setReservation(6);
 		mdst.setReservationCandidate(6,1,1,1);
 
-		DataSourceFactory.setInstance(mdst);
+		TestUtil.setDataSource(mdst);
+		TestUtil.clearStatus();
 
-		StatusAccess.clearSavedFile();
 		solo = new Solo(getInstrumentation(), getActivity());
 		assertTrue(TestUtil.waitForStartUi(getActivity()));
 	}

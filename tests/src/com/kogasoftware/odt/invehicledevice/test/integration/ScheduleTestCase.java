@@ -20,7 +20,7 @@ public class ScheduleTestCase extends
 	public ScheduleTestCase() {
 		super("com.kogasoftware.odt.invehicledevice.ui.activity",
 				InVehicleDeviceActivity.class);
-		DataSourceFactory.setInstance(new DummyDataSource());
+		TestUtil.setDataSource(new DummyDataSource());
 	}
 
 	public void dataset(Integer i) {
@@ -28,14 +28,14 @@ public class ScheduleTestCase extends
 		MockDataSource mds = new MockDataSource();
 
 		mds.setOperationSchedules(i);
-		DataSourceFactory.setInstance(mds);
+		TestUtil.setDataSource(mds);
 
 	}
 
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		StatusAccess.clearSavedFile();
+		TestUtil.clearStatus();
 		solo = new Solo(getInstrumentation(), getActivity());
 		assertTrue(TestUtil.waitForStartUi(getActivity()));
 	}

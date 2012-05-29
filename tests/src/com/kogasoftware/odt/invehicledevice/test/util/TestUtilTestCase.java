@@ -33,14 +33,14 @@ public class TestUtilTestCase extends
 	}
 
 	public void testWaitForStartUi() throws Exception {
-		StatusAccess.clearSavedFile();
-		DataSourceFactory.setInstance(new DummyDataSource());
+		TestUtil.clearStatus();
+		TestUtil.setDataSource(new DummyDataSource());
 		assertTrue(TestUtil.waitForStartUi(getActivity()));
 	}
 
 	public void testWaitForStartUiTimeout() throws Exception {
-		StatusAccess.clearSavedFile();
-		DataSourceFactory.setInstance(new NoOperationScheduleDataSource());
+		TestUtil.clearStatus();
+		TestUtil.setDataSource(new NoOperationScheduleDataSource());
 		assertFalse(TestUtil.waitForStartUi(getActivity()));
 	}
 }

@@ -18,8 +18,8 @@ public class ScheduleChangedTestCase extends
 	public ScheduleChangedTestCase() {
 		super("com.kogasoftware.odt.invehicledevice.ui.activity",
 				InVehicleDeviceActivity.class);
-		DataSourceFactory.setInstance(new ScheduleChangedTestDataSource());
-		StatusAccess.clearSavedFile();
+		TestUtil.setDataSource(new ScheduleChangedTestDataSource());
+		TestUtil.clearStatus();
 	}
 
 	@Override

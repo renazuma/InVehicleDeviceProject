@@ -40,7 +40,7 @@ public class ReturnPathTestCase extends
 	public void setUp() throws Exception {
 		super.setUp();
 
-		StatusAccess.clearSavedFile();
+		TestUtil.clearStatus();
 		solo = new Solo(getInstrumentation(), getActivity());
 		assertTrue(TestUtil.waitForStartUi(getActivity()));
 
@@ -72,7 +72,7 @@ public class ReturnPathTestCase extends
 	public void test00_データ初期設定() {
 		// TODO
 		// userId,departurePlatformId,arrivalPlatformId部分は後で茂木さんの実装が出来たら実装する
-		StatusAccess.clearSavedFile();
+		TestUtil.clearStatus();
 		dataset(6, 1, 1, 1);
 
 	}

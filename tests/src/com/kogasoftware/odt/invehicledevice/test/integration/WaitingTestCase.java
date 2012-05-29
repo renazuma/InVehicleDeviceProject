@@ -29,7 +29,7 @@ public class WaitingTestCase extends
 		mds.setReservation(i);
 		mds.setReservationCandidate(6, 1, 1, 1);
 
-		DataSourceFactory.setInstance(mds);
+		TestUtil.setDataSource(mds);
 
 	}
 
@@ -40,7 +40,7 @@ public class WaitingTestCase extends
 
 		dataset(6);
 
-		StatusAccess.clearSavedFile();
+		TestUtil.clearStatus();
 
 		solo = new Solo(getInstrumentation(), getActivity());
 		assertTrue(TestUtil.waitForStartUi(getActivity()));

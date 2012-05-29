@@ -26,7 +26,7 @@ public class MapTestCase extends
 	public void setUp() throws Exception {
 		super.setUp();
 		fail("地図未対応");
-		StatusAccess.clearSavedFile();
+		TestUtil.clearStatus();
 		solo = new Solo(getInstrumentation(), getActivity());
 		assertTrue(TestUtil.waitForStartUi(getActivity()));
 	}
