@@ -102,8 +102,8 @@ public class CommonEventSubscriber {
 					OperationSchedule operationSchedule = status.remainingOperationSchedules
 							.get(0);
 					commonLogic.getDataSource().arrivalOperationSchedule(
-						operationSchedule,
-						new EmptyWebAPICallback<OperationSchedule>());
+							operationSchedule,
+							new EmptyWebAPICallback<OperationSchedule>());
 				}
 				status.phase = Status.Phase.PLATFORM;
 			}
@@ -318,7 +318,7 @@ public class CommonEventSubscriber {
 			}
 		});
 	}
-	
+
 	@Subscribe
 	public void startNewOperation(NewOperationStartEvent e) {
 		statusAccess.write(new Writer() {
@@ -333,7 +333,7 @@ public class CommonEventSubscriber {
 						.clear();
 				status.phase = Phase.INITIAL;
 				status.reservations.clear();
-				status.updatedDate = new Date();
+				status.updatedDate = CommonLogic.getDate();
 			}
 		});
 	}
