@@ -153,10 +153,11 @@ public class CommonLogic {
 		}
 		for (Integer resourceId : new Integer[] { R.id.start_check_modal_view,
 				R.id.schedule_modal_view, R.id.memo_modal_view,
-				R.id.return_path_modal_view, R.id.notification_modal_view,
-				R.id.schedule_changed_modal_view, R.id.navigation_modal_view,
-				R.id.phase_text_view, R.id.drive_phase_view,
-				R.id.platform_phase_view, R.id.finish_phase_view }) {
+				R.id.arrival_check_modal_view, R.id.return_path_modal_view,
+				R.id.notification_modal_view, R.id.schedule_changed_modal_view,
+				R.id.navigation_modal_view, R.id.phase_text_view,
+				R.id.drive_phase_view, R.id.platform_phase_view,
+				R.id.finish_phase_view }) {
 			View view = activity.findViewById(resourceId);
 			if (view != null) {
 				eventBus.register(view);

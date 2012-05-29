@@ -153,6 +153,11 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 
+    <com.kogasoftware.odt.invehicledevice.ui.modalview.ArrivalCheckModalView
+        android:id="@+id/arrival_check_modal_view"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
+    
     <com.kogasoftware.odt.invehicledevice.ui.modalview.MemoModalView
         android:id="@+id/memo_modal_view"
         android:layout_width="fill_parent"

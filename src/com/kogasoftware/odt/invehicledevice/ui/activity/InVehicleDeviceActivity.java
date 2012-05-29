@@ -38,6 +38,7 @@ import com.kogasoftware.odt.invehicledevice.logic.event.ExitEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.SignalStrengthChangedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.UpdatedOperationScheduleAlertEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.VehicleNotificationReceivedAlertEvent;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.ArrivalCheckModalView;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.NavigationModalView;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.ScheduleModalView;
 import com.kogasoftware.odt.invehicledevice.ui.phaseview.PlatformPhaseView;
@@ -148,7 +149,7 @@ public class InVehicleDeviceActivity extends Activity {
 		changePhaseButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				commonLogic.postEvent(new EnterPlatformPhaseEvent());
+				commonLogic.postEvent(new ArrivalCheckModalView.ShowEvent());
 			}
 		});
 	}
