@@ -113,6 +113,10 @@ public class UiEventBus {
 			if (disposed.get()) {
 				return;
 			}
+			if (registeredObjects.contains(object)) {
+				Log.w(TAG, "duplicated registration: " + object);
+				return;
+			}
 			registeredObjects.add(object);
 			getEventBusForObject(object).register(object);
 		}
