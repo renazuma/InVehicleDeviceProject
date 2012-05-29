@@ -3,6 +3,7 @@ package com.kogasoftware.odt.invehicledevice.backgroundtask;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
+
 import android.util.Log;
 
 import com.google.common.eventbus.Subscribe;
@@ -12,7 +13,6 @@ import com.kogasoftware.odt.invehicledevice.logic.event.NewOperationStartEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.UpdatedOperationScheduleAlertEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.UpdatedOperationScheduleReceiveStartEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.UpdatedOperationScheduleReceivedEvent;
-import com.kogasoftware.odt.webapi.Identifiables;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
@@ -55,23 +55,15 @@ public class OperationScheduleReceiveThread extends Thread {
 	@Override
 	public void run() {
 		try {
-			// 初回以降のスケジュールの受信
 			while (!Thread.currentThread().isInterrupted()) {
 				// スケジュール変更通知があるまで待つ
 				startUpdatedOperationScheduleReceiveSemaphore.acquire();
-
-				final List<VehicleNotification> workingVehicleNotification = new LinkedList<VehicleNotification>();
-				while (!Thread.currentThread().isInterrupted()) {
-					Identifiables
-							.merge(workingVehicleNotification,
-									commonLogic
-											.getReceivingOperationScheduleChangedVehicleNotifications());
-					try {
-						receive(workingVehicleNotification);
-						break;
-					} catch (WebAPIException e) {
-						Log.i(TAG, "retry", e);
-					}
+				try {
+					receive(commonLogic
+							.getReceivingOperationScheduleChangedVehicleNotifications());
+					break;
+				} catch (WebAPIException e) {
+					Log.i(TAG, "retry", e);
 				}
 			}
 		} catch (InterruptedException e) {
