@@ -56,6 +56,10 @@ public class DrivingTestCase extends
 		
 		getInstrumentation().waitForIdleSync();
 
+		solo.clickOnView(solo.getView(R.id.arrival_button));
+		
+		getInstrumentation().waitForIdleSync();
+
 		assertTrue(solo.searchText("停車中")); // TODO 画像ファイル名assertに書き換わる予定
 
 	}
@@ -63,6 +67,10 @@ public class DrivingTestCase extends
 	public void test04_停車中から出発しますボタンを押すと出発確認画面表示() {
 
 		solo.clickOnView(solo.getView(R.id.change_phase_button));
+		
+		getInstrumentation().waitForIdleSync();
+
+		solo.clickOnView(solo.getView(R.id.arrival_button));
 		
 		getInstrumentation().waitForIdleSync();
 
@@ -112,15 +120,15 @@ public class DrivingTestCase extends
 		VTextView next2 = (VTextView) solo.getView(R.id.platform_name_2_beyond_text_view);
 		VTextView next3 = (VTextView) solo.getView(R.id.platform_name_3_beyond_text_view);
 
-		assertTrue(solo.searchText("乗降場A"));
+		assertTrue(solo.searchText("乗降場A", true));
 		assertEquals("乗降場A", next1.getText());
 		assertEquals("乗降場B", next2.getText());
 		assertEquals("乗降場C", next3.getText());
 		
 		test06_出発確認画面で出発するボタンを押すと運転中画面表示();
 
-		assertFalse(solo.searchText("乗降場A"));
-		assertTrue(solo.searchText("乗降場B"));
+		assertFalse(solo.searchText("乗降場A", true));
+		assertTrue(solo.searchText("乗降場B", true));
 		assertEquals("乗降場B", next1.getText());
 		assertEquals("乗降場C", next2.getText());
 		assertEquals("", next3.getText());
@@ -138,7 +146,8 @@ public class DrivingTestCase extends
 
 		solo.clickOnView(solo.getView(R.id.change_phase_button));
 		getInstrumentation().waitForIdleSync();
-
+		solo.clickOnView(solo.getView(R.id.arrival_button));
+		getInstrumentation().waitForIdleSync();
 		solo.clickOnView(solo.getView(R.id.change_phase_button));
 		getInstrumentation().waitForIdleSync();
 		assertEquals(View.VISIBLE, solo.getView(R.id.start_check_modal_view)

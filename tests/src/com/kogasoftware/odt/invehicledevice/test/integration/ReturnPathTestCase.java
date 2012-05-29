@@ -32,8 +32,8 @@ public class ReturnPathTestCase extends
 		mds.setReservationCandidate(iCount, userId, departurePlatformId,
 				arrivalPlatformId);
 
-		DataSourceFactory.setInstance(mds);
-
+		TestUtil.setDataSource(mds);
+		TestUtil.setDate("2012-01-01T09:00:00+09:00");
 	}
 
 	@Override
@@ -48,6 +48,8 @@ public class ReturnPathTestCase extends
 		if (DataSourceFactory.newInstance("http://localhost", "", new EmptyFile()) instanceof MockDataSource) {
 			try {
 				solo.clickOnButton("到着しました");
+				getInstrumentation().waitForIdleSync();
+				solo.clickOnButton("到着する");
 				getInstrumentation().waitForIdleSync();
 				solo.clickOnButton("復路");
 				getInstrumentation().waitForIdleSync();

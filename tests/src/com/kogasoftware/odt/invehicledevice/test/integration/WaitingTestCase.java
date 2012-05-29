@@ -46,8 +46,9 @@ public class WaitingTestCase extends
 		assertTrue(TestUtil.waitForStartUi(getActivity()));
 
 		// デフォルトで停車中にする
-		if (solo.searchButton("到着しました")) {
+		if (solo.searchButton("到着しました", true)) {
 			solo.clickOnButton("到着しました");
+			solo.clickOnButton("到着する");
 		}
 	}
 

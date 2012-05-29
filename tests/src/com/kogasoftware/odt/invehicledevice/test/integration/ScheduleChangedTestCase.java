@@ -39,6 +39,7 @@ public class ScheduleChangedTestCase extends
 		assertTrue(solo.searchText("乗降場A"));
 
 		solo.clickOnButton("到着しました");
+		solo.clickOnButton("到着する");
 		getInstrumentation().waitForIdleSync();
 		solo.clickOnButton("出発する");
 		getInstrumentation().waitForIdleSync();

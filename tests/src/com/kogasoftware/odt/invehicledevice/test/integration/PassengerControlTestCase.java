@@ -46,8 +46,9 @@ public class PassengerControlTestCase extends
 		assertTrue(TestUtil.waitForStartUi(getActivity()));
 
 		// デフォルトで停車中にする
-		if (solo.searchButton("到着しました")) {
+		if (solo.searchButton("到着しました", true)) {
 			solo.clickOnButton("到着しました");
+			solo.clickOnButton("到着する");
 		}
 	}
 
@@ -165,6 +166,10 @@ public class PassengerControlTestCase extends
 		solo.clickOnView(solo.getView(R.id.change_phase_button));
 
 		getInstrumentation().waitForIdleSync();
+		
+		solo.clickOnView(solo.getView(R.id.arrival_button));
+
+		getInstrumentation().waitForIdleSync();
 
 		assertTrue(solo.searchText("停車中")); // TODO 画像ファイル名assertに書き換わる予定
 
@@ -194,6 +199,10 @@ public class PassengerControlTestCase extends
 		getInstrumentation().waitForIdleSync();
 
 		solo.clickOnView(solo.getView(R.id.change_phase_button));
+
+		getInstrumentation().waitForIdleSync();
+
+		solo.clickOnView(solo.getView(R.id.arrival_button));
 
 		getInstrumentation().waitForIdleSync();
 
@@ -230,6 +239,10 @@ public class PassengerControlTestCase extends
 		getInstrumentation().waitForIdleSync();
 
 		solo.clickOnView(solo.getView(R.id.change_phase_button));
+
+		getInstrumentation().waitForIdleSync();
+		
+		solo.clickOnView(solo.getView(R.id.arrival_button));
 
 		getInstrumentation().waitForIdleSync();
 

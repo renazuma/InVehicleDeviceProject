@@ -47,4 +47,8 @@ public class TestUtil {
 		}
 		return true;
 	}
+
+	public static void setDate(String string) {
+		setDate(DateTime.parse(string));
+	}
 }

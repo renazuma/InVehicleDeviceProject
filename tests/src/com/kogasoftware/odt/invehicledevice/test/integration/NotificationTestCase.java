@@ -127,6 +127,7 @@ public class NotificationTestCase extends
 		test01_起動時は非表示();
 
 		solo.clickOnButton("到着しました");
+		solo.clickOnButton("到着する");
 
 		List<VehicleNotification> vehicleNotifications = null;
 		try {
