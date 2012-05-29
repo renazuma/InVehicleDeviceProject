@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">ODT車載機設定アプリケーション</string>
+    <string name="app_name">車載器設定</string>
     <string name="connection_config">接続設定</string>
     <string name="connection_url">接続先URL</string>
     <string name="login">ログイン</string>
