@@ -17,6 +17,7 @@
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:baselineAligned="false"
                 android:orientation="horizontal" >
 
                 <FrameLayout
@@ -120,6 +121,8 @@
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
                 android:text="@string/map"
+                android:enabled="false"
+                android:state_enabled="false"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <Button

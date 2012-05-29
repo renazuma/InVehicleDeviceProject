@@ -49,25 +49,25 @@ public class StartCheckModalView extends ModalView {
 		ListView errorReservationListView = (ListView) findViewById(R.id.error_reservation_list_view);
 		List<String> messages = new LinkedList<String>();
 		for (Reservation reservation : adapter.getNoGettingOnReservations()) {
-			messages.add(getUserName(reservation) + "様が未乗車です");
+			messages.add(" ※" + getUserName(reservation) + "様が未乗車です");
 		}
 		for (Reservation reservation : adapter.getNoGettingOffReservations()) {
-			messages.add(getUserName(reservation) + "様が未降車です");
+			messages.add(" ※" + getUserName(reservation) + "様が未降車です");
 		}
 		for (Reservation reservation : adapter.getNoPaymentReservations()) {
-			messages.add(getUserName(reservation) + "様が料金未払いです");
+			messages.add(" ※" + getUserName(reservation) + "様が料金未払いです");
 		}
 
 		errorReservationListView.setAdapter(new ArrayAdapter<String>(
 				getContext(), android.R.layout.simple_list_item_1, messages));
 
 		Button startButton = (Button) findViewById(R.id.start_button);
-		TextView doesItLeaveTextView = (TextView) findViewById(R.id.does_it_leave_text_view);
+		TextView titleTextView = (TextView) findViewById(R.id.start_check_modal_title_text_view);
 		if (getCommonLogic().getRemainingOperationSchedules().size() <= 1) {
-			doesItLeaveTextView.setText("確定しますか？");
+			titleTextView.setText("確定しますか？");
 			startButton.setText("確定する");
 		} else {
-			doesItLeaveTextView.setText("出発しますか？");
+			titleTextView.setText("出発しますか？");
 			startButton.setText("出発する");
 		}
 		startButton.setOnClickListener(new OnClickListener() {

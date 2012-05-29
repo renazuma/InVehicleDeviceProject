@@ -1,28 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    android:layout_height="fill_parent" >
+
+    <TextView
+        android:id="@+id/notification_modal_title_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:text="管理者から連絡があります"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
         android:id="@+id/notification_text_view"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:layout_weight="1"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:layout_above="@+id/notification_modal_buttons"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/notification_modal_title_text_view"
+        android:background="@drawable/border"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_margin="5dip" />
 
-    <Button
-        android:id="@+id/reply_yes_button"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_weight="1"
-        android:text="@string/yes" />
+    <LinearLayout
+        android:id="@+id/notification_modal_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true" >
 
-    <Button
-        android:id="@+id/reply_no_button"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_weight="1"
-        android:text="@string/no" />
+        <Button
+            android:id="@+id/reply_yes_button"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:text="@string/yes" />
 
-</LinearLayout>
+        <Button
+            android:id="@+id/reply_no_button"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:text="@string/no" />
+    </LinearLayout>
+
+</RelativeLayout>

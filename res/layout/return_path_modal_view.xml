@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    android:layout_height="fill_parent" >
 
     <TextView
         android:id="@+id/return_path_title_text_view"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_weight="1"
-        />
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true" />
 
     <LinearLayout
+        android:id="@+id/return_path_demand_view"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_weight="1"
-        android:baselineAligned="false"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/return_path_title_text_view"
         android:orientation="horizontal" >
 
         <Spinner
@@ -53,35 +53,48 @@
     <Button
         android:id="@+id/reservation_candidate_scroll_up_button"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/return_path_demand_view"
         android:text="@string/scroll_up" />
 
     <ListView
         android:id="@+id/reservation_candidates_list_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_weight="1" />
+        android:layout_above="@+id/reservation_candidate_scroll_down_button"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/reservation_candidate_scroll_up_button" />
 
     <Button
         android:id="@+id/reservation_candidate_scroll_down_button"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/return_path_submit_buttons"
+        android:layout_alignParentLeft="true"
         android:text="@string/scroll_down" />
 
-    <Button
-        android:id="@+id/do_reservation_button"
+    <LinearLayout
+        android:id="@+id/return_path_submit_buttons"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_weight="1"
-        android:text="@string/it_reserves" />
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal" >
 
-    <Button
-        android:id="@+id/return_path_close_button"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_weight="1"
-        android:text="@string/it_returns" />
+        <Button
+            android:id="@+id/do_reservation_button"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="@string/it_reserves"
+            android:layout_weight="1"
+             />
 
-</LinearLayout>
+        <Button
+            android:id="@+id/return_path_close_button"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="@string/it_returns"
+            android:layout_weight="1" />
+    </LinearLayout>
+</RelativeLayout>
