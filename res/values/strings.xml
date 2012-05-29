@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="alighting_number">降車人数</string>
-    <string name="app_name">ODT車載機アプリケーション</string>
+    <string name="app_name">車載器</string>
     <string name="arrival_schedule">到着予定</string>
     <string name="departure_schedule">出発時刻</string>
     <string name="does_it_leave">出発しますか？</string>
