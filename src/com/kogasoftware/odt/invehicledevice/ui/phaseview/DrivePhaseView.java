@@ -30,10 +30,10 @@ public class DrivePhaseView extends PhaseView {
 	private final Runnable toggleDrivingView = new Runnable() {
 		@Override
 		public void run() {
-			if (drivingView2Layout.getVisibility() == View.VISIBLE) {
-				drivingView2Layout.setVisibility(View.GONE);
+			if (driveView2.getVisibility() == View.VISIBLE) {
+				driveView2.setVisibility(View.GONE);
 			} else {
-				drivingView2Layout.setVisibility(View.VISIBLE);
+				driveView2.setVisibility(View.VISIBLE);
 			}
 			handler.postDelayed(this, TOGGLE_DRIVING_VIEW_INTERVAL);
 		}
@@ -44,8 +44,8 @@ public class DrivePhaseView extends PhaseView {
 	private final VTextView platformName2BeyondTextView;
 	private final VTextView platformName3BeyondTextView;
 	private final TextView platformArrivalTimeTextView;
-	private final View drivingView1Layout;
-	private final View drivingView2Layout;
+	private final View driveView1;
+	private final View driveView2;
 	private final Handler handler = new Handler();
 
 	public DrivePhaseView(Context context, AttributeSet attrs) {
@@ -58,14 +58,14 @@ public class DrivePhaseView extends PhaseView {
 		platformName2BeyondTextView = (VTextView) findViewById(R.id.platform_name_2_beyond_text_view);
 		platformName3BeyondTextView = (VTextView) findViewById(R.id.platform_name_3_beyond_text_view);
 		platformArrivalTimeTextView = (TextView) findViewById(R.id.platform_arrival_time_text_view);
-		drivingView1Layout = findViewById(R.id.drive_view1);
-		drivingView2Layout = findViewById(R.id.drive_view2);
+		driveView1 = findViewById(R.id.drive_view1);
+		driveView2 = findViewById(R.id.drive_view2);
 
 		TypedArray typedArray = getContext().obtainStyledAttributes(
 				new int[] { android.R.attr.background });
 		Integer backgroundColor = typedArray.getColor(0, Color.WHITE);
-		drivingView1Layout.setBackgroundColor(backgroundColor); // TODO XMLで指定
-		drivingView2Layout.setBackgroundColor(backgroundColor); // TODO
+		driveView1.setBackgroundColor(backgroundColor); // TODO XMLで指定
+		driveView2.setBackgroundColor(backgroundColor); // TODO
 	}
 
 	@Override

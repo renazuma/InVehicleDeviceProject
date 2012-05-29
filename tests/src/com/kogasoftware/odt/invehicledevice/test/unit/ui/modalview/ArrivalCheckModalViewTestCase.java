@@ -15,7 +15,7 @@ import com.kogasoftware.odt.invehicledevice.logic.event.CommonLogicLoadCompleteE
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterPlatformPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.ArrivalCheckModalView;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.StartCheckModalView;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.DepartureCheckModalView;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
 
@@ -64,7 +64,7 @@ public class ArrivalCheckModalViewTestCase extends
 		});
 		CommonLogic cl2 = newCommonLogic();
 		try {
-			assertEquals(cl2.countRegisteredClass(StartCheckModalView.class)
+			assertEquals(cl2.countRegisteredClass(DepartureCheckModalView.class)
 					.intValue(), 1);
 		} finally {
 			cl2.dispose();

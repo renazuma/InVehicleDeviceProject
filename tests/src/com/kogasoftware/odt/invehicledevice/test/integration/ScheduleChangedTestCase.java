@@ -58,7 +58,7 @@ public class ScheduleChangedTestCase extends
 		getInstrumentation().waitForIdleSync();
 		solo.clickOnView(solo.getView(R.id.change_phase_button));
 		getInstrumentation().waitForIdleSync();
-		solo.clickOnView(solo.getView(R.id.start_button));
+		solo.clickOnView(solo.getView(R.id.departure_button));
 
 		assertFalse(solo.searchText("乗降場C"));
 		assertTrue(solo.searchText("乗降場B", true));

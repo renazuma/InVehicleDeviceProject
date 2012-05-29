@@ -6,18 +6,15 @@ import android.widget.TextView;
 
 import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
-import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSourceFactory;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
-import com.kogasoftware.odt.invehicledevice.test.util.datasource.DummyDataSource;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
-public class WaitingTestCase extends
+public class PlatformTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 	private Solo solo;
 
-	public WaitingTestCase() {
+	public PlatformTestCase() {
 		super("com.kogasoftware.odt.invehicledevice.ui.activity",
 				InVehicleDeviceActivity.class);
 	}
@@ -89,13 +86,13 @@ public class WaitingTestCase extends
 
 	public void test04_出発ボタンを押すと出発ダイアログ表示() {
 		solo.clickOnButton("出発する");
-		assertEquals(View.VISIBLE, solo.getView(R.id.start_check_modal_view)
-				.getVisibility());
+		assertEquals(View.VISIBLE, solo
+				.getView(R.id.departure_check_modal_view).getVisibility());
 	}
 
 	public void test05_出発ダイアログはい選択で走行中() {
 		test04_出発ボタンを押すと出発ダイアログ表示();
-		solo.clickOnView(solo.getView(R.id.start_button));
+		solo.clickOnView(solo.getView(R.id.departure_button));
 		getInstrumentation().waitForIdleSync();
 		TextView v = (TextView) solo.getView(R.id.phase_text_view);
 		assertEquals("走行中", v.getText());
@@ -103,7 +100,7 @@ public class WaitingTestCase extends
 
 	public void test06_出発ダイアログいいえ選択で停車中に戻る() {
 		test04_出発ボタンを押すと出発ダイアログ表示();
-		solo.clickOnView(solo.getView(R.id.start_check_close_button));
+		solo.clickOnView(solo.getView(R.id.departure_check_close_button));
 		TextView v = (TextView) solo.getView(R.id.phase_text_view);
 		assertEquals("停車中", v.getText());
 	}

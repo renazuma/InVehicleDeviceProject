@@ -89,12 +89,12 @@ public class PassengerControlTestCase extends
 
 		solo.clickOnButton("出発する");
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.start_check_modal_view)
+		assertEquals(View.VISIBLE, solo.getView(R.id.departure_check_modal_view)
 				.getVisibility());
 
 		getInstrumentation().waitForIdleSync();
 
-		solo.clickOnView(solo.getView(R.id.start_button));
+		solo.clickOnView(solo.getView(R.id.departure_button));
 		getInstrumentation().waitForIdleSync();
 		TextView v = (TextView) solo.getView(R.id.phase_text_view);
 		assertEquals("走行中", v.getText());
@@ -111,7 +111,7 @@ public class PassengerControlTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.start_check_modal_view)
+		assertEquals(View.VISIBLE, solo.getView(R.id.departure_check_modal_view)
 				.getVisibility());
 
 		assertTrue(solo.searchText("名字b", 0, true));
@@ -120,7 +120,7 @@ public class PassengerControlTestCase extends
 		assertTrue(solo.searchText("名字e", 0, true));
 		assertTrue(solo.searchText("名字f", 0, true));
 
-		solo.clickOnView(solo.getView(R.id.start_button));
+		solo.clickOnView(solo.getView(R.id.departure_button));
 		getInstrumentation().waitForIdleSync();
 		TextView v = (TextView) solo.getView(R.id.phase_text_view);
 		assertEquals("走行中", v.getText());
@@ -149,10 +149,10 @@ public class PassengerControlTestCase extends
 
 		solo.clickOnButton("出発する");
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.start_check_modal_view)
+		assertEquals(View.VISIBLE, solo.getView(R.id.departure_check_modal_view)
 				.getVisibility());
 
-		solo.clickOnView(solo.getView(R.id.start_button));
+		solo.clickOnView(solo.getView(R.id.departure_button));
 		getInstrumentation().waitForIdleSync();
 		TextView v = (TextView) solo.getView(R.id.phase_text_view);
 		assertEquals("走行中", v.getText());
@@ -184,10 +184,10 @@ public class PassengerControlTestCase extends
 
 		solo.clickOnButton("出発する");
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.start_check_modal_view)
+		assertEquals(View.VISIBLE, solo.getView(R.id.departure_check_modal_view)
 				.getVisibility());
 
-		solo.clickOnView(solo.getView(R.id.start_button));
+		solo.clickOnView(solo.getView(R.id.departure_button));
 		getInstrumentation().waitForIdleSync();
 		TextView v = (TextView) solo.getView(R.id.phase_text_view);
 		assertEquals("走行中", v.getText());
@@ -224,10 +224,10 @@ public class PassengerControlTestCase extends
 
 		solo.clickOnButton("出発する");
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.start_check_modal_view)
+		assertEquals(View.VISIBLE, solo.getView(R.id.departure_check_modal_view)
 				.getVisibility());
 
-		solo.clickOnView(solo.getView(R.id.start_button));
+		solo.clickOnView(solo.getView(R.id.departure_button));
 		getInstrumentation().waitForIdleSync();
 		TextView v = (TextView) solo.getView(R.id.phase_text_view);
 		assertEquals("走行中", v.getText());
@@ -265,10 +265,10 @@ public class PassengerControlTestCase extends
 
 		solo.clickOnButton("出発する");
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.start_check_modal_view)
+		assertEquals(View.VISIBLE, solo.getView(R.id.departure_check_modal_view)
 				.getVisibility());
 
-		solo.clickOnView(solo.getView(R.id.start_button));
+		solo.clickOnView(solo.getView(R.id.departure_button));
 		getInstrumentation().waitForIdleSync();
 		TextView v = (TextView) solo.getView(R.id.phase_text_view);
 		assertEquals("走行中", v.getText());

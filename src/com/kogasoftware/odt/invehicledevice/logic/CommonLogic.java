@@ -21,9 +21,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.BuildConfig;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.backgroundtask.CommonEventSubscriber;
-import com.kogasoftware.odt.invehicledevice.backgroundtask.ReservationEventSubscriber;
-import com.kogasoftware.odt.invehicledevice.backgroundtask.VehicleNotificationEventSubscriber;
+import com.kogasoftware.odt.invehicledevice.backgroundtask.CommonEventProcessor;
+import com.kogasoftware.odt.invehicledevice.backgroundtask.VehicleNotificationEventProcessor;
 import com.kogasoftware.odt.invehicledevice.logic.Status.Phase;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.ReadOnlyStatusAccess;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Reader;
@@ -94,9 +93,8 @@ public class CommonLogic {
 	private final DataSource dataSource;
 	private final UiEventBus eventBus;
 	private final ReadOnlyStatusAccess statusAccess;
-	private final CommonEventSubscriber commonEventSubscriber;
-	private final ReservationEventSubscriber reservationEventSubscriber;
-	private final VehicleNotificationEventSubscriber vehicleNotificationEventSubscriber;
+	private final CommonEventProcessor commonEventProcessor;
+	private final VehicleNotificationEventProcessor vehicleNotificationEventProcessor;
 
 	/**
 	 * Nullオブジェクトパターン用のコンストラクタ
@@ -106,10 +104,8 @@ public class CommonLogic {
 		this.statusAccess = statusAccess.getReadOnlyStatusAccess();
 		dataSource = DataSourceFactory.newInstance();
 		eventBus = new UiEventBus();
-		commonEventSubscriber = new CommonEventSubscriber(this, statusAccess);
-		reservationEventSubscriber = new ReservationEventSubscriber(this,
-				statusAccess);
-		vehicleNotificationEventSubscriber = new VehicleNotificationEventSubscriber(
+		commonEventProcessor = new CommonEventProcessor(this, statusAccess);
+		vehicleNotificationEventProcessor = new VehicleNotificationEventProcessor(
 				this, statusAccess);
 
 		dispose();
@@ -120,10 +116,8 @@ public class CommonLogic {
 	 */
 	public CommonLogic(Activity activity, Handler activityHandler,
 			StatusAccess statusAccess) {
-		commonEventSubscriber = new CommonEventSubscriber(this, statusAccess);
-		reservationEventSubscriber = new ReservationEventSubscriber(this,
-				statusAccess);
-		vehicleNotificationEventSubscriber = new VehicleNotificationEventSubscriber(
+		commonEventProcessor = new CommonEventProcessor(this, statusAccess);
+		vehicleNotificationEventProcessor = new VehicleNotificationEventProcessor(
 				this, statusAccess);
 		this.statusAccess = statusAccess.getReadOnlyStatusAccess();
 		SharedPreferences preferences = PreferenceManager
@@ -147,17 +141,17 @@ public class CommonLogic {
 				.newInstance(url, token, webAPIBackupFile);
 
 		eventBus = new UiEventBus(activityHandler);
-		for (Object object : new Object[] { activity, commonEventSubscriber,
-				reservationEventSubscriber, vehicleNotificationEventSubscriber }) {
+		for (Object object : new Object[] { activity, commonEventProcessor,
+				vehicleNotificationEventProcessor }) {
 			eventBus.register(object);
 		}
-		for (Integer resourceId : new Integer[] { R.id.start_check_modal_view,
-				R.id.schedule_modal_view, R.id.memo_modal_view,
-				R.id.arrival_check_modal_view, R.id.return_path_modal_view,
-				R.id.notification_modal_view, R.id.schedule_changed_modal_view,
-				R.id.navigation_modal_view, R.id.phase_text_view,
-				R.id.drive_phase_view, R.id.platform_phase_view,
-				R.id.finish_phase_view }) {
+		for (Integer resourceId : new Integer[] {
+				R.id.departure_check_modal_view, R.id.schedule_modal_view,
+				R.id.memo_modal_view, R.id.arrival_check_modal_view,
+				R.id.return_path_modal_view, R.id.notification_modal_view,
+				R.id.schedule_changed_modal_view, R.id.navigation_modal_view,
+				R.id.phase_text_view, R.id.drive_phase_view,
+				R.id.platform_phase_view, R.id.finish_phase_view }) {
 			View view = activity.findViewById(resourceId);
 			if (view != null) {
 				eventBus.register(view);

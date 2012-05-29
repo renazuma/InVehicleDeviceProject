@@ -15,22 +15,22 @@ import com.kogasoftware.odt.invehicledevice.logic.event.CommonLogicLoadCompleteE
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterDrivePhaseEvent;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.StartCheckModalView;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.DepartureCheckModalView;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
 
-public class StartCheckModalViewTestCase extends
+public class DepartureCheckModalViewTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 	CommonLogic cl;
 	StatusAccess sa;
-	StartCheckModalView mv;
+	DepartureCheckModalView mv;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		sa = new StatusAccess(getActivity());
 		cl = new CommonLogic(getActivity(), getActivityHandler(), sa);
-		mv = (StartCheckModalView) inflateAndAddTestLayout(com.kogasoftware.odt.invehicledevice.test.R.layout.test_start_check_modal_view);
+		mv = (DepartureCheckModalView) inflateAndAddTestLayout(com.kogasoftware.odt.invehicledevice.test.R.layout.test_departure_check_modal_view);
 		cl.registerEventListener(mv);
 		mv.setCommonLogic(new CommonLogicLoadCompleteEvent(cl));
 
@@ -65,7 +65,7 @@ public class StartCheckModalViewTestCase extends
 		});
 		CommonLogic cl2 = newCommonLogic();
 		try {
-			assertEquals(cl2.countRegisteredClass(StartCheckModalView.class)
+			assertEquals(cl2.countRegisteredClass(DepartureCheckModalView.class)
 					.intValue(), 1);
 		} finally {
 			cl2.dispose();
@@ -79,7 +79,7 @@ public class StartCheckModalViewTestCase extends
 		assertFalse(mv.isShown());
 		assertNotSame(mv.getVisibility(), View.VISIBLE);
 
-		cl.postEvent(new StartCheckModalView.ShowEvent(
+		cl.postEvent(new DepartureCheckModalView.ShowEvent(
 				new ReservationArrayAdapter(getInstrumentation()
 						.getContext(), cl)));
 		getInstrumentation().waitForIdleSync();
@@ -99,13 +99,13 @@ public class StartCheckModalViewTestCase extends
 				return null;
 			}
 		});
-		solo.clickOnView(solo.getView(R.id.start_button));
+		solo.clickOnView(solo.getView(R.id.departure_button));
 		cdl.await();
 	}
 
 	public void test戻るボタンを押すと消える() throws Exception {
 		testShowEvent();
-		solo.clickOnView(solo.getView(R.id.start_check_close_button));
+		solo.clickOnView(solo.getView(R.id.departure_check_close_button));
 		getInstrumentation().waitForIdleSync();
 		assertFalse(mv.isShown());
 	}

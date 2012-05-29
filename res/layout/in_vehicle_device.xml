@@ -149,7 +149,7 @@
         android:layout_height="fill_parent" />
 
     <com.kogasoftware.odt.invehicledevice.ui.modalview.StartCheckModalView
-        android:id="@+id/start_check_modal_view"
+        android:id="@+id/departure_check_modal_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 

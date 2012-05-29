@@ -27,14 +27,14 @@ import com.kogasoftware.odt.webapi.model.VehicleNotifications;
  * 通知に関する内部データ処理
  */
 @UiEventBus.HighPriority
-public class VehicleNotificationEventSubscriber {
-	private static final String TAG = VehicleNotificationEventSubscriber.class
+public class VehicleNotificationEventProcessor {
+	private static final String TAG = VehicleNotificationEventProcessor.class
 			.getSimpleName();
 
 	private final CommonLogic commonLogic;
 	private final StatusAccess statusAccess;
 
-	public VehicleNotificationEventSubscriber(CommonLogic commonLogic,
+	public VehicleNotificationEventProcessor(CommonLogic commonLogic,
 			StatusAccess statusAccess) {
 		this.commonLogic = commonLogic;
 		this.statusAccess = statusAccess;

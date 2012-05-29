@@ -36,11 +36,11 @@ import com.kogasoftware.odt.webapi.model.VehicleNotification;
  * 共通の内部データ処理
  */
 @UiEventBus.HighPriority
-public class CommonEventSubscriber {
+public class CommonEventProcessor {
 	private final CommonLogic commonLogic;
 	private final StatusAccess statusAccess;
 
-	public CommonEventSubscriber(CommonLogic commonLogic,
+	public CommonEventProcessor(CommonLogic commonLogic,
 			StatusAccess statusAccess) {
 		this.commonLogic = commonLogic;
 		this.statusAccess = statusAccess;

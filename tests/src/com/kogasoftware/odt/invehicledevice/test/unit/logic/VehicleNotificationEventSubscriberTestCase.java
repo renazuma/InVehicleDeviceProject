@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.google.common.base.Function;
 import com.google.common.eventbus.Subscribe;
-import com.kogasoftware.odt.invehicledevice.backgroundtask.VehicleNotificationEventSubscriber;
+import com.kogasoftware.odt.invehicledevice.backgroundtask.VehicleNotificationEventProcessor;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.Status;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
@@ -45,7 +45,7 @@ public class VehicleNotificationEventSubscriberTestCase extends
 
 		assertEquals(
 				cl.countRegisteredClass(
-						VehicleNotificationEventSubscriber.class).intValue(), 1);
+						VehicleNotificationEventProcessor.class).intValue(), 1);
 	}
 
 	@Override

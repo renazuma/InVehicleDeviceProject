@@ -27,12 +27,12 @@ import com.kogasoftware.odt.invehicledevice.logic.event.EnterFinishPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterPlatformPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter.ItemType;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.StartCheckModalView;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.DepartureCheckModalView;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
 
 public class PlatformPhaseView extends PhaseView {
-	public static class StartCheckEvent {
+	public static class DepartureCheckEvent {
 	}
 
 	private static final String TAG = PlatformPhaseView.class.getSimpleName();
@@ -283,7 +283,7 @@ public class PlatformPhaseView extends PhaseView {
 	// }
 
 	@Subscribe
-	public void showStartCheckModalView(StartCheckEvent e) {
-		getCommonLogic().postEvent(new StartCheckModalView.ShowEvent(adapter));
+	public void showStartCheckModalView(DepartureCheckEvent e) {
+		getCommonLogic().postEvent(new DepartureCheckModalView.ShowEvent(adapter));
 	}
 }

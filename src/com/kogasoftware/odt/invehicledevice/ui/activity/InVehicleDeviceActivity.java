@@ -181,7 +181,7 @@ public class InVehicleDeviceActivity extends Activity {
 		changePhaseButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				commonLogic.postEvent(new PlatformPhaseView.StartCheckEvent());
+				commonLogic.postEvent(new PlatformPhaseView.DepartureCheckEvent());
 			}
 		});
 		changePhaseButton.setEnabled(true);

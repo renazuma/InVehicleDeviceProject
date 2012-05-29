@@ -16,7 +16,7 @@ import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentati
 import com.kogasoftware.odt.invehicledevice.test.util.Subscriber;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.test.util.datasource.DummyDataSource;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.StartCheckModalView;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.DepartureCheckModalView;
 import com.kogasoftware.odt.invehicledevice.ui.phaseview.PlatformPhaseView;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
@@ -95,10 +95,11 @@ public class PlatformPhaseViewTestCase extends
 		assertEquals(pv.getVisibility(), View.VISIBLE);
 	}
 
-	public void xtestStartCheckEventを送るとStartCheckModalView_ShowEventを送出()
+	public void xtestDepartureCheckEventを送るとDepartureCheckModalView_ShowEventを送出()
 			throws Exception {
-		Subscriber<StartCheckModalView.ShowEvent> s = Subscriber.of(StartCheckModalView.ShowEvent.class, cl);
-		cl.postEvent(new PlatformPhaseView.StartCheckEvent());
+		Subscriber<DepartureCheckModalView.ShowEvent> s = Subscriber.of(
+				DepartureCheckModalView.ShowEvent.class, cl);
+		cl.postEvent(new PlatformPhaseView.DepartureCheckEvent());
 		assertTrue(s.cdl.await(10, TimeUnit.SECONDS));
 	}
 }

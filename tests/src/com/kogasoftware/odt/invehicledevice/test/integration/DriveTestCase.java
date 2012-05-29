@@ -13,12 +13,12 @@ import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.test.util.datasource.DummyDataSource;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
-public class DrivingTestCase extends
+public class DriveTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 	private Solo solo;
 
-	public DrivingTestCase() {
+	public DriveTestCase() {
 		super("com.kogasoftware.odt.invehicledevice.ui.activity",
 				InVehicleDeviceActivity.class);
 		TestUtil.setDataSource(new DummyDataSource());
@@ -45,7 +45,7 @@ public class DrivingTestCase extends
 	}
 
 	public void test02_起動時は出発ダイアログは非表示() {
-		assertEquals(View.GONE, solo.getView(R.id.start_check_modal_view)
+		assertEquals(View.GONE, solo.getView(R.id.departure_check_modal_view)
 				.getVisibility());
 	}
 
@@ -80,7 +80,7 @@ public class DrivingTestCase extends
 		
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.start_check_modal_view)
+		assertEquals(View.VISIBLE, solo.getView(R.id.departure_check_modal_view)
 				.getVisibility());
 
 	}
@@ -88,7 +88,7 @@ public class DrivingTestCase extends
 	public void test05_出発確認画面でやめるボタンを押すと停車中画面表示() {
 		test04_停車中から出発しますボタンを押すと出発確認画面表示();
 
-		solo.clickOnView(solo.getView(R.id.start_check_close_button));
+		solo.clickOnView(solo.getView(R.id.departure_check_close_button));
 		assertEquals(View.VISIBLE, solo.getView(R.id.platform_phase_view)
 				.getVisibility());
 
@@ -102,7 +102,7 @@ public class DrivingTestCase extends
 	public void test06_出発確認画面で出発するボタンを押すと運転中画面表示() {
 		test04_停車中から出発しますボタンを押すと出発確認画面表示();
 
-		solo.clickOnView(solo.getView(R.id.start_button));
+		solo.clickOnView(solo.getView(R.id.departure_button));
 		getInstrumentation().waitForIdleSync();
 
 		assertEquals(View.VISIBLE, solo.getView(R.id.drive_phase_view)
@@ -150,10 +150,10 @@ public class DrivingTestCase extends
 		getInstrumentation().waitForIdleSync();
 		solo.clickOnView(solo.getView(R.id.change_phase_button));
 		getInstrumentation().waitForIdleSync();
-		assertEquals(View.VISIBLE, solo.getView(R.id.start_check_modal_view)
+		assertEquals(View.VISIBLE, solo.getView(R.id.departure_check_modal_view)
 				.getVisibility());
 
-		solo.clickOnView(solo.getView(R.id.start_button));
+		solo.clickOnView(solo.getView(R.id.departure_button));
 		getInstrumentation().waitForIdleSync();
 		assertEquals(View.VISIBLE, solo.getView(R.id.finish_phase_view)
 				.getVisibility());

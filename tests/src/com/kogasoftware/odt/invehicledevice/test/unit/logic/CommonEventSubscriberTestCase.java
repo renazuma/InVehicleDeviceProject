@@ -2,7 +2,7 @@ package com.kogasoftware.odt.invehicledevice.test.unit.logic;
 
 import android.location.Location;
 
-import com.kogasoftware.odt.invehicledevice.backgroundtask.CommonEventSubscriber;
+import com.kogasoftware.odt.invehicledevice.backgroundtask.CommonEventProcessor;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.Status;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
@@ -36,7 +36,7 @@ public class CommonEventSubscriberTestCase extends
 
 		cl = new CommonLogic(getActivity(), getActivityHandler(), sa);
 
-		assertEquals(cl.countRegisteredClass(CommonEventSubscriber.class)
+		assertEquals(cl.countRegisteredClass(CommonEventProcessor.class)
 				.intValue(), 1);
 	}
 

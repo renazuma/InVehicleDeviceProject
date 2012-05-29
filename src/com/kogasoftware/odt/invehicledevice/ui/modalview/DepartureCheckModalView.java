@@ -19,7 +19,7 @@ import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdap
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.User;
 
-public class StartCheckModalView extends ModalView {
+public class DepartureCheckModalView extends ModalView {
 	public static class ShowEvent {
 		public final ReservationArrayAdapter reservationArrayAdapter;
 
@@ -37,10 +37,10 @@ public class StartCheckModalView extends ModalView {
 		}
 	}
 
-	public StartCheckModalView(Context context, AttributeSet attrs) {
+	public DepartureCheckModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		setContentView(R.layout.start_check_modal_view);
-		setCloseOnClick(R.id.start_check_close_button);
+		setContentView(R.layout.departure_check_modal_view);
+		setCloseOnClick(R.id.departure_check_close_button);
 	}
 
 	@Subscribe
@@ -61,8 +61,8 @@ public class StartCheckModalView extends ModalView {
 		errorReservationListView.setAdapter(new ArrayAdapter<String>(
 				getContext(), android.R.layout.simple_list_item_1, messages));
 
-		Button startButton = (Button) findViewById(R.id.start_button);
-		TextView titleTextView = (TextView) findViewById(R.id.start_check_modal_title_text_view);
+		Button startButton = (Button) findViewById(R.id.departure_button);
+		TextView titleTextView = (TextView) findViewById(R.id.departure_check_modal_title_text_view);
 		if (getCommonLogic().getRemainingOperationSchedules().size() <= 1) {
 			titleTextView.setText("確定しますか？");
 			startButton.setText("確定する");
