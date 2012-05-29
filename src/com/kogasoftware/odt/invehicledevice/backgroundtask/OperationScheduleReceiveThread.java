@@ -61,7 +61,6 @@ public class OperationScheduleReceiveThread extends Thread {
 				try {
 					receive(commonLogic
 							.getReceivingOperationScheduleChangedVehicleNotifications());
-					break;
 				} catch (WebAPIException e) {
 					Log.i(TAG, "retry", e);
 				}
