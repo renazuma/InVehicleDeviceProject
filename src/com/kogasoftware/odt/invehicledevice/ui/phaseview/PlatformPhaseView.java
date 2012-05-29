@@ -283,7 +283,8 @@ public class PlatformPhaseView extends PhaseView {
 	// }
 
 	@Subscribe
-	public void showStartCheckModalView(DepartureCheckEvent e) {
-		getCommonLogic().postEvent(new DepartureCheckModalView.ShowEvent(adapter));
+	public void showDepartureCheckModalView(DepartureCheckEvent e) {
+		getCommonLogic().postEvent(
+				new DepartureCheckModalView.ShowEvent(adapter));
 	}
 }
