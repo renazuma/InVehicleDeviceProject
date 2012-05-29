@@ -30,6 +30,7 @@ public class PassengerControlTestCase extends
 		mds.setReservationCandidate(6, 1, 1, 1);
 
 		TestUtil.setDataSource(mds);
+		TestUtil.setDate("2012-01-01T09:00:00+09:00");
 	}
 
 	@Override
@@ -135,6 +136,10 @@ public class PassengerControlTestCase extends
 		getInstrumentation().waitForIdleSync();
 
 		solo.clickOnView(solo.getView(R.id.change_phase_button));
+
+		getInstrumentation().waitForIdleSync();
+
+		solo.clickOnView(solo.getView(R.id.arrival_button));
 
 		getInstrumentation().waitForIdleSync();
 
@@ -249,8 +254,13 @@ public class PassengerControlTestCase extends
 
 		assertTrue(solo.searchToggleButton("過去の乗降場で未乗車の乗客を表示"));
 		solo.clickOnToggleButton("過去の乗降場で未乗車の乗客を表示");
+		
+		for (Integer i = 0; i < 20; ++i) {
+			solo.scrollUp();
+		}
 
 		assertTrue(solo.searchText("名字c", 0, true));
+		getInstrumentation().waitForIdleSync();
 		solo.clickOnText("名字c", 0, true);
 
 		solo.clickOnButton("出発する");
