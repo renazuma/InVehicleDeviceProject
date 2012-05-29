@@ -17,6 +17,7 @@ import com.kogasoftware.odt.invehicledevice.logic.event.EnterDrivePhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterFinishPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterPlatformPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.LocationReceivedEvent;
+import com.kogasoftware.odt.invehicledevice.logic.event.NewOperationStartEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.OperationScheduleInitializedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.OrientationChangedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.TemperatureChangedEvent;
@@ -28,6 +29,7 @@ import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.PassengerRecords;
 import com.kogasoftware.odt.webapi.model.Reservation;
+import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 /**
@@ -313,6 +315,25 @@ public class CommonEventSubscriber {
 			public void write(Status status) {
 				mergeUpdatedOperationScheduleOnWriteLock(status,
 						e.operationSchedules, e.triggerVehicleNotifications);
+			}
+		});
+	}
+	
+	@Subscribe
+	public void startNewOperation(NewOperationStartEvent e) {
+		statusAccess.write(new Writer() {
+			@Override
+			public void write(Status status) {
+				status.serviceUnitStatusLog = new ServiceUnitStatusLog();
+				status.remainingOperationSchedules.clear();
+				status.finishedOperationSchedules.clear();
+				status.receivingOperationScheduleChangedVehicleNotifications
+						.clear();
+				status.receivedOperationScheduleChangedVehicleNotifications
+						.clear();
+				status.phase = Phase.INITIAL;
+				status.reservations.clear();
+				status.updatedDate = new Date();
 			}
 		});
 	}

@@ -28,6 +28,7 @@ import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.Status.Phase;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
 import com.kogasoftware.odt.invehicledevice.logic.event.CommonLogicLoadCompleteEvent;
+import com.kogasoftware.odt.invehicledevice.logic.event.NewOperationStartEvent;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.NotificationModalView;
 
 /**
@@ -54,6 +55,7 @@ public class BackgroundTask {
 	private final ScheduledExecutorService executorService = Executors
 			.newScheduledThreadPool(NUM_THREADS);
 	private final VehicleNotificationReceiver vehicleNotificationReceiver;
+	private final NextDateChecker nextDateChecker;
 	private final SignalStrengthListener signalStrengthListener;
 	private final CommonLogic commonLogic;
 	private final Thread voiceThread;
@@ -105,6 +107,7 @@ public class BackgroundTask {
 				commonLogic);
 		vehicleNotificationReceiver = new VehicleNotificationReceiver(
 				commonLogic);
+		nextDateChecker = new NextDateChecker(commonLogic);
 		temperatureSensorEventListener = new TemperatureSensorEventListener(
 				commonLogic);
 		signalStrengthListener = new SignalStrengthListener(commonLogic,
@@ -149,8 +152,8 @@ public class BackgroundTask {
 		voiceThread.start();
 		operationScheduleReceiveThread.start();
 
-		if (commonLogic.getPhase() != Phase.FINISH
-				&& commonLogic.getRemainingOperationSchedules().isEmpty()) {
+		if (!commonLogic.isOperationScheduleInitialized()) {
+			commonLogic.postEvent(new NewOperationStartEvent());
 			commonLogic.waitForOperationScheduleInitialize();
 		}
 
@@ -196,6 +199,8 @@ public class BackgroundTask {
 		commonLogic.postEvent(new NotificationModalView.ShowEvent());
 
 		executorService.scheduleWithFixedDelay(vehicleNotificationReceiver, 0,
+				POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
+		executorService.scheduleWithFixedDelay(nextDateChecker, 0,
 				POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
 		executorService.scheduleWithFixedDelay(locationSender, 0,
 				POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);

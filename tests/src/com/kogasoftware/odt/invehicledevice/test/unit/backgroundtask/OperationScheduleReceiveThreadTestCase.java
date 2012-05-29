@@ -113,7 +113,7 @@ public class OperationScheduleReceiveThreadTestCase extends
 		return l;
 	}
 
-	public void testUpdatedOperationScheduleReceiveStartEvent通知が無い場合二度めのOperationScheduleを受信はしない()
+	public void testUpdatedOperationScheduleReceiveStartEvent通知が無い場合OperationScheduleを受信はしない()
 			throws Exception {
 		final AtomicInteger seq = new AtomicInteger(0);
 		class TestDataSource extends DummyDataSource {
@@ -131,15 +131,39 @@ public class OperationScheduleReceiveThreadTestCase extends
 				UpdatedOperationScheduleReceivedEvent.class, cl);
 		cl.registerEventListener(osrt);
 		osrt.start();
+		Thread.sleep(10 * 1000);
+		assertEquals(0, seq.get());
+		assertEquals(0, s.s.availablePermits());
+	}
+
+	public void testUpdatedOperationScheduleReceiveStartEvent通知でのOperationScheduleを受信()
+			throws Exception {
+		final AtomicInteger seq = new AtomicInteger(0);
+
+		class TestDataSource extends DummyDataSource {
+			public List<OperationSchedule> getOperationSchedules()
+					throws WebAPIException {
+				seq.addAndGet(1);
+				return getDummyOperationSchedules();
+			}
+		}
+		TestUtil.clearStatus();
+		TestUtil.setDataSource(new TestDataSource());
+		cl = newCommonLogic();
+		osrt = new OperationScheduleReceiveThread(cl);
+		Subscriber<UpdatedOperationScheduleReceivedEvent> s = Subscriber.of(
+				UpdatedOperationScheduleReceivedEvent.class, cl);
+		cl.registerEventListener(osrt);
+		osrt.start();
+		cl.postEvent(new UpdatedOperationScheduleReceiveStartEvent());
 		Thread.sleep(10 * 1000);
 		assertEquals(1, seq.get());
 		assertEquals(1, s.s.availablePermits());
 	}
 
-	public void testUpdatedOperationScheduleReceiveStartEvent通知で二度めのOperationScheduleを受信()
+	public void testUpdatedOperationScheduleReceiveStartEvent二回通知で二回OperationScheduleを受信()
 			throws Exception {
 		final AtomicInteger seq = new AtomicInteger(0);
-
 		class TestDataSource extends DummyDataSource {
 			public List<OperationSchedule> getOperationSchedules()
 					throws WebAPIException {
@@ -151,73 +175,15 @@ public class OperationScheduleReceiveThreadTestCase extends
 		TestUtil.setDataSource(new TestDataSource());
 		cl = newCommonLogic();
 		osrt = new OperationScheduleReceiveThread(cl);
+		osrt.start();
 		Subscriber<UpdatedOperationScheduleReceivedEvent> s = Subscriber.of(
 				UpdatedOperationScheduleReceivedEvent.class, cl);
+		cl.registerEventListener(s);
 		cl.registerEventListener(osrt);
-		osrt.start();
+		cl.postEvent(new UpdatedOperationScheduleReceiveStartEvent());
 		cl.postEvent(new UpdatedOperationScheduleReceiveStartEvent());
 		Thread.sleep(10 * 1000);
 		assertEquals(2, seq.get());
 		assertEquals(2, s.s.availablePermits());
-	}
-
-	public void testUpdatedOperationScheduleReceiveStartEvent二回通知で三度めのOperationScheduleを受信()
-			throws Exception {
-		final AtomicInteger seq = new AtomicInteger(0);
-		class TestDataSource extends DummyDataSource {
-			public List<OperationSchedule> getOperationSchedules()
-					throws WebAPIException {
-				seq.addAndGet(1);
-				return getDummyOperationSchedules();
-			}
-		}
-		TestUtil.clearStatus();
-		TestUtil.setDataSource(new TestDataSource());
-		cl = newCommonLogic();
-		osrt = new OperationScheduleReceiveThread(cl);
-		osrt.start();
-		Subscriber<UpdatedOperationScheduleReceivedEvent> s = Subscriber.of(
-				UpdatedOperationScheduleReceivedEvent.class, cl);
-		cl.registerEventListener(s);
-		cl.registerEventListener(osrt);
-		cl.postEvent(new UpdatedOperationScheduleReceiveStartEvent());
-		cl.postEvent(new UpdatedOperationScheduleReceiveStartEvent());
-		Thread.sleep(10 * 1000);
-		assertEquals(3, seq.get());
-		assertEquals(3, s.s.availablePermits());
-	}
-
-	public void testしきい時間を過ぎると自動で新しいOperationScheduleを受信() throws Exception {
-		class TestDataSource extends DummyDataSource {
-			public List<OperationSchedule> getOperationSchedules()
-					throws WebAPIException {
-				return getDummyOperationSchedules();
-			}
-		}
-		TestUtil.clearStatus();
-		TestUtil.setDataSource(new TestDataSource());
-		TestUtil.setDate(new DateTime(2012, 1, 23, CommonLogic.NEW_SCHEDULE_DOWNLOAD_HOUR - 1, 50, 0));
-		
-		cl = newCommonLogic();
-		osrt = new OperationScheduleReceiveThread(cl);
-		Subscriber<UpdatedOperationScheduleReceivedEvent> s = Subscriber.of(
-				UpdatedOperationScheduleReceivedEvent.class, cl);
-		cl.registerEventListener(s);
-		cl.registerEventListener(osrt);
-		osrt.start();
-
-		assertTrue(s.s.tryAcquire(5, TimeUnit.SECONDS));
-		assertFalse(s.s.tryAcquire(5, TimeUnit.SECONDS));
-		TestUtil.setDate(new DateTime(2012, 1, 23, CommonLogic.NEW_SCHEDULE_DOWNLOAD_HOUR, 0, 0));
-		assertTrue(s.s.tryAcquire(5, TimeUnit.SECONDS));
-
-		TestUtil.setDate(new DateTime(2012, 1, 23, CommonLogic.NEW_SCHEDULE_DOWNLOAD_HOUR + 1, 0, 0));
-		assertFalse(s.s.tryAcquire(5, TimeUnit.SECONDS));
-		
-		TestUtil.setDate(new DateTime(2012, 1, 24, CommonLogic.NEW_SCHEDULE_DOWNLOAD_HOUR - 2, 0, 0));
-		assertFalse(s.s.tryAcquire(5, TimeUnit.SECONDS));
-		
-		TestUtil.setDate(new DateTime(2012, 1, 30, 0, 0, 0));
-		assertTrue(s.s.tryAcquire(5, TimeUnit.SECONDS));
 	}
 }

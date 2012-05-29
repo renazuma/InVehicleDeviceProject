@@ -1,17 +1,14 @@
 package com.kogasoftware.odt.invehicledevice.backgroundtask;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
-
 import android.util.Log;
 
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.backgroundtask.VoiceThread.SpeakEvent;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
+import com.kogasoftware.odt.invehicledevice.logic.event.NewOperationStartEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.UpdatedOperationScheduleAlertEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.UpdatedOperationScheduleReceiveStartEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.UpdatedOperationScheduleReceivedEvent;
@@ -55,56 +52,22 @@ public class OperationScheduleReceiveThread extends Thread {
 				operationSchedules, triggerVehicleNotifications));
 	}
 
-	protected Date getNextUpdateDate() {
-		Calendar now = Calendar.getInstance();
-		now.setTime(CommonLogic.getDate());
-		Calendar calendar = Calendar.getInstance();
-		calendar.clear();
-		calendar.set(now.get(Calendar.YEAR), now.get(Calendar.MONTH),
-				now.get(Calendar.DAY_OF_MONTH),
-				CommonLogic.NEW_SCHEDULE_DOWNLOAD_HOUR, 0);
-		if (!calendar.after(now)) {
-			calendar.add(Calendar.DAY_OF_MONTH, 1);
-		}
-		return calendar.getTime();
-	}
-
 	@Override
 	public void run() {
 		try {
-			// 初回のスケジュールの受信
-			if (!commonLogic.isOperationScheduleInitialized()) {
-				while (true) {
-					Thread.sleep(0); // interruption point
-					try {
-						receive(new LinkedList<VehicleNotification>());
-						break;
-					} catch (WebAPIException e) {
-						Log.i(TAG, "initialize retry", e);
-					}
-				}
-			}
-
-			Date nextUpdateDate = getNextUpdateDate();
 			// 初回以降のスケジュールの受信
 			while (!Thread.currentThread().isInterrupted()) {
 				// スケジュール変更通知があるまで待つ
-				if (!startUpdatedOperationScheduleReceiveSemaphore.tryAcquire(
-						1, TimeUnit.SECONDS)) {
-					if (nextUpdateDate.after(CommonLogic.getDate())) {
-						continue;
-					}
-				}
+				startUpdatedOperationScheduleReceiveSemaphore.acquire();
 
 				final List<VehicleNotification> workingVehicleNotification = new LinkedList<VehicleNotification>();
 				while (!Thread.currentThread().isInterrupted()) {
+					Identifiables
+							.merge(workingVehicleNotification,
+									commonLogic
+											.getReceivingOperationScheduleChangedVehicleNotifications());
 					try {
-						Identifiables
-								.merge(workingVehicleNotification,
-										commonLogic
-												.getReceivingOperationScheduleChangedVehicleNotifications());
 						receive(workingVehicleNotification);
-						nextUpdateDate = getNextUpdateDate();
 						break;
 					} catch (WebAPIException e) {
 						Log.i(TAG, "retry", e);
@@ -116,9 +79,18 @@ public class OperationScheduleReceiveThread extends Thread {
 		}
 	}
 
-	@Subscribe
-	public void startUpdatedOperationScheduleReceive(
-			UpdatedOperationScheduleReceiveStartEvent e) {
+	public void startNewOperationScheduleReceive() {
 		startUpdatedOperationScheduleReceiveSemaphore.release();
+	}
+
+	@Subscribe
+	public void startNewOperationScheduleReceive(
+			UpdatedOperationScheduleReceiveStartEvent e) {
+		startNewOperationScheduleReceive();
+	}
+
+	@Subscribe
+	public void startNewOperationScheduleReceive(NewOperationStartEvent e) {
+		startNewOperationScheduleReceive();
 	}
 }

@@ -163,17 +163,7 @@ public class StatusAccess {
 					now.get(Calendar.DAY_OF_MONTH),
 					CommonLogic.NEW_SCHEDULE_DOWNLOAD_HOUR, 0);
 			if (status.updatedDate.before(calendar.getTime())) {
-				status.serviceUnitStatusLog = new ServiceUnitStatusLog();
-				status.remainingOperationSchedules.clear();
-				status.finishedOperationSchedules.clear();
 				status.operationScheduleInitializedSign.drainPermits();
-				status.receivingOperationScheduleChangedVehicleNotifications
-						.clear();
-				status.receivedOperationScheduleChangedVehicleNotifications
-						.clear();
-				status.phase = Phase.INITIAL;
-				status.reservations.clear();
-				status.updatedDate = now.getTime();
 			}
 		}
 		status.file = file;
