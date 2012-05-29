@@ -13,9 +13,9 @@ import com.kogasoftware.odt.invehicledevice.preference.R;
 public class InVehicleDevicePreferenceTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDevicePreferenceActivity> {
 
-	private static final String URL = "http://10.0.2.2";
-	private static final String LOGIN = "odtodt";
-	private static final String PASSWORD = "odtodt";
+	private static final String URL = "http://opewebstage.koko-bus.com";
+	private static final String LOGIN = "odt";
+	private static final String PASSWORD = "odt";
 
 	private Solo solo;
 
