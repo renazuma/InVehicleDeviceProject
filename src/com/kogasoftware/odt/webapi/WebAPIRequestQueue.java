@@ -204,17 +204,17 @@ public class WebAPIRequestQueue {
 			synchronized (queueLock) {
 				for (String group : new LinkedList<String>(
 						requestsByGroup.keys())) {
+					List<WebAPIRequest<?>> requests = requestsByGroup
+							.get(group);
+					if (requests.isEmpty()) {
+						processingGroups.remove(group);
+						requestsByGroup.removeAll(group);
+						continue;
+					}
 					if (processingGroups.contains(group)) {
 						continue;
 					}
 					processingGroups.add(group);
-
-					List<WebAPIRequest<?>> requests = requestsByGroup
-							.get(group);
-					if (requests == null || requests.isEmpty()) {
-						requestsByGroup.removeAll(group);
-						continue;
-					}
 					return requests.get(0);
 				}
 			}
