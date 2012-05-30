@@ -56,7 +56,7 @@ public class WebAPIDataSource implements DataSource {
 			return caller.call();
 		} catch (JSONException e) {
 			Log.w(TAG, e);
-			callback.onException(-1, new WebAPIException(true, e));
+			callback.onException(-1, new WebAPIException(e));
 		} catch (WebAPIException e) {
 			Log.w(TAG, e);
 			callback.onException(-1, e);

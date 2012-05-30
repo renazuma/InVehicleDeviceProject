@@ -53,6 +53,6 @@ class NoOperationScheduleDataSource extends EmptyDataSource {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 		}
-		throw new WebAPIException(false, "error");
+		throw new WebAPIException("error");
 	}
 };

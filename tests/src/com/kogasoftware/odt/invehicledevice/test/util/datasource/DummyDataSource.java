@@ -48,7 +48,7 @@ public class DummyDataSource implements DataSource {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
-			throw new WebAPIException(false, e);
+			throw new WebAPIException(e);
 		}
 
 		InVehicleDevice model = new InVehicleDevice();
@@ -81,7 +81,7 @@ public class DummyDataSource implements DataSource {
 			Thread.sleep(3000);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
-			throw new WebAPIException(false, e);
+			throw new WebAPIException(e);
 		}
 
 		List<OperationSchedule> l = new LinkedList<OperationSchedule>();
@@ -140,7 +140,7 @@ public class DummyDataSource implements DataSource {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
-			throw new WebAPIException(false, e);
+			throw new WebAPIException(e);
 		}
 
 		List<VehicleNotification> l = new LinkedList<VehicleNotification>();

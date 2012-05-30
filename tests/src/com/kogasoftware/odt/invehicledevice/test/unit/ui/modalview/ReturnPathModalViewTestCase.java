@@ -64,7 +64,7 @@ public class ReturnPathModalViewTestCase extends
 			if (createFailed) {
 				callback.onFailed(rk, 500, "mock");
 			} else if (createExceptioned) {
-				callback.onException(rk, new WebAPIException(false, "mock"));
+				callback.onException(rk, new WebAPIException("mock"));
 			} else {
 				Reservation r = new Reservation();
 				callback.onSucceed(rk, 200, r);
@@ -83,7 +83,7 @@ public class ReturnPathModalViewTestCase extends
 			if (searchFailed) {
 				callback.onFailed(rk, 500, "mock");
 			} else if (searchExceptioned) {
-				callback.onException(rk, new WebAPIException(false, "mock"));
+				callback.onException(rk, new WebAPIException("mock"));
 			} else {
 				callback.onSucceed(rk, 200, l);
 			}

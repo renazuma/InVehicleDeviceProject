@@ -78,7 +78,7 @@ public class VehicleNotificationReceiverTestCase extends
 			@Override
 			public List<VehicleNotification> getVehicleNotifications()
 					throws WebAPIException {
-				throw new WebAPIException(false, "not found");
+				throw new WebAPIException("not found");
 			}
 		}
 		TestUtil.setDataSource(new TestDataSource());

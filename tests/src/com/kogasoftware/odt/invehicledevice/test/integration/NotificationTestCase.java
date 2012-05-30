@@ -38,6 +38,7 @@ public class NotificationTestCase extends
 		mdst.setReservation(6);
 		mdst.setReservationCandidate(6,1,1,1);
 
+		TestUtil.setDate("2012-01-01T09:00:00+09:00");
 		TestUtil.setDataSource(mdst);
 		TestUtil.clearStatus();
 

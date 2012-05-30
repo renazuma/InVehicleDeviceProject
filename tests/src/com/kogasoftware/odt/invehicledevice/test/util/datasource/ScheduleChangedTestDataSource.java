@@ -44,7 +44,7 @@ public class ScheduleChangedTestDataSource implements DataSource {
 
 	@Override
 	public InVehicleDevice getInVehicleDevice() throws WebAPIException {
-		throw new WebAPIException(true, "not implemented");
+		throw new WebAPIException("not implemented");
 	}
 
 	@Override
@@ -128,7 +128,7 @@ public class ScheduleChangedTestDataSource implements DataSource {
 			e.printStackTrace();
 		}
 
-		throw new WebAPIException(true, "not implemented");
+		throw new WebAPIException("not implemented");
 
 	}
 

@@ -81,7 +81,7 @@ public class MockDataSource implements DataSource {
 			Thread.sleep(1);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
-			throw new WebAPIException(false, e);
+			throw new WebAPIException(e);
 		}
 
 		List<VehicleNotification> l = new LinkedList<VehicleNotification>();
