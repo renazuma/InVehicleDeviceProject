@@ -183,7 +183,11 @@ public class ReturnPathModalViewTestCase extends
 	}
 
 	protected void assertErrorMessage(boolean value) {
-		String s = solo.getString(R.string.an_error_occurred);
+		assertErrorMessage(value, R.string.an_error_occurred);
+	}
+
+	protected void assertErrorMessage(boolean value, int resourceId) {
+		String s = solo.getString(resourceId);
 		boolean e = solo.searchText(s, true);
 		if (e) {
 			for (int i = 0; i < 10; ++i) {
@@ -204,7 +208,7 @@ public class ReturnPathModalViewTestCase extends
 		expectedSearchResponses.add(new ReservationCandidate());
 		searchFailed = true;
 		callTestUIで入力した検索条件が送信される(now, date, true);
-		assertErrorMessage(true);
+		assertErrorMessage(true, R.string.reservation_candidate_not_found);
 		assertEquals(0, lv.getCount());
 	}
 
@@ -217,7 +221,7 @@ public class ReturnPathModalViewTestCase extends
 		expectedSearchResponses.add(new ReservationCandidate());
 		searchExceptioned = true;
 		callTestUIで入力した検索条件が送信される(now, date, true);
-		assertErrorMessage(true);
+		assertErrorMessage(true, R.string.reservation_candidate_not_found);
 		assertEquals(0, lv.getCount());
 	}
 
@@ -228,7 +232,7 @@ public class ReturnPathModalViewTestCase extends
 		r.setArrivalPlatformId(110);
 
 		callTestUIで入力した検索条件が送信される(now, date, false);
-		assertErrorMessage(true);
+		assertErrorMessage(true, R.string.reservation_candidate_not_found);
 		assertEquals(0, lv.getCount());
 	}
 
