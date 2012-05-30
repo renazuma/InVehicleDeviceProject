@@ -12,6 +12,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.AsyncTask;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -44,6 +45,8 @@ public class ReturnPathModalView extends ModalView {
 		}
 	}
 
+	private static final String TAG = ReturnPathModalView.class.getSimpleName();
+
 	private Reservation currentReservation = new Reservation();
 	// private static final String TAG =
 	// ReturnPathModalView.class.getSimpleName();
@@ -53,6 +56,9 @@ public class ReturnPathModalView extends ModalView {
 	private final Button doReservationButton;
 	private final Button reservationCandidateScrollUpButton;
 	private final Button reservationCandidateScrollDownButton;
+	private final Spinner hourSpinner;
+	private final Spinner minuteSpinner;
+	private final Spinner inOrOutSpinner;
 
 	public ReturnPathModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -64,6 +70,9 @@ public class ReturnPathModalView extends ModalView {
 		doReservationButton = (Button) findViewById(R.id.do_reservation_button);
 		reservationCandidateScrollUpButton = (Button) findViewById(R.id.reservation_candidate_scroll_up_button);
 		reservationCandidateScrollDownButton = (Button) findViewById(R.id.reservation_candidate_scroll_down_button);
+		hourSpinner = (Spinner) findViewById(R.id.reservation_candidate_hour_spinner);
+		minuteSpinner = (Spinner) findViewById(R.id.reservation_candidate_minute_spinner);
+		inOrOutSpinner = (Spinner) findViewById(R.id.reservation_candidate_in_or_out_spinner);
 
 		searchingDialog = new ProgressDialog(getContext());
 		searchingDialog.setMessage("予約情報を受信しています");
@@ -124,16 +133,16 @@ public class ReturnPathModalView extends ModalView {
 		}
 		currentReservation = event.reservation;
 		TextView returnPathTitleTextView = (TextView) findViewById(R.id.return_path_title_text_view);
-		String title = "予約番号 " + currentReservation.getId();
+		String title = "";
 		for (User user : currentReservation.getUser().asSet()) {
-			title += " " + user.getLastName() + " " + user.getFirstName() + "様";
+			title += user.getLastName() + " " + user.getFirstName() + " 様 ";
 		}
+		title += "予約番号:" + currentReservation.getId();
 		title += " 復路の予約";
 		returnPathTitleTextView.setText(title);
 
 		Date now = CommonLogic.getDate();
 
-		Spinner hourSpinner = (Spinner) findViewById(R.id.reservation_candidate_hour_spinner);
 		List<String> hours = new LinkedList<String>();
 		for (Integer hour = now.getHours(); hour < 24; ++hour) {
 			hours.add(hour.toString());
@@ -147,14 +156,12 @@ public class ReturnPathModalView extends ModalView {
 		for (Integer minute = 0; minute < 60; ++minute) {
 			minutes.add(minute.toString());
 		}
-		Spinner minuteSpinner = (Spinner) findViewById(R.id.reservation_candidate_minute_spinner);
 		ArrayAdapter<String> minuteAdapter = new ArrayAdapter<String>(
 				getContext(), android.R.layout.simple_spinner_item, minutes);
 		minuteSpinner.setAdapter(minuteAdapter);
 		minuteSpinner.setSelection(now.getMinutes());
 
 		String[] inOrOut = { "乗車", "降車" };
-		Spinner inOrOutSpinner = (Spinner) findViewById(R.id.reservation_candidate_in_or_out_spinner);
 		ArrayAdapter<String> inOrOutAdapter = new ArrayAdapter<String>(
 				getContext(), android.R.layout.simple_spinner_item, inOrOut);
 		inOrOutSpinner.setAdapter(inOrOutAdapter);
@@ -185,14 +192,46 @@ public class ReturnPathModalView extends ModalView {
 	}
 
 	protected void onSearchReturnPathButtonClick() {
+		Integer hour = 0;
+		Object hourObject = hourSpinner.getSelectedItem();
+		if (!(hourObject instanceof String)) {
+			Log.w(TAG, "hourObject is not String");
+			return;
+		}
+		try {
+			hour = Integer.parseInt((String) hourObject);
+		} catch (NumberFormatException e) {
+			Log.w(TAG, e);
+			return;
+		}
+
+		Integer minute = 0;
+		Object minuteObject = minuteSpinner.getSelectedItem();
+		if (!(minuteObject instanceof String)) {
+			Log.w(TAG, "minuteObject is not String");
+			return;
+		}
+		try {
+			minute = Integer.parseInt((String) minuteObject);
+		} catch (NumberFormatException e) {
+			Log.w(TAG, e);
+			return;
+		}
+
 		searchingDialog.show();
-		Date now = new Date();
+		Calendar now = Calendar.getInstance();
+		now.setTime(CommonLogic.getDate());
 		Calendar calendar = Calendar.getInstance();
-		calendar.set(now.getYear(), now.getMonth(), now.getDay(),
-				now.getHours(), now.getMinutes());
+		calendar.clear();
+		calendar.set(now.get(Calendar.YEAR), now.get(Calendar.MONTH),
+				now.get(Calendar.DAY_OF_MONTH), hour, minute);
 
 		final Demand demand = new Demand();
-		demand.setDepartureTime(calendar.getTime());
+		if (inOrOutSpinner.getSelectedItemPosition() == 0) {
+			demand.setDepartureTime(calendar.getTime());
+		} else {
+			demand.setArrivalTime(calendar.getTime());
+		}
 		demand.setDeparturePlatformId(currentReservation.getArrivalPlatformId());
 		demand.setDeparturePlatform(currentReservation.getArrivalPlatform());
 		demand.setArrivalPlatformId(currentReservation.getDeparturePlatformId());

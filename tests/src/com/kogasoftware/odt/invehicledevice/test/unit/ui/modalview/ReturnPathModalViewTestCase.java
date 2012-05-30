@@ -342,9 +342,15 @@ public class ReturnPathModalViewTestCase extends
 
 		Demand d = searchRequests.poll(500, TimeUnit.SECONDS);
 		assertNotNull(d);
-		assertTrue(d.getDepartureTime().isPresent());
-		(new Interval(date.minusSeconds(1), date.plusSeconds(1))).contains(d
-				.getDepartureTime().get().getTime());
+		if (on) {
+			assertTrue(d.getDepartureTime().isPresent());
+			assertTrue((new Interval(date.minusMinutes(1), date.plusMinutes(1))).contains(d
+					.getDepartureTime().get().getTime()));
+		} else {
+			assertTrue(d.getArrivalTime().isPresent());
+			assertTrue((new Interval(date.minusMinutes(1), date.plusMinutes(1))).contains(d
+					.getArrivalTime().get().getTime()));
+		}
 
 		// 予約と逆
 		assertTrue(d.getArrivalPlatformId().isPresent());
