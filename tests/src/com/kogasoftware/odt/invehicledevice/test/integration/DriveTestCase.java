@@ -7,8 +7,6 @@ import android.widget.TextView;
 
 import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
-import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSourceFactory;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.test.util.datasource.DummyDataSource;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
@@ -53,13 +51,9 @@ public class DriveTestCase extends
 		test01_起動時は走行中表示();
 
 		solo.clickOnView(solo.getView(R.id.change_phase_button));
-		
-		getInstrumentation().waitForIdleSync();
 
 		solo.clickOnView(solo.getView(R.id.arrival_button));
 		
-		getInstrumentation().waitForIdleSync();
-
 		assertTrue(solo.searchText("停車中")); // TODO 画像ファイル名assertに書き換わる予定
 
 	}
@@ -68,47 +62,32 @@ public class DriveTestCase extends
 
 		solo.clickOnView(solo.getView(R.id.change_phase_button));
 		
-		getInstrumentation().waitForIdleSync();
-
 		solo.clickOnView(solo.getView(R.id.arrival_button));
 		
-		getInstrumentation().waitForIdleSync();
-
-		assertTrue(solo.searchText("停車中")); // TODO 画像ファイル名assertに書き換わる予定
+		assertTrue(solo.searchText("停車中"));
 
 		solo.clickOnView(solo.getView(R.id.change_phase_button));
 		
-		getInstrumentation().waitForIdleSync();
-
-		assertEquals(View.VISIBLE, solo.getView(R.id.departure_check_modal_view)
-				.getVisibility());
-
+		TestUtil.willShow(solo, R.id.departure_check_modal_view);
 	}
 
 	public void test05_出発確認画面でやめるボタンを押すと停車中画面表示() {
 		test04_停車中から出発しますボタンを押すと出発確認画面表示();
 
 		solo.clickOnView(solo.getView(R.id.departure_check_close_button));
-		assertEquals(View.VISIBLE, solo.getView(R.id.platform_phase_view)
-				.getVisibility());
-
-		getInstrumentation().waitForIdleSync();
-
-		TextView v = (TextView) solo.getView(R.id.phase_text_view);
-		assertEquals("停車中", v.getText()); // TODO 画像ファイル名assertに書き換わる予定
-
+		TestUtil.willShow(solo, R.id.platform_phase_view);
+		assertTrue(solo.searchText("停車中", true));
+		assertFalse(solo.searchText("走行中", true));
 	}
 
 	public void test06_出発確認画面で出発するボタンを押すと運転中画面表示() {
 		test04_停車中から出発しますボタンを押すと出発確認画面表示();
 
 		solo.clickOnView(solo.getView(R.id.departure_button));
-		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.drive_phase_view)
-				.getVisibility());
-		TextView v = (TextView) solo.getView(R.id.phase_text_view);
-		assertEquals("走行中", v.getText()); // TODO 画像ファイル名assertに書き換わる予定
+		TestUtil.willShow(solo, R.id.drive_phase_view);
+		assertFalse(solo.searchText("停車中", true));
+		assertTrue(solo.searchText("走行中", true));
 
 	}
 
@@ -145,21 +124,14 @@ public class DriveTestCase extends
 		}
 
 		solo.clickOnView(solo.getView(R.id.change_phase_button));
-		getInstrumentation().waitForIdleSync();
 		solo.clickOnView(solo.getView(R.id.arrival_button));
-		getInstrumentation().waitForIdleSync();
 		solo.clickOnView(solo.getView(R.id.change_phase_button));
-		getInstrumentation().waitForIdleSync();
-		assertEquals(View.VISIBLE, solo.getView(R.id.departure_check_modal_view)
-				.getVisibility());
+		TestUtil.willShow(solo, R.id.departure_check_modal_view);
 
 		solo.clickOnView(solo.getView(R.id.departure_button));
-		getInstrumentation().waitForIdleSync();
-		assertEquals(View.VISIBLE, solo.getView(R.id.finish_phase_view)
-				.getVisibility());
 
+		TestUtil.willShow(solo, R.id.finish_phase_view);
 		TextView v = (TextView) solo.getView(R.id.phase_text_view);
 		assertEquals("", v.getText());
-
 	}
 }

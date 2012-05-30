@@ -3,11 +3,14 @@ package com.kogasoftware.odt.invehicledevice.test.util;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import junit.framework.Assert;
+
 import org.joda.time.DateTime;
 
 import android.view.View;
 
 import com.google.common.util.concurrent.Uninterruptibles;
+import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSource;
@@ -25,6 +28,27 @@ public class TestUtil {
 	
 	public static void clearStatus() {
 		StatusAccess.clearSavedFile();
+	}
+	
+	public static void willShow(Solo solo, Integer resourceId) {
+		willShow(solo, solo.getView(resourceId));
+	}
+
+	public static void willShow(Solo solo, View view) {
+		Assert.assertTrue(solo.waitForView(view));
+	}
+	
+	public static void willHide(Solo solo, Integer resourceId) {
+		willHide(solo.getView(resourceId));
+	}
+	
+	public static void willHide(View view) {
+		for (Integer i = 0; i < 20; ++i) {
+			if (view.getVisibility() != View.VISIBLE) {
+				return;
+			}
+		}
+		Assert.fail();
 	}
 	
 	public static Boolean waitForStartUi(final InVehicleDeviceActivity activity) throws InterruptedException {

@@ -101,7 +101,7 @@ public class ScheduleChangedTestDataSource implements DataSource {
 								+ "reservations_as_departure: ["
 								+ r1
 								+ ","
-								+ r3 + "]}");
+								+ r3 + "], operation_record: {arrived_at: '2012-01-01T01:00:01+09:00', departed_at: '2012-01-01T01:00:02+09:00'}}");
 				l.add(new OperationSchedule(j1));
 
 				JSONObject j2 = new JSONObject(

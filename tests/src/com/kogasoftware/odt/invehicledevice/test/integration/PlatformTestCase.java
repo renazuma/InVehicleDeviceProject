@@ -27,7 +27,7 @@ public class PlatformTestCase extends
 		mds.setReservationCandidate(6, 1, 1, 1);
 
 		TestUtil.setDataSource(mds);
-
+		TestUtil.setDate("2012-01-01T09:00:00+09:00");
 	}
 
 	@Override

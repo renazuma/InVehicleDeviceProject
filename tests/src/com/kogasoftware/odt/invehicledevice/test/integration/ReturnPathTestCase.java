@@ -7,7 +7,6 @@ import android.widget.Button;
 
 import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSourceFactory;
 import com.kogasoftware.odt.invehicledevice.logic.empty.EmptyFile;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
@@ -22,7 +21,7 @@ public class ReturnPathTestCase extends
 		super("com.kogasoftware.odt.invehicledevice.ui.activity",
 				InVehicleDeviceActivity.class);
 	}
-
+	
 	public void dataset(Integer iCount, Integer userId,
 			Integer departurePlatformId, Integer arrivalPlatformId) {
 

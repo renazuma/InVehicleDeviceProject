@@ -1,12 +1,10 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.backgroundtask;
 
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.backgroundtask.ExitRequiredPreferenceChangeListener;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.SharedPreferencesKey;

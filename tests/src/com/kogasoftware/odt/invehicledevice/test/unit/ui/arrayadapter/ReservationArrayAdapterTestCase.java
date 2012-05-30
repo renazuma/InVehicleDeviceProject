@@ -1,17 +1,11 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.ui.arrayadapter;
 
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import android.util.Log;
-import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
