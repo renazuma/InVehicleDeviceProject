@@ -73,7 +73,12 @@
         android:layout_height="fill_parent"
         android:layout_above="@+id/reservation_candidate_scroll_down_button"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/reservation_candidate_scroll_up_button" />
+        android:layout_below="@+id/reservation_candidate_scroll_up_button"
+        android:layout_marginBottom="5dip"
+        android:layout_marginLeft="1dip"
+        android:layout_marginRight="1dip"
+        android:layout_marginTop="1dip"
+        android:background="@drawable/border" />
 
     <Button
         android:id="@+id/reservation_candidate_scroll_down_button"

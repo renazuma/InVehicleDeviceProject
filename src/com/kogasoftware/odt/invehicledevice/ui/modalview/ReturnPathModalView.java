@@ -150,6 +150,7 @@ public class ReturnPathModalView extends ModalView {
 		}
 		ArrayAdapter<String> hourAdapter = new ArrayAdapter<String>(
 				getContext(), android.R.layout.simple_spinner_item, hours);
+		hourAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
 		hourSpinner.setAdapter(hourAdapter);
 		hourSpinner.setSelection(0); // 必ず一つは要素が入る
 
@@ -159,16 +160,20 @@ public class ReturnPathModalView extends ModalView {
 		}
 		ArrayAdapter<String> minuteAdapter = new ArrayAdapter<String>(
 				getContext(), android.R.layout.simple_spinner_item, minutes);
+		minuteAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
 		minuteSpinner.setAdapter(minuteAdapter);
 		minuteSpinner.setSelection(now.getMinutes());
 
 		String[] inOrOut = { "乗車", "降車" };
 		ArrayAdapter<String> inOrOutAdapter = new ArrayAdapter<String>(
 				getContext(), android.R.layout.simple_spinner_item, inOrOut);
+		inOrOutAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
 		inOrOutSpinner.setAdapter(inOrOutAdapter);
 
 		reservationCandidateScrollUpButton.setVisibility(View.INVISIBLE);
 		reservationCandidateScrollDownButton.setVisibility(View.INVISIBLE);
+		reservationCandidateListView.setVisibility(View.INVISIBLE);
+		
 		doReservationButton.setEnabled(false);
 		reservationCandidateListView
 				.setAdapter(new ReservationCandidateArrayAdapter(getContext(),
@@ -329,7 +334,7 @@ public class ReturnPathModalView extends ModalView {
 			List<ReservationCandidate> reservationCandidates) {
 		if (reservationCandidates.isEmpty()) {
 			Toast.makeText(getContext(),
-					getResources().getString(R.string.an_error_occurred),
+					getResources().getString(R.string.reservation_candidate_not_found),
 					Toast.LENGTH_LONG).show();
 			return;
 		}
@@ -345,6 +350,7 @@ public class ReturnPathModalView extends ModalView {
 					}
 				});
 		reservationCandidateListView.setAdapter(adapter);
+		reservationCandidateListView.setVisibility(View.VISIBLE);
 		reservationCandidateScrollUpButton.setVisibility(View.VISIBLE);
 		reservationCandidateScrollDownButton.setVisibility(View.VISIBLE);
 	}

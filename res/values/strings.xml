@@ -47,4 +47,5 @@
     <string name="zoom_in">拡大</string>
     <string name="zoom_out">縮小</string>
     <string name="an_error_occurred">エラーが発生しました</string>
+    <string name="reservation_candidate_not_found">予約候補を取得できませんでした</string>
 </resources>
