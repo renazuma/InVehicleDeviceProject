@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
 import android.app.ProgressDialog;
@@ -24,6 +25,7 @@ import android.widget.Toast;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
@@ -48,6 +50,7 @@ public class ReturnPathModalView extends ModalView {
 	private static final String TAG = ReturnPathModalView.class.getSimpleName();
 
 	private Reservation currentReservation = new Reservation();
+	private ReservationCandidate currentReservationCandidate = new ReservationCandidate();
 	// private static final String TAG =
 	// ReturnPathModalView.class.getSimpleName();
 	private final ProgressDialog searchingDialog;
@@ -132,7 +135,7 @@ public class ReturnPathModalView extends ModalView {
 			return;
 		}
 		currentReservation = event.reservation;
-		
+
 		TextView returnPathTitleTextView = (TextView) findViewById(R.id.return_path_title_text_view);
 		String title = "";
 		for (User user : currentReservation.getUser().asSet()) {
@@ -173,7 +176,7 @@ public class ReturnPathModalView extends ModalView {
 		reservationCandidateScrollUpButton.setVisibility(View.INVISIBLE);
 		reservationCandidateScrollDownButton.setVisibility(View.INVISIBLE);
 		reservationCandidateListView.setVisibility(View.INVISIBLE);
-		
+
 		doReservationButton.setEnabled(false);
 		reservationCandidateListView
 				.setAdapter(new ReservationCandidateArrayAdapter(getContext(),
@@ -241,10 +244,11 @@ public class ReturnPathModalView extends ModalView {
 		demand.setUserId(currentReservation.getUserId().or(0));
 		demand.setDeparturePlatformId(currentReservation.getArrivalPlatformId());
 		demand.setArrivalPlatformId(currentReservation.getDeparturePlatformId());
-		
+
 		AsyncTask<Void, Void, List<ReservationCandidate>> task = new AsyncTask<Void, Void, List<ReservationCandidate>>() {
 			@Override
 			protected List<ReservationCandidate> doInBackground(Void... params) {
+				final CountDownLatch countDownLatch = new CountDownLatch(1);
 				final List<ReservationCandidate> reservationCandidates = new LinkedList<ReservationCandidate>();
 				getCommonLogic().getDataSource().searchReservationCandidate(
 						demand,
@@ -252,19 +256,27 @@ public class ReturnPathModalView extends ModalView {
 							@Override
 							public void onException(int reqkey,
 									WebAPIException ex) {
+								countDownLatch.countDown();
 							}
 
 							@Override
 							public void onFailed(int reqkey, int statusCode,
 									String response) {
+								countDownLatch.countDown();
 							}
 
 							@Override
 							public void onSucceed(int reqkey, int statusCode,
 									List<ReservationCandidate> result) {
 								reservationCandidates.addAll(result);
+								countDownLatch.countDown();
 							}
 						});
+				try {
+					countDownLatch.await();
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+				}
 				return reservationCandidates;
 			}
 
@@ -285,28 +297,35 @@ public class ReturnPathModalView extends ModalView {
 		AsyncTask<Void, Void, Optional<Reservation>> task = new AsyncTask<Void, Void, Optional<Reservation>>() {
 			@Override
 			protected Optional<Reservation> doInBackground(Void... params) {
-				ReservationCandidate reservationCandidate = new ReservationCandidate();
 				final AtomicReference<Reservation> outputReservation = new AtomicReference<Reservation>();
-
+				final CountDownLatch countDownLatch = new CountDownLatch(1);
 				getCommonLogic().getDataSource().createReservation(
-						reservationCandidate,
+						currentReservationCandidate,
 						new WebAPICallback<Reservation>() {
 							@Override
 							public void onException(int reqkey,
 									WebAPIException ex) {
+								countDownLatch.countDown();
 							}
 
 							@Override
 							public void onFailed(int reqkey, int statusCode,
 									String response) {
+								countDownLatch.countDown();
 							}
 
 							@Override
 							public void onSucceed(int reqkey, int statusCode,
 									Reservation result) {
 								outputReservation.set(result);
+								countDownLatch.countDown();
 							}
 						});
+				try {
+					countDownLatch.await();
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+				}
 				return Optional.fromNullable(outputReservation.get());
 			}
 
@@ -333,11 +352,15 @@ public class ReturnPathModalView extends ModalView {
 	protected void setReservationCandidates(
 			List<ReservationCandidate> reservationCandidates) {
 		if (reservationCandidates.isEmpty()) {
-			Toast.makeText(getContext(),
-					getResources().getString(R.string.reservation_candidate_not_found),
+			Toast.makeText(
+					getContext(),
+					getResources().getString(
+							R.string.reservation_candidate_not_found),
 					Toast.LENGTH_LONG).show();
 			return;
 		}
+		reservationCandidates = Lists.partition(reservationCandidates, 10).get(0);
+
 		final ReservationCandidateArrayAdapter adapter = new ReservationCandidateArrayAdapter(
 				getContext(), reservationCandidates);
 		reservationCandidateListView
@@ -346,6 +369,7 @@ public class ReturnPathModalView extends ModalView {
 					public void onItemClick(AdapterView<?> parent, View view,
 							int position, long id) {
 						adapter.setSelectedPosition(Optional.of(position));
+						currentReservationCandidate = adapter.getItem(position);
 						doReservationButton.setEnabled(true);
 					}
 				});
