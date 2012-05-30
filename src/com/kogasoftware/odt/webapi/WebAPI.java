@@ -242,9 +242,9 @@ public class WebAPI implements Closeable {
 			try {
 				httpResponse = httpClient.execute(request.getRequest());
 			} catch (ClientProtocolException e) {
-				throw new WebAPIException(true, e);
+				throw new WebAPIException(e);
 			} catch (IOException e) {
-				throw new WebAPIException(true, e);
+				throw new WebAPIException(e);
 			}
 
 			int statusCode = httpResponse.getStatusLine().getStatusCode();
@@ -258,7 +258,7 @@ public class WebAPI implements Closeable {
 					Log.d(TAG, "response body:" + responseString);
 				}
 			} catch (IOException e) {
-				throw new WebAPIException(true, e);
+				throw new WebAPIException(e);
 			}
 
 			if (statusCode / 100 == 4 || statusCode / 100 == 5) {
@@ -271,9 +271,9 @@ public class WebAPI implements Closeable {
 				return true;
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
-				throw new WebAPIException(false, e);
+				throw new WebAPIException(e);
 			} catch (Exception e) {
-				throw new WebAPIException(false, e);
+				throw new WebAPIException(e);
 			}
 		} catch (WebAPIException e) {
 			request.onException(e);

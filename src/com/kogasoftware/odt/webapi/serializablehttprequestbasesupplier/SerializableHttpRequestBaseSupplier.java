@@ -53,7 +53,7 @@ abstract public class SerializableHttpRequestBaseSupplier implements
 		try {
 			request.setURI(new URI(uri));
 		} catch (URISyntaxException e) {
-			throw new WebAPIException(true, e);
+			throw new WebAPIException(e);
 		}
 	}
 

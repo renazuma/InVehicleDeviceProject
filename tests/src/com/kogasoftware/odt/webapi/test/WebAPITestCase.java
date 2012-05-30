@@ -71,7 +71,7 @@ public class WebAPITestCase extends
 		@Override
 		protected boolean doHttpSessionAndCallback(WebAPIRequest<?> request) {
 			if (offline) {
-				request.onException(new WebAPIException(true, "offline test"));
+				request.onException(new WebAPIException("offline test"));
 				return false;
 			} else {
 				return super.doHttpSessionAndCallback(request);

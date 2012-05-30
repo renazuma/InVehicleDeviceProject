@@ -32,7 +32,7 @@ abstract public class SerializableHttpEntityEnclosingRequestBase extends
 			entity.setContentType("application/json");
 			request.setEntity(entity);
 		} catch (UnsupportedEncodingException e) {
-			throw new WebAPIException(false, e);
+			throw new WebAPIException(e);
 		}
 	}
 
@@ -44,7 +44,7 @@ abstract public class SerializableHttpEntityEnclosingRequestBase extends
 				entityJSON.put(AUTHENTICATION_TOKEN_KEY, authenticationToken);
 				entityString = entityJSON.toString();
 			} catch (JSONException e) {
-				throw new WebAPIException(false, e);
+				throw new WebAPIException(e);
 			}
 		}
 	}
