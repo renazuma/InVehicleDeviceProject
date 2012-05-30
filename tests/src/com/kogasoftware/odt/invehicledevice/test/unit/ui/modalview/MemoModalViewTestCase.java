@@ -23,6 +23,7 @@ public class MemoModalViewTestCase extends
 		cl.registerEventListener(mv);
 		mv.setCommonLogic(new CommonLogicLoadCompleteEvent(cl));
 		r = new Reservation();
+		r.setId(12345);
 	}
 
 	@Override
@@ -55,38 +56,50 @@ public class MemoModalViewTestCase extends
 	public void testShowEvent() throws InterruptedException {
 		assertFalse(mv.isShown());
 		TestUtil.willHide(mv);
-		
+
 		cl.postEvent(new MemoModalView.ShowEvent(r));
 
 		TestUtil.willShow(solo, mv);
+
+		assertTrue(solo.searchText(r.getId().toString()));
+
+		for (User user : r.getUser().asSet()) {
+			if (!user.getFirstName().isEmpty()) {
+				assertTrue(solo.searchText(user.getFirstName()));
+			}
+			if (!user.getLastName().isEmpty()) {
+				assertTrue(solo.searchText(user.getLastName()));
+			}
+		}
 	}
-	
+
 	public void testReservationMemo0() throws Exception {
 		String memo = "こんにちは";
 		r.setMemo(memo);
-		
+
 		testShowEvent();
-		
+
 		assertTrue(solo.searchText(memo));
 	}
 
 	public void testReservationMemo1() throws Exception {
 		String memo = "Hello reservation memo";
 		r.setMemo(memo);
-		
+
 		testShowEvent();
-		
+
 		assertTrue(solo.searchText(memo));
 	}
-	
+
 	public void testUserMemo0() throws Exception {
 		String memo = "こんにちは";
 		User u = new User();
 		u.setRememberMe(memo);
 		r.setUser(u);
-		
+		r.setId(5678);
+
 		testShowEvent();
-		
+
 		assertFalse(solo.searchText("要介護"));
 		assertFalse(solo.searchText("要車椅子"));
 		assertTrue(solo.searchText(memo));
@@ -94,22 +107,24 @@ public class MemoModalViewTestCase extends
 
 	public void testUserMemo1() throws Exception {
 		User u = new User();
+		u.setFirstName("ふぁーすとねーむ");
 		u.setHandicapped(true);
 		r.setUser(u);
-		
+
 		testShowEvent();
-		
+
 		assertTrue(solo.searchText("要介護"));
 		assertFalse(solo.searchText("要車椅子"));
 	}
 
 	public void testUserMemo2() throws Exception {
 		User u = new User();
+		u.setLastName("らすとねーむ");
 		u.setWheelchair(true);
 		r.setUser(u);
-		
+
 		testShowEvent();
-		
+
 		assertFalse(solo.searchText("要介護"));
 		assertTrue(solo.searchText("要車椅子"));
 	}
@@ -120,14 +135,14 @@ public class MemoModalViewTestCase extends
 		u.setHandicapped(true);
 		u.setRememberMe("覚書");
 		r.setUser(u);
-		
+
 		testShowEvent();
-		
+
 		assertTrue(solo.searchText("覚書"));
 		assertTrue(solo.searchText("要介護"));
 		assertTrue(solo.searchText("要車椅子"));
 	}
-	
+
 	public void test戻るボタンを押すと消える() throws Exception {
 		testShowEvent();
 		solo.clickOnView(solo.getView(R.id.memo_close_button));

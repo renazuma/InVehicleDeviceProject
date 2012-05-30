@@ -4,12 +4,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <LinearLayout
-        android:id="@+id/memo_modal_view_titles"
+    <TextView
+        android:id="@+id/memo_title_text_view"
+        style="@style/ModalView.Title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true" >
+        android:layout_alignParentTop="true" />
+
+    <LinearLayout
+        android:id="@+id/memo_each_titles"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/memo_title_text_view" >
 
         <TextView
             style="@style/ModalView.Title"
@@ -31,7 +39,7 @@
         android:layout_height="fill_parent"
         android:layout_above="@+id/memo_close_button"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/memo_modal_view_titles" >
+        android:layout_below="@+id/memo_each_titles" >
 
         <TextView
             android:id="@+id/reservation_memo_text_view"

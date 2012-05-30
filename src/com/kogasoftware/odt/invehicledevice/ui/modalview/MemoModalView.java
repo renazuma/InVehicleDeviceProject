@@ -9,6 +9,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.webapi.model.Reservation;
+import com.kogasoftware.odt.webapi.model.User;
 import com.kogasoftware.odt.webapi.model.Users;
 
 public class MemoModalView extends ModalView {
@@ -30,6 +31,14 @@ public class MemoModalView extends ModalView {
 	@Subscribe
 	public void show(ShowEvent event) {
 		Reservation reservation = event.reservation;
+		TextView titleTextView = (TextView) findViewById(R.id.memo_title_text_view);
+		String title = "";
+		for (User user : reservation.getUser().asSet()) {
+			title += " " + user.getLastName() + " " + user.getFirstName() + " 様 ";
+		}
+		title += "予約番号：" + reservation.getId();
+		titleTextView.setText(title);
+		
 		TextView reservationMemoTextView = (TextView) findViewById(R.id.reservation_memo_text_view);
 		reservationMemoTextView.setText(reservation.getMemo().or(""));
 
