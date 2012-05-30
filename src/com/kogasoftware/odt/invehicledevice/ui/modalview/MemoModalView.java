@@ -34,7 +34,7 @@ public class MemoModalView extends ModalView {
 		TextView titleTextView = (TextView) findViewById(R.id.memo_title_text_view);
 		String title = "";
 		for (User user : reservation.getUser().asSet()) {
-			title += " " + user.getLastName() + " " + user.getFirstName() + " 様 ";
+			title += user.getLastName() + " " + user.getFirstName() + " 様 ";
 		}
 		title += "予約番号：" + reservation.getId();
 		titleTextView.setText(title);

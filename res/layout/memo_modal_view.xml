@@ -46,7 +46,7 @@
             style="@style/ModalView.Content"
             android:layout_width="0dip"
             android:layout_height="fill_parent"
-            android:layout_margin="5dip"
+            android:layout_margin="1dip"
             android:layout_weight="1"
             android:background="@drawable/border" />
 
@@ -55,7 +55,7 @@
             style="@style/ModalView.Content"
             android:layout_width="0dip"
             android:layout_height="fill_parent"
-            android:layout_margin="5dip"
+            android:layout_margin="1dip"
             android:layout_weight="1"
             android:background="@drawable/border" />
     </LinearLayout>
