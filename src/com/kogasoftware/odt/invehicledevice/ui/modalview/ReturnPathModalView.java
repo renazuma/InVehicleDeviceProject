@@ -132,6 +132,7 @@ public class ReturnPathModalView extends ModalView {
 			return;
 		}
 		currentReservation = event.reservation;
+		
 		TextView returnPathTitleTextView = (TextView) findViewById(R.id.return_path_title_text_view);
 		String title = "";
 		for (User user : currentReservation.getUser().asSet()) {
@@ -232,11 +233,10 @@ public class ReturnPathModalView extends ModalView {
 		} else {
 			demand.setArrivalTime(calendar.getTime());
 		}
+		demand.setUserId(currentReservation.getUserId().or(0));
 		demand.setDeparturePlatformId(currentReservation.getArrivalPlatformId());
-		demand.setDeparturePlatform(currentReservation.getArrivalPlatform());
 		demand.setArrivalPlatformId(currentReservation.getDeparturePlatformId());
-		demand.setArrivalPlatform(currentReservation.getDeparturePlatform());
-
+		
 		AsyncTask<Void, Void, List<ReservationCandidate>> task = new AsyncTask<Void, Void, List<ReservationCandidate>>() {
 			@Override
 			protected List<ReservationCandidate> doInBackground(Void... params) {
