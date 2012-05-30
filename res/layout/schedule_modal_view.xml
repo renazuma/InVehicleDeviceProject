@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical">
+    style="@style/ModalView.Layout"
+    android:orientation="vertical" >
 
     <Button
         android:id="@+id/operation_schedule_scroll_up_button"
+        style="@style/ModalView.Button"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/scroll_up" />
@@ -18,12 +18,14 @@
 
     <Button
         android:id="@+id/operation_schedule_scroll_down_button"
+        style="@style/ModalView.Button"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/scroll_down" />
 
     <Button
         android:id="@+id/schedule_close_button"
+        style="@style/ModalView.Button"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/it_returns" />

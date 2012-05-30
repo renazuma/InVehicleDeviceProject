@@ -1,5 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style parent="@android:style/Theme.Light.NoTitleBar.Fullscreen" name="InVehicleDevice.Default" >
+
+    <style name="Activity.Theme" parent="@android:style/Theme.Light.NoTitleBar.Fullscreen"></style>
+
+    <style name="ModalView.Layout" parent="@android:style/TextAppearance.Large">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@android:color/white</item>
+    </style>
+
+    <style name="ModalView.Title" parent="@android:style/TextAppearance.Large">
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+
+    <style name="ModalView.Content" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+
+    <style name="ModalView.Button" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+    
+    <style name="ModalView.Setup" parent="@android:style/TextAppearance.Medium">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:layout_alignParentLeft">true</item>
+        <item name="android:layout_alignParentTop">true</item>
+    </style>
+    
+    <style name="SideButton" parent="@android:style/TextAppearance.Large">
+        <item name="android:textColor">@android:color/black</item>
     </style>
 </resources>

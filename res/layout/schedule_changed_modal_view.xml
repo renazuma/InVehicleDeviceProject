@@ -1,28 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
+    style="@style/ModalView.Layout" >
 
     <TextView
         android:id="@+id/schedule_changed_modal_title_text_view"
+        style="@style/ModalView.Title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:text="@string/operation_schedule_was_changed"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:text="@string/operation_schedule_was_changed" />
 
     <TextView
         android:id="@+id/schedule_changed_text_view"
+        style="@style/ModalView.Content"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
+        android:layout_above="@+id/schedule_changed_modal_buttons"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/schedule_changed_modal_title_text_view"
-        android:layout_above="@+id/schedule_changed_modal_buttons"
-        android:background="@drawable/border"
-        android:textAppearance="?android:attr/textAppearanceLarge" 
-        android:layout_margin="5dip" />
+        android:layout_margin="5dip"
+        android:background="@drawable/border" />
 
     <LinearLayout
         android:id="@+id/schedule_changed_modal_buttons"
@@ -33,6 +31,7 @@
 
         <Button
             android:id="@+id/schedule_confirm_button"
+            style="@style/ModalView.Button"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
@@ -40,6 +39,7 @@
 
         <Button
             android:id="@+id/schedule_changed_close_button"
+            style="@style/ModalView.Button"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"

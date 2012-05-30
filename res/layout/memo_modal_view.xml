@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    style="@style/ModalView.Layout"
     android:orientation="vertical" >
 
     <TextView
         android:id="@+id/reservation_memo_text_view"
+        style="@style/ModalView.Content"
         android:layout_width="fill_parent"
         android:layout_height="0dip"
         android:layout_margin="5dip"
-        android:background="@drawable/border" 
-        android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_weight="1"
-         />
+        android:background="@drawable/border" />
 
     <Button
         android:id="@+id/memo_close_button"
+        style="@style/ModalView.Button"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/it_closes" />
