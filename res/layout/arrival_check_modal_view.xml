@@ -16,6 +16,7 @@
         style="@style/ModalView.Content"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
+        android:padding="15dip"
         android:layout_above="@+id/arrival_check_modal_buttons"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/arrival_check_modal_title_text_view"
