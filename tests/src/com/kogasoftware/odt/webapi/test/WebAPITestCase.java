@@ -1213,7 +1213,7 @@ public class WebAPITestCase extends
 		api = new WebAPI(TEST_SERVER_HOST, master.getInVehicleDevice()
 				.getAuthenticationToken().orNull());
 		
-		final List<ReservationCandidate> rc = new LinkedList<ReservationCandidate>();
+		final List<ReservationCandidate> rcs = new LinkedList<ReservationCandidate>();
 		latch = new CountDownLatch(1);
 		Demand d = new Demand();
 		d.setDepartureTime(new Date());
@@ -1222,16 +1222,20 @@ public class WebAPITestCase extends
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
 							List<ReservationCandidate> result) {
-						rc.addAll(result);
+						rcs.addAll(result);
 						latch.countDown();
 					}
 				});
 		assertTrue(latch.await(20, TimeUnit.SECONDS));
-		assertTrue(rc.size() > 0);
+		assertTrue(rcs.size() > 0);
+		for (ReservationCandidate rc : rcs) {
+			assertTrue(rc.getArrivalPlatform().isPresent());
+			assertTrue(rc.getDeparturePlatform().isPresent());
+		}
 		
 		final AtomicReference<Reservation> r = new AtomicReference<Reservation>();
 		latch = new CountDownLatch(1);
-		api.createReservation(rc.get(0), new EmptyWebAPICallback<Reservation>(){
+		api.createReservation(rcs.get(0), new EmptyWebAPICallback<Reservation>(){
 			@Override
 			public void onSucceed(int reqkey, int statusCode,
 					Reservation result) {
@@ -1241,5 +1245,7 @@ public class WebAPITestCase extends
 		});
 		assertTrue(latch.await(2000, TimeUnit.SECONDS));
 		assertNotNull(r.get());
+		assertTrue(r.get().getArrivalPlatform().isPresent());
+		assertTrue(r.get().getDeparturePlatform().isPresent());
 	}
 }
