@@ -77,9 +77,6 @@ public class Reservation extends Model {
 			setUnitAssignmentId(getUnitAssignment().get().getId());
 		}
 		setUser(User.parse(jsonObject, "user"));
-		if (getUser().isPresent()) {
-			setUserId(getUser().get().getId());
-		}
 	}
 
 	public static Optional<Reservation> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
