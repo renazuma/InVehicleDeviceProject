@@ -324,6 +324,7 @@ public class CommonEventProcessor {
 		statusAccess.write(new Writer() {
 			@Override
 			public void write(Status status) {
+				status.operationScheduleInitializedSign.drainPermits();
 				status.serviceUnitStatusLog = new ServiceUnitStatusLog();
 				status.remainingOperationSchedules.clear();
 				status.finishedOperationSchedules.clear();
