@@ -25,6 +25,7 @@ import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.PassengerRecords;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.User;
+import com.kogasoftware.odt.webapi.model.Users;
 
 public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 	public static enum ItemType {
@@ -138,7 +139,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 
 		// メモボタン
 		Button memoButton = (Button) view.findViewById(R.id.memo_button);
-		if (reservation.getMemo().isPresent()) {
+		if (reservation.getMemo().isPresent() || !Users.getMemo(reservation).isEmpty()) {
 			memoButton.setVisibility(View.VISIBLE);
 			memoButton.setOnClickListener(new OnClickListener() {
 				@Override
