@@ -288,7 +288,7 @@ public class CommonLogic {
 		eventBus.register(eventListener);
 	}
 
-	public void restoreStatus() {
+	public void refreshPhase() {
 		switch (getPhase()) {
 		case INITIAL:
 			postEvent(new EnterDrivePhaseEvent());

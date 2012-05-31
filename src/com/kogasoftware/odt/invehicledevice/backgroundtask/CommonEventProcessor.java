@@ -243,8 +243,8 @@ public class CommonEventProcessor {
 	}
 
 	@Subscribe
-	public void restoreStatus(UpdatedOperationScheduleMergedEvent event) {
-		commonLogic.restoreStatus();
+	public void refreshPhase(UpdatedOperationScheduleMergedEvent event) {
+		commonLogic.refreshPhase();
 	}
 
 	/**
@@ -349,7 +349,7 @@ public class CommonEventProcessor {
 					return;
 				}
 				status.reservations.add(e.reservation);
-				commonLogic.restoreStatus();
+				commonLogic.refreshPhase();
 			}
 		});
 	}

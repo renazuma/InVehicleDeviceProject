@@ -355,7 +355,7 @@ public class InVehicleDeviceActivity extends Activity {
 			commonLogic.dispose();
 			return;
 		}
-		commonLogic.restoreStatus();
+		commonLogic.refreshPhase();
 		waitForStartUiLatch.countDown();
 
 		// UI開始時に、各部品が出たり消えたりするのでそれを隠すためViewの表示を遅延させる
