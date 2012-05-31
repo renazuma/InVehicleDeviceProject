@@ -244,6 +244,12 @@ public class ReturnPathModalView extends ModalView {
 			demand.setArrivalTime(calendar.getTime());
 		}
 		demand.setUserId(currentReservation.getUserId().or(0));
+		if (currentReservation.getPassengerRecord().isPresent()) {
+			demand.setPassengerCount(currentReservation.getPassengerRecord()
+					.get().getPassengerCount());
+		} else {
+			demand.setPassengerCount(currentReservation.getPassengerCount());
+		}
 		demand.setDeparturePlatformId(currentReservation.getArrivalPlatformId());
 		demand.setArrivalPlatformId(currentReservation.getDeparturePlatformId());
 
@@ -345,7 +351,11 @@ public class ReturnPathModalView extends ModalView {
 							Toast.LENGTH_LONG).show();
 					return;
 				}
-				
+				BigToast.makeText(
+						getContext(),
+						getResources()
+								.getString(R.string.reservation_succeed),
+						Toast.LENGTH_LONG).show();
 				hide();
 			}
 		};
@@ -362,7 +372,8 @@ public class ReturnPathModalView extends ModalView {
 					Toast.LENGTH_LONG).show();
 			return;
 		}
-		reservationCandidates = Lists.partition(reservationCandidates, 10).get(0);
+		reservationCandidates = Lists.partition(reservationCandidates, 10).get(
+				0);
 
 		final ReservationCandidateArrayAdapter adapter = new ReservationCandidateArrayAdapter(
 				getContext(), reservationCandidates);
