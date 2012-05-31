@@ -29,6 +29,7 @@ import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
+import com.kogasoftware.odt.invehicledevice.ui.BigToast;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationCandidateArrayAdapter;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
@@ -336,7 +337,7 @@ public class ReturnPathModalView extends ModalView {
 					return;
 				}
 				if (!result.isPresent()) {
-					Toast.makeText(
+					BigToast.makeText(
 							getContext(),
 							getResources()
 									.getString(R.string.an_error_occurred),
@@ -352,7 +353,7 @@ public class ReturnPathModalView extends ModalView {
 	protected void setReservationCandidates(
 			List<ReservationCandidate> reservationCandidates) {
 		if (reservationCandidates.isEmpty()) {
-			Toast.makeText(
+			BigToast.makeText(
 					getContext(),
 					getResources().getString(
 							R.string.reservation_candidate_not_found),
