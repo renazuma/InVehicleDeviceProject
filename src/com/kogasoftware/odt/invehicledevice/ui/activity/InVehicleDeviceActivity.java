@@ -16,6 +16,7 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -259,7 +260,7 @@ public class InVehicleDeviceActivity extends Activity {
 		switch (id) {
 		case WAIT_FOR_INITIALIZE_DIALOG_ID: {
 			ProgressDialog dialog = new ProgressDialog(this);
-			dialog.setMessage("運行情報を取得しています");
+			dialog.setMessage(Html.fromHtml("<big>運行情報を取得しています</big>"));
 			dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 			dialog.setOnCancelListener(new OnCancelListener() {
 				@Override

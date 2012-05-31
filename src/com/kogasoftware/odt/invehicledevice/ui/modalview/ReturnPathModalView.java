@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.AsyncTask;
+import android.text.Html;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -79,7 +80,7 @@ public class ReturnPathModalView extends ModalView {
 		inOrOutSpinner = (Spinner) findViewById(R.id.reservation_candidate_in_or_out_spinner);
 
 		searchingDialog = new ProgressDialog(getContext());
-		searchingDialog.setMessage("予約情報を受信しています");
+		searchingDialog.setMessage(Html.fromHtml("<big>予約情報を受信しています</big>"));
 		searchingDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		searchingDialog.setOnDismissListener(new OnDismissListener() {
 			@Override
@@ -88,7 +89,7 @@ public class ReturnPathModalView extends ModalView {
 		});
 
 		sendingDialog = new ProgressDialog(getContext());
-		sendingDialog.setMessage("予約情報を送信しています");
+		sendingDialog.setMessage(Html.fromHtml("<big>予約情報を送信しています</big>"));
 		sendingDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		sendingDialog.setOnDismissListener(new OnDismissListener() {
 			@Override
