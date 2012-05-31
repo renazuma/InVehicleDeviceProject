@@ -20,6 +20,7 @@ import com.kogasoftware.odt.invehicledevice.logic.event.LocationReceivedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.NewOperationStartEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.OperationScheduleInitializedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.OrientationChangedEvent;
+import com.kogasoftware.odt.invehicledevice.logic.event.ReturnPathReservationCreatedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.TemperatureChangedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.UiEventBus;
 import com.kogasoftware.odt.invehicledevice.logic.event.UpdatedOperationScheduleMergedEvent;
@@ -335,6 +336,20 @@ public class CommonEventProcessor {
 				status.phase = Phase.INITIAL;
 				status.reservations.clear();
 				status.updatedDate = CommonLogic.getDate();
+			}
+		});
+	}
+	
+	@Subscribe
+	public void mergeReturnPathReservation(final ReturnPathReservationCreatedEvent e) {
+		statusAccess.write(new Writer() {
+			@Override
+			public void write(Status status) {
+				if (!e.reservation.getUnitAssignmentId().equals(status.unitAssignment.getId())) {
+					return;
+				}
+				status.reservations.add(e.reservation);
+				commonLogic.restoreStatus();
 			}
 		});
 	}

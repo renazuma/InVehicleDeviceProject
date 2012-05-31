@@ -11,7 +11,9 @@ import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.ServiceProvider;
+import com.kogasoftware.odt.webapi.model.ServiceUnit;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
+import com.kogasoftware.odt.webapi.model.UnitAssignment;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 /**
@@ -31,8 +33,10 @@ public class Status implements Serializable {
 
 	public String token = "";
 	public String url = "";
-	public InVehicleDevice inVehicleDevice;
-	public ServiceProvider serviceProvider;
+	public InVehicleDevice inVehicleDevice = new InVehicleDevice();
+	public ServiceProvider serviceProvider = new ServiceProvider();
+	public UnitAssignment unitAssignment = new UnitAssignment();
+	public ServiceUnit serviceUnit = new ServiceUnit();
 	public ServiceUnitStatusLog serviceUnitStatusLog = new ServiceUnitStatusLog();
 
 	public final LinkedList<OperationSchedule> remainingOperationSchedules = new LinkedList<OperationSchedule>();
@@ -44,5 +48,4 @@ public class Status implements Serializable {
 	public final LinkedList<VehicleNotification> receivingOperationScheduleChangedVehicleNotifications = new LinkedList<VehicleNotification>();
 	public final LinkedList<VehicleNotification> receivedOperationScheduleChangedVehicleNotifications = new LinkedList<VehicleNotification>();
 	public final LinkedList<VehicleNotification> repliedVehicleNotifications = new LinkedList<VehicleNotification>();
-
 }
