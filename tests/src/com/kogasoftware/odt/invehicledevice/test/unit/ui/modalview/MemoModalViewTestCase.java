@@ -102,6 +102,7 @@ public class MemoModalViewTestCase extends
 
 		assertFalse(solo.searchText("要介護"));
 		assertFalse(solo.searchText("要車椅子"));
+		assertFalse(solo.searchText("身体障害者"));
 		assertTrue(solo.searchText(memo));
 	}
 
@@ -113,7 +114,8 @@ public class MemoModalViewTestCase extends
 
 		testShowEvent();
 
-		assertTrue(solo.searchText("要介護"));
+		assertFalse(solo.searchText("要介護"));
+		assertTrue(solo.searchText("身体障害者"));
 		assertFalse(solo.searchText("要車椅子"));
 	}
 
@@ -126,13 +128,27 @@ public class MemoModalViewTestCase extends
 		testShowEvent();
 
 		assertFalse(solo.searchText("要介護"));
+		assertFalse(solo.searchText("身体障害者"));
 		assertTrue(solo.searchText("要車椅子"));
 	}
 
 	public void testUserMemo3() throws Exception {
 		User u = new User();
+		u.setNeededCare(true);
+		r.setUser(u);
+
+		testShowEvent();
+
+		assertTrue(solo.searchText("要介護"));
+		assertFalse(solo.searchText("身体障害者"));
+		assertFalse(solo.searchText("要車椅子"));
+	}
+
+	public void testUserMemo4() throws Exception {
+		User u = new User();
 		u.setWheelchair(true);
 		u.setHandicapped(true);
+		u.setNeededCare(true);
 		u.setRememberMe("覚書");
 		r.setUser(u);
 
@@ -140,6 +156,7 @@ public class MemoModalViewTestCase extends
 
 		assertTrue(solo.searchText("覚書"));
 		assertTrue(solo.searchText("要介護"));
+		assertTrue(solo.searchText("身体障害者"));
 		assertTrue(solo.searchText("要車椅子"));
 	}
 
