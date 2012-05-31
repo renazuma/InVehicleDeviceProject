@@ -6,14 +6,17 @@ import java.util.List;
 public class Users {
 	public static List<String> getMemo(User user) {
 		List<String> memo = new LinkedList<String>();
-		if (user.getRememberMe().isPresent()) {
-			memo.add(user.getRememberMe().get());
+		for (String rememberMe : user.getRememberMe().asSet()) {
+			memo.add(rememberMe);
 		}
 		if (user.getHandicapped().or(false)) {
-			memo.add("※要介護");
+			memo.add("※身体障害者");
 		}
 		if (user.getWheelchair().or(false)) {
 			memo.add("※要車椅子");
+		}
+		if (user.getNeededCare().or(false)) {
+			memo.add("※要介護");
 		}
 		return memo;
 	}

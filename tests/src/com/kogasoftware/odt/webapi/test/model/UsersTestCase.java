@@ -23,45 +23,65 @@ public class UsersTestCase extends TestCase {
 		
 		u.setHandicapped(true);
 		u.setWheelchair(false);
+		u.setNeededCare(false);
 		u.clearRememberMe();
 		assertEquals(1, Users.getMemo(r).size());
 		assertEquals(1, Users.getMemo(u).size());
 		
 		u.setHandicapped(false);
 		u.setWheelchair(true);
+		u.setNeededCare(false);
 		u.clearRememberMe();
 		assertEquals(1, Users.getMemo(r).size());
 		assertEquals(1, Users.getMemo(u).size());
 		
 		u.setHandicapped(false);
 		u.setWheelchair(false);
+		u.setNeededCare(true);
+		u.clearRememberMe();
+		assertEquals(1, Users.getMemo(r).size());
+		assertEquals(1, Users.getMemo(u).size());
+		
+		u.setHandicapped(false);
+		u.setWheelchair(false);
+		u.setNeededCare(false);
 		u.setRememberMe("Hello");
 		assertEquals(1, Users.getMemo(r).size());
 		assertEquals(1, Users.getMemo(u).size());
 		
-		
 		u.setHandicapped(true);
 		u.setWheelchair(true);
+		u.setNeededCare(false);
 		u.clearRememberMe();
 		assertEquals(2, Users.getMemo(r).size());
 		assertEquals(2, Users.getMemo(u).size());
 		
 		u.setHandicapped(true);
 		u.setWheelchair(false);
+		u.setNeededCare(false);
 		u.setRememberMe("World");
 		assertEquals(2, Users.getMemo(r).size());
 		assertEquals(2, Users.getMemo(u).size());
 		
 		u.setHandicapped(false);
 		u.setWheelchair(true);
+		u.setNeededCare(false);
+		u.setRememberMe("Hello");
+		assertEquals(2, Users.getMemo(r).size());
+		assertEquals(2, Users.getMemo(u).size());
+		
+		u.setHandicapped(false);
+		u.setWheelchair(false);
+		u.setNeededCare(true);
 		u.setRememberMe("Hello");
 		assertEquals(2, Users.getMemo(r).size());
 		assertEquals(2, Users.getMemo(u).size());
 		
 		u.setHandicapped(true);
 		u.setWheelchair(true);
+		u.setNeededCare(true);
 		u.setRememberMe("Hello");
-		assertEquals(3, Users.getMemo(r).size());
-		assertEquals(3, Users.getMemo(u).size());
+		assertEquals(4, Users.getMemo(r).size());
+		assertEquals(4, Users.getMemo(u).size());
 	}
 }
