@@ -11,59 +11,25 @@
         android:orientation="horizontal" >
 
         <TextView
-            android:layout_width="wrap_content"
+            android:id="@+id/next_platform_text_view"
+            android:layout_width="0dip"
             android:layout_height="fill_parent"
-            android:gravity="bottom"
-            android:text="@string/next_platform_is" />
+            android:layout_weight="1"
+            android:gravity="bottom|left" />
 
         <TextView
-            android:id="@+id/platform_name_text_view"
+            android:id="@+id/minutes_remaining_text_view"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
-            android:gravity="bottom"
-            android:textSize="20dip" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:gravity="bottom"
-            android:text="@string/departure_schedule" />
-
-        <TextView
-            android:id="@+id/platform_departure_time_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:gravity="bottom"
-            android:textSize="20dip" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:gravity="bottom"
-            android:text="@string/remain" />
-
-        <TextView
-            android:id="@+id/minutes_remaining"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:gravity="bottom"
-            android:textColor="#ff0000"
-            android:textSize="20dip" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:gravity="bottom"
-            android:text="@string/minute" />
+            android:gravity="bottom|right" />
     </LinearLayout>
-    
+
     <LinearLayout
         android:id="@+id/last_operation_schedule_layout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:visibility="gone"
-         >
+        android:visibility="gone" >
 
         <TextView
             android:layout_width="wrap_content"

@@ -49,4 +49,6 @@
     <string name="an_error_occurred">エラーが発生しました</string>
     <string name="reservation_candidate_not_found">予約候補を取得できませんでした</string>
     <string name="reservation_succeed">予約が完了しました</string>
+    <string name="next_platform_is_html">次は&lt;big&gt;&lt;big&gt;%s&lt;/big&gt;&lt;/big&gt;</string>
+    <string name="minutes_remaining_to_depart_html">%1$s出発&lt;br&gt;あと&lt;big&gt;&lt;font color=&quot;red&quot;&gt;%2$d&lt;/font&gt;&lt;/big&gt;分</string>
 </resources>

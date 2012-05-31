@@ -8,6 +8,7 @@ import java.util.List;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Handler;
+import android.text.Html;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,7 +38,6 @@ public class PlatformPhaseView extends PhaseView {
 
 	private static final String TAG = PlatformPhaseView.class.getSimpleName();
 	private static final long UPDATE_MINUTES_REMAINING_INTERVAL_MILLIS = 5;
-	private final TextView platformDepartureTimeTextView;
 	private final ListView reservationListView;
 	private final TextView platformNameTextView;
 	private final ToggleButton showAllRidingReservationsButton;
@@ -68,8 +68,13 @@ public class PlatformPhaseView extends PhaseView {
 			} else {
 				Date departure = operationSchedules.get(0)
 						.getDepartureEstimate();
-				Long milliGap = departure.getTime() - now.getTime();
-				minutesRemainingTextView.setText("" + (milliGap / 1000 / 60));
+				Long gap = (departure.getTime() - now.getTime()) / 1000 / 60;
+				DateFormat dateFormat = new SimpleDateFormat("H時m分"); // TODO
+				String dateString = dateFormat.format(departure);
+				minutesRemainingTextView.setText(Html.fromHtml(String.format(
+						getResources().getString(
+								R.string.minutes_remaining_to_depart_html),
+						dateString, gap)));
 			}
 			handler.postDelayed(updateMinutesRemaining,
 					UPDATE_MINUTES_REMAINING_INTERVAL_MILLIS);
@@ -82,8 +87,7 @@ public class PlatformPhaseView extends PhaseView {
 
 		reservationScrollUpButton = (Button) findViewById(R.id.reservation_scroll_up_button);
 		reservationScrollDownButton = (Button) findViewById(R.id.reservation_scroll_down_button);
-		platformNameTextView = (TextView) findViewById(R.id.platform_name_text_view);
-		platformDepartureTimeTextView = (TextView) findViewById(R.id.platform_departure_time_text_view);
+		platformNameTextView = (TextView) findViewById(R.id.next_platform_text_view);
 		reservationListView = (ListView) findViewById(R.id.reservation_list_view);
 		LayoutInflater layoutInflater = (LayoutInflater) getContext()
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -97,7 +101,7 @@ public class PlatformPhaseView extends PhaseView {
 				.findViewById(R.id.show_missed_reservations_button);
 		// addUnexpectedReservationButton = (Button) reservationListFooterView
 		// .findViewById(R.id.add_unexpected_reservation_button);
-		minutesRemainingTextView = (TextView) findViewById(R.id.minutes_remaining);
+		minutesRemainingTextView = (TextView) findViewById(R.id.minutes_remaining_text_view);
 		lastOperationScheduleLayout = (LinearLayout) findViewById(R.id.last_operation_schedule_layout);
 		nextOperationScheduleLayout = (LinearLayout) findViewById(R.id.next_operation_schedule_layout);
 
@@ -152,17 +156,16 @@ public class PlatformPhaseView extends PhaseView {
 		reservationListView.setAdapter(adapter);
 
 		if (operationSchedules.size() > 1) {
-			DateFormat dateFormat = new SimpleDateFormat("H時m分"); // TODO
-			platformDepartureTimeTextView.setText(dateFormat
-					.format(operationSchedule.getDepartureEstimate()));
 			OperationSchedule nextOperationSchedule = operationSchedules.get(1);
 			for (Platform platform : nextOperationSchedule.getPlatform()
 					.asSet()) {
-				platformNameTextView.setText(platform.getName());
+				platformNameTextView.setText(Html.fromHtml(String.format(
+						getResources()
+								.getString(R.string.next_platform_is_html),
+						platform.getName())));
 			}
 		} else {
 			platformNameTextView.setText("");
-			platformDepartureTimeTextView.setText("");
 		}
 
 		showAllRidingReservationsButton
