@@ -24,11 +24,14 @@ public class BigToastTestCase extends EmptyActivityInstrumentationTestCase2 {
 		callTestMakeText("あいうえおかきくけこさしすせそ", Toast.LENGTH_LONG);
 	}
 
-	public void callTestMakeText(String text, int duration) throws Exception {
-		Toast t = BigToast.makeText(getInstrumentation().getTargetContext()
-				.getApplicationContext(), text, duration);
+	public void callTestMakeText(final String text, final int duration) throws Exception {
 		assertFalse(solo.searchText(text, true));
-		t.show();
+		runOnUiThreadSync(new Runnable() {
+			@Override
+			public void run() {
+				BigToast.makeText(getActivity(), text, duration).show();
+			}
+		});
 		assertTrue(solo.searchText(text, true));
 		while (solo.searchText(text, true)) {
 		}
