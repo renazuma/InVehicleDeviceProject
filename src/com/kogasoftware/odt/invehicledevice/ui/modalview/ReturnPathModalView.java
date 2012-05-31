@@ -30,7 +30,6 @@ import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.logic.event.ReturnPathReservationCreatedEvent;
 import com.kogasoftware.odt.invehicledevice.ui.BigToast;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationCandidateArrayAdapter;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
@@ -338,9 +337,7 @@ public class ReturnPathModalView extends ModalView {
 				if (isCancelled()) {
 					return;
 				}
-				if (result.isPresent()) {
-					getCommonLogic().postEvent(new ReturnPathReservationCreatedEvent(result.get()));
-				} else {
+				if (!result.isPresent()) {
 					BigToast.makeText(
 							getContext(),
 							getResources()
