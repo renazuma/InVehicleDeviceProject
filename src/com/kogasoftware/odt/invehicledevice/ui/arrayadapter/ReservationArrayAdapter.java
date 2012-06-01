@@ -19,7 +19,6 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.empty.EmptyWebAPICallback;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.MemoModalView;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.ReturnPathModalView;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.PassengerRecords;
@@ -151,17 +150,6 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		} else {
 			memoButton.setVisibility(View.GONE);
 		}
-
-		// 復路ボタン
-		Button returnPathButton = (Button) view
-				.findViewById(R.id.return_path_button);
-		returnPathButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				commonLogic.postEvent(new ReturnPathModalView.ShowEvent(
-						reservation));
-			}
-		});
 
 		// 行の表示
 		view.setOnClickListener(new OnClickListener() {

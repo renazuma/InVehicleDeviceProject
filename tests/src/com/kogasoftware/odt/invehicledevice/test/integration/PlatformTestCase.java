@@ -76,14 +76,6 @@ public class PlatformTestCase extends
 				.getVisibility());
 	}
 
-	public void test03_復路ボタンを押すと復路画面が表示() {
-		assertEquals(View.GONE, solo.getView(R.id.return_path_modal_view)
-				.getVisibility());
-		solo.clickOnButton("復路");
-		assertEquals(View.VISIBLE, solo.getView(R.id.return_path_modal_view)
-				.getVisibility());
-	}
-
 	public void test04_出発ボタンを押すと出発ダイアログ表示() {
 		solo.clickOnButton("出発する");
 		assertEquals(View.VISIBLE, solo
@@ -103,28 +95,6 @@ public class PlatformTestCase extends
 		solo.clickOnView(solo.getView(R.id.departure_check_close_button));
 		TextView v = (TextView) solo.getView(R.id.phase_text_view);
 		assertEquals("停車中", v.getText());
-	}
-
-	public void test07_復路画面で予約候補を検索を押すと予約候補表示() {
-
-		test03_復路ボタンを押すと復路画面が表示();
-
-		solo.clickOnButton("予約候補を検索");
-		assertEquals(View.VISIBLE, solo.getView(R.id.return_path_modal_view)
-				.getVisibility());
-		assertEquals(View.VISIBLE, solo.getView(R.id.return_path_button)
-				.getVisibility());
-
-	}
-
-	public void test08_復路画面で予約を押すと待機中画面へ戻る() {
-
-		test07_復路画面で予約候補を検索を押すと予約候補表示();
-
-		solo.clickOnButton("予約する");
-		assertEquals(View.VISIBLE, solo.getView(R.id.platform_phase_view)
-				.getVisibility());
-
 	}
 
 	public void test09_下スクロール() {

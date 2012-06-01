@@ -139,10 +139,6 @@
             android:visibility="gone" />
     </FrameLayout>
 
-    <com.kogasoftware.odt.invehicledevice.ui.modalview.ReturnPathModalView
-        android:id="@+id/return_path_modal_view"
-        style="@style/ModalView.Setup" />
-
     <com.kogasoftware.odt.invehicledevice.ui.modalview.DepartureCheckModalView
         android:id="@+id/departure_check_modal_view"
         style="@style/ModalView.Setup" />
