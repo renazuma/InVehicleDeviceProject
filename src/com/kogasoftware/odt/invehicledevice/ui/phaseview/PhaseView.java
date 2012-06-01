@@ -14,7 +14,6 @@ import com.kogasoftware.odt.invehicledevice.logic.event.CommonLogicLoadCompleteE
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterDrivePhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterFinishPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterPlatformPhaseEvent;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.ModalView;
 
 public class PhaseView extends FrameLayout {
 	private CommonLogic commonLogic = new CommonLogic();
@@ -51,9 +50,9 @@ public class PhaseView extends FrameLayout {
 	protected void setContentView(int resourceId) {
 		LayoutInflater layoutInflater = (LayoutInflater) getContext()
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		this.addView(layoutInflater.inflate(resourceId, null),
-				new ModalView.LayoutParams(ModalView.LayoutParams.FILL_PARENT,
-						ModalView.LayoutParams.FILL_PARENT));
+		addView(layoutInflater.inflate(resourceId, null),
+				new PhaseView.LayoutParams(PhaseView.LayoutParams.FILL_PARENT,
+						PhaseView.LayoutParams.FILL_PARENT));
 
 		TypedArray typedArray = getContext().obtainStyledAttributes(
 				new int[] { android.R.attr.background });

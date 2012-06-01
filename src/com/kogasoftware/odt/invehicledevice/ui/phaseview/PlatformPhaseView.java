@@ -12,7 +12,6 @@ import android.text.Html;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.LinearLayout;
@@ -26,6 +25,7 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterFinishPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterPlatformPhaseEvent;
+import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter.ItemType;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.DepartureCheckModalView;
@@ -45,8 +45,6 @@ public class PlatformPhaseView extends PhaseView {
 	private final ToggleButton showMissedReservationsButton;
 	// private final Button addUnexpectedReservationButton;
 	private final View reservationListFooterView;
-	private final Button reservationScrollDownButton;
-	private final Button reservationScrollUpButton;
 	private final TextView minutesRemainingTextView;
 	private final LinearLayout lastOperationScheduleLayout;
 	private final LinearLayout nextOperationScheduleLayout;
@@ -85,10 +83,8 @@ public class PlatformPhaseView extends PhaseView {
 		super(context, attrs);
 		setContentView(R.layout.platform_phase_view);
 
-		reservationScrollUpButton = (Button) findViewById(R.id.reservation_scroll_up_button);
-		reservationScrollDownButton = (Button) findViewById(R.id.reservation_scroll_down_button);
 		platformNameTextView = (TextView) findViewById(R.id.next_platform_text_view);
-		reservationListView = (ListView) findViewById(R.id.reservation_list_view);
+		reservationListView = ((FlickUnneededListView) findViewById(R.id.reservation_list_view)).getListView();
 		LayoutInflater layoutInflater = (LayoutInflater) getContext()
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		reservationListFooterView = layoutInflater.inflate(
@@ -106,23 +102,6 @@ public class PlatformPhaseView extends PhaseView {
 		nextOperationScheduleLayout = (LinearLayout) findViewById(R.id.next_operation_schedule_layout);
 
 		reservationListView.addFooterView(reservationListFooterView);
-
-		reservationScrollUpButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				Integer position = reservationListView
-						.getFirstVisiblePosition();
-				reservationListView.smoothScrollToPosition(position);
-			}
-		});
-		reservationScrollDownButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				Integer position = reservationListView.getLastVisiblePosition();
-				reservationListView.smoothScrollToPosition(position);
-			}
-		});
-
 	}
 
 	@Override
@@ -134,8 +113,6 @@ public class PlatformPhaseView extends PhaseView {
 			commonLogic.postEvent(new EnterFinishPhaseEvent());
 			return;
 		}
-
-		OperationSchedule operationSchedule = operationSchedules.get(0);
 
 		Boolean last = (operationSchedules.size() <= 1);
 		if (last) {

@@ -15,6 +15,7 @@ import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterDrivePhaseEvent;
+import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.User;
@@ -46,7 +47,8 @@ public class DepartureCheckModalView extends ModalView {
 	@Subscribe
 	public void show(ShowEvent event) {
 		final ReservationArrayAdapter adapter = event.reservationArrayAdapter;
-		ListView errorReservationListView = (ListView) findViewById(R.id.error_reservation_list_view);
+		ListView errorReservationListView = ((FlickUnneededListView) findViewById(R.id.error_reservation_list_view))
+				.getListView();
 		List<String> messages = new LinkedList<String>();
 		for (Reservation reservation : adapter.getNoGettingOnReservations()) {
 			messages.add(" ※" + getUserName(reservation) + "様が未乗車です");

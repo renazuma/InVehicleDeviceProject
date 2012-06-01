@@ -66,19 +66,4 @@ public class ScheduleModalViewTestCase extends
 		getInstrumentation().waitForIdleSync();
 		assertFalse(mv.isShown());
 	}
-
-	public void xtest下ボタンを押すと下へスクロール() throws Exception {
-		testShowEvent();
-		solo.clickOnView(solo
-				.getView(R.id.operation_schedule_scroll_down_button));
-		getInstrumentation().waitForIdleSync();
-		fail("stub!");
-	}
-
-	public void xtest上ボタンを押すと上へスクロール() throws Exception {
-		testShowEvent();
-		solo.clickOnView(solo.getView(R.id.operation_schedule_scroll_up_button));
-		getInstrumentation().waitForIdleSync();
-		fail("stub!");
-	}
 }

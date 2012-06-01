@@ -26,8 +26,8 @@
     <string name="present_time">現在時刻</string>
     <string name="present_time_format">H時m分</string>
     <string name="return_path">復路</string>
-    <string name="scroll_down">下へ移動</string>
-    <string name="scroll_up">上へ移動</string>
+    <string name="scroll_down">▽ 下へ移動</string>
+    <string name="scroll_up">△ 上へ移動</string>
     <string name="yes">はい</string>
     <string name="operation_schedule_was_changed">運行予定が変更されました</string>
     <string name="search_reservation_candidate">予約候補を検索</string>

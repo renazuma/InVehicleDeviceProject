@@ -3,30 +3,11 @@
     style="@style/ModalView.Layout"
     android:orientation="vertical" >
 
-    <Button
-        android:id="@+id/operation_schedule_scroll_up_button"
-        style="@style/ModalView.Button"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/scroll_up" />
-
-    <ListView
+    <com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView
         android:id="@+id/operation_schedule_list_view"
-        android:background="@drawable/border"
-        android:layout_marginLeft="1dip"
-        android:layout_marginRight="1dip"
-        android:layout_marginTop="1dip"
-        android:layout_marginBottom="5dip"
         android:layout_width="fill_parent"
         android:layout_height="0dip"
         android:layout_weight="1" />
-
-    <Button
-        android:id="@+id/operation_schedule_scroll_down_button"
-        style="@style/ModalView.Button"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/scroll_down" />
 
     <Button
         android:id="@+id/schedule_close_button"

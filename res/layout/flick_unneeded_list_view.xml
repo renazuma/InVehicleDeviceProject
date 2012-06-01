@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="2dip"
+    android:orientation="vertical" >
+
+    <Button
+        android:id="@+id/flick_unneeded_list_view_scroll_up_button"
+        style="@style/ModalView.Button"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:text="@string/scroll_up" />
+
+    <ListView
+        android:id="@+id/flick_unneeded_list_view_inner_list_view"
+        android:layout_width="fill_parent"
+        android:layout_height="0dip"
+        android:layout_above="@+id/flick_unneeded_list_view_scroll_down_button"
+        android:layout_below="@+id/flick_unneeded_list_view_scroll_up_button"
+        android:layout_marginBottom="5dip"
+        android:layout_marginLeft="1dip"
+        android:layout_marginRight="1dip"
+        android:layout_marginTop="1dip" />
+
+    <Button
+        android:id="@+id/flick_unneeded_list_view_scroll_down_button"
+        style="@style/ModalView.Button"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:text="@string/scroll_down" />
+
+</RelativeLayout>

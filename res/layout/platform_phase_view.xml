@@ -38,22 +38,10 @@
             android:text="現在最終乗降場です" />
     </LinearLayout>
 
-    <Button
-        android:id="@+id/reservation_scroll_up_button"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/scroll_up" />
-
-    <ListView
+    <com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView
         android:id="@+id/reservation_list_view"
         android:layout_width="fill_parent"
         android:layout_height="0dip"
         android:layout_weight="1" />
-
-    <Button
-        android:id="@+id/reservation_scroll_down_button"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/scroll_down" />
 
 </LinearLayout>

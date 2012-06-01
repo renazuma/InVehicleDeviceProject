@@ -10,7 +10,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true" />
 
-    <ListView
+    <com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView
         android:id="@+id/error_reservation_list_view"
         style="@style/ModalView.Content"
         android:layout_width="match_parent"
