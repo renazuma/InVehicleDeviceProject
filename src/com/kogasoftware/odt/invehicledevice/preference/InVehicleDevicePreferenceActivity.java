@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -90,7 +91,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		switch (id) {
 		case CONNECTING_DIALOG_ID: {
 			ProgressDialog dialog = new ProgressDialog(this);
-			dialog.setMessage("接続確認をしています");
+			dialog.setMessage(Html.fromHtml("<big>接続確認をしています</big>"));
 			dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 			return dialog;
 		}
@@ -181,8 +182,10 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 			runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
-					Toast.makeText(InVehicleDevicePreferenceActivity.this,
-							getResources().getString(R.string.an_error_occurred),
+					Toast.makeText(
+							InVehicleDevicePreferenceActivity.this,
+							getResources()
+									.getString(R.string.an_error_occurred),
 							Toast.LENGTH_LONG).show();
 					Toast.makeText(InVehicleDevicePreferenceActivity.this,
 							"token not found", Toast.LENGTH_LONG).show();
@@ -202,21 +205,21 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		intent.putExtra(SharedPreferencesKey.SERVER_IN_VEHICLE_DEVICE_TOKEN,
 				token);
 		intent.putExtra(SharedPreferencesKey.IN_VEHICLE_DEVICE, inVehicleDevice);
-//		if (!inVehicleDevice.getServiceProvider().isPresent()) {
-//			runOnUiThread(new Runnable() {
-//				@Override
-//				public void run() {
-//					Toast.makeText(InVehicleDevicePreferenceActivity.this,
-//							getResources().getString(R.string.an_error_occurred),
-//							Toast.LENGTH_LONG).show();
-//					Toast.makeText(InVehicleDevicePreferenceActivity.this,
-//							"in_vehicle_device.service_provider not found",
-//							Toast.LENGTH_LONG).show();
-//				}
-//			});
-//			finish();
-//			return;
-//		}
+		// if (!inVehicleDevice.getServiceProvider().isPresent()) {
+		// runOnUiThread(new Runnable() {
+		// @Override
+		// public void run() {
+		// Toast.makeText(InVehicleDevicePreferenceActivity.this,
+		// getResources().getString(R.string.an_error_occurred),
+		// Toast.LENGTH_LONG).show();
+		// Toast.makeText(InVehicleDevicePreferenceActivity.this,
+		// "in_vehicle_device.service_provider not found",
+		// Toast.LENGTH_LONG).show();
+		// }
+		// });
+		// finish();
+		// return;
+		// }
 		intent.putExtra(SharedPreferencesKey.SERVICE_PROVIDER,
 				inVehicleDevice.getServiceProvider());
 		String packageName = "com.kogasoftware.odt.invehicledevice";
