@@ -24,14 +24,14 @@
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="予約メモ" />
+            android:text="@string/reservation_memo" />
 
         <TextView
             style="@style/ModalView.Title"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="ユーザーメモ" />
+            android:text="@string/user_memo" />
     </LinearLayout>
 
     <LinearLayout

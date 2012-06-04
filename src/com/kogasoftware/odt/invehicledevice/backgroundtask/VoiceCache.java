@@ -127,10 +127,9 @@ public class VoiceCache {
 		openJTalk = new OpenJTalk(voiceDirectory, dictionaryDirectory,
 				libraryDirectory);
 
-		Boolean clear = false;
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(context);
-		clear = preferences.getBoolean(SharedPreferencesKey.CLEAR_VOICE_CACHE,
+		Boolean clear = preferences.getBoolean(SharedPreferencesKey.CLEAR_VOICE_CACHE,
 				false);
 		if (clear) {
 			SharedPreferences.Editor editor = preferences.edit();

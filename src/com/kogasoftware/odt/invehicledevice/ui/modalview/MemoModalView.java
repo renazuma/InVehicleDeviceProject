@@ -32,11 +32,11 @@ public class MemoModalView extends ModalView {
 	public void show(ShowEvent event) {
 		Reservation reservation = event.reservation;
 		TextView titleTextView = (TextView) findViewById(R.id.memo_title_text_view);
-		String title = "";
+		StringBuilder title = new StringBuilder();
 		for (User user : reservation.getUser().asSet()) {
-			title += user.getLastName() + " " + user.getFirstName() + " 様 ";
+			title.append(user.getLastName() + " " + user.getFirstName() + " 様 ");
 		}
-		title += "予約番号：" + reservation.getId();
+		title.append("予約番号：" + reservation.getId());
 		titleTextView.setText(title);
 		
 		TextView reservationMemoTextView = (TextView) findViewById(R.id.reservation_memo_text_view);

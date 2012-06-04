@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:text="到着しますか？" />
+        android:text="@string/does_it_arrive" />
 
     <TextView
         android:id="@+id/arrival_check_comment_text_view"
@@ -36,7 +36,7 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
-            android:text="到着する" />
+            android:text="@string/it_arrives" />
 
         <Button
             android:id="@+id/arrival_check_close_button"

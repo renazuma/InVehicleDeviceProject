@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:text="管理者から連絡があります" />
+        android:text="@string/vehicle_notification_received" />
 
     <TextView
         android:id="@+id/notification_text_view"
