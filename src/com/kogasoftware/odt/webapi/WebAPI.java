@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -109,6 +110,7 @@ public class WebAPI implements Closeable {
 	public static final Integer REQUEST_EXPIRE_DAYS = 3;
 	private static final String TAG = WebAPI.class.getSimpleName();
 	protected static final int NUM_THREADS = 3;
+	protected static final String UNIQUE_GROUP = WebAPIRequestQueue.UNIQUE_GROUP;
 
 	protected static final String PATH_PREFIX = "/in_vehicle_devices";
 	public static final String PATH_LOGIN = PATH_PREFIX + "/sign_in";
@@ -177,7 +179,7 @@ public class WebAPI implements Closeable {
 		retryParam.put("operation_record", retryOr.toJSONObject());
 
 		return put(PATH_SCHEDULES + "/" + os.getId() + "/arrival", param,
-				retryParam, callback,
+				retryParam, UNIQUE_GROUP, callback,
 				new ResponseConverter<OperationSchedule>() {
 					@Override
 					public OperationSchedule convert(byte[] rawResponse)
@@ -224,7 +226,7 @@ public class WebAPI implements Closeable {
 		retryParam.put("operation_record", retryOr.toJSONObject());
 
 		return put(PATH_SCHEDULES + "/" + os.getId() + "/departure", param,
-				retryParam, callback,
+				retryParam, UNIQUE_GROUP, callback,
 				new ResponseConverter<OperationSchedule>() {
 					@Override
 					public OperationSchedule convert(byte[] rawResponse)
@@ -335,20 +337,15 @@ public class WebAPI implements Closeable {
 		return res;
 	}
 
-	protected <T> int get(String path, WebAPICallback<T> callback,
-			ResponseConverter<T> conv, boolean retryable)
-			throws WebAPIException {
+	protected <T> int get(String path, Map<String, String> params,
+			boolean retryable, String requestGroup, WebAPICallback<T> callback,
+			ResponseConverter<T> conv) throws WebAPIException {
 		SerializableHttpGetSupplier supplier = new SerializableHttpGetSupplier(
-				getServerHost(), path, authenticationToken);
+				getServerHost(), path, params, authenticationToken);
 		WebAPIRequest<?> request = new WebAPIRequest<T>(callback, conv,
 				supplier, retryable);
-		requests.add(request);
+		requests.add(request, requestGroup);
 		return request.getReqKey();
-	}
-
-	protected <T> int get(String path, WebAPICallback<T> callback,
-			ResponseConverter<T> conv) throws WebAPIException {
-		return get(path, callback, conv, true);
 	}
 
 	public String getAuthenticationToken() {
@@ -385,14 +382,15 @@ public class WebAPI implements Closeable {
 
 		return put(PATH_SCHEDULES + "/" + operationSchedule.getId()
 				+ "/reservations/" + reservation.getId() + "/getoff", param,
-				retryParam, callback, new ResponseConverter<PassengerRecord>() {
+				retryParam, group, callback,
+				new ResponseConverter<PassengerRecord>() {
 					@Override
 					public PassengerRecord convert(byte[] rawResponse)
 							throws Exception {
 						return PassengerRecord.parse(
 								parseJSONObject(rawResponse)).orNull();
 					}
-				}, true, group);
+				});
 	}
 
 	/**
@@ -426,14 +424,15 @@ public class WebAPI implements Closeable {
 
 		return put(PATH_SCHEDULES + "/" + operationSchedule.getId()
 				+ "/reservations/" + reservation.getId() + "/geton", param,
-				retryParam, callback, new ResponseConverter<PassengerRecord>() {
+				retryParam, group, callback,
+				new ResponseConverter<PassengerRecord>() {
 					@Override
 					public PassengerRecord convert(byte[] rawResponse)
 							throws Exception {
 						return PassengerRecord.parse(
 								parseJSONObject(rawResponse)).orNull();
 					}
-				}, true, group);
+				});
 	}
 
 	/**
@@ -450,7 +449,7 @@ public class WebAPI implements Closeable {
 				reservation.getId());
 		return put(PATH_SCHEDULES + "/" + operationSchedule.getId()
 				+ "/reservations/" + reservation.getId() + "/cancel_geton",
-				new JSONObject(), new JSONObject(), callback,
+				new JSONObject(), true, group, callback,
 				new ResponseConverter<PassengerRecord>() {
 					@Override
 					public PassengerRecord convert(byte[] rawResponse)
@@ -458,7 +457,7 @@ public class WebAPI implements Closeable {
 						return PassengerRecord.parse(
 								parseJSONObject(rawResponse)).orNull();
 					}
-				}, true, group);
+				});
 	}
 
 	/**
@@ -475,7 +474,7 @@ public class WebAPI implements Closeable {
 				reservation.getId());
 		return put(PATH_SCHEDULES + "/" + operationSchedule.getId()
 				+ "/reservations/" + reservation.getId() + "/cancel_getoff",
-				new JSONObject(), new JSONObject(), callback,
+				new JSONObject(), true, group, callback,
 				new ResponseConverter<PassengerRecord>() {
 					@Override
 					public PassengerRecord convert(byte[] rawResponse)
@@ -483,7 +482,7 @@ public class WebAPI implements Closeable {
 						return PassengerRecord.parse(
 								parseJSONObject(rawResponse)).orNull();
 					}
-				}, true, group);
+				});
 	}
 
 	/**
@@ -492,7 +491,8 @@ public class WebAPI implements Closeable {
 	public int getOperationSchedules(
 			WebAPICallback<List<OperationSchedule>> callback)
 			throws WebAPIException {
-		return get(PATH_SCHEDULES, callback,
+		return get(PATH_SCHEDULES, new TreeMap<String, String>(), true,
+				UNIQUE_GROUP, callback,
 				new ResponseConverter<List<OperationSchedule>>() {
 					@Override
 					public List<OperationSchedule> convert(byte[] rawResponse)
@@ -531,7 +531,8 @@ public class WebAPI implements Closeable {
 	public int getVehicleNotifications(
 			WebAPICallback<List<VehicleNotification>> callback)
 			throws WebAPIException {
-		return get(PATH_NOTIFICATIONS, callback,
+		return get(PATH_NOTIFICATIONS, new TreeMap<String, String>(), true,
+				UNIQUE_GROUP, callback,
 				new ResponseConverter<List<VehicleNotification>>() {
 					@Override
 					public List<VehicleNotification> convert(byte[] rawResponse)
@@ -561,7 +562,7 @@ public class WebAPI implements Closeable {
 		JSONObject param = new JSONObject();
 		param.put("in_vehicle_device", ivd);
 
-		return post(PATH_LOGIN, param, param,
+		return post(PATH_LOGIN, param, false, UNIQUE_GROUP,
 				new WebAPICallback<InVehicleDevice>() {
 					@Override
 					public void onException(int reqkey, WebAPIException ex) {
@@ -592,7 +593,7 @@ public class WebAPI implements Closeable {
 						return InVehicleDevice.parse(
 								parseJSONObject(rawResponse)).orNull();
 					}
-				}, false);
+				});
 	}
 
 	protected JSONArray parseJSONArray(byte[] rawResponse) throws JSONException {
@@ -609,14 +610,15 @@ public class WebAPI implements Closeable {
 	}
 
 	protected <T> int post(String path, JSONObject param,
-			JSONObject retryParam, WebAPICallback<T> callback,
-			ResponseConverter<T> conv) throws WebAPIException {
-		return post(path, param, retryParam, callback, conv, true);
+			JSONObject retryParam, String requestGroup,
+			WebAPICallback<T> callback, ResponseConverter<T> conv)
+			throws WebAPIException {
+		return post(path, param, retryParam, true, requestGroup, callback, conv);
 	}
 
 	protected <T> int post(String path, JSONObject param,
-			JSONObject retryParam, WebAPICallback<T> callback,
-			ResponseConverter<T> conv, boolean retryable)
+			JSONObject retryParam, boolean retryable, String requestGroup,
+			WebAPICallback<T> callback, ResponseConverter<T> conv)
 			throws WebAPIException {
 		SerializableHttpPostSupplier first = new SerializableHttpPostSupplier(
 				getServerHost(), path, param, authenticationToken);
@@ -628,28 +630,21 @@ public class WebAPI implements Closeable {
 		return request.getReqKey();
 	}
 
-	protected <T> int post(String path, JSONObject param,
-			WebAPICallback<T> callback, ResponseConverter<T> conv)
-			throws WebAPIException {
-		return post(path, param, param, callback, conv, true);
+	protected <T> int post(String path, JSONObject param, boolean retryable,
+			String requestGroup, WebAPICallback<T> callback,
+			ResponseConverter<T> conv) throws WebAPIException {
+		return post(path, param, param, retryable, requestGroup, callback, conv);
 	}
 
 	protected <T> int put(String path, JSONObject param, JSONObject retryParam,
-			WebAPICallback<T> callback, ResponseConverter<T> conv)
-			throws WebAPIException {
-		return put(path, param, retryParam, callback, conv, true);
+			String requestGroup, WebAPICallback<T> callback,
+			ResponseConverter<T> conv) throws WebAPIException {
+		return put(path, param, retryParam, true, requestGroup, callback, conv);
 	}
 
 	protected <T> int put(String path, JSONObject param, JSONObject retryParam,
-			WebAPICallback<T> callback, ResponseConverter<T> conv,
-			boolean retryable) throws WebAPIException {
-		return put(path, param, retryParam, callback, conv, retryable,
-				WebAPIRequestQueue.UNIQUE_GROUP);
-	}
-
-	protected <T> int put(String path, JSONObject param, JSONObject retryParam,
-			WebAPICallback<T> callback, ResponseConverter<T> conv,
-			boolean retryable, String requestGroup) throws WebAPIException {
+			boolean retryable, String requestGroup, WebAPICallback<T> callback,
+			ResponseConverter<T> conv) throws WebAPIException {
 		SerializableHttpPutSupplier first = new SerializableHttpPutSupplier(
 				getServerHost(), path, param, authenticationToken);
 		SerializableHttpPutSupplier retry = new SerializableHttpPutSupplier(
@@ -660,10 +655,10 @@ public class WebAPI implements Closeable {
 		return request.getReqKey();
 	}
 
-	protected <T> int put(String path, JSONObject param,
-			WebAPICallback<T> callback, ResponseConverter<T> conv)
-			throws WebAPIException {
-		return put(path, param, param, callback, conv, true);
+	protected <T> int put(String path, JSONObject param, boolean retryable,
+			String requestGroup, WebAPICallback<T> callback,
+			ResponseConverter<T> conv) throws WebAPIException {
+		return put(path, param, param, retryable, requestGroup, callback, conv);
 	}
 
 	/**
@@ -674,15 +669,15 @@ public class WebAPI implements Closeable {
 			throws JSONException, WebAPIException {
 		JSONObject param = new JSONObject();
 		param.put("demand", demand.toJSONObject());
-		return post(PATH_RESERVATIONS + "/search", param, param, callback,
-				new ResponseConverter<List<ReservationCandidate>>() {
+		return post(PATH_RESERVATIONS + "/search", param, false, UNIQUE_GROUP,
+				callback, new ResponseConverter<List<ReservationCandidate>>() {
 					@Override
 					public List<ReservationCandidate> convert(byte[] rawResponse)
 							throws Exception {
 						return ReservationCandidate
 								.parseList(parseJSONArray(rawResponse));
 					}
-				}, false);
+				});
 	}
 
 	/**
@@ -693,7 +688,7 @@ public class WebAPI implements Closeable {
 			WebAPIException {
 		JSONObject param = new JSONObject();
 		param.put("reservation_candidate_id", reservationCandidate.getId());
-		return post(PATH_RESERVATIONS, param, param, callback,
+		return post(PATH_RESERVATIONS, param, false, UNIQUE_GROUP, callback,
 				new ResponseConverter<Reservation>() {
 					@Override
 					public Reservation convert(byte[] rawResponse)
@@ -701,7 +696,7 @@ public class WebAPI implements Closeable {
 						return Reservation.parse(parseJSONObject(rawResponse))
 								.orNull();
 					}
-				}, false);
+				});
 	}
 
 	/**
@@ -731,7 +726,8 @@ public class WebAPI implements Closeable {
 				filterJSONKeys(retryVn.toJSONObject(), filter));
 
 		return put(PATH_NOTIFICATIONS + "/" + vn.getId(), param, retryParam,
-				callback, new ResponseConverter<VehicleNotification>() {
+				UNIQUE_GROUP, callback,
+				new ResponseConverter<VehicleNotification>() {
 					@Override
 					public VehicleNotification convert(byte[] rawResponse)
 							throws Exception {
@@ -756,7 +752,7 @@ public class WebAPI implements Closeable {
 		param.put("service_unit_status_log", log.toJSONObject());
 		retryParam.put("service_unit_status_log", retryLog.toJSONObject());
 
-		return post(PATH_STATUSLOGS, param, retryParam, callback,
+		return post(PATH_STATUSLOGS, param, retryParam, UNIQUE_GROUP, callback,
 				new ResponseConverter<ServiceUnitStatusLog>() {
 					@Override
 					public ServiceUnitStatusLog convert(byte[] rawResponse)

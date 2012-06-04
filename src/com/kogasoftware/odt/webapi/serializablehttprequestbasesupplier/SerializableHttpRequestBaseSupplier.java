@@ -3,6 +3,7 @@ package com.kogasoftware.odt.webapi.serializablehttprequestbasesupplier;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
@@ -28,11 +29,11 @@ abstract public class SerializableHttpRequestBaseSupplier implements
 	protected final String authenticationToken;
 
 	public SerializableHttpRequestBaseSupplier(String host, String path,
-			TreeMap<String, String> params, String authenticationToken) {
+			Map<String, String> params, String authenticationToken) {
 		this.host = host;
 		this.path = path;
-		this.params = Objects.firstNonNull(params,
-				new TreeMap<String, String>());
+		this.params = new TreeMap<String, String>(Objects.firstNonNull(params,
+				new TreeMap<String, String>()));
 		this.authenticationToken = Strings.nullToEmpty(authenticationToken);
 	}
 

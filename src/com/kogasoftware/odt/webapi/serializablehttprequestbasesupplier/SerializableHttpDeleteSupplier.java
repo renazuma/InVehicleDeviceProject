@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.webapi.serializablehttprequestbasesupplier;
 
+import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.http.client.methods.HttpDelete;
@@ -18,7 +19,7 @@ public class SerializableHttpDeleteSupplier extends
 	}
 
 	public SerializableHttpDeleteSupplier(String host, String path,
-			TreeMap<String, String> params, String authenticationToken) {
+			Map<String, String> params, String authenticationToken) {
 		super(host, path, params, authenticationToken);
 	}
 
