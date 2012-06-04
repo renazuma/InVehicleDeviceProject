@@ -931,7 +931,7 @@ public class WebAPITestCase extends
 		final AtomicInteger order = new AtomicInteger(0);
 		semaphore = new Semaphore(0);
 		latch = new CountDownLatch(1);
-		int max = 10;
+		int max = 50;
 		for (int i = 0; i < max; ++i) {
 			final int fi = i;
 			if (i % 2 == 0) {
@@ -967,9 +967,9 @@ public class WebAPITestCase extends
 
 		assertFalse(semaphore.tryAcquire(20, TimeUnit.SECONDS));
 		offline = false;
-		assertTrue(latch.await(20, TimeUnit.SECONDS));
-		assertFalse(semaphore.tryAcquire(max)); // 挟み込まれたgetVehicleNotifications()が先に完了することをチェック
-		assertTrue(semaphore.tryAcquire(max, 100, TimeUnit.SECONDS));
+		assertTrue(semaphore.tryAcquire(5, 100, TimeUnit.SECONDS));
+		assertEquals(0, latch.getCount()); // 挟み込まれたgetVehicleNotifications()が先に完了していることをチェック
+		assertTrue(semaphore.tryAcquire(max - 5, 1000, TimeUnit.SECONDS));
 		assertEquals(max, order.get());
 	}
 
