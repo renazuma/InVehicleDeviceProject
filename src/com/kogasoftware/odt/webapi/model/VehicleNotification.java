@@ -14,7 +14,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class VehicleNotification extends Model {
-	private static final long serialVersionUID = 7221079311819113904L;
+	private static final long serialVersionUID = 2181150750540206367L;
 
 	public VehicleNotification() {
 	}
@@ -33,17 +33,8 @@ public class VehicleNotification extends Model {
 		setResponse(parseOptionalInteger(jsonObject, "response"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setInVehicleDevice(InVehicleDevice.parse(jsonObject, "in_vehicle_device"));
-		if (getInVehicleDevice().isPresent()) {
-			setInVehicleDeviceId(getInVehicleDevice().get().getId());
-		}
 		setOperator(Operator.parse(jsonObject, "operator"));
-		if (getOperator().isPresent()) {
-			setOperatorId(getOperator().get().getId());
-		}
 		setReservation(Reservation.parse(jsonObject, "reservation"));
-		if (getReservation().isPresent()) {
-			setReservationId(getReservation().get().getId());
-		}
 	}
 
 	public static Optional<VehicleNotification> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {

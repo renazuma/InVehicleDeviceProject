@@ -14,7 +14,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class UnitAssignment extends Model {
-	private static final long serialVersionUID = 2203710356313815201L;
+	private static final long serialVersionUID = 6869870721217155860L;
 
 	public UnitAssignment() {
 	}
@@ -31,9 +31,6 @@ public class UnitAssignment extends Model {
 		setReservationCandidates(ReservationCandidate.parseList(jsonObject, "reservation_candidates"));
 		setReservations(Reservation.parseList(jsonObject, "reservations"));
 		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
-		if (getServiceProvider().isPresent()) {
-			setServiceProviderId(getServiceProvider().get().getId());
-		}
 		setServiceUnits(ServiceUnit.parseList(jsonObject, "service_units"));
 	}
 

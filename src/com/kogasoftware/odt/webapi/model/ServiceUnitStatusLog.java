@@ -14,7 +14,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class ServiceUnitStatusLog extends Model {
-	private static final long serialVersionUID = 4519572694175730796L;
+	private static final long serialVersionUID = 5135496534149781402L;
 
 	public ServiceUnitStatusLog() {
 	}
@@ -31,9 +31,6 @@ public class ServiceUnitStatusLog extends Model {
 		setTemperature(parseOptionalInteger(jsonObject, "temperature"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setServiceUnit(ServiceUnit.parse(jsonObject, "service_unit"));
-		if (getServiceUnit().isPresent()) {
-			setServiceUnitId(getServiceUnit().get().getId());
-		}
 	}
 
 	public static Optional<ServiceUnitStatusLog> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {

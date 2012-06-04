@@ -14,7 +14,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class ServiceUnit extends Model {
-	private static final long serialVersionUID = 8448516197874819477L;
+	private static final long serialVersionUID = 2922490979421372895L;
 
 	public ServiceUnit() {
 	}
@@ -31,26 +31,11 @@ public class ServiceUnit extends Model {
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setVehicleId(parseOptionalInteger(jsonObject, "vehicle_id"));
 		setDriver(Driver.parse(jsonObject, "driver"));
-		if (getDriver().isPresent()) {
-			setDriverId(getDriver().get().getId());
-		}
 		setInVehicleDevice(InVehicleDevice.parse(jsonObject, "in_vehicle_device"));
-		if (getInVehicleDevice().isPresent()) {
-			setInVehicleDeviceId(getInVehicleDevice().get().getId());
-		}
 		setOperationRecords(OperationRecord.parseList(jsonObject, "operation_records"));
 		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
-		if (getServiceProvider().isPresent()) {
-			setServiceProviderId(getServiceProvider().get().getId());
-		}
 		setUnitAssignment(UnitAssignment.parse(jsonObject, "unit_assignment"));
-		if (getUnitAssignment().isPresent()) {
-			setUnitAssignmentId(getUnitAssignment().get().getId());
-		}
 		setVehicle(Vehicle.parse(jsonObject, "vehicle"));
-		if (getVehicle().isPresent()) {
-			setVehicleId(getVehicle().get().getId());
-		}
 	}
 
 	public static Optional<ServiceUnit> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {

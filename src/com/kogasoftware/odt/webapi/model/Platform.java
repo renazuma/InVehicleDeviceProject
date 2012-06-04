@@ -14,7 +14,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Platform extends Model {
-	private static final long serialVersionUID = 6110775933408506834L;
+	private static final long serialVersionUID = 3070458023722013773L;
 
 	public Platform() {
 	}
@@ -49,9 +49,6 @@ public class Platform extends Model {
 		setReservationsAsArrival(Reservation.parseList(jsonObject, "reservations_as_arrival"));
 		setReservationsAsDeparture(Reservation.parseList(jsonObject, "reservations_as_departure"));
 		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
-		if (getServiceProvider().isPresent()) {
-			setServiceProviderId(getServiceProvider().get().getId());
-		}
 	}
 
 	public static Optional<Platform> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {

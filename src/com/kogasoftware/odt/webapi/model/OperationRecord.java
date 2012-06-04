@@ -14,7 +14,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class OperationRecord extends Model {
-	private static final long serialVersionUID = 6439856943165817552L;
+	private static final long serialVersionUID = 3327359433670454314L;
 
 	public OperationRecord() {
 	}
@@ -30,13 +30,7 @@ public class OperationRecord extends Model {
 		setServiceUnitId(parseOptionalInteger(jsonObject, "service_unit_id"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setOperationSchedule(OperationSchedule.parse(jsonObject, "operation_schedule"));
-		if (getOperationSchedule().isPresent()) {
-			setOperationScheduleId(getOperationSchedule().get().getId());
-		}
 		setServiceUnit(ServiceUnit.parse(jsonObject, "service_unit"));
-		if (getServiceUnit().isPresent()) {
-			setServiceUnitId(getServiceUnit().get().getId());
-		}
 	}
 
 	public static Optional<OperationRecord> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {

@@ -14,7 +14,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class InVehicleDevice extends Model {
-	private static final long serialVersionUID = 9051211010065926586L;
+	private static final long serialVersionUID = 1922044890911019169L;
 
 	public InVehicleDevice() {
 	}
@@ -31,9 +31,6 @@ public class InVehicleDevice extends Model {
 		setPasswordConfirmation(parseOptionalString(jsonObject, "password_confirmation"));
 		setRememberMe(parseOptionalString(jsonObject, "remember_me"));
 		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
-		if (getServiceProvider().isPresent()) {
-			setServiceProviderId(getServiceProvider().get().getId());
-		}
 		setServiceUnits(ServiceUnit.parseList(jsonObject, "service_units"));
 		setVehicleNotifications(VehicleNotification.parseList(jsonObject, "vehicle_notifications"));
 	}

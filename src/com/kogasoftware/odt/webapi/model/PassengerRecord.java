@@ -14,7 +14,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class PassengerRecord extends Model {
-	private static final long serialVersionUID = 5541609164994013038L;
+	private static final long serialVersionUID = 7717470486958203428L;
 
 	public PassengerRecord() {
 	}
@@ -37,21 +37,9 @@ public class PassengerRecord extends Model {
 		setTimestamp(parseOptionalDate(jsonObject, "timestamp"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setArrivalOperationSchedule(OperationSchedule.parse(jsonObject, "arrival_operation_schedule"));
-		if (getArrivalOperationSchedule().isPresent()) {
-			setArrivalOperationScheduleId(getArrivalOperationSchedule().get().getId());
-		}
 		setDepartureOperationSchedule(OperationSchedule.parse(jsonObject, "departure_operation_schedule"));
-		if (getDepartureOperationSchedule().isPresent()) {
-			setDepartureOperationScheduleId(getDepartureOperationSchedule().get().getId());
-		}
 		setReservation(Reservation.parse(jsonObject, "reservation"));
-		if (getReservation().isPresent()) {
-			setReservationId(getReservation().get().getId());
-		}
 		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
-		if (getServiceProvider().isPresent()) {
-			setServiceProviderId(getServiceProvider().get().getId());
-		}
 	}
 
 	public static Optional<PassengerRecord> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {

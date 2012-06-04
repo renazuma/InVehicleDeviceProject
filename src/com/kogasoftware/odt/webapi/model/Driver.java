@@ -14,7 +14,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Driver extends Model {
-	private static final long serialVersionUID = 6951241086202488163L;
+	private static final long serialVersionUID = 6180571124595135251L;
 
 	public Driver() {
 	}
@@ -29,9 +29,6 @@ public class Driver extends Model {
 		setTelephoneNumber(parseString(jsonObject, "telephone_number"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
-		if (getServiceProvider().isPresent()) {
-			setServiceProviderId(getServiceProvider().get().getId());
-		}
 		setServiceUnits(ServiceUnit.parseList(jsonObject, "service_units"));
 	}
 

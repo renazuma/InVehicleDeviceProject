@@ -14,7 +14,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class OperationSchedule extends Model {
-	private static final long serialVersionUID = 1958768855141365188L;
+	private static final long serialVersionUID = 2056899763939785400L;
 
 	public OperationSchedule() {
 	}
@@ -31,19 +31,10 @@ public class OperationSchedule extends Model {
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setOperationRecord(OperationRecord.parse(jsonObject, "operation_record"));
 		setPlatform(Platform.parse(jsonObject, "platform"));
-		if (getPlatform().isPresent()) {
-			setPlatformId(getPlatform().get().getId());
-		}
 		setReservationsAsArrival(Reservation.parseList(jsonObject, "reservations_as_arrival"));
 		setReservationsAsDeparture(Reservation.parseList(jsonObject, "reservations_as_departure"));
 		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
-		if (getServiceProvider().isPresent()) {
-			setServiceProviderId(getServiceProvider().get().getId());
-		}
 		setUnitAssignment(UnitAssignment.parse(jsonObject, "unit_assignment"));
-		if (getUnitAssignment().isPresent()) {
-			setUnitAssignmentId(getUnitAssignment().get().getId());
-		}
 	}
 
 	public static Optional<OperationSchedule> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {

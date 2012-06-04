@@ -14,7 +14,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Reservation extends Model {
-	private static final long serialVersionUID = 2580585784611193016L;
+	private static final long serialVersionUID = 2537867150257165295L;
 
 	public Reservation() {
 	}
@@ -44,38 +44,14 @@ public class Reservation extends Model {
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setUserId(parseOptionalInteger(jsonObject, "user_id"));
 		setArrivalPlatform(Platform.parse(jsonObject, "arrival_platform"));
-		if (getArrivalPlatform().isPresent()) {
-			setArrivalPlatformId(getArrivalPlatform().get().getId());
-		}
 		setArrivalSchedule(OperationSchedule.parse(jsonObject, "arrival_schedule"));
-		if (getArrivalSchedule().isPresent()) {
-			setArrivalScheduleId(getArrivalSchedule().get().getId());
-		}
 		setDemand(Demand.parse(jsonObject, "demand"));
-		if (getDemand().isPresent()) {
-			setDemandId(getDemand().get().getId());
-		}
 		setDeparturePlatform(Platform.parse(jsonObject, "departure_platform"));
-		if (getDeparturePlatform().isPresent()) {
-			setDeparturePlatformId(getDeparturePlatform().get().getId());
-		}
 		setDepartureSchedule(OperationSchedule.parse(jsonObject, "departure_schedule"));
-		if (getDepartureSchedule().isPresent()) {
-			setDepartureScheduleId(getDepartureSchedule().get().getId());
-		}
 		setOperator(Operator.parse(jsonObject, "operator"));
-		if (getOperator().isPresent()) {
-			setOperatorId(getOperator().get().getId());
-		}
 		setPassengerRecord(PassengerRecord.parse(jsonObject, "passenger_record"));
 		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
-		if (getServiceProvider().isPresent()) {
-			setServiceProviderId(getServiceProvider().get().getId());
-		}
 		setUnitAssignment(UnitAssignment.parse(jsonObject, "unit_assignment"));
-		if (getUnitAssignment().isPresent()) {
-			setUnitAssignmentId(getUnitAssignment().get().getId());
-		}
 		setUser(User.parse(jsonObject, "user"));
 	}
 

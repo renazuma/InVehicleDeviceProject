@@ -14,7 +14,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Operator extends Model {
-	private static final long serialVersionUID = 2082683799370297596L;
+	private static final long serialVersionUID = 335699473036569927L;
 
 	public Operator() {
 	}
@@ -33,9 +33,6 @@ public class Operator extends Model {
 		setRememberMe(parseOptionalString(jsonObject, "remember_me"));
 		setReservations(Reservation.parseList(jsonObject, "reservations"));
 		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
-		if (getServiceProvider().isPresent()) {
-			setServiceProviderId(getServiceProvider().get().getId());
-		}
 	}
 
 	public static Optional<Operator> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {

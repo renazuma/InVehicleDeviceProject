@@ -14,7 +14,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Vehicle extends Model {
-	private static final long serialVersionUID = 2685416271677569846L;
+	private static final long serialVersionUID = 4788613593445889122L;
 
 	public Vehicle() {
 	}
@@ -30,9 +30,6 @@ public class Vehicle extends Model {
 		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
-		if (getServiceProvider().isPresent()) {
-			setServiceProviderId(getServiceProvider().get().getId());
-		}
 		setServiceUnits(ServiceUnit.parseList(jsonObject, "service_units"));
 	}
 

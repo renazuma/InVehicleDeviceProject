@@ -14,7 +14,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Demand extends Model {
-	private static final long serialVersionUID = 517461246843203391L;
+	private static final long serialVersionUID = 5960642347259432133L;
 
 	public Demand() {
 	}
@@ -36,27 +36,12 @@ public class Demand extends Model {
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setUserId(parseInteger(jsonObject, "user_id"));
 		setArrivalPlatform(Platform.parse(jsonObject, "arrival_platform"));
-		if (getArrivalPlatform().isPresent()) {
-			setArrivalPlatformId(getArrivalPlatform().get().getId());
-		}
 		setDeparturePlatform(Platform.parse(jsonObject, "departure_platform"));
-		if (getDeparturePlatform().isPresent()) {
-			setDeparturePlatformId(getDeparturePlatform().get().getId());
-		}
 		setReservation(Reservation.parse(jsonObject, "reservation"));
 		setReservationCandidates(ReservationCandidate.parseList(jsonObject, "reservation_candidates"));
 		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
-		if (getServiceProvider().isPresent()) {
-			setServiceProviderId(getServiceProvider().get().getId());
-		}
 		setUnitAssignment(UnitAssignment.parse(jsonObject, "unit_assignment"));
-		if (getUnitAssignment().isPresent()) {
-			setUnitAssignmentId(getUnitAssignment().get().getId());
-		}
 		setUser(User.parse(jsonObject, "user"));
-		if (getUser().isPresent()) {
-			setUserId(getUser().get().getId());
-		}
 	}
 
 	public static Optional<Demand> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
