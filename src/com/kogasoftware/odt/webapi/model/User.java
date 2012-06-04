@@ -14,7 +14,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class User extends Model {
-	private static final long serialVersionUID = 2970814859174092693L;
+	private static final long serialVersionUID = 5251465621724673472L;
 
 	public User() {
 	}
@@ -43,6 +43,7 @@ public class User extends Model {
 		setTelephoneNumber2(parseOptionalString(jsonObject, "telephone_number2"));
 		setUpdateNotification(parseOptionalBoolean(jsonObject, "update_notification"));
 		setWheelchair(parseOptionalBoolean(jsonObject, "wheelchair"));
+		setZip(parseOptionalString(jsonObject, "zip"));
 		setAuditComment(parseOptionalString(jsonObject, "audit_comment"));
 		setFullname(parseOptionalString(jsonObject, "fullname"));
 		setFullnameRuby(parseOptionalString(jsonObject, "fullname_ruby"));
@@ -114,6 +115,7 @@ public class User extends Model {
 		jsonObject.put("telephone_number2", toJSON(getTelephoneNumber2().orNull()));
 		jsonObject.put("update_notification", toJSON(getUpdateNotification().orNull()));
 		jsonObject.put("wheelchair", toJSON(getWheelchair().orNull()));
+		jsonObject.put("zip", toJSON(getZip().orNull()));
 		jsonObject.put("audit_comment", toJSON(getAuditComment().orNull()));
 		jsonObject.put("fullname", toJSON(getFullname().orNull()));
 		jsonObject.put("fullname_ruby", toJSON(getFullnameRuby().orNull()));
@@ -468,6 +470,24 @@ public class User extends Model {
 
 	public void clearWheelchair() {
 		this.wheelchair = Optional.absent();
+	}
+
+	private Optional<String> zip = Optional.absent();
+
+	public Optional<String> getZip() {
+		return wrapNull(zip);
+	}
+
+	public void setZip(Optional<String> zip) {
+		this.zip = wrapNull(zip);
+	}
+
+	public void setZip(String zip) {
+		this.zip = Optional.fromNullable(zip);
+	}
+
+	public void clearZip() {
+		this.zip = Optional.absent();
 	}
 
 	private Optional<String> auditComment = Optional.absent();
