@@ -17,6 +17,14 @@ WebAPITest::Application.routes.draw do
   resources :vehicles
   resources :service_unit_status_logs
 
+  namespace :in_vehicle_devices do
+    resources :reservations, :only => [:create] do
+      collection do
+        post 'search'
+      end
+    end
+  end
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
