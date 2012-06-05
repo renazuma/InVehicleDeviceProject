@@ -93,21 +93,21 @@
             android:layout_weight="1"
             android:orientation="horizontal" >
 
-            <jp.tomorrowkey.android.vtextviewer.VTextView
+            <TextView
                 android:id="@+id/platform_name_1_beyond_text_view"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
-            <jp.tomorrowkey.android.vtextviewer.VTextView
+            <TextView
                 android:id="@+id/platform_name_2_beyond_text_view"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
-            <jp.tomorrowkey.android.vtextviewer.VTextView
+            <TextView
                 android:id="@+id/platform_name_3_beyond_text_view"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"

@@ -4,7 +4,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-import jp.tomorrowkey.android.vtextviewer.VTextView;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -40,9 +39,9 @@ public class DrivePhaseView extends PhaseView {
 	};
 	private final TextView nextPlatformNameTextView;
 	private final TextView nextPlatformNameRubyTextView;
-	private final VTextView platformName1BeyondTextView;
-	private final VTextView platformName2BeyondTextView;
-	private final VTextView platformName3BeyondTextView;
+	private final TextView platformName1BeyondTextView;
+	private final TextView platformName2BeyondTextView;
+	private final TextView platformName3BeyondTextView;
 	private final TextView platformArrivalTimeTextView;
 	private final View driveView1;
 	private final View driveView2;
@@ -54,9 +53,9 @@ public class DrivePhaseView extends PhaseView {
 
 		nextPlatformNameTextView = (TextView) findViewById(R.id.next_platform_name_text_view);
 		nextPlatformNameRubyTextView = (TextView) findViewById(R.id.next_platform_name_ruby_text_view);
-		platformName1BeyondTextView = (VTextView) findViewById(R.id.platform_name_1_beyond_text_view);
-		platformName2BeyondTextView = (VTextView) findViewById(R.id.platform_name_2_beyond_text_view);
-		platformName3BeyondTextView = (VTextView) findViewById(R.id.platform_name_3_beyond_text_view);
+		platformName1BeyondTextView = (TextView) findViewById(R.id.platform_name_1_beyond_text_view);
+		platformName2BeyondTextView = (TextView) findViewById(R.id.platform_name_2_beyond_text_view);
+		platformName3BeyondTextView = (TextView) findViewById(R.id.platform_name_3_beyond_text_view);
 		platformArrivalTimeTextView = (TextView) findViewById(R.id.platform_arrival_time_text_view);
 		driveView1 = findViewById(R.id.drive_view1);
 		driveView2 = findViewById(R.id.drive_view2);
