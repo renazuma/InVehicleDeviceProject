@@ -1,6 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.test.integration;
 
-import jp.tomorrowkey.android.TextViewer.TextView;
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.View;
 import android.widget.TextView;
