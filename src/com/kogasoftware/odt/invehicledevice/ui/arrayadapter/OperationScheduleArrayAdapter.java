@@ -91,7 +91,7 @@ public class OperationScheduleArrayAdapter extends
 				operationSchedule)) {
 			convertView.setBackgroundColor(Color.TRANSPARENT);
 		} else {
-			convertView.setBackgroundColor(Color.GRAY);
+			convertView.setBackgroundColor(Color.LTGRAY);
 		}
 		return convertView;
 	}
