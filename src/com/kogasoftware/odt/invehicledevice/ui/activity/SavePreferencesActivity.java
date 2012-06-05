@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.ui.activity;
 
+import java.io.InvalidClassException;
 import java.io.Serializable;
 
 import org.json.JSONException;
@@ -37,8 +38,19 @@ public class SavePreferencesActivity extends Activity {
 		}
 		InVehicleDevice inVehicleDevice = new InVehicleDevice();
 
-		Serializable maybeInVehicleDevice = bundle
+		Serializable maybeInVehicleDevice = null;
+		try {
+			maybeInVehicleDevice = bundle
 				.getSerializable(SharedPreferencesKey.IN_VEHICLE_DEVICE);
+		} catch (RuntimeException e) {
+			Log.e(TAG, e.toString(), e);
+			if (e.getCause() instanceof InvalidClassException) {
+				Toast.makeText(this, "エラーが発生しました。設定アプリケーションのバージョンと車載器アプリケーションのバージョンが適合しません。", Toast.LENGTH_LONG).show();
+			} else {
+				Toast.makeText(this, "不明なエラーが発生しました。デバイスのログを参照してください。", Toast.LENGTH_LONG).show();
+			}
+			return;
+		}
 		if (maybeInVehicleDevice instanceof InVehicleDevice) {
 			inVehicleDevice = (InVehicleDevice) maybeInVehicleDevice;
 		} else {
