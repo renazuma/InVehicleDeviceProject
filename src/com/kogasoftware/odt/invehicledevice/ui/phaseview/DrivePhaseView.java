@@ -100,23 +100,30 @@ public class DrivePhaseView extends PhaseView {
 		DateFormat dateFormat = new SimpleDateFormat(getResources().getString(
 				R.string.platform_arrival_time_format));
 
-		platformName1BeyondTextView.setText(platform.getName());
 		platformArrivalTimeTextView.setText(dateFormat.format(operationSchedule
 				.getArrivalEstimate()));
 
-		platformName2BeyondTextView.setText("");
+		platformName1BeyondTextView.setText("");
 		if (operationSchedules.size() > 1) {
-			for (Platform platform2 : operationSchedules.get(1).getPlatform()
+			for (Platform platform1 : operationSchedules.get(1).getPlatform()
 					.asSet()) {
-				platformName2BeyondTextView.setText(platform2.getName());
+				platformName1BeyondTextView.setText("▼ " + platform1.getName());
+			}
+		}
+
+		platformName2BeyondTextView.setText("");
+		if (operationSchedules.size() > 2) {
+			for (Platform platform2 : operationSchedules.get(2).getPlatform()
+					.asSet()) {
+				platformName2BeyondTextView.setText("▼ " + platform2.getName());
 			}
 		}
 
 		platformName3BeyondTextView.setText("");
-		if (operationSchedules.size() > 2) {
-			for (Platform platform3 : operationSchedules.get(2).getPlatform()
+		if (operationSchedules.size() > 3) {
+			for (Platform platform3 : operationSchedules.get(3).getPlatform()
 					.asSet()) {
-				platformName3BeyondTextView.setText(platform3.getName());
+				platformName3BeyondTextView.setText("▼ " + platform3.getName());
 			}
 		}
 
