@@ -13,9 +13,9 @@ import com.kogasoftware.odt.invehicledevice.preference.R;
 public class InVehicleDevicePreferenceTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDevicePreferenceActivity> {
 
-	private static final String URL = "http://opewebstage.koko-bus.com";
-	private static final String LOGIN = "odt";
-	private static final String PASSWORD = "odt";
+	private static final String URL = "http://10.1.10.161";
+	private static final String LOGIN = "test_login";
+	private static final String PASSWORD = "test_password";
 
 	private Solo solo;
 
@@ -38,8 +38,7 @@ public class InVehicleDevicePreferenceTestCase extends
 		solo.clearEditText(0);
 		solo.enterText(0, url);
 		solo.sendKey(KeyEvent.KEYCODE_ENTER);
-		solo.clickOnButton(getInstrumentation().getTargetContext()
-				.getResources().getString(android.R.string.ok));
+		solo.sendKey(KeyEvent.KEYCODE_ENTER);
 		getInstrumentation().waitForIdleSync();
 	}
 
@@ -50,8 +49,7 @@ public class InVehicleDevicePreferenceTestCase extends
 		solo.clearEditText(0);
 		solo.enterText(0, login);
 		solo.sendKey(KeyEvent.KEYCODE_ENTER);
-		solo.clickOnButton(getInstrumentation().getTargetContext()
-				.getResources().getString(android.R.string.ok));
+		solo.sendKey(KeyEvent.KEYCODE_ENTER);
 		getInstrumentation().waitForIdleSync();
 	}
 
@@ -62,8 +60,7 @@ public class InVehicleDevicePreferenceTestCase extends
 		solo.clearEditText(0);
 		solo.enterText(0, password);
 		solo.sendKey(KeyEvent.KEYCODE_ENTER);
-		solo.clickOnButton(getInstrumentation().getTargetContext()
-				.getResources().getString(android.R.string.ok));
+		solo.sendKey(KeyEvent.KEYCODE_ENTER);
 		getInstrumentation().waitForIdleSync();
 	}
 
