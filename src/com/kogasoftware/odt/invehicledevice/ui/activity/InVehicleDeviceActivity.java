@@ -12,6 +12,8 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -208,6 +210,16 @@ public class InVehicleDeviceActivity extends Activity {
 		getWindow().addFlags(
 				WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
 						| WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
+
+		try {
+			PackageInfo packageInfo = getPackageManager().getPackageInfo(
+					getPackageName(), 0);
+			Log.i(TAG, "onCreate: versionCode=" + packageInfo.versionCode
+					+ " versionName=" + packageInfo.versionName);
+		} catch (NameNotFoundException e) {
+			Log.w(TAG, e);
+		}
+
 		setContentView(R.layout.in_vehicle_device);
 
 		contentView = findViewById(android.R.id.content);
