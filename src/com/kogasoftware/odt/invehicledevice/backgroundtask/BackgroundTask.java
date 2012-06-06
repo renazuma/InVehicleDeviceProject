@@ -119,7 +119,6 @@ public class BackgroundTask {
 	 */
 	public void loop() {
 		try {
-			Thread.sleep(0); // interruption point
 			onLoopStart();
 			Thread.sleep(0); // interruption point
 			Looper.loop();
