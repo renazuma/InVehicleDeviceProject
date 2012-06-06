@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.common.base.Objects;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.backgroundtask.VoiceThread.SpeakEvent;
@@ -20,10 +21,14 @@ import com.kogasoftware.odt.webapi.model.VehicleNotification;
 import com.kogasoftware.odt.webapi.model.VehicleNotifications;
 
 public class ScheduleChangedModalView extends ModalView {
+	private final TextView scheduleChangedTextView;
+
 	public ScheduleChangedModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		setContentView(R.layout.schedule_changed_modal_view);
 		setCloseOnClick(R.id.schedule_changed_close_button);
+
+		scheduleChangedTextView = (TextView) findViewById(R.id.schedule_changed_text_view);
 
 		Button scheduleConfirmButton = (Button) findViewById(R.id.schedule_confirm_button);
 		scheduleConfirmButton.setOnClickListener(new OnClickListener() {
@@ -35,9 +40,14 @@ public class ScheduleChangedModalView extends ModalView {
 		});
 	}
 
+	@Override
+	public void hide() {
+		super.hide();
+		scheduleChangedTextView.setText("");
+	}
+
 	@Subscribe
 	public void show(UpdatedOperationScheduleMergedEvent event) {
-		super.show();
 		final List<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();
 		getCommonLogic().getStatusAccess().read(new VoidReader() {
 			@Override
@@ -46,15 +56,20 @@ public class ScheduleChangedModalView extends ModalView {
 						.addAll(status.receivedOperationScheduleChangedVehicleNotifications);
 			}
 		});
+		if (vehicleNotifications.isEmpty()) {
+			return;
+		}
+
+		super.show();
 		getCommonLogic().postEvent(new ScheduleModalView.HideEvent());
 
-		StringBuilder message = new StringBuilder();
+		StringBuilder message = new StringBuilder(Objects.firstNonNull(
+				scheduleChangedTextView.getText(), ""));
 		for (VehicleNotification vehicleNotification : vehicleNotifications) {
 			message.append(vehicleNotification.getBody());
 			message.append('\n');
 		}
 
-		TextView scheduleChangedTextView = (TextView) findViewById(R.id.schedule_changed_text_view);
 		scheduleChangedTextView.setText(message);
 		getCommonLogic().postEvent(new SpeakEvent(message.toString()));
 
