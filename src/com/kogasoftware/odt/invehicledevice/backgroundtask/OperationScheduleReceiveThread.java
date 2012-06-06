@@ -40,10 +40,9 @@ public class OperationScheduleReceiveThread extends Thread {
 		if (!triggerVehicleNotifications.isEmpty()) {
 			commonLogic.postEvent(new UpdatedOperationScheduleAlertEvent());
 			try {
-				Thread.sleep(5000); // TODO 定数
 				commonLogic.postEvent(new SpeakEvent("運行予定が変更されました"));
+				Thread.sleep(5000); // TODO 定数
 			} catch (InterruptedException e) {
-				// 割り込み状態を有効へ戻してから以降の処理を続行する。早めに終了しておきたいため音声再生はしないでおく。
 				Thread.currentThread().interrupt();
 			}
 		}

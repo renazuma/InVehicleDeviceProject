@@ -59,14 +59,16 @@ public class NotificationModalView extends ModalView {
 			hide();
 			return;
 		}
-
-		currentVehicleNotification = vehicleNotifications.get(0);
+		VehicleNotification newVehicleNotification = vehicleNotifications
+				.get(0);
+		if (!newVehicleNotification.getId().equals(
+				currentVehicleNotification.getId())) {
+			getCommonLogic().postEvent(
+					new SpeakEvent(newVehicleNotification.getBody()));
+		}
+		currentVehicleNotification = newVehicleNotification;
 		TextView bodyTextView = (TextView) findViewById(R.id.notification_text_view);
 		bodyTextView.setText(currentVehicleNotification.getBody());
-		if (!isShown()) {
-			getCommonLogic().postEvent(
-					new SpeakEvent(currentVehicleNotification.getBody()));
-		}
 		super.show();
 	}
 
