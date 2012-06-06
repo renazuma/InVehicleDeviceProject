@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
+import com.kogasoftware.odt.invehicledevice.backgroundtask.BackgroundTask;
 import com.kogasoftware.odt.invehicledevice.logic.SharedPreferencesKey;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.WebAPIDataSource;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
@@ -32,10 +33,7 @@ public class SavePreferencesActivity extends Activity {
 		Intent intent = getIntent();
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(this);
-		Bundle bundle = intent.getExtras();
-		if (bundle == null) {
-			return;
-		}
+		Bundle bundle = Objects.firstNonNull(intent.getExtras(), new Bundle());
 		InVehicleDevice inVehicleDevice = new InVehicleDevice();
 
 		Serializable maybeInVehicleDevice = null;
@@ -86,11 +84,14 @@ public class SavePreferencesActivity extends Activity {
 		} catch (JSONException e) {
 			Log.e(TAG, "toJSONObject() failed", e);
 		}
-		editor.putBoolean(SharedPreferencesKey.EXIT_REQUIRED, true);
 		editor.putBoolean(SharedPreferencesKey.CLEAR_STATUS_BACKUP, true);
 		editor.putBoolean(SharedPreferencesKey.CLEAR_WEBAPI_BACKUP, true);
 		editor.putBoolean(SharedPreferencesKey.CLEAR_VOICE_CACHE, true);
 		editor.commit();
 		Toast.makeText(this, "設定を保存しました", Toast.LENGTH_LONG).show();
+		
+		Intent exitIntent = new Intent();
+		exitIntent.setAction(BackgroundTask.ACTION_EXIT);
+		getApplicationContext().sendBroadcast(exitIntent);
 	}
 }

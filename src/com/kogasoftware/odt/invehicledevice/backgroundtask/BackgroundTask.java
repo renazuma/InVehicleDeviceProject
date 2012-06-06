@@ -10,13 +10,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.IntentFilter;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.os.Looper;
-import android.preference.PreferenceManager;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -36,8 +35,9 @@ import com.kogasoftware.odt.invehicledevice.ui.modalview.NotificationModalView;
  * 注意: quit以外のメソッドは全て同じスレッドで実行する
  */
 public class BackgroundTask {
-	private static final String TAG = BackgroundTaskThread.class
-			.getSimpleName();
+	private static final String TAG = BackgroundTask.class.getSimpleName();
+	public static final String ACTION_EXIT = BackgroundTask.class.getName()
+			+ ".ACTION_EXIT";
 	private static final long POLLING_PERIOD_MILLIS = 30 * 1000;
 	private static final Integer NUM_THREADS = 3;
 
@@ -45,9 +45,7 @@ public class BackgroundTask {
 	private final SensorManager sensorManager;
 	private final ConnectivityManager connectivityManager;
 	private final Optional<TelephonyManager> optionalTelephonyManager;
-	private final SharedPreferences sharedPreferences;
 	private final LocationSender locationSender;
-	private final ExitRequiredPreferenceChangeListener exitRequiredPreferenceChangeListener;
 	private final TemperatureSensorEventListener temperatureSensorEventListener;
 	private final OrientationSensorEventListener orientationSensorEventListener;
 	private final CountDownLatch completeLatch = new CountDownLatch(1);
@@ -56,11 +54,13 @@ public class BackgroundTask {
 	private final VehicleNotificationReceiver vehicleNotificationReceiver;
 	private final NextDateChecker nextDateChecker;
 	private final SignalStrengthListener signalStrengthListener;
+	private final ExitBroadcastReceiver exitBroadcastReceiver;
 	private final CommonLogic commonLogic;
 	private final Thread voiceThread;
 	private final Thread operationScheduleReceiveThread;
 	private final Looper myLooper;
 	private final AtomicBoolean quitCalled = new AtomicBoolean(false);
+	private final Context applicationContext;
 
 	public BackgroundTask(CommonLogic commonLogic, Context context,
 			StatusAccess statusAccess) {
@@ -69,6 +69,7 @@ public class BackgroundTask {
 		}
 		myLooper = Looper.myLooper();
 		this.commonLogic = commonLogic;
+		applicationContext = context.getApplicationContext();
 
 		locationManager = (LocationManager) context
 				.getSystemService(Context.LOCATION_SERVICE);
@@ -95,11 +96,7 @@ public class BackgroundTask {
 			Log.w(TAG, e);
 		}
 		optionalTelephonyManager = tempTelephonyManager;
-
-		sharedPreferences = PreferenceManager
-				.getDefaultSharedPreferences(context);
-
-		exitRequiredPreferenceChangeListener = new ExitRequiredPreferenceChangeListener(
+		exitBroadcastReceiver = new ExitBroadcastReceiver(
 				commonLogic);
 		locationSender = new LocationSender(commonLogic);
 		orientationSensorEventListener = new OrientationSensorEventListener(
@@ -144,9 +141,14 @@ public class BackgroundTask {
 				operationScheduleReceiveThread, vehicleNotificationReceiver,
 				locationSender, temperatureSensorEventListener,
 				orientationSensorEventListener,
-				exitRequiredPreferenceChangeListener, signalStrengthListener, }) {
+				exitBroadcastReceiver, signalStrengthListener, }) {
 			commonLogic.registerEventListener(object);
 		}
+
+		IntentFilter intentFilter = new IntentFilter();
+		intentFilter.addAction(BackgroundTask.ACTION_EXIT);
+		applicationContext
+				.registerReceiver(exitBroadcastReceiver, intentFilter);
 
 		voiceThread.start();
 		operationScheduleReceiveThread.start();
@@ -169,10 +171,8 @@ public class BackgroundTask {
 		commonLogic.postEvent(new CommonLogicLoadCompleteEvent(commonLogic));
 		completeLatch.await();
 
-		sharedPreferences
-				.registerOnSharedPreferenceChangeListener(exitRequiredPreferenceChangeListener);
-		locationManager.requestLocationUpdates(
-				LocationManager.GPS_PROVIDER, 2000, 1, locationSender);
+		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+				2000, 1, locationSender);
 
 		List<Sensor> temperatureSensors = sensorManager
 				.getSensorList(Sensor.TYPE_TEMPERATURE);
@@ -208,11 +208,10 @@ public class BackgroundTask {
 	private void onLoopStop() {
 		voiceThread.interrupt();
 		operationScheduleReceiveThread.interrupt();
-		sharedPreferences
-				.unregisterOnSharedPreferenceChangeListener(exitRequiredPreferenceChangeListener);
 		locationManager.removeUpdates(locationSender);
 		sensorManager.unregisterListener(temperatureSensorEventListener);
 		sensorManager.unregisterListener(orientationSensorEventListener);
+		applicationContext.unregisterReceiver(exitBroadcastReceiver);
 		for (TelephonyManager telephonyManager : optionalTelephonyManager
 				.asSet()) {
 			telephonyManager.listen(signalStrengthListener,
