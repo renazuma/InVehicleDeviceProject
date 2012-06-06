@@ -42,7 +42,7 @@ public class BackgroundTaskTestCase extends
 			@Override
 			public void run() {
 				BackgroundTask bt = new BackgroundTask(cl, getInstrumentation()
-						.getContext(), sa);
+						.getTargetContext(), sa);
 				Thread.currentThread().interrupt();
 				bt.loop();
 				cdl.countDown();
@@ -61,7 +61,7 @@ public class BackgroundTaskTestCase extends
 			public void run() {
 				Thread.currentThread().interrupt();
 				BackgroundTask bt = new BackgroundTask(cl, getInstrumentation()
-						.getContext(), sa);
+						.getTargetContext(), sa);
 				bt.loop();
 				cdl.countDown();
 			}
@@ -78,7 +78,7 @@ public class BackgroundTaskTestCase extends
 			@Override
 			public void run() {
 				final BackgroundTask bt = new BackgroundTask(cl,
-						getInstrumentation().getContext(), sa);
+						getInstrumentation().getTargetContext(), sa);
 				new Thread() {
 					@Override
 					public void run() {
@@ -101,7 +101,7 @@ public class BackgroundTaskTestCase extends
 			@Override
 			public void run() {
 				final BackgroundTask bt = new BackgroundTask(cl,
-						getInstrumentation().getContext(), sa);
+						getInstrumentation().getTargetContext(), sa);
 				new Thread() {
 					@Override
 					public void run() {
@@ -124,7 +124,7 @@ public class BackgroundTaskTestCase extends
 			@Override
 			public void run() {
 				BackgroundTask bt = new BackgroundTask(cl, getInstrumentation()
-						.getContext(), sa);
+						.getTargetContext(), sa);
 				bt.quit();
 				bt.loop();
 				cdl.countDown();
