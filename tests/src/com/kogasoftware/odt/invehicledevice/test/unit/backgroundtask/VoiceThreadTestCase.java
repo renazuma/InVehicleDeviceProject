@@ -41,7 +41,7 @@ public class VoiceThreadTestCase extends EmptyActivityInstrumentationTestCase2 {
 			@Override
 			public void run() {
 				bt.set(new BackgroundTask(cl,
-						getInstrumentation().getContext(), sa));
+						getInstrumentation().getTargetContext(), sa));
 				cdl.countDown();
 				bt.get().loop();
 			}
