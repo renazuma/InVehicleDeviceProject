@@ -60,6 +60,22 @@ public class ScheduleModalViewTestCase extends
 		assertEquals(mv.getVisibility(), View.VISIBLE);
 	}
 
+	/**
+	 * HideEventを受け取ると消える
+	 */
+	public void testHideEvent() throws InterruptedException {
+		testShowEvent();
+
+		assertTrue(mv.isShown());
+		assertEquals(mv.getVisibility(), View.VISIBLE);
+
+		cl.postEvent(new ScheduleModalView.HideEvent());
+		getInstrumentation().waitForIdleSync();
+
+		assertFalse(mv.isShown());
+		assertNotSame(mv.getVisibility(), View.VISIBLE);
+	}
+
 	public void test戻るボタンを押すと消える() throws Exception {
 		testShowEvent();
 		solo.clickOnView(solo.getView(R.id.schedule_close_button));

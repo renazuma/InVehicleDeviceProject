@@ -19,6 +19,9 @@ public class ScheduleModalView extends ModalView {
 	public static class ShowEvent {
 	}
 
+	public static class HideEvent {
+	}
+
 	private final List<OperationSchedule> operationSchedules = new LinkedList<OperationSchedule>();
 
 	public ScheduleModalView(Context context, AttributeSet attrs) {
@@ -41,5 +44,10 @@ public class ScheduleModalView extends ModalView {
 				getContext(), operationSchedules, getCommonLogic());
 		operationScheduleListView.setAdapter(adapter);
 		super.show();
+	}
+
+	@Subscribe
+	public void hide(HideEvent event) {
+		hide();
 	}
 }

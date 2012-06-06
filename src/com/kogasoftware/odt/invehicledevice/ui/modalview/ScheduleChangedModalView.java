@@ -46,6 +46,7 @@ public class ScheduleChangedModalView extends ModalView {
 						.addAll(status.receivedOperationScheduleChangedVehicleNotifications);
 			}
 		});
+		getCommonLogic().postEvent(new ScheduleModalView.HideEvent());
 
 		StringBuilder message = new StringBuilder();
 		for (VehicleNotification vehicleNotification : vehicleNotifications) {
