@@ -51,13 +51,13 @@ public class InVehicleDeviceActivity extends Activity {
 	private static final int UPDATE_TIME_INTERVAL_MILLIS = 3000;
 	private static final int ALERT_SHOW_INTERVAL_MILLIS = 500;
 	private static final int UI_SHOW_DELAY_MILLIS = 500;
-	
+
 	private static final int WAIT_FOR_INITIALIZE_DIALOG_ID = 10;
 
 	private static final int PLATFORM_PHASE_COLOR = Color.rgb(0xAA, 0xAA, 0xFF);
 	private static final int FINISH_PHASE_COLOR = Color.rgb(0xAA, 0xAA, 0xAA);
 	private static final int DRIVE_PHASE_COLOR = Color.rgb(0xAA, 0xFF, 0xAA);
-	
+
 	private final Handler handler = new Handler();
 	private final CountDownLatch waitForStartUiLatch = new CountDownLatch(1);
 	private final List<View> phaseColoredViews = new LinkedList<View>();
@@ -182,7 +182,8 @@ public class InVehicleDeviceActivity extends Activity {
 		changePhaseButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				commonLogic.postEvent(new PlatformPhaseView.DepartureCheckEvent());
+				commonLogic
+						.postEvent(new PlatformPhaseView.DepartureCheckEvent());
 			}
 		});
 		changePhaseButton.setEnabled(true);
@@ -197,14 +198,16 @@ public class InVehicleDeviceActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		if (BuildConfig.DEBUG) {
 			// StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
 			// .detectAll().penaltyLog().build());
 			// StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
 			// .detectAll().penaltyLog().penaltyDeath().build());
 		}
-		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		getWindow().addFlags(
+				WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+						| WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
 		setContentView(R.layout.in_vehicle_device);
 
 		contentView = findViewById(android.R.id.content);
@@ -282,7 +285,7 @@ public class InVehicleDeviceActivity extends Activity {
 	public void onDestroy() {
 		super.onDestroy();
 		getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-		
+
 		handler.removeCallbacks(updateTime);
 		handler.removeCallbacks(alertOperationScheduleChanged);
 		handler.removeCallbacks(alertVehicleNotification);
