@@ -33,19 +33,11 @@ public class StartBroadcastReceiverTestCase extends
 	}
 
 	public void testInVehicleDeviceActivityを起動() throws Exception {
-
-		solo.sleep(2000);
 		for (Activity a : solo.getAllOpenedActivities()) {
 			assertNotSame(InVehicleDeviceActivity.class, a.getClass());
 		}
 		sbr.onReceive(getInstrumentation().getTargetContext(), new Intent());
-		solo.sleep(2000);
-		for (Activity a : solo.getAllOpenedActivities()) {
-			if (InVehicleDeviceActivity.class.equals(a.getClass())) {
-				return;
-			}
-		}
-		fail();
+		assertTrue(solo.waitForActivity(InVehicleDeviceActivity.class.getSimpleName()));
 	}
 
 	public void testすでにInVehicleDeviceActivity起動していた場合は新しいActivityを起動しない()
