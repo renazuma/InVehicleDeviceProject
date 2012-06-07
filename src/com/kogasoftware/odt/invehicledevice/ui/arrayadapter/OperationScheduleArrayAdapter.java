@@ -33,7 +33,7 @@ public class OperationScheduleArrayAdapter extends
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		DateFormat displayDateFormat = new SimpleDateFormat("H時m分");
+		DateFormat displayDateFormat = new SimpleDateFormat("HH時mm分");
 		if (convertView == null) {
 			convertView = layoutInflater.inflate(RESOURCE_ID, null);
 		}
@@ -62,21 +62,21 @@ public class OperationScheduleArrayAdapter extends
 
 		TextView getOnPassengerCountTextView = (TextView) convertView
 				.findViewById(R.id.operation_schedule_get_on_passenger_count_text_view);
-		getOnPassengerCountTextView.setText("乗車" + getOnPassengerCount + "名");
+		getOnPassengerCountTextView.setText("乗車" + String.format("%3d", getOnPassengerCount) + "名");
 		getOnPassengerCountTextView
 				.setVisibility(getOnPassengerCount.equals(0) ? View.INVISIBLE
 						: View.VISIBLE);
 
 		TextView getOffPassengerCountTextView = (TextView) convertView
 				.findViewById(R.id.operation_schedule_get_off_passenger_count_text_view);
-		getOffPassengerCountTextView.setText("降車" + getOffPassengerCount + "名");
+		getOffPassengerCountTextView.setText("降車" + String.format("%3d", getOffPassengerCount ) + "名");
 		getOffPassengerCountTextView.setVisibility(getOffPassengerCount
 				.equals(0) ? View.INVISIBLE : View.VISIBLE);
 
 		TextView arrivalEstimateTextView = (TextView) convertView
 				.findViewById(R.id.operation_schedule_arrival_estimate_text_view);
 		arrivalEstimateTextView.setText(displayDateFormat
-				.format(operationSchedule.getArrivalEstimate()) + " 到着");
+				.format(operationSchedule.getArrivalEstimate()) + " 着");
 
 		TextView departureEstimateTextView = (TextView) convertView
 				.findViewById(R.id.operation_schedule_departure_estimate_text_view);
@@ -84,7 +84,7 @@ public class OperationScheduleArrayAdapter extends
 			departureEstimateTextView.setText("");
 		} else {
 			departureEstimateTextView.setText(displayDateFormat
-					.format(operationSchedule.getDepartureEstimate()) + " 出発");
+					.format(operationSchedule.getDepartureEstimate()) + " 発");
 		}
 
 		if (commonLogic.getRemainingOperationSchedules().contains(

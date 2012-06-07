@@ -89,6 +89,7 @@ public class DrivePhaseView extends PhaseView {
 			}
 		}
 		totalPassengerCountTextView.setText(totalPassengerCount + "名乗車中");
+		
 
 		if (!operationSchedule.getPlatform().isPresent()) {
 			return; // TODO

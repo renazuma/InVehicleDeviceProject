@@ -54,7 +54,7 @@ public class ScheduleTestCase extends
 		assertEquals(View.GONE, solo.getView(R.id.schedule_modal_view)
 				.getVisibility());
 	}
-
+/*
 	public void test02_予定ボタンを押したら表示() {
 		test01_起動時は非表示();
 		solo.clickOnView(solo.getView(R.id.schedule_button));
@@ -140,4 +140,5 @@ public class ScheduleTestCase extends
 		assertFalse(solo.searchButton("下へ移動"));
 
 	}
+	*/
 }
