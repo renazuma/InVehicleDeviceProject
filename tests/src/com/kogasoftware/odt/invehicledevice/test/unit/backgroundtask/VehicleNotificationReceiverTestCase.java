@@ -2,6 +2,7 @@ package com.kogasoftware.odt.invehicledevice.test.unit.backgroundtask;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import com.kogasoftware.odt.invehicledevice.backgroundtask.VehicleNotificationReceiver;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
@@ -51,6 +52,7 @@ public class VehicleNotificationReceiverTestCase extends
 		Subscriber<VehicleNotificationReceivedEvent> s = Subscriber.of(VehicleNotificationReceivedEvent.class, cl);
 		vnr.run();
 		Thread.sleep(5000);
+		assertTrue(s.cdl.await(10, TimeUnit.SECONDS));
 		assertEquals(1, s.l.size());
 		assertEquals(vn0, s.l.get(0).vehicleNotifications.get(0));
 		assertEquals(vn1, s.l.get(0).vehicleNotifications.get(1));
