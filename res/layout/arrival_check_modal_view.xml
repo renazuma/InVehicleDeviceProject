@@ -9,7 +9,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:text="@string/does_it_arrive" />
+        android:text="@string/does_it_arrive"
+        android:textSize="36sp" />
 
     <TextView
         android:id="@+id/arrival_check_comment_text_view"
@@ -21,7 +22,8 @@
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/arrival_check_modal_title_text_view"
         android:layout_margin="5dip"
-        android:background="@drawable/border" />
+        android:background="@drawable/border"
+        android:textSize="36sp" />
 
     <LinearLayout
         android:id="@+id/arrival_check_modal_buttons"
@@ -36,7 +38,8 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
-            android:text="@string/it_arrives" />
+            android:text="@string/it_arrives"
+            android:textSize="24sp" />
 
         <Button
             android:id="@+id/arrival_check_close_button"
@@ -44,7 +47,8 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
-            android:text="@string/cancel" />
-    </LinearLayout>
+            android:text="@string/cancel"
+            android:textSize="24sp" />
+        </LinearLayout>
 
 </RelativeLayout>

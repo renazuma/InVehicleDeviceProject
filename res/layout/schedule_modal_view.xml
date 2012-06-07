@@ -14,6 +14,7 @@
         style="@style/ModalView.Button"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:textSize="24sp"
         android:text="@string/it_returns" />
 
 </LinearLayout>

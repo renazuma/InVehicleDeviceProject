@@ -67,6 +67,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
+        android:textSize="24sp"
         android:text="@string/it_closes" />
 
 </RelativeLayout>
