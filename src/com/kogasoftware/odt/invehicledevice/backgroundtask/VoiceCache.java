@@ -192,4 +192,8 @@ public class VoiceCache {
 			throw new ExecutionException(e);
 		}
 	}
+
+	public File getIfPresent(String voice) {
+		return cache.getIfPresent(voice);
+	}
 }

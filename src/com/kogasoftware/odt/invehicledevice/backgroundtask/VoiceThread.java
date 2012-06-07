@@ -31,29 +31,11 @@ public class VoiceThread extends Thread {
 		}
 	}
 
-	private static class VoiceEntry {
-		private final String string;
-		private final File file;
-
-		public VoiceEntry(String string, File file) {
-			this.string = string;
-			this.file = file;
-		}
-
-		public String getString() {
-			return string;
-		}
-
-		public File getFile() {
-			return file;
-		}
-	}
-
 	private static final String TAG = VoiceThread.class.getSimpleName();
 	private static final Integer MAX_CACHE_BYTES = 100 * 1024 * 1024;
 	private static final Integer MAX_MESSAGE_LENGTH = 200;
 	private final BlockingQueue<String> voices = new LinkedBlockingQueue<String>();
-	private final BlockingQueue<VoiceEntry> voiceEntries = new LinkedBlockingQueue<VoiceEntry>();
+	private final BlockingQueue<String> preparedVoices = new LinkedBlockingQueue<String>();
 	private final Context context;
 	private volatile CountDownLatch speakableLatch = new CountDownLatch(0); // 参照書き換え可能な状態で複数スレッドから読まれるためvolatileをつける
 
@@ -104,9 +86,8 @@ public class VoiceThread extends Thread {
 				public void run() {
 					try {
 						while (true) {
-							VoiceEntry voiceEntry = voiceEntries.take();
-							speak(voiceCache, voiceEntry.getString(),
-									voiceEntry.getFile());
+							String voice = preparedVoices.take();
+							speak(voiceCache, voice);
 						}
 					} catch (InterruptedException e) {
 					}
@@ -139,16 +120,24 @@ public class VoiceThread extends Thread {
 	private void synthesis(final VoiceCache voiceCache, final String voice)
 			throws InterruptedException {
 		try {
-			voiceEntries.add(new VoiceEntry(voice, voiceCache.get(voice)));
+			voiceCache.get(voice);
 		} catch (ExecutionException e) {
 			Log.w(TAG, "voice=" + voice, e);
 			voiceCache.invalidate(voice);
+			return;
 		}
+		preparedVoices.add(voice);
 	}
 
-	private void speak(final VoiceCache voiceCache, final String voiceString,
-			final File voiceFile) throws InterruptedException {
+	private void speak(final VoiceCache voiceCache, final String voice)
+			throws InterruptedException {
 		speakableLatch.await();
+		
+		final File voiceFile = voiceCache.getIfPresent(voice);
+		if (voiceFile == null) {
+			Log.w(TAG, "voice=\"" + voice + "\" is not present");
+			return;
+		}
 
 		final Semaphore semaphore = new Semaphore(0);
 		MediaPlayer mediaPlayer = new MediaPlayer();
@@ -162,8 +151,8 @@ public class VoiceThread extends Thread {
 			@Override
 			public boolean onError(MediaPlayer mp, int what, int extra) {
 				Log.w(TAG, "onError(" + mp + ", " + what + ", " + extra
-						+ ") voice=\"" + voiceString + "\" at " + voiceFile);
-				voiceCache.invalidate(voiceString);
+						+ ") voice=\"" + voice + "\" at " + voiceFile);
+				voiceCache.invalidate(voice);
 				semaphore.release();
 				return false;
 			}
@@ -175,8 +164,8 @@ public class VoiceThread extends Thread {
 			mediaPlayer.start();
 			semaphore.acquire();
 		} catch (IOException e) {
-			Log.w(TAG, "voice=" + voiceString, e);
-			voiceCache.invalidate(voiceString);
+			Log.w(TAG, "voice=" + voice, e);
+			voiceCache.invalidate(voice);
 		} finally {
 			mediaPlayer.release();
 		}
