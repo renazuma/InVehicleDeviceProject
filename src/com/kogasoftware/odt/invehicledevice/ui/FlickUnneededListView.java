@@ -1,6 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.ui;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,8 @@ public class FlickUnneededListView extends FrameLayout {
 	protected final ListView listView;
 	protected final Button scrollUpButton;
 	protected final Button scrollDownButton;
+	protected final Integer DISABLED_TEXT_COLOR = Color.GRAY;
+	protected final Integer ENABLED_TEXT_COLOR = Color.BLACK;
 
 	public FlickUnneededListView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -39,7 +42,8 @@ public class FlickUnneededListView extends FrameLayout {
 					scrollUpButtonEnabled = true;
 				} else {
 					View firstVisibleView = listView.getChildAt(0);
-					if (firstVisibleView != null && firstVisibleView.getTop() < 0) {
+					if (firstVisibleView != null
+							&& firstVisibleView.getTop() < 0) {
 						scrollUpButtonEnabled = true;
 					}
 				}
@@ -48,12 +52,21 @@ public class FlickUnneededListView extends FrameLayout {
 				if (lastVisibleItem < listView.getCount() - 1) {
 					scrollDownButtonEnabled = true;
 				} else {
-					View lastVisibleView = listView.getChildAt(listView.getChildCount() - 1);
-					if (lastVisibleView != null && lastVisibleView.getBottom() > listView.getHeight()) {
+					View lastVisibleView = listView.getChildAt(listView
+							.getChildCount() - 1);
+					if (lastVisibleView != null
+							&& lastVisibleView.getBottom() > listView
+									.getHeight()) {
 						scrollDownButtonEnabled = true;
 					}
 				}
-				
+
+				scrollUpButton
+						.setTextColor(scrollUpButtonEnabled ? ENABLED_TEXT_COLOR
+								: DISABLED_TEXT_COLOR);
+				scrollDownButton
+						.setTextColor(scrollDownButtonEnabled ? ENABLED_TEXT_COLOR
+								: DISABLED_TEXT_COLOR);
 				scrollUpButton.setEnabled(scrollUpButtonEnabled);
 				scrollDownButton.setEnabled(scrollDownButtonEnabled);
 			}
