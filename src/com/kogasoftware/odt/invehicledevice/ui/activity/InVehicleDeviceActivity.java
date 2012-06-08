@@ -93,23 +93,6 @@ public class InVehicleDeviceActivity extends Activity {
 		}
 	};
 
-	private final Runnable alertOperationScheduleChanged = new Runnable() {
-		private Integer count = 0;
-
-		@Override
-		public void run() {
-			if (count > 10) { // TODO 定数
-				count = 0;
-				alertImageView.setVisibility(View.GONE);
-				return;
-			}
-			count++;
-			alertImageView.setVisibility(count % 2 == 0 ? View.VISIBLE
-					: View.GONE);
-			handler.postDelayed(this, ALERT_SHOW_INTERVAL_MILLIS);
-		}
-	};
-
 	public static class ResumedEvent {
 	}
 
@@ -304,7 +287,6 @@ public class InVehicleDeviceActivity extends Activity {
 		getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
 		handler.removeCallbacks(updateTime);
-		handler.removeCallbacks(alertOperationScheduleChanged);
 		handler.removeCallbacks(alertVehicleNotification);
 
 		commonLogic.dispose();
@@ -348,7 +330,7 @@ public class InVehicleDeviceActivity extends Activity {
 	public void startAlertOperationScheduleChanged(
 			UpdatedOperationScheduleAlertEvent e) {
 		if (!isFinishing()) {
-			handler.post(alertOperationScheduleChanged);
+			handler.post(alertVehicleNotification);
 		}
 	}
 

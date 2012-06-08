@@ -24,12 +24,13 @@ public class VoiceThread extends Thread {
 	private static final String TAG = VoiceThread.class.getSimpleName();
 	private static final Integer MAX_CACHE_BYTES = 100 * 1024 * 1024;
 	private static final Integer MAX_MESSAGE_LENGTH = 200;
-	private final BlockingQueue<String> voices = new LinkedBlockingQueue<String>();
+	private final BlockingQueue<String> voices;
 	private final BlockingQueue<String> preparedVoices = new LinkedBlockingQueue<String>();
 	private final Context context;
 
 	public VoiceThread(Context context, BlockingQueue<String> voices) {
 		this.context = context;
+		this.voices = voices;
 	}
 
 	public static List<String> split(String message, Integer maxLength) {
@@ -57,12 +58,6 @@ public class VoiceThread extends Thread {
 		return result;
 	}
 
-	public void enqueue(String message) {
-		for (String splitted : split(message, MAX_MESSAGE_LENGTH)) {
-			voices.add(splitted);
-		}
-	}
-
 	@Override
 	public void run() {
 		Thread speakThread = new EmptyThread();
@@ -84,7 +79,9 @@ public class VoiceThread extends Thread {
 			speakThread.start();
 			while (true) {
 				String voice = voices.take();
-				synthesis(voiceCache, voice);
+				for (String splitted : split(voice, MAX_MESSAGE_LENGTH)) {
+					synthesis(voiceCache, splitted);
+				}
 			}
 		} catch (IOException e) {
 			Log.e(TAG, "IOException", e);
@@ -143,12 +140,6 @@ public class VoiceThread extends Thread {
 			voiceCache.invalidate(voice);
 		} finally {
 			mediaPlayer.release();
-		}
-	}
-
-	public void enqueue(List<? extends CharSequence> messages) {
-		for (CharSequence message : messages) {
-			enqueue(message.toString());
 		}
 	}
 }

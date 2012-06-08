@@ -91,14 +91,12 @@ public class EmptyDataSource implements DataSource {
 	@Override
 	public int searchReservationCandidate(Demand demand,
 			WebAPICallback<List<ReservationCandidate>> callback) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public int createReservation(ReservationCandidate reservationCandidate,
 			WebAPICallback<Reservation> callback) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 

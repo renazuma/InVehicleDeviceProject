@@ -88,17 +88,13 @@ public class StatusAccess {
 		void write(Status status);
 	}
 
-	private static final AtomicBoolean willClearStatusFile = new AtomicBoolean(
+	private static final AtomicBoolean WILL_CLEAR_SAVED_FILE = new AtomicBoolean(
 			false);
 
 	private static final String TAG = StatusAccess.class.getSimpleName();
 
 	public static void clearSavedFile() {
-		willClearStatusFile.set(true);
-	}
-
-	private static Status newStatusInstance() {
-		return new Status();
+		WILL_CLEAR_SAVED_FILE.set(true);
 	}
 
 	/**
@@ -109,45 +105,39 @@ public class StatusAccess {
 	 * CLEAR_REQUIRED_SHARED_PREFERENCE_KEYにより新しいオブジェクトが作られた場合、
 	 * CLEAR_REQUIRED_SHARED_PREFERENCE_KEYはfalseに設定する
 	 */
-	private static Status newStatusInstance(Context context) {
-		Boolean isClear = willClearStatusFile.getAndSet(false);
+	private static Status newStatusInstanceFromFile(Context context) {
+		Boolean isClear = WILL_CLEAR_SAVED_FILE.getAndSet(false);
 		Status status = new Status();
 		File file = new File(context.getFilesDir() + File.separator
 				+ Status.class.getCanonicalName() + ".serialized");
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(context);
-		if (isClear) {
-			synchronized (FILE_ACCESS_LOCK) {
-				if (!file.delete()) {
-					Log.e(TAG, "!\"" + file + "\".delete()");
-				}
-			}
-		} else if (preferences.getBoolean(
-				SharedPreferencesKey.CLEAR_STATUS_BACKUP, false)) {
-			synchronized (FILE_ACCESS_LOCK) {
-				if (!file.delete()) {
-					Log.e(TAG, "!\"" + file + "\".delete()");
-				}
-			}
+		if (preferences.getBoolean(SharedPreferencesKey.CLEAR_STATUS_BACKUP,
+				false)) {
+			isClear = true;
 			preferences
 					.edit()
 					.putBoolean(SharedPreferencesKey.CLEAR_STATUS_BACKUP, false)
 					.commit();
-		} else if (!file.exists()) {
+		}
+
+		if (!file.exists()) {
 			Log.i(TAG, "\"" + file + "\" not found");
+		} else if (isClear) {
+			if (!file.delete()) {
+				Log.e(TAG, "!\"" + file + "\".delete()");
+			}
 		} else {
-			synchronized (FILE_ACCESS_LOCK) {
-				try {
-					Object object = SerializationUtils
-							.deserialize(new FileInputStream(file));
-					if (object instanceof Status) {
-						status = (Status) object;
-					}
-				} catch (SerializationException e) {
-					Log.e(TAG, e.toString(), e);
-				} catch (IOException e) {
-					Log.w(TAG, e);
+			try {
+				Object object = SerializationUtils
+						.deserialize(new FileInputStream(file));
+				if (object instanceof Status) {
+					status = (Status) object;
 				}
+			} catch (SerializationException e) {
+				Log.e(TAG, e.toString(), e);
+			} catch (IOException e) {
+				Log.w(TAG, e);
 			}
 
 			Calendar now = Calendar.getInstance();
@@ -161,6 +151,7 @@ public class StatusAccess {
 				status.operationScheduleInitializedSign.drainPermits();
 			}
 		}
+
 		status.file = file;
 		status.token = preferences.getString(
 				SharedPreferencesKey.SERVER_IN_VEHICLE_DEVICE_TOKEN, "");
@@ -171,9 +162,9 @@ public class StatusAccess {
 					preferences.getString(
 							SharedPreferencesKey.SERVICE_PROVIDER, "{}")));
 		} catch (JSONException e) {
-			Log.e(TAG, "parse JSON failed", e);
+			Log.w(TAG, e);
 		} catch (ParseException e) {
-			Log.e(TAG, "parse JSON failed", e);
+			Log.w(TAG, e);
 		}
 		try {
 			status.serviceProvider = new ServiceProvider(new JSONObject(
@@ -198,11 +189,13 @@ public class StatusAccess {
 	 * 空のStatusを生成する。
 	 */
 	public StatusAccess() {
-		status = newStatusInstance();
+		status = new Status();
 	}
 
 	public StatusAccess(Context context) {
-		status = newStatusInstance(context);
+		synchronized (FILE_ACCESS_LOCK) {
+			status = newStatusInstanceFromFile(context);
+		}
 	}
 
 	public ReadOnlyStatusAccess getReadOnlyStatusAccess() {

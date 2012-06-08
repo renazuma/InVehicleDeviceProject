@@ -48,7 +48,7 @@ public class BackgroundTaskThread extends Thread {
 				statusAccess);
 		try {
 			BackgroundTask backgroundTask = new BackgroundTask(commonLogic,
-					activity, statusAccess);
+					activity);
 			synchronized (backgroundTaskQuitLock) {
 				optionalBackgroundTask = Optional.of(backgroundTask);
 			}

@@ -53,8 +53,8 @@ public class LocationSenderTestCase extends
 		Thread t = new Thread() {
 			@Override
 			public void run() {
-				bt.set(new BackgroundTask(cl,
-						getInstrumentation().getTargetContext(), sa));
+				bt.set(new BackgroundTask(cl, getInstrumentation()
+						.getTargetContext()));
 				cdl.countDown();
 				bt.get().loop();
 			}
@@ -111,8 +111,8 @@ public class LocationSenderTestCase extends
 							Criteria.POWER_LOW, Criteria.ACCURACY_FINE);
 					locationManager.setTestProviderEnabled(provider, true);
 					try {
-						locationManager.requestLocationUpdates(
-								provider, 0, 0, ls);
+						locationManager.requestLocationUpdates(provider, 0, 0,
+								ls);
 						Location l = new Location(provider);
 						l.setLatitude(lat);
 						l.setLongitude(lon);

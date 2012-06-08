@@ -97,8 +97,7 @@ public class VoiceCache {
 		cache = CacheBuilder.newBuilder().weigher(new Weigher<String, File>() {
 			@Override
 			public int weigh(String voice, File file) {
-				long length = file.length();
-				return (int) length;
+				return (int) file.length();
 			}
 		}).removalListener(new RemovalListener<String, File>() {
 			@Override
@@ -129,8 +128,8 @@ public class VoiceCache {
 
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(context);
-		Boolean clear = preferences.getBoolean(SharedPreferencesKey.CLEAR_VOICE_CACHE,
-				false);
+		Boolean clear = preferences.getBoolean(
+				SharedPreferencesKey.CLEAR_VOICE_CACHE, false);
 		if (clear) {
 			SharedPreferences.Editor editor = preferences.edit();
 			editor.putBoolean(SharedPreferencesKey.CLEAR_VOICE_CACHE, false);

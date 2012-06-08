@@ -129,16 +129,19 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		View view = convertView != null ? convertView : layoutInflater.inflate(
-				RESOURCE_ID, null);
+		if (convertView == null) {
+			convertView = layoutInflater.inflate(RESOURCE_ID, null);
+		}
+
 		final Reservation reservation = getItem(position);
-		TextView passengerCountTextView = (TextView) view
+		TextView passengerCountTextView = (TextView) convertView
 				.findViewById(R.id.passenger_count_text_view);
 		passengerCountTextView.setText(reservation.getPassengerCount() + "名");
 
 		// メモボタン
-		Button memoButton = (Button) view.findViewById(R.id.memo_button);
-		if (reservation.getMemo().isPresent() || !Users.getMemo(reservation).isEmpty()) {
+		Button memoButton = (Button) convertView.findViewById(R.id.memo_button);
+		if (reservation.getMemo().isPresent()
+				|| !Users.getMemo(reservation).isEmpty()) {
 			memoButton.setVisibility(View.VISIBLE);
 			memoButton.setOnClickListener(new OnClickListener() {
 				@Override
@@ -152,7 +155,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		}
 
 		// 行の表示
-		view.setOnClickListener(new OnClickListener() {
+		convertView.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				if (isSelected(reservation)) {
@@ -163,7 +166,8 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 				notifyDataSetChanged();
 			}
 		});
-		TextView userNameView = (TextView) view.findViewById(R.id.user_name);
+		TextView userNameView = (TextView) convertView
+				.findViewById(R.id.user_name);
 		if (reservation.getUser().isPresent()) {
 			User user = reservation.getUser().get();
 			userNameView.setText(user.getLastName() + " " + user.getFirstName()
@@ -188,16 +192,16 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		}
 
 		text += " 予約番号 " + reservation.getId();
-		TextView reservationIdView = (TextView) view
+		TextView reservationIdView = (TextView) convertView
 				.findViewById(R.id.reservation_id);
 		reservationIdView.setText(text);
 
 		if (isSelected(reservation)) {
-			view.setBackgroundColor(Color.CYAN); // TODO テーマ
+			convertView.setBackgroundColor(Color.CYAN); // TODO テーマ
 		} else {
-			view.setBackgroundColor(Color.TRANSPARENT);
+			convertView.setBackgroundColor(Color.TRANSPARENT);
 		}
-		return view;
+		return convertView;
 	}
 
 	public void hide(ItemType itemType) {
@@ -212,11 +216,11 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		if (remainingOperationSchedules.size() <= 1) {
 			return false;
 		}
-		for (OperationSchedule operationSchedule : remainingOperationSchedules
+		for (OperationSchedule remainingOperationSchedule : remainingOperationSchedules
 				.subList(1, remainingOperationSchedules.size())) {
 			if (reservation.getDepartureScheduleId().isPresent()
 					&& reservation.getDepartureScheduleId().get()
-							.equals(operationSchedule.getId())) {
+							.equals(remainingOperationSchedule.getId())) {
 				return true;
 			}
 		}
@@ -268,10 +272,10 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 			return false;
 		}
 		// 現在以降で乗車予定の場合はfalse
-		for (OperationSchedule operationSchedule : remainingOperationSchedules) {
+		for (OperationSchedule remainingOperationSchedule : remainingOperationSchedules) {
 			if (reservation.getDepartureScheduleId().isPresent()
 					&& reservation.getDepartureScheduleId().get()
-							.equals(operationSchedule.getId())) {
+							.equals(remainingOperationSchedule.getId())) {
 				return false;
 			}
 		}

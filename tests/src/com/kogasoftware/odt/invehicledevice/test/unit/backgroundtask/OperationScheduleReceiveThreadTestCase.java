@@ -7,7 +7,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -50,6 +49,7 @@ public class OperationScheduleReceiveThreadTestCase extends
 	public void xtest初回のOperationSchedule受信成功ではUpdatedOperationScheduleReceivedEvent送出しない()
 			throws Exception {
 		class TestDataSource extends DummyDataSource {
+			@Override
 			public List<OperationSchedule> getOperationSchedules()
 					throws WebAPIException {
 				List<OperationSchedule> l = new LinkedList<OperationSchedule>();
@@ -117,6 +117,7 @@ public class OperationScheduleReceiveThreadTestCase extends
 			throws Exception {
 		final AtomicInteger seq = new AtomicInteger(0);
 		class TestDataSource extends DummyDataSource {
+			@Override
 			public List<OperationSchedule> getOperationSchedules()
 					throws WebAPIException {
 				seq.addAndGet(1);
@@ -141,6 +142,7 @@ public class OperationScheduleReceiveThreadTestCase extends
 		final AtomicInteger seq = new AtomicInteger(0);
 
 		class TestDataSource extends DummyDataSource {
+			@Override
 			public List<OperationSchedule> getOperationSchedules()
 					throws WebAPIException {
 				seq.addAndGet(1);
@@ -165,6 +167,7 @@ public class OperationScheduleReceiveThreadTestCase extends
 			throws Exception {
 		final AtomicInteger seq = new AtomicInteger(0);
 		class TestDataSource extends DummyDataSource {
+			@Override
 			public List<OperationSchedule> getOperationSchedules()
 					throws WebAPIException {
 				seq.addAndGet(1);

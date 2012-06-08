@@ -147,6 +147,7 @@ public class UiEventBusTestCase extends EmptyActivityInstrumentationTestCase2 {
 
 		@UiEventBus.HighPriority
 		class HighTest1 {
+			@SuppressWarnings("unused")
 			@Subscribe
 			public void test(Object object) {
 				ai.compareAndSet(0, 1);
@@ -166,6 +167,7 @@ public class UiEventBusTestCase extends EmptyActivityInstrumentationTestCase2 {
 
 		@UiEventBus.HighPriority
 		class HighTest3 {
+			@SuppressWarnings("unused")
 			@Subscribe
 			public void test(Object object) {
 				ai.compareAndSet(0, 3);

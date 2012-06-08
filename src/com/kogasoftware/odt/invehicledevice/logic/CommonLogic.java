@@ -28,6 +28,7 @@ import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.ReadOnlyStatusAcc
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Reader;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSourceFactory;
+import com.kogasoftware.odt.invehicledevice.logic.datasource.EmptyDataSource;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.WebAPIDataSource;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterDrivePhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterFinishPhaseEvent;
@@ -92,7 +93,7 @@ public class CommonLogic {
 
 	private final DataSource dataSource;
 	private final UiEventBus eventBus;
-	private final ReadOnlyStatusAccess statusAccess;
+	private final ReadOnlyStatusAccess readOnlyStatusAccess;
 	private final CommonEventProcessor commonEventProcessor;
 	private final VehicleNotificationEventProcessor vehicleNotificationEventProcessor;
 
@@ -100,14 +101,13 @@ public class CommonLogic {
 	 * Nullオブジェクトパターン用のコンストラクタ
 	 */
 	public CommonLogic() {
-		StatusAccess writableStatusAccess = new StatusAccess();
-		this.statusAccess = writableStatusAccess.getReadOnlyStatusAccess();
-		dataSource = DataSourceFactory.newInstance();
+		StatusAccess statusAccess = new StatusAccess();
+		readOnlyStatusAccess = statusAccess.getReadOnlyStatusAccess();
+		dataSource = new EmptyDataSource();
 		eventBus = new UiEventBus();
-		commonEventProcessor = new CommonEventProcessor(this, writableStatusAccess);
+		commonEventProcessor = new CommonEventProcessor(this, statusAccess);
 		vehicleNotificationEventProcessor = new VehicleNotificationEventProcessor(
-				this, writableStatusAccess);
-
+				this, statusAccess);
 		dispose();
 	}
 
@@ -119,7 +119,7 @@ public class CommonLogic {
 		commonEventProcessor = new CommonEventProcessor(this, statusAccess);
 		vehicleNotificationEventProcessor = new VehicleNotificationEventProcessor(
 				this, statusAccess);
-		this.statusAccess = statusAccess.getReadOnlyStatusAccess();
+		readOnlyStatusAccess = statusAccess.getReadOnlyStatusAccess();
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(activity);
 		String url = preferences.getString(SharedPreferencesKey.SERVER_URL,
@@ -148,10 +148,10 @@ public class CommonLogic {
 		for (Integer resourceId : new Integer[] {
 				R.id.departure_check_modal_view, R.id.schedule_modal_view,
 				R.id.memo_modal_view, R.id.arrival_check_modal_view,
-				R.id.notification_modal_view,
-				R.id.schedule_changed_modal_view, R.id.navigation_modal_view,
-				R.id.phase_text_view, R.id.drive_phase_view,
-				R.id.platform_phase_view, R.id.finish_phase_view }) {
+				R.id.notification_modal_view, R.id.schedule_changed_modal_view,
+				R.id.navigation_modal_view, R.id.phase_text_view,
+				R.id.drive_phase_view, R.id.platform_phase_view,
+				R.id.finish_phase_view }) {
 			View view = activity.findViewById(resourceId);
 			if (view != null) {
 				eventBus.register(view);
@@ -163,23 +163,28 @@ public class CommonLogic {
 		return eventBus.countRegisteredClass(c);
 	}
 
-	public void dispose() {
+	/**
+	 * コンストラクタから呼び出されることもあるため、finalメソッドとする
+	 */
+	public final void dispose() {
 		Closeables.closeQuietly(dataSource);
 		eventBus.dispose();
 	}
 
 	public Optional<OperationSchedule> getCurrentOperationSchedule() {
-		return statusAccess.read(new Reader<Optional<OperationSchedule>>() {
-			@Override
-			public Optional<OperationSchedule> read(Status status) {
-				if (status.remainingOperationSchedules.isEmpty()) {
-					return Optional.absent();
-				} else {
-					return Optional.of(status.remainingOperationSchedules
-							.get(0));
-				}
-			}
-		});
+		return readOnlyStatusAccess
+				.read(new Reader<Optional<OperationSchedule>>() {
+					@Override
+					public Optional<OperationSchedule> read(Status status) {
+						if (status.remainingOperationSchedules.isEmpty()) {
+							return Optional.absent();
+						} else {
+							return Optional
+									.of(status.remainingOperationSchedules
+											.get(0));
+						}
+					}
+				});
 	}
 
 	public DataSource getDataSource() {
@@ -187,7 +192,7 @@ public class CommonLogic {
 	}
 
 	public List<OperationSchedule> getFinishedOperationSchedules() {
-		return statusAccess.read(new Reader<List<OperationSchedule>>() {
+		return readOnlyStatusAccess.read(new Reader<List<OperationSchedule>>() {
 			@Override
 			public List<OperationSchedule> read(Status status) {
 				return new LinkedList<OperationSchedule>(
@@ -201,7 +206,7 @@ public class CommonLogic {
 	}
 
 	public Phase getPhase() {
-		return statusAccess.read(new Reader<Phase>() {
+		return readOnlyStatusAccess.read(new Reader<Phase>() {
 			@Override
 			public Phase read(Status status) {
 				return status.phase;
@@ -210,17 +215,18 @@ public class CommonLogic {
 	}
 
 	public List<VehicleNotification> getReceivingOperationScheduleChangedVehicleNotifications() {
-		return statusAccess.read(new Reader<List<VehicleNotification>>() {
-			@Override
-			public List<VehicleNotification> read(Status status) {
-				return new LinkedList<VehicleNotification>(
-						status.receivingOperationScheduleChangedVehicleNotifications);
-			}
-		});
+		return readOnlyStatusAccess
+				.read(new Reader<List<VehicleNotification>>() {
+					@Override
+					public List<VehicleNotification> read(Status status) {
+						return new LinkedList<VehicleNotification>(
+								status.receivingOperationScheduleChangedVehicleNotifications);
+					}
+				});
 	}
 
 	public List<OperationSchedule> getRemainingOperationSchedules() {
-		return statusAccess.read(new Reader<List<OperationSchedule>>() {
+		return readOnlyStatusAccess.read(new Reader<List<OperationSchedule>>() {
 			@Override
 			public List<OperationSchedule> read(Status status) {
 				return new LinkedList<OperationSchedule>(
@@ -230,7 +236,7 @@ public class CommonLogic {
 	}
 
 	public List<Reservation> getReservations() {
-		return statusAccess.read(new Reader<List<Reservation>>() {
+		return readOnlyStatusAccess.read(new Reader<List<Reservation>>() {
 			@Override
 			public List<Reservation> read(Status status) {
 				return new LinkedList<Reservation>(status.reservations);
@@ -239,7 +245,7 @@ public class CommonLogic {
 	}
 
 	public ServiceUnitStatusLog getServiceUnitStatusLog() {
-		return statusAccess.read(new Reader<ServiceUnitStatusLog>() {
+		return readOnlyStatusAccess.read(new Reader<ServiceUnitStatusLog>() {
 			@Override
 			public ServiceUnitStatusLog read(Status status) {
 				return status.serviceUnitStatusLog;
@@ -248,11 +254,11 @@ public class CommonLogic {
 	}
 
 	public ReadOnlyStatusAccess getStatusAccess() {
-		return statusAccess;
+		return readOnlyStatusAccess;
 	}
 
 	public String getToken() {
-		return statusAccess.read(new Reader<String>() {
+		return readOnlyStatusAccess.read(new Reader<String>() {
 			@Override
 			public String read(Status status) {
 				return status.token;
@@ -261,17 +267,18 @@ public class CommonLogic {
 	}
 
 	public List<VehicleNotification> getVehicleNotifications() {
-		return statusAccess.read(new Reader<List<VehicleNotification>>() {
-			@Override
-			public List<VehicleNotification> read(Status status) {
-				return new LinkedList<VehicleNotification>(
-						status.vehicleNotifications);
-			}
-		});
+		return readOnlyStatusAccess
+				.read(new Reader<List<VehicleNotification>>() {
+					@Override
+					public List<VehicleNotification> read(Status status) {
+						return new LinkedList<VehicleNotification>(
+								status.vehicleNotifications);
+					}
+				});
 	}
 
 	public Boolean isOperationScheduleInitialized() {
-		return statusAccess.read(new Reader<Boolean>() {
+		return readOnlyStatusAccess.read(new Reader<Boolean>() {
 			@Override
 			public Boolean read(Status status) {
 				return (status.operationScheduleInitializedSign
@@ -307,7 +314,7 @@ public class CommonLogic {
 
 	public void waitForOperationScheduleInitialize()
 			throws InterruptedException {
-		Semaphore operationScheduleInitializedSign = statusAccess
+		Semaphore operationScheduleInitializedSign = readOnlyStatusAccess
 				.read(new Reader<Semaphore>() {
 					@Override
 					public Semaphore read(Status status) {

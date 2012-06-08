@@ -36,19 +36,20 @@ public class ReservationCandidateArrayAdapter extends
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		final View view = convertView != null ? convertView : layoutInflater
-				.inflate(RESOURCE_ID, null);
+		if (convertView == null) {
+			convertView = layoutInflater.inflate(RESOURCE_ID, null);
+		}
 
 		if (selectedPosition.isPresent()
 				&& selectedPosition.get().equals(position)) {
 			// convertView.setBackgroundDrawable(context.getResources()
 			// .getDrawable(android.R.drawable.list_selector_background));
-			view.setBackgroundColor(Color.CYAN); // TODO テーマ
+			convertView.setBackgroundColor(Color.CYAN); // TODO テーマ
 		} else {
-			view.setBackgroundColor(Color.TRANSPARENT);
+			convertView.setBackgroundColor(Color.TRANSPARENT);
 		}
 
-		TextView v = (TextView) view
+		TextView v = (TextView) convertView
 				.findViewById(R.id.reservation_candidate_text_view);
 		ReservationCandidate c = getItem(position);
 		String s = "";
@@ -68,7 +69,7 @@ public class ReservationCandidateArrayAdapter extends
 		s += " / " + d.getHours() + "時" + d.getMinutes() + "分 → "
 				+ a.getHours() + "時" + a.getMinutes() + "分";
 		v.setText(s);
-		return view;
+		return convertView;
 	}
 
 	public void setSelectedPosition(Optional<Integer> selectedPosition) {

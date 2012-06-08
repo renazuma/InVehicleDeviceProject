@@ -58,24 +58,22 @@ public class PlatformPhaseView extends PhaseView {
 	private final Runnable updateMinutesRemaining = new Runnable() {
 		@Override
 		public void run() {
+			handler.postDelayed(updateMinutesRemaining,
+					UPDATE_MINUTES_REMAINING_INTERVAL_MILLIS);
 			Date now = CommonLogic.getDate();
-			List<OperationSchedule> operationSchedules = getCommonLogic()
-					.getRemainingOperationSchedules();
-			if (operationSchedules.size() <= 1) {
-				minutesRemainingTextView.setText("");
-			} else {
-				Date departure = operationSchedules.get(0)
+			minutesRemainingTextView.setText("");
+			for (OperationSchedule operationSchedule : getCommonLogic()
+					.getCurrentOperationSchedule().asSet()) {
+				Date departureEstimate = operationSchedule
 						.getDepartureEstimate();
-				Long gap = (departure.getTime() - now.getTime()) / 1000 / 60;
+				Long gap = (departureEstimate.getTime() - now.getTime()) / 1000 / 60;
 				DateFormat dateFormat = new SimpleDateFormat("H時m分"); // TODO
-				String dateString = dateFormat.format(departure);
+				String dateString = dateFormat.format(departureEstimate);
 				minutesRemainingTextView.setText(Html.fromHtml(String.format(
 						getResources().getString(
 								R.string.minutes_remaining_to_depart_html),
 						dateString, gap)));
 			}
-			handler.postDelayed(updateMinutesRemaining,
-					UPDATE_MINUTES_REMAINING_INTERVAL_MILLIS);
 		}
 	};
 
@@ -84,7 +82,8 @@ public class PlatformPhaseView extends PhaseView {
 		setContentView(R.layout.platform_phase_view);
 
 		platformNameTextView = (TextView) findViewById(R.id.next_platform_text_view);
-		reservationListView = ((FlickUnneededListView) findViewById(R.id.reservation_list_view)).getListView();
+		reservationListView = ((FlickUnneededListView) findViewById(R.id.reservation_list_view))
+				.getListView();
 		LayoutInflater layoutInflater = (LayoutInflater) getContext()
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		reservationListFooterView = layoutInflater.inflate(

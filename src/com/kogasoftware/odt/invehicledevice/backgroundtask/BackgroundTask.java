@@ -25,7 +25,6 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
 import com.kogasoftware.odt.invehicledevice.logic.event.CommonLogicLoadCompleteEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.NewOperationStartEvent;
 import com.kogasoftware.odt.invehicledevice.service.LauncherService;
@@ -65,8 +64,7 @@ public class BackgroundTask {
 	private final Context applicationContext;
 	private final VoiceServiceConnector voiceServiceConnector;
 
-	public BackgroundTask(CommonLogic commonLogic, Context context,
-			StatusAccess statusAccess) {
+	public BackgroundTask(CommonLogic commonLogic, Context context) {
 		if (Looper.myLooper() == null) {
 			Looper.prepare();
 		}
@@ -126,8 +124,6 @@ public class BackgroundTask {
 			Looper.loop();
 		} catch (InterruptedException e) {
 			// do nothing
-		} catch (RejectedExecutionException e) {
-			Log.w(TAG, e);
 		} catch (ExecutionException e) {
 			Log.w(TAG, e);
 		} finally {
@@ -135,9 +131,7 @@ public class BackgroundTask {
 		}
 	}
 
-	private void onLoopStart() throws InterruptedException,
-			RejectedExecutionException, ExecutionException {
-
+	private void onLoopStart() throws InterruptedException, ExecutionException {
 		for (Object object : new Object[] { operationScheduleReceiveThread,
 				vehicleNotificationReceiver, locationSender,
 				temperatureSensorEventListener, orientationSensorEventListener,
@@ -202,12 +196,17 @@ public class BackgroundTask {
 		applicationContext.startService(new Intent(applicationContext,
 				VoiceService.class));
 
-		executorService.scheduleWithFixedDelay(vehicleNotificationReceiver, 0,
-				POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
-		executorService.scheduleWithFixedDelay(nextDateChecker, 0,
-				POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
-		executorService.scheduleWithFixedDelay(locationSender, 0,
-				POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
+		try {
+			executorService.scheduleWithFixedDelay(vehicleNotificationReceiver,
+					0, POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
+			executorService.scheduleWithFixedDelay(nextDateChecker, 0,
+					POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
+			executorService.scheduleWithFixedDelay(locationSender, 0,
+					POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
+		} catch (RejectedExecutionException e) {
+			Log.w(TAG, e);
+			quit();
+		}
 	}
 
 	private void onLoopStop() {

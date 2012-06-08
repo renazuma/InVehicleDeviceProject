@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.kogasoftware.odt.invehicledevice.logic.empty.EmptyThread;
+
 /**
  * OpenJTalkライブラリのプロセスを分離するためのサービス TODO: TTSとして書き直し
  */
@@ -24,7 +26,7 @@ public class VoiceService extends Service {
 	}
 
 	private final BlockingQueue<String> voices = new LinkedBlockingQueue<String>();
-	private VoiceThread voiceThread = null;
+	private Thread voiceThread = new EmptyThread();
 
 	@Override
 	public void onCreate() {
@@ -42,7 +44,9 @@ public class VoiceService extends Service {
 			List<CharSequence> messages = intent
 					.getCharSequenceArrayListExtra(MESSAGE_KEY);
 			if (messages != null) {
-				voiceThread.enqueue(messages);
+				for (CharSequence message : messages) {
+					voices.add(message.toString());
+				}
 			}
 		}
 		return Service.START_STICKY;
