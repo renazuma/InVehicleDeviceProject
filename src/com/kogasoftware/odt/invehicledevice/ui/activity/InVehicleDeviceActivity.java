@@ -296,6 +296,8 @@ public class InVehicleDeviceActivity extends Activity {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		Log.i(TAG, "onDestroy");
+		
 		getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
 		handler.removeCallbacks(updateTime);
