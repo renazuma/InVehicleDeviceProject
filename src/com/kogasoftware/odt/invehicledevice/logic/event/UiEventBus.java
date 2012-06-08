@@ -81,7 +81,7 @@ public class UiEventBus {
 		}
 	}
 
-	private final EventBus getEventBusForObject(Object object) {
+	private EventBus getEventBusForObject(Object object) {
 		if (object.getClass().isAnnotationPresent(HighPriority.class)) {
 			return highPriorityEventBus;
 		} else {

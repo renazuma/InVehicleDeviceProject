@@ -5,11 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InvalidClassException;
 import java.text.ParseException;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -25,12 +22,9 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.common.io.Closeables;
-import com.kogasoftware.odt.invehicledevice.logic.Status.Phase;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.WebAPIDataSource;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.ServiceProvider;
-import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
-import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 /**
  * InVehicleDeviceStatusのアクセスに対し 書き込みがあったら自動で保存. 読み書き時にロックを実行を行う
@@ -64,7 +58,7 @@ public class StatusAccess {
 
 		public SaveThread(File file, byte[] serialized) {
 			this.file = file;
-			this.serialized = serialized;
+			this.serialized = serialized.clone();
 		}
 
 		@Override
@@ -140,6 +134,7 @@ public class StatusAccess {
 					.putBoolean(SharedPreferencesKey.CLEAR_STATUS_BACKUP, false)
 					.commit();
 		} else if (!file.exists()) {
+			Log.i(TAG, "\"" + file + "\" not found");
 		} else {
 			synchronized (FILE_ACCESS_LOCK) {
 				try {

@@ -100,13 +100,13 @@ public class CommonLogic {
 	 * Nullオブジェクトパターン用のコンストラクタ
 	 */
 	public CommonLogic() {
-		StatusAccess statusAccess = new StatusAccess();
-		this.statusAccess = statusAccess.getReadOnlyStatusAccess();
+		StatusAccess writableStatusAccess = new StatusAccess();
+		this.statusAccess = writableStatusAccess.getReadOnlyStatusAccess();
 		dataSource = DataSourceFactory.newInstance();
 		eventBus = new UiEventBus();
-		commonEventProcessor = new CommonEventProcessor(this, statusAccess);
+		commonEventProcessor = new CommonEventProcessor(this, writableStatusAccess);
 		vehicleNotificationEventProcessor = new VehicleNotificationEventProcessor(
-				this, statusAccess);
+				this, writableStatusAccess);
 
 		dispose();
 	}

@@ -202,6 +202,7 @@ public class InVehicleDeviceActivity extends Activity {
 		super.onCreate(savedInstanceState);
 
 		if (BuildConfig.DEBUG) {
+			Log.i(TAG, "BuildConfig.DEBUG=" + BuildConfig.DEBUG);
 			// StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
 			// .detectAll().penaltyLog().build());
 			// StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()

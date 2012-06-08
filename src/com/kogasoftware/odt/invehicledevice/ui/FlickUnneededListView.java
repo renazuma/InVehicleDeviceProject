@@ -16,11 +16,11 @@ import com.kogasoftware.odt.invehicledevice.R;
 public class FlickUnneededListView extends FrameLayout {
 	private static final String TAG = FlickUnneededListView.class
 			.getSimpleName();
+	protected static final Integer DISABLED_TEXT_COLOR = Color.GRAY;
+	protected static final Integer ENABLED_TEXT_COLOR = Color.BLACK;
 	protected final ListView listView;
 	protected final Button scrollUpButton;
 	protected final Button scrollDownButton;
-	protected final Integer DISABLED_TEXT_COLOR = Color.GRAY;
-	protected final Integer ENABLED_TEXT_COLOR = Color.BLACK;
 
 	public FlickUnneededListView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -93,15 +93,5 @@ public class FlickUnneededListView extends FrameLayout {
 
 	public ListView getListView() {
 		return listView;
-	}
-
-	@Override
-	protected void onAttachedToWindow() {
-		super.onAttachedToWindow();
-	}
-
-	@Override
-	protected void onDetachedFromWindow() {
-		super.onDetachedFromWindow();
 	}
 }
