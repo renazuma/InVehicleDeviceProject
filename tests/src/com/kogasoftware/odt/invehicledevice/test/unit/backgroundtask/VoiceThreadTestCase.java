@@ -1,25 +1,29 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.backgroundtask;
 
 import java.util.Iterator;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.kogasoftware.odt.invehicledevice.backgroundtask.BackgroundTask;
-import com.kogasoftware.odt.invehicledevice.backgroundtask.VoiceThread;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
+import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceThread;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 
 public class VoiceThreadTestCase extends EmptyActivityInstrumentationTestCase2 {
 	CommonLogic cl;
 	StatusAccess sa;
 	VoiceThread vt;
+	BlockingQueue<String> bq;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		vt = new VoiceThread(getInstrumentation().getTargetContext());
+		bq = new LinkedBlockingQueue<String>();
+		vt = new VoiceThread(getInstrumentation().getTargetContext(), bq);
 		sa = new StatusAccess(getActivity());
 		cl = new CommonLogic(getActivity(), getActivityHandler(), sa);
 	}
@@ -41,8 +45,8 @@ public class VoiceThreadTestCase extends EmptyActivityInstrumentationTestCase2 {
 		Thread t = new Thread() {
 			@Override
 			public void run() {
-				bt.set(new BackgroundTask(cl,
-						getInstrumentation().getTargetContext(), sa));
+				bt.set(new BackgroundTask(cl, getInstrumentation()
+						.getTargetContext(), sa));
 				cdl.countDown();
 				bt.get().loop();
 			}
@@ -57,7 +61,7 @@ public class VoiceThreadTestCase extends EmptyActivityInstrumentationTestCase2 {
 	public void xtestVoiceThread_1() throws Exception {
 		fail("stub! / physical test required");
 	}
-	
+
 	public void testSplit() {
 		// 行分割
 		Iterator<String> l;
@@ -67,32 +71,32 @@ public class VoiceThreadTestCase extends EmptyActivityInstrumentationTestCase2 {
 		assertFalse(l.hasNext());
 		l = VoiceThread.split("\n\n\r\n", 3).iterator();
 		assertFalse(l.hasNext());
-		
+
 		l = VoiceThread.split("a", 3).iterator();
 		assertEquals("a", l.next());
 		assertFalse(l.hasNext());
-		
+
 		l = VoiceThread.split("aa", 3).iterator();
 		assertEquals("aa", l.next());
 		assertFalse(l.hasNext());
-		
+
 		l = VoiceThread.split("aa\nbb", 3).iterator();
 		assertEquals("aa", l.next());
 		assertEquals("bb", l.next());
 		assertFalse(l.hasNext());
-		
+
 		l = VoiceThread.split("aa\nbb\rcc", 3).iterator();
 		assertEquals("aa", l.next());
 		assertEquals("bb", l.next());
 		assertEquals("cc", l.next());
 		assertFalse(l.hasNext());
-		
+
 		l = VoiceThread.split("\raa\nbb\r\ncc\r\n", 3).iterator();
 		assertEquals("aa", l.next());
 		assertEquals("bb", l.next());
 		assertEquals("cc", l.next());
 		assertFalse(l.hasNext());
-		
+
 		// 句読点分割
 		l = VoiceThread.split("\raaa\nbb、bb\r\nc、c\r\n", 3).iterator();
 		assertEquals("aaa", l.next());
@@ -100,7 +104,7 @@ public class VoiceThreadTestCase extends EmptyActivityInstrumentationTestCase2 {
 		assertEquals("bb", l.next());
 		assertEquals("c、c", l.next());
 		assertFalse(l.hasNext());
-		
+
 		l = VoiceThread.split("\ra。\nb。b\r\nc　c\r\n", 2).iterator();
 		assertEquals("a。", l.next());
 		assertEquals("b", l.next());
@@ -108,7 +112,7 @@ public class VoiceThreadTestCase extends EmptyActivityInstrumentationTestCase2 {
 		assertEquals("c", l.next());
 		assertEquals("c", l.next());
 		assertFalse(l.hasNext());
-		
+
 		// 句読点で分割しても足りない場合文字数で分割
 		l = VoiceThread.split("\raaaa\nbbb\r\nc、cccc、c\r\n", 3).iterator();
 		assertEquals("aaa", l.next());
