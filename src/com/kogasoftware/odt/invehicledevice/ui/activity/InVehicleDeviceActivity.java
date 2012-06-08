@@ -12,6 +12,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.TypedArray;
@@ -41,6 +42,7 @@ import com.kogasoftware.odt.invehicledevice.logic.event.ExitEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.SignalStrengthChangedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.UpdatedOperationScheduleAlertEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.VehicleNotificationReceivedAlertEvent;
+import com.kogasoftware.odt.invehicledevice.service.LauncherService;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.ArrivalCheckModalView;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.NavigationModalView;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.ScheduleModalView;
@@ -220,6 +222,8 @@ public class InVehicleDeviceActivity extends Activity {
 		} catch (NameNotFoundException e) {
 			Log.w(TAG, e);
 		}
+		
+		startService(new Intent(this, LauncherService.class));
 
 		setContentView(R.layout.in_vehicle_device);
 
