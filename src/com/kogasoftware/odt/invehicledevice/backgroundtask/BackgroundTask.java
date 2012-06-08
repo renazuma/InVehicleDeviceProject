@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
@@ -27,6 +28,7 @@ import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
 import com.kogasoftware.odt.invehicledevice.logic.event.CommonLogicLoadCompleteEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.NewOperationStartEvent;
+import com.kogasoftware.odt.invehicledevice.service.LauncherService;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.NotificationModalView;
 
 /**
@@ -96,8 +98,7 @@ public class BackgroundTask {
 			Log.w(TAG, e);
 		}
 		optionalTelephonyManager = tempTelephonyManager;
-		exitBroadcastReceiver = new ExitBroadcastReceiver(
-				commonLogic);
+		exitBroadcastReceiver = new ExitBroadcastReceiver(commonLogic);
 		locationSender = new LocationSender(commonLogic);
 		orientationSensorEventListener = new OrientationSensorEventListener(
 				commonLogic);
@@ -139,8 +140,8 @@ public class BackgroundTask {
 		for (Object object : new Object[] { voiceThread,
 				operationScheduleReceiveThread, vehicleNotificationReceiver,
 				locationSender, temperatureSensorEventListener,
-				orientationSensorEventListener,
-				exitBroadcastReceiver, signalStrengthListener, }) {
+				orientationSensorEventListener, exitBroadcastReceiver,
+				signalStrengthListener, }) {
 			commonLogic.registerEventListener(object);
 		}
 
@@ -195,6 +196,9 @@ public class BackgroundTask {
 					PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
 		}
 		commonLogic.postEvent(new NotificationModalView.ShowEvent());
+
+		applicationContext.startService(new Intent(applicationContext,
+				LauncherService.class));
 
 		executorService.scheduleWithFixedDelay(vehicleNotificationReceiver, 0,
 				POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
