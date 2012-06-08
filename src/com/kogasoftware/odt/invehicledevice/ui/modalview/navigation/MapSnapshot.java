@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.navigation;
+package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation;
 
 import android.graphics.Bitmap;
 

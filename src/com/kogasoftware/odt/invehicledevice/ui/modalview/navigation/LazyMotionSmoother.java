@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.navigation;
+package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation;
 
 /**
  * 遅延を許して回転をスムーズにする

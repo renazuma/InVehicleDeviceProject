@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.navigation;
+package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
