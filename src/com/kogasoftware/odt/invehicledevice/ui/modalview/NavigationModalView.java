@@ -1,168 +1,48 @@
 package com.kogasoftware.odt.invehicledevice.ui.modalview;
 
+import java.lang.ref.WeakReference;
+
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.opengles.GL10;
+
 import android.content.Context;
+import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
 
+class Renderer implements GLSurfaceView.Renderer {
+	@Override
+	public void onDrawFrame(GL10 gl) {
+	}
+
+	@Override
+	public void onSurfaceChanged(GL10 gl, int width, int height) {
+	}
+
+	@Override
+	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+	}
+}
+
 public class NavigationModalView extends ModalView {
-
-	// static class NavigationViewLocationListener implements LocationListener {
-	// private static final String TAG = NavigationViewLocationListener.class
-	// .getSimpleName();
-	// private final MapOnTouchListener mapOnTouchListener;
-	// private final MapView mapView;
-	//
-	// public NavigationViewLocationListener(
-	// MapOnTouchListener mapOnTouchListener, MapView mapView) {
-	// this.mapOnTouchListener = mapOnTouchListener;
-	// this.mapView = mapView;
-	// }
-	//
-	// @Override
-	// public void onLocationChanged(Location location) {
-	// Double latitude = location.getLatitude();
-	// Double longitude = location.getLongitude();
-	// GeoPoint newCenter = new GeoPoint((int) (latitude * 1E6),
-	// (int) (longitude * 1E6));
-	// mapOnTouchListener.updateGeoPoint(newCenter);
-	// mapView.getController().animateTo(newCenter);
-	// }
-	//
-	// @Override
-	// public void onProviderDisabled(String provider) {
-	// Log.d(TAG, "onProviderDisabled:" + provider);
-	// }
-	//
-	// @Override
-	// public void onProviderEnabled(String provider) {
-	// Log.d(TAG, "onProviderEnabled:" + provider);
-	// }
-	//
-	// @Override
-	// public void onStatusChanged(String provider, int status, Bundle extras) {
-	// Log.d(TAG, "onStatusChanged: " + provider + " " + status + " "
-	// + extras);
-	// }
-	// }
-
 	public static class ShowEvent {
 	}
 
-	//
-	// private static final String TAG =
-	// NavigationModalView.class.getSimpleName();
-	// private final MapView mapView;
-	// private final MapViewRedirector mapViewRedirector;
-	// private final LocationManager locationManager;
-	// private final NavigationViewLocationListener locationListener;
-	// private final MapSynchronizer mapSynchronizer;
-	// private final OrientationSensor orientationSensor;
-	// private final MapRenderer mapRenderer;
 	private final Button zoomInButton;
-
-	// private WeakReference<GLSurfaceView> glSurfaceViewWeakReference;
-	// private WeakReference<MapOnTouchListener>
-	// mapOnTouchListenerWeakReference;
-
 	private final Button zoomOutButton;
 
-	// public MapView getMapView() {
-	// return mapView;
-	// }
-	//
-	// @Override
-	// protected void onAttachedToWindow() {
-	// super.onAttachedToWindow();
-	//
-	// locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-	// 2000, 0, locationListener);
-	// mapSynchronizer.create();
-	// orientationSensor.create();
-	//
-	// MapOnTouchListener mapOnTouchListener = mapOnTouchListenerWeakReference
-	// .get();
-	//
-	// // ICSのGLSurfaceView.GLThreadがその親ViewをメンバmParentに保存する。
-	// // そのため、Activity再構築などのタイミングで1/10程度の確率で循環参照でリークすることがある。
-	// // それを防ぐために参照を極力減らしたFrameLayoutを間にはさむ
-	// {
-	// FrameLayout icsLeakAvoidanceFrameLayout = new FrameLayout(
-	// getContext().getApplicationContext());
-	// GLSurfaceView glSurfaceView = new GLSurfaceView(getContext()
-	// .getApplicationContext());
-	// if (mapOnTouchListener != null) {
-	// glSurfaceView.setOnTouchListener(mapOnTouchListener);
-	// }
-	// glSurfaceView.setRenderer(mapRenderer);
-	// addView(icsLeakAvoidanceFrameLayout,
-	// new NavigationModalView.LayoutParams(
-	// NavigationModalView.LayoutParams.FILL_PARENT,
-	// NavigationModalView.LayoutParams.FILL_PARENT));
-	// icsLeakAvoidanceFrameLayout.addView(glSurfaceView,
-	// new FrameLayout.LayoutParams(
-	// FrameLayout.LayoutParams.FILL_PARENT,
-	// FrameLayout.LayoutParams.FILL_PARENT));
-	// glSurfaceViewWeakReference = new WeakReference<GLSurfaceView>(
-	// glSurfaceView);
-	// }
-	//
-	// mapViewRedirector.addView(mapView, new MapViewRedirector.LayoutParams(
-	// MapRenderer.MAP_TEXTURE_WIDTH, MapRenderer.MAP_TEXTURE_HEIGHT));
-	// addView(mapViewRedirector, new NavigationModalView.LayoutParams(
-	// MapRenderer.MAP_TEXTURE_WIDTH, MapRenderer.MAP_TEXTURE_HEIGHT));
-	//
+	private WeakReference<GLSurfaceView> glSurfaceViewWeakReference = new WeakReference<GLSurfaceView>(
+			null);
+
 	public NavigationModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		setContentView(R.layout.navigation_modal_view);
 		setCloseOnClick(R.id.navigation_close_button);
-		//
-		// mapView = new MapView(context,
-		// "0_ZIi_adDM8WHxCX0OJTfcXhHO8jOsYOjLF7xow");
-		// mapView.setClickable(true);
-		// mapSynchronizer = new MapSynchronizer();
-		// locationManager = (LocationManager) context
-		// .getSystemService(Context.LOCATION_SERVICE);
-		// MapOnTouchListener mapOnTouchListener = new
-		// MapOnTouchListener(mapView);
-		// mapView.setOnTouchListener(mapOnTouchListener);
-		//
-		// mapViewRedirector = new MapViewRedirector(context, null);
-		// mapViewRedirector.init(mapSynchronizer, mapView);
-		//
-		// mapRenderer = new MapRenderer(context.getResources(),
-		// mapSynchronizer,
-		// mapView);
-		//
-		// orientationSensor = new LegacyOrientationSensor(context) {
-		// private Double lastOrientation = 0.0;
-		//
-		// @Override
-		// public void onOrientationChanged(Double orientation) {
-		// Double fixedOrientation = Utility.getNearestRadian(
-		// lastOrientation, orientation);
-		// mapRenderer.setOrientation(fixedOrientation);
-		// MapOnTouchListener mapOnTouchListener =
-		// mapOnTouchListenerWeakReference
-		// .get();
-		// if (mapOnTouchListener != null) {
-		// mapOnTouchListener.onOrientationChanged(fixedOrientation);
-		// }
-		// lastOrientation = fixedOrientation;
-		// // Log.v(TAG, TAG + "," + orientation + "," + fixedOrientation);
-		// }
-		// };
-		// locationListener = new NavigationViewLocationListener(
-		// mapOnTouchListener, mapView);
-		// glSurfaceViewWeakReference = new WeakReference<GLSurfaceView>(null);
-		//
-		// mapOnTouchListenerWeakReference = new
-		// WeakReference<MapOnTouchListener>(
-		// mapOnTouchListener);
-		//
 
 		zoomInButton = (Button) findViewById(R.id.navigation_zoom_in_button);
 		zoomInButton.setOnClickListener(new OnClickListener() {
@@ -180,32 +60,39 @@ public class NavigationModalView extends ModalView {
 			}
 		});
 
-		// mapView.getController().animateTo(new GeoPoint(35899045, 139928656));
-		// mapView.getController().setZoom(15);
-		// }
-		//
-		// @Override
-		// protected void onDetachedFromWindow() {
-		// mapSynchronizer.destroy();
-		// orientationSensor.destroy();
-		// locationManager.removeUpdates(locationListener);
-		// glSurfaceViewWeakReference.clear();
-		// removeAllViews();
-		// super.onDetachedFromWindow();
-		// }
-		//
+		// ICSのGLSurfaceView.GLThreadがその親ViewをメンバmParentに保存する。
+		// そのため、Activity再構築などのタイミングで1/10程度の確率で循環参照でリークすることがある。
+		// それを防ぐために参照を極力減らしたFrameLayoutを間にはさむ
+		{
+			FrameLayout icsLeakAvoidanceFrameLayout = new FrameLayout(
+					getContext().getApplicationContext());
+			GLSurfaceView glSurfaceView = new GLSurfaceView(getContext());
+			glSurfaceView.setRenderer(new Renderer());
+			addView(icsLeakAvoidanceFrameLayout, 0,
+					new NavigationModalView.LayoutParams(
+							NavigationModalView.LayoutParams.FILL_PARENT,
+							NavigationModalView.LayoutParams.FILL_PARENT));
+			icsLeakAvoidanceFrameLayout.addView(glSurfaceView,
+					new FrameLayout.LayoutParams(
+							FrameLayout.LayoutParams.FILL_PARENT,
+							FrameLayout.LayoutParams.FILL_PARENT));
+			glSurfaceViewWeakReference = new WeakReference<GLSurfaceView>(
+					glSurfaceView);
+		}
 	}
 
 	public void onPauseActivity() {
-		// GLSurfaceView glSurfaceView = glSurfaceViewWeakReference.get();
-		// if (glSurfaceView != null) {
-		// glSurfaceView.onPause();
+		GLSurfaceView glSurfaceView = glSurfaceViewWeakReference.get();
+		if (glSurfaceView != null) {
+			glSurfaceView.onPause();
+		}
 	}
 
 	public void onResumeActivity() {
-		// GLSurfaceView glSurfaceView = glSurfaceViewWeakReference.get();
-		// if (glSurfaceView != null) {
-		// glSurfaceView.onResume();
+		GLSurfaceView glSurfaceView = glSurfaceViewWeakReference.get();
+		if (glSurfaceView != null) {
+			glSurfaceView.onResume();
+		}
 	}
 
 	@Subscribe
