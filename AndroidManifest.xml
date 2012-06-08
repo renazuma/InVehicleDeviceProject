@@ -42,12 +42,18 @@
         </activity>
         <activity android:name=".ui.activity.EmptyActivity" />
 
-        <receiver android:name=".backgroundtask.StartBroadcastReceiver" >
+        <receiver android:name=".service.LauncherService$StartBroadcastReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.POWER_CONNECTED" />
                 <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_REPLACED" />
+                <data android:scheme="package" android:path="com.kogasoftware.odt.invehicledevice" />
+            </intent-filter>
         </receiver>
+        <service android:name=".service.LauncherService" />
     </application>
 
 </manifest>
