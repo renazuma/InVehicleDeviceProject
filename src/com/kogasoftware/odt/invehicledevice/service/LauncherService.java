@@ -7,12 +7,15 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
 import android.util.Log;
 
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
 public class LauncherService extends Service {
 	private static final String TAG = LauncherService.class.getSimpleName();
+	private static final Integer WAKE_LOCK_PERIOD_MILLIS = 1000;
 
 	private BroadcastReceiver screenOnBroadcastReceiver = new BroadcastReceiver() {
 		@Override
@@ -52,8 +55,30 @@ public class LauncherService extends Service {
 	}
 
 	private void showActivity() {
-		Intent startIntent = new Intent(this, InVehicleDeviceActivity.class);
+		Intent startIntent = new Intent(LauncherService.this,
+				InVehicleDeviceActivity.class);
 		startIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+		PowerManager powerManager = ((PowerManager) getSystemService(Context.POWER_SERVICE));
+		if (powerManager == null) {
+			Log.e(TAG, "PowerManager not found");
+			return;
+		}
+		final WakeLock wakeLock = powerManager.newWakeLock(
+				PowerManager.SCREEN_DIM_WAKE_LOCK
+						| PowerManager.ACQUIRE_CAUSES_WAKEUP
+						| PowerManager.ON_AFTER_RELEASE,
+				LauncherService.class.getSimpleName());
+		wakeLock.acquire();
+		Runnable release = new Runnable() {
+			@Override
+			public void run() {
+				wakeLock.release();
+			}
+		};
+		if (!(new Handler()).postDelayed(release, WAKE_LOCK_PERIOD_MILLIS)) {
+			wakeLock.release();
+		}
 		startActivity(startIntent);
 	}
 
@@ -74,6 +99,8 @@ public class LauncherService extends Service {
 		super.onStartCommand(intent, flags, startId);
 		Log.i(TAG, "onStartCommand(" + intent + ", " + flags + ", " + startId
 				+ ")");
+
+		// onStartCommandはすぐに処理を返さなければいけないため、Activityの起動はHandler経由にする
 		(new Handler()).post(new Runnable() {
 			@Override
 			public void run() {
