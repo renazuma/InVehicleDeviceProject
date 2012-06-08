@@ -5,6 +5,7 @@
     <TextView
         android:id="@+id/departure_check_modal_title_text_view"
         style="@style/ModalView.Title"
+        android:textSize="26sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
@@ -34,6 +35,7 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
+            android:textSize="24sp"
             android:text="@string/it_leaves" />
 
         <Button
@@ -42,6 +44,7 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
+            android:textSize="24sp"
             android:text="@string/cancel" />
     </LinearLayout>
 
