@@ -49,12 +49,12 @@ public class ScheduleTestCase extends
 	}
 
 	public void test01_起動時は非表示() {
-		assertEquals("本日の運行予定",
+		assertEquals("運行予定",
 				((Button) solo.getView(R.id.schedule_button)).getText());
 		assertEquals(View.GONE, solo.getView(R.id.schedule_modal_view)
 				.getVisibility());
 	}
-/*
+
 	public void test02_予定ボタンを押したら表示() {
 		test01_起動時は非表示();
 		solo.clickOnView(solo.getView(R.id.schedule_button));
@@ -73,7 +73,7 @@ public class ScheduleTestCase extends
 		getInstrumentation().waitForIdleSync();
 		assertEquals(View.GONE, solo.getView(R.id.schedule_modal_view)
 				.getVisibility());
-		
+
 		assertFalse(solo.searchText("上野御徒町駅前", true));
 		assertFalse(solo.searchText("上野動物園前", true));
 	}
@@ -140,5 +140,5 @@ public class ScheduleTestCase extends
 		assertFalse(solo.searchButton("下へ移動"));
 
 	}
-	*/
+
 }

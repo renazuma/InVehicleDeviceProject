@@ -51,13 +51,13 @@ public class DepartureCheckModalView extends ModalView {
 				.getListView();
 		List<String> messages = new LinkedList<String>();
 		for (Reservation reservation : adapter.getNoGettingOnReservations()) {
-			messages.add(" ※" + getUserName(reservation) + "様が未乗車です");
+			messages.add(" ※ " + getUserName(reservation) + "様が未乗車です");
 		}
 		for (Reservation reservation : adapter.getNoGettingOffReservations()) {
-			messages.add(" ※" + getUserName(reservation) + "様が未降車です");
+			messages.add(" ※ " + getUserName(reservation) + "様が未降車です");
 		}
 		for (Reservation reservation : adapter.getNoPaymentReservations()) {
-			messages.add(" ※" + getUserName(reservation) + "様が料金未払いです");
+			messages.add(" ※ " + getUserName(reservation) + "様が料金未払いです");
 		}
 
 		errorReservationListView.setAdapter(new ArrayAdapter<String>(

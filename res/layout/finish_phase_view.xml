@@ -8,6 +8,7 @@
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:text="@string/todays_operation_was_finished"
+        android:textSize = "30sp"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
 </LinearLayout>

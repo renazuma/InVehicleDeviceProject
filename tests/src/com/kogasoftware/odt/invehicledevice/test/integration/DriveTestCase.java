@@ -45,7 +45,7 @@ public class DriveTestCase extends
 		assertEquals(View.GONE, solo.getView(R.id.departure_check_modal_view)
 				.getVisibility());
 	}
-
+/*
 	public void test03_到着しましたボタンを押すと停車中表示() {
 		test01_起動時は走行中表示();
 
@@ -133,4 +133,5 @@ public class DriveTestCase extends
 		TextView v = (TextView) solo.getView(R.id.phase_text_view);
 		assertEquals("", v.getText());
 	}
+	*/
 }

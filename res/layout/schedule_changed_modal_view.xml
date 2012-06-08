@@ -9,6 +9,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
+        android:textSize="26sp"
         android:text="@string/operation_schedule_was_changed" />
 
     <TextView
@@ -19,6 +20,7 @@
         android:layout_above="@+id/schedule_changed_modal_buttons"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/schedule_changed_modal_title_text_view"
+        android:textSize="30sp"
         android:layout_margin="5dip"
         android:background="@drawable/border" />
 
@@ -35,6 +37,7 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
+            android:textSize="24sp"
             android:text="@string/show_operation_schedule" />
 
         <Button
