@@ -280,7 +280,7 @@ public class InVehicleDeviceActivity extends Activity {
 		switch (id) {
 		case WAIT_FOR_INITIALIZE_DIALOG_ID: {
 			ProgressDialog dialog = new ProgressDialog(this);
-			dialog.setMessage(Html.fromHtml("<big>運行情報を取得しています</big>"));
+			dialog.setMessage(Html.fromHtml("<big><big>運行情報を取得しています</big></big>"));
 			dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 			dialog.setOnCancelListener(new OnCancelListener() {
 				@Override
