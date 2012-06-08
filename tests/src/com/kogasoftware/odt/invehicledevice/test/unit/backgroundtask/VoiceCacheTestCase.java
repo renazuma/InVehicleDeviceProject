@@ -8,8 +8,8 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.preference.PreferenceManager;
 
-import com.kogasoftware.odt.invehicledevice.backgroundtask.VoiceCache;
 import com.kogasoftware.odt.invehicledevice.logic.SharedPreferencesKey;
+import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceCache;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 
 public class VoiceCacheTestCase extends EmptyActivityInstrumentationTestCase2 {

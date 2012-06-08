@@ -29,6 +29,7 @@ import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
 import com.kogasoftware.odt.invehicledevice.logic.event.CommonLogicLoadCompleteEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.NewOperationStartEvent;
 import com.kogasoftware.odt.invehicledevice.service.LauncherService;
+import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.NotificationModalView;
 
 /**
@@ -58,11 +59,11 @@ public class BackgroundTask {
 	private final SignalStrengthListener signalStrengthListener;
 	private final ExitBroadcastReceiver exitBroadcastReceiver;
 	private final CommonLogic commonLogic;
-	private final Thread voiceThread;
 	private final Thread operationScheduleReceiveThread;
 	private final Looper myLooper;
 	private final AtomicBoolean quitCalled = new AtomicBoolean(false);
 	private final Context applicationContext;
+	private final VoiceServiceConnector voiceServiceConnector;
 
 	public BackgroundTask(CommonLogic commonLogic, Context context,
 			StatusAccess statusAccess) {
@@ -109,9 +110,9 @@ public class BackgroundTask {
 				commonLogic);
 		signalStrengthListener = new SignalStrengthListener(commonLogic,
 				connectivityManager);
-		voiceThread = new VoiceThread(context);
 		operationScheduleReceiveThread = new OperationScheduleReceiveThread(
 				commonLogic);
+		voiceServiceConnector = new VoiceServiceConnector(context);
 	}
 
 	/**
@@ -137,11 +138,11 @@ public class BackgroundTask {
 	private void onLoopStart() throws InterruptedException,
 			RejectedExecutionException, ExecutionException {
 
-		for (Object object : new Object[] { voiceThread,
-				operationScheduleReceiveThread, vehicleNotificationReceiver,
-				locationSender, temperatureSensorEventListener,
-				orientationSensorEventListener, exitBroadcastReceiver,
-				signalStrengthListener, }) {
+		for (Object object : new Object[] { operationScheduleReceiveThread,
+				vehicleNotificationReceiver, locationSender,
+				temperatureSensorEventListener, orientationSensorEventListener,
+				exitBroadcastReceiver, signalStrengthListener,
+				voiceServiceConnector }) {
 			commonLogic.registerEventListener(object);
 		}
 
@@ -150,7 +151,6 @@ public class BackgroundTask {
 		applicationContext
 				.registerReceiver(exitBroadcastReceiver, intentFilter);
 
-		voiceThread.start();
 		operationScheduleReceiveThread.start();
 
 		if (!commonLogic.isOperationScheduleInitialized()) {
@@ -199,6 +199,8 @@ public class BackgroundTask {
 
 		applicationContext.startService(new Intent(applicationContext,
 				LauncherService.class));
+		applicationContext.startService(new Intent(applicationContext,
+				VoiceService.class));
 
 		executorService.scheduleWithFixedDelay(vehicleNotificationReceiver, 0,
 				POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
@@ -209,7 +211,6 @@ public class BackgroundTask {
 	}
 
 	private void onLoopStop() {
-		voiceThread.interrupt();
 		operationScheduleReceiveThread.interrupt();
 		locationManager.removeUpdates(locationSender);
 		sensorManager.unregisterListener(temperatureSensorEventListener);

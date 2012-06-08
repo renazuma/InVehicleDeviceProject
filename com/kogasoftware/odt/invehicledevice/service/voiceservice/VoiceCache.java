@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.backgroundtask;
+package com.kogasoftware.odt.invehicledevice.service.voiceservice;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -45,7 +45,7 @@ public class VoiceCache {
 			this.map = new TreeMap<String, File>(map);
 		}
 
-		private static final long serialVersionUID = -8533398684555140766L;
+		private static final long serialVersionUID = -8533398684555140767L;
 		private final AtomicInteger sequence;
 		private final TreeMap<String, File> map;
 	}
@@ -135,7 +135,7 @@ public class VoiceCache {
 			SharedPreferences.Editor editor = preferences.edit();
 			editor.putBoolean(SharedPreferencesKey.CLEAR_VOICE_CACHE, false);
 			editor.commit();
-			if (!instanceStateFile.delete()) {
+			if (instanceStateFile.exists() && !instanceStateFile.delete()) {
 				throw new IOException("!\"" + instanceStateFile + "\".delete()");
 			}
 		} else {

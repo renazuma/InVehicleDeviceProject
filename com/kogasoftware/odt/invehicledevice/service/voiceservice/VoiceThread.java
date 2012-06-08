@@ -1,11 +1,10 @@
-package com.kogasoftware.odt.invehicledevice.backgroundtask;
+package com.kogasoftware.odt.invehicledevice.service.voiceservice;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
@@ -18,18 +17,9 @@ import android.util.Log;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
-import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.logic.empty.EmptyThread;
-import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
 public class VoiceThread extends Thread {
-	public static class SpeakEvent {
-		public final String message;
-
-		public SpeakEvent(String message) {
-			this.message = message;
-		}
-	}
 
 	private static final String TAG = VoiceThread.class.getSimpleName();
 	private static final Integer MAX_CACHE_BYTES = 100 * 1024 * 1024;
@@ -37,9 +27,8 @@ public class VoiceThread extends Thread {
 	private final BlockingQueue<String> voices = new LinkedBlockingQueue<String>();
 	private final BlockingQueue<String> preparedVoices = new LinkedBlockingQueue<String>();
 	private final Context context;
-	private volatile CountDownLatch speakableLatch = new CountDownLatch(0); // 参照書き換え可能な状態で複数スレッドから読まれるためvolatileをつける
 
-	public VoiceThread(Context context) {
+	public VoiceThread(Context context, BlockingQueue<String> voices) {
 		this.context = context;
 	}
 
@@ -68,10 +57,9 @@ public class VoiceThread extends Thread {
 		return result;
 	}
 
-	@Subscribe
-	public void enqueue(SpeakEvent event) {
-		for (String message : split(event.message, MAX_MESSAGE_LENGTH)) {
-			voices.add(message);
+	public void enqueue(String message) {
+		for (String splitted : split(message, MAX_MESSAGE_LENGTH)) {
+			voices.add(splitted);
 		}
 	}
 
@@ -106,17 +94,6 @@ public class VoiceThread extends Thread {
 		}
 	}
 
-	@Subscribe
-	public void pause(InVehicleDeviceActivity.PausedEvent e) {
-		speakableLatch.countDown();
-		speakableLatch = new CountDownLatch(1);
-	}
-
-	@Subscribe
-	public void resume(InVehicleDeviceActivity.ResumedEvent e) {
-		speakableLatch.countDown();
-	}
-
 	private void synthesis(final VoiceCache voiceCache, final String voice)
 			throws InterruptedException {
 		try {
@@ -131,8 +108,6 @@ public class VoiceThread extends Thread {
 
 	private void speak(final VoiceCache voiceCache, final String voice)
 			throws InterruptedException {
-		speakableLatch.await();
-		
 		final File voiceFile = voiceCache.getIfPresent(voice);
 		if (voiceFile == null) {
 			Log.w(TAG, "voice=\"" + voice + "\" is not present");
@@ -168,6 +143,12 @@ public class VoiceThread extends Thread {
 			voiceCache.invalidate(voice);
 		} finally {
 			mediaPlayer.release();
+		}
+	}
+
+	public void enqueue(List<? extends CharSequence> messages) {
+		for (CharSequence message : messages) {
+			enqueue(message.toString());
 		}
 	}
 }
