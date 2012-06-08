@@ -29,6 +29,14 @@ public class LauncherService extends Service {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			Log.i(TAG, "broadcast received " + intent);
+			if (intent == null) {
+				Log.w(TAG, "intent is null");
+				return;
+			}
+			if (intent.getAction() == null) {
+				Log.w(TAG, "intent.getAction() is null");
+				return;
+			}
 			if (intent.getAction().equals(Intent.ACTION_PACKAGE_REPLACED)
 					&& !intent.getDataString().equals(
 							"package:com.kogasoftware.odt.invehicledevice")) {
