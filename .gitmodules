@@ -1,9 +1,12 @@
 [submodule "AndroidCommon"]
 	path = AndroidCommon
 	url = git@github.com:odt/AndroidCommon.git
+	ignore = all
 [submodule "AndroidOpenJTalk"]
 	path = AndroidOpenJTalk
 	url = git@github.com:odt/AndroidOpenJTalk.git
+	ignore = all
 [submodule "AndroidWebAPI"]
 	path = AndroidWebAPI
 	url = git@github.com:odt/AndroidWebAPI.git
+	ignore = all
