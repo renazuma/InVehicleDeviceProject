@@ -69,8 +69,8 @@ public class InVehicleDeviceActivity extends Activity {
 		@Override
 		public void run() {
 			Date now = CommonLogic.getDate();
-			DateFormat f = new SimpleDateFormat(getResources().getString(
-					R.string.present_time_format));
+			DateFormat f = new SimpleDateFormat(
+					getString(R.string.present_time_format));
 			presentTimeTextView.setText(f.format(now));
 			handler.postDelayed(this, UPDATE_TIME_INTERVAL_MILLIS);
 		}

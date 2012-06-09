@@ -1,7 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation;
 
-import java.util.Queue;
-
 public class FrameTask {
 	protected Boolean removed = false;
 
@@ -19,6 +17,6 @@ public class FrameTask {
 	void onDraw(FrameState frameState) {
 	}
 
-	public void onAdd(Queue<FrameTask> frameTaskQueue) {
+	public void onAdd(FrameState frameState) {
 	}
 }

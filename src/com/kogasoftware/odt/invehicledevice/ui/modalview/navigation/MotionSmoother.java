@@ -2,27 +2,27 @@ package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation;
 
 public abstract class MotionSmoother {
 
-	public void addMotion(Double motion) {
+	public void addMotion(double motion) {
 		addMotion(motion, System.currentTimeMillis());
 	}
 
-	public void addMotion(Double motion, Long millis) {
+	public void addMotion(double motion, long millis) {
 		synchronized (this) {
 			calculateAndAddMotion(motion, millis);
 		}
 	}
 
-	protected abstract void calculateAndAddMotion(Double motion, Long millis);
+	protected abstract void calculateAndAddMotion(double motion, long millis);
 
-	public Double getSmoothMotion() {
+	public double getSmoothMotion() {
 		return getSmoothMotion(System.currentTimeMillis());
 	}
 
-	public Double getSmoothMotion(Long millis) {
+	public double getSmoothMotion(long millis) {
 		synchronized (this) {
 			return calculateAndGetSmoothMotion(millis);
 		}
 	}
 
-	protected abstract Double calculateAndGetSmoothMotion(Long millis);
+	protected abstract double calculateAndGetSmoothMotion(long millis);
 }

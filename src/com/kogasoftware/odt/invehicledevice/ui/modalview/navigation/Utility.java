@@ -24,10 +24,6 @@ public class Utility {
 		}
 		return next;
 	}
-
-	public static Integer getNomikaiWarikan(Integer cost, Integer numPersons) {
-		return cost / numPersons;
-	}
 	
 	public static double locationToDouble(long loc) {
 		return loc * 1.0e-6;

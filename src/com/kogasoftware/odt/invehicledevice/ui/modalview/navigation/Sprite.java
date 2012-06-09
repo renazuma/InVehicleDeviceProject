@@ -7,23 +7,20 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PointF;
 
-import com.google.android.maps.GeoPoint;
 import com.google.common.math.DoubleMath;
+import com.javadocmd.simplelatlng.LatLng;
 
 public abstract class Sprite extends FrameTask {
 	/**
 	 * Sprite.draw() メソッドで描画対象をどこに描くかを指定するため，引数として渡すクラス
-	 * 
-	 * @author ksc
-	 * 
 	 */
 	public static class DrawParams {
-		public Boolean useGeoPoint = false;
+		public Boolean useLatLng = false;
 
 		public final FrameState frameState;
 		public Double x = 0d;
 		public Double y = 0d;
-		public GeoPoint geoPoint = new GeoPoint(0, 0);
+		public LatLng latLng = new LatLng(0, 0);
 		public Double angle = 0d;
 		public Double scale = 1d;
 		public Double alpha = 1d;
@@ -42,9 +39,9 @@ public abstract class Sprite extends FrameTask {
 			return this;
 		}
 
-		public DrawParams geoPoint(GeoPoint geoPoint) {
-			this.geoPoint = geoPoint;
-			useGeoPoint = true;
+		public DrawParams latLng(LatLng latLng) {
+			this.latLng = latLng;
+			useLatLng = true;
 			return this;
 		}
 
@@ -55,13 +52,13 @@ public abstract class Sprite extends FrameTask {
 
 		public DrawParams x(Double x) {
 			this.x = x;
-			useGeoPoint = false;
+			useLatLng = false;
 			return this;
 		}
 
 		public DrawParams y(Double y) {
 			this.y = y;
-			useGeoPoint = false;
+			useLatLng = false;
 			return this;
 		}
 	}
@@ -74,8 +71,8 @@ public abstract class Sprite extends FrameTask {
 	protected Integer bitmapHeight = 0;
 
 	public void draw(DrawParams drawParams) {
-		if (drawParams.useGeoPoint) {
-			draw(drawParams.frameState, drawParams.geoPoint, drawParams.angle,
+		if (drawParams.useLatLng) {
+			draw(drawParams.frameState, drawParams.latLng, drawParams.angle,
 					drawParams.scale, drawParams.alpha);
 		} else {
 			draw(drawParams.frameState, drawParams.x, drawParams.y,
@@ -114,23 +111,23 @@ public abstract class Sprite extends FrameTask {
 				scale.floatValue(), alpha.floatValue());
 	}
 
-	public void draw(FrameState frameState, GeoPoint geoPoint) {
-		draw(frameState, geoPoint, 0d);
+	public void draw(FrameState frameState, LatLng latLng) {
+		draw(frameState, latLng, 0d);
 	}
 
-	public void draw(FrameState frameState, GeoPoint geoPoint, Double angle) {
-		draw(frameState, geoPoint, angle, 1d);
+	public void draw(FrameState frameState, LatLng latLng, Double angle) {
+		draw(frameState, latLng, angle, 1d);
 	}
 
-	public void draw(FrameState frameState, GeoPoint geoPoint, Double angle,
+	public void draw(FrameState frameState, LatLng latLng, Double angle,
 			Double scale) {
-		draw(frameState, geoPoint, angle, scale, 1d);
+		draw(frameState, latLng, angle, scale, 1d);
 	}
 
-	public void draw(FrameState frameState, GeoPoint geoPoint, Double angle,
+	public void draw(FrameState frameState, LatLng latLng, Double angle,
 			Double scale, Double alpha) {
 
-		PointF point = frameState.convertGeoPointToPointF(geoPoint);
+		PointF point = frameState.convertLatLngToPointF(latLng);
 		draw(frameState, (double) point.x, (double) point.y, angle, scale,
 				alpha);
 	}
@@ -153,7 +150,7 @@ public abstract class Sprite extends FrameTask {
 				.log2(Math.max(originalBitmapWidth, originalBitmapHeight))));
 		if (bitmapWidth.equals(alignedLength)
 				&& bitmapHeight.equals(alignedLength)) {
-			Texture.update(gl, bitmap, textureId);
+			Texture.update(gl, textureId, bitmap);
 		} else {
 			bitmapWidth = alignedLength;
 			bitmapHeight = alignedLength;
@@ -162,18 +159,22 @@ public abstract class Sprite extends FrameTask {
 			Float left = (float) (bitmapWidth - originalBitmapWidth) / 2;
 			Float top = (float) (bitmapHeight - originalBitmapHeight) / 2;
 			new Canvas(alignedBitmap)
-			.drawBitmap(bitmap, left, top, new Paint());
-			Texture.update(gl, alignedBitmap, textureId);
+					.drawBitmap(bitmap, left, top, new Paint());
+			Texture.update(gl, textureId, alignedBitmap);
 			alignedBitmap.recycle();
 		}
 		bitmap = null; // 明示的に参照を外す。TODO recycle()を検討
 	}
 
 	public void onDispose(GL10 gl) {
+		// bitmap.recycle();
 		Texture.delete(gl, textureId);
 	}
 
-	protected void setBitmap(Bitmap bitmap) {
-		this.bitmap = bitmap;
+	protected void setBitmap(Bitmap newBitmap) {
+		if (bitmap != null) {
+			bitmap.recycle();
+		}
+		bitmap = newBitmap;
 	}
 }

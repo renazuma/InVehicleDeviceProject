@@ -2,9 +2,6 @@ package com.kogasoftware.odt.invehicledevice.ui.modalview;
 
 import java.lang.ref.WeakReference;
 
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL10;
-
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
@@ -14,20 +11,8 @@ import android.widget.FrameLayout;
 
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
-
-class Renderer implements GLSurfaceView.Renderer {
-	@Override
-	public void onDrawFrame(GL10 gl) {
-	}
-
-	@Override
-	public void onSurfaceChanged(GL10 gl, int width, int height) {
-	}
-
-	@Override
-	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-	}
-}
+import com.kogasoftware.odt.invehicledevice.logic.event.CommonLogicLoadCompleteEvent;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.NavigationRenderer;
 
 public class NavigationModalView extends ModalView {
 	public static class ShowEvent {
@@ -37,6 +22,8 @@ public class NavigationModalView extends ModalView {
 	private final Button zoomOutButton;
 
 	private WeakReference<GLSurfaceView> glSurfaceViewWeakReference = new WeakReference<GLSurfaceView>(
+			null);
+	private WeakReference<NavigationRenderer> navigationRendererWeakReference = new WeakReference<NavigationRenderer>(
 			null);
 
 	public NavigationModalView(Context context, AttributeSet attrs) {
@@ -64,10 +51,14 @@ public class NavigationModalView extends ModalView {
 		// そのため、Activity再構築などのタイミングで1/10程度の確率で循環参照でリークすることがある。
 		// それを防ぐために参照を極力減らしたFrameLayoutを間にはさむ
 		{
+			NavigationRenderer navigationRenderer = new NavigationRenderer(
+					getContext().getResources());
+			navigationRendererWeakReference = new WeakReference<NavigationRenderer>(
+					navigationRenderer);
 			FrameLayout icsLeakAvoidanceFrameLayout = new FrameLayout(
 					getContext().getApplicationContext());
 			GLSurfaceView glSurfaceView = new GLSurfaceView(getContext());
-			glSurfaceView.setRenderer(new Renderer());
+			glSurfaceView.setRenderer(navigationRenderer);
 			addView(icsLeakAvoidanceFrameLayout, 0,
 					new NavigationModalView.LayoutParams(
 							NavigationModalView.LayoutParams.FILL_PARENT,
@@ -79,6 +70,7 @@ public class NavigationModalView extends ModalView {
 			glSurfaceViewWeakReference = new WeakReference<GLSurfaceView>(
 					glSurfaceView);
 		}
+		show();
 	}
 
 	public void onPauseActivity() {
@@ -92,6 +84,16 @@ public class NavigationModalView extends ModalView {
 		GLSurfaceView glSurfaceView = glSurfaceViewWeakReference.get();
 		if (glSurfaceView != null) {
 			glSurfaceView.onResume();
+		}
+	}
+
+	@Override
+	public void setCommonLogic(CommonLogicLoadCompleteEvent event) {
+		super.setCommonLogic(event);
+		NavigationRenderer navigationRenderer = navigationRendererWeakReference
+				.get();
+		if (navigationRenderer != null) {
+			getCommonLogic().registerEventListener(navigationRenderer);
 		}
 	}
 

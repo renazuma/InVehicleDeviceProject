@@ -9,22 +9,22 @@ package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation;
 public class LazyMotionSmoother extends MotionSmoother {
 	// private static final String TAG =
 	// LazyMotionSmoother.class.getSimpleName();
-	private volatile Long lastMillis = 0l;
-	private volatile Double startOrientation = 0.0;
-	private volatile Double targetOrientation = 0.0;
-	private final Double latency;
-	private final Double maxVelocity;
-	private final Double minVelocity;
+	private volatile long lastMillis = 0l;
+	private volatile double startOrientation = 0.0;
+	private volatile double targetOrientation = 0.0;
+	private final double latency;
+	private final double maxVelocity;
+	private final double minVelocity;
 
 	public LazyMotionSmoother() {
 		this(300.0, Double.MAX_VALUE, 0.0);
 	}
 
-	public LazyMotionSmoother(Double latency) {
+	public LazyMotionSmoother(double latency) {
 		this(latency, Double.MAX_VALUE, 0.0);
 	}
 
-	public LazyMotionSmoother(Double latency, Double maxVelocity,
+	public LazyMotionSmoother(double latency, double maxVelocity,
 			Double minVelocity) {
 		this.maxVelocity = maxVelocity;
 		this.minVelocity = minVelocity;
@@ -32,7 +32,7 @@ public class LazyMotionSmoother extends MotionSmoother {
 	}
 
 	@Override
-	protected void calculateAndAddMotion(Double orientation, Long millis) {
+	protected void calculateAndAddMotion(double orientation, long millis) {
 		if (lastMillis > millis) {
 			return;
 		}
@@ -43,9 +43,9 @@ public class LazyMotionSmoother extends MotionSmoother {
 	}
 
 	@Override
-	protected Double calculateAndGetSmoothMotion(Long millis) {
-		Double result = 0.0;
-		Double elapsed = (double) (millis - lastMillis);
+	protected double calculateAndGetSmoothMotion(long millis) {
+		double result = 0.0;
+		double elapsed = (millis - lastMillis);
 		if (elapsed <= 0.0) {
 			return startOrientation;
 		}
@@ -53,9 +53,9 @@ public class LazyMotionSmoother extends MotionSmoother {
 			elapsed = latency;
 		}
 		// 現在の角度の差
-		Double diffAngle = targetOrientation - startOrientation;
+		double diffAngle = targetOrientation - startOrientation;
 		// 角速度
-		Double angularVelocity = diffAngle / latency;
+		double angularVelocity = diffAngle / latency;
 		// 角速度を丸める
 		if (Math.abs(angularVelocity) > maxVelocity) {
 			angularVelocity = maxVelocity * (angularVelocity > 0 ? 1 : -1);
@@ -64,7 +64,7 @@ public class LazyMotionSmoother extends MotionSmoother {
 			angularVelocity = minVelocity * (angularVelocity > 0 ? 1 : -1);
 		}
 		// 追加する角度
-		Double extraAngle = angularVelocity * elapsed;
+		double extraAngle = angularVelocity * elapsed;
 		if (Math.abs(extraAngle) > Math.abs(diffAngle)) {
 			// 追加する角度が現在の差より大きい場合
 			result = targetOrientation;

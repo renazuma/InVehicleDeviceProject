@@ -10,12 +10,11 @@ import android.graphics.Bitmap;
 import android.opengl.GLUtils;
 
 public class Texture {
-
 	// 固定小数点値で1.0
-	static final int ONE = 0x10000;
+	private static final int ONE = 0x10000;
 	// テクスチャ座標配列
-	static final int TEX_COORDS[] = { 0, ONE, ONE, ONE, 0, 0, ONE, 0, };
-	static final IntBuffer TEX_COORDS_INT_BUFFER = wrapNativeIntBuffer(TEX_COORDS);
+	private static final IntBuffer DEFAULT_TEX_COORDS = wrapNativeIntBuffer(new int[] {
+			0, ONE, ONE, ONE, 0, 0, ONE, 0 });
 
 	/**
 	 * 2Dテクスチャを描画する
@@ -32,8 +31,9 @@ public class Texture {
 	 * @param scaleX
 	 *            , scale_y 拡大率
 	 */
-	static void draw(GL10 gl, int textureId, float x, float y, int width,
-			int height, float angle, float scaleX, float scaleY, float alpha) {
+	public static void draw(GL10 gl, int textureId, float x, float y,
+			int width, int height, float angle, float scaleX, float scaleY,
+			float alpha) {
 
 		// 頂点座標
 		int vertices[] = { -width * ONE / 2, //
@@ -89,7 +89,7 @@ public class Texture {
 		// 頂点座標配列をセット
 		gl.glVertexPointer(3, GL10.GL_FIXED, 0, wrapNativeIntBuffer(vertices));
 		// テクスチャ情報をセット
-		gl.glTexCoordPointer(2, GL10.GL_FIXED, 0, TEX_COORDS_INT_BUFFER);
+		gl.glTexCoordPointer(2, GL10.GL_FIXED, 0, DEFAULT_TEX_COORDS);
 		// セットした配列を元に描画
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
 		// さきほどプッシュした状態に行列スタックを戻す
@@ -109,23 +109,24 @@ public class Texture {
 	 *            読み込むリソースのIDを渡す
 	 * @return 生成したテクスチャのIDを返す
 	 */
-	static int generate(GL10 gl) {
+	public static int generate(GL10 gl) {
 		int[] textures = new int[1];
-		// テクスチャを作成するための固有名を1つ作成
+		// テクスチャを作成するための固有IDを1つ作成
 		gl.glGenTextures(1, textures, 0);
-
-		// 作成されたテクスチャのIDをセット
-		int textureId = textures[0];
-
-		// テクスチャにアクセスするためのIDを返す
-		return textureId;
+		return textures[0];
 	}
 
-	static void delete(GL10 gl, int textureId) {
+	/**
+	 * テクスチャを削除する
+	 */
+	public static void delete(GL10 gl, int textureId) {
 		gl.glDeleteTextures(1, new int[] { textureId }, 0);
 	}
 
-	static void update(GL10 gl, Bitmap bitmap, int textureId) {
+	/**
+	 * テクスチャを張り替える
+	 */
+	public static void update(GL10 gl, int textureId, Bitmap bitmap) {
 		// 指定した固有名を持つテクスチャを作成
 		gl.glBindTexture(GL10.GL_TEXTURE_2D, textureId);
 
@@ -151,7 +152,7 @@ public class Texture {
 		GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
 	}
 
-	public static IntBuffer wrapNativeIntBuffer(int vertices[]) {
+	private static IntBuffer wrapNativeIntBuffer(int vertices[]) {
 		ByteBuffer byteBuffer = ByteBuffer.allocateDirect(vertices.length * 4);
 		byteBuffer.order(ByteOrder.nativeOrder());
 		IntBuffer intBuffer = byteBuffer.asIntBuffer();
