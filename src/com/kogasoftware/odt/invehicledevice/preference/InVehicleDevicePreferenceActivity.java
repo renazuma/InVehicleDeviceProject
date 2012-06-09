@@ -6,7 +6,6 @@ import org.json.JSONException;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -33,12 +32,15 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		OnSharedPreferenceChangeListener {
 	private static final int CONNECTING_DIALOG_ID = 100;
 	private static final String DEFAULT_URL = "http://127.0.0.1";
+	private static final String LOGIN_KEY = "login";
+	private static final String PASSWORD_KEY = "password";
 	private static final String TAG = InVehicleDevicePreferenceActivity.class
 			.getSimpleName();
+
+	private final AtomicBoolean callbackReceived = new AtomicBoolean(false);
 	private int latestReqKey = 0;
-	private AtomicBoolean callbackReceived = new AtomicBoolean(false);
+
 	private SharedPreferences preferences = null;
-	private Button saveConfigButton = null;
 	private WebAPI api = null;
 
 	@Override
@@ -54,32 +56,11 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 
 		preferences.registerOnSharedPreferenceChangeListener(this);
 
-		saveConfigButton = (Button) findViewById(R.id.save_config_button);
+		Button saveConfigButton = (Button) findViewById(R.id.save_config_button);
 		saveConfigButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				if (isFinishing()) {
-					return;
-				}
-				showDialog(CONNECTING_DIALOG_ID);
-				Context context = InVehicleDevicePreferenceActivity.this;
-				api.setServerHost(preferences.getString("connection_url",
-						DEFAULT_URL));
-
-				InVehicleDevice ivd = new InVehicleDevice();
-				ivd.setLogin(preferences.getString("login", "ivd1"));
-				ivd.setPassword(preferences.getString("password", "ivdpass"));
-				callbackReceived.set(false);
-				try {
-					latestReqKey = api.login(ivd,
-							InVehicleDevicePreferenceActivity.this);
-				} catch (WebAPIException e) {
-					Toast.makeText(context, e.toString(), Toast.LENGTH_LONG)
-							.show();
-				} catch (JSONException e) {
-					Toast.makeText(context, e.toString(), Toast.LENGTH_LONG)
-							.show();
-				}
+				onSaveConfigButtonClick();
 			}
 		});
 
@@ -91,7 +72,8 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		switch (id) {
 		case CONNECTING_DIALOG_ID: {
 			ProgressDialog dialog = new ProgressDialog(this);
-			dialog.setMessage(Html.fromHtml("<big>接続確認をしています</big>"));
+			dialog.setMessage(Html
+					.fromHtml(getString(R.string.checking_connection_config)));
 			dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 			return dialog;
 		}
@@ -116,7 +98,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		}
 		final String message = "onException: reqKey=" + reqKey + ", exception="
 				+ ex;
-
+		Log.w(TAG, message, ex);
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -143,6 +125,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		}
 		final String message = "onFailed: reqKey=" + reqKey + ", statusCode="
 				+ statusCode + " response=" + response;
+		Log.w(TAG, message);
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -179,6 +162,8 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		} catch (IllegalArgumentException e) {
 		}
 		if (!inVehicleDevice.getAuthenticationToken().isPresent()) {
+			final String message = "token not found";
+			Log.e(TAG, message);
 			runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
@@ -188,7 +173,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 									.getString(R.string.an_error_occurred),
 							Toast.LENGTH_LONG).show();
 					Toast.makeText(InVehicleDevicePreferenceActivity.this,
-							"token not found", Toast.LENGTH_LONG).show();
+							message, Toast.LENGTH_LONG).show();
 				}
 			});
 			finish();
@@ -197,7 +182,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		String token = inVehicleDevice.getAuthenticationToken().get();
 		SharedPreferences preference = PreferenceManager
 				.getDefaultSharedPreferences(InVehicleDevicePreferenceActivity.this);
-		String url = preference.getString("connection_url", "");
+		String url = preference.getString(SharedPreferencesKey.SERVER_URL, "");
 
 		Intent intent = new Intent();
 		intent.setAction(Intent.ACTION_SEND);
@@ -205,21 +190,6 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		intent.putExtra(SharedPreferencesKey.SERVER_IN_VEHICLE_DEVICE_TOKEN,
 				token);
 		intent.putExtra(SharedPreferencesKey.IN_VEHICLE_DEVICE, inVehicleDevice);
-		// if (!inVehicleDevice.getServiceProvider().isPresent()) {
-		// runOnUiThread(new Runnable() {
-		// @Override
-		// public void run() {
-		// Toast.makeText(InVehicleDevicePreferenceActivity.this,
-		// getResources().getString(R.string.an_error_occurred),
-		// Toast.LENGTH_LONG).show();
-		// Toast.makeText(InVehicleDevicePreferenceActivity.this,
-		// "in_vehicle_device.service_provider not found",
-		// Toast.LENGTH_LONG).show();
-		// }
-		// });
-		// finish();
-		// return;
-		// }
 		intent.putExtra(SharedPreferencesKey.SERVICE_PROVIDER,
 				inVehicleDevice.getServiceProvider());
 		String packageName = "com.kogasoftware.odt.invehicledevice";
@@ -230,10 +200,33 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 	}
 
 	private void updateSummary() {
-		EditTextPreference connectionUrl = (EditTextPreference) findPreference("connection_url");
-		connectionUrl.setSummary(preferences.getString("connection_url", ""));
+		EditTextPreference connectionUrl = (EditTextPreference) findPreference(SharedPreferencesKey.SERVER_URL);
+		connectionUrl.setSummary(preferences.getString(
+				SharedPreferencesKey.SERVER_URL, ""));
 
-		EditTextPreference login = (EditTextPreference) findPreference("login");
-		login.setSummary(preferences.getString("login", ""));
+		EditTextPreference login = (EditTextPreference) findPreference(LOGIN_KEY);
+		login.setSummary(preferences.getString(LOGIN_KEY, ""));
+	}
+
+	private void onSaveConfigButtonClick() {
+		if (isFinishing()) {
+			return;
+		}
+		showDialog(CONNECTING_DIALOG_ID);
+		api.setServerHost(preferences.getString(
+				SharedPreferencesKey.SERVER_URL, DEFAULT_URL));
+
+		InVehicleDevice ivd = new InVehicleDevice();
+		ivd.setLogin(preferences.getString(LOGIN_KEY, ""));
+		ivd.setPassword(preferences.getString(PASSWORD_KEY, ""));
+		callbackReceived.set(false);
+		try {
+			latestReqKey = api.login(ivd,
+					InVehicleDevicePreferenceActivity.this);
+		} catch (WebAPIException e) {
+			Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show();
+		} catch (JSONException e) {
+			Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show();
+		}
 	}
 }

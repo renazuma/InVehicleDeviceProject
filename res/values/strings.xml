@@ -3,10 +3,10 @@
 
     <string name="app_name">車載器設定</string>
     <string name="connection_config">接続設定</string>
-    <string name="connection_url">接続先URL</string>
+    <string name="server_url">接続先URL</string>
     <string name="login">ログイン</string>
     <string name="password">パスワード</string>
     <string name="ok">OK</string>
     <string name="an_error_occurred">エラーが発生しました</string>
-    
+    <string name="checking_connection_config">&lt;big&gt;&lt;big&gt;接続確認をしています&lt;/big&gt;&lt;/big&gt;</string>
 </resources>
