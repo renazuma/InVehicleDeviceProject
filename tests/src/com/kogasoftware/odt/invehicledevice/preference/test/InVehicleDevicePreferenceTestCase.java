@@ -33,8 +33,8 @@ public class InVehicleDevicePreferenceTestCase extends
 
 	private void setConnectionUrl(String url) throws Exception {
 		getInstrumentation().waitForIdleSync();
-		solo.clickOnText(getInstrumentation().getTargetContext().getResources()
-				.getString(R.string.connection_url));
+		solo.clickOnText(getInstrumentation().getTargetContext().getString(
+				R.string.server_url));
 		solo.clearEditText(0);
 		solo.enterText(0, url);
 		solo.sendKey(KeyEvent.KEYCODE_ENTER);
@@ -96,7 +96,7 @@ public class InVehicleDevicePreferenceTestCase extends
 			// Toastが消えるのを待つ
 			Thread.sleep(1000);
 		}
-		
+
 		assertFalse(getActivity().isFinishing());
 	}
 
