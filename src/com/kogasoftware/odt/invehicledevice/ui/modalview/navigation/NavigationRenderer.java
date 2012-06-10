@@ -1,9 +1,10 @@
 package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation;
 
 import java.io.InputStream;
-import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -24,21 +25,26 @@ import com.kogasoftware.odt.invehicledevice.logic.event.OrientationChangedEvent;
 
 public class NavigationRenderer implements GLSurfaceView.Renderer {
 	private static final String TAG = NavigationRenderer.class.getSimpleName();
-	private final Queue<FrameTask> frameTaskQueue = new LinkedList<FrameTask>();
-	private final MotionSmoother rotationSmoother = new LazyMotionSmoother(
-			500.0, 0.02, 0.00005);
-	private final MotionSmoother latitudeSmoother = new LazyMotionSmoother(
-			500.0, 0.02, 0.00005);
-	private final MotionSmoother longitudeSmoother = new LazyMotionSmoother(
-			500.0, 0.02, 0.00005);
+	// private final MotionSmoother rotationSmoother = new LazyMotionSmoother(
+	// 500.0, 0.02, 0.00005);
+	// private final MotionSmoother latitudeSmoother = new LazyMotionSmoother(
+	// 500.0, 0.02, 0.00005);
+	// private final MotionSmoother longitudeSmoother = new LazyMotionSmoother(
+	// 500.0, 0.02, 0.00005);
+	private final MotionSmoother rotationSmoother = new SimpleMotionSmoother();
+	private final MotionSmoother latitudeSmoother = new SimpleMotionSmoother();
+	private final MotionSmoother longitudeSmoother = new SimpleMotionSmoother();
 	private final LatLng currentLatLng = new LatLng(0, 0);
 	private long framesBy10seconds = 0l;
 	private long lastReportMillis = 0l;
+	private final List<FrameTask> frameTasks = new LinkedList<FrameTask>();
+	private final Queue<FrameTask> addedFrameTasks = new ConcurrentLinkedQueue<FrameTask>();
+	private final Queue<FrameTask> removedFrameTasks = new ConcurrentLinkedQueue<FrameTask>();
 
 	public NavigationRenderer(Resources resources) {
-		frameTaskQueue.add(new GeoPointDroidSprite(resources, new LatLng(
-				35.899975, 139.935788)));
-		frameTaskQueue.add(new MyLocationSprite(resources));
+		frameTasks.add(new GeoPointDroidSprite(resources, new LatLng(35.899975,
+				139.935788)));
+		frameTasks.add(new MyLocationSprite(resources));
 	}
 
 	private static Bitmap getBitmapResource(Context context, int id) {
@@ -67,7 +73,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 
 		// 現在の方向を取得
 		double radian = Utility.getNearestRadian(0.0, 2 * Math.PI
-				- rotationSmoother.getSmoothMotion());
+				- rotationSmoother.getSmoothMotion(millis));
 
 		// 現在地を取得
 		double latitude = latitudeSmoother.getSmoothMotion(millis);
@@ -75,19 +81,32 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		currentLatLng.setLatitudeLongitude(latitude, longitude);
 
 		FrameState frameState = new FrameState(gl, millis, radian,
-				currentLatLng);
-		for (Iterator<FrameTask> iterator = frameTaskQueue.iterator(); iterator
-				.hasNext();) {
-			FrameTask frameTask = iterator.next();
-			if (frameTask.isRemoved()) {
-				frameTask.onDispose(frameState);
-				iterator.remove();
-			} else {
-				frameTask.onDraw(frameState);
+				currentLatLng, addedFrameTasks, removedFrameTasks);
+
+		// 追加予約されているFrameTaskを追加
+		while (true) {
+			FrameTask frameTask = addedFrameTasks.poll();
+			if (frameTask == null) {
+				break;
 			}
+			frameTask.onAdd(frameState);
+			frameTasks.add(frameTask);
 		}
 
-		frameTaskQueue.addAll(frameState.getNewFrameTasks());
+		// 削除予約されているFrameTaskを削除
+		while (true) {
+			FrameTask frameTask = removedFrameTasks.poll();
+			if (frameTask == null) {
+				break;
+			}
+			frameTask.onRemove(frameState);
+			frameTasks.remove(frameTask);
+		}
+
+		// FrameTaskをひとつずつ描画
+		for (FrameTask frameTask : frameTasks) {
+			frameTask.onDraw(frameState);
+		}
 	}
 
 	/**

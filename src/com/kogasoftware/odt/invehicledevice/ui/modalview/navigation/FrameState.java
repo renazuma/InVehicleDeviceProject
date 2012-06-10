@@ -1,6 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation;
 
-import java.util.LinkedList;
+import java.util.Queue;
 
 import javax.microedition.khronos.opengles.GL10;
 
@@ -13,22 +13,25 @@ public class FrameState {
 	private final long milliSeconds;
 	private final double radian;
 	private final LatLng latLng;
-	private final LinkedList<FrameTask> newFrameTasks = new LinkedList<FrameTask>();
+	private final Queue<FrameTask> addedFrameTasks;
+	private final Queue<FrameTask> removedFrameTasks;
 
-	public FrameState(GL10 gl, long milliSeconds, double radian, LatLng latLng) {
+	public FrameState(GL10 gl, long milliSeconds, double radian, LatLng latLng,
+			Queue<FrameTask> addedFrameTasks, Queue<FrameTask> removedFrameTasks) {
 		this.gl = gl;
 		this.milliSeconds = milliSeconds;
 		this.radian = radian;
 		this.latLng = latLng;
+		this.addedFrameTasks = addedFrameTasks;
+		this.removedFrameTasks = removedFrameTasks;
 	}
 
 	public void addFrameTask(FrameTask frameTask) {
-		frameTask.onAdd(this);
-		newFrameTasks.add(frameTask);
+		addedFrameTasks.add(frameTask);
 	}
 
-	public LinkedList<FrameTask> getNewFrameTasks() {
-		return newFrameTasks;
+	public void removeFrameTask(FrameTask frameTask) {
+		removedFrameTasks.add(frameTask);
 	}
 
 	/**
