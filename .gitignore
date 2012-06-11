@@ -25,3 +25,4 @@ release.keystore
 
 custom_rules.xml
 debug.keystore
+.sonar/
