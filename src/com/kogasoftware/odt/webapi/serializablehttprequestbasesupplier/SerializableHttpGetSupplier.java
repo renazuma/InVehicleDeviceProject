@@ -22,6 +22,11 @@ public class SerializableHttpGetSupplier extends
 		super(host, path, params, authenticationToken);
 	}
 
+	public SerializableHttpGetSupplier(String host, String path,
+			Map<String, String> params, String authenticationToken, String extension) {
+		super(host, path, params, authenticationToken, extension);
+	}
+
 	@Override
 	public HttpRequestBase get() throws WebAPIException {
 		HttpGet request = new HttpGet();

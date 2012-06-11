@@ -25,10 +25,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.ByteStreams;
+import com.javadocmd.simplelatlng.LatLng;
 import com.kogasoftware.odt.webapi.model.Demand;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationRecord;
@@ -761,6 +764,40 @@ public class WebAPI implements Closeable {
 								parseJSONObject(rawResponse)).orNull();
 					}
 				});
+	}
+
+	/**
+	 * 地図画像を取得
+	 */
+	public int getMapTile(LatLng center, Integer zoom,
+			WebAPICallback<Bitmap> callback) {
+		ResponseConverter<Bitmap> responseConverter = new ResponseConverter<Bitmap>() {
+			@Override
+			public Bitmap convert(byte[] rawResponse) throws Exception {
+				Bitmap b = BitmapFactory.decodeByteArray(rawResponse, 0,
+						rawResponse.length);
+				return b;
+			}
+		};
+
+		// http://ojw.dev.openstreetmap.org/StaticMap/?lat=35.214478887245&lon=139.21875&z=5&mode=Export&show=1
+		// http://otile1.mqcdn.com/tiles/1.0.0/osm/15/5240/12661.jpg
+		Map<String, String> params = new TreeMap<String, String>();
+		params.put("lat", "" + center.getLatitude());
+		params.put("lon", "" + center.getLongitude());
+		params.put("z", "" + zoom);
+		params.put("w", "" + 256);
+		params.put("h", "" + 256);
+		params.put("mode", "Export");
+		params.put("show", "1");
+
+		SerializableHttpGetSupplier supplier = new SerializableHttpGetSupplier(
+				"http://ojw.dev.openstreetmap.org", "/StaticMap/", params,
+				authenticationToken, "");
+		WebAPIRequest<?> request = new WebAPIRequest<Bitmap>(callback,
+				responseConverter, supplier, true);
+		requests.add(request);
+		return request.getReqKey();
 	}
 
 	public void setServerHost(String serverHost) {

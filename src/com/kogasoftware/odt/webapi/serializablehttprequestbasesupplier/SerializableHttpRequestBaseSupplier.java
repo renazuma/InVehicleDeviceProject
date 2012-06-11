@@ -25,23 +25,30 @@ abstract public class SerializableHttpRequestBaseSupplier implements
 
 	protected final String host;
 	protected final String path;
+	protected final String extension;
 	protected final TreeMap<String, String> params; // Serializableを明示するため具体的なクラスを指定
 	protected final String authenticationToken;
 
 	public SerializableHttpRequestBaseSupplier(String host, String path,
-			Map<String, String> params, String authenticationToken) {
+			Map<String, String> params, String authenticationToken, String extension) {
 		this.host = host;
 		this.path = path;
 		this.params = new TreeMap<String, String>(Objects.firstNonNull(params,
 				new TreeMap<String, String>()));
 		this.authenticationToken = Strings.nullToEmpty(authenticationToken);
+		this.extension = extension;
+	}
+	
+	public SerializableHttpRequestBaseSupplier(String host, String path,
+			Map<String, String> params, String authenticationToken) {
+		this(host, path, params, authenticationToken, ".json");
 	}
 
 	protected void build(HttpRequestBase request) throws WebAPIException {
 		registerAuthenticationToken();
 
 		Uri.Builder uriBuilder = Uri.parse(host).buildUpon();
-		uriBuilder.path(path + ".json");
+		uriBuilder.path(path + extension);
 
 		for (Entry<String, String> entry : (new TreeMap<String, String>(params))
 				.entrySet()) {
