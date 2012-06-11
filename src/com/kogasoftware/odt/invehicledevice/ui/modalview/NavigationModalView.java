@@ -70,7 +70,6 @@ public class NavigationModalView extends ModalView {
 			glSurfaceViewWeakReference = new WeakReference<GLSurfaceView>(
 					glSurfaceView);
 		}
-		show();
 	}
 
 	public void onPauseActivity() {
