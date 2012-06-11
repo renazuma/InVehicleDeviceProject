@@ -22,3 +22,6 @@ jni/*.xz
 jni/*/*.a
 local.properties
 release.keystore
+
+custom_rules.xml
+debug.keystore
