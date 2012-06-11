@@ -108,11 +108,15 @@ public class VoiceCache {
 			}
 		}).maximumWeight(maxBytes).build();
 		File dataDirectory = context.getExternalFilesDir("open_jtalk");
-		File libraryDirectory = context.getFilesDir();
-
+		if (dataDirectory == null) {
+			throw new IOException(
+					"context.getExternalFilesDir(\"open_jtalk\") is null");
+		}
 		if (!dataDirectory.isDirectory()) {
 			throw new IOException("!(" + dataDirectory + ").isDirectory()");
 		}
+		File libraryDirectory = context.getFilesDir();
+
 		String s = File.separator;
 		File voiceDirectory = new File(dataDirectory + s + "voice" + s
 				+ "mei_normal");

@@ -127,6 +127,10 @@ public class TileCache {
 					}
 				});
 		outputDirectory = context.getExternalFilesDir("tile");
+		if (outputDirectory == null) {
+			throw new IOException(
+					"context.getExternalFilesDir(\"tile\") is null");
+		}
 		if (!outputDirectory.exists() && !outputDirectory.mkdirs()) {
 			throw new IOException("!\"" + outputDirectory + "\".mkdirs()");
 		}
