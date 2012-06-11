@@ -10,7 +10,7 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSource;
+import com.kogasoftware.odt.invehicledevice.logic.datasource.EmptyDataSource;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.Demand;
@@ -23,8 +23,8 @@ import com.kogasoftware.odt.webapi.model.ReservationCandidate;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
-public class DummyDataSource implements DataSource {
-
+public class DummyDataSource extends EmptyDataSource {
+	
 	private Date nextNotifyDate = new Date(new Date().getTime() + 60 * 1000);
 
 	public List<ServiceUnitStatusLog> sendServiceUnitStatusLogArgs = new LinkedList<ServiceUnitStatusLog>();

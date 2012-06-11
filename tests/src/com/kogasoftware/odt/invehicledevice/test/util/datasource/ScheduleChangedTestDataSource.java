@@ -10,7 +10,7 @@ import org.json.JSONObject;
 
 import android.util.Log;
 
-import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSource;
+import com.kogasoftware.odt.invehicledevice.logic.datasource.EmptyDataSource;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.Demand;
@@ -23,7 +23,7 @@ import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 import com.kogasoftware.odt.webapi.model.VehicleNotifications;
 
-public class ScheduleChangedTestDataSource implements DataSource {
+public class ScheduleChangedTestDataSource extends EmptyDataSource {
 	private static final String TAG = ScheduleChangedTestDataSource.class
 			.getSimpleName();
 	private final AtomicInteger phase = new AtomicInteger(0);

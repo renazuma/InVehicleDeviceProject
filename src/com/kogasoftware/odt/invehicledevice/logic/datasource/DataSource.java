@@ -3,6 +3,9 @@ package com.kogasoftware.odt.invehicledevice.logic.datasource;
 import java.io.Closeable;
 import java.util.List;
 
+import android.graphics.Bitmap;
+
+import com.javadocmd.simplelatlng.LatLng;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.Demand;
@@ -15,6 +18,8 @@ import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public interface DataSource extends Closeable {
+	void cancel(int reqkey);
+
 	int arrivalOperationSchedule(OperationSchedule os,
 			WebAPICallback<OperationSchedule> callback);
 
@@ -52,4 +57,7 @@ public interface DataSource extends Closeable {
 
 	int createReservation(ReservationCandidate reservationCandidate,
 			WebAPICallback<Reservation> callback);
+
+	int getMapTile(LatLng center, Integer zoom,
+			WebAPICallback<Bitmap> webAPICallback);
 }

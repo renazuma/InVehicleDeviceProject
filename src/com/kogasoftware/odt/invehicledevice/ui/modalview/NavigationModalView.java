@@ -52,17 +52,18 @@ public class NavigationModalView extends ModalView {
 		// それを防ぐために参照を極力減らしたFrameLayoutを間にはさむ
 		{
 			NavigationRenderer navigationRenderer = new NavigationRenderer(
-					getContext().getResources());
+					getContext());
 			navigationRendererWeakReference = new WeakReference<NavigationRenderer>(
 					navigationRenderer);
 			FrameLayout icsLeakAvoidanceFrameLayout = new FrameLayout(
 					getContext().getApplicationContext());
 			GLSurfaceView glSurfaceView = new GLSurfaceView(getContext());
 			glSurfaceView.setRenderer(navigationRenderer);
-			addView(icsLeakAvoidanceFrameLayout, 0,
-					new NavigationModalView.LayoutParams(
-							NavigationModalView.LayoutParams.FILL_PARENT,
-							NavigationModalView.LayoutParams.FILL_PARENT));
+			FrameLayout navigationSurfaceParent = (FrameLayout) findViewById(R.id.navigation_surface_parent);
+			navigationSurfaceParent.addView(icsLeakAvoidanceFrameLayout,
+					new FrameLayout.LayoutParams(
+							FrameLayout.LayoutParams.FILL_PARENT,
+							FrameLayout.LayoutParams.FILL_PARENT));
 			icsLeakAvoidanceFrameLayout.addView(glSurfaceView,
 					new FrameLayout.LayoutParams(
 							FrameLayout.LayoutParams.FILL_PARENT,
@@ -93,11 +94,34 @@ public class NavigationModalView extends ModalView {
 				.get();
 		if (navigationRenderer != null) {
 			getCommonLogic().registerEventListener(navigationRenderer);
+			navigationRenderer.setCommonLogic(getCommonLogic());
 		}
 	}
 
 	@Subscribe
 	public void show(ShowEvent event) {
-		super.show();
+		show();
+	}
+	
+	@Override
+	public void show() {
+		setVisibility(VISIBLE);
+		GLSurfaceView glSurfaceView = glSurfaceViewWeakReference.get();
+		if (glSurfaceView != null) {
+			glSurfaceView.setVisibility(VISIBLE);
+		}
+		// TODO:アニメーション
+		// super.show();
+	}
+	
+	@Override
+	public void hide() {
+		setVisibility(GONE);
+		GLSurfaceView glSurfaceView = glSurfaceViewWeakReference.get();
+		if (glSurfaceView != null) {
+			glSurfaceView.setVisibility(GONE);
+		}
+		// TODO:アニメーション
+		// super.hide();
 	}
 }

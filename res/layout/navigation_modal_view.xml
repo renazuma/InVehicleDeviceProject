@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/ModalView.Layout" >
+    style="@style/ModalView.Layout"
+    android:padding="0dip" >
+
+    <FrameLayout
+        android:id="@+id/navigation_surface_parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,8 +19,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textSize="24sp"
-            android:text="@string/it_returns" />
+            android:text="@string/it_returns"
+            android:textSize="24sp" />
 
         <Button
             android:id="@+id/navigation_zoom_in_button"
@@ -22,8 +28,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textSize="24sp"
-            android:text="@string/zoom_in" />
+            android:text="@string/zoom_in"
+            android:textSize="24sp" />
 
         <Button
             android:id="@+id/navigation_zoom_out_button"
@@ -31,8 +37,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textSize="24sp"
-            android:text="@string/zoom_out" />
+            android:text="@string/zoom_out"
+            android:textSize="24sp" />
     </LinearLayout>
 
 </FrameLayout>

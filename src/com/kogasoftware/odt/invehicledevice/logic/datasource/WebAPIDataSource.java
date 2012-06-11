@@ -7,9 +7,11 @@ import java.util.concurrent.CountDownLatch;
 
 import org.json.JSONException;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.google.common.io.Closeables;
+import com.javadocmd.simplelatlng.LatLng;
 import com.kogasoftware.odt.invehicledevice.logic.empty.EmptyWebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPI;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
@@ -265,5 +267,15 @@ public class WebAPIDataSource implements DataSource {
 				return api.createReservation(reservationCandidate, callback);
 			}
 		});
+	}
+
+	@Override
+	public void cancel(int reqkey) {
+	}
+
+	@Override
+	public int getMapTile(LatLng center, Integer zoom,
+			WebAPICallback<Bitmap> callback) {
+		return api.getMapTile(center, zoom, callback);
 	}
 }

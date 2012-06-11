@@ -10,6 +10,9 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.graphics.Bitmap;
+
+import com.javadocmd.simplelatlng.LatLng;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSource;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
@@ -471,6 +474,16 @@ public class MockDataSource implements DataSource {
 			Thread.currentThread().interrupt();
 		}
 		callback.onSucceed(0, 200, new Reservation());
+		return 0;
+	}
+
+	@Override
+	public void cancel(int reqkey) {
+	}
+
+	@Override
+	public int getMapTile(LatLng center, Integer zoom,
+			WebAPICallback<Bitmap> webAPICallback) {
 		return 0;
 	}
 }
