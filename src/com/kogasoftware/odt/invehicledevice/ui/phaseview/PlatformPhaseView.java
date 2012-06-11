@@ -39,7 +39,8 @@ public class PlatformPhaseView extends PhaseView {
 	private static final String TAG = PlatformPhaseView.class.getSimpleName();
 	private static final long UPDATE_MINUTES_REMAINING_INTERVAL_MILLIS = 5;
 	private final ListView reservationListView;
-	private final TextView platformNameTextView;
+	private final TextView nextPlatformNameTextView;
+	private final TextView nowPlatformNameTextView;
 	private final ToggleButton showAllRidingReservationsButton;
 	private final ToggleButton showFutureReservationsButton;
 	private final ToggleButton showMissedReservationsButton;
@@ -81,7 +82,8 @@ public class PlatformPhaseView extends PhaseView {
 		super(context, attrs);
 		setContentView(R.layout.platform_phase_view);
 
-		platformNameTextView = (TextView) findViewById(R.id.next_platform_text_view);
+		nextPlatformNameTextView = (TextView) findViewById(R.id.next_platform_text_view);
+		nowPlatformNameTextView = (TextView) findViewById(R.id.now_platform_text_view);
 		reservationListView = ((FlickUnneededListView) findViewById(R.id.reservation_list_view))
 				.getListView();
 		LayoutInflater layoutInflater = (LayoutInflater) getContext()
@@ -135,14 +137,19 @@ public class PlatformPhaseView extends PhaseView {
 			OperationSchedule nextOperationSchedule = operationSchedules.get(1);
 			for (Platform platform : nextOperationSchedule.getPlatform()
 					.asSet()) {
-				platformNameTextView.setText(Html.fromHtml(String.format(
+				nextPlatformNameTextView.setText(Html.fromHtml(String.format(
 						getResources()
 								.getString(R.string.next_platform_is_html),
 						platform.getName())));
 			}
 		} else {
-			platformNameTextView.setText("");
+			nextPlatformNameTextView.setText("");
 		}
+		//TODO 茂木さん、現在の乗降場を表示するコードを書いてね！！
+		nowPlatformNameTextView.setText(Html.fromHtml(String.format(
+				getResources()
+						.getString(R.string.now_platform_is_html),
+				"現在乗降場")));
 
 		showAllRidingReservationsButton
 				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
