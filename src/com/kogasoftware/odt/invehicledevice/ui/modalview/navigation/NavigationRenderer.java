@@ -135,6 +135,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	@Override
 	public void onDrawFrame(GL10 gl) {
 		final long millis = System.currentTimeMillis();
+		float cameraZoom = 1.5f;
 
 		// 現在の方向を取得
 		float angle = Utility.getNearestRadian(0.0,
@@ -168,7 +169,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		}
 
 		// 上下左右で追加で表示に必要なタイルを準備
-		int extraTiles = (int) Math.floor(Math.max(height, width)
+		int extraTiles = (int) Math.floor(Math.max(height, width) / cameraZoom
 				/ TileKey.TILE_LENGTH / 2 + 1);
 		TileKey centerTileKey = new TileKey(currentLatLng, zoom.get());
 
@@ -228,7 +229,9 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		float right = center.x + width / 2f;
 		float bottom = center.y + -height / 2f;
 		float top = center.y + height / 2f;
-		GLU.gluOrtho2D(gl, left, right, bottom, top);
+		// GLU.gluOrtho2D(gl, left, right, bottom, top);
+		GLU.gluOrtho2D(gl, left / cameraZoom, right / cameraZoom, bottom
+				/ cameraZoom, top / cameraZoom);
 
 		// モデル全体の回転
 		gl.glMatrixMode(GL10.GL_MODELVIEW);
