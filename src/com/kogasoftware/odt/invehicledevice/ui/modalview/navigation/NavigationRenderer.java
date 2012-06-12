@@ -155,7 +155,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		// 現在の方向を取得
 		float angle = Utility.getNearestRadian(0.0,
 				-rotationSmoother.getSmoothMotion(millis)).floatValue();
-		angle = (float) Math.toRadians((millis / 50) % 360);
+		// angle = (float) Math.toRadians((millis / 50) % 360);
 
 		// 現在地を取得
 		double latitude = latitudeSmoother.getSmoothMotion(millis);
@@ -362,10 +362,10 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	public void changeLocation(LocationReceivedEvent event) {
 		Log.i(TAG, "changeLocation " + event.location);
 		long millis = System.currentTimeMillis();
-		// latitudeSmoother.addMotion(event.location.getLatitude(), millis);
-		// longitudeSmoother.addMotion(event.location.getLongitude(), millis);
-		latitudeSmoother.addMotion(35.658517, millis);
-		longitudeSmoother.addMotion(139.701334, millis);
+		latitudeSmoother.addMotion(event.location.getLatitude(), millis);
+		longitudeSmoother.addMotion(event.location.getLongitude(), millis);
+		// latitudeSmoother.addMotion(35.658517, millis);
+		// longitudeSmoother.addMotion(139.701334, millis);
 	}
 
 	/**
