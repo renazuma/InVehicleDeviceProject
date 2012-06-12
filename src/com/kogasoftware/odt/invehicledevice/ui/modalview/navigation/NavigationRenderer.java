@@ -42,7 +42,9 @@ import com.kogasoftware.odt.invehicledevice.logic.event.OrientationChangedEvent;
 public class NavigationRenderer implements GLSurfaceView.Renderer {
 	private static final String TAG = NavigationRenderer.class.getSimpleName();
 	public static final Integer MAX_TILE_CACHE_BYTES = 100 * 1024 * 1024;
-	private final MotionSmoother rotationSmoother = new SimpleMotionSmoother();
+
+	private final MotionSmoother rotationSmoother = new LazyMotionSmoother(
+			500.0, 0.02, 0.00005);
 
 	// private final MotionSmoother latitudeSmoother = new LazyMotionSmoother(
 	// 500.0, 0.02, 0.00005);
@@ -136,9 +138,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 
 		// 現在の方向を取得
 		float angle = Utility.getNearestRadian(0.0,
-				2 * Math.PI - rotationSmoother.getSmoothMotion(millis))
-				.floatValue();
-		// angle = (millis / 50) % 360;
+				-rotationSmoother.getSmoothMotion(millis)).floatValue();
 
 		// 現在地を取得
 		double latitude = latitudeSmoother.getSmoothMotion(millis);
@@ -159,7 +159,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 
 		// フレームレートの計算
 		framesBy10seconds++;
-		if (millis - lastReportMillis > 10000) {
+		if (millis - lastReportMillis > 1000) {
 			Log.i(TAG, "onDrawFrame() fps=" + (double) framesBy10seconds / 10
 					+ ", lat=" + latitude + ", lon=" + longitude + ", zoom="
 					+ zoom.get() + ", angle=" + angle);
@@ -234,7 +234,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		gl.glMatrixMode(GL10.GL_MODELVIEW);
 		gl.glLoadIdentity();
 		gl.glTranslatef(center.x, center.y, 0);
-		gl.glRotatef(angle, 0, 0, 1);
+		gl.glRotatef((float) Math.toDegrees(angle), 0, 0, 1);
 		gl.glTranslatef(-center.x, -center.y, 0);
 
 		// FrameTaskをひとつずつ描画
