@@ -75,7 +75,7 @@ public class ScheduleChangedTestDataSource extends EmptyDataSource {
 				// 変更前のスケジュール
 				JSONObject j1 = new JSONObject(
 						"{id:1, arrival_estimate: '2012-01-01T01:00:00+09:00', departure_estimate: '2012-01-01T02:00:00+09:00', "
-								+ "platform: {name: '乗降場A', name_ruby: 'のりおりばえー'}, "
+								+ "platform: {name: '乗降場A', name_ruby: 'のりおりばえー', latitude: 90, longitude: 45}, "
 								+ "reservations_as_departure: ["
 								+ r1
 								+ ","
@@ -97,7 +97,7 @@ public class ScheduleChangedTestDataSource extends EmptyDataSource {
 				// 変更後のスケジュール
 				JSONObject j1 = new JSONObject(
 						"{id:1, arrival_estimate: '2012-01-01T01:00:00+09:00', departure_estimate: '2012-01-01T02:00:00+09:00', "
-								+ "platform: {name: '乗降場A', name_ruby: 'のりおりばえー'}, "
+								+ "platform: {name: '乗降場A', name_ruby: 'のりおりばえー', latitude: 43.064615, longitude: 141.346807}, "
 								+ "reservations_as_departure: ["
 								+ r1
 								+ ","
@@ -106,7 +106,7 @@ public class ScheduleChangedTestDataSource extends EmptyDataSource {
 
 				JSONObject j2 = new JSONObject(
 						"{id:3, arrival_estimate: '2012-01-01T02:00:00+09:00', departure_estimate: '2012-01-01T02:00:00+09:00', "
-								+ "platform: {name: '乗降場C', name_ruby: 'のりおりばしー'}, reservations_as_arrival: [ "
+								+ "platform: {name: '乗降場C', name_ruby: 'のりおりばしー', latitude: -9.189967, longitude: -75.015152}, reservations_as_arrival: [ "
 								+ r3 + " ]}");
 				l.add(new OperationSchedule(j2));
 
