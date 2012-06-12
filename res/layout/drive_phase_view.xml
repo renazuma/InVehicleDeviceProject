@@ -99,24 +99,30 @@
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
-                android:textSize="26sp"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="26sp" />
 
             <TextView
                 android:id="@+id/platform_name_2_beyond_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
-                android:textSize="26sp"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="26sp" />
 
             <TextView
                 android:id="@+id/platform_name_3_beyond_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
-                android:textSize="26sp"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="26sp" />
         </LinearLayout>
     </LinearLayout>
 
