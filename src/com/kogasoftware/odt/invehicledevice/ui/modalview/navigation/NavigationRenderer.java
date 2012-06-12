@@ -140,8 +140,8 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		addedFrameTasks.add(nextPlatformFrameTask);
 
 		// TODO
-		latitudeSmoother.addMotion(35.658517);
-		longitudeSmoother.addMotion(139.701334);
+		latitudeSmoother.addMotion(34.664887);
+		longitudeSmoother.addMotion(134.092846);
 	}
 
 	/**
@@ -150,11 +150,10 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	@Override
 	public void onDrawFrame(GL10 gl) {
 		final long millis = System.currentTimeMillis();
-		float cameraZoom = 1.5f;
+		float cameraZoom = 2f;
 
 		// 現在の方向を取得
-		float angle = Utility.getNearestRadian(0.0,
-				-rotationSmoother.getSmoothMotion(millis)).floatValue();
+		float angle = (float) -rotationSmoother.getSmoothMotion(millis);
 		// angle = (float) Math.toRadians((millis / 50) % 360);
 
 		// 現在地を取得
@@ -374,7 +373,9 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	@Subscribe
 	public void changeOrientation(OrientationChangedEvent event) {
 		Log.i(TAG, "changeOrientation " + event.orientationDegree);
-		rotationSmoother.addMotion(Math.toRadians(event.orientationDegree));
+		double r = Utility.getNearestRadian(0d,
+				Math.toRadians(event.orientationDegree));
+		rotationSmoother.addMotion(r);
 	}
 
 	@Subscribe
@@ -402,7 +403,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 
 	public boolean zoomIn() {
 		int temp = zoom.get();
-		if (temp > 15) {
+		if (temp > 16) {
 			return false;
 		}
 		nextZoom.set(temp + 1);
