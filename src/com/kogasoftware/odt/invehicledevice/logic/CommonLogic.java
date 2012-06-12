@@ -326,6 +326,10 @@ public class CommonLogic {
 	}
 
 	public void unregisterEventListener(Object object) {
-		eventBus.unregister(object);
+		try {
+			eventBus.unregister(object);
+		} catch (IllegalArgumentException e) {
+			Log.w(TAG, e);
+		}
 	}
 }

@@ -36,8 +36,11 @@ import com.google.common.cache.RemovalNotification;
 import com.google.common.eventbus.Subscribe;
 import com.javadocmd.simplelatlng.LatLng;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
+import com.kogasoftware.odt.invehicledevice.logic.event.EnterDrivePhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.LocationReceivedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.OrientationChangedEvent;
+import com.kogasoftware.odt.webapi.model.OperationSchedule;
+import com.kogasoftware.odt.webapi.model.Platform;
 
 public class NavigationRenderer implements GLSurfaceView.Renderer {
 	private static final String TAG = NavigationRenderer.class.getSimpleName();
@@ -66,19 +69,21 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	private long framesBy10seconds = 0l;
 	private long lastReportMillis = 0l;
 	private final List<FrameTask> frameTasks = new LinkedList<FrameTask>();
+	private final List<FrameTask> frontFrameTasks = new LinkedList<FrameTask>();
 	private final Queue<FrameTask> addedFrameTasks = new ConcurrentLinkedQueue<FrameTask>();
 	private final Queue<FrameTask> removedFrameTasks = new ConcurrentLinkedQueue<FrameTask>();
 	private final Set<TileKey> loadingTileKeys = new CopyOnWriteArraySet<TileKey>();
 	private CommonLogic commonLogic = new CommonLogic();
 	private int width = 0;
 	private int height = 0;
-	private final AtomicInteger zoom = new AtomicInteger(3);
+	private final AtomicInteger zoom = new AtomicInteger(15);
 	private final AtomicInteger nextZoom = new AtomicInteger(zoom.get());
 	private final TileCache tileCache;
 	private final LoadingCache<TileKey, TileFrameTask> textureCache;
 	private final Integer NUM_THREADS = 10;
 	private volatile ExecutorService executorService = Executors
 			.newFixedThreadPool(NUM_THREADS);
+	private final NextPlatformFrameTask nextPlatformFrameTask;
 
 	// private final Set<TileKey> texturedTileKeys = new
 	// CopyOnWriteArraySet<TileKey>();
@@ -127,6 +132,16 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		textureCache = CacheBuilder.newBuilder().initialCapacity(32)
 				.maximumSize(48).removalListener(textureRemovalListener)
 				.build(textureCacheLoader);
+
+		nextPlatformFrameTask = new NextPlatformFrameTask(
+				context.getResources());
+
+		addedFrameTasks.add(new SelfFrameTask(context.getResources()));
+		addedFrameTasks.add(nextPlatformFrameTask);
+
+		// TODO
+		latitudeSmoother.addMotion(35.658517);
+		longitudeSmoother.addMotion(139.701334);
 	}
 
 	/**
@@ -140,6 +155,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		// 現在の方向を取得
 		float angle = Utility.getNearestRadian(0.0,
 				-rotationSmoother.getSmoothMotion(millis)).floatValue();
+		angle = (float) Math.toRadians((millis / 50) % 360);
 
 		// 現在地を取得
 		double latitude = latitudeSmoother.getSmoothMotion(millis);
@@ -199,7 +215,12 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 			FrameTask newFrameTask = addedFrameTasks.poll();
 			if (newFrameTask != null) {
 				newFrameTask.onAdd(frameState);
-				frameTasks.add(newFrameTask);
+				if (newFrameTask.getClass().isAnnotationPresent(
+						FrameTask.Front.class)) {
+					frontFrameTasks.add(newFrameTask);
+				} else {
+					frameTasks.add(newFrameTask);
+				}
 			}
 			FrameTask deleteFrameTask = removedFrameTasks.poll();
 			if (deleteFrameTask != null) {
@@ -222,19 +243,21 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		float right = center.x + width / 2f;
 		float bottom = center.y + -height / 2f;
 		float top = center.y + height / 2f;
-		// GLU.gluOrtho2D(gl, left, right, bottom, top);
-		GLU.gluOrtho2D(gl, left / cameraZoom, right / cameraZoom, bottom
-				/ cameraZoom, top / cameraZoom);
+		GLU.gluOrtho2D(gl, left, right, bottom, top);
 
-		// モデル全体の回転
+		// モデル全体の回転と拡大率を設定
 		gl.glMatrixMode(GL10.GL_MODELVIEW);
 		gl.glLoadIdentity();
 		gl.glTranslatef(center.x, center.y, 0);
 		gl.glRotatef((float) Math.toDegrees(angle), 0, 0, 1);
+		gl.glScalef(cameraZoom, cameraZoom, cameraZoom);
 		gl.glTranslatef(-center.x, -center.y, 0);
 
 		// FrameTaskをひとつずつ描画
 		for (FrameTask frameTask : frameTasks) {
+			frameTask.onDraw(frameState);
+		}
+		for (FrameTask frameTask : frontFrameTasks) {
 			frameTask.onDraw(frameState);
 		}
 	}
@@ -339,8 +362,10 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	public void changeLocation(LocationReceivedEvent event) {
 		Log.i(TAG, "changeLocation " + event.location);
 		long millis = System.currentTimeMillis();
-		latitudeSmoother.addMotion(event.location.getLatitude(), millis);
-		longitudeSmoother.addMotion(event.location.getLongitude(), millis);
+		// latitudeSmoother.addMotion(event.location.getLatitude(), millis);
+		// longitudeSmoother.addMotion(event.location.getLongitude(), millis);
+		latitudeSmoother.addMotion(35.658517, millis);
+		longitudeSmoother.addMotion(139.701334, millis);
 	}
 
 	/**
@@ -352,10 +377,27 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		rotationSmoother.addMotion(Math.toRadians(event.orientationDegree));
 	}
 
+	@Subscribe
+	public void setNextPlatform(EnterDrivePhaseEvent e) {
+		setNextPlatform();
+	}
+
+	public void setNextPlatform() {
+		for (OperationSchedule operationSchedule : commonLogic
+				.getCurrentOperationSchedule().asSet()) {
+			for (Platform platform : operationSchedule.getPlatform().asSet()) {
+				nextPlatformFrameTask.setLatLng(new LatLng(platform
+						.getLatitude().doubleValue(), platform.getLongitude()
+						.doubleValue()));
+			}
+		}
+	}
+
 	public void setCommonLogic(CommonLogic commonLogic) {
 		this.commonLogic.dispose();
 		this.commonLogic = commonLogic;
 		tileCache.setCommonLogic(commonLogic);
+		setNextPlatform();
 	}
 
 	public boolean zoomIn() {
