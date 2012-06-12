@@ -195,24 +195,17 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		FrameState frameState = new FrameState(gl, millis, angle,
 				currentLatLng, zoom.get(), addedFrameTasks, removedFrameTasks);
 
-		// 追加予約されているFrameTaskを追加
-		while (true) {
-			FrameTask frameTask = addedFrameTasks.poll();
-			if (frameTask == null) {
-				break;
+		while (!addedFrameTasks.isEmpty() || !removedFrameTasks.isEmpty()) {
+			FrameTask newFrameTask = addedFrameTasks.poll();
+			if (newFrameTask != null) {
+				newFrameTask.onAdd(frameState);
+				frameTasks.add(newFrameTask);
 			}
-			frameTask.onAdd(frameState);
-			frameTasks.add(frameTask);
-		}
-
-		// 削除予約されているFrameTaskを削除
-		while (true) {
-			FrameTask frameTask = removedFrameTasks.poll();
-			if (frameTask == null) {
-				break;
+			FrameTask deleteFrameTask = removedFrameTasks.poll();
+			if (deleteFrameTask != null) {
+				deleteFrameTask.onRemove(frameState);
+				frameTasks.remove(deleteFrameTask);
 			}
-			frameTask.onRemove(frameState);
-			frameTasks.remove(frameTask);
 		}
 
 		// 描画用バッファをクリア
