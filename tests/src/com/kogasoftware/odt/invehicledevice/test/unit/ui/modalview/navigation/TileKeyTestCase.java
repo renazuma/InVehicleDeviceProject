@@ -1,6 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.ui.modalview.navigation;
 
 import junit.framework.TestCase;
+import android.graphics.Point;
 import android.graphics.PointF;
 
 import com.javadocmd.simplelatlng.LatLng;
@@ -20,29 +21,50 @@ public class TileKeyTestCase extends TestCase {
 		assertFalse((new TileKey(5, 6, 7).equals(1)));
 	}
 
-	void assertDistance(float expected, float actual, float maxDistance) {
+	static void assertDistance(float expected, float actual, float maxDistance) {
 		if (Math.abs((double) expected - (double) actual) > Math
 				.abs((double) maxDistance)) {
-			fail("assertDistance failed: |(" + expected + ") - (" + actual + ")| < |" + maxDistance + "|");
+			fail("assertDistance failed: |(" + expected + ") - (" + actual
+					+ ")| < |" + maxDistance + "|");
 		}
 	}
 
-	public void testGetOffsetPixels() {
+	void assertPoint(Point expected, Point actual) {
+		if (expected.x != actual.x || expected.y != actual.y) {
+			fail("assertPoint failed: (" + expected.x + ", " + expected.y
+					+ ") != (" + actual.x + "," + actual.y + ")");
+		}
+	}
+
+	public void testGetCenterPixel() {
+		TileKey tk;
+
+		tk = new TileKey(0, 0, 1);
+		assertPoint(new Point(-128, 128), tk.getCenterPixel());
+
+		tk = new TileKey(1, 0, 1);
+		assertPoint(new Point(128, 128), tk.getCenterPixel());
+
+		tk = new TileKey(1, 1, 1);
+		assertPoint(new Point(128, -128), tk.getCenterPixel());
+	}
+
+	public void xtestGetOffsetPixels() {
 		PointF o;
 		TileKey tk;
-		tk = (new TileKey(0, 0, 0));
-		o = tk.getOffsetPixels(new LatLng(0, 0));
+		tk = new TileKey(0, 0, 0);
+		o = tk.xgetOffsetPixels(new LatLng(0, 0));
 		float d = 0.001f;
 		assertDistance(0f, o.x, d);
 		assertDistance(0f, o.y, d);
 
 		tk = new TileKey(0, 0, 1);
-		o = tk.getOffsetPixels(new LatLng(0, 0));
+		o = tk.xgetOffsetPixels(new LatLng(0, 0));
 		assertDistance(-128f, o.x, d);
 		assertDistance(-128f, o.y, d);
 
 		tk = new TileKey(0, 0, 2);
-		o = tk.getOffsetPixels(new LatLng(0, 0));
+		o = tk.xgetOffsetPixels(new LatLng(0, 0));
 		assertDistance(-384f, o.x, d);
 		assertDistance(-384f, o.y, d);
 	}

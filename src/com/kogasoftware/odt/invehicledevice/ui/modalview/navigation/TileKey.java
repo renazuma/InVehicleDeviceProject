@@ -3,14 +3,17 @@ package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import android.graphics.Point;
 import android.graphics.PointF;
 
+import com.google.common.base.Optional;
 import com.javadocmd.simplelatlng.LatLng;
 
 public class TileKey {
 	private final int x;
 	private final int y;
 	private final int zoom;
+	public static int TILE_LENGTH = 256;
 
 	public TileKey(int x, int y, int zoom) {
 		this.x = x;
@@ -26,7 +29,14 @@ public class TileKey {
 		this.zoom = zoom;
 	}
 
-	public PointF getOffsetPixels(LatLng from) {
+	public Point getCenterPixel() {
+		int totalSideTiles = 1 << zoom;
+		int px = TILE_LENGTH / 2 * (x * 2 - totalSideTiles + 1);
+		int py = -(TILE_LENGTH / 2 * (y * 2 - totalSideTiles + 1));
+		return new Point(px, py);
+	}
+
+	public PointF xgetOffsetPixels(LatLng from) {
 		double longitudePixels = (getCenter().getLongitude() - from
 				.getLongitude()) * 256 * Math.pow(2, zoom) / 360;
 
@@ -60,7 +70,7 @@ public class TileKey {
 	}
 
 	public String toFileName() {
-		return x + "_" + y + "_" + zoom;
+		return zoom + "_" + x + "_" + y;
 	}
 
 	public LatLng getCenter() {
@@ -70,7 +80,20 @@ public class TileKey {
 		return new LatLng(latitude, longitude);
 	}
 
-	public Integer getZoom() {
+	public int getZoom() {
 		return zoom;
+	}
+
+	public Optional<TileKey> getRelativeTileKey(int extraX, int extraY) {
+		int totalSideTiles = 1 << zoom;
+		int newX = x + extraX;
+		int newY = y + extraY;
+		if (newX < 0 || totalSideTiles <= newX) {
+			return Optional.absent();
+		}
+		if (newY < 0 || totalSideTiles <= newY) {
+			return Optional.absent();
+		}
+		return Optional.of(new TileKey(newX, newY, zoom));
 	}
 }

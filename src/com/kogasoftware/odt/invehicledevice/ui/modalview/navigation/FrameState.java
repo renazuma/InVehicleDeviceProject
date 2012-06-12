@@ -12,15 +12,18 @@ public class FrameState {
 	private final GL10 gl;
 	private final long milliSeconds;
 	private final float angle;
+	private final int zoom;
 	private final LatLng latLng;
 	private final Queue<FrameTask> addedFrameTasks;
 	private final Queue<FrameTask> removedFrameTasks;
 
 	public FrameState(GL10 gl, long milliSeconds, float angle, LatLng latLng,
-			Queue<FrameTask> addedFrameTasks, Queue<FrameTask> removedFrameTasks) {
+			int zoom, Queue<FrameTask> addedFrameTasks,
+			Queue<FrameTask> removedFrameTasks) {
 		this.gl = gl;
 		this.milliSeconds = milliSeconds;
 		this.angle = angle;
+		this.zoom = zoom;
 		this.latLng = latLng;
 		this.addedFrameTasks = addedFrameTasks;
 		this.removedFrameTasks = removedFrameTasks;
@@ -52,12 +55,16 @@ public class FrameState {
 	public long getMilliSeconds() {
 		return milliSeconds;
 	}
-	
+
 	public float getAngle() {
 		return angle;
 	}
 
 	public LatLng getLatLng() {
 		return latLng;
+	}
+
+	public int getZoom() {
+		return zoom;
 	}
 }

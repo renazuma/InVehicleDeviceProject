@@ -8,6 +8,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -15,11 +16,11 @@ import javax.microedition.khronos.opengles.GL10;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.PointF;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
 import android.util.Log;
 
-import com.google.common.base.Optional;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -36,10 +37,19 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	public static final Integer MAX_TILE_CACHE_BYTES = 100 * 1024 * 1024;
 	private final MotionSmoother rotationSmoother = new LazyMotionSmoother(
 			500.0, 0.02, 0.00005);
+
 	// private final MotionSmoother latitudeSmoother = new LazyMotionSmoother(
 	// 500.0, 0.02, 0.00005);
 	// private final MotionSmoother longitudeSmoother = new LazyMotionSmoother(
 	// 500.0, 0.02, 0.00005);
+
+	public static PointF getPoint(LatLng latLng, int zoom) {
+		int totalPixels = (1 << zoom) * TileKey.TILE_LENGTH;
+		double x = latLng.getLongitude() * totalPixels / 360d;
+		double y = SphericalMercator.lat2y(latLng.getLatitude()) * totalPixels
+				/ 360d;
+		return new PointF((float) x, (float) y);
+	}
 
 	private final MotionSmoother latitudeSmoother = new SimpleMotionSmoother();
 	private final MotionSmoother longitudeSmoother = new SimpleMotionSmoother();
@@ -51,8 +61,10 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	private final Queue<FrameTask> removedFrameTasks = new ConcurrentLinkedQueue<FrameTask>();
 	private CommonLogic commonLogic = new CommonLogic();
 	private volatile GL10 gl = new EmptyGL10();
-	private int zoom = 1;
-	private volatile Optional<Integer> nextZoom = Optional.absent();
+	private int width = 0;
+	private int height = 0;
+	private final AtomicInteger zoom = new AtomicInteger(1);
+	private final AtomicInteger nextZoom = new AtomicInteger(zoom.get());
 	private final TileCache tileCache;
 	private final LoadingCache<TileKey, TileFrameTask> textureCache;
 	private final Set<TileKey> texturedTileKeys = new CopyOnWriteArraySet<TileKey>();
@@ -118,44 +130,34 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		currentLatLng.setLatitudeLongitude(latitude, longitude);
 
 		// ズームを修正
-		if (nextZoom.isPresent()) {
-			zoom = nextZoom.get();
-			nextZoom = Optional.absent();
-		}
+		zoom.set(nextZoom.get());
 
 		// フレームレートの計算
 		framesBy10seconds++;
 		if (millis - lastReportMillis > 10000) {
 			Log.i(TAG, "onDrawFrame() fps=" + (double) framesBy10seconds / 10
 					+ ", lat=" + latitude + ", lon=" + longitude + ", zoom="
-					+ zoom + ", angle=" + angle);
+					+ zoom.get() + ", angle=" + angle);
 			framesBy10seconds = 0l;
 			lastReportMillis = millis;
 		}
 
-		// 表示に必要なタイルを準備
-		{
-			TileKey tileKey = new TileKey(currentLatLng, zoom);
-			if (!texturedTileKeys.contains(tileKey)) {
-				// テクスチャがロードされていない場合
-				TileFrameTask tileFrameTask = textureCache
-						.getIfPresent(tileKey);
-				if (tileFrameTask == null) {
-					// キャッシュに無い場合、キャッシュにロード
-					textureCache.refresh(tileKey);
-				} else {
-					// キャッシュに有った場合、追加
-					texturedTileKeys.add(tileKey);
-					addedFrameTasks.add(tileFrameTask);
+		// 上下左右で追加で表示に必要なタイルを準備
+		int extraTiles = (int) Math.floor(Math.max(height, width)
+				/ TileKey.TILE_LENGTH);
+		TileKey centerTileKey = new TileKey(currentLatLng, zoom.get());
+
+		for (int x = -extraTiles; x <= extraTiles; ++x) {
+			for (int y = -extraTiles; y <= extraTiles; ++y) {
+				for (TileKey tileKey : centerTileKey.getRelativeTileKey(x, y)
+						.asSet()) {
+					addTile(tileKey);
 				}
 			}
 		}
 
-		// 描画用バッファをクリア
-		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
-
 		FrameState frameState = new FrameState(gl, millis, angle,
-				currentLatLng, addedFrameTasks, removedFrameTasks);
+				currentLatLng, zoom.get(), addedFrameTasks, removedFrameTasks);
 
 		// 追加予約されているFrameTaskを追加
 		while (true) {
@@ -177,9 +179,39 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 			frameTasks.remove(frameTask);
 		}
 
+		// 描画用バッファをクリア
+		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+
+		// 射影行列を現在地にあわせて修正
+		PointF center = getPoint(currentLatLng, zoom.get());
+		gl.glMatrixMode(GL10.GL_PROJECTION);
+		// 現在選択されている行列(射影行列)に、単位行列をセット
+		gl.glLoadIdentity();
+		// 平行投影用のパラメータをセット
+		float left = center.x + -width / 2f;
+		float right = center.x + width / 2f;
+		float bottom = center.y + -height / 2f;
+		float top = center.y + height / 2f;
+		GLU.gluOrtho2D(gl, left, right, bottom, top);
+
 		// FrameTaskをひとつずつ描画
 		for (FrameTask frameTask : frameTasks) {
 			frameTask.onDraw(frameState);
+		}
+	}
+
+	private void addTile(TileKey tileKey) {
+		if (!texturedTileKeys.contains(tileKey)) {
+			// テクスチャがロードされていない場合
+			TileFrameTask tileFrameTask = textureCache.getIfPresent(tileKey);
+			if (tileFrameTask == null) {
+				// キャッシュに無い場合、キャッシュにロード
+				textureCache.refresh(tileKey);
+			} else {
+				// キャッシュに有った場合、追加
+				texturedTileKeys.add(tileKey);
+				addedFrameTasks.add(tileFrameTask);
+			}
 		}
 	}
 
@@ -194,18 +226,13 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	@Override
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
 		this.gl = gl;
+		this.width = width;
+		this.height = height;
 
 		Log.i(TAG, "onSurfaceChanged() width=" + width + " height=" + height);
 
 		// ビューポートをサイズに合わせてセットしなおす
 		gl.glViewport(0, 0, width, height);
-		// 射影行列を選択
-		gl.glMatrixMode(GL10.GL_PROJECTION);
-		// 現在選択されている行列(射影行列)に、単位行列をセット
-		gl.glLoadIdentity();
-
-		// 平行投影用のパラメータをセット
-		GLU.gluOrtho2D(gl, -width / 2f, width / 2f, -height / 2f, height / 2f);
 	}
 
 	/**
@@ -259,5 +286,23 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		this.commonLogic.dispose();
 		this.commonLogic = commonLogic;
 		tileCache.setCommonLogic(commonLogic);
+	}
+
+	public boolean zoomIn() {
+		int temp = zoom.get();
+		if (temp > 15) {
+			return false;
+		}
+		nextZoom.set(temp + 1);
+		return true;
+	}
+
+	public boolean zoomOut() {
+		int temp = zoom.get();
+		if (temp <= 1) {
+			return false;
+		}
+		nextZoom.set(temp - 1);
+		return true;
 	}
 }

@@ -35,7 +35,11 @@ public class NavigationModalView extends ModalView {
 		zoomInButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				// mapView.getController().zoomIn();
+				NavigationRenderer navigationRenderer = navigationRendererWeakReference
+						.get();
+				if (navigationRenderer != null) {
+					navigationRenderer.zoomIn();
+				}
 			}
 		});
 
@@ -43,7 +47,11 @@ public class NavigationModalView extends ModalView {
 		zoomOutButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				// mapView.getController().zoomOut();
+				NavigationRenderer navigationRenderer = navigationRendererWeakReference
+						.get();
+				if (navigationRenderer != null) {
+					navigationRenderer.zoomOut();
+				}
 			}
 		});
 
@@ -102,7 +110,7 @@ public class NavigationModalView extends ModalView {
 	public void show(ShowEvent event) {
 		show();
 	}
-	
+
 	@Override
 	public void show() {
 		setVisibility(VISIBLE);
@@ -113,12 +121,13 @@ public class NavigationModalView extends ModalView {
 		// TODO:アニメーション
 		// super.show();
 	}
-	
+
 	@Override
 	public void hide() {
 		setVisibility(GONE);
 		GLSurfaceView glSurfaceView = glSurfaceViewWeakReference.get();
 		if (glSurfaceView != null) {
+			// glSurfaceView.setVisibility(INVISIBLE);
 			glSurfaceView.setVisibility(GONE);
 		}
 		// TODO:アニメーション
