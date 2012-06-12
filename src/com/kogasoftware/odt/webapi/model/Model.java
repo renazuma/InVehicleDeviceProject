@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang3.SerializationUtils;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.json.JSONArray;
@@ -24,10 +23,10 @@ abstract public class Model implements Serializable, Identifiable, Cloneable {
 
 	private static final long serialVersionUID = -5513333240346057624L;
 
-	protected static final DateTimeFormatter DATE_TIME_FORMATTER = 
-			DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
-	protected static final DateTimeFormatter DATE_FORMATTER = 
-			DateTimeFormat.forPattern("yyyy-MM-dd");
+	protected static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormat
+			.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
+	protected static final DateTimeFormatter DATE_FORMATTER = DateTimeFormat
+			.forPattern("yyyy-MM-dd");
 
 	protected static void errorIfNull(Object value) {
 		if (value != null) {
@@ -64,7 +63,7 @@ abstract public class Model implements Serializable, Identifiable, Cloneable {
 		Date date;
 		try {
 			date = new Date(DATE_TIME_FORMATTER.parseDateTime(dateString)
-				.getMillis());
+					.getMillis());
 		} catch (IllegalArgumentException ex) {
 			date = new Date(DATE_FORMATTER.parseDateTime(dateString)
 					.getMillis());
@@ -72,11 +71,12 @@ abstract public class Model implements Serializable, Identifiable, Cloneable {
 		return date;
 	}
 
-	protected static Float parseFloat(JSONObject jsonObject, String key) throws JSONException {
+	protected static Float parseFloat(JSONObject jsonObject, String key)
+			throws JSONException {
 		if (!jsonObject.has(key)) {
 			return 0f;
 		}
-		return (float)jsonObject.getDouble(key);
+		return (float) jsonObject.getDouble(key);
 	}
 
 	protected static Integer parseInteger(JSONObject jsonObject, String key)
@@ -87,40 +87,45 @@ abstract public class Model implements Serializable, Identifiable, Cloneable {
 		return jsonObject.getInt(key);
 	}
 
-	protected static Optional<Boolean> parseOptionalBoolean(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	protected static Optional<Boolean> parseOptionalBoolean(
+			JSONObject jsonObject, String key) throws JSONException,
+			ParseException {
 		if (jsonObject.isNull(key)) {
-			return Optional.<Boolean>absent();
+			return Optional.absent();
 		}
-		return Optional.<Boolean>of(parseBoolean(jsonObject, key));
+		return Optional.of(parseBoolean(jsonObject, key));
 	}
 
-	protected static Optional<Date> parseOptionalDate(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	protected static Optional<Date> parseOptionalDate(JSONObject jsonObject,
+			String key) throws JSONException, ParseException {
 		if (jsonObject.isNull(key)) {
-			return Optional.<Date>absent();
+			return Optional.absent();
 		}
-		return Optional.<Date>of(parseDate(jsonObject, key));
+		return Optional.of(parseDate(jsonObject, key));
 	}
 
-	protected static Optional<Float> parseOptionalFloat(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	protected static Optional<Float> parseOptionalFloat(JSONObject jsonObject,
+			String key) throws JSONException, ParseException {
 		if (jsonObject.isNull(key)) {
-			return Optional.<Float>absent();
+			return Optional.absent();
 		}
-		return Optional.<Float>of(parseFloat(jsonObject, key));
+		return Optional.of(parseFloat(jsonObject, key));
 	}
 
-
-	protected static Optional<Integer> parseOptionalInteger(JSONObject jsonObject, String key) throws JSONException {
+	protected static Optional<Integer> parseOptionalInteger(
+			JSONObject jsonObject, String key) throws JSONException {
 		if (jsonObject.isNull(key)) {
-			return Optional.<Integer>absent();
+			return Optional.absent();
 		}
-		return Optional.<Integer>of(parseInteger(jsonObject, key));
+		return Optional.of(parseInteger(jsonObject, key));
 	}
 
-	protected static Optional<String> parseOptionalString(JSONObject jsonObject, String key) throws JSONException {
+	protected static Optional<String> parseOptionalString(
+			JSONObject jsonObject, String key) throws JSONException {
 		if (jsonObject.isNull(key)) {
-			return Optional.<String>absent();
+			return Optional.absent();
 		}
-		return Optional.<String>of(parseString(jsonObject, key));
+		return Optional.of(parseString(jsonObject, key));
 	}
 
 	protected static String parseString(JSONObject jsonObject, String key)
@@ -166,7 +171,8 @@ abstract public class Model implements Serializable, Identifiable, Cloneable {
 		return value;
 	}
 
-	protected static Object toJSON(List<? extends Model> value) throws JSONException {
+	protected static Object toJSON(List<? extends Model> value)
+			throws JSONException {
 		if (value == null) {
 			return JSONObject.NULL;
 		}
@@ -177,7 +183,8 @@ abstract public class Model implements Serializable, Identifiable, Cloneable {
 		return jsonArray;
 	}
 
-	protected static Object toJSON(Optional<? extends Model> value) throws JSONException {
+	protected static Object toJSON(Optional<? extends Model> value)
+			throws JSONException {
 		if (value == null || !value.isPresent()) {
 			return JSONObject.NULL;
 		}
@@ -211,7 +218,8 @@ abstract public class Model implements Serializable, Identifiable, Cloneable {
 		return value != null ? value : new LinkedList<T>();
 	}
 
-	protected static <T extends Serializable> Optional<T> wrapNull(Optional<T> value) {
+	protected static <T extends Serializable> Optional<T> wrapNull(
+			Optional<T> value) {
 		return value != null ? value : Optional.<T> absent();
 	}
 
@@ -220,6 +228,7 @@ abstract public class Model implements Serializable, Identifiable, Cloneable {
 	}
 
 	abstract public JSONObject toJSONObject() throws JSONException;
-	
+
+	@Override
 	abstract protected Model clone();
 }
