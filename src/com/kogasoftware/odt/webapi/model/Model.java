@@ -135,7 +135,7 @@ abstract public class Model implements Serializable, Identifiable, Cloneable {
 		if (value == null) {
 			return JSONObject.NULL;
 		}
-		return value.toString();
+		return value.toPlainString();
 	}
 
 	protected static Object toJSON(Boolean value) {
