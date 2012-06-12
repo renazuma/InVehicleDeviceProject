@@ -2,12 +2,13 @@ package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
-import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -53,21 +54,23 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 
 	private final MotionSmoother latitudeSmoother = new SimpleMotionSmoother();
 	private final MotionSmoother longitudeSmoother = new SimpleMotionSmoother();
-	private final LatLng currentLatLng = new LatLng(0, 0);
+	private final LatLng currentLatLng = new LatLng(35.658517, 139.701334);
+
 	private long framesBy10seconds = 0l;
 	private long lastReportMillis = 0l;
 	private final List<FrameTask> frameTasks = new LinkedList<FrameTask>();
 	private final Queue<FrameTask> addedFrameTasks = new ConcurrentLinkedQueue<FrameTask>();
 	private final Queue<FrameTask> removedFrameTasks = new ConcurrentLinkedQueue<FrameTask>();
 	private CommonLogic commonLogic = new CommonLogic();
-	private volatile GL10 gl = new EmptyGL10();
 	private int width = 0;
 	private int height = 0;
-	private final AtomicInteger zoom = new AtomicInteger(1);
+	private final AtomicInteger zoom = new AtomicInteger(3);
 	private final AtomicInteger nextZoom = new AtomicInteger(zoom.get());
 	private final TileCache tileCache;
 	private final LoadingCache<TileKey, TileFrameTask> textureCache;
-	private final Set<TileKey> texturedTileKeys = new CopyOnWriteArraySet<TileKey>();
+	// private final Set<TileKey> texturedTileKeys = new
+	// CopyOnWriteArraySet<TileKey>();
+	private final Map<TileKey, TileFrameTask> activeTileFrameTasks = new ConcurrentHashMap<TileKey, TileFrameTask>();
 	private final CacheLoader<TileKey, TileFrameTask> textureCacheLoader = new CacheLoader<TileKey, TileFrameTask>() {
 		@Override
 		public TileFrameTask load(TileKey key) throws Exception {
@@ -77,10 +80,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 				throw new IOException("BitmapFactory.decodeFile(" + file
 						+ ") failed");
 			}
-			int id = Texture.generate(gl);
-			Texture.update(gl, id, bitmap);
-			bitmap.recycle();
-			return new TileFrameTask(key, id);
+			return new TileFrameTask(key, bitmap);
 		}
 	};
 
@@ -88,8 +88,8 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		@Override
 		public void onRemoval(
 				RemovalNotification<TileKey, TileFrameTask> notification) {
-			removedFrameTasks.add(notification.getValue());
-			texturedTileKeys.remove(notification.getKey());
+			// removedFrameTasks.add(notification.getValue());
+			// texturedTileKeys.remove(notification.getKey());
 		}
 	};
 
@@ -105,8 +105,8 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 			Log.wtf(TAG, e);
 			throw new RuntimeException(e);
 		}
-		textureCache = CacheBuilder.newBuilder()
-				.removalListener(textureRemovalListener)
+		textureCache = CacheBuilder.newBuilder().initialCapacity(32)
+				.maximumSize(48).removalListener(textureRemovalListener)
 				.build(textureCacheLoader);
 	}
 
@@ -115,8 +115,6 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	 */
 	@Override
 	public void onDrawFrame(GL10 gl) {
-		this.gl = gl;
-
 		final long millis = System.currentTimeMillis();
 
 		// 現在の方向を取得
@@ -127,10 +125,20 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		// 現在地を取得
 		double latitude = latitudeSmoother.getSmoothMotion(millis);
 		double longitude = longitudeSmoother.getSmoothMotion(millis);
+
+		// latitude = 35.658517;
+		// longitude = 139.701334;
+		// latitude = 0;
+		// longitude = 0;
+
 		currentLatLng.setLatitudeLongitude(latitude, longitude);
 
 		// ズームを修正
-		zoom.set(nextZoom.get());
+		if (zoom.get() != nextZoom.get()) {
+			zoom.set(nextZoom.get());
+			textureCache.cleanUp();
+			textureCache.invalidateAll();
+		}
 
 		// フレームレートの計算
 		framesBy10seconds++;
@@ -144,17 +152,27 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 
 		// 上下左右で追加で表示に必要なタイルを準備
 		int extraTiles = (int) Math.floor(Math.max(height, width)
-				/ TileKey.TILE_LENGTH);
+				/ TileKey.TILE_LENGTH / 2 + 1);
 		TileKey centerTileKey = new TileKey(currentLatLng, zoom.get());
 
+		Map<TileKey, TileFrameTask> inactiveTileFrameTasks = new HashMap<TileKey, TileFrameTask>(
+				activeTileFrameTasks);
 		for (int x = -extraTiles; x <= extraTiles; ++x) {
 			for (int y = -extraTiles; y <= extraTiles; ++y) {
 				for (TileKey tileKey : centerTileKey.getRelativeTileKey(x, y)
 						.asSet()) {
+					// LRUをするため、見えているタイルの参照回数を増やす
+					// textureCache.getIfPresent(tileKey);
+					// タイルのロードと追加
 					addTile(tileKey);
+					inactiveTileFrameTasks.remove(tileKey);
 				}
 			}
 		}
+		for (TileKey inactiveTileKey : inactiveTileFrameTasks.keySet()) {
+			activeTileFrameTasks.remove(inactiveTileKey);
+		}
+		removedFrameTasks.addAll(inactiveTileFrameTasks.values());
 
 		FrameState frameState = new FrameState(gl, millis, angle,
 				currentLatLng, zoom.get(), addedFrameTasks, removedFrameTasks);
@@ -187,6 +205,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		gl.glMatrixMode(GL10.GL_PROJECTION);
 		// 現在選択されている行列(射影行列)に、単位行列をセット
 		gl.glLoadIdentity();
+
 		// 平行投影用のパラメータをセット
 		float left = center.x + -width / 2f;
 		float right = center.x + width / 2f;
@@ -194,25 +213,38 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		float top = center.y + height / 2f;
 		GLU.gluOrtho2D(gl, left, right, bottom, top);
 
+		// モデルの回転をセット
+		// gl.glMatrixMode(GL10.GL_MODELVIEW);
+		// gl.glTranslatef(-256f, -256f, 0);
+		// gl.glTranslatef(-center.x, -center.y, 0);
+		// gl.glTranslatef(center.x, center.y, 0);
+
 		// FrameTaskをひとつずつ描画
 		for (FrameTask frameTask : frameTasks) {
 			frameTask.onDraw(frameState);
 		}
 	}
 
-	private void addTile(TileKey tileKey) {
-		if (!texturedTileKeys.contains(tileKey)) {
-			// テクスチャがロードされていない場合
-			TileFrameTask tileFrameTask = textureCache.getIfPresent(tileKey);
-			if (tileFrameTask == null) {
-				// キャッシュに無い場合、キャッシュにロード
-				textureCache.refresh(tileKey);
-			} else {
-				// キャッシュに有った場合、追加
-				texturedTileKeys.add(tileKey);
-				addedFrameTasks.add(tileFrameTask);
-			}
+	private void addTile(final TileKey tileKey) {
+		if (activeTileFrameTasks.containsKey(tileKey)) {
+			return;
 		}
+
+		// テクスチャがロードされていない場合
+		TileFrameTask tileFrameTask = textureCache.getIfPresent(tileKey);
+		if (tileFrameTask != null) {
+			// キャッシュに有った場合、追加
+			activeTileFrameTasks.put(tileKey, tileFrameTask);
+			addedFrameTasks.add(tileFrameTask);
+			textureCache.invalidate(tileKey);
+		}
+		// キャッシュに無い場合、キャッシュにロード
+		(new Thread() {
+			@Override
+			public void run() {
+				textureCache.refresh(tileKey);
+			}
+		}).start();
 	}
 
 	/**
@@ -225,7 +257,6 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	 */
 	@Override
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
-		this.gl = gl;
 		this.width = width;
 		this.height = height;
 
@@ -240,8 +271,6 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	 */
 	@Override
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-		this.gl = gl;
-
 		Log.i(TAG, "onSurfaceCreated()");
 		// ディザを無効化
 		gl.glDisable(GL10.GL_DITHER);
@@ -249,7 +278,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		// gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_FASTEST);
 		gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_NICEST);
 		// バッファ初期化時のカラー情報をセット
-		gl.glClearColor(0, 0, 0, 1);
+		gl.glClearColor(1, 1, 1, 1);
 		// 片面表示を有効に
 		gl.glEnable(GL10.GL_CULL_FACE);
 		// カリング設定をCCWに

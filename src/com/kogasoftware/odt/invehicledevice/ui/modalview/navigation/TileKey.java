@@ -1,5 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -9,7 +11,8 @@ import android.graphics.PointF;
 import com.google.common.base.Optional;
 import com.javadocmd.simplelatlng.LatLng;
 
-public class TileKey {
+public class TileKey implements Serializable {
+	private static final long serialVersionUID = -2858195330177966613L;
 	private final int x;
 	private final int y;
 	private final int zoom;

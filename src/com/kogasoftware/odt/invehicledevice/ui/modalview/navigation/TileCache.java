@@ -5,9 +5,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -44,17 +44,17 @@ public class TileCache {
 
 	private static class InstanceState implements Serializable {
 		public InstanceState() {
-			this(new AtomicInteger(0), new TreeMap<TileKey, File>());
+			this(new AtomicInteger(0), new HashMap<TileKey, File>());
 		}
 
 		public InstanceState(AtomicInteger sequence, Map<TileKey, File> map) {
 			this.sequence = new AtomicInteger(sequence.get());
-			this.map = new TreeMap<TileKey, File>(map);
+			this.map = new HashMap<TileKey, File>(map);
 		}
 
 		private static final long serialVersionUID = -8533398684555140768L;
 		private final AtomicInteger sequence;
-		private final TreeMap<TileKey, File> map;
+		private final HashMap<TileKey, File> map;
 	}
 
 	/**
@@ -175,13 +175,6 @@ public class TileCache {
 		fileCache.invalidate(voice);
 	}
 
-	// @Override
-	// public File load(TileKey key) throws IOException {
-	// File file = new File(outputDirectory, key.toFileName() + ".wav");
-	// dirty.set(true);
-	// return file;
-	// }
-
 	protected void saveInstanceState() throws ExecutionException {
 		try {
 			InstanceState instanceState = new InstanceState(sequence,
@@ -197,10 +190,6 @@ public class TileCache {
 
 	public File getIfPresent(TileKey key) {
 		return fileCache.getIfPresent(key);
-	}
-
-	public void refresh(TileKey key) {
-		fileCache.refresh(key);
 	}
 
 	public File receiveMapTileImage(TileKey key) throws Exception {
@@ -240,7 +229,7 @@ public class TileCache {
 			Closeables.closeQuietly(fileOutputStream);
 			outputBitmap.get().recycle();
 		}
-
+		dirty.set(true);
 		return file;
 	}
 

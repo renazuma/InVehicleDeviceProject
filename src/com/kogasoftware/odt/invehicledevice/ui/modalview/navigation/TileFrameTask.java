@@ -1,19 +1,30 @@
 package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation;
 
+import android.graphics.Bitmap;
 import android.graphics.Point;
 
 public class TileFrameTask extends FrameTask {
 	private final TileKey tileKey;
-	private final int textureId;
+	private final Bitmap bitmap; // TODO:recycleされるかもしれない
+	private int textureId = -1; // TODO:Optionalを検討
 
-	public TileFrameTask(TileKey tileKey, int textureId) {
+	public TileFrameTask(TileKey tileKey, Bitmap bitmap) {
 		this.tileKey = tileKey;
-		this.textureId = textureId;
+		this.bitmap = bitmap;
+	}
+
+	@Override
+	public void onAdd(FrameState frameState) {
+		textureId = Texture.generate(frameState.getGL());
+		Texture.update(frameState.getGL(), textureId, bitmap);
+		bitmap.recycle();
 	}
 
 	@Override
 	public void onRemove(FrameState frameState) {
-		Texture.delete(frameState.getGL(), textureId);
+		if (textureId != -1) {
+			Texture.delete(frameState.getGL(), textureId);
+		}
 	}
 
 	@Override
@@ -22,7 +33,11 @@ public class TileFrameTask extends FrameTask {
 			return;
 		}
 		Point point = tileKey.getCenterPixel();
+		// float scale = (TileKey.TILE_LENGTH + 5) / TileKey.TILE_LENGTH;
+		// float scale = 1.5f;
+		float scale = 1f;
 		Texture.draw(frameState.getGL(), textureId, point.x, point.y,
-				TileKey.TILE_LENGTH, TileKey.TILE_LENGTH, 0, 1f, 1f, 1f);
+				TileKey.TILE_LENGTH + 1, TileKey.TILE_LENGTH + 1, 0, scale,
+				scale, 1f);
 	}
 }
