@@ -10,14 +10,20 @@ import java.util.concurrent.CountDownLatch;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
@@ -38,6 +44,7 @@ import com.kogasoftware.odt.invehicledevice.logic.event.EnterDrivePhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterFinishPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterPlatformPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.ExitEvent;
+import com.kogasoftware.odt.invehicledevice.logic.event.LocationReceivedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.SignalStrengthChangedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.UpdatedOperationScheduleAlertEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.VehicleNotificationReceivedAlertEvent;
@@ -47,7 +54,8 @@ import com.kogasoftware.odt.invehicledevice.ui.modalview.ScheduleModalView;
 import com.kogasoftware.odt.invehicledevice.ui.phaseview.PlatformPhaseView;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 
-public class InVehicleDeviceActivity extends Activity {
+public class InVehicleDeviceActivity extends Activity implements
+		LocationListener {
 	private static final String TAG = InVehicleDeviceActivity.class
 			.getSimpleName();
 	private static final int UPDATE_TIME_INTERVAL_MILLIS = 3000;
@@ -181,6 +189,28 @@ public class InVehicleDeviceActivity extends Activity {
 	}
 
 	@Override
+	public void onLocationChanged(Location location) {
+		String s = "onLocationChanged(lat=" + location.getLatitude() + ", lon="
+				+ location.getLongitude() + ")";
+		Log.i(TAG, s);
+		// BigToast.makeText(this, "位置情報を受信しました " + s,
+		// Toast.LENGTH_LONG).show();
+		commonLogic.postEvent(new LocationReceivedEvent(location));
+	}
+
+	@Override
+	public void onProviderDisabled(String provider) {
+	}
+
+	@Override
+	public void onProviderEnabled(String provider) {
+	}
+
+	@Override
+	public void onStatusChanged(String provider, int status, Bundle extras) {
+	}
+
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
@@ -206,6 +236,20 @@ public class InVehicleDeviceActivity extends Activity {
 		}
 
 		setContentView(R.layout.in_vehicle_device);
+
+		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		// see　http://kamoland.com/wiki/wiki.cgi?Desire%A4%CEGPS%BC%E8%C6%C0%A4%C7%A4%CE%BB%EE%B9%D4%BA%F8%B8%ED
+		powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+		wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
+				this.getClass().getName());
+		wakeLock.acquire();
+		Location location = locationManager
+				.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+		if (location != null) {
+			this.onLocationChanged(location);
+		}
+		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+				1000, 1, this);
 
 		contentView = findViewById(android.R.id.content);
 		presentTimeTextView = (TextView) findViewById(R.id.present_time_text_view);
@@ -253,7 +297,12 @@ public class InVehicleDeviceActivity extends Activity {
 
 		backgroundThread = new BackgroundTaskThread(this);
 		backgroundThread.start();
+
 	}
+
+	private LocationManager locationManager = null;
+	private PowerManager powerManager = null;
+	private WakeLock wakeLock = null;
 
 	@Override
 	protected Dialog onCreateDialog(int id) {
@@ -283,6 +332,10 @@ public class InVehicleDeviceActivity extends Activity {
 	public void onDestroy() {
 		super.onDestroy();
 		Log.i(TAG, "onDestroy");
+		locationManager.removeUpdates(this);
+		if (wakeLock.isHeld()) {
+			wakeLock.release();
+		}
 
 		getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 

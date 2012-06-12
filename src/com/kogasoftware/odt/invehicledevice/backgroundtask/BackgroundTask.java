@@ -14,7 +14,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
-import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.os.Looper;
 import android.telephony.PhoneStateListener;
@@ -43,7 +42,6 @@ public class BackgroundTask {
 	private static final long POLLING_PERIOD_MILLIS = 30 * 1000;
 	private static final Integer NUM_THREADS = 3;
 
-	private final LocationManager locationManager;
 	private final SensorManager sensorManager;
 	private final ConnectivityManager connectivityManager;
 	private final Optional<TelephonyManager> optionalTelephonyManager;
@@ -72,8 +70,6 @@ public class BackgroundTask {
 		this.commonLogic = commonLogic;
 		applicationContext = context.getApplicationContext();
 
-		locationManager = (LocationManager) context
-				.getSystemService(Context.LOCATION_SERVICE);
 		sensorManager = (SensorManager) context
 				.getSystemService(Context.SENSOR_SERVICE);
 		connectivityManager = (ConnectivityManager) context
@@ -165,9 +161,6 @@ public class BackgroundTask {
 		commonLogic.postEvent(new CommonLogicLoadCompleteEvent(commonLogic));
 		completeLatch.await();
 
-		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-				2000, 1, locationSender);
-
 		List<Sensor> temperatureSensors = sensorManager
 				.getSensorList(Sensor.TYPE_TEMPERATURE);
 		if (temperatureSensors.size() > 0) {
@@ -189,6 +182,7 @@ public class BackgroundTask {
 			telephonyManager.listen(signalStrengthListener,
 					PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
 		}
+
 		commonLogic.postEvent(new NotificationModalView.ShowEvent());
 
 		applicationContext.startService(new Intent(applicationContext,
@@ -211,7 +205,6 @@ public class BackgroundTask {
 
 	private void onLoopStop() {
 		operationScheduleReceiveThread.interrupt();
-		locationManager.removeUpdates(locationSender);
 		sensorManager.unregisterListener(temperatureSensorEventListener);
 		sensorManager.unregisterListener(orientationSensorEventListener);
 		applicationContext.unregisterReceiver(exitBroadcastReceiver);

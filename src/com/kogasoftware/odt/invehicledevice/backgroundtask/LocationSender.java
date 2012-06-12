@@ -1,38 +1,17 @@
 package com.kogasoftware.odt.invehicledevice.backgroundtask;
 
-import android.location.Location;
-import android.location.LocationListener;
-import android.os.Bundle;
-
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.logic.event.LocationReceivedEvent;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 
-public class LocationSender implements Runnable, LocationListener {
+public class LocationSender implements Runnable {
 
+	private static final String TAG = LocationSender.class.getSimpleName();
 	private final CommonLogic commonLogic;
 
 	public LocationSender(CommonLogic commonLogic) {
 		this.commonLogic = commonLogic;
-	}
-
-	@Override
-	public void onLocationChanged(Location location) {
-		commonLogic.postEvent(new LocationReceivedEvent(location));
-	}
-
-	@Override
-	public void onProviderDisabled(String provider) {
-	}
-
-	@Override
-	public void onProviderEnabled(String provider) {
-	}
-
-	@Override
-	public void onStatusChanged(String provider, int status, Bundle extras) {
 	}
 
 	/**
