@@ -32,7 +32,8 @@ class RemoveTileFrameTask extends FrameTask {
 	@Override
 	void onDraw(FrameState frameState) {
 		float alpha = Floats.max(initialAlpha
-				- (frameState.getMilliSeconds() - addedMillis) / 1000f, 0);
+				- (frameState.getMilliSeconds() - addedMillis) / 2000f, 0);
+		alpha *= 0.8;
 		Point point = tileKey.getCenterPixel();
 		float scale = 1f;
 		Texture.draw(frameState.getGL(), textureId, point.x, point.y,
@@ -59,7 +60,9 @@ public class TileFrameTask extends FrameTask {
 	@Override
 	public void onAdd(FrameState frameState) {
 		textureId = Texture.generate(frameState.getGL());
-		Texture.update(frameState.getGL(), textureId, bitmap);
+		if (!bitmap.isRecycled()) {
+			Texture.update(frameState.getGL(), textureId, bitmap);
+		}
 		bitmap.recycle();
 		addedMillis = frameState.getMilliSeconds();
 	}
