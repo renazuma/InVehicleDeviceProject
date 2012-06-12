@@ -24,8 +24,8 @@ public class Status implements Serializable {
 		DRIVE, FINISH, INITIAL, PLATFORM
 	}
 
-	private static final long serialVersionUID = 5617948559888181L;
-	
+	private static final long serialVersionUID = 561788559888181L;
+
 	public final Semaphore operationScheduleInitializedSign = new Semaphore(0); // パーミットが0以上の場合は初期化済み。0以上になるまで待つためにacquireしたら必ずreleaseする。CountDownLatchがSerializableではないためこれを使用
 	public Date updatedDate = new Date();
 	public File file = new EmptyFile();
