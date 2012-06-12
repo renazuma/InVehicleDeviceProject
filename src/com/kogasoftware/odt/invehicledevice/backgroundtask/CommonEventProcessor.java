@@ -276,11 +276,20 @@ public class CommonEventProcessor {
 		});
 	}
 
+	private static final Long ORIENTATION_SAVE_PERIOD_MILLIS = 5000L;
+	private Long lastOrientationSavedMillis = System.currentTimeMillis();
+
 	/**
 	 * 方向情報を保存
 	 */
 	@Subscribe
 	public void setOrientation(final OrientationChangedEvent e) {
+		long now = System.currentTimeMillis();
+		if (lastOrientationSavedMillis + ORIENTATION_SAVE_PERIOD_MILLIS > now) {
+			return;
+		}
+		lastOrientationSavedMillis = now;
+
 		statusAccess.write(new Writer() {
 			@Override
 			public void write(Status status) {

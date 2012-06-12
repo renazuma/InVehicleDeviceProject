@@ -9,7 +9,7 @@ import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.event.OrientationChangedEvent;
 
 public class OrientationSensorEventListener implements SensorEventListener {
-	private static final Long SAVE_PERIOD_MILLIS = 1000L;
+	private static final Long SAVE_PERIOD_MILLIS = 200L;
 	private Long lastSavedMillis = System.currentTimeMillis();
 
 	private final CommonLogic commonLogic;
