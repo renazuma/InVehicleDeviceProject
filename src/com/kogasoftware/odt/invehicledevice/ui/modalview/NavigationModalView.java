@@ -64,7 +64,8 @@ public class NavigationModalView extends ModalView {
 		NavigationRenderer navigationRenderer = navigationRendererWeakReference
 				.get();
 		if (navigationRenderer != null) {
-			navigationRenderer.onResumeActivity();
+			navigationRenderer.onPauseActivity();
+			getCommonLogic().unregisterEventListener(navigationRenderer);
 		}
 
 		FrameLayout navigationSurfaceParent = (FrameLayout) findViewById(R.id.navigation_surface_parent);
@@ -96,6 +97,8 @@ public class NavigationModalView extends ModalView {
 				glSurfaceView);
 
 		glSurfaceView.onResume();
+
+		getCommonLogic().registerEventListener(navigationRenderer);
 		navigationRenderer.setCommonLogic(getCommonLogic());
 		navigationRenderer.onResumeActivity();
 	}

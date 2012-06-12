@@ -324,4 +324,8 @@ public class CommonLogic {
 		operationScheduleInitializedSign.acquire();
 		operationScheduleInitializedSign.release();
 	}
+
+	public void unregisterEventListener(Object object) {
+		eventBus.unregister(object);
+	}
 }
