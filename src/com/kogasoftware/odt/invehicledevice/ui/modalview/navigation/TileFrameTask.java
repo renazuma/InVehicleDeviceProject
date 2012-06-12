@@ -25,6 +25,9 @@ public class TileFrameTask extends FrameTask {
 		if (textureId != -1) {
 			Texture.delete(frameState.getGL(), textureId);
 		}
+		if (!bitmap.isRecycled()) {
+			bitmap.recycle();
+		}
 	}
 
 	@Override

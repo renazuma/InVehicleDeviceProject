@@ -54,31 +54,6 @@ public class NavigationModalView extends ModalView {
 				}
 			}
 		});
-
-		// ICSのGLSurfaceView.GLThreadがその親ViewをメンバmParentに保存する。
-		// そのため、Activity再構築などのタイミングで1/10程度の確率で循環参照でリークすることがある。
-		// それを防ぐために参照を極力減らしたFrameLayoutを間にはさむ
-		{
-			NavigationRenderer navigationRenderer = new NavigationRenderer(
-					getContext());
-			navigationRendererWeakReference = new WeakReference<NavigationRenderer>(
-					navigationRenderer);
-			FrameLayout icsLeakAvoidanceFrameLayout = new FrameLayout(
-					getContext().getApplicationContext());
-			GLSurfaceView glSurfaceView = new GLSurfaceView(getContext());
-			glSurfaceView.setRenderer(navigationRenderer);
-			FrameLayout navigationSurfaceParent = (FrameLayout) findViewById(R.id.navigation_surface_parent);
-			navigationSurfaceParent.addView(icsLeakAvoidanceFrameLayout,
-					new FrameLayout.LayoutParams(
-							FrameLayout.LayoutParams.FILL_PARENT,
-							FrameLayout.LayoutParams.FILL_PARENT));
-			icsLeakAvoidanceFrameLayout.addView(glSurfaceView,
-					new FrameLayout.LayoutParams(
-							FrameLayout.LayoutParams.FILL_PARENT,
-							FrameLayout.LayoutParams.FILL_PARENT));
-			glSurfaceViewWeakReference = new WeakReference<GLSurfaceView>(
-					glSurfaceView);
-		}
 	}
 
 	public void onPauseActivity() {
@@ -86,13 +61,43 @@ public class NavigationModalView extends ModalView {
 		if (glSurfaceView != null) {
 			glSurfaceView.onPause();
 		}
+		NavigationRenderer navigationRenderer = navigationRendererWeakReference
+				.get();
+		if (navigationRenderer != null) {
+			navigationRenderer.onResumeActivity();
+		}
+
+		FrameLayout navigationSurfaceParent = (FrameLayout) findViewById(R.id.navigation_surface_parent);
+		navigationSurfaceParent.removeAllViews();
 	}
 
 	public void onResumeActivity() {
-		GLSurfaceView glSurfaceView = glSurfaceViewWeakReference.get();
-		if (glSurfaceView != null) {
-			glSurfaceView.onResume();
-		}
+		// ICSのGLSurfaceView.GLThreadがその親ViewをメンバmParentに保存する。
+		// そのため、Activity再構築などのタイミングで1/10程度の確率で循環参照でリークすることがある。
+		// それを防ぐために参照を極力減らしたFrameLayoutを間にはさむ
+		NavigationRenderer navigationRenderer = new NavigationRenderer(
+				getContext());
+		navigationRendererWeakReference = new WeakReference<NavigationRenderer>(
+				navigationRenderer);
+		FrameLayout icsLeakAvoidanceFrameLayout = new FrameLayout(getContext()
+				.getApplicationContext());
+		GLSurfaceView glSurfaceView = new GLSurfaceView(getContext());
+		glSurfaceView.setRenderer(navigationRenderer);
+		FrameLayout navigationSurfaceParent = (FrameLayout) findViewById(R.id.navigation_surface_parent);
+		navigationSurfaceParent.addView(icsLeakAvoidanceFrameLayout,
+				new FrameLayout.LayoutParams(
+						FrameLayout.LayoutParams.FILL_PARENT,
+						FrameLayout.LayoutParams.FILL_PARENT));
+		icsLeakAvoidanceFrameLayout.addView(glSurfaceView,
+				new FrameLayout.LayoutParams(
+						FrameLayout.LayoutParams.FILL_PARENT,
+						FrameLayout.LayoutParams.FILL_PARENT));
+		glSurfaceViewWeakReference = new WeakReference<GLSurfaceView>(
+				glSurfaceView);
+
+		glSurfaceView.onResume();
+		navigationRenderer.setCommonLogic(getCommonLogic());
+		navigationRenderer.onResumeActivity();
 	}
 
 	@Override

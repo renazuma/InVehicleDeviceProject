@@ -7,11 +7,7 @@ import java.nio.IntBuffer;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.opengl.GLUtils;
-
-import com.google.common.math.DoubleMath;
 
 public class Texture {
 	// 固定小数点値で1.0
@@ -79,7 +75,7 @@ public class Texture {
 		// 行列スタックに現在の行列をプッシュ
 		gl.glPushMatrix();
 		// 現在選択されている行列(モデルビュー行列)に、単位行列をセット
-		gl.glLoadIdentity();
+		// gl.glLoadIdentity();
 		// モデルを平行移動する行列を掛け合わせる
 		gl.glTranslatef(x, y, 0);
 		// モデルをX軸中心に回転する行列を掛け合わせる
@@ -129,25 +125,6 @@ public class Texture {
 	 * テクスチャを張り替える
 	 */
 	public static void update(GL10 gl, int textureId, Bitmap bitmap) {
-		Bitmap targetBitmap = bitmap;
-		boolean recycle = false;
-
-		int alignedLength = (int) Math.pow(
-				2,
-				Math.ceil(DoubleMath.log2(Math.max(bitmap.getWidth(),
-						bitmap.getHeight()))));
-		if (bitmap.getWidth() != alignedLength
-				|| bitmap.getHeight() != alignedLength) {
-			Bitmap alignedBitmap = Bitmap.createBitmap(alignedLength,
-					alignedLength, Bitmap.Config.ARGB_8888);
-			Float left = (float) (alignedLength - bitmap.getWidth()) / 2;
-			Float top = (float) (alignedLength - bitmap.getHeight()) / 2;
-			new Canvas(alignedBitmap)
-					.drawBitmap(bitmap, left, top, new Paint());
-			targetBitmap = alignedBitmap;
-			recycle = true;
-		}
-
 		// 指定した固有名を持つテクスチャを作成
 		gl.glBindTexture(GL10.GL_TEXTURE_2D, textureId);
 
@@ -170,11 +147,7 @@ public class Texture {
 				GL10.GL_REPLACE);
 
 		// ビットマップからテクスチャを作成する
-		GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, targetBitmap, 0);
-
-		if (recycle) {
-			targetBitmap.recycle();
-		}
+		GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
 	}
 
 	private static IntBuffer wrapNativeIntBuffer(int vertices[]) {

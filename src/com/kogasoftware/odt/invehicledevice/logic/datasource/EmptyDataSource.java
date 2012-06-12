@@ -109,7 +109,9 @@ public class EmptyDataSource implements DataSource {
 
 	@Override
 	public int getMapTile(LatLng center, Integer zoom,
-			WebAPICallback<Bitmap> webAPICallback) {
+			WebAPICallback<Bitmap> callback) {
+		// TODO Auto-generated method stub
 		return 0;
 	}
+
 }

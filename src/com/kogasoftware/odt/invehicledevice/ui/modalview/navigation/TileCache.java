@@ -21,6 +21,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -31,6 +33,7 @@ import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
 import com.google.common.cache.Weigher;
 import com.google.common.io.Closeables;
+import com.google.common.math.DoubleMath;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.SharedPreferencesKey;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
@@ -99,7 +102,7 @@ public class TileCache {
 	private final LoadingCache<TileKey, File> fileCache;
 
 	private final AtomicBoolean dirty = new AtomicBoolean(false);
-	private CommonLogic commonLogic = new CommonLogic();
+	private volatile CommonLogic commonLogic = new CommonLogic();
 
 	public TileCache(Context context, Integer maxBytes) throws IOException {
 		fileCache = CacheBuilder
@@ -171,8 +174,9 @@ public class TileCache {
 		return result;
 	}
 
-	public void invalidate(String voice) {
-		fileCache.invalidate(voice);
+	public void invalidate(TileKey key) {
+		fileCache.invalidate(key);
+		// fileCache.refresh(key);
 	}
 
 	protected void saveInstanceState() throws ExecutionException {
@@ -215,19 +219,30 @@ public class TileCache {
 					}
 				});
 		countDownLatch.await();
-		if (outputBitmap.get() == null) {
+		Bitmap bitmap = outputBitmap.get();
+		if (bitmap == null) {
 			throw new NullPointerException();
 		}
+
+		int alignedLength = (int) Math.pow(
+				2,
+				Math.floor(DoubleMath.log2(Math.max(bitmap.getWidth(),
+						bitmap.getHeight()))));
+		Bitmap alignedBitmap = Bitmap.createBitmap(alignedLength,
+				alignedLength, Bitmap.Config.RGB_565);
+		Float left = (float) (alignedLength - bitmap.getWidth()) / 2;
+		Float top = (float) (alignedLength - bitmap.getHeight()) / 2;
+		new Canvas(alignedBitmap).drawBitmap(bitmap, left, top, new Paint());
+		bitmap.recycle();
 
 		File file = new File(outputDirectory, key.toFileName() + ".png");
 		FileOutputStream fileOutputStream = null;
 		try {
 			fileOutputStream = new FileOutputStream(file);
-			outputBitmap.get().compress(CompressFormat.PNG, 100,
-					fileOutputStream);
+			alignedBitmap.compress(CompressFormat.PNG, 100, fileOutputStream);
 		} finally {
 			Closeables.closeQuietly(fileOutputStream);
-			outputBitmap.get().recycle();
+			alignedBitmap.recycle();
 		}
 		dirty.set(true);
 		return file;
