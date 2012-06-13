@@ -45,6 +45,11 @@ public class NextPlatformFrameTask extends FrameTask {
 
 	@Override
 	void onDraw(FrameState frameState) {
+		// 緯度0経度0は海なので、未初期化と判断して良い
+		if (latLng.getLatitude() == 0 && latLng.getLongitude() == 0) {
+			return;
+		}
+
 		PointF point = NavigationRenderer
 				.getPoint(latLng, frameState.getZoom());
 		float scale = 0.4f;
