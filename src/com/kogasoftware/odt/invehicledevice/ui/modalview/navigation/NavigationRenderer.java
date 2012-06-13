@@ -24,6 +24,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PointF;
+import android.location.Location;
+import android.location.LocationManager;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
 import android.util.Log;
@@ -41,6 +43,7 @@ import com.kogasoftware.odt.invehicledevice.logic.event.LocationReceivedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.OrientationChangedEvent;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
+import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 
 public class NavigationRenderer implements GLSurfaceView.Renderer {
 	private static final String TAG = NavigationRenderer.class.getSimpleName();
@@ -139,9 +142,22 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		addedFrameTasks.add(new SelfFrameTask(context.getResources()));
 		addedFrameTasks.add(nextPlatformFrameTask);
 
-		// TODO
-		latitudeSmoother.addMotion(34.664887);
-		longitudeSmoother.addMotion(134.092846);
+		// 〒701-4302 岡山県瀬戸内市牛窓町牛窓３９１１−３７ (東備バス（株）)
+		double defaultLatitude = 34.617781;
+		double defaultLongitude = 134.161429;
+
+		LocationManager locationManager = (LocationManager) context
+				.getSystemService(Context.LOCATION_SERVICE);
+		if (locationManager != null) {
+			Location location = locationManager
+					.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+			if (location != null) {
+				defaultLatitude = location.getLatitude();
+				defaultLongitude = location.getLongitude();
+			}
+		}
+		latitudeSmoother.addMotion(defaultLatitude);
+		longitudeSmoother.addMotion(defaultLongitude);
 	}
 
 	/**
@@ -359,12 +375,18 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	 */
 	@Subscribe
 	public void changeLocation(LocationReceivedEvent event) {
-		Log.i(TAG, "changeLocation " + event.location);
+		changeLocation();
+	}
+
+	public void changeLocation() {
+		ServiceUnitStatusLog serviceUnitStatusLog = commonLogic
+				.getServiceUnitStatusLog();
+		double latitude = serviceUnitStatusLog.getLatitude().doubleValue();
+		double longitude = serviceUnitStatusLog.getLongitude().doubleValue();
+		Log.i(TAG, "changeLocation lat=" + latitude + ", lon=" + longitude);
 		long millis = System.currentTimeMillis();
-		latitudeSmoother.addMotion(event.location.getLatitude(), millis);
-		longitudeSmoother.addMotion(event.location.getLongitude(), millis);
-		// latitudeSmoother.addMotion(35.658517, millis);
-		// longitudeSmoother.addMotion(139.701334, millis);
+		latitudeSmoother.addMotion(latitude, millis);
+		longitudeSmoother.addMotion(longitude, millis);
 	}
 
 	/**
@@ -401,6 +423,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		this.commonLogic = commonLogic;
 		tileCache.setCommonLogic(commonLogic);
 		setNextPlatform();
+		changeLocation();
 	}
 
 	public boolean zoomIn() {
