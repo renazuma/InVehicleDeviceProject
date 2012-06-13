@@ -117,6 +117,9 @@ public class InVehicleDeviceActivity extends Activity implements
 	private NavigationModalView navigationModalView = null;
 	private TextView statusTextView = null;
 	private TextView presentTimeTextView = null;
+	private LocationManager locationManager = null;
+	private PowerManager powerManager = null;
+	private WakeLock wakeLock = null;
 
 	@Subscribe
 	public void changeNetworkStrengthImage(SignalStrengthChangedEvent e) {
@@ -238,18 +241,7 @@ public class InVehicleDeviceActivity extends Activity implements
 		setContentView(R.layout.in_vehicle_device);
 
 		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		// see　http://kamoland.com/wiki/wiki.cgi?Desire%A4%CEGPS%BC%E8%C6%C0%A4%C7%A4%CE%BB%EE%B9%D4%BA%F8%B8%ED
 		powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
-		wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
-				this.getClass().getName());
-		wakeLock.acquire();
-		Location location = locationManager
-				.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-		if (location != null) {
-			this.onLocationChanged(location);
-		}
-		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-				1000, 1, this);
 
 		contentView = findViewById(android.R.id.content);
 		presentTimeTextView = (TextView) findViewById(R.id.present_time_text_view);
@@ -300,10 +292,6 @@ public class InVehicleDeviceActivity extends Activity implements
 
 	}
 
-	private LocationManager locationManager = null;
-	private PowerManager powerManager = null;
-	private WakeLock wakeLock = null;
-
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
@@ -332,10 +320,6 @@ public class InVehicleDeviceActivity extends Activity implements
 	public void onDestroy() {
 		super.onDestroy();
 		Log.i(TAG, "onDestroy");
-		locationManager.removeUpdates(this);
-		if (wakeLock.isHeld()) {
-			wakeLock.release();
-		}
 
 		getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -346,6 +330,28 @@ public class InVehicleDeviceActivity extends Activity implements
 		backgroundThread.interrupt();
 
 		waitForStartUiLatch.countDown();
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+
+		// see　http://kamoland.com/wiki/wiki.cgi?Desire%A4%CEGPS%BC%E8%C6%C0%A4%C7%A4%CE%BB%EE%B9%D4%BA%F8%B8%ED
+		wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
+				getClass().getName());
+		wakeLock.acquire();
+		locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+				1000, 1, this);
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		locationManager.removeUpdates(this);
+		if (wakeLock.isHeld()) {
+			wakeLock.release();
+		}
 	}
 
 	@Override
