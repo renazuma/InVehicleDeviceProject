@@ -276,7 +276,7 @@ public class CommonEventProcessor {
 		});
 	}
 
-	private static final Long ORIENTATION_SAVE_PERIOD_MILLIS = 5000L;
+	public static final Long ORIENTATION_SAVE_PERIOD_MILLIS = 5000L;
 	private Long lastOrientationSavedMillis = System.currentTimeMillis();
 
 	/**

@@ -70,10 +70,11 @@ public class CommonEventSubscriberTestCase extends
 		}
 	}
 
-	public void testSetOrientation() {
+	public void testSetOrientation() throws Exception {
 		final Float f1 = 10f;
 		final Float f2 = 20f;
 
+		Thread.sleep(CommonEventProcessor.ORIENTATION_SAVE_PERIOD_MILLIS);
 		cl.postEvent(new OrientationChangedEvent(f1));
 		getInstrumentation().waitForIdleSync();
 		sa.read(new VoidReader() {
@@ -84,6 +85,7 @@ public class CommonEventSubscriberTestCase extends
 			}
 		});
 
+		Thread.sleep(CommonEventProcessor.ORIENTATION_SAVE_PERIOD_MILLIS);
 		cl.postEvent(new OrientationChangedEvent(f2));
 		getInstrumentation().waitForIdleSync();
 		sa.read(new VoidReader() {
