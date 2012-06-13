@@ -151,7 +151,8 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		if (locationManager != null) {
 			Location location = locationManager
 					.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-			if (location != null) {
+			if (location != null
+					&& !(location.getLatitude() == 0 && location.getLatitude() == 0)) {
 				defaultLatitude = location.getLatitude();
 				defaultLongitude = location.getLongitude();
 			}
@@ -383,6 +384,9 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 				.getServiceUnitStatusLog();
 		double latitude = serviceUnitStatusLog.getLatitude().doubleValue();
 		double longitude = serviceUnitStatusLog.getLongitude().doubleValue();
+		if (latitude == 0 && longitude == 0) {
+			return;
+		}
 		Log.i(TAG, "changeLocation lat=" + latitude + ", lon=" + longitude);
 		long millis = System.currentTimeMillis();
 		latitudeSmoother.addMotion(latitude, millis);
@@ -426,22 +430,8 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		changeLocation();
 	}
 
-	public boolean zoomIn() {
-		int temp = zoom.get();
-		if (temp > 16) {
-			return false;
-		}
-		nextZoom.set(temp + 1);
-		return true;
-	}
-
-	public boolean zoomOut() {
-		int temp = zoom.get();
-		if (temp <= 1) {
-			return false;
-		}
-		nextZoom.set(temp - 1);
-		return true;
+	public void setZoomLevel(int newZoom) {
+		nextZoom.set(newZoom);
 	}
 
 	public void onResumeActivity() {

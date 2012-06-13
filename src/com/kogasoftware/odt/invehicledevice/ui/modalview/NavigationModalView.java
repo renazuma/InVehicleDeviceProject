@@ -3,6 +3,7 @@ package com.kogasoftware.odt.invehicledevice.ui.modalview;
 import java.lang.ref.WeakReference;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.view.View;
@@ -18,6 +19,7 @@ public class NavigationModalView extends ModalView {
 	public static class ShowEvent {
 	}
 
+	private Integer zoomLevel = 13;
 	private final Button zoomInButton;
 	private final Button zoomOutButton;
 
@@ -25,6 +27,42 @@ public class NavigationModalView extends ModalView {
 			null);
 	private WeakReference<NavigationRenderer> navigationRendererWeakReference = new WeakReference<NavigationRenderer>(
 			null);
+
+	public void setZoomLevel(Integer newZoomLevel) {
+		if (newZoomLevel <= 9) {
+			newZoomLevel = 9;
+			zoomOutButton.setTextColor(Color.GRAY);
+			zoomOutButton.setEnabled(false);
+		} else {
+			zoomOutButton.setTextColor(Color.BLACK);
+			zoomOutButton.setEnabled(true);
+		}
+
+		if (newZoomLevel >= 17) {
+			newZoomLevel = 17;
+			zoomInButton.setTextColor(Color.GRAY);
+			zoomInButton.setEnabled(false);
+		} else {
+			zoomInButton.setTextColor(Color.BLACK);
+			zoomInButton.setEnabled(true);
+		}
+
+		zoomLevel = newZoomLevel;
+		NavigationRenderer navigationRenderer = navigationRendererWeakReference
+				.get();
+		if (navigationRenderer != null) {
+			navigationRenderer.setZoomLevel(zoomLevel);
+		}
+
+	}
+
+	public void zoomIn() {
+		setZoomLevel(zoomLevel + 2);
+	}
+
+	public void zoomOut() {
+		setZoomLevel(zoomLevel - 2);
+	}
 
 	public NavigationModalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -35,11 +73,7 @@ public class NavigationModalView extends ModalView {
 		zoomInButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				NavigationRenderer navigationRenderer = navigationRendererWeakReference
-						.get();
-				if (navigationRenderer != null) {
-					navigationRenderer.zoomIn();
-				}
+				zoomIn();
 			}
 		});
 
@@ -47,11 +81,7 @@ public class NavigationModalView extends ModalView {
 		zoomOutButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				NavigationRenderer navigationRenderer = navigationRendererWeakReference
-						.get();
-				if (navigationRenderer != null) {
-					navigationRenderer.zoomOut();
-				}
+				zoomOut();
 			}
 		});
 	}
@@ -78,6 +108,7 @@ public class NavigationModalView extends ModalView {
 		// それを防ぐために参照を極力減らしたFrameLayoutを間にはさむ
 		NavigationRenderer navigationRenderer = new NavigationRenderer(
 				getContext());
+		navigationRenderer.setZoomLevel(zoomLevel);
 		navigationRendererWeakReference = new WeakReference<NavigationRenderer>(
 				navigationRenderer);
 		FrameLayout icsLeakAvoidanceFrameLayout = new FrameLayout(getContext()
