@@ -13,10 +13,10 @@ import com.javadocmd.simplelatlng.LatLng;
 
 public class TileKey implements Serializable {
 	private static final long serialVersionUID = -2858195330177966613L;
+	public static final int TILE_LENGTH = 256;
 	private final int x;
 	private final int y;
 	private final int zoom;
-	public static int TILE_LENGTH = 256;
 
 	public TileKey(int x, int y, int zoom) {
 		this.x = x;
