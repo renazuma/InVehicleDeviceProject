@@ -771,6 +771,54 @@ public class WebAPI implements Closeable {
 	}
 
 	/**
+	 * http://ojw.dev.openstreetmap.org/StaticMap/?lat=35.214478887245&lon=
+	 * 139.21875&z=5&mode=Export&show=1
+	 */
+	protected SerializableHttpGetSupplier getOJWOSMRequestSupplier(String lat,
+			String lon, int zoom) {
+		Map<String, String> params = new TreeMap<String, String>();
+		params.put("lat", lat);
+		params.put("lon", lon);
+		params.put("z", "" + zoom);
+		params.put("w", "" + 300);
+		params.put("h", "" + 300);
+		params.put("mode", "Export");
+		params.put("show", "1");
+		return new SerializableHttpGetSupplier(
+				"http://ojw.dev.openstreetmap.org", "/StaticMap/", params, "",
+				"");
+	}
+
+	/**
+	 * http://open.mapquestapi.com/staticmap/v3/getmap?size=600,200&zoom=15&
+	 * center=41.862648,-87.615549
+	 */
+	protected SerializableHttpGetSupplier getMapQuestOSMRequestSupplier(
+			String lat, String lon, int zoom) {
+		Map<String, String> params = new TreeMap<String, String>();
+		params.put("center", lat + "," + lon);
+		params.put("zoom", "" + zoom);
+		params.put("size", "300,300");
+		return new SerializableHttpGetSupplier("http://open.mapquestapi.com",
+				"/staticmap/v3/getmap", params, "", "");
+	}
+
+	/**
+	 * http://maps.google.com/maps/api/staticmap
+	 */
+	protected SerializableHttpGetSupplier getGoogleMapRequestSupplier(
+			String lat, String lon, int zoom) {
+		Map<String, String> params = new TreeMap<String, String>();
+		params.put("center", lat + "," + lon);
+		params.put("zoom", "" + zoom);
+		params.put("size", "300x300");
+		params.put("sensor", "false");
+		params.put("language", "ja");
+		return new SerializableHttpGetSupplier("http://maps.google.com",
+				"/maps/api/staticmap", params, "", "");
+	}
+
+	/**
 	 * 地図画像を取得
 	 */
 	public int getMapTile(LatLng center, Integer zoom,
@@ -787,42 +835,12 @@ public class WebAPI implements Closeable {
 		String lat = String.format("%.6f", center.getLatitude());
 		String lon = String.format("%.6f", center.getLongitude());
 
-		// http://open.mapquestapi.com/staticmap/v3/getmap?size=600,200&zoom=15&center=41.862648,-87.615549
-		// Map<String, String> params = new TreeMap<String, String>();
-		// params.put("center",
-		// "" + center.getLatitude() + "," + center.getLongitude());
-		// params.put("zoom", "" + zoom);
-		// params.put("size", "300,300");
-		// SerializableHttpGetSupplier supplier = new
-		// SerializableHttpGetSupplier(
-		// "http://open.mapquestapi.com", "/staticmap/v3/getmap", params,
-		// "", "");
-
-		// http://ojw.dev.openstreetmap.org/StaticMap/?lat=35.214478887245&lon=139.21875&z=5&mode=Export&show=1
-		// http://otile1.mqcdn.com/tiles/1.0.0/osm/15/5240/12661.jpg
-		Map<String, String> params = new TreeMap<String, String>();
-		params.put("lat", lat);
-		params.put("lon", lon);
-		params.put("z", "" + zoom);
-		params.put("w", "" + 300);
-		params.put("h", "" + 300);
-		params.put("mode", "Export");
-		params.put("show", "1");
-		SerializableHttpGetSupplier supplier = new SerializableHttpGetSupplier(
-				"http://ojw.dev.openstreetmap.org", "/StaticMap/", params, "",
-				"");
-
-		// http://maps.google.com/maps/api/staticmap
-		// Map<String, String> params = new TreeMap<String, String>();
-		// params.put("center",
-		// "" + center.getLatitude() + "," + center.getLongitude());
-		// params.put("zoom", "" + zoom);
-		// params.put("size", "256x256");
-		// params.put("sensor", "false");
-		// params.put("language", "ja");
-		// SerializableHttpGetSupplier supplier = new
-		// SerializableHttpGetSupplier(
-		// "http://maps.google.com", "/maps/api/staticmap", params, "", "");
+		// SerializableHttpGetSupplier supplier = getOJWOSMRequestSupplier(lat,
+		// lon, zoom);
+		SerializableHttpGetSupplier supplier = getGoogleMapRequestSupplier(lat,
+				lon, zoom);
+		// SerializableHttpGetSupplier supplier = getMapQuestOSMRequestSupplier(
+		// lat, lon, zoom);
 
 		WebAPIRequest<?> request = new WebAPIRequest<Bitmap>(callback,
 				responseConverter, supplier, true);
