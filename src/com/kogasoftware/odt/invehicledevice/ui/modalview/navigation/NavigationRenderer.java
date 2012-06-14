@@ -186,6 +186,18 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 				latitudeSmoother.getSmoothMotion(millis),
 				longitudeSmoother.getSmoothMotion(millis));
 		LatLng centerLatLng = vehicleLatLng;
+		PointF centerPoint = getPoint(centerLatLng, zoom);
+		PointF vehiclePoint = getPoint(vehicleLatLng, zoom);
+		PointF nextPlatformPoint = getPoint(nextPlatformFrameTask.getLatLng(),
+				zoom);
+		{
+			// 現在地と目的地のピクセル距離を計算
+			double pixelDistance = Math.pow(vehiclePoint.x
+					- nextPlatformPoint.x, 2)
+					* Math.pow(vehiclePoint.y - nextPlatformPoint.y, 2);
+			// 縦横で短い方を基準にしたピクセル距離の割合を計算
+			double poxelDistanceRate = pixelDistance / Math.min(width, height);
+		}
 
 		// フレームレートの計算
 		framesBy10seconds++;
@@ -204,7 +216,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		TileKey centerTileKey = new TileKey(centerLatLng, zoom);
 		Map<TileKey, TileFrameTask> inactiveTileFrameTasks = new HashMap<TileKey, TileFrameTask>(
 				activeTileFrameTasks);
-		Multimap<Double, TileKey> tileKeyByDistance = LinkedListMultimap
+		Multimap<Double, TileKey> tileKeysByDistance = LinkedListMultimap
 				.<Double, TileKey> create();
 		for (int x = -extraTiles; x <= extraTiles; ++x) {
 			for (int y = -extraTiles; y <= extraTiles; ++y) {
@@ -212,13 +224,13 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 						.asSet()) {
 					double distance = Math.pow((double) x * height / width, 2)
 							+ y * y;
-					tileKeyByDistance.put(distance, tileKey);
+					tileKeysByDistance.put(distance, tileKey);
 				}
 			}
 		}
 		// 必要なタイルを中心に近い順にソートして追加
-		for (Double distance : new TreeSet<Double>(tileKeyByDistance.keys())) {
-			for (TileKey tileKey : tileKeyByDistance.get(distance)) {
+		for (Double distance : new TreeSet<Double>(tileKeysByDistance.keys())) {
+			for (TileKey tileKey : tileKeysByDistance.get(distance)) {
 				addTile(tileKey);
 				inactiveTileFrameTasks.remove(tileKey);
 			}
@@ -256,25 +268,24 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 
 		// 射影行列を現在地にあわせて修正
-		PointF center = getPoint(centerLatLng, zoom);
 		gl.glMatrixMode(GL10.GL_PROJECTION);
 		// 現在選択されている行列(射影行列)に、単位行列をセット
 		gl.glLoadIdentity();
 
 		// 平行投影用のパラメータをセット
-		float left = center.x + -width / 2f;
-		float right = center.x + width / 2f;
-		float bottom = center.y + -height / 2f;
-		float top = center.y + height / 2f;
+		float left = centerPoint.x + -width / 2f;
+		float right = centerPoint.x + width / 2f;
+		float bottom = centerPoint.y + -height / 2f;
+		float top = centerPoint.y + height / 2f;
 		GLU.gluOrtho2D(gl, left, right, bottom, top);
 
 		// モデル全体の回転と拡大率を設定
 		gl.glMatrixMode(GL10.GL_MODELVIEW);
 		gl.glLoadIdentity();
-		gl.glTranslatef(center.x, center.y, 0);
+		gl.glTranslatef(vehiclePoint.x, vehiclePoint.y, 0);
 		gl.glRotatef((float) Math.toDegrees(angle), 0, 0, 1);
 		gl.glScalef(cameraZoom, cameraZoom, cameraZoom);
-		gl.glTranslatef(-center.x, -center.y, 0);
+		gl.glTranslatef(-vehiclePoint.x, -vehiclePoint.y, 0);
 
 		// FrameTaskをひとつずつ描画
 		for (FrameTask frameTask : frameTasks) {
