@@ -134,6 +134,8 @@ public class StatusAccess {
 				if (object instanceof Status) {
 					status = (Status) object;
 				}
+			} catch (IndexOutOfBoundsException e) {
+				Log.e(TAG, e.toString(), e);
 			} catch (SerializationException e) {
 				Log.e(TAG, e.toString(), e);
 			} catch (IOException e) {

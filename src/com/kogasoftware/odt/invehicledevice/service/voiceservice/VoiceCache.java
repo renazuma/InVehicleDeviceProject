@@ -72,6 +72,8 @@ public class VoiceCache {
 			}
 			result = (InstanceState) object;
 			succeed = true;
+		} catch (IndexOutOfBoundsException e) {
+			Log.e(TAG, e.toString(), e);
 		} catch (IOException e) {
 			Log.w(TAG, e);
 		} catch (SerializationException e) {
