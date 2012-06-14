@@ -78,6 +78,8 @@ public class WebAPIRequestQueue {
 					return;
 				}
 				requestsByGroup.putAll(((InstanceState) object).requests);
+			} catch (IndexOutOfBoundsException e) {
+				Log.e(TAG, e.toString(), e);
 			} catch (IOException e) {
 				Log.w(TAG, e);
 			} catch (SerializationException e) {
