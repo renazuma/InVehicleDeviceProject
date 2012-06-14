@@ -8,7 +8,10 @@ import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.FrameLayout;
+import android.widget.ToggleButton;
 
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
@@ -22,13 +25,18 @@ public class NavigationModalView extends ModalView {
 	private Integer zoomLevel = 13;
 	private final Button zoomInButton;
 	private final Button zoomOutButton;
+	private final ToggleButton autoZoomButton;
 
 	private WeakReference<GLSurfaceView> glSurfaceViewWeakReference = new WeakReference<GLSurfaceView>(
 			null);
 	private WeakReference<NavigationRenderer> navigationRendererWeakReference = new WeakReference<NavigationRenderer>(
 			null);
 
-	public void setZoomLevel(Integer newZoomLevel) {
+	protected void setZoomLevel(Integer newZoomLevel) {
+		if (autoZoomButton.isChecked()) {
+			autoZoomButton.setChecked(false);
+		}
+
 		if (newZoomLevel <= 9) {
 			newZoomLevel = 9;
 			zoomOutButton.setTextColor(Color.GRAY);
@@ -53,15 +61,23 @@ public class NavigationModalView extends ModalView {
 		if (navigationRenderer != null) {
 			navigationRenderer.setZoomLevel(zoomLevel);
 		}
-
+	}
+	
+	protected void setAutoZoom(Boolean autoZoom) {
+		autoZoomButton.setTextColor(autoZoom ? Color.BLACK : Color.GRAY);
+		NavigationRenderer navigationRenderer = navigationRendererWeakReference
+				.get();
+		if (navigationRenderer != null) {
+			navigationRenderer.setAutoZoom(autoZoom);
+		}
 	}
 
-	public void zoomIn() {
-		setZoomLevel(zoomLevel + 2);
+	protected void zoomIn() {
+		setZoomLevel(zoomLevel + 1);
 	}
 
-	public void zoomOut() {
-		setZoomLevel(zoomLevel - 2);
+	protected void zoomOut() {
+		setZoomLevel(zoomLevel - 1);
 	}
 
 	public NavigationModalView(Context context, AttributeSet attrs) {
@@ -84,6 +100,18 @@ public class NavigationModalView extends ModalView {
 				zoomOut();
 			}
 		});
+
+		autoZoomButton = (ToggleButton) findViewById(R.id.navigation_auto_zoom_button);
+		autoZoomButton
+				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+					@Override
+					public void onCheckedChanged(CompoundButton buttonView,
+							boolean isChecked) {
+						setAutoZoom(isChecked);
+					}
+				});
+		autoZoomButton.setChecked(true);
+		setAutoZoom(true);
 	}
 
 	public void onPauseActivity() {
