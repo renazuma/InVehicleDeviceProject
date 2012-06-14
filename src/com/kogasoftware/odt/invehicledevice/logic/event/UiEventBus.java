@@ -127,8 +127,9 @@ public class UiEventBus {
 	 */
 	public void unregister(Object object) {
 		synchronized (registerAndDisposeLock) {
-			registeredObjects.remove(object);
-			getEventBusForObject(object).unregister(object);
+			if (registeredObjects.remove(object)) {
+				getEventBusForObject(object).unregister(object);
+			}
 		}
 	}
 }
