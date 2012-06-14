@@ -51,7 +51,7 @@
     <string name="show_missed_passengers">過去の乗降場で未乗車の乗客を表示</string>
     <string name="zoom_in">拡大</string>
     <string name="zoom_out">縮小</string>
-    <string name="auto_zoom">自動拡大縮小</string>
+    <string name="auto_zoom">自動調整</string>
     <string name="an_error_occurred">エラーが発生しました</string>
     <string name="reservation_candidate_not_found">予約候補を取得できませんでした</string>
     <string name="reservation_succeed">予約が完了しました</string>
