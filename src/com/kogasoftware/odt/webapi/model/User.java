@@ -14,7 +14,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class User extends Model {
-	private static final long serialVersionUID = 5160414596299833290L;
+	private static final long serialVersionUID = 8739939407632974373L;
 
 	public User() {
 	}
@@ -47,6 +47,7 @@ public class User extends Model {
 		setAuditComment(parseOptionalString(jsonObject, "audit_comment"));
 		setFullname(parseOptionalString(jsonObject, "fullname"));
 		setFullnameRuby(parseOptionalString(jsonObject, "fullname_ruby"));
+		setMemo(parseOptionalString(jsonObject, "memo"));
 		setPassword(parseOptionalString(jsonObject, "password"));
 		setPasswordConfirmation(parseOptionalString(jsonObject, "password_confirmation"));
 		setRememberMe(parseOptionalString(jsonObject, "remember_me"));
@@ -116,6 +117,7 @@ public class User extends Model {
 		jsonObject.put("audit_comment", toJSON(getAuditComment().orNull()));
 		jsonObject.put("fullname", toJSON(getFullname().orNull()));
 		jsonObject.put("fullname_ruby", toJSON(getFullnameRuby().orNull()));
+		jsonObject.put("memo", toJSON(getMemo().orNull()));
 		jsonObject.put("password", toJSON(getPassword().orNull()));
 		jsonObject.put("password_confirmation", toJSON(getPasswordConfirmation().orNull()));
 		jsonObject.put("remember_me", toJSON(getRememberMe().orNull()));
@@ -539,6 +541,24 @@ public class User extends Model {
 
 	public void clearFullnameRuby() {
 		this.fullnameRuby = Optional.absent();
+	}
+
+	private Optional<String> memo = Optional.absent();
+
+	public Optional<String> getMemo() {
+		return wrapNull(memo);
+	}
+
+	public void setMemo(Optional<String> memo) {
+		this.memo = wrapNull(memo);
+	}
+
+	public void setMemo(String memo) {
+		this.memo = Optional.fromNullable(memo);
+	}
+
+	public void clearMemo() {
+		this.memo = Optional.absent();
 	}
 
 	private Optional<String> password = Optional.absent();

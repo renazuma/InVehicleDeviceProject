@@ -14,7 +14,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class OperationSchedule extends Model {
-	private static final long serialVersionUID = 2056899763939785400L;
+	private static final long serialVersionUID = 5935012698276298446L;
 
 	public OperationSchedule() {
 	}
@@ -26,6 +26,7 @@ public class OperationSchedule extends Model {
 		setDepartureEstimate(parseDate(jsonObject, "departure_estimate"));
 		setId(parseInteger(jsonObject, "id"));
 		setPlatformId(parseOptionalInteger(jsonObject, "platform_id"));
+		setRemain(parseInteger(jsonObject, "remain"));
 		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
 		setUnitAssignmentId(parseOptionalInteger(jsonObject, "unit_assignment_id"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
@@ -76,6 +77,7 @@ public class OperationSchedule extends Model {
 		jsonObject.put("departure_estimate", toJSON(getDepartureEstimate()));
 		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("platform_id", toJSON(getPlatformId().orNull()));
+		jsonObject.put("remain", toJSON(getRemain()));
 		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
 		jsonObject.put("unit_assignment_id", toJSON(getUnitAssignmentId().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
@@ -182,6 +184,16 @@ public class OperationSchedule extends Model {
 
 	public void clearPlatformId() {
 		this.platformId = Optional.absent();
+	}
+
+	private Integer remain = 0;
+
+	public Integer getRemain() {
+		return wrapNull(remain);
+	}
+
+	public void setRemain(Integer remain) {
+		this.remain = wrapNull(remain);
 	}
 
 	private Optional<Integer> serviceProviderId = Optional.absent();
