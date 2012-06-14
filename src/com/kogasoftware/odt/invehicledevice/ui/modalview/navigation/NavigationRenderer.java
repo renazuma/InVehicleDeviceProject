@@ -216,9 +216,11 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 			// 縦横で短い方を基準にしたピクセル距離の割合を計算
 			double pixelDistanceRate = pixelDistance / Math.min(width, height);
 			// ピクセル距離に応じてズームを修正
-			if (pixelDistanceRate < 0.18) {
+			if (pixelDistanceRate < 0.15) {
+				// 近い場合、拡大する
 				setZoomLevel(zoomLevel + 1);
-			} else if (pixelDistanceRate > 0.3) {
+			} else if (pixelDistanceRate > 0.35) {
+				// 遠い場合、縮小する
 				setZoomLevel(zoomLevel - 1);
 			}
 		}
