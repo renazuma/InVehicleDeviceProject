@@ -812,8 +812,7 @@ public class WebAPI implements Closeable {
 		String path = "/REST/v1/Imagery/Map/Road/" + lat + "," + lon + "/"
 				+ zoom;
 		Map<String, String> params = new TreeMap<String, String>();
-		params.put("key",
-				"AmmB05JoE__tzxOYE4XFmuRubjys-0JB5oKWJ1es_G5NPQO0lgHwvfanGwDoPq6X");
+		params.put("key", "");
 		params.put("mapSize", "300,300");
 		params.put("culture", "ja");
 		return new SerializableHttpGetSupplier("http://dev.virtualearth.net",
