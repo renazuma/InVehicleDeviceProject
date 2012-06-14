@@ -44,6 +44,7 @@ import com.kogasoftware.odt.webapi.WebAPIException;
  */
 public class TileCache {
 	private static final String TAG = TileCache.class.getSimpleName();
+	private static final Object CACHE_FILE_ACCESS_LOCK = new Object(); // ファイルアクセス中のスレッドを一つに制限するためのロック。将来的にはロックの粒度をファイル毎にする必要があるかもしれない。
 
 	private static class InstanceState implements Serializable {
 		public InstanceState() {
@@ -110,16 +111,20 @@ public class TileCache {
 				.weigher(new Weigher<TileKey, File>() {
 					@Override
 					public int weigh(TileKey key, File file) {
-						return (int) file.length();
+						synchronized (CACHE_FILE_ACCESS_LOCK) {
+							return (int) file.length();
+						}
 					}
 				})
 				.removalListener(new RemovalListener<TileKey, File>() {
 					@Override
 					public void onRemoval(
 							RemovalNotification<TileKey, File> notification) {
-						if (!notification.getValue().delete()) {
-							Log.w(TAG, "!\"" + notification.getValue()
-									+ "\".delete()");
+						synchronized (CACHE_FILE_ACCESS_LOCK) {
+							if (!notification.getValue().delete()) {
+								Log.w(TAG, "!\"" + notification.getValue()
+										+ "\".delete()");
+							}
 						}
 					}
 				}).maximumWeight(maxBytes)
@@ -198,11 +203,12 @@ public class TileCache {
 
 	public File receiveMapTileImage(TileKey key) throws Exception {
 		File file = new File(outputDirectory, key.toFileName() + ".png");
-		if (file.exists()) {
-			dirty.set(true);
-			return file;
+		synchronized (CACHE_FILE_ACCESS_LOCK) {
+			if (file.exists()) {
+				dirty.set(true);
+				return file;
+			}
 		}
-		
 		final CountDownLatch countDownLatch = new CountDownLatch(1);
 		final AtomicReference<Bitmap> outputBitmap = new AtomicReference<Bitmap>(
 				null);
@@ -241,13 +247,16 @@ public class TileCache {
 		new Canvas(alignedBitmap).drawBitmap(bitmap, left, top, new Paint());
 		bitmap.recycle();
 
-		FileOutputStream fileOutputStream = null;
-		try {
-			fileOutputStream = new FileOutputStream(file);
-			alignedBitmap.compress(CompressFormat.PNG, 100, fileOutputStream);
-		} finally {
-			Closeables.closeQuietly(fileOutputStream);
-			alignedBitmap.recycle();
+		synchronized (CACHE_FILE_ACCESS_LOCK) {
+			FileOutputStream fileOutputStream = null;
+			try {
+				fileOutputStream = new FileOutputStream(file);
+				alignedBitmap.compress(CompressFormat.PNG, 100,
+						fileOutputStream);
+			} finally {
+				Closeables.closeQuietly(fileOutputStream);
+				alignedBitmap.recycle();
+			}
 		}
 		dirty.set(true);
 		return file;
