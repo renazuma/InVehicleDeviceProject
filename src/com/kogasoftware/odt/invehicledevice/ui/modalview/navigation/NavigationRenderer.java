@@ -29,6 +29,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
+import android.util.FloatMath;
 import android.util.Log;
 
 import com.google.common.base.Optional;
@@ -42,6 +43,7 @@ import com.javadocmd.simplelatlng.LatLng;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterDrivePhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.LocationReceivedEvent;
+import com.kogasoftware.odt.invehicledevice.logic.event.MapZoomLevelChangedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.OrientationChangedEvent;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
@@ -50,6 +52,8 @@ import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 public class NavigationRenderer implements GLSurfaceView.Renderer {
 	private static final String TAG = NavigationRenderer.class.getSimpleName();
 	public static final Integer MAX_TILE_CACHE_BYTES = 100 * 1024 * 1024;
+	public static final Integer MAX_ZOOM_LEVEL = 17;
+	public static final Integer MIN_ZOOM_LEVEL = 9;
 
 	private final MotionSmoother rotationSmoother = new LazyMotionSmoother(
 			500.0, 0.02, 0.00005);
@@ -59,8 +63,8 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	// private final MotionSmoother longitudeSmoother = new LazyMotionSmoother(
 	// 500.0, 0.02, 0.00005);
 
-	public static PointF getPoint(LatLng latLng, int zoom) {
-		int totalPixels = (1 << zoom) * TileKey.TILE_LENGTH;
+	public static PointF getPoint(LatLng latLng, int zoomLevel) {
+		int totalPixels = (1 << zoomLevel) * TileKey.TILE_LENGTH;
 		double x = latLng.getLongitude() * totalPixels / 360d;
 		double y = SphericalMercator.lat2y(latLng.getLatitude()) * totalPixels
 				/ 360d;
@@ -106,11 +110,11 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	private volatile ExecutorService executorService = Executors
 			.newFixedThreadPool(NUM_THREADS);
 
-	private int zoom = 15; // ズームレベル
-	private final AtomicReference<Optional<Integer>> syncNextZoom = new AtomicReference<Optional<Integer>>(
+	private int zoomLevel = 15;
+	private final AtomicReference<Optional<Integer>> syncNextZoomLevel = new AtomicReference<Optional<Integer>>(
 			Optional.<Integer> absent()); // 描画中にzoomの値が変更されないようにするための変数
-	private boolean autoZoom = true; // 自動ズームするかどうか
-	private final AtomicReference<Optional<Boolean>> syncNextAutoZoom = new AtomicReference<Optional<Boolean>>(
+	private boolean autoZoomLevel = true; // 自動ズームするかどうか
+	private final AtomicReference<Optional<Boolean>> syncNextAutoZoomLevel = new AtomicReference<Optional<Boolean>>(
 			Optional.<Boolean> absent()); // 描画中にautoZoomの値が変更されないようにするための変数
 
 	public NavigationRenderer(Context context) {
@@ -162,19 +166,19 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		float cameraZoom = 2f;
 
 		// ズームを修正
-		for (Integer nextZoom : syncNextZoom.getAndSet(
+		for (Integer nextZoomLevel : syncNextZoomLevel.getAndSet(
 				Optional.<Integer> absent()).asSet()) {
-			if (!nextZoom.equals(zoom)) {
+			if (!nextZoomLevel.equals(zoomLevel)) {
 				tileFrameTaskCache.cleanUp();
-				zoom = nextZoom;
+				zoomLevel = nextZoomLevel;
 			}
 		}
 
 		// 自動ズームかどうかを修正
-		for (Boolean nextAutoZoom : syncNextAutoZoom.getAndSet(
+		for (Boolean nextAutoZoomLevel : syncNextAutoZoomLevel.getAndSet(
 				Optional.<Boolean> absent()).asSet()) {
-			if (!nextAutoZoom.equals(autoZoom)) {
-				autoZoom = nextAutoZoom;
+			if (!nextAutoZoomLevel.equals(autoZoomLevel)) {
+				autoZoomLevel = nextAutoZoomLevel;
 			}
 		}
 
@@ -186,17 +190,37 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 				latitudeSmoother.getSmoothMotion(millis),
 				longitudeSmoother.getSmoothMotion(millis));
 		LatLng centerLatLng = vehicleLatLng;
-		PointF centerPoint = getPoint(centerLatLng, zoom);
-		PointF vehiclePoint = getPoint(vehicleLatLng, zoom);
+		PointF centerPoint = getPoint(centerLatLng, zoomLevel);
+		PointF vehiclePoint = getPoint(vehicleLatLng, zoomLevel);
 		PointF nextPlatformPoint = getPoint(nextPlatformFrameTask.getLatLng(),
-				zoom);
-		{
+				zoomLevel);
+
+		centerPoint.y += (float) height / 5.5; // 中心を上に修正
+		{ // 目的地が現在地より下にある場合、中心を下に修正して目的地が見やすいようにする
+			float vehicleRY = vehiclePoint.x * FloatMath.sin(angle)
+					+ vehiclePoint.y * FloatMath.cos(angle);
+			float nextPlatformRY = nextPlatformPoint.x * FloatMath.sin(angle)
+					+ nextPlatformPoint.y * FloatMath.cos(angle);
+			if (vehicleRY > nextPlatformRY) {
+				float extraY = Math.min(vehicleRY - nextPlatformRY,
+						(float) height / 2);
+				centerPoint.y -= extraY;
+			}
+		}
+
+		if (autoZoomLevel) {
 			// 現在地と目的地のピクセル距離を計算
-			double pixelDistance = Math.pow(vehiclePoint.x
-					- nextPlatformPoint.x, 2)
-					* Math.pow(vehiclePoint.y - nextPlatformPoint.y, 2);
+			double dx = vehiclePoint.x - nextPlatformPoint.x;
+			double dy = vehiclePoint.y - nextPlatformPoint.y;
+			double pixelDistance = Math.sqrt(dx * dx + dy * dy);
 			// 縦横で短い方を基準にしたピクセル距離の割合を計算
-			double poxelDistanceRate = pixelDistance / Math.min(width, height);
+			double pixelDistanceRate = pixelDistance / Math.min(width, height);
+			// ピクセル距離に応じてズームを修正
+			if (pixelDistanceRate < 0.18) {
+				setZoomLevel(zoomLevel + 1);
+			} else if (pixelDistanceRate > 0.3) {
+				setZoomLevel(zoomLevel - 1);
+			}
 		}
 
 		// フレームレートの計算
@@ -204,7 +228,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		if (millis - lastReportMillis > 1000) {
 			Log.i(TAG, "onDrawFrame() fps=" + (double) framesBy10seconds / 10
 					+ ", lat=" + vehicleLatLng.getLatitude() + ", lon="
-					+ vehicleLatLng.getLongitude() + ", zoom=" + zoom
+					+ vehicleLatLng.getLongitude() + ", zoom=" + zoomLevel
 					+ ", angle=" + angle);
 			framesBy10seconds = 0l;
 			lastReportMillis = millis;
@@ -213,7 +237,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		// 上下左右で追加で表示に必要なタイルを準備
 		int extraTiles = (int) Math.floor(Math.max(height, width) / cameraZoom
 				/ TileKey.TILE_LENGTH / 2 + 1);
-		TileKey centerTileKey = new TileKey(centerLatLng, zoom);
+		TileKey centerTileKey = new TileKey(centerLatLng, zoomLevel);
 		Map<TileKey, TileFrameTask> inactiveTileFrameTasks = new HashMap<TileKey, TileFrameTask>(
 				activeTileFrameTasks);
 		Multimap<Double, TileKey> tileKeysByDistance = LinkedListMultimap
@@ -222,9 +246,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 			for (int y = -extraTiles; y <= extraTiles; ++y) {
 				for (TileKey tileKey : centerTileKey.getRelativeTileKey(x, y)
 						.asSet()) {
-					double distance = Math.pow((double) x * height / width, 2)
-							+ y * y;
-					tileKeysByDistance.put(distance, tileKey);
+					tileKeysByDistance.put((double) (x * x + y * y), tileKey);
 				}
 			}
 		}
@@ -243,7 +265,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 
 		// 描画用の情報を作成
 		FrameState frameState = new FrameState(gl, millis, angle, centerLatLng,
-				zoom, addedFrameTasks, removedFrameTasks);
+				zoomLevel, addedFrameTasks, removedFrameTasks);
 
 		// 追加予約、削除予約されているFrameTaskをリストに追加削除
 		while (!addedFrameTasks.isEmpty() || !removedFrameTasks.isEmpty()) {
@@ -273,15 +295,16 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		gl.glLoadIdentity();
 
 		// 平行投影用のパラメータをセット
-		float left = centerPoint.x + -width / 2f;
-		float right = centerPoint.x + width / 2f;
-		float bottom = centerPoint.y + -height / 2f;
-		float top = centerPoint.y + height / 2f;
+		float left = -width / 2f;
+		float right = width / 2f;
+		float bottom = -height / 2f;
+		float top = height / 2f;
 		GLU.gluOrtho2D(gl, left, right, bottom, top);
 
 		// モデル全体の回転と拡大率を設定
 		gl.glMatrixMode(GL10.GL_MODELVIEW);
 		gl.glLoadIdentity();
+		gl.glTranslatef(-centerPoint.x, -centerPoint.y, 0);
 		gl.glTranslatef(vehiclePoint.x, vehiclePoint.y, 0);
 		gl.glRotatef((float) Math.toDegrees(angle), 0, 0, 1);
 		gl.glScalef(cameraZoom, cameraZoom, cameraZoom);
@@ -324,7 +347,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 					if (Thread.currentThread().isInterrupted()) {
 						return;
 					}
-					if (zoom != tileKey.getZoom()) {
+					if (zoomLevel != tileKey.getZoom()) {
 						return;
 					}
 					tileFrameTaskCache.get(tileKey);
@@ -448,12 +471,17 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		changeLocation();
 	}
 
-	public void setZoomLevel(int newZoom) {
-		syncNextZoom.set(Optional.of(newZoom));
+	public void setZoomLevel(int newZoomLevel) {
+		if (newZoomLevel > MAX_ZOOM_LEVEL || newZoomLevel < MIN_ZOOM_LEVEL
+				|| zoomLevel == newZoomLevel) {
+			return;
+		}
+		commonLogic.postEvent(new MapZoomLevelChangedEvent(newZoomLevel));
+		syncNextZoomLevel.set(Optional.of(newZoomLevel));
 	}
 
-	public void setAutoZoom(boolean newAutoZoom) {
-		syncNextAutoZoom.set(Optional.of(newAutoZoom));
+	public void setAutoZoomLevel(boolean newAutoZoomLevel) {
+		syncNextAutoZoomLevel.set(Optional.of(newAutoZoomLevel));
 	}
 
 	public void onResumeActivity() {

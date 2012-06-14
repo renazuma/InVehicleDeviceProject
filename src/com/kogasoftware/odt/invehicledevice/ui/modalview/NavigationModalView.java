@@ -16,13 +16,14 @@ import android.widget.ToggleButton;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.logic.event.CommonLogicLoadCompleteEvent;
+import com.kogasoftware.odt.invehicledevice.logic.event.MapZoomLevelChangedEvent;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.NavigationRenderer;
 
 public class NavigationModalView extends ModalView {
 	public static class ShowEvent {
 	}
 
-	private Integer zoomLevel = 13;
+	private volatile Integer zoomLevel = 13;
 	private final Button zoomInButton;
 	private final Button zoomOutButton;
 	private final ToggleButton autoZoomButton;
@@ -31,14 +32,16 @@ public class NavigationModalView extends ModalView {
 			null);
 	private WeakReference<NavigationRenderer> navigationRendererWeakReference = new WeakReference<NavigationRenderer>(
 			null);
-
-	protected void setZoomLevel(Integer newZoomLevel) {
-		if (autoZoomButton.isChecked()) {
-			autoZoomButton.setChecked(false);
-		}
-
-		if (newZoomLevel <= 9) {
-			newZoomLevel = 9;
+	
+	@Subscribe
+	public void updateZoomButtons(MapZoomLevelChangedEvent e) {
+		zoomLevel = e.zoomLevel;
+		updateZoomButtons();
+	}
+	
+	protected void updateZoomButtons() {
+		if (zoomLevel <= NavigationRenderer.MIN_ZOOM_LEVEL) {
+			zoomLevel = NavigationRenderer.MIN_ZOOM_LEVEL;
 			zoomOutButton.setTextColor(Color.GRAY);
 			zoomOutButton.setEnabled(false);
 		} else {
@@ -46,21 +49,30 @@ public class NavigationModalView extends ModalView {
 			zoomOutButton.setEnabled(true);
 		}
 
-		if (newZoomLevel >= 17) {
-			newZoomLevel = 17;
+		if (zoomLevel >= NavigationRenderer.MAX_ZOOM_LEVEL) {
+			zoomLevel = NavigationRenderer.MAX_ZOOM_LEVEL;
 			zoomInButton.setTextColor(Color.GRAY);
 			zoomInButton.setEnabled(false);
 		} else {
 			zoomInButton.setTextColor(Color.BLACK);
 			zoomInButton.setEnabled(true);
 		}
+	}
 
+	protected void setZoomLevel(Integer newZoomLevel) {
 		zoomLevel = newZoomLevel;
 		NavigationRenderer navigationRenderer = navigationRendererWeakReference
 				.get();
 		if (navigationRenderer != null) {
+			navigationRenderer.setAutoZoomLevel(false);
 			navigationRenderer.setZoomLevel(zoomLevel);
 		}
+
+		if (autoZoomButton.isChecked()) {
+			autoZoomButton.setChecked(false);
+		}
+		
+		updateZoomButtons();
 	}
 	
 	protected void setAutoZoom(Boolean autoZoom) {
@@ -68,7 +80,7 @@ public class NavigationModalView extends ModalView {
 		NavigationRenderer navigationRenderer = navigationRendererWeakReference
 				.get();
 		if (navigationRenderer != null) {
-			navigationRenderer.setAutoZoom(autoZoom);
+			navigationRenderer.setAutoZoomLevel(autoZoom);
 		}
 	}
 
@@ -112,6 +124,7 @@ public class NavigationModalView extends ModalView {
 				});
 		autoZoomButton.setChecked(true);
 		setAutoZoom(true);
+		updateZoomButtons();
 	}
 
 	public void onPauseActivity() {
