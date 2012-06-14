@@ -197,6 +197,12 @@ public class TileCache {
 	}
 
 	public File receiveMapTileImage(TileKey key) throws Exception {
+		File file = new File(outputDirectory, key.toFileName() + ".png");
+		if (file.exists()) {
+			dirty.set(true);
+			return file;
+		}
+		
 		final CountDownLatch countDownLatch = new CountDownLatch(1);
 		final AtomicReference<Bitmap> outputBitmap = new AtomicReference<Bitmap>(
 				null);
@@ -235,7 +241,6 @@ public class TileCache {
 		new Canvas(alignedBitmap).drawBitmap(bitmap, left, top, new Paint());
 		bitmap.recycle();
 
-		File file = new File(outputDirectory, key.toFileName() + ".png");
 		FileOutputStream fileOutputStream = null;
 		try {
 			fileOutputStream = new FileOutputStream(file);
