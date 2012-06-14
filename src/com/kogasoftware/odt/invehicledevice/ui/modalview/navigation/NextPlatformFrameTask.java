@@ -26,6 +26,10 @@ public class NextPlatformFrameTask extends FrameTask {
 	public void setLatLng(LatLng latLng) {
 		this.latLng = latLng;
 	}
+	
+	public LatLng getLatLng() {
+		return latLng;
+	}
 
 	@Override
 	public void onAdd(FrameState frameState) {
