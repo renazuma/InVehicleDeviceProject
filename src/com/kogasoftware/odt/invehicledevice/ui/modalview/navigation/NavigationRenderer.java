@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -15,7 +16,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -30,11 +31,12 @@ import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
 import android.util.Log;
 
+import com.google.common.base.Optional;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
+import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.Multimap;
 import com.google.common.eventbus.Subscribe;
 import com.javadocmd.simplelatlng.LatLng;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
@@ -67,30 +69,15 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 
 	private final MotionSmoother latitudeSmoother = new SimpleMotionSmoother();
 	private final MotionSmoother longitudeSmoother = new SimpleMotionSmoother();
-	private final LatLng currentLatLng = new LatLng(35.658517, 139.701334);
-
-	private long framesBy10seconds = 0l;
-	private long lastReportMillis = 0l;
 	private final List<FrameTask> frameTasks = new LinkedList<FrameTask>();
 	private final List<FrameTask> frontFrameTasks = new LinkedList<FrameTask>();
 	private final Queue<FrameTask> addedFrameTasks = new ConcurrentLinkedQueue<FrameTask>();
 	private final Queue<FrameTask> removedFrameTasks = new ConcurrentLinkedQueue<FrameTask>();
 	private final Set<TileKey> loadingTileKeys = new CopyOnWriteArraySet<TileKey>();
-	private CommonLogic commonLogic = new CommonLogic();
-	private int width = 0;
-	private int height = 0;
-	private final AtomicInteger zoom = new AtomicInteger(15);
-	private final AtomicInteger nextZoom = new AtomicInteger(zoom.get());
 	private final TileCache tileCache;
-	private final LoadingCache<TileKey, TileFrameTask> textureCache;
+	private final LoadingCache<TileKey, TileFrameTask> tileFrameTaskCache;
 	private final Integer NUM_THREADS = 10;
-	private volatile ExecutorService executorService = Executors
-			.newFixedThreadPool(NUM_THREADS);
 	private final NextPlatformFrameTask nextPlatformFrameTask;
-
-	// private final Set<TileKey> texturedTileKeys = new
-	// CopyOnWriteArraySet<TileKey>();
-
 	private final Map<TileKey, TileFrameTask> activeTileFrameTasks = new ConcurrentHashMap<TileKey, TileFrameTask>();
 	private final CacheLoader<TileKey, TileFrameTask> textureCacheLoader = new CacheLoader<TileKey, TileFrameTask>() {
 		@Override
@@ -111,14 +98,20 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		}
 	};
 
-	private final RemovalListener<TileKey, TileFrameTask> textureRemovalListener = new RemovalListener<TileKey, TileFrameTask>() {
-		@Override
-		public void onRemoval(
-				RemovalNotification<TileKey, TileFrameTask> notification) {
-			// removedFrameTasks.add(notification.getValue());
-			// texturedTileKeys.remove(notification.getKey());
-		}
-	};
+	private CommonLogic commonLogic = new CommonLogic();
+	private long framesBy10seconds = 0l;
+	private long lastReportMillis = 0l;
+	private int width = 0;
+	private int height = 0;
+	private volatile ExecutorService executorService = Executors
+			.newFixedThreadPool(NUM_THREADS);
+
+	private int zoom = 15; // ズームレベル
+	private final AtomicReference<Optional<Integer>> syncNextZoom = new AtomicReference<Optional<Integer>>(
+			Optional.<Integer> absent()); // 描画中にzoomの値が変更されないようにするための変数
+	private boolean autoZoom = true; // 自動ズームするかどうか
+	private final AtomicReference<Optional<Boolean>> syncNextAutoZoom = new AtomicReference<Optional<Boolean>>(
+			Optional.<Boolean> absent()); // 描画中にautoZoomの値が変更されないようにするための変数
 
 	public NavigationRenderer(Context context) {
 		// frameTasks.add(new GeoPointDroidSprite(context.getResources(),
@@ -132,9 +125,8 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 			Log.wtf(TAG, e);
 			throw new RuntimeException(e);
 		}
-		textureCache = CacheBuilder.newBuilder().initialCapacity(32)
-				.maximumSize(48).removalListener(textureRemovalListener)
-				.build(textureCacheLoader);
+		tileFrameTaskCache = CacheBuilder.newBuilder().initialCapacity(32)
+				.maximumSize(48).build(textureCacheLoader);
 
 		nextPlatformFrameTask = new NextPlatformFrameTask(
 				context.getResources());
@@ -169,33 +161,39 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		final long millis = System.currentTimeMillis();
 		float cameraZoom = 2f;
 
+		// ズームを修正
+		for (Integer nextZoom : syncNextZoom.getAndSet(
+				Optional.<Integer> absent()).asSet()) {
+			if (!nextZoom.equals(zoom)) {
+				tileFrameTaskCache.cleanUp();
+				zoom = nextZoom;
+			}
+		}
+
+		// 自動ズームかどうかを修正
+		for (Boolean nextAutoZoom : syncNextAutoZoom.getAndSet(
+				Optional.<Boolean> absent()).asSet()) {
+			if (!nextAutoZoom.equals(autoZoom)) {
+				autoZoom = nextAutoZoom;
+			}
+		}
+
 		// 現在の方向を取得
 		float angle = (float) -rotationSmoother.getSmoothMotion(millis);
-		// angle = (float) Math.toRadians((millis / 50) % 360);
 
 		// 現在地を取得
-		double latitude = latitudeSmoother.getSmoothMotion(millis);
-		double longitude = longitudeSmoother.getSmoothMotion(millis);
-
-		// latitude = 35.658517;
-		// longitude = 139.701334;
-		// latitude = 0;
-		// longitude = 0;
-
-		currentLatLng.setLatitudeLongitude(latitude, longitude);
-
-		// ズームを修正
-		if (zoom.get() != nextZoom.get()) {
-			zoom.set(nextZoom.get());
-			textureCache.cleanUp();
-		}
+		LatLng vehicleLatLng = new LatLng(
+				latitudeSmoother.getSmoothMotion(millis),
+				longitudeSmoother.getSmoothMotion(millis));
+		LatLng centerLatLng = vehicleLatLng;
 
 		// フレームレートの計算
 		framesBy10seconds++;
 		if (millis - lastReportMillis > 1000) {
 			Log.i(TAG, "onDrawFrame() fps=" + (double) framesBy10seconds / 10
-					+ ", lat=" + latitude + ", lon=" + longitude + ", zoom="
-					+ zoom.get() + ", angle=" + angle);
+					+ ", lat=" + vehicleLatLng.getLatitude() + ", lon="
+					+ vehicleLatLng.getLongitude() + ", zoom=" + zoom
+					+ ", angle=" + angle);
 			framesBy10seconds = 0l;
 			lastReportMillis = millis;
 		}
@@ -203,30 +201,39 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		// 上下左右で追加で表示に必要なタイルを準備
 		int extraTiles = (int) Math.floor(Math.max(height, width) / cameraZoom
 				/ TileKey.TILE_LENGTH / 2 + 1);
-		TileKey centerTileKey = new TileKey(currentLatLng, zoom.get());
-
+		TileKey centerTileKey = new TileKey(centerLatLng, zoom);
 		Map<TileKey, TileFrameTask> inactiveTileFrameTasks = new HashMap<TileKey, TileFrameTask>(
 				activeTileFrameTasks);
+		Multimap<Double, TileKey> tileKeyByDistance = LinkedListMultimap
+				.<Double, TileKey> create();
 		for (int x = -extraTiles; x <= extraTiles; ++x) {
 			for (int y = -extraTiles; y <= extraTiles; ++y) {
 				for (TileKey tileKey : centerTileKey.getRelativeTileKey(x, y)
 						.asSet()) {
-					// LRUをするため、見えているタイルの参照回数を増やす
-					// textureCache.getIfPresent(tileKey);
-					// タイルのロードと追加
-					addTile(tileKey);
-					inactiveTileFrameTasks.remove(tileKey);
+					double distance = Math.pow((double) x * height / width, 2)
+							+ y * y;
+					tileKeyByDistance.put(distance, tileKey);
 				}
 			}
 		}
+		// 必要なタイルを中心に近い順にソートして追加
+		for (Double distance : new TreeSet<Double>(tileKeyByDistance.keys())) {
+			for (TileKey tileKey : tileKeyByDistance.get(distance)) {
+				addTile(tileKey);
+				inactiveTileFrameTasks.remove(tileKey);
+			}
+		}
+		// 不要なタイルを削除予約
 		for (TileKey inactiveTileKey : inactiveTileFrameTasks.keySet()) {
 			activeTileFrameTasks.remove(inactiveTileKey);
 		}
 		removedFrameTasks.addAll(inactiveTileFrameTasks.values());
 
-		FrameState frameState = new FrameState(gl, millis, angle,
-				currentLatLng, zoom.get(), addedFrameTasks, removedFrameTasks);
+		// 描画用の情報を作成
+		FrameState frameState = new FrameState(gl, millis, angle, centerLatLng,
+				zoom, addedFrameTasks, removedFrameTasks);
 
+		// 追加予約、削除予約されているFrameTaskをリストに追加削除
 		while (!addedFrameTasks.isEmpty() || !removedFrameTasks.isEmpty()) {
 			FrameTask newFrameTask = addedFrameTasks.poll();
 			if (newFrameTask != null) {
@@ -249,7 +256,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 
 		// 射影行列を現在地にあわせて修正
-		PointF center = getPoint(currentLatLng, zoom.get());
+		PointF center = getPoint(centerLatLng, zoom);
 		gl.glMatrixMode(GL10.GL_PROJECTION);
 		// 現在選択されている行列(射影行列)に、単位行列をセット
 		gl.glLoadIdentity();
@@ -284,12 +291,12 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		}
 
 		// テクスチャが表示されていない場合
-		TileFrameTask tileFrameTask = textureCache.getIfPresent(tileKey);
+		TileFrameTask tileFrameTask = tileFrameTaskCache.getIfPresent(tileKey);
 		if (tileFrameTask != null) {
 			// キャッシュにあった場合、追加
 			activeTileFrameTasks.put(tileKey, tileFrameTask);
 			addedFrameTasks.add(tileFrameTask);
-			textureCache.invalidate(tileKey);
+			tileFrameTaskCache.invalidate(tileKey);
 		}
 
 		// ロード中の場合終了
@@ -306,10 +313,10 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 					if (Thread.currentThread().isInterrupted()) {
 						return;
 					}
-					if (zoom.get() != tileKey.getZoom()) {
+					if (zoom != tileKey.getZoom()) {
 						return;
 					}
-					textureCache.get(tileKey);
+					tileFrameTaskCache.get(tileKey);
 				} catch (ExecutionException e) {
 					tileCache.invalidate(tileKey);
 					Log.w(TAG, e);
@@ -431,7 +438,11 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	}
 
 	public void setZoomLevel(int newZoom) {
-		nextZoom.set(newZoom);
+		syncNextZoom.set(Optional.of(newZoom));
+	}
+
+	public void setAutoZoom(boolean newAutoZoom) {
+		syncNextAutoZoom.set(Optional.of(newAutoZoom));
 	}
 
 	public void onResumeActivity() {
