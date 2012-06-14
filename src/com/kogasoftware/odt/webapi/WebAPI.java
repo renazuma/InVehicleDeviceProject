@@ -780,8 +780,8 @@ public class WebAPI implements Closeable {
 		params.put("lat", lat);
 		params.put("lon", lon);
 		params.put("z", "" + zoom);
-		params.put("w", "" + 300);
-		params.put("h", "" + 300);
+		params.put("w", "" + 256);
+		params.put("h", "" + 256);
 		params.put("mode", "Export");
 		params.put("show", "1");
 		return new SerializableHttpGetSupplier(
@@ -798,15 +798,32 @@ public class WebAPI implements Closeable {
 		Map<String, String> params = new TreeMap<String, String>();
 		params.put("center", lat + "," + lon);
 		params.put("zoom", "" + zoom);
-		params.put("size", "300,300");
+		params.put("size", "256,256");
 		return new SerializableHttpGetSupplier("http://open.mapquestapi.com",
 				"/staticmap/v3/getmap", params, "", "");
 	}
 
 	/**
+	 * http://dev.virtualearth.net/REST/v1/Imagery/Map/Road/47.610,-122.107/2?
+	 * key=key
+	 */
+	protected SerializableHttpGetSupplier getBingMapsRequestSupplier(
+			String lat, String lon, int zoom) {
+		String path = "/REST/v1/Imagery/Map/Road/" + lat + "," + lon + "/"
+				+ zoom;
+		Map<String, String> params = new TreeMap<String, String>();
+		params.put("key",
+				"AmmB05JoE__tzxOYE4XFmuRubjys-0JB5oKWJ1es_G5NPQO0lgHwvfanGwDoPq6X");
+		params.put("mapSize", "300,300");
+		params.put("culture", "ja");
+		return new SerializableHttpGetSupplier("http://dev.virtualearth.net",
+				path, params, "", "");
+	}
+
+	/**
 	 * http://maps.google.com/maps/api/staticmap
 	 */
-	protected SerializableHttpGetSupplier getGoogleMapRequestSupplier(
+	protected SerializableHttpGetSupplier getGoogleMapsRequestSupplier(
 			String lat, String lon, int zoom) {
 		Map<String, String> params = new TreeMap<String, String>();
 		params.put("center", lat + "," + lon);
@@ -837,9 +854,11 @@ public class WebAPI implements Closeable {
 
 		// SerializableHttpGetSupplier supplier = getOJWOSMRequestSupplier(lat,
 		// lon, zoom);
-		SerializableHttpGetSupplier supplier = getGoogleMapRequestSupplier(lat,
+		SerializableHttpGetSupplier supplier = getGoogleMapsRequestSupplier(lat,
 				lon, zoom);
 		// SerializableHttpGetSupplier supplier = getMapQuestOSMRequestSupplier(
+		// lat, lon, zoom);
+		// SerializableHttpGetSupplier supplier = getBingMapsRequestSupplier(
 		// lat, lon, zoom);
 
 		WebAPIRequest<?> request = new WebAPIRequest<Bitmap>(callback,
