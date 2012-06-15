@@ -1,7 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.map;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -13,13 +12,12 @@ import com.google.common.base.Optional;
 import com.javadocmd.simplelatlng.LatLng;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.SphericalMercator;
 
-public class TileKey implements Serializable, Comparable {
+public class TileKey implements Serializable {
 	private static final long serialVersionUID = -2858195330177966613L;
 	public static final int TILE_LENGTH = 256;
 	private final int x;
 	private final int y;
 	private final int zoom;
-	private final Date createdDate = new Date();
 
 	public TileKey(int x, int y, int zoom) {
 		this.x = x;
@@ -101,13 +99,5 @@ public class TileKey implements Serializable, Comparable {
 			return Optional.absent();
 		}
 		return Optional.of(new TileKey(newX, newY, zoom));
-	}
-
-	@Override
-	public int compareTo(Object other) {
-		if (other == null || !(other instanceof TileKey)) {
-			return -1;
-		}
-		return createdDate.compareTo(((TileKey) other).createdDate);
 	}
 }
