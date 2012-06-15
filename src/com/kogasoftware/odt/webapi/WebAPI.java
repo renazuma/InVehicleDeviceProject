@@ -871,6 +871,10 @@ public class WebAPI implements Closeable {
 		return request.getReqKey();
 	}
 
+	public void abort(int reqkey) {
+		requests.abort(reqkey);
+	}
+
 	public void setServerHost(String serverHost) {
 		this.serverHost = serverHost;
 	}

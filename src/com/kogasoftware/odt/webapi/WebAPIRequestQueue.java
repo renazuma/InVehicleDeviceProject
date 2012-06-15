@@ -15,6 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.SerializationException;
 import org.apache.commons.lang3.SerializationUtils;
+import org.apache.http.client.methods.HttpRequestBase;
 
 import android.util.Log;
 
@@ -164,6 +165,22 @@ public class WebAPIRequestQueue {
 				waitingQueuePollPermissions.release(requestsByGroup.get(group).size());
 				break;
 			}
+		}
+	}
+
+	public void abort(int reqkey) {
+		WebAPIRequest<?> request = null;
+		synchronized (queueLock) {
+			for (Entry<String, WebAPIRequest<?>> entry : LinkedListMultimap
+					.create(requestsByGroup).entries()) {
+				if (entry.getValue().getReqKey() == reqkey) {
+					request = entry.getValue();
+					remove(entry.getValue());
+				}
+			}
+		}
+		if (request != null) {
+			request.abort();
 		}
 	}
 

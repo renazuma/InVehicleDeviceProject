@@ -8,6 +8,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.http.client.methods.HttpRequestBase;
 
+import android.util.Log;
+
 import com.kogasoftware.odt.webapi.WebAPI.ResponseConverter;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.serializablehttprequestbasesupplier.SerializableHttpRequestBaseSupplier;
@@ -99,5 +101,18 @@ public class WebAPIRequest<T> implements Serializable {
 
 	public void setRetry(boolean retry) {
 		this.retry = retry;
+	}
+
+	public void abort() {
+		try {
+			firstRequest.get().abort();
+		} catch (WebAPIException e) {
+			Log.w(TAG, e);
+		}
+		try {
+			retryRequest.get().abort();
+		} catch (WebAPIException e) {
+			Log.w(TAG, e);
+		}
 	}
 }
