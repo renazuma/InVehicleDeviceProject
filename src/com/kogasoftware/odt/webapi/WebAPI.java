@@ -754,10 +754,15 @@ public class WebAPI implements Closeable {
 		ServiceUnitStatusLog retryLog = log.clone();
 		retryLog.setOffline(true);
 
+		String[] filter = new String[] { "latitude", "longitude", "offline",
+				"offline_time", "orientation", "temperature" };
+
 		JSONObject param = new JSONObject();
 		JSONObject retryParam = new JSONObject();
-		param.put("service_unit_status_log", log.toJSONObject());
-		retryParam.put("service_unit_status_log", retryLog.toJSONObject());
+		param.put("service_unit_status_log",
+				filterJSONKeys(log.toJSONObject(), filter));
+		retryParam.put("service_unit_status_log",
+				filterJSONKeys(retryLog.toJSONObject(), filter));
 
 		return post(PATH_STATUSLOGS, param, retryParam, UNIQUE_GROUP, callback,
 				new ResponseConverter<ServiceUnitStatusLog>() {
