@@ -35,7 +35,7 @@ public abstract class TilePipe<F, T> implements Closeable {
 
 	protected void loopLoad() throws InterruptedException {
 		while (true) {
-			TilePair<F> from = fromPipeQueue.acquire();
+			TilePair<F> from = fromPipeQueue.reserve();
 			TilePair<T> to = null;
 			try {
 				to = load(from);

@@ -12,7 +12,7 @@ public class PipeQueue<T> {
 	private final Semaphore semaphore = new Semaphore(0);
 	private final Object queueLock = new Object();
 	private final Queue<T> queue = new ConcurrentLinkedQueue<T>();
-	private final Set<T> acquired = new CopyOnWriteArraySet<T>();
+	private final Set<T> reserved = new CopyOnWriteArraySet<T>();
 
 	public void add(T element) {
 		synchronized (queueLock) {
@@ -24,24 +24,24 @@ public class PipeQueue<T> {
 	public void remove(T element) {
 		synchronized (queueLock) {
 			queue.remove(element);
-			acquired.remove(element);
+			reserved.remove(element);
 		}
 	}
 	
 	public Optional<T> get() {
 		synchronized (queueLock) {
 			for (T element : queue) {
-				if (acquired.contains(element)) {
+				if (reserved.contains(element)) {
 					continue;
 				}
-				acquired.add(element);
+				reserved.add(element);
 				return Optional.of(element);
 			}
 		}
 		return Optional.absent();
 	}
 
-	public T acquire() throws InterruptedException {
+	public T reserve() throws InterruptedException {
 		while (true) {
 			semaphore.acquire();
 			for (T element : get().asSet()) {
