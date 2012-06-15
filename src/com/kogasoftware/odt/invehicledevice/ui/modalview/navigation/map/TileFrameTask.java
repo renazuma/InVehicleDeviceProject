@@ -1,8 +1,11 @@
-package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation;
+package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.map;
 
 import android.graphics.Point;
 
 import com.google.common.primitives.Floats;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.FrameState;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.FrameTask;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.Texture;
 
 class RemoveTileFrameTask extends FrameTask {
 	private final TileKey tileKey;
@@ -19,7 +22,7 @@ class RemoveTileFrameTask extends FrameTask {
 	}
 
 	@Override
-	void onDraw(FrameState frameState) {
+	public void onDraw(FrameState frameState) {
 		float alpha = Floats.max(initialAlpha
 				- (frameState.getMilliSeconds() - createdMillis) / 2000f, 0);
 		alpha *= 0.8;
@@ -57,7 +60,7 @@ public class TileFrameTask extends FrameTask {
 	}
 
 	@Override
-	void onDraw(FrameState frameState) {
+	public void onDraw(FrameState frameState) {
 		if (frameState.getZoom() != tileKey.getZoom()) {
 			return;
 		}

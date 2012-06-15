@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.ui.modalview;
+package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.map;
 
 import java.io.File;
 import java.util.Set;
@@ -10,7 +10,6 @@ import android.graphics.Bitmap;
 
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.FrameState;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.Texture;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.TileKey;
 
 public class TilePipeline {
 	private static final Integer MAX_TEXTURE_TRANSFER_COUNT = 10;
@@ -26,7 +25,7 @@ public class TilePipeline {
 		webTilePipe = new WebTilePipe(startPipeQueue, filePipeQueue);
 		fileTilePipe = new FileTilePipe(filePipeQueue, bitmapPipeQueue);
 	}
-	
+
 	public void start(TileKey tileKey) {
 		if (processingTileKeys.add(tileKey)) {
 			startPipeQueue.add(new TilePair<Void>(tileKey, null));

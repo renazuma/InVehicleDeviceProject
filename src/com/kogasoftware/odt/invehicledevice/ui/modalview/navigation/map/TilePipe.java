@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.ui.modalview;
+package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.map;
 
 import java.io.Closeable;
 import java.io.IOException;

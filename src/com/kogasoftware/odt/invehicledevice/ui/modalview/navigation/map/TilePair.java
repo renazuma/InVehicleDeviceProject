@@ -1,6 +1,5 @@
-package com.kogasoftware.odt.invehicledevice.ui.modalview;
+package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.map;
 
-import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.TileKey;
 
 public class TilePair<V> {
 	private final TileKey tileKey;

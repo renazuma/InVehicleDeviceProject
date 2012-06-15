@@ -26,7 +26,7 @@ public class NextPlatformFrameTask extends FrameTask {
 	public void setLatLng(LatLng latLng) {
 		this.latLng = latLng;
 	}
-	
+
 	public LatLng getLatLng() {
 		return latLng;
 	}
@@ -48,7 +48,7 @@ public class NextPlatformFrameTask extends FrameTask {
 	}
 
 	@Override
-	void onDraw(FrameState frameState) {
+	public void onDraw(FrameState frameState) {
 		// 緯度0経度0は海なので、未初期化と判断して良い
 		if (latLng.getLatitude() == 0 && latLng.getLongitude() == 0) {
 			return;

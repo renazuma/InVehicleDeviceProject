@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.ui.modalview;
+package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.map;
 
 import java.util.Queue;
 import java.util.Set;

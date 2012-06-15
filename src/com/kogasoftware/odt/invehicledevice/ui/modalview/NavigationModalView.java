@@ -20,7 +20,7 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.logic.event.CommonLogicLoadCompleteEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.MapZoomLevelChangedEvent;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.NavigationRenderer;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.TilePipeline2;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.map.TilePipeline2;
 
 public class NavigationModalView extends ModalView {
 	public static class ShowEvent {

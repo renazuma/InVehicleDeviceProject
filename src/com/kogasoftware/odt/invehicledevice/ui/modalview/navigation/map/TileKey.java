@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation;
+package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.map;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -11,6 +11,7 @@ import android.graphics.PointF;
 
 import com.google.common.base.Optional;
 import com.javadocmd.simplelatlng.LatLng;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.SphericalMercator;
 
 public class TileKey implements Serializable, Comparable {
 	private static final long serialVersionUID = -2858195330177966613L;

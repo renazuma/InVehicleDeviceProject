@@ -14,7 +14,7 @@ public class FrameTask {
 	public void onRemove(FrameState frameState) {
 	}
 
-	void onDraw(FrameState frameState) {
+	public void onDraw(FrameState frameState) {
 	}
 
 	public void onAdd(FrameState frameState) {

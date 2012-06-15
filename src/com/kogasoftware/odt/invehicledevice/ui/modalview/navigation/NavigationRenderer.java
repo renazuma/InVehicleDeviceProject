@@ -32,6 +32,9 @@ import com.kogasoftware.odt.invehicledevice.logic.event.EnterDrivePhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.LocationReceivedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.MapZoomLevelChangedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.OrientationChangedEvent;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.map.TileFrameTask;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.map.TileKey;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.map.TilePipeline2;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
@@ -147,18 +150,19 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		PointF nextPlatformPoint = getPoint(nextPlatformFrameTask.getLatLng(),
 				zoomLevel);
 
-		centerPoint.y += (float) height / 5.5; // 中心を上に修正
+		centerPoint.y += height / 5.5; // 中心を上に修正
 		{ // 目的地が現在地より下にある場合、中心を下に修正して目的地が見やすいようにする
 			float vehicleRY = vehiclePoint.x * FloatMath.sin(angle)
 					+ vehiclePoint.y * FloatMath.cos(angle);
 			float nextPlatformRY = nextPlatformPoint.x * FloatMath.sin(angle)
 					+ nextPlatformPoint.y * FloatMath.cos(angle);
-			
+
 			boolean hasExtraY = false;
 			try {
 				hasExtraY = (vehicleRY > nextPlatformRY);
 			} catch (ArrayIndexOutOfBoundsException e) {
-				Log.w(TAG, "vehicleRY=" + vehicleRY + ", nextPlatfomrRY=" + nextPlatformRY, e);
+				Log.w(TAG, "vehicleRY=" + vehicleRY + ", nextPlatfomrRY="
+						+ nextPlatformRY, e);
 			}
 			if (hasExtraY) {
 				float extraY = Math.min(vehicleRY - nextPlatformRY,
