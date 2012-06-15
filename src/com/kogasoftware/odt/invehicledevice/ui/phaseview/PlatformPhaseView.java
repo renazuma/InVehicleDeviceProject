@@ -39,7 +39,6 @@ public class PlatformPhaseView extends PhaseView {
 	private static final String TAG = PlatformPhaseView.class.getSimpleName();
 	private static final long UPDATE_MINUTES_REMAINING_INTERVAL_MILLIS = 5;
 	private final ListView reservationListView;
-	private final TextView nextPlatformNameTextView;
 	private final TextView nowPlatformNameTextView;
 	private final ToggleButton showAllRidingReservationsButton;
 	private final ToggleButton showFutureReservationsButton;
@@ -68,7 +67,7 @@ public class PlatformPhaseView extends PhaseView {
 				Date departureEstimate = operationSchedule
 						.getDepartureEstimate();
 				Long gap = (departureEstimate.getTime() - now.getTime()) / 1000 / 60;
-				DateFormat dateFormat = new SimpleDateFormat("H時m分"); // TODO
+				DateFormat dateFormat = new SimpleDateFormat("HH時mm分"); // TODO
 				String dateString = dateFormat.format(departureEstimate);
 				minutesRemainingTextView.setText(Html.fromHtml(String.format(
 						getResources().getString(
@@ -82,7 +81,6 @@ public class PlatformPhaseView extends PhaseView {
 		super(context, attrs);
 		setContentView(R.layout.platform_phase_view);
 
-		nextPlatformNameTextView = (TextView) findViewById(R.id.next_platform_text_view);
 		nowPlatformNameTextView = (TextView) findViewById(R.id.now_platform_text_view);
 		reservationListView = ((FlickUnneededListView) findViewById(R.id.reservation_list_view))
 				.getListView();
@@ -133,23 +131,18 @@ public class PlatformPhaseView extends PhaseView {
 		adapter = new ReservationArrayAdapter(getContext(), commonLogic);
 		reservationListView.setAdapter(adapter);
 
-		if (operationSchedules.size() > 1) {
-			OperationSchedule nextOperationSchedule = operationSchedules.get(1);
-			for (Platform platform : nextOperationSchedule.getPlatform()
+		if (operationSchedules.size() > 0) {
+			OperationSchedule nowOperationSchedule = operationSchedules.get(0);
+			for (Platform platform : nowOperationSchedule.getPlatform()
 					.asSet()) {
-				nextPlatformNameTextView.setText(Html.fromHtml(String.format(
+				nowPlatformNameTextView.setText(Html.fromHtml(String.format(
 						getResources()
-								.getString(R.string.next_platform_is_html),
+								.getString(R.string.now_platform_is_html),
 						platform.getName())));
 			}
 		} else {
-			nextPlatformNameTextView.setText("");
+			nowPlatformNameTextView.setText("");
 		}
-		//TODO 茂木さん、現在の乗降場を表示するコードを書いてね！！
-		nowPlatformNameTextView.setText(Html.fromHtml(String.format(
-				getResources()
-						.getString(R.string.now_platform_is_html),
-				"現在乗降場")));
 
 		showAllRidingReservationsButton
 				.setOnCheckedChangeListener(new OnCheckedChangeListener() {

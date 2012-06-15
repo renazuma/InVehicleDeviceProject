@@ -17,6 +17,7 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
+            android:textSize="30sp"
             android:text="@string/map" />
 
         <Button
@@ -25,6 +26,7 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
+            android:textSize="30sp"
             android:text="@string/today_operation_schedule" />
 
         <Button
@@ -33,6 +35,7 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
+            android:textSize="30sp"
             android:text="@string/it_arrives" />
     </LinearLayout>
 

@@ -142,7 +142,7 @@ public class InVehicleDeviceActivity extends Activity implements
 		setPhaseColor(DRIVE_PHASE_COLOR);
 
 		changePhaseButton.setEnabled(true);
-		changePhaseButton.setText("到着しました");
+		changePhaseButton.setText("到着し\nました");
 		changePhaseButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -170,9 +170,9 @@ public class InVehicleDeviceActivity extends Activity implements
 		statusTextView.setText("停車中");
 
 		if (operationSchedules.size() > 1) {
-			changePhaseButton.setText("出発する");
+			changePhaseButton.setText(" 出発 \n する ");
 		} else {
-			changePhaseButton.setText("確定する");
+			changePhaseButton.setText(" 確定 \n する ");
 		}
 
 		changePhaseButton.setOnClickListener(new OnClickListener() {

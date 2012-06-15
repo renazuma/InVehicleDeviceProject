@@ -24,7 +24,7 @@ import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class DummyDataSource extends EmptyDataSource {
-	
+
 	private Date nextNotifyDate = new Date(new Date().getTime() + 60 * 1000);
 
 	public List<ServiceUnitStatusLog> sendServiceUnitStatusLogArgs = new LinkedList<ServiceUnitStatusLog>();
@@ -89,10 +89,12 @@ public class DummyDataSource extends EmptyDataSource {
 			String r1 = "{id: 51, passenger_count: 1, departure_schedule_id: 1, arrival_schedule_id: 2, payment: 100, user: {id: 1, last_name: 'ああああ', first_name: 'いちごう'}}";
 			String r2 = "{id: 52, passenger_count: 5, departure_schedule_id: 2, arrival_schedule_id: 3, payment:   0, user: {id: 2, last_name: 'いいいい', first_name: 'にごう'}}";
 			String r3 = "{id: 53, passenger_count: 0, departure_schedule_id: 1, arrival_schedule_id: 3, payment: 500, user: {id: 3, last_name: 'うううう', first_name: 'さんごう'}}";
+			String r4 = "{id: 54, passenger_count: 2, departure_schedule_id: 1, arrival_schedule_id: 3, payment: 500, user: {id: 3, last_name: 'ええええ', first_name: 'よんごう'}}";
+			String r5 = "{id: 55, passenger_count: 1, departure_schedule_id: 3, arrival_schedule_id: 3, payment: 500, user: {id: 3, last_name: 'おおおお', first_name: 'ごごう'}}";
 
 			JSONObject j1 = new JSONObject(
-					"{id:1, arrival_estimate: '2012-01-01T01:00:00+09:00', departure_estimate: '2012-01-01T02:00:00+09:00', "
-							+ "platform: {name: '乗降場A', name_ruby: 'のりおりばえー'}, "
+					"{id:1, arrival_estimate: '2012-01-01T09:00:00+09:00', departure_estimate: '2012-01-01T09:15:00+09:00', "
+							+ "platform: {name: '85_特別養護老人ホームあじさいのおか牛窓／在宅介護支援センターＡＪＩＳＡＩ', name_ruby: 'とくべつようごろうじんほーむあじさいのおかうしまどざいたくかいごしえんせんたーあじさい'}, "
 							+ "reservations_as_departure: ["
 							+ r1
 							+ ","
@@ -101,8 +103,8 @@ public class DummyDataSource extends EmptyDataSource {
 			l.add(new OperationSchedule(j1));
 
 			JSONObject j2 = new JSONObject(
-					"{id:2, arrival_estimate: '2012-01-01T02:00:00+09:00', departure_estimate: '2012-01-01T02:00:00+09:00', "
-							+ "platform: {name: '乗降場B', name_ruby: 'のりおりばびー'}, reservations_as_arrival: [ "
+					"{id:2, arrival_estimate: '2012-01-01T09:30:00+09:00', departure_estimate: '2012-01-01T09:35:00+09:00', "
+							+ "platform: {name: '420_岡山県牛窓ヨットハーバー、岡山県セーリング連盟（ＮＰＯ法人）', name_ruby: 'おかやまけんうしまどよっとはーばーおかやまけんせーりんぐれんめい'}, reservations_as_arrival: [ "
 							+ r1
 							+ " ], "
 							+ "reservations_as_departure: ["
@@ -111,14 +113,34 @@ public class DummyDataSource extends EmptyDataSource {
 			l.add(new OperationSchedule(j2));
 
 			JSONObject j3 = new JSONObject(
-					"{id:3, arrival_estimate: '2012-01-01T03:00:00+09:00', departure_estimate: '2012-01-01T02:00:00+09:00', "
-							+ "platform: {name: '乗降場C', name_ruby: 'のりおりばしー'}, "
+					"{id:3, arrival_estimate: '2012-01-01T10:15:00+09:00', departure_estimate: '2012-01-01T10:20:00+09:00', "
+							+ "platform: {name: '214_焼肉味楽', name_ruby: 'やきにくみらく'}, "
 							+ "reservations_as_arrival: ["
 							+ r2
 							+ ","
 							+ r3
 							+ "]}");
 			l.add(new OperationSchedule(j3));
+
+			JSONObject j4 = new JSONObject(
+					"{id:4, arrival_estimate: '2012-01-01T11:00:00+09:00', departure_estimate: '2012-01-01T11:05:00+09:00', "
+							+ "platform: {name: '27_横尾入口停留所（尾張方面行き）', name_ruby: 'よこおいりぐちていりゅうじょ（おわりほうめんゆき）'}, "
+							+ "reservations_as_arrival: ["
+							+ r3
+							+ ","
+							+ r4
+							+ "]}");
+			l.add(new OperationSchedule(j4));
+
+			JSONObject j5 = new JSONObject(
+					"{id:3, arrival_estimate: '2012-01-01T03:00:00+09:00', departure_estimate: '2012-01-01T02:00:00+09:00', "
+							+ "platform: {name: '220_瀬戸内市役所／牛窓支所、瀬戸内市立美術館、瀬戸内市役所／教育委員会', name_ruby: 'せとうちしやくしょうしまどししょ、せとうちしりつびじゅつかん、せとうちしやくしょきょういくいいんかい'}, "
+							+ "reservations_as_arrival: ["
+							+ r4
+							+ ","
+							+ r5
+							+ "]}");
+			l.add(new OperationSchedule(j5));
 
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block

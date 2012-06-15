@@ -139,7 +139,7 @@ public class MockDataSource implements DataSource {
 				sOperationSchedule = "{ id: 1,"
 						+ "arrival_estimate: '2012-01-01T09:00:00+09:00', "
 						+ "departure_estimate: '2012-01-01T09:15:00+09:00', "
-						+ "platform: {name: 'テストコガソフトウェア前', name_ruby: 'てすとこがそふとうぇあまえ'}, "
+						+ "platform: {name: '9_瀬戸内警察署前停留所（千手・尾張方面行き）', name_ruby: 'せとうちけいさつしょまえていりゅうじょ（せんず・おわりほうめんゆき）'}, "
 						+ "reservations_as_arrival: [" + "],"
 						+ "reservations_as_departure: [" + u1a + "," + u1b
 						+ "," + u1c + "," + u1d + "," + u1e + ", " + u1f + "]}";
@@ -152,7 +152,7 @@ public class MockDataSource implements DataSource {
 						"{ id: 2,"
 								+ "arrival_estimate: '2012-01-01T09:30:00+09:00', "
 								+ "departure_estimate: '2012-01-01T10:05:00+09:00', "
-								+ "platform: {name: 'テスト上野御徒町駅前',name_ruby: 'てすとうえのおかちまちえきまえ'}, "
+								+ "platform: {name: '85_特別養護老人ホームあじさいのおか牛窓／在宅介護支援センターＡＪＩＳＡＩ',name_ruby: 'とくべつようごろうじんほーむあじさいのおかうしまどざいたくかいごしえんせんたーあじさい'}, "
 								+ "reservations_as_arrival: [{passenger_count: 5}]}");
 				lOperationSchedule.add(new OperationSchedule(j2));
 			}

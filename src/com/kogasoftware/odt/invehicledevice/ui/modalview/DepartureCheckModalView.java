@@ -1,9 +1,11 @@
 package com.kogasoftware.odt.invehicledevice.ui.modalview;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
 import android.content.Context;
+import android.text.Html;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -15,12 +17,16 @@ import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterDrivePhaseEvent;
+import com.kogasoftware.odt.invehicledevice.logic.event.EnterFinishPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter;
+import com.kogasoftware.odt.webapi.model.OperationSchedule;
+import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.User;
 
 public class DepartureCheckModalView extends ModalView {
+
 	public static class ShowEvent {
 		public final ReservationArrayAdapter reservationArrayAdapter;
 
@@ -46,7 +52,10 @@ public class DepartureCheckModalView extends ModalView {
 
 	@Subscribe
 	public void show(ShowEvent event) {
-		final ReservationArrayAdapter adapter = event.reservationArrayAdapter;
+		final ReservationArrayAdapter adapter = new ReservationArrayAdapter(
+				getContext(), getCommonLogic());
+		Date now = CommonLogic.getDate();
+
 		ListView errorReservationListView = ((FlickUnneededListView) findViewById(R.id.error_reservation_list_view))
 				.getListView();
 		List<String> messages = new LinkedList<String>();
@@ -64,12 +73,34 @@ public class DepartureCheckModalView extends ModalView {
 				getContext(), android.R.layout.simple_list_item_1, messages));
 
 		Button startButton = (Button) findViewById(R.id.departure_button);
-		TextView titleTextView = (TextView) findViewById(R.id.departure_check_modal_title_text_view);
+		TextView titleTextView = (TextView) findViewById(R.id.next_platform_text_view);
+
 		if (getCommonLogic().getRemainingOperationSchedules().size() <= 1) {
 			titleTextView.setText("確定しますか？");
 			startButton.setText("確定する");
 		} else {
-			titleTextView.setText("出発しますか？");
+
+			CommonLogic commonLogic = getCommonLogic();
+			List<OperationSchedule> operationSchedules = commonLogic
+					.getRemainingOperationSchedules();
+			if (operationSchedules.isEmpty()) {
+				commonLogic.postEvent(new EnterFinishPhaseEvent());
+				titleTextView.setText("");
+			}
+
+			if (operationSchedules.size() > 1) {
+				OperationSchedule nowOperationSchedule = operationSchedules.get(1);
+				for (Platform platform : nowOperationSchedule.getPlatform()
+						.asSet()) {
+					titleTextView.setText(Html.fromHtml(String.format(
+							getResources()
+									.getString(R.string.next_platform_is_html),
+							platform.getName())));
+				}
+			} else {
+				titleTextView.setText("");
+			}
+
 			startButton.setText("出発する");
 		}
 		startButton.setOnClickListener(new OnClickListener() {
