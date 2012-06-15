@@ -25,6 +25,7 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterFinishPhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterPlatformPhaseEvent;
+import com.kogasoftware.odt.invehicledevice.logic.event.SpeakEvent;
 import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter.ItemType;
@@ -54,7 +55,7 @@ public class PlatformPhaseView extends PhaseView {
 	private final Handler handler = new Handler();
 
 	private Optional<AlertDialog> dialog = Optional.absent();
-
+	private Integer lastMinutesRemaining = Integer.MAX_VALUE;
 	private final Runnable updateMinutesRemaining = new Runnable() {
 		@Override
 		public void run() {
@@ -66,13 +67,18 @@ public class PlatformPhaseView extends PhaseView {
 					.getCurrentOperationSchedule().asSet()) {
 				Date departureEstimate = operationSchedule
 						.getDepartureEstimate();
-				Long gap = (departureEstimate.getTime() - now.getTime()) / 1000 / 60;
-				DateFormat dateFormat = new SimpleDateFormat("HH時mm分"); // TODO
+				Integer minutesRemaining = (int) (departureEstimate.getTime() - now
+						.getTime()) / 1000 / 60;
+				DateFormat dateFormat = new SimpleDateFormat("H時m分"); // TODO
 				String dateString = dateFormat.format(departureEstimate);
 				minutesRemainingTextView.setText(Html.fromHtml(String.format(
 						getResources().getString(
 								R.string.minutes_remaining_to_depart_html),
-						dateString, gap)));
+						dateString, minutesRemaining)));
+				if (lastMinutesRemaining >= 2 && minutesRemaining == 1) {
+					getCommonLogic().postEvent(new SpeakEvent("あと1分で出発時刻です"));
+				}
+				lastMinutesRemaining = minutesRemaining;
 			}
 		}
 	};
@@ -143,6 +149,10 @@ public class PlatformPhaseView extends PhaseView {
 		} else {
 			nowPlatformNameTextView.setText("");
 		}
+		// TODO 茂木さん、現在の乗降場を表示するコードを書いてね！！
+		nowPlatformNameTextView.setText(Html.fromHtml(String.format(
+				getResources().getString(R.string.now_platform_is_html),
+				"現在乗降場")));
 
 		showAllRidingReservationsButton
 				.setOnCheckedChangeListener(new OnCheckedChangeListener() {

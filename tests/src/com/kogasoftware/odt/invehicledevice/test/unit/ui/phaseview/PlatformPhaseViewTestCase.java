@@ -49,7 +49,6 @@ public class PlatformPhaseViewTestCase extends
 			}
 		});
 		pv.setCommonLogic(new CommonLogicLoadCompleteEvent(cl));
-
 	}
 
 	@Override

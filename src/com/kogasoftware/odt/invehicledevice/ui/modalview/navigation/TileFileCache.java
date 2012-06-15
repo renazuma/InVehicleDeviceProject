@@ -29,14 +29,14 @@ import com.kogasoftware.odt.webapi.WebAPIException;
 /**
  * TODO: VoiceCacheと共通部分をまとめる
  */
-public class TileCache {
-	private static final String TAG = TileCache.class.getSimpleName();
+public class TileFileCache {
+	private static final String TAG = TileFileCache.class.getSimpleName();
 	private static final Object CACHE_FILE_ACCESS_LOCK = new Object(); // ファイルアクセス中のスレッドを一つに制限するためのロック。将来的にはロックの粒度をファイル毎にする必要があるかもしれない。
 	private final File outputDirectory;
 	private final LoadingCache<TileKey, File> fileCache;
 	private volatile CommonLogic commonLogic = new CommonLogic();
 
-	public TileCache(Context context, Integer maxBytes) throws IOException {
+	public TileFileCache(Context context, Integer maxBytes) throws IOException {
 		fileCache = CacheBuilder
 				.newBuilder()
 				.weigher(new Weigher<TileKey, File>() {
@@ -88,7 +88,6 @@ public class TileCache {
 
 	public void invalidate(TileKey key) {
 		fileCache.invalidate(key);
-		// fileCache.refresh(key);
 	}
 
 	public File getIfPresent(TileKey key) {

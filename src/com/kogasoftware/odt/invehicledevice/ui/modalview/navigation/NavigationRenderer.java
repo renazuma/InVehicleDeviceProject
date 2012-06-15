@@ -1,7 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,18 +10,14 @@ import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.PointF;
 import android.location.Location;
 import android.location.LocationManager;
@@ -33,9 +27,6 @@ import android.util.FloatMath;
 import android.util.Log;
 
 import com.google.common.base.Optional;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.eventbus.Subscribe;
@@ -78,29 +69,10 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	private final Queue<FrameTask> addedFrameTasks = new ConcurrentLinkedQueue<FrameTask>();
 	private final Queue<FrameTask> removedFrameTasks = new ConcurrentLinkedQueue<FrameTask>();
 	private final Set<TileKey> loadingTileKeys = new CopyOnWriteArraySet<TileKey>();
-	private final TileCache tileCache;
-	private final LoadingCache<TileKey, TileFrameTask> tileFrameTaskCache;
+	private final TilePipeline tilePipeline;
 	private final Integer NUM_THREADS = 10;
 	private final NextPlatformFrameTask nextPlatformFrameTask;
 	private final Map<TileKey, TileFrameTask> activeTileFrameTasks = new ConcurrentHashMap<TileKey, TileFrameTask>();
-	private final CacheLoader<TileKey, TileFrameTask> textureCacheLoader = new CacheLoader<TileKey, TileFrameTask>() {
-		@Override
-		public TileFrameTask load(TileKey key) throws Exception {
-			File file = tileCache.get(key);
-			if (!file.exists()) {
-				tileCache.invalidate(key);
-				throw new IOException("!\"" + file + "\".exists()");
-			}
-
-			Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-			if (bitmap == null) {
-				tileCache.invalidate(key);
-				throw new IOException("BitmapFactory.decodeFile(" + file
-						+ ") failed");
-			}
-			return new TileFrameTask(key, bitmap);
-		}
-	};
 
 	private CommonLogic commonLogic = new CommonLogic();
 	private long framesBy10seconds = 0l;
@@ -118,20 +90,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 			Optional.<Boolean> absent()); // 描画中にautoZoomの値が変更されないようにするための変数
 
 	public NavigationRenderer(Context context) {
-		// frameTasks.add(new GeoPointDroidSprite(context.getResources(),
-		// new LatLng(35.899975, 139.935788)));
-		// frameTasks.add(new MyLocationSprite(context.getResources()));
-		try {
-			tileCache = new TileCache(context, MAX_TILE_CACHE_BYTES);
-		} catch (IOException e) {
-			// この例外はリカバリー不可能
-			// TODO: 起動時にSDがささっているかどうかのチェック
-			Log.wtf(TAG, e);
-			throw new RuntimeException(e);
-		}
-		tileFrameTaskCache = CacheBuilder.newBuilder().initialCapacity(32)
-				.maximumSize(48).build(textureCacheLoader);
-
+		tilePipeline = new TilePipeline(context);
 		nextPlatformFrameTask = new NextPlatformFrameTask(
 				context.getResources());
 
@@ -169,7 +128,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		for (Integer nextZoomLevel : syncNextZoomLevel.getAndSet(
 				Optional.<Integer> absent()).asSet()) {
 			if (!nextZoomLevel.equals(zoomLevel)) {
-				tileFrameTaskCache.cleanUp();
+				tilePipeline.changeZoomLevel(zoomLevel);
 				zoomLevel = nextZoomLevel;
 			}
 		}
@@ -333,45 +292,11 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		}
 
 		// テクスチャが表示されていない場合
-		TileFrameTask tileFrameTask = tileFrameTaskCache.getIfPresent(tileKey);
-		if (tileFrameTask != null) {
+		for (TileFrameTask tileFrameTask : tilePipeline
+				.pollOrStartLoad(tileKey).asSet()) {
 			// キャッシュにあった場合、追加
 			activeTileFrameTasks.put(tileKey, tileFrameTask);
 			addedFrameTasks.add(tileFrameTask);
-			tileFrameTaskCache.invalidate(tileKey);
-		}
-
-		// ロード中の場合終了
-		if (loadingTileKeys.contains(tileKey)) {
-			return;
-		}
-
-		// ロード開始
-		loadingTileKeys.add(tileKey);
-		Runnable runnable = new Runnable() {
-			@Override
-			public void run() {
-				try {
-					if (Thread.currentThread().isInterrupted()) {
-						return;
-					}
-					if (zoomLevel != tileKey.getZoom()) {
-						return;
-					}
-					tileFrameTaskCache.get(tileKey);
-				} catch (ExecutionException e) {
-					tileCache.invalidate(tileKey);
-					Log.w(TAG, e);
-				} finally {
-					loadingTileKeys.remove(tileKey);
-				}
-			}
-		};
-
-		try {
-			executorService.submit(runnable);
-		} catch (RejectedExecutionException e) {
-			Log.w(TAG, e);
 		}
 	}
 
@@ -474,7 +399,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	public void setCommonLogic(CommonLogic commonLogic) {
 		this.commonLogic.dispose();
 		this.commonLogic = commonLogic;
-		tileCache.setCommonLogic(commonLogic);
+		tilePipeline.setCommonLogic(commonLogic);
 		setNextPlatform();
 		changeLocation();
 	}
