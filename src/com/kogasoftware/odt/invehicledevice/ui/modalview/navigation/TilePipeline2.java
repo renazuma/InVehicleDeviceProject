@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Map.Entry;
 import java.util.NavigableMap;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
@@ -15,8 +14,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicReference;
-
-import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -38,8 +35,8 @@ import com.kogasoftware.odt.webapi.WebAPIException;
 /**
  * 地図タイルファイルの Web → ファイル → メモリ → テクスチャ のロードのパイプラインを管理するクラス
  */
-public class TilePipeline {
-	private static final String TAG = TilePipeline.class.getSimpleName();
+public class TilePipeline2 {
+	private static final String TAG = TilePipeline2.class.getSimpleName();
 	private static final Object CACHE_FILE_ACCESS_LOCK = new Object();
 	private static final Integer MAX_TEXTURE_TRANSFER_COUNT = 10;
 	private volatile CommonLogic commonLogic = new CommonLogic();
@@ -78,6 +75,7 @@ public class TilePipeline {
 		public void onSucceed(int reqkey, int statusCode, Bitmap bitmap) {
 			try {
 				alignAndSaveBitmap(tileKey, bitmap, false);
+				startupTileKeys.add(tileKey);
 			} catch (FileNotFoundException e) {
 				Log.w(TAG, e);
 			}
@@ -117,7 +115,7 @@ public class TilePipeline {
 		}
 	}
 
-	public TilePipeline(Context context) throws IOException {
+	public TilePipeline2(Context context) throws IOException {
 		outputDirectory = context.getExternalFilesDir("tile");
 		if (outputDirectory == null) {
 			throw new IOException(
@@ -126,24 +124,20 @@ public class TilePipeline {
 		if (!outputDirectory.exists() && !outputDirectory.mkdirs()) {
 			throw new IOException("!\"" + outputDirectory + "\".mkdirs()");
 		}
+		
+		for (int i = 0; i < 3; ++i) {
+			webToFileLoaders.submit(new WebToFileLoader());
+		}
+		for (int i = 0; i < 3; ++i) {
+			fileToBitmapLoaders.submit(new FileToBitmapLoader());
+		}
+		for (int i = 0; i < 3; ++i) {
+			startupLoaders.submit(new StartupLoader());
+		}
+		
 	}
 
-	public void transferGL(GL10 gl, FrameState frameState) {
-		// 読み込まれたBitmapをTextureに変換
-		for (Integer i = 0; i < MAX_TEXTURE_TRANSFER_COUNT; ++i) {
-			Entry<TileKey, Bitmap> entry = bitmaps.pollFirstEntry();
-			if (entry == null) {
-				break;
-			}
-			Bitmap bitmap = entry.getValue();
-			TileKey tileKey = entry.getKey();
-			Integer textureId = Texture.generate(gl);
-			Texture.update(gl, textureId, bitmap);
-			bitmap.recycle();
-			tileFrameTasks.put(tileKey, new TileFrameTask(tileKey, textureId,
-					frameState.getMilliSeconds()));
-		}
-	}
+
 
 	/**
 	 * 指定されたzoomLevel以外のデータをパイプラインから消去する

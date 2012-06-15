@@ -20,7 +20,7 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.logic.event.CommonLogicLoadCompleteEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.MapZoomLevelChangedEvent;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.NavigationRenderer;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.TilePipeline;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.TilePipeline2;
 
 public class NavigationModalView extends ModalView {
 	public static class ShowEvent {
@@ -32,7 +32,7 @@ public class NavigationModalView extends ModalView {
 	private final Button zoomInButton;
 	private final Button zoomOutButton;
 	private final ToggleButton autoZoomButton;
-	private final TilePipeline tilePipeline;
+	private final TilePipeline2 tilePipeline;
 
 	private WeakReference<GLSurfaceView> glSurfaceViewWeakReference = new WeakReference<GLSurfaceView>(
 			null);
@@ -103,7 +103,7 @@ public class NavigationModalView extends ModalView {
 		setContentView(R.layout.navigation_modal_view);
 		setCloseOnClick(R.id.navigation_close_button);
 		try {
-			tilePipeline = new TilePipeline(context);
+			tilePipeline = new TilePipeline2(context);
 		} catch (IOException e) {
 
 			Log.e(TAG, e.toString(), e);

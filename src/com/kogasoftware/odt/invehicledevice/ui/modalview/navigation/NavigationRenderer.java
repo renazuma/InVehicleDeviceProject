@@ -64,7 +64,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	private final List<FrameTask> frontFrameTasks = new LinkedList<FrameTask>();
 	private final Queue<FrameTask> addedFrameTasks = new ConcurrentLinkedQueue<FrameTask>();
 	private final Queue<FrameTask> removedFrameTasks = new ConcurrentLinkedQueue<FrameTask>();
-	private final TilePipeline tilePipeline;
+	private final TilePipeline2 tilePipeline;
 	private final Integer NUM_THREADS = 10;
 	private final NextPlatformFrameTask nextPlatformFrameTask;
 	private final Map<TileKey, TileFrameTask> activeTileFrameTasks = new ConcurrentHashMap<TileKey, TileFrameTask>();
@@ -82,7 +82,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	private final AtomicReference<Optional<Boolean>> syncNextAutoZoomLevel = new AtomicReference<Optional<Boolean>>(
 			Optional.<Boolean> absent()); // 描画中にautoZoomの値が変更されないようにするための変数
 
-	public NavigationRenderer(Context context, TilePipeline tilePipeline) {
+	public NavigationRenderer(Context context, TilePipeline2 tilePipeline) {
 		this.tilePipeline = tilePipeline;
 		nextPlatformFrameTask = new NextPlatformFrameTask(
 				context.getResources());
