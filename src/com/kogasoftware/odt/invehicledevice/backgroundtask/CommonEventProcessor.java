@@ -29,7 +29,6 @@ import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.PassengerRecords;
 import com.kogasoftware.odt.webapi.model.Reservation;
-import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 /**
@@ -334,7 +333,6 @@ public class CommonEventProcessor {
 			@Override
 			public void write(Status status) {
 				status.operationScheduleInitializedSign.drainPermits();
-				status.serviceUnitStatusLog = new ServiceUnitStatusLog();
 				status.remainingOperationSchedules.clear();
 				status.finishedOperationSchedules.clear();
 				status.receivingOperationScheduleChangedVehicleNotifications
