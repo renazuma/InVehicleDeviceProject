@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.webapi.serializablehttprequestbasesupplier;
+package com.kogasoftware.odt.webapi.serializablerequestloader;
 
 import java.io.UnsupportedEncodingException;
 
@@ -10,14 +10,12 @@ import org.json.JSONObject;
 import com.google.common.base.Objects;
 import com.kogasoftware.odt.webapi.WebAPIException;
 
-abstract public class SerializableHttpEntityEnclosingRequestBase extends
-		SerializableHttpRequestBaseSupplier {
-	private static final long serialVersionUID = -3807598102171626080L;
-	private static final String TAG = SerializableHttpEntityEnclosingRequestBase.class
-			.getSimpleName();
+abstract public class SerializableEntityEnclosingRequestLoader extends
+		SerializableRequestLoader {
+	private static final long serialVersionUID = -3807558102171626080L;
 	protected String entityString = "";
 
-	public SerializableHttpEntityEnclosingRequestBase(String host, String path,
+	public SerializableEntityEnclosingRequestLoader(String host, String path,
 			JSONObject entityJSON, String authenticationToken) {
 		super(host, path, null, authenticationToken);
 		this.entityString = Objects.firstNonNull(entityJSON, new JSONObject())

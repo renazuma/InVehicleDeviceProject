@@ -41,10 +41,11 @@ import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.ReservationCandidate;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
-import com.kogasoftware.odt.webapi.serializablehttprequestbasesupplier.SerializableHttpDeleteSupplier;
-import com.kogasoftware.odt.webapi.serializablehttprequestbasesupplier.SerializableHttpGetSupplier;
-import com.kogasoftware.odt.webapi.serializablehttprequestbasesupplier.SerializableHttpPostSupplier;
-import com.kogasoftware.odt.webapi.serializablehttprequestbasesupplier.SerializableHttpPutSupplier;
+import com.kogasoftware.odt.webapi.serializablerequestloader.SerializableDeleteLoader;
+import com.kogasoftware.odt.webapi.serializablerequestloader.SerializableGetLoader;
+import com.kogasoftware.odt.webapi.serializablerequestloader.SerializablePostLoader;
+import com.kogasoftware.odt.webapi.serializablerequestloader.SerializablePutLoader;
+import com.kogasoftware.odt.webapi.serializablerequestloader.SerializableRequestLoader;
 
 public class WebAPI implements Closeable {
 	public static class EmptyWebAPICallback<T> implements WebAPICallback<T> {
@@ -200,10 +201,10 @@ public class WebAPI implements Closeable {
 
 	protected <T> int delete(String path, WebAPICallback<T> callback,
 			ResponseConverter<T> conv) throws WebAPIException {
-		SerializableHttpDeleteSupplier supplier = new SerializableHttpDeleteSupplier(
+		SerializableDeleteLoader loader = new SerializableDeleteLoader(
 				getServerHost(), path, authenticationToken);
 		WebAPIRequest<?> request = new WebAPIRequest<T>(callback, conv,
-				supplier);
+				loader);
 		requests.add(request);
 		return request.getReqKey();
 	}
@@ -347,10 +348,10 @@ public class WebAPI implements Closeable {
 	protected <T> int get(String path, Map<String, String> params,
 			boolean retryable, String requestGroup, WebAPICallback<T> callback,
 			ResponseConverter<T> conv) throws WebAPIException {
-		SerializableHttpGetSupplier supplier = new SerializableHttpGetSupplier(
+		SerializableGetLoader loader = new SerializableGetLoader(
 				getServerHost(), path, params, authenticationToken);
 		WebAPIRequest<?> request = new WebAPIRequest<T>(callback, conv,
-				supplier, retryable);
+				loader, retryable);
 		requests.add(request, requestGroup);
 		return request.getReqKey();
 	}
@@ -627,9 +628,9 @@ public class WebAPI implements Closeable {
 			JSONObject retryParam, boolean retryable, String requestGroup,
 			WebAPICallback<T> callback, ResponseConverter<T> conv)
 			throws WebAPIException {
-		SerializableHttpPostSupplier first = new SerializableHttpPostSupplier(
+		SerializablePostLoader first = new SerializablePostLoader(
 				getServerHost(), path, param, authenticationToken);
-		SerializableHttpPostSupplier retry = new SerializableHttpPostSupplier(
+		SerializablePostLoader retry = new SerializablePostLoader(
 				getServerHost(), path, retryParam, authenticationToken);
 		WebAPIRequest<?> request = new WebAPIRequest<T>(callback, conv, first,
 				retry, retryable);
@@ -652,9 +653,9 @@ public class WebAPI implements Closeable {
 	protected <T> int put(String path, JSONObject param, JSONObject retryParam,
 			boolean retryable, String requestGroup, WebAPICallback<T> callback,
 			ResponseConverter<T> conv) throws WebAPIException {
-		SerializableHttpPutSupplier first = new SerializableHttpPutSupplier(
+		SerializablePutLoader first = new SerializablePutLoader(
 				getServerHost(), path, param, authenticationToken);
-		SerializableHttpPutSupplier retry = new SerializableHttpPutSupplier(
+		SerializablePutLoader retry = new SerializablePutLoader(
 				getServerHost(), path, retryParam, authenticationToken);
 		WebAPIRequest<?> request = new WebAPIRequest<T>(callback, conv, first,
 				retry, retryable);
@@ -779,7 +780,7 @@ public class WebAPI implements Closeable {
 	 * http://ojw.dev.openstreetmap.org/StaticMap/?lat=35.214478887245&lon=
 	 * 139.21875&z=5&mode=Export&show=1
 	 */
-	protected SerializableHttpGetSupplier getOJWOSMRequestSupplier(String lat,
+	protected SerializableGetLoader getOJWOSMRequestloader(String lat,
 			String lon, int zoom) {
 		Map<String, String> params = new TreeMap<String, String>();
 		params.put("lat", lat);
@@ -789,22 +790,21 @@ public class WebAPI implements Closeable {
 		params.put("h", "" + 256);
 		params.put("mode", "Export");
 		params.put("show", "1");
-		return new SerializableHttpGetSupplier(
-				"http://ojw.dev.openstreetmap.org", "/StaticMap/", params, "",
-				"");
+		return new SerializableGetLoader("http://ojw.dev.openstreetmap.org",
+				"/StaticMap/", params, "", "");
 	}
 
 	/**
 	 * http://open.mapquestapi.com/staticmap/v3/getmap?size=600,200&zoom=15&
 	 * center=41.862648,-87.615549
 	 */
-	protected SerializableHttpGetSupplier getMapQuestOSMRequestSupplier(
-			String lat, String lon, int zoom) {
+	protected SerializableGetLoader getMapQuestOSMRequestloader(String lat,
+			String lon, int zoom) {
 		Map<String, String> params = new TreeMap<String, String>();
 		params.put("center", lat + "," + lon);
 		params.put("zoom", "" + zoom);
 		params.put("size", "256,256");
-		return new SerializableHttpGetSupplier("http://open.mapquestapi.com",
+		return new SerializableGetLoader("http://open.mapquestapi.com",
 				"/staticmap/v3/getmap", params, "", "");
 	}
 
@@ -812,30 +812,30 @@ public class WebAPI implements Closeable {
 	 * http://dev.virtualearth.net/REST/v1/Imagery/Map/Road/47.610,-122.107/2?
 	 * key=key
 	 */
-	protected SerializableHttpGetSupplier getBingMapsRequestSupplier(
-			String lat, String lon, int zoom) {
+	protected SerializableGetLoader getBingMapsRequestloader(String lat,
+			String lon, int zoom) {
 		String path = "/REST/v1/Imagery/Map/Road/" + lat + "," + lon + "/"
 				+ zoom;
 		Map<String, String> params = new TreeMap<String, String>();
 		params.put("key", "");
 		params.put("mapSize", "300,300");
 		params.put("culture", "ja");
-		return new SerializableHttpGetSupplier("http://dev.virtualearth.net",
-				path, params, "", "");
+		return new SerializableGetLoader("http://dev.virtualearth.net", path,
+				params, "", "");
 	}
 
 	/**
 	 * http://maps.google.com/maps/api/staticmap
 	 */
-	protected SerializableHttpGetSupplier getGoogleMapsRequestSupplier(
-			String lat, String lon, int zoom) {
+	protected SerializableGetLoader getGoogleMapsRequestloader(String lat,
+			String lon, int zoom) {
 		Map<String, String> params = new TreeMap<String, String>();
 		params.put("center", lat + "," + lon);
 		params.put("zoom", "" + zoom);
 		params.put("size", "300x300");
 		params.put("sensor", "false");
 		params.put("language", "ja");
-		return new SerializableHttpGetSupplier("http://maps.google.com",
+		return new SerializableGetLoader("http://maps.google.com",
 				"/maps/api/staticmap", params, "", "");
 	}
 
@@ -856,17 +856,17 @@ public class WebAPI implements Closeable {
 		String lat = String.format("%.6f", center.getLatitude());
 		String lon = String.format("%.6f", center.getLongitude());
 
-		// SerializableHttpGetSupplier supplier = getOJWOSMRequestSupplier(lat,
+		// SerializableRequestLoader loader = getOJWOSMRequestloader(lat, lon,
+		// zoom);
+		// SerializableRequestLoader loader = getGoogleMapsRequestloader(lat,
 		// lon, zoom);
-		SerializableHttpGetSupplier supplier = getGoogleMapsRequestSupplier(lat,
-				lon, zoom);
-		// SerializableHttpGetSupplier supplier = getMapQuestOSMRequestSupplier(
-		// lat, lon, zoom);
-		// SerializableHttpGetSupplier supplier = getBingMapsRequestSupplier(
-		// lat, lon, zoom);
+		// SerializableRequestLoader loader = getMapQuestOSMRequestloader(lat,
+		// lon, zoom);
+		SerializableRequestLoader loader = getBingMapsRequestloader(lat, lon,
+				zoom);
 
 		WebAPIRequest<?> request = new WebAPIRequest<Bitmap>(callback,
-				responseConverter, supplier, true);
+				responseConverter, loader, true);
 		requests.add(request);
 		return request.getReqKey();
 	}

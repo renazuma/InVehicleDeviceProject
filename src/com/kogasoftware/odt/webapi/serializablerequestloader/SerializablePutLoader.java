@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.webapi.serializablehttprequestbasesupplier;
+package com.kogasoftware.odt.webapi.serializablerequestloader;
 
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -6,17 +6,16 @@ import org.json.JSONObject;
 
 import com.kogasoftware.odt.webapi.WebAPIException;
 
-public class SerializableHttpPutSupplier extends
-		SerializableHttpEntityEnclosingRequestBase {
-	private static final long serialVersionUID = -5259397660430435317L;
+public class SerializablePutLoader extends SerializableEntityEnclosingRequestLoader {
+	private static final long serialVersionUID = -5259397660430434317L;
 
-	public SerializableHttpPutSupplier(String host, String path,
+	public SerializablePutLoader(String host, String path,
 			JSONObject entityJSON, String authenticationToken) {
 		super(host, path, entityJSON, authenticationToken);
 	}
 
 	@Override
-	public HttpRequestBase get() throws WebAPIException {
+	public HttpRequestBase load() throws WebAPIException {
 		HttpPut request = new HttpPut();
 		build(request);
 		return request;

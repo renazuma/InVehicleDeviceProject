@@ -12,14 +12,14 @@ import android.util.Log;
 
 import com.kogasoftware.odt.webapi.WebAPI.ResponseConverter;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
-import com.kogasoftware.odt.webapi.serializablehttprequestbasesupplier.SerializableHttpRequestBaseSupplier;
+import com.kogasoftware.odt.webapi.serializablerequestloader.SerializableRequestLoader;
 
 public class WebAPIRequest<T> implements Serializable {
 	private static final long serialVersionUID = -8451453777378477195L;
 	private static final String TAG = WebAPIRequest.class.getSimpleName();
 	protected static final AtomicInteger reqkeyCounter = new AtomicInteger(0);
-	protected final SerializableHttpRequestBaseSupplier firstRequest;
-	protected final SerializableHttpRequestBaseSupplier retryRequest;
+	protected final SerializableRequestLoader firstRequest;
+	protected final SerializableRequestLoader retryRequest;
 	protected final int reqkey = reqkeyCounter.incrementAndGet();
 	protected final Date createdDate = new Date();
 	protected final boolean retryable;
@@ -36,27 +36,27 @@ public class WebAPIRequest<T> implements Serializable {
 
 	public WebAPIRequest(WebAPICallback<T> callback,
 			ResponseConverter<T> responseConverter,
-			SerializableHttpRequestBaseSupplier request) {
+			SerializableRequestLoader request) {
 		this(callback, responseConverter, request, true);
 	}
 
 	public WebAPIRequest(WebAPICallback<T> callback,
 			ResponseConverter<T> responseConverter,
-			SerializableHttpRequestBaseSupplier request, Boolean retryable) {
+			SerializableRequestLoader request, Boolean retryable) {
 		this(callback, responseConverter, request, request, retryable);
 	}
 
 	public WebAPIRequest(WebAPICallback<T> callback,
 			ResponseConverter<T> responseConverter,
-			SerializableHttpRequestBaseSupplier firstRequest,
-			SerializableHttpRequestBaseSupplier retryRequest) {
+			SerializableRequestLoader firstRequest,
+			SerializableRequestLoader retryRequest) {
 		this(callback, responseConverter, firstRequest, retryRequest, true);
 	}
 
 	protected WebAPIRequest(WebAPICallback<T> callback,
 			ResponseConverter<T> responseConverter,
-			SerializableHttpRequestBaseSupplier firstRequest,
-			SerializableHttpRequestBaseSupplier retryRequest, Boolean retryable) {
+			SerializableRequestLoader firstRequest,
+			SerializableRequestLoader retryRequest, Boolean retryable) {
 		this.callback = callback;
 		this.responseConverter = responseConverter;
 		this.firstRequest = firstRequest;
@@ -73,7 +73,7 @@ public class WebAPIRequest<T> implements Serializable {
 	}
 
 	public HttpRequestBase getRequest() throws WebAPIException {
-		return retry ? retryRequest.get() : firstRequest.get();
+		return retry ? retryRequest.load() : firstRequest.load();
 	}
 
 	public boolean isRetryable() {
@@ -105,12 +105,12 @@ public class WebAPIRequest<T> implements Serializable {
 
 	public void abort() {
 		try {
-			firstRequest.get().abort();
+			firstRequest.load().abort();
 		} catch (WebAPIException e) {
 			Log.w(TAG, e);
 		}
 		try {
-			retryRequest.get().abort();
+			retryRequest.load().abort();
 		} catch (WebAPIException e) {
 			Log.w(TAG, e);
 		}
