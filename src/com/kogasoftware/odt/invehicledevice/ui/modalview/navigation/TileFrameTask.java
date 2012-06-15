@@ -1,6 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation;
 
-import android.graphics.Bitmap;
 import android.graphics.Point;
 
 import com.google.common.primitives.Floats;
@@ -9,30 +8,20 @@ class RemoveTileFrameTask extends FrameTask {
 	private final TileKey tileKey;
 	private final int textureId;
 	private final float initialAlpha;
-	private long addedMillis = 0;
+	private final long createdMillis;
 
-	public RemoveTileFrameTask(TileKey tileKey, int textureId, float alpha) {
+	public RemoveTileFrameTask(TileKey tileKey, int textureId, float alpha,
+			long createdMillis) {
 		this.tileKey = tileKey;
 		this.textureId = textureId;
 		this.initialAlpha = alpha;
-	}
-
-	@Override
-	public void onAdd(FrameState frameState) {
-		addedMillis = frameState.getMilliSeconds();
-	}
-
-	@Override
-	public void onRemove(FrameState frameState) {
-		if (textureId != -1) {
-			Texture.delete(frameState.getGL(), textureId);
-		}
+		this.createdMillis = createdMillis;
 	}
 
 	@Override
 	void onDraw(FrameState frameState) {
 		float alpha = Floats.max(initialAlpha
-				- (frameState.getMilliSeconds() - addedMillis) / 2000f, 0);
+				- (frameState.getMilliSeconds() - createdMillis) / 2000f, 0);
 		alpha *= 0.8;
 		Point point = tileKey.getCenterPixel();
 		float scale = 1f;
@@ -47,35 +36,24 @@ class RemoveTileFrameTask extends FrameTask {
 
 public class TileFrameTask extends FrameTask {
 	private final TileKey tileKey;
-	private final Bitmap bitmap; // TODO:recycleされるかもしれない
-	private int textureId = -1; // TODO:Optionalを検討
-	private long addedMillis = 0;
+	private final int textureId;
+	private final long createdMillis;
 	private float alpha = 0;
 
-	public TileFrameTask(TileKey tileKey, Bitmap bitmap) {
+	public TileFrameTask(TileKey tileKey, int textureId, long createdMillis) {
 		this.tileKey = tileKey;
-		this.bitmap = bitmap;
+		this.textureId = textureId;
+		this.createdMillis = createdMillis;
 	}
 
 	@Override
 	public void onAdd(FrameState frameState) {
-		textureId = Texture.generate(frameState.getGL());
-		if (!bitmap.isRecycled()) {
-			Texture.update(frameState.getGL(), textureId, bitmap);
-		}
-		bitmap.recycle();
-		addedMillis = frameState.getMilliSeconds();
 	}
 
 	@Override
 	public void onRemove(FrameState frameState) {
-		if (textureId != -1) {
-			frameState.addFrameTask(new RemoveTileFrameTask(tileKey, textureId,
-					alpha));
-		}
-		if (!bitmap.isRecycled()) {
-			bitmap.recycle();
-		}
+		frameState.addFrameTask(new RemoveTileFrameTask(tileKey, textureId,
+				alpha, frameState.getMilliSeconds()));
 	}
 
 	@Override
@@ -84,7 +62,7 @@ public class TileFrameTask extends FrameTask {
 			return;
 		}
 		alpha = Floats.min(
-				(frameState.getMilliSeconds() - addedMillis) / 1000f, 1);
+				(frameState.getMilliSeconds() - createdMillis) / 1000f, 1);
 		Point point = tileKey.getCenterPixel();
 		// float scale = (TileKey.TILE_LENGTH + 5) / TileKey.TILE_LENGTH;
 		// float scale = 1.5f;

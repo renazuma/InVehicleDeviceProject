@@ -153,12 +153,19 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 					+ vehiclePoint.y * FloatMath.cos(angle);
 			float nextPlatformRY = nextPlatformPoint.x * FloatMath.sin(angle)
 					+ nextPlatformPoint.y * FloatMath.cos(angle);
+<<<<<<< Updated upstream
+=======
 			
+>>>>>>> Stashed changes
 			boolean hasExtraY = false;
 			try {
 				hasExtraY = (vehicleRY > nextPlatformRY);
 			} catch (ArrayIndexOutOfBoundsException e) {
+<<<<<<< Updated upstream
+				Log.e(TAG, "vehicleRY=" + vehicleRY + ", nextPlatfomrRY=" + nextPlatformRY, e);
+=======
 				Log.w(TAG, "vehicleRY=" + vehicleRY + ", nextPlatfomrRY=" + nextPlatformRY, e);
+>>>>>>> Stashed changes
 			}
 			if (hasExtraY) {
 				float extraY = Math.min(vehicleRY - nextPlatformRY,

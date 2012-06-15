@@ -271,6 +271,7 @@ public class WebAPIDataSource implements DataSource {
 
 	@Override
 	public void cancel(int reqkey) {
+		api.abort(reqkey);
 	}
 
 	@Override

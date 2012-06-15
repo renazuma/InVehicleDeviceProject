@@ -1,6 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -11,12 +12,13 @@ import android.graphics.PointF;
 import com.google.common.base.Optional;
 import com.javadocmd.simplelatlng.LatLng;
 
-public class TileKey implements Serializable {
+public class TileKey implements Serializable, Comparable {
 	private static final long serialVersionUID = -2858195330177966613L;
 	public static final int TILE_LENGTH = 256;
 	private final int x;
 	private final int y;
 	private final int zoom;
+	private final Date createdDate = new Date();
 
 	public TileKey(int x, int y, int zoom) {
 		this.x = x;
@@ -73,7 +75,7 @@ public class TileKey implements Serializable {
 	}
 
 	public String toFileName() {
-		return zoom + "_" + x + "_" + y;
+		return zoom + "_" + x + "_" + y + ".png";
 	}
 
 	public LatLng getCenter() {
@@ -98,5 +100,13 @@ public class TileKey implements Serializable {
 			return Optional.absent();
 		}
 		return Optional.of(new TileKey(newX, newY, zoom));
+	}
+
+	@Override
+	public int compareTo(Object other) {
+		if (other == null || !(other instanceof TileKey)) {
+			return -1;
+		}
+		return createdDate.compareTo(((TileKey) other).createdDate);
 	}
 }
