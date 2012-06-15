@@ -5,7 +5,8 @@ import java.io.IOException;
 
 import android.graphics.Bitmap;
 
-public class FileTilePipe extends TilePipe<File, Bitmap> {
+public class FileTilePipe extends
+		PipeExchanger<TilePair<File>, TilePair<Bitmap>> {
 	public FileTilePipe(PipeQueue<TilePair<File>> fromPipeQueue,
 			PipeQueue<TilePair<Bitmap>> toPipeQueue) {
 		super(fromPipeQueue, toPipeQueue);

@@ -6,10 +6,11 @@ import java.io.IOException;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.EmptyDataSource;
 
-public class WebTilePipe extends TilePipe<Void, File> {
+public class WebTilePipe extends PipeExchanger<TilePair<Void>, TilePair<File>> {
 	private DataSource dataSource = new EmptyDataSource();
-	
-	public WebTilePipe(PipeQueue<TilePair<Void>> fromPipeQueue, PipeQueue<TilePair<File>> toPipeQueue) {
+
+	public WebTilePipe(PipeQueue<TilePair<Void>> fromPipeQueue,
+			PipeQueue<TilePair<File>> toPipeQueue) {
 		super(fromPipeQueue, toPipeQueue);
 	}
 
