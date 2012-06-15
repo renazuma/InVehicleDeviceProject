@@ -8,11 +8,13 @@
     <Button
         android:id="@+id/flick_unneeded_list_view_scroll_up_button"
         style="@style/ModalView.Button"
+        android:paddingTop="15sp"
+        android:paddingBottom="15sp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:textSize="24sp"
+        android:textSize="30sp"
         android:text="@string/scroll_up" />
 
     <ListView
@@ -29,11 +31,13 @@
     <Button
         android:id="@+id/flick_unneeded_list_view_scroll_down_button"
         style="@style/ModalView.Button"
+        android:paddingTop="15sp"
+        android:paddingBottom="15sp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:textSize="24sp"
+        android:textSize="30sp"
         android:text="@string/scroll_down" />
 
 </RelativeLayout>

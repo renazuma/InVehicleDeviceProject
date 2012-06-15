@@ -11,7 +11,7 @@
         android:layout_weight="1"
         android:textOff="@string/show_all_riding_passengers"
         android:textOn="@string/show_all_riding_passengers"
-        android:textSize="18sp" />
+        android:textSize="22sp" />
 
     <ToggleButton
         android:id="@+id/show_future_reservations_button"
@@ -20,7 +20,7 @@
         android:layout_weight="1"
         android:textOff="@string/show_future_passengers"
         android:textOn="@string/show_future_passengers"
-        android:textSize="18sp" />
+        android:textSize="22sp" />
 
     <ToggleButton
         android:id="@+id/show_missed_reservations_button"
@@ -29,7 +29,7 @@
         android:layout_weight="1"
         android:textOff="@string/show_missed_passengers"
         android:textOn="@string/show_missed_passengers"
-        android:textSize="18sp" />
+        android:textSize="22sp" />
 
 </LinearLayout>
 <!--

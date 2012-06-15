@@ -12,9 +12,11 @@
     <Button
         android:id="@+id/schedule_close_button"
         style="@style/ModalView.Button"
+        android:paddingTop="15sp"
+        android:paddingBottom="15sp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textSize="24sp"
+        android:textSize="30sp"
         android:text="@string/it_returns" />
 
 </LinearLayout>
