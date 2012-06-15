@@ -26,7 +26,7 @@ import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.event.CommonLogicLoadCompleteEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.NewOperationStartEvent;
-import com.kogasoftware.odt.invehicledevice.service.LauncherService;
+import com.kogasoftware.odt.invehicledevice.service.StartupService;
 import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.NotificationModalView;
 
@@ -186,7 +186,7 @@ public class BackgroundTask {
 		commonLogic.postEvent(new NotificationModalView.ShowEvent());
 
 		applicationContext.startService(new Intent(applicationContext,
-				LauncherService.class));
+				StartupService.class));
 		applicationContext.startService(new Intent(applicationContext,
 				VoiceService.class));
 

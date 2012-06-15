@@ -5,14 +5,14 @@ import android.content.Intent;
 import android.test.ActivityInstrumentationTestCase2;
 
 import com.jayway.android.robotium.solo.Solo;
-import com.kogasoftware.odt.invehicledevice.service.LauncherService.StartBroadcastReceiver;
+import com.kogasoftware.odt.invehicledevice.service.StartupService.StartupBroadcastReceiver;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
 public class StartBroadcastReceiverTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 	Solo solo;
-	StartBroadcastReceiver sbr;
+	StartupBroadcastReceiver sbr;
 
 	public StartBroadcastReceiverTestCase() {
 		super("com.kogasoftware.odt.invehicledevice",
@@ -23,7 +23,7 @@ public class StartBroadcastReceiverTestCase extends
 	public void setUp() throws Exception {
 		super.setUp();
 		solo = new Solo(getInstrumentation());
-		sbr = new StartBroadcastReceiver();
+		sbr = new StartupBroadcastReceiver();
 	}
 
 	@Override

@@ -5,17 +5,21 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.kogasoftware.odt.invehicledevice.ui.BigToast;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
-public class LauncherService extends Service {
-	private static final String TAG = LauncherService.class.getSimpleName();
+public class StartupService extends Service {
+	private static final String TAG = StartupService.class.getSimpleName();
 	private static final Integer WAKE_LOCK_PERIOD_MILLIS = 1000;
+	private static final long WAIT_FOR_EXTERNAL_STORAGE_MILLIS = 15 * 1000;
 	private final BroadcastReceiver screenOnBroadcastReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -24,8 +28,33 @@ public class LauncherService extends Service {
 		}
 	};
 
-	public static class StartBroadcastReceiver extends BroadcastReceiver {
-		private static final String TAG = StartBroadcastReceiver.class
+	private final Runnable waitExternalStorageAndShowActivityCallback = new Runnable() {
+		@Override
+		public void run() {
+			handler.removeCallbacks(this);
+			String externalStorageState = Environment.getExternalStorageState();
+			if (!externalStorageState.equals(Environment.MEDIA_MOUNTED)) {
+				handler.postDelayed(this, WAIT_FOR_EXTERNAL_STORAGE_MILLIS);
+				Log.i(TAG, "Environment.getExternalStorageState() "
+						+ externalStorageState + " != "
+						+ Environment.MEDIA_MOUNTED);
+				BigToast.makeText(StartupService.this, "SDカードを接続してください",
+						Toast.LENGTH_LONG).show();
+				return;
+			}
+
+			Intent startIntent = new Intent(StartupService.this,
+					InVehicleDeviceActivity.class);
+			startIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			showScreen();
+			startActivity(startIntent);
+		}
+	};
+
+	private final Handler handler = new Handler();
+
+	public static class StartupBroadcastReceiver extends BroadcastReceiver {
+		private static final String TAG = StartupBroadcastReceiver.class
 				.getSimpleName();
 
 		@Override
@@ -44,7 +73,7 @@ public class LauncherService extends Service {
 							"package:com.kogasoftware.odt.invehicledevice")) {
 				return;
 			}
-			context.startService(new Intent(context, LauncherService.class));
+			context.startService(new Intent(context, StartupService.class));
 		}
 	}
 
@@ -70,24 +99,20 @@ public class LauncherService extends Service {
 				PowerManager.SCREEN_DIM_WAKE_LOCK
 						| PowerManager.ACQUIRE_CAUSES_WAKEUP
 						| PowerManager.ON_AFTER_RELEASE,
-				LauncherService.class.getSimpleName());
+				StartupService.class.getSimpleName());
 		Runnable release = new Runnable() {
 			@Override
 			public void run() {
 				wakeLock.release();
 			}
 		};
-		if ((new Handler()).postDelayed(release, WAKE_LOCK_PERIOD_MILLIS)) {
+		if (handler.postDelayed(release, WAKE_LOCK_PERIOD_MILLIS)) {
 			wakeLock.acquire();
 		}
 	}
 
 	private void showActivity() {
-		Intent startIntent = new Intent(LauncherService.this,
-				InVehicleDeviceActivity.class);
-		startIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		showScreen();
-		startActivity(startIntent);
+		handler.post(waitExternalStorageAndShowActivityCallback);
 	}
 
 	@Override
