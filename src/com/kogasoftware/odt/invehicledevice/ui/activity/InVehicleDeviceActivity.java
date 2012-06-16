@@ -32,7 +32,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.common.eventbus.Subscribe;
-import com.kogasoftware.odt.invehicledevice.BuildConfig;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.backgroundtask.BackgroundTaskThread;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
@@ -215,13 +214,12 @@ public class InVehicleDeviceActivity extends Activity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if (BuildConfig.DEBUG) {
-			Log.i(TAG, "BuildConfig.DEBUG=" + BuildConfig.DEBUG);
-			// StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-			// .detectAll().penaltyLog().build());
-			// StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-			// .detectAll().penaltyLog().penaltyDeath().build());
-		}
+		// if (BuildConfig.DEBUG) {
+		// StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+		// .detectAll().penaltyLog().build());
+		// StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+		// .detectAll().penaltyLog().penaltyDeath().build());
+		// }
 		Log.i(TAG, "onCreate()");
 		getWindow().addFlags(
 				WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON

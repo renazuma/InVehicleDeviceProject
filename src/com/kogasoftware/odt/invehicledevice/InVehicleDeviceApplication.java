@@ -16,7 +16,8 @@ public class InVehicleDeviceApplication extends Application {
 			PackageInfo packageInfo = getPackageManager().getPackageInfo(
 					getPackageName(), 0);
 			Log.i(TAG, "versionCode=" + packageInfo.versionCode
-					+ " versionName=" + packageInfo.versionName);
+					+ " versionName=" + packageInfo.versionName
+					+ " BuildConfig.DEBUG=" + BuildConfig.DEBUG);
 		} catch (NameNotFoundException e) {
 			Log.w(TAG, e);
 		}
