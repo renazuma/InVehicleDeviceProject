@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation;
+package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.frametask;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -6,8 +6,10 @@ import android.graphics.BitmapFactory;
 import android.graphics.PointF;
 
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.FrameState;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.NavigationRenderer;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.Texture;
 
-@FrameTask.Front
 public class SelfFrameTask extends FrameTask {
 	private final Bitmap bitmap; // TODO:recycleされるかもしれない
 	private int textureId = -1; // TODO:Optionalを検討

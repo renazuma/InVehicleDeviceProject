@@ -20,7 +20,7 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.logic.event.CommonLogicLoadCompleteEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.MapZoomLevelChangedEvent;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.NavigationRenderer;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.map.TilePipeline2;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.map.TilePipeline;
 
 public class NavigationModalView extends ModalView {
 	public static class ShowEvent {
@@ -32,7 +32,7 @@ public class NavigationModalView extends ModalView {
 	private final Button zoomInButton;
 	private final Button zoomOutButton;
 	private final ToggleButton autoZoomButton;
-	private final TilePipeline2 tilePipeline;
+	private final TilePipeline tilePipeline;
 
 	private WeakReference<GLSurfaceView> glSurfaceViewWeakReference = new WeakReference<GLSurfaceView>(
 			null);
@@ -103,7 +103,7 @@ public class NavigationModalView extends ModalView {
 		setContentView(R.layout.navigation_modal_view);
 		setCloseOnClick(R.id.navigation_close_button);
 		try {
-			tilePipeline = new TilePipeline2(context);
+			tilePipeline = new TilePipeline(context);
 		} catch (IOException e) {
 
 			Log.e(TAG, e.toString(), e);
@@ -141,7 +141,6 @@ public class NavigationModalView extends ModalView {
 	}
 
 	public void onPauseActivity() {
-		tilePipeline.pause();
 		GLSurfaceView glSurfaceView = glSurfaceViewWeakReference.get();
 		if (glSurfaceView != null) {
 			glSurfaceView.onPause();
@@ -158,7 +157,6 @@ public class NavigationModalView extends ModalView {
 	}
 
 	public void onResumeActivity() {
-		tilePipeline.resume();
 		// ICSのGLSurfaceView.GLThreadがその親ViewをメンバmParentに保存する。
 		// そのため、Activity再構築などのタイミングで1/10程度の確率で循環参照でリークすることがある。
 		// それを防ぐために参照を極力減らしたFrameLayoutを間にはさむ

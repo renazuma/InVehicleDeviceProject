@@ -1,19 +1,23 @@
 package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.map;
 
-import java.io.File;
 import java.io.IOException;
 
 import android.graphics.Bitmap;
 
-public class FileTilePipe extends
-		PipeExchanger<TilePair<File>, TilePair<Bitmap>> {
-	public FileTilePipe(PipeQueue<TilePair<File>> fromPipeQueue,
-			PipeQueue<TilePair<Bitmap>> toPipeQueue) {
-		super(fromPipeQueue, toPipeQueue);
+import com.google.common.base.Predicate;
+
+public class FileTilePipe extends PipeExchanger<Tile, TileBitmapFile, Bitmap> {
+	public FileTilePipe(PipeQueue<Tile, TileBitmapFile> fromPipeQueue,
+			PipeQueue<Tile, Bitmap> toPipeQueue, Predicate<Tile> isValid) {
+		super(fromPipeQueue, toPipeQueue, isValid);
 	}
 
 	@Override
-	protected TilePair<Bitmap> load(TilePair<File> from) throws IOException {
-		return null;
+	protected Bitmap load(Tile tile, TileBitmapFile from) throws IOException {
+		return from.getBitmap();
+	}
+
+	@Override
+	public void cancel(Tile key) {
 	}
 }

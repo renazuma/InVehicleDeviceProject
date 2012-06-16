@@ -8,7 +8,7 @@ import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.NavigationRe
 
 public class NavigationRendererTestCase extends TestCase {
 	static void assertDistance(float expected, float actual, float maxDistance) {
-		TileKeyTestCase.assertDistance(expected, actual, maxDistance);
+		TileTestCase.assertDistance(expected, actual, maxDistance);
 	}
 
 	public void testGetPont() {

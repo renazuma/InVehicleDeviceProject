@@ -1,12 +1,8 @@
 package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
-import java.util.TreeSet;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -23,8 +19,6 @@ import android.util.FloatMath;
 import android.util.Log;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Multimap;
 import com.google.common.eventbus.Subscribe;
 import com.javadocmd.simplelatlng.LatLng;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
@@ -32,9 +26,12 @@ import com.kogasoftware.odt.invehicledevice.logic.event.EnterDrivePhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.LocationReceivedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.MapZoomLevelChangedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.OrientationChangedEvent;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.map.TileFrameTask;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.map.TileKey;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.map.TilePipeline2;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.frametask.FrameTask;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.frametask.MapFrameTask;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.frametask.NextPlatformFrameTask;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.frametask.SelfFrameTask;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.map.Tile;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.map.TilePipeline;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
@@ -45,32 +42,24 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	public static final Integer MAX_ZOOM_LEVEL = 17;
 	public static final Integer MIN_ZOOM_LEVEL = 9;
 
-	private final MotionSmoother rotationSmoother = new LazyMotionSmoother(
-			500.0, 0.02, 0.00005);
-
-	// private final MotionSmoother latitudeSmoother = new LazyMotionSmoother(
-	// 500.0, 0.02, 0.00005);
-	// private final MotionSmoother longitudeSmoother = new LazyMotionSmoother(
-	// 500.0, 0.02, 0.00005);
-
 	public static PointF getPoint(LatLng latLng, int zoomLevel) {
-		int totalPixels = (1 << zoomLevel) * TileKey.TILE_LENGTH;
+		int totalPixels = (1 << zoomLevel) * Tile.TILE_LENGTH;
 		double x = latLng.getLongitude() * totalPixels / 360d;
 		double y = SphericalMercator.lat2y(latLng.getLatitude()) * totalPixels
 				/ 360d;
 		return new PointF((float) x, (float) y);
 	}
 
+	private final MotionSmoother rotationSmoother = new LazyMotionSmoother(
+			500.0, 0.02, 0.00005);
 	private final MotionSmoother latitudeSmoother = new SimpleMotionSmoother();
 	private final MotionSmoother longitudeSmoother = new SimpleMotionSmoother();
+	private final List<FrameTask> backgroundFrameTasks = new LinkedList<FrameTask>();
 	private final List<FrameTask> frameTasks = new LinkedList<FrameTask>();
-	private final List<FrameTask> frontFrameTasks = new LinkedList<FrameTask>();
 	private final Queue<FrameTask> addedFrameTasks = new ConcurrentLinkedQueue<FrameTask>();
 	private final Queue<FrameTask> removedFrameTasks = new ConcurrentLinkedQueue<FrameTask>();
-	private final TilePipeline2 tilePipeline;
-	private final Integer NUM_THREADS = 10;
 	private final NextPlatformFrameTask nextPlatformFrameTask;
-	private final Map<TileKey, TileFrameTask> activeTileFrameTasks = new ConcurrentHashMap<TileKey, TileFrameTask>();
+	private final TilePipeline tilePipeline;
 
 	private CommonLogic commonLogic = new CommonLogic();
 	private long framesBy10seconds = 0l;
@@ -85,11 +74,12 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	private final AtomicReference<Optional<Boolean>> syncNextAutoZoomLevel = new AtomicReference<Optional<Boolean>>(
 			Optional.<Boolean> absent()); // 描画中にautoZoomの値が変更されないようにするための変数
 
-	public NavigationRenderer(Context context, TilePipeline2 tilePipeline) {
+	public NavigationRenderer(Context context, TilePipeline tilePipeline) {
 		this.tilePipeline = tilePipeline;
 		nextPlatformFrameTask = new NextPlatformFrameTask(
 				context.getResources());
 
+		addedFrameTasks.add(new MapFrameTask(context, tilePipeline));
 		addedFrameTasks.add(new SelfFrameTask(context.getResources()));
 		addedFrameTasks.add(nextPlatformFrameTask);
 
@@ -124,7 +114,6 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		for (Integer nextZoomLevel : syncNextZoomLevel.getAndSet(
 				Optional.<Integer> absent()).asSet()) {
 			if (!nextZoomLevel.equals(zoomLevel)) {
-				tilePipeline.changeZoomLevel(zoomLevel);
 				zoomLevel = nextZoomLevel;
 			}
 		}
@@ -159,6 +148,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 
 			boolean hasExtraY = false;
 			try {
+				// ArrayIndexOutOfBoundsExceptionが発生することがある。詳細はコミットログ参照。
 				hasExtraY = (vehicleRY > nextPlatformRY);
 			} catch (ArrayIndexOutOfBoundsException e) {
 				Log.w(TAG, "vehicleRY=" + vehicleRY + ", nextPlatfomrRY="
@@ -199,38 +189,10 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 			lastReportMillis = millis;
 		}
 
-		// 上下左右で追加で表示に必要なタイルを準備
-		int extraTiles = (int) Math.floor(Math.max(height, width) / cameraZoom
-				/ TileKey.TILE_LENGTH / 2 + 1);
-		TileKey centerTileKey = new TileKey(centerLatLng, zoomLevel);
-		Map<TileKey, TileFrameTask> inactiveTileFrameTasks = new HashMap<TileKey, TileFrameTask>(
-				activeTileFrameTasks);
-		Multimap<Double, TileKey> tileKeysByDistance = LinkedListMultimap
-				.<Double, TileKey> create();
-		for (int x = -extraTiles; x <= extraTiles; ++x) {
-			for (int y = -extraTiles; y <= extraTiles; ++y) {
-				for (TileKey tileKey : centerTileKey.getRelativeTileKey(x, y)
-						.asSet()) {
-					tileKeysByDistance.put((double) (x * x + y * y), tileKey);
-				}
-			}
-		}
-		// 必要なタイルを中心に近い順にソートして追加
-		for (Double distance : new TreeSet<Double>(tileKeysByDistance.keys())) {
-			for (TileKey tileKey : tileKeysByDistance.get(distance)) {
-				addTile(tileKey);
-				inactiveTileFrameTasks.remove(tileKey);
-			}
-		}
-		// 不要なタイルを削除予約
-		for (TileKey inactiveTileKey : inactiveTileFrameTasks.keySet()) {
-			activeTileFrameTasks.remove(inactiveTileKey);
-		}
-		removedFrameTasks.addAll(inactiveTileFrameTasks.values());
-
 		// 描画用の情報を作成
 		FrameState frameState = new FrameState(gl, millis, angle, centerLatLng,
-				zoomLevel, addedFrameTasks, removedFrameTasks);
+				zoomLevel, addedFrameTasks, removedFrameTasks, cameraZoom,
+				width, height);
 
 		// 追加予約、削除予約されているFrameTaskをリストに追加削除
 		while (!addedFrameTasks.isEmpty() || !removedFrameTasks.isEmpty()) {
@@ -238,8 +200,8 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 			if (newFrameTask != null) {
 				newFrameTask.onAdd(frameState);
 				if (newFrameTask.getClass().isAnnotationPresent(
-						FrameTask.Front.class)) {
-					frontFrameTasks.add(newFrameTask);
+						FrameTask.Background.class)) {
+					backgroundFrameTasks.add(newFrameTask);
 				} else {
 					frameTasks.add(newFrameTask);
 				}
@@ -247,7 +209,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 			FrameTask deleteFrameTask = removedFrameTasks.poll();
 			if (deleteFrameTask != null) {
 				deleteFrameTask.onRemove(frameState);
-				frameTasks.remove(deleteFrameTask);
+				backgroundFrameTasks.remove(deleteFrameTask);
 			}
 		}
 
@@ -276,25 +238,11 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		gl.glTranslatef(-vehiclePoint.x, -vehiclePoint.y, 0);
 
 		// FrameTaskをひとつずつ描画
+		for (FrameTask frameTask : backgroundFrameTasks) {
+			frameTask.onDraw(frameState);
+		}
 		for (FrameTask frameTask : frameTasks) {
 			frameTask.onDraw(frameState);
-		}
-		for (FrameTask frameTask : frontFrameTasks) {
-			frameTask.onDraw(frameState);
-		}
-	}
-
-	private void addTile(final TileKey tileKey) {
-		if (activeTileFrameTasks.containsKey(tileKey)) {
-			return;
-		}
-
-		// テクスチャが表示されていない場合
-		for (TileFrameTask tileFrameTask : tilePipeline
-				.pollOrStartLoad(tileKey).asSet()) {
-			// キャッシュにあった場合、追加
-			activeTileFrameTasks.put(tileKey, tileFrameTask);
-			addedFrameTasks.add(tileFrameTask);
 		}
 	}
 

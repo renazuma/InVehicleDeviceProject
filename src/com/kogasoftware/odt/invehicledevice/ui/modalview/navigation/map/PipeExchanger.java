@@ -5,17 +5,21 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import android.util.Log;
 
+import com.google.common.base.Predicate;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 
-public abstract class PipeExchanger<F, T> implements Closeable {
+public abstract class PipeExchanger<K, F, T> implements Closeable {
 	private static final String TAG = PipeExchanger.class.getSimpleName();
 	protected static final Integer NUM_LOADERS = 3;
-	protected final PipeQueue<F> fromPipeQueue;
-	protected final PipeQueue<T> toPipeQueue;
+	protected final PipeQueue<K, F> fromPipeQueue;
+	protected final PipeQueue<K, T> toPipeQueue;
 	protected final ExecutorService loaders = Executors
 			.newFixedThreadPool(NUM_LOADERS);
+	protected final Predicate<Tile> isValid;
 	protected CommonLogic commonLogic = new CommonLogic();
 
 	public void setCommonLogic(CommonLogic commonLogic) {
@@ -35,26 +39,31 @@ public abstract class PipeExchanger<F, T> implements Closeable {
 
 	protected void loopLoad() throws InterruptedException {
 		while (true) {
-			F from = fromPipeQueue.reserve();
+			Pair<K, F> fromPair = fromPipeQueue.reserve();
 			T to = null;
 			try {
-				to = load(from);
+				to = load(fromPair.getKey(), fromPair.getValue());
 			} catch (IOException e) {
 				Log.w(TAG, e);
 			} finally {
-				fromPipeQueue.remove(from);
+				fromPipeQueue.remove(fromPair);
 			}
 			if (to != null) {
-				toPipeQueue.add(to);
+				toPipeQueue.add(fromPair.getKey(), to);
 			}
 		}
 	}
 
-	protected abstract T load(F from) throws IOException;
+	protected abstract T load(K key, F from) throws IOException,
+			InterruptedException;
 
-	public PipeExchanger(PipeQueue<F> fromPipeQueue, PipeQueue<T> toPipeQueue) {
+	public abstract void cancel(K key);
+
+	public PipeExchanger(PipeQueue<K, F> fromPipeQueue,
+			PipeQueue<K, T> toPipeQueue, Predicate<Tile> isValid) {
 		this.fromPipeQueue = fromPipeQueue;
 		this.toPipeQueue = toPipeQueue;
+		this.isValid = isValid;
 		for (Integer i = 0; i < NUM_LOADERS; ++i) {
 			loaders.submit(new Loader());
 		}

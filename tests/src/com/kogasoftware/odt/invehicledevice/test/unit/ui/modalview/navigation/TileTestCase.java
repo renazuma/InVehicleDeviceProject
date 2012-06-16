@@ -5,20 +5,20 @@ import android.graphics.Point;
 import android.graphics.PointF;
 
 import com.javadocmd.simplelatlng.LatLng;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.map.TileKey;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.map.Tile;
 
-public class TileKeyTestCase extends TestCase {
+public class TileTestCase extends TestCase {
 	public void testEquals() {
-		assertTrue((new TileKey(0, 0, 0)).equals(new TileKey(0, 0, 0)));
-		assertTrue((new TileKey(1, 2, 3)).equals(new TileKey(1, 2, 3)));
+		assertTrue((new Tile(0, 0, 0)).equals(new Tile(0, 0, 0)));
+		assertTrue((new Tile(1, 2, 3)).equals(new Tile(1, 2, 3)));
 
-		assertFalse((new TileKey(5, 6, 7).equals(new TileKey(6, 6, 7))));
-		assertFalse((new TileKey(5, 6, 7).equals(new TileKey(5, 7, 7))));
-		assertFalse((new TileKey(5, 6, 7).equals(new TileKey(5, 6, 8))));
+		assertFalse((new Tile(5, 6, 7).equals(new Tile(6, 6, 7))));
+		assertFalse((new Tile(5, 6, 7).equals(new Tile(5, 7, 7))));
+		assertFalse((new Tile(5, 6, 7).equals(new Tile(5, 6, 8))));
 
-		assertFalse((new TileKey(5, 6, 7).equals(new TileKey(7, 6, 5))));
+		assertFalse((new Tile(5, 6, 7).equals(new Tile(7, 6, 5))));
 
-		assertFalse((new TileKey(5, 6, 7).equals(1)));
+		assertFalse((new Tile(5, 6, 7).equals(1)));
 	}
 
 	static void assertDistance(float expected, float actual, float maxDistance) {
@@ -37,33 +37,33 @@ public class TileKeyTestCase extends TestCase {
 	}
 
 	public void testGetCenterPixel() {
-		TileKey tk;
+		Tile tk;
 
-		tk = new TileKey(0, 0, 1);
+		tk = new Tile(0, 0, 1);
 		assertPoint(new Point(-128, 128), tk.getCenterPixel());
 
-		tk = new TileKey(1, 0, 1);
+		tk = new Tile(1, 0, 1);
 		assertPoint(new Point(128, 128), tk.getCenterPixel());
 
-		tk = new TileKey(1, 1, 1);
+		tk = new Tile(1, 1, 1);
 		assertPoint(new Point(128, -128), tk.getCenterPixel());
 	}
 
 	public void xtestGetOffsetPixels() {
 		PointF o;
-		TileKey tk;
-		tk = new TileKey(0, 0, 0);
+		Tile tk;
+		tk = new Tile(0, 0, 0);
 		o = tk.xgetOffsetPixels(new LatLng(0, 0));
 		float d = 0.001f;
 		assertDistance(0f, o.x, d);
 		assertDistance(0f, o.y, d);
 
-		tk = new TileKey(0, 0, 1);
+		tk = new Tile(0, 0, 1);
 		o = tk.xgetOffsetPixels(new LatLng(0, 0));
 		assertDistance(-128f, o.x, d);
 		assertDistance(-128f, o.y, d);
 
-		tk = new TileKey(0, 0, 2);
+		tk = new Tile(0, 0, 2);
 		o = tk.xgetOffsetPixels(new LatLng(0, 0));
 		assertDistance(-384f, o.x, d);
 		assertDistance(-384f, o.y, d);

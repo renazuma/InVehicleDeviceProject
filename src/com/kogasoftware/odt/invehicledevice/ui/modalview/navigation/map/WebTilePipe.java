@@ -2,20 +2,82 @@ package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.map;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
 
+import org.apache.commons.lang3.ObjectUtils.Null;
+
+import android.graphics.Bitmap;
+
+import com.google.common.base.Predicate;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.EmptyDataSource;
+import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
+import com.kogasoftware.odt.webapi.WebAPIException;
 
-public class WebTilePipe extends PipeExchanger<TilePair<Void>, TilePair<File>> {
+public class WebTilePipe extends PipeExchanger<Tile, Null, TileBitmapFile> {
 	private DataSource dataSource = new EmptyDataSource();
+	private final File outputDirectory;
+	private final Map<Tile, Integer> loadingReqKeys = new ConcurrentHashMap<Tile, Integer>();
 
-	public WebTilePipe(PipeQueue<TilePair<Void>> fromPipeQueue,
-			PipeQueue<TilePair<File>> toPipeQueue) {
-		super(fromPipeQueue, toPipeQueue);
+	public WebTilePipe(PipeQueue<Tile, Null> fromPipeQueue,
+			PipeQueue<Tile, TileBitmapFile> toPipeQueue,
+			Predicate<Tile> isValid, File outputDirectory) {
+		super(fromPipeQueue, toPipeQueue, isValid);
+		this.outputDirectory = outputDirectory;
 	}
 
 	@Override
-	protected TilePair<File> load(TilePair<Void> from) throws IOException {
-		return null;
+	public void cancel(Tile tile) {
+		Integer reqkey = loadingReqKeys.remove(tile);
+		if (reqkey != null) {
+			dataSource.cancel(reqkey);
+		}
+	}
+
+	@Override
+	protected TileBitmapFile load(final Tile tile, Null from)
+			throws IOException, InterruptedException {
+		TileBitmapFile tileBitmapFile = new TileBitmapFile(tile,
+				outputDirectory);
+		if (tileBitmapFile.exists()) {
+			return tileBitmapFile;
+		}
+		final CountDownLatch countDownLatch = new CountDownLatch(1);
+		final AtomicReference<Bitmap> outputBitmap = new AtomicReference<Bitmap>(
+				null);
+		int reqkey = commonLogic.getDataSource().getMapTile(tile.getCenter(),
+				tile.getZoom(), new WebAPICallback<Bitmap>() {
+					@Override
+					public void onException(int reqkey, WebAPIException ex) {
+						dataSource.cancel(reqkey);
+						countDownLatch.countDown();
+					}
+
+					@Override
+					public void onFailed(int reqkey, int statusCode,
+							String response) {
+						dataSource.cancel(reqkey);
+						countDownLatch.countDown();
+					}
+
+					@Override
+					public void onSucceed(int reqkey, int statusCode,
+							Bitmap bitmap) {
+						outputBitmap.set(bitmap);
+						countDownLatch.countDown();
+					}
+				});
+		loadingReqKeys.put(tile, reqkey);
+		countDownLatch.await();
+		loadingReqKeys.remove(tile);
+		Bitmap bitmap = outputBitmap.get();
+		if (bitmap == null) {
+			throw new IOException("bitmap == null");
+		}
+		tileBitmapFile.alignAndSaveBitmap(bitmap, true).recycle();
+		return tileBitmapFile;
 	}
 }

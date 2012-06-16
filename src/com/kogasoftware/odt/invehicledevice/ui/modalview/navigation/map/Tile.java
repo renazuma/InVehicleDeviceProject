@@ -12,20 +12,28 @@ import com.google.common.base.Optional;
 import com.javadocmd.simplelatlng.LatLng;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.SphericalMercator;
 
-public class TileKey implements Serializable {
+public class Tile implements Serializable {
 	private static final long serialVersionUID = -2858195330177966613L;
 	public static final int TILE_LENGTH = 256;
 	private final int x;
 	private final int y;
 	private final int zoom;
 
-	public TileKey(int x, int y, int zoom) {
+	public Tile(int x, int y, int zoom) {
 		this.x = x;
 		this.y = y;
 		this.zoom = zoom;
 	}
 
-	public TileKey(LatLng latLng, int zoom) {
+	public int getX() {
+		return x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public Tile(LatLng latLng, int zoom) {
 		x = (int) Math.floor(((180.0 + latLng.getLongitude()) / 360.0)
 				* Math.pow(2, zoom));
 		y = (int) Math.floor(((180.0 - SphericalMercator.lat2y(latLng
@@ -64,17 +72,13 @@ public class TileKey implements Serializable {
 
 	@Override
 	public boolean equals(Object object) {
-		if (object instanceof TileKey) {
-			TileKey other = (TileKey) object;
+		if (object instanceof Tile) {
+			Tile other = (Tile) object;
 			return new EqualsBuilder().append(x, other.x).append(y, other.y)
 					.append(zoom, other.zoom).isEquals();
 		} else {
 			return false;
 		}
-	}
-
-	public String toFileName() {
-		return zoom + "_" + x + "_" + y + ".png";
 	}
 
 	public LatLng getCenter() {
@@ -88,7 +92,7 @@ public class TileKey implements Serializable {
 		return zoom;
 	}
 
-	public Optional<TileKey> getRelativeTileKey(int extraX, int extraY) {
+	public Optional<Tile> getRelativeTile(int extraX, int extraY) {
 		int totalSideTiles = 1 << zoom;
 		int newX = x + extraX;
 		int newY = y + extraY;
@@ -98,6 +102,6 @@ public class TileKey implements Serializable {
 		if (newY < 0 || totalSideTiles <= newY) {
 			return Optional.absent();
 		}
-		return Optional.of(new TileKey(newX, newY, zoom));
+		return Optional.of(new Tile(newX, newY, zoom));
 	}
 }
