@@ -84,7 +84,6 @@ public class NotificationTestCase extends
 				.getVisibility());
 
 	}
-
 	public void test03_はいを押下して閉じ走行中に戻る() {
 
 		test02_走行中に管理者から連絡が来たら表示();

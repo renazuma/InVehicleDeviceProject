@@ -34,10 +34,12 @@
         <Button
             android:id="@+id/schedule_confirm_button"
             style="@style/ModalView.Button"
+            android:paddingTop="15sp"
+            android:paddingBottom="15sp"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
-            android:textSize="24sp"
+            android:textSize="30sp"
             android:text="@string/show_operation_schedule" />
 
         <Button

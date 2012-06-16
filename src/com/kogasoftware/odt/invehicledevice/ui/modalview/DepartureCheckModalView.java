@@ -12,6 +12,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.graphics.Typeface;
+import android.graphics.Color;
 
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
@@ -54,25 +56,9 @@ public class DepartureCheckModalView extends ModalView {
 	public void show(ShowEvent event) {
 		final ReservationArrayAdapter adapter = new ReservationArrayAdapter(
 				getContext(), getCommonLogic());
-		Date now = CommonLogic.getDate();
-
-		ListView errorReservationListView = ((FlickUnneededListView) findViewById(R.id.error_reservation_list_view))
-				.getListView();
-		List<String> messages = new LinkedList<String>();
-		for (Reservation reservation : adapter.getNoGettingOnReservations()) {
-			messages.add(" ※ " + getUserName(reservation) + "様が未乗車です");
-		}
-		for (Reservation reservation : adapter.getNoGettingOffReservations()) {
-			messages.add(" ※ " + getUserName(reservation) + "様が未降車です");
-		}
-		for (Reservation reservation : adapter.getNoPaymentReservations()) {
-			messages.add(" ※ " + getUserName(reservation) + "様が料金未払いです");
-		}
-
-		errorReservationListView.setAdapter(new ArrayAdapter<String>(
-				getContext(), android.R.layout.simple_list_item_1, messages));
 
 		Button startButton = (Button) findViewById(R.id.departure_button);
+		Button closeButton = (Button) findViewById(R.id.departure_check_close_button);
 		TextView titleTextView = (TextView) findViewById(R.id.next_platform_text_view);
 
 		if (getCommonLogic().getRemainingOperationSchedules().size() <= 1) {
@@ -80,6 +66,7 @@ public class DepartureCheckModalView extends ModalView {
 			startButton.setText("確定する");
 		} else {
 
+			//次の乗降場表示
 			CommonLogic commonLogic = getCommonLogic();
 			List<OperationSchedule> operationSchedules = commonLogic
 					.getRemainingOperationSchedules();
@@ -103,6 +90,28 @@ public class DepartureCheckModalView extends ModalView {
 
 			startButton.setText("出発する");
 		}
+
+		ListView errorReservationListView = ((FlickUnneededListView) findViewById(R.id.error_reservation_list_view))
+				.getListView();
+		List<String> messages = new LinkedList<String>();
+		for (Reservation reservation : adapter.getNoGettingOnReservations()) {
+			messages.add(" ※ " + getUserName(reservation) + "様が未乗車です");
+		}
+		for (Reservation reservation : adapter.getNoGettingOffReservations()) {
+			messages.add(" ※ " + getUserName(reservation) + "様が未降車です");
+		}
+		for (Reservation reservation : adapter.getNoPaymentReservations()) {
+			messages.add(" ※ " + getUserName(reservation) + "様が料金未払いです");
+		}
+
+		errorReservationListView.setAdapter(new ArrayAdapter<String>(
+				getContext(), android.R.layout.simple_list_item_1, messages));
+/* TODO 空じゃないので月曜日に再確認
+		if (!messages.isEmpty()) {
+			closeButton.setTextColor(Color.parseColor("#CC0000"));
+			closeButton.setTypeface(Typeface.DEFAULT_BOLD);
+		}
+*/
 		startButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {

@@ -66,7 +66,8 @@
         android:layout_height="fill_parent"
         android:orientation="vertical" >
 
-        <LinearLayout
+
+            <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
@@ -85,45 +86,41 @@
                 android:layout_weight="1"
                 android:gravity="left|center"
                 android:textSize="50dip" />
-        </LinearLayout>
+
+            </LinearLayout>
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
-            android:orientation="vertical"
-            android:paddingLeft="25dip" >
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/platform_arrival_time_text_view2"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:textSize="50dip" />
+
+            <TextView
+                android:layout_width="0dip"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:gravity="left|center"
+                android:text="@string/arrival_schedule"
+                android:textSize="50dip" />
+        </LinearLayout>
 
             <TextView
                 android:id="@+id/platform_name_1_beyond_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:layout_weight="1"
+                android:paddingBottom="5dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
                 android:ellipsize="end"
                 android:singleLine="true"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textSize="26sp" />
 
-            <TextView
-                android:id="@+id/platform_name_2_beyond_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:layout_weight="1"
-                android:ellipsize="end"
-                android:singleLine="true"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textSize="26sp" />
-
-            <TextView
-                android:id="@+id/platform_name_3_beyond_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:layout_weight="1"
-                android:ellipsize="end"
-                android:singleLine="true"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textSize="26sp" />
-        </LinearLayout>
-    </LinearLayout>
+            </LinearLayout>
 
 </FrameLayout>

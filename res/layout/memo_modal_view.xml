@@ -51,7 +51,7 @@
             android:layout_height="fill_parent"
             android:layout_margin="1dip"
             android:layout_weight="1"
-            android:textSize="26sp"
+            android:textSize="30sp"
             android:background="@drawable/border" />
 
         <TextView
@@ -61,18 +61,20 @@
             android:layout_height="fill_parent"
             android:layout_margin="1dip"
             android:layout_weight="1"
-            android:textSize="26sp"
+            android:textSize="30sp"
             android:background="@drawable/border" />
     </LinearLayout>
 
     <Button
         android:id="@+id/memo_close_button"
         style="@style/ModalView.Button"
+        android:paddingTop="15sp"
+        android:paddingBottom="15sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:textSize="24sp"
+        android:textSize="30sp"
         android:text="@string/it_closes" />
 
 </RelativeLayout>

@@ -22,7 +22,7 @@
         android:layout_below="@+id/notification_modal_title_text_view"
         android:layout_margin="5dip"
         android:background="@drawable/border"
-        android:textSize="26sp"
+        android:textSize="30sp"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <LinearLayout
@@ -35,19 +35,23 @@
         <Button
             style="@style/ModalView.Button"
             android:id="@+id/reply_yes_button"
+            android:paddingTop="15sp"
+            android:paddingBottom="15sp"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
-            android:textSize="24sp"
+            android:textSize="30sp"
             android:text="@string/yes" />
 
         <Button
             style="@style/ModalView.Button"
             android:id="@+id/reply_no_button"
+            android:paddingTop="15sp"
+            android:paddingBottom="15sp"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
-           android:textSize="24sp"
+            android:textSize="30sp"
             android:text="@string/no" />
     </LinearLayout>
 
