@@ -5,7 +5,7 @@ import android.graphics.Point;
 import android.graphics.PointF;
 
 import com.javadocmd.simplelatlng.LatLng;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.map.Tile;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipeline.Tile;
 
 public class TileTestCase extends TestCase {
 	public void testEquals() {

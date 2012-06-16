@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.map;
+package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipeline;
 
 import java.io.File;
 import java.io.IOException;

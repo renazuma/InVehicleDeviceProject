@@ -30,8 +30,8 @@ import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.frametask.Fr
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.frametask.MapFrameTask;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.frametask.NextPlatformFrameTask;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.frametask.SelfFrameTask;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.map.Tile;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.map.TilePipeline;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipeline.Tile;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipeline.TilePipeline;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;

@@ -10,9 +10,9 @@ import android.content.Context;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.FrameState;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.map.Tile;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.map.TileFrameTask;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.map.TilePipeline;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipeline.Tile;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipeline.TileFrameTask;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipeline.TilePipeline;
 
 public class MapFrameTask extends FrameTask {
 	private final Map<Tile, TileFrameTask> activeTileFrameTasks = new ConcurrentHashMap<Tile, TileFrameTask>();
