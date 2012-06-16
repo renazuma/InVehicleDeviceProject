@@ -66,8 +66,8 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	private long lastReportMillis = 0l;
 	private int width = 0;
 	private int height = 0;
-
 	private int zoomLevel = 15;
+
 	private final AtomicReference<Optional<Integer>> syncNextZoomLevel = new AtomicReference<Optional<Integer>>(
 			Optional.<Integer> absent()); // 描画中にzoomの値が変更されないようにするための変数
 	private boolean autoZoomLevel = true; // 自動ズームするかどうか
@@ -180,8 +180,8 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 
 		// フレームレートの計算
 		framesBy10seconds++;
-		if (millis - lastReportMillis > 1000) {
-			Log.i(TAG, "onDrawFrame() fps=" + (double) framesBy10seconds / 10
+		if (millis - lastReportMillis > 10 * 1000) {
+			Log.d(TAG, "onDrawFrame() fps=" + (double) framesBy10seconds / 10
 					+ ", lat=" + vehicleLatLng.getLatitude() + ", lon="
 					+ vehicleLatLng.getLongitude() + ", zoom=" + zoomLevel
 					+ ", angle=" + angle);
@@ -321,7 +321,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		double from = rotationSmoother.getSmoothMotion();
 		double to = Utility.getNearestRadian(from,
 				Math.toRadians(event.orientationDegree));
-		Log.i(TAG, "changeOrientation got=" + event.orientationDegree
+		Log.v(TAG, "changeOrientation got=" + event.orientationDegree
 				+ " from=" + from + " to=" + to);
 		rotationSmoother.addMotion(to);
 	}
