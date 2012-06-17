@@ -2,11 +2,10 @@ package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipelin
 
 import android.graphics.Bitmap;
 
-import com.google.common.base.Predicate;
-
 public class BitmapPipeQueue<K> extends PipeQueue<K, Bitmap> {
-	public BitmapPipeQueue(int limit, Predicate<K> isValid) {
-		super(limit, isValid);
+
+	public BitmapPipeQueue(int limit, OnDropListener<K> onDropListener) {
+		super(limit, onDropListener);
 	}
 
 	@Override

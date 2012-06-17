@@ -115,12 +115,14 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	public void onDrawFrame(GL10 gl) {
 		final long millis = System.currentTimeMillis();
 		float cameraZoom = 1f;
+		boolean zoomLevelChanged = false;
 
 		// ズームを修正
 		for (Integer nextZoomLevel : syncNextZoomLevel.getAndSet(
 				Optional.<Integer> absent()).asSet()) {
 			if (!nextZoomLevel.equals(zoomLevel)) {
 				zoomLevel = nextZoomLevel;
+				zoomLevelChanged = true;
 			}
 		}
 		float totalZoom = cameraZoom * (1 << zoomLevel);
@@ -246,9 +248,15 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 
 		// FrameTaskをひとつずつ描画
 		for (FrameTask frameTask : backgroundFrameTasks) {
+			if (zoomLevelChanged) {
+				frameTask.onChangeZoom(frameState);
+			}
 			frameTask.onDraw(frameState);
 		}
 		for (FrameTask frameTask : frameTasks) {
+			if (zoomLevelChanged) {
+				frameTask.onChangeZoom(frameState);
+			}
 			frameTask.onDraw(frameState);
 		}
 	}

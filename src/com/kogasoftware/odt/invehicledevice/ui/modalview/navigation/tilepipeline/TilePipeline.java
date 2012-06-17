@@ -17,30 +17,28 @@ import android.content.Context;
 import android.graphics.Bitmap;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.event.ExitEvent;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.Textures;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipeline.PipeQueue.OnDropListener;
 
 public class TilePipeline {
 	private static final Integer MAX_TEXTURE_TRANSFER_COUNT = 10;
 
-	class OnRemoveTileListener {
-		public void onRemoveTile(Tile tile) {
-			processingTiles.remove(tile);
-		}
-	}
-
 	private final Set<Tile> processingTiles = new CopyOnWriteArraySet<Tile>();
-	private final Predicate<Tile> isProcessing = Predicates.in(processingTiles);
+	private final OnDropListener<Tile> onDropListener = new OnDropListener<Tile>() {
+		@Override
+		public void onDrop(Tile key) {
+			processingTiles.remove(key);
+		}
+	};
 	private final PipeQueue<Tile, Null> startPipeQueue = new PipeQueue<Tile, Null>(
-			100, isProcessing);
+			100, onDropListener);
 	private final PipeQueue<Tile, TileBitmapFile> filePipeQueue = new PipeQueue<Tile, TileBitmapFile>(
-			100, isProcessing);
+			100, onDropListener);
 	private final PipeQueue<Tile, Bitmap> bitmapPipeQueue = new BitmapPipeQueue<Tile>(
-			16, isProcessing);
+			16, onDropListener);
 	private final Map<Tile, Integer> textures = new HashMap<Tile, Integer>();
 	// private final Map<Tile, Integer> textures = ImmutableMap.of();
 	private final PipeExchanger<Tile, Null, TileBitmapFile> webTilePipe;
@@ -50,9 +48,9 @@ public class TilePipeline {
 	public TilePipeline(Context context) {
 		File outputDirectory = context.getExternalFilesDir("tile");
 		webTilePipe = new WebTilePipe(startPipeQueue, filePipeQueue,
-				isProcessing, outputDirectory);
+				onDropListener, outputDirectory);
 		fileTilePipe = new FileTilePipe(filePipeQueue, bitmapPipeQueue,
-				isProcessing);
+				onDropListener);
 	}
 
 	public void start(Tile tile) {
@@ -76,6 +74,7 @@ public class TilePipeline {
 			Bitmap bitmap = pair.getValue();
 			if (textures.size() > 10) {
 				bitmap.recycle();
+				onDropListener.onDrop(pair.getKey());
 				break;
 			}
 			Tile tile = pair.getKey();
@@ -92,6 +91,11 @@ public class TilePipeline {
 	}
 
 	public void changeZoomLevel(int zoomLevel) {
+		startPipeQueue.clear();
+		webTilePipe.clear();
+		filePipeQueue.clear();
+		fileTilePipe.clear();
+		bitmapPipeQueue.clear();
 	}
 
 	public Optional<Integer> pollOrStartLoad(Tile tile) {

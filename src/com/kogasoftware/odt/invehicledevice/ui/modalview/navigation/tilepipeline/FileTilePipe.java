@@ -4,12 +4,13 @@ import java.io.IOException;
 
 import android.graphics.Bitmap;
 
-import com.google.common.base.Predicate;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipeline.PipeQueue.OnDropListener;
 
 public class FileTilePipe extends PipeExchanger<Tile, TileBitmapFile, Bitmap> {
 	public FileTilePipe(PipeQueue<Tile, TileBitmapFile> fromPipeQueue,
-			PipeQueue<Tile, Bitmap> toPipeQueue, Predicate<Tile> isValid) {
-		super(fromPipeQueue, toPipeQueue, isValid);
+			PipeQueue<Tile, Bitmap> toPipeQueue,
+			OnDropListener<Tile> onDropListener) {
+		super(fromPipeQueue, toPipeQueue, onDropListener);
 	}
 
 	@Override
@@ -18,6 +19,6 @@ public class FileTilePipe extends PipeExchanger<Tile, TileBitmapFile, Bitmap> {
 	}
 
 	@Override
-	public void cancel(Tile key) {
+	public void clear() {
 	}
 }

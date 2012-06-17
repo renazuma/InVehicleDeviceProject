@@ -2,6 +2,7 @@ package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipelin
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
@@ -11,7 +12,7 @@ import org.apache.commons.lang3.ObjectUtils.Null;
 
 import android.graphics.Bitmap;
 
-import com.google.common.base.Predicate;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipeline.PipeQueue.OnDropListener;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 
@@ -21,16 +22,18 @@ public class WebTilePipe extends PipeExchanger<Tile, Null, TileBitmapFile> {
 
 	public WebTilePipe(PipeQueue<Tile, Null> fromPipeQueue,
 			PipeQueue<Tile, TileBitmapFile> toPipeQueue,
-			Predicate<Tile> isValid, File outputDirectory) {
-		super(fromPipeQueue, toPipeQueue, isValid);
+			OnDropListener<Tile> onDropListener, File outputDirectory) {
+		super(fromPipeQueue, toPipeQueue, onDropListener);
 		this.outputDirectory = outputDirectory;
 	}
 
 	@Override
-	public void cancel(Tile tile) {
-		Integer reqkey = loadingReqKeys.remove(tile);
-		if (reqkey != null) {
-			commonLogic.getDataSource().cancel(reqkey);
+	public void clear() {
+		for (Tile tile : new HashSet<Tile>(loadingReqKeys.keySet())) {
+			Integer reqkey = loadingReqKeys.remove(tile);
+			if (reqkey != null) {
+				commonLogic.getDataSource().cancel(reqkey);
+			}
 		}
 	}
 

@@ -2,6 +2,8 @@ package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipelin
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -9,42 +11,31 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 
 public class PipeQueue<K, V> {
+	public static interface OnDropListener<K> {
+		void onDrop(K key);
+	}
+
 	private final BlockingQueue<Pair<K, V>> queue;
-	private final Predicate<K> isValid;
+	private final OnDropListener<K> onDropListener;
 
-	public PipeQueue(int limit, Predicate<K> isValid) {
-		this.isValid = isValid;
+	public PipeQueue(int limit, OnDropListener<K> onDropListener) {
 		queue = new LinkedBlockingQueue<Pair<K, V>>(limit);
+		this.onDropListener = onDropListener;
 	}
 
-	public PipeQueue(int limit) {
-		this(limit, Predicates.<K> alwaysTrue());
-	}
-
-	public boolean add(K key, V value) {
-		// 有効かどうかの確認
-		if (!isValid.apply(key)) {
-			return false;
-		}
+	public void add(K key, V value) {
 		try {
 			queue.add(Pair.of(key, value));
-			return true;
 		} catch (IllegalStateException e) {
 			// Queue full
 			// TODO:ブロックする処理で書き換え
-			return false;
+			onDropListener.onDrop(key);
 		}
 	}
 
 	protected void disposeValue(V value) {
-	}
-
-	public void remove(Pair<K, V> element) {
-		queue.remove(element);
 	}
 
 	public Optional<Pair<K, V>> poll() {
@@ -70,5 +61,13 @@ public class PipeQueue<K, V> {
 			set.add(pair.getKey());
 		}
 		return set;
+	}
+
+	public void clear() {
+		List<Pair<K, V>> list = new LinkedList<Pair<K, V>>();
+		queue.drainTo(list);
+		for (Pair<K, V> pair : list) {
+			onDropListener.onDrop(pair.getKey());
+		}
 	}
 }
