@@ -27,7 +27,7 @@ import com.kogasoftware.odt.invehicledevice.logic.event.LocationReceivedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.MapZoomLevelChangedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.OrientationChangedEvent;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.frametask.FrameTask;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.frametask.MapFrameTask;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.frametask.MapBuildFrameTask;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.frametask.NextPlatformFrameTask;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.frametask.SelfFrameTask;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipeline.Tile;
@@ -74,12 +74,12 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	private final AtomicReference<Optional<Boolean>> syncNextAutoZoomLevel = new AtomicReference<Optional<Boolean>>(
 			Optional.<Boolean> absent()); // 描画中にautoZoomの値が変更されないようにするための変数
 
-	public NavigationRenderer(Context context, TilePipeline tilePipeline) {
-		this.tilePipeline = tilePipeline;
+	public NavigationRenderer(Context context) {
+		this.tilePipeline = new TilePipeline(context);
 		nextPlatformFrameTask = new NextPlatformFrameTask(
 				context.getResources());
 
-		addedFrameTasks.add(new MapFrameTask(context, tilePipeline));
+		addedFrameTasks.add(new MapBuildFrameTask(context, tilePipeline));
 		addedFrameTasks.add(new SelfFrameTask(context.getResources()));
 		addedFrameTasks.add(nextPlatformFrameTask);
 

@@ -1,13 +1,11 @@
 package com.kogasoftware.odt.invehicledevice.ui.modalview;
 
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 import android.content.Context;
 import android.graphics.Color;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -20,7 +18,6 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.logic.event.CommonLogicLoadCompleteEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.MapZoomLevelChangedEvent;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.NavigationRenderer;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipeline.TilePipeline;
 
 public class NavigationModalView extends ModalView {
 	public static class ShowEvent {
@@ -32,7 +29,6 @@ public class NavigationModalView extends ModalView {
 	private final Button zoomInButton;
 	private final Button zoomOutButton;
 	private final ToggleButton autoZoomButton;
-	private final TilePipeline tilePipeline;
 
 	private WeakReference<GLSurfaceView> glSurfaceViewWeakReference = new WeakReference<GLSurfaceView>(
 			null);
@@ -102,13 +98,6 @@ public class NavigationModalView extends ModalView {
 		super(context, attrs);
 		setContentView(R.layout.navigation_modal_view);
 		setCloseOnClick(R.id.navigation_close_button);
-		try {
-			tilePipeline = new TilePipeline(context);
-		} catch (IOException e) {
-
-			Log.e(TAG, e.toString(), e);
-			throw new RuntimeException(e);
-		}
 
 		zoomInButton = (Button) findViewById(R.id.navigation_zoom_in_button);
 		zoomInButton.setOnClickListener(new OnClickListener() {
@@ -161,7 +150,7 @@ public class NavigationModalView extends ModalView {
 		// そのため、Activity再構築などのタイミングで1/10程度の確率で循環参照でリークすることがある。
 		// それを防ぐために参照を極力減らしたFrameLayoutを間にはさむ
 		NavigationRenderer navigationRenderer = new NavigationRenderer(
-				getContext(), tilePipeline);
+				getContext());
 		navigationRenderer.setZoomLevel(zoomLevel);
 		navigationRendererWeakReference = new WeakReference<NavigationRenderer>(
 				navigationRenderer);

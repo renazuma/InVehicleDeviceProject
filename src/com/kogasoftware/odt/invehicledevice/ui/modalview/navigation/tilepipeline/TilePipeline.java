@@ -1,8 +1,8 @@
 package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipeline;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -33,13 +33,14 @@ public class TilePipeline {
 	private final PipeQueue<Tile, TileBitmapFile> filePipeQueue = new PipeQueue<Tile, TileBitmapFile>(
 			100, isProcessing);
 	private final PipeQueue<Tile, Bitmap> bitmapPipeQueue = new BitmapPipeQueue<Tile>(
-			32, isProcessing);
+			16, isProcessing);
 	private final Map<Tile, Integer> textures = new HashMap<Tile, Integer>();
+	// private final Map<Tile, Integer> textures = ImmutableMap.of();
 	private final PipeExchanger<Tile, Null, TileBitmapFile> webTilePipe;
 	private final PipeExchanger<Tile, TileBitmapFile, Bitmap> fileTilePipe;
 	private CommonLogic commonLogic = new CommonLogic();
 
-	public TilePipeline(Context context) throws IOException {
+	public TilePipeline(Context context) {
 		File outputDirectory = context.getExternalFilesDir("tile");
 		webTilePipe = new WebTilePipe(startPipeQueue, filePipeQueue,
 				isProcessing, outputDirectory);
@@ -66,7 +67,7 @@ public class TilePipeline {
 		Integer i = 0;
 		for (Pair<Tile, Bitmap> pair : bitmapPipeQueue.poll().asSet()) {
 			Bitmap bitmap = pair.getValue();
-			if (textures.size() > 30) {
+			if (textures.size() > 10) {
 				bitmap.recycle();
 				break;
 			}
@@ -110,6 +111,6 @@ public class TilePipeline {
 	}
 
 	public Set<Tile> getPresentTiles() {
-		return textures.keySet();
+		return new HashSet<Tile>(textures.keySet());
 	}
 }
