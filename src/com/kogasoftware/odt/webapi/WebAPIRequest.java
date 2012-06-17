@@ -27,8 +27,9 @@ public class WebAPIRequest<T> implements Serializable {
 
 	transient protected WebAPICallback<T> callback;
 	transient protected ResponseConverter<T> responseConverter;
-	
-	private void readObject(ObjectInputStream objectInputStream) throws IOException, ClassNotFoundException {
+
+	private void readObject(ObjectInputStream objectInputStream)
+			throws IOException, ClassNotFoundException {
 		objectInputStream.defaultReadObject();
 		callback = null;
 		responseConverter = null;
@@ -114,5 +115,6 @@ public class WebAPIRequest<T> implements Serializable {
 		} catch (WebAPIException e) {
 			Log.w(TAG, e);
 		}
+		onException(new WebAPIException("Connection aborted by application"));
 	}
 }
