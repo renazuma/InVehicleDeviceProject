@@ -15,7 +15,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.SerializationException;
 import org.apache.commons.lang3.SerializationUtils;
-import org.apache.http.client.methods.HttpRequestBase;
 
 import android.util.Log;
 
@@ -32,7 +31,6 @@ public class WebAPIRequestQueue {
 	private static final Object FILE_ACCESS_LOCK = new Object(); // ファイルアクセス中のスレッドを一つに制限するためのロック。将来的にはロックの粒度をファイル毎にする必要があるかもしれない。
 	public static final String UNIQUE_GROUP = "";
 	private final AtomicInteger uniqueGroupSequence = new AtomicInteger(0);
-
 
 	private static class InstanceState implements Serializable {
 		private static final long serialVersionUID = 672897944999498098L;
@@ -162,7 +160,8 @@ public class WebAPIRequestQueue {
 				processingGroups.remove(group);
 				requestsByGroup.remove(group, request);
 				backup();
-				waitingQueuePollPermissions.release(requestsByGroup.get(group).size());
+				waitingQueuePollPermissions.release(requestsByGroup.get(group)
+						.size());
 				break;
 			}
 		}
@@ -176,6 +175,7 @@ public class WebAPIRequestQueue {
 				if (entry.getValue().getReqKey() == reqkey) {
 					request = entry.getValue();
 					remove(entry.getValue());
+					break;
 				}
 			}
 		}
@@ -199,13 +199,15 @@ public class WebAPIRequestQueue {
 				}
 				String group = entry.getKey();
 				processingGroups.remove(group);
-				List<WebAPIRequest<?>> retryRequests = requestsByGroup.removeAll(group);
+				List<WebAPIRequest<?>> retryRequests = requestsByGroup
+						.removeAll(group);
 				for (WebAPIRequest<?> retryRequest : retryRequests) {
 					retryRequest.setRetry(true);
 				}
 				requestsByGroup.putAll(group, retryRequests);
 				backup();
-				waitingQueuePollPermissions.release(requestsByGroup.get(group).size());
+				waitingQueuePollPermissions.release(requestsByGroup.get(group)
+						.size());
 				break;
 			}
 		}
