@@ -40,7 +40,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	public static final int WORLD_WIDTH = 256;
 	public static final int WORLD_HEIGHT = 256;
 	public static final int MAX_ZOOM_LEVEL = 17;
-	public static final int MIN_ZOOM_LEVEL = 1;
+	public static final int MIN_ZOOM_LEVEL = 9;
 
 	public static PointF getPoint(LatLng latLng) {
 		double x = latLng.getLongitude() * NavigationRenderer.WORLD_WIDTH
@@ -115,7 +115,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	@Override
 	public void onDrawFrame(GL10 gl) {
 		final long millis = System.currentTimeMillis();
-		float cameraZoom = 1f;
+		float cameraZoom = 1.5f;
 		boolean zoomLevelChanged = false;
 
 		// ズームを修正

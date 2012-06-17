@@ -87,4 +87,8 @@ public class FrameState {
 	public int getWidth() {
 		return width;
 	}
+
+	public float getTotalZoom() {
+		return (1 << zoom) * cameraZoom;
+	}
 }
