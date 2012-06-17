@@ -346,11 +346,15 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	 */
 	@Subscribe
 	public void changeOrientation(OrientationChangedEvent event) {
+		// changeOrientation(Math.toRadians(event.orientationDegree));
+	}
+
+	@Subscribe
+	public void changeOrientation(double rad) {
 		double from = rotationSmoother.getSmoothMotion();
-		double to = Utility.getNearestRadian(from,
-				Math.toRadians(event.orientationDegree));
-		Log.v(TAG, "changeOrientation got=" + event.orientationDegree
-				+ " from=" + from + " to=" + to);
+		double to = Utility.getNearestRadian(from, rad);
+		Log.v(TAG, "changeOrientation got=" + rad + " from=" + from + " to="
+				+ to);
 		rotationSmoother.addMotion(to);
 	}
 
