@@ -4,7 +4,6 @@ import junit.framework.TestCase;
 import android.graphics.PointF;
 import android.util.Log;
 
-import com.javadocmd.simplelatlng.LatLng;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipeline.Tile;
 
 public class TileTestCase extends TestCase {
@@ -70,23 +69,23 @@ public class TileTestCase extends TestCase {
 		assertPointF(new PointF(192, -192), tk.getCenterPixel());
 	}
 
-	public void xtestGetOffsetPixels() {
-		PointF o;
-		Tile tk;
-		tk = new Tile(0, 0, 0);
-		o = tk.xgetOffsetPixels(new LatLng(0, 0));
-		float d = 0.001f;
-		assertDistance(0f, o.x, d);
-		assertDistance(0f, o.y, d);
-
-		tk = new Tile(0, 0, 1);
-		o = tk.xgetOffsetPixels(new LatLng(0, 0));
-		assertDistance(-128f, o.x, d);
-		assertDistance(-128f, o.y, d);
-
-		tk = new Tile(0, 0, 2);
-		o = tk.xgetOffsetPixels(new LatLng(0, 0));
-		assertDistance(-384f, o.x, d);
-		assertDistance(-384f, o.y, d);
-	}
+	// public void xtestGetOffsetPixels() {
+	// PointF o;
+	// Tile tk;
+	// tk = new Tile(0, 0, 0);
+	// o = tk.xgetOffsetPixels(new LatLng(0, 0));
+	// float d = 0.001f;
+	// assertDistance(0f, o.x, d);
+	// assertDistance(0f, o.y, d);
+	//
+	// tk = new Tile(0, 0, 1);
+	// o = tk.xgetOffsetPixels(new LatLng(0, 0));
+	// assertDistance(-128f, o.x, d);
+	// assertDistance(-128f, o.y, d);
+	//
+	// tk = new Tile(0, 0, 2);
+	// o = tk.xgetOffsetPixels(new LatLng(0, 0));
+	// assertDistance(-384f, o.x, d);
+	// assertDistance(-384f, o.y, d);
+	// }
 }

@@ -52,22 +52,6 @@ public class Tile implements Serializable {
 		return new PointF(px, py);
 	}
 
-	public PointF xgetOffsetPixels(LatLng from) {
-		double longitudePixels = (getCenter().getLongitude() - from
-				.getLongitude()) * 256 * Math.pow(2, zoom) / 360;
-
-		double sphericalLatitudeTo = 360.0 / Math.pow(2, zoom) * (y + 0.5)
-				- 180.0;
-		double sphericalLatitudeFrom = SphericalMercator.lat2y(from
-				.getLatitude());
-		double sphericalLatitudeDistance = sphericalLatitudeTo
-				- sphericalLatitudeFrom;
-		double latitudePixels = sphericalLatitudeDistance * 256
-				* Math.pow(2, zoom) / 360;
-
-		return new PointF((float) latitudePixels, (float) longitudePixels);
-	}
-
 	@Override
 	public int hashCode() {
 		return new HashCodeBuilder().append(x).append(y).append(zoom)

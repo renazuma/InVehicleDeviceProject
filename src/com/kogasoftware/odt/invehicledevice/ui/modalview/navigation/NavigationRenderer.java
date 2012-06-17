@@ -43,8 +43,8 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 
 	public static PointF getPoint(LatLng latLng) {
 		double x = (latLng.getLongitude() + 180) * Tile.TILE_LENGTH / 360d;
-		double y = -(SphericalMercator.lat2y(latLng.getLatitude()) + 180)
-				* Tile.TILE_LENGTH / 360d;
+		double y = (SphericalMercator.lat2y(latLng.getLatitude()) + 180)
+				* Tile.TILE_LENGTH / 360d - Tile.TILE_LENGTH;
 		return new PointF((float) x, (float) y);
 	}
 
@@ -129,12 +129,14 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		float angle = 0;
 
 		// 現在地を取得
-		// LatLng vehicleLatLng = new LatLng(
-		// latitudeSmoother.getSmoothMotion(millis),
-		// longitudeSmoother.getSmoothMotion(millis));
-		// LatLng centerLatLng = vehicleLatLng;
-		LatLng vehicleLatLng = new LatLng(0, 0);
-		LatLng centerLatLng = new LatLng(0, 0);
+		LatLng vehicleLatLng = new LatLng(
+				latitudeSmoother.getSmoothMotion(millis),
+				longitudeSmoother.getSmoothMotion(millis));
+		LatLng centerLatLng = vehicleLatLng;
+		// LatLng vehicleLatLng = new LatLng(51.478876, 0);
+		// LatLng centerLatLng = new LatLng(51.478876, 0);
+		// LatLng vehicleLatLng = new LatLng(0, 0);
+		// LatLng centerLatLng = new LatLng(0, 0);
 		PointF centerPoint = getPoint(centerLatLng);
 		PointF vehiclePoint = getPoint(vehicleLatLng);
 		PointF nextPlatformPoint = getPoint(nextPlatformFrameTask.getLatLng());
@@ -184,7 +186,8 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 			Log.d(TAG, "onDrawFrame() fps=" + (double) framesBy10seconds / 10
 					+ ", lat=" + vehicleLatLng.getLatitude() + ", lon="
 					+ vehicleLatLng.getLongitude() + ", zoom=" + zoomLevel
-					+ ", angle=" + angle);
+					+ ", angle=" + angle + ", center=(" + centerPoint.x + ","
+					+ centerPoint.y + ")");
 			framesBy10seconds = 0l;
 			lastReportMillis = millis;
 		}
@@ -227,10 +230,10 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		// float top = height / 2f;
 		// GLU.gluOrtho2D(gl, left, right, bottom, top);
 		float totalZoom = cameraZoom * (1 << zoomLevel);
-		float left = -width / 2 / totalZoom + centerPoint.x;
-		float right = width / 2 / totalZoom + centerPoint.x;
-		float bottom = -height / 2 / totalZoom + centerPoint.y;
-		float top = height / 2 / totalZoom + centerPoint.y;
+		float left = -width / 2f / totalZoom + centerPoint.x;
+		float right = width / 2f / totalZoom + centerPoint.x;
+		float bottom = -height / 2f / totalZoom + centerPoint.y;
+		float top = height / 2f / totalZoom + centerPoint.y;
 		GLU.gluOrtho2D(gl, left, right, bottom, top);
 		// gl.glScalef(cameraZoom, cameraZoom, cameraZoom);
 
@@ -369,10 +372,10 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	}
 
 	public void setZoomLevel(int newZoomLevel) {
-		if (newZoomLevel > MAX_ZOOM_LEVEL || newZoomLevel < MIN_ZOOM_LEVEL
-				|| zoomLevel == newZoomLevel) {
-			return;
-		}
+		// if (newZoomLevel > MAX_ZOOM_LEVEL || newZoomLevel < MIN_ZOOM_LEVEL
+		// || zoomLevel == newZoomLevel) {
+		// return;
+		// }
 		commonLogic.postEvent(new MapZoomLevelChangedEvent(newZoomLevel));
 		syncNextZoomLevel.set(Optional.of(newZoomLevel));
 	}
