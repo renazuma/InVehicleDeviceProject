@@ -40,9 +40,8 @@ public class DrivePhaseView extends PhaseView {
 	private final TextView nextPlatformNameTextView;
 	private final TextView nextPlatformNameRubyTextView;
 	private final TextView platformName1BeyondTextView;
-	private final TextView platformName2BeyondTextView;
-	private final TextView platformName3BeyondTextView;
 	private final TextView platformArrivalTimeTextView;
+	private final TextView platformArrivalTimeTextView2;
 	private final View driveView1;
 	private final View driveView2;
 	private final Handler handler = new Handler();
@@ -54,9 +53,8 @@ public class DrivePhaseView extends PhaseView {
 		nextPlatformNameTextView = (TextView) findViewById(R.id.next_platform_name_text_view);
 		nextPlatformNameRubyTextView = (TextView) findViewById(R.id.next_platform_name_ruby_text_view);
 		platformName1BeyondTextView = (TextView) findViewById(R.id.platform_name_1_beyond_text_view);
-		platformName2BeyondTextView = (TextView) findViewById(R.id.platform_name_2_beyond_text_view);
-		platformName3BeyondTextView = (TextView) findViewById(R.id.platform_name_3_beyond_text_view);
 		platformArrivalTimeTextView = (TextView) findViewById(R.id.platform_arrival_time_text_view);
+		platformArrivalTimeTextView2 = (TextView) findViewById(R.id.platform_arrival_time_text_view2);
 		driveView1 = findViewById(R.id.drive_view1);
 		driveView2 = findViewById(R.id.drive_view2);
 
@@ -89,7 +87,7 @@ public class DrivePhaseView extends PhaseView {
 			}
 		}
 		totalPassengerCountTextView.setText(totalPassengerCount + "名乗車中");
-		
+
 
 		if (!operationSchedule.getPlatform().isPresent()) {
 			return; // TODO
@@ -104,27 +102,14 @@ public class DrivePhaseView extends PhaseView {
 		platformArrivalTimeTextView.setText(dateFormat.format(operationSchedule
 				.getArrivalEstimate()));
 
+		platformArrivalTimeTextView2.setText(dateFormat.format(operationSchedule
+				.getArrivalEstimate()));
+
 		platformName1BeyondTextView.setText("");
 		if (operationSchedules.size() > 1) {
 			for (Platform platform1 : operationSchedules.get(1).getPlatform()
 					.asSet()) {
 				platformName1BeyondTextView.setText("▼ " + platform1.getName());
-			}
-		}
-
-		platformName2BeyondTextView.setText("");
-		if (operationSchedules.size() > 2) {
-			for (Platform platform2 : operationSchedules.get(2).getPlatform()
-					.asSet()) {
-				platformName2BeyondTextView.setText("▼ " + platform2.getName());
-			}
-		}
-
-		platformName3BeyondTextView.setText("");
-		if (operationSchedules.size() > 3) {
-			for (Platform platform3 : operationSchedules.get(3).getPlatform()
-					.asSet()) {
-				platformName3BeyondTextView.setText("▼ " + platform3.getName());
 			}
 		}
 

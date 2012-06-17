@@ -14,7 +14,7 @@
 
         <TextView
             android:id="@+id/reservation_id"
-            android:textSize = "16sp"
+            android:textSize = "18sp"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent" />
 
@@ -22,7 +22,7 @@
             android:id="@+id/user_name"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
-            android:textSize ="28sp" />
+            android:textSize ="30sp" />
     </LinearLayout>
 
     <Button
@@ -30,7 +30,7 @@
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:text="@string/memo"
-        android:textSize = "16sp"
+        android:textSize = "18sp"
         android:visibility="invisible" />
     <!--
     <ToggleButton

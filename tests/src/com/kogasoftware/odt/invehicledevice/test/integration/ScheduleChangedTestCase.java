@@ -34,6 +34,24 @@ public class ScheduleChangedTestCase extends
 	}
 
 	public void test01_テスト() throws Exception {
+
+//		assertTrue(solo.searchText("乗降場A", true));
+
+//		solo.clickOnButton("到着し");
+//		solo.clickOnButton("到着する");
+//		solo.clickOnButton("出発する");
+		TestUtil.willShow(solo, R.id.departure_check_modal_view);
+//		solo.clickOnView(solo.getButton("出発する", true));
+
+//		assertFalse(solo.searchText("乗降場A", true));
+//		assertTrue(solo.searchText("乗降場B", true));
+
+		Thread.sleep(200 * 1000); // 通知を待つ
+
+//		solo.clickOnButton("戻る");
+	}
+
+	public void test02_テスト() throws Exception {
 		assertTrue(solo.searchText("乗降場A", true));
 
 		solo.clickOnButton("到着しました");
@@ -44,7 +62,7 @@ public class ScheduleChangedTestCase extends
 
 		assertFalse(solo.searchText("乗降場A", true));
 		assertTrue(solo.searchText("乗降場B", true));
-		
+
 		Thread.sleep(20 * 1000); // 通知を待つ
 		solo.clickOnButton("戻る");
 		assertFalse(solo.searchText("乗降場B", true));
