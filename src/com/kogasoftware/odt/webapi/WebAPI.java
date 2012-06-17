@@ -203,8 +203,7 @@ public class WebAPI implements Closeable {
 			ResponseConverter<T> conv) throws WebAPIException {
 		SerializableDeleteLoader loader = new SerializableDeleteLoader(
 				getServerHost(), path, authenticationToken);
-		WebAPIRequest<?> request = new WebAPIRequest<T>(callback, conv,
-				loader);
+		WebAPIRequest<?> request = new WebAPIRequest<T>(callback, conv, loader);
 		requests.add(request);
 		return request.getReqKey();
 	}
@@ -350,8 +349,8 @@ public class WebAPI implements Closeable {
 			ResponseConverter<T> conv) throws WebAPIException {
 		SerializableGetLoader loader = new SerializableGetLoader(
 				getServerHost(), path, params, authenticationToken);
-		WebAPIRequest<?> request = new WebAPIRequest<T>(callback, conv,
-				loader, retryable);
+		WebAPIRequest<?> request = new WebAPIRequest<T>(callback, conv, loader,
+				retryable);
 		requests.add(request, requestGroup);
 		return request.getReqKey();
 	}
@@ -858,12 +857,12 @@ public class WebAPI implements Closeable {
 
 		// SerializableRequestLoader loader = getOJWOSMRequestloader(lat, lon,
 		// zoom);
-		// SerializableRequestLoader loader = getGoogleMapsRequestloader(lat,
-		// lon, zoom);
+		SerializableRequestLoader loader = getGoogleMapsRequestloader(lat, lon,
+				zoom);
 		// SerializableRequestLoader loader = getMapQuestOSMRequestloader(lat,
 		// lon, zoom);
-		SerializableRequestLoader loader = getBingMapsRequestloader(lat, lon,
-				zoom);
+		// SerializableRequestLoader loader = getBingMapsRequestloader(lat, lon,
+		// zoom);
 
 		WebAPIRequest<?> request = new WebAPIRequest<Bitmap>(callback,
 				responseConverter, loader, true);
