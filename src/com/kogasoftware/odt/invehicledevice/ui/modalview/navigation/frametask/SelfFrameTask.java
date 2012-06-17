@@ -42,7 +42,7 @@ public class SelfFrameTask extends FrameTask {
 	public void onDraw(FrameState frameState) {
 		PointF point = NavigationRenderer.getPoint(frameState.getLatLng(),
 				frameState.getZoom());
-		float scale = 0.4f;
+		float scale = 1f / (1 << frameState.getZoom());
 		float alpha = 0.8f;
 		Textures.draw(frameState.getGL(), textureId, point.x, point.y, width,
 				height, -frameState.getAngle(), scale, scale, alpha);

@@ -2,6 +2,7 @@ package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
@@ -137,5 +138,14 @@ public class Textures {
 		intBuffer.put(vertices);
 		intBuffer.position(0);
 		return intBuffer;
+	}
+
+	public static FloatBuffer wrapNativeFloatBuffer(float vertices[]) {
+		ByteBuffer byteBuffer = ByteBuffer.allocateDirect(vertices.length * 4);
+		byteBuffer.order(ByteOrder.nativeOrder());
+		FloatBuffer floatBuffer = byteBuffer.asFloatBuffer();
+		floatBuffer.put(vertices);
+		floatBuffer.position(0);
+		return floatBuffer;
 	}
 }

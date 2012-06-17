@@ -5,7 +5,7 @@ import java.util.TreeSet;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import android.graphics.Point;
+import android.graphics.PointF;
 
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
@@ -76,8 +76,8 @@ public class MapFrameTask extends FrameTask {
 
 	private void drawTile(FrameState frameState, Tile tile, int textureId) {
 		float alpha = 1f;
-		Point point = tile.getCenterPixel();
-		float scale = 1f;
+		PointF point = tile.getCenterPixel();
+		float scale = 1f / (1 << tile.getZoom());
 		Textures.draw(frameState.getGL(), textureId, point.x, point.y,
 				Tile.TILE_LENGTH + 1, Tile.TILE_LENGTH + 1, 0, scale, scale,
 				alpha);

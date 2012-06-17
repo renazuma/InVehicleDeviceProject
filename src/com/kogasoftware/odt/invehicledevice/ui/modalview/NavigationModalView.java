@@ -25,7 +25,7 @@ public class NavigationModalView extends ModalView {
 
 	private static final String TAG = NavigationModalView.class.getSimpleName();
 
-	private volatile Integer zoomLevel = 13;
+	private volatile Integer zoomLevel = 1;
 	private final Button zoomInButton;
 	private final Button zoomOutButton;
 	private final ToggleButton autoZoomButton;

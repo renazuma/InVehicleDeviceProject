@@ -1,13 +1,34 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.ui.modalview.navigation;
 
 import junit.framework.TestCase;
-import android.graphics.Point;
 import android.graphics.PointF;
+import android.util.Log;
 
 import com.javadocmd.simplelatlng.LatLng;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipeline.Tile;
 
 public class TileTestCase extends TestCase {
+	public void testF() {
+		float f0 = 256;
+
+		float d1 = f0 / (1 << 1);
+		float d2 = f0 / (1 << 2);
+		float d3 = f0 / (1 << 3);
+		float d17 = f0 / (1 << 17);
+		float d20 = f0 / (1 << 20);
+
+		float m1 = d1 * (1 << 1);
+		float m2 = d2 * (1 << 2);
+		float m3 = d3 * (1 << 3);
+		float m17 = d17 * (1 << 17);
+		float m20 = d20 * (1 << 20);
+		float m20a = (float) ((2.4414062E-4) * (1 << 20));
+
+		String s = m1 + "/" + m2 + "/" + m3 + "/" + m17 + "/" + m20 + "/"
+				+ m20a;
+		Log.w("testF", s);
+	}
+
 	public void testEquals() {
 		assertTrue((new Tile(0, 0, 0)).equals(new Tile(0, 0, 0)));
 		assertTrue((new Tile(1, 2, 3)).equals(new Tile(1, 2, 3)));
@@ -29,7 +50,7 @@ public class TileTestCase extends TestCase {
 		}
 	}
 
-	void assertPoint(Point expected, Point actual) {
+	void assertPointF(PointF expected, PointF actual) {
 		if (expected.x != actual.x || expected.y != actual.y) {
 			fail("assertPoint failed: (" + expected.x + ", " + expected.y
 					+ ") != (" + actual.x + "," + actual.y + ")");
@@ -40,13 +61,13 @@ public class TileTestCase extends TestCase {
 		Tile tk;
 
 		tk = new Tile(0, 0, 1);
-		assertPoint(new Point(-128, 128), tk.getCenterPixel());
+		assertPointF(new PointF(64, -64), tk.getCenterPixel());
 
 		tk = new Tile(1, 0, 1);
-		assertPoint(new Point(128, 128), tk.getCenterPixel());
+		assertPointF(new PointF(192, -64), tk.getCenterPixel());
 
 		tk = new Tile(1, 1, 1);
-		assertPoint(new Point(128, -128), tk.getCenterPixel());
+		assertPointF(new PointF(192, -192), tk.getCenterPixel());
 	}
 
 	public void xtestGetOffsetPixels() {

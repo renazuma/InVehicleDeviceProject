@@ -5,7 +5,6 @@ import java.io.Serializable;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import android.graphics.Point;
 import android.graphics.PointF;
 
 import com.google.common.base.Optional;
@@ -25,6 +24,14 @@ public class Tile implements Serializable {
 		this.zoom = zoom;
 	}
 
+	public Tile(LatLng latLng, int zoom) {
+		x = (int) Math.floor(((180.0 + latLng.getLongitude()) / 360.0)
+				* Math.pow(2, zoom));
+		y = (int) Math.floor(((180.0 - SphericalMercator.lat2y(latLng
+				.getLatitude())) / 360.0) * Math.pow(2, zoom));
+		this.zoom = zoom;
+	}
+
 	@Override
 	public String toString() {
 		return "(" + x + "," + y + "," + zoom + ")";
@@ -38,19 +45,11 @@ public class Tile implements Serializable {
 		return y;
 	}
 
-	public Tile(LatLng latLng, int zoom) {
-		x = (int) Math.floor(((180.0 + latLng.getLongitude()) / 360.0)
-				* Math.pow(2, zoom));
-		y = (int) Math.floor(((180.0 - SphericalMercator.lat2y(latLng
-				.getLatitude())) / 360.0) * Math.pow(2, zoom));
-		this.zoom = zoom;
-	}
-
-	public Point getCenterPixel() {
-		int totalSideTiles = 1 << zoom;
-		int px = TILE_LENGTH / 2 * (x * 2 - totalSideTiles + 1);
-		int py = -(TILE_LENGTH / 2 * (y * 2 - totalSideTiles + 1));
-		return new Point(px, py);
+	public PointF getCenterPixel() {
+		float tileLength = 256 / (1 << zoom);
+		float px = tileLength * (x + 0.5f);
+		float py = -tileLength * (y + 0.5f);
+		return new PointF(px, py);
 	}
 
 	public PointF xgetOffsetPixels(LatLng from) {

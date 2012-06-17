@@ -15,7 +15,6 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
-import android.util.FloatMath;
 import android.util.Log;
 
 import com.google.common.base.Optional;
@@ -40,13 +39,21 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	private static final String TAG = NavigationRenderer.class.getSimpleName();
 	public static final Integer MAX_TILE_CACHE_BYTES = 100 * 1024 * 1024;
 	public static final Integer MAX_ZOOM_LEVEL = 17;
-	public static final Integer MIN_ZOOM_LEVEL = 9;
+	// public static final Integer MIN_ZOOM_LEVEL = 9;
+	public static final Integer MIN_ZOOM_LEVEL = 1;
 
-	public static PointF getPoint(LatLng latLng, int zoomLevel) {
+	public static PointF getPoint2(LatLng latLng, int zoomLevel) {
 		int totalPixels = (1 << zoomLevel) * Tile.TILE_LENGTH;
 		double x = latLng.getLongitude() * totalPixels / 360d;
 		double y = SphericalMercator.lat2y(latLng.getLatitude()) * totalPixels
 				/ 360d;
+		return new PointF((float) x, (float) y);
+	}
+
+	public static PointF getPoint(LatLng latLng, int zoomLevel) {
+		double x = (latLng.getLongitude() + 180) * Tile.TILE_LENGTH / 360d;
+		double y = -(SphericalMercator.lat2y(latLng.getLatitude()) + 180)
+				* Tile.TILE_LENGTH / 360d;
 		return new PointF((float) x, (float) y);
 	}
 
@@ -66,7 +73,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	private long lastReportMillis = 0l;
 	private int width = 0;
 	private int height = 0;
-	private int zoomLevel = 15;
+	private int zoomLevel = 1;
 
 	private final AtomicReference<Optional<Integer>> syncNextZoomLevel = new AtomicReference<Optional<Integer>>(
 			Optional.<Integer> absent()); // 描画中にzoomの値が変更されないようにするための変数
@@ -81,7 +88,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 
 		addedFrameTasks.add(new MapBuildFrameTask(context, tilePipeline));
 		addedFrameTasks.add(new SelfFrameTask(context.getResources()));
-		addedFrameTasks.add(nextPlatformFrameTask);
+		// addedFrameTasks.add(nextPlatformFrameTask);
 
 		// 〒701-4302 岡山県瀬戸内市牛窓町牛窓３９１１−３７ (東備バス（株）)
 		double defaultLatitude = 34.617781;
@@ -127,41 +134,44 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		}
 
 		// 現在の方向を取得
-		float angle = (float) -rotationSmoother.getSmoothMotion(millis);
+		// float angle = (float) -rotationSmoother.getSmoothMotion(millis);
+		float angle = 0;
 
 		// 現在地を取得
-		LatLng vehicleLatLng = new LatLng(
-				latitudeSmoother.getSmoothMotion(millis),
-				longitudeSmoother.getSmoothMotion(millis));
-		LatLng centerLatLng = vehicleLatLng;
+		// LatLng vehicleLatLng = new LatLng(
+		// latitudeSmoother.getSmoothMotion(millis),
+		// longitudeSmoother.getSmoothMotion(millis));
+		// LatLng centerLatLng = vehicleLatLng;
+		LatLng vehicleLatLng = new LatLng(0, 0);
+		LatLng centerLatLng = new LatLng(0, 0);
 		PointF centerPoint = getPoint(centerLatLng, zoomLevel);
 		PointF vehiclePoint = getPoint(vehicleLatLng, zoomLevel);
 		PointF nextPlatformPoint = getPoint(nextPlatformFrameTask.getLatLng(),
 				zoomLevel);
 
-		centerPoint.y += height / 5.5; // 中心を上に修正
-		{ // 目的地が現在地より下にある場合、中心を下に修正して目的地が見やすいようにする
-			float vehicleRY = vehiclePoint.x * FloatMath.sin(angle)
-					+ vehiclePoint.y * FloatMath.cos(angle);
-			float nextPlatformRY = nextPlatformPoint.x * FloatMath.sin(angle)
-					+ nextPlatformPoint.y * FloatMath.cos(angle);
+		// centerPoint.y += height / 5.5; // 中心を上に修正
+		// { // 目的地が現在地より下にある場合、中心を下に修正して目的地が見やすいようにする
+		// float vehicleRY = vehiclePoint.x * FloatMath.sin(angle)
+		// + vehiclePoint.y * FloatMath.cos(angle);
+		// float nextPlatformRY = nextPlatformPoint.x * FloatMath.sin(angle)
+		// + nextPlatformPoint.y * FloatMath.cos(angle);
+		//
+		// boolean hasExtraY = false;
+		// try {
+		// // ArrayIndexOutOfBoundsExceptionが発生することがある。詳細はコミットログ参照。
+		// hasExtraY = (vehicleRY > nextPlatformRY);
+		// } catch (ArrayIndexOutOfBoundsException e) {
+		// Log.w(TAG, "vehicleRY=" + vehicleRY + ", nextPlatfomrRY="
+		// + nextPlatformRY, e);
+		// }
+		// if (hasExtraY) {
+		// float extraY = Math.min(vehicleRY - nextPlatformRY,
+		// (float) height / 2);
+		// centerPoint.y -= extraY;
+		// }
+		// }
 
-			boolean hasExtraY = false;
-			try {
-				// ArrayIndexOutOfBoundsExceptionが発生することがある。詳細はコミットログ参照。
-				hasExtraY = (vehicleRY > nextPlatformRY);
-			} catch (ArrayIndexOutOfBoundsException e) {
-				Log.w(TAG, "vehicleRY=" + vehicleRY + ", nextPlatfomrRY="
-						+ nextPlatformRY, e);
-			}
-			if (hasExtraY) {
-				float extraY = Math.min(vehicleRY - nextPlatformRY,
-						(float) height / 2);
-				centerPoint.y -= extraY;
-			}
-		}
-
-		if (autoZoomLevel) {
+		if (autoZoomLevel && false) {
 			// 現在地と目的地のピクセル距離を計算
 			double dx = vehiclePoint.x - nextPlatformPoint.x;
 			double dy = vehiclePoint.y - nextPlatformPoint.y;
@@ -218,23 +228,29 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 
 		// 射影行列を現在地にあわせて修正
 		gl.glMatrixMode(GL10.GL_PROJECTION);
-		// 現在選択されている行列(射影行列)に、単位行列をセット
 		gl.glLoadIdentity();
 
 		// 平行投影用のパラメータをセット
-		float left = -width / 2f;
-		float right = width / 2f;
-		float bottom = -height / 2f;
-		float top = height / 2f;
+		// float left = -width / 2f;
+		// float right = width / 2f;
+		// float bottom = -height / 2f;
+		// float top = height / 2f;
+		// GLU.gluOrtho2D(gl, left, right, bottom, top);
+		float totalZoom = cameraZoom * (1 << zoomLevel);
+		float left = -width / 2 / totalZoom + centerPoint.x;
+		float right = width / 2 / totalZoom + centerPoint.x;
+		float bottom = -height / 2 / totalZoom + centerPoint.y;
+		float top = height / 2 / totalZoom + centerPoint.y;
 		GLU.gluOrtho2D(gl, left, right, bottom, top);
+		// gl.glScalef(cameraZoom, cameraZoom, cameraZoom);
 
-		// モデル全体の回転と拡大率を設定
+		// モデル変換行列
 		gl.glMatrixMode(GL10.GL_MODELVIEW);
 		gl.glLoadIdentity();
-		gl.glTranslatef(-centerPoint.x, -centerPoint.y, 0);
+
+		// 自分自身を中心に全体を回転する
 		gl.glTranslatef(vehiclePoint.x, vehiclePoint.y, 0);
 		gl.glRotatef((float) Math.toDegrees(angle), 0, 0, 1);
-		gl.glScalef(cameraZoom, cameraZoom, cameraZoom);
 		gl.glTranslatef(-vehiclePoint.x, -vehiclePoint.y, 0);
 
 		// FrameTaskをひとつずつ描画
