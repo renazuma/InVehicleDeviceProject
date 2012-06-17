@@ -56,20 +56,16 @@ public class TileBitmapFile {
 				Math.floor(DoubleMath.log2(Math.max(bitmap.getWidth(),
 						bitmap.getHeight()))));
 		if (bitmap.getWidth() == alignedLength
-				&& bitmap.getHeight() == alignedLength) {
-			if (!alwaysSave) {
-				return bitmap;
-			}
-		} else {
-			Bitmap alignedBitmap = Bitmap.createBitmap(alignedLength,
-					alignedLength, Bitmap.Config.RGB_565);
-			Float left = (float) (alignedLength - bitmap.getWidth()) / 2;
-			Float top = (float) (alignedLength - bitmap.getHeight()) / 2;
-			new Canvas(alignedBitmap)
-					.drawBitmap(bitmap, left, top, new Paint());
-			bitmap.recycle();
-			bitmap = alignedBitmap;
+				&& bitmap.getHeight() == alignedLength && !alwaysSave) {
+			return bitmap;
 		}
+		Bitmap alignedBitmap = Bitmap.createBitmap(alignedLength,
+				alignedLength, Bitmap.Config.RGB_565);
+		Float left = (float) (alignedLength - bitmap.getWidth()) / 2;
+		Float top = (float) (alignedLength - bitmap.getHeight()) / 2;
+		new Canvas(alignedBitmap).drawBitmap(bitmap, left, top, new Paint());
+		bitmap.recycle();
+		bitmap = alignedBitmap;
 
 		synchronized (BITMAP_FILE_ACCESS_LOCK) {
 			FileOutputStream fileOutputStream = null;
