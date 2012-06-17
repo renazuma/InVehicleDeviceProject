@@ -101,7 +101,6 @@ public class ModalView extends FrameLayout implements AnimationListener {
 
 	@Subscribe
 	public void setCommonLogic(CommonLogicLoadCompleteEvent event) {
-		commonLogic.dispose();
 		commonLogic = event.commonLogic;
 	}
 

@@ -23,7 +23,6 @@ public abstract class PipeExchanger<K, F, T> implements Closeable {
 	protected CommonLogic commonLogic = new CommonLogic();
 
 	public void setCommonLogic(CommonLogic commonLogic) {
-		this.commonLogic.dispose();
 		this.commonLogic = commonLogic;
 	}
 

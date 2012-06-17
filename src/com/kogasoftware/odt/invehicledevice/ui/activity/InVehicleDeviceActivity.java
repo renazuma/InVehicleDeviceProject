@@ -397,7 +397,6 @@ public class InVehicleDeviceActivity extends Activity implements
 			// Dialogが表示されていない場合はこの例外が発生
 			// Log.w(TAG, e);
 		}
-		commonLogic.dispose();
 		commonLogic = event.commonLogic;
 		if (isFinishing()) {
 			commonLogic.dispose();

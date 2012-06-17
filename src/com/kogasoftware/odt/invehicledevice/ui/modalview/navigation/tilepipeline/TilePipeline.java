@@ -141,7 +141,6 @@ public class TilePipeline {
 	}
 
 	public void setCommonLogic(CommonLogic commonLogic) {
-		this.commonLogic.dispose();
 		this.commonLogic = commonLogic;
 		webTilePipe.setCommonLogic(commonLogic);
 		fileTilePipe.setCommonLogic(commonLogic);

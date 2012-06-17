@@ -375,7 +375,6 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	}
 
 	public void setCommonLogic(CommonLogic commonLogic) {
-		this.commonLogic.dispose();
 		this.commonLogic = commonLogic;
 		tilePipeline.setCommonLogic(commonLogic);
 		setNextPlatform();
