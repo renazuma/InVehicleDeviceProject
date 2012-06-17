@@ -108,7 +108,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	@Override
 	public void onDrawFrame(GL10 gl) {
 		final long millis = System.currentTimeMillis();
-		float cameraZoom = 2f;
+		float cameraZoom = 1f;
 
 		// ズームを修正
 		for (Integer nextZoomLevel : syncNextZoomLevel.getAndSet(
@@ -289,6 +289,18 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		// フラットシェーディングにセット
 		gl.glShadeModel(GL10.GL_FLAT);
 		// gl.glShadeModel(GL10.GL_SMOOTH);
+		// ブレンディングを有効化
+		gl.glEnable(GL10.GL_BLEND);
+		gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+		// 2Dテクスチャを有効に
+		gl.glEnable(GL10.GL_TEXTURE_2D);
+		// 頂点配列を使うことを宣言
+		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
+		// テクスチャ座標配列を使うことを宣言
+		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+		// テクスチャの透明度の合成を有効にする
+		gl.glTexEnvx(GL10.GL_TEXTURE_ENV, GL10.GL_TEXTURE_ENV_MODE,
+				GL10.GL_MODULATE);
 	}
 
 	/**

@@ -25,6 +25,11 @@ public class Tile implements Serializable {
 		this.zoom = zoom;
 	}
 
+	@Override
+	public String toString() {
+		return "(" + x + "," + y + "," + zoom + ")";
+	}
+
 	public int getX() {
 		return x;
 	}

@@ -8,7 +8,7 @@ import android.graphics.PointF;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.FrameState;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.NavigationRenderer;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.Texture;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.Textures;
 
 public class SelfFrameTask extends FrameTask {
 	private final Bitmap bitmap; // TODO:recycleされるかもしれない
@@ -24,9 +24,9 @@ public class SelfFrameTask extends FrameTask {
 
 	@Override
 	public void onAdd(FrameState frameState) {
-		textureId = Texture.generate(frameState.getGL());
+		textureId = Textures.generate(frameState.getGL());
 		if (!bitmap.isRecycled()) {
-			Texture.update(frameState.getGL(), textureId, bitmap);
+			Textures.update(frameState.getGL(), textureId, bitmap);
 		}
 		bitmap.recycle();
 	}
@@ -44,7 +44,7 @@ public class SelfFrameTask extends FrameTask {
 				frameState.getZoom());
 		float scale = 0.4f;
 		float alpha = 0.8f;
-		Texture.draw(frameState.getGL(), textureId, point.x, point.y, width,
+		Textures.draw(frameState.getGL(), textureId, point.x, point.y, width,
 				height, -frameState.getAngle(), scale, scale, alpha);
 	}
 }

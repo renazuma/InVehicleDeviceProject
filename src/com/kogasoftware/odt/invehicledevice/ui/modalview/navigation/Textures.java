@@ -9,11 +9,11 @@ import javax.microedition.khronos.opengles.GL10;
 import android.graphics.Bitmap;
 import android.opengl.GLUtils;
 
-public class Texture {
+public class Textures {
 	// 固定小数点値で1.0
-	private static final int ONE = 0x10000;
+	public static final int ONE = 0x10000;
 	// テクスチャ座標配列
-	private static final IntBuffer DEFAULT_TEX_COORDS = wrapNativeIntBuffer(new int[] {
+	public static final IntBuffer DEFAULT_TEX_COORDS = wrapNativeIntBuffer(new int[] {
 			0, ONE, ONE, ONE, 0, 0, ONE, 0 });
 
 	/**
@@ -50,21 +50,6 @@ public class Texture {
 				0, //
 		};
 
-		// 頂点配列を使うことを宣言
-		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
-
-		// テクスチャ座標配列を使うことを宣言
-		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-
-		// ブレンディングを有効化
-		gl.glEnable(GL10.GL_BLEND);
-		gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-		// テクスチャの透明度の合成を有効にする
-		gl.glTexEnvx(GL10.GL_TEXTURE_ENV, GL10.GL_TEXTURE_ENV_MODE,
-				GL10.GL_MODULATE);
-
-		// 2Dテクスチャを有効に
-		gl.glEnable(GL10.GL_TEXTURE_2D);
 		// テクスチャユニット0番をアクティブに
 		gl.glActiveTexture(GL10.GL_TEXTURE0);
 		// テクスチャIDに対応するテクスチャをバインド
@@ -94,11 +79,6 @@ public class Texture {
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
 		// さきほどプッシュした状態に行列スタックを戻す
 		gl.glPopMatrix();
-
-		// 有効にしたものを無効化
-		gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
-		gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-		gl.glDisable(GL10.GL_TEXTURE_2D);
 	}
 
 	/**
@@ -150,7 +130,7 @@ public class Texture {
 		GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
 	}
 
-	private static IntBuffer wrapNativeIntBuffer(int vertices[]) {
+	public static IntBuffer wrapNativeIntBuffer(int vertices[]) {
 		ByteBuffer byteBuffer = ByteBuffer.allocateDirect(vertices.length * 4);
 		byteBuffer.order(ByteOrder.nativeOrder());
 		IntBuffer intBuffer = byteBuffer.asIntBuffer();

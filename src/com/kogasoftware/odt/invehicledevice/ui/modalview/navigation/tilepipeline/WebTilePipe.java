@@ -12,13 +12,10 @@ import org.apache.commons.lang3.ObjectUtils.Null;
 import android.graphics.Bitmap;
 
 import com.google.common.base.Predicate;
-import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSource;
-import com.kogasoftware.odt.invehicledevice.logic.datasource.EmptyDataSource;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 
 public class WebTilePipe extends PipeExchanger<Tile, Null, TileBitmapFile> {
-	private DataSource dataSource = new EmptyDataSource();
 	private final File outputDirectory;
 	private final Map<Tile, Integer> loadingReqKeys = new ConcurrentHashMap<Tile, Integer>();
 
@@ -33,7 +30,7 @@ public class WebTilePipe extends PipeExchanger<Tile, Null, TileBitmapFile> {
 	public void cancel(Tile tile) {
 		Integer reqkey = loadingReqKeys.remove(tile);
 		if (reqkey != null) {
-			dataSource.cancel(reqkey);
+			commonLogic.getDataSource().cancel(reqkey);
 		}
 	}
 
@@ -52,14 +49,14 @@ public class WebTilePipe extends PipeExchanger<Tile, Null, TileBitmapFile> {
 				tile.getZoom(), new WebAPICallback<Bitmap>() {
 					@Override
 					public void onException(int reqkey, WebAPIException ex) {
-						dataSource.cancel(reqkey);
+						commonLogic.getDataSource().cancel(reqkey);
 						countDownLatch.countDown();
 					}
 
 					@Override
 					public void onFailed(int reqkey, int statusCode,
 							String response) {
-						dataSource.cancel(reqkey);
+						commonLogic.getDataSource().cancel(reqkey);
 						countDownLatch.countDown();
 					}
 
