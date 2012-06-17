@@ -48,8 +48,10 @@ public class MapFrameTask extends FrameTask {
 		// drawTile(frameState, centerTile,
 		// tilePipeline.pollOrStartLoad(centerTile).or(defaultTextureId));
 
-		int extraTiles = (int) Math.floor(Math.max(frameState.getHeight(),
-				frameState.getWdith()) / cameraZoom / NavigationRenderer.WORLD_LENGTH / 2 + 1);
+		int extraTiles = (int) Math.floor(Math.max(frameState.getHeight()
+				/ NavigationRenderer.WORLD_HEIGHT, frameState.getWidth()
+				/ NavigationRenderer.WORLD_WIDTH)
+				/ cameraZoom / 2 + 1);
 		Set<Tile> inactiveTiles = tilePipeline.getPresentTiles();
 		// 表示するタイルを列挙し、中心に近い順にソート
 		Multimap<Double, Tile> tilesByDistance = LinkedListMultimap
@@ -80,8 +82,7 @@ public class MapFrameTask extends FrameTask {
 		PointF point = tile.getCenterPixel();
 		float scale = 1f / (1 << tile.getZoom());
 		Textures.drawf(frameState.getGL(), textureId, point.x, point.y,
-				NavigationRenderer.WORLD_LENGTH + 1, NavigationRenderer.WORLD_LENGTH + 1, 0, scale, scale,
-				alpha);
+				Tile.WIDTH + 1, Tile.HEIGHT + 1, 0, scale, scale, alpha);
 	}
 
 	@Override

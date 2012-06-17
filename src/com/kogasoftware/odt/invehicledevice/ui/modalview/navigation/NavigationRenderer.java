@@ -37,16 +37,16 @@ import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 
 public class NavigationRenderer implements GLSurfaceView.Renderer {
 	private static final String TAG = NavigationRenderer.class.getSimpleName();
-	public static final Integer WORLD_LENGTH = 256;
-	public static final Integer MAX_ZOOM_LEVEL = 17;
-	public static final Integer MIN_ZOOM_LEVEL = 1;
+	public static final int WORLD_WIDTH = 256;
+	public static final int WORLD_HEIGHT = 256;
+	public static final int MAX_ZOOM_LEVEL = 17;
+	public static final int MIN_ZOOM_LEVEL = 1;
 
 	public static PointF getPoint(LatLng latLng) {
-		double x = (latLng.getLongitude() + 180)
-				* NavigationRenderer.WORLD_LENGTH / 360d;
-		double y = (SphericalMercator.lat2y(latLng.getLatitude()) + 180)
-				* NavigationRenderer.WORLD_LENGTH / 360d
-				- NavigationRenderer.WORLD_LENGTH;
+		double x = latLng.getLongitude() * NavigationRenderer.WORLD_WIDTH
+				/ 360d;
+		double y = SphericalMercator.lat2y(latLng.getLatitude())
+				* NavigationRenderer.WORLD_HEIGHT / 360d;
 		return new PointF((float) x, (float) y);
 	}
 
@@ -80,8 +80,8 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	private final AtomicReference<Optional<Boolean>> syncNextAutoZoomLevel = new AtomicReference<Optional<Boolean>>(
 			Optional.<Boolean> absent()); // 描画中にautoZoomの値が変更されないようにするための変数
 
-	public NavigationRenderer(Context context) {
-		this.tilePipeline = new TilePipeline(context);
+	public NavigationRenderer(Context context, TilePipeline tilePipeline) {
+		this.tilePipeline = tilePipeline;
 		nextPlatformFrameTask = new NextPlatformFrameTask(
 				context.getResources());
 

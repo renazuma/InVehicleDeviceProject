@@ -60,13 +60,13 @@ public class TileTestCase extends TestCase {
 		Tile tk;
 
 		tk = new Tile(0, 0, 1);
-		assertPointF(new PointF(64, -64), tk.getCenterPixel());
+		assertPointF(new PointF(-64, 64), tk.getCenterPixel());
 
 		tk = new Tile(1, 0, 1);
-		assertPointF(new PointF(192, -64), tk.getCenterPixel());
+		assertPointF(new PointF(64, 64), tk.getCenterPixel());
 
 		tk = new Tile(1, 1, 1);
-		assertPointF(new PointF(192, -192), tk.getCenterPixel());
+		assertPointF(new PointF(64, -64), tk.getCenterPixel());
 	}
 
 	// public void xtestGetOffsetPixels() {

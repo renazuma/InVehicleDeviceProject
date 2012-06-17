@@ -84,7 +84,7 @@ public class FrameState {
 		return height;
 	}
 
-	public int getWdith() {
+	public int getWidth() {
 		return width;
 	}
 }

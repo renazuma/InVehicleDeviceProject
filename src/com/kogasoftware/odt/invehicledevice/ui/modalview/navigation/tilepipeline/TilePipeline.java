@@ -26,6 +26,13 @@ import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.Textures;
 
 public class TilePipeline {
 	private static final Integer MAX_TEXTURE_TRANSFER_COUNT = 10;
+
+	class OnRemoveTileListener {
+		public void onRemoveTile(Tile tile) {
+			processingTiles.remove(tile);
+		}
+	}
+
 	private final Set<Tile> processingTiles = new CopyOnWriteArraySet<Tile>();
 	private final Predicate<Tile> isProcessing = Predicates.in(processingTiles);
 	private final PipeQueue<Tile, Null> startPipeQueue = new PipeQueue<Tile, Null>(
