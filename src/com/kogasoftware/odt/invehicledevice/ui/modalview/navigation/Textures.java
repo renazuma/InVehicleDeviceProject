@@ -14,8 +14,10 @@ public class Textures {
 	// 固定小数点値で1.0
 	public static final int ONE = 0x10000;
 	// テクスチャ座標配列
-	public static final IntBuffer DEFAULT_TEX_COORDS = wrapNativeIntBuffer(new int[] {
+	public static final IntBuffer DEFAULT_INT_TEX_COORDS = wrapNativeIntBuffer(new int[] {
 			0, ONE, ONE, ONE, 0, 0, ONE, 0 });
+	public static final FloatBuffer DEFAULT_FLOAT_TEX_COORDS = wrapNativeFloatBuffer(new float[] {
+			0, 1, 1, 1, 0, 0, 1, 0 });
 
 	/**
 	 * 2Dテクスチャを描画する
@@ -75,7 +77,57 @@ public class Textures {
 		// 頂点座標配列をセット
 		gl.glVertexPointer(3, GL10.GL_FIXED, 0, wrapNativeIntBuffer(vertices));
 		// テクスチャ情報をセット
-		gl.glTexCoordPointer(2, GL10.GL_FIXED, 0, DEFAULT_TEX_COORDS);
+		gl.glTexCoordPointer(2, GL10.GL_FIXED, 0, DEFAULT_INT_TEX_COORDS);
+		// セットした配列を元に描画
+		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
+		// さきほどプッシュした状態に行列スタックを戻す
+		gl.glPopMatrix();
+	}
+
+	public static void drawf(GL10 gl, int textureId, float x, float y,
+			float width, float height, float angle, float scaleX, float scaleY,
+			float alpha) {
+
+		// 頂点座標
+		float vertices[] = { -width / 2, //
+				-height / 2, //
+				0, //
+				width / 2, //
+				-height / 2, //
+				0, //
+				-width / 2, //
+				height / 2, //
+				0, //
+				width / 2, //
+				height / 2, //
+				0, //
+		};
+
+		// テクスチャユニット0番をアクティブに
+		gl.glActiveTexture(GL10.GL_TEXTURE0);
+		// テクスチャIDに対応するテクスチャをバインド
+		gl.glBindTexture(GL10.GL_TEXTURE_2D, textureId);
+
+		// モデルビュー行列を選択
+		gl.glMatrixMode(GL10.GL_MODELVIEW);
+		// 行列スタックに現在の行列をプッシュ
+		gl.glPushMatrix();
+		// 現在選択されている行列(モデルビュー行列)に、単位行列をセット
+		// gl.glLoadIdentity();
+		// モデルを平行移動する行列を掛け合わせる
+		gl.glTranslatef(x, y, 0);
+		// モデルをX軸中心に回転する行列を掛け合わせる
+		// gl.glRotatef(60.0f, 1.0f, 0.0f, 0.0f);
+		// モデルをZ軸中心に回転する行列を掛け合わせる
+		gl.glRotatef((float) Math.toDegrees(angle), 0.0f, 0.0f, 1.0f);
+		// モデルを拡大縮小する行列を掛け合わせる
+		gl.glScalef(scaleX, scaleY, 1.0f);
+		// 色をセット
+		gl.glColor4x(0x10000, 0x10000, 0x10000, (int) (0x10000 * alpha));
+		// 頂点座標配列をセット
+		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, wrapNativeFloatBuffer(vertices));
+		// テクスチャ情報をセット
+		gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, DEFAULT_FLOAT_TEX_COORDS);
 		// セットした配列を元に描画
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
 		// さきほどプッシュした状態に行列スタックを戻す

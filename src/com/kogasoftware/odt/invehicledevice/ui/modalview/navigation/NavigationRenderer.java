@@ -37,20 +37,11 @@ import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 
 public class NavigationRenderer implements GLSurfaceView.Renderer {
 	private static final String TAG = NavigationRenderer.class.getSimpleName();
-	public static final Integer MAX_TILE_CACHE_BYTES = 100 * 1024 * 1024;
 	public static final Integer MAX_ZOOM_LEVEL = 17;
 	// public static final Integer MIN_ZOOM_LEVEL = 9;
 	public static final Integer MIN_ZOOM_LEVEL = 1;
 
-	public static PointF getPoint2(LatLng latLng, int zoomLevel) {
-		int totalPixels = (1 << zoomLevel) * Tile.TILE_LENGTH;
-		double x = latLng.getLongitude() * totalPixels / 360d;
-		double y = SphericalMercator.lat2y(latLng.getLatitude()) * totalPixels
-				/ 360d;
-		return new PointF((float) x, (float) y);
-	}
-
-	public static PointF getPoint(LatLng latLng, int zoomLevel) {
+	public static PointF getPoint(LatLng latLng) {
 		double x = (latLng.getLongitude() + 180) * Tile.TILE_LENGTH / 360d;
 		double y = -(SphericalMercator.lat2y(latLng.getLatitude()) + 180)
 				* Tile.TILE_LENGTH / 360d;
@@ -88,7 +79,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 
 		addedFrameTasks.add(new MapBuildFrameTask(context, tilePipeline));
 		addedFrameTasks.add(new SelfFrameTask(context.getResources()));
-		// addedFrameTasks.add(nextPlatformFrameTask);
+		addedFrameTasks.add(nextPlatformFrameTask);
 
 		// 〒701-4302 岡山県瀬戸内市牛窓町牛窓３９１１−３７ (東備バス（株）)
 		double defaultLatitude = 34.617781;
@@ -144,10 +135,9 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		// LatLng centerLatLng = vehicleLatLng;
 		LatLng vehicleLatLng = new LatLng(0, 0);
 		LatLng centerLatLng = new LatLng(0, 0);
-		PointF centerPoint = getPoint(centerLatLng, zoomLevel);
-		PointF vehiclePoint = getPoint(vehicleLatLng, zoomLevel);
-		PointF nextPlatformPoint = getPoint(nextPlatformFrameTask.getLatLng(),
-				zoomLevel);
+		PointF centerPoint = getPoint(centerLatLng);
+		PointF vehiclePoint = getPoint(vehicleLatLng);
+		PointF nextPlatformPoint = getPoint(nextPlatformFrameTask.getLatLng());
 
 		// centerPoint.y += height / 5.5; // 中心を上に修正
 		// { // 目的地が現在地より下にある場合、中心を下に修正して目的地が見やすいようにする

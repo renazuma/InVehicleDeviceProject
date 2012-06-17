@@ -46,7 +46,7 @@ public class Tile implements Serializable {
 	}
 
 	public PointF getCenterPixel() {
-		float tileLength = 256 / (1 << zoom);
+		float tileLength = (float) TILE_LENGTH / (1 << zoom);
 		float px = tileLength * (x + 0.5f);
 		float py = -tileLength * (y + 0.5f);
 		return new PointF(px, py);
