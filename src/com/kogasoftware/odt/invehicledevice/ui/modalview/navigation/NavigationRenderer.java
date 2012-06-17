@@ -15,6 +15,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
+import android.util.FloatMath;
 import android.util.Log;
 
 import com.google.common.base.Optional;
@@ -29,7 +30,6 @@ import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.frametask.Fr
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.frametask.MapBuildFrameTask;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.frametask.NextPlatformFrameTask;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.frametask.SelfFrameTask;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipeline.Tile;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipeline.TilePipeline;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
@@ -37,14 +37,22 @@ import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 
 public class NavigationRenderer implements GLSurfaceView.Renderer {
 	private static final String TAG = NavigationRenderer.class.getSimpleName();
+	public static final Integer WORLD_LENGTH = 256;
 	public static final Integer MAX_ZOOM_LEVEL = 17;
-	// public static final Integer MIN_ZOOM_LEVEL = 9;
 	public static final Integer MIN_ZOOM_LEVEL = 1;
 
 	public static PointF getPoint(LatLng latLng) {
-		double x = (latLng.getLongitude() + 180) * Tile.TILE_LENGTH / 360d;
+		double x = (latLng.getLongitude() + 180)
+				* NavigationRenderer.WORLD_LENGTH / 360d;
 		double y = (SphericalMercator.lat2y(latLng.getLatitude()) + 180)
-				* Tile.TILE_LENGTH / 360d - Tile.TILE_LENGTH;
+				* NavigationRenderer.WORLD_LENGTH / 360d
+				- NavigationRenderer.WORLD_LENGTH;
+		return new PointF((float) x, (float) y);
+	}
+
+	public static PointF getDisplayPoint(LatLng latLng) {
+		double x = 0;
+		double y = 0;
 		return new PointF((float) x, (float) y);
 	}
 
@@ -64,7 +72,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	private long lastReportMillis = 0l;
 	private int width = 0;
 	private int height = 0;
-	private int zoomLevel = 1;
+	private int zoomLevel = 12;
 
 	private final AtomicReference<Optional<Integer>> syncNextZoomLevel = new AtomicReference<Optional<Integer>>(
 			Optional.<Integer> absent()); // 描画中にzoomの値が変更されないようにするための変数
@@ -115,6 +123,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 				zoomLevel = nextZoomLevel;
 			}
 		}
+		float totalZoom = cameraZoom * (1 << zoomLevel);
 
 		// 自動ズームかどうかを修正
 		for (Boolean nextAutoZoomLevel : syncNextAutoZoomLevel.getAndSet(
@@ -125,48 +134,44 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		}
 
 		// 現在の方向を取得
-		// float angle = (float) -rotationSmoother.getSmoothMotion(millis);
-		float angle = 0;
+		float angle = (float) -rotationSmoother.getSmoothMotion(millis);
+		// float angle = 45;
 
 		// 現在地を取得
 		LatLng vehicleLatLng = new LatLng(
 				latitudeSmoother.getSmoothMotion(millis),
 				longitudeSmoother.getSmoothMotion(millis));
 		LatLng centerLatLng = vehicleLatLng;
-		// LatLng vehicleLatLng = new LatLng(51.478876, 0);
-		// LatLng centerLatLng = new LatLng(51.478876, 0);
-		// LatLng vehicleLatLng = new LatLng(0, 0);
-		// LatLng centerLatLng = new LatLng(0, 0);
 		PointF centerPoint = getPoint(centerLatLng);
 		PointF vehiclePoint = getPoint(vehicleLatLng);
 		PointF nextPlatformPoint = getPoint(nextPlatformFrameTask.getLatLng());
 
-		// centerPoint.y += height / 5.5; // 中心を上に修正
-		// { // 目的地が現在地より下にある場合、中心を下に修正して目的地が見やすいようにする
-		// float vehicleRY = vehiclePoint.x * FloatMath.sin(angle)
-		// + vehiclePoint.y * FloatMath.cos(angle);
-		// float nextPlatformRY = nextPlatformPoint.x * FloatMath.sin(angle)
-		// + nextPlatformPoint.y * FloatMath.cos(angle);
-		//
-		// boolean hasExtraY = false;
-		// try {
-		// // ArrayIndexOutOfBoundsExceptionが発生することがある。詳細はコミットログ参照。
-		// hasExtraY = (vehicleRY > nextPlatformRY);
-		// } catch (ArrayIndexOutOfBoundsException e) {
-		// Log.w(TAG, "vehicleRY=" + vehicleRY + ", nextPlatfomrRY="
-		// + nextPlatformRY, e);
-		// }
-		// if (hasExtraY) {
-		// float extraY = Math.min(vehicleRY - nextPlatformRY,
-		// (float) height / 2);
-		// centerPoint.y -= extraY;
-		// }
-		// }
+		centerPoint.y += height / 5.5 / totalZoom; // 中心を上に修正
+		{ // 目的地が現在地より下にある場合、中心を下に修正して目的地が見やすいようにする
+			float vehicleRY = vehiclePoint.x * FloatMath.sin(angle)
+					+ vehiclePoint.y * FloatMath.cos(angle);
+			float nextPlatformRY = nextPlatformPoint.x * FloatMath.sin(angle)
+					+ nextPlatformPoint.y * FloatMath.cos(angle);
 
-		if (autoZoomLevel && false) {
+			boolean hasExtraY = false;
+			try {
+				// ArrayIndexOutOfBoundsExceptionが発生することがある。詳細はコミットログ参照。
+				hasExtraY = (vehicleRY > nextPlatformRY);
+			} catch (ArrayIndexOutOfBoundsException e) {
+				Log.w(TAG, "vehicleRY=" + vehicleRY + ", nextPlatfomrRY="
+						+ nextPlatformRY, e);
+			}
+			if (hasExtraY) {
+				float extraY = Math.min(vehicleRY - nextPlatformRY,
+						(float) height / 2 / totalZoom);
+				centerPoint.y -= extraY;
+			}
+		}
+
+		if (autoZoomLevel) {
 			// 現在地と目的地のピクセル距離を計算
-			double dx = vehiclePoint.x - nextPlatformPoint.x;
-			double dy = vehiclePoint.y - nextPlatformPoint.y;
+			double dx = (vehiclePoint.x - nextPlatformPoint.x) * totalZoom;
+			double dy = (vehiclePoint.y - nextPlatformPoint.y) * totalZoom;
 			double pixelDistance = Math.sqrt(dx * dx + dy * dy);
 			// 縦横で短い方を基準にしたピクセル距離の割合を計算
 			double pixelDistanceRate = pixelDistance / Math.min(width, height);
@@ -224,18 +229,11 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		gl.glLoadIdentity();
 
 		// 平行投影用のパラメータをセット
-		// float left = -width / 2f;
-		// float right = width / 2f;
-		// float bottom = -height / 2f;
-		// float top = height / 2f;
-		// GLU.gluOrtho2D(gl, left, right, bottom, top);
-		float totalZoom = cameraZoom * (1 << zoomLevel);
 		float left = -width / 2f / totalZoom + centerPoint.x;
 		float right = width / 2f / totalZoom + centerPoint.x;
 		float bottom = -height / 2f / totalZoom + centerPoint.y;
 		float top = height / 2f / totalZoom + centerPoint.y;
 		GLU.gluOrtho2D(gl, left, right, bottom, top);
-		// gl.glScalef(cameraZoom, cameraZoom, cameraZoom);
 
 		// モデル変換行列
 		gl.glMatrixMode(GL10.GL_MODELVIEW);
@@ -372,10 +370,10 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	}
 
 	public void setZoomLevel(int newZoomLevel) {
-		// if (newZoomLevel > MAX_ZOOM_LEVEL || newZoomLevel < MIN_ZOOM_LEVEL
-		// || zoomLevel == newZoomLevel) {
-		// return;
-		// }
+		if (newZoomLevel > MAX_ZOOM_LEVEL || newZoomLevel < MIN_ZOOM_LEVEL
+				|| zoomLevel == newZoomLevel) {
+			return;
+		}
 		commonLogic.postEvent(new MapZoomLevelChangedEvent(newZoomLevel));
 		syncNextZoomLevel.set(Optional.of(newZoomLevel));
 	}

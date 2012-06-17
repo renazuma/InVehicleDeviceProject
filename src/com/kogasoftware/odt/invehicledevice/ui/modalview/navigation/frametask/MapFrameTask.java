@@ -10,6 +10,7 @@ import android.graphics.PointF;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.FrameState;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.NavigationRenderer;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.Textures;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipeline.Tile;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipeline.TilePipeline;
@@ -48,7 +49,7 @@ public class MapFrameTask extends FrameTask {
 		// tilePipeline.pollOrStartLoad(centerTile).or(defaultTextureId));
 
 		int extraTiles = (int) Math.floor(Math.max(frameState.getHeight(),
-				frameState.getWdith()) / cameraZoom / Tile.TILE_LENGTH / 2 + 1);
+				frameState.getWdith()) / cameraZoom / NavigationRenderer.WORLD_LENGTH / 2 + 1);
 		Set<Tile> inactiveTiles = tilePipeline.getPresentTiles();
 		// 表示するタイルを列挙し、中心に近い順にソート
 		Multimap<Double, Tile> tilesByDistance = LinkedListMultimap
@@ -79,7 +80,7 @@ public class MapFrameTask extends FrameTask {
 		PointF point = tile.getCenterPixel();
 		float scale = 1f / (1 << tile.getZoom());
 		Textures.drawf(frameState.getGL(), textureId, point.x, point.y,
-				Tile.TILE_LENGTH + 1, Tile.TILE_LENGTH + 1, 0, scale, scale,
+				NavigationRenderer.WORLD_LENGTH + 1, NavigationRenderer.WORLD_LENGTH + 1, 0, scale, scale,
 				alpha);
 	}
 

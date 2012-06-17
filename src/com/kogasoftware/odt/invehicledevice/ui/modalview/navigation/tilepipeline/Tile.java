@@ -9,11 +9,11 @@ import android.graphics.PointF;
 
 import com.google.common.base.Optional;
 import com.javadocmd.simplelatlng.LatLng;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.NavigationRenderer;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.SphericalMercator;
 
 public class Tile implements Serializable {
 	private static final long serialVersionUID = -2858195330177966613L;
-	public static final int TILE_LENGTH = 256;
 	private final int x;
 	private final int y;
 	private final int zoom;
@@ -46,7 +46,7 @@ public class Tile implements Serializable {
 	}
 
 	public PointF getCenterPixel() {
-		float tileLength = (float) TILE_LENGTH / (1 << zoom);
+		float tileLength = (float) NavigationRenderer.WORLD_LENGTH / (1 << zoom);
 		float px = tileLength * (x + 0.5f);
 		float py = -tileLength * (y + 0.5f);
 		return new PointF(px, py);
