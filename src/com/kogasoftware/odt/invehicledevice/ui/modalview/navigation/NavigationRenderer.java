@@ -82,6 +82,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 
 	public NavigationRenderer(Context context, TilePipeline tilePipeline) {
 		this.tilePipeline = tilePipeline;
+		tilePipeline.changeZoomLevel(zoomLevel);
 		nextPlatformFrameTask = new NextPlatformFrameTask(
 				context.getResources());
 

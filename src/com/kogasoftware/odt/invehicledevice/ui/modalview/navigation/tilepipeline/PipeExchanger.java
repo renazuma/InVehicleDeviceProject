@@ -33,13 +33,15 @@ public abstract class PipeExchanger<K, F, T> implements Closeable {
 			try {
 				loopLoad();
 			} catch (InterruptedException e) {
+			} finally {
+				Log.i(getClass().getSimpleName(), "exit");
 			}
 		}
 	}
 
 	protected void loopLoad() throws InterruptedException {
+		String T = getClass().getSimpleName();
 		while (true) {
-			String T = getClass().getSimpleName();
 			Pair<K, F> fromPair = fromPipeQueue.take();
 			Log.i(T, "start " + fromPair.getKey());
 			long startTime = System.currentTimeMillis();
@@ -53,7 +55,7 @@ public abstract class PipeExchanger<K, F, T> implements Closeable {
 					+ "ms";
 			if (to != null) {
 				Log.i(T, "complete " + fromPair.getKey() + elapsed);
-				toPipeQueue.add(fromPair.getKey(), to);
+				toPipeQueue.addAndDrop(fromPair.getKey(), to);
 			} else {
 				Log.i(T, "error " + fromPair.getKey() + elapsed);
 				onDropListener.onDrop(fromPair.getKey());
