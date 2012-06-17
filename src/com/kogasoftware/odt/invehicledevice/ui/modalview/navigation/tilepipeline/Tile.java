@@ -1,30 +1,31 @@
-package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation;
+package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipeline;
 
 import java.io.Serializable;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import android.graphics.Point;
 import android.graphics.PointF;
 
 import com.google.common.base.Optional;
 import com.javadocmd.simplelatlng.LatLng;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.SphericalMercator;
 
-public class TileKey implements Serializable {
+public class Tile implements Serializable {
 	private static final long serialVersionUID = -2858195330177966613L;
-	public static final int TILE_LENGTH = 256;
+	public static final int WIDTH = 256;
+	public static final int HEIGHT = 256;
 	private final int x;
 	private final int y;
 	private final int zoom;
 
-	public TileKey(int x, int y, int zoom) {
+	public Tile(int x, int y, int zoom) {
 		this.x = x;
 		this.y = y;
 		this.zoom = zoom;
 	}
 
-	public TileKey(LatLng latLng, int zoom) {
+	public Tile(LatLng latLng, int zoom) {
 		x = (int) Math.floor(((180.0 + latLng.getLongitude()) / 360.0)
 				* Math.pow(2, zoom));
 		y = (int) Math.floor(((180.0 - SphericalMercator.lat2y(latLng
@@ -32,27 +33,23 @@ public class TileKey implements Serializable {
 		this.zoom = zoom;
 	}
 
-	public Point getCenterPixel() {
-		int totalSideTiles = 1 << zoom;
-		int px = TILE_LENGTH / 2 * (x * 2 - totalSideTiles + 1);
-		int py = -(TILE_LENGTH / 2 * (y * 2 - totalSideTiles + 1));
-		return new Point(px, py);
+	@Override
+	public String toString() {
+		return "(" + x + "," + y + "," + zoom + ")";
 	}
 
-	public PointF xgetOffsetPixels(LatLng from) {
-		double longitudePixels = (getCenter().getLongitude() - from
-				.getLongitude()) * 256 * Math.pow(2, zoom) / 360;
+	public int getX() {
+		return x;
+	}
 
-		double sphericalLatitudeTo = 360.0 / Math.pow(2, zoom) * (y + 0.5)
-				- 180.0;
-		double sphericalLatitudeFrom = SphericalMercator.lat2y(from
-				.getLatitude());
-		double sphericalLatitudeDistance = sphericalLatitudeTo
-				- sphericalLatitudeFrom;
-		double latitudePixels = sphericalLatitudeDistance * 256
-				* Math.pow(2, zoom) / 360;
+	public int getY() {
+		return y;
+	}
 
-		return new PointF((float) latitudePixels, (float) longitudePixels);
+	public PointF getCenterPixel() {
+		float px = WIDTH / (float) (1 << zoom) * (x + 0.5f) - WIDTH / 2;
+		float py = HEIGHT / 2 - HEIGHT / (float) (1 << zoom) * (y + 0.5f);
+		return new PointF(px, py);
 	}
 
 	@Override
@@ -63,17 +60,13 @@ public class TileKey implements Serializable {
 
 	@Override
 	public boolean equals(Object object) {
-		if (object instanceof TileKey) {
-			TileKey other = (TileKey) object;
+		if (object instanceof Tile) {
+			Tile other = (Tile) object;
 			return new EqualsBuilder().append(x, other.x).append(y, other.y)
 					.append(zoom, other.zoom).isEquals();
 		} else {
 			return false;
 		}
-	}
-
-	public String toFileName() {
-		return zoom + "_" + x + "_" + y;
 	}
 
 	public LatLng getCenter() {
@@ -87,7 +80,7 @@ public class TileKey implements Serializable {
 		return zoom;
 	}
 
-	public Optional<TileKey> getRelativeTileKey(int extraX, int extraY) {
+	public Optional<Tile> getRelativeTile(int extraX, int extraY) {
 		int totalSideTiles = 1 << zoom;
 		int newX = x + extraX;
 		int newY = y + extraY;
@@ -97,6 +90,6 @@ public class TileKey implements Serializable {
 		if (newY < 0 || totalSideTiles <= newY) {
 			return Optional.absent();
 		}
-		return Optional.of(new TileKey(newX, newY, zoom));
+		return Optional.of(new Tile(newX, newY, zoom));
 	}
 }

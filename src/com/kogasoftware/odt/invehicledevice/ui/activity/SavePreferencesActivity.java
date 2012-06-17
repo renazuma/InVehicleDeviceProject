@@ -19,7 +19,6 @@ import com.kogasoftware.odt.invehicledevice.backgroundtask.BackgroundTask;
 import com.kogasoftware.odt.invehicledevice.logic.SharedPreferencesKey;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.WebAPIDataSource;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
-import com.kogasoftware.odt.webapi.model.ServiceProvider;
 
 public class SavePreferencesActivity extends Activity {
 	private static final String TAG = SavePreferencesActivity.class
@@ -39,13 +38,17 @@ public class SavePreferencesActivity extends Activity {
 		Serializable maybeInVehicleDevice = null;
 		try {
 			maybeInVehicleDevice = bundle
-				.getSerializable(SharedPreferencesKey.IN_VEHICLE_DEVICE);
+					.getSerializable(SharedPreferencesKey.IN_VEHICLE_DEVICE);
 		} catch (RuntimeException e) {
 			Log.e(TAG, e.toString(), e);
 			if (e.getCause() instanceof InvalidClassException) {
-				Toast.makeText(this, "エラーが発生しました。設定アプリケーションのバージョンと車載器アプリケーションのバージョンが適合しません。", Toast.LENGTH_LONG).show();
+				Toast.makeText(
+						this,
+						"エラーが発生しました。設定アプリケーションのバージョンと車載器アプリケーションのバージョンが適合しません。",
+						Toast.LENGTH_LONG).show();
 			} else {
-				Toast.makeText(this, "不明なエラーが発生しました。デバイスのログを参照してください。", Toast.LENGTH_LONG).show();
+				Toast.makeText(this, "不明なエラーが発生しました。デバイスのログを参照してください。",
+						Toast.LENGTH_LONG).show();
 			}
 			return;
 		}
@@ -54,13 +57,6 @@ public class SavePreferencesActivity extends Activity {
 		} else {
 			Log.e(TAG,
 					"!(bundle.getSerializable(SharedPreferencesKey.IN_VEHICLE_DEVICE) instanceof InVehicleDevice)");
-		}
-
-		ServiceProvider serviceProvider = new ServiceProvider();
-		if (inVehicleDevice.getServiceProvider().isPresent()) {
-			serviceProvider = inVehicleDevice.getServiceProvider().get();
-		} else {
-			Log.e(TAG, "!(inVehicleDevice.getServiceProvider().isPresent())");
 		}
 
 		SharedPreferences.Editor editor = preferences.edit();
@@ -73,12 +69,6 @@ public class SavePreferencesActivity extends Activity {
 				Strings.nullToEmpty(bundle
 						.getString(SharedPreferencesKey.SERVER_IN_VEHICLE_DEVICE_TOKEN)));
 		try {
-			editor.putString(SharedPreferencesKey.SERVICE_PROVIDER,
-					serviceProvider.toJSONObject().toString());
-		} catch (JSONException e) {
-			Log.e(TAG, "toJSONObject() failed", e);
-		}
-		try {
 			editor.putString(SharedPreferencesKey.IN_VEHICLE_DEVICE,
 					inVehicleDevice.toJSONObject().toString());
 		} catch (JSONException e) {
@@ -89,7 +79,7 @@ public class SavePreferencesActivity extends Activity {
 		editor.putBoolean(SharedPreferencesKey.CLEAR_VOICE_CACHE, true);
 		editor.commit();
 		Toast.makeText(this, "設定を保存しました", Toast.LENGTH_LONG).show();
-		
+
 		Intent exitIntent = new Intent();
 		exitIntent.setAction(BackgroundTask.ACTION_EXIT);
 		getApplicationContext().sendBroadcast(exitIntent);

@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation;
+package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.frametask;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -6,8 +6,10 @@ import android.graphics.BitmapFactory;
 import android.graphics.PointF;
 
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.FrameState;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.NavigationRenderer;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.Textures;
 
-@FrameTask.Front
 public class SelfFrameTask extends FrameTask {
 	private final Bitmap bitmap; // TODO:recycleされるかもしれない
 	private int textureId = -1; // TODO:Optionalを検討
@@ -22,9 +24,9 @@ public class SelfFrameTask extends FrameTask {
 
 	@Override
 	public void onAdd(FrameState frameState) {
-		textureId = Texture.generate(frameState.getGL());
+		textureId = Textures.generate(frameState.getGL());
 		if (!bitmap.isRecycled()) {
-			Texture.update(frameState.getGL(), textureId, bitmap);
+			Textures.update(frameState.getGL(), textureId, bitmap);
 		}
 		bitmap.recycle();
 	}
@@ -37,12 +39,11 @@ public class SelfFrameTask extends FrameTask {
 	}
 
 	@Override
-	void onDraw(FrameState frameState) {
-		PointF point = NavigationRenderer.getPoint(frameState.getLatLng(),
-				frameState.getZoom());
-		float scale = 0.4f;
+	public void onDraw(FrameState frameState) {
+		PointF point = NavigationRenderer.getPoint(frameState.getLatLng());
+		float scale = 1f / frameState.getTotalZoom();
 		float alpha = 0.8f;
-		Texture.draw(frameState.getGL(), textureId, point.x, point.y, width,
+		Textures.draw(frameState.getGL(), textureId, point.x, point.y, width,
 				height, -frameState.getAngle(), scale, scale, alpha);
 	}
 }

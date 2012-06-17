@@ -13,8 +13,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.location.Location;
@@ -34,7 +32,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.common.eventbus.Subscribe;
-import com.kogasoftware.odt.invehicledevice.BuildConfig;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.backgroundtask.BackgroundTaskThread;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
@@ -217,26 +214,17 @@ public class InVehicleDeviceActivity extends Activity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if (BuildConfig.DEBUG) {
-			Log.i(TAG, "BuildConfig.DEBUG=" + BuildConfig.DEBUG);
-			// StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-			// .detectAll().penaltyLog().build());
-			// StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-			// .detectAll().penaltyLog().penaltyDeath().build());
-		}
+		// if (BuildConfig.DEBUG) {
+		// StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+		// .detectAll().penaltyLog().build());
+		// StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+		// .detectAll().penaltyLog().penaltyDeath().build());
+		// }
+		Log.i(TAG, "onCreate()");
 		getWindow().addFlags(
 				WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
 						| WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
 						| WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
-
-		try {
-			PackageInfo packageInfo = getPackageManager().getPackageInfo(
-					getPackageName(), 0);
-			Log.i(TAG, "onCreate: versionCode=" + packageInfo.versionCode
-					+ " versionName=" + packageInfo.versionName);
-		} catch (NameNotFoundException e) {
-			Log.w(TAG, e);
-		}
 
 		setContentView(R.layout.in_vehicle_device);
 
@@ -319,7 +307,7 @@ public class InVehicleDeviceActivity extends Activity implements
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		Log.i(TAG, "onDestroy");
+		Log.i(TAG, "onDestroy()");
 
 		getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 

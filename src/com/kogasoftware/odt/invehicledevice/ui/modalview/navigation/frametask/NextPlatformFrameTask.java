@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation;
+package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.frametask;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -7,8 +7,10 @@ import android.graphics.PointF;
 
 import com.javadocmd.simplelatlng.LatLng;
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.FrameState;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.NavigationRenderer;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.Textures;
 
-@FrameTask.Front
 public class NextPlatformFrameTask extends FrameTask {
 	private final Bitmap bitmap; // TODO:recycleされるかもしれない
 	private int textureId = -1; // TODO:Optionalを検討
@@ -26,16 +28,16 @@ public class NextPlatformFrameTask extends FrameTask {
 	public void setLatLng(LatLng latLng) {
 		this.latLng = latLng;
 	}
-	
+
 	public LatLng getLatLng() {
 		return latLng;
 	}
 
 	@Override
 	public void onAdd(FrameState frameState) {
-		textureId = Texture.generate(frameState.getGL());
+		textureId = Textures.generate(frameState.getGL());
 		if (!bitmap.isRecycled()) {
-			Texture.update(frameState.getGL(), textureId, bitmap);
+			Textures.update(frameState.getGL(), textureId, bitmap);
 		}
 		bitmap.recycle();
 	}
@@ -48,17 +50,16 @@ public class NextPlatformFrameTask extends FrameTask {
 	}
 
 	@Override
-	void onDraw(FrameState frameState) {
+	public void onDraw(FrameState frameState) {
 		// 緯度0経度0は海なので、未初期化と判断して良い
 		if (latLng.getLatitude() == 0 && latLng.getLongitude() == 0) {
 			return;
 		}
 
-		PointF point = NavigationRenderer
-				.getPoint(latLng, frameState.getZoom());
-		float scale = 0.4f;
+		PointF point = NavigationRenderer.getPoint(latLng);
+		float scale = 1f / frameState.getTotalZoom();
 		float alpha = 0.8f;
-		Texture.draw(frameState.getGL(), textureId, point.x, point.y, width,
+		Textures.draw(frameState.getGL(), textureId, point.x, point.y, width,
 				height, -frameState.getAngle(), scale, scale, alpha);
 	}
 }

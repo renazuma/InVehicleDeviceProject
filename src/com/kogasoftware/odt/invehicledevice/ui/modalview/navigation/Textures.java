@@ -2,6 +2,7 @@ package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
@@ -9,12 +10,14 @@ import javax.microedition.khronos.opengles.GL10;
 import android.graphics.Bitmap;
 import android.opengl.GLUtils;
 
-public class Texture {
+public class Textures {
 	// 固定小数点値で1.0
-	private static final int ONE = 0x10000;
+	public static final int ONE = 0x10000;
 	// テクスチャ座標配列
-	private static final IntBuffer DEFAULT_TEX_COORDS = wrapNativeIntBuffer(new int[] {
+	public static final IntBuffer DEFAULT_INT_TEX_COORDS = wrapNativeIntBuffer(new int[] {
 			0, ONE, ONE, ONE, 0, 0, ONE, 0 });
+	public static final FloatBuffer DEFAULT_FLOAT_TEX_COORDS = wrapNativeFloatBuffer(new float[] {
+			0, 1, 1, 1, 0, 0, 1, 0 });
 
 	/**
 	 * 2Dテクスチャを描画する
@@ -50,21 +53,6 @@ public class Texture {
 				0, //
 		};
 
-		// 頂点配列を使うことを宣言
-		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
-
-		// テクスチャ座標配列を使うことを宣言
-		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-
-		// ブレンディングを有効化
-		gl.glEnable(GL10.GL_BLEND);
-		gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-		// テクスチャの透明度の合成を有効にする
-		gl.glTexEnvx(GL10.GL_TEXTURE_ENV, GL10.GL_TEXTURE_ENV_MODE,
-				GL10.GL_MODULATE);
-
-		// 2Dテクスチャを有効に
-		gl.glEnable(GL10.GL_TEXTURE_2D);
 		// テクスチャユニット0番をアクティブに
 		gl.glActiveTexture(GL10.GL_TEXTURE0);
 		// テクスチャIDに対応するテクスチャをバインド
@@ -89,16 +77,61 @@ public class Texture {
 		// 頂点座標配列をセット
 		gl.glVertexPointer(3, GL10.GL_FIXED, 0, wrapNativeIntBuffer(vertices));
 		// テクスチャ情報をセット
-		gl.glTexCoordPointer(2, GL10.GL_FIXED, 0, DEFAULT_TEX_COORDS);
+		gl.glTexCoordPointer(2, GL10.GL_FIXED, 0, DEFAULT_INT_TEX_COORDS);
 		// セットした配列を元に描画
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
 		// さきほどプッシュした状態に行列スタックを戻す
 		gl.glPopMatrix();
+	}
 
-		// 有効にしたものを無効化
-		gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
-		gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-		gl.glDisable(GL10.GL_TEXTURE_2D);
+	public static void drawf(GL10 gl, int textureId, float x, float y,
+			float width, float height, float angle, float scaleX, float scaleY,
+			float alpha) {
+
+		// 頂点座標
+		float vertices[] = { -width / 2, //
+				-height / 2, //
+				0, //
+				width / 2, //
+				-height / 2, //
+				0, //
+				-width / 2, //
+				height / 2, //
+				0, //
+				width / 2, //
+				height / 2, //
+				0, //
+		};
+
+		// テクスチャユニット0番をアクティブに
+		gl.glActiveTexture(GL10.GL_TEXTURE0);
+		// テクスチャIDに対応するテクスチャをバインド
+		gl.glBindTexture(GL10.GL_TEXTURE_2D, textureId);
+
+		// モデルビュー行列を選択
+		gl.glMatrixMode(GL10.GL_MODELVIEW);
+		// 行列スタックに現在の行列をプッシュ
+		gl.glPushMatrix();
+		// 現在選択されている行列(モデルビュー行列)に、単位行列をセット
+		// gl.glLoadIdentity();
+		// モデルを平行移動する行列を掛け合わせる
+		gl.glTranslatef(x, y, 0);
+		// モデルをX軸中心に回転する行列を掛け合わせる
+		// gl.glRotatef(60.0f, 1.0f, 0.0f, 0.0f);
+		// モデルをZ軸中心に回転する行列を掛け合わせる
+		gl.glRotatef((float) Math.toDegrees(angle), 0.0f, 0.0f, 1.0f);
+		// モデルを拡大縮小する行列を掛け合わせる
+		gl.glScalef(scaleX, scaleY, 1.0f);
+		// 色をセット
+		gl.glColor4x(0x10000, 0x10000, 0x10000, (int) (0x10000 * alpha));
+		// 頂点座標配列をセット
+		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, wrapNativeFloatBuffer(vertices));
+		// テクスチャ情報をセット
+		gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, DEFAULT_FLOAT_TEX_COORDS);
+		// セットした配列を元に描画
+		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
+		// さきほどプッシュした状態に行列スタックを戻す
+		gl.glPopMatrix();
 	}
 
 	/**
@@ -150,12 +183,21 @@ public class Texture {
 		GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
 	}
 
-	private static IntBuffer wrapNativeIntBuffer(int vertices[]) {
+	public static IntBuffer wrapNativeIntBuffer(int vertices[]) {
 		ByteBuffer byteBuffer = ByteBuffer.allocateDirect(vertices.length * 4);
 		byteBuffer.order(ByteOrder.nativeOrder());
 		IntBuffer intBuffer = byteBuffer.asIntBuffer();
 		intBuffer.put(vertices);
 		intBuffer.position(0);
 		return intBuffer;
+	}
+
+	public static FloatBuffer wrapNativeFloatBuffer(float vertices[]) {
+		ByteBuffer byteBuffer = ByteBuffer.allocateDirect(vertices.length * 4);
+		byteBuffer.order(ByteOrder.nativeOrder());
+		FloatBuffer floatBuffer = byteBuffer.asFloatBuffer();
+		floatBuffer.put(vertices);
+		floatBuffer.position(0);
+		return floatBuffer;
 	}
 }

@@ -1,29 +1,15 @@
 package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.PointF;
 import android.location.Location;
 import android.location.LocationManager;
@@ -33,11 +19,6 @@ import android.util.FloatMath;
 import android.util.Log;
 
 import com.google.common.base.Optional;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Multimap;
 import com.google.common.eventbus.Subscribe;
 import com.javadocmd.simplelatlng.LatLng;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
@@ -45,96 +26,67 @@ import com.kogasoftware.odt.invehicledevice.logic.event.EnterDrivePhaseEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.LocationReceivedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.MapZoomLevelChangedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.OrientationChangedEvent;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.frametask.FrameTask;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.frametask.MapBuildFrameTask;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.frametask.NextPlatformFrameTask;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.frametask.SelfFrameTask;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipeline.TilePipeline;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 
 public class NavigationRenderer implements GLSurfaceView.Renderer {
 	private static final String TAG = NavigationRenderer.class.getSimpleName();
-	public static final Integer MAX_TILE_CACHE_BYTES = 100 * 1024 * 1024;
-	public static final Integer MAX_ZOOM_LEVEL = 17;
-	public static final Integer MIN_ZOOM_LEVEL = 9;
+	public static final int WORLD_WIDTH = 256;
+	public static final int WORLD_HEIGHT = 256;
+	public static final int MAX_ZOOM_LEVEL = 17;
+	public static final int MIN_ZOOM_LEVEL = 9;
 
-	private final MotionSmoother rotationSmoother = new LazyMotionSmoother(
-			500.0, 0.02, 0.00005);
-
-	// private final MotionSmoother latitudeSmoother = new LazyMotionSmoother(
-	// 500.0, 0.02, 0.00005);
-	// private final MotionSmoother longitudeSmoother = new LazyMotionSmoother(
-	// 500.0, 0.02, 0.00005);
-
-	public static PointF getPoint(LatLng latLng, int zoomLevel) {
-		int totalPixels = (1 << zoomLevel) * TileKey.TILE_LENGTH;
-		double x = latLng.getLongitude() * totalPixels / 360d;
-		double y = SphericalMercator.lat2y(latLng.getLatitude()) * totalPixels
+	public static PointF getPoint(LatLng latLng) {
+		double x = latLng.getLongitude() * NavigationRenderer.WORLD_WIDTH
 				/ 360d;
+		double y = SphericalMercator.lat2y(latLng.getLatitude())
+				* NavigationRenderer.WORLD_HEIGHT / 360d;
 		return new PointF((float) x, (float) y);
 	}
 
+	public static PointF getDisplayPoint(LatLng latLng) {
+		double x = 0;
+		double y = 0;
+		return new PointF((float) x, (float) y);
+	}
+
+	private final MotionSmoother rotationSmoother = new LazyMotionSmoother(
+			500.0, 0.02, 0.00005);
 	private final MotionSmoother latitudeSmoother = new SimpleMotionSmoother();
 	private final MotionSmoother longitudeSmoother = new SimpleMotionSmoother();
+	private final List<FrameTask> backgroundFrameTasks = new LinkedList<FrameTask>();
 	private final List<FrameTask> frameTasks = new LinkedList<FrameTask>();
-	private final List<FrameTask> frontFrameTasks = new LinkedList<FrameTask>();
 	private final Queue<FrameTask> addedFrameTasks = new ConcurrentLinkedQueue<FrameTask>();
 	private final Queue<FrameTask> removedFrameTasks = new ConcurrentLinkedQueue<FrameTask>();
-	private final Set<TileKey> loadingTileKeys = new CopyOnWriteArraySet<TileKey>();
-	private final TileCache tileCache;
-	private final LoadingCache<TileKey, TileFrameTask> tileFrameTaskCache;
-	private final Integer NUM_THREADS = 10;
 	private final NextPlatformFrameTask nextPlatformFrameTask;
-	private final Map<TileKey, TileFrameTask> activeTileFrameTasks = new ConcurrentHashMap<TileKey, TileFrameTask>();
-	private final CacheLoader<TileKey, TileFrameTask> textureCacheLoader = new CacheLoader<TileKey, TileFrameTask>() {
-		@Override
-		public TileFrameTask load(TileKey key) throws Exception {
-			File file = tileCache.get(key);
-			if (!file.exists()) {
-				tileCache.invalidate(key);
-				throw new IOException("!\"" + file + "\".exists()");
-			}
-
-			Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-			if (bitmap == null) {
-				tileCache.invalidate(key);
-				throw new IOException("BitmapFactory.decodeFile(" + file
-						+ ") failed");
-			}
-			return new TileFrameTask(key, bitmap);
-		}
-	};
+	private final TilePipeline tilePipeline;
 
 	private CommonLogic commonLogic = new CommonLogic();
 	private long framesBy10seconds = 0l;
 	private long lastReportMillis = 0l;
 	private int width = 0;
 	private int height = 0;
-	private volatile ExecutorService executorService = Executors
-			.newFixedThreadPool(NUM_THREADS);
+	private int zoomLevel = 12;
 
-	private int zoomLevel = 15;
 	private final AtomicReference<Optional<Integer>> syncNextZoomLevel = new AtomicReference<Optional<Integer>>(
 			Optional.<Integer> absent()); // 描画中にzoomの値が変更されないようにするための変数
 	private boolean autoZoomLevel = true; // 自動ズームするかどうか
 	private final AtomicReference<Optional<Boolean>> syncNextAutoZoomLevel = new AtomicReference<Optional<Boolean>>(
 			Optional.<Boolean> absent()); // 描画中にautoZoomの値が変更されないようにするための変数
 
-	public NavigationRenderer(Context context) {
-		// frameTasks.add(new GeoPointDroidSprite(context.getResources(),
-		// new LatLng(35.899975, 139.935788)));
-		// frameTasks.add(new MyLocationSprite(context.getResources()));
-		try {
-			tileCache = new TileCache(context, MAX_TILE_CACHE_BYTES);
-		} catch (IOException e) {
-			// この例外はリカバリー不可能
-			// TODO: 起動時にSDがささっているかどうかのチェック
-			Log.wtf(TAG, e);
-			throw new RuntimeException(e);
-		}
-		tileFrameTaskCache = CacheBuilder.newBuilder().initialCapacity(32)
-				.maximumSize(48).build(textureCacheLoader);
-
+	public NavigationRenderer(Context context, TilePipeline tilePipeline) {
+		this.tilePipeline = tilePipeline;
+		tilePipeline.changeZoomLevel(zoomLevel);
 		nextPlatformFrameTask = new NextPlatformFrameTask(
 				context.getResources());
 
+		addedFrameTasks.add(new MapBuildFrameTask(context, tilePipeline));
 		addedFrameTasks.add(new SelfFrameTask(context.getResources()));
 		addedFrameTasks.add(nextPlatformFrameTask);
 
@@ -163,16 +115,18 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	@Override
 	public void onDrawFrame(GL10 gl) {
 		final long millis = System.currentTimeMillis();
-		float cameraZoom = 2f;
+		float cameraZoom = 1.5f;
+		boolean zoomLevelChanged = false;
 
 		// ズームを修正
 		for (Integer nextZoomLevel : syncNextZoomLevel.getAndSet(
 				Optional.<Integer> absent()).asSet()) {
 			if (!nextZoomLevel.equals(zoomLevel)) {
-				tileFrameTaskCache.cleanUp();
 				zoomLevel = nextZoomLevel;
+				zoomLevelChanged = true;
 			}
 		}
+		float totalZoom = cameraZoom * (1 << zoomLevel);
 
 		// 自動ズームかどうかを修正
 		for (Boolean nextAutoZoomLevel : syncNextAutoZoomLevel.getAndSet(
@@ -184,40 +138,43 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 
 		// 現在の方向を取得
 		float angle = (float) -rotationSmoother.getSmoothMotion(millis);
+		// float angle = 45;
 
 		// 現在地を取得
 		LatLng vehicleLatLng = new LatLng(
 				latitudeSmoother.getSmoothMotion(millis),
 				longitudeSmoother.getSmoothMotion(millis));
 		LatLng centerLatLng = vehicleLatLng;
-		PointF centerPoint = getPoint(centerLatLng, zoomLevel);
-		PointF vehiclePoint = getPoint(vehicleLatLng, zoomLevel);
-		PointF nextPlatformPoint = getPoint(nextPlatformFrameTask.getLatLng(),
-				zoomLevel);
+		PointF centerPoint = getPoint(centerLatLng);
+		PointF vehiclePoint = getPoint(vehicleLatLng);
+		PointF nextPlatformPoint = getPoint(nextPlatformFrameTask.getLatLng());
 
-		centerPoint.y += (float) height / 5.5; // 中心を上に修正
+		centerPoint.y += height / 5.5 / totalZoom; // 中心を上に修正
 		{ // 目的地が現在地より下にある場合、中心を下に修正して目的地が見やすいようにする
 			float vehicleRY = vehiclePoint.x * FloatMath.sin(angle)
 					+ vehiclePoint.y * FloatMath.cos(angle);
 			float nextPlatformRY = nextPlatformPoint.x * FloatMath.sin(angle)
 					+ nextPlatformPoint.y * FloatMath.cos(angle);
+
 			boolean hasExtraY = false;
 			try {
+				// ArrayIndexOutOfBoundsExceptionが発生することがある。詳細はコミットログ参照。
 				hasExtraY = (vehicleRY > nextPlatformRY);
 			} catch (ArrayIndexOutOfBoundsException e) {
-				Log.e(TAG, "vehicleRY=" + vehicleRY + ", nextPlatfomrRY=" + nextPlatformRY, e);
+				Log.w(TAG, "vehicleRY=" + vehicleRY + ", nextPlatfomrRY="
+						+ nextPlatformRY, e);
 			}
 			if (hasExtraY) {
 				float extraY = Math.min(vehicleRY - nextPlatformRY,
-						(float) height / 2);
+						(float) height / 2 / totalZoom);
 				centerPoint.y -= extraY;
 			}
 		}
 
 		if (autoZoomLevel) {
 			// 現在地と目的地のピクセル距離を計算
-			double dx = vehiclePoint.x - nextPlatformPoint.x;
-			double dy = vehiclePoint.y - nextPlatformPoint.y;
+			double dx = (vehiclePoint.x - nextPlatformPoint.x) * totalZoom;
+			double dy = (vehiclePoint.y - nextPlatformPoint.y) * totalZoom;
 			double pixelDistance = Math.sqrt(dx * dx + dy * dy);
 			// 縦横で短い方を基準にしたピクセル距離の割合を計算
 			double pixelDistanceRate = pixelDistance / Math.min(width, height);
@@ -233,47 +190,20 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 
 		// フレームレートの計算
 		framesBy10seconds++;
-		if (millis - lastReportMillis > 1000) {
-			Log.i(TAG, "onDrawFrame() fps=" + (double) framesBy10seconds / 10
+		if (millis - lastReportMillis > 10 * 1000) {
+			Log.d(TAG, "onDrawFrame() fps=" + (double) framesBy10seconds / 10
 					+ ", lat=" + vehicleLatLng.getLatitude() + ", lon="
 					+ vehicleLatLng.getLongitude() + ", zoom=" + zoomLevel
-					+ ", angle=" + angle);
+					+ ", angle=" + angle + ", center=(" + centerPoint.x + ","
+					+ centerPoint.y + ")");
 			framesBy10seconds = 0l;
 			lastReportMillis = millis;
 		}
 
-		// 上下左右で追加で表示に必要なタイルを準備
-		int extraTiles = (int) Math.floor(Math.max(height, width) / cameraZoom
-				/ TileKey.TILE_LENGTH / 2 + 1);
-		TileKey centerTileKey = new TileKey(centerLatLng, zoomLevel);
-		Map<TileKey, TileFrameTask> inactiveTileFrameTasks = new HashMap<TileKey, TileFrameTask>(
-				activeTileFrameTasks);
-		Multimap<Double, TileKey> tileKeysByDistance = LinkedListMultimap
-				.<Double, TileKey> create();
-		for (int x = -extraTiles; x <= extraTiles; ++x) {
-			for (int y = -extraTiles; y <= extraTiles; ++y) {
-				for (TileKey tileKey : centerTileKey.getRelativeTileKey(x, y)
-						.asSet()) {
-					tileKeysByDistance.put((double) (x * x + y * y), tileKey);
-				}
-			}
-		}
-		// 必要なタイルを中心に近い順にソートして追加
-		for (Double distance : new TreeSet<Double>(tileKeysByDistance.keys())) {
-			for (TileKey tileKey : tileKeysByDistance.get(distance)) {
-				addTile(tileKey);
-				inactiveTileFrameTasks.remove(tileKey);
-			}
-		}
-		// 不要なタイルを削除予約
-		for (TileKey inactiveTileKey : inactiveTileFrameTasks.keySet()) {
-			activeTileFrameTasks.remove(inactiveTileKey);
-		}
-		removedFrameTasks.addAll(inactiveTileFrameTasks.values());
-
 		// 描画用の情報を作成
 		FrameState frameState = new FrameState(gl, millis, angle, centerLatLng,
-				zoomLevel, addedFrameTasks, removedFrameTasks);
+				zoomLevel, addedFrameTasks, removedFrameTasks, cameraZoom,
+				width, height);
 
 		// 追加予約、削除予約されているFrameTaskをリストに追加削除
 		while (!addedFrameTasks.isEmpty() || !removedFrameTasks.isEmpty()) {
@@ -281,8 +211,8 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 			if (newFrameTask != null) {
 				newFrameTask.onAdd(frameState);
 				if (newFrameTask.getClass().isAnnotationPresent(
-						FrameTask.Front.class)) {
-					frontFrameTasks.add(newFrameTask);
+						FrameTask.Background.class)) {
+					backgroundFrameTasks.add(newFrameTask);
 				} else {
 					frameTasks.add(newFrameTask);
 				}
@@ -290,7 +220,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 			FrameTask deleteFrameTask = removedFrameTasks.poll();
 			if (deleteFrameTask != null) {
 				deleteFrameTask.onRemove(frameState);
-				frameTasks.remove(deleteFrameTask);
+				backgroundFrameTasks.remove(deleteFrameTask);
 			}
 		}
 
@@ -299,79 +229,36 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 
 		// 射影行列を現在地にあわせて修正
 		gl.glMatrixMode(GL10.GL_PROJECTION);
-		// 現在選択されている行列(射影行列)に、単位行列をセット
 		gl.glLoadIdentity();
 
 		// 平行投影用のパラメータをセット
-		float left = -width / 2f;
-		float right = width / 2f;
-		float bottom = -height / 2f;
-		float top = height / 2f;
+		float left = -width / 2f / totalZoom + centerPoint.x;
+		float right = width / 2f / totalZoom + centerPoint.x;
+		float bottom = -height / 2f / totalZoom + centerPoint.y;
+		float top = height / 2f / totalZoom + centerPoint.y;
 		GLU.gluOrtho2D(gl, left, right, bottom, top);
 
-		// モデル全体の回転と拡大率を設定
+		// モデル変換行列
 		gl.glMatrixMode(GL10.GL_MODELVIEW);
 		gl.glLoadIdentity();
-		gl.glTranslatef(-centerPoint.x, -centerPoint.y, 0);
+
+		// 自分自身を中心に全体を回転する
 		gl.glTranslatef(vehiclePoint.x, vehiclePoint.y, 0);
 		gl.glRotatef((float) Math.toDegrees(angle), 0, 0, 1);
-		gl.glScalef(cameraZoom, cameraZoom, cameraZoom);
 		gl.glTranslatef(-vehiclePoint.x, -vehiclePoint.y, 0);
 
 		// FrameTaskをひとつずつ描画
-		for (FrameTask frameTask : frameTasks) {
-			frameTask.onDraw(frameState);
-		}
-		for (FrameTask frameTask : frontFrameTasks) {
-			frameTask.onDraw(frameState);
-		}
-	}
-
-	private void addTile(final TileKey tileKey) {
-		if (activeTileFrameTasks.containsKey(tileKey)) {
-			return;
-		}
-
-		// テクスチャが表示されていない場合
-		TileFrameTask tileFrameTask = tileFrameTaskCache.getIfPresent(tileKey);
-		if (tileFrameTask != null) {
-			// キャッシュにあった場合、追加
-			activeTileFrameTasks.put(tileKey, tileFrameTask);
-			addedFrameTasks.add(tileFrameTask);
-			tileFrameTaskCache.invalidate(tileKey);
-		}
-
-		// ロード中の場合終了
-		if (loadingTileKeys.contains(tileKey)) {
-			return;
-		}
-
-		// ロード開始
-		loadingTileKeys.add(tileKey);
-		Runnable runnable = new Runnable() {
-			@Override
-			public void run() {
-				try {
-					if (Thread.currentThread().isInterrupted()) {
-						return;
-					}
-					if (zoomLevel != tileKey.getZoom()) {
-						return;
-					}
-					tileFrameTaskCache.get(tileKey);
-				} catch (ExecutionException e) {
-					tileCache.invalidate(tileKey);
-					Log.w(TAG, e);
-				} finally {
-					loadingTileKeys.remove(tileKey);
-				}
+		for (FrameTask frameTask : backgroundFrameTasks) {
+			if (zoomLevelChanged) {
+				frameTask.onChangeZoom(frameState);
 			}
-		};
-
-		try {
-			executorService.submit(runnable);
-		} catch (RejectedExecutionException e) {
-			Log.w(TAG, e);
+			frameTask.onDraw(frameState);
+		}
+		for (FrameTask frameTask : frameTasks) {
+			if (zoomLevelChanged) {
+				frameTask.onChangeZoom(frameState);
+			}
+			frameTask.onDraw(frameState);
 		}
 	}
 
@@ -418,6 +305,18 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		// フラットシェーディングにセット
 		gl.glShadeModel(GL10.GL_FLAT);
 		// gl.glShadeModel(GL10.GL_SMOOTH);
+		// ブレンディングを有効化
+		gl.glEnable(GL10.GL_BLEND);
+		gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+		// 2Dテクスチャを有効に
+		gl.glEnable(GL10.GL_TEXTURE_2D);
+		// 頂点配列を使うことを宣言
+		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
+		// テクスチャ座標配列を使うことを宣言
+		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+		// テクスチャの透明度の合成を有効にする
+		gl.glTexEnvx(GL10.GL_TEXTURE_ENV, GL10.GL_TEXTURE_ENV_MODE,
+				GL10.GL_MODULATE);
 	}
 
 	/**
@@ -447,11 +346,15 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	 */
 	@Subscribe
 	public void changeOrientation(OrientationChangedEvent event) {
+		// changeOrientation(Math.toRadians(event.orientationDegree));
+	}
+
+	@Subscribe
+	public void changeOrientation(double rad) {
 		double from = rotationSmoother.getSmoothMotion();
-		double to = Utility.getNearestRadian(from,
-				Math.toRadians(event.orientationDegree));
-		Log.i(TAG, "changeOrientation got=" + event.orientationDegree
-				+ " from=" + from + " to=" + to);
+		double to = Utility.getNearestRadian(from, rad);
+		Log.v(TAG, "changeOrientation got=" + rad + " from=" + from + " to="
+				+ to);
 		rotationSmoother.addMotion(to);
 	}
 
@@ -474,7 +377,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	public void setCommonLogic(CommonLogic commonLogic) {
 		this.commonLogic.dispose();
 		this.commonLogic = commonLogic;
-		tileCache.setCommonLogic(commonLogic);
+		tilePipeline.setCommonLogic(commonLogic);
 		setNextPlatform();
 		changeLocation();
 	}
@@ -493,11 +396,8 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	}
 
 	public void onResumeActivity() {
-		executorService.shutdown();
-		executorService = Executors.newFixedThreadPool(NUM_THREADS);
 	}
 
 	public void onPauseActivity() {
-		executorService.shutdown();
 	}
 }

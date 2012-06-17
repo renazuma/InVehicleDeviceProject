@@ -1,5 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.service;
 
+import java.io.File;
+
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -32,6 +34,7 @@ public class StartupService extends Service {
 		@Override
 		public void run() {
 			handler.removeCallbacks(this);
+
 			String externalStorageState = Environment.getExternalStorageState();
 			if (!externalStorageState.equals(Environment.MEDIA_MOUNTED)) {
 				handler.postDelayed(this, WAIT_FOR_EXTERNAL_STORAGE_MILLIS);
@@ -42,6 +45,7 @@ public class StartupService extends Service {
 						Toast.LENGTH_LONG).show();
 				return;
 			}
+			File externalStorageDir = Environment.getExternalStorageDirectory();
 
 			Intent startIntent = new Intent(StartupService.this,
 					InVehicleDeviceActivity.class);
