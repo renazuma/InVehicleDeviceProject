@@ -4,10 +4,8 @@ import java.lang.ref.WeakReference;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.PointF;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -17,15 +15,12 @@ import android.widget.ToggleButton;
 
 import com.google.common.eventbus.Subscribe;
 import com.javadocmd.simplelatlng.LatLng;
-import com.javadocmd.simplelatlng.LatLngTool;
-import com.javadocmd.simplelatlng.util.LengthUnit;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.logic.event.CommonLogicLoadCompleteEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.LocationReceivedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.MapZoomLevelChangedEvent;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.NavigationRenderer;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipeline.TilePipeline;
-import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 
 public class NavigationModalView extends ModalView {
 	public static class ShowEvent {
@@ -57,42 +52,42 @@ public class NavigationModalView extends ModalView {
 	 */
 	@Subscribe
 	public void changeOrientation(LocationReceivedEvent event) {
-		NavigationRenderer navigationRenderer = navigationRendererWeakReference
-				.get();
-		if (navigationRenderer == null) {
-			return;
-		}
-
-		ServiceUnitStatusLog serviceUnitStatusLog = getCommonLogic()
-				.getServiceUnitStatusLog();
-		double latitude = serviceUnitStatusLog.getLatitude().doubleValue();
-		double longitude = serviceUnitStatusLog.getLongitude().doubleValue();
-		if (latitude == 0 && longitude == 0) {
-			return;
-		}
-		if (lastLatLng.equals(new LatLng(0, 0))) {
-			// TODO:
-			Log.i(TAG, "changeLocation lastLatLng is uninitialized");
-			lastLatLng = new LatLng(latitude, longitude);
-			return;
-		}
-
-		LatLng latLng = new LatLng(latitude, longitude);
-		double distance = LatLngTool.distance(latLng, lastLatLng,
-				LengthUnit.METER);
-		Log.i(TAG, "changeLocation distance=" + distance);
-		if (distance <= 2) {
-			return;
-		}
-
-		PointF last = NavigationRenderer.getPoint(lastLatLng);
-		PointF current = NavigationRenderer.getPoint(latLng);
-		orientation = Math.atan2(current.y - last.y, current.x - last.x)
-				- Math.PI / 2;
-		Log.i(TAG, "changeOrientation last=(" + last.x + "," + last.y
-				+ ") current=(" + current.x + "," + current.y + ")");
-		lastLatLng = latLng;
-		navigationRenderer.changeOrientation(orientation);
+//		NavigationRenderer navigationRenderer = navigationRendererWeakReference
+//				.get();
+//		if (navigationRenderer == null) {
+//			return;
+//		}
+//
+//		ServiceUnitStatusLog serviceUnitStatusLog = getCommonLogic()
+//				.getServiceUnitStatusLog();
+//		double latitude = serviceUnitStatusLog.getLatitude().doubleValue();
+//		double longitude = serviceUnitStatusLog.getLongitude().doubleValue();
+//		if (latitude == 0 && longitude == 0) {
+//			return;
+//		}
+//		if (lastLatLng.equals(new LatLng(0, 0))) {
+//			// TODO:
+//			Log.i(TAG, "changeLocation lastLatLng is uninitialized");
+//			lastLatLng = new LatLng(latitude, longitude);
+//			return;
+//		}
+//
+//		LatLng latLng = new LatLng(latitude, longitude);
+//		double distance = LatLngTool.distance(latLng, lastLatLng,
+//				LengthUnit.METER);
+//		Log.i(TAG, "changeLocation distance=" + distance);
+//		if (distance <= 2) {
+//			return;
+//		}
+//
+//		PointF last = NavigationRenderer.getPoint(lastLatLng);
+//		PointF current = NavigationRenderer.getPoint(latLng);
+//		orientation = Math.atan2(current.y - last.y, current.x - last.x)
+//				- Math.PI / 2;
+//		Log.i(TAG, "changeOrientation last=(" + last.x + "," + last.y
+//				+ ") current=(" + current.x + "," + current.y + ")");
+//		lastLatLng = latLng;
+//		navigationRenderer.changeOrientation(orientation);
 	}
 
 	protected void updateZoomButtons() {

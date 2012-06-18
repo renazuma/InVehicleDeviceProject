@@ -31,15 +31,13 @@ import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.frametask.Ma
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.frametask.NextPlatformFrameTask;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.frametask.SelfFrameTask;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipeline.TilePipeline;
-import com.kogasoftware.odt.webapi.model.OperationSchedule;
-import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 
 public class NavigationRenderer implements GLSurfaceView.Renderer {
 	private static final String TAG = NavigationRenderer.class.getSimpleName();
 	public static final int WORLD_WIDTH = 256;
 	public static final int WORLD_HEIGHT = 256;
-	public static final int MAX_ZOOM_LEVEL = 17;
+	public static final int MAX_ZOOM_LEVEL = 16;
 	public static final int MIN_ZOOM_LEVEL = 9;
 
 	public static PointF getPoint(LatLng latLng) {
@@ -85,6 +83,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		tilePipeline.changeZoomLevel(zoomLevel);
 		nextPlatformFrameTask = new NextPlatformFrameTask(
 				context.getResources());
+		nextPlatformFrameTask.setLatLng(new LatLng(0, 0));
 
 		addedFrameTasks.add(new MapBuildFrameTask(context, tilePipeline));
 		addedFrameTasks.add(new SelfFrameTask(context.getResources()));
@@ -115,7 +114,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	@Override
 	public void onDrawFrame(GL10 gl) {
 		final long millis = System.currentTimeMillis();
-		float cameraZoom = 2f;
+		float cameraZoom = 1f;
 		boolean zoomLevelChanged = false;
 
 		// ズームを修正
@@ -141,16 +140,21 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		// float angle = 45;
 
 		// 現在地を取得
-		LatLng vehicleLatLng = new LatLng(
-				latitudeSmoother.getSmoothMotion(millis),
-				longitudeSmoother.getSmoothMotion(millis));
+		//LatLng vehicleLatLng = new LatLng(
+		//		latitudeSmoother.getSmoothMotion(millis),
+		//		longitudeSmoother.getSmoothMotion(millis));
+		LatLng vehicleLatLng = new LatLng(35.70766, 139.772977);
 		LatLng centerLatLng = vehicleLatLng;
 		PointF centerPoint = getPoint(centerLatLng);
 		PointF vehiclePoint = getPoint(vehicleLatLng);
-		PointF nextPlatformPoint = getPoint(nextPlatformFrameTask.getLatLng());
 
 		centerPoint.y += height / 5.5 / totalZoom; // 中心を上に修正
-		{ // 目的地が現在地より下にある場合、中心を下に修正して目的地が見やすいようにする
+
+		// 目的地が存在する場合
+		if (!nextPlatformFrameTask.getLatLng().equals(new LatLng(0, 0))) {
+			PointF nextPlatformPoint = getPoint(nextPlatformFrameTask
+					.getLatLng());
+			// 目的地が現在地より下にある場合、中心を下に修正して目的地が見やすいようにする
 			float vehicleRY = vehiclePoint.x * FloatMath.sin(angle)
 					+ vehiclePoint.y * FloatMath.cos(angle);
 			float nextPlatformRY = nextPlatformPoint.x * FloatMath.sin(angle)
@@ -169,22 +173,23 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 						(float) height / 2 / totalZoom);
 				centerPoint.y -= extraY;
 			}
-		}
 
-		if (autoZoomLevel) {
-			// 現在地と目的地のピクセル距離を計算
-			double dx = (vehiclePoint.x - nextPlatformPoint.x) * totalZoom;
-			double dy = (vehiclePoint.y - nextPlatformPoint.y) * totalZoom;
-			double pixelDistance = Math.sqrt(dx * dx + dy * dy);
-			// 縦横で短い方を基準にしたピクセル距離の割合を計算
-			double pixelDistanceRate = pixelDistance / Math.min(width, height);
-			// ピクセル距離に応じてズームを修正
-			if (pixelDistanceRate < 0.15) {
-				// 近い場合、拡大する
-				setZoomLevel(zoomLevel + 1);
-			} else if (pixelDistanceRate > 0.35) {
-				// 遠い場合、縮小する
-				setZoomLevel(zoomLevel - 1);
+			if (autoZoomLevel) {
+				// 現在地と目的地のピクセル距離を計算
+				double dx = (vehiclePoint.x - nextPlatformPoint.x) * totalZoom;
+				double dy = (vehiclePoint.y - nextPlatformPoint.y) * totalZoom;
+				double pixelDistance = Math.sqrt(dx * dx + dy * dy);
+				// 縦横で短い方を基準にしたピクセル距離の割合を計算
+				double pixelDistanceRate = pixelDistance
+						/ Math.min(width, height);
+				// ピクセル距離に応じてズームを修正
+				if (pixelDistanceRate < 0.15) {
+					// 近い場合、拡大する
+					setZoomLevel(zoomLevel + 1);
+				} else if (pixelDistanceRate > 0.35) {
+					// 遠い場合、縮小する
+					setZoomLevel(zoomLevel - 1);
+				}
 			}
 		}
 
@@ -346,10 +351,9 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	 */
 	@Subscribe
 	public void changeOrientation(OrientationChangedEvent event) {
-		// changeOrientation(Math.toRadians(event.orientationDegree));
+		changeOrientation(Math.toRadians(event.orientationDegree));
 	}
 
-	@Subscribe
 	public void changeOrientation(double rad) {
 		double from = rotationSmoother.getSmoothMotion();
 		double to = Utility.getNearestRadian(from, rad);
@@ -364,14 +368,14 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	}
 
 	public void setNextPlatform() {
-		for (OperationSchedule operationSchedule : commonLogic
-				.getCurrentOperationSchedule().asSet()) {
-			for (Platform platform : operationSchedule.getPlatform().asSet()) {
-				nextPlatformFrameTask.setLatLng(new LatLng(platform
-						.getLatitude().doubleValue(), platform.getLongitude()
-						.doubleValue()));
-			}
-		}
+		// for (OperationSchedule operationSchedule : commonLogic
+		// .getCurrentOperationSchedule().asSet()) {
+		// for (Platform platform : operationSchedule.getPlatform().asSet()) {
+		// nextPlatformFrameTask.setLatLng(new LatLng(platform
+		// .getLatitude().doubleValue(), platform.getLongitude()
+		// .doubleValue()));
+		// }
+		// }
 	}
 
 	public void setCommonLogic(CommonLogic commonLogic) {
