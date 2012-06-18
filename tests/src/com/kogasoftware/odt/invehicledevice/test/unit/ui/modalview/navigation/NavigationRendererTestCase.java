@@ -11,11 +11,10 @@ public class NavigationRendererTestCase extends TestCase {
 		TileTestCase.assertDistance(expected, actual, maxDistance);
 	}
 
-	public void testGetPont() {
+	public void testGetPoint() {
 		PointF p;
 		float d = 0.001f;
 
-		// zoom0
 		p = NavigationRenderer.getPoint(new LatLng(0, 0));
 		assertDistance(0f, p.x, d);
 		assertDistance(0f, p.y, d);
@@ -32,23 +31,13 @@ public class NavigationRendererTestCase extends TestCase {
 		assertDistance(128f, p.x, d);
 		assertDistance(128f, p.y, 1);
 
-		// zoom1
 		p = NavigationRenderer.getPoint(new LatLng(0, -90));
-		assertDistance(-128f, p.x, d);
-		assertDistance(0f, p.y, d);
-
-		// zoom2
-		p = NavigationRenderer.getPoint(new LatLng(0, 0));
-		assertDistance(0f, p.x, d);
-		assertDistance(0f, p.y, d);
-
-		p = NavigationRenderer.getPoint(new LatLng(0, -90));
-		assertDistance(-256f, p.x, d);
+		assertDistance(-64f, p.x, d);
 		assertDistance(0f, p.y, d);
 
 		p = NavigationRenderer.getPoint(new LatLng(-85, -90));
-		assertDistance(-256f, p.x, d);
-		assertDistance(-512f, p.y, 2);
+		assertDistance(-64f, p.x, d);
+		assertDistance(-128f, p.y, 2);
 
 	}
 }
