@@ -149,10 +149,6 @@ public class PlatformPhaseView extends PhaseView {
 		} else {
 			nowPlatformNameTextView.setText("");
 		}
-		// TODO 茂木さん、現在の乗降場を表示するコードを書いてね！！
-		nowPlatformNameTextView.setText(Html.fromHtml(String.format(
-				getResources().getString(R.string.now_platform_is_html),
-				"現在乗降場")));
 
 		showAllRidingReservationsButton
 				.setOnCheckedChangeListener(new OnCheckedChangeListener() {

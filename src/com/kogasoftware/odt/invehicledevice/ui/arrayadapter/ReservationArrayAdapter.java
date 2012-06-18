@@ -197,9 +197,17 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		reservationIdView.setText(text);
 
 		if (isSelected(reservation)) {
-			convertView.setBackgroundColor(Color.CYAN); // TODO テーマ
+			if (canGetOn(reservation)) {
+				convertView.setBackgroundColor(Color.parseColor("#FF69B4")); // TODO テーマ
+			} else {
+				convertView.setBackgroundColor(Color.parseColor("#40E0D0")); // TODO テーマ
+			}
 		} else {
-			convertView.setBackgroundColor(Color.TRANSPARENT);
+			if (canGetOn(reservation)) {
+				convertView.setBackgroundColor(Color.parseColor("#F9D9D8"));// TODO テーマ
+			} else {
+				convertView.setBackgroundColor(Color.parseColor("#D5E9F6"));// TODO テーマ
+			}
 		}
 		return convertView;
 	}
@@ -254,7 +262,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 	}
 
 	private Boolean isGetOffScheduled(Reservation reservation) {
-		// 乗車予定かどうかを返す
+		// 降車予定かどうかを返す
 		return reservation.getArrivalScheduleId().isPresent()
 				&& reservation.getArrivalScheduleId().get()
 						.equals(operationSchedule.getId());
