@@ -1,11 +1,14 @@
 package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.frametask;
 
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.microedition.khronos.opengles.GL10;
 
 import android.graphics.PointF;
 
+import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.Multimap;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.FrameState;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.NavigationRenderer;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.Textures;
@@ -42,31 +45,37 @@ public class MapFrameTask extends FrameTask {
 		// 上下左右で追加で表示に必要なタイルを準備
 		float cameraZoom = frameState.getCameraZoom();
 		Tile centerTile = new Tile(frameState.getLatLng(), frameState.getZoom());
-		// 中心のタイルは毎回受信確認する
-		tilePipeline.start(centerTile);
 
-		int lineTiles = (int)Math.ceil(Math.max(frameState.getWidth()
-				/ (double)Tile.WIDTH, frameState.getHeight() / (double)Tile.HEIGHT)
+		int lineTiles = (int) Math.ceil(Math.max(frameState.getWidth()
+				/ (double) Tile.WIDTH, frameState.getHeight()
+				/ (double) Tile.HEIGHT)
 				/ cameraZoom);
-		if (lineTiles % 2  == 0) {
+		if (lineTiles % 2 == 0) {
 			lineTiles += 1;
 		}
-		int extraTiles = (lineTiles - 1) / 2;
+		int extraTiles = (lineTiles - 1) / 2 + 1;
 
 		Set<Tile> inactiveTiles = tilePipeline.getPresentTiles();
-		// 表示するタイルを列挙し、中心に近い順にソート
+
+		// 必要なタイルを中心に近い順にソートして追加
+		Multimap<Double, Tile> tilesByDistance = LinkedListMultimap
+				.<Double, Tile> create();
 		for (int x = -extraTiles; x <= extraTiles; ++x) {
 			for (int y = -extraTiles; y <= extraTiles; ++y) {
 				for (Tile tile : centerTile.getRelativeTile(x, y).asSet()) {
-					drawTile(
-							frameState,
-							tile,
-							tilePipeline.pollOrStartLoad(tile).or(
-									defaultTextureId));
-					inactiveTiles.remove(tile);
+					tilesByDistance.put((double) (x * x + y * y), tile);
 				}
 			}
 		}
+		for (Double distance : new TreeSet<Double>(tilesByDistance.keys())) {
+			for (Tile tile : tilesByDistance.get(distance)) {
+				int textureId = tilePipeline.pollOrStartLoad(tile).or(
+						defaultTextureId);
+				drawTile(frameState, tile, textureId);
+				inactiveTiles.remove(tile);
+			}
+		}
+
 		if (!lastCenterTile.equals(centerTile)) {
 			lastCenterTile = centerTile;
 			// 次のズームレベルのデータを先読みする
