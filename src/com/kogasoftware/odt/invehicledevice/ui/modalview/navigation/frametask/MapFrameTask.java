@@ -46,10 +46,14 @@ public class MapFrameTask extends FrameTask {
 		// drawTile(frameState, centerTile,
 		// tilePipeline.pollOrStartLoad(centerTile).or(defaultTextureId));
 
-		int extraTiles = (int) Math.floor(Math.max(frameState.getHeight()
-				/ NavigationRenderer.WORLD_HEIGHT, frameState.getWidth()
-				/ NavigationRenderer.WORLD_WIDTH)
-				/ cameraZoom / 2 + 1);
+		int lineTiles = (int)Math.ceil(Math.max(frameState.getWidth()
+				/ (double)Tile.WIDTH, frameState.getHeight() / (double)Tile.HEIGHT)
+				/ cameraZoom);
+		if (lineTiles % 2  == 0) {
+			lineTiles += 1;
+		}
+		int extraTiles = (lineTiles - 1) / 2;
+
 		Set<Tile> inactiveTiles = tilePipeline.getPresentTiles();
 		// 表示するタイルを列挙し、中心に近い順にソート
 		for (int x = -extraTiles; x <= extraTiles; ++x) {
