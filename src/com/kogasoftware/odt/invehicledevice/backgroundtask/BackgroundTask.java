@@ -19,6 +19,7 @@ import android.os.Looper;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.WindowManager;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
@@ -44,9 +45,11 @@ public class BackgroundTask {
 
 	private final SensorManager sensorManager;
 	private final ConnectivityManager connectivityManager;
+	private final WindowManager windowManager;
 	private final Optional<TelephonyManager> optionalTelephonyManager;
 	private final LocationSender locationSender;
 	private final TemperatureSensorEventListener temperatureSensorEventListener;
+	private final AccMagSensorEventListener accMagSensorEventListener;
 	private final OrientationSensorEventListener orientationSensorEventListener;
 	private final CountDownLatch completeLatch = new CountDownLatch(1);
 	private final ScheduledExecutorService executorService = Executors
@@ -74,6 +77,8 @@ public class BackgroundTask {
 				.getSystemService(Context.SENSOR_SERVICE);
 		connectivityManager = (ConnectivityManager) context
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
+		windowManager = (WindowManager) context
+				.getSystemService(Context.WINDOW_SERVICE);
 
 		// TODO:内容精査
 		// TelephonyManagerはNullPointerExceptionを発生させる
@@ -95,6 +100,8 @@ public class BackgroundTask {
 		optionalTelephonyManager = tempTelephonyManager;
 		exitBroadcastReceiver = new ExitBroadcastReceiver(commonLogic);
 		locationSender = new LocationSender(commonLogic);
+		accMagSensorEventListener = new AccMagSensorEventListener(commonLogic,
+				windowManager);
 		orientationSensorEventListener = new OrientationSensorEventListener(
 				commonLogic);
 		vehicleNotificationReceiver = new VehicleNotificationReceiver(
@@ -167,6 +174,22 @@ public class BackgroundTask {
 			Sensor sensor = temperatureSensors.get(0);
 			sensorManager.registerListener(temperatureSensorEventListener,
 					sensor, SensorManager.SENSOR_DELAY_UI);
+		}
+
+		List<Sensor> accelerometerSensors = sensorManager
+				.getSensorList(Sensor.TYPE_ACCELEROMETER);
+		if (accelerometerSensors.size() > 0) {
+			Sensor sensor = accelerometerSensors.get(0);
+			sensorManager.registerListener(accMagSensorEventListener, sensor,
+					SensorManager.SENSOR_DELAY_UI);
+		}
+
+		List<Sensor> magneticFieldSensors = sensorManager
+				.getSensorList(Sensor.TYPE_MAGNETIC_FIELD);
+		if (magneticFieldSensors.size() > 0) {
+			Sensor sensor = magneticFieldSensors.get(0);
+			sensorManager.registerListener(accMagSensorEventListener, sensor,
+					SensorManager.SENSOR_DELAY_UI);
 		}
 
 		List<Sensor> orientationSensors = sensorManager
