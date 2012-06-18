@@ -277,7 +277,6 @@ public class InVehicleDeviceActivity extends Activity implements
 
 		backgroundThread = new BackgroundTaskThread(this);
 		backgroundThread.start();
-
 	}
 
 	@Override

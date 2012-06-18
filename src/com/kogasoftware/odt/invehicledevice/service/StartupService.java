@@ -62,7 +62,7 @@ public class StartupService extends Service {
 			Log.e(TAG, "!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)");
 			BigToast.makeText(this, "GPSの設定を有効にしてください",
 					Toast.LENGTH_LONG).show();
-			return false;			
+			return false;
 		}
 
 		Intent startIntent = new Intent(StartupService.this,
