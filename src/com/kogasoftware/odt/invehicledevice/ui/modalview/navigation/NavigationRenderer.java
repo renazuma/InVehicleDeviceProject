@@ -158,6 +158,8 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 
 		centerPoint.y += height / 5.5 / totalZoom; // 中心を上に修正
 
+		double pixelDistanceRate = 0.0;
+		
 		// 目的地が存在する場合
 		if (!nextPlatformFrameTask.getLatLng().equals(new LatLng(0, 0))) {
 			PointF nextPlatformPoint = getPoint(nextPlatformFrameTask
@@ -182,34 +184,34 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 				centerPoint.y -= extraY;
 			}
 
+			// 現在地と目的地のピクセル距離を計算
+			double dx = (vehiclePoint.x - nextPlatformPoint.x);
+			double dy = (vehiclePoint.y - nextPlatformPoint.y);
+			double pixelDistance = Math.sqrt(dx * dx + dy * dy) * totalZoom;
+			// 縦横で短い方を基準にしたピクセル距離の割合を計算
+			pixelDistanceRate = pixelDistance
+					/ Math.min(width, height);
+			
 			if (autoZoomLevel) {
-				// 現在地と目的地のピクセル距離を計算
-				double dx = (vehiclePoint.x - nextPlatformPoint.x) * totalZoom;
-				double dy = (vehiclePoint.y - nextPlatformPoint.y) * totalZoom;
-				double pixelDistance = Math.sqrt(dx * dx + dy * dy);
-				// 縦横で短い方を基準にしたピクセル距離の割合を計算
-				double pixelDistanceRate = pixelDistance
-						/ Math.min(width, height);
 				// ピクセル距離に応じてズームを修正
-				if (pixelDistanceRate < 0.15) {
+				if (pixelDistanceRate < 0.22) {
 					// 近い場合、拡大する
 					setZoomLevel(zoomLevel + 1);
-				} else if (pixelDistanceRate > 0.35) {
+				} else if (pixelDistanceRate > 0.55) {
 					// 遠い場合、縮小する
 					setZoomLevel(zoomLevel - 1);
 				}
 			}
 		}
 
-		// フレームレートの計算
+		// 表示状況を取得
 		framesBy10seconds++;
 		if (millis - lastReportMillis > 10 * 1000) {
-			// int o = context.getResources().getConfiguration().orientation;
 			Log.d(TAG, "onDrawFrame() fps=" + (double) framesBy10seconds / 10
 					+ ", lat=" + vehicleLatLng.getLatitude() + ", lon="
 					+ vehicleLatLng.getLongitude() + ", zoom=" + zoomLevel
 					+ ", angle=" + angle + ", center=(" + centerPoint.x + ","
-					+ centerPoint.y + ")");
+					+ centerPoint.y + ") pdr=" + pixelDistanceRate);
 			framesBy10seconds = 0l;
 			lastReportMillis = millis;
 		}

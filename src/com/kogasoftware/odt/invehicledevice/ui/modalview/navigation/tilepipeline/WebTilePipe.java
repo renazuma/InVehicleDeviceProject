@@ -18,6 +18,7 @@ import com.kogasoftware.odt.webapi.WebAPIException;
 
 public class WebTilePipe extends PipeExchanger<Tile, Null, TileBitmapFile> {
 	private final File outputDirectory;
+	protected static final Integer NUM_LOADERS = 10;
 	private final Map<Tile, Integer> loadingReqKeys = new ConcurrentHashMap<Tile, Integer>();
 
 	public WebTilePipe(PipeQueue<Tile, Null> fromPipeQueue,
