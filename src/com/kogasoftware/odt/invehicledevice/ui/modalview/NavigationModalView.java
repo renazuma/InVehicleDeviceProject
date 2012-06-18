@@ -14,10 +14,8 @@ import android.widget.FrameLayout;
 import android.widget.ToggleButton;
 
 import com.google.common.eventbus.Subscribe;
-import com.javadocmd.simplelatlng.LatLng;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.logic.event.CommonLogicLoadCompleteEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.LocationReceivedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.MapZoomLevelChangedEvent;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.NavigationRenderer;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipeline.TilePipeline;
@@ -27,14 +25,11 @@ public class NavigationModalView extends ModalView {
 	}
 
 	private static final String TAG = NavigationModalView.class.getSimpleName();
-
 	private volatile Integer zoomLevel = 12;
 	private final Button zoomInButton;
 	private final Button zoomOutButton;
 	private final ToggleButton autoZoomButton;
 	private final TilePipeline tilePipeline;
-	private double orientation = 0.0;
-	private LatLng lastLatLng = new LatLng(0, 0);
 
 	private WeakReference<GLSurfaceView> glSurfaceViewWeakReference = new WeakReference<GLSurfaceView>(
 			null);
@@ -45,49 +40,6 @@ public class NavigationModalView extends ModalView {
 	public void updateZoomButtons(MapZoomLevelChangedEvent e) {
 		zoomLevel = e.zoomLevel;
 		updateZoomButtons();
-	}
-
-	/**
-	 * GPSを利用して方向を取得する
-	 */
-	@Subscribe
-	public void changeOrientation(LocationReceivedEvent event) {
-//		NavigationRenderer navigationRenderer = navigationRendererWeakReference
-//				.get();
-//		if (navigationRenderer == null) {
-//			return;
-//		}
-//
-//		ServiceUnitStatusLog serviceUnitStatusLog = getCommonLogic()
-//				.getServiceUnitStatusLog();
-//		double latitude = serviceUnitStatusLog.getLatitude().doubleValue();
-//		double longitude = serviceUnitStatusLog.getLongitude().doubleValue();
-//		if (latitude == 0 && longitude == 0) {
-//			return;
-//		}
-//		if (lastLatLng.equals(new LatLng(0, 0))) {
-//			// TODO:
-//			Log.i(TAG, "changeLocation lastLatLng is uninitialized");
-//			lastLatLng = new LatLng(latitude, longitude);
-//			return;
-//		}
-//
-//		LatLng latLng = new LatLng(latitude, longitude);
-//		double distance = LatLngTool.distance(latLng, lastLatLng,
-//				LengthUnit.METER);
-//		Log.i(TAG, "changeLocation distance=" + distance);
-//		if (distance <= 2) {
-//			return;
-//		}
-//
-//		PointF last = NavigationRenderer.getPoint(lastLatLng);
-//		PointF current = NavigationRenderer.getPoint(latLng);
-//		orientation = Math.atan2(current.y - last.y, current.x - last.x)
-//				- Math.PI / 2;
-//		Log.i(TAG, "changeOrientation last=(" + last.x + "," + last.y
-//				+ ") current=(" + current.x + "," + current.y + ")");
-//		lastLatLng = latLng;
-//		navigationRenderer.changeOrientation(orientation);
 	}
 
 	protected void updateZoomButtons() {
@@ -203,7 +155,6 @@ public class NavigationModalView extends ModalView {
 		NavigationRenderer navigationRenderer = new NavigationRenderer(
 				getContext(), tilePipeline);
 		navigationRenderer.setZoomLevel(zoomLevel);
-		navigationRenderer.changeOrientation(orientation);
 		navigationRendererWeakReference = new WeakReference<NavigationRenderer>(
 				navigationRenderer);
 		FrameLayout icsLeakAvoidanceFrameLayout = new FrameLayout(getContext()

@@ -34,6 +34,8 @@ import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.frametask.Ma
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.frametask.NextPlatformFrameTask;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.frametask.SelfFrameTask;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipeline.TilePipeline;
+import com.kogasoftware.odt.webapi.model.OperationSchedule;
+import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 
 public class NavigationRenderer implements GLSurfaceView.Renderer {
@@ -142,10 +144,10 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		}
 
 		// 現在地を取得
-		// LatLng vehicleLatLng = new LatLng(
-		// latitudeSmoother.getSmoothMotion(millis),
-		// longitudeSmoother.getSmoothMotion(millis));
-		LatLng vehicleLatLng = new LatLng(35.707085, 139.771739);
+		LatLng vehicleLatLng = new LatLng(
+				latitudeSmoother.getSmoothMotion(millis),
+				longitudeSmoother.getSmoothMotion(millis));
+		// LatLng vehicleLatLng = new LatLng(35.707085, 139.771739);
 		// LatLng vehicleLatLng = new LatLng(0, 0);
 		LatLng centerLatLng = vehicleLatLng;
 		PointF centerPoint = getPoint(centerLatLng);
@@ -154,14 +156,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		// 現在の方向を取得
 		float angle = (float) (-rotationSmoother.getSmoothMotion(millis));
 
-		// 東西の実際の距離
-		// Tile tile = new Tile(centerLatLng, zoomLevel);
-		// Tile upperTile = tile.getRelativeTile(0, -1);
-		// 南北の実際の距離
-
-		// float angle = 45;
-
-		// centerPoint.y += height / 5.5 / totalZoom; // 中心を上に修正
+		centerPoint.y += height / 5.5 / totalZoom; // 中心を上に修正
 
 		// 目的地が存在する場合
 		if (!nextPlatformFrameTask.getLatLng().equals(new LatLng(0, 0))) {
@@ -400,14 +395,14 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	}
 
 	public void setNextPlatform() {
-		// for (OperationSchedule operationSchedule : commonLogic
-		// .getCurrentOperationSchedule().asSet()) {
-		// for (Platform platform : operationSchedule.getPlatform().asSet()) {
-		// nextPlatformFrameTask.setLatLng(new LatLng(platform
-		// .getLatitude().doubleValue(), platform.getLongitude()
-		// .doubleValue()));
-		// }
-		// }
+		for (OperationSchedule operationSchedule : commonLogic
+				.getCurrentOperationSchedule().asSet()) {
+			for (Platform platform : operationSchedule.getPlatform().asSet()) {
+				nextPlatformFrameTask.setLatLng(new LatLng(platform
+						.getLatitude().doubleValue(), platform.getLongitude()
+						.doubleValue()));
+			}
+		}
 	}
 
 	public void setCommonLogic(CommonLogic commonLogic) {
