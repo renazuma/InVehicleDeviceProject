@@ -1,12 +1,11 @@
 package com.kogasoftware.odt.invehicledevice.service;
 
-import java.io.File;
-
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.location.LocationManager;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
@@ -21,7 +20,7 @@ import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 public class StartupService extends Service {
 	private static final String TAG = StartupService.class.getSimpleName();
 	private static final Integer WAKE_LOCK_PERIOD_MILLIS = 1000;
-	private static final long WAIT_FOR_EXTERNAL_STORAGE_MILLIS = 15 * 1000;
+	private static final long CHECK_DEVICE_INTERVAL_MILLIS = 15 * 1000;
 	private final BroadcastReceiver screenOnBroadcastReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -30,30 +29,49 @@ public class StartupService extends Service {
 		}
 	};
 
-	private final Runnable waitExternalStorageAndShowActivityCallback = new Runnable() {
+	private final Runnable checkDeviceAndShowActivityCallback = new Runnable() {
 		@Override
 		public void run() {
-			handler.removeCallbacks(this);
-
-			String externalStorageState = Environment.getExternalStorageState();
-			if (!externalStorageState.equals(Environment.MEDIA_MOUNTED)) {
-				handler.postDelayed(this, WAIT_FOR_EXTERNAL_STORAGE_MILLIS);
-				Log.i(TAG, "Environment.getExternalStorageState() "
-						+ externalStorageState + " != "
-						+ Environment.MEDIA_MOUNTED);
-				BigToast.makeText(StartupService.this, "SDカードを接続してください",
-						Toast.LENGTH_LONG).show();
-				return;
+			if (checkDeviceAndStartActivity()) {
+				handler.removeCallbacks(this);
+			} else {
+				handler.postDelayed(this, CHECK_DEVICE_INTERVAL_MILLIS);
 			}
-			File externalStorageDir = Environment.getExternalStorageDirectory();
-
-			Intent startIntent = new Intent(StartupService.this,
-					InVehicleDeviceActivity.class);
-			startIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			showScreen();
-			startActivity(startIntent);
 		}
 	};
+
+	private Boolean checkDeviceAndStartActivity() {
+		String externalStorageState = Environment.getExternalStorageState();
+		if (!externalStorageState.equals(Environment.MEDIA_MOUNTED)) {
+			Log.i(TAG, "Environment.getExternalStorageState() "
+					+ externalStorageState + " != " + Environment.MEDIA_MOUNTED);
+			BigToast.makeText(this, "SDカードを接続してください",
+					Toast.LENGTH_LONG).show();
+			return false;
+		}
+		
+		LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		if (locationManager == null) {
+			Log.e(TAG, "getSystemService(Context.LOCATION_SERVICE) == null");
+			BigToast.makeText(this, "LOCATION_SERVICEに接続できません",
+					Toast.LENGTH_LONG).show();
+			return false;
+		}
+
+		if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+			Log.e(TAG, "!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)");
+			BigToast.makeText(this, "GPSの設定を有効にしてください",
+					Toast.LENGTH_LONG).show();
+			return false;			
+		}
+
+		Intent startIntent = new Intent(StartupService.this,
+				InVehicleDeviceActivity.class);
+		startIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		showScreen();
+		startActivity(startIntent);
+		return true;
+	}
 
 	private final Handler handler = new Handler();
 
@@ -116,7 +134,7 @@ public class StartupService extends Service {
 	}
 
 	private void showActivity() {
-		handler.post(waitExternalStorageAndShowActivityCallback);
+		handler.post(checkDeviceAndShowActivityCallback);
 	}
 
 	@Override
