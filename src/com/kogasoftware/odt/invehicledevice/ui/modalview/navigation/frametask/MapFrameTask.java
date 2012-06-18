@@ -42,9 +42,8 @@ public class MapFrameTask extends FrameTask {
 		// 上下左右で追加で表示に必要なタイルを準備
 		float cameraZoom = frameState.getCameraZoom();
 		Tile centerTile = new Tile(frameState.getLatLng(), frameState.getZoom());
-		// 中心のタイルを描画
-		// drawTile(frameState, centerTile,
-		// tilePipeline.pollOrStartLoad(centerTile).or(defaultTextureId));
+		// 中心のタイルは毎回受信確認する
+		tilePipeline.start(centerTile);
 
 		int lineTiles = (int)Math.ceil(Math.max(frameState.getWidth()
 				/ (double)Tile.WIDTH, frameState.getHeight() / (double)Tile.HEIGHT)
