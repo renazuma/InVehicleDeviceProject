@@ -3,6 +3,8 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:gravity="left|center"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp"
     android:orientation="horizontal" >
 
     <LinearLayout
