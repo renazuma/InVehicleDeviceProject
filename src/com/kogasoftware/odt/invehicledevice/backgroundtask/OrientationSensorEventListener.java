@@ -27,7 +27,7 @@ public class OrientationSensorEventListener implements SensorEventListener {
 		if (event.sensor.getType() != Sensor.TYPE_ORIENTATION) {
 			return;
 		}
-
+		
 		// 方位から回転角を設定
 		float[] values = event.values;
 		final Float degree = values[SensorManager.DATA_X];

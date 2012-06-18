@@ -17,6 +17,9 @@ import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
 import android.util.FloatMath;
 import android.util.Log;
+import android.view.Display;
+import android.view.Surface;
+import android.view.WindowManager;
 
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
@@ -39,7 +42,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	private static final String TAG = NavigationRenderer.class.getSimpleName();
 	public static final int WORLD_WIDTH = 256;
 	public static final int WORLD_HEIGHT = 256;
-	public static final int MAX_ZOOM_LEVEL = 17;
+	public static final int MAX_ZOOM_LEVEL = 16;
 	public static final int MIN_ZOOM_LEVEL = 9;
 
 	public static PointF getPoint(LatLng latLng) {
@@ -79,12 +82,16 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	private boolean autoZoomLevel = true; // 自動ズームするかどうか
 	private final AtomicReference<Optional<Boolean>> syncNextAutoZoomLevel = new AtomicReference<Optional<Boolean>>(
 			Optional.<Boolean> absent()); // 描画中にautoZoomの値が変更されないようにするための変数
+	private final WindowManager windowManager;
 
 	public NavigationRenderer(Context context, TilePipeline tilePipeline) {
 		this.tilePipeline = tilePipeline;
+		windowManager = (WindowManager) context
+				.getSystemService(Context.WINDOW_SERVICE);
 		tilePipeline.changeZoomLevel(zoomLevel);
 		nextPlatformFrameTask = new NextPlatformFrameTask(
 				context.getResources());
+		nextPlatformFrameTask.setLatLng(new LatLng(0, 0));
 
 		addedFrameTasks.add(new MapBuildFrameTask(context, tilePipeline));
 		addedFrameTasks.add(new SelfFrameTask(context.getResources()));
@@ -136,21 +143,26 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 			}
 		}
 
-		// 現在の方向を取得
-		float angle = (float) -rotationSmoother.getSmoothMotion(millis);
-		// float angle = 45;
-
 		// 現在地を取得
 		LatLng vehicleLatLng = new LatLng(
 				latitudeSmoother.getSmoothMotion(millis),
 				longitudeSmoother.getSmoothMotion(millis));
+		// LatLng vehicleLatLng = new LatLng(35.707085, 139.771739);
+		// LatLng vehicleLatLng = new LatLng(0, 0);
 		LatLng centerLatLng = vehicleLatLng;
 		PointF centerPoint = getPoint(centerLatLng);
 		PointF vehiclePoint = getPoint(vehicleLatLng);
-		PointF nextPlatformPoint = getPoint(nextPlatformFrameTask.getLatLng());
+
+		// 現在の方向を取得
+		float angle = (float) (-rotationSmoother.getSmoothMotion(millis));
 
 		centerPoint.y += height / 5.5 / totalZoom; // 中心を上に修正
-		{ // 目的地が現在地より下にある場合、中心を下に修正して目的地が見やすいようにする
+
+		// 目的地が存在する場合
+		if (!nextPlatformFrameTask.getLatLng().equals(new LatLng(0, 0))) {
+			PointF nextPlatformPoint = getPoint(nextPlatformFrameTask
+					.getLatLng());
+			// 目的地が現在地より下にある場合、中心を下に修正して目的地が見やすいようにする
 			float vehicleRY = vehiclePoint.x * FloatMath.sin(angle)
 					+ vehiclePoint.y * FloatMath.cos(angle);
 			float nextPlatformRY = nextPlatformPoint.x * FloatMath.sin(angle)
@@ -169,28 +181,30 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 						(float) height / 2 / totalZoom);
 				centerPoint.y -= extraY;
 			}
-		}
 
-		if (autoZoomLevel) {
-			// 現在地と目的地のピクセル距離を計算
-			double dx = (vehiclePoint.x - nextPlatformPoint.x) * totalZoom;
-			double dy = (vehiclePoint.y - nextPlatformPoint.y) * totalZoom;
-			double pixelDistance = Math.sqrt(dx * dx + dy * dy);
-			// 縦横で短い方を基準にしたピクセル距離の割合を計算
-			double pixelDistanceRate = pixelDistance / Math.min(width, height);
-			// ピクセル距離に応じてズームを修正
-			if (pixelDistanceRate < 0.15) {
-				// 近い場合、拡大する
-				setZoomLevel(zoomLevel + 1);
-			} else if (pixelDistanceRate > 0.35) {
-				// 遠い場合、縮小する
-				setZoomLevel(zoomLevel - 1);
+			if (autoZoomLevel) {
+				// 現在地と目的地のピクセル距離を計算
+				double dx = (vehiclePoint.x - nextPlatformPoint.x) * totalZoom;
+				double dy = (vehiclePoint.y - nextPlatformPoint.y) * totalZoom;
+				double pixelDistance = Math.sqrt(dx * dx + dy * dy);
+				// 縦横で短い方を基準にしたピクセル距離の割合を計算
+				double pixelDistanceRate = pixelDistance
+						/ Math.min(width, height);
+				// ピクセル距離に応じてズームを修正
+				if (pixelDistanceRate < 0.15) {
+					// 近い場合、拡大する
+					setZoomLevel(zoomLevel + 1);
+				} else if (pixelDistanceRate > 0.35) {
+					// 遠い場合、縮小する
+					setZoomLevel(zoomLevel - 1);
+				}
 			}
 		}
 
 		// フレームレートの計算
 		framesBy10seconds++;
 		if (millis - lastReportMillis > 10 * 1000) {
+			// int o = context.getResources().getConfiguration().orientation;
 			Log.d(TAG, "onDrawFrame() fps=" + (double) framesBy10seconds / 10
 					+ ", lat=" + vehicleLatLng.getLatitude() + ", lon="
 					+ vehicleLatLng.getLongitude() + ", zoom=" + zoomLevel
@@ -346,11 +360,28 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	 */
 	@Subscribe
 	public void changeOrientation(OrientationChangedEvent event) {
-		// changeOrientation(Math.toRadians(event.orientationDegree));
+		changeOrientation(Math.toRadians(event.orientationDegree));
 	}
 
-	@Subscribe
 	public void changeOrientation(double rad) {
+		Display display = windowManager.getDefaultDisplay();
+		int displayRotation = display.getRotation();
+		switch (displayRotation) {
+		case Surface.ROTATION_0:
+			break;
+		case Surface.ROTATION_90:
+			rad -= Math.PI * 0.5;
+			break;
+		case Surface.ROTATION_180:
+			rad -= (float) Math.PI;
+			break;
+		case Surface.ROTATION_270:
+			rad -= Math.PI * 1.5;
+			break;
+		default:
+			Log.w(TAG, "unexpected display.getRotation() " + displayRotation);
+			break;
+		}
 		double from = rotationSmoother.getSmoothMotion();
 		double to = Utility.getNearestRadian(from, rad);
 		Log.v(TAG, "changeOrientation got=" + rad + " from=" + from + " to="
