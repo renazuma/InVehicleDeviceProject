@@ -18,7 +18,7 @@ public class TemperatureSensorEventListenerTestCase extends
 		dds = new DummyDataSource();
 		DataSourceFactory.setInstance(dds);
 		cl = newCommonLogic();
-		osel = new OrientationSensorEventListener(cl);
+		// osel = new OrientationSensorEventListener(cl);
 	}
 
 	@Override

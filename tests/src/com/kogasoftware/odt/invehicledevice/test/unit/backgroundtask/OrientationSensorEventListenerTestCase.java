@@ -1,5 +1,8 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.backgroundtask;
 
+import android.content.Context;
+import android.view.WindowManager;
+
 import com.kogasoftware.odt.invehicledevice.backgroundtask.OrientationSensorEventListener;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSourceFactory;
@@ -16,10 +19,11 @@ public class OrientationSensorEventListenerTestCase extends
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
+		WindowManager wm = (WindowManager)getInstrumentation().getContext().getSystemService(Context.WINDOW_SERVICE);
 		dds = new DummyDataSource();
 		DataSourceFactory.setInstance(dds);
 		cl = newCommonLogic();
-		osel = new OrientationSensorEventListener(cl);
+		osel = new OrientationSensorEventListener(cl, wm);
 	}
 
 	@Override

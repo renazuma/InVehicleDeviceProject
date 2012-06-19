@@ -17,8 +17,6 @@ import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
 import android.util.FloatMath;
 import android.util.Log;
-import android.view.Display;
-import android.view.Surface;
 import android.view.WindowManager;
 
 import com.google.common.base.Optional;
@@ -159,7 +157,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		centerPoint.y += height / 5.5 / totalZoom; // 中心を上に修正
 
 		double pixelDistanceRate = 0.0;
-		
+
 		// 目的地が存在する場合
 		if (!nextPlatformFrameTask.getLatLng().equals(new LatLng(0, 0))) {
 			PointF nextPlatformPoint = getPoint(nextPlatformFrameTask
@@ -189,9 +187,8 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 			double dy = (vehiclePoint.y - nextPlatformPoint.y);
 			double pixelDistance = Math.sqrt(dx * dx + dy * dy) * totalZoom;
 			// 縦横で短い方を基準にしたピクセル距離の割合を計算
-			pixelDistanceRate = pixelDistance
-					/ Math.min(width, height);
-			
+			pixelDistanceRate = pixelDistance / Math.min(width, height);
+
 			if (autoZoomLevel) {
 				// ピクセル距離に応じてズームを修正
 				if (pixelDistanceRate < 0.22) {
@@ -366,24 +363,6 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	}
 
 	public void changeOrientation(double rad) {
-		Display display = windowManager.getDefaultDisplay();
-		int displayRotation = display.getRotation();
-		switch (displayRotation) {
-		case Surface.ROTATION_0:
-			break;
-		case Surface.ROTATION_90:
-			rad -= Math.PI * 0.5;
-			break;
-		case Surface.ROTATION_180:
-			rad -= (float) Math.PI;
-			break;
-		case Surface.ROTATION_270:
-			rad -= Math.PI * 1.5;
-			break;
-		default:
-			Log.w(TAG, "unexpected display.getRotation() " + displayRotation);
-			break;
-		}
 		double from = rotationSmoother.getSmoothMotion();
 		double to = Utility.getNearestRadian(from, rad);
 		Log.v(TAG, "changeOrientation got=" + rad + " from=" + from + " to="

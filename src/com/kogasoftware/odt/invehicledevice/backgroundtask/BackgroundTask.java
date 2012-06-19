@@ -103,7 +103,7 @@ public class BackgroundTask {
 		accMagSensorEventListener = new AccMagSensorEventListener(commonLogic,
 				windowManager);
 		orientationSensorEventListener = new OrientationSensorEventListener(
-				commonLogic);
+				commonLogic, windowManager);
 		vehicleNotificationReceiver = new VehicleNotificationReceiver(
 				commonLogic);
 		nextDateChecker = new NextDateChecker(commonLogic);
