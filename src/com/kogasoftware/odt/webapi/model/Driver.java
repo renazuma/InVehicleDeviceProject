@@ -1,12 +1,15 @@
 package com.kogasoftware.odt.webapi.model;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang3.SerializationUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,22 +17,30 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Driver extends Model {
-	private static final long serialVersionUID = 6180571124595135251L;
+	private static final long serialVersionUID = 6302972045321095913L;
 
 	public Driver() {
 	}
 
-	public Driver(JSONObject jsonObject) throws JSONException, ParseException {
-		setCreatedAt(parseDate(jsonObject, "created_at"));
-		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
-		setFirstName(parseString(jsonObject, "first_name"));
-		setId(parseInteger(jsonObject, "id"));
-		setLastName(parseString(jsonObject, "last_name"));
-		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
-		setTelephoneNumber(parseString(jsonObject, "telephone_number"));
-		setUpdatedAt(parseDate(jsonObject, "updated_at"));
-		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
-		setServiceUnits(ServiceUnit.parseList(jsonObject, "service_units"));
+	public Driver(JSONObject jsonObject) throws JSONException {
+		try {
+			fillMembers(this, jsonObject);
+		} catch (ParseException e) {
+			throw new JSONException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
+		}
+	}
+
+	public static void fillMembers(Driver model, JSONObject jsonObject) throws JSONException, ParseException {
+		model.setCreatedAt(parseDate(jsonObject, "created_at"));
+		model.setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
+		model.setFirstName(parseString(jsonObject, "first_name"));
+		model.setId(parseInteger(jsonObject, "id"));
+		model.setLastName(parseString(jsonObject, "last_name"));
+		model.setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
+		model.setTelephoneNumber(parseString(jsonObject, "telephone_number"));
+		model.setUpdatedAt(parseDate(jsonObject, "updated_at"));
+		model.setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
+		model.setServiceUnits(ServiceUnit.parseList(jsonObject, "service_units"));
 	}
 
 	public static Optional<Driver> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -63,7 +74,11 @@ public class Driver extends Model {
 	}
 
 	@Override
-	public JSONObject toJSONObject() throws JSONException {
+	protected JSONObject toJSONObject(Boolean recursive, Integer depth) throws JSONException {
+		depth++;
+		if (depth > MAX_RECURSE_DEPTH) {
+			return new JSONObject();
+		}
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
 		jsonObject.put("deleted_at", toJSON(getDeletedAt().orNull()));
@@ -73,20 +88,48 @@ public class Driver extends Model {
 		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
 		jsonObject.put("telephone_number", toJSON(getTelephoneNumber()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
-
 		if (getServiceProvider().isPresent()) {
-			jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
+			if (recursive) {
+				jsonObject.put("service_provider", getServiceProvider().get().toJSONObject(true, depth));
+			} else {
+				jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
+			}
 		}
-		if (getServiceUnits().size() > 0) {
-	   		jsonObject.put("service_units", toJSON(getServiceUnits()));
+		if (getServiceUnits().size() > 0 && recursive) {
+			jsonObject.put("service_units", toJSON(getServiceUnits(), true, depth));
 		}
-
 		return jsonObject;
 	}
 
+	private void writeObject(ObjectOutputStream objectOutputStream)
+			throws IOException {
+		try {
+			objectOutputStream.writeObject(toJSONObject(true).toString());
+		} catch (JSONException e) {
+			throw new IOException(e);
+		}
+	}
+
+	private void readObject(ObjectInputStream objectInputStream)
+		throws IOException, ClassNotFoundException {
+		Object object = objectInputStream.readObject();
+		if (!(object instanceof String)) {
+			return;
+		}
+		String jsonString = (String) object;
+		try {
+			JSONObject jsonObject = new JSONObject(jsonString);
+			fillMembers(this, jsonObject);
+		} catch (JSONException e) {
+			throw new IOException(e);
+		} catch (ParseException e) {
+			throw new IOException(e);
+		}
+	}
+
 	@Override
-	public Driver clone() {
-		return SerializationUtils.clone(this);
+	public Driver cloneByJSON() throws JSONException {
+		return new Driver(toJSONObject(true));
 	}
 
 	private Date createdAt = new Date();

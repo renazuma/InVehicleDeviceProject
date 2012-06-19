@@ -20,6 +20,7 @@ import com.kogasoftware.odt.webapi.Identifiable;
 
 abstract public class Model implements Serializable, Identifiable, Cloneable {
 	public static final String TAG = Model.class.getSimpleName();
+	public static final Integer MAX_RECURSE_DEPTH = 10;
 
 	private static final long serialVersionUID = -5513333240346057624L;
 
@@ -171,24 +172,24 @@ abstract public class Model implements Serializable, Identifiable, Cloneable {
 		return value;
 	}
 
-	protected static Object toJSON(List<? extends Model> value)
+	protected static Object toJSON(List<? extends Model> value, Boolean recursive, Integer depth)
 			throws JSONException {
 		if (value == null) {
 			return JSONObject.NULL;
 		}
 		JSONArray jsonArray = new JSONArray();
 		for (Model model : value) {
-			jsonArray.put(model.toJSONObject());
+			jsonArray.put(model.toJSONObject(recursive, depth));
 		}
 		return jsonArray;
 	}
 
-	protected static Object toJSON(Optional<? extends Model> value)
+	protected static Object toJSON(Optional<? extends Model> value, Boolean recursive, Integer depth)
 			throws JSONException {
 		if (value == null || !value.isPresent()) {
 			return JSONObject.NULL;
 		}
-		return value.get().toJSONObject();
+		return value.get().toJSONObject(recursive, depth);
 	}
 
 	protected static Object toJSON(String value) {
@@ -227,8 +228,16 @@ abstract public class Model implements Serializable, Identifiable, Cloneable {
 		return value != null ? value : "";
 	}
 
-	abstract public JSONObject toJSONObject() throws JSONException;
+	public JSONObject toJSONObject() throws JSONException {
+		return toJSONObject(false, 0);
+	}
 
-	@Override
-	abstract protected Model clone();
+	public JSONObject toJSONObject(Boolean recursive) throws JSONException {
+		return toJSONObject(recursive, 0);
+	}
+
+	abstract protected JSONObject toJSONObject(Boolean recursive, Integer depth)
+			throws JSONException;
+
+	abstract protected Model cloneByJSON() throws JSONException;
 }

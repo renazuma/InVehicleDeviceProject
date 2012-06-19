@@ -1,12 +1,15 @@
 package com.kogasoftware.odt.webapi.model;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang3.SerializationUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,32 +17,40 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class PassengerRecord extends Model {
-	private static final long serialVersionUID = 7717470486958203428L;
+	private static final long serialVersionUID = 6845766570098258913L;
 
 	public PassengerRecord() {
 	}
 
-	public PassengerRecord(JSONObject jsonObject) throws JSONException, ParseException {
-		setArrivalOperationScheduleId(parseOptionalInteger(jsonObject, "arrival_operation_schedule_id"));
-		setCreatedAt(parseDate(jsonObject, "created_at"));
-		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
-		setDepartureOperationScheduleId(parseOptionalInteger(jsonObject, "departure_operation_schedule_id"));
-		setGetOffTime(parseOptionalDate(jsonObject, "get_off_time"));
-		setGetOffTimeOffline(parseOptionalBoolean(jsonObject, "get_off_time_offline"));
-		setGetOnTime(parseOptionalDate(jsonObject, "get_on_time"));
-		setGetOnTimeOffline(parseOptionalBoolean(jsonObject, "get_on_time_offline"));
-		setId(parseInteger(jsonObject, "id"));
-		setPassengerCount(parseInteger(jsonObject, "passenger_count"));
-		setPayment(parseOptionalInteger(jsonObject, "payment"));
-		setReservationId(parseOptionalInteger(jsonObject, "reservation_id"));
-		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
-		setStatus(parseInteger(jsonObject, "status"));
-		setTimestamp(parseOptionalDate(jsonObject, "timestamp"));
-		setUpdatedAt(parseDate(jsonObject, "updated_at"));
-		setArrivalOperationSchedule(OperationSchedule.parse(jsonObject, "arrival_operation_schedule"));
-		setDepartureOperationSchedule(OperationSchedule.parse(jsonObject, "departure_operation_schedule"));
-		setReservation(Reservation.parse(jsonObject, "reservation"));
-		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
+	public PassengerRecord(JSONObject jsonObject) throws JSONException {
+		try {
+			fillMembers(this, jsonObject);
+		} catch (ParseException e) {
+			throw new JSONException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
+		}
+	}
+
+	public static void fillMembers(PassengerRecord model, JSONObject jsonObject) throws JSONException, ParseException {
+		model.setArrivalOperationScheduleId(parseOptionalInteger(jsonObject, "arrival_operation_schedule_id"));
+		model.setCreatedAt(parseDate(jsonObject, "created_at"));
+		model.setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
+		model.setDepartureOperationScheduleId(parseOptionalInteger(jsonObject, "departure_operation_schedule_id"));
+		model.setGetOffTime(parseOptionalDate(jsonObject, "get_off_time"));
+		model.setGetOffTimeOffline(parseOptionalBoolean(jsonObject, "get_off_time_offline"));
+		model.setGetOnTime(parseOptionalDate(jsonObject, "get_on_time"));
+		model.setGetOnTimeOffline(parseOptionalBoolean(jsonObject, "get_on_time_offline"));
+		model.setId(parseInteger(jsonObject, "id"));
+		model.setPassengerCount(parseInteger(jsonObject, "passenger_count"));
+		model.setPayment(parseOptionalInteger(jsonObject, "payment"));
+		model.setReservationId(parseOptionalInteger(jsonObject, "reservation_id"));
+		model.setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
+		model.setStatus(parseInteger(jsonObject, "status"));
+		model.setTimestamp(parseOptionalDate(jsonObject, "timestamp"));
+		model.setUpdatedAt(parseDate(jsonObject, "updated_at"));
+		model.setArrivalOperationSchedule(OperationSchedule.parse(jsonObject, "arrival_operation_schedule"));
+		model.setDepartureOperationSchedule(OperationSchedule.parse(jsonObject, "departure_operation_schedule"));
+		model.setReservation(Reservation.parse(jsonObject, "reservation"));
+		model.setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
 	}
 
 	public static Optional<PassengerRecord> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -73,7 +84,11 @@ public class PassengerRecord extends Model {
 	}
 
 	@Override
-	public JSONObject toJSONObject() throws JSONException {
+	protected JSONObject toJSONObject(Boolean recursive, Integer depth) throws JSONException {
+		depth++;
+		if (depth > MAX_RECURSE_DEPTH) {
+			return new JSONObject();
+		}
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("arrival_operation_schedule_id", toJSON(getArrivalOperationScheduleId().orNull()));
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
@@ -91,28 +106,66 @@ public class PassengerRecord extends Model {
 		jsonObject.put("status", toJSON(getStatus()));
 		jsonObject.put("timestamp", toJSON(getTimestamp().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
-
 		if (getArrivalOperationSchedule().isPresent()) {
-			jsonObject.put("arrival_operation_schedule_id", toJSON(getArrivalOperationSchedule().get().getId()));
+			if (recursive) {
+				jsonObject.put("arrival_operation_schedule", getArrivalOperationSchedule().get().toJSONObject(true, depth));
+			} else {
+				jsonObject.put("arrival_operation_schedule_id", toJSON(getArrivalOperationSchedule().get().getId()));
+			}
 		}
-
 		if (getDepartureOperationSchedule().isPresent()) {
-			jsonObject.put("departure_operation_schedule_id", toJSON(getDepartureOperationSchedule().get().getId()));
+			if (recursive) {
+				jsonObject.put("departure_operation_schedule", getDepartureOperationSchedule().get().toJSONObject(true, depth));
+			} else {
+				jsonObject.put("departure_operation_schedule_id", toJSON(getDepartureOperationSchedule().get().getId()));
+			}
 		}
-
 		if (getReservation().isPresent()) {
-			jsonObject.put("reservation_id", toJSON(getReservation().get().getId()));
+			if (recursive) {
+				jsonObject.put("reservation", getReservation().get().toJSONObject(true, depth));
+			} else {
+				jsonObject.put("reservation_id", toJSON(getReservation().get().getId()));
+			}
 		}
-
 		if (getServiceProvider().isPresent()) {
-			jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
+			if (recursive) {
+				jsonObject.put("service_provider", getServiceProvider().get().toJSONObject(true, depth));
+			} else {
+				jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
+			}
 		}
 		return jsonObject;
 	}
 
+	private void writeObject(ObjectOutputStream objectOutputStream)
+			throws IOException {
+		try {
+			objectOutputStream.writeObject(toJSONObject(true).toString());
+		} catch (JSONException e) {
+			throw new IOException(e);
+		}
+	}
+
+	private void readObject(ObjectInputStream objectInputStream)
+		throws IOException, ClassNotFoundException {
+		Object object = objectInputStream.readObject();
+		if (!(object instanceof String)) {
+			return;
+		}
+		String jsonString = (String) object;
+		try {
+			JSONObject jsonObject = new JSONObject(jsonString);
+			fillMembers(this, jsonObject);
+		} catch (JSONException e) {
+			throw new IOException(e);
+		} catch (ParseException e) {
+			throw new IOException(e);
+		}
+	}
+
 	@Override
-	public PassengerRecord clone() {
-		return SerializationUtils.clone(this);
+	public PassengerRecord cloneByJSON() throws JSONException {
+		return new PassengerRecord(toJSONObject(true));
 	}
 
 	private Optional<Integer> arrivalOperationScheduleId = Optional.absent();

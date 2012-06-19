@@ -1,12 +1,15 @@
 package com.kogasoftware.odt.webapi.model;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang3.SerializationUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,39 +17,47 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class ServiceProvider extends Model {
-	private static final long serialVersionUID = 5370939264325870288L;
+	private static final long serialVersionUID = 5048757731793906937L;
 
 	public ServiceProvider() {
 	}
 
-	public ServiceProvider(JSONObject jsonObject) throws JSONException, ParseException {
-		setCreatedAt(parseDate(jsonObject, "created_at"));
-		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
-		setId(parseInteger(jsonObject, "id"));
-		setLatitude(parseBigDecimal(jsonObject, "latitude"));
-		setLongitude(parseBigDecimal(jsonObject, "longitude"));
-		setMustContactGap(parseInteger(jsonObject, "must_contact_gap"));
-		setName(parseString(jsonObject, "name"));
-		setRecommend(parseBoolean(jsonObject, "recommend"));
-		setReservationStartDate(parseInteger(jsonObject, "reservation_start_date"));
-		setReservationTimeLimit(parseString(jsonObject, "reservation_time_limit"));
-		setSemiDemand(parseBoolean(jsonObject, "semi_demand"));
-		setSemiDemandExtentLimit(parseInteger(jsonObject, "semi_demand_extent_limit"));
-		setUpdatedAt(parseDate(jsonObject, "updated_at"));
-		setUserLoginLength(parseInteger(jsonObject, "user_login_length"));
-		setDemands(Demand.parseList(jsonObject, "demands"));
-		setDrivers(Driver.parseList(jsonObject, "drivers"));
-		setInVehicleDevices(InVehicleDevice.parseList(jsonObject, "in_vehicle_devices"));
-		setOperationSchedules(OperationSchedule.parseList(jsonObject, "operation_schedules"));
-		setOperators(Operator.parseList(jsonObject, "operators"));
-		setPassengerRecords(PassengerRecord.parseList(jsonObject, "passenger_records"));
-		setPlatforms(Platform.parseList(jsonObject, "platforms"));
-		setReservationCandidates(ReservationCandidate.parseList(jsonObject, "reservation_candidates"));
-		setReservations(Reservation.parseList(jsonObject, "reservations"));
-		setServiceUnits(ServiceUnit.parseList(jsonObject, "service_units"));
-		setUnitAssignments(UnitAssignment.parseList(jsonObject, "unit_assignments"));
-		setUsers(User.parseList(jsonObject, "users"));
-		setVehicles(Vehicle.parseList(jsonObject, "vehicles"));
+	public ServiceProvider(JSONObject jsonObject) throws JSONException {
+		try {
+			fillMembers(this, jsonObject);
+		} catch (ParseException e) {
+			throw new JSONException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
+		}
+	}
+
+	public static void fillMembers(ServiceProvider model, JSONObject jsonObject) throws JSONException, ParseException {
+		model.setCreatedAt(parseDate(jsonObject, "created_at"));
+		model.setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
+		model.setId(parseInteger(jsonObject, "id"));
+		model.setLatitude(parseBigDecimal(jsonObject, "latitude"));
+		model.setLongitude(parseBigDecimal(jsonObject, "longitude"));
+		model.setMustContactGap(parseInteger(jsonObject, "must_contact_gap"));
+		model.setName(parseString(jsonObject, "name"));
+		model.setRecommend(parseBoolean(jsonObject, "recommend"));
+		model.setReservationStartDate(parseInteger(jsonObject, "reservation_start_date"));
+		model.setReservationTimeLimit(parseString(jsonObject, "reservation_time_limit"));
+		model.setSemiDemand(parseBoolean(jsonObject, "semi_demand"));
+		model.setSemiDemandExtentLimit(parseInteger(jsonObject, "semi_demand_extent_limit"));
+		model.setUpdatedAt(parseDate(jsonObject, "updated_at"));
+		model.setUserLoginLength(parseInteger(jsonObject, "user_login_length"));
+		model.setDemands(Demand.parseList(jsonObject, "demands"));
+		model.setDrivers(Driver.parseList(jsonObject, "drivers"));
+		model.setInVehicleDevices(InVehicleDevice.parseList(jsonObject, "in_vehicle_devices"));
+		model.setOperationSchedules(OperationSchedule.parseList(jsonObject, "operation_schedules"));
+		model.setOperators(Operator.parseList(jsonObject, "operators"));
+		model.setPassengerRecords(PassengerRecord.parseList(jsonObject, "passenger_records"));
+		model.setPlatforms(Platform.parseList(jsonObject, "platforms"));
+		model.setReservationCandidates(ReservationCandidate.parseList(jsonObject, "reservation_candidates"));
+		model.setReservations(Reservation.parseList(jsonObject, "reservations"));
+		model.setServiceUnits(ServiceUnit.parseList(jsonObject, "service_units"));
+		model.setUnitAssignments(UnitAssignment.parseList(jsonObject, "unit_assignments"));
+		model.setUsers(User.parseList(jsonObject, "users"));
+		model.setVehicles(Vehicle.parseList(jsonObject, "vehicles"));
 	}
 
 	public static Optional<ServiceProvider> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -80,7 +91,11 @@ public class ServiceProvider extends Model {
 	}
 
 	@Override
-	public JSONObject toJSONObject() throws JSONException {
+	protected JSONObject toJSONObject(Boolean recursive, Integer depth) throws JSONException {
+		depth++;
+		if (depth > MAX_RECURSE_DEPTH) {
+			return new JSONObject();
+		}
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
 		jsonObject.put("deleted_at", toJSON(getDeletedAt().orNull()));
@@ -96,64 +111,77 @@ public class ServiceProvider extends Model {
 		jsonObject.put("semi_demand_extent_limit", toJSON(getSemiDemandExtentLimit()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
 		jsonObject.put("user_login_length", toJSON(getUserLoginLength()));
-		if (getDemands().size() > 0) {
-	   		jsonObject.put("demands", toJSON(getDemands()));
+		if (getDemands().size() > 0 && recursive) {
+			jsonObject.put("demands", toJSON(getDemands(), true, depth));
 		}
-
-		if (getDrivers().size() > 0) {
-	   		jsonObject.put("drivers", toJSON(getDrivers()));
+		if (getDrivers().size() > 0 && recursive) {
+			jsonObject.put("drivers", toJSON(getDrivers(), true, depth));
 		}
-
-		if (getInVehicleDevices().size() > 0) {
-	   		jsonObject.put("in_vehicle_devices", toJSON(getInVehicleDevices()));
+		if (getInVehicleDevices().size() > 0 && recursive) {
+			jsonObject.put("in_vehicle_devices", toJSON(getInVehicleDevices(), true, depth));
 		}
-
-		if (getOperationSchedules().size() > 0) {
-	   		jsonObject.put("operation_schedules", toJSON(getOperationSchedules()));
+		if (getOperationSchedules().size() > 0 && recursive) {
+			jsonObject.put("operation_schedules", toJSON(getOperationSchedules(), true, depth));
 		}
-
-		if (getOperators().size() > 0) {
-	   		jsonObject.put("operators", toJSON(getOperators()));
+		if (getOperators().size() > 0 && recursive) {
+			jsonObject.put("operators", toJSON(getOperators(), true, depth));
 		}
-
-		if (getPassengerRecords().size() > 0) {
-	   		jsonObject.put("passenger_records", toJSON(getPassengerRecords()));
+		if (getPassengerRecords().size() > 0 && recursive) {
+			jsonObject.put("passenger_records", toJSON(getPassengerRecords(), true, depth));
 		}
-
-		if (getPlatforms().size() > 0) {
-	   		jsonObject.put("platforms", toJSON(getPlatforms()));
+		if (getPlatforms().size() > 0 && recursive) {
+			jsonObject.put("platforms", toJSON(getPlatforms(), true, depth));
 		}
-
-		if (getReservationCandidates().size() > 0) {
-	   		jsonObject.put("reservation_candidates", toJSON(getReservationCandidates()));
+		if (getReservationCandidates().size() > 0 && recursive) {
+			jsonObject.put("reservation_candidates", toJSON(getReservationCandidates(), true, depth));
 		}
-
-		if (getReservations().size() > 0) {
-	   		jsonObject.put("reservations", toJSON(getReservations()));
+		if (getReservations().size() > 0 && recursive) {
+			jsonObject.put("reservations", toJSON(getReservations(), true, depth));
 		}
-
-		if (getServiceUnits().size() > 0) {
-	   		jsonObject.put("service_units", toJSON(getServiceUnits()));
+		if (getServiceUnits().size() > 0 && recursive) {
+			jsonObject.put("service_units", toJSON(getServiceUnits(), true, depth));
 		}
-
-		if (getUnitAssignments().size() > 0) {
-	   		jsonObject.put("unit_assignments", toJSON(getUnitAssignments()));
+		if (getUnitAssignments().size() > 0 && recursive) {
+			jsonObject.put("unit_assignments", toJSON(getUnitAssignments(), true, depth));
 		}
-
-		if (getUsers().size() > 0) {
-	   		jsonObject.put("users", toJSON(getUsers()));
+		if (getUsers().size() > 0 && recursive) {
+			jsonObject.put("users", toJSON(getUsers(), true, depth));
 		}
-
-		if (getVehicles().size() > 0) {
-	   		jsonObject.put("vehicles", toJSON(getVehicles()));
+		if (getVehicles().size() > 0 && recursive) {
+			jsonObject.put("vehicles", toJSON(getVehicles(), true, depth));
 		}
-
 		return jsonObject;
 	}
 
+	private void writeObject(ObjectOutputStream objectOutputStream)
+			throws IOException {
+		try {
+			objectOutputStream.writeObject(toJSONObject(true).toString());
+		} catch (JSONException e) {
+			throw new IOException(e);
+		}
+	}
+
+	private void readObject(ObjectInputStream objectInputStream)
+		throws IOException, ClassNotFoundException {
+		Object object = objectInputStream.readObject();
+		if (!(object instanceof String)) {
+			return;
+		}
+		String jsonString = (String) object;
+		try {
+			JSONObject jsonObject = new JSONObject(jsonString);
+			fillMembers(this, jsonObject);
+		} catch (JSONException e) {
+			throw new IOException(e);
+		} catch (ParseException e) {
+			throw new IOException(e);
+		}
+	}
+
 	@Override
-	public ServiceProvider clone() {
-		return SerializationUtils.clone(this);
+	public ServiceProvider cloneByJSON() throws JSONException {
+		return new ServiceProvider(toJSONObject(true));
 	}
 
 	private Date createdAt = new Date();

@@ -1,12 +1,15 @@
 package com.kogasoftware.odt.webapi.model;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang3.SerializationUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,24 +17,32 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class UnitAssignment extends Model {
-	private static final long serialVersionUID = 6869870721217155860L;
+	private static final long serialVersionUID = 6364142624599314300L;
 
 	public UnitAssignment() {
 	}
 
-	public UnitAssignment(JSONObject jsonObject) throws JSONException, ParseException {
-		setCreatedAt(parseDate(jsonObject, "created_at"));
-		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
-		setId(parseInteger(jsonObject, "id"));
-		setName(parseString(jsonObject, "name"));
-		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
-		setUpdatedAt(parseDate(jsonObject, "updated_at"));
-		setWorking(parseBoolean(jsonObject, "working"));
-		setOperationSchedules(OperationSchedule.parseList(jsonObject, "operation_schedules"));
-		setReservationCandidates(ReservationCandidate.parseList(jsonObject, "reservation_candidates"));
-		setReservations(Reservation.parseList(jsonObject, "reservations"));
-		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
-		setServiceUnits(ServiceUnit.parseList(jsonObject, "service_units"));
+	public UnitAssignment(JSONObject jsonObject) throws JSONException {
+		try {
+			fillMembers(this, jsonObject);
+		} catch (ParseException e) {
+			throw new JSONException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
+		}
+	}
+
+	public static void fillMembers(UnitAssignment model, JSONObject jsonObject) throws JSONException, ParseException {
+		model.setCreatedAt(parseDate(jsonObject, "created_at"));
+		model.setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
+		model.setId(parseInteger(jsonObject, "id"));
+		model.setName(parseString(jsonObject, "name"));
+		model.setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
+		model.setUpdatedAt(parseDate(jsonObject, "updated_at"));
+		model.setWorking(parseBoolean(jsonObject, "working"));
+		model.setOperationSchedules(OperationSchedule.parseList(jsonObject, "operation_schedules"));
+		model.setReservationCandidates(ReservationCandidate.parseList(jsonObject, "reservation_candidates"));
+		model.setReservations(Reservation.parseList(jsonObject, "reservations"));
+		model.setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
+		model.setServiceUnits(ServiceUnit.parseList(jsonObject, "service_units"));
 	}
 
 	public static Optional<UnitAssignment> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -65,7 +76,11 @@ public class UnitAssignment extends Model {
 	}
 
 	@Override
-	public JSONObject toJSONObject() throws JSONException {
+	protected JSONObject toJSONObject(Boolean recursive, Integer depth) throws JSONException {
+		depth++;
+		if (depth > MAX_RECURSE_DEPTH) {
+			return new JSONObject();
+		}
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
 		jsonObject.put("deleted_at", toJSON(getDeletedAt().orNull()));
@@ -74,32 +89,57 @@ public class UnitAssignment extends Model {
 		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
 		jsonObject.put("working", toJSON(getWorking()));
-		if (getOperationSchedules().size() > 0) {
-	   		jsonObject.put("operation_schedules", toJSON(getOperationSchedules()));
+		if (getOperationSchedules().size() > 0 && recursive) {
+			jsonObject.put("operation_schedules", toJSON(getOperationSchedules(), true, depth));
 		}
-
-		if (getReservationCandidates().size() > 0) {
-	   		jsonObject.put("reservation_candidates", toJSON(getReservationCandidates()));
+		if (getReservationCandidates().size() > 0 && recursive) {
+			jsonObject.put("reservation_candidates", toJSON(getReservationCandidates(), true, depth));
 		}
-
-		if (getReservations().size() > 0) {
-	   		jsonObject.put("reservations", toJSON(getReservations()));
+		if (getReservations().size() > 0 && recursive) {
+			jsonObject.put("reservations", toJSON(getReservations(), true, depth));
 		}
-
-
 		if (getServiceProvider().isPresent()) {
-			jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
+			if (recursive) {
+				jsonObject.put("service_provider", getServiceProvider().get().toJSONObject(true, depth));
+			} else {
+				jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
+			}
 		}
-		if (getServiceUnits().size() > 0) {
-	   		jsonObject.put("service_units", toJSON(getServiceUnits()));
+		if (getServiceUnits().size() > 0 && recursive) {
+			jsonObject.put("service_units", toJSON(getServiceUnits(), true, depth));
 		}
-
 		return jsonObject;
 	}
 
+	private void writeObject(ObjectOutputStream objectOutputStream)
+			throws IOException {
+		try {
+			objectOutputStream.writeObject(toJSONObject(true).toString());
+		} catch (JSONException e) {
+			throw new IOException(e);
+		}
+	}
+
+	private void readObject(ObjectInputStream objectInputStream)
+		throws IOException, ClassNotFoundException {
+		Object object = objectInputStream.readObject();
+		if (!(object instanceof String)) {
+			return;
+		}
+		String jsonString = (String) object;
+		try {
+			JSONObject jsonObject = new JSONObject(jsonString);
+			fillMembers(this, jsonObject);
+		} catch (JSONException e) {
+			throw new IOException(e);
+		} catch (ParseException e) {
+			throw new IOException(e);
+		}
+	}
+
 	@Override
-	public UnitAssignment clone() {
-		return SerializationUtils.clone(this);
+	public UnitAssignment cloneByJSON() throws JSONException {
+		return new UnitAssignment(toJSONObject(true));
 	}
 
 	private Date createdAt = new Date();

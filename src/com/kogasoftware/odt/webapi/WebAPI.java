@@ -174,7 +174,7 @@ public class WebAPI implements Closeable {
 			JSONException {
 		OperationRecord or = os.getOperationRecord().or(new OperationRecord());
 		or.setArrivedAt(new Date());
-		OperationRecord retryOr = or.clone();
+		OperationRecord retryOr = or.cloneByJSON();
 		retryOr.setArrivedAtOffline(true);
 
 		JSONObject param = new JSONObject();
@@ -220,7 +220,7 @@ public class WebAPI implements Closeable {
 			JSONException {
 		OperationRecord or = os.getOperationRecord().or(new OperationRecord());
 		or.setDepartedAt(new Date());
-		OperationRecord retryOr = or.clone();
+		OperationRecord retryOr = or.cloneByJSON();
 		retryOr.setDepartedAtOffline(true);
 
 		JSONObject param = new JSONObject();
@@ -371,7 +371,7 @@ public class WebAPI implements Closeable {
 			WebAPICallback<PassengerRecord> callback) throws WebAPIException,
 			JSONException {
 		passengerRecord.setGetOffTime(new Date());
-		PassengerRecord retryPassengerRecord = passengerRecord.clone();
+		PassengerRecord retryPassengerRecord = passengerRecord.cloneByJSON();
 		retryPassengerRecord.setGetOffTimeOffline(true);
 
 		String[] filter = new String[] { "id", "payment", "passenger_count",
@@ -412,7 +412,7 @@ public class WebAPI implements Closeable {
 			WebAPICallback<PassengerRecord> callback) throws WebAPIException,
 			JSONException {
 		passengerRecord.setGetOnTime(new Date());
-		PassengerRecord retryPassengerRecord = passengerRecord.clone();
+		PassengerRecord retryPassengerRecord = passengerRecord.cloneByJSON();
 		retryPassengerRecord.setGetOnTimeOffline(true);
 
 		JSONObject param = new JSONObject();
@@ -720,7 +720,7 @@ public class WebAPI implements Closeable {
 			throws WebAPIException, JSONException {
 		vn.setResponse(response);
 		vn.setReadAt(new Date());
-		VehicleNotification retryVn = vn.clone();
+		VehicleNotification retryVn = vn.cloneByJSON();
 		retryVn.setOffline(true);
 
 		String[] filter = new String[] { "id", "response", "read_at", "offline" };
@@ -751,7 +751,7 @@ public class WebAPI implements Closeable {
 			WebAPICallback<ServiceUnitStatusLog> callback)
 			throws WebAPIException, JSONException {
 		log.setOfflineTime(new Date());
-		ServiceUnitStatusLog retryLog = log.clone();
+		ServiceUnitStatusLog retryLog = log.cloneByJSON();
 		retryLog.setOffline(true);
 
 		String[] filter = new String[] { "latitude", "longitude", "offline",

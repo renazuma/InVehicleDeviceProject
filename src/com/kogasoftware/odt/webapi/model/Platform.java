@@ -1,12 +1,15 @@
 package com.kogasoftware.odt.webapi.model;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang3.SerializationUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,41 +17,49 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Platform extends Model {
-	private static final long serialVersionUID = 3070458023722013773L;
+	private static final long serialVersionUID = 5395779256729984388L;
 
 	public Platform() {
 	}
 
-	public Platform(JSONObject jsonObject) throws JSONException, ParseException {
-		setAddress(parseOptionalString(jsonObject, "address"));
-		setCreatedAt(parseDate(jsonObject, "created_at"));
-		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
-		setDemandAreaId(parseOptionalInteger(jsonObject, "demand_area_id"));
-		setEndAt(parseOptionalDate(jsonObject, "end_at"));
-		setId(parseInteger(jsonObject, "id"));
-		setImage(parseOptionalString(jsonObject, "image"));
-		setKeyword(parseOptionalString(jsonObject, "keyword"));
-		setLatitude(parseBigDecimal(jsonObject, "latitude"));
-		setLongitude(parseBigDecimal(jsonObject, "longitude"));
-		setMemo(parseOptionalString(jsonObject, "memo"));
-		setName(parseString(jsonObject, "name"));
-		setNameRuby(parseString(jsonObject, "name_ruby"));
-		setPlatformCategoryId(parseOptionalInteger(jsonObject, "platform_category_id"));
-		setReportingRegionId(parseInteger(jsonObject, "reporting_region_id"));
-		setSemiDemandAreaId(parseOptionalInteger(jsonObject, "semi_demand_area_id"));
-		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
-		setStartAt(parseOptionalDate(jsonObject, "start_at"));
-		setTypeOfDemand(parseOptionalInteger(jsonObject, "type_of_demand"));
-		setTypeOfPlatform(parseInteger(jsonObject, "type_of_platform"));
-		setUpdatedAt(parseDate(jsonObject, "updated_at"));
-		setDemandsAsArrival(Demand.parseList(jsonObject, "demands_as_arrival"));
-		setDemandsAsDeparture(Demand.parseList(jsonObject, "demands_as_departure"));
-		setOperationSchedules(OperationSchedule.parseList(jsonObject, "operation_schedules"));
-		setReservationCandidatesAsArrival(ReservationCandidate.parseList(jsonObject, "reservation_candidates_as_arrival"));
-		setReservationCandidatesAsDeparture(ReservationCandidate.parseList(jsonObject, "reservation_candidates_as_departure"));
-		setReservationsAsArrival(Reservation.parseList(jsonObject, "reservations_as_arrival"));
-		setReservationsAsDeparture(Reservation.parseList(jsonObject, "reservations_as_departure"));
-		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
+	public Platform(JSONObject jsonObject) throws JSONException {
+		try {
+			fillMembers(this, jsonObject);
+		} catch (ParseException e) {
+			throw new JSONException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
+		}
+	}
+
+	public static void fillMembers(Platform model, JSONObject jsonObject) throws JSONException, ParseException {
+		model.setAddress(parseOptionalString(jsonObject, "address"));
+		model.setCreatedAt(parseDate(jsonObject, "created_at"));
+		model.setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
+		model.setDemandAreaId(parseOptionalInteger(jsonObject, "demand_area_id"));
+		model.setEndAt(parseOptionalDate(jsonObject, "end_at"));
+		model.setId(parseInteger(jsonObject, "id"));
+		model.setImage(parseOptionalString(jsonObject, "image"));
+		model.setKeyword(parseOptionalString(jsonObject, "keyword"));
+		model.setLatitude(parseBigDecimal(jsonObject, "latitude"));
+		model.setLongitude(parseBigDecimal(jsonObject, "longitude"));
+		model.setMemo(parseOptionalString(jsonObject, "memo"));
+		model.setName(parseString(jsonObject, "name"));
+		model.setNameRuby(parseString(jsonObject, "name_ruby"));
+		model.setPlatformCategoryId(parseOptionalInteger(jsonObject, "platform_category_id"));
+		model.setReportingRegionId(parseInteger(jsonObject, "reporting_region_id"));
+		model.setSemiDemandAreaId(parseOptionalInteger(jsonObject, "semi_demand_area_id"));
+		model.setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
+		model.setStartAt(parseOptionalDate(jsonObject, "start_at"));
+		model.setTypeOfDemand(parseOptionalInteger(jsonObject, "type_of_demand"));
+		model.setTypeOfPlatform(parseInteger(jsonObject, "type_of_platform"));
+		model.setUpdatedAt(parseDate(jsonObject, "updated_at"));
+		model.setDemandsAsArrival(Demand.parseList(jsonObject, "demands_as_arrival"));
+		model.setDemandsAsDeparture(Demand.parseList(jsonObject, "demands_as_departure"));
+		model.setOperationSchedules(OperationSchedule.parseList(jsonObject, "operation_schedules"));
+		model.setReservationCandidatesAsArrival(ReservationCandidate.parseList(jsonObject, "reservation_candidates_as_arrival"));
+		model.setReservationCandidatesAsDeparture(ReservationCandidate.parseList(jsonObject, "reservation_candidates_as_departure"));
+		model.setReservationsAsArrival(Reservation.parseList(jsonObject, "reservations_as_arrival"));
+		model.setReservationsAsDeparture(Reservation.parseList(jsonObject, "reservations_as_departure"));
+		model.setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
 	}
 
 	public static Optional<Platform> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -82,7 +93,11 @@ public class Platform extends Model {
 	}
 
 	@Override
-	public JSONObject toJSONObject() throws JSONException {
+	protected JSONObject toJSONObject(Boolean recursive, Integer depth) throws JSONException {
+		depth++;
+		if (depth > MAX_RECURSE_DEPTH) {
+			return new JSONObject();
+		}
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("address", toJSON(getAddress().orNull()));
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
@@ -105,44 +120,66 @@ public class Platform extends Model {
 		jsonObject.put("type_of_demand", toJSON(getTypeOfDemand().orNull()));
 		jsonObject.put("type_of_platform", toJSON(getTypeOfPlatform()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
-		if (getDemandsAsArrival().size() > 0) {
-	   		jsonObject.put("demands_as_arrival", toJSON(getDemandsAsArrival()));
+		if (getDemandsAsArrival().size() > 0 && recursive) {
+			jsonObject.put("demands_as_arrival", toJSON(getDemandsAsArrival(), true, depth));
 		}
-
-		if (getDemandsAsDeparture().size() > 0) {
-	   		jsonObject.put("demands_as_departure", toJSON(getDemandsAsDeparture()));
+		if (getDemandsAsDeparture().size() > 0 && recursive) {
+			jsonObject.put("demands_as_departure", toJSON(getDemandsAsDeparture(), true, depth));
 		}
-
-		if (getOperationSchedules().size() > 0) {
-	   		jsonObject.put("operation_schedules", toJSON(getOperationSchedules()));
+		if (getOperationSchedules().size() > 0 && recursive) {
+			jsonObject.put("operation_schedules", toJSON(getOperationSchedules(), true, depth));
 		}
-
-		if (getReservationCandidatesAsArrival().size() > 0) {
-	   		jsonObject.put("reservation_candidates_as_arrival", toJSON(getReservationCandidatesAsArrival()));
+		if (getReservationCandidatesAsArrival().size() > 0 && recursive) {
+			jsonObject.put("reservation_candidates_as_arrival", toJSON(getReservationCandidatesAsArrival(), true, depth));
 		}
-
-		if (getReservationCandidatesAsDeparture().size() > 0) {
-	   		jsonObject.put("reservation_candidates_as_departure", toJSON(getReservationCandidatesAsDeparture()));
+		if (getReservationCandidatesAsDeparture().size() > 0 && recursive) {
+			jsonObject.put("reservation_candidates_as_departure", toJSON(getReservationCandidatesAsDeparture(), true, depth));
 		}
-
-		if (getReservationsAsArrival().size() > 0) {
-	   		jsonObject.put("reservations_as_arrival", toJSON(getReservationsAsArrival()));
+		if (getReservationsAsArrival().size() > 0 && recursive) {
+			jsonObject.put("reservations_as_arrival", toJSON(getReservationsAsArrival(), true, depth));
 		}
-
-		if (getReservationsAsDeparture().size() > 0) {
-	   		jsonObject.put("reservations_as_departure", toJSON(getReservationsAsDeparture()));
+		if (getReservationsAsDeparture().size() > 0 && recursive) {
+			jsonObject.put("reservations_as_departure", toJSON(getReservationsAsDeparture(), true, depth));
 		}
-
-
 		if (getServiceProvider().isPresent()) {
-			jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
+			if (recursive) {
+				jsonObject.put("service_provider", getServiceProvider().get().toJSONObject(true, depth));
+			} else {
+				jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
+			}
 		}
 		return jsonObject;
 	}
 
+	private void writeObject(ObjectOutputStream objectOutputStream)
+			throws IOException {
+		try {
+			objectOutputStream.writeObject(toJSONObject(true).toString());
+		} catch (JSONException e) {
+			throw new IOException(e);
+		}
+	}
+
+	private void readObject(ObjectInputStream objectInputStream)
+		throws IOException, ClassNotFoundException {
+		Object object = objectInputStream.readObject();
+		if (!(object instanceof String)) {
+			return;
+		}
+		String jsonString = (String) object;
+		try {
+			JSONObject jsonObject = new JSONObject(jsonString);
+			fillMembers(this, jsonObject);
+		} catch (JSONException e) {
+			throw new IOException(e);
+		} catch (ParseException e) {
+			throw new IOException(e);
+		}
+	}
+
 	@Override
-	public Platform clone() {
-		return SerializationUtils.clone(this);
+	public Platform cloneByJSON() throws JSONException {
+		return new Platform(toJSONObject(true));
 	}
 
 	private Optional<String> address = Optional.absent();

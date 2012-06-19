@@ -1,12 +1,15 @@
 package com.kogasoftware.odt.webapi.model;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang3.SerializationUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,23 +17,31 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class OperationRecord extends Model {
-	private static final long serialVersionUID = 3327359433670454314L;
+	private static final long serialVersionUID = 172374822522855981L;
 
 	public OperationRecord() {
 	}
 
-	public OperationRecord(JSONObject jsonObject) throws JSONException, ParseException {
-		setArrivedAt(parseOptionalDate(jsonObject, "arrived_at"));
-		setArrivedAtOffline(parseOptionalBoolean(jsonObject, "arrived_at_offline"));
-		setCreatedAt(parseDate(jsonObject, "created_at"));
-		setDepartedAt(parseOptionalDate(jsonObject, "departed_at"));
-		setDepartedAtOffline(parseOptionalBoolean(jsonObject, "departed_at_offline"));
-		setId(parseInteger(jsonObject, "id"));
-		setOperationScheduleId(parseOptionalInteger(jsonObject, "operation_schedule_id"));
-		setServiceUnitId(parseOptionalInteger(jsonObject, "service_unit_id"));
-		setUpdatedAt(parseDate(jsonObject, "updated_at"));
-		setOperationSchedule(OperationSchedule.parse(jsonObject, "operation_schedule"));
-		setServiceUnit(ServiceUnit.parse(jsonObject, "service_unit"));
+	public OperationRecord(JSONObject jsonObject) throws JSONException {
+		try {
+			fillMembers(this, jsonObject);
+		} catch (ParseException e) {
+			throw new JSONException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
+		}
+	}
+
+	public static void fillMembers(OperationRecord model, JSONObject jsonObject) throws JSONException, ParseException {
+		model.setArrivedAt(parseOptionalDate(jsonObject, "arrived_at"));
+		model.setArrivedAtOffline(parseOptionalBoolean(jsonObject, "arrived_at_offline"));
+		model.setCreatedAt(parseDate(jsonObject, "created_at"));
+		model.setDepartedAt(parseOptionalDate(jsonObject, "departed_at"));
+		model.setDepartedAtOffline(parseOptionalBoolean(jsonObject, "departed_at_offline"));
+		model.setId(parseInteger(jsonObject, "id"));
+		model.setOperationScheduleId(parseOptionalInteger(jsonObject, "operation_schedule_id"));
+		model.setServiceUnitId(parseOptionalInteger(jsonObject, "service_unit_id"));
+		model.setUpdatedAt(parseDate(jsonObject, "updated_at"));
+		model.setOperationSchedule(OperationSchedule.parse(jsonObject, "operation_schedule"));
+		model.setServiceUnit(ServiceUnit.parse(jsonObject, "service_unit"));
 	}
 
 	public static Optional<OperationRecord> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -64,7 +75,11 @@ public class OperationRecord extends Model {
 	}
 
 	@Override
-	public JSONObject toJSONObject() throws JSONException {
+	protected JSONObject toJSONObject(Boolean recursive, Integer depth) throws JSONException {
+		depth++;
+		if (depth > MAX_RECURSE_DEPTH) {
+			return new JSONObject();
+		}
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("arrived_at", toJSON(getArrivedAt().orNull()));
 		jsonObject.put("arrived_at_offline", toJSON(getArrivedAtOffline().orNull()));
@@ -75,20 +90,52 @@ public class OperationRecord extends Model {
 		jsonObject.put("operation_schedule_id", toJSON(getOperationScheduleId().orNull()));
 		jsonObject.put("service_unit_id", toJSON(getServiceUnitId().orNull()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
-
 		if (getOperationSchedule().isPresent()) {
-			jsonObject.put("operation_schedule_id", toJSON(getOperationSchedule().get().getId()));
+			if (recursive) {
+				jsonObject.put("operation_schedule", getOperationSchedule().get().toJSONObject(true, depth));
+			} else {
+				jsonObject.put("operation_schedule_id", toJSON(getOperationSchedule().get().getId()));
+			}
 		}
-
 		if (getServiceUnit().isPresent()) {
-			jsonObject.put("service_unit_id", toJSON(getServiceUnit().get().getId()));
+			if (recursive) {
+				jsonObject.put("service_unit", getServiceUnit().get().toJSONObject(true, depth));
+			} else {
+				jsonObject.put("service_unit_id", toJSON(getServiceUnit().get().getId()));
+			}
 		}
 		return jsonObject;
 	}
 
+	private void writeObject(ObjectOutputStream objectOutputStream)
+			throws IOException {
+		try {
+			objectOutputStream.writeObject(toJSONObject(true).toString());
+		} catch (JSONException e) {
+			throw new IOException(e);
+		}
+	}
+
+	private void readObject(ObjectInputStream objectInputStream)
+		throws IOException, ClassNotFoundException {
+		Object object = objectInputStream.readObject();
+		if (!(object instanceof String)) {
+			return;
+		}
+		String jsonString = (String) object;
+		try {
+			JSONObject jsonObject = new JSONObject(jsonString);
+			fillMembers(this, jsonObject);
+		} catch (JSONException e) {
+			throw new IOException(e);
+		} catch (ParseException e) {
+			throw new IOException(e);
+		}
+	}
+
 	@Override
-	public OperationRecord clone() {
-		return SerializationUtils.clone(this);
+	public OperationRecord cloneByJSON() throws JSONException {
+		return new OperationRecord(toJSONObject(true));
 	}
 
 	private Optional<Date> arrivedAt = Optional.absent();
