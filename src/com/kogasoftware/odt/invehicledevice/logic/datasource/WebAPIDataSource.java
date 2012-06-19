@@ -3,9 +3,9 @@ package com.kogasoftware.odt.invehicledevice.logic.datasource;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.graphics.Bitmap;
 import android.util.Log;
@@ -120,73 +120,69 @@ public class WebAPIDataSource implements DataSource {
 
 	@Override
 	public List<OperationSchedule> getOperationSchedules() {
-		final CountDownLatch countDownLatch = new CountDownLatch(1);
-		final List<OperationSchedule> result = new LinkedList<OperationSchedule>();
-		final WebAPICallback<List<OperationSchedule>> callback = new WebAPICallback<List<OperationSchedule>>() {
-			@Override
-			public void onSucceed(final int reqkey, final int statusCode,
-					final List<OperationSchedule> operationSchedules) {
-				result.addAll(operationSchedules);
-				countDownLatch.countDown();
-			}
-
-			@Override
-			public void onException(int reqkey, WebAPIException ex) {
-				countDownLatch.countDown();
-			}
-
-			@Override
-			public void onFailed(int reqkey, int statusCode, String response) {
-				countDownLatch.countDown();
-			}
-		};
-		callWebAPI(new WebAPICaller() {
-			@Override
-			public int call() throws WebAPIException, JSONException {
-				return api.getOperationSchedules(callback);
-			}
-		});
+		String r1 = "{id: 51, passenger_count: 1, departure_schedule_id: 1, arrival_schedule_id: 2, payment: 100, user: {id: 1, last_name: 'ああああ', first_name: 'いちごう'}}";
+		String r2 = "{id: 52, passenger_count: 5, departure_schedule_id: 1, arrival_schedule_id: 2, payment:   0, user: {id: 2, last_name: 'いいいい', first_name: 'にごう'}}";
+		String r3 = "{id: 53, passenger_count: 0, departure_schedule_id: 1, arrival_schedule_id: 3, payment: 500, user: {id: 3, last_name: 'うううう', first_name: 'さんごう'}}";
+		List<OperationSchedule> l = new LinkedList<OperationSchedule>();
 		try {
-			countDownLatch.await();
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
+			// 変更前のスケジュール
+			JSONObject j1;
+			j1 = new JSONObject(
+					"{id:1, arrival_estimate: '2012-01-01T01:00:00+09:00', departure_estimate: '2012-01-01T02:00:00+09:00', "
+							+ "platform: {name: '乗降場1', name_ruby: 'のりおりば1', latitude: 34.664887, longitude: 134.092846}, "
+							+ "reservations_as_departure: ["
+							+ r1
+							+ ","
+							+ r2
+							+ "]}");
+			l.add(new OperationSchedule(j1));
+
+			JSONObject j2 = new JSONObject(
+					"{id:2, arrival_estimate: '2012-01-01T02:00:00+09:00', departure_estimate: '2012-01-01T02:00:00+09:00', "
+							+ "platform: {name: '乗降場2', name_ruby: 'のりおりば2'}, "
+							+ "reservations_as_arrival: ["
+							+ r1
+							+ ","
+							+ r2
+							+ "]}");
+			l.add(new OperationSchedule(j2));
+
+			JSONObject j3 = new JSONObject(
+					"{id:3, arrival_estimate: '2012-01-01T02:00:00+09:00', departure_estimate: '2012-01-01T02:00:00+09:00', "
+							+ "platform: {name: '乗降場3', name_ruby: 'のりおりば3'}}");
+			l.add(new OperationSchedule(j3));
+			JSONObject j4 = new JSONObject(
+					"{id:4, arrival_estimate: '2012-01-01T02:00:00+09:00', departure_estimate: '2012-01-01T02:00:00+09:00', "
+							+ "platform: {name: '乗降場4', name_ruby: 'のりおりば4'}}");
+			l.add(new OperationSchedule(j4));
+			JSONObject j5 = new JSONObject(
+					"{id:5, arrival_estimate: '2012-01-01T02:00:00+09:00', departure_estimate: '2012-01-01T02:00:00+09:00', "
+							+ "platform: {name: '乗降場5', name_ruby: 'のりおりば5'}}");
+			l.add(new OperationSchedule(j5));
+			JSONObject j6 = new JSONObject(
+					"{id:6, arrival_estimate: '2012-01-01T02:00:00+09:00', departure_estimate: '2012-01-01T02:00:00+09:00', "
+							+ "platform: {name: '乗降場6', name_ruby: 'のりおりば6'}}");
+			l.add(new OperationSchedule(j6));
+			JSONObject j7 = new JSONObject(
+					"{id:7, arrival_estimate: '2012-01-01T02:00:00+09:00', departure_estimate: '2012-01-01T02:00:00+09:00', "
+							+ "platform: {name: '乗降場7', name_ruby: 'のりおりば7'}}");
+			l.add(new OperationSchedule(j7));
+			JSONObject j8 = new JSONObject(
+					"{id:8, arrival_estimate: '2012-01-01T02:00:00+09:00', departure_estimate: '2012-01-01T02:00:00+09:00', "
+							+ "platform: {name: '乗降場8', name_ruby: 'のりおりば8'}}");
+			l.add(new OperationSchedule(j8));
+			JSONObject j9 = new JSONObject(
+					"{id:9, arrival_estimate: '2012-01-01T02:00:00+09:00', departure_estimate: '2012-01-01T02:00:00+09:00', "
+							+ "platform: {name: '乗降場9', name_ruby: 'のりおりば9'}}");
+			l.add(new OperationSchedule(j9));
+		} catch (JSONException e) {
 		}
-		return result;
+		return l;
 	}
 
 	@Override
 	public List<VehicleNotification> getVehicleNotifications() {
-		final CountDownLatch countDownLatch = new CountDownLatch(1);
 		final List<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();
-		final WebAPICallback<List<VehicleNotification>> callback = new WebAPICallback<List<VehicleNotification>>() {
-			@Override
-			public void onException(int reqkey, WebAPIException ex) {
-				countDownLatch.countDown();
-			}
-
-			@Override
-			public void onFailed(int reqkey, int statusCode, String response) {
-				countDownLatch.countDown();
-			}
-
-			@Override
-			public void onSucceed(int reqkey, int statusCode,
-					List<VehicleNotification> result) {
-				vehicleNotifications.addAll(result);
-				countDownLatch.countDown();
-			}
-		};
-		callWebAPI(new WebAPICaller() {
-			@Override
-			public int call() throws WebAPIException {
-				return api.getVehicleNotifications(callback);
-			}
-		});
-		try {
-			countDownLatch.await();
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-		}
 		return vehicleNotifications;
 	}
 
@@ -206,13 +202,7 @@ public class WebAPIDataSource implements DataSource {
 	public int sendServiceUnitStatusLog(
 			final ServiceUnitStatusLog serviceUnitStatusLog,
 			final WebAPICallback<ServiceUnitStatusLog> callback) {
-		return callWebAPI(new WebAPICaller() {
-			@Override
-			public int call() throws WebAPIException, JSONException {
-				return api.sendServiceUnitStatusLog(serviceUnitStatusLog,
-						callback);
-			}
-		}, callback);
+		return 0;
 	}
 
 	@Override

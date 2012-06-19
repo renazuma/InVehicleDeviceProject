@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.Calendar;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
@@ -134,6 +133,8 @@ public class StatusAccess {
 				if (object instanceof Status) {
 					status = (Status) object;
 				}
+				
+				
 			} catch (IndexOutOfBoundsException e) {
 				Log.e(TAG, e.toString(), e);
 			} catch (SerializationException e) {
@@ -165,16 +166,12 @@ public class StatusAccess {
 							SharedPreferencesKey.SERVICE_PROVIDER, "{}")));
 		} catch (JSONException e) {
 			Log.w(TAG, e);
-		} catch (ParseException e) {
-			Log.w(TAG, e);
 		}
 		try {
 			status.serviceProvider = new ServiceProvider(new JSONObject(
 					preferences.getString(
 							SharedPreferencesKey.IN_VEHICLE_DEVICE, "{}")));
 		} catch (JSONException e) {
-			Log.e(TAG, "parse JSON failed", e);
-		} catch (ParseException e) {
 			Log.e(TAG, "parse JSON failed", e);
 		}
 

@@ -198,9 +198,6 @@ public class MockDataSource implements DataSource {
 				lOperationSchedule.add(new OperationSchedule(j6));
 			}
 
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -328,9 +325,6 @@ public class MockDataSource implements DataSource {
 							+ "reservations_as_departure: []}");
 			lOperationSchedule.add(new OperationSchedule(j6));
 
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -1,6 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.backgroundtask;
 
-import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -67,8 +66,6 @@ public class OperationScheduleReceiveThreadTestCase extends
 									+ "platform: {name: '乗降場B', name_ruby: 'のりおりばびー'}, reservations_as_arrival: [ "
 									+ r1 + " ]}");
 					l.add(new OperationSchedule(j2));
-				} catch (ParseException e) {
-					e.printStackTrace();
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -105,8 +102,6 @@ public class OperationScheduleReceiveThreadTestCase extends
 							+ "platform: {name: '乗降場B', name_ruby: 'のりおりばびー'}, reservations_as_arrival: [ "
 							+ r1 + " ]}");
 			l.add(new OperationSchedule(j2));
-		} catch (ParseException e) {
-			fail();
 		} catch (JSONException e) {
 			fail();
 		}

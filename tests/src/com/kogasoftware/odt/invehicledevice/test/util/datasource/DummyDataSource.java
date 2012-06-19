@@ -142,9 +142,6 @@ public class DummyDataSource extends EmptyDataSource {
 							+ "]}");
 			l.add(new OperationSchedule(j5));
 
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

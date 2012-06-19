@@ -1,6 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.test.util.datasource;
 
-import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -118,9 +117,6 @@ public class ScheduleChangedTestDataSource extends EmptyDataSource {
 				return l;
 			}
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InterruptedException e) {
