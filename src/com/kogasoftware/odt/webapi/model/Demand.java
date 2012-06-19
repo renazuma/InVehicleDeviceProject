@@ -17,7 +17,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Demand extends Model {
-	private static final long serialVersionUID = 1074803948309533258L;
+	private static final long serialVersionUID = 2605048858550668508L;
 
 	public Demand() {
 	}
@@ -171,9 +171,9 @@ public class Demand extends Model {
 			JSONObject jsonObject = new JSONObject(jsonString);
 			fillMembers(this, jsonObject);
 		} catch (JSONException e) {
-			throw new IOException(e);
+			throw new IOException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
 		} catch (ParseException e) {
-			throw new IOException(e);
+			throw new IOException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
 		}
 	}
 

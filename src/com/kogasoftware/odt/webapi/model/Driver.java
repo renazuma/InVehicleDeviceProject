@@ -17,7 +17,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Driver extends Model {
-	private static final long serialVersionUID = 4661638196557606936L;
+	private static final long serialVersionUID = 8534141210510594295L;
 
 	public Driver() {
 	}
@@ -121,9 +121,9 @@ public class Driver extends Model {
 			JSONObject jsonObject = new JSONObject(jsonString);
 			fillMembers(this, jsonObject);
 		} catch (JSONException e) {
-			throw new IOException(e);
+			throw new IOException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
 		} catch (ParseException e) {
-			throw new IOException(e);
+			throw new IOException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
 		}
 	}
 

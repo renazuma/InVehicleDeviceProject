@@ -17,7 +17,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class OperationSchedule extends Model {
-	private static final long serialVersionUID = 6051954250112049543L;
+	private static final long serialVersionUID = 2546180859899581907L;
 
 	public OperationSchedule() {
 	}
@@ -149,9 +149,9 @@ public class OperationSchedule extends Model {
 			JSONObject jsonObject = new JSONObject(jsonString);
 			fillMembers(this, jsonObject);
 		} catch (JSONException e) {
-			throw new IOException(e);
+			throw new IOException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
 		} catch (ParseException e) {
-			throw new IOException(e);
+			throw new IOException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
 		}
 	}
 
