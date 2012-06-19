@@ -10,7 +10,6 @@ import android.view.Surface;
 import android.view.WindowManager;
 
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.logic.event.OrientationChangedEvent;
 
 public class OrientationSensorEventListener implements SensorEventListener {
 	private static final Long SAVE_PERIOD_MILLIS = 200L;
@@ -63,6 +62,6 @@ public class OrientationSensorEventListener implements SensorEventListener {
 			break;
 		}
 		
-		commonLogic.postEvent(new OrientationChangedEvent(360 - degree));
+		// commonLogic.postEvent(new OrientationChangedEvent(360 - degree));
 	}
 }

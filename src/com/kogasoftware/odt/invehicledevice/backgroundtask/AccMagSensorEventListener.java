@@ -9,6 +9,7 @@ import android.view.Surface;
 import android.view.WindowManager;
 
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
+import com.kogasoftware.odt.invehicledevice.logic.event.OrientationChangedEvent;
 
 // original: 
 // http://kamoland.com/wiki/wiki.cgi?TYPE_ORIENTATION%A4%F2%BB%C8%A4%EF%A4%BA%A4%CB%CA%FD%B0%CC%B3%D1%A4%F2%BC%E8%C6%C0
@@ -79,7 +80,7 @@ public class AccMagSensorEventListener implements SensorEventListener {
 		}
 
 		if (degree != null) {
-			// commonLogic.postEvent(new OrientationChangedEvent(360 - degree));
+			commonLogic.postEvent(new OrientationChangedEvent(360 - degree));
 		}
 	}
 
