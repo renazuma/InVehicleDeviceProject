@@ -17,7 +17,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class InVehicleDevice extends Model {
-	private static final long serialVersionUID = 8631481362066371250L;
+	private static final long serialVersionUID = 4819809037610485411L;
 
 	public InVehicleDevice() {
 	}
@@ -114,7 +114,7 @@ public class InVehicleDevice extends Model {
 		try {
 			objectOutputStream.writeObject(toJSONObject(true).toString());
 		} catch (JSONException e) {
-			throw new IOException(e);
+			throw new IOException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
 		}
 	}
 

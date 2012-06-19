@@ -17,7 +17,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Platform extends Model {
-	private static final long serialVersionUID = 5395779256729984388L;
+	private static final long serialVersionUID = 777744408342965993L;
 
 	public Platform() {
 	}
@@ -156,7 +156,7 @@ public class Platform extends Model {
 		try {
 			objectOutputStream.writeObject(toJSONObject(true).toString());
 		} catch (JSONException e) {
-			throw new IOException(e);
+			throw new IOException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
 		}
 	}
 

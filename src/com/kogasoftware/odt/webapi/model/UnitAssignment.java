@@ -17,7 +17,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class UnitAssignment extends Model {
-	private static final long serialVersionUID = 6364142624599314300L;
+	private static final long serialVersionUID = 4443339355073020223L;
 
 	public UnitAssignment() {
 	}
@@ -116,7 +116,7 @@ public class UnitAssignment extends Model {
 		try {
 			objectOutputStream.writeObject(toJSONObject(true).toString());
 		} catch (JSONException e) {
-			throw new IOException(e);
+			throw new IOException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
 		}
 	}
 

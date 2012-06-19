@@ -17,7 +17,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class OperationSchedule extends Model {
-	private static final long serialVersionUID = 113704077271357260L;
+	private static final long serialVersionUID = 6051954250112049543L;
 
 	public OperationSchedule() {
 	}
@@ -134,7 +134,7 @@ public class OperationSchedule extends Model {
 		try {
 			objectOutputStream.writeObject(toJSONObject(true).toString());
 		} catch (JSONException e) {
-			throw new IOException(e);
+			throw new IOException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
 		}
 	}
 

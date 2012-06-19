@@ -17,7 +17,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class ServiceUnitStatusLog extends Model {
-	private static final long serialVersionUID = 1533825260176678276L;
+	private static final long serialVersionUID = 5130444674534893698L;
 
 	public ServiceUnitStatusLog() {
 	}
@@ -106,7 +106,7 @@ public class ServiceUnitStatusLog extends Model {
 		try {
 			objectOutputStream.writeObject(toJSONObject(true).toString());
 		} catch (JSONException e) {
-			throw new IOException(e);
+			throw new IOException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
 		}
 	}
 

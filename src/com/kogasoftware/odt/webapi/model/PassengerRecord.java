@@ -17,7 +17,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class PassengerRecord extends Model {
-	private static final long serialVersionUID = 6845766570098258913L;
+	private static final long serialVersionUID = 8260590477822397004L;
 
 	public PassengerRecord() {
 	}
@@ -142,7 +142,7 @@ public class PassengerRecord extends Model {
 		try {
 			objectOutputStream.writeObject(toJSONObject(true).toString());
 		} catch (JSONException e) {
-			throw new IOException(e);
+			throw new IOException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
 		}
 	}
 

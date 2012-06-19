@@ -17,7 +17,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class OperationRecord extends Model {
-	private static final long serialVersionUID = 172374822522855981L;
+	private static final long serialVersionUID = 8486084005323781808L;
 
 	public OperationRecord() {
 	}
@@ -112,7 +112,7 @@ public class OperationRecord extends Model {
 		try {
 			objectOutputStream.writeObject(toJSONObject(true).toString());
 		} catch (JSONException e) {
-			throw new IOException(e);
+			throw new IOException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
 		}
 	}
 

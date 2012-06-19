@@ -17,7 +17,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Demand extends Model {
-	private static final long serialVersionUID = 2730268046747258809L;
+	private static final long serialVersionUID = 1074803948309533258L;
 
 	public Demand() {
 	}
@@ -156,7 +156,7 @@ public class Demand extends Model {
 		try {
 			objectOutputStream.writeObject(toJSONObject(true).toString());
 		} catch (JSONException e) {
-			throw new IOException(e);
+			throw new IOException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
 		}
 	}
 

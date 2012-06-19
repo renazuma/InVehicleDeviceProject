@@ -17,7 +17,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class Vehicle extends Model {
-	private static final long serialVersionUID = 502605349694834488L;
+	private static final long serialVersionUID = 8844417983574727403L;
 
 	public Vehicle() {
 	}
@@ -108,7 +108,7 @@ public class Vehicle extends Model {
 		try {
 			objectOutputStream.writeObject(toJSONObject(true).toString());
 		} catch (JSONException e) {
-			throw new IOException(e);
+			throw new IOException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
 		}
 	}
 
