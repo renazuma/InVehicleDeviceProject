@@ -43,10 +43,10 @@ public class ScheduleModalView extends ModalView {
 		OperationScheduleArrayAdapter adapter = new OperationScheduleArrayAdapter(
 				getContext(), operationSchedules, getCommonLogic());
 		operationScheduleListView.setAdapter(adapter);
-		Integer extraItems = 2;
+		Integer extraItems = 1;
 		for (OperationSchedule currentOperationSchedule : getCommonLogic()
 				.getCurrentOperationSchedule().asSet()) {
-			for (Integer i = 0; i < (adapter.getCount() - extraItems); ++i) {
+			for (Integer i = 1; i < (adapter.getCount() - extraItems); ++i) {
 				if (adapter.getItem(i).getId()
 						.equals(currentOperationSchedule.getId())) {
 					operationScheduleListView.smoothScrollToPosition(i + extraItems);
