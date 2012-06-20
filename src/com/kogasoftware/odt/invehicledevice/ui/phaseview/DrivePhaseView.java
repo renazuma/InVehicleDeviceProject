@@ -99,10 +99,10 @@ public class DrivePhaseView extends PhaseView {
 		DateFormat dateFormat = new SimpleDateFormat(getResources().getString(
 				R.string.platform_arrival_time_format));
 
-		platformArrivalTimeTextView.setText(dateFormat.format(operationSchedule
+		platformArrivalTimeTextView.setText("  " + dateFormat.format(operationSchedule
 				.getArrivalEstimate()));
 
-		platformArrivalTimeTextView2.setText(dateFormat.format(operationSchedule
+		platformArrivalTimeTextView2.setText("  " + dateFormat.format(operationSchedule
 				.getArrivalEstimate()));
 
 		platformName1BeyondTextView.setText("");

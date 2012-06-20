@@ -28,10 +28,10 @@ public class ArrivalCheckModalView extends ModalView {
 		for (OperationSchedule operationSchedule : getCommonLogic().getCurrentOperationSchedule().asSet()) {
 			for (Platform platform : operationSchedule.getPlatform().asSet()) {
 				TextView commentTextView = (TextView) findViewById(R.id.arrival_check_comment_text_view);
-				commentTextView.setText(platform.getName() + "に到着します。");
+				commentTextView.setText(platform.getName());
 			}
 		}
-		
+
 		arrivalButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {

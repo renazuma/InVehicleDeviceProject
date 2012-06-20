@@ -69,7 +69,7 @@ public class PlatformPhaseView extends PhaseView {
 						.getDepartureEstimate();
 				Integer minutesRemaining = (int) (departureEstimate.getTime() - now
 						.getTime()) / 1000 / 60;
-				DateFormat dateFormat = new SimpleDateFormat("H時m分"); // TODO
+				DateFormat dateFormat = new SimpleDateFormat("HH:mm");
 				String dateString = dateFormat.format(departureEstimate);
 				minutesRemainingTextView.setText(Html.fromHtml(String.format(
 						getResources().getString(

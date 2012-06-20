@@ -8,12 +8,16 @@ import android.content.Context;
 import android.text.Html;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.animation.Animation;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.graphics.Typeface;
 import android.graphics.Color;
+import android.widget.LinearLayout;
+import android.view.animation.Animation;
+import android.view.animation.AlphaAnimation;
 
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
@@ -28,6 +32,8 @@ import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.User;
 
 public class DepartureCheckModalView extends ModalView {
+	
+	private final AlphaAnimation animation = new AlphaAnimation(1, 0.1f);
 
 	public static class ShowEvent {
 		public final ReservationArrayAdapter reservationArrayAdapter;
@@ -77,38 +83,29 @@ public class DepartureCheckModalView extends ModalView {
 				getContext(), android.R.layout.simple_list_item_1, messages));
 
 		if (getCommonLogic().getRemainingOperationSchedules().size() <= 1) {
-			titleTextView.setText("確定しますか？");
 			startButton.setText("確定する");
 		} else {
-
-			//次の乗降場表示
-			CommonLogic commonLogic = getCommonLogic();
-			List<OperationSchedule> operationSchedules = commonLogic
-					.getRemainingOperationSchedules();
-			if (operationSchedules.isEmpty()) {
-				commonLogic.postEvent(new EnterFinishPhaseEvent());
-				titleTextView.setText("");
-			}
-
-			if (operationSchedules.size() > 1) {
-				OperationSchedule nowOperationSchedule = operationSchedules.get(1);
-				for (Platform platform : nowOperationSchedule.getPlatform()
-						.asSet()) {
-					titleTextView.setText(Html.fromHtml(String.format(
-							getResources()
-									.getString(R.string.next_platform_is_html),
-							platform.getName())));
-				}
-			} else {
-				titleTextView.setText("");
-			}
-
 			startButton.setText("出発する");
 		}
 
 		if (!messages.isEmpty()) {
-			closeButton.setTextColor(Color.parseColor("#CC0000"));
-			closeButton.setTypeface(Typeface.DEFAULT_BOLD);
+
+            animation.setDuration(1000);
+            animation.setRepeatCount(1);
+            animation.setRepeatCount(Animation.INFINITE);
+            closeButton.startAnimation(animation);
+
+            closeButton.setBackgroundColor(Color.parseColor("#FF6666"));
+			closeButton.setTextColor(Color.parseColor("#FFFFFF"));
+
+	        LinearLayout.LayoutParams lp
+            =   new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.FILL_PARENT,
+                LinearLayout.LayoutParams.FILL_PARENT);
+            lp.weight = 0.5f;
+            lp.setMargins(10, 1, 10, 10);
+            closeButton.setLayoutParams(lp);
+            closeButton.setShadowLayer(1.0f, 1.5f, 1.5f, Color.parseColor("#FFFFFF"));
 		}
 
 		startButton.setOnClickListener(new OnClickListener() {

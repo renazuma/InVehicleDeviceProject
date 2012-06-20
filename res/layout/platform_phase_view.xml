@@ -16,7 +16,7 @@
             android:textSize="18sp"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
+            android:layout_weight="2.5"
             android:orientation="vertical"
             android:ellipsize="end"
             android:maxLines ="2"
@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:textSize="20sp"
+            android:textSize="22sp"
             android:gravity="right" />
     </LinearLayout>
 

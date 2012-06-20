@@ -64,6 +64,8 @@
         <Button
             android:id="@+id/navigation_zoom_in_button"
             style="@style/ModalView.Button"
+            android:paddingTop="15sp"
+            android:paddingBottom="15sp"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
             android:layout_weight="1"
@@ -84,6 +86,8 @@
 
         <Button
             android:id="@+id/navigation_zoom_out_button"
+            android:paddingTop="15sp"
+            android:paddingBottom="15sp"
             style="@style/ModalView.Button"
             android:layout_width="0dp"
             android:layout_height="fill_parent"

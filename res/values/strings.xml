@@ -29,7 +29,7 @@
     <string name="no">いいえ</string>
     <string name="operation_management">運行管理</string>
     <string name="present_time">現在時刻</string>
-    <string name="present_time_format">HH時mm分</string>
+    <string name="present_time_format">HH:mm</string>
     <string name="return_path">復路</string>
     <string name="scroll_down">▽ 下へ移動</string>
     <string name="scroll_up">△ 上へ移動</string>
@@ -43,7 +43,7 @@
     <string name="cancel">やめる</string>
     <string name="show_operation_schedule">運行予定表示</string>
     <string name="today_operation_schedule">運行\n予定</string>
-    <string name="platform_arrival_time_format">HH時mm分</string>
+    <string name="platform_arrival_time_format">HH:mm</string>
     <string name="todays_operation_was_finished">本日の運行は終了しました</string>
     <string name="show_all_riding_passengers">乗車中の乗客全員を表示</string>
     <string name="show_future_passengers">未来の乗客を表示</string>

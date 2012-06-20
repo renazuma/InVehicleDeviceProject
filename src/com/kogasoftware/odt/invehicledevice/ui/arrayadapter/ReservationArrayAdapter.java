@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
+import android.view.animation.Animation;
+import android.view.animation.AlphaAnimation;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
@@ -38,6 +40,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 			.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	private static final Integer RESOURCE_ID = R.layout.reservation_list_row;
 	private final CommonLogic commonLogic;
+	private final AlphaAnimation animation = new AlphaAnimation(1, 0.1f);
 
 	private final List<Reservation> reservations = new LinkedList<Reservation>();
 
@@ -150,6 +153,11 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 							reservation));
 				}
 			});
+            animation.setDuration(1000);
+            animation.setRepeatCount(1);
+            animation.setRepeatCount(Animation.INFINITE);
+            memoButton.startAnimation(animation);
+
 		} else {
 			memoButton.setVisibility(View.GONE);
 		}

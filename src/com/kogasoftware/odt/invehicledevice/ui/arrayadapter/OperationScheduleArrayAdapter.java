@@ -36,7 +36,7 @@ public class OperationScheduleArrayAdapter extends
 		if (convertView == null) {
 			convertView = layoutInflater.inflate(RESOURCE_ID, null);
 		}
-		DateFormat displayDateFormat = new SimpleDateFormat("HH時mm分");
+		DateFormat displayDateFormat = new SimpleDateFormat("HH:mm");
 
 		OperationSchedule operationSchedule = getItem(position);
 		TextView platformNameView = (TextView) convertView
