@@ -58,4 +58,6 @@
     <string name="now_platform_is_html">現在は&lt;big&gt;&lt;big&gt;%s&lt;/big&gt;&lt;/big&gt;</string>
     <string name="next_platform_is_html">次は&lt;big&gt;&lt;big&gt;%s&lt;/big&gt;&lt;/big&gt;</string>
     <string name="minutes_remaining_to_depart_html">%1$s出発&lt;br&gt;あと&lt;big&gt;&lt;font color=&quot;red&quot;&gt;%2$d&lt;/font&gt;&lt;/big&gt;分</string>
+    <string name="platform_arrival_time">HH:mm着</string>
+    <string name="platform_depature_time">HH:mm発</string>
 </resources>
