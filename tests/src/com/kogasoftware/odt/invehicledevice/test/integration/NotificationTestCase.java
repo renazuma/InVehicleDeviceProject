@@ -103,7 +103,7 @@ public class NotificationTestCase extends
 				.getVisibility());
 
 	}
-
+/*
 	public void test04_いいえを押下して閉じ走行中に戻る() {
 		test02_走行中に管理者から連絡が来たら表示();
 
@@ -229,4 +229,5 @@ public class NotificationTestCase extends
 				.getVisibility());
 
 	}
+	*/
 }
