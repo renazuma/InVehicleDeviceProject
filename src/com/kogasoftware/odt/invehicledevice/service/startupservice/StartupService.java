@@ -44,6 +44,7 @@ public class StartupService extends Service {
 			Log.i(TAG, "waiting for startup enabled");
 			return;
 		}
+		
 		String externalStorageState = Environment.getExternalStorageState();
 		if (!externalStorageState.equals(Environment.MEDIA_MOUNTED)) {
 			Log.i(TAG, "Environment.getExternalStorageState() "
@@ -70,6 +71,7 @@ public class StartupService extends Service {
 
 		Intent startIntent = new Intent(StartupService.this,
 				InVehicleDeviceActivity.class);
+		startIntent.setAction(Intent.ACTION_DEFAULT);
 		startIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		startActivity(startIntent);
 	}
