@@ -32,7 +32,7 @@ import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.User;
 
 public class DepartureCheckModalView extends ModalView {
-	
+
 	private final AlphaAnimation animation = new AlphaAnimation(1, 0.1f);
 
 	public static class ShowEvent {
@@ -88,10 +88,10 @@ public class DepartureCheckModalView extends ModalView {
 			startButton.setText("出発する");
 		}
 
+		// 警告データが存在するため「やめる」ボタンの形状を変更
 		if (!messages.isEmpty()) {
 
             animation.setDuration(1000);
-            animation.setRepeatCount(1);
             animation.setRepeatCount(Animation.INFINITE);
             closeButton.startAnimation(animation);
 

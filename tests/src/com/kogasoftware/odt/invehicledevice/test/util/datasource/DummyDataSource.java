@@ -93,7 +93,7 @@ public class DummyDataSource extends EmptyDataSource {
 			String r5 = "{id: 55, passenger_count: 1, departure_schedule_id: 4, arrival_schedule_id: 5, payment: 500, user: {id: 5, last_name: 'おおおお', first_name: 'ごごう'}}";
 
 			JSONObject j1 = new JSONObject(
-					"{id:1, arrival_estimate: '2012-06-18T09:00:00+09:00', departure_estimate: '2012-06-18T09:15:00+09:00', "
+					"{id:1, arrival_estimate: '2012-06-21T09:00:00+09:00', departure_estimate: '2012-06-21T09:15:00+09:00', "
 							+ "platform: {name: '85_特別養護老人ホームあじさいのおか牛窓／在宅介護支援センターＡＪＩＳＡＩ', name_ruby: 'とくべつようごろうじんほーむあじさいのおかうしまどざいたくかいごしえんせんたーあじさい'}, "
 							+ "reservations_as_departure: ["
 							+ r1
@@ -103,7 +103,7 @@ public class DummyDataSource extends EmptyDataSource {
 			l.add(new OperationSchedule(j1));
 
 			JSONObject j2 = new JSONObject(
-					"{id:2, arrival_estimate: '2012-06-18T09:30:00+09:00', departure_estimate: '2012-06-18T09:35:00+09:00', "
+					"{id:2, arrival_estimate: '2012-06-21T09:30:00+09:00', departure_estimate: '2012-06-21T09:35:00+09:00', "
 							+ "platform: {name: '420_岡山県牛窓ヨットハーバー、岡山県セーリング連盟（ＮＰＯ法人）', name_ruby: 'おかやまけんうしまどよっとはーばーおかやまけんせーりんぐれんめい'}, reservations_as_arrival: [ "
 							+ r1
 							+ " ], "
@@ -113,7 +113,7 @@ public class DummyDataSource extends EmptyDataSource {
 			l.add(new OperationSchedule(j2));
 
 			JSONObject j3 = new JSONObject(
-					"{id:3, arrival_estimate: '2012-06-18T10:15:00+09:00', departure_estimate: '2012-06-18T10:20:00+09:00', "
+					"{id:3, arrival_estimate: '2012-06-21T10:15:00+09:00', departure_estimate: '2012-06-21T10:20:00+09:00', "
 							+ "platform: {name: '214_焼肉味楽', name_ruby: 'やきにくみらく'}, "
 							+ "reservations_as_arrival: ["
 							+ r2
@@ -123,7 +123,7 @@ public class DummyDataSource extends EmptyDataSource {
 			l.add(new OperationSchedule(j3));
 
 			JSONObject j4 = new JSONObject(
-					"{id:4, arrival_estimate: '2012-06-18T11:00:00+09:00', departure_estimate: '2012-06-18T11:05:00+09:00', "
+					"{id:4, arrival_estimate: '2012-06-21T11:00:00+09:00', departure_estimate: '2012-06-21T11:05:00+09:00', "
 							+ "platform: {name: '27_横尾入口停留所（尾張方面行き）', name_ruby: 'よこおいりぐちていりゅうじょ（おわりほうめんゆき）'}, "
 							+ "reservations_as_departure: ["
 							+ r5
@@ -133,7 +133,7 @@ public class DummyDataSource extends EmptyDataSource {
 			l.add(new OperationSchedule(j4));
 
 			JSONObject j5 = new JSONObject(
-					"{id:5, arrival_estimate: '2012-06-18T03:00:00+09:00', departure_estimate: '2012-06-18T02:00:00+09:00', "
+					"{id:5, arrival_estimate: '2012-06-21T03:00:00+09:00', departure_estimate: '2012-06-21T02:00:00+09:00', "
 							+ "platform: {name: '220_瀬戸内市役所／牛窓支所、瀬戸内市立美術館、瀬戸内市役所／教育委員会', name_ruby: 'せとうちしやくしょうしまどししょ、せとうちしりつびじゅつかん、せとうちしやくしょきょういくいいんかい'}, "
 							+ "reservations_as_arrival: ["
 							+ r4

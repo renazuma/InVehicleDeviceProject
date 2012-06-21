@@ -151,10 +151,10 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 				public void onClick(View view) {
 					commonLogic.postEvent(new MemoModalView.ShowEvent(
 							reservation));
+					animation.cancel();
 				}
 			});
             animation.setDuration(1000);
-            animation.setRepeatCount(1);
             animation.setRepeatCount(Animation.INFINITE);
             memoButton.startAnimation(animation);
 
