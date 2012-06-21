@@ -55,6 +55,7 @@ public class BackgroundTaskThread extends Thread {
 			backgroundTask.loop();
 		} finally {
 			commonLogic.dispose();
+			statusAccess.close();
 		}
 	}
 }

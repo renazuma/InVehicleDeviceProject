@@ -1,12 +1,16 @@
 package com.kogasoftware.odt.invehicledevice.logic;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Calendar;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -22,14 +26,16 @@ import android.util.Log;
 
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.logic.datasource.WebAPIDataSource;
+import com.kogasoftware.odt.invehicledevice.logic.empty.EmptyThread;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.ServiceProvider;
 
 /**
  * InVehicleDeviceStatusのアクセスに対し 書き込みがあったら自動で保存. 読み書き時にロックを実行を行う
  */
-public class StatusAccess {
+public class StatusAccess implements Closeable {
 	private static final Object FILE_ACCESS_LOCK = new Object(); // ファイルアクセス中のスレッドを一つに制限するためのロック。将来的にはロックの粒度をファイル毎にする必要があるかもしれない。
+	private static final Integer SAVE_PERIO = 5000;
 
 	public interface Reader<T> {
 		T read(Status status);
@@ -51,23 +57,27 @@ public class StatusAccess {
 		}
 	}
 
-	private static class SaveThread extends Thread {
+	private class SaveThread extends Thread {
 		private final File file;
-		private final byte[] serialized;
 
-		public SaveThread(File file, byte[] serialized) {
+		public SaveThread(File file) {
 			this.file = file;
-			this.serialized = serialized.clone();
 		}
 
-		@Override
-		public void run() {
+		private void loop() throws InterruptedException {
+			Thread.sleep(SAVE_PERIO);
+			saveSemaphore.acquire();
+			saveSemaphore.drainPermits();
+			ByteBuffer buffer = saveData.getAndSet(null);
+			if (buffer == null) {
+				return;
+			}
 			synchronized (FILE_ACCESS_LOCK) {
 				FileOutputStream fileOutputStream = null;
 				try {
 					fileOutputStream = new FileOutputStream(file);
 					fileOutputStream.getChannel().lock();
-					fileOutputStream.write(serialized);
+					fileOutputStream.write(buffer.array());
 				} catch (FileNotFoundException e) {
 					Log.w(TAG, e);
 				} catch (IOException e) {
@@ -75,6 +85,16 @@ public class StatusAccess {
 				} finally {
 					Closeables.closeQuietly(fileOutputStream);
 				}
+			}
+		}
+
+		@Override
+		public void run() {
+			try {
+				while (true) {
+					loop();
+				}
+			} catch (InterruptedException e) {
 			}
 		}
 	}
@@ -133,8 +153,7 @@ public class StatusAccess {
 				if (object instanceof Status) {
 					status = (Status) object;
 				}
-				
-				
+
 			} catch (IndexOutOfBoundsException e) {
 				Log.e(TAG, e.toString(), e);
 			} catch (SerializationException e) {
@@ -183,6 +202,9 @@ public class StatusAccess {
 	private final Lock readLock = reentrantReadWriteLock.readLock();
 	private final Lock writeLock = reentrantReadWriteLock.writeLock();
 	private final Status status;
+	private final Semaphore saveSemaphore = new Semaphore(0);
+	private final AtomicReference<ByteBuffer> saveData = new AtomicReference<ByteBuffer>();
+	private Thread saveThread = new EmptyThread();
 
 	/**
 	 * 空のStatusを生成する。
@@ -195,6 +217,8 @@ public class StatusAccess {
 		synchronized (FILE_ACCESS_LOCK) {
 			status = newStatusInstanceFromFile(context);
 		}
+		saveThread = new SaveThread(status.file);
+		saveThread.start();
 	}
 
 	public ReadOnlyStatusAccess getReadOnlyStatusAccess() {
@@ -221,7 +245,7 @@ public class StatusAccess {
 	}
 
 	private void save(final File file) {
-		// ByteArrayへの変換を呼び出し元スレッドで行う
+		// byte[]への変換を呼び出し元スレッドで行う
 		long startTime = System.currentTimeMillis();
 		byte[] serialized = new byte[0];
 		try {
@@ -239,9 +263,8 @@ public class StatusAccess {
 			long runTime = stopTime - startTime;
 			Log.d(TAG, "StatusAccess.save() " + runTime + " ms");
 		}
-
-		// ByteArrayへの変換後は、呼び出し元スレッドでのファイルIOを避けるため新しいスレッドでデータを書き込む
-		(new SaveThread(file, serialized)).start();
+		saveData.set(ByteBuffer.wrap(serialized));
+		saveSemaphore.release();
 	}
 
 	public void write(Writer writer) {
@@ -254,5 +277,10 @@ public class StatusAccess {
 
 		// findbugsの警告回避ができないため、Lockのダウングレードはしないでおく
 		save(status.file);
+	}
+
+	@Override
+	public void close() {
+		saveThread.interrupt();
 	}
 }
