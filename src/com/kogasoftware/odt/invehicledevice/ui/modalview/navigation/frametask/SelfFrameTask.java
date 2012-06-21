@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PointF;
 
+import com.javadocmd.simplelatlng.LatLng;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.FrameState;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.NavigationRenderer;
@@ -15,6 +16,7 @@ public class SelfFrameTask extends FrameTask {
 	private int textureId = -1; // TODO:Optionalを検討
 	private final int width;
 	private final int height;
+	private final LatLng latLng = new LatLng(0, 0);
 
 	public SelfFrameTask(Resources resources) {
 		bitmap = BitmapFactory.decodeResource(resources, R.drawable.self);
@@ -38,9 +40,14 @@ public class SelfFrameTask extends FrameTask {
 		}
 	}
 
+	public void setLatLng(LatLng latLng) {
+		this.latLng.setLatitudeLongitude(latLng.getLatitude(),
+				latLng.getLongitude());
+	}
+
 	@Override
 	public void onDraw(FrameState frameState) {
-		PointF point = NavigationRenderer.getPoint(frameState.getLatLng());
+		PointF point = NavigationRenderer.getPoint(latLng);
 		float scale = 1.5f / frameState.getTotalZoom();
 		float alpha = 0.4f;
 		Textures.draw(frameState.getGL(), textureId, point.x, point.y, width,

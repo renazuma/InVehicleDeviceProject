@@ -66,6 +66,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	private final Queue<FrameTask> addedFrameTasks = new ConcurrentLinkedQueue<FrameTask>();
 	private final Queue<FrameTask> removedFrameTasks = new ConcurrentLinkedQueue<FrameTask>();
 	private final NextPlatformFrameTask nextPlatformFrameTask;
+	private final SelfFrameTask selfFrameTask;
 	private final TilePipeline tilePipeline;
 
 	private CommonLogic commonLogic = new CommonLogic();
@@ -87,12 +88,12 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		windowManager = (WindowManager) context
 				.getSystemService(Context.WINDOW_SERVICE);
 		tilePipeline.changeZoomLevel(zoomLevel);
+		addedFrameTasks.add(new MapBuildFrameTask(context, tilePipeline));
+		selfFrameTask = new SelfFrameTask(context.getResources());
+		addedFrameTasks.add(selfFrameTask);
 		nextPlatformFrameTask = new NextPlatformFrameTask(
 				context.getResources());
 		nextPlatformFrameTask.setLatLng(new LatLng(0, 0));
-
-		addedFrameTasks.add(new MapBuildFrameTask(context, tilePipeline));
-		addedFrameTasks.add(new SelfFrameTask(context.getResources()));
 		addedFrameTasks.add(nextPlatformFrameTask);
 
 		// 〒701-4302 岡山県瀬戸内市牛窓町牛窓３９１１−３７ (東備バス（株）)
@@ -142,29 +143,31 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		}
 
 		// 現在地を取得
-		LatLng vehicleLatLng = new LatLng(
+		LatLng selfLatLng = new LatLng(
 				latitudeSmoother.getSmoothMotion(millis),
 				longitudeSmoother.getSmoothMotion(millis));
+		selfFrameTask.setLatLng(selfLatLng);
 		// LatLng vehicleLatLng = new LatLng(35.707085, 139.771739);
 		// LatLng vehicleLatLng = new LatLng(0, 0);
-		LatLng centerLatLng = vehicleLatLng;
+		LatLng centerLatLng = selfLatLng;
 		PointF centerPoint = getPoint(centerLatLng);
-		PointF vehiclePoint = getPoint(vehicleLatLng);
+		PointF selfPoint = getPoint(selfLatLng);
 
 		// 現在の方向を取得
 		float angle = (float) (-rotationSmoother.getSmoothMotion(millis));
 
-		centerPoint.y += height / 5.5 / totalZoom; // 中心を上に修正
-
 		double pixelDistanceRate = 0.0;
 
-		// 目的地が存在する場合
-		if (!nextPlatformFrameTask.getLatLng().equals(new LatLng(0, 0))) {
+		if (nextPlatformFrameTask.getLatLng().equals(new LatLng(0, 0))) {
+			// 目的地が存在しない場合
+		} else if (autoZoomLevel) {
+			// 自動ズームが有効な場合
+			centerPoint.y += height / 5.5 / totalZoom; // 中心を上に修正
 			PointF nextPlatformPoint = getPoint(nextPlatformFrameTask
 					.getLatLng());
 			// 目的地が現在地より下にある場合、中心を下に修正して目的地が見やすいようにする
-			float vehicleRY = vehiclePoint.x * FloatMath.sin(angle)
-					+ vehiclePoint.y * FloatMath.cos(angle);
+			float vehicleRY = selfPoint.x * FloatMath.sin(angle)
+					+ selfPoint.y * FloatMath.cos(angle);
 			float nextPlatformRY = nextPlatformPoint.x * FloatMath.sin(angle)
 					+ nextPlatformPoint.y * FloatMath.cos(angle);
 
@@ -183,21 +186,32 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 			}
 
 			// 現在地と目的地のピクセル距離を計算
-			double dx = (vehiclePoint.x - nextPlatformPoint.x);
-			double dy = (vehiclePoint.y - nextPlatformPoint.y);
+			double dx = (selfPoint.x - nextPlatformPoint.x);
+			double dy = (selfPoint.y - nextPlatformPoint.y);
 			double pixelDistance = Math.sqrt(dx * dx + dy * dy) * totalZoom;
 			// 縦横で短い方を基準にしたピクセル距離の割合を計算
 			pixelDistanceRate = pixelDistance / Math.min(width, height);
 
-			if (autoZoomLevel) {
-				// ピクセル距離に応じてズームを修正
-				if (pixelDistanceRate < 0.22) {
-					// 近い場合、拡大する
-					setZoomLevel(zoomLevel + 1);
-				} else if (pixelDistanceRate > 0.55) {
-					// 遠い場合、縮小する
-					setZoomLevel(zoomLevel - 1);
-				}
+			// ピクセル距離に応じてズームを修正
+			if (pixelDistanceRate < 0.22) {
+				// 近い場合、拡大する
+				setZoomLevel(zoomLevel + 1);
+			} else if (pixelDistanceRate > 0.55) {
+				// 遠い場合、縮小する
+				setZoomLevel(zoomLevel - 1);
+			}
+		} else {
+			// 自動ズームが無効の場合
+			centerLatLng = nextPlatformFrameTask.getLatLng();
+			centerPoint = getPoint(centerLatLng);
+			// 中心を自車方向にずらす
+			double dy = selfPoint.y - centerPoint.y;
+			double dx = selfPoint.x - centerPoint.x;
+			if (dx != 0d && dy != 0d) {
+				double rad = Math.atan2(dy, dx);
+				double distance = Math.min(width, height) / 5.5 / totalZoom;
+				centerPoint.x += Math.cos(rad) * distance;
+				centerPoint.y += Math.sin(rad) * distance;
 			}
 		}
 
@@ -205,8 +219,8 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		framesBy10seconds++;
 		if (millis - lastReportMillis > 10 * 1000) {
 			Log.d(TAG, "onDrawFrame() fps=" + (double) framesBy10seconds / 10
-					+ ", lat=" + vehicleLatLng.getLatitude() + ", lon="
-					+ vehicleLatLng.getLongitude() + ", zoom=" + zoomLevel
+					+ ", lat=" + selfLatLng.getLatitude() + ", lon="
+					+ selfLatLng.getLongitude() + ", zoom=" + zoomLevel
 					+ ", angle=" + angle + ", center=(" + centerPoint.x + ","
 					+ centerPoint.y + ") pdr=" + pixelDistanceRate);
 			framesBy10seconds = 0l;
@@ -255,10 +269,17 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		gl.glMatrixMode(GL10.GL_MODELVIEW);
 		gl.glLoadIdentity();
 
-		// 自分自身を中心に全体を回転する
-		gl.glTranslatef(vehiclePoint.x, vehiclePoint.y, 0);
-		gl.glRotatef((float) Math.toDegrees(angle), 0, 0, 1);
-		gl.glTranslatef(-vehiclePoint.x, -vehiclePoint.y, 0);
+		if (autoZoomLevel) {
+			// 自分自身を中心に全体を回転する
+			gl.glTranslatef(selfPoint.x, selfPoint.y, 0);
+			gl.glRotatef((float) Math.toDegrees(angle), 0, 0, 1);
+			gl.glTranslatef(-selfPoint.x, -selfPoint.y, 0);
+		} else {
+			// 目的地を中心に全体を回転する
+			gl.glTranslatef(centerPoint.x, centerPoint.y, 0);
+			gl.glRotatef((float) Math.toDegrees(angle), 0, 0, 1);
+			gl.glTranslatef(-centerPoint.x, -centerPoint.y, 0);
+		}
 
 		// FrameTaskをひとつずつ描画
 		for (FrameTask frameTask : backgroundFrameTasks) {
