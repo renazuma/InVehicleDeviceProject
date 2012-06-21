@@ -32,7 +32,7 @@
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:text="@string/memo"
-        android:background="#adff2f"
+        android:background="#90e090"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:layout_marginRight="5dp"
