@@ -5,20 +5,20 @@ import java.util.List;
 
 public class Users {
 	public static List<String> getMemo(User user) {
-		List<String> memo = new LinkedList<String>();
-		for (String rememberMe : user.getRememberMe().asSet()) {
-			memo.add(rememberMe);
+		List<String> memos = new LinkedList<String>();
+		for (String memo : user.getMemo().asSet()) {
+			memos.add(memo);
 		}
 		if (user.getHandicapped().or(false)) {
-			memo.add("※身体障害者");
+			memos.add("※身体障害者");
 		}
 		if (user.getWheelchair().or(false)) {
-			memo.add("※要車椅子");
+			memos.add("※要車椅子");
 		}
 		if (user.getNeededCare().or(false)) {
-			memo.add("※要介護");
+			memos.add("※要介護");
 		}
-		return memo;
+		return memos;
 	}
 	
 	public static List<String> getMemo(Reservation reservation) {
