@@ -38,7 +38,7 @@ public class PlatformPhaseView extends PhaseView {
 	}
 
 	private static final String TAG = PlatformPhaseView.class.getSimpleName();
-	private static final long UPDATE_MINUTES_REMAINING_INTERVAL_MILLIS = 5;
+	private static final long UPDATE_MINUTES_REMAINING_INTERVAL_MILLIS = 3;
 	private final ListView reservationListView;
 	private final TextView nowPlatformNameTextView;
 	private final ToggleButton showAllRidingReservationsButton;
@@ -67,8 +67,8 @@ public class PlatformPhaseView extends PhaseView {
 					.getCurrentOperationSchedule().asSet()) {
 				Date departureEstimate = operationSchedule
 						.getDepartureEstimate();
-				Integer minutesRemaining = (int) (departureEstimate.getTime() - now
-						.getTime()) / 1000 / 60;
+				Integer minutesRemaining = (int) (departureEstimate.getTime() / 1000 / 60 - now
+						.getTime() / 1000 / 60);
 				DateFormat dateFormat = new SimpleDateFormat("HH:mm");
 				String dateString = dateFormat.format(departureEstimate);
 				minutesRemainingTextView.setText(Html.fromHtml(String.format(
@@ -139,12 +139,11 @@ public class PlatformPhaseView extends PhaseView {
 
 		if (operationSchedules.size() > 0) {
 			OperationSchedule nowOperationSchedule = operationSchedules.get(0);
-			for (Platform platform : nowOperationSchedule.getPlatform()
-					.asSet()) {
-				nowPlatformNameTextView.setText(Html.fromHtml(String.format(
-						getResources()
-								.getString(R.string.now_platform_is_html),
-						platform.getName())));
+			for (Platform platform : nowOperationSchedule.getPlatform().asSet()) {
+				nowPlatformNameTextView.setText(Html.fromHtml(String
+						.format(getResources().getString(
+								R.string.now_platform_is_html),
+								platform.getName())));
 			}
 		} else {
 			nowPlatformNameTextView.setText("");
