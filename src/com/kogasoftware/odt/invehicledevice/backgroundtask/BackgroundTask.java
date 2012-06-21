@@ -230,6 +230,7 @@ public class BackgroundTask {
 		operationScheduleReceiveThread.interrupt();
 		sensorManager.unregisterListener(temperatureSensorEventListener);
 		sensorManager.unregisterListener(orientationSensorEventListener);
+		sensorManager.unregisterListener(accMagSensorEventListener);
 		applicationContext.unregisterReceiver(exitBroadcastReceiver);
 		for (TelephonyManager telephonyManager : optionalTelephonyManager
 				.asSet()) {
