@@ -20,7 +20,7 @@ import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
 public class StartupService extends Service {
 	private static final String TAG = StartupService.class.getSimpleName();
-	private static final long CHECK_DEVICE_INTERVAL_MILLIS = 20 * 1000;
+	private static final long CHECK_DEVICE_INTERVAL_MILLIS = 10 * 1000;
 	private final AtomicBoolean enabled = new AtomicBoolean(true);
 	private final BroadcastReceiver screenOnBroadcastReceiver = new BroadcastReceiver() {
 		@Override
@@ -41,7 +41,7 @@ public class StartupService extends Service {
 
 	private void checkDeviceAndStartActivity() {
 		if (!enabled.get()) {
-			Log.i(TAG, "Startup disabled");
+			Log.i(TAG, "waiting for startup enabled");
 			return;
 		}
 		String externalStorageState = Environment.getExternalStorageState();
@@ -109,11 +109,13 @@ public class StartupService extends Service {
 		@Override
 		public void disable() throws RemoteException {
 			enabled.set(false);
+			Log.i(TAG, "Startup disabled");
 		}
 
 		@Override
 		public void enable() throws RemoteException {
 			enabled.set(true);
+			Log.i(TAG, "Startup enabled");
 		}
 	};
 	
@@ -138,6 +140,7 @@ public class StartupService extends Service {
 		super.onStartCommand(intent, flags, startId);
 		Log.i(TAG, "onStartCommand(" + intent + ", " + flags + ", " + startId
 				+ ")");
+		enabled.set(true);
 
 		showActivity();
 		return Service.START_STICKY;
