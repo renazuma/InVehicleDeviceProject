@@ -11,11 +11,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
-import android.view.animation.Animation;
-import android.view.animation.AlphaAnimation;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
@@ -327,8 +327,6 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 			if (PassengerRecords.isUnhandled(passengerRecord)) {
 				passengerRecord.setGetOnTime(new Date());
 				passengerRecord
-						.setDepartureOperationSchedule(operationSchedule);
-				passengerRecord
 						.setDepartureOperationScheduleId(operationSchedule
 								.getId());
 				commonLogic.getDataSource().getOnPassenger(operationSchedule,
@@ -336,7 +334,6 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 						new EmptyWebAPICallback<PassengerRecord>());
 			} else if (PassengerRecords.isRiding(passengerRecord)) {
 				passengerRecord.setGetOffTime(new Date());
-				passengerRecord.setArrivalOperationSchedule(operationSchedule);
 				passengerRecord.setArrivalOperationScheduleId(operationSchedule
 						.getId());
 				commonLogic.getDataSource().getOffPassenger(operationSchedule,
@@ -353,14 +350,12 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 				.asSet()) {
 			if (PassengerRecords.isRiding(passengerRecord)) {
 				passengerRecord.clearGetOnTime();
-				passengerRecord.clearDepartureOperationSchedule();
 				passengerRecord.clearDepartureOperationScheduleId();
 				commonLogic.getDataSource().cancelGetOnPassenger(
 						operationSchedule, reservation,
 						new EmptyWebAPICallback<PassengerRecord>());
 			} else if (PassengerRecords.isGotOff(passengerRecord)) {
 				passengerRecord.clearGetOffTime();
-				passengerRecord.clearArrivalOperationSchedule();
 				passengerRecord.clearArrivalOperationScheduleId();
 				commonLogic.getDataSource().cancelGetOffPassenger(
 						operationSchedule, reservation,
