@@ -12,7 +12,7 @@ import android.view.WindowManager;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 
 public class OrientationSensorEventListener implements SensorEventListener {
-	private static final Long SAVE_PERIOD_MILLIS = 200L;
+	private static final Long SAVE_PERIOD_MILLIS = 500L;
 	private static final String TAG = OrientationSensorEventListener.class.getSimpleName();
 	private Long lastSavedMillis = System.currentTimeMillis();
 
