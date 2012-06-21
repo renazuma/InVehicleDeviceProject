@@ -61,9 +61,10 @@
       <copy todir=".">
         <fileset dir="InVehicleDevice">
           <include name="src/com/kogasoftware/odt/invehicledevice/logic/SharedPreferencesKey.java"/>
+          <include name="src/com/kogasoftware/odt/invehicledevice/service/startupservice/IStartupService.aidl"/>
         </fileset>
       </copy>
-    </target>    
+    </target>
     <import file="custom_rules.xml" optional="true" />
 
     <!-- Import the actual build file.

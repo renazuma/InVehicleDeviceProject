@@ -6,10 +6,15 @@ import org.json.JSONException;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.RemoteException;
 import android.preference.EditTextPreference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
@@ -22,6 +27,7 @@ import android.widget.Toast;
 
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.logic.SharedPreferencesKey;
+import com.kogasoftware.odt.invehicledevice.service.startupservice.IStartupService;
 import com.kogasoftware.odt.webapi.WebAPI;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
@@ -43,9 +49,29 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 	private SharedPreferences preferences = null;
 	private WebAPI api = null;
 
+	private ServiceConnection serviceConnection = new ServiceConnection() {
+		@Override
+		public void onServiceConnected(ComponentName componentName,
+				IBinder service) {
+			Log.i(TAG, "onServiceConnected");
+			IStartupService startupService = IStartupService.Stub.asInterface(service);
+			try {
+				startupService.disable();
+			} catch (RemoteException e) {
+				Log.w(TAG, e);
+			}
+		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName componentName) {
+			Log.i(TAG, "onServiceDisconnected");
+		}
+	};
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+	
 		setContentView(R.layout.main);
 		api = new WebAPI(DEFAULT_URL);
 
@@ -80,10 +106,24 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		}
 		return null;
 	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		bindService(new Intent(IStartupService.class.getName()),
+                serviceConnection, Context.BIND_AUTO_CREATE);
+	}
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+		unbindService(serviceConnection);
+	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+
 		preferences.unregisterOnSharedPreferenceChangeListener(this);
 		Closeables.closeQuietly(api);
 	}
