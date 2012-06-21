@@ -48,7 +48,7 @@
         </activity>
         <activity android:name=".ui.activity.EmptyActivity" />
 
-        <receiver android:name=".service.StartupService$StartupBroadcastReceiver" >
+        <receiver android:name=".service.startupservice.StartupService$StartupBroadcastReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.POWER_CONNECTED" />
@@ -63,12 +63,8 @@
             </intent-filter>
         </receiver>
 
-        <service android:name=".service.StartupService" />
-
-        <!-- OpenJTalkの処理はプロセスを分離しておく -->
-        <service
-            android:name=".service.voiceservice.VoiceService"
-            android:process=":VoiceService" />
+        <service android:name=".service.startupservice.StartupService" android:process=":StartupService" android:exported="true"/>
+        <service android:name=".service.voiceservice.VoiceService" android:process=":VoiceService"/>
     </application>
 
 </manifest>
