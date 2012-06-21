@@ -152,7 +152,6 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 				public void onClick(View view) {
 					commonLogic.postEvent(new MemoModalView.ShowEvent(
 							reservation));
-		            view.clearAnimation();
 				}
 			});
             animation.setDuration(1000);
