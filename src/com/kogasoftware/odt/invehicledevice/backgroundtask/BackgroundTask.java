@@ -176,21 +176,21 @@ public class BackgroundTask {
 					sensor, SensorManager.SENSOR_DELAY_UI);
 		}
 
-		List<Sensor> accelerometerSensors = sensorManager
-				.getSensorList(Sensor.TYPE_ACCELEROMETER);
-		if (accelerometerSensors.size() > 0) {
-			Sensor sensor = accelerometerSensors.get(0);
-			sensorManager.registerListener(accMagSensorEventListener, sensor,
-					SensorManager.SENSOR_DELAY_UI);
-		}
-
-		List<Sensor> magneticFieldSensors = sensorManager
-				.getSensorList(Sensor.TYPE_MAGNETIC_FIELD);
-		if (magneticFieldSensors.size() > 0) {
-			Sensor sensor = magneticFieldSensors.get(0);
-			sensorManager.registerListener(accMagSensorEventListener, sensor,
-					SensorManager.SENSOR_DELAY_UI);
-		}
+		// List<Sensor> accelerometerSensors = sensorManager
+		// .getSensorList(Sensor.TYPE_ACCELEROMETER);
+		// if (accelerometerSensors.size() > 0) {
+		// Sensor sensor = accelerometerSensors.get(0);
+		// sensorManager.registerListener(accMagSensorEventListener, sensor,
+		// SensorManager.SENSOR_DELAY_UI);
+		// }
+		//
+		// List<Sensor> magneticFieldSensors = sensorManager
+		// .getSensorList(Sensor.TYPE_MAGNETIC_FIELD);
+		// if (magneticFieldSensors.size() > 0) {
+		// Sensor sensor = magneticFieldSensors.get(0);
+		// sensorManager.registerListener(accMagSensorEventListener, sensor,
+		// SensorManager.SENSOR_DELAY_UI);
+		// }
 
 		List<Sensor> orientationSensors = sensorManager
 				.getSensorList(Sensor.TYPE_ORIENTATION);
@@ -230,7 +230,7 @@ public class BackgroundTask {
 		operationScheduleReceiveThread.interrupt();
 		sensorManager.unregisterListener(temperatureSensorEventListener);
 		sensorManager.unregisterListener(orientationSensorEventListener);
-		sensorManager.unregisterListener(accMagSensorEventListener);
+		// sensorManager.unregisterListener(accMagSensorEventListener);
 		applicationContext.unregisterReceiver(exitBroadcastReceiver);
 		for (TelephonyManager telephonyManager : optionalTelephonyManager
 				.asSet()) {
