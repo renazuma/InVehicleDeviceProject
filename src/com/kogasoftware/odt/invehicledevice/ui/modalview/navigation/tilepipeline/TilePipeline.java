@@ -25,7 +25,7 @@ import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipeline
 
 public class TilePipeline {
 	private static final String TAG = TilePipeline.class.getSimpleName();
-	private static final Integer MAX_TEXTURE_TRANSFER_COUNT = 10;
+	private static final Integer MAX_TEXTURE_TRANSFER_COUNT = 5;
 	private final Set<Tile> processingTiles = new CopyOnWriteArraySet<Tile>();
 	private final OnDropListener<Tile> onDropListener = new OnDropListener<Tile>() {
 		@Override
