@@ -17,7 +17,7 @@ import org.json.JSONObject;
 import com.google.common.base.Optional;
 
 public class VehicleNotification extends Model {
-	private static final long serialVersionUID = 2481083602147645862L;
+	private static final long serialVersionUID = 1878705192607302047L;
 
 	public VehicleNotification() {
 	}
@@ -32,6 +32,7 @@ public class VehicleNotification extends Model {
 
 	public static void fillMembers(VehicleNotification model, JSONObject jsonObject) throws JSONException, ParseException {
 		model.setBody(parseString(jsonObject, "body"));
+		model.setBodyRuby(parseOptionalString(jsonObject, "body_ruby"));
 		model.setCreatedAt(parseDate(jsonObject, "created_at"));
 		model.setEventAt(parseOptionalDate(jsonObject, "event_at"));
 		model.setId(parseInteger(jsonObject, "id"));
@@ -86,6 +87,7 @@ public class VehicleNotification extends Model {
 		}
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("body", toJSON(getBody()));
+		jsonObject.put("body_ruby", toJSON(getBodyRuby().orNull()));
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
 		jsonObject.put("event_at", toJSON(getEventAt().orNull()));
 		jsonObject.put("id", toJSON(getId()));
@@ -160,6 +162,24 @@ public class VehicleNotification extends Model {
 
 	public void setBody(String body) {
 		this.body = wrapNull(body);
+	}
+
+	private Optional<String> bodyRuby = Optional.absent();
+
+	public Optional<String> getBodyRuby() {
+		return wrapNull(bodyRuby);
+	}
+
+	public void setBodyRuby(Optional<String> bodyRuby) {
+		this.bodyRuby = wrapNull(bodyRuby);
+	}
+
+	public void setBodyRuby(String bodyRuby) {
+		this.bodyRuby = Optional.fromNullable(bodyRuby);
+	}
+
+	public void clearBodyRuby() {
+		this.bodyRuby = Optional.absent();
 	}
 
 	private Date createdAt = new Date();
