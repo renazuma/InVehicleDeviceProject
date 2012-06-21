@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.test.ActivityInstrumentationTestCase2;
 
 import com.jayway.android.robotium.solo.Solo;
-import com.kogasoftware.odt.invehicledevice.service.StartupService.StartupBroadcastReceiver;
+import com.kogasoftware.odt.invehicledevice.service.startupservice.StartupService.StartupBroadcastReceiver;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
 public class StartBroadcastReceiverTestCase extends
