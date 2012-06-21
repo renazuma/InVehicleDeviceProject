@@ -68,7 +68,7 @@ public class NotificationModalView extends ModalView {
 		}
 		currentVehicleNotification = newVehicleNotification;
 		TextView bodyTextView = (TextView) findViewById(R.id.notification_text_view);
-		bodyTextView.setText(currentVehicleNotification.getBody());
+		bodyTextView.setText(currentVehicleNotification.getBodyRuby().or(currentVehicleNotification.getBody()));
 		super.show();
 	}
 

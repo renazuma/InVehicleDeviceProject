@@ -66,10 +66,11 @@ public class ScheduleChangedModalView extends ModalView {
 		StringBuilder message = new StringBuilder(Objects.firstNonNull(
 				scheduleChangedTextView.getText(), ""));
 		for (VehicleNotification vehicleNotification : vehicleNotifications) {
-			getCommonLogic().postEvent(
-					new SpeakEvent(vehicleNotification.getBody()));
-			message.append(vehicleNotification.getBody());
-			message.append('\n');
+			for (String body : vehicleNotification.getBodyRuby().asSet()) {
+				getCommonLogic().postEvent(new SpeakEvent(body));
+				message.append(body);
+				message.append('\n');
+			}
 		}
 
 		scheduleChangedTextView.setText(message);
