@@ -69,14 +69,25 @@ public class DepartureCheckModalView extends ModalView {
 		ListView errorReservationListView = ((FlickUnneededListView) findViewById(R.id.error_reservation_list_view))
 				.getListView();
 		List<String> messages = new LinkedList<String>();
-		for (Reservation reservation : adapter.getNoGettingOnReservations()) {
-			messages.add(" ※ " + getUserName(reservation) + "様が未乗車です");
+
+		if (adapter.getNoGettingOnReservations().isEmpty()) {
+		} else {
+			for (Reservation reservation : adapter.getNoGettingOnReservations()) {
+				messages.add(" ※ " + getUserName(reservation) + "様が未乗車です");
+			}
 		}
-		for (Reservation reservation : adapter.getNoGettingOffReservations()) {
-			messages.add(" ※ " + getUserName(reservation) + "様が未降車です");
+
+		if (adapter.getNoGettingOffReservations().isEmpty()) {
+		} else {
+			for (Reservation reservation : adapter.getNoGettingOffReservations()) {
+				messages.add(" ※ " + getUserName(reservation) + "様が未降車です");
+			}
 		}
-		for (Reservation reservation : adapter.getNoPaymentReservations()) {
-			messages.add(" ※ " + getUserName(reservation) + "様が料金未払いです");
+		if (adapter.getNoPaymentReservations().isEmpty()) {
+		} else {
+			for (Reservation reservation : adapter.getNoPaymentReservations()) {
+				messages.add(" ※ " + getUserName(reservation) + "様が料金未払いです");
+			}
 		}
 
 		errorReservationListView.setAdapter(new ArrayAdapter<String>(
@@ -90,7 +101,6 @@ public class DepartureCheckModalView extends ModalView {
 
 		// 警告データが存在するため「やめる」ボタンの形状を変更
 		if (!messages.isEmpty()) {
-
             animation.setDuration(1000);
             animation.setRepeatCount(Animation.INFINITE);
             closeButton.startAnimation(animation);
@@ -106,6 +116,22 @@ public class DepartureCheckModalView extends ModalView {
             lp.setMargins(10, 1, 10, 10);
             closeButton.setLayoutParams(lp);
             closeButton.setShadowLayer(1.0f, 1.5f, 1.5f, Color.parseColor("#FFFFFF"));
+
+		} else {
+
+			closeButton.setBackgroundDrawable(startButton.getBackground());
+			closeButton.clearAnimation();
+
+			closeButton.setTextColor(Color.BLACK);
+	        LinearLayout.LayoutParams lp
+            =   new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.FILL_PARENT,
+                LinearLayout.LayoutParams.FILL_PARENT);
+            lp.setMargins(0, 0, 0, 0);
+
+            lp.weight = 1f;
+            closeButton.setLayoutParams(lp);
+            closeButton.setShadowLayer(0.0f, 0.0f, 0.0f, Color.parseColor("#FFFFFF"));
 		}
 
 		startButton.setOnClickListener(new OnClickListener() {
