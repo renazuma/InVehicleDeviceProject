@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -24,6 +25,7 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.event.CommonLogicLoadCompleteEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.EnterFinishPhaseEvent;
+import com.kogasoftware.odt.invehicledevice.logic.event.LocationReceivedEvent;
 import com.kogasoftware.odt.invehicledevice.logic.event.MapZoomLevelChangedEvent;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.NavigationRenderer;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipeline.TilePipeline;
@@ -35,11 +37,28 @@ public class NavigationModalView extends ModalView {
 	}
 
 	private static final String TAG = NavigationModalView.class.getSimpleName();
+	private static final Integer GPS_ALERT_FLASH_MILLIS = 1000;
+	private static final Integer GPS_EXPIRE_MILLIS = 20000;
 	private volatile Integer zoomLevel = 12;
 	private final Button zoomInButton;
 	private final Button zoomOutButton;
+	private final LinearLayout gpsAlertLayout;
 	private final ToggleButton autoZoomButton;
 	private final TilePipeline tilePipeline;
+	private final Runnable gpsAlert = new Runnable() {
+		@Override
+		public void run() {
+			Date now = new Date();
+			if (lastLocationUpdated.getTime() + GPS_EXPIRE_MILLIS > now.getTime()) {
+				gpsAlertLayout.setVisibility(GONE);
+				getHandler().postDelayed(this, GPS_EXPIRE_MILLIS);
+				return;
+			}
+			gpsAlertLayout.setVisibility(gpsAlertLayout.isShown() ? GONE : VISIBLE);
+			getHandler().postDelayed(this, GPS_ALERT_FLASH_MILLIS);
+		}
+	};
+	private Date lastLocationUpdated = new Date();
 
 	private WeakReference<GLSurfaceView> glSurfaceViewWeakReference = new WeakReference<GLSurfaceView>(
 			null);
@@ -50,6 +69,11 @@ public class NavigationModalView extends ModalView {
 	public void updateZoomButtons(MapZoomLevelChangedEvent e) {
 		zoomLevel = e.zoomLevel;
 		updateZoomButtons();
+	}
+
+	@Subscribe
+	public void updateLocation(LocationReceivedEvent event) {
+		lastLocationUpdated = new Date();
 	}
 
 	protected void updateZoomButtons() {
@@ -138,6 +162,8 @@ public class NavigationModalView extends ModalView {
 					}
 				});
 		autoZoomButton.setChecked(true);
+		gpsAlertLayout = (LinearLayout)findViewById(R.id.gps_alert_layout);
+		
 		setAutoZoom(true);
 		updateZoomButtons();
 
@@ -279,5 +305,17 @@ public class NavigationModalView extends ModalView {
 		}
 		// TODO:アニメーション
 		// super.hide();
+	}
+	
+	@Override
+	public void onAttachedToWindow() {
+		super.onAttachedToWindow();
+		getHandler().post(gpsAlert);
+	}
+	
+	@Override
+	public void onDetachedFromWindow() {
+		super.onDetachedFromWindow();
+		getHandler().removeCallbacks(gpsAlert);
 	}
 }
