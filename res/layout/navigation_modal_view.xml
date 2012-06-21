@@ -53,15 +53,15 @@
 
         <LinearLayout
             android:id="@+id/gps_alert_layout"
-            android:layout_below="@+id/next_operation_schedule_layout"
-            android:layout_alignParentRight="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/next_operation_schedule_layout"
             android:background="#99FFFFFF"
             android:gravity="right|center"
             android:orientation="horizontal"
-            android:padding="0dip" >
+            android:padding="0dip"
+            android:visibility="gone" >
 
             <ImageView
                 android:layout_width="35sp"
@@ -69,6 +69,7 @@
                 android:src="@drawable/gps" />
 
             <TextView
+                android:id="@+id/gps_alert_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="位置情報を受信しています"

@@ -43,22 +43,27 @@ public class NavigationModalView extends ModalView {
 	private final Button zoomInButton;
 	private final Button zoomOutButton;
 	private final LinearLayout gpsAlertLayout;
+	private final TextView gpsAlertTextView;
 	private final ToggleButton autoZoomButton;
 	private final TilePipeline tilePipeline;
 	private final Runnable gpsAlert = new Runnable() {
 		@Override
 		public void run() {
 			Date now = new Date();
-			if (lastLocationUpdated.getTime() + GPS_EXPIRE_MILLIS > now.getTime()) {
+			if (lastLocationUpdated.getTime() + GPS_EXPIRE_MILLIS > now
+					.getTime()) {
 				gpsAlertLayout.setVisibility(INVISIBLE);
 				getHandler().postDelayed(this, GPS_EXPIRE_MILLIS);
 				return;
 			}
-			gpsAlertLayout.setVisibility(gpsAlertLayout.isShown() ? INVISIBLE : VISIBLE);
+			gpsAlertLayout.setVisibility(VISIBLE);
+			gpsAlertTextView
+					.setVisibility(gpsAlertTextView.getVisibility() == VISIBLE ? INVISIBLE
+							: VISIBLE);
 			getHandler().postDelayed(this, GPS_ALERT_FLASH_MILLIS);
 		}
 	};
-	private Date lastLocationUpdated = new Date();
+	private Date lastLocationUpdated = new Date(0);
 
 	private WeakReference<GLSurfaceView> glSurfaceViewWeakReference = new WeakReference<GLSurfaceView>(
 			null);
@@ -162,8 +167,9 @@ public class NavigationModalView extends ModalView {
 					}
 				});
 		autoZoomButton.setChecked(true);
-		gpsAlertLayout = (LinearLayout)findViewById(R.id.gps_alert_layout);
-		
+		gpsAlertLayout = (LinearLayout) findViewById(R.id.gps_alert_layout);
+		gpsAlertTextView = (TextView) findViewById(R.id.gps_alert_text_view);
+
 		setAutoZoom(true);
 		updateZoomButtons();
 
@@ -246,7 +252,7 @@ public class NavigationModalView extends ModalView {
 		// TODO:アニメーション
 		// super.show();
 
-		//次の乗降場表示
+		// 次の乗降場表示
 		TextView titleTextView = (TextView) findViewById(R.id.next_platform_text_view);
 		CommonLogic commonLogic = getCommonLogic();
 		List<OperationSchedule> operationSchedules = commonLogic
@@ -264,31 +270,33 @@ public class NavigationModalView extends ModalView {
 		Date displayDate = new Date();
 		switch (commonLogic.getPhase()) {
 		case DRIVE:
-			titleTextFormat = getResources().getString(R.string.next_platform_is_html);
-			timeTextFormat = getResources().getString(R.string.platform_arrival_time);
+			titleTextFormat = getResources().getString(
+					R.string.next_platform_is_html);
+			timeTextFormat = getResources().getString(
+					R.string.platform_arrival_time);
 			displayDate = operationSchedule.getArrivalEstimate();
 			break;
 		default:
-			titleTextFormat = getResources().getString(R.string.now_platform_is_html);
-			timeTextFormat = getResources().getString(R.string.platform_depature_time);
+			titleTextFormat = getResources().getString(
+					R.string.now_platform_is_html);
+			timeTextFormat = getResources().getString(
+					R.string.platform_depature_time);
 			displayDate = operationSchedule.getDepartureEstimate();
 			break;
 		}
 
 		if (operationSchedules.size() > 0) {
 			OperationSchedule nowOperationSchedule = operationSchedules.get(0);
-			for (Platform platform : nowOperationSchedule.getPlatform()
-					.asSet()) {
+			for (Platform platform : nowOperationSchedule.getPlatform().asSet()) {
 				titleTextView.setText(Html.fromHtml(String.format(
-						titleTextFormat,
-						platform.getName())));
+						titleTextFormat, platform.getName())));
 			}
 		} else {
 			titleTextView.setText("");
 		}
 
-		//到着時刻表示
-		TextView  platformArrivalTimeTextView = (TextView) findViewById(R.id.platform_arrival_time_view);
+		// 到着時刻表示
+		TextView platformArrivalTimeTextView = (TextView) findViewById(R.id.platform_arrival_time_view);
 		DateFormat dateFormat = new SimpleDateFormat(timeTextFormat);
 
 		platformArrivalTimeTextView.setText(dateFormat.format(displayDate));
@@ -306,13 +314,13 @@ public class NavigationModalView extends ModalView {
 		// TODO:アニメーション
 		// super.hide();
 	}
-	
+
 	@Override
 	public void onAttachedToWindow() {
 		super.onAttachedToWindow();
 		getHandler().post(gpsAlert);
 	}
-	
+
 	@Override
 	public void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
