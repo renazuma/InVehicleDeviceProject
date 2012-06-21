@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.view.animation.Animation;
 import android.view.animation.AlphaAnimation;
 
+import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
 import com.kogasoftware.odt.invehicledevice.logic.empty.EmptyWebAPICallback;
