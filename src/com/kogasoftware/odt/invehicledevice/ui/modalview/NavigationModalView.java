@@ -50,11 +50,11 @@ public class NavigationModalView extends ModalView {
 		public void run() {
 			Date now = new Date();
 			if (lastLocationUpdated.getTime() + GPS_EXPIRE_MILLIS > now.getTime()) {
-				gpsAlertLayout.setVisibility(GONE);
+				gpsAlertLayout.setVisibility(INVISIBLE);
 				getHandler().postDelayed(this, GPS_EXPIRE_MILLIS);
 				return;
 			}
-			gpsAlertLayout.setVisibility(gpsAlertLayout.isShown() ? GONE : VISIBLE);
+			gpsAlertLayout.setVisibility(gpsAlertLayout.isShown() ? INVISIBLE : VISIBLE);
 			getHandler().postDelayed(this, GPS_ALERT_FLASH_MILLIS);
 		}
 	};
