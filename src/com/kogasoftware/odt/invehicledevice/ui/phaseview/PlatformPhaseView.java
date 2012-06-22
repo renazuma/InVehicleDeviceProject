@@ -106,7 +106,7 @@ public class PlatformPhaseView extends PhaseView {
 		lastOperationScheduleLayout = (LinearLayout) findViewById(R.id.last_operation_schedule_layout);
 		nextOperationScheduleLayout = (LinearLayout) findViewById(R.id.next_operation_schedule_layout);
 
-		reservationListView.addFooterView(reservationListFooterView);
+		// reservationListView.addFooterView(reservationListFooterView);
 	}
 
 	@Override
