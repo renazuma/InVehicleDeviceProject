@@ -6,11 +6,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Calendar;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -68,16 +66,32 @@ public class StatusAccess implements Closeable {
 			Thread.sleep(SAVE_PERIO);
 			saveSemaphore.acquire();
 			saveSemaphore.drainPermits();
-			ByteBuffer buffer = saveData.getAndSet(null);
-			if (buffer == null) {
+
+			// byte[]への変換を呼び出し元スレッドで行う
+			long startTime = System.currentTimeMillis();
+			byte[] serialized = new byte[0];
+			try {
+				readLock.lock();
+				try {
+					serialized = SerializationUtils.serialize(status);
+				} finally {
+					readLock.unlock();
+				}
+			} catch (SerializationException e) {
+				Log.e(TAG, e.toString(), e);
 				return;
+			} finally {
+				long stopTime = System.currentTimeMillis();
+				long runTime = stopTime - startTime;
+				Log.d(TAG, "StatusAccess.save() " + runTime + " ms");
 			}
+
 			synchronized (FILE_ACCESS_LOCK) {
 				FileOutputStream fileOutputStream = null;
 				try {
 					fileOutputStream = new FileOutputStream(file);
 					fileOutputStream.getChannel().lock();
-					fileOutputStream.write(buffer.array());
+					fileOutputStream.write(serialized);
 				} catch (FileNotFoundException e) {
 					Log.w(TAG, e);
 				} catch (IOException e) {
@@ -203,7 +217,6 @@ public class StatusAccess implements Closeable {
 	private final Lock writeLock = reentrantReadWriteLock.writeLock();
 	private final Status status;
 	private final Semaphore saveSemaphore = new Semaphore(0);
-	private final AtomicReference<ByteBuffer> saveData = new AtomicReference<ByteBuffer>();
 	private Thread saveThread = new EmptyThread();
 
 	/**
@@ -244,26 +257,7 @@ public class StatusAccess implements Closeable {
 		});
 	}
 
-	private void save(final File file) {
-		// byte[]への変換を呼び出し元スレッドで行う
-		long startTime = System.currentTimeMillis();
-		byte[] serialized = new byte[0];
-		try {
-			readLock.lock();
-			try {
-				serialized = SerializationUtils.serialize(status);
-			} finally {
-				readLock.unlock();
-			}
-		} catch (SerializationException e) {
-			Log.e(TAG, e.toString(), e);
-			return;
-		} finally {
-			long stopTime = System.currentTimeMillis();
-			long runTime = stopTime - startTime;
-			Log.d(TAG, "StatusAccess.save() " + runTime + " ms");
-		}
-		saveData.set(ByteBuffer.wrap(serialized));
+	private void save() {
 		saveSemaphore.release();
 	}
 
@@ -276,7 +270,7 @@ public class StatusAccess implements Closeable {
 		}
 
 		// findbugsの警告回避ができないため、Lockのダウングレードはしないでおく
-		save(status.file);
+		save();
 	}
 
 	@Override
