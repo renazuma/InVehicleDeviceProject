@@ -18,6 +18,7 @@ import org.apache.commons.lang3.SerializationUtils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -109,21 +110,24 @@ public class VoiceCache {
 				}
 			}
 		}).maximumWeight(maxBytes).build();
-		File dataDirectory = context.getExternalFilesDir("open_jtalk");
-		if (dataDirectory == null) {
-			throw new IOException(
-					"context.getExternalFilesDir(\"open_jtalk\") is null");
-		}
+
+		String s = File.separator;
+		File dataDirectory = new File(Environment.getExternalStorageDirectory()
+				+ s + ".odt" + s + "open_jtalk");
 		if (!dataDirectory.isDirectory()) {
 			throw new IOException("!(" + dataDirectory + ").isDirectory()");
 		}
 		File libraryDirectory = context.getFilesDir();
 
-		String s = File.separator;
 		File voiceDirectory = new File(dataDirectory + s + "voice" + s
 				+ "mei_normal");
 		File dictionaryDirectory = new File(dataDirectory + s + "dictionary");
-		outputDirectory = new File(dataDirectory + s + "output");
+		File outputDirectoryBase = context.getExternalFilesDir("open_jtalk");
+		if (outputDirectoryBase == null) {
+			throw new IOException(
+					"context.getExternalFilesDir(\"open_jtalk\") is null");
+		}
+		outputDirectory = new File(outputDirectoryBase, "output");
 		if (!outputDirectory.exists() && !outputDirectory.mkdirs()) {
 			throw new IOException("!\"" + outputDirectory + "\".mkdirs()");
 		}
