@@ -17,6 +17,7 @@
         <TextView
             android:id="@+id/reservation_id"
             android:textSize = "18sp"
+            android:textColor="@android:color/black"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent" />
 
@@ -24,7 +25,8 @@
             android:id="@+id/user_name"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
-            android:textSize ="30sp" />
+            android:textSize ="30sp"
+            android:textColor="@android:color/black" />
     </LinearLayout>
 
     <Button
@@ -52,7 +54,8 @@
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:gravity="center_vertical"
-        android:textSize="25dip" />
+        android:textSize="25dip" 
+        android:textColor="@android:color/black"/>
     <!--
     <Spinner
         android:id="@+id/change_passenger_count_spinner"
