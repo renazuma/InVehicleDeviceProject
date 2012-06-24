@@ -1,45 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="alighting_number">降車人数</string>
+    <string name="operation_schedule_receiving_html">&lt;big&gt;&lt;big&gt;運行情報を取得しています&lt;/big&gt;&lt;/big&gt;</string>
     <string name="app_name">車載器</string>
     <string name="arrival_schedule">到着予定</string>
     <string name="departure_schedule">出発時刻</string>
-    <string name="does_it_leave">出発しますか？</string>
     <string name="does_it_arrive">到着しますか？</string>
-    <string name="does_it_stop">本当に中止しますか？</string>
     <string name="entrainment_number">乗車人数</string>
-    <string name="icon">(アイコン)</string>
     <string name="it_closes">戻る</string>
     <string name="reservation_memo">予約メモ</string>
     <string name="vehicle_notification_received">管理者から連絡があります</string>
     <string name="user_memo">ユーザーメモ</string>
     <string name="it_arrives">到着する</string>
-    <string name="it_has_paused">運行一時停止中</string>
-    <string name="it_has_stopped">中止しています</string>
     <string name="it_is_the_last_platform_now">現在最終乗降場です</string>
     <string name="it_leaves">出発する</string>
-    <string name="it_reserves">予約する</string>
-    <string name="it_resumes">運行を再開する</string>
     <string name="it_returns">戻る</string>
-    <string name="it_stops_todays_operation">本日の運行を中止する</string>
-    <string name="it_stops">中止する</string>
     <string name="map">地図</string>
     <string name="memo">メモ</string>
     <string name="next_platform_is">次は</string>
     <string name="no">いいえ</string>
-    <string name="operation_management">運行管理</string>
-    <string name="present_time">現在時刻</string>
     <string name="present_time_format">HH:mm</string>
-    <string name="return_path">復路</string>
     <string name="scroll_down">▽ 下へ移動</string>
     <string name="scroll_up">△ 上へ移動</string>
     <string name="yes">はい</string>
     <string name="operation_schedule_was_changed">運行予定が変更されました</string>
-    <string name="search_reservation_candidate">予約候補を検索</string>
-    <string name="pause">運行の一時停止</string>
-    <string name="remain">あと</string>
-    <string name="minute">分</string>
-    <string name="hour">時</string>
     <string name="cancel">やめる</string>
     <string name="show_operation_schedule">運行予定表示</string>
     <string name="today_operation_schedule">運行\n予定</string>
@@ -47,17 +31,14 @@
     <string name="todays_operation_was_finished">本日の運行は終了しました</string>
     <string name="show_all_riding_passengers">乗車中の乗客全員を表示</string>
     <string name="show_future_passengers">未来の乗客を表示</string>
-    <string name="add_unexpected_reservation">飛び乗り予約の新規追加</string>
     <string name="show_missed_passengers">過去の乗降場で未乗車の乗客を表示</string>
     <string name="zoom_in">拡大</string>
     <string name="zoom_out">縮小</string>
     <string name="auto_zoom">自動調整</string>
-    <string name="an_error_occurred">エラーが発生しました</string>
-    <string name="reservation_candidate_not_found">予約候補を取得できませんでした</string>
-    <string name="reservation_succeed">予約が完了しました</string>
     <string name="now_platform_is_html">現在は&lt;big&gt;&lt;big&gt;%s&lt;/big&gt;&lt;/big&gt;</string>
     <string name="next_platform_is_html">次は&lt;big&gt;&lt;big&gt;%s&lt;/big&gt;&lt;/big&gt;</string>
     <string name="minutes_remaining_to_depart_html">%1$s出発&lt;br&gt;あと&lt;big&gt;&lt;font color=&quot;red&quot;&gt;%2$d&lt;/font&gt;&lt;/big&gt;分</string>
     <string name="platform_arrival_time">HH:mm着</string>
     <string name="platform_depature_time">HH:mm発</string>
+    <string name="location_receiving">位置情報を受信しています</string>
 </resources>
