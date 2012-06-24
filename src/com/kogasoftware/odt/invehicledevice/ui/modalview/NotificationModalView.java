@@ -18,6 +18,7 @@ public class NotificationModalView extends ModalView implements
 	public NotificationModalView(Context context, InVehicleDeviceService service) {
 		super(context, service);
 		setContentView(R.layout.notification_modal_view);
+		service.addOnAlertVehicleNotificationReceiveListener(this);
 		findViewById(R.id.reply_yes_button).setOnClickListener(
 				new OnClickListener() {
 					@Override
