@@ -15,9 +15,9 @@ import android.widget.Toast;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
-import com.kogasoftware.odt.invehicledevice.backgroundtask.BackgroundTask;
-import com.kogasoftware.odt.invehicledevice.logic.SharedPreferencesKey;
-import com.kogasoftware.odt.invehicledevice.logic.datasource.WebAPIDataSource;
+import com.kogasoftware.odt.invehicledevice.datasource.WebAPIDataSource;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKey;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundthread.BackgroundTask;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 
 public class SavePreferencesActivity extends Activity {

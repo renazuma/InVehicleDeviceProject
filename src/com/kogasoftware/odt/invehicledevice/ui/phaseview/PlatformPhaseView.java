@@ -9,7 +9,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Handler;
 import android.text.Html;
-import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -20,16 +19,12 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.google.common.base.Optional;
-import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.logic.event.EnterFinishPhaseEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.EnterPlatformPhaseEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.SpeakEvent;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter.ItemType;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.DepartureCheckModalView;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.MemoModalView;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
 
@@ -49,11 +44,10 @@ public class PlatformPhaseView extends PhaseView {
 	private final TextView minutesRemainingTextView;
 	private final LinearLayout lastOperationScheduleLayout;
 	private final LinearLayout nextOperationScheduleLayout;
-
-	private ReservationArrayAdapter adapter = new ReservationArrayAdapter(
-			getContext(), getCommonLogic());
+	private final MemoModalView memoModalView;
 	private final Handler handler = new Handler();
-
+	private Optional<ReservationArrayAdapter> optionalAdapter = Optional
+			.absent();
 	private Optional<AlertDialog> dialog = Optional.absent();
 	private Integer lastMinutesRemaining = Integer.MAX_VALUE;
 	private final Runnable updateMinutesRemaining = new Runnable() {
@@ -61,9 +55,9 @@ public class PlatformPhaseView extends PhaseView {
 		public void run() {
 			handler.postDelayed(updateMinutesRemaining,
 					UPDATE_MINUTES_REMAINING_INTERVAL_MILLIS);
-			Date now = CommonLogic.getDate();
+			Date now = InVehicleDeviceService.getDate();
 			minutesRemainingTextView.setText("");
-			for (OperationSchedule operationSchedule : getCommonLogic()
+			for (OperationSchedule operationSchedule : service
 					.getCurrentOperationSchedule().asSet()) {
 				Date departureEstimate = operationSchedule
 						.getDepartureEstimate();
@@ -76,17 +70,19 @@ public class PlatformPhaseView extends PhaseView {
 								R.string.minutes_remaining_to_depart_html),
 						dateString, minutesRemaining)));
 				if (lastMinutesRemaining >= 2 && minutesRemaining == 1) {
-					getCommonLogic().postEvent(new SpeakEvent("あと1分で出発時刻です"));
+					service.speak("あと1分で出発時刻です");
 				}
 				lastMinutesRemaining = minutesRemaining;
 			}
 		}
 	};
 
-	public PlatformPhaseView(Context context, AttributeSet attrs) {
-		super(context, attrs);
+	public PlatformPhaseView(Context context, InVehicleDeviceService service,
+			MemoModalView memoModalView) {
+		super(context, service);
 		setContentView(R.layout.platform_phase_view);
 
+		this.memoModalView = memoModalView;
 		nowPlatformNameTextView = (TextView) findViewById(R.id.now_platform_text_view);
 		reservationListView = ((FlickUnneededListView) findViewById(R.id.reservation_list_view))
 				.getListView();
@@ -109,13 +105,43 @@ public class PlatformPhaseView extends PhaseView {
 		// reservationListView.addFooterView(reservationListFooterView);
 	}
 
+	public Optional<ReservationArrayAdapter> getReservationArrayAdapter() {
+		return optionalAdapter;
+	}
+
 	@Override
-	public void enterPlatformPhase(EnterPlatformPhaseEvent event) {
-		CommonLogic commonLogic = getCommonLogic();
-		List<OperationSchedule> operationSchedules = commonLogic
+	protected void onAttachedToWindow() {
+		super.onAttachedToWindow();
+		handler.post(updateMinutesRemaining);
+	}
+
+	@Override
+	protected void onDetachedFromWindow() {
+		super.onDetachedFromWindow();
+		handler.removeCallbacks(updateMinutesRemaining);
+		if (dialog.isPresent()) {
+			dialog.get().cancel();
+		}
+	}
+
+	@Override
+	public void onEnterDrivePhase() {
+		super.onEnterDrivePhase();
+		optionalAdapter = Optional.absent();
+	}
+
+	@Override
+	public void onEnterFinishPhase() {
+		super.onEnterFinishPhase();
+		optionalAdapter = Optional.absent();
+	}
+
+	@Override
+	public void onEnterPlatformPhase() {
+		List<OperationSchedule> operationSchedules = service
 				.getRemainingOperationSchedules();
 		if (operationSchedules.isEmpty()) {
-			commonLogic.postEvent(new EnterFinishPhaseEvent());
+			service.enterFinishPhase();
 			return;
 		}
 
@@ -134,7 +160,10 @@ public class PlatformPhaseView extends PhaseView {
 			// addUnexpectedReservationButton.setVisibility(VISIBLE);
 		}
 
-		adapter = new ReservationArrayAdapter(getContext(), commonLogic);
+		final ReservationArrayAdapter adapter = new ReservationArrayAdapter(
+				service, memoModalView);
+		optionalAdapter = Optional.of(adapter);
+
 		reservationListView.setAdapter(adapter);
 
 		if (operationSchedules.size() > 0) {
@@ -191,84 +220,5 @@ public class PlatformPhaseView extends PhaseView {
 				});
 		showMissedReservationsButton.setChecked(false);
 		setVisibility(View.VISIBLE);
-	}
-
-	@Override
-	protected void onAttachedToWindow() {
-		super.onAttachedToWindow();
-		handler.post(updateMinutesRemaining);
-	}
-
-	@Override
-	protected void onDetachedFromWindow() {
-		super.onDetachedFromWindow();
-		handler.removeCallbacks(updateMinutesRemaining);
-		if (dialog.isPresent()) {
-			dialog.get().cancel();
-		}
-	}
-
-	// 飛び乗り予約ダイアログ表示
-	// 飛び乗り予約機能復活時のすぐに参考可能なようにコメントアウトにしておく
-	// private void showAddUnexpectedReservationDialog() {
-	// if (!isShown()) {
-	// return;
-	// }
-	//
-	// final List<OperationSchedule> operationSchedules = getCommonLogic()
-	// .getRemainingOperationSchedules();
-	// if (operationSchedules.size() <= 1) {
-	// Log.w(TAG,
-	// "can't add unexpected reservation, !(operationSchedulfes.isEmpty())",
-	// new Exception());
-	// return;
-	// }
-	// operationSchedules.remove(operationSchedules.get(0));
-	// final String[] operationScheduleSelections = new
-	// String[operationSchedules
-	// .size()];
-	// DateFormat displayDateFormat = new SimpleDateFormat("H時m分");
-	// for (Integer i = 0; i < operationScheduleSelections.length; ++i) {
-	// OperationSchedule operationSchedule = operationSchedules.get(i);
-	// String selection = "";
-	// selection += displayDateFormat.format(operationSchedule
-	// .getArrivalEstimate()) + "着予定 / ";
-	//
-	// if (operationSchedule.getPlatform().isPresent()) {
-	// selection += operationSchedule.getPlatform().get().getName();
-	// } else {
-	// // TODO
-	// selection += "Operation Schedule ID: "
-	// + operationSchedules.get(i).getId();
-	// }
-	// operationScheduleSelections[i] = selection;
-	// }
-	//
-	// AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-	// builder.setTitle("降車予定の乗降場を選択してください");
-	// builder.setItems(operationScheduleSelections,
-	// new DialogInterface.OnClickListener() {
-	// @Override
-	// public void onClick(DialogInterface dialog, int which) {
-	// dialog.dismiss();
-	// if (which >= operationSchedules.size()) {
-	// // TODO warning
-	// return;
-	// }
-	// OperationSchedule arrivalOperationSchedule = operationSchedules
-	// .get(which);
-	// getCommonLogic().postEvent(
-	// new UnexpectedReservationAddedEvent(
-	// arrivalOperationSchedule.getId()));
-	// }
-	// });
-	// dialog = Optional.of(builder.create());
-	// dialog.get().show();
-	// }
-
-	@Subscribe
-	public void showDepartureCheckModalView(DepartureCheckEvent e) {
-		getCommonLogic().postEvent(
-				new DepartureCheckModalView.ShowEvent(adapter));
 	}
 }

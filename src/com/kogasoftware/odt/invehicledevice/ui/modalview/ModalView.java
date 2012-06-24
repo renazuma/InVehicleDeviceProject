@@ -5,7 +5,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
-import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
@@ -13,25 +12,23 @@ import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 
-import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.logic.event.CommonLogicLoadCompleteEvent;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 
 public class ModalView extends FrameLayout implements AnimationListener {
 	private enum AnimationTarget {
 		NONE, SHOW, HIDE
 	}
 
-	private final AtomicReference<AnimationTarget> animationTarget = new AtomicReference<AnimationTarget>(
+	protected final AtomicReference<AnimationTarget> animationTarget = new AtomicReference<AnimationTarget>(
 			AnimationTarget.NONE);
-	private final Animation showAnimation;
-	private final Animation hideAnimation;
+	protected final Animation showAnimation;
+	protected final Animation hideAnimation;
+	protected InVehicleDeviceService service;
 
-	private CommonLogic commonLogic = new CommonLogic();
-
-	public ModalView(Context context, AttributeSet attrs) {
-		super(context, attrs);
+	public ModalView(Context context, InVehicleDeviceService service) {
+		super(context);
+		this.service = service;
 		showAnimation = AnimationUtils.loadAnimation(getContext(),
 				R.anim.show_modal_view);
 		showAnimation.setAnimationListener(this);
@@ -40,10 +37,6 @@ public class ModalView extends FrameLayout implements AnimationListener {
 		hideAnimation.setAnimationListener(this);
 		setClickable(true);
 		setVisibility(GONE);
-	}
-
-	protected CommonLogic getCommonLogic() {
-		return commonLogic;
 	}
 
 	public void hide() {
@@ -97,11 +90,6 @@ public class ModalView extends FrameLayout implements AnimationListener {
 				hide();
 			}
 		});
-	}
-
-	@Subscribe
-	public void setCommonLogic(CommonLogicLoadCompleteEvent event) {
-		commonLogic = event.commonLogic;
 	}
 
 	protected void setContentView(int resourceId) {

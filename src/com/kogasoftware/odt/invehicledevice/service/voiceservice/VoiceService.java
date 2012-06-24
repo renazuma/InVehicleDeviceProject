@@ -9,7 +9,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.kogasoftware.odt.invehicledevice.logic.empty.EmptyThread;
+import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 
 /**
  * OpenJTalkライブラリのプロセスを分離するためのサービス TODO: TTSとして書き直し

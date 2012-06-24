@@ -1,39 +1,27 @@
 package com.kogasoftware.odt.invehicledevice.ui.modalview;
 
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
 import android.content.Context;
-import android.text.Html;
-import android.util.AttributeSet;
+import android.graphics.Color;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.graphics.Typeface;
-import android.graphics.Color;
-import android.widget.LinearLayout;
-import android.view.animation.Animation;
-import android.view.animation.AlphaAnimation;
 
-import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.logic.event.EnterDrivePhaseEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.EnterFinishPhaseEvent;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter;
-import com.kogasoftware.odt.webapi.model.OperationSchedule;
-import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.User;
 
 public class DepartureCheckModalView extends ModalView {
-
-	private final AlphaAnimation animation = new AlphaAnimation(1, 0.1f);
 
 	public static class ShowEvent {
 		public final ReservationArrayAdapter reservationArrayAdapter;
@@ -52,17 +40,16 @@ public class DepartureCheckModalView extends ModalView {
 		}
 	}
 
-	public DepartureCheckModalView(Context context, AttributeSet attrs) {
-		super(context, attrs);
+	private final AlphaAnimation animation = new AlphaAnimation(1, 0.1f);
+
+	public DepartureCheckModalView(Context context,
+			InVehicleDeviceService service) {
+		super(context, service);
 		setContentView(R.layout.departure_check_modal_view);
 		setCloseOnClick(R.id.departure_check_close_button);
 	}
 
-	@Subscribe
-	public void show(ShowEvent event) {
-		final ReservationArrayAdapter adapter = new ReservationArrayAdapter(
-				getContext(), getCommonLogic());
-
+	public void show(ReservationArrayAdapter adapter) {
 		Button startButton = (Button) findViewById(R.id.departure_button);
 		Button closeButton = (Button) findViewById(R.id.departure_check_close_button);
 		TextView titleTextView = (TextView) findViewById(R.id.next_platform_text_view);
@@ -79,7 +66,8 @@ public class DepartureCheckModalView extends ModalView {
 
 		if (adapter.getNoGettingOffReservations().isEmpty()) {
 		} else {
-			for (Reservation reservation : adapter.getNoGettingOffReservations()) {
+			for (Reservation reservation : adapter
+					.getNoGettingOffReservations()) {
 				messages.add(" ※ " + getUserName(reservation) + "様が未降車です");
 			}
 		}
@@ -93,7 +81,7 @@ public class DepartureCheckModalView extends ModalView {
 		errorReservationListView.setAdapter(new ArrayAdapter<String>(
 				getContext(), android.R.layout.simple_list_item_1, messages));
 
-		if (getCommonLogic().getRemainingOperationSchedules().size() <= 1) {
+		if (service.getRemainingOperationSchedules().size() <= 1) {
 			startButton.setText("確定する");
 		} else {
 			startButton.setText("出発する");
@@ -101,21 +89,21 @@ public class DepartureCheckModalView extends ModalView {
 
 		// 警告データが存在するため「やめる」ボタンの形状を変更
 		if (!messages.isEmpty()) {
-            animation.setDuration(1000);
-            animation.setRepeatCount(Animation.INFINITE);
-            closeButton.startAnimation(animation);
+			animation.setDuration(1000);
+			animation.setRepeatCount(Animation.INFINITE);
+			closeButton.startAnimation(animation);
 
-            closeButton.setBackgroundColor(Color.parseColor("#FF6666"));
+			closeButton.setBackgroundColor(Color.parseColor("#FF6666"));
 			closeButton.setTextColor(Color.parseColor("#FFFFFF"));
 
-	        LinearLayout.LayoutParams lp
-            =   new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.FILL_PARENT,
-                LinearLayout.LayoutParams.FILL_PARENT);
-            lp.weight = 0.5f;
-            lp.setMargins(10, 1, 10, 10);
-            closeButton.setLayoutParams(lp);
-            closeButton.setShadowLayer(1.0f, 1.5f, 1.5f, Color.parseColor("#FFFFFF"));
+			LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+					LinearLayout.LayoutParams.FILL_PARENT,
+					LinearLayout.LayoutParams.FILL_PARENT);
+			lp.weight = 0.5f;
+			lp.setMargins(10, 1, 10, 10);
+			closeButton.setLayoutParams(lp);
+			closeButton.setShadowLayer(1.0f, 1.5f, 1.5f,
+					Color.parseColor("#FFFFFF"));
 
 		} else {
 
@@ -123,22 +111,21 @@ public class DepartureCheckModalView extends ModalView {
 			closeButton.clearAnimation();
 
 			closeButton.setTextColor(Color.BLACK);
-	        LinearLayout.LayoutParams lp
-            =   new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.FILL_PARENT,
-                LinearLayout.LayoutParams.FILL_PARENT);
-            lp.setMargins(0, 0, 0, 0);
+			LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+					LinearLayout.LayoutParams.FILL_PARENT,
+					LinearLayout.LayoutParams.FILL_PARENT);
+			lp.setMargins(0, 0, 0, 0);
 
-            lp.weight = 1f;
-            closeButton.setLayoutParams(lp);
-            closeButton.setShadowLayer(0.0f, 0.0f, 0.0f, Color.parseColor("#FFFFFF"));
+			lp.weight = 1f;
+			closeButton.setLayoutParams(lp);
+			closeButton.setShadowLayer(0.0f, 0.0f, 0.0f,
+					Color.parseColor("#FFFFFF"));
 		}
 
 		startButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				CommonLogic commonLogic = getCommonLogic();
-				commonLogic.postEvent(new EnterDrivePhaseEvent());
+				service.enterDrivePhase();
 				hide();
 			}
 		});

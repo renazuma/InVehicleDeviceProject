@@ -8,15 +8,11 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Handler;
-import android.util.AttributeSet;
 import android.view.View;
 import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.logic.event.EnterDrivePhaseEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.EnterFinishPhaseEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.SpeakEvent;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.PassengerRecords;
@@ -46,8 +42,8 @@ public class DrivePhaseView extends PhaseView {
 	private final View driveView2;
 	private final Handler handler = new Handler();
 
-	public DrivePhaseView(Context context, AttributeSet attrs) {
-		super(context, attrs);
+	public DrivePhaseView(Context context, InVehicleDeviceService service) {
+		super(context, service);
 		setContentView(R.layout.drive_phase_view);
 
 		nextPlatformNameTextView = (TextView) findViewById(R.id.next_platform_name_text_view);
@@ -66,19 +62,30 @@ public class DrivePhaseView extends PhaseView {
 	}
 
 	@Override
-	public void enterDrivePhase(EnterDrivePhaseEvent event) {
-		CommonLogic commonLogic = getCommonLogic();
-		List<OperationSchedule> operationSchedules = commonLogic
+	protected void onAttachedToWindow() {
+		super.onAttachedToWindow();
+		handler.post(toggleDrivingView);
+	}
+
+	@Override
+	protected void onDetachedFromWindow() {
+		super.onDetachedFromWindow();
+		handler.removeCallbacks(toggleDrivingView);
+	}
+
+	@Override
+	public void onEnterDrivePhase() {
+		List<OperationSchedule> operationSchedules = service
 				.getRemainingOperationSchedules();
 		if (operationSchedules.isEmpty()) {
-			commonLogic.postEvent(new EnterFinishPhaseEvent());
+			service.enterFinishPhase();
 			return;
 		}
 
 		OperationSchedule operationSchedule = operationSchedules.get(0);
 		TextView totalPassengerCountTextView = (TextView) findViewById(R.id.total_passenger_count_text_view);
 		Integer totalPassengerCount = 0;
-		for (Reservation reservation : commonLogic.getReservations()) {
+		for (Reservation reservation : service.getReservations()) {
 			for (PassengerRecord passengerRecord : reservation
 					.getPassengerRecord().asSet()) {
 				if (PassengerRecords.isRiding(passengerRecord)) {
@@ -87,7 +94,6 @@ public class DrivePhaseView extends PhaseView {
 			}
 		}
 		totalPassengerCountTextView.setText(totalPassengerCount + "名乗車中");
-
 
 		if (!operationSchedule.getPlatform().isPresent()) {
 			return; // TODO
@@ -99,11 +105,11 @@ public class DrivePhaseView extends PhaseView {
 		DateFormat dateFormat = new SimpleDateFormat(getResources().getString(
 				R.string.platform_arrival_time_format));
 
-		platformArrivalTimeTextView.setText("  " + dateFormat.format(operationSchedule
-				.getArrivalEstimate()));
+		platformArrivalTimeTextView.setText("  "
+				+ dateFormat.format(operationSchedule.getArrivalEstimate()));
 
-		platformArrivalTimeTextView2.setText("  " + dateFormat.format(operationSchedule
-				.getArrivalEstimate()));
+		platformArrivalTimeTextView2.setText("  "
+				+ dateFormat.format(operationSchedule.getArrivalEstimate()));
 
 		platformName1BeyondTextView.setText("");
 		if (operationSchedules.size() > 1) {
@@ -113,21 +119,8 @@ public class DrivePhaseView extends PhaseView {
 			}
 		}
 
-		commonLogic.postEvent(new SpeakEvent("出発します。次は、"
-				+ platform.getNameRuby() + "。" + platform.getNameRuby() + "。"));
-
+		service.speak("出発します。次は、" + platform.getNameRuby() + "。"
+				+ platform.getNameRuby() + "。");
 		setVisibility(View.VISIBLE);
-	}
-
-	@Override
-	protected void onAttachedToWindow() {
-		super.onAttachedToWindow();
-		handler.post(toggleDrivingView);
-	}
-
-	@Override
-	protected void onDetachedFromWindow() {
-		super.onDetachedFromWindow();
-		handler.removeCallbacks(toggleDrivingView);
 	}
 }

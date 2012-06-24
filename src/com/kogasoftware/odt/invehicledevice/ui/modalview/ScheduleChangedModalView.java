@@ -1,32 +1,34 @@
 package com.kogasoftware.odt.invehicledevice.ui.modalview;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import android.content.Context;
-import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.common.base.Objects;
-import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.logic.Status;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.VoidReader;
-import com.kogasoftware.odt.invehicledevice.logic.event.ReceivedOperationScheduleChangedVehicleNotificationsReplyEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.SpeakEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.UpdatedOperationScheduleMergedEvent;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.VoidReader;
+import com.kogasoftware.odt.webapi.Identifiables;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 import com.kogasoftware.odt.webapi.model.VehicleNotifications;
 
-public class ScheduleChangedModalView extends ModalView {
-	private final TextView scheduleChangedTextView;
+public class ScheduleChangedModalView extends ModalView implements
+		InVehicleDeviceService.OnMergeUpdatedOperationScheduleListener {
+	protected final TextView scheduleChangedTextView;
+	protected final ScheduleModalView scheduleModalView;
 
-	public ScheduleChangedModalView(Context context, AttributeSet attrs) {
-		super(context, attrs);
+	public ScheduleChangedModalView(Context context,
+			InVehicleDeviceService service,
+			final ScheduleModalView scheduleModalView) {
+		super(context, service);
+		this.scheduleModalView = scheduleModalView;
 		setContentView(R.layout.schedule_changed_modal_view);
 		setCloseOnClick(R.id.schedule_changed_close_button);
+		service.addOnMergeUpdatedOperationScheduleListener(this);
 
 		scheduleChangedTextView = (TextView) findViewById(R.id.schedule_changed_text_view);
 
@@ -34,7 +36,7 @@ public class ScheduleChangedModalView extends ModalView {
 		scheduleConfirmButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				getCommonLogic().postEvent(new ScheduleModalView.ShowEvent());
+				scheduleModalView.show();
 				hide();
 			}
 		});
@@ -46,14 +48,16 @@ public class ScheduleChangedModalView extends ModalView {
 		scheduleChangedTextView.setText("");
 	}
 
-	@Subscribe
-	public void show(UpdatedOperationScheduleMergedEvent event) {
-		final List<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();
-		getCommonLogic().getStatusAccess().read(new VoidReader() {
+	@Override
+	public void onMergeUpdatedOperationSchedule(
+			final List<VehicleNotification> vehicleNotifications) {
+
+		service.getLocalDataSource().withReadLock(new VoidReader() {
 			@Override
-			public void read(Status status) {
-				vehicleNotifications
-						.addAll(status.receivedOperationScheduleChangedVehicleNotifications);
+			public void read(LocalData status) {
+				Identifiables
+						.merge(vehicleNotifications,
+								status.receivedOperationScheduleChangedVehicleNotifications);
 			}
 		});
 		if (vehicleNotifications.isEmpty()) {
@@ -61,16 +65,14 @@ public class ScheduleChangedModalView extends ModalView {
 		}
 
 		super.show();
-		getCommonLogic().postEvent(new ScheduleModalView.HideEvent());
+		scheduleModalView.hide();
 
 		StringBuilder message = new StringBuilder(Objects.firstNonNull(
 				scheduleChangedTextView.getText(), ""));
 		for (VehicleNotification vehicleNotification : vehicleNotifications) {
-			for (String body : vehicleNotification.getBodyRuby().asSet()) {
-				getCommonLogic().postEvent(new SpeakEvent(body));
-				message.append(body);
-				message.append('\n');
-			}
+			service.speak(vehicleNotification.getBodyRuby().or(""));
+			message.append(vehicleNotification.getBody());
+			message.append('\n');
 		}
 
 		scheduleChangedTextView.setText(message);
@@ -79,9 +81,7 @@ public class ScheduleChangedModalView extends ModalView {
 		for (VehicleNotification vehicleNotification : vehicleNotifications) {
 			vehicleNotification.setResponse(VehicleNotifications.Response.YES); // TODO
 		}
-		getCommonLogic()
-				.postEvent(
-						new ReceivedOperationScheduleChangedVehicleNotificationsReplyEvent(
-								vehicleNotifications));
+
+		service.replyUpdatedOperationScheduleVehicleNotifications(vehicleNotifications);
 	}
 }

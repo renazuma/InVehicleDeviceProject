@@ -13,22 +13,22 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Reservation;
 
 public class OperationScheduleArrayAdapter extends
 		ArrayAdapter<OperationSchedule> {
 	private final LayoutInflater layoutInflater;
-	private final CommonLogic commonLogic;
+	private final InVehicleDeviceService service;
 	private static final Integer RESOURCE_ID = R.layout.operation_schedule_list_row;
 
-	public OperationScheduleArrayAdapter(Context context,
-			List<OperationSchedule> items, CommonLogic commonLogic) {
-		super(context, RESOURCE_ID, items);
-		this.layoutInflater = (LayoutInflater) context
+	public OperationScheduleArrayAdapter(InVehicleDeviceService service,
+			List<OperationSchedule> items) {
+		super(service, RESOURCE_ID, items);
+		this.service = service;
+		this.layoutInflater = (LayoutInflater) service
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		this.commonLogic = commonLogic;
 	}
 
 	@Override
@@ -89,8 +89,8 @@ public class OperationScheduleArrayAdapter extends
 					.format(operationSchedule.getDepartureEstimate()) + " 発");
 		}
 
-		if (commonLogic.getRemainingOperationSchedules().contains(
-				operationSchedule)) {
+		if (service.getRemainingOperationSchedules()
+				.contains(operationSchedule)) {
 			convertView.setBackgroundColor(Color.TRANSPARENT);
 		} else {
 			convertView.setBackgroundColor(Color.LTGRAY);

@@ -3,25 +3,20 @@ package com.kogasoftware.odt.invehicledevice.ui.modalview;
 import java.util.List;
 
 import android.content.Context;
-import android.util.AttributeSet;
 import android.view.View;
 import android.widget.TextView;
 
-import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.logic.event.SpeakEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.VehicleNotificationRepliedEvent;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 import com.kogasoftware.odt.webapi.model.VehicleNotifications;
 
-public class NotificationModalView extends ModalView {
-	public static class ShowEvent {
-	}
-
+public class NotificationModalView extends ModalView implements
+		InVehicleDeviceService.OnAlertVehicleNotificationReceiveListener {
 	private VehicleNotification currentVehicleNotification = new VehicleNotification();
 
-	public NotificationModalView(Context context, AttributeSet attrs) {
-		super(context, attrs);
+	public NotificationModalView(Context context, InVehicleDeviceService service) {
+		super(context, service);
 		setContentView(R.layout.notification_modal_view);
 		findViewById(R.id.reply_yes_button).setOnClickListener(
 				new OnClickListener() {
@@ -41,19 +36,33 @@ public class NotificationModalView extends ModalView {
 						reply();
 					}
 				});
+		show();
+	}
+
+	@Override
+	public void onAlertVehicleNotificationReceive() {
+		getHandler().postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				show();
+			}
+		}, 5000);
 	}
 
 	private void reply() {
 		hide();
-		getCommonLogic()
-				.postEvent(
-						new VehicleNotificationRepliedEvent(
-								currentVehicleNotification));
+		service.replyVehicleNotification(currentVehicleNotification);
+		getHandler().post(new Runnable() {
+			@Override
+			public void run() {
+				show();
+			}
+		});
 	}
 
 	@Override
 	public void show() {
-		List<VehicleNotification> vehicleNotifications = getCommonLogic()
+		List<VehicleNotification> vehicleNotifications = service
 				.getVehicleNotifications();
 		if (vehicleNotifications.isEmpty()) {
 			hide();
@@ -63,17 +72,12 @@ public class NotificationModalView extends ModalView {
 				.get(0);
 		if (!newVehicleNotification.getId().equals(
 				currentVehicleNotification.getId())) {
-			getCommonLogic().postEvent(
-					new SpeakEvent(newVehicleNotification.getBody()));
+			service.speak(newVehicleNotification.getBodyRuby().or(
+					newVehicleNotification.getBody()));
 		}
 		currentVehicleNotification = newVehicleNotification;
 		TextView bodyTextView = (TextView) findViewById(R.id.notification_text_view);
-		bodyTextView.setText(currentVehicleNotification.getBodyRuby().or(currentVehicleNotification.getBody()));
+		bodyTextView.setText(currentVehicleNotification.getBody());
 		super.show();
-	}
-
-	@Subscribe
-	public void show(ShowEvent event) {
-		show();
 	}
 }

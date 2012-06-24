@@ -1,20 +1,19 @@
 package com.kogasoftware.odt.invehicledevice.ui.phaseview;
 
 import android.content.Context;
-import android.util.AttributeSet;
 import android.view.View;
 
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.logic.event.EnterFinishPhaseEvent;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 
 public class FinishPhaseView extends PhaseView {
-	public FinishPhaseView(Context context, AttributeSet attrs) {
-		super(context, attrs);
+	public FinishPhaseView(Context context, InVehicleDeviceService service) {
+		super(context, service);
 		setContentView(R.layout.finish_phase_view);
 	}
 
 	@Override
-	public void enterFinishPhase(EnterFinishPhaseEvent event) {
+	public void onEnterFinishPhase() {
 		setVisibility(View.VISIBLE);
 	}
 }

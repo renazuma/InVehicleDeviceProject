@@ -8,9 +8,10 @@ import java.util.List;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.location.Location;
 import android.opengl.GLSurfaceView;
+import android.os.Handler;
 import android.text.Html;
-import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -20,22 +21,20 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.logic.event.CommonLogicLoadCompleteEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.EnterFinishPhaseEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.LocationReceivedEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.MapZoomLevelChangedEvent;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.NavigationRenderer;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipeline.TilePipeline;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
 
-public class NavigationModalView extends ModalView {
-	public static class ShowEvent {
-	}
-
+public class NavigationModalView extends ModalView implements
+		InVehicleDeviceService.OnResumeActivityListener,
+		InVehicleDeviceService.OnPauseActivityListener,
+		InVehicleDeviceService.OnChangeLocationListener,
+		InVehicleDeviceService.OnChangeOrientationListener,
+		InVehicleDeviceService.OnEnterPhaseListener,
+		NavigationRenderer.OnChangeMapZoomLevelListener {
 	private static final String TAG = NavigationModalView.class.getSimpleName();
 	private static final Integer GPS_ALERT_FLASH_MILLIS = 1000;
 	private static final Integer GPS_EXPIRE_MILLIS = 20000;
@@ -70,76 +69,17 @@ public class NavigationModalView extends ModalView {
 	private WeakReference<NavigationRenderer> navigationRendererWeakReference = new WeakReference<NavigationRenderer>(
 			null);
 
-	@Subscribe
-	public void updateZoomButtons(MapZoomLevelChangedEvent e) {
-		zoomLevel = e.zoomLevel;
-		updateZoomButtons();
-	}
-
-	@Subscribe
-	public void updateLocation(LocationReceivedEvent event) {
-		lastLocationUpdated = new Date();
-	}
-
-	protected void updateZoomButtons() {
-		if (zoomLevel <= NavigationRenderer.MIN_ZOOM_LEVEL) {
-			zoomLevel = NavigationRenderer.MIN_ZOOM_LEVEL;
-			zoomOutButton.setTextColor(Color.GRAY);
-			zoomOutButton.setEnabled(false);
-		} else {
-			zoomOutButton.setTextColor(Color.BLACK);
-			zoomOutButton.setEnabled(true);
-		}
-
-		if (zoomLevel >= NavigationRenderer.MAX_ZOOM_LEVEL) {
-			zoomLevel = NavigationRenderer.MAX_ZOOM_LEVEL;
-			zoomInButton.setTextColor(Color.GRAY);
-			zoomInButton.setEnabled(false);
-		} else {
-			zoomInButton.setTextColor(Color.BLACK);
-			zoomInButton.setEnabled(true);
-		}
-	}
-
-	protected void setZoomLevel(Integer newZoomLevel) {
-		zoomLevel = newZoomLevel;
-		NavigationRenderer navigationRenderer = navigationRendererWeakReference
-				.get();
-		if (navigationRenderer != null) {
-			navigationRenderer.setAutoZoomLevel(false);
-			navigationRenderer.setZoomLevel(zoomLevel);
-		}
-
-		if (autoZoomButton.isChecked()) {
-			autoZoomButton.setChecked(false);
-		}
-
-		updateZoomButtons();
-	}
-
-	protected void setAutoZoom(Boolean autoZoom) {
-		autoZoomButton.setTextColor(autoZoom ? Color.BLACK : Color.GRAY);
-		NavigationRenderer navigationRenderer = navigationRendererWeakReference
-				.get();
-		if (navigationRenderer != null) {
-			navigationRenderer.setAutoZoomLevel(autoZoom);
-		}
-	}
-
-	protected void zoomIn() {
-		setZoomLevel(zoomLevel + 1);
-	}
-
-	protected void zoomOut() {
-		setZoomLevel(zoomLevel - 1);
-	}
-
-	public NavigationModalView(Context context, AttributeSet attrs) {
-		super(context, attrs);
+	public NavigationModalView(Context context, InVehicleDeviceService service) {
+		super(context, service);
 		setContentView(R.layout.navigation_modal_view);
 		setCloseOnClick(R.id.navigation_close_button);
+		service.addOnResumeActivityListener(this);
+		service.addOnPauseActivityListener(this);
+		service.addOnChangeLocationListener(this);
+		service.addOnChangeOrientationListener(this);
+		service.addOnEnterPhaseListener(this);
 
-		tilePipeline = new TilePipeline(context);
+		tilePipeline = new TilePipeline(service);
 
 		zoomInButton = (Button) findViewById(R.id.navigation_zoom_in_button);
 		zoomInButton.setOnClickListener(new OnClickListener() {
@@ -172,32 +112,94 @@ public class NavigationModalView extends ModalView {
 
 		setAutoZoom(true);
 		updateZoomButtons();
-
+		onResumeActivity();
 	}
 
+	@Override
+	public void hide() {
+		setVisibility(GONE);
+		GLSurfaceView glSurfaceView = glSurfaceViewWeakReference.get();
+		if (glSurfaceView != null) {
+			// glSurfaceView.setVisibility(INVISIBLE);
+			glSurfaceView.setVisibility(GONE);
+		}
+		// TODO:アニメーション
+		// super.hide();
+	}
+
+	@Override
+	public void onAttachedToWindow() {
+		super.onAttachedToWindow();
+		getHandler().post(gpsAlert);
+	}
+
+	@Override
+	public void onChangeLocation(Location location) {
+		lastLocationUpdated = new Date();
+		NavigationRenderer navigationRenderer = navigationRendererWeakReference
+				.get();
+		if (navigationRenderer != null) {
+			navigationRenderer.updateLocation();
+		}
+	}
+
+	@Override
+	public void onChangeMapZoomLevel(int zoomLevel) {
+		this.zoomLevel = zoomLevel;
+		updateZoomButtons();
+	}
+
+	@Override
+	public void onChangeOrientation(Double orientationDegree) {
+		NavigationRenderer navigationRenderer = navigationRendererWeakReference
+				.get();
+		if (navigationRenderer != null) {
+			navigationRenderer.changeOrientation(orientationDegree);
+		}
+	}
+
+	@Override
+	public void onDetachedFromWindow() {
+		super.onDetachedFromWindow();
+		getHandler().removeCallbacks(gpsAlert);
+	}
+
+	@Override
+	public void onEnterDrivePhase() {
+		NavigationRenderer navigationRenderer = navigationRendererWeakReference
+				.get();
+		if (navigationRenderer != null) {
+			navigationRenderer.updatePlatform();
+		}
+	}
+
+	@Override
+	public void onEnterFinishPhase() {
+	}
+
+	@Override
+	public void onEnterPlatformPhase() {
+	}
+
+	@Override
 	public void onPauseActivity() {
 		GLSurfaceView glSurfaceView = glSurfaceViewWeakReference.get();
 		if (glSurfaceView != null) {
 			glSurfaceView.onPause();
 		}
-		NavigationRenderer navigationRenderer = navigationRendererWeakReference
-				.get();
-		if (navigationRenderer != null) {
-			navigationRenderer.onPauseActivity();
-			getCommonLogic().unregisterEventListener(navigationRenderer);
-		}
 
 		FrameLayout navigationSurfaceParent = (FrameLayout) findViewById(R.id.navigation_surface_parent);
 		navigationSurfaceParent.removeAllViews();
-
 	}
 
+	@Override
 	public void onResumeActivity() {
 		// ICSのGLSurfaceView.GLThreadがその親ViewをメンバmParentに保存する。
 		// そのため、Activity再構築などのタイミングで1/10程度の確率で循環参照でリークすることがある。
 		// それを防ぐために参照を極力減らしたFrameLayoutを間にはさむ
-		NavigationRenderer navigationRenderer = new NavigationRenderer(
-				getContext(), tilePipeline);
+		NavigationRenderer navigationRenderer = new NavigationRenderer(service,
+				tilePipeline, new Handler());
+		navigationRenderer.addOnChangeMapZoomLevelListener(this);
 		navigationRenderer.setZoomLevel(zoomLevel);
 		navigationRendererWeakReference = new WeakReference<NavigationRenderer>(
 				navigationRenderer);
@@ -218,28 +220,31 @@ public class NavigationModalView extends ModalView {
 				glSurfaceView);
 
 		glSurfaceView.onResume();
-
-		getCommonLogic().registerEventListener(navigationRenderer);
-		navigationRenderer.setCommonLogic(getCommonLogic());
-		navigationRenderer.onResumeActivity();
-
 	}
 
-	@Override
-	public void setCommonLogic(CommonLogicLoadCompleteEvent event) {
-		super.setCommonLogic(event);
+	protected void setAutoZoom(Boolean autoZoom) {
+		autoZoomButton.setTextColor(autoZoom ? Color.BLACK : Color.GRAY);
 		NavigationRenderer navigationRenderer = navigationRendererWeakReference
 				.get();
 		if (navigationRenderer != null) {
-			getCommonLogic().registerEventListener(navigationRenderer);
-			navigationRenderer.setCommonLogic(getCommonLogic());
+			navigationRenderer.setAutoZoomLevel(autoZoom);
 		}
-
 	}
 
-	@Subscribe
-	public void show(ShowEvent event) {
-		show();
+	protected void setZoomLevel(Integer newZoomLevel) {
+		zoomLevel = newZoomLevel;
+		NavigationRenderer navigationRenderer = navigationRendererWeakReference
+				.get();
+		if (navigationRenderer != null) {
+			navigationRenderer.setAutoZoomLevel(false);
+			navigationRenderer.setZoomLevel(zoomLevel);
+		}
+
+		if (autoZoomButton.isChecked()) {
+			autoZoomButton.setChecked(false);
+		}
+
+		updateZoomButtons();
 	}
 
 	@Override
@@ -254,11 +259,10 @@ public class NavigationModalView extends ModalView {
 
 		// 次の乗降場表示
 		TextView titleTextView = (TextView) findViewById(R.id.next_platform_text_view);
-		CommonLogic commonLogic = getCommonLogic();
-		List<OperationSchedule> operationSchedules = commonLogic
+		List<OperationSchedule> operationSchedules = service
 				.getRemainingOperationSchedules();
 		if (operationSchedules.isEmpty()) {
-			commonLogic.postEvent(new EnterFinishPhaseEvent());
+			service.enterFinishPhase();
 			titleTextView.setText("");
 			return;
 		}
@@ -268,7 +272,7 @@ public class NavigationModalView extends ModalView {
 		String titleTextFormat = "";
 		String timeTextFormat = "";
 		Date displayDate = new Date();
-		switch (commonLogic.getPhase()) {
+		switch (service.getPhase()) {
 		case DRIVE:
 			titleTextFormat = getResources().getString(
 					R.string.next_platform_is_html);
@@ -303,27 +307,31 @@ public class NavigationModalView extends ModalView {
 
 	}
 
-	@Override
-	public void hide() {
-		setVisibility(GONE);
-		GLSurfaceView glSurfaceView = glSurfaceViewWeakReference.get();
-		if (glSurfaceView != null) {
-			// glSurfaceView.setVisibility(INVISIBLE);
-			glSurfaceView.setVisibility(GONE);
+	protected void updateZoomButtons() {
+		if (zoomLevel <= NavigationRenderer.MIN_ZOOM_LEVEL) {
+			zoomLevel = NavigationRenderer.MIN_ZOOM_LEVEL;
+			zoomOutButton.setTextColor(Color.GRAY);
+			zoomOutButton.setEnabled(false);
+		} else {
+			zoomOutButton.setTextColor(Color.BLACK);
+			zoomOutButton.setEnabled(true);
 		}
-		// TODO:アニメーション
-		// super.hide();
+
+		if (zoomLevel >= NavigationRenderer.MAX_ZOOM_LEVEL) {
+			zoomLevel = NavigationRenderer.MAX_ZOOM_LEVEL;
+			zoomInButton.setTextColor(Color.GRAY);
+			zoomInButton.setEnabled(false);
+		} else {
+			zoomInButton.setTextColor(Color.BLACK);
+			zoomInButton.setEnabled(true);
+		}
 	}
 
-	@Override
-	public void onAttachedToWindow() {
-		super.onAttachedToWindow();
-		getHandler().post(gpsAlert);
+	protected void zoomIn() {
+		setZoomLevel(zoomLevel + 1);
 	}
 
-	@Override
-	public void onDetachedFromWindow() {
-		super.onDetachedFromWindow();
-		getHandler().removeCallbacks(gpsAlert);
+	protected void zoomOut() {
+		setZoomLevel(zoomLevel - 1);
 	}
 }

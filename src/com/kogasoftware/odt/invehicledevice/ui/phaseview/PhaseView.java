@@ -3,47 +3,35 @@ package com.kogasoftware.odt.invehicledevice.ui.phaseview;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
-import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import com.google.common.eventbus.Subscribe;
-import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.logic.event.CommonLogicLoadCompleteEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.EnterDrivePhaseEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.EnterFinishPhaseEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.EnterPlatformPhaseEvent;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 
-public class PhaseView extends FrameLayout {
-	private CommonLogic commonLogic = new CommonLogic();
+public class PhaseView extends FrameLayout implements
+		InVehicleDeviceService.OnEnterPhaseListener {
+	protected InVehicleDeviceService service;
 
-	public PhaseView(Context context, AttributeSet attrs) {
-		super(context, attrs);
+	public PhaseView(Context context, InVehicleDeviceService service) {
+		super(context);
+		this.service = service;
+		service.addOnEnterPhaseListener(this);
 	}
 
-	@Subscribe
-	public void enterDrivePhase(EnterDrivePhaseEvent event) {
+	@Override
+	public void onEnterDrivePhase() {
 		setVisibility(View.GONE);
 	}
 
-	@Subscribe
-	public void enterFinishPhase(EnterFinishPhaseEvent event) {
+	@Override
+	public void onEnterFinishPhase() {
 		setVisibility(View.GONE);
 	}
 
-	@Subscribe
-	public void enterPlatformPhase(EnterPlatformPhaseEvent event) {
+	@Override
+	public void onEnterPlatformPhase() {
 		setVisibility(View.GONE);
-	}
-
-	protected CommonLogic getCommonLogic() {
-		return commonLogic;
-	}
-
-	@Subscribe
-	public void setCommonLogic(CommonLogicLoadCompleteEvent event) {
-		commonLogic = event.commonLogic;
 	}
 
 	protected void setContentView(int resourceId) {
@@ -58,4 +46,5 @@ public class PhaseView extends FrameLayout {
 		int backgroundColor = typedArray.getColor(0, Color.WHITE);
 		setBackgroundColor(backgroundColor);
 	}
+
 }

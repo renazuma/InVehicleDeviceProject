@@ -112,59 +112,23 @@
     </LinearLayout>
 
     <FrameLayout
+        android:id="@+id/phase_view_layout"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/topbar"
-        android:layout_toLeftOf="@+id/side_button_view" >
+        android:layout_toLeftOf="@+id/side_button_view" />
 
-        <com.kogasoftware.odt.invehicledevice.ui.phaseview.PlatformPhaseView
-            android:id="@+id/platform_phase_view"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:visibility="gone" />
-
-        <com.kogasoftware.odt.invehicledevice.ui.phaseview.DrivePhaseView
-            android:id="@+id/drive_phase_view"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent" />
-
-        <com.kogasoftware.odt.invehicledevice.ui.phaseview.FinishPhaseView
-            android:id="@+id/finish_phase_view"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:visibility="gone" />
-    </FrameLayout>
-
-    <com.kogasoftware.odt.invehicledevice.ui.modalview.DepartureCheckModalView
-        android:id="@+id/departure_check_modal_view"
-        style="@style/ModalView.Setup" />
-
-    <com.kogasoftware.odt.invehicledevice.ui.modalview.ArrivalCheckModalView
-        android:id="@+id/arrival_check_modal_view"
-        style="@style/ModalView.Setup" />
-
-    <com.kogasoftware.odt.invehicledevice.ui.modalview.MemoModalView
-        android:id="@+id/memo_modal_view"
-        style="@style/ModalView.Setup" />
-
-    <com.kogasoftware.odt.invehicledevice.ui.modalview.NavigationModalView
-        android:id="@+id/navigation_modal_view"
-        style="@style/ModalView.Setup" />
-
-    <com.kogasoftware.odt.invehicledevice.ui.modalview.ScheduleModalView
-        android:id="@+id/schedule_modal_view"
-        style="@style/ModalView.Setup" />
-
-    <com.kogasoftware.odt.invehicledevice.ui.modalview.ScheduleChangedModalView
-        android:id="@+id/schedule_changed_modal_view"
-        style="@style/ModalView.Setup" />
-
-    <com.kogasoftware.odt.invehicledevice.ui.modalview.NotificationModalView
-        android:id="@+id/notification_modal_view"
-        style="@style/ModalView.Setup" />
-
+        
+    
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:id="@+id/modal_view_layout"/>
+        
     <ImageView
         android:id="@+id/alert_image_view"
         android:layout_width="50dip"

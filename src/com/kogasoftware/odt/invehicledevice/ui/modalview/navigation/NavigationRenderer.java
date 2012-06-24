@@ -1,9 +1,12 @@
 package com.kogasoftware.odt.invehicledevice.ui.modalview.navigation;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -15,18 +18,13 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
+import android.os.Handler;
 import android.util.FloatMath;
 import android.util.Log;
-import android.view.WindowManager;
 
 import com.google.common.base.Optional;
-import com.google.common.eventbus.Subscribe;
 import com.javadocmd.simplelatlng.LatLng;
-import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.logic.event.EnterDrivePhaseEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.LocationReceivedEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.MapZoomLevelChangedEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.OrientationChangedEvent;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.frametask.FrameTask;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.frametask.MapBuildFrameTask;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.frametask.NextPlatformFrameTask;
@@ -37,11 +35,22 @@ import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 
 public class NavigationRenderer implements GLSurfaceView.Renderer {
+	public interface OnChangeMapZoomLevelListener {
+		void onChangeMapZoomLevel(int zoomLevel);
+	}
+
 	private static final String TAG = NavigationRenderer.class.getSimpleName();
+
 	public static final int WORLD_WIDTH = 256;
 	public static final int WORLD_HEIGHT = 256;
 	public static final int MAX_ZOOM_LEVEL = 16;
 	public static final int MIN_ZOOM_LEVEL = 9;
+
+	public static PointF getDisplayPoint(LatLng latLng) {
+		double x = 0;
+		double y = 0;
+		return new PointF((float) x, (float) y);
+	}
 
 	public static PointF getPoint(LatLng latLng) {
 		double x = latLng.getLongitude() * NavigationRenderer.WORLD_WIDTH
@@ -51,48 +60,41 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		return new PointF((float) x, (float) y);
 	}
 
-	public static PointF getDisplayPoint(LatLng latLng) {
-		double x = 0;
-		double y = 0;
-		return new PointF((float) x, (float) y);
-	}
-
-	private final MotionSmoother rotationSmoother = new LazyMotionSmoother(
+	protected final Set<OnChangeMapZoomLevelListener> onChangeMapZoomLevelListeners = new CopyOnWriteArraySet<OnChangeMapZoomLevelListener>();
+	protected final MotionSmoother rotationSmoother = new LazyMotionSmoother(
 			500.0, 0.02, 0.00005);
-	private final MotionSmoother latitudeSmoother = new SimpleMotionSmoother();
-	private final MotionSmoother longitudeSmoother = new SimpleMotionSmoother();
-	private final List<FrameTask> backgroundFrameTasks = new LinkedList<FrameTask>();
-	private final List<FrameTask> frameTasks = new LinkedList<FrameTask>();
-	private final Queue<FrameTask> addedFrameTasks = new ConcurrentLinkedQueue<FrameTask>();
-	private final Queue<FrameTask> removedFrameTasks = new ConcurrentLinkedQueue<FrameTask>();
-	private final NextPlatformFrameTask nextPlatformFrameTask;
-	private final SelfFrameTask selfFrameTask;
-	private final TilePipeline tilePipeline;
+	protected final MotionSmoother latitudeSmoother = new SimpleMotionSmoother();
+	protected final MotionSmoother longitudeSmoother = new SimpleMotionSmoother();
+	protected final List<FrameTask> backgroundFrameTasks = new LinkedList<FrameTask>();
+	protected final List<FrameTask> frameTasks = new LinkedList<FrameTask>();
+	protected final Queue<FrameTask> addedFrameTasks = new ConcurrentLinkedQueue<FrameTask>();
+	protected final Queue<FrameTask> removedFrameTasks = new ConcurrentLinkedQueue<FrameTask>();
+	protected final NextPlatformFrameTask nextPlatformFrameTask;
+	protected final SelfFrameTask selfFrameTask;
+	protected long framesBy10seconds = 0l;
+	protected long lastReportMillis = 0l;
+	protected int width = 0;
+	protected int height = 0;
+	protected int zoomLevel = 12;
 
-	private CommonLogic commonLogic = new CommonLogic();
-	private long framesBy10seconds = 0l;
-	private long lastReportMillis = 0l;
-	private int width = 0;
-	private int height = 0;
-	private int zoomLevel = 12;
-
-	private final AtomicReference<Optional<Integer>> syncNextZoomLevel = new AtomicReference<Optional<Integer>>(
+	protected final AtomicReference<Optional<Integer>> syncNextZoomLevel = new AtomicReference<Optional<Integer>>(
 			Optional.<Integer> absent()); // 描画中にzoomの値が変更されないようにするための変数
-	private boolean autoZoomLevel = true; // 自動ズームするかどうか
-	private final AtomicReference<Optional<Boolean>> syncNextAutoZoomLevel = new AtomicReference<Optional<Boolean>>(
+	protected boolean autoZoomLevel = true; // 自動ズームするかどうか
+	protected final AtomicReference<Optional<Boolean>> syncNextAutoZoomLevel = new AtomicReference<Optional<Boolean>>(
 			Optional.<Boolean> absent()); // 描画中にautoZoomの値が変更されないようにするための変数
-	private final WindowManager windowManager;
+	protected final InVehicleDeviceService service;
+	protected final Handler uiHandler;
 
-	public NavigationRenderer(Context context, TilePipeline tilePipeline) {
-		this.tilePipeline = tilePipeline;
-		windowManager = (WindowManager) context
-				.getSystemService(Context.WINDOW_SERVICE);
+	public NavigationRenderer(InVehicleDeviceService service,
+			TilePipeline tilePipeline, Handler uiHandler) {
+		this.service = service;
+		this.uiHandler = uiHandler;
 		tilePipeline.changeZoomLevel(zoomLevel);
-		addedFrameTasks.add(new MapBuildFrameTask(context, tilePipeline));
-		selfFrameTask = new SelfFrameTask(context.getResources());
+		addedFrameTasks.add(new MapBuildFrameTask(service, tilePipeline));
+		selfFrameTask = new SelfFrameTask(service.getResources());
 		addedFrameTasks.add(selfFrameTask);
 		nextPlatformFrameTask = new NextPlatformFrameTask(
-				context.getResources());
+				service.getResources());
 		nextPlatformFrameTask.setLatLng(new LatLng(0, 0));
 		addedFrameTasks.add(nextPlatformFrameTask);
 
@@ -100,7 +102,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		double defaultLatitude = 34.617781;
 		double defaultLongitude = 134.161429;
 
-		LocationManager locationManager = (LocationManager) context
+		LocationManager locationManager = (LocationManager) service
 				.getSystemService(Context.LOCATION_SERVICE);
 		if (locationManager != null) {
 			Location location = locationManager
@@ -113,6 +115,20 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		}
 		latitudeSmoother.addMotion(defaultLatitude);
 		longitudeSmoother.addMotion(defaultLongitude);
+	}
+
+	public void addOnChangeMapZoomLevelListener(
+			OnChangeMapZoomLevelListener listener) {
+		onChangeMapZoomLevelListeners.add(listener);
+	}
+
+	public void changeOrientation(Double orientationDegree) {
+		double rad = Math.toRadians(orientationDegree);
+		double from = rotationSmoother.getSmoothMotion();
+		double to = Utility.getNearestRadian(from, rad);
+		Log.v(TAG, "changeOrientation got=" + rad + " from=" + from + " to="
+				+ to);
+		rotationSmoother.addMotion(to);
 	}
 
 	/**
@@ -166,8 +182,8 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 			PointF nextPlatformPoint = getPoint(nextPlatformFrameTask
 					.getLatLng());
 			// 目的地が現在地より下にある場合、中心を下に修正して目的地が見やすいようにする
-			float vehicleRY = selfPoint.x * FloatMath.sin(angle)
-					+ selfPoint.y * FloatMath.cos(angle);
+			float vehicleRY = selfPoint.x * FloatMath.sin(angle) + selfPoint.y
+					* FloatMath.cos(angle);
 			float nextPlatformRY = nextPlatformPoint.x * FloatMath.sin(angle)
 					+ nextPlatformPoint.y * FloatMath.cos(angle);
 
@@ -353,16 +369,30 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 				GL10.GL_MODULATE);
 	}
 
-	/**
-	 * 現在地を修正する
-	 */
-	@Subscribe
-	public void changeLocation(LocationReceivedEvent event) {
-		changeLocation();
+	public void setAutoZoomLevel(boolean newAutoZoomLevel) {
+		syncNextAutoZoomLevel.set(Optional.of(newAutoZoomLevel));
 	}
 
-	public void changeLocation() {
-		ServiceUnitStatusLog serviceUnitStatusLog = commonLogic
+	public void setZoomLevel(final int newZoomLevel) {
+		if (newZoomLevel > MAX_ZOOM_LEVEL || newZoomLevel < MIN_ZOOM_LEVEL
+				|| zoomLevel == newZoomLevel) {
+			return;
+		}
+
+		uiHandler.post(new Runnable() {
+			@Override
+			public void run() {
+				for (OnChangeMapZoomLevelListener listener : new ArrayList<OnChangeMapZoomLevelListener>(
+						onChangeMapZoomLevelListeners)) {
+					listener.onChangeMapZoomLevel(newZoomLevel);
+				}
+			}
+		});
+		syncNextZoomLevel.set(Optional.of(newZoomLevel));
+	}
+
+	public void updateLocation() {
+		ServiceUnitStatusLog serviceUnitStatusLog = service
 				.getServiceUnitStatusLog();
 		double latitude = serviceUnitStatusLog.getLatitude().doubleValue();
 		double longitude = serviceUnitStatusLog.getLongitude().doubleValue();
@@ -375,29 +405,8 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		longitudeSmoother.addMotion(longitude, millis);
 	}
 
-	/**
-	 * 現在の方向を修正する
-	 */
-	@Subscribe
-	public void changeOrientation(OrientationChangedEvent event) {
-		changeOrientation(Math.toRadians(event.orientationDegree));
-	}
-
-	public void changeOrientation(double rad) {
-		double from = rotationSmoother.getSmoothMotion();
-		double to = Utility.getNearestRadian(from, rad);
-		Log.v(TAG, "changeOrientation got=" + rad + " from=" + from + " to="
-				+ to);
-		rotationSmoother.addMotion(to);
-	}
-
-	@Subscribe
-	public void setNextPlatform(EnterDrivePhaseEvent e) {
-		setNextPlatform();
-	}
-
-	public void setNextPlatform() {
-		for (OperationSchedule operationSchedule : commonLogic
+	public void updatePlatform() {
+		for (OperationSchedule operationSchedule : service
 				.getCurrentOperationSchedule().asSet()) {
 			for (Platform platform : operationSchedule.getPlatform().asSet()) {
 				nextPlatformFrameTask.setLatLng(new LatLng(platform
@@ -405,31 +414,5 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 						.doubleValue()));
 			}
 		}
-	}
-
-	public void setCommonLogic(CommonLogic commonLogic) {
-		this.commonLogic = commonLogic;
-		tilePipeline.setCommonLogic(commonLogic);
-		setNextPlatform();
-		changeLocation();
-	}
-
-	public void setZoomLevel(int newZoomLevel) {
-		if (newZoomLevel > MAX_ZOOM_LEVEL || newZoomLevel < MIN_ZOOM_LEVEL
-				|| zoomLevel == newZoomLevel) {
-			return;
-		}
-		commonLogic.postEvent(new MapZoomLevelChangedEvent(newZoomLevel));
-		syncNextZoomLevel.set(Optional.of(newZoomLevel));
-	}
-
-	public void setAutoZoomLevel(boolean newAutoZoomLevel) {
-		syncNextAutoZoomLevel.set(Optional.of(newAutoZoomLevel));
-	}
-
-	public void onResumeActivity() {
-	}
-
-	public void onPauseActivity() {
 	}
 }

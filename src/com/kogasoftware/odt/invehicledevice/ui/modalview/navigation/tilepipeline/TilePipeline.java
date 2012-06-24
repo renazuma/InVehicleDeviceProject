@@ -12,18 +12,15 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.ObjectUtils.Null;
 import org.apache.commons.lang3.tuple.Pair;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.google.common.base.Optional;
-import com.google.common.eventbus.Subscribe;
-import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.logic.event.ExitEvent;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.Textures;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipeline.PipeQueue.OnDropListener;
 
-public class TilePipeline {
+public class TilePipeline implements InVehicleDeviceService.OnExitListener {
 	private static final String TAG = TilePipeline.class.getSimpleName();
 	private static final Integer MAX_TEXTURE_TRANSFER_COUNT = 5;
 	private final Set<Tile> processingTiles = new CopyOnWriteArraySet<Tile>();
@@ -69,21 +66,42 @@ public class TilePipeline {
 			25, onDropListener, comparator);
 	private final PipeExchanger<Tile, Null, TileBitmapFile> webTilePipe;
 	private final PipeExchanger<Tile, TileBitmapFile, Bitmap> fileTilePipe;
-	private CommonLogic commonLogic = new CommonLogic();
 
-	public TilePipeline(Context context) {
-		File outputDirectory = context.getExternalFilesDir("tile");
-		webTilePipe = new WebTilePipe(startPipeQueue, filePipeQueue,
+	public TilePipeline(InVehicleDeviceService service) {
+		File outputDirectory = service.getExternalFilesDir("tile");
+		webTilePipe = new WebTilePipe(service, startPipeQueue, filePipeQueue,
 				onDropListener, outputDirectory);
-		fileTilePipe = new FileTilePipe(filePipeQueue, bitmapPipeQueue,
-				onDropListener);
+		fileTilePipe = new FileTilePipe(service, filePipeQueue,
+				bitmapPipeQueue, onDropListener);
 	}
 
-	public void start(Tile tile) {
-		if (processingTiles.add(tile)) {
-			// Log.v(TAG, "add " + tile);
-			startPipeQueue.addAndDrop(tile, ObjectUtils.NULL);
+	public void changeZoomLevel(int zoomLevel) {
+		this.zoomLevel = zoomLevel;
+		startPipeQueue.clear();
+		webTilePipe.clear();
+		filePipeQueue.clear();
+		fileTilePipe.clear();
+		bitmapPipeQueue.clear();
+		texturePipeQueue.clear();
+		processingTiles.clear();
+	}
+
+	public Set<Tile> getPresentTiles() {
+		return new HashSet<Tile>(texturePipeQueue.getKeys());
+	}
+
+	@Override
+	public void onExit() {
+		webTilePipe.close();
+		fileTilePipe.close();
+	}
+
+	public Optional<Integer> pollOrStartLoad(Tile tile) {
+		for (Integer textureId : texturePipeQueue.getIfPresent(tile).asSet()) {
+			return Optional.of(textureId);
 		}
+		start(tile);
+		return Optional.absent();
 	}
 
 	public void remove(GL10 gl, Tile tile) {
@@ -91,6 +109,13 @@ public class TilePipeline {
 		processingTiles.remove(tile);
 		for (Integer textureId : texturePipeQueue.remove(tile).asSet()) {
 			Textures.delete(gl, textureId);
+		}
+	}
+
+	public void start(Tile tile) {
+		if (processingTiles.add(tile)) {
+			// Log.v(TAG, "add " + tile);
+			startPipeQueue.addAndDrop(tile, ObjectUtils.NULL);
 		}
 	}
 
@@ -119,41 +144,5 @@ public class TilePipeline {
 				break;
 			}
 		}
-	}
-
-	public void changeZoomLevel(int zoomLevel) {
-		this.zoomLevel = zoomLevel;
-		startPipeQueue.clear();
-		webTilePipe.clear();
-		filePipeQueue.clear();
-		fileTilePipe.clear();
-		bitmapPipeQueue.clear();
-		texturePipeQueue.clear();
-		processingTiles.clear();
-	}
-
-	public Optional<Integer> pollOrStartLoad(Tile tile) {
-		for (Integer textureId : texturePipeQueue.getIfPresent(tile).asSet()) {
-			return Optional.of(textureId);
-		}
-		start(tile);
-		return Optional.absent();
-	}
-
-	public void setCommonLogic(CommonLogic commonLogic) {
-		this.commonLogic = commonLogic;
-		webTilePipe.setCommonLogic(commonLogic);
-		fileTilePipe.setCommonLogic(commonLogic);
-		commonLogic.registerEventListener(this);
-	}
-
-	@Subscribe
-	public void close(ExitEvent exitEvent) {
-		webTilePipe.close();
-		fileTilePipe.close();
-	}
-
-	public Set<Tile> getPresentTiles() {
-		return new HashSet<Tile>(texturePipeQueue.getKeys());
 	}
 }

@@ -12,6 +12,7 @@ import org.apache.commons.lang3.ObjectUtils.Null;
 
 import android.graphics.Bitmap;
 
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipeline.PipeQueue.OnDropListener;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
@@ -19,12 +20,13 @@ import com.kogasoftware.odt.webapi.WebAPIException;
 public class WebTilePipe extends PipeExchanger<Tile, Null, TileBitmapFile> {
 	private final File outputDirectory;
 	protected static final Integer NUM_LOADERS = 10;
-	private final Map<Tile, Integer> loadingReqKeys = new ConcurrentHashMap<Tile, Integer>();
+	protected final Map<Tile, Integer> loadingReqKeys = new ConcurrentHashMap<Tile, Integer>();
 
-	public WebTilePipe(PipeQueue<Tile, Null> fromPipeQueue,
+	public WebTilePipe(InVehicleDeviceService service,
+			PipeQueue<Tile, Null> fromPipeQueue,
 			PipeQueue<Tile, TileBitmapFile> toPipeQueue,
 			OnDropListener<Tile> onDropListener, File outputDirectory) {
-		super(fromPipeQueue, toPipeQueue, onDropListener);
+		super(service, fromPipeQueue, toPipeQueue, onDropListener);
 		this.outputDirectory = outputDirectory;
 	}
 
@@ -33,7 +35,7 @@ public class WebTilePipe extends PipeExchanger<Tile, Null, TileBitmapFile> {
 		for (Tile tile : new HashSet<Tile>(loadingReqKeys.keySet())) {
 			Integer reqkey = loadingReqKeys.remove(tile);
 			if (reqkey != null) {
-				commonLogic.getDataSource().cancel(reqkey);
+				service.getDataSource().cancel(reqkey);
 			}
 		}
 	}
@@ -49,18 +51,18 @@ public class WebTilePipe extends PipeExchanger<Tile, Null, TileBitmapFile> {
 		final CountDownLatch countDownLatch = new CountDownLatch(1);
 		final AtomicReference<Bitmap> outputBitmap = new AtomicReference<Bitmap>(
 				null);
-		int reqkey = commonLogic.getDataSource().getMapTile(tile.getCenter(),
+		int reqkey = service.getDataSource().getMapTile(tile.getCenter(),
 				tile.getZoom(), new WebAPICallback<Bitmap>() {
 					@Override
 					public void onException(int reqkey, WebAPIException ex) {
-						commonLogic.getDataSource().cancel(reqkey);
+						service.getDataSource().cancel(reqkey);
 						countDownLatch.countDown();
 					}
 
 					@Override
 					public void onFailed(int reqkey, int statusCode,
 							String response) {
-						commonLogic.getDataSource().cancel(reqkey);
+						service.getDataSource().cancel(reqkey);
 						countDownLatch.countDown();
 					}
 

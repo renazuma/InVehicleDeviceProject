@@ -72,7 +72,7 @@
                 android:id="@+id/gps_alert_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="位置情報を受信しています"
+                android:text="@string/location_receiving"
                 android:textColor="@android:color/black"
                 android:textSize="25sp" />
         </LinearLayout>

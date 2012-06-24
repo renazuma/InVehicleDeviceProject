@@ -9,23 +9,10 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import android.util.Log;
 
-import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipeline.PipeQueue.OnDropListener;
 
 public abstract class PipeExchanger<K, F, T> implements Closeable {
-	private static final String TAG = PipeExchanger.class.getSimpleName();
-	protected static final Integer NUM_LOADERS = 3;
-	protected final PipeQueue<K, F> fromPipeQueue;
-	protected final PipeQueue<K, T> toPipeQueue;
-	protected final ExecutorService loaders = Executors
-			.newFixedThreadPool(NUM_LOADERS);
-	protected final OnDropListener<K> onDropListener;
-	protected CommonLogic commonLogic = new CommonLogic();
-
-	public void setCommonLogic(CommonLogic commonLogic) {
-		this.commonLogic = commonLogic;
-	}
-
 	protected class Loader implements Runnable {
 		@Override
 		public void run() {
@@ -37,6 +24,37 @@ public abstract class PipeExchanger<K, F, T> implements Closeable {
 			}
 		}
 	}
+
+	private static final String TAG = PipeExchanger.class.getSimpleName();
+	protected static final Integer NUM_LOADERS = 3;
+	protected final PipeQueue<K, F> fromPipeQueue;
+	protected final PipeQueue<K, T> toPipeQueue;
+	protected final ExecutorService loaders = Executors
+			.newFixedThreadPool(NUM_LOADERS);
+	protected final OnDropListener<K> onDropListener;
+	protected final InVehicleDeviceService service;
+
+	public PipeExchanger(InVehicleDeviceService service,
+			PipeQueue<K, F> fromPipeQueue, PipeQueue<K, T> toPipeQueue,
+			OnDropListener<K> onDropListener) {
+		this.service = service;
+		this.fromPipeQueue = fromPipeQueue;
+		this.toPipeQueue = toPipeQueue;
+		this.onDropListener = onDropListener;
+		for (Integer i = 0; i < NUM_LOADERS; ++i) {
+			loaders.submit(new Loader());
+		}
+	}
+
+	public abstract void clear();
+
+	@Override
+	public void close() {
+		loaders.shutdownNow();
+	}
+
+	protected abstract T load(K key, F from) throws IOException,
+			InterruptedException;
 
 	protected void loopLoad() throws InterruptedException {
 		String T = getClass().getSimpleName();
@@ -61,25 +79,5 @@ public abstract class PipeExchanger<K, F, T> implements Closeable {
 				onDropListener.onDrop(fromPair.getKey());
 			}
 		}
-	}
-
-	protected abstract T load(K key, F from) throws IOException,
-			InterruptedException;
-
-	public abstract void clear();
-
-	public PipeExchanger(PipeQueue<K, F> fromPipeQueue,
-			PipeQueue<K, T> toPipeQueue, OnDropListener<K> onDropListener) {
-		this.fromPipeQueue = fromPipeQueue;
-		this.toPipeQueue = toPipeQueue;
-		this.onDropListener = onDropListener;
-		for (Integer i = 0; i < NUM_LOADERS; ++i) {
-			loaders.submit(new Loader());
-		}
-	}
-
-	@Override
-	public void close() {
-		loaders.shutdownNow();
 	}
 }
