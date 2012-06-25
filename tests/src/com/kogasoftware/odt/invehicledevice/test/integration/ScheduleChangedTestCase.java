@@ -7,6 +7,7 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.test.util.datasource.ScheduleChangedTestDataSource;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.DepartureCheckModalView;
 
 public class ScheduleChangedTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
@@ -24,7 +25,7 @@ public class ScheduleChangedTestCase extends
 	public void setUp() throws Exception {
 		super.setUp();
 		solo = new Solo(getInstrumentation(), getActivity());
-		assertTrue(TestUtil.waitForStartUi(getActivity()));
+		assertTrue(TestUtil.waitForStartUI(getActivity()));
 	}
 
 	@Override
@@ -40,7 +41,7 @@ public class ScheduleChangedTestCase extends
 //		solo.clickOnButton("到着し");
 //		solo.clickOnButton("到着する");
 //		solo.clickOnButton("出発する");
-		TestUtil.willShow(solo, R.id.departure_check_modal_view);
+		TestUtil.willShow(solo, DepartureCheckModalView.class);
 //		solo.clickOnView(solo.getButton("出発する", true));
 
 //		assertFalse(solo.searchText("乗降場A", true));
@@ -57,7 +58,7 @@ public class ScheduleChangedTestCase extends
 		solo.clickOnButton("到着しました");
 		solo.clickOnButton("到着する");
 		solo.clickOnButton("出発する");
-		TestUtil.willShow(solo, R.id.departure_check_modal_view);
+		TestUtil.willShow(solo, DepartureCheckModalView.class);
 		solo.clickOnView(solo.getButton("出発する", true));
 
 		assertFalse(solo.searchText("乗降場A", true));

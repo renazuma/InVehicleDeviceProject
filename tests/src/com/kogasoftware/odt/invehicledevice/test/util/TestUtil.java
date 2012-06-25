@@ -30,8 +30,8 @@ public class TestUtil {
 		LocalDataSource.clearSavedFile();
 	}
 	
-	public static void willShow(Solo solo, Integer resourceId) {
-		willShow(solo, solo.getView(resourceId));
+	public static void willShow(Solo solo, Class<? extends View> c) {
+		willShow(solo, solo.getView(c, 0));
 	}
 
 	public static void willShow(Solo solo, View view) {
@@ -51,13 +51,13 @@ public class TestUtil {
 		Assert.fail();
 	}
 	
-	public static Boolean waitForStartUi(final InVehicleDeviceActivity activity) throws InterruptedException {
+	public static Boolean waitForStartUI(final InVehicleDeviceActivity activity) throws InterruptedException {
 		Thread t = new Thread() {
 			@Override
 			public void run() {
 				while (!Thread.currentThread().isInterrupted()) {
 					Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
-					if (activity.findViewById(android.R.id.content).getVisibility() == View.VISIBLE) {
+					if (activity.isUIInitialized()) {
 						return;
 					}
 				}

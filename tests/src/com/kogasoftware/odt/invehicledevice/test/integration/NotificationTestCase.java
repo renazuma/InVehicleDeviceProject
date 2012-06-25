@@ -6,9 +6,10 @@ import android.test.ActivityInstrumentationTestCase2;
 import android.view.View;
 
 import com.jayway.android.robotium.solo.Solo;
-import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.NotificationModalView;
+import com.kogasoftware.odt.invehicledevice.ui.phaseview.DrivePhaseView;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
@@ -40,7 +41,7 @@ public class NotificationTestCase extends
 		TestUtil.clearStatus();
 
 		solo = new Solo(getInstrumentation(), getActivity());
-		assertTrue(TestUtil.waitForStartUi(getActivity()));
+		assertTrue(TestUtil.waitForStartUI(getActivity()));
 	}
 
 	@Override
@@ -51,10 +52,10 @@ public class NotificationTestCase extends
 
 	public void test01_起動時は非表示() {
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.drive_phase_view)
+		assertEquals(View.VISIBLE, solo.getView(DrivePhaseView.class, 0)
 				.getVisibility());
 
-		assertEquals(View.GONE, solo.getView(R.id.notification_modal_view)
+		assertEquals(View.GONE, solo.getView(NotificationModalView.class, 0)
 				.getVisibility());
 
 
@@ -80,7 +81,7 @@ public class NotificationTestCase extends
 
 		solo.sleep(WAIT_MILLIS);
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.notification_modal_view)
+		assertEquals(View.VISIBLE, solo.getView(NotificationModalView.class, 0)
 				.getVisibility());
 
 	}
@@ -96,10 +97,10 @@ public class NotificationTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.GONE, solo.getView(R.id.notification_modal_view)
+		assertEquals(View.GONE, solo.getView(NotificationModalView.class, 0)
 				.getVisibility());
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.drive_phase_view)
+		assertEquals(View.VISIBLE, solo.getView(DrivePhaseView.class, 0)
 				.getVisibility());
 
 	}

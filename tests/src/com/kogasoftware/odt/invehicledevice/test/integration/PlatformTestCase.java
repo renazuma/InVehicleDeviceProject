@@ -8,6 +8,8 @@ import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.DepartureCheckModalView;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.MemoModalView;
 
 public class PlatformTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
@@ -40,7 +42,7 @@ public class PlatformTestCase extends
 		TestUtil.clearStatus();
 
 		solo = new Solo(getInstrumentation(), getActivity());
-		assertTrue(TestUtil.waitForStartUi(getActivity()));
+		assertTrue(TestUtil.waitForStartUI(getActivity()));
 
 		// デフォルトで停車中にする
 		if (solo.searchButton("到着しました", true)) {
@@ -63,7 +65,7 @@ public class PlatformTestCase extends
 	public void test01_メモボタンを押すとメモ画面が表示() {
 
 		solo.clickOnButton("メモ");
-		assertEquals(View.VISIBLE, solo.getView(R.id.memo_modal_view)
+		assertEquals(View.VISIBLE, solo.getView(MemoModalView.class, 0)
 				.getVisibility());
 		assertTrue(solo.searchText("テストメモ1"));
 	}
@@ -72,14 +74,14 @@ public class PlatformTestCase extends
 		test01_メモボタンを押すとメモ画面が表示();
 		solo.clickOnView(solo.getView(R.id.memo_close_button));
 		getInstrumentation().waitForIdleSync();
-		assertEquals(View.GONE, solo.getView(R.id.memo_modal_view)
+		assertEquals(View.GONE, solo.getView(MemoModalView.class, 0)
 				.getVisibility());
 	}
 
 	public void test04_出発ボタンを押すと出発ダイアログ表示() {
 		solo.clickOnButton("出発する");
 		assertEquals(View.VISIBLE, solo
-				.getView(R.id.departure_check_modal_view).getVisibility());
+				.getView(DepartureCheckModalView.class, 0).getVisibility());
 	}
 
 	public void test05_出発ダイアログはい選択で走行中() {

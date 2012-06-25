@@ -2,13 +2,12 @@ package com.kogasoftware.odt.invehicledevice.test.integration;
 
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.View;
-import android.widget.TextView;
 
 import com.jayway.android.robotium.solo.Solo;
-import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.test.util.datasource.DummyDataSource;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.DepartureCheckModalView;
 
 public class DriveTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
@@ -27,7 +26,7 @@ public class DriveTestCase extends
 		TestUtil.clearStatus();
 
 		solo = new Solo(getInstrumentation(), getActivity());
-		assertTrue(TestUtil.waitForStartUi(getActivity()));
+		assertTrue(TestUtil.waitForStartUI(getActivity()));
 	}
 
 	@Override
@@ -42,7 +41,7 @@ public class DriveTestCase extends
 	}
 
 	public void test02_起動時は出発ダイアログは非表示() {
-		assertEquals(View.GONE, solo.getView(R.id.departure_check_modal_view)
+		assertEquals(View.GONE, solo.getView(DepartureCheckModalView.class, 0)
 				.getVisibility());
 	}
 /*

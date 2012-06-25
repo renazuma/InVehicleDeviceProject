@@ -8,6 +8,7 @@ import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.DepartureCheckModalView;
 
 public class PassengerControlTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
@@ -40,7 +41,7 @@ public class PassengerControlTestCase extends
 		TestUtil.clearStatus();
 
 		solo = new Solo(getInstrumentation(), getActivity());
-		assertTrue(TestUtil.waitForStartUi(getActivity()));
+		assertTrue(TestUtil.waitForStartUI(getActivity()));
 
 		// デフォルトで停車中にする
 		if (solo.searchButton("到着しました", true)) {
@@ -86,7 +87,7 @@ public class PassengerControlTestCase extends
 
 		solo.clickOnButton("出発する");
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.departure_check_modal_view)
+		assertEquals(View.VISIBLE, solo.getView(DepartureCheckModalView.class, 0)
 				.getVisibility());
 
 		getInstrumentation().waitForIdleSync();
@@ -108,7 +109,7 @@ public class PassengerControlTestCase extends
 
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.departure_check_modal_view)
+		assertEquals(View.VISIBLE, solo.getView(DepartureCheckModalView.class, 0)
 				.getVisibility());
 
 		assertTrue(solo.searchText("名字b", 0, true));
@@ -146,7 +147,7 @@ public class PassengerControlTestCase extends
 
 		solo.clickOnButton("出発する");
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.departure_check_modal_view)
+		assertEquals(View.VISIBLE, solo.getView(DepartureCheckModalView.class, 0)
 				.getVisibility());
 
 		solo.clickOnView(solo.getView(R.id.departure_button));
@@ -181,7 +182,7 @@ public class PassengerControlTestCase extends
 
 		solo.clickOnButton("出発する");
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.departure_check_modal_view)
+		assertEquals(View.VISIBLE, solo.getView(DepartureCheckModalView.class, 0)
 				.getVisibility());
 
 		solo.clickOnView(solo.getView(R.id.departure_button));
@@ -221,7 +222,7 @@ public class PassengerControlTestCase extends
 
 		solo.clickOnButton("出発する");
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.departure_check_modal_view)
+		assertEquals(View.VISIBLE, solo.getView(DepartureCheckModalView.class, 0)
 				.getVisibility());
 
 		solo.clickOnView(solo.getView(R.id.departure_button));
@@ -262,7 +263,7 @@ public class PassengerControlTestCase extends
 
 		solo.clickOnButton("出発する");
 
-		assertEquals(View.VISIBLE, solo.getView(R.id.departure_check_modal_view)
+		assertEquals(View.VISIBLE, solo.getView(DepartureCheckModalView.class, 0)
 				.getVisibility());
 
 		solo.clickOnView(solo.getView(R.id.departure_button));

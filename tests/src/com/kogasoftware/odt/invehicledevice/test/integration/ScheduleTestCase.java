@@ -9,6 +9,7 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.test.util.datasource.DummyDataSource;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.ScheduleModalView;
 
 public class ScheduleTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
@@ -35,7 +36,7 @@ public class ScheduleTestCase extends
 		super.setUp();
 		TestUtil.clearStatus();
 		solo = new Solo(getInstrumentation(), getActivity());
-		assertTrue(TestUtil.waitForStartUi(getActivity()));
+		assertTrue(TestUtil.waitForStartUI(getActivity()));
 	}
 
 	@Override
@@ -51,7 +52,7 @@ public class ScheduleTestCase extends
 	public void test01_起動時は非表示() {
 		assertEquals("運行予定",
 				((Button) solo.getView(R.id.schedule_button)).getText());
-		assertEquals(View.GONE, solo.getView(R.id.schedule_modal_view)
+		assertEquals(View.GONE, solo.getView(ScheduleModalView.class, 0)
 				.getVisibility());
 	}
 
@@ -59,7 +60,7 @@ public class ScheduleTestCase extends
 		test01_起動時は非表示();
 		solo.clickOnView(solo.getView(R.id.schedule_button));
 		getInstrumentation().waitForIdleSync();
-		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_modal_view)
+		assertEquals(View.VISIBLE, solo.getView(ScheduleModalView.class, 0)
 				.getVisibility());
 		assertTrue(solo.searchText("上野御徒町駅前"));
 		assertTrue(solo.searchText("上野動物園前"));
@@ -71,7 +72,7 @@ public class ScheduleTestCase extends
 		solo.clickOnButton("戻る");
 
 		getInstrumentation().waitForIdleSync();
-		assertEquals(View.GONE, solo.getView(R.id.schedule_modal_view)
+		assertEquals(View.GONE, solo.getView(ScheduleModalView.class, 0)
 				.getVisibility());
 
 		assertFalse(solo.searchText("上野御徒町駅前", true));
@@ -81,7 +82,7 @@ public class ScheduleTestCase extends
 	public void test04_一回閉じてからもう一度予定ボタンを押したら表示() {
 		test03_戻るボタンを押したら消える();
 		solo.clickOnView(solo.getView(R.id.schedule_button));
-		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_modal_view)
+		assertEquals(View.VISIBLE, solo.getView(ScheduleModalView.class, 0)
 				.getVisibility());
 	}
 
@@ -92,7 +93,7 @@ public class ScheduleTestCase extends
 		assertTrue(solo.searchText("コガソフト", 0, false));
 
 		solo.clickOnView(solo.getView(R.id.schedule_button));
-		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_modal_view)
+		assertEquals(View.VISIBLE, solo.getView(ScheduleModalView.class, 0)
 				.getVisibility());
 
 		solo.clickOnButton("下へ移動");
@@ -107,7 +108,7 @@ public class ScheduleTestCase extends
 		test05_予定を表示してから下スクロール();
 
 		solo.clickOnView(solo.getView(R.id.schedule_button));
-		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_modal_view)
+		assertEquals(View.VISIBLE, solo.getView(ScheduleModalView.class, 0)
 				.getVisibility());
 
 		solo.clickOnButton("上へ移動");
@@ -124,7 +125,7 @@ public class ScheduleTestCase extends
 		test02_予定ボタンを押したら表示();
 
 		solo.clickOnView(solo.getView(R.id.schedule_button));
-		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_modal_view)
+		assertEquals(View.VISIBLE, solo.getView(ScheduleModalView.class, 0)
 				.getVisibility());
 
 		assertFalse(solo.searchButton("上へ移動"));
@@ -134,7 +135,7 @@ public class ScheduleTestCase extends
 		test02_予定ボタンを押したら表示();
 
 		solo.clickOnView(solo.getView(R.id.schedule_button));
-		assertEquals(View.VISIBLE, solo.getView(R.id.schedule_modal_view)
+		assertEquals(View.VISIBLE, solo.getView(ScheduleModalView.class, 0)
 				.getVisibility());
 
 		assertFalse(solo.searchButton("下へ移動"));

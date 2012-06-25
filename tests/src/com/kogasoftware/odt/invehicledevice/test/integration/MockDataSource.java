@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import android.graphics.Bitmap;
 
 import com.javadocmd.simplelatlng.LatLng;
-import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSource;
+import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.Demand;
@@ -34,6 +34,7 @@ public class MockDataSource implements DataSource {
 	private Date nextNotifyDate = new Date();
 	private boolean NotificationFlag = false;
 
+	
 	@Override
 	public int arrivalOperationSchedule(OperationSchedule os,
 			WebAPICallback<OperationSchedule> callback) {
