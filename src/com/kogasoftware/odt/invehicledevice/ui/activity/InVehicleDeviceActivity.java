@@ -10,6 +10,9 @@ import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Color;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.StrictMode;
@@ -25,7 +28,10 @@ import com.kogasoftware.odt.invehicledevice.ui.InVehicleDeviceView;
 
 public class InVehicleDeviceActivity extends Activity implements
 		InVehicleDeviceService.OnInitializeListener,
-		InVehicleDeviceService.OnExitListener {
+		InVehicleDeviceService.OnExitListener, LocationListener {
+	
+	private LocationManager locationManager = null;
+
 	public static class PausedEvent {
 	}
 
@@ -80,6 +86,8 @@ public class InVehicleDeviceActivity extends Activity implements
 
 		bindService(new Intent(this, InVehicleDeviceService.class),
 				serviceConnection, Context.BIND_AUTO_CREATE);
+		
+		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 	}
 
 	@Override
@@ -143,6 +151,19 @@ public class InVehicleDeviceActivity extends Activity implements
 			optionalService.get().setActivityPaused();
 		}
 	}
+	
+	public void onStop() {
+		super.onStop();
+		locationManager.removeUpdates(this);
+	}
+	
+	@Override
+	public void onStart() {
+		super.onStart();
+		locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+		1000, 1, this);
+	}
 
 	@Override
 	public void onResume() {
@@ -153,5 +174,24 @@ public class InVehicleDeviceActivity extends Activity implements
 		if (optionalService.isPresent()) {
 			optionalService.get().setActivityResumed();
 		}
+	}
+
+	@Override
+	public void onLocationChanged(Location location) {
+		if (optionalService.isPresent()) {
+			optionalService.get().changeLocation(location);
+		}
+	}
+
+	@Override
+	public void onProviderDisabled(String arg0) {
+	}
+
+	@Override
+	public void onProviderEnabled(String arg0) {
+	}
+
+	@Override
+	public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
 	}
 }
