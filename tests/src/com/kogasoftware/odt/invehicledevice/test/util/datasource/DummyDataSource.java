@@ -10,7 +10,7 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.kogasoftware.odt.invehicledevice.logic.datasource.EmptyDataSource;
+import com.kogasoftware.odt.invehicledevice.datasource.EmptyDataSource;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.Demand;

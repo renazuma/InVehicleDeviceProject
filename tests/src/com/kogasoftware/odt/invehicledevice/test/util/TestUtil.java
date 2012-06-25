@@ -11,10 +11,10 @@ import android.view.View;
 
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.jayway.android.robotium.solo.Solo;
-import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
-import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSource;
-import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSourceFactory;
+import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
+import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
 public class TestUtil {
@@ -23,11 +23,11 @@ public class TestUtil {
 	}
 	
 	public static void setDate(DateTime date) {
-		CommonLogic.setDate(new Date(date.getMillis()));
+		InVehicleDeviceService.setDate(new Date(date.getMillis()));
 	}
 	
 	public static void clearStatus() {
-		StatusAccess.clearSavedFile();
+		LocalDataSource.clearSavedFile();
 	}
 	
 	public static void willShow(Solo solo, Integer resourceId) {

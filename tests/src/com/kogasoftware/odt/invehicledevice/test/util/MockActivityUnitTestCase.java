@@ -11,7 +11,7 @@ import android.os.Looper;
 import android.test.ActivityUnitTestCase;
 
 import com.google.common.base.Objects;
-import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 
 public class MockActivityUnitTestCase extends
 		ActivityUnitTestCase<MockActivity> {
@@ -57,7 +57,7 @@ public class MockActivityUnitTestCase extends
 	 * Activityに関連付くたHandlerを取得
 	 */
 	protected Handler getActivityHandler() throws InterruptedException {
-		return CommonLogic.getActivityHandler(getActivity2());
+		return InVehicleDeviceService.getActivityHandler(getActivity2());
 	}
 
 	protected void loop() {

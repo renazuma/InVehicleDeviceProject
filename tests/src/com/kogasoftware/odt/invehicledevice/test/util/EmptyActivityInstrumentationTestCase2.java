@@ -13,8 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.jayway.android.robotium.solo.Solo;
-import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.ui.activity.EmptyActivity;
 
 public class EmptyActivityInstrumentationTestCase2 extends
@@ -44,7 +43,7 @@ public class EmptyActivityInstrumentationTestCase2 extends
 			}
 		}).start();
 
-		Handler h = CommonLogic.getActivityHandler(getActivity());
+		Handler h = InVehicleDeviceService.getActivityHandler(getActivity());
 		cdl.countDown();
 		return h;
 	}
@@ -69,11 +68,6 @@ public class EmptyActivityInstrumentationTestCase2 extends
 			}
 		});
 		return v.get();
-	}
-
-	public CommonLogic newCommonLogic() throws InterruptedException {
-		return new CommonLogic(getActivity(), getActivityHandler(),
-				new StatusAccess(getActivity()));
 	}
 
 	public void runOnUiThreadSync(Runnable runnable)

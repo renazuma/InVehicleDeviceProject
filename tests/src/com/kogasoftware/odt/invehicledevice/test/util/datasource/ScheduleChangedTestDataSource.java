@@ -9,7 +9,7 @@ import org.json.JSONObject;
 
 import android.util.Log;
 
-import com.kogasoftware.odt.invehicledevice.logic.datasource.EmptyDataSource;
+import com.kogasoftware.odt.invehicledevice.datasource.EmptyDataSource;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.Demand;

@@ -2,12 +2,13 @@ package com.kogasoftware.odt.invehicledevice.test.util;
 
 import java.util.List;
 
-import com.kogasoftware.odt.invehicledevice.logic.datasource.EmptyDataSource;
+import android.test.ActivityInstrumentationTestCase2;
+
+import com.kogasoftware.odt.invehicledevice.datasource.EmptyDataSource;
 import com.kogasoftware.odt.invehicledevice.test.util.datasource.DummyDataSource;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
-import android.test.ActivityInstrumentationTestCase2;
 
 public class TestUtilTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {

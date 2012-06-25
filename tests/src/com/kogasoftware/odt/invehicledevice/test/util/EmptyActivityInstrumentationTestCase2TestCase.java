@@ -8,7 +8,7 @@ import com.kogasoftware.odt.invehicledevice.ui.modalview.NavigationModalView;
 public class EmptyActivityInstrumentationTestCase2TestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 
-	public void testInflateTestLayout() throws InterruptedException {
+	public void xtestInflateTestLayout() throws InterruptedException {
 		View v = inflateAndAddTestLayout(com.kogasoftware.odt.invehicledevice.test.R.layout.test_navigation_modal_view);
 		assertTrue(v instanceof NavigationModalView);
 		ViewGroup vg = (ViewGroup) getActivity().findViewById(
