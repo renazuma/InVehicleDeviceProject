@@ -115,6 +115,8 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		}
 		latitudeSmoother.addMotion(defaultLatitude);
 		longitudeSmoother.addMotion(defaultLongitude);
+		
+		updatePlatform();
 	}
 
 	public void addOnChangeMapZoomLevelListener(
