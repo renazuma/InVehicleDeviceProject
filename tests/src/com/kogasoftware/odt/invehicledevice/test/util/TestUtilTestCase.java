@@ -21,13 +21,13 @@ public class TestUtilTestCase extends
 	public void testWaitForStartUi() throws Exception {
 		TestUtil.clearStatus();
 		TestUtil.setDataSource(new DummyDataSource());
-		assertTrue(TestUtil.waitForStartUi(getActivity()));
+		assertTrue(TestUtil.waitForStartUI(getActivity()));
 	}
 
 	public void testWaitForStartUiTimeout() throws Exception {
 		TestUtil.clearStatus();
 		TestUtil.setDataSource(new NoOperationScheduleDataSource());
-		assertFalse(TestUtil.waitForStartUi(getActivity()));
+		assertFalse(TestUtil.waitForStartUI(getActivity()));
 	}
 }
 

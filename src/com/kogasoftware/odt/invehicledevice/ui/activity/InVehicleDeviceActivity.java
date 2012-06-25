@@ -47,7 +47,7 @@ public class InVehicleDeviceActivity extends Activity implements
 		}
 	};
 
-	private Boolean isServiceInitialized = false;
+	private Boolean uiInitialized = false;
 	private Optional<InVehicleDeviceService> optionalService = Optional
 			.absent();
 
@@ -123,7 +123,11 @@ public class InVehicleDeviceActivity extends Activity implements
 		}
 		getWindow().getDecorView().setBackgroundColor(Color.WHITE);
 		setContentView(new InVehicleDeviceView(this, service));
-		isServiceInitialized = true;
+		uiInitialized = true;
+	}
+	
+	public Boolean isUIInitialized() {
+		return uiInitialized;
 	}
 
 	@Override
@@ -141,7 +145,7 @@ public class InVehicleDeviceActivity extends Activity implements
 	@Override
 	public void onResume() {
 		super.onResume();
-		if (!isFinishing() && !isServiceInitialized) {
+		if (!isFinishing() && !uiInitialized) {
 			showDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
 		}
 		if (optionalService.isPresent()) {
