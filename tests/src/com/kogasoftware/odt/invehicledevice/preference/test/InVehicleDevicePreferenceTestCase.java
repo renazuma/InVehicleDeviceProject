@@ -6,7 +6,7 @@ import android.test.ActivityInstrumentationTestCase2;
 import android.view.KeyEvent;
 
 import com.jayway.android.robotium.solo.Solo;
-import com.kogasoftware.odt.invehicledevice.logic.SharedPreferencesKey;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKey;
 import com.kogasoftware.odt.invehicledevice.preference.InVehicleDevicePreferenceActivity;
 import com.kogasoftware.odt.invehicledevice.preference.R;
 

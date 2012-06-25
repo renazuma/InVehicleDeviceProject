@@ -26,7 +26,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.common.io.Closeables;
-import com.kogasoftware.odt.invehicledevice.logic.SharedPreferencesKey;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKey;
 import com.kogasoftware.odt.invehicledevice.service.startupservice.IStartupService;
 import com.kogasoftware.odt.webapi.WebAPI;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
