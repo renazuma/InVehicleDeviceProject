@@ -49,7 +49,7 @@ public class BackgroundTask {
 
 	private final SensorManager sensorManager;
 	private final Optional<TelephonyManager> optionalTelephonyManager;
-	private final LocationSender locationSender;
+	private final ServiceUnitStatusLogSender locationSender;
 	private final TemperatureSensorEventListener temperatureSensorEventListener;
 	private final AccMagSensorEventListener accMagSensorEventListener;
 	private final OrientationSensorEventListener orientationSensorEventListener;
@@ -113,7 +113,7 @@ public class BackgroundTask {
 		}
 		optionalTelephonyManager = tempTelephonyManager;
 		exitBroadcastReceiver = new ExitBroadcastReceiver(service);
-		locationSender = new LocationSender(service);
+		locationSender = new ServiceUnitStatusLogSender(service);
 		accMagSensorEventListener = new AccMagSensorEventListener(service);
 		orientationSensorEventListener = new OrientationSensorEventListener(
 				service);

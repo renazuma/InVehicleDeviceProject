@@ -4,10 +4,10 @@ import com.kogasoftware.odt.invehicledevice.empty.EmptyWebAPICallback;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 
-public class LocationSender implements Runnable {
+public class ServiceUnitStatusLogSender implements Runnable {
 	protected final InVehicleDeviceService service;
 
-	public LocationSender(InVehicleDeviceService service) {
+	public ServiceUnitStatusLogSender(InVehicleDeviceService service) {
 		this.service = service;
 	}
 
