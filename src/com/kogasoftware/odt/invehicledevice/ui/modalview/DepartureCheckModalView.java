@@ -106,8 +106,8 @@ public class DepartureCheckModalView extends ModalView {
 					Color.parseColor("#FFFFFF"));
 
 		} else {
-
-			closeButton.setBackgroundDrawable(startButton.getBackground());
+			closeButton.setBackgroundDrawable(getContext().getResources()
+					.getDrawable(android.R.drawable.btn_default));
 			closeButton.clearAnimation();
 
 			closeButton.setTextColor(Color.BLACK);
