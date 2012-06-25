@@ -136,7 +136,7 @@ public class ScheduleChangedTestDataSource extends EmptyDataSource {
 			VehicleNotification v = new VehicleNotification();
 			v.setId(1);
 			v.setBody("運行スケジュールが変更されました");
-			v.setNotificationKind(VehicleNotifications.NotificationKind.SCHEDULE_CHANGED);
+			v.setNotificationKind(VehicleNotifications.NotificationKind.RESERVATION_CHANGED);
 			l.add(v);
 			return l;
 		} else if (phase.compareAndSet(30, 4)) {

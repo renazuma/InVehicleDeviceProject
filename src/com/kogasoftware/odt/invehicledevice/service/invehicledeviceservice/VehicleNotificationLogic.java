@@ -43,7 +43,7 @@ public class VehicleNotificationLogic {
 		final List<VehicleNotification> normalVehicleNotifications = new LinkedList<VehicleNotification>();
 		for (VehicleNotification vehicleNotification : vehicleNotifications) {
 			if (vehicleNotification.getNotificationKind().equals(
-					VehicleNotifications.NotificationKind.SCHEDULE_CHANGED)) {
+					VehicleNotifications.NotificationKind.RESERVATION_CHANGED)) {
 				scheduleChangedVehicleNotifications.add(vehicleNotification);
 			} else {
 				normalVehicleNotifications.add(vehicleNotification);
