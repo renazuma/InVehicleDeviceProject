@@ -1,6 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
@@ -15,13 +14,11 @@ import java.util.concurrent.atomic.AtomicReference;
 import android.app.Activity;
 import android.app.Service;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.common.base.Optional;
@@ -29,9 +26,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.BuildConfig;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
-import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
 import com.kogasoftware.odt.invehicledevice.datasource.EmptyDataSource;
-import com.kogasoftware.odt.invehicledevice.datasource.WebAPIDataSource;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Reader;
@@ -571,26 +566,6 @@ public class InVehicleDeviceService extends Service {
 	public void onCreate() {
 		Log.w(TAG, "onCreate");
 
-		SharedPreferences preferences = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		String url = preferences.getString(SharedPreferencesKey.SERVER_URL,
-				WebAPIDataSource.DEFAULT_URL);
-		String token = preferences.getString(
-				SharedPreferencesKey.SERVER_IN_VEHICLE_DEVICE_TOKEN, "");
-		File webAPIBackupFile = getFileStreamPath("webapi.serialized");
-		if (preferences.getBoolean(SharedPreferencesKey.CLEAR_WEBAPI_BACKUP,
-				false)) {
-			if (webAPIBackupFile.exists() && !webAPIBackupFile.delete()) {
-				Log.w(TAG, "!\"" + webAPIBackupFile + "\".delete()");
-			}
-			SharedPreferences.Editor editor = preferences.edit();
-			editor.putBoolean(SharedPreferencesKey.CLEAR_WEBAPI_BACKUP, false);
-			editor.commit();
-		}
-
-		dataSource = DataSourceFactory
-				.newInstance(url, token, webAPIBackupFile);
-
 		backgroundThread = new BackgroundTaskThread(this);
 		backgroundThread.start();
 	}
@@ -747,6 +722,10 @@ public class InVehicleDeviceService extends Service {
 
 	public void setLocalDataSource(LocalDataSource localDataSource) {
 		this.localDataSource = localDataSource;
+	}
+
+	public void setDataSource(DataSource dataSource) {
+		this.dataSource = dataSource;
 	}
 
 	public void speak(String message) {
