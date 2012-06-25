@@ -15,6 +15,10 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.telephony.PhoneStateListener;
@@ -49,6 +53,25 @@ public class BackgroundTask {
 	private final TemperatureSensorEventListener temperatureSensorEventListener;
 	private final AccMagSensorEventListener accMagSensorEventListener;
 	private final OrientationSensorEventListener orientationSensorEventListener;
+	private final LocationManager locationManager;
+	private final LocationListener locationListener = new LocationListener() {
+		@Override
+		public void onLocationChanged(Location location) {
+			service.changeLocation(location);
+		}
+
+		@Override
+		public void onProviderDisabled(String provider) {
+		}
+
+		@Override
+		public void onProviderEnabled(String provider) {
+		}
+
+		@Override
+		public void onStatusChanged(String provider, int status, Bundle extras) {
+		}
+	};
 	private final ScheduledExecutorService executorService = Executors
 			.newScheduledThreadPool(NUM_THREADS);
 	private final VehicleNotificationReceiver vehicleNotificationReceiver;
@@ -69,7 +92,8 @@ public class BackgroundTask {
 
 		sensorManager = (SensorManager) service
 				.getSystemService(Context.SENSOR_SERVICE);
-
+		locationManager = (LocationManager) service.getSystemService(Context.LOCATION_SERVICE);
+		
 		// TODO:内容精査
 		// TelephonyManagerはNullPointerExceptionを発生させる
 		// E/AndroidRuntime(24190):FATAL EXCEPTION: Thread-4030
@@ -126,6 +150,9 @@ public class BackgroundTask {
 		intentFilter.addAction(BackgroundTask.ACTION_EXIT);
 		service.getApplicationContext().registerReceiver(exitBroadcastReceiver,
 				intentFilter);
+		locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+		1000, 1, locationListener);
 
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(service);
@@ -156,7 +183,7 @@ public class BackgroundTask {
 		} else {
 			service.setInitialized();
 		}
-
+		
 		List<Sensor> temperatureSensors = sensorManager
 				.getSensorList(Sensor.TYPE_TEMPERATURE);
 		if (temperatureSensors.size() > 0) {
@@ -213,6 +240,7 @@ public class BackgroundTask {
 
 	protected void onLoopStop() {
 		operationScheduleReceiveThread.interrupt();
+		locationManager.removeUpdates(locationListener);
 		sensorManager.unregisterListener(temperatureSensorEventListener);
 		sensorManager.unregisterListener(orientationSensorEventListener);
 		// sensorManager.unregisterListener(accMagSensorEventListener);
