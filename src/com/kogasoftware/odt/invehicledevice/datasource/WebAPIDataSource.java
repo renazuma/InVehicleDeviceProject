@@ -132,12 +132,10 @@ public class WebAPIDataSource implements DataSource {
 
 			@Override
 			public void onException(int reqkey, WebAPIException ex) {
-				countDownLatch.countDown();
 			}
 
 			@Override
 			public void onFailed(int reqkey, int statusCode, String response) {
-				countDownLatch.countDown();
 			}
 		};
 		callWebAPI(new WebAPICaller() {
