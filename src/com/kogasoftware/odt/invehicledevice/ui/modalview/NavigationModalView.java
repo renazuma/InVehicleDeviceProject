@@ -27,6 +27,7 @@ import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.NavigationRe
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipeline.TilePipeline;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
+import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class NavigationModalView extends ModalView implements
 		InVehicleDeviceService.OnResumeActivityListener,
@@ -34,6 +35,7 @@ public class NavigationModalView extends ModalView implements
 		InVehicleDeviceService.OnChangeLocationListener,
 		InVehicleDeviceService.OnChangeOrientationListener,
 		InVehicleDeviceService.OnEnterPhaseListener,
+		InVehicleDeviceService.OnMergeUpdatedOperationScheduleListener,
 		NavigationRenderer.OnChangeMapZoomLevelListener {
 	private static final String TAG = NavigationModalView.class.getSimpleName();
 	private static final Integer GPS_ALERT_FLASH_MILLIS = 1000;
@@ -78,6 +80,7 @@ public class NavigationModalView extends ModalView implements
 		service.addOnChangeLocationListener(this);
 		service.addOnChangeOrientationListener(this);
 		service.addOnEnterPhaseListener(this);
+		service.addOnMergeUpdatedOperationScheduleListener(this);
 
 		tilePipeline = new TilePipeline(service);
 
@@ -163,9 +166,8 @@ public class NavigationModalView extends ModalView implements
 		super.onDetachedFromWindow();
 		getHandler().removeCallbacks(gpsAlert);
 	}
-
-	@Override
-	public void onEnterDrivePhase() {
+	
+	protected void updatePlatform() {
 		NavigationRenderer navigationRenderer = navigationRendererWeakReference
 				.get();
 		if (navigationRenderer != null) {
@@ -174,11 +176,18 @@ public class NavigationModalView extends ModalView implements
 	}
 
 	@Override
+	public void onEnterDrivePhase() {
+		updatePlatform();
+	}
+
+	@Override
 	public void onEnterFinishPhase() {
+		updatePlatform();
 	}
 
 	@Override
 	public void onEnterPlatformPhase() {
+		updatePlatform();
 	}
 
 	@Override
@@ -304,7 +313,7 @@ public class NavigationModalView extends ModalView implements
 		DateFormat dateFormat = new SimpleDateFormat(timeTextFormat);
 
 		platformArrivalTimeTextView.setText(dateFormat.format(displayDate));
-
+		updatePlatform();
 	}
 
 	protected void updateZoomButtons() {
@@ -333,5 +342,11 @@ public class NavigationModalView extends ModalView implements
 
 	protected void zoomOut() {
 		setZoomLevel(zoomLevel - 1);
+	}
+
+	@Override
+	public void onMergeUpdatedOperationSchedule(
+			List<VehicleNotification> triggerVehicleNotifications) {
+		updatePlatform();
 	}
 }
