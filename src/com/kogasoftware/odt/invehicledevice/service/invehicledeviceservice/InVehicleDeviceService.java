@@ -132,8 +132,8 @@ public class InVehicleDeviceService extends Service {
 		GET_ON, GET_OFF,
 	}
 
-	public static final Integer NEW_SCHEDULE_DOWNLOAD_HOUR = 3;
-	public static final Integer NEW_SCHEDULE_DOWNLOAD_MINUTE = 0;
+	public static final Integer NEW_SCHEDULE_DOWNLOAD_HOUR = 0;
+	public static final Integer NEW_SCHEDULE_DOWNLOAD_MINUTE = 5;
 
 	protected static final Object DEFAULT_DATE_LOCK = new Object();
 
