@@ -12,6 +12,8 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicReference;
 
 import android.app.Activity;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.location.Location;
@@ -32,6 +34,7 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Local
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Reader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundthread.BackgroundTaskThread;
+import com.kogasoftware.odt.invehicledevice.ui.activity.StartupActivity;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
@@ -562,10 +565,31 @@ public class InVehicleDeviceService extends Service {
 		return binder;
 	}
 
+	public static final Integer FOREGROUND_NOTIFICATION_ID = 10;
+
 	@Override
 	public void onCreate() {
 		Log.w(TAG, "onCreate");
 
+		// @see http://stackoverflow.com/questions/3687200/implement-startforeground-method-in-android
+		// The intent to launch when the user clicks the expanded notification
+		Intent intent = new Intent(this, StartupActivity.class);
+		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+				| Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		PendingIntent pendIntent = PendingIntent
+				.getActivity(this, 0, intent, 0);
+
+		// This constructor is deprecated. Use Notification.Builder instead
+		Notification notification = new Notification(
+				android.R.drawable.ic_menu_info_details, "Ticker text",
+				System.currentTimeMillis());
+
+		// This method is deprecated. Use Notification.Builder instead.
+		notification.setLatestEventInfo(this, "Title text", "Content text",
+				pendIntent);
+
+		notification.flags |= Notification.FLAG_NO_CLEAR;
+		startForeground(FOREGROUND_NOTIFICATION_ID, notification);
 		backgroundThread = new BackgroundTaskThread(this);
 		backgroundThread.start();
 	}
@@ -573,6 +597,7 @@ public class InVehicleDeviceService extends Service {
 	@Override
 	public void onDestroy() {
 		Log.w(TAG, "onDestroy");
+		stopForeground(false);
 		backgroundThread.interrupt();
 		onInitializeListeners.clear();
 		onEnterPhaseListeners.clear();
