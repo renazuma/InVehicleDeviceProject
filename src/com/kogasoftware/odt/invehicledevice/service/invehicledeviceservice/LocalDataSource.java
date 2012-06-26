@@ -167,7 +167,8 @@ public class LocalDataSource implements Closeable {
 			calendar.clear();
 			calendar.set(now.get(Calendar.YEAR), now.get(Calendar.MONTH),
 					now.get(Calendar.DAY_OF_MONTH),
-					InVehicleDeviceService.NEW_SCHEDULE_DOWNLOAD_HOUR, 0);
+					InVehicleDeviceService.NEW_SCHEDULE_DOWNLOAD_HOUR,
+					InVehicleDeviceService.NEW_SCHEDULE_DOWNLOAD_MINUTE);
 			if (localData.updatedDate.before(calendar.getTime())) {
 				localData.operationScheduleInitializedSign.drainPermits();
 			}
