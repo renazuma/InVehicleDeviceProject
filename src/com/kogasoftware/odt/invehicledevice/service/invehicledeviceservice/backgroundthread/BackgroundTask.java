@@ -15,11 +15,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.media.AudioManager;
-import android.os.Bundle;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.telephony.PhoneStateListener;
@@ -55,25 +51,7 @@ public class BackgroundTask {
 	private final AccMagSensorEventListener accMagSensorEventListener;
 	private final OrientationSensorEventListener orientationSensorEventListener;
 	private final AudioManager audioManager;
-	private final LocationManager locationManager;
-	private final LocationListener locationListener = new LocationListener() {
-		@Override
-		public void onLocationChanged(Location location) {
-			service.changeLocation(location);
-		}
-
-		@Override
-		public void onProviderDisabled(String provider) {
-		}
-
-		@Override
-		public void onProviderEnabled(String provider) {
-		}
-
-		@Override
-		public void onStatusChanged(String provider, int status, Bundle extras) {
-		}
-	};
+	private final LocationListener locationListener;
 	private final ScheduledExecutorService executorService = Executors
 			.newScheduledThreadPool(NUM_THREADS);
 	private final VehicleNotificationReceiver vehicleNotificationReceiver;
@@ -94,8 +72,6 @@ public class BackgroundTask {
 
 		sensorManager = (SensorManager) service
 				.getSystemService(Context.SENSOR_SERVICE);
-		locationManager = (LocationManager) service
-				.getSystemService(Context.LOCATION_SERVICE);
 		audioManager = (AudioManager) service
 				.getSystemService(Context.AUDIO_SERVICE);
 
@@ -127,6 +103,7 @@ public class BackgroundTask {
 		temperatureSensorEventListener = new TemperatureSensorEventListener(
 				service);
 		signalStrengthListener = new SignalStrengthListener(service);
+		locationListener = new LocationListener(service);
 		operationScheduleReceiveThread = new OperationScheduleReceiveThread(
 				service);
 	}
@@ -155,9 +132,6 @@ public class BackgroundTask {
 		intentFilter.addAction(BackgroundTask.ACTION_EXIT);
 		service.getApplicationContext().registerReceiver(exitBroadcastReceiver,
 				intentFilter);
-		locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-				1000, 1, locationListener);
 
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(service);
@@ -188,6 +162,8 @@ public class BackgroundTask {
 		} else {
 			service.setInitialized();
 		}
+		
+		locationListener.start();
 
 		audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,
 				audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
@@ -248,7 +224,7 @@ public class BackgroundTask {
 
 	protected void onLoopStop() {
 		operationScheduleReceiveThread.interrupt();
-		locationManager.removeUpdates(locationListener);
+		locationListener.stop();
 		sensorManager.unregisterListener(temperatureSensorEventListener);
 		sensorManager.unregisterListener(orientationSensorEventListener);
 		// sensorManager.unregisterListener(accMagSensorEventListener);
