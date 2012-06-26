@@ -205,9 +205,9 @@ public class InVehicleDeviceService extends Service {
 	protected final Set<OnPauseActivityListener> onPauseActivityListeners = new CopyOnWriteArraySet<OnPauseActivityListener>();
 	protected final Set<OnResumeActivityListener> onResumeActivityListeners = new CopyOnWriteArraySet<OnResumeActivityListener>();
 	protected final VoiceServiceConnector voiceServiceConnector;
-	protected Thread backgroundThread = new EmptyThread();
-	protected DataSource dataSource = new EmptyDataSource();
-	protected LocalDataSource localDataSource = new LocalDataSource();
+	protected volatile Thread backgroundThread = new EmptyThread();
+	protected volatile DataSource dataSource = new EmptyDataSource();
+	protected volatile LocalDataSource localDataSource = new LocalDataSource();
 
 	public InVehicleDeviceService() {
 		super();
