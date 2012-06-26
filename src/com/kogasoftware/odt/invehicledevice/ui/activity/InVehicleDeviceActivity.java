@@ -116,7 +116,7 @@ public class InVehicleDeviceActivity extends Activity implements
 	
 	@Override
 	public void onInitialize(InVehicleDeviceService service) {
-		Log.w(TAG, "onInitialize()");
+		Log.i(TAG, "onInitialize()");
 		try {
 			dismissDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
 		} catch (IllegalArgumentException e) {
