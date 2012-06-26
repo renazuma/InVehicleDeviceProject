@@ -18,6 +18,7 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Looper;
 import android.preference.PreferenceManager;
@@ -53,6 +54,7 @@ public class BackgroundTask {
 	private final TemperatureSensorEventListener temperatureSensorEventListener;
 	private final AccMagSensorEventListener accMagSensorEventListener;
 	private final OrientationSensorEventListener orientationSensorEventListener;
+	private final AudioManager audioManager;
 	private final LocationManager locationManager;
 	private final LocationListener locationListener = new LocationListener() {
 		@Override
@@ -92,8 +94,11 @@ public class BackgroundTask {
 
 		sensorManager = (SensorManager) service
 				.getSystemService(Context.SENSOR_SERVICE);
-		locationManager = (LocationManager) service.getSystemService(Context.LOCATION_SERVICE);
-		
+		locationManager = (LocationManager) service
+				.getSystemService(Context.LOCATION_SERVICE);
+		audioManager = (AudioManager) service
+				.getSystemService(Context.AUDIO_SERVICE);
+
 		// TODO:内容精査
 		// TelephonyManagerはNullPointerExceptionを発生させる
 		// E/AndroidRuntime(24190):FATAL EXCEPTION: Thread-4030
@@ -152,7 +157,7 @@ public class BackgroundTask {
 				intentFilter);
 		locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-		1000, 1, locationListener);
+				1000, 1, locationListener);
 
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(service);
@@ -170,8 +175,8 @@ public class BackgroundTask {
 			editor.putBoolean(SharedPreferencesKey.CLEAR_WEBAPI_BACKUP, false);
 			editor.commit();
 		}
-		DataSource dataSource = DataSourceFactory
-				.newInstance(url, token, webAPIBackupFile);
+		DataSource dataSource = DataSourceFactory.newInstance(url, token,
+				webAPIBackupFile);
 		service.setDataSource(dataSource);
 		LocalDataSource localDataSource = new LocalDataSource(service);
 		service.setLocalDataSource(localDataSource);
@@ -183,7 +188,10 @@ public class BackgroundTask {
 		} else {
 			service.setInitialized();
 		}
-		
+
+		audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,
+				audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
+
 		List<Sensor> temperatureSensors = sensorManager
 				.getSensorList(Sensor.TYPE_TEMPERATURE);
 		if (temperatureSensors.size() > 0) {
