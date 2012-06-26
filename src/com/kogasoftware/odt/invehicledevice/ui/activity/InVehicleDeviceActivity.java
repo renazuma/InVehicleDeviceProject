@@ -103,6 +103,7 @@ public class InVehicleDeviceActivity extends Activity implements
 		super.onDestroy();
 		Log.i(TAG, "onDestroy()");
 		unbindService(serviceConnection);
+		stopService(new Intent(this, InVehicleDeviceService.class));
 		getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 	}
 
@@ -111,9 +112,11 @@ public class InVehicleDeviceActivity extends Activity implements
 		finish();
 	}
 
+	
+	
 	@Override
 	public void onInitialize(InVehicleDeviceService service) {
-		Log.w(TAG, "onInitialize");
+		Log.w(TAG, "onInitialize()");
 		try {
 			dismissDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
 		} catch (IllegalArgumentException e) {

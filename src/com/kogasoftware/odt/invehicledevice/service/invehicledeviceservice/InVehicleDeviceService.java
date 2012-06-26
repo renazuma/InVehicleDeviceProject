@@ -563,22 +563,15 @@ public class InVehicleDeviceService extends Service {
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		return binder;
-	}
-
-	public static final Integer FOREGROUND_NOTIFICATION_ID = 10;
-
-	@Override
-	public void onCreate() {
-		Log.w(TAG, "onCreate");
+		Log.w(TAG, "onBind()");
 
 		// @see http://stackoverflow.com/questions/3687200/implement-startforeground-method-in-android
 		// The intent to launch when the user clicks the expanded notification
-		Intent intent = new Intent(this, StartupActivity.class);
-		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+		Intent notificationIntent = new Intent(this, StartupActivity.class);
+		notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
 				| Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		PendingIntent pendIntent = PendingIntent
-				.getActivity(this, 0, intent, 0);
+				.getActivity(this, 0, notificationIntent, 0);
 
 		// This constructor is deprecated. Use Notification.Builder instead
 		Notification notification = new Notification(
@@ -593,11 +586,15 @@ public class InVehicleDeviceService extends Service {
 		startForeground(FOREGROUND_NOTIFICATION_ID, notification);
 		backgroundThread = new BackgroundTaskThread(this);
 		backgroundThread.start();
+
+		return binder;
 	}
 
+	public static final Integer FOREGROUND_NOTIFICATION_ID = 10;
+
 	@Override
-	public void onDestroy() {
-		Log.w(TAG, "onDestroy");
+	public boolean onUnbind(Intent intent) {
+		Log.w(TAG, "onDestroy()");
 		stopForeground(false);
 		backgroundThread.interrupt();
 		onInitializeListeners.clear();
@@ -618,6 +615,9 @@ public class InVehicleDeviceService extends Service {
 		onStartReceiveUpdatedOperationScheduleListeners.clear();
 		Closeables.closeQuietly(dataSource);
 		Closeables.closeQuietly(localDataSource);
+
+		stopSelf();
+		return false;
 	}
 
 	@Override
