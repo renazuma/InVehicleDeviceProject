@@ -563,7 +563,7 @@ public class InVehicleDeviceService extends Service {
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		Log.w(TAG, "onBind()");
+		Log.i(TAG, "onBind()");
 
 		// @see http://stackoverflow.com/questions/3687200/implement-startforeground-method-in-android
 		// The intent to launch when the user clicks the expanded notification
@@ -594,7 +594,7 @@ public class InVehicleDeviceService extends Service {
 
 	@Override
 	public boolean onUnbind(Intent intent) {
-		Log.w(TAG, "onDestroy()");
+		Log.i(TAG, "onUnbind()");
 		stopForeground(false);
 		backgroundThread.interrupt();
 		onInitializeListeners.clear();
