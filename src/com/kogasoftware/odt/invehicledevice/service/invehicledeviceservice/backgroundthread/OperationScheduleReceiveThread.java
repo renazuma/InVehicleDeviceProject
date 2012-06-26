@@ -65,11 +65,15 @@ public class OperationScheduleReceiveThread extends Thread implements
 			while (!Thread.currentThread().isInterrupted()) {
 				// スケジュール変更通知があるまで待つ
 				startUpdatedOperationScheduleReceiveSemaphore.acquire();
-				try {
-					receive(service
-							.getReceivingOperationScheduleChangedVehicleNotifications());
-				} catch (WebAPIException e) {
-					Log.i(TAG, "retry", e);
+				while (true) {
+					try {
+						receive(service
+								.getReceivingOperationScheduleChangedVehicleNotifications());
+						break;
+					} catch (WebAPIException e) {
+						Log.i(TAG, "retry", e);
+					}
+					Thread.sleep(10 * 1000);
 				}
 			}
 		} catch (InterruptedException e) {
