@@ -61,6 +61,8 @@ public class OperationScheduleReceiveThread extends Thread implements
 
 	@Override
 	public void run() {
+		// 最初の一度は必ず受信する
+		startUpdatedOperationScheduleReceiveSemaphore.release();
 		try {
 			while (!Thread.currentThread().isInterrupted()) {
 				// スケジュール変更通知があるまで待つ
