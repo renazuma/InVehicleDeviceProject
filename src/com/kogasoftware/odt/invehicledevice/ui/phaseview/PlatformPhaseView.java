@@ -69,8 +69,8 @@ public class PlatformPhaseView extends PhaseView {
 						getResources().getString(
 								R.string.minutes_remaining_to_depart_html),
 						dateString, minutesRemaining)));
-				if (lastMinutesRemaining >= 2 && minutesRemaining == 1) {
-					service.speak("あと1分で出発時刻です");
+				if (lastMinutesRemaining >= 3 && minutesRemaining == 2) {
+					service.speak("あと2分で出発時刻です");
 				}
 				lastMinutesRemaining = minutesRemaining;
 			}
