@@ -4,7 +4,6 @@ import android.os.Looper;
 
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
 
 public class BackgroundTaskThread extends Thread {
 	private final InVehicleDeviceService service;
@@ -29,21 +28,15 @@ public class BackgroundTaskThread extends Thread {
 	}
 
 	/**
-	 * CommonLogicを作り、それを引数にしてBackgroundTaskを開始する. 直接は呼ばない.
+	 * BackgroundTaskを開始する.
 	 */
 	@Override
 	public void run() {
 		Looper.prepare();
-
-		LocalDataSource statusAccess = new LocalDataSource(service);
-		try {
-			BackgroundTask backgroundTask = new BackgroundTask(service);
-			synchronized (backgroundTaskQuitLock) {
-				optionalBackgroundTask = Optional.of(backgroundTask);
-			}
-			backgroundTask.loop();
-		} finally {
-			statusAccess.close();
+		BackgroundTask backgroundTask = new BackgroundTask(service);
+		synchronized (backgroundTaskQuitLock) {
+			optionalBackgroundTask = Optional.of(backgroundTask);
 		}
+		backgroundTask.loop();
 	}
 }
