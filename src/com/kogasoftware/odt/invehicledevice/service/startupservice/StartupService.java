@@ -2,8 +2,12 @@ package com.kogasoftware.odt.invehicledevice.service.startupservice;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningTaskInfo;
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -44,16 +48,15 @@ public class StartupService extends Service {
 			Log.i(TAG, "waiting for startup enabled");
 			return;
 		}
-		
+
 		String externalStorageState = Environment.getExternalStorageState();
 		if (!externalStorageState.equals(Environment.MEDIA_MOUNTED)) {
 			Log.i(TAG, "Environment.getExternalStorageState() "
 					+ externalStorageState + " != " + Environment.MEDIA_MOUNTED);
-			BigToast.makeText(this, "SDカードを接続してください",
-					Toast.LENGTH_LONG).show();
+			BigToast.makeText(this, "SDカードを接続してください", Toast.LENGTH_LONG).show();
 			return;
 		}
-		
+
 		LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		if (locationManager == null) {
 			Log.e(TAG, "getSystemService(Context.LOCATION_SERVICE) == null");
@@ -63,10 +66,24 @@ public class StartupService extends Service {
 		}
 
 		if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-			Log.e(TAG, "!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)");
-			BigToast.makeText(this, "GPSの設定を有効にしてください",
-					Toast.LENGTH_LONG).show();
+			Log.e(TAG,
+					"!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)");
+			BigToast.makeText(this, "GPSの設定を有効にしてください", Toast.LENGTH_LONG)
+					.show();
 			return;
+		}
+
+		ActivityManager activityManager = (ActivityManager) getSystemService(Activity.ACTIVITY_SERVICE);
+		for (RunningTaskInfo runningTaskInfo : activityManager
+				.getRunningTasks(1)) {
+			ComponentName topActivity = runningTaskInfo.topActivity;
+			if (topActivity.getPackageName().equals(getPackageName())
+					&& topActivity.getClassName().equals(
+							InVehicleDeviceActivity.class.getName())) {
+				Log.v(TAG, "activity " + InVehicleDeviceActivity.class
+						+ " is running");
+				return;
+			}
 		}
 
 		Intent startIntent = new Intent(StartupService.this,
@@ -107,7 +124,7 @@ public class StartupService extends Service {
 		return binder;
 	}
 
-	private final IStartupService.Stub binder = new IStartupService.Stub(){
+	private final IStartupService.Stub binder = new IStartupService.Stub() {
 		@Override
 		public void disable() throws RemoteException {
 			enabled.set(false);
@@ -120,7 +137,7 @@ public class StartupService extends Service {
 			Log.i(TAG, "Startup enabled");
 		}
 	};
-	
+
 	private void showActivity() {
 		handler.post(checkDeviceAndShowActivityCallback);
 	}
