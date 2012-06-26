@@ -167,6 +167,8 @@ public class OperationScheduleLogic {
 		localData.finishedOperationSchedules
 				.addAll(newFinishedOperationSchedules);
 
+		localData.updatedDate = InVehicleDeviceService.getDate();
+
 		if (service.isOperationScheduleInitialized()) {
 			service.mergeUpdatedOperationSchedule(triggerVehicleNotifications);
 		} else {
@@ -243,7 +245,6 @@ public class OperationScheduleLogic {
 						.clear();
 				localData.phase = Phase.INITIAL;
 				localData.reservations.clear();
-				localData.updatedDate = InVehicleDeviceService.getDate();
 			}
 		});
 	}
