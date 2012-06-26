@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.StrictMode;
 import android.text.Html;
@@ -24,19 +25,31 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVeh
 import com.kogasoftware.odt.invehicledevice.ui.InVehicleDeviceView;
 
 public class InVehicleDeviceActivity extends Activity implements
-		InVehicleDeviceService.OnInitializeListener,
 		InVehicleDeviceService.OnExitListener {
 	private static final String TAG = InVehicleDeviceActivity.class
 			.getSimpleName();
-
 	private static final int WAIT_FOR_INITIALIZE_DIALOG_ID = 10;
+	private static final int WAIT_FOR_INITIALIZE_MILLIS = 3 * 1000;
+	private final Handler handler = new Handler();
+	private final Runnable waitForInitialize = new Runnable() {
+		@Override
+		public void run() {
+			for (InVehicleDeviceService service : optionalService.asSet()) {
+				if (service.isOperationScheduleInitialized()) {
+					onInitialize(service);
+					handler.removeCallbacks(this);
+					return;
+				}
+			}
+			handler.postDelayed(this, WAIT_FOR_INITIALIZE_MILLIS);
+		}
+	};
 
 	private final ServiceConnection serviceConnection = new ServiceConnection() {
 		@Override
 		public void onServiceConnected(ComponentName className, IBinder binder) {
 			InVehicleDeviceService service = ((InVehicleDeviceService.LocalBinder) binder)
 					.getService();
-			service.addOnInitializeListener(InVehicleDeviceActivity.this);
 			service.addOnExitListener(InVehicleDeviceActivity.this);
 			optionalService = Optional.of(service);
 		}
@@ -74,6 +87,7 @@ public class InVehicleDeviceActivity extends Activity implements
 
 		bindService(new Intent(this, InVehicleDeviceService.class),
 				serviceConnection, Context.BIND_AUTO_CREATE);
+		handler.post(waitForInitialize);
 	}
 
 	@Override
@@ -105,6 +119,7 @@ public class InVehicleDeviceActivity extends Activity implements
 		unbindService(serviceConnection);
 		stopService(new Intent(this, InVehicleDeviceService.class));
 		getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		handler.removeCallbacks(waitForInitialize);
 	}
 
 	@Override
@@ -112,9 +127,6 @@ public class InVehicleDeviceActivity extends Activity implements
 		finish();
 	}
 
-	
-	
-	@Override
 	public void onInitialize(InVehicleDeviceService service) {
 		Log.i(TAG, "onInitialize()");
 		try {
@@ -128,7 +140,7 @@ public class InVehicleDeviceActivity extends Activity implements
 		setContentView(new InVehicleDeviceView(this, service));
 		uiInitialized = true;
 	}
-	
+
 	public Boolean isUIInitialized() {
 		return uiInitialized;
 	}
