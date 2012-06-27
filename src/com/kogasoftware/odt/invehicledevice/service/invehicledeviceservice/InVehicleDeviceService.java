@@ -16,6 +16,7 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Binder;
 import android.os.Handler;
@@ -56,7 +57,7 @@ public class InVehicleDeviceService extends Service {
 	}
 
 	public static interface OnChangeLocationListener {
-		void onChangeLocation(Location location);
+		void onChangeLocation(Location location, Optional<GpsStatus> gpsStatus);
 	}
 
 	public static interface OnChangeOrientationListener {
@@ -327,14 +328,14 @@ public class InVehicleDeviceService extends Service {
 		});
 	}
 
-	public void changeLocation(final Location location) {
+	public void changeLocation(final Location location, final Optional<GpsStatus> gpsStatus) {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
 				serviceUnitStatusLogLogic.changeLocation(location);
 				for (OnChangeLocationListener listener : new ArrayList<OnChangeLocationListener>(
 						onChangeLocationListeners)) {
-					listener.onChangeLocation(location);
+					listener.onChangeLocation(location, gpsStatus);
 				}
 			}
 		});

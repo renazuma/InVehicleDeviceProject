@@ -51,7 +51,7 @@ public class BackgroundTask {
 	private final AccMagSensorEventListener accMagSensorEventListener;
 	private final OrientationSensorEventListener orientationSensorEventListener;
 	private final AudioManager audioManager;
-	private final LocationListener locationListener;
+	private final LocationNotifier locationListener;
 	private final ScheduledExecutorService executorService = Executors
 			.newScheduledThreadPool(NUM_THREADS);
 	private final VehicleNotificationReceiver vehicleNotificationReceiver;
@@ -103,7 +103,7 @@ public class BackgroundTask {
 		temperatureSensorEventListener = new TemperatureSensorEventListener(
 				service);
 		signalStrengthListener = new SignalStrengthListener(service);
-		locationListener = new LocationListener(service);
+		locationListener = new LocationNotifier(service);
 		operationScheduleReceiveThread = new OperationScheduleReceiveThread(
 				service);
 	}
