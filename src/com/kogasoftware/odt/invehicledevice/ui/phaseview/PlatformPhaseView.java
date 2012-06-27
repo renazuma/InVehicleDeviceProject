@@ -30,9 +30,6 @@ import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
 
 public class PlatformPhaseView extends PhaseView {
-	public static class DepartureCheckEvent {
-	}
-
 	private static final String TAG = PlatformPhaseView.class.getSimpleName();
 	private static final long UPDATE_MINUTES_REMAINING_INTERVAL_MILLIS = 3;
 	private final ListView reservationListView;
@@ -71,6 +68,7 @@ public class PlatformPhaseView extends PhaseView {
 								R.string.minutes_remaining_to_depart_html),
 						dateString, minutesRemaining)));
 				if (service.getPhase().equals(Phase.PLATFORM)
+						&& service.getRemainingOperationSchedules().size() > 1
 						&& lastMinutesRemaining >= 3 && minutesRemaining == 2) {
 					service.speak("あと2分で出発時刻です");
 				}
