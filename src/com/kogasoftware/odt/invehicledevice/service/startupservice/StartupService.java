@@ -15,6 +15,7 @@ import android.location.LocationManager;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.os.RemoteException;
 import android.util.Log;
 import android.widget.Toast;
@@ -110,10 +111,24 @@ public class StartupService extends Service {
 				Log.w(TAG, "intent.getAction() is null");
 				return;
 			}
-			if (intent.getAction().equals(Intent.ACTION_PACKAGE_REPLACED)
-					&& !intent.getDataString().equals(
-							"package:com.kogasoftware.odt.invehicledevice")) {
-				return;
+			if (intent.getAction().equals(Intent.ACTION_PACKAGE_REPLACED)) {
+				String dataString = "package:" + context.getPackageName();
+				if (!intent.getDataString().equals(dataString)) {
+					Log.v(TAG, "!intent.getDataString().equals(\"" + dataString + "\")");
+					return;
+				}
+				PowerManager powerManager = (PowerManager) context
+						.getSystemService(Context.POWER_SERVICE);
+				if (powerManager == null) {
+					Log.w(TAG,
+							"getSystemService(Context.POWER_SERVICE) == null");
+					return;
+				}
+				if (!powerManager.isScreenOn()) {
+					Log.i(TAG, "package replaced & screen off");
+					return;
+				}
+				Log.i(TAG, "package replaced");
 			}
 			context.startService(new Intent(context, StartupService.class));
 		}
