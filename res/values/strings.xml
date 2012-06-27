@@ -41,4 +41,5 @@
     <string name="platform_arrival_time">HH:mm着</string>
     <string name="platform_depature_time">HH:mm発</string>
     <string name="location_receiving">位置情報を受信しています</string>
+    <string name="gps_satellites_format">(人工衛星%1d/4)</string>
 </resources>

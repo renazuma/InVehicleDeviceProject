@@ -8,7 +8,9 @@ import java.util.List;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.location.GpsStatus;
 import android.location.Location;
+import android.location.LocationManager;
 import android.opengl.GLSurfaceView;
 import android.os.Handler;
 import android.text.Html;
@@ -21,6 +23,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import com.google.common.base.Optional;
+import com.google.common.collect.Iterables;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.NavigationRenderer;
@@ -39,33 +43,38 @@ public class NavigationModalView extends ModalView implements
 		NavigationRenderer.OnChangeMapZoomLevelListener {
 	private static final String TAG = NavigationModalView.class.getSimpleName();
 	private static final Integer GPS_ALERT_FLASH_MILLIS = 1000;
-	private static final Integer GPS_EXPIRE_MILLIS = 20000;
+	private static final Integer GPS_EXPIRE_MILLIS = 20 * 1000;
+	private static final Integer LOCATION_EXPIRE_MILLIS = 20 * 1000;
 	private volatile Integer zoomLevel = 12;
 	private final Button zoomInButton;
 	private final Button zoomOutButton;
 	private final LinearLayout gpsAlertLayout;
 	private final TextView gpsAlertTextView;
+	private final TextView gpsSatellitesTextView;
 	private final ToggleButton autoZoomButton;
 	private final TilePipeline tilePipeline;
 	private final Runnable gpsAlert = new Runnable() {
 		@Override
 		public void run() {
 			Date now = new Date();
-			if (lastLocationUpdated.getTime() + GPS_EXPIRE_MILLIS > now
+			if (lastGpsUpdated.getTime() + GPS_EXPIRE_MILLIS > now
 					.getTime()) {
 				gpsAlertLayout.setVisibility(INVISIBLE);
 				getHandler().postDelayed(this, GPS_EXPIRE_MILLIS);
 				return;
 			}
 			gpsAlertLayout.setVisibility(VISIBLE);
+			gpsSatellitesTextView.setText(String.format(
+					getContext().getString(R.string.gps_satellites_format),
+					numSatellites));
 			gpsAlertTextView
 					.setVisibility(gpsAlertTextView.getVisibility() == VISIBLE ? INVISIBLE
 							: VISIBLE);
 			getHandler().postDelayed(this, GPS_ALERT_FLASH_MILLIS);
 		}
 	};
-	private Date lastLocationUpdated = new Date(0);
-
+	private Date lastGpsUpdated = new Date(0);
+	private Integer numSatellites = 0;
 	private WeakReference<GLSurfaceView> glSurfaceViewWeakReference = new WeakReference<GLSurfaceView>(
 			null);
 	private WeakReference<NavigationRenderer> navigationRendererWeakReference = new WeakReference<NavigationRenderer>(
@@ -112,6 +121,7 @@ public class NavigationModalView extends ModalView implements
 		autoZoomButton.setChecked(true);
 		gpsAlertLayout = (LinearLayout) findViewById(R.id.gps_alert_layout);
 		gpsAlertTextView = (TextView) findViewById(R.id.gps_alert_text_view);
+		gpsSatellitesTextView = (TextView) findViewById(R.id.gps_satellites_text_view);
 
 		setAutoZoom(true);
 		updateZoomButtons();
@@ -137,8 +147,18 @@ public class NavigationModalView extends ModalView implements
 	}
 
 	@Override
-	public void onChangeLocation(Location location) {
-		lastLocationUpdated = new Date();
+	public void onChangeLocation(Location location,
+			Optional<GpsStatus> optionalGpsStatus) {
+		if (location.getProvider().equals(LocationManager.GPS_PROVIDER)) {
+			lastGpsUpdated = new Date(location.getTime());
+		}
+		for (GpsStatus gpsStatus : optionalGpsStatus.asSet()) {
+			numSatellites = Iterables.size(gpsStatus.getSatellites());
+		}
+		Date now = new Date();
+		if (location.getTime() + LOCATION_EXPIRE_MILLIS < now.getTime()) {
+			return;
+		}
 		NavigationRenderer navigationRenderer = navigationRendererWeakReference
 				.get();
 		if (navigationRenderer != null) {
@@ -166,7 +186,7 @@ public class NavigationModalView extends ModalView implements
 		super.onDetachedFromWindow();
 		getHandler().removeCallbacks(gpsAlert);
 	}
-	
+
 	protected void updatePlatform() {
 		NavigationRenderer navigationRenderer = navigationRendererWeakReference
 				.get();
