@@ -115,6 +115,7 @@ public class VoiceThread extends Thread {
 			return;
 		}
 		
+		Log.i(TAG, "speak voice=" + voice);
 		audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,
 				audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
 
