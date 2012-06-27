@@ -139,7 +139,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	@Override
 	public void onDrawFrame(GL10 gl) {
 		final long millis = System.currentTimeMillis();
-		float cameraZoom = 2f;
+		float cameraZoom = 4f;
 		boolean zoomLevelChanged = false;
 
 		// ズームを修正
