@@ -64,9 +64,13 @@ public class NavigationModalView extends ModalView implements
 				return;
 			}
 			gpsAlertLayout.setVisibility(VISIBLE);
-			gpsSatellitesTextView.setText(String.format(
+			if (numSatellites < 4) {
+				gpsSatellitesTextView.setText(String.format(
 					getContext().getString(R.string.gps_satellites_format),
 					numSatellites));
+			} else {
+				gpsSatellitesTextView.setText("(計算中)");
+			}
 			gpsAlertTextView
 					.setVisibility(gpsAlertTextView.getVisibility() == VISIBLE ? INVISIBLE
 							: VISIBLE);
