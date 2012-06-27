@@ -21,6 +21,7 @@ import android.widget.ToggleButton;
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
 import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter.ItemType;
@@ -69,7 +70,8 @@ public class PlatformPhaseView extends PhaseView {
 						getResources().getString(
 								R.string.minutes_remaining_to_depart_html),
 						dateString, minutesRemaining)));
-				if (lastMinutesRemaining >= 3 && minutesRemaining == 2) {
+				if (service.getPhase().equals(Phase.PLATFORM)
+						&& lastMinutesRemaining >= 3 && minutesRemaining == 2) {
 					service.speak("あと2分で出発時刻です");
 				}
 				lastMinutesRemaining = minutesRemaining;
