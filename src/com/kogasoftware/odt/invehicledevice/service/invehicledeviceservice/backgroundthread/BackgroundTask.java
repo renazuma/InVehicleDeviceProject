@@ -15,7 +15,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
-import android.media.AudioManager;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.telephony.PhoneStateListener;
@@ -50,7 +49,6 @@ public class BackgroundTask {
 	private final TemperatureSensorEventListener temperatureSensorEventListener;
 	private final AccMagSensorEventListener accMagSensorEventListener;
 	private final OrientationSensorEventListener orientationSensorEventListener;
-	private final AudioManager audioManager;
 	private final LocationNotifier locationListener;
 	private final ScheduledExecutorService executorService = Executors
 			.newScheduledThreadPool(NUM_THREADS);
@@ -72,9 +70,7 @@ public class BackgroundTask {
 
 		sensorManager = (SensorManager) service
 				.getSystemService(Context.SENSOR_SERVICE);
-		audioManager = (AudioManager) service
-				.getSystemService(Context.AUDIO_SERVICE);
-
+		
 		// TODO:内容精査
 		// TelephonyManagerはNullPointerExceptionを発生させる
 		// E/AndroidRuntime(24190):FATAL EXCEPTION: Thread-4030
@@ -164,9 +160,6 @@ public class BackgroundTask {
 		}
 		
 		locationListener.start();
-
-		audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,
-				audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
 
 		List<Sensor> temperatureSensors = sensorManager
 				.getSensorList(Sensor.TYPE_TEMPERATURE);

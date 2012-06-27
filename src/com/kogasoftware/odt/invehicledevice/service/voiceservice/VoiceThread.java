@@ -10,6 +10,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
 
 import android.content.Context;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
@@ -27,10 +28,13 @@ public class VoiceThread extends Thread {
 	private final BlockingQueue<String> voices;
 	private final BlockingQueue<String> preparedVoices = new LinkedBlockingQueue<String>();
 	private final Context context;
+	private final AudioManager audioManager;
 
 	public VoiceThread(Context context, BlockingQueue<String> voices) {
 		this.context = context;
 		this.voices = voices;
+		audioManager = (AudioManager) context
+				.getSystemService(Context.AUDIO_SERVICE);
 	}
 
 	public static List<String> split(String message, Integer maxLength) {
@@ -110,6 +114,9 @@ public class VoiceThread extends Thread {
 			Log.w(TAG, "voice=\"" + voice + "\" is not present");
 			return;
 		}
+		
+		audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,
+				audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
 
 		final Semaphore semaphore = new Semaphore(0);
 		MediaPlayer mediaPlayer = new MediaPlayer();
