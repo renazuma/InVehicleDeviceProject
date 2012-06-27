@@ -155,7 +155,12 @@ public class InVehicleDeviceActivity extends Activity implements
 		if (optionalService.isPresent()) {
 			optionalService.get().setActivityPaused();
 		}
-		// finish();
+	}
+	
+	@Override
+	public void onStop() {
+		super.onStop();
+		finish();
 	}
 
 	@Override
