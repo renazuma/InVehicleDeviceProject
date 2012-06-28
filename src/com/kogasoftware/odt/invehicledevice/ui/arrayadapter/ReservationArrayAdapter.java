@@ -81,7 +81,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 			super.add(reservation);
 			return;
 		}
-		if (canGetOff(reservation) && isGetOffScheduled(reservation)) {
+		if (/* canGetOff(reservation) && */ isGetOffScheduled(reservation)) {
 			super.add(reservation);
 			return;
 		}
@@ -130,10 +130,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 	public List<Reservation> getNoGettingOffReservations() {
 		List<Reservation> noGettingOffReservations = new LinkedList<Reservation>();
 		for (Reservation reservation : reservations) {
-			if (isSelected(reservation) || !canGetOff(reservation)) {
-				continue;
-			}
-			if (isLastOperationSchedule || isGetOffScheduled(reservation)) {
+			if (isGetOffScheduled(reservation) && !isSelected(reservation)) {
 				noGettingOffReservations.add(reservation);
 			}
 		}
@@ -209,18 +206,14 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		}
 
 		String text = "";
-		if (canGetOn(reservation)) {
-			if (isGetOnScheduled(reservation)) {
-				text += "[乗]";
-			} else {
-				text += "[*乗]";
-			}
+		if (isGetOffScheduled(reservation)) {
+			text += "[降]";
+		} else if (isGetOnScheduled(reservation)) {
+			text += "[乗]";
+		} else if (canGetOff(reservation)) {
+			text += "[*降]";
 		} else {
-			if (isGetOffScheduled(reservation)) {
-				text += "[降]";
-			} else {
-				text += "[*降]";
-			}
+			text += "[*乗]";
 		}
 
 		text += " 予約番号 " + reservation.getId();
@@ -229,7 +222,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		reservationIdView.setText(text);
 
 		if (isSelected(reservation)) {
-			if (canGetOn(reservation)) {
+			if (isGetOnScheduled(reservation)) {
 				convertView.setBackgroundColor(Color.parseColor("#FF69B4")); // TODO
 																				// テーマ
 			} else {
@@ -237,7 +230,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 																				// テーマ
 			}
 		} else {
-			if (canGetOn(reservation)) {
+			if (isGetOnScheduled(reservation)) {
 				convertView.setBackgroundColor(Color.parseColor("#F9D9D8"));// TODO
 																			// テーマ
 			} else {
