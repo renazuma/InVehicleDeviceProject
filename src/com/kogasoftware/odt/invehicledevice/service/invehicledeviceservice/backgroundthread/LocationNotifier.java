@@ -205,8 +205,22 @@ public class LocationNotifier implements LocationListener,
 
 	@Override
 	public void onStatusChanged(String provider, int status, Bundle extras) {
-		Log.d(TAG, "onStatusChanged(\"" + provider + "\", +" + status + ", "
-				+ extras + ")");
+		String message = "onStatusChanged(\"" + provider + "\", ";
+		switch (status) {
+		case LocationProvider.OUT_OF_SERVICE:
+			message += "OUT_OF_SERVICE";
+			break;
+		case LocationProvider.AVAILABLE:
+			message += "AVAILABLE";
+			break;
+		case LocationProvider.TEMPORARILY_UNAVAILABLE:
+			message += "TEMPORARILY_UNAVAILABLE";
+			break;
+		default:
+			message += "unknown:" + status;
+			break;
+		}
+		Log.d(TAG, message + ", " + extras + ")");
 	}
 
 	public void start() {
