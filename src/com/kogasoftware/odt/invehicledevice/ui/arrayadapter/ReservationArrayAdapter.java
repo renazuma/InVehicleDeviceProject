@@ -40,6 +40,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 			.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	protected final AlphaAnimation animation = new AlphaAnimation(1, 0.1f);
 	protected final List<Reservation> reservations = new LinkedList<Reservation>();
+	protected final List<Reservation> getOffScheduledAndUnhandledReservation = new LinkedList<Reservation>();
 	protected final List<OperationSchedule> remainingOperationSchedules = new LinkedList<OperationSchedule>();
 	protected final OperationSchedule operationSchedule;
 	protected final EnumSet<ItemType> visibleItemTypes = EnumSet
@@ -86,7 +87,6 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		remainingOperationSchedules.addAll(service
 				.getRemainingOperationSchedules());
 		reservations.addAll(service.getReservations());
-
 		isLastOperationSchedule = (remainingOperationSchedules.size() <= 1);
 		if (isLastOperationSchedule) {
 			visibleItemTypes.add(ItemType.RIDING_AND_NO_GET_OFF);
@@ -96,6 +96,13 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 			operationSchedule = new OperationSchedule();
 		} else {
 			operationSchedule = remainingOperationSchedules.get(0);
+		}
+		
+		for (Reservation reservation : reservations) {
+			if (isGetOffScheduled(reservation)
+					&& PassengerRecords.isUnhandled(reservation)) {
+				getOffScheduledAndUnhandledReservation.add(reservation);
+			}
 		}
 		updateDataSet();
 	}
@@ -109,7 +116,11 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 			super.add(reservation);
 			return;
 		}
-		if (/* canGetOff(reservation) && */isGetOffScheduled(reservation)) {
+		if (canGetOff(reservation) && isGetOffScheduled(reservation)) {
+			super.add(reservation);
+			return;
+		}
+		if (getOffScheduledAndUnhandledReservation.contains(reservation)) {
 			super.add(reservation);
 			return;
 		}
@@ -333,7 +344,16 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		for (PassengerRecord passengerRecord : reservation.getPassengerRecord()
 				.asSet()) {
 			passengerRecord.setPassengerCount(reservation.getPassengerCount());
-			if (PassengerRecords.isUnhandled(passengerRecord)) {
+			if (getOffScheduledAndUnhandledReservation.contains(reservation)) {
+				passengerRecord.setGetOnTime(new Date());
+				passengerRecord.setGetOffTime(new Date());
+				passengerRecord.setDepartureOperationScheduleId(reservation.getDepartureScheduleId());
+				passengerRecord.setArrivalOperationScheduleId(operationSchedule.getId());
+				service.getDataSource().getOnPassenger(operationSchedule, reservation, passengerRecord,
+						new EmptyWebAPICallback<PassengerRecord>());
+				service.getDataSource().getOffPassenger(operationSchedule, reservation, passengerRecord,
+						new EmptyWebAPICallback<PassengerRecord>());
+			} else if (PassengerRecords.isUnhandled(passengerRecord)) {
 				passengerRecord.setGetOnTime(new Date());
 				passengerRecord
 						.setDepartureOperationScheduleId(operationSchedule
@@ -362,7 +382,16 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 				new PassengerRecord()));
 		for (PassengerRecord passengerRecord : reservation.getPassengerRecord()
 				.asSet()) {
-			if (PassengerRecords.isRiding(passengerRecord)) {
+			if (getOffScheduledAndUnhandledReservation.contains(reservation)) {
+				passengerRecord.clearGetOnTime();
+				passengerRecord.clearGetOffTime();
+				passengerRecord.clearDepartureOperationScheduleId();
+				passengerRecord.clearArrivalOperationScheduleId();
+				service.getDataSource().cancelGetOffPassenger(operationSchedule, reservation,
+						new EmptyWebAPICallback<PassengerRecord>());
+				service.getDataSource().cancelGetOnPassenger(operationSchedule, reservation,
+								new EmptyWebAPICallback<PassengerRecord>());
+			} else if (PassengerRecords.isRiding(passengerRecord)) {
 				passengerRecord.clearGetOnTime();
 				passengerRecord.clearDepartureOperationScheduleId();
 				service.getDataSource()
