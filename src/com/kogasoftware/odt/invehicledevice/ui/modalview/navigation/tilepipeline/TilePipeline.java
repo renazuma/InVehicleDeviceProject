@@ -61,9 +61,9 @@ public class TilePipeline implements InVehicleDeviceService.OnExitListener {
 	private final PipeQueue<Tile, TileBitmapFile> filePipeQueue = new PipeQueue<Tile, TileBitmapFile>(
 			100, onDropListener, comparator);
 	private final PipeQueue<Tile, Bitmap> bitmapPipeQueue = new BitmapPipeQueue<Tile>(
-			16, onDropListener, comparator);
+			5, onDropListener, comparator);
 	private final PipeQueue<Tile, Integer> texturePipeQueue = new PipeQueue<Tile, Integer>(
-			25, onDropListener, comparator);
+			9, onDropListener, comparator);
 	private final PipeExchanger<Tile, Null, TileBitmapFile> webTilePipe;
 	private final PipeExchanger<Tile, TileBitmapFile, Bitmap> fileTilePipe;
 
