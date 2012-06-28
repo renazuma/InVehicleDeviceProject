@@ -48,6 +48,34 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 	protected final Boolean isLastOperationSchedule;
 	protected final MemoModalView memoModalView;
 	protected final InVehicleDeviceService service;
+	protected final OnClickListener onClickViewListener = new OnClickListener() {
+		@Override
+		public void onClick(View view) {
+			Object tag = view.getTag();
+			if (!(tag instanceof Reservation)) {
+				return;
+			}
+			Reservation reservation = (Reservation) tag;
+			if (isSelected(reservation)) {
+				unselect(reservation);
+			} else {
+				select(reservation);
+			}
+			notifyDataSetChanged();
+		}
+	};
+
+	protected final OnClickListener onClickMemoButtonListener = new OnClickListener() {
+		@Override
+		public void onClick(View view) {
+			Object tag = view.getTag();
+			if (!(tag instanceof Reservation)) {
+				return;
+			}
+			Reservation reservation = (Reservation) tag;
+			memoModalView.show(reservation);
+		}
+	};
 
 	public ReservationArrayAdapter(InVehicleDeviceService service,
 			MemoModalView memoModalView) {
@@ -81,7 +109,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 			super.add(reservation);
 			return;
 		}
-		if (/* canGetOff(reservation) && */ isGetOffScheduled(reservation)) {
+		if (/* canGetOff(reservation) && */isGetOffScheduled(reservation)) {
 			super.add(reservation);
 			return;
 		}
@@ -159,42 +187,28 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 			convertView = layoutInflater.inflate(RESOURCE_ID, null);
 		}
 
-		final Reservation reservation = getItem(position);
+		Reservation reservation = getItem(position);
 		TextView passengerCountTextView = (TextView) convertView
 				.findViewById(R.id.passenger_count_text_view);
 		passengerCountTextView.setText(reservation.getPassengerCount() + "名");
 
 		// メモボタン
 		Button memoButton = (Button) convertView.findViewById(R.id.memo_button);
+		memoButton.setTag(reservation);
+		memoButton.setOnClickListener(onClickMemoButtonListener);
 		if (reservation.getMemo().isPresent()
 				|| !Users.getMemo(reservation).isEmpty()) {
 			memoButton.setVisibility(View.VISIBLE);
-			memoButton.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View view) {
-					memoModalView.show(reservation);
-				}
-			});
 			animation.setDuration(1000);
 			animation.setRepeatCount(Animation.INFINITE);
 			memoButton.startAnimation(animation);
-
 		} else {
 			memoButton.setVisibility(View.GONE);
 		}
 
 		// 行の表示
-		convertView.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				if (isSelected(reservation)) {
-					unselect(reservation);
-				} else {
-					select(reservation);
-				}
-				notifyDataSetChanged();
-			}
-		});
+		convertView.setTag(reservation);
+		convertView.setOnClickListener(onClickViewListener);
 		TextView userNameView = (TextView) convertView
 				.findViewById(R.id.user_name);
 		if (reservation.getUser().isPresent()) {
