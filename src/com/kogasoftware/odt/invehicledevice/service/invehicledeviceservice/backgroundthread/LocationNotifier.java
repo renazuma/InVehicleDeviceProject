@@ -246,16 +246,20 @@ public class LocationNotifier implements LocationListener,
 		nextRestartBaseTime = (new Date()).getTime();
 		wakeLock.acquire();
 
-		if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-			locationManager.requestLocationUpdates(
-					LocationManager.NETWORK_PROVIDER, DEFAULT_MIN_TIME,
-					DEFAULT_MIN_DISTANCE, this);
-		}
-		if (locationManager.isProviderEnabled(LocationManager.PASSIVE_PROVIDER)) {
-			locationManager.requestLocationUpdates(
-					LocationManager.PASSIVE_PROVIDER, DEFAULT_MIN_TIME,
-					DEFAULT_MIN_DISTANCE, this);
-		}
+		// if
+		// (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER))
+		// {
+		// locationManager.requestLocationUpdates(
+		// LocationManager.NETWORK_PROVIDER, DEFAULT_MIN_TIME,
+		// DEFAULT_MIN_DISTANCE, this);
+		// }
+		// if
+		// (locationManager.isProviderEnabled(LocationManager.PASSIVE_PROVIDER))
+		// {
+		// locationManager.requestLocationUpdates(
+		// LocationManager.PASSIVE_PROVIDER, DEFAULT_MIN_TIME,
+		// DEFAULT_MIN_DISTANCE, this);
+		// }
 		if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 			lastLocation = Optional.fromNullable(locationManager
 					.getLastKnownLocation(LocationManager.GPS_PROVIDER));
