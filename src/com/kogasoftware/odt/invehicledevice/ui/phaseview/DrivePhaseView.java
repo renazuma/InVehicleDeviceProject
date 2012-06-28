@@ -64,7 +64,7 @@ public class DrivePhaseView extends PhaseView {
 	@Override
 	protected void onAttachedToWindow() {
 		super.onAttachedToWindow();
-		handler.post(toggleDrivingView);
+		// handler.post(toggleDrivingView);
 	}
 
 	@Override
