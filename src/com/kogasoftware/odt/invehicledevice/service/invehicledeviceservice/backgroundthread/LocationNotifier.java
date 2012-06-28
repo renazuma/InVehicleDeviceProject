@@ -140,7 +140,7 @@ public class LocationNotifier implements LocationListener,
 						+ "/" + numSatellites + " => "
 						+ newNumUsedInFixSatellites + "/" + newNumSatellites);
 				numSatellites = newNumSatellites;
-				newNumSatellites = newNumUsedInFixSatellites;
+				numUsedInFixSatellites = newNumUsedInFixSatellites;
 				if (lastLocation.isPresent()) {
 					service.changeLocation(lastLocation.get(), gpsStatus);
 				}
