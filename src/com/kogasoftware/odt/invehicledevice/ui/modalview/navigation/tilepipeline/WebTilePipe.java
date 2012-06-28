@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.apache.commons.lang3.ObjectUtils.Null;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipeline.PipeQueue.OnDropListener;
@@ -18,6 +19,7 @@ import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 
 public class WebTilePipe extends PipeExchanger<Tile, Null, TileBitmapFile> {
+	private static final String TAG = WebTilePipe.class.getSimpleName();
 	private final File outputDirectory;
 	protected static final Integer NUM_LOADERS = 10;
 	protected final Map<Tile, Integer> loadingReqKeys = new ConcurrentHashMap<Tile, Integer>();
@@ -56,6 +58,7 @@ public class WebTilePipe extends PipeExchanger<Tile, Null, TileBitmapFile> {
 					@Override
 					public void onException(int reqkey, WebAPIException ex) {
 						service.getDataSource().cancel(reqkey);
+						Log.i(TAG, "onException reqkey=" + reqkey, ex);
 						countDownLatch.countDown();
 					}
 
@@ -63,6 +66,8 @@ public class WebTilePipe extends PipeExchanger<Tile, Null, TileBitmapFile> {
 					public void onFailed(int reqkey, int statusCode,
 							String response) {
 						service.getDataSource().cancel(reqkey);
+						Log.i(TAG, "onFailed reqkey=" + reqkey + " statusCode="
+								+ statusCode + " response=" + response);
 						countDownLatch.countDown();
 					}
 
