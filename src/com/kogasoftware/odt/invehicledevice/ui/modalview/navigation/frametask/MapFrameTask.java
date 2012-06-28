@@ -50,10 +50,10 @@ public class MapFrameTask extends FrameTask {
 				/ (double) Tile.WIDTH, frameState.getHeight()
 				/ (double) Tile.HEIGHT)
 				/ cameraZoom);
-		if (lineTiles % 2 == 0) {
-			lineTiles += 1;
+		if (lineTiles % 2 == 1) {
+			lineTiles--;
 		}
-		int extraTiles = (lineTiles - 1) / 2 + 1;
+		int extraTiles = lineTiles / 2;
 
 		Set<Tile> inactiveTiles = tilePipeline.getPresentTiles();
 
