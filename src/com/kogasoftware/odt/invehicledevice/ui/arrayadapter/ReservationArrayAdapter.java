@@ -128,27 +128,27 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 	}
 
 	public List<Reservation> getNoGettingOffReservations() {
-		List<Reservation> getNoGettingOffReservations = new LinkedList<Reservation>();
+		List<Reservation> noGettingOffReservations = new LinkedList<Reservation>();
 		for (Reservation reservation : reservations) {
 			if (isSelected(reservation) || !canGetOff(reservation)) {
 				continue;
 			}
 			if (isLastOperationSchedule || isGetOffScheduled(reservation)) {
-				getNoGettingOffReservations.add(reservation);
+				noGettingOffReservations.add(reservation);
 			}
 		}
-		return getNoGettingOffReservations;
+		return noGettingOffReservations;
 	}
 
 	public List<Reservation> getNoGettingOnReservations() {
-		List<Reservation> getNoGettingOnReservations = new LinkedList<Reservation>();
+		List<Reservation> noGettingOnReservations = new LinkedList<Reservation>();
 		for (Reservation reservation : reservations) {
 			if (canGetOn(reservation) && isGetOnScheduled(reservation)
 					&& !isSelected(reservation)) {
-				getNoGettingOnReservations.add(reservation);
+				noGettingOnReservations.add(reservation);
 			}
 		}
-		return getNoGettingOnReservations;
+		return noGettingOnReservations;
 	}
 
 	public List<Reservation> getNoPaymentReservations() {
