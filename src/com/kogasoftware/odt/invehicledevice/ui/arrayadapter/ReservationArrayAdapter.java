@@ -196,7 +196,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		Button memoButton = (Button) convertView.findViewById(R.id.memo_button);
 		memoButton.setTag(reservation);
 		memoButton.setOnClickListener(onClickMemoButtonListener);
-		if (reservation.getMemo().isPresent()
+		if (!reservation.getMemo().or("").isEmpty()
 				|| !Users.getMemo(reservation).isEmpty()) {
 			memoButton.setVisibility(View.VISIBLE);
 			animation.setDuration(1000);
