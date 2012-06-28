@@ -384,7 +384,7 @@ public class WebAPI implements Closeable {
 		retryParam.put("passenger_record",
 				filterJSONKeys(retryPassengerRecord.toJSONObject(), filter));
 
-		String group = getReservationGetOffGroup(operationSchedule.getId(),
+		String group = getReservationGetOnOrOffGroup(operationSchedule.getId(),
 				reservation.getId());
 
 		return put(PATH_SCHEDULES + "/" + operationSchedule.getId()
@@ -426,7 +426,7 @@ public class WebAPI implements Closeable {
 		retryParam.put("passenger_record",
 				filterJSONKeys(retryPassengerRecord.toJSONObject(), filter));
 
-		String group = getReservationGetOnGroup(operationSchedule.getId(),
+		String group = getReservationGetOnOrOffGroup(operationSchedule.getId(),
 				reservation.getId());
 
 		return put(PATH_SCHEDULES + "/" + operationSchedule.getId()
@@ -452,7 +452,7 @@ public class WebAPI implements Closeable {
 	public int cancelGetOnPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, WebAPICallback<PassengerRecord> callback)
 			throws WebAPIException, JSONException {
-		String group = getReservationGetOnGroup(operationSchedule.getId(),
+		String group = getReservationGetOnOrOffGroup(operationSchedule.getId(),
 				reservation.getId());
 		return put(PATH_SCHEDULES + "/" + operationSchedule.getId()
 				+ "/reservations/" + reservation.getId() + "/cancel_geton",
@@ -477,7 +477,7 @@ public class WebAPI implements Closeable {
 	public int cancelGetOffPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, WebAPICallback<PassengerRecord> callback)
 			throws WebAPIException, JSONException {
-		String group = getReservationGetOffGroup(operationSchedule.getId(),
+		String group = getReservationGetOnOrOffGroup(operationSchedule.getId(),
 				reservation.getId());
 		return put(PATH_SCHEDULES + "/" + operationSchedule.getId()
 				+ "/reservations/" + reservation.getId() + "/cancel_getoff",
@@ -878,15 +878,9 @@ public class WebAPI implements Closeable {
 		this.serverHost = serverHost;
 	}
 
-	protected String getReservationGetOnGroup(Integer operationScheduleId,
+	protected String getReservationGetOnOrOffGroup(Integer operationScheduleId,
 			Integer reservationId) {
-		return "ReservationGetOnGroup/operationScheduleId="
-				+ operationScheduleId + "/reservationId=" + reservationId;
-	}
-
-	protected String getReservationGetOffGroup(Integer operationScheduleId,
-			Integer reservationId) {
-		return "ReservationGetOffGroup/operationScheduleId="
+		return "ReservationGetOnOrOffGroup/operationScheduleId="
 				+ operationScheduleId + "/reservationId=" + reservationId;
 	}
 }
