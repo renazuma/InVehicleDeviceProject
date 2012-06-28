@@ -7,7 +7,9 @@ public class Users {
 	public static List<String> getMemo(User user) {
 		List<String> memos = new LinkedList<String>();
 		for (String memo : user.getMemo().asSet()) {
-			memos.add(memo);
+			if (memo.length() > 0) {
+				memos.add(memo);
+			}
 		}
 		if (user.getHandicapped().or(false)) {
 			memos.add("※身体障害者");
