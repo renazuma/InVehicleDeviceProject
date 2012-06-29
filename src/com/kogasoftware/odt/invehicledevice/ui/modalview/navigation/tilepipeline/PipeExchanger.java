@@ -59,7 +59,7 @@ public abstract class PipeExchanger<K, F, T> implements Closeable {
 	protected void loopLoad() throws InterruptedException {
 		String T = getClass().getSimpleName();
 		while (true) {
-			Thread.sleep(100);
+			Thread.sleep(200);
 			Pair<K, F> fromPair = fromPipeQueue.take();
 			Log.i(T, "start " + fromPair.getKey());
 			long startTime = System.currentTimeMillis();
