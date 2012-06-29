@@ -87,7 +87,7 @@ public class InVehicleDeviceActivity extends Activity implements
 
 		bindService(new Intent(this, InVehicleDeviceService.class),
 				serviceConnection, Context.BIND_AUTO_CREATE);
-		handler.post(waitForInitialize);
+		handler.postDelayed(waitForInitialize, 15 * 1000); // TODO:ウエイトを無くす
 	}
 
 	@Override
