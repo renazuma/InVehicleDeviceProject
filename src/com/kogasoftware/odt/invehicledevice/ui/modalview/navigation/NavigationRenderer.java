@@ -146,6 +146,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		for (Integer nextZoomLevel : syncNextZoomLevel.getAndSet(
 				Optional.<Integer> absent()).asSet()) {
 			if (!nextZoomLevel.equals(zoomLevel)) {
+				Log.d(TAG, "zoomLevelChanged: " + zoomLevel + " -> " + nextZoomLevel);
 				zoomLevel = nextZoomLevel;
 				zoomLevelChanged = true;
 			}
@@ -211,7 +212,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 			pixelDistanceRate = pixelDistance / Math.min(width, height);
 
 			// ピクセル距離に応じてズームを修正
-			if (pixelDistanceRate < 0.28) {
+			if (pixelDistanceRate < 0.27) {
 				// 近い場合、拡大する
 				setZoomLevel(zoomLevel + 1);
 			} else if (pixelDistanceRate > 0.56) {
