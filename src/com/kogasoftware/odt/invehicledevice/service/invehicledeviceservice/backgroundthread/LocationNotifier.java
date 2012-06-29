@@ -34,8 +34,8 @@ public class LocationNotifier implements LocationListener,
 		GpsStatus.NmeaListener {
 	private static final String TAG = LocationNotifier.class.getSimpleName();
 	public static final Float ACCURACY_THRESHOLD = 50f;
-	protected static final Integer DEFAULT_MIN_TIME = 1500;
-	protected static final Integer DEFAULT_MIN_DISTANCE = 0;
+	protected static final Integer DEFAULT_MIN_TIME = 1000;
+	protected static final Integer DEFAULT_MIN_DISTANCE = 1;
 	protected static final Integer COARSE_TIMEOUT = 30 * 1000;
 	protected static final Integer RESTART_TIMEOUT = 90 * 1000;
 	protected static final Integer RESTART_CHECK_INTERVAL = 20 * 1000;
