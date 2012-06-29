@@ -743,6 +743,7 @@ public class InVehicleDeviceService extends Service {
 						onInitializeListeners)) {
 					listener.onInitialize(InVehicleDeviceService.this);
 				}
+				refreshPhase();
 			}
 		});
 	}
