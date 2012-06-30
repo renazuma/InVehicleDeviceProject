@@ -11,6 +11,7 @@ public class InVehicleDeviceApplication extends Application {
 
 	@Override
 	public void onCreate() {
+		super.onCreate();
 		Log.i(TAG, "onCreate()");
 		try {
 			PackageInfo packageInfo = getPackageManager().getPackageInfo(
@@ -25,6 +26,7 @@ public class InVehicleDeviceApplication extends Application {
 
 	@Override
 	public void onTerminate() {
-		Log.i(TAG, "onDestroy()");
+		super.onTerminate();
+		Log.i(TAG, "onTerminate()");
 	}
 }
