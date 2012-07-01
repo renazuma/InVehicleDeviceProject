@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.location.GpsSatellite;
 import android.location.GpsStatus;
 import android.location.Location;
@@ -14,10 +15,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKey;
 
 /**
  * 位置情報を取得する
@@ -36,9 +39,12 @@ public class LocationNotifier implements LocationListener,
 	public static final Float ACCURACY_THRESHOLD = 50f;
 	protected static final Integer DEFAULT_MIN_TIME = 1000;
 	protected static final Integer DEFAULT_MIN_DISTANCE = 1;
+	protected static final Integer DEFAULT_RESTART_TIMEOUT = 90 * 1000;
 	protected static final Integer COARSE_TIMEOUT = 30 * 1000;
-	protected static final Integer RESTART_TIMEOUT = 90 * 1000;
 	protected static final Integer RESTART_CHECK_INTERVAL = 20 * 1000;
+	protected final Integer minTime;
+	protected final Integer minDistance;
+	protected final Integer restartTimeout;
 	protected final Handler handler = new Handler();
 	protected final long handlerThreadId = handler.getLooper().getThread()
 			.getId();
@@ -62,7 +68,7 @@ public class LocationNotifier implements LocationListener,
 					+ " nextRestartBaseTime=\"" + new Date(nextRestartBaseTime)
 					+ "\" now=\"" + new Date() + "\"");
 			final Date now = new Date();
-			if ((nextRestartBaseTime + RESTART_TIMEOUT) > now.getTime()) {
+			if ((nextRestartBaseTime + restartTimeout) > now.getTime()) {
 				Log.d(TAG, "GPS restart unnecessary");
 				handler.postDelayed(this, RESTART_CHECK_INTERVAL);
 				return;
@@ -98,8 +104,24 @@ public class LocationNotifier implements LocationListener,
 				.getSystemService(Context.POWER_SERVICE);
 		wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
 				getClass().getName());
+
+		SharedPreferences preferences = PreferenceManager
+				.getDefaultSharedPreferences(service);
+		minTime = preferences.getInt(
+				SharedPreferencesKey.LOCATION_RECEIVE_MIN_TIME,
+				DEFAULT_MIN_TIME);
+		minDistance = preferences.getInt(
+				SharedPreferencesKey.LOCATION_RECEIVE_MIN_DISTANCE,
+				DEFAULT_MIN_DISTANCE);
+		restartTimeout = preferences.getInt(
+				SharedPreferencesKey.LOCATION_RECEIVE_RESTART_TIMEOUT,
+				DEFAULT_RESTART_TIMEOUT);
+
 		service.addOnPauseActivityListener(this);
 		service.addOnResumeActivityListener(this);
+
+		Log.i(TAG, "minTime=" + minTime + " minDistance=" + minDistance
+				+ " restartTimeout=" + restartTimeout);
 	}
 
 	@Override
@@ -264,9 +286,8 @@ public class LocationNotifier implements LocationListener,
 		// if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 		lastLocation = Optional.fromNullable(locationManager
 				.getLastKnownLocation(LocationManager.GPS_PROVIDER));
-		locationManager.requestLocationUpdates(
-				LocationManager.GPS_PROVIDER, DEFAULT_MIN_TIME,
-				DEFAULT_MIN_DISTANCE, this);
+		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+				minTime, minDistance, this);
 		locationManager.addGpsStatusListener(this);
 		locationManager.addNmeaListener(this);
 		// }
