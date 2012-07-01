@@ -9,7 +9,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.util.Log;
 
-@ReportsCrashes(formKey = "dGVjZDhsb3JLVXctSlJXWV9vU1FHSWc6MQ", mode = ReportingInteractionMode.TOAST, resToastText = R.string.crash_toast_text)
+@ReportsCrashes(formKey = "dGVjZDhsb3JLVXctSlJXWV9vU1FHSWc6MQ", mode = ReportingInteractionMode.TOAST, resToastText = R.string.crash_toast_text, logcatArguments = {
+		"-t", "1000", "-v", "time" })
 public class InVehicleDeviceApplication extends Application {
 	private static final String TAG = InVehicleDeviceApplication.class
 			.getSimpleName();
