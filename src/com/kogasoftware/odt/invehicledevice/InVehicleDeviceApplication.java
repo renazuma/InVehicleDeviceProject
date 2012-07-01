@@ -1,6 +1,7 @@
 package com.kogasoftware.odt.invehicledevice;
 
 import org.acra.ACRA;
+import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
 
 import android.app.Application;
@@ -8,7 +9,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.util.Log;
 
-@ReportsCrashes(formKey = "dGVjZDhsb3JLVXctSlJXWV9vU1FHSWc6MQ")
+@ReportsCrashes(formKey = "dGVjZDhsb3JLVXctSlJXWV9vU1FHSWc6MQ", mode = ReportingInteractionMode.TOAST, resToastText = R.string.crash_toast_text)
 public class InVehicleDeviceApplication extends Application {
 	private static final String TAG = InVehicleDeviceApplication.class
 			.getSimpleName();
