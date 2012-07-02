@@ -9,6 +9,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.acra.ErrorReporter;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -70,7 +72,7 @@ public class BackgroundTask {
 
 		sensorManager = (SensorManager) service
 				.getSystemService(Context.SENSOR_SERVICE);
-		
+
 		// TODO:内容精査
 		// TelephonyManagerはNullPointerExceptionを発生させる
 		// E/AndroidRuntime(24190):FATAL EXCEPTION: Thread-4030
@@ -124,10 +126,15 @@ public class BackgroundTask {
 
 	protected void onLoopStart() throws InterruptedException,
 			ExecutionException {
+
 		IntentFilter intentFilter = new IntentFilter();
 		intentFilter.addAction(BackgroundTask.ACTION_EXIT);
 		service.getApplicationContext().registerReceiver(exitBroadcastReceiver,
 				intentFilter);
+
+		ErrorReporter errorReporter = ErrorReporter.getInstance();
+		errorReporter.handleSilentException(
+				new Throwable("APPLICATION_START_LOG"));
 
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(service);
@@ -158,7 +165,7 @@ public class BackgroundTask {
 		} else {
 			service.setInitialized();
 		}
-		
+
 		locationListener.start();
 
 		List<Sensor> temperatureSensors = sensorManager
