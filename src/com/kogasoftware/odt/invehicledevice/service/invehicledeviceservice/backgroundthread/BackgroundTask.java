@@ -1,6 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundthread;
 
 import java.io.File;
+import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
@@ -17,6 +18,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
+import android.os.DropBoxManager;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.telephony.PhoneStateListener;
@@ -132,9 +134,30 @@ public class BackgroundTask {
 		service.getApplicationContext().registerReceiver(exitBroadcastReceiver,
 				intentFilter);
 
+		StringBuilder trace = new StringBuilder();
+		{
+			DropBoxManager dropBoxManager = (DropBoxManager) service
+					.getSystemService(Context.DROPBOX_SERVICE);
+			Calendar calendar = Calendar.getInstance();
+			calendar.add(Calendar.MINUTE, -10);
+			Long last = calendar.getTimeInMillis();
+			for (Integer i = 0; i < 5; ++i) {
+				DropBoxManager.Entry entry = dropBoxManager.getNextEntry(
+						"data_app_anr", last);
+				if (entry == null) {
+					break;
+				}
+				last = entry.getTimeMillis();
+				trace.append(entry.getText(1024 * 1024) + "\n");
+			}
+		}
+
 		ErrorReporter errorReporter = ErrorReporter.getInstance();
-		errorReporter.handleSilentException(
-				new Throwable("APPLICATION_START_LOG"));
+		String customKey = "anr_traces";
+		errorReporter.putCustomData(customKey, trace.toString());
+		errorReporter.handleSilentException(new Throwable(
+				"APPLICATION_START_LOG"));
+		errorReporter.removeCustomData(customKey);
 
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(service);

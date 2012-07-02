@@ -25,7 +25,7 @@ import android.util.Log;
 		ReportField.TOTAL_MEM_SIZE, ReportField.USER_APP_START_DATE,
 		ReportField.USER_COMMENT, ReportField.USER_CRASH_DATE,
 		ReportField.USER_EMAIL, }, logcatArguments = { "-t", "1000", "-v",
-		"time" }, includeDropBoxSystemTags = true)
+		"time" }, includeDropBoxSystemTags = true, additionalDropBoxTags = { "data_app_anr" })
 public class InVehicleDeviceApplication extends Application {
 	private static final String TAG = InVehicleDeviceApplication.class
 			.getSimpleName();
