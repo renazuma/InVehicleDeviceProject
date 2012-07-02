@@ -10,7 +10,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.util.Log;
 
 @ReportsCrashes(formKey = "dFp5SnVVbTRuem13WmJ0YlVUb2NjaXc6MQ", mode = ReportingInteractionMode.TOAST, resToastText = R.string.crash_toast_text, logcatArguments = {
-		"-t", "1000", "-v", "time" })
+		"-t", "1000", "-v", "time" }, includeDropBoxSystemTags = true)
 public class InVehicleDeviceApplication extends Application {
 	private static final String TAG = InVehicleDeviceApplication.class
 			.getSimpleName();
