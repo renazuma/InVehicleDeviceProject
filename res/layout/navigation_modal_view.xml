@@ -20,7 +20,8 @@
             android:layout_alignParentTop="true"
             android:background="#99FFFFFF"
             android:orientation="horizontal"
-            android:padding="0dip" >
+            android:padding="0dip"
+            android:layout_gravity="center_vertical" >
 
             <TextView
                 android:id="@+id/next_platform_text_view"
@@ -48,6 +49,13 @@
                 android:shadowDy="1.5"
                 android:shadowRadius="0.1"
                 android:textSize="28sp" />
+
+            <Button
+                android:id="@+id/navigation_platform_memo_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/memo"
+                android:textSize="20sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -74,6 +82,7 @@
                 android:text="@string/location_receiving"
                 android:textColor="@android:color/black"
                 android:textSize="25sp" />
+
             <TextView
                 android:id="@+id/gps_satellites_text_view"
                 android:layout_width="wrap_content"

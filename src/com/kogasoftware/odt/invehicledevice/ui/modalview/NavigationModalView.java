@@ -53,6 +53,8 @@ public class NavigationModalView extends ModalView implements
 	private final TextView gpsSatellitesTextView;
 	private final ToggleButton autoZoomButton;
 	private final TilePipeline tilePipeline;
+	private final PlatformMemoModalView platformMemoModalView;
+	private final Button platformMemoButton;
 	private final Handler handler = new Handler();
 	private final Runnable gpsAlert = new Runnable() {
 		@Override
@@ -85,8 +87,9 @@ public class NavigationModalView extends ModalView implements
 	private WeakReference<NavigationRenderer> navigationRendererWeakReference = new WeakReference<NavigationRenderer>(
 			null);
 
-	public NavigationModalView(Context context, InVehicleDeviceService service) {
+	public NavigationModalView(Context context, InVehicleDeviceService service, final PlatformMemoModalView platformMemoModalView) {
 		super(context, service);
+		this.platformMemoModalView = platformMemoModalView;
 		setContentView(R.layout.navigation_modal_view);
 		setCloseOnClick(R.id.navigation_close_button);
 		service.addOnResumeActivityListener(this);
@@ -123,6 +126,14 @@ public class NavigationModalView extends ModalView implements
 						setAutoZoom(isChecked);
 					}
 				});
+		platformMemoButton = (Button) findViewById(R.id.navigation_platform_memo_button);
+		platformMemoButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				platformMemoModalView.show();
+			}
+		});
+		
 		autoZoomButton.setChecked(true);
 		gpsAlertLayout = (LinearLayout) findViewById(R.id.gps_alert_layout);
 		gpsAlertTextView = (TextView) findViewById(R.id.gps_alert_text_view);
@@ -198,6 +209,17 @@ public class NavigationModalView extends ModalView implements
 		if (navigationRenderer != null) {
 			navigationRenderer.updatePlatform();
 		}
+		
+		Integer platformMemoVisibility = GONE;
+		for (OperationSchedule operationSchedule : service
+				.getCurrentOperationSchedule().asSet()) {
+			for (Platform platform : operationSchedule.getPlatform().asSet()) {
+				if (platform.getMemo().isPresent()) {
+					platformMemoVisibility = VISIBLE;
+				}
+			}
+		}
+		platformMemoButton.setVisibility(platformMemoVisibility);
 	}
 
 	@Override
