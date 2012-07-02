@@ -53,6 +53,9 @@ public class NavigationModalView extends ModalView implements
 	private final TextView gpsSatellitesTextView;
 	private final ToggleButton autoZoomButton;
 	private final TilePipeline tilePipeline;
+	private final PlatformMemoModalView platformMemoModalView;
+	private final Button platformMemoButton;
+	private final Handler handler = new Handler();
 	private final Runnable gpsAlert = new Runnable() {
 		@Override
 		public void run() {
@@ -60,7 +63,7 @@ public class NavigationModalView extends ModalView implements
 			if (lastGpsUpdated.getTime() + GPS_EXPIRE_MILLIS > now
 					.getTime()) {
 				gpsAlertLayout.setVisibility(INVISIBLE);
-				getHandler().postDelayed(this, GPS_EXPIRE_MILLIS);
+				handler.postDelayed(this, GPS_EXPIRE_MILLIS);
 				return;
 			}
 			gpsAlertLayout.setVisibility(VISIBLE);
@@ -74,7 +77,7 @@ public class NavigationModalView extends ModalView implements
 			gpsAlertTextView
 					.setVisibility(gpsAlertTextView.getVisibility() == VISIBLE ? INVISIBLE
 							: VISIBLE);
-			getHandler().postDelayed(this, GPS_ALERT_FLASH_MILLIS);
+			handler.postDelayed(this, GPS_ALERT_FLASH_MILLIS);
 		}
 	};
 	private Date lastGpsUpdated = new Date(0);
@@ -84,8 +87,9 @@ public class NavigationModalView extends ModalView implements
 	private WeakReference<NavigationRenderer> navigationRendererWeakReference = new WeakReference<NavigationRenderer>(
 			null);
 
-	public NavigationModalView(Context context, InVehicleDeviceService service) {
+	public NavigationModalView(Context context, InVehicleDeviceService service, final PlatformMemoModalView platformMemoModalView) {
 		super(context, service);
+		this.platformMemoModalView = platformMemoModalView;
 		setContentView(R.layout.navigation_modal_view);
 		setCloseOnClick(R.id.navigation_close_button);
 		service.addOnResumeActivityListener(this);
@@ -122,6 +126,14 @@ public class NavigationModalView extends ModalView implements
 						setAutoZoom(isChecked);
 					}
 				});
+		platformMemoButton = (Button) findViewById(R.id.navigation_platform_memo_button);
+		platformMemoButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				platformMemoModalView.show();
+			}
+		});
+		
 		autoZoomButton.setChecked(true);
 		gpsAlertLayout = (LinearLayout) findViewById(R.id.gps_alert_layout);
 		gpsAlertTextView = (TextView) findViewById(R.id.gps_alert_text_view);
@@ -147,7 +159,7 @@ public class NavigationModalView extends ModalView implements
 	@Override
 	public void onAttachedToWindow() {
 		super.onAttachedToWindow();
-		getHandler().post(gpsAlert);
+		handler.post(gpsAlert);
 	}
 
 	@Override
@@ -188,7 +200,7 @@ public class NavigationModalView extends ModalView implements
 	@Override
 	public void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
-		getHandler().removeCallbacks(gpsAlert);
+		handler.removeCallbacks(gpsAlert);
 	}
 
 	protected void updatePlatform() {
@@ -197,6 +209,17 @@ public class NavigationModalView extends ModalView implements
 		if (navigationRenderer != null) {
 			navigationRenderer.updatePlatform();
 		}
+		
+		Integer platformMemoVisibility = GONE;
+		for (OperationSchedule operationSchedule : service
+				.getCurrentOperationSchedule().asSet()) {
+			for (Platform platform : operationSchedule.getPlatform().asSet()) {
+				if (platform.getMemo().isPresent()) {
+					platformMemoVisibility = VISIBLE;
+				}
+			}
+		}
+		platformMemoButton.setVisibility(platformMemoVisibility);
 	}
 
 	@Override

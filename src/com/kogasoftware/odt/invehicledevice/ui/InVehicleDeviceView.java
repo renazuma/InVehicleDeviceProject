@@ -8,6 +8,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,12 +26,14 @@ import com.kogasoftware.odt.invehicledevice.ui.modalview.DepartureCheckModalView
 import com.kogasoftware.odt.invehicledevice.ui.modalview.MemoModalView;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.NavigationModalView;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.NotificationModalView;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.PlatformMemoModalView;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.ScheduleChangedModalView;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.ScheduleModalView;
 import com.kogasoftware.odt.invehicledevice.ui.phaseview.DrivePhaseView;
 import com.kogasoftware.odt.invehicledevice.ui.phaseview.FinishPhaseView;
 import com.kogasoftware.odt.invehicledevice.ui.phaseview.PlatformPhaseView;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
+import com.kogasoftware.odt.webapi.model.Platform;
 
 public class InVehicleDeviceView extends FrameLayout implements
 		InVehicleDeviceService.OnEnterPhaseListener,
@@ -47,6 +50,7 @@ public class InVehicleDeviceView extends FrameLayout implements
 	private final Button mapButton;
 	private final Button scheduleButton;
 	private final Button changePhaseButton;
+	private final Button platformMemoButton;
 	private final ImageView networkStrengthImageView;
 	private final ImageView alertImageView;
 	private final NavigationModalView navigationModalView;
@@ -54,14 +58,17 @@ public class InVehicleDeviceView extends FrameLayout implements
 	private final DepartureCheckModalView departureCheckModalView;
 	private final ArrivalCheckModalView arrivalCheckModalView;
 	private final MemoModalView memoModalView;
+	private final PlatformMemoModalView platformMemoModalView;
 	private final ScheduleChangedModalView scheduleChangedModalView;
 	private final NotificationModalView notificationModalView;
 	private final PlatformPhaseView platformPhaseView;
 	private final DrivePhaseView drivePhaseView;
 	private final FinishPhaseView finishPhaseView;
-
 	private final TextView statusTextView;
 	private final TextView presentTimeTextView;
+	private final ViewGroup platformMemoButtonLayout;
+	
+	private final Handler handler = new Handler();
 
 	private final Runnable updateTime = new Runnable() {
 		@Override
@@ -70,7 +77,7 @@ public class InVehicleDeviceView extends FrameLayout implements
 			DateFormat f = new SimpleDateFormat(getContext().getString(
 					R.string.present_time_format));
 			presentTimeTextView.setText(f.format(now));
-			getHandler().postDelayed(this, UPDATE_TIME_INTERVAL_MILLIS);
+			handler.postDelayed(this, UPDATE_TIME_INTERVAL_MILLIS);
 		}
 	};
 
@@ -87,7 +94,7 @@ public class InVehicleDeviceView extends FrameLayout implements
 			count++;
 			alertImageView.setVisibility(count % 2 == 0 ? View.VISIBLE
 					: View.GONE);
-			getHandler().postDelayed(this, ALERT_SHOW_INTERVAL_MILLIS);
+			handler.postDelayed(this, ALERT_SHOW_INTERVAL_MILLIS);
 		}
 	};
 
@@ -110,7 +117,8 @@ public class InVehicleDeviceView extends FrameLayout implements
 		departureCheckModalView = new DepartureCheckModalView(context, service);
 		arrivalCheckModalView = new ArrivalCheckModalView(context, service);
 		memoModalView = new MemoModalView(context, service);
-		navigationModalView = new NavigationModalView(context, service);
+		platformMemoModalView = new PlatformMemoModalView(context, service);
+		navigationModalView = new NavigationModalView(context, service, platformMemoModalView);
 		scheduleModalView = new ScheduleModalView(context, service);
 		scheduleChangedModalView = new ScheduleChangedModalView(context,
 				service, scheduleModalView);
@@ -121,6 +129,7 @@ public class InVehicleDeviceView extends FrameLayout implements
 		modalViewLayout.addView(arrivalCheckModalView);
 		modalViewLayout.addView(memoModalView);
 		modalViewLayout.addView(navigationModalView);
+		modalViewLayout.addView(platformMemoModalView);
 		modalViewLayout.addView(scheduleModalView);
 		modalViewLayout.addView(scheduleChangedModalView);
 		modalViewLayout.addView(notificationModalView);
@@ -135,6 +144,8 @@ public class InVehicleDeviceView extends FrameLayout implements
 		phaseViewLayout.addView(drivePhaseView);
 		phaseViewLayout.addView(finishPhaseView);
 
+		platformMemoButtonLayout = (ViewGroup)findViewById(R.id.platform_memo_button_layout);
+		
 		presentTimeTextView = (TextView) findViewById(R.id.present_time_text_view);
 		statusTextView = (TextView) findViewById(R.id.phase_text_view);
 		changePhaseButton = (Button) findViewById(R.id.change_phase_button);
@@ -142,6 +153,7 @@ public class InVehicleDeviceView extends FrameLayout implements
 		scheduleButton = (Button) findViewById(R.id.schedule_button);
 		networkStrengthImageView = (ImageView) findViewById(R.id.network_strength_image_view);
 		alertImageView = (ImageView) findViewById(R.id.alert_image_view);
+		platformMemoButton = (Button) findViewById(R.id.platform_memo_button);
 		mapButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -154,10 +166,15 @@ public class InVehicleDeviceView extends FrameLayout implements
 				scheduleModalView.show();
 			}
 		});
-
+		platformMemoButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				platformMemoModalView.show();
+			}
+		});
 		for (Integer resourceId : new Integer[] { R.id.icon_layout,
 				R.id.operation_phase_layout, R.id.present_time_layout,
-				R.id.side_button_view }) {
+				R.id.platform_memo_button_layout, R.id.side_button_view }) {
 			View view = findViewById(resourceId);
 			if (view != null) {
 				phaseColoredViews.add(findViewById(resourceId));
@@ -176,18 +193,18 @@ public class InVehicleDeviceView extends FrameLayout implements
 
 	@Override
 	public void onAlertUpdatedOperationSchedule() {
-		getHandler().post(alertVehicleNotification);
+		handler.post(alertVehicleNotification);
 	}
 
 	@Override
 	public void onAlertVehicleNotificationReceive() {
-		getHandler().post(alertVehicleNotification);
+		handler.post(alertVehicleNotification);
 	}
 
 	@Override
 	public void onAttachedToWindow() {
 		super.onAttachedToWindow();
-		getHandler().post(updateTime);
+		handler.post(updateTime);
 	}
 
 	@Override
@@ -208,8 +225,8 @@ public class InVehicleDeviceView extends FrameLayout implements
 	@Override
 	public void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
-		getHandler().removeCallbacks(updateTime);
-		getHandler().removeCallbacks(alertVehicleNotification);
+		handler.removeCallbacks(updateTime);
+		handler.removeCallbacks(alertVehicleNotification);
 	}
 
 	@Override
@@ -225,6 +242,17 @@ public class InVehicleDeviceView extends FrameLayout implements
 				arrivalCheckModalView.show();
 			}
 		});
+
+		Integer platformMemoVisibility = GONE;
+		for (OperationSchedule operationSchedule : service
+				.getCurrentOperationSchedule().asSet()) {
+			for (Platform platform : operationSchedule.getPlatform().asSet()) {
+				if (platform.getMemo().isPresent()) {
+					platformMemoVisibility = VISIBLE;	
+				}
+			}
+		}
+		platformMemoButtonLayout.setVisibility(platformMemoVisibility);
 	}
 
 	@Override
