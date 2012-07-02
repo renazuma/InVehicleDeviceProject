@@ -9,4 +9,9 @@
     <string name="ok">OK</string>
     <string name="an_error_occurred">エラーが発生しました</string>
     <string name="checking_connection_config">&lt;big&gt;&lt;big&gt;接続確認をしています&lt;/big&gt;&lt;/big&gt;</string>
+    <string name="location_receive_config">位置情報受信設定</string>
+    <string name="location_receive_min_distance">再受信する最小距離(メートル)</string>
+    <string name="location_receive_min_time">再受信する最小時間(ミリ秒)</string>
+    <string name="location_receive_restart_timeout">受信できない際、切断し再接続するまでの時間(ミリ秒)</string>
+    
 </resources>
