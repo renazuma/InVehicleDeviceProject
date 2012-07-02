@@ -23,19 +23,19 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/location_receive_config" >
         <EditTextPreference
-            android:defaultValue="1"
-            android:dialogTitle="@string/location_receive_min_distance"
-            android:inputType="numberDecimal"
-            android:key="location_receive_min_distance"
-            android:maxLines="1"
-            android:title="@string/location_receive_min_distance" />
-        <EditTextPreference
             android:defaultValue="1000"
             android:dialogTitle="@string/location_receive_min_time"
             android:inputType="numberDecimal"
             android:key="location_receive_min_time"
             android:maxLines="1"
             android:title="@string/location_receive_min_time" />
+        <EditTextPreference
+            android:defaultValue="1"
+            android:dialogTitle="@string/location_receive_min_distance"
+            android:inputType="numberDecimal"
+            android:key="location_receive_min_distance"
+            android:maxLines="1"
+            android:title="@string/location_receive_min_distance" />
         <EditTextPreference
             android:defaultValue="90000"
             android:dialogTitle="@string/location_receive_restart_timeout"
