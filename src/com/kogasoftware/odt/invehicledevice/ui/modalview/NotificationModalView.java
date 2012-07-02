@@ -3,6 +3,7 @@ package com.kogasoftware.odt.invehicledevice.ui.modalview;
 import java.util.List;
 
 import android.content.Context;
+import android.os.Handler;
 import android.view.View;
 import android.widget.TextView;
 
@@ -13,6 +14,7 @@ import com.kogasoftware.odt.webapi.model.VehicleNotifications;
 
 public class NotificationModalView extends ModalView implements
 		InVehicleDeviceService.OnAlertVehicleNotificationReceiveListener {
+	private final Handler handler = new Handler();
 	private VehicleNotification currentVehicleNotification = new VehicleNotification();
 
 	public NotificationModalView(Context context, InVehicleDeviceService service) {
@@ -42,7 +44,7 @@ public class NotificationModalView extends ModalView implements
 
 	@Override
 	public void onAlertVehicleNotificationReceive() {
-		getHandler().postDelayed(new Runnable() {
+		handler.postDelayed(new Runnable() {
 			@Override
 			public void run() {
 				show();
@@ -53,7 +55,7 @@ public class NotificationModalView extends ModalView implements
 	private void reply() {
 		hide();
 		service.replyVehicleNotification(currentVehicleNotification);
-		getHandler().post(new Runnable() {
+		handler.post(new Runnable() {
 			@Override
 			public void run() {
 				show();

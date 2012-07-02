@@ -53,6 +53,7 @@ public class NavigationModalView extends ModalView implements
 	private final TextView gpsSatellitesTextView;
 	private final ToggleButton autoZoomButton;
 	private final TilePipeline tilePipeline;
+	private final Handler handler = new Handler();
 	private final Runnable gpsAlert = new Runnable() {
 		@Override
 		public void run() {
@@ -60,7 +61,7 @@ public class NavigationModalView extends ModalView implements
 			if (lastGpsUpdated.getTime() + GPS_EXPIRE_MILLIS > now
 					.getTime()) {
 				gpsAlertLayout.setVisibility(INVISIBLE);
-				getHandler().postDelayed(this, GPS_EXPIRE_MILLIS);
+				handler.postDelayed(this, GPS_EXPIRE_MILLIS);
 				return;
 			}
 			gpsAlertLayout.setVisibility(VISIBLE);
@@ -74,7 +75,7 @@ public class NavigationModalView extends ModalView implements
 			gpsAlertTextView
 					.setVisibility(gpsAlertTextView.getVisibility() == VISIBLE ? INVISIBLE
 							: VISIBLE);
-			getHandler().postDelayed(this, GPS_ALERT_FLASH_MILLIS);
+			handler.postDelayed(this, GPS_ALERT_FLASH_MILLIS);
 		}
 	};
 	private Date lastGpsUpdated = new Date(0);
@@ -147,7 +148,7 @@ public class NavigationModalView extends ModalView implements
 	@Override
 	public void onAttachedToWindow() {
 		super.onAttachedToWindow();
-		getHandler().post(gpsAlert);
+		handler.post(gpsAlert);
 	}
 
 	@Override
@@ -188,7 +189,7 @@ public class NavigationModalView extends ModalView implements
 	@Override
 	public void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
-		getHandler().removeCallbacks(gpsAlert);
+		handler.removeCallbacks(gpsAlert);
 	}
 
 	protected void updatePlatform() {

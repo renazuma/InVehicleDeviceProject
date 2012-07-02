@@ -8,6 +8,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,9 +60,9 @@ public class InVehicleDeviceView extends FrameLayout implements
 	private final PlatformPhaseView platformPhaseView;
 	private final DrivePhaseView drivePhaseView;
 	private final FinishPhaseView finishPhaseView;
-
 	private final TextView statusTextView;
 	private final TextView presentTimeTextView;
+	private final Handler handler = new Handler();
 
 	private final Runnable updateTime = new Runnable() {
 		@Override
@@ -70,7 +71,7 @@ public class InVehicleDeviceView extends FrameLayout implements
 			DateFormat f = new SimpleDateFormat(getContext().getString(
 					R.string.present_time_format));
 			presentTimeTextView.setText(f.format(now));
-			getHandler().postDelayed(this, UPDATE_TIME_INTERVAL_MILLIS);
+			handler.postDelayed(this, UPDATE_TIME_INTERVAL_MILLIS);
 		}
 	};
 
@@ -87,7 +88,7 @@ public class InVehicleDeviceView extends FrameLayout implements
 			count++;
 			alertImageView.setVisibility(count % 2 == 0 ? View.VISIBLE
 					: View.GONE);
-			getHandler().postDelayed(this, ALERT_SHOW_INTERVAL_MILLIS);
+			handler.postDelayed(this, ALERT_SHOW_INTERVAL_MILLIS);
 		}
 	};
 
@@ -176,18 +177,18 @@ public class InVehicleDeviceView extends FrameLayout implements
 
 	@Override
 	public void onAlertUpdatedOperationSchedule() {
-		getHandler().post(alertVehicleNotification);
+		handler.post(alertVehicleNotification);
 	}
 
 	@Override
 	public void onAlertVehicleNotificationReceive() {
-		getHandler().post(alertVehicleNotification);
+		handler.post(alertVehicleNotification);
 	}
 
 	@Override
 	public void onAttachedToWindow() {
 		super.onAttachedToWindow();
-		getHandler().post(updateTime);
+		handler.post(updateTime);
 	}
 
 	@Override
@@ -208,8 +209,8 @@ public class InVehicleDeviceView extends FrameLayout implements
 	@Override
 	public void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
-		getHandler().removeCallbacks(updateTime);
-		getHandler().removeCallbacks(alertVehicleNotification);
+		handler.removeCallbacks(updateTime);
+		handler.removeCallbacks(alertVehicleNotification);
 	}
 
 	@Override
