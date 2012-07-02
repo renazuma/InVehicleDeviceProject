@@ -9,4 +9,7 @@ public class SharedPreferencesKey {
 	public static final String SERVER_IN_VEHICLE_DEVICE_TOKEN = "server_in_vehicle_device_authentication_token";
 	public static final String SERVICE_PROVIDER = "service_provider";
 	public static final String IN_VEHICLE_DEVICE = "in_vehicle_device";
+	public static final String LOCATION_RECEIVE_MIN_TIME = "location_receive_min_time";
+	public static final String LOCATION_RECEIVE_MIN_DISTANCE = "location_receive_min_distance";
+	public static final String LOCATION_RECEIVE_RESTART_TIMEOUT = "location_receive_restart_timeout";
 }

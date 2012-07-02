@@ -74,6 +74,14 @@ public class SavePreferencesActivity extends Activity {
 		} catch (JSONException e) {
 			Log.e(TAG, "toJSONObject() failed", e);
 		}
+		editor.putInt(
+				SharedPreferencesKey.LOCATION_RECEIVE_MIN_DISTANCE,
+				bundle.getInt(SharedPreferencesKey.LOCATION_RECEIVE_MIN_DISTANCE));
+		editor.putInt(SharedPreferencesKey.LOCATION_RECEIVE_MIN_TIME,
+				bundle.getInt(SharedPreferencesKey.LOCATION_RECEIVE_MIN_TIME));
+		editor.putInt(
+				SharedPreferencesKey.LOCATION_RECEIVE_RESTART_TIMEOUT,
+				bundle.getInt(SharedPreferencesKey.LOCATION_RECEIVE_RESTART_TIMEOUT));
 		editor.putBoolean(SharedPreferencesKey.CLEAR_STATUS_BACKUP, true);
 		editor.putBoolean(SharedPreferencesKey.CLEAR_WEBAPI_BACKUP, true);
 		editor.putBoolean(SharedPreferencesKey.CLEAR_VOICE_CACHE, true);
