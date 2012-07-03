@@ -576,11 +576,11 @@ public class InVehicleDeviceService extends Service {
 
 		// This constructor is deprecated. Use Notification.Builder instead
 		Notification notification = new Notification(
-				android.R.drawable.ic_menu_info_details, "Ticker text",
+				android.R.drawable.ic_menu_info_details, "車載器アプリケーションを起動しています",
 				System.currentTimeMillis());
 
 		// This method is deprecated. Use Notification.Builder instead.
-		notification.setLatestEventInfo(this, "Title text", "Content text",
+		notification.setLatestEventInfo(this, "車載器アプリケーション", "起動しています",
 				pendIntent);
 
 		notification.flags |= Notification.FLAG_NO_CLEAR;
