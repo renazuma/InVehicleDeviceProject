@@ -72,7 +72,7 @@ public class EmptyActivityInstrumentationTestCase2 extends
 
 	public void runOnUiThreadSync(Runnable runnable)
 			throws InterruptedException {
-		MockActivityUnitTestCase.runOnUiThreadSync(getActivity(), runnable);
+		TestUtil.runOnUiThreadSync(getActivity(), runnable);
 	}
 
 	@Override

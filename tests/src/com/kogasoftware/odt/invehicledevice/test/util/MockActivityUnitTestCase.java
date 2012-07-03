@@ -1,9 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.test.util;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
-import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Intent;
 import android.os.Handler;
@@ -18,24 +14,6 @@ public class MockActivityUnitTestCase extends
 
 	static class QuitLooperWorkaroundException extends RuntimeException {
 		private static final long serialVersionUID = 6589002041806964185L;
-	}
-
-	public static void runOnUiThreadSync(Activity activity,
-			final Runnable runnable) throws InterruptedException {
-		final CountDownLatch cdl = new CountDownLatch(1);
-		activity.runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					runnable.run();
-				} finally {
-					cdl.countDown();
-				}
-			}
-		});
-		if (!cdl.await(10, TimeUnit.SECONDS)) {
-			throw new RuntimeException("runOnUiThreadSync Timeout!");
-		}
 	}
 
 	MockActivity a;
@@ -88,7 +66,7 @@ public class MockActivityUnitTestCase extends
 
 	public void runOnUiThreadSync(Runnable runnable)
 			throws InterruptedException {
-		runOnUiThreadSync(getActivity2(), runnable);
+		TestUtil.runOnUiThreadSync(getActivity2(), runnable);
 	}
 
 	@Override
