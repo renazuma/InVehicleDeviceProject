@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # == Schema Information
 #
 # Table name: operation_schedules
@@ -23,8 +24,7 @@ class OperationSchedule < ActiveRecord::Base
   has_one :operation_record
 
   # Define Validations
-  validates_presence_of :departure_estimate, :arrival_estimate, :unit_assignment
-
+  validates_presence_of :unit_assignment
 
   # Define For Logical Deletion
   acts_as_paranoid
