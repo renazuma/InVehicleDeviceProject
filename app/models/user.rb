@@ -44,7 +44,7 @@ class User < ActiveRecord::Base
   devise :database_authenticatable
 
   # Setup accessible (or protected) attributes for your model
-  attr_accessible :id, :login, :last_name, :first_name, :last_name_ruby, :first_name_ruby, :birthday, :age, :sex, :email, :email2, :password, :password_confirmation, :remember_me, :zip, :address, :telephone_number, :telephone_number2, :felica_id, :needed_care, :handicapped, :wheelchair, :recommend_ok, :update_notification, :recommend_notification, :reserve_notification, :service_provider_id
+  attr_accessible :id, :login, :last_name, :first_name, :last_name_ruby, :first_name_ruby, :birthday, :sex, :email, :email2, :password, :password_confirmation, :remember_me, :zip, :address, :telephone_number, :telephone_number2, :felica_id, :needed_care, :handicapped, :wheelchair, :recommend_ok, :update_notification, :recommend_notification, :reserve_notification, :service_provider_id, :memo
 
   # Operation Audit
   acts_as_audited :except => [:password]
@@ -53,12 +53,12 @@ class User < ActiveRecord::Base
   acts_as_paranoid
 
   # Define Callback
-  before_validation :calc_age, :email_blank_to_nil
+  before_validation :email_blank_to_nil
   # 人のフルネームと同名のグループを作成する。
   after_create :create_initial_group
 
   # Define Validation
-  validates_presence_of :login, :birthday, :age, :sex, :address, :telephone_number
+  validates_presence_of :login, :birthday, :sex, :address, :telephone_number
   validates_presence_of :last_name, :unless => Proc.new {|record| record.first_name.blank?}
   validates_presence_of :last_name_ruby, :unless => Proc.new {|record| record.first_name_ruby.blank?}
   validates_presence_of :first_name, :unless => Proc.new {|record| record.last_name.blank?}
@@ -67,7 +67,7 @@ class User < ActiveRecord::Base
   validates_presence_of :fullname_ruby, :if => Proc.new {|record| record.last_name_ruby.blank? && record.first_name_ruby.blank?}
   validates_uniqueness_of :login
   validates_uniqueness_of :email, :allow_blank => true, :allow_nil => true
-  validates_numericality_of :age, :sex
+  validates_numericality_of :sex
   validates_format_of :telephone_number, :with => /^(?:[0-9]+[\-\s]?)+[0-9]+$/
   validates_format_of :email, :with => /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i, :allow_nil => true # cf. Rails API Document
 
@@ -126,18 +126,6 @@ class User < ActiveRecord::Base
           :name => partial_match_keyword,
           :tel =>  left_match_keyword,
           :login => left_match_keyword)
-  end
-
-  private
-  def calc_age
-    if self.birthday && self.age.nil?
-      today = Date.today
-      if self.birthday.month < today.month || (self.birthday.month == today.month && self.birthday.day <= today.day)
-        self.age = today.year - self.birthday.year
-      else
-        self.age = today.year - self.birthday.year - 1
-      end
-    end
   end
 
   def email_blank_to_nil
