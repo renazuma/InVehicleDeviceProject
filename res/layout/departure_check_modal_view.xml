@@ -36,7 +36,7 @@
             android:layout_weight="1"
             android:paddingBottom="15sp"
             android:paddingTop="15sp"
-            android:text="@string/cancel"
+            android:text="@string/it_returns_to_platform_modal_view"
             android:textSize="30sp" />
     </LinearLayout>
 

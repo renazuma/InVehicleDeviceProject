@@ -93,7 +93,7 @@ public class DepartureCheckModalView extends ModalView {
 			animation.setRepeatCount(Animation.INFINITE);
 			closeButton.startAnimation(animation);
 
-			closeButton.setBackgroundColor(Color.parseColor("#FF6666"));
+			closeButton.setBackgroundColor(Color.parseColor("#66FF66"));
 			closeButton.setTextColor(Color.parseColor("#FFFFFF"));
 
 			LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
