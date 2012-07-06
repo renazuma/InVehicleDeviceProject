@@ -24,63 +24,63 @@ public class UsersTestCase extends TestCase {
 		u.setHandicapped(true);
 		u.setWheelchair(false);
 		u.setNeededCare(false);
-		u.clearRememberMe();
+		u.clearMemo();
 		assertEquals(1, Users.getMemo(r).size());
 		assertEquals(1, Users.getMemo(u).size());
 		
 		u.setHandicapped(false);
 		u.setWheelchair(true);
 		u.setNeededCare(false);
-		u.clearRememberMe();
+		u.clearMemo();
 		assertEquals(1, Users.getMemo(r).size());
 		assertEquals(1, Users.getMemo(u).size());
 		
 		u.setHandicapped(false);
 		u.setWheelchair(false);
 		u.setNeededCare(true);
-		u.clearRememberMe();
+		u.clearMemo();
 		assertEquals(1, Users.getMemo(r).size());
 		assertEquals(1, Users.getMemo(u).size());
 		
 		u.setHandicapped(false);
 		u.setWheelchair(false);
 		u.setNeededCare(false);
-		u.setRememberMe("Hello");
+		u.setMemo("Hello");
 		assertEquals(1, Users.getMemo(r).size());
 		assertEquals(1, Users.getMemo(u).size());
 		
 		u.setHandicapped(true);
 		u.setWheelchair(true);
 		u.setNeededCare(false);
-		u.clearRememberMe();
+		u.clearMemo();
 		assertEquals(2, Users.getMemo(r).size());
 		assertEquals(2, Users.getMemo(u).size());
 		
 		u.setHandicapped(true);
 		u.setWheelchair(false);
 		u.setNeededCare(false);
-		u.setRememberMe("World");
+		u.setMemo("World");
 		assertEquals(2, Users.getMemo(r).size());
 		assertEquals(2, Users.getMemo(u).size());
 		
 		u.setHandicapped(false);
 		u.setWheelchair(true);
 		u.setNeededCare(false);
-		u.setRememberMe("Hello");
+		u.setMemo("Hello");
 		assertEquals(2, Users.getMemo(r).size());
 		assertEquals(2, Users.getMemo(u).size());
 		
 		u.setHandicapped(false);
 		u.setWheelchair(false);
 		u.setNeededCare(true);
-		u.setRememberMe("Hello");
+		u.setMemo("Hello");
 		assertEquals(2, Users.getMemo(r).size());
 		assertEquals(2, Users.getMemo(u).size());
 		
 		u.setHandicapped(true);
 		u.setWheelchair(true);
 		u.setNeededCare(true);
-		u.setRememberMe("Hello");
+		u.setMemo("Hello");
 		assertEquals(4, Users.getMemo(r).size());
 		assertEquals(4, Users.getMemo(u).size());
 	}
