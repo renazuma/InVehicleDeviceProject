@@ -15,6 +15,7 @@
     <string name="it_is_the_last_platform_now">現在最終乗降場です</string>
     <string name="it_leaves">出発する</string>
     <string name="it_returns">戻る</string>
+    <string name="it_returns_to_platform_modal_view">乗降一覧に戻る</string>
     <string name="map">地図</string>
     <string name="memo">メモ</string>
     <string name="next_platform_is">次は</string>

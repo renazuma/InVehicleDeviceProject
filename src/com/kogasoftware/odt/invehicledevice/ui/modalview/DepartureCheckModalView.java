@@ -40,7 +40,7 @@ public class DepartureCheckModalView extends ModalView {
 		}
 	}
 
-	private final AlphaAnimation animation = new AlphaAnimation(1, 0.1f);
+	private final AlphaAnimation animation = new AlphaAnimation(1, 0.3f);
 
 	public DepartureCheckModalView(Context context,
 			InVehicleDeviceService service) {
@@ -91,10 +91,11 @@ public class DepartureCheckModalView extends ModalView {
 		if (!messages.isEmpty()) {
 			animation.setDuration(1000);
 			animation.setRepeatCount(Animation.INFINITE);
+			animation.setRepeatMode(Animation.REVERSE);
 			closeButton.startAnimation(animation);
 
-			closeButton.setBackgroundColor(Color.parseColor("#FF6666"));
-			closeButton.setTextColor(Color.parseColor("#FFFFFF"));
+			closeButton.setBackgroundColor(Color.parseColor("#66FF66"));
+			closeButton.setTextColor(Color.parseColor("#000000"));
 
 			LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
 					LinearLayout.LayoutParams.FILL_PARENT,
