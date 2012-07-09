@@ -42,13 +42,8 @@ public class LocalDataSource implements Closeable {
 		public SaveThread(File file) {
 			this.file = file;
 		}
-
-		private void loop() throws InterruptedException {
-			Thread.sleep(SAVE_PERIO);
-			saveSemaphore.acquire();
-			saveSemaphore.drainPermits();
-
-			// byte[]への変換を呼び出し元スレッドで行う
+		
+		private void save() {
 			long startTime = System.currentTimeMillis();
 			byte[] serialized = new byte[0];
 			try {
@@ -87,9 +82,13 @@ public class LocalDataSource implements Closeable {
 		public void run() {
 			try {
 				while (true) {
-					loop();
+					Thread.sleep(SAVE_PERIO);
+					saveSemaphore.acquire();
+					saveSemaphore.drainPermits();
+					save();
 				}
 			} catch (InterruptedException e) {
+				save(); // アプリ終了時は必ずsaveを行う
 			}
 		}
 	}
