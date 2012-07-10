@@ -57,16 +57,6 @@
             -post-build
             -pre-clean
     -->
-
-    <target name="-post-compile">
-      <delete verbose="true">
-        <fileset dir="${out.classes.absolute.dir}" includes="${workaround.exclude.library.paths}" />
-      </delete>
-      <path id="out.dex.jar.input.ref">
-        <fileset dir="${jar.libs.absolute.dir}" includes="*.jar" />
-      </path>
-    </target>
-
     <import file="custom_rules.xml" optional="true" />
 
     <!-- Import the actual build file.

@@ -12,7 +12,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
@@ -52,30 +51,20 @@ public class DepartureCheckModalView extends ModalView {
 	public void show(ReservationArrayAdapter adapter) {
 		Button startButton = (Button) findViewById(R.id.departure_button);
 		Button closeButton = (Button) findViewById(R.id.departure_check_close_button);
-		TextView titleTextView = (TextView) findViewById(R.id.next_platform_text_view);
 		ListView errorReservationListView = ((FlickUnneededListView) findViewById(R.id.error_reservation_list_view))
 				.getListView();
 		List<String> messages = new LinkedList<String>();
 
-		if (adapter.getNoGettingOnReservations().isEmpty()) {
-		} else {
-			for (Reservation reservation : adapter.getNoGettingOnReservations()) {
-				messages.add(" ※ " + getUserName(reservation) + "様が未乗車です");
-			}
+		for (Reservation reservation : adapter.getNoGettingOnReservations()) {
+			messages.add(" ※ " + getUserName(reservation) + "様が未乗車です");
 		}
 
-		if (adapter.getNoGettingOffReservations().isEmpty()) {
-		} else {
-			for (Reservation reservation : adapter
-					.getNoGettingOffReservations()) {
-				messages.add(" ※ " + getUserName(reservation) + "様が未降車です");
-			}
+		for (Reservation reservation : adapter.getNoGettingOffReservations()) {
+			messages.add(" ※ " + getUserName(reservation) + "様が未降車です");
 		}
-		if (adapter.getNoPaymentReservations().isEmpty()) {
-		} else {
-			for (Reservation reservation : adapter.getNoPaymentReservations()) {
-				messages.add(" ※ " + getUserName(reservation) + "様が料金未払いです");
-			}
+
+		for (Reservation reservation : adapter.getNoPaymentReservations()) {
+			messages.add(" ※ " + getUserName(reservation) + "様が料金未払いです");
 		}
 
 		errorReservationListView.setAdapter(new ArrayAdapter<String>(
