@@ -25,7 +25,7 @@ import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
 public class StartupService extends Service {
 	private static final String TAG = StartupService.class.getSimpleName();
-	private static final long CHECK_DEVICE_INTERVAL_MILLIS = 10 * 1000;
+	public static final long CHECK_DEVICE_INTERVAL_MILLIS = 10 * 1000;
 	private final AtomicBoolean enabled = new AtomicBoolean(true);
 	private final BroadcastReceiver screenOnBroadcastReceiver = new BroadcastReceiver() {
 		@Override
