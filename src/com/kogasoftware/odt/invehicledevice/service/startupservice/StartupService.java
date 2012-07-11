@@ -31,7 +31,7 @@ public class StartupService extends Service {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			Log.i(TAG, "screen on");
-			showActivity();
+			enabled.set(true);
 		}
 	};
 
@@ -153,20 +153,18 @@ public class StartupService extends Service {
 		}
 	};
 
-	private void showActivity() {
-		handler.post(checkDeviceAndShowActivityCallback);
-	}
-
 	@Override
 	public void onCreate() {
 		IntentFilter intentFilter = new IntentFilter(Intent.ACTION_SCREEN_ON);
 		getApplicationContext().registerReceiver(screenOnBroadcastReceiver,
 				intentFilter);
+		handler.post(checkDeviceAndShowActivityCallback);
 	}
 
 	@Override
 	public void onDestroy() {
 		getApplicationContext().unregisterReceiver(screenOnBroadcastReceiver);
+		handler.removeCallbacks(checkDeviceAndShowActivityCallback);
 	}
 
 	@Override
@@ -175,8 +173,6 @@ public class StartupService extends Service {
 		Log.i(TAG, "onStartCommand(" + intent + ", " + flags + ", " + startId
 				+ ")");
 		enabled.set(true);
-
-		showActivity();
 		return Service.START_STICKY;
 	}
 }
