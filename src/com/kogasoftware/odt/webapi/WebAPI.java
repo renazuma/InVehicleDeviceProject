@@ -764,7 +764,7 @@ public class WebAPI implements Closeable {
 		retryParam.put("service_unit_status_log",
 				filterJSONKeys(retryLog.toJSONObject(), filter));
 
-		return post(PATH_STATUSLOGS, param, retryParam, UNIQUE_GROUP, callback,
+		return post(PATH_STATUSLOGS, param, retryParam, "sendServiceUnitStatusLog", callback,
 				new ResponseConverter<ServiceUnitStatusLog>() {
 					@Override
 					public ServiceUnitStatusLog convert(byte[] rawResponse)
