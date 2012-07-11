@@ -1,6 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.LinkedList;
@@ -26,6 +25,7 @@ import android.util.Log;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.BuildConfig;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
@@ -157,7 +157,6 @@ public class InVehicleDeviceService extends Service {
 		latch.await();
 		Preconditions.checkNotNull(handler.get());
 		return handler.get();
-
 	}
 
 	public static Date getDate() {
@@ -182,29 +181,34 @@ public class InVehicleDeviceService extends Service {
 		}
 	}
 
+	protected static <T> Set<T> newListenerSet() {
+		// return Collections.newSetFromMap(new WeakHashMap<T, Boolean>());
+		return new CopyOnWriteArraySet<T>();
+	}
+
 	protected final OperationScheduleLogic operationScheduleLogic;
 	protected final VehicleNotificationLogic vehicleNotificationLogic;
 	protected final ServiceUnitStatusLogLogic serviceUnitStatusLogLogic;
 	protected final IBinder binder = new LocalBinder();
 	protected final Handler handler = new Handler(Looper.getMainLooper());
-	protected final Set<OnInitializeListener> onInitializeListeners = new CopyOnWriteArraySet<OnInitializeListener>();
-	protected final Set<OnEnterPhaseListener> onEnterPhaseListeners = new CopyOnWriteArraySet<OnEnterPhaseListener>();
-	protected final Set<OnAlertUpdatedOperationScheduleListener> onAlertUpdatedOperationScheduleListeners = new CopyOnWriteArraySet<OnAlertUpdatedOperationScheduleListener>();
-	protected final Set<OnAlertVehicleNotificationReceiveListener> onAlertVehicleNotificationReceiveListeners = new CopyOnWriteArraySet<OnAlertVehicleNotificationReceiveListener>();
-	protected final Set<OnChangeLocationListener> onChangeLocationListeners = new CopyOnWriteArraySet<OnChangeLocationListener>();
-	protected final Set<OnChangeOrientationListener> onChangeOrientationListeners = new CopyOnWriteArraySet<OnChangeOrientationListener>();
-	protected final Set<OnChangeSignalStrengthListener> onChangeSignalStrengthListeners = new CopyOnWriteArraySet<OnChangeSignalStrengthListener>();
-	protected final Set<OnChangeTemperatureListener> onChangeTemperatureListeners = new CopyOnWriteArraySet<OnChangeTemperatureListener>();
-	protected final Set<OnExitListener> onExitListeners = new CopyOnWriteArraySet<OnExitListener>();
-	protected final Set<OnMergeUpdatedOperationScheduleListener> onMergeUpdatedOperationScheduleListeners = new CopyOnWriteArraySet<OnMergeUpdatedOperationScheduleListener>();
-	protected final Set<OnReceiveUpdatedOperationScheduleListener> onReceiveUpdatedOperationScheduleListeners = new CopyOnWriteArraySet<OnReceiveUpdatedOperationScheduleListener>();
-	protected final Set<OnReceiveVehicleNotificationListener> onReceiveVehicleNotificationListeners = new CopyOnWriteArraySet<OnReceiveVehicleNotificationListener>();
-	protected final Set<OnReplyUpdatedOperationScheduleVehicleNotificationsListener> onReplyUpdatedOperationScheduleVehicleNotificationsListeners = new CopyOnWriteArraySet<OnReplyUpdatedOperationScheduleVehicleNotificationsListener>();
-	protected final Set<OnReplyVehicleNotificationListener> onReplyVehicleNotificationListeners = new CopyOnWriteArraySet<OnReplyVehicleNotificationListener>();
-	protected final Set<OnStartNewOperationListener> onStartNewOperationListeners = new CopyOnWriteArraySet<OnStartNewOperationListener>();
-	protected final Set<OnStartReceiveUpdatedOperationScheduleListener> onStartReceiveUpdatedOperationScheduleListeners = new CopyOnWriteArraySet<OnStartReceiveUpdatedOperationScheduleListener>();
-	protected final Set<OnPauseActivityListener> onPauseActivityListeners = new CopyOnWriteArraySet<OnPauseActivityListener>();
-	protected final Set<OnResumeActivityListener> onResumeActivityListeners = new CopyOnWriteArraySet<OnResumeActivityListener>();
+	protected final Set<OnInitializeListener> onInitializeListeners = newListenerSet();
+	protected final Set<OnEnterPhaseListener> onEnterPhaseListeners = newListenerSet();
+	protected final Set<OnAlertUpdatedOperationScheduleListener> onAlertUpdatedOperationScheduleListeners = newListenerSet();
+	protected final Set<OnAlertVehicleNotificationReceiveListener> onAlertVehicleNotificationReceiveListeners = newListenerSet();
+	protected final Set<OnChangeLocationListener> onChangeLocationListeners = newListenerSet();
+	protected final Set<OnChangeOrientationListener> onChangeOrientationListeners = newListenerSet();
+	protected final Set<OnChangeSignalStrengthListener> onChangeSignalStrengthListeners = newListenerSet();
+	protected final Set<OnChangeTemperatureListener> onChangeTemperatureListeners = newListenerSet();
+	protected final Set<OnExitListener> onExitListeners = newListenerSet();
+	protected final Set<OnMergeUpdatedOperationScheduleListener> onMergeUpdatedOperationScheduleListeners = newListenerSet();
+	protected final Set<OnReceiveUpdatedOperationScheduleListener> onReceiveUpdatedOperationScheduleListeners = newListenerSet();
+	protected final Set<OnReceiveVehicleNotificationListener> onReceiveVehicleNotificationListeners = newListenerSet();
+	protected final Set<OnReplyUpdatedOperationScheduleVehicleNotificationsListener> onReplyUpdatedOperationScheduleVehicleNotificationsListeners = newListenerSet();
+	protected final Set<OnReplyVehicleNotificationListener> onReplyVehicleNotificationListeners = newListenerSet();
+	protected final Set<OnStartNewOperationListener> onStartNewOperationListeners = newListenerSet();
+	protected final Set<OnStartReceiveUpdatedOperationScheduleListener> onStartReceiveUpdatedOperationScheduleListeners = newListenerSet();
+	protected final Set<OnPauseActivityListener> onPauseActivityListeners = newListenerSet();
+	protected final Set<OnResumeActivityListener> onResumeActivityListeners = newListenerSet();
 	protected final VoiceServiceConnector voiceServiceConnector;
 	protected volatile Thread backgroundThread = new EmptyThread();
 	protected volatile DataSource remoteDataSource = new EmptyDataSource();
@@ -308,8 +312,8 @@ public class InVehicleDeviceService extends Service {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
-				for (OnAlertUpdatedOperationScheduleListener listener : new ArrayList<OnAlertUpdatedOperationScheduleListener>(
-						onAlertUpdatedOperationScheduleListeners)) {
+				for (OnAlertUpdatedOperationScheduleListener listener : Lists
+						.newArrayList(onAlertUpdatedOperationScheduleListeners)) {
 					listener.onAlertUpdatedOperationSchedule();
 				}
 			}
@@ -320,21 +324,22 @@ public class InVehicleDeviceService extends Service {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
-				for (OnAlertVehicleNotificationReceiveListener listener : new ArrayList<OnAlertVehicleNotificationReceiveListener>(
-						onAlertVehicleNotificationReceiveListeners)) {
+				for (OnAlertVehicleNotificationReceiveListener listener : Lists
+						.newArrayList(onAlertVehicleNotificationReceiveListeners)) {
 					listener.onAlertVehicleNotificationReceive();
 				}
 			}
 		});
 	}
 
-	public void changeLocation(final Location location, final Optional<GpsStatus> gpsStatus) {
+	public void changeLocation(final Location location,
+			final Optional<GpsStatus> gpsStatus) {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
 				serviceUnitStatusLogLogic.changeLocation(location);
-				for (OnChangeLocationListener listener : new ArrayList<OnChangeLocationListener>(
-						onChangeLocationListeners)) {
+				for (OnChangeLocationListener listener : Lists
+						.newArrayList(onChangeLocationListeners)) {
 					listener.onChangeLocation(location, gpsStatus);
 				}
 			}
@@ -346,8 +351,8 @@ public class InVehicleDeviceService extends Service {
 			@Override
 			public void run() {
 				serviceUnitStatusLogLogic.changeOrientation(degree);
-				for (OnChangeOrientationListener listener : new ArrayList<OnChangeOrientationListener>(
-						onChangeOrientationListeners)) {
+				for (OnChangeOrientationListener listener : Lists
+						.newArrayList(onChangeOrientationListeners)) {
 					listener.onChangeOrientation(degree);
 				}
 			}
@@ -358,8 +363,8 @@ public class InVehicleDeviceService extends Service {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
-				for (OnChangeSignalStrengthListener listener : new ArrayList<OnChangeSignalStrengthListener>(
-						onChangeSignalStrengthListeners)) {
+				for (OnChangeSignalStrengthListener listener : Lists
+						.newArrayList(onChangeSignalStrengthListeners)) {
 					listener.onChangeSignalStrength(signalStrengthPercentage);
 				}
 			}
@@ -371,8 +376,8 @@ public class InVehicleDeviceService extends Service {
 			@Override
 			public void run() {
 				serviceUnitStatusLogLogic.changeTemperature(celciusTemperature);
-				for (OnChangeTemperatureListener listener : new ArrayList<OnChangeTemperatureListener>(
-						onChangeTemperatureListeners)) {
+				for (OnChangeTemperatureListener listener : Lists
+						.newArrayList(onChangeTemperatureListeners)) {
 					listener.onChangeTemperature(celciusTemperature);
 				}
 			}
@@ -384,8 +389,8 @@ public class InVehicleDeviceService extends Service {
 			@Override
 			public void run() {
 				operationScheduleLogic.enterDrivePhase();
-				for (OnEnterPhaseListener listener : new ArrayList<OnEnterPhaseListener>(
-						onEnterPhaseListeners)) {
+				for (OnEnterPhaseListener listener : Lists
+						.newArrayList(onEnterPhaseListeners)) {
 					listener.onEnterDrivePhase();
 				}
 			}
@@ -397,8 +402,8 @@ public class InVehicleDeviceService extends Service {
 			@Override
 			public void run() {
 				operationScheduleLogic.enterFinishPhase();
-				for (OnEnterPhaseListener listener : new ArrayList<OnEnterPhaseListener>(
-						onEnterPhaseListeners)) {
+				for (OnEnterPhaseListener listener : Lists
+						.newArrayList(onEnterPhaseListeners)) {
 					listener.onEnterFinishPhase();
 				}
 			}
@@ -410,8 +415,8 @@ public class InVehicleDeviceService extends Service {
 			@Override
 			public void run() {
 				operationScheduleLogic.enterPlatformPhase();
-				for (OnEnterPhaseListener listener : new ArrayList<OnEnterPhaseListener>(
-						onEnterPhaseListeners)) {
+				for (OnEnterPhaseListener listener : Lists
+						.newArrayList(onEnterPhaseListeners)) {
 					listener.onEnterPlatformPhase();
 				}
 			}
@@ -561,8 +566,8 @@ public class InVehicleDeviceService extends Service {
 			@Override
 			public void run() {
 				refreshPhase();
-				for (OnMergeUpdatedOperationScheduleListener listener : new ArrayList<OnMergeUpdatedOperationScheduleListener>(
-						onMergeUpdatedOperationScheduleListeners)) {
+				for (OnMergeUpdatedOperationScheduleListener listener : Lists
+						.newArrayList(onMergeUpdatedOperationScheduleListeners)) {
 					listener.onMergeUpdatedOperationSchedule(triggerVehicleNotifications);
 				}
 			}
@@ -572,14 +577,22 @@ public class InVehicleDeviceService extends Service {
 	@Override
 	public IBinder onBind(Intent intent) {
 		Log.i(TAG, "onBind()");
+		return binder;
+	}
 
-		// @see http://stackoverflow.com/questions/3687200/implement-startforeground-method-in-android
+	@Override
+	public void onCreate() {
+		super.onCreate();
+		Log.i(TAG, "onCreate()");
+
+		// @see
+		// http://stackoverflow.com/questions/3687200/implement-startforeground-method-in-android
 		// The intent to launch when the user clicks the expanded notification
 		Intent notificationIntent = new Intent(this, StartupActivity.class);
 		notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
 				| Intent.FLAG_ACTIVITY_SINGLE_TOP);
-		PendingIntent pendIntent = PendingIntent
-				.getActivity(this, 0, notificationIntent, 0);
+		PendingIntent pendIntent = PendingIntent.getActivity(this, 0,
+				notificationIntent, 0);
 
 		// This constructor is deprecated. Use Notification.Builder instead
 		Notification notification = new Notification(
@@ -594,8 +607,6 @@ public class InVehicleDeviceService extends Service {
 		startForeground(FOREGROUND_NOTIFICATION_ID, notification);
 		backgroundThread = new BackgroundTaskThread(this);
 		backgroundThread.start();
-
-		return binder;
 	}
 
 	public static final Integer FOREGROUND_NOTIFICATION_ID = 10;
@@ -603,8 +614,15 @@ public class InVehicleDeviceService extends Service {
 	@Override
 	public boolean onUnbind(Intent intent) {
 		Log.i(TAG, "onUnbind()");
-		stopForeground(false);
+		stopSelf();
 		exit();
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		Log.i(TAG, "onDestroy()");
+		stopForeground(true);
 		backgroundThread.interrupt();
 		onInitializeListeners.clear();
 		onEnterPhaseListeners.clear();
@@ -624,9 +642,6 @@ public class InVehicleDeviceService extends Service {
 		onStartReceiveUpdatedOperationScheduleListeners.clear();
 		Closeables.closeQuietly(remoteDataSource);
 		Closeables.closeQuietly(localDataSource);
-
-		stopSelf();
-		return false;
 	}
 
 	@Override
@@ -642,8 +657,8 @@ public class InVehicleDeviceService extends Service {
 			public void run() {
 				operationScheduleLogic.receiveUpdatedOperationSchedule(
 						operationSchedules, triggerVehicleNotifications);
-				for (OnReceiveUpdatedOperationScheduleListener listener : new ArrayList<OnReceiveUpdatedOperationScheduleListener>(
-						onReceiveUpdatedOperationScheduleListeners)) {
+				for (OnReceiveUpdatedOperationScheduleListener listener : Lists
+						.newArrayList(onReceiveUpdatedOperationScheduleListeners)) {
 					listener.onReceiveUpdatedOperationSchedule(
 							operationSchedules, triggerVehicleNotifications);
 				}
@@ -658,8 +673,8 @@ public class InVehicleDeviceService extends Service {
 			public void run() {
 				vehicleNotificationLogic
 						.receiveVehicleNotification(vehicleNotifications);
-				for (OnReceiveVehicleNotificationListener listener : new ArrayList<OnReceiveVehicleNotificationListener>(
-						onReceiveVehicleNotificationListeners)) {
+				for (OnReceiveVehicleNotificationListener listener : Lists
+						.newArrayList(onReceiveVehicleNotificationListeners)) {
 					listener.onReceiveVehicleNotification(vehicleNotifications);
 				}
 			}
@@ -690,8 +705,8 @@ public class InVehicleDeviceService extends Service {
 			public void run() {
 				vehicleNotificationLogic
 						.replyUpdatedOperationScheduleVehicleNotifications(vehicleNotifications);
-				for (OnReplyUpdatedOperationScheduleVehicleNotificationsListener listener : new ArrayList<OnReplyUpdatedOperationScheduleVehicleNotificationsListener>(
-						onReplyUpdatedOperationScheduleVehicleNotificationsListeners)) {
+				for (OnReplyUpdatedOperationScheduleVehicleNotificationsListener listener : Lists
+						.newArrayList(onReplyUpdatedOperationScheduleVehicleNotificationsListeners)) {
 					listener.onReplyUpdatedOperationScheduleVehicleNotifications(vehicleNotifications);
 				}
 			}
@@ -705,8 +720,8 @@ public class InVehicleDeviceService extends Service {
 			public void run() {
 				vehicleNotificationLogic
 						.replyVehicleNotification(vehicleNotification);
-				for (OnReplyVehicleNotificationListener listener : new ArrayList<OnReplyVehicleNotificationListener>(
-						onReplyVehicleNotificationListeners)) {
+				for (OnReplyVehicleNotificationListener listener : Lists
+						.newArrayList(onReplyVehicleNotificationListeners)) {
 					listener.onReplyVehicleNotification(vehicleNotification);
 				}
 			}
@@ -717,8 +732,8 @@ public class InVehicleDeviceService extends Service {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
-				for (OnPauseActivityListener listener : new ArrayList<OnPauseActivityListener>(
-						onPauseActivityListeners)) {
+				for (OnPauseActivityListener listener : Lists
+						.newArrayList(onPauseActivityListeners)) {
 					listener.onPauseActivity();
 				}
 			}
@@ -729,8 +744,8 @@ public class InVehicleDeviceService extends Service {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
-				for (OnResumeActivityListener listener : new ArrayList<OnResumeActivityListener>(
-						onResumeActivityListeners)) {
+				for (OnResumeActivityListener listener : Lists
+						.newArrayList(onResumeActivityListeners)) {
 					listener.onResumeActivity();
 				}
 			}
@@ -747,8 +762,8 @@ public class InVehicleDeviceService extends Service {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
-				for (OnInitializeListener listener : new ArrayList<OnInitializeListener>(
-						onInitializeListeners)) {
+				for (OnInitializeListener listener : Lists
+						.newArrayList(onInitializeListeners)) {
 					listener.onInitialize(InVehicleDeviceService.this);
 				}
 				refreshPhase();
@@ -773,8 +788,8 @@ public class InVehicleDeviceService extends Service {
 			@Override
 			public void run() {
 				operationScheduleLogic.startNewOperation();
-				for (OnStartNewOperationListener listener : new ArrayList<OnStartNewOperationListener>(
-						onStartNewOperationListeners)) {
+				for (OnStartNewOperationListener listener : Lists
+						.newArrayList(onStartNewOperationListeners)) {
 					listener.onStartNewOperation();
 				}
 			}
@@ -785,8 +800,8 @@ public class InVehicleDeviceService extends Service {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
-				for (OnStartReceiveUpdatedOperationScheduleListener listener : new ArrayList<OnStartReceiveUpdatedOperationScheduleListener>(
-						onStartReceiveUpdatedOperationScheduleListeners)) {
+				for (OnStartReceiveUpdatedOperationScheduleListener listener : Lists
+						.newArrayList(onStartReceiveUpdatedOperationScheduleListeners)) {
 					listener.onStartReceiveUpdatedOperationSchedule();
 				}
 			}
