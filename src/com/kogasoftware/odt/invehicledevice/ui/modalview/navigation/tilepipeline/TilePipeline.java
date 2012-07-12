@@ -73,6 +73,7 @@ public class TilePipeline implements InVehicleDeviceService.OnExitListener {
 				onDropListener, outputDirectory);
 		fileTilePipe = new FileTilePipe(service, filePipeQueue,
 				bitmapPipeQueue, onDropListener);
+		service.addOnExitListener(this);
 	}
 
 	public void changeZoomLevel(int zoomLevel) {

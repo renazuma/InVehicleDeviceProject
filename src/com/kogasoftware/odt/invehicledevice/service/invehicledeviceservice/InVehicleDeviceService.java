@@ -419,15 +419,22 @@ public class InVehicleDeviceService extends Service {
 	}
 
 	public void exit() {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				for (OnExitListener listener : new ArrayList<OnExitListener>(
-						onExitListeners)) {
-					listener.onExit();
+		// このメソッドが呼ばれた後に追加されたOnExitListenerを無視するため、
+		// handlerと同じスレッドで呼ばれた場合はpostせずそのままコールバックを行う
+		if (handler.getLooper().getThread().getId() != Thread.currentThread()
+				.getId()) {
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					exit();
 				}
-			}
-		});
+			});
+			return;
+		}
+		for (OnExitListener listener : new ArrayList<OnExitListener>(
+				onExitListeners)) {
+			listener.onExit();
+		}
 	}
 
 	public Optional<OperationSchedule> getCurrentOperationSchedule() {
@@ -597,6 +604,7 @@ public class InVehicleDeviceService extends Service {
 	public boolean onUnbind(Intent intent) {
 		Log.i(TAG, "onUnbind()");
 		stopForeground(false);
+		exit();
 		backgroundThread.interrupt();
 		onInitializeListeners.clear();
 		onEnterPhaseListeners.clear();
