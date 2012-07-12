@@ -1252,8 +1252,13 @@ public class WebAPITestCase extends
 	}
 
 	public void testAbort() throws Exception {
-		api = new OfflineTestWebAPI(TEST_SERVER_HOST, master
+		api = new OfflineTestWebAPI(SERVER_HOST, master
 				.getInVehicleDevice().getAuthenticationToken().get());
+		UnitAssignment ua = record.createUnitAssignment("1号車");
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.MONTH, -1);
+		record.createServiceUnit(master.getDriver(), master.getVehicle(),
+				master.getInVehicleDevice(), ua, cal.getTime());
 		offline = true;
 
 		final Semaphore numSucceed = new Semaphore(0);
@@ -1324,7 +1329,7 @@ public class WebAPITestCase extends
 				});
 		api.abort(k);
 		offline = false;
-		Thread.sleep(10 * 1000);
+		Thread.sleep(20 * 1000);
 		assertEquals(i.get(), 1);
 	}
 }
