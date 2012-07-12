@@ -184,7 +184,7 @@ public class WebAPITestCase extends
 
 	public void testGetVehicleNotifications() throws Exception {
 		api = new WebAPI(SERVER_HOST, master.getInVehicleDevice()
-				.getAuthenticationToken().orNull());
+				.getAuthenticationToken().get());
 		latch = new CountDownLatch(1);
 		notifications = null;
 
@@ -221,13 +221,13 @@ public class WebAPITestCase extends
 
 	public void testResponseVehicleNotification() throws Exception {
 		api = new WebAPI(SERVER_HOST, master.getInVehicleDevice()
-				.getAuthenticationToken().orNull());
+				.getAuthenticationToken().get());
 		callTestResponseVehicleNotification(false);
 	}
 
 	public void testResponseVehicleNotificationOffline() throws Exception {
 		api = new OfflineTestWebAPI(SERVER_HOST, master.getInVehicleDevice()
-				.getAuthenticationToken().orNull());
+				.getAuthenticationToken().get());
 		callTestResponseVehicleNotification(true);
 	}
 
@@ -341,13 +341,13 @@ public class WebAPITestCase extends
 
 	public void testGetOperationSchedules() throws Exception {
 		api = new WebAPI(SERVER_HOST, master.getInVehicleDevice()
-				.getAuthenticationToken().orNull());
+				.getAuthenticationToken().get());
 		callTestGetOperationSchedules(false);
 	}
 
 	public void testGetOperationSchedulesOffline() throws Exception {
 		api = new OfflineTestWebAPI(SERVER_HOST, master.getInVehicleDevice()
-				.getAuthenticationToken().orNull());
+				.getAuthenticationToken().get());
 		callTestGetOperationSchedules(true);
 	}
 
@@ -518,13 +518,13 @@ public class WebAPITestCase extends
 
 	public void testPassengerGetOnAndOffOffline() throws Exception {
 		api = new OfflineTestWebAPI(SERVER_HOST, master.getInVehicleDevice()
-				.getAuthenticationToken().orNull());
+				.getAuthenticationToken().get());
 		callTestPassengerGetOnAndOff(true);
 	}
 
 	public void testPassengerGetOnAndOff() throws Exception {
 		api = new WebAPI(SERVER_HOST, master.getInVehicleDevice()
-				.getAuthenticationToken().orNull());
+				.getAuthenticationToken().get());
 		callTestPassengerGetOnAndOff(false);
 	}
 
@@ -711,7 +711,7 @@ public class WebAPITestCase extends
 
 	public void testPassengerCancelGetOnAndOff() throws Exception {
 		api = new WebAPI(SERVER_HOST, master.getInVehicleDevice()
-				.getAuthenticationToken().orNull());
+				.getAuthenticationToken().get());
 		schedules = null;
 		createTestOperationSchedules();
 
@@ -863,7 +863,7 @@ public class WebAPITestCase extends
 
 	public void testPassengerCancelGetOffOrdered() throws Exception {
 		api = new OfflineTestWebAPI(SERVER_HOST, master.getInVehicleDevice()
-				.getAuthenticationToken().orNull());
+				.getAuthenticationToken().get());
 		schedules = null;
 		createTestOperationSchedules();
 
@@ -975,7 +975,7 @@ public class WebAPITestCase extends
 
 	public void testPassengerCancelGetOnOrdered() throws Exception {
 		api = new OfflineTestWebAPI(SERVER_HOST, master.getInVehicleDevice()
-				.getAuthenticationToken().orNull());
+				.getAuthenticationToken().get());
 		schedules = null;
 		createTestOperationSchedules();
 
@@ -1102,13 +1102,13 @@ public class WebAPITestCase extends
 
 	public void testSendServiceUnitStatusLog() throws Exception {
 		api = new WebAPI(SERVER_HOST, master.getInVehicleDevice()
-				.getAuthenticationToken().orNull());
+				.getAuthenticationToken().get());
 		callTestSendServiceUnitStatusLog(false);
 	}
 
 	public void testSendServiceUnitStatusLogOffline() throws Exception {
 		api = new OfflineTestWebAPI(SERVER_HOST, master.getInVehicleDevice()
-				.getAuthenticationToken().orNull());
+				.getAuthenticationToken().get());
 		callTestSendServiceUnitStatusLog(true);
 	}
 
@@ -1167,7 +1167,7 @@ public class WebAPITestCase extends
 				"backup.serialized");
 		offline = true;
 		api = new OfflineTestWebAPI(SERVER_HOST, master.getInVehicleDevice()
-				.getAuthenticationToken().orNull(), backupFile);
+				.getAuthenticationToken().get(), backupFile);
 		latch = new CountDownLatch(1);
 		schedules = null;
 
@@ -1194,7 +1194,7 @@ public class WebAPITestCase extends
 		assertTrue(serverServiceUnitStatusLogs.isEmpty());
 
 		api = new WebAPI(SERVER_HOST, master.getInVehicleDevice()
-				.getAuthenticationToken().orNull(), backupFile);
+				.getAuthenticationToken().get(), backupFile);
 		Thread.sleep(10 * 1000);
 		serverServiceUnitStatusLogs = new SyncCall<List<ServiceUnitStatusLog>>() {
 			@Override
@@ -1211,7 +1211,7 @@ public class WebAPITestCase extends
 
 	public void testSearchReservationCandidateAndCreateReservation() throws Exception {
 		api = new WebAPI(TEST_SERVER_HOST, master.getInVehicleDevice()
-				.getAuthenticationToken().orNull());
+				.getAuthenticationToken().get());
 		
 		final List<ReservationCandidate> rcs = new LinkedList<ReservationCandidate>();
 		latch = new CountDownLatch(1);
