@@ -414,8 +414,8 @@ public class WebAPITestCase extends
 		assertNotNull(schedules);
 		assertEquals(2, schedules.size());
 
-		assertNotNull(schedules.get(1).getReservationsAsArrival().get(0)
-				.getUser().orNull());
+		assertTrue(schedules.get(1).getReservationsAsArrival().get(0)
+				.getUser().isPresent());
 
 		if (offlineTest) {
 			offline = true;
@@ -541,8 +541,8 @@ public class WebAPITestCase extends
 		OperationSchedule os2 = schedules.get(1);
 		Reservation res = os1.getReservationsAsDeparture().get(0);
 
-		assertNotNull(schedules.get(1).getReservationsAsArrival().get(0)
-				.getUser().orNull());
+		assertTrue(schedules.get(1).getReservationsAsArrival().get(0)
+				.getUser().isPresent());
 
 		passengerRecord = null;
 		PassengerRecord prec = new PassengerRecord();
@@ -588,7 +588,7 @@ public class WebAPITestCase extends
 		assertNotNull(serverPassengerRecord);
 		assertTrue(serverPassengerRecord.getGetOnTime().isPresent());
 		assertEquals(os1.getId(), serverPassengerRecord
-				.getDepartureOperationScheduleId().orNull());
+				.getDepartureOperationScheduleId().get());
 		assertTrue(serverPassengerRecord.getGetOnTime().isPresent());
 		assertTrue(PassengerRecords.isRiding(serverPassengerRecord));
 		if (offlineTest) {
@@ -621,8 +621,8 @@ public class WebAPITestCase extends
 		assertTrue(latch.await(100, TimeUnit.SECONDS));
 
 		assertNotNull(schedule.getOperationRecord());
-		assertNotNull(schedule.getOperationRecord().orNull().getDepartedAt()
-				.orNull());
+		assertTrue(schedule.getOperationRecord().get().getDepartedAt()
+				.isPresent());
 
 		latch = new CountDownLatch(1);
 		api.arrivalOperationSchedule(schedules.get(1),
@@ -648,8 +648,8 @@ public class WebAPITestCase extends
 		assertTrue(latch.await(100, TimeUnit.SECONDS));
 
 		assertNotNull(schedule.getOperationRecord());
-		assertNotNull(schedule.getOperationRecord().orNull().getArrivedAt()
-				.orNull());
+		assertTrue(schedule.getOperationRecord().get().getArrivedAt()
+				.isPresent());
 
 		passengerRecord = null;
 		prec = new PassengerRecord();
@@ -696,9 +696,9 @@ public class WebAPITestCase extends
 		assertNotNull(serverPassengerRecord);
 		assertTrue(serverPassengerRecord.getGetOffTime().isPresent());
 		assertEquals(os1.getId(), serverPassengerRecord
-				.getDepartureOperationScheduleId().orNull());
+				.getDepartureOperationScheduleId().get());
 		assertEquals(os2.getId(), serverPassengerRecord
-				.getArrivalOperationScheduleId().orNull());
+				.getArrivalOperationScheduleId().get());
 		assertTrue(serverPassengerRecord.getGetOffTime().isPresent());
 		assertTrue(PassengerRecords.isGotOff(serverPassengerRecord));
 
@@ -722,8 +722,8 @@ public class WebAPITestCase extends
 		OperationSchedule os2 = schedules.get(1);
 		Reservation res = os1.getReservationsAsDeparture().get(0);
 
-		assertNotNull(schedules.get(1).getReservationsAsArrival().get(0)
-				.getUser().orNull());
+		assertTrue(schedules.get(1).getReservationsAsArrival().get(0)
+				.getUser().isPresent());
 
 		passengerRecord = null;
 		PassengerRecord prec = new PassengerRecord();
@@ -794,8 +794,8 @@ public class WebAPITestCase extends
 		assertTrue(latch.await(200, TimeUnit.SECONDS));
 
 		assertNotNull(schedule.getOperationRecord());
-		assertNotNull(schedule.getOperationRecord().orNull().getDepartedAt()
-				.orNull());
+		assertTrue(schedule.getOperationRecord().get().getDepartedAt()
+				.isPresent());
 
 		latch = new CountDownLatch(1);
 		api.arrivalOperationSchedule(schedules.get(1),
@@ -821,8 +821,8 @@ public class WebAPITestCase extends
 		assertTrue(latch.await(100, TimeUnit.SECONDS));
 
 		assertNotNull(schedule.getOperationRecord());
-		assertNotNull(schedule.getOperationRecord().orNull().getArrivedAt()
-				.orNull());
+		assertTrue(schedule.getOperationRecord().get().getArrivedAt()
+				.isPresent());
 
 		passengerRecord = null;
 		prec = new PassengerRecord();
@@ -856,7 +856,7 @@ public class WebAPITestCase extends
 		assertFalse(serverPassengerRecord.getGetOffTime().isPresent());
 		assertTrue(PassengerRecords.isRiding(serverPassengerRecord));
 		assertEquals(os1.getId(), serverPassengerRecord
-				.getDepartureOperationScheduleId().orNull());
+				.getDepartureOperationScheduleId().get());
 		assertFalse(serverPassengerRecord.getArrivalOperationScheduleId()
 				.isPresent());
 	}
@@ -874,8 +874,8 @@ public class WebAPITestCase extends
 		OperationSchedule os2 = schedules.get(1);
 		Reservation res = os1.getReservationsAsDeparture().get(0);
 
-		assertNotNull(schedules.get(1).getReservationsAsArrival().get(0)
-				.getUser().orNull());
+		assertTrue(schedules.get(1).getReservationsAsArrival().get(0)
+				.getUser().isPresent());
 
 		passengerRecord = null;
 		PassengerRecord prec = new PassengerRecord();
@@ -917,9 +917,9 @@ public class WebAPITestCase extends
 				});
 		assertTrue(latch.await(100, TimeUnit.SECONDS));
 
-		assertNotNull(schedule.getOperationRecord());
-		assertNotNull(schedule.getOperationRecord().orNull().getArrivedAt()
-				.orNull());
+		assertTrue(schedule.getOperationRecord().isPresent());
+		assertTrue(schedule.getOperationRecord().get().getArrivedAt()
+				.isPresent());
 
 		passengerRecord = null;
 		prec = new PassengerRecord();
@@ -986,8 +986,8 @@ public class WebAPITestCase extends
 		Reservation res = os1.getReservationsAsDeparture().get(0);
 		Reservation res2 = os1.getReservationsAsDeparture().get(1);
 
-		assertNotNull(schedules.get(1).getReservationsAsArrival().get(0)
-				.getUser().orNull());
+		assertTrue(schedules.get(1).getReservationsAsArrival().get(0)
+				.getUser().isPresent());
 
 		passengerRecord = null;
 		PassengerRecord prec = new PassengerRecord();
