@@ -90,6 +90,11 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 				onSaveConfigButtonClick();
 			}
 		});
+		
+		if (!bindService(new Intent(IStartupService.class.getName()),
+				serviceConnection, Context.BIND_AUTO_CREATE)) {
+			Log.e(TAG, "bindService failed");
+		}
 
 		updateSummary();
 	}
@@ -109,22 +114,10 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 	}
 
 	@Override
-	public void onResume() {
-		super.onResume();
-		bindService(new Intent(IStartupService.class.getName()),
-				serviceConnection, Context.BIND_AUTO_CREATE);
-	}
-
-	@Override
-	public void onPause() {
-		super.onPause();
-		unbindService(serviceConnection);
-	}
-
-	@Override
 	public void onDestroy() {
 		super.onDestroy();
 
+		unbindService(serviceConnection);
 		preferences.unregisterOnSharedPreferenceChangeListener(this);
 		Closeables.closeQuietly(api);
 	}
