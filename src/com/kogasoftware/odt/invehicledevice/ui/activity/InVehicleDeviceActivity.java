@@ -46,6 +46,10 @@ public class InVehicleDeviceActivity extends Activity implements
 	private final ServiceConnection serviceConnection = new ServiceConnection() {
 		@Override
 		public void onServiceConnected(ComponentName className, IBinder binder) {
+			if (!(binder instanceof InVehicleDeviceService.LocalBinder)) {
+				Log.e(TAG, "!(" + binder + " instanceof InVehicleDeviceService.LocalBinder)");
+				return;
+			}
 			InVehicleDeviceService service = ((InVehicleDeviceService.LocalBinder) binder)
 					.getService();
 			service.addOnExitListener(InVehicleDeviceActivity.this);
