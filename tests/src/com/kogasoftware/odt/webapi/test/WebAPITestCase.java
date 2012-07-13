@@ -128,20 +128,29 @@ public class WebAPITestCase extends
 
 	public void testPasswordLogin() throws Exception {
 		api = new WebAPI(SERVER_HOST);
-		callTestPasswordLogin(false);
+		callTestPasswordLogin(false, true);
 	}
 
 	public void testPasswordLoginNoRetry() throws Exception {
 		api = new OfflineTestWebAPI(SERVER_HOST);
-		callTestPasswordLogin(true);
+		callTestPasswordLogin(true, true);
 	}
 
-	public void callTestPasswordLogin(boolean retryTest) throws Exception {
+	public void testPasswordLoginFail() throws Exception {
+		api = new WebAPI(SERVER_HOST);
+		callTestPasswordLogin(false, false);
+	}
+
+	public void callTestPasswordLogin(boolean retryTest, boolean validAuth)
+			throws Exception {
 		semaphore = new Semaphore(0);
 
 		InVehicleDevice ivd = new InVehicleDevice();
 		ivd.setLogin("ivd1");
 		ivd.setPassword("ivdpass");
+		if (!validAuth) {
+			ivd.setPassword(ivd.getPassword() + "x");
+		}
 
 		final AtomicBoolean succeed = new AtomicBoolean(false);
 
@@ -170,9 +179,13 @@ public class WebAPITestCase extends
 
 		assertTrue(semaphore.tryAcquire(20, TimeUnit.SECONDS));
 		if (!retryTest) {
-			assertTrue(succeed.get());
-			assertNotNull(api.getAuthenticationToken());
-			assertTrue(api.getAuthenticationToken().length() > 0);
+			if (validAuth) {
+				assertTrue(succeed.get());
+				assertNotNull(api.getAuthenticationToken());
+				assertTrue(api.getAuthenticationToken().length() > 0);
+			} else {
+				assertFalse(succeed.get());
+			}
 		} else {
 			assertFalse(succeed.get());
 			offline = false;
