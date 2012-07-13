@@ -43,11 +43,11 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 	private static final String TAG = InVehicleDevicePreferenceActivity.class
 			.getSimpleName();
 
+	private final WebAPI api = new WebAPI(DEFAULT_URL);
 	private final AtomicBoolean callbackReceived = new AtomicBoolean(false);
 	private int latestReqKey = 0;
 
 	private SharedPreferences preferences = null;
-	private WebAPI api = null;
 
 	private ServiceConnection serviceConnection = new ServiceConnection() {
 		@Override
@@ -74,7 +74,6 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.main);
-		api = new WebAPI(DEFAULT_URL);
 
 		addPreferencesFromResource(R.xml.preference);
 
