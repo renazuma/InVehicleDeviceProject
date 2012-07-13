@@ -1396,4 +1396,29 @@ public class WebAPITestCase extends
 		Thread.sleep(20 * 1000);
 		assertEquals(i.get(), 1);
 	}
+
+	public void testOnException() throws Exception {
+		api = new WebAPI("https://localhost:12345");
+		final AtomicBoolean unexpected = new AtomicBoolean(false);
+		latch = new CountDownLatch(10);
+		api.getVehicleNotifications(new WebAPICallback<List<VehicleNotification>>() {
+			@Override
+			public void onException(int reqkey, WebAPIException ex) {
+				latch.countDown();
+			}
+
+			@Override
+			public void onFailed(int reqkey, int statusCode, String response) {
+				unexpected.set(true);
+			}
+
+			@Override
+			public void onSucceed(int reqkey, int statusCode,
+					List<VehicleNotification> result) {
+				unexpected.set(true);
+			}
+		});
+		assertTrue(latch.await(20, TimeUnit.SECONDS));
+		assertFalse(unexpected.get());
+	}
 }
