@@ -1164,7 +1164,7 @@ public class WebAPITestCase extends
 	}
 
 	public void testSendServiceUnitStatusLogUseOnlyOneThread() throws Exception {
-		api = new WebAPI(SERVER_HOST, master.getInVehicleDevice()
+		api = new OfflineTestWebAPI(SERVER_HOST, master.getInVehicleDevice()
 				.getAuthenticationToken().get());
 
 		UnitAssignment ua = record.createUnitAssignment("1号車");
@@ -1177,11 +1177,13 @@ public class WebAPITestCase extends
 		log.setLatitude(new BigDecimal(35.2));
 		log.setLongitude(new BigDecimal(135.8));
 
-		latch = new CountDownLatch(1);
-		final Integer MAX = 50;
+		latch = new CountDownLatch(2);
+		List<Integer> keys = new LinkedList<Integer>();
+		final Integer MAX = 1000;
 		final AtomicInteger c = new AtomicInteger(0);
+		offline = true;
 		for (Integer i = 0; i < MAX; ++i) {
-			api.sendServiceUnitStatusLog(log,
+			int k = api.sendServiceUnitStatusLog(log,
 					new EmptyWebAPICallback<ServiceUnitStatusLog>() {
 						@Override
 						public void onSucceed(int reqkey, int statusCode,
@@ -1189,17 +1191,26 @@ public class WebAPITestCase extends
 							c.incrementAndGet();
 						}
 					});
-		}
-		api.getVehicleNotifications(new EmptyWebAPICallback<List<VehicleNotification>>() {
-			@Override
-			public void onSucceed(int reqkey, int statusCode,
-					List<VehicleNotification> result) {
-				latch.countDown();
+			keys.add(k);
+			if (i.equals(MAX / 2) || i.equals(0)) {
+				api.getVehicleNotifications(new EmptyWebAPICallback<List<VehicleNotification>>() {
+					@Override
+					public void onSucceed(int reqkey, int statusCode,
+							List<VehicleNotification> result) {
+						latch.countDown();
+					}
+				});
 			}
-		});
-		assertTrue(latch.await(200, TimeUnit.SECONDS));
-		Log.i(TAG, "c=" + c);
-		assertTrue(c.get() < MAX / 5);
+		}
+		offline = false;
+		try {
+			assertTrue(latch.await(200, TimeUnit.SECONDS));
+			assertTrue(c.get() < MAX / 50);
+		} finally {
+			for (Integer key : keys) {
+				api.abort(key);
+			}
+		}
 	}
 
 	public void testRestoreRequest() throws Exception {
