@@ -12,7 +12,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import com.google.common.base.Optional;
 
 public class PipeQueue<K, V> {
-	public static interface OnDropListener<K> {
+	public interface OnDropListener<K> {
 		void onDrop(K key);
 	}
 
