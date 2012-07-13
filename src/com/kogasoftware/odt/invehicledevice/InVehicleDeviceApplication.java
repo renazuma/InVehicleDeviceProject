@@ -45,7 +45,7 @@ public class InVehicleDeviceApplication extends Application {
 		} catch (NameNotFoundException e) {
 			Log.w(TAG, e);
 		}
-		// enableStrictMode();
+		enableStrictMode();
 	}
 
 	protected void enableStrictMode() {
