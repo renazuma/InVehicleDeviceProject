@@ -21,6 +21,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,20 +49,6 @@ import com.kogasoftware.odt.webapi.serializablerequestloader.SerializablePutLoad
 import com.kogasoftware.odt.webapi.serializablerequestloader.SerializableRequestLoader;
 
 public class WebAPI implements Closeable {
-	public static class EmptyWebAPICallback<T> implements WebAPICallback<T> {
-		@Override
-		public void onException(int reqkey, WebAPIException ex) {
-		}
-
-		@Override
-		public void onFailed(int reqkey, int statusCode, String response) {
-		}
-
-		@Override
-		public void onSucceed(int reqkey, int statusCode, T result) {
-		}
-	}
-
 	public interface ResponseConverter<T> {
 		public T convert(byte[] rawResponse) throws Exception;
 	}
@@ -243,31 +230,20 @@ public class WebAPI implements Closeable {
 	protected boolean doHttpSessionAndCallback(WebAPIRequest<?> request) {
 		try {
 			HttpClient httpClient = new DefaultHttpClient();
-			HttpResponse httpResponse;
-			try {
-				httpResponse = httpClient.execute(request.getRequest());
-			} catch (ClientProtocolException e) {
-				throw new WebAPIException(e);
-			} catch (IOException e) {
-				throw new WebAPIException(e);
-			}
-
+			HttpResponse httpResponse = httpClient
+					.execute(request.getRequest());
 			int statusCode = httpResponse.getStatusLine().getStatusCode();
 			byte[] response = new byte[] {};
 			String responseString = "";
-			try {
-				HttpEntity entity = httpResponse.getEntity();
-				if (entity != null) {
-					response = ByteStreams.toByteArray(entity.getContent());
-					if (response.length < 1024) {
-						responseString = decodeByteArray(response);
-					} else {
-						responseString = "response length=" + response.length;
-					}
-					Log.d(TAG, "response body:" + responseString);
+			HttpEntity entity = httpResponse.getEntity();
+			if (entity != null) {
+				response = EntityUtils.toByteArray(entity);
+				if (response.length < 1024) {
+					responseString = decodeByteArray(response);
+				} else {
+					responseString = "response length=" + response.length;
 				}
-			} catch (IOException e) {
-				throw new WebAPIException(e);
+				Log.d(TAG, "response body:" + responseString);
 			}
 
 			if (statusCode / 100 == 4 || statusCode / 100 == 5) {
@@ -275,19 +251,17 @@ public class WebAPI implements Closeable {
 				return false;
 			}
 
-			try {
-				request.onSucceed(statusCode, response);
-				return true;
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
-				throw new WebAPIException(e);
-			} catch (Exception e) {
-				throw new WebAPIException(e);
-			}
+			request.onSucceed(statusCode, response);
+			return true;
 		} catch (WebAPIException e) {
 			request.onException(e);
-			return false;
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			request.onException(new WebAPIException(e));
+		} catch (Exception e) {
+			request.onException(new WebAPIException(e));
 		}
+		return false;
 	}
 
 	protected void doWebAPISession() throws InterruptedException {
@@ -764,7 +738,8 @@ public class WebAPI implements Closeable {
 		retryParam.put("service_unit_status_log",
 				filterJSONKeys(retryLog.toJSONObject(), filter));
 
-		return post(PATH_STATUSLOGS, param, retryParam, "sendServiceUnitStatusLog", callback,
+		return post(PATH_STATUSLOGS, param, retryParam,
+				"sendServiceUnitStatusLog", callback,
 				new ResponseConverter<ServiceUnitStatusLog>() {
 					@Override
 					public ServiceUnitStatusLog convert(byte[] rawResponse)
