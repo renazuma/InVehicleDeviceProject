@@ -633,7 +633,7 @@ public class WebAPI implements Closeable {
 				getServerHost(), path, retryParam, authenticationToken);
 		WebAPIRequest<?> request = new WebAPIRequest<T>(callback, conv, first,
 				retry, retryable);
-		requests.add(request);
+		requests.add(request, requestGroup);
 		return request.getReqKey();
 	}
 
