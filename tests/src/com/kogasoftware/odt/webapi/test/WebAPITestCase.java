@@ -21,6 +21,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.test.ActivityInstrumentationTestCase2;
+import android.util.Log;
 
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.webapi.WebAPI;
@@ -1162,6 +1163,45 @@ public class WebAPITestCase extends
 		}
 	}
 
+	public void testSendServiceUnitStatusLogUseOnlyOneThread() throws Exception {
+		api = new WebAPI(SERVER_HOST, master.getInVehicleDevice()
+				.getAuthenticationToken().get());
+
+		UnitAssignment ua = record.createUnitAssignment("1号車");
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.MONTH, -1);
+		record.createServiceUnit(master.getDriver(), master.getVehicle(),
+				master.getInVehicleDevice(), ua, cal.getTime());
+
+		ServiceUnitStatusLog log = new ServiceUnitStatusLog();
+		log.setLatitude(new BigDecimal(35.2));
+		log.setLongitude(new BigDecimal(135.8));
+
+		latch = new CountDownLatch(1);
+		final Integer MAX = 50;
+		final AtomicInteger c = new AtomicInteger(0);
+		for (Integer i = 0; i < MAX; ++i) {
+			api.sendServiceUnitStatusLog(log,
+					new EmptyWebAPICallback<ServiceUnitStatusLog>() {
+						@Override
+						public void onSucceed(int reqkey, int statusCode,
+								ServiceUnitStatusLog result) {
+							c.incrementAndGet();
+						}
+					});
+		}
+		api.getVehicleNotifications(new EmptyWebAPICallback<List<VehicleNotification>>() {
+			@Override
+			public void onSucceed(int reqkey, int statusCode,
+					List<VehicleNotification> result) {
+				latch.countDown();
+			}
+		});
+		assertTrue(latch.await(200, TimeUnit.SECONDS));
+		Log.i(TAG, "c=" + c);
+		assertTrue(c.get() < MAX / 5);
+	}
+
 	public void testRestoreRequest() throws Exception {
 		File backupFile = getInstrumentation().getContext().getFileStreamPath(
 				"backup.serialized");
@@ -1252,8 +1292,8 @@ public class WebAPITestCase extends
 	}
 
 	public void testAbort() throws Exception {
-		api = new OfflineTestWebAPI(SERVER_HOST, master
-				.getInVehicleDevice().getAuthenticationToken().get());
+		api = new OfflineTestWebAPI(SERVER_HOST, master.getInVehicleDevice()
+				.getAuthenticationToken().get());
 		UnitAssignment ua = record.createUnitAssignment("1号車");
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.MONTH, -1);
