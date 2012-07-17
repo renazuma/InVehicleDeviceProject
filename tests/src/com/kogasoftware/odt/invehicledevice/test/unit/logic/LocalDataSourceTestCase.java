@@ -2,6 +2,7 @@ package com.kogasoftware.odt.invehicledevice.test.unit.logic;
 
 import java.util.Date;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
@@ -51,8 +52,9 @@ public class LocalDataSourceTestCase extends EmptyActivityInstrumentationTestCas
 	 * コンストラクタ。clearStatusFileが呼ばれたら内容をクリア
 	 */
 	public void testConstructor_2() throws Exception {
+		Context c = getInstrumentation().getTargetContext();
 		// 保存
-		LocalDataSource lds1 = new LocalDataSource(getActivity());
+		LocalDataSource lds1 = new LocalDataSource(c);
 		lds1.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData ld) {
@@ -63,21 +65,23 @@ public class LocalDataSourceTestCase extends EmptyActivityInstrumentationTestCas
 						.add(new VehicleNotification());
 			}
 		});
+		lds1.close();
 		Thread.sleep(500); // 保存されるのを待つ
 
 		// クリアされていないことを確認
-		LocalDataSource lds2 = new LocalDataSource(getActivity());
+		LocalDataSource lds2 = new LocalDataSource(c);
 		lds2.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData ld) {
-				assertEquals(ld.reservations.size(), 1);
-				assertEquals(ld.repliedVehicleNotifications.size(), 1);
+				assertEquals(1, ld.reservations.size());
+				assertEquals(1, ld.repliedVehicleNotifications.size());
 			}
 		});
+		lds2.close();
 
 		// クリアされることを確認
 		LocalDataSource.clearSavedFile();
-		LocalDataSource lds3 = new LocalDataSource(getActivity());
+		LocalDataSource lds3 = new LocalDataSource(c);
 		lds3.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData ld) {
@@ -85,9 +89,10 @@ public class LocalDataSourceTestCase extends EmptyActivityInstrumentationTestCas
 				assertTrue(ld.repliedVehicleNotifications.isEmpty());
 			}
 		});
+		lds3.close();
 
 		// 復活しないことを確認
-		LocalDataSource lds4 = new LocalDataSource(getActivity());
+		LocalDataSource lds4 = new LocalDataSource(c);
 		lds4.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData ld) {
@@ -95,57 +100,64 @@ public class LocalDataSourceTestCase extends EmptyActivityInstrumentationTestCas
 				assertTrue(ld.repliedVehicleNotifications.isEmpty());
 			}
 		});
+		lds4.close();
 	}
 
 	/**
 	 * コンストラクタ。SharedPreferencesKeyのCLEAR_REQUIREDがtrueの場合 内容をクリア
 	 */
 	public void testConstructor_3() throws Exception {
+		Context c = getInstrumentation().getTargetContext();
+
 		// 保存
 		LocalDataSource.clearSavedFile();
-		LocalDataSource lds1 = new LocalDataSource(getActivity());
+		LocalDataSource lds1 = new LocalDataSource(c);
 		lds1.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData ld) {
 				ld.remainingOperationSchedules.add(new OperationSchedule());
 			}
 		});
+		lds1.close();
 		Thread.sleep(500); // 保存されるのを待つ
 
 		// クリアされていないことを確認
-		LocalDataSource lds2 = new LocalDataSource(getActivity());
+		LocalDataSource lds2 = new LocalDataSource(c);
 		lds2.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData ld) {
 				assertEquals(ld.remainingOperationSchedules.size(), 1);
 			}
 		});
+		lds2.close();
 
 		SharedPreferences preferences = PreferenceManager
-				.getDefaultSharedPreferences(getActivity());
+				.getDefaultSharedPreferences(c);
 		preferences.edit()
 				.putBoolean(SharedPreferencesKey.CLEAR_STATUS_BACKUP, true)
 				.commit();
 		// クリアされることを確認
-		LocalDataSource lds3 = new LocalDataSource(getActivity());
+		LocalDataSource lds3 = new LocalDataSource(c);
 		lds3.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData ld) {
 				assertTrue(ld.remainingOperationSchedules.isEmpty());
 			}
 		});
+		lds3.close();
 
 		// SharedPreferencesKey.CLEAR_REQUIREDがfalseになっていることを確認
 		assertFalse(preferences.getBoolean(
 				SharedPreferencesKey.CLEAR_STATUS_BACKUP, true));
 
 		// データが復活しないことを確認
-		LocalDataSource lds4 = new LocalDataSource(getActivity());
+		LocalDataSource lds4 = new LocalDataSource(c);
 		lds4.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData ld) {
 				assertTrue(ld.remainingOperationSchedules.isEmpty());
 			}
 		});
+		lds4.close();
 	}
 }
