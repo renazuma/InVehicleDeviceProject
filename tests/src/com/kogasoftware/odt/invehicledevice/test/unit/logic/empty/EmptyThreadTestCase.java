@@ -1,8 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.logic.empty;
 
+import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 import junit.framework.TestCase;
-
-import com.kogasoftware.odt.invehicledevice.logic.empty.EmptyThread;
 
 public class EmptyThreadTestCase extends TestCase {
 	public void testStart() throws Exception {
