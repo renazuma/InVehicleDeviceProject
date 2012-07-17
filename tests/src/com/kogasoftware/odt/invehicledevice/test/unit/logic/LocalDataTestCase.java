@@ -26,15 +26,15 @@ public class LocalDataTestCase extends EmptyActivityInstrumentationTestCase2 {
 	 */
 	public void testSerializable() throws Exception {
 		LocalData ld1 = new LocalData();
-		s1.url = "http://example.com/" + Math.random();
+		ld1.url = "http://example.com/" + Math.random();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ObjectOutputStream oos = new ObjectOutputStream(baos);
-		oos.writeObject(s1);
+		oos.writeObject(ld1);
 		oos.close();
 
 		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
 		ObjectInputStream ois = new ObjectInputStream(bais);
 		LocalData s2 = (LocalData) ois.readObject();
-		assertEquals(s2.url, s1.url);
+		assertEquals(s2.url, ld1.url);
 	}
 }
