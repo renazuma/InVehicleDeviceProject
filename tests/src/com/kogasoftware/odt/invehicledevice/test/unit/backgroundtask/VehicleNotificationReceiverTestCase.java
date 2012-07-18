@@ -2,13 +2,9 @@ package com.kogasoftware.odt.invehicledevice.test.unit.backgroundtask;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-import com.kogasoftware.odt.invehicledevice.backgroundtask.VehicleNotificationReceiver;
-import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.logic.event.VehicleNotificationReceivedEvent;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundthread.VehicleNotificationReceiver;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
-import com.kogasoftware.odt.invehicledevice.test.util.Subscriber;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.test.util.datasource.DummyDataSource;
 import com.kogasoftware.odt.webapi.WebAPIException;
@@ -17,9 +13,6 @@ import com.kogasoftware.odt.webapi.model.VehicleNotification;
 public class VehicleNotificationReceiverTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 
-	CommonLogic cl;
-	
-
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -27,9 +20,6 @@ public class VehicleNotificationReceiverTestCase extends
 
 	@Override
 	protected void tearDown() throws Exception {
-		if (cl != null) {
-			cl.dispose();
-		}
 		super.tearDown();
 	}
 
@@ -47,15 +37,10 @@ public class VehicleNotificationReceiverTestCase extends
 			}
 		}
 		TestUtil.setDataSource(new TestDataSource());
-		cl = newCommonLogic();
-		VehicleNotificationReceiver vnr = new VehicleNotificationReceiver(cl);
-		Subscriber<VehicleNotificationReceivedEvent> s = Subscriber.of(VehicleNotificationReceivedEvent.class, cl);
+		VehicleNotificationReceiver vnr = new VehicleNotificationReceiver(null);
 		vnr.run();
 		Thread.sleep(5000);
-		assertTrue(s.cdl.await(10, TimeUnit.SECONDS));
-		assertEquals(1, s.l.size());
-		assertEquals(vn0, s.l.get(0).vehicleNotifications.get(0));
-		assertEquals(vn1, s.l.get(0).vehicleNotifications.get(1));
+		assertTrue(false);
 	}
 	
 	public void testRun_新しいVNがなければVehicleNotificationReceivedEvent通知は起きない_1() throws Exception {
@@ -67,12 +52,10 @@ public class VehicleNotificationReceiverTestCase extends
 			}
 		}
 		TestUtil.setDataSource(new TestDataSource());
-		cl = newCommonLogic();
-		VehicleNotificationReceiver vnr = new VehicleNotificationReceiver(cl);
-		Subscriber<VehicleNotificationReceivedEvent> s = Subscriber.of(VehicleNotificationReceivedEvent.class, cl);
+		VehicleNotificationReceiver vnr = new VehicleNotificationReceiver(null);
 		vnr.run();
 		Thread.sleep(5000);
-		assertTrue(s.l.isEmpty());
+		assertTrue(false);
 	}
 	
 	public void testRun_新しいVNがなければVehicleNotificationReceivedEvent通知は起きない_2() throws Exception {
@@ -84,11 +67,9 @@ public class VehicleNotificationReceiverTestCase extends
 			}
 		}
 		TestUtil.setDataSource(new TestDataSource());
-		cl = newCommonLogic();
-		VehicleNotificationReceiver vnr = new VehicleNotificationReceiver(cl);
-		Subscriber<VehicleNotificationReceivedEvent> s = Subscriber.of(VehicleNotificationReceivedEvent.class, cl);
+		VehicleNotificationReceiver vnr = new VehicleNotificationReceiver(null);
 		vnr.run();
 		Thread.sleep(5000);
-		assertTrue(s.l.isEmpty());
+		assertTrue(false);
 	}
 }

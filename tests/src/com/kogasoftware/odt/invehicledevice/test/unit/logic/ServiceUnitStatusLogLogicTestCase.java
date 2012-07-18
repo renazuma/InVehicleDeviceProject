@@ -73,6 +73,7 @@ public class ServiceUnitStatusLogLogicTestCase extends
 
 		Thread.sleep(ServiceUnitStatusLogLogic.ORIENTATION_SAVE_PERIOD_MILLIS);
 		s.changeOrientation(f1);
+		
 		sa.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData status) {

@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.util.concurrent.Uninterruptibles;
-import com.kogasoftware.odt.invehicledevice.backgroundtask.BackgroundTaskThread;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundthread.BackgroundTaskThread;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 
 public class BackgroundTaskThreadTestCase extends
@@ -23,7 +23,7 @@ public class BackgroundTaskThreadTestCase extends
 	 */
 	public void testInterrupt() throws Exception {
 		for (int i = 0; i < 2000; i += 100) {
-			BackgroundTaskThread t = new BackgroundTaskThread(getActivity());
+			BackgroundTaskThread t = new BackgroundTaskThread(null);
 			t.start();
 			Thread.sleep(i);
 			t.interrupt();
@@ -47,8 +47,7 @@ public class BackgroundTaskThreadTestCase extends
 				public void run() {
 					Uninterruptibles.sleepUninterruptibly(fi * 50,
 							TimeUnit.MILLISECONDS);
-					BackgroundTaskThread bt = new BackgroundTaskThread(
-							getActivity());
+					BackgroundTaskThread bt = new BackgroundTaskThread(null);
 					bt.start();
 					ts.add(bt);
 				}
@@ -70,8 +69,7 @@ public class BackgroundTaskThreadTestCase extends
 				public void run() {
 					Uninterruptibles.sleepUninterruptibly(fi * 50,
 							TimeUnit.MILLISECONDS);
-					BackgroundTaskThread bt = new BackgroundTaskThread(
-							getActivity());
+					BackgroundTaskThread bt = new BackgroundTaskThread(null);
 					bt.start();
 					ts.add(bt);
 				}
