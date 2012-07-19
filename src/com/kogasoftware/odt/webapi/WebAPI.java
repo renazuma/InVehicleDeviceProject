@@ -173,7 +173,7 @@ public class WebAPI implements Closeable {
 					public OperationSchedule convert(byte[] rawResponse)
 							throws Exception {
 						return OperationSchedule.parse(
-								parseJSONObject(rawResponse)).orNull();
+								parseJSONObject(rawResponse));
 					}
 				});
 	}
@@ -219,7 +219,7 @@ public class WebAPI implements Closeable {
 					public OperationSchedule convert(byte[] rawResponse)
 							throws Exception {
 						return OperationSchedule.parse(
-								parseJSONObject(rawResponse)).orNull();
+								parseJSONObject(rawResponse));
 					}
 				});
 	}
@@ -366,7 +366,7 @@ public class WebAPI implements Closeable {
 					public PassengerRecord convert(byte[] rawResponse)
 							throws Exception {
 						return PassengerRecord.parse(
-								parseJSONObject(rawResponse)).orNull();
+								parseJSONObject(rawResponse));
 					}
 				});
 	}
@@ -408,7 +408,7 @@ public class WebAPI implements Closeable {
 					public PassengerRecord convert(byte[] rawResponse)
 							throws Exception {
 						return PassengerRecord.parse(
-								parseJSONObject(rawResponse)).orNull();
+								parseJSONObject(rawResponse));
 					}
 				});
 	}
@@ -433,7 +433,7 @@ public class WebAPI implements Closeable {
 					public PassengerRecord convert(byte[] rawResponse)
 							throws Exception {
 						return PassengerRecord.parse(
-								parseJSONObject(rawResponse)).orNull();
+								parseJSONObject(rawResponse));
 					}
 				});
 	}
@@ -458,7 +458,7 @@ public class WebAPI implements Closeable {
 					public PassengerRecord convert(byte[] rawResponse)
 							throws Exception {
 						return PassengerRecord.parse(
-								parseJSONObject(rawResponse)).orNull();
+								parseJSONObject(rawResponse));
 					}
 				});
 	}
@@ -569,7 +569,7 @@ public class WebAPI implements Closeable {
 					public InVehicleDevice convert(byte[] rawResponse)
 							throws Exception {
 						return InVehicleDevice.parse(
-								parseJSONObject(rawResponse)).orNull();
+								parseJSONObject(rawResponse));
 					}
 				});
 	}
@@ -671,8 +671,7 @@ public class WebAPI implements Closeable {
 					@Override
 					public Reservation convert(byte[] rawResponse)
 							throws Exception {
-						return Reservation.parse(parseJSONObject(rawResponse))
-								.orNull();
+						return Reservation.parse(parseJSONObject(rawResponse));
 					}
 				});
 	}
@@ -710,7 +709,7 @@ public class WebAPI implements Closeable {
 					public VehicleNotification convert(byte[] rawResponse)
 							throws Exception {
 						return VehicleNotification.parse(
-								parseJSONObject(rawResponse)).orNull();
+								parseJSONObject(rawResponse));
 					}
 				});
 	}
@@ -742,7 +741,7 @@ public class WebAPI implements Closeable {
 					public ServiceUnitStatusLog convert(byte[] rawResponse)
 							throws Exception {
 						return ServiceUnitStatusLog.parse(
-								parseJSONObject(rawResponse)).orNull();
+								parseJSONObject(rawResponse));
 					}
 				});
 	}
