@@ -15,11 +15,11 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class OperationScheduleBase extends Model {
-	private static final long serialVersionUID = 1834100602588915919L;
+	private static final long serialVersionUID = 830695293138650913L;
 
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {
-		setArribalEstimate(parseOptionalDate(jsonObject, "arribal_estimate"));
+		setArrivalEstimate(parseOptionalDate(jsonObject, "arrival_estimate"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
 		setDepartureEstimate(parseOptionalDate(jsonObject, "departure_estimate"));
@@ -76,7 +76,7 @@ public abstract class OperationScheduleBase extends Model {
 		}
 		Integer nextDepth = depth + 1;
 		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("arribal_estimate", toJSON(getArribalEstimate()));
+		jsonObject.put("arrival_estimate", toJSON(getArrivalEstimate()));
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
 		jsonObject.put("deleted_at", toJSON(getDeletedAt()));
 		jsonObject.put("departure_estimate", toJSON(getDepartureEstimate()));
@@ -124,22 +124,22 @@ public abstract class OperationScheduleBase extends Model {
 		return parse(toJSONObject(true));
 	}
 
-	private Optional<Date> arribalEstimate = Optional.absent();
+	private Optional<Date> arrivalEstimate = Optional.absent();
 
-	public Optional<Date> getArribalEstimate() {
-		return wrapNull(arribalEstimate);
+	public Optional<Date> getArrivalEstimate() {
+		return wrapNull(arrivalEstimate);
 	}
 
-	public void setArribalEstimate(Optional<Date> arribalEstimate) {
-		this.arribalEstimate = wrapNull(arribalEstimate);
+	public void setArrivalEstimate(Optional<Date> arrivalEstimate) {
+		this.arrivalEstimate = wrapNull(arrivalEstimate);
 	}
 
-	public void setArribalEstimate(Date arribalEstimate) {
-		this.arribalEstimate = Optional.fromNullable(arribalEstimate);
+	public void setArrivalEstimate(Date arrivalEstimate) {
+		this.arrivalEstimate = Optional.fromNullable(arrivalEstimate);
 	}
 
-	public void clearArribalEstimate() {
-		this.arribalEstimate = Optional.absent();
+	public void clearArrivalEstimate() {
+		this.arrivalEstimate = Optional.absent();
 	}
 
 	private Date createdAt = new Date();
