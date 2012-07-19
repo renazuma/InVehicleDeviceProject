@@ -13,15 +13,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.test.ActivityInstrumentationTestCase2;
-import android.util.Log;
 
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.webapi.WebAPI;
@@ -33,7 +25,6 @@ import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationRecord;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
-import com.kogasoftware.odt.webapi.model.PassengerRecords;
 import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.ReservationCandidate;
@@ -369,22 +360,16 @@ public class WebAPITestCase extends
 			throws Exception {
 		latch = new CountDownLatch(1);
 		schedules = null;
+		
+		Date now = new Date();
 
 		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.MINUTE, 20);
-		Date dtArrival1 = cal.getTime();
-
-		cal = Calendar.getInstance();
 		cal.add(Calendar.MINUTE, 22);
 		Date dtDeparture1 = cal.getTime();
 
 		cal = Calendar.getInstance();
 		cal.add(Calendar.MINUTE, 40);
 		Date dtArrival2 = cal.getTime();
-
-		cal = Calendar.getInstance();
-		cal.add(Calendar.MINUTE, 45);
-		Date dtDeparture2 = cal.getTime();
 
 		User user = master.createUser("login1", "もぎ", "けんた");
 		UnitAssignment ua = record.createUnitAssignment("1号車");
@@ -394,11 +379,9 @@ public class WebAPITestCase extends
 				master.getInVehicleDevice(), ua, cal.getTime());
 
 		Platform p1 = master.createPlatform("乗降場1", "じょうこうじょう1");
-		OperationSchedule os1 = record.createOperationSchedule(ua, p1,
-				dtArrival1, dtDeparture1);
+		OperationSchedule os1 = record.createOperationSchedule(ua, p1, now);
 		Platform p2 = master.createPlatform("乗降場2", "じょうこうじょう2");
-		OperationSchedule os2 = record.createOperationSchedule(ua, p2,
-				dtArrival2, dtDeparture2);
+		OperationSchedule os2 = record.createOperationSchedule(ua, p2, now);
 
 		Demand demand = record.createDemand(user, ua, p1, dtDeparture1, p2,
 				dtArrival2, 0);
@@ -604,7 +587,7 @@ public class WebAPITestCase extends
 		assertEquals(os1.getId(), serverPassengerRecord
 				.getDepartureOperationScheduleId().get());
 		assertTrue(serverPassengerRecord.getGetOnTime().isPresent());
-		assertTrue(PassengerRecords.isRiding(serverPassengerRecord));
+		assertTrue(serverPassengerRecord.isRiding());
 		if (offlineTest) {
 			assertTrue(serverPassengerRecord.getGetOnTimeOffline().or(false));
 		} else {
@@ -714,7 +697,7 @@ public class WebAPITestCase extends
 		assertEquals(os2.getId(), serverPassengerRecord
 				.getArrivalOperationScheduleId().get());
 		assertTrue(serverPassengerRecord.getGetOffTime().isPresent());
-		assertTrue(PassengerRecords.isGotOff(serverPassengerRecord));
+		assertTrue(serverPassengerRecord.isGotOff());
 
 		if (offlineTest) {
 			assertTrue(serverPassengerRecord.getGetOffTimeOffline().or(false));
@@ -771,7 +754,7 @@ public class WebAPITestCase extends
 		assertFalse(serverPassengerRecord.getGetOnTime().isPresent());
 		assertFalse(serverPassengerRecord.getDepartureOperationScheduleId()
 				.isPresent());
-		assertTrue(PassengerRecords.isUnhandled(serverPassengerRecord));
+		assertTrue(serverPassengerRecord.isUnhandled());
 
 		latch = new CountDownLatch(1);
 		api.getOnPassenger(os1, res, prec,
@@ -868,7 +851,7 @@ public class WebAPITestCase extends
 		assertNotNull(serverPassengerRecord);
 		assertTrue(serverPassengerRecord.getGetOnTime().isPresent());
 		assertFalse(serverPassengerRecord.getGetOffTime().isPresent());
-		assertTrue(PassengerRecords.isRiding(serverPassengerRecord));
+		assertTrue(serverPassengerRecord.isRiding());
 		assertEquals(os1.getId(), serverPassengerRecord
 				.getDepartureOperationScheduleId().get());
 		assertFalse(serverPassengerRecord.getArrivalOperationScheduleId()
@@ -1055,21 +1038,15 @@ public class WebAPITestCase extends
 	}
 
 	private void createTestOperationSchedules() throws Exception {
+		Date now = new Date();
+		
 		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.MINUTE, 20);
-		Date dtArrival1 = cal.getTime();
-
-		cal = Calendar.getInstance();
 		cal.add(Calendar.MINUTE, 22);
-		Date dtDeparture1 = cal.getTime();
+		Date dtDeparture = cal.getTime();
 
 		cal = Calendar.getInstance();
 		cal.add(Calendar.MINUTE, 40);
-		Date dtArrival2 = cal.getTime();
-
-		cal = Calendar.getInstance();
-		cal.add(Calendar.MINUTE, 45);
-		Date dtDeparture2 = cal.getTime();
+		Date dtArrival = cal.getTime();
 
 		User user = master.createUser("login1", "もぎ", "けんた");
 		UnitAssignment ua = record.createUnitAssignment("1号車");
@@ -1079,18 +1056,16 @@ public class WebAPITestCase extends
 				master.getInVehicleDevice(), ua, cal.getTime());
 
 		Platform p1 = master.createPlatform("乗降場1", "じょうこうじょう1");
-		OperationSchedule os1 = record.createOperationSchedule(ua, p1,
-				dtArrival1, dtDeparture1);
+		OperationSchedule os1 = record.createOperationSchedule(ua, p1, now);
 		Platform p2 = master.createPlatform("乗降場2", "じょうこうじょう2");
-		OperationSchedule os2 = record.createOperationSchedule(ua, p2,
-				dtArrival2, dtDeparture2);
+		OperationSchedule os2 = record.createOperationSchedule(ua, p2, now);
 
-		Demand demand = record.createDemand(user, ua, p1, dtDeparture1, p2,
-				dtArrival2, 0);
+		Demand demand = record.createDemand(user, ua, p1, dtDeparture, p2,
+				dtArrival, 0);
 		Reservation res = record.createReservation(user, demand, ua, p1, os1,
-				dtDeparture1, p2, os2, dtArrival2, 500);
+				dtDeparture, p2, os2, dtArrival, 500);
 		Reservation res2 = record.createReservation(user, demand, ua, p1, os1,
-				dtDeparture1, p2, os2, dtArrival2, 500);
+				dtDeparture, p2, os2, dtArrival, 500);
 
 		latch = new CountDownLatch(1);
 		api.getOperationSchedules(new WebAPICallback<List<OperationSchedule>>() {
