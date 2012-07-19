@@ -25,8 +25,8 @@ public class WebAPIRequest<T> implements Serializable {
 	protected final boolean retryable;
 	protected boolean retry = false;
 
-	transient protected WebAPICallback<T> callback;
-	transient protected ResponseConverter<T> responseConverter;
+	protected transient WebAPICallback<T> callback;
+	protected transient ResponseConverter<T> responseConverter;
 
 	private void readObject(ObjectInputStream objectInputStream)
 			throws IOException, ClassNotFoundException {

@@ -10,7 +10,7 @@ import org.json.JSONObject;
 import com.google.common.base.Objects;
 import com.kogasoftware.odt.webapi.WebAPIException;
 
-abstract public class SerializableEntityEnclosingRequestLoader extends
+public abstract class SerializableEntityEnclosingRequestLoader extends
 		SerializableRequestLoader {
 	private static final long serialVersionUID = -3807558102171626080L;
 	protected String entityString = "";

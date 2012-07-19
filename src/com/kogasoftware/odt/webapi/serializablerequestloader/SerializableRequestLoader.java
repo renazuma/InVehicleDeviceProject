@@ -16,7 +16,7 @@ import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import com.kogasoftware.odt.webapi.WebAPIException;
 
-abstract public class SerializableRequestLoader implements Serializable {
+public abstract class SerializableRequestLoader implements Serializable {
 	private static final String TAG = SerializableRequestLoader.class.getSimpleName();
 	private static final long serialVersionUID = -7411970624771269698L;
 	protected static final String AUTHENTICATION_TOKEN_KEY = "authentication_token";
@@ -64,7 +64,7 @@ abstract public class SerializableRequestLoader implements Serializable {
 		}
 	}
 
-	abstract public HttpRequestBase load() throws WebAPIException;
+	public abstract HttpRequestBase load() throws WebAPIException;
 
 	protected void registerAuthenticationToken() throws WebAPIException {
 		if (authenticationToken.length() > 0) {
