@@ -47,7 +47,7 @@ import com.kogasoftware.odt.webapi.serializablerequestloader.SerializableRequest
 
 public class WebAPI implements Closeable {
 	public interface ResponseConverter<T> {
-		public T convert(byte[] rawResponse) throws Exception;
+		T convert(byte[] rawResponse) throws Exception;
 	}
 
 	public interface WebAPICallback<T> {
@@ -59,7 +59,7 @@ public class WebAPI implements Closeable {
 		 * @param ex
 		 *            例外オブジェクト
 		 */
-		public void onException(int reqkey, WebAPIException ex);
+		void onException(int reqkey, WebAPIException ex);
 
 		/**
 		 * リクエスト失敗時のコールバック
@@ -69,7 +69,7 @@ public class WebAPI implements Closeable {
 		 * @param statusCode
 		 *            HTTPステータス
 		 */
-		public void onFailed(int reqkey, int statusCode, String response);
+		void onFailed(int reqkey, int statusCode, String response);
 
 		/**
 		 * リクエスト成功時のコールバック
@@ -81,7 +81,7 @@ public class WebAPI implements Closeable {
 		 * @param result
 		 *            結果のオブジェクト
 		 */
-		public void onSucceed(int reqkey, int statusCode, T result);
+		void onSucceed(int reqkey, int statusCode, T result);
 	}
 
 	class WebAPISessionRunner implements Runnable {
