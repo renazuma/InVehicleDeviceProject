@@ -15,12 +15,14 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class OperationScheduleBase extends Model {
-	private static final long serialVersionUID = 497878977274914042L;
+	private static final long serialVersionUID = 1834100602588915919L;
 
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {
+		setArribalEstimate(parseOptionalDate(jsonObject, "arribal_estimate"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
+		setDepartureEstimate(parseOptionalDate(jsonObject, "departure_estimate"));
 		setId(parseInteger(jsonObject, "id"));
 		setOperationDate(parseOptionalDate(jsonObject, "operation_date"));
 		setPlatformId(parseOptionalInteger(jsonObject, "platform_id"));
@@ -74,8 +76,10 @@ public abstract class OperationScheduleBase extends Model {
 		}
 		Integer nextDepth = depth + 1;
 		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("arribal_estimate", toJSON(getArribalEstimate()));
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
 		jsonObject.put("deleted_at", toJSON(getDeletedAt()));
+		jsonObject.put("departure_estimate", toJSON(getDepartureEstimate()));
 		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("operation_date", toJSON(getOperationDate()));
 		jsonObject.put("platform_id", toJSON(getPlatformId()));
@@ -120,6 +124,24 @@ public abstract class OperationScheduleBase extends Model {
 		return parse(toJSONObject(true));
 	}
 
+	private Optional<Date> arribalEstimate = Optional.absent();
+
+	public Optional<Date> getArribalEstimate() {
+		return wrapNull(arribalEstimate);
+	}
+
+	public void setArribalEstimate(Optional<Date> arribalEstimate) {
+		this.arribalEstimate = wrapNull(arribalEstimate);
+	}
+
+	public void setArribalEstimate(Date arribalEstimate) {
+		this.arribalEstimate = Optional.fromNullable(arribalEstimate);
+	}
+
+	public void clearArribalEstimate() {
+		this.arribalEstimate = Optional.absent();
+	}
+
 	private Date createdAt = new Date();
 
 	public Date getCreatedAt() {
@@ -146,6 +168,24 @@ public abstract class OperationScheduleBase extends Model {
 
 	public void clearDeletedAt() {
 		this.deletedAt = Optional.absent();
+	}
+
+	private Optional<Date> departureEstimate = Optional.absent();
+
+	public Optional<Date> getDepartureEstimate() {
+		return wrapNull(departureEstimate);
+	}
+
+	public void setDepartureEstimate(Optional<Date> departureEstimate) {
+		this.departureEstimate = wrapNull(departureEstimate);
+	}
+
+	public void setDepartureEstimate(Date departureEstimate) {
+		this.departureEstimate = Optional.fromNullable(departureEstimate);
+	}
+
+	public void clearDepartureEstimate() {
+		this.departureEstimate = Optional.absent();
 	}
 
 	private Integer id = 0;
