@@ -1,13 +1,11 @@
-package com.kogasoftware.odt.webapi.model;
+package com.kogasoftware.odt.webapi.model.base;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
@@ -15,44 +13,38 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.base.Optional;
+import com.kogasoftware.odt.webapi.model.*;
 
-public class ServiceUnitStatusLog extends Model {
-	private static final long serialVersionUID = 3902872063760710398L;
+@SuppressWarnings("unused")
+public abstract class ServiceUnitStatusLogBase extends Model {
+	private static final long serialVersionUID = 5933276948802842243L;
 
-	public ServiceUnitStatusLog() {
-	}
-
-	public ServiceUnitStatusLog(JSONObject jsonObject) throws JSONException {
-		try {
-			fillMembers(this, jsonObject);
-		} catch (ParseException e) {
-			throw new JSONException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
-		}
-	}
-
-	public static void fillMembers(ServiceUnitStatusLog model, JSONObject jsonObject) throws JSONException, ParseException {
-		model.setCreatedAt(parseDate(jsonObject, "created_at"));
-		model.setId(parseInteger(jsonObject, "id"));
-		model.setLatitude(parseBigDecimal(jsonObject, "latitude"));
-		model.setLongitude(parseBigDecimal(jsonObject, "longitude"));
-		model.setOffline(parseOptionalBoolean(jsonObject, "offline"));
-		model.setOfflineTime(parseOptionalDate(jsonObject, "offline_time"));
-		model.setOrientation(parseOptionalInteger(jsonObject, "orientation"));
-		model.setServiceUnitId(parseOptionalInteger(jsonObject, "service_unit_id"));
-		model.setTemperature(parseOptionalInteger(jsonObject, "temperature"));
-		model.setUpdatedAt(parseDate(jsonObject, "updated_at"));
-		model.setServiceUnit(ServiceUnit.parse(jsonObject, "service_unit"));
+	@Override
+	public void fill(JSONObject jsonObject) throws JSONException, ParseException {
+		setCreatedAt(parseDate(jsonObject, "created_at"));
+		setId(parseInteger(jsonObject, "id"));
+		setLatitude(parseBigDecimal(jsonObject, "latitude"));
+		setLongitude(parseBigDecimal(jsonObject, "longitude"));
+		setOffline(parseOptionalBoolean(jsonObject, "offline"));
+		setOfflineTime(parseOptionalDate(jsonObject, "offline_time"));
+		setOrientation(parseOptionalInteger(jsonObject, "orientation"));
+		setServiceUnitId(parseOptionalInteger(jsonObject, "service_unit_id"));
+		setTemperature(parseOptionalInteger(jsonObject, "temperature"));
+		setUpdatedAt(parseDate(jsonObject, "updated_at"));
+		setServiceUnit(ServiceUnit.parse(jsonObject, "service_unit"));
 	}
 
 	public static Optional<ServiceUnitStatusLog> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
 		if (!jsonObject.has(key)) {
 			return Optional.absent();
 		}
-		return parse(jsonObject.getJSONObject(key));
+		return Optional.of(parse(jsonObject.getJSONObject(key)));
 	}
 
-	public static Optional<ServiceUnitStatusLog> parse(JSONObject jsonObject) throws JSONException, ParseException {
-		return Optional.of(new ServiceUnitStatusLog(jsonObject));
+	public static ServiceUnitStatusLog parse(JSONObject jsonObject) throws JSONException, ParseException {
+		ServiceUnitStatusLog model = new ServiceUnitStatusLog();
+		model.fill(jsonObject);
+		return model;
 	}
 
 	public static LinkedList<ServiceUnitStatusLog> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -69,31 +61,31 @@ public class ServiceUnitStatusLog extends Model {
 			if (jsonArray.isNull(i)) {
 				continue;
 			}
-			models.add(new ServiceUnitStatusLog(jsonArray.getJSONObject(i)));
+			models.add(parse(jsonArray.getJSONObject(i)));
 		}
 		return models;
 	}
 
 	@Override
 	protected JSONObject toJSONObject(Boolean recursive, Integer depth) throws JSONException {
-		depth++;
 		if (depth > MAX_RECURSE_DEPTH) {
 			return new JSONObject();
 		}
+		Integer nextDepth = depth + 1;
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
 		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("latitude", toJSON(getLatitude()));
 		jsonObject.put("longitude", toJSON(getLongitude()));
-		jsonObject.put("offline", toJSON(getOffline().orNull()));
-		jsonObject.put("offline_time", toJSON(getOfflineTime().orNull()));
-		jsonObject.put("orientation", toJSON(getOrientation().orNull()));
-		jsonObject.put("service_unit_id", toJSON(getServiceUnitId().orNull()));
-		jsonObject.put("temperature", toJSON(getTemperature().orNull()));
+		jsonObject.put("offline", toJSON(getOffline()));
+		jsonObject.put("offline_time", toJSON(getOfflineTime()));
+		jsonObject.put("orientation", toJSON(getOrientation()));
+		jsonObject.put("service_unit_id", toJSON(getServiceUnitId()));
+		jsonObject.put("temperature", toJSON(getTemperature()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
 		if (getServiceUnit().isPresent()) {
 			if (recursive) {
-				jsonObject.put("service_unit", getServiceUnit().get().toJSONObject(true, depth));
+				jsonObject.put("service_unit", getServiceUnit().get().toJSONObject(true, nextDepth));
 			} else {
 				jsonObject.put("service_unit_id", toJSON(getServiceUnit().get().getId()));
 			}
@@ -101,35 +93,14 @@ public class ServiceUnitStatusLog extends Model {
 		return jsonObject;
 	}
 
-	private void writeObject(ObjectOutputStream objectOutputStream)
-			throws IOException {
-		try {
-			objectOutputStream.writeObject(toJSONObject(true).toString());
-		} catch (JSONException e) {
-			throw new IOException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
-		}
-	}
-
-	private void readObject(ObjectInputStream objectInputStream)
-		throws IOException, ClassNotFoundException {
-		Object object = objectInputStream.readObject();
-		if (!(object instanceof String)) {
-			return;
-		}
-		String jsonString = (String) object;
-		try {
-			JSONObject jsonObject = new JSONObject(jsonString);
-			fillMembers(this, jsonObject);
-		} catch (JSONException e) {
-			throw new IOException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
-		} catch (ParseException e) {
-			throw new IOException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
-		}
-	}
-
 	@Override
 	public ServiceUnitStatusLog cloneByJSON() throws JSONException {
-		return new ServiceUnitStatusLog(toJSONObject(true));
+		try {
+			return parse(toJSONObject(true));
+		} catch (ParseException e) {
+			throw new JSONException(e.toString() + "\n"
+				+ ExceptionUtils.getStackTrace(e));
+		}
 	}
 
 	private Date createdAt = new Date();

@@ -1,5 +1,8 @@
-package com.kogasoftware.odt.webapi.model;
+package com.kogasoftware.odt.webapi.model.base;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -7,6 +10,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.json.JSONArray;
@@ -15,12 +19,14 @@ import org.json.JSONObject;
 
 import android.util.Log;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import com.kogasoftware.odt.webapi.Identifiable;
 
-abstract public class Model implements Serializable, Identifiable, Cloneable {
+public abstract class Model implements Serializable, Identifiable, Cloneable {
 	public static final String TAG = Model.class.getSimpleName();
-	public static final Integer MAX_RECURSE_DEPTH = 10;
+	public static final Integer MAX_RECURSE_DEPTH = 11;
 
 	private static final long serialVersionUID = -5513333240346057624L;
 
@@ -137,46 +143,24 @@ abstract public class Model implements Serializable, Identifiable, Cloneable {
 		return jsonObject.getString(key);
 	}
 
-	protected static Object toJSON(BigDecimal value) {
-		if (value == null) {
-			return JSONObject.NULL;
+	protected static Object toJSON(Object object) {
+		if (object instanceof Optional<?>) {
+			Optional<?> optional = (Optional<?>) object;
+			if (optional.isPresent()) {
+				return toJSON(optional.get());
+			} else {
+				return JSONObject.NULL;
+			}
+		} else if (object instanceof BigDecimal) {
+			return ((BigDecimal) object).toPlainString();
+		} else if (object instanceof Date) {
+			return DATE_TIME_FORMATTER.print(((Date) object).getTime());
 		}
-		return value.toPlainString();
+		return object;
 	}
 
-	protected static Object toJSON(Boolean value) {
-		if (value == null) {
-			return JSONObject.NULL;
-		}
-		return value;
-	}
-
-	protected static Object toJSON(Date value) {
-		if (value == null) {
-			return JSONObject.NULL;
-		}
-		return DATE_TIME_FORMATTER.print(value.getTime());
-	}
-
-	protected static Object toJSON(Float value) {
-		if (value == null) {
-			return JSONObject.NULL;
-		}
-		return value;
-	}
-
-	protected static Object toJSON(Integer value) {
-		if (value == null) {
-			return JSONObject.NULL;
-		}
-		return value;
-	}
-
-	protected static Object toJSON(List<? extends Model> value, Boolean recursive, Integer depth)
-			throws JSONException {
-		if (value == null) {
-			return JSONObject.NULL;
-		}
+	protected static Object toJSON(List<? extends Model> value,
+			Boolean recursive, Integer depth) throws JSONException {
 		JSONArray jsonArray = new JSONArray();
 		for (Model model : value) {
 			jsonArray.put(model.toJSONObject(recursive, depth));
@@ -184,48 +168,42 @@ abstract public class Model implements Serializable, Identifiable, Cloneable {
 		return jsonArray;
 	}
 
-	protected static Object toJSON(Optional<? extends Model> value, Boolean recursive, Integer depth)
-			throws JSONException {
-		if (value == null || !value.isPresent()) {
+	protected static Object toJSON(Optional<? extends Model> value,
+			Boolean recursive, Integer depth) throws JSONException {
+		if (value.isPresent()) {
+			return value.get().toJSONObject(recursive, depth);
+		} else {
 			return JSONObject.NULL;
 		}
-		return value.get().toJSONObject(recursive, depth);
-	}
-
-	protected static Object toJSON(String value) {
-		if (value == null) {
-			return JSONObject.NULL;
-		}
-		return value;
 	}
 
 	protected static BigDecimal wrapNull(BigDecimal value) {
-		return value != null ? value : BigDecimal.ZERO;
+		return Objects.firstNonNull(value, BigDecimal.ZERO);
 	}
 
 	protected static Boolean wrapNull(Boolean value) {
-		return value != null ? value : false;
+		return Objects.firstNonNull(value, false);
 	}
 
 	protected static Date wrapNull(Date value) {
-		return value != null ? value : new Date();
+		return Objects.firstNonNull(value, new Date());
 	}
 
 	protected static Integer wrapNull(Integer value) {
-		return value != null ? value : 0;
+		return Objects.firstNonNull(value, 0);
 	}
 
 	protected static <T extends Serializable> List<T> wrapNull(List<T> value) {
-		return value != null ? value : new LinkedList<T>();
+		return Objects.firstNonNull(value, new LinkedList<T>());
 	}
 
 	protected static <T extends Serializable> Optional<T> wrapNull(
 			Optional<T> value) {
-		return value != null ? value : Optional.<T> absent();
+		return Objects.firstNonNull(value, Optional.<T> absent());
 	}
 
 	protected static String wrapNull(String value) {
-		return value != null ? value : "";
+		return Strings.nullToEmpty(value);
 	}
 
 	public JSONObject toJSONObject() throws JSONException {
@@ -236,8 +214,40 @@ abstract public class Model implements Serializable, Identifiable, Cloneable {
 		return toJSONObject(recursive, 0);
 	}
 
-	abstract protected JSONObject toJSONObject(Boolean recursive, Integer depth)
+	protected abstract JSONObject toJSONObject(Boolean recursive, Integer depth)
 			throws JSONException;
 
-	abstract protected Model cloneByJSON() throws JSONException;
+	protected abstract Model cloneByJSON() throws JSONException;
+
+	private void writeObject(ObjectOutputStream objectOutputStream)
+			throws IOException {
+		try {
+			objectOutputStream.writeObject(toJSONObject(true).toString());
+		} catch (JSONException e) {
+			throw new IOException(e.toString() + "\n"
+					+ ExceptionUtils.getStackTrace(e));
+		}
+	}
+
+	private void readObject(ObjectInputStream objectInputStream)
+			throws IOException, ClassNotFoundException {
+		Object object = objectInputStream.readObject();
+		if (!(object instanceof String)) {
+			return;
+		}
+		String jsonString = (String) object;
+		try {
+			JSONObject jsonObject = new JSONObject(jsonString);
+			fill(jsonObject);
+		} catch (JSONException e) {
+			throw new IOException(e.toString() + "\n"
+					+ ExceptionUtils.getStackTrace(e));
+		} catch (ParseException e) {
+			throw new IOException(e.toString() + "\n"
+					+ ExceptionUtils.getStackTrace(e));
+		}
+	}
+
+	public abstract void fill(JSONObject jsonObject) throws ParseException,
+			JSONException;
 }

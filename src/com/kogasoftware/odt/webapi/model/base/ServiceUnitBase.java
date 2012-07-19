@@ -1,13 +1,11 @@
-package com.kogasoftware.odt.webapi.model;
+package com.kogasoftware.odt.webapi.model.base;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
@@ -15,49 +13,43 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.base.Optional;
+import com.kogasoftware.odt.webapi.model.*;
 
-public class ServiceUnit extends Model {
-	private static final long serialVersionUID = 6837274428683509391L;
+@SuppressWarnings("unused")
+public abstract class ServiceUnitBase extends Model {
+	private static final long serialVersionUID = 7765689775529169788L;
 
-	public ServiceUnit() {
-	}
-
-	public ServiceUnit(JSONObject jsonObject) throws JSONException {
-		try {
-			fillMembers(this, jsonObject);
-		} catch (ParseException e) {
-			throw new JSONException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
-		}
-	}
-
-	public static void fillMembers(ServiceUnit model, JSONObject jsonObject) throws JSONException, ParseException {
-		model.setActivatedAt(parseOptionalDate(jsonObject, "activated_at"));
-		model.setCreatedAt(parseDate(jsonObject, "created_at"));
-		model.setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
-		model.setDriverId(parseOptionalInteger(jsonObject, "driver_id"));
-		model.setId(parseInteger(jsonObject, "id"));
-		model.setInVehicleDeviceId(parseOptionalInteger(jsonObject, "in_vehicle_device_id"));
-		model.setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
-		model.setUnitAssignmentId(parseOptionalInteger(jsonObject, "unit_assignment_id"));
-		model.setUpdatedAt(parseDate(jsonObject, "updated_at"));
-		model.setVehicleId(parseOptionalInteger(jsonObject, "vehicle_id"));
-		model.setDriver(Driver.parse(jsonObject, "driver"));
-		model.setInVehicleDevice(InVehicleDevice.parse(jsonObject, "in_vehicle_device"));
-		model.setOperationRecords(OperationRecord.parseList(jsonObject, "operation_records"));
-		model.setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
-		model.setUnitAssignment(UnitAssignment.parse(jsonObject, "unit_assignment"));
-		model.setVehicle(Vehicle.parse(jsonObject, "vehicle"));
+	@Override
+	public void fill(JSONObject jsonObject) throws JSONException, ParseException {
+		setActivatedAt(parseOptionalDate(jsonObject, "activated_at"));
+		setCreatedAt(parseDate(jsonObject, "created_at"));
+		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
+		setDriverId(parseOptionalInteger(jsonObject, "driver_id"));
+		setId(parseInteger(jsonObject, "id"));
+		setInVehicleDeviceId(parseOptionalInteger(jsonObject, "in_vehicle_device_id"));
+		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
+		setUnitAssignmentId(parseOptionalInteger(jsonObject, "unit_assignment_id"));
+		setUpdatedAt(parseDate(jsonObject, "updated_at"));
+		setVehicleId(parseOptionalInteger(jsonObject, "vehicle_id"));
+		setDriver(Driver.parse(jsonObject, "driver"));
+		setInVehicleDevice(InVehicleDevice.parse(jsonObject, "in_vehicle_device"));
+		setOperationRecords(OperationRecord.parseList(jsonObject, "operation_records"));
+		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
+		setUnitAssignment(UnitAssignment.parse(jsonObject, "unit_assignment"));
+		setVehicle(Vehicle.parse(jsonObject, "vehicle"));
 	}
 
 	public static Optional<ServiceUnit> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
 		if (!jsonObject.has(key)) {
 			return Optional.absent();
 		}
-		return parse(jsonObject.getJSONObject(key));
+		return Optional.of(parse(jsonObject.getJSONObject(key)));
 	}
 
-	public static Optional<ServiceUnit> parse(JSONObject jsonObject) throws JSONException, ParseException {
-		return Optional.of(new ServiceUnit(jsonObject));
+	public static ServiceUnit parse(JSONObject jsonObject) throws JSONException, ParseException {
+		ServiceUnit model = new ServiceUnit();
+		model.fill(jsonObject);
+		return model;
 	}
 
 	public static LinkedList<ServiceUnit> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -74,62 +66,62 @@ public class ServiceUnit extends Model {
 			if (jsonArray.isNull(i)) {
 				continue;
 			}
-			models.add(new ServiceUnit(jsonArray.getJSONObject(i)));
+			models.add(parse(jsonArray.getJSONObject(i)));
 		}
 		return models;
 	}
 
 	@Override
 	protected JSONObject toJSONObject(Boolean recursive, Integer depth) throws JSONException {
-		depth++;
 		if (depth > MAX_RECURSE_DEPTH) {
 			return new JSONObject();
 		}
+		Integer nextDepth = depth + 1;
 		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("activated_at", toJSON(getActivatedAt().orNull()));
+		jsonObject.put("activated_at", toJSON(getActivatedAt()));
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
-		jsonObject.put("deleted_at", toJSON(getDeletedAt().orNull()));
-		jsonObject.put("driver_id", toJSON(getDriverId().orNull()));
+		jsonObject.put("deleted_at", toJSON(getDeletedAt()));
+		jsonObject.put("driver_id", toJSON(getDriverId()));
 		jsonObject.put("id", toJSON(getId()));
-		jsonObject.put("in_vehicle_device_id", toJSON(getInVehicleDeviceId().orNull()));
-		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
-		jsonObject.put("unit_assignment_id", toJSON(getUnitAssignmentId().orNull()));
+		jsonObject.put("in_vehicle_device_id", toJSON(getInVehicleDeviceId()));
+		jsonObject.put("service_provider_id", toJSON(getServiceProviderId()));
+		jsonObject.put("unit_assignment_id", toJSON(getUnitAssignmentId()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
-		jsonObject.put("vehicle_id", toJSON(getVehicleId().orNull()));
+		jsonObject.put("vehicle_id", toJSON(getVehicleId()));
 		if (getDriver().isPresent()) {
 			if (recursive) {
-				jsonObject.put("driver", getDriver().get().toJSONObject(true, depth));
+				jsonObject.put("driver", getDriver().get().toJSONObject(true, nextDepth));
 			} else {
 				jsonObject.put("driver_id", toJSON(getDriver().get().getId()));
 			}
 		}
 		if (getInVehicleDevice().isPresent()) {
 			if (recursive) {
-				jsonObject.put("in_vehicle_device", getInVehicleDevice().get().toJSONObject(true, depth));
+				jsonObject.put("in_vehicle_device", getInVehicleDevice().get().toJSONObject(true, nextDepth));
 			} else {
 				jsonObject.put("in_vehicle_device_id", toJSON(getInVehicleDevice().get().getId()));
 			}
 		}
 		if (getOperationRecords().size() > 0 && recursive) {
-			jsonObject.put("operation_records", toJSON(getOperationRecords(), true, depth));
+			jsonObject.put("operation_records", toJSON(getOperationRecords(), true, nextDepth));
 		}
 		if (getServiceProvider().isPresent()) {
 			if (recursive) {
-				jsonObject.put("service_provider", getServiceProvider().get().toJSONObject(true, depth));
+				jsonObject.put("service_provider", getServiceProvider().get().toJSONObject(true, nextDepth));
 			} else {
 				jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
 			}
 		}
 		if (getUnitAssignment().isPresent()) {
 			if (recursive) {
-				jsonObject.put("unit_assignment", getUnitAssignment().get().toJSONObject(true, depth));
+				jsonObject.put("unit_assignment", getUnitAssignment().get().toJSONObject(true, nextDepth));
 			} else {
 				jsonObject.put("unit_assignment_id", toJSON(getUnitAssignment().get().getId()));
 			}
 		}
 		if (getVehicle().isPresent()) {
 			if (recursive) {
-				jsonObject.put("vehicle", getVehicle().get().toJSONObject(true, depth));
+				jsonObject.put("vehicle", getVehicle().get().toJSONObject(true, nextDepth));
 			} else {
 				jsonObject.put("vehicle_id", toJSON(getVehicle().get().getId()));
 			}
@@ -137,35 +129,14 @@ public class ServiceUnit extends Model {
 		return jsonObject;
 	}
 
-	private void writeObject(ObjectOutputStream objectOutputStream)
-			throws IOException {
-		try {
-			objectOutputStream.writeObject(toJSONObject(true).toString());
-		} catch (JSONException e) {
-			throw new IOException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
-		}
-	}
-
-	private void readObject(ObjectInputStream objectInputStream)
-		throws IOException, ClassNotFoundException {
-		Object object = objectInputStream.readObject();
-		if (!(object instanceof String)) {
-			return;
-		}
-		String jsonString = (String) object;
-		try {
-			JSONObject jsonObject = new JSONObject(jsonString);
-			fillMembers(this, jsonObject);
-		} catch (JSONException e) {
-			throw new IOException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
-		} catch (ParseException e) {
-			throw new IOException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
-		}
-	}
-
 	@Override
 	public ServiceUnit cloneByJSON() throws JSONException {
-		return new ServiceUnit(toJSONObject(true));
+		try {
+			return parse(toJSONObject(true));
+		} catch (ParseException e) {
+			throw new JSONException(e.toString() + "\n"
+				+ ExceptionUtils.getStackTrace(e));
+		}
 	}
 
 	private Optional<Date> activatedAt = Optional.absent();
@@ -362,11 +333,11 @@ public class ServiceUnit extends Model {
 
 	private LinkedList<OperationRecord> operationRecords = new LinkedList<OperationRecord>();
 
-	public List<OperationRecord> getOperationRecords() {
+	public LinkedList<OperationRecord> getOperationRecords() {
 		return new LinkedList<OperationRecord>(wrapNull(operationRecords));
 	}
 
-	public void setOperationRecords(List<OperationRecord> operationRecords) {
+	public void setOperationRecords(LinkedList<OperationRecord> operationRecords) {
 		this.operationRecords = new LinkedList<OperationRecord>(wrapNull(operationRecords));
 	}
 

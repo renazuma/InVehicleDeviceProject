@@ -1,13 +1,11 @@
-package com.kogasoftware.odt.webapi.model;
+package com.kogasoftware.odt.webapi.model.base;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
@@ -15,55 +13,51 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.base.Optional;
+import com.kogasoftware.odt.webapi.model.*;
 
-public class Demand extends Model {
-	private static final long serialVersionUID = 2605048858550668508L;
+@SuppressWarnings("unused")
+public abstract class DemandBase extends Model {
+	private static final long serialVersionUID = 3569202516487192676L;
 
-	public Demand() {
-	}
-
-	public Demand(JSONObject jsonObject) throws JSONException {
-		try {
-			fillMembers(this, jsonObject);
-		} catch (ParseException e) {
-			throw new JSONException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
-		}
-	}
-
-	public static void fillMembers(Demand model, JSONObject jsonObject) throws JSONException, ParseException {
-		model.setArrivalPlatformId(parseOptionalInteger(jsonObject, "arrival_platform_id"));
-		model.setArrivalTime(parseOptionalDate(jsonObject, "arrival_time"));
-		model.setCreatedAt(parseDate(jsonObject, "created_at"));
-		model.setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
-		model.setDeparturePlatformId(parseOptionalInteger(jsonObject, "departure_platform_id"));
-		model.setDepartureTime(parseOptionalDate(jsonObject, "departure_time"));
-		model.setId(parseInteger(jsonObject, "id"));
-		model.setMemo(parseOptionalString(jsonObject, "memo"));
-		model.setPassengerCount(parseInteger(jsonObject, "passenger_count"));
-		model.setRepeat(parseOptionalBoolean(jsonObject, "repeat"));
-		model.setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
-		model.setStoppageTime(parseOptionalInteger(jsonObject, "stoppage_time"));
-		model.setUnitAssignmentId(parseOptionalInteger(jsonObject, "unit_assignment_id"));
-		model.setUpdatedAt(parseDate(jsonObject, "updated_at"));
-		model.setUserId(parseInteger(jsonObject, "user_id"));
-		model.setArrivalPlatform(Platform.parse(jsonObject, "arrival_platform"));
-		model.setDeparturePlatform(Platform.parse(jsonObject, "departure_platform"));
-		model.setReservation(Reservation.parse(jsonObject, "reservation"));
-		model.setReservationCandidates(ReservationCandidate.parseList(jsonObject, "reservation_candidates"));
-		model.setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
-		model.setUnitAssignment(UnitAssignment.parse(jsonObject, "unit_assignment"));
-		model.setUser(User.parse(jsonObject, "user"));
+	@Override
+	public void fill(JSONObject jsonObject) throws JSONException, ParseException {
+		setArrivalPlatformId(parseOptionalInteger(jsonObject, "arrival_platform_id"));
+		setArrivalTime(parseOptionalDate(jsonObject, "arrival_time"));
+		setCreatedAt(parseDate(jsonObject, "created_at"));
+		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
+		setDeparturePlatformId(parseOptionalInteger(jsonObject, "departure_platform_id"));
+		setDepartureTime(parseOptionalDate(jsonObject, "departure_time"));
+		setId(parseInteger(jsonObject, "id"));
+		setMemo(parseOptionalString(jsonObject, "memo"));
+		setPassengerCount(parseInteger(jsonObject, "passenger_count"));
+		setRepeat(parseOptionalBoolean(jsonObject, "repeat"));
+		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
+		setStoppageTime(parseOptionalInteger(jsonObject, "stoppage_time"));
+		setUnitAssignmentId(parseOptionalInteger(jsonObject, "unit_assignment_id"));
+		setUpdatedAt(parseDate(jsonObject, "updated_at"));
+		setUserId(parseInteger(jsonObject, "user_id"));
+		setArrivalPlatform(Platform.parse(jsonObject, "arrival_platform"));
+		setDeparturePlatform(Platform.parse(jsonObject, "departure_platform"));
+		setFellowUsers(User.parseList(jsonObject, "fellow_users"));
+		setReservation(Reservation.parse(jsonObject, "reservation"));
+		setReservationCandidates(ReservationCandidate.parseList(jsonObject, "reservation_candidates"));
+		setReservationUsers(ReservationUser.parseList(jsonObject, "reservation_users"));
+		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
+		setUnitAssignment(UnitAssignment.parse(jsonObject, "unit_assignment"));
+		setUser(User.parse(jsonObject, "user"));
 	}
 
 	public static Optional<Demand> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
 		if (!jsonObject.has(key)) {
 			return Optional.absent();
 		}
-		return parse(jsonObject.getJSONObject(key));
+		return Optional.of(parse(jsonObject.getJSONObject(key)));
 	}
 
-	public static Optional<Demand> parse(JSONObject jsonObject) throws JSONException, ParseException {
-		return Optional.of(new Demand(jsonObject));
+	public static Demand parse(JSONObject jsonObject) throws JSONException, ParseException {
+		Demand model = new Demand();
+		model.fill(jsonObject);
+		return model;
 	}
 
 	public static LinkedList<Demand> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -80,70 +74,76 @@ public class Demand extends Model {
 			if (jsonArray.isNull(i)) {
 				continue;
 			}
-			models.add(new Demand(jsonArray.getJSONObject(i)));
+			models.add(parse(jsonArray.getJSONObject(i)));
 		}
 		return models;
 	}
 
 	@Override
 	protected JSONObject toJSONObject(Boolean recursive, Integer depth) throws JSONException {
-		depth++;
 		if (depth > MAX_RECURSE_DEPTH) {
 			return new JSONObject();
 		}
+		Integer nextDepth = depth + 1;
 		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("arrival_platform_id", toJSON(getArrivalPlatformId().orNull()));
-		jsonObject.put("arrival_time", toJSON(getArrivalTime().orNull()));
+		jsonObject.put("arrival_platform_id", toJSON(getArrivalPlatformId()));
+		jsonObject.put("arrival_time", toJSON(getArrivalTime()));
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
-		jsonObject.put("deleted_at", toJSON(getDeletedAt().orNull()));
-		jsonObject.put("departure_platform_id", toJSON(getDeparturePlatformId().orNull()));
-		jsonObject.put("departure_time", toJSON(getDepartureTime().orNull()));
+		jsonObject.put("deleted_at", toJSON(getDeletedAt()));
+		jsonObject.put("departure_platform_id", toJSON(getDeparturePlatformId()));
+		jsonObject.put("departure_time", toJSON(getDepartureTime()));
 		jsonObject.put("id", toJSON(getId()));
-		jsonObject.put("memo", toJSON(getMemo().orNull()));
+		jsonObject.put("memo", toJSON(getMemo()));
 		jsonObject.put("passenger_count", toJSON(getPassengerCount()));
-		jsonObject.put("repeat", toJSON(getRepeat().orNull()));
-		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
-		jsonObject.put("stoppage_time", toJSON(getStoppageTime().orNull()));
-		jsonObject.put("unit_assignment_id", toJSON(getUnitAssignmentId().orNull()));
+		jsonObject.put("repeat", toJSON(getRepeat()));
+		jsonObject.put("service_provider_id", toJSON(getServiceProviderId()));
+		jsonObject.put("stoppage_time", toJSON(getStoppageTime()));
+		jsonObject.put("unit_assignment_id", toJSON(getUnitAssignmentId()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
 		jsonObject.put("user_id", toJSON(getUserId()));
 		if (getArrivalPlatform().isPresent()) {
 			if (recursive) {
-				jsonObject.put("arrival_platform", getArrivalPlatform().get().toJSONObject(true, depth));
+				jsonObject.put("arrival_platform", getArrivalPlatform().get().toJSONObject(true, nextDepth));
 			} else {
 				jsonObject.put("arrival_platform_id", toJSON(getArrivalPlatform().get().getId()));
 			}
 		}
 		if (getDeparturePlatform().isPresent()) {
 			if (recursive) {
-				jsonObject.put("departure_platform", getDeparturePlatform().get().toJSONObject(true, depth));
+				jsonObject.put("departure_platform", getDeparturePlatform().get().toJSONObject(true, nextDepth));
 			} else {
 				jsonObject.put("departure_platform_id", toJSON(getDeparturePlatform().get().getId()));
 			}
 		}
+		if (getFellowUsers().size() > 0 && recursive) {
+			jsonObject.put("fellow_users", toJSON(getFellowUsers(), true, nextDepth));
+		}
 		if (getReservation().isPresent() && recursive) {
-			jsonObject.put("reservation", getReservation().get().toJSONObject(true, depth));
+			jsonObject.put("reservation", getReservation().get().toJSONObject(true, nextDepth));
 		}
 		if (getReservationCandidates().size() > 0 && recursive) {
-			jsonObject.put("reservation_candidates", toJSON(getReservationCandidates(), true, depth));
+			jsonObject.put("reservation_candidates", toJSON(getReservationCandidates(), true, nextDepth));
+		}
+		if (getReservationUsers().size() > 0 && recursive) {
+			jsonObject.put("reservation_users", toJSON(getReservationUsers(), true, nextDepth));
 		}
 		if (getServiceProvider().isPresent()) {
 			if (recursive) {
-				jsonObject.put("service_provider", getServiceProvider().get().toJSONObject(true, depth));
+				jsonObject.put("service_provider", getServiceProvider().get().toJSONObject(true, nextDepth));
 			} else {
 				jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
 			}
 		}
 		if (getUnitAssignment().isPresent()) {
 			if (recursive) {
-				jsonObject.put("unit_assignment", getUnitAssignment().get().toJSONObject(true, depth));
+				jsonObject.put("unit_assignment", getUnitAssignment().get().toJSONObject(true, nextDepth));
 			} else {
 				jsonObject.put("unit_assignment_id", toJSON(getUnitAssignment().get().getId()));
 			}
 		}
 		if (getUser().isPresent()) {
 			if (recursive) {
-				jsonObject.put("user", getUser().get().toJSONObject(true, depth));
+				jsonObject.put("user", getUser().get().toJSONObject(true, nextDepth));
 			} else {
 				jsonObject.put("user_id", toJSON(getUser().get().getId()));
 			}
@@ -151,35 +151,14 @@ public class Demand extends Model {
 		return jsonObject;
 	}
 
-	private void writeObject(ObjectOutputStream objectOutputStream)
-			throws IOException {
-		try {
-			objectOutputStream.writeObject(toJSONObject(true).toString());
-		} catch (JSONException e) {
-			throw new IOException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
-		}
-	}
-
-	private void readObject(ObjectInputStream objectInputStream)
-		throws IOException, ClassNotFoundException {
-		Object object = objectInputStream.readObject();
-		if (!(object instanceof String)) {
-			return;
-		}
-		String jsonString = (String) object;
-		try {
-			JSONObject jsonObject = new JSONObject(jsonString);
-			fillMembers(this, jsonObject);
-		} catch (JSONException e) {
-			throw new IOException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
-		} catch (ParseException e) {
-			throw new IOException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
-		}
-	}
-
 	@Override
 	public Demand cloneByJSON() throws JSONException {
-		return new Demand(toJSONObject(true));
+		try {
+			return parse(toJSONObject(true));
+		} catch (ParseException e) {
+			throw new JSONException(e.toString() + "\n"
+				+ ExceptionUtils.getStackTrace(e));
+		}
 	}
 
 	private Optional<Integer> arrivalPlatformId = Optional.absent();
@@ -448,6 +427,20 @@ public class Demand extends Model {
 		this.departurePlatform = Optional.absent();
 	}
 
+	private LinkedList<User> fellowUsers = new LinkedList<User>();
+
+	public LinkedList<User> getFellowUsers() {
+		return new LinkedList<User>(wrapNull(fellowUsers));
+	}
+
+	public void setFellowUsers(LinkedList<User> fellowUsers) {
+		this.fellowUsers = new LinkedList<User>(wrapNull(fellowUsers));
+	}
+
+	public void clearFellowUsers() {
+		this.fellowUsers = new LinkedList<User>();
+	}
+
 	private Optional<Reservation> reservation = Optional.absent();
 
 	public Optional<Reservation> getReservation() {
@@ -468,16 +461,30 @@ public class Demand extends Model {
 
 	private LinkedList<ReservationCandidate> reservationCandidates = new LinkedList<ReservationCandidate>();
 
-	public List<ReservationCandidate> getReservationCandidates() {
+	public LinkedList<ReservationCandidate> getReservationCandidates() {
 		return new LinkedList<ReservationCandidate>(wrapNull(reservationCandidates));
 	}
 
-	public void setReservationCandidates(List<ReservationCandidate> reservationCandidates) {
+	public void setReservationCandidates(LinkedList<ReservationCandidate> reservationCandidates) {
 		this.reservationCandidates = new LinkedList<ReservationCandidate>(wrapNull(reservationCandidates));
 	}
 
 	public void clearReservationCandidates() {
 		this.reservationCandidates = new LinkedList<ReservationCandidate>();
+	}
+
+	private LinkedList<ReservationUser> reservationUsers = new LinkedList<ReservationUser>();
+
+	public LinkedList<ReservationUser> getReservationUsers() {
+		return new LinkedList<ReservationUser>(wrapNull(reservationUsers));
+	}
+
+	public void setReservationUsers(LinkedList<ReservationUser> reservationUsers) {
+		this.reservationUsers = new LinkedList<ReservationUser>(wrapNull(reservationUsers));
+	}
+
+	public void clearReservationUsers() {
+		this.reservationUsers = new LinkedList<ReservationUser>();
 	}
 
 	private Optional<ServiceProvider> serviceProvider = Optional.absent();

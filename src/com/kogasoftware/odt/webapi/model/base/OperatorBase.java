@@ -1,13 +1,11 @@
-package com.kogasoftware.odt.webapi.model;
+package com.kogasoftware.odt.webapi.model.base;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
@@ -15,46 +13,39 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.base.Optional;
+import com.kogasoftware.odt.webapi.model.*;
 
-public class Operator extends Model {
-	private static final long serialVersionUID = 2099648606408733881L;
+@SuppressWarnings("unused")
+public abstract class OperatorBase extends Model {
+	private static final long serialVersionUID = 446482701602930190L;
 
-	public Operator() {
-	}
-
-	public Operator(JSONObject jsonObject) throws JSONException {
-		try {
-			fillMembers(this, jsonObject);
-		} catch (ParseException e) {
-			throw new JSONException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
-		}
-	}
-
-	public static void fillMembers(Operator model, JSONObject jsonObject) throws JSONException, ParseException {
-		model.setAuthenticationToken(parseOptionalString(jsonObject, "authentication_token"));
-		model.setEmail(parseOptionalString(jsonObject, "email"));
-		model.setFirstName(parseString(jsonObject, "first_name"));
-		model.setId(parseInteger(jsonObject, "id"));
-		model.setLastName(parseString(jsonObject, "last_name"));
-		model.setLogin(parseString(jsonObject, "login"));
-		model.setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
-		model.setAuditComment(parseOptionalString(jsonObject, "audit_comment"));
-		model.setPassword(parseOptionalString(jsonObject, "password"));
-		model.setPasswordConfirmation(parseOptionalString(jsonObject, "password_confirmation"));
-		model.setRememberMe(parseOptionalString(jsonObject, "remember_me"));
-		model.setReservations(Reservation.parseList(jsonObject, "reservations"));
-		model.setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
+	@Override
+	public void fill(JSONObject jsonObject) throws JSONException, ParseException {
+		setAuthenticationToken(parseOptionalString(jsonObject, "authentication_token"));
+		setEmail(parseOptionalString(jsonObject, "email"));
+		setFirstName(parseString(jsonObject, "first_name"));
+		setId(parseInteger(jsonObject, "id"));
+		setLastName(parseString(jsonObject, "last_name"));
+		setLogin(parseString(jsonObject, "login"));
+		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
+		setAuditComment(parseOptionalString(jsonObject, "audit_comment"));
+		setPassword(parseOptionalString(jsonObject, "password"));
+		setPasswordConfirmation(parseOptionalString(jsonObject, "password_confirmation"));
+		setRememberMe(parseOptionalString(jsonObject, "remember_me"));
+		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
 	}
 
 	public static Optional<Operator> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
 		if (!jsonObject.has(key)) {
 			return Optional.absent();
 		}
-		return parse(jsonObject.getJSONObject(key));
+		return Optional.of(parse(jsonObject.getJSONObject(key)));
 	}
 
-	public static Optional<Operator> parse(JSONObject jsonObject) throws JSONException, ParseException {
-		return Optional.of(new Operator(jsonObject));
+	public static Operator parse(JSONObject jsonObject) throws JSONException, ParseException {
+		Operator model = new Operator();
+		model.fill(jsonObject);
+		return model;
 	}
 
 	public static LinkedList<Operator> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -71,35 +62,32 @@ public class Operator extends Model {
 			if (jsonArray.isNull(i)) {
 				continue;
 			}
-			models.add(new Operator(jsonArray.getJSONObject(i)));
+			models.add(parse(jsonArray.getJSONObject(i)));
 		}
 		return models;
 	}
 
 	@Override
 	protected JSONObject toJSONObject(Boolean recursive, Integer depth) throws JSONException {
-		depth++;
 		if (depth > MAX_RECURSE_DEPTH) {
 			return new JSONObject();
 		}
+		Integer nextDepth = depth + 1;
 		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("authentication_token", toJSON(getAuthenticationToken().orNull()));
-		jsonObject.put("email", toJSON(getEmail().orNull()));
+		jsonObject.put("authentication_token", toJSON(getAuthenticationToken()));
+		jsonObject.put("email", toJSON(getEmail()));
 		jsonObject.put("first_name", toJSON(getFirstName()));
 		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("last_name", toJSON(getLastName()));
 		jsonObject.put("login", toJSON(getLogin()));
-		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
-		jsonObject.put("audit_comment", toJSON(getAuditComment().orNull()));
-		jsonObject.put("password", toJSON(getPassword().orNull()));
-		jsonObject.put("password_confirmation", toJSON(getPasswordConfirmation().orNull()));
-		jsonObject.put("remember_me", toJSON(getRememberMe().orNull()));
-		if (getReservations().size() > 0 && recursive) {
-			jsonObject.put("reservations", toJSON(getReservations(), true, depth));
-		}
+		jsonObject.put("service_provider_id", toJSON(getServiceProviderId()));
+		jsonObject.put("audit_comment", toJSON(getAuditComment()));
+		jsonObject.put("password", toJSON(getPassword()));
+		jsonObject.put("password_confirmation", toJSON(getPasswordConfirmation()));
+		jsonObject.put("remember_me", toJSON(getRememberMe()));
 		if (getServiceProvider().isPresent()) {
 			if (recursive) {
-				jsonObject.put("service_provider", getServiceProvider().get().toJSONObject(true, depth));
+				jsonObject.put("service_provider", getServiceProvider().get().toJSONObject(true, nextDepth));
 			} else {
 				jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
 			}
@@ -107,35 +95,14 @@ public class Operator extends Model {
 		return jsonObject;
 	}
 
-	private void writeObject(ObjectOutputStream objectOutputStream)
-			throws IOException {
-		try {
-			objectOutputStream.writeObject(toJSONObject(true).toString());
-		} catch (JSONException e) {
-			throw new IOException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
-		}
-	}
-
-	private void readObject(ObjectInputStream objectInputStream)
-		throws IOException, ClassNotFoundException {
-		Object object = objectInputStream.readObject();
-		if (!(object instanceof String)) {
-			return;
-		}
-		String jsonString = (String) object;
-		try {
-			JSONObject jsonObject = new JSONObject(jsonString);
-			fillMembers(this, jsonObject);
-		} catch (JSONException e) {
-			throw new IOException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
-		} catch (ParseException e) {
-			throw new IOException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
-		}
-	}
-
 	@Override
 	public Operator cloneByJSON() throws JSONException {
-		return new Operator(toJSONObject(true));
+		try {
+			return parse(toJSONObject(true));
+		} catch (ParseException e) {
+			throw new JSONException(e.toString() + "\n"
+				+ ExceptionUtils.getStackTrace(e));
+		}
 	}
 
 	private Optional<String> authenticationToken = Optional.absent();
@@ -302,20 +269,6 @@ public class Operator extends Model {
 
 	public void clearRememberMe() {
 		this.rememberMe = Optional.absent();
-	}
-
-	private LinkedList<Reservation> reservations = new LinkedList<Reservation>();
-
-	public List<Reservation> getReservations() {
-		return new LinkedList<Reservation>(wrapNull(reservations));
-	}
-
-	public void setReservations(List<Reservation> reservations) {
-		this.reservations = new LinkedList<Reservation>(wrapNull(reservations));
-	}
-
-	public void clearReservations() {
-		this.reservations = new LinkedList<Reservation>();
 	}
 
 	private Optional<ServiceProvider> serviceProvider = Optional.absent();

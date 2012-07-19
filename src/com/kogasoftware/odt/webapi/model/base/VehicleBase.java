@@ -1,13 +1,11 @@
-package com.kogasoftware.odt.webapi.model;
+package com.kogasoftware.odt.webapi.model.base;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
@@ -15,44 +13,38 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.base.Optional;
+import com.kogasoftware.odt.webapi.model.*;
 
-public class Vehicle extends Model {
-	private static final long serialVersionUID = 7993969392355219271L;
+@SuppressWarnings("unused")
+public abstract class VehicleBase extends Model {
+	private static final long serialVersionUID = 6135059780334065294L;
 
-	public Vehicle() {
-	}
-
-	public Vehicle(JSONObject jsonObject) throws JSONException {
-		try {
-			fillMembers(this, jsonObject);
-		} catch (ParseException e) {
-			throw new JSONException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
-		}
-	}
-
-	public static void fillMembers(Vehicle model, JSONObject jsonObject) throws JSONException, ParseException {
-		model.setCapacity(parseInteger(jsonObject, "capacity"));
-		model.setCreatedAt(parseDate(jsonObject, "created_at"));
-		model.setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
-		model.setId(parseInteger(jsonObject, "id"));
-		model.setImage(parseOptionalString(jsonObject, "image"));
-		model.setModelName(parseString(jsonObject, "model_name"));
-		model.setNumber(parseString(jsonObject, "number"));
-		model.setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
-		model.setUpdatedAt(parseDate(jsonObject, "updated_at"));
-		model.setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
-		model.setServiceUnits(ServiceUnit.parseList(jsonObject, "service_units"));
+	@Override
+	public void fill(JSONObject jsonObject) throws JSONException, ParseException {
+		setCapacity(parseInteger(jsonObject, "capacity"));
+		setCreatedAt(parseDate(jsonObject, "created_at"));
+		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
+		setId(parseInteger(jsonObject, "id"));
+		setImage(parseOptionalString(jsonObject, "image"));
+		setModelName(parseString(jsonObject, "model_name"));
+		setNumber(parseString(jsonObject, "number"));
+		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
+		setUpdatedAt(parseDate(jsonObject, "updated_at"));
+		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
+		setServiceUnits(ServiceUnit.parseList(jsonObject, "service_units"));
 	}
 
 	public static Optional<Vehicle> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
 		if (!jsonObject.has(key)) {
 			return Optional.absent();
 		}
-		return parse(jsonObject.getJSONObject(key));
+		return Optional.of(parse(jsonObject.getJSONObject(key)));
 	}
 
-	public static Optional<Vehicle> parse(JSONObject jsonObject) throws JSONException, ParseException {
-		return Optional.of(new Vehicle(jsonObject));
+	public static Vehicle parse(JSONObject jsonObject) throws JSONException, ParseException {
+		Vehicle model = new Vehicle();
+		model.fill(jsonObject);
+		return model;
 	}
 
 	public static LinkedList<Vehicle> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -69,69 +61,48 @@ public class Vehicle extends Model {
 			if (jsonArray.isNull(i)) {
 				continue;
 			}
-			models.add(new Vehicle(jsonArray.getJSONObject(i)));
+			models.add(parse(jsonArray.getJSONObject(i)));
 		}
 		return models;
 	}
 
 	@Override
 	protected JSONObject toJSONObject(Boolean recursive, Integer depth) throws JSONException {
-		depth++;
 		if (depth > MAX_RECURSE_DEPTH) {
 			return new JSONObject();
 		}
+		Integer nextDepth = depth + 1;
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("capacity", toJSON(getCapacity()));
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
-		jsonObject.put("deleted_at", toJSON(getDeletedAt().orNull()));
+		jsonObject.put("deleted_at", toJSON(getDeletedAt()));
 		jsonObject.put("id", toJSON(getId()));
-		jsonObject.put("image", toJSON(getImage().orNull()));
+		jsonObject.put("image", toJSON(getImage()));
 		jsonObject.put("model_name", toJSON(getModelName()));
 		jsonObject.put("number", toJSON(getNumber()));
-		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
+		jsonObject.put("service_provider_id", toJSON(getServiceProviderId()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
 		if (getServiceProvider().isPresent()) {
 			if (recursive) {
-				jsonObject.put("service_provider", getServiceProvider().get().toJSONObject(true, depth));
+				jsonObject.put("service_provider", getServiceProvider().get().toJSONObject(true, nextDepth));
 			} else {
 				jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
 			}
 		}
 		if (getServiceUnits().size() > 0 && recursive) {
-			jsonObject.put("service_units", toJSON(getServiceUnits(), true, depth));
+			jsonObject.put("service_units", toJSON(getServiceUnits(), true, nextDepth));
 		}
 		return jsonObject;
 	}
 
-	private void writeObject(ObjectOutputStream objectOutputStream)
-			throws IOException {
-		try {
-			objectOutputStream.writeObject(toJSONObject(true).toString());
-		} catch (JSONException e) {
-			throw new IOException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
-		}
-	}
-
-	private void readObject(ObjectInputStream objectInputStream)
-		throws IOException, ClassNotFoundException {
-		Object object = objectInputStream.readObject();
-		if (!(object instanceof String)) {
-			return;
-		}
-		String jsonString = (String) object;
-		try {
-			JSONObject jsonObject = new JSONObject(jsonString);
-			fillMembers(this, jsonObject);
-		} catch (JSONException e) {
-			throw new IOException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
-		} catch (ParseException e) {
-			throw new IOException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
-		}
-	}
-
 	@Override
 	public Vehicle cloneByJSON() throws JSONException {
-		return new Vehicle(toJSONObject(true));
+		try {
+			return parse(toJSONObject(true));
+		} catch (ParseException e) {
+			throw new JSONException(e.toString() + "\n"
+				+ ExceptionUtils.getStackTrace(e));
+		}
 	}
 
 	private Integer capacity = 0;
@@ -268,11 +239,11 @@ public class Vehicle extends Model {
 
 	private LinkedList<ServiceUnit> serviceUnits = new LinkedList<ServiceUnit>();
 
-	public List<ServiceUnit> getServiceUnits() {
+	public LinkedList<ServiceUnit> getServiceUnits() {
 		return new LinkedList<ServiceUnit>(wrapNull(serviceUnits));
 	}
 
-	public void setServiceUnits(List<ServiceUnit> serviceUnits) {
+	public void setServiceUnits(LinkedList<ServiceUnit> serviceUnits) {
 		this.serviceUnits = new LinkedList<ServiceUnit>(wrapNull(serviceUnits));
 	}
 

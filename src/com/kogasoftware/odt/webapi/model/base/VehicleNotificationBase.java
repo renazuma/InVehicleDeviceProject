@@ -1,13 +1,11 @@
-package com.kogasoftware.odt.webapi.model;
+package com.kogasoftware.odt.webapi.model.base;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
@@ -15,49 +13,43 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.base.Optional;
+import com.kogasoftware.odt.webapi.model.*;
 
-public class VehicleNotification extends Model {
-	private static final long serialVersionUID = 1878705192607302047L;
+@SuppressWarnings("unused")
+public abstract class VehicleNotificationBase extends Model {
+	private static final long serialVersionUID = 1175760967168641429L;
 
-	public VehicleNotification() {
-	}
-
-	public VehicleNotification(JSONObject jsonObject) throws JSONException {
-		try {
-			fillMembers(this, jsonObject);
-		} catch (ParseException e) {
-			throw new JSONException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
-		}
-	}
-
-	public static void fillMembers(VehicleNotification model, JSONObject jsonObject) throws JSONException, ParseException {
-		model.setBody(parseString(jsonObject, "body"));
-		model.setBodyRuby(parseOptionalString(jsonObject, "body_ruby"));
-		model.setCreatedAt(parseDate(jsonObject, "created_at"));
-		model.setEventAt(parseOptionalDate(jsonObject, "event_at"));
-		model.setId(parseInteger(jsonObject, "id"));
-		model.setInVehicleDeviceId(parseInteger(jsonObject, "in_vehicle_device_id"));
-		model.setNotificationKind(parseInteger(jsonObject, "notification_kind"));
-		model.setOffline(parseOptionalBoolean(jsonObject, "offline"));
-		model.setOperatorId(parseOptionalInteger(jsonObject, "operator_id"));
-		model.setReadAt(parseOptionalDate(jsonObject, "read_at"));
-		model.setReservationId(parseOptionalInteger(jsonObject, "reservation_id"));
-		model.setResponse(parseOptionalInteger(jsonObject, "response"));
-		model.setUpdatedAt(parseDate(jsonObject, "updated_at"));
-		model.setInVehicleDevice(InVehicleDevice.parse(jsonObject, "in_vehicle_device"));
-		model.setOperator(Operator.parse(jsonObject, "operator"));
-		model.setReservation(Reservation.parse(jsonObject, "reservation"));
+	@Override
+	public void fill(JSONObject jsonObject) throws JSONException, ParseException {
+		setBody(parseString(jsonObject, "body"));
+		setBodyRuby(parseOptionalString(jsonObject, "body_ruby"));
+		setCreatedAt(parseDate(jsonObject, "created_at"));
+		setEventAt(parseOptionalDate(jsonObject, "event_at"));
+		setId(parseInteger(jsonObject, "id"));
+		setInVehicleDeviceId(parseInteger(jsonObject, "in_vehicle_device_id"));
+		setNotificationKind(parseInteger(jsonObject, "notification_kind"));
+		setOffline(parseOptionalBoolean(jsonObject, "offline"));
+		setOperatorId(parseOptionalInteger(jsonObject, "operator_id"));
+		setReadAt(parseOptionalDate(jsonObject, "read_at"));
+		setReservationId(parseOptionalInteger(jsonObject, "reservation_id"));
+		setResponse(parseOptionalInteger(jsonObject, "response"));
+		setUpdatedAt(parseDate(jsonObject, "updated_at"));
+		setInVehicleDevice(InVehicleDevice.parse(jsonObject, "in_vehicle_device"));
+		setOperator(Operator.parse(jsonObject, "operator"));
+		setReservation(Reservation.parse(jsonObject, "reservation"));
 	}
 
 	public static Optional<VehicleNotification> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
 		if (!jsonObject.has(key)) {
 			return Optional.absent();
 		}
-		return parse(jsonObject.getJSONObject(key));
+		return Optional.of(parse(jsonObject.getJSONObject(key)));
 	}
 
-	public static Optional<VehicleNotification> parse(JSONObject jsonObject) throws JSONException, ParseException {
-		return Optional.of(new VehicleNotification(jsonObject));
+	public static VehicleNotification parse(JSONObject jsonObject) throws JSONException, ParseException {
+		VehicleNotification model = new VehicleNotification();
+		model.fill(jsonObject);
+		return model;
 	}
 
 	public static LinkedList<VehicleNotification> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -74,48 +66,48 @@ public class VehicleNotification extends Model {
 			if (jsonArray.isNull(i)) {
 				continue;
 			}
-			models.add(new VehicleNotification(jsonArray.getJSONObject(i)));
+			models.add(parse(jsonArray.getJSONObject(i)));
 		}
 		return models;
 	}
 
 	@Override
 	protected JSONObject toJSONObject(Boolean recursive, Integer depth) throws JSONException {
-		depth++;
 		if (depth > MAX_RECURSE_DEPTH) {
 			return new JSONObject();
 		}
+		Integer nextDepth = depth + 1;
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("body", toJSON(getBody()));
-		jsonObject.put("body_ruby", toJSON(getBodyRuby().orNull()));
+		jsonObject.put("body_ruby", toJSON(getBodyRuby()));
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
-		jsonObject.put("event_at", toJSON(getEventAt().orNull()));
+		jsonObject.put("event_at", toJSON(getEventAt()));
 		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("in_vehicle_device_id", toJSON(getInVehicleDeviceId()));
 		jsonObject.put("notification_kind", toJSON(getNotificationKind()));
-		jsonObject.put("offline", toJSON(getOffline().orNull()));
-		jsonObject.put("operator_id", toJSON(getOperatorId().orNull()));
-		jsonObject.put("read_at", toJSON(getReadAt().orNull()));
-		jsonObject.put("reservation_id", toJSON(getReservationId().orNull()));
-		jsonObject.put("response", toJSON(getResponse().orNull()));
+		jsonObject.put("offline", toJSON(getOffline()));
+		jsonObject.put("operator_id", toJSON(getOperatorId()));
+		jsonObject.put("read_at", toJSON(getReadAt()));
+		jsonObject.put("reservation_id", toJSON(getReservationId()));
+		jsonObject.put("response", toJSON(getResponse()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
 		if (getInVehicleDevice().isPresent()) {
 			if (recursive) {
-				jsonObject.put("in_vehicle_device", getInVehicleDevice().get().toJSONObject(true, depth));
+				jsonObject.put("in_vehicle_device", getInVehicleDevice().get().toJSONObject(true, nextDepth));
 			} else {
 				jsonObject.put("in_vehicle_device_id", toJSON(getInVehicleDevice().get().getId()));
 			}
 		}
 		if (getOperator().isPresent()) {
 			if (recursive) {
-				jsonObject.put("operator", getOperator().get().toJSONObject(true, depth));
+				jsonObject.put("operator", getOperator().get().toJSONObject(true, nextDepth));
 			} else {
 				jsonObject.put("operator_id", toJSON(getOperator().get().getId()));
 			}
 		}
 		if (getReservation().isPresent()) {
 			if (recursive) {
-				jsonObject.put("reservation", getReservation().get().toJSONObject(true, depth));
+				jsonObject.put("reservation", getReservation().get().toJSONObject(true, nextDepth));
 			} else {
 				jsonObject.put("reservation_id", toJSON(getReservation().get().getId()));
 			}
@@ -123,35 +115,14 @@ public class VehicleNotification extends Model {
 		return jsonObject;
 	}
 
-	private void writeObject(ObjectOutputStream objectOutputStream)
-			throws IOException {
-		try {
-			objectOutputStream.writeObject(toJSONObject(true).toString());
-		} catch (JSONException e) {
-			throw new IOException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
-		}
-	}
-
-	private void readObject(ObjectInputStream objectInputStream)
-		throws IOException, ClassNotFoundException {
-		Object object = objectInputStream.readObject();
-		if (!(object instanceof String)) {
-			return;
-		}
-		String jsonString = (String) object;
-		try {
-			JSONObject jsonObject = new JSONObject(jsonString);
-			fillMembers(this, jsonObject);
-		} catch (JSONException e) {
-			throw new IOException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
-		} catch (ParseException e) {
-			throw new IOException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
-		}
-	}
-
 	@Override
 	public VehicleNotification cloneByJSON() throws JSONException {
-		return new VehicleNotification(toJSONObject(true));
+		try {
+			return parse(toJSONObject(true));
+		} catch (ParseException e) {
+			throw new JSONException(e.toString() + "\n"
+				+ ExceptionUtils.getStackTrace(e));
+		}
 	}
 
 	private String body = "";

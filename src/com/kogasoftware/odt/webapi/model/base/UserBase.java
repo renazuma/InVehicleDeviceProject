@@ -1,13 +1,11 @@
-package com.kogasoftware.odt.webapi.model;
+package com.kogasoftware.odt.webapi.model.base;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
@@ -15,68 +13,64 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.base.Optional;
+import com.kogasoftware.odt.webapi.model.*;
 
-public class User extends Model {
-	private static final long serialVersionUID = 7310900769548733337L;
+@SuppressWarnings("unused")
+public abstract class UserBase extends Model {
+	private static final long serialVersionUID = 4646762236665134945L;
 
-	public User() {
-	}
-
-	public User(JSONObject jsonObject) throws JSONException {
-		try {
-			fillMembers(this, jsonObject);
-		} catch (ParseException e) {
-			throw new JSONException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
-		}
-	}
-
-	public static void fillMembers(User model, JSONObject jsonObject) throws JSONException, ParseException {
-		model.setAddress(parseString(jsonObject, "address"));
-		model.setAge(parseInteger(jsonObject, "age"));
-		model.setBirthday(parseDate(jsonObject, "birthday"));
-		model.setEmail(parseOptionalString(jsonObject, "email"));
-		model.setEmail2(parseOptionalString(jsonObject, "email2"));
-		model.setFelicaId(parseOptionalString(jsonObject, "felica_id"));
-		model.setFirstName(parseString(jsonObject, "first_name"));
-		model.setFirstNameRuby(parseString(jsonObject, "first_name_ruby"));
-		model.setHandicapped(parseOptionalBoolean(jsonObject, "handicapped"));
-		model.setId(parseInteger(jsonObject, "id"));
-		model.setLastName(parseString(jsonObject, "last_name"));
-		model.setLastNameRuby(parseString(jsonObject, "last_name_ruby"));
-		model.setLogin(parseString(jsonObject, "login"));
-		model.setMemo(parseOptionalString(jsonObject, "memo"));
-		model.setNeededCare(parseOptionalBoolean(jsonObject, "needed_care"));
-		model.setRecommendNotification(parseOptionalBoolean(jsonObject, "recommend_notification"));
-		model.setRecommendOk(parseOptionalBoolean(jsonObject, "recommend_ok"));
-		model.setReserveNotification(parseOptionalBoolean(jsonObject, "reserve_notification"));
-		model.setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
-		model.setSex(parseInteger(jsonObject, "sex"));
-		model.setTelephoneNumber(parseString(jsonObject, "telephone_number"));
-		model.setTelephoneNumber2(parseOptionalString(jsonObject, "telephone_number2"));
-		model.setUpdateNotification(parseOptionalBoolean(jsonObject, "update_notification"));
-		model.setWheelchair(parseOptionalBoolean(jsonObject, "wheelchair"));
-		model.setZip(parseOptionalString(jsonObject, "zip"));
-		model.setAuditComment(parseOptionalString(jsonObject, "audit_comment"));
-		model.setFullname(parseOptionalString(jsonObject, "fullname"));
-		model.setFullnameRuby(parseOptionalString(jsonObject, "fullname_ruby"));
-		model.setPassword(parseOptionalString(jsonObject, "password"));
-		model.setPasswordConfirmation(parseOptionalString(jsonObject, "password_confirmation"));
-		model.setRememberMe(parseOptionalString(jsonObject, "remember_me"));
-		model.setDemands(Demand.parseList(jsonObject, "demands"));
-		model.setReservationCandidates(ReservationCandidate.parseList(jsonObject, "reservation_candidates"));
-		model.setReservations(Reservation.parseList(jsonObject, "reservations"));
-		model.setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
+	@Override
+	public void fill(JSONObject jsonObject) throws JSONException, ParseException {
+		setAddress(parseString(jsonObject, "address"));
+		setBirthday(parseDate(jsonObject, "birthday"));
+		setEmail(parseOptionalString(jsonObject, "email"));
+		setEmail2(parseOptionalString(jsonObject, "email2"));
+		setFelicaId(parseOptionalString(jsonObject, "felica_id"));
+		setFirstName(parseString(jsonObject, "first_name"));
+		setFirstNameRuby(parseString(jsonObject, "first_name_ruby"));
+		setHandicapped(parseOptionalBoolean(jsonObject, "handicapped"));
+		setId(parseInteger(jsonObject, "id"));
+		setLastName(parseString(jsonObject, "last_name"));
+		setLastNameRuby(parseString(jsonObject, "last_name_ruby"));
+		setLogin(parseString(jsonObject, "login"));
+		setMemo(parseString(jsonObject, "memo"));
+		setNeededCare(parseOptionalBoolean(jsonObject, "needed_care"));
+		setRecommendNotification(parseOptionalBoolean(jsonObject, "recommend_notification"));
+		setRecommendOk(parseOptionalBoolean(jsonObject, "recommend_ok"));
+		setReserveNotification(parseOptionalBoolean(jsonObject, "reserve_notification"));
+		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
+		setSex(parseInteger(jsonObject, "sex"));
+		setTelephoneNumber(parseString(jsonObject, "telephone_number"));
+		setTelephoneNumber2(parseOptionalString(jsonObject, "telephone_number2"));
+		setUpdateNotification(parseOptionalBoolean(jsonObject, "update_notification"));
+		setWheelchair(parseOptionalBoolean(jsonObject, "wheelchair"));
+		setZip(parseOptionalString(jsonObject, "zip"));
+		setAuditComment(parseOptionalString(jsonObject, "audit_comment"));
+		setFullname(parseOptionalString(jsonObject, "fullname"));
+		setFullnameRuby(parseOptionalString(jsonObject, "fullname_ruby"));
+		setPassword(parseOptionalString(jsonObject, "password"));
+		setPasswordConfirmation(parseOptionalString(jsonObject, "password_confirmation"));
+		setRememberMe(parseOptionalString(jsonObject, "remember_me"));
+		setDemands(Demand.parseList(jsonObject, "demands"));
+		setPassengerRecords(PassengerRecord.parseList(jsonObject, "passenger_records"));
+		setPlatforms(Platform.parseList(jsonObject, "platforms"));
+		setReservationCandidates(ReservationCandidate.parseList(jsonObject, "reservation_candidates"));
+		setReservationUsers(ReservationUser.parseList(jsonObject, "reservation_users"));
+		setReservations(Reservation.parseList(jsonObject, "reservations"));
+		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
 	}
 
 	public static Optional<User> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
 		if (!jsonObject.has(key)) {
 			return Optional.absent();
 		}
-		return parse(jsonObject.getJSONObject(key));
+		return Optional.of(parse(jsonObject.getJSONObject(key)));
 	}
 
-	public static Optional<User> parse(JSONObject jsonObject) throws JSONException, ParseException {
-		return Optional.of(new User(jsonObject));
+	public static User parse(JSONObject jsonObject) throws JSONException, ParseException {
+		User model = new User();
+		model.fill(jsonObject);
+		return model;
 	}
 
 	public static LinkedList<User> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
@@ -93,61 +87,69 @@ public class User extends Model {
 			if (jsonArray.isNull(i)) {
 				continue;
 			}
-			models.add(new User(jsonArray.getJSONObject(i)));
+			models.add(parse(jsonArray.getJSONObject(i)));
 		}
 		return models;
 	}
 
 	@Override
 	protected JSONObject toJSONObject(Boolean recursive, Integer depth) throws JSONException {
-		depth++;
 		if (depth > MAX_RECURSE_DEPTH) {
 			return new JSONObject();
 		}
+		Integer nextDepth = depth + 1;
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("address", toJSON(getAddress()));
-		jsonObject.put("age", toJSON(getAge()));
 		jsonObject.put("birthday", toJSON(getBirthday()));
-		jsonObject.put("email", toJSON(getEmail().orNull()));
-		jsonObject.put("email2", toJSON(getEmail2().orNull()));
-		jsonObject.put("felica_id", toJSON(getFelicaId().orNull()));
+		jsonObject.put("email", toJSON(getEmail()));
+		jsonObject.put("email2", toJSON(getEmail2()));
+		jsonObject.put("felica_id", toJSON(getFelicaId()));
 		jsonObject.put("first_name", toJSON(getFirstName()));
 		jsonObject.put("first_name_ruby", toJSON(getFirstNameRuby()));
-		jsonObject.put("handicapped", toJSON(getHandicapped().orNull()));
+		jsonObject.put("handicapped", toJSON(getHandicapped()));
 		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("last_name", toJSON(getLastName()));
 		jsonObject.put("last_name_ruby", toJSON(getLastNameRuby()));
 		jsonObject.put("login", toJSON(getLogin()));
-		jsonObject.put("memo", toJSON(getMemo().orNull()));
-		jsonObject.put("needed_care", toJSON(getNeededCare().orNull()));
-		jsonObject.put("recommend_notification", toJSON(getRecommendNotification().orNull()));
-		jsonObject.put("recommend_ok", toJSON(getRecommendOk().orNull()));
-		jsonObject.put("reserve_notification", toJSON(getReserveNotification().orNull()));
-		jsonObject.put("service_provider_id", toJSON(getServiceProviderId().orNull()));
+		jsonObject.put("memo", toJSON(getMemo()));
+		jsonObject.put("needed_care", toJSON(getNeededCare()));
+		jsonObject.put("recommend_notification", toJSON(getRecommendNotification()));
+		jsonObject.put("recommend_ok", toJSON(getRecommendOk()));
+		jsonObject.put("reserve_notification", toJSON(getReserveNotification()));
+		jsonObject.put("service_provider_id", toJSON(getServiceProviderId()));
 		jsonObject.put("sex", toJSON(getSex()));
 		jsonObject.put("telephone_number", toJSON(getTelephoneNumber()));
-		jsonObject.put("telephone_number2", toJSON(getTelephoneNumber2().orNull()));
-		jsonObject.put("update_notification", toJSON(getUpdateNotification().orNull()));
-		jsonObject.put("wheelchair", toJSON(getWheelchair().orNull()));
-		jsonObject.put("zip", toJSON(getZip().orNull()));
-		jsonObject.put("audit_comment", toJSON(getAuditComment().orNull()));
-		jsonObject.put("fullname", toJSON(getFullname().orNull()));
-		jsonObject.put("fullname_ruby", toJSON(getFullnameRuby().orNull()));
-		jsonObject.put("password", toJSON(getPassword().orNull()));
-		jsonObject.put("password_confirmation", toJSON(getPasswordConfirmation().orNull()));
-		jsonObject.put("remember_me", toJSON(getRememberMe().orNull()));
+		jsonObject.put("telephone_number2", toJSON(getTelephoneNumber2()));
+		jsonObject.put("update_notification", toJSON(getUpdateNotification()));
+		jsonObject.put("wheelchair", toJSON(getWheelchair()));
+		jsonObject.put("zip", toJSON(getZip()));
+		jsonObject.put("audit_comment", toJSON(getAuditComment()));
+		jsonObject.put("fullname", toJSON(getFullname()));
+		jsonObject.put("fullname_ruby", toJSON(getFullnameRuby()));
+		jsonObject.put("password", toJSON(getPassword()));
+		jsonObject.put("password_confirmation", toJSON(getPasswordConfirmation()));
+		jsonObject.put("remember_me", toJSON(getRememberMe()));
 		if (getDemands().size() > 0 && recursive) {
-			jsonObject.put("demands", toJSON(getDemands(), true, depth));
+			jsonObject.put("demands", toJSON(getDemands(), true, nextDepth));
+		}
+		if (getPassengerRecords().size() > 0 && recursive) {
+			jsonObject.put("passenger_records", toJSON(getPassengerRecords(), true, nextDepth));
+		}
+		if (getPlatforms().size() > 0 && recursive) {
+			jsonObject.put("platforms", toJSON(getPlatforms(), true, nextDepth));
 		}
 		if (getReservationCandidates().size() > 0 && recursive) {
-			jsonObject.put("reservation_candidates", toJSON(getReservationCandidates(), true, depth));
+			jsonObject.put("reservation_candidates", toJSON(getReservationCandidates(), true, nextDepth));
+		}
+		if (getReservationUsers().size() > 0 && recursive) {
+			jsonObject.put("reservation_users", toJSON(getReservationUsers(), true, nextDepth));
 		}
 		if (getReservations().size() > 0 && recursive) {
-			jsonObject.put("reservations", toJSON(getReservations(), true, depth));
+			jsonObject.put("reservations", toJSON(getReservations(), true, nextDepth));
 		}
 		if (getServiceProvider().isPresent()) {
 			if (recursive) {
-				jsonObject.put("service_provider", getServiceProvider().get().toJSONObject(true, depth));
+				jsonObject.put("service_provider", getServiceProvider().get().toJSONObject(true, nextDepth));
 			} else {
 				jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
 			}
@@ -155,35 +157,14 @@ public class User extends Model {
 		return jsonObject;
 	}
 
-	private void writeObject(ObjectOutputStream objectOutputStream)
-			throws IOException {
-		try {
-			objectOutputStream.writeObject(toJSONObject(true).toString());
-		} catch (JSONException e) {
-			throw new IOException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
-		}
-	}
-
-	private void readObject(ObjectInputStream objectInputStream)
-		throws IOException, ClassNotFoundException {
-		Object object = objectInputStream.readObject();
-		if (!(object instanceof String)) {
-			return;
-		}
-		String jsonString = (String) object;
-		try {
-			JSONObject jsonObject = new JSONObject(jsonString);
-			fillMembers(this, jsonObject);
-		} catch (JSONException e) {
-			throw new IOException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
-		} catch (ParseException e) {
-			throw new IOException(e.toString() + "\n" + ExceptionUtils.getStackTrace(e));
-		}
-	}
-
 	@Override
 	public User cloneByJSON() throws JSONException {
-		return new User(toJSONObject(true));
+		try {
+			return parse(toJSONObject(true));
+		} catch (ParseException e) {
+			throw new JSONException(e.toString() + "\n"
+				+ ExceptionUtils.getStackTrace(e));
+		}
 	}
 
 	private String address = "";
@@ -194,16 +175,6 @@ public class User extends Model {
 
 	public void setAddress(String address) {
 		this.address = wrapNull(address);
-	}
-
-	private Integer age = 0;
-
-	public Integer getAge() {
-		return wrapNull(age);
-	}
-
-	public void setAge(Integer age) {
-		this.age = wrapNull(age);
 	}
 
 	private Date birthday = new Date();
@@ -348,22 +319,14 @@ public class User extends Model {
 		this.login = wrapNull(login);
 	}
 
-	private Optional<String> memo = Optional.absent();
+	private String memo = "";
 
-	public Optional<String> getMemo() {
+	public String getMemo() {
 		return wrapNull(memo);
 	}
 
-	public void setMemo(Optional<String> memo) {
-		this.memo = wrapNull(memo);
-	}
-
 	public void setMemo(String memo) {
-		this.memo = Optional.fromNullable(memo);
-	}
-
-	public void clearMemo() {
-		this.memo = Optional.absent();
+		this.memo = wrapNull(memo);
 	}
 
 	private Optional<Boolean> neededCare = Optional.absent();
@@ -658,11 +621,11 @@ public class User extends Model {
 
 	private LinkedList<Demand> demands = new LinkedList<Demand>();
 
-	public List<Demand> getDemands() {
+	public LinkedList<Demand> getDemands() {
 		return new LinkedList<Demand>(wrapNull(demands));
 	}
 
-	public void setDemands(List<Demand> demands) {
+	public void setDemands(LinkedList<Demand> demands) {
 		this.demands = new LinkedList<Demand>(wrapNull(demands));
 	}
 
@@ -670,13 +633,41 @@ public class User extends Model {
 		this.demands = new LinkedList<Demand>();
 	}
 
+	private LinkedList<PassengerRecord> passengerRecords = new LinkedList<PassengerRecord>();
+
+	public LinkedList<PassengerRecord> getPassengerRecords() {
+		return new LinkedList<PassengerRecord>(wrapNull(passengerRecords));
+	}
+
+	public void setPassengerRecords(LinkedList<PassengerRecord> passengerRecords) {
+		this.passengerRecords = new LinkedList<PassengerRecord>(wrapNull(passengerRecords));
+	}
+
+	public void clearPassengerRecords() {
+		this.passengerRecords = new LinkedList<PassengerRecord>();
+	}
+
+	private LinkedList<Platform> platforms = new LinkedList<Platform>();
+
+	public LinkedList<Platform> getPlatforms() {
+		return new LinkedList<Platform>(wrapNull(platforms));
+	}
+
+	public void setPlatforms(LinkedList<Platform> platforms) {
+		this.platforms = new LinkedList<Platform>(wrapNull(platforms));
+	}
+
+	public void clearPlatforms() {
+		this.platforms = new LinkedList<Platform>();
+	}
+
 	private LinkedList<ReservationCandidate> reservationCandidates = new LinkedList<ReservationCandidate>();
 
-	public List<ReservationCandidate> getReservationCandidates() {
+	public LinkedList<ReservationCandidate> getReservationCandidates() {
 		return new LinkedList<ReservationCandidate>(wrapNull(reservationCandidates));
 	}
 
-	public void setReservationCandidates(List<ReservationCandidate> reservationCandidates) {
+	public void setReservationCandidates(LinkedList<ReservationCandidate> reservationCandidates) {
 		this.reservationCandidates = new LinkedList<ReservationCandidate>(wrapNull(reservationCandidates));
 	}
 
@@ -684,13 +675,27 @@ public class User extends Model {
 		this.reservationCandidates = new LinkedList<ReservationCandidate>();
 	}
 
+	private LinkedList<ReservationUser> reservationUsers = new LinkedList<ReservationUser>();
+
+	public LinkedList<ReservationUser> getReservationUsers() {
+		return new LinkedList<ReservationUser>(wrapNull(reservationUsers));
+	}
+
+	public void setReservationUsers(LinkedList<ReservationUser> reservationUsers) {
+		this.reservationUsers = new LinkedList<ReservationUser>(wrapNull(reservationUsers));
+	}
+
+	public void clearReservationUsers() {
+		this.reservationUsers = new LinkedList<ReservationUser>();
+	}
+
 	private LinkedList<Reservation> reservations = new LinkedList<Reservation>();
 
-	public List<Reservation> getReservations() {
+	public LinkedList<Reservation> getReservations() {
 		return new LinkedList<Reservation>(wrapNull(reservations));
 	}
 
-	public void setReservations(List<Reservation> reservations) {
+	public void setReservations(LinkedList<Reservation> reservations) {
 		this.reservations = new LinkedList<Reservation>(wrapNull(reservations));
 	}
 
