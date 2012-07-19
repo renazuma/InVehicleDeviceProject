@@ -3,7 +3,12 @@ package com.kogasoftware.odt.webapi.model;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class ServiceProviders {
+import com.kogasoftware.odt.webapi.model.base.Model;
+import com.kogasoftware.odt.webapi.model.base.ServiceProviderBase;
+
+public class ServiceProvider extends ServiceProviderBase {
+	private static final long serialVersionUID = 8456722052053624083L;
+
 	public static class ReservationTimeLimit {
 		protected Integer operatorWeb = 0;
 		protected Integer androidApp = 0;
