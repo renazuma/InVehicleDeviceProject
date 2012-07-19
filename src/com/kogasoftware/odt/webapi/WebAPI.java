@@ -2,7 +2,6 @@ package com.kogasoftware.odt.webapi;
 
 import java.io.Closeable;
 import java.io.File;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Calendar;
 import java.util.Date;
@@ -18,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
@@ -31,7 +29,6 @@ import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import com.google.common.base.Charsets;
-import com.google.common.io.ByteStreams;
 import com.javadocmd.simplelatlng.LatLng;
 import com.kogasoftware.odt.webapi.model.Demand;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
