@@ -21,6 +21,7 @@ class PassengerRecord < ActiveRecord::Base
   # Define Relations
   belongs_to :service_provider
   belongs_to :reservation
+  belongs_to :user
   belongs_to :departure_operation_schedule, :class_name => "OperationSchedule"
   belongs_to :arrival_operation_schedule, :class_name => "OperationSchedule"
 
