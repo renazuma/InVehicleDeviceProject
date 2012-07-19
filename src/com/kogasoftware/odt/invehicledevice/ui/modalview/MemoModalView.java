@@ -4,24 +4,12 @@ import android.content.Context;
 import android.widget.TextView;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Preconditions;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.User;
-import com.kogasoftware.odt.webapi.model.Users;
 
 public class MemoModalView extends ModalView {
-
-	public static class ShowEvent {
-		public final Reservation reservation;
-
-		public ShowEvent(Reservation reservation) {
-			Preconditions.checkNotNull(reservation);
-			this.reservation = reservation;
-		}
-	}
-
 	public MemoModalView(Context context, InVehicleDeviceService service) {
 		super(context, service);
 		setContentView(R.layout.memo_modal_view);

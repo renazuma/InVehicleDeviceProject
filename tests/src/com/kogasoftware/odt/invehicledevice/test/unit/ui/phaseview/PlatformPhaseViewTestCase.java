@@ -93,12 +93,4 @@ public class PlatformPhaseViewTestCase extends
 		assertTrue(pv.isShown());
 		assertEquals(pv.getVisibility(), View.VISIBLE);
 	}
-
-	public void xtestDepartureCheckEventを送るとDepartureCheckModalView_ShowEventを送出()
-			throws Exception {
-		Subscriber<DepartureCheckModalView.ShowEvent> s = Subscriber.of(
-				DepartureCheckModalView.ShowEvent.class, cl);
-		cl.postEvent(new PlatformPhaseView.DepartureCheckEvent());
-		assertTrue(s.cdl.await(10, TimeUnit.SECONDS));
-	}
 }

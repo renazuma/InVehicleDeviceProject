@@ -21,15 +21,6 @@ import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.User;
 
 public class DepartureCheckModalView extends ModalView {
-
-	public static class ShowEvent {
-		public final ReservationArrayAdapter reservationArrayAdapter;
-
-		public ShowEvent(ReservationArrayAdapter reservationArrayAdapter) {
-			this.reservationArrayAdapter = reservationArrayAdapter;
-		}
-	}
-
 	private static String getUserName(Reservation reservation) {
 		if (reservation.getUser().isPresent()) {
 			User user = reservation.getUser().get();

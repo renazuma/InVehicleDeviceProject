@@ -11,9 +11,6 @@ import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
 
 public class ArrivalCheckModalView extends ModalView {
-	public static class ShowEvent {
-	}
-
 	public ArrivalCheckModalView(Context context, InVehicleDeviceService service) {
 		super(context, service);
 		setContentView(R.layout.arrival_check_modal_view);
