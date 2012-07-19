@@ -1,13 +1,11 @@
 package com.kogasoftware.odt.webapi.model.base;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,10 +15,10 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class OperationRecordBase extends Model {
-	private static final long serialVersionUID = 6177791532219171855L;
+	private static final long serialVersionUID = 7067594765925748239L;
 
 	@Override
-	public void fill(JSONObject jsonObject) throws JSONException, ParseException {
+	public void fill(JSONObject jsonObject) throws JSONException {
 		setArrivedAt(parseOptionalDate(jsonObject, "arrived_at"));
 		setArrivedAtOffline(parseOptionalBoolean(jsonObject, "arrived_at_offline"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
@@ -34,20 +32,20 @@ public abstract class OperationRecordBase extends Model {
 		setServiceUnit(ServiceUnit.parse(jsonObject, "service_unit"));
 	}
 
-	public static Optional<OperationRecord> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	public static Optional<OperationRecord> parse(JSONObject jsonObject, String key) throws JSONException {
 		if (!jsonObject.has(key)) {
 			return Optional.absent();
 		}
 		return Optional.of(parse(jsonObject.getJSONObject(key)));
 	}
 
-	public static OperationRecord parse(JSONObject jsonObject) throws JSONException, ParseException {
+	public static OperationRecord parse(JSONObject jsonObject) throws JSONException {
 		OperationRecord model = new OperationRecord();
 		model.fill(jsonObject);
 		return model;
 	}
 
-	public static LinkedList<OperationRecord> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	public static LinkedList<OperationRecord> parseList(JSONObject jsonObject, String key) throws JSONException {
 		if (!jsonObject.has(key)) {
 			return new LinkedList<OperationRecord>();
 		}
@@ -55,7 +53,7 @@ public abstract class OperationRecordBase extends Model {
 		return parseList(jsonArray);
 	}
 
-	public static LinkedList<OperationRecord> parseList(JSONArray jsonArray) throws JSONException, ParseException {
+	public static LinkedList<OperationRecord> parseList(JSONArray jsonArray) throws JSONException {
 		LinkedList<OperationRecord> models = new LinkedList<OperationRecord>();
 		for (Integer i = 0; i < jsonArray.length(); ++i) {
 			if (jsonArray.isNull(i)) {
@@ -101,12 +99,7 @@ public abstract class OperationRecordBase extends Model {
 
 	@Override
 	public OperationRecord cloneByJSON() throws JSONException {
-		try {
-			return parse(toJSONObject(true));
-		} catch (ParseException e) {
-			throw new JSONException(e.toString() + "\n"
-				+ ExceptionUtils.getStackTrace(e));
-		}
+		return parse(toJSONObject(true));
 	}
 
 	private Optional<Date> arrivedAt = Optional.absent();

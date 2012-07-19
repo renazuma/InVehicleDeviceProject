@@ -1,13 +1,11 @@
 package com.kogasoftware.odt.webapi.model.base;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,10 +15,10 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class VehicleBase extends Model {
-	private static final long serialVersionUID = 6135059780334065294L;
+	private static final long serialVersionUID = 7491956852540023694L;
 
 	@Override
-	public void fill(JSONObject jsonObject) throws JSONException, ParseException {
+	public void fill(JSONObject jsonObject) throws JSONException {
 		setCapacity(parseInteger(jsonObject, "capacity"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
@@ -34,20 +32,20 @@ public abstract class VehicleBase extends Model {
 		setServiceUnits(ServiceUnit.parseList(jsonObject, "service_units"));
 	}
 
-	public static Optional<Vehicle> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	public static Optional<Vehicle> parse(JSONObject jsonObject, String key) throws JSONException {
 		if (!jsonObject.has(key)) {
 			return Optional.absent();
 		}
 		return Optional.of(parse(jsonObject.getJSONObject(key)));
 	}
 
-	public static Vehicle parse(JSONObject jsonObject) throws JSONException, ParseException {
+	public static Vehicle parse(JSONObject jsonObject) throws JSONException {
 		Vehicle model = new Vehicle();
 		model.fill(jsonObject);
 		return model;
 	}
 
-	public static LinkedList<Vehicle> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	public static LinkedList<Vehicle> parseList(JSONObject jsonObject, String key) throws JSONException {
 		if (!jsonObject.has(key)) {
 			return new LinkedList<Vehicle>();
 		}
@@ -55,7 +53,7 @@ public abstract class VehicleBase extends Model {
 		return parseList(jsonArray);
 	}
 
-	public static LinkedList<Vehicle> parseList(JSONArray jsonArray) throws JSONException, ParseException {
+	public static LinkedList<Vehicle> parseList(JSONArray jsonArray) throws JSONException {
 		LinkedList<Vehicle> models = new LinkedList<Vehicle>();
 		for (Integer i = 0; i < jsonArray.length(); ++i) {
 			if (jsonArray.isNull(i)) {
@@ -97,12 +95,7 @@ public abstract class VehicleBase extends Model {
 
 	@Override
 	public Vehicle cloneByJSON() throws JSONException {
-		try {
-			return parse(toJSONObject(true));
-		} catch (ParseException e) {
-			throw new JSONException(e.toString() + "\n"
-				+ ExceptionUtils.getStackTrace(e));
-		}
+		return parse(toJSONObject(true));
 	}
 
 	private Integer capacity = 0;

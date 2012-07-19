@@ -5,7 +5,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -61,19 +60,23 @@ public abstract class Model implements Serializable, Identifiable, Cloneable {
 	}
 
 	protected static Date parseDate(JSONObject jsonObject, String key)
-			throws JSONException, ParseException {
+			throws JSONException {
+		Date date = new Date();
 		if (!jsonObject.has(key)) {
 			return new Date();
 		}
 
 		String dateString = jsonObject.getString(key);
-		Date date;
 		try {
 			date = new Date(DATE_TIME_FORMATTER.parseDateTime(dateString)
 					.getMillis());
 		} catch (IllegalArgumentException ex) {
-			date = new Date(DATE_FORMATTER.parseDateTime(dateString)
-					.getMillis());
+			try {
+				date = new Date(DATE_FORMATTER.parseDateTime(dateString)
+						.getMillis());
+			} catch (IllegalArgumentException ex2) {
+				Log.w(TAG, ex2);
+			}
 		}
 		return date;
 	}
@@ -95,8 +98,7 @@ public abstract class Model implements Serializable, Identifiable, Cloneable {
 	}
 
 	protected static Optional<Boolean> parseOptionalBoolean(
-			JSONObject jsonObject, String key) throws JSONException,
-			ParseException {
+			JSONObject jsonObject, String key) throws JSONException {
 		if (jsonObject.isNull(key)) {
 			return Optional.absent();
 		}
@@ -104,7 +106,7 @@ public abstract class Model implements Serializable, Identifiable, Cloneable {
 	}
 
 	protected static Optional<Date> parseOptionalDate(JSONObject jsonObject,
-			String key) throws JSONException, ParseException {
+			String key) throws JSONException {
 		if (jsonObject.isNull(key)) {
 			return Optional.absent();
 		}
@@ -112,7 +114,7 @@ public abstract class Model implements Serializable, Identifiable, Cloneable {
 	}
 
 	protected static Optional<Float> parseOptionalFloat(JSONObject jsonObject,
-			String key) throws JSONException, ParseException {
+			String key) throws JSONException {
 		if (jsonObject.isNull(key)) {
 			return Optional.absent();
 		}
@@ -242,12 +244,8 @@ public abstract class Model implements Serializable, Identifiable, Cloneable {
 		} catch (JSONException e) {
 			throw new IOException(e.toString() + "\n"
 					+ ExceptionUtils.getStackTrace(e));
-		} catch (ParseException e) {
-			throw new IOException(e.toString() + "\n"
-					+ ExceptionUtils.getStackTrace(e));
 		}
 	}
 
-	public abstract void fill(JSONObject jsonObject) throws ParseException,
-			JSONException;
+	public abstract void fill(JSONObject jsonObject) throws JSONException;
 }

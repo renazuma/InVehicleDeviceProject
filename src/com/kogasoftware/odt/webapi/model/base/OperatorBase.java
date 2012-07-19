@@ -1,13 +1,11 @@
 package com.kogasoftware.odt.webapi.model.base;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,10 +15,10 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class OperatorBase extends Model {
-	private static final long serialVersionUID = 446482701602930190L;
+	private static final long serialVersionUID = 2238130622360752218L;
 
 	@Override
-	public void fill(JSONObject jsonObject) throws JSONException, ParseException {
+	public void fill(JSONObject jsonObject) throws JSONException {
 		setAuthenticationToken(parseOptionalString(jsonObject, "authentication_token"));
 		setEmail(parseOptionalString(jsonObject, "email"));
 		setFirstName(parseString(jsonObject, "first_name"));
@@ -35,20 +33,20 @@ public abstract class OperatorBase extends Model {
 		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
 	}
 
-	public static Optional<Operator> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	public static Optional<Operator> parse(JSONObject jsonObject, String key) throws JSONException {
 		if (!jsonObject.has(key)) {
 			return Optional.absent();
 		}
 		return Optional.of(parse(jsonObject.getJSONObject(key)));
 	}
 
-	public static Operator parse(JSONObject jsonObject) throws JSONException, ParseException {
+	public static Operator parse(JSONObject jsonObject) throws JSONException {
 		Operator model = new Operator();
 		model.fill(jsonObject);
 		return model;
 	}
 
-	public static LinkedList<Operator> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	public static LinkedList<Operator> parseList(JSONObject jsonObject, String key) throws JSONException {
 		if (!jsonObject.has(key)) {
 			return new LinkedList<Operator>();
 		}
@@ -56,7 +54,7 @@ public abstract class OperatorBase extends Model {
 		return parseList(jsonArray);
 	}
 
-	public static LinkedList<Operator> parseList(JSONArray jsonArray) throws JSONException, ParseException {
+	public static LinkedList<Operator> parseList(JSONArray jsonArray) throws JSONException {
 		LinkedList<Operator> models = new LinkedList<Operator>();
 		for (Integer i = 0; i < jsonArray.length(); ++i) {
 			if (jsonArray.isNull(i)) {
@@ -97,12 +95,7 @@ public abstract class OperatorBase extends Model {
 
 	@Override
 	public Operator cloneByJSON() throws JSONException {
-		try {
-			return parse(toJSONObject(true));
-		} catch (ParseException e) {
-			throw new JSONException(e.toString() + "\n"
-				+ ExceptionUtils.getStackTrace(e));
-		}
+		return parse(toJSONObject(true));
 	}
 
 	private Optional<String> authenticationToken = Optional.absent();

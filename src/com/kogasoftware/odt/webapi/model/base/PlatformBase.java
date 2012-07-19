@@ -1,13 +1,11 @@
 package com.kogasoftware.odt.webapi.model.base;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,10 +15,10 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class PlatformBase extends Model {
-	private static final long serialVersionUID = 5774960818655722119L;
+	private static final long serialVersionUID = 7855032270831512623L;
 
 	@Override
-	public void fill(JSONObject jsonObject) throws JSONException, ParseException {
+	public void fill(JSONObject jsonObject) throws JSONException {
 		setAddress(parseString(jsonObject, "address"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
@@ -52,20 +50,20 @@ public abstract class PlatformBase extends Model {
 		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
 	}
 
-	public static Optional<Platform> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	public static Optional<Platform> parse(JSONObject jsonObject, String key) throws JSONException {
 		if (!jsonObject.has(key)) {
 			return Optional.absent();
 		}
 		return Optional.of(parse(jsonObject.getJSONObject(key)));
 	}
 
-	public static Platform parse(JSONObject jsonObject) throws JSONException, ParseException {
+	public static Platform parse(JSONObject jsonObject) throws JSONException {
 		Platform model = new Platform();
 		model.fill(jsonObject);
 		return model;
 	}
 
-	public static LinkedList<Platform> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	public static LinkedList<Platform> parseList(JSONObject jsonObject, String key) throws JSONException {
 		if (!jsonObject.has(key)) {
 			return new LinkedList<Platform>();
 		}
@@ -73,7 +71,7 @@ public abstract class PlatformBase extends Model {
 		return parseList(jsonArray);
 	}
 
-	public static LinkedList<Platform> parseList(JSONArray jsonArray) throws JSONException, ParseException {
+	public static LinkedList<Platform> parseList(JSONArray jsonArray) throws JSONException {
 		LinkedList<Platform> models = new LinkedList<Platform>();
 		for (Integer i = 0; i < jsonArray.length(); ++i) {
 			if (jsonArray.isNull(i)) {
@@ -145,12 +143,7 @@ public abstract class PlatformBase extends Model {
 
 	@Override
 	public Platform cloneByJSON() throws JSONException {
-		try {
-			return parse(toJSONObject(true));
-		} catch (ParseException e) {
-			throw new JSONException(e.toString() + "\n"
-				+ ExceptionUtils.getStackTrace(e));
-		}
+		return parse(toJSONObject(true));
 	}
 
 	private String address = "";

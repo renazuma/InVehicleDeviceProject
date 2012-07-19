@@ -1,13 +1,11 @@
 package com.kogasoftware.odt.webapi.model.base;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,10 +15,10 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class OperationScheduleBase extends Model {
-	private static final long serialVersionUID = 5936723858532465776L;
+	private static final long serialVersionUID = 497878977274914042L;
 
 	@Override
-	public void fill(JSONObject jsonObject) throws JSONException, ParseException {
+	public void fill(JSONObject jsonObject) throws JSONException {
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
 		setId(parseInteger(jsonObject, "id"));
@@ -37,20 +35,20 @@ public abstract class OperationScheduleBase extends Model {
 		setUnitAssignment(UnitAssignment.parse(jsonObject, "unit_assignment"));
 	}
 
-	public static Optional<OperationSchedule> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	public static Optional<OperationSchedule> parse(JSONObject jsonObject, String key) throws JSONException {
 		if (!jsonObject.has(key)) {
 			return Optional.absent();
 		}
 		return Optional.of(parse(jsonObject.getJSONObject(key)));
 	}
 
-	public static OperationSchedule parse(JSONObject jsonObject) throws JSONException, ParseException {
+	public static OperationSchedule parse(JSONObject jsonObject) throws JSONException {
 		OperationSchedule model = new OperationSchedule();
 		model.fill(jsonObject);
 		return model;
 	}
 
-	public static LinkedList<OperationSchedule> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	public static LinkedList<OperationSchedule> parseList(JSONObject jsonObject, String key) throws JSONException {
 		if (!jsonObject.has(key)) {
 			return new LinkedList<OperationSchedule>();
 		}
@@ -58,7 +56,7 @@ public abstract class OperationScheduleBase extends Model {
 		return parseList(jsonArray);
 	}
 
-	public static LinkedList<OperationSchedule> parseList(JSONArray jsonArray) throws JSONException, ParseException {
+	public static LinkedList<OperationSchedule> parseList(JSONArray jsonArray) throws JSONException {
 		LinkedList<OperationSchedule> models = new LinkedList<OperationSchedule>();
 		for (Integer i = 0; i < jsonArray.length(); ++i) {
 			if (jsonArray.isNull(i)) {
@@ -119,12 +117,7 @@ public abstract class OperationScheduleBase extends Model {
 
 	@Override
 	public OperationSchedule cloneByJSON() throws JSONException {
-		try {
-			return parse(toJSONObject(true));
-		} catch (ParseException e) {
-			throw new JSONException(e.toString() + "\n"
-				+ ExceptionUtils.getStackTrace(e));
-		}
+		return parse(toJSONObject(true));
 	}
 
 	private Date createdAt = new Date();

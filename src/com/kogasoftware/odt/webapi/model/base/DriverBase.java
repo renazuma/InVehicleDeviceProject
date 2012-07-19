@@ -1,13 +1,11 @@
 package com.kogasoftware.odt.webapi.model.base;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,10 +15,10 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class DriverBase extends Model {
-	private static final long serialVersionUID = 6000360149817239460L;
+	private static final long serialVersionUID = 2463387328335319055L;
 
 	@Override
-	public void fill(JSONObject jsonObject) throws JSONException, ParseException {
+	public void fill(JSONObject jsonObject) throws JSONException {
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
 		setFirstName(parseString(jsonObject, "first_name"));
@@ -33,20 +31,20 @@ public abstract class DriverBase extends Model {
 		setServiceUnits(ServiceUnit.parseList(jsonObject, "service_units"));
 	}
 
-	public static Optional<Driver> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	public static Optional<Driver> parse(JSONObject jsonObject, String key) throws JSONException {
 		if (!jsonObject.has(key)) {
 			return Optional.absent();
 		}
 		return Optional.of(parse(jsonObject.getJSONObject(key)));
 	}
 
-	public static Driver parse(JSONObject jsonObject) throws JSONException, ParseException {
+	public static Driver parse(JSONObject jsonObject) throws JSONException {
 		Driver model = new Driver();
 		model.fill(jsonObject);
 		return model;
 	}
 
-	public static LinkedList<Driver> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	public static LinkedList<Driver> parseList(JSONObject jsonObject, String key) throws JSONException {
 		if (!jsonObject.has(key)) {
 			return new LinkedList<Driver>();
 		}
@@ -54,7 +52,7 @@ public abstract class DriverBase extends Model {
 		return parseList(jsonArray);
 	}
 
-	public static LinkedList<Driver> parseList(JSONArray jsonArray) throws JSONException, ParseException {
+	public static LinkedList<Driver> parseList(JSONArray jsonArray) throws JSONException {
 		LinkedList<Driver> models = new LinkedList<Driver>();
 		for (Integer i = 0; i < jsonArray.length(); ++i) {
 			if (jsonArray.isNull(i)) {
@@ -95,12 +93,7 @@ public abstract class DriverBase extends Model {
 
 	@Override
 	public Driver cloneByJSON() throws JSONException {
-		try {
-			return parse(toJSONObject(true));
-		} catch (ParseException e) {
-			throw new JSONException(e.toString() + "\n"
-				+ ExceptionUtils.getStackTrace(e));
-		}
+		return parse(toJSONObject(true));
 	}
 
 	private Date createdAt = new Date();

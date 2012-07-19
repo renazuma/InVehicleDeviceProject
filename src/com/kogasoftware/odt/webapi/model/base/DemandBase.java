@@ -1,13 +1,11 @@
 package com.kogasoftware.odt.webapi.model.base;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,10 +15,10 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class DemandBase extends Model {
-	private static final long serialVersionUID = 3569202516487192676L;
+	private static final long serialVersionUID = 6232237974562542361L;
 
 	@Override
-	public void fill(JSONObject jsonObject) throws JSONException, ParseException {
+	public void fill(JSONObject jsonObject) throws JSONException {
 		setArrivalPlatformId(parseOptionalInteger(jsonObject, "arrival_platform_id"));
 		setArrivalTime(parseOptionalDate(jsonObject, "arrival_time"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
@@ -47,20 +45,20 @@ public abstract class DemandBase extends Model {
 		setUser(User.parse(jsonObject, "user"));
 	}
 
-	public static Optional<Demand> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	public static Optional<Demand> parse(JSONObject jsonObject, String key) throws JSONException {
 		if (!jsonObject.has(key)) {
 			return Optional.absent();
 		}
 		return Optional.of(parse(jsonObject.getJSONObject(key)));
 	}
 
-	public static Demand parse(JSONObject jsonObject) throws JSONException, ParseException {
+	public static Demand parse(JSONObject jsonObject) throws JSONException {
 		Demand model = new Demand();
 		model.fill(jsonObject);
 		return model;
 	}
 
-	public static LinkedList<Demand> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	public static LinkedList<Demand> parseList(JSONObject jsonObject, String key) throws JSONException {
 		if (!jsonObject.has(key)) {
 			return new LinkedList<Demand>();
 		}
@@ -68,7 +66,7 @@ public abstract class DemandBase extends Model {
 		return parseList(jsonArray);
 	}
 
-	public static LinkedList<Demand> parseList(JSONArray jsonArray) throws JSONException, ParseException {
+	public static LinkedList<Demand> parseList(JSONArray jsonArray) throws JSONException {
 		LinkedList<Demand> models = new LinkedList<Demand>();
 		for (Integer i = 0; i < jsonArray.length(); ++i) {
 			if (jsonArray.isNull(i)) {
@@ -153,12 +151,7 @@ public abstract class DemandBase extends Model {
 
 	@Override
 	public Demand cloneByJSON() throws JSONException {
-		try {
-			return parse(toJSONObject(true));
-		} catch (ParseException e) {
-			throw new JSONException(e.toString() + "\n"
-				+ ExceptionUtils.getStackTrace(e));
-		}
+		return parse(toJSONObject(true));
 	}
 
 	private Optional<Integer> arrivalPlatformId = Optional.absent();

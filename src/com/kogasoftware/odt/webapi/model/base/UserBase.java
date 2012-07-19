@@ -1,13 +1,11 @@
 package com.kogasoftware.odt.webapi.model.base;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,10 +15,10 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class UserBase extends Model {
-	private static final long serialVersionUID = 4646762236665134945L;
+	private static final long serialVersionUID = 9102461514097400425L;
 
 	@Override
-	public void fill(JSONObject jsonObject) throws JSONException, ParseException {
+	public void fill(JSONObject jsonObject) throws JSONException {
 		setAddress(parseString(jsonObject, "address"));
 		setBirthday(parseDate(jsonObject, "birthday"));
 		setEmail(parseOptionalString(jsonObject, "email"));
@@ -60,20 +58,20 @@ public abstract class UserBase extends Model {
 		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
 	}
 
-	public static Optional<User> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	public static Optional<User> parse(JSONObject jsonObject, String key) throws JSONException {
 		if (!jsonObject.has(key)) {
 			return Optional.absent();
 		}
 		return Optional.of(parse(jsonObject.getJSONObject(key)));
 	}
 
-	public static User parse(JSONObject jsonObject) throws JSONException, ParseException {
+	public static User parse(JSONObject jsonObject) throws JSONException {
 		User model = new User();
 		model.fill(jsonObject);
 		return model;
 	}
 
-	public static LinkedList<User> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	public static LinkedList<User> parseList(JSONObject jsonObject, String key) throws JSONException {
 		if (!jsonObject.has(key)) {
 			return new LinkedList<User>();
 		}
@@ -81,7 +79,7 @@ public abstract class UserBase extends Model {
 		return parseList(jsonArray);
 	}
 
-	public static LinkedList<User> parseList(JSONArray jsonArray) throws JSONException, ParseException {
+	public static LinkedList<User> parseList(JSONArray jsonArray) throws JSONException {
 		LinkedList<User> models = new LinkedList<User>();
 		for (Integer i = 0; i < jsonArray.length(); ++i) {
 			if (jsonArray.isNull(i)) {
@@ -159,12 +157,7 @@ public abstract class UserBase extends Model {
 
 	@Override
 	public User cloneByJSON() throws JSONException {
-		try {
-			return parse(toJSONObject(true));
-		} catch (ParseException e) {
-			throw new JSONException(e.toString() + "\n"
-				+ ExceptionUtils.getStackTrace(e));
-		}
+		return parse(toJSONObject(true));
 	}
 
 	private String address = "";

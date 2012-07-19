@@ -1,13 +1,11 @@
 package com.kogasoftware.odt.webapi.model.base;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,10 +15,10 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class ReservationBase extends Model {
-	private static final long serialVersionUID = 8351113438265447225L;
+	private static final long serialVersionUID = 5070696493400128882L;
 
 	@Override
-	public void fill(JSONObject jsonObject) throws JSONException, ParseException {
+	public void fill(JSONObject jsonObject) throws JSONException {
 		setArrivalLock(parseOptionalBoolean(jsonObject, "arrival_lock"));
 		setArrivalPlatformId(parseOptionalInteger(jsonObject, "arrival_platform_id"));
 		setArrivalScheduleId(parseOptionalInteger(jsonObject, "arrival_schedule_id"));
@@ -59,20 +57,20 @@ public abstract class ReservationBase extends Model {
 		setUser(User.parse(jsonObject, "user"));
 	}
 
-	public static Optional<Reservation> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	public static Optional<Reservation> parse(JSONObject jsonObject, String key) throws JSONException {
 		if (!jsonObject.has(key)) {
 			return Optional.absent();
 		}
 		return Optional.of(parse(jsonObject.getJSONObject(key)));
 	}
 
-	public static Reservation parse(JSONObject jsonObject) throws JSONException, ParseException {
+	public static Reservation parse(JSONObject jsonObject) throws JSONException {
 		Reservation model = new Reservation();
 		model.fill(jsonObject);
 		return model;
 	}
 
-	public static LinkedList<Reservation> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	public static LinkedList<Reservation> parseList(JSONObject jsonObject, String key) throws JSONException {
 		if (!jsonObject.has(key)) {
 			return new LinkedList<Reservation>();
 		}
@@ -80,7 +78,7 @@ public abstract class ReservationBase extends Model {
 		return parseList(jsonArray);
 	}
 
-	public static LinkedList<Reservation> parseList(JSONArray jsonArray) throws JSONException, ParseException {
+	public static LinkedList<Reservation> parseList(JSONArray jsonArray) throws JSONException {
 		LinkedList<Reservation> models = new LinkedList<Reservation>();
 		for (Integer i = 0; i < jsonArray.length(); ++i) {
 			if (jsonArray.isNull(i)) {
@@ -199,12 +197,7 @@ public abstract class ReservationBase extends Model {
 
 	@Override
 	public Reservation cloneByJSON() throws JSONException {
-		try {
-			return parse(toJSONObject(true));
-		} catch (ParseException e) {
-			throw new JSONException(e.toString() + "\n"
-				+ ExceptionUtils.getStackTrace(e));
-		}
+		return parse(toJSONObject(true));
 	}
 
 	private Optional<Boolean> arrivalLock = Optional.absent();

@@ -1,13 +1,11 @@
 package com.kogasoftware.odt.webapi.model.base;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,10 +15,10 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class InVehicleDeviceBase extends Model {
-	private static final long serialVersionUID = 6679256773776002946L;
+	private static final long serialVersionUID = 3486221099769360104L;
 
 	@Override
-	public void fill(JSONObject jsonObject) throws JSONException, ParseException {
+	public void fill(JSONObject jsonObject) throws JSONException {
 		setAuthenticationToken(parseOptionalString(jsonObject, "authentication_token"));
 		setId(parseInteger(jsonObject, "id"));
 		setLogin(parseString(jsonObject, "login"));
@@ -36,20 +34,20 @@ public abstract class InVehicleDeviceBase extends Model {
 		setVehicleNotifications(VehicleNotification.parseList(jsonObject, "vehicle_notifications"));
 	}
 
-	public static Optional<InVehicleDevice> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	public static Optional<InVehicleDevice> parse(JSONObject jsonObject, String key) throws JSONException {
 		if (!jsonObject.has(key)) {
 			return Optional.absent();
 		}
 		return Optional.of(parse(jsonObject.getJSONObject(key)));
 	}
 
-	public static InVehicleDevice parse(JSONObject jsonObject) throws JSONException, ParseException {
+	public static InVehicleDevice parse(JSONObject jsonObject) throws JSONException {
 		InVehicleDevice model = new InVehicleDevice();
 		model.fill(jsonObject);
 		return model;
 	}
 
-	public static LinkedList<InVehicleDevice> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	public static LinkedList<InVehicleDevice> parseList(JSONObject jsonObject, String key) throws JSONException {
 		if (!jsonObject.has(key)) {
 			return new LinkedList<InVehicleDevice>();
 		}
@@ -57,7 +55,7 @@ public abstract class InVehicleDeviceBase extends Model {
 		return parseList(jsonArray);
 	}
 
-	public static LinkedList<InVehicleDevice> parseList(JSONArray jsonArray) throws JSONException, ParseException {
+	public static LinkedList<InVehicleDevice> parseList(JSONArray jsonArray) throws JSONException {
 		LinkedList<InVehicleDevice> models = new LinkedList<InVehicleDevice>();
 		for (Integer i = 0; i < jsonArray.length(); ++i) {
 			if (jsonArray.isNull(i)) {
@@ -103,12 +101,7 @@ public abstract class InVehicleDeviceBase extends Model {
 
 	@Override
 	public InVehicleDevice cloneByJSON() throws JSONException {
-		try {
-			return parse(toJSONObject(true));
-		} catch (ParseException e) {
-			throw new JSONException(e.toString() + "\n"
-				+ ExceptionUtils.getStackTrace(e));
-		}
+		return parse(toJSONObject(true));
 	}
 
 	private Optional<String> authenticationToken = Optional.absent();

@@ -1,13 +1,11 @@
 package com.kogasoftware.odt.webapi.model.base;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,10 +15,10 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class ServiceUnitBase extends Model {
-	private static final long serialVersionUID = 7765689775529169788L;
+	private static final long serialVersionUID = 8384510044526003539L;
 
 	@Override
-	public void fill(JSONObject jsonObject) throws JSONException, ParseException {
+	public void fill(JSONObject jsonObject) throws JSONException {
 		setActivatedAt(parseOptionalDate(jsonObject, "activated_at"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
@@ -39,20 +37,20 @@ public abstract class ServiceUnitBase extends Model {
 		setVehicle(Vehicle.parse(jsonObject, "vehicle"));
 	}
 
-	public static Optional<ServiceUnit> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	public static Optional<ServiceUnit> parse(JSONObject jsonObject, String key) throws JSONException {
 		if (!jsonObject.has(key)) {
 			return Optional.absent();
 		}
 		return Optional.of(parse(jsonObject.getJSONObject(key)));
 	}
 
-	public static ServiceUnit parse(JSONObject jsonObject) throws JSONException, ParseException {
+	public static ServiceUnit parse(JSONObject jsonObject) throws JSONException {
 		ServiceUnit model = new ServiceUnit();
 		model.fill(jsonObject);
 		return model;
 	}
 
-	public static LinkedList<ServiceUnit> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	public static LinkedList<ServiceUnit> parseList(JSONObject jsonObject, String key) throws JSONException {
 		if (!jsonObject.has(key)) {
 			return new LinkedList<ServiceUnit>();
 		}
@@ -60,7 +58,7 @@ public abstract class ServiceUnitBase extends Model {
 		return parseList(jsonArray);
 	}
 
-	public static LinkedList<ServiceUnit> parseList(JSONArray jsonArray) throws JSONException, ParseException {
+	public static LinkedList<ServiceUnit> parseList(JSONArray jsonArray) throws JSONException {
 		LinkedList<ServiceUnit> models = new LinkedList<ServiceUnit>();
 		for (Integer i = 0; i < jsonArray.length(); ++i) {
 			if (jsonArray.isNull(i)) {
@@ -131,12 +129,7 @@ public abstract class ServiceUnitBase extends Model {
 
 	@Override
 	public ServiceUnit cloneByJSON() throws JSONException {
-		try {
-			return parse(toJSONObject(true));
-		} catch (ParseException e) {
-			throw new JSONException(e.toString() + "\n"
-				+ ExceptionUtils.getStackTrace(e));
-		}
+		return parse(toJSONObject(true));
 	}
 
 	private Optional<Date> activatedAt = Optional.absent();

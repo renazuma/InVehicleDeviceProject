@@ -1,13 +1,11 @@
 package com.kogasoftware.odt.webapi.model.base;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,10 +15,10 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class VehicleNotificationBase extends Model {
-	private static final long serialVersionUID = 1175760967168641429L;
+	private static final long serialVersionUID = 2463835741785429583L;
 
 	@Override
-	public void fill(JSONObject jsonObject) throws JSONException, ParseException {
+	public void fill(JSONObject jsonObject) throws JSONException {
 		setBody(parseString(jsonObject, "body"));
 		setBodyRuby(parseOptionalString(jsonObject, "body_ruby"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
@@ -39,20 +37,20 @@ public abstract class VehicleNotificationBase extends Model {
 		setReservation(Reservation.parse(jsonObject, "reservation"));
 	}
 
-	public static Optional<VehicleNotification> parse(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	public static Optional<VehicleNotification> parse(JSONObject jsonObject, String key) throws JSONException {
 		if (!jsonObject.has(key)) {
 			return Optional.absent();
 		}
 		return Optional.of(parse(jsonObject.getJSONObject(key)));
 	}
 
-	public static VehicleNotification parse(JSONObject jsonObject) throws JSONException, ParseException {
+	public static VehicleNotification parse(JSONObject jsonObject) throws JSONException {
 		VehicleNotification model = new VehicleNotification();
 		model.fill(jsonObject);
 		return model;
 	}
 
-	public static LinkedList<VehicleNotification> parseList(JSONObject jsonObject, String key) throws JSONException, ParseException {
+	public static LinkedList<VehicleNotification> parseList(JSONObject jsonObject, String key) throws JSONException {
 		if (!jsonObject.has(key)) {
 			return new LinkedList<VehicleNotification>();
 		}
@@ -60,7 +58,7 @@ public abstract class VehicleNotificationBase extends Model {
 		return parseList(jsonArray);
 	}
 
-	public static LinkedList<VehicleNotification> parseList(JSONArray jsonArray) throws JSONException, ParseException {
+	public static LinkedList<VehicleNotification> parseList(JSONArray jsonArray) throws JSONException {
 		LinkedList<VehicleNotification> models = new LinkedList<VehicleNotification>();
 		for (Integer i = 0; i < jsonArray.length(); ++i) {
 			if (jsonArray.isNull(i)) {
@@ -117,12 +115,7 @@ public abstract class VehicleNotificationBase extends Model {
 
 	@Override
 	public VehicleNotification cloneByJSON() throws JSONException {
-		try {
-			return parse(toJSONObject(true));
-		} catch (ParseException e) {
-			throw new JSONException(e.toString() + "\n"
-				+ ExceptionUtils.getStackTrace(e));
-		}
+		return parse(toJSONObject(true));
 	}
 
 	private String body = "";
