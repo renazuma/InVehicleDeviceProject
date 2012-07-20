@@ -179,14 +179,14 @@ public class LocalDataSource implements Closeable {
 		localData.url = preferences.getString(SharedPreferencesKey.SERVER_URL,
 				WebAPIDataSource.DEFAULT_URL);
 		try {
-			localData.inVehicleDevice = new InVehicleDevice(new JSONObject(
+			localData.inVehicleDevice = InVehicleDevice.parse(new JSONObject(
 					preferences.getString(
 							SharedPreferencesKey.SERVICE_PROVIDER, "{}")));
 		} catch (JSONException e) {
 			Log.w(TAG, e);
 		}
 		try {
-			localData.serviceProvider = new ServiceProvider(new JSONObject(
+			localData.serviceProvider = ServiceProvider.parse(new JSONObject(
 					preferences.getString(
 							SharedPreferencesKey.IN_VEHICLE_DEVICE, "{}")));
 		} catch (JSONException e) {
