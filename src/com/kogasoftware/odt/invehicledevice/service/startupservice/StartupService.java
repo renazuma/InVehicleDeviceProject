@@ -17,6 +17,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.RemoteException;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -47,6 +48,13 @@ public class StartupService extends Service {
 	private void checkDeviceAndStartActivity() {
 		if (!enabled.get()) {
 			Log.i(TAG, "waiting for startup enabled");
+			return;
+		}
+
+		if (Settings.System.getInt(getContentResolver(),
+				Settings.System.AIRPLANE_MODE_ON, 0) != 0) {
+			BigToast.makeText(this, "機内モードが有効になっています。機内モードを無効にしてください。",
+					Toast.LENGTH_LONG).show();
 			return;
 		}
 
@@ -114,7 +122,8 @@ public class StartupService extends Service {
 			if (intent.getAction().equals(Intent.ACTION_PACKAGE_REPLACED)) {
 				String dataString = "package:" + context.getPackageName();
 				if (!intent.getDataString().equals(dataString)) {
-					Log.v(TAG, "!intent.getDataString().equals(\"" + dataString + "\")");
+					Log.v(TAG, "!intent.getDataString().equals(\"" + dataString
+							+ "\")");
 					return;
 				}
 				PowerManager powerManager = (PowerManager) context
@@ -155,6 +164,7 @@ public class StartupService extends Service {
 
 	@Override
 	public void onCreate() {
+		Log.i(TAG, "onCreate()");
 		IntentFilter intentFilter = new IntentFilter(Intent.ACTION_SCREEN_ON);
 		getApplicationContext().registerReceiver(screenOnBroadcastReceiver,
 				intentFilter);
@@ -163,6 +173,7 @@ public class StartupService extends Service {
 
 	@Override
 	public void onDestroy() {
+		Log.i(TAG, "onDestroy()");
 		getApplicationContext().unregisterReceiver(screenOnBroadcastReceiver);
 		handler.removeCallbacks(checkDeviceAndShowActivityCallback);
 	}
