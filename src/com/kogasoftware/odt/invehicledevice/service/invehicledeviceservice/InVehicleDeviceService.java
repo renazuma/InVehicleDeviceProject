@@ -37,7 +37,7 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Local
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundthread.BackgroundTaskThread;
 import com.kogasoftware.odt.invehicledevice.ui.activity.StartupActivity;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
-import com.kogasoftware.odt.webapi.model.Reservation;
+import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
@@ -507,11 +507,11 @@ public class InVehicleDeviceService extends Service {
 				});
 	}
 
-	public List<Reservation> getReservations() {
-		return localDataSource.withReadLock(new Reader<List<Reservation>>() {
+	public List<PassengerRecord> getPassengerRecords() {
+		return localDataSource.withReadLock(new Reader<List<PassengerRecord>>() {
 			@Override
-			public List<Reservation> read(LocalData status) {
-				return new LinkedList<Reservation>(status.reservations);
+			public List<PassengerRecord> read(LocalData status) {
+				return new LinkedList<PassengerRecord>(status.passengerRecords);
 			}
 		});
 	}

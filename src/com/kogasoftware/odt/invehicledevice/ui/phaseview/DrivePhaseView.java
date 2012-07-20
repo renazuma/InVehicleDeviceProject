@@ -15,9 +15,7 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
-import com.kogasoftware.odt.webapi.model.PassengerRecords;
 import com.kogasoftware.odt.webapi.model.Platform;
-import com.kogasoftware.odt.webapi.model.Reservation;
 
 public class DrivePhaseView extends PhaseView {
 	private static final int TOGGLE_DRIVING_VIEW_INTERVAL = 5000;
@@ -85,12 +83,9 @@ public class DrivePhaseView extends PhaseView {
 		OperationSchedule operationSchedule = operationSchedules.get(0);
 		TextView totalPassengerCountTextView = (TextView) findViewById(R.id.total_passenger_count_text_view);
 		Integer totalPassengerCount = 0;
-		for (Reservation reservation : service.getReservations()) {
-			for (PassengerRecord passengerRecord : reservation
-					.getPassengerRecord().asSet()) {
-				if (PassengerRecords.isRiding(passengerRecord)) {
-					totalPassengerCount += passengerRecord.getPassengerCount();
-				}
+		for (PassengerRecord passengerRecord : service.getPassengerRecords()) {
+			if (passengerRecord.isRiding()) {
+				totalPassengerCount += passengerRecord.getPassengerCount();
 			}
 		}
 		totalPassengerCountTextView.setText(totalPassengerCount + "名乗車中");

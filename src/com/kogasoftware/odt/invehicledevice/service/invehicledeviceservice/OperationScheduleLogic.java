@@ -1,6 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice;
 
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -11,8 +10,8 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Local
 import com.kogasoftware.odt.webapi.model.OperationRecord;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
-import com.kogasoftware.odt.webapi.model.PassengerRecords;
 import com.kogasoftware.odt.webapi.model.Reservation;
+import com.kogasoftware.odt.webapi.model.User;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 /**
@@ -98,20 +97,16 @@ public class OperationScheduleLogic {
 		localData.receivedOperationScheduleChangedVehicleNotifications
 				.addAll(triggerVehicleNotifications);
 
-		// 新規の場合Reservationは削除
+		// 新規の場合PassengerRecordはすべて削除
 		if (!service.isOperationScheduleInitialized()) {
-			localData.reservations.clear();
+			localData.passengerRecords.clear();
 		}
 
-		// 未乗車のReservationは削除
-		for (Reservation reservation : new LinkedList<Reservation>(
-				localData.reservations)) {
-			if (!reservation.getPassengerRecord().isPresent()) {
-				localData.reservations.remove(reservation);
-				continue;
-			}
-			if (PassengerRecords.isUnhandled(reservation)) {
-				localData.reservations.remove(reservation);
+		// 未乗車のPassengerRecordは削除
+		for (PassengerRecord passengerRecord : new LinkedList<PassengerRecord>(
+				localData.passengerRecords)) {
+			if (passengerRecord.isUnhandled()) {
+				localData.passengerRecords.remove(passengerRecord);
 			}
 		}
 
@@ -121,10 +116,10 @@ public class OperationScheduleLogic {
 					.getOperationRecord().or(new OperationRecord()));
 			for (Reservation reservation : operationSchedule
 					.getReservationsAsDeparture()) {
-				mergeUpdatedReservationWithWriteLock(localData, reservation);
-				// マージ完了後もPassengerRecordが存在しない予約には空のPassengerRecordを割り当て
-				reservation.setPassengerRecord(reservation.getPassengerRecord()
-						.or(new PassengerRecord()));
+				for (User user : reservation.getUsers()) {
+					mergeUpdatedPassengerRecordWithWriteLock(localData,
+							reservation, user, new PassengerRecord());
+				}
 			}
 		}
 
@@ -177,47 +172,49 @@ public class OperationScheduleLogic {
 	}
 
 	/**
-	 * 更新されたReservationを現在のものにマージする処理(LocalDataがロックされた状態内)
+	 * 更新されたPassengerRecordを現在のものにマージする処理(LocalDataがロックされた状態内)
 	 */
-	protected void mergeUpdatedReservationWithWriteLock(LocalData localData,
-			Reservation serverReservation) {
-		// 乗車済み、降車済みのPassengerRecordの中に既に対応するものが存在する場合、それのReservationを交換
-		for (Reservation localReservation : new LinkedList<Reservation>(
-				localData.reservations)) {
-			if (!localReservation.getId().equals(serverReservation.getId())) {
+	protected void mergeUpdatedPassengerRecordWithWriteLock(
+			LocalData localData, Reservation serverReservation,
+			User serverUser, PassengerRecord serverPassengerRecord) {
+		serverPassengerRecord.setReservation(serverReservation);
+		serverPassengerRecord.setUser(serverUser);
+
+		// 乗車済み、降車済みのPassengerRecordの中に既に対応するものが存在する場合、それのPassengerRecordを交換
+		for (PassengerRecord localPassengerRecord : new LinkedList<PassengerRecord>(
+				localData.passengerRecords)) {
+			// IDが一致するかを調べる
+			// ただし、localPassengerRecordにはIDが振られていないことがあるため、ReservationとUserのIDの一致を調べる
+			if (!localPassengerRecord.getReservationId().isPresent()
+					|| !localPassengerRecord.getReservationId().get()
+							.equals(serverReservation.getId())) {
+				continue;
+			}
+			if (!localPassengerRecord.getUserId().isPresent()
+					|| !localPassengerRecord.getUserId().get()
+							.equals(serverUser.getId())) {
 				continue;
 			}
 
-			// IDが一致した場合、予約を交換
-			localData.reservations.remove(localReservation);
-			// 予約の削除
-			if (serverReservation.getDeletedAt().isPresent()) {
-				return;
-			}
-			localData.reservations.add(serverReservation);
+			// IDが一致した場合
 
-			// 新しい乗車実績を反映
-			if (!localReservation.getPassengerRecord().isPresent()) {
+			// サーバーのPassengerRecordがローカルよりも新しい場合、ローカルのものをサーバーのもので置き換え
+			if (serverPassengerRecord.getUpdatedAt().after(
+					localPassengerRecord.getUpdatedAt())) {
+				localData.passengerRecords.remove(localPassengerRecord);
+				localData.passengerRecords.add(serverPassengerRecord);
 				return;
 			}
-			if (!serverReservation.getPassengerRecord().isPresent()) {
-				serverReservation.setPassengerRecord(localReservation
-						.getPassengerRecord());
-				return;
-			}
-			Date serverUpdatedAt = serverReservation.getPassengerRecord().get()
-					.getUpdatedAt();
-			Date localUpdatedAt = localReservation.getPassengerRecord().get()
-					.getUpdatedAt();
-			if (serverUpdatedAt.before(localUpdatedAt)) {
-				serverReservation.setPassengerRecord(localReservation
-						.getPassengerRecord());
-			}
-			return;
+
+			// ReservationとUserはサーバーから送られたものにする
+			localPassengerRecord.setReservation(serverReservation);
+			localPassengerRecord.setUser(serverUser);
+
+			localData.passengerRecords.add(serverPassengerRecord);
 		}
 
-		// IDが一致した予約が存在しない場合、無変更で追加する
-		localData.reservations.add(serverReservation);
+		// IDが一致したPassengerRecordが存在しない場合、無変更で追加する
+		localData.passengerRecords.add(serverPassengerRecord);
 	}
 
 	public void receiveUpdatedOperationSchedule(
@@ -244,7 +241,7 @@ public class OperationScheduleLogic {
 				localData.receivedOperationScheduleChangedVehicleNotifications
 						.clear();
 				localData.phase = Phase.INITIAL;
-				localData.reservations.clear();
+				localData.passengerRecords.clear();
 			}
 		});
 	}

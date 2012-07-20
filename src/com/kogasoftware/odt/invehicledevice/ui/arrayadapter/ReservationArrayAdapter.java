@@ -23,12 +23,10 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVeh
 import com.kogasoftware.odt.invehicledevice.ui.modalview.MemoModalView;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
-import com.kogasoftware.odt.webapi.model.PassengerRecords;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.User;
-import com.kogasoftware.odt.webapi.model.Users;
 
-public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
+public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 	public static enum ItemType {
 		RIDING_AND_NO_GET_OFF, FUTURE_GET_ON, MISSED,
 	}
@@ -39,8 +37,8 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 	protected final LayoutInflater layoutInflater = (LayoutInflater) getContext()
 			.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	protected final AlphaAnimation animation = new AlphaAnimation(1, 0.1f);
-	protected final List<Reservation> reservations = new LinkedList<Reservation>();
-	protected final List<Reservation> getOffScheduledAndUnhandledReservation = new LinkedList<Reservation>();
+	protected final List<PassengerRecord> passengerRecords = new LinkedList<PassengerRecord>();
+	protected final List<PassengerRecord> getOffScheduledAndUnhandledPassengerRecords = new LinkedList<PassengerRecord>();
 	protected final List<OperationSchedule> remainingOperationSchedules = new LinkedList<OperationSchedule>();
 	protected final OperationSchedule operationSchedule;
 	protected final EnumSet<ItemType> visibleItemTypes = EnumSet
@@ -53,14 +51,14 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		@Override
 		public void onClick(View view) {
 			Object tag = view.getTag();
-			if (!(tag instanceof Reservation)) {
+			if (!(tag instanceof PassengerRecord)) {
 				return;
 			}
-			Reservation reservation = (Reservation) tag;
-			if (isSelected(reservation)) {
-				unselect(reservation);
+			PassengerRecord passengerRecord = (PassengerRecord) tag;
+			if (isSelected(passengerRecord)) {
+				unselect(passengerRecord);
 			} else {
-				select(reservation);
+				select(passengerRecord);
 			}
 			notifyDataSetChanged();
 		}
@@ -70,11 +68,11 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		@Override
 		public void onClick(View view) {
 			Object tag = view.getTag();
-			if (!(tag instanceof Reservation)) {
+			if (!(tag instanceof PassengerRecord)) {
 				return;
 			}
-			Reservation reservation = (Reservation) tag;
-			memoModalView.show(reservation);
+			PassengerRecord passengerRecord = (PassengerRecord) tag;
+			memoModalView.show(passengerRecord);
 		}
 	};
 
@@ -86,7 +84,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		// payTiming = commonLogic.getPayTiming();
 		remainingOperationSchedules.addAll(service
 				.getRemainingOperationSchedules());
-		reservations.addAll(service.getReservations());
+		passengerRecords.addAll(service.getPassengerRecords());
 		isLastOperationSchedule = (remainingOperationSchedules.size() <= 1);
 		if (isLastOperationSchedule) {
 			visibleItemTypes.add(ItemType.RIDING_AND_NO_GET_OFF);
@@ -97,99 +95,89 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		} else {
 			operationSchedule = remainingOperationSchedules.get(0);
 		}
-		
-		for (Reservation reservation : reservations) {
-			if (isGetOffScheduled(reservation)
-					&& PassengerRecords.isUnhandled(reservation)) {
-				getOffScheduledAndUnhandledReservation.add(reservation);
+
+		for (PassengerRecord passengerRecord : passengerRecords) {
+			if (isGetOffScheduled(passengerRecord)
+					&& passengerRecord.isUnhandled()) {
+				getOffScheduledAndUnhandledPassengerRecords
+						.add(passengerRecord);
 			}
 		}
 		updateDataSet();
 	}
 
 	@Override
-	public void add(Reservation reservation) {
-		if (!reservation.getPassengerRecord().isPresent()) {
+	public void add(PassengerRecord passengerRecord) {
+		if (!passengerRecord.getReservation().isPresent()
+				|| !passengerRecord.getUser().isPresent()) {
 			return;
 		}
-		if (canGetOn(reservation) && isGetOnScheduled(reservation)) {
-			super.add(reservation);
+		if (canGetOn(passengerRecord) && isGetOnScheduled(passengerRecord)) {
+			super.add(passengerRecord);
 			return;
 		}
-		if (canGetOff(reservation) && isGetOffScheduled(reservation)) {
-			super.add(reservation);
+		if (canGetOff(passengerRecord) && isGetOffScheduled(passengerRecord)) {
+			super.add(passengerRecord);
 			return;
 		}
-		if (getOffScheduledAndUnhandledReservation.contains(reservation)) {
-			super.add(reservation);
-			return;
-		}
-		if (visibleItemTypes.contains(ItemType.FUTURE_GET_ON)
-				&& isFutureGetOn(reservation)) {
-			super.add(reservation);
-			return;
-		}
-		if (visibleItemTypes.contains(ItemType.RIDING_AND_NO_GET_OFF)
-				&& isRidingAndNoGetOff(reservation)) {
-			super.add(reservation);
-			return;
-		}
-		if (visibleItemTypes.contains(ItemType.MISSED) && isMissed(reservation)) {
-			super.add(reservation);
+		if (getOffScheduledAndUnhandledPassengerRecords
+				.contains(passengerRecord)) {
+			super.add(passengerRecord);
 			return;
 		}
 	}
 
-	private Boolean canGetOff(Reservation reservation) {
-		if (isSelected(reservation)) {
-			if (PassengerRecords.isGotOff(reservation)) {
+	private Boolean canGetOff(PassengerRecord passengerRecord) {
+		if (isSelected(passengerRecord)) {
+			if (passengerRecord.isGotOff()) {
 				return true;
 			}
 		} else {
-			if (PassengerRecords.isRiding(reservation)) {
+			if (passengerRecord.isRiding()) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	private Boolean canGetOn(Reservation reservation) {
-		if (isSelected(reservation)) {
-			if (PassengerRecords.isRiding(reservation)) {
+	private Boolean canGetOn(PassengerRecord passengerRecord) {
+		if (isSelected(passengerRecord)) {
+			if (passengerRecord.isRiding()) {
 				return true;
 			}
 		} else {
-			if (PassengerRecords.isUnhandled(reservation)) {
+			if (passengerRecord.isUnhandled()) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	public List<Reservation> getNoGettingOffReservations() {
-		List<Reservation> noGettingOffReservations = new LinkedList<Reservation>();
-		for (Reservation reservation : reservations) {
-			if (isGetOffScheduled(reservation) && !isSelected(reservation)) {
-				noGettingOffReservations.add(reservation);
+	public List<PassengerRecord> getNoGettingOffPassengerRecords() {
+		List<PassengerRecord> noGettingOffReservations = new LinkedList<PassengerRecord>();
+		for (PassengerRecord passengerRecord : passengerRecords) {
+			if (isGetOffScheduled(passengerRecord)
+					&& !isSelected(passengerRecord)) {
+				noGettingOffReservations.add(passengerRecord);
 			}
 		}
 		return noGettingOffReservations;
 	}
 
-	public List<Reservation> getNoGettingOnReservations() {
-		List<Reservation> noGettingOnReservations = new LinkedList<Reservation>();
-		for (Reservation reservation : reservations) {
-			if (canGetOn(reservation) && isGetOnScheduled(reservation)
-					&& !isSelected(reservation)) {
-				noGettingOnReservations.add(reservation);
+	public List<PassengerRecord> getNoGettingOnPassengerRecords() {
+		List<PassengerRecord> noGettingOnReservations = new LinkedList<PassengerRecord>();
+		for (PassengerRecord passengerRecord : passengerRecords) {
+			if (canGetOn(passengerRecord) && isGetOnScheduled(passengerRecord)
+					&& !isSelected(passengerRecord)) {
+				noGettingOnReservations.add(passengerRecord);
 			}
 		}
 		return noGettingOnReservations;
 	}
 
-	public List<Reservation> getNoPaymentReservations() {
-		List<Reservation> noPaymentReservations = new LinkedList<Reservation>();
-		return noPaymentReservations;
+	public List<PassengerRecord> getNoPaymentPassengerRecords() {
+		List<PassengerRecord> noPaymentPassengerRecords = new LinkedList<PassengerRecord>();
+		return noPaymentPassengerRecords;
 	}
 
 	@Override
@@ -198,7 +186,15 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 			convertView = layoutInflater.inflate(RESOURCE_ID, null);
 		}
 
-		Reservation reservation = getItem(position);
+		PassengerRecord passengerRecord = getItem(position);
+		if (!passengerRecord.getReservation().isPresent()
+				|| !passengerRecord.getUser().isPresent()) {
+			return convertView;
+		}
+
+		Reservation reservation = passengerRecord.getReservation().get();
+		User user = passengerRecord.getUser().get();
+
 		TextView passengerCountTextView = (TextView) convertView
 				.findViewById(R.id.passenger_count_text_view);
 		passengerCountTextView.setText(reservation.getPassengerCount() + "名");
@@ -208,7 +204,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		memoButton.setTag(reservation);
 		memoButton.setOnClickListener(onClickMemoButtonListener);
 		if (!reservation.getMemo().or("").isEmpty()
-				|| !Users.getMemo(reservation).isEmpty()) {
+				|| !user.getNotes().isEmpty()) {
 			memoButton.setVisibility(View.VISIBLE);
 			animation.setDuration(1000);
 			animation.setRepeatCount(Animation.INFINITE);
@@ -222,20 +218,15 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		convertView.setOnClickListener(onClickViewListener);
 		TextView userNameView = (TextView) convertView
 				.findViewById(R.id.user_name);
-		if (reservation.getUser().isPresent()) {
-			User user = reservation.getUser().get();
-			userNameView.setText(user.getLastName() + " " + user.getFirstName()
-					+ " 様");
-		} else {
-			userNameView.setText("ID:" + reservation.getUserId() + " 様");
-		}
+		userNameView.setText(user.getLastName() + " " + user.getFirstName()
+				+ " 様");
 
 		String text = "";
-		if (isGetOffScheduled(reservation)) {
+		if (isGetOffScheduled(passengerRecord)) {
 			text += "[降]";
-		} else if (isGetOnScheduled(reservation)) {
+		} else if (isGetOnScheduled(passengerRecord)) {
 			text += "[乗]";
-		} else if (canGetOff(reservation)) {
+		} else if (canGetOff(passengerRecord)) {
 			text += "[*降]";
 		} else {
 			text += "[*乗]";
@@ -246,8 +237,8 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 				.findViewById(R.id.reservation_id);
 		reservationIdView.setText(text);
 
-		if (isSelected(reservation)) {
-			if (isGetOnScheduled(reservation)) {
+		if (isSelected(passengerRecord)) {
+			if (isGetOnScheduled(passengerRecord)) {
 				convertView.setBackgroundColor(Color.parseColor("#FF69B4")); // TODO
 																				// テーマ
 			} else {
@@ -255,7 +246,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 																				// テーマ
 			}
 		} else {
-			if (isGetOnScheduled(reservation)) {
+			if (isGetOnScheduled(passengerRecord)) {
 				convertView.setBackgroundColor(Color.parseColor("#F9D9D8"));// TODO
 																			// テーマ
 			} else {
@@ -271,104 +262,75 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		updateDataSet();
 	}
 
-	private Boolean isFutureGetOn(Reservation reservation) {
-		if (!canGetOn(reservation)) {
+	private Boolean isGetOffScheduled(PassengerRecord passengerRecord) {
+		// 降車予定かどうか
+		if (!passengerRecord.getReservation().isPresent()) {
 			return false;
 		}
-		if (remainingOperationSchedules.size() <= 1) {
-			return false;
-		}
-		for (OperationSchedule remainingOperationSchedule : remainingOperationSchedules
-				.subList(1, remainingOperationSchedules.size())) {
-			if (reservation.getDepartureScheduleId().isPresent()
-					&& reservation.getDepartureScheduleId().get()
-							.equals(remainingOperationSchedule.getId())) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private Boolean isGetOffScheduled(Reservation reservation) {
-		// 降車予定かどうかを返す
+		Reservation reservation = passengerRecord.getReservation().get();
 		return reservation.getArrivalScheduleId().isPresent()
 				&& reservation.getArrivalScheduleId().get()
 						.equals(operationSchedule.getId());
 	}
 
-	private Boolean isGetOnScheduled(Reservation reservation) {
+	private Boolean isGetOnScheduled(PassengerRecord passengerRecord) {
 		// 乗車予定かどうか
+		if (!passengerRecord.getReservation().isPresent()) {
+			return false;
+		}
+		Reservation reservation = passengerRecord.getReservation().get();
 		return reservation.getDepartureScheduleId().isPresent()
 				&& reservation.getDepartureScheduleId().get()
 						.equals(operationSchedule.getId());
 	}
 
-	private Boolean isMissed(Reservation reservation) {
-		if (!canGetOn(reservation)) {
-			return false;
-		}
-		// 現在以降で乗車予定の場合はfalse
-		for (OperationSchedule remainingOperationSchedule : remainingOperationSchedules) {
-			if (reservation.getDepartureScheduleId().isPresent()
-					&& reservation.getDepartureScheduleId().get()
-							.equals(remainingOperationSchedule.getId())) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	private Boolean isRidingAndNoGetOff(Reservation reservation) {
-		return canGetOff(reservation) && !isGetOffScheduled(reservation);
-	}
-
-	public Boolean isSelected(Reservation reservation) {
-		for (PassengerRecord passengerRecord : reservation.getPassengerRecord()
-				.asSet()) {
-			if (PassengerRecords.isRiding(passengerRecord)) {
-				return operationSchedule.getId().equals(
-						passengerRecord.getDepartureOperationScheduleId()
-								.orNull());
-			} else if (PassengerRecords.isGotOff(passengerRecord)) {
-				return operationSchedule.getId().equals(
-						passengerRecord.getArrivalOperationScheduleId()
-								.orNull());
-			}
+	public Boolean isSelected(PassengerRecord passengerRecord) {
+		if (passengerRecord.isRiding()) {
+			return operationSchedule.getId().equals(
+					passengerRecord.getDepartureOperationScheduleId().orNull());
+		} else if (passengerRecord.isGotOff()) {
+			return operationSchedule.getId().equals(
+					passengerRecord.getArrivalOperationScheduleId().orNull());
 		}
 		return false;
 	}
 
-	public void select(Reservation reservation) {
+	public void select(PassengerRecord passengerRecord) {
+		if (!passengerRecord.getReservation().isPresent()) {
+			return;
+		}
+		Reservation reservation = passengerRecord.getReservation().get();
 		reservation.setPassengerRecord(reservation.getPassengerRecord().or(
 				new PassengerRecord()));
-		for (PassengerRecord passengerRecord : reservation.getPassengerRecord()
-				.asSet()) {
-			passengerRecord.setPassengerCount(reservation.getPassengerCount());
-			if (getOffScheduledAndUnhandledReservation.contains(reservation)) {
-				passengerRecord.setGetOnTime(new Date());
-				passengerRecord.setGetOffTime(new Date());
-				passengerRecord.setDepartureOperationScheduleId(reservation.getDepartureScheduleId());
-				passengerRecord.setArrivalOperationScheduleId(operationSchedule.getId());
-				service.getDataSource().getOnPassenger(operationSchedule, reservation, passengerRecord,
-						new EmptyWebAPICallback<PassengerRecord>());
-				service.getDataSource().getOffPassenger(operationSchedule, reservation, passengerRecord,
-						new EmptyWebAPICallback<PassengerRecord>());
-			} else if (PassengerRecords.isUnhandled(passengerRecord)) {
-				passengerRecord.setGetOnTime(new Date());
-				passengerRecord
-						.setDepartureOperationScheduleId(operationSchedule
-								.getId());
-				service.getDataSource().getOnPassenger(operationSchedule,
-						reservation, passengerRecord,
-						new EmptyWebAPICallback<PassengerRecord>());
-			} else if (PassengerRecords.isRiding(passengerRecord)) {
-				passengerRecord.setGetOffTime(new Date());
-				passengerRecord.setArrivalOperationScheduleId(operationSchedule
-						.getId());
-				service.getDataSource().getOffPassenger(operationSchedule,
-						reservation, passengerRecord,
-						new EmptyWebAPICallback<PassengerRecord>());
-			}
+		passengerRecord.setPassengerCount(reservation.getPassengerCount());
+		if (getOffScheduledAndUnhandledPassengerRecords
+				.contains(passengerRecord)) {
+			passengerRecord.setGetOnTime(new Date());
+			passengerRecord.setGetOffTime(new Date());
+			passengerRecord.setDepartureOperationScheduleId(reservation
+					.getDepartureScheduleId());
+			passengerRecord.setArrivalOperationScheduleId(operationSchedule
+					.getId());
+			service.getDataSource().getOnPassenger(operationSchedule,
+					reservation, passengerRecord,
+					new EmptyWebAPICallback<PassengerRecord>());
+			service.getDataSource().getOffPassenger(operationSchedule,
+					reservation, passengerRecord,
+					new EmptyWebAPICallback<PassengerRecord>());
+		} else if (passengerRecord.isUnhandled()) {
+			passengerRecord.setGetOnTime(new Date());
+			passengerRecord.setDepartureOperationScheduleId(operationSchedule
+					.getId());
+			service.getDataSource().getOnPassenger(operationSchedule,
+					reservation, passengerRecord,
+					new EmptyWebAPICallback<PassengerRecord>());
+		} else if (passengerRecord.isRiding()) {
+			passengerRecord.setGetOffTime(new Date());
+			passengerRecord.setArrivalOperationScheduleId(operationSchedule
+					.getId());
+			service.getDataSource().getOffPassenger(operationSchedule,
+					reservation, passengerRecord,
+					new EmptyWebAPICallback<PassengerRecord>());
 		}
 	}
 
@@ -377,40 +339,38 @@ public class ReservationArrayAdapter extends ArrayAdapter<Reservation> {
 		updateDataSet();
 	}
 
-	public void unselect(Reservation reservation) {
-		reservation.setPassengerRecord(reservation.getPassengerRecord().or(
-				new PassengerRecord()));
-		for (PassengerRecord passengerRecord : reservation.getPassengerRecord()
-				.asSet()) {
-			if (getOffScheduledAndUnhandledReservation.contains(reservation)) {
-				passengerRecord.clearGetOnTime();
-				passengerRecord.clearGetOffTime();
-				passengerRecord.clearDepartureOperationScheduleId();
-				passengerRecord.clearArrivalOperationScheduleId();
-				service.getDataSource().cancelGetOffPassenger(operationSchedule, reservation,
-						new EmptyWebAPICallback<PassengerRecord>());
-				service.getDataSource().cancelGetOnPassenger(operationSchedule, reservation,
-								new EmptyWebAPICallback<PassengerRecord>());
-			} else if (PassengerRecords.isRiding(passengerRecord)) {
-				passengerRecord.clearGetOnTime();
-				passengerRecord.clearDepartureOperationScheduleId();
-				service.getDataSource()
-						.cancelGetOnPassenger(operationSchedule, reservation,
-								new EmptyWebAPICallback<PassengerRecord>());
-			} else if (PassengerRecords.isGotOff(passengerRecord)) {
-				passengerRecord.clearGetOffTime();
-				passengerRecord.clearArrivalOperationScheduleId();
-				service.getDataSource().cancelGetOffPassenger(
-						operationSchedule, reservation,
-						new EmptyWebAPICallback<PassengerRecord>());
-			}
+	public void unselect(PassengerRecord passengerRecord) {
+		if (!passengerRecord.getReservation().isPresent()) {
+			return;
+		}
+		Reservation reservation = passengerRecord.getReservation().get();
+		if (getOffScheduledAndUnhandledPassengerRecords
+				.contains(passengerRecord)) {
+			passengerRecord.clearGetOnTime();
+			passengerRecord.clearGetOffTime();
+			passengerRecord.clearDepartureOperationScheduleId();
+			passengerRecord.clearArrivalOperationScheduleId();
+			service.getDataSource().cancelGetOffPassenger(operationSchedule,
+					reservation, new EmptyWebAPICallback<PassengerRecord>());
+			service.getDataSource().cancelGetOnPassenger(operationSchedule,
+					reservation, new EmptyWebAPICallback<PassengerRecord>());
+		} else if (passengerRecord.isRiding()) {
+			passengerRecord.clearGetOnTime();
+			passengerRecord.clearDepartureOperationScheduleId();
+			service.getDataSource().cancelGetOnPassenger(operationSchedule,
+					reservation, new EmptyWebAPICallback<PassengerRecord>());
+		} else if (passengerRecord.isGotOff()) {
+			passengerRecord.clearGetOffTime();
+			passengerRecord.clearArrivalOperationScheduleId();
+			service.getDataSource().cancelGetOffPassenger(operationSchedule,
+					reservation, new EmptyWebAPICallback<PassengerRecord>());
 		}
 	}
 
 	private void updateDataSet() {
 		clear();
-		for (Reservation reservation : reservations) {
-			add(reservation);
+		for (PassengerRecord passengerRecord : passengerRecords) {
+			add(passengerRecord);
 		}
 		notifyDataSetChanged();
 	}

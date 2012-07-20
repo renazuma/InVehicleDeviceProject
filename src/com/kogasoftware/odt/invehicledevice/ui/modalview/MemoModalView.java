@@ -6,6 +6,7 @@ import android.widget.TextView;
 import com.google.common.base.Joiner;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.User;
 
@@ -16,21 +17,29 @@ public class MemoModalView extends ModalView {
 		setCloseOnClick(R.id.memo_close_button);
 	}
 
-	public void show(Reservation reservation) {
+	public void show(Reservation reservation, User user) {
 		TextView titleTextView = (TextView) findViewById(R.id.memo_title_text_view);
 		StringBuilder title = new StringBuilder();
-		for (User user : reservation.getUser().asSet()) {
-			title.append(user.getLastName() + " " + user.getFirstName() + " 様 ");
-		}
+
+		title.append(user.getLastName() + " " + user.getFirstName() + " 様 ");
+
 		title.append("  予約番号：" + reservation.getId());
+
 		titleTextView.setText(title);
 
 		TextView reservationMemoTextView = (TextView) findViewById(R.id.reservation_memo_text_view);
 		reservationMemoTextView.setText(reservation.getMemo().or(""));
 
 		TextView userMemoTextView = (TextView) findViewById(R.id.user_memo_text_view);
-		userMemoTextView.setText(Joiner.on('\n').join(
-				Users.getMemo(reservation)));
+		userMemoTextView.setText(Joiner.on('\n').join(user.getNotes()));
 		super.show();
+	}
+
+	public void show(PassengerRecord passengerRecord) {
+		if (passengerRecord.getReservation().isPresent()
+				&& passengerRecord.getUser().isPresent()) {
+			show(passengerRecord.getReservation().get(), passengerRecord
+					.getUser().get());
+		}
 	}
 }

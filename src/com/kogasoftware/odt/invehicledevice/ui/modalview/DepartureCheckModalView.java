@@ -17,16 +17,16 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter;
-import com.kogasoftware.odt.webapi.model.Reservation;
+import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.User;
 
 public class DepartureCheckModalView extends ModalView {
-	private static String getUserName(Reservation reservation) {
-		if (reservation.getUser().isPresent()) {
-			User user = reservation.getUser().get();
+	private static String getUserName(PassengerRecord passengerRecord) {
+		if (passengerRecord.getUser().isPresent()) {
+			User user = passengerRecord.getUser().get();
 			return user.getLastName() + user.getFirstName();
 		} else {
-			return "「予約ID: " + reservation.getId() + "」";
+			return "「予約ID: " + passengerRecord.getReservationId().or(0) + "」";
 		}
 	}
 
@@ -46,16 +46,16 @@ public class DepartureCheckModalView extends ModalView {
 				.getListView();
 		List<String> messages = new LinkedList<String>();
 
-		for (Reservation reservation : adapter.getNoGettingOnReservations()) {
-			messages.add(" ※ " + getUserName(reservation) + "様が未乗車です");
+		for (PassengerRecord passengerRecord : adapter.getNoGettingOnPassengerRecords()) {
+			messages.add(" ※ " + getUserName(passengerRecord) + "様が未乗車です");
 		}
 
-		for (Reservation reservation : adapter.getNoGettingOffReservations()) {
-			messages.add(" ※ " + getUserName(reservation) + "様が未降車です");
+		for (PassengerRecord passengerRecord : adapter.getNoGettingOffPassengerRecords()) {
+			messages.add(" ※ " + getUserName(passengerRecord) + "様が未降車です");
 		}
 
-		for (Reservation reservation : adapter.getNoPaymentReservations()) {
-			messages.add(" ※ " + getUserName(reservation) + "様が料金未払いです");
+		for (PassengerRecord passengerRecord : adapter.getNoPaymentPassengerRecords()) {
+			messages.add(" ※ " + getUserName(passengerRecord) + "様が料金未払いです");
 		}
 
 		errorReservationListView.setAdapter(new ArrayAdapter<String>(
