@@ -100,7 +100,7 @@ public class DummyDataSource extends EmptyDataSource {
 							+ ","
 							+ r3
 							+ "]}");
-			l.add(new OperationSchedule(j1));
+			l.add(OperationSchedule.parse(j1));
 
 			JSONObject j2 = new JSONObject(
 					"{id:2, arrival_estimate: '2012-06-21T09:30:00+09:00', departure_estimate: '2012-06-21T09:35:00+09:00', "
@@ -110,7 +110,7 @@ public class DummyDataSource extends EmptyDataSource {
 							+ "reservations_as_departure: ["
 							+ r2
 							+ "]" + "}");
-			l.add(new OperationSchedule(j2));
+			l.add(OperationSchedule.parse(j2));
 
 			JSONObject j3 = new JSONObject(
 					"{id:3, arrival_estimate: '2012-06-21T10:15:00+09:00', departure_estimate: '2012-06-21T10:20:00+09:00', "
@@ -120,7 +120,7 @@ public class DummyDataSource extends EmptyDataSource {
 							+ ","
 							+ r3
 							+ "]}");
-			l.add(new OperationSchedule(j3));
+			l.add(OperationSchedule.parse(j3));
 
 			JSONObject j4 = new JSONObject(
 					"{id:4, arrival_estimate: '2012-06-21T11:00:00+09:00', departure_estimate: '2012-06-21T11:05:00+09:00', "
@@ -130,7 +130,7 @@ public class DummyDataSource extends EmptyDataSource {
 							+ ","
 							+ r4
 							+ "]}");
-			l.add(new OperationSchedule(j4));
+			l.add(OperationSchedule.parse(j4));
 
 			JSONObject j5 = new JSONObject(
 					"{id:5, arrival_estimate: '2012-06-21T03:00:00+09:00', departure_estimate: '2012-06-21T02:00:00+09:00', "
@@ -140,7 +140,7 @@ public class DummyDataSource extends EmptyDataSource {
 							+ ","
 							+ r5
 							+ "]}");
-			l.add(new OperationSchedule(j5));
+			l.add(OperationSchedule.parse(j5));
 
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block

@@ -20,7 +20,6 @@ import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.ReservationCandidate;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
-import com.kogasoftware.odt.webapi.model.VehicleNotifications;
 
 public class ScheduleChangedTestDataSource extends EmptyDataSource {
 	private static final String TAG = ScheduleChangedTestDataSource.class
@@ -79,7 +78,7 @@ public class ScheduleChangedTestDataSource extends EmptyDataSource {
 								+ r1
 								+ ","
 								+ r2 + "]}");
-				l.add(new OperationSchedule(j1));
+				l.add(OperationSchedule.parse(j1));
 
 				JSONObject j2 = new JSONObject(
 						"{id:2, arrival_estimate: '2012-01-01T02:00:00+09:00', departure_estimate: '2012-01-01T02:00:00+09:00', "
@@ -89,7 +88,7 @@ public class ScheduleChangedTestDataSource extends EmptyDataSource {
 								+ ","
 								+ r2
 								+ "]}");
-				l.add(new OperationSchedule(j2));
+				l.add(OperationSchedule.parse(j2));
 				return l;
 			} else if (phase.compareAndSet(2, 3)) {
 				Thread.sleep(10000);
@@ -101,19 +100,19 @@ public class ScheduleChangedTestDataSource extends EmptyDataSource {
 								+ r1
 								+ ","
 								+ r3 + "], operation_record: {arrived_at: '2012-01-01T01:00:01+09:00', departed_at: '2012-01-01T01:00:02+09:00'}}");
-				l.add(new OperationSchedule(j1));
+				l.add(OperationSchedule.parse(j1));
 
 				JSONObject j2 = new JSONObject(
 						"{id:3, arrival_estimate: '2012-01-01T02:00:00+09:00', departure_estimate: '2012-01-01T02:00:00+09:00', "
 								+ "platform: {name: '乗降場C', name_ruby: 'のりおりばしー', latitude: -9.189967, longitude: -75.015152}, reservations_as_arrival: [ "
 								+ r3 + " ]}");
-				l.add(new OperationSchedule(j2));
+				l.add(OperationSchedule.parse(j2));
 
 				JSONObject j3 = new JSONObject(
 						"{id:2, arrival_estimate: '2012-01-01T03:00:00+09:00', departure_estimate: '2012-01-01T02:00:00+09:00', "
 								+ "platform: {name: '乗降場B', name_ruby: 'のりおりばびー'}, "
 								+ "reservations_as_arrival: [" + r1 + "]}");
-				l.add(new OperationSchedule(j3));
+				l.add(OperationSchedule.parse(j3));
 				return l;
 			}
 		} catch (JSONException e) {
@@ -136,7 +135,7 @@ public class ScheduleChangedTestDataSource extends EmptyDataSource {
 			VehicleNotification v = new VehicleNotification();
 			v.setId(1);
 			v.setBody("運行スケジュールが変更されました");
-			v.setNotificationKind(VehicleNotifications.NotificationKind.RESERVATION_CHANGED);
+			v.setNotificationKind(VehicleNotification.NotificationKind.RESERVATION_CHANGED);
 			l.add(v);
 			return l;
 		} else if (phase.compareAndSet(30, 4)) {
