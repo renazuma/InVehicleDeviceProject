@@ -188,7 +188,7 @@ public class BackgroundTask {
 		}
 		DataSource dataSource = DataSourceFactory.newInstance(url, token,
 				webAPIBackupFile);
-		service.setDataSource(dataSource);
+		service.setRemoteDataSource(dataSource);
 		LocalDataSource localDataSource = new LocalDataSource(service);
 		service.setLocalDataSource(localDataSource);
 

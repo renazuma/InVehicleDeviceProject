@@ -40,7 +40,7 @@ public class OperationScheduleReceiveThread extends Thread implements
 			final List<VehicleNotification> triggerVehicleNotifications)
 			throws WebAPIException {
 		final List<OperationSchedule> operationSchedules = new LinkedList<OperationSchedule>();
-		operationSchedules.addAll(service.getDataSource()
+		operationSchedules.addAll(service.getRemoteDataSource()
 				.getOperationSchedules());
 
 		// triggerVehicleNotificationsが存在する場合は、OperationScheduleUpdatedAlertEvent送出

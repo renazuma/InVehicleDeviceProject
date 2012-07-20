@@ -41,7 +41,7 @@ public class OperationScheduleLogic {
 					localData.remainingOperationSchedules
 							.remove(operationSchedule);
 					localData.finishedOperationSchedules.add(operationSchedule);
-					service.getDataSource().departureOperationSchedule(
+					service.getRemoteDataSource().departureOperationSchedule(
 							operationSchedule,
 							new EmptyWebAPICallback<OperationSchedule>());
 				}
@@ -76,7 +76,7 @@ public class OperationScheduleLogic {
 				if (localData.phase == LocalData.Phase.DRIVE) {
 					OperationSchedule operationSchedule = localData.remainingOperationSchedules
 							.get(0);
-					service.getDataSource().arrivalOperationSchedule(
+					service.getRemoteDataSource().arrivalOperationSchedule(
 							operationSchedule,
 							new EmptyWebAPICallback<OperationSchedule>());
 				}

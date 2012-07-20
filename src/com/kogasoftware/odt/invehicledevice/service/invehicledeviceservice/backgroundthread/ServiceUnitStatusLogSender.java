@@ -18,7 +18,7 @@ public class ServiceUnitStatusLogSender implements Runnable {
 	public void run() {
 		final ServiceUnitStatusLog serviceUnitStatusLog = service
 				.getServiceUnitStatusLog();
-		service.getDataSource().sendServiceUnitStatusLog(serviceUnitStatusLog,
+		service.getRemoteDataSource().sendServiceUnitStatusLog(serviceUnitStatusLog,
 				new EmptyWebAPICallback<ServiceUnitStatusLog>());
 	}
 }

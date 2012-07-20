@@ -114,7 +114,7 @@ public class VehicleNotificationLogic {
 	public void replyUpdatedOperationScheduleVehicleNotifications(
 			final List<VehicleNotification> vehicleNotifications) {
 		for (VehicleNotification vehicleNotification : vehicleNotifications) {
-			service.getDataSource().responseVehicleNotification(
+			service.getRemoteDataSource().responseVehicleNotification(
 					vehicleNotification, VehicleNotification.Response.YES,
 					new EmptyWebAPICallback<VehicleNotification>());
 		}
@@ -136,7 +136,7 @@ public class VehicleNotificationLogic {
 	public void replyVehicleNotification(
 			final VehicleNotification vehicleNotification) {
 		for (Integer response : vehicleNotification.getResponse().asSet()) {
-			service.getDataSource().responseVehicleNotification(
+			service.getRemoteDataSource().responseVehicleNotification(
 					vehicleNotification, response,
 					new EmptyWebAPICallback<VehicleNotification>());
 		}

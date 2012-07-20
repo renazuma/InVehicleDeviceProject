@@ -207,7 +207,7 @@ public class InVehicleDeviceService extends Service {
 	protected final Set<OnResumeActivityListener> onResumeActivityListeners = new CopyOnWriteArraySet<OnResumeActivityListener>();
 	protected final VoiceServiceConnector voiceServiceConnector;
 	protected volatile Thread backgroundThread = new EmptyThread();
-	protected volatile DataSource dataSource = new EmptyDataSource();
+	protected volatile DataSource remoteDataSource = new EmptyDataSource();
 	protected volatile LocalDataSource localDataSource = new LocalDataSource();
 
 	public InVehicleDeviceService() {
@@ -453,8 +453,12 @@ public class InVehicleDeviceService extends Service {
 				});
 	}
 
-	public DataSource getDataSource() {
-		return dataSource;
+	public DataSource getRemoteDataSource() {
+		return remoteDataSource;
+	}
+
+	public LocalDataSource getLocalDataSource() {
+		return localDataSource;
 	}
 
 	public List<OperationSchedule> getFinishedOperationSchedules() {
@@ -466,10 +470,6 @@ public class InVehicleDeviceService extends Service {
 								status.finishedOperationSchedules);
 					}
 				});
-	}
-
-	public LocalDataSource getLocalDataSource() {
-		return localDataSource;
 	}
 
 	public EnumSet<PayTiming> getPayTiming() {
@@ -622,7 +622,7 @@ public class InVehicleDeviceService extends Service {
 		onReplyVehicleNotificationListeners.clear();
 		onStartNewOperationListeners.clear();
 		onStartReceiveUpdatedOperationScheduleListeners.clear();
-		Closeables.closeQuietly(dataSource);
+		Closeables.closeQuietly(remoteDataSource);
 		Closeables.closeQuietly(localDataSource);
 
 		stopSelf();
@@ -760,8 +760,8 @@ public class InVehicleDeviceService extends Service {
 		this.localDataSource = localDataSource;
 	}
 
-	public void setDataSource(DataSource dataSource) {
-		this.dataSource = dataSource;
+	public void setRemoteDataSource(DataSource remoteDataSource) {
+		this.remoteDataSource = remoteDataSource;
 	}
 
 	public void speak(String message) {

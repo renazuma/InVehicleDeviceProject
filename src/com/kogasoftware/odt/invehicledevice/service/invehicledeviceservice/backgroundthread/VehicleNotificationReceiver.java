@@ -17,7 +17,7 @@ public class VehicleNotificationReceiver implements Runnable {
 	public void run() {
 		try {
 			List<VehicleNotification> vehicleNotifications = service
-					.getDataSource().getVehicleNotifications();
+					.getRemoteDataSource().getVehicleNotifications();
 			if (vehicleNotifications.isEmpty()) {
 				return;
 			}
