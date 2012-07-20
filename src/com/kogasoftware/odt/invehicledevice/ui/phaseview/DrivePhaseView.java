@@ -2,6 +2,7 @@ package com.kogasoftware.odt.invehicledevice.ui.phaseview;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import android.content.Context;
@@ -97,14 +98,16 @@ public class DrivePhaseView extends PhaseView {
 		nextPlatformNameTextView.setText(platform.getName());
 		nextPlatformNameRubyTextView.setText(platform.getNameRuby());
 
+		platformArrivalTimeTextView.setText("");
+		platformArrivalTimeTextView2.setText("");
 		DateFormat dateFormat = new SimpleDateFormat(getResources().getString(
 				R.string.platform_arrival_time_format));
-
-		platformArrivalTimeTextView.setText("  "
-				+ dateFormat.format(operationSchedule.getArrivalEstimate()));
-
-		platformArrivalTimeTextView2.setText("  "
-				+ dateFormat.format(operationSchedule.getArrivalEstimate()));
+		for (Date arrivalEstimate : operationSchedule.getArrivalEstimate()
+				.asSet()) {
+			String text = "  " + dateFormat.format(arrivalEstimate);
+			platformArrivalTimeTextView.setText(text);
+			platformArrivalTimeTextView2.setText(text);
+		}
 
 		platformName1BeyondTextView.setText("");
 		if (operationSchedules.size() > 1) {

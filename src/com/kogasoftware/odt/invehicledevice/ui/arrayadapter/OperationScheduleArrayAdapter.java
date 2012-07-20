@@ -2,6 +2,7 @@ package com.kogasoftware.odt.invehicledevice.ui.arrayadapter;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import android.content.Context;
@@ -77,16 +78,24 @@ public class OperationScheduleArrayAdapter extends
 
 		TextView arrivalEstimateTextView = (TextView) convertView
 				.findViewById(R.id.operation_schedule_arrival_estimate_text_view);
-		arrivalEstimateTextView.setText(displayDateFormat
-				.format(operationSchedule.getArrivalEstimate()) + " 着");
-
 		TextView departureEstimateTextView = (TextView) convertView
 				.findViewById(R.id.operation_schedule_departure_estimate_text_view);
-		if (getCount() == position + 1) {
-			departureEstimateTextView.setText("");
-		} else {
-			departureEstimateTextView.setText(displayDateFormat
-					.format(operationSchedule.getDepartureEstimate()) + " 発");
+
+		arrivalEstimateTextView.setText("");
+		departureEstimateTextView.setText("");
+
+		for (Date arrivalEstimate : operationSchedule.getArrivalEstimate()
+				.asSet()) {
+			arrivalEstimateTextView.setText(displayDateFormat
+					.format(arrivalEstimate) + " 着");
+		}
+
+		if (getCount() != position + 1) {
+			for (Date departureEstimate : operationSchedule
+					.getDepartureEstimate().asSet()) {
+				departureEstimateTextView.setText(displayDateFormat
+						.format(departureEstimate) + " 発");
+			}
 		}
 
 		if (service.getRemainingOperationSchedules()
