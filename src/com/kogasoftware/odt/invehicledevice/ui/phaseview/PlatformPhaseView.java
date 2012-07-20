@@ -57,8 +57,11 @@ public class PlatformPhaseView extends PhaseView {
 			minutesRemainingTextView.setText("");
 			for (OperationSchedule operationSchedule : service
 					.getCurrentOperationSchedule().asSet()) {
+				if (!operationSchedule.getDepartureEstimate().isPresent()) {
+					return;
+				}
 				Date departureEstimate = operationSchedule
-						.getDepartureEstimate();
+						.getDepartureEstimate().get();
 				Integer minutesRemaining = (int) (departureEstimate.getTime() / 1000 / 60 - now
 						.getTime() / 1000 / 60);
 				DateFormat dateFormat = new SimpleDateFormat("HH:mm");

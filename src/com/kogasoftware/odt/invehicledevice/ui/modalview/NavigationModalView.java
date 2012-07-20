@@ -327,7 +327,7 @@ public class NavigationModalView extends ModalView implements
 
 		String titleTextFormat = "";
 		String timeTextFormat = "";
-		Date displayDate = new Date();
+		Optional<Date> displayDate = Optional.absent();
 		switch (service.getPhase()) {
 		case DRIVE:
 			titleTextFormat = getResources().getString(
@@ -359,7 +359,9 @@ public class NavigationModalView extends ModalView implements
 		TextView platformArrivalTimeTextView = (TextView) findViewById(R.id.platform_arrival_time_view);
 		DateFormat dateFormat = new SimpleDateFormat(timeTextFormat);
 
-		platformArrivalTimeTextView.setText(dateFormat.format(displayDate));
+		if (displayDate.isPresent()) {
+			platformArrivalTimeTextView.setText(dateFormat.format(displayDate.get()));
+		}
 		updatePlatform();
 	}
 
