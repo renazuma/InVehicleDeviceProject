@@ -9,6 +9,7 @@ import junit.framework.Assert;
 import org.joda.time.DateTime;
 
 import android.app.Activity;
+import android.app.Instrumentation;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +18,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.RemoteException;
 import android.os.StrictMode;
+import android.util.Log;
 import android.view.View;
 
 import com.google.common.util.concurrent.Uninterruptibles;
@@ -29,6 +31,8 @@ import com.kogasoftware.odt.invehicledevice.service.startupservice.IStartupServi
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
 public class TestUtil {
+	private static final String TAG = TestUtil.class.getSimpleName();
+
 	public static void setDataSource(DataSource ds) {
 		DataSourceFactory.setInstance(ds);
 	}
@@ -122,11 +126,11 @@ public class TestUtil {
 						myLooper.quit();
 						try {
 							if (enable) {
-								startupService.enable();	
+								startupService.enable();
 							} else {
 								startupService.disable();
 							}
-							
+
 						} catch (RemoteException e) {
 						}
 					}
@@ -146,18 +150,52 @@ public class TestUtil {
 		t.join();
 	}
 
-	public static void disableAutoStart(Context context) throws InterruptedException {
+	public static void disableAutoStart(Context context)
+			throws InterruptedException {
 		setAutoStart(context, false);
 	}
 
-	public static void enableAutoStart(Context context) throws InterruptedException {
+	public static void enableAutoStart(Context context)
+			throws InterruptedException {
 		setAutoStart(context, true);
 	}
-	
+
 	public static void enableStrictMode() {
 		StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
 				.detectAll().penaltyLog().build());
 		StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll()
 				.penaltyLog().penaltyDeath().build());
+	}
+	
+	public static void exitService(final Context c) throws InterruptedException {
+		final Intent i = new Intent(c, InVehicleDeviceService.class);
+		Thread t = new Thread() {
+			Looper myLooper;
+			final ServiceConnection sc = new ServiceConnection() {
+				@Override
+				public void onServiceConnected(ComponentName cn, IBinder ib) {
+					((InVehicleDeviceService.LocalBinder) ib).getService().exit();
+					c.unbindService(this);
+					c.stopService(i);
+					myLooper.quit();
+					interrupt();
+				}
+
+				@Override
+				public void onServiceDisconnected(ComponentName cn) {
+				}
+			};
+
+			@Override
+			public void run() {
+				Looper.prepare();
+				myLooper = Looper.myLooper();
+				Assert.assertTrue(c
+						.bindService(i, sc, Context.BIND_AUTO_CREATE));
+				Looper.loop();
+			}
+		};
+		t.start();
+		t.join();
 	}
 }

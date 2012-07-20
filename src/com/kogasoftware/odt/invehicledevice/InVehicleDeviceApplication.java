@@ -8,6 +8,7 @@ import org.acra.annotation.ReportsCrashes;
 import android.app.Application;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.StrictMode;
 import android.util.Log;
 
 @ReportsCrashes(formKey = "dFp5SnVVbTRuem13WmJ0YlVUb2NjaXc6MQ", mode = ReportingInteractionMode.TOAST, resToastText = R.string.crash_toast_text, customReportContent = {
@@ -43,6 +44,17 @@ public class InVehicleDeviceApplication extends Application {
 					+ " BuildConfig.DEBUG=" + BuildConfig.DEBUG);
 		} catch (NameNotFoundException e) {
 			Log.w(TAG, e);
+		}
+		enableStrictMode();
+	}
+
+	protected void enableStrictMode() {
+		if (BuildConfig.DEBUG) {
+			StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+					.detectAll().penaltyLog().build());
+			StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+					.detectAll().penaltyLog().penaltyDeath().build());
+			Log.i(TAG, "StrictMode enabled");
 		}
 	}
 

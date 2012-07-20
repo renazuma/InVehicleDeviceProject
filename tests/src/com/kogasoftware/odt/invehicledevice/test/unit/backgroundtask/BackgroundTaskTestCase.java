@@ -3,9 +3,8 @@ package com.kogasoftware.odt.invehicledevice.test.unit.backgroundtask;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import com.kogasoftware.odt.invehicledevice.backgroundtask.BackgroundTask;
-import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundthread.BackgroundTask;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.test.util.datasource.DummyDataSource;
@@ -13,23 +12,18 @@ import com.kogasoftware.odt.invehicledevice.test.util.datasource.DummyDataSource
 public class BackgroundTaskTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 
-	StatusAccess sa;
-	CommonLogic cl;
+	LocalDataSource sa;
 
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
 		Thread.sleep(10 * 1000);
 		TestUtil.setDataSource(new DummyDataSource());
-		sa = new StatusAccess(getActivity());
-		cl = new CommonLogic(getActivity(), getActivityHandler(), sa);
+		sa = new LocalDataSource(getActivity());
 	}
 
 	@Override
 	public void tearDown() throws Exception {
-		if (cl != null) {
-			cl.dispose();
-		}
 		super.tearDown();
 	}
 
@@ -41,8 +35,7 @@ public class BackgroundTaskTestCase extends
 		new Thread() {
 			@Override
 			public void run() {
-				BackgroundTask bt = new BackgroundTask(cl, getInstrumentation()
-						.getTargetContext());
+				BackgroundTask bt = new BackgroundTask(null);
 				Thread.currentThread().interrupt();
 				bt.loop();
 				cdl.countDown();
@@ -60,8 +53,7 @@ public class BackgroundTaskTestCase extends
 			@Override
 			public void run() {
 				Thread.currentThread().interrupt();
-				BackgroundTask bt = new BackgroundTask(cl, getInstrumentation()
-						.getTargetContext());
+				BackgroundTask bt = new BackgroundTask(null);
 				bt.loop();
 				cdl.countDown();
 			}
@@ -77,8 +69,7 @@ public class BackgroundTaskTestCase extends
 		new Thread() {
 			@Override
 			public void run() {
-				final BackgroundTask bt = new BackgroundTask(cl,
-						getInstrumentation().getTargetContext());
+				final BackgroundTask bt = new BackgroundTask(null);
 				new Thread() {
 					@Override
 					public void run() {
@@ -100,8 +91,7 @@ public class BackgroundTaskTestCase extends
 		new Thread() {
 			@Override
 			public void run() {
-				final BackgroundTask bt = new BackgroundTask(cl,
-						getInstrumentation().getTargetContext());
+				final BackgroundTask bt = new BackgroundTask(null);
 				new Thread() {
 					@Override
 					public void run() {
@@ -123,8 +113,7 @@ public class BackgroundTaskTestCase extends
 		new Thread() {
 			@Override
 			public void run() {
-				BackgroundTask bt = new BackgroundTask(cl, getInstrumentation()
-						.getTargetContext());
+				BackgroundTask bt = new BackgroundTask(null);
 				bt.quit();
 				bt.loop();
 				cdl.countDown();

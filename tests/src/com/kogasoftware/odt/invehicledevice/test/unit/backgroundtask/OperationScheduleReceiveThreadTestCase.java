@@ -2,21 +2,13 @@ package com.kogasoftware.odt.invehicledevice.test.unit.backgroundtask;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.google.common.base.Function;
-import com.google.common.eventbus.Subscribe;
-import com.kogasoftware.odt.invehicledevice.backgroundtask.OperationScheduleReceiveThread;
-import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.logic.event.UpdatedOperationScheduleReceiveStartEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.UpdatedOperationScheduleReceivedEvent;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundthread.OperationScheduleReceiveThread;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
-import com.kogasoftware.odt.invehicledevice.test.util.Subscriber;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.test.util.datasource.DummyDataSource;
 import com.kogasoftware.odt.webapi.WebAPIException;
@@ -25,7 +17,6 @@ import com.kogasoftware.odt.webapi.model.OperationSchedule;
 public class OperationScheduleReceiveThreadTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 
-	CommonLogic cl;
 	OperationScheduleReceiveThread osrt;
 
 	@Override
@@ -35,9 +26,6 @@ public class OperationScheduleReceiveThreadTestCase extends
 
 	@Override
 	protected void tearDown() throws Exception {
-		if (cl != null) {
-			cl.dispose();
-		}
 		if (osrt != null) {
 			osrt.interrupt();
 			osrt.join();
@@ -74,18 +62,8 @@ public class OperationScheduleReceiveThreadTestCase extends
 		}
 		TestUtil.clearStatus();
 		TestUtil.setDataSource(new TestDataSource());
-		cl = newCommonLogic();
-		final CountDownLatch cdl = new CountDownLatch(1);
-		cl.registerEventListener(new Function<UpdatedOperationScheduleReceivedEvent, Void>() {
-			@Subscribe
-			@Override
-			public Void apply(UpdatedOperationScheduleReceivedEvent e) {
-				cdl.countDown();
-				return null;
-			}
-		});
-		osrt = new OperationScheduleReceiveThread(cl);
-		assertFalse(cdl.await(2, TimeUnit.SECONDS));
+		osrt = new OperationScheduleReceiveThread(null);
+		assertFalse(true);
 	}
 
 	List<OperationSchedule> getDummyOperationSchedules() {
@@ -121,15 +99,11 @@ public class OperationScheduleReceiveThreadTestCase extends
 		}
 		TestUtil.clearStatus();
 		TestUtil.setDataSource(new TestDataSource());
-		cl = newCommonLogic();
-		osrt = new OperationScheduleReceiveThread(cl);
-		Subscriber<UpdatedOperationScheduleReceivedEvent> s = Subscriber.of(
-				UpdatedOperationScheduleReceivedEvent.class, cl);
-		cl.registerEventListener(osrt);
+		osrt = new OperationScheduleReceiveThread(null);
 		osrt.start();
 		Thread.sleep(10 * 1000);
 		assertEquals(0, seq.get());
-		assertEquals(0, s.s.availablePermits());
+		assertEquals(0, 1);
 	}
 
 	public void testUpdatedOperationScheduleReceiveStartEvent通知でのOperationScheduleを受信()
@@ -146,16 +120,11 @@ public class OperationScheduleReceiveThreadTestCase extends
 		}
 		TestUtil.clearStatus();
 		TestUtil.setDataSource(new TestDataSource());
-		cl = newCommonLogic();
-		osrt = new OperationScheduleReceiveThread(cl);
-		Subscriber<UpdatedOperationScheduleReceivedEvent> s = Subscriber.of(
-				UpdatedOperationScheduleReceivedEvent.class, cl);
-		cl.registerEventListener(osrt);
+		osrt = new OperationScheduleReceiveThread(null);
 		osrt.start();
-		cl.postEvent(new UpdatedOperationScheduleReceiveStartEvent());
 		Thread.sleep(10 * 1000);
 		assertEquals(1, seq.get());
-		assertEquals(1, s.s.availablePermits());
+		assertEquals(1, 0);
 	}
 
 	public void testUpdatedOperationScheduleReceiveStartEvent二回通知で二回OperationScheduleを受信()
@@ -171,17 +140,10 @@ public class OperationScheduleReceiveThreadTestCase extends
 		}
 		TestUtil.clearStatus();
 		TestUtil.setDataSource(new TestDataSource());
-		cl = newCommonLogic();
-		osrt = new OperationScheduleReceiveThread(cl);
+		osrt = new OperationScheduleReceiveThread(null);
 		osrt.start();
-		Subscriber<UpdatedOperationScheduleReceivedEvent> s = Subscriber.of(
-				UpdatedOperationScheduleReceivedEvent.class, cl);
-		cl.registerEventListener(s);
-		cl.registerEventListener(osrt);
-		cl.postEvent(new UpdatedOperationScheduleReceiveStartEvent());
-		cl.postEvent(new UpdatedOperationScheduleReceiveStartEvent());
 		Thread.sleep(10 * 1000);
 		assertEquals(2, seq.get());
-		assertEquals(2, s.s.availablePermits());
+		assertEquals(2, 0);
 	}
 }

@@ -48,31 +48,31 @@ public class InVehicleDeviceService extends Service {
 		}
 	}
 
-	public static interface OnAlertUpdatedOperationScheduleListener {
+	public interface OnAlertUpdatedOperationScheduleListener {
 		void onAlertUpdatedOperationSchedule();
 	}
 
-	public static interface OnAlertVehicleNotificationReceiveListener {
+	public interface OnAlertVehicleNotificationReceiveListener {
 		void onAlertVehicleNotificationReceive();
 	}
 
-	public static interface OnChangeLocationListener {
+	public interface OnChangeLocationListener {
 		void onChangeLocation(Location location, Optional<GpsStatus> gpsStatus);
 	}
 
-	public static interface OnChangeOrientationListener {
+	public interface OnChangeOrientationListener {
 		void onChangeOrientation(Double orientationDegree);
 	}
 
-	public static interface OnChangeSignalStrengthListener {
+	public interface OnChangeSignalStrengthListener {
 		void onChangeSignalStrength(Integer signalStrengthPercentage);
 	}
 
-	public static interface OnChangeTemperatureListener {
+	public interface OnChangeTemperatureListener {
 		void onChangeTemperature(Double celciusTemperature);
 	}
 
-	public static interface OnEnterPhaseListener {
+	public interface OnEnterPhaseListener {
 		void onEnterDrivePhase();
 
 		void onEnterFinishPhase();
@@ -80,15 +80,15 @@ public class InVehicleDeviceService extends Service {
 		void onEnterPlatformPhase();
 	}
 
-	public static interface OnExitListener {
+	public interface OnExitListener {
 		void onExit();
 	}
 
-	public static interface OnInitializeListener {
+	public interface OnInitializeListener {
 		void onInitialize(InVehicleDeviceService localService);
 	}
 
-	public static interface OnMergeUpdatedOperationScheduleListener {
+	public interface OnMergeUpdatedOperationScheduleListener {
 		void onMergeUpdatedOperationSchedule(
 				List<VehicleNotification> triggerVehicleNotifications);
 	}
@@ -97,23 +97,23 @@ public class InVehicleDeviceService extends Service {
 		void onPauseActivity();
 	}
 
-	public static interface OnReceiveUpdatedOperationScheduleListener {
+	public interface OnReceiveUpdatedOperationScheduleListener {
 		void onReceiveUpdatedOperationSchedule(
 				List<OperationSchedule> operationSchedules,
 				List<VehicleNotification> triggerVehicleNotifications);
 	}
 
-	public static interface OnReceiveVehicleNotificationListener {
+	public interface OnReceiveVehicleNotificationListener {
 		void onReceiveVehicleNotification(
 				List<VehicleNotification> vehicleNotifications);
 	}
 
-	public static interface OnReplyUpdatedOperationScheduleVehicleNotificationsListener {
+	public interface OnReplyUpdatedOperationScheduleVehicleNotificationsListener {
 		void onReplyUpdatedOperationScheduleVehicleNotifications(
 				List<VehicleNotification> vehicleNotifications);
 	}
 
-	public static interface OnReplyVehicleNotificationListener {
+	public interface OnReplyVehicleNotificationListener {
 		void onReplyVehicleNotification(VehicleNotification vehicleNotification);
 	}
 
@@ -121,11 +121,11 @@ public class InVehicleDeviceService extends Service {
 		void onResumeActivity();
 	}
 
-	public static interface OnStartNewOperationListener {
+	public interface OnStartNewOperationListener {
 		void onStartNewOperation();
 	}
 
-	public static interface OnStartReceiveUpdatedOperationScheduleListener {
+	public interface OnStartReceiveUpdatedOperationScheduleListener {
 		void onStartReceiveUpdatedOperationSchedule();
 	}
 
@@ -419,15 +419,22 @@ public class InVehicleDeviceService extends Service {
 	}
 
 	public void exit() {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				for (OnExitListener listener : new ArrayList<OnExitListener>(
-						onExitListeners)) {
-					listener.onExit();
+		// このメソッドが呼ばれた後に追加されたOnExitListenerを無視するため、
+		// handlerと同じスレッドで呼ばれた場合はpostせずそのままコールバックを行う
+		if (handler.getLooper().getThread().getId() != Thread.currentThread()
+				.getId()) {
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					exit();
 				}
-			}
-		});
+			});
+			return;
+		}
+		for (OnExitListener listener : new ArrayList<OnExitListener>(
+				onExitListeners)) {
+			listener.onExit();
+		}
 	}
 
 	public Optional<OperationSchedule> getCurrentOperationSchedule() {
@@ -597,6 +604,7 @@ public class InVehicleDeviceService extends Service {
 	public boolean onUnbind(Intent intent) {
 		Log.i(TAG, "onUnbind()");
 		stopForeground(false);
+		exit();
 		backgroundThread.interrupt();
 		onInitializeListeners.clear();
 		onEnterPhaseListeners.clear();

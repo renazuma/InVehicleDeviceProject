@@ -4,14 +4,12 @@ import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
 import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceThread;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 
 public class VoiceThreadTestCase extends EmptyActivityInstrumentationTestCase2 {
-	CommonLogic cl;
-	StatusAccess sa;
+	LocalDataSource sa;
 	VoiceThread vt;
 	BlockingQueue<String> bq;
 
@@ -20,17 +18,13 @@ public class VoiceThreadTestCase extends EmptyActivityInstrumentationTestCase2 {
 		super.setUp();
 		bq = new LinkedBlockingQueue<String>();
 		vt = new VoiceThread(getInstrumentation().getTargetContext(), bq);
-		sa = new StatusAccess(getActivity());
-		cl = new CommonLogic(getActivity(), getActivityHandler(), sa);
+		sa = new LocalDataSource(null);
 	}
 
 	@Override
 	protected void tearDown() throws Exception {
 		if (vt != null) {
 			vt.interrupt();
-		}
-		if (cl != null) {
-			cl.dispose();
 		}
 		super.tearDown();
 	}

@@ -13,13 +13,11 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.StrictMode;
 import android.text.Html;
 import android.util.Log;
 import android.view.WindowManager;
 
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.invehicledevice.BuildConfig;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.ui.InVehicleDeviceView;
@@ -48,6 +46,10 @@ public class InVehicleDeviceActivity extends Activity implements
 	private final ServiceConnection serviceConnection = new ServiceConnection() {
 		@Override
 		public void onServiceConnected(ComponentName className, IBinder binder) {
+			if (!(binder instanceof InVehicleDeviceService.LocalBinder)) {
+				Log.e(TAG, "!(" + binder + " instanceof InVehicleDeviceService.LocalBinder)");
+				return;
+			}
 			InVehicleDeviceService service = ((InVehicleDeviceService.LocalBinder) binder)
 					.getService();
 			service.addOnExitListener(InVehicleDeviceActivity.this);
@@ -64,20 +66,10 @@ public class InVehicleDeviceActivity extends Activity implements
 	private Optional<InVehicleDeviceService> optionalService = Optional
 			.absent();
 
-	protected void enableStrictMode() {
-		if (BuildConfig.DEBUG) {
-			StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-					.detectAll().penaltyLog().build());
-			StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-					.detectAll().penaltyLog().penaltyDeath().build());
-		}
-	}
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.i(TAG, "onCreate()");
-		// enableStrictMode();
 		getWindow().addFlags(
 				WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
 						| WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
@@ -87,7 +79,7 @@ public class InVehicleDeviceActivity extends Activity implements
 
 		bindService(new Intent(this, InVehicleDeviceService.class),
 				serviceConnection, Context.BIND_AUTO_CREATE);
-		handler.postDelayed(waitForInitialize, 15 * 1000); // TODO:ウエイトを無くす
+		handler.post(waitForInitialize);
 	}
 
 	@Override

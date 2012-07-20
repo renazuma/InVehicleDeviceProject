@@ -4,11 +4,22 @@ import java.util.List;
 
 import junit.framework.AssertionFailedError;
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningTaskInfo;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.Bundle;
+import android.os.IBinder;
+import android.os.Looper;
 import android.test.ActivityInstrumentationTestCase2;
+import android.util.Log;
 
 import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.datasource.EmptyDataSource;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.startupservice.StartupService;
 import com.kogasoftware.odt.invehicledevice.test.util.datasource.DummyDataSource;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.webapi.WebAPIException;
@@ -17,9 +28,26 @@ import com.kogasoftware.odt.webapi.model.OperationSchedule;
 public class TestUtilTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
+	private static final String TAG = TestUtilTestCase.class.getSimpleName();
+
 	public TestUtilTestCase() {
 		super("com.kogasoftware.odt.invehicledevice",
 				InVehicleDeviceActivity.class);
+	}
+
+	public void setUp() throws Exception {
+		TestUtil.disableAutoStart(getInstrumentation().getContext());
+	}
+
+	public void tearDown() throws Exception {
+		try {
+			Context tc = getInstrumentation().getTargetContext();
+			TestUtil.disableAutoStart(tc);
+			Thread.sleep(10 * 1000);
+			TestUtil.exitService(tc);
+		} finally {
+			super.tearDown();
+		}
 	}
 
 	public void testWaitForStartUi() throws Exception {
@@ -47,18 +75,41 @@ public class TestUtilTestCase extends
 
 	public void testDisableAutoStart() throws Exception {
 		Context c = getInstrumentation().getContext();
-		Solo s = new Solo(getInstrumentation(), getActivity());
+		String pn = getInstrumentation().getTargetContext().getPackageName();
+		InVehicleDeviceActivity a = getActivity();
+		TestUtil.waitForStartUI(a);
 		TestUtil.disableAutoStart(c);
-		s.finishOpenedActivities();
-		
+		a.finish();
+
 		Thread.sleep(5000);
-		try {
-			s.waitForActivity("InVehicleDeviceActivity", 20 * 1000);
-			throw new RuntimeException("");
-		} catch (AssertionFailedError e) {
+
+		ActivityManager activityManager = (ActivityManager) c
+				.getSystemService(Activity.ACTIVITY_SERVICE);
+		for (RunningTaskInfo runningTaskInfo : activityManager
+				.getRunningTasks(1)) {
+			ComponentName topActivity = runningTaskInfo.topActivity;
+			if (topActivity.getPackageName().equals(pn)
+					&& topActivity.getClassName().equals(
+							InVehicleDeviceActivity.class.getName())) {
+				fail();
+			}
 		}
+
 		TestUtil.enableAutoStart(c);
-		assertTrue(s.waitForActivity("InVehicleDeviceActivity", 20 * 1000));
+		Thread.sleep(StartupService.CHECK_DEVICE_INTERVAL_MILLIS);
+		Thread.sleep(5 * 1000);
+		
+		for (RunningTaskInfo runningTaskInfo : activityManager
+				.getRunningTasks(1)) {
+			ComponentName topActivity = runningTaskInfo.topActivity;
+			if (topActivity.getPackageName().equals(pn)
+					&& topActivity.getClassName().equals(
+							InVehicleDeviceActivity.class.getName())) {
+				return;
+			}
+		}
+		
+		fail();
 	}
 }
 

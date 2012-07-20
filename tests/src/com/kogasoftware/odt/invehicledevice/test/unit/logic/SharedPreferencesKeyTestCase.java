@@ -1,8 +1,8 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.logic;
 
-import junit.framework.TestCase;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKey;
 
-import com.kogasoftware.odt.invehicledevice.logic.SharedPreferencesKey;
+import junit.framework.TestCase;
 
 public class SharedPreferencesKeyTestCase extends TestCase {
 	public void testConstructor() {

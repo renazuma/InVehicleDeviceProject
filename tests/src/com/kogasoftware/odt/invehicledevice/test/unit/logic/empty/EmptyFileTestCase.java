@@ -2,9 +2,10 @@ package com.kogasoftware.odt.invehicledevice.test.unit.logic.empty;
 
 import java.io.File;
 
+import com.kogasoftware.odt.invehicledevice.empty.EmptyFile;
+
 import junit.framework.TestCase;
 
-import com.kogasoftware.odt.invehicledevice.logic.empty.EmptyFile;
 
 public class EmptyFileTestCase extends TestCase {
 	@Override
