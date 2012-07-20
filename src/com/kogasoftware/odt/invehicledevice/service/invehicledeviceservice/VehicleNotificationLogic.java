@@ -9,7 +9,6 @@ import com.kogasoftware.odt.invehicledevice.empty.EmptyWebAPICallback;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
 import com.kogasoftware.odt.webapi.Identifiables;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
-import com.kogasoftware.odt.webapi.model.VehicleNotifications;
 
 /**
  * 通知に関する内部データ処理
@@ -43,7 +42,7 @@ public class VehicleNotificationLogic {
 		final List<VehicleNotification> normalVehicleNotifications = new LinkedList<VehicleNotification>();
 		for (VehicleNotification vehicleNotification : vehicleNotifications) {
 			if (vehicleNotification.getNotificationKind().equals(
-					VehicleNotifications.NotificationKind.RESERVATION_CHANGED)) {
+					VehicleNotification.NotificationKind.RESERVATION_CHANGED)) {
 				scheduleChangedVehicleNotifications.add(vehicleNotification);
 			} else {
 				normalVehicleNotifications.add(vehicleNotification);
@@ -116,7 +115,7 @@ public class VehicleNotificationLogic {
 			final List<VehicleNotification> vehicleNotifications) {
 		for (VehicleNotification vehicleNotification : vehicleNotifications) {
 			service.getDataSource().responseVehicleNotification(
-					vehicleNotification, VehicleNotifications.Response.YES,
+					vehicleNotification, VehicleNotification.Response.YES,
 					new EmptyWebAPICallback<VehicleNotification>());
 		}
 

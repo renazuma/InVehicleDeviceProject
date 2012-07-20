@@ -10,7 +10,6 @@ import android.widget.TextView;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
-import com.kogasoftware.odt.webapi.model.VehicleNotifications;
 
 public class NotificationModalView extends ModalView implements
 		InVehicleDeviceService.OnAlertVehicleNotificationReceiveListener {
@@ -26,7 +25,7 @@ public class NotificationModalView extends ModalView implements
 					@Override
 					public void onClick(View view) {
 						currentVehicleNotification
-								.setResponse(VehicleNotifications.Response.YES);
+								.setResponse(VehicleNotification.Response.YES);
 						reply();
 					}
 				});
@@ -35,7 +34,7 @@ public class NotificationModalView extends ModalView implements
 					@Override
 					public void onClick(View view) {
 						currentVehicleNotification
-								.setResponse(VehicleNotifications.Response.NO);
+								.setResponse(VehicleNotification.Response.NO);
 						reply();
 					}
 				});

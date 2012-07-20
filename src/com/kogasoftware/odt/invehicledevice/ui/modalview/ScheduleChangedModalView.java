@@ -14,7 +14,6 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Local
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.VoidReader;
 import com.kogasoftware.odt.webapi.Identifiables;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
-import com.kogasoftware.odt.webapi.model.VehicleNotifications;
 
 public class ScheduleChangedModalView extends ModalView implements
 		InVehicleDeviceService.OnMergeUpdatedOperationScheduleListener {
@@ -79,7 +78,7 @@ public class ScheduleChangedModalView extends ModalView implements
 
 		// 表示したスケジュール変更通知を、responseを指定して返信リストへ追加
 		for (VehicleNotification vehicleNotification : vehicleNotifications) {
-			vehicleNotification.setResponse(VehicleNotifications.Response.YES); // TODO
+			vehicleNotification.setResponse(VehicleNotification.Response.YES); // TODO
 		}
 
 		service.replyUpdatedOperationScheduleVehicleNotifications(vehicleNotifications);
