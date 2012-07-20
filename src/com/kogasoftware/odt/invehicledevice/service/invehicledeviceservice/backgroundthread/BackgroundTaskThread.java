@@ -34,9 +34,15 @@ public class BackgroundTaskThread extends Thread {
 	public void run() {
 		Looper.prepare();
 		BackgroundTask backgroundTask = new BackgroundTask(service);
-		synchronized (backgroundTaskQuitLock) {
-			optionalBackgroundTask = Optional.of(backgroundTask);
+		try {
+			synchronized (backgroundTaskQuitLock) {
+				optionalBackgroundTask = Optional.of(backgroundTask);
+			}
+			backgroundTask.loop();
+		} finally {
+			synchronized (backgroundTaskQuitLock) {
+				optionalBackgroundTask = Optional.absent();
+			}
 		}
-		backgroundTask.loop();
 	}
 }
