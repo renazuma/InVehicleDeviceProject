@@ -12,4 +12,5 @@ public class SharedPreferencesKey {
 	public static final String LOCATION_RECEIVE_MIN_TIME = "location_receive_min_time";
 	public static final String LOCATION_RECEIVE_MIN_DISTANCE = "location_receive_min_distance";
 	public static final String LOCATION_RECEIVE_RESTART_TIMEOUT = "location_receive_restart_timeout";
+	public static final String INITIALIZED = "initialized";
 }
