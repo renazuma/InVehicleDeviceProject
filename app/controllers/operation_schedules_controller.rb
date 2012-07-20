@@ -19,6 +19,8 @@ class OperationSchedulesController < ApplicationController
   end
 
   def create
+    params[:operation_schedule].delete(:departure_estimate)
+    params[:operation_schedule].delete(:arrival_estimate)
     @operation_schedule = OperationSchedule.new(params[:operation_schedule])
 
     respond_to do |format|
