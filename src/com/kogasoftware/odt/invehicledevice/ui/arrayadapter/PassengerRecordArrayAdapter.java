@@ -201,7 +201,7 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 
 		// メモボタン
 		Button memoButton = (Button) convertView.findViewById(R.id.memo_button);
-		memoButton.setTag(reservation);
+		memoButton.setTag(passengerRecord);
 		memoButton.setOnClickListener(onClickMemoButtonListener);
 		if (!reservation.getMemo().or("").isEmpty()
 				|| !user.getNotes().isEmpty()) {
@@ -213,8 +213,11 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 			memoButton.setVisibility(View.GONE);
 		}
 
+		
+		
+		
 		// 行の表示
-		convertView.setTag(reservation);
+		convertView.setTag(passengerRecord);
 		convertView.setOnClickListener(onClickViewListener);
 		TextView userNameView = (TextView) convertView
 				.findViewById(R.id.user_name);
