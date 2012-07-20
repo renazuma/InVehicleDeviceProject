@@ -86,12 +86,26 @@ public class DummyDataSource extends EmptyDataSource {
 
 		List<OperationSchedule> l = new LinkedList<OperationSchedule>();
 		try {
-			String r1 = "{id: 51, passenger_count: 1, departure_schedule_id: 1, arrival_schedule_id: 2, payment: 100, user: {id: 1, last_name: 'ああああ', first_name: 'いちごう'},memo: 'テストメモ1'}";
-			String r2 = "{id: 52, passenger_count: 5, departure_schedule_id: 2, arrival_schedule_id: 3, payment:   0, user: {id: 2, last_name: 'いいいい', first_name: 'にごう'}}";
-			String r3 = "{id: 53, passenger_count: 3, departure_schedule_id: 1, arrival_schedule_id: 3, payment: 500, user: {id: 3, last_name: 'うううう', first_name: 'さんごう'},memo: 'テストメモ3'}";
-			String r4 = "{id: 54, passenger_count: 2, departure_schedule_id: 4, arrival_schedule_id: 5, payment: 500, user: {id: 4, last_name: 'ええええ', first_name: 'よんごう'}}";
-			String r5 = "{id: 55, passenger_count: 1, departure_schedule_id: 4, arrival_schedule_id: 5, payment: 500, user: {id: 5, last_name: 'おおおお', first_name: 'ごごう'}}";
+			String ru1 = "{user: {id: 1, last_name: 'ラストネーム', first_name: 'ファーストネーム', passenger_records: [{departure_operation_schedule_id: 1, get_on_time: '2000-01-01', updated_at: '2030-01-01'}, {updated_at: '1999-01-01'}]}}";
+			String ru2 = "{user: {id: 2, last_name: '山田', first_name: '太郎'}}";
+			String ru3 = "{user: {id: 3, last_name: '山口', first_name: '二郎'}}";
+			String ru4 = "{user: {id: 4, last_name: '川田', first_name: 'さぶろう'}}";
+			String ru5 = "{user: {id: 5, last_name: '川口', first_name: 'しろう'}}";
+			String ru6 = "{user: {id: 6, last_name: '田口', first_name: 'ろくろう'}}";
+			String ru7 = "{user: {id: 7, last_name: '田川', first_name: 'ななろう'}}";
 
+			String rus1 = "[" + ru1 + ", " + ru2 + "]";
+			String rus2 = "[" + ru3 + "]";
+			String rus3 = "[" + ru4 + ", " + ru5 + ", " + ru6 + "]";
+			String rus4 = "[]";
+			String rus5 = "[" + ru7 + "]";
+
+			String r1 = "{id: 51, passenger_count: 1, departure_schedule_id: 1, arrival_schedule_id: 2, payment: 100, reservation_users: " + rus1 + ", memo: 'テストメモ1'}";
+			String r2 = "{id: 52, passenger_count: 5, departure_schedule_id: 2, arrival_schedule_id: 3, payment:   0, reservation_users: " + rus2 + "}";
+			String r3 = "{id: 53, passenger_count: 3, departure_schedule_id: 1, arrival_schedule_id: 3, payment: 500, reservation_users: " + rus3 + ", memo: 'テストメモ3'}";
+			String r4 = "{id: 54, passenger_count: 2, departure_schedule_id: 4, arrival_schedule_id: 5, payment: 500, reservation_users: " + rus4 + "}";
+			String r5 = "{id: 55, passenger_count: 1, departure_schedule_id: 4, arrival_schedule_id: 5, payment: 500, reservation_users: " + rus5 + "}";
+			
 			JSONObject j1 = new JSONObject(
 					"{id:1, arrival_estimate: '2012-06-21T09:00:00+09:00', departure_estimate: '2012-06-21T09:15:00+09:00', "
 							+ "platform: {name: '85_特別養護老人ホームあじさいのおか牛窓／在宅介護支援センターＡＪＩＳＡＩ', name_ruby: 'とくべつようごろうじんほーむあじさいのおかうしまどざいたくかいごしえんせんたーあじさい'}, "
