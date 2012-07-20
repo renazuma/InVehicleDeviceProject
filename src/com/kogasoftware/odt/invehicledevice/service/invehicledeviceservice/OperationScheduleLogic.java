@@ -118,7 +118,7 @@ public class OperationScheduleLogic {
 					.getReservationsAsDeparture()) {
 				for (User user : reservation.getUsers()) {
 					mergeUpdatedPassengerRecordWithWriteLock(localData,
-							reservation, user, new PassengerRecord());
+							reservation, user);
 				}
 			}
 		}
@@ -175,10 +175,23 @@ public class OperationScheduleLogic {
 	 * 更新されたPassengerRecordを現在のものにマージする処理(LocalDataがロックされた状態内)
 	 */
 	protected void mergeUpdatedPassengerRecordWithWriteLock(
-			LocalData localData, Reservation serverReservation,
-			User serverUser, PassengerRecord serverPassengerRecord) {
+			LocalData localData, Reservation serverReservation, User serverUser) {
+		// サーバーから送られるPassengerRecordを取得
+		Boolean passengerRecordReceived = false;
+		PassengerRecord serverPassengerRecord = new PassengerRecord();
+		for (PassengerRecord passengerRecord : serverUser.getPassengerRecords()) {
+			serverPassengerRecord = passengerRecord;
+			passengerRecordReceived = true;
+			break;
+		}
 		serverPassengerRecord.setReservation(serverReservation);
+		serverPassengerRecord.setReservationId(serverReservation.getId());
 		serverPassengerRecord.setUser(serverUser);
+		serverPassengerRecord.setUserId(serverUser.getId());
+
+		// 循環参照にならないようにする
+		serverReservation.clearPassengerRecord();
+		serverUser.clearPassengerRecords();
 
 		// 乗車済み、降車済みのPassengerRecordの中に既に対応するものが存在する場合、それのPassengerRecordを交換
 		for (PassengerRecord localPassengerRecord : new LinkedList<PassengerRecord>(
@@ -198,9 +211,10 @@ public class OperationScheduleLogic {
 
 			// IDが一致した場合
 
-			// サーバーのPassengerRecordがローカルよりも新しい場合、ローカルのものをサーバーのもので置き換え
-			if (serverPassengerRecord.getUpdatedAt().after(
-					localPassengerRecord.getUpdatedAt())) {
+			// サーバーのPassengerRecordが存在しローカルよりも新しい場合、ローカルのものをサーバーのもので置き換え
+			if (passengerRecordReceived
+					&& serverPassengerRecord.getUpdatedAt().after(
+							localPassengerRecord.getUpdatedAt())) {
 				localData.passengerRecords.remove(localPassengerRecord);
 				localData.passengerRecords.add(serverPassengerRecord);
 				return;
@@ -209,8 +223,7 @@ public class OperationScheduleLogic {
 			// ReservationとUserはサーバーから送られたものにする
 			localPassengerRecord.setReservation(serverReservation);
 			localPassengerRecord.setUser(serverUser);
-
-			localData.passengerRecords.add(serverPassengerRecord);
+			return;
 		}
 
 		// IDが一致したPassengerRecordが存在しない場合、無変更で追加する
