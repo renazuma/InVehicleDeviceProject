@@ -17,8 +17,6 @@ public class VoiceServiceConnector implements
 
 	public VoiceServiceConnector(InVehicleDeviceService service) {
 		this.service = service;
-		service.addOnPauseActivityListener(this);
-		service.addOnResumeActivityListener(this);
 	}
 
 	@Override

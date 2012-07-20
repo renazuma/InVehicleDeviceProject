@@ -66,8 +66,10 @@ public class TilePipeline implements InVehicleDeviceService.OnExitListener {
 			25, onDropListener, comparator);
 	private final PipeExchanger<Tile, Null, TileBitmapFile> webTilePipe;
 	private final PipeExchanger<Tile, TileBitmapFile, Bitmap> fileTilePipe;
+	private final InVehicleDeviceService service;
 
 	public TilePipeline(InVehicleDeviceService service) {
+		this.service = service;
 		File outputDirectory = service.getExternalFilesDir("tile");
 		webTilePipe = new WebTilePipe(service, startPipeQueue, filePipeQueue,
 				onDropListener, outputDirectory);
@@ -95,6 +97,7 @@ public class TilePipeline implements InVehicleDeviceService.OnExitListener {
 	public void onExit() {
 		webTilePipe.close();
 		fileTilePipe.close();
+		service.removeOnExitListener(this);
 	}
 
 	public Optional<Integer> pollOrStartLoad(Tile tile) {

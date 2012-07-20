@@ -22,8 +22,6 @@ public class OperationScheduleReceiveThread extends Thread implements
 
 	public OperationScheduleReceiveThread(InVehicleDeviceService service) {
 		this.service = service;
-		service.addOnStartNewOperationListener(this);
-		service.addOnStartReceiveUpdatedOperationScheduleListener(this);
 	}
 
 	@Override
@@ -61,9 +59,12 @@ public class OperationScheduleReceiveThread extends Thread implements
 
 	@Override
 	public void run() {
-		// 最初の一度は必ず受信する
-		startUpdatedOperationScheduleReceiveSemaphore.release();
 		try {
+			service.addOnStartNewOperationListener(this);
+			service.addOnStartReceiveUpdatedOperationScheduleListener(this);
+			
+			// 最初の一度は必ず受信する
+			startUpdatedOperationScheduleReceiveSemaphore.release();
 			while (!Thread.currentThread().isInterrupted()) {
 				// スケジュール変更通知があるまで待つ
 				startUpdatedOperationScheduleReceiveSemaphore.acquire();
@@ -80,6 +81,9 @@ public class OperationScheduleReceiveThread extends Thread implements
 			}
 		} catch (InterruptedException e) {
 			// 正常終了
+		} finally {
+			service.removeOnStartNewOperationListener(this);
+			service.removeOnStartReceiveUpdatedOperationScheduleListener(this);
 		}
 	}
 

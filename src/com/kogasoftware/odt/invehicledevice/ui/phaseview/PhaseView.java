@@ -16,7 +16,18 @@ public class PhaseView extends FrameLayout implements
 	public PhaseView(Context context, InVehicleDeviceService service) {
 		super(context);
 		this.service = service;
+	}
+
+	@Override
+	protected void onAttachedToWindow() {
+		super.onAttachedToWindow();
 		service.addOnEnterPhaseListener(this);
+	}
+
+	@Override
+	protected void onDetachedFromWindow() {
+		super.onDetachedFromWindow();
+		service.removeOnEnterPhaseListener(this);
 	}
 
 	@Override

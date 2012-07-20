@@ -47,7 +47,8 @@ public class InVehicleDeviceActivity extends Activity implements
 		@Override
 		public void onServiceConnected(ComponentName className, IBinder binder) {
 			if (!(binder instanceof InVehicleDeviceService.LocalBinder)) {
-				Log.e(TAG, "!(" + binder + " instanceof InVehicleDeviceService.LocalBinder)");
+				Log.e(TAG, "!(" + binder
+						+ " instanceof InVehicleDeviceService.LocalBinder)");
 				return;
 			}
 			InVehicleDeviceService service = ((InVehicleDeviceService.LocalBinder) binder)
@@ -108,8 +109,10 @@ public class InVehicleDeviceActivity extends Activity implements
 	public void onDestroy() {
 		super.onDestroy();
 		Log.i(TAG, "onDestroy()");
+		if (optionalService.isPresent()) {
+			optionalService.get().removeOnExitListener(this);
+		}
 		unbindService(serviceConnection);
-		stopService(new Intent(this, InVehicleDeviceService.class));
 		getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		handler.removeCallbacks(waitForInitialize);
 	}
@@ -148,7 +151,7 @@ public class InVehicleDeviceActivity extends Activity implements
 			optionalService.get().setActivityPaused();
 		}
 	}
-	
+
 	@Override
 	public void onStop() {
 		super.onStop();

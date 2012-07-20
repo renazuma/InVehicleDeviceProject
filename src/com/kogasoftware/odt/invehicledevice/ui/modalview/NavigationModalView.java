@@ -92,12 +92,6 @@ public class NavigationModalView extends ModalView implements
 		this.platformMemoModalView = platformMemoModalView;
 		setContentView(R.layout.navigation_modal_view);
 		setCloseOnClick(R.id.navigation_close_button);
-		service.addOnResumeActivityListener(this);
-		service.addOnPauseActivityListener(this);
-		service.addOnChangeLocationListener(this);
-		service.addOnChangeOrientationListener(this);
-		service.addOnEnterPhaseListener(this);
-		service.addOnMergeUpdatedOperationScheduleListener(this);
 
 		tilePipeline = new TilePipeline(service);
 
@@ -157,9 +151,32 @@ public class NavigationModalView extends ModalView implements
 	}
 
 	@Override
-	public void onAttachedToWindow() {
+	protected void onAttachedToWindow() {
 		super.onAttachedToWindow();
 		handler.post(gpsAlert);
+
+		service.addOnResumeActivityListener(this);
+		service.addOnPauseActivityListener(this);
+		service.addOnChangeLocationListener(this);
+		service.addOnChangeOrientationListener(this);
+		service.addOnEnterPhaseListener(this);
+		service.addOnMergeUpdatedOperationScheduleListener(this);
+	}
+
+	@Override
+	protected void onDetachedFromWindow() {
+		super.onDetachedFromWindow();
+		
+		service.removeOnResumeActivityListener(this);
+		service.removeOnPauseActivityListener(this);
+		service.removeOnChangeLocationListener(this);
+		service.removeOnChangeOrientationListener(this);
+		service.removeOnEnterPhaseListener(this);
+		service.removeOnMergeUpdatedOperationScheduleListener(this);
+		
+		tilePipeline.onExit();
+
+		handler.removeCallbacks(gpsAlert);
 	}
 
 	@Override
@@ -195,12 +212,6 @@ public class NavigationModalView extends ModalView implements
 		if (navigationRenderer != null) {
 			navigationRenderer.changeOrientation(orientationDegree);
 		}
-	}
-
-	@Override
-	public void onDetachedFromWindow() {
-		super.onDetachedFromWindow();
-		handler.removeCallbacks(gpsAlert);
 	}
 
 	protected void updatePlatform() {

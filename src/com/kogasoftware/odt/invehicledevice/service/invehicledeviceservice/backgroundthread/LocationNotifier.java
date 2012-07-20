@@ -25,15 +25,15 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Share
 /**
  * 位置情報を取得する
  * 
- * 1.ACCURACY_THRESHOLDを満たす位置を受信したら、その時間を記録し、その位置をサービスに通知
- * 2.ACCURACY_THRESHOLDを満たさない位置を受信し満たす位置をCOARSE_TIMEOUT内に受信できなかった場合はその位置をサービスに通知
+ * 1.ACCURACY_THRESHOLDを満たす位置を受信したら、その時間を記録し、その位置をサービスに通知 2.
+ * ACCURACY_THRESHOLDを満たさない位置を受信し満たす位置をCOARSE_TIMEOUT内に受信できなかった場合はその位置をサービスに通知
  * 3.ACCURACY_THRESHOLDを満たす位置をRESTART_TIMEOUT内に受信できない場合再起動
  * 
- * @see http://kamoland.com/wiki/wiki.cgi?Desire%A4%CEGPS%BC%E8%C6%C0%A4%C7%A4%CE%BB%EE%B9%D4%BA%F8%B8%ED
+ * @see http
+ *      ://kamoland.com/wiki/wiki.cgi?Desire%A4%CEGPS%BC%E8%C6%C0%A4%C7%A4%CE
+ *      %BB%EE%B9%D4%BA%F8%B8%ED
  */
-public class LocationNotifier implements LocationListener,
-		InVehicleDeviceService.OnPauseActivityListener,
-		InVehicleDeviceService.OnResumeActivityListener, GpsStatus.Listener,
+public class LocationNotifier implements LocationListener, GpsStatus.Listener,
 		GpsStatus.NmeaListener {
 	private static final String TAG = LocationNotifier.class.getSimpleName();
 	public static final Float ACCURACY_THRESHOLD = 50f;
@@ -116,9 +116,6 @@ public class LocationNotifier implements LocationListener,
 		restartTimeout = preferences.getInt(
 				SharedPreferencesKey.LOCATION_RECEIVE_RESTART_TIMEOUT,
 				DEFAULT_RESTART_TIMEOUT);
-
-		service.addOnPauseActivityListener(this);
-		service.addOnResumeActivityListener(this);
 
 		Log.i(TAG, "minTime=" + minTime + " minDistance=" + minDistance
 				+ " restartTimeout=" + restartTimeout);
@@ -207,11 +204,6 @@ public class LocationNotifier implements LocationListener,
 	}
 
 	@Override
-	public void onPauseActivity() {
-		// stop();
-	}
-
-	@Override
 	public void onProviderDisabled(String provider) {
 		Log.d(TAG, "onProviderDisabled(\"" + provider + "\")");
 	}
@@ -219,11 +211,6 @@ public class LocationNotifier implements LocationListener,
 	@Override
 	public void onProviderEnabled(String provider) {
 		Log.d(TAG, "onProviderEnabled(\"" + provider + "\")");
-	}
-
-	@Override
-	public void onResumeActivity() {
-		// start();
 	}
 
 	@Override
@@ -283,7 +270,8 @@ public class LocationNotifier implements LocationListener,
 		// LocationManager.PASSIVE_PROVIDER, DEFAULT_MIN_TIME,
 		// DEFAULT_MIN_DISTANCE, this);
 		// }
-		// if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+		// if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+		// {
 		lastLocation = Optional.fromNullable(locationManager
 				.getLastKnownLocation(LocationManager.GPS_PROVIDER));
 		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,

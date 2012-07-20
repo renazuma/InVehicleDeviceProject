@@ -27,7 +27,6 @@ public class ScheduleChangedModalView extends ModalView implements
 		this.scheduleModalView = scheduleModalView;
 		setContentView(R.layout.schedule_changed_modal_view);
 		setCloseOnClick(R.id.schedule_changed_close_button);
-		service.addOnMergeUpdatedOperationScheduleListener(this);
 
 		scheduleChangedTextView = (TextView) findViewById(R.id.schedule_changed_text_view);
 
@@ -39,6 +38,18 @@ public class ScheduleChangedModalView extends ModalView implements
 				hide();
 			}
 		});
+	}
+
+	@Override
+	protected void onAttachedToWindow() {
+		super.onAttachedToWindow();
+		service.addOnMergeUpdatedOperationScheduleListener(this);
+	}
+
+	@Override
+	protected void onDetachedFromWindow() {
+		super.onDetachedFromWindow();
+		service.removeOnMergeUpdatedOperationScheduleListener(this);
 	}
 
 	@Override

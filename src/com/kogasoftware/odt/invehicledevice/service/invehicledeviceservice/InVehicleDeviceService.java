@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.LinkedList;
@@ -135,12 +136,12 @@ public class InVehicleDeviceService extends Service {
 
 	public static final Integer NEW_SCHEDULE_DOWNLOAD_HOUR = 0;
 	public static final Integer NEW_SCHEDULE_DOWNLOAD_MINUTE = 5;
+	public static final Integer FOREGROUND_NOTIFICATION_ID = 10;
 
 	protected static final Object DEFAULT_DATE_LOCK = new Object();
-
 	protected static Optional<Long> mockDateOffset = Optional.absent();
 
-	protected static final String TAG = InVehicleDeviceService.class
+	private static final String TAG = InVehicleDeviceService.class
 			.getSimpleName();
 
 	public static Handler getActivityHandler(Activity activity)
@@ -191,6 +192,8 @@ public class InVehicleDeviceService extends Service {
 	protected final ServiceUnitStatusLogLogic serviceUnitStatusLogLogic;
 	protected final IBinder binder = new LocalBinder();
 	protected final Handler handler = new Handler(Looper.getMainLooper());
+	protected final VoiceServiceConnector voiceServiceConnector;
+	
 	protected final Set<OnInitializeListener> onInitializeListeners = newListenerSet();
 	protected final Set<OnEnterPhaseListener> onEnterPhaseListeners = newListenerSet();
 	protected final Set<OnAlertUpdatedOperationScheduleListener> onAlertUpdatedOperationScheduleListeners = newListenerSet();
@@ -209,7 +212,7 @@ public class InVehicleDeviceService extends Service {
 	protected final Set<OnStartReceiveUpdatedOperationScheduleListener> onStartReceiveUpdatedOperationScheduleListeners = newListenerSet();
 	protected final Set<OnPauseActivityListener> onPauseActivityListeners = newListenerSet();
 	protected final Set<OnResumeActivityListener> onResumeActivityListeners = newListenerSet();
-	protected final VoiceServiceConnector voiceServiceConnector;
+	
 	protected volatile Thread backgroundThread = new EmptyThread();
 	protected volatile DataSource remoteDataSource = new EmptyDataSource();
 	protected volatile LocalDataSource localDataSource = new LocalDataSource();
@@ -306,6 +309,91 @@ public class InVehicleDeviceService extends Service {
 	public void addOnStartReceiveUpdatedOperationScheduleListener(
 			OnStartReceiveUpdatedOperationScheduleListener listener) {
 		onStartReceiveUpdatedOperationScheduleListeners.add(listener);
+	}
+
+	public void removeOnAlertUpdatedOperationScheduleListener(
+			OnAlertUpdatedOperationScheduleListener listener) {
+		onAlertUpdatedOperationScheduleListeners.remove(listener);
+	}
+
+	public void removeOnAlertVehicleNotificationReceiveListener(
+			OnAlertVehicleNotificationReceiveListener listener) {
+		onAlertVehicleNotificationReceiveListeners.remove(listener);
+	}
+
+	public void removeOnChangeLocationListener(OnChangeLocationListener listener) {
+		onChangeLocationListeners.remove(listener);
+	}
+
+	public void removeOnChangeOrientationListener(
+			OnChangeOrientationListener listener) {
+		onChangeOrientationListeners.remove(listener);
+	}
+
+	public void removeOnChangeSignalStrengthListener(
+			OnChangeSignalStrengthListener listener) {
+		onChangeSignalStrengthListeners.remove(listener);
+	}
+
+	public void removeOnChangeTemperatureListener(
+			OnChangeTemperatureListener listener) {
+		onChangeTemperatureListeners.remove(listener);
+	}
+
+	public void removeOnEnterPhaseListener(OnEnterPhaseListener listener) {
+		onEnterPhaseListeners.remove(listener);
+	}
+
+	public void removeOnExitListener(OnExitListener listener) {
+		onExitListeners.remove(listener);
+	}
+
+	public void removeOnInitializeListener(OnInitializeListener listener) {
+		onInitializeListeners.remove(listener);
+	}
+
+	public void removeOnMergeUpdatedOperationScheduleListener(
+			OnMergeUpdatedOperationScheduleListener listener) {
+		onMergeUpdatedOperationScheduleListeners.remove(listener);
+	}
+
+	public void removeOnPauseActivityListener(OnPauseActivityListener listener) {
+		onPauseActivityListeners.remove(listener);
+	}
+
+	public void removeOnReceiveUpdatedOperationScheduleListener(
+			OnReceiveUpdatedOperationScheduleListener listener) {
+		onReceiveUpdatedOperationScheduleListeners.remove(listener);
+	}
+
+	public void removeOnReceiveVehicleNotificationListener(
+			OnReceiveVehicleNotificationListener listener) {
+		onReceiveVehicleNotificationListeners.remove(listener);
+	}
+
+	public void removeOnReplyUpdatedOperationScheduleVehicleNotificationsListener(
+			OnReplyUpdatedOperationScheduleVehicleNotificationsListener listener) {
+		onReplyUpdatedOperationScheduleVehicleNotificationsListeners
+				.remove(listener);
+	};
+
+	public void removeOnReplyVehicleNotificationListener(
+			OnReplyVehicleNotificationListener listener) {
+		onReplyVehicleNotificationListeners.remove(listener);
+	};
+
+	public void removeOnResumeActivityListener(OnResumeActivityListener listener) {
+		onResumeActivityListeners.remove(listener);
+	}
+
+	public void removeOnStartNewOperationListener(
+			OnStartNewOperationListener listener) {
+		onStartNewOperationListeners.remove(listener);
+	}
+
+	public void removeOnStartReceiveUpdatedOperationScheduleListener(
+			OnStartReceiveUpdatedOperationScheduleListener listener) {
+		onStartReceiveUpdatedOperationScheduleListeners.remove(listener);
 	}
 
 	public void alertUpdatedOperationSchedule() {
@@ -440,6 +528,7 @@ public class InVehicleDeviceService extends Service {
 				onExitListeners)) {
 			listener.onExit();
 		}
+		stopSelf();
 	}
 
 	public Optional<OperationSchedule> getCurrentOperationSchedule() {
@@ -581,6 +670,12 @@ public class InVehicleDeviceService extends Service {
 	}
 
 	@Override
+	public boolean onUnbind(Intent intent) {
+		Log.i(TAG, "onUnbind()");
+		return false;
+	}
+
+	@Override
 	public void onCreate() {
 		super.onCreate();
 		Log.i(TAG, "onCreate()");
@@ -607,15 +702,9 @@ public class InVehicleDeviceService extends Service {
 		startForeground(FOREGROUND_NOTIFICATION_ID, notification);
 		backgroundThread = new BackgroundTaskThread(this);
 		backgroundThread.start();
-	}
-
-	public static final Integer FOREGROUND_NOTIFICATION_ID = 10;
-
-	@Override
-	public boolean onUnbind(Intent intent) {
-		Log.i(TAG, "onUnbind()");
-		stopSelf();
-		exit();
+		
+		addOnPauseActivityListener(voiceServiceConnector);
+		addOnResumeActivityListener(voiceServiceConnector);
 	}
 
 	@Override
@@ -624,6 +713,10 @@ public class InVehicleDeviceService extends Service {
 		Log.i(TAG, "onDestroy()");
 		stopForeground(true);
 		backgroundThread.interrupt();
+
+		removeOnPauseActivityListener(voiceServiceConnector);
+		removeOnResumeActivityListener(voiceServiceConnector);
+
 		onInitializeListeners.clear();
 		onEnterPhaseListeners.clear();
 		onAlertUpdatedOperationScheduleListeners.clear();
@@ -634,12 +727,15 @@ public class InVehicleDeviceService extends Service {
 		onChangeTemperatureListeners.clear();
 		onExitListeners.clear();
 		onMergeUpdatedOperationScheduleListeners.clear();
+		onPauseActivityListeners.clear();
 		onReceiveUpdatedOperationScheduleListeners.clear();
 		onReceiveVehicleNotificationListeners.clear();
 		onReplyUpdatedOperationScheduleVehicleNotificationsListeners.clear();
 		onReplyVehicleNotificationListeners.clear();
+		onResumeActivityListeners.clear();
 		onStartNewOperationListeners.clear();
 		onStartReceiveUpdatedOperationScheduleListeners.clear();
+		
 		Closeables.closeQuietly(remoteDataSource);
 		Closeables.closeQuietly(localDataSource);
 	}

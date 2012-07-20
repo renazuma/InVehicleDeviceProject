@@ -19,7 +19,6 @@ public class NotificationModalView extends ModalView implements
 	public NotificationModalView(Context context, InVehicleDeviceService service) {
 		super(context, service);
 		setContentView(R.layout.notification_modal_view);
-		service.addOnAlertVehicleNotificationReceiveListener(this);
 		findViewById(R.id.reply_yes_button).setOnClickListener(
 				new OnClickListener() {
 					@Override
@@ -39,6 +38,18 @@ public class NotificationModalView extends ModalView implements
 					}
 				});
 		show();
+	}
+
+	@Override
+	protected void onAttachedToWindow() {
+		super.onAttachedToWindow();
+		service.addOnAlertVehicleNotificationReceiveListener(this);
+	}
+
+	@Override
+	protected void onDetachedFromWindow() {
+		super.onDetachedFromWindow();
+		service.removeOnAlertVehicleNotificationReceiveListener(this);
 	}
 
 	@Override

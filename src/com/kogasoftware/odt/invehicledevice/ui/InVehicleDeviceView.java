@@ -106,9 +106,9 @@ public class InVehicleDeviceView extends FrameLayout implements
 	}
 
 	public InVehicleDeviceView(Context context,
-			InVehicleDeviceService localService) {
+			InVehicleDeviceService service) {
 		super(context);
-		this.service = localService;
+		this.service = service;
 
 		LayoutInflater layoutInflater = (LayoutInflater) getContext()
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -183,12 +183,7 @@ public class InVehicleDeviceView extends FrameLayout implements
 			}
 		}
 
-		localService.addOnAlertUpdatedOperationScheduleListener(this);
-		localService.addOnAlertVehicleNotificationReceiveListener(this);
-		localService.addOnChangeSignalStrengthListener(this);
-		localService.addOnEnterPhaseListener(this);
-		localService.refreshPhase();
-
+		service.refreshPhase();
 	}
 
 	@Override
@@ -202,9 +197,26 @@ public class InVehicleDeviceView extends FrameLayout implements
 	}
 
 	@Override
-	public void onAttachedToWindow() {
+	protected void onAttachedToWindow() {
 		super.onAttachedToWindow();
 		handler.post(updateTime);
+
+		service.addOnAlertUpdatedOperationScheduleListener(this);
+		service.addOnAlertVehicleNotificationReceiveListener(this);
+		service.addOnChangeSignalStrengthListener(this);
+		service.addOnEnterPhaseListener(this);
+	}
+
+	@Override
+	protected void onDetachedFromWindow() {
+		super.onDetachedFromWindow();
+		service.removeOnAlertUpdatedOperationScheduleListener(this);
+		service.removeOnAlertVehicleNotificationReceiveListener(this);
+		service.removeOnChangeSignalStrengthListener(this);
+		service.removeOnEnterPhaseListener(this);
+		
+		handler.removeCallbacks(updateTime);
+		handler.removeCallbacks(alertVehicleNotification);
 	}
 
 	@Override
@@ -220,13 +232,6 @@ public class InVehicleDeviceView extends FrameLayout implements
 			imageResourceId = R.drawable.network_strength_3;
 		}
 		networkStrengthImageView.setImageResource(imageResourceId);
-	}
-
-	@Override
-	public void onDetachedFromWindow() {
-		super.onDetachedFromWindow();
-		handler.removeCallbacks(updateTime);
-		handler.removeCallbacks(alertVehicleNotification);
 	}
 
 	@Override
