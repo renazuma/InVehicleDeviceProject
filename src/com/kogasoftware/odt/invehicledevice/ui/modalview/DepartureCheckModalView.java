@@ -16,7 +16,7 @@ import android.widget.ListView;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
-import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter;
+import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordArrayAdapter;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.User;
 
@@ -39,7 +39,7 @@ public class DepartureCheckModalView extends ModalView {
 		setCloseOnClick(R.id.departure_check_close_button);
 	}
 
-	public void show(ReservationArrayAdapter adapter) {
+	public void show(PassengerRecordArrayAdapter adapter) {
 		Button startButton = (Button) findViewById(R.id.departure_button);
 		Button closeButton = (Button) findViewById(R.id.departure_check_close_button);
 		ListView errorReservationListView = ((FlickUnneededListView) findViewById(R.id.error_reservation_list_view))

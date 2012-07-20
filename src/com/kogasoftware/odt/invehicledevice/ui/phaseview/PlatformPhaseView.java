@@ -23,8 +23,8 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
 import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
-import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter;
-import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter.ItemType;
+import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordArrayAdapter;
+import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordArrayAdapter.ItemType;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.MemoModalView;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
@@ -44,7 +44,7 @@ public class PlatformPhaseView extends PhaseView {
 	private final LinearLayout nextOperationScheduleLayout;
 	private final MemoModalView memoModalView;
 	private final Handler handler = new Handler();
-	private Optional<ReservationArrayAdapter> optionalAdapter = Optional
+	private Optional<PassengerRecordArrayAdapter> optionalAdapter = Optional
 			.absent();
 	private Optional<AlertDialog> dialog = Optional.absent();
 	private Integer lastMinutesRemaining = Integer.MAX_VALUE;
@@ -108,7 +108,7 @@ public class PlatformPhaseView extends PhaseView {
 		// reservationListView.addFooterView(reservationListFooterView);
 	}
 
-	public Optional<ReservationArrayAdapter> getReservationArrayAdapter() {
+	public Optional<PassengerRecordArrayAdapter> getReservationArrayAdapter() {
 		return optionalAdapter;
 	}
 
@@ -163,7 +163,7 @@ public class PlatformPhaseView extends PhaseView {
 			// addUnexpectedReservationButton.setVisibility(VISIBLE);
 		}
 
-		final ReservationArrayAdapter adapter = new ReservationArrayAdapter(
+		final PassengerRecordArrayAdapter adapter = new PassengerRecordArrayAdapter(
 				service, memoModalView);
 		optionalAdapter = Optional.of(adapter);
 

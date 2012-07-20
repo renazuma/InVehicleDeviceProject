@@ -26,12 +26,12 @@ import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.User;
 
-public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
+public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 	public static enum ItemType {
 		RIDING_AND_NO_GET_OFF, FUTURE_GET_ON, MISSED,
 	}
 
-	private static final String TAG = ReservationArrayAdapter.class
+	private static final String TAG = PassengerRecordArrayAdapter.class
 			.getSimpleName();
 	protected static final Integer RESOURCE_ID = R.layout.reservation_list_row;
 	protected final LayoutInflater layoutInflater = (LayoutInflater) getContext()
@@ -76,7 +76,7 @@ public class ReservationArrayAdapter extends ArrayAdapter<PassengerRecord> {
 		}
 	};
 
-	public ReservationArrayAdapter(InVehicleDeviceService service,
+	public PassengerRecordArrayAdapter(InVehicleDeviceService service,
 			MemoModalView memoModalView) {
 		super(service, RESOURCE_ID);
 		this.service = service;

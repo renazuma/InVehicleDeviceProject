@@ -20,7 +20,7 @@ import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
-import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter;
+import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordArrayAdapter;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.ArrivalCheckModalView;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.DepartureCheckModalView;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.MemoModalView;
@@ -282,7 +282,7 @@ public class InVehicleDeviceView extends FrameLayout implements
 		changePhaseButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				for (ReservationArrayAdapter adapter : platformPhaseView
+				for (PassengerRecordArrayAdapter adapter : platformPhaseView
 						.getReservationArrayAdapter().asSet()) {
 					departureCheckModalView.show(adapter);
 				}
