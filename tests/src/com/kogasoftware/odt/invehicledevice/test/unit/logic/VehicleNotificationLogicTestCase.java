@@ -21,7 +21,6 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Vehic
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.NotificationModalView;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
-import com.kogasoftware.odt.webapi.model.VehicleNotifications;
 
 public class VehicleNotificationLogicTestCase extends
 		ServiceTestCase<InVehicleDeviceService> {
@@ -61,7 +60,7 @@ public class VehicleNotificationLogicTestCase extends
 	public void testMergeVehicleNotification_スケジュールnotification追加()
 			throws Exception {
 		final VehicleNotification vn = new VehicleNotification();
-		vn.setNotificationKind(VehicleNotifications.NotificationKind.RESERVATION_CHANGED);
+		vn.setNotificationKind(VehicleNotification.NotificationKind.RESERVATION_CHANGED);
 		List<VehicleNotification> vns = new LinkedList<VehicleNotification>();
 		vns.add(vn);
 		s.receiveVehicleNotification(vns);
@@ -87,10 +86,10 @@ public class VehicleNotificationLogicTestCase extends
 		final VehicleNotification vn0b = new VehicleNotification();
 		final VehicleNotification vn1 = new VehicleNotification();
 		final VehicleNotification vn2 = new VehicleNotification();
-		vn0a.setNotificationKind(VehicleNotifications.NotificationKind.RESERVATION_CHANGED);
-		vn0b.setNotificationKind(VehicleNotifications.NotificationKind.RESERVATION_CHANGED);
-		vn1.setNotificationKind(VehicleNotifications.NotificationKind.RESERVATION_CHANGED);
-		vn2.setNotificationKind(VehicleNotifications.NotificationKind.RESERVATION_CHANGED);
+		vn0a.setNotificationKind(VehicleNotification.NotificationKind.RESERVATION_CHANGED);
+		vn0b.setNotificationKind(VehicleNotification.NotificationKind.RESERVATION_CHANGED);
+		vn1.setNotificationKind(VehicleNotification.NotificationKind.RESERVATION_CHANGED);
+		vn2.setNotificationKind(VehicleNotification.NotificationKind.RESERVATION_CHANGED);
 		vn0a.setId(1000);
 		vn0b.setId(1000);
 		vn1.setId(1001);
@@ -143,10 +142,10 @@ public class VehicleNotificationLogicTestCase extends
 		final VehicleNotification vn1 = new VehicleNotification();
 		final VehicleNotification vn2a = new VehicleNotification();
 		final VehicleNotification vn2b = new VehicleNotification();
-		vn0.setNotificationKind(VehicleNotifications.NotificationKind.RESERVATION_CHANGED);
-		vn1.setNotificationKind(VehicleNotifications.NotificationKind.RESERVATION_CHANGED);
-		vn2a.setNotificationKind(VehicleNotifications.NotificationKind.RESERVATION_CHANGED);
-		vn2b.setNotificationKind(VehicleNotifications.NotificationKind.RESERVATION_CHANGED);
+		vn0.setNotificationKind(VehicleNotification.NotificationKind.RESERVATION_CHANGED);
+		vn1.setNotificationKind(VehicleNotification.NotificationKind.RESERVATION_CHANGED);
+		vn2a.setNotificationKind(VehicleNotification.NotificationKind.RESERVATION_CHANGED);
+		vn2b.setNotificationKind(VehicleNotification.NotificationKind.RESERVATION_CHANGED);
 		vn0.setId(200);
 		vn1.setId(201);
 		vn2a.setId(202);
@@ -192,10 +191,10 @@ public class VehicleNotificationLogicTestCase extends
 		final VehicleNotification vn1a = new VehicleNotification();
 		final VehicleNotification vn1b = new VehicleNotification();
 		final VehicleNotification vn2 = new VehicleNotification();
-		vn0.setNotificationKind(VehicleNotifications.NotificationKind.RESERVATION_CHANGED);
-		vn1a.setNotificationKind(VehicleNotifications.NotificationKind.RESERVATION_CHANGED);
-		vn1b.setNotificationKind(VehicleNotifications.NotificationKind.RESERVATION_CHANGED);
-		vn2.setNotificationKind(VehicleNotifications.NotificationKind.RESERVATION_CHANGED);
+		vn0.setNotificationKind(VehicleNotification.NotificationKind.RESERVATION_CHANGED);
+		vn1a.setNotificationKind(VehicleNotification.NotificationKind.RESERVATION_CHANGED);
+		vn1b.setNotificationKind(VehicleNotification.NotificationKind.RESERVATION_CHANGED);
+		vn2.setNotificationKind(VehicleNotification.NotificationKind.RESERVATION_CHANGED);
 		vn0.setId(20);
 		vn1a.setId(21);
 		vn1b.setId(21);
@@ -243,10 +242,10 @@ public class VehicleNotificationLogicTestCase extends
 		final VehicleNotification vn1 = new VehicleNotification();
 		final VehicleNotification vn2 = new VehicleNotification();
 		final VehicleNotification vn3 = new VehicleNotification();
-		vn0.setNotificationKind(VehicleNotifications.NotificationKind.RESERVATION_CHANGED);
-		vn1.setNotificationKind(VehicleNotifications.NotificationKind.FROM_OPERATOR);
-		vn2.setNotificationKind(VehicleNotifications.NotificationKind.RESERVATION_CHANGED);
-		vn3.setNotificationKind(VehicleNotifications.NotificationKind.FROM_OPERATOR);
+		vn0.setNotificationKind(VehicleNotification.NotificationKind.RESERVATION_CHANGED);
+		vn1.setNotificationKind(VehicleNotification.NotificationKind.FROM_OPERATOR);
+		vn2.setNotificationKind(VehicleNotification.NotificationKind.RESERVATION_CHANGED);
+		vn3.setNotificationKind(VehicleNotification.NotificationKind.FROM_OPERATOR);
 		vn0.setId(200);
 		vn1.setId(201);
 		vn2.setId(202);
@@ -287,7 +286,7 @@ public class VehicleNotificationLogicTestCase extends
 	public void testMergeVehicleNotification_一般notification追加()
 			throws Exception {
 		final VehicleNotification vn = new VehicleNotification();
-		vn.setNotificationKind(VehicleNotifications.NotificationKind.FROM_OPERATOR);
+		vn.setNotificationKind(VehicleNotification.NotificationKind.FROM_OPERATOR);
 		List<VehicleNotification> vns = new LinkedList<VehicleNotification>();
 		vns.add(vn);
 		s.receiveVehicleNotification(vns);
@@ -309,10 +308,10 @@ public class VehicleNotificationLogicTestCase extends
 		final VehicleNotification vn1 = new VehicleNotification();
 		final VehicleNotification vn2a = new VehicleNotification();
 		final VehicleNotification vn2b = new VehicleNotification();
-		vn0.setNotificationKind(VehicleNotifications.NotificationKind.FROM_OPERATOR);
-		vn1.setNotificationKind(VehicleNotifications.NotificationKind.FROM_OPERATOR);
-		vn2a.setNotificationKind(VehicleNotifications.NotificationKind.FROM_OPERATOR);
-		vn2b.setNotificationKind(VehicleNotifications.NotificationKind.FROM_OPERATOR);
+		vn0.setNotificationKind(VehicleNotification.NotificationKind.FROM_OPERATOR);
+		vn1.setNotificationKind(VehicleNotification.NotificationKind.FROM_OPERATOR);
+		vn2a.setNotificationKind(VehicleNotification.NotificationKind.FROM_OPERATOR);
+		vn2b.setNotificationKind(VehicleNotification.NotificationKind.FROM_OPERATOR);
 		vn0.setId(10);
 		vn1.setId(11);
 		vn2a.setId(12);
@@ -348,10 +347,10 @@ public class VehicleNotificationLogicTestCase extends
 		final VehicleNotification vn1a = new VehicleNotification();
 		final VehicleNotification vn1b = new VehicleNotification();
 		final VehicleNotification vn2 = new VehicleNotification();
-		vn0.setNotificationKind(VehicleNotifications.NotificationKind.FROM_OPERATOR);
-		vn1a.setNotificationKind(VehicleNotifications.NotificationKind.FROM_OPERATOR);
-		vn1b.setNotificationKind(VehicleNotifications.NotificationKind.FROM_OPERATOR);
-		vn2.setNotificationKind(VehicleNotifications.NotificationKind.FROM_OPERATOR);
+		vn0.setNotificationKind(VehicleNotification.NotificationKind.FROM_OPERATOR);
+		vn1a.setNotificationKind(VehicleNotification.NotificationKind.FROM_OPERATOR);
+		vn1b.setNotificationKind(VehicleNotification.NotificationKind.FROM_OPERATOR);
+		vn2.setNotificationKind(VehicleNotification.NotificationKind.FROM_OPERATOR);
 		vn0.setId(100);
 		vn1a.setId(101);
 		vn1b.setId(101);

@@ -14,6 +14,7 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Local
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKey;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
+import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
@@ -58,8 +59,8 @@ public class LocalDataSourceTestCase extends EmptyActivityInstrumentationTestCas
 		lds1.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData ld) {
-				ld.reservations.clear();
-				ld.reservations.add(new Reservation());
+				ld.passengerRecords.clear();
+				ld.passengerRecords.add(new PassengerRecord());
 				ld.repliedVehicleNotifications.clear();
 				ld.repliedVehicleNotifications
 						.add(new VehicleNotification());
@@ -73,7 +74,7 @@ public class LocalDataSourceTestCase extends EmptyActivityInstrumentationTestCas
 		lds2.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData ld) {
-				assertEquals(1, ld.reservations.size());
+				assertEquals(1, ld.passengerRecords.size());
 				assertEquals(1, ld.repliedVehicleNotifications.size());
 			}
 		});
@@ -85,7 +86,7 @@ public class LocalDataSourceTestCase extends EmptyActivityInstrumentationTestCas
 		lds3.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData ld) {
-				assertTrue(ld.reservations.isEmpty());
+				assertTrue(ld.passengerRecords.isEmpty());
 				assertTrue(ld.repliedVehicleNotifications.isEmpty());
 			}
 		});
@@ -96,7 +97,7 @@ public class LocalDataSourceTestCase extends EmptyActivityInstrumentationTestCas
 		lds4.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData ld) {
-				assertTrue(ld.reservations.isEmpty());
+				assertTrue(ld.passengerRecords.isEmpty());
 				assertTrue(ld.repliedVehicleNotifications.isEmpty());
 			}
 		});

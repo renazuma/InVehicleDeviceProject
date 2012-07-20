@@ -145,7 +145,7 @@ public class MockDataSource implements DataSource {
 						+ "reservations_as_departure: [" + u1a + "," + u1b
 						+ "," + u1c + "," + u1d + "," + u1e + ", " + u1f + "]}";
 				JSONObject j1 = new JSONObject(sOperationSchedule);
-				lOperationSchedule.add(new OperationSchedule(j1));
+				lOperationSchedule.add(OperationSchedule.parse(j1));
 			}
 
 			if (iOperationScheduleCount > 1) {
@@ -155,7 +155,7 @@ public class MockDataSource implements DataSource {
 								+ "departure_estimate: '2012-01-01T10:05:00+09:00', "
 								+ "platform: {name: '85_特別養護老人ホームあじさいのおか牛窓／在宅介護支援センターＡＪＩＳＡＩ',name_ruby: 'とくべつようごろうじんほーむあじさいのおかうしまどざいたくかいごしえんせんたーあじさい'}, "
 								+ "reservations_as_arrival: [{passenger_count: 5}]}");
-				lOperationSchedule.add(new OperationSchedule(j2));
+				lOperationSchedule.add(OperationSchedule.parse(j2));
 			}
 
 			if (iOperationScheduleCount > 2) {
@@ -165,7 +165,7 @@ public class MockDataSource implements DataSource {
 								+ "departure_estimate: '2012-01-01T10:33:00+09:00', "
 								+ "platform: {name: 'テスト上野動物園前', name_ruby: 'てすとうえのどうぶつえんまえ'}, "
 								+ "reservations_as_departure: [{passenger_count: 5}, {passenger_count: 6}, {passenger_count: 7}]}");
-				lOperationSchedule.add(new OperationSchedule(j3));
+				lOperationSchedule.add(OperationSchedule.parse(j3));
 			}
 
 			if (iOperationScheduleCount > 3) {
@@ -176,7 +176,7 @@ public class MockDataSource implements DataSource {
 								+ "platform: {name: 'テスト上野広小路前', name_ruby: 'てすとうえのひろこうじまえ'}, "
 								+ "reservations_as_arrival: [] ,"
 								+ "reservations_as_departure: [{passenger_count: 7}]}");
-				lOperationSchedule.add(new OperationSchedule(j4));
+				lOperationSchedule.add(OperationSchedule.parse(j4));
 			}
 
 			if (iOperationScheduleCount > 4) {
@@ -185,7 +185,7 @@ public class MockDataSource implements DataSource {
 								+ "arrival_estimate: '2012-01-01T12:00:00+09:00', "
 								+ "departure_estimate: '2012-01-01T12:05:00+09:00', "
 								+ "platform: {name: 'テスト湯島天神前', name_ruby: 'てすとゆしまてんじんまえ'}}");
-				lOperationSchedule.add(new OperationSchedule(j5));
+				lOperationSchedule.add(OperationSchedule.parse(j5));
 			}
 
 			if (iOperationScheduleCount > 5) {
@@ -196,7 +196,7 @@ public class MockDataSource implements DataSource {
 								+ "platform: {name: 'テストＪＲ御徒町駅前', name_ruby: 'てすとじぇいあーるおかちまちえきまえ'}, "
 								+ "reservations_as_arrival: [{passenger_count: 50}, {passenger_count: 60}, {passenger_count: 70}] ,"
 								+ "reservations_as_departure: [{passenger_count: 150}, {passenger_count: 160}, {passenger_count: 170}]}");
-				lOperationSchedule.add(new OperationSchedule(j6));
+				lOperationSchedule.add(OperationSchedule.parse(j6));
 			}
 
 		} catch (JSONException e) {
@@ -268,7 +268,7 @@ public class MockDataSource implements DataSource {
 							+ "reservations_as_departure: [" + u1a + "," + u1b
 							+ "," + u1c + "," + u1d + "," + u1e + "," + u1f
 							+ "]}");
-			lOperationSchedule.add(new OperationSchedule(j1));
+			lOperationSchedule.add(OperationSchedule.parse(j1));
 
 			JSONObject j2 = new JSONObject(
 					"{"
@@ -279,7 +279,7 @@ public class MockDataSource implements DataSource {
 							+ "reservations_as_arrival: [" + u1d + "], "
 							+ "reservations_as_departure: [" + u1g + "," + u1j
 							+ "," + u1l + "]}");
-			lOperationSchedule.add(new OperationSchedule(j2));
+			lOperationSchedule.add(OperationSchedule.parse(j2));
 
 			JSONObject j3 = new JSONObject(
 					"{"
@@ -290,7 +290,7 @@ public class MockDataSource implements DataSource {
 							+ "reservations_as_arrival: [" + u1c + "," + u1g
 							+ "," + "], " + "reservations_as_departure: ["
 							+ u1h + "," + u1k + "," + u1m + "]}");
-			lOperationSchedule.add(new OperationSchedule(j3));
+			lOperationSchedule.add(OperationSchedule.parse(j3));
 
 			JSONObject j4 = new JSONObject(
 					"{"
@@ -302,7 +302,7 @@ public class MockDataSource implements DataSource {
 							+ "," + u1h + "," + u1k + "], "
 							+ "reservations_as_departure: [" + u1i + "," + u1n
 							+ "," + u1o + "]}");
-			lOperationSchedule.add(new OperationSchedule(j4));
+			lOperationSchedule.add(OperationSchedule.parse(j4));
 
 			JSONObject j5 = new JSONObject(
 					"{"
@@ -313,7 +313,7 @@ public class MockDataSource implements DataSource {
 							+ "reservations_as_arrival: [" + u1e + "," + u1j
 							+ "," + u1m + "," + u1o + "], "
 							+ "reservations_as_departure: []}");
-			lOperationSchedule.add(new OperationSchedule(j5));
+			lOperationSchedule.add(OperationSchedule.parse(j5));
 
 			JSONObject j6 = new JSONObject(
 					"{"
@@ -324,7 +324,7 @@ public class MockDataSource implements DataSource {
 							+ "reservations_as_arrival: [" + u1a + "," + u1i
 							+ "," + u1l + "," + u1n + "], "
 							+ "reservations_as_departure: []}");
-			lOperationSchedule.add(new OperationSchedule(j6));
+			lOperationSchedule.add(OperationSchedule.parse(j6));
 
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block

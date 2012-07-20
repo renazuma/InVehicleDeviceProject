@@ -48,12 +48,12 @@ public class OperationScheduleReceiveThreadTestCase extends
 									+ "reservations_as_departure: ["
 									+ r1
 									+ "]}");
-					l.add(new OperationSchedule(j1));
+					l.add(OperationSchedule.parse(j1));
 					JSONObject j2 = new JSONObject(
 							"{id:2, arrival_estimate: '2012-01-01T02:00:00+09:00', departure_estimate: '2012-01-01T02:00:00+09:00', "
 									+ "platform: {name: '乗降場B', name_ruby: 'のりおりばびー'}, reservations_as_arrival: [ "
 									+ r1 + " ]}");
-					l.add(new OperationSchedule(j2));
+					l.add(OperationSchedule.parse(j2));
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -74,12 +74,12 @@ public class OperationScheduleReceiveThreadTestCase extends
 					"{id:1, arrival_estimate: '2012-01-01T01:00:00+09:00', departure_estimate: '2012-01-01T02:00:00+09:00', "
 							+ "platform: {name: '乗降場A', name_ruby: 'のりおりばえー'}, "
 							+ "reservations_as_departure: [" + r1 + "]}");
-			l.add(new OperationSchedule(j1));
+			l.add(OperationSchedule.parse(j1));
 			JSONObject j2 = new JSONObject(
 					"{id:2, arrival_estimate: '2012-01-01T02:00:00+09:00', departure_estimate: '2012-01-01T02:00:00+09:00', "
 							+ "platform: {name: '乗降場B', name_ruby: 'のりおりばびー'}, reservations_as_arrival: [ "
 							+ r1 + " ]}");
-			l.add(new OperationSchedule(j2));
+			l.add(OperationSchedule.parse(j2));
 		} catch (JSONException e) {
 			fail();
 		}
