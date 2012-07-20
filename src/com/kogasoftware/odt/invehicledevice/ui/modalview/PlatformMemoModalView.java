@@ -20,9 +20,9 @@ public class PlatformMemoModalView extends ModalView {
 		for (OperationSchedule operationSchedule : service
 				.getCurrentOperationSchedule().asSet()) {
 			for (Platform platform : operationSchedule.getPlatform().asSet()) {
-				for (String memo : platform.getMemo().asSet()) {
+				if (!platform.getMemo().isEmpty()) {
 					TextView memoTextView = (TextView) findViewById(R.id.platform_memo_text_view);
-					memoTextView.setText(memo);
+					memoTextView.setText(platform.getMemo());
 					super.show();
 				}
 			}

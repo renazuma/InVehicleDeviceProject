@@ -214,7 +214,7 @@ public class NavigationModalView extends ModalView implements
 		for (OperationSchedule operationSchedule : service
 				.getCurrentOperationSchedule().asSet()) {
 			for (Platform platform : operationSchedule.getPlatform().asSet()) {
-				if (platform.getMemo().isPresent()) {
+				if (!platform.getMemo().isEmpty()) {
 					platformMemoVisibility = VISIBLE;
 				}
 			}
