@@ -59,6 +59,8 @@ public class InVehicleDeviceActivity extends Activity implements
 
 		@Override
 		public void onServiceDisconnected(ComponentName className) {
+			Log.e(TAG, "onServiceDisconnected(" + className + ")");
+			optionalService = Optional.absent();
 			finish();
 		}
 	};
