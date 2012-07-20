@@ -122,7 +122,7 @@ public class WebAPITestCase extends
 		callTestPasswordLogin(false, true);
 	}
 
-	public void testPasswordLoginNoRetry() throws Exception {
+	public void testPasswordLoginRetry() throws Exception {
 		api = new OfflineTestWebAPI(SERVER_HOST);
 		callTestPasswordLogin(true, true);
 	}
@@ -180,8 +180,8 @@ public class WebAPITestCase extends
 		} else {
 			assertFalse(succeed.get());
 			offline = false;
-			assertFalse(semaphore.tryAcquire(20, TimeUnit.SECONDS)); // エラーでも再送信しない
-			assertFalse(succeed.get());
+			assertTrue(semaphore.tryAcquire(20, TimeUnit.SECONDS));
+			assertTrue(succeed.get());
 		}
 	}
 

@@ -522,7 +522,7 @@ public class WebAPI implements Closeable {
 	}
 
 	/**
-	 * OperatorWeb へログインして authorization_token を取得。このAPIは失敗時にリトライしない。
+	 * OperatorWebへログインしてauthorization_tokenを取得
 	 * 
 	 * @param login
 	 *            　ログイン情報(login, password のみ設定必要)
@@ -540,7 +540,7 @@ public class WebAPI implements Closeable {
 		JSONObject param = new JSONObject();
 		param.put("in_vehicle_device", ivd);
 
-		return post(PATH_LOGIN, param, false, UNIQUE_GROUP,
+		return post(PATH_LOGIN, param, true, UNIQUE_GROUP,
 				new WebAPICallback<InVehicleDevice>() {
 					@Override
 					public void onException(int reqkey, WebAPIException ex) {
@@ -640,14 +640,14 @@ public class WebAPI implements Closeable {
 	}
 
 	/**
-	 * 予約候補を取得。このAPIは失敗時にリトライしない。
+	 * 予約候補を取得
 	 */
 	public int searchReservationCandidate(Demand demand,
 			WebAPICallback<List<ReservationCandidate>> callback)
 			throws JSONException, WebAPIException {
 		JSONObject param = new JSONObject();
 		param.put("demand", demand.toJSONObject());
-		return post(PATH_RESERVATIONS + "/search", param, false, UNIQUE_GROUP,
+		return post(PATH_RESERVATIONS + "/search", param, true, UNIQUE_GROUP,
 				callback, new ResponseConverter<List<ReservationCandidate>>() {
 					@Override
 					public List<ReservationCandidate> convert(byte[] rawResponse)
@@ -659,14 +659,14 @@ public class WebAPI implements Closeable {
 	}
 
 	/**
-	 * 予約の実行。このAPIは失敗時にリトライしない。
+	 * 予約の実行
 	 */
 	public int createReservation(ReservationCandidate reservationCandidate,
 			WebAPICallback<Reservation> callback) throws JSONException,
 			WebAPIException {
 		JSONObject param = new JSONObject();
 		param.put("reservation_candidate_id", reservationCandidate.getId());
-		return post(PATH_RESERVATIONS, param, false, UNIQUE_GROUP, callback,
+		return post(PATH_RESERVATIONS, param, true, UNIQUE_GROUP, callback,
 				new ResponseConverter<Reservation>() {
 					@Override
 					public Reservation convert(byte[] rawResponse)
