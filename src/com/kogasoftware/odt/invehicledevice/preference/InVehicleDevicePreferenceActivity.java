@@ -123,6 +123,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 
 	@Override
 	public void onException(int reqKey, WebAPIException ex) {
+		api.abort(reqKey);
 		if (reqKey != latestReqKey) {
 			return;
 		}
@@ -150,6 +151,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 
 	@Override
 	public void onFailed(int reqKey, int statusCode, String response) {
+		api.abort(reqKey);
 		if (reqKey != latestReqKey) {
 			return;
 		}
