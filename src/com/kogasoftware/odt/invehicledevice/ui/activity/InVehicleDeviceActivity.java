@@ -89,6 +89,18 @@ public class InVehicleDeviceActivity extends Activity implements
 	}
 
 	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		Log.i(TAG, "onDestroy()");
+		if (optionalService.isPresent()) {
+			optionalService.get().removeOnExitListener(this);
+		}
+		unbindService(serviceConnection);
+		getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		handler.removeCallbacks(waitForInitialize);
+	}
+
+	@Override
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
 		case WAIT_FOR_INITIALIZE_DIALOG_ID: {
@@ -108,18 +120,6 @@ public class InVehicleDeviceActivity extends Activity implements
 		default:
 			return null;
 		}
-	}
-
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		Log.i(TAG, "onDestroy()");
-		if (optionalService.isPresent()) {
-			optionalService.get().removeOnExitListener(this);
-		}
-		unbindService(serviceConnection);
-		getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-		handler.removeCallbacks(waitForInitialize);
 	}
 
 	@Override
@@ -159,31 +159,40 @@ public class InVehicleDeviceActivity extends Activity implements
 	}
 
 	@Override
-	public void onPause() {
-		super.onPause();
-		try {
-			dismissDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
-		} catch (IllegalArgumentException e) {
-		}
-		if (optionalService.isPresent()) {
-			optionalService.get().setActivityPaused();
-		}
+	public void onStart() {
+		super.onStart();
+		Log.i(TAG, "onStart()");
 	}
-
+	
 	@Override
 	public void onStop() {
 		super.onStop();
+		Log.i(TAG, "onStop()");
 		finish();
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
+		Log.i(TAG, "onResume()");
 		if (!isFinishing() && !uiInitialized) {
 			showDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
 		}
 		if (optionalService.isPresent()) {
 			optionalService.get().setActivityResumed();
+		}
+	}
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+		Log.i(TAG, "onPause()");
+		try {
+			dismissDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
+		} catch (IllegalArgumentException e) {
+		}
+		if (optionalService.isPresent()) {
+			optionalService.get().setActivityPaused();
 		}
 	}
 }
