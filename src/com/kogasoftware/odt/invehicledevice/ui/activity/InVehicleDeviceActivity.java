@@ -136,8 +136,9 @@ public class InVehicleDeviceActivity extends Activity implements
 		if (isFinishing()) {
 			return;
 		}
-		getWindow().getDecorView().setBackgroundColor(Color.WHITE);
+
 		final View view = new InVehicleDeviceView(this, service);
+		view.setBackgroundColor(Color.WHITE);
 		view.setVisibility(View.INVISIBLE);
 		setContentView(view);
 		
