@@ -15,7 +15,10 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.text.Html;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.R;
@@ -124,7 +127,7 @@ public class InVehicleDeviceActivity extends Activity implements
 		finish();
 	}
 
-	public void onInitialize(InVehicleDeviceService service) {
+	public void onInitialize(final InVehicleDeviceService service) {
 		Log.i(TAG, "onInitialize()");
 		try {
 			dismissDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
@@ -134,7 +137,19 @@ public class InVehicleDeviceActivity extends Activity implements
 			return;
 		}
 		getWindow().getDecorView().setBackgroundColor(Color.WHITE);
-		setContentView(new InVehicleDeviceView(this, service));
+		final View view = new InVehicleDeviceView(this, service);
+		view.setVisibility(View.INVISIBLE);
+		setContentView(view);
+		
+		// データが割り当てられる前の状態の部品を表示させないため、表示を遅延させる。
+		handler.post(new Runnable() {
+			@Override
+			public void run() {
+				Animation animation = AnimationUtils.loadAnimation(
+						InVehicleDeviceActivity.this, R.anim.show_in_vehicle_device_view);
+				view.startAnimation(animation);
+			}
+		});
 		uiInitialized = true;
 	}
 
