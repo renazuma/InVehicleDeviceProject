@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Activity.Theme" parent="@android:style/Theme.Light.NoTitleBar.Fullscreen"></style>
+    <style name="Activity.Theme" parent="@android:style/Theme.Light.NoTitleBar.Fullscreen">
+        <item name="android:windowBackground">@android:color/black</item>
+    </style>
 
     <style name="ModalView.Layout" parent="@android:style/TextAppearance.Large">
         <item name="android:padding">3dip</item>
@@ -25,4 +27,4 @@
     <style name="SideButton" parent="@android:style/TextAppearance.Large">
         <item name="android:textColor">@android:color/black</item>
     </style>
-</resources>
+</resources>

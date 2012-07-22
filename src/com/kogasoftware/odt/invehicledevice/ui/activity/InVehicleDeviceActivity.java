@@ -81,13 +81,13 @@ public class InVehicleDeviceActivity extends Activity implements
 						| WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
 						| WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
 
-		getWindow().getDecorView().setBackgroundColor(Color.BLACK);
-
 		bindService(new Intent(this, InVehicleDeviceService.class),
 				serviceConnection, Context.BIND_AUTO_CREATE);
 		handler.post(waitForInitialize);
 	}
 
+	
+	
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
