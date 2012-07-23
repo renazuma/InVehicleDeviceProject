@@ -30,7 +30,7 @@ public class WebAPIRequestQueue {
 	public static final String UNIQUE_GROUP = "";
 
 	protected static class InstanceState implements Serializable {
-		protected static final long serialVersionUID = 672897944999498098L;
+		protected static final long serialVersionUID = 672897944999498097L;
 		protected final LinkedList<Pair<String, List<WebAPIRequest<?>>>> requestsByGroup;
 
 		public InstanceState(
