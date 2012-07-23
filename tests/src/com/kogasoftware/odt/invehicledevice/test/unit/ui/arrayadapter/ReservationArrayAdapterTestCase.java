@@ -8,28 +8,29 @@ import java.util.concurrent.TimeUnit;
 import android.util.Log;
 import android.widget.ListView;
 
-import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.logic.Status;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
-import com.kogasoftware.odt.invehicledevice.logic.datasource.DataSource;
-import com.kogasoftware.odt.invehicledevice.logic.datasource.EmptyDataSource;
+import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
+import com.kogasoftware.odt.invehicledevice.datasource.EmptyDataSource;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
-import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter;
+import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordArrayAdapter;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.User;
+import static org.mockito.Mockito.*;
 
 public class ReservationArrayAdapterTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 
 	private static final String TAG = ReservationArrayAdapterTestCase.class.getSimpleName();
-	CommonLogic cl;
-	ReservationArrayAdapter raa;
-	StatusAccess sa;
+	InVehicleDeviceService s;
+	PassengerRecordArrayAdapter raa;
+	LocalDataSource sa;
 	
 	BlockingQueue<Reservation> getOnReservations = new LinkedBlockingQueue<Reservation>();
 	BlockingQueue<Reservation> getOffReservations = new LinkedBlockingQueue<Reservation>();
@@ -74,8 +75,8 @@ public class ReservationArrayAdapterTestCase extends
 	protected void setUp() throws Exception {
 		super.setUp();
 		TestUtil.setDataSource(dataSource);
-		sa = new StatusAccess(getActivity());
-		cl = new CommonLogic(getActivity(), getActivityHandler(), sa);
+		s = mock(InVehicleDeviceService.class);
+		sa = new LocalDataSource(getActivity());
 		getOnReservations.clear();
 		getOffReservations.clear();
 		cancelGetOnReservations.clear();
@@ -85,9 +86,6 @@ public class ReservationArrayAdapterTestCase extends
 	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
-		if (cl != null) {
-			cl.dispose();
-		}
 	}
 	
 	protected void sync() throws Exception {
@@ -100,9 +98,9 @@ public class ReservationArrayAdapterTestCase extends
 		final String userName0 = "上野駅前";
 		final String userName1 = "御徒町駅前";
 		final Integer T = 300;
-		sa.write(new Writer() {
+		sa.withWriteLock(new Writer() {
 			@Override
-			public void write(Status status) {
+			public void write(LocalData status) {
 				status.reservations.clear();
 				OperationSchedule os0 = new OperationSchedule();
 				os0.setId(200);
@@ -143,7 +141,7 @@ public class ReservationArrayAdapterTestCase extends
 			}
 		});
 
-		raa = new ReservationArrayAdapter(getInstrumentation()
+		raa = new PassengerRecordArrayAdapter(getInstrumentation()
 				.getTargetContext(), cl);
 		sync();
 		assertEquals(raa.getCount(), 2);

@@ -3,32 +3,30 @@ package com.kogasoftware.odt.invehicledevice.test.unit.ui.arrayadapter;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.OperationScheduleArrayAdapter;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
+import static org.mockito.Mockito.*;
 
 public class OperationScheduleArrayAdapterTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 
-	CommonLogic cl;
+	InVehicleDeviceService s;
 	OperationScheduleArrayAdapter osaa;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		cl = newCommonLogic();
-		osaa = new OperationScheduleArrayAdapter(getInstrumentation()
-				.getTargetContext(), new ArrayList<OperationSchedule>(), cl);
+		s = mock(InVehicleDeviceService.class);
+		osaa = new OperationScheduleArrayAdapter(s,
+				new ArrayList<OperationSchedule>());
 	}
 
 	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
-		if (cl != null) {
-			cl.dispose();
-		}
 	}
 
 	public void testOperationScheduleのPlatformが表示される() throws Exception {
@@ -49,10 +47,9 @@ public class OperationScheduleArrayAdapterTestCase extends
 			os.setPlatform(p);
 			oss.add(os);
 		}
-		
-		osaa = new OperationScheduleArrayAdapter(getInstrumentation()
-				.getTargetContext(), oss, cl);
-		
+
+		osaa = new OperationScheduleArrayAdapter(s, oss);
+
 		runOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
@@ -60,7 +57,7 @@ public class OperationScheduleArrayAdapterTestCase extends
 			}
 		});
 		assertTrue(solo.searchText(platformName0));
-		
+
 		runOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {

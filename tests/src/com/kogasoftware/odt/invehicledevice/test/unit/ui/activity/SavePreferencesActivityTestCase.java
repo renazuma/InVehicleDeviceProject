@@ -9,8 +9,8 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.test.ActivityInstrumentationTestCase2;
 
-import com.kogasoftware.odt.invehicledevice.backgroundtask.BackgroundTask;
-import com.kogasoftware.odt.invehicledevice.logic.SharedPreferencesKey;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKey;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundthread.BackgroundTask;
 import com.kogasoftware.odt.invehicledevice.ui.activity.SavePreferencesActivity;
 
 public class SavePreferencesActivityTestCase extends

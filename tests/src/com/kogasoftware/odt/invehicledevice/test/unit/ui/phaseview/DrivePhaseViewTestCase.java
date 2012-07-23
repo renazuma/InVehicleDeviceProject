@@ -5,8 +5,6 @@ import java.util.concurrent.TimeUnit;
 
 import android.view.View;
 
-import com.google.common.base.Function;
-import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
@@ -59,7 +57,7 @@ public class DrivePhaseViewTestCase extends
 			}
 		});
 
-		cl.postEvent(new EnterDrivePhaseEvent());
+		s.enterDrivePhase();
 		getInstrumentation().waitForIdleSync();
 
 		assertTrue(pv.isShown());
@@ -69,7 +67,7 @@ public class DrivePhaseViewTestCase extends
 	public void testEnterFinishPhaseEventで非表示() throws Exception {
 		testEnterDrivePhaseEventで表示();
 
-		cl.postEvent(new EnterFinishPhaseEvent());
+		s.enterFinishPhase();
 		getInstrumentation().waitForIdleSync();
 
 		assertFalse(pv.isShown());
@@ -79,7 +77,7 @@ public class DrivePhaseViewTestCase extends
 	public void testEnterPlatformPhaseEventで非表示() throws Exception {
 		testEnterDrivePhaseEventで表示();
 
-		cl.postEvent(new EnterPlatformPhaseEvent());
+		s.enterPlatformPhase();
 		getInstrumentation().waitForIdleSync();
 
 		assertFalse(pv.isShown());
@@ -88,31 +86,23 @@ public class DrivePhaseViewTestCase extends
 
 	public void testOperationScheduleが0個の場合EnterFinishPhaseView発生()
 			throws Exception {
-		sa.write(new Writer() { // TODO もっとスマートにする
+		sa.withWriteLock(new Writer() { // TODO もっとスマートにする
 			@Override
-			public void write(Status status) {
+			public void write(LocalData status) {
 				status.remainingOperationSchedules.clear();
 			}
 		});
 		final CountDownLatch cdl = new CountDownLatch(1);
-		cl.registerEventListener(new Function<EnterFinishPhaseEvent, Void>() {
-			@Subscribe
-			@Override
-			public Void apply(EnterFinishPhaseEvent e) {
-				cdl.countDown();
-				return null;
-			}
-		});
-		cl.postEvent(new EnterDrivePhaseEvent());
+		s.enterDrivePhase();
 		assertTrue(cdl.await(10, TimeUnit.SECONDS));
 		assertFalse(pv.isShown());
 	}
 
 	public void testOperationScheduleが1個の場合EnterFinishPhaseView発生()
 			throws Exception {
-		sa.write(new Writer() { // TODO もっとスマートにする
+		sa.withWriteLock(new Writer() { // TODO もっとスマートにする
 			@Override
-			public void write(Status status) {
+			public void write(LocalData status) {
 				OperationSchedule os = new OperationSchedule();
 				os.setPlatform(new Platform());
 				status.phase = Phase.PLATFORM;
@@ -120,24 +110,14 @@ public class DrivePhaseViewTestCase extends
 				status.remainingOperationSchedules.add(os);
 			}
 		});
-		final CountDownLatch cdl = new CountDownLatch(1);
-		cl.registerEventListener(new Function<EnterFinishPhaseEvent, Void>() {
-			@Subscribe
-			@Override
-			public Void apply(EnterFinishPhaseEvent e) {
-				cdl.countDown();
-				return null;
-			}
-		});
-		cl.postEvent(new EnterDrivePhaseEvent());
-		assertTrue(cdl.await(10, TimeUnit.SECONDS));
+		s.enterDrivePhase();
 		assertFalse(pv.isShown());
 	}
 
 	public void testOperationScheduleが2個の場合表示される() {
-		sa.write(new Writer() { // TODO もっとスマートにする
+		sa.withWriteLock(new Writer() { // TODO もっとスマートにする
 			@Override
-			public void write(Status status) {
+			public void write(LocalData status) {
 				OperationSchedule os1 = new OperationSchedule();
 				OperationSchedule os2 = new OperationSchedule();
 				os1.setPlatform(new Platform());
@@ -147,15 +127,15 @@ public class DrivePhaseViewTestCase extends
 				status.remainingOperationSchedules.add(os2);
 			}
 		});
-		cl.postEvent(new EnterDrivePhaseEvent());
+		s.enterDrivePhase();
 		getInstrumentation().waitForIdleSync();
 		assertTrue(pv.isShown());
 	}
 
 	public void xtestOperationScheduleが2個の場合次の駅が1つ表示() {
-		sa.write(new Writer() { // TODO もっとスマートにする
+		sa.withWriteLock(new Writer() { // TODO もっとスマートにする
 			@Override
-			public void write(Status status) {
+			public void write(LocalData status) {
 				OperationSchedule os1 = new OperationSchedule();
 				OperationSchedule os2 = new OperationSchedule();
 				os1.setPlatform(new Platform());
@@ -165,15 +145,15 @@ public class DrivePhaseViewTestCase extends
 				status.remainingOperationSchedules.add(os2);
 			}
 		});
-		cl.postEvent(new EnterDrivePhaseEvent());
+		s.enterDrivePhase();
 		getInstrumentation().waitForIdleSync();
 		fail("stub!");
 	}
 
 	public void xtestOperationScheduleが2個の場合次の駅が2つ表示() {
-		sa.write(new Writer() { // TODO もっとスマートにする
+		sa.withWriteLock(new Writer() { // TODO もっとスマートにする
 			@Override
-			public void write(Status status) {
+			public void write(LocalData status) {
 				OperationSchedule os1 = new OperationSchedule();
 				OperationSchedule os2 = new OperationSchedule();
 				OperationSchedule os3 = new OperationSchedule();
@@ -186,15 +166,15 @@ public class DrivePhaseViewTestCase extends
 				status.remainingOperationSchedules.add(os3);
 			}
 		});
-		cl.postEvent(new EnterDrivePhaseEvent());
+		s.enterDrivePhase();
 		getInstrumentation().waitForIdleSync();
 		fail("stub!");
 	}
 
 	public void xtestOperationScheduleが2個の場合次の駅が3つ表示() {
-		sa.write(new Writer() { // TODO もっとスマートにする
+		sa.withWriteLock(new Writer() { // TODO もっとスマートにする
 			@Override
-			public void write(Status status) {
+			public void write(LocalData status) {
 				OperationSchedule os1 = new OperationSchedule();
 				OperationSchedule os2 = new OperationSchedule();
 				OperationSchedule os3 = new OperationSchedule();
@@ -210,7 +190,7 @@ public class DrivePhaseViewTestCase extends
 				status.remainingOperationSchedules.add(os4);
 			}
 		});
-		cl.postEvent(new EnterDrivePhaseEvent());
+		s.enterDrivePhase();
 		getInstrumentation().waitForIdleSync();
 		fail("stub!");
 	}
