@@ -31,7 +31,19 @@ public class InVehicleDeviceActivity extends Activity implements
 			.getSimpleName();
 	private static final int WAIT_FOR_INITIALIZE_DIALOG_ID = 10;
 	private static final int WAIT_FOR_INITIALIZE_MILLIS = 3 * 1000;
+	private static final int PAUSE_FINISH_TIMEOUT_MILLIS = 10 * 1000;
 	private final Handler handler = new Handler();
+	// Androidエミュレーターで、Activity起動後ESCキーを押してホーム画面に戻ると、Activityが見えていないのに
+	// onStopやonDestroyが呼ばれずRunningTaskInfo.topActivityがこのActivityを返すため、自動再起動ができないことがある。
+	// そのため、onPauseが呼ばれて一定時間が経ったらtaskを移動してfinishするようにした
+	private final Runnable pauseFinishTimeouter = new Runnable() {
+		@Override
+		public void run() {
+			Log.i(TAG, "pauseFinishTimeouter.run()");
+			moveTaskToBack(true);
+			finish();
+		}
+	};
 	private final Runnable waitForInitialize = new Runnable() {
 		@Override
 		public void run() {
@@ -96,6 +108,7 @@ public class InVehicleDeviceActivity extends Activity implements
 		unbindService(serviceConnection);
 		getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		handler.removeCallbacks(waitForInitialize);
+		handler.removeCallbacks(pauseFinishTimeouter);
 	}
 
 	@Override
@@ -168,13 +181,13 @@ public class InVehicleDeviceActivity extends Activity implements
 	public void onStop() {
 		super.onStop();
 		Log.i(TAG, "onStop()");
-		finish();
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
 		Log.i(TAG, "onResume()");
+		handler.removeCallbacks(pauseFinishTimeouter);
 		if (!isFinishing() && !uiInitialized) {
 			showDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
 		}
@@ -187,6 +200,7 @@ public class InVehicleDeviceActivity extends Activity implements
 	public void onPause() {
 		super.onPause();
 		Log.i(TAG, "onPause()");
+		handler.postDelayed(pauseFinishTimeouter, PAUSE_FINISH_TIMEOUT_MILLIS);
 		try {
 			dismissDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
 		} catch (IllegalArgumentException e) {
