@@ -180,7 +180,9 @@ public class WebAPITestCase extends
 			}
 		} else {
 			assertFalse(succeed.get());
+			semaphore.drainPermits();
 			offline = false;
+			Thread.sleep(10 * 1000);
 			assertTrue(semaphore.tryAcquire(20, TimeUnit.SECONDS));
 			assertTrue(succeed.get());
 		}
