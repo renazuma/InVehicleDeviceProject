@@ -7,37 +7,33 @@ import android.view.View;
 
 import com.google.common.base.Function;
 import com.google.common.eventbus.Subscribe;
-import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.logic.Status;
-import com.kogasoftware.odt.invehicledevice.logic.Status.Phase;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
-import com.kogasoftware.odt.invehicledevice.logic.event.CommonLogicLoadCompleteEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.EnterDrivePhaseEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.EnterFinishPhaseEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.EnterPlatformPhaseEvent;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.ui.phaseview.DrivePhaseView;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
+import static org.mockito.Mockito.*;
 
 public class DrivePhaseViewTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 
-	CommonLogic cl;
-	StatusAccess sa;
+	InVehicleDeviceService s;
+	LocalDataSource sa;
 	DrivePhaseView pv;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		sa = new StatusAccess(getActivity());
-		cl = new CommonLogic(getActivity(), getActivityHandler(), sa);
+		s = mock(InVehicleDeviceService.class);
+		sa = new LocalDataSource(getActivity());
 		pv = (DrivePhaseView) inflateAndAddTestLayout(com.kogasoftware.odt.invehicledevice.test.R.layout.test_drive_phase_view);
-		cl.registerEventListener(pv);
-		sa.write(new Writer() { // TODO もっとスマートにする
+		sa.withWriteLock(new Writer() { // TODO もっとスマートにする
 			@Override
-			public void write(Status status) {
+			public void write(LocalData status) {
 				status.phase = Phase.PLATFORM;
 				OperationSchedule os1 = new OperationSchedule();
 				OperationSchedule os2 = new OperationSchedule();
@@ -48,16 +44,11 @@ public class DrivePhaseViewTestCase extends
 				status.remainingOperationSchedules.add(os2);
 			}
 		});
-		pv.setCommonLogic(new CommonLogicLoadCompleteEvent(cl));
-
 	}
 
 	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
-		if (cl != null) {
-			cl.dispose();
-		}
 	}
 
 	public void testEnterDrivePhaseEventで表示() throws Exception {
