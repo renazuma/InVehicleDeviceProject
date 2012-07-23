@@ -65,15 +65,17 @@ public class BackgroundTask {
 	private final Looper myLooper;
 	private final AtomicBoolean quitCalled = new AtomicBoolean(false);
 	private final InVehicleDeviceService service;
+	private final Context applicationContext;
 
 	public BackgroundTask(InVehicleDeviceService service) {
 		this.service = service;
 		if (Looper.myLooper() == null) {
 			Looper.prepare();
 		}
+		applicationContext = service.getApplicationContext();
 		myLooper = Looper.myLooper();
 
-		sensorManager = (SensorManager) service
+		sensorManager = (SensorManager) applicationContext
 				.getSystemService(Context.SENSOR_SERVICE);
 
 		// TODO:内容精査
@@ -88,8 +90,9 @@ public class BackgroundTask {
 		// E/AndroidRuntime(24190):at_com.kogasoftware.odt.invehicledevice.test.unit.backgroundtask.BackgroundTaskTestCase$1.run(BackgroundTaskTestCase.java:44)
 		Optional<TelephonyManager> tempTelephonyManager = Optional.absent();
 		try {
-			tempTelephonyManager = Optional.of((TelephonyManager) service
-					.getSystemService(Context.TELEPHONY_SERVICE));
+			tempTelephonyManager = Optional
+					.of((TelephonyManager) applicationContext
+							.getSystemService(Context.TELEPHONY_SERVICE));
 		} catch (NullPointerException e) {
 			Log.w(TAG, e);
 		}
