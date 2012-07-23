@@ -34,7 +34,6 @@ public class MockDataSource implements DataSource {
 	private Date nextNotifyDate = new Date();
 	private boolean NotificationFlag = false;
 
-	
 	@Override
 	public int arrivalOperationSchedule(OperationSchedule os,
 			WebAPICallback<OperationSchedule> callback) {
@@ -125,12 +124,29 @@ public class MockDataSource implements DataSource {
 
 		lOperationSchedule = new LinkedList<OperationSchedule>();
 
-		String u1a = "{id: 1011, departure_schedule_id: 1, arrival_schedule_id: 2 ,passenger_count:5, user: {first_name: '名前a', last_name: '名字a'},memo: 'テストメモ1'}";
-		String u1b = "{id: 1012, departure_schedule_id: 1, arrival_schedule_id: 3 ,passenger_count:6, user: {first_name: '名前b', last_name: '名字b'},memo: 'テストメモ2'}";
-		String u1c = "{id: 1013, departure_schedule_id: 1, arrival_schedule_id: 4 ,passenger_count:7, user: {first_name: '名前c', last_name: '名字c'}}";
-		String u1d = "{id: 1014, departure_schedule_id: 1, arrival_schedule_id: 5 ,passenger_count:16, user: {first_name: '名前d', last_name: '名字d'}}";
-		String u1e = "{id: 1015, departure_schedule_id: 1, arrival_schedule_id: 6 ,passenger_count:15, user: {first_name: '名前e', last_name: '名字e'}}";
-		String u1f = "{id: 1016, departure_schedule_id: 1, arrival_schedule_id: 6 ,passenger_count:17, user: {first_name: '名前f', last_name: '名字f'}}";
+		String ru1 = "{user: {id: 1, last_name: '名字a', first_name: '名前a'}}";
+		String ru2 = "{user: {id: 2, last_name: '名字b', first_name: '名前b'}}";
+		String ru3 = "{user: {id: 3, last_name: '名字c', first_name: '名前c'}}";
+		String ru4 = "{user: {id: 4, last_name: '名字d', first_name: '名前d'}}";
+		String ru5 = "{user: {id: 5, last_name: '名字e', first_name: '名前e'}}";
+		String ru6 = "{user: {id: 6, last_name: '名字f', first_name: '名前f'}}";
+
+		String rus1 = "[" + ru1 + "]";
+		String rus2 = "[" + ru2 + "]";
+		String rus3 = "[" + ru3 + "]";
+		String rus4 = "[" + ru4 + "]";
+		String rus5 = "[" + ru5 + ", " + ru6 + "]";
+
+		String r1 = "{id: 51, passenger_count: 1, departure_schedule_id: 1, arrival_schedule_id: 2, payment: 100, reservation_users: "
+				+ rus1 + ", memo: 'テストメモ1'}";
+		String r2 = "{id: 52, passenger_count: 1, departure_schedule_id: 1, arrival_schedule_id: 3, payment:   0, reservation_users: "
+				+ rus2 + "}";
+		String r3 = "{id: 53, passenger_count: 1, departure_schedule_id: 1, arrival_schedule_id: 4, payment: 500, reservation_users: "
+				+ rus3 + ", memo: 'テストメモ3'}";
+		String r4 = "{id: 54, passenger_count: 1, departure_schedule_id: 1, arrival_schedule_id: 5, payment: 500, reservation_users: "
+				+ rus4 + "}";
+		String r5 = "{id: 55, passenger_count: 1, departure_schedule_id: 1, arrival_schedule_id: 6, payment: 500, reservation_users: "
+				+ rus5 + "}";
 
 		String sOperationSchedule = new String();
 
@@ -142,8 +158,8 @@ public class MockDataSource implements DataSource {
 						+ "departure_estimate: '2012-01-01T09:15:00+09:00', "
 						+ "platform: {name: '9_瀬戸内警察署前停留所（千手・尾張方面行き）', name_ruby: 'せとうちけいさつしょまえていりゅうじょ（せんず・おわりほうめんゆき）'}, "
 						+ "reservations_as_arrival: [" + "],"
-						+ "reservations_as_departure: [" + u1a + "," + u1b
-						+ "," + u1c + "," + u1d + "," + u1e + ", " + u1f + "]}";
+						+ "reservations_as_departure: [" + r1 + "," + r2 + ","
+						+ r3 + "," + r4 + "," + r5 + ", ]}";
 				JSONObject j1 = new JSONObject(sOperationSchedule);
 				lOperationSchedule.add(OperationSchedule.parse(j1));
 			}
@@ -212,6 +228,38 @@ public class MockDataSource implements DataSource {
 
 		lOperationSchedule = new LinkedList<OperationSchedule>();
 
+		String ru1 = "{user: {id: 1, last_name: '名字a', first_name: '名前a'}}";
+		String ru2 = "{user: {id: 2, last_name: '名字b', first_name: '名前b'}}";
+		String ru3 = "{user: {id: 3, last_name: '名字c', first_name: '名前c'}}";
+		String ru4 = "{user: {id: 4, last_name: '名字d', first_name: '名前d'}}";
+		String ru5 = "{user: {id: 5, last_name: '名字e', first_name: '名前e'}}";
+		String ru6 = "{user: {id: 6, last_name: '名字f', first_name: '名前f'}}";
+		String ru7 = "{user: {id: 7, last_name: '名字g', first_name: '名前g'}}";
+		String ru8 = "{user: {id: 8, last_name: '名字h', first_name: '名前h'}}";
+		String ru9 = "{user: {id: 9, last_name: '名字i', first_name: '名前i'}}";
+		String ru10 = "{user: {id: 10, last_name: '名字j', first_name: '名前j'}}";
+		String ru11 = "{user: {id: 11, last_name: '名字k', first_name: '名前k'}}";
+		String ru12 = "{user: {id: 12, last_name: '名字l', first_name: '名前l'}}";
+		String ru13 = "{user: {id: 13, last_name: '名字m', first_name: '名前m'}}";
+		String ru14 = "{user: {id: 14, last_name: '名字n', first_name: '名前n'}}";
+		String ru15 = "{user: {id: 15, last_name: '名字o', first_name: '名前o'}}";
+		
+		String rus1 = "[" + ru1 + "]";
+		String rus2 = "[" + ru2 + "]";
+		String rus3 = "[" + ru3 + "]";
+		String rus4 = "[" + ru4 + "]";
+		String rus5 = "[" + ru5 + "]";
+		String rus6 = "[" + ru6 + "]";
+		String rus7 = "[" + ru7 + "]";
+		String rus8 = "[" + ru8 + "]";
+		String rus9 = "[" + ru9 + "]";
+		String rus10 = "[" + ru10 + "]";
+		String rus11 = "[" + ru11 + "]";
+		String rus12 = "[" + ru12 + "]";
+		String rus13 = "[" + ru13 + "]";
+		String rus14 = "[" + ru14 + "]";
+		String rus15 = "[" + ru15 + "]";
+		
 		String u1a = "";
 		String u1b = "";
 		String u1c = "";
@@ -228,33 +276,33 @@ public class MockDataSource implements DataSource {
 		String u1n = "";
 		String u1o = "";
 		if (iReservation > 0) {
-			u1a = "{passenger_count: 1 ,id: 1011,departure_schedule_id: 101,arrival_schedule_id: 106,user: {first_name: 'テストa', last_name: '名字a'},memo: 'テストメモ1'}";
+			u1a = "{passenger_count: 1 ,id: 1011,departure_schedule_id: 101,arrival_schedule_id: 106,reservation_users: " + rus1 + ",memo: 'テストメモ1'}";
 		}
 		if (iReservation > 1) {
-			u1b = ", {passenger_count: 2,id: 1012,departure_schedule_id: 101,arrival_schedule_id: 104,user: {first_name: 'テストb', last_name: '名字b'}}";
+			u1b = ", {passenger_count: 2,id: 1012,departure_schedule_id: 101,arrival_schedule_id: 104,reservation_users: " + rus2 + "}";
 		}
 		if (iReservation > 2) {
-			u1c = ", {passenger_count: 3,id: 1013,departure_schedule_id: 101,arrival_schedule_id: 103,user: {first_name: 'テストc', last_name: '名字c'}}";
+			u1c = ", {passenger_count: 3,id: 1013,departure_schedule_id: 101,arrival_schedule_id: 103,reservation_users: " + rus3 + "}";
 		}
 		if (iReservation > 3) {
-			u1d = ", {passenger_count: 4,id: 1014,departure_schedule_id: 101,arrival_schedule_id: 102,user: {first_name: 'テストd', last_name: '名字d'}}";
+			u1d = ", {passenger_count: 4,id: 1014,departure_schedule_id: 101,arrival_schedule_id: 102,reservation_users: " + rus4 + "}";
 		}
 		if (iReservation > 4) {
-			u1e = ", {passenger_count: 5,id: 1015,departure_schedule_id: 101,arrival_schedule_id: 105,user: {first_name: 'テストe', last_name: '名字e'}}";
+			u1e = ", {passenger_count: 5,id: 1015,departure_schedule_id: 101,arrival_schedule_id: 105,reservation_users: " + rus5 + "}";
 		}
 		if (iReservation > 5) {
-			u1f = ", {passenger_count: 6,id: 1016,departure_schedule_id: 101,arrival_schedule_id: 104,user: {first_name: 'テストf', last_name: '名字f'}}";
+			u1f = ", {passenger_count: 6,id: 1016,departure_schedule_id: 101,arrival_schedule_id: 104,reservation_users: " + rus6 + "}";
 		}
 
-		u1g = ", {passenger_count: 1,id: 1017,departure_schedule_id: 102,arrival_schedule_id: 103,user: {first_name: 'テストg', last_name: '名字g'}}";
-		u1h = ", {passenger_count: 1,id: 1018,departure_schedule_id: 103,arrival_schedule_id: 104,user: {first_name: 'テストh', last_name: '名字h'}}";
-		u1i = ", {passenger_count: 1,id: 1019,departure_schedule_id: 104,arrival_schedule_id: 106,user: {first_name: 'テストi', last_name: '名字i'}}";
-		u1j = ", {passenger_count: 1,id: 1020,departure_schedule_id: 102,arrival_schedule_id: 105,user: {first_name: 'テストj', last_name: '名字j'}}";
-		u1k = ", {passenger_count: 1,id: 1021,departure_schedule_id: 103,arrival_schedule_id: 104,user: {first_name: 'テストk', last_name: '名字k'}}";
-		u1l = ", {passenger_count: 1,id: 1022,departure_schedule_id: 102,arrival_schedule_id: 106,user: {first_name: 'テストl', last_name: '名字l'}}";
-		u1m = ", {passenger_count: 1,id: 1023,departure_schedule_id: 103,arrival_schedule_id: 105,user: {first_name: 'テストm', last_name: '名字m'}}";
-		u1n = ", {passenger_count: 1,id: 1024,departure_schedule_id: 104,arrival_schedule_id: 106,user: {first_name: 'テストn', last_name: '名字n'}}";
-		u1o = ", {passenger_count: 1,id: 1025,departure_schedule_id: 104,arrival_schedule_id: 105,user: {first_name: 'テストo', last_name: '名字o'}}";
+		u1g = ", {passenger_count: 1,id: 1017,departure_schedule_id: 102,arrival_schedule_id: 103,reservation_users: " + rus7 + "}";
+		u1h = ", {passenger_count: 1,id: 1018,departure_schedule_id: 103,arrival_schedule_id: 104,reservation_users: " + rus8 + "}";
+		u1i = ", {passenger_count: 1,id: 1019,departure_schedule_id: 104,arrival_schedule_id: 106,reservation_users: " + rus9 + "}";
+		u1j = ", {passenger_count: 1,id: 1020,departure_schedule_id: 102,arrival_schedule_id: 105,reservation_users: " + rus10 + "}";
+		u1k = ", {passenger_count: 1,id: 1021,departure_schedule_id: 103,arrival_schedule_id: 104,reservation_users: " + rus11 + "}";
+		u1l = ", {passenger_count: 1,id: 1022,departure_schedule_id: 102,arrival_schedule_id: 106,reservation_users: " + rus12 + "}";
+		u1m = ", {passenger_count: 1,id: 1023,departure_schedule_id: 103,arrival_schedule_id: 105,reservation_users: " + rus13 + "}";
+		u1n = ", {passenger_count: 1,id: 1024,departure_schedule_id: 104,arrival_schedule_id: 106,reservation_users: " + rus14 + "}";
+		u1o = ", {passenger_count: 1,id: 1025,departure_schedule_id: 104,arrival_schedule_id: 105,reservation_users: " + rus15 + "}";
 
 		try {
 
