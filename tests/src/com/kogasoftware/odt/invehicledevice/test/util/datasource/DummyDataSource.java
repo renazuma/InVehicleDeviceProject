@@ -108,7 +108,7 @@ public class DummyDataSource extends EmptyDataSource {
 			
 			JSONObject j1 = new JSONObject(
 					"{id:1, arrival_estimate: '2012-06-21T09:00:00+09:00', departure_estimate: '2012-06-21T09:15:00+09:00', "
-							+ "platform: {name: '85_特別養護老人ホームあじさいのおか牛窓／在宅介護支援センターＡＪＩＳＡＩ', name_ruby: 'とくべつようごろうじんほーむあじさいのおかうしまどざいたくかいごしえんせんたーあじさい'}, "
+							+ "platform: {name: '乗降場A', name_ruby: 'とくべつようごろうじんほーむあじさいのおかうしまどざいたくかいごしえんせんたーあじさい'}, "
 							+ "reservations_as_departure: ["
 							+ r1
 							+ ","
@@ -118,7 +118,7 @@ public class DummyDataSource extends EmptyDataSource {
 
 			JSONObject j2 = new JSONObject(
 					"{id:2, arrival_estimate: '2012-06-21T09:30:00+09:00', departure_estimate: '2012-06-21T09:35:00+09:00', "
-							+ "platform: {name: '420_岡山県牛窓ヨットハーバー、岡山県セーリング連盟（ＮＰＯ法人）', name_ruby: 'おかやまけんうしまどよっとはーばーおかやまけんせーりんぐれんめい'}, reservations_as_arrival: [ "
+							+ "platform: {name: '乗降場B', name_ruby: 'おかやまけんうしまどよっとはーばーおかやまけんせーりんぐれんめい'}, reservations_as_arrival: [ "
 							+ r1
 							+ " ], "
 							+ "reservations_as_departure: ["
@@ -128,7 +128,7 @@ public class DummyDataSource extends EmptyDataSource {
 
 			JSONObject j3 = new JSONObject(
 					"{id:3, arrival_estimate: '2012-06-21T10:15:00+09:00', departure_estimate: '2012-06-21T10:20:00+09:00', "
-							+ "platform: {name: '214_焼肉味楽', name_ruby: 'やきにくみらく'}, "
+							+ "platform: {name: '乗降場C', name_ruby: 'やきにくみらく'}, "
 							+ "reservations_as_arrival: ["
 							+ r2
 							+ ","
@@ -148,7 +148,7 @@ public class DummyDataSource extends EmptyDataSource {
 
 			JSONObject j5 = new JSONObject(
 					"{id:5, arrival_estimate: '2012-06-21T03:00:00+09:00', departure_estimate: '2012-06-21T02:00:00+09:00', "
-							+ "platform: {name: '220_瀬戸内市役所／牛窓支所、瀬戸内市立美術館、瀬戸内市役所／教育委員会', name_ruby: 'せとうちしやくしょうしまどししょ、せとうちしりつびじゅつかん、せとうちしやくしょきょういくいいんかい'}, "
+							+ "platform: {name: '最終乗降場', name_ruby: 'せとうちしやくしょうしまどししょ、せとうちしりつびじゅつかん、せとうちしやくしょきょういくいいんかい'}, "
 							+ "reservations_as_arrival: ["
 							+ r4
 							+ ","
