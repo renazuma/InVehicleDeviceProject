@@ -108,10 +108,6 @@ public class PlatformPhaseView extends PhaseView {
 		// reservationListView.addFooterView(reservationListFooterView);
 	}
 
-	public Optional<PassengerRecordArrayAdapter> getReservationArrayAdapter() {
-		return optionalAdapter;
-	}
-
 	@Override
 	protected void onAttachedToWindow() {
 		super.onAttachedToWindow();

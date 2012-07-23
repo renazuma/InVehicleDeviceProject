@@ -20,7 +20,6 @@ import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
-import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordArrayAdapter;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.ArrivalCheckModalView;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.DepartureCheckModalView;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.MemoModalView;
@@ -67,7 +66,7 @@ public class InVehicleDeviceView extends FrameLayout implements
 	private final TextView statusTextView;
 	private final TextView presentTimeTextView;
 	private final ViewGroup platformMemoButtonLayout;
-	
+
 	private final Handler handler = new Handler();
 
 	private final Runnable updateTime = new Runnable() {
@@ -105,8 +104,7 @@ public class InVehicleDeviceView extends FrameLayout implements
 		throw new RuntimeException("not implemented");
 	}
 
-	public InVehicleDeviceView(Context context,
-			InVehicleDeviceService service) {
+	public InVehicleDeviceView(Context context, InVehicleDeviceService service) {
 		super(context);
 		this.service = service;
 
@@ -118,7 +116,8 @@ public class InVehicleDeviceView extends FrameLayout implements
 		arrivalCheckModalView = new ArrivalCheckModalView(context, service);
 		memoModalView = new MemoModalView(context, service);
 		platformMemoModalView = new PlatformMemoModalView(context, service);
-		navigationModalView = new NavigationModalView(context, service, platformMemoModalView);
+		navigationModalView = new NavigationModalView(context, service,
+				platformMemoModalView);
 		scheduleModalView = new ScheduleModalView(context, service);
 		scheduleChangedModalView = new ScheduleChangedModalView(context,
 				service, scheduleModalView);
@@ -144,8 +143,8 @@ public class InVehicleDeviceView extends FrameLayout implements
 		phaseViewLayout.addView(drivePhaseView);
 		phaseViewLayout.addView(finishPhaseView);
 
-		platformMemoButtonLayout = (ViewGroup)findViewById(R.id.platform_memo_button_layout);
-		
+		platformMemoButtonLayout = (ViewGroup) findViewById(R.id.platform_memo_button_layout);
+
 		presentTimeTextView = (TextView) findViewById(R.id.present_time_text_view);
 		statusTextView = (TextView) findViewById(R.id.phase_text_view);
 		changePhaseButton = (Button) findViewById(R.id.change_phase_button);
@@ -214,7 +213,7 @@ public class InVehicleDeviceView extends FrameLayout implements
 		service.removeOnAlertVehicleNotificationReceiveListener(this);
 		service.removeOnChangeSignalStrengthListener(this);
 		service.removeOnEnterPhaseListener(this);
-		
+
 		handler.removeCallbacks(updateTime);
 		handler.removeCallbacks(alertVehicleNotification);
 	}
@@ -287,10 +286,7 @@ public class InVehicleDeviceView extends FrameLayout implements
 		changePhaseButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				for (PassengerRecordArrayAdapter adapter : platformPhaseView
-						.getReservationArrayAdapter().asSet()) {
-					departureCheckModalView.show(adapter);
-				}
+				departureCheckModalView.show();
 			}
 		});
 		changePhaseButton.setEnabled(true);

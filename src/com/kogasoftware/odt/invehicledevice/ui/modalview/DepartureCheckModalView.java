@@ -16,7 +16,6 @@ import android.widget.ListView;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
-import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordArrayAdapter;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.User;
 
@@ -39,22 +38,22 @@ public class DepartureCheckModalView extends ModalView {
 		setCloseOnClick(R.id.departure_check_close_button);
 	}
 
-	public void show(PassengerRecordArrayAdapter adapter) {
+	public void show() {
 		Button startButton = (Button) findViewById(R.id.departure_button);
 		Button closeButton = (Button) findViewById(R.id.departure_check_close_button);
 		ListView errorReservationListView = ((FlickUnneededListView) findViewById(R.id.error_reservation_list_view))
 				.getListView();
 		List<String> messages = new LinkedList<String>();
 
-		for (PassengerRecord passengerRecord : adapter.getNoGettingOnPassengerRecords()) {
+		for (PassengerRecord passengerRecord : service.getNoGettingOnPassengerRecords()) {
 			messages.add(" ※ " + getUserName(passengerRecord) + "様が未乗車です");
 		}
 
-		for (PassengerRecord passengerRecord : adapter.getNoGettingOffPassengerRecords()) {
+		for (PassengerRecord passengerRecord : service.getNoGettingOffPassengerRecords()) {
 			messages.add(" ※ " + getUserName(passengerRecord) + "様が未降車です");
 		}
 
-		for (PassengerRecord passengerRecord : adapter.getNoPaymentPassengerRecords()) {
+		for (PassengerRecord passengerRecord : service.getNoPaymentPassengerRecords()) {
 			messages.add(" ※ " + getUserName(passengerRecord) + "様が料金未払いです");
 		}
 

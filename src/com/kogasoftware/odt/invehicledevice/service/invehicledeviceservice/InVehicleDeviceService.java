@@ -188,12 +188,13 @@ public class InVehicleDeviceService extends Service {
 	}
 
 	protected final OperationScheduleLogic operationScheduleLogic;
+	protected final PassengerRecordLogic passengerRecordLogic;
 	protected final VehicleNotificationLogic vehicleNotificationLogic;
 	protected final ServiceUnitStatusLogLogic serviceUnitStatusLogLogic;
 	protected final IBinder binder = new LocalBinder();
 	protected final Handler handler = new Handler(Looper.getMainLooper());
 	protected final VoiceServiceConnector voiceServiceConnector;
-	
+
 	protected final Set<OnInitializeListener> onInitializeListeners = newListenerSet();
 	protected final Set<OnEnterPhaseListener> onEnterPhaseListeners = newListenerSet();
 	protected final Set<OnAlertUpdatedOperationScheduleListener> onAlertUpdatedOperationScheduleListeners = newListenerSet();
@@ -212,7 +213,7 @@ public class InVehicleDeviceService extends Service {
 	protected final Set<OnStartReceiveUpdatedOperationScheduleListener> onStartReceiveUpdatedOperationScheduleListeners = newListenerSet();
 	protected final Set<OnPauseActivityListener> onPauseActivityListeners = newListenerSet();
 	protected final Set<OnResumeActivityListener> onResumeActivityListeners = newListenerSet();
-	
+
 	protected volatile Thread backgroundThread = new EmptyThread();
 	protected volatile DataSource remoteDataSource = new EmptyDataSource();
 	protected volatile LocalDataSource localDataSource = new LocalDataSource();
@@ -221,8 +222,10 @@ public class InVehicleDeviceService extends Service {
 		super();
 
 		operationScheduleLogic = new OperationScheduleLogic(this);
+		passengerRecordLogic = new PassengerRecordLogic(this);
 		vehicleNotificationLogic = new VehicleNotificationLogic(this);
 		serviceUnitStatusLogLogic = new ServiceUnitStatusLogLogic(this);
+
 		voiceServiceConnector = new VoiceServiceConnector(this);
 	}
 
@@ -602,12 +605,14 @@ public class InVehicleDeviceService extends Service {
 	}
 
 	public List<PassengerRecord> getPassengerRecords() {
-		return localDataSource.withReadLock(new Reader<List<PassengerRecord>>() {
-			@Override
-			public List<PassengerRecord> read(LocalData status) {
-				return new LinkedList<PassengerRecord>(status.passengerRecords);
-			}
-		});
+		return localDataSource
+				.withReadLock(new Reader<List<PassengerRecord>>() {
+					@Override
+					public List<PassengerRecord> read(LocalData status) {
+						return new LinkedList<PassengerRecord>(
+								status.passengerRecords);
+					}
+				});
 	}
 
 	public ServiceUnitStatusLog getServiceUnitStatusLog() {
@@ -702,7 +707,7 @@ public class InVehicleDeviceService extends Service {
 		startForeground(FOREGROUND_NOTIFICATION_ID, notification);
 		backgroundThread = new BackgroundTaskThread(this);
 		backgroundThread.start();
-		
+
 		addOnPauseActivityListener(voiceServiceConnector);
 		addOnResumeActivityListener(voiceServiceConnector);
 	}
@@ -735,7 +740,7 @@ public class InVehicleDeviceService extends Service {
 		onResumeActivityListeners.clear();
 		onStartNewOperationListeners.clear();
 		onStartReceiveUpdatedOperationScheduleListeners.clear();
-		
+
 		Closeables.closeQuietly(remoteDataSource);
 		Closeables.closeQuietly(localDataSource);
 	}
@@ -915,5 +920,50 @@ public class InVehicleDeviceService extends Service {
 				});
 		operationScheduleInitializedSign.acquire();
 		operationScheduleInitializedSign.release();
+	}
+
+	public Boolean isSelected(PassengerRecord passengerRecord) {
+		return passengerRecordLogic.isSelected(passengerRecord);
+	}
+
+	public void unselect(PassengerRecord passengerRecord) {
+		passengerRecordLogic.unselect(passengerRecord);
+	}
+
+	public void select(PassengerRecord passengerRecord) {
+		passengerRecordLogic.select(passengerRecord);
+	}
+
+	public Boolean isGetOffScheduled(PassengerRecord passengerRecord) {
+		return passengerRecordLogic.isGetOffScheduled(passengerRecord);
+	}
+
+	public Boolean canGetOn(PassengerRecord passengerRecord) {
+		return passengerRecordLogic.canGetOn(passengerRecord);
+	}
+
+	public Boolean isGetOnScheduled(PassengerRecord passengerRecord) {
+		return passengerRecordLogic.isGetOnScheduled(passengerRecord);
+	}
+
+	public Boolean canGetOff(PassengerRecord passengerRecord) {
+		return passengerRecordLogic.canGetOff(passengerRecord);
+	}
+
+	public List<PassengerRecord> getGetOffScheduledAndUnhandledPassengerRecords() {
+		return passengerRecordLogic
+				.getGetOffScheduledAndUnhandledPassengerRecords();
+	}
+
+	public List<PassengerRecord> getNoGettingOnPassengerRecords() {
+		return passengerRecordLogic.getNoGettingOnPassengerRecords();
+	}
+
+	public List<PassengerRecord> getNoGettingOffPassengerRecords() {
+		return passengerRecordLogic.getNoGettingOffPassengerRecords();
+	}
+
+	public List<PassengerRecord> getNoPaymentPassengerRecords() {
+		return passengerRecordLogic.getNoPaymentPassengerRecords();
 	}
 }
