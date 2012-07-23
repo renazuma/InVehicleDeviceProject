@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import android.test.ActivityInstrumentationTestCase2;
+import android.util.Log;
 
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.webapi.WebAPI;
@@ -360,7 +361,7 @@ public class WebAPITestCase extends
 			throws Exception {
 		latch = new CountDownLatch(1);
 		schedules = null;
-		
+
 		Date now = new Date();
 
 		Calendar cal = Calendar.getInstance();
@@ -1039,7 +1040,7 @@ public class WebAPITestCase extends
 
 	private void createTestOperationSchedules() throws Exception {
 		Date now = new Date();
-		
+
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.MINUTE, 22);
 		Date dtDeparture = cal.getTime();
@@ -1395,5 +1396,51 @@ public class WebAPITestCase extends
 		});
 		assertTrue(latch.await(20, TimeUnit.SECONDS));
 		assertFalse(unexpected.get());
+	}
+
+	public void testNewRequestIsPrior() throws Exception {
+		api = new OfflineTestWebAPI(SERVER_HOST, master.getInVehicleDevice()
+				.getAuthenticationToken().get());
+		UnitAssignment ua = record.createUnitAssignment("1号車");
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.MONTH, -1);
+		record.createServiceUnit(master.getDriver(), master.getVehicle(),
+				master.getInVehicleDevice(), ua, cal.getTime());
+
+		offline = true;
+		final Integer MAX = 100;
+		final AtomicInteger numSucceed = new AtomicInteger(0);
+		for (Integer i = 0; i < MAX; ++i) {
+			if (i % 2 == 0) {
+				api.sendServiceUnitStatusLog(new ServiceUnitStatusLog(),
+						new EmptyWebAPICallback<ServiceUnitStatusLog>() {
+							@Override
+							public void onSucceed(int reqkey, int statusCode,
+									ServiceUnitStatusLog result) {
+								numSucceed.incrementAndGet();
+							}
+						});
+			} else {
+				api.getVehicleNotifications(new EmptyWebAPICallback<List<VehicleNotification>>() {
+					@Override
+					public void onSucceed(int reqkey, int statusCode,
+							List<VehicleNotification> result) {
+						numSucceed.incrementAndGet();
+					}
+				});
+			}
+		}
+		offline = false;
+		latch = new CountDownLatch(1);
+		api.getVehicleNotifications(new EmptyWebAPICallback<List<VehicleNotification>>() {
+			@Override
+			public void onSucceed(int reqkey, int statusCode,
+					List<VehicleNotification> result) {
+				latch.countDown();
+			}
+		});
+		assertTrue(latch.await(200, TimeUnit.SECONDS));
+		Log.i(TAG, "testNewRequestIsPrior() numSucceed=" + numSucceed.get());
+		assertTrue(numSucceed.get() < MAX / 10);
 	}
 }
