@@ -28,7 +28,7 @@ class Order {
 	private int quantity;
 }
 
-public class MockitoUsageTest extends TestCase {
+public class MockitoUsageTestCase extends TestCase {
 
 	public static abstract class Warehouse {
 		public abstract boolean hasInventory(String product, int quantity);
