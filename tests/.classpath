@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="gen"/>
-	<classpathentry excluding="com/kogasoftware/odt/invehicledevice/test/integration/|com/kogasoftware/odt/invehicledevice/test/unit/backgroundtask/|com/kogasoftware/odt/invehicledevice/test/unit/logic/|com/kogasoftware/odt/invehicledevice/test/unit/logic/datasource/|com/kogasoftware/odt/invehicledevice/test/unit/logic/empty/|com/kogasoftware/odt/invehicledevice/test/unit/logic/event/|com/kogasoftware/odt/invehicledevice/test/unit/ui/|com/kogasoftware/odt/invehicledevice/test/unit/ui/activity/|com/kogasoftware/odt/invehicledevice/test/unit/ui/arrayadapter/|com/kogasoftware/odt/invehicledevice/test/unit/ui/modalview/|com/kogasoftware/odt/invehicledevice/test/unit/ui/modalview/navigation/|com/kogasoftware/odt/invehicledevice/test/unit/ui/phaseview/" kind="src" path="src"/>
+	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/InVehicleDevice"/>
