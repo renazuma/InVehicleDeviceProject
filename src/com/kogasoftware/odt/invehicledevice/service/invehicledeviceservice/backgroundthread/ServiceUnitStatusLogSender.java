@@ -2,6 +2,7 @@ package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.back
 
 import com.kogasoftware.odt.invehicledevice.empty.EmptyWebAPICallback;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 
 public class ServiceUnitStatusLogSender implements Runnable {
@@ -16,6 +17,9 @@ public class ServiceUnitStatusLogSender implements Runnable {
 	 */
 	@Override
 	public void run() {
+		if (service.getPhase() == Phase.FINISH) {
+			return;
+		}
 		final ServiceUnitStatusLog serviceUnitStatusLog = service
 				.getServiceUnitStatusLog();
 		service.getRemoteDataSource().sendServiceUnitStatusLog(serviceUnitStatusLog,
