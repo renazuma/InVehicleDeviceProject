@@ -86,8 +86,6 @@ public class InVehicleDeviceActivity extends Activity implements
 		handler.post(waitForInitialize);
 	}
 
-	
-	
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
@@ -141,14 +139,16 @@ public class InVehicleDeviceActivity extends Activity implements
 		view.setBackgroundColor(Color.WHITE);
 		view.setVisibility(View.INVISIBLE);
 		setContentView(view);
-		
+
 		// データが割り当てられる前の状態の部品を表示させないため、表示を遅延させる。
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
 				Animation animation = AnimationUtils.loadAnimation(
-						InVehicleDeviceActivity.this, R.anim.show_in_vehicle_device_view);
+						InVehicleDeviceActivity.this,
+						R.anim.show_in_vehicle_device_view);
 				view.startAnimation(animation);
+				view.setVisibility(View.VISIBLE);
 			}
 		});
 		uiInitialized = true;
@@ -163,7 +163,7 @@ public class InVehicleDeviceActivity extends Activity implements
 		super.onStart();
 		Log.i(TAG, "onStart()");
 	}
-	
+
 	@Override
 	public void onStop() {
 		super.onStop();
@@ -182,7 +182,7 @@ public class InVehicleDeviceActivity extends Activity implements
 			optionalService.get().setActivityResumed();
 		}
 	}
-	
+
 	@Override
 	public void onPause() {
 		super.onPause();
