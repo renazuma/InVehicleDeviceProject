@@ -1,6 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.test.util;
 
-import com.kogasoftware.odt.invehicledevice.test.util.MockitoUsageTest.Warehouse;
+import com.kogasoftware.odt.invehicledevice.test.util.MockitoUsageTestCase.Warehouse;
 
 import junit.framework.TestCase;
 import static org.mockito.Mockito.*;
