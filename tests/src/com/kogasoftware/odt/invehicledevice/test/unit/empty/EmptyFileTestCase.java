@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.logic.empty;
+package com.kogasoftware.odt.invehicledevice.test.unit.empty;
 
 import java.io.File;
 

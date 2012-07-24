@@ -1,8 +1,8 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.logic.datasource;
+package com.kogasoftware.odt.invehicledevice.test.unit.datasource;
 
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 
-public class DataSourceTestCase extends EmptyActivityInstrumentationTestCase2 {
+public class WebAPIDataSourceTestCase extends EmptyActivityInstrumentationTestCase2 {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -11,5 +11,8 @@ public class DataSourceTestCase extends EmptyActivityInstrumentationTestCase2 {
 	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
+	}
+
+	public void testWebAPIDataSource_1() throws Exception {
 	}
 }

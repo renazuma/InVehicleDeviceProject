@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.logic.datasource;
+package com.kogasoftware.odt.invehicledevice.test.unit.datasource;
 
 import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyFile;

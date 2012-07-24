@@ -26,10 +26,10 @@ import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.User;
 import static org.mockito.Mockito.*;
 
-public class ReservationArrayAdapterTestCase extends
+public class PassengerRecordArrayAdapterTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 
-	private static final String TAG = ReservationArrayAdapterTestCase.class.getSimpleName();
+	private static final String TAG = PassengerRecordArrayAdapterTestCase.class.getSimpleName();
 	InVehicleDeviceService s;
 	MemoModalView mmv;
 	PassengerRecordArrayAdapter raa;

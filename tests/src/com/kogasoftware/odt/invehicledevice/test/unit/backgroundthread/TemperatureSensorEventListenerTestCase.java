@@ -1,13 +1,12 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.backgroundtask;
+package com.kogasoftware.odt.invehicledevice.test.unit.backgroundthread;
 
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundthread.OrientationSensorEventListener;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.test.util.datasource.DummyDataSource;
 
-public class OrientationSensorEventListenerTestCase extends
+public class TemperatureSensorEventListenerTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
-
 	DummyDataSource dds;
 	OrientationSensorEventListener osel;
 
@@ -25,6 +24,7 @@ public class OrientationSensorEventListenerTestCase extends
 	}
 
 	public void xtestOnSensorChanged() throws Exception {
+		// 引数のクラスがnewできないのでstub
 		fail("stub!");
 	}
 }

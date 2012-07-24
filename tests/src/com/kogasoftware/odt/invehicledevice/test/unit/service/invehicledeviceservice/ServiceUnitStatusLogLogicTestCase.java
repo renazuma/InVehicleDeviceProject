@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.logic;
+package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledeviceservice;
 
 import android.location.GpsStatus;
 import android.location.Location;
