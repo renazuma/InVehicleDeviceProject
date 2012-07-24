@@ -1223,7 +1223,7 @@ public class WebAPITestCase extends
 		log.setOrientation(10);
 		log.setTemperature(20);
 
-		api.sendServiceUnitStatusLog(log, null);
+		api.saveOnClose(api.sendServiceUnitStatusLog(log, null));
 		api.close();
 		Thread.sleep(10 * 1000);
 
