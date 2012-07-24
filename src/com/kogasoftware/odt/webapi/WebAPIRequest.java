@@ -24,6 +24,7 @@ public class WebAPIRequest<T> implements Serializable {
 	protected final Date createdDate = new Date();
 	protected final boolean retryable;
 	protected boolean retry = false;
+	protected boolean saveOnClose = false;
 
 	protected transient WebAPICallback<T> callback;
 	protected transient ResponseConverter<T> responseConverter;
@@ -116,5 +117,13 @@ public class WebAPIRequest<T> implements Serializable {
 			Log.w(TAG, e);
 		}
 		onException(new WebAPIException("Connection aborted by application"));
+	}
+	
+	public void setSaveOnClose(boolean saveOnClose) {
+		this.saveOnClose = saveOnClose;
+	}
+	
+	public boolean isSaveOnClose() {
+		return saveOnClose;
 	}
 }

@@ -854,4 +854,14 @@ public class WebAPI implements Closeable {
 		return "ReservationGetOnOrOffGroup/operationScheduleId="
 				+ operationScheduleId + "/reservationId=" + reservationId;
 	}
+
+	/**
+	 * WebAPIのクローズ時にリクエストをファイルに保存し、次回のWebAPIのコンストラクタで復活させ、
+	 * 成功するか期限が過ぎるまで通信を行うようにする。 ただし、復活後のリクエストは通信時にコールバックを行わない。
+	 * 
+	 * @param reqkey
+	 */
+	public void saveOnClose(int reqkey) {
+		requests.setSaveOnClose(reqkey, true);
+	}
 }
