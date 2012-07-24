@@ -137,17 +137,17 @@ public class BackgroundTask {
 
 		IntentFilter exitIntentFilter = new IntentFilter();
 		exitIntentFilter.addAction(BackgroundTask.ACTION_EXIT);
-		service.getApplicationContext().registerReceiver(exitBroadcastReceiver,
+		applicationContext.registerReceiver(exitBroadcastReceiver,
 				exitIntentFilter);
 
 		IntentFilter batteryIntentFilter = new IntentFilter();
 		batteryIntentFilter.addAction(Intent.ACTION_BATTERY_CHANGED);
-		service.getApplicationContext().registerReceiver(
+		applicationContext.registerReceiver(
 				batteryBroadcastReceiver, batteryIntentFilter);
 
 		StringBuilder trace = new StringBuilder();
 		{
-			DropBoxManager dropBoxManager = (DropBoxManager) service
+			DropBoxManager dropBoxManager = (DropBoxManager) applicationContext
 					.getSystemService(Context.DROPBOX_SERVICE);
 			Calendar calendar = Calendar.getInstance();
 			calendar.add(Calendar.MINUTE, -10);
@@ -264,13 +264,13 @@ public class BackgroundTask {
 		sensorManager.unregisterListener(orientationSensorEventListener);
 		// sensorManager.unregisterListener(accMagSensorEventListener);
 		try {
-			service.getApplicationContext().unregisterReceiver(
+			applicationContext.unregisterReceiver(
 					exitBroadcastReceiver);
 		} catch (IllegalArgumentException e) {
 			Log.i(TAG, "unregisterReceiver(exitBroadcastReceiver) failed", e);
 		}
 		try {
-			service.getApplicationContext().unregisterReceiver(
+			applicationContext.unregisterReceiver(
 					batteryBroadcastReceiver);
 		} catch (IllegalArgumentException e) {
 			Log.i(TAG, "unregisterReceiver(batteryBroadcastReceiver) failed", e);
