@@ -17,8 +17,10 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Local
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordArrayAdapter;
+import com.kogasoftware.odt.invehicledevice.ui.modalview.MemoModalView;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
+import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.User;
@@ -29,20 +31,21 @@ public class ReservationArrayAdapterTestCase extends
 
 	private static final String TAG = ReservationArrayAdapterTestCase.class.getSimpleName();
 	InVehicleDeviceService s;
+	MemoModalView mmv;
 	PassengerRecordArrayAdapter raa;
 	LocalDataSource sa;
 	
-	BlockingQueue<Reservation> getOnReservations = new LinkedBlockingQueue<Reservation>();
-	BlockingQueue<Reservation> getOffReservations = new LinkedBlockingQueue<Reservation>();
-	BlockingQueue<Reservation> cancelGetOnReservations = new LinkedBlockingQueue<Reservation>();
-	BlockingQueue<Reservation> cancelGetOffReservations = new LinkedBlockingQueue<Reservation>();
+	BlockingQueue<PassengerRecord> getOnPassengerRecords = new LinkedBlockingQueue<PassengerRecord>();
+	BlockingQueue<PassengerRecord> getOffPassengerRecords = new LinkedBlockingQueue<PassengerRecord>();
+	BlockingQueue<PassengerRecord> cancelGetOnPassengerRecords = new LinkedBlockingQueue<PassengerRecord>();
+	BlockingQueue<PassengerRecord> cancelGetOffPassengerRecords = new LinkedBlockingQueue<PassengerRecord>();
 	
 	DataSource dataSource = new EmptyDataSource() {
 		@Override
 		public int getOffPassenger(OperationSchedule operationSchedule,
 				Reservation reservation, PassengerRecord passengerRecord,
 				WebAPICallback<PassengerRecord> callback) {
-			getOffReservations.add(reservation);
+			getOffPassengerRecords.add(passengerRecord);
 			return 0;
 		}
 
@@ -50,23 +53,21 @@ public class ReservationArrayAdapterTestCase extends
 		public int getOnPassenger(OperationSchedule operationSchedule,
 				Reservation reservation, PassengerRecord passengerRecord,
 				WebAPICallback<PassengerRecord> callback) {
-			getOnReservations.add(reservation);
+			getOnPassengerRecords.add(passengerRecord);
 			return 0;
 		}
 
-		@Override
 		public int cancelGetOffPassenger(OperationSchedule operationSchedule,
-				Reservation reservation,
+				PassengerRecord passengerRecord,
 				WebAPICallback<PassengerRecord> callback) {
-			cancelGetOffReservations.add(reservation);
+			cancelGetOffPassengerRecords.add(passengerRecord);
 			return 0;
 		}
 
-		@Override
 		public int cancelGetOnPassenger(OperationSchedule operationSchedule,
-				Reservation reservation,
+				PassengerRecord passengerRecord,
 				WebAPICallback<PassengerRecord> callback) {
-			cancelGetOnReservations.add(reservation);
+			cancelGetOnPassengerRecords.add(passengerRecord);
 			return 0;
 		}
 	};
@@ -76,11 +77,12 @@ public class ReservationArrayAdapterTestCase extends
 		super.setUp();
 		TestUtil.setDataSource(dataSource);
 		s = mock(InVehicleDeviceService.class);
+		mmv = mock(MemoModalView.class);
 		sa = new LocalDataSource(getActivity());
-		getOnReservations.clear();
-		getOffReservations.clear();
-		cancelGetOnReservations.clear();
-		cancelGetOffReservations.clear();
+		getOnPassengerRecords.clear();
+		getOffPassengerRecords.clear();
+		cancelGetOnPassengerRecords.clear();
+		cancelGetOffPassengerRecords.clear();
 	}
 
 	@Override
@@ -94,14 +96,14 @@ public class ReservationArrayAdapterTestCase extends
 		Log.i(TAG, "sync complete");
 	}
 
-	public void testReservationGetOn() throws Exception {
+	public void testPassengerRecordGetOn() throws Exception {
 		final String userName0 = "上野駅前";
 		final String userName1 = "御徒町駅前";
 		final Integer T = 300;
 		sa.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData status) {
-				status.reservations.clear();
+				status.passengerRecords.clear();
 				OperationSchedule os0 = new OperationSchedule();
 				os0.setId(200);
 				OperationSchedule os1 = new OperationSchedule();
@@ -118,11 +120,11 @@ public class ReservationArrayAdapterTestCase extends
 					Reservation r = new Reservation();
 					User u = new User();
 					u.setLastName(userName0);
-					r.setUser(u);
-					r.setPassengerRecord(pr);
 					r.setDepartureScheduleId(os1.getId());
 					r.setArrivalScheduleId(os2.getId());
-					status.reservations.add(r);
+					pr.setUser(u);
+					pr.setReservation(r);
+					status.passengerRecords.add(pr);
 				}
 
 				{
@@ -132,17 +134,16 @@ public class ReservationArrayAdapterTestCase extends
 					Reservation r = new Reservation();
 					User u = new User();
 					u.setLastName(userName1);
-					r.setUser(u);
-					r.setPassengerRecord(pr);
+					pr.setUser(u);
+					pr.setReservation(r);
 					r.setDepartureScheduleId(os0.getId());
 					r.setArrivalScheduleId(os1.getId());
-					status.reservations.add(r);
+					status.passengerRecords.add(pr);
 				}
 			}
 		});
 
-		raa = new PassengerRecordArrayAdapter(getInstrumentation()
-				.getTargetContext(), cl);
+		raa = new PassengerRecordArrayAdapter(s, mmv);
 		sync();
 		assertEquals(raa.getCount(), 2);
 		runOnUiThreadSync(new Runnable() {
@@ -155,40 +156,40 @@ public class ReservationArrayAdapterTestCase extends
 		});
 		assertTrue(solo.searchText(userName0, true));
 		
-		Reservation r;
+		PassengerRecord r;
 		solo.clickOnText(userName0);
-		r = getOnReservations.poll(T, TimeUnit.SECONDS);
+		r = getOnPassengerRecords.poll(T, TimeUnit.SECONDS);
 		assertEquals(userName0, r.getUser().get().getLastName());
 		
 		solo.clickOnText(userName0);
-		r = cancelGetOnReservations.poll(T, TimeUnit.SECONDS);
+		r = cancelGetOnPassengerRecords.poll(T, TimeUnit.SECONDS);
 		assertEquals(userName0, r.getUser().get().getLastName());
 		
 		assertTrue(solo.searchText(userName1, true));
 		
 		solo.clickOnText(userName1);
-		r = getOffReservations.poll(T, TimeUnit.SECONDS);
+		r = getOffPassengerRecords.poll(T, TimeUnit.SECONDS);
 		assertEquals(userName1, r.getUser().get().getLastName());
 		
 		solo.clickOnText(userName1);
-		r = cancelGetOffReservations.poll(T, TimeUnit.SECONDS);
+		r = cancelGetOffPassengerRecords.poll(T, TimeUnit.SECONDS);
 		assertEquals(userName1, r.getUser().get().getLastName());
 		
 		
 		solo.clickOnText(userName0);
-		r = getOnReservations.poll(T, TimeUnit.SECONDS);
+		r = getOnPassengerRecords.poll(T, TimeUnit.SECONDS);
 		assertEquals(userName0, r.getUser().get().getLastName());
 		
 		solo.clickOnText(userName1);
-		r = getOffReservations.poll(T, TimeUnit.SECONDS);
+		r = getOffPassengerRecords.poll(T, TimeUnit.SECONDS);
 		assertEquals(userName1, r.getUser().get().getLastName());
 		
 		solo.clickOnText(userName0);
-		r = cancelGetOnReservations.poll(T, TimeUnit.SECONDS);
+		r = cancelGetOnPassengerRecords.poll(T, TimeUnit.SECONDS);
 		assertEquals(userName0, r.getUser().get().getLastName());
 		
 		solo.clickOnText(userName1);
-		r = cancelGetOffReservations.poll(T, TimeUnit.SECONDS);
+		r = cancelGetOffPassengerRecords.poll(T, TimeUnit.SECONDS);
 		assertEquals(userName1, r.getUser().get().getLastName());
 	}
 }

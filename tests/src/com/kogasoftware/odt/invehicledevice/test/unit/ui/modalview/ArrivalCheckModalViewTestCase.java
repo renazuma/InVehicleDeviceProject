@@ -2,41 +2,38 @@ package com.kogasoftware.odt.invehicledevice.test.unit.ui.modalview;
 
 import java.util.concurrent.CountDownLatch;
 
+import android.app.Activity;
 import android.view.View;
 
-import com.google.common.base.Function;
-import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.logic.Status;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
-import com.kogasoftware.odt.invehicledevice.logic.event.CommonLogicLoadCompleteEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.EnterPlatformPhaseEvent;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.ArrivalCheckModalView;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.DepartureCheckModalView;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
+import static org.mockito.Mockito.*;
 
 public class ArrivalCheckModalViewTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
-	CommonLogic cl;
-	StatusAccess sa;
+	InVehicleDeviceService s;
+	LocalDataSource sa;
 	ArrivalCheckModalView mv;
+	Activity a;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		sa = new StatusAccess(getActivity());
-		cl = new CommonLogic(getActivity(), getActivityHandler(), sa);
-		mv = (ArrivalCheckModalView) inflateAndAddTestLayout(com.kogasoftware.odt.invehicledevice.test.R.layout.test_arrival_check_modal_view);
-		cl.registerEventListener(mv);
-		mv.setCommonLogic(new CommonLogicLoadCompleteEvent(cl));
+		a = getActivity();
+		sa = new LocalDataSource(getActivity());
+		s = mock(InVehicleDeviceService.class);
+		mv = new ArrivalCheckModalView(a, s);
 		
-		sa.write(new Writer() {
+		sa.withWriteLock(new Writer() {
 			@Override
-			public void write(Status status) {
+			public void write(LocalData status) {
 				OperationSchedule os = new OperationSchedule();
 				Platform p = new Platform();
 				p.setName("乗降場X");
@@ -50,9 +47,6 @@ public class ArrivalCheckModalViewTestCase extends
 	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
-		if (cl != null) {
-			cl.dispose();
-		}
 	}
 
 	public void xtestEventBusに自動で登録される() throws Exception {
@@ -62,13 +56,12 @@ public class ArrivalCheckModalViewTestCase extends
 				getActivity().setContentView(R.layout.in_vehicle_device);
 			}
 		});
-		CommonLogic cl2 = newCommonLogic();
-		try {
-			assertEquals(cl2.countRegisteredClass(DepartureCheckModalView.class)
-					.intValue(), 1);
-		} finally {
-			cl2.dispose();
-		}
+//		try {
+//			assertEquals(cl2.countRegisteredClass(DepartureCheckModalView.class)
+//					.intValue(), 1);
+//		} finally {
+//			cl2.dispose();
+//		}
 	}
 
 	/**
@@ -78,7 +71,6 @@ public class ArrivalCheckModalViewTestCase extends
 		assertFalse(mv.isShown());
 		assertNotSame(mv.getVisibility(), View.VISIBLE);
 
-		cl.postEvent(new ArrivalCheckModalView.ShowEvent());
 		getInstrumentation().waitForIdleSync();
 
 		assertTrue(mv.isShown());
@@ -98,9 +90,9 @@ public class ArrivalCheckModalViewTestCase extends
 	}
 	
 	protected void callTest到着予定の乗降場名が表示される(final String name) throws InterruptedException {
-		sa.write(new Writer() {
+		sa.withWriteLock(new Writer() {
 			@Override
-			public void write(Status status) {
+			public void write(LocalData status) {
 				OperationSchedule os = new OperationSchedule();
 				Platform p = new Platform();
 				p.setName(name);
@@ -116,14 +108,6 @@ public class ArrivalCheckModalViewTestCase extends
 	public void test到着するボタンを押すとEnterPlatformPhaseEvent通知() throws Exception {
 		testShowEvent();
 		final CountDownLatch cdl = new CountDownLatch(1);
-		cl.registerEventListener(new Function<EnterPlatformPhaseEvent, Void>() {
-			@Subscribe
-			@Override
-			public Void apply(EnterPlatformPhaseEvent e) {
-				cdl.countDown();
-				return null;
-			}
-		});
 		solo.clickOnView(solo.getView(R.id.arrival_button));
 		cdl.await();
 	}

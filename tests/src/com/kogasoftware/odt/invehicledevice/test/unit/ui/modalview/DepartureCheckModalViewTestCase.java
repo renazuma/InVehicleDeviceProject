@@ -2,41 +2,40 @@ package com.kogasoftware.odt.invehicledevice.test.unit.ui.modalview;
 
 import java.util.concurrent.CountDownLatch;
 
+import android.app.Activity;
 import android.view.View;
 
 import com.google.common.base.Function;
 import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.logic.CommonLogic;
-import com.kogasoftware.odt.invehicledevice.logic.Status;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess;
-import com.kogasoftware.odt.invehicledevice.logic.StatusAccess.Writer;
-import com.kogasoftware.odt.invehicledevice.logic.event.CommonLogicLoadCompleteEvent;
-import com.kogasoftware.odt.invehicledevice.logic.event.EnterDrivePhaseEvent;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
-import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.ReservationArrayAdapter;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.DepartureCheckModalView;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
+import static org.mockito.Mockito.*;
 
 public class DepartureCheckModalViewTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
-	CommonLogic cl;
-	StatusAccess sa;
+	InVehicleDeviceService s;
+	LocalDataSource sa;
 	DepartureCheckModalView mv;
+	Activity a;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		sa = new StatusAccess(getActivity());
-		cl = new CommonLogic(getActivity(), getActivityHandler(), sa);
-		mv = (DepartureCheckModalView) inflateAndAddTestLayout(com.kogasoftware.odt.invehicledevice.test.R.layout.test_departure_check_modal_view);
-		cl.registerEventListener(mv);
-		mv.setCommonLogic(new CommonLogicLoadCompleteEvent(cl));
+		a = getActivity();
+		s = mock(InVehicleDeviceService.class);
+		sa = new LocalDataSource(getActivity());
+		mv = new DepartureCheckModalView(a, s);
 
-		sa.write(new Writer() { // TODO もっとスマートにする
+		sa.withWriteLock(new Writer() { // TODO もっとスマートにする
 			@Override
-			public void write(Status status) {
+			public void write(LocalData status) {
 				OperationSchedule os1 = new OperationSchedule();
 				OperationSchedule os2 = new OperationSchedule();
 				os1.setPlatform(new Platform());
@@ -51,9 +50,6 @@ public class DepartureCheckModalViewTestCase extends
 	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
-		if (cl != null) {
-			cl.dispose();
-		}
 	}
 
 	public void xtestEventBusに自動で登録される() throws Exception {
@@ -63,13 +59,12 @@ public class DepartureCheckModalViewTestCase extends
 				getActivity().setContentView(R.layout.in_vehicle_device);
 			}
 		});
-		CommonLogic cl2 = newCommonLogic();
-		try {
-			assertEquals(cl2.countRegisteredClass(DepartureCheckModalView.class)
-					.intValue(), 1);
-		} finally {
-			cl2.dispose();
-		}
+//		try {
+//			assertEquals(cl2.countRegisteredClass(DepartureCheckModalView.class)
+//					.intValue(), 1);
+//		} finally {
+//			cl2.dispose();
+//		}
 	}
 
 	/**
@@ -79,9 +74,9 @@ public class DepartureCheckModalViewTestCase extends
 		assertFalse(mv.isShown());
 		assertNotSame(mv.getVisibility(), View.VISIBLE);
 
-		cl.postEvent(new DepartureCheckModalView.ShowEvent(
-				new ReservationArrayAdapter(getInstrumentation()
-						.getContext(), cl)));
+//		cl.postEvent(new DepartureCheckModalView.ShowEvent(
+//				new ReservationArrayAdapter(getInstrumentation()
+//						.getContext(), cl)));
 		getInstrumentation().waitForIdleSync();
 
 		assertTrue(mv.isShown());
@@ -91,14 +86,6 @@ public class DepartureCheckModalViewTestCase extends
 	public void test出発するボタンを押すとEnterDrivePhaseEvent通知() throws Exception {
 		testShowEvent();
 		final CountDownLatch cdl = new CountDownLatch(1);
-		cl.registerEventListener(new Function<EnterDrivePhaseEvent, Void>() {
-			@Subscribe
-			@Override
-			public Void apply(EnterDrivePhaseEvent e) {
-				cdl.countDown();
-				return null;
-			}
-		});
 		solo.clickOnView(solo.getView(R.id.departure_button));
 		cdl.await();
 	}
