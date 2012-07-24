@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyWebAPICallback;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
 import com.kogasoftware.odt.webapi.Identifiables;
@@ -113,10 +114,11 @@ public class VehicleNotificationLogic {
 
 	public void replyUpdatedOperationScheduleVehicleNotifications(
 			final List<VehicleNotification> vehicleNotifications) {
+		DataSource dataSource = service.getRemoteDataSource();
 		for (VehicleNotification vehicleNotification : vehicleNotifications) {
-			service.getRemoteDataSource().responseVehicleNotification(
+			dataSource.saveOnClose(dataSource.responseVehicleNotification(
 					vehicleNotification, VehicleNotification.Response.YES,
-					new EmptyWebAPICallback<VehicleNotification>());
+					new EmptyWebAPICallback<VehicleNotification>()));
 		}
 
 		service.getLocalDataSource().withWriteLock(new Writer() {
@@ -135,10 +137,11 @@ public class VehicleNotificationLogic {
 	 */
 	public void replyVehicleNotification(
 			final VehicleNotification vehicleNotification) {
+		DataSource dataSource = service.getRemoteDataSource();
 		for (Integer response : vehicleNotification.getResponse().asSet()) {
-			service.getRemoteDataSource().responseVehicleNotification(
+			dataSource.saveOnClose(dataSource.responseVehicleNotification(
 					vehicleNotification, response,
-					new EmptyWebAPICallback<VehicleNotification>());
+					new EmptyWebAPICallback<VehicleNotification>()));
 		}
 		final AtomicBoolean empty = new AtomicBoolean(false);
 		service.getLocalDataSource().withWriteLock(new Writer() {

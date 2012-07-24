@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundthread;
 
+import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyWebAPICallback;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
@@ -22,7 +23,8 @@ public class ServiceUnitStatusLogSender implements Runnable {
 		}
 		final ServiceUnitStatusLog serviceUnitStatusLog = service
 				.getServiceUnitStatusLog();
-		service.getRemoteDataSource().sendServiceUnitStatusLog(serviceUnitStatusLog,
-				new EmptyWebAPICallback<ServiceUnitStatusLog>());
+		DataSource dataSource = service.getRemoteDataSource();
+		dataSource.saveOnClose(dataSource.sendServiceUnitStatusLog(serviceUnitStatusLog,
+				new EmptyWebAPICallback<ServiceUnitStatusLog>()));
 	}
 }

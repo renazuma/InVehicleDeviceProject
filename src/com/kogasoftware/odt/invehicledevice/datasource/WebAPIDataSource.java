@@ -277,4 +277,9 @@ public class WebAPIDataSource implements DataSource {
 			WebAPICallback<Bitmap> callback) {
 		return api.getMapTile(center, zoom, callback);
 	}
+
+	@Override
+	public void saveOnClose(int reqkey) {
+		api.saveOnClose(reqkey);
+	}
 }

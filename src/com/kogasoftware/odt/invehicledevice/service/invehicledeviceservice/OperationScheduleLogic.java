@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.google.common.base.Optional;
+import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyWebAPICallback;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
@@ -41,9 +42,10 @@ public class OperationScheduleLogic {
 					localData.remainingOperationSchedules
 							.remove(operationSchedule);
 					localData.finishedOperationSchedules.add(operationSchedule);
-					service.getRemoteDataSource().departureOperationSchedule(
+					DataSource dataSource = service.getRemoteDataSource();
+					dataSource.saveOnClose(dataSource.departureOperationSchedule(
 							operationSchedule,
-							new EmptyWebAPICallback<OperationSchedule>());
+							new EmptyWebAPICallback<OperationSchedule>()));
 				}
 				localData.phase = LocalData.Phase.DRIVE;
 			}
@@ -76,9 +78,10 @@ public class OperationScheduleLogic {
 				if (localData.phase == LocalData.Phase.DRIVE) {
 					OperationSchedule operationSchedule = localData.remainingOperationSchedules
 							.get(0);
-					service.getRemoteDataSource().arrivalOperationSchedule(
+					DataSource dataSource = service.getRemoteDataSource();
+					dataSource.saveOnClose(dataSource.arrivalOperationSchedule(
 							operationSchedule,
-							new EmptyWebAPICallback<OperationSchedule>());
+							new EmptyWebAPICallback<OperationSchedule>()));
 				}
 				localData.phase = LocalData.Phase.PLATFORM;
 			}

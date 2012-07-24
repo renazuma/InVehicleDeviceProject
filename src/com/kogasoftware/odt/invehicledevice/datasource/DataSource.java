@@ -60,4 +60,6 @@ public interface DataSource extends Closeable {
 
 	int getMapTile(LatLng center, Integer zoom,
 			WebAPICallback<Bitmap> webAPICallback);
+
+	void saveOnClose(int reqkey);
 }

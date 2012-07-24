@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyWebAPICallback;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
@@ -130,6 +131,7 @@ public class PassengerRecordLogic {
 		reservation.setPassengerRecord(reservation.getPassengerRecord().or(
 				new PassengerRecord()));
 		passengerRecord.setPassengerCount(reservation.getPassengerCount());
+		DataSource dataSource = service.getRemoteDataSource(); 
 		if (getGetOffScheduledAndUnhandledPassengerRecords()
 				.contains(passengerRecord)) {
 			passengerRecord.setGetOnTime(new Date());
@@ -138,26 +140,26 @@ public class PassengerRecordLogic {
 					.getDepartureScheduleId());
 			passengerRecord.setArrivalOperationScheduleId(operationSchedule
 					.getId());
-			service.getRemoteDataSource().getOnPassenger(operationSchedule,
+			dataSource.saveOnClose(dataSource.getOnPassenger(operationSchedule,
 					reservation, passengerRecord,
-					new EmptyWebAPICallback<PassengerRecord>());
-			service.getRemoteDataSource().getOffPassenger(operationSchedule,
+					new EmptyWebAPICallback<PassengerRecord>()));
+			dataSource.saveOnClose(dataSource.getOffPassenger(operationSchedule,
 					reservation, passengerRecord,
-					new EmptyWebAPICallback<PassengerRecord>());
+					new EmptyWebAPICallback<PassengerRecord>()));
 		} else if (passengerRecord.isUnhandled()) {
 			passengerRecord.setGetOnTime(new Date());
 			passengerRecord.setDepartureOperationScheduleId(operationSchedule
 					.getId());
-			service.getRemoteDataSource().getOnPassenger(operationSchedule,
+			dataSource.saveOnClose(dataSource.getOnPassenger(operationSchedule,
 					reservation, passengerRecord,
-					new EmptyWebAPICallback<PassengerRecord>());
+					new EmptyWebAPICallback<PassengerRecord>()));
 		} else if (passengerRecord.isRiding()) {
 			passengerRecord.setGetOffTime(new Date());
 			passengerRecord.setArrivalOperationScheduleId(operationSchedule
 					.getId());
-			service.getRemoteDataSource().getOffPassenger(operationSchedule,
+			dataSource.saveOnClose(dataSource.getOffPassenger(operationSchedule,
 					reservation, passengerRecord,
-					new EmptyWebAPICallback<PassengerRecord>());
+					new EmptyWebAPICallback<PassengerRecord>()));
 		}
 	}
 
@@ -170,6 +172,7 @@ public class PassengerRecordLogic {
 		if (!passengerRecord.getReservation().isPresent()) {
 			return;
 		}
+		DataSource dataSource = service.getRemoteDataSource();
 		Reservation reservation = passengerRecord.getReservation().get();
 		if (getGetOffScheduledAndUnhandledPassengerRecords()
 				.contains(passengerRecord)) {
@@ -177,20 +180,20 @@ public class PassengerRecordLogic {
 			passengerRecord.clearGetOffTime();
 			passengerRecord.clearDepartureOperationScheduleId();
 			passengerRecord.clearArrivalOperationScheduleId();
-			service.getRemoteDataSource().cancelGetOffPassenger(operationSchedule,
-					reservation, new EmptyWebAPICallback<PassengerRecord>());
-			service.getRemoteDataSource().cancelGetOnPassenger(operationSchedule,
-					reservation, new EmptyWebAPICallback<PassengerRecord>());
+			dataSource.saveOnClose(dataSource.cancelGetOffPassenger(operationSchedule,
+					reservation, new EmptyWebAPICallback<PassengerRecord>()));
+			dataSource.saveOnClose(dataSource.cancelGetOnPassenger(operationSchedule,
+					reservation, new EmptyWebAPICallback<PassengerRecord>()));
 		} else if (passengerRecord.isRiding()) {
 			passengerRecord.clearGetOnTime();
 			passengerRecord.clearDepartureOperationScheduleId();
-			service.getRemoteDataSource().cancelGetOnPassenger(operationSchedule,
-					reservation, new EmptyWebAPICallback<PassengerRecord>());
+			dataSource.saveOnClose(dataSource.cancelGetOnPassenger(operationSchedule,
+					reservation, new EmptyWebAPICallback<PassengerRecord>()));
 		} else if (passengerRecord.isGotOff()) {
 			passengerRecord.clearGetOffTime();
 			passengerRecord.clearArrivalOperationScheduleId();
-			service.getRemoteDataSource().cancelGetOffPassenger(operationSchedule,
-					reservation, new EmptyWebAPICallback<PassengerRecord>());
+			dataSource.saveOnClose(dataSource.cancelGetOffPassenger(operationSchedule,
+					reservation, new EmptyWebAPICallback<PassengerRecord>()));
 		}
 	}
 

@@ -529,4 +529,10 @@ public class MockDataSource implements DataSource {
 			WebAPICallback<Bitmap> webAPICallback) {
 		return 0;
 	}
+
+	@Override
+	public void saveOnClose(int reqkey) {
+		// TODO Auto-generated method stub
+		
+	}
 }

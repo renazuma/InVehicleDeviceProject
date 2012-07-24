@@ -114,4 +114,10 @@ public class EmptyDataSource implements DataSource {
 		return 0;
 	}
 
+	@Override
+	public void saveOnClose(int reqkey) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
