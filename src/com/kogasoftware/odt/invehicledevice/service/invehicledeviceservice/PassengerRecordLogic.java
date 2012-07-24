@@ -128,8 +128,6 @@ public class PassengerRecordLogic {
 			return;
 		}
 		Reservation reservation = passengerRecord.getReservation().get();
-		reservation.setPassengerRecord(reservation.getPassengerRecord().or(
-				new PassengerRecord()));
 		passengerRecord.setPassengerCount(reservation.getPassengerCount());
 		DataSource dataSource = service.getRemoteDataSource(); 
 		if (getGetOffScheduledAndUnhandledPassengerRecords()
@@ -180,6 +178,7 @@ public class PassengerRecordLogic {
 			passengerRecord.clearGetOffTime();
 			passengerRecord.clearDepartureOperationScheduleId();
 			passengerRecord.clearArrivalOperationScheduleId();
+			reservation.setPassengerRecord(passengerRecord); // TODO:消す
 			dataSource.saveOnClose(dataSource.cancelGetOffPassenger(operationSchedule,
 					reservation, new EmptyWebAPICallback<PassengerRecord>()));
 			dataSource.saveOnClose(dataSource.cancelGetOnPassenger(operationSchedule,
@@ -187,11 +186,13 @@ public class PassengerRecordLogic {
 		} else if (passengerRecord.isRiding()) {
 			passengerRecord.clearGetOnTime();
 			passengerRecord.clearDepartureOperationScheduleId();
+			reservation.setPassengerRecord(passengerRecord); // TODO:消す
 			dataSource.saveOnClose(dataSource.cancelGetOnPassenger(operationSchedule,
 					reservation, new EmptyWebAPICallback<PassengerRecord>()));
 		} else if (passengerRecord.isGotOff()) {
 			passengerRecord.clearGetOffTime();
 			passengerRecord.clearArrivalOperationScheduleId();
+			reservation.setPassengerRecord(passengerRecord); // TODO:消す
 			dataSource.saveOnClose(dataSource.cancelGetOffPassenger(operationSchedule,
 					reservation, new EmptyWebAPICallback<PassengerRecord>()));
 		}
