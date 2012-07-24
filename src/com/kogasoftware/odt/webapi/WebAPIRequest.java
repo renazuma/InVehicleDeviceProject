@@ -17,13 +17,14 @@ import com.kogasoftware.odt.webapi.serializablerequestloader.SerializableRequest
 public class WebAPIRequest<T> implements Serializable {
 	private static final long serialVersionUID = -8451453777378477195L;
 	private static final String TAG = WebAPIRequest.class.getSimpleName();
-	protected static final AtomicInteger reqkeyCounter = new AtomicInteger(0);
+	protected static final AtomicInteger REQ_KEY_COUNTER = new AtomicInteger(0);
 	protected final SerializableRequestLoader firstRequest;
 	protected final SerializableRequestLoader retryRequest;
-	protected final int reqkey = reqkeyCounter.incrementAndGet();
+	protected final int reqkey = REQ_KEY_COUNTER.incrementAndGet();
 	protected final Date createdDate = new Date();
 	protected final boolean retryable;
 	protected boolean retry = false;
+	protected boolean saveOnClose = false;
 
 	protected transient WebAPICallback<T> callback;
 	protected transient ResponseConverter<T> responseConverter;
@@ -116,5 +117,13 @@ public class WebAPIRequest<T> implements Serializable {
 			Log.w(TAG, e);
 		}
 		onException(new WebAPIException("Connection aborted by application"));
+	}
+	
+	public void setSaveOnClose(boolean saveOnClose) {
+		this.saveOnClose = saveOnClose;
+	}
+	
+	public boolean isSaveOnClose() {
+		return saveOnClose;
 	}
 }
