@@ -49,17 +49,18 @@ public class BackgroundTask {
 
 	private final SensorManager sensorManager;
 	private final Optional<TelephonyManager> optionalTelephonyManager;
-	private final ServiceUnitStatusLogSender locationSender;
+	private final ServiceUnitStatusLogSender serviceUnitStatusLogSender;
 	private final TemperatureSensorEventListener temperatureSensorEventListener;
 	private final AccMagSensorEventListener accMagSensorEventListener;
 	private final OrientationSensorEventListener orientationSensorEventListener;
-	private final LocationNotifier locationListener;
+	private final LocationNotifier locationNotifier;
 	private final ScheduledExecutorService executorService = Executors
 			.newScheduledThreadPool(NUM_THREADS);
 	private final VehicleNotificationReceiver vehicleNotificationReceiver;
 	private final NextDateNotifier nextDateChecker;
 	private final SignalStrengthListener signalStrengthListener;
 	private final ExitBroadcastReceiver exitBroadcastReceiver;
+	private final BatteryBroadcastReceiver batteryBroadcastReceiver;
 	private final Thread operationScheduleReceiveThread;
 	private final Looper myLooper;
 	private final AtomicBoolean quitCalled = new AtomicBoolean(false);
@@ -94,7 +95,8 @@ public class BackgroundTask {
 		}
 		optionalTelephonyManager = tempTelephonyManager;
 		exitBroadcastReceiver = new ExitBroadcastReceiver(service);
-		locationSender = new ServiceUnitStatusLogSender(service);
+		batteryBroadcastReceiver = new BatteryBroadcastReceiver();
+		serviceUnitStatusLogSender = new ServiceUnitStatusLogSender(service);
 		accMagSensorEventListener = new AccMagSensorEventListener(service);
 		orientationSensorEventListener = new OrientationSensorEventListener(
 				service);
@@ -103,7 +105,7 @@ public class BackgroundTask {
 		temperatureSensorEventListener = new TemperatureSensorEventListener(
 				service);
 		signalStrengthListener = new SignalStrengthListener(service);
-		locationListener = new LocationNotifier(service);
+		locationNotifier = new LocationNotifier(service);
 		operationScheduleReceiveThread = new OperationScheduleReceiveThread(
 				service);
 	}
@@ -114,6 +116,7 @@ public class BackgroundTask {
 	 */
 	public void loop() {
 		try {
+			Thread.sleep(0); // interruption point
 			onLoopStart();
 			Thread.sleep(0); // interruption point
 			Looper.loop();
@@ -129,10 +132,15 @@ public class BackgroundTask {
 	protected void onLoopStart() throws InterruptedException,
 			ExecutionException {
 
-		IntentFilter intentFilter = new IntentFilter();
-		intentFilter.addAction(BackgroundTask.ACTION_EXIT);
+		IntentFilter exitIntentFilter = new IntentFilter();
+		exitIntentFilter.addAction(BackgroundTask.ACTION_EXIT);
 		service.getApplicationContext().registerReceiver(exitBroadcastReceiver,
-				intentFilter);
+				exitIntentFilter);
+
+		IntentFilter batteryIntentFilter = new IntentFilter();
+		batteryIntentFilter.addAction(Intent.ACTION_BATTERY_CHANGED);
+		service.getApplicationContext().registerReceiver(
+				batteryBroadcastReceiver, batteryIntentFilter);
 
 		StringBuilder trace = new StringBuilder();
 		{
@@ -158,6 +166,9 @@ public class BackgroundTask {
 		errorReporter.handleSilentException(new Throwable(
 				"APPLICATION_START_LOG"));
 		errorReporter.removeCustomData(customKey);
+
+		Thread.sleep(0); // スレッド終了中にlocationNotifier.start()を呼ぶとエラーログが出るため、直前に割り込み可能なsleep()を置く
+		locationNotifier.start();
 
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(service);
@@ -188,8 +199,6 @@ public class BackgroundTask {
 		} else {
 			service.setInitialized();
 		}
-
-		locationListener.start();
 
 		List<Sensor> temperatureSensors = sensorManager
 				.getSensorList(Sensor.TYPE_TEMPERATURE);
@@ -237,8 +246,8 @@ public class BackgroundTask {
 					0, POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
 			executorService.scheduleWithFixedDelay(nextDateChecker, 0,
 					POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
-			executorService.scheduleWithFixedDelay(locationSender, 0,
-					POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
+			executorService.scheduleWithFixedDelay(serviceUnitStatusLogSender,
+					0, POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
 		} catch (RejectedExecutionException e) {
 			Log.w(TAG, e);
 			quit();
@@ -247,12 +256,22 @@ public class BackgroundTask {
 
 	protected void onLoopStop() {
 		operationScheduleReceiveThread.interrupt();
-		locationListener.stop();
+		locationNotifier.stop();
 		sensorManager.unregisterListener(temperatureSensorEventListener);
 		sensorManager.unregisterListener(orientationSensorEventListener);
 		// sensorManager.unregisterListener(accMagSensorEventListener);
-		service.getApplicationContext().unregisterReceiver(
-				exitBroadcastReceiver);
+		try {
+			service.getApplicationContext().unregisterReceiver(
+					exitBroadcastReceiver);
+		} catch (IllegalArgumentException e) {
+			Log.i(TAG, "unregisterReceiver(exitBroadcastReceiver) failed", e);
+		}
+		try {
+			service.getApplicationContext().unregisterReceiver(
+					batteryBroadcastReceiver);
+		} catch (IllegalArgumentException e) {
+			Log.i(TAG, "unregisterReceiver(batteryBroadcastReceiver) failed", e);
+		}
 		for (TelephonyManager telephonyManager : optionalTelephonyManager
 				.asSet()) {
 			telephonyManager.listen(signalStrengthListener,
