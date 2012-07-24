@@ -23,6 +23,7 @@ import android.view.animation.AnimationUtils;
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.startupservice.StartupService;
 import com.kogasoftware.odt.invehicledevice.ui.InVehicleDeviceView;
 
 public class InVehicleDeviceActivity extends Activity implements
@@ -95,6 +96,7 @@ public class InVehicleDeviceActivity extends Activity implements
 
 		bindService(new Intent(this, InVehicleDeviceService.class),
 				serviceConnection, Context.BIND_AUTO_CREATE);
+		startService(new Intent(this, StartupService.class));
 		handler.post(waitForInitialize);
 	}
 
