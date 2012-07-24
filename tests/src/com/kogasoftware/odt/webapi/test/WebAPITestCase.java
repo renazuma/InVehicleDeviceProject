@@ -72,7 +72,7 @@ public class WebAPITestCase extends
 		}
 	}
 
-	class EmptyWebAPICallback<T> implements WebAPICallback<T> {
+	public static class EmptyWebAPICallback<T> implements WebAPICallback<T> {
 		@Override
 		public void onException(int reqkey, WebAPIException ex) {
 		}

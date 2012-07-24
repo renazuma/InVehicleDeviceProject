@@ -145,15 +145,26 @@ public class WebAPIRequestQueue {
 	}
 
 	protected void backup(File backupFile) {
-		LinkedList<Pair<String, List<WebAPIRequest<?>>>> backupRequests = Lists
+		LinkedList<Pair<String, List<WebAPIRequest<?>>>> backupRequestsByGroup = Lists
 				.newLinkedList();
 		synchronized (queueLock) {
-			backupRequests.addAll(requestsByGroup);
+			for (Pair<String, List<WebAPIRequest<?>>> pair : Lists
+					.newLinkedList(requestsByGroup)) {
+				List<WebAPIRequest<?>> backupRequests = Lists.newLinkedList();
+				for (WebAPIRequest<?> request : pair.getValue()) {
+					if (request.isSaveOnClose()) {
+						backupRequests.add(request);
+					}
+				}
+				if (!backupRequests.isEmpty()) {
+					backupRequestsByGroup.add(Pair.of(pair.getKey(), backupRequests));
+				}
+			}
 		}
 
 		synchronized (FILE_ACCESS_LOCK) {
 			try {
-				SerializationUtils.serialize(new InstanceState(backupRequests),
+				SerializationUtils.serialize(new InstanceState(backupRequestsByGroup),
 						new FileOutputStream(backupFile));
 			} catch (SerializationException e) {
 				Log.e(TAG, e.toString(), e);
@@ -277,6 +288,7 @@ public class WebAPIRequestQueue {
 				for (WebAPIRequest<?> request : entry.getValue()) {
 					if (request.getReqKey() == reqkey) {
 						request.setSaveOnClose(saveOnClose);
+						backup();
 						break;
 					}
 				}
