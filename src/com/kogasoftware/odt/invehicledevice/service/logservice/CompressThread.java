@@ -15,14 +15,12 @@ import com.google.common.io.Closeables;
 
 public class CompressThread extends Thread {
 	private static final String TAG = CompressThread.class.getSimpleName();
-	private final Context context;
 	private final BlockingQueue<File> rawLogFiles;
 	private final BlockingQueue<File> compressedLogFiles;
 
 	public CompressThread(Context context, File dataDirectory,
 			BlockingQueue<File> rawLogFiles,
 			BlockingQueue<File> compressedLogFiles) {
-		this.context = context;
 		this.rawLogFiles = rawLogFiles;
 		this.compressedLogFiles = compressedLogFiles;
 	}

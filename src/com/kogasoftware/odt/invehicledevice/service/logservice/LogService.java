@@ -35,7 +35,7 @@ public class LogService extends Service {
 						+ "log");
 
 		logcatThread = new LogcatThread(this, dataDirectory, rawLogFiles);
-		dropboxThread = new DropboxThread(this, dataDirectory, rawLogFiles);
+		dropboxThread = new DropBoxThread(this, dataDirectory, rawLogFiles);
 		compressThread = new CompressThread(this, dataDirectory, rawLogFiles,
 				compressedLogFiles);
 		uploadThread = new UploadThread(this, dataDirectory, compressedLogFiles);
