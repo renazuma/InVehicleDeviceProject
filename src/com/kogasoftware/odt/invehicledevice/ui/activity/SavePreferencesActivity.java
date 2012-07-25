@@ -69,6 +69,16 @@ public class SavePreferencesActivity extends Activity {
 				SharedPreferencesKey.SERVER_IN_VEHICLE_DEVICE_TOKEN,
 				Strings.nullToEmpty(bundle
 						.getString(SharedPreferencesKey.SERVER_IN_VEHICLE_DEVICE_TOKEN)));
+		editor.putString(
+				SharedPreferencesKey.SERVER_IN_VEHICLE_DEVICE_TOKEN,
+				Strings.nullToEmpty(bundle
+						.getString(SharedPreferencesKey.SERVER_IN_VEHICLE_DEVICE_TOKEN)));
+		editor.putString(SharedPreferencesKey.AWS_ACCESS_KEY_ID, Strings
+				.nullToEmpty(bundle
+						.getString(SharedPreferencesKey.AWS_ACCESS_KEY_ID)));
+		editor.putString(SharedPreferencesKey.AWS_SECRET_ACCESS_KEY, Strings
+				.nullToEmpty(bundle
+						.getString(SharedPreferencesKey.AWS_SECRET_ACCESS_KEY)));
 		try {
 			editor.putString(SharedPreferencesKey.IN_VEHICLE_DEVICE,
 					inVehicleDevice.toJSONObject().toString());
