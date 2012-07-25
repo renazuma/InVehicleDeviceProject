@@ -15,7 +15,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class ReservationBase extends Model {
-	private static final long serialVersionUID = 5070696493400128882L;
+	private static final long serialVersionUID = 636968190988697936L;
 
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {
@@ -51,7 +51,6 @@ public abstract class ReservationBase extends Model {
 		setFellowUsers(User.parseList(jsonObject, "fellow_users"));
 		setOperator(Operator.parse(jsonObject, "operator"));
 		setPassengerRecord(PassengerRecord.parse(jsonObject, "passenger_record"));
-		setReservationUsers(ReservationUser.parseList(jsonObject, "reservation_users"));
 		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
 		setUnitAssignment(UnitAssignment.parse(jsonObject, "unit_assignment"));
 		setUser(User.parse(jsonObject, "user"));
@@ -167,9 +166,6 @@ public abstract class ReservationBase extends Model {
 		}
 		if (getPassengerRecord().isPresent() && recursive) {
 			jsonObject.put("passenger_record", getPassengerRecord().get().toJSONObject(true, nextDepth));
-		}
-		if (getReservationUsers().size() > 0 && recursive) {
-			jsonObject.put("reservation_users", toJSON(getReservationUsers(), true, nextDepth));
 		}
 		if (getServiceProvider().isPresent()) {
 			if (recursive) {
@@ -698,20 +694,6 @@ public abstract class ReservationBase extends Model {
 
 	public void clearPassengerRecord() {
 		this.passengerRecord = Optional.absent();
-	}
-
-	private LinkedList<ReservationUser> reservationUsers = new LinkedList<ReservationUser>();
-
-	public LinkedList<ReservationUser> getReservationUsers() {
-		return new LinkedList<ReservationUser>(wrapNull(reservationUsers));
-	}
-
-	public void setReservationUsers(LinkedList<ReservationUser> reservationUsers) {
-		this.reservationUsers = new LinkedList<ReservationUser>(wrapNull(reservationUsers));
-	}
-
-	public void clearReservationUsers() {
-		this.reservationUsers = new LinkedList<ReservationUser>();
 	}
 
 	private Optional<ServiceProvider> serviceProvider = Optional.absent();

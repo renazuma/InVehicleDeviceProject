@@ -553,7 +553,7 @@ public class WebAPITestCase extends
 		if (offlineTest) {
 			offline = true;
 		}
-		api.getOnPassenger(os1, res, prec,
+		api.getOnPassenger(os1, res, res.getFellowUsers().get(0), prec,
 				new WebAPICallback<PassengerRecord>() {
 
 					@Override
@@ -660,7 +660,7 @@ public class WebAPITestCase extends
 		if (offlineTest) {
 			offline = true;
 		}
-		api.getOffPassenger(os2, res, prec,
+		api.getOffPassenger(os2, res, res.getFellowUsers().get(0), prec,
 				new WebAPICallback<PassengerRecord>() {
 
 					@Override
@@ -732,9 +732,9 @@ public class WebAPITestCase extends
 
 		latch = new CountDownLatch(1);
 
-		api.getOnPassenger(os1, res, prec,
+		api.getOnPassenger(os1, res, res.getFellowUsers().get(0), prec,
 				new EmptyWebAPICallback<PassengerRecord>());
-		api.cancelGetOnPassenger(os1, res,
+		api.cancelGetOnPassenger(os1, res, res.getFellowUsers().get(0),
 				new EmptyWebAPICallback<PassengerRecord>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
@@ -760,7 +760,7 @@ public class WebAPITestCase extends
 		assertTrue(serverPassengerRecord.isUnhandled());
 
 		latch = new CountDownLatch(1);
-		api.getOnPassenger(os1, res, prec,
+		api.getOnPassenger(os1, res, res.getFellowUsers().get(0), prec,
 				new EmptyWebAPICallback<PassengerRecord>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
@@ -830,9 +830,9 @@ public class WebAPITestCase extends
 		prec.setPassengerCount(3);
 
 		latch = new CountDownLatch(1);
-		api.getOffPassenger(os2, res, prec,
+		api.getOffPassenger(os2, res, res.getFellowUsers().get(0), prec,
 				new EmptyWebAPICallback<PassengerRecord>());
-		api.cancelGetOffPassenger(os2, res,
+		api.cancelGetOffPassenger(os2, res, res.getFellowUsers().get(0),
 				new EmptyWebAPICallback<PassengerRecord>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
@@ -883,7 +883,7 @@ public class WebAPITestCase extends
 		prec.setPassengerCount(3);
 
 		latch = new CountDownLatch(1);
-		api.getOnPassenger(os1, res, prec,
+		api.getOnPassenger(os1, res, res.getFellowUsers().get(0), prec,
 				new EmptyWebAPICallback<PassengerRecord>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
@@ -935,7 +935,7 @@ public class WebAPITestCase extends
 		for (int i = 0; i < max; ++i) {
 			final int fi = i;
 			if (i % 2 == 0) {
-				api.getOffPassenger(os2, res, prec,
+				api.getOffPassenger(os2, res, res.getFellowUsers().get(0), prec,
 						new EmptyWebAPICallback<PassengerRecord>() {
 							@Override
 							public void onSucceed(int reqkey, int statusCode,
@@ -945,7 +945,7 @@ public class WebAPITestCase extends
 							}
 						});
 			} else {
-				api.cancelGetOffPassenger(os2, res,
+				api.cancelGetOffPassenger(os2, res, res.getFellowUsers().get(0),
 						new EmptyWebAPICallback<PassengerRecord>() {
 							@Override
 							public void onSucceed(int reqkey, int statusCode,
@@ -1000,7 +1000,7 @@ public class WebAPITestCase extends
 		for (int i = 0; i < max; ++i) {
 			final int fi = i;
 			if (i % 2 == 0) {
-				api.getOnPassenger(os1, res, prec,
+				api.getOnPassenger(os1, res, res.getFellowUsers().get(0), prec,
 						new EmptyWebAPICallback<PassengerRecord>() {
 							@Override
 							public void onSucceed(int reqkey, int statusCode,
@@ -1010,7 +1010,7 @@ public class WebAPITestCase extends
 							}
 						});
 			} else {
-				api.cancelGetOnPassenger(os1, res,
+				api.cancelGetOnPassenger(os1, res, res.getFellowUsers().get(0),
 						new EmptyWebAPICallback<PassengerRecord>() {
 							@Override
 							public void onSucceed(int reqkey, int statusCode,
@@ -1021,7 +1021,7 @@ public class WebAPITestCase extends
 						});
 			}
 			if (i == max / 2) {
-				api.getOnPassenger(os1, res2, prec,
+				api.getOnPassenger(os1, res2, res2.getFellowUsers().get(0), prec,
 						new EmptyWebAPICallback<PassengerRecord>() {
 							@Override
 							public void onSucceed(int reqkey, int statusCode,

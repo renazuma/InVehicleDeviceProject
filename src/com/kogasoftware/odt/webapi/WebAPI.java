@@ -38,6 +38,7 @@ import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.ReservationCandidate;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
+import com.kogasoftware.odt.webapi.model.User;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 import com.kogasoftware.odt.webapi.serializablerequestloader.SerializableDeleteLoader;
 import com.kogasoftware.odt.webapi.serializablerequestloader.SerializableGetLoader;
@@ -338,7 +339,7 @@ public class WebAPI implements Closeable {
 	 * @throws JSONException
 	 */
 	public int getOffPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, PassengerRecord passengerRecord,
+			Reservation reservation, User user, PassengerRecord passengerRecord,
 			WebAPICallback<PassengerRecord> callback) throws WebAPIException,
 			JSONException {
 		passengerRecord.setGetOffTime(new Date());
@@ -379,7 +380,7 @@ public class WebAPI implements Closeable {
 	 * @throws JSONException
 	 */
 	public int getOnPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, PassengerRecord passengerRecord,
+			Reservation reservation, User user, PassengerRecord passengerRecord,
 			WebAPICallback<PassengerRecord> callback) throws WebAPIException,
 			JSONException {
 		passengerRecord.setGetOnTime(new Date());
@@ -421,7 +422,7 @@ public class WebAPI implements Closeable {
 	 * @throws JSONException
 	 */
 	public int cancelGetOnPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, WebAPICallback<PassengerRecord> callback)
+			Reservation reservation, User user, WebAPICallback<PassengerRecord> callback)
 			throws WebAPIException, JSONException {
 		String group = getReservationGetOnOrOffGroup(operationSchedule.getId(),
 				reservation.getId());
@@ -446,7 +447,7 @@ public class WebAPI implements Closeable {
 	 * @throws JSONException
 	 */
 	public int cancelGetOffPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, WebAPICallback<PassengerRecord> callback)
+			Reservation reservation, User user, WebAPICallback<PassengerRecord> callback)
 			throws WebAPIException, JSONException {
 		String group = getReservationGetOnOrOffGroup(operationSchedule.getId(),
 				reservation.getId());
