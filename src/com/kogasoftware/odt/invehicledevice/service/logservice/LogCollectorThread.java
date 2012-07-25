@@ -109,6 +109,7 @@ public class LogCollectorThread extends Thread implements Flushable {
 
 	@Override
 	public void flush() {
+		Flushables.flushQuietly(pipedOutputStream);
 		Flushables.flushQuietly(currentOutputStream.get());
 	}
 }
