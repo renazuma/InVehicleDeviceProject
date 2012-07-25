@@ -77,7 +77,7 @@ public class InVehicleDeviceActivity extends Activity implements
 		public void onServiceDisconnected(ComponentName className) {
 			Log.e(TAG, "onServiceDisconnected(" + className + ")");
 			optionalService = Optional.absent();
-			finish();
+			onExit();
 		}
 	};
 
@@ -136,6 +136,7 @@ public class InVehicleDeviceActivity extends Activity implements
 
 	@Override
 	public void onExit() {
+		handler.postDelayed(pauseFinishTimeouter, PAUSE_FINISH_TIMEOUT_MILLIS);
 		finish();
 	}
 
