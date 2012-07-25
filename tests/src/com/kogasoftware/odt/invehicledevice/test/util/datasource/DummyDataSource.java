@@ -59,22 +59,6 @@ public class DummyDataSource extends EmptyDataSource {
 	}
 
 	@Override
-	public int getOffPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, PassengerRecord passengerRecord,
-			WebAPICallback<PassengerRecord> callback) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int getOnPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, PassengerRecord passengerRecord,
-			WebAPICallback<PassengerRecord> callback) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
 	public List<OperationSchedule> getOperationSchedules()
 			throws WebAPIException {
 		try {
@@ -204,20 +188,6 @@ public class DummyDataSource extends EmptyDataSource {
 
 	@Override
 	public void close() {
-	}
-
-	@Override
-	public int cancelGetOffPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, WebAPICallback<PassengerRecord> callback) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int cancelGetOnPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, WebAPICallback<PassengerRecord> callback) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 
 	@Override

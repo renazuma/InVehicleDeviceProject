@@ -46,22 +46,6 @@ public class ScheduleChangedTestDataSource extends EmptyDataSource {
 	}
 
 	@Override
-	public int getOffPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, PassengerRecord passengerRecord,
-			WebAPICallback<PassengerRecord> callback) {
-		Log.w(TAG, "not implemented");
-		return 0;
-	}
-
-	@Override
-	public int getOnPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, PassengerRecord passengerRecord,
-			WebAPICallback<PassengerRecord> callback) {
-		Log.w(TAG, "not implemented");
-		return 0;
-	}
-
-	@Override
 	public List<OperationSchedule> getOperationSchedules()
 			throws WebAPIException {
 		String r1 = "{id: 51, passenger_count: 1, departure_schedule_id: 1, arrival_schedule_id: 2, payment: 100, user: {id: 1, last_name: 'ああああ', first_name: 'いちごう'}}";
@@ -185,20 +169,6 @@ public class ScheduleChangedTestDataSource extends EmptyDataSource {
 
 	@Override
 	public void close() {
-	}
-
-	@Override
-	public int cancelGetOffPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, WebAPICallback<PassengerRecord> callback) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int cancelGetOnPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, WebAPICallback<PassengerRecord> callback) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 
 	@Override

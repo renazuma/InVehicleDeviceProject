@@ -64,7 +64,8 @@ public class PassengerRecordArrayAdapterTestCase extends
 	DataSource dataSource = new EmptyDataSource() {
 		@Override
 		public int getOffPassenger(OperationSchedule operationSchedule,
-				Reservation reservation, PassengerRecord passengerRecord,
+				Reservation reservation, User user,
+				PassengerRecord passengerRecord,
 				WebAPICallback<PassengerRecord> callback) {
 			getOffPassengerRecords.add(passengerRecord);
 			return 0;
@@ -72,7 +73,8 @@ public class PassengerRecordArrayAdapterTestCase extends
 
 		@Override
 		public int getOnPassenger(OperationSchedule operationSchedule,
-				Reservation reservation, PassengerRecord passengerRecord,
+				Reservation reservation, User user,
+				PassengerRecord passengerRecord,
 				WebAPICallback<PassengerRecord> callback) {
 			getOnPassengerRecords.add(passengerRecord);
 			return 0;
@@ -80,17 +82,19 @@ public class PassengerRecordArrayAdapterTestCase extends
 
 		@Override
 		public int cancelGetOffPassenger(OperationSchedule operationSchedule,
-				Reservation reservation,
+				Reservation reservation, User user,
 				WebAPICallback<PassengerRecord> callback) {
-			cancelGetOffPassengerRecords.add(reservation.getPassengerRecord().get());
+			cancelGetOffPassengerRecords.add(reservation.getPassengerRecord()
+					.get());
 			return 0;
 		}
 
 		@Override
 		public int cancelGetOnPassenger(OperationSchedule operationSchedule,
-				Reservation reservation,
+				Reservation reservation, User user,
 				WebAPICallback<PassengerRecord> callback) {
-			cancelGetOnPassengerRecords.add(reservation.getPassengerRecord().get());
+			cancelGetOnPassengerRecords.add(reservation.getPassengerRecord()
+					.get());
 			return 0;
 		}
 	};
@@ -119,7 +123,7 @@ public class PassengerRecordArrayAdapterTestCase extends
 		if (!s.isOperationScheduleInitialized()) {
 			fail();
 		}
-		
+
 		sa = s.getLocalDataSource();
 
 		mmv = new MemoModalView(a, s);
@@ -223,7 +227,7 @@ public class PassengerRecordArrayAdapterTestCase extends
 		assertNotNull(r);
 		assertEquals(userName0, r.getUser().get().getLastName());
 
- 		solo.clickOnText(userName0);
+		solo.clickOnText(userName0);
 		r = cancelGetOnPassengerRecords.poll(T, TimeUnit.SECONDS);
 		assertNotNull(r);
 		assertEquals(userName0, r.getUser().get().getLastName());
@@ -259,7 +263,7 @@ public class PassengerRecordArrayAdapterTestCase extends
 		r = cancelGetOffPassengerRecords.poll(T, TimeUnit.SECONDS);
 		assertNotNull(r);
 		assertEquals(userName1, r.getUser().get().getLastName());
-		
+
 		// 次の乗降場へ移動
 		s.enterDrivePhase();
 		s.enterPlatformPhase();
@@ -284,10 +288,10 @@ public class PassengerRecordArrayAdapterTestCase extends
 		assertNotNull(r);
 		assertEquals(userName0, r.getUser().get().getLastName());
 
- 		solo.clickOnText(userName0);
+		solo.clickOnText(userName0);
 		r = cancelGetOffPassengerRecords.poll(T, TimeUnit.SECONDS);
 		assertNotNull(r);
 		assertEquals(userName0, r.getUser().get().getLastName());
-		
+
 	}
 }
