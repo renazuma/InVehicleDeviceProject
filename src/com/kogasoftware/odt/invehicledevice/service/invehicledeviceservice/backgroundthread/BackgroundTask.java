@@ -32,6 +32,7 @@ import com.kogasoftware.odt.invehicledevice.datasource.WebAPIDataSource;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKey;
+import com.kogasoftware.odt.invehicledevice.service.startupservice.StartupService;
 import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
 
 /**
@@ -240,8 +241,9 @@ public class BackgroundTask {
 					PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
 		}
 
+		service.startService(new Intent(service, StartupService.class));
 		service.startService(new Intent(service, VoiceService.class));
-
+		
 		try {
 			executorService.scheduleWithFixedDelay(vehicleNotificationReceiver,
 					0, POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);

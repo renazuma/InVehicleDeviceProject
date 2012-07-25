@@ -96,7 +96,6 @@ public class InVehicleDeviceActivity extends Activity implements
 
 		bindService(new Intent(this, InVehicleDeviceService.class),
 				serviceConnection, Context.BIND_AUTO_CREATE);
-		startService(new Intent(this, StartupService.class));
 		handler.post(waitForInitialize);
 	}
 
