@@ -15,6 +15,7 @@ import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.ReservationCandidate;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
+import com.kogasoftware.odt.webapi.model.User;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public interface DataSource extends Closeable {
@@ -29,11 +30,11 @@ public interface DataSource extends Closeable {
 	InVehicleDevice getInVehicleDevice() throws WebAPIException;
 
 	int getOffPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, PassengerRecord passengerRecord,
+			Reservation reservation, User user, PassengerRecord passengerRecord,
 			WebAPICallback<PassengerRecord> callback);
 
 	int getOnPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, PassengerRecord passengerRecord,
+			Reservation reservation, User user, PassengerRecord passengerRecord,
 			WebAPICallback<PassengerRecord> callback);
 
 	List<OperationSchedule> getOperationSchedules() throws WebAPIException;
@@ -47,10 +48,10 @@ public interface DataSource extends Closeable {
 			WebAPICallback<ServiceUnitStatusLog> callback);
 
 	int cancelGetOffPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, WebAPICallback<PassengerRecord> callback);
+			Reservation reservation, User user, WebAPICallback<PassengerRecord> callback);
 
 	int cancelGetOnPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, WebAPICallback<PassengerRecord> callback);
+			Reservation reservation, User user, WebAPICallback<PassengerRecord> callback);
 
 	int searchReservationCandidate(Demand demand,
 			WebAPICallback<List<ReservationCandidate>> callback);

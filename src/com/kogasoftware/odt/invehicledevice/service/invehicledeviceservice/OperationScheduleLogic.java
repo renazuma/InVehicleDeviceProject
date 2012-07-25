@@ -119,7 +119,7 @@ public class OperationScheduleLogic {
 					.getOperationRecord().or(new OperationRecord()));
 			for (Reservation reservation : operationSchedule
 					.getReservationsAsDeparture()) {
-				for (User user : reservation.getUsers()) {
+				for (User user : reservation.getFellowUsers()) {
 					mergeUpdatedPassengerRecordWithWriteLock(localData,
 							reservation, user);
 				}

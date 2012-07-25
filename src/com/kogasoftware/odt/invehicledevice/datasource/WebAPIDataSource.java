@@ -23,6 +23,7 @@ import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.ReservationCandidate;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
+import com.kogasoftware.odt.webapi.model.User;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class WebAPIDataSource implements DataSource {
@@ -92,27 +93,27 @@ public class WebAPIDataSource implements DataSource {
 
 	@Override
 	public int getOffPassenger(final OperationSchedule operationSchedule,
-			final Reservation reservation,
+			final Reservation reservation, final User user,
 			final PassengerRecord passengerRecord,
 			final WebAPICallback<PassengerRecord> callback) {
 		return callWebAPI(new WebAPICaller() {
 			@Override
 			public int call() throws WebAPIException, JSONException {
 				return api.getOffPassenger(operationSchedule, reservation,
-						passengerRecord, callback);
+						user, passengerRecord, callback);
 			}
 		}, callback);
 	}
 
 	@Override
 	public int getOnPassenger(final OperationSchedule operationSchedule,
-			final Reservation reservation,
+			final Reservation reservation, final User user,
 			final PassengerRecord passengerRecord,
 			final WebAPICallback<PassengerRecord> callback) {
 		return callWebAPI(new WebAPICaller() {
 			@Override
 			public int call() throws WebAPIException, JSONException {
-				return api.getOnPassenger(operationSchedule, reservation,
+				return api.getOnPassenger(operationSchedule, reservation, user,
 						passengerRecord, callback);
 			}
 		}, callback);
@@ -220,26 +221,26 @@ public class WebAPIDataSource implements DataSource {
 
 	@Override
 	public int cancelGetOnPassenger(final OperationSchedule operationSchedule,
-			final Reservation reservation,
+			final Reservation reservation, final User user,
 			final WebAPICallback<PassengerRecord> callback) {
 		return callWebAPI(new WebAPICaller() {
 			@Override
 			public int call() throws WebAPIException, JSONException {
 				return api.cancelGetOnPassenger(operationSchedule, reservation,
-						callback);
+						user, callback);
 			}
 		}, callback);
 	}
 
 	@Override
 	public int cancelGetOffPassenger(final OperationSchedule operationSchedule,
-			final Reservation reservation,
+			final Reservation reservation, final User user,
 			final WebAPICallback<PassengerRecord> callback) {
 		return callWebAPI(new WebAPICaller() {
 			@Override
 			public int call() throws WebAPIException, JSONException {
 				return api.cancelGetOffPassenger(operationSchedule,
-						reservation, callback);
+						reservation, user, callback);
 			}
 		}, callback);
 	}

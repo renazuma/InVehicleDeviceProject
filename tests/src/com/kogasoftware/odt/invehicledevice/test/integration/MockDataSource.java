@@ -24,6 +24,7 @@ import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.ReservationCandidate;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
+import com.kogasoftware.odt.webapi.model.User;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class MockDataSource implements DataSource {
@@ -53,20 +54,6 @@ public class MockDataSource implements DataSource {
 		model.setTypeNumber("TYPENUMBER543210");
 		model.setModelName("MODELNAME09876");
 		return model;
-	}
-
-	@Override
-	public int getOffPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, PassengerRecord passengerRecord,
-			WebAPICallback<PassengerRecord> callback) {
-		return 0;
-	}
-
-	@Override
-	public int getOnPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, PassengerRecord passengerRecord,
-			WebAPICallback<PassengerRecord> callback) {
-		return 0;
 	}
 
 	@Override
@@ -488,20 +475,6 @@ public class MockDataSource implements DataSource {
 	}
 
 	@Override
-	public int cancelGetOffPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, WebAPICallback<PassengerRecord> callback) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int cancelGetOnPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, WebAPICallback<PassengerRecord> callback) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
 	public int searchReservationCandidate(Demand demand,
 			WebAPICallback<List<ReservationCandidate>> callback) {
 		callback.onSucceed(0, 200, lReservationCandidate);
@@ -534,5 +507,39 @@ public class MockDataSource implements DataSource {
 	public void saveOnClose(int reqkey) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public int getOffPassenger(OperationSchedule operationSchedule,
+			Reservation reservation, User user,
+			PassengerRecord passengerRecord,
+			WebAPICallback<PassengerRecord> callback) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getOnPassenger(OperationSchedule operationSchedule,
+			Reservation reservation, User user,
+			PassengerRecord passengerRecord,
+			WebAPICallback<PassengerRecord> callback) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int cancelGetOffPassenger(OperationSchedule operationSchedule,
+			Reservation reservation, User user,
+			WebAPICallback<PassengerRecord> callback) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int cancelGetOnPassenger(OperationSchedule operationSchedule,
+			Reservation reservation, User user,
+			WebAPICallback<PassengerRecord> callback) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }
