@@ -26,7 +26,7 @@ public class LogcatThread extends LogCollectorThread {
 	private Process getProcess() throws InterruptedException {
 		while (true) {
 			try {
-				return Runtime.getRuntime().exec("logcat -t 5000 -v time");
+				return Runtime.getRuntime().exec("logcat -v time");
 			} catch (IOException e) {
 				Log.w(TAG, e);
 			}
@@ -41,6 +41,7 @@ public class LogcatThread extends LogCollectorThread {
 
 	@Override
 	public void run() {
+		Log.i(TAG, "start");
 		try {
 			final Process process = getProcess();
 			processCloser = new Closeable() {
@@ -60,5 +61,6 @@ public class LogcatThread extends LogCollectorThread {
 		} catch (InterruptedException e) {
 			Closeables.closeQuietly(processCloser);
 		}
+		Log.i(TAG, "exit");
 	}
 }

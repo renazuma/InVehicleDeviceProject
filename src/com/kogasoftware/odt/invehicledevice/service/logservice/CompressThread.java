@@ -2,6 +2,7 @@ package com.kogasoftware.odt.invehicledevice.service.logservice;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
@@ -27,6 +28,7 @@ public class CompressThread extends Thread {
 
 	@Override
 	public void run() {
+		Log.i(TAG, "start");
 		try {
 			while (true) {
 				Thread.sleep(1000);
@@ -37,14 +39,18 @@ public class CompressThread extends Thread {
 				GZIPOutputStream gzipOutputStream = null;
 				FileOutputStream fileOutputStream = null;
 				Boolean succeed = false;
+				Boolean retry = false;
 				try {
 					fileInputStream = new FileInputStream(rawLogFile);
 					fileOutputStream = new FileOutputStream(compressedLogFile);
 					gzipOutputStream = new GZIPOutputStream(fileOutputStream);
 					ByteStreams.copy(fileInputStream, gzipOutputStream);
 					succeed = true;
+				} catch (FileNotFoundException e) {
+					Log.w(TAG, e);
 				} catch (IOException e) {
 					Log.w(TAG, e);
+					retry = true;
 				} finally {
 					Closeables.closeQuietly(fileInputStream);
 					Closeables.closeQuietly(gzipOutputStream);
@@ -53,11 +59,12 @@ public class CompressThread extends Thread {
 				if (succeed) {
 					compressedLogFiles.add(compressedLogFile);
 					rawLogFile.delete();
-				} else {
+				} else if (retry) {
 					rawLogFiles.add(rawLogFile);
 				}
 			}
 		} catch (InterruptedException e) {
 		}
+		Log.i(TAG, "exit");
 	}
 }

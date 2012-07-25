@@ -65,6 +65,7 @@ public class DropBoxThread extends LogCollectorThread {
 
 	@Override
 	public void run() {
+		Log.i(TAG, "start");
 		Calendar calendar = Calendar.getInstance();
 		calendar.add(Calendar.DAY_OF_MONTH, -5);
 		Date minLastCheckDate = calendar.getTime();
@@ -72,7 +73,9 @@ public class DropBoxThread extends LogCollectorThread {
 				LAST_CHECKED_DATE_KEY, 0L));
 		if (minLastCheckDate.after(lastCheckDate)) {
 			lastCheckDate = minLastCheckDate;
+			Log.i(TAG, "lastCheckDate changed");
 		}
+		Log.i(TAG, "lastCheckDate=" + lastCheckDate);
 		try {
 			while (true) {
 				Date nextCheckDate = new Date();
@@ -80,7 +83,7 @@ public class DropBoxThread extends LogCollectorThread {
 					save(tag, lastCheckDate, nextCheckDate);
 					Thread.sleep(1000);
 				}
-				
+
 				lastCheckDate = nextCheckDate;
 				flush();
 				sharedPreferences
@@ -91,5 +94,6 @@ public class DropBoxThread extends LogCollectorThread {
 			}
 		} catch (InterruptedException e) {
 		}
+		Log.i(TAG, "exit");
 	}
 }

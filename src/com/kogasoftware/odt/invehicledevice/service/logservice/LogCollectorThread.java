@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.service.logservice;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.Flushable;
@@ -33,6 +34,7 @@ public class LogCollectorThread extends Thread implements Flushable {
 	private final PipeThread pipeThread;
 	private final AtomicReference<OutputStream> currentOutputStream = new AtomicReference<OutputStream>(
 			null);
+	private final InputStream inputStream;
 
 	protected final PipedOutputStream pipedOutputStream = new PipedOutputStream();
 
@@ -54,7 +56,8 @@ public class LogCollectorThread extends Thread implements Flushable {
 					fileOutputStream.write(oneByte);
 				}
 			} catch (IOException e) {
-				Log.w(TAG, e);
+				Log.w(TAG + "#"
+						+ LogCollectorThread.this.getClass().getSimpleName(), e);
 			} finally {
 				Closeables.closeQuietly(fileOutputStream);
 				currentOutputStream.set(null);
@@ -63,23 +66,19 @@ public class LogCollectorThread extends Thread implements Flushable {
 
 		@Override
 		public void run() {
-			PipedInputStream pipedInputStream = null;
 			try {
-				pipedInputStream = new PipedInputStream(pipedOutputStream);
 				while (true) {
 					String format = (new SimpleDateFormat("yyyyMMddHHmmss.SSS"))
 							.format(new Date());
 					File file = new File(dataDirectory, deviceId + "_" + format
 							+ "_" + name + ".log");
-					save(file, pipedInputStream);
+					save(file, inputStream);
 					rawLogFiles.add(file);
 					Thread.sleep(10 * 1000);
 				}
 			} catch (InterruptedException e) {
-			} catch (IOException e) {
-				Log.w(TAG, e);
 			} finally {
-				Closeables.closeQuietly(pipedInputStream);
+				Closeables.closeQuietly(inputStream);
 			}
 		}
 	}
@@ -89,6 +88,13 @@ public class LogCollectorThread extends Thread implements Flushable {
 		this.dataDirectory = dataDirectory;
 		this.rawLogFiles = rawLogFiles;
 		this.name = name;
+		InputStream tempInputStream = new ByteArrayInputStream(new byte[] {});
+		try {
+			tempInputStream = new PipedInputStream(pipedOutputStream);
+		} catch (IOException e) {
+			Log.e(TAG, e.toString(), e);
+		}
+		inputStream = tempInputStream;
 		TelephonyManager telephonyManager = (TelephonyManager) context
 				.getSystemService(Context.TELEPHONY_SERVICE);
 		deviceId = telephonyManager.getDeviceId(); // TODO

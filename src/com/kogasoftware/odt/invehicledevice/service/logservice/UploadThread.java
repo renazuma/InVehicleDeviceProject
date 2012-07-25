@@ -28,6 +28,7 @@ public class UploadThread extends Thread {
 
 	@Override
 	public void run() {
+		Log.i(TAG, "start");
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		String accessKeyId = preferences.getString(
@@ -62,5 +63,6 @@ public class UploadThread extends Thread {
 			}
 		} catch (InterruptedException e) {
 		}
+		Log.i(TAG, "exit");
 	}
 }
