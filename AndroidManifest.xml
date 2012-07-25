@@ -27,6 +27,7 @@
       </intent-filter>
     </receiver>
     <service android:name=".service.invehicledeviceservice.InVehicleDeviceService"/>
+    <service android:name=".service.logservice.LogService" android:process=":LogService"/>
     <service android:name=".service.startupservice.StartupService" android:process=":StartupService">
       <intent-filter>
         <action android:name="com.kogasoftware.odt.invehicledevice.service.startupservice.IStartupService"/>

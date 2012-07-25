@@ -13,4 +13,6 @@ public class SharedPreferencesKey {
 	public static final String LOCATION_RECEIVE_MIN_DISTANCE = "location_receive_min_distance";
 	public static final String LOCATION_RECEIVE_RESTART_TIMEOUT = "location_receive_restart_timeout";
 	public static final String INITIALIZED = "initialized";
+	public static final String AWS_ACCESS_KEY_ID = "aws_access_key_id";
+	public static final String AWS_SECRET_ACCESS_KEY = "aws_secret_access_key";
 }

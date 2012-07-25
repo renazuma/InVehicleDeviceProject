@@ -152,7 +152,6 @@ public class StartupService extends Service {
 				Log.i(TAG, "package replaced");
 			}
 			context.startService(new Intent(context, StartupService.class));
-			context.startService(new Intent(context, LogService.class));
 		}
 	}
 
@@ -197,6 +196,7 @@ public class StartupService extends Service {
 		Log.i(TAG, "onStartCommand(" + intent + ", " + flags + ", " + startId
 				+ ")");
 		enabled.set(true);
+		startService(new Intent(this, LogService.class));
 		return Service.START_STICKY;
 	}
 }
