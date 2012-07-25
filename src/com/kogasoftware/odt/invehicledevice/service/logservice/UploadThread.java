@@ -43,6 +43,10 @@ public class UploadThread extends Thread {
 			while (true) {
 				Thread.sleep(5000);
 				File compressedLogFile = compressedLogFiles.take();
+				if (!compressedLogFile.exists()) {
+					Log.w(TAG, "compressedLogFile(" + compressedLogFile + ") not found" );
+					continue;
+				}
 				Boolean succeed = false;
 				try {
 					PutObjectRequest putObjectRequest = new PutObjectRequest(
