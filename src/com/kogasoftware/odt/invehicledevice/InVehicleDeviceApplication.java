@@ -1,6 +1,7 @@
 package com.kogasoftware.odt.invehicledevice;
 
 import org.acra.ACRA;
+import org.acra.ErrorReporter;
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
@@ -10,6 +11,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.StrictMode;
 import android.util.Log;
+
+import com.kogasoftware.odt.invehicledevice.service.logservice.LogServiceReportSender;
 
 @ReportsCrashes(formKey = "dFp5SnVVbTRuem13WmJ0YlVUb2NjaXc6MQ", mode = ReportingInteractionMode.TOAST, resToastText = R.string.crash_toast_text, customReportContent = {
 		ReportField.ANDROID_VERSION, ReportField.APP_VERSION_CODE,
@@ -36,6 +39,7 @@ public class InVehicleDeviceApplication extends Application {
 		ACRA.init(this);
 		super.onCreate();
 		Log.i(TAG, "onCreate()");
+		
 		try {
 			PackageInfo packageInfo = getPackageManager().getPackageInfo(
 					getPackageName(), 0);
@@ -45,6 +49,10 @@ public class InVehicleDeviceApplication extends Application {
 		} catch (NameNotFoundException e) {
 			Log.w(TAG, e);
 		}
+
+		ErrorReporter errorReporter = ErrorReporter.getInstance();
+		errorReporter.setReportSender(new LogServiceReportSender(this));
+
 		enableStrictMode();
 	}
 

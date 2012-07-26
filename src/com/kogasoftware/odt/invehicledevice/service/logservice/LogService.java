@@ -7,7 +7,11 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
@@ -17,9 +21,37 @@ import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 
 public class LogService extends Service {
 	private static final String TAG = LogService.class.getSimpleName();
+	public static final String ACTION_SEND_LOG = LogService.class
+			.getSimpleName() + ".ACTION_SEND_LOG";
 	public static final long CHECK_DEVICE_INTERVAL_MILLIS = 10 * 1000;
 	private final BlockingQueue<File> rawLogFiles = new LinkedBlockingQueue<File>();
 	private final BlockingQueue<File> compressedLogFiles = new LinkedBlockingQueue<File>();
+	private final BroadcastReceiver sendLogBroadcastReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if (intent == null) {
+				Log.w(TAG, "onReceive intent == null");
+				return;
+			}
+			Bundle extras = intent.getExtras();
+			if (extras == null) {
+				Log.w(TAG, "onReceive intent.getExtras() == null");
+				return;
+			}
+			String fileString = extras.getString("file");
+			if (fileString == null) {
+				Log.w(TAG, "onReceive intent.getExtras().getString() == null");
+				return;
+			}
+			File file = new File(fileString);
+			if (!file.exists()) {
+				Log.w(TAG, "!\"" + file + "\".exists()");
+				return;
+			}
+			Log.i(TAG, "\"" + file + "\" added");
+			rawLogFiles.add(file);
+		}
+	};
 	private Thread logcatThread = new EmptyThread();
 	private Thread dropboxThread = new EmptyThread();
 	private Thread compressThread = new EmptyThread();
@@ -39,6 +71,11 @@ public class LogService extends Service {
 		compressThread = new CompressThread(this, dataDirectory, rawLogFiles,
 				compressedLogFiles);
 		uploadThread = new UploadThread(this, dataDirectory, compressedLogFiles);
+
+		IntentFilter intentFilter = new IntentFilter();
+		intentFilter.addAction(ACTION_SEND_LOG);
+		registerReceiver(sendLogBroadcastReceiver, intentFilter);
+
 		final Handler handler = new Handler();
 		handler.post(new Runnable() {
 			@Override
@@ -92,6 +129,7 @@ public class LogService extends Service {
 		dropboxThread.interrupt();
 		compressThread.interrupt();
 		uploadThread.interrupt();
+		unregisterReceiver(sendLogBroadcastReceiver);
 	}
 
 	@Override
