@@ -7,14 +7,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.BlockingQueue;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.ByteStreams;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.DropBoxManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
+
+import com.google.common.base.Charsets;
+import com.google.common.io.ByteStreams;
 
 public class DropBoxThread extends LogCollectorThread {
 	private static final String LAST_CHECKED_DATE_KEY = "last_checked_date_key";
@@ -50,7 +50,7 @@ public class DropBoxThread extends LogCollectorThread {
 			}
 			try {
 				pipedOutputStream
-						.write(("===== TAG: " + entry.getTag() + " =====\n")
+						.write(("----- tag=" + entry.getTag() + " flags=" + entry.getFlags() + " -----\n")
 								.getBytes(Charsets.UTF_8));
 				InputStream inputStream = entry.getInputStream();
 				if (inputStream != null) {
