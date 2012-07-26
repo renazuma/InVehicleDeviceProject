@@ -2,7 +2,6 @@ package com.kogasoftware.odt.invehicledevice.test.util;
 
 import com.kogasoftware.odt.invehicledevice.test.util.MockitoUsageTestCase.Warehouse;
 
-import junit.framework.TestCase;
 import static org.mockito.Mockito.*;
 
 class Order {
@@ -28,7 +27,7 @@ class Order {
 	private int quantity;
 }
 
-public class MockitoUsageTestCase extends TestCase {
+public class MockitoUsageTestCase extends junit.framework.TestCase /* antでビルドする際にTestCaseのみだと失敗するのでパッケージ名も追記 */ {
 
 	public static abstract class Warehouse {
 		public abstract boolean hasInventory(String product, int quantity);
