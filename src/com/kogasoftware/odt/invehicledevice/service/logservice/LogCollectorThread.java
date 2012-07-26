@@ -16,7 +16,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import android.content.Context;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.google.common.base.Stopwatch;
@@ -30,7 +29,6 @@ public class LogCollectorThread extends Thread implements Flushable {
 	private final String name;
 	private final BlockingQueue<File> rawLogFiles;
 	private final File dataDirectory;
-	private final String deviceId;
 	private final PipeThread pipeThread;
 	private final AtomicReference<OutputStream> currentOutputStream = new AtomicReference<OutputStream>(
 			null);
@@ -70,7 +68,7 @@ public class LogCollectorThread extends Thread implements Flushable {
 				while (true) {
 					String format = (new SimpleDateFormat("yyyyMMddHHmmss.SSS"))
 							.format(new Date());
-					File file = new File(dataDirectory, deviceId + "_" + format
+					File file = new File(dataDirectory, format
 							+ "_" + name + ".log");
 					save(file, inputStream);
 					rawLogFiles.add(file);
@@ -95,9 +93,6 @@ public class LogCollectorThread extends Thread implements Flushable {
 			Log.e(TAG, e.toString(), e);
 		}
 		inputStream = tempInputStream;
-		TelephonyManager telephonyManager = (TelephonyManager) context
-				.getSystemService(Context.TELEPHONY_SERVICE);
-		deviceId = telephonyManager.getDeviceId(); // TODO
 		pipeThread = new PipeThread();
 	}
 

@@ -6,6 +6,7 @@ import java.util.concurrent.BlockingQueue;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.amazonaws.AmazonClientException;
@@ -19,11 +20,15 @@ public class UploadThread extends Thread {
 	private static final String TAG = UploadThread.class.getSimpleName();
 	private final Context context;
 	private final BlockingQueue<File> compressedLogFiles;
+	private final String deviceId;
 
 	public UploadThread(Context context, File dataDirectory,
 			BlockingQueue<File> compressedLogFiles) {
 		this.context = context;
 		this.compressedLogFiles = compressedLogFiles;
+		TelephonyManager telephonyManager = (TelephonyManager) context
+				.getSystemService(Context.TELEPHONY_SERVICE);
+		deviceId = telephonyManager.getDeviceId(); // TODO
 	}
 
 	@Override
@@ -50,7 +55,7 @@ public class UploadThread extends Thread {
 				Boolean succeed = false;
 				try {
 					PutObjectRequest putObjectRequest = new PutObjectRequest(
-							bucket, "log/" + compressedLogFile.getName(),
+							bucket, "log/" + deviceId + "_" + compressedLogFile.getName(),
 							compressedLogFile);
 					s3Client.putObject(putObjectRequest);
 					succeed = true;
