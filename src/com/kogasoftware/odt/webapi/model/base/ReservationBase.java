@@ -15,7 +15,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class ReservationBase extends Model {
-	private static final long serialVersionUID = 693628541074530362L;
+	private static final long serialVersionUID = 8213641238051138506L;
 
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {
@@ -50,7 +50,7 @@ public abstract class ReservationBase extends Model {
 		setDepartureSchedule(OperationSchedule.parse(jsonObject, "departure_schedule"));
 		setFellowUsers(User.parseList(jsonObject, "fellow_users"));
 		setOperator(Operator.parse(jsonObject, "operator"));
-		setPassengerRecord(PassengerRecord.parse(jsonObject, "passenger_record"));
+		setPassengerRecords(PassengerRecord.parseList(jsonObject, "passenger_records"));
 		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
 		setUnitAssignment(UnitAssignment.parse(jsonObject, "unit_assignment"));
 		setUser(User.parse(jsonObject, "user"));
@@ -164,8 +164,8 @@ public abstract class ReservationBase extends Model {
 				jsonObject.put("operator_id", toJSON(getOperator().get().getId()));
 			}
 		}
-		if (getPassengerRecord().isPresent() && recursive) {
-			jsonObject.put("passenger_record", getPassengerRecord().get().toJSONObject(true, nextDepth));
+		if (getPassengerRecords().size() > 0 && recursive) {
+			jsonObject.put("passenger_records", toJSON(getPassengerRecords(), true, nextDepth));
 		}
 		if (getServiceProvider().isPresent()) {
 			if (recursive) {
@@ -678,22 +678,18 @@ public abstract class ReservationBase extends Model {
 		this.operator = Optional.absent();
 	}
 
-	private Optional<PassengerRecord> passengerRecord = Optional.absent();
+	private LinkedList<PassengerRecord> passengerRecords = new LinkedList<PassengerRecord>();
 
-	public Optional<PassengerRecord> getPassengerRecord() {
-		return wrapNull(passengerRecord);
+	public List<PassengerRecord> getPassengerRecords() {
+		return wrapNull(passengerRecords);
 	}
 
-	public void setPassengerRecord(Optional<PassengerRecord> passengerRecord) {
-		this.passengerRecord = wrapNull(passengerRecord);
+	public void setPassengerRecords(Iterable<PassengerRecord> passengerRecords) {
+		this.passengerRecords = wrapNull(passengerRecords);
 	}
 
-	public void setPassengerRecord(PassengerRecord passengerRecord) {
-		this.passengerRecord = Optional.fromNullable(passengerRecord);
-	}
-
-	public void clearPassengerRecord() {
-		this.passengerRecord = Optional.absent();
+	public void clearPassengerRecords() {
+		this.passengerRecords = new LinkedList<PassengerRecord>();
 	}
 
 	private Optional<ServiceProvider> serviceProvider = Optional.absent();
