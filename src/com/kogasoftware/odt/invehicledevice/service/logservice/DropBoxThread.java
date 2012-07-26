@@ -90,7 +90,13 @@ public class DropBoxThread extends LogCollectorThread {
 						.edit()
 						.putLong(LAST_CHECKED_DATE_KEY, lastCheckDate.getTime())
 						.commit();
-				Thread.sleep(10 * 1000);
+				Thread.sleep(20 * 1000);
+
+				try { // 何か書き込むことで読み込み待ちスレッドを起こし、時間によるログローテートができるようにする
+					pipedOutputStream.write('\n');
+				} catch (IOException e) {
+					Log.w(TAG, e);
+				}
 			}
 		} catch (InterruptedException e) {
 		}
