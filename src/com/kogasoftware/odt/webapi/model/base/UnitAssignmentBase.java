@@ -15,7 +15,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class UnitAssignmentBase extends Model {
-	private static final long serialVersionUID = 2128958445294756904L;
+	private static final long serialVersionUID = 816031042617469931L;
 
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {
@@ -194,12 +194,12 @@ public abstract class UnitAssignmentBase extends Model {
 
 	private LinkedList<OperationSchedule> operationSchedules = new LinkedList<OperationSchedule>();
 
-	public LinkedList<OperationSchedule> getOperationSchedules() {
-		return new LinkedList<OperationSchedule>(wrapNull(operationSchedules));
+	public List<OperationSchedule> getOperationSchedules() {
+		return wrapNull(operationSchedules);
 	}
 
-	public void setOperationSchedules(LinkedList<OperationSchedule> operationSchedules) {
-		this.operationSchedules = new LinkedList<OperationSchedule>(wrapNull(operationSchedules));
+	public void setOperationSchedules(Iterable<OperationSchedule> operationSchedules) {
+		this.operationSchedules = wrapNull(operationSchedules);
 	}
 
 	public void clearOperationSchedules() {
@@ -208,12 +208,12 @@ public abstract class UnitAssignmentBase extends Model {
 
 	private LinkedList<ReservationCandidate> reservationCandidates = new LinkedList<ReservationCandidate>();
 
-	public LinkedList<ReservationCandidate> getReservationCandidates() {
-		return new LinkedList<ReservationCandidate>(wrapNull(reservationCandidates));
+	public List<ReservationCandidate> getReservationCandidates() {
+		return wrapNull(reservationCandidates);
 	}
 
-	public void setReservationCandidates(LinkedList<ReservationCandidate> reservationCandidates) {
-		this.reservationCandidates = new LinkedList<ReservationCandidate>(wrapNull(reservationCandidates));
+	public void setReservationCandidates(Iterable<ReservationCandidate> reservationCandidates) {
+		this.reservationCandidates = wrapNull(reservationCandidates);
 	}
 
 	public void clearReservationCandidates() {
@@ -222,12 +222,12 @@ public abstract class UnitAssignmentBase extends Model {
 
 	private LinkedList<Reservation> reservations = new LinkedList<Reservation>();
 
-	public LinkedList<Reservation> getReservations() {
-		return new LinkedList<Reservation>(wrapNull(reservations));
+	public List<Reservation> getReservations() {
+		return wrapNull(reservations);
 	}
 
-	public void setReservations(LinkedList<Reservation> reservations) {
-		this.reservations = new LinkedList<Reservation>(wrapNull(reservations));
+	public void setReservations(Iterable<Reservation> reservations) {
+		this.reservations = wrapNull(reservations);
 	}
 
 	public void clearReservations() {
@@ -254,12 +254,12 @@ public abstract class UnitAssignmentBase extends Model {
 
 	private LinkedList<ServiceUnit> serviceUnits = new LinkedList<ServiceUnit>();
 
-	public LinkedList<ServiceUnit> getServiceUnits() {
-		return new LinkedList<ServiceUnit>(wrapNull(serviceUnits));
+	public List<ServiceUnit> getServiceUnits() {
+		return wrapNull(serviceUnits);
 	}
 
-	public void setServiceUnits(LinkedList<ServiceUnit> serviceUnits) {
-		this.serviceUnits = new LinkedList<ServiceUnit>(wrapNull(serviceUnits));
+	public void setServiceUnits(Iterable<ServiceUnit> serviceUnits) {
+		this.serviceUnits = wrapNull(serviceUnits);
 	}
 
 	public void clearServiceUnits() {

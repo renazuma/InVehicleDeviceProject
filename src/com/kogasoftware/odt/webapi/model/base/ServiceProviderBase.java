@@ -15,7 +15,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class ServiceProviderBase extends Model {
-	private static final long serialVersionUID = 6024941612085328098L;
+	private static final long serialVersionUID = 9218262404259202807L;
 
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {
@@ -310,12 +310,12 @@ public abstract class ServiceProviderBase extends Model {
 
 	private LinkedList<Demand> demands = new LinkedList<Demand>();
 
-	public LinkedList<Demand> getDemands() {
-		return new LinkedList<Demand>(wrapNull(demands));
+	public List<Demand> getDemands() {
+		return wrapNull(demands);
 	}
 
-	public void setDemands(LinkedList<Demand> demands) {
-		this.demands = new LinkedList<Demand>(wrapNull(demands));
+	public void setDemands(Iterable<Demand> demands) {
+		this.demands = wrapNull(demands);
 	}
 
 	public void clearDemands() {
@@ -324,12 +324,12 @@ public abstract class ServiceProviderBase extends Model {
 
 	private LinkedList<Driver> drivers = new LinkedList<Driver>();
 
-	public LinkedList<Driver> getDrivers() {
-		return new LinkedList<Driver>(wrapNull(drivers));
+	public List<Driver> getDrivers() {
+		return wrapNull(drivers);
 	}
 
-	public void setDrivers(LinkedList<Driver> drivers) {
-		this.drivers = new LinkedList<Driver>(wrapNull(drivers));
+	public void setDrivers(Iterable<Driver> drivers) {
+		this.drivers = wrapNull(drivers);
 	}
 
 	public void clearDrivers() {
@@ -338,12 +338,12 @@ public abstract class ServiceProviderBase extends Model {
 
 	private LinkedList<InVehicleDevice> inVehicleDevices = new LinkedList<InVehicleDevice>();
 
-	public LinkedList<InVehicleDevice> getInVehicleDevices() {
-		return new LinkedList<InVehicleDevice>(wrapNull(inVehicleDevices));
+	public List<InVehicleDevice> getInVehicleDevices() {
+		return wrapNull(inVehicleDevices);
 	}
 
-	public void setInVehicleDevices(LinkedList<InVehicleDevice> inVehicleDevices) {
-		this.inVehicleDevices = new LinkedList<InVehicleDevice>(wrapNull(inVehicleDevices));
+	public void setInVehicleDevices(Iterable<InVehicleDevice> inVehicleDevices) {
+		this.inVehicleDevices = wrapNull(inVehicleDevices);
 	}
 
 	public void clearInVehicleDevices() {
@@ -352,12 +352,12 @@ public abstract class ServiceProviderBase extends Model {
 
 	private LinkedList<OperationSchedule> operationSchedules = new LinkedList<OperationSchedule>();
 
-	public LinkedList<OperationSchedule> getOperationSchedules() {
-		return new LinkedList<OperationSchedule>(wrapNull(operationSchedules));
+	public List<OperationSchedule> getOperationSchedules() {
+		return wrapNull(operationSchedules);
 	}
 
-	public void setOperationSchedules(LinkedList<OperationSchedule> operationSchedules) {
-		this.operationSchedules = new LinkedList<OperationSchedule>(wrapNull(operationSchedules));
+	public void setOperationSchedules(Iterable<OperationSchedule> operationSchedules) {
+		this.operationSchedules = wrapNull(operationSchedules);
 	}
 
 	public void clearOperationSchedules() {
@@ -366,12 +366,12 @@ public abstract class ServiceProviderBase extends Model {
 
 	private LinkedList<Operator> operators = new LinkedList<Operator>();
 
-	public LinkedList<Operator> getOperators() {
-		return new LinkedList<Operator>(wrapNull(operators));
+	public List<Operator> getOperators() {
+		return wrapNull(operators);
 	}
 
-	public void setOperators(LinkedList<Operator> operators) {
-		this.operators = new LinkedList<Operator>(wrapNull(operators));
+	public void setOperators(Iterable<Operator> operators) {
+		this.operators = wrapNull(operators);
 	}
 
 	public void clearOperators() {
@@ -380,12 +380,12 @@ public abstract class ServiceProviderBase extends Model {
 
 	private LinkedList<PassengerRecord> passengerRecords = new LinkedList<PassengerRecord>();
 
-	public LinkedList<PassengerRecord> getPassengerRecords() {
-		return new LinkedList<PassengerRecord>(wrapNull(passengerRecords));
+	public List<PassengerRecord> getPassengerRecords() {
+		return wrapNull(passengerRecords);
 	}
 
-	public void setPassengerRecords(LinkedList<PassengerRecord> passengerRecords) {
-		this.passengerRecords = new LinkedList<PassengerRecord>(wrapNull(passengerRecords));
+	public void setPassengerRecords(Iterable<PassengerRecord> passengerRecords) {
+		this.passengerRecords = wrapNull(passengerRecords);
 	}
 
 	public void clearPassengerRecords() {
@@ -394,12 +394,12 @@ public abstract class ServiceProviderBase extends Model {
 
 	private LinkedList<Platform> platforms = new LinkedList<Platform>();
 
-	public LinkedList<Platform> getPlatforms() {
-		return new LinkedList<Platform>(wrapNull(platforms));
+	public List<Platform> getPlatforms() {
+		return wrapNull(platforms);
 	}
 
-	public void setPlatforms(LinkedList<Platform> platforms) {
-		this.platforms = new LinkedList<Platform>(wrapNull(platforms));
+	public void setPlatforms(Iterable<Platform> platforms) {
+		this.platforms = wrapNull(platforms);
 	}
 
 	public void clearPlatforms() {
@@ -408,12 +408,12 @@ public abstract class ServiceProviderBase extends Model {
 
 	private LinkedList<ReservationCandidate> reservationCandidates = new LinkedList<ReservationCandidate>();
 
-	public LinkedList<ReservationCandidate> getReservationCandidates() {
-		return new LinkedList<ReservationCandidate>(wrapNull(reservationCandidates));
+	public List<ReservationCandidate> getReservationCandidates() {
+		return wrapNull(reservationCandidates);
 	}
 
-	public void setReservationCandidates(LinkedList<ReservationCandidate> reservationCandidates) {
-		this.reservationCandidates = new LinkedList<ReservationCandidate>(wrapNull(reservationCandidates));
+	public void setReservationCandidates(Iterable<ReservationCandidate> reservationCandidates) {
+		this.reservationCandidates = wrapNull(reservationCandidates);
 	}
 
 	public void clearReservationCandidates() {
@@ -422,12 +422,12 @@ public abstract class ServiceProviderBase extends Model {
 
 	private LinkedList<Reservation> reservations = new LinkedList<Reservation>();
 
-	public LinkedList<Reservation> getReservations() {
-		return new LinkedList<Reservation>(wrapNull(reservations));
+	public List<Reservation> getReservations() {
+		return wrapNull(reservations);
 	}
 
-	public void setReservations(LinkedList<Reservation> reservations) {
-		this.reservations = new LinkedList<Reservation>(wrapNull(reservations));
+	public void setReservations(Iterable<Reservation> reservations) {
+		this.reservations = wrapNull(reservations);
 	}
 
 	public void clearReservations() {
@@ -436,12 +436,12 @@ public abstract class ServiceProviderBase extends Model {
 
 	private LinkedList<ServiceUnit> serviceUnits = new LinkedList<ServiceUnit>();
 
-	public LinkedList<ServiceUnit> getServiceUnits() {
-		return new LinkedList<ServiceUnit>(wrapNull(serviceUnits));
+	public List<ServiceUnit> getServiceUnits() {
+		return wrapNull(serviceUnits);
 	}
 
-	public void setServiceUnits(LinkedList<ServiceUnit> serviceUnits) {
-		this.serviceUnits = new LinkedList<ServiceUnit>(wrapNull(serviceUnits));
+	public void setServiceUnits(Iterable<ServiceUnit> serviceUnits) {
+		this.serviceUnits = wrapNull(serviceUnits);
 	}
 
 	public void clearServiceUnits() {
@@ -450,12 +450,12 @@ public abstract class ServiceProviderBase extends Model {
 
 	private LinkedList<UnitAssignment> unitAssignments = new LinkedList<UnitAssignment>();
 
-	public LinkedList<UnitAssignment> getUnitAssignments() {
-		return new LinkedList<UnitAssignment>(wrapNull(unitAssignments));
+	public List<UnitAssignment> getUnitAssignments() {
+		return wrapNull(unitAssignments);
 	}
 
-	public void setUnitAssignments(LinkedList<UnitAssignment> unitAssignments) {
-		this.unitAssignments = new LinkedList<UnitAssignment>(wrapNull(unitAssignments));
+	public void setUnitAssignments(Iterable<UnitAssignment> unitAssignments) {
+		this.unitAssignments = wrapNull(unitAssignments);
 	}
 
 	public void clearUnitAssignments() {
@@ -464,12 +464,12 @@ public abstract class ServiceProviderBase extends Model {
 
 	private LinkedList<User> users = new LinkedList<User>();
 
-	public LinkedList<User> getUsers() {
-		return new LinkedList<User>(wrapNull(users));
+	public List<User> getUsers() {
+		return wrapNull(users);
 	}
 
-	public void setUsers(LinkedList<User> users) {
-		this.users = new LinkedList<User>(wrapNull(users));
+	public void setUsers(Iterable<User> users) {
+		this.users = wrapNull(users);
 	}
 
 	public void clearUsers() {
@@ -478,12 +478,12 @@ public abstract class ServiceProviderBase extends Model {
 
 	private LinkedList<Vehicle> vehicles = new LinkedList<Vehicle>();
 
-	public LinkedList<Vehicle> getVehicles() {
-		return new LinkedList<Vehicle>(wrapNull(vehicles));
+	public List<Vehicle> getVehicles() {
+		return wrapNull(vehicles);
 	}
 
-	public void setVehicles(LinkedList<Vehicle> vehicles) {
-		this.vehicles = new LinkedList<Vehicle>(wrapNull(vehicles));
+	public void setVehicles(Iterable<Vehicle> vehicles) {
+		this.vehicles = wrapNull(vehicles);
 	}
 
 	public void clearVehicles() {

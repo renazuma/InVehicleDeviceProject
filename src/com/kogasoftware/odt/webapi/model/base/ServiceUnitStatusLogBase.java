@@ -15,7 +15,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class ServiceUnitStatusLogBase extends Model {
-	private static final long serialVersionUID = 6046206316348160066L;
+	private static final long serialVersionUID = 7902930018134897061L;
 
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {

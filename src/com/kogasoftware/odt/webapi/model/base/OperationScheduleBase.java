@@ -15,7 +15,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class OperationScheduleBase extends Model {
-	private static final long serialVersionUID = 830695293138650913L;
+	private static final long serialVersionUID = 763885832946443531L;
 
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {
@@ -318,12 +318,12 @@ public abstract class OperationScheduleBase extends Model {
 
 	private LinkedList<Reservation> reservationsAsArrival = new LinkedList<Reservation>();
 
-	public LinkedList<Reservation> getReservationsAsArrival() {
-		return new LinkedList<Reservation>(wrapNull(reservationsAsArrival));
+	public List<Reservation> getReservationsAsArrival() {
+		return wrapNull(reservationsAsArrival);
 	}
 
-	public void setReservationsAsArrival(LinkedList<Reservation> reservationsAsArrival) {
-		this.reservationsAsArrival = new LinkedList<Reservation>(wrapNull(reservationsAsArrival));
+	public void setReservationsAsArrival(Iterable<Reservation> reservationsAsArrival) {
+		this.reservationsAsArrival = wrapNull(reservationsAsArrival);
 	}
 
 	public void clearReservationsAsArrival() {
@@ -332,12 +332,12 @@ public abstract class OperationScheduleBase extends Model {
 
 	private LinkedList<Reservation> reservationsAsDeparture = new LinkedList<Reservation>();
 
-	public LinkedList<Reservation> getReservationsAsDeparture() {
-		return new LinkedList<Reservation>(wrapNull(reservationsAsDeparture));
+	public List<Reservation> getReservationsAsDeparture() {
+		return wrapNull(reservationsAsDeparture);
 	}
 
-	public void setReservationsAsDeparture(LinkedList<Reservation> reservationsAsDeparture) {
-		this.reservationsAsDeparture = new LinkedList<Reservation>(wrapNull(reservationsAsDeparture));
+	public void setReservationsAsDeparture(Iterable<Reservation> reservationsAsDeparture) {
+		this.reservationsAsDeparture = wrapNull(reservationsAsDeparture);
 	}
 
 	public void clearReservationsAsDeparture() {

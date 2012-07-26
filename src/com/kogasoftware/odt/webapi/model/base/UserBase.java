@@ -15,7 +15,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class UserBase extends Model {
-	private static final long serialVersionUID = 7131687903076727575L;
+	private static final long serialVersionUID = 1807123538429933401L;
 
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {
@@ -610,12 +610,12 @@ public abstract class UserBase extends Model {
 
 	private LinkedList<Demand> demands = new LinkedList<Demand>();
 
-	public LinkedList<Demand> getDemands() {
-		return new LinkedList<Demand>(wrapNull(demands));
+	public List<Demand> getDemands() {
+		return wrapNull(demands);
 	}
 
-	public void setDemands(LinkedList<Demand> demands) {
-		this.demands = new LinkedList<Demand>(wrapNull(demands));
+	public void setDemands(Iterable<Demand> demands) {
+		this.demands = wrapNull(demands);
 	}
 
 	public void clearDemands() {
@@ -624,12 +624,12 @@ public abstract class UserBase extends Model {
 
 	private LinkedList<PassengerRecord> passengerRecords = new LinkedList<PassengerRecord>();
 
-	public LinkedList<PassengerRecord> getPassengerRecords() {
-		return new LinkedList<PassengerRecord>(wrapNull(passengerRecords));
+	public List<PassengerRecord> getPassengerRecords() {
+		return wrapNull(passengerRecords);
 	}
 
-	public void setPassengerRecords(LinkedList<PassengerRecord> passengerRecords) {
-		this.passengerRecords = new LinkedList<PassengerRecord>(wrapNull(passengerRecords));
+	public void setPassengerRecords(Iterable<PassengerRecord> passengerRecords) {
+		this.passengerRecords = wrapNull(passengerRecords);
 	}
 
 	public void clearPassengerRecords() {
@@ -638,12 +638,12 @@ public abstract class UserBase extends Model {
 
 	private LinkedList<Platform> platforms = new LinkedList<Platform>();
 
-	public LinkedList<Platform> getPlatforms() {
-		return new LinkedList<Platform>(wrapNull(platforms));
+	public List<Platform> getPlatforms() {
+		return wrapNull(platforms);
 	}
 
-	public void setPlatforms(LinkedList<Platform> platforms) {
-		this.platforms = new LinkedList<Platform>(wrapNull(platforms));
+	public void setPlatforms(Iterable<Platform> platforms) {
+		this.platforms = wrapNull(platforms);
 	}
 
 	public void clearPlatforms() {
@@ -652,12 +652,12 @@ public abstract class UserBase extends Model {
 
 	private LinkedList<ReservationCandidate> reservationCandidates = new LinkedList<ReservationCandidate>();
 
-	public LinkedList<ReservationCandidate> getReservationCandidates() {
-		return new LinkedList<ReservationCandidate>(wrapNull(reservationCandidates));
+	public List<ReservationCandidate> getReservationCandidates() {
+		return wrapNull(reservationCandidates);
 	}
 
-	public void setReservationCandidates(LinkedList<ReservationCandidate> reservationCandidates) {
-		this.reservationCandidates = new LinkedList<ReservationCandidate>(wrapNull(reservationCandidates));
+	public void setReservationCandidates(Iterable<ReservationCandidate> reservationCandidates) {
+		this.reservationCandidates = wrapNull(reservationCandidates);
 	}
 
 	public void clearReservationCandidates() {
@@ -666,12 +666,12 @@ public abstract class UserBase extends Model {
 
 	private LinkedList<Reservation> reservations = new LinkedList<Reservation>();
 
-	public LinkedList<Reservation> getReservations() {
-		return new LinkedList<Reservation>(wrapNull(reservations));
+	public List<Reservation> getReservations() {
+		return wrapNull(reservations);
 	}
 
-	public void setReservations(LinkedList<Reservation> reservations) {
-		this.reservations = new LinkedList<Reservation>(wrapNull(reservations));
+	public void setReservations(Iterable<Reservation> reservations) {
+		this.reservations = wrapNull(reservations);
 	}
 
 	public void clearReservations() {

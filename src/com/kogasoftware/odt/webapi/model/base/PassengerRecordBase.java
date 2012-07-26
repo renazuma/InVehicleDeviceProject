@@ -15,7 +15,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class PassengerRecordBase extends Model {
-	private static final long serialVersionUID = 6162339721322496381L;
+	private static final long serialVersionUID = 5458690246524136419L;
 
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {

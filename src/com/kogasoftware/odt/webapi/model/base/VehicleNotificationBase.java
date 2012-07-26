@@ -15,7 +15,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class VehicleNotificationBase extends Model {
-	private static final long serialVersionUID = 2463835741785429583L;
+	private static final long serialVersionUID = 5537160945349028376L;
 
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {

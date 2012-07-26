@@ -21,6 +21,7 @@ import android.util.Log;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.kogasoftware.odt.webapi.Identifiable;
 
 public abstract class Model implements Serializable, Identifiable, Cloneable {
@@ -195,8 +196,8 @@ public abstract class Model implements Serializable, Identifiable, Cloneable {
 		return Objects.firstNonNull(value, 0);
 	}
 
-	protected static <T extends Serializable> List<T> wrapNull(List<T> value) {
-		return Objects.firstNonNull(value, new LinkedList<T>());
+	protected static <T extends Model> LinkedList<T> wrapNull(Iterable<T> value) {
+		return Lists.newLinkedList(Objects.firstNonNull(value, new LinkedList<T>()));
 	}
 
 	protected static <T extends Serializable> Optional<T> wrapNull(

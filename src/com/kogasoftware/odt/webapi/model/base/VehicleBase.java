@@ -15,7 +15,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class VehicleBase extends Model {
-	private static final long serialVersionUID = 7491956852540023694L;
+	private static final long serialVersionUID = 7305990078686878702L;
 
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {
@@ -232,12 +232,12 @@ public abstract class VehicleBase extends Model {
 
 	private LinkedList<ServiceUnit> serviceUnits = new LinkedList<ServiceUnit>();
 
-	public LinkedList<ServiceUnit> getServiceUnits() {
-		return new LinkedList<ServiceUnit>(wrapNull(serviceUnits));
+	public List<ServiceUnit> getServiceUnits() {
+		return wrapNull(serviceUnits);
 	}
 
-	public void setServiceUnits(LinkedList<ServiceUnit> serviceUnits) {
-		this.serviceUnits = new LinkedList<ServiceUnit>(wrapNull(serviceUnits));
+	public void setServiceUnits(Iterable<ServiceUnit> serviceUnits) {
+		this.serviceUnits = wrapNull(serviceUnits);
 	}
 
 	public void clearServiceUnits() {

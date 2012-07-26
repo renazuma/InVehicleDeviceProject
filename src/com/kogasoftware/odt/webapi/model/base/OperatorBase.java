@@ -15,7 +15,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class OperatorBase extends Model {
-	private static final long serialVersionUID = 2238130622360752218L;
+	private static final long serialVersionUID = 2406668626405220242L;
 
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {

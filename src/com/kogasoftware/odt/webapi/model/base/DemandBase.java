@@ -15,7 +15,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class DemandBase extends Model {
-	private static final long serialVersionUID = 5928672551108080483L;
+	private static final long serialVersionUID = 5999730861047386183L;
 
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {
@@ -418,12 +418,12 @@ public abstract class DemandBase extends Model {
 
 	private LinkedList<User> fellowUsers = new LinkedList<User>();
 
-	public LinkedList<User> getFellowUsers() {
-		return new LinkedList<User>(wrapNull(fellowUsers));
+	public List<User> getFellowUsers() {
+		return wrapNull(fellowUsers);
 	}
 
-	public void setFellowUsers(LinkedList<User> fellowUsers) {
-		this.fellowUsers = new LinkedList<User>(wrapNull(fellowUsers));
+	public void setFellowUsers(Iterable<User> fellowUsers) {
+		this.fellowUsers = wrapNull(fellowUsers);
 	}
 
 	public void clearFellowUsers() {
@@ -450,12 +450,12 @@ public abstract class DemandBase extends Model {
 
 	private LinkedList<ReservationCandidate> reservationCandidates = new LinkedList<ReservationCandidate>();
 
-	public LinkedList<ReservationCandidate> getReservationCandidates() {
-		return new LinkedList<ReservationCandidate>(wrapNull(reservationCandidates));
+	public List<ReservationCandidate> getReservationCandidates() {
+		return wrapNull(reservationCandidates);
 	}
 
-	public void setReservationCandidates(LinkedList<ReservationCandidate> reservationCandidates) {
-		this.reservationCandidates = new LinkedList<ReservationCandidate>(wrapNull(reservationCandidates));
+	public void setReservationCandidates(Iterable<ReservationCandidate> reservationCandidates) {
+		this.reservationCandidates = wrapNull(reservationCandidates);
 	}
 
 	public void clearReservationCandidates() {

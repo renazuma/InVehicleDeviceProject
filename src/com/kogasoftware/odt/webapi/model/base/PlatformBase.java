@@ -15,7 +15,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class PlatformBase extends Model {
-	private static final long serialVersionUID = 7855032270831512623L;
+	private static final long serialVersionUID = 1602262952239394051L;
 
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {
@@ -430,12 +430,12 @@ public abstract class PlatformBase extends Model {
 
 	private LinkedList<Demand> demandsAsArrival = new LinkedList<Demand>();
 
-	public LinkedList<Demand> getDemandsAsArrival() {
-		return new LinkedList<Demand>(wrapNull(demandsAsArrival));
+	public List<Demand> getDemandsAsArrival() {
+		return wrapNull(demandsAsArrival);
 	}
 
-	public void setDemandsAsArrival(LinkedList<Demand> demandsAsArrival) {
-		this.demandsAsArrival = new LinkedList<Demand>(wrapNull(demandsAsArrival));
+	public void setDemandsAsArrival(Iterable<Demand> demandsAsArrival) {
+		this.demandsAsArrival = wrapNull(demandsAsArrival);
 	}
 
 	public void clearDemandsAsArrival() {
@@ -444,12 +444,12 @@ public abstract class PlatformBase extends Model {
 
 	private LinkedList<Demand> demandsAsDeparture = new LinkedList<Demand>();
 
-	public LinkedList<Demand> getDemandsAsDeparture() {
-		return new LinkedList<Demand>(wrapNull(demandsAsDeparture));
+	public List<Demand> getDemandsAsDeparture() {
+		return wrapNull(demandsAsDeparture);
 	}
 
-	public void setDemandsAsDeparture(LinkedList<Demand> demandsAsDeparture) {
-		this.demandsAsDeparture = new LinkedList<Demand>(wrapNull(demandsAsDeparture));
+	public void setDemandsAsDeparture(Iterable<Demand> demandsAsDeparture) {
+		this.demandsAsDeparture = wrapNull(demandsAsDeparture);
 	}
 
 	public void clearDemandsAsDeparture() {
@@ -458,12 +458,12 @@ public abstract class PlatformBase extends Model {
 
 	private LinkedList<OperationSchedule> operationSchedules = new LinkedList<OperationSchedule>();
 
-	public LinkedList<OperationSchedule> getOperationSchedules() {
-		return new LinkedList<OperationSchedule>(wrapNull(operationSchedules));
+	public List<OperationSchedule> getOperationSchedules() {
+		return wrapNull(operationSchedules);
 	}
 
-	public void setOperationSchedules(LinkedList<OperationSchedule> operationSchedules) {
-		this.operationSchedules = new LinkedList<OperationSchedule>(wrapNull(operationSchedules));
+	public void setOperationSchedules(Iterable<OperationSchedule> operationSchedules) {
+		this.operationSchedules = wrapNull(operationSchedules);
 	}
 
 	public void clearOperationSchedules() {
@@ -472,12 +472,12 @@ public abstract class PlatformBase extends Model {
 
 	private LinkedList<ReservationCandidate> reservationCandidatesAsArrival = new LinkedList<ReservationCandidate>();
 
-	public LinkedList<ReservationCandidate> getReservationCandidatesAsArrival() {
-		return new LinkedList<ReservationCandidate>(wrapNull(reservationCandidatesAsArrival));
+	public List<ReservationCandidate> getReservationCandidatesAsArrival() {
+		return wrapNull(reservationCandidatesAsArrival);
 	}
 
-	public void setReservationCandidatesAsArrival(LinkedList<ReservationCandidate> reservationCandidatesAsArrival) {
-		this.reservationCandidatesAsArrival = new LinkedList<ReservationCandidate>(wrapNull(reservationCandidatesAsArrival));
+	public void setReservationCandidatesAsArrival(Iterable<ReservationCandidate> reservationCandidatesAsArrival) {
+		this.reservationCandidatesAsArrival = wrapNull(reservationCandidatesAsArrival);
 	}
 
 	public void clearReservationCandidatesAsArrival() {
@@ -486,12 +486,12 @@ public abstract class PlatformBase extends Model {
 
 	private LinkedList<ReservationCandidate> reservationCandidatesAsDeparture = new LinkedList<ReservationCandidate>();
 
-	public LinkedList<ReservationCandidate> getReservationCandidatesAsDeparture() {
-		return new LinkedList<ReservationCandidate>(wrapNull(reservationCandidatesAsDeparture));
+	public List<ReservationCandidate> getReservationCandidatesAsDeparture() {
+		return wrapNull(reservationCandidatesAsDeparture);
 	}
 
-	public void setReservationCandidatesAsDeparture(LinkedList<ReservationCandidate> reservationCandidatesAsDeparture) {
-		this.reservationCandidatesAsDeparture = new LinkedList<ReservationCandidate>(wrapNull(reservationCandidatesAsDeparture));
+	public void setReservationCandidatesAsDeparture(Iterable<ReservationCandidate> reservationCandidatesAsDeparture) {
+		this.reservationCandidatesAsDeparture = wrapNull(reservationCandidatesAsDeparture);
 	}
 
 	public void clearReservationCandidatesAsDeparture() {
@@ -500,12 +500,12 @@ public abstract class PlatformBase extends Model {
 
 	private LinkedList<Reservation> reservationsAsArrival = new LinkedList<Reservation>();
 
-	public LinkedList<Reservation> getReservationsAsArrival() {
-		return new LinkedList<Reservation>(wrapNull(reservationsAsArrival));
+	public List<Reservation> getReservationsAsArrival() {
+		return wrapNull(reservationsAsArrival);
 	}
 
-	public void setReservationsAsArrival(LinkedList<Reservation> reservationsAsArrival) {
-		this.reservationsAsArrival = new LinkedList<Reservation>(wrapNull(reservationsAsArrival));
+	public void setReservationsAsArrival(Iterable<Reservation> reservationsAsArrival) {
+		this.reservationsAsArrival = wrapNull(reservationsAsArrival);
 	}
 
 	public void clearReservationsAsArrival() {
@@ -514,12 +514,12 @@ public abstract class PlatformBase extends Model {
 
 	private LinkedList<Reservation> reservationsAsDeparture = new LinkedList<Reservation>();
 
-	public LinkedList<Reservation> getReservationsAsDeparture() {
-		return new LinkedList<Reservation>(wrapNull(reservationsAsDeparture));
+	public List<Reservation> getReservationsAsDeparture() {
+		return wrapNull(reservationsAsDeparture);
 	}
 
-	public void setReservationsAsDeparture(LinkedList<Reservation> reservationsAsDeparture) {
-		this.reservationsAsDeparture = new LinkedList<Reservation>(wrapNull(reservationsAsDeparture));
+	public void setReservationsAsDeparture(Iterable<Reservation> reservationsAsDeparture) {
+		this.reservationsAsDeparture = wrapNull(reservationsAsDeparture);
 	}
 
 	public void clearReservationsAsDeparture() {

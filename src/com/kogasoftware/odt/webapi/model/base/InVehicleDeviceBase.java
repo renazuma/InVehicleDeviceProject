@@ -15,7 +15,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class InVehicleDeviceBase extends Model {
-	private static final long serialVersionUID = 3486221099769360104L;
+	private static final long serialVersionUID = 6301824503613939481L;
 
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {
@@ -272,12 +272,12 @@ public abstract class InVehicleDeviceBase extends Model {
 
 	private LinkedList<ServiceUnit> serviceUnits = new LinkedList<ServiceUnit>();
 
-	public LinkedList<ServiceUnit> getServiceUnits() {
-		return new LinkedList<ServiceUnit>(wrapNull(serviceUnits));
+	public List<ServiceUnit> getServiceUnits() {
+		return wrapNull(serviceUnits);
 	}
 
-	public void setServiceUnits(LinkedList<ServiceUnit> serviceUnits) {
-		this.serviceUnits = new LinkedList<ServiceUnit>(wrapNull(serviceUnits));
+	public void setServiceUnits(Iterable<ServiceUnit> serviceUnits) {
+		this.serviceUnits = wrapNull(serviceUnits);
 	}
 
 	public void clearServiceUnits() {
@@ -286,12 +286,12 @@ public abstract class InVehicleDeviceBase extends Model {
 
 	private LinkedList<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();
 
-	public LinkedList<VehicleNotification> getVehicleNotifications() {
-		return new LinkedList<VehicleNotification>(wrapNull(vehicleNotifications));
+	public List<VehicleNotification> getVehicleNotifications() {
+		return wrapNull(vehicleNotifications);
 	}
 
-	public void setVehicleNotifications(LinkedList<VehicleNotification> vehicleNotifications) {
-		this.vehicleNotifications = new LinkedList<VehicleNotification>(wrapNull(vehicleNotifications));
+	public void setVehicleNotifications(Iterable<VehicleNotification> vehicleNotifications) {
+		this.vehicleNotifications = wrapNull(vehicleNotifications);
 	}
 
 	public void clearVehicleNotifications() {

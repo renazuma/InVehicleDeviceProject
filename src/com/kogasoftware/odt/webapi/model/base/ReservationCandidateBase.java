@@ -15,7 +15,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class ReservationCandidateBase extends Model {
-	private static final long serialVersionUID = 1294950737757098752L;
+	private static final long serialVersionUID = 835031036168773445L;
 
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {
@@ -412,12 +412,12 @@ public abstract class ReservationCandidateBase extends Model {
 
 	private LinkedList<User> fellowUsers = new LinkedList<User>();
 
-	public LinkedList<User> getFellowUsers() {
-		return new LinkedList<User>(wrapNull(fellowUsers));
+	public List<User> getFellowUsers() {
+		return wrapNull(fellowUsers);
 	}
 
-	public void setFellowUsers(LinkedList<User> fellowUsers) {
-		this.fellowUsers = new LinkedList<User>(wrapNull(fellowUsers));
+	public void setFellowUsers(Iterable<User> fellowUsers) {
+		this.fellowUsers = wrapNull(fellowUsers);
 	}
 
 	public void clearFellowUsers() {
