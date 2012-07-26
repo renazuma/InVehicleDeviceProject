@@ -388,8 +388,10 @@ public class WebAPITestCase extends
 
 		Demand demand = record.createDemand(user, ua, p1, dtDeparture1, p2,
 				dtArrival2, 0);
-		assertNotNull(record.createReservation(user, demand, ua, p1, os1,
-				dtDeparture1, p2, os2, dtArrival2, 0));
+		Reservation r = record.createReservation(user, demand, ua, p1, os1,
+				dtDeparture1, p2, os2, dtArrival2, 0);
+		assertNotNull(r);
+		assertNotNull(record.createReservationUser(r, user));
 
 		api.getOperationSchedules(new WebAPICallback<List<OperationSchedule>>() {
 			@Override
@@ -414,8 +416,11 @@ public class WebAPITestCase extends
 		assertNotNull(schedules);
 		assertEquals(2, schedules.size());
 
-		assertTrue(schedules.get(1).getReservationsAsArrival().get(0).getUser()
-				.isPresent());
+		assertEquals(1, schedules.get(0).getReservationsAsDeparture().get(0)
+				.getFellowUsers().size());
+
+		assertEquals(1, schedules.get(1).getReservationsAsArrival().get(0)
+				.getFellowUsers().size());
 
 		if (offlineTest) {
 			offline = true;
@@ -540,9 +545,10 @@ public class WebAPITestCase extends
 		OperationSchedule os1 = schedules.get(0);
 		OperationSchedule os2 = schedules.get(1);
 		Reservation res = os1.getReservationsAsDeparture().get(0);
+		User user = master.createUser("login2", "もぎ", "たろう");
+		assertNotNull(record.createReservationUser(res, user));
 
-		assertTrue(schedules.get(1).getReservationsAsArrival().get(0).getUser()
-				.isPresent());
+		assertFalse(schedules.get(1).getReservationsAsArrival().get(0).getFellowUsers().isEmpty());
 
 		passengerRecord = null;
 		PassengerRecord prec = new PassengerRecord();
@@ -722,8 +728,7 @@ public class WebAPITestCase extends
 		OperationSchedule os2 = schedules.get(1);
 		Reservation res = os1.getReservationsAsDeparture().get(0);
 
-		assertTrue(schedules.get(1).getReservationsAsArrival().get(0).getUser()
-				.isPresent());
+		assertFalse(schedules.get(1).getReservationsAsArrival().get(0).getFellowUsers().isEmpty());
 
 		passengerRecord = null;
 		PassengerRecord prec = new PassengerRecord();
@@ -874,8 +879,7 @@ public class WebAPITestCase extends
 		OperationSchedule os2 = schedules.get(1);
 		Reservation res = os1.getReservationsAsDeparture().get(0);
 
-		assertTrue(schedules.get(1).getReservationsAsArrival().get(0).getUser()
-				.isPresent());
+		assertFalse(schedules.get(1).getReservationsAsArrival().get(0).getFellowUsers().isEmpty());
 
 		passengerRecord = null;
 		PassengerRecord prec = new PassengerRecord();
@@ -935,8 +939,8 @@ public class WebAPITestCase extends
 		for (int i = 0; i < max; ++i) {
 			final int fi = i;
 			if (i % 2 == 0) {
-				api.getOffPassenger(os2, res, res.getFellowUsers().get(0), prec,
-						new EmptyWebAPICallback<PassengerRecord>() {
+				api.getOffPassenger(os2, res, res.getFellowUsers().get(0),
+						prec, new EmptyWebAPICallback<PassengerRecord>() {
 							@Override
 							public void onSucceed(int reqkey, int statusCode,
 									PassengerRecord result) {
@@ -945,7 +949,8 @@ public class WebAPITestCase extends
 							}
 						});
 			} else {
-				api.cancelGetOffPassenger(os2, res, res.getFellowUsers().get(0),
+				api.cancelGetOffPassenger(os2, res,
+						res.getFellowUsers().get(0),
 						new EmptyWebAPICallback<PassengerRecord>() {
 							@Override
 							public void onSucceed(int reqkey, int statusCode,
@@ -986,8 +991,7 @@ public class WebAPITestCase extends
 		Reservation res = os1.getReservationsAsDeparture().get(0);
 		Reservation res2 = os1.getReservationsAsDeparture().get(1);
 
-		assertTrue(schedules.get(1).getReservationsAsArrival().get(0).getUser()
-				.isPresent());
+		assertFalse(schedules.get(1).getReservationsAsArrival().get(0).getFellowUsers().isEmpty());
 
 		passengerRecord = null;
 		PassengerRecord prec = new PassengerRecord();
@@ -1021,8 +1025,8 @@ public class WebAPITestCase extends
 						});
 			}
 			if (i == max / 2) {
-				api.getOnPassenger(os1, res2, res2.getFellowUsers().get(0), prec,
-						new EmptyWebAPICallback<PassengerRecord>() {
+				api.getOnPassenger(os1, res2, res2.getFellowUsers().get(0),
+						prec, new EmptyWebAPICallback<PassengerRecord>() {
 							@Override
 							public void onSucceed(int reqkey, int statusCode,
 									PassengerRecord result) {
@@ -1069,6 +1073,9 @@ public class WebAPITestCase extends
 				dtDeparture, p2, os2, dtArrival, 500);
 		Reservation res2 = record.createReservation(user, demand, ua, p1, os1,
 				dtDeparture, p2, os2, dtArrival, 500);
+		
+		assertNotNull(record.createReservationUser(res, user));
+		assertNotNull(record.createReservationUser(res2, user));
 
 		latch = new CountDownLatch(1);
 		api.getOperationSchedules(new WebAPICallback<List<OperationSchedule>>() {
