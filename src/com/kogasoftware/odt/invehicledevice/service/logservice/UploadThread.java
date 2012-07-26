@@ -71,6 +71,8 @@ public class UploadThread extends Thread {
 				}
 			}
 		} catch (InterruptedException e) {
+		} finally {
+			s3Client.shutdown();
 		}
 		Log.i(TAG, "exit");
 	}
