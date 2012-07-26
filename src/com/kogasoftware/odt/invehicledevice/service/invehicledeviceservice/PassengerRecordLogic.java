@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyWebAPICallback;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
@@ -187,7 +188,7 @@ public class PassengerRecordLogic {
 			passengerRecord.clearGetOffTime();
 			passengerRecord.clearDepartureOperationScheduleId();
 			passengerRecord.clearArrivalOperationScheduleId();
-			reservation.setPassengerRecord(passengerRecord); // TODO:消す
+			reservation.setPassengerRecords(Lists.newArrayList(passengerRecord)); // TODO:消す
 			dataSource.saveOnClose(dataSource.cancelGetOffPassenger(
 					operationSchedule, reservation, user,
 					new EmptyWebAPICallback<PassengerRecord>()));
@@ -197,14 +198,14 @@ public class PassengerRecordLogic {
 		} else if (passengerRecord.isRiding()) {
 			passengerRecord.clearGetOnTime();
 			passengerRecord.clearDepartureOperationScheduleId();
-			reservation.setPassengerRecord(passengerRecord); // TODO:消す
+			reservation.setPassengerRecords(Lists.newArrayList(passengerRecord)); // TODO:消す
 			dataSource.saveOnClose(dataSource.cancelGetOnPassenger(
 					operationSchedule, reservation, user,
 					new EmptyWebAPICallback<PassengerRecord>()));
 		} else if (passengerRecord.isGotOff()) {
 			passengerRecord.clearGetOffTime();
 			passengerRecord.clearArrivalOperationScheduleId();
-			reservation.setPassengerRecord(passengerRecord); // TODO:消す
+			reservation.setPassengerRecords(Lists.newArrayList(passengerRecord)); // TODO:消す
 			dataSource.saveOnClose(dataSource.cancelGetOffPassenger(
 					operationSchedule, reservation, user,
 					new EmptyWebAPICallback<PassengerRecord>()));

@@ -43,9 +43,10 @@ public class OperationScheduleLogic {
 							.remove(operationSchedule);
 					localData.finishedOperationSchedules.add(operationSchedule);
 					DataSource dataSource = service.getRemoteDataSource();
-					dataSource.saveOnClose(dataSource.departureOperationSchedule(
-							operationSchedule,
-							new EmptyWebAPICallback<OperationSchedule>()));
+					dataSource.saveOnClose(dataSource
+							.departureOperationSchedule(
+									operationSchedule,
+									new EmptyWebAPICallback<OperationSchedule>()));
 				}
 				localData.phase = LocalData.Phase.DRIVE;
 			}
@@ -123,6 +124,9 @@ public class OperationScheduleLogic {
 					mergeUpdatedPassengerRecordWithWriteLock(localData,
 							reservation, user);
 				}
+				// 循環参照にならないようにする
+				reservation.clearFellowUsers();
+				reservation.clearPassengerRecords();
 			}
 		}
 
@@ -182,10 +186,15 @@ public class OperationScheduleLogic {
 		// サーバーから送られるPassengerRecordを取得
 		Boolean passengerRecordReceived = false;
 		PassengerRecord serverPassengerRecord = new PassengerRecord();
-		for (PassengerRecord passengerRecord : serverUser.getPassengerRecords()) {
-			serverPassengerRecord = passengerRecord;
-			passengerRecordReceived = true;
-			break;
+		for (PassengerRecord passengerRecord : serverReservation
+				.getPassengerRecords()) {
+			if (passengerRecord.getUserId().isPresent()
+					&& passengerRecord.getUserId().get()
+							.equals(serverUser.getId())) {
+				serverPassengerRecord = passengerRecord;
+				passengerRecordReceived = true;
+				break;
+			}
 		}
 		serverPassengerRecord.setReservation(serverReservation);
 		serverPassengerRecord.setReservationId(serverReservation.getId());
@@ -193,7 +202,6 @@ public class OperationScheduleLogic {
 		serverPassengerRecord.setUserId(serverUser.getId());
 
 		// 循環参照にならないようにする
-		serverReservation.clearPassengerRecord();
 		serverUser.clearPassengerRecords();
 
 		// 乗車済み、降車済みのPassengerRecordの中に既に対応するものが存在する場合、それのPassengerRecordを交換

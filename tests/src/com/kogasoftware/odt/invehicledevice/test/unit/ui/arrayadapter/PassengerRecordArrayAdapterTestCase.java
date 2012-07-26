@@ -84,8 +84,8 @@ public class PassengerRecordArrayAdapterTestCase extends
 		public int cancelGetOffPassenger(OperationSchedule operationSchedule,
 				Reservation reservation, User user,
 				WebAPICallback<PassengerRecord> callback) {
-			cancelGetOffPassengerRecords.add(reservation.getPassengerRecord()
-					.get());
+			cancelGetOffPassengerRecords.add(reservation.getPassengerRecords()
+					.get(0));
 			return 0;
 		}
 
@@ -93,8 +93,8 @@ public class PassengerRecordArrayAdapterTestCase extends
 		public int cancelGetOnPassenger(OperationSchedule operationSchedule,
 				Reservation reservation, User user,
 				WebAPICallback<PassengerRecord> callback) {
-			cancelGetOnPassengerRecords.add(reservation.getPassengerRecord()
-					.get());
+			cancelGetOnPassengerRecords.add(reservation.getPassengerRecords()
+					.get(0));
 			return 0;
 		}
 	};
