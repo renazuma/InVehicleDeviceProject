@@ -9,6 +9,7 @@ WebAPITest::Application.routes.draw do
   resources :passenger_records
   resources :platforms
   resources :reservations
+  resources :reservation_users
   resources :unit_assignments
   resources :users
   resources :demands
