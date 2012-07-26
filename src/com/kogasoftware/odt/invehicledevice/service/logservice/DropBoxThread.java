@@ -15,6 +15,7 @@ import android.util.Log;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.ByteStreams;
+import com.google.common.io.Closeables;
 
 public class DropBoxThread extends LogCollectorThread {
 	private static final String LAST_CHECKED_DATE_KEY = "last_checked_date_key";
@@ -48,16 +49,24 @@ public class DropBoxThread extends LogCollectorThread {
 			if (entry.getTimeMillis() > nextCheckDate.getTime()) {
 				break;
 			}
+
+			String header = "\n//////////////////////////////////////////////////\n";
+			header += "tag=" + tag + "\n";
+			header += "flags=" + entry.getFlags() + "\n";
+			header += "describeContents=" + entry.describeContents() + "\n";
+			header += "\n";
+
+			InputStream inputStream = null;
 			try {
-				String header = "\n//////////////////////////////////////////////////\n"
-						+ "----- tag=" + tag + " flags=" + entry.getFlags() + " -----\n";
 				pipedOutputStream.write(header.getBytes(Charsets.UTF_8));
-				InputStream inputStream = entry.getInputStream();
+				inputStream = entry.getInputStream();
 				if (inputStream != null) {
 					ByteStreams.copy(inputStream, pipedOutputStream);
 				}
 			} catch (IOException e) {
 				Log.w(TAG, e);
+			} finally {
+				Closeables.closeQuietly(inputStream);
 			}
 			lastEntryTimeMillis = entry.getTimeMillis();
 		}
