@@ -49,9 +49,9 @@ public class DropBoxThread extends LogCollectorThread {
 				break;
 			}
 			try {
-				pipedOutputStream
-						.write(("----- tag=" + entry.getTag() + " flags=" + entry.getFlags() + " -----\n")
-								.getBytes(Charsets.UTF_8));
+				String header = "\n//////////////////////////////////////////////////\n"
+						+ "----- tag=" + tag + " flags=" + entry.getFlags() + " -----\n";
+				pipedOutputStream.write(header.getBytes(Charsets.UTF_8));
 				InputStream inputStream = entry.getInputStream();
 				if (inputStream != null) {
 					ByteStreams.copy(inputStream, pipedOutputStream);
