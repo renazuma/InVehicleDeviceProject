@@ -15,7 +15,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class ReservationBase extends Model {
-	private static final long serialVersionUID = 8213641238051138506L;
+	private static final long serialVersionUID = 3082901213166285482L;
 
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {
@@ -51,6 +51,7 @@ public abstract class ReservationBase extends Model {
 		setFellowUsers(User.parseList(jsonObject, "fellow_users"));
 		setOperator(Operator.parse(jsonObject, "operator"));
 		setPassengerRecords(PassengerRecord.parseList(jsonObject, "passenger_records"));
+		setReservationUsers(ReservationUser.parseList(jsonObject, "reservation_users"));
 		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
 		setUnitAssignment(UnitAssignment.parse(jsonObject, "unit_assignment"));
 		setUser(User.parse(jsonObject, "user"));
@@ -166,6 +167,9 @@ public abstract class ReservationBase extends Model {
 		}
 		if (getPassengerRecords().size() > 0 && recursive) {
 			jsonObject.put("passenger_records", toJSON(getPassengerRecords(), true, nextDepth));
+		}
+		if (getReservationUsers().size() > 0 && recursive) {
+			jsonObject.put("reservation_users", toJSON(getReservationUsers(), true, nextDepth));
 		}
 		if (getServiceProvider().isPresent()) {
 			if (recursive) {
@@ -690,6 +694,20 @@ public abstract class ReservationBase extends Model {
 
 	public void clearPassengerRecords() {
 		this.passengerRecords = new LinkedList<PassengerRecord>();
+	}
+
+	private LinkedList<ReservationUser> reservationUsers = new LinkedList<ReservationUser>();
+
+	public List<ReservationUser> getReservationUsers() {
+		return wrapNull(reservationUsers);
+	}
+
+	public void setReservationUsers(Iterable<ReservationUser> reservationUsers) {
+		this.reservationUsers = wrapNull(reservationUsers);
+	}
+
+	public void clearReservationUsers() {
+		this.reservationUsers = new LinkedList<ReservationUser>();
 	}
 
 	private Optional<ServiceProvider> serviceProvider = Optional.absent();

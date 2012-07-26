@@ -15,7 +15,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class DemandBase extends Model {
-	private static final long serialVersionUID = 5999730861047386183L;
+	private static final long serialVersionUID = 6398625251796913548L;
 
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {
@@ -39,6 +39,7 @@ public abstract class DemandBase extends Model {
 		setFellowUsers(User.parseList(jsonObject, "fellow_users"));
 		setReservation(Reservation.parse(jsonObject, "reservation"));
 		setReservationCandidates(ReservationCandidate.parseList(jsonObject, "reservation_candidates"));
+		setReservationUsers(ReservationUser.parseList(jsonObject, "reservation_users"));
 		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
 		setUnitAssignment(UnitAssignment.parse(jsonObject, "unit_assignment"));
 		setUser(User.parse(jsonObject, "user"));
@@ -120,6 +121,9 @@ public abstract class DemandBase extends Model {
 		}
 		if (getReservationCandidates().size() > 0 && recursive) {
 			jsonObject.put("reservation_candidates", toJSON(getReservationCandidates(), true, nextDepth));
+		}
+		if (getReservationUsers().size() > 0 && recursive) {
+			jsonObject.put("reservation_users", toJSON(getReservationUsers(), true, nextDepth));
 		}
 		if (getServiceProvider().isPresent()) {
 			if (recursive) {
@@ -460,6 +464,20 @@ public abstract class DemandBase extends Model {
 
 	public void clearReservationCandidates() {
 		this.reservationCandidates = new LinkedList<ReservationCandidate>();
+	}
+
+	private LinkedList<ReservationUser> reservationUsers = new LinkedList<ReservationUser>();
+
+	public List<ReservationUser> getReservationUsers() {
+		return wrapNull(reservationUsers);
+	}
+
+	public void setReservationUsers(Iterable<ReservationUser> reservationUsers) {
+		this.reservationUsers = wrapNull(reservationUsers);
+	}
+
+	public void clearReservationUsers() {
+		this.reservationUsers = new LinkedList<ReservationUser>();
 	}
 
 	private Optional<ServiceProvider> serviceProvider = Optional.absent();

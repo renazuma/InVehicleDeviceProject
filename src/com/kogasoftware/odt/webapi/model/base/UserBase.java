@@ -15,7 +15,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class UserBase extends Model {
-	private static final long serialVersionUID = 1807123538429933401L;
+	private static final long serialVersionUID = 715522837220393539L;
 
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {
@@ -53,6 +53,7 @@ public abstract class UserBase extends Model {
 		setPassengerRecords(PassengerRecord.parseList(jsonObject, "passenger_records"));
 		setPlatforms(Platform.parseList(jsonObject, "platforms"));
 		setReservationCandidates(ReservationCandidate.parseList(jsonObject, "reservation_candidates"));
+		setReservationUsers(ReservationUser.parseList(jsonObject, "reservation_users"));
 		setReservations(Reservation.parseList(jsonObject, "reservations"));
 		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
 	}
@@ -137,6 +138,9 @@ public abstract class UserBase extends Model {
 		}
 		if (getReservationCandidates().size() > 0 && recursive) {
 			jsonObject.put("reservation_candidates", toJSON(getReservationCandidates(), true, nextDepth));
+		}
+		if (getReservationUsers().size() > 0 && recursive) {
+			jsonObject.put("reservation_users", toJSON(getReservationUsers(), true, nextDepth));
 		}
 		if (getReservations().size() > 0 && recursive) {
 			jsonObject.put("reservations", toJSON(getReservations(), true, nextDepth));
@@ -662,6 +666,20 @@ public abstract class UserBase extends Model {
 
 	public void clearReservationCandidates() {
 		this.reservationCandidates = new LinkedList<ReservationCandidate>();
+	}
+
+	private LinkedList<ReservationUser> reservationUsers = new LinkedList<ReservationUser>();
+
+	public List<ReservationUser> getReservationUsers() {
+		return wrapNull(reservationUsers);
+	}
+
+	public void setReservationUsers(Iterable<ReservationUser> reservationUsers) {
+		this.reservationUsers = wrapNull(reservationUsers);
+	}
+
+	public void clearReservationUsers() {
+		this.reservationUsers = new LinkedList<ReservationUser>();
 	}
 
 	private LinkedList<Reservation> reservations = new LinkedList<Reservation>();
