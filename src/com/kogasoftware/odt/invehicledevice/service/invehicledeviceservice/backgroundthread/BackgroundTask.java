@@ -1,7 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundthread;
 
 import java.io.File;
-import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
@@ -18,7 +17,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
-import android.os.DropBoxManager;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.telephony.PhoneStateListener;
@@ -145,30 +143,9 @@ public class BackgroundTask {
 		applicationContext.registerReceiver(
 				batteryBroadcastReceiver, batteryIntentFilter);
 
-		StringBuilder trace = new StringBuilder();
-		{
-			DropBoxManager dropBoxManager = (DropBoxManager) applicationContext
-					.getSystemService(Context.DROPBOX_SERVICE);
-			Calendar calendar = Calendar.getInstance();
-			calendar.add(Calendar.MINUTE, -10);
-			Long last = calendar.getTimeInMillis();
-			for (Integer i = 0; i < 5; ++i) {
-				DropBoxManager.Entry entry = dropBoxManager.getNextEntry(
-						"data_app_anr", last);
-				if (entry == null) {
-					break;
-				}
-				last = entry.getTimeMillis();
-				trace.append(entry.getText(1024 * 1024) + "\n");
-			}
-		}
-
 		ErrorReporter errorReporter = ErrorReporter.getInstance();
-		String customKey = "anr_traces";
-		errorReporter.putCustomData(customKey, trace.toString());
 		errorReporter.handleSilentException(new Throwable(
 				"APPLICATION_START_LOG"));
-		errorReporter.removeCustomData(customKey);
 
 		Thread.sleep(0); // スレッド終了中にlocationNotifier.start()を呼ぶとエラーログが出るため、直前に割り込み可能なsleep()を置く
 		locationNotifier.start();
