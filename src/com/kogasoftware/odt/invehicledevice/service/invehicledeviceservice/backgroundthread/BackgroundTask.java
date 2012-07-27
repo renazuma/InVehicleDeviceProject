@@ -144,8 +144,15 @@ public class BackgroundTask {
 				batteryBroadcastReceiver, batteryIntentFilter);
 
 		ErrorReporter errorReporter = ErrorReporter.getInstance();
-		errorReporter.handleSilentException(new Throwable(
-				"APPLICATION_START_LOG"));
+		try {
+			errorReporter.handleSilentException(new Throwable(
+					"APPLICATION_START_LOG"));
+		} catch (IllegalMonitorStateException e) {
+			Log.w(TAG, e);
+			myLooper.quit();
+			service.exit();
+			return;
+		}
 
 		Thread.sleep(0); // スレッド終了中にlocationNotifier.start()を呼ぶとエラーログが出るため、直前に割り込み可能なsleep()を置く
 		locationNotifier.start();
