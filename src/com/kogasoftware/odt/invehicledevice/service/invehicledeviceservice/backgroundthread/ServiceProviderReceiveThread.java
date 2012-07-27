@@ -41,8 +41,10 @@ public class ServiceProviderReceiveThread extends Thread implements
 		// ログアップロード用のサービスに渡すのに、SharedPreferencesを使う
 		SharedPreferences.Editor editor = PreferenceManager
 				.getDefaultSharedPreferences(service).edit();
-		editor.putString(SharedPreferencesKey.AWS_ACCESS_KEY_ID, "");
-		editor.putString(SharedPreferencesKey.AWS_SECRET_ACCESS_KEY, "");
+		editor.putString(SharedPreferencesKey.AWS_ACCESS_KEY_ID,
+				serviceProvider.getLogAccessKeyIdAws().or(""));
+		editor.putString(SharedPreferencesKey.AWS_SECRET_ACCESS_KEY,
+				serviceProvider.getLogSecretAccessKeyAws().or(""));
 		editor.commit();
 	}
 
