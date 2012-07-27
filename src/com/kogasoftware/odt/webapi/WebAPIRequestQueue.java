@@ -8,20 +8,18 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.SerializationException;
 import org.apache.commons.lang3.SerializationUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import android.util.Log;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.Lists;
 
 /**
  * WebAPIRequestを管理するクラス
@@ -30,35 +28,40 @@ public class WebAPIRequestQueue {
 	private static final String TAG = WebAPIRequestQueue.class.getSimpleName();
 	private static final Object FILE_ACCESS_LOCK = new Object(); // ファイルアクセス中のスレッドを一つに制限するためのロック。将来的にはロックの粒度をファイル毎にする必要があるかもしれない。
 	public static final String UNIQUE_GROUP = "";
-	private final AtomicInteger uniqueGroupSequence = new AtomicInteger(0);
 
-	private static class InstanceState implements Serializable {
-		private static final long serialVersionUID = 672897944999498098L;
-		private final LinkedListMultimap<String, WebAPIRequest<?>> requests;
+	protected static class InstanceState implements Serializable {
+		protected static final long serialVersionUID = 672897944999498097L;
+		protected final LinkedList<Pair<String, List<WebAPIRequest<?>>>> requestsByGroup;
 
-		public InstanceState(Multimap<String, WebAPIRequest<?>> requests) {
-			this.requests = LinkedListMultimap.create(requests);
+		public InstanceState(
+				LinkedList<Pair<String, List<WebAPIRequest<?>>>> requestsByGroup) {
+			this.requestsByGroup = Lists.newLinkedList(requestsByGroup);
 		}
 	}
 
+	// 一意のブループ名を作るための値
+	protected final AtomicInteger uniqueGroupSequence = new AtomicInteger(0);
 	// 作業中のグループ
 	protected final Set<String> processingGroups = new HashSet<String>();
 	// グループ毎作業待ちリクエスト
-	protected final ListMultimap<String, WebAPIRequest<?>> requestsByGroup = LinkedListMultimap
-			.create();
-	// グループ毎作業待ちリクエストの追加待ち処理を実装するためのセマフォ。パーミットの数は必ずwaitingQueueのサイズと同じか多くなるようにする。
+	protected final LinkedList<Pair<String, List<WebAPIRequest<?>>>> requestsByGroup = Lists
+			.newLinkedList();
+	// 「グループ毎作業待ちリクエスト」の追加待ち処理を実装するためのセマフォ。パーミットの数は必ずrequestsByGroup内の作業中でないリクエストの数と同じか多くなるようにする。
 	protected final Semaphore waitingQueuePollPermissions = new Semaphore(0);
 	// 各キューの整合性を保つためのロック
 	protected final Object queueLock = new Object();
 	// バックアップ先ファイル名
 	protected final Optional<File> optionalBackupFile;
 
+	/**
+	 * コンストラクタ
+	 */
 	public WebAPIRequestQueue() {
 		optionalBackupFile = Optional.absent();
 	}
 
 	/**
-	 * コンストラクタ backupFileが指定されている場合はそのファイルからデータを読み出す
+	 * コンストラクタ
 	 * 
 	 * @param backupFile
 	 *            データを読み出すファイル
@@ -76,7 +79,8 @@ public class WebAPIRequestQueue {
 					Log.w(TAG, "!(" + object + " instanceof InstanceState)");
 					return;
 				}
-				requestsByGroup.putAll(((InstanceState) object).requests);
+				InstanceState instanceState = (InstanceState) object;
+				requestsByGroup.addAll(instanceState.requestsByGroup);
 			} catch (IndexOutOfBoundsException e) {
 				Log.e(TAG, e.toString(), e);
 			} catch (IOException e) {
@@ -86,6 +90,21 @@ public class WebAPIRequestQueue {
 			} finally {
 				waitingQueuePollPermissions.release(requestsByGroup.size());
 			}
+		}
+	}
+
+	protected List<WebAPIRequest<?>> findOrCreateGroup(String group) {
+		synchronized (queueLock) {
+			// 同名のグループを探す
+			for (Pair<String, List<WebAPIRequest<?>>> pair : requestsByGroup) {
+				if (pair.getKey().equals(group)) {
+					return pair.getValue();
+				}
+			}
+			// ない場合新規作成
+			List<WebAPIRequest<?>> newList = Lists.newLinkedList();
+			requestsByGroup.addFirst(Pair.of(group, newList));
+			return newList;
 		}
 	}
 
@@ -101,12 +120,12 @@ public class WebAPIRequestQueue {
 				while (true) {
 					Integer s = uniqueGroupSequence.getAndIncrement();
 					group = "group-" + s;
-					if (!requestsByGroup.containsKey(group)) {
+					if (findOrCreateGroup(group).isEmpty()) {
 						break;
 					}
 				}
 			}
-			requestsByGroup.put(group, request);
+			findOrCreateGroup(group).add(request);
 			backup();
 			waitingQueuePollPermissions.release();
 		}
@@ -117,7 +136,7 @@ public class WebAPIRequestQueue {
 	}
 
 	/**
-	 * 現在のリクエストの保存
+	 * 現在の状態を保存
 	 */
 	protected void backup() {
 		for (File backupFile : optionalBackupFile.asSet()) {
@@ -126,15 +145,26 @@ public class WebAPIRequestQueue {
 	}
 
 	protected void backup(File backupFile) {
-		Multimap<String, WebAPIRequest<?>> backupRequests = LinkedListMultimap
-				.create();
+		LinkedList<Pair<String, List<WebAPIRequest<?>>>> backupRequestsByGroup = Lists
+				.newLinkedList();
 		synchronized (queueLock) {
-			backupRequests.putAll(requestsByGroup);
+			for (Pair<String, List<WebAPIRequest<?>>> pair : Lists
+					.newLinkedList(requestsByGroup)) {
+				List<WebAPIRequest<?>> backupRequests = Lists.newLinkedList();
+				for (WebAPIRequest<?> request : pair.getValue()) {
+					if (request.isSaveOnClose()) {
+						backupRequests.add(request);
+					}
+				}
+				if (!backupRequests.isEmpty()) {
+					backupRequestsByGroup.add(Pair.of(pair.getKey(), backupRequests));
+				}
+			}
 		}
 
 		synchronized (FILE_ACCESS_LOCK) {
 			try {
-				SerializationUtils.serialize(new InstanceState(backupRequests),
+				SerializationUtils.serialize(new InstanceState(backupRequestsByGroup),
 						new FileOutputStream(backupFile));
 			} catch (SerializationException e) {
 				Log.e(TAG, e.toString(), e);
@@ -151,36 +181,46 @@ public class WebAPIRequestQueue {
 	 */
 	public void remove(WebAPIRequest<?> request) {
 		synchronized (queueLock) {
-			for (Entry<String, WebAPIRequest<?>> entry : LinkedListMultimap
-					.create(requestsByGroup).entries()) {
-				if (entry.getValue() != request) {
+			for (Pair<String, List<WebAPIRequest<?>>> entry : Lists
+					.newLinkedList(requestsByGroup)) {
+				String group = entry.getKey();
+				List<WebAPIRequest<?>> requests = entry.getValue();
+				if (!requests.remove(request)) {
 					continue;
 				}
-				String group = entry.getKey();
-				processingGroups.remove(group);
-				requestsByGroup.remove(group, request);
+				if (processingGroups.remove(group)) {
+					waitingQueuePollPermissions.release(requests.size());
+				}
+				if (requests.isEmpty()) {
+					requestsByGroup.remove(entry);
+				}
 				backup();
-				waitingQueuePollPermissions.release(requestsByGroup.get(group)
-						.size());
 				break;
 			}
 		}
 	}
 
+	/**
+	 * リクエストの中断
+	 * 
+	 * @param reqkey
+	 */
 	public void abort(int reqkey) {
-		WebAPIRequest<?> request = null;
+		WebAPIRequest<?> foundRequest = null;
 		synchronized (queueLock) {
-			for (Entry<String, WebAPIRequest<?>> entry : LinkedListMultimap
-					.create(requestsByGroup).entries()) {
-				if (entry.getValue().getReqKey() == reqkey) {
-					request = entry.getValue();
-					remove(entry.getValue());
-					break;
+			for (Pair<String, List<WebAPIRequest<?>>> entry : Lists
+					.newLinkedList(requestsByGroup)) {
+				for (WebAPIRequest<?> request : entry.getValue()) {
+					if (request.getReqKey() == reqkey) {
+						foundRequest = request;
+						remove(request);
+						break;
+					}
 				}
 			}
 		}
-		if (request != null) {
-			request.abort();
+		if (foundRequest != null) {
+			foundRequest.abort();
 		}
 	}
 
@@ -192,23 +232,22 @@ public class WebAPIRequestQueue {
 	 */
 	public void retry(WebAPIRequest<?> request) {
 		synchronized (queueLock) {
-			for (Entry<String, WebAPIRequest<?>> entry : LinkedListMultimap
-					.create(requestsByGroup).entries()) {
-				if (entry.getValue() != request) {
+			for (Pair<String, List<WebAPIRequest<?>>> entry : Lists
+					.newLinkedList(requestsByGroup)) {
+				String group = entry.getKey();
+				List<WebAPIRequest<?>> requests = entry.getValue();
+				if (!requests.contains(request)) {
 					continue;
 				}
-				String group = entry.getKey();
-				processingGroups.remove(group);
-				List<WebAPIRequest<?>> retryRequests = requestsByGroup
-						.removeAll(group);
-				for (WebAPIRequest<?> retryRequest : retryRequests) {
+				if (processingGroups.remove(group)) {
+					waitingQueuePollPermissions.release(requests.size());
+				}
+				requestsByGroup.remove(entry);
+				requestsByGroup.addLast(entry);
+				for (WebAPIRequest<?> retryRequest : requests) {
 					retryRequest.setRetry(true);
 				}
-				requestsByGroup.putAll(group, retryRequests);
 				backup();
-				waitingQueuePollPermissions.release(requestsByGroup.get(group)
-						.size());
-				break;
 			}
 		}
 	}
@@ -223,13 +262,13 @@ public class WebAPIRequestQueue {
 		while (true) {
 			waitingQueuePollPermissions.acquire(); // synchronizedの外で待つ
 			synchronized (queueLock) {
-				for (String group : new LinkedList<String>(
-						requestsByGroup.keys())) {
-					List<WebAPIRequest<?>> requests = requestsByGroup
-							.get(group);
+				for (Pair<String, List<WebAPIRequest<?>>> entry : Lists
+						.newLinkedList(requestsByGroup)) {
+					String group = entry.getKey();
+					List<WebAPIRequest<?>> requests = entry.getValue();
 					if (requests.isEmpty()) {
 						processingGroups.remove(group);
-						requestsByGroup.removeAll(group);
+						requestsByGroup.remove(entry);
 						continue;
 					}
 					if (processingGroups.contains(group)) {
@@ -237,6 +276,21 @@ public class WebAPIRequestQueue {
 					}
 					processingGroups.add(group);
 					return requests.get(0);
+				}
+			}
+		}
+	}
+
+	public void setSaveOnClose(int reqkey, boolean saveOnClose) {
+		synchronized (queueLock) {
+			for (Pair<String, List<WebAPIRequest<?>>> entry : Lists
+					.newLinkedList(requestsByGroup)) {
+				for (WebAPIRequest<?> request : entry.getValue()) {
+					if (request.getReqKey() == reqkey) {
+						request.setSaveOnClose(saveOnClose);
+						backup();
+						break;
+					}
 				}
 			}
 		}
