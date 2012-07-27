@@ -22,6 +22,7 @@ import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.ReservationCandidate;
+import com.kogasoftware.odt.webapi.model.ServiceProvider;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.webapi.model.User;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
@@ -282,5 +283,18 @@ public class WebAPIDataSource implements DataSource {
 	@Override
 	public void saveOnClose(int reqkey) {
 		api.saveOnClose(reqkey);
+	}
+}
+
+	}
+
+	@Override
+	public int getServiceProvider(final WebAPICallback<ServiceProvider> callback) {
+		return callWebAPI(new WebAPICaller() {
+			@Override
+			public int call() throws JSONException, WebAPIException {
+				return api.getServicePrivider(callback);
+			}
+		});
 	}
 }
