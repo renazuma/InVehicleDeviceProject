@@ -265,6 +265,7 @@ public class BackgroundTask {
 					PhoneStateListener.LISTEN_NONE);
 		}
 		executorService.shutdownNow();
+		service.exit();
 	}
 
 	/**
