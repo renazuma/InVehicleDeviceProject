@@ -33,6 +33,7 @@ public class LogCollectorThread extends Thread implements Flushable {
 	private final AtomicReference<OutputStream> currentOutputStream = new AtomicReference<OutputStream>(
 			null);
 	private final InputStream inputStream;
+	protected final Context context;
 
 	protected final PipedOutputStream pipedOutputStream = new PipedOutputStream();
 
@@ -83,6 +84,7 @@ public class LogCollectorThread extends Thread implements Flushable {
 
 	public LogCollectorThread(Context context, File dataDirectory,
 			BlockingQueue<File> rawLogFiles, String name) {
+		this.context = context;
 		this.dataDirectory = dataDirectory;
 		this.rawLogFiles = rawLogFiles;
 		this.name = name;

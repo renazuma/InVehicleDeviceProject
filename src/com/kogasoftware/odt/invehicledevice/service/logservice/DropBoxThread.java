@@ -27,15 +27,12 @@ public class DropBoxThread extends LogCollectorThread {
 			"system_app_anr", "system_app_crash", "system_app_wtf",
 			"system_server_anr", "system_server_crash", "system_server_wtf", };
 	private final DropBoxManager dropBoxManager;
-	private final SharedPreferences sharedPreferences;
 
 	public DropBoxThread(Context context, File dataDirectory,
 			BlockingQueue<File> rawLogFiles) {
 		super(context, dataDirectory, rawLogFiles, "dropbox");
 		dropBoxManager = (DropBoxManager) context
 				.getSystemService(Context.DROPBOX_SERVICE);
-		sharedPreferences = PreferenceManager
-				.getDefaultSharedPreferences(context);
 	}
 
 	void save(String tag, Date lastCheckDate, Date nextCheckDate) {
@@ -75,6 +72,8 @@ public class DropBoxThread extends LogCollectorThread {
 	@Override
 	public void run() {
 		Log.i(TAG, "start");
+		SharedPreferences sharedPreferences = PreferenceManager
+				.getDefaultSharedPreferences(context);
 		Calendar calendar = Calendar.getInstance();
 		calendar.add(Calendar.DAY_OF_MONTH, -5);
 		Date minLastCheckDate = calendar.getTime();
