@@ -24,8 +24,9 @@ public class DropBoxThread extends LogCollectorThread {
 			"APANIC_THREADS", "BATTERY_DISCHARGE_INFO", "SYSTEM_BOOT",
 			"SYSTEM_LAST_KMSG", "SYSTEM_RECOVERY_LOG", "SYSTEM_RESTART",
 			"SYSTEM_TOMBSTONE", "data_app_anr", "data_app_strictmode",
-			"system_app_anr", "system_app_crash", "system_app_wtf",
-			"system_server_anr", "system_server_crash", "system_server_wtf", };
+			"data_app_wtf", "data_app_crash", "system_app_anr",
+			"system_app_crash", "system_app_wtf", "system_server_anr",
+			"system_server_crash", "system_server_wtf", };
 	private final DropBoxManager dropBoxManager;
 
 	public DropBoxThread(Context context, File dataDirectory,
