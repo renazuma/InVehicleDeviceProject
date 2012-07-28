@@ -250,6 +250,7 @@ public class NavigationModalView extends ModalView implements
 
 	@Override
 	public void onPauseActivity() {
+		Log.i(TAG, "onPauseActivity()");
 		GLSurfaceView glSurfaceView = glSurfaceViewWeakReference.get();
 		if (glSurfaceView != null) {
 			glSurfaceView.onPause();
@@ -261,6 +262,7 @@ public class NavigationModalView extends ModalView implements
 
 	@Override
 	public void onResumeActivity() {
+		Log.i(TAG, "onResumeActivity()");
 		// ICSのGLSurfaceView.GLThreadがその親ViewをメンバmParentに保存する。
 		// そのため、Activity再構築などのタイミングで1/10程度の確率で循環参照でリークすることがある。
 		// それを防ぐために参照を極力減らしたFrameLayoutを間にはさむ
