@@ -28,7 +28,7 @@ import com.kogasoftware.odt.invehicledevice.service.logservice.LogServiceReportS
 		ReportField.SHARED_PREFERENCES, ReportField.STACK_TRACE,
 		ReportField.TOTAL_MEM_SIZE, ReportField.USER_APP_START_DATE,
 		ReportField.USER_COMMENT, ReportField.USER_CRASH_DATE,
-		ReportField.USER_EMAIL, }, logcatArguments = { "-v", "time" }, includeDropBoxSystemTags = true, additionalDropBoxTags = { "data_app_anr" })
+		ReportField.USER_EMAIL, }, includeDropBoxSystemTags = true, additionalDropBoxTags = { "data_app_anr" })
 public class InVehicleDeviceApplication extends Application {
 	private static final String TAG = InVehicleDeviceApplication.class
 			.getSimpleName();
