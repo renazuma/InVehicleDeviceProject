@@ -35,6 +35,18 @@ public class InVehicleDeviceApplication extends Application {
 
 	@Override
 	public void onCreate() {
+		try { // Applicationオブジェクトが生成できない旨の例外が起きることがあり、このonCreateが怪しいためデバッグ用にwtfとして記録する。
+			tryOnCreate();
+		} catch (RuntimeException e) {
+			Log.wtf(TAG, e);
+			throw e;
+		} catch (Exception e) {
+			Log.wtf(TAG, e);
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void tryOnCreate() {
 		ACRA.init(this);
 		super.onCreate();
 		Log.i(TAG, "onCreate()");
