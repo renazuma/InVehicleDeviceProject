@@ -14,6 +14,7 @@ import android.location.LocationManager;
 import android.opengl.GLSurfaceView;
 import android.os.Handler;
 import android.text.Html;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -277,6 +278,7 @@ public class NavigationModalView extends ModalView implements
 		GLSurfaceView glSurfaceView = new GLSurfaceView(getContext());
 		glSurfaceView.setRenderer(navigationRenderer);
 		FrameLayout navigationSurfaceParent = (FrameLayout) findViewById(R.id.navigation_surface_parent);
+		navigationSurfaceParent.removeAllViews();
 		navigationSurfaceParent.addView(icsLeakAvoidanceFrameLayout,
 				new FrameLayout.LayoutParams(
 						FrameLayout.LayoutParams.FILL_PARENT,
