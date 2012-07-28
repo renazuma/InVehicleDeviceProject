@@ -33,14 +33,20 @@ public class UploadThread extends Thread {
 		deviceId = telephonyManager.getDeviceId(); // TODO
 	}
 
-	private AWSCredentials getAWSCredentials() {
-		SharedPreferences preferences = PreferenceManager
-				.getDefaultSharedPreferences(context);
-		String accessKeyId = preferences.getString(
-				SharedPreferencesKey.AWS_ACCESS_KEY_ID, "");
-		String secretAccessKey = preferences.getString(
-				SharedPreferencesKey.AWS_SECRET_ACCESS_KEY, "");
-		return new BasicAWSCredentials(accessKeyId, secretAccessKey);
+	private AWSCredentials getAWSCredentials() throws InterruptedException {
+		while (true) {
+			Thread.sleep(5000);
+			SharedPreferences preferences = PreferenceManager
+					.getDefaultSharedPreferences(context);
+			String accessKeyId = preferences.getString(
+					SharedPreferencesKey.AWS_ACCESS_KEY_ID, "");
+			String secretAccessKey = preferences.getString(
+					SharedPreferencesKey.AWS_SECRET_ACCESS_KEY, "");
+			if (accessKeyId.isEmpty() || secretAccessKey.isEmpty()) {
+				continue;
+			}
+			return new BasicAWSCredentials(accessKeyId, secretAccessKey);
+		}
 	}
 
 	private void uploadOneFile(AmazonS3Client s3Client)
