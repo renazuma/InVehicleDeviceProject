@@ -140,8 +140,8 @@ public class LogService extends Service {
 
 				logcatThread.start();
 				dropboxThread.start();
-				// compressThread.start();
-				// uploadThread.start();
+				compressThread.start();
+				uploadThread.start();
 			}
 		});
 	}
