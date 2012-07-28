@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -18,12 +20,14 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
+import com.kogasoftware.odt.invehicledevice.ui.activity.StartupActivity;
 
 public class LogService extends Service {
 	private static final String TAG = LogService.class.getSimpleName();
 	public static final String ACTION_SEND_LOG = LogService.class
 			.getSimpleName() + ".ACTION_SEND_LOG";
 	public static final long CHECK_DEVICE_INTERVAL_MILLIS = 10 * 1000;
+	public static final Integer FOREGROUND_NOTIFICATION_ID = 10;
 	private final BlockingQueue<File> rawLogFiles = new LinkedBlockingQueue<File>();
 	private final BlockingQueue<File> compressedLogFiles = new LinkedBlockingQueue<File>();
 	private final BroadcastReceiver sendLogBroadcastReceiver = new BroadcastReceiver() {
@@ -75,6 +79,26 @@ public class LogService extends Service {
 		IntentFilter intentFilter = new IntentFilter();
 		intentFilter.addAction(ACTION_SEND_LOG);
 		registerReceiver(sendLogBroadcastReceiver, intentFilter);
+		
+		// @see http://stackoverflow.com/questions/3687200/implement-startforeground-method-in-android
+		// The intent to launch when the user clicks the expanded notification
+		Intent notificationIntent = new Intent(this, StartupActivity.class);
+		notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+				| Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		PendingIntent pendIntent = PendingIntent.getActivity(this, 0,
+				notificationIntent, 0);
+
+		// This constructor is deprecated. Use Notification.Builder instead
+		Notification notification = new Notification(
+				android.R.drawable.ic_menu_info_details, "車載器アプリケーションを起動しています",
+				System.currentTimeMillis());
+
+		// This method is deprecated. Use Notification.Builder instead.
+		notification.setLatestEventInfo(this, "車載器アプリケーション", "起動しています",
+				pendIntent);
+
+		notification.flags |= Notification.FLAG_NO_CLEAR;
+		startForeground(FOREGROUND_NOTIFICATION_ID, notification);
 
 		final Handler handler = new Handler();
 		handler.post(new Runnable() {
@@ -116,8 +140,8 @@ public class LogService extends Service {
 
 				logcatThread.start();
 				dropboxThread.start();
-				compressThread.start();
-				uploadThread.start();
+				// compressThread.start();
+				// uploadThread.start();
 			}
 		});
 	}
@@ -125,6 +149,7 @@ public class LogService extends Service {
 	@Override
 	public void onDestroy() {
 		Log.i(TAG, "onDestroy()");
+		stopForeground(false);
 		logcatThread.interrupt();
 		dropboxThread.interrupt();
 		compressThread.interrupt();

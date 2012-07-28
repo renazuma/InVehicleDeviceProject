@@ -85,10 +85,6 @@ public class InVehicleDeviceService extends Service {
 		void onExit();
 	}
 
-	public interface OnInitializeListener {
-		void onInitialize(InVehicleDeviceService localService);
-	}
-
 	public interface OnMergeUpdatedOperationScheduleListener {
 		void onMergeUpdatedOperationSchedule(
 				List<VehicleNotification> triggerVehicleNotifications);
@@ -136,9 +132,9 @@ public class InVehicleDeviceService extends Service {
 
 	public static final Integer NEW_SCHEDULE_DOWNLOAD_HOUR = 0;
 	public static final Integer NEW_SCHEDULE_DOWNLOAD_MINUTE = 5;
-	public static final Integer FOREGROUND_NOTIFICATION_ID = 10;
 
 	protected static final Object DEFAULT_DATE_LOCK = new Object();
+
 	protected static Optional<Long> mockDateOffset = Optional.absent();
 
 	private static final String TAG = InVehicleDeviceService.class
@@ -264,10 +260,6 @@ public class InVehicleDeviceService extends Service {
 
 	public void addOnExitListener(OnExitListener listener) {
 		onExitListeners.add(listener);
-	}
-
-	public void addOnInitializeListener(OnInitializeListener listener) {
-		onInitializeListeners.add(listener);
 	}
 
 	public void addOnMergeUpdatedOperationScheduleListener(
@@ -644,12 +636,12 @@ public class InVehicleDeviceService extends Service {
 				});
 	}
 
-	public Boolean isOperationScheduleInitialized() {
+	public Boolean isOperationInitialized() {
 		return localDataSource.withReadLock(new Reader<Boolean>() {
 			@Override
 			public Boolean read(LocalData status) {
-				return (status.operationScheduleInitializedSign
-						.availablePermits() > 0);
+				return (status.operationScheduleInitializedSign.availablePermits() > 0 
+						&& status.serviceProviderInitializedSign.availablePermits() > 0);
 			}
 		});
 	}
@@ -685,26 +677,6 @@ public class InVehicleDeviceService extends Service {
 		super.onCreate();
 		Log.i(TAG, "onCreate()");
 
-		// @see
-		// http://stackoverflow.com/questions/3687200/implement-startforeground-method-in-android
-		// The intent to launch when the user clicks the expanded notification
-		Intent notificationIntent = new Intent(this, StartupActivity.class);
-		notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-				| Intent.FLAG_ACTIVITY_SINGLE_TOP);
-		PendingIntent pendIntent = PendingIntent.getActivity(this, 0,
-				notificationIntent, 0);
-
-		// This constructor is deprecated. Use Notification.Builder instead
-		Notification notification = new Notification(
-				android.R.drawable.ic_menu_info_details, "車載器アプリケーションを起動しています",
-				System.currentTimeMillis());
-
-		// This method is deprecated. Use Notification.Builder instead.
-		notification.setLatestEventInfo(this, "車載器アプリケーション", "起動しています",
-				pendIntent);
-
-		notification.flags |= Notification.FLAG_NO_CLEAR;
-		startForeground(FOREGROUND_NOTIFICATION_ID, notification);
 		backgroundThread = new BackgroundTaskThread(this);
 		backgroundThread.start();
 
@@ -849,25 +821,6 @@ public class InVehicleDeviceService extends Service {
 						.newArrayList(onResumeActivityListeners)) {
 					listener.onResumeActivity();
 				}
-			}
-		});
-	}
-
-	public void setInitialized() {
-		localDataSource.withWriteLock(new Writer() {
-			@Override
-			public void write(LocalData status) {
-				status.operationScheduleInitializedSign.release();
-			}
-		});
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				for (OnInitializeListener listener : Lists
-						.newArrayList(onInitializeListeners)) {
-					listener.onInitialize(InVehicleDeviceService.this);
-				}
-				refreshPhase();
 			}
 		});
 	}
