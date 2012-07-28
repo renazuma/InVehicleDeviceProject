@@ -38,32 +38,32 @@ public class DropBoxThread extends LogCollectorThread {
 	void save(String tag, Date lastCheckDate, Date nextCheckDate) {
 		Long lastEntryTimeMillis = lastCheckDate.getTime();
 		while (true) {
-			DropBoxManager.Entry entry = dropBoxManager.getNextEntry(tag,
+			DropBoxManager.Entry entry = dropBoxManager.getNextEntry(/* tag */ null,
 					lastEntryTimeMillis);
-			if (entry == null) {
-				break;
-			}
-			if (entry.getTimeMillis() > nextCheckDate.getTime()) {
-				break;
-			}
-
-			String header = "\n//////////////////////////////////////////////////\n";
-			header += "tag=" + tag + "\n";
-			header += "flags=" + entry.getFlags() + "\n";
-			header += "describeContents=" + entry.describeContents() + "\n";
-			header += "\n";
-
-			InputStream inputStream = null;
 			try {
+				if (entry == null) {
+					break;
+				}
+				if (entry.getTimeMillis() > nextCheckDate.getTime()) {
+					break;
+				}
+
+				String header = "\n//////////////////////////////////////////////////\n";
+				header += "timeMillis" + entry.getTimeMillis() + "\n";
+				header += "tag=" + entry.getTag() + "\n";
+				header += "flags=" + entry.getFlags() + "\n";
+				header += "describeContents=" + entry.describeContents() + "\n";
+				header += "\n";
+
 				pipedOutputStream.write(header.getBytes(Charsets.UTF_8));
-				inputStream = entry.getInputStream();
+				InputStream inputStream = entry.getInputStream();
 				if (inputStream != null) {
 					ByteStreams.copy(inputStream, pipedOutputStream);
 				}
 			} catch (IOException e) {
 				Log.w(TAG, e);
 			} finally {
-				Closeables.closeQuietly(inputStream);
+				Closeables.closeQuietly(entry);
 			}
 			lastEntryTimeMillis = entry.getTimeMillis();
 		}
@@ -87,10 +87,11 @@ public class DropBoxThread extends LogCollectorThread {
 		try {
 			while (true) {
 				Date nextCheckDate = new Date();
-				for (String tag : DROPBOX_TAGS) {
-					save(tag, lastCheckDate, nextCheckDate);
-					Thread.sleep(1000);
-				}
+				// for (String tag : DROPBOX_TAGS) {
+				// save(tag, lastCheckDate, nextCheckDate);
+				// Thread.sleep(1000);
+				// }
+				save("", lastCheckDate, nextCheckDate);
 
 				lastCheckDate = nextCheckDate;
 				flush();
