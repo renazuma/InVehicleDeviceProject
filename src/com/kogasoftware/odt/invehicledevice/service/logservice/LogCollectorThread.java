@@ -21,6 +21,7 @@ import android.util.Log;
 import com.google.common.base.Stopwatch;
 import com.google.common.io.Closeables;
 import com.google.common.io.Flushables;
+import com.google.common.io.NullOutputStream;
 
 public class LogCollectorThread extends Thread implements Flushable {
 	private static final String TAG = LogCollectorThread.class.getSimpleName();
@@ -30,8 +31,9 @@ public class LogCollectorThread extends Thread implements Flushable {
 	private final BlockingQueue<File> rawLogFiles;
 	private final File dataDirectory;
 	private final PipeThread pipeThread;
+	private final NullOutputStream nullOutputStream = new NullOutputStream();
 	private final AtomicReference<OutputStream> currentOutputStream = new AtomicReference<OutputStream>(
-			null);
+			nullOutputStream);
 	private final InputStream inputStream;
 	protected final Context context;
 
@@ -59,7 +61,7 @@ public class LogCollectorThread extends Thread implements Flushable {
 						+ LogCollectorThread.this.getClass().getSimpleName(), e);
 			} finally {
 				Closeables.closeQuietly(fileOutputStream);
-				currentOutputStream.set(null);
+				currentOutputStream.set(nullOutputStream);
 			}
 		}
 
@@ -69,8 +71,8 @@ public class LogCollectorThread extends Thread implements Flushable {
 				while (true) {
 					String format = (new SimpleDateFormat("yyyyMMddHHmmss.SSS"))
 							.format(new Date());
-					File file = new File(dataDirectory, format
-							+ "_" + name + ".log");
+					File file = new File(dataDirectory, format + "_" + name
+							+ ".log");
 					save(file, inputStream);
 					rawLogFiles.add(file);
 					Thread.sleep(10 * 1000);
