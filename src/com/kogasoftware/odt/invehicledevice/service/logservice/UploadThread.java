@@ -15,7 +15,7 @@ import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKey;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 
 public class UploadThread extends Thread {
 	private static final String TAG = UploadThread.class.getSimpleName();
@@ -39,9 +39,9 @@ public class UploadThread extends Thread {
 			SharedPreferences preferences = PreferenceManager
 					.getDefaultSharedPreferences(context);
 			String accessKeyId = preferences.getString(
-					SharedPreferencesKey.AWS_ACCESS_KEY_ID, "");
+					SharedPreferencesKeys.AWS_ACCESS_KEY_ID, "");
 			String secretAccessKey = preferences.getString(
-					SharedPreferencesKey.AWS_SECRET_ACCESS_KEY, "");
+					SharedPreferencesKeys.AWS_SECRET_ACCESS_KEY, "");
 			if (accessKeyId.isEmpty() || secretAccessKey.isEmpty()) {
 				continue;
 			}

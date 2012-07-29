@@ -129,12 +129,12 @@ public class LocalDataSource implements Closeable {
 				+ LocalData.class.getCanonicalName() + ".serialized");
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(context);
-		if (preferences.getBoolean(SharedPreferencesKey.CLEAR_STATUS_BACKUP,
+		if (preferences.getBoolean(SharedPreferencesKeys.CLEAR_STATUS_BACKUP,
 				false)) {
 			isClear = true;
 			preferences
 					.edit()
-					.putBoolean(SharedPreferencesKey.CLEAR_STATUS_BACKUP, false)
+					.putBoolean(SharedPreferencesKeys.CLEAR_STATUS_BACKUP, false)
 					.commit();
 		}
 
@@ -175,20 +175,20 @@ public class LocalDataSource implements Closeable {
 
 		localData.file = file;
 		localData.token = preferences.getString(
-				SharedPreferencesKey.SERVER_IN_VEHICLE_DEVICE_TOKEN, "");
-		localData.url = preferences.getString(SharedPreferencesKey.SERVER_URL,
+				SharedPreferencesKeys.SERVER_IN_VEHICLE_DEVICE_TOKEN, "");
+		localData.url = preferences.getString(SharedPreferencesKeys.SERVER_URL,
 				WebAPIDataSource.DEFAULT_URL);
 		try {
 			localData.inVehicleDevice = InVehicleDevice.parse(new JSONObject(
 					preferences.getString(
-							SharedPreferencesKey.SERVICE_PROVIDER, "{}")));
+							SharedPreferencesKeys.SERVICE_PROVIDER, "{}")));
 		} catch (JSONException e) {
 			Log.w(TAG, e);
 		}
 		try {
 			localData.serviceProvider = ServiceProvider.parse(new JSONObject(
 					preferences.getString(
-							SharedPreferencesKey.IN_VEHICLE_DEVICE, "{}")));
+							SharedPreferencesKeys.IN_VEHICLE_DEVICE, "{}")));
 		} catch (JSONException e) {
 			Log.e(TAG, "parse JSON failed", e);
 		}

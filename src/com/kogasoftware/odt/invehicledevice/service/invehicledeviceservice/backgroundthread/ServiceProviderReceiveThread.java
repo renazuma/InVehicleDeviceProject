@@ -8,7 +8,7 @@ import android.preference.PreferenceManager;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKey;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.ServiceProvider;
@@ -41,9 +41,9 @@ public class ServiceProviderReceiveThread extends Thread implements
 		// ログアップロード用のサービスに渡すのに、SharedPreferencesを使う
 		SharedPreferences.Editor editor = PreferenceManager
 				.getDefaultSharedPreferences(service).edit();
-		editor.putString(SharedPreferencesKey.AWS_ACCESS_KEY_ID,
+		editor.putString(SharedPreferencesKeys.AWS_ACCESS_KEY_ID,
 				serviceProvider.getLogAccessKeyIdAws().or(""));
-		editor.putString(SharedPreferencesKey.AWS_SECRET_ACCESS_KEY,
+		editor.putString(SharedPreferencesKeys.AWS_SECRET_ACCESS_KEY,
 				serviceProvider.getLogSecretAccessKeyAws().or(""));
 		editor.commit();
 	}

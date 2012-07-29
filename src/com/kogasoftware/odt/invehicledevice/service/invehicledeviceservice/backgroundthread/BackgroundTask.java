@@ -29,7 +29,7 @@ import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
 import com.kogasoftware.odt.invehicledevice.datasource.WebAPIDataSource;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKey;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 import com.kogasoftware.odt.invehicledevice.service.startupservice.StartupService;
 import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
 
@@ -40,8 +40,6 @@ import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
  */
 public class BackgroundTask {
 	private static final String TAG = BackgroundTask.class.getSimpleName();
-	public static final String ACTION_EXIT = BackgroundTask.class.getName()
-			+ ".ACTION_EXIT";
 	private static final long POLLING_PERIOD_MILLIS = 30 * 1000;
 	private static final Integer NUM_THREADS = 3;
 
@@ -134,7 +132,7 @@ public class BackgroundTask {
 			ExecutionException {
 
 		IntentFilter exitIntentFilter = new IntentFilter();
-		exitIntentFilter.addAction(BackgroundTask.ACTION_EXIT);
+		exitIntentFilter.addAction(Broadcasts.ACTION_EXIT);
 		applicationContext.registerReceiver(exitBroadcastReceiver,
 				exitIntentFilter);
 
@@ -159,18 +157,18 @@ public class BackgroundTask {
 
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(service);
-		String url = preferences.getString(SharedPreferencesKey.SERVER_URL,
+		String url = preferences.getString(SharedPreferencesKeys.SERVER_URL,
 				WebAPIDataSource.DEFAULT_URL);
 		String token = preferences.getString(
-				SharedPreferencesKey.SERVER_IN_VEHICLE_DEVICE_TOKEN, "");
+				SharedPreferencesKeys.SERVER_IN_VEHICLE_DEVICE_TOKEN, "");
 		File webAPIBackupFile = service.getFileStreamPath("webapi.serialized");
-		if (preferences.getBoolean(SharedPreferencesKey.CLEAR_WEBAPI_BACKUP,
+		if (preferences.getBoolean(SharedPreferencesKeys.CLEAR_WEBAPI_BACKUP,
 				false)) {
 			if (webAPIBackupFile.exists() && !webAPIBackupFile.delete()) {
 				Log.w(TAG, "!\"" + webAPIBackupFile + "\".delete()");
 			}
 			SharedPreferences.Editor editor = preferences.edit();
-			editor.putBoolean(SharedPreferencesKey.CLEAR_WEBAPI_BACKUP, false);
+			editor.putBoolean(SharedPreferencesKeys.CLEAR_WEBAPI_BACKUP, false);
 			editor.commit();
 		}
 		DataSource dataSource = DataSourceFactory.newInstance(url, token,

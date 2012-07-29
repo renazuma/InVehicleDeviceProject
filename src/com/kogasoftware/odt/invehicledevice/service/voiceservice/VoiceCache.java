@@ -27,7 +27,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
 import com.google.common.cache.Weigher;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKey;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 import com.kogasoftware.openjtalk.OpenJTalk;
 
 /**
@@ -139,10 +139,10 @@ public class VoiceCache {
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		Boolean clear = preferences.getBoolean(
-				SharedPreferencesKey.CLEAR_VOICE_CACHE, false);
+				SharedPreferencesKeys.CLEAR_VOICE_CACHE, false);
 		if (clear) {
 			SharedPreferences.Editor editor = preferences.edit();
-			editor.putBoolean(SharedPreferencesKey.CLEAR_VOICE_CACHE, false);
+			editor.putBoolean(SharedPreferencesKeys.CLEAR_VOICE_CACHE, false);
 			editor.commit();
 			if (instanceStateFile.exists() && !instanceStateFile.delete()) {
 				throw new IOException("!\"" + instanceStateFile + "\".delete()");

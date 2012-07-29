@@ -16,8 +16,8 @@ import android.widget.Toast;
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import com.kogasoftware.odt.invehicledevice.datasource.WebAPIDataSource;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKey;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundthread.BackgroundTask;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundthread.Broadcasts;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 
 public class SavePreferencesActivity extends Activity {
@@ -38,7 +38,7 @@ public class SavePreferencesActivity extends Activity {
 		Serializable maybeInVehicleDevice = null;
 		try {
 			maybeInVehicleDevice = bundle
-					.getSerializable(SharedPreferencesKey.IN_VEHICLE_DEVICE);
+					.getSerializable(SharedPreferencesKeys.IN_VEHICLE_DEVICE);
 		} catch (RuntimeException e) {
 			Log.e(TAG, e.toString(), e);
 			if (e.getCause() instanceof InvalidClassException) {
@@ -62,45 +62,35 @@ public class SavePreferencesActivity extends Activity {
 		SharedPreferences.Editor editor = preferences.edit();
 		editor.clear();
 		editor.putBoolean(SharedPreferencesKey.INITIALIZED, true);
-		editor.putString(SharedPreferencesKey.SERVER_URL, Objects.firstNonNull(
-				bundle.getString(SharedPreferencesKey.SERVER_URL),
+		editor.putString(SharedPreferencesKeys.SERVER_URL, Objects.firstNonNull(
+				bundle.getString(SharedPreferencesKeys.SERVER_URL),
 				WebAPIDataSource.DEFAULT_URL));
 		editor.putString(
-				SharedPreferencesKey.SERVER_IN_VEHICLE_DEVICE_TOKEN,
+				SharedPreferencesKeys.SERVER_IN_VEHICLE_DEVICE_TOKEN,
 				Strings.nullToEmpty(bundle
-						.getString(SharedPreferencesKey.SERVER_IN_VEHICLE_DEVICE_TOKEN)));
-		editor.putString(
-				SharedPreferencesKey.SERVER_IN_VEHICLE_DEVICE_TOKEN,
-				Strings.nullToEmpty(bundle
-						.getString(SharedPreferencesKey.SERVER_IN_VEHICLE_DEVICE_TOKEN)));
-		editor.putString(SharedPreferencesKey.AWS_ACCESS_KEY_ID, Strings
-				.nullToEmpty(bundle
-						.getString(SharedPreferencesKey.AWS_ACCESS_KEY_ID)));
-		editor.putString(SharedPreferencesKey.AWS_SECRET_ACCESS_KEY, Strings
-				.nullToEmpty(bundle
-						.getString(SharedPreferencesKey.AWS_SECRET_ACCESS_KEY)));
+						.getString(SharedPreferencesKeys.SERVER_IN_VEHICLE_DEVICE_TOKEN)));
 		try {
-			editor.putString(SharedPreferencesKey.IN_VEHICLE_DEVICE,
+			editor.putString(SharedPreferencesKeys.IN_VEHICLE_DEVICE,
 					inVehicleDevice.toJSONObject().toString());
 		} catch (JSONException e) {
 			Log.e(TAG, "toJSONObject() failed", e);
 		}
 		editor.putInt(
-				SharedPreferencesKey.LOCATION_RECEIVE_MIN_DISTANCE,
-				bundle.getInt(SharedPreferencesKey.LOCATION_RECEIVE_MIN_DISTANCE));
-		editor.putInt(SharedPreferencesKey.LOCATION_RECEIVE_MIN_TIME,
-				bundle.getInt(SharedPreferencesKey.LOCATION_RECEIVE_MIN_TIME));
+				SharedPreferencesKeys.LOCATION_RECEIVE_MIN_DISTANCE,
+				bundle.getInt(SharedPreferencesKeys.LOCATION_RECEIVE_MIN_DISTANCE));
+		editor.putInt(SharedPreferencesKeys.LOCATION_RECEIVE_MIN_TIME,
+				bundle.getInt(SharedPreferencesKeys.LOCATION_RECEIVE_MIN_TIME));
 		editor.putInt(
-				SharedPreferencesKey.LOCATION_RECEIVE_RESTART_TIMEOUT,
-				bundle.getInt(SharedPreferencesKey.LOCATION_RECEIVE_RESTART_TIMEOUT));
-		editor.putBoolean(SharedPreferencesKey.CLEAR_STATUS_BACKUP, true);
-		editor.putBoolean(SharedPreferencesKey.CLEAR_WEBAPI_BACKUP, true);
-		editor.putBoolean(SharedPreferencesKey.CLEAR_VOICE_CACHE, true);
+				SharedPreferencesKeys.LOCATION_RECEIVE_RESTART_TIMEOUT,
+				bundle.getInt(SharedPreferencesKeys.LOCATION_RECEIVE_RESTART_TIMEOUT));
+		editor.putBoolean(SharedPreferencesKeys.CLEAR_STATUS_BACKUP, true);
+		editor.putBoolean(SharedPreferencesKeys.CLEAR_WEBAPI_BACKUP, true);
+		editor.putBoolean(SharedPreferencesKeys.CLEAR_VOICE_CACHE, true);
 		editor.commit();
 		Toast.makeText(this, "設定を保存しました", Toast.LENGTH_LONG).show();
 
 		Intent exitIntent = new Intent();
-		exitIntent.setAction(BackgroundTask.ACTION_EXIT);
+		exitIntent.setAction(Broadcasts.ACTION_EXIT);
 		getApplicationContext().sendBroadcast(exitIntent);
 	}
 }

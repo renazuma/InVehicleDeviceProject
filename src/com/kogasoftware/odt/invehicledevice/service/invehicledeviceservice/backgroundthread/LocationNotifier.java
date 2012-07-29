@@ -20,7 +20,7 @@ import android.util.Log;
 
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKey;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 
 /**
  * 位置情報を取得する
@@ -108,13 +108,13 @@ public class LocationNotifier implements LocationListener, GpsStatus.Listener,
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(service);
 		minTime = preferences.getInt(
-				SharedPreferencesKey.LOCATION_RECEIVE_MIN_TIME,
+				SharedPreferencesKeys.LOCATION_RECEIVE_MIN_TIME,
 				DEFAULT_MIN_TIME);
 		minDistance = preferences.getInt(
-				SharedPreferencesKey.LOCATION_RECEIVE_MIN_DISTANCE,
+				SharedPreferencesKeys.LOCATION_RECEIVE_MIN_DISTANCE,
 				DEFAULT_MIN_DISTANCE);
 		restartTimeout = preferences.getInt(
-				SharedPreferencesKey.LOCATION_RECEIVE_RESTART_TIMEOUT,
+				SharedPreferencesKeys.LOCATION_RECEIVE_RESTART_TIMEOUT,
 				DEFAULT_RESTART_TIMEOUT);
 
 		Log.i(TAG, "minTime=" + minTime + " minDistance=" + minDistance
