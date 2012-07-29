@@ -60,7 +60,8 @@
     <target name="-pre-build">
       <copy todir=".">
         <fileset dir="InVehicleDevice">
-          <include name="src/com/kogasoftware/odt/invehicledevice/service/invehicledeviceservice/SharedPreferencesKey.java"/>
+          <include name="src/com/kogasoftware/odt/invehicledevice/service/invehicledeviceservice/SharedPreferencesKeys.java"/>
+          <include name="src/com/kogasoftware/odt/invehicledevice/service/invehicledeviceservice/backgroundthread/Broadcasts.java"/>
           <include name="src/com/kogasoftware/odt/invehicledevice/service/startupservice/IStartupService.aidl"/>
         </fileset>
       </copy>

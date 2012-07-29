@@ -26,7 +26,8 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.common.io.Closeables;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKey;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundthread.Broadcasts;
 import com.kogasoftware.odt.invehicledevice.service.startupservice.IStartupService;
 import com.kogasoftware.odt.webapi.WebAPI;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
@@ -61,6 +62,9 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 			} catch (RemoteException e) {
 				Log.w(TAG, e);
 			}
+			Intent exitIntent = new Intent();
+			exitIntent.setAction(Broadcasts.ACTION_EXIT);
+			getApplicationContext().sendBroadcast(exitIntent);
 		}
 
 		@Override
@@ -89,15 +93,10 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 				onSaveConfigButtonClick();
 			}
 		});
-		
-		if (!bindService(new Intent(IStartupService.class.getName()),
-				serviceConnection, Context.BIND_AUTO_CREATE)) {
-			Log.e(TAG, "bindService failed");
-		}
 
 		updateSummary();
 	}
-
+	
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
@@ -113,10 +112,22 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 	}
 
 	@Override
+	public void onStart() {
+		super.onStart();
+		bindService(new Intent(IStartupService.class.getName()),
+				serviceConnection, Context.BIND_AUTO_CREATE);
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		unbindService(serviceConnection);
+	}
+
+	@Override
 	public void onDestroy() {
 		super.onDestroy();
 
-		unbindService(serviceConnection);
 		preferences.unregisterOnSharedPreferenceChangeListener(this);
 		Closeables.closeQuietly(api);
 	}
@@ -217,29 +228,29 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		String token = inVehicleDevice.getAuthenticationToken().get();
 		SharedPreferences preference = PreferenceManager
 				.getDefaultSharedPreferences(InVehicleDevicePreferenceActivity.this);
-		String url = preference.getString(SharedPreferencesKey.SERVER_URL, "");
+		String url = preference.getString(SharedPreferencesKeys.SERVER_URL, "");
 
 		Intent intent = new Intent();
 		intent.setAction(Intent.ACTION_SEND);
-		intent.putExtra(SharedPreferencesKey.SERVER_URL, url);
-		intent.putExtra(SharedPreferencesKey.SERVER_IN_VEHICLE_DEVICE_TOKEN,
+		intent.putExtra(SharedPreferencesKeys.SERVER_URL, url);
+		intent.putExtra(SharedPreferencesKeys.SERVER_IN_VEHICLE_DEVICE_TOKEN,
 				token);
-		intent.putExtra(SharedPreferencesKey.IN_VEHICLE_DEVICE, inVehicleDevice);
-		intent.putExtra(SharedPreferencesKey.SERVICE_PROVIDER,
+		intent.putExtra(SharedPreferencesKeys.IN_VEHICLE_DEVICE, inVehicleDevice);
+		intent.putExtra(SharedPreferencesKeys.SERVICE_PROVIDER,
 				inVehicleDevice.getServiceProvider());
 		intent.putExtra(
-				SharedPreferencesKey.LOCATION_RECEIVE_MIN_DISTANCE,
+				SharedPreferencesKeys.LOCATION_RECEIVE_MIN_DISTANCE,
 				Integer.parseInt(preference
 						.getString(
-								SharedPreferencesKey.LOCATION_RECEIVE_MIN_DISTANCE,
+								SharedPreferencesKeys.LOCATION_RECEIVE_MIN_DISTANCE,
 								"1")));
 		intent.putExtra(
-				SharedPreferencesKey.LOCATION_RECEIVE_MIN_TIME,
+				SharedPreferencesKeys.LOCATION_RECEIVE_MIN_TIME,
 				Integer.parseInt(preference.getString(
-						SharedPreferencesKey.LOCATION_RECEIVE_MIN_TIME, "1000")));
-		intent.putExtra(SharedPreferencesKey.LOCATION_RECEIVE_RESTART_TIMEOUT,
+						SharedPreferencesKeys.LOCATION_RECEIVE_MIN_TIME, "1000")));
+		intent.putExtra(SharedPreferencesKeys.LOCATION_RECEIVE_RESTART_TIMEOUT,
 				Integer.parseInt(preference.getString(
-						SharedPreferencesKey.LOCATION_RECEIVE_RESTART_TIMEOUT,
+						SharedPreferencesKeys.LOCATION_RECEIVE_RESTART_TIMEOUT,
 						"90000")));
 		String packageName = "com.kogasoftware.odt.invehicledevice";
 		intent.setClassName(packageName, packageName
@@ -250,10 +261,10 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 
 	private void updateSummary() {
 		for (String key : new String[] { LOGIN_KEY,
-				SharedPreferencesKey.SERVER_URL,
-				SharedPreferencesKey.LOCATION_RECEIVE_MIN_DISTANCE,
-				SharedPreferencesKey.LOCATION_RECEIVE_MIN_TIME,
-				SharedPreferencesKey.LOCATION_RECEIVE_RESTART_TIMEOUT }) {
+				SharedPreferencesKeys.SERVER_URL,
+				SharedPreferencesKeys.LOCATION_RECEIVE_MIN_DISTANCE,
+				SharedPreferencesKeys.LOCATION_RECEIVE_MIN_TIME,
+				SharedPreferencesKeys.LOCATION_RECEIVE_RESTART_TIMEOUT }) {
 			EditTextPreference preference = (EditTextPreference) findPreference(key);
 			preference.setSummary(preference.getText());
 		}
@@ -265,7 +276,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		}
 		showDialog(CONNECTING_DIALOG_ID);
 		api.setServerHost(preferences.getString(
-				SharedPreferencesKey.SERVER_URL, DEFAULT_URL));
+				SharedPreferencesKeys.SERVER_URL, DEFAULT_URL));
 
 		InVehicleDevice ivd = new InVehicleDevice();
 		ivd.setLogin(preferences.getString(LOGIN_KEY, ""));

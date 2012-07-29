@@ -6,7 +6,7 @@ import android.test.ActivityInstrumentationTestCase2;
 import android.view.KeyEvent;
 
 import com.jayway.android.robotium.solo.Solo;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKey;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 import com.kogasoftware.odt.invehicledevice.preference.InVehicleDevicePreferenceActivity;
 import com.kogasoftware.odt.invehicledevice.preference.R;
 
@@ -196,10 +196,10 @@ public class InVehicleDevicePreferenceTestCase extends
 					.equals("com.kogasoftware.odt.invehicledevice.ui.activity.SavePreferencesActivity")) {
 				Intent intent = a.getIntent();
 				assertEquals(
-						intent.getStringExtra(SharedPreferencesKey.SERVER_URL),
+						intent.getStringExtra(SharedPreferencesKeys.SERVER_URL),
 						URL);
 				assertTrue(intent.getStringExtra(
-						SharedPreferencesKey.SERVER_IN_VEHICLE_DEVICE_TOKEN)
+						SharedPreferencesKeys.SERVER_IN_VEHICLE_DEVICE_TOKEN)
 						.length() > 0);
 				return;
 			}
