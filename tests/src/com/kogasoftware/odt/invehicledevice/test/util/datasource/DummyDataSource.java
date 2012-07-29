@@ -20,6 +20,7 @@ import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.ReservationCandidate;
+import com.kogasoftware.odt.webapi.model.ServiceProvider;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
@@ -278,5 +279,10 @@ public class DummyDataSource extends EmptyDataSource {
 		callback.onSucceed(0, 200, new Reservation());
 		return 0;
 	}
-
+	
+	@Override
+	public int getServiceProvider(WebAPICallback<ServiceProvider> callback) {
+		callback.onSucceed(0, 200, new ServiceProvider());
+		return 0;
+	}
 }
