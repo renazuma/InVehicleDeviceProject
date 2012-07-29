@@ -12,6 +12,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.StrictMode;
 import android.util.Log;
 
+import com.google.common.base.Throwables;
 import com.kogasoftware.odt.invehicledevice.service.logservice.LogServiceReportSender;
 
 @ReportsCrashes(formKey = "dFp5SnVVbTRuem13WmJ0YlVUb2NjaXc6MQ", mode = ReportingInteractionMode.TOAST, resToastText = R.string.crash_toast_text, customReportContent = {
@@ -37,12 +38,10 @@ public class InVehicleDeviceApplication extends Application {
 	public void onCreate() {
 		try { // Applicationオブジェクトが生成できない旨の例外が起きることがあり、このonCreateが怪しいためデバッグ用にwtfとして記録する。
 			tryOnCreate();
-		} catch (RuntimeException e) {
-			Log.wtf(TAG, e);
-			throw e;
-		} catch (Exception e) {
-			Log.wtf(TAG, e);
-			throw new RuntimeException(e);
+		} catch (Throwable t) {
+			Log.wtf(TAG, t);
+			Log.wtf(TAG, Throwables.getStackTraceAsString(t));
+			throw Throwables.propagate(t);
 		}
 	}
 
