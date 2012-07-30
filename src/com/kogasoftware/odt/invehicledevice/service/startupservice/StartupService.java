@@ -32,6 +32,13 @@ public class StartupService extends Service {
 	private static final String TAG = StartupService.class.getSimpleName();
 	public static final long CHECK_DEVICE_INTERVAL_MILLIS = 10 * 1000;
 	private final AtomicBoolean enabled = new AtomicBoolean(true);
+	private final BroadcastReceiver screenOffBroadcastReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			Log.i(TAG, "screen off");
+			enabled.set(false);
+		}
+	};
 	private final BroadcastReceiver screenOnBroadcastReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -177,9 +184,10 @@ public class StartupService extends Service {
 	@Override
 	public void onCreate() {
 		Log.i(TAG, "onCreate()");
-		IntentFilter intentFilter = new IntentFilter(Intent.ACTION_SCREEN_ON);
 		getApplicationContext().registerReceiver(screenOnBroadcastReceiver,
-				intentFilter);
+				new IntentFilter(Intent.ACTION_SCREEN_ON));
+		getApplicationContext().registerReceiver(screenOffBroadcastReceiver,
+				new IntentFilter(Intent.ACTION_SCREEN_OFF));
 		handler.post(checkDeviceAndShowActivityCallback);
 	}
 
@@ -187,6 +195,7 @@ public class StartupService extends Service {
 	public void onDestroy() {
 		Log.i(TAG, "onDestroy()");
 		getApplicationContext().unregisterReceiver(screenOnBroadcastReceiver);
+		getApplicationContext().unregisterReceiver(screenOffBroadcastReceiver);
 		handler.removeCallbacks(checkDeviceAndShowActivityCallback);
 	}
 
