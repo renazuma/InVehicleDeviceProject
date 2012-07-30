@@ -1458,22 +1458,27 @@ public class WebAPITestCase extends
 	public void testGetServiceProvider() throws Exception {
 		api = new WebAPI(SERVER_HOST, master.getInVehicleDevice()
 				.getAuthenticationToken().get());
+		latch = new CountDownLatch(1);
 		final AtomicReference<ServiceProvider> outputServiceProvider = new AtomicReference<ServiceProvider>();
 		api.getServicePrivider(new WebAPICallback<ServiceProvider>(){
 			@Override
 			public void onException(int reqkey, WebAPIException ex) {
+				latch.countDown();
 			}
 
 			@Override
 			public void onFailed(int reqkey, int statusCode, String response) {
+				latch.countDown();
 			}
 
 			@Override
 			public void onSucceed(int reqkey, int statusCode,
 					ServiceProvider result) {
 				outputServiceProvider.set(result);
+				latch.countDown();
 			}
 		});
+		assertTrue(latch.await(20, TimeUnit.SECONDS));
 		assertNotNull(outputServiceProvider.get());
 		assertEquals(serviceProvider.getId(), outputServiceProvider.get().getId());
 	}
