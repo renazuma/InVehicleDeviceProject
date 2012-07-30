@@ -112,8 +112,8 @@ public class WebAPI implements Closeable {
 			+ "/service_unit_status_logs";
 	public static final String PATH_RESERVATIONS = PATH_PREFIX
 			+ "/reservations";
-	public static final String PATH_PRIVIDERS = PATH_PREFIX
-			+ "/service_providers";
+	public static final String PATH_PRIVIDER = PATH_PREFIX
+			+ "/service_provider";
 
 	protected static String decodeByteArray(byte[] byteArray) {
 		return Charsets.ISO_8859_1.decode(ByteBuffer.wrap(byteArray))
@@ -760,7 +760,7 @@ public class WebAPI implements Closeable {
 	 */
 	public int getServicePrivider(WebAPICallback<ServiceProvider> callback)
 			throws WebAPIException {
-		return get(PATH_PRIVIDERS, new TreeMap<String, String>(), true,
+		return get(PATH_PRIVIDER, new TreeMap<String, String>(), true,
 				UNIQUE_GROUP, callback,
 				new ResponseConverter<ServiceProvider>() {
 					@Override
