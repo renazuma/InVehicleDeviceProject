@@ -50,7 +50,7 @@ public class DropBoxThread extends LogCollectorThread {
 				}
 
 				String header = "\n//////////////////////////////////////////////////\n";
-				header += "timeMillis" + entry.getTimeMillis() + "\n";
+				header += "timeMillis=" + entry.getTimeMillis() + "\n";
 				header += "tag=" + entry.getTag() + "\n";
 				header += "flags=" + entry.getFlags() + "\n";
 				header += "describeContents=" + entry.describeContents() + "\n";
