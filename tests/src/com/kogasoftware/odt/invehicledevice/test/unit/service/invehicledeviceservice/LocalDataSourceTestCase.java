@@ -11,7 +11,7 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Local
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Reader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.VoidReader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKey;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
@@ -135,7 +135,7 @@ public class LocalDataSourceTestCase extends EmptyActivityInstrumentationTestCas
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(c);
 		preferences.edit()
-				.putBoolean(SharedPreferencesKey.CLEAR_STATUS_BACKUP, true)
+				.putBoolean(SharedPreferencesKeys.CLEAR_STATUS_BACKUP, true)
 				.commit();
 		// クリアされることを確認
 		LocalDataSource lds3 = new LocalDataSource(c);
@@ -149,7 +149,7 @@ public class LocalDataSourceTestCase extends EmptyActivityInstrumentationTestCas
 
 		// SharedPreferencesKey.CLEAR_REQUIREDがfalseになっていることを確認
 		assertFalse(preferences.getBoolean(
-				SharedPreferencesKey.CLEAR_STATUS_BACKUP, true));
+				SharedPreferencesKeys.CLEAR_STATUS_BACKUP, true));
 
 		// データが復活しないことを確認
 		LocalDataSource lds4 = new LocalDataSource(c);

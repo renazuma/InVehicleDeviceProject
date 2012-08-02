@@ -23,7 +23,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKey;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 import com.kogasoftware.odt.invehicledevice.service.logservice.LogService;
 import com.kogasoftware.odt.invehicledevice.ui.BigToast;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
@@ -64,7 +64,7 @@ public class StartupService extends Service {
 
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(this);
-		if (!preferences.getBoolean(SharedPreferencesKey.INITIALIZED, false)) {
+		if (!preferences.getBoolean(SharedPreferencesKeys.INITIALIZED, false)) {
 			BigToast.makeText(this, "初期設定が見つかりません。設定アプリケーションを利用し初期設定を行なってください。",
 					Toast.LENGTH_LONG).show();
 			return;

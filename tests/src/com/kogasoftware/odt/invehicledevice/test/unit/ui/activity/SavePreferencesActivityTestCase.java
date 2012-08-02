@@ -9,8 +9,9 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.test.ActivityInstrumentationTestCase2;
 
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKey;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundthread.BackgroundTask;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundthread.Broadcasts;
 import com.kogasoftware.odt.invehicledevice.ui.activity.SavePreferencesActivity;
 
 public class SavePreferencesActivityTestCase extends
@@ -39,14 +40,14 @@ public class SavePreferencesActivityTestCase extends
 				.getTargetContext());
 
 		SharedPreferences.Editor editor = sp.edit();
-		editor.putString(SharedPreferencesKey.SERVER_URL, "http://127.0.0.1");
-		editor.putString(SharedPreferencesKey.SERVER_IN_VEHICLE_DEVICE_TOKEN,
+		editor.putString(SharedPreferencesKeys.SERVER_URL, "http://127.0.0.1");
+		editor.putString(SharedPreferencesKeys.SERVER_IN_VEHICLE_DEVICE_TOKEN,
 				"");
-		editor.putBoolean(SharedPreferencesKey.CLEAR_STATUS_BACKUP, false);
+		editor.putBoolean(SharedPreferencesKeys.CLEAR_STATUS_BACKUP, false);
 		editor.commit();
 		actionExitReceived = false;
 		IntentFilter i = new IntentFilter();
-		i.addAction(BackgroundTask.ACTION_EXIT);
+		i.addAction(Broadcasts.ACTION_EXIT);
 		getInstrumentation().getTargetContext().getApplicationContext().registerReceiver(br, i);
 	}
 
@@ -68,19 +69,19 @@ public class SavePreferencesActivityTestCase extends
 		String u = "http://example.com/foo/bar";
 		String t = "token12345678";
 		Bundle bundle = new Bundle();
-		bundle.putString(SharedPreferencesKey.SERVER_URL, u);
-		bundle.putString(SharedPreferencesKey.SERVER_IN_VEHICLE_DEVICE_TOKEN, t);
+		bundle.putString(SharedPreferencesKeys.SERVER_URL, u);
+		bundle.putString(SharedPreferencesKeys.SERVER_IN_VEHICLE_DEVICE_TOKEN, t);
 		Intent intent = new Intent(Intent.ACTION_SEND);
 		intent.putExtras(bundle);
 		setActivityIntent(intent);
 		getActivity();
 		getInstrumentation().waitForIdleSync();
 
-		assertEquals(sp.getString(SharedPreferencesKey.SERVER_URL, ""), u);
+		assertEquals(sp.getString(SharedPreferencesKeys.SERVER_URL, ""), u);
 		assertEquals(sp.getString(
-				SharedPreferencesKey.SERVER_IN_VEHICLE_DEVICE_TOKEN, ""), t);
+				SharedPreferencesKeys.SERVER_IN_VEHICLE_DEVICE_TOKEN, ""), t);
 
-		assertTrue(sp.getBoolean(SharedPreferencesKey.CLEAR_STATUS_BACKUP, false));
+		assertTrue(sp.getBoolean(SharedPreferencesKeys.CLEAR_STATUS_BACKUP, false));
 		assertTrue(actionExitReceived);
 	}
 
@@ -90,7 +91,7 @@ public class SavePreferencesActivityTestCase extends
 		setActivityIntent(intent);
 		getActivity();
 
-		assertTrue(sp.getBoolean(SharedPreferencesKey.CLEAR_STATUS_BACKUP, false));
+		assertTrue(sp.getBoolean(SharedPreferencesKeys.CLEAR_STATUS_BACKUP, false));
 		assertTrue(actionExitReceived);
 	}
 }

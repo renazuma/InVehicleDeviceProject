@@ -8,7 +8,7 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.preference.PreferenceManager;
 
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKey;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceCache;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 
@@ -88,7 +88,7 @@ public class VoiceCacheTestCase extends EmptyActivityInstrumentationTestCase2 {
 					.getDefaultSharedPreferences(c)
 					.edit()
 					.putBoolean(
-							SharedPreferencesKey.CLEAR_VOICE_CACHE,
+							SharedPreferencesKeys.CLEAR_VOICE_CACHE,
 							true).commit();
 			new VoiceCache(c, Integer.MAX_VALUE);
 		}
