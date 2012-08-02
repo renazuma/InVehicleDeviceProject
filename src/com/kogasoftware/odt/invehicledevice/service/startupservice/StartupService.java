@@ -73,10 +73,10 @@ public class StartupService extends Service {
 			}
 			
 			@Override
-			protected void onPostExecute(Boolean result) {
-				if (isCancelled() || result == null) {
+			protected void onPostExecute(Boolean initialized) {
+				if (isCancelled() || initialized == null) {
 					return;
-				} else if (result) {
+				} else if (initialized) {
 					BigToast.makeText(StartupService.this, "初期設定が見つかりません。設定アプリケーションを利用し初期設定を行なってください。",
 							Toast.LENGTH_LONG).show();
 					return;
