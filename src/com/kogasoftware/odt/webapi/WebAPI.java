@@ -37,6 +37,7 @@ import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.ReservationCandidate;
+import com.kogasoftware.odt.webapi.model.ServiceProvider;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.webapi.model.User;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
@@ -111,6 +112,8 @@ public class WebAPI implements Closeable {
 			+ "/service_unit_status_logs";
 	public static final String PATH_RESERVATIONS = PATH_PREFIX
 			+ "/reservations";
+	public static final String PATH_PRIVIDERS = PATH_PREFIX
+			+ "/service_providers";
 
 	protected static String decodeByteArray(byte[] byteArray) {
 		return Charsets.ISO_8859_1.decode(ByteBuffer.wrap(byteArray))
@@ -748,6 +751,23 @@ public class WebAPI implements Closeable {
 							throws Exception {
 						return ServiceUnitStatusLog
 								.parse(parseJSONObject(rawResponse));
+					}
+				});
+	}
+
+	/**
+	 * サービスプロバイダの取得
+	 */
+	public int getServicePrivider(WebAPICallback<ServiceProvider> callback)
+			throws WebAPIException {
+		return get(PATH_PRIVIDERS, new TreeMap<String, String>(), true,
+				UNIQUE_GROUP, callback,
+				new ResponseConverter<ServiceProvider>() {
+					@Override
+					public ServiceProvider convert(byte[] rawResponse)
+							throws Exception {
+						return ServiceProvider.parse(
+								parseJSONObject(rawResponse)).orNull();
 					}
 				});
 	}

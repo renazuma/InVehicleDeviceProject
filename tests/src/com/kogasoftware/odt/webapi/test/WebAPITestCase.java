@@ -29,6 +29,7 @@ import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.ReservationCandidate;
+import com.kogasoftware.odt.webapi.model.ServiceProvider;
 import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.webapi.model.UnitAssignment;
 import com.kogasoftware.odt.webapi.model.User;
@@ -93,6 +94,7 @@ public class WebAPITestCase extends
 	volatile boolean offline;
 	private GenerateMaster master;
 	private GenerateRecord record;
+	private ServiceProvider serviceProvider;
 
 	@Override
 	protected void setUp() throws Exception {
@@ -101,14 +103,13 @@ public class WebAPITestCase extends
 		// マスタ生成
 		master = new GenerateMaster(TEST_SERVER_HOST);
 		master.cleanDatabase();
-		master.createServiceProvider();
+		serviceProvider = master.createServiceProvider();
 		master.createDriver("もぎ", "しゅーまっは", "011");
 		master.createVehicle("ちば90も 99-91", "F1");
 		master.createInVehicleDevice();
 		master.createOperator();
 
 		record = new GenerateRecord(master);
-
 		offline = false;
 	}
 
@@ -1451,5 +1452,29 @@ public class WebAPITestCase extends
 		assertTrue(latch.await(200, TimeUnit.SECONDS));
 		Log.i(TAG, "testNewRequestIsPrior() numSucceed=" + numSucceed.get());
 		assertTrue(numSucceed.get() < MAX / 10);
+	}
+}
+
+	public void testGetServiceProvider() throws Exception {
+		api = new WebAPI(SERVER_HOST, master.getInVehicleDevice()
+				.getAuthenticationToken().get());
+		final AtomicReference<ServiceProvider> outputServiceProvider = new AtomicReference<ServiceProvider>();
+		api.getServicePrivider(new WebAPICallback<ServiceProvider>(){
+			@Override
+			public void onException(int reqkey, WebAPIException ex) {
+			}
+
+			@Override
+			public void onFailed(int reqkey, int statusCode, String response) {
+			}
+
+			@Override
+			public void onSucceed(int reqkey, int statusCode,
+					ServiceProvider result) {
+				outputServiceProvider.set(result);
+			}
+		});
+		assertNotNull(outputServiceProvider.get());
+		assertEquals(serviceProvider.getId(), outputServiceProvider.get().getId());
 	}
 }
