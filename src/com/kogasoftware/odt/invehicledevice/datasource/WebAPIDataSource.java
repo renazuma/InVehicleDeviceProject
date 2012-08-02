@@ -284,9 +284,6 @@ public class WebAPIDataSource implements DataSource {
 	public void saveOnClose(int reqkey) {
 		api.saveOnClose(reqkey);
 	}
-}
-
-	}
 
 	@Override
 	public int getServiceProvider(final WebAPICallback<ServiceProvider> callback) {

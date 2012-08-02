@@ -507,9 +507,12 @@ public class MockDataSource implements DataSource {
 	@Override
 	public void saveOnClose(int reqkey) {
 		// TODO Auto-generated method stub
+	}
+	
+	@Override
 	public int getServiceProvider(WebAPICallback<ServiceProvider> callback) {
 		callback.onSucceed(0, 200, new ServiceProvider());
-		
+		return 0;
 	}
 
 	@Override
