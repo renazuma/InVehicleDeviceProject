@@ -41,6 +41,7 @@ public class DropBoxThread extends LogCollectorThread {
 		while (true) {
 			DropBoxManager.Entry entry = dropBoxManager.getNextEntry(/* tag */ null,
 					lastEntryTimeMillis);
+			InputStream inputStream = null;
 			try {
 				if (entry == null) {
 					break;
@@ -57,13 +58,14 @@ public class DropBoxThread extends LogCollectorThread {
 				header += "\n";
 
 				pipedOutputStream.write(header.getBytes(Charsets.UTF_8));
-				InputStream inputStream = entry.getInputStream();
+				inputStream = entry.getInputStream();
 				if (inputStream != null) {
 					ByteStreams.copy(inputStream, pipedOutputStream);
 				}
 			} catch (IOException e) {
 				Log.w(TAG, e);
 			} finally {
+				Closeables.closeQuietly(inputStream); // StrictModeの警告よけ
 				Closeables.closeQuietly(entry);
 			}
 			lastEntryTimeMillis = entry.getTimeMillis();
