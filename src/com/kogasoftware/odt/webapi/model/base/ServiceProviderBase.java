@@ -15,7 +15,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class ServiceProviderBase extends Model {
-	private static final long serialVersionUID = 9218262404259202807L;
+	private static final long serialVersionUID = 150230926204091934L;
 
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {
@@ -23,6 +23,8 @@ public abstract class ServiceProviderBase extends Model {
 		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
 		setId(parseInteger(jsonObject, "id"));
 		setLatitude(parseBigDecimal(jsonObject, "latitude"));
+		setLogAccessKeyIdAws(parseOptionalString(jsonObject, "log_access_key_id_aws"));
+		setLogSecretAccessKeyAws(parseOptionalString(jsonObject, "log_secret_access_key_aws"));
 		setLongitude(parseBigDecimal(jsonObject, "longitude"));
 		setMustContactGap(parseInteger(jsonObject, "must_contact_gap"));
 		setName(parseString(jsonObject, "name"));
@@ -92,6 +94,8 @@ public abstract class ServiceProviderBase extends Model {
 		jsonObject.put("deleted_at", toJSON(getDeletedAt()));
 		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("latitude", toJSON(getLatitude()));
+		jsonObject.put("log_access_key_id_aws", toJSON(getLogAccessKeyIdAws()));
+		jsonObject.put("log_secret_access_key_aws", toJSON(getLogSecretAccessKeyAws()));
 		jsonObject.put("longitude", toJSON(getLongitude()));
 		jsonObject.put("must_contact_gap", toJSON(getMustContactGap()));
 		jsonObject.put("name", toJSON(getName()));
@@ -196,6 +200,42 @@ public abstract class ServiceProviderBase extends Model {
 
 	public void setLatitude(BigDecimal latitude) {
 		this.latitude = wrapNull(latitude);
+	}
+
+	private Optional<String> logAccessKeyIdAws = Optional.absent();
+
+	public Optional<String> getLogAccessKeyIdAws() {
+		return wrapNull(logAccessKeyIdAws);
+	}
+
+	public void setLogAccessKeyIdAws(Optional<String> logAccessKeyIdAws) {
+		this.logAccessKeyIdAws = wrapNull(logAccessKeyIdAws);
+	}
+
+	public void setLogAccessKeyIdAws(String logAccessKeyIdAws) {
+		this.logAccessKeyIdAws = Optional.fromNullable(logAccessKeyIdAws);
+	}
+
+	public void clearLogAccessKeyIdAws() {
+		this.logAccessKeyIdAws = Optional.absent();
+	}
+
+	private Optional<String> logSecretAccessKeyAws = Optional.absent();
+
+	public Optional<String> getLogSecretAccessKeyAws() {
+		return wrapNull(logSecretAccessKeyAws);
+	}
+
+	public void setLogSecretAccessKeyAws(Optional<String> logSecretAccessKeyAws) {
+		this.logSecretAccessKeyAws = wrapNull(logSecretAccessKeyAws);
+	}
+
+	public void setLogSecretAccessKeyAws(String logSecretAccessKeyAws) {
+		this.logSecretAccessKeyAws = Optional.fromNullable(logSecretAccessKeyAws);
+	}
+
+	public void clearLogSecretAccessKeyAws() {
+		this.logSecretAccessKeyAws = Optional.absent();
 	}
 
 	private BigDecimal longitude = BigDecimal.ZERO;
