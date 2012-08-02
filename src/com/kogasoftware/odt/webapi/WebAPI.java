@@ -767,7 +767,7 @@ public class WebAPI implements Closeable {
 					public ServiceProvider convert(byte[] rawResponse)
 							throws Exception {
 						return ServiceProvider.parse(
-								parseJSONObject(rawResponse)).orNull();
+								parseJSONObject(rawResponse));
 					}
 				});
 	}
