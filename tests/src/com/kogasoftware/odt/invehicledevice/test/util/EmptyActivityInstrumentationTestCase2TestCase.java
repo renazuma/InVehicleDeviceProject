@@ -9,7 +9,7 @@ public class EmptyActivityInstrumentationTestCase2TestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 
 	public void xtestInflateTestLayout() throws InterruptedException {
-		View v = inflateAndAddTestLayout(com.kogasoftware.odt.invehicledevice.test.R.layout.test_navigation_modal_view);
+		View v = new NavigationModalView(null, null, null);
 		assertTrue(v instanceof NavigationModalView);
 		ViewGroup vg = (ViewGroup) getActivity().findViewById(
 				android.R.id.content);
