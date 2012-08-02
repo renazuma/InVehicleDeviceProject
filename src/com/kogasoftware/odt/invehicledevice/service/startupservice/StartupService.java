@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
@@ -55,21 +56,37 @@ public class StartupService extends Service {
 			handler.postDelayed(this, CHECK_DEVICE_INTERVAL_MILLIS);
 		}
 	};
-
+	
 	private void checkDeviceAndStartActivity() {
 		if (!enabled.get()) {
 			Log.i(TAG, "waiting for startup enabled");
 			return;
 		}
+		
+		AsyncTask<Void,Void,Boolean> asyncTask = new AsyncTask<Void, Void, Boolean>() {
+			@Override
+			protected Boolean doInBackground(Void... params) {
+				SharedPreferences preferences = PreferenceManager
+						.getDefaultSharedPreferences(StartupService.this);
+				return preferences.getBoolean(SharedPreferencesKeys.INITIALIZED, false);
+			}
+			
+			@Override
+			protected void onPostExecute(Boolean result) {
+				if (isCancelled() || result == null) {
+					return;
+				} else if (result) {
+					BigToast.makeText(StartupService.this, "初期設定が見つかりません。設定アプリケーションを利用し初期設定を行なってください。",
+							Toast.LENGTH_LONG).show();
+					return;
+				}
+				checkDeviceAndStartActivityAfterInitialized();
+			}
+		};
+		asyncTask.execute();
+	}
 
-		SharedPreferences preferences = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		if (!preferences.getBoolean(SharedPreferencesKeys.INITIALIZED, false)) {
-			BigToast.makeText(this, "初期設定が見つかりません。設定アプリケーションを利用し初期設定を行なってください。",
-					Toast.LENGTH_LONG).show();
-			return;
-		}
-
+	private void checkDeviceAndStartActivityAfterInitialized() {
 		if (Settings.System.getInt(getContentResolver(),
 				Settings.System.AIRPLANE_MODE_ON, 0) != 0) {
 			BigToast.makeText(this, "機内モードが有効になっています。機内モードを無効にしてください。",
@@ -120,7 +137,7 @@ public class StartupService extends Service {
 		startIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		startActivity(startIntent);
 	}
-
+	
 	private final Handler handler = new Handler();
 
 	public static class StartupBroadcastReceiver extends BroadcastReceiver {
