@@ -49,7 +49,7 @@ public class ServiceProviderReceiveThread extends Thread implements
 	}
 
 	private void receive() {
-		service.getDataSource().getServiceProvider(
+		service.getRemoteDataSource().getServiceProvider(
 				new WebAPICallback<ServiceProvider>() {
 					@Override
 					public void onException(int reqkey, WebAPIException ex) {
