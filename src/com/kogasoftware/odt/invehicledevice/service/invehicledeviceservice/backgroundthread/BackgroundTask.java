@@ -178,11 +178,9 @@ public class BackgroundTask {
 		service.setLocalDataSource(localDataSource);
 
 		operationScheduleReceiveThread.start();
-		if (!service.isOperationScheduleInitialized()) {
+		if (!service.isOperationInitialized()) {
 			service.startNewOperation();
 			service.waitForOperationScheduleInitialize();
-		} else {
-			service.setInitialized();
 		}
 
 		List<Sensor> temperatureSensors = sensorManager

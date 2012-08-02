@@ -116,11 +116,11 @@ public class PassengerRecordArrayAdapterTestCase extends
 		sccdl.await(20, TimeUnit.SECONDS);
 		for (Integer i = 0; i < 500; ++i) {
 			Thread.sleep(1000);
-			if (s.isOperationScheduleInitialized()) {
+			if (s.isOperationInitialized()) {
 				break;
 			}
 		}
-		if (!s.isOperationScheduleInitialized()) {
+		if (!s.isOperationInitialized()) {
 			fail();
 		}
 

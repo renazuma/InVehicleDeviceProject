@@ -102,7 +102,7 @@ public class OperationScheduleLogic {
 				.addAll(triggerVehicleNotifications);
 
 		// 新規の場合PassengerRecordはすべて削除
-		if (!service.isOperationScheduleInitialized()) {
+		if (!service.isOperationInitialized()) {
 			localData.passengerRecords.clear();
 		}
 
@@ -171,10 +171,10 @@ public class OperationScheduleLogic {
 
 		localData.updatedDate = InVehicleDeviceService.getDate();
 
-		if (service.isOperationScheduleInitialized()) {
+		if (service.isOperationInitialized()) {
 			service.mergeUpdatedOperationSchedule(triggerVehicleNotifications);
 		} else {
-			service.setInitialized();
+			localData.operationScheduleInitializedSign.release();
 		}
 	}
 

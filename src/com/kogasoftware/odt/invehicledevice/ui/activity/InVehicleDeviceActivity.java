@@ -49,7 +49,7 @@ public class InVehicleDeviceActivity extends Activity implements
 		@Override
 		public void run() {
 			for (InVehicleDeviceService service : optionalService.asSet()) {
-				if (service.isOperationScheduleInitialized()) {
+				if (service.isOperationInitialized()) {
 					onInitialize(service);
 					handler.removeCallbacks(this);
 					return;
