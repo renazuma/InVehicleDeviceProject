@@ -1453,7 +1453,6 @@ public class WebAPITestCase extends
 		Log.i(TAG, "testNewRequestIsPrior() numSucceed=" + numSucceed.get());
 		assertTrue(numSucceed.get() < MAX / 10);
 	}
-}
 
 	public void testGetServiceProvider() throws Exception {
 		api = new WebAPI(SERVER_HOST, master.getInVehicleDevice()
