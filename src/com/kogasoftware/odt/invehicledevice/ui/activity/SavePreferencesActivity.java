@@ -3,11 +3,13 @@ package com.kogasoftware.odt.invehicledevice.ui.activity;
 import java.io.InvalidClassException;
 import java.io.Serializable;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONException;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -24,11 +26,7 @@ public class SavePreferencesActivity extends Activity {
 	private static final String TAG = SavePreferencesActivity.class
 			.getSimpleName();
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		finish(); // 必ずfinishする
-
+	private Pair<Boolean, String> saveInBackground() {
 		Intent intent = getIntent();
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(this);
@@ -41,30 +39,29 @@ public class SavePreferencesActivity extends Activity {
 					.getSerializable(SharedPreferencesKeys.IN_VEHICLE_DEVICE);
 		} catch (RuntimeException e) {
 			Log.e(TAG, e.toString(), e);
+			String message = "";
 			if (e.getCause() instanceof InvalidClassException) {
-				Toast.makeText(
-						this,
-						"エラーが発生しました。設定アプリケーションのバージョンと車載器アプリケーションのバージョンが適合しません。",
-						Toast.LENGTH_LONG).show();
+				message = "エラーが発生しました。設定アプリケーションのバージョンと車載器アプリケーションのバージョンが適合しません。";
 			} else {
-				Toast.makeText(this, "不明なエラーが発生しました。デバイスのログを参照してください。",
-						Toast.LENGTH_LONG).show();
+				message = "不明なエラーが発生しました。デバイスのログを参照してください。";
 			}
-			return;
+			return Pair.of(false, message);
 		}
+
 		if (maybeInVehicleDevice instanceof InVehicleDevice) {
 			inVehicleDevice = (InVehicleDevice) maybeInVehicleDevice;
 		} else {
-			Log.e(TAG,
-					"!(bundle.getSerializable(SharedPreferencesKey.IN_VEHICLE_DEVICE) instanceof InVehicleDevice)");
+			String message = "!(bundle.getSerializable(SharedPreferencesKey.IN_VEHICLE_DEVICE) instanceof InVehicleDevice)";
+			Log.e(TAG, message);
 		}
 
 		SharedPreferences.Editor editor = preferences.edit();
 		editor.clear();
 		editor.putBoolean(SharedPreferencesKeys.INITIALIZED, true);
-		editor.putString(SharedPreferencesKeys.SERVER_URL, Objects.firstNonNull(
-				bundle.getString(SharedPreferencesKeys.SERVER_URL),
-				WebAPIDataSource.DEFAULT_URL));
+		editor.putString(SharedPreferencesKeys.SERVER_URL, Objects
+				.firstNonNull(
+						bundle.getString(SharedPreferencesKeys.SERVER_URL),
+						WebAPIDataSource.DEFAULT_URL));
 		editor.putString(
 				SharedPreferencesKeys.SERVER_IN_VEHICLE_DEVICE_TOKEN,
 				Strings.nullToEmpty(bundle
@@ -75,6 +72,7 @@ public class SavePreferencesActivity extends Activity {
 		} catch (JSONException e) {
 			Log.e(TAG, "toJSONObject() failed", e);
 		}
+
 		editor.putInt(
 				SharedPreferencesKeys.LOCATION_RECEIVE_MIN_DISTANCE,
 				bundle.getInt(SharedPreferencesKeys.LOCATION_RECEIVE_MIN_DISTANCE));
@@ -87,10 +85,35 @@ public class SavePreferencesActivity extends Activity {
 		editor.putBoolean(SharedPreferencesKeys.CLEAR_WEBAPI_BACKUP, true);
 		editor.putBoolean(SharedPreferencesKeys.CLEAR_VOICE_CACHE, true);
 		editor.commit();
-		Toast.makeText(this, "設定を保存しました", Toast.LENGTH_LONG).show();
+		return Pair.of(true, "");
+	}
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		finish(); // 必ずfinishする
+		AsyncTask<Void, Void, Pair<Boolean, String>> asyncTask = new AsyncTask<Void, Void, Pair<Boolean, String>>() {
+			@Override
+			protected void onPostExecute(Pair<Boolean, String> result) {
+				if (isCancelled() || result == null) {
+					return;
+				} else if (!result.getKey()) {
+					Toast.makeText(SavePreferencesActivity.this,
+							result.getValue(), Toast.LENGTH_LONG).show();
+					return;
+				}
+				Toast.makeText(SavePreferencesActivity.this, "設定を保存しました",
+						Toast.LENGTH_LONG).show();
+				Intent exitIntent = new Intent();
+				exitIntent.setAction(Broadcasts.ACTION_EXIT);
+				getApplicationContext().sendBroadcast(exitIntent);
+			}
 
-		Intent exitIntent = new Intent();
-		exitIntent.setAction(Broadcasts.ACTION_EXIT);
-		getApplicationContext().sendBroadcast(exitIntent);
+			@Override
+			protected Pair<Boolean, String> doInBackground(Void... params) {
+				return saveInBackground();
+			}
+		};
+		asyncTask.execute();
 	}
 }
