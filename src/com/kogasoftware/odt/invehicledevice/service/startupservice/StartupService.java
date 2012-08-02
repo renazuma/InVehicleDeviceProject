@@ -63,6 +63,7 @@ public class StartupService extends Service {
 			return;
 		}
 		
+		// SharedPreferencesの読み取りがファイルIOになるので、サブスレッドで読み取るようにする
 		AsyncTask<Void,Void,Boolean> asyncTask = new AsyncTask<Void, Void, Boolean>() {
 			@Override
 			protected Boolean doInBackground(Void... params) {
