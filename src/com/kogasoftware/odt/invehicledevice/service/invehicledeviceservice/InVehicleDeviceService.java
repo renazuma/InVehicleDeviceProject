@@ -191,7 +191,6 @@ public class InVehicleDeviceService extends Service {
 	protected final Handler handler = new Handler(Looper.getMainLooper());
 	protected final VoiceServiceConnector voiceServiceConnector;
 
-	protected final Set<OnInitializeListener> onInitializeListeners = newListenerSet();
 	protected final Set<OnEnterPhaseListener> onEnterPhaseListeners = newListenerSet();
 	protected final Set<OnAlertUpdatedOperationScheduleListener> onAlertUpdatedOperationScheduleListeners = newListenerSet();
 	protected final Set<OnAlertVehicleNotificationReceiveListener> onAlertVehicleNotificationReceiveListeners = newListenerSet();
@@ -341,10 +340,6 @@ public class InVehicleDeviceService extends Service {
 
 	public void removeOnExitListener(OnExitListener listener) {
 		onExitListeners.remove(listener);
-	}
-
-	public void removeOnInitializeListener(OnInitializeListener listener) {
-		onInitializeListeners.remove(listener);
 	}
 
 	public void removeOnMergeUpdatedOperationScheduleListener(
@@ -694,7 +689,6 @@ public class InVehicleDeviceService extends Service {
 		removeOnPauseActivityListener(voiceServiceConnector);
 		removeOnResumeActivityListener(voiceServiceConnector);
 
-		onInitializeListeners.clear();
 		onEnterPhaseListeners.clear();
 		onAlertUpdatedOperationScheduleListeners.clear();
 		onAlertVehicleNotificationReceiveListeners.clear();
