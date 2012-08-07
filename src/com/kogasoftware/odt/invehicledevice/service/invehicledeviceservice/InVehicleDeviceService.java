@@ -865,8 +865,18 @@ public class InVehicleDeviceService extends Service {
 						return status.operationScheduleInitializedSign;
 					}
 				});
+		Semaphore serviceProviderInitializedSign = localDataSource
+				.withReadLock(new Reader<Semaphore>() {
+					@Override
+					public Semaphore read(LocalData status) {
+						return status.serviceProviderInitializedSign;
+					}
+				});
+
 		operationScheduleInitializedSign.acquire();
 		operationScheduleInitializedSign.release();
+		serviceProviderInitializedSign.acquire();
+		serviceProviderInitializedSign.release();
 	}
 
 	public Boolean isSelected(PassengerRecord passengerRecord) {
