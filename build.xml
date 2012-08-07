@@ -57,6 +57,14 @@
             -post-build
             -pre-clean
     -->
+    <target name="-pre-build">
+      <replaceregexp
+          match="^(android\.library\.reference\.[1-9]=\.\.)/AndroidWebAPI$"
+          replace="\1"
+          file="AndroidWebTestAPI/project.properties"
+          byline="true"
+          flags="g" />
+    </target>
     <import file="custom_rules.xml" optional="true" />
 
     <!-- Import the actual build file.
