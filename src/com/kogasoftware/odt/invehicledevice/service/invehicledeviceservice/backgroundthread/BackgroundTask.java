@@ -184,7 +184,7 @@ public class BackgroundTask {
 		
 		if (!service.isOperationInitialized()) {
 			service.startNewOperation();
-			service.waitForOperationScheduleInitialize();
+			service.waitForOperationInitialize();
 		}
 
 		List<Sensor> temperatureSensors = sensorManager

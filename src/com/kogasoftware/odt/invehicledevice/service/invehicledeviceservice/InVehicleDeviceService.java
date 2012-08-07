@@ -856,7 +856,7 @@ public class InVehicleDeviceService extends Service {
 		});
 	}
 
-	public void waitForOperationScheduleInitialize()
+	public void waitForOperationInitialize()
 			throws InterruptedException {
 		Semaphore operationScheduleInitializedSign = localDataSource
 				.withReadLock(new Reader<Semaphore>() {
