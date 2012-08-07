@@ -42,7 +42,9 @@ public class InVehicleDeviceActivity extends Activity implements
 		public void run() {
 			Log.i(TAG, "pauseFinishTimeouter.run()");
 			moveTaskToBack(true);
-			finish();
+			if (!isFinishing()) {
+				finish();
+			}
 		}
 	};
 	private final Runnable waitForInitialize = new Runnable() {
@@ -123,7 +125,9 @@ public class InVehicleDeviceActivity extends Activity implements
 			dialog.setOnCancelListener(new OnCancelListener() {
 				@Override
 				public void onCancel(DialogInterface dialogInterface) {
-					finish();
+					if (!isFinishing()) {
+						finish();
+					}
 				}
 			});
 			return dialog;
@@ -137,7 +141,9 @@ public class InVehicleDeviceActivity extends Activity implements
 	@Override
 	public void onExit() {
 		handler.postDelayed(pauseFinishTimeouter, PAUSE_FINISH_TIMEOUT_MILLIS);
-		finish();
+		if (!isFinishing()) {
+			finish();
+		}
 	}
 
 	public void onInitialize(final InVehicleDeviceService service) {
@@ -183,7 +189,9 @@ public class InVehicleDeviceActivity extends Activity implements
 	public void onStop() {
 		super.onStop();
 		Log.i(TAG, "onStop()");
-		finish();
+		if (!isFinishing()) {
+			finish();
+		}
 	}
 
 	@Override
