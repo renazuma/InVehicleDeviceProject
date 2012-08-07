@@ -58,6 +58,7 @@ public class BackgroundTask {
 	private final ExitBroadcastReceiver exitBroadcastReceiver;
 	private final BatteryBroadcastReceiver batteryBroadcastReceiver;
 	private final Thread operationScheduleReceiveThread;
+	private final Thread serviceProviderReceiveThread;
 	private final Looper myLooper;
 	private final AtomicBoolean quitCalled = new AtomicBoolean(false);
 	private final InVehicleDeviceService service;
@@ -107,6 +108,7 @@ public class BackgroundTask {
 		locationNotifier = new LocationNotifier(service);
 		operationScheduleReceiveThread = new OperationScheduleReceiveThread(
 				service);
+		serviceProviderReceiveThread = new ServiceProviderReceiveThread(service);
 	}
 
 	/**
@@ -178,6 +180,8 @@ public class BackgroundTask {
 		service.setLocalDataSource(localDataSource);
 
 		operationScheduleReceiveThread.start();
+		serviceProviderReceiveThread.start();
+		
 		if (!service.isOperationInitialized()) {
 			service.startNewOperation();
 			service.waitForOperationScheduleInitialize();
@@ -239,6 +243,7 @@ public class BackgroundTask {
 
 	protected void onLoopStop() {
 		operationScheduleReceiveThread.interrupt();
+		serviceProviderReceiveThread.interrupt();
 		locationNotifier.stop();
 		sensorManager.unregisterListener(temperatureSensorEventListener);
 		sensorManager.unregisterListener(orientationSensorEventListener);
