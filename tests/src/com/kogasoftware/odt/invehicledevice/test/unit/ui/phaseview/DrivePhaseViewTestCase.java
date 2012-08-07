@@ -28,7 +28,7 @@ public class DrivePhaseViewTestCase extends
 		super.setUp();
 		s = mock(InVehicleDeviceService.class);
 		sa = new LocalDataSource(getActivity());
-		pv = (DrivePhaseView) inflateAndAddTestLayout(com.kogasoftware.odt.invehicledevice.test.R.layout.test_drive_phase_view);
+		pv = new DrivePhaseView(null, s);
 		sa.withWriteLock(new Writer() { // TODO もっとスマートにする
 			@Override
 			public void write(LocalData status) {

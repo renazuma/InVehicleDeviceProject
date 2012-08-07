@@ -22,9 +22,7 @@ public class ModalViewTestCase extends EmptyActivityInstrumentationTestCase2 {
 		s = mock(InVehicleDeviceService.class);
 		fail("TestModalViewのinflateにAnimationResourceが必要のため失敗する");
 
-		LayoutInflater li = (LayoutInflater) getInstrumentation().getContext()
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		mv = (TestModalView) li.inflate(R.layout.test_modal_view, null);
+		mv = new TestModalView(a, s);
 		runOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {

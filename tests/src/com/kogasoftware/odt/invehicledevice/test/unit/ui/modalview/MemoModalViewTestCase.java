@@ -23,7 +23,7 @@ public class MemoModalViewTestCase extends
 		super.setUp();
 		a = getActivity();
 		s = mock(InVehicleDeviceService.class);
-		mv = (MemoModalView) inflateAndAddTestLayout(com.kogasoftware.odt.invehicledevice.test.R.layout.test_memo_modal_view);
+		mv = new MemoModalView(a, s);
 		r = new Reservation();
 		r.setId(12345);
 	}
