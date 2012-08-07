@@ -17,6 +17,7 @@ import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
 
 import com.jayway.android.robotium.solo.Solo;
+import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.datasource.EmptyDataSource;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.startupservice.StartupService;
@@ -50,27 +51,28 @@ public class TestUtilTestCase extends
 		}
 	}
 
-	public void testWaitForStartUi() throws Exception {
+	public void callTestWaitForStartUi(Boolean timeout) throws Exception {
 		TestUtil.clearStatus();
-		TestUtil.setDataSource(new DummyDataSource());
-		assertTrue(TestUtil.waitForStartUI(getActivity()));
+		DataSource ds = new DummyDataSource();
+		if (timeout) {
+			ds = new DummyDataSource() {
+				@Override
+				public List<OperationSchedule> getOperationSchedules()
+						throws WebAPIException {
+					throw new WebAPIException("test");
+				}
+			};
+		}
+		TestUtil.setDataSource(ds);
+		assertEquals(!timeout, TestUtil.waitForStartUI(getActivity()).booleanValue());
+	}
+
+	public void testWaitForStartUi() throws Exception {
+		callTestWaitForStartUi(false);
 	}
 
 	public void testWaitForStartUiTimeout() throws Exception {
-		Context c = getInstrumentation().getContext();
-		final Activity a = getActivity();
-		TestUtil.disableAutoStart(c);
-		TestUtil.runOnUiThreadSync(a, new Runnable() {
-			@Override
-			public void run() {
-				a.finish();
-			}
-		});
-		getActivity().finish();
-
-		TestUtil.clearStatus();
-		TestUtil.setDataSource(new NoOperationScheduleDataSource());
-		assertFalse(TestUtil.waitForStartUI(getActivity()));
+		callTestWaitForStartUi(true);
 	}
 
 	public void testDisableAutoStart() throws Exception {
@@ -112,15 +114,3 @@ public class TestUtilTestCase extends
 		fail();
 	}
 }
-
-class NoOperationScheduleDataSource extends EmptyDataSource {
-	@Override
-	public List<OperationSchedule> getOperationSchedules()
-			throws WebAPIException {
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-		}
-		throw new WebAPIException("error");
-	}
-};
