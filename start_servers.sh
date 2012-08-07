@@ -1,8 +1,5 @@
 #!/bin/sh
 
-git submodule update --init
-git submodule foreach 'git checkout master; git pull'
-
 for mysql_socket in \
   /var/lib/mysql/mysql.sock /var/run/mysqld/mysqld.sock; do
   if [ -e $mysql_socket ]; then
