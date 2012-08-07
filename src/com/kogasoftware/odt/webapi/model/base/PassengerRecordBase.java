@@ -15,10 +15,11 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class PassengerRecordBase extends Model {
-	private static final long serialVersionUID = 5458690246524136419L;
+	private static final long serialVersionUID = 3497600956423721556L;
 
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {
+		setAge(parseOptionalInteger(jsonObject, "age"));
 		setArrivalOperationScheduleId(parseOptionalInteger(jsonObject, "arrival_operation_schedule_id"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
@@ -33,7 +34,6 @@ public abstract class PassengerRecordBase extends Model {
 		setReservationId(parseOptionalInteger(jsonObject, "reservation_id"));
 		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
 		setStatus(parseInteger(jsonObject, "status"));
-		setTimestamp(parseOptionalDate(jsonObject, "timestamp"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setUserId(parseOptionalInteger(jsonObject, "user_id"));
 		setArrivalOperationSchedule(OperationSchedule.parse(jsonObject, "arrival_operation_schedule"));
@@ -82,6 +82,7 @@ public abstract class PassengerRecordBase extends Model {
 		}
 		Integer nextDepth = depth + 1;
 		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("age", toJSON(getAge()));
 		jsonObject.put("arrival_operation_schedule_id", toJSON(getArrivalOperationScheduleId()));
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
 		jsonObject.put("deleted_at", toJSON(getDeletedAt()));
@@ -96,7 +97,6 @@ public abstract class PassengerRecordBase extends Model {
 		jsonObject.put("reservation_id", toJSON(getReservationId()));
 		jsonObject.put("service_provider_id", toJSON(getServiceProviderId()));
 		jsonObject.put("status", toJSON(getStatus()));
-		jsonObject.put("timestamp", toJSON(getTimestamp()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
 		jsonObject.put("user_id", toJSON(getUserId()));
 		if (getArrivalOperationSchedule().isPresent()) {
@@ -140,6 +140,24 @@ public abstract class PassengerRecordBase extends Model {
 	@Override
 	public PassengerRecord cloneByJSON() throws JSONException {
 		return parse(toJSONObject(true));
+	}
+
+	private Optional<Integer> age = Optional.absent();
+
+	public Optional<Integer> getAge() {
+		return wrapNull(age);
+	}
+
+	public void setAge(Optional<Integer> age) {
+		this.age = wrapNull(age);
+	}
+
+	public void setAge(Integer age) {
+		this.age = Optional.fromNullable(age);
+	}
+
+	public void clearAge() {
+		this.age = Optional.absent();
 	}
 
 	private Optional<Integer> arrivalOperationScheduleId = Optional.absent();
@@ -360,24 +378,6 @@ public abstract class PassengerRecordBase extends Model {
 
 	public void setStatus(Integer status) {
 		this.status = wrapNull(status);
-	}
-
-	private Optional<Date> timestamp = Optional.absent();
-
-	public Optional<Date> getTimestamp() {
-		return wrapNull(timestamp);
-	}
-
-	public void setTimestamp(Optional<Date> timestamp) {
-		this.timestamp = wrapNull(timestamp);
-	}
-
-	public void setTimestamp(Date timestamp) {
-		this.timestamp = Optional.fromNullable(timestamp);
-	}
-
-	public void clearTimestamp() {
-		this.timestamp = Optional.absent();
 	}
 
 	private Date updatedAt = new Date();
