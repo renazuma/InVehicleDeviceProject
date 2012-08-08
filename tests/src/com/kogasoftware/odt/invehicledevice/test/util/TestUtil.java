@@ -9,7 +9,8 @@ import junit.framework.Assert;
 import org.joda.time.DateTime;
 
 import android.app.Activity;
-import android.app.Instrumentation;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningTaskInfo;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -18,7 +19,6 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.RemoteException;
 import android.os.StrictMode;
-import android.util.Log;
 import android.view.View;
 
 import com.google.common.util.concurrent.Uninterruptibles;
@@ -150,6 +150,17 @@ public class TestUtil {
 		t.join();
 	}
 
+	public static ComponentName getTopActivity(Context c) {
+		ActivityManager activityManager = (ActivityManager) c
+				.getSystemService(Activity.ACTIVITY_SERVICE);
+		for (RunningTaskInfo runningTaskInfo : activityManager
+				.getRunningTasks(1)) {
+			return runningTaskInfo.topActivity;
+		}
+		
+		throw new RuntimeException("topActivity not found");
+	}
+
 	public static void disableAutoStart(Context context)
 			throws InterruptedException {
 		setAutoStart(context, false);
@@ -166,7 +177,7 @@ public class TestUtil {
 		StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll()
 				.penaltyLog().penaltyDeath().build());
 	}
-	
+
 	public static void exitService(final Context c) throws InterruptedException {
 		final Intent i = new Intent(c, InVehicleDeviceService.class);
 		Thread t = new Thread() {
@@ -174,7 +185,8 @@ public class TestUtil {
 			final ServiceConnection sc = new ServiceConnection() {
 				@Override
 				public void onServiceConnected(ComponentName cn, IBinder ib) {
-					((InVehicleDeviceService.LocalBinder) ib).getService().exit();
+					((InVehicleDeviceService.LocalBinder) ib).getService()
+							.exit();
 					c.unbindService(this);
 					c.stopService(i);
 					myLooper.quit();
@@ -190,8 +202,9 @@ public class TestUtil {
 			public void run() {
 				Looper.prepare();
 				myLooper = Looper.myLooper();
-				Assert.assertTrue(c
-						.bindService(i, sc, Context.BIND_AUTO_CREATE));
+				if (!c.bindService(i, sc, 0)) {
+					return;
+				}
 				Looper.loop();
 			}
 		};

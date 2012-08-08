@@ -2,24 +2,10 @@ package com.kogasoftware.odt.invehicledevice.test.util;
 
 import java.util.List;
 
-import junit.framework.AssertionFailedError;
-import android.app.Activity;
-import android.app.ActivityManager;
-import android.app.ActivityManager.RunningTaskInfo;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.os.Bundle;
-import android.os.IBinder;
-import android.os.Looper;
 import android.test.ActivityInstrumentationTestCase2;
-import android.util.Log;
 
-import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
-import com.kogasoftware.odt.invehicledevice.datasource.EmptyDataSource;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.startupservice.StartupService;
 import com.kogasoftware.odt.invehicledevice.test.util.datasource.DummyDataSource;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
@@ -30,6 +16,7 @@ public class TestUtilTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
 	private static final String TAG = TestUtilTestCase.class.getSimpleName();
+	InVehicleDeviceActivity a;
 
 	public TestUtilTestCase() {
 		super("com.kogasoftware.odt.invehicledevice",
@@ -37,14 +24,19 @@ public class TestUtilTestCase extends
 	}
 
 	public void setUp() throws Exception {
+		super.setUp();
 		TestUtil.disableAutoStart(getInstrumentation().getContext());
+		Thread.sleep(10 * 1000);
 	}
 
 	public void tearDown() throws Exception {
 		try {
+			if (a != null) {
+				a.finish();
+			}
+			a = null;
 			Context tc = getInstrumentation().getTargetContext();
 			TestUtil.disableAutoStart(tc);
-			Thread.sleep(10 * 1000);
 			TestUtil.exitService(tc);
 		} finally {
 			super.tearDown();
@@ -52,7 +44,6 @@ public class TestUtilTestCase extends
 	}
 
 	public void callTestWaitForStartUi(Boolean timeout) throws Exception {
-		TestUtil.clearStatus();
 		DataSource ds = new DummyDataSource();
 		if (timeout) {
 			ds = new DummyDataSource() {
@@ -63,54 +54,66 @@ public class TestUtilTestCase extends
 				}
 			};
 		}
+
+		TestUtil.clearStatus();
 		TestUtil.setDataSource(ds);
-		assertEquals(!timeout, TestUtil.waitForStartUI(getActivity()).booleanValue());
+		a = getActivity();
+		assertEquals(!timeout, TestUtil.waitForStartUI(a).booleanValue());
 	}
 
-	public void testWaitForStartUi() throws Exception {
+	public void testWaitForStartUi1() throws Exception {
 		callTestWaitForStartUi(false);
 	}
 
-	public void testWaitForStartUiTimeout() throws Exception {
+	public void testWaitForStartUi1Timeout() throws Exception {
 		callTestWaitForStartUi(true);
 	}
 
-	public void testDisableAutoStart() throws Exception {
+	public void testWaitForStartUi2() throws Exception {
+		callTestWaitForStartUi(false);
+	}
+
+	public void testWaitForStartUi2Timeout() throws Exception {
+		callTestWaitForStartUi(true);
+	}
+
+	public void callTestDisableAutoStart() throws Exception {
 		Context c = getInstrumentation().getContext();
-		String pn = getInstrumentation().getTargetContext().getPackageName();
-		InVehicleDeviceActivity a = getActivity();
+
+		// ActivityのUI起動後、自動起動をOFFにしてActivityを終了
+		a = getActivity();
 		TestUtil.waitForStartUI(a);
 		TestUtil.disableAutoStart(c);
 		a.finish();
-
+		a.moveTaskToBack(true);
+		a = null;
 		Thread.sleep(5000);
 
-		ActivityManager activityManager = (ActivityManager) c
-				.getSystemService(Activity.ACTIVITY_SERVICE);
-		for (RunningTaskInfo runningTaskInfo : activityManager
-				.getRunningTasks(1)) {
-			ComponentName topActivity = runningTaskInfo.topActivity;
-			if (topActivity.getPackageName().equals(pn)
-					&& topActivity.getClassName().equals(
-							InVehicleDeviceActivity.class.getName())) {
-				fail();
-			}
+		// 最前面のActivityが車載器の場合失敗
+		if (TestUtil.getTopActivity(c).getClassName()
+				.equals(InVehicleDeviceActivity.class.getName())) {
+			fail();
 		}
 
+		// 自動起動をON
 		TestUtil.enableAutoStart(c);
 		Thread.sleep(StartupService.CHECK_DEVICE_INTERVAL_MILLIS);
 		Thread.sleep(5 * 1000);
-		
-		for (RunningTaskInfo runningTaskInfo : activityManager
-				.getRunningTasks(1)) {
-			ComponentName topActivity = runningTaskInfo.topActivity;
-			if (topActivity.getPackageName().equals(pn)
-					&& topActivity.getClassName().equals(
-							InVehicleDeviceActivity.class.getName())) {
-				return;
-			}
+
+		// 最前面のActivityが車載器の場合成功
+		if (TestUtil.getTopActivity(c).getClassName()
+				.equals(InVehicleDeviceActivity.class.getName())) {
+			return;
 		}
-		
+
 		fail();
+	}
+
+	public void xtestDisableAutoStart1() throws Exception {
+		callTestDisableAutoStart();
+	}
+
+	public void xtestDisableAutoStart2() throws Exception {
+		callTestDisableAutoStart();
 	}
 }
