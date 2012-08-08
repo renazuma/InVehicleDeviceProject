@@ -95,7 +95,9 @@ public class InVehicleDeviceActivity extends Activity implements
 				WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
 						| WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
 						| WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
-
+		if (!isFinishing()) {
+			showDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
+		}
 		bindService(new Intent(this, InVehicleDeviceService.class),
 				serviceConnection, Context.BIND_AUTO_CREATE);
 		handler.post(waitForInitialize);
@@ -148,10 +150,6 @@ public class InVehicleDeviceActivity extends Activity implements
 
 	public void onInitialize(final InVehicleDeviceService service) {
 		Log.i(TAG, "onInitialize()");
-		try {
-			dismissDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
-		} catch (IllegalArgumentException e) {
-		}
 		if (isFinishing()) {
 			return;
 		}
@@ -170,6 +168,11 @@ public class InVehicleDeviceActivity extends Activity implements
 						R.anim.show_in_vehicle_device_view);
 				view.startAnimation(animation);
 				view.setVisibility(View.VISIBLE);
+				try {
+					removeDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
+				} catch (IllegalArgumentException e) {
+					Log.w(TAG, e);
+				}
 			}
 		});
 		uiInitialized = true;
@@ -199,9 +202,6 @@ public class InVehicleDeviceActivity extends Activity implements
 		super.onResume();
 		Log.i(TAG, "onResume()");
 		handler.removeCallbacks(pauseFinishTimeouter);
-		if (!isFinishing() && !uiInitialized) {
-			showDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
-		}
 		if (optionalService.isPresent()) {
 			optionalService.get().setActivityResumed();
 		}
@@ -212,10 +212,6 @@ public class InVehicleDeviceActivity extends Activity implements
 		super.onPause();
 		Log.i(TAG, "onPause()");
 		handler.postDelayed(pauseFinishTimeouter, PAUSE_FINISH_TIMEOUT_MILLIS);
-		try {
-			dismissDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
-		} catch (IllegalArgumentException e) {
-		}
 		if (optionalService.isPresent()) {
 			optionalService.get().setActivityPaused();
 		}
