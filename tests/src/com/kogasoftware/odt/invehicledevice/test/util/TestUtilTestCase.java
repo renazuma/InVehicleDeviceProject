@@ -4,6 +4,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.test.ActivityInstrumentationTestCase2;
+import android.view.KeyEvent;
 
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.service.startupservice.StartupService;
@@ -103,17 +104,20 @@ public class TestUtilTestCase extends
 		// 最前面のActivityが車載器の場合成功
 		if (TestUtil.getTopActivity(c).getClassName()
 				.equals(InVehicleDeviceActivity.class.getName())) {
+			TestUtil.disableAutoStart(c);
+			sendKeys(KeyEvent.KEYCODE_HOME);
+			Thread.sleep(10 * 1000);
 			return;
 		}
 
 		fail();
 	}
 
-	public void xtestDisableAutoStart1() throws Exception {
+	public void testDisableAutoStart1() throws Exception {
 		callTestDisableAutoStart();
 	}
 
-	public void xtestDisableAutoStart2() throws Exception {
+	public void testDisableAutoStart2() throws Exception {
 		callTestDisableAutoStart();
 	}
 }
