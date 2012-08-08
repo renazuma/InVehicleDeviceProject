@@ -22,7 +22,6 @@ public class ServiceProviderReceiveThread extends Thread implements
 
 	public ServiceProviderReceiveThread(InVehicleDeviceService service) {
 		this.service = service;
-		service.addOnStartNewOperationListener(this);
 	}
 
 	@Override
@@ -74,6 +73,7 @@ public class ServiceProviderReceiveThread extends Thread implements
 		// 最初の一度は必ず受信する
 		serviceProviderReceiveSemaphore.release();
 		try {
+			service.addOnStartNewOperationListener(this);
 			while (!Thread.currentThread().isInterrupted()) {
 				// 受信通知があるまで待つ
 				serviceProviderReceiveSemaphore.acquire();
@@ -82,6 +82,8 @@ public class ServiceProviderReceiveThread extends Thread implements
 			}
 		} catch (InterruptedException e) {
 			// 正常終了
+		} finally {
+			service.removeOnStartNewOperationListener(this);
 		}
 	}
 }
