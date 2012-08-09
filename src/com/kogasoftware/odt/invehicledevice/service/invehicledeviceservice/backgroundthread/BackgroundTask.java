@@ -17,6 +17,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
+import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.telephony.PhoneStateListener;
@@ -63,6 +64,8 @@ public class BackgroundTask {
 	private final AtomicBoolean quitCalled = new AtomicBoolean(false);
 	private final InVehicleDeviceService service;
 	private final Context applicationContext;
+	private final Handler handler;
+	private final AtomicBoolean loopStopped = new AtomicBoolean(false);
 
 	public BackgroundTask(InVehicleDeviceService service) {
 		this.service = service;
@@ -71,6 +74,7 @@ public class BackgroundTask {
 		}
 		applicationContext = service.getApplicationContext();
 		myLooper = Looper.myLooper();
+		handler = new Handler();
 
 		sensorManager = (SensorManager) applicationContext
 				.getSystemService(Context.SENSOR_SERVICE);
@@ -243,6 +247,9 @@ public class BackgroundTask {
 	}
 
 	protected void onLoopStop() {
+		if (loopStopped.getAndSet(true)) {
+			return;
+		}
 		Log.i(TAG, "onLoopStop()");
 		operationScheduleReceiveThread.interrupt();
 		serviceProviderReceiveThread.interrupt();
@@ -277,7 +284,13 @@ public class BackgroundTask {
 	public void quit() {
 		// 二回以上呼ばれないようにする
 		if (!quitCalled.getAndSet(true)) {
-			myLooper.quit();
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					onLoopStop();
+					myLooper.quit();
+				}
+			});
 		}
 	}
 }
