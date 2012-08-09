@@ -108,6 +108,7 @@ public class InVehicleDeviceActivity extends Activity implements
 		Log.i(TAG, "onDestroy()");
 		if (optionalService.isPresent()) {
 			optionalService.get().removeOnExitListener(this);
+			optionalService = Optional.absent();
 		}
 		unbindService(serviceConnection);
 		getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);

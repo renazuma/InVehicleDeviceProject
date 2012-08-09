@@ -684,6 +684,7 @@ public class InVehicleDeviceService extends Service {
 		Log.i(TAG, "onDestroy()");
 		stopForeground(true);
 		backgroundThread.interrupt();
+		backgroundThread = new EmptyThread();
 
 		removeOnPauseActivityListener(voiceServiceConnector);
 		removeOnResumeActivityListener(voiceServiceConnector);
