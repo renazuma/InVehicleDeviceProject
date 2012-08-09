@@ -132,6 +132,7 @@ public class BackgroundTask {
 
 	protected void onLoopStart() throws InterruptedException,
 			ExecutionException {
+		Log.i(TAG, "onLoopStart()");
 
 		IntentFilter exitIntentFilter = new IntentFilter();
 		exitIntentFilter.addAction(Broadcasts.ACTION_EXIT);
@@ -242,6 +243,7 @@ public class BackgroundTask {
 	}
 
 	protected void onLoopStop() {
+		Log.i(TAG, "onLoopStop()");
 		operationScheduleReceiveThread.interrupt();
 		serviceProviderReceiveThread.interrupt();
 		locationNotifier.stop();
