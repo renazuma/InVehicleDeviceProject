@@ -23,7 +23,6 @@ import android.view.animation.AnimationUtils;
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
-import com.kogasoftware.odt.invehicledevice.service.startupservice.StartupService;
 import com.kogasoftware.odt.invehicledevice.ui.InVehicleDeviceView;
 
 public class InVehicleDeviceActivity extends Activity implements
@@ -32,7 +31,7 @@ public class InVehicleDeviceActivity extends Activity implements
 			.getSimpleName();
 	private static final int WAIT_FOR_INITIALIZE_DIALOG_ID = 10;
 	private static final int WAIT_FOR_INITIALIZE_MILLIS = 3 * 1000;
-	private static final int PAUSE_FINISH_TIMEOUT_MILLIS = 10 * 1000;
+	public static final int PAUSE_FINISH_TIMEOUT_MILLIS = 10 * 1000;
 	private final Handler handler = new Handler();
 	// Androidエミュレーターで、Activity起動後ESCキーを押してホーム画面に戻ると、Activityが見えていないのに
 	// onStopやonDestroyが呼ばれずRunningTaskInfo.topActivityがこのActivityを返すため、自動再起動ができないことがある。
