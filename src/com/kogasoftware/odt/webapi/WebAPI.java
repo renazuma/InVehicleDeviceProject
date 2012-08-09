@@ -52,6 +52,14 @@ public class WebAPI implements Closeable {
 		T convert(byte[] rawResponse) throws Exception;
 	}
 
+	public static class VoidResponseConverter implements
+			ResponseConverter<Void> {
+		@Override
+		public Void convert(byte[] rawResponse) throws Exception {
+			return null;
+		}
+	};
+
 	public interface WebAPICallback<T> {
 		/**
 		 * 例外発生時のコールバック
@@ -343,9 +351,8 @@ public class WebAPI implements Closeable {
 	 */
 	public int getOffPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, User user,
-			PassengerRecord passengerRecord,
-			WebAPICallback<PassengerRecord> callback) throws WebAPIException,
-			JSONException {
+			PassengerRecord passengerRecord, WebAPICallback<Void> callback)
+			throws WebAPIException, JSONException {
 		passengerRecord.setGetOffTime(new Date());
 		PassengerRecord retryPassengerRecord = passengerRecord.cloneByJSON();
 		retryPassengerRecord.setGetOffTimeOffline(true);
@@ -360,20 +367,14 @@ public class WebAPI implements Closeable {
 		retryParam.put("passenger_record",
 				filterJSONKeys(retryPassengerRecord.toJSONObject(), filter));
 
-		String group = getPassengerRecordGetOnOrOffGroup(operationSchedule.getId(),
-				reservation.getId(), user.getId());
+		String group = getPassengerRecordGetOnOrOffGroup(
+				operationSchedule.getId(), reservation.getId(), user.getId());
 
-		return put(PATH_SCHEDULES + "/" + operationSchedule.getId()
-				+ "/reservations/" + reservation.getId() + "/users/" + user.getId() + "/getoff", param,
-				retryParam, group, callback,
-				new ResponseConverter<PassengerRecord>() {
-					@Override
-					public PassengerRecord convert(byte[] rawResponse)
-							throws Exception {
-						return PassengerRecord
-								.parse(parseJSONObject(rawResponse));
-					}
-				});
+		return put(
+				PATH_SCHEDULES + "/" + operationSchedule.getId()
+						+ "/reservations/" + reservation.getId() + "/users/"
+						+ user.getId() + "/passenger_record", param,
+				retryParam, group, callback, new VoidResponseConverter());
 	}
 
 	/**
@@ -385,9 +386,8 @@ public class WebAPI implements Closeable {
 	 */
 	public int getOnPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, User user,
-			PassengerRecord passengerRecord,
-			WebAPICallback<PassengerRecord> callback) throws WebAPIException,
-			JSONException {
+			PassengerRecord passengerRecord, WebAPICallback<Void> callback)
+			throws WebAPIException, JSONException {
 		passengerRecord.setGetOnTime(new Date());
 		PassengerRecord retryPassengerRecord = passengerRecord.cloneByJSON();
 		retryPassengerRecord.setGetOnTimeOffline(true);
@@ -403,21 +403,14 @@ public class WebAPI implements Closeable {
 		retryParam.put("passenger_record",
 				filterJSONKeys(retryPassengerRecord.toJSONObject(), filter));
 
-		String group = getPassengerRecordGetOnOrOffGroup(operationSchedule.getId(),
-				reservation.getId(), user.getId());
+		String group = getPassengerRecordGetOnOrOffGroup(
+				operationSchedule.getId(), reservation.getId(), user.getId());
 
 		return put(
 				PATH_SCHEDULES + "/" + operationSchedule.getId()
 						+ "/reservations/" + reservation.getId() + "/users/"
-						+ user.getId() + "/geton", param, retryParam, group,
-				callback, new ResponseConverter<PassengerRecord>() {
-					@Override
-					public PassengerRecord convert(byte[] rawResponse)
-							throws Exception {
-						return PassengerRecord
-								.parse(parseJSONObject(rawResponse));
-					}
-				});
+						+ user.getId() + "/passenger_record", param,
+				retryParam, group, callback, new VoidResponseConverter());
 	}
 
 	/**
@@ -428,22 +421,16 @@ public class WebAPI implements Closeable {
 	 * @throws JSONException
 	 */
 	public int cancelGetOnPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, User user,
-			WebAPICallback<PassengerRecord> callback) throws WebAPIException,
-			JSONException {
-		String group = getPassengerRecordGetOnOrOffGroup(operationSchedule.getId(),
-				reservation.getId(), user.getId());
-		return put(PATH_SCHEDULES + "/" + operationSchedule.getId()
-				+ "/reservations/" + reservation.getId() + "/users/" + user.getId() + "/cancel_geton",
+			Reservation reservation, User user, WebAPICallback<Void> callback)
+			throws WebAPIException, JSONException {
+		String group = getPassengerRecordGetOnOrOffGroup(
+				operationSchedule.getId(), reservation.getId(), user.getId());
+		return put(
+				PATH_SCHEDULES + "/" + operationSchedule.getId()
+						+ "/reservations/" + reservation.getId() + "/users/"
+						+ user.getId() + "/passenger_record/canceled",
 				new JSONObject(), true, group, callback,
-				new ResponseConverter<PassengerRecord>() {
-					@Override
-					public PassengerRecord convert(byte[] rawResponse)
-							throws Exception {
-						return PassengerRecord
-								.parse(parseJSONObject(rawResponse));
-					}
-				});
+				new VoidResponseConverter());
 	}
 
 	/**
@@ -454,22 +441,16 @@ public class WebAPI implements Closeable {
 	 * @throws JSONException
 	 */
 	public int cancelGetOffPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, User user,
-			WebAPICallback<PassengerRecord> callback) throws WebAPIException,
-			JSONException {
-		String group = getPassengerRecordGetOnOrOffGroup(operationSchedule.getId(),
-				reservation.getId(), user.getId());
-		return put(PATH_SCHEDULES + "/" + operationSchedule.getId()
-				+ "/reservations/" + reservation.getId() + "/users/" + user.getId() +  "/cancel_getoff",
+			Reservation reservation, User user, WebAPICallback<Void> callback)
+			throws WebAPIException, JSONException {
+		String group = getPassengerRecordGetOnOrOffGroup(
+				operationSchedule.getId(), reservation.getId(), user.getId());
+		return put(
+				PATH_SCHEDULES + "/" + operationSchedule.getId()
+						+ "/reservations/" + reservation.getId() + "/users/"
+						+ user.getId() + "/passenger_record/canceled",
 				new JSONObject(), true, group, callback,
-				new ResponseConverter<PassengerRecord>() {
-					@Override
-					public PassengerRecord convert(byte[] rawResponse)
-							throws Exception {
-						return PassengerRecord
-								.parse(parseJSONObject(rawResponse));
-					}
-				});
+				new VoidResponseConverter());
 	}
 
 	/**
@@ -766,8 +747,8 @@ public class WebAPI implements Closeable {
 					@Override
 					public ServiceProvider convert(byte[] rawResponse)
 							throws Exception {
-						return ServiceProvider.parse(
-								parseJSONObject(rawResponse));
+						return ServiceProvider
+								.parse(parseJSONObject(rawResponse));
 					}
 				});
 	}
@@ -875,8 +856,8 @@ public class WebAPI implements Closeable {
 		this.serverHost = serverHost;
 	}
 
-	protected String getPassengerRecordGetOnOrOffGroup(Integer operationScheduleId,
-			Integer reservationId, Integer userId) {
+	protected String getPassengerRecordGetOnOrOffGroup(
+			Integer operationScheduleId, Integer reservationId, Integer userId) {
 		return "PassengerRecordGetOnOrOffGroup/operationScheduleId="
 				+ operationScheduleId + "/reservationId=" + reservationId
 				+ "/userId=" + userId;

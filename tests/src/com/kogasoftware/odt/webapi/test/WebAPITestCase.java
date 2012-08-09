@@ -13,6 +13,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import junit.framework.Assert;
+
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
 
@@ -549,9 +551,9 @@ public class WebAPITestCase extends
 		User user = master.createUser("login2", "もぎ", "たろう");
 		assertNotNull(record.createReservationUser(res, user));
 
-		assertFalse(schedules.get(1).getReservationsAsArrival().get(0).getFellowUsers().isEmpty());
+		assertFalse(schedules.get(1).getReservationsAsArrival().get(0)
+				.getFellowUsers().isEmpty());
 
-		passengerRecord = null;
 		PassengerRecord prec = new PassengerRecord();
 		prec.setPayment(res.getPayment());
 		prec.setPassengerCount(3);
@@ -561,22 +563,11 @@ public class WebAPITestCase extends
 			offline = true;
 		}
 		api.getOnPassenger(os1, res, res.getFellowUsers().get(0), prec,
-				new WebAPICallback<PassengerRecord>() {
-
+				new EmptyWebAPICallback<Void>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
-							PassengerRecord result) {
-						passengerRecord = result;
+							Void result) {
 						latch.countDown();
-					}
-
-					@Override
-					public void onFailed(int reqkey, int statusCode,
-							String response) {
-					}
-
-					@Override
-					public void onException(int reqkey, WebAPIException ex) {
 					}
 				});
 		if (offlineTest) {
@@ -584,7 +575,6 @@ public class WebAPITestCase extends
 			offline = false;
 		}
 		assertTrue(latch.await(20, TimeUnit.SECONDS));
-		assertNotNull(passengerRecord);
 		PassengerRecord serverPassengerRecord = new SyncCall<PassengerRecord>() {
 			@Override
 			public int run() throws Exception {
@@ -658,7 +648,6 @@ public class WebAPITestCase extends
 		assertTrue(schedule.getOperationRecord().get().getArrivedAt()
 				.isPresent());
 
-		passengerRecord = null;
 		prec = new PassengerRecord();
 		prec.setPayment(res.getPayment());
 		prec.setPassengerCount(3);
@@ -668,31 +657,18 @@ public class WebAPITestCase extends
 			offline = true;
 		}
 		api.getOffPassenger(os2, res, res.getFellowUsers().get(0), prec,
-				new WebAPICallback<PassengerRecord>() {
-
+				new EmptyWebAPICallback<Void>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
-							PassengerRecord result) {
-						passengerRecord = result;
+							Void result) {
 						latch.countDown();
 					}
-
-					@Override
-					public void onFailed(int reqkey, int statusCode,
-							String response) {
-					}
-
-					@Override
-					public void onException(int reqkey, WebAPIException ex) {
-					}
-
 				});
 		if (offlineTest) {
 			assertFalse(latch.await(20, TimeUnit.SECONDS));
 			offline = false;
 		}
 		assertTrue(latch.await(20, TimeUnit.SECONDS));
-		assertNotNull(passengerRecord);
 		serverPassengerRecord = new SyncCall<PassengerRecord>() {
 			@Override
 			public int run() throws Exception {
@@ -729,9 +705,9 @@ public class WebAPITestCase extends
 		OperationSchedule os2 = schedules.get(1);
 		Reservation res = os1.getReservationsAsDeparture().get(0);
 
-		assertFalse(schedules.get(1).getReservationsAsArrival().get(0).getFellowUsers().isEmpty());
+		assertFalse(schedules.get(1).getReservationsAsArrival().get(0)
+				.getFellowUsers().isEmpty());
 
-		passengerRecord = null;
 		PassengerRecord prec = new PassengerRecord();
 		prec.setPayment(res.getPayment());
 		prec.setPassengerCount(3);
@@ -739,19 +715,17 @@ public class WebAPITestCase extends
 		latch = new CountDownLatch(1);
 
 		api.getOnPassenger(os1, res, res.getFellowUsers().get(0), prec,
-				new EmptyWebAPICallback<PassengerRecord>());
+				new EmptyWebAPICallback<Void>());
 		api.cancelGetOnPassenger(os1, res, res.getFellowUsers().get(0),
-				new EmptyWebAPICallback<PassengerRecord>() {
+				new EmptyWebAPICallback<Void>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
-							PassengerRecord result) {
-						passengerRecord = result;
+							Void result) {
 						latch.countDown();
 					}
 				});
 
 		assertTrue(latch.await(20, TimeUnit.SECONDS));
-		assertNotNull(passengerRecord);
 		PassengerRecord serverPassengerRecord = new SyncCall<PassengerRecord>() {
 			@Override
 			public int run() throws Exception {
@@ -767,10 +741,10 @@ public class WebAPITestCase extends
 
 		latch = new CountDownLatch(1);
 		api.getOnPassenger(os1, res, res.getFellowUsers().get(0), prec,
-				new EmptyWebAPICallback<PassengerRecord>() {
+				new EmptyWebAPICallback<Void>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
-							PassengerRecord result) {
+							Void result) {
 						latch.countDown();
 					}
 				});
@@ -830,26 +804,23 @@ public class WebAPITestCase extends
 		assertTrue(schedule.getOperationRecord().get().getArrivedAt()
 				.isPresent());
 
-		passengerRecord = null;
 		prec = new PassengerRecord();
 		prec.setPayment(res.getPayment());
 		prec.setPassengerCount(3);
 
 		latch = new CountDownLatch(1);
 		api.getOffPassenger(os2, res, res.getFellowUsers().get(0), prec,
-				new EmptyWebAPICallback<PassengerRecord>());
+				new EmptyWebAPICallback<Void>());
 		api.cancelGetOffPassenger(os2, res, res.getFellowUsers().get(0),
-				new EmptyWebAPICallback<PassengerRecord>() {
+				new EmptyWebAPICallback<Void>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
-							PassengerRecord result) {
-						passengerRecord = result;
+							Void result) {
 						latch.countDown();
 					}
 				});
 
 		assertTrue(latch.await(20, TimeUnit.SECONDS));
-		assertNotNull(passengerRecord);
 		serverPassengerRecord = new SyncCall<PassengerRecord>() {
 			@Override
 			public int run() throws Exception {
@@ -880,19 +851,19 @@ public class WebAPITestCase extends
 		OperationSchedule os2 = schedules.get(1);
 		Reservation res = os1.getReservationsAsDeparture().get(0);
 
-		assertFalse(schedules.get(1).getReservationsAsArrival().get(0).getFellowUsers().isEmpty());
+		assertFalse(schedules.get(1).getReservationsAsArrival().get(0)
+				.getFellowUsers().isEmpty());
 
-		passengerRecord = null;
 		PassengerRecord prec = new PassengerRecord();
 		prec.setPayment(res.getPayment());
 		prec.setPassengerCount(3);
 
 		latch = new CountDownLatch(1);
 		api.getOnPassenger(os1, res, res.getFellowUsers().get(0), prec,
-				new EmptyWebAPICallback<PassengerRecord>() {
+				new EmptyWebAPICallback<Void>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
-							PassengerRecord result) {
+							Void result) {
 						latch.countDown();
 					}
 				});
@@ -926,7 +897,6 @@ public class WebAPITestCase extends
 		assertTrue(schedule.getOperationRecord().get().getArrivedAt()
 				.isPresent());
 
-		passengerRecord = null;
 		prec = new PassengerRecord();
 		prec.setPayment(res.getPayment());
 		prec.setPassengerCount(3);
@@ -941,10 +911,10 @@ public class WebAPITestCase extends
 			final int fi = i;
 			if (i % 2 == 0) {
 				api.getOffPassenger(os2, res, res.getFellowUsers().get(0),
-						prec, new EmptyWebAPICallback<PassengerRecord>() {
+						prec, new EmptyWebAPICallback<Void>() {
 							@Override
 							public void onSucceed(int reqkey, int statusCode,
-									PassengerRecord result) {
+									Void result) {
 								order.compareAndSet(fi, fi + 1);
 								semaphore.release();
 							}
@@ -952,10 +922,10 @@ public class WebAPITestCase extends
 			} else {
 				api.cancelGetOffPassenger(os2, res,
 						res.getFellowUsers().get(0),
-						new EmptyWebAPICallback<PassengerRecord>() {
+						new EmptyWebAPICallback<Void>() {
 							@Override
 							public void onSucceed(int reqkey, int statusCode,
-									PassengerRecord result) {
+									Void result) {
 								order.compareAndSet(fi, fi + 1);
 								semaphore.release();
 							}
@@ -992,9 +962,9 @@ public class WebAPITestCase extends
 		Reservation res = os1.getReservationsAsDeparture().get(0);
 		Reservation res2 = os1.getReservationsAsDeparture().get(1);
 
-		assertFalse(schedules.get(1).getReservationsAsArrival().get(0).getFellowUsers().isEmpty());
+		assertFalse(schedules.get(1).getReservationsAsArrival().get(0)
+				.getFellowUsers().isEmpty());
 
-		passengerRecord = null;
 		PassengerRecord prec = new PassengerRecord();
 
 		latch = new CountDownLatch(1);
@@ -1006,20 +976,20 @@ public class WebAPITestCase extends
 			final int fi = i;
 			if (i % 2 == 0) {
 				api.getOnPassenger(os1, res, res.getFellowUsers().get(0), prec,
-						new EmptyWebAPICallback<PassengerRecord>() {
+						new EmptyWebAPICallback<Void>() {
 							@Override
 							public void onSucceed(int reqkey, int statusCode,
-									PassengerRecord result) {
+									Void result) {
 								order.compareAndSet(fi, fi + 1);
 								semaphore.release();
 							}
 						});
 			} else {
 				api.cancelGetOnPassenger(os1, res, res.getFellowUsers().get(0),
-						new EmptyWebAPICallback<PassengerRecord>() {
+						new EmptyWebAPICallback<Void>() {
 							@Override
 							public void onSucceed(int reqkey, int statusCode,
-									PassengerRecord result) {
+									Void result) {
 								order.compareAndSet(fi, fi + 1);
 								semaphore.release();
 							}
@@ -1027,10 +997,10 @@ public class WebAPITestCase extends
 			}
 			if (i == max / 2) {
 				api.getOnPassenger(os1, res2, res2.getFellowUsers().get(0),
-						prec, new EmptyWebAPICallback<PassengerRecord>() {
+						prec, new EmptyWebAPICallback<Void>() {
 							@Override
 							public void onSucceed(int reqkey, int statusCode,
-									PassengerRecord result) {
+									Void result) {
 								latch.countDown();
 							}
 						});
@@ -1074,9 +1044,14 @@ public class WebAPITestCase extends
 				dtDeparture, p2, os2, dtArrival, 500);
 		Reservation res2 = record.createReservation(user, demand, ua, p1, os1,
 				dtDeparture, p2, os2, dtArrival, 500);
-		
+
 		assertNotNull(record.createReservationUser(res, user));
 		assertNotNull(record.createReservationUser(res2, user));
+
+		assertNotNull(record.createPassengerRecord(res, user, os1, dtDeparture,
+				false, os2, dtArrival, false, 0));
+		assertNotNull(record.createPassengerRecord(res2, user, os1,
+				dtDeparture, false, os2, dtArrival, false, 0));
 
 		latch = new CountDownLatch(1);
 		api.getOperationSchedules(new WebAPICallback<List<OperationSchedule>>() {
@@ -1459,7 +1434,7 @@ public class WebAPITestCase extends
 				.getAuthenticationToken().get());
 		latch = new CountDownLatch(1);
 		final AtomicReference<ServiceProvider> outputServiceProvider = new AtomicReference<ServiceProvider>();
-		api.getServicePrivider(new WebAPICallback<ServiceProvider>(){
+		api.getServicePrivider(new WebAPICallback<ServiceProvider>() {
 			@Override
 			public void onException(int reqkey, WebAPIException ex) {
 				latch.countDown();
@@ -1479,6 +1454,7 @@ public class WebAPITestCase extends
 		});
 		assertTrue(latch.await(20, TimeUnit.SECONDS));
 		assertNotNull(outputServiceProvider.get());
-		assertEquals(serviceProvider.getId(), outputServiceProvider.get().getId());
+		assertEquals(serviceProvider.getId(), outputServiceProvider.get()
+				.getId());
 	}
 }
