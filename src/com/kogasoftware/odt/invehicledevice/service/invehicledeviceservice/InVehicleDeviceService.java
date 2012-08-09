@@ -518,7 +518,6 @@ public class InVehicleDeviceService extends Service {
 				onExitListeners)) {
 			listener.onExit();
 		}
-		stopSelf();
 	}
 
 	public Optional<OperationSchedule> getCurrentOperationSchedule() {
