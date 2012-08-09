@@ -65,7 +65,7 @@ public class OperationScheduleReceiveThread extends Thread implements
 			
 			// 最初の一度は必ず受信する
 			startUpdatedOperationScheduleReceiveSemaphore.release();
-			while (!Thread.currentThread().isInterrupted()) {
+			while (true) {
 				// スケジュール変更通知があるまで待つ
 				startUpdatedOperationScheduleReceiveSemaphore.acquire();
 				while (true) {

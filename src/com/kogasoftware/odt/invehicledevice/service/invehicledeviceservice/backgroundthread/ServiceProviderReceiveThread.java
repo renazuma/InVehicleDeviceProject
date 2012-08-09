@@ -74,7 +74,7 @@ public class ServiceProviderReceiveThread extends Thread implements
 		serviceProviderReceiveSemaphore.release();
 		try {
 			service.addOnStartNewOperationListener(this);
-			while (!Thread.currentThread().isInterrupted()) {
+			while (true) {
 				// 受信通知があるまで待つ
 				serviceProviderReceiveSemaphore.acquire();
 				receive();
