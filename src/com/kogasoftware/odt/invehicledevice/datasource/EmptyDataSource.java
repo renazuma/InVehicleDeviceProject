@@ -86,51 +86,41 @@ public class EmptyDataSource implements DataSource {
 	@Override
 	public int getMapTile(LatLng center, Integer zoom,
 			WebAPICallback<Bitmap> callback) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public void saveOnClose(int reqkey) {
-		// TODO Auto-generated method stub
-		
+	}
+
+	@Override
+	public int getServiceProvider(WebAPICallback<ServiceProvider> callback) {
+		return 0;
 	}
 
 	@Override
 	public int getOffPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, User user,
-			PassengerRecord passengerRecord,
-			WebAPICallback<PassengerRecord> callback) {
-		// TODO Auto-generated method stub
+			PassengerRecord passengerRecord, WebAPICallback<Void> callback) {
 		return 0;
 	}
 
 	@Override
 	public int getOnPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, User user,
-			PassengerRecord passengerRecord,
-			WebAPICallback<PassengerRecord> callback) {
-		// TODO Auto-generated method stub
+			PassengerRecord passengerRecord, WebAPICallback<Void> callback) {
 		return 0;
 	}
 
 	@Override
 	public int cancelGetOffPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, User user,
-			WebAPICallback<PassengerRecord> callback) {
-		// TODO Auto-generated method stub
+			Reservation reservation, User user, WebAPICallback<Void> callback) {
 		return 0;
 	}
 
 	@Override
 	public int cancelGetOnPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, User user,
-			WebAPICallback<PassengerRecord> callback) {
-		return 0;
-	}
-
-	@Override
-	public int getServiceProvider(WebAPICallback<ServiceProvider> callback) {
+			Reservation reservation, User user, WebAPICallback<Void> callback) {
 		return 0;
 	}
 }

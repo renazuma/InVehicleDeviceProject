@@ -147,24 +147,24 @@ public class PassengerRecordLogic {
 					.getId());
 			dataSource.saveOnClose(dataSource.getOnPassenger(operationSchedule,
 					reservation, user, passengerRecord,
-					new EmptyWebAPICallback<PassengerRecord>()));
+					new EmptyWebAPICallback<Void>()));
 			dataSource.saveOnClose(dataSource.getOffPassenger(
 					operationSchedule, reservation, user, passengerRecord,
-					new EmptyWebAPICallback<PassengerRecord>()));
+					new EmptyWebAPICallback<Void>()));
 		} else if (passengerRecord.isUnhandled()) {
 			passengerRecord.setGetOnTime(new Date());
 			passengerRecord.setDepartureOperationScheduleId(operationSchedule
 					.getId());
 			dataSource.saveOnClose(dataSource.getOnPassenger(operationSchedule,
 					reservation, user, passengerRecord,
-					new EmptyWebAPICallback<PassengerRecord>()));
+					new EmptyWebAPICallback<Void>()));
 		} else if (passengerRecord.isRiding()) {
 			passengerRecord.setGetOffTime(new Date());
 			passengerRecord.setArrivalOperationScheduleId(operationSchedule
 					.getId());
 			dataSource.saveOnClose(dataSource.getOffPassenger(
 					operationSchedule, reservation, user, passengerRecord,
-					new EmptyWebAPICallback<PassengerRecord>()));
+					new EmptyWebAPICallback<Void>()));
 		}
 	}
 
@@ -191,24 +191,24 @@ public class PassengerRecordLogic {
 			reservation.setPassengerRecords(Lists.newArrayList(passengerRecord)); // TODO:消す
 			dataSource.saveOnClose(dataSource.cancelGetOffPassenger(
 					operationSchedule, reservation, user,
-					new EmptyWebAPICallback<PassengerRecord>()));
+					new EmptyWebAPICallback<Void>()));
 			dataSource.saveOnClose(dataSource.cancelGetOnPassenger(
 					operationSchedule, reservation, user,
-					new EmptyWebAPICallback<PassengerRecord>()));
+					new EmptyWebAPICallback<Void>()));
 		} else if (passengerRecord.isRiding()) {
 			passengerRecord.clearGetOnTime();
 			passengerRecord.clearDepartureOperationScheduleId();
 			reservation.setPassengerRecords(Lists.newArrayList(passengerRecord)); // TODO:消す
 			dataSource.saveOnClose(dataSource.cancelGetOnPassenger(
 					operationSchedule, reservation, user,
-					new EmptyWebAPICallback<PassengerRecord>()));
+					new EmptyWebAPICallback<Void>()));
 		} else if (passengerRecord.isGotOff()) {
 			passengerRecord.clearGetOffTime();
 			passengerRecord.clearArrivalOperationScheduleId();
 			reservation.setPassengerRecords(Lists.newArrayList(passengerRecord)); // TODO:消す
 			dataSource.saveOnClose(dataSource.cancelGetOffPassenger(
 					operationSchedule, reservation, user,
-					new EmptyWebAPICallback<PassengerRecord>()));
+					new EmptyWebAPICallback<Void>()));
 		}
 	}
 

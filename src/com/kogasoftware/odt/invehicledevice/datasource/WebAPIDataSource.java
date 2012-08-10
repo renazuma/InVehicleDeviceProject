@@ -96,7 +96,7 @@ public class WebAPIDataSource implements DataSource {
 	public int getOffPassenger(final OperationSchedule operationSchedule,
 			final Reservation reservation, final User user,
 			final PassengerRecord passengerRecord,
-			final WebAPICallback<PassengerRecord> callback) {
+			final WebAPICallback<Void> callback) {
 		return callWebAPI(new WebAPICaller() {
 			@Override
 			public int call() throws WebAPIException, JSONException {
@@ -110,7 +110,7 @@ public class WebAPIDataSource implements DataSource {
 	public int getOnPassenger(final OperationSchedule operationSchedule,
 			final Reservation reservation, final User user,
 			final PassengerRecord passengerRecord,
-			final WebAPICallback<PassengerRecord> callback) {
+			final WebAPICallback<Void> callback) {
 		return callWebAPI(new WebAPICaller() {
 			@Override
 			public int call() throws WebAPIException, JSONException {
@@ -223,7 +223,7 @@ public class WebAPIDataSource implements DataSource {
 	@Override
 	public int cancelGetOnPassenger(final OperationSchedule operationSchedule,
 			final Reservation reservation, final User user,
-			final WebAPICallback<PassengerRecord> callback) {
+			final WebAPICallback<Void> callback) {
 		return callWebAPI(new WebAPICaller() {
 			@Override
 			public int call() throws WebAPIException, JSONException {
@@ -236,7 +236,7 @@ public class WebAPIDataSource implements DataSource {
 	@Override
 	public int cancelGetOffPassenger(final OperationSchedule operationSchedule,
 			final Reservation reservation, final User user,
-			final WebAPICallback<PassengerRecord> callback) {
+			final WebAPICallback<Void> callback) {
 		return callWebAPI(new WebAPICaller() {
 			@Override
 			public int call() throws WebAPIException, JSONException {

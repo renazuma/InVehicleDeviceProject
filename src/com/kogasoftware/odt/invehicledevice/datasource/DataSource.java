@@ -32,11 +32,11 @@ public interface DataSource extends Closeable {
 
 	int getOffPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, User user, PassengerRecord passengerRecord,
-			WebAPICallback<PassengerRecord> callback);
+			WebAPICallback<Void> callback);
 
 	int getOnPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, User user, PassengerRecord passengerRecord,
-			WebAPICallback<PassengerRecord> callback);
+			WebAPICallback<Void> callback);
 
 	List<OperationSchedule> getOperationSchedules() throws WebAPIException;
 
@@ -49,10 +49,10 @@ public interface DataSource extends Closeable {
 			WebAPICallback<ServiceUnitStatusLog> callback);
 
 	int cancelGetOffPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, User user, WebAPICallback<PassengerRecord> callback);
+			Reservation reservation, User user, WebAPICallback<Void> callback);
 
 	int cancelGetOnPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, User user, WebAPICallback<PassengerRecord> callback);
+			Reservation reservation, User user, WebAPICallback<Void> callback);
 
 	int searchReservationCandidate(Demand demand,
 			WebAPICallback<List<ReservationCandidate>> callback);

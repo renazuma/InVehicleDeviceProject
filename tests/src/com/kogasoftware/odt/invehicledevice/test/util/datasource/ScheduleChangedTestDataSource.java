@@ -15,7 +15,6 @@ import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.Demand;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
-import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.ReservationCandidate;
 import com.kogasoftware.odt.webapi.model.ServiceProvider;
@@ -84,7 +83,8 @@ public class ScheduleChangedTestDataSource extends EmptyDataSource {
 								+ "reservations_as_departure: ["
 								+ r1
 								+ ","
-								+ r3 + "], operation_record: {arrived_at: '2012-01-01T01:00:01+09:00', departed_at: '2012-01-01T01:00:02+09:00'}}");
+								+ r3
+								+ "], operation_record: {arrived_at: '2012-01-01T01:00:01+09:00', departed_at: '2012-01-01T01:00:02+09:00'}}");
 				l.add(OperationSchedule.parse(j1));
 
 				JSONObject j2 = new JSONObject(

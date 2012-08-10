@@ -16,7 +16,6 @@ import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.Demand;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
-import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.ReservationCandidate;
@@ -85,12 +84,17 @@ public class DummyDataSource extends EmptyDataSource {
 			String rus4 = "[]";
 			String rus5 = "[" + ru7 + "]";
 
-			String r1 = "{id: 51, passenger_count: 1, departure_schedule_id: 1, arrival_schedule_id: 2, payment: 100, reservation_users: " + rus1 + ", memo: 'テストメモ1'}";
-			String r2 = "{id: 52, passenger_count: 5, departure_schedule_id: 2, arrival_schedule_id: 3, payment:   0, reservation_users: " + rus2 + "}";
-			String r3 = "{id: 53, passenger_count: 3, departure_schedule_id: 1, arrival_schedule_id: 3, payment: 500, reservation_users: " + rus3 + ", memo: 'テストメモ3'}";
-			String r4 = "{id: 54, passenger_count: 2, departure_schedule_id: 4, arrival_schedule_id: 5, payment: 500, reservation_users: " + rus4 + "}";
-			String r5 = "{id: 55, passenger_count: 1, departure_schedule_id: 4, arrival_schedule_id: 5, payment: 500, reservation_users: " + rus5 + "}";
-			
+			String r1 = "{id: 51, passenger_count: 1, departure_schedule_id: 1, arrival_schedule_id: 2, payment: 100, reservation_users: "
+					+ rus1 + ", memo: 'テストメモ1'}";
+			String r2 = "{id: 52, passenger_count: 5, departure_schedule_id: 2, arrival_schedule_id: 3, payment:   0, reservation_users: "
+					+ rus2 + "}";
+			String r3 = "{id: 53, passenger_count: 3, departure_schedule_id: 1, arrival_schedule_id: 3, payment: 500, reservation_users: "
+					+ rus3 + ", memo: 'テストメモ3'}";
+			String r4 = "{id: 54, passenger_count: 2, departure_schedule_id: 4, arrival_schedule_id: 5, payment: 500, reservation_users: "
+					+ rus4 + "}";
+			String r5 = "{id: 55, passenger_count: 1, departure_schedule_id: 4, arrival_schedule_id: 5, payment: 500, reservation_users: "
+					+ rus5 + "}";
+
 			JSONObject j1 = new JSONObject(
 					"{id:1, arrival_estimate: '2012-06-21T09:00:00+09:00', departure_estimate: '2012-06-21T09:15:00+09:00', "
 							+ "platform: {name: '乗降場A', name_ruby: 'とくべつようごろうじんほーむあじさいのおかうしまどざいたくかいごしえんせんたーあじさい'}, "
@@ -279,7 +283,7 @@ public class DummyDataSource extends EmptyDataSource {
 		callback.onSucceed(0, 200, new Reservation());
 		return 0;
 	}
-	
+
 	@Override
 	public int getServiceProvider(WebAPICallback<ServiceProvider> callback) {
 		callback.onSucceed(0, 200, new ServiceProvider());
