@@ -406,6 +406,10 @@ public class WebAPI implements Closeable {
 	public int cancelGetOnPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, User user, WebAPICallback<Void> callback)
 			throws WebAPIException, JSONException {
+		PassengerRecord passengerRecord = new PassengerRecord();
+		passengerRecord.setGetOnTime(new Date());
+		passengerRecord.clearGetOffTime();
+		JSONObject param = passengerRecord.toJSONObject();
 		String group = getPassengerRecordGetOnOrOffGroup(
 				operationSchedule.getId(), reservation.getId(), user.getId());
 		return put(
@@ -425,6 +429,10 @@ public class WebAPI implements Closeable {
 	public int cancelGetOffPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, User user, WebAPICallback<Void> callback)
 			throws WebAPIException, JSONException {
+		PassengerRecord passengerRecord = new PassengerRecord();
+		passengerRecord.clearGetOnTime();
+		passengerRecord.setGetOffTime(new Date());
+		JSONObject param = passengerRecord.toJSONObject();
 		String group = getPassengerRecordGetOnOrOffGroup(
 				operationSchedule.getId(), reservation.getId(), user.getId());
 		return put(
