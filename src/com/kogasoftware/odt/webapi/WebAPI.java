@@ -50,14 +50,6 @@ public class WebAPI implements Closeable {
 		T convert(byte[] rawResponse) throws Exception;
 	}
 
-	public static class VoidResponseConverter implements
-			ResponseConverter<Void> {
-		@Override
-		public Void convert(byte[] rawResponse) throws Exception {
-			return null;
-		}
-	};
-
 	public interface WebAPICallback<T> {
 		/**
 		 * 例外発生時のコールバック
@@ -104,7 +96,13 @@ public class WebAPI implements Closeable {
 	}
 
 	public static final Integer REQUEST_EXPIRE_DAYS = 3;
-	private static final String TAG = WebAPI.class.getSimpleName();
+	public static ResponseConverter<Void> VOID_RESPONSE_CONVERTER = new ResponseConverter<Void>() {
+		@Override
+		public Void convert(byte[] rawResponse) throws Exception {
+			return null;
+		}
+	};
+
 	protected static final int NUM_THREADS = 5;
 	protected static final String UNIQUE_GROUP = WebAPIRequestQueue.UNIQUE_GROUP;
 
@@ -178,14 +176,7 @@ public class WebAPI implements Closeable {
 
 		return put(PATH_SCHEDULES + "/" + os.getId() + "/arrival", param,
 				retryParam, UNIQUE_GROUP, callback,
-				new ResponseConverter<OperationSchedule>() {
-					@Override
-					public OperationSchedule convert(byte[] rawResponse)
-							throws Exception {
-						return OperationSchedule
-								.parse(parseJSONObject(rawResponse));
-					}
-				});
+				OperationSchedule.RESPONSE_CONVERTER);
 	}
 
 	@Override
@@ -224,14 +215,7 @@ public class WebAPI implements Closeable {
 
 		return put(PATH_SCHEDULES + "/" + os.getId() + "/departure", param,
 				retryParam, UNIQUE_GROUP, callback,
-				new ResponseConverter<OperationSchedule>() {
-					@Override
-					public OperationSchedule convert(byte[] rawResponse)
-							throws Exception {
-						return OperationSchedule
-								.parse(parseJSONObject(rawResponse));
-					}
-				});
+				OperationSchedule.RESPONSE_CONVERTER);
 	}
 
 	protected boolean doHttpSessionAndCallback(WebAPIRequest<?> request) {
@@ -372,7 +356,7 @@ public class WebAPI implements Closeable {
 				PATH_SCHEDULES + "/" + operationSchedule.getId()
 						+ "/reservations/" + reservation.getId() + "/users/"
 						+ user.getId() + "/passenger_record", param,
-				retryParam, group, callback, new VoidResponseConverter());
+				retryParam, group, callback, VOID_RESPONSE_CONVERTER);
 	}
 
 	/**
@@ -408,7 +392,7 @@ public class WebAPI implements Closeable {
 				PATH_SCHEDULES + "/" + operationSchedule.getId()
 						+ "/reservations/" + reservation.getId() + "/users/"
 						+ user.getId() + "/passenger_record", param,
-				retryParam, group, callback, new VoidResponseConverter());
+				retryParam, group, callback, VOID_RESPONSE_CONVERTER);
 	}
 
 	/**
@@ -427,8 +411,7 @@ public class WebAPI implements Closeable {
 				PATH_SCHEDULES + "/" + operationSchedule.getId()
 						+ "/reservations/" + reservation.getId() + "/users/"
 						+ user.getId() + "/passenger_record/canceled",
-				new JSONObject(), true, group, callback,
-				new VoidResponseConverter());
+				true, group, callback, VOID_RESPONSE_CONVERTER);
 	}
 
 	/**
@@ -447,8 +430,7 @@ public class WebAPI implements Closeable {
 				PATH_SCHEDULES + "/" + operationSchedule.getId()
 						+ "/reservations/" + reservation.getId() + "/users/"
 						+ user.getId() + "/passenger_record/canceled",
-				new JSONObject(), true, group, callback,
-				new VoidResponseConverter());
+				true, group, callback, VOID_RESPONSE_CONVERTER);
 	}
 
 	/**
@@ -459,14 +441,7 @@ public class WebAPI implements Closeable {
 			throws WebAPIException {
 		return get(PATH_SCHEDULES, new TreeMap<String, String>(), true,
 				UNIQUE_GROUP, callback,
-				new ResponseConverter<List<OperationSchedule>>() {
-					@Override
-					public List<OperationSchedule> convert(byte[] rawResponse)
-							throws Exception {
-						return OperationSchedule
-								.parseList(parseJSONArray(rawResponse));
-					}
-				});
+				OperationSchedule.LIST_RESPONSE_CONVERTER);
 	}
 
 	protected String getServerHost() {
@@ -485,14 +460,7 @@ public class WebAPI implements Closeable {
 			throws WebAPIException {
 		return get(PATH_NOTIFICATIONS, new TreeMap<String, String>(), true,
 				UNIQUE_GROUP, callback,
-				new ResponseConverter<List<VehicleNotification>>() {
-					@Override
-					public List<VehicleNotification> convert(byte[] rawResponse)
-							throws Exception {
-						return VehicleNotification
-								.parseList(parseJSONArray(rawResponse));
-					}
-				});
+				VehicleNotification.LIST_RESPONSE_CONVERTER);
 	}
 
 	/**
@@ -545,7 +513,7 @@ public class WebAPI implements Closeable {
 						return InVehicleDevice
 								.parse(parseJSONObject(rawResponse));
 					}
-				});
+				}, InVehicleDevice.RESPONSE_CONVERTER);
 	}
 
 	protected JSONArray parseJSONArray(byte[] rawResponse) throws JSONException {
@@ -622,14 +590,7 @@ public class WebAPI implements Closeable {
 		JSONObject param = new JSONObject();
 		param.put("demand", demand.toJSONObject());
 		return post(PATH_RESERVATIONS + "/search", param, true, UNIQUE_GROUP,
-				callback, new ResponseConverter<List<ReservationCandidate>>() {
-					@Override
-					public List<ReservationCandidate> convert(byte[] rawResponse)
-							throws Exception {
-						return ReservationCandidate
-								.parseList(parseJSONArray(rawResponse));
-					}
-				});
+				callback, ReservationCandidate.LIST_RESPONSE_CONVERTER);
 	}
 
 	/**
@@ -641,13 +602,7 @@ public class WebAPI implements Closeable {
 		JSONObject param = new JSONObject();
 		param.put("reservation_candidate_id", reservationCandidate.getId());
 		return post(PATH_RESERVATIONS, param, true, UNIQUE_GROUP, callback,
-				new ResponseConverter<Reservation>() {
-					@Override
-					public Reservation convert(byte[] rawResponse)
-							throws Exception {
-						return Reservation.parse(parseJSONObject(rawResponse));
-					}
-				});
+				Reservation.RESPONSE_CONVERTER);
 	}
 
 	/**
@@ -678,14 +633,7 @@ public class WebAPI implements Closeable {
 
 		return put(PATH_NOTIFICATIONS + "/" + vn.getId(), param, retryParam,
 				UNIQUE_GROUP, callback,
-				new ResponseConverter<VehicleNotification>() {
-					@Override
-					public VehicleNotification convert(byte[] rawResponse)
-							throws Exception {
-						return VehicleNotification
-								.parse(parseJSONObject(rawResponse));
-					}
-				});
+				VehicleNotification.RESPONSE_CONVERTER);
 	}
 
 	/**
@@ -710,14 +658,7 @@ public class WebAPI implements Closeable {
 
 		return post(PATH_STATUSLOGS, param, retryParam,
 				"sendServiceUnitStatusLog", callback,
-				new ResponseConverter<ServiceUnitStatusLog>() {
-					@Override
-					public ServiceUnitStatusLog convert(byte[] rawResponse)
-							throws Exception {
-						return ServiceUnitStatusLog
-								.parse(parseJSONObject(rawResponse));
-					}
-				});
+				ServiceUnitStatusLog.RESPONSE_CONVERTER);
 	}
 
 	/**
@@ -725,16 +666,8 @@ public class WebAPI implements Closeable {
 	 */
 	public int getServicePrivider(WebAPICallback<ServiceProvider> callback)
 			throws WebAPIException {
-		return get(PATH_PRIVIDER, new TreeMap<String, String>(), true,
-				UNIQUE_GROUP, callback,
-				new ResponseConverter<ServiceProvider>() {
-					@Override
-					public ServiceProvider convert(byte[] rawResponse)
-							throws Exception {
-						return ServiceProvider
-								.parse(parseJSONObject(rawResponse));
-					}
-				});
+		return get(PATH_SERVICE_PRIVIDER, new TreeMap<String, String>(), true,
+				UNIQUE_GROUP, callback, ServiceProvider.RESPONSE_CONVERTER);
 	}
 
 	/**
