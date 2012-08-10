@@ -163,8 +163,8 @@ public class WebAPITestCase extends
 			@Override
 			public void onSucceed(int reqkey, int statusCode,
 					InVehicleDevice result) {
-				semaphore.release();
 				succeed.set(true);
+				semaphore.release();
 			}
 
 			@Override
