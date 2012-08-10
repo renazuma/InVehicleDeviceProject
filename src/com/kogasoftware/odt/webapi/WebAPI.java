@@ -5,10 +5,8 @@ import java.io.File;
 import java.nio.ByteBuffer;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.Executors;
@@ -465,22 +463,8 @@ public class WebAPI implements Closeable {
 					@Override
 					public List<OperationSchedule> convert(byte[] rawResponse)
 							throws Exception {
-						List<OperationSchedule> operationSchedules = OperationSchedule
+						return OperationSchedule
 								.parseList(parseJSONArray(rawResponse));
-						Map<Integer, Reservation> reservations = new HashMap<Integer, Reservation>();
-						for (OperationSchedule os : operationSchedules) {
-							for (ListIterator<Reservation> rit = os
-									.getReservationsAsArrival().listIterator(); rit
-									.hasNext();) {
-								Reservation r = rit.next();
-								if (reservations.containsKey(r.getId())) {
-									rit.set(reservations.get(r.getId()));
-								} else {
-									reservations.put(r.getId(), r);
-								}
-							}
-						}
-						return operationSchedules;
 					}
 				});
 	}
