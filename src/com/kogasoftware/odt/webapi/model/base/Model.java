@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -227,7 +228,7 @@ public abstract class Model implements Serializable, Identifiable, Cloneable {
 		try {
 			objectOutputStream.writeObject(toJSONObject(true).toString());
 		} catch (JSONException e) {
-			throw new IOException(e.toString() + "\n"
+			throw new IOException(e.toString() + SystemUtils.LINE_SEPARATOR
 					+ ExceptionUtils.getStackTrace(e));
 		}
 	}
@@ -243,7 +244,7 @@ public abstract class Model implements Serializable, Identifiable, Cloneable {
 			JSONObject jsonObject = new JSONObject(jsonString);
 			fill(jsonObject);
 		} catch (JSONException e) {
-			throw new IOException(e.toString() + "\n"
+			throw new IOException(e.toString() + SystemUtils.LINE_SEPARATOR
 					+ ExceptionUtils.getStackTrace(e));
 		}
 	}
