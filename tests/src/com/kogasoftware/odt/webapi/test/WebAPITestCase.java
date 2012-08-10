@@ -90,13 +90,19 @@ public class WebAPITestCase extends
 	};
 
 	WebAPI api;
+	volatile boolean offline;
 	CountDownLatch latch;
 	CountDownLatch latch2;
 	Semaphore semaphore;
 	volatile boolean offline;
-	private GenerateMaster master;
-	private GenerateRecord record;
-	private ServiceProvider serviceProvider;
+	GenerateMaster master;
+	GenerateRecord record;
+	ServiceProvider serviceProvider;
+	List<VehicleNotification> notifications;
+	List<OperationSchedule> schedules;
+	OperationSchedule schedule;
+	PassengerRecord passengerRecord;
+	ServiceUnitStatusLog serviceUnitStatusLog;
 
 	@Override
 	protected void setUp() throws Exception {
