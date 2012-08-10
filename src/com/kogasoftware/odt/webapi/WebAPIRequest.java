@@ -27,7 +27,7 @@ public class WebAPIRequest<T> implements Serializable {
 	protected boolean saveOnClose = false;
 
 	protected transient WebAPICallback<T> callback;
-	protected transient ResponseConverter<T> responseConverter;
+	protected transient ResponseConverter<? extends T> responseConverter;
 
 	private void readObject(ObjectInputStream objectInputStream)
 			throws IOException, ClassNotFoundException {
@@ -37,26 +37,26 @@ public class WebAPIRequest<T> implements Serializable {
 	}
 
 	public WebAPIRequest(WebAPICallback<T> callback,
-			ResponseConverter<T> responseConverter,
+			ResponseConverter<? extends T> responseConverter,
 			SerializableRequestLoader request) {
 		this(callback, responseConverter, request, true);
 	}
 
 	public WebAPIRequest(WebAPICallback<T> callback,
-			ResponseConverter<T> responseConverter,
+			ResponseConverter<? extends T> responseConverter,
 			SerializableRequestLoader request, Boolean retryable) {
 		this(callback, responseConverter, request, request, retryable);
 	}
 
 	public WebAPIRequest(WebAPICallback<T> callback,
-			ResponseConverter<T> responseConverter,
+			ResponseConverter<? extends T> responseConverter,
 			SerializableRequestLoader firstRequest,
 			SerializableRequestLoader retryRequest) {
 		this(callback, responseConverter, firstRequest, retryRequest, true);
 	}
 
 	protected WebAPIRequest(WebAPICallback<T> callback,
-			ResponseConverter<T> responseConverter,
+			ResponseConverter<? extends T> responseConverter,
 			SerializableRequestLoader firstRequest,
 			SerializableRequestLoader retryRequest, Boolean retryable) {
 		this.callback = callback;
