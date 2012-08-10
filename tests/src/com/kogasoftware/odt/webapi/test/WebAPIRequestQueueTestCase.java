@@ -10,19 +10,15 @@ import com.kogasoftware.odt.webapi.WebAPIRequestQueue;
 import com.kogasoftware.odt.webapi.serializablerequestloader.SerializableGetLoader;
 import com.kogasoftware.odt.webapi.test.WebAPITestCase.EmptyWebAPICallback;
 
-import android.test.ActivityInstrumentationTestCase2;
+import android.test.AndroidTestCase;
 
 public class WebAPIRequestQueueTestCase extends
-		ActivityInstrumentationTestCase2<DummyActivity> {
+		AndroidTestCase {
 	private static final String TAG = WebAPITestCase.class.getSimpleName();
-
-	public WebAPIRequestQueueTestCase() {
-		super("com.kogasoftware.odt.webapi.test", DummyActivity.class);
-	}
 
 	public void testSetSaveOnClose() throws InterruptedException {
 		final Thread mainThread = Thread.currentThread();
-		File backupFile = getInstrumentation().getContext().getFileStreamPath(
+		File backupFile = getContext().getFileStreamPath(
 				"foo");
 		backupFile.deleteOnExit();
 		backupFile.delete();
