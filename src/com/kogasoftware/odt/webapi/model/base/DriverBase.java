@@ -11,11 +11,25 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.base.Optional;
+import com.kogasoftware.odt.webapi.WebAPI;
+import com.kogasoftware.odt.webapi.WebAPI.ResponseConverter;
 import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class DriverBase extends Model {
-	private static final long serialVersionUID = 3010100879126528140L;
+	private static final long serialVersionUID = 5957740957013640674L;
+	public static final ResponseConverter<Driver> RESPONSE_CONVERTER = new ResponseConverter<Driver>() {
+		@Override
+		public Driver convert(byte[] rawResponse) throws JSONException {
+			return parse(WebAPI.parseJSONObject(rawResponse));
+		}
+	};
+	public static final ResponseConverter<List<Driver>> LIST_RESPONSE_CONVERTER = new ResponseConverter<List<Driver>>() {
+		@Override
+		public List<Driver> convert(byte[] rawResponse) throws JSONException {
+			return parseList(WebAPI.parseJSONArray(rawResponse));
+		}
+	};
 
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {

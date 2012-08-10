@@ -11,11 +11,25 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.base.Optional;
+import com.kogasoftware.odt.webapi.WebAPI;
+import com.kogasoftware.odt.webapi.WebAPI.ResponseConverter;
 import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class OperationRecordBase extends Model {
-	private static final long serialVersionUID = 4608510169436397882L;
+	private static final long serialVersionUID = 1754285101778595011L;
+	public static final ResponseConverter<OperationRecord> RESPONSE_CONVERTER = new ResponseConverter<OperationRecord>() {
+		@Override
+		public OperationRecord convert(byte[] rawResponse) throws JSONException {
+			return parse(WebAPI.parseJSONObject(rawResponse));
+		}
+	};
+	public static final ResponseConverter<List<OperationRecord>> LIST_RESPONSE_CONVERTER = new ResponseConverter<List<OperationRecord>>() {
+		@Override
+		public List<OperationRecord> convert(byte[] rawResponse) throws JSONException {
+			return parseList(WebAPI.parseJSONArray(rawResponse));
+		}
+	};
 
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {
