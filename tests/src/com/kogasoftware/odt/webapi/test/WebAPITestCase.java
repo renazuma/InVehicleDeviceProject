@@ -13,9 +13,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import junit.framework.Assert;
-
-import android.test.ActivityInstrumentationTestCase2;
+import android.test.AndroidTestCase;
 import android.util.Log;
 
 import com.google.common.io.Closeables;
@@ -40,15 +38,10 @@ import com.kogasoftware.odt.webtestapi.GenerateMaster;
 import com.kogasoftware.odt.webtestapi.GenerateRecord;
 import com.kogasoftware.odt.webtestapi.SyncCall;
 
-public class WebAPITestCase extends
-		ActivityInstrumentationTestCase2<DummyActivity> {
+public class WebAPITestCase extends AndroidTestCase {
 	public static final String SERVER_HOST = "http://10.0.2.2:3334";
 	public static final String TEST_SERVER_HOST = "http://10.0.2.2:3333";
 	private static final String TAG = WebAPITestCase.class.getSimpleName();
-
-	public WebAPITestCase() {
-		super("com.kogasoftware.odt.webapi.test", DummyActivity.class);
-	}
 
 	class OfflineTestWebAPI extends WebAPI {
 		public OfflineTestWebAPI(String serverHost) {
