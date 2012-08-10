@@ -3,7 +3,6 @@ package com.kogasoftware.odt.webapi;
 import java.io.Closeable;
 import java.io.File;
 import java.nio.ByteBuffer;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -13,6 +12,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -274,9 +274,9 @@ public class WebAPI implements Closeable {
 	protected void doWebAPISession() throws InterruptedException {
 		WebAPIRequest<?> request = requests.take();
 		boolean succeed = false;
-		Calendar calendar = Calendar.getInstance();
-		calendar.add(Calendar.DATE, -REQUEST_EXPIRE_DAYS);
-		if (calendar.getTime().after(request.getCreatedDate())) {
+		Date now = new Date();
+		if (DateUtils.addDays(request.getCreatedDate(), REQUEST_EXPIRE_DAYS)
+				.before(now)) {
 			Log.i(TAG, "Request (" + request + ") is expired. createdDate: "
 					+ request.getCreatedDate());
 			requests.remove(request);
