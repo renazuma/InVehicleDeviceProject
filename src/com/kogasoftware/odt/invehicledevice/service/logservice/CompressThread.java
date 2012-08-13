@@ -58,7 +58,9 @@ public class CompressThread extends Thread {
 				}
 				if (succeed) {
 					compressedLogFiles.add(compressedLogFile);
-					rawLogFile.delete();
+					if (!rawLogFile.delete()) {
+						Log.w(TAG, "!\"" + rawLogFile + "\".delete()");
+					}
 				} else if (retry) {
 					rawLogFiles.add(rawLogFile);
 				}

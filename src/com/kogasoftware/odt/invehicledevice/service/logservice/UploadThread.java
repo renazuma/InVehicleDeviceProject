@@ -66,7 +66,9 @@ public class UploadThread extends Thread {
 			succeed = true;
 		} finally {
 			if (succeed) {
-				compressedLogFile.delete();
+				if (!compressedLogFile.delete()) {
+					Log.w(TAG, "!\"" + compressedLogFile + "\".delete()");
+				}
 			} else {
 				compressedLogFiles.add(compressedLogFile);
 			}
