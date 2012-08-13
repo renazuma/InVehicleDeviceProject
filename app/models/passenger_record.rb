@@ -26,7 +26,7 @@ class PassengerRecord < ActiveRecord::Base
   belongs_to :arrival_operation_schedule, :class_name => "OperationSchedule"
 
   # Define Validation
-  validates_presence_of :get_on_time, :passenger_count, :departure_operation_schedule
+  validates_presence_of :passenger_count, :departure_operation_schedule, :arrival_operation_schedule
 
   # Define For Logical Deletion
   acts_as_paranoid
