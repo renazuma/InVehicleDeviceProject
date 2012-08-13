@@ -50,6 +50,9 @@ public class BatteryBroadcastReceiver extends BroadcastReceiver {
 		case BatteryManager.BATTERY_STATUS_FULL:
 			statusString = "full";
 			break;
+		default:
+			statusString = "(default:" + status + ")";
+			break;
 		}
 
 		String healthString = "";
@@ -72,6 +75,9 @@ public class BatteryBroadcastReceiver extends BroadcastReceiver {
 		case BatteryManager.BATTERY_HEALTH_UNSPECIFIED_FAILURE:
 			healthString = "unspecified failure";
 			break;
+		default:
+			healthString = "(default:" + health + ")";
+			break;
 		}
 
 		String acString = "";
@@ -83,7 +89,7 @@ public class BatteryBroadcastReceiver extends BroadcastReceiver {
 			acString = "plugged usb";
 			break;
 		default:
-			acString = "unknown";
+			acString = "(default:" + plugged + ")";;
 			break;
 		}
 
