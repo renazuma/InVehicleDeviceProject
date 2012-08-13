@@ -97,7 +97,7 @@ public class WebAPI implements Closeable {
 	private static final String TAG = WebAPI.class.getSimpleName();
 
 	public static final Integer REQUEST_EXPIRE_DAYS = 3;
-	public static ResponseConverter<Void> VOID_RESPONSE_CONVERTER = new ResponseConverter<Void>() {
+	public static final ResponseConverter<Void> VOID_RESPONSE_CONVERTER = new ResponseConverter<Void>() {
 		@Override
 		public Void convert(byte[] rawResponse) throws Exception {
 			return null;
