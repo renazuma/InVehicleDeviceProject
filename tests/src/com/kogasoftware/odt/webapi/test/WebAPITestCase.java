@@ -570,7 +570,7 @@ public class WebAPITestCase extends AndroidTestCase {
 			@Override
 			public int run() throws Exception {
 				return master.getTestAPI().getPassengerRecord(
-						passengerRecords.get(1).getId(), this);
+						passengerRecords.get(0).getId(), this);
 			}
 		}.getResult();
 		assertNotNull(serverPassengerRecord);
@@ -1042,10 +1042,10 @@ public class WebAPITestCase extends AndroidTestCase {
 		assertNotNull(record.createReservationUser(res, user));
 		assertNotNull(record.createReservationUser(res2, user));
 
-		PassengerRecord pr1 = record.createPassengerRecord(res, user, os1,
-				dtDeparture, false, os2, dtArrival, false, 0);
+		PassengerRecord pr1 = record.createPassengerRecord(res, user, os1, os2,
+				0);
 		PassengerRecord pr2 = record.createPassengerRecord(res2, user, os1,
-				dtDeparture, false, os2, dtArrival, false, 0);
+				os2, 0);
 
 		assertNotNull(pr1);
 		assertNotNull(pr2);
