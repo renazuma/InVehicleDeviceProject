@@ -31,16 +31,8 @@ public class InVehicleDevicePreferenceTestCase extends
 		solo = new Solo(getInstrumentation(), getActivity());
 	}
 	
-	private void scrollUpToTop() {
-		for (Integer retry = 0; solo.scrollUp(); ++retry) {
-			if (retry > 50) {
-				fail("scrollUpToTop() retry > 50");
-			}
-		}
-	}
-
 	private void setConnectionUrl(String url) throws Exception {
-		scrollUpToTop();
+		solo.scrollToTop();
 		getInstrumentation().waitForIdleSync();
 		solo.clickOnText(getInstrumentation().getTargetContext().getString(
 				R.string.server_url));
@@ -52,7 +44,7 @@ public class InVehicleDevicePreferenceTestCase extends
 	}
 
 	private void setLogin(String login) throws Exception {
-		scrollUpToTop();
+		solo.scrollToTop();
 		getInstrumentation().waitForIdleSync();
 		solo.clickOnText(getInstrumentation().getTargetContext().getResources()
 				.getString(R.string.login));
@@ -64,7 +56,7 @@ public class InVehicleDevicePreferenceTestCase extends
 	}
 
 	private void setPassword(String password) throws Exception {
-		scrollUpToTop();
+		solo.scrollToTop();
 		getInstrumentation().waitForIdleSync();
 		solo.clickOnText(getInstrumentation().getTargetContext().getResources()
 				.getString(R.string.password));
