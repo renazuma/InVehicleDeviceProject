@@ -65,8 +65,7 @@ public class PassengerRecordArrayAdapterTestCase extends
 		@Override
 		public int getOffPassenger(OperationSchedule operationSchedule,
 				Reservation reservation, User user,
-				PassengerRecord passengerRecord,
-				WebAPICallback<PassengerRecord> callback) {
+				PassengerRecord passengerRecord, WebAPICallback<Void> callback) {
 			getOffPassengerRecords.add(passengerRecord);
 			return 0;
 		}
@@ -74,8 +73,7 @@ public class PassengerRecordArrayAdapterTestCase extends
 		@Override
 		public int getOnPassenger(OperationSchedule operationSchedule,
 				Reservation reservation, User user,
-				PassengerRecord passengerRecord,
-				WebAPICallback<PassengerRecord> callback) {
+				PassengerRecord passengerRecord, WebAPICallback<Void> callback) {
 			getOnPassengerRecords.add(passengerRecord);
 			return 0;
 		}
@@ -83,7 +81,7 @@ public class PassengerRecordArrayAdapterTestCase extends
 		@Override
 		public int cancelGetOffPassenger(OperationSchedule operationSchedule,
 				Reservation reservation, User user,
-				WebAPICallback<PassengerRecord> callback) {
+				WebAPICallback<Void> callback) {
 			cancelGetOffPassengerRecords.add(reservation.getPassengerRecords()
 					.get(0));
 			return 0;
@@ -92,7 +90,7 @@ public class PassengerRecordArrayAdapterTestCase extends
 		@Override
 		public int cancelGetOnPassenger(OperationSchedule operationSchedule,
 				Reservation reservation, User user,
-				WebAPICallback<PassengerRecord> callback) {
+				WebAPICallback<Void> callback) {
 			cancelGetOnPassengerRecords.add(reservation.getPassengerRecords()
 					.get(0));
 			return 0;

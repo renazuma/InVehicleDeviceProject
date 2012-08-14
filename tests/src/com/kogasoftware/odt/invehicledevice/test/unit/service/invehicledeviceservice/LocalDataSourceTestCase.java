@@ -15,10 +15,10 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Share
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
-import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
-public class LocalDataSourceTestCase extends EmptyActivityInstrumentationTestCase2 {
+public class LocalDataSourceTestCase extends
+		EmptyActivityInstrumentationTestCase2 {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -62,8 +62,7 @@ public class LocalDataSourceTestCase extends EmptyActivityInstrumentationTestCas
 				ld.passengerRecords.clear();
 				ld.passengerRecords.add(new PassengerRecord());
 				ld.repliedVehicleNotifications.clear();
-				ld.repliedVehicleNotifications
-						.add(new VehicleNotification());
+				ld.repliedVehicleNotifications.add(new VehicleNotification());
 			}
 		});
 		lds1.close();

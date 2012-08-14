@@ -1,7 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.ui.modalview;
 
-import java.util.concurrent.TimeUnit;
-
+import static org.mockito.Mockito.mock;
 import android.app.Activity;
 import android.view.View;
 
@@ -14,7 +13,6 @@ import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentati
 import com.kogasoftware.odt.invehicledevice.ui.modalview.ScheduleChangedModalView;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.ScheduleModalView;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
-import static org.mockito.Mockito.*;
 
 public class ScheduleChangedModalViewTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
@@ -53,8 +51,8 @@ public class ScheduleChangedModalViewTestCase extends
 	 */
 	public void testUpdatedOperationScheduleMergedEvent_1()
 			throws InterruptedException {
-//		Subscriber<ScheduleModalView.HideEvent> s = Subscriber.of(
-//				ScheduleModalView.HideEvent.class, cl);
+		// Subscriber<ScheduleModalView.HideEvent> s = Subscriber.of(
+		// ScheduleModalView.HideEvent.class, cl);
 
 		final String body = "こんにちは";
 		sa.withWriteLock(new Writer() { // TODO: イベントで書き直し
@@ -74,13 +72,13 @@ public class ScheduleChangedModalViewTestCase extends
 		assertFalse(mv.isShown());
 		assertNotSame(mv.getVisibility(), View.VISIBLE);
 
-//		cl.postEvent(new UpdatedOperationScheduleMergedEvent());
+		// cl.postEvent(new UpdatedOperationScheduleMergedEvent());
 		getInstrumentation().waitForIdleSync();
 
 		assertTrue(mv.isShown());
 		assertEquals(mv.getVisibility(), View.VISIBLE);
 		assertTrue(solo.searchText(body, true));
-//		assertTrue(s.cdl.await(3, TimeUnit.SECONDS));
+		// assertTrue(s.cdl.await(3, TimeUnit.SECONDS));
 	}
 
 	/**
@@ -88,8 +86,8 @@ public class ScheduleChangedModalViewTestCase extends
 	 */
 	public void testUpdatedOperationScheduleMergedEvent_2()
 			throws InterruptedException {
-//		Subscriber<ScheduleModalView.HideEvent> s = Subscriber.of(
-//				ScheduleModalView.HideEvent.class, cl);
+		// Subscriber<ScheduleModalView.HideEvent> s = Subscriber.of(
+		// ScheduleModalView.HideEvent.class, cl);
 
 		final String body1 = "連絡1";
 		final String body2 = "連絡2";
@@ -118,7 +116,7 @@ public class ScheduleChangedModalViewTestCase extends
 		assertFalse(mv.isShown());
 		assertNotSame(mv.getVisibility(), View.VISIBLE);
 
-//		cl.postEvent(new UpdatedOperationScheduleMergedEvent());
+		// cl.postEvent(new UpdatedOperationScheduleMergedEvent());
 		getInstrumentation().waitForIdleSync();
 
 		assertTrue(mv.isShown());
@@ -126,7 +124,7 @@ public class ScheduleChangedModalViewTestCase extends
 		assertTrue(solo.searchText(body1, true));
 		assertTrue(solo.searchText(body2, true));
 		assertFalse(solo.searchText(body3, true));
-//		assertTrue(s.cdl.await(3, TimeUnit.SECONDS));
+		// assertTrue(s.cdl.await(3, TimeUnit.SECONDS));
 
 		sa.withWriteLock(new Writer() { // TODO: イベントで書き直し
 			@Override
@@ -139,7 +137,7 @@ public class ScheduleChangedModalViewTestCase extends
 			}
 		});
 
-//		cl.postEvent(new UpdatedOperationScheduleMergedEvent());
+		// cl.postEvent(new UpdatedOperationScheduleMergedEvent());
 		getInstrumentation().waitForIdleSync();
 
 		assertTrue(mv.isShown());
@@ -147,7 +145,7 @@ public class ScheduleChangedModalViewTestCase extends
 		assertTrue(solo.searchText(body1, true));
 		assertTrue(solo.searchText(body2, true));
 		assertTrue(solo.searchText(body3, true));
-//		assertTrue(s.cdl.await(3, TimeUnit.SECONDS));
+		// assertTrue(s.cdl.await(3, TimeUnit.SECONDS));
 	}
 
 	/**
@@ -156,8 +154,8 @@ public class ScheduleChangedModalViewTestCase extends
 	 */
 	public void testUpdatedOperationScheduleMergedEvent_3()
 			throws InterruptedException {
-//		Subscriber<ScheduleModalView.HideEvent> s = Subscriber.of(
-//				ScheduleModalView.HideEvent.class, cl);
+		// Subscriber<ScheduleModalView.HideEvent> s = Subscriber.of(
+		// ScheduleModalView.HideEvent.class, cl);
 
 		sa.withWriteLock(new Writer() { // TODO: イベントで書き直し
 			@Override
@@ -170,12 +168,12 @@ public class ScheduleChangedModalViewTestCase extends
 		assertFalse(mv.isShown());
 		assertNotSame(mv.getVisibility(), View.VISIBLE);
 
-//		cl.postEvent(new ScheduleModalView.ShowEvent());
+		// cl.postEvent(new ScheduleModalView.ShowEvent());
 		getInstrumentation().waitForIdleSync();
 
 		assertFalse(mv.isShown());
 		assertNotSame(mv.getVisibility(), View.VISIBLE);
-//		assertFalse(s.cdl.await(3, TimeUnit.SECONDS));
+		// assertFalse(s.cdl.await(3, TimeUnit.SECONDS));
 	}
 
 	public void test戻るボタンを押すと消える() throws Exception {
@@ -188,9 +186,9 @@ public class ScheduleChangedModalViewTestCase extends
 	public void test予定を確認ボタンを押すと消えてScheduleModalView_ShowEvent発生()
 			throws Exception {
 		testUpdatedOperationScheduleMergedEvent_1();
-//		Subscriber<ScheduleModalView.ShowEvent> s = Subscriber.of(
-//				ScheduleModalView.ShowEvent.class, cl);
+		// Subscriber<ScheduleModalView.ShowEvent> s = Subscriber.of(
+		// ScheduleModalView.ShowEvent.class, cl);
 		solo.clickOnView(solo.getView(R.id.schedule_confirm_button));
-//		s.cdl.await();
+		// s.cdl.await();
 	}
 }

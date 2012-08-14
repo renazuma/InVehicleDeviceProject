@@ -10,7 +10,6 @@ import android.preference.PreferenceManager;
 import android.test.ActivityInstrumentationTestCase2;
 
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundthread.BackgroundTask;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundthread.Broadcasts;
 import com.kogasoftware.odt.invehicledevice.ui.activity.SavePreferencesActivity;
 
@@ -48,14 +47,16 @@ public class SavePreferencesActivityTestCase extends
 		actionExitReceived = false;
 		IntentFilter i = new IntentFilter();
 		i.addAction(Broadcasts.ACTION_EXIT);
-		getInstrumentation().getTargetContext().getApplicationContext().registerReceiver(br, i);
+		getInstrumentation().getTargetContext().getApplicationContext()
+				.registerReceiver(br, i);
 	}
 
 	@Override
 	protected void tearDown() throws Exception {
 		// 必ず自動でfinishする
 		assertTrue(getActivity().isFinishing());
-		getInstrumentation().getTargetContext().getApplicationContext().unregisterReceiver(br);
+		getInstrumentation().getTargetContext().getApplicationContext()
+				.unregisterReceiver(br);
 		super.tearDown();
 	}
 
@@ -65,12 +66,14 @@ public class SavePreferencesActivityTestCase extends
 		assertTrue(actionExitReceived);
 	}
 
-	public void testSharedPreferenceにデータが保存されACTION_EXITが送信される() throws Exception {
+	public void testSharedPreferenceにデータが保存されACTION_EXITが送信される()
+			throws Exception {
 		String u = "http://example.com/foo/bar";
 		String t = "token12345678";
 		Bundle bundle = new Bundle();
 		bundle.putString(SharedPreferencesKeys.SERVER_URL, u);
-		bundle.putString(SharedPreferencesKeys.SERVER_IN_VEHICLE_DEVICE_TOKEN, t);
+		bundle.putString(SharedPreferencesKeys.SERVER_IN_VEHICLE_DEVICE_TOKEN,
+				t);
 		Intent intent = new Intent(Intent.ACTION_SEND);
 		intent.putExtras(bundle);
 		setActivityIntent(intent);
@@ -81,7 +84,8 @@ public class SavePreferencesActivityTestCase extends
 		assertEquals(sp.getString(
 				SharedPreferencesKeys.SERVER_IN_VEHICLE_DEVICE_TOKEN, ""), t);
 
-		assertTrue(sp.getBoolean(SharedPreferencesKeys.CLEAR_STATUS_BACKUP, false));
+		assertTrue(sp.getBoolean(SharedPreferencesKeys.CLEAR_STATUS_BACKUP,
+				false));
 		assertTrue(actionExitReceived);
 	}
 
@@ -91,7 +95,8 @@ public class SavePreferencesActivityTestCase extends
 		setActivityIntent(intent);
 		getActivity();
 
-		assertTrue(sp.getBoolean(SharedPreferencesKeys.CLEAR_STATUS_BACKUP, false));
+		assertTrue(sp.getBoolean(SharedPreferencesKeys.CLEAR_STATUS_BACKUP,
+				false));
 		assertTrue(actionExitReceived);
 	}
 }

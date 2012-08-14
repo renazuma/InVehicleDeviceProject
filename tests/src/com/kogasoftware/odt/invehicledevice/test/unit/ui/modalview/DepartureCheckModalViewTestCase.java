@@ -1,12 +1,12 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.ui.modalview;
 
+import static org.mockito.Mockito.mock;
+
 import java.util.concurrent.CountDownLatch;
 
 import android.app.Activity;
 import android.view.View;
 
-import com.google.common.base.Function;
-import com.google.common.eventbus.Subscribe;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
@@ -16,7 +16,6 @@ import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentati
 import com.kogasoftware.odt.invehicledevice.ui.modalview.DepartureCheckModalView;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
-import static org.mockito.Mockito.*;
 
 public class DepartureCheckModalViewTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
@@ -59,12 +58,12 @@ public class DepartureCheckModalViewTestCase extends
 				getActivity().setContentView(R.layout.in_vehicle_device);
 			}
 		});
-//		try {
-//			assertEquals(cl2.countRegisteredClass(DepartureCheckModalView.class)
-//					.intValue(), 1);
-//		} finally {
-//			cl2.dispose();
-//		}
+		// try {
+		// assertEquals(cl2.countRegisteredClass(DepartureCheckModalView.class)
+		// .intValue(), 1);
+		// } finally {
+		// cl2.dispose();
+		// }
 	}
 
 	/**
@@ -74,9 +73,9 @@ public class DepartureCheckModalViewTestCase extends
 		assertFalse(mv.isShown());
 		assertNotSame(mv.getVisibility(), View.VISIBLE);
 
-//		cl.postEvent(new DepartureCheckModalView.ShowEvent(
-//				new ReservationArrayAdapter(getInstrumentation()
-//						.getContext(), cl)));
+		// cl.postEvent(new DepartureCheckModalView.ShowEvent(
+		// new ReservationArrayAdapter(getInstrumentation()
+		// .getContext(), cl)));
 		getInstrumentation().waitForIdleSync();
 
 		assertTrue(mv.isShown());

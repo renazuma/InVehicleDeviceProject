@@ -2,24 +2,15 @@ package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledevicese
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
-import android.content.Context;
 import android.test.ServiceTestCase;
 
-import com.google.common.base.Function;
-import com.google.common.eventbus.Subscribe;
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Reader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.VoidReader;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.VehicleNotificationLogic;
-import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.NotificationModalView;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class VehicleNotificationLogicTestCase extends
@@ -427,26 +418,27 @@ public class VehicleNotificationLogicTestCase extends
 				status.vehicleNotifications.add(vn2);
 			}
 		});
-//		final CountDownLatch cdl = new CountDownLatch(1);
-//		cl.registerEventListener(new Function<NotificationModalView.ShowEvent, Void>() {
-//			@Subscribe
-//			@Override
-//			public Void apply(NotificationModalView.ShowEvent e) {
-//				cdl.countDown();
-//				return null;
-//			}
-//		});
-//		cl.postEvent(new VehicleNotificationRepliedEvent(vn1));
-//		assertTrue(cdl.await(10, TimeUnit.SECONDS));
-//		getInstrumentation().waitForIdleSync();
-//		sa.withReadLock(new VoidReader() {
-//			@Override
-//			public void read(LocalData status) {
-//				assertFalse(status.vehicleNotifications.isEmpty());
-//				assertEquals(status.vehicleNotifications.get(0), vn2);
-//				assertEquals(status.repliedVehicleNotifications.size(), 1);
-//				assertEquals(status.repliedVehicleNotifications.get(0), vn1);
-//			}
-//		});
+		// final CountDownLatch cdl = new CountDownLatch(1);
+		// cl.registerEventListener(new
+		// Function<NotificationModalView.ShowEvent, Void>() {
+		// @Subscribe
+		// @Override
+		// public Void apply(NotificationModalView.ShowEvent e) {
+		// cdl.countDown();
+		// return null;
+		// }
+		// });
+		// cl.postEvent(new VehicleNotificationRepliedEvent(vn1));
+		// assertTrue(cdl.await(10, TimeUnit.SECONDS));
+		// getInstrumentation().waitForIdleSync();
+		// sa.withReadLock(new VoidReader() {
+		// @Override
+		// public void read(LocalData status) {
+		// assertFalse(status.vehicleNotifications.isEmpty());
+		// assertEquals(status.vehicleNotifications.get(0), vn2);
+		// assertEquals(status.repliedVehicleNotifications.size(), 1);
+		// assertEquals(status.repliedVehicleNotifications.get(0), vn1);
+		// }
+		// });
 	}
 }

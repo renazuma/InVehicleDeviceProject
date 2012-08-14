@@ -204,10 +204,8 @@ public class MockDataSource implements DataSource {
 			}
 
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
 
 	public void setReservation(Integer iReservation) {
@@ -231,7 +229,7 @@ public class MockDataSource implements DataSource {
 		String ru13 = "{user: {id: 13, last_name: '名字m', first_name: '名前m'}}";
 		String ru14 = "{user: {id: 14, last_name: '名字n', first_name: '名前n'}}";
 		String ru15 = "{user: {id: 15, last_name: '名字o', first_name: '名前o'}}";
-		
+
 		String rus1 = "[" + ru1 + "]";
 		String rus2 = "[" + ru2 + "]";
 		String rus3 = "[" + ru3 + "]";
@@ -247,7 +245,7 @@ public class MockDataSource implements DataSource {
 		String rus13 = "[" + ru13 + "]";
 		String rus14 = "[" + ru14 + "]";
 		String rus15 = "[" + ru15 + "]";
-		
+
 		String u1a = "";
 		String u1b = "";
 		String u1c = "";
@@ -264,33 +262,48 @@ public class MockDataSource implements DataSource {
 		String u1n = "";
 		String u1o = "";
 		if (iReservation > 0) {
-			u1a = "{passenger_count: 1 ,id: 1011,departure_schedule_id: 101,arrival_schedule_id: 106,reservation_users: " + rus1 + ",memo: 'テストメモ1'}";
+			u1a = "{passenger_count: 1 ,id: 1011,departure_schedule_id: 101,arrival_schedule_id: 106,reservation_users: "
+					+ rus1 + ",memo: 'テストメモ1'}";
 		}
 		if (iReservation > 1) {
-			u1b = ", {passenger_count: 2,id: 1012,departure_schedule_id: 101,arrival_schedule_id: 104,reservation_users: " + rus2 + "}";
+			u1b = ", {passenger_count: 2,id: 1012,departure_schedule_id: 101,arrival_schedule_id: 104,reservation_users: "
+					+ rus2 + "}";
 		}
 		if (iReservation > 2) {
-			u1c = ", {passenger_count: 3,id: 1013,departure_schedule_id: 101,arrival_schedule_id: 103,reservation_users: " + rus3 + "}";
+			u1c = ", {passenger_count: 3,id: 1013,departure_schedule_id: 101,arrival_schedule_id: 103,reservation_users: "
+					+ rus3 + "}";
 		}
 		if (iReservation > 3) {
-			u1d = ", {passenger_count: 4,id: 1014,departure_schedule_id: 101,arrival_schedule_id: 102,reservation_users: " + rus4 + "}";
+			u1d = ", {passenger_count: 4,id: 1014,departure_schedule_id: 101,arrival_schedule_id: 102,reservation_users: "
+					+ rus4 + "}";
 		}
 		if (iReservation > 4) {
-			u1e = ", {passenger_count: 5,id: 1015,departure_schedule_id: 101,arrival_schedule_id: 105,reservation_users: " + rus5 + "}";
+			u1e = ", {passenger_count: 5,id: 1015,departure_schedule_id: 101,arrival_schedule_id: 105,reservation_users: "
+					+ rus5 + "}";
 		}
 		if (iReservation > 5) {
-			u1f = ", {passenger_count: 6,id: 1016,departure_schedule_id: 101,arrival_schedule_id: 104,reservation_users: " + rus6 + "}";
+			u1f = ", {passenger_count: 6,id: 1016,departure_schedule_id: 101,arrival_schedule_id: 104,reservation_users: "
+					+ rus6 + "}";
 		}
 
-		u1g = ", {passenger_count: 1,id: 1017,departure_schedule_id: 102,arrival_schedule_id: 103,reservation_users: " + rus7 + "}";
-		u1h = ", {passenger_count: 1,id: 1018,departure_schedule_id: 103,arrival_schedule_id: 104,reservation_users: " + rus8 + "}";
-		u1i = ", {passenger_count: 1,id: 1019,departure_schedule_id: 104,arrival_schedule_id: 106,reservation_users: " + rus9 + "}";
-		u1j = ", {passenger_count: 1,id: 1020,departure_schedule_id: 102,arrival_schedule_id: 105,reservation_users: " + rus10 + "}";
-		u1k = ", {passenger_count: 1,id: 1021,departure_schedule_id: 103,arrival_schedule_id: 104,reservation_users: " + rus11 + "}";
-		u1l = ", {passenger_count: 1,id: 1022,departure_schedule_id: 102,arrival_schedule_id: 106,reservation_users: " + rus12 + "}";
-		u1m = ", {passenger_count: 1,id: 1023,departure_schedule_id: 103,arrival_schedule_id: 105,reservation_users: " + rus13 + "}";
-		u1n = ", {passenger_count: 1,id: 1024,departure_schedule_id: 104,arrival_schedule_id: 106,reservation_users: " + rus14 + "}";
-		u1o = ", {passenger_count: 1,id: 1025,departure_schedule_id: 104,arrival_schedule_id: 105,reservation_users: " + rus15 + "}";
+		u1g = ", {passenger_count: 1,id: 1017,departure_schedule_id: 102,arrival_schedule_id: 103,reservation_users: "
+				+ rus7 + "}";
+		u1h = ", {passenger_count: 1,id: 1018,departure_schedule_id: 103,arrival_schedule_id: 104,reservation_users: "
+				+ rus8 + "}";
+		u1i = ", {passenger_count: 1,id: 1019,departure_schedule_id: 104,arrival_schedule_id: 106,reservation_users: "
+				+ rus9 + "}";
+		u1j = ", {passenger_count: 1,id: 1020,departure_schedule_id: 102,arrival_schedule_id: 105,reservation_users: "
+				+ rus10 + "}";
+		u1k = ", {passenger_count: 1,id: 1021,departure_schedule_id: 103,arrival_schedule_id: 104,reservation_users: "
+				+ rus11 + "}";
+		u1l = ", {passenger_count: 1,id: 1022,departure_schedule_id: 102,arrival_schedule_id: 106,reservation_users: "
+				+ rus12 + "}";
+		u1m = ", {passenger_count: 1,id: 1023,departure_schedule_id: 103,arrival_schedule_id: 105,reservation_users: "
+				+ rus13 + "}";
+		u1n = ", {passenger_count: 1,id: 1024,departure_schedule_id: 104,arrival_schedule_id: 106,reservation_users: "
+				+ rus14 + "}";
+		u1o = ", {passenger_count: 1,id: 1025,departure_schedule_id: 104,arrival_schedule_id: 105,reservation_users: "
+				+ rus15 + "}";
 
 		try {
 
@@ -363,7 +376,6 @@ public class MockDataSource implements DataSource {
 			lOperationSchedule.add(OperationSchedule.parse(j6));
 
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -506,9 +518,8 @@ public class MockDataSource implements DataSource {
 
 	@Override
 	public void saveOnClose(int reqkey) {
-		// TODO Auto-generated method stub
 	}
-	
+
 	@Override
 	public int getServiceProvider(WebAPICallback<ServiceProvider> callback) {
 		callback.onSucceed(0, 200, new ServiceProvider());
@@ -518,34 +529,26 @@ public class MockDataSource implements DataSource {
 	@Override
 	public int getOffPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, User user,
-			PassengerRecord passengerRecord,
-			WebAPICallback<PassengerRecord> callback) {
-		// TODO Auto-generated method stub
+			PassengerRecord passengerRecord, WebAPICallback<Void> callback) {
 		return 0;
 	}
 
 	@Override
 	public int getOnPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, User user,
-			PassengerRecord passengerRecord,
-			WebAPICallback<PassengerRecord> callback) {
-		// TODO Auto-generated method stub
+			PassengerRecord passengerRecord, WebAPICallback<Void> callback) {
 		return 0;
 	}
 
 	@Override
 	public int cancelGetOffPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, User user,
-			WebAPICallback<PassengerRecord> callback) {
-		// TODO Auto-generated method stub
+			Reservation reservation, User user, WebAPICallback<Void> callback) {
 		return 0;
 	}
 
 	@Override
 	public int cancelGetOnPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, User user,
-			WebAPICallback<PassengerRecord> callback) {
-		// TODO Auto-generated method stub
+			Reservation reservation, User user, WebAPICallback<Void> callback) {
 		return 0;
 	}
 }
