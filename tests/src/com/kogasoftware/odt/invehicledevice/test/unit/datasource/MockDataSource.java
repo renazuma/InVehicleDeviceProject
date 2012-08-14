@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.integration;
+package com.kogasoftware.odt.invehicledevice.test.unit.datasource;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -33,7 +33,6 @@ public class MockDataSource implements DataSource {
 	private List<OperationSchedule> lOperationSchedule = new LinkedList<OperationSchedule>();
 	private final List<ReservationCandidate> lReservationCandidate = new LinkedList<ReservationCandidate>();
 
-	private Date nextNotifyDate = new Date();
 	private boolean NotificationFlag = false;
 
 	@Override
@@ -68,17 +67,9 @@ public class MockDataSource implements DataSource {
 	public List<VehicleNotification> getVehicleNotifications()
 			throws WebAPIException {
 
-		try {
-			Thread.sleep(1);
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			throw new WebAPIException(e);
-		}
-
 		List<VehicleNotification> l = new LinkedList<VehicleNotification>();
 
 		if (NotificationFlag) {
-			nextNotifyDate = new Date(new Date().getTime() + 10 * 1000);
 			VehicleNotification n = new VehicleNotification();
 			n.setBody("テスト通知が行われました " + new Date());
 			l.add(n);
