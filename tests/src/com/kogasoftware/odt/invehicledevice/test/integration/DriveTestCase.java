@@ -106,7 +106,8 @@ public class DriveTestCase extends
 	public void test08_最終乗降場についた時の挙動() throws Exception {
 		for (Integer i = 0; i < 5; ++i) {
 			test06_出発確認画面で出発するボタンを押すと運転中画面表示();
-			if (solo.searchText("最終乗降場")) {
+			if (solo.searchText("最終乗降場", true)) {
+				test06_出発確認画面で出発するボタンを押すと運転中画面表示();
 				break;
 			}
 			Thread.sleep(2000);
