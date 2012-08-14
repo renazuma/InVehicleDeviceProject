@@ -44,8 +44,6 @@ public class PlatformPhaseView extends PhaseView {
 	private final LinearLayout nextOperationScheduleLayout;
 	private final MemoModalView memoModalView;
 	private final Handler handler = new Handler();
-	private Optional<PassengerRecordArrayAdapter> optionalAdapter = Optional
-			.absent();
 	private Optional<AlertDialog> dialog = Optional.absent();
 	private Integer lastMinutesRemaining = Integer.MAX_VALUE;
 	private final Runnable updateMinutesRemaining = new Runnable() {
@@ -126,13 +124,11 @@ public class PlatformPhaseView extends PhaseView {
 	@Override
 	public void onEnterDrivePhase() {
 		super.onEnterDrivePhase();
-		optionalAdapter = Optional.absent();
 	}
 
 	@Override
 	public void onEnterFinishPhase() {
 		super.onEnterFinishPhase();
-		optionalAdapter = Optional.absent();
 	}
 
 	@Override
@@ -161,8 +157,6 @@ public class PlatformPhaseView extends PhaseView {
 
 		final PassengerRecordArrayAdapter adapter = new PassengerRecordArrayAdapter(
 				service, memoModalView);
-		optionalAdapter = Optional.of(adapter);
-
 		reservationListView.setAdapter(adapter);
 
 		if (operationSchedules.size() > 0) {
