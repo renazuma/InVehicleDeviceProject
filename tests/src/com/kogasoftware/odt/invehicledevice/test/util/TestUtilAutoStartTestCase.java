@@ -10,7 +10,8 @@ import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 public class TestUtilAutoStartTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 
-	private static final String TAG = TestUtilAutoStartTestCase.class.getSimpleName();
+	private static final String TAG = TestUtilAutoStartTestCase.class
+			.getSimpleName();
 	Context c;
 
 	public TestUtilAutoStartTestCase() {
@@ -18,15 +19,17 @@ public class TestUtilAutoStartTestCase extends
 				InVehicleDeviceActivity.class);
 	}
 
+	@Override
 	public void setUp() throws Exception {
 		super.setUp();
 		c = getInstrumentation().getContext();
 	}
 
+	@Override
 	public void tearDown() throws Exception {
 		super.tearDown();
 	}
-	
+
 	public void callTestDisableAutoStart() throws Exception {
 		// ActivityのUI起動後、自動起動をOFFにしてActivityを終了
 		InVehicleDeviceActivity a = getActivity();
@@ -63,7 +66,13 @@ public class TestUtilAutoStartTestCase extends
 		callTestDisableAutoStart();
 	}
 
+	// 二度目以降の実行に失敗することがあるので、複数回実行する
 	public void testDisableAutoStart2() throws Exception {
+		callTestDisableAutoStart();
+	}
+
+	// 二度目以降の実行に失敗することがあるので、複数回実行する
+	public void testDisableAutoStart3() throws Exception {
 		callTestDisableAutoStart();
 	}
 }

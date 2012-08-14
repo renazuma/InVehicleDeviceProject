@@ -44,13 +44,6 @@ public class DummyDataSource extends EmptyDataSource {
 
 	@Override
 	public InVehicleDevice getInVehicleDevice() throws WebAPIException {
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			throw new WebAPIException(e);
-		}
-
 		InVehicleDevice model = new InVehicleDevice();
 		model.setId(10);
 		model.setTypeNumber("TESTNUMBER012345");
@@ -61,13 +54,6 @@ public class DummyDataSource extends EmptyDataSource {
 	@Override
 	public List<OperationSchedule> getOperationSchedules()
 			throws WebAPIException {
-		try {
-			Thread.sleep(3000);
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			throw new WebAPIException(e);
-		}
-
 		List<OperationSchedule> l = new LinkedList<OperationSchedule>();
 		try {
 			String ru1 = "{user: {id: 1, last_name: 'ラストネーム', first_name: 'ファーストネーム', passenger_records: [{departure_operation_schedule_id: 1, get_on_time: '2000-01-01', updated_at: '2030-01-01'}, {updated_at: '1999-01-01'}]}}";
