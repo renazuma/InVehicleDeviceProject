@@ -24,7 +24,8 @@ public class BigToastTestCase extends EmptyActivityInstrumentationTestCase2 {
 		callTestMakeText("あいうえおかきくけこさしすせそ", Toast.LENGTH_LONG);
 	}
 
-	public void callTestMakeText(final String text, final int duration) throws Exception {
+	public void callTestMakeText(final String text, final int duration)
+			throws Exception {
 		assertFalse(solo.searchText(text, true));
 		runOnUiThreadSync(new Runnable() {
 			@Override
@@ -33,7 +34,9 @@ public class BigToastTestCase extends EmptyActivityInstrumentationTestCase2 {
 			}
 		});
 		assertTrue(solo.searchText(text, true));
-		while (solo.searchText(text, true)) {
+		for (int i = 0; solo.searchText(text, true); ++i) {
+			assertTrue(i < 100);
+			Thread.sleep(500);
 		}
 	}
 }
