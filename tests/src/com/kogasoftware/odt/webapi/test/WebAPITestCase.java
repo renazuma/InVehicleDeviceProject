@@ -68,20 +68,6 @@ public class WebAPITestCase extends AndroidTestCase {
 		}
 	}
 
-	public static class EmptyWebAPICallback<T> implements WebAPICallback<T> {
-		@Override
-		public void onException(int reqkey, WebAPIException ex) {
-		}
-
-		@Override
-		public void onFailed(int reqkey, int statusCode, String response) {
-		}
-
-		@Override
-		public void onSucceed(int reqkey, int statusCode, T result) {
-		}
-	};
-
 	WebAPI api;
 	volatile boolean offline;
 	CountDownLatch latch;
