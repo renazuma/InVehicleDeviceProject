@@ -8,7 +8,6 @@ import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIRequest;
 import com.kogasoftware.odt.webapi.WebAPIRequestQueue;
 import com.kogasoftware.odt.webapi.serializablerequestloader.SerializableGetLoader;
-import com.kogasoftware.odt.webapi.test.WebAPITestCase.EmptyWebAPICallback;
 
 import android.test.AndroidTestCase;
 
