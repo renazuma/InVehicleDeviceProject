@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.backgroundthread;
+package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledeviceservicebackgroundthread;
 
 import android.content.Intent;
 

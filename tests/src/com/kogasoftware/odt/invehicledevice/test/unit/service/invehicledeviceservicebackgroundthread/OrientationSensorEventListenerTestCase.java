@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.backgroundthread;
+package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledeviceservicebackgroundthread;
 
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundthread.OrientationSensorEventListener;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
