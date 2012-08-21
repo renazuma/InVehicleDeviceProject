@@ -17,8 +17,6 @@ public class ModalViewTestCase extends EmptyActivityInstrumentationTestCase2 {
 		super.setUp();
 		a = getActivity();
 		s = mock(InVehicleDeviceService.class);
-		fail("TestModalViewのinflateにAnimationResourceが必要のため失敗する");
-
 		mv = new TestModalView(a, s);
 		runOnUiThreadSync(new Runnable() {
 			@Override
@@ -27,7 +25,36 @@ public class ModalViewTestCase extends EmptyActivityInstrumentationTestCase2 {
 			}
 		});
 	}
-
+	
+	public void testShow() throws Exception {
+		runOnUiThreadSync(new Runnable() {
+			@Override
+			public void run() {
+				mv.show();
+			}
+		});
+		getInstrumentation().waitForIdleSync();
+		assertTrue(mv.isShown());
+		
+		runOnUiThreadSync(new Runnable() {
+			@Override
+			public void run() {
+				mv.hide();
+			}
+		});
+		getInstrumentation().waitForIdleSync();
+		assertFalse(mv.isShown());
+		
+		runOnUiThreadSync(new Runnable() {
+			@Override
+			public void run() {
+				mv.show();
+			}
+		});
+		getInstrumentation().waitForIdleSync();
+		assertTrue(mv.isShown());
+	}
+	
 	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();

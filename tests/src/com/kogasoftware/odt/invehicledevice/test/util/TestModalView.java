@@ -9,4 +9,8 @@ public class TestModalView extends ModalView {
 	public TestModalView(Context context, InVehicleDeviceService service) {
 		super(context, service);
 	}
+	
+	public void show() {
+		super.show();
+	}
 }
