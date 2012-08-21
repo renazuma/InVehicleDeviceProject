@@ -1,8 +1,8 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledeviceservicebackgroundthread;
+package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledeviceservice.backgroundtask;
 
 import android.content.Intent;
 
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundthread.ExitBroadcastReceiver;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask.ExitBroadcastReceiver;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 
 public class ExitBroadcastReceiverTestCase extends

@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundthread;
+package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

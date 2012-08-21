@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundthread;
+package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask;
 
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyWebAPICallback;

@@ -19,7 +19,7 @@ import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import com.kogasoftware.odt.invehicledevice.datasource.WebAPIDataSource;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundthread.Broadcasts;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask.Broadcasts;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 
 public class SavePreferencesActivity extends Activity {
