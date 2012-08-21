@@ -3,14 +3,20 @@ package com.kogasoftware.odt.invehicledevice.service.logservice;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.BlockingQueue;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.DropBoxManager;
 import android.preference.PreferenceManager;
+import android.util.Base64;
+import android.util.Base64OutputStream;
 import android.util.Log;
 
 import com.google.common.base.Charsets;
@@ -50,17 +56,27 @@ public class DropBoxThread extends LogCollectorThread {
 					break;
 				}
 
-				String header = "\n//////////////////////////////////////////////////\n";
-				header += "timeMillis=" + entry.getTimeMillis() + "\n";
-				header += "tag=" + entry.getTag() + "\n";
-				header += "flags=" + entry.getFlags() + "\n";
-				header += "describeContents=" + entry.describeContents() + "\n";
-				header += "\n";
-
-				pipedOutputStream.write(header.getBytes(Charsets.UTF_8));
-				inputStream = entry.getInputStream();
+				JSONObject metadata = new JSONObject();
+				try {
+					metadata.put("timeMillis", entry.getTimeMillis());
+					metadata.put("tag", entry.getTag());
+					metadata.put("flags", entry.getFlags());
+					metadata.put("describeContents", entry.describeContents());
+				} catch (JSONException e) {
+					Log.w(TAG, e);
+				}
+				getOutputStream().write(metadata.toString().getBytes(
+						Charsets.UTF_8));
+				inputStream = entry.getInputStream(); // 非常に大きなデータの可能性があるため、一度に全て読み出さないようにする
 				if (inputStream != null) {
-					ByteStreams.copy(inputStream, pipedOutputStream);
+					OutputStream base64OutputStream = null;
+					try {
+						base64OutputStream = new Base64OutputStream(
+								getOutputStream(), Base64.DEFAULT | Base64.NO_CLOSE);
+						ByteStreams.copy(inputStream, base64OutputStream);
+					} finally {
+						Closeables.closeQuietly(base64OutputStream);
+					}
 				}
 			} catch (IOException e) {
 				Log.w(TAG, e);
