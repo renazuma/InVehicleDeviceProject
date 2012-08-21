@@ -2,6 +2,7 @@ package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledevicese
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
@@ -26,6 +27,7 @@ public class LocalDataTestCase extends AndroidTestCase {
 	public void testSerializable() throws Exception {
 		LocalData ld1 = new LocalData();
 		ld1.url = "http://example.com/" + Math.random();
+		ld1.file = new File("foo");
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ObjectOutputStream oos = new ObjectOutputStream(baos);
 		oos.writeObject(ld1);
@@ -33,7 +35,9 @@ public class LocalDataTestCase extends AndroidTestCase {
 
 		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
 		ObjectInputStream ois = new ObjectInputStream(bais);
-		LocalData s2 = (LocalData) ois.readObject();
-		assertEquals(s2.url, ld1.url);
+		LocalData ld2 = (LocalData) ois.readObject();
+		assertEquals(ld1.url, ld2.url);
+		assertEquals(ld1.file, ld2.file);
+		assertFalse(ld1.file == ld2.file);
 	}
 }
