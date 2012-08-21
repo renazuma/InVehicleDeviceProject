@@ -5,15 +5,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
-import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
+import android.test.AndroidTestCase;
 
-public class LocalDataTestCase extends EmptyActivityInstrumentationTestCase2 {
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
+
+public class LocalDataTestCase extends AndroidTestCase {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		
-		Thread.sleep(10 * 1000); // 別のアプリがLocalDataを保存するかもしれないため、一定時間待つ
 	}
 
 	@Override

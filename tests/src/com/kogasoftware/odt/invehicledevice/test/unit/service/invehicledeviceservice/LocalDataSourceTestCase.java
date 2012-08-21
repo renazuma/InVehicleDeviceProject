@@ -5,6 +5,7 @@ import java.util.Date;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.test.AndroidTestCase;
 
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
@@ -12,13 +13,11 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Local
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.VoidReader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
-import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
-public class LocalDataSourceTestCase extends
-		EmptyActivityInstrumentationTestCase2 {
+public class LocalDataSourceTestCase extends AndroidTestCase {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -53,7 +52,7 @@ public class LocalDataSourceTestCase extends
 	 * コンストラクタ。clearStatusFileが呼ばれたら内容をクリア
 	 */
 	public void testConstructor_2() throws Exception {
-		Context c = getInstrumentation().getTargetContext();
+		Context c = getContext();
 		// 保存
 		LocalDataSource lds1 = new LocalDataSource(c);
 		lds1.withWriteLock(new Writer() {
@@ -107,7 +106,7 @@ public class LocalDataSourceTestCase extends
 	 * コンストラクタ。SharedPreferencesKeyのCLEAR_REQUIREDがtrueの場合 内容をクリア
 	 */
 	public void testConstructor_3() throws Exception {
-		Context c = getInstrumentation().getTargetContext();
+		Context c = getContext();
 
 		// 保存
 		LocalDataSource.clearSavedFile();

@@ -1,8 +1,8 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.datasource;
 
-import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
+import android.test.AndroidTestCase;
 
-public class WebAPIDataSourceTestCase extends EmptyActivityInstrumentationTestCase2 {
+public class WebAPIDataSourceTestCase extends AndroidTestCase {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
