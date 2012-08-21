@@ -6,8 +6,8 @@ import android.test.ActivityInstrumentationTestCase2;
 import android.view.View;
 
 import com.jayway.android.robotium.solo.Solo;
-import com.kogasoftware.odt.invehicledevice.test.unit.datasource.MockDataSource;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
+import com.kogasoftware.odt.invehicledevice.test.util.datasource.MockDataSource;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.NotificationModalView;
 import com.kogasoftware.odt.invehicledevice.ui.phaseview.DrivePhaseView;
