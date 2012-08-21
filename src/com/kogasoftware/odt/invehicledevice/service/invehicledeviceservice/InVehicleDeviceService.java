@@ -678,7 +678,6 @@ public class InVehicleDeviceService extends Service {
 	public void onDestroy() {
 		super.onDestroy();
 		Log.i(TAG, "onDestroy()");
-		stopForeground(true);
 		backgroundThread.interrupt();
 		backgroundThread = new EmptyThread();
 
