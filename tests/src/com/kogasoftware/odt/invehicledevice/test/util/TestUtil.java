@@ -1,6 +1,9 @@
 package com.kogasoftware.odt.invehicledevice.test.util;
 
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.WeakHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -21,6 +24,7 @@ import android.os.RemoteException;
 import android.os.StrictMode;
 import android.view.View;
 
+import com.google.common.base.Stopwatch;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
@@ -157,7 +161,7 @@ public class TestUtil {
 				.getRunningTasks(1)) {
 			return runningTaskInfo.topActivity;
 		}
-		
+
 		throw new RuntimeException("topActivity not found");
 	}
 
@@ -210,5 +214,48 @@ public class TestUtil {
 		};
 		t.start();
 		t.join();
+	}
+
+	private static <T> WeakHashMap<T, Integer> createManyEmptyObjectAndCheckMemory(Context context, Class<T> c, Integer numObjects)
+			throws Exception {
+		WeakHashMap<T, Integer> whm = new WeakHashMap<T, Integer>();
+		
+		// サイズが小さいことを確認
+		List<T> l = new LinkedList<T>();
+		for (Integer i = 0; i < numObjects; ++i) {
+			T t = c.newInstance(); // 引数無しのデフォルトコンストラクタがあることを確認
+			l.add(t);
+			whm.put(t, i);
+		}
+
+		// lowMemoryになっていないことを確認
+		ActivityManager.MemoryInfo mi = new ActivityManager.MemoryInfo();
+		((ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE))
+				.getMemoryInfo(mi);
+		Assert.assertFalse("Low memory available: " + mi.availMem + " bytes",
+				mi.lowMemory);
+		Assert.assertFalse(whm.isEmpty());
+		return whm;
+	}
+	public static <T> void assertEmptyObject(Context context, Class<T> c)
+			throws Exception {
+		assertEmptyObject(context, c, false);
+	}
+	
+	public static <T> void assertEmptyObject(Context context, Class<T> c, Boolean largeObject)
+			throws Exception {
+		WeakHashMap<T, Integer> whm = createManyEmptyObjectAndCheckMemory(context, c, largeObject ? 20 * 1024 : 200 * 1024);
+		
+		// 自動でGCされるかを確認
+		Stopwatch sw = new Stopwatch().start();
+		while (sw.elapsedTime(TimeUnit.SECONDS) < 10) {
+			if (whm.isEmpty()) {
+				return;
+			}
+			Thread.sleep(500);
+			System.gc();
+		}
+
+		Assert.fail("WeakHashMap size=" + whm.size() + " " + whm);
 	}
 }

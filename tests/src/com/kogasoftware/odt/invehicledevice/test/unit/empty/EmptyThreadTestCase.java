@@ -1,13 +1,20 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.empty;
 
-import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
-import junit.framework.TestCase;
+import android.test.AndroidTestCase;
 
-public class EmptyThreadTestCase extends TestCase {
+import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
+import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
+
+public class EmptyThreadTestCase extends AndroidTestCase {
+	public void testSmallInstance() throws Exception {
+		TestUtil.assertEmptyObject(getContext(), EmptyThread.class, true);
+	}
+
 	public void testStart() throws Exception {
 		Thread t = new EmptyThread();
 		t.start();
-		t.join(200); // 即座に終了する
-		assertFalse(t.isAlive());
+		t.join(200);
+		assertFalse(t.isAlive()); // 即座に終了する
 	}
 }
+
