@@ -5,16 +5,21 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map.Entry;
 
 import org.acra.CrashReportData;
+import org.acra.ReportField;
 import org.acra.sender.ReportSender;
 import org.acra.sender.ReportSenderException;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Environment;
 import android.util.Log;
 
+import com.google.common.base.Charsets;
 import com.google.common.io.Closeables;
 
 public class LogServiceReportSender implements ReportSender {
@@ -39,10 +44,18 @@ public class LogServiceReportSender implements ReportSender {
 			String message = "!\"" + dataDirectory + "\".canWrite()";
 			throw new ReportSenderException(message, new Throwable(message));
 		}
+		JSONObject jsonObject = new JSONObject();
+		for (Entry<ReportField, String> entry : crashReportData.entrySet()) {
+			try {
+				jsonObject.put(entry.getKey().toString(), entry.getValue());
+			} catch (JSONException e) {
+				Log.w(TAG, e);
+			}
+		}
 		FileOutputStream fileOutputStream = null;
 		try {
 			fileOutputStream = new FileOutputStream(file);
-			crashReportData.storeToXML(fileOutputStream, file.getName());
+			fileOutputStream.write(jsonObject.toString().getBytes(Charsets.UTF_8));
 		} catch (IOException e) {
 			throw new ReportSenderException("IOException file=" + file, e);
 		} finally {
