@@ -52,7 +52,7 @@ public class LogcatThread extends LogCollectorThread {
 			};
 			InputStream inputStream = process.getInputStream();
 			try {
-				ByteStreams.copy(inputStream, pipedOutputStream);
+				ByteStreams.copy(inputStream, getOutputStream());
 			} catch (IOException e) {
 				Log.w(TAG, e);
 			} finally {

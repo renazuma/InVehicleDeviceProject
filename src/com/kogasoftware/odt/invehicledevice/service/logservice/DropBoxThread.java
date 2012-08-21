@@ -105,7 +105,7 @@ public class DropBoxThread extends LogCollectorThread {
 				Thread.sleep(20 * 1000);
 
 				try { // 何か書き込むことで読み込み待ちスレッドを起こし、時間によるログローテートができるようにする
-					pipedOutputStream.write('\n');
+					getOutputStream().write('\n');
 				} catch (IOException e) {
 					Log.w(TAG, e);
 				}

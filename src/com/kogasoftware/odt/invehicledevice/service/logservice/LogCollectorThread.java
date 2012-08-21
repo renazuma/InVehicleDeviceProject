@@ -36,9 +36,8 @@ public class LogCollectorThread extends Thread implements Flushable {
 			nullOutputStream);
 	private final InputStream inputStream;
 	protected final Context context;
-
-	protected final PipedOutputStream pipedOutputStream = new PipedOutputStream();
-
+	private final PipedOutputStream pipedOutputStream = new PipedOutputStream();
+	
 	class PipeThread extends Thread {
 		private void save(File file, InputStream inputStream)
 				throws InterruptedException {
@@ -116,5 +115,9 @@ public class LogCollectorThread extends Thread implements Flushable {
 	public void flush() {
 		Flushables.flushQuietly(pipedOutputStream);
 		Flushables.flushQuietly(currentOutputStream.get());
+	}
+	
+	protected OutputStream getOutputStream() {
+		return pipedOutputStream;
 	}
 }
