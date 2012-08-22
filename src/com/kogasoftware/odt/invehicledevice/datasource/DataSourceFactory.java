@@ -15,7 +15,6 @@ public class DataSourceFactory {
 			return new EmptyDataSource();
 		}
 		synchronized (DATA_SOURCE_LOCK) {
-			// return dataSource.or(new ScheduleChangedTestDataSource());
 			return dataSource.or(new EmptyDataSource());
 		}
 	}
