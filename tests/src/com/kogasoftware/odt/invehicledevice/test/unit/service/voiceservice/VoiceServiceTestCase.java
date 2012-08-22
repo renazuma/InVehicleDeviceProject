@@ -1,13 +1,13 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.service.voiceservice;
 
-import com.kogasoftware.odt.invehicledevice.service.startupservice.StartupService;
+import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
 
 import android.content.Intent;
 import android.test.ServiceTestCase;
 
-public class VoiceServiceTestCase extends ServiceTestCase<StartupService> {
+public class VoiceServiceTestCase extends ServiceTestCase<VoiceService> {
 	public VoiceServiceTestCase() {
-		super(StartupService.class);
+		super(VoiceService.class);
 	}
 
 	public void testOnCreate() {
