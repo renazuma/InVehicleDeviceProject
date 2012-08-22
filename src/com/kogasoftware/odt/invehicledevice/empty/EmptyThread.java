@@ -4,7 +4,7 @@ package com.kogasoftware.odt.invehicledevice.empty;
 public class EmptyThread extends Thread {
 	public EmptyThread() {
 		super();
-		super.start(); // Android2.3ではstart()していないThreadはGCされないようなので、start()しておく
+		super.start(); // Android2.3ではstart()していないThreadは非常にGCされにくいようなので、start()しておく(EmptyThreadTestCaseも参照)
 	}
 	
 	@Override
