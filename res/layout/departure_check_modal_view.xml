@@ -8,7 +8,28 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/departure_check_modal_buttons"
-        android:layout_alignParentLeft="true" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true" />
+
+    <FrameLayout
+        android:id="@+id/departure_button_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/departure_check_modal_buttons"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true" >
+
+        <Button
+            android:id="@+id/departure_button"
+            style="@style/ModalView.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:padding="50sp"
+            android:text="@string/it_leaves"
+            android:textSize="40sp" />
+    </FrameLayout>
 
     <LinearLayout
         android:id="@+id/departure_check_modal_buttons"
@@ -18,11 +39,11 @@
         android:layout_alignParentLeft="true" >
 
         <Button
-            android:id="@+id/departure_button"
+            android:id="@+id/departure_with_error_button"
             style="@style/ModalView.Button"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:paddingBottom="15sp"
             android:paddingTop="15sp"
             android:text="@string/it_leaves"
