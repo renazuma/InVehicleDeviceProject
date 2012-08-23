@@ -20,7 +20,7 @@ public class EmptyActivityInstrumentationTestCase2 extends
 		ActivityInstrumentationTestCase2<EmptyActivity> {
 
 	public Solo solo;
-	private EmptyActivity a;
+	public EmptyActivity a;
 
 	public EmptyActivityInstrumentationTestCase2() {
 		super("com.kogasoftware.odt.invehicledevice", EmptyActivity.class);
