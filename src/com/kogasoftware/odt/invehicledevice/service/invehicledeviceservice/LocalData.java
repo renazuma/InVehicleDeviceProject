@@ -29,7 +29,7 @@ public class LocalData implements Serializable {
 	public final Semaphore operationScheduleInitializedSign = new Semaphore(0); // パーミットが0以上の場合は初期化済み。0以上になるまで待つためにacquireしたら必ずreleaseする。CountDownLatchがSerializableではないためこれを使用
 	public final Semaphore serviceProviderInitializedSign = new Semaphore(0); // パーミットが0以上の場合は初期化済み。0以上になるまで待つためにacquireしたら必ずreleaseする。CountDownLatchがSerializableではないためこれを使用
 
-	public Date updatedDate = new Date();
+	public Date updatedDate = InVehicleDeviceService.getDate();
 	public File file = new EmptyFile();
 	public Phase phase = Phase.INITIAL;
 
