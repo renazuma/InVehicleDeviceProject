@@ -42,7 +42,7 @@ public class TestUtil {
 	}
 
 	public static void setDate(DateTime date) {
-		InVehicleDeviceService.setDate(new Date(date.getMillis()));
+		InVehicleDeviceService.setMockDate(new Date(date.getMillis()));
 	}
 
 	public static void clearStatus() {

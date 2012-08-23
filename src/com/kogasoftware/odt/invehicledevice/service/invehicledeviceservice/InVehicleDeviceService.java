@@ -22,6 +22,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -129,9 +130,8 @@ public class InVehicleDeviceService extends Service {
 	public static final Integer NEW_SCHEDULE_DOWNLOAD_HOUR = 0;
 	public static final Integer NEW_SCHEDULE_DOWNLOAD_MINUTE = 5;
 
-	protected static final Object DEFAULT_DATE_LOCK = new Object();
-
-	protected static Optional<Long> mockDateOffset = Optional.absent();
+	private static final Object MOCK_DATE_OFFSET_MILLIS_LOCK = new Object();
+	private static Optional<Long> mockDateOffsetMillis = Optional.absent();
 
 	private static final String TAG = InVehicleDeviceService.class
 			.getSimpleName();
@@ -156,21 +156,24 @@ public class InVehicleDeviceService extends Service {
 		if (!BuildConfig.DEBUG) {
 			return new Date();
 		}
-		synchronized (DEFAULT_DATE_LOCK) {
-			if (mockDateOffset.isPresent()) {
-				return new Date(new Date().getTime() + mockDateOffset.get());
+		Date now = new Date();
+		synchronized (MOCK_DATE_OFFSET_MILLIS_LOCK) {
+			if (mockDateOffsetMillis.isPresent()) {
+				return new Date(now.getTime() + mockDateOffsetMillis.get());
+			} else {
+				return now;
 			}
-			return new Date();
 		}
 	}
 
-	public static void setDate(Date date) {
+	@VisibleForTesting
+	public static void setMockDate(Date mockDate) {
 		if (!BuildConfig.DEBUG) {
 			return;
 		}
-		synchronized (DEFAULT_DATE_LOCK) {
-			Date now = new Date();
-			mockDateOffset = Optional.of(date.getTime() - now.getTime());
+		Date now = new Date();
+		synchronized (MOCK_DATE_OFFSET_MILLIS_LOCK) {
+			mockDateOffsetMillis = Optional.of(mockDate.getTime() - now.getTime());
 		}
 	}
 
