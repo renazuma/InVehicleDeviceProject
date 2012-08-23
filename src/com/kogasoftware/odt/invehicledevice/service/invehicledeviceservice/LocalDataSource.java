@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
@@ -14,6 +15,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.lang3.SerializationException;
 import org.apache.commons.lang3.SerializationUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -22,6 +24,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.datasource.WebAPIDataSource;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
@@ -42,7 +45,7 @@ public class LocalDataSource implements Closeable {
 		public SaveThread(File file) {
 			this.file = file;
 		}
-		
+
 		private void save() {
 			long startTime = System.currentTimeMillis();
 			byte[] serialized = new byte[0];
@@ -82,10 +85,10 @@ public class LocalDataSource implements Closeable {
 		public void run() {
 			try {
 				while (true) {
-					Thread.sleep(SAVE_PERIO);
 					saveSemaphore.acquire();
 					saveSemaphore.drainPermits();
 					save();
+					Thread.sleep(savePeriodMillis);
 				}
 			} catch (InterruptedException e) {
 				save(); // アプリ終了時は必ずsaveを行う
@@ -103,7 +106,7 @@ public class LocalDataSource implements Closeable {
 
 	private static final Object FILE_ACCESS_LOCK = new Object(); // ファイルアクセス中のスレッドを一つに制限するためのロック。将来的にはロックの粒度をファイル毎にする必要があるかもしれない。
 
-	private static final Integer SAVE_PERIO = 5 * 60 * 1000;
+	private static final Integer DEFAULT_SAVE_PERIO_MILLIS = 5 * 60 * 1000;
 
 	private static final AtomicBoolean WILL_CLEAR_SAVED_FILE = new AtomicBoolean(
 			false);
@@ -134,8 +137,8 @@ public class LocalDataSource implements Closeable {
 			isClear = true;
 			preferences
 					.edit()
-					.putBoolean(SharedPreferencesKeys.CLEAR_STATUS_BACKUP, false)
-					.commit();
+					.putBoolean(SharedPreferencesKeys.CLEAR_STATUS_BACKUP,
+							false).commit();
 		}
 
 		if (!file.exists()) {
@@ -160,15 +163,19 @@ public class LocalDataSource implements Closeable {
 				Log.w(TAG, e);
 			}
 
-			Calendar now = Calendar.getInstance();
-			now.setTime(InVehicleDeviceService.getDate());
-			Calendar calendar = Calendar.getInstance();
-			calendar.clear();
-			calendar.set(now.get(Calendar.YEAR), now.get(Calendar.MONTH),
-					now.get(Calendar.DAY_OF_MONTH),
-					InVehicleDeviceService.NEW_SCHEDULE_DOWNLOAD_HOUR,
+			Calendar startCalendar = Calendar.getInstance();
+			startCalendar.setTime(InVehicleDeviceService.getDate());
+			startCalendar = DateUtils.truncate(startCalendar, Calendar.MINUTE);
+			startCalendar.add(Calendar.HOUR_OF_DAY,
+					-InVehicleDeviceService.NEW_SCHEDULE_DOWNLOAD_HOUR);
+			startCalendar.add(Calendar.MINUTE,
+					-InVehicleDeviceService.NEW_SCHEDULE_DOWNLOAD_MINUTE);
+			startCalendar.set(Calendar.HOUR_OF_DAY,
+					InVehicleDeviceService.NEW_SCHEDULE_DOWNLOAD_HOUR);
+			startCalendar.set(Calendar.MINUTE,
 					InVehicleDeviceService.NEW_SCHEDULE_DOWNLOAD_MINUTE);
-			if (localData.updatedDate.before(calendar.getTime())) {
+			Date startDate = startCalendar.getTime();
+			if (localData.updatedDate.before(startDate)) {
 				localData.operationScheduleInitializedSign.drainPermits();
 			}
 		}
@@ -202,13 +209,21 @@ public class LocalDataSource implements Closeable {
 	private final Lock writeLock = reentrantReadWriteLock.writeLock();
 	private final LocalData localData;
 	private final Semaphore saveSemaphore = new Semaphore(0);
+	private final Integer savePeriodMillis;
 	private Thread saveThread = new EmptyThread();
 
 	public LocalDataSource() {
 		localData = new LocalData();
+		savePeriodMillis = DEFAULT_SAVE_PERIO_MILLIS;
 	}
 
 	public LocalDataSource(Context context) {
+		this(context, DEFAULT_SAVE_PERIO_MILLIS);
+	}
+
+	@VisibleForTesting
+	public LocalDataSource(Context context, Integer savePeriodMillis) {
+		this.savePeriodMillis = savePeriodMillis;
 		synchronized (FILE_ACCESS_LOCK) {
 			localData = newStatusInstanceFromFile(context);
 		}
@@ -221,6 +236,11 @@ public class LocalDataSource implements Closeable {
 		saveThread.interrupt();
 	}
 
+	/**
+	 * 読み取りロックをした状態で、localDataにアクセスを行う
+	 * 
+	 * @param reader
+	 */
 	public <T> T withReadLock(Reader<T> reader) {
 		readLock.lock();
 		try {
@@ -230,6 +250,11 @@ public class LocalDataSource implements Closeable {
 		}
 	}
 
+	/**
+	 * 読み取りロックをした状態で、localDataにアクセスを行う
+	 * 
+	 * @param reader
+	 */
 	public void withReadLock(final VoidReader reader) {
 		withReadLock(new Reader<Void>() {
 			@Override
@@ -240,10 +265,12 @@ public class LocalDataSource implements Closeable {
 		});
 	}
 
-	private void save() {
-		saveSemaphore.release();
-	}
-
+	/**
+	 * 書き込みロックをした状態で、localDataにアクセスを行う。処理が完了したら、localDataを永続化する。
+	 * ただし、前回の永続化からsavePeriodMillis経過していない場合は、savePeriodMillisが経過するまで永続化は行わない。
+	 * 
+	 * @param writer
+	 */
 	public void withWriteLock(Writer writer) {
 		writeLock.lock();
 		try {
@@ -253,6 +280,6 @@ public class LocalDataSource implements Closeable {
 		}
 
 		// findbugsの警告回避ができないため、Lockのダウングレードはしないでおく
-		save();
+		saveSemaphore.release();
 	}
 }
