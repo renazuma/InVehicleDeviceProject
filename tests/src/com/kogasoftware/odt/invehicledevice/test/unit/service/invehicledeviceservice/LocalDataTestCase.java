@@ -1,14 +1,10 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledeviceservice;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
+import org.apache.commons.lang3.SerializationUtils;
 import android.test.AndroidTestCase;
-
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
+import com.kogasoftware.odt.webapi.model.ServiceProvider;
 
 public class LocalDataTestCase extends AndroidTestCase {
 	@Override
@@ -27,17 +23,13 @@ public class LocalDataTestCase extends AndroidTestCase {
 	public void testSerializable() throws Exception {
 		LocalData ld1 = new LocalData();
 		ld1.url = "http://example.com/" + Math.random();
-		ld1.file = new File("foo");
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		ObjectOutputStream oos = new ObjectOutputStream(baos);
-		oos.writeObject(ld1);
-		oos.close();
-
-		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-		ObjectInputStream ois = new ObjectInputStream(bais);
-		LocalData ld2 = (LocalData) ois.readObject();
+		ld1.file = new File("foo" + Math.random());
+		ld1.serviceProvider = new ServiceProvider();
+		ld1.serviceProvider.setName("テストサービスプロバイダー");
+		LocalData ld2 = SerializationUtils.clone(ld1);
 		assertEquals(ld1.url, ld2.url);
 		assertEquals(ld1.file, ld2.file);
 		assertFalse(ld1.file == ld2.file);
+		assertEquals(ld1.serviceProvider.getName(), ld2.serviceProvider.getName());
 	}
 }
