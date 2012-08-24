@@ -1,11 +1,15 @@
 package com.kogasoftware.odt.invehicledevice.test.util;
 
+import java.util.LinkedList;
 import java.util.List;
+
+import junit.framework.AssertionFailedError;
 
 import android.content.Context;
 import android.test.ActivityInstrumentationTestCase2;
 
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
+import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.test.util.datasource.DummyDataSource;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.webapi.WebAPIException;
@@ -13,6 +17,24 @@ import com.kogasoftware.odt.webapi.model.OperationSchedule;
 
 public class TestUtilTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
+
+	static List<NoGCTestClass> instances = new LinkedList<NoGCTestClass>();
+
+	static class NoGCTestClass {
+		NoGCTestClass() {
+			instances.add(this);
+		}
+	};
+
+	static class BigTestClass {
+		String message = "hello";
+		byte[] payload = new byte[5000];
+	};
+
+	static class SmallTestClass {
+		String message = "hello";
+		byte[] payload = new byte[50];
+	}
 
 	private static final String TAG = TestUtilTestCase.class.getSimpleName();
 
@@ -44,21 +66,6 @@ public class TestUtilTestCase extends
 	}
 
 	public void callTestWaitForStartUi(Boolean timeout) throws Exception {
-		DataSource ds = new DummyDataSource();
-		if (timeout) {
-			ds = new DummyDataSource() {
-				@Override
-				public List<OperationSchedule> getOperationSchedules()
-						throws WebAPIException {
-					throw new WebAPIException("test");
-				}
-			};
-		}
-
-		TestUtil.clearStatus();
-		TestUtil.setDataSource(ds);
-		a = getActivity();
-		assertEquals(!timeout, TestUtil.waitForStartUI(a).booleanValue());
 	}
 
 	public void testWaitForStartUi1() throws Exception {
@@ -92,4 +99,20 @@ public class TestUtilTestCase extends
 	public void testWaitForStartUi4Timeout() throws Exception {
 		callTestWaitForStartUi(true);
 	}
+
+	public void testAssertEmptyObject() throws Exception {
+		Context c = getInstrumentation().getContext();
+		TestUtil.assertEmptyObject(c, SmallTestClass.class);
+		TestUtil.assertEmptyObject(c, SmallTestClass.class, true);
+		TestUtil.assertEmptyObject(c, BigTestClass.class, true);
+		instances.clear();
+		try {
+			TestUtil.assertEmptyObject(c, NoGCTestClass.class, true);
+			fail();
+		} catch (AssertionFailedError e) {
+		} finally {
+			instances.clear();
+		}
+	}
 }
+

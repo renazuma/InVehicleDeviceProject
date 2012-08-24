@@ -242,9 +242,9 @@ public class TestUtil {
 		assertEmptyObject(context, c, false);
 	}
 	
-	public static <T> void assertEmptyObject(Context context, Class<T> c, Boolean largeObject)
+	public static <T> void assertEmptyObject(Context context, Class<T> c, Boolean bigObject)
 			throws Exception {
-		WeakHashMap<T, Integer> whm = createManyEmptyObjectAndCheckMemory(context, c, largeObject ? 20 * 1024 : 200 * 1024);
+		WeakHashMap<T, Integer> whm = createManyEmptyObjectAndCheckMemory(context, c, bigObject ? (1 << 12) : (1 << 17));
 		
 		// 自動でGCされるかを確認
 		Stopwatch sw = new Stopwatch().start();
