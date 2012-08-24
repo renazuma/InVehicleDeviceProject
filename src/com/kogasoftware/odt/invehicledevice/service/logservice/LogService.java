@@ -2,6 +2,8 @@ package com.kogasoftware.odt.invehicledevice.service.logservice;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -19,6 +21,8 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.google.common.io.Closeables;
+import com.google.common.io.NullOutputStream;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 import com.kogasoftware.odt.invehicledevice.ui.activity.StartupActivity;
 
@@ -57,7 +61,9 @@ public class LogService extends Service {
 		}
 	};
 	private Thread logcatThread = new EmptyThread();
+	private OutputStream logcatOutputStream = new NullOutputStream();
 	private Thread dropboxThread = new EmptyThread();
+	private OutputStream dropboxOutputStream = new NullOutputStream();
 	private Thread compressThread = new EmptyThread();
 	private Thread uploadThread = new EmptyThread();
 
@@ -70,8 +76,22 @@ public class LogService extends Service {
 				Environment.getExternalStorageDirectory() + s + ".odt" + s
 						+ "log");
 
-		logcatThread = new LogcatThread(this, dataDirectory, rawLogFiles);
-		dropboxThread = new DropBoxThread(this, dataDirectory, rawLogFiles);
+		try {
+			logcatOutputStream = new SplitFileOutputStream(
+					dataDirectory, "logcat", rawLogFiles);
+			dropboxOutputStream = new SplitFileOutputStream(
+					dataDirectory, "dropbox", rawLogFiles);
+		} catch (IOException e) {
+			Log.wtf(TAG, e);
+			Closeables.closeQuietly(logcatOutputStream);
+			Closeables.closeQuietly(dropboxOutputStream);
+			// ログが出力できない致命的なエラーのため、サービスをクラッシュさせ再起動させる
+			throw new RuntimeException("can't create log");
+		}
+
+		logcatThread = new LogcatThread(logcatOutputStream);
+		dropboxThread = new DropBoxThread(dropboxOutputStream, this);
+
 		compressThread = new CompressThread(this, dataDirectory, rawLogFiles,
 				compressedLogFiles);
 		uploadThread = new UploadThread(this, dataDirectory, compressedLogFiles);
@@ -79,8 +99,9 @@ public class LogService extends Service {
 		IntentFilter intentFilter = new IntentFilter();
 		intentFilter.addAction(ACTION_SEND_LOG);
 		registerReceiver(sendLogBroadcastReceiver, intentFilter);
-		
-		// @see http://stackoverflow.com/questions/3687200/implement-startforeground-method-in-android
+
+		// @see
+		// http://stackoverflow.com/questions/3687200/implement-startforeground-method-in-android
 		// The intent to launch when the user clicks the expanded notification
 		Intent notificationIntent = new Intent(this, StartupActivity.class);
 		notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -154,6 +175,8 @@ public class LogService extends Service {
 		dropboxThread.interrupt();
 		compressThread.interrupt();
 		uploadThread.interrupt();
+		Closeables.closeQuietly(logcatOutputStream);
+		Closeables.closeQuietly(dropboxOutputStream);
 		unregisterReceiver(sendLogBroadcastReceiver);
 	}
 

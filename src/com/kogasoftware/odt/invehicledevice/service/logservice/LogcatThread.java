@@ -1,22 +1,20 @@
 package com.kogasoftware.odt.invehicledevice.service.logservice;
 
 import java.io.Closeable;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.BlockingQueue;
-
-import android.content.Context;
+import java.io.OutputStream;
 import android.util.Log;
 
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyCloseable;
 
-public class LogcatThread extends LogCollectorThread {
+public class LogcatThread extends Thread {
 	private static final String TAG = LogcatThread.class.getSimpleName();
 	public static final Integer CHECK_INTERVAL = 2000;
 	private volatile Closeable processCloser = new EmptyCloseable();
+	private final OutputStream outputStream;
 
 	public void interrupt() {
 		super.interrupt();
@@ -34,9 +32,8 @@ public class LogcatThread extends LogCollectorThread {
 		}
 	}
 
-	public LogcatThread(Context context, File dataDirectory,
-			BlockingQueue<File> rawLogFiles) {
-		super(context, dataDirectory, rawLogFiles, "logcat");
+	public LogcatThread(OutputStream outputStream) {
+		this.outputStream = outputStream;
 	}
 
 	@Override
@@ -52,7 +49,7 @@ public class LogcatThread extends LogCollectorThread {
 			};
 			InputStream inputStream = process.getInputStream();
 			try {
-				ByteStreams.copy(inputStream, getOutputStream());
+				ByteStreams.copy(inputStream, outputStream);
 			} catch (IOException e) {
 				Log.w(TAG, e);
 			} finally {
