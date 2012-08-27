@@ -62,32 +62,7 @@ public class StartupService extends Service {
 			Log.i(TAG, "waiting for startup enabled");
 			return;
 		}
-		
-		// SharedPreferencesの読み取りがファイルIOになるので、サブスレッドで読み取るようにする
-		AsyncTask<Void,Void,Boolean> asyncTask = new AsyncTask<Void, Void, Boolean>() {
-			@Override
-			protected Boolean doInBackground(Void... params) {
-				SharedPreferences preferences = PreferenceManager
-						.getDefaultSharedPreferences(StartupService.this);
-				return preferences.getBoolean(SharedPreferencesKeys.INITIALIZED, false);
-			}
-			
-			@Override
-			protected void onPostExecute(Boolean initialized) {
-				if (isCancelled() || initialized == null) {
-					return;
-				} else if (!initialized) {
-					BigToast.makeText(StartupService.this, "初期設定が見つかりません。設定アプリケーションを利用し初期設定を行なってください。",
-							Toast.LENGTH_LONG).show();
-					return;
-				}
-				checkDeviceAndStartActivityAfterInitialized();
-			}
-		};
-		asyncTask.execute();
-	}
 
-	private void checkDeviceAndStartActivityAfterInitialized() {
 		if (Settings.System.getInt(getContentResolver(),
 				Settings.System.AIRPLANE_MODE_ON, 0) != 0) {
 			BigToast.makeText(this, "機内モードが有効になっています。機内モードを無効にしてください。",

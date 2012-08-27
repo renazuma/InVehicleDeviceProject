@@ -2,13 +2,13 @@ package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.back
 
 import java.util.concurrent.Semaphore;
 
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+import android.content.Intent;
 
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
+import com.kogasoftware.odt.invehicledevice.service.logservice.UploadThread;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.ServiceProvider;
@@ -37,14 +37,14 @@ public class ServiceProviderReceiveThread extends Thread implements
 				localData.serviceProviderInitializedSign.release();
 			}
 		});
-		// ログアップロード用のサービスに渡すのに、SharedPreferencesを使う
-		SharedPreferences.Editor editor = PreferenceManager
-				.getDefaultSharedPreferences(service).edit();
-		editor.putString(SharedPreferencesKeys.AWS_ACCESS_KEY_ID,
-				serviceProvider.getLogAccessKeyIdAws().or(""));
-		editor.putString(SharedPreferencesKeys.AWS_SECRET_ACCESS_KEY,
-				serviceProvider.getLogSecretAccessKeyAws().or(""));
-		editor.commit();
+
+		// ログアップロード用のサービスに認証情報を送信
+		Intent intent = new Intent(UploadThread.ACTION_UPDATE_CREDENTIALS);
+		intent.putExtra(SharedPreferencesKeys.AWS_ACCESS_KEY_ID,
+				serviceProvider.getLogAccessKeyIdAws());
+		intent.putExtra(SharedPreferencesKeys.AWS_SECRET_ACCESS_KEY,
+				serviceProvider.getLogSecretAccessKeyAws());
+		service.sendBroadcast(intent);
 	}
 
 	private void receive() {

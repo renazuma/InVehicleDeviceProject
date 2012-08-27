@@ -17,9 +17,7 @@ import org.apache.commons.lang3.SerializationException;
 import org.apache.commons.lang3.SerializationUtils;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Environment;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.common.cache.Cache;
@@ -27,7 +25,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
 import com.google.common.cache.Weigher;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 import com.kogasoftware.openjtalk.OpenJTalk;
 
 /**
@@ -136,23 +133,10 @@ public class VoiceCache {
 		openJTalk = new OpenJTalk(voiceDirectory, dictionaryDirectory,
 				libraryDirectory);
 
-		SharedPreferences preferences = PreferenceManager
-				.getDefaultSharedPreferences(context);
-		Boolean clear = preferences.getBoolean(
-				SharedPreferencesKeys.CLEAR_VOICE_CACHE, false);
-		if (clear) {
-			SharedPreferences.Editor editor = preferences.edit();
-			editor.putBoolean(SharedPreferencesKeys.CLEAR_VOICE_CACHE, false);
-			editor.commit();
-			if (instanceStateFile.exists() && !instanceStateFile.delete()) {
-				throw new IOException("!\"" + instanceStateFile + "\".delete()");
-			}
-		} else {
-			InstanceState instanceState = loadInstanceState(instanceStateFile);
-			sequence.set(instanceState.sequence.get());
-			for (Entry<String, File> entry : instanceState.map.entrySet()) {
-				cache.put(entry.getKey(), entry.getValue());
-			}
+		InstanceState instanceState = loadInstanceState(instanceStateFile);
+		sequence.set(instanceState.sequence.get());
+		for (Entry<String, File> entry : instanceState.map.entrySet()) {
+			cache.put(entry.getKey(), entry.getValue());
 		}
 	}
 

@@ -12,7 +12,6 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.DropBoxManager;
-import android.preference.PreferenceManager;
 import android.util.Base64;
 import android.util.Base64OutputStream;
 import android.util.Log;
@@ -26,6 +25,7 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVeh
 public class DropBoxThread extends Thread {
 	private static final String LAST_CHECKED_DATE_KEY = "last_checked_date_key";
 	private static final String TAG = DropBoxThread.class.getSimpleName();
+	private static final String SHARED_PREFERENCES_NAME = DropBoxThread.class.getSimpleName() + ".sharedpreferences";
 	private static final String[] DROPBOX_TAGS = { "APANIC_CONSOLE",
 			"APANIC_THREADS", "BATTERY_DISCHARGE_INFO", "SYSTEM_BOOT",
 			"SYSTEM_LAST_KMSG", "SYSTEM_RECOVERY_LOG", "SYSTEM_RESTART",
@@ -99,9 +99,7 @@ public class DropBoxThread extends Thread {
 	 * DropBoxManagerを最後にチェックした日付を取得する。 ただし、指定日数以上前の場合は、指定日数前に丸める。
 	 */
 	@VisibleForTesting
-	public static Date getLastCheckDate(Context context) {
-		SharedPreferences sharedPreferences = PreferenceManager
-				.getDefaultSharedPreferences(context);
+	public static Date getLastCheckDate(SharedPreferences sharedPreferences) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(InVehicleDeviceService.getDate());
 		calendar.add(Calendar.DAY_OF_MONTH, -LAST_CHECK_DATE_LIMIT_DAYS);
@@ -119,9 +117,8 @@ public class DropBoxThread extends Thread {
 	@Override
 	public void run() {
 		Log.i(TAG, "start");
-		Date lastCheckDate = getLastCheckDate(context);
-		SharedPreferences sharedPreferences = PreferenceManager
-				.getDefaultSharedPreferences(context);
+		SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+		Date lastCheckDate = getLastCheckDate(sharedPreferences);
 		try {
 			while (true) {
 				Date nextCheckDate = new Date();

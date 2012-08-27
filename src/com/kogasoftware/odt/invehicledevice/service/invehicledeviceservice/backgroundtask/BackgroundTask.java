@@ -17,12 +17,14 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
@@ -33,6 +35,7 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Local
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 import com.kogasoftware.odt.invehicledevice.service.startupservice.StartupService;
 import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
+import com.kogasoftware.odt.invehicledevice.ui.BigToast;
 
 /**
  * バックグランドでの処理を管理するクラス
@@ -145,8 +148,8 @@ public class BackgroundTask {
 
 		IntentFilter batteryIntentFilter = new IntentFilter();
 		batteryIntentFilter.addAction(Intent.ACTION_BATTERY_CHANGED);
-		applicationContext.registerReceiver(
-				batteryBroadcastReceiver, batteryIntentFilter);
+		applicationContext.registerReceiver(batteryBroadcastReceiver,
+				batteryIntentFilter);
 
 		ErrorReporter errorReporter = ErrorReporter.getInstance();
 		try {
@@ -159,11 +162,21 @@ public class BackgroundTask {
 			return;
 		}
 
-		Thread.sleep(0); // スレッド終了中にlocationNotifier.start()を呼ぶとエラーログが出るため、直前に割り込み可能なsleep()を置く
-		locationNotifier.start();
-
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(service);
+		Boolean initialized = preferences.getBoolean(
+				SharedPreferencesKeys.INITIALIZED, false);
+		if (!initialized) {
+			Log.w(TAG, "!SharedPreferences.getBoolean(SharedPreferencesKeys.INITIALIZED, false)");
+			BigToast.makeText(service.getApplicationContext(),
+					"初期設定が見つかりません。設定アプリケーションを利用し初期設定を行なってください。",
+					Toast.LENGTH_LONG).show();
+			myLooper.quit();
+			return;
+		}
+
+		locationNotifier.start();
+
 		String url = preferences.getString(SharedPreferencesKeys.SERVER_URL,
 				WebAPIDataSource.DEFAULT_URL);
 		String token = preferences.getString(
@@ -186,7 +199,7 @@ public class BackgroundTask {
 
 		operationScheduleReceiveThread.start();
 		serviceProviderReceiveThread.start();
-		
+
 		if (!service.isOperationInitialized()) {
 			service.startNewOperation();
 			service.waitForOperationInitialize();
@@ -232,7 +245,7 @@ public class BackgroundTask {
 
 		service.startService(new Intent(service, StartupService.class));
 		service.startService(new Intent(service, VoiceService.class));
-		
+
 		try {
 			executorService.scheduleWithFixedDelay(vehicleNotificationReceiver,
 					0, POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
@@ -258,14 +271,12 @@ public class BackgroundTask {
 		sensorManager.unregisterListener(orientationSensorEventListener);
 		// sensorManager.unregisterListener(accMagSensorEventListener);
 		try {
-			applicationContext.unregisterReceiver(
-					exitBroadcastReceiver);
+			applicationContext.unregisterReceiver(exitBroadcastReceiver);
 		} catch (IllegalArgumentException e) {
 			Log.i(TAG, "unregisterReceiver(exitBroadcastReceiver) failed", e);
 		}
 		try {
-			applicationContext.unregisterReceiver(
-					batteryBroadcastReceiver);
+			applicationContext.unregisterReceiver(batteryBroadcastReceiver);
 		} catch (IllegalArgumentException e) {
 			Log.i(TAG, "unregisterReceiver(batteryBroadcastReceiver) failed", e);
 		}

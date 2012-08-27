@@ -3,9 +3,12 @@ package com.kogasoftware.odt.invehicledevice.service.logservice;
 import java.io.File;
 import java.util.concurrent.BlockingQueue;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+import android.os.Bundle;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
@@ -15,14 +18,44 @@ import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.google.common.base.Strings;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 
 public class UploadThread extends Thread {
 	private static final String TAG = UploadThread.class.getSimpleName();
+	private static final String SHARED_PREFERENCES_NAME = UploadThread.class
+			.getSimpleName() + ".sharedpreferences";
+	public static final String ACTION_UPDATE_CREDENTIALS = UploadThread.class
+			.getSimpleName() + ".ACTION_UPDATE_CREDENTIALS";
 	private final Context context;
 	private final BlockingQueue<File> compressedLogFiles;
 	private final String deviceId;
 	private final String bucket = "odt-android";
+	private final BroadcastReceiver updateCredentialsBroadcastReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if (intent == null) {
+				Log.w(TAG, "onReceive intent == null");
+				return;
+			}
+			Bundle extras = intent.getExtras();
+			if (extras == null) {
+				Log.w(TAG, "onReceive intent.getExtras() == null");
+				return;
+			}
+			SharedPreferences.Editor editor = context.getSharedPreferences(
+					SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
+			editor.putString(
+					SharedPreferencesKeys.AWS_ACCESS_KEY_ID,
+					Strings.nullToEmpty(extras
+							.getString(SharedPreferencesKeys.AWS_ACCESS_KEY_ID)));
+			editor.putString(
+					SharedPreferencesKeys.AWS_SECRET_ACCESS_KEY,
+					Strings.nullToEmpty(extras
+							.getString(SharedPreferencesKeys.AWS_SECRET_ACCESS_KEY)));
+			editor.apply();
+		}
+	};
 
 	public UploadThread(Context context, File dataDirectory,
 			BlockingQueue<File> compressedLogFiles) {
@@ -36,11 +69,11 @@ public class UploadThread extends Thread {
 	private AWSCredentials getAWSCredentials() throws InterruptedException {
 		while (true) {
 			Thread.sleep(5000);
-			SharedPreferences preferences = PreferenceManager
-					.getDefaultSharedPreferences(context);
-			String accessKeyId = preferences.getString(
+			SharedPreferences sharedPreferences = context.getSharedPreferences(
+					SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+			String accessKeyId = sharedPreferences.getString(
 					SharedPreferencesKeys.AWS_ACCESS_KEY_ID, "");
-			String secretAccessKey = preferences.getString(
+			String secretAccessKey = sharedPreferences.getString(
 					SharedPreferencesKeys.AWS_SECRET_ACCESS_KEY, "");
 			if (accessKeyId.isEmpty() || secretAccessKey.isEmpty()) {
 				continue;
@@ -78,25 +111,33 @@ public class UploadThread extends Thread {
 	@Override
 	public void run() {
 		Log.i(TAG, "start");
-		while (true) {
-			try {
-				Thread.sleep(5000);
-				AmazonS3Client s3Client = new AmazonS3Client(
-						getAWSCredentials());
+		IntentFilter intentFilter = new IntentFilter();
+		intentFilter.addAction(ACTION_UPDATE_CREDENTIALS);
+		context.registerReceiver(updateCredentialsBroadcastReceiver,
+				intentFilter);
+		try {
+			while (true) {
 				try {
-					while (true) {
-						uploadOneFile(s3Client);
+					Thread.sleep(5000);
+					AmazonS3Client s3Client = new AmazonS3Client(
+							getAWSCredentials());
+					try {
+						while (true) {
+							uploadOneFile(s3Client);
+						}
+					} finally {
+						s3Client.shutdown();
 					}
-				} finally {
-					s3Client.shutdown();
+				} catch (InterruptedException e) {
+					break;
+				} catch (AmazonServiceException e) {
+					Log.w(TAG, e);
+				} catch (AmazonClientException e) {
+					Log.w(TAG, e);
 				}
-			} catch (InterruptedException e) {
-				break;
-			} catch (AmazonServiceException e) {
-				Log.w(TAG, e);
-			} catch (AmazonClientException e) {
-				Log.w(TAG, e);
 			}
+		} finally {
+			context.unregisterReceiver(updateCredentialsBroadcastReceiver);
 		}
 		Log.i(TAG, "exit");
 	}
