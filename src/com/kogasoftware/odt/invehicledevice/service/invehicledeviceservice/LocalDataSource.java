@@ -91,7 +91,9 @@ public class LocalDataSource implements Closeable {
 					Thread.sleep(savePeriodMillis);
 				}
 			} catch (InterruptedException e) {
-				save(); // アプリ終了時は必ずsaveを行う
+				if (saveSemaphore.tryAcquire()) {
+					save(); // アプリ終了時、saveSemaphoreがacquire可能の場合は必ずsaveを行う
+				}
 			}
 		}
 	}
