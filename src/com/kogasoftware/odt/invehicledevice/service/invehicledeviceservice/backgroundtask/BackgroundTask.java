@@ -178,9 +178,9 @@ public class BackgroundTask {
 			editor.putBoolean(SharedPreferencesKeys.CLEAR_WEBAPI_BACKUP, false);
 			editor.commit();
 		}
-		DataSource dataSource = DataSourceFactory.newInstance(url, token,
+		DataSource remoteDataSource = DataSourceFactory.newInstance(url, token,
 				webAPIBackupFile);
-		service.setRemoteDataSource(dataSource);
+		service.setRemoteDataSource(remoteDataSource);
 		LocalDataSource localDataSource = new LocalDataSource(service);
 		service.setLocalDataSource(localDataSource);
 
