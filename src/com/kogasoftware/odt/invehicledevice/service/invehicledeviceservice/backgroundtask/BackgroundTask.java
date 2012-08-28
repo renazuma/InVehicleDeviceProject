@@ -158,7 +158,6 @@ public class BackgroundTask {
 		} catch (IllegalMonitorStateException e) {
 			Log.w(TAG, e);
 			myLooper.quit();
-			service.exit();
 			return;
 		}
 
