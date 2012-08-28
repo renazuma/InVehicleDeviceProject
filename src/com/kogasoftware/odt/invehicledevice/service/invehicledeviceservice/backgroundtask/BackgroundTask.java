@@ -141,16 +141,6 @@ public class BackgroundTask {
 			ExecutionException {
 		Log.i(TAG, "onLoopStart()");
 
-		IntentFilter exitIntentFilter = new IntentFilter();
-		exitIntentFilter.addAction(Broadcasts.ACTION_EXIT);
-		applicationContext.registerReceiver(exitBroadcastReceiver,
-				exitIntentFilter);
-
-		IntentFilter batteryIntentFilter = new IntentFilter();
-		batteryIntentFilter.addAction(Intent.ACTION_BATTERY_CHANGED);
-		applicationContext.registerReceiver(batteryBroadcastReceiver,
-				batteryIntentFilter);
-
 		ErrorReporter errorReporter = ErrorReporter.getInstance();
 		try {
 			errorReporter.handleSilentException(new Throwable(
@@ -174,8 +164,6 @@ public class BackgroundTask {
 			return;
 		}
 
-		locationNotifier.start();
-
 		String url = preferences.getString(SharedPreferencesKeys.SERVER_URL,
 				WebAPIDataSource.DEFAULT_URL);
 		String token = preferences.getString(
@@ -195,6 +183,18 @@ public class BackgroundTask {
 		service.setRemoteDataSource(dataSource);
 		LocalDataSource localDataSource = new LocalDataSource(service);
 		service.setLocalDataSource(localDataSource);
+
+		IntentFilter exitIntentFilter = new IntentFilter();
+		exitIntentFilter.addAction(Broadcasts.ACTION_EXIT);
+		applicationContext.registerReceiver(exitBroadcastReceiver,
+				exitIntentFilter);
+
+		IntentFilter batteryIntentFilter = new IntentFilter();
+		batteryIntentFilter.addAction(Intent.ACTION_BATTERY_CHANGED);
+		applicationContext.registerReceiver(batteryBroadcastReceiver,
+				batteryIntentFilter);
+
+		locationNotifier.start();
 
 		operationScheduleReceiveThread.start();
 		serviceProviderReceiveThread.start();
