@@ -69,9 +69,9 @@ public class InVehicleDeviceApplication extends Application {
 	protected void enableStrictMode() {
 		if (BuildConfig.DEBUG) {
 			StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-					.detectAll().penaltyLog().build());
+					.detectAll().penaltyLog().penaltyDropBox().build());
 			StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-					.detectAll().penaltyLog().penaltyDeath().build());
+					.detectAll().penaltyLog().penaltyDropBox().penaltyDeath().build());
 			Log.i(TAG, "StrictMode enabled");
 		}
 	}
