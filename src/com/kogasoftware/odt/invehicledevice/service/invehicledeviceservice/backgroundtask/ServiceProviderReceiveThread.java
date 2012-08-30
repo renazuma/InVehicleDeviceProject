@@ -41,9 +41,9 @@ public class ServiceProviderReceiveThread extends Thread implements
 		// ログアップロード用のサービスに認証情報を送信
 		Intent intent = new Intent(UploadThread.ACTION_UPDATE_CREDENTIALS);
 		intent.putExtra(SharedPreferencesKeys.AWS_ACCESS_KEY_ID,
-				serviceProvider.getLogAccessKeyIdAws());
+				serviceProvider.getLogAccessKeyIdAws().or(""));
 		intent.putExtra(SharedPreferencesKeys.AWS_SECRET_ACCESS_KEY,
-				serviceProvider.getLogSecretAccessKeyAws());
+				serviceProvider.getLogSecretAccessKeyAws().or(""));
 		service.sendBroadcast(intent);
 	}
 
