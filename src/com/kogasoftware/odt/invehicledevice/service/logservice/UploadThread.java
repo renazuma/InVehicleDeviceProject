@@ -33,27 +33,34 @@ public class UploadThread extends Thread {
 	private final String bucket = "odt-android";
 	private final BroadcastReceiver updateCredentialsBroadcastReceiver = new BroadcastReceiver() {
 		@Override
-		public void onReceive(Context context, Intent intent) {
+		public void onReceive(final Context context, Intent intent) {
 			if (intent == null) {
 				Log.w(TAG, "onReceive intent == null");
 				return;
 			}
-			Bundle extras = intent.getExtras();
+			final Bundle extras = intent.getExtras();
 			if (extras == null) {
 				Log.w(TAG, "onReceive intent.getExtras() == null");
 				return;
 			}
-			SharedPreferences.Editor editor = context.getSharedPreferences(
-					SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
-			editor.putString(
-					SharedPreferencesKeys.AWS_ACCESS_KEY_ID,
-					Strings.nullToEmpty(extras
-							.getString(SharedPreferencesKeys.AWS_ACCESS_KEY_ID)));
-			editor.putString(
-					SharedPreferencesKeys.AWS_SECRET_ACCESS_KEY,
-					Strings.nullToEmpty(extras
-							.getString(SharedPreferencesKeys.AWS_SECRET_ACCESS_KEY)));
-			editor.apply();
+			Thread saveThread = new Thread() {
+				@Override
+				public void run() {
+					SharedPreferences.Editor editor = context
+							.getSharedPreferences(SHARED_PREFERENCES_NAME,
+									Context.MODE_PRIVATE).edit();
+					editor.putString(
+							SharedPreferencesKeys.AWS_ACCESS_KEY_ID,
+							Strings.nullToEmpty(extras
+									.getString(SharedPreferencesKeys.AWS_ACCESS_KEY_ID)));
+					editor.putString(
+							SharedPreferencesKeys.AWS_SECRET_ACCESS_KEY,
+							Strings.nullToEmpty(extras
+									.getString(SharedPreferencesKeys.AWS_SECRET_ACCESS_KEY)));
+					editor.apply();
+				}
+			};
+			saveThread.start();
 		}
 	};
 
