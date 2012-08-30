@@ -1,17 +1,20 @@
 package com.kogasoftware.odt.invehicledevice.empty;
 
+import android.os.Build;
+
 /** FindBugs警告避け用クラス */
 public class EmptyThread extends Thread {
 	public EmptyThread() {
 		super();
-		super.start(); // Android2.3ではstart()していないThreadは非常にGCされにくいようなので、start()しておく(EmptyThreadTestCaseも参照)
+		if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.GINGERBREAD_MR1) {
+			super.start(); // Android2.3以前ではstart()していないThreadは非常にGCされにくいようなので、start()しておく(EmptyThreadTestCaseも参照)	
+		}
 	}
-	
+
 	@Override
 	public void start() {
-		// コンストラクタでsuper.start()が呼ばれているため、二重起動を防ぐため親のメソッドを呼ばないようにする
 	}
-	
+
 	@Override
 	public void run() {
 	}
