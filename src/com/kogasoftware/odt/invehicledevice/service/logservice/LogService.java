@@ -3,7 +3,6 @@ package com.kogasoftware.odt.invehicledevice.service.logservice;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -21,8 +20,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.google.common.io.Closeables;
-import com.google.common.io.NullOutputStream;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 import com.kogasoftware.odt.invehicledevice.ui.activity.StartupActivity;
 
@@ -61,9 +58,7 @@ public class LogService extends Service {
 		}
 	};
 	private Thread logcatThread = new EmptyThread();
-	private OutputStream logcatOutputStream = new NullOutputStream();
 	private Thread dropboxThread = new EmptyThread();
-	private OutputStream dropboxOutputStream = new NullOutputStream();
 	private Thread compressThread = new EmptyThread();
 	private Thread uploadThread = new EmptyThread();
 
@@ -77,20 +72,17 @@ public class LogService extends Service {
 						+ "log");
 
 		try {
-			logcatOutputStream = new SplitFileOutputStream(
-					dataDirectory, "logcat", rawLogFiles);
-			dropboxOutputStream = new SplitFileOutputStream(
-					dataDirectory, "dropbox", rawLogFiles);
+			logcatThread = new LogcatThread(new SplitFileOutputStream(
+					dataDirectory, "logcat", rawLogFiles));
+			dropboxThread = new DropBoxThread(this, new SplitFileOutputStream(
+					dataDirectory, "dropbox", rawLogFiles));
 		} catch (IOException e) {
 			Log.wtf(TAG, e);
-			Closeables.closeQuietly(logcatOutputStream);
-			Closeables.closeQuietly(dropboxOutputStream);
+			logcatThread.interrupt();
+			dropboxThread.interrupt();
 			// ログが出力できない致命的なエラーのため、サービスをクラッシュさせ再起動させる
 			throw new RuntimeException("can't create log");
 		}
-
-		logcatThread = new LogcatThread(logcatOutputStream);
-		dropboxThread = new DropBoxThread(dropboxOutputStream, this);
 
 		compressThread = new CompressThread(this, dataDirectory, rawLogFiles,
 				compressedLogFiles);
@@ -175,8 +167,6 @@ public class LogService extends Service {
 		dropboxThread.interrupt();
 		compressThread.interrupt();
 		uploadThread.interrupt();
-		Closeables.closeQuietly(logcatOutputStream);
-		Closeables.closeQuietly(dropboxOutputStream);
 		unregisterReceiver(sendLogBroadcastReceiver);
 	}
 
