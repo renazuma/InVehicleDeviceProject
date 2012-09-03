@@ -25,5 +25,7 @@ local.properties
 debug.keystore
 release.keystore
 
+src/com/kogasoftware/odt/invehicledevice/service
+
 open_jtalk
 *_GIT_IGNORE_*
