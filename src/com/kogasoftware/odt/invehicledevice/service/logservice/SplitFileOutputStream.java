@@ -56,8 +56,7 @@ public class SplitFileOutputStream extends OutputStream {
 				return;
 			}
 			File newFile = getNewFile();
-			OutputStream newOutputStream = new FileOutputStream(newFile); // ここで例外が発生するので、ここまでの時点でメンバ変数の更新はしない
-
+			OutputStream newOutputStream = new FileOutputStream(newFile);
 			try {
 				currentOutputStream.flush();
 			} catch (IOException e) {
@@ -68,6 +67,8 @@ public class SplitFileOutputStream extends OutputStream {
 			} catch (IOException e) {
 				Log.w(TAG, e);
 			}
+
+			// 以下の処理はメンバの更新になるため、例外などで中断されないように注意する
 			outputFiles.add(currentFile);
 			currentFile = newFile;
 			currentOutputStream = newOutputStream;
