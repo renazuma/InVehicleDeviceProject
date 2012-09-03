@@ -7,12 +7,14 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
+
 import android.util.Log;
 
-import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Stopwatch;
 import com.google.common.io.NullOutputStream;
+import com.google.common.util.concurrent.Uninterruptibles;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyFile;
-import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 
 /**
  * writeされたデータをファイルに分割して保存するOutputStream
@@ -20,82 +22,50 @@ import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 public class SplitFileOutputStream extends OutputStream {
 	private static final String TAG = SplitFileOutputStream.class
 			.getSimpleName();
-	private static final Integer DEFAULT_TIMEOUT_SECONDS = 60 * 60;
-	private static final Integer DEFAULT_MAX_BYTES = 2 * 1024 * 1024;
 	private final Object memberAccessLock = new Object(); // メンバアクセス時には必ずこれを使ってロックを行う
 	private final File baseDirectory;
 	private final String baseFileName;
 	private final BlockingQueue<File> outputFiles;
-	private final Integer maxBytes;
-	private final Runnable timeout;
-	private volatile Thread timeoutThread = new EmptyThread();
-	private volatile Integer currentBytes = 0;
+	private final Stopwatch stopwatch = new Stopwatch();
+	private volatile Long count = 0L;
 	private volatile File currentFile = new EmptyFile();
 	private volatile OutputStream currentOutputStream = new NullOutputStream();
 
 	public SplitFileOutputStream(File baseDirectory, String baseFileName,
 			BlockingQueue<File> outputFiles) throws IOException {
-		this(baseDirectory, baseFileName, outputFiles, DEFAULT_TIMEOUT_SECONDS,
-				DEFAULT_MAX_BYTES);
-	}
-
-	@VisibleForTesting
-	public SplitFileOutputStream(File baseDirectory, String baseFileName,
-			BlockingQueue<File> outputFiles, final Integer timeoutSeconds,
-			Integer maxBytes) throws IOException {
 		super();
 		this.baseDirectory = baseDirectory;
 		this.baseFileName = baseFileName;
 		this.outputFiles = outputFiles;
-		this.maxBytes = maxBytes;
-		timeout = new Runnable() {
-			@Override
-			public void run() {
-				try {
-					while (true) {
-						Thread.sleep(timeoutSeconds * 1000);
-						try {
-							synchronized (memberAccessLock) {
-								if (currentBytes.equals(0)) {
-									continue;
-								}
-								changeFile();
-							}
-						} catch (IOException e) {
-							Log.e(TAG, e.toString(), e);
-						}
-					}
-				} catch (InterruptedException e) {
-				}
-			}
-		};
 		currentFile = getNewFile();
 		currentOutputStream = new FileOutputStream(currentFile);
-		resetTimeoutThread();
 	}
 
 	private File getNewFile() {
 		synchronized (memberAccessLock) {
-			String format = (new SimpleDateFormat("yyyyMMddHHmmss.SSS"))
-					.format(new Date());
-			return new File(baseDirectory, format + "_" + baseFileName + ".log");
+			while (true) {
+				String format = (new SimpleDateFormat("yyyyMMddHHmmss.SSS"))
+						.format(new Date());
+				File newFile = new File(baseDirectory, format + "_"
+						+ baseFileName + ".log");
+				if (newFile.exists()) {
+					Uninterruptibles.sleepUninterruptibly(50,
+							TimeUnit.MILLISECONDS);
+					continue;
+				}
+				return newFile;
+			}
 		}
 	}
 
-	private void resetTimeoutThread() {
+	public void split() throws IOException {
 		synchronized (memberAccessLock) {
-			timeoutThread.interrupt();
-			timeoutThread = new Thread(timeout);
-			timeoutThread.start();
-		}
-	}
-
-	private void changeFile() throws IOException {
-		synchronized (memberAccessLock) {
+			if (count.equals(0L)) {
+				return;
+			}
 			File newFile = getNewFile();
 			OutputStream newOutputStream = new FileOutputStream(newFile); // ここで例外が発生するので、ここまでの時点でメンバ変数の更新はしない
 
-			resetTimeoutThread();
 			try {
 				currentOutputStream.flush();
 			} catch (IOException e) {
@@ -109,23 +79,36 @@ public class SplitFileOutputStream extends OutputStream {
 			outputFiles.add(currentFile);
 			currentFile = newFile;
 			currentOutputStream = newOutputStream;
-			currentBytes = 0;
+			count = 0L;
+			stopwatch.reset();
 		}
 	}
 
 	@Override
-	public void write(int oneByte) throws IOException {
+	public void write(byte[] b, int off, int len) throws IOException {
 		synchronized (memberAccessLock) {
-			Log.i(TAG, currentBytes + "/" + maxBytes + " " + (char)oneByte + " " + currentFile);
-			currentBytes++;
-			currentOutputStream.write(oneByte);
-			// ファイルサイズがmaxBytesを超えたら、保存先ファイルを交換
-			if (currentBytes >= maxBytes) {
-				changeFile();
+			currentOutputStream.write(b, off, len);
+			if (count.equals(0L) && !stopwatch.isRunning()) {
+				stopwatch.start();
 			}
+			count += len;
 		}
 	}
-	
+
+	@Override
+	public void write(byte[] b) throws IOException {
+		synchronized (memberAccessLock) {
+			write(b, 0, b.length);
+		}
+	}
+
+	@Override
+	public void write(int b) throws IOException {
+		synchronized (memberAccessLock) {
+			write(new byte[] { (byte) b });
+		}
+	}
+
 	@Override
 	public void flush() throws IOException {
 		synchronized (memberAccessLock) {
@@ -137,7 +120,6 @@ public class SplitFileOutputStream extends OutputStream {
 	public void close() throws IOException {
 		try {
 			synchronized (memberAccessLock) {
-				timeoutThread.interrupt();
 				try {
 					try {
 						flush();
@@ -155,6 +137,18 @@ public class SplitFileOutputStream extends OutputStream {
 			}
 		} finally {
 			super.close();
+		}
+	}
+
+	public Long getCount() {
+		synchronized (memberAccessLock) {
+			return count;
+		}
+	}
+
+	public Long getElapsedMillisSinceFirstWrite() {
+		synchronized (memberAccessLock) {
+			return stopwatch.elapsedMillis();
 		}
 	}
 }
