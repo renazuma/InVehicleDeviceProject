@@ -41,20 +41,12 @@ public class SplitFileOutputStream extends OutputStream {
 		currentOutputStream = new FileOutputStream(currentFile);
 	}
 
-	private File getNewFile() {
+	private File getNewFile() throws IOException {
 		synchronized (memberAccessLock) {
-			while (true) {
-				String format = (new SimpleDateFormat("yyyyMMddHHmmss.SSS"))
-						.format(new Date());
-				File newFile = new File(baseDirectory, format + "_"
-						+ baseFileName + ".log");
-				if (newFile.exists()) {
-					Uninterruptibles.sleepUninterruptibly(50,
-							TimeUnit.MILLISECONDS);
-					continue;
-				}
-				return newFile;
-			}
+			String format = (new SimpleDateFormat("yyyyMMddHHmmss.SSS"))
+					.format(new Date());
+			return File.createTempFile(format + "_" + baseFileName + "_",
+					".log", baseDirectory);
 		}
 	}
 
