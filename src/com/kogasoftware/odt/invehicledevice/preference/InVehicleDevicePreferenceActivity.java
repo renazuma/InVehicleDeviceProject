@@ -134,13 +134,13 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 
 	@Override
 	public void onException(int reqKey, WebAPIException ex) {
-		api.abort(reqKey);
 		if (reqKey != latestReqKey) {
 			return;
 		}
 		if (callbackReceived.getAndSet(true)) {
 			return;
 		}
+		api.abort(reqKey);
 		final String message = "onException: reqKey=" + reqKey + ", exception="
 				+ ex;
 		Log.w(TAG, message, ex);
@@ -162,13 +162,13 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 
 	@Override
 	public void onFailed(int reqKey, int statusCode, String response) {
-		api.abort(reqKey);
 		if (reqKey != latestReqKey) {
 			return;
 		}
 		if (callbackReceived.getAndSet(true)) {
 			return;
 		}
+		api.abort(reqKey);
 		final String message = "onFailed: reqKey=" + reqKey + ", statusCode="
 				+ statusCode + " response=" + response;
 		Log.w(TAG, message);

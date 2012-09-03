@@ -1,9 +1,12 @@
 package com.kogasoftware.odt.invehicledevice.preference.test;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources.NotFoundException;
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.KeyEvent;
+import android.widget.Toast;
 
 import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
@@ -67,23 +70,67 @@ public class InVehicleDevicePreferenceTestCase extends
 		getInstrumentation().waitForIdleSync();
 	}
 
-	private void assertToast(boolean expected, int resourceId) {
+	private void assertToast(boolean expected, int resourceId) throws Exception {
+		assertToast(expected, getInstrumentation().getTargetContext()
+				.getResources().getString(resourceId));
+	}
+
+	private void assertToast(boolean show, String s) throws InterruptedException {
 		getInstrumentation().waitForIdleSync();
-		String s = getInstrumentation().getTargetContext().getResources()
-				.getString(resourceId);
 		boolean actual = false;
-		for (int i = 0; i < 5; ++i) {
-			if (solo.searchText(s, true)) {
-				actual = true;
+		int retry = 3;
+		
+		// searchTextの結果がshowと合うまで待つ
+		for (int i = 0; i < retry; ++i) {
+			actual = solo.searchText(s, true);
+			if (actual == show) {
 				break;
 			}
 		}
-		for (int i = 0; i < 5; ++i) {
-			if (!solo.searchText(s, true)) {
-				break;
-			}
+		
+		if (actual) {
+			// searchTextの結果がfalseになるまで待つ
+			for (int i = 0; i < retry; ++i) {
+				if (!solo.searchText(s, true)) {
+					break;
+				}
+			}	
 		}
-		assertEquals(expected, actual);
+		
+		assertEquals(show, actual);
+		if (!show) {
+			return;
+		}
+	}
+	
+	public void callTestAssertToast(final Context context, final int duration) throws Exception {
+		final String s1 = "あいうえお";
+		final String s2 = "かきくけこ";
+
+		getActivity().runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				Toast.makeText(context, s1, duration).show();
+			}
+		});
+		assertToast(true, s1);
+		assertToast(false, s1);
+		assertToast(false, s2);
+
+		getActivity().runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				Toast.makeText(context, "asdf" + s2 + "ASDF", duration).show();
+			}
+		});
+		assertToast(true, s2);
+		assertToast(false, s2);
+		assertToast(false, s1);
+	}
+	
+	public void testAssertToast() throws Exception {
+		callTestAssertToast(getInstrumentation().getTargetContext(), Toast.LENGTH_SHORT);
+		callTestAssertToast(getInstrumentation().getTargetContext(), Toast.LENGTH_LONG);
 	}
 
 	public void test不正なサーバーを入力() throws Exception {
@@ -94,12 +141,6 @@ public class InVehicleDevicePreferenceTestCase extends
 		solo.clickOnText(getInstrumentation().getTargetContext().getResources()
 				.getString(R.string.ok));
 		assertToast(true, R.string.an_error_occurred);
-		while (solo.searchText(getInstrumentation().getTargetContext()
-				.getResources().getString(R.string.an_error_occurred), true)) {
-			// Toastが消えるのを待つ
-			Thread.sleep(1000);
-		}
-
 		assertFalse(getActivity().isFinishing());
 	}
 
@@ -111,11 +152,6 @@ public class InVehicleDevicePreferenceTestCase extends
 		solo.clickOnText(getInstrumentation().getTargetContext().getResources()
 				.getString(R.string.ok));
 		assertToast(true, R.string.an_error_occurred);
-		while (solo.searchText(getInstrumentation().getTargetContext()
-				.getResources().getString(R.string.an_error_occurred), true)) {
-			// Toastが消えるのを待つ
-			Thread.sleep(1000);
-		}
 		assertFalse(getActivity().isFinishing());
 	}
 
@@ -208,6 +244,20 @@ public class InVehicleDevicePreferenceTestCase extends
 			}
 		}
 		fail();
+	}
+
+	public void testエラー内容が表示される() throws Exception {
+		setConnectionUrl("%%%%");
+		setLogin("foo");
+		setPassword("bar");
+		solo.clickOnText(getInstrumentation().getTargetContext().getResources()
+				.getString(R.string.ok));
+		assertToast(true, "Target host must not be null");
+		
+		setConnectionUrl("http://127.0.0.1:5432");
+		solo.clickOnText(getInstrumentation().getTargetContext().getResources()
+				.getString(R.string.ok));
+		assertToast(true, "refused");
 	}
 
 	@Override
