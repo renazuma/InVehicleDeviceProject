@@ -7,13 +7,10 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
-
 import android.util.Log;
 
 import com.google.common.base.Stopwatch;
 import com.google.common.io.NullOutputStream;
-import com.google.common.util.concurrent.Uninterruptibles;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyFile;
 
 /**

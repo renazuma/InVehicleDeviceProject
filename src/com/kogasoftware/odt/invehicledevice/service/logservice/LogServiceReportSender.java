@@ -3,6 +3,7 @@ package com.kogasoftware.odt.invehicledevice.service.logservice;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map.Entry;
@@ -19,19 +20,26 @@ import android.content.Intent;
 import android.os.Environment;
 import android.util.Log;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.io.Closeables;
+import com.kogasoftware.odt.invehicledevice.empty.EmptyFile;
 
 public class LogServiceReportSender implements ReportSender {
-	private static final String TAG = LogServiceReportSender.class.getSimpleName();
+	private static final String TAG = LogServiceReportSender.class
+			.getSimpleName();
 	private final File dataDirectory;
 	private final Context context;
 
 	public LogServiceReportSender(Context context) {
-		String s = File.separator;
+		this(context, new File(Environment.getExternalStorageDirectory()
+				+ File.separator + ".odt" + File.separator + "log"));
+	}
+
+	@VisibleForTesting
+	public LogServiceReportSender(Context context, File dataDirectory) {
 		this.context = context;
-		dataDirectory = new File(Environment.getExternalStorageDirectory() + s
-				+ ".odt" + s + "log");
+		this.dataDirectory = dataDirectory;
 	}
 
 	@Override
@@ -39,11 +47,31 @@ public class LogServiceReportSender implements ReportSender {
 			throws ReportSenderException {
 		String format = (new SimpleDateFormat("yyyyMMddHHmmss.SSS"))
 				.format(new Date());
-		File file = new File(dataDirectory, format + "_crashreport.log");
-		if (!dataDirectory.canWrite()) {
-			String message = "!\"" + dataDirectory + "\".canWrite()";
-			throw new ReportSenderException(message, new Throwable(message));
+		File file = new EmptyFile();
+		OutputStream fileOutputStream = null;
+		try {
+			file = File.createTempFile(format + "_crashreport", ".log",
+					dataDirectory);
+			fileOutputStream = new FileOutputStream(file);
+			fileOutputStream.write(getCrashReportJSONObject(crashReportData)
+					.toString().getBytes(Charsets.UTF_8));
+		} catch (IOException e) {
+			throw new ReportSenderException("IOException file=" + file
+					+ " dataDirectory=" + dataDirectory, e);
+		} finally {
+			Closeables.closeQuietly(fileOutputStream);
 		}
+
+		Log.i(TAG, "\"" + file + "\" saved");
+		Intent intent = new Intent(SendLogBroadcastReceiver.ACTION_SEND_LOG);
+		intent.putExtra(SendLogBroadcastReceiver.EXTRAS_KEY_LOG_FILE_NAME,
+				file.getAbsolutePath());
+		context.sendBroadcast(intent);
+	}
+
+	@VisibleForTesting
+	public static JSONObject getCrashReportJSONObject(
+			CrashReportData crashReportData) {
 		JSONObject jsonObject = new JSONObject();
 		for (Entry<ReportField, String> entry : crashReportData.entrySet()) {
 			try {
@@ -52,18 +80,6 @@ public class LogServiceReportSender implements ReportSender {
 				Log.w(TAG, e);
 			}
 		}
-		FileOutputStream fileOutputStream = null;
-		try {
-			fileOutputStream = new FileOutputStream(file);
-			fileOutputStream.write(jsonObject.toString().getBytes(Charsets.UTF_8));
-		} catch (IOException e) {
-			throw new ReportSenderException("IOException file=" + file, e);
-		} finally {
-			Closeables.closeQuietly(fileOutputStream);
-		}
-		Log.i(TAG, "\"" + file + "\" saved");
-		Intent intent = new Intent(LogService.ACTION_SEND_LOG);
-		intent.putExtra("file", file.getAbsolutePath());
-		context.sendBroadcast(intent);
+		return jsonObject;
 	}
 }

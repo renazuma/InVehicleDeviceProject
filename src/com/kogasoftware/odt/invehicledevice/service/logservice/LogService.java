@@ -10,11 +10,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
@@ -25,38 +22,12 @@ import com.kogasoftware.odt.invehicledevice.ui.activity.StartupActivity;
 
 public class LogService extends Service {
 	private static final String TAG = LogService.class.getSimpleName();
-	public static final String ACTION_SEND_LOG = LogService.class
-			.getSimpleName() + ".ACTION_SEND_LOG";
 	public static final long CHECK_DEVICE_INTERVAL_MILLIS = 10 * 1000;
 	public static final Integer FOREGROUND_NOTIFICATION_ID = 10;
 	private final BlockingQueue<File> rawLogFiles = new LinkedBlockingQueue<File>();
 	private final BlockingQueue<File> compressedLogFiles = new LinkedBlockingQueue<File>();
-	private final BroadcastReceiver sendLogBroadcastReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			if (intent == null) {
-				Log.w(TAG, "onReceive intent == null");
-				return;
-			}
-			Bundle extras = intent.getExtras();
-			if (extras == null) {
-				Log.w(TAG, "onReceive intent.getExtras() == null");
-				return;
-			}
-			String fileString = extras.getString("file");
-			if (fileString == null) {
-				Log.w(TAG, "onReceive intent.getExtras().getString() == null");
-				return;
-			}
-			File file = new File(fileString);
-			if (!file.exists()) {
-				Log.w(TAG, "!\"" + file + "\".exists()");
-				return;
-			}
-			Log.i(TAG, "\"" + file + "\" added");
-			rawLogFiles.add(file);
-		}
-	};
+	private final SendLogBroadcastReceiver sendLogBroadcastReceiver = new SendLogBroadcastReceiver(
+			rawLogFiles);
 	private Thread logcatThread = new EmptyThread();
 	private Thread dropboxThread = new EmptyThread();
 	private Thread compressThread = new EmptyThread();
@@ -88,9 +59,8 @@ public class LogService extends Service {
 				compressedLogFiles);
 		uploadThread = new UploadThread(this, dataDirectory, compressedLogFiles);
 
-		IntentFilter intentFilter = new IntentFilter();
-		intentFilter.addAction(ACTION_SEND_LOG);
-		registerReceiver(sendLogBroadcastReceiver, intentFilter);
+		registerReceiver(sendLogBroadcastReceiver, new IntentFilter(
+				SendLogBroadcastReceiver.ACTION_SEND_LOG));
 
 		// @see
 		// http://stackoverflow.com/questions/3687200/implement-startforeground-method-in-android
