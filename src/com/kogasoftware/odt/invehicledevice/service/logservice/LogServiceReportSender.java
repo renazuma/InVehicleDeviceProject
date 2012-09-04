@@ -63,8 +63,9 @@ public class LogServiceReportSender implements ReportSender {
 		}
 
 		Log.i(TAG, "\"" + file + "\" saved");
-		Intent intent = new Intent(LogService.ACTION_SEND_LOG);
-		intent.putExtra(LogService.EXTRAS_KEY_LOG_FILE_NAME, file.getAbsolutePath());
+		Intent intent = new Intent(SendLogBroadcastReceiver.ACTION_SEND_LOG);
+		intent.putExtra(SendLogBroadcastReceiver.EXTRAS_KEY_LOG_FILE_NAME,
+				file.getAbsolutePath());
 		context.sendBroadcast(intent);
 	}
 

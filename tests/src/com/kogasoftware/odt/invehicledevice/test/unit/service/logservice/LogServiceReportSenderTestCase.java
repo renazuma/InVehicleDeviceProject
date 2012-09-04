@@ -15,6 +15,7 @@ import com.google.common.io.CharStreams;
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.service.logservice.LogService;
 import com.kogasoftware.odt.invehicledevice.service.logservice.LogServiceReportSender;
+import com.kogasoftware.odt.invehicledevice.service.logservice.SendLogBroadcastReceiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -65,12 +66,12 @@ public class LogServiceReportSenderTestCase extends AndroidTestCase {
 				cdl.countDown();
 			}
 		};
-		getContext().registerReceiver(br, new IntentFilter(LogService.ACTION_SEND_LOG));
+		getContext().registerReceiver(br, new IntentFilter(SendLogBroadcastReceiver.ACTION_SEND_LOG));
 		
 		lsrs.send(crd);
 		
 		assertTrue(cdl.await(1, TimeUnit.SECONDS));
-		String f = outputIntent.get().getStringExtra(LogService.EXTRAS_KEY_LOG_FILE_NAME);
+		String f = outputIntent.get().getStringExtra(SendLogBroadcastReceiver.EXTRAS_KEY_LOG_FILE_NAME);
 		assertNotNull(f);
 		FileReader fr = null;
 		JSONObject jo = new JSONObject();
