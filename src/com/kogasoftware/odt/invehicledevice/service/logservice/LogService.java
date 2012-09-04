@@ -27,6 +27,7 @@ public class LogService extends Service {
 	private static final String TAG = LogService.class.getSimpleName();
 	public static final String ACTION_SEND_LOG = LogService.class
 			.getSimpleName() + ".ACTION_SEND_LOG";
+	public static final String EXTRAS_KEY_LOG_FILE_NAME = "file";
 	public static final long CHECK_DEVICE_INTERVAL_MILLIS = 10 * 1000;
 	public static final Integer FOREGROUND_NOTIFICATION_ID = 10;
 	private final BlockingQueue<File> rawLogFiles = new LinkedBlockingQueue<File>();
@@ -43,7 +44,7 @@ public class LogService extends Service {
 				Log.w(TAG, "onReceive intent.getExtras() == null");
 				return;
 			}
-			String fileString = extras.getString("file");
+			String fileString = extras.getString(EXTRAS_KEY_LOG_FILE_NAME);
 			if (fileString == null) {
 				Log.w(TAG, "onReceive intent.getExtras().getString() == null");
 				return;
