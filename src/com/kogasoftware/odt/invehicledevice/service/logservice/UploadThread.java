@@ -5,10 +5,8 @@ import java.util.concurrent.BlockingQueue;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
@@ -23,54 +21,23 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Share
 
 public class UploadThread extends Thread {
 	private static final String TAG = UploadThread.class.getSimpleName();
-	private static final String SHARED_PREFERENCES_NAME = UploadThread.class
+	public static final String SHARED_PREFERENCES_NAME = UploadThread.class
 			.getSimpleName() + ".sharedpreferences";
 	public static final String ACTION_UPDATE_CREDENTIALS = UploadThread.class
 			.getSimpleName() + ".ACTION_UPDATE_CREDENTIALS";
 	private final Context context;
-	private final BlockingQueue<File> compressedLogFiles;
+	private final BlockingQueue<File> uploadFiles;
 	private final String deviceId;
 	private final String bucket = "odt-android";
-	private final BroadcastReceiver updateCredentialsBroadcastReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(final Context context, Intent intent) {
-			if (intent == null) {
-				Log.w(TAG, "onReceive intent == null");
-				return;
-			}
-			final Bundle extras = intent.getExtras();
-			if (extras == null) {
-				Log.w(TAG, "onReceive intent.getExtras() == null");
-				return;
-			}
-			Thread saveThread = new Thread() {
-				@Override
-				public void run() {
-					SharedPreferences.Editor editor = context
-							.getSharedPreferences(SHARED_PREFERENCES_NAME,
-									Context.MODE_PRIVATE).edit();
-					editor.putString(
-							SharedPreferencesKeys.AWS_ACCESS_KEY_ID,
-							Strings.nullToEmpty(extras
-									.getString(SharedPreferencesKeys.AWS_ACCESS_KEY_ID)));
-					editor.putString(
-							SharedPreferencesKeys.AWS_SECRET_ACCESS_KEY,
-							Strings.nullToEmpty(extras
-									.getString(SharedPreferencesKeys.AWS_SECRET_ACCESS_KEY)));
-					editor.apply();
-				}
-			};
-			saveThread.start();
-		}
-	};
+	private final BroadcastReceiver updateCredentialsBroadcastReceiver = new UpdateCredentialsBroadcastReceiver();
 
 	public UploadThread(Context context, File dataDirectory,
-			BlockingQueue<File> compressedLogFiles) {
+			BlockingQueue<File> uploadFiles) {
 		this.context = context;
-		this.compressedLogFiles = compressedLogFiles;
+		this.uploadFiles = uploadFiles;
 		TelephonyManager telephonyManager = (TelephonyManager) context
 				.getSystemService(Context.TELEPHONY_SERVICE);
-		deviceId = telephonyManager.getDeviceId(); // TODO
+		deviceId = Strings.nullToEmpty(telephonyManager.getDeviceId());
 	}
 
 	private AWSCredentials getAWSCredentials() throws InterruptedException {
@@ -92,7 +59,7 @@ public class UploadThread extends Thread {
 	private void uploadOneFile(AmazonS3Client s3Client)
 			throws InterruptedException {
 		Thread.sleep(5000);
-		File compressedLogFile = compressedLogFiles.take();
+		File compressedLogFile = uploadFiles.take();
 		if (!compressedLogFile.exists()) {
 			Log.w(TAG, "compressedLogFile(" + compressedLogFile + ") not found");
 			return;
@@ -110,7 +77,7 @@ public class UploadThread extends Thread {
 					Log.w(TAG, "!\"" + compressedLogFile + "\".delete()");
 				}
 			} else {
-				compressedLogFiles.add(compressedLogFile);
+				uploadFiles.add(compressedLogFile);
 			}
 		}
 	}
