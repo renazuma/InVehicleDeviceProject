@@ -19,6 +19,13 @@ import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 
 public class TestUtilTestCase extends AndroidTestCase {
 
+	public void testReadWithNonBlock() throws Exception {
+		byte[] ba = new byte[] { 1, 2, 3 };
+		ByteArrayInputStream baos = new ByteArrayInputStream(ba);
+		MoreAsserts.assertEquals(ba, TestUtil.readWithNonBlock(baos));
+		MoreAsserts.assertEquals(new byte[0], TestUtil.readWithNonBlock(baos));
+	}
+
 	public void testReadWithNonBlock_NoClose() throws Exception {
 		InputStream is = new InputStream() {
 			int a = 5;

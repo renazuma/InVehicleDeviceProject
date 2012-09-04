@@ -1,5 +1,10 @@
 package com.kogasoftware.odt.invehicledevice.test.util;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -237,6 +242,7 @@ public class TestUtil {
 		Assert.assertFalse(whm.isEmpty());
 		return whm;
 	}
+
 	public static <T> void assertEmptyObject(Context context, Class<T> c)
 			throws Exception {
 		assertEmptyObject(context, c, false);
@@ -257,5 +263,29 @@ public class TestUtil {
 		}
 
 		Assert.fail("WeakHashMap size=" + whm.size() + " " + whm);
+	}
+
+	public static byte[] readWithNonBlock(InputStream inputStream) throws IOException, InterruptedException {
+		return readWithNonBlock(inputStream, 0);
+	}
+
+	public static byte[] readWithNonBlock(InputStream inputStream, long timeout) throws IOException, InterruptedException {
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		Stopwatch stopwatch = new Stopwatch().start();
+		while (true) {
+			int available = inputStream.available();
+			if (available <= 0) {
+				if (stopwatch.elapsedMillis() > timeout) {
+					break;	
+				}
+				Thread.sleep(timeout / 10);
+				continue;
+			}
+			byte[] buffer = new byte[available];
+			inputStream.read(buffer, 0, available);
+			byteArrayOutputStream.write(buffer);
+			stopwatch.reset().start();
+		}
+		return byteArrayOutputStream.toByteArray();
 	}
 }
