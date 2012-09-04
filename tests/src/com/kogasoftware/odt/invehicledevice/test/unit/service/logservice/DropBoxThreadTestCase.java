@@ -1,19 +1,17 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.service.logservice;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.Reader;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.acra.util.Base64;
+import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.google.common.base.Charsets;
-import com.google.common.io.CharStreams;
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.service.logservice.DropBoxThread;
 import com.kogasoftware.odt.invehicledevice.service.logservice.SplitFileOutputStream;
@@ -52,18 +50,12 @@ public class DropBoxThreadTestCase extends AndroidTestCase {
 	List<JSONObject> read(File file) throws Exception {
 		assertNotNull(file);
 
-		Reader r = null;
-		try {
-			r = new FileReader(file);
-			JSONArray ja = new JSONArray(CharStreams.toString(r));
-			List<JSONObject> l = new LinkedList<JSONObject>();
-			for (Integer i = 0; i < ja.length(); ++i) {
-				l.add(ja.getJSONObject(i));
-			}
-			return l;
-		} finally {
-			Closeables.closeQuietly(r);
+		JSONArray ja = new JSONArray(FileUtils.readFileToString(file));
+		List<JSONObject> l = new LinkedList<JSONObject>();
+		for (Integer i = 0; i < ja.length(); ++i) {
+			l.add(ja.getJSONObject(i));
 		}
+		return l;
 	}
 
 	String decode(String base64) {

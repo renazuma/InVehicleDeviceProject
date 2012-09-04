@@ -1,19 +1,15 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.service.logservice;
 
-import java.io.Closeable;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import org.apache.commons.io.FileUtils;
 
 import android.test.AndroidTestCase;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Stopwatch;
-import com.google.common.io.CharStreams;
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.service.logservice.SplitFileOutputStream;
 
@@ -100,19 +96,10 @@ public class SplitFileOutputStreamTestCase extends AndroidTestCase {
 		sfos.split();
 		assertEquals(0, sfos.getCount().intValue());
 		assertEquals(2, files.size());
-		
+
 		sfos.close();
-	
-		List<FileReader> readers = new LinkedList<FileReader>();
-		readers.add(new FileReader(files.take()));
-		readers.add(new FileReader(files.take()));
 
-		assertEquals("123", CharStreams.toString(readers.get(0)));
-		assertEquals("AB", CharStreams.toString(readers.get(1)));
-
-
-		for (Closeable c : readers) {
-			Closeables.closeQuietly(c);
-		}
+		assertEquals("123", FileUtils.readFileToString(files.poll()));
+		assertEquals("AB", FileUtils.readFileToString(files.poll()));
 	}
 }
