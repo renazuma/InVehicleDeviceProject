@@ -1,63 +1,77 @@
 package com.kogasoftware.odt.invehicledevice.service.logservice;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import android.util.Log;
 
-import com.google.common.io.ByteStreams;
-import com.google.common.io.Closeables;
-import com.kogasoftware.odt.invehicledevice.empty.EmptyCloseable;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.primitives.Bytes;
+
+import android.util.Log;
 
 public class LogcatThread extends Thread {
 	private static final String TAG = LogcatThread.class.getSimpleName();
-	public static final Integer CHECK_INTERVAL = 2000;
-	private volatile Closeable processCloser = new EmptyCloseable();
-	private final OutputStream outputStream;
+	public static final Long DEFAULT_SPLIT_BYTES = 2 * 1024 * 1024L;
+	public static final Long DEFAULT_TIMEOUT_MILLIS = 60 * 60 * 1000L;
+	public static final Long WAIT_FOR_AVAILABLE_MILLIS = 200L;
+	private final InputStream inputStream;
+	private final SplitFileOutputStream splitFileOutputStream;
+	private final Long splitBytes;
+	private final Long timeoutMillis;
 
-	public void interrupt() {
-		super.interrupt();
-		Closeables.closeQuietly(processCloser);
+	public LogcatThread(SplitFileOutputStream splitFileOutputStream)
+			throws IOException {
+		this(splitFileOutputStream, new LogcatInputStream(),
+				DEFAULT_SPLIT_BYTES, DEFAULT_TIMEOUT_MILLIS);
 	}
 
-	private Process getProcess() throws InterruptedException {
-		while (true) {
-			try {
-				return Runtime.getRuntime().exec("logcat -v time");
-			} catch (IOException e) {
-				Log.w(TAG, e);
-			}
-			Thread.sleep(LogcatThread.CHECK_INTERVAL);
-		}
-	}
-
-	public LogcatThread(OutputStream outputStream) {
-		this.outputStream = outputStream;
+	@VisibleForTesting
+	public LogcatThread(SplitFileOutputStream splitFileOutputStream,
+			InputStream inputStream, Long splitBytes, Long timeoutMillis) {
+		this.splitFileOutputStream = splitFileOutputStream;
+		this.inputStream = inputStream;
+		this.splitBytes = splitBytes;
+		this.timeoutMillis = timeoutMillis;
 	}
 
 	@Override
 	public void run() {
 		Log.i(TAG, "start");
 		try {
-			final Process process = getProcess();
-			processCloser = new Closeable() {
-				@Override
-				public void close() {
-					process.destroy();
+			while (true) {
+				if (splitFileOutputStream.getElapsedMillisSinceFirstWrite() > timeoutMillis) {
+					splitFileOutputStream.split();
 				}
-			};
-			InputStream inputStream = process.getInputStream();
-			try {
-				ByteStreams.copy(inputStream, outputStream);
-			} catch (IOException e) {
-				Log.w(TAG, e);
-			} finally {
-				Closeables.closeQuietly(inputStream);
+				Integer available = inputStream.available();
+				if (available <= 0) {
+					Thread.sleep(WAIT_FOR_AVAILABLE_MILLIS);
+					continue;
+				}
+				byte[] buffer = new byte[available];
+				inputStream.read(buffer);
+				Boolean written = false;
+				if (splitFileOutputStream.getCount() + buffer.length >= splitBytes) {
+					Integer newLineIndex = Bytes.lastIndexOf(buffer, (byte) '\n');
+					if (newLineIndex >= 0) {
+						splitFileOutputStream
+								.write(buffer, 0, newLineIndex + 1);
+						splitFileOutputStream.split();
+						if (buffer.length >= newLineIndex + 1) {
+							splitFileOutputStream.write(buffer,
+									newLineIndex + 1, buffer.length
+											- newLineIndex - 1);
+						}
+						written = true;
+					}
+				}
+				if (!written) {
+					splitFileOutputStream.write(buffer);
+				}
 			}
+		} catch (IOException e) {
+			Log.w(TAG, e);
 		} catch (InterruptedException e) {
-			Closeables.closeQuietly(processCloser);
+		} finally {
+			Log.i(TAG, "exit");
 		}
-		Log.i(TAG, "exit");
 	}
 }
