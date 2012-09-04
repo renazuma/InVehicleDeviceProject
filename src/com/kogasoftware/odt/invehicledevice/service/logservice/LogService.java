@@ -55,7 +55,7 @@ public class LogService extends Service {
 			throw new RuntimeException("can't create log");
 		}
 
-		compressThread = new CompressThread(this, dataDirectory, rawLogFiles,
+		compressThread = new CompressThread(this, rawLogFiles,
 				compressedLogFiles);
 		uploadThread = new UploadThread(this, dataDirectory, compressedLogFiles);
 
