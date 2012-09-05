@@ -23,6 +23,7 @@ public class UploadThread extends Thread {
 	private static final String TAG = UploadThread.class.getSimpleName();
 	public static final String SHARED_PREFERENCES_NAME = UploadThread.class
 			.getSimpleName() + ".sharedpreferences";
+	public static final Integer SHARED_PREFERENCES_CHECK_INTERVAL_MILLIS = 5000;
 	public static final String ACTION_UPDATE_CREDENTIALS = UploadThread.class
 			.getSimpleName() + ".ACTION_UPDATE_CREDENTIALS";
 	private final Context context;
@@ -40,9 +41,9 @@ public class UploadThread extends Thread {
 		deviceId = Strings.nullToEmpty(telephonyManager.getDeviceId());
 	}
 
-	private AWSCredentials getAWSCredentials() throws InterruptedException {
+	public static AWSCredentials getAWSCredentials(Context context)
+			throws InterruptedException {
 		while (true) {
-			Thread.sleep(5000);
 			SharedPreferences sharedPreferences = context.getSharedPreferences(
 					SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
 			String accessKeyId = sharedPreferences.getString(
@@ -50,6 +51,7 @@ public class UploadThread extends Thread {
 			String secretAccessKey = sharedPreferences.getString(
 					SharedPreferencesKeys.AWS_SECRET_ACCESS_KEY, "");
 			if (accessKeyId.isEmpty() || secretAccessKey.isEmpty()) {
+				Thread.sleep(SHARED_PREFERENCES_CHECK_INTERVAL_MILLIS);
 				continue;
 			}
 			return new BasicAWSCredentials(accessKeyId, secretAccessKey);
@@ -94,7 +96,7 @@ public class UploadThread extends Thread {
 				try {
 					Thread.sleep(5000);
 					AmazonS3Client s3Client = new AmazonS3Client(
-							getAWSCredentials());
+							getAWSCredentials(context));
 					try {
 						while (true) {
 							uploadOneFile(s3Client);
