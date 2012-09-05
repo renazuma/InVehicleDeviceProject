@@ -1,18 +1,106 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.service.logservice;
 
+import java.io.File;
+import java.nio.charset.Charset;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
+
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.google.common.base.Charsets;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 import com.kogasoftware.odt.invehicledevice.service.logservice.UploadThread;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Environment;
 import android.test.AndroidTestCase;
 
+import static org.mockito.Mockito.*;
+
 public class UploadThreadTestCase extends AndroidTestCase {
+	Charset c = Charsets.UTF_16BE;
+
+	public void testUploadFile() throws Exception {
+		BlockingQueue<File> files = new LinkedBlockingQueue<File>();
+		UploadThread ut = new UploadThread(getContext(), files);
+
+		StringBuilder d1 = new StringBuilder("compress data");
+		for (int i = 0; i < 500; ++i) {
+			d1.append("data" + i);
+		}
+
+		ByteArrayOutputStream d2 = new ByteArrayOutputStream();
+		for (int i = 0; i < 16 * 1024; ++i) {
+			d2.write((byte) i);
+		}
+		d2.close();
+
+		File f1 = new File(Environment.getExternalStorageDirectory(), "foo");
+		File f2 = getContext().getFileStreamPath("foobar");
+
+		FileUtils.writeByteArrayToFile(f1, d1.toString().getBytes(c));
+		FileUtils.writeByteArrayToFile(f2, d2.toByteArray());
+
+		files.add(f1);
+		files.add(f2);
+
+		// 成功させる
+		AmazonS3Client s3Client = mock(AmazonS3Client.class);
+		ut.uploadOneFile(s3Client);
+
+		ArgumentCaptor<PutObjectRequest> argument = ArgumentCaptor
+				.forClass(PutObjectRequest.class);
+		verify(s3Client).putObject(argument.capture());
+		assertEquals(f1, argument.getValue().getFile());
+		assertFalse(files.contains(f1));
+		assertTrue(files.contains(f2));
+
+		// 失敗させる1
+		s3Client = mock(AmazonS3Client.class);
+		when(s3Client.putObject(Mockito.<PutObjectRequest> any())).thenThrow(
+				new AmazonClientException("error"));
+		try {
+			ut.uploadOneFile(s3Client);
+			fail();
+		} catch (AmazonClientException e) {
+		}
+		verify(s3Client).putObject(argument.capture());
+		assertEquals(f2, argument.getValue().getFile());
+		assertTrue(files.contains(f2));
+
+		// 失敗させる2
+		s3Client = mock(AmazonS3Client.class);
+		when(s3Client.putObject(Mockito.<PutObjectRequest> any())).thenThrow(
+				new AmazonServiceException("error"));
+		try {
+			ut.uploadOneFile(s3Client);
+			fail();
+		} catch (AmazonServiceException e) {
+		}
+		verify(s3Client).putObject(argument.capture());
+		assertEquals(f2, argument.getValue().getFile());
+		assertTrue(files.contains(f2));
+
+		// 成功させる
+		s3Client = mock(AmazonS3Client.class);
+		ut.uploadOneFile(s3Client);
+		verify(s3Client).putObject(argument.capture());
+		assertEquals(f2, argument.getValue().getFile());
+		assertFalse(files.contains(f2));
+	}
+
 	public void testGetAWSCredentials() throws Exception {
 		SharedPreferences.Editor e = getContext().getSharedPreferences(
 				UploadThread.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
