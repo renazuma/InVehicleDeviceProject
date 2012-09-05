@@ -44,7 +44,8 @@ public class UploadThreadTestCase extends AndroidTestCase {
 		final CountDownLatch cdl = new CountDownLatch(1);
 		UploadThread ut = new UploadThread(getContext(), files) {
 			Integer counter = 0;
-			public void uploadOneFile(AmazonS3Client s3Client) throws InterruptedException {
+			@Override
+			public void uploadOneFile(AmazonS3Client s3Client, String deviceId) throws InterruptedException {
 				cdl.countDown();
 				// InterruptedException以外の例外が飛んでも再び呼ばれるかのチェック
 				counter++;
@@ -111,7 +112,7 @@ public class UploadThreadTestCase extends AndroidTestCase {
 
 		// 成功させる
 		AmazonS3Client s3Client = mock(AmazonS3Client.class);
-		ut.uploadOneFile(s3Client);
+		ut.uploadOneFile(s3Client, "");
 
 		ArgumentCaptor<PutObjectRequest> argument = ArgumentCaptor
 				.forClass(PutObjectRequest.class);
@@ -125,7 +126,7 @@ public class UploadThreadTestCase extends AndroidTestCase {
 		when(s3Client.putObject(Mockito.<PutObjectRequest> any())).thenThrow(
 				new AmazonClientException("error"));
 		try {
-			ut.uploadOneFile(s3Client);
+			ut.uploadOneFile(s3Client, "");
 			fail();
 		} catch (AmazonClientException e) {
 		}
@@ -138,7 +139,7 @@ public class UploadThreadTestCase extends AndroidTestCase {
 		when(s3Client.putObject(Mockito.<PutObjectRequest> any())).thenThrow(
 				new AmazonServiceException("error"));
 		try {
-			ut.uploadOneFile(s3Client);
+			ut.uploadOneFile(s3Client, "");
 			fail();
 		} catch (AmazonServiceException e) {
 		}
@@ -148,7 +149,7 @@ public class UploadThreadTestCase extends AndroidTestCase {
 
 		// 成功させる
 		s3Client = mock(AmazonS3Client.class);
-		ut.uploadOneFile(s3Client);
+		ut.uploadOneFile(s3Client, "");
 		verify(s3Client).putObject(argument.capture());
 		assertEquals(f2, argument.getValue().getFile());
 		assertFalse(files.contains(f2));

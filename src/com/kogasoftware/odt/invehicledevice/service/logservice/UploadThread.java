@@ -17,7 +17,9 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Optional;
 import com.google.common.base.Strings;
+import com.kogasoftware.odt.invehicledevice.BuildConfig;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 
 public class UploadThread extends Thread {
@@ -30,16 +32,13 @@ public class UploadThread extends Thread {
 			.getSimpleName() + ".ACTION_UPDATE_CREDENTIALS";
 	private final Context context;
 	private final BlockingQueue<File> uploadFiles;
-	private final String deviceId;
 	private final String bucket = "odt-android";
 	private final BroadcastReceiver updateCredentialsBroadcastReceiver = new UpdateCredentialsBroadcastReceiver();
+	private Optional<AmazonS3Client> mockAmazonS3Client = Optional.absent();
 
 	public UploadThread(Context context, BlockingQueue<File> uploadFiles) {
 		this.context = context;
 		this.uploadFiles = uploadFiles;
-		TelephonyManager telephonyManager = (TelephonyManager) context
-				.getSystemService(Context.TELEPHONY_SERVICE);
-		deviceId = Strings.nullToEmpty(telephonyManager.getDeviceId());
 	}
 
 	@VisibleForTesting
@@ -61,7 +60,7 @@ public class UploadThread extends Thread {
 	}
 
 	@VisibleForTesting
-	public void uploadOneFile(AmazonS3Client s3Client)
+	public void uploadOneFile(AmazonS3Client s3Client, String deviceId)
 			throws InterruptedException {
 		Thread.sleep(UPLOAD_DELAY_MILLIS);
 		File uploadFile = uploadFiles.take();
@@ -89,6 +88,10 @@ public class UploadThread extends Thread {
 	@Override
 	public void run() {
 		Log.i(TAG, "start");
+		TelephonyManager telephonyManager = (TelephonyManager) context
+				.getSystemService(Context.TELEPHONY_SERVICE);
+		String deviceId = Strings.nullToEmpty(telephonyManager.getDeviceId());
+
 		IntentFilter intentFilter = new IntentFilter();
 		intentFilter.addAction(ACTION_UPDATE_CREDENTIALS);
 		context.registerReceiver(updateCredentialsBroadcastReceiver,
@@ -97,11 +100,10 @@ public class UploadThread extends Thread {
 			while (true) {
 				try {
 					Thread.sleep(5000);
-					AmazonS3Client s3Client = new AmazonS3Client(
-							getAWSCredentials(context));
+					AmazonS3Client s3Client = getAmazonS3Client();
 					try {
 						while (true) {
-							uploadOneFile(s3Client);
+							uploadOneFile(s3Client, deviceId);
 						}
 					} finally {
 						s3Client.shutdown();
@@ -118,5 +120,20 @@ public class UploadThread extends Thread {
 			context.unregisterReceiver(updateCredentialsBroadcastReceiver);
 		}
 		Log.i(TAG, "exit");
+	}
+
+	private AmazonS3Client getAmazonS3Client() throws InterruptedException {
+		if (!BuildConfig.DEBUG) {
+			return new AmazonS3Client(getAWSCredentials(context));
+		}
+		if (mockAmazonS3Client.isPresent()) {
+			return mockAmazonS3Client.get();
+		}
+		return new AmazonS3Client(getAWSCredentials(context));
+	}
+	
+	@VisibleForTesting
+	public void setMockAmazonS3Client(AmazonS3Client amazonS3Client) {
+		mockAmazonS3Client = Optional.of(amazonS3Client);
 	}
 }
