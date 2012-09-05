@@ -31,8 +31,61 @@ import static org.mockito.Mockito.*;
 
 public class UploadThreadTestCase extends AndroidTestCase {
 	Charset c = Charsets.UTF_16BE;
+	
+	public void setUp() throws Exception {
+		super.setUp();
+		getContext().getSharedPreferences(
+				UploadThread.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
+				.edit().clear().apply();
+	}
 
-	public void testUploadFile() throws Exception {
+	public void testStart() throws Exception {
+		BlockingQueue<File> files = new LinkedBlockingQueue<File>();
+		final CountDownLatch cdl = new CountDownLatch(1);
+		UploadThread ut = new UploadThread(getContext(), files) {
+			Integer counter = 0;
+			public void uploadOneFile(AmazonS3Client s3Client) throws InterruptedException {
+				cdl.countDown();
+				// InterruptedException以外の例外が飛んでも再び呼ばれるかのチェック
+				counter++;
+				switch (counter) {
+				case 0:
+					break;
+				case 1:
+					throw new AmazonServiceException("foo");
+				case 2:
+					throw new AmazonServiceException("bar");
+				case 3:
+					break;
+				case 4:
+					throw new InterruptedException("test ok !");
+				}
+			}
+		};
+
+		ut.start();
+		assertFalse(cdl
+				.await((int) (UploadThread.SHARED_PREFERENCES_CHECK_INTERVAL_MILLIS * 1.2),
+						TimeUnit.MILLISECONDS));
+		
+		SharedPreferences.Editor e = getContext().getSharedPreferences(
+				UploadThread.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
+				.edit();
+		String id = "ididid";
+		String key = "keykeykey";
+		e.putString(SharedPreferencesKeys.AWS_ACCESS_KEY_ID, id);
+		e.putString(SharedPreferencesKeys.AWS_SECRET_ACCESS_KEY, key);
+		e.apply();
+		
+		assertTrue(cdl
+				.await((int) (UploadThread.SHARED_PREFERENCES_CHECK_INTERVAL_MILLIS * 1.2),
+						TimeUnit.MILLISECONDS));
+
+		ut.join(UploadThread.SHARED_PREFERENCES_CHECK_INTERVAL_MILLIS * 10);
+		assertFalse(ut.isAlive());
+	}
+	
+	public void testUploadOneFile() throws Exception {
 		BlockingQueue<File> files = new LinkedBlockingQueue<File>();
 		UploadThread ut = new UploadThread(getContext(), files);
 
