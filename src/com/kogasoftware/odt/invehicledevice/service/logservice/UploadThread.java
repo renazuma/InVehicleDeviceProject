@@ -16,6 +16,7 @@ import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 
@@ -24,6 +25,7 @@ public class UploadThread extends Thread {
 	public static final String SHARED_PREFERENCES_NAME = UploadThread.class
 			.getSimpleName() + ".sharedpreferences";
 	public static final Integer SHARED_PREFERENCES_CHECK_INTERVAL_MILLIS = 5000;
+	public static final Integer UPLOAD_DELAY_MILLIS = 5000;
 	public static final String ACTION_UPDATE_CREDENTIALS = UploadThread.class
 			.getSimpleName() + ".ACTION_UPDATE_CREDENTIALS";
 	private final Context context;
@@ -32,8 +34,7 @@ public class UploadThread extends Thread {
 	private final String bucket = "odt-android";
 	private final BroadcastReceiver updateCredentialsBroadcastReceiver = new UpdateCredentialsBroadcastReceiver();
 
-	public UploadThread(Context context, File dataDirectory,
-			BlockingQueue<File> uploadFiles) {
+	public UploadThread(Context context, BlockingQueue<File> uploadFiles) {
 		this.context = context;
 		this.uploadFiles = uploadFiles;
 		TelephonyManager telephonyManager = (TelephonyManager) context
@@ -41,6 +42,7 @@ public class UploadThread extends Thread {
 		deviceId = Strings.nullToEmpty(telephonyManager.getDeviceId());
 	}
 
+	@VisibleForTesting
 	public static AWSCredentials getAWSCredentials(Context context)
 			throws InterruptedException {
 		while (true) {
@@ -58,28 +60,28 @@ public class UploadThread extends Thread {
 		}
 	}
 
-	private void uploadOneFile(AmazonS3Client s3Client)
+	@VisibleForTesting
+	public void uploadOneFile(AmazonS3Client s3Client)
 			throws InterruptedException {
-		Thread.sleep(5000);
-		File compressedLogFile = uploadFiles.take();
-		if (!compressedLogFile.exists()) {
-			Log.w(TAG, "compressedLogFile(" + compressedLogFile + ") not found");
+		Thread.sleep(UPLOAD_DELAY_MILLIS);
+		File uploadFile = uploadFiles.take();
+		if (!uploadFile.exists()) {
+			Log.w(TAG, "uploadFile(" + uploadFile + ") not found");
 			return;
 		}
 		Boolean succeed = false;
 		try {
 			PutObjectRequest putObjectRequest = new PutObjectRequest(bucket,
-					"log/" + deviceId + "_" + compressedLogFile.getName(),
-					compressedLogFile);
+					"log/" + deviceId + "_" + uploadFile.getName(), uploadFile);
 			s3Client.putObject(putObjectRequest);
 			succeed = true;
 		} finally {
 			if (succeed) {
-				if (!compressedLogFile.delete()) {
-					Log.w(TAG, "!\"" + compressedLogFile + "\".delete()");
+				if (!uploadFile.delete()) {
+					Log.w(TAG, "!\"" + uploadFile + "\".delete()");
 				}
 			} else {
-				uploadFiles.add(compressedLogFile);
+				uploadFiles.add(uploadFile);
 			}
 		}
 	}
