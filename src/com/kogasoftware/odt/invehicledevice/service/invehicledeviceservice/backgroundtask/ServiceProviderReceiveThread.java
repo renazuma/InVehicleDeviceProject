@@ -37,7 +37,11 @@ public class ServiceProviderReceiveThread extends Thread implements
 				localData.serviceProviderInitializedSign.release();
 			}
 		});
+		
+		sendUpdateCredentialsBroadcast(serviceProvider);
+	}
 
+	public void sendUpdateCredentialsBroadcast(ServiceProvider serviceProvider) {
 		// ログアップロード用のサービスに認証情報を送信
 		Intent intent = new Intent(UploadThread.ACTION_UPDATE_CREDENTIALS);
 		intent.putExtra(SharedPreferencesKeys.AWS_ACCESS_KEY_ID,
