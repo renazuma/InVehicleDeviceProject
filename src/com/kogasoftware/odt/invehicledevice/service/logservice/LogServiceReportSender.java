@@ -50,7 +50,7 @@ public class LogServiceReportSender implements ReportSender {
 		File file = new EmptyFile();
 		OutputStream fileOutputStream = null;
 		try {
-			file = File.createTempFile(format + "_crashreport", ".log",
+			file = File.createTempFile(format + "_acra_", ".log",
 					dataDirectory);
 			fileOutputStream = new FileOutputStream(file);
 			fileOutputStream.write(getCrashReportJSONObject(crashReportData)
