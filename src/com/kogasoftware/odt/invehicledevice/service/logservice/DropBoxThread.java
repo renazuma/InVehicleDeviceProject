@@ -149,6 +149,8 @@ public class DropBoxThread extends Thread {
 				Thread.sleep(checkIntervalMillis);
 			}
 		} catch (InterruptedException e) {
+		} finally {
+			splitLogFile();
 		}
 		Log.i(TAG, "exit");
 	}
