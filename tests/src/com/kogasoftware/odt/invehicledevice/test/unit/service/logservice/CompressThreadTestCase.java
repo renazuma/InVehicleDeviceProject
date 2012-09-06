@@ -55,6 +55,7 @@ public class CompressThreadTestCase extends AndroidTestCase {
 		for (int i = 0; i < 16 * 1024; ++i) {
 			d2.write((byte) i);
 		}
+		d2.close();
 
 		File f1 = new File(Environment.getExternalStorageDirectory(), "foo");
 		File f2 = getContext().getFileStreamPath("foobar");
