@@ -91,13 +91,13 @@ public class DropBoxThreadTestCase extends AndroidTestCase {
 		}
 
 		List<JSONObject> l = read(files.poll());
-		assertEquals("test1", l.get(0).getJSONObject("header").get("tag"));
-		assertEquals("test1dataa", decode(l.get(0).getString("body")));
-		assertEquals("test1", l.get(1).getJSONObject("header").get("tag"));
-		assertEquals("test1datab", decode(l.get(1).getString("body")));
-		assertEquals("test1", l.get(2).getJSONObject("header").get("tag"));
-		assertEquals("test1datac", decode(l.get(2).getString("body")));
-		assertEquals("test1", l.get(3).getJSONObject("header").get("tag"));
+		assertEquals("test1", l.get(0).get("tag"));
+		assertEquals("test1dataa", decode(l.get(0).getString("contents")));
+		assertEquals("test1", l.get(1).get("tag"));
+		assertEquals("test1datab", decode(l.get(1).getString("contents")));
+		assertEquals("test1", l.get(2).get("tag"));
+		assertEquals("test1datac", decode(l.get(2).getString("contents")));
+		assertEquals("test1", l.get(3).get("tag"));
 		files.clear();
 
 		{ // split
@@ -121,16 +121,16 @@ public class DropBoxThreadTestCase extends AndroidTestCase {
 		}
 
 		l = read(files.poll());
-		assertEquals("test2", l.get(0).getJSONObject("header").get("tag"));
-		assertEquals("test2dataa", decode(l.get(0).getString("body")));
-		assertEquals("test2", l.get(1).getJSONObject("header").get("tag"));
-		assertEquals("test2datab", decode(l.get(1).getString("body")));
-		assertEquals("test2", l.get(2).getJSONObject("header").get("tag"));
+		assertEquals("test2", l.get(0).get("tag"));
+		assertEquals("test2dataa", decode(l.get(0).getString("contents")));
+		assertEquals("test2", l.get(1).get("tag"));
+		assertEquals("test2datab", decode(l.get(1).getString("contents")));
+		assertEquals("test2", l.get(2).get("tag"));
 
 		l = read(files.poll());
-		assertEquals("test3", l.get(0).getJSONObject("header").get("tag"));
-		assertEquals("test3dataa", decode(l.get(0).getString("body")));
-		assertEquals("test3", l.get(1).getJSONObject("header").get("tag"));
+		assertEquals("test3", l.get(0).get("tag"));
+		assertEquals("test3dataa", decode(l.get(0).getString("contents")));
+		assertEquals("test3", l.get(1).get("tag"));
 	}
 
 	public void testSplitTimeout() throws Exception {
@@ -161,12 +161,12 @@ public class DropBoxThreadTestCase extends AndroidTestCase {
 		Thread.sleep((long) (timeoutMillis * 1.1)); // clear
 		dbt.dumpToFile();
 		List<JSONObject> l = read(files.poll());
-		assertEquals("test1", l.get(0).getJSONObject("header").get("tag"));
-		assertEquals("test1dataa", decode(l.get(0).getString("body")));
-		assertEquals("test1", l.get(1).getJSONObject("header").get("tag"));
-		assertEquals("test1datab", decode(l.get(1).getString("body")));
-		assertEquals("test1", l.get(2).getJSONObject("header").get("tag"));
-		assertEquals("test1datac", decode(l.get(2).getString("body")));
+		assertEquals("test1", l.get(0).get("tag"));
+		assertEquals("test1dataa", decode(l.get(0).getString("contents")));
+		assertEquals("test1", l.get(1).get("tag"));
+		assertEquals("test1datab", decode(l.get(1).getString("contents")));
+		assertEquals("test1", l.get(2).get("tag"));
+		assertEquals("test1datac", decode(l.get(2).getString("contents")));
 		files.clear();
 
 		{ // split
@@ -200,18 +200,18 @@ public class DropBoxThreadTestCase extends AndroidTestCase {
 		}
 
 		l = read(files.poll());
-		assertEquals("test2", l.get(0).getJSONObject("header").get("tag"));
-		assertEquals("test2dataa", decode(l.get(0).getString("body")));
-		assertEquals("test2", l.get(1).getJSONObject("header").get("tag"));
-		assertEquals("test2datab", decode(l.get(1).getString("body")));
-		assertEquals("test2", l.get(2).getJSONObject("header").get("tag"));
-		assertEquals("test2datac", decode(l.get(2).getString("body")));
+		assertEquals("test2", l.get(0).get("tag"));
+		assertEquals("test2dataa", decode(l.get(0).getString("contents")));
+		assertEquals("test2", l.get(1).get("tag"));
+		assertEquals("test2datab", decode(l.get(1).getString("contents")));
+		assertEquals("test2", l.get(2).get("tag"));
+		assertEquals("test2datac", decode(l.get(2).getString("contents")));
 
 		l = read(files.poll());
-		assertEquals("test3", l.get(0).getJSONObject("header").get("tag"));
-		assertEquals("test3dataa", decode(l.get(0).getString("body")));
-		assertEquals("test3", l.get(1).getJSONObject("header").get("tag"));
-		assertEquals("test3datab", decode(l.get(1).getString("body")));
+		assertEquals("test3", l.get(0).get("tag"));
+		assertEquals("test3dataa", decode(l.get(0).getString("contents")));
+		assertEquals("test3", l.get(1).get("tag"));
+		assertEquals("test3datab", decode(l.get(1).getString("contents")));
 	}
 
 	public void testSplitTimeoutCheckInterval() throws Exception {
@@ -247,14 +247,14 @@ public class DropBoxThreadTestCase extends AndroidTestCase {
 
 		Thread.sleep((long) (timeoutMillis * 1.1)); // clear
 		List<JSONObject> l = read(files.poll());
-		assertEquals("test1a", l.get(0).getJSONObject("header").get("tag"));
-		assertEquals("test1dataa", decode(l.get(0).getString("body")));
-		assertEquals("test1b", l.get(1).getJSONObject("header").get("tag"));
-		assertEquals("test1datab", decode(l.get(1).getString("body")));
+		assertEquals("test1a", l.get(0).get("tag"));
+		assertEquals("test1dataa", decode(l.get(0).getString("contents")));
+		assertEquals("test1b", l.get(1).get("tag"));
+		assertEquals("test1datab", decode(l.get(1).getString("contents")));
 
 		l = read(files.poll());
-		assertEquals("test1c", l.get(0).getJSONObject("header").get("tag"));
-		assertEquals("test1datac", decode(l.get(0).getString("body")));
+		assertEquals("test1c", l.get(0).get("tag"));
+		assertEquals("test1datac", decode(l.get(0).getString("contents")));
 	}
 
 	public void testSplitBytesCheckInterval() throws Exception {
@@ -303,16 +303,16 @@ public class DropBoxThreadTestCase extends AndroidTestCase {
 		}
 
 		List<JSONObject> l = read(files.poll());
-		assertEquals("test1a", l.get(0).getJSONObject("header").get("tag"));
-		assertEquals("test1dataa", decode(l.get(0).getString("body")));
-		assertEquals("test1b", l.get(1).getJSONObject("header").get("tag"));
-		assertEquals("test1datab", decode(l.get(1).getString("body")));
-		assertEquals("test1c", l.get(2).getJSONObject("header").get("tag"));
+		assertEquals("test1a", l.get(0).get("tag"));
+		assertEquals("test1dataa", decode(l.get(0).getString("contents")));
+		assertEquals("test1b", l.get(1).get("tag"));
+		assertEquals("test1datab", decode(l.get(1).getString("contents")));
+		assertEquals("test1c", l.get(2).get("tag"));
 
 		l = read(files.poll());
-		assertEquals("test1d", l.get(0).getJSONObject("header").get("tag"));
-		assertEquals("test1datad", decode(l.get(0).getString("body")));
-		assertEquals("test1e", l.get(1).getJSONObject("header").get("tag"));
+		assertEquals("test1d", l.get(0).get("tag"));
+		assertEquals("test1datad", decode(l.get(0).getString("contents")));
+		assertEquals("test1e", l.get(1).get("tag"));
 	}
 	
 	public void testInterrupt() throws Exception {
@@ -340,9 +340,11 @@ public class DropBoxThreadTestCase extends AndroidTestCase {
 
 		Thread.sleep((long) (timeoutMillis * 1.1)); // clear
 		List<JSONObject> l = read(files.poll());
-		assertEquals("test1a", l.get(0).getJSONObject("header").get("tag"));
-		assertEquals("test1dataa", decode(l.get(0).getString("body")));
-		assertEquals("test1b", l.get(1).getJSONObject("header").get("tag"));
-		assertEquals("test1datab", decode(l.get(1).getString("body")));
+		assertEquals("test1a", l.get(0).get("tag"));
+		assertEquals("test1dataa", decode(l.get(0).getString("contents")));
+		assertEquals("test1b", l.get(1).get("tag"));
+		assertEquals("test1datab", decode(l.get(1).getString("contents")));
 	}
 }
+
+
