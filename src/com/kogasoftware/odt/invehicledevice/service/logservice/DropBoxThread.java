@@ -153,6 +153,11 @@ public class DropBoxThread extends Thread {
 		} catch (InterruptedException e) {
 		} finally {
 			splitLogFile();
+			try {
+				splitFileOutputStream.close();
+			} catch (IOException e) {
+				Log.w(TAG, e);
+			}
 		}
 		Log.i(TAG, "exit");
 	}

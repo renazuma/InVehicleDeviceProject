@@ -71,6 +71,11 @@ public class LogcatThread extends Thread {
 			Log.w(TAG, e);
 		} catch (InterruptedException e) {
 		} finally {
+			try {
+				splitFileOutputStream.close();
+			} catch (IOException e) {
+				Log.w(TAG, e);
+			}
 			Log.i(TAG, "exit");
 		}
 	}
