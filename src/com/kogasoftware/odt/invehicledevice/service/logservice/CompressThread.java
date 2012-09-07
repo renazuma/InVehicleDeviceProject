@@ -33,6 +33,14 @@ public class CompressThread extends Thread {
 		try {
 			while (true) {
 				File rawLogFile = rawLogFiles.take();
+				if (rawLogFile.length() == 0L) {
+					Log.w(TAG, "\"" + rawLogFile
+							+ "\".length() == 0L / ignored");
+					if (!rawLogFile.delete()) {
+						Log.w(TAG, "!\"" + rawLogFile + "\".delete()");
+					}
+					continue;
+				}
 				File compressedLogFile = new File(rawLogFile
 						+ COMPRESSED_FILE_SUFFIX);
 

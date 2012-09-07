@@ -67,12 +67,6 @@ public class UploadThread extends Thread {
 		if (!uploadFile.exists()) {
 			Log.w(TAG, "\"" + uploadFile + "\" not found");
 			return;
-		} else if (uploadFile.length() == 0L) {
-			Log.w(TAG, "\"" + uploadFile + "\".length() == 0L / ignored");
-			if (!uploadFile.delete()) {
-				Log.w(TAG, "!\"" + uploadFile + "\".delete()");
-			}
-			return;
 		}
 		Boolean succeed = false;
 		try {
