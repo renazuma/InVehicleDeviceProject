@@ -78,7 +78,7 @@ public class DropBoxThread extends Thread {
 		json.append("\"tag\":" + JSONObject.quote(entry.getTag()) + ",");
 		json.append("\"flags\":" + entry.getFlags() + ",");
 		json.append("\"describe_contents\":" + entry.describeContents());
-		
+
 		InputStream inputStream = null;
 		try {
 			if (splitFileOutputStream.getCount().equals(0L)) {
@@ -130,12 +130,16 @@ public class DropBoxThread extends Thread {
 		return lastCheckDate;
 	}
 
-	private void splitLogFile() {
+	private void terminateLogFile() throws IOException {
 		if (splitFileOutputStream.getCount().equals(0L)) {
 			return;
 		}
+		splitFileOutputStream.write("]".getBytes(CHARSET));
+	}
+
+	private void splitLogFile() {
 		try {
-			splitFileOutputStream.write("]".getBytes(CHARSET));
+			terminateLogFile();
 			splitFileOutputStream.split();
 		} catch (IOException e) {
 			Log.w(TAG, e);
@@ -152,7 +156,11 @@ public class DropBoxThread extends Thread {
 			}
 		} catch (InterruptedException e) {
 		} finally {
-			splitLogFile();
+			try {
+				terminateLogFile();
+			} catch (IOException e) {
+				Log.e(TAG, e.toString(), e);
+			}
 			try {
 				splitFileOutputStream.close();
 			} catch (IOException e) {
