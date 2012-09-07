@@ -102,25 +102,37 @@ public class UploadThreadTestCase extends AndroidTestCase {
 		d2.close();
 
 		File f1 = new File(Environment.getExternalStorageDirectory(), "foo");
+		File fe = getContext().getFileStreamPath("empty");
 		File f2 = getContext().getFileStreamPath("foobar");
 
 		FileUtils.writeByteArrayToFile(f1, d1.toString().getBytes(c));
+		FileUtils.touch(fe);
 		FileUtils.writeByteArrayToFile(f2, d2.toByteArray());
 
 		files.add(f1);
+		files.add(fe);
 		files.add(f2);
 
 		// 成功させる
 		AmazonS3Client s3Client = mock(AmazonS3Client.class);
 		ut.uploadOneFile(s3Client, "");
-
 		ArgumentCaptor<PutObjectRequest> argument = ArgumentCaptor
 				.forClass(PutObjectRequest.class);
 		verify(s3Client).putObject(argument.capture());
 		assertEquals(f1, argument.getValue().getFile());
 		assertFalse(files.contains(f1));
+		assertTrue(files.contains(fe));
 		assertTrue(files.contains(f2));
-
+		assertFalse(f1.exists());
+		
+		// 空ファイルが無視される
+		s3Client = mock(AmazonS3Client.class);
+		ut.uploadOneFile(s3Client, "");
+		verifyZeroInteractions(s3Client);
+		assertFalse(files.contains(fe));
+		assertTrue(files.contains(f2));
+		assertFalse(fe.exists());
+		
 		// 失敗させる1
 		s3Client = mock(AmazonS3Client.class);
 		when(s3Client.putObject(Mockito.<PutObjectRequest> any())).thenThrow(
@@ -133,7 +145,8 @@ public class UploadThreadTestCase extends AndroidTestCase {
 		verify(s3Client).putObject(argument.capture());
 		assertEquals(f2, argument.getValue().getFile());
 		assertTrue(files.contains(f2));
-
+		assertTrue(f2.exists());
+		
 		// 失敗させる2
 		s3Client = mock(AmazonS3Client.class);
 		when(s3Client.putObject(Mockito.<PutObjectRequest> any())).thenThrow(
@@ -146,13 +159,15 @@ public class UploadThreadTestCase extends AndroidTestCase {
 		verify(s3Client).putObject(argument.capture());
 		assertEquals(f2, argument.getValue().getFile());
 		assertTrue(files.contains(f2));
-
+		assertTrue(f2.exists());
+		
 		// 成功させる
 		s3Client = mock(AmazonS3Client.class);
 		ut.uploadOneFile(s3Client, "");
 		verify(s3Client).putObject(argument.capture());
 		assertEquals(f2, argument.getValue().getFile());
 		assertFalse(files.contains(f2));
+		assertFalse(f2.exists());
 	}
 
 	public void testGetAWSCredentials() throws Exception {
