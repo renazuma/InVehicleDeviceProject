@@ -10,6 +10,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Environment;
@@ -32,6 +34,17 @@ public class LogService extends Service {
 	private Thread dropboxThread = new EmptyThread();
 	private Thread compressThread = new EmptyThread();
 	private Thread uploadThread = new EmptyThread();
+
+	/**
+	 * シャットダウン時、可能な限りSDカードのマウントが解除される前に書込み中のログをフラッシュするため、
+	 * ACTION_SHUTDOWNを受信して処理を行う。
+	 */
+	public static class ShutdownBroadcastReceiver extends BroadcastReceiver {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			context.stopService(new Intent(context, LogService.class));
+		}
+	}
 
 	public File getDataDirectory() {
 		return new File(Environment.getExternalStorageDirectory()

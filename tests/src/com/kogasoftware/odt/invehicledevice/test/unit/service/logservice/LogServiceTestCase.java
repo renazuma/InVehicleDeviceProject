@@ -6,10 +6,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.mockito.ArgumentCaptor;
 
 import com.kogasoftware.odt.invehicledevice.service.logservice.LogService;
 import com.kogasoftware.odt.invehicledevice.service.logservice.SplitFileOutputStream;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Environment;
 import android.test.ServiceTestCase;
@@ -39,7 +41,16 @@ public class LogServiceTestCase extends ServiceTestCase<LogService> {
 		assertFalse(s.startLog(mock(SplitFileOutputStream.class), mock(SplitFileOutputStream.class)));
 		Thread.sleep(5000);
 	}
-
+	
+	public void testShutdown() {
+		Context context = mock(Context.class);
+		(new LogService.ShutdownBroadcastReceiver()).onReceive(context, new Intent());
+		ArgumentCaptor<Intent> intentCapture = ArgumentCaptor.forClass(Intent.class);
+		verify(context).stopService(intentCapture.capture());
+		Intent intent = intentCapture.getValue();
+		assertEquals(LogService.class.getName(), intent.getComponent().getClassName());
+	}
+	
 	public void testWaitForDataDirectory() throws IOException,
 			InterruptedException {
 		File tmp1 = getContext().getDir("foo", 0755);
