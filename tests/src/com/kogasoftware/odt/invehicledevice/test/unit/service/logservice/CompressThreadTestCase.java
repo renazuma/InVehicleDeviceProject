@@ -58,14 +58,17 @@ public class CompressThreadTestCase extends AndroidTestCase {
 		d2.close();
 
 		File f1 = new File(Environment.getExternalStorageDirectory(), "foo");
+		File fe = new File(Environment.getExternalStorageDirectory(), "empty");
 		File f2 = getContext().getFileStreamPath("foobar");
 
 		FileUtils.writeByteArrayToFile(f1, d1.toString().getBytes(c));
+		FileUtils.touch(fe);
 		FileUtils.writeByteArrayToFile(f2, d2.toByteArray());
 		Long f1Length = f1.length();
 		Long f2Length = f2.length();
 
 		inputFiles.add(f1);
+		inputFiles.add(fe);
 		inputFiles.add(f2);
 		Thread.sleep(s);
 		Thread.sleep(s);
@@ -74,6 +77,7 @@ public class CompressThreadTestCase extends AndroidTestCase {
 		File of1 = outputFiles.poll();
 		File of2 = outputFiles.poll();
 		assertFalse(f1.exists());
+		assertFalse(fe.exists());
 		assertFalse(f2.exists());
 		assertEquals(f1 + CompressThread.COMPRESSED_FILE_SUFFIX, of1.toString());
 		assertEquals(f2 + CompressThread.COMPRESSED_FILE_SUFFIX, of2.toString());
