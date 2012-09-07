@@ -8,10 +8,13 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 
 import com.kogasoftware.odt.invehicledevice.service.logservice.LogService;
+import com.kogasoftware.odt.invehicledevice.service.logservice.SplitFileOutputStream;
 
 import android.content.Intent;
 import android.os.Environment;
 import android.test.ServiceTestCase;
+
+import static org.mockito.Mockito.*;
 
 public class LogServiceTestCase extends ServiceTestCase<LogService> {
 	File d;
@@ -31,13 +34,13 @@ public class LogServiceTestCase extends ServiceTestCase<LogService> {
 		startService(new Intent());
 		LogService s = getService();
 		s.onCreate();
-		assertTrue(s.startLog());
+		assertTrue(s.startLog(mock(SplitFileOutputStream.class), mock(SplitFileOutputStream.class)));
 		s.onDestroy();
-		assertFalse(s.startLog());
+		assertFalse(s.startLog(mock(SplitFileOutputStream.class), mock(SplitFileOutputStream.class)));
 		Thread.sleep(5000);
 	}
 
-	public void xtestWaitForDataDirectory() throws IOException,
+	public void testWaitForDataDirectory() throws IOException,
 			InterruptedException {
 		File tmp1 = getContext().getDir("foo", 0755);
 		if (tmp1.exists()) {
@@ -67,7 +70,7 @@ public class LogServiceTestCase extends ServiceTestCase<LogService> {
 		assertFalse(t.isAlive());
 	}
 
-	public void xtestGetCompressedLogFiles() throws Exception {
+	public void testGetCompressedLogFiles() throws Exception {
 		File f1 = new File(d, "a.txt").getCanonicalFile();
 		File f2 = new File(d, "b.gz").getCanonicalFile();
 		File f3 = new File(d, "c.gza").getCanonicalFile();
@@ -90,7 +93,7 @@ public class LogServiceTestCase extends ServiceTestCase<LogService> {
 		assertTrue(cfs.contains(f5));
 	}
 
-	public void xtestGetRawLogFiles() throws Exception {
+	public void testGetRawLogFiles() throws Exception {
 		File f1 = new File(d, "a.log").getCanonicalFile();
 		File f2 = new File(d, "b.log").getCanonicalFile();
 		File f3 = new File(d, "c.loga").getCanonicalFile();

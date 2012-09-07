@@ -17,6 +17,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 
 public class LogService extends Service {
@@ -56,12 +57,17 @@ public class LogService extends Service {
 			break;
 		}
 	}
-	
-	public UploadThread createUploadThread(BlockingQueue<File> compressedLogFiles) {
+
+	public UploadThread createUploadThread(
+			BlockingQueue<File> compressedLogFiles) {
 		return new UploadThread(this, compressedLogFiles);
 	}
-	
-	public Boolean startLog() {
+
+	/**
+	 * スレッド開始。onDestroy()発生後に行われるのを防ぐためメインスレッドで実行する。
+	 */
+	public Boolean startLog(SplitFileOutputStream logcatSplitFileOutputStream,
+			SplitFileOutputStream dropboxSplitFileOutputStream) {
 		if (destroyed) {
 			Log.i(TAG, "destroyed=" + destroyed + " / startLog returned");
 			return false;
@@ -77,10 +83,9 @@ public class LogService extends Service {
 		uploadThread = createUploadThread(compressedLogFiles);
 
 		try {
-			logcatThread = new LogcatThread(new SplitFileOutputStream(
-					dataDirectory, "logcat", rawLogFiles));
-			dropboxThread = new DropBoxThread(this, new SplitFileOutputStream(
-					dataDirectory, "dropbox", rawLogFiles));
+			logcatThread = new LogcatThread(logcatSplitFileOutputStream);
+			dropboxThread = new DropBoxThread(this,
+					dropboxSplitFileOutputStream);
 		} catch (IOException e) {
 			Log.wtf(TAG, e);
 			// ログが出力できない致命的なエラーのため、サービスをクラッシュさせ再起動させる
@@ -104,21 +109,41 @@ public class LogService extends Service {
 				SendLogBroadcastReceiver.ACTION_SEND_LOG));
 
 		final Handler handler = new Handler();
-		new Thread() {
+		Thread thread = new Thread() {
 			@Override
 			public void run() {
 				try {
-					waitForDataDirectory(getDataDirectory());
-					handler.post(new Runnable() {
+					// ディレクトリ準備完了を別スレッドで待つ
+					final File dataDirectory = getDataDirectory();
+					waitForDataDirectory(dataDirectory);
+					
+					// メインスレッドでのIOを避けるため、ディレクトリ準備完了後にストリームを準備する
+					final SplitFileOutputStream logcatSplitFileOutputStream = new SplitFileOutputStream(dataDirectory,
+							"logcat", rawLogFiles);
+					final SplitFileOutputStream dropboxSplitFileOutputStream = new SplitFileOutputStream(dataDirectory,
+							"dropbox", rawLogFiles);
+					
+					// スレッド開始は、onDestroy()発生後に行われるのを防ぐためメインスレッドで行う。
+					Boolean posted = handler.post(new Runnable() {
 						@Override
 						public void run() {
-							startLog();
+							startLog(logcatSplitFileOutputStream,
+									dropboxSplitFileOutputStream);
 						}
 					});
+					if (!posted) {
+						Closeables.closeQuietly(logcatSplitFileOutputStream);
+						Closeables.closeQuietly(dropboxSplitFileOutputStream);
+					}
 				} catch (InterruptedException e) {
+				} catch (IOException e) {
+					// 致命的なエラーのため、再起動する
+					Log.e(TAG, e.toString(), e);
+					stopSelf();
 				}
 			}
-		}.start();
+		};
+		thread.start();
 	}
 
 	@Override
