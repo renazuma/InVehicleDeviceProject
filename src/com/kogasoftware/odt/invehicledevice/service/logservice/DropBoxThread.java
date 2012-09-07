@@ -7,7 +7,6 @@ import java.nio.charset.Charset;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
@@ -66,17 +65,20 @@ public class DropBoxThread extends Thread {
 				.getSystemService(Context.DROPBOX_SERVICE);
 	}
 
-	private void save(DropBoxManager.Entry entry) {
-		JSONObject header = new JSONObject();
-		try {
-			header.put("timeMillis", entry.getTimeMillis());
-			header.put("tag", entry.getTag());
-			header.put("flags", entry.getFlags());
-			header.put("describeContents", entry.describeContents());
-		} catch (JSONException e) {
-			Log.w(TAG, e);
-		}
+	/**
+	 * DropBoxManager.EntryをJSON形式に変換してストリームへ保存する。
+	 * 非常に大きくなる可能性のあるデータをストリームのまま扱わなければいけないため、直接JSONを組み立てる。
+	 */
+	private void write(DropBoxManager.Entry entry) {
 		Charset c = CHARSET;
+
+		StringBuilder json = new StringBuilder();
+		json.append("{");
+		json.append("\"timeMillis\":" + entry.getTimeMillis() + ",");
+		json.append("\"tag\":" + JSONObject.quote(entry.getTag()) + ",");
+		json.append("\"flags\":" + entry.getFlags() + ",");
+		json.append("\"describeContents\":" + entry.describeContents());
+		
 		InputStream inputStream = null;
 		try {
 			if (splitFileOutputStream.getCount().equals(0L)) {
@@ -84,10 +86,10 @@ public class DropBoxThread extends Thread {
 			} else {
 				splitFileOutputStream.write(",".getBytes(c));
 			}
-			splitFileOutputStream.write(("{\"header\":" + header).getBytes(c));
+			splitFileOutputStream.write(json.toString().getBytes(c));
 			inputStream = entry.getInputStream(); // 非常に大きなデータの可能性があるため、一度に全て読み出さないようにする
 			if (inputStream != null) {
-				splitFileOutputStream.write(",\"body\":\"".getBytes(c));
+				splitFileOutputStream.write(",\"contents\":\"".getBytes(c));
 				OutputStream base64OutputStream = null;
 				try {
 					base64OutputStream = new Base64OutputStream(
@@ -173,7 +175,7 @@ public class DropBoxThread extends Thread {
 				if (entry == null) {
 					break;
 				}
-				save(entry);
+				write(entry);
 				if (splitFileOutputStream.getCount() > splitBytes) {
 					splitLogFile();
 				}
