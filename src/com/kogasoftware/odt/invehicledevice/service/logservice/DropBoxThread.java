@@ -74,10 +74,10 @@ public class DropBoxThread extends Thread {
 
 		StringBuilder json = new StringBuilder();
 		json.append("{");
-		json.append("\"timeMillis\":" + entry.getTimeMillis() + ",");
+		json.append("\"time_millis\":" + entry.getTimeMillis() + ",");
 		json.append("\"tag\":" + JSONObject.quote(entry.getTag()) + ",");
 		json.append("\"flags\":" + entry.getFlags() + ",");
-		json.append("\"describeContents\":" + entry.describeContents());
+		json.append("\"describe_contents\":" + entry.describeContents());
 		
 		InputStream inputStream = null;
 		try {

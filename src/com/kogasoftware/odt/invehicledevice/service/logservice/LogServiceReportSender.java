@@ -50,8 +50,8 @@ public class LogServiceReportSender implements ReportSender {
 		File file = new EmptyFile();
 		OutputStream fileOutputStream = null;
 		try {
-			file = File.createTempFile(format + "_acra_", ".log",
-					dataDirectory);
+			file = File
+					.createTempFile(format + "_acra_", ".log", dataDirectory);
 			fileOutputStream = new FileOutputStream(file);
 			fileOutputStream.write(getCrashReportJSONObject(crashReportData)
 					.toString().getBytes(Charsets.UTF_8));
@@ -75,7 +75,8 @@ public class LogServiceReportSender implements ReportSender {
 		JSONObject jsonObject = new JSONObject();
 		for (Entry<ReportField, String> entry : crashReportData.entrySet()) {
 			try {
-				jsonObject.put(entry.getKey().toString(), entry.getValue());
+				jsonObject.put(entry.getKey().toString().toLowerCase(),
+						entry.getValue());
 			} catch (JSONException e) {
 				Log.w(TAG, e);
 			}

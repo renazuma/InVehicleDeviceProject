@@ -13,7 +13,6 @@ import org.json.JSONObject;
 
 import com.google.common.io.CharStreams;
 import com.google.common.io.Closeables;
-import com.kogasoftware.odt.invehicledevice.service.logservice.LogService;
 import com.kogasoftware.odt.invehicledevice.service.logservice.LogServiceReportSender;
 import com.kogasoftware.odt.invehicledevice.service.logservice.SendLogBroadcastReceiver;
 
@@ -82,7 +81,9 @@ public class LogServiceReportSenderTestCase extends AndroidTestCase {
 			Closeables.closeQuietly(fr);
 		}
 		
-		assertEquals(LogServiceReportSender.getCrashReportJSONObject(crd).toString(), jo.toString());
+		JSONObject got = LogServiceReportSender.getCrashReportJSONObject(crd);
+		assertEquals(jo.get("app_version_code"), got.get("app_version_code"));
+		assertEquals(jo.get("custom_data"), got.get("custom_data"));
 	}
 
 	public void testGetCrashReportJSONObject() throws Exception {
@@ -94,7 +95,7 @@ public class LogServiceReportSenderTestCase extends AndroidTestCase {
 
 		JSONObject jo = LogServiceReportSender.getCrashReportJSONObject(crd);
 
-		assertEquals(avc, jo.getString(ReportField.APP_VERSION_CODE.toString()));
-		assertEquals(cd, jo.getString(ReportField.CUSTOM_DATA.toString()));
+		assertEquals(avc, jo.getString("app_version_code".toString()));
+		assertEquals(cd, jo.getString("custom_data".toString()));
 	}
 }
