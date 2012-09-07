@@ -123,6 +123,7 @@ public class UploadThreadTestCase extends AndroidTestCase {
 		assertFalse(files.contains(f1));
 		assertTrue(files.contains(fe));
 		assertTrue(files.contains(f2));
+		assertFalse(f1.exists());
 		
 		// 空ファイルが無視される
 		s3Client = mock(AmazonS3Client.class);
@@ -130,6 +131,7 @@ public class UploadThreadTestCase extends AndroidTestCase {
 		verifyZeroInteractions(s3Client);
 		assertFalse(files.contains(fe));
 		assertTrue(files.contains(f2));
+		assertFalse(fe.exists());
 		
 		// 失敗させる1
 		s3Client = mock(AmazonS3Client.class);
@@ -143,6 +145,7 @@ public class UploadThreadTestCase extends AndroidTestCase {
 		verify(s3Client).putObject(argument.capture());
 		assertEquals(f2, argument.getValue().getFile());
 		assertTrue(files.contains(f2));
+		assertTrue(f2.exists());
 		
 		// 失敗させる2
 		s3Client = mock(AmazonS3Client.class);
@@ -156,6 +159,7 @@ public class UploadThreadTestCase extends AndroidTestCase {
 		verify(s3Client).putObject(argument.capture());
 		assertEquals(f2, argument.getValue().getFile());
 		assertTrue(files.contains(f2));
+		assertTrue(f2.exists());
 		
 		// 成功させる
 		s3Client = mock(AmazonS3Client.class);
@@ -163,6 +167,7 @@ public class UploadThreadTestCase extends AndroidTestCase {
 		verify(s3Client).putObject(argument.capture());
 		assertEquals(f2, argument.getValue().getFile());
 		assertFalse(files.contains(f2));
+		assertFalse(f2.exists());
 	}
 
 	public void testGetAWSCredentials() throws Exception {
