@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.acra.util.Base64;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -19,6 +18,7 @@ import com.kogasoftware.odt.invehicledevice.service.logservice.SplitFileOutputSt
 import android.content.Context;
 import android.os.DropBoxManager;
 import android.test.AndroidTestCase;
+import android.util.Base64;
 
 public class DropBoxThreadTestCase extends AndroidTestCase {
 	DropBoxManager dbm;
