@@ -60,7 +60,7 @@ public class InVehicleDeviceApplication extends Application {
 			Log.w(TAG, e);
 		}
 
-		ErrorReporter errorReporter = ErrorReporter.getInstance();
+		ErrorReporter errorReporter = ACRA.getErrorReporter();
 		errorReporter.setReportSender(new LogServiceReportSender(this));
 
 		enableStrictMode();
