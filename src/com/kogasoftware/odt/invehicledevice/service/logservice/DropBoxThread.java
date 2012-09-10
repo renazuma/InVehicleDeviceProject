@@ -1,15 +1,26 @@
 package com.kogasoftware.odt.invehicledevice.service.logservice;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.json.JSONObject;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.DropBoxManager;
 import android.util.Base64;
@@ -30,7 +41,7 @@ public class DropBoxThread extends Thread {
 	public static final Long DEFAULT_CHECK_INTERVAL_MILLIS = 30 * 1000L;
 	private static final String SHARED_PREFERENCES_NAME = DropBoxThread.class
 			.getSimpleName() + ".sharedpreferences";
-	private static final Charset CHARSET = Charsets.UTF_8;
+	public static final Charset CHARSET = Charsets.UTF_8;
 	private static final String[] DROPBOX_TAGS = { "APANIC_CONSOLE",
 			"APANIC_THREADS", "BATTERY_DISCHARGE_INFO", "SYSTEM_BOOT",
 			"SYSTEM_LAST_KMSG", "SYSTEM_RECOVERY_LOG", "SYSTEM_RESTART",
@@ -104,6 +115,7 @@ public class DropBoxThread extends Thread {
 				}
 			}
 			splitFileOutputStream.write("}\n".getBytes(c));
+			splitFileOutputStream.flush();
 		} catch (IOException e) {
 			Log.w(TAG, e);
 		} finally {
@@ -202,5 +214,25 @@ public class DropBoxThread extends Thread {
 		SharedPreferences.Editor editor = sharedPreferences.edit();
 		editor.putLong(LAST_CHECKED_DATE_KEY, lastCheckDate.getTime());
 		editor.commit();
+	}
+
+	public static void terminateDropBoxLogFile(File file) {
+		// ファイルをすべて読み込まないよう注意する
+		RandomAccessFile randomAccessFile = null;
+		try {
+			randomAccessFile = new RandomAccessFile(file, "rw");
+			Long length = randomAccessFile.length();
+			if (length <= 0) {
+				return;
+			}
+			randomAccessFile.seek(length - 1);
+			if (randomAccessFile.readByte() == '}') { // ここの処理が文字コードUTF-16などでは動かないことがあるため注意
+				randomAccessFile.write(']');
+			}
+		} catch (IOException e) {
+			Log.w(TAG, e);
+		} finally {
+			Closeables.closeQuietly(randomAccessFile);
+		}
 	}
 }

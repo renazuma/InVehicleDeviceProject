@@ -23,6 +23,10 @@ public class LogServiceTestCase extends ServiceTestCase<LogService> {
 
 	public LogServiceTestCase() {
 		super(LogService.class);
+	}
+
+	public void setUp() throws Exception {
+		super.setUp();
 		d = new File(Environment.getExternalStorageDirectory(), "test");
 		try {
 			FileUtils.deleteDirectory(d);
@@ -127,5 +131,36 @@ public class LogServiceTestCase extends ServiceTestCase<LogService> {
 		assertTrue(cfs.contains(f1));
 		assertTrue(cfs.contains(f2));
 		assertTrue(cfs.contains(f4));
+	}
+
+	public void testGetDropBoxLogFiles() throws Exception {
+		assertEquals("_dropbox_", LogService.DROPBOX_FILE_TAG); // DROPBOX_FILE_TAGが変更されたら下記のファイル名も変更する
+		File f1 = new File(d, "dropbox.log").getCanonicalFile();
+		File f2 = new File(d, "_dropbox.log").getCanonicalFile();
+		File f3 = new File(d, "dropbox_.log").getCanonicalFile();
+		File f4 = new File(d, "_dropbox_.log").getCanonicalFile(); // OK
+		File f5 = new File(d, "a_dropbox_e.log").getCanonicalFile(); // OK
+		File f6 = new File(d, "b_dropbox_f.log.gz").getCanonicalFile();
+		File f7 = new File(d, "0_dropbox_x.alog").getCanonicalFile();
+		File f8 = new File(d, "test.log").getCanonicalFile();
+
+		FileUtils.touch(f1);
+		FileUtils.touch(f2);
+		FileUtils.touch(f3);
+		FileUtils.touch(f4);
+		FileUtils.touch(f5);
+		FileUtils.touch(f6);
+		FileUtils.touch(f7);
+		FileUtils.touch(f8);
+
+		List<File> fs = LogService.getDropBoxLogFiles(d);
+		List<File> cfs = new LinkedList<File>();
+		for (File f : fs) {
+			cfs.add(f.getCanonicalFile());
+		}
+
+		assertEquals(2, cfs.size());
+		assertTrue(cfs.contains(f4));
+		assertTrue(cfs.contains(f5));
 	}
 }
