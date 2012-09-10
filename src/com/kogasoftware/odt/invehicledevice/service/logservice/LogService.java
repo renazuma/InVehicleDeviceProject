@@ -25,6 +25,8 @@ import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 public class LogService extends Service {
 	private static final String TAG = LogService.class.getSimpleName();
 	public static final long CHECK_DEVICE_INTERVAL_MILLIS = 10 * 1000;
+	public static final String LOGCAT_FILE_TAG = "_logcat_";
+	public static final String DROPBOX_FILE_TAG = "_dropbox_";
 	private final BlockingQueue<File> rawLogFiles = new LinkedBlockingQueue<File>();
 	private final BlockingQueue<File> compressedLogFiles = new LinkedBlockingQueue<File>();
 	private final SendLogBroadcastReceiver sendLogBroadcastReceiver = new SendLogBroadcastReceiver(
@@ -129,13 +131,16 @@ public class LogService extends Service {
 					// ディレクトリ準備完了を別スレッドで待つ
 					final File dataDirectory = getDataDirectory();
 					waitForDataDirectory(dataDirectory);
-					
+					// DropBoxのログファイルの終端を設定
+					for (File file : getDropBoxLogFiles(dataDirectory)) {
+						DropBoxThread.terminateDropBoxLogFile(file);
+					}
 					// メインスレッドでのIOを避けるため、ディレクトリ準備完了後にストリームを準備する
-					final SplitFileOutputStream logcatSplitFileOutputStream = new SplitFileOutputStream(dataDirectory,
-							"logcat", rawLogFiles);
-					final SplitFileOutputStream dropboxSplitFileOutputStream = new SplitFileOutputStream(dataDirectory,
-							"dropbox", rawLogFiles);
-					
+					final SplitFileOutputStream logcatSplitFileOutputStream = new SplitFileOutputStream(
+							dataDirectory, LOGCAT_FILE_TAG, rawLogFiles);
+					final SplitFileOutputStream dropboxSplitFileOutputStream = new SplitFileOutputStream(
+							dataDirectory, DROPBOX_FILE_TAG, rawLogFiles);
+
 					// スレッド開始は、onDestroy()発生後に行われるのを防ぐためメインスレッドで行う。
 					Boolean posted = handler.post(new Runnable() {
 						@Override
@@ -199,6 +204,21 @@ public class LogService extends Service {
 			@Override
 			public boolean accept(File dir, String filename) {
 				return filename.endsWith(".log");
+			}
+		});
+		if (defaultFiles != null) {
+			files.addAll(Arrays.asList(defaultFiles));
+		}
+		return files;
+	}
+
+	public static List<File> getDropBoxLogFiles(File directory) {
+		List<File> files = new LinkedList<File>();
+		File[] defaultFiles = directory.listFiles(new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String filename) {
+				return filename.endsWith(".log")
+						&& filename.indexOf(DROPBOX_FILE_TAG) >= 0;
 			}
 		});
 		if (defaultFiles != null) {

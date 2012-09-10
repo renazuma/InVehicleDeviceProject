@@ -17,6 +17,7 @@ import com.kogasoftware.odt.invehicledevice.service.logservice.SplitFileOutputSt
 
 import android.content.Context;
 import android.os.DropBoxManager;
+import android.os.Environment;
 import android.test.AndroidTestCase;
 import android.util.Base64;
 
@@ -314,7 +315,7 @@ public class DropBoxThreadTestCase extends AndroidTestCase {
 		assertEquals("test1datad", decode(l.get(0).getString("contents")));
 		assertEquals("test1e", l.get(1).get("tag"));
 	}
-	
+
 	public void testInterrupt() throws Exception {
 		Long splitBytes = 5000L;
 		Long timeoutMillis = 5000L;
@@ -345,6 +346,40 @@ public class DropBoxThreadTestCase extends AndroidTestCase {
 		assertEquals("test1b", l.get(1).get("tag"));
 		assertEquals("test1datab", decode(l.get(1).getString("contents")));
 	}
+
+	public void testTerminateDropBoxLogFile() throws Exception {
+		assertEquals(Charsets.UTF_8, DropBoxThread.CHARSET); // 現在、ファイルの終端の文字を見て処理を判断する箇所がUTF-8に依存している
+
+		d = new File(Environment.getExternalStorageDirectory(), "foo");
+
+		File f1 = new File(d, "f1.log").getCanonicalFile();
+		File f2 = new File(d, "f2.log").getCanonicalFile();
+		File f3 = new File(d, "f3.log").getCanonicalFile();
+		File f4 = new File(d, "f4.log").getCanonicalFile();
+		File f5 = new File(d, "f5.log").getCanonicalFile();
+
+		String d1 = "";
+		String d2 = "}";
+		String d3 = "foo";
+		String d4 = "foo}";
+		String d5 = "ba}r";
+
+		FileUtils.write(f1, d1);
+		FileUtils.write(f2, d2);
+		FileUtils.write(f3, d3);
+		FileUtils.write(f4, d4);
+		FileUtils.write(f5, d5);
+
+		DropBoxThread.terminateDropBoxLogFile(f1);
+		DropBoxThread.terminateDropBoxLogFile(f2);
+		DropBoxThread.terminateDropBoxLogFile(f3);
+		DropBoxThread.terminateDropBoxLogFile(f4);
+		DropBoxThread.terminateDropBoxLogFile(f5);
+
+		assertEquals(d1, FileUtils.readFileToString(f1));
+		assertEquals(d2 + "]", FileUtils.readFileToString(f2));
+		assertEquals(d3, FileUtils.readFileToString(f3));
+		assertEquals(d4 + "]", FileUtils.readFileToString(f4));
+		assertEquals(d5, FileUtils.readFileToString(f5));
+	}
 }
-
-

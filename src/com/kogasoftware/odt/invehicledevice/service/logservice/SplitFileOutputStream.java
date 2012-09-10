@@ -42,8 +42,8 @@ public class SplitFileOutputStream extends OutputStream {
 		synchronized (memberAccessLock) {
 			String format = (new SimpleDateFormat("yyyyMMddHHmmss.SSS"))
 					.format(new Date());
-			return File.createTempFile(format + "_" + baseFileName + "_",
-					".log", baseDirectory);
+			return File.createTempFile(format + baseFileName, ".log",
+					baseDirectory);
 		}
 	}
 
