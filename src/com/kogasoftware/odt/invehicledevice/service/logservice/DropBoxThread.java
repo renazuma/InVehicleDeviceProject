@@ -95,7 +95,7 @@ public class DropBoxThread extends Thread {
 			if (splitFileOutputStream.getCount().equals(0L)) {
 				splitFileOutputStream.write("[".getBytes(c));
 			} else {
-				splitFileOutputStream.write(",".getBytes(c));
+				splitFileOutputStream.write("\n,".getBytes(c));
 			}
 			splitFileOutputStream.write(json.toString().getBytes(c));
 			inputStream = entry.getInputStream(); // 非常に大きなデータの可能性があるため、一度に全て読み出さないようにする
@@ -114,7 +114,7 @@ public class DropBoxThread extends Thread {
 					splitFileOutputStream.write("\"".getBytes(c));
 				}
 			}
-			splitFileOutputStream.write("}\n".getBytes(c));
+			splitFileOutputStream.write("}".getBytes(c));
 			splitFileOutputStream.flush();
 		} catch (IOException e) {
 			Log.w(TAG, e);
