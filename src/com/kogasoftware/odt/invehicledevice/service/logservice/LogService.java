@@ -131,10 +131,6 @@ public class LogService extends Service {
 					// ディレクトリ準備完了を別スレッドで待つ
 					final File dataDirectory = getDataDirectory();
 					waitForDataDirectory(dataDirectory);
-					// DropBoxのログファイルの終端を設定
-					for (File file : getDropBoxLogFiles(dataDirectory)) {
-						DropBoxThread.terminateDropBoxLogFile(file);
-					}
 					// メインスレッドでのIOを避けるため、ディレクトリ準備完了後にストリームを準備する
 					final SplitFileOutputStream logcatSplitFileOutputStream = new SplitFileOutputStream(
 							dataDirectory, LOGCAT_FILE_TAG, rawLogFiles);
