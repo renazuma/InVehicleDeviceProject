@@ -161,6 +161,9 @@ public class DropBoxThread extends Thread {
 		// for (String tag : DROPBOX_TAGS) {
 		Long lastEntryTimeMillis = lastCheckDate.getTime();
 		while (true) {
+			if (Thread.currentThread().isInterrupted()) {
+				return;
+			}
 			DropBoxManager.Entry entry = null;
 			try {
 				entry = dropBoxManager.getNextEntry(
