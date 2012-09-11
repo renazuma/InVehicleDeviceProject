@@ -9,6 +9,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.acra.ACRA;
 import org.acra.ErrorReporter;
 
 import android.content.Context;
@@ -140,7 +141,7 @@ public class BackgroundTask {
 			ExecutionException {
 		Log.i(TAG, "onLoopStart()");
 
-		ErrorReporter errorReporter = ErrorReporter.getInstance();
+		ErrorReporter errorReporter = ACRA.getErrorReporter();
 		try {
 			errorReporter.handleSilentException(new Throwable(
 					"APPLICATION_START_LOG"));
