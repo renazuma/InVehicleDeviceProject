@@ -33,6 +33,9 @@ public class DropBoxThreadTestCase extends AndroidTestCase {
 		dbm = (DropBoxManager) getContext().getSystemService(
 				Context.DROPBOX_SERVICE);
 		files = new LinkedBlockingQueue<File>();
+		d = getContext().getExternalFilesDir("test2");
+		FileUtils.deleteDirectory(d);
+		d.mkdirs();
 	}
 
 	public void tearDown() throws Exception {
@@ -67,8 +70,7 @@ public class DropBoxThreadTestCase extends AndroidTestCase {
 		Long splitBytes = 2000L;
 		Long timeoutMillis = 50000L;
 		Long checkIntervalMillis = 0L;
-		sfos = new SplitFileOutputStream(getContext().getExternalFilesDir(
-				"test2"), "test2", files);
+		sfos = new SplitFileOutputStream(d, "test2", files);
 		dbt = new DropBoxThread(getContext(), sfos, splitBytes, timeoutMillis,
 				checkIntervalMillis);
 		dbm.addData("test1", new byte[splitBytes.intValue()], 0);
@@ -138,8 +140,7 @@ public class DropBoxThreadTestCase extends AndroidTestCase {
 		Long splitBytes = 5000L;
 		Long timeoutMillis = 500L;
 		Long checkIntervalMillis = 5000L;
-		sfos = new SplitFileOutputStream(getContext().getExternalFilesDir(
-				"test2"), "test2", files);
+		sfos = new SplitFileOutputStream(d, "test2", files);
 		dbt = new DropBoxThread(getContext(), sfos, splitBytes, timeoutMillis,
 				checkIntervalMillis);
 
@@ -220,8 +221,7 @@ public class DropBoxThreadTestCase extends AndroidTestCase {
 		Long timeoutMillis = 200L;
 		Long checkIntervalMillis = 1000L;
 		assertTrue(checkIntervalMillis / timeoutMillis > 3);
-		sfos = new SplitFileOutputStream(getContext().getExternalFilesDir(
-				"test2"), "test2", files);
+		sfos = new SplitFileOutputStream(d, "test2", files);
 		dbt = new DropBoxThread(getContext(), sfos, splitBytes, timeoutMillis,
 				checkIntervalMillis);
 		dbt.start();
@@ -259,16 +259,15 @@ public class DropBoxThreadTestCase extends AndroidTestCase {
 	}
 
 	public void testSplitBytesCheckInterval() throws Exception {
-		Long splitBytes = 2000L;
+		Long splitBytes = 5000L;
 		Long timeoutMillis = 10000L;
 		Long checkIntervalMillis = 500L;
-		sfos = new SplitFileOutputStream(getContext().getExternalFilesDir(
-				"test2"), "test2", files);
+		sfos = new SplitFileOutputStream(d, "test2", files);
 		dbt = new DropBoxThread(getContext(), sfos, splitBytes, timeoutMillis,
 				checkIntervalMillis);
 		dbt.start();
 		dbm.addData("test1", new byte[splitBytes.intValue()], 0);
-		Thread.sleep((long) checkIntervalMillis); // clear
+		Thread.sleep((long) (checkIntervalMillis * 1.2)); // clear
 		files.clear();
 
 		{ // split by bytes
@@ -320,8 +319,7 @@ public class DropBoxThreadTestCase extends AndroidTestCase {
 		Long splitBytes = 5000L;
 		Long timeoutMillis = 5000L;
 		Long checkIntervalMillis = 500L;
-		sfos = new SplitFileOutputStream(getContext().getExternalFilesDir(
-				"test2"), "test2", files);
+		sfos = new SplitFileOutputStream(d, "test2", files);
 		dbt = new DropBoxThread(getContext(), sfos, splitBytes, timeoutMillis,
 				checkIntervalMillis);
 		dbt.start();
