@@ -7,7 +7,7 @@ public class LogcatInputStream extends FilterInputStream {
 	private final Process process;
 	
 	public LogcatInputStream() throws IOException {
-		this(Runtime.getRuntime().exec("logcat -v time"));
+		this(Runtime.getRuntime().exec("logcat -v threadtime"));
 	}
 
 	private LogcatInputStream(Process process) {
