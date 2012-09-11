@@ -1,26 +1,15 @@
 package com.kogasoftware.odt.invehicledevice.service.logservice;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.RandomAccessFile;
 import java.nio.charset.Charset;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.json.JSONObject;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.DropBoxManager;
 import android.util.Base64;
@@ -50,6 +39,7 @@ public class DropBoxThread extends Thread {
 			"system_app_crash", "system_app_wtf", "system_server_anr",
 			"system_server_crash", "system_server_wtf", };
 	public static final Integer LAST_CHECK_DATE_LIMIT_DAYS = 5;
+	public static final String DELIMITER = "\u0001";
 	private final DropBoxManager dropBoxManager;
 	private final SplitFileOutputStream splitFileOutputStream;
 	private final Context context;
@@ -92,11 +82,6 @@ public class DropBoxThread extends Thread {
 
 		InputStream inputStream = null;
 		try {
-			if (splitFileOutputStream.getCount().equals(0L)) {
-				splitFileOutputStream.write("[".getBytes(c));
-			} else {
-				splitFileOutputStream.write("\n,".getBytes(c));
-			}
 			splitFileOutputStream.write(json.toString().getBytes(c));
 			inputStream = entry.getInputStream(); // 非常に大きなデータの可能性があるため、一度に全て読み出さないようにする
 			if (inputStream != null) {
@@ -114,7 +99,7 @@ public class DropBoxThread extends Thread {
 					splitFileOutputStream.write("\"".getBytes(c));
 				}
 			}
-			splitFileOutputStream.write("}".getBytes(c));
+			splitFileOutputStream.write(("}" + DELIMITER).getBytes(c));
 			splitFileOutputStream.flush();
 		} catch (IOException e) {
 			Log.w(TAG, e);
@@ -142,37 +127,20 @@ public class DropBoxThread extends Thread {
 		return lastCheckDate;
 	}
 
-	private void terminateLogFile() throws IOException {
-		if (splitFileOutputStream.getCount().equals(0L)) {
-			return;
-		}
-		splitFileOutputStream.write("]".getBytes(CHARSET));
-	}
-
-	private void splitLogFile() {
-		try {
-			terminateLogFile();
-			splitFileOutputStream.split();
-		} catch (IOException e) {
-			Log.w(TAG, e);
-		}
-	}
-
 	@Override
 	public void run() {
 		Log.i(TAG, "start");
 		try {
 			while (true) {
-				dumpToFile();
+				try {
+					dumpToFile();
+				} catch (IOException e) {
+					Log.w(TAG, e);
+				}
 				Thread.sleep(checkIntervalMillis);
 			}
 		} catch (InterruptedException e) {
 		} finally {
-			try {
-				terminateLogFile();
-			} catch (IOException e) {
-				Log.e(TAG, e.toString(), e);
-			}
 			try {
 				splitFileOutputStream.close();
 			} catch (IOException e) {
@@ -182,12 +150,12 @@ public class DropBoxThread extends Thread {
 		Log.i(TAG, "exit");
 	}
 
-	public void dumpToFile() {
+	public void dumpToFile() throws IOException {
 		SharedPreferences sharedPreferences = context.getSharedPreferences(
 				SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
 		Date lastCheckDate = getLastCheckDate(sharedPreferences);
 		if (splitFileOutputStream.getElapsedMillisSinceFirstWrite() > timeoutMillis) {
-			splitLogFile();
+			splitFileOutputStream.split();
 		}
 		Date nextCheckDate = new Date();
 		// for (String tag : DROPBOX_TAGS) {
@@ -202,7 +170,7 @@ public class DropBoxThread extends Thread {
 				}
 				write(entry);
 				if (splitFileOutputStream.getCount() > splitBytes) {
-					splitLogFile();
+					splitFileOutputStream.split();
 				}
 				lastEntryTimeMillis = entry.getTimeMillis();
 			} finally {
@@ -214,25 +182,5 @@ public class DropBoxThread extends Thread {
 		SharedPreferences.Editor editor = sharedPreferences.edit();
 		editor.putLong(LAST_CHECKED_DATE_KEY, lastCheckDate.getTime());
 		editor.commit();
-	}
-
-	public static void terminateDropBoxLogFile(File file) {
-		// ファイルをすべて読み込まないよう注意する
-		RandomAccessFile randomAccessFile = null;
-		try {
-			randomAccessFile = new RandomAccessFile(file, "rw");
-			Long length = randomAccessFile.length();
-			if (length <= 0) {
-				return;
-			}
-			randomAccessFile.seek(length - 1);
-			if (randomAccessFile.readByte() == '}') { // ここの処理が文字コードUTF-16などでは動かないことがあるため注意
-				randomAccessFile.write(']');
-			}
-		} catch (IOException e) {
-			Log.w(TAG, e);
-		} finally {
-			Closeables.closeQuietly(randomAccessFile);
-		}
 	}
 }
