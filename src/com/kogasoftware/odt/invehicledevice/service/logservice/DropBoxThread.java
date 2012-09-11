@@ -99,7 +99,7 @@ public class DropBoxThread extends Thread {
 					splitFileOutputStream.write("\"".getBytes(c));
 				}
 			}
-			splitFileOutputStream.write(("}" + DELIMITER).getBytes(c));
+			splitFileOutputStream.write(("}" + DELIMITER + "\n").getBytes(c));
 			splitFileOutputStream.flush();
 		} catch (IOException e) {
 			Log.w(TAG, e);
