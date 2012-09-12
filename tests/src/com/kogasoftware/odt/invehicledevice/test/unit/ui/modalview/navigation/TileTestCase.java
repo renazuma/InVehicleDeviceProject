@@ -23,9 +23,12 @@ public class TileTestCase extends TestCase {
 		float m20 = d20 * (1 << 20);
 		float m20a = (float) ((2.4414062E-4) * (1 << 20));
 
-		String s = m1 + "/" + m2 + "/" + m3 + "/" + m17 + "/" + m20 + "/"
-				+ m20a;
-		Log.w("testF", s);
+		assertEquals(256f, m1);
+		assertEquals(256f, m2);
+		assertEquals(256f, m3);
+		assertEquals(256f, m17);
+		assertEquals(256f, m20);
+		assertEquals(256f, m20a);
 	}
 
 	public void testEquals() {

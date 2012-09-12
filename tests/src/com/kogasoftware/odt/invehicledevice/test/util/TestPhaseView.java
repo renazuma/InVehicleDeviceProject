@@ -9,5 +9,4 @@ public class TestPhaseView extends PhaseView {
 	public TestPhaseView(Context context, InVehicleDeviceService service) {
 		super(context, service);
 	}
-
 }
