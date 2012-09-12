@@ -11,6 +11,7 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Local
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.VoidReader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.ServiceUnitStatusLogLogic;
+import static org.mockito.Mockito.*;
 
 public class ServiceUnitStatusLogLogicTestCase extends
 		ServiceTestCase<InVehicleDeviceService> {
@@ -46,6 +47,12 @@ public class ServiceUnitStatusLogLogicTestCase extends
 		super.tearDown();
 	}
 
+	public void testConstructor_NoServiceInteractions() {
+		InVehicleDeviceService s = mock(InVehicleDeviceService.class);
+		new ServiceUnitStatusLogLogic(s);
+		verifyZeroInteractions(s);
+	}
+	
 	public void testSetLocation() {
 		String provider = "test";
 		for (Integer i = 0; i < 20; ++i) {

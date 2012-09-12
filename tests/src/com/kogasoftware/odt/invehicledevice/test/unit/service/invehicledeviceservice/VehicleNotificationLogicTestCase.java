@@ -1,5 +1,8 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledeviceservice;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyZeroInteractions;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -11,6 +14,7 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Local
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.VoidReader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.VehicleNotificationLogic;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class VehicleNotificationLogicTestCase extends
@@ -48,6 +52,12 @@ public class VehicleNotificationLogicTestCase extends
 		super.tearDown();
 	}
 
+	public void testConstructor_NoServiceInteractions() {
+		InVehicleDeviceService s = mock(InVehicleDeviceService.class);
+		new VehicleNotificationLogic(s);
+		verifyZeroInteractions(s);
+	}
+	
 	public void testMergeVehicleNotification_スケジュールnotification追加()
 			throws Exception {
 		final VehicleNotification vn = new VehicleNotification();
