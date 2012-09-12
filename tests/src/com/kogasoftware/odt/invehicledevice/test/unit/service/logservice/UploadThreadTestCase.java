@@ -101,8 +101,8 @@ public class UploadThreadTestCase extends AndroidTestCase {
 		}
 		d2.close();
 
-		File f1 = new File(Environment.getExternalStorageDirectory(), "foo");
-		File f2 = getContext().getFileStreamPath("foobar");
+		File f1 = new File(Environment.getExternalStorageDirectory(), "UploadThreadTestCase.baz");
+		File f2 = getContext().getFileStreamPath("UploadThreadTestCase.foobar");
 
 		FileUtils.writeByteArrayToFile(f1, d1.toString().getBytes(c));
 		FileUtils.writeByteArrayToFile(f2, d2.toByteArray());

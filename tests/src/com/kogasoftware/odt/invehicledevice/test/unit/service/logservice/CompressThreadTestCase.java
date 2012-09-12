@@ -57,9 +57,9 @@ public class CompressThreadTestCase extends AndroidTestCase {
 		}
 		d2.close();
 
-		File f1 = new File(Environment.getExternalStorageDirectory(), "foo");
-		File fe = new File(Environment.getExternalStorageDirectory(), "empty");
-		File f2 = getContext().getFileStreamPath("foobar");
+		File f1 = new File(Environment.getExternalStorageDirectory(), "CompressThreadTestCase.fuga");
+		File fe = new File(Environment.getExternalStorageDirectory(), "CompressThreadTestCase.empty");
+		File f2 = getContext().getFileStreamPath("CompressThreadTestCase.foobar");
 
 		FileUtils.writeByteArrayToFile(f1, d1.toString().getBytes(c));
 		FileUtils.touch(fe);
