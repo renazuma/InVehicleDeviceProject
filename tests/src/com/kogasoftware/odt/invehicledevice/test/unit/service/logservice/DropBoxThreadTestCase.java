@@ -54,6 +54,9 @@ public class DropBoxThreadTestCase extends AndroidTestCase {
 		List<JSONObject> l = new LinkedList<JSONObject>();
 		for (String s : FileUtils.readFileToString(file, DropBoxThread.CHARSET)
 				.split(DropBoxThread.DELIMITER)) {
+			if (s.replaceAll("^[\r\n\t ]+", "").isEmpty()) {
+				continue;
+			}
 			l.add(new JSONObject(s));
 		}
 		return l;
