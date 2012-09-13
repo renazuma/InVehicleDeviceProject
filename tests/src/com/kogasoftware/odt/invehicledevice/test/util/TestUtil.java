@@ -320,5 +320,10 @@ public class TestUtil {
 		}
 		return byteArrayOutputStream.toByteArray();
 	}
+
+	public static void advanceDate(int millis) {
+		Date now = InVehicleDeviceService.getDate();
+		InVehicleDeviceService.setMockDate(new Date(now.getTime() + millis));
+	}
 }
 
