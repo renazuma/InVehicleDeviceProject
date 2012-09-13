@@ -3,9 +3,12 @@ package com.kogasoftware.odt.invehicledevice.test.util;
 import java.util.List;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.test.ActivityInstrumentationTestCase2;
 
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 import com.kogasoftware.odt.invehicledevice.test.util.datasource.DummyDataSource;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.webapi.WebAPIException;
@@ -29,6 +32,12 @@ public class TestUtilWaitForStartUiTestCase extends
 			};
 		}
 
+		SharedPreferences.Editor editor = PreferenceManager
+				.getDefaultSharedPreferences(tc).edit();
+		editor.clear();
+		editor.putBoolean(SharedPreferencesKeys.INITIALIZED, true);
+		editor.apply();
+		
 		TestUtil.clearStatus();
 		TestUtil.setDataSource(ds);
 		a = getActivity();

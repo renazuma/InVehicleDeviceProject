@@ -118,6 +118,7 @@ public class LogService extends Service {
 	@Override
 	public void onCreate() {
 		destroyed = false;
+		super.onCreate();
 		Log.i(TAG, "onCreate()");
 
 		registerReceiver(sendLogBroadcastReceiver, new IntentFilter(
@@ -163,6 +164,7 @@ public class LogService extends Service {
 	@Override
 	public void onDestroy() {
 		destroyed = true;
+		super.onDestroy();
 		Log.i(TAG, "onDestroy()");
 		logcatThread.interrupt();
 		dropboxThread.interrupt();
@@ -221,5 +223,13 @@ public class LogService extends Service {
 			files.addAll(Arrays.asList(defaultFiles));
 		}
 		return files;
+	}
+
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		super.onStartCommand(intent, flags, startId);
+		Log.i(TAG, "onStartCommand(" + intent + ", " + flags + ", " + startId
+				+ ")");
+		return Service.START_STICKY;
 	}
 }

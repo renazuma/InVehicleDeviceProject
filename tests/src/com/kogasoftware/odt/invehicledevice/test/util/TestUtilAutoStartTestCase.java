@@ -54,7 +54,7 @@ public class TestUtilAutoStartTestCase extends
 		if (TestUtil.getTopActivity(c).getClassName()
 				.equals(InVehicleDeviceActivity.class.getName())) {
 			TestUtil.disableAutoStart(c);
-			sendKeys(KeyEvent.KEYCODE_HOME);
+			sendKeys(KeyEvent.KEYCODE_HOME, KeyEvent.KEYCODE_BACK);
 			Thread.sleep(10 * 1000);
 			return;
 		}

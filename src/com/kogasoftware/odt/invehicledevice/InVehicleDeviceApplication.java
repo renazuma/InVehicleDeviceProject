@@ -1,5 +1,7 @@
 package com.kogasoftware.odt.invehicledevice;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.acra.ACRA;
 import org.acra.ErrorReporter;
 import org.acra.ReportField;
@@ -7,13 +9,17 @@ import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
 
 import android.app.Application;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.StrictMode;
 import android.util.Log;
 
 import com.google.common.base.Throwables;
+import com.kogasoftware.odt.invehicledevice.service.logservice.LogService;
 import com.kogasoftware.odt.invehicledevice.service.logservice.LogServiceReportSender;
+import com.kogasoftware.odt.invehicledevice.service.startupservice.StartupService;
+import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
 
 @ReportsCrashes(formKey = "dFp5SnVVbTRuem13WmJ0YlVUb2NjaXc6MQ", mode = ReportingInteractionMode.TOAST, resToastText = R.string.crash_toast_text, customReportContent = {
 		ReportField.ANDROID_VERSION, ReportField.APP_VERSION_CODE,
@@ -33,6 +39,7 @@ import com.kogasoftware.odt.invehicledevice.service.logservice.LogServiceReportS
 public class InVehicleDeviceApplication extends Application {
 	private static final String TAG = InVehicleDeviceApplication.class
 			.getSimpleName();
+	private static final AtomicInteger ACRA_INIT_ONCE_WORKAROUND = new AtomicInteger(1);
 
 	@Override
 	public void onCreate() {
@@ -46,9 +53,18 @@ public class InVehicleDeviceApplication extends Application {
 	}
 
 	public void tryOnCreate() {
-		ACRA.init(this);
-		super.onCreate();
 		Log.i(TAG, "onCreate()");
+		if (ACRA_INIT_ONCE_WORKAROUND.getAndSet(0) != 0) {
+			ACRA.init(this);
+			super.onCreate();
+			ErrorReporter errorReporter = ACRA.getErrorReporter();
+			errorReporter.setReportSender(new LogServiceReportSender(this));
+		} else {
+			super.onCreate();
+			String message = "ACRA.init() called more than once";
+			Log.e(TAG, message);
+			Log.wtf(TAG, message);
+		}
 
 		try {
 			PackageInfo packageInfo = getPackageManager().getPackageInfo(
@@ -60,10 +76,11 @@ public class InVehicleDeviceApplication extends Application {
 			Log.w(TAG, e);
 		}
 
-		ErrorReporter errorReporter = ACRA.getErrorReporter();
-		errorReporter.setReportSender(new LogServiceReportSender(this));
-
 		enableStrictMode();
+
+		startService(new Intent(this, StartupService.class));
+		startService(new Intent(this, VoiceService.class));
+		startService(new Intent(this, LogService.class));
 	}
 
 	protected void enableStrictMode() {
@@ -71,7 +88,7 @@ public class InVehicleDeviceApplication extends Application {
 			StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
 					.detectAll().penaltyLog().penaltyDropBox().build());
 			StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-					.detectAll().penaltyLog().penaltyDropBox().penaltyDeath().build());
+					.detectAll().penaltyLog().penaltyDropBox().build());
 			Log.i(TAG, "StrictMode enabled");
 		}
 	}
@@ -80,5 +97,9 @@ public class InVehicleDeviceApplication extends Application {
 	public void onTerminate() {
 		super.onTerminate();
 		Log.i(TAG, "onTerminate()");
+
+		stopService(new Intent(this, StartupService.class));
+		stopService(new Intent(this, VoiceService.class));
+		stopService(new Intent(this, LogService.class));
 	}
 }
