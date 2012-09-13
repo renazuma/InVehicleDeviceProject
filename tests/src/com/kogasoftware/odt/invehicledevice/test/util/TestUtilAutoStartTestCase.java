@@ -4,19 +4,15 @@ import android.content.Context;
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.KeyEvent;
 
-import com.kogasoftware.odt.invehicledevice.service.startupservice.StartupService;
+import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
 public class TestUtilAutoStartTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
-
-	private static final String TAG = TestUtilAutoStartTestCase.class
-			.getSimpleName();
 	Context c;
 
 	public TestUtilAutoStartTestCase() {
-		super("com.kogasoftware.odt.invehicledevice",
-				InVehicleDeviceActivity.class);
+		super(InVehicleDeviceActivity.class);
 	}
 
 	@Override
@@ -31,47 +27,34 @@ public class TestUtilAutoStartTestCase extends
 	}
 
 	public void callTestDisableAutoStart() throws Exception {
-		// ActivityのUI起動後、自動起動をOFFにしてActivityを終了
-		InVehicleDeviceActivity a = getActivity();
-		TestUtil.waitForStartUI(a);
+		// 自動起動をOFFにし、Activityを終了
 		TestUtil.disableAutoStart(c);
-		a.finish();
-		a = null;
-		Thread.sleep(5 * 1000);
-
-		// 最前面のActivityが車載器の場合失敗
-		if (TestUtil.getTopActivity(c).getClassName()
-				.equals(InVehicleDeviceActivity.class.getName())) {
-			fail();
-		}
-
+		sendKeys(KeyEvent.KEYCODE_HOME, KeyEvent.KEYCODE_BACK);
+		
+		// 非表示になることを確認
+		TestUtil.assertHide(c, InVehicleDeviceActivity.class);
+		
 		// 自動起動をON
 		TestUtil.enableAutoStart(c);
-		Thread.sleep(StartupService.CHECK_DEVICE_INTERVAL_MILLIS);
-		Thread.sleep(5 * 1000);
-
-		// 最前面のActivityが車載器の場合成功
-		if (TestUtil.getTopActivity(c).getClassName()
-				.equals(InVehicleDeviceActivity.class.getName())) {
-			TestUtil.disableAutoStart(c);
-			sendKeys(KeyEvent.KEYCODE_HOME, KeyEvent.KEYCODE_BACK);
-			Thread.sleep(10 * 1000);
-			return;
-		}
-
-		fail();
+		
+		// 表示されることを確認
+		TestUtil.assertShow(c, InVehicleDeviceActivity.class);
 	}
 
 	public void testDisableAutoStart1() throws Exception {
 		callTestDisableAutoStart();
 	}
 
-	// 二度目以降の実行に失敗することがあるので、複数回実行する
+	/**
+	 *  二度目以降の実行に失敗することがあるので、複数回実行する
+	 */
 	public void testDisableAutoStart2() throws Exception {
 		callTestDisableAutoStart();
 	}
 
-	// 二度目以降の実行に失敗することがあるので、複数回実行する
+	/**
+	 *  二度目以降の実行に失敗することがあるので、複数回実行する
+	 */
 	public void testDisableAutoStart3() throws Exception {
 		callTestDisableAutoStart();
 	}

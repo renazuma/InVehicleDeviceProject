@@ -25,6 +25,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.RemoteException;
 import android.os.StrictMode;
+import android.util.Log;
 import android.view.View;
 
 import com.google.common.base.Stopwatch;
@@ -33,9 +34,7 @@ import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
 import com.kogasoftware.odt.invehicledevice.service.startupservice.IStartupService;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
@@ -170,6 +169,36 @@ public class TestUtil {
 		throw new RuntimeException("topActivity not found");
 	}
 
+	public static void assertChangeVisibility(Context context,
+			Class<? extends Activity> activityClass, Boolean visibility) {
+		ActivityManager activityManager = (ActivityManager) context
+				.getSystemService(Activity.ACTIVITY_SERVICE);
+		Stopwatch stopwatch = new Stopwatch().start();
+		while (stopwatch.elapsedMillis() < 5 * 1000) {
+			for (RunningTaskInfo runningTaskInfo : activityManager
+					.getRunningTasks(1)) {
+				Log.w(TAG, "e1=" + runningTaskInfo.topActivity.getClassName());
+				Log.w(TAG, "e2=" + activityClass.getName());
+				if (visibility.equals(runningTaskInfo.topActivity.getClassName().equals(
+						activityClass.getName()))) {
+					return;
+				}
+			}
+			Uninterruptibles.sleepUninterruptibly(50, TimeUnit.MILLISECONDS);
+		}
+		Assert.fail();
+	}
+
+	public static void assertShow(Context context,
+			Class<? extends Activity> activityClass) {
+		assertChangeVisibility(context, activityClass, true);
+	}
+
+	public static void assertHide(Context context,
+			Class<? extends Activity> activityClass) {
+		assertChangeVisibility(context, activityClass, false);
+	}
+
 	public static void disableAutoStart(Context context)
 			throws InterruptedException {
 		setAutoStart(context, false);
@@ -221,10 +250,10 @@ public class TestUtil {
 		t.join();
 	}
 
-	private static <T> WeakHashMap<T, Integer> createManyEmptyObjectAndCheckMemory(Context context, Class<T> c, Integer numObjects)
-			throws Exception {
+	private static <T> WeakHashMap<T, Integer> createManyEmptyObjectAndCheckMemory(
+			Context context, Class<T> c, Integer numObjects) throws Exception {
 		WeakHashMap<T, Integer> whm = new WeakHashMap<T, Integer>();
-		
+
 		// サイズが小さいことを確認
 		List<T> l = new LinkedList<T>();
 		for (Integer i = 0; i < numObjects; ++i) {
@@ -247,11 +276,12 @@ public class TestUtil {
 			throws Exception {
 		assertEmptyObject(context, c, false);
 	}
-	
-	public static <T> void assertEmptyObject(Context context, Class<T> c, Boolean bigObject)
-			throws Exception {
-		WeakHashMap<T, Integer> whm = createManyEmptyObjectAndCheckMemory(context, c, bigObject ? (1 << 12) : (1 << 17));
-		
+
+	public static <T> void assertEmptyObject(Context context, Class<T> c,
+			Boolean bigObject) throws Exception {
+		WeakHashMap<T, Integer> whm = createManyEmptyObjectAndCheckMemory(
+				context, c, bigObject ? (1 << 12) : (1 << 17));
+
 		// 自動でGCされるかを確認
 		Stopwatch sw = new Stopwatch().start();
 		while (sw.elapsedTime(TimeUnit.SECONDS) < 10) {
@@ -265,18 +295,20 @@ public class TestUtil {
 		Assert.fail("WeakHashMap size=" + whm.size() + " " + whm);
 	}
 
-	public static byte[] readWithNonBlock(InputStream inputStream) throws IOException, InterruptedException {
+	public static byte[] readWithNonBlock(InputStream inputStream)
+			throws IOException, InterruptedException {
 		return readWithNonBlock(inputStream, 0);
 	}
 
-	public static byte[] readWithNonBlock(InputStream inputStream, long timeout) throws IOException, InterruptedException {
+	public static byte[] readWithNonBlock(InputStream inputStream, long timeout)
+			throws IOException, InterruptedException {
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		Stopwatch stopwatch = new Stopwatch().start();
 		while (true) {
 			int available = inputStream.available();
 			if (available <= 0) {
 				if (stopwatch.elapsedMillis() > timeout) {
-					break;	
+					break;
 				}
 				Thread.sleep(timeout / 10);
 				continue;
@@ -289,3 +321,4 @@ public class TestUtil {
 		return byteArrayOutputStream.toByteArray();
 	}
 }
+
