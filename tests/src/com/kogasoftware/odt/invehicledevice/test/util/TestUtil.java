@@ -67,7 +67,7 @@ public class TestUtil {
 				if (condition.call()) {
 					return;
 				}
-				Thread.sleep(timeout / 10);
+				Thread.sleep((long) (Math.log(timeout) * 20));
 			}
 		} catch (Exception e) {
 			throw new AssertionFailedError(e);
@@ -171,7 +171,8 @@ public class TestUtil {
 					}
 
 					@Override
-					public void onServiceDisconnected(ComponentName componentName) {
+					public void onServiceDisconnected(
+							ComponentName componentName) {
 						myLooper.quit();
 					}
 				};
