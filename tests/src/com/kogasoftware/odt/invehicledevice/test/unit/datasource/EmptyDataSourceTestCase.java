@@ -1,12 +1,12 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.datasource;
 
-import android.test.AndroidTestCase;
+import android.test.InstrumentationTestCase;
 
 import com.kogasoftware.odt.invehicledevice.datasource.EmptyDataSource;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 
-public class EmptyDataSourceTestCase extends AndroidTestCase {
+public class EmptyDataSourceTestCase extends InstrumentationTestCase {
 	public void testSmallInstance() throws Exception {
-		TestUtil.assertEmptyObject(getContext(), EmptyDataSource.class);
+		TestUtil.assertEmptyObject(getInstrumentation(), EmptyDataSource.class);
 	}
 }
