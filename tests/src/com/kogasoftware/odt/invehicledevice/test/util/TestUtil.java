@@ -19,6 +19,7 @@ import org.joda.time.DateTime;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
+import android.app.Instrumentation;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -27,6 +28,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.RemoteException;
 import android.os.StrictMode;
+import android.view.KeyEvent;
 import android.view.View;
 
 import com.google.common.base.Stopwatch;
@@ -169,7 +171,8 @@ public class TestUtil {
 					}
 
 					@Override
-					public void onServiceDisconnected(ComponentName arg0) {
+					public void onServiceDisconnected(ComponentName componentName) {
+						myLooper.quit();
 					}
 				};
 
@@ -297,13 +300,17 @@ public class TestUtil {
 		return whm;
 	}
 
-	public static <T> void assertEmptyObject(Context context, Class<T> c)
-			throws Exception {
-		assertEmptyObject(context, c, false);
-	}
+	public static <T> void assertEmptyObject(Instrumentation instrumentation,
+			Class<T> c, Boolean bigObject) throws Exception {
+		Context context = instrumentation.getContext();
+		TestUtil.disableAutoStart(context);
+		try {
+			instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
+			instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_HOME);
+		} catch (SecurityException e) {
+		}
+		Thread.sleep(5000);
 
-	public static <T> void assertEmptyObject(Context context, Class<T> c,
-			Boolean bigObject) throws Exception {
 		WeakHashMap<T, Integer> whm = createManyEmptyObjectAndCheckMemory(
 				context, c, bigObject ? (1 << 12) : (1 << 17));
 
@@ -353,5 +360,10 @@ public class TestUtil {
 
 	public static void advanceDate(double millis) {
 		advanceDate((long) millis);
+	}
+
+	public static <T> void assertEmptyObject(Instrumentation instrumentation,
+			Class<T> c) throws Exception {
+		assertEmptyObject(instrumentation, c, false);
 	}
 }

@@ -3,13 +3,31 @@ package com.kogasoftware.odt.invehicledevice.test.util;
 import java.util.LinkedList;
 import java.util.List;
 import junit.framework.AssertionFailedError;
-import android.content.Context;
-import android.test.AndroidTestCase;
+import android.app.Instrumentation;
+import android.test.InstrumentationTestCase;
 
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 
-public class TestUtilEmptyObjectTestCase extends AndroidTestCase {
-	static List<NoGCTestClass> instances = new LinkedList<NoGCTestClass>();
+public class TestUtilEmptyObjectTestCase extends InstrumentationTestCase {
+	static List<NoGCTestClass> instances;
+	
+	@Override
+	public void setUp() throws Exception {
+		super.setUp();
+		instances = new LinkedList<NoGCTestClass>();
+	}
+
+	@Override
+	public void tearDown() throws Exception {
+		try {
+			instances.clear();
+			instances = null;
+			System.gc();
+			Runtime.getRuntime().gc();
+		} finally {
+			super.tearDown();
+		}
+	}
 
 	static class NoGCTestClass {
 		NoGCTestClass() {
@@ -28,13 +46,13 @@ public class TestUtilEmptyObjectTestCase extends AndroidTestCase {
 	}
 
 	public void testAssertEmptyObject() throws Exception {
-		Context c = getContext();
-		TestUtil.assertEmptyObject(c, SmallTestClass.class);
-		TestUtil.assertEmptyObject(c, SmallTestClass.class, true);
-		TestUtil.assertEmptyObject(c, BigTestClass.class, true);
+		Instrumentation i = getInstrumentation();
+		TestUtil.assertEmptyObject(i, SmallTestClass.class);
+		TestUtil.assertEmptyObject(i, SmallTestClass.class, true);
+		TestUtil.assertEmptyObject(i, BigTestClass.class, true);
 		instances.clear();
 		try {
-			TestUtil.assertEmptyObject(c, NoGCTestClass.class, true);
+			TestUtil.assertEmptyObject(i, NoGCTestClass.class, true);
 			fail();
 		} catch (AssertionFailedError e) {
 		} finally {
