@@ -1,5 +1,9 @@
 package com.kogasoftware.odt.invehicledevice;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.acra.ACRA;
@@ -16,6 +20,7 @@ import android.os.StrictMode;
 import android.util.Log;
 
 import com.google.common.base.Throwables;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.logservice.LogService;
 import com.kogasoftware.odt.invehicledevice.service.logservice.LogServiceReportSender;
 import com.kogasoftware.odt.invehicledevice.service.startupservice.StartupService;
@@ -39,7 +44,8 @@ import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
 public class InVehicleDeviceApplication extends Application {
 	private static final String TAG = InVehicleDeviceApplication.class
 			.getSimpleName();
-	private static final AtomicInteger ACRA_INIT_ONCE_WORKAROUND = new AtomicInteger(1);
+	private static final AtomicInteger ACRA_INIT_ONCE_WORKAROUND = new AtomicInteger(
+			1);
 
 	@Override
 	public void onCreate() {
@@ -101,5 +107,13 @@ public class InVehicleDeviceApplication extends Application {
 		stopService(new Intent(this, StartupService.class));
 		stopService(new Intent(this, VoiceService.class));
 		stopService(new Intent(this, LogService.class));
+
+		for (Entry<Date, List<CountDownLatch>> entry : InVehicleDeviceService.mockSleepStatus
+				.entrySet()) {
+			for (CountDownLatch countDownLatch : entry.getValue()) {
+				countDownLatch.countDown();
+			}
+		}
+		InVehicleDeviceService.mockSleepStatus.clear();
 	}
 }

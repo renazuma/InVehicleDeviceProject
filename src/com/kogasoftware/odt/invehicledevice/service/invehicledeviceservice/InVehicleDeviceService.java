@@ -1,19 +1,18 @@
 package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
-import java.util.WeakHashMap;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicReference;
-
-import org.apache.commons.lang3.tuple.Pair;
 
 import android.app.Activity;
 import android.app.Service;
@@ -30,6 +29,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.BuildConfig;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
@@ -135,6 +135,7 @@ public class InVehicleDeviceService extends Service {
 	public static final Integer NEW_SCHEDULE_DOWNLOAD_MINUTE = 5;
 
 	private static final Object MOCK_DATE_LOCK = new Object();
+	public static final SortedMap<Date, List<CountDownLatch>> mockSleepStatus = new TreeMap<Date, List<CountDownLatch>>();
 	private static Boolean useMockDate = false;
 	private static Date mockDate = new Date();
 
@@ -171,16 +172,19 @@ public class InVehicleDeviceService extends Service {
 		}
 	}
 
-	private static final List<Pair<Date, CountDownLatch>> mockSleepStatus = new LinkedList<Pair<Date, CountDownLatch>>();
-
 	public static void sleep(long time) throws InterruptedException {
 		if (!BuildConfig.DEBUG) {
 			Thread.sleep(time);
 			return;
 		}
 		CountDownLatch countDownLatch = new CountDownLatch(1);
-		mockSleepStatus.add(Pair.of(new Date(getDate().getTime() + time),
-				countDownLatch));
+		synchronized (MOCK_DATE_LOCK) {
+			Date wakeUpDate = new Date(getDate().getTime() + time);
+			if (!mockSleepStatus.containsKey(wakeUpDate)) {
+				mockSleepStatus.put(wakeUpDate, new LinkedList<CountDownLatch>());
+			}
+			mockSleepStatus.get(wakeUpDate).add(countDownLatch);
+		}
 		countDownLatch.await();
 	}
 
@@ -192,11 +196,16 @@ public class InVehicleDeviceService extends Service {
 		synchronized (MOCK_DATE_LOCK) {
 			useMockDate = true;
 			InVehicleDeviceService.mockDate = mockDate;
-			for (Pair<Date, CountDownLatch> sleepState : Lists.newLinkedList(mockSleepStatus)) {
-				if (mockDate.after(sleepState.getKey())) {
-					sleepState.getValue().countDown();
-					mockSleepStatus.remove(sleepState);
+			for (Entry<Date, List<CountDownLatch>> entry : Maps.newTreeMap(
+					mockSleepStatus).entrySet()) {
+				if (mockDate.before(entry.getKey())) {
+					break;
 				}
+				for (CountDownLatch countDownLatch : entry.getValue()) {
+					countDownLatch.countDown();
+					Thread.yield();
+				}
+				mockSleepStatus.remove(entry.getKey());
 			}
 		}
 	}

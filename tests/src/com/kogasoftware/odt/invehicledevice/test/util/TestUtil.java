@@ -179,8 +179,8 @@ public class TestUtil {
 					.getRunningTasks(1)) {
 				Log.w(TAG, "e1=" + runningTaskInfo.topActivity.getClassName());
 				Log.w(TAG, "e2=" + activityClass.getName());
-				if (visibility.equals(runningTaskInfo.topActivity.getClassName().equals(
-						activityClass.getName()))) {
+				if (visibility.equals(runningTaskInfo.topActivity
+						.getClassName().equals(activityClass.getName()))) {
 					return;
 				}
 			}
@@ -321,9 +321,12 @@ public class TestUtil {
 		return byteArrayOutputStream.toByteArray();
 	}
 
-	public static void advanceDate(int millis) {
+	public static void advanceDate(long millis) {
 		Date now = InVehicleDeviceService.getDate();
 		InVehicleDeviceService.setMockDate(new Date(now.getTime() + millis));
 	}
-}
 
+	public static void advanceDate(double millis) {
+		advanceDate((long) millis);
+	}
+}
