@@ -1,11 +1,13 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.ui.modalview;
 
 import static org.mockito.Mockito.mock;
+
 import android.app.Activity;
 
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.test.util.TestModalView;
+import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 
 public class ModalViewTestCase extends EmptyActivityInstrumentationTestCase2 {
 	InVehicleDeviceService s;
@@ -25,7 +27,7 @@ public class ModalViewTestCase extends EmptyActivityInstrumentationTestCase2 {
 			}
 		});
 	}
-	
+
 	public void testShow() throws Exception {
 		runOnUiThreadSync(new Runnable() {
 			@Override
@@ -33,8 +35,7 @@ public class ModalViewTestCase extends EmptyActivityInstrumentationTestCase2 {
 				mv.show();
 			}
 		});
-		getInstrumentation().waitForIdleSync();
-		assertTrue(mv.isShown());
+		TestUtil.assertShow(mv);
 		
 		runOnUiThreadSync(new Runnable() {
 			@Override
@@ -42,19 +43,17 @@ public class ModalViewTestCase extends EmptyActivityInstrumentationTestCase2 {
 				mv.hide();
 			}
 		});
-		getInstrumentation().waitForIdleSync();
-		assertFalse(mv.isShown());
-		
+		TestUtil.assertHide(mv);
+
 		runOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
 				mv.show();
 			}
 		});
-		getInstrumentation().waitForIdleSync();
-		assertTrue(mv.isShown());
+		TestUtil.assertShow(mv);
 	}
-	
+
 	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
