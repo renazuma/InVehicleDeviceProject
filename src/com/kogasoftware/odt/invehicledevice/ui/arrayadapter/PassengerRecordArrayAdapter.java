@@ -102,11 +102,11 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 				|| !passengerRecord.getUser().isPresent()) {
 			return;
 		}
-		if (service.canGetOn(passengerRecord) && service.isGetOnScheduled(passengerRecord)) {
+		if (service.isGetOnScheduled(passengerRecord)) {
 			super.add(passengerRecord);
 			return;
 		}
-		if (service.canGetOff(passengerRecord) && service.isGetOffScheduled(passengerRecord)) {
+		if (service.isGetOffScheduled(passengerRecord)) {
 			super.add(passengerRecord);
 			return;
 		}

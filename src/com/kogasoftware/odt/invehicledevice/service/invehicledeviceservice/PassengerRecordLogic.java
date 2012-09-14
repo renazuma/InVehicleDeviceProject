@@ -158,7 +158,7 @@ public class PassengerRecordLogic {
 			dataSource.saveOnClose(dataSource.getOnPassenger(operationSchedule,
 					reservation, user, passengerRecord,
 					new EmptyWebAPICallback<Void>()));
-		} else if (passengerRecord.isRiding()) {
+		} else if (passengerRecord.isRiding() || passengerRecord.isGotOff()) {
 			passengerRecord.setGetOffTime(new Date());
 			passengerRecord.setArrivalOperationScheduleId(operationSchedule
 					.getId());
@@ -195,7 +195,7 @@ public class PassengerRecordLogic {
 			dataSource.saveOnClose(dataSource.cancelGetOnPassenger(
 					operationSchedule, reservation, user,
 					new EmptyWebAPICallback<Void>()));
-		} else if (passengerRecord.isRiding()) {
+		} else if (passengerRecord.isUnhandled() || passengerRecord.isRiding()) {
 			passengerRecord.clearGetOnTime();
 			passengerRecord.clearDepartureOperationScheduleId();
 			reservation.setPassengerRecords(Lists.newArrayList(passengerRecord)); // TODO:消す
