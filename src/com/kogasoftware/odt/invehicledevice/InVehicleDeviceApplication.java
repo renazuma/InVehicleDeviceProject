@@ -19,7 +19,6 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.StrictMode;
 import android.util.Log;
 
-import com.google.common.base.Throwables;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.logservice.LogService;
 import com.kogasoftware.odt.invehicledevice.service.logservice.LogServiceReportSender;
@@ -49,22 +48,12 @@ public class InVehicleDeviceApplication extends Application {
 
 	@Override
 	public void onCreate() {
-		try { // Applicationオブジェクトが生成できない旨の例外が起きることがあり、このonCreateが怪しいためデバッグ用にwtfとして記録する。
-			tryOnCreate();
-		} catch (Throwable t) {
-			Log.wtf(TAG, t);
-			Log.wtf(TAG, Throwables.getStackTraceAsString(t));
-			throw Throwables.propagate(t);
-		}
-	}
-
-	public void tryOnCreate() {
 		Log.i(TAG, "onCreate()");
 		if (ACRA_INIT_ONCE_WORKAROUND.getAndSet(0) != 0) {
 			ACRA.init(this);
 			super.onCreate();
-			ErrorReporter errorReporter = ACRA.getErrorReporter();
-			errorReporter.setReportSender(new LogServiceReportSender(this));
+			ACRA.getErrorReporter().setReportSender(
+					new LogServiceReportSender(this));
 		} else {
 			super.onCreate();
 			String message = "ACRA.init() called more than once";
