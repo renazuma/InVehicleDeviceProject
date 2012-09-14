@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import android.app.Activity;
+import android.app.Instrumentation;
 import android.content.res.XmlResourceParser;
 import android.os.Handler;
 import android.test.ActivityInstrumentationTestCase2;
@@ -78,9 +79,11 @@ public class EmptyActivityInstrumentationTestCase2 extends
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
+		Instrumentation i = getInstrumentation();
+		TestUtil.disableAutoStart(i.getContext());
 		Thread.sleep(2000); // 別タスクがStatusを保存するかもしれないため、一定時間待つ
 		a = getActivity();
-		solo = new Solo(getInstrumentation(), a);
+		solo = new Solo(i, a);
 	}
 
 	@Override
