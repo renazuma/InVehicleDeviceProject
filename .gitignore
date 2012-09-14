@@ -23,9 +23,9 @@ jni/*.xz
 jni/*/*.a
 local.properties
 release.keystore
+debug.keystore
+lint-results.xml
 
 open_jtalk
 *_GIT_IGNORE_*
 
-
-debug.keystore
