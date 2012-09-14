@@ -88,7 +88,7 @@ public class TestUtil {
 		assertChange(new Callable<Boolean>() {
 			@Override
 			public Boolean call() {
-				return visibility.equals(view.getVisibility());
+				return visibility.equals(view.getVisibility() == View.VISIBLE);
 			}
 		});
 	}
