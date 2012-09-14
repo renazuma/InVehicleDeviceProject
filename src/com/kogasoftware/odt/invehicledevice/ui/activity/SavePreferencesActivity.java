@@ -89,13 +89,22 @@ public class SavePreferencesActivity extends Activity {
 	}
 	
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		finish(); // 必ずfinishする
+	protected void onStart() {
+		super.onStart();
 		AsyncTask<Void, Void, Pair<Boolean, String>> asyncTask = new AsyncTask<Void, Void, Pair<Boolean, String>>() {
 			@Override
+			protected void onCancelled() {
+				if (!isFinishing()) {
+					finish();
+				}
+			}
+			
+			@Override
 			protected void onPostExecute(Pair<Boolean, String> result) {
-				if (isCancelled() || result == null) {
+				if (!isFinishing()) {
+					finish();
+				}
+				if (result == null) {
 					return;
 				} else if (!result.getKey()) {
 					Toast.makeText(SavePreferencesActivity.this,

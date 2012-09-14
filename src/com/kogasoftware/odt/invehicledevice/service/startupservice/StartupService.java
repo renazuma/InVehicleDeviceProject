@@ -21,29 +21,35 @@ import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.kogasoftware.odt.invehicledevice.service.logservice.LogService;
 import com.kogasoftware.odt.invehicledevice.ui.BigToast;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
 public class StartupService extends Service {
 	private static final String TAG = StartupService.class.getSimpleName();
 	public static final long CHECK_DEVICE_INTERVAL_MILLIS = 10 * 1000;
+	private final Handler handler = new Handler();
 	private final AtomicBoolean enabled = new AtomicBoolean(true);
-	private final BroadcastReceiver screenOffBroadcastReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			Log.i(TAG, "screen off");
-			enabled.set(false);
-		}
-	};
 	private final BroadcastReceiver screenOnBroadcastReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			Log.i(TAG, "screen on");
-			enabled.set(true);
+			handler.post(checkDeviceAndShowActivityCallback);
 		}
 	};
+	private final IStartupService.Stub binder = new IStartupService.Stub() {
+		@Override
+		public void disable() throws RemoteException {
+			enabled.set(false);
+			Log.i(TAG, "Startup disabled");
+		}
 
+		@Override
+		public void enable() throws RemoteException {
+			enabled.set(true);
+			Log.i(TAG, "Startup enabled");
+			handler.post(checkDeviceAndShowActivityCallback);
+		}
+	};
 	private final Runnable checkDeviceAndShowActivityCallback = new Runnable() {
 		@Override
 		public void run() {
@@ -52,10 +58,20 @@ public class StartupService extends Service {
 			handler.postDelayed(this, CHECK_DEVICE_INTERVAL_MILLIS);
 		}
 	};
-	
+
 	private void checkDeviceAndStartActivity() {
 		if (!enabled.get()) {
 			Log.i(TAG, "waiting for startup enabled");
+			return;
+		}
+
+		PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+		if (powerManager == null) {
+			Log.w(TAG, "getSystemService(Context.POWER_SERVICE) == null");
+			return;
+		}
+		if (!powerManager.isScreenOn()) {
+			Log.i(TAG, "package replaced & screen off");
 			return;
 		}
 
@@ -109,8 +125,6 @@ public class StartupService extends Service {
 		startIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		startActivity(startIntent);
 	}
-	
-	private final Handler handler = new Handler();
 
 	public static class StartupBroadcastReceiver extends BroadcastReceiver {
 		private static final String TAG = StartupBroadcastReceiver.class
@@ -134,17 +148,6 @@ public class StartupService extends Service {
 							+ "\")");
 					return;
 				}
-				PowerManager powerManager = (PowerManager) context
-						.getSystemService(Context.POWER_SERVICE);
-				if (powerManager == null) {
-					Log.w(TAG,
-							"getSystemService(Context.POWER_SERVICE) == null");
-					return;
-				}
-				if (!powerManager.isScreenOn()) {
-					Log.i(TAG, "package replaced & screen off");
-					return;
-				}
 				Log.i(TAG, "package replaced");
 			}
 			context.startService(new Intent(context, StartupService.class));
@@ -156,27 +159,11 @@ public class StartupService extends Service {
 		return binder;
 	}
 
-	private final IStartupService.Stub binder = new IStartupService.Stub() {
-		@Override
-		public void disable() throws RemoteException {
-			enabled.set(false);
-			Log.i(TAG, "Startup disabled");
-		}
-
-		@Override
-		public void enable() throws RemoteException {
-			enabled.set(true);
-			Log.i(TAG, "Startup enabled");
-		}
-	};
-
 	@Override
 	public void onCreate() {
 		Log.i(TAG, "onCreate()");
 		getApplicationContext().registerReceiver(screenOnBroadcastReceiver,
 				new IntentFilter(Intent.ACTION_SCREEN_ON));
-		getApplicationContext().registerReceiver(screenOffBroadcastReceiver,
-				new IntentFilter(Intent.ACTION_SCREEN_OFF));
 		handler.post(checkDeviceAndShowActivityCallback);
 	}
 
@@ -184,7 +171,6 @@ public class StartupService extends Service {
 	public void onDestroy() {
 		Log.i(TAG, "onDestroy()");
 		getApplicationContext().unregisterReceiver(screenOnBroadcastReceiver);
-		getApplicationContext().unregisterReceiver(screenOffBroadcastReceiver);
 		handler.removeCallbacks(checkDeviceAndShowActivityCallback);
 	}
 
@@ -193,8 +179,6 @@ public class StartupService extends Service {
 		super.onStartCommand(intent, flags, startId);
 		Log.i(TAG, "onStartCommand(" + intent + ", " + flags + ", " + startId
 				+ ")");
-		enabled.set(true);
-		startService(new Intent(this, LogService.class));
 		return Service.START_STICKY;
 	}
 }

@@ -19,17 +19,17 @@ public class VoiceService extends Service {
 			+ ".ACTION_VOICE";
 	public static final String MESSAGE_KEY = "MESSAGE_KEY";
 	private static final String TAG = VoiceService.class.getSimpleName();
+	private final BlockingQueue<String> voices = new LinkedBlockingQueue<String>();
+	private Thread voiceThread = new EmptyThread();
 
 	@Override
 	public IBinder onBind(Intent intent) {
 		return null;
 	}
 
-	private final BlockingQueue<String> voices = new LinkedBlockingQueue<String>();
-	private Thread voiceThread = new EmptyThread();
-
 	@Override
 	public void onCreate() {
+		super.onCreate();
 		voiceThread = new VoiceThread(this, voices);
 		voiceThread.start();
 	}
@@ -54,6 +54,7 @@ public class VoiceService extends Service {
 
 	@Override
 	public void onDestroy() {
+		super.onDestroy();
 		voiceThread.interrupt();
 	}
 }
