@@ -1,5 +1,9 @@
 package com.kogasoftware.odt.invehicledevice;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.acra.ACRA;
@@ -15,7 +19,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.StrictMode;
 import android.util.Log;
 
-import com.google.common.base.Throwables;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.logservice.LogService;
 import com.kogasoftware.odt.invehicledevice.service.logservice.LogServiceReportSender;
 import com.kogasoftware.odt.invehicledevice.service.startupservice.StartupService;
@@ -39,26 +43,17 @@ import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
 public class InVehicleDeviceApplication extends Application {
 	private static final String TAG = InVehicleDeviceApplication.class
 			.getSimpleName();
-	private static final AtomicInteger ACRA_INIT_ONCE_WORKAROUND = new AtomicInteger(1);
+	private static final AtomicInteger ACRA_INIT_ONCE_WORKAROUND = new AtomicInteger(
+			1);
 
 	@Override
 	public void onCreate() {
-		try { // Applicationオブジェクトが生成できない旨の例外が起きることがあり、このonCreateが怪しいためデバッグ用にwtfとして記録する。
-			tryOnCreate();
-		} catch (Throwable t) {
-			Log.wtf(TAG, t);
-			Log.wtf(TAG, Throwables.getStackTraceAsString(t));
-			throw Throwables.propagate(t);
-		}
-	}
-
-	public void tryOnCreate() {
 		Log.i(TAG, "onCreate()");
 		if (ACRA_INIT_ONCE_WORKAROUND.getAndSet(0) != 0) {
 			ACRA.init(this);
 			super.onCreate();
-			ErrorReporter errorReporter = ACRA.getErrorReporter();
-			errorReporter.setReportSender(new LogServiceReportSender(this));
+			ACRA.getErrorReporter().setReportSender(
+					new LogServiceReportSender(this));
 		} else {
 			super.onCreate();
 			String message = "ACRA.init() called more than once";
@@ -101,5 +96,13 @@ public class InVehicleDeviceApplication extends Application {
 		stopService(new Intent(this, StartupService.class));
 		stopService(new Intent(this, VoiceService.class));
 		stopService(new Intent(this, LogService.class));
+
+		for (Entry<Date, List<CountDownLatch>> entry : InVehicleDeviceService.mockSleepStatus
+				.entrySet()) {
+			for (CountDownLatch countDownLatch : entry.getValue()) {
+				countDownLatch.countDown();
+			}
+		}
+		InVehicleDeviceService.mockSleepStatus.clear();
 	}
 }

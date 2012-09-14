@@ -5,7 +5,10 @@ import java.util.Date;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
@@ -26,6 +29,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.BuildConfig;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
@@ -130,8 +134,10 @@ public class InVehicleDeviceService extends Service {
 	public static final Integer NEW_SCHEDULE_DOWNLOAD_HOUR = 0;
 	public static final Integer NEW_SCHEDULE_DOWNLOAD_MINUTE = 5;
 
-	private static final Object MOCK_DATE_OFFSET_MILLIS_LOCK = new Object();
-	private static Optional<Long> mockDateOffsetMillis = Optional.absent();
+	private static final Object MOCK_DATE_LOCK = new Object();
+	public static final SortedMap<Date, List<CountDownLatch>> mockSleepStatus = new TreeMap<Date, List<CountDownLatch>>();
+	private static Boolean useMockDate = false;
+	private static Date mockDate = new Date();
 
 	private static final String TAG = InVehicleDeviceService.class
 			.getSimpleName();
@@ -157,13 +163,29 @@ public class InVehicleDeviceService extends Service {
 			return new Date();
 		}
 		Date now = new Date();
-		synchronized (MOCK_DATE_OFFSET_MILLIS_LOCK) {
-			if (mockDateOffsetMillis.isPresent()) {
-				return new Date(now.getTime() + mockDateOffsetMillis.get());
+		synchronized (MOCK_DATE_LOCK) {
+			if (useMockDate) {
+				return mockDate;
 			} else {
 				return now;
 			}
 		}
+	}
+
+	public static void sleep(long time) throws InterruptedException {
+		if (!BuildConfig.DEBUG) {
+			Thread.sleep(time);
+			return;
+		}
+		CountDownLatch countDownLatch = new CountDownLatch(1);
+		synchronized (MOCK_DATE_LOCK) {
+			Date wakeUpDate = new Date(getDate().getTime() + time);
+			if (!mockSleepStatus.containsKey(wakeUpDate)) {
+				mockSleepStatus.put(wakeUpDate, new LinkedList<CountDownLatch>());
+			}
+			mockSleepStatus.get(wakeUpDate).add(countDownLatch);
+		}
+		countDownLatch.await();
 	}
 
 	@VisibleForTesting
@@ -171,9 +193,20 @@ public class InVehicleDeviceService extends Service {
 		if (!BuildConfig.DEBUG) {
 			return;
 		}
-		Date now = new Date();
-		synchronized (MOCK_DATE_OFFSET_MILLIS_LOCK) {
-			mockDateOffsetMillis = Optional.of(mockDate.getTime() - now.getTime());
+		synchronized (MOCK_DATE_LOCK) {
+			useMockDate = true;
+			InVehicleDeviceService.mockDate = mockDate;
+			for (Entry<Date, List<CountDownLatch>> entry : Maps.newTreeMap(
+					mockSleepStatus).entrySet()) {
+				if (mockDate.before(entry.getKey())) {
+					break;
+				}
+				for (CountDownLatch countDownLatch : entry.getValue()) {
+					countDownLatch.countDown();
+					Thread.yield();
+				}
+				mockSleepStatus.remove(entry.getKey());
+			}
 		}
 	}
 
@@ -633,8 +666,9 @@ public class InVehicleDeviceService extends Service {
 		return localDataSource.withReadLock(new Reader<Boolean>() {
 			@Override
 			public Boolean read(LocalData status) {
-				return (status.operationScheduleInitializedSign.availablePermits() > 0 
-						&& status.serviceProviderInitializedSign.availablePermits() > 0);
+				return (status.operationScheduleInitializedSign
+						.availablePermits() > 0 && status.serviceProviderInitializedSign
+						.availablePermits() > 0);
 			}
 		});
 	}
@@ -854,8 +888,7 @@ public class InVehicleDeviceService extends Service {
 		});
 	}
 
-	public void waitForOperationInitialize()
-			throws InterruptedException {
+	public void waitForOperationInitialize() throws InterruptedException {
 		Semaphore operationScheduleInitializedSign = localDataSource
 				.withReadLock(new Reader<Semaphore>() {
 					@Override

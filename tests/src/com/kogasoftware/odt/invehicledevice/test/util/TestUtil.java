@@ -7,16 +7,19 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.WeakHashMap;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import junit.framework.Assert;
+import junitx.framework.AssertionFailedError;
 
 import org.joda.time.DateTime;
 
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
+import android.app.Instrumentation;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -25,6 +28,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.RemoteException;
 import android.os.StrictMode;
+import android.view.KeyEvent;
 import android.view.View;
 
 import com.google.common.base.Stopwatch;
@@ -33,9 +37,7 @@ import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
 import com.kogasoftware.odt.invehicledevice.service.startupservice.IStartupService;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
@@ -54,25 +56,49 @@ public class TestUtil {
 		LocalDataSource.clearSavedFile();
 	}
 
-	public static void willShow(Solo solo, Class<? extends View> c) {
-		willShow(solo, solo.getView(c, 0));
+	public static void assertChange(Callable<Boolean> condition) {
+		assertChange(condition, 20 * 1000);
 	}
 
-	public static void willShow(Solo solo, View view) {
-		Assert.assertTrue(solo.waitForView(view));
-	}
-
-	public static void willHide(Solo solo, Integer resourceId) {
-		willHide(solo.getView(resourceId));
-	}
-
-	public static void willHide(View view) {
-		for (Integer i = 0; i < 20; ++i) {
-			if (view.getVisibility() != View.VISIBLE) {
-				return;
+	public static void assertChange(Callable<Boolean> condition, long timeout) {
+		try {
+			Stopwatch stopwatch = new Stopwatch().start();
+			while (stopwatch.elapsedMillis() < timeout) {
+				if (condition.call()) {
+					return;
+				}
+				Thread.sleep(timeout / 10);
 			}
+		} catch (Exception e) {
+			throw new AssertionFailedError(e);
 		}
 		Assert.fail();
+	}
+
+	public static void assertShow(Solo solo, Class<? extends View> c) {
+		assertShow(solo.getView(c, 0));
+	}
+
+	public static void assertShow(View view) {
+		assertChangeVisibility(view, true);
+	}
+
+	public static void assertChangeVisibility(final View view,
+			final Boolean visibility) {
+		assertChange(new Callable<Boolean>() {
+			@Override
+			public Boolean call() {
+				return visibility.equals(view.getVisibility());
+			}
+		});
+	}
+
+	public static void assertHide(Solo solo, Integer resourceId) {
+		assertHide(solo.getView(resourceId));
+	}
+
+	public static void assertHide(View view) {
+		assertChangeVisibility(view, false);
 	}
 
 	public static Boolean waitForStartUI(final InVehicleDeviceActivity activity)
@@ -89,7 +115,7 @@ public class TestUtil {
 			}
 		};
 		t.start();
-		t.join(60 * 1000);
+		t.join(20 * 1000);
 		if (t.isAlive()) {
 			t.interrupt();
 			return false;
@@ -145,7 +171,8 @@ public class TestUtil {
 					}
 
 					@Override
-					public void onServiceDisconnected(ComponentName arg0) {
+					public void onServiceDisconnected(ComponentName componentName) {
+						myLooper.quit();
 					}
 				};
 
@@ -168,6 +195,36 @@ public class TestUtil {
 		}
 
 		throw new RuntimeException("topActivity not found");
+	}
+
+	public static void assertChangeVisibility(Context context,
+			final Class<? extends Activity> activityClass,
+			final Boolean visibility) {
+		final ActivityManager activityManager = (ActivityManager) context
+				.getSystemService(Activity.ACTIVITY_SERVICE);
+		assertChange(new Callable<Boolean>() {
+			@Override
+			public Boolean call() {
+				for (RunningTaskInfo runningTaskInfo : activityManager
+						.getRunningTasks(1)) {
+					if (visibility.equals(runningTaskInfo.topActivity
+							.getClassName().equals(activityClass.getName()))) {
+						return true;
+					}
+				}
+				return false;
+			}
+		});
+	}
+
+	public static void assertShow(Context context,
+			Class<? extends Activity> activityClass) {
+		assertChangeVisibility(context, activityClass, true);
+	}
+
+	public static void assertHide(Context context,
+			Class<? extends Activity> activityClass) {
+		assertChangeVisibility(context, activityClass, false);
 	}
 
 	public static void disableAutoStart(Context context)
@@ -221,10 +278,10 @@ public class TestUtil {
 		t.join();
 	}
 
-	private static <T> WeakHashMap<T, Integer> createManyEmptyObjectAndCheckMemory(Context context, Class<T> c, Integer numObjects)
-			throws Exception {
+	private static <T> WeakHashMap<T, Integer> createManyEmptyObjectAndCheckMemory(
+			Context context, Class<T> c, Integer numObjects) throws Exception {
 		WeakHashMap<T, Integer> whm = new WeakHashMap<T, Integer>();
-		
+
 		// サイズが小さいことを確認
 		List<T> l = new LinkedList<T>();
 		for (Integer i = 0; i < numObjects; ++i) {
@@ -243,15 +300,20 @@ public class TestUtil {
 		return whm;
 	}
 
-	public static <T> void assertEmptyObject(Context context, Class<T> c)
-			throws Exception {
-		assertEmptyObject(context, c, false);
-	}
-	
-	public static <T> void assertEmptyObject(Context context, Class<T> c, Boolean bigObject)
-			throws Exception {
-		WeakHashMap<T, Integer> whm = createManyEmptyObjectAndCheckMemory(context, c, bigObject ? (1 << 12) : (1 << 17));
-		
+	public static <T> void assertEmptyObject(Instrumentation instrumentation,
+			Class<T> c, Boolean bigObject) throws Exception {
+		Context context = instrumentation.getContext();
+		TestUtil.disableAutoStart(context);
+		try {
+			instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
+			instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_HOME);
+		} catch (SecurityException e) {
+		}
+		Thread.sleep(5000);
+
+		WeakHashMap<T, Integer> whm = createManyEmptyObjectAndCheckMemory(
+				context, c, bigObject ? (1 << 12) : (1 << 17));
+
 		// 自動でGCされるかを確認
 		Stopwatch sw = new Stopwatch().start();
 		while (sw.elapsedTime(TimeUnit.SECONDS) < 10) {
@@ -265,18 +327,20 @@ public class TestUtil {
 		Assert.fail("WeakHashMap size=" + whm.size() + " " + whm);
 	}
 
-	public static byte[] readWithNonBlock(InputStream inputStream) throws IOException, InterruptedException {
+	public static byte[] readWithNonBlock(InputStream inputStream)
+			throws IOException, InterruptedException {
 		return readWithNonBlock(inputStream, 0);
 	}
 
-	public static byte[] readWithNonBlock(InputStream inputStream, long timeout) throws IOException, InterruptedException {
+	public static byte[] readWithNonBlock(InputStream inputStream, long timeout)
+			throws IOException, InterruptedException {
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		Stopwatch stopwatch = new Stopwatch().start();
 		while (true) {
 			int available = inputStream.available();
 			if (available <= 0) {
 				if (stopwatch.elapsedMillis() > timeout) {
-					break;	
+					break;
 				}
 				Thread.sleep(timeout / 10);
 				continue;
@@ -287,5 +351,19 @@ public class TestUtil {
 			stopwatch.reset().start();
 		}
 		return byteArrayOutputStream.toByteArray();
+	}
+
+	public static void advanceDate(long millis) {
+		Date now = InVehicleDeviceService.getDate();
+		InVehicleDeviceService.setMockDate(new Date(now.getTime() + millis));
+	}
+
+	public static void advanceDate(double millis) {
+		advanceDate((long) millis);
+	}
+
+	public static <T> void assertEmptyObject(Instrumentation instrumentation,
+			Class<T> c) throws Exception {
+		assertEmptyObject(instrumentation, c, false);
 	}
 }

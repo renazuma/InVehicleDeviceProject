@@ -10,7 +10,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.acra.ACRA;
-import org.acra.ErrorReporter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -33,8 +32,6 @@ import com.kogasoftware.odt.invehicledevice.datasource.WebAPIDataSource;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
-import com.kogasoftware.odt.invehicledevice.service.startupservice.StartupService;
-import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
 import com.kogasoftware.odt.invehicledevice.ui.BigToast;
 
 /**
@@ -141,15 +138,8 @@ public class BackgroundTask {
 			ExecutionException {
 		Log.i(TAG, "onLoopStart()");
 
-		ErrorReporter errorReporter = ACRA.getErrorReporter();
-		try {
-			errorReporter.handleSilentException(new Throwable(
-					"APPLICATION_START_LOG"));
-		} catch (IllegalMonitorStateException e) {
-			Log.w(TAG, e);
-			myLooper.quit();
-			return;
-		}
+		ACRA.getErrorReporter().handleSilentException(
+				new Throwable("APPLICATION_START_LOG"));
 
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(service);

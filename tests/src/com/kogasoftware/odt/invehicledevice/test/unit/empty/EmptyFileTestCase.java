@@ -2,14 +2,14 @@ package com.kogasoftware.odt.invehicledevice.test.unit.empty;
 
 import java.io.File;
 
-import android.test.AndroidTestCase;
+import android.test.InstrumentationTestCase;
 
 import com.kogasoftware.odt.invehicledevice.empty.EmptyFile;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 
-public class EmptyFileTestCase extends AndroidTestCase {
+public class EmptyFileTestCase extends InstrumentationTestCase {
 	public void testSmallInstance() throws Exception {
-		TestUtil.assertEmptyObject(getContext(), EmptyFile.class);
+		TestUtil.assertEmptyObject(getInstrumentation(), EmptyFile.class);
 	}
 
 	/**

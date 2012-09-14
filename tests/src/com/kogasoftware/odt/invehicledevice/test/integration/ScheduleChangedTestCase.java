@@ -41,7 +41,7 @@ public class ScheduleChangedTestCase extends
 //		solo.clickOnButton("到着し");
 //		solo.clickOnButton("到着する");
 //		solo.clickOnButton("出発する");
-		TestUtil.willShow(solo, DepartureCheckModalView.class);
+		TestUtil.assertShow(solo, DepartureCheckModalView.class);
 //		solo.clickOnView(solo.getButton("出発する", true));
 
 //		assertFalse(solo.searchText("乗降場A", true));
@@ -58,7 +58,7 @@ public class ScheduleChangedTestCase extends
 		solo.clickOnButton("到着しました");
 		solo.clickOnButton("到着する");
 		solo.clickOnButton("出発する");
-		TestUtil.willShow(solo, DepartureCheckModalView.class);
+		TestUtil.assertShow(solo, DepartureCheckModalView.class);
 		solo.clickOnView(solo.getButton("出発する", true));
 
 		assertFalse(solo.searchText("乗降場A", true));
