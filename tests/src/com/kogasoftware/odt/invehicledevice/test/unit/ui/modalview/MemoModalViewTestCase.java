@@ -47,9 +47,9 @@ public class MemoModalViewTestCase extends
 	 */
 	public void testShowEvent() throws InterruptedException {
 		assertFalse(mv.isShown());
-		TestUtil.willHide(mv);
+		TestUtil.assertHide(mv);
 
-		TestUtil.willShow(solo, mv);
+		TestUtil.assertShow(mv);
 
 		assertTrue(solo.searchText(r.getId().toString()));
 

@@ -7,10 +7,12 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.WeakHashMap;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import junit.framework.Assert;
+import junitx.framework.AssertionFailedError;
 
 import org.joda.time.DateTime;
 
@@ -25,7 +27,6 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.RemoteException;
 import android.os.StrictMode;
-import android.util.Log;
 import android.view.View;
 
 import com.google.common.base.Stopwatch;
@@ -53,25 +54,49 @@ public class TestUtil {
 		LocalDataSource.clearSavedFile();
 	}
 
-	public static void willShow(Solo solo, Class<? extends View> c) {
-		willShow(solo, solo.getView(c, 0));
+	public static void assertChange(Callable<Boolean> condition) {
+		assertChange(condition, 20 * 1000);
 	}
 
-	public static void willShow(Solo solo, View view) {
-		Assert.assertTrue(solo.waitForView(view));
-	}
-
-	public static void willHide(Solo solo, Integer resourceId) {
-		willHide(solo.getView(resourceId));
-	}
-
-	public static void willHide(View view) {
-		for (Integer i = 0; i < 20; ++i) {
-			if (view.getVisibility() != View.VISIBLE) {
-				return;
+	public static void assertChange(Callable<Boolean> condition, long timeout) {
+		try {
+			Stopwatch stopwatch = new Stopwatch().start();
+			while (stopwatch.elapsedMillis() > timeout) {
+				if (condition.call()) {
+					return;
+				}
+				Thread.sleep(timeout / 10);
 			}
+		} catch (Exception e) {
+			throw new AssertionFailedError(e);
 		}
 		Assert.fail();
+	}
+
+	public static void assertShow(Solo solo, Class<? extends View> c) {
+		assertShow(solo.getView(c, 0));
+	}
+
+	public static void assertShow(View view) {
+		assertChangeVisibility(view, true);
+	}
+
+	public static void assertChangeVisibility(final View view,
+			final Boolean visibility) {
+		assertChange(new Callable<Boolean>() {
+			@Override
+			public Boolean call() {
+				return visibility.equals(view.getVisibility());
+			}
+		});
+	}
+
+	public static void assertHide(Solo solo, Integer resourceId) {
+		assertHide(solo.getView(resourceId));
+	}
+
+	public static void assertHide(View view) {
+		assertChangeVisibility(view, false);
 	}
 
 	public static Boolean waitForStartUI(final InVehicleDeviceActivity activity)
@@ -170,23 +195,23 @@ public class TestUtil {
 	}
 
 	public static void assertChangeVisibility(Context context,
-			Class<? extends Activity> activityClass, Boolean visibility) {
-		ActivityManager activityManager = (ActivityManager) context
+			final Class<? extends Activity> activityClass,
+			final Boolean visibility) {
+		final ActivityManager activityManager = (ActivityManager) context
 				.getSystemService(Activity.ACTIVITY_SERVICE);
-		Stopwatch stopwatch = new Stopwatch().start();
-		while (stopwatch.elapsedMillis() < 5 * 1000) {
-			for (RunningTaskInfo runningTaskInfo : activityManager
-					.getRunningTasks(1)) {
-				Log.w(TAG, "e1=" + runningTaskInfo.topActivity.getClassName());
-				Log.w(TAG, "e2=" + activityClass.getName());
-				if (visibility.equals(runningTaskInfo.topActivity
-						.getClassName().equals(activityClass.getName()))) {
-					return;
+		assertChange(new Callable<Boolean>() {
+			@Override
+			public Boolean call() {
+				for (RunningTaskInfo runningTaskInfo : activityManager
+						.getRunningTasks(1)) {
+					if (visibility.equals(runningTaskInfo.topActivity
+							.getClassName().equals(activityClass.getName()))) {
+						return true;
+					}
 				}
+				return false;
 			}
-			Uninterruptibles.sleepUninterruptibly(50, TimeUnit.MILLISECONDS);
-		}
-		Assert.fail();
+		});
 	}
 
 	public static void assertShow(Context context,
