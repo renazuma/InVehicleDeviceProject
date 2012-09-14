@@ -63,7 +63,7 @@ public class TestUtil {
 	public static void assertChange(Callable<Boolean> condition, long timeout) {
 		try {
 			Stopwatch stopwatch = new Stopwatch().start();
-			while (stopwatch.elapsedMillis() > timeout) {
+			while (stopwatch.elapsedMillis() < timeout) {
 				if (condition.call()) {
 					return;
 				}
@@ -115,7 +115,7 @@ public class TestUtil {
 			}
 		};
 		t.start();
-		t.join(60 * 1000);
+		t.join(20 * 1000);
 		if (t.isAlive()) {
 			t.interrupt();
 			return false;
