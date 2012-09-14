@@ -2,7 +2,6 @@ package com.kogasoftware.odt.invehicledevice.test.unit.ui.modalview.navigation;
 
 import junit.framework.TestCase;
 import android.graphics.PointF;
-import android.util.Log;
 
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipeline.Tile;
 
