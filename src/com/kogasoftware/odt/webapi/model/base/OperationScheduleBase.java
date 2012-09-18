@@ -17,7 +17,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class OperationScheduleBase extends Model {
-	private static final long serialVersionUID = 7197008588286608338L;
+	private static final long serialVersionUID = 6517349631253088097L;
 	public static final ResponseConverter<OperationSchedule> RESPONSE_CONVERTER = new ResponseConverter<OperationSchedule>() {
 		@Override
 		public OperationSchedule convert(byte[] rawResponse) throws JSONException {
@@ -39,7 +39,9 @@ public abstract class OperationScheduleBase extends Model {
 		setDepartureEstimate(parseOptionalDate(jsonObject, "departure_estimate"));
 		setId(parseInteger(jsonObject, "id"));
 		setOperationDate(parseOptionalDate(jsonObject, "operation_date"));
+		setPassengerCountChange(parseInteger(jsonObject, "passenger_count_change"));
 		setPlatformId(parseOptionalInteger(jsonObject, "platform_id"));
+		setRemain(parseInteger(jsonObject, "remain"));
 		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
 		setUnitAssignmentId(parseOptionalInteger(jsonObject, "unit_assignment_id"));
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
@@ -96,7 +98,9 @@ public abstract class OperationScheduleBase extends Model {
 		jsonObject.put("departure_estimate", toJSON(getDepartureEstimate()));
 		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("operation_date", toJSON(getOperationDate()));
+		jsonObject.put("passenger_count_change", toJSON(getPassengerCountChange()));
 		jsonObject.put("platform_id", toJSON(getPlatformId()));
+		jsonObject.put("remain", toJSON(getRemain()));
 		jsonObject.put("service_provider_id", toJSON(getServiceProviderId()));
 		jsonObject.put("unit_assignment_id", toJSON(getUnitAssignmentId()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
@@ -230,6 +234,16 @@ public abstract class OperationScheduleBase extends Model {
 		this.operationDate = Optional.absent();
 	}
 
+	private Integer passengerCountChange = 0;
+
+	public Integer getPassengerCountChange() {
+		return wrapNull(passengerCountChange);
+	}
+
+	public void setPassengerCountChange(Integer passengerCountChange) {
+		this.passengerCountChange = wrapNull(passengerCountChange);
+	}
+
 	private Optional<Integer> platformId = Optional.absent();
 
 	public Optional<Integer> getPlatformId() {
@@ -246,6 +260,16 @@ public abstract class OperationScheduleBase extends Model {
 
 	public void clearPlatformId() {
 		this.platformId = Optional.absent();
+	}
+
+	private Integer remain = 0;
+
+	public Integer getRemain() {
+		return wrapNull(remain);
+	}
+
+	public void setRemain(Integer remain) {
+		this.remain = wrapNull(remain);
 	}
 
 	private Optional<Integer> serviceProviderId = Optional.absent();
