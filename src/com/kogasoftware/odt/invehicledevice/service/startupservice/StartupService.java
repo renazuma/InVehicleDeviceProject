@@ -59,64 +59,14 @@ public class StartupService extends Service {
 		}
 	};
 
-	private void checkDeviceAndStartActivity() {
+	public void checkDeviceAndStartActivity() {
 		if (!enabled.get()) {
 			Log.i(TAG, "waiting for startup enabled");
 			return;
 		}
 
-		PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
-		if (powerManager == null) {
-			Log.w(TAG, "getSystemService(Context.POWER_SERVICE) == null");
+		if (!isDeviceReady()) {
 			return;
-		}
-		if (!powerManager.isScreenOn()) {
-			Log.i(TAG, "package replaced & screen off");
-			return;
-		}
-
-		if (Settings.System.getInt(getContentResolver(),
-				Settings.System.AIRPLANE_MODE_ON, 0) != 0) {
-			BigToast.makeText(this, "機内モードが有効になっています。機内モードを無効にしてください。",
-					Toast.LENGTH_LONG).show();
-			return;
-		}
-
-		String externalStorageState = Environment.getExternalStorageState();
-		if (!externalStorageState.equals(Environment.MEDIA_MOUNTED)) {
-			Log.i(TAG, "Environment.getExternalStorageState() "
-					+ externalStorageState + " != " + Environment.MEDIA_MOUNTED);
-			BigToast.makeText(this, "SDカードを接続してください", Toast.LENGTH_LONG).show();
-			return;
-		}
-
-		LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		if (locationManager == null) {
-			Log.e(TAG, "getSystemService(Context.LOCATION_SERVICE) == null");
-			BigToast.makeText(this, "LOCATION_SERVICEに接続できません",
-					Toast.LENGTH_LONG).show();
-			return;
-		}
-
-		if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-			Log.e(TAG,
-					"!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)");
-			BigToast.makeText(this, "GPSの設定を有効にしてください", Toast.LENGTH_LONG)
-					.show();
-			return;
-		}
-
-		ActivityManager activityManager = (ActivityManager) getSystemService(Activity.ACTIVITY_SERVICE);
-		for (RunningTaskInfo runningTaskInfo : activityManager
-				.getRunningTasks(1)) {
-			ComponentName topActivity = runningTaskInfo.topActivity;
-			if (topActivity.getPackageName().equals(getPackageName())
-					&& topActivity.getClassName().equals(
-							InVehicleDeviceActivity.class.getName())) {
-				Log.v(TAG, "activity " + InVehicleDeviceActivity.class
-						+ " is running");
-				return;
-			}
 		}
 
 		Intent startIntent = new Intent(StartupService.this,
@@ -124,6 +74,57 @@ public class StartupService extends Service {
 		startIntent.setAction(Intent.ACTION_DEFAULT);
 		startIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		startActivity(startIntent);
+	}
+
+	public Boolean isDeviceReady() {
+		return isDeviceReady(Environment.getExternalStorageState());
+	}
+
+	public Boolean isDeviceReady(String externalStorageState) {
+		if (!externalStorageState.equals(Environment.MEDIA_MOUNTED)) {
+			Log.i(TAG, "Environment.getExternalStorageState() "
+					+ externalStorageState + " != " + Environment.MEDIA_MOUNTED);
+			BigToast.makeText(this, "SDカードを接続してください", Toast.LENGTH_LONG).show();
+			return false;
+		}
+
+		PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+		if (!powerManager.isScreenOn()) {
+			Log.i(TAG, "screen off");
+			return false;
+		}
+
+		if (Settings.System.getInt(getContentResolver(),
+				Settings.System.AIRPLANE_MODE_ON, 0) != 0) {
+			BigToast.makeText(this, "機内モードが有効になっています。機内モードを無効にしてください。",
+					Toast.LENGTH_LONG).show();
+			return false;
+		}
+
+		LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+			Log.e(TAG,
+					"!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)");
+			BigToast.makeText(this, "GPSの設定を有効にしてください", Toast.LENGTH_LONG)
+					.show();
+			return false;
+		}
+
+		ActivityManager activityManager = (ActivityManager) getSystemService(Activity.ACTIVITY_SERVICE);
+		for (RunningTaskInfo runningTaskInfo : activityManager
+				.getRunningTasks(1)) {
+			String packageName = getPackageName();
+			String className = InVehicleDeviceActivity.class.getName();
+			ComponentName topActivity = runningTaskInfo.topActivity;
+			if (topActivity.getPackageName().equals(packageName)
+					&& topActivity.getClassName().equals(className)) {
+				Log.v(TAG, "activity " + InVehicleDeviceActivity.class
+						+ " is running");
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	public static class StartupBroadcastReceiver extends BroadcastReceiver {
