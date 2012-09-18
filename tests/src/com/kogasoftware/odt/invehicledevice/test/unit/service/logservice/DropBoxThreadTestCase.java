@@ -9,15 +9,15 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Closeables;
-import com.kogasoftware.odt.invehicledevice.service.logservice.DropBoxThread;
-import com.kogasoftware.odt.invehicledevice.service.logservice.SplitFileOutputStream;
-
 import android.content.Context;
 import android.os.DropBoxManager;
 import android.test.AndroidTestCase;
 import android.util.Base64;
+
+import com.google.common.base.Charsets;
+import com.google.common.io.Closeables;
+import com.kogasoftware.odt.invehicledevice.service.logservice.DropBoxThread;
+import com.kogasoftware.odt.invehicledevice.service.logservice.SplitFileOutputStream;
 
 public class DropBoxThreadTestCase extends AndroidTestCase {
 	DropBoxManager dbm;
@@ -26,6 +26,7 @@ public class DropBoxThreadTestCase extends AndroidTestCase {
 	File d;
 	BlockingQueue<File> files;
 
+	@Override
 	public void setUp() throws Exception {
 		super.setUp();
 		dbm = (DropBoxManager) getContext().getSystemService(
@@ -36,6 +37,7 @@ public class DropBoxThreadTestCase extends AndroidTestCase {
 		d.mkdirs();
 	}
 
+	@Override
 	public void tearDown() throws Exception {
 		try {
 			if (dbt != null) {
@@ -221,28 +223,28 @@ public class DropBoxThreadTestCase extends AndroidTestCase {
 		Long timeoutMillis = 200L;
 		Long checkIntervalMillis = 1000L;
 		assertTrue(checkIntervalMillis / timeoutMillis > 3);
+		dbm.addData("test1", new byte[splitBytes.intValue()], 0);
 		sfos = new SplitFileOutputStream(d, "test2", files);
 		dbt = new DropBoxThread(getContext(), sfos, splitBytes, timeoutMillis,
 				checkIntervalMillis);
 		dbt.start();
-		dbm.addData("test1", new byte[splitBytes.intValue()], 0);
 		Thread.sleep((long) (checkIntervalMillis * 1.1)); // clear
 		files.clear();
 
 		{ // split by timeout
 			dbm.addText("test1a", "test1dataa");
-			Thread.sleep((long) timeoutMillis);
+			Thread.sleep(timeoutMillis);
 			assertEquals(0, files.size());
 			dbm.addText("test1b", "test1datab");
-			Thread.sleep((long) timeoutMillis);
+			Thread.sleep(timeoutMillis);
 			assertEquals(0, files.size());
-			Thread.sleep((long) (checkIntervalMillis * 2));
+			Thread.sleep(checkIntervalMillis * 2);
 			assertEquals(1, files.size());
 
 			dbm.addText("test1c", "test1datac");
-			Thread.sleep((long) timeoutMillis);
+			Thread.sleep(timeoutMillis);
 			assertEquals(1, files.size());
-			Thread.sleep((long) (checkIntervalMillis * 2));
+			Thread.sleep(checkIntervalMillis * 2);
 			assertEquals(2, files.size());
 		}
 
@@ -262,11 +264,11 @@ public class DropBoxThreadTestCase extends AndroidTestCase {
 		Long splitBytes = 5000L;
 		Long timeoutMillis = 10000L;
 		Long checkIntervalMillis = 500L;
+		dbm.addData("test1", new byte[splitBytes.intValue()], 0);
 		sfos = new SplitFileOutputStream(d, "test2", files);
 		dbt = new DropBoxThread(getContext(), sfos, splitBytes, timeoutMillis,
 				checkIntervalMillis);
 		dbt.start();
-		dbm.addData("test1", new byte[splitBytes.intValue()], 0);
 		Thread.sleep((long) (checkIntervalMillis * 1.2)); // clear
 		files.clear();
 
@@ -274,31 +276,31 @@ public class DropBoxThreadTestCase extends AndroidTestCase {
 			dbm.addText("test1a", "test1dataa");
 			Thread.sleep((long) (checkIntervalMillis * 0.1));
 			assertEquals(0, files.size());
-			Thread.sleep((long) checkIntervalMillis);
+			Thread.sleep(checkIntervalMillis);
 			assertEquals(0, files.size());
 
 			dbm.addText("test1b", "test1datab");
 			Thread.sleep((long) (checkIntervalMillis * 0.1));
 			assertEquals(0, files.size());
-			Thread.sleep((long) checkIntervalMillis);
+			Thread.sleep(checkIntervalMillis);
 			assertEquals(0, files.size());
 
 			dbm.addData("test1c", new byte[splitBytes.intValue()], 0);
 			Thread.sleep((long) (checkIntervalMillis * 0.1));
 			assertEquals(0, files.size());
-			Thread.sleep((long) checkIntervalMillis);
+			Thread.sleep(checkIntervalMillis);
 			assertEquals(1, files.size());
 
 			dbm.addText("test1d", "test1datad");
 			Thread.sleep((long) (checkIntervalMillis * 0.1));
 			assertEquals(1, files.size());
-			Thread.sleep((long) checkIntervalMillis);
+			Thread.sleep(checkIntervalMillis);
 			assertEquals(1, files.size());
 
 			dbm.addData("test1e", new byte[splitBytes.intValue()], 0);
 			Thread.sleep((long) (checkIntervalMillis * 0.1));
 			assertEquals(1, files.size());
-			Thread.sleep((long) checkIntervalMillis);
+			Thread.sleep(checkIntervalMillis);
 			assertEquals(2, files.size());
 		}
 
@@ -319,18 +321,18 @@ public class DropBoxThreadTestCase extends AndroidTestCase {
 		Long splitBytes = 5000L;
 		Long timeoutMillis = 5000L;
 		Long checkIntervalMillis = 500L;
+		dbm.addData("test1", new byte[splitBytes.intValue()], 0);
 		sfos = new SplitFileOutputStream(d, "test2", files);
 		dbt = new DropBoxThread(getContext(), sfos, splitBytes, timeoutMillis,
 				checkIntervalMillis);
 		dbt.start();
-		dbm.addData("test1", new byte[splitBytes.intValue()], 0);
 		Thread.sleep((long) (checkIntervalMillis * 1.1)); // clear
 		files.clear();
 
 		{ // split by interrupt
 			dbm.addText("test1a", "test1dataa");
 			dbm.addText("test1b", "test1datab");
-			Thread.sleep((long) (checkIntervalMillis * 2));
+			Thread.sleep(checkIntervalMillis * 2);
 			assertEquals(0, files.size());
 			dbt.interrupt();
 			dbt.join();
@@ -345,3 +347,5 @@ public class DropBoxThreadTestCase extends AndroidTestCase {
 		assertEquals("test1datab", decode(l.get(1).getString("contents")));
 	}
 }
+
+
