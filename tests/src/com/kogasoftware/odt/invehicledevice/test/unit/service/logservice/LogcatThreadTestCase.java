@@ -53,33 +53,38 @@ public class LogcatThreadTestCase extends AndroidTestCase {
 		lt.start();
 
 		pos.write(new byte[] { 0, 1, '\n' });
+		pos.flush();
 		Thread.sleep(s);
 		assertEquals(1, files.size());
 		MoreAsserts.assertEquals(new byte[] { 0, 1, '\n' },
 				FileUtils.readFileToByteArray(files.poll()));
 
 		pos.write(new byte[] { 0, 1, 2, '\n', 3 });
+		pos.flush();
 		Thread.sleep(s);
 		assertEquals(1, files.size());
 		MoreAsserts.assertEquals(new byte[] { 0, 1, 2, '\n' },
 				FileUtils.readFileToByteArray(files.poll()));
 
 		pos.write(new byte[] { 4 });
+		pos.flush();
 		Thread.sleep(s);
 		assertEquals(0, files.size());
 
 		pos.write(new byte[] { '\n' });
+		pos.flush();
 		Thread.sleep(s);
 		assertEquals(1, files.size());
 		MoreAsserts.assertEquals(new byte[] { 3, 4, '\n' },
 				FileUtils.readFileToByteArray(files.poll()));
 
 		pos.write(new byte[] { '\n', 5 });
+		pos.flush();
 		Thread.sleep(s);
 		assertEquals(0, files.size());
 
 		pos.write(new byte[] { 6, '\n' });
-
+		pos.flush();
 		Thread.sleep(s);
 		assertEquals(1, files.size());
 		MoreAsserts.assertEquals(new byte[] { '\n', 5, 6, '\n' },
@@ -94,6 +99,7 @@ public class LogcatThreadTestCase extends AndroidTestCase {
 		lt.start();
 
 		pos.write(new byte[] { 0, 1, 2, 3, 4, 5, 6, 7 });
+		pos.flush();
 		Thread.sleep(timeoutMillis / 2);
 		assertEquals(0, files.size());
 		Thread.sleep(timeoutMillis);
@@ -104,6 +110,7 @@ public class LogcatThreadTestCase extends AndroidTestCase {
 
 		byte[] b = "test文字列データ".getBytes(Charsets.UTF_16);
 		pos.write(b);
+		pos.flush();
 		Thread.sleep(timeoutMillis / 2);
 		assertEquals(0, files.size());
 		Thread.sleep(timeoutMillis);
