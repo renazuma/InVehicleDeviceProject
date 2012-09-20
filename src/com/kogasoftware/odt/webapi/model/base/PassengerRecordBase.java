@@ -17,7 +17,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class PassengerRecordBase extends Model {
-	private static final long serialVersionUID = 6837041795192127496L;
+	private static final long serialVersionUID = 902443669137045191L;
 	public static final ResponseConverter<PassengerRecord> RESPONSE_CONVERTER = new ResponseConverter<PassengerRecord>() {
 		@Override
 		public PassengerRecord convert(byte[] rawResponse) throws JSONException {
@@ -30,7 +30,9 @@ public abstract class PassengerRecordBase extends Model {
 			return parseList(WebAPI.parseJSONArray(rawResponse));
 		}
 	};
-
+	protected void refreshUpdatedAt() {
+		setUpdatedAt(new Date());
+	}
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {
 		setAge(parseOptionalInteger(jsonObject, "age"));
@@ -48,13 +50,14 @@ public abstract class PassengerRecordBase extends Model {
 		setReservationId(parseOptionalInteger(jsonObject, "reservation_id"));
 		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
 		setStatus(parseInteger(jsonObject, "status"));
-		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setUserId(parseOptionalInteger(jsonObject, "user_id"));
 		setArrivalOperationSchedule(OperationSchedule.parse(jsonObject, "arrival_operation_schedule"));
 		setDepartureOperationSchedule(OperationSchedule.parse(jsonObject, "departure_operation_schedule"));
 		setReservation(Reservation.parse(jsonObject, "reservation"));
 		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
 		setUser(User.parse(jsonObject, "user"));
+
+		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 	}
 
 	public static Optional<PassengerRecord> parse(JSONObject jsonObject, String key) throws JSONException {
@@ -163,15 +166,16 @@ public abstract class PassengerRecordBase extends Model {
 	}
 
 	public void setAge(Optional<Integer> age) {
+		refreshUpdatedAt();
 		this.age = wrapNull(age);
 	}
 
 	public void setAge(Integer age) {
-		this.age = Optional.fromNullable(age);
+		setAge(Optional.fromNullable(age));
 	}
 
 	public void clearAge() {
-		this.age = Optional.absent();
+		setAge(Optional.<Integer>absent());
 	}
 
 	private Optional<Integer> arrivalOperationScheduleId = Optional.absent();
@@ -181,15 +185,16 @@ public abstract class PassengerRecordBase extends Model {
 	}
 
 	public void setArrivalOperationScheduleId(Optional<Integer> arrivalOperationScheduleId) {
+		refreshUpdatedAt();
 		this.arrivalOperationScheduleId = wrapNull(arrivalOperationScheduleId);
 	}
 
 	public void setArrivalOperationScheduleId(Integer arrivalOperationScheduleId) {
-		this.arrivalOperationScheduleId = Optional.fromNullable(arrivalOperationScheduleId);
+		setArrivalOperationScheduleId(Optional.fromNullable(arrivalOperationScheduleId));
 	}
 
 	public void clearArrivalOperationScheduleId() {
-		this.arrivalOperationScheduleId = Optional.absent();
+		setArrivalOperationScheduleId(Optional.<Integer>absent());
 	}
 
 	private Date createdAt = new Date();
@@ -199,6 +204,7 @@ public abstract class PassengerRecordBase extends Model {
 	}
 
 	public void setCreatedAt(Date createdAt) {
+		refreshUpdatedAt();
 		this.createdAt = wrapNull(createdAt);
 	}
 
@@ -209,15 +215,16 @@ public abstract class PassengerRecordBase extends Model {
 	}
 
 	public void setDeletedAt(Optional<Date> deletedAt) {
+		refreshUpdatedAt();
 		this.deletedAt = wrapNull(deletedAt);
 	}
 
 	public void setDeletedAt(Date deletedAt) {
-		this.deletedAt = Optional.fromNullable(deletedAt);
+		setDeletedAt(Optional.fromNullable(deletedAt));
 	}
 
 	public void clearDeletedAt() {
-		this.deletedAt = Optional.absent();
+		setDeletedAt(Optional.<Date>absent());
 	}
 
 	private Optional<Integer> departureOperationScheduleId = Optional.absent();
@@ -227,15 +234,16 @@ public abstract class PassengerRecordBase extends Model {
 	}
 
 	public void setDepartureOperationScheduleId(Optional<Integer> departureOperationScheduleId) {
+		refreshUpdatedAt();
 		this.departureOperationScheduleId = wrapNull(departureOperationScheduleId);
 	}
 
 	public void setDepartureOperationScheduleId(Integer departureOperationScheduleId) {
-		this.departureOperationScheduleId = Optional.fromNullable(departureOperationScheduleId);
+		setDepartureOperationScheduleId(Optional.fromNullable(departureOperationScheduleId));
 	}
 
 	public void clearDepartureOperationScheduleId() {
-		this.departureOperationScheduleId = Optional.absent();
+		setDepartureOperationScheduleId(Optional.<Integer>absent());
 	}
 
 	private Optional<Date> getOffTime = Optional.absent();
@@ -245,15 +253,16 @@ public abstract class PassengerRecordBase extends Model {
 	}
 
 	public void setGetOffTime(Optional<Date> getOffTime) {
+		refreshUpdatedAt();
 		this.getOffTime = wrapNull(getOffTime);
 	}
 
 	public void setGetOffTime(Date getOffTime) {
-		this.getOffTime = Optional.fromNullable(getOffTime);
+		setGetOffTime(Optional.fromNullable(getOffTime));
 	}
 
 	public void clearGetOffTime() {
-		this.getOffTime = Optional.absent();
+		setGetOffTime(Optional.<Date>absent());
 	}
 
 	private Optional<Boolean> getOffTimeOffline = Optional.absent();
@@ -263,15 +272,16 @@ public abstract class PassengerRecordBase extends Model {
 	}
 
 	public void setGetOffTimeOffline(Optional<Boolean> getOffTimeOffline) {
+		refreshUpdatedAt();
 		this.getOffTimeOffline = wrapNull(getOffTimeOffline);
 	}
 
 	public void setGetOffTimeOffline(Boolean getOffTimeOffline) {
-		this.getOffTimeOffline = Optional.fromNullable(getOffTimeOffline);
+		setGetOffTimeOffline(Optional.fromNullable(getOffTimeOffline));
 	}
 
 	public void clearGetOffTimeOffline() {
-		this.getOffTimeOffline = Optional.absent();
+		setGetOffTimeOffline(Optional.<Boolean>absent());
 	}
 
 	private Optional<Date> getOnTime = Optional.absent();
@@ -281,15 +291,16 @@ public abstract class PassengerRecordBase extends Model {
 	}
 
 	public void setGetOnTime(Optional<Date> getOnTime) {
+		refreshUpdatedAt();
 		this.getOnTime = wrapNull(getOnTime);
 	}
 
 	public void setGetOnTime(Date getOnTime) {
-		this.getOnTime = Optional.fromNullable(getOnTime);
+		setGetOnTime(Optional.fromNullable(getOnTime));
 	}
 
 	public void clearGetOnTime() {
-		this.getOnTime = Optional.absent();
+		setGetOnTime(Optional.<Date>absent());
 	}
 
 	private Optional<Boolean> getOnTimeOffline = Optional.absent();
@@ -299,15 +310,16 @@ public abstract class PassengerRecordBase extends Model {
 	}
 
 	public void setGetOnTimeOffline(Optional<Boolean> getOnTimeOffline) {
+		refreshUpdatedAt();
 		this.getOnTimeOffline = wrapNull(getOnTimeOffline);
 	}
 
 	public void setGetOnTimeOffline(Boolean getOnTimeOffline) {
-		this.getOnTimeOffline = Optional.fromNullable(getOnTimeOffline);
+		setGetOnTimeOffline(Optional.fromNullable(getOnTimeOffline));
 	}
 
 	public void clearGetOnTimeOffline() {
-		this.getOnTimeOffline = Optional.absent();
+		setGetOnTimeOffline(Optional.<Boolean>absent());
 	}
 
 	private Integer id = 0;
@@ -317,6 +329,7 @@ public abstract class PassengerRecordBase extends Model {
 	}
 
 	public void setId(Integer id) {
+		refreshUpdatedAt();
 		this.id = wrapNull(id);
 	}
 
@@ -327,6 +340,7 @@ public abstract class PassengerRecordBase extends Model {
 	}
 
 	public void setPassengerCount(Integer passengerCount) {
+		refreshUpdatedAt();
 		this.passengerCount = wrapNull(passengerCount);
 	}
 
@@ -337,15 +351,16 @@ public abstract class PassengerRecordBase extends Model {
 	}
 
 	public void setPayment(Optional<Integer> payment) {
+		refreshUpdatedAt();
 		this.payment = wrapNull(payment);
 	}
 
 	public void setPayment(Integer payment) {
-		this.payment = Optional.fromNullable(payment);
+		setPayment(Optional.fromNullable(payment));
 	}
 
 	public void clearPayment() {
-		this.payment = Optional.absent();
+		setPayment(Optional.<Integer>absent());
 	}
 
 	private Optional<Integer> reservationId = Optional.absent();
@@ -355,15 +370,16 @@ public abstract class PassengerRecordBase extends Model {
 	}
 
 	public void setReservationId(Optional<Integer> reservationId) {
+		refreshUpdatedAt();
 		this.reservationId = wrapNull(reservationId);
 	}
 
 	public void setReservationId(Integer reservationId) {
-		this.reservationId = Optional.fromNullable(reservationId);
+		setReservationId(Optional.fromNullable(reservationId));
 	}
 
 	public void clearReservationId() {
-		this.reservationId = Optional.absent();
+		setReservationId(Optional.<Integer>absent());
 	}
 
 	private Optional<Integer> serviceProviderId = Optional.absent();
@@ -373,15 +389,16 @@ public abstract class PassengerRecordBase extends Model {
 	}
 
 	public void setServiceProviderId(Optional<Integer> serviceProviderId) {
+		refreshUpdatedAt();
 		this.serviceProviderId = wrapNull(serviceProviderId);
 	}
 
 	public void setServiceProviderId(Integer serviceProviderId) {
-		this.serviceProviderId = Optional.fromNullable(serviceProviderId);
+		setServiceProviderId(Optional.fromNullable(serviceProviderId));
 	}
 
 	public void clearServiceProviderId() {
-		this.serviceProviderId = Optional.absent();
+		setServiceProviderId(Optional.<Integer>absent());
 	}
 
 	private Integer status = 0;
@@ -391,6 +408,7 @@ public abstract class PassengerRecordBase extends Model {
 	}
 
 	public void setStatus(Integer status) {
+		refreshUpdatedAt();
 		this.status = wrapNull(status);
 	}
 
@@ -411,18 +429,19 @@ public abstract class PassengerRecordBase extends Model {
 	}
 
 	public void setUserId(Optional<Integer> userId) {
+		refreshUpdatedAt();
 		this.userId = wrapNull(userId);
 	}
 
 	public void setUserId(Integer userId) {
-		this.userId = Optional.fromNullable(userId);
+		setUserId(Optional.fromNullable(userId));
 	}
 
 	public void clearUserId() {
-		this.userId = Optional.absent();
+		setUserId(Optional.<Integer>absent());
 	}
 
-	private Optional<OperationSchedule> arrivalOperationSchedule = Optional.absent();
+	private Optional<OperationSchedule> arrivalOperationSchedule = Optional.<OperationSchedule>absent();
 
 	public Optional<OperationSchedule> getArrivalOperationSchedule() {
 		return wrapNull(arrivalOperationSchedule);
@@ -433,14 +452,14 @@ public abstract class PassengerRecordBase extends Model {
 	}
 
 	public void setArrivalOperationSchedule(OperationSchedule arrivalOperationSchedule) {
-		this.arrivalOperationSchedule = Optional.fromNullable(arrivalOperationSchedule);
+		setArrivalOperationSchedule(Optional.fromNullable(arrivalOperationSchedule));
 	}
 
 	public void clearArrivalOperationSchedule() {
-		this.arrivalOperationSchedule = Optional.absent();
+		setArrivalOperationSchedule(Optional.<OperationSchedule>absent());
 	}
 
-	private Optional<OperationSchedule> departureOperationSchedule = Optional.absent();
+	private Optional<OperationSchedule> departureOperationSchedule = Optional.<OperationSchedule>absent();
 
 	public Optional<OperationSchedule> getDepartureOperationSchedule() {
 		return wrapNull(departureOperationSchedule);
@@ -451,14 +470,14 @@ public abstract class PassengerRecordBase extends Model {
 	}
 
 	public void setDepartureOperationSchedule(OperationSchedule departureOperationSchedule) {
-		this.departureOperationSchedule = Optional.fromNullable(departureOperationSchedule);
+		setDepartureOperationSchedule(Optional.fromNullable(departureOperationSchedule));
 	}
 
 	public void clearDepartureOperationSchedule() {
-		this.departureOperationSchedule = Optional.absent();
+		setDepartureOperationSchedule(Optional.<OperationSchedule>absent());
 	}
 
-	private Optional<Reservation> reservation = Optional.absent();
+	private Optional<Reservation> reservation = Optional.<Reservation>absent();
 
 	public Optional<Reservation> getReservation() {
 		return wrapNull(reservation);
@@ -469,14 +488,14 @@ public abstract class PassengerRecordBase extends Model {
 	}
 
 	public void setReservation(Reservation reservation) {
-		this.reservation = Optional.fromNullable(reservation);
+		setReservation(Optional.fromNullable(reservation));
 	}
 
 	public void clearReservation() {
-		this.reservation = Optional.absent();
+		setReservation(Optional.<Reservation>absent());
 	}
 
-	private Optional<ServiceProvider> serviceProvider = Optional.absent();
+	private Optional<ServiceProvider> serviceProvider = Optional.<ServiceProvider>absent();
 
 	public Optional<ServiceProvider> getServiceProvider() {
 		return wrapNull(serviceProvider);
@@ -487,14 +506,14 @@ public abstract class PassengerRecordBase extends Model {
 	}
 
 	public void setServiceProvider(ServiceProvider serviceProvider) {
-		this.serviceProvider = Optional.fromNullable(serviceProvider);
+		setServiceProvider(Optional.fromNullable(serviceProvider));
 	}
 
 	public void clearServiceProvider() {
-		this.serviceProvider = Optional.absent();
+		setServiceProvider(Optional.<ServiceProvider>absent());
 	}
 
-	private Optional<User> user = Optional.absent();
+	private Optional<User> user = Optional.<User>absent();
 
 	public Optional<User> getUser() {
 		return wrapNull(user);
@@ -505,10 +524,10 @@ public abstract class PassengerRecordBase extends Model {
 	}
 
 	public void setUser(User user) {
-		this.user = Optional.fromNullable(user);
+		setUser(Optional.fromNullable(user));
 	}
 
 	public void clearUser() {
-		this.user = Optional.absent();
+		setUser(Optional.<User>absent());
 	}
 }

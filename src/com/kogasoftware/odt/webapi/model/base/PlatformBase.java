@@ -17,7 +17,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class PlatformBase extends Model {
-	private static final long serialVersionUID = 3432799195018838911L;
+	private static final long serialVersionUID = 7123188740021768912L;
 	public static final ResponseConverter<Platform> RESPONSE_CONVERTER = new ResponseConverter<Platform>() {
 		@Override
 		public Platform convert(byte[] rawResponse) throws JSONException {
@@ -30,7 +30,9 @@ public abstract class PlatformBase extends Model {
 			return parseList(WebAPI.parseJSONArray(rawResponse));
 		}
 	};
-
+	protected void refreshUpdatedAt() {
+		setUpdatedAt(new Date());
+	}
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {
 		setAddress(parseString(jsonObject, "address"));
@@ -53,7 +55,6 @@ public abstract class PlatformBase extends Model {
 		setStartAt(parseOptionalDate(jsonObject, "start_at"));
 		setTypeOfDemand(parseOptionalInteger(jsonObject, "type_of_demand"));
 		setTypeOfPlatform(parseInteger(jsonObject, "type_of_platform"));
-		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setDemandsAsArrival(Demand.parseList(jsonObject, "demands_as_arrival"));
 		setDemandsAsDeparture(Demand.parseList(jsonObject, "demands_as_departure"));
 		setOperationSchedules(OperationSchedule.parseList(jsonObject, "operation_schedules"));
@@ -62,6 +63,8 @@ public abstract class PlatformBase extends Model {
 		setReservationsAsArrival(Reservation.parseList(jsonObject, "reservations_as_arrival"));
 		setReservationsAsDeparture(Reservation.parseList(jsonObject, "reservations_as_departure"));
 		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
+
+		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 	}
 
 	public static Optional<Platform> parse(JSONObject jsonObject, String key) throws JSONException {
@@ -167,6 +170,7 @@ public abstract class PlatformBase extends Model {
 	}
 
 	public void setAddress(String address) {
+		refreshUpdatedAt();
 		this.address = wrapNull(address);
 	}
 
@@ -177,6 +181,7 @@ public abstract class PlatformBase extends Model {
 	}
 
 	public void setCreatedAt(Date createdAt) {
+		refreshUpdatedAt();
 		this.createdAt = wrapNull(createdAt);
 	}
 
@@ -187,15 +192,16 @@ public abstract class PlatformBase extends Model {
 	}
 
 	public void setDeletedAt(Optional<Date> deletedAt) {
+		refreshUpdatedAt();
 		this.deletedAt = wrapNull(deletedAt);
 	}
 
 	public void setDeletedAt(Date deletedAt) {
-		this.deletedAt = Optional.fromNullable(deletedAt);
+		setDeletedAt(Optional.fromNullable(deletedAt));
 	}
 
 	public void clearDeletedAt() {
-		this.deletedAt = Optional.absent();
+		setDeletedAt(Optional.<Date>absent());
 	}
 
 	private Optional<Integer> demandAreaId = Optional.absent();
@@ -205,15 +211,16 @@ public abstract class PlatformBase extends Model {
 	}
 
 	public void setDemandAreaId(Optional<Integer> demandAreaId) {
+		refreshUpdatedAt();
 		this.demandAreaId = wrapNull(demandAreaId);
 	}
 
 	public void setDemandAreaId(Integer demandAreaId) {
-		this.demandAreaId = Optional.fromNullable(demandAreaId);
+		setDemandAreaId(Optional.fromNullable(demandAreaId));
 	}
 
 	public void clearDemandAreaId() {
-		this.demandAreaId = Optional.absent();
+		setDemandAreaId(Optional.<Integer>absent());
 	}
 
 	private Optional<Date> endAt = Optional.absent();
@@ -223,15 +230,16 @@ public abstract class PlatformBase extends Model {
 	}
 
 	public void setEndAt(Optional<Date> endAt) {
+		refreshUpdatedAt();
 		this.endAt = wrapNull(endAt);
 	}
 
 	public void setEndAt(Date endAt) {
-		this.endAt = Optional.fromNullable(endAt);
+		setEndAt(Optional.fromNullable(endAt));
 	}
 
 	public void clearEndAt() {
-		this.endAt = Optional.absent();
+		setEndAt(Optional.<Date>absent());
 	}
 
 	private Integer id = 0;
@@ -241,6 +249,7 @@ public abstract class PlatformBase extends Model {
 	}
 
 	public void setId(Integer id) {
+		refreshUpdatedAt();
 		this.id = wrapNull(id);
 	}
 
@@ -251,15 +260,16 @@ public abstract class PlatformBase extends Model {
 	}
 
 	public void setImage(Optional<String> image) {
+		refreshUpdatedAt();
 		this.image = wrapNull(image);
 	}
 
 	public void setImage(String image) {
-		this.image = Optional.fromNullable(image);
+		setImage(Optional.fromNullable(image));
 	}
 
 	public void clearImage() {
-		this.image = Optional.absent();
+		setImage(Optional.<String>absent());
 	}
 
 	private String keyword = "";
@@ -269,6 +279,7 @@ public abstract class PlatformBase extends Model {
 	}
 
 	public void setKeyword(String keyword) {
+		refreshUpdatedAt();
 		this.keyword = wrapNull(keyword);
 	}
 
@@ -279,6 +290,7 @@ public abstract class PlatformBase extends Model {
 	}
 
 	public void setLatitude(BigDecimal latitude) {
+		refreshUpdatedAt();
 		this.latitude = wrapNull(latitude);
 	}
 
@@ -289,6 +301,7 @@ public abstract class PlatformBase extends Model {
 	}
 
 	public void setLongitude(BigDecimal longitude) {
+		refreshUpdatedAt();
 		this.longitude = wrapNull(longitude);
 	}
 
@@ -299,6 +312,7 @@ public abstract class PlatformBase extends Model {
 	}
 
 	public void setMemo(String memo) {
+		refreshUpdatedAt();
 		this.memo = wrapNull(memo);
 	}
 
@@ -309,6 +323,7 @@ public abstract class PlatformBase extends Model {
 	}
 
 	public void setName(String name) {
+		refreshUpdatedAt();
 		this.name = wrapNull(name);
 	}
 
@@ -319,6 +334,7 @@ public abstract class PlatformBase extends Model {
 	}
 
 	public void setNameRuby(String nameRuby) {
+		refreshUpdatedAt();
 		this.nameRuby = wrapNull(nameRuby);
 	}
 
@@ -329,15 +345,16 @@ public abstract class PlatformBase extends Model {
 	}
 
 	public void setPlatformCategoryId(Optional<Integer> platformCategoryId) {
+		refreshUpdatedAt();
 		this.platformCategoryId = wrapNull(platformCategoryId);
 	}
 
 	public void setPlatformCategoryId(Integer platformCategoryId) {
-		this.platformCategoryId = Optional.fromNullable(platformCategoryId);
+		setPlatformCategoryId(Optional.fromNullable(platformCategoryId));
 	}
 
 	public void clearPlatformCategoryId() {
-		this.platformCategoryId = Optional.absent();
+		setPlatformCategoryId(Optional.<Integer>absent());
 	}
 
 	private Integer reportingRegionId = 0;
@@ -347,6 +364,7 @@ public abstract class PlatformBase extends Model {
 	}
 
 	public void setReportingRegionId(Integer reportingRegionId) {
+		refreshUpdatedAt();
 		this.reportingRegionId = wrapNull(reportingRegionId);
 	}
 
@@ -357,15 +375,16 @@ public abstract class PlatformBase extends Model {
 	}
 
 	public void setSemiDemandAreaId(Optional<Integer> semiDemandAreaId) {
+		refreshUpdatedAt();
 		this.semiDemandAreaId = wrapNull(semiDemandAreaId);
 	}
 
 	public void setSemiDemandAreaId(Integer semiDemandAreaId) {
-		this.semiDemandAreaId = Optional.fromNullable(semiDemandAreaId);
+		setSemiDemandAreaId(Optional.fromNullable(semiDemandAreaId));
 	}
 
 	public void clearSemiDemandAreaId() {
-		this.semiDemandAreaId = Optional.absent();
+		setSemiDemandAreaId(Optional.<Integer>absent());
 	}
 
 	private Optional<Integer> serviceProviderId = Optional.absent();
@@ -375,15 +394,16 @@ public abstract class PlatformBase extends Model {
 	}
 
 	public void setServiceProviderId(Optional<Integer> serviceProviderId) {
+		refreshUpdatedAt();
 		this.serviceProviderId = wrapNull(serviceProviderId);
 	}
 
 	public void setServiceProviderId(Integer serviceProviderId) {
-		this.serviceProviderId = Optional.fromNullable(serviceProviderId);
+		setServiceProviderId(Optional.fromNullable(serviceProviderId));
 	}
 
 	public void clearServiceProviderId() {
-		this.serviceProviderId = Optional.absent();
+		setServiceProviderId(Optional.<Integer>absent());
 	}
 
 	private Optional<Date> startAt = Optional.absent();
@@ -393,15 +413,16 @@ public abstract class PlatformBase extends Model {
 	}
 
 	public void setStartAt(Optional<Date> startAt) {
+		refreshUpdatedAt();
 		this.startAt = wrapNull(startAt);
 	}
 
 	public void setStartAt(Date startAt) {
-		this.startAt = Optional.fromNullable(startAt);
+		setStartAt(Optional.fromNullable(startAt));
 	}
 
 	public void clearStartAt() {
-		this.startAt = Optional.absent();
+		setStartAt(Optional.<Date>absent());
 	}
 
 	private Optional<Integer> typeOfDemand = Optional.absent();
@@ -411,15 +432,16 @@ public abstract class PlatformBase extends Model {
 	}
 
 	public void setTypeOfDemand(Optional<Integer> typeOfDemand) {
+		refreshUpdatedAt();
 		this.typeOfDemand = wrapNull(typeOfDemand);
 	}
 
 	public void setTypeOfDemand(Integer typeOfDemand) {
-		this.typeOfDemand = Optional.fromNullable(typeOfDemand);
+		setTypeOfDemand(Optional.fromNullable(typeOfDemand));
 	}
 
 	public void clearTypeOfDemand() {
-		this.typeOfDemand = Optional.absent();
+		setTypeOfDemand(Optional.<Integer>absent());
 	}
 
 	private Integer typeOfPlatform = 0;
@@ -429,6 +451,7 @@ public abstract class PlatformBase extends Model {
 	}
 
 	public void setTypeOfPlatform(Integer typeOfPlatform) {
+		refreshUpdatedAt();
 		this.typeOfPlatform = wrapNull(typeOfPlatform);
 	}
 
@@ -453,7 +476,7 @@ public abstract class PlatformBase extends Model {
 	}
 
 	public void clearDemandsAsArrival() {
-		this.demandsAsArrival = new LinkedList<Demand>();
+		setDemandsAsArrival(new LinkedList<Demand>());
 	}
 
 	private LinkedList<Demand> demandsAsDeparture = new LinkedList<Demand>();
@@ -467,7 +490,7 @@ public abstract class PlatformBase extends Model {
 	}
 
 	public void clearDemandsAsDeparture() {
-		this.demandsAsDeparture = new LinkedList<Demand>();
+		setDemandsAsDeparture(new LinkedList<Demand>());
 	}
 
 	private LinkedList<OperationSchedule> operationSchedules = new LinkedList<OperationSchedule>();
@@ -481,7 +504,7 @@ public abstract class PlatformBase extends Model {
 	}
 
 	public void clearOperationSchedules() {
-		this.operationSchedules = new LinkedList<OperationSchedule>();
+		setOperationSchedules(new LinkedList<OperationSchedule>());
 	}
 
 	private LinkedList<ReservationCandidate> reservationCandidatesAsArrival = new LinkedList<ReservationCandidate>();
@@ -495,7 +518,7 @@ public abstract class PlatformBase extends Model {
 	}
 
 	public void clearReservationCandidatesAsArrival() {
-		this.reservationCandidatesAsArrival = new LinkedList<ReservationCandidate>();
+		setReservationCandidatesAsArrival(new LinkedList<ReservationCandidate>());
 	}
 
 	private LinkedList<ReservationCandidate> reservationCandidatesAsDeparture = new LinkedList<ReservationCandidate>();
@@ -509,7 +532,7 @@ public abstract class PlatformBase extends Model {
 	}
 
 	public void clearReservationCandidatesAsDeparture() {
-		this.reservationCandidatesAsDeparture = new LinkedList<ReservationCandidate>();
+		setReservationCandidatesAsDeparture(new LinkedList<ReservationCandidate>());
 	}
 
 	private LinkedList<Reservation> reservationsAsArrival = new LinkedList<Reservation>();
@@ -523,7 +546,7 @@ public abstract class PlatformBase extends Model {
 	}
 
 	public void clearReservationsAsArrival() {
-		this.reservationsAsArrival = new LinkedList<Reservation>();
+		setReservationsAsArrival(new LinkedList<Reservation>());
 	}
 
 	private LinkedList<Reservation> reservationsAsDeparture = new LinkedList<Reservation>();
@@ -537,10 +560,10 @@ public abstract class PlatformBase extends Model {
 	}
 
 	public void clearReservationsAsDeparture() {
-		this.reservationsAsDeparture = new LinkedList<Reservation>();
+		setReservationsAsDeparture(new LinkedList<Reservation>());
 	}
 
-	private Optional<ServiceProvider> serviceProvider = Optional.absent();
+	private Optional<ServiceProvider> serviceProvider = Optional.<ServiceProvider>absent();
 
 	public Optional<ServiceProvider> getServiceProvider() {
 		return wrapNull(serviceProvider);
@@ -551,10 +574,10 @@ public abstract class PlatformBase extends Model {
 	}
 
 	public void setServiceProvider(ServiceProvider serviceProvider) {
-		this.serviceProvider = Optional.fromNullable(serviceProvider);
+		setServiceProvider(Optional.fromNullable(serviceProvider));
 	}
 
 	public void clearServiceProvider() {
-		this.serviceProvider = Optional.absent();
+		setServiceProvider(Optional.<ServiceProvider>absent());
 	}
 }

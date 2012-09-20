@@ -17,7 +17,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class OperatorBase extends Model {
-	private static final long serialVersionUID = 5427036274531277272L;
+	private static final long serialVersionUID = 5292359294497796903L;
 	public static final ResponseConverter<Operator> RESPONSE_CONVERTER = new ResponseConverter<Operator>() {
 		@Override
 		public Operator convert(byte[] rawResponse) throws JSONException {
@@ -30,7 +30,6 @@ public abstract class OperatorBase extends Model {
 			return parseList(WebAPI.parseJSONArray(rawResponse));
 		}
 	};
-
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {
 		setAuthenticationToken(parseOptionalString(jsonObject, "authentication_token"));
@@ -123,11 +122,11 @@ public abstract class OperatorBase extends Model {
 	}
 
 	public void setAuthenticationToken(String authenticationToken) {
-		this.authenticationToken = Optional.fromNullable(authenticationToken);
+		setAuthenticationToken(Optional.fromNullable(authenticationToken));
 	}
 
 	public void clearAuthenticationToken() {
-		this.authenticationToken = Optional.absent();
+		setAuthenticationToken(Optional.<String>absent());
 	}
 
 	private Optional<String> email = Optional.absent();
@@ -141,11 +140,11 @@ public abstract class OperatorBase extends Model {
 	}
 
 	public void setEmail(String email) {
-		this.email = Optional.fromNullable(email);
+		setEmail(Optional.fromNullable(email));
 	}
 
 	public void clearEmail() {
-		this.email = Optional.absent();
+		setEmail(Optional.<String>absent());
 	}
 
 	private String firstName = "";
@@ -199,11 +198,11 @@ public abstract class OperatorBase extends Model {
 	}
 
 	public void setServiceProviderId(Integer serviceProviderId) {
-		this.serviceProviderId = Optional.fromNullable(serviceProviderId);
+		setServiceProviderId(Optional.fromNullable(serviceProviderId));
 	}
 
 	public void clearServiceProviderId() {
-		this.serviceProviderId = Optional.absent();
+		setServiceProviderId(Optional.<Integer>absent());
 	}
 
 	private Optional<String> auditComment = Optional.absent();
@@ -217,11 +216,11 @@ public abstract class OperatorBase extends Model {
 	}
 
 	public void setAuditComment(String auditComment) {
-		this.auditComment = Optional.fromNullable(auditComment);
+		setAuditComment(Optional.fromNullable(auditComment));
 	}
 
 	public void clearAuditComment() {
-		this.auditComment = Optional.absent();
+		setAuditComment(Optional.<String>absent());
 	}
 
 	private Optional<String> password = Optional.absent();
@@ -235,11 +234,11 @@ public abstract class OperatorBase extends Model {
 	}
 
 	public void setPassword(String password) {
-		this.password = Optional.fromNullable(password);
+		setPassword(Optional.fromNullable(password));
 	}
 
 	public void clearPassword() {
-		this.password = Optional.absent();
+		setPassword(Optional.<String>absent());
 	}
 
 	private Optional<String> passwordConfirmation = Optional.absent();
@@ -253,11 +252,11 @@ public abstract class OperatorBase extends Model {
 	}
 
 	public void setPasswordConfirmation(String passwordConfirmation) {
-		this.passwordConfirmation = Optional.fromNullable(passwordConfirmation);
+		setPasswordConfirmation(Optional.fromNullable(passwordConfirmation));
 	}
 
 	public void clearPasswordConfirmation() {
-		this.passwordConfirmation = Optional.absent();
+		setPasswordConfirmation(Optional.<String>absent());
 	}
 
 	private Optional<String> rememberMe = Optional.absent();
@@ -271,14 +270,14 @@ public abstract class OperatorBase extends Model {
 	}
 
 	public void setRememberMe(String rememberMe) {
-		this.rememberMe = Optional.fromNullable(rememberMe);
+		setRememberMe(Optional.fromNullable(rememberMe));
 	}
 
 	public void clearRememberMe() {
-		this.rememberMe = Optional.absent();
+		setRememberMe(Optional.<String>absent());
 	}
 
-	private Optional<ServiceProvider> serviceProvider = Optional.absent();
+	private Optional<ServiceProvider> serviceProvider = Optional.<ServiceProvider>absent();
 
 	public Optional<ServiceProvider> getServiceProvider() {
 		return wrapNull(serviceProvider);
@@ -289,10 +288,10 @@ public abstract class OperatorBase extends Model {
 	}
 
 	public void setServiceProvider(ServiceProvider serviceProvider) {
-		this.serviceProvider = Optional.fromNullable(serviceProvider);
+		setServiceProvider(Optional.fromNullable(serviceProvider));
 	}
 
 	public void clearServiceProvider() {
-		this.serviceProvider = Optional.absent();
+		setServiceProvider(Optional.<ServiceProvider>absent());
 	}
 }

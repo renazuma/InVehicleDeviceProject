@@ -17,7 +17,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class VehicleBase extends Model {
-	private static final long serialVersionUID = 251737250942393982L;
+	private static final long serialVersionUID = 3212936543602712364L;
 	public static final ResponseConverter<Vehicle> RESPONSE_CONVERTER = new ResponseConverter<Vehicle>() {
 		@Override
 		public Vehicle convert(byte[] rawResponse) throws JSONException {
@@ -30,7 +30,9 @@ public abstract class VehicleBase extends Model {
 			return parseList(WebAPI.parseJSONArray(rawResponse));
 		}
 	};
-
+	protected void refreshUpdatedAt() {
+		setUpdatedAt(new Date());
+	}
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {
 		setCapacity(parseInteger(jsonObject, "capacity"));
@@ -41,9 +43,10 @@ public abstract class VehicleBase extends Model {
 		setModelName(parseString(jsonObject, "model_name"));
 		setNumber(parseString(jsonObject, "number"));
 		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
-		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
 		setServiceUnits(ServiceUnit.parseList(jsonObject, "service_units"));
+
+		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 	}
 
 	public static Optional<Vehicle> parse(JSONObject jsonObject, String key) throws JSONException {
@@ -119,6 +122,7 @@ public abstract class VehicleBase extends Model {
 	}
 
 	public void setCapacity(Integer capacity) {
+		refreshUpdatedAt();
 		this.capacity = wrapNull(capacity);
 	}
 
@@ -129,6 +133,7 @@ public abstract class VehicleBase extends Model {
 	}
 
 	public void setCreatedAt(Date createdAt) {
+		refreshUpdatedAt();
 		this.createdAt = wrapNull(createdAt);
 	}
 
@@ -139,15 +144,16 @@ public abstract class VehicleBase extends Model {
 	}
 
 	public void setDeletedAt(Optional<Date> deletedAt) {
+		refreshUpdatedAt();
 		this.deletedAt = wrapNull(deletedAt);
 	}
 
 	public void setDeletedAt(Date deletedAt) {
-		this.deletedAt = Optional.fromNullable(deletedAt);
+		setDeletedAt(Optional.fromNullable(deletedAt));
 	}
 
 	public void clearDeletedAt() {
-		this.deletedAt = Optional.absent();
+		setDeletedAt(Optional.<Date>absent());
 	}
 
 	private Integer id = 0;
@@ -157,6 +163,7 @@ public abstract class VehicleBase extends Model {
 	}
 
 	public void setId(Integer id) {
+		refreshUpdatedAt();
 		this.id = wrapNull(id);
 	}
 
@@ -167,15 +174,16 @@ public abstract class VehicleBase extends Model {
 	}
 
 	public void setImage(Optional<String> image) {
+		refreshUpdatedAt();
 		this.image = wrapNull(image);
 	}
 
 	public void setImage(String image) {
-		this.image = Optional.fromNullable(image);
+		setImage(Optional.fromNullable(image));
 	}
 
 	public void clearImage() {
-		this.image = Optional.absent();
+		setImage(Optional.<String>absent());
 	}
 
 	private String modelName = "";
@@ -185,6 +193,7 @@ public abstract class VehicleBase extends Model {
 	}
 
 	public void setModelName(String modelName) {
+		refreshUpdatedAt();
 		this.modelName = wrapNull(modelName);
 	}
 
@@ -195,6 +204,7 @@ public abstract class VehicleBase extends Model {
 	}
 
 	public void setNumber(String number) {
+		refreshUpdatedAt();
 		this.number = wrapNull(number);
 	}
 
@@ -205,15 +215,16 @@ public abstract class VehicleBase extends Model {
 	}
 
 	public void setServiceProviderId(Optional<Integer> serviceProviderId) {
+		refreshUpdatedAt();
 		this.serviceProviderId = wrapNull(serviceProviderId);
 	}
 
 	public void setServiceProviderId(Integer serviceProviderId) {
-		this.serviceProviderId = Optional.fromNullable(serviceProviderId);
+		setServiceProviderId(Optional.fromNullable(serviceProviderId));
 	}
 
 	public void clearServiceProviderId() {
-		this.serviceProviderId = Optional.absent();
+		setServiceProviderId(Optional.<Integer>absent());
 	}
 
 	private Date updatedAt = new Date();
@@ -226,7 +237,7 @@ public abstract class VehicleBase extends Model {
 		this.updatedAt = wrapNull(updatedAt);
 	}
 
-	private Optional<ServiceProvider> serviceProvider = Optional.absent();
+	private Optional<ServiceProvider> serviceProvider = Optional.<ServiceProvider>absent();
 
 	public Optional<ServiceProvider> getServiceProvider() {
 		return wrapNull(serviceProvider);
@@ -237,11 +248,11 @@ public abstract class VehicleBase extends Model {
 	}
 
 	public void setServiceProvider(ServiceProvider serviceProvider) {
-		this.serviceProvider = Optional.fromNullable(serviceProvider);
+		setServiceProvider(Optional.fromNullable(serviceProvider));
 	}
 
 	public void clearServiceProvider() {
-		this.serviceProvider = Optional.absent();
+		setServiceProvider(Optional.<ServiceProvider>absent());
 	}
 
 	private LinkedList<ServiceUnit> serviceUnits = new LinkedList<ServiceUnit>();
@@ -255,6 +266,6 @@ public abstract class VehicleBase extends Model {
 	}
 
 	public void clearServiceUnits() {
-		this.serviceUnits = new LinkedList<ServiceUnit>();
+		setServiceUnits(new LinkedList<ServiceUnit>());
 	}
 }

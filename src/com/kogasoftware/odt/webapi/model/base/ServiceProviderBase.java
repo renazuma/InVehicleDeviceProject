@@ -17,7 +17,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class ServiceProviderBase extends Model {
-	private static final long serialVersionUID = 2242145607593413664L;
+	private static final long serialVersionUID = 2919373423390957705L;
 	public static final ResponseConverter<ServiceProvider> RESPONSE_CONVERTER = new ResponseConverter<ServiceProvider>() {
 		@Override
 		public ServiceProvider convert(byte[] rawResponse) throws JSONException {
@@ -30,7 +30,9 @@ public abstract class ServiceProviderBase extends Model {
 			return parseList(WebAPI.parseJSONArray(rawResponse));
 		}
 	};
-
+	protected void refreshUpdatedAt() {
+		setUpdatedAt(new Date());
+	}
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {
 		setCreatedAt(parseDate(jsonObject, "created_at"));
@@ -48,7 +50,6 @@ public abstract class ServiceProviderBase extends Model {
 		setSemiDemand(parseBoolean(jsonObject, "semi_demand"));
 		setSemiDemandExtentLimit(parseInteger(jsonObject, "semi_demand_extent_limit"));
 		setTimeBufferRatio(parseString(jsonObject, "time_buffer_ratio"));
-		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setUserLoginLength(parseInteger(jsonObject, "user_login_length"));
 		setDemands(Demand.parseList(jsonObject, "demands"));
 		setDrivers(Driver.parseList(jsonObject, "drivers"));
@@ -63,6 +64,8 @@ public abstract class ServiceProviderBase extends Model {
 		setUnitAssignments(UnitAssignment.parseList(jsonObject, "unit_assignments"));
 		setUsers(User.parseList(jsonObject, "users"));
 		setVehicles(Vehicle.parseList(jsonObject, "vehicles"));
+
+		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 	}
 
 	public static Optional<ServiceProvider> parse(JSONObject jsonObject, String key) throws JSONException {
@@ -175,6 +178,7 @@ public abstract class ServiceProviderBase extends Model {
 	}
 
 	public void setCreatedAt(Date createdAt) {
+		refreshUpdatedAt();
 		this.createdAt = wrapNull(createdAt);
 	}
 
@@ -185,15 +189,16 @@ public abstract class ServiceProviderBase extends Model {
 	}
 
 	public void setDeletedAt(Optional<Date> deletedAt) {
+		refreshUpdatedAt();
 		this.deletedAt = wrapNull(deletedAt);
 	}
 
 	public void setDeletedAt(Date deletedAt) {
-		this.deletedAt = Optional.fromNullable(deletedAt);
+		setDeletedAt(Optional.fromNullable(deletedAt));
 	}
 
 	public void clearDeletedAt() {
-		this.deletedAt = Optional.absent();
+		setDeletedAt(Optional.<Date>absent());
 	}
 
 	private Integer id = 0;
@@ -203,6 +208,7 @@ public abstract class ServiceProviderBase extends Model {
 	}
 
 	public void setId(Integer id) {
+		refreshUpdatedAt();
 		this.id = wrapNull(id);
 	}
 
@@ -213,6 +219,7 @@ public abstract class ServiceProviderBase extends Model {
 	}
 
 	public void setLatitude(BigDecimal latitude) {
+		refreshUpdatedAt();
 		this.latitude = wrapNull(latitude);
 	}
 
@@ -223,15 +230,16 @@ public abstract class ServiceProviderBase extends Model {
 	}
 
 	public void setLogAccessKeyIdAws(Optional<String> logAccessKeyIdAws) {
+		refreshUpdatedAt();
 		this.logAccessKeyIdAws = wrapNull(logAccessKeyIdAws);
 	}
 
 	public void setLogAccessKeyIdAws(String logAccessKeyIdAws) {
-		this.logAccessKeyIdAws = Optional.fromNullable(logAccessKeyIdAws);
+		setLogAccessKeyIdAws(Optional.fromNullable(logAccessKeyIdAws));
 	}
 
 	public void clearLogAccessKeyIdAws() {
-		this.logAccessKeyIdAws = Optional.absent();
+		setLogAccessKeyIdAws(Optional.<String>absent());
 	}
 
 	private Optional<String> logSecretAccessKeyAws = Optional.absent();
@@ -241,15 +249,16 @@ public abstract class ServiceProviderBase extends Model {
 	}
 
 	public void setLogSecretAccessKeyAws(Optional<String> logSecretAccessKeyAws) {
+		refreshUpdatedAt();
 		this.logSecretAccessKeyAws = wrapNull(logSecretAccessKeyAws);
 	}
 
 	public void setLogSecretAccessKeyAws(String logSecretAccessKeyAws) {
-		this.logSecretAccessKeyAws = Optional.fromNullable(logSecretAccessKeyAws);
+		setLogSecretAccessKeyAws(Optional.fromNullable(logSecretAccessKeyAws));
 	}
 
 	public void clearLogSecretAccessKeyAws() {
-		this.logSecretAccessKeyAws = Optional.absent();
+		setLogSecretAccessKeyAws(Optional.<String>absent());
 	}
 
 	private BigDecimal longitude = BigDecimal.ZERO;
@@ -259,6 +268,7 @@ public abstract class ServiceProviderBase extends Model {
 	}
 
 	public void setLongitude(BigDecimal longitude) {
+		refreshUpdatedAt();
 		this.longitude = wrapNull(longitude);
 	}
 
@@ -269,6 +279,7 @@ public abstract class ServiceProviderBase extends Model {
 	}
 
 	public void setMustContactGap(Integer mustContactGap) {
+		refreshUpdatedAt();
 		this.mustContactGap = wrapNull(mustContactGap);
 	}
 
@@ -279,6 +290,7 @@ public abstract class ServiceProviderBase extends Model {
 	}
 
 	public void setName(String name) {
+		refreshUpdatedAt();
 		this.name = wrapNull(name);
 	}
 
@@ -289,6 +301,7 @@ public abstract class ServiceProviderBase extends Model {
 	}
 
 	public void setRecommend(Boolean recommend) {
+		refreshUpdatedAt();
 		this.recommend = wrapNull(recommend);
 	}
 
@@ -299,6 +312,7 @@ public abstract class ServiceProviderBase extends Model {
 	}
 
 	public void setReservationStartDate(Integer reservationStartDate) {
+		refreshUpdatedAt();
 		this.reservationStartDate = wrapNull(reservationStartDate);
 	}
 
@@ -309,6 +323,7 @@ public abstract class ServiceProviderBase extends Model {
 	}
 
 	public void setReservationTimeLimit(String reservationTimeLimit) {
+		refreshUpdatedAt();
 		this.reservationTimeLimit = wrapNull(reservationTimeLimit);
 	}
 
@@ -319,6 +334,7 @@ public abstract class ServiceProviderBase extends Model {
 	}
 
 	public void setSemiDemand(Boolean semiDemand) {
+		refreshUpdatedAt();
 		this.semiDemand = wrapNull(semiDemand);
 	}
 
@@ -329,6 +345,7 @@ public abstract class ServiceProviderBase extends Model {
 	}
 
 	public void setSemiDemandExtentLimit(Integer semiDemandExtentLimit) {
+		refreshUpdatedAt();
 		this.semiDemandExtentLimit = wrapNull(semiDemandExtentLimit);
 	}
 
@@ -339,6 +356,7 @@ public abstract class ServiceProviderBase extends Model {
 	}
 
 	public void setTimeBufferRatio(String timeBufferRatio) {
+		refreshUpdatedAt();
 		this.timeBufferRatio = wrapNull(timeBufferRatio);
 	}
 
@@ -359,6 +377,7 @@ public abstract class ServiceProviderBase extends Model {
 	}
 
 	public void setUserLoginLength(Integer userLoginLength) {
+		refreshUpdatedAt();
 		this.userLoginLength = wrapNull(userLoginLength);
 	}
 
@@ -373,7 +392,7 @@ public abstract class ServiceProviderBase extends Model {
 	}
 
 	public void clearDemands() {
-		this.demands = new LinkedList<Demand>();
+		setDemands(new LinkedList<Demand>());
 	}
 
 	private LinkedList<Driver> drivers = new LinkedList<Driver>();
@@ -387,7 +406,7 @@ public abstract class ServiceProviderBase extends Model {
 	}
 
 	public void clearDrivers() {
-		this.drivers = new LinkedList<Driver>();
+		setDrivers(new LinkedList<Driver>());
 	}
 
 	private LinkedList<InVehicleDevice> inVehicleDevices = new LinkedList<InVehicleDevice>();
@@ -401,7 +420,7 @@ public abstract class ServiceProviderBase extends Model {
 	}
 
 	public void clearInVehicleDevices() {
-		this.inVehicleDevices = new LinkedList<InVehicleDevice>();
+		setInVehicleDevices(new LinkedList<InVehicleDevice>());
 	}
 
 	private LinkedList<OperationSchedule> operationSchedules = new LinkedList<OperationSchedule>();
@@ -415,7 +434,7 @@ public abstract class ServiceProviderBase extends Model {
 	}
 
 	public void clearOperationSchedules() {
-		this.operationSchedules = new LinkedList<OperationSchedule>();
+		setOperationSchedules(new LinkedList<OperationSchedule>());
 	}
 
 	private LinkedList<Operator> operators = new LinkedList<Operator>();
@@ -429,7 +448,7 @@ public abstract class ServiceProviderBase extends Model {
 	}
 
 	public void clearOperators() {
-		this.operators = new LinkedList<Operator>();
+		setOperators(new LinkedList<Operator>());
 	}
 
 	private LinkedList<PassengerRecord> passengerRecords = new LinkedList<PassengerRecord>();
@@ -443,7 +462,7 @@ public abstract class ServiceProviderBase extends Model {
 	}
 
 	public void clearPassengerRecords() {
-		this.passengerRecords = new LinkedList<PassengerRecord>();
+		setPassengerRecords(new LinkedList<PassengerRecord>());
 	}
 
 	private LinkedList<Platform> platforms = new LinkedList<Platform>();
@@ -457,7 +476,7 @@ public abstract class ServiceProviderBase extends Model {
 	}
 
 	public void clearPlatforms() {
-		this.platforms = new LinkedList<Platform>();
+		setPlatforms(new LinkedList<Platform>());
 	}
 
 	private LinkedList<ReservationCandidate> reservationCandidates = new LinkedList<ReservationCandidate>();
@@ -471,7 +490,7 @@ public abstract class ServiceProviderBase extends Model {
 	}
 
 	public void clearReservationCandidates() {
-		this.reservationCandidates = new LinkedList<ReservationCandidate>();
+		setReservationCandidates(new LinkedList<ReservationCandidate>());
 	}
 
 	private LinkedList<Reservation> reservations = new LinkedList<Reservation>();
@@ -485,7 +504,7 @@ public abstract class ServiceProviderBase extends Model {
 	}
 
 	public void clearReservations() {
-		this.reservations = new LinkedList<Reservation>();
+		setReservations(new LinkedList<Reservation>());
 	}
 
 	private LinkedList<ServiceUnit> serviceUnits = new LinkedList<ServiceUnit>();
@@ -499,7 +518,7 @@ public abstract class ServiceProviderBase extends Model {
 	}
 
 	public void clearServiceUnits() {
-		this.serviceUnits = new LinkedList<ServiceUnit>();
+		setServiceUnits(new LinkedList<ServiceUnit>());
 	}
 
 	private LinkedList<UnitAssignment> unitAssignments = new LinkedList<UnitAssignment>();
@@ -513,7 +532,7 @@ public abstract class ServiceProviderBase extends Model {
 	}
 
 	public void clearUnitAssignments() {
-		this.unitAssignments = new LinkedList<UnitAssignment>();
+		setUnitAssignments(new LinkedList<UnitAssignment>());
 	}
 
 	private LinkedList<User> users = new LinkedList<User>();
@@ -527,7 +546,7 @@ public abstract class ServiceProviderBase extends Model {
 	}
 
 	public void clearUsers() {
-		this.users = new LinkedList<User>();
+		setUsers(new LinkedList<User>());
 	}
 
 	private LinkedList<Vehicle> vehicles = new LinkedList<Vehicle>();
@@ -541,6 +560,6 @@ public abstract class ServiceProviderBase extends Model {
 	}
 
 	public void clearVehicles() {
-		this.vehicles = new LinkedList<Vehicle>();
+		setVehicles(new LinkedList<Vehicle>());
 	}
 }

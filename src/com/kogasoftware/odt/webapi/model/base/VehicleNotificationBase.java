@@ -17,7 +17,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class VehicleNotificationBase extends Model {
-	private static final long serialVersionUID = 9090312091533237684L;
+	private static final long serialVersionUID = 118686875032817512L;
 	public static final ResponseConverter<VehicleNotification> RESPONSE_CONVERTER = new ResponseConverter<VehicleNotification>() {
 		@Override
 		public VehicleNotification convert(byte[] rawResponse) throws JSONException {
@@ -30,7 +30,9 @@ public abstract class VehicleNotificationBase extends Model {
 			return parseList(WebAPI.parseJSONArray(rawResponse));
 		}
 	};
-
+	protected void refreshUpdatedAt() {
+		setUpdatedAt(new Date());
+	}
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {
 		setBody(parseString(jsonObject, "body"));
@@ -45,10 +47,11 @@ public abstract class VehicleNotificationBase extends Model {
 		setReadAt(parseOptionalDate(jsonObject, "read_at"));
 		setReservationId(parseOptionalInteger(jsonObject, "reservation_id"));
 		setResponse(parseOptionalInteger(jsonObject, "response"));
-		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setInVehicleDevice(InVehicleDevice.parse(jsonObject, "in_vehicle_device"));
 		setOperator(Operator.parse(jsonObject, "operator"));
 		setReservation(Reservation.parse(jsonObject, "reservation"));
+
+		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 	}
 
 	public static Optional<VehicleNotification> parse(JSONObject jsonObject, String key) throws JSONException {
@@ -139,6 +142,7 @@ public abstract class VehicleNotificationBase extends Model {
 	}
 
 	public void setBody(String body) {
+		refreshUpdatedAt();
 		this.body = wrapNull(body);
 	}
 
@@ -149,15 +153,16 @@ public abstract class VehicleNotificationBase extends Model {
 	}
 
 	public void setBodyRuby(Optional<String> bodyRuby) {
+		refreshUpdatedAt();
 		this.bodyRuby = wrapNull(bodyRuby);
 	}
 
 	public void setBodyRuby(String bodyRuby) {
-		this.bodyRuby = Optional.fromNullable(bodyRuby);
+		setBodyRuby(Optional.fromNullable(bodyRuby));
 	}
 
 	public void clearBodyRuby() {
-		this.bodyRuby = Optional.absent();
+		setBodyRuby(Optional.<String>absent());
 	}
 
 	private Date createdAt = new Date();
@@ -167,6 +172,7 @@ public abstract class VehicleNotificationBase extends Model {
 	}
 
 	public void setCreatedAt(Date createdAt) {
+		refreshUpdatedAt();
 		this.createdAt = wrapNull(createdAt);
 	}
 
@@ -177,15 +183,16 @@ public abstract class VehicleNotificationBase extends Model {
 	}
 
 	public void setEventAt(Optional<Date> eventAt) {
+		refreshUpdatedAt();
 		this.eventAt = wrapNull(eventAt);
 	}
 
 	public void setEventAt(Date eventAt) {
-		this.eventAt = Optional.fromNullable(eventAt);
+		setEventAt(Optional.fromNullable(eventAt));
 	}
 
 	public void clearEventAt() {
-		this.eventAt = Optional.absent();
+		setEventAt(Optional.<Date>absent());
 	}
 
 	private Integer id = 0;
@@ -195,6 +202,7 @@ public abstract class VehicleNotificationBase extends Model {
 	}
 
 	public void setId(Integer id) {
+		refreshUpdatedAt();
 		this.id = wrapNull(id);
 	}
 
@@ -205,6 +213,7 @@ public abstract class VehicleNotificationBase extends Model {
 	}
 
 	public void setInVehicleDeviceId(Integer inVehicleDeviceId) {
+		refreshUpdatedAt();
 		this.inVehicleDeviceId = wrapNull(inVehicleDeviceId);
 	}
 
@@ -215,6 +224,7 @@ public abstract class VehicleNotificationBase extends Model {
 	}
 
 	public void setNotificationKind(Integer notificationKind) {
+		refreshUpdatedAt();
 		this.notificationKind = wrapNull(notificationKind);
 	}
 
@@ -225,15 +235,16 @@ public abstract class VehicleNotificationBase extends Model {
 	}
 
 	public void setOffline(Optional<Boolean> offline) {
+		refreshUpdatedAt();
 		this.offline = wrapNull(offline);
 	}
 
 	public void setOffline(Boolean offline) {
-		this.offline = Optional.fromNullable(offline);
+		setOffline(Optional.fromNullable(offline));
 	}
 
 	public void clearOffline() {
-		this.offline = Optional.absent();
+		setOffline(Optional.<Boolean>absent());
 	}
 
 	private Optional<Integer> operatorId = Optional.absent();
@@ -243,15 +254,16 @@ public abstract class VehicleNotificationBase extends Model {
 	}
 
 	public void setOperatorId(Optional<Integer> operatorId) {
+		refreshUpdatedAt();
 		this.operatorId = wrapNull(operatorId);
 	}
 
 	public void setOperatorId(Integer operatorId) {
-		this.operatorId = Optional.fromNullable(operatorId);
+		setOperatorId(Optional.fromNullable(operatorId));
 	}
 
 	public void clearOperatorId() {
-		this.operatorId = Optional.absent();
+		setOperatorId(Optional.<Integer>absent());
 	}
 
 	private Optional<Date> readAt = Optional.absent();
@@ -261,15 +273,16 @@ public abstract class VehicleNotificationBase extends Model {
 	}
 
 	public void setReadAt(Optional<Date> readAt) {
+		refreshUpdatedAt();
 		this.readAt = wrapNull(readAt);
 	}
 
 	public void setReadAt(Date readAt) {
-		this.readAt = Optional.fromNullable(readAt);
+		setReadAt(Optional.fromNullable(readAt));
 	}
 
 	public void clearReadAt() {
-		this.readAt = Optional.absent();
+		setReadAt(Optional.<Date>absent());
 	}
 
 	private Optional<Integer> reservationId = Optional.absent();
@@ -279,15 +292,16 @@ public abstract class VehicleNotificationBase extends Model {
 	}
 
 	public void setReservationId(Optional<Integer> reservationId) {
+		refreshUpdatedAt();
 		this.reservationId = wrapNull(reservationId);
 	}
 
 	public void setReservationId(Integer reservationId) {
-		this.reservationId = Optional.fromNullable(reservationId);
+		setReservationId(Optional.fromNullable(reservationId));
 	}
 
 	public void clearReservationId() {
-		this.reservationId = Optional.absent();
+		setReservationId(Optional.<Integer>absent());
 	}
 
 	private Optional<Integer> response = Optional.absent();
@@ -297,15 +311,16 @@ public abstract class VehicleNotificationBase extends Model {
 	}
 
 	public void setResponse(Optional<Integer> response) {
+		refreshUpdatedAt();
 		this.response = wrapNull(response);
 	}
 
 	public void setResponse(Integer response) {
-		this.response = Optional.fromNullable(response);
+		setResponse(Optional.fromNullable(response));
 	}
 
 	public void clearResponse() {
-		this.response = Optional.absent();
+		setResponse(Optional.<Integer>absent());
 	}
 
 	private Date updatedAt = new Date();
@@ -318,7 +333,7 @@ public abstract class VehicleNotificationBase extends Model {
 		this.updatedAt = wrapNull(updatedAt);
 	}
 
-	private Optional<InVehicleDevice> inVehicleDevice = Optional.absent();
+	private Optional<InVehicleDevice> inVehicleDevice = Optional.<InVehicleDevice>absent();
 
 	public Optional<InVehicleDevice> getInVehicleDevice() {
 		return wrapNull(inVehicleDevice);
@@ -329,14 +344,14 @@ public abstract class VehicleNotificationBase extends Model {
 	}
 
 	public void setInVehicleDevice(InVehicleDevice inVehicleDevice) {
-		this.inVehicleDevice = Optional.fromNullable(inVehicleDevice);
+		setInVehicleDevice(Optional.fromNullable(inVehicleDevice));
 	}
 
 	public void clearInVehicleDevice() {
-		this.inVehicleDevice = Optional.absent();
+		setInVehicleDevice(Optional.<InVehicleDevice>absent());
 	}
 
-	private Optional<Operator> operator = Optional.absent();
+	private Optional<Operator> operator = Optional.<Operator>absent();
 
 	public Optional<Operator> getOperator() {
 		return wrapNull(operator);
@@ -347,14 +362,14 @@ public abstract class VehicleNotificationBase extends Model {
 	}
 
 	public void setOperator(Operator operator) {
-		this.operator = Optional.fromNullable(operator);
+		setOperator(Optional.fromNullable(operator));
 	}
 
 	public void clearOperator() {
-		this.operator = Optional.absent();
+		setOperator(Optional.<Operator>absent());
 	}
 
-	private Optional<Reservation> reservation = Optional.absent();
+	private Optional<Reservation> reservation = Optional.<Reservation>absent();
 
 	public Optional<Reservation> getReservation() {
 		return wrapNull(reservation);
@@ -365,10 +380,10 @@ public abstract class VehicleNotificationBase extends Model {
 	}
 
 	public void setReservation(Reservation reservation) {
-		this.reservation = Optional.fromNullable(reservation);
+		setReservation(Optional.fromNullable(reservation));
 	}
 
 	public void clearReservation() {
-		this.reservation = Optional.absent();
+		setReservation(Optional.<Reservation>absent());
 	}
 }

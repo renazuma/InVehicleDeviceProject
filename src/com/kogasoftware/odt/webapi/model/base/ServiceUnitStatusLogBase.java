@@ -17,7 +17,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class ServiceUnitStatusLogBase extends Model {
-	private static final long serialVersionUID = 3602178020186773208L;
+	private static final long serialVersionUID = 865657044807863946L;
 	public static final ResponseConverter<ServiceUnitStatusLog> RESPONSE_CONVERTER = new ResponseConverter<ServiceUnitStatusLog>() {
 		@Override
 		public ServiceUnitStatusLog convert(byte[] rawResponse) throws JSONException {
@@ -30,7 +30,9 @@ public abstract class ServiceUnitStatusLogBase extends Model {
 			return parseList(WebAPI.parseJSONArray(rawResponse));
 		}
 	};
-
+	protected void refreshUpdatedAt() {
+		setUpdatedAt(new Date());
+	}
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {
 		setCreatedAt(parseDate(jsonObject, "created_at"));
@@ -42,8 +44,9 @@ public abstract class ServiceUnitStatusLogBase extends Model {
 		setOrientation(parseOptionalInteger(jsonObject, "orientation"));
 		setServiceUnitId(parseOptionalInteger(jsonObject, "service_unit_id"));
 		setTemperature(parseOptionalInteger(jsonObject, "temperature"));
-		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setServiceUnit(ServiceUnit.parse(jsonObject, "service_unit"));
+
+		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 	}
 
 	public static Optional<ServiceUnitStatusLog> parse(JSONObject jsonObject, String key) throws JSONException {
@@ -117,6 +120,7 @@ public abstract class ServiceUnitStatusLogBase extends Model {
 	}
 
 	public void setCreatedAt(Date createdAt) {
+		refreshUpdatedAt();
 		this.createdAt = wrapNull(createdAt);
 	}
 
@@ -127,6 +131,7 @@ public abstract class ServiceUnitStatusLogBase extends Model {
 	}
 
 	public void setId(Integer id) {
+		refreshUpdatedAt();
 		this.id = wrapNull(id);
 	}
 
@@ -137,6 +142,7 @@ public abstract class ServiceUnitStatusLogBase extends Model {
 	}
 
 	public void setLatitude(BigDecimal latitude) {
+		refreshUpdatedAt();
 		this.latitude = wrapNull(latitude);
 	}
 
@@ -147,6 +153,7 @@ public abstract class ServiceUnitStatusLogBase extends Model {
 	}
 
 	public void setLongitude(BigDecimal longitude) {
+		refreshUpdatedAt();
 		this.longitude = wrapNull(longitude);
 	}
 
@@ -157,15 +164,16 @@ public abstract class ServiceUnitStatusLogBase extends Model {
 	}
 
 	public void setOffline(Optional<Boolean> offline) {
+		refreshUpdatedAt();
 		this.offline = wrapNull(offline);
 	}
 
 	public void setOffline(Boolean offline) {
-		this.offline = Optional.fromNullable(offline);
+		setOffline(Optional.fromNullable(offline));
 	}
 
 	public void clearOffline() {
-		this.offline = Optional.absent();
+		setOffline(Optional.<Boolean>absent());
 	}
 
 	private Optional<Date> offlineTime = Optional.absent();
@@ -175,15 +183,16 @@ public abstract class ServiceUnitStatusLogBase extends Model {
 	}
 
 	public void setOfflineTime(Optional<Date> offlineTime) {
+		refreshUpdatedAt();
 		this.offlineTime = wrapNull(offlineTime);
 	}
 
 	public void setOfflineTime(Date offlineTime) {
-		this.offlineTime = Optional.fromNullable(offlineTime);
+		setOfflineTime(Optional.fromNullable(offlineTime));
 	}
 
 	public void clearOfflineTime() {
-		this.offlineTime = Optional.absent();
+		setOfflineTime(Optional.<Date>absent());
 	}
 
 	private Optional<Integer> orientation = Optional.absent();
@@ -193,15 +202,16 @@ public abstract class ServiceUnitStatusLogBase extends Model {
 	}
 
 	public void setOrientation(Optional<Integer> orientation) {
+		refreshUpdatedAt();
 		this.orientation = wrapNull(orientation);
 	}
 
 	public void setOrientation(Integer orientation) {
-		this.orientation = Optional.fromNullable(orientation);
+		setOrientation(Optional.fromNullable(orientation));
 	}
 
 	public void clearOrientation() {
-		this.orientation = Optional.absent();
+		setOrientation(Optional.<Integer>absent());
 	}
 
 	private Optional<Integer> serviceUnitId = Optional.absent();
@@ -211,15 +221,16 @@ public abstract class ServiceUnitStatusLogBase extends Model {
 	}
 
 	public void setServiceUnitId(Optional<Integer> serviceUnitId) {
+		refreshUpdatedAt();
 		this.serviceUnitId = wrapNull(serviceUnitId);
 	}
 
 	public void setServiceUnitId(Integer serviceUnitId) {
-		this.serviceUnitId = Optional.fromNullable(serviceUnitId);
+		setServiceUnitId(Optional.fromNullable(serviceUnitId));
 	}
 
 	public void clearServiceUnitId() {
-		this.serviceUnitId = Optional.absent();
+		setServiceUnitId(Optional.<Integer>absent());
 	}
 
 	private Optional<Integer> temperature = Optional.absent();
@@ -229,15 +240,16 @@ public abstract class ServiceUnitStatusLogBase extends Model {
 	}
 
 	public void setTemperature(Optional<Integer> temperature) {
+		refreshUpdatedAt();
 		this.temperature = wrapNull(temperature);
 	}
 
 	public void setTemperature(Integer temperature) {
-		this.temperature = Optional.fromNullable(temperature);
+		setTemperature(Optional.fromNullable(temperature));
 	}
 
 	public void clearTemperature() {
-		this.temperature = Optional.absent();
+		setTemperature(Optional.<Integer>absent());
 	}
 
 	private Date updatedAt = new Date();
@@ -250,7 +262,7 @@ public abstract class ServiceUnitStatusLogBase extends Model {
 		this.updatedAt = wrapNull(updatedAt);
 	}
 
-	private Optional<ServiceUnit> serviceUnit = Optional.absent();
+	private Optional<ServiceUnit> serviceUnit = Optional.<ServiceUnit>absent();
 
 	public Optional<ServiceUnit> getServiceUnit() {
 		return wrapNull(serviceUnit);
@@ -261,10 +273,10 @@ public abstract class ServiceUnitStatusLogBase extends Model {
 	}
 
 	public void setServiceUnit(ServiceUnit serviceUnit) {
-		this.serviceUnit = Optional.fromNullable(serviceUnit);
+		setServiceUnit(Optional.fromNullable(serviceUnit));
 	}
 
 	public void clearServiceUnit() {
-		this.serviceUnit = Optional.absent();
+		setServiceUnit(Optional.<ServiceUnit>absent());
 	}
 }

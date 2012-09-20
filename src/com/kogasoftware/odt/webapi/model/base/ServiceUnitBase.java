@@ -17,7 +17,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class ServiceUnitBase extends Model {
-	private static final long serialVersionUID = 6601577165306105617L;
+	private static final long serialVersionUID = 6308686101126825945L;
 	public static final ResponseConverter<ServiceUnit> RESPONSE_CONVERTER = new ResponseConverter<ServiceUnit>() {
 		@Override
 		public ServiceUnit convert(byte[] rawResponse) throws JSONException {
@@ -30,7 +30,9 @@ public abstract class ServiceUnitBase extends Model {
 			return parseList(WebAPI.parseJSONArray(rawResponse));
 		}
 	};
-
+	protected void refreshUpdatedAt() {
+		setUpdatedAt(new Date());
+	}
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {
 		setActivatedAt(parseOptionalDate(jsonObject, "activated_at"));
@@ -41,7 +43,6 @@ public abstract class ServiceUnitBase extends Model {
 		setInVehicleDeviceId(parseOptionalInteger(jsonObject, "in_vehicle_device_id"));
 		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
 		setUnitAssignmentId(parseOptionalInteger(jsonObject, "unit_assignment_id"));
-		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setVehicleId(parseOptionalInteger(jsonObject, "vehicle_id"));
 		setDriver(Driver.parse(jsonObject, "driver"));
 		setInVehicleDevice(InVehicleDevice.parse(jsonObject, "in_vehicle_device"));
@@ -49,6 +50,8 @@ public abstract class ServiceUnitBase extends Model {
 		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
 		setUnitAssignment(UnitAssignment.parse(jsonObject, "unit_assignment"));
 		setVehicle(Vehicle.parse(jsonObject, "vehicle"));
+
+		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 	}
 
 	public static Optional<ServiceUnit> parse(JSONObject jsonObject, String key) throws JSONException {
@@ -153,15 +156,16 @@ public abstract class ServiceUnitBase extends Model {
 	}
 
 	public void setActivatedAt(Optional<Date> activatedAt) {
+		refreshUpdatedAt();
 		this.activatedAt = wrapNull(activatedAt);
 	}
 
 	public void setActivatedAt(Date activatedAt) {
-		this.activatedAt = Optional.fromNullable(activatedAt);
+		setActivatedAt(Optional.fromNullable(activatedAt));
 	}
 
 	public void clearActivatedAt() {
-		this.activatedAt = Optional.absent();
+		setActivatedAt(Optional.<Date>absent());
 	}
 
 	private Date createdAt = new Date();
@@ -171,6 +175,7 @@ public abstract class ServiceUnitBase extends Model {
 	}
 
 	public void setCreatedAt(Date createdAt) {
+		refreshUpdatedAt();
 		this.createdAt = wrapNull(createdAt);
 	}
 
@@ -181,15 +186,16 @@ public abstract class ServiceUnitBase extends Model {
 	}
 
 	public void setDeletedAt(Optional<Date> deletedAt) {
+		refreshUpdatedAt();
 		this.deletedAt = wrapNull(deletedAt);
 	}
 
 	public void setDeletedAt(Date deletedAt) {
-		this.deletedAt = Optional.fromNullable(deletedAt);
+		setDeletedAt(Optional.fromNullable(deletedAt));
 	}
 
 	public void clearDeletedAt() {
-		this.deletedAt = Optional.absent();
+		setDeletedAt(Optional.<Date>absent());
 	}
 
 	private Optional<Integer> driverId = Optional.absent();
@@ -199,15 +205,16 @@ public abstract class ServiceUnitBase extends Model {
 	}
 
 	public void setDriverId(Optional<Integer> driverId) {
+		refreshUpdatedAt();
 		this.driverId = wrapNull(driverId);
 	}
 
 	public void setDriverId(Integer driverId) {
-		this.driverId = Optional.fromNullable(driverId);
+		setDriverId(Optional.fromNullable(driverId));
 	}
 
 	public void clearDriverId() {
-		this.driverId = Optional.absent();
+		setDriverId(Optional.<Integer>absent());
 	}
 
 	private Integer id = 0;
@@ -217,6 +224,7 @@ public abstract class ServiceUnitBase extends Model {
 	}
 
 	public void setId(Integer id) {
+		refreshUpdatedAt();
 		this.id = wrapNull(id);
 	}
 
@@ -227,15 +235,16 @@ public abstract class ServiceUnitBase extends Model {
 	}
 
 	public void setInVehicleDeviceId(Optional<Integer> inVehicleDeviceId) {
+		refreshUpdatedAt();
 		this.inVehicleDeviceId = wrapNull(inVehicleDeviceId);
 	}
 
 	public void setInVehicleDeviceId(Integer inVehicleDeviceId) {
-		this.inVehicleDeviceId = Optional.fromNullable(inVehicleDeviceId);
+		setInVehicleDeviceId(Optional.fromNullable(inVehicleDeviceId));
 	}
 
 	public void clearInVehicleDeviceId() {
-		this.inVehicleDeviceId = Optional.absent();
+		setInVehicleDeviceId(Optional.<Integer>absent());
 	}
 
 	private Optional<Integer> serviceProviderId = Optional.absent();
@@ -245,15 +254,16 @@ public abstract class ServiceUnitBase extends Model {
 	}
 
 	public void setServiceProviderId(Optional<Integer> serviceProviderId) {
+		refreshUpdatedAt();
 		this.serviceProviderId = wrapNull(serviceProviderId);
 	}
 
 	public void setServiceProviderId(Integer serviceProviderId) {
-		this.serviceProviderId = Optional.fromNullable(serviceProviderId);
+		setServiceProviderId(Optional.fromNullable(serviceProviderId));
 	}
 
 	public void clearServiceProviderId() {
-		this.serviceProviderId = Optional.absent();
+		setServiceProviderId(Optional.<Integer>absent());
 	}
 
 	private Optional<Integer> unitAssignmentId = Optional.absent();
@@ -263,15 +273,16 @@ public abstract class ServiceUnitBase extends Model {
 	}
 
 	public void setUnitAssignmentId(Optional<Integer> unitAssignmentId) {
+		refreshUpdatedAt();
 		this.unitAssignmentId = wrapNull(unitAssignmentId);
 	}
 
 	public void setUnitAssignmentId(Integer unitAssignmentId) {
-		this.unitAssignmentId = Optional.fromNullable(unitAssignmentId);
+		setUnitAssignmentId(Optional.fromNullable(unitAssignmentId));
 	}
 
 	public void clearUnitAssignmentId() {
-		this.unitAssignmentId = Optional.absent();
+		setUnitAssignmentId(Optional.<Integer>absent());
 	}
 
 	private Date updatedAt = new Date();
@@ -291,18 +302,19 @@ public abstract class ServiceUnitBase extends Model {
 	}
 
 	public void setVehicleId(Optional<Integer> vehicleId) {
+		refreshUpdatedAt();
 		this.vehicleId = wrapNull(vehicleId);
 	}
 
 	public void setVehicleId(Integer vehicleId) {
-		this.vehicleId = Optional.fromNullable(vehicleId);
+		setVehicleId(Optional.fromNullable(vehicleId));
 	}
 
 	public void clearVehicleId() {
-		this.vehicleId = Optional.absent();
+		setVehicleId(Optional.<Integer>absent());
 	}
 
-	private Optional<Driver> driver = Optional.absent();
+	private Optional<Driver> driver = Optional.<Driver>absent();
 
 	public Optional<Driver> getDriver() {
 		return wrapNull(driver);
@@ -313,14 +325,14 @@ public abstract class ServiceUnitBase extends Model {
 	}
 
 	public void setDriver(Driver driver) {
-		this.driver = Optional.fromNullable(driver);
+		setDriver(Optional.fromNullable(driver));
 	}
 
 	public void clearDriver() {
-		this.driver = Optional.absent();
+		setDriver(Optional.<Driver>absent());
 	}
 
-	private Optional<InVehicleDevice> inVehicleDevice = Optional.absent();
+	private Optional<InVehicleDevice> inVehicleDevice = Optional.<InVehicleDevice>absent();
 
 	public Optional<InVehicleDevice> getInVehicleDevice() {
 		return wrapNull(inVehicleDevice);
@@ -331,11 +343,11 @@ public abstract class ServiceUnitBase extends Model {
 	}
 
 	public void setInVehicleDevice(InVehicleDevice inVehicleDevice) {
-		this.inVehicleDevice = Optional.fromNullable(inVehicleDevice);
+		setInVehicleDevice(Optional.fromNullable(inVehicleDevice));
 	}
 
 	public void clearInVehicleDevice() {
-		this.inVehicleDevice = Optional.absent();
+		setInVehicleDevice(Optional.<InVehicleDevice>absent());
 	}
 
 	private LinkedList<OperationRecord> operationRecords = new LinkedList<OperationRecord>();
@@ -349,10 +361,10 @@ public abstract class ServiceUnitBase extends Model {
 	}
 
 	public void clearOperationRecords() {
-		this.operationRecords = new LinkedList<OperationRecord>();
+		setOperationRecords(new LinkedList<OperationRecord>());
 	}
 
-	private Optional<ServiceProvider> serviceProvider = Optional.absent();
+	private Optional<ServiceProvider> serviceProvider = Optional.<ServiceProvider>absent();
 
 	public Optional<ServiceProvider> getServiceProvider() {
 		return wrapNull(serviceProvider);
@@ -363,14 +375,14 @@ public abstract class ServiceUnitBase extends Model {
 	}
 
 	public void setServiceProvider(ServiceProvider serviceProvider) {
-		this.serviceProvider = Optional.fromNullable(serviceProvider);
+		setServiceProvider(Optional.fromNullable(serviceProvider));
 	}
 
 	public void clearServiceProvider() {
-		this.serviceProvider = Optional.absent();
+		setServiceProvider(Optional.<ServiceProvider>absent());
 	}
 
-	private Optional<UnitAssignment> unitAssignment = Optional.absent();
+	private Optional<UnitAssignment> unitAssignment = Optional.<UnitAssignment>absent();
 
 	public Optional<UnitAssignment> getUnitAssignment() {
 		return wrapNull(unitAssignment);
@@ -381,14 +393,14 @@ public abstract class ServiceUnitBase extends Model {
 	}
 
 	public void setUnitAssignment(UnitAssignment unitAssignment) {
-		this.unitAssignment = Optional.fromNullable(unitAssignment);
+		setUnitAssignment(Optional.fromNullable(unitAssignment));
 	}
 
 	public void clearUnitAssignment() {
-		this.unitAssignment = Optional.absent();
+		setUnitAssignment(Optional.<UnitAssignment>absent());
 	}
 
-	private Optional<Vehicle> vehicle = Optional.absent();
+	private Optional<Vehicle> vehicle = Optional.<Vehicle>absent();
 
 	public Optional<Vehicle> getVehicle() {
 		return wrapNull(vehicle);
@@ -399,10 +411,10 @@ public abstract class ServiceUnitBase extends Model {
 	}
 
 	public void setVehicle(Vehicle vehicle) {
-		this.vehicle = Optional.fromNullable(vehicle);
+		setVehicle(Optional.fromNullable(vehicle));
 	}
 
 	public void clearVehicle() {
-		this.vehicle = Optional.absent();
+		setVehicle(Optional.<Vehicle>absent());
 	}
 }

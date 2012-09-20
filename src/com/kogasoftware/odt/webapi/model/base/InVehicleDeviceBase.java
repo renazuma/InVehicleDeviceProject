@@ -17,7 +17,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class InVehicleDeviceBase extends Model {
-	private static final long serialVersionUID = 8804748728408932342L;
+	private static final long serialVersionUID = 4326828688997805850L;
 	public static final ResponseConverter<InVehicleDevice> RESPONSE_CONVERTER = new ResponseConverter<InVehicleDevice>() {
 		@Override
 		public InVehicleDevice convert(byte[] rawResponse) throws JSONException {
@@ -30,7 +30,6 @@ public abstract class InVehicleDeviceBase extends Model {
 			return parseList(WebAPI.parseJSONArray(rawResponse));
 		}
 	};
-
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {
 		setAuthenticationToken(parseOptionalString(jsonObject, "authentication_token"));
@@ -129,11 +128,11 @@ public abstract class InVehicleDeviceBase extends Model {
 	}
 
 	public void setAuthenticationToken(String authenticationToken) {
-		this.authenticationToken = Optional.fromNullable(authenticationToken);
+		setAuthenticationToken(Optional.fromNullable(authenticationToken));
 	}
 
 	public void clearAuthenticationToken() {
-		this.authenticationToken = Optional.absent();
+		setAuthenticationToken(Optional.<String>absent());
 	}
 
 	private Integer id = 0;
@@ -177,11 +176,11 @@ public abstract class InVehicleDeviceBase extends Model {
 	}
 
 	public void setServiceProviderId(Integer serviceProviderId) {
-		this.serviceProviderId = Optional.fromNullable(serviceProviderId);
+		setServiceProviderId(Optional.fromNullable(serviceProviderId));
 	}
 
 	public void clearServiceProviderId() {
-		this.serviceProviderId = Optional.absent();
+		setServiceProviderId(Optional.<Integer>absent());
 	}
 
 	private String typeNumber = "";
@@ -205,11 +204,11 @@ public abstract class InVehicleDeviceBase extends Model {
 	}
 
 	public void setAuditComment(String auditComment) {
-		this.auditComment = Optional.fromNullable(auditComment);
+		setAuditComment(Optional.fromNullable(auditComment));
 	}
 
 	public void clearAuditComment() {
-		this.auditComment = Optional.absent();
+		setAuditComment(Optional.<String>absent());
 	}
 
 	private Optional<String> password = Optional.absent();
@@ -223,11 +222,11 @@ public abstract class InVehicleDeviceBase extends Model {
 	}
 
 	public void setPassword(String password) {
-		this.password = Optional.fromNullable(password);
+		setPassword(Optional.fromNullable(password));
 	}
 
 	public void clearPassword() {
-		this.password = Optional.absent();
+		setPassword(Optional.<String>absent());
 	}
 
 	private Optional<String> passwordConfirmation = Optional.absent();
@@ -241,11 +240,11 @@ public abstract class InVehicleDeviceBase extends Model {
 	}
 
 	public void setPasswordConfirmation(String passwordConfirmation) {
-		this.passwordConfirmation = Optional.fromNullable(passwordConfirmation);
+		setPasswordConfirmation(Optional.fromNullable(passwordConfirmation));
 	}
 
 	public void clearPasswordConfirmation() {
-		this.passwordConfirmation = Optional.absent();
+		setPasswordConfirmation(Optional.<String>absent());
 	}
 
 	private Optional<String> rememberMe = Optional.absent();
@@ -259,14 +258,14 @@ public abstract class InVehicleDeviceBase extends Model {
 	}
 
 	public void setRememberMe(String rememberMe) {
-		this.rememberMe = Optional.fromNullable(rememberMe);
+		setRememberMe(Optional.fromNullable(rememberMe));
 	}
 
 	public void clearRememberMe() {
-		this.rememberMe = Optional.absent();
+		setRememberMe(Optional.<String>absent());
 	}
 
-	private Optional<ServiceProvider> serviceProvider = Optional.absent();
+	private Optional<ServiceProvider> serviceProvider = Optional.<ServiceProvider>absent();
 
 	public Optional<ServiceProvider> getServiceProvider() {
 		return wrapNull(serviceProvider);
@@ -277,11 +276,11 @@ public abstract class InVehicleDeviceBase extends Model {
 	}
 
 	public void setServiceProvider(ServiceProvider serviceProvider) {
-		this.serviceProvider = Optional.fromNullable(serviceProvider);
+		setServiceProvider(Optional.fromNullable(serviceProvider));
 	}
 
 	public void clearServiceProvider() {
-		this.serviceProvider = Optional.absent();
+		setServiceProvider(Optional.<ServiceProvider>absent());
 	}
 
 	private LinkedList<ServiceUnit> serviceUnits = new LinkedList<ServiceUnit>();
@@ -295,7 +294,7 @@ public abstract class InVehicleDeviceBase extends Model {
 	}
 
 	public void clearServiceUnits() {
-		this.serviceUnits = new LinkedList<ServiceUnit>();
+		setServiceUnits(new LinkedList<ServiceUnit>());
 	}
 
 	private LinkedList<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();
@@ -309,6 +308,6 @@ public abstract class InVehicleDeviceBase extends Model {
 	}
 
 	public void clearVehicleNotifications() {
-		this.vehicleNotifications = new LinkedList<VehicleNotification>();
+		setVehicleNotifications(new LinkedList<VehicleNotification>());
 	}
 }
