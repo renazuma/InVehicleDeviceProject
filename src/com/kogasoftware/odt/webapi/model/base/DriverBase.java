@@ -17,7 +17,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class DriverBase extends Model {
-	private static final long serialVersionUID = 5957740957013640674L;
+	private static final long serialVersionUID = 4230347465101070365L;
 	public static final ResponseConverter<Driver> RESPONSE_CONVERTER = new ResponseConverter<Driver>() {
 		@Override
 		public Driver convert(byte[] rawResponse) throws JSONException {
@@ -30,7 +30,9 @@ public abstract class DriverBase extends Model {
 			return parseList(WebAPI.parseJSONArray(rawResponse));
 		}
 	};
-
+	protected void refreshUpdatedAt() {
+		setUpdatedAt(new Date());
+	}
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {
 		setCreatedAt(parseDate(jsonObject, "created_at"));
@@ -40,9 +42,10 @@ public abstract class DriverBase extends Model {
 		setLastName(parseString(jsonObject, "last_name"));
 		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
 		setTelephoneNumber(parseString(jsonObject, "telephone_number"));
-		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
 		setServiceUnits(ServiceUnit.parseList(jsonObject, "service_units"));
+
+		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 	}
 
 	public static Optional<Driver> parse(JSONObject jsonObject, String key) throws JSONException {
@@ -117,6 +120,7 @@ public abstract class DriverBase extends Model {
 	}
 
 	public void setCreatedAt(Date createdAt) {
+		refreshUpdatedAt();
 		this.createdAt = wrapNull(createdAt);
 	}
 
@@ -127,15 +131,16 @@ public abstract class DriverBase extends Model {
 	}
 
 	public void setDeletedAt(Optional<Date> deletedAt) {
+		refreshUpdatedAt();
 		this.deletedAt = wrapNull(deletedAt);
 	}
 
 	public void setDeletedAt(Date deletedAt) {
-		this.deletedAt = Optional.fromNullable(deletedAt);
+		setDeletedAt(Optional.fromNullable(deletedAt));
 	}
 
 	public void clearDeletedAt() {
-		this.deletedAt = Optional.absent();
+		setDeletedAt(Optional.<Date>absent());
 	}
 
 	private String firstName = "";
@@ -145,6 +150,7 @@ public abstract class DriverBase extends Model {
 	}
 
 	public void setFirstName(String firstName) {
+		refreshUpdatedAt();
 		this.firstName = wrapNull(firstName);
 	}
 
@@ -155,6 +161,7 @@ public abstract class DriverBase extends Model {
 	}
 
 	public void setId(Integer id) {
+		refreshUpdatedAt();
 		this.id = wrapNull(id);
 	}
 
@@ -165,6 +172,7 @@ public abstract class DriverBase extends Model {
 	}
 
 	public void setLastName(String lastName) {
+		refreshUpdatedAt();
 		this.lastName = wrapNull(lastName);
 	}
 
@@ -175,15 +183,16 @@ public abstract class DriverBase extends Model {
 	}
 
 	public void setServiceProviderId(Optional<Integer> serviceProviderId) {
+		refreshUpdatedAt();
 		this.serviceProviderId = wrapNull(serviceProviderId);
 	}
 
 	public void setServiceProviderId(Integer serviceProviderId) {
-		this.serviceProviderId = Optional.fromNullable(serviceProviderId);
+		setServiceProviderId(Optional.fromNullable(serviceProviderId));
 	}
 
 	public void clearServiceProviderId() {
-		this.serviceProviderId = Optional.absent();
+		setServiceProviderId(Optional.<Integer>absent());
 	}
 
 	private String telephoneNumber = "";
@@ -193,6 +202,7 @@ public abstract class DriverBase extends Model {
 	}
 
 	public void setTelephoneNumber(String telephoneNumber) {
+		refreshUpdatedAt();
 		this.telephoneNumber = wrapNull(telephoneNumber);
 	}
 
@@ -206,7 +216,7 @@ public abstract class DriverBase extends Model {
 		this.updatedAt = wrapNull(updatedAt);
 	}
 
-	private Optional<ServiceProvider> serviceProvider = Optional.absent();
+	private Optional<ServiceProvider> serviceProvider = Optional.<ServiceProvider>absent();
 
 	public Optional<ServiceProvider> getServiceProvider() {
 		return wrapNull(serviceProvider);
@@ -217,11 +227,11 @@ public abstract class DriverBase extends Model {
 	}
 
 	public void setServiceProvider(ServiceProvider serviceProvider) {
-		this.serviceProvider = Optional.fromNullable(serviceProvider);
+		setServiceProvider(Optional.fromNullable(serviceProvider));
 	}
 
 	public void clearServiceProvider() {
-		this.serviceProvider = Optional.absent();
+		setServiceProvider(Optional.<ServiceProvider>absent());
 	}
 
 	private LinkedList<ServiceUnit> serviceUnits = new LinkedList<ServiceUnit>();
@@ -235,6 +245,6 @@ public abstract class DriverBase extends Model {
 	}
 
 	public void clearServiceUnits() {
-		this.serviceUnits = new LinkedList<ServiceUnit>();
+		setServiceUnits(new LinkedList<ServiceUnit>());
 	}
 }

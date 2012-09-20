@@ -17,7 +17,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class UserBase extends Model {
-	private static final long serialVersionUID = 4135707572506575629L;
+	private static final long serialVersionUID = 1304993702418693707L;
 	public static final ResponseConverter<User> RESPONSE_CONVERTER = new ResponseConverter<User>() {
 		@Override
 		public User convert(byte[] rawResponse) throws JSONException {
@@ -30,7 +30,6 @@ public abstract class UserBase extends Model {
 			return parseList(WebAPI.parseJSONArray(rawResponse));
 		}
 	};
-
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {
 		setAddress(parseString(jsonObject, "address"));
@@ -205,11 +204,11 @@ public abstract class UserBase extends Model {
 	}
 
 	public void setEmail(String email) {
-		this.email = Optional.fromNullable(email);
+		setEmail(Optional.fromNullable(email));
 	}
 
 	public void clearEmail() {
-		this.email = Optional.absent();
+		setEmail(Optional.<String>absent());
 	}
 
 	private Optional<String> email2 = Optional.absent();
@@ -223,11 +222,11 @@ public abstract class UserBase extends Model {
 	}
 
 	public void setEmail2(String email2) {
-		this.email2 = Optional.fromNullable(email2);
+		setEmail2(Optional.fromNullable(email2));
 	}
 
 	public void clearEmail2() {
-		this.email2 = Optional.absent();
+		setEmail2(Optional.<String>absent());
 	}
 
 	private Optional<String> felicaId = Optional.absent();
@@ -241,11 +240,11 @@ public abstract class UserBase extends Model {
 	}
 
 	public void setFelicaId(String felicaId) {
-		this.felicaId = Optional.fromNullable(felicaId);
+		setFelicaId(Optional.fromNullable(felicaId));
 	}
 
 	public void clearFelicaId() {
-		this.felicaId = Optional.absent();
+		setFelicaId(Optional.<String>absent());
 	}
 
 	private String firstName = "";
@@ -279,11 +278,11 @@ public abstract class UserBase extends Model {
 	}
 
 	public void setHandicapped(Boolean handicapped) {
-		this.handicapped = Optional.fromNullable(handicapped);
+		setHandicapped(Optional.fromNullable(handicapped));
 	}
 
 	public void clearHandicapped() {
-		this.handicapped = Optional.absent();
+		setHandicapped(Optional.<Boolean>absent());
 	}
 
 	private Integer id = 0;
@@ -347,11 +346,11 @@ public abstract class UserBase extends Model {
 	}
 
 	public void setNeededCare(Boolean neededCare) {
-		this.neededCare = Optional.fromNullable(neededCare);
+		setNeededCare(Optional.fromNullable(neededCare));
 	}
 
 	public void clearNeededCare() {
-		this.neededCare = Optional.absent();
+		setNeededCare(Optional.<Boolean>absent());
 	}
 
 	private Optional<Boolean> recommendNotification = Optional.absent();
@@ -365,11 +364,11 @@ public abstract class UserBase extends Model {
 	}
 
 	public void setRecommendNotification(Boolean recommendNotification) {
-		this.recommendNotification = Optional.fromNullable(recommendNotification);
+		setRecommendNotification(Optional.fromNullable(recommendNotification));
 	}
 
 	public void clearRecommendNotification() {
-		this.recommendNotification = Optional.absent();
+		setRecommendNotification(Optional.<Boolean>absent());
 	}
 
 	private Optional<Boolean> recommendOk = Optional.absent();
@@ -383,11 +382,11 @@ public abstract class UserBase extends Model {
 	}
 
 	public void setRecommendOk(Boolean recommendOk) {
-		this.recommendOk = Optional.fromNullable(recommendOk);
+		setRecommendOk(Optional.fromNullable(recommendOk));
 	}
 
 	public void clearRecommendOk() {
-		this.recommendOk = Optional.absent();
+		setRecommendOk(Optional.<Boolean>absent());
 	}
 
 	private Optional<Boolean> reserveNotification = Optional.absent();
@@ -401,11 +400,11 @@ public abstract class UserBase extends Model {
 	}
 
 	public void setReserveNotification(Boolean reserveNotification) {
-		this.reserveNotification = Optional.fromNullable(reserveNotification);
+		setReserveNotification(Optional.fromNullable(reserveNotification));
 	}
 
 	public void clearReserveNotification() {
-		this.reserveNotification = Optional.absent();
+		setReserveNotification(Optional.<Boolean>absent());
 	}
 
 	private Optional<Integer> serviceProviderId = Optional.absent();
@@ -419,11 +418,11 @@ public abstract class UserBase extends Model {
 	}
 
 	public void setServiceProviderId(Integer serviceProviderId) {
-		this.serviceProviderId = Optional.fromNullable(serviceProviderId);
+		setServiceProviderId(Optional.fromNullable(serviceProviderId));
 	}
 
 	public void clearServiceProviderId() {
-		this.serviceProviderId = Optional.absent();
+		setServiceProviderId(Optional.<Integer>absent());
 	}
 
 	private Integer sex = 0;
@@ -457,11 +456,11 @@ public abstract class UserBase extends Model {
 	}
 
 	public void setTelephoneNumber2(String telephoneNumber2) {
-		this.telephoneNumber2 = Optional.fromNullable(telephoneNumber2);
+		setTelephoneNumber2(Optional.fromNullable(telephoneNumber2));
 	}
 
 	public void clearTelephoneNumber2() {
-		this.telephoneNumber2 = Optional.absent();
+		setTelephoneNumber2(Optional.<String>absent());
 	}
 
 	private Optional<Boolean> updateNotification = Optional.absent();
@@ -475,11 +474,11 @@ public abstract class UserBase extends Model {
 	}
 
 	public void setUpdateNotification(Boolean updateNotification) {
-		this.updateNotification = Optional.fromNullable(updateNotification);
+		setUpdateNotification(Optional.fromNullable(updateNotification));
 	}
 
 	public void clearUpdateNotification() {
-		this.updateNotification = Optional.absent();
+		setUpdateNotification(Optional.<Boolean>absent());
 	}
 
 	private Optional<Boolean> wheelchair = Optional.absent();
@@ -493,11 +492,11 @@ public abstract class UserBase extends Model {
 	}
 
 	public void setWheelchair(Boolean wheelchair) {
-		this.wheelchair = Optional.fromNullable(wheelchair);
+		setWheelchair(Optional.fromNullable(wheelchair));
 	}
 
 	public void clearWheelchair() {
-		this.wheelchair = Optional.absent();
+		setWheelchair(Optional.<Boolean>absent());
 	}
 
 	private Optional<String> zip = Optional.absent();
@@ -511,11 +510,11 @@ public abstract class UserBase extends Model {
 	}
 
 	public void setZip(String zip) {
-		this.zip = Optional.fromNullable(zip);
+		setZip(Optional.fromNullable(zip));
 	}
 
 	public void clearZip() {
-		this.zip = Optional.absent();
+		setZip(Optional.<String>absent());
 	}
 
 	private Optional<String> auditComment = Optional.absent();
@@ -529,11 +528,11 @@ public abstract class UserBase extends Model {
 	}
 
 	public void setAuditComment(String auditComment) {
-		this.auditComment = Optional.fromNullable(auditComment);
+		setAuditComment(Optional.fromNullable(auditComment));
 	}
 
 	public void clearAuditComment() {
-		this.auditComment = Optional.absent();
+		setAuditComment(Optional.<String>absent());
 	}
 
 	private Optional<String> fullname = Optional.absent();
@@ -547,11 +546,11 @@ public abstract class UserBase extends Model {
 	}
 
 	public void setFullname(String fullname) {
-		this.fullname = Optional.fromNullable(fullname);
+		setFullname(Optional.fromNullable(fullname));
 	}
 
 	public void clearFullname() {
-		this.fullname = Optional.absent();
+		setFullname(Optional.<String>absent());
 	}
 
 	private Optional<String> fullnameRuby = Optional.absent();
@@ -565,11 +564,11 @@ public abstract class UserBase extends Model {
 	}
 
 	public void setFullnameRuby(String fullnameRuby) {
-		this.fullnameRuby = Optional.fromNullable(fullnameRuby);
+		setFullnameRuby(Optional.fromNullable(fullnameRuby));
 	}
 
 	public void clearFullnameRuby() {
-		this.fullnameRuby = Optional.absent();
+		setFullnameRuby(Optional.<String>absent());
 	}
 
 	private Optional<String> password = Optional.absent();
@@ -583,11 +582,11 @@ public abstract class UserBase extends Model {
 	}
 
 	public void setPassword(String password) {
-		this.password = Optional.fromNullable(password);
+		setPassword(Optional.fromNullable(password));
 	}
 
 	public void clearPassword() {
-		this.password = Optional.absent();
+		setPassword(Optional.<String>absent());
 	}
 
 	private Optional<String> passwordConfirmation = Optional.absent();
@@ -601,11 +600,11 @@ public abstract class UserBase extends Model {
 	}
 
 	public void setPasswordConfirmation(String passwordConfirmation) {
-		this.passwordConfirmation = Optional.fromNullable(passwordConfirmation);
+		setPasswordConfirmation(Optional.fromNullable(passwordConfirmation));
 	}
 
 	public void clearPasswordConfirmation() {
-		this.passwordConfirmation = Optional.absent();
+		setPasswordConfirmation(Optional.<String>absent());
 	}
 
 	private Optional<String> rememberMe = Optional.absent();
@@ -619,11 +618,11 @@ public abstract class UserBase extends Model {
 	}
 
 	public void setRememberMe(String rememberMe) {
-		this.rememberMe = Optional.fromNullable(rememberMe);
+		setRememberMe(Optional.fromNullable(rememberMe));
 	}
 
 	public void clearRememberMe() {
-		this.rememberMe = Optional.absent();
+		setRememberMe(Optional.<String>absent());
 	}
 
 	private LinkedList<Demand> demands = new LinkedList<Demand>();
@@ -637,7 +636,7 @@ public abstract class UserBase extends Model {
 	}
 
 	public void clearDemands() {
-		this.demands = new LinkedList<Demand>();
+		setDemands(new LinkedList<Demand>());
 	}
 
 	private LinkedList<PassengerRecord> passengerRecords = new LinkedList<PassengerRecord>();
@@ -651,7 +650,7 @@ public abstract class UserBase extends Model {
 	}
 
 	public void clearPassengerRecords() {
-		this.passengerRecords = new LinkedList<PassengerRecord>();
+		setPassengerRecords(new LinkedList<PassengerRecord>());
 	}
 
 	private LinkedList<Platform> platforms = new LinkedList<Platform>();
@@ -665,7 +664,7 @@ public abstract class UserBase extends Model {
 	}
 
 	public void clearPlatforms() {
-		this.platforms = new LinkedList<Platform>();
+		setPlatforms(new LinkedList<Platform>());
 	}
 
 	private LinkedList<ReservationCandidate> reservationCandidates = new LinkedList<ReservationCandidate>();
@@ -679,7 +678,7 @@ public abstract class UserBase extends Model {
 	}
 
 	public void clearReservationCandidates() {
-		this.reservationCandidates = new LinkedList<ReservationCandidate>();
+		setReservationCandidates(new LinkedList<ReservationCandidate>());
 	}
 
 	private LinkedList<ReservationUser> reservationUsers = new LinkedList<ReservationUser>();
@@ -693,7 +692,7 @@ public abstract class UserBase extends Model {
 	}
 
 	public void clearReservationUsers() {
-		this.reservationUsers = new LinkedList<ReservationUser>();
+		setReservationUsers(new LinkedList<ReservationUser>());
 	}
 
 	private LinkedList<Reservation> reservations = new LinkedList<Reservation>();
@@ -707,10 +706,10 @@ public abstract class UserBase extends Model {
 	}
 
 	public void clearReservations() {
-		this.reservations = new LinkedList<Reservation>();
+		setReservations(new LinkedList<Reservation>());
 	}
 
-	private Optional<ServiceProvider> serviceProvider = Optional.absent();
+	private Optional<ServiceProvider> serviceProvider = Optional.<ServiceProvider>absent();
 
 	public Optional<ServiceProvider> getServiceProvider() {
 		return wrapNull(serviceProvider);
@@ -721,10 +720,10 @@ public abstract class UserBase extends Model {
 	}
 
 	public void setServiceProvider(ServiceProvider serviceProvider) {
-		this.serviceProvider = Optional.fromNullable(serviceProvider);
+		setServiceProvider(Optional.fromNullable(serviceProvider));
 	}
 
 	public void clearServiceProvider() {
-		this.serviceProvider = Optional.absent();
+		setServiceProvider(Optional.<ServiceProvider>absent());
 	}
 }

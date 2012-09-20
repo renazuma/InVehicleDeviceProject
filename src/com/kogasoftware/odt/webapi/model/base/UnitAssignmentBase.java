@@ -17,7 +17,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class UnitAssignmentBase extends Model {
-	private static final long serialVersionUID = 8517482894114772371L;
+	private static final long serialVersionUID = 7180542306067615307L;
 	public static final ResponseConverter<UnitAssignment> RESPONSE_CONVERTER = new ResponseConverter<UnitAssignment>() {
 		@Override
 		public UnitAssignment convert(byte[] rawResponse) throws JSONException {
@@ -30,7 +30,9 @@ public abstract class UnitAssignmentBase extends Model {
 			return parseList(WebAPI.parseJSONArray(rawResponse));
 		}
 	};
-
+	protected void refreshUpdatedAt() {
+		setUpdatedAt(new Date());
+	}
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {
 		setCreatedAt(parseDate(jsonObject, "created_at"));
@@ -38,13 +40,14 @@ public abstract class UnitAssignmentBase extends Model {
 		setId(parseInteger(jsonObject, "id"));
 		setName(parseString(jsonObject, "name"));
 		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
-		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setWorking(parseBoolean(jsonObject, "working"));
 		setOperationSchedules(OperationSchedule.parseList(jsonObject, "operation_schedules"));
 		setReservationCandidates(ReservationCandidate.parseList(jsonObject, "reservation_candidates"));
 		setReservations(Reservation.parseList(jsonObject, "reservations"));
 		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
 		setServiceUnits(ServiceUnit.parseList(jsonObject, "service_units"));
+
+		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 	}
 
 	public static Optional<UnitAssignment> parse(JSONObject jsonObject, String key) throws JSONException {
@@ -127,6 +130,7 @@ public abstract class UnitAssignmentBase extends Model {
 	}
 
 	public void setCreatedAt(Date createdAt) {
+		refreshUpdatedAt();
 		this.createdAt = wrapNull(createdAt);
 	}
 
@@ -137,15 +141,16 @@ public abstract class UnitAssignmentBase extends Model {
 	}
 
 	public void setDeletedAt(Optional<Date> deletedAt) {
+		refreshUpdatedAt();
 		this.deletedAt = wrapNull(deletedAt);
 	}
 
 	public void setDeletedAt(Date deletedAt) {
-		this.deletedAt = Optional.fromNullable(deletedAt);
+		setDeletedAt(Optional.fromNullable(deletedAt));
 	}
 
 	public void clearDeletedAt() {
-		this.deletedAt = Optional.absent();
+		setDeletedAt(Optional.<Date>absent());
 	}
 
 	private Integer id = 0;
@@ -155,6 +160,7 @@ public abstract class UnitAssignmentBase extends Model {
 	}
 
 	public void setId(Integer id) {
+		refreshUpdatedAt();
 		this.id = wrapNull(id);
 	}
 
@@ -165,6 +171,7 @@ public abstract class UnitAssignmentBase extends Model {
 	}
 
 	public void setName(String name) {
+		refreshUpdatedAt();
 		this.name = wrapNull(name);
 	}
 
@@ -175,15 +182,16 @@ public abstract class UnitAssignmentBase extends Model {
 	}
 
 	public void setServiceProviderId(Optional<Integer> serviceProviderId) {
+		refreshUpdatedAt();
 		this.serviceProviderId = wrapNull(serviceProviderId);
 	}
 
 	public void setServiceProviderId(Integer serviceProviderId) {
-		this.serviceProviderId = Optional.fromNullable(serviceProviderId);
+		setServiceProviderId(Optional.fromNullable(serviceProviderId));
 	}
 
 	public void clearServiceProviderId() {
-		this.serviceProviderId = Optional.absent();
+		setServiceProviderId(Optional.<Integer>absent());
 	}
 
 	private Date updatedAt = new Date();
@@ -203,6 +211,7 @@ public abstract class UnitAssignmentBase extends Model {
 	}
 
 	public void setWorking(Boolean working) {
+		refreshUpdatedAt();
 		this.working = wrapNull(working);
 	}
 
@@ -217,7 +226,7 @@ public abstract class UnitAssignmentBase extends Model {
 	}
 
 	public void clearOperationSchedules() {
-		this.operationSchedules = new LinkedList<OperationSchedule>();
+		setOperationSchedules(new LinkedList<OperationSchedule>());
 	}
 
 	private LinkedList<ReservationCandidate> reservationCandidates = new LinkedList<ReservationCandidate>();
@@ -231,7 +240,7 @@ public abstract class UnitAssignmentBase extends Model {
 	}
 
 	public void clearReservationCandidates() {
-		this.reservationCandidates = new LinkedList<ReservationCandidate>();
+		setReservationCandidates(new LinkedList<ReservationCandidate>());
 	}
 
 	private LinkedList<Reservation> reservations = new LinkedList<Reservation>();
@@ -245,10 +254,10 @@ public abstract class UnitAssignmentBase extends Model {
 	}
 
 	public void clearReservations() {
-		this.reservations = new LinkedList<Reservation>();
+		setReservations(new LinkedList<Reservation>());
 	}
 
-	private Optional<ServiceProvider> serviceProvider = Optional.absent();
+	private Optional<ServiceProvider> serviceProvider = Optional.<ServiceProvider>absent();
 
 	public Optional<ServiceProvider> getServiceProvider() {
 		return wrapNull(serviceProvider);
@@ -259,11 +268,11 @@ public abstract class UnitAssignmentBase extends Model {
 	}
 
 	public void setServiceProvider(ServiceProvider serviceProvider) {
-		this.serviceProvider = Optional.fromNullable(serviceProvider);
+		setServiceProvider(Optional.fromNullable(serviceProvider));
 	}
 
 	public void clearServiceProvider() {
-		this.serviceProvider = Optional.absent();
+		setServiceProvider(Optional.<ServiceProvider>absent());
 	}
 
 	private LinkedList<ServiceUnit> serviceUnits = new LinkedList<ServiceUnit>();
@@ -277,6 +286,6 @@ public abstract class UnitAssignmentBase extends Model {
 	}
 
 	public void clearServiceUnits() {
-		this.serviceUnits = new LinkedList<ServiceUnit>();
+		setServiceUnits(new LinkedList<ServiceUnit>());
 	}
 }

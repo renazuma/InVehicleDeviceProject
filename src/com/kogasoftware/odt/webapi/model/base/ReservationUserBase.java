@@ -17,7 +17,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class ReservationUserBase extends Model {
-	private static final long serialVersionUID = 6161717103096532320L;
+	private static final long serialVersionUID = 2851632811176726319L;
 	public static final ResponseConverter<ReservationUser> RESPONSE_CONVERTER = new ResponseConverter<ReservationUser>() {
 		@Override
 		public ReservationUser convert(byte[] rawResponse) throws JSONException {
@@ -30,16 +30,19 @@ public abstract class ReservationUserBase extends Model {
 			return parseList(WebAPI.parseJSONArray(rawResponse));
 		}
 	};
-
+	protected void refreshUpdatedAt() {
+		setUpdatedAt(new Date());
+	}
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setId(parseInteger(jsonObject, "id"));
 		setLikeReservationId(parseInteger(jsonObject, "like_reservation_id"));
 		setLikeReservationType(parseString(jsonObject, "like_reservation_type"));
-		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setUserId(parseInteger(jsonObject, "user_id"));
 		setUser(User.parse(jsonObject, "user"));
+
+		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 	}
 
 	public static Optional<ReservationUser> parse(JSONObject jsonObject, String key) throws JSONException {
@@ -109,6 +112,7 @@ public abstract class ReservationUserBase extends Model {
 	}
 
 	public void setCreatedAt(Date createdAt) {
+		refreshUpdatedAt();
 		this.createdAt = wrapNull(createdAt);
 	}
 
@@ -119,6 +123,7 @@ public abstract class ReservationUserBase extends Model {
 	}
 
 	public void setId(Integer id) {
+		refreshUpdatedAt();
 		this.id = wrapNull(id);
 	}
 
@@ -129,6 +134,7 @@ public abstract class ReservationUserBase extends Model {
 	}
 
 	public void setLikeReservationId(Integer likeReservationId) {
+		refreshUpdatedAt();
 		this.likeReservationId = wrapNull(likeReservationId);
 	}
 
@@ -139,6 +145,7 @@ public abstract class ReservationUserBase extends Model {
 	}
 
 	public void setLikeReservationType(String likeReservationType) {
+		refreshUpdatedAt();
 		this.likeReservationType = wrapNull(likeReservationType);
 	}
 
@@ -159,10 +166,11 @@ public abstract class ReservationUserBase extends Model {
 	}
 
 	public void setUserId(Integer userId) {
+		refreshUpdatedAt();
 		this.userId = wrapNull(userId);
 	}
 
-	private Optional<User> user = Optional.absent();
+	private Optional<User> user = Optional.<User>absent();
 
 	public Optional<User> getUser() {
 		return wrapNull(user);
@@ -173,10 +181,10 @@ public abstract class ReservationUserBase extends Model {
 	}
 
 	public void setUser(User user) {
-		this.user = Optional.fromNullable(user);
+		setUser(Optional.fromNullable(user));
 	}
 
 	public void clearUser() {
-		this.user = Optional.absent();
+		setUser(Optional.<User>absent());
 	}
 }

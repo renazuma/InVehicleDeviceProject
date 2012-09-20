@@ -17,7 +17,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class OperationRecordBase extends Model {
-	private static final long serialVersionUID = 1754285101778595011L;
+	private static final long serialVersionUID = 4832882434228285278L;
 	public static final ResponseConverter<OperationRecord> RESPONSE_CONVERTER = new ResponseConverter<OperationRecord>() {
 		@Override
 		public OperationRecord convert(byte[] rawResponse) throws JSONException {
@@ -30,7 +30,9 @@ public abstract class OperationRecordBase extends Model {
 			return parseList(WebAPI.parseJSONArray(rawResponse));
 		}
 	};
-
+	protected void refreshUpdatedAt() {
+		setUpdatedAt(new Date());
+	}
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {
 		setArrivedAt(parseOptionalDate(jsonObject, "arrived_at"));
@@ -41,9 +43,10 @@ public abstract class OperationRecordBase extends Model {
 		setId(parseInteger(jsonObject, "id"));
 		setOperationScheduleId(parseOptionalInteger(jsonObject, "operation_schedule_id"));
 		setServiceUnitId(parseOptionalInteger(jsonObject, "service_unit_id"));
-		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 		setOperationSchedule(OperationSchedule.parse(jsonObject, "operation_schedule"));
 		setServiceUnit(ServiceUnit.parse(jsonObject, "service_unit"));
+
+		setUpdatedAt(parseDate(jsonObject, "updated_at"));
 	}
 
 	public static Optional<OperationRecord> parse(JSONObject jsonObject, String key) throws JSONException {
@@ -123,15 +126,16 @@ public abstract class OperationRecordBase extends Model {
 	}
 
 	public void setArrivedAt(Optional<Date> arrivedAt) {
+		refreshUpdatedAt();
 		this.arrivedAt = wrapNull(arrivedAt);
 	}
 
 	public void setArrivedAt(Date arrivedAt) {
-		this.arrivedAt = Optional.fromNullable(arrivedAt);
+		setArrivedAt(Optional.fromNullable(arrivedAt));
 	}
 
 	public void clearArrivedAt() {
-		this.arrivedAt = Optional.absent();
+		setArrivedAt(Optional.<Date>absent());
 	}
 
 	private Optional<Boolean> arrivedAtOffline = Optional.absent();
@@ -141,15 +145,16 @@ public abstract class OperationRecordBase extends Model {
 	}
 
 	public void setArrivedAtOffline(Optional<Boolean> arrivedAtOffline) {
+		refreshUpdatedAt();
 		this.arrivedAtOffline = wrapNull(arrivedAtOffline);
 	}
 
 	public void setArrivedAtOffline(Boolean arrivedAtOffline) {
-		this.arrivedAtOffline = Optional.fromNullable(arrivedAtOffline);
+		setArrivedAtOffline(Optional.fromNullable(arrivedAtOffline));
 	}
 
 	public void clearArrivedAtOffline() {
-		this.arrivedAtOffline = Optional.absent();
+		setArrivedAtOffline(Optional.<Boolean>absent());
 	}
 
 	private Date createdAt = new Date();
@@ -159,6 +164,7 @@ public abstract class OperationRecordBase extends Model {
 	}
 
 	public void setCreatedAt(Date createdAt) {
+		refreshUpdatedAt();
 		this.createdAt = wrapNull(createdAt);
 	}
 
@@ -169,15 +175,16 @@ public abstract class OperationRecordBase extends Model {
 	}
 
 	public void setDepartedAt(Optional<Date> departedAt) {
+		refreshUpdatedAt();
 		this.departedAt = wrapNull(departedAt);
 	}
 
 	public void setDepartedAt(Date departedAt) {
-		this.departedAt = Optional.fromNullable(departedAt);
+		setDepartedAt(Optional.fromNullable(departedAt));
 	}
 
 	public void clearDepartedAt() {
-		this.departedAt = Optional.absent();
+		setDepartedAt(Optional.<Date>absent());
 	}
 
 	private Optional<Boolean> departedAtOffline = Optional.absent();
@@ -187,15 +194,16 @@ public abstract class OperationRecordBase extends Model {
 	}
 
 	public void setDepartedAtOffline(Optional<Boolean> departedAtOffline) {
+		refreshUpdatedAt();
 		this.departedAtOffline = wrapNull(departedAtOffline);
 	}
 
 	public void setDepartedAtOffline(Boolean departedAtOffline) {
-		this.departedAtOffline = Optional.fromNullable(departedAtOffline);
+		setDepartedAtOffline(Optional.fromNullable(departedAtOffline));
 	}
 
 	public void clearDepartedAtOffline() {
-		this.departedAtOffline = Optional.absent();
+		setDepartedAtOffline(Optional.<Boolean>absent());
 	}
 
 	private Integer id = 0;
@@ -205,6 +213,7 @@ public abstract class OperationRecordBase extends Model {
 	}
 
 	public void setId(Integer id) {
+		refreshUpdatedAt();
 		this.id = wrapNull(id);
 	}
 
@@ -215,15 +224,16 @@ public abstract class OperationRecordBase extends Model {
 	}
 
 	public void setOperationScheduleId(Optional<Integer> operationScheduleId) {
+		refreshUpdatedAt();
 		this.operationScheduleId = wrapNull(operationScheduleId);
 	}
 
 	public void setOperationScheduleId(Integer operationScheduleId) {
-		this.operationScheduleId = Optional.fromNullable(operationScheduleId);
+		setOperationScheduleId(Optional.fromNullable(operationScheduleId));
 	}
 
 	public void clearOperationScheduleId() {
-		this.operationScheduleId = Optional.absent();
+		setOperationScheduleId(Optional.<Integer>absent());
 	}
 
 	private Optional<Integer> serviceUnitId = Optional.absent();
@@ -233,15 +243,16 @@ public abstract class OperationRecordBase extends Model {
 	}
 
 	public void setServiceUnitId(Optional<Integer> serviceUnitId) {
+		refreshUpdatedAt();
 		this.serviceUnitId = wrapNull(serviceUnitId);
 	}
 
 	public void setServiceUnitId(Integer serviceUnitId) {
-		this.serviceUnitId = Optional.fromNullable(serviceUnitId);
+		setServiceUnitId(Optional.fromNullable(serviceUnitId));
 	}
 
 	public void clearServiceUnitId() {
-		this.serviceUnitId = Optional.absent();
+		setServiceUnitId(Optional.<Integer>absent());
 	}
 
 	private Date updatedAt = new Date();
@@ -254,7 +265,7 @@ public abstract class OperationRecordBase extends Model {
 		this.updatedAt = wrapNull(updatedAt);
 	}
 
-	private Optional<OperationSchedule> operationSchedule = Optional.absent();
+	private Optional<OperationSchedule> operationSchedule = Optional.<OperationSchedule>absent();
 
 	public Optional<OperationSchedule> getOperationSchedule() {
 		return wrapNull(operationSchedule);
@@ -265,14 +276,14 @@ public abstract class OperationRecordBase extends Model {
 	}
 
 	public void setOperationSchedule(OperationSchedule operationSchedule) {
-		this.operationSchedule = Optional.fromNullable(operationSchedule);
+		setOperationSchedule(Optional.fromNullable(operationSchedule));
 	}
 
 	public void clearOperationSchedule() {
-		this.operationSchedule = Optional.absent();
+		setOperationSchedule(Optional.<OperationSchedule>absent());
 	}
 
-	private Optional<ServiceUnit> serviceUnit = Optional.absent();
+	private Optional<ServiceUnit> serviceUnit = Optional.<ServiceUnit>absent();
 
 	public Optional<ServiceUnit> getServiceUnit() {
 		return wrapNull(serviceUnit);
@@ -283,10 +294,10 @@ public abstract class OperationRecordBase extends Model {
 	}
 
 	public void setServiceUnit(ServiceUnit serviceUnit) {
-		this.serviceUnit = Optional.fromNullable(serviceUnit);
+		setServiceUnit(Optional.fromNullable(serviceUnit));
 	}
 
 	public void clearServiceUnit() {
-		this.serviceUnit = Optional.absent();
+		setServiceUnit(Optional.<ServiceUnit>absent());
 	}
 }
