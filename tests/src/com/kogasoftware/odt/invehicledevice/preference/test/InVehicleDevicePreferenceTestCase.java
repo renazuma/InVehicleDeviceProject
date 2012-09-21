@@ -3,7 +3,6 @@ package com.kogasoftware.odt.invehicledevice.preference.test;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources.NotFoundException;
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.KeyEvent;
 import android.widget.Toast;
