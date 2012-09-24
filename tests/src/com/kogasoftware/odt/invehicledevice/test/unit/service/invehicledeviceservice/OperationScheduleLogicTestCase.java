@@ -14,6 +14,7 @@ import android.test.AndroidTestCase;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
@@ -51,6 +52,7 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 	@Override
 	public void tearDown() throws Exception {
 		try {
+			Closeables.closeQuietly(lds);
 		} finally {
 			super.tearDown();
 		}
