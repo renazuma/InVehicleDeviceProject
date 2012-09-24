@@ -41,10 +41,9 @@ public class OperationScheduleLogic {
 						.get(0);
 				if (localData.phase == LocalData.Phase.PLATFORM) {
 					DataSource dataSource = service.getRemoteDataSource();
-					dataSource.saveOnClose(dataSource
-							.departureOperationSchedule(
-									operationSchedule,
-									new EmptyWebAPICallback<OperationSchedule>()));
+					dataSource.withSaveOnClose().departureOperationSchedule(
+							operationSchedule,
+							new EmptyWebAPICallback<OperationSchedule>());
 				}
 				localData.phase = LocalData.Phase.DRIVE;
 			}
@@ -78,9 +77,9 @@ public class OperationScheduleLogic {
 					OperationSchedule operationSchedule = localData.operationSchedules
 							.get(0);
 					DataSource dataSource = service.getRemoteDataSource();
-					dataSource.saveOnClose(dataSource.arrivalOperationSchedule(
+					dataSource.withSaveOnClose().arrivalOperationSchedule(
 							operationSchedule,
-							new EmptyWebAPICallback<OperationSchedule>()));
+							new EmptyWebAPICallback<OperationSchedule>());
 				}
 				localData.phase = LocalData.Phase.PLATFORM;
 			}

@@ -281,8 +281,9 @@ public class WebAPIDataSource implements DataSource {
 	}
 
 	@Override
-	public void saveOnClose(int reqkey) {
-		api.saveOnClose(reqkey);
+	public DataSource withSaveOnClose() {
+		api.withSaveOnClose();
+		return this;
 	}
 
 	@Override

@@ -116,9 +116,9 @@ public class VehicleNotificationLogic {
 			final List<VehicleNotification> vehicleNotifications) {
 		DataSource dataSource = service.getRemoteDataSource();
 		for (VehicleNotification vehicleNotification : vehicleNotifications) {
-			dataSource.saveOnClose(dataSource.responseVehicleNotification(
+			dataSource.withSaveOnClose().responseVehicleNotification(
 					vehicleNotification, VehicleNotification.Response.YES,
-					new EmptyWebAPICallback<VehicleNotification>()));
+					new EmptyWebAPICallback<VehicleNotification>());
 		}
 
 		service.getLocalDataSource().withWriteLock(new Writer() {
@@ -139,9 +139,9 @@ public class VehicleNotificationLogic {
 			final VehicleNotification vehicleNotification) {
 		DataSource dataSource = service.getRemoteDataSource();
 		for (Integer response : vehicleNotification.getResponse().asSet()) {
-			dataSource.saveOnClose(dataSource.responseVehicleNotification(
+			dataSource.withSaveOnClose().responseVehicleNotification(
 					vehicleNotification, response,
-					new EmptyWebAPICallback<VehicleNotification>()));
+					new EmptyWebAPICallback<VehicleNotification>());
 		}
 		final AtomicBoolean empty = new AtomicBoolean(false);
 		service.getLocalDataSource().withWriteLock(new Writer() {
