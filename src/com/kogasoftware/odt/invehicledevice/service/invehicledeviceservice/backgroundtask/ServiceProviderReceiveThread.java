@@ -37,7 +37,7 @@ public class ServiceProviderReceiveThread extends Thread implements
 				localData.serviceProviderInitializedSign.release();
 			}
 		});
-		
+
 		sendUpdateCredentialsBroadcast(serviceProvider);
 	}
 
@@ -82,7 +82,6 @@ public class ServiceProviderReceiveThread extends Thread implements
 				// 受信通知があるまで待つ
 				serviceProviderReceiveSemaphore.acquire();
 				receive();
-				Thread.sleep(10 * 1000);
 			}
 		} catch (InterruptedException e) {
 			// 正常終了

@@ -58,13 +58,16 @@ public class ServiceProviderReceiveThreadTestCase extends AndroidTestCase {
 		Integer m = 1000;
 		sprt.start();
 		Thread.sleep(m);
-		verify(s).sendBroadcast(Mockito.<Intent> any());
+		verify(s, Mockito.times(1)).sendBroadcast(Mockito.<Intent> any());
+
+		Thread.sleep(m);
+		verify(s, Mockito.times(1)).sendBroadcast(Mockito.<Intent> any());
 
 		ArgumentCaptor<Intent> intentArgument = ArgumentCaptor
 				.forClass(Intent.class);
 		sprt.onStartNewOperation();
 		Thread.sleep(m);
-		verify(s).sendBroadcast(intentArgument.capture());
+		verify(s, Mockito.times(2)).sendBroadcast(intentArgument.capture());
 		assertEquals(UploadThread.ACTION_UPDATE_CREDENTIALS, intentArgument
 				.getValue().getAction());
 
