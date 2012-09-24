@@ -18,17 +18,17 @@ import android.os.PowerManager.WakeLock;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 
 /**
  * 位置情報を取得する
- * 
- * 1.ACCURACY_THRESHOLDを満たす位置を受信したら、その時間を記録し、その位置をサービスに通知 2.
- * ACCURACY_THRESHOLDを満たさない位置を受信し満たす位置をCOARSE_TIMEOUT内に受信できなかった場合はその位置をサービスに通知
- * 3.ACCURACY_THRESHOLDを満たす位置をRESTART_TIMEOUT内に受信できない場合再起動
- * 
+ *
+ * 1.ACCURACY_THRESHOLDを満たす位置を受信したら、その時間を記録し、その位置をサービスに通知
+ * 2.ACCURACY_THRESHOLDを満たす位置をRESTART_TIMEOUT内に受信できない場合再起動
+ *
  * @see http
  *      ://kamoland.com/wiki/wiki.cgi?Desire%A4%CEGPS%BC%E8%C6%C0%A4%C7%A4%CE
  *      %BB%EE%B9%D4%BA%F8%B8%ED
@@ -37,11 +37,11 @@ public class LocationNotifier implements LocationListener, GpsStatus.Listener,
 		GpsStatus.NmeaListener {
 	private static final String TAG = LocationNotifier.class.getSimpleName();
 	public static final Float ACCURACY_THRESHOLD = 50f;
+	protected static final Integer DEFAULT_RESTART_CHECK_INTERVAL = 20 * 1000;
+	public final Integer restartCheckInterval;
 	protected static final Integer DEFAULT_MIN_TIME = 1000;
 	protected static final Integer DEFAULT_MIN_DISTANCE = 1;
 	protected static final Integer DEFAULT_RESTART_TIMEOUT = 90 * 1000;
-	protected static final Integer COARSE_TIMEOUT = 30 * 1000;
-	protected static final Integer RESTART_CHECK_INTERVAL = 20 * 1000;
 	protected final Integer minTime;
 	protected final Integer minDistance;
 	protected final Integer restartTimeout;
@@ -70,7 +70,7 @@ public class LocationNotifier implements LocationListener, GpsStatus.Listener,
 			final Date now = new Date();
 			if ((nextRestartBaseTime + restartTimeout) > now.getTime()) {
 				Log.d(TAG, "GPS restart unnecessary");
-				handler.postDelayed(this, RESTART_CHECK_INTERVAL);
+				handler.postDelayed(this, restartCheckInterval);
 				return;
 			}
 
@@ -82,10 +82,9 @@ public class LocationNotifier implements LocationListener, GpsStatus.Listener,
 				public void run() {
 					startLocationUpdates();
 					Log.d(TAG, "GPS restart complete");
-					handler.postDelayed(restartTimeouter,
-							RESTART_CHECK_INTERVAL);
+					handler.postDelayed(restartTimeouter, restartCheckInterval);
 				}
-			}, RESTART_CHECK_INTERVAL);
+			}, restartCheckInterval);
 		}
 	};
 
@@ -96,8 +95,10 @@ public class LocationNotifier implements LocationListener, GpsStatus.Listener,
 	protected Integer numSatellites = 0;
 	protected Integer numUsedInFixSatellites = 0;
 
-	public LocationNotifier(InVehicleDeviceService service) {
+	public LocationNotifier(InVehicleDeviceService service,
+			SharedPreferences preferences, Integer restartCheckInterval) {
 		this.service = service;
+		this.restartCheckInterval = restartCheckInterval;
 		locationManager = (LocationManager) service
 				.getSystemService(Context.LOCATION_SERVICE);
 		powerManager = (PowerManager) service
@@ -105,8 +106,6 @@ public class LocationNotifier implements LocationListener, GpsStatus.Listener,
 		wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
 				getClass().getName());
 
-		SharedPreferences preferences = PreferenceManager
-				.getDefaultSharedPreferences(service);
 		minTime = preferences.getInt(
 				SharedPreferencesKeys.LOCATION_RECEIVE_MIN_TIME,
 				DEFAULT_MIN_TIME);
@@ -119,6 +118,12 @@ public class LocationNotifier implements LocationListener, GpsStatus.Listener,
 
 		Log.i(TAG, "minTime=" + minTime + " minDistance=" + minDistance
 				+ " restartTimeout=" + restartTimeout);
+	}
+
+	@VisibleForTesting
+	public LocationNotifier(InVehicleDeviceService service) {
+		this(service, PreferenceManager.getDefaultSharedPreferences(service),
+				DEFAULT_RESTART_CHECK_INTERVAL);
 	}
 
 	@Override
@@ -182,18 +187,10 @@ public class LocationNotifier implements LocationListener, GpsStatus.Listener,
 			Log.i(TAG, message + " / accurate location");
 			lastLocation = Optional.of(location);
 			service.changeLocation(location, gpsStatus);
-			return;
-		}
-
-		// 精度が低いデータを受信した場合
-		Date now = new Date();
-		if ((now.getTime() - lastAccurateLocationTime) < COARSE_TIMEOUT) {
+		} else {
+			// 精度が低いデータを受信した場合
 			Log.i(TAG, message + " / coarse location. not updated.");
-			return;
 		}
-		Log.i(TAG, message + " / coarse location. updated.");
-		lastLocation = Optional.of(location);
-		service.changeLocation(location, gpsStatus);
 	}
 
 	@Override
