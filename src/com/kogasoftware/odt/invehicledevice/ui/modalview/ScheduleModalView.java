@@ -29,7 +29,6 @@ public class ScheduleModalView extends ModalView {
 	public void show() {
 		super.hide();
 		operationSchedules.clear();
-		operationSchedules.addAll(service.getFinishedOperationSchedules());
 		operationSchedules.addAll(service.getRemainingOperationSchedules());
 		OperationScheduleArrayAdapter adapter = new OperationScheduleArrayAdapter(
 				service, operationSchedules);

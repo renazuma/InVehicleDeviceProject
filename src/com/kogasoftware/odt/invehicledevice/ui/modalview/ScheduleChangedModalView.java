@@ -16,7 +16,7 @@ import com.kogasoftware.odt.webapi.Identifiables;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class ScheduleChangedModalView extends ModalView implements
-		InVehicleDeviceService.OnMergeUpdatedOperationScheduleListener {
+		InVehicleDeviceService.OnMergeOperationSchedulesListener {
 	protected final TextView scheduleChangedTextView;
 	protected final ScheduleModalView scheduleModalView;
 
@@ -43,13 +43,13 @@ public class ScheduleChangedModalView extends ModalView implements
 	@Override
 	protected void onAttachedToWindow() {
 		super.onAttachedToWindow();
-		service.addOnMergeUpdatedOperationScheduleListener(this);
+		service.addOnMergeOperationSchedulesListener(this);
 	}
 
 	@Override
 	protected void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
-		service.removeOnMergeUpdatedOperationScheduleListener(this);
+		service.removeOnMergeOperationSchedulesListener(this);
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class ScheduleChangedModalView extends ModalView implements
 	}
 
 	@Override
-	public void onMergeUpdatedOperationSchedule(
+	public void onMergeOperationSchedules(
 			final List<VehicleNotification> vehicleNotifications) {
 
 		service.getLocalDataSource().withReadLock(new VoidReader() {

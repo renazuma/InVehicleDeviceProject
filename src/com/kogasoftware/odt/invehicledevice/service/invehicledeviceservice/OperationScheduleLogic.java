@@ -1,12 +1,13 @@
 package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyWebAPICallback;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Reader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
 import com.kogasoftware.odt.webapi.model.OperationRecord;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
@@ -32,16 +33,13 @@ public class OperationScheduleLogic {
 		service.getLocalDataSource().withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
-				if (localData.remainingOperationSchedules.isEmpty()) {
+				if (localData.operationSchedules.isEmpty()) {
 					service.refreshPhase();
 					return;
 				}
-				OperationSchedule operationSchedule = localData.remainingOperationSchedules
+				OperationSchedule operationSchedule = localData.operationSchedules
 						.get(0);
 				if (localData.phase == LocalData.Phase.PLATFORM) {
-					localData.remainingOperationSchedules
-							.remove(operationSchedule);
-					localData.finishedOperationSchedules.add(operationSchedule);
 					DataSource dataSource = service.getRemoteDataSource();
 					dataSource.saveOnClose(dataSource
 							.departureOperationSchedule(
@@ -72,12 +70,12 @@ public class OperationScheduleLogic {
 		service.getLocalDataSource().withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
-				if (localData.remainingOperationSchedules.isEmpty()) {
+				if (localData.operationSchedules.isEmpty()) {
 					service.refreshPhase();
 					return;
 				}
 				if (localData.phase == LocalData.Phase.DRIVE) {
-					OperationSchedule operationSchedule = localData.remainingOperationSchedules
+					OperationSchedule operationSchedule = localData.operationSchedules
 							.get(0);
 					DataSource dataSource = service.getRemoteDataSource();
 					dataSource.saveOnClose(dataSource.arrivalOperationSchedule(
@@ -90,10 +88,10 @@ public class OperationScheduleLogic {
 	}
 
 	/**
-	 * 更新されたOperationScheduleを現在のものにマージする(LocalDataがロックされた状態内)
+	 * OperationScheduleをマージする(LocalDataがロックされた状態内)
 	 */
-	protected void mergeUpdatedOperationScheduleWithWriteLock(
-			LocalData localData, List<OperationSchedule> newOperationSchedules,
+	public void mergeOperationSchedulesWithWriteLock(LocalData localData,
+			List<OperationSchedule> newOperationSchedules,
 			List<VehicleNotification> triggerVehicleNotifications) {
 		// 通知を受信済みリストに移動
 		localData.receivingOperationScheduleChangedVehicleNotifications
@@ -106,23 +104,51 @@ public class OperationScheduleLogic {
 			localData.passengerRecords.clear();
 		}
 
-		// 未乗車のPassengerRecordは削除
-		for (PassengerRecord passengerRecord : new LinkedList<PassengerRecord>(
-				localData.passengerRecords)) {
-			if (passengerRecord.isUnhandled()) {
-				localData.passengerRecords.remove(passengerRecord);
+		for (Integer i = 0; i < localData.operationSchedules.size(); ++i) {
+			if (i >= newOperationSchedules.size()) {
+				break;
 			}
+			OperationSchedule remoteOperationSchedule = newOperationSchedules
+					.get(i);
+			OperationSchedule localOperationSchedule = localData.operationSchedules
+					.get(i);
+			if (!remoteOperationSchedule.getId().equals(
+					localOperationSchedule.getId())) {
+				break;
+			}
+			if (!localOperationSchedule.getOperationRecord().isPresent()) {
+				continue;
+			} else if (!remoteOperationSchedule.getOperationRecord()
+					.isPresent()) {
+				remoteOperationSchedule
+						.setOperationRecord(localOperationSchedule
+								.getOperationRecord());
+				continue;
+			}
+			OperationRecord localOperationRecord = localOperationSchedule
+					.getOperationRecord().get();
+			OperationRecord remoteOperationRecord = remoteOperationSchedule
+					.getOperationRecord().or(new OperationRecord());
+			OperationRecord newOperationRecord = localOperationRecord
+					.getUpdatedAt().after(remoteOperationRecord.getUpdatedAt()) ? localOperationRecord
+					: remoteOperationRecord;
+			remoteOperationSchedule.setOperationRecord(newOperationRecord);
 		}
 
-		// 予約の追加、書き換え
+		// PassengerRecordの個別マージ
 		for (OperationSchedule operationSchedule : newOperationSchedules) {
-			operationSchedule.setOperationRecord(operationSchedule
-					.getOperationRecord().or(new OperationRecord()));
 			for (Reservation reservation : operationSchedule
 					.getReservationsAsDeparture()) {
 				for (User user : reservation.getFellowUsers()) {
-					mergeUpdatedPassengerRecordWithWriteLock(localData,
-							reservation, user);
+					for (PassengerRecord passengerRecord : reservation
+							.getPassengerRecords()) {
+						if (passengerRecord.getUserId().equals(
+								Optional.of(user.getId()))) {
+							mergePassengerRecordsWithWriteLock(localData,
+									passengerRecord, user);
+							break;
+						}
+					}
 				}
 				// 循環参照にならないようにする
 				reservation.clearFellowUsers();
@@ -130,28 +156,10 @@ public class OperationScheduleLogic {
 			}
 		}
 
-		// OperationScheduleの再生
-		LinkedList<OperationSchedule> newRemainingOperationSchedules = new LinkedList<OperationSchedule>(
-				newOperationSchedules);
-		List<OperationSchedule> newFinishedOperationSchedules = new LinkedList<OperationSchedule>();
-		for (OperationSchedule operationSchedule : new LinkedList<OperationSchedule>(
-				newRemainingOperationSchedules)) {
-			if (!operationSchedule.getOperationRecord().isPresent()) {
-				break;
-			}
-			OperationRecord operationRecord = operationSchedule
-					.getOperationRecord().get();
-			if (!operationRecord.getDepartedAt().isPresent()) {
-				break;
-			}
-			newFinishedOperationSchedules.add(operationSchedule);
-			newRemainingOperationSchedules.remove(operationSchedule);
-		}
-
-		if (newRemainingOperationSchedules.isEmpty()) {
+		if (newOperationSchedules.isEmpty()) {
 			localData.phase = Phase.FINISH;
 		} else {
-			Optional<OperationRecord> operationRecord = newRemainingOperationSchedules
+			Optional<OperationRecord> operationRecord = newOperationSchedules
 					.get(0).getOperationRecord();
 			if (!operationRecord.isPresent()) {
 				localData.phase = Phase.FINISH;
@@ -162,104 +170,72 @@ public class OperationScheduleLogic {
 			}
 		}
 
-		localData.remainingOperationSchedules.clear();
-		localData.remainingOperationSchedules
-				.addAll(newRemainingOperationSchedules);
-		localData.finishedOperationSchedules.clear();
-		localData.finishedOperationSchedules
-				.addAll(newFinishedOperationSchedules);
+		localData.operationSchedules.clear();
+		localData.operationSchedules.addAll(newOperationSchedules);
 
 		localData.updatedDate = InVehicleDeviceService.getDate();
 
-		if (service.isOperationInitialized()) {
-			service.mergeUpdatedOperationSchedule(triggerVehicleNotifications);
-		} else {
+		if (!service.isOperationInitialized()) {
 			localData.operationScheduleInitializedSign.release();
 		}
 	}
 
 	/**
-	 * 更新されたPassengerRecordを現在のものにマージする処理(LocalDataがロックされた状態内)
+	 * PassengerRecordをマージする(LocalDataがロックされた状態内)
 	 */
-	protected void mergeUpdatedPassengerRecordWithWriteLock(
-			LocalData localData, Reservation serverReservation, User serverUser) {
-		// サーバーから送られるPassengerRecordを取得
-		Boolean passengerRecordReceived = false;
-		PassengerRecord serverPassengerRecord = new PassengerRecord();
-		for (PassengerRecord passengerRecord : serverReservation
-				.getPassengerRecords()) {
-			if (passengerRecord.getUserId().isPresent()
-					&& passengerRecord.getUserId().get()
-							.equals(serverUser.getId())) {
-				serverPassengerRecord = passengerRecord;
-				passengerRecordReceived = true;
-				break;
-			}
-		}
-		serverPassengerRecord.setReservation(serverReservation);
-		serverPassengerRecord.setReservationId(serverReservation.getId());
-		serverPassengerRecord.setUser(serverUser);
-		serverPassengerRecord.setUserId(serverUser.getId());
+	public void mergePassengerRecordsWithWriteLock(LocalData localData,
+			PassengerRecord serverPassengerRecord, User user) {
+		// 循環参照を防ぐ
+		user.clearPassengerRecords();
 
-		// 循環参照にならないようにする
-		serverUser.clearPassengerRecords();
-
-		// 乗車済み、降車済みのPassengerRecordの中に既に対応するものが存在する場合、それのPassengerRecordを交換
-		for (PassengerRecord localPassengerRecord : new LinkedList<PassengerRecord>(
-				localData.passengerRecords)) {
-			// IDが一致するかを調べる
-			// ただし、localPassengerRecordにはIDが振られていないことがあるため、ReservationとUserのIDの一致を調べる
-			if (!localPassengerRecord.getReservationId().isPresent()
-					|| !localPassengerRecord.getReservationId().get()
-							.equals(serverReservation.getId())) {
-				continue;
-			}
-			if (!localPassengerRecord.getUserId().isPresent()
-					|| !localPassengerRecord.getUserId().get()
-							.equals(serverUser.getId())) {
+		// マージ対象を探す
+		for (PassengerRecord localPassengerRecord : Lists
+				.newArrayList(localData.passengerRecords)) {
+			if (!serverPassengerRecord.getId().equals(
+					localPassengerRecord.getId())) {
 				continue;
 			}
 
-			// IDが一致した場合
-
-			// サーバーのPassengerRecordが存在しローカルよりも新しい場合、ローカルのものをサーバーのもので置き換え
-			if (passengerRecordReceived
-					&& serverPassengerRecord.getUpdatedAt().after(
-							localPassengerRecord.getUpdatedAt())) {
-				localData.passengerRecords.remove(localPassengerRecord);
-				localData.passengerRecords.add(serverPassengerRecord);
+			if (serverPassengerRecord.getUpdatedAt().before(
+					localPassengerRecord.getUpdatedAt())) {
+				localPassengerRecord.setUser(user);
 				return;
 			}
 
-			// ReservationとUserはサーバーから送られたものにする
-			localPassengerRecord.setReservation(serverReservation);
-			localPassengerRecord.setUser(serverUser);
-			return;
+			localData.passengerRecords.remove(localPassengerRecord);
+			break;
 		}
 
-		// IDが一致したPassengerRecordが存在しない場合、無変更で追加する
+		// PassengerRecordを更新
 		localData.passengerRecords.add(serverPassengerRecord);
+		serverPassengerRecord.setUser(user);
 	}
 
-	public void receiveUpdatedOperationSchedule(
+	/**
+	 * OperationScheduleをマージする
+	 */
+	public void mergeOperationSchedules(
 			final List<OperationSchedule> operationSchedules,
 			final List<VehicleNotification> triggerVehicleNotifications) {
 		service.getLocalDataSource().withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
-				mergeUpdatedOperationScheduleWithWriteLock(localData,
+				mergeOperationSchedulesWithWriteLock(localData,
 						operationSchedules, triggerVehicleNotifications);
 			}
 		});
+		service.refreshPhase();
 	}
 
+	/**
+	 * 現在の運行情報を破棄して新しい運行を開始する
+	 */
 	public void startNewOperation() {
 		service.getLocalDataSource().withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
 				localData.operationScheduleInitializedSign.drainPermits();
-				localData.remainingOperationSchedules.clear();
-				localData.finishedOperationSchedules.clear();
+				localData.operationSchedules.clear();
 				localData.receivingOperationScheduleChangedVehicleNotifications
 						.clear();
 				localData.receivedOperationScheduleChangedVehicleNotifications
@@ -268,5 +244,26 @@ public class OperationScheduleLogic {
 				localData.passengerRecords.clear();
 			}
 		});
+	}
+
+	/**
+	 * 現在の運行スケジュールを得る
+	 */
+	public Optional<OperationSchedule> getCurrentOperationSchedule() {
+		return service.getLocalDataSource().withReadLock(
+				new Reader<Optional<OperationSchedule>>() {
+					@Override
+					public Optional<OperationSchedule> read(LocalData status) {
+						for (OperationSchedule operationSchedule : status.operationSchedules) {
+							if (!operationSchedule.getOperationRecord()
+									.isPresent()
+									|| !operationSchedule.getOperationRecord()
+											.get().getDepartedAt().isPresent()) {
+								return Optional.of(operationSchedule);
+							}
+						}
+						return Optional.absent();
+					}
+				});
 	}
 }
