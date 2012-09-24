@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyWebAPICallback;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
@@ -188,7 +187,6 @@ public class PassengerRecordLogic {
 			passengerRecord.clearGetOffTime();
 			passengerRecord.clearDepartureOperationScheduleId();
 			passengerRecord.clearArrivalOperationScheduleId();
-			reservation.setPassengerRecords(Lists.newArrayList(passengerRecord)); // TODO:消す
 			dataSource.withSaveOnClose().cancelGetOffPassenger(
 					operationSchedule, reservation, user,
 					new EmptyWebAPICallback<Void>());
@@ -198,14 +196,12 @@ public class PassengerRecordLogic {
 		} else if (passengerRecord.isUnhandled() || passengerRecord.isRiding()) {
 			passengerRecord.clearGetOnTime();
 			passengerRecord.clearDepartureOperationScheduleId();
-			reservation.setPassengerRecords(Lists.newArrayList(passengerRecord)); // TODO:消す
 			dataSource.withSaveOnClose().cancelGetOnPassenger(
 					operationSchedule, reservation, user,
 					new EmptyWebAPICallback<Void>());
 		} else if (passengerRecord.isGotOff()) {
 			passengerRecord.clearGetOffTime();
 			passengerRecord.clearArrivalOperationScheduleId();
-			reservation.setPassengerRecords(Lists.newArrayList(passengerRecord)); // TODO:消す
 			dataSource.withSaveOnClose().cancelGetOffPassenger(
 					operationSchedule, reservation, user,
 					new EmptyWebAPICallback<Void>());
@@ -215,7 +211,7 @@ public class PassengerRecordLogic {
 	public List<PassengerRecord> getGetOffScheduledAndUnhandledPassengerRecords() {
 		List<PassengerRecord> passengerRecords = new LinkedList<PassengerRecord>();
 		for (PassengerRecord passengerRecord : service.getPassengerRecords()) {
-			if (service.isGetOffScheduled(passengerRecord)
+			if (isGetOffScheduled(passengerRecord)
 					&& passengerRecord.isUnhandled()) {
 				passengerRecords.add(passengerRecord);
 			}
