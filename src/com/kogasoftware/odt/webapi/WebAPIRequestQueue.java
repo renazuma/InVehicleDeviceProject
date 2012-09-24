@@ -280,19 +280,4 @@ public class WebAPIRequestQueue {
 			}
 		}
 	}
-
-	public void setSaveOnClose(int reqkey, boolean saveOnClose) {
-		synchronized (queueLock) {
-			for (Pair<String, List<WebAPIRequest<?>>> entry : Lists
-					.newLinkedList(requestsByGroup)) {
-				for (WebAPIRequest<?> request : entry.getValue()) {
-					if (request.getReqKey() == reqkey) {
-						request.setSaveOnClose(saveOnClose);
-						backup();
-						break;
-					}
-				}
-			}
-		}
-	}
 }

@@ -1192,7 +1192,7 @@ public class WebAPITestCase extends AndroidTestCase {
 		log.setOrientation(10);
 		log.setTemperature(20);
 
-		api.saveOnClose(api.sendServiceUnitStatusLog(log, null));
+		api.withSaveOnClose().sendServiceUnitStatusLog(log, null);
 		api.close();
 		Thread.sleep(10 * 1000);
 

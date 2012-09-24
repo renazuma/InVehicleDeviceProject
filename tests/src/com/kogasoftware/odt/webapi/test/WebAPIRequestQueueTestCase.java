@@ -37,10 +37,10 @@ public class WebAPIRequestQueueTestCase extends
 			WebAPIRequest<Object> r3 = new WebAPIRequest<Object>(c, rc, sgl);
 			{
 				WebAPIRequestQueue rq = new WebAPIRequestQueue(backupFile);
+				r1.setSaveOnClose(true);
 				rq.add(r1);
 				rq.add(r2);
 				rq.add(r3);
-				rq.setSaveOnClose(r1.getReqKey(), true);
 			}
 			{
 				WebAPIRequestQueue rq = new WebAPIRequestQueue(backupFile);
@@ -70,10 +70,10 @@ public class WebAPIRequestQueueTestCase extends
 			WebAPIRequest<Object> r3 = new WebAPIRequest<Object>(c, rc, sgl);
 			{
 				WebAPIRequestQueue rq = new WebAPIRequestQueue(backupFile);
+				r2.setSaveOnClose(true);
 				rq.add(r1, "x");
 				rq.add(r2, "x");
 				rq.add(r3);
-				rq.setSaveOnClose(r2.getReqKey(), true);
 			}
 			{
 				WebAPIRequestQueue rq = new WebAPIRequestQueue(backupFile);
@@ -103,11 +103,11 @@ public class WebAPIRequestQueueTestCase extends
 			WebAPIRequest<Object> r3 = new WebAPIRequest<Object>(c, rc, sgl);
 			{
 				WebAPIRequestQueue rq = new WebAPIRequestQueue(backupFile);
+				r1.setSaveOnClose(true);
+				r3.setSaveOnClose(true);
 				rq.add(r1, "y");
 				rq.add(r2);
 				rq.add(r3);
-				rq.setSaveOnClose(r1.getReqKey(), true);
-				rq.setSaveOnClose(r3.getReqKey(), true);
 			}
 			{
 				WebAPIRequestQueue rq = new WebAPIRequestQueue(backupFile);
@@ -139,11 +139,11 @@ public class WebAPIRequestQueueTestCase extends
 			WebAPIRequest<Object> r3 = new WebAPIRequest<Object>(c, rc, sgl);
 			{
 				WebAPIRequestQueue rq = new WebAPIRequestQueue(backupFile);
+				r1.setSaveOnClose(true);
+				r3.setSaveOnClose(true);
 				rq.add(r1, "z");
 				rq.add(r2);
 				rq.add(r3, "z");
-				rq.setSaveOnClose(r1.getReqKey(), true);
-				rq.setSaveOnClose(r3.getReqKey(), true);
 			}
 			{
 				WebAPIRequestQueue rq = new WebAPIRequestQueue(backupFile);

@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.WeakHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -130,6 +131,8 @@ public class WebAPI implements Closeable {
 	protected final WebAPIRequestQueue requests;
 	protected volatile String serverHost = "http://127.0.0.1"; // 複数スレッドから参照の書きかえがありうるためvolatile
 	protected volatile String authenticationToken = ""; // 複数スレッドから参照の書きかえがありうるためvolatile
+	protected final Object saveOnCloseStatusLock = new Object();
+	protected final WeakHashMap<Thread, Boolean> saveOnCloseStatus = new WeakHashMap<Thread, Boolean>();
 
 	public WebAPI(String serverHost) {
 		this(serverHost, "");
@@ -190,7 +193,7 @@ public class WebAPI implements Closeable {
 		SerializableDeleteLoader loader = new SerializableDeleteLoader(
 				getServerHost(), path, authenticationToken);
 		WebAPIRequest<?> request = new WebAPIRequest<T>(callback, conv, loader);
-		requests.add(request);
+		addRequest(request);
 		return request.getReqKey();
 	}
 
@@ -317,7 +320,7 @@ public class WebAPI implements Closeable {
 				getServerHost(), path, params, authenticationToken);
 		WebAPIRequest<?> request = new WebAPIRequest<T>(callback, conv, loader,
 				retryable);
-		requests.add(request, requestGroup);
+		addRequest(request, requestGroup);
 		return request.getReqKey();
 	}
 
@@ -549,7 +552,7 @@ public class WebAPI implements Closeable {
 				getServerHost(), path, retryParam, authenticationToken);
 		WebAPIRequest<?> request = new WebAPIRequest<T>(callback, conv, first,
 				retry, retryable);
-		requests.add(request, requestGroup);
+		addRequest(request, requestGroup);
 		return request.getReqKey();
 	}
 
@@ -574,7 +577,7 @@ public class WebAPI implements Closeable {
 				getServerHost(), path, retryParam, authenticationToken);
 		WebAPIRequest<?> request = new WebAPIRequest<T>(callback, conv, first,
 				retry, retryable);
-		requests.add(request, requestGroup);
+		addRequest(request, requestGroup);
 		return request.getReqKey();
 	}
 
@@ -764,7 +767,7 @@ public class WebAPI implements Closeable {
 
 		WebAPIRequest<?> request = new WebAPIRequest<Bitmap>(callback,
 				responseConverter, loader, true);
-		requests.add(request);
+		addRequest(request);
 		return request.getReqKey();
 	}
 
@@ -783,13 +786,31 @@ public class WebAPI implements Closeable {
 				+ "/userId=" + userId;
 	}
 
+	protected void addRequest(WebAPIRequest<?> request) {
+		addRequest(request, UNIQUE_GROUP);
+	}
+
+	protected void addRequest(WebAPIRequest<?> request, String requestGroup) {
+		synchronized (saveOnCloseStatusLock) {
+			if (saveOnCloseStatus.containsKey(Thread.currentThread())
+					&& saveOnCloseStatus.get(Thread.currentThread())) {
+				request.setSaveOnClose(true);
+				saveOnCloseStatus.put(Thread.currentThread(), false);
+			}
+		}
+		requests.add(request, requestGroup);
+	}
+
 	/**
-	 * WebAPIのクローズ時にリクエストをファイルに保存し、次回のWebAPIのコンストラクタで復活させ、
-	 * 成功するか期限が過ぎるまで通信を行うようにする。 ただし、復活後のリクエストは通信時にコールバックを行わない。
+	 * 同じスレッドで次に実行するAPIの通信を、WebAPIクローズ時にリクエストをファイルに保存し、次回のWebAPIのコンストラクタで復活させ、
+	 * 成功するか期限が過ぎるまで通信を行うようにする。ただし、復活後のリクエストは通信時にコールバックを行わない。
 	 * 
 	 * @param reqkey
 	 */
-	public void saveOnClose(int reqkey) {
-		requests.setSaveOnClose(reqkey, true);
+	public WebAPI withSaveOnClose() {
+		synchronized (saveOnCloseStatusLock) {
+			saveOnCloseStatus.put(Thread.currentThread(), true);
+		}
+		return this;
 	}
 }
