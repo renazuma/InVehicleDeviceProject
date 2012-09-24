@@ -1,19 +1,27 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledeviceservice.backgroundtask;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import android.content.Intent;
+import android.test.AndroidTestCase;
 
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask.ExitBroadcastReceiver;
-import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
+
 
 public class ExitBroadcastReceiverTestCase extends
-		EmptyActivityInstrumentationTestCase2 {
+		AndroidTestCase {
 
+	InVehicleDeviceService s;
 	ExitBroadcastReceiver ebr;
 
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		ebr = new ExitBroadcastReceiver(null);
+		s = mock(InVehicleDeviceService.class);
+		ebr = new ExitBroadcastReceiver(s);
 	}
 
 	@Override
@@ -22,11 +30,11 @@ public class ExitBroadcastReceiverTestCase extends
 	}
 
 	/**
-	 * ExitEventを発生させる
+	 * exitメソッドを実行
 	 */
-	public void testOnSharedPreferenceChanged1() throws Exception {
-		assertFalse(true);
-		ebr.onReceive(getInstrumentation().getContext(), new Intent());
-		assertTrue(false);
+	public void testOnReceive() throws Exception {
+		verify(s, never()).exit();
+		ebr.onReceive(getContext(), new Intent());
+		verify(s, times(1)).exit();
 	}
 }
