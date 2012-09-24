@@ -1,16 +1,24 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledeviceservice.backgroundtask;
 
-import org.mockito.ArgumentCaptor;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask.ServiceProviderReceiveThread;
-import com.kogasoftware.odt.invehicledevice.service.logservice.UploadThread;
-import com.kogasoftware.odt.webapi.model.ServiceProvider;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 
 import android.content.Intent;
 import android.test.AndroidTestCase;
-import static org.mockito.Mockito.*;
+
+import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
+import com.kogasoftware.odt.invehicledevice.datasource.EmptyDataSource;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask.ServiceProviderReceiveThread;
+import com.kogasoftware.odt.invehicledevice.service.logservice.UploadThread;
+import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
+import com.kogasoftware.odt.webapi.model.ServiceProvider;
 
 public class ServiceProviderReceiveThreadTestCase extends AndroidTestCase {
 	ServiceProviderReceiveThread sprt;
@@ -34,11 +42,42 @@ public class ServiceProviderReceiveThreadTestCase extends AndroidTestCase {
 		}
 	}
 
+	public void testRun() throws Exception {
+		DataSource ds = new EmptyDataSource() {
+			@Override
+			public int getServiceProvider(
+					WebAPICallback<ServiceProvider> callback) {
+				ServiceProvider sp = new ServiceProvider();
+				callback.onSucceed(0, 200, sp);
+				return 0;
+			}
+		};
+		when(s.getRemoteDataSource()).thenReturn(ds);
+		when(s.getLocalDataSource()).thenReturn(new LocalDataSource());
+
+		Integer m = 1000;
+		sprt.start();
+		Thread.sleep(m);
+		verify(s).sendBroadcast(Mockito.<Intent> any());
+
+		ArgumentCaptor<Intent> intentArgument = ArgumentCaptor
+				.forClass(Intent.class);
+		sprt.onStartNewOperation();
+		Thread.sleep(m);
+		verify(s).sendBroadcast(intentArgument.capture());
+		assertEquals(UploadThread.ACTION_UPDATE_CREDENTIALS, intentArgument
+				.getValue().getAction());
+
+		sprt.interrupt();
+		sprt.join(m);
+		assertFalse(sprt.isAlive());
+	}
+
 	public void testSendUpdateCredentialsBroadcast() {
 		ServiceProvider sp = new ServiceProvider();
 		sp.setLogAccessKeyIdAws("テストID");
 		sp.setLogSecretAccessKeyAws("テストKey");
-		
+
 		sprt.sendUpdateCredentialsBroadcast(sp);
 
 		ArgumentCaptor<Intent> intentArgument = ArgumentCaptor
