@@ -40,7 +40,7 @@ public class NavigationModalView extends ModalView implements
 		InVehicleDeviceService.OnChangeLocationListener,
 		InVehicleDeviceService.OnChangeOrientationListener,
 		InVehicleDeviceService.OnEnterPhaseListener,
-		InVehicleDeviceService.OnMergeUpdatedOperationScheduleListener,
+		InVehicleDeviceService.OnMergeOperationSchedulesListener,
 		NavigationRenderer.OnChangeMapZoomLevelListener {
 	private static final String TAG = NavigationModalView.class.getSimpleName();
 	private static final Integer GPS_ALERT_FLASH_MILLIS = 1000;
@@ -161,7 +161,7 @@ public class NavigationModalView extends ModalView implements
 		service.addOnChangeLocationListener(this);
 		service.addOnChangeOrientationListener(this);
 		service.addOnEnterPhaseListener(this);
-		service.addOnMergeUpdatedOperationScheduleListener(this);
+		service.addOnMergeOperationSchedulesListener(this);
 	}
 
 	@Override
@@ -173,7 +173,7 @@ public class NavigationModalView extends ModalView implements
 		service.removeOnChangeLocationListener(this);
 		service.removeOnChangeOrientationListener(this);
 		service.removeOnEnterPhaseListener(this);
-		service.removeOnMergeUpdatedOperationScheduleListener(this);
+		service.removeOnMergeOperationSchedulesListener(this);
 		
 		tilePipeline.onExit();
 
@@ -409,7 +409,7 @@ public class NavigationModalView extends ModalView implements
 	}
 
 	@Override
-	public void onMergeUpdatedOperationSchedule(
+	public void onMergeOperationSchedules(
 			List<VehicleNotification> triggerVehicleNotifications) {
 		updatePlatform();
 	}

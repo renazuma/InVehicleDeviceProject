@@ -53,7 +53,7 @@ public class OperationScheduleReceiveThread extends Thread implements
 			}
 		}
 
-		service.receiveUpdatedOperationSchedule(operationSchedules,
+		service.mergeOperationSchedules(operationSchedules,
 				triggerVehicleNotifications);
 	}
 

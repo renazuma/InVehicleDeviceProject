@@ -86,8 +86,8 @@ public class InVehicleDeviceService extends Service {
 		void onExit();
 	}
 
-	public interface OnMergeUpdatedOperationScheduleListener {
-		void onMergeUpdatedOperationSchedule(
+	public interface OnMergeOperationSchedulesListener {
+		void onMergeOperationSchedules(
 				List<VehicleNotification> triggerVehicleNotifications);
 	}
 
@@ -181,7 +181,8 @@ public class InVehicleDeviceService extends Service {
 		synchronized (MOCK_DATE_LOCK) {
 			Date wakeUpDate = new Date(getDate().getTime() + time);
 			if (!mockSleepStatus.containsKey(wakeUpDate)) {
-				mockSleepStatus.put(wakeUpDate, new LinkedList<CountDownLatch>());
+				mockSleepStatus.put(wakeUpDate,
+						new LinkedList<CountDownLatch>());
 			}
 			mockSleepStatus.get(wakeUpDate).add(countDownLatch);
 		}
@@ -231,8 +232,7 @@ public class InVehicleDeviceService extends Service {
 	protected final Set<OnChangeSignalStrengthListener> onChangeSignalStrengthListeners = newListenerSet();
 	protected final Set<OnChangeTemperatureListener> onChangeTemperatureListeners = newListenerSet();
 	protected final Set<OnExitListener> onExitListeners = newListenerSet();
-	protected final Set<OnMergeUpdatedOperationScheduleListener> onMergeUpdatedOperationScheduleListeners = newListenerSet();
-	protected final Set<OnReceiveUpdatedOperationScheduleListener> onReceiveUpdatedOperationScheduleListeners = newListenerSet();
+	protected final Set<OnMergeOperationSchedulesListener> onMergeOperationSchedulesListeners = newListenerSet();
 	protected final Set<OnReceiveVehicleNotificationListener> onReceiveVehicleNotificationListeners = newListenerSet();
 	protected final Set<OnReplyUpdatedOperationScheduleVehicleNotificationsListener> onReplyUpdatedOperationScheduleVehicleNotificationsListeners = newListenerSet();
 	protected final Set<OnReplyVehicleNotificationListener> onReplyVehicleNotificationListeners = newListenerSet();
@@ -293,18 +293,13 @@ public class InVehicleDeviceService extends Service {
 		onExitListeners.add(listener);
 	}
 
-	public void addOnMergeUpdatedOperationScheduleListener(
-			OnMergeUpdatedOperationScheduleListener listener) {
-		onMergeUpdatedOperationScheduleListeners.add(listener);
+	public void addOnMergeOperationSchedulesListener(
+			OnMergeOperationSchedulesListener listener) {
+		onMergeOperationSchedulesListeners.add(listener);
 	}
 
 	public void addOnPauseActivityListener(OnPauseActivityListener listener) {
 		onPauseActivityListeners.add(listener);
-	}
-
-	public void addOnReceiveUpdatedOperationScheduleListener(
-			OnReceiveUpdatedOperationScheduleListener listener) {
-		onReceiveUpdatedOperationScheduleListeners.add(listener);
 	}
 
 	public void addOnReceiveVehicleNotificationListener(
@@ -374,18 +369,13 @@ public class InVehicleDeviceService extends Service {
 		onExitListeners.remove(listener);
 	}
 
-	public void removeOnMergeUpdatedOperationScheduleListener(
-			OnMergeUpdatedOperationScheduleListener listener) {
-		onMergeUpdatedOperationScheduleListeners.remove(listener);
+	public void removeOnMergeOperationSchedulesListener(
+			OnMergeOperationSchedulesListener listener) {
+		onMergeOperationSchedulesListeners.remove(listener);
 	}
 
 	public void removeOnPauseActivityListener(OnPauseActivityListener listener) {
 		onPauseActivityListeners.remove(listener);
-	}
-
-	public void removeOnReceiveUpdatedOperationScheduleListener(
-			OnReceiveUpdatedOperationScheduleListener listener) {
-		onReceiveUpdatedOperationScheduleListeners.remove(listener);
 	}
 
 	public void removeOnReceiveVehicleNotificationListener(
@@ -553,19 +543,7 @@ public class InVehicleDeviceService extends Service {
 	}
 
 	public Optional<OperationSchedule> getCurrentOperationSchedule() {
-		return localDataSource
-				.withReadLock(new Reader<Optional<OperationSchedule>>() {
-					@Override
-					public Optional<OperationSchedule> read(LocalData status) {
-						if (status.remainingOperationSchedules.isEmpty()) {
-							return Optional.absent();
-						} else {
-							return Optional
-									.of(status.remainingOperationSchedules
-											.get(0));
-						}
-					}
-				});
+		return operationScheduleLogic.getCurrentOperationSchedule();
 	}
 
 	public DataSource getRemoteDataSource() {
@@ -574,17 +552,6 @@ public class InVehicleDeviceService extends Service {
 
 	public LocalDataSource getLocalDataSource() {
 		return localDataSource;
-	}
-
-	public List<OperationSchedule> getFinishedOperationSchedules() {
-		return localDataSource
-				.withReadLock(new Reader<List<OperationSchedule>>() {
-					@Override
-					public List<OperationSchedule> read(LocalData status) {
-						return new LinkedList<OperationSchedule>(
-								status.finishedOperationSchedules);
-					}
-				});
 	}
 
 	public EnumSet<PayTiming> getPayTiming() {
@@ -617,7 +584,7 @@ public class InVehicleDeviceService extends Service {
 					@Override
 					public List<OperationSchedule> read(LocalData status) {
 						return new LinkedList<OperationSchedule>(
-								status.remainingOperationSchedules);
+								status.operationSchedules);
 					}
 				});
 	}
@@ -673,20 +640,6 @@ public class InVehicleDeviceService extends Service {
 		});
 	}
 
-	public void mergeUpdatedOperationSchedule(
-			final List<VehicleNotification> triggerVehicleNotifications) {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				refreshPhase();
-				for (OnMergeUpdatedOperationScheduleListener listener : Lists
-						.newArrayList(onMergeUpdatedOperationScheduleListeners)) {
-					listener.onMergeUpdatedOperationSchedule(triggerVehicleNotifications);
-				}
-			}
-		});
-	}
-
 	@Override
 	public IBinder onBind(Intent intent) {
 		Log.i(TAG, "onBind()");
@@ -729,9 +682,8 @@ public class InVehicleDeviceService extends Service {
 		onChangeSignalStrengthListeners.clear();
 		onChangeTemperatureListeners.clear();
 		onExitListeners.clear();
-		onMergeUpdatedOperationScheduleListeners.clear();
+		onMergeOperationSchedulesListeners.clear();
 		onPauseActivityListeners.clear();
-		onReceiveUpdatedOperationScheduleListeners.clear();
 		onReceiveVehicleNotificationListeners.clear();
 		onReplyUpdatedOperationScheduleVehicleNotificationsListeners.clear();
 		onReplyVehicleNotificationListeners.clear();
@@ -748,18 +700,17 @@ public class InVehicleDeviceService extends Service {
 		return START_STICKY;
 	}
 
-	public void receiveUpdatedOperationSchedule(
+	public void mergeOperationSchedules(
 			final List<OperationSchedule> operationSchedules,
 			final List<VehicleNotification> triggerVehicleNotifications) {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
-				operationScheduleLogic.receiveUpdatedOperationSchedule(
+				operationScheduleLogic.mergeOperationSchedules(
 						operationSchedules, triggerVehicleNotifications);
-				for (OnReceiveUpdatedOperationScheduleListener listener : Lists
-						.newArrayList(onReceiveUpdatedOperationScheduleListeners)) {
-					listener.onReceiveUpdatedOperationSchedule(
-							operationSchedules, triggerVehicleNotifications);
+				for (OnMergeOperationSchedulesListener listener : Lists
+						.newArrayList(onMergeOperationSchedulesListeners)) {
+					listener.onMergeOperationSchedules(triggerVehicleNotifications);
 				}
 			}
 		});
