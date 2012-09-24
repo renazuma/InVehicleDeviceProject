@@ -16,6 +16,7 @@ public class OperationScheduleReceiveThread extends Thread implements
 		InVehicleDeviceService.OnStartReceiveUpdatedOperationScheduleListener {
 	private static final String TAG = OperationScheduleReceiveThread.class
 			.getSimpleName();
+	public static final Integer VOICE_DELAY_MILLIS = 5000;
 	protected final InVehicleDeviceService service;
 	protected final Semaphore startUpdatedOperationScheduleReceiveSemaphore = new Semaphore(
 			0);
@@ -47,7 +48,7 @@ public class OperationScheduleReceiveThread extends Thread implements
 			service.alertUpdatedOperationSchedule();
 			try {
 				service.speak("運行予定が変更されました");
-				Thread.sleep(5000); // TODO 定数
+				Thread.sleep(VOICE_DELAY_MILLIS);
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
 			}
@@ -62,7 +63,7 @@ public class OperationScheduleReceiveThread extends Thread implements
 		try {
 			service.addOnStartNewOperationListener(this);
 			service.addOnStartReceiveUpdatedOperationScheduleListener(this);
-			
+
 			// 最初の一度は必ず受信する
 			startUpdatedOperationScheduleReceiveSemaphore.release();
 			while (true) {
