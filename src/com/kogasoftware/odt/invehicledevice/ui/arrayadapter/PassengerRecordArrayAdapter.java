@@ -110,11 +110,6 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 			super.add(passengerRecord);
 			return;
 		}
-		if (service.getGetOffScheduledAndUnhandledPassengerRecords()
-				.contains(passengerRecord)) {
-			super.add(passengerRecord);
-			return;
-		}
 	}
 
 	@Override
@@ -149,7 +144,7 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 		} else {
 			memoButton.setVisibility(View.GONE);
 		}
-		
+
 		// 行の表示
 		convertView.setTag(passengerRecord);
 		convertView.setOnClickListener(onClickViewListener);

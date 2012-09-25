@@ -123,7 +123,7 @@ public class LocalDataSource implements Closeable {
 	 * isClearがtrueか、
 	 * SharedPreferenceのCLEAR_REQUIRED_SHARED_PREFERENCE_KEYがtrueの場合
 	 * 新しいLocalDataオブジェクトを作る。それ以外の場合はファイルからLocalDataオブジェクトを作る。
-	 * 
+	 *
 	 * CLEAR_REQUIRED_SHARED_PREFERENCE_KEYにより新しいオブジェクトが作られた場合、
 	 * CLEAR_REQUIRED_SHARED_PREFERENCE_KEYはfalseに設定する
 	 */
@@ -240,7 +240,7 @@ public class LocalDataSource implements Closeable {
 
 	/**
 	 * 読み取りロックをした状態で、localDataにアクセスを行う
-	 * 
+	 *
 	 * @param reader
 	 */
 	public <T> T withReadLock(Reader<T> reader) {
@@ -254,7 +254,7 @@ public class LocalDataSource implements Closeable {
 
 	/**
 	 * 読み取りロックをした状態で、localDataにアクセスを行う
-	 * 
+	 *
 	 * @param reader
 	 */
 	public void withReadLock(final VoidReader reader) {
@@ -270,7 +270,7 @@ public class LocalDataSource implements Closeable {
 	/**
 	 * 書き込みロックをした状態で、localDataにアクセスを行う。処理が完了したら、localDataを永続化する。
 	 * ただし、前回の永続化からsavePeriodMillis経過していない場合は、savePeriodMillisが経過するまで永続化は行わない。
-	 * 
+	 *
 	 * @param writer
 	 */
 	public void withWriteLock(Writer writer) {
@@ -281,7 +281,6 @@ public class LocalDataSource implements Closeable {
 			writeLock.unlock();
 		}
 
-		// findbugsの警告回避ができないため、Lockのダウングレードはしないでおく
 		saveSemaphore.release();
 	}
 }
