@@ -131,8 +131,8 @@ public class WebAPI implements Closeable {
 	protected final WebAPIRequestQueue requests;
 	protected volatile String serverHost = "http://127.0.0.1"; // 複数スレッドから参照の書きかえがありうるためvolatile
 	protected volatile String authenticationToken = ""; // 複数スレッドから参照の書きかえがありうるためvolatile
-	protected final Object saveOnCloseStatusLock = new Object();
-	protected final WeakHashMap<Thread, Boolean> saveOnCloseStatus = new WeakHashMap<Thread, Boolean>();
+	protected final Object requestConfigsLock = new Object();
+	protected final WeakHashMap<Thread, WebAPIRequestConfig> requestConfigs = new WeakHashMap<Thread, WebAPIRequestConfig>();
 
 	public WebAPI(String serverHost) {
 		this(serverHost, "");
@@ -272,7 +272,7 @@ public class WebAPI implements Closeable {
 		}
 
 		succeed = doHttpSessionAndCallback(request);
-		if (succeed || !request.isRetryable()) {
+		if (succeed || !request.getConfig().getRetry()) {
 			requests.remove(request);
 		} else {
 			requests.retry(request);
@@ -314,12 +314,11 @@ public class WebAPI implements Closeable {
 	}
 
 	protected <T> int get(String path, Map<String, String> params,
-			boolean retryable, String requestGroup, WebAPICallback<T> callback,
+			String requestGroup, WebAPICallback<T> callback,
 			ResponseConverter<? extends T> conv) throws WebAPIException {
 		SerializableGetLoader loader = new SerializableGetLoader(
 				getServerHost(), path, params, authenticationToken);
-		WebAPIRequest<?> request = new WebAPIRequest<T>(callback, conv, loader,
-				retryable);
+		WebAPIRequest<?> request = new WebAPIRequest<T>(callback, conv, loader);
 		addRequest(request, requestGroup);
 		return request.getReqKey();
 	}
@@ -419,7 +418,7 @@ public class WebAPI implements Closeable {
 				PATH_OPERATION_SCHEDULES + "/" + operationSchedule.getId()
 						+ "/reservations/" + reservation.getId() + "/users/"
 						+ user.getId() + "/passenger_record/canceled", param,
-				true, group, callback, VOID_RESPONSE_CONVERTER);
+				group, callback, VOID_RESPONSE_CONVERTER);
 	}
 
 	/**
@@ -442,7 +441,7 @@ public class WebAPI implements Closeable {
 				PATH_OPERATION_SCHEDULES + "/" + operationSchedule.getId()
 						+ "/reservations/" + reservation.getId() + "/users/"
 						+ user.getId() + "/passenger_record/canceled", param,
-				true, group, callback, VOID_RESPONSE_CONVERTER);
+				group, callback, VOID_RESPONSE_CONVERTER);
 	}
 
 	/**
@@ -452,7 +451,7 @@ public class WebAPI implements Closeable {
 			WebAPICallback<List<OperationSchedule>> callback)
 			throws WebAPIException {
 		return get(PATH_OPERATION_SCHEDULES, new TreeMap<String, String>(),
-				true, UNIQUE_GROUP, callback,
+				UNIQUE_GROUP, callback,
 				OperationSchedule.LIST_RESPONSE_CONVERTER);
 	}
 
@@ -471,7 +470,7 @@ public class WebAPI implements Closeable {
 			WebAPICallback<List<VehicleNotification>> callback)
 			throws WebAPIException {
 		return get(PATH_VEHICLE_NOTIFICATIONS, new TreeMap<String, String>(),
-				true, UNIQUE_GROUP, callback,
+				UNIQUE_GROUP, callback,
 				VehicleNotification.LIST_RESPONSE_CONVERTER);
 	}
 
@@ -494,7 +493,7 @@ public class WebAPI implements Closeable {
 		JSONObject param = new JSONObject();
 		param.put("in_vehicle_device", ivd);
 
-		return post(PATH_LOGIN, param, true, UNIQUE_GROUP,
+		return post(PATH_LOGIN, param, UNIQUE_GROUP,
 				new WebAPICallback<InVehicleDevice>() {
 					@Override
 					public void onException(int reqkey, WebAPIException ex) {
@@ -539,52 +538,39 @@ public class WebAPI implements Closeable {
 			JSONObject retryParam, String requestGroup,
 			WebAPICallback<T> callback, ResponseConverter<? extends T> conv)
 			throws WebAPIException {
-		return post(path, param, retryParam, true, requestGroup, callback, conv);
-	}
-
-	protected <T> int post(String path, JSONObject param,
-			JSONObject retryParam, boolean retryable, String requestGroup,
-			WebAPICallback<T> callback, ResponseConverter<? extends T> conv)
-			throws WebAPIException {
 		SerializablePostLoader first = new SerializablePostLoader(
 				getServerHost(), path, param, authenticationToken);
 		SerializablePostLoader retry = new SerializablePostLoader(
 				getServerHost(), path, retryParam, authenticationToken);
 		WebAPIRequest<?> request = new WebAPIRequest<T>(callback, conv, first,
-				retry, retryable);
+				retry);
 		addRequest(request, requestGroup);
 		return request.getReqKey();
 	}
 
-	protected <T> int post(String path, JSONObject param, boolean retryable,
-			String requestGroup, WebAPICallback<T> callback,
-			ResponseConverter<? extends T> conv) throws WebAPIException {
-		return post(path, param, param, retryable, requestGroup, callback, conv);
+	protected <T> int post(String path, JSONObject param, String requestGroup,
+			WebAPICallback<T> callback, ResponseConverter<? extends T> conv)
+			throws WebAPIException {
+		return post(path, param, param, requestGroup, callback, conv);
+	}
+
+	protected <T> int put(String path, JSONObject param, String requestGroup,
+			WebAPICallback<T> callback, ResponseConverter<? extends T> conv)
+			throws WebAPIException {
+		return put(path, param, param, requestGroup, callback, conv);
 	}
 
 	protected <T> int put(String path, JSONObject param, JSONObject retryParam,
 			String requestGroup, WebAPICallback<T> callback,
-			ResponseConverter<? extends T> conv) throws WebAPIException {
-		return put(path, param, retryParam, true, requestGroup, callback, conv);
-	}
-
-	protected <T> int put(String path, JSONObject param, JSONObject retryParam,
-			boolean retryable, String requestGroup, WebAPICallback<T> callback,
 			ResponseConverter<? extends T> conv) throws WebAPIException {
 		SerializablePutLoader first = new SerializablePutLoader(
 				getServerHost(), path, param, authenticationToken);
 		SerializablePutLoader retry = new SerializablePutLoader(
 				getServerHost(), path, retryParam, authenticationToken);
 		WebAPIRequest<?> request = new WebAPIRequest<T>(callback, conv, first,
-				retry, retryable);
+				retry);
 		addRequest(request, requestGroup);
 		return request.getReqKey();
-	}
-
-	protected <T> int put(String path, JSONObject param, boolean retryable,
-			String requestGroup, WebAPICallback<T> callback,
-			ResponseConverter<? extends T> conv) throws WebAPIException {
-		return put(path, param, param, retryable, requestGroup, callback, conv);
 	}
 
 	/**
@@ -595,7 +581,7 @@ public class WebAPI implements Closeable {
 			throws JSONException, WebAPIException {
 		JSONObject param = new JSONObject();
 		param.put("demand", demand.toJSONObject());
-		return post(PATH_RESERVATIONS + "/search", param, true, UNIQUE_GROUP,
+		return post(PATH_RESERVATIONS + "/search", param, UNIQUE_GROUP,
 				callback, ReservationCandidate.LIST_RESPONSE_CONVERTER);
 	}
 
@@ -607,7 +593,7 @@ public class WebAPI implements Closeable {
 			WebAPIException {
 		JSONObject param = new JSONObject();
 		param.put("reservation_candidate_id", reservationCandidate.getId());
-		return post(PATH_RESERVATIONS, param, true, UNIQUE_GROUP, callback,
+		return post(PATH_RESERVATIONS, param, UNIQUE_GROUP, callback,
 				Reservation.RESPONSE_CONVERTER);
 	}
 
@@ -672,7 +658,7 @@ public class WebAPI implements Closeable {
 	 */
 	public int getServicePrivider(WebAPICallback<ServiceProvider> callback)
 			throws WebAPIException {
-		return get(PATH_SERVICE_PRIVIDER, new TreeMap<String, String>(), true,
+		return get(PATH_SERVICE_PRIVIDER, new TreeMap<String, String>(),
 				UNIQUE_GROUP, callback, ServiceProvider.RESPONSE_CONVERTER);
 	}
 
@@ -766,7 +752,7 @@ public class WebAPI implements Closeable {
 		// zoom);
 
 		WebAPIRequest<?> request = new WebAPIRequest<Bitmap>(callback,
-				responseConverter, loader, true);
+				responseConverter, loader);
 		addRequest(request);
 		return request.getReqKey();
 	}
@@ -786,18 +772,33 @@ public class WebAPI implements Closeable {
 				+ "/userId=" + userId;
 	}
 
+	protected WebAPIRequestConfig getRequestConfig() {
+		Thread key = Thread.currentThread();
+		synchronized (requestConfigsLock) {
+			if (requestConfigs.containsKey(key)) {
+				return requestConfigs.get(key);
+			} else {
+				WebAPIRequestConfig requestConfig = new WebAPIRequestConfig();
+				requestConfigs.put(key, requestConfig);
+				return requestConfig;
+			}
+		}
+	}
+	
+	protected void clearRequestConfig() {
+		synchronized (requestConfigsLock) {
+			requestConfigs.remove(Thread.currentThread());
+		}
+	}
+
 	protected void addRequest(WebAPIRequest<?> request) {
 		addRequest(request, UNIQUE_GROUP);
 	}
 
 	protected void addRequest(WebAPIRequest<?> request, String requestGroup) {
-		synchronized (saveOnCloseStatusLock) {
-			if (saveOnCloseStatus.containsKey(Thread.currentThread())
-					&& saveOnCloseStatus.get(Thread.currentThread())) {
-				request.setSaveOnClose(true);
-				saveOnCloseStatus.put(Thread.currentThread(), false);
-			}
-		}
+		WebAPIRequestConfig requestConfig = getRequestConfig();
+		clearRequestConfig();
+		request.setConfig(requestConfig);
 		requests.add(request, requestGroup);
 	}
 
@@ -808,9 +809,21 @@ public class WebAPI implements Closeable {
 	 * @param reqkey
 	 */
 	public WebAPI withSaveOnClose() {
-		synchronized (saveOnCloseStatusLock) {
-			saveOnCloseStatus.put(Thread.currentThread(), true);
-		}
+		return withSaveOnClose(true);
+	}
+
+	public WebAPI withSaveOnClose(boolean saveOnClose) {
+		getRequestConfig().setSaveOnClose(saveOnClose);
+		return this;
+	}
+
+	/**
+	 * 同じスレッドで次に実行するAPIの通信が、リトライするかを設定する。
+	 * 
+	 * @param reqkey
+	 */
+	public WebAPI withRetry(boolean retry) {
+		getRequestConfig().setRetry(retry);
 		return this;
 	}
 }

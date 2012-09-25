@@ -17,7 +17,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class InVehicleDeviceBase extends Model {
-	private static final long serialVersionUID = 4326828688997805850L;
+	private static final long serialVersionUID = 7218497968670832486L;
 	public static final ResponseConverter<InVehicleDevice> RESPONSE_CONVERTER = new ResponseConverter<InVehicleDevice>() {
 		@Override
 		public InVehicleDevice convert(byte[] rawResponse) throws JSONException {
@@ -44,6 +44,7 @@ public abstract class InVehicleDeviceBase extends Model {
 		setRememberMe(parseOptionalString(jsonObject, "remember_me"));
 		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
 		setServiceUnits(ServiceUnit.parseList(jsonObject, "service_units"));
+		setUnitAssignments(UnitAssignment.parseList(jsonObject, "unit_assignments"));
 		setVehicleNotifications(VehicleNotification.parseList(jsonObject, "vehicle_notifications"));
 	}
 
@@ -105,6 +106,9 @@ public abstract class InVehicleDeviceBase extends Model {
 		}
 		if (getServiceUnits().size() > 0 && recursive) {
 			jsonObject.put("service_units", toJSON(getServiceUnits(), true, nextDepth));
+		}
+		if (getUnitAssignments().size() > 0 && recursive) {
+			jsonObject.put("unit_assignments", toJSON(getUnitAssignments(), true, nextDepth));
 		}
 		if (getVehicleNotifications().size() > 0 && recursive) {
 			jsonObject.put("vehicle_notifications", toJSON(getVehicleNotifications(), true, nextDepth));
@@ -295,6 +299,20 @@ public abstract class InVehicleDeviceBase extends Model {
 
 	public void clearServiceUnits() {
 		setServiceUnits(new LinkedList<ServiceUnit>());
+	}
+
+	private LinkedList<UnitAssignment> unitAssignments = new LinkedList<UnitAssignment>();
+
+	public List<UnitAssignment> getUnitAssignments() {
+		return wrapNull(unitAssignments);
+	}
+
+	public void setUnitAssignments(Iterable<UnitAssignment> unitAssignments) {
+		this.unitAssignments = wrapNull(unitAssignments);
+	}
+
+	public void clearUnitAssignments() {
+		setUnitAssignments(new LinkedList<UnitAssignment>());
 	}
 
 	private LinkedList<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();
