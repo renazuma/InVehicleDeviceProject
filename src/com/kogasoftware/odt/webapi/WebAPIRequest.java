@@ -22,10 +22,9 @@ public class WebAPIRequest<T> implements Serializable {
 	protected final SerializableRequestLoader retryRequest;
 	protected final int reqkey = REQ_KEY_COUNTER.incrementAndGet();
 	protected final Date createdDate = new Date();
-	protected final boolean retryable;
-	protected boolean retry = false;
-	protected boolean saveOnClose = false;
 
+	protected WebAPIRequestConfig config = new WebAPIRequestConfig();
+	protected boolean retry;
 	protected transient WebAPICallback<T> callback;
 	protected transient ResponseConverter<? extends T> responseConverter;
 
@@ -39,31 +38,17 @@ public class WebAPIRequest<T> implements Serializable {
 	public WebAPIRequest(WebAPICallback<T> callback,
 			ResponseConverter<? extends T> responseConverter,
 			SerializableRequestLoader request) {
-		this(callback, responseConverter, request, true);
-	}
-
-	public WebAPIRequest(WebAPICallback<T> callback,
-			ResponseConverter<? extends T> responseConverter,
-			SerializableRequestLoader request, Boolean retryable) {
-		this(callback, responseConverter, request, request, retryable);
-	}
-
-	public WebAPIRequest(WebAPICallback<T> callback,
-			ResponseConverter<? extends T> responseConverter,
-			SerializableRequestLoader firstRequest,
-			SerializableRequestLoader retryRequest) {
-		this(callback, responseConverter, firstRequest, retryRequest, true);
+		this(callback, responseConverter, request, request);
 	}
 
 	protected WebAPIRequest(WebAPICallback<T> callback,
 			ResponseConverter<? extends T> responseConverter,
 			SerializableRequestLoader firstRequest,
-			SerializableRequestLoader retryRequest, Boolean retryable) {
+			SerializableRequestLoader retryRequest) {
 		this.callback = callback;
 		this.responseConverter = responseConverter;
 		this.firstRequest = firstRequest;
 		this.retryRequest = retryRequest;
-		this.retryable = retryable;
 	}
 
 	public Date getCreatedDate() {
@@ -77,11 +62,7 @@ public class WebAPIRequest<T> implements Serializable {
 	public HttpRequestBase getRequest() throws WebAPIException {
 		return retry ? retryRequest.load() : firstRequest.load();
 	}
-
-	public boolean isRetryable() {
-		return retryable;
-	}
-
+	
 	public void onException(WebAPIException e) {
 		if (callback != null) {
 			callback.onException(reqkey, e);
@@ -119,11 +100,11 @@ public class WebAPIRequest<T> implements Serializable {
 		onException(new WebAPIException("Connection aborted by application"));
 	}
 	
-	public void setSaveOnClose(boolean saveOnClose) {
-		this.saveOnClose = saveOnClose;
+	public void setConfig(WebAPIRequestConfig config) {
+		this.config = config;
 	}
 	
-	public boolean isSaveOnClose() {
-		return saveOnClose;
+	public WebAPIRequestConfig getConfig() {
+		return config;
 	}
 }

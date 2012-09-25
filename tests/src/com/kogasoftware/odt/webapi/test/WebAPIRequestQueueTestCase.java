@@ -6,6 +6,7 @@ import java.util.HashMap;
 import com.kogasoftware.odt.webapi.WebAPI.ResponseConverter;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIRequest;
+import com.kogasoftware.odt.webapi.WebAPIRequestConfig;
 import com.kogasoftware.odt.webapi.WebAPIRequestQueue;
 import com.kogasoftware.odt.webapi.serializablerequestloader.SerializableGetLoader;
 
@@ -19,6 +20,8 @@ public class WebAPIRequestQueueTestCase extends
 		final Thread mainThread = Thread.currentThread();
 		File backupFile = getContext().getFileStreamPath(
 				"foo");
+		WebAPIRequestConfig saveOnCloseConfig = new WebAPIRequestConfig();
+		saveOnCloseConfig.setSaveOnClose(true);
 		backupFile.deleteOnExit();
 		backupFile.delete();
 		SerializableGetLoader sgl = new SerializableGetLoader("", "",
@@ -37,7 +40,7 @@ public class WebAPIRequestQueueTestCase extends
 			WebAPIRequest<Object> r3 = new WebAPIRequest<Object>(c, rc, sgl);
 			{
 				WebAPIRequestQueue rq = new WebAPIRequestQueue(backupFile);
-				r1.setSaveOnClose(true);
+				r1.setConfig(saveOnCloseConfig);
 				rq.add(r1);
 				rq.add(r2);
 				rq.add(r3);
@@ -70,7 +73,7 @@ public class WebAPIRequestQueueTestCase extends
 			WebAPIRequest<Object> r3 = new WebAPIRequest<Object>(c, rc, sgl);
 			{
 				WebAPIRequestQueue rq = new WebAPIRequestQueue(backupFile);
-				r2.setSaveOnClose(true);
+				r2.setConfig(saveOnCloseConfig);
 				rq.add(r1, "x");
 				rq.add(r2, "x");
 				rq.add(r3);
@@ -103,8 +106,8 @@ public class WebAPIRequestQueueTestCase extends
 			WebAPIRequest<Object> r3 = new WebAPIRequest<Object>(c, rc, sgl);
 			{
 				WebAPIRequestQueue rq = new WebAPIRequestQueue(backupFile);
-				r1.setSaveOnClose(true);
-				r3.setSaveOnClose(true);
+				r1.setConfig(saveOnCloseConfig);
+				r3.setConfig(saveOnCloseConfig);
 				rq.add(r1, "y");
 				rq.add(r2);
 				rq.add(r3);
@@ -139,8 +142,8 @@ public class WebAPIRequestQueueTestCase extends
 			WebAPIRequest<Object> r3 = new WebAPIRequest<Object>(c, rc, sgl);
 			{
 				WebAPIRequestQueue rq = new WebAPIRequestQueue(backupFile);
-				r1.setSaveOnClose(true);
-				r3.setSaveOnClose(true);
+				r1.setConfig(saveOnCloseConfig);
+				r3.setConfig(saveOnCloseConfig);
 				rq.add(r1, "z");
 				rq.add(r2);
 				rq.add(r3, "z");

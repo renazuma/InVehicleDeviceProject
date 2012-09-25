@@ -152,7 +152,7 @@ public class WebAPIRequestQueue {
 					.newLinkedList(requestsByGroup)) {
 				List<WebAPIRequest<?>> backupRequests = Lists.newLinkedList();
 				for (WebAPIRequest<?> request : pair.getValue()) {
-					if (request.isSaveOnClose()) {
+					if (request.getConfig().getSaveOnClose()) {
 						backupRequests.add(request);
 					}
 				}
