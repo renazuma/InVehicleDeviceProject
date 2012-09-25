@@ -17,7 +17,7 @@ class OperationRecord < ActiveRecord::Base
   belongs_to :operation_schedule
 
   # Defilne Validations
-  validates_presence_of :departed_at, :arrived_at, :operation_schedule
+  validates_presence_of :operation_schedule
 
   # Scope
   default_scope -> { includes(:operation_schedule) }
