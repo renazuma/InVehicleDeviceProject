@@ -3,6 +3,7 @@ package com.kogasoftware.odt.invehicledevice.datasource;
 import java.io.File;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Supplier;
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.BuildConfig;
 
@@ -19,19 +20,22 @@ public class DataSourceFactory {
 		}
 	}
 
-	public static DataSource newInstance(String url, String token, File file) {
+	public static DataSource newInstance(final String url, final String token,
+			final File file) {
 		if (!BuildConfig.DEBUG) {
 			return new WebAPIDataSource(url, token, file);
 		}
 		synchronized (DATA_SOURCE_LOCK) {
-			if (dataSource.isPresent()) {
-				return dataSource.get();
-			}
-			// 厳密にclose()する必要があるため、Optional.or()は使わない
-			// return new _GIT_IGNORE_DummyDataSource();
-			return new WebAPIDataSource(url, token, file);
-			// return new ScheduleChangedTestDataSource();
-			// return new EmptyDataSource();
+			return dataSource.or(new Supplier<DataSource>() {
+				@Override
+				public DataSource get() {
+					// 厳密にclose()する必要があるため、インスタンス生成を遅延させる
+					return new WebAPIDataSource(url, token, file);
+					// return new _GIT_IGNORE_DummyDataSource();
+					// return new ScheduleChangedTestDataSource();
+					// return new EmptyDataSource();
+				}
+			});
 		}
 	}
 
