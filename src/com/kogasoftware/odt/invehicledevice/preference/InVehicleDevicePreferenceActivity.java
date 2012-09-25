@@ -140,7 +140,6 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		if (callbackReceived.getAndSet(true)) {
 			return;
 		}
-		api.abort(reqKey);
 		final String message = "onException: reqKey=" + reqKey + ", exception="
 				+ ex;
 		Log.w(TAG, message, ex);
@@ -168,7 +167,6 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		if (callbackReceived.getAndSet(true)) {
 			return;
 		}
-		api.abort(reqKey);
 		final String message = "onFailed: reqKey=" + reqKey + ", statusCode="
 				+ statusCode + " response=" + response;
 		Log.w(TAG, message);
@@ -283,8 +281,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		ivd.setPassword(preferences.getString(PASSWORD_KEY, ""));
 		callbackReceived.set(false);
 		try {
-			latestReqKey = api.login(ivd,
-					InVehicleDevicePreferenceActivity.this);
+			latestReqKey = api.withRetry(false).login(ivd, this);
 		} catch (WebAPIException e) {
 			Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show();
 		} catch (JSONException e) {
