@@ -889,11 +889,6 @@ public class InVehicleDeviceService extends Service {
 		return passengerRecordLogic.canGetOff(passengerRecord);
 	}
 
-	public List<PassengerRecord> getGetOffScheduledAndUnhandledPassengerRecords() {
-		return passengerRecordLogic
-				.getGetOffScheduledAndUnhandledPassengerRecords();
-	}
-
 	public List<PassengerRecord> getNoGettingOnPassengerRecords() {
 		return passengerRecordLogic.getNoGettingOnPassengerRecords();
 	}

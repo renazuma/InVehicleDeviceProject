@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyWebAPICallback;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
@@ -83,9 +84,8 @@ public class PassengerRecordLogic {
 			return false;
 		}
 		Reservation reservation = passengerRecord.getReservation().get();
-		return reservation.getArrivalScheduleId().isPresent()
-				&& reservation.getArrivalScheduleId().get()
-						.equals(operationSchedule.getId());
+		return reservation.getArrivalScheduleId().equals(
+				Optional.of(operationSchedule.getId()));
 	}
 
 	public Boolean isGetOnScheduled(PassengerRecord passengerRecord) {
@@ -100,9 +100,8 @@ public class PassengerRecordLogic {
 			return false;
 		}
 		Reservation reservation = passengerRecord.getReservation().get();
-		return reservation.getDepartureScheduleId().isPresent()
-				&& reservation.getDepartureScheduleId().get()
-						.equals(operationSchedule.getId());
+		return reservation.getDepartureScheduleId().equals(
+				Optional.of(operationSchedule.getId()));
 	}
 
 	public Boolean isSelected(PassengerRecord passengerRecord) {
@@ -113,11 +112,11 @@ public class PassengerRecordLogic {
 				.getCurrentOperationSchedule().get();
 
 		if (passengerRecord.isRiding()) {
-			return operationSchedule.getId().equals(
-					passengerRecord.getDepartureOperationScheduleId().orNull());
+			return passengerRecord.getDepartureOperationScheduleId().equals(
+					Optional.of(operationSchedule.getId()));
 		} else if (passengerRecord.isGotOff()) {
-			return operationSchedule.getId().equals(
-					passengerRecord.getArrivalOperationScheduleId().orNull());
+			return passengerRecord.getArrivalOperationScheduleId().equals(
+					Optional.of(operationSchedule.getId()));
 		}
 		return false;
 	}
@@ -136,10 +135,10 @@ public class PassengerRecordLogic {
 		User user = passengerRecord.getUser().get();
 		passengerRecord.setPassengerCount(reservation.getPassengerCount());
 		DataSource dataSource = service.getRemoteDataSource();
-		if (getGetOffScheduledAndUnhandledPassengerRecords().contains(
-				passengerRecord)) {
-			passengerRecord.setGetOnTime(new Date());
-			passengerRecord.setGetOffTime(new Date());
+		Date now = InVehicleDeviceService.getDate();
+		if (isGetOffScheduled(passengerRecord) && passengerRecord.isUnhandled()) {
+			passengerRecord.setGetOnTime(now);
+			passengerRecord.setGetOffTime(now);
 			passengerRecord.setDepartureOperationScheduleId(reservation
 					.getDepartureScheduleId());
 			passengerRecord.setArrivalOperationScheduleId(operationSchedule
@@ -147,22 +146,22 @@ public class PassengerRecordLogic {
 			dataSource.withSaveOnClose().getOnPassenger(operationSchedule,
 					reservation, user, passengerRecord,
 					new EmptyWebAPICallback<Void>());
-			dataSource.withSaveOnClose().getOffPassenger(
-					operationSchedule, reservation, user, passengerRecord,
+			dataSource.withSaveOnClose().getOffPassenger(operationSchedule,
+					reservation, user, passengerRecord,
 					new EmptyWebAPICallback<Void>());
 		} else if (passengerRecord.isUnhandled()) {
-			passengerRecord.setGetOnTime(new Date());
+			passengerRecord.setGetOnTime(now);
 			passengerRecord.setDepartureOperationScheduleId(operationSchedule
 					.getId());
 			dataSource.withSaveOnClose().getOnPassenger(operationSchedule,
 					reservation, user, passengerRecord,
 					new EmptyWebAPICallback<Void>());
 		} else if (passengerRecord.isRiding() || passengerRecord.isGotOff()) {
-			passengerRecord.setGetOffTime(new Date());
+			passengerRecord.setGetOffTime(now);
 			passengerRecord.setArrivalOperationScheduleId(operationSchedule
 					.getId());
-			dataSource.withSaveOnClose().getOffPassenger(
-					operationSchedule, reservation, user, passengerRecord,
+			dataSource.withSaveOnClose().getOffPassenger(operationSchedule,
+					reservation, user, passengerRecord,
 					new EmptyWebAPICallback<Void>());
 		}
 	}
@@ -181,8 +180,10 @@ public class PassengerRecordLogic {
 		Reservation reservation = passengerRecord.getReservation().get();
 		User user = passengerRecord.getUser().get();
 		DataSource dataSource = service.getRemoteDataSource();
-		if (getGetOffScheduledAndUnhandledPassengerRecords().contains(
-				passengerRecord)) {
+		if (isGetOffScheduled(passengerRecord)
+				&& passengerRecord.isGotOff()
+				&& passengerRecord.getGetOnTime().equals(
+						passengerRecord.getGetOffTime())) {
 			passengerRecord.clearGetOnTime();
 			passengerRecord.clearGetOffTime();
 			passengerRecord.clearDepartureOperationScheduleId();
@@ -206,16 +207,5 @@ public class PassengerRecordLogic {
 					operationSchedule, reservation, user,
 					new EmptyWebAPICallback<Void>());
 		}
-	}
-
-	public List<PassengerRecord> getGetOffScheduledAndUnhandledPassengerRecords() {
-		List<PassengerRecord> passengerRecords = new LinkedList<PassengerRecord>();
-		for (PassengerRecord passengerRecord : service.getPassengerRecords()) {
-			if (isGetOffScheduled(passengerRecord)
-					&& passengerRecord.isUnhandled()) {
-				passengerRecords.add(passengerRecord);
-			}
-		}
-		return passengerRecords;
 	}
 }
