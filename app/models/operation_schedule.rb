@@ -48,14 +48,4 @@ class OperationSchedule < ActiveRecord::Base
     decrement = self.reservations_as_arrival.sum {|r| r.passenger_count}
     return (increment - decrement)
   end
-
-
-  # 現在の運行時点での残席を取得する
-  # service_unitを持たないunit_assignmentと紐付いている場合は、nilを返す
-  def remain
-    if capacity = self.unit_assignment.capacity
-      delta_sum = self.class.before_equal_from(self).sum {|schedule| schedule.delta_passenger_count}
-      capacity - delta_sum
-    end
-  end
 end
