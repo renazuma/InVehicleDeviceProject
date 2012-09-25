@@ -772,10 +772,6 @@ public class WebAPI implements Closeable {
 				+ "/userId=" + userId;
 	}
 
-	protected void addRequest(WebAPIRequest<?> request) {
-		addRequest(request, UNIQUE_GROUP);
-	}
-
 	protected WebAPIRequestConfig getRequestConfig() {
 		Thread key = Thread.currentThread();
 		synchronized (requestConfigsLock) {
@@ -788,9 +784,20 @@ public class WebAPI implements Closeable {
 			}
 		}
 	}
+	
+	protected void clearRequestConfig() {
+		synchronized (requestConfigsLock) {
+			requestConfigs.remove(Thread.currentThread());
+		}
+	}
+
+	protected void addRequest(WebAPIRequest<?> request) {
+		addRequest(request, UNIQUE_GROUP);
+	}
 
 	protected void addRequest(WebAPIRequest<?> request, String requestGroup) {
 		WebAPIRequestConfig requestConfig = getRequestConfig();
+		clearRequestConfig();
 		request.setConfig(requestConfig);
 		requests.add(request, requestGroup);
 	}
