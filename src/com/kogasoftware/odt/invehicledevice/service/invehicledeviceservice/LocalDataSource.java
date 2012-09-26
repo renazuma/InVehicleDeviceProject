@@ -156,7 +156,8 @@ public class LocalDataSource implements Closeable {
 				if (object instanceof LocalData) {
 					localData = (LocalData) object;
 				}
-
+			} catch (IllegalArgumentException e) {
+				Log.e(TAG, e.toString(), e);
 			} catch (IndexOutOfBoundsException e) {
 				Log.e(TAG, e.toString(), e);
 			} catch (SerializationException e) {

@@ -50,7 +50,7 @@ public class VoiceCache {
 
 	/**
 	 * キャッシュの状態をファイルから読み取る。コンストラクタから使うため、staticメソッドにしておく。
-	 * 
+	 *
 	 * @param instanceStateFile
 	 * @param sequence
 	 * @return
@@ -70,6 +70,8 @@ public class VoiceCache {
 			}
 			result = (InstanceState) object;
 			succeed = true;
+		} catch (IllegalArgumentException e) {
+			Log.e(TAG, e.toString(), e);
 		} catch (IndexOutOfBoundsException e) {
 			Log.e(TAG, e.toString(), e);
 		} catch (IOException e) {
@@ -142,7 +144,7 @@ public class VoiceCache {
 
 	/**
 	 * voiceに対応する音声ファイルを取得
-	 * 
+	 *
 	 * @param voice
 	 * @return
 	 * @throws ExecutionException
