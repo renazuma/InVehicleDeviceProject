@@ -2,8 +2,10 @@ package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice;
 
 import java.math.BigDecimal;
 
+import android.location.GpsStatus;
 import android.location.Location;
 
+import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
 
 public class ServiceUnitStatusLogLogic {
@@ -15,7 +17,7 @@ public class ServiceUnitStatusLogLogic {
 		this.service = service;
 	}
 
-	public void changeLocation(final Location location) {
+	public void changeLocation(final Location location, Optional<GpsStatus> gpsStatus) {
 		service.getLocalDataSource().withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {

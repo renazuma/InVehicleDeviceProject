@@ -450,7 +450,7 @@ public class InVehicleDeviceService extends Service {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
-				serviceUnitStatusLogLogic.changeLocation(location);
+				serviceUnitStatusLogLogic.changeLocation(location, gpsStatus);
 				for (OnChangeLocationListener listener : Lists
 						.newArrayList(onChangeLocationListeners)) {
 					listener.onChangeLocation(location, gpsStatus);
