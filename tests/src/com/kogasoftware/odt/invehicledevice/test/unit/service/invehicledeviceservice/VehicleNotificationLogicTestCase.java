@@ -64,6 +64,7 @@ public class VehicleNotificationLogicTestCase extends AndroidTestCase {
 		ListAssert.assertEquals(Lists.newArrayList(vn), vnl
 				.getVehicleNotifications(NotificationKind.RESERVATION_CHANGED,
 						VehicleNotificationStatus.UNHANDLED));
+		assertEquals(1, vnl.getVehicleNotifications().size());
 	}
 
 	public void testMergeVehicleNotification_RESERVATION_CHANGED同一IDがUNHANDLEDにある場合追加されない()
@@ -93,6 +94,7 @@ public class VehicleNotificationLogicTestCase extends AndroidTestCase {
 		ListAssert.assertEquals(Lists.newArrayList(vn0b), vnl
 				.getVehicleNotifications(NotificationKind.RESERVATION_CHANGED,
 						VehicleNotificationStatus.OPERATION_SCHEDULE_RECEIVED));
+		assertEquals(3, vnl.getVehicleNotifications().size());
 	}
 
 	public void testMergeVehicleNotification_RESERVATION_CHANGED同一IDがREPLIEDにある場合追加されない()
@@ -123,6 +125,7 @@ public class VehicleNotificationLogicTestCase extends AndroidTestCase {
 		ListAssert.assertEquals(Lists.newArrayList(vn2b), vnl
 				.getVehicleNotifications(NotificationKind.RESERVATION_CHANGED,
 						VehicleNotificationStatus.REPLIED));
+		assertEquals(3, vnl.getVehicleNotifications().size());
 	}
 
 	public void testMergeVehicleNotification_RESERVATION_CHANGED同一IDがOPERATION_SCHEDULE_RECEIVEDは追加されない()
@@ -149,12 +152,7 @@ public class VehicleNotificationLogicTestCase extends AndroidTestCase {
 		ListAssert.assertEquals(Lists.newArrayList(vn1b, vn0, vn2), vnl
 				.getVehicleNotifications(NotificationKind.RESERVATION_CHANGED,
 						VehicleNotificationStatus.UNHANDLED));
-		ListAssert.assertEquals(Lists.newArrayList(), vnl
-				.getVehicleNotifications(NotificationKind.RESERVATION_CHANGED,
-						VehicleNotificationStatus.REPLIED));
-		ListAssert.assertEquals(Lists.newArrayList(), vnl
-				.getVehicleNotifications(NotificationKind.FROM_OPERATOR,
-						VehicleNotificationStatus.REPLIED));
+		assertEquals(3, vnl.getVehicleNotifications().size());
 	}
 
 	public void testMergeVehicleNotification_FROM_OPERATOR追加() throws Exception {
@@ -166,9 +164,7 @@ public class VehicleNotificationLogicTestCase extends AndroidTestCase {
 		ListAssert.assertEquals(Lists.newArrayList(vn), vnl
 				.getVehicleNotifications(NotificationKind.FROM_OPERATOR,
 						VehicleNotificationStatus.UNHANDLED));
-		ListAssert.assertEquals(Lists.newArrayList(), vnl
-				.getVehicleNotifications(NotificationKind.FROM_OPERATOR,
-						VehicleNotificationStatus.REPLIED));
+		assertEquals(1, vnl.getVehicleNotifications().size());
 	}
 
 	public void testMergeVehicleNotification_FROM_OPERATOR同一IDがREPLIEDにあると追加されない()
@@ -197,10 +193,10 @@ public class VehicleNotificationLogicTestCase extends AndroidTestCase {
 		ListAssert.assertEquals(Lists.newArrayList(vn0, vn1), vnl
 				.getVehicleNotifications(NotificationKind.FROM_OPERATOR,
 						VehicleNotificationStatus.UNHANDLED));
-
 		ListAssert.assertEquals(Lists.newArrayList(vn2b), vnl
 				.getVehicleNotifications(NotificationKind.FROM_OPERATOR,
 						VehicleNotificationStatus.REPLIED));
+		assertEquals(3, vnl.getVehicleNotifications().size());
 	}
 
 	public void testMergeVehicleNotification_FROM_OPERATOR同一IDがUNHANDLEDにあると追加されない()
@@ -227,9 +223,7 @@ public class VehicleNotificationLogicTestCase extends AndroidTestCase {
 		ListAssert.assertEquals(Lists.newArrayList(vn1b, vn0, vn2), vnl
 				.getVehicleNotifications(NotificationKind.FROM_OPERATOR,
 						VehicleNotificationStatus.UNHANDLED));
-		ListAssert.assertEquals(Lists.newArrayList(), vnl
-				.getVehicleNotifications(NotificationKind.FROM_OPERATOR,
-						VehicleNotificationStatus.REPLIED));
+		assertEquals(3, vnl.getVehicleNotifications().size());
 	}
 
 	/**
@@ -249,12 +243,12 @@ public class VehicleNotificationLogicTestCase extends AndroidTestCase {
 						VehicleNotificationStatus.UNHANDLED, vn2);
 			}
 		});
+
 		ListAssert.assertEquals(Lists.newArrayList(vn1, vn2), vnl
 				.getVehicleNotifications(NotificationKind.FROM_OPERATOR,
 						VehicleNotificationStatus.UNHANDLED));
-		ListAssert.assertEquals(Lists.newArrayList(), vnl
-				.getVehicleNotifications(NotificationKind.FROM_OPERATOR,
-						VehicleNotificationStatus.REPLIED));
+		assertEquals(2, vnl.getVehicleNotifications().size());
+
 		vnl.replyVehicleNotification(vn1);
 		ListAssert.assertEquals(Lists.newArrayList(vn2), vnl
 				.getVehicleNotifications(NotificationKind.FROM_OPERATOR,
@@ -262,12 +256,12 @@ public class VehicleNotificationLogicTestCase extends AndroidTestCase {
 		ListAssert.assertEquals(Lists.newArrayList(vn1), vnl
 				.getVehicleNotifications(NotificationKind.FROM_OPERATOR,
 						VehicleNotificationStatus.REPLIED));
+		assertEquals(2, vnl.getVehicleNotifications().size());
+
 		vnl.replyVehicleNotification(vn2);
-		ListAssert.assertEquals(Lists.newArrayList(), vnl
-				.getVehicleNotifications(NotificationKind.FROM_OPERATOR,
-						VehicleNotificationStatus.UNHANDLED));
 		ListAssert.assertEquals(Lists.newArrayList(vn1, vn2), vnl
 				.getVehicleNotifications(NotificationKind.FROM_OPERATOR,
 						VehicleNotificationStatus.REPLIED));
+		assertEquals(2, vnl.getVehicleNotifications().size());
 	}
 }

@@ -5,11 +5,13 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyWebAPICallback;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Reader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.VoidReader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
@@ -149,5 +151,19 @@ public class VehicleNotificationLogic {
 			}
 		});
 		return vehicleNotifications;
+	}
+
+	public Multimap<VehicleNotificationStatus, VehicleNotification> getVehicleNotifications() {
+		return service
+				.getLocalDataSource()
+				.withReadLock(
+						new Reader<Multimap<VehicleNotificationStatus, VehicleNotification>>() {
+							@Override
+							public Multimap<VehicleNotificationStatus, VehicleNotification> read(
+									LocalData localData) {
+								return LinkedHashMultimap
+										.create(localData.vehicleNotifications);
+							}
+						});
 	}
 }
