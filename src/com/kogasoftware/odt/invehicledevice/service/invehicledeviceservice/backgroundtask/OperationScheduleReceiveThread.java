@@ -6,10 +6,15 @@ import java.util.concurrent.Semaphore;
 
 import android.util.Log;
 
+import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.VoidReader;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
+import com.kogasoftware.odt.webapi.model.VehicleNotification.NotificationKind;
 
 public class OperationScheduleReceiveThread extends Thread implements
 		InVehicleDeviceService.OnStartNewOperationListener,
@@ -71,8 +76,9 @@ public class OperationScheduleReceiveThread extends Thread implements
 				startUpdatedOperationScheduleReceiveSemaphore.acquire();
 				while (true) {
 					try {
-						receive(service
-								.getReceivingOperationScheduleChangedVehicleNotifications());
+						receive(service.getVehicleNotifications(
+								NotificationKind.RESERVATION_CHANGED,
+								VehicleNotificationStatus.UNHANDLED));
 						break;
 					} catch (WebAPIException e) {
 						Log.i(TAG, "retry", e);
@@ -86,6 +92,24 @@ public class OperationScheduleReceiveThread extends Thread implements
 			service.removeOnStartNewOperationListener(this);
 			service.removeOnStartReceiveUpdatedOperationScheduleListener(this);
 		}
+	}
+
+	private List<VehicleNotification> getTriggerVehicleNotifications() {
+		final List<VehicleNotification> triggerVehicleNotifications = Lists
+				.newLinkedList();
+		service.getLocalDataSource().withReadLock(new VoidReader() {
+			@Override
+			public void read(LocalData localData) {
+				for (VehicleNotification vehicleNotification : localData.vehicleNotifications
+						.get(VehicleNotificationStatus.UNHANDLED)) {
+					if (vehicleNotification.getNotificationKind().equals(
+							NotificationKind.RESERVATION_CHANGED)) {
+						triggerVehicleNotifications.add(vehicleNotification);
+					}
+				}
+			}
+		});
+		return triggerVehicleNotifications;
 	}
 
 	public void startNewOperationScheduleReceive() {

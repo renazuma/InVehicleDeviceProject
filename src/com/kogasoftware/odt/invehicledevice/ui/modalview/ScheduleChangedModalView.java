@@ -10,9 +10,7 @@ import android.widget.TextView;
 import com.google.common.base.Objects;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.VoidReader;
-import com.kogasoftware.odt.webapi.Identifiables;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class ScheduleChangedModalView extends ModalView implements
@@ -62,14 +60,8 @@ public class ScheduleChangedModalView extends ModalView implements
 	public void onMergeOperationSchedules(
 			final List<VehicleNotification> vehicleNotifications) {
 
-		service.getLocalDataSource().withReadLock(new VoidReader() {
-			@Override
-			public void read(LocalData status) {
-				Identifiables
-						.merge(vehicleNotifications,
-								status.receivedOperationScheduleChangedVehicleNotifications);
-			}
-		});
+		service.setVehicleNotificationStatus(vehicleNotifications,
+				VehicleNotificationStatus.OPERATION_SCHEDULE_RECEIVED);
 		if (vehicleNotifications.isEmpty()) {
 			return;
 		}

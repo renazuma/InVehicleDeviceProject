@@ -36,6 +36,7 @@ import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.datasource.EmptyDataSource;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Reader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask.BackgroundTaskThread;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
@@ -580,24 +581,12 @@ public class InVehicleDeviceService extends Service {
 		});
 	}
 
-	public List<VehicleNotification> getReceivingOperationScheduleChangedVehicleNotifications() {
-		return localDataSource
-				.withReadLock(new Reader<List<VehicleNotification>>() {
-					@Override
-					public List<VehicleNotification> read(LocalData status) {
-						return new LinkedList<VehicleNotification>(
-								status.receivingOperationScheduleChangedVehicleNotifications);
-					}
-				});
-	}
-
 	public List<OperationSchedule> getRemainingOperationSchedules() {
 		return localDataSource
 				.withReadLock(new Reader<List<OperationSchedule>>() {
 					@Override
 					public List<OperationSchedule> read(LocalData status) {
-						return new LinkedList<OperationSchedule>(
-								status.operationSchedules);
+						return Lists.newLinkedList(status.operationSchedules);
 					}
 				});
 	}
@@ -622,17 +611,6 @@ public class InVehicleDeviceService extends Service {
 				return status.token;
 			}
 		});
-	}
-
-	public List<VehicleNotification> getVehicleNotifications() {
-		return localDataSource
-				.withReadLock(new Reader<List<VehicleNotification>>() {
-					@Override
-					public List<VehicleNotification> read(LocalData status) {
-						return new LinkedList<VehicleNotification>(
-								status.vehicleNotifications);
-					}
-				});
 	}
 
 	public Boolean isOperationInitialized() {
@@ -905,5 +883,18 @@ public class InVehicleDeviceService extends Service {
 
 	public List<PassengerRecord> getNoPaymentPassengerRecords() {
 		return passengerRecordLogic.getNoPaymentPassengerRecords();
+	}
+
+	public List<VehicleNotification> getVehicleNotifications(
+			Integer notificationKind, VehicleNotificationStatus status) {
+		return vehicleNotificationLogic.getVehicleNotifications(
+				notificationKind, status);
+	}
+
+	public Boolean setVehicleNotificationStatus(
+			List<VehicleNotification> vehicleNotifications,
+			VehicleNotificationStatus status) {
+		return vehicleNotificationLogic.setVehicleNotificationStatus(
+				vehicleNotifications, status);
 	}
 }

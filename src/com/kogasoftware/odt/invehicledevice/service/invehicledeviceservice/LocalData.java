@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.concurrent.Semaphore;
 
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyFile;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
@@ -24,7 +26,7 @@ public class LocalData implements Serializable {
 		DRIVE, FINISH, INITIAL, PLATFORM
 	}
 
-	private static final long serialVersionUID = 179788018111L;
+	private static final long serialVersionUID = 17978801788121L;
 
 	public final Semaphore operationScheduleInitializedSign = new Semaphore(0); // パーミットが0以上の場合は初期化済み。0以上になるまで待つためにacquireしたら必ずreleaseする。CountDownLatchがSerializableではないためこれを使用
 	public final Semaphore serviceProviderInitializedSign = new Semaphore(0); // パーミットが0以上の場合は初期化済み。0以上になるまで待つためにacquireしたら必ずreleaseする。CountDownLatchがSerializableではないためこれを使用
@@ -41,12 +43,15 @@ public class LocalData implements Serializable {
 	public ServiceUnit serviceUnit = new ServiceUnit();
 	public ServiceUnitStatusLog serviceUnitStatusLog = new ServiceUnitStatusLog();
 
-	public final LinkedList<OperationSchedule> operationSchedules = new LinkedList<OperationSchedule>();
+	public final LinkedList<OperationSchedule> operationSchedules = Lists
+			.newLinkedList();
+	public final LinkedList<PassengerRecord> passengerRecords = Lists
+			.newLinkedList();
 
-	public final LinkedList<PassengerRecord> passengerRecords = new LinkedList<PassengerRecord>();
+	public static enum VehicleNotificationStatus {
+		UNHANDLED, OPERATION_SCHEDULE_RECEIVED, REPLIED,
+	}
 
-	public final LinkedList<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();
-	public final LinkedList<VehicleNotification> receivingOperationScheduleChangedVehicleNotifications = new LinkedList<VehicleNotification>();
-	public final LinkedList<VehicleNotification> receivedOperationScheduleChangedVehicleNotifications = new LinkedList<VehicleNotification>();
-	public final LinkedList<VehicleNotification> repliedVehicleNotifications = new LinkedList<VehicleNotification>();
+	public final LinkedHashMultimap<VehicleNotificationStatus, VehicleNotification> vehicleNotifications = LinkedHashMultimap
+			.create();
 }

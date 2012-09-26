@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyWebAPICallback;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Reader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
 import com.kogasoftware.odt.webapi.model.OperationRecord;
@@ -90,14 +91,7 @@ public class OperationScheduleLogic {
 	 * OperationScheduleをマージする(LocalDataがロックされた状態内)
 	 */
 	public void mergeOperationSchedulesWithWriteLock(LocalData localData,
-			List<OperationSchedule> newOperationSchedules,
-			List<VehicleNotification> triggerVehicleNotifications) {
-		// 通知を受信済みリストに移動
-		localData.receivingOperationScheduleChangedVehicleNotifications
-				.removeAll(triggerVehicleNotifications);
-		localData.receivedOperationScheduleChangedVehicleNotifications
-				.addAll(triggerVehicleNotifications);
-
+			List<OperationSchedule> newOperationSchedules) {
 		// 新規の場合PassengerRecordはすべて削除
 		if (!service.isOperationInitialized()) {
 			localData.passengerRecords.clear();
@@ -216,11 +210,16 @@ public class OperationScheduleLogic {
 	public void mergeOperationSchedules(
 			final List<OperationSchedule> operationSchedules,
 			final List<VehicleNotification> triggerVehicleNotifications) {
-		service.getLocalDataSource().withWriteLock(new Writer() {
+		LocalDataSource localDataSource = service.getLocalDataSource();
+		// 通知を受信済みリストに移動
+		service.setVehicleNotificationStatus(triggerVehicleNotifications,
+				VehicleNotificationStatus.OPERATION_SCHEDULE_RECEIVED);
+		// マージ
+		localDataSource.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
 				mergeOperationSchedulesWithWriteLock(localData,
-						operationSchedules, triggerVehicleNotifications);
+						operationSchedules);
 			}
 		});
 		service.refreshPhase();
@@ -235,10 +234,7 @@ public class OperationScheduleLogic {
 			public void write(LocalData localData) {
 				localData.operationScheduleInitializedSign.drainPermits();
 				localData.operationSchedules.clear();
-				localData.receivingOperationScheduleChangedVehicleNotifications
-						.clear();
-				localData.receivedOperationScheduleChangedVehicleNotifications
-						.clear();
+				localData.vehicleNotifications.clear();
 				localData.phase = Phase.INITIAL;
 				localData.passengerRecords.clear();
 			}
