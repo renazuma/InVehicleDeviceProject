@@ -2,14 +2,16 @@ package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledevicese
 
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+
+import org.mockito.verification.VerificationWithTimeout;
 
 import android.location.GpsStatus;
 import android.location.Location;
@@ -37,7 +39,7 @@ public class InVehicleDeviceServiceTestCase extends
 	}
 
 	public void testForwarding() throws Exception {
-		Integer m = 200;
+		VerificationWithTimeout t = timeout(5000);
 
 		final OperationScheduleLogic osl = mock(OperationScheduleLogic.class);
 		final PassengerRecordLogic prl = mock(PassengerRecordLogic.class);
@@ -64,8 +66,7 @@ public class InVehicleDeviceServiceTestCase extends
 				PassengerRecord pr = new PassengerRecord();
 				pr.setId(1);
 				s.canGetOff(pr);
-				Thread.sleep(m);
-				verify(prl, only()).canGetOff(eq(pr));
+				verify(prl, t.only()).canGetOff(eq(pr));
 			}
 
 			{
@@ -73,8 +74,7 @@ public class InVehicleDeviceServiceTestCase extends
 				PassengerRecord pr = new PassengerRecord();
 				pr.setId(2);
 				s.canGetOn(pr);
-				Thread.sleep(m);
-				verify(prl, only()).canGetOn(eq(pr));
+				verify(prl, t.only()).canGetOn(eq(pr));
 			}
 
 			{
@@ -83,81 +83,70 @@ public class InVehicleDeviceServiceTestCase extends
 				// Optional<GpsStatus> gs = Optional.of(mock(GpsStatus.class));
 				Optional<GpsStatus> gs = Optional.absent();
 				s.changeLocation(l, gs);
-				Thread.sleep(m);
-				verify(susll, only()).changeLocation(l, gs);
+				verify(susll, t.only()).changeLocation(l, gs);
 			}
 
 			{
 				reset(susll);
 				Double d = 1.2345;
 				s.changeOrientation(d);
-				Thread.sleep(m);
-				verify(susll, only()).changeOrientation(d);
+				verify(susll, t.only()).changeOrientation(d);
 			}
 
 			{
 				reset(susll);
 				Double d = 1.2345;
 				s.changeOrientation(d);
-				Thread.sleep(m);
-				verify(susll, only()).changeOrientation(d);
+				verify(susll, t.only()).changeOrientation(d);
 			}
 
 			{
 				reset(susll);
 				Double d = 25.012345;
 				s.changeTemperature(d);
-				Thread.sleep(m);
-				verify(susll, only()).changeTemperature(d);
+				verify(susll, t.only()).changeTemperature(d);
 			}
 
 			{
 				reset(osl);
 				s.enterDrivePhase();
-				Thread.sleep(m);
-				verify(osl, only()).enterDrivePhase();
+				verify(osl, t.only()).enterDrivePhase();
 			}
 
 			{
 				reset(osl);
 				s.enterFinishPhase();
-				Thread.sleep(m);
-				verify(osl, only()).enterFinishPhase();
+				verify(osl, t.only()).enterFinishPhase();
 			}
 
 			{
 				reset(osl);
 				s.getCurrentOperationSchedule();
-				Thread.sleep(m);
-				verify(osl, only()).getCurrentOperationSchedule();
+				verify(osl, t.only()).getCurrentOperationSchedule();
 			}
 
 			{
 				reset(prl);
 				s.getNoGettingOffPassengerRecords();
-				Thread.sleep(m);
-				verify(prl, only()).getNoGettingOffPassengerRecords();
+				verify(prl, t.only()).getNoGettingOffPassengerRecords();
 			}
 
 			{
 				reset(prl);
 				s.getNoGettingOnPassengerRecords();
-				Thread.sleep(m);
-				verify(prl, only()).getNoGettingOnPassengerRecords();
+				verify(prl, t.only()).getNoGettingOnPassengerRecords();
 			}
 
 			{
 				reset(prl);
 				s.getNoPaymentPassengerRecords();
-				Thread.sleep(m);
-				verify(prl, only()).getNoPaymentPassengerRecords();
+				verify(prl, t.only()).getNoPaymentPassengerRecords();
 			}
 
 			{
 				reset(prl);
 				s.getPassengerRecords();
-				Thread.sleep(m);
-				verify(prl, only()).getPassengerRecords();
+				verify(prl, t.only()).getPassengerRecords();
 			}
 
 			{
@@ -165,8 +154,7 @@ public class InVehicleDeviceServiceTestCase extends
 				Integer i = 589023;
 				VehicleNotificationStatus vns = VehicleNotificationStatus.REPLIED;
 				s.getVehicleNotifications(i, vns);
-				Thread.sleep(m);
-				verify(vnl, only()).getVehicleNotifications(i, vns);
+				verify(vnl, t.only()).getVehicleNotifications(i, vns);
 			}
 
 			{
@@ -174,8 +162,7 @@ public class InVehicleDeviceServiceTestCase extends
 				PassengerRecord pr = new PassengerRecord();
 				pr.setId(3);
 				s.isGetOffScheduled(pr);
-				Thread.sleep(m);
-				verify(prl, only()).isGetOffScheduled(pr);
+				verify(prl, t.only()).isGetOffScheduled(pr);
 			}
 
 			{
@@ -183,8 +170,7 @@ public class InVehicleDeviceServiceTestCase extends
 				PassengerRecord pr = new PassengerRecord();
 				pr.setId(4);
 				s.isGetOnScheduled(pr);
-				Thread.sleep(m);
-				verify(prl, only()).isGetOnScheduled(pr);
+				verify(prl, t.only()).isGetOnScheduled(pr);
 			}
 
 			{
@@ -192,8 +178,7 @@ public class InVehicleDeviceServiceTestCase extends
 				PassengerRecord pr = new PassengerRecord();
 				pr.setId(5);
 				s.isSelected(pr);
-				Thread.sleep(m);
-				verify(prl, only()).isSelected(pr);
+				verify(prl, t.only()).isSelected(pr);
 			}
 
 			{
@@ -201,24 +186,21 @@ public class InVehicleDeviceServiceTestCase extends
 				List<OperationSchedule> oss = Lists.newLinkedList();
 				List<VehicleNotification> vns = Lists.newLinkedList();
 				s.mergeOperationSchedules(oss, vns);
-				Thread.sleep(m);
-				verify(osl, only()).mergeOperationSchedules(oss, vns);
+				verify(osl, t.only()).mergeOperationSchedules(oss, vns);
 			}
 
 			{
 				reset(vnl);
 				List<VehicleNotification> vns = Lists.newLinkedList();
 				s.receiveVehicleNotification(vns);
-				Thread.sleep(m);
-				verify(vnl, only()).receiveVehicleNotification(vns);
+				verify(vnl, t.only()).receiveVehicleNotification(vns);
 			}
 
 			{
 				reset(vnl);
 				List<VehicleNotification> vns = Lists.newLinkedList();
 				s.replyUpdatedOperationScheduleVehicleNotifications(vns);
-				Thread.sleep(m);
-				verify(vnl, only()).replyUpdatedOperationScheduleVehicleNotifications(vns);
+				verify(vnl, t.only()).replyUpdatedOperationScheduleVehicleNotifications(vns);
 			}
 
 			{
@@ -226,8 +208,7 @@ public class InVehicleDeviceServiceTestCase extends
 				VehicleNotification vn = new VehicleNotification();
 				vn.setId(10);
 				s.replyVehicleNotification(vn);
-				Thread.sleep(m);
-				verify(vnl, only()).replyVehicleNotification(vn);
+				verify(vnl, t.only()).replyVehicleNotification(vn);
 			}
 
 			{
@@ -235,15 +216,13 @@ public class InVehicleDeviceServiceTestCase extends
 				PassengerRecord pr = new PassengerRecord();
 				pr.setId(11);
 				s.unselect(pr);
-				Thread.sleep(m);
-				verify(prl, only()).unselect(pr);
+				verify(prl, t.only()).unselect(pr);
 			}
 
 			{
 				reset(osl);
 				s.startNewOperation();
-				Thread.sleep(m);
-				verify(osl, only()).startNewOperation();
+				verify(osl, t.only()).startNewOperation();
 			}
 		} finally {
 			ht.quit();
