@@ -43,7 +43,7 @@ public class TileTestCase extends TestCase {
 		assertFalse((new Tile(5, 6, 7).equals(1)));
 	}
 
-	static void assertDistance(float expected, float actual, float maxDistance) {
+	public static void assertDistance(float expected, float actual, float maxDistance) {
 		if (Math.abs((double) expected - (double) actual) > Math
 				.abs((double) maxDistance)) {
 			fail("assertDistance failed: |(" + expected + ") - (" + actual
