@@ -245,14 +245,27 @@ public class InVehicleDeviceService extends Service {
 	protected volatile DataSource remoteDataSource = new EmptyDataSource();
 	protected volatile LocalDataSource localDataSource = new LocalDataSource();
 
+	@VisibleForTesting
+	public InVehicleDeviceService(
+			OperationScheduleLogic operationScheduleLogic,
+			PassengerRecordLogic passengerRecordLogic,
+			VehicleNotificationLogic vehicleNotificationLogic,
+			ServiceUnitStatusLogLogic serviceUnitStatusLogLogic,
+			VoiceServiceConnector voiceServiceConnector) {
+		super();
+		this.operationScheduleLogic = operationScheduleLogic;
+		this.passengerRecordLogic = passengerRecordLogic;
+		this.vehicleNotificationLogic = vehicleNotificationLogic;
+		this.serviceUnitStatusLogLogic = serviceUnitStatusLogLogic;
+		this.voiceServiceConnector = voiceServiceConnector;
+	}
+
 	public InVehicleDeviceService() {
 		super();
-
 		operationScheduleLogic = new OperationScheduleLogic(this);
 		passengerRecordLogic = new PassengerRecordLogic(this);
 		vehicleNotificationLogic = new VehicleNotificationLogic(this);
 		serviceUnitStatusLogLogic = new ServiceUnitStatusLogLogic(this);
-
 		voiceServiceConnector = new VoiceServiceConnector(this);
 	}
 
