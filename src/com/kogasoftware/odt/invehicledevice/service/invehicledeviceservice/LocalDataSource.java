@@ -47,12 +47,15 @@ public class LocalDataSource implements Closeable {
 		}
 
 		private void save() {
-			long startTime = System.currentTimeMillis();
 			byte[] serialized = new byte[0];
+			long beginTime = 0;
+			long endTime = 0;
 			try {
 				readLock.lock();
 				try {
+					beginTime = System.currentTimeMillis();
 					serialized = SerializationUtils.serialize(localData);
+					endTime = System.currentTimeMillis();
 				} finally {
 					readLock.unlock();
 				}
@@ -60,9 +63,8 @@ public class LocalDataSource implements Closeable {
 				Log.e(TAG, e.toString(), e);
 				return;
 			} finally {
-				long stopTime = System.currentTimeMillis();
-				long runTime = stopTime - startTime;
-				Log.d(TAG, "LocalDataSource.save() " + runTime + " ms");
+				long elapsed = endTime - beginTime;
+				Log.d(TAG, "serialize() " + elapsed + "ms " + serialized.length + "bytes");
 			}
 
 			synchronized (FILE_ACCESS_LOCK) {
