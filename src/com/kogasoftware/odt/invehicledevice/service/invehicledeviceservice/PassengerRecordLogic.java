@@ -5,8 +5,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyWebAPICallback;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Reader;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
@@ -47,7 +49,7 @@ public class PassengerRecordLogic {
 
 	public List<PassengerRecord> getNoGettingOffPassengerRecords() {
 		List<PassengerRecord> noGettingOffReservations = new LinkedList<PassengerRecord>();
-		for (PassengerRecord passengerRecord : service.getPassengerRecords()) {
+		for (PassengerRecord passengerRecord : getPassengerRecords()) {
 			if (isGetOffScheduled(passengerRecord)
 					&& !isSelected(passengerRecord)) {
 				noGettingOffReservations.add(passengerRecord);
@@ -56,9 +58,19 @@ public class PassengerRecordLogic {
 		return noGettingOffReservations;
 	}
 
+	public List<PassengerRecord> getPassengerRecords() {
+		return service.getLocalDataSource().withReadLock(
+				new Reader<List<PassengerRecord>>() {
+					@Override
+					public List<PassengerRecord> read(LocalData status) {
+						return Lists.newLinkedList(status.passengerRecords);
+					}
+				});
+	}
+
 	public List<PassengerRecord> getNoGettingOnPassengerRecords() {
 		List<PassengerRecord> noGettingOnReservations = new LinkedList<PassengerRecord>();
-		for (PassengerRecord passengerRecord : service.getPassengerRecords()) {
+		for (PassengerRecord passengerRecord : getPassengerRecords()) {
 			if (canGetOn(passengerRecord) && isGetOnScheduled(passengerRecord)
 					&& !isSelected(passengerRecord)) {
 				noGettingOnReservations.add(passengerRecord);

@@ -603,14 +603,7 @@ public class InVehicleDeviceService extends Service {
 	}
 
 	public List<PassengerRecord> getPassengerRecords() {
-		return localDataSource
-				.withReadLock(new Reader<List<PassengerRecord>>() {
-					@Override
-					public List<PassengerRecord> read(LocalData status) {
-						return new LinkedList<PassengerRecord>(
-								status.passengerRecords);
-					}
-				});
+		return passengerRecordLogic.getPassengerRecords();
 	}
 
 	public ServiceUnitStatusLog getServiceUnitStatusLog() {
