@@ -1,14 +1,17 @@
 package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice;
 
-import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyWebAPICallback;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.VoidReader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
-import com.kogasoftware.odt.webapi.Identifiables;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 /**
@@ -23,22 +26,6 @@ public class VehicleNotificationLogic {
 
 	public void receiveVehicleNotification(
 			List<VehicleNotification> vehicleNotifications) {
-		// 古いVehicleNotificationを削除
-		service.getLocalDataSource().withWriteLock(new Writer() {
-			@Override
-			public void write(LocalData localData) {
-				final Calendar calendar = Calendar.getInstance();
-				calendar.add(Calendar.DATE, -3); // TODO:定数
-				for (VehicleNotification vehicleNotification : new LinkedList<VehicleNotification>(
-						localData.repliedVehicleNotifications)) {
-					if (vehicleNotification.getCreatedAt().before(
-							calendar.getTime())) {
-						localData.repliedVehicleNotifications
-								.remove(vehicleNotification);
-					}
-				}
-			}
-		});
 		final List<VehicleNotification> scheduleChangedVehicleNotifications = new LinkedList<VehicleNotification>();
 		final List<VehicleNotification> normalVehicleNotifications = new LinkedList<VehicleNotification>();
 		for (VehicleNotification vehicleNotification : vehicleNotifications) {
@@ -50,66 +37,24 @@ public class VehicleNotificationLogic {
 			}
 		}
 
-		final AtomicBoolean operationScheduleChanged = new AtomicBoolean(false);
 		// スケジュール変更通知の処理
-		service.getLocalDataSource().withWriteLock(new Writer() {
-			@Override
-			public void write(LocalData localData) {
-				for (VehicleNotification vehicleNotification : scheduleChangedVehicleNotifications) {
-					if (Identifiables.contains(
-							localData.repliedVehicleNotifications,
-							vehicleNotification)) {
-						continue;
-					}
-					if (Identifiables
-							.contains(
-									localData.receivedOperationScheduleChangedVehicleNotifications,
-									vehicleNotification)) {
-						continue;
-					}
-					if (Identifiables
-							.merge(localData.receivingOperationScheduleChangedVehicleNotifications,
-									vehicleNotification)) {
-						operationScheduleChanged.set(true);
-					}
-				}
-			}
-		});
-		if (operationScheduleChanged.get()) {
+		if (setVehicleNotificationStatus(scheduleChangedVehicleNotifications,
+				VehicleNotificationStatus.UNHANDLED)) {
 			service.startReceiveUpdatedOperationSchedule();
 		}
 
 		// 一般通知の処理
-		final AtomicBoolean normalsMerged = new AtomicBoolean(false);
-		service.getLocalDataSource().withWriteLock(new Writer() {
-			@Override
-			public void write(LocalData localData) {
-				for (VehicleNotification vehicleNotification : normalVehicleNotifications) {
-					if (Identifiables.contains(
-							localData.repliedVehicleNotifications,
-							vehicleNotification)) {
-						continue;
-					}
-					if (Identifiables.merge(localData.vehicleNotifications,
-							vehicleNotification)) {
-						normalsMerged.set(true);
-					}
+		if (setVehicleNotificationStatus(normalVehicleNotifications,
+				VehicleNotificationStatus.UNHANDLED)) {
+			// 一般通知がマージされた場合別スレッドでUIに対して通知処理
+			(new Thread() {
+				@Override
+				public void run() {
+					service.alertVehicleNotificationReceive();
+					service.speak("管理者から連絡があります");
 				}
-			}
-		});
-		if (!normalsMerged.get()) {
-			return;
+			}).start();
 		}
-
-		// 一般通知がマージされた場合別スレッドでUIに対して通知処理
-		(new Thread() {
-			@Override
-			public void run() {
-				service.alertVehicleNotificationReceive();
-				service.speak("管理者から連絡があります");
-			}
-		}).start();
-
 	}
 
 	public void replyUpdatedOperationScheduleVehicleNotifications(
@@ -120,16 +65,8 @@ public class VehicleNotificationLogic {
 					vehicleNotification, VehicleNotification.Response.YES,
 					new EmptyWebAPICallback<VehicleNotification>());
 		}
-
-		service.getLocalDataSource().withWriteLock(new Writer() {
-			@Override
-			public void write(LocalData localData) {
-				localData.receivedOperationScheduleChangedVehicleNotifications
-						.removeAll(vehicleNotifications);
-				localData.repliedVehicleNotifications
-						.addAll(vehicleNotifications);
-			}
-		});
+		setVehicleNotificationStatus(vehicleNotifications,
+				VehicleNotificationStatus.REPLIED);
 	}
 
 	/**
@@ -143,14 +80,74 @@ public class VehicleNotificationLogic {
 					vehicleNotification, response,
 					new EmptyWebAPICallback<VehicleNotification>());
 		}
-		final AtomicBoolean empty = new AtomicBoolean(false);
+		setVehicleNotificationStatus(vehicleNotification,
+				VehicleNotificationStatus.REPLIED);
+	}
+
+	public Boolean setVehicleNotificationStatus(
+			VehicleNotification vehicleNotification,
+			VehicleNotificationStatus status) {
+		return setVehicleNotificationStatus(
+				Lists.newArrayList(vehicleNotification), status);
+	}
+
+	public Boolean setVehicleNotificationStatus(
+			final List<VehicleNotification> vehicleNotifications,
+			final VehicleNotificationStatus status) {
+		final AtomicBoolean updated = new AtomicBoolean(false);
 		service.getLocalDataSource().withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
-				localData.vehicleNotifications.remove(vehicleNotification);
-				localData.repliedVehicleNotifications.add(vehicleNotification);
-				empty.set(localData.vehicleNotifications.isEmpty());
+				updated.set(setVehicleNotificationStatus(
+						localData.vehicleNotifications, vehicleNotifications,
+						status));
 			}
 		});
+		return updated.get();
+	}
+
+	private static Boolean setVehicleNotificationStatus(
+			Multimap<VehicleNotificationStatus, VehicleNotification> vehicleNotifications,
+			List<VehicleNotification> newVehicleNotifications,
+			VehicleNotificationStatus status) {
+		Boolean updated = false;
+		for (VehicleNotification newVehicleNotification : newVehicleNotifications) {
+			Boolean hasNewer = false;
+			for (Entry<VehicleNotificationStatus, VehicleNotification> entry : Lists
+					.newArrayList(vehicleNotifications.entries())) {
+				if (!entry.getValue().getId()
+						.equals(newVehicleNotification.getId())) {
+					continue;
+				}
+				if (entry.getKey().ordinal() >= status.ordinal()) {
+					hasNewer = true;
+				} else {
+					vehicleNotifications.remove(entry.getKey(),
+							entry.getValue());
+				}
+			}
+			if (!hasNewer) {
+				vehicleNotifications.put(status, newVehicleNotification);
+				updated = true;
+			}
+		}
+		return updated;
+	}
+
+	public List<VehicleNotification> getVehicleNotifications(
+			final Integer notificationKind,
+			final VehicleNotificationStatus status) {
+		final List<VehicleNotification> vehicleNotifications = Lists
+				.newLinkedList();
+		service.getLocalDataSource().withReadLock(new VoidReader() {
+			@Override
+			public void read(LocalData localData) {
+				for (VehicleNotification vehicleNotification : localData.vehicleNotifications
+						.get(status)) {
+					vehicleNotifications.add(vehicleNotification);
+				}
+			}
+		});
+		return vehicleNotifications;
 	}
 }

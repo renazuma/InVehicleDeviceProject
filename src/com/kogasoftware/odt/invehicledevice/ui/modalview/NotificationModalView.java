@@ -9,7 +9,9 @@ import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
+import com.kogasoftware.odt.webapi.model.VehicleNotification.NotificationKind;
 
 public class NotificationModalView extends ModalView implements
 		InVehicleDeviceService.OnAlertVehicleNotificationReceiveListener {
@@ -76,7 +78,8 @@ public class NotificationModalView extends ModalView implements
 	@Override
 	public void show() {
 		List<VehicleNotification> vehicleNotifications = service
-				.getVehicleNotifications();
+				.getVehicleNotifications(NotificationKind.FROM_OPERATOR,
+						VehicleNotificationStatus.UNHANDLED);
 		if (vehicleNotifications.isEmpty()) {
 			hide();
 			return;
