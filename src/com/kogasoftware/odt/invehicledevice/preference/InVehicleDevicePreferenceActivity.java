@@ -45,7 +45,6 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 			.getSimpleName();
 
 	private final WebAPI api = new WebAPI(DEFAULT_URL);
-	private final AtomicBoolean callbackReceived = new AtomicBoolean(false);
 	private int latestReqKey = 0;
 
 	private SharedPreferences preferences = null;
@@ -137,9 +136,6 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		if (reqKey != latestReqKey) {
 			return;
 		}
-		if (callbackReceived.getAndSet(true)) {
-			return;
-		}
 		final String message = "onException: reqKey=" + reqKey + ", exception="
 				+ ex;
 		Log.w(TAG, message, ex);
@@ -162,9 +158,6 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 	@Override
 	public void onFailed(int reqKey, int statusCode, String response) {
 		if (reqKey != latestReqKey) {
-			return;
-		}
-		if (callbackReceived.getAndSet(true)) {
 			return;
 		}
 		final String message = "onFailed: reqKey=" + reqKey + ", statusCode="
@@ -196,9 +189,6 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 	public void onSucceed(int reqKey, int statusCode,
 			InVehicleDevice inVehicleDevice) {
 		if (reqKey != latestReqKey) {
-			return;
-		}
-		if (callbackReceived.getAndSet(true)) {
 			return;
 		}
 		try {
@@ -279,7 +269,6 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		InVehicleDevice ivd = new InVehicleDevice();
 		ivd.setLogin(preferences.getString(LOGIN_KEY, ""));
 		ivd.setPassword(preferences.getString(PASSWORD_KEY, ""));
-		callbackReceived.set(false);
 		try {
 			latestReqKey = api.withRetry(false).login(ivd, this);
 		} catch (WebAPIException e) {
