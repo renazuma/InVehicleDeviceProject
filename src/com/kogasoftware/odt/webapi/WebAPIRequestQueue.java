@@ -81,6 +81,8 @@ public class WebAPIRequestQueue {
 				}
 				InstanceState instanceState = (InstanceState) object;
 				requestsByGroup.addAll(instanceState.requestsByGroup);
+			} catch (IllegalArgumentException e) {
+				Log.e(TAG, e.toString(), e);
 			} catch (IndexOutOfBoundsException e) {
 				Log.e(TAG, e.toString(), e);
 			} catch (IOException e) {
