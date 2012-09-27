@@ -106,10 +106,10 @@ public class InVehicleDeviceActivity extends Activity implements
 	public void onDestroy() {
 		super.onDestroy();
 		Log.i(TAG, "onDestroy()");
-		if (optionalService.isPresent()) {
-			optionalService.get().removeOnExitListener(this);
-			optionalService = Optional.absent();
+		for (InVehicleDeviceService service : optionalService.asSet()) {
+			service.removeOnExitListener(this);
 		}
+		optionalService = Optional.absent();
 		unbindService(serviceConnection);
 		getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		handler.removeCallbacks(waitForInitialize);
@@ -202,8 +202,8 @@ public class InVehicleDeviceActivity extends Activity implements
 		super.onResume();
 		Log.i(TAG, "onResume()");
 		handler.removeCallbacks(pauseFinishTimeouter);
-		if (optionalService.isPresent()) {
-			optionalService.get().setActivityResumed();
+		for (InVehicleDeviceService service : optionalService.asSet()) {
+			service.setActivityResumed();
 		}
 	}
 
@@ -212,8 +212,8 @@ public class InVehicleDeviceActivity extends Activity implements
 		super.onPause();
 		Log.i(TAG, "onPause()");
 		handler.postDelayed(pauseFinishTimeouter, PAUSE_FINISH_TIMEOUT_MILLIS);
-		if (optionalService.isPresent()) {
-			optionalService.get().setActivityPaused();
+		for (InVehicleDeviceService service : optionalService.asSet()) {
+			service.setActivityPaused();
 		}
 	}
 }
