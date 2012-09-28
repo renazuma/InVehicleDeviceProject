@@ -6,11 +6,8 @@ import java.util.concurrent.Semaphore;
 
 import android.util.Log;
 
-import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.VoidReader;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
@@ -40,7 +37,7 @@ public class OperationScheduleReceiveThread extends Thread implements
 		startNewOperationScheduleReceive();
 	}
 
-	private void receive(
+	public void receive(
 			final List<VehicleNotification> triggerVehicleNotifications)
 			throws WebAPIException {
 		final List<OperationSchedule> operationSchedules = new LinkedList<OperationSchedule>();
@@ -92,24 +89,6 @@ public class OperationScheduleReceiveThread extends Thread implements
 			service.removeOnStartNewOperationListener(this);
 			service.removeOnStartReceiveUpdatedOperationScheduleListener(this);
 		}
-	}
-
-	private List<VehicleNotification> getTriggerVehicleNotifications() {
-		final List<VehicleNotification> triggerVehicleNotifications = Lists
-				.newLinkedList();
-		service.getLocalDataSource().withReadLock(new VoidReader() {
-			@Override
-			public void read(LocalData localData) {
-				for (VehicleNotification vehicleNotification : localData.vehicleNotifications
-						.get(VehicleNotificationStatus.UNHANDLED)) {
-					if (vehicleNotification.getNotificationKind().equals(
-							NotificationKind.RESERVATION_CHANGED)) {
-						triggerVehicleNotifications.add(vehicleNotification);
-					}
-				}
-			}
-		});
-		return triggerVehicleNotifications;
 	}
 
 	public void startNewOperationScheduleReceive() {
