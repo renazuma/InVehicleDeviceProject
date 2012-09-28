@@ -1,12 +1,16 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledeviceservice.backgroundtask;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.mockito.Mockito;
+import org.mockito.verification.VerificationWithTimeout;
 
 import android.test.AndroidTestCase;
 
@@ -15,9 +19,8 @@ import com.kogasoftware.odt.invehicledevice.datasource.EmptyDataSource;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask.OperationScheduleReceiveThread;
-import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
+import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
-import com.kogasoftware.odt.webapi.model.ServiceProvider;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class OperationScheduleReceiveThreadTestCase extends AndroidTestCase {
@@ -42,39 +45,89 @@ public class OperationScheduleReceiveThreadTestCase extends AndroidTestCase {
 		}
 	}
 
-	public void testRun() throws Exception {
+	public void testRun_NotifyOperationScheduleReceiveFailed() throws Exception {
+		VerificationWithTimeout t = timeout((int) (OperationScheduleReceiveThread.VOICE_DELAY_MILLIS * 1.2));
+		final AtomicBoolean fail = new AtomicBoolean(true);
 		DataSource ds = new EmptyDataSource() {
 			@Override
-			public int getServiceProvider(
-					WebAPICallback<ServiceProvider> callback) {
-				ServiceProvider sp = new ServiceProvider();
-				callback.onSucceed(0, 200, sp);
-				return 0;
+			public List<OperationSchedule> getOperationSchedules()
+					throws WebAPIException {
+				if (fail.get()) {
+					throw new WebAPIException("test");
+				}
+				return super.getOperationSchedules();
 			}
 		};
 		when(s.getRemoteDataSource()).thenReturn(ds);
 		when(s.getLocalDataSource()).thenReturn(new LocalDataSource());
 
-		Integer m = (int) (OperationScheduleReceiveThread.VOICE_DELAY_MILLIS * 1.2);
 		osrt.start();
-		Thread.sleep(m);
-		verify(s, Mockito.times(1)).mergeOperationSchedules(
+
+		fail.set(true);
+		verify(s, t.never()).mergeOperationSchedules(
+				Mockito.<List<OperationSchedule>> any(),
+				Mockito.<List<VehicleNotification>> any());
+		verify(s, times(1)).notifyOperationScheduleReceiveFailed();
+
+		fail.set(false);
+		verify(s, t.times(1)).mergeOperationSchedules(
+				Mockito.<List<OperationSchedule>> any(),
+				Mockito.<List<VehicleNotification>> any());
+		verify(s, times(1)).notifyOperationScheduleReceiveFailed();
+
+		fail.set(true);
+		verify(s, t.times(1)).mergeOperationSchedules(
+				Mockito.<List<OperationSchedule>> any(),
+				Mockito.<List<VehicleNotification>> any());
+		verify(s, times(2)).notifyOperationScheduleReceiveFailed();
+
+		fail.set(false);
+		verify(s, t.times(1)).mergeOperationSchedules(
+				Mockito.<List<OperationSchedule>> any(),
+				Mockito.<List<VehicleNotification>> any());
+		verify(s, times(3)).notifyOperationScheduleReceiveFailed();
+
+		osrt.startNewOperationScheduleReceive();
+
+		fail.set(true);
+		verify(s, t.times(1)).mergeOperationSchedules(
+				Mockito.<List<OperationSchedule>> any(),
+				Mockito.<List<VehicleNotification>> any());
+		verify(s, times(3)).notifyOperationScheduleReceiveFailed();
+
+		fail.set(false);
+		verify(s, t.times(2)).mergeOperationSchedules(
+				Mockito.<List<OperationSchedule>> any(),
+				Mockito.<List<VehicleNotification>> any());
+		verify(s, times(4)).notifyOperationScheduleReceiveFailed();
+
+		osrt.interrupt();
+		osrt.join(5000);
+		assertFalse(osrt.isAlive());
+	}
+
+	public void testRun() throws Exception {
+		when(s.getRemoteDataSource()).thenReturn(new EmptyDataSource());
+		when(s.getLocalDataSource()).thenReturn(new LocalDataSource());
+
+		VerificationWithTimeout t = timeout((int) (OperationScheduleReceiveThread.VOICE_DELAY_MILLIS * 1.2));
+		osrt.start();
+		verify(s, t.times(1)).mergeOperationSchedules(
 				Mockito.<List<OperationSchedule>> any(),
 				Mockito.<List<VehicleNotification>> any());
 
-		Thread.sleep(m);
-		verify(s, Mockito.times(1)).mergeOperationSchedules(
+		verify(s, t.times(1)).mergeOperationSchedules(
 				Mockito.<List<OperationSchedule>> any(),
 				Mockito.<List<VehicleNotification>> any());
 
 		osrt.startNewOperationScheduleReceive();
-		Thread.sleep(m);
-		verify(s, Mockito.times(2)).mergeOperationSchedules(
+		verify(s, t.times(2)).mergeOperationSchedules(
 				Mockito.<List<OperationSchedule>> any(),
 				Mockito.<List<VehicleNotification>> any());
 
 		osrt.interrupt();
-		osrt.join(m);
+		osrt.join(5000);
 		assertFalse(osrt.isAlive());
 	}
+
 }
