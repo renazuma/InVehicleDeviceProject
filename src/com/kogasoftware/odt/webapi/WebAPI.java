@@ -134,6 +134,13 @@ public class WebAPI implements Closeable {
 	protected final Object requestConfigsLock = new Object();
 	protected final WeakHashMap<Thread, WebAPIRequestConfig> requestConfigs = new WeakHashMap<Thread, WebAPIRequestConfig>();
 
+	protected <T> int handleJSONException(JSONException e,
+			WebAPICallback<T> callback) {
+		int reqkey = -1;
+		callback.onException(reqkey, new WebAPIException(e));
+		return reqkey;
+	}
+
 	public WebAPI(String serverHost) {
 		this(serverHost, "");
 	}
@@ -163,24 +170,29 @@ public class WebAPI implements Closeable {
 	 * 
 	 * @param os
 	 *            運行スケジュールオブジェクト
-	 * @throws JSONException
 	 */
-	public int arrivalOperationSchedule(OperationSchedule os,
-			WebAPICallback<OperationSchedule> callback) throws WebAPIException,
-			JSONException {
-		OperationRecord or = os.getOperationRecord().or(new OperationRecord());
-		or.setArrivedAt(new Date());
-		OperationRecord retryOr = or.cloneByJSON();
-		retryOr.setArrivedAtOffline(true);
+	public int arrivalOperationSchedule(final OperationSchedule os,
+			final WebAPICallback<OperationSchedule> callback) {
+		try {
+			OperationRecord or = os.getOperationRecord().or(
+					new OperationRecord());
+			or.setArrivedAt(new Date());
+			OperationRecord retryOr;
+			retryOr = or.cloneByJSON();
+			retryOr.setArrivedAtOffline(true);
 
-		JSONObject param = new JSONObject();
-		JSONObject retryParam = new JSONObject();
-		param.put("operation_record", or.toJSONObject());
-		retryParam.put("operation_record", retryOr.toJSONObject());
+			JSONObject param = new JSONObject();
+			JSONObject retryParam = new JSONObject();
+			param.put("operation_record", or.toJSONObject());
+			retryParam.put("operation_record", retryOr.toJSONObject());
 
-		return put(PATH_OPERATION_SCHEDULES + "/" + os.getId() + "/arrival",
-				param, retryParam, UNIQUE_GROUP, callback,
-				OperationSchedule.RESPONSE_CONVERTER);
+			return put(
+					PATH_OPERATION_SCHEDULES + "/" + os.getId() + "/arrival",
+					param, retryParam, UNIQUE_GROUP, callback,
+					OperationSchedule.RESPONSE_CONVERTER);
+		} catch (JSONException e) {
+			return handleJSONException(e, callback);
+		}
 	}
 
 	@Override
@@ -189,7 +201,7 @@ public class WebAPI implements Closeable {
 	}
 
 	protected <T> int delete(String path, WebAPICallback<T> callback,
-			ResponseConverter<? extends T> conv) throws WebAPIException {
+			ResponseConverter<? extends T> conv) {
 		SerializableDeleteLoader loader = new SerializableDeleteLoader(
 				getServerHost(), path, authenticationToken);
 		WebAPIRequest<?> request = new WebAPIRequest<T>(callback, conv, loader);
@@ -201,25 +213,28 @@ public class WebAPI implements Closeable {
 	 * 出発時のサーバへの通知
 	 * 
 	 * @param os
-	 *            運行スケジュールオブジェクト
-	 * @throws JSONException
+	 *            運行スケジュールオブジェクト @
 	 */
-	public int departureOperationSchedule(OperationSchedule os,
-			WebAPICallback<OperationSchedule> callback) throws WebAPIException,
-			JSONException {
-		OperationRecord or = os.getOperationRecord().or(new OperationRecord());
-		or.setDepartedAt(new Date());
-		OperationRecord retryOr = or.cloneByJSON();
-		retryOr.setDepartedAtOffline(true);
+	public int departureOperationSchedule(final OperationSchedule os,
+			final WebAPICallback<OperationSchedule> callback) {
+		try {
+			OperationRecord or = os.getOperationRecord().or(
+					new OperationRecord());
+			or.setDepartedAt(new Date());
+			OperationRecord retryOr = or.cloneByJSON();
+			retryOr.setDepartedAtOffline(true);
 
-		JSONObject param = new JSONObject();
-		JSONObject retryParam = new JSONObject();
-		param.put("operation_record", or.toJSONObject());
-		retryParam.put("operation_record", retryOr.toJSONObject());
+			JSONObject param = new JSONObject();
+			JSONObject retryParam = new JSONObject();
+			param.put("operation_record", or.toJSONObject());
+			retryParam.put("operation_record", retryOr.toJSONObject());
 
-		return put(PATH_OPERATION_SCHEDULES + "/" + os.getId() + "/departure",
-				param, retryParam, UNIQUE_GROUP, callback,
-				OperationSchedule.RESPONSE_CONVERTER);
+			return put(PATH_OPERATION_SCHEDULES + "/" + os.getId()
+					+ "/departure", param, retryParam, UNIQUE_GROUP, callback,
+					OperationSchedule.RESPONSE_CONVERTER);
+		} catch (JSONException e) {
+			return handleJSONException(e, callback);
+		}
 	}
 
 	protected boolean doHttpSessionAndCallback(WebAPIRequest<?> request) {
@@ -315,7 +330,7 @@ public class WebAPI implements Closeable {
 
 	protected <T> int get(String path, Map<String, String> params,
 			String requestGroup, WebAPICallback<T> callback,
-			ResponseConverter<? extends T> conv) throws WebAPIException {
+			ResponseConverter<? extends T> conv) {
 		SerializableGetLoader loader = new SerializableGetLoader(
 				getServerHost(), path, params, authenticationToken);
 		WebAPIRequest<?> request = new WebAPIRequest<T>(callback, conv, loader);
@@ -331,125 +346,144 @@ public class WebAPI implements Closeable {
 	 * 降車のサーバへの通知
 	 * 
 	 * @param operationSchedule
-	 *            運行スケジュールオブジェクト
-	 * @throws JSONException
+	 *            運行スケジュールオブジェクト @
 	 */
 	public int getOffPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, User user,
-			PassengerRecord passengerRecord, WebAPICallback<Void> callback)
-			throws WebAPIException, JSONException {
-		passengerRecord.setGetOffTime(new Date());
-		PassengerRecord retryPassengerRecord = passengerRecord.cloneByJSON();
-		retryPassengerRecord.setGetOffTimeOffline(true);
+			PassengerRecord passengerRecord, WebAPICallback<Void> callback) {
+		try {
+			passengerRecord.setGetOffTime(new Date());
+			PassengerRecord retryPassengerRecord = passengerRecord
+					.cloneByJSON();
+			retryPassengerRecord.setGetOffTimeOffline(true);
 
-		String[] filter = new String[] { "id", "payment", "passenger_count",
-				"get_off_time", "get_off_time_offline" };
+			String[] filter = new String[] { "id", "payment",
+					"passenger_count", "get_off_time", "get_off_time_offline" };
 
-		JSONObject param = new JSONObject();
-		JSONObject retryParam = new JSONObject();
-		param.put("passenger_record",
-				filterJSONKeys(passengerRecord.toJSONObject(), filter));
-		retryParam.put("passenger_record",
-				filterJSONKeys(retryPassengerRecord.toJSONObject(), filter));
+			JSONObject param = new JSONObject();
+			JSONObject retryParam = new JSONObject();
+			param.put("passenger_record",
+					filterJSONKeys(passengerRecord.toJSONObject(), filter));
+			retryParam
+					.put("passenger_record",
+							filterJSONKeys(retryPassengerRecord.toJSONObject(),
+									filter));
 
-		String group = getPassengerRecordGetOnOrOffGroup(
-				operationSchedule.getId(), reservation.getId(), user.getId());
+			String group = getPassengerRecordGetOnOrOffGroup(
+					operationSchedule.getId(), reservation.getId(),
+					user.getId());
 
-		return put(
-				PATH_OPERATION_SCHEDULES + "/" + operationSchedule.getId()
-						+ "/reservations/" + reservation.getId() + "/users/"
-						+ user.getId() + "/passenger_record", param,
-				retryParam, group, callback, VOID_RESPONSE_CONVERTER);
+			return put(
+					PATH_OPERATION_SCHEDULES + "/" + operationSchedule.getId()
+							+ "/reservations/" + reservation.getId()
+							+ "/users/" + user.getId() + "/passenger_record",
+					param, retryParam, group, callback, VOID_RESPONSE_CONVERTER);
+		} catch (JSONException e) {
+			return handleJSONException(e, callback);
+		}
 	}
 
 	/**
 	 * 乗車のサーバへの通知
 	 * 
 	 * @param operationSchedule
-	 *            運行スケジュールオブジェクト
-	 * @throws JSONException
+	 *            運行スケジュールオブジェクト @
 	 */
 	public int getOnPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, User user,
-			PassengerRecord passengerRecord, WebAPICallback<Void> callback)
-			throws WebAPIException, JSONException {
-		passengerRecord.setGetOnTime(new Date());
-		PassengerRecord retryPassengerRecord = passengerRecord.cloneByJSON();
-		retryPassengerRecord.setGetOnTimeOffline(true);
+			PassengerRecord passengerRecord, WebAPICallback<Void> callback) {
+		try {
+			passengerRecord.setGetOnTime(new Date());
+			PassengerRecord retryPassengerRecord = passengerRecord
+					.cloneByJSON();
+			retryPassengerRecord.setGetOnTimeOffline(true);
 
-		JSONObject param = new JSONObject();
-		JSONObject retryParam = new JSONObject();
+			JSONObject param = new JSONObject();
+			JSONObject retryParam = new JSONObject();
 
-		String[] filter = new String[] { "id", "payment", "passenger_count",
-				"get_on_time", "get_on_time_offline" };
+			String[] filter = new String[] { "id", "payment",
+					"passenger_count", "get_on_time", "get_on_time_offline" };
 
-		param.put("passenger_record",
-				filterJSONKeys(passengerRecord.toJSONObject(), filter));
-		retryParam.put("passenger_record",
-				filterJSONKeys(retryPassengerRecord.toJSONObject(), filter));
+			param.put("passenger_record",
+					filterJSONKeys(passengerRecord.toJSONObject(), filter));
+			retryParam
+					.put("passenger_record",
+							filterJSONKeys(retryPassengerRecord.toJSONObject(),
+									filter));
 
-		String group = getPassengerRecordGetOnOrOffGroup(
-				operationSchedule.getId(), reservation.getId(), user.getId());
+			String group = getPassengerRecordGetOnOrOffGroup(
+					operationSchedule.getId(), reservation.getId(),
+					user.getId());
 
-		return put(
-				PATH_OPERATION_SCHEDULES + "/" + operationSchedule.getId()
-						+ "/reservations/" + reservation.getId() + "/users/"
-						+ user.getId() + "/passenger_record", param,
-				retryParam, group, callback, VOID_RESPONSE_CONVERTER);
+			return put(
+					PATH_OPERATION_SCHEDULES + "/" + operationSchedule.getId()
+							+ "/reservations/" + reservation.getId()
+							+ "/users/" + user.getId() + "/passenger_record",
+					param, retryParam, group, callback, VOID_RESPONSE_CONVERTER);
+		} catch (JSONException e) {
+			return handleJSONException(e, callback);
+		}
 	}
 
 	/**
 	 * 乗車のキャンセル
 	 * 
 	 * @param operationSchedule
-	 *            運行スケジュールオブジェクト
-	 * @throws JSONException
+	 *            運行スケジュールオブジェクト @
 	 */
 	public int cancelGetOnPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, User user, WebAPICallback<Void> callback)
-			throws WebAPIException, JSONException {
-		PassengerRecord passengerRecord = new PassengerRecord();
-		passengerRecord.setGetOnTime(new Date());
-		passengerRecord.clearGetOffTime();
-		JSONObject param = passengerRecord.toJSONObject();
-		String group = getPassengerRecordGetOnOrOffGroup(
-				operationSchedule.getId(), reservation.getId(), user.getId());
-		return put(
-				PATH_OPERATION_SCHEDULES + "/" + operationSchedule.getId()
-						+ "/reservations/" + reservation.getId() + "/users/"
-						+ user.getId() + "/passenger_record/canceled", param,
-				group, callback, VOID_RESPONSE_CONVERTER);
+			Reservation reservation, User user, WebAPICallback<Void> callback) {
+		try {
+			PassengerRecord passengerRecord = new PassengerRecord();
+			passengerRecord.setGetOnTime(new Date());
+			passengerRecord.clearGetOffTime();
+			JSONObject param = passengerRecord.toJSONObject();
+			String group = getPassengerRecordGetOnOrOffGroup(
+					operationSchedule.getId(), reservation.getId(),
+					user.getId());
+			return put(
+					PATH_OPERATION_SCHEDULES + "/" + operationSchedule.getId()
+							+ "/reservations/" + reservation.getId()
+							+ "/users/" + user.getId()
+							+ "/passenger_record/canceled", param, group,
+					callback, VOID_RESPONSE_CONVERTER);
+		} catch (JSONException e) {
+			return handleJSONException(e, callback);
+		}
 	}
 
 	/**
 	 * 降車のキャンセル
 	 * 
 	 * @param operationSchedule
-	 *            運行スケジュールオブジェクト
-	 * @throws JSONException
+	 *            運行スケジュールオブジェクト @
 	 */
 	public int cancelGetOffPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, User user, WebAPICallback<Void> callback)
-			throws WebAPIException, JSONException {
-		PassengerRecord passengerRecord = new PassengerRecord();
-		passengerRecord.clearGetOnTime();
-		passengerRecord.setGetOffTime(new Date());
-		JSONObject param = passengerRecord.toJSONObject();
-		String group = getPassengerRecordGetOnOrOffGroup(
-				operationSchedule.getId(), reservation.getId(), user.getId());
-		return put(
-				PATH_OPERATION_SCHEDULES + "/" + operationSchedule.getId()
-						+ "/reservations/" + reservation.getId() + "/users/"
-						+ user.getId() + "/passenger_record/canceled", param,
-				group, callback, VOID_RESPONSE_CONVERTER);
+			Reservation reservation, User user, WebAPICallback<Void> callback) {
+		try {
+			PassengerRecord passengerRecord = new PassengerRecord();
+			passengerRecord.clearGetOnTime();
+			passengerRecord.setGetOffTime(new Date());
+			JSONObject param = passengerRecord.toJSONObject();
+			String group = getPassengerRecordGetOnOrOffGroup(
+					operationSchedule.getId(), reservation.getId(),
+					user.getId());
+			return put(
+					PATH_OPERATION_SCHEDULES + "/" + operationSchedule.getId()
+							+ "/reservations/" + reservation.getId()
+							+ "/users/" + user.getId()
+							+ "/passenger_record/canceled", param, group,
+					callback, VOID_RESPONSE_CONVERTER);
+		} catch (JSONException e) {
+			return handleJSONException(e, callback);
+		}
 	}
 
 	/**
 	 * 運行情報を取得する
 	 */
 	public int getOperationSchedules(
-			WebAPICallback<List<OperationSchedule>> callback)
-			throws WebAPIException {
+			WebAPICallback<List<OperationSchedule>> callback) {
 		return get(PATH_OPERATION_SCHEDULES, new TreeMap<String, String>(),
 				UNIQUE_GROUP, callback,
 				OperationSchedule.LIST_RESPONSE_CONVERTER);
@@ -467,8 +501,7 @@ public class WebAPI implements Closeable {
 	 * @throws WebAPIException
 	 */
 	public int getVehicleNotifications(
-			WebAPICallback<List<VehicleNotification>> callback)
-			throws WebAPIException {
+			WebAPICallback<List<VehicleNotification>> callback) {
 		return get(PATH_VEHICLE_NOTIFICATIONS, new TreeMap<String, String>(),
 				UNIQUE_GROUP, callback,
 				VehicleNotification.LIST_RESPONSE_CONVERTER);
@@ -482,42 +515,43 @@ public class WebAPI implements Closeable {
 	 * @param callback
 	 *            処理完了時のコールバック
 	 * @return reqkey
-	 * @throws WebAPIException
-	 * @throws JSONException
 	 */
 	public int login(InVehicleDevice login,
-			final WebAPICallback<InVehicleDevice> callback)
-			throws WebAPIException, JSONException {
-		JSONObject ivd = filterJSONKeys(login.toJSONObject(), new String[] {
-				"login", "password" });
-		JSONObject param = new JSONObject();
-		param.put("in_vehicle_device", ivd);
+			final WebAPICallback<InVehicleDevice> callback) {
+		try {
+			JSONObject ivd = filterJSONKeys(login.toJSONObject(), new String[] {
+					"login", "password" });
+			JSONObject param = new JSONObject();
+			param.put("in_vehicle_device", ivd);
 
-		return post(PATH_LOGIN, param, UNIQUE_GROUP,
-				new WebAPICallback<InVehicleDevice>() {
-					@Override
-					public void onException(int reqkey, WebAPIException ex) {
-						callback.onException(reqkey, ex);
-					}
-
-					@Override
-					public void onFailed(int reqkey, int statusCode,
-							String response) {
-						callback.onFailed(reqkey, statusCode, response);
-					}
-
-					@Override
-					public void onSucceed(int reqkey, int statusCode,
-							InVehicleDevice result) {
-						for (String authenticationToken : result
-								.getAuthenticationToken().asSet()) {
-							WebAPI.this.authenticationToken = authenticationToken;
-							Log.d(TAG, "onSucceed : "
-									+ WebAPI.this.authenticationToken);
-							callback.onSucceed(reqkey, statusCode, result);
+			return post(PATH_LOGIN, param, UNIQUE_GROUP,
+					new WebAPICallback<InVehicleDevice>() {
+						@Override
+						public void onException(int reqkey, WebAPIException ex) {
+							callback.onException(reqkey, ex);
 						}
-					}
-				}, InVehicleDevice.RESPONSE_CONVERTER);
+
+						@Override
+						public void onFailed(int reqkey, int statusCode,
+								String response) {
+							callback.onFailed(reqkey, statusCode, response);
+						}
+
+						@Override
+						public void onSucceed(int reqkey, int statusCode,
+								InVehicleDevice result) {
+							for (String authenticationToken : result
+									.getAuthenticationToken().asSet()) {
+								WebAPI.this.authenticationToken = authenticationToken;
+								Log.d(TAG, "onSucceed : "
+										+ WebAPI.this.authenticationToken);
+								callback.onSucceed(reqkey, statusCode, result);
+							}
+						}
+					}, InVehicleDevice.RESPONSE_CONVERTER);
+		} catch (JSONException e) {
+			return handleJSONException(e, callback);
+		}
 	}
 
 	public static JSONArray parseJSONArray(byte[] rawResponse)
@@ -536,8 +570,7 @@ public class WebAPI implements Closeable {
 
 	protected <T> int post(String path, JSONObject param,
 			JSONObject retryParam, String requestGroup,
-			WebAPICallback<T> callback, ResponseConverter<? extends T> conv)
-			throws WebAPIException {
+			WebAPICallback<T> callback, ResponseConverter<? extends T> conv) {
 		SerializablePostLoader first = new SerializablePostLoader(
 				getServerHost(), path, param, authenticationToken);
 		SerializablePostLoader retry = new SerializablePostLoader(
@@ -549,20 +582,18 @@ public class WebAPI implements Closeable {
 	}
 
 	protected <T> int post(String path, JSONObject param, String requestGroup,
-			WebAPICallback<T> callback, ResponseConverter<? extends T> conv)
-			throws WebAPIException {
+			WebAPICallback<T> callback, ResponseConverter<? extends T> conv) {
 		return post(path, param, param, requestGroup, callback, conv);
 	}
 
 	protected <T> int put(String path, JSONObject param, String requestGroup,
-			WebAPICallback<T> callback, ResponseConverter<? extends T> conv)
-			throws WebAPIException {
+			WebAPICallback<T> callback, ResponseConverter<? extends T> conv) {
 		return put(path, param, param, requestGroup, callback, conv);
 	}
 
 	protected <T> int put(String path, JSONObject param, JSONObject retryParam,
 			String requestGroup, WebAPICallback<T> callback,
-			ResponseConverter<? extends T> conv) throws WebAPIException {
+			ResponseConverter<? extends T> conv) {
 		SerializablePutLoader first = new SerializablePutLoader(
 				getServerHost(), path, param, authenticationToken);
 		SerializablePutLoader retry = new SerializablePutLoader(
@@ -577,24 +608,30 @@ public class WebAPI implements Closeable {
 	 * 予約候補を取得
 	 */
 	public int searchReservationCandidate(Demand demand,
-			WebAPICallback<List<ReservationCandidate>> callback)
-			throws JSONException, WebAPIException {
-		JSONObject param = new JSONObject();
-		param.put("demand", demand.toJSONObject());
-		return post(PATH_RESERVATIONS + "/search", param, UNIQUE_GROUP,
-				callback, ReservationCandidate.LIST_RESPONSE_CONVERTER);
+			WebAPICallback<List<ReservationCandidate>> callback) {
+		try {
+			JSONObject param = new JSONObject();
+			param.put("demand", demand.toJSONObject());
+			return post(PATH_RESERVATIONS + "/search", param, UNIQUE_GROUP,
+					callback, ReservationCandidate.LIST_RESPONSE_CONVERTER);
+		} catch (JSONException e) {
+			return handleJSONException(e, callback);
+		}
 	}
 
 	/**
 	 * 予約の実行
 	 */
 	public int createReservation(ReservationCandidate reservationCandidate,
-			WebAPICallback<Reservation> callback) throws JSONException,
-			WebAPIException {
+			WebAPICallback<Reservation> callback) {
 		JSONObject param = new JSONObject();
-		param.put("reservation_candidate_id", reservationCandidate.getId());
-		return post(PATH_RESERVATIONS, param, UNIQUE_GROUP, callback,
-				Reservation.RESPONSE_CONVERTER);
+		try {
+			param.put("reservation_candidate_id", reservationCandidate.getId());
+			return post(PATH_RESERVATIONS, param, UNIQUE_GROUP, callback,
+					Reservation.RESPONSE_CONVERTER);
+		} catch (JSONException e) {
+			return handleJSONException(e, callback);
+		}
 	}
 
 	/**
@@ -603,61 +640,66 @@ public class WebAPI implements Closeable {
 	 * @param vn
 	 *            通知オブジェクト
 	 * @param response
-	 *            応答
-	 * @throws JSONException
+	 *            応答 @
 	 */
 	public int responseVehicleNotification(VehicleNotification vn,
-			int response, WebAPICallback<VehicleNotification> callback)
-			throws WebAPIException, JSONException {
-		vn.setResponse(response);
-		vn.setReadAt(new Date());
-		VehicleNotification retryVn = vn.cloneByJSON();
-		retryVn.setOffline(true);
+			int response, WebAPICallback<VehicleNotification> callback) {
+		try {
+			vn.setResponse(response);
+			vn.setReadAt(new Date());
+			VehicleNotification retryVn = vn.cloneByJSON();
+			retryVn.setOffline(true);
 
-		String[] filter = new String[] { "id", "response", "read_at", "offline" };
+			String[] filter = new String[] { "id", "response", "read_at",
+					"offline" };
 
-		JSONObject param = new JSONObject();
-		JSONObject retryParam = new JSONObject();
-		param.put("vehicle_notification",
-				filterJSONKeys(vn.toJSONObject(), filter));
-		retryParam.put("vehicle_notification",
-				filterJSONKeys(retryVn.toJSONObject(), filter));
+			JSONObject param = new JSONObject();
+			JSONObject retryParam = new JSONObject();
+			param.put("vehicle_notification",
+					filterJSONKeys(vn.toJSONObject(), filter));
+			retryParam.put("vehicle_notification",
+					filterJSONKeys(retryVn.toJSONObject(), filter));
 
-		return put(PATH_VEHICLE_NOTIFICATIONS + "/" + vn.getId(), param,
-				retryParam, UNIQUE_GROUP, callback,
-				VehicleNotification.RESPONSE_CONVERTER);
+			return put(PATH_VEHICLE_NOTIFICATIONS + "/" + vn.getId(), param,
+					retryParam, UNIQUE_GROUP, callback,
+					VehicleNotification.RESPONSE_CONVERTER);
+		} catch (JSONException e) {
+			return handleJSONException(e, callback);
+		}
 	}
 
 	/**
 	 * 車載器状態の通知
 	 */
 	public int sendServiceUnitStatusLog(ServiceUnitStatusLog log,
-			WebAPICallback<ServiceUnitStatusLog> callback)
-			throws WebAPIException, JSONException {
-		log.setOfflineTime(new Date());
-		ServiceUnitStatusLog retryLog = log.cloneByJSON();
-		retryLog.setOffline(true);
+			WebAPICallback<ServiceUnitStatusLog> callback) {
+		try {
+			log.setOfflineTime(new Date());
+			ServiceUnitStatusLog retryLog = log.cloneByJSON();
+			retryLog.setOffline(true);
 
-		String[] filter = new String[] { "latitude", "longitude", "offline",
-				"offline_time", "orientation", "temperature" };
+			String[] filter = new String[] { "latitude", "longitude",
+					"offline", "offline_time", "orientation", "temperature" };
 
-		JSONObject param = new JSONObject();
-		JSONObject retryParam = new JSONObject();
-		param.put("service_unit_status_log",
-				filterJSONKeys(log.toJSONObject(), filter));
-		retryParam.put("service_unit_status_log",
-				filterJSONKeys(retryLog.toJSONObject(), filter));
+			JSONObject param = new JSONObject();
+			JSONObject retryParam = new JSONObject();
+			param.put("service_unit_status_log",
+					filterJSONKeys(log.toJSONObject(), filter));
+			retryParam.put("service_unit_status_log",
+					filterJSONKeys(retryLog.toJSONObject(), filter));
 
-		return post(PATH_SERVICE_UNIT_STATUS_LOGS, param, retryParam,
-				"sendServiceUnitStatusLog", callback,
-				ServiceUnitStatusLog.RESPONSE_CONVERTER);
+			return post(PATH_SERVICE_UNIT_STATUS_LOGS, param, retryParam,
+					"sendServiceUnitStatusLog", callback,
+					ServiceUnitStatusLog.RESPONSE_CONVERTER);
+		} catch (JSONException e) {
+			return handleJSONException(e, callback);
+		}
 	}
 
 	/**
 	 * サービスプロバイダの取得
 	 */
-	public int getServicePrivider(WebAPICallback<ServiceProvider> callback)
-			throws WebAPIException {
+	public int getServicePrivider(WebAPICallback<ServiceProvider> callback) {
 		return get(PATH_SERVICE_PRIVIDER, new TreeMap<String, String>(),
 				UNIQUE_GROUP, callback, ServiceProvider.RESPONSE_CONVERTER);
 	}
@@ -784,7 +826,7 @@ public class WebAPI implements Closeable {
 			}
 		}
 	}
-	
+
 	protected void clearRequestConfig() {
 		synchronized (requestConfigsLock) {
 			requestConfigs.remove(Thread.currentThread());
