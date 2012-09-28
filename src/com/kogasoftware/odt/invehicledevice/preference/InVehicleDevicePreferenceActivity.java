@@ -1,9 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.preference;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.json.JSONException;
-
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
@@ -269,12 +265,6 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		InVehicleDevice ivd = new InVehicleDevice();
 		ivd.setLogin(preferences.getString(LOGIN_KEY, ""));
 		ivd.setPassword(preferences.getString(PASSWORD_KEY, ""));
-		try {
-			latestReqKey = api.withRetry(false).login(ivd, this);
-		} catch (WebAPIException e) {
-			Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show();
-		} catch (JSONException e) {
-			Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show();
-		}
+		latestReqKey = api.withRetry(false).login(ivd, this);
 	}
 }
