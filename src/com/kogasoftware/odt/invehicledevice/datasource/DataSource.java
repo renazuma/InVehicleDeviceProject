@@ -7,9 +7,7 @@ import android.graphics.Bitmap;
 
 import com.javadocmd.simplelatlng.LatLng;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
-import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.Demand;
-import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
@@ -28,19 +26,20 @@ public interface DataSource extends Closeable {
 	int departureOperationSchedule(OperationSchedule os,
 			WebAPICallback<OperationSchedule> callback);
 
-	InVehicleDevice getInVehicleDevice() throws WebAPIException;
-
 	int getOffPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, User user, PassengerRecord passengerRecord,
+			Reservation reservation, User user,
+			PassengerRecord passengerRecord,
 			WebAPICallback<Void> callback);
 
 	int getOnPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, User user, PassengerRecord passengerRecord,
+			Reservation reservation, User user,
+			PassengerRecord passengerRecord,
 			WebAPICallback<Void> callback);
 
-	List<OperationSchedule> getOperationSchedules() throws WebAPIException;
+	int getOperationSchedules(WebAPICallback<List<OperationSchedule>> callback);
 
-	List<VehicleNotification> getVehicleNotifications() throws WebAPIException;
+	int getVehicleNotifications(
+			WebAPICallback<List<VehicleNotification>> callback);
 
 	int responseVehicleNotification(VehicleNotification vn, int response,
 			WebAPICallback<VehicleNotification> callback);
@@ -66,4 +65,6 @@ public interface DataSource extends Closeable {
 	int getServiceProvider(WebAPICallback<ServiceProvider> callback);
 
 	DataSource withSaveOnClose();
+
+	DataSource withRetry(Boolean retry);
 }

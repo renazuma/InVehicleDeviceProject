@@ -75,6 +75,10 @@ public class InVehicleDeviceService extends Service {
 		void onChangeTemperature(Double celciusTemperature);
 	}
 
+	public interface OnNotifyOperationScheduleReceiveFailedListener {
+		void onNotifyOperationScheduleReceiveFailed();
+	}
+
 	public interface OnEnterPhaseListener {
 		void onEnterDrivePhase();
 
@@ -241,6 +245,7 @@ public class InVehicleDeviceService extends Service {
 	protected final Set<OnStartReceiveUpdatedOperationScheduleListener> onStartReceiveUpdatedOperationScheduleListeners = newListenerSet();
 	protected final Set<OnPauseActivityListener> onPauseActivityListeners = newListenerSet();
 	protected final Set<OnResumeActivityListener> onResumeActivityListeners = newListenerSet();
+	protected final Set<OnNotifyOperationScheduleReceiveFailedListener> onNotifyOperationScheduleReceiveFailedListeners = newListenerSet();
 
 	protected volatile Thread backgroundThread = new EmptyThread();
 	protected volatile DataSource remoteDataSource = new EmptyDataSource();
@@ -346,6 +351,11 @@ public class InVehicleDeviceService extends Service {
 		onStartReceiveUpdatedOperationScheduleListeners.add(listener);
 	}
 
+	public void addOnNotifyOperationScheduleReceiveFailedListener(
+			OnNotifyOperationScheduleReceiveFailedListener listener) {
+		onNotifyOperationScheduleReceiveFailedListeners.add(listener);
+	}
+
 	public void removeOnAlertUpdatedOperationScheduleListener(
 			OnAlertUpdatedOperationScheduleListener listener) {
 		onAlertUpdatedOperationScheduleListeners.remove(listener);
@@ -420,6 +430,11 @@ public class InVehicleDeviceService extends Service {
 	public void removeOnStartReceiveUpdatedOperationScheduleListener(
 			OnStartReceiveUpdatedOperationScheduleListener listener) {
 		onStartReceiveUpdatedOperationScheduleListeners.remove(listener);
+	}
+
+	public void removeOnNotifyOperationScheduleReceiveFailedListener(
+			OnNotifyOperationScheduleReceiveFailedListener listener) {
+		onNotifyOperationScheduleReceiveFailedListeners.remove(listener);
 	}
 
 	public void alertUpdatedOperationSchedule() {
@@ -674,6 +689,7 @@ public class InVehicleDeviceService extends Service {
 		onResumeActivityListeners.clear();
 		onStartNewOperationListeners.clear();
 		onStartReceiveUpdatedOperationScheduleListeners.clear();
+		onNotifyOperationScheduleReceiveFailedListeners.clear();
 
 		Closeables.closeQuietly(remoteDataSource);
 		Closeables.closeQuietly(localDataSource);
@@ -896,5 +912,17 @@ public class InVehicleDeviceService extends Service {
 			VehicleNotificationStatus status) {
 		return vehicleNotificationLogic.setVehicleNotificationStatus(
 				vehicleNotifications, status);
+	}
+
+	public void notifyOperationScheduleReceiveFailed() {
+		handler.post(new Runnable() {
+			@Override
+			public void run() {
+				for (OnNotifyOperationScheduleReceiveFailedListener listener : Lists
+						.newArrayList(onNotifyOperationScheduleReceiveFailedListeners)) {
+					listener.onNotifyOperationScheduleReceiveFailed();
+				}
+			}
+		});
 	}
 }

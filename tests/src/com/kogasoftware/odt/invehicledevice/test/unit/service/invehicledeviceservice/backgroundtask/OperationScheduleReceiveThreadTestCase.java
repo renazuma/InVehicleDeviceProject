@@ -19,6 +19,7 @@ import com.kogasoftware.odt.invehicledevice.datasource.EmptyDataSource;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask.OperationScheduleReceiveThread;
+import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
@@ -50,12 +51,13 @@ public class OperationScheduleReceiveThreadTestCase extends AndroidTestCase {
 		final AtomicBoolean fail = new AtomicBoolean(true);
 		DataSource ds = new EmptyDataSource() {
 			@Override
-			public List<OperationSchedule> getOperationSchedules()
-					throws WebAPIException {
+			public int getOperationSchedules(
+					WebAPICallback<List<OperationSchedule>> callback) {
 				if (fail.get()) {
-					throw new WebAPIException("test");
+					callback.onException(0, new WebAPIException(
+							new RuntimeException()));
 				}
-				return super.getOperationSchedules();
+				return 0;
 			}
 		};
 		when(s.getRemoteDataSource()).thenReturn(ds);

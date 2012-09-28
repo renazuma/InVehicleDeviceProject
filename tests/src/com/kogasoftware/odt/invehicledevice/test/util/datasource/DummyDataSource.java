@@ -14,7 +14,6 @@ import com.kogasoftware.odt.invehicledevice.datasource.EmptyDataSource;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.Demand;
-import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.Reservation;
@@ -42,17 +41,7 @@ public class DummyDataSource extends EmptyDataSource {
 		return 0;
 	}
 
-	@Override
-	public InVehicleDevice getInVehicleDevice() throws WebAPIException {
-		InVehicleDevice model = new InVehicleDevice();
-		model.setId(10);
-		model.setTypeNumber("TESTNUMBER012345");
-		model.setModelName("MODELNAME67890");
-		return model;
-	}
-
-	@Override
-	public List<OperationSchedule> getOperationSchedules()
+	public List<OperationSchedule> getOperationSchedules2()
 			throws WebAPIException {
 		List<OperationSchedule> l = new LinkedList<OperationSchedule>();
 		try {
@@ -139,10 +128,7 @@ public class DummyDataSource extends EmptyDataSource {
 		return l;
 	}
 
-	@Override
-	public List<VehicleNotification> getVehicleNotifications()
-
-	throws WebAPIException {
+	public List<VehicleNotification> getVehicleNotifications2() throws WebAPIException {
 
 		try {
 			Thread.sleep(5000);

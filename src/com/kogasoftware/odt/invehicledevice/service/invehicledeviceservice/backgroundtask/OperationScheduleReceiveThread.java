@@ -1,13 +1,11 @@
 package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
-import android.util.Log;
-
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
+import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
@@ -16,8 +14,6 @@ import com.kogasoftware.odt.webapi.model.VehicleNotification.NotificationKind;
 public class OperationScheduleReceiveThread extends Thread implements
 		InVehicleDeviceService.OnStartNewOperationListener,
 		InVehicleDeviceService.OnStartReceiveUpdatedOperationScheduleListener {
-	private static final String TAG = OperationScheduleReceiveThread.class
-			.getSimpleName();
 	public static final Integer VOICE_DELAY_MILLIS = 5000;
 	protected final InVehicleDeviceService service;
 	protected final Semaphore startUpdatedOperationScheduleReceiveSemaphore = new Semaphore(
@@ -38,26 +34,36 @@ public class OperationScheduleReceiveThread extends Thread implements
 	}
 
 	public void receive(
-			final List<VehicleNotification> triggerVehicleNotifications)
-			throws WebAPIException {
-		final List<OperationSchedule> operationSchedules = new LinkedList<OperationSchedule>();
-		operationSchedules.addAll(service.getRemoteDataSource()
-				.getOperationSchedules());
+			final List<VehicleNotification> triggerVehicleNotifications) {
+		service.getRemoteDataSource().getOperationSchedules(
+				new WebAPICallback<List<OperationSchedule>>() {
+					@Override
+					public void onException(int reqkey, WebAPIException ex) {
+						service.notifyOperationScheduleReceiveFailed();
+					}
 
-		// triggerVehicleNotificationsが存在する場合は、OperationScheduleUpdatedAlertEvent送出
-		// 音声通知も行う
-		if (!triggerVehicleNotifications.isEmpty()) {
-			service.alertUpdatedOperationSchedule();
-			try {
-				service.speak("運行予定が変更されました");
-				Thread.sleep(VOICE_DELAY_MILLIS);
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
-			}
-		}
+					@Override
+					public void onFailed(int reqkey, int statusCode,
+							String response) {
+						service.notifyOperationScheduleReceiveFailed();
+					}
 
-		service.mergeOperationSchedules(operationSchedules,
-				triggerVehicleNotifications);
+					@Override
+					public void onSucceed(int reqkey, int statusCode,
+							List<OperationSchedule> operationSchedules) {
+						if (!triggerVehicleNotifications.isEmpty()) {
+							service.alertUpdatedOperationSchedule();
+							try {
+								service.speak("運行予定が変更されました");
+								Thread.sleep(VOICE_DELAY_MILLIS);
+							} catch (InterruptedException e) {
+								Thread.currentThread().interrupt();
+							}
+						}
+						service.mergeOperationSchedules(operationSchedules,
+								triggerVehicleNotifications);
+					}
+				});
 	}
 
 	@Override
@@ -71,17 +77,10 @@ public class OperationScheduleReceiveThread extends Thread implements
 			while (true) {
 				// スケジュール変更通知があるまで待つ
 				startUpdatedOperationScheduleReceiveSemaphore.acquire();
-				while (true) {
-					try {
-						receive(service.getVehicleNotifications(
-								NotificationKind.RESERVATION_CHANGED,
-								VehicleNotificationStatus.UNHANDLED));
-						break;
-					} catch (WebAPIException e) {
-						Log.i(TAG, "retry", e);
-					}
-					Thread.sleep(10 * 1000);
-				}
+				receive(service.getVehicleNotifications(
+						NotificationKind.RESERVATION_CHANGED,
+						VehicleNotificationStatus.UNHANDLED));
+				Thread.sleep(10 * 1000);
 			}
 		} catch (InterruptedException e) {
 			// 正常終了

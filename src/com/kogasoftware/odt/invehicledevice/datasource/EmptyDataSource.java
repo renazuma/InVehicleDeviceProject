@@ -1,16 +1,13 @@
 package com.kogasoftware.odt.invehicledevice.datasource;
 
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
 
 import android.graphics.Bitmap;
 
 import com.javadocmd.simplelatlng.LatLng;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
-import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.Demand;
-import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
@@ -21,7 +18,6 @@ import com.kogasoftware.odt.webapi.model.User;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class EmptyDataSource implements DataSource {
-
 	@Override
 	public void close() throws IOException {
 	}
@@ -36,23 +32,6 @@ public class EmptyDataSource implements DataSource {
 	public int departureOperationSchedule(OperationSchedule os,
 			WebAPICallback<OperationSchedule> callback) {
 		return 0;
-	}
-
-	@Override
-	public InVehicleDevice getInVehicleDevice() throws WebAPIException {
-		return new InVehicleDevice();
-	}
-
-	@Override
-	public List<OperationSchedule> getOperationSchedules()
-			throws WebAPIException {
-		return new LinkedList<OperationSchedule>();
-	}
-
-	@Override
-	public List<VehicleNotification> getVehicleNotifications()
-			throws WebAPIException {
-		return new LinkedList<VehicleNotification>();
 	}
 
 	@Override
@@ -95,20 +74,6 @@ public class EmptyDataSource implements DataSource {
 	}
 
 	@Override
-	public int getOffPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, User user,
-			PassengerRecord passengerRecord, WebAPICallback<Void> callback) {
-		return 0;
-	}
-
-	@Override
-	public int getOnPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, User user,
-			PassengerRecord passengerRecord, WebAPICallback<Void> callback) {
-		return 0;
-	}
-
-	@Override
 	public int cancelGetOffPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, User user, WebAPICallback<Void> callback) {
 		return 0;
@@ -123,5 +88,36 @@ public class EmptyDataSource implements DataSource {
 	@Override
 	public DataSource withSaveOnClose() {
 		return this;
+	}
+
+	@Override
+	public int getOperationSchedules(
+			WebAPICallback<List<OperationSchedule>> callback) {
+		return 0;
+	}
+
+	@Override
+	public int getVehicleNotifications(
+			WebAPICallback<List<VehicleNotification>> callback) {
+		return 0;
+	}
+
+	@Override
+	public DataSource withRetry(Boolean retry) {
+		return this;
+	}
+
+	@Override
+	public int getOffPassenger(OperationSchedule operationSchedule,
+			Reservation reservation, User user,
+			PassengerRecord passengerRecord, WebAPICallback<Void> callback) {
+		return 0;
+	}
+
+	@Override
+	public int getOnPassenger(OperationSchedule operationSchedule,
+			Reservation reservation, User user,
+			PassengerRecord passengerRecord, WebAPICallback<Void> callback) {
+		return 0;
 	}
 }

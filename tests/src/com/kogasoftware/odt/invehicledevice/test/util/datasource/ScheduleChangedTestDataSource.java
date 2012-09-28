@@ -13,7 +13,6 @@ import com.kogasoftware.odt.invehicledevice.datasource.EmptyDataSource;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.Demand;
-import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.ReservationCandidate;
@@ -40,13 +39,7 @@ public class ScheduleChangedTestDataSource extends EmptyDataSource {
 		return 0;
 	}
 
-	@Override
-	public InVehicleDevice getInVehicleDevice() throws WebAPIException {
-		throw new WebAPIException("not implemented");
-	}
-
-	@Override
-	public List<OperationSchedule> getOperationSchedules()
+	public List<OperationSchedule> getOperationSchedules2()
 			throws WebAPIException {
 		String r1 = "{id: 51, passenger_count: 1, departure_schedule_id: 1, arrival_schedule_id: 2, payment: 100, user: {id: 1, last_name: 'ああああ', first_name: 'いちごう'}}";
 		String r2 = "{id: 52, passenger_count: 5, departure_schedule_id: 1, arrival_schedule_id: 2, payment:   0, user: {id: 2, last_name: 'いいいい', first_name: 'にごう'}}";
@@ -112,8 +105,7 @@ public class ScheduleChangedTestDataSource extends EmptyDataSource {
 
 	}
 
-	@Override
-	public List<VehicleNotification> getVehicleNotifications()
+	public List<VehicleNotification> getVehicleNotifications2()
 			throws WebAPIException {
 		List<VehicleNotification> l = new LinkedList<VehicleNotification>();
 		if (phase.compareAndSet(1, 2)) {

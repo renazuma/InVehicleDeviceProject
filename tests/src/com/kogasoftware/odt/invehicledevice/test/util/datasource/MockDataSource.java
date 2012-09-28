@@ -15,9 +15,7 @@ import android.graphics.Bitmap;
 import com.javadocmd.simplelatlng.LatLng;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
-import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.Demand;
-import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Platform;
@@ -45,38 +43,6 @@ public class MockDataSource implements DataSource {
 	public int departureOperationSchedule(OperationSchedule os,
 			WebAPICallback<OperationSchedule> callback) {
 		return 0;
-	}
-
-	@Override
-	public InVehicleDevice getInVehicleDevice() {
-		InVehicleDevice model = new InVehicleDevice();
-		model.setId(10);
-		model.setTypeNumber("TYPENUMBER543210");
-		model.setModelName("MODELNAME09876");
-		return model;
-	}
-
-	@Override
-	public List<OperationSchedule> getOperationSchedules() {
-
-		return lOperationSchedule;
-
-	}
-
-	@Override
-	public List<VehicleNotification> getVehicleNotifications()
-			throws WebAPIException {
-
-		List<VehicleNotification> l = new LinkedList<VehicleNotification>();
-
-		if (NotificationFlag) {
-			VehicleNotification n = new VehicleNotification();
-			n.setBody("テスト通知が行われました " + new Date());
-			l.add(n);
-		}
-
-		return l;
-
 	}
 
 	@Override
@@ -514,20 +480,6 @@ public class MockDataSource implements DataSource {
 	}
 
 	@Override
-	public int getOffPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, User user,
-			PassengerRecord passengerRecord, WebAPICallback<Void> callback) {
-		return 0;
-	}
-
-	@Override
-	public int getOnPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, User user,
-			PassengerRecord passengerRecord, WebAPICallback<Void> callback) {
-		return 0;
-	}
-
-	@Override
 	public int cancelGetOffPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, User user, WebAPICallback<Void> callback) {
 		return 0;
@@ -542,5 +494,44 @@ public class MockDataSource implements DataSource {
 	@Override
 	public DataSource withSaveOnClose() {
 		return this;
+	}
+
+	@Override
+	public int getOperationSchedules(
+			WebAPICallback<List<OperationSchedule>> callback) {
+		callback.onSucceed(0, 200, lOperationSchedule);
+		return 0;
+	}
+
+	@Override
+	public int getVehicleNotifications(
+			WebAPICallback<List<VehicleNotification>> callback) {
+		List<VehicleNotification> l = new LinkedList<VehicleNotification>();
+		if (NotificationFlag) {
+			VehicleNotification n = new VehicleNotification();
+			n.setBody("テスト通知が行われました " + new Date());
+			l.add(n);
+			callback.onSucceed(0, 200, l);
+		}
+		return 0;
+	}
+
+	@Override
+	public DataSource withRetry(Boolean retry) {
+		return this;
+	}
+
+	@Override
+	public int getOffPassenger(OperationSchedule operationSchedule,
+			Reservation reservation, User user,
+			PassengerRecord passengerRecord, WebAPICallback<Void> callback) {
+		return 0;
+	}
+
+	@Override
+	public int getOnPassenger(OperationSchedule operationSchedule,
+			Reservation reservation, User user,
+			PassengerRecord passengerRecord, WebAPICallback<Void> callback) {
+		return 0;
 	}
 }
