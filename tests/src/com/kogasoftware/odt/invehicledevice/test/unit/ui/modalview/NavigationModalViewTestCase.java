@@ -1,15 +1,14 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.ui.modalview;
 
+import static org.mockito.Mockito.mock;
 import android.app.Activity;
-import android.view.View;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
+import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.NavigationModalView;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.PlatformMemoModalView;
-
-import static org.mockito.Mockito.*;
 
 public class NavigationModalViewTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
@@ -25,6 +24,12 @@ public class NavigationModalViewTestCase extends
 		s = mock(InVehicleDeviceService.class);
 		pmmv = mock(PlatformMemoModalView.class);
 		mv = new NavigationModalView(a, s, pmmv);
+		runOnUiThreadSync(new Runnable() {
+			@Override
+			public void run() {
+				a.setContentView(mv);
+			}
+		});
 	}
 
 	@Override
@@ -32,47 +37,32 @@ public class NavigationModalViewTestCase extends
 		super.tearDown();
 	}
 
-	public void xtestEventBusに自動で登録される() throws Exception {
+	public void testShow() throws InterruptedException {
+		TestUtil.assertHide(mv);
 		runOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
-				getActivity().setContentView(R.layout.in_vehicle_device);
+				mv.show();
 			}
 		});
-	}
-
-	/**
-	 * ShowEventを受け取ると表示される
-	 */
-	public void testShowEvent() throws InterruptedException {
-		assertFalse(mv.isShown());
-		assertNotSame(mv.getVisibility(), View.VISIBLE);
-
-//		cl.postEvent(new NavigationModalView.ShowEvent());
-		getInstrumentation().waitForIdleSync();
-
-		assertTrue(mv.isShown());
-		assertEquals(mv.getVisibility(), View.VISIBLE);
+		TestUtil.assertShow(mv);
 	}
 
 	public void test戻るボタンを押すと消える() throws Exception {
-		testShowEvent();
+		testShow();
 		solo.clickOnView(solo.getView(R.id.navigation_close_button));
-		getInstrumentation().waitForIdleSync();
-		assertFalse(mv.isShown());
+		TestUtil.assertHide(mv);
 	}
 
 	public void xtest拡大ボタンを押すと拡大() throws Exception {
-		testShowEvent();
+		testShow();
 		solo.clickOnView(solo.getView(R.id.navigation_zoom_in_button));
-		getInstrumentation().waitForIdleSync();
 		fail("stub!");
 	}
 
 	public void xtest縮小ボタンを押すと縮小() throws Exception {
-		testShowEvent();
+		testShow();
 		solo.clickOnView(solo.getView(R.id.navigation_zoom_out_button));
-		getInstrumentation().waitForIdleSync();
 		fail("stub!");
 	}
 }
