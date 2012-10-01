@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.ui.modalview;
 
+import static org.mockito.Mockito.mock;
 import android.app.Activity;
 
 import com.kogasoftware.odt.invehicledevice.R;
@@ -7,15 +8,17 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVeh
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.MemoModalView;
+import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.User;
-import static org.mockito.Mockito.*;
 
 public class MemoModalViewTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 	InVehicleDeviceService s;
 	MemoModalView mv;
+	PassengerRecord pr;
 	Reservation r;
+	User u;
 	Activity a;
 
 	@Override
@@ -24,8 +27,21 @@ public class MemoModalViewTestCase extends
 		a = getActivity();
 		s = mock(InVehicleDeviceService.class);
 		mv = new MemoModalView(a, s);
+		runOnUiThreadSync(new Runnable() {
+			@Override
+			public void run() {
+				a.setContentView(mv);
+			}
+		});
+		pr = new PassengerRecord();
 		r = new Reservation();
+		u = new User();
+		pr.setReservation(r);
+		pr.setUser(u);
 		r.setId(12345);
+		u.setId(56789);
+		u.setFirstName("first name");
+		u.setLastName("last name");
 	}
 
 	@Override
@@ -33,41 +49,35 @@ public class MemoModalViewTestCase extends
 		super.tearDown();
 	}
 
-	public void xtestEventBusに自動で登録される() throws Exception {
+	public void testShow() throws InterruptedException {
+		TestUtil.assertHide(mv);
 		runOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
-				getActivity().setContentView(R.layout.in_vehicle_device);
+				mv.show(pr);
 			}
 		});
-	}
-
-	/**
-	 * ShowEventを受け取ると表示される
-	 */
-	public void testShowEvent() throws InterruptedException {
-		assertFalse(mv.isShown());
-		TestUtil.assertHide(mv);
-
 		TestUtil.assertShow(mv);
 
 		assertTrue(solo.searchText(r.getId().toString()));
 
-		for (User user : r.getUser().asSet()) {
+		for (User user : pr.getUser().asSet()) {
 			if (!user.getFirstName().isEmpty()) {
 				assertTrue(solo.searchText(user.getFirstName()));
 			}
 			if (!user.getLastName().isEmpty()) {
 				assertTrue(solo.searchText(user.getLastName()));
 			}
+			return;
 		}
+		fail();
 	}
 
 	public void testReservationMemo0() throws Exception {
 		String memo = "こんにちは";
 		r.setMemo(memo);
 
-		testShowEvent();
+		testShow();
 
 		assertTrue(solo.searchText(memo));
 	}
@@ -76,19 +86,17 @@ public class MemoModalViewTestCase extends
 		String memo = "Hello reservation memo";
 		r.setMemo(memo);
 
-		testShowEvent();
+		testShow();
 
 		assertTrue(solo.searchText(memo));
 	}
 
 	public void testUserMemo0() throws Exception {
 		String memo = "こんにちは";
-		User u = new User();
-		u.setRememberMe(memo);
-		r.setUser(u);
+		u.setMemo(memo);
 		r.setId(5678);
 
-		testShowEvent();
+		testShow();
 
 		assertFalse(solo.searchText("要介護"));
 		assertFalse(solo.searchText("要車椅子"));
@@ -97,12 +105,10 @@ public class MemoModalViewTestCase extends
 	}
 
 	public void testUserMemo1() throws Exception {
-		User u = new User();
 		u.setFirstName("ふぁーすとねーむ");
 		u.setHandicapped(true);
-		r.setUser(u);
 
-		testShowEvent();
+		testShow();
 
 		assertFalse(solo.searchText("要介護"));
 		assertTrue(solo.searchText("身体障害者"));
@@ -110,12 +116,10 @@ public class MemoModalViewTestCase extends
 	}
 
 	public void testUserMemo2() throws Exception {
-		User u = new User();
 		u.setLastName("らすとねーむ");
 		u.setWheelchair(true);
-		r.setUser(u);
 
-		testShowEvent();
+		testShow();
 
 		assertFalse(solo.searchText("要介護"));
 		assertFalse(solo.searchText("身体障害者"));
@@ -123,11 +127,9 @@ public class MemoModalViewTestCase extends
 	}
 
 	public void testUserMemo3() throws Exception {
-		User u = new User();
 		u.setNeededCare(true);
-		r.setUser(u);
 
-		testShowEvent();
+		testShow();
 
 		assertTrue(solo.searchText("要介護"));
 		assertFalse(solo.searchText("身体障害者"));
@@ -135,14 +137,12 @@ public class MemoModalViewTestCase extends
 	}
 
 	public void testUserMemo4() throws Exception {
-		User u = new User();
 		u.setWheelchair(true);
 		u.setHandicapped(true);
 		u.setNeededCare(true);
-		u.setRememberMe("覚書");
-		r.setUser(u);
+		u.setMemo("覚書");
 
-		testShowEvent();
+		testShow();
 
 		assertTrue(solo.searchText("覚書"));
 		assertTrue(solo.searchText("要介護"));
@@ -151,9 +151,9 @@ public class MemoModalViewTestCase extends
 	}
 
 	public void test戻るボタンを押すと消える() throws Exception {
-		testShowEvent();
+		testShow();
 		solo.clickOnView(solo.getView(R.id.memo_close_button));
-		getInstrumentation().waitForIdleSync();
-		assertFalse(mv.isShown());
+
+		TestUtil.assertHide(mv);
 	}
 }

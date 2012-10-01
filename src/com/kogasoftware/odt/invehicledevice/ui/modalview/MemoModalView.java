@@ -17,7 +17,7 @@ public class MemoModalView extends ModalView {
 		setCloseOnClick(R.id.memo_close_button);
 	}
 
-	public void show(Reservation reservation, User user) {
+	protected void show(Reservation reservation, User user) {
 		TextView titleTextView = (TextView) findViewById(R.id.memo_title_text_view);
 		StringBuilder title = new StringBuilder();
 
@@ -36,10 +36,10 @@ public class MemoModalView extends ModalView {
 	}
 
 	public void show(PassengerRecord passengerRecord) {
-		if (passengerRecord.getReservation().isPresent()
-				&& passengerRecord.getUser().isPresent()) {
-			show(passengerRecord.getReservation().get(), passengerRecord
-					.getUser().get());
+		for (Reservation reservation : passengerRecord.getReservation().asSet()) {
+			for (User user : passengerRecord.getUser().asSet()) {
+				show(reservation, user);
+			}
 		}
 	}
 }
