@@ -267,15 +267,14 @@ public class LocationNotifier implements LocationListener, GpsStatus.Listener,
 		// LocationManager.PASSIVE_PROVIDER, DEFAULT_MIN_TIME,
 		// DEFAULT_MIN_DISTANCE, this);
 		// }
-		// if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
-		// {
-		lastLocation = Optional.fromNullable(locationManager
-				.getLastKnownLocation(LocationManager.GPS_PROVIDER));
-		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-				minTime, minDistance, this);
-		locationManager.addGpsStatusListener(this);
-		locationManager.addNmeaListener(this);
-		// }
+		if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+			lastLocation = Optional.fromNullable(locationManager
+					.getLastKnownLocation(LocationManager.GPS_PROVIDER));
+			locationManager.requestLocationUpdates(
+					LocationManager.GPS_PROVIDER, minTime, minDistance, this);
+			locationManager.addGpsStatusListener(this);
+			locationManager.addNmeaListener(this);
+		}
 		handler.post(restartTimeouter);
 	}
 

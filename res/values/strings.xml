@@ -45,4 +45,5 @@
     <string name="gps_satellites_format">(人工衛星%1d/4)</string>
     <string name="crash_toast_text">車載器アプリケーションで予期しない不具合が発生しました。再起動します。</string>
     <string name="platform_memo">乗降場メモ</string>
+    <string name="failed_to_connect_operator_tool">オペレーターツールとの通信に失敗しました。</string>
 </resources>
