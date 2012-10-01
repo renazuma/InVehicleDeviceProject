@@ -19,14 +19,18 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Toast;
 
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService.OnOperationScheduleReceiveFailedListener;
+import com.kogasoftware.odt.invehicledevice.ui.BigToast;
 import com.kogasoftware.odt.invehicledevice.ui.InVehicleDeviceView;
 
 public class InVehicleDeviceActivity extends Activity implements
-		InVehicleDeviceService.OnExitListener {
+		InVehicleDeviceService.OnExitListener,
+		OnOperationScheduleReceiveFailedListener {
 	private static final String TAG = InVehicleDeviceActivity.class
 			.getSimpleName();
 	private static final int WAIT_FOR_INITIALIZE_DIALOG_ID = 10;
@@ -70,6 +74,7 @@ public class InVehicleDeviceActivity extends Activity implements
 			}
 			InVehicleDeviceService service = ((InVehicleDeviceService.LocalBinder) binder)
 					.getService();
+			service.addOnOperationScheduleReceiveFailedListener(InVehicleDeviceActivity.this);
 			service.addOnExitListener(InVehicleDeviceActivity.this);
 			optionalService = Optional.of(service);
 		}
@@ -108,6 +113,7 @@ public class InVehicleDeviceActivity extends Activity implements
 		Log.i(TAG, "onDestroy()");
 		for (InVehicleDeviceService service : optionalService.asSet()) {
 			service.removeOnExitListener(this);
+			service.removeOnOperationScheduleReceiveFailedListener(this);
 		}
 		optionalService = Optional.absent();
 		unbindService(serviceConnection);
@@ -215,5 +221,12 @@ public class InVehicleDeviceActivity extends Activity implements
 		for (InVehicleDeviceService service : optionalService.asSet()) {
 			service.setActivityPaused();
 		}
+	}
+
+	@Override
+	public void onOperationScheduleReceiveFailed() {
+		BigToast.makeText(this,
+				getString(R.string.failed_to_connect_operator_tool),
+				Toast.LENGTH_LONG).show();
 	}
 }
