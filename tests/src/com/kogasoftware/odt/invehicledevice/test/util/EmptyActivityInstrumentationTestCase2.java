@@ -4,7 +4,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.res.XmlResourceParser;
 import android.os.Handler;
@@ -44,7 +43,7 @@ public class EmptyActivityInstrumentationTestCase2 extends
 			}
 		}).start();
 
-		Handler h = InVehicleDeviceService.getActivityHandler(getActivity());
+		Handler h = InVehicleDeviceService.getActivityHandler(a);
 		cdl.countDown();
 		return h;
 	}
@@ -58,13 +57,11 @@ public class EmptyActivityInstrumentationTestCase2 extends
 		runOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
-				Activity a = getActivity();
 				LayoutInflater li = a.getLayoutInflater(); // Activity用のLayoutInflaterを使う
 				XmlResourceParser p = getInstrumentation().getContext()
 						.getResources().getXml(testLayoutResourceId);
 				v.set(li.inflate(p, null));
-				ViewGroup vg = (ViewGroup) getActivity().findViewById(
-						android.R.id.content);
+				ViewGroup vg = (ViewGroup) a.findViewById(android.R.id.content);
 				vg.addView(v.get());
 			}
 		});
@@ -73,7 +70,7 @@ public class EmptyActivityInstrumentationTestCase2 extends
 
 	public void runOnUiThreadSync(Runnable runnable)
 			throws InterruptedException {
-		TestUtil.runOnUiThreadSync(getActivity(), runnable);
+		TestUtil.runOnUiThreadSync(a, runnable);
 	}
 
 	@Override
@@ -81,7 +78,6 @@ public class EmptyActivityInstrumentationTestCase2 extends
 		super.setUp();
 		Instrumentation i = getInstrumentation();
 		TestUtil.disableAutoStart(i.getContext());
-		Thread.sleep(2000); // 別タスクがStatusを保存するかもしれないため、一定時間待つ
 		a = getActivity();
 		solo = new Solo(i, a);
 	}
@@ -91,7 +87,8 @@ public class EmptyActivityInstrumentationTestCase2 extends
 		try {
 			if (solo != null) {
 				solo.finishOpenedActivities();
-			} else if (a != null) {
+			}
+			if (a != null) {
 				a.finish();
 			}
 		} finally {
