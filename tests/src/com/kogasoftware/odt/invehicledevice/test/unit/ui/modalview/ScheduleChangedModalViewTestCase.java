@@ -7,6 +7,7 @@ import android.view.View;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
@@ -46,10 +47,7 @@ public class ScheduleChangedModalViewTestCase extends
 		});
 	}
 
-	/**
-	 * ShowEventを受け取ると表示され、ScheduleModalView.HideEventが発行される
-	 */
-	public void testUpdatedOperationScheduleMergedEvent_1()
+	public void testUpdatedOperationScheduleMerged1()
 			throws InterruptedException {
 		// Subscriber<ScheduleModalView.HideEvent> s = Subscriber.of(
 		// ScheduleModalView.HideEvent.class, cl);
@@ -61,11 +59,7 @@ public class ScheduleChangedModalViewTestCase extends
 				VehicleNotification vn = new VehicleNotification();
 				vn.setBody(body);
 				vn.setNotificationKind(VehicleNotification.NotificationKind.RESERVATION_CHANGED);
-				status.repliedVehicleNotifications.clear();
-				status.receivedOperationScheduleChangedVehicleNotifications
-						.clear();
-				status.receivedOperationScheduleChangedVehicleNotifications
-						.add(vn);
+				status.vehicleNotifications.clear();
 			}
 		});
 
@@ -84,7 +78,7 @@ public class ScheduleChangedModalViewTestCase extends
 	/**
 	 * ShowEventを二度受け取ると、内容が追記される
 	 */
-	public void testUpdatedOperationScheduleMergedEvent_2()
+	public void testUpdatedOperationScheduleMerged2()
 			throws InterruptedException {
 		// Subscriber<ScheduleModalView.HideEvent> s = Subscriber.of(
 		// ScheduleModalView.HideEvent.class, cl);
@@ -103,13 +97,7 @@ public class ScheduleChangedModalViewTestCase extends
 				vn2.setBody(body2);
 				vn2.setNotificationKind(VehicleNotification.NotificationKind.RESERVATION_CHANGED);
 
-				status.repliedVehicleNotifications.clear();
-				status.receivedOperationScheduleChangedVehicleNotifications
-						.clear();
-				status.receivedOperationScheduleChangedVehicleNotifications
-						.add(vn1);
-				status.receivedOperationScheduleChangedVehicleNotifications
-						.add(vn2);
+				status.vehicleNotifications.clear();
 			}
 		});
 
@@ -132,8 +120,7 @@ public class ScheduleChangedModalViewTestCase extends
 				VehicleNotification vn = new VehicleNotification();
 				vn.setBody(body3);
 				vn.setNotificationKind(VehicleNotification.NotificationKind.RESERVATION_CHANGED);
-				status.receivedOperationScheduleChangedVehicleNotifications
-						.add(vn);
+				status.vehicleNotifications.put(VehicleNotificationStatus.OPERATION_SCHEDULE_RECEIVED, vn);
 			}
 		});
 
@@ -152,7 +139,7 @@ public class ScheduleChangedModalViewTestCase extends
 	 * VehicleNotificationが無い場合ShowEventを受け取っても表示されず、ScheduleModalView.
 	 * HideEventも発行されない
 	 */
-	public void testUpdatedOperationScheduleMergedEvent_3()
+	public void testUpdatedOperationScheduleMerged3()
 			throws InterruptedException {
 		// Subscriber<ScheduleModalView.HideEvent> s = Subscriber.of(
 		// ScheduleModalView.HideEvent.class, cl);
@@ -160,8 +147,7 @@ public class ScheduleChangedModalViewTestCase extends
 		sa.withWriteLock(new Writer() { // TODO: イベントで書き直し
 			@Override
 			public void write(LocalData status) {
-				status.receivedOperationScheduleChangedVehicleNotifications
-						.clear();
+				status.vehicleNotifications.clear();
 			}
 		});
 
@@ -177,7 +163,7 @@ public class ScheduleChangedModalViewTestCase extends
 	}
 
 	public void test戻るボタンを押すと消える() throws Exception {
-		testUpdatedOperationScheduleMergedEvent_1();
+		testUpdatedOperationScheduleMerged1();
 		solo.clickOnView(solo.getView(R.id.schedule_changed_close_button));
 		getInstrumentation().waitForIdleSync();
 		assertFalse(mv.isShown());
@@ -185,7 +171,7 @@ public class ScheduleChangedModalViewTestCase extends
 
 	public void test予定を確認ボタンを押すと消えてScheduleModalView_ShowEvent発生()
 			throws Exception {
-		testUpdatedOperationScheduleMergedEvent_1();
+		testUpdatedOperationScheduleMerged1();
 		// Subscriber<ScheduleModalView.ShowEvent> s = Subscriber.of(
 		// ScheduleModalView.ShowEvent.class, cl);
 		solo.clickOnView(solo.getView(R.id.schedule_confirm_button));

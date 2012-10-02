@@ -1,10 +1,12 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.ui.modalview;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
+import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.PlatformMemoModalView;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
@@ -36,6 +38,7 @@ public class PlatformMemoModalViewTestCase extends
 				mv.show();
 			}
 		});
+		getInstrumentation().waitForIdleSync();
 		assertFalse(mv.isShown());
 	}
 
@@ -48,6 +51,7 @@ public class PlatformMemoModalViewTestCase extends
 				mv.show();
 			}
 		});
+		getInstrumentation().waitForIdleSync();
 		assertFalse(mv.isShown());
 	}
 
@@ -61,21 +65,13 @@ public class PlatformMemoModalViewTestCase extends
 				mv.show();
 			}
 		});
+		getInstrumentation().waitForIdleSync();
 		assertFalse(mv.isShown());
 	}
 
-	public void testShow_SuccessAndHideButton() throws Exception {
-		callTestShow_Success(true);
-	}
-
-	public void testShow_SuccessAndHideMethod() throws Exception {
-		callTestShow_Success(false);
-	}
-
-	public void callTestShow_Success(Boolean hideButton) throws Exception {
+	private void assertShow(String memo) throws Exception {
 		OperationSchedule os = new OperationSchedule();
 		Platform p = new Platform();
-		String memo = "こんにちは" + Math.random();
 		p.setMemo(memo);
 		os.setPlatform(p);
 		when(s.getCurrentOperationSchedule()).thenReturn(Optional.of(os));
@@ -85,19 +81,30 @@ public class PlatformMemoModalViewTestCase extends
 				mv.show();
 			}
 		});
-		assertTrue(mv.isShown());
-		assertTrue(solo.searchText(memo));
 
-		if (hideButton) {
-			solo.clickOnButton("戻る");
-		} else {
-			runOnUiThreadSync(new Runnable() {
-				@Override
-				public void run() {
-					mv.hide();
-				}
-			});
-		}
+		TestUtil.assertShow(mv);
+		assertTrue(solo.searchText(memo));
+	}
+
+	public void testShow() throws Exception {
+		assertShow("こんにちは");
+	}
+
+	public void testHide() throws Exception {
+		assertShow("こんばんわ");
+		runOnUiThreadSync(new Runnable() {
+			@Override
+			public void run() {
+				mv.hide();
+			}
+		});
+		getInstrumentation().waitForIdleSync();
+		assertFalse(mv.isShown());
+	}
+
+	public void testBackButton() throws Exception {
+		assertShow("プラットフォームメモ");
+		solo.clickOnButton("戻る");
 		getInstrumentation().waitForIdleSync();
 		assertFalse(mv.isShown());
 	}
@@ -107,3 +114,4 @@ public class PlatformMemoModalViewTestCase extends
 		super.tearDown();
 	}
 }
+
