@@ -146,7 +146,9 @@ public class VehicleNotificationLogic {
 			public void read(LocalData localData) {
 				for (VehicleNotification vehicleNotification : localData.vehicleNotifications
 						.get(status)) {
-					vehicleNotifications.add(vehicleNotification);
+					if (vehicleNotification.getNotificationKind().equals(notificationKind)) {
+						vehicleNotifications.add(vehicleNotification);
+					}
 				}
 			}
 		});
