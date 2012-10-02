@@ -1,45 +1,43 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.ui.modalview;
 
-import java.util.concurrent.CountDownLatch;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import android.app.Activity;
-import android.view.View;
-
+import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
+import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.ArrivalCheckModalView;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
-import static org.mockito.Mockito.*;
 
 public class ArrivalCheckModalViewTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 	InVehicleDeviceService s;
-	LocalDataSource sa;
+	OperationSchedule os;
 	ArrivalCheckModalView mv;
-	Activity a;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		a = getActivity();
-		sa = new LocalDataSource(getActivity());
+		os = new OperationSchedule();
+		Platform p = new Platform();
+		p.setName("乗降場X");
+		os.setPlatform(p);
+
 		s = mock(InVehicleDeviceService.class);
+		when(s.getCurrentOperationSchedule()).thenReturn(Optional.of(os));
+
 		mv = new ArrivalCheckModalView(a, s);
-		
-		sa.withWriteLock(new Writer() {
+
+		runOnUiThreadSync(new Runnable() {
 			@Override
-			public void write(LocalData status) {
-				OperationSchedule os = new OperationSchedule();
-				Platform p = new Platform();
-				p.setName("乗降場X");
-				os.setPlatform(p);
-				status.remainingOperationSchedules.clear();
-				status.remainingOperationSchedules.add(os);
+			public void run() {
+				a.setContentView(mv);
 			}
 		});
 	}
@@ -49,73 +47,47 @@ public class ArrivalCheckModalViewTestCase extends
 		super.tearDown();
 	}
 
-	public void xtestEventBusに自動で登録される() throws Exception {
+	public void testShow1() throws Exception {
+		assertShow("乗降場K");
+	}
+
+	public void testShow2() throws Exception {
+		assertShow("乗降場L");
+	}
+
+	public void testShow3() throws Exception {
+		assertShow("乗降場M");
+	}
+
+	protected void assertShow(String platformName) throws Exception {
+		for (Platform p : os.getPlatform().asSet()) {
+			p.setName(platformName);
+		}
+
+		assertFalse(mv.isShown());
+
 		runOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
-				getActivity().setContentView(R.layout.in_vehicle_device);
+				mv.show();
 			}
 		});
-//		try {
-//			assertEquals(cl2.countRegisteredClass(DepartureCheckModalView.class)
-//					.intValue(), 1);
-//		} finally {
-//			cl2.dispose();
-//		}
+
+		TestUtil.assertShow(mv);
+		assertTrue(solo.searchText(platformName, true));
 	}
 
-	/**
-	 * ShowEventを受け取ると表示される
-	 */
-	public void testShowEvent() throws InterruptedException {
-		assertFalse(mv.isShown());
-		assertNotSame(mv.getVisibility(), View.VISIBLE);
-
-		getInstrumentation().waitForIdleSync();
-
-		assertTrue(mv.isShown());
-		assertEquals(mv.getVisibility(), View.VISIBLE);
-	}
-
-	public void test到着予定の乗降場名が表示される1() throws InterruptedException {
-		callTest到着予定の乗降場名が表示される("乗降場K");	
-	}
-
-	public void test到着予定の乗降場名が表示される2() throws InterruptedException {
-		callTest到着予定の乗降場名が表示される("乗降場L");	
-	}
-
-	public void test到着予定の乗降場名が表示される3() throws InterruptedException {
-		callTest到着予定の乗降場名が表示される("乗降場M");	
-	}
-	
-	protected void callTest到着予定の乗降場名が表示される(final String name) throws InterruptedException {
-		sa.withWriteLock(new Writer() {
-			@Override
-			public void write(LocalData status) {
-				OperationSchedule os = new OperationSchedule();
-				Platform p = new Platform();
-				p.setName(name);
-				os.setPlatform(p);
-				status.remainingOperationSchedules.clear();
-				status.remainingOperationSchedules.add(os);
-			}
-		});
-		testShowEvent();
-		assertTrue(solo.searchText(name, true));
-	}	
-	
-	public void test到着するボタンを押すとEnterPlatformPhaseEvent通知() throws Exception {
-		testShowEvent();
-		final CountDownLatch cdl = new CountDownLatch(1);
+	public void testArrive() throws Exception {
+		assertShow("のりおりば");
 		solo.clickOnView(solo.getView(R.id.arrival_button));
-		cdl.await();
+		TestUtil.assertHide(mv);
+		verify(s, times(1)).enterPlatformPhase();
 	}
 
-	public void test戻るボタンを押すと消える() throws Exception {
-		testShowEvent();
+	public void testBack() throws Exception {
+		assertShow("のりおりば");
 		solo.clickOnView(solo.getView(R.id.arrival_check_close_button));
-		getInstrumentation().waitForIdleSync();
-		assertFalse(mv.isShown());
+		TestUtil.assertHide(mv);
+		verify(s, never()).enterPlatformPhase();
 	}
 }
