@@ -1,7 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.ui.modalview;
 
 import static org.mockito.Mockito.mock;
-import android.app.Activity;
 import android.view.View;
 
 import com.kogasoftware.odt.invehicledevice.R;
@@ -21,15 +20,13 @@ public class ScheduleChangedModalViewTestCase extends
 	LocalDataSource sa;
 	ScheduleChangedModalView mv;
 	ScheduleModalView smv;
-	Activity a;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		a = getActivity();
 		s = mock(InVehicleDeviceService.class);
 		smv = mock(ScheduleModalView.class);
-		sa = new LocalDataSource(getActivity());
+		sa = new LocalDataSource(a);
 		mv = new ScheduleChangedModalView(a, s, smv);
 	}
 
@@ -42,7 +39,7 @@ public class ScheduleChangedModalViewTestCase extends
 		runOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
-				getActivity().setContentView(R.layout.in_vehicle_device);
+				a.setContentView(R.layout.in_vehicle_device);
 			}
 		});
 	}

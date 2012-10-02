@@ -4,7 +4,6 @@ import static org.mockito.Mockito.mock;
 
 import java.util.concurrent.CountDownLatch;
 
-import android.app.Activity;
 import android.view.View;
 
 import com.kogasoftware.odt.invehicledevice.R;
@@ -22,14 +21,12 @@ public class DepartureCheckModalViewTestCase extends
 	InVehicleDeviceService s;
 	LocalDataSource sa;
 	DepartureCheckModalView mv;
-	Activity a;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		a = getActivity();
 		s = mock(InVehicleDeviceService.class);
-		sa = new LocalDataSource(getActivity());
+		sa = new LocalDataSource(a);
 		mv = new DepartureCheckModalView(a, s);
 
 		sa.withWriteLock(new Writer() { // TODO もっとスマートにする
@@ -55,7 +52,7 @@ public class DepartureCheckModalViewTestCase extends
 		runOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
-				getActivity().setContentView(R.layout.in_vehicle_device);
+				a.setContentView(R.layout.in_vehicle_device);
 			}
 		});
 		// try {

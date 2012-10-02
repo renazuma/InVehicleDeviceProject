@@ -1,7 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.ui.modalview;
 
 import static org.mockito.Mockito.mock;
-import android.app.Activity;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
@@ -19,12 +18,10 @@ public class MemoModalViewTestCase extends
 	PassengerRecord pr;
 	Reservation r;
 	User u;
-	Activity a;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		a = getActivity();
 		s = mock(InVehicleDeviceService.class);
 		mv = new MemoModalView(a, s);
 		runOnUiThreadSync(new Runnable() {
