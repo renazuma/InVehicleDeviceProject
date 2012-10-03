@@ -146,7 +146,7 @@ public class OperationScheduleLogic {
 						if (passengerRecord.getUserId().equals(
 								Optional.of(user.getId()))) {
 							mergePassengerRecordsWithWriteLock(localData,
-									passengerRecord, user);
+									passengerRecord, reservation, user);
 							break;
 						}
 					}
@@ -184,10 +184,12 @@ public class OperationScheduleLogic {
 
 	/**
 	 * PassengerRecordをマージする(LocalDataがロックされた状態内)
+	 * @param reservation
 	 */
 	public void mergePassengerRecordsWithWriteLock(LocalData localData,
-			PassengerRecord serverPassengerRecord, User user) {
+			PassengerRecord serverPassengerRecord, Reservation reservation, User user) {
 		// 循環参照を防ぐ
+		// TODO:不要になる予定
 		user.clearPassengerRecords();
 
 		// マージ対象を探す
@@ -201,6 +203,7 @@ public class OperationScheduleLogic {
 			if (serverPassengerRecord.getUpdatedAt().before(
 					localPassengerRecord.getUpdatedAt())) {
 				localPassengerRecord.setUser(user);
+				localPassengerRecord.setReservation(reservation);
 				return;
 			}
 
@@ -211,6 +214,7 @@ public class OperationScheduleLogic {
 		// PassengerRecordを更新
 		localData.passengerRecords.add(serverPassengerRecord);
 		serverPassengerRecord.setUser(user);
+		serverPassengerRecord.setReservation(reservation);
 	}
 
 	/**
