@@ -23,6 +23,8 @@ import android.widget.Toast;
 
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.compatibility.reflection.android.view.ViewReflection;
+import com.kogasoftware.odt.invehicledevice.compatibility.reflection.android.view.ViewReflection.OnSystemUiVisibilityChangeListenerReflection;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService.OnOperationScheduleReceiveFailedListener;
 import com.kogasoftware.odt.invehicledevice.ui.BigToast;
@@ -36,6 +38,7 @@ public class InVehicleDeviceActivity extends Activity implements
 	private static final int WAIT_FOR_INITIALIZE_DIALOG_ID = 10;
 	private static final int WAIT_FOR_INITIALIZE_MILLIS = 1 * 1000;
 	public static final int PAUSE_FINISH_TIMEOUT_MILLIS = 10 * 1000;
+	public static final int SYSTEM_UI_VISIBILITY_UPDATE_MILLIS = 2 * 1000;
 	private final Handler handler = new Handler();
 	// Androidエミュレーターで、Activity起動後ESCキーを押してホーム画面に戻ると、Activityが見えていないのに
 	// onStopやonDestroyが呼ばれずRunningTaskInfo.topActivityがこのActivityを返すため、自動再起動ができないことがある。
@@ -87,6 +90,26 @@ public class InVehicleDeviceActivity extends Activity implements
 		}
 	};
 
+	private final OnSystemUiVisibilityChangeListenerReflection onSystemUiVisibilityChangeListener = new OnSystemUiVisibilityChangeListenerReflection() {
+		@Override
+		public void onSystemUiVisibilityChange(int visibility) {
+			Log.w(TAG, "onSystemUiVisibilityChange(" + visibility + ")");
+			for (final Integer SYSTEM_UI_FLAG_LOW_PROFILE : ViewReflection.SYSTEM_UI_FLAG_LOW_PROFILE
+					.asSet()) {
+				if (SYSTEM_UI_FLAG_LOW_PROFILE.equals(visibility)) {
+					return;
+				}
+				handler.postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						ViewReflection.setSystemUiVisibility(getWindow()
+								.getDecorView(), SYSTEM_UI_FLAG_LOW_PROFILE);
+					}
+				}, SYSTEM_UI_VISIBILITY_UPDATE_MILLIS);
+			}
+		}
+	};
+
 	private Boolean uiInitialized = false;
 	private Optional<InVehicleDeviceService> optionalService = Optional
 			.absent();
@@ -105,6 +128,8 @@ public class InVehicleDeviceActivity extends Activity implements
 		bindService(new Intent(this, InVehicleDeviceService.class),
 				serviceConnection, Context.BIND_AUTO_CREATE);
 		handler.post(waitForInitialize);
+		ViewReflection.setOnSystemUiVisibilityChangeListener(getWindow()
+				.getDecorView(), onSystemUiVisibilityChangeListener);
 	}
 
 	@Override
@@ -210,6 +235,11 @@ public class InVehicleDeviceActivity extends Activity implements
 		handler.removeCallbacks(pauseFinishTimeouter);
 		for (InVehicleDeviceService service : optionalService.asSet()) {
 			service.setActivityResumed();
+		}
+		for (final Integer SYSTEM_UI_FLAG_LOW_PROFILE : ViewReflection.SYSTEM_UI_FLAG_LOW_PROFILE
+				.asSet()) {
+			ViewReflection.setSystemUiVisibility(getWindow().getDecorView(),
+					SYSTEM_UI_FLAG_LOW_PROFILE);
 		}
 	}
 
