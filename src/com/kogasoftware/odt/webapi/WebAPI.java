@@ -176,7 +176,9 @@ public class WebAPI implements Closeable {
 		try {
 			OperationRecord or = os.getOperationRecord().or(
 					new OperationRecord());
-			or.setArrivedAt(new Date());
+			if (!or.getArrivedAt().isPresent()) {
+				or.setArrivedAt(new Date());
+			}
 			OperationRecord retryOr;
 			retryOr = or.cloneByJSON();
 			retryOr.setArrivedAtOffline(true);
@@ -220,7 +222,9 @@ public class WebAPI implements Closeable {
 		try {
 			OperationRecord or = os.getOperationRecord().or(
 					new OperationRecord());
-			or.setDepartedAt(new Date());
+			if (!or.getDepartedAt().isPresent()) {
+				or.setDepartedAt(new Date());
+			}
 			OperationRecord retryOr = or.cloneByJSON();
 			retryOr.setDepartedAtOffline(true);
 
