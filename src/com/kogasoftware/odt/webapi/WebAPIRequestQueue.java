@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -20,6 +21,7 @@ import android.util.Log;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import com.google.common.io.Closeables;
 
 /**
  * WebAPIRequestを管理するクラス
@@ -72,9 +74,11 @@ public class WebAPIRequestQueue {
 			return;
 		}
 		synchronized (FILE_ACCESS_LOCK) {
+			InputStream inputStream = null;
 			try {
+				inputStream = new FileInputStream(backupFile);
 				Object object = SerializationUtils
-						.deserialize(new FileInputStream(backupFile));
+						.deserialize(inputStream);
 				if (!(object instanceof InstanceState)) {
 					Log.w(TAG, "!(" + object + " instanceof InstanceState)");
 					return;
@@ -91,6 +95,7 @@ public class WebAPIRequestQueue {
 				Log.e(TAG, e.toString(), e);
 			} finally {
 				waitingQueuePollPermissions.release(requestsByGroup.size());
+				Closeables.closeQuietly(inputStream);
 			}
 		}
 	}
