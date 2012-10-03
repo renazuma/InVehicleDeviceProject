@@ -3,7 +3,6 @@ package com.kogasoftware.odt.invehicledevice.ui.arrayadapter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -24,11 +23,11 @@ public class OperationScheduleArrayAdapter extends
 	private final InVehicleDeviceService service;
 	private static final Integer RESOURCE_ID = R.layout.operation_schedule_list_row;
 
-	public OperationScheduleArrayAdapter(InVehicleDeviceService service,
-			List<OperationSchedule> items) {
-		super(service, RESOURCE_ID, items);
+	public OperationScheduleArrayAdapter(Context context,
+			InVehicleDeviceService service) {
+		super(context, RESOURCE_ID, service.getOperationSchedules());
 		this.service = service;
-		this.layoutInflater = (LayoutInflater) service
+		this.layoutInflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 

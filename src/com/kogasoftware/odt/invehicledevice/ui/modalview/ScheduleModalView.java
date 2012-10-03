@@ -1,9 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.ui.modalview;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import android.content.Context;
+import android.os.Handler;
 import android.widget.ListView;
 
 import com.kogasoftware.odt.invehicledevice.R;
@@ -14,8 +12,7 @@ import com.kogasoftware.odt.webapi.model.OperationSchedule;
 
 public class ScheduleModalView extends ModalView {
 	final ListView operationScheduleListView;
-
-	private final List<OperationSchedule> operationSchedules = new LinkedList<OperationSchedule>();
+	final Handler handler = new Handler();
 
 	public ScheduleModalView(Context context, InVehicleDeviceService service) {
 		super(context, service);
@@ -28,19 +25,18 @@ public class ScheduleModalView extends ModalView {
 	@Override
 	public void show() {
 		super.hide();
-		operationSchedules.clear();
-		operationSchedules.addAll(service.getRemainingOperationSchedules());
 		OperationScheduleArrayAdapter adapter = new OperationScheduleArrayAdapter(
-				service, operationSchedules);
+				getContext(), service);
 		operationScheduleListView.setAdapter(adapter);
-		Integer extraItems = 1;
+
+		Integer extraRows = 1;
+		// 未運行の運行スケジュールまでスクロールする
 		for (OperationSchedule currentOperationSchedule : service
 				.getCurrentOperationSchedule().asSet()) {
-			for (Integer i = 1; i < (adapter.getCount() - extraItems); ++i) {
+			for (Integer i = 0; i < adapter.getCount(); ++i) {
 				if (adapter.getItem(i).getId()
 						.equals(currentOperationSchedule.getId())) {
-					operationScheduleListView.smoothScrollToPosition(i
-							+ extraItems);
+					operationScheduleListView.setSelectionFromTop(i, 0);
 					break;
 				}
 			}
