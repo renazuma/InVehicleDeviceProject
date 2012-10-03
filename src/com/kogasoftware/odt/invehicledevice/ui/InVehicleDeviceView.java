@@ -263,6 +263,7 @@ public class InVehicleDeviceView extends FrameLayout implements
 	public void onEnterFinishPhase() {
 		statusTextView.setText("");
 		changePhaseButton.setEnabled(false);
+		platformMemoButtonLayout.setVisibility(GONE);
 		setPhaseColor(FINISH_PHASE_COLOR);
 	}
 
