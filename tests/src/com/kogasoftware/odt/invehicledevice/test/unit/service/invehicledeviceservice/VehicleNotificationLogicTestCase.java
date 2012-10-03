@@ -54,6 +54,45 @@ public class VehicleNotificationLogicTestCase extends AndroidTestCase {
 		verifyZeroInteractions(s);
 	}
 
+	public void testGetVehicleNotifications() {
+		final VehicleNotification vn1a = new VehicleNotification();
+		final VehicleNotification vn1b = new VehicleNotification();
+		final VehicleNotification vn2a = new VehicleNotification();
+		final VehicleNotification vn2b = new VehicleNotification();
+		final VehicleNotification vn2c = new VehicleNotification();
+		vn1a.setId(11);
+		vn1b.setId(12);
+		vn2a.setId(21);
+		vn2b.setId(22);
+		vn2c.setId(23);
+		vn1a.setNotificationKind(NotificationKind.FROM_OPERATOR);
+		vn1b.setNotificationKind(NotificationKind.FROM_OPERATOR);
+		vn2a.setNotificationKind(NotificationKind.RESERVATION_CHANGED);
+		vn2b.setNotificationKind(NotificationKind.RESERVATION_CHANGED);
+		vn2c.setNotificationKind(NotificationKind.RESERVATION_CHANGED);
+		vnl.setVehicleNotificationStatus(Lists.newArrayList(vn1a, vn2a),
+				VehicleNotificationStatus.UNHANDLED);
+		vnl.setVehicleNotificationStatus(Lists.newArrayList(vn1b, vn2b),
+				VehicleNotificationStatus.REPLIED);
+		vnl.setVehicleNotificationStatus(Lists.newArrayList(vn2c),
+				VehicleNotificationStatus.OPERATION_SCHEDULE_RECEIVED);
+		ListAssert.assertEquals(Lists.newArrayList(vn1a), vnl
+				.getVehicleNotifications(NotificationKind.FROM_OPERATOR,
+						VehicleNotificationStatus.UNHANDLED));
+		ListAssert.assertEquals(Lists.newArrayList(vn1b), vnl
+				.getVehicleNotifications(NotificationKind.FROM_OPERATOR,
+						VehicleNotificationStatus.REPLIED));
+		ListAssert.assertEquals(Lists.newArrayList(vn2a), vnl
+				.getVehicleNotifications(NotificationKind.RESERVATION_CHANGED,
+						VehicleNotificationStatus.UNHANDLED));
+		ListAssert.assertEquals(Lists.newArrayList(vn2b), vnl
+				.getVehicleNotifications(NotificationKind.RESERVATION_CHANGED,
+						VehicleNotificationStatus.REPLIED));
+		ListAssert.assertEquals(Lists.newArrayList(vn2c), vnl
+				.getVehicleNotifications(NotificationKind.RESERVATION_CHANGED,
+						VehicleNotificationStatus.OPERATION_SCHEDULE_RECEIVED));
+	}
+
 	public void testMergeVehicleNotification_RESERVATION_CHANGED追加()
 			throws Exception {
 		final VehicleNotification vn = new VehicleNotification();
