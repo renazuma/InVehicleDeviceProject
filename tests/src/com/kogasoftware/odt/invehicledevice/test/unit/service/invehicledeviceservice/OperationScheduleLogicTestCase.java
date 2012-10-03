@@ -358,8 +358,10 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 		assertEquals(13, osl.getCurrentOperationSchedule().get().getId()
 				.intValue());
 
-		osl.enterDrivePhase();
+		osl.enterFinishPhase();
 		assertEquals(Phase.FINISH, osl.getPhase());
 		assertFalse(osl.getCurrentOperationSchedule().isPresent());
 	}
 }
+
+
