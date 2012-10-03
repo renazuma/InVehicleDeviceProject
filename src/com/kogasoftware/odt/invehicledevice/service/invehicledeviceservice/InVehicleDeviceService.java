@@ -596,14 +596,12 @@ public class InVehicleDeviceService extends Service {
 		});
 	}
 
+	public List<OperationSchedule> getOperationSchedules() {
+		return operationScheduleLogic.getOperationSchedules();
+	}
+
 	public List<OperationSchedule> getRemainingOperationSchedules() {
-		return localDataSource
-				.withReadLock(new Reader<List<OperationSchedule>>() {
-					@Override
-					public List<OperationSchedule> read(LocalData status) {
-						return Lists.newLinkedList(status.operationSchedules);
-					}
-				});
+		return operationScheduleLogic.getRemainingOperationSchedules();
 	}
 
 	public List<PassengerRecord> getPassengerRecords() {

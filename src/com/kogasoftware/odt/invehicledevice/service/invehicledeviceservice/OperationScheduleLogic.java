@@ -261,4 +261,35 @@ public class OperationScheduleLogic {
 					}
 				});
 	}
+
+	public List<OperationSchedule> getRemainingOperationSchedules() {
+		return service.getLocalDataSource().withReadLock(
+				new Reader<List<OperationSchedule>>() {
+					@Override
+					public List<OperationSchedule> read(LocalData status) {
+						List<OperationSchedule> operationSchedules = Lists
+								.newLinkedList();
+						for (OperationSchedule operationSchedule : status.operationSchedules) {
+							for (OperationRecord operationRecord : operationSchedule
+									.getOperationRecord().asSet()) {
+								if (!operationRecord.getDepartedAt()
+										.isPresent()) {
+									operationSchedules.add(operationSchedule);
+								}
+							}
+						}
+						return operationSchedules;
+					}
+				});
+	}
+
+	public List<OperationSchedule> getOperationSchedules() {
+		return service.getLocalDataSource().withReadLock(
+				new Reader<List<OperationSchedule>>() {
+					@Override
+					public List<OperationSchedule> read(LocalData status) {
+						return Lists.newLinkedList(status.operationSchedules);
+					}
+				});
+	}
 }

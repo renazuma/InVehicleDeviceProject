@@ -6,6 +6,8 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
+import junitx.framework.ListAssert;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -230,4 +232,80 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 		String s6 = "[{id: 14, operation_record: {departed_at: '2012-01-01'}}, {id: 15}]";
 		callTestGetCurrentOperationSchedules(s6, Optional.of(15));
 	}
+
+	public void callTestGetOperationSchedules(String jsonString) throws Exception {
+		final List<OperationSchedule> locals = OperationSchedule
+				.parseList(new JSONArray(jsonString));
+		lds.withWriteLock(new Writer() {
+			@Override
+			public void write(LocalData localData) {
+				localData.operationSchedules.clear();
+				localData.operationSchedules.addAll(locals);
+			}
+		});
+		ListAssert.assertEquals(locals, osl.getOperationSchedules());
+	}
+
+	public void testGetOperationSchedules() throws Exception {
+		String s1 = "[]";
+		callTestGetOperationSchedules(s1);
+
+		String s2 = "[{id: 10}]";
+		callTestGetOperationSchedules(s2);
+
+		String s3 = "[{id: 11, operation_record: {}}]";
+		callTestGetOperationSchedules(s3);
+
+		String s4 = "[{id: 12, operation_record: {arrived_at: '2012-01-01'}}]";
+		callTestGetOperationSchedules(s4);
+
+		String s5 = "[{id: 13, operation_record: {departed_at: '2012-01-01'}}]";
+		callTestGetOperationSchedules(s5);
+
+		String s6 = "[{id: 14, operation_record: {departed_at: '2012-01-01'}}, {id: 15}]";
+		callTestGetOperationSchedules(s6);
+	}
+
+	public void callTestGetRemainingOperationSchedules(String expected, String param) throws Exception {
+		final List<OperationSchedule> paramList = OperationSchedule
+				.parseList(new JSONArray(param));
+		final List<OperationSchedule> expectedList = OperationSchedule
+				.parseList(new JSONArray(expected));
+		lds.withWriteLock(new Writer() {
+			@Override
+			public void write(LocalData localData) {
+				localData.operationSchedules.clear();
+				localData.operationSchedules.addAll(paramList);
+			}
+		});
+
+		List<OperationSchedule> gotList = osl.getRemainingOperationSchedules();
+		assertEquals(expectedList.size(), gotList.size());
+		for (Integer i = 0; i < expectedList.size(); ++i) {
+			assertEquals(expectedList.get(i).getId(), gotList.get(i).getId());
+		}
+	}
+
+	public void testGetRemainingOperationSchedules() throws Exception {
+		String s1e = "[]";
+		String s1p = "[]";
+		callTestGetRemainingOperationSchedules(s1e, s1p);
+
+		String s2e = "[{id: 10, operation_record: {}}]";
+		String s2p = "[{id: 10, operation_record: {}}]";
+		callTestGetRemainingOperationSchedules(s2e, s2p);
+
+		String s3e = "[{id: 11, operation_record: {}}, {id: 12, operation_record: {}}, {id: 13, operation_record: {}}]";
+		String s3p = "[{id: 11, operation_record: {}}, {id: 12, operation_record: {}}, {id: 13, operation_record: {}}]";
+		callTestGetRemainingOperationSchedules(s3e, s3p);
+
+		String s4e = "[]";
+		String s4p = "[{id: 14, operation_record: {departed_at: '2012-01-01'}}]";
+		callTestGetRemainingOperationSchedules(s4e, s4p);
+
+		String s5e = "[{id: 16, operation_record: {}}]";
+		String s5p = "[{id: 15, operation_record: {departed_at: '2012-01-01'}}, {id: 16, operation_record: {}}]";
+		callTestGetRemainingOperationSchedules(s5e, s5p);
+	}
 }
+
