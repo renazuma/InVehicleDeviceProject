@@ -1,6 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.ui.modalview;
 
 import android.content.Context;
+import android.os.Handler;
 import android.widget.ListView;
 
 import com.kogasoftware.odt.invehicledevice.R;
@@ -11,6 +12,7 @@ import com.kogasoftware.odt.webapi.model.OperationSchedule;
 
 public class ScheduleModalView extends ModalView {
 	final ListView operationScheduleListView;
+	final Handler handler = new Handler();
 
 	public ScheduleModalView(Context context, InVehicleDeviceService service) {
 		super(context, service);
@@ -27,15 +29,14 @@ public class ScheduleModalView extends ModalView {
 				getContext(), service);
 		operationScheduleListView.setAdapter(adapter);
 
+		Integer extraRows = 1;
 		// 未運行の運行スケジュールまでスクロールする
-		Integer extraItems = 1;
 		for (OperationSchedule currentOperationSchedule : service
 				.getCurrentOperationSchedule().asSet()) {
-			for (Integer i = 1; i < (adapter.getCount() - extraItems); ++i) {
+			for (Integer i = 0; i < adapter.getCount(); ++i) {
 				if (adapter.getItem(i).getId()
 						.equals(currentOperationSchedule.getId())) {
-					operationScheduleListView.smoothScrollToPosition(i
-							+ extraItems);
+					operationScheduleListView.setSelectionFromTop(i, 0);
 					break;
 				}
 			}

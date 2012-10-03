@@ -129,6 +129,11 @@ public class TestUtil {
 
 	public static void runOnUiThreadSync(Activity activity,
 			final Runnable runnable) throws InterruptedException {
+		runOnUiThreadSync(activity, runnable, 20);
+	}
+
+	public static void runOnUiThreadSync(Activity activity,
+			final Runnable runnable, Integer timeoutSeconds) throws InterruptedException {
 		final CountDownLatch cdl = new CountDownLatch(1);
 		activity.runOnUiThread(new Runnable() {
 			@Override
@@ -140,7 +145,7 @@ public class TestUtil {
 				}
 			}
 		});
-		if (!cdl.await(10, TimeUnit.SECONDS)) {
+		if (!cdl.await(timeoutSeconds, TimeUnit.SECONDS)) {
 			throw new RuntimeException("runOnUiThreadSync Timeout!");
 		}
 	}

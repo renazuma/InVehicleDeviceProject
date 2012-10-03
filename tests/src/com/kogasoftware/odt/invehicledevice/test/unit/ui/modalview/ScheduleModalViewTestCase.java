@@ -3,6 +3,7 @@ package com.kogasoftware.odt.invehicledevice.test.unit.ui.modalview;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.Date;
 import java.util.List;
 
 import org.mockito.invocation.InvocationOnMock;
@@ -72,6 +73,17 @@ public class ScheduleModalViewTestCase extends
 				a.setContentView(mv);
 			}
 		});
+
+		os0.setId(100);
+		os1.setId(101);
+		os2.setId(102);
+		os3.setId(103);
+		os4.setId(104);
+		os5.setId(105);
+		os6.setId(106);
+		os7.setId(107);
+		os8.setId(108);
+		os9.setId(109);
 
 		os0.setOperationRecord(or0);
 		os1.setOperationRecord(or1);
@@ -161,6 +173,125 @@ public class ScheduleModalViewTestCase extends
 		assertTrue(solo.searchText(p2.getName(), true));
 	}
 
+	public void testAutoScroll0() throws Exception {
+		Platform p0 = new Platform();
+		Platform p2 = new Platform();
+		p0.setName("スクロールして隠れる駅");
+		p2.setName("スクロールして最上部に来る駅");
+		os0.setPlatform(p0);
+		os2.setPlatform(p2);
+		or0.setDepartedAt(new Date());
+		or1.setDepartedAt(new Date());
+
+		oss.add(os0);
+		oss.add(os1);
+		oss.add(os2);
+		oss.add(os3);
+		oss.add(os4);
+		oss.add(os5);
+		oss.add(os6);
+		oss.add(os7);
+		oss.add(os8);
+		oss.add(os9);
+
+		assertShow();
+		assertFalse(solo.searchText(p0.getName(), true));
+
+		runOnUiThreadSync(new Runnable() {
+			@Override
+			public void run() {
+				mv.hide();
+			}
+		});
+		TestUtil.assertHide(mv);
+		assertShow();
+		assertTrue(solo.searchText(p2.getName(), true));
+	}
+
+	public void testAutoScroll1() throws Exception {
+		Platform p5 = new Platform();
+		Platform p7 = new Platform();
+		p5.setName("スクロールして隠れる駅");
+		p7.setName("スクロールして最上部に来る駅");
+		os5.setPlatform(p5);
+		os7.setPlatform(p7);
+		or0.setDepartedAt(new Date());
+		or1.setDepartedAt(new Date());
+		or2.setDepartedAt(new Date());
+		or3.setDepartedAt(new Date());
+		or4.setDepartedAt(new Date());
+		or5.setDepartedAt(new Date());
+		or6.setDepartedAt(new Date());
+
+		oss.add(os0);
+		oss.add(os1);
+		oss.add(os2);
+		oss.add(os3);
+		oss.add(os4);
+		oss.add(os5);
+		oss.add(os6);
+		oss.add(os7);
+		oss.add(os8);
+		oss.add(os9);
+
+		assertShow();
+
+		assertFalse(solo.searchText(p5.getName(), true));
+
+		runOnUiThreadSync(new Runnable() {
+			@Override
+			public void run() {
+				mv.hide();
+			}
+		});
+		TestUtil.assertHide(mv);
+		assertShow();
+		assertTrue(solo.searchText(p7.getName(), true));
+	}
+
+	public void testAutoScroll2() throws Exception {
+		Platform p7 = new Platform();
+		Platform p9 = new Platform();
+		p7.setName("下限のため隠れない駅");
+		p9.setName("下限のため最下部の駅");
+		os7.setPlatform(p7);
+		os9.setPlatform(p9);
+		or0.setDepartedAt(new Date());
+		or1.setDepartedAt(new Date());
+		or2.setDepartedAt(new Date());
+		or3.setDepartedAt(new Date());
+		or4.setDepartedAt(new Date());
+		or5.setDepartedAt(new Date());
+		or6.setDepartedAt(new Date());
+		or7.setDepartedAt(new Date());
+		or8.setDepartedAt(new Date());
+
+		oss.add(os0);
+		oss.add(os1);
+		oss.add(os2);
+		oss.add(os3);
+		oss.add(os4);
+		oss.add(os5);
+		oss.add(os6);
+		oss.add(os7);
+		oss.add(os8);
+		oss.add(os9);
+
+		assertShow();
+
+		assertTrue(solo.searchText(p7.getName(), true));
+
+		runOnUiThreadSync(new Runnable() {
+			@Override
+			public void run() {
+				mv.hide();
+			}
+		});
+		TestUtil.assertHide(mv);
+		assertShow();
+		assertTrue(solo.searchText(p9.getName(), true));
+	}
+
 	public void testHide() throws Exception {
 		Platform p0 = new Platform();
 		p0.setName("駅A");
@@ -195,8 +326,9 @@ public class ScheduleModalViewTestCase extends
 			public void run() {
 				mv.show();
 			}
-		});
+		}, 50000);
 
 		TestUtil.assertShow(mv);
 	}
 }
+
