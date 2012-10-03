@@ -83,6 +83,8 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 				assertEquals(1, localData.operationSchedules.size());
 				assertEquals(remote.getId(), localData.operationSchedules
 						.get(0).getId());
+				assertTrue(localData.operationSchedules.get(0)
+						.getOperationRecord().isPresent());
 			}
 		});
 	}
@@ -120,6 +122,8 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 				assertEquals(1, localData.operationSchedules.size());
 				assertEquals(remote.getId(), localData.operationSchedules
 						.get(0).getId());
+				assertTrue(localData.operationSchedules.get(0)
+						.getOperationRecord().isPresent());
 				assertEquals(1, localData.passengerRecords.size());
 				assertEquals(3, localData.passengerRecords.getFirst().getId()
 						.intValue());
@@ -233,7 +237,8 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 		callTestGetCurrentOperationSchedules(s6, Optional.of(15));
 	}
 
-	public void callTestGetOperationSchedules(String jsonString) throws Exception {
+	public void callTestGetOperationSchedules(String jsonString)
+			throws Exception {
 		final List<OperationSchedule> locals = OperationSchedule
 				.parseList(new JSONArray(jsonString));
 		lds.withWriteLock(new Writer() {
@@ -266,7 +271,8 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 		callTestGetOperationSchedules(s6);
 	}
 
-	public void callTestGetRemainingOperationSchedules(String expected, String param) throws Exception {
+	public void callTestGetRemainingOperationSchedules(String expected,
+			String param) throws Exception {
 		final List<OperationSchedule> paramList = OperationSchedule
 				.parseList(new JSONArray(param));
 		final List<OperationSchedule> expectedList = OperationSchedule
@@ -308,4 +314,3 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 		callTestGetRemainingOperationSchedules(s5e, s5p);
 	}
 }
-

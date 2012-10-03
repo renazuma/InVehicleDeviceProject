@@ -97,6 +97,7 @@ public class OperationScheduleLogic {
 			localData.passengerRecords.clear();
 		}
 
+		// OperationRecordのマージ
 		for (Integer i = 0; i < localData.operationSchedules.size(); ++i) {
 			if (i >= newOperationSchedules.size()) {
 				break;
@@ -128,7 +129,14 @@ public class OperationScheduleLogic {
 			remoteOperationSchedule.setOperationRecord(newOperationRecord);
 		}
 
-		// PassengerRecordの個別マージ
+		// OperationRecordが、マージ後に存在しない場合は新規作成
+		for (OperationSchedule operationSchedule : newOperationSchedules) {
+			if (!operationSchedule.getOperationRecord().isPresent()) {
+				operationSchedule.setOperationRecord(new OperationRecord());
+			}
+		}
+
+		// PassengerRecordのマージ
 		for (OperationSchedule operationSchedule : newOperationSchedules) {
 			for (Reservation reservation : operationSchedule
 					.getReservationsAsDeparture()) {
@@ -144,6 +152,7 @@ public class OperationScheduleLogic {
 					}
 				}
 				// 循環参照にならないようにする
+				// TODO:不要になる予定
 				reservation.clearFellowUsers();
 				reservation.clearPassengerRecords();
 			}
