@@ -34,17 +34,13 @@ public class OperationScheduleLogic {
 		service.getLocalDataSource().withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
-				if (localData.operationSchedules.isEmpty()) {
-					service.refreshPhase();
+				List<OperationSchedule> remainingOperationSchedules = getRemainingOperationSchedules();
+				if (remainingOperationSchedules.isEmpty()) {
+					service.enterFinishPhase();
 					return;
 				}
-				OperationSchedule operationSchedule = localData.operationSchedules
-						.get(0);
 				if (localData.phase == LocalData.Phase.PLATFORM) {
-					DataSource dataSource = service.getRemoteDataSource();
-					dataSource.withSaveOnClose().departureOperationSchedule(
-							operationSchedule,
-							new EmptyWebAPICallback<OperationSchedule>());
+					depart();
 				}
 				localData.phase = LocalData.Phase.DRIVE;
 			}
@@ -58,6 +54,7 @@ public class OperationScheduleLogic {
 		service.getLocalDataSource().withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
+				depart();
 				localData.phase = LocalData.Phase.FINISH;
 			}
 		});
@@ -70,21 +67,45 @@ public class OperationScheduleLogic {
 		service.getLocalDataSource().withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
-				if (localData.operationSchedules.isEmpty()) {
-					service.refreshPhase();
+				List<OperationSchedule> remainingOperationSchedules = getRemainingOperationSchedules();
+				if (remainingOperationSchedules.isEmpty()) {
+					service.enterFinishPhase();
 					return;
 				}
 				if (localData.phase == LocalData.Phase.DRIVE) {
-					OperationSchedule operationSchedule = localData.operationSchedules
-							.get(0);
-					DataSource dataSource = service.getRemoteDataSource();
-					dataSource.withSaveOnClose().arrivalOperationSchedule(
-							operationSchedule,
-							new EmptyWebAPICallback<OperationSchedule>());
+					arrive();
 				}
 				localData.phase = LocalData.Phase.PLATFORM;
 			}
 		});
+	}
+
+	private void arrive() {
+		for (OperationSchedule operationSchedule : getCurrentOperationSchedule()
+				.asSet()) {
+			OperationRecord operationRecord = operationSchedule
+					.getOperationRecord().or(new OperationRecord());
+			operationRecord.setArrivedAt(InVehicleDeviceService.getDate());
+			operationSchedule.setOperationRecord(operationRecord);
+			DataSource dataSource = service.getRemoteDataSource();
+			dataSource.withSaveOnClose().arrivalOperationSchedule(
+					operationSchedule,
+					new EmptyWebAPICallback<OperationSchedule>());
+		}
+	}
+
+	private void depart() {
+		for (OperationSchedule operationSchedule : getCurrentOperationSchedule()
+				.asSet()) {
+			OperationRecord operationRecord = operationSchedule
+					.getOperationRecord().or(new OperationRecord());
+			operationRecord.setDepartedAt(InVehicleDeviceService.getDate());
+			operationSchedule.setOperationRecord(operationRecord);
+			DataSource dataSource = service.getRemoteDataSource();
+			dataSource.withSaveOnClose().departureOperationSchedule(
+					operationSchedule,
+					new EmptyWebAPICallback<OperationSchedule>());
+		}
 	}
 
 	/**
@@ -184,10 +205,12 @@ public class OperationScheduleLogic {
 
 	/**
 	 * PassengerRecordをマージする(LocalDataがロックされた状態内)
+	 *
 	 * @param reservation
 	 */
 	public void mergePassengerRecordsWithWriteLock(LocalData localData,
-			PassengerRecord serverPassengerRecord, Reservation reservation, User user) {
+			PassengerRecord serverPassengerRecord, Reservation reservation,
+			User user) {
 		// 循環参照を防ぐ
 		// TODO:不要になる予定
 		user.clearPassengerRecords();
@@ -304,5 +327,14 @@ public class OperationScheduleLogic {
 						return Lists.newLinkedList(status.operationSchedules);
 					}
 				});
+	}
+
+	public Phase getPhase() {
+		return service.getLocalDataSource().withReadLock(new Reader<Phase>() {
+			@Override
+			public Phase read(LocalData status) {
+				return status.phase;
+			}
+		});
 	}
 }

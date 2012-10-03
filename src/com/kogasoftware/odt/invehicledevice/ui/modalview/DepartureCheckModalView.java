@@ -31,6 +31,7 @@ public class DepartureCheckModalView extends ModalView {
 		setCloseOnClick(R.id.departure_check_close_button);
 	}
 
+	@Override
 	public void show() {
 		Button departureButton = (Button) findViewById(R.id.departure_button);
 		Button departureWithErrorButton = (Button) findViewById(R.id.departure_with_error_button);
@@ -65,7 +66,11 @@ public class DepartureCheckModalView extends ModalView {
 		OnClickListener onClickDepartureButtonListener = new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				service.enterDrivePhase();
+				if (service.getRemainingOperationSchedules().size() <= 1) {
+					service.enterFinishPhase();
+				} else {
+					service.enterDrivePhase();
+				}
 				hide();
 			}
 		};

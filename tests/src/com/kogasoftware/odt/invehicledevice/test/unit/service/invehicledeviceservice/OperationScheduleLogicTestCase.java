@@ -17,8 +17,10 @@ import android.test.AndroidTestCase;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.io.Closeables;
+import com.kogasoftware.odt.invehicledevice.datasource.EmptyDataSource;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.VoidReader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
@@ -40,11 +42,13 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 		lds = new LocalDataSource(getContext());
 		s = mock(InVehicleDeviceService.class);
 		when(s.getLocalDataSource()).thenReturn(lds);
+		when(s.getRemoteDataSource()).thenReturn(new EmptyDataSource());
 		when(s.isOperationInitialized()).thenReturn(true);
 		osl = new OperationScheduleLogic(s);
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
+				localData.phase = Phase.INITIAL;
 				localData.passengerRecords.clear();
 				localData.operationSchedules.clear();
 			}
@@ -312,5 +316,50 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 		String s5e = "[{id: 16, operation_record: {}}]";
 		String s5p = "[{id: 15, operation_record: {departed_at: '2012-01-01'}}, {id: 16, operation_record: {}}]";
 		callTestGetRemainingOperationSchedules(s5e, s5p);
+	}
+
+	public void testPhase0() throws Exception {
+		String json = "[{id: 11, operation_record: {}}, {id: 12, operation_record: {}}, {id: 13, operation_record: {}}]";
+		final List<OperationSchedule> oss = OperationSchedule
+				.parseList(new JSONArray(json));
+		lds.withWriteLock(new Writer() {
+			@Override
+			public void write(LocalData localData) {
+				localData.operationSchedules.addAll(oss);
+			}
+		});
+		assertEquals(Phase.INITIAL, osl.getPhase());
+		assertEquals(11, osl.getCurrentOperationSchedule().get().getId()
+				.intValue());
+		osl.enterDrivePhase();
+		assertEquals(Phase.DRIVE, osl.getPhase());
+		assertEquals(11, osl.getCurrentOperationSchedule().get().getId()
+				.intValue());
+		osl.enterPlatformPhase();
+		assertEquals(Phase.PLATFORM, osl.getPhase());
+		assertEquals(11, osl.getCurrentOperationSchedule().get().getId()
+				.intValue());
+
+		osl.enterDrivePhase();
+		assertEquals(Phase.DRIVE, osl.getPhase());
+		assertEquals(12, osl.getCurrentOperationSchedule().get().getId()
+				.intValue());
+		osl.enterPlatformPhase();
+		assertEquals(Phase.PLATFORM, osl.getPhase());
+		assertEquals(12, osl.getCurrentOperationSchedule().get().getId()
+				.intValue());
+
+		osl.enterDrivePhase();
+		assertEquals(Phase.DRIVE, osl.getPhase());
+		assertEquals(13, osl.getCurrentOperationSchedule().get().getId()
+				.intValue());
+		osl.enterPlatformPhase();
+		assertEquals(Phase.PLATFORM, osl.getPhase());
+		assertEquals(13, osl.getCurrentOperationSchedule().get().getId()
+				.intValue());
+
+		osl.enterDrivePhase();
+		assertEquals(Phase.FINISH, osl.getPhase());
+		assertFalse(osl.getCurrentOperationSchedule().isPresent());
 	}
 }

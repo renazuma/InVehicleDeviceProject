@@ -588,12 +588,7 @@ public class InVehicleDeviceService extends Service {
 	}
 
 	public Phase getPhase() {
-		return localDataSource.withReadLock(new Reader<Phase>() {
-			@Override
-			public Phase read(LocalData status) {
-				return status.phase;
-			}
-		});
+		return operationScheduleLogic.getPhase();
 	}
 
 	public List<OperationSchedule> getOperationSchedules() {
