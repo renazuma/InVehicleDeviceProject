@@ -1,17 +1,20 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.ui.modalview;
 
 import static org.mockito.Mockito.mock;
-import android.view.View;
+import static org.mockito.Mockito.when;
 
+import java.util.List;
+
+import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
+import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.ScheduleChangedModalView;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.ScheduleModalView;
+import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class ScheduleChangedModalViewTestCase extends
@@ -25,9 +28,18 @@ public class ScheduleChangedModalViewTestCase extends
 	protected void setUp() throws Exception {
 		super.setUp();
 		s = mock(InVehicleDeviceService.class);
-		smv = mock(ScheduleModalView.class);
+		when(s.getCurrentOperationSchedule()).thenReturn(
+				Optional.<OperationSchedule> absent());
+		smv = new ScheduleModalView(a, s);
 		sa = new LocalDataSource(a);
 		mv = new ScheduleChangedModalView(a, s, smv);
+
+		runOnUiThreadSync(new Runnable() {
+			@Override
+			public void run() {
+				a.setContentView(mv);
+			}
+		});
 	}
 
 	@Override
@@ -35,143 +47,66 @@ public class ScheduleChangedModalViewTestCase extends
 		super.tearDown();
 	}
 
-	public void xtestEventBusに自動で登録される() throws Exception {
+	public void testShow() throws Exception {
+		VehicleNotification vn = new VehicleNotification();
+		String body = "こんにちは";
+		vn.setBody(body);
+		assertShow(Lists.newArrayList(vn));
+		assertTrue(solo.searchText(body));
+	}
+
+	public void testAddMessage() throws Exception {
+		final VehicleNotification vn0 = new VehicleNotification();
+		final VehicleNotification vn1 = new VehicleNotification();
+		final VehicleNotification vn2 = new VehicleNotification();
+		String body0 = "おはよう";
+		String body1 = "こんにちは";
+		String body2 = "こんばんは";
+		vn0.setBody(body0);
+		vn1.setBody(body1);
+		vn2.setBody(body2);
+		assertShow(Lists.newArrayList(vn0, vn1));
+
+		assertTrue(solo.searchText(body0, true));
+		assertTrue(solo.searchText(body1, true));
+		assertFalse(solo.searchText(body2, true));
+
 		runOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
-				a.setContentView(R.layout.in_vehicle_device);
-			}
-		});
-	}
-
-	public void testUpdatedOperationScheduleMerged1()
-			throws InterruptedException {
-		// Subscriber<ScheduleModalView.HideEvent> s = Subscriber.of(
-		// ScheduleModalView.HideEvent.class, cl);
-
-		final String body = "こんにちは";
-		sa.withWriteLock(new Writer() { // TODO: イベントで書き直し
-			@Override
-			public void write(LocalData status) {
-				VehicleNotification vn = new VehicleNotification();
-				vn.setBody(body);
-				vn.setNotificationKind(VehicleNotification.NotificationKind.RESERVATION_CHANGED);
-				status.vehicleNotifications.clear();
+				mv.onMergeOperationSchedules(Lists.newArrayList(vn2));
 			}
 		});
 
-		assertFalse(mv.isShown());
-		assertNotSame(mv.getVisibility(), View.VISIBLE);
-
-		// cl.postEvent(new UpdatedOperationScheduleMergedEvent());
-		getInstrumentation().waitForIdleSync();
-
-		assertTrue(mv.isShown());
-		assertEquals(mv.getVisibility(), View.VISIBLE);
-		assertTrue(solo.searchText(body, true));
-		// assertTrue(s.cdl.await(3, TimeUnit.SECONDS));
-	}
-
-	/**
-	 * ShowEventを二度受け取ると、内容が追記される
-	 */
-	public void testUpdatedOperationScheduleMerged2()
-			throws InterruptedException {
-		// Subscriber<ScheduleModalView.HideEvent> s = Subscriber.of(
-		// ScheduleModalView.HideEvent.class, cl);
-
-		final String body1 = "連絡1";
-		final String body2 = "連絡2";
-		final String body3 = "連絡3";
-		sa.withWriteLock(new Writer() { // TODO: イベントで書き直し
-			@Override
-			public void write(LocalData status) {
-				VehicleNotification vn1 = new VehicleNotification();
-				vn1.setBody(body1);
-				vn1.setNotificationKind(VehicleNotification.NotificationKind.RESERVATION_CHANGED);
-
-				VehicleNotification vn2 = new VehicleNotification();
-				vn2.setBody(body2);
-				vn2.setNotificationKind(VehicleNotification.NotificationKind.RESERVATION_CHANGED);
-
-				status.vehicleNotifications.clear();
-			}
-		});
-
-		assertFalse(mv.isShown());
-		assertNotSame(mv.getVisibility(), View.VISIBLE);
-
-		// cl.postEvent(new UpdatedOperationScheduleMergedEvent());
-		getInstrumentation().waitForIdleSync();
-
-		assertTrue(mv.isShown());
-		assertEquals(mv.getVisibility(), View.VISIBLE);
+		assertTrue(solo.searchText(body0, true));
 		assertTrue(solo.searchText(body1, true));
 		assertTrue(solo.searchText(body2, true));
-		assertFalse(solo.searchText(body3, true));
-		// assertTrue(s.cdl.await(3, TimeUnit.SECONDS));
-
-		sa.withWriteLock(new Writer() { // TODO: イベントで書き直し
-			@Override
-			public void write(LocalData status) {
-				VehicleNotification vn = new VehicleNotification();
-				vn.setBody(body3);
-				vn.setNotificationKind(VehicleNotification.NotificationKind.RESERVATION_CHANGED);
-				status.vehicleNotifications.put(VehicleNotificationStatus.OPERATION_SCHEDULE_RECEIVED, vn);
-			}
-		});
-
-		// cl.postEvent(new UpdatedOperationScheduleMergedEvent());
-		getInstrumentation().waitForIdleSync();
-
-		assertTrue(mv.isShown());
-		assertEquals(mv.getVisibility(), View.VISIBLE);
-		assertTrue(solo.searchText(body1, true));
-		assertTrue(solo.searchText(body2, true));
-		assertTrue(solo.searchText(body3, true));
-		// assertTrue(s.cdl.await(3, TimeUnit.SECONDS));
 	}
 
-	/**
-	 * VehicleNotificationが無い場合ShowEventを受け取っても表示されず、ScheduleModalView.
-	 * HideEventも発行されない
-	 */
-	public void testUpdatedOperationScheduleMerged3()
-			throws InterruptedException {
-		// Subscriber<ScheduleModalView.HideEvent> s = Subscriber.of(
-		// ScheduleModalView.HideEvent.class, cl);
-
-		sa.withWriteLock(new Writer() { // TODO: イベントで書き直し
-			@Override
-			public void write(LocalData status) {
-				status.vehicleNotifications.clear();
-			}
-		});
-
-		assertFalse(mv.isShown());
-		assertNotSame(mv.getVisibility(), View.VISIBLE);
-
-		// cl.postEvent(new ScheduleModalView.ShowEvent());
-		getInstrumentation().waitForIdleSync();
-
-		assertFalse(mv.isShown());
-		assertNotSame(mv.getVisibility(), View.VISIBLE);
-		// assertFalse(s.cdl.await(3, TimeUnit.SECONDS));
-	}
-
-	public void test戻るボタンを押すと消える() throws Exception {
-		testUpdatedOperationScheduleMerged1();
-		solo.clickOnView(solo.getView(R.id.schedule_changed_close_button));
-		getInstrumentation().waitForIdleSync();
-		assertFalse(mv.isShown());
-	}
-
-	public void test予定を確認ボタンを押すと消えてScheduleModalView_ShowEvent発生()
+	protected void assertShow(final List<VehicleNotification> vns)
 			throws Exception {
-		testUpdatedOperationScheduleMerged1();
-		// Subscriber<ScheduleModalView.ShowEvent> s = Subscriber.of(
-		// ScheduleModalView.ShowEvent.class, cl);
+		assertFalse(mv.isShown());
+		runOnUiThreadSync(new Runnable() {
+			@Override
+			public void run() {
+				mv.onMergeOperationSchedules(vns);
+			}
+		});
+		TestUtil.assertShow(mv);
+	}
+
+	public void testBack() throws Exception {
+		VehicleNotification vn = new VehicleNotification();
+		assertShow(Lists.newArrayList(vn));
+		solo.clickOnView(solo.getView(R.id.schedule_changed_close_button));
+		TestUtil.assertHide(mv);
+	}
+
+	public void testScheduleConfirm() throws Exception {
+		VehicleNotification vn = new VehicleNotification();
+		assertShow(Lists.newArrayList(vn));
 		solo.clickOnView(solo.getView(R.id.schedule_confirm_button));
-		// s.cdl.await();
+		TestUtil.assertHide(mv);
+		TestUtil.assertShow(smv);
 	}
 }
