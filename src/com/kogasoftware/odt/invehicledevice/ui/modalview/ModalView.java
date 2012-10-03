@@ -24,7 +24,7 @@ public class ModalView extends FrameLayout implements AnimationListener {
 			AnimationTarget.NONE);
 	protected final Animation showAnimation;
 	protected final Animation hideAnimation;
-	protected InVehicleDeviceService service;
+	protected final InVehicleDeviceService service;
 
 	public ModalView(Context context, InVehicleDeviceService service) {
 		super(context);
@@ -80,7 +80,7 @@ public class ModalView extends FrameLayout implements AnimationListener {
 
 	/**
 	 * 指定したリソースに、ModalViewを閉じるOnClickListenerをセット
-	 * 
+	 *
 	 * @param resourceId
 	 */
 	protected void setCloseOnClick(Integer resourceId) {
