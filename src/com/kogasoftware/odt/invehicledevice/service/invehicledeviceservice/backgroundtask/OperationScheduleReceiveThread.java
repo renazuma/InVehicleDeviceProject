@@ -2,7 +2,9 @@ package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.back
 
 import java.util.List;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
+import com.google.common.util.concurrent.Uninterruptibles;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
@@ -15,6 +17,7 @@ public class OperationScheduleReceiveThread extends Thread implements
 		InVehicleDeviceService.OnStartNewOperationListener,
 		InVehicleDeviceService.OnStartReceiveUpdatedOperationScheduleListener {
 	public static final Integer VOICE_DELAY_MILLIS = 5000;
+	public static final Integer RETRY_DELAY_MILLIS = 5000;
 	protected final InVehicleDeviceService service;
 	protected final Semaphore startUpdatedOperationScheduleReceiveSemaphore = new Semaphore(
 			0);
@@ -40,12 +43,16 @@ public class OperationScheduleReceiveThread extends Thread implements
 					@Override
 					public void onException(int reqkey, WebAPIException ex) {
 						service.notifyOperationScheduleReceiveFailed();
+						Uninterruptibles.sleepUninterruptibly(
+								RETRY_DELAY_MILLIS, TimeUnit.MILLISECONDS);
 					}
 
 					@Override
 					public void onFailed(int reqkey, int statusCode,
 							String response) {
 						service.notifyOperationScheduleReceiveFailed();
+						Uninterruptibles.sleepUninterruptibly(
+								RETRY_DELAY_MILLIS, TimeUnit.MILLISECONDS);
 					}
 
 					@Override
