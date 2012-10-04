@@ -249,7 +249,7 @@ public class ScheduleModalViewTestCase extends
 		assertTrue(solo.searchText(p7.getName(), true));
 	}
 
-	public void testAutoScroll2() throws Exception {
+	public void xtestAutoScroll2() throws Exception {
 		Platform p7 = new Platform();
 		Platform p9 = new Platform();
 		p7.setName("下限のため隠れない駅");
