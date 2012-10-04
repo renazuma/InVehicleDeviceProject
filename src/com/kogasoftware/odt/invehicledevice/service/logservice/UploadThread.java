@@ -1,6 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.service.logservice;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 
 import android.content.BroadcastReceiver;
@@ -61,7 +62,7 @@ public class UploadThread extends Thread {
 
 	@VisibleForTesting
 	public void uploadOneFile(AmazonS3Client s3Client, String deviceId)
-			throws InterruptedException {
+			throws InterruptedException, IOException {
 		Thread.sleep(UPLOAD_DELAY_MILLIS);
 		File uploadFile = uploadFiles.take();
 		if (!uploadFile.exists()) {
@@ -72,7 +73,19 @@ public class UploadThread extends Thread {
 		try {
 			PutObjectRequest putObjectRequest = new PutObjectRequest(bucket,
 					"log/" + deviceId + "_" + uploadFile.getName(), uploadFile);
-			s3Client.putObject(putObjectRequest);
+			try {
+				s3Client.putObject(putObjectRequest);
+			} catch (IllegalStateException e) {
+				// java.lang.IllegalStateException: Content has been consumed
+				// at org.apache.http.entity.BasicHttpEntity.getContent(BasicHttpEntity.java:84)
+				// at com.amazonaws.http.AmazonHttpClient.executeHelper(Unknown Source)
+				// at com.amazonaws.http.AmazonHttpClient.execute(Unknown Source)
+				// at com.amazonaws.services.s3.AmazonS3Client.invoke(Unknown Source)
+				// at com.amazonaws.services.s3.AmazonS3Client.putObject(Unknown Source)
+				// at com.kogasoftware.odt.invehicledevice.service.logservice.UploadThread.uploadOneFile(UploadThread.java:75)
+				// at com.kogasoftware.odt.invehicledevice.service.logservice.UploadThread.run(UploadThread.java:106)
+				throw new IOException(e);
+			}
 			succeed = true;
 		} finally {
 			if (succeed) {
@@ -114,6 +127,8 @@ public class UploadThread extends Thread {
 					Log.w(TAG, e);
 				} catch (AmazonClientException e) {
 					Log.w(TAG, e);
+				} catch (IOException e) {
+					Log.e(TAG, e.toString(), e);
 				}
 			}
 		} finally {
@@ -131,7 +146,7 @@ public class UploadThread extends Thread {
 		}
 		return new AmazonS3Client(getAWSCredentials(context));
 	}
-	
+
 	@VisibleForTesting
 	public void setMockAmazonS3Client(AmazonS3Client amazonS3Client) {
 		mockAmazonS3Client = Optional.of(amazonS3Client);
