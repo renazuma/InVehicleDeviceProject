@@ -14,7 +14,7 @@ import android.test.AndroidTestCase;
 
 public class WebAPIRequestQueueTestCase extends
 		AndroidTestCase {
-	private static final String TAG = WebAPITestCase.class.getSimpleName();
+	private static final String TAG = WebAPIRequestQueueTestCase.class.getSimpleName();
 
 	public void testSetSaveOnClose() throws InterruptedException {
 		final Thread mainThread = Thread.currentThread();
