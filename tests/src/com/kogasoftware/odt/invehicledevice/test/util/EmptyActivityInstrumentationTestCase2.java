@@ -8,6 +8,7 @@ import android.app.Instrumentation;
 import android.content.res.XmlResourceParser;
 import android.os.Handler;
 import android.test.ActivityInstrumentationTestCase2;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -83,6 +84,17 @@ public class EmptyActivityInstrumentationTestCase2 extends
 		super.setUp();
 		Instrumentation i = getInstrumentation();
 		TestUtil.disableAutoStart(i.getContext());
+
+		// すでに車載器Activityが起動していることがあるので、BACK,HOMEキーを送信して終了
+		try {
+			i.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
+		} catch (SecurityException e) {
+		}
+		try {
+			i.sendKeyDownUpSync(KeyEvent.KEYCODE_HOME);
+		} catch (SecurityException e) {
+		}
+
 		a = getActivity();
 		solo = new Solo(i, a);
 	}
