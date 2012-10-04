@@ -255,8 +255,12 @@ public class InVehicleDeviceActivity extends Activity implements
 
 	@Override
 	public void onOperationScheduleReceiveFailed() {
-		BigToast.makeText(this,
-				getString(R.string.failed_to_connect_operator_tool),
-				Toast.LENGTH_LONG).show();
+		for (InVehicleDeviceService service : optionalService.asSet()) {
+			if (!service.isOperationInitialized()) {
+				BigToast.makeText(this,
+						getString(R.string.failed_to_connect_operator_tool),
+						Toast.LENGTH_LONG).show();
+			}
+		}
 	}
 }
