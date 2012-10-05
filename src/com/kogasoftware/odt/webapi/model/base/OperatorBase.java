@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,7 +19,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class OperatorBase extends Model {
-	private static final long serialVersionUID = 5292359294497796903L;
+	private static final long serialVersionUID = 292885598331744478L;
 	public static final ResponseConverter<Operator> RESPONSE_CONVERTER = new ResponseConverter<Operator>() {
 		@Override
 		public Operator convert(byte[] rawResponse) throws JSONException {
@@ -293,5 +295,45 @@ public abstract class OperatorBase extends Model {
 
 	public void clearServiceProvider() {
 		setServiceProvider(Optional.<ServiceProvider>absent());
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder()
+			.append(authenticationToken)
+			.append(email)
+			.append(firstName)
+			.append(id)
+			.append(lastName)
+			.append(login)
+			.append(serviceProviderId)
+			.append(auditComment)
+			.append(password)
+			.append(passwordConfirmation)
+			.append(rememberMe)
+			.append(serviceProvider)
+			.toHashCode();
+	}
+	
+	@Override
+	public boolean equals(final Object obj) {
+		if(!(obj instanceof OperatorBase)) {
+			return false;
+		}
+		OperatorBase other = (OperatorBase) obj;
+		return new EqualsBuilder()
+			.append(authenticationToken, other.authenticationToken)
+			.append(email, other.email)
+			.append(firstName, other.firstName)
+			.append(id, other.id)
+			.append(lastName, other.lastName)
+			.append(login, other.login)
+			.append(serviceProviderId, other.serviceProviderId)
+			.append(auditComment, other.auditComment)
+			.append(password, other.password)
+			.append(passwordConfirmation, other.passwordConfirmation)
+			.append(rememberMe, other.rememberMe)
+			.append(serviceProvider, other.serviceProvider)
+			.isEquals();
 	}
 }

@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,7 +19,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class UnitAssignmentBase extends Model {
-	private static final long serialVersionUID = 7180542306067615307L;
+	private static final long serialVersionUID = 3280947584733840345L;
 	public static final ResponseConverter<UnitAssignment> RESPONSE_CONVERTER = new ResponseConverter<UnitAssignment>() {
 		@Override
 		public UnitAssignment convert(byte[] rawResponse) throws JSONException {
@@ -287,5 +289,45 @@ public abstract class UnitAssignmentBase extends Model {
 
 	public void clearServiceUnits() {
 		setServiceUnits(new LinkedList<ServiceUnit>());
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder()
+			.append(createdAt)
+			.append(deletedAt)
+			.append(id)
+			.append(name)
+			.append(serviceProviderId)
+			.append(updatedAt)
+			.append(working)
+			.append(operationSchedules)
+			.append(reservationCandidates)
+			.append(reservations)
+			.append(serviceProvider)
+			.append(serviceUnits)
+			.toHashCode();
+	}
+	
+	@Override
+	public boolean equals(final Object obj) {
+		if(!(obj instanceof UnitAssignmentBase)) {
+			return false;
+		}
+		UnitAssignmentBase other = (UnitAssignmentBase) obj;
+		return new EqualsBuilder()
+			.append(createdAt, other.createdAt)
+			.append(deletedAt, other.deletedAt)
+			.append(id, other.id)
+			.append(name, other.name)
+			.append(serviceProviderId, other.serviceProviderId)
+			.append(updatedAt, other.updatedAt)
+			.append(working, other.working)
+			.append(operationSchedules, other.operationSchedules)
+			.append(reservationCandidates, other.reservationCandidates)
+			.append(reservations, other.reservations)
+			.append(serviceProvider, other.serviceProvider)
+			.append(serviceUnits, other.serviceUnits)
+			.isEquals();
 	}
 }

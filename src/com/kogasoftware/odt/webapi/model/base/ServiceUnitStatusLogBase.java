@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,7 +19,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class ServiceUnitStatusLogBase extends Model {
-	private static final long serialVersionUID = 865657044807863946L;
+	private static final long serialVersionUID = 4166838134573111029L;
 	public static final ResponseConverter<ServiceUnitStatusLog> RESPONSE_CONVERTER = new ResponseConverter<ServiceUnitStatusLog>() {
 		@Override
 		public ServiceUnitStatusLog convert(byte[] rawResponse) throws JSONException {
@@ -278,5 +280,43 @@ public abstract class ServiceUnitStatusLogBase extends Model {
 
 	public void clearServiceUnit() {
 		setServiceUnit(Optional.<ServiceUnit>absent());
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder()
+			.append(createdAt)
+			.append(id)
+			.append(latitude)
+			.append(longitude)
+			.append(offline)
+			.append(offlineTime)
+			.append(orientation)
+			.append(serviceUnitId)
+			.append(temperature)
+			.append(updatedAt)
+			.append(serviceUnit)
+			.toHashCode();
+	}
+	
+	@Override
+	public boolean equals(final Object obj) {
+		if(!(obj instanceof ServiceUnitStatusLogBase)) {
+			return false;
+		}
+		ServiceUnitStatusLogBase other = (ServiceUnitStatusLogBase) obj;
+		return new EqualsBuilder()
+			.append(createdAt, other.createdAt)
+			.append(id, other.id)
+			.append(latitude, other.latitude)
+			.append(longitude, other.longitude)
+			.append(offline, other.offline)
+			.append(offlineTime, other.offlineTime)
+			.append(orientation, other.orientation)
+			.append(serviceUnitId, other.serviceUnitId)
+			.append(temperature, other.temperature)
+			.append(updatedAt, other.updatedAt)
+			.append(serviceUnit, other.serviceUnit)
+			.isEquals();
 	}
 }

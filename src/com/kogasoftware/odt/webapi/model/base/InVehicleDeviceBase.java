@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,7 +19,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class InVehicleDeviceBase extends Model {
-	private static final long serialVersionUID = 7218497968670832486L;
+	private static final long serialVersionUID = 89181319512474502L;
 	public static final ResponseConverter<InVehicleDevice> RESPONSE_CONVERTER = new ResponseConverter<InVehicleDevice>() {
 		@Override
 		public InVehicleDevice convert(byte[] rawResponse) throws JSONException {
@@ -327,5 +329,49 @@ public abstract class InVehicleDeviceBase extends Model {
 
 	public void clearVehicleNotifications() {
 		setVehicleNotifications(new LinkedList<VehicleNotification>());
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder()
+			.append(authenticationToken)
+			.append(id)
+			.append(login)
+			.append(modelName)
+			.append(serviceProviderId)
+			.append(typeNumber)
+			.append(auditComment)
+			.append(password)
+			.append(passwordConfirmation)
+			.append(rememberMe)
+			.append(serviceProvider)
+			.append(serviceUnits)
+			.append(unitAssignments)
+			.append(vehicleNotifications)
+			.toHashCode();
+	}
+	
+	@Override
+	public boolean equals(final Object obj) {
+		if(!(obj instanceof InVehicleDeviceBase)) {
+			return false;
+		}
+		InVehicleDeviceBase other = (InVehicleDeviceBase) obj;
+		return new EqualsBuilder()
+			.append(authenticationToken, other.authenticationToken)
+			.append(id, other.id)
+			.append(login, other.login)
+			.append(modelName, other.modelName)
+			.append(serviceProviderId, other.serviceProviderId)
+			.append(typeNumber, other.typeNumber)
+			.append(auditComment, other.auditComment)
+			.append(password, other.password)
+			.append(passwordConfirmation, other.passwordConfirmation)
+			.append(rememberMe, other.rememberMe)
+			.append(serviceProvider, other.serviceProvider)
+			.append(serviceUnits, other.serviceUnits)
+			.append(unitAssignments, other.unitAssignments)
+			.append(vehicleNotifications, other.vehicleNotifications)
+			.isEquals();
 	}
 }

@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,7 +19,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class ServiceUnitBase extends Model {
-	private static final long serialVersionUID = 6308686101126825945L;
+	private static final long serialVersionUID = 376777390700395067L;
 	public static final ResponseConverter<ServiceUnit> RESPONSE_CONVERTER = new ResponseConverter<ServiceUnit>() {
 		@Override
 		public ServiceUnit convert(byte[] rawResponse) throws JSONException {
@@ -416,5 +418,53 @@ public abstract class ServiceUnitBase extends Model {
 
 	public void clearVehicle() {
 		setVehicle(Optional.<Vehicle>absent());
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder()
+			.append(activatedAt)
+			.append(createdAt)
+			.append(deletedAt)
+			.append(driverId)
+			.append(id)
+			.append(inVehicleDeviceId)
+			.append(serviceProviderId)
+			.append(unitAssignmentId)
+			.append(updatedAt)
+			.append(vehicleId)
+			.append(driver)
+			.append(inVehicleDevice)
+			.append(operationRecords)
+			.append(serviceProvider)
+			.append(unitAssignment)
+			.append(vehicle)
+			.toHashCode();
+	}
+	
+	@Override
+	public boolean equals(final Object obj) {
+		if(!(obj instanceof ServiceUnitBase)) {
+			return false;
+		}
+		ServiceUnitBase other = (ServiceUnitBase) obj;
+		return new EqualsBuilder()
+			.append(activatedAt, other.activatedAt)
+			.append(createdAt, other.createdAt)
+			.append(deletedAt, other.deletedAt)
+			.append(driverId, other.driverId)
+			.append(id, other.id)
+			.append(inVehicleDeviceId, other.inVehicleDeviceId)
+			.append(serviceProviderId, other.serviceProviderId)
+			.append(unitAssignmentId, other.unitAssignmentId)
+			.append(updatedAt, other.updatedAt)
+			.append(vehicleId, other.vehicleId)
+			.append(driver, other.driver)
+			.append(inVehicleDevice, other.inVehicleDevice)
+			.append(operationRecords, other.operationRecords)
+			.append(serviceProvider, other.serviceProvider)
+			.append(unitAssignment, other.unitAssignment)
+			.append(vehicle, other.vehicle)
+			.isEquals();
 	}
 }

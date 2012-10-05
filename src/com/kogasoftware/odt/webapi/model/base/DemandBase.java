@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,7 +19,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class DemandBase extends Model {
-	private static final long serialVersionUID = 2995633870383066534L;
+	private static final long serialVersionUID = 9019562465701671920L;
 	public static final ResponseConverter<Demand> RESPONSE_CONVERTER = new ResponseConverter<Demand>() {
 		@Override
 		public Demand convert(byte[] rawResponse) throws JSONException {
@@ -605,5 +607,73 @@ public abstract class DemandBase extends Model {
 
 	public void clearUser() {
 		setUser(Optional.<User>absent());
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder()
+			.append(arrivalLock)
+			.append(arrivalPlatformId)
+			.append(arrivalTime)
+			.append(createdAt)
+			.append(deletedAt)
+			.append(departureLock)
+			.append(departurePlatformId)
+			.append(departureTime)
+			.append(id)
+			.append(memo)
+			.append(passengerCount)
+			.append(repeat)
+			.append(serviceProviderId)
+			.append(stoppageTime)
+			.append(unitAssignmentId)
+			.append(updatedAt)
+			.append(userId)
+			.append(arrivalPlatform)
+			.append(departurePlatform)
+			.append(fellowUsers)
+			.append(reservation)
+			.append(reservationCandidates)
+			.append(reservationUsers)
+			.append(serviceProvider)
+			.append(unitAssignment)
+			.append(user)
+			.toHashCode();
+	}
+	
+	@Override
+	public boolean equals(final Object obj) {
+		if(!(obj instanceof DemandBase)) {
+			return false;
+		}
+		DemandBase other = (DemandBase) obj;
+		return new EqualsBuilder()
+			.append(arrivalLock, other.arrivalLock)
+			.append(arrivalPlatformId, other.arrivalPlatformId)
+			.append(arrivalTime, other.arrivalTime)
+			.append(createdAt, other.createdAt)
+			.append(deletedAt, other.deletedAt)
+			.append(departureLock, other.departureLock)
+			.append(departurePlatformId, other.departurePlatformId)
+			.append(departureTime, other.departureTime)
+			.append(id, other.id)
+			.append(memo, other.memo)
+			.append(passengerCount, other.passengerCount)
+			.append(repeat, other.repeat)
+			.append(serviceProviderId, other.serviceProviderId)
+			.append(stoppageTime, other.stoppageTime)
+			.append(unitAssignmentId, other.unitAssignmentId)
+			.append(updatedAt, other.updatedAt)
+			.append(userId, other.userId)
+			.append(arrivalPlatform, other.arrivalPlatform)
+			.append(departurePlatform, other.departurePlatform)
+			.append(fellowUsers, other.fellowUsers)
+			.append(reservation, other.reservation)
+			.append(reservationCandidates, other.reservationCandidates)
+			.append(reservationUsers, other.reservationUsers)
+			.append(serviceProvider, other.serviceProvider)
+			.append(unitAssignment, other.unitAssignment)
+			.append(user, other.user)
+			.isEquals();
 	}
 }

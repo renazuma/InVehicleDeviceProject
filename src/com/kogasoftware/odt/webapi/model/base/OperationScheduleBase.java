@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,7 +19,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class OperationScheduleBase extends Model {
-	private static final long serialVersionUID = 4035921201604020618L;
+	private static final long serialVersionUID = 8204934758626763019L;
 	public static final ResponseConverter<OperationSchedule> RESPONSE_CONVERTER = new ResponseConverter<OperationSchedule>() {
 		@Override
 		public OperationSchedule convert(byte[] rawResponse) throws JSONException {
@@ -430,5 +432,57 @@ public abstract class OperationScheduleBase extends Model {
 
 	public void clearUnitAssignment() {
 		setUnitAssignment(Optional.<UnitAssignment>absent());
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder()
+			.append(arrivalEstimate)
+			.append(createdAt)
+			.append(deletedAt)
+			.append(departureEstimate)
+			.append(id)
+			.append(operationDate)
+			.append(passengerCountChange)
+			.append(platformId)
+			.append(remain)
+			.append(serviceProviderId)
+			.append(unitAssignmentId)
+			.append(updatedAt)
+			.append(operationRecord)
+			.append(platform)
+			.append(reservationsAsArrival)
+			.append(reservationsAsDeparture)
+			.append(serviceProvider)
+			.append(unitAssignment)
+			.toHashCode();
+	}
+	
+	@Override
+	public boolean equals(final Object obj) {
+		if(!(obj instanceof OperationScheduleBase)) {
+			return false;
+		}
+		OperationScheduleBase other = (OperationScheduleBase) obj;
+		return new EqualsBuilder()
+			.append(arrivalEstimate, other.arrivalEstimate)
+			.append(createdAt, other.createdAt)
+			.append(deletedAt, other.deletedAt)
+			.append(departureEstimate, other.departureEstimate)
+			.append(id, other.id)
+			.append(operationDate, other.operationDate)
+			.append(passengerCountChange, other.passengerCountChange)
+			.append(platformId, other.platformId)
+			.append(remain, other.remain)
+			.append(serviceProviderId, other.serviceProviderId)
+			.append(unitAssignmentId, other.unitAssignmentId)
+			.append(updatedAt, other.updatedAt)
+			.append(operationRecord, other.operationRecord)
+			.append(platform, other.platform)
+			.append(reservationsAsArrival, other.reservationsAsArrival)
+			.append(reservationsAsDeparture, other.reservationsAsDeparture)
+			.append(serviceProvider, other.serviceProvider)
+			.append(unitAssignment, other.unitAssignment)
+			.isEquals();
 	}
 }

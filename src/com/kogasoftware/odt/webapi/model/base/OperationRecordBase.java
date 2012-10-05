@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,7 +19,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class OperationRecordBase extends Model {
-	private static final long serialVersionUID = 4832882434228285278L;
+	private static final long serialVersionUID = 6095226832278901548L;
 	public static final ResponseConverter<OperationRecord> RESPONSE_CONVERTER = new ResponseConverter<OperationRecord>() {
 		@Override
 		public OperationRecord convert(byte[] rawResponse) throws JSONException {
@@ -299,5 +301,43 @@ public abstract class OperationRecordBase extends Model {
 
 	public void clearServiceUnit() {
 		setServiceUnit(Optional.<ServiceUnit>absent());
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder()
+			.append(arrivedAt)
+			.append(arrivedAtOffline)
+			.append(createdAt)
+			.append(departedAt)
+			.append(departedAtOffline)
+			.append(id)
+			.append(operationScheduleId)
+			.append(serviceUnitId)
+			.append(updatedAt)
+			.append(operationSchedule)
+			.append(serviceUnit)
+			.toHashCode();
+	}
+	
+	@Override
+	public boolean equals(final Object obj) {
+		if(!(obj instanceof OperationRecordBase)) {
+			return false;
+		}
+		OperationRecordBase other = (OperationRecordBase) obj;
+		return new EqualsBuilder()
+			.append(arrivedAt, other.arrivedAt)
+			.append(arrivedAtOffline, other.arrivedAtOffline)
+			.append(createdAt, other.createdAt)
+			.append(departedAt, other.departedAt)
+			.append(departedAtOffline, other.departedAtOffline)
+			.append(id, other.id)
+			.append(operationScheduleId, other.operationScheduleId)
+			.append(serviceUnitId, other.serviceUnitId)
+			.append(updatedAt, other.updatedAt)
+			.append(operationSchedule, other.operationSchedule)
+			.append(serviceUnit, other.serviceUnit)
+			.isEquals();
 	}
 }

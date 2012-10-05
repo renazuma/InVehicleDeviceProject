@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,7 +19,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class ReservationUserBase extends Model {
-	private static final long serialVersionUID = 4919514987534104473L;
+	private static final long serialVersionUID = 3669109346341722908L;
 	public static final ResponseConverter<ReservationUser> RESPONSE_CONVERTER = new ResponseConverter<ReservationUser>() {
 		@Override
 		public ReservationUser convert(byte[] rawResponse) throws JSONException {
@@ -212,5 +214,37 @@ public abstract class ReservationUserBase extends Model {
 
 	public void clearUser() {
 		setUser(Optional.<User>absent());
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder()
+			.append(createdAt)
+			.append(id)
+			.append(likeReservationId)
+			.append(likeReservationType)
+			.append(updatedAt)
+			.append(userId)
+			.append(reservation)
+			.append(user)
+			.toHashCode();
+	}
+	
+	@Override
+	public boolean equals(final Object obj) {
+		if(!(obj instanceof ReservationUserBase)) {
+			return false;
+		}
+		ReservationUserBase other = (ReservationUserBase) obj;
+		return new EqualsBuilder()
+			.append(createdAt, other.createdAt)
+			.append(id, other.id)
+			.append(likeReservationId, other.likeReservationId)
+			.append(likeReservationType, other.likeReservationType)
+			.append(updatedAt, other.updatedAt)
+			.append(userId, other.userId)
+			.append(reservation, other.reservation)
+			.append(user, other.user)
+			.isEquals();
 	}
 }

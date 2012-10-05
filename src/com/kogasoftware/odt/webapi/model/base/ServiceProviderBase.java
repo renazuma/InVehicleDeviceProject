@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,7 +19,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class ServiceProviderBase extends Model {
-	private static final long serialVersionUID = 4138388057231562585L;
+	private static final long serialVersionUID = 8695386415207338764L;
 	public static final ResponseConverter<ServiceProvider> RESPONSE_CONVERTER = new ResponseConverter<ServiceProvider>() {
 		@Override
 		public ServiceProvider convert(byte[] rawResponse) throws JSONException {
@@ -574,5 +576,83 @@ public abstract class ServiceProviderBase extends Model {
 
 	public void clearVehicles() {
 		setVehicles(new LinkedList<Vehicle>());
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder()
+			.append(createdAt)
+			.append(deletedAt)
+			.append(domain)
+			.append(id)
+			.append(latitude)
+			.append(logAccessKeyIdAws)
+			.append(logSecretAccessKeyAws)
+			.append(longitude)
+			.append(mustContactGap)
+			.append(name)
+			.append(recommend)
+			.append(reservationStartDate)
+			.append(reservationTimeLimit)
+			.append(semiDemand)
+			.append(semiDemandExtentLimit)
+			.append(timeBufferRatio)
+			.append(updatedAt)
+			.append(userLoginLength)
+			.append(demands)
+			.append(drivers)
+			.append(inVehicleDevices)
+			.append(operationSchedules)
+			.append(operators)
+			.append(passengerRecords)
+			.append(platforms)
+			.append(reservationCandidates)
+			.append(reservations)
+			.append(serviceUnits)
+			.append(unitAssignments)
+			.append(users)
+			.append(vehicles)
+			.toHashCode();
+	}
+	
+	@Override
+	public boolean equals(final Object obj) {
+		if(!(obj instanceof ServiceProviderBase)) {
+			return false;
+		}
+		ServiceProviderBase other = (ServiceProviderBase) obj;
+		return new EqualsBuilder()
+			.append(createdAt, other.createdAt)
+			.append(deletedAt, other.deletedAt)
+			.append(domain, other.domain)
+			.append(id, other.id)
+			.append(latitude, other.latitude)
+			.append(logAccessKeyIdAws, other.logAccessKeyIdAws)
+			.append(logSecretAccessKeyAws, other.logSecretAccessKeyAws)
+			.append(longitude, other.longitude)
+			.append(mustContactGap, other.mustContactGap)
+			.append(name, other.name)
+			.append(recommend, other.recommend)
+			.append(reservationStartDate, other.reservationStartDate)
+			.append(reservationTimeLimit, other.reservationTimeLimit)
+			.append(semiDemand, other.semiDemand)
+			.append(semiDemandExtentLimit, other.semiDemandExtentLimit)
+			.append(timeBufferRatio, other.timeBufferRatio)
+			.append(updatedAt, other.updatedAt)
+			.append(userLoginLength, other.userLoginLength)
+			.append(demands, other.demands)
+			.append(drivers, other.drivers)
+			.append(inVehicleDevices, other.inVehicleDevices)
+			.append(operationSchedules, other.operationSchedules)
+			.append(operators, other.operators)
+			.append(passengerRecords, other.passengerRecords)
+			.append(platforms, other.platforms)
+			.append(reservationCandidates, other.reservationCandidates)
+			.append(reservations, other.reservations)
+			.append(serviceUnits, other.serviceUnits)
+			.append(unitAssignments, other.unitAssignments)
+			.append(users, other.users)
+			.append(vehicles, other.vehicles)
+			.isEquals();
 	}
 }
