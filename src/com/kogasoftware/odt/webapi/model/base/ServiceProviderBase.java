@@ -17,7 +17,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class ServiceProviderBase extends Model {
-	private static final long serialVersionUID = 2919373423390957705L;
+	private static final long serialVersionUID = 4138388057231562585L;
 	public static final ResponseConverter<ServiceProvider> RESPONSE_CONVERTER = new ResponseConverter<ServiceProvider>() {
 		@Override
 		public ServiceProvider convert(byte[] rawResponse) throws JSONException {
@@ -37,6 +37,7 @@ public abstract class ServiceProviderBase extends Model {
 	public void fill(JSONObject jsonObject) throws JSONException {
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
+		setDomain(parseString(jsonObject, "domain"));
 		setId(parseInteger(jsonObject, "id"));
 		setLatitude(parseBigDecimal(jsonObject, "latitude"));
 		setLogAccessKeyIdAws(parseOptionalString(jsonObject, "log_access_key_id_aws"));
@@ -109,6 +110,7 @@ public abstract class ServiceProviderBase extends Model {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
 		jsonObject.put("deleted_at", toJSON(getDeletedAt()));
+		jsonObject.put("domain", toJSON(getDomain()));
 		jsonObject.put("id", toJSON(getId()));
 		jsonObject.put("latitude", toJSON(getLatitude()));
 		jsonObject.put("log_access_key_id_aws", toJSON(getLogAccessKeyIdAws()));
@@ -199,6 +201,17 @@ public abstract class ServiceProviderBase extends Model {
 
 	public void clearDeletedAt() {
 		setDeletedAt(Optional.<Date>absent());
+	}
+
+	private String domain = "";
+
+	public String getDomain() {
+		return wrapNull(domain);
+	}
+
+	public void setDomain(String domain) {
+		refreshUpdatedAt();
+		this.domain = wrapNull(domain);
 	}
 
 	private Integer id = 0;

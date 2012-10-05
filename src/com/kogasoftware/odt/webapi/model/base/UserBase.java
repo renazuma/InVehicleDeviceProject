@@ -17,7 +17,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class UserBase extends Model {
-	private static final long serialVersionUID = 1304993702418693707L;
+	private static final long serialVersionUID = 3696716870891502803L;
 	public static final ResponseConverter<User> RESPONSE_CONVERTER = new ResponseConverter<User>() {
 		@Override
 		public User convert(byte[] rawResponse) throws JSONException {
@@ -68,6 +68,7 @@ public abstract class UserBase extends Model {
 		setReservationCandidates(ReservationCandidate.parseList(jsonObject, "reservation_candidates"));
 		setReservationUsers(ReservationUser.parseList(jsonObject, "reservation_users"));
 		setReservations(Reservation.parseList(jsonObject, "reservations"));
+		setReservationsAsFellow(Reservation.parseList(jsonObject, "reservations_as_fellow"));
 		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
 	}
 
@@ -157,6 +158,9 @@ public abstract class UserBase extends Model {
 		}
 		if (getReservations().size() > 0 && recursive) {
 			jsonObject.put("reservations", toJSON(getReservations(), true, nextDepth));
+		}
+		if (getReservationsAsFellow().size() > 0 && recursive) {
+			jsonObject.put("reservations_as_fellow", toJSON(getReservationsAsFellow(), true, nextDepth));
 		}
 		if (getServiceProvider().isPresent()) {
 			if (recursive) {
@@ -707,6 +711,20 @@ public abstract class UserBase extends Model {
 
 	public void clearReservations() {
 		setReservations(new LinkedList<Reservation>());
+	}
+
+	private LinkedList<Reservation> reservationsAsFellow = new LinkedList<Reservation>();
+
+	public List<Reservation> getReservationsAsFellow() {
+		return wrapNull(reservationsAsFellow);
+	}
+
+	public void setReservationsAsFellow(Iterable<Reservation> reservationsAsFellow) {
+		this.reservationsAsFellow = wrapNull(reservationsAsFellow);
+	}
+
+	public void clearReservationsAsFellow() {
+		setReservationsAsFellow(new LinkedList<Reservation>());
 	}
 
 	private Optional<ServiceProvider> serviceProvider = Optional.<ServiceProvider>absent();

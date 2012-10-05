@@ -17,7 +17,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class ReservationBase extends Model {
-	private static final long serialVersionUID = 7666804533746767948L;
+	private static final long serialVersionUID = 6737850999793922060L;
 	public static final ResponseConverter<Reservation> RESPONSE_CONVERTER = new ResponseConverter<Reservation>() {
 		@Override
 		public Reservation convert(byte[] rawResponse) throws JSONException {
@@ -35,14 +35,14 @@ public abstract class ReservationBase extends Model {
 	}
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {
-		setArrivalLock(parseOptionalBoolean(jsonObject, "arrival_lock"));
+		setArrivalLock(parseOptionalString(jsonObject, "arrival_lock"));
 		setArrivalPlatformId(parseOptionalInteger(jsonObject, "arrival_platform_id"));
 		setArrivalScheduleId(parseOptionalInteger(jsonObject, "arrival_schedule_id"));
 		setArrivalTime(parseDate(jsonObject, "arrival_time"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
 		setDemandId(parseOptionalInteger(jsonObject, "demand_id"));
-		setDepartureLock(parseOptionalBoolean(jsonObject, "departure_lock"));
+		setDepartureLock(parseOptionalString(jsonObject, "departure_lock"));
 		setDeparturePlatformId(parseOptionalInteger(jsonObject, "departure_platform_id"));
 		setDepartureScheduleId(parseOptionalInteger(jsonObject, "departure_schedule_id"));
 		setDepartureTime(parseDate(jsonObject, "departure_time"));
@@ -217,23 +217,23 @@ public abstract class ReservationBase extends Model {
 		return parse(toJSONObject(true));
 	}
 
-	private Optional<Boolean> arrivalLock = Optional.absent();
+	private Optional<String> arrivalLock = Optional.absent();
 
-	public Optional<Boolean> getArrivalLock() {
+	public Optional<String> getArrivalLock() {
 		return wrapNull(arrivalLock);
 	}
 
-	public void setArrivalLock(Optional<Boolean> arrivalLock) {
+	public void setArrivalLock(Optional<String> arrivalLock) {
 		refreshUpdatedAt();
 		this.arrivalLock = wrapNull(arrivalLock);
 	}
 
-	public void setArrivalLock(Boolean arrivalLock) {
+	public void setArrivalLock(String arrivalLock) {
 		setArrivalLock(Optional.fromNullable(arrivalLock));
 	}
 
 	public void clearArrivalLock() {
-		setArrivalLock(Optional.<Boolean>absent());
+		setArrivalLock(Optional.<String>absent());
 	}
 
 	private Optional<Integer> arrivalPlatformId = Optional.absent();
@@ -334,23 +334,23 @@ public abstract class ReservationBase extends Model {
 		setDemandId(Optional.<Integer>absent());
 	}
 
-	private Optional<Boolean> departureLock = Optional.absent();
+	private Optional<String> departureLock = Optional.absent();
 
-	public Optional<Boolean> getDepartureLock() {
+	public Optional<String> getDepartureLock() {
 		return wrapNull(departureLock);
 	}
 
-	public void setDepartureLock(Optional<Boolean> departureLock) {
+	public void setDepartureLock(Optional<String> departureLock) {
 		refreshUpdatedAt();
 		this.departureLock = wrapNull(departureLock);
 	}
 
-	public void setDepartureLock(Boolean departureLock) {
+	public void setDepartureLock(String departureLock) {
 		setDepartureLock(Optional.fromNullable(departureLock));
 	}
 
 	public void clearDepartureLock() {
-		setDepartureLock(Optional.<Boolean>absent());
+		setDepartureLock(Optional.<String>absent());
 	}
 
 	private Optional<Integer> departurePlatformId = Optional.absent();

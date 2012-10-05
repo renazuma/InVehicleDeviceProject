@@ -17,7 +17,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class ReservationCandidateBase extends Model {
-	private static final long serialVersionUID = 5745834658686013652L;
+	private static final long serialVersionUID = 1368925444186032704L;
 	public static final ResponseConverter<ReservationCandidate> RESPONSE_CONVERTER = new ResponseConverter<ReservationCandidate>() {
 		@Override
 		public ReservationCandidate convert(byte[] rawResponse) throws JSONException {
@@ -36,11 +36,13 @@ public abstract class ReservationCandidateBase extends Model {
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {
 		setAccuracy(parseOptionalFloat(jsonObject, "accuracy"));
+		setArrivalLock(parseOptionalString(jsonObject, "arrival_lock"));
 		setArrivalPlatformId(parseInteger(jsonObject, "arrival_platform_id"));
 		setArrivalTime(parseDate(jsonObject, "arrival_time"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
 		setDemandId(parseOptionalInteger(jsonObject, "demand_id"));
+		setDepartureLock(parseOptionalString(jsonObject, "departure_lock"));
 		setDeparturePlatformId(parseInteger(jsonObject, "departure_platform_id"));
 		setDepartureTime(parseDate(jsonObject, "departure_time"));
 		setId(parseInteger(jsonObject, "id"));
@@ -101,11 +103,13 @@ public abstract class ReservationCandidateBase extends Model {
 		Integer nextDepth = depth + 1;
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("accuracy", toJSON(getAccuracy()));
+		jsonObject.put("arrival_lock", toJSON(getArrivalLock()));
 		jsonObject.put("arrival_platform_id", toJSON(getArrivalPlatformId()));
 		jsonObject.put("arrival_time", toJSON(getArrivalTime()));
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
 		jsonObject.put("deleted_at", toJSON(getDeletedAt()));
 		jsonObject.put("demand_id", toJSON(getDemandId()));
+		jsonObject.put("departure_lock", toJSON(getDepartureLock()));
 		jsonObject.put("departure_platform_id", toJSON(getDeparturePlatformId()));
 		jsonObject.put("departure_time", toJSON(getDepartureTime()));
 		jsonObject.put("id", toJSON(getId()));
@@ -190,6 +194,25 @@ public abstract class ReservationCandidateBase extends Model {
 		setAccuracy(Optional.<Float>absent());
 	}
 
+	private Optional<String> arrivalLock = Optional.absent();
+
+	public Optional<String> getArrivalLock() {
+		return wrapNull(arrivalLock);
+	}
+
+	public void setArrivalLock(Optional<String> arrivalLock) {
+		refreshUpdatedAt();
+		this.arrivalLock = wrapNull(arrivalLock);
+	}
+
+	public void setArrivalLock(String arrivalLock) {
+		setArrivalLock(Optional.fromNullable(arrivalLock));
+	}
+
+	public void clearArrivalLock() {
+		setArrivalLock(Optional.<String>absent());
+	}
+
 	private Integer arrivalPlatformId = 0;
 
 	public Integer getArrivalPlatformId() {
@@ -259,6 +282,25 @@ public abstract class ReservationCandidateBase extends Model {
 
 	public void clearDemandId() {
 		setDemandId(Optional.<Integer>absent());
+	}
+
+	private Optional<String> departureLock = Optional.absent();
+
+	public Optional<String> getDepartureLock() {
+		return wrapNull(departureLock);
+	}
+
+	public void setDepartureLock(Optional<String> departureLock) {
+		refreshUpdatedAt();
+		this.departureLock = wrapNull(departureLock);
+	}
+
+	public void setDepartureLock(String departureLock) {
+		setDepartureLock(Optional.fromNullable(departureLock));
+	}
+
+	public void clearDepartureLock() {
+		setDepartureLock(Optional.<String>absent());
 	}
 
 	private Integer departurePlatformId = 0;

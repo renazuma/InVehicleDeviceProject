@@ -17,7 +17,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class ReservationUserBase extends Model {
-	private static final long serialVersionUID = 2851632811176726319L;
+	private static final long serialVersionUID = 4919514987534104473L;
 	public static final ResponseConverter<ReservationUser> RESPONSE_CONVERTER = new ResponseConverter<ReservationUser>() {
 		@Override
 		public ReservationUser convert(byte[] rawResponse) throws JSONException {
@@ -40,6 +40,7 @@ public abstract class ReservationUserBase extends Model {
 		setLikeReservationId(parseInteger(jsonObject, "like_reservation_id"));
 		setLikeReservationType(parseString(jsonObject, "like_reservation_type"));
 		setUserId(parseInteger(jsonObject, "user_id"));
+		setReservation(Reservation.parse(jsonObject, "reservation"));
 		setUser(User.parse(jsonObject, "user"));
 
 		setUpdatedAt(parseDate(jsonObject, "updated_at"));
@@ -90,6 +91,13 @@ public abstract class ReservationUserBase extends Model {
 		jsonObject.put("like_reservation_type", toJSON(getLikeReservationType()));
 		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
 		jsonObject.put("user_id", toJSON(getUserId()));
+		if (getReservation().isPresent()) {
+			if (recursive) {
+				jsonObject.put("reservation", getReservation().get().toJSONObject(true, nextDepth));
+			} else {
+				jsonObject.put("like_reservation_id", toJSON(getReservation().get().getId()));
+			}
+		}
 		if (getUser().isPresent()) {
 			if (recursive) {
 				jsonObject.put("user", getUser().get().toJSONObject(true, nextDepth));
@@ -168,6 +176,24 @@ public abstract class ReservationUserBase extends Model {
 	public void setUserId(Integer userId) {
 		refreshUpdatedAt();
 		this.userId = wrapNull(userId);
+	}
+
+	private Optional<Reservation> reservation = Optional.<Reservation>absent();
+
+	public Optional<Reservation> getReservation() {
+		return wrapNull(reservation);
+	}
+
+	public void setReservation(Optional<Reservation> reservation) {
+		this.reservation = wrapNull(reservation);
+	}
+
+	public void setReservation(Reservation reservation) {
+		setReservation(Optional.fromNullable(reservation));
+	}
+
+	public void clearReservation() {
+		setReservation(Optional.<Reservation>absent());
 	}
 
 	private Optional<User> user = Optional.<User>absent();

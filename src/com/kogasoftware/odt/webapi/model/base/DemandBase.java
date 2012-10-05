@@ -17,7 +17,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class DemandBase extends Model {
-	private static final long serialVersionUID = 4866728639568179335L;
+	private static final long serialVersionUID = 2995633870383066534L;
 	public static final ResponseConverter<Demand> RESPONSE_CONVERTER = new ResponseConverter<Demand>() {
 		@Override
 		public Demand convert(byte[] rawResponse) throws JSONException {
@@ -35,10 +35,12 @@ public abstract class DemandBase extends Model {
 	}
 	@Override
 	public void fill(JSONObject jsonObject) throws JSONException {
+		setArrivalLock(parseOptionalString(jsonObject, "arrival_lock"));
 		setArrivalPlatformId(parseOptionalInteger(jsonObject, "arrival_platform_id"));
 		setArrivalTime(parseOptionalDate(jsonObject, "arrival_time"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
+		setDepartureLock(parseOptionalString(jsonObject, "departure_lock"));
 		setDeparturePlatformId(parseOptionalInteger(jsonObject, "departure_platform_id"));
 		setDepartureTime(parseOptionalDate(jsonObject, "departure_time"));
 		setId(parseInteger(jsonObject, "id"));
@@ -101,10 +103,12 @@ public abstract class DemandBase extends Model {
 		}
 		Integer nextDepth = depth + 1;
 		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("arrival_lock", toJSON(getArrivalLock()));
 		jsonObject.put("arrival_platform_id", toJSON(getArrivalPlatformId()));
 		jsonObject.put("arrival_time", toJSON(getArrivalTime()));
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
 		jsonObject.put("deleted_at", toJSON(getDeletedAt()));
+		jsonObject.put("departure_lock", toJSON(getDepartureLock()));
 		jsonObject.put("departure_platform_id", toJSON(getDeparturePlatformId()));
 		jsonObject.put("departure_time", toJSON(getDepartureTime()));
 		jsonObject.put("id", toJSON(getId()));
@@ -169,6 +173,25 @@ public abstract class DemandBase extends Model {
 	@Override
 	public Demand cloneByJSON() throws JSONException {
 		return parse(toJSONObject(true));
+	}
+
+	private Optional<String> arrivalLock = Optional.absent();
+
+	public Optional<String> getArrivalLock() {
+		return wrapNull(arrivalLock);
+	}
+
+	public void setArrivalLock(Optional<String> arrivalLock) {
+		refreshUpdatedAt();
+		this.arrivalLock = wrapNull(arrivalLock);
+	}
+
+	public void setArrivalLock(String arrivalLock) {
+		setArrivalLock(Optional.fromNullable(arrivalLock));
+	}
+
+	public void clearArrivalLock() {
+		setArrivalLock(Optional.<String>absent());
 	}
 
 	private Optional<Integer> arrivalPlatformId = Optional.absent();
@@ -237,6 +260,25 @@ public abstract class DemandBase extends Model {
 
 	public void clearDeletedAt() {
 		setDeletedAt(Optional.<Date>absent());
+	}
+
+	private Optional<String> departureLock = Optional.absent();
+
+	public Optional<String> getDepartureLock() {
+		return wrapNull(departureLock);
+	}
+
+	public void setDepartureLock(Optional<String> departureLock) {
+		refreshUpdatedAt();
+		this.departureLock = wrapNull(departureLock);
+	}
+
+	public void setDepartureLock(String departureLock) {
+		setDepartureLock(Optional.fromNullable(departureLock));
+	}
+
+	public void clearDepartureLock() {
+		setDepartureLock(Optional.<String>absent());
 	}
 
 	private Optional<Integer> departurePlatformId = Optional.absent();
