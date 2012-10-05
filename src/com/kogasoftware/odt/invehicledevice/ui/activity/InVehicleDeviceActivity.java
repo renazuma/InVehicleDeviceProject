@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
@@ -13,6 +14,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.provider.Settings;
+import android.provider.Settings.SettingNotFoundException;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
@@ -23,6 +26,7 @@ import android.widget.Toast;
 
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.compatibility.reflection.android.provider.SettingsReflection;
 import com.kogasoftware.odt.invehicledevice.compatibility.reflection.android.view.ViewReflection;
 import com.kogasoftware.odt.invehicledevice.compatibility.reflection.android.view.ViewReflection.OnSystemUiVisibilityChangeListenerReflection;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
@@ -217,6 +221,9 @@ public class InVehicleDeviceActivity extends Activity implements
 	public void onStart() {
 		super.onStart();
 		Log.i(TAG, "onStart()");
+		Settings.System.putInt(getContentResolver(),
+				Settings.System.ACCELEROMETER_ROTATION, 0);
+		fixUserRotation();
 	}
 
 	@Override
@@ -250,6 +257,33 @@ public class InVehicleDeviceActivity extends Activity implements
 		handler.postDelayed(pauseFinishTimeouter, PAUSE_FINISH_TIMEOUT_MILLIS);
 		for (InVehicleDeviceService service : optionalService.asSet()) {
 			service.setActivityPaused();
+		}
+	}
+
+	/**
+	 * USER_ROTATIONを現在の方向に固定する
+	 */
+	public void fixUserRotation() {
+		for (final String USER_ROTATION : SettingsReflection.SystemReflection.USER_ROTATION
+				.asSet()) {
+			WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+			Integer currentRotation = windowManager.getDefaultDisplay()
+					.getRotation();
+			ContentResolver contentResolver = getContentResolver();
+			try {
+				Integer configRotation = Settings.System.getInt(
+						contentResolver, USER_ROTATION);
+				if (currentRotation.equals(configRotation)) {
+					Log.i(TAG, "fixUserRotation() currentRotation.equals("
+							+ configRotation + ")");
+					return;
+				}
+			} catch (SettingNotFoundException e) {
+			}
+			Settings.System.putInt(getContentResolver(), USER_ROTATION,
+					currentRotation);
+			Log.i(TAG, "fixUserRotation() updated rotation="
+					+ currentRotation);
 		}
 	}
 

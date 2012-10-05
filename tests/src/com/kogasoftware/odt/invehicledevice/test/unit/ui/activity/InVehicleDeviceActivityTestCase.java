@@ -4,13 +4,24 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.test.ActivityInstrumentationTestCase2;
+import android.view.Surface;
+import android.view.WindowManager;
 
 import com.google.common.base.Stopwatch;
 import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.compatibility.reflection.android.provider.SettingsReflection;
 import com.kogasoftware.odt.invehicledevice.datasource.EmptyDataSource;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 import com.kogasoftware.odt.invehicledevice.service.startupservice.StartupService;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
@@ -31,6 +42,11 @@ public class InVehicleDeviceActivityTestCase extends
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
+		SharedPreferences sp = PreferenceManager
+				.getDefaultSharedPreferences(getInstrumentation()
+						.getTargetContext());
+		assertTrue(sp.edit()
+				.putBoolean(SharedPreferencesKeys.INITIALIZED, true).commit());
 	}
 
 	@Override
@@ -44,7 +60,7 @@ public class InVehicleDeviceActivityTestCase extends
 		}
 	}
 
-	public void xtest初回のスケジュール受信に失敗した場合の警告() throws Exception {
+	public void test初回のスケジュール受信に失敗した場合の警告() throws Exception {
 		String message = getInstrumentation().getTargetContext().getString(
 				R.string.failed_to_connect_operator_tool);
 		TestUtil.disableAutoStart(getInstrumentation().getContext());
@@ -112,7 +128,7 @@ public class InVehicleDeviceActivityTestCase extends
 		}
 	}
 
-	public void xtest初回のスケジュール受信に失敗した場合の警告_成功した場合表示されない() throws Exception {
+	public void test初回のスケジュール受信に失敗した場合の警告_成功した場合表示されない() throws Exception {
 		String message = getInstrumentation().getTargetContext().getString(
 				R.string.failed_to_connect_operator_tool);
 		TestUtil.disableAutoStart(getInstrumentation().getContext());
@@ -128,5 +144,61 @@ public class InVehicleDeviceActivityTestCase extends
 
 		solo = new Solo(getInstrumentation(), getActivity());
 		assertFalse(solo.waitForText(message));
+	}
+
+	public void testFixUserRotation_0() throws Exception {
+		assertFixUserRotation(Surface.ROTATION_0);
+	}
+
+	public void testFixUserRotation_90() throws Exception {
+		assertFixUserRotation(Surface.ROTATION_90);
+	}
+
+	public void testFixUserRotation_180() throws Exception {
+		assertFixUserRotation(Surface.ROTATION_180);
+	}
+
+	public void testFixUserRotation_270() throws Exception {
+		assertFixUserRotation(Surface.ROTATION_270);
+	}
+
+	protected Boolean isDefaultLandscape() {
+		return true;
+	}
+
+	public void assertFixUserRotation(Integer request) throws Exception {
+		TestUtil.disableAutoStart(getInstrumentation().getContext());
+		for (String USER_ROTATION : SettingsReflection.SystemReflection.USER_ROTATION
+				.asSet()) {
+			final ContentResolver cr = getInstrumentation().getTargetContext()
+					.getContentResolver();
+			assertTrue(Settings.System.putInt(cr, USER_ROTATION, request));
+			Thread.sleep(3 * 1000);
+			final Activity a = getActivity();
+			TestUtil.assertShow(a, a.getClass());
+			final AtomicInteger changed = new AtomicInteger(-1);
+			Thread.sleep(3 * 1000);
+			TestUtil.runOnUiThreadSync(a, new Runnable() {
+				@Override
+				public void run() {
+					changed.set(((WindowManager) a
+							.getSystemService(Context.WINDOW_SERVICE))
+							.getDefaultDisplay().getOrientation());
+				}
+			});
+			Thread.sleep(3 * 1000);
+			a.finish();
+			TestUtil.assertHide(a, a.getClass());
+			Integer after = Settings.System.getInt(a.getContentResolver(),
+					USER_ROTATION);
+			assertEquals(changed.get(), after.intValue());
+			if (isDefaultLandscape()) {
+				assertTrue(Surface.ROTATION_0 == changed.get()
+						|| Surface.ROTATION_180 == changed.get());
+			} else {
+				assertTrue(Surface.ROTATION_90 == changed.get()
+						|| Surface.ROTATION_270 == changed.get());
+			}
+		}
 	}
 }
