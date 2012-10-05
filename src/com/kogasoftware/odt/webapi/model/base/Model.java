@@ -31,10 +31,12 @@ public abstract class Model implements Serializable, Identifiable, Cloneable {
 
 	private static final long serialVersionUID = -5513333240346057624L;
 
-	protected static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormat
-			.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
-	protected static final DateTimeFormatter DATE_FORMATTER = DateTimeFormat
-			.forPattern("yyyy-MM-dd");
+	protected static final DateTimeFormatter OUTPUT_DATE_TIME_FORMATTER = DateTimeFormat
+			.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ");
+	protected static final List<DateTimeFormatter> INPUT_DATE_TIME_FORMATTERS = Lists
+			.newArrayList(OUTPUT_DATE_TIME_FORMATTER,
+					DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ"),
+					DateTimeFormat.forPattern("yyyy-MM-dd"));
 
 	protected static void errorIfNull(Object value) {
 		if (value != null) {
@@ -63,24 +65,21 @@ public abstract class Model implements Serializable, Identifiable, Cloneable {
 
 	protected static Date parseDate(JSONObject jsonObject, String key)
 			throws JSONException {
-		Date date = new Date();
 		if (!jsonObject.has(key)) {
 			return new Date();
 		}
 
 		String dateString = jsonObject.getString(key);
-		try {
-			date = new Date(DATE_TIME_FORMATTER.parseDateTime(dateString)
-					.getMillis());
-		} catch (IllegalArgumentException ex) {
+		for (DateTimeFormatter dateTimeFormatter : INPUT_DATE_TIME_FORMATTERS) {
 			try {
-				date = new Date(DATE_FORMATTER.parseDateTime(dateString)
+				return new Date(dateTimeFormatter.parseDateTime(dateString)
 						.getMillis());
-			} catch (IllegalArgumentException ex2) {
-				Log.w(TAG, ex2);
+			} catch (IllegalArgumentException e) {
 			}
 		}
-		return date;
+
+		Log.e(TAG, "date string \"" + dateString + "\" can't parse");
+		return new Date();
 	}
 
 	protected static Float parseFloat(JSONObject jsonObject, String key)
@@ -158,7 +157,7 @@ public abstract class Model implements Serializable, Identifiable, Cloneable {
 		} else if (object instanceof BigDecimal) {
 			return ((BigDecimal) object).toPlainString();
 		} else if (object instanceof Date) {
-			return DATE_TIME_FORMATTER.print(((Date) object).getTime());
+			return OUTPUT_DATE_TIME_FORMATTER.print(((Date) object).getTime());
 		}
 		return object;
 	}
@@ -198,7 +197,8 @@ public abstract class Model implements Serializable, Identifiable, Cloneable {
 	}
 
 	protected static <T extends Model> LinkedList<T> wrapNull(Iterable<T> value) {
-		return Lists.newLinkedList(Objects.firstNonNull(value, new LinkedList<T>()));
+		return Lists.newLinkedList(Objects.firstNonNull(value,
+				new LinkedList<T>()));
 	}
 
 	protected static <T extends Serializable> Optional<T> wrapNull(
