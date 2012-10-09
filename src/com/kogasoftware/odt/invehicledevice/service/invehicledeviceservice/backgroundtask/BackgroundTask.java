@@ -183,6 +183,7 @@ public class BackgroundTask {
 					}
 				}
 			}.start();
+			Thread.sleep(ERROR_MESSAGE_THREAD_EXIT_MILLIS / 3);
 			myLooper.quit();
 			return;
 		}
