@@ -201,4 +201,14 @@ public class InVehicleDeviceActivityTestCase extends
 			}
 		}
 	}
+
+	public void testNotInitialized() {
+		SharedPreferences sp = PreferenceManager
+				.getDefaultSharedPreferences(getInstrumentation()
+						.getTargetContext());
+		assertTrue(sp.edit()
+				.putBoolean(SharedPreferencesKeys.INITIALIZED, false).commit());
+		solo = new Solo(getInstrumentation(), getActivity());
+		assertTrue(solo.waitForText(solo.getString(R.string.settings_are_not_initialized)));
+	}
 }

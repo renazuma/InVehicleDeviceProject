@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.acra.ACRA;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -18,6 +19,7 @@ import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.telephony.PhoneStateListener;
@@ -26,6 +28,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.google.common.base.Optional;
+import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
 import com.kogasoftware.odt.invehicledevice.datasource.WebAPIDataSource;
@@ -36,13 +39,14 @@ import com.kogasoftware.odt.invehicledevice.ui.BigToast;
 
 /**
  * バックグランドでの処理を管理するクラス
- * 
+ *
  * 注意: quit以外のメソッドは全て同じスレッドで実行する
  */
 public class BackgroundTask {
 	private static final String TAG = BackgroundTask.class.getSimpleName();
 	private static final long POLLING_PERIOD_MILLIS = 30 * 1000;
 	private static final Integer NUM_THREADS = 3;
+	private static final Integer ERROR_MESSAGE_THREAD_EXIT_MILLIS = 15 * 1000;
 
 	private final SensorManager sensorManager;
 	private final Optional<TelephonyManager> optionalTelephonyManager;
@@ -146,10 +150,35 @@ public class BackgroundTask {
 		Boolean initialized = preferences.getBoolean(
 				SharedPreferencesKeys.INITIALIZED, false);
 		if (!initialized) {
-			Log.w(TAG, "!SharedPreferences.getBoolean(SharedPreferencesKeys.INITIALIZED, false)");
-			BigToast.makeText(service.getApplicationContext(),
-					"初期設定が見つかりません。設定アプリケーションを利用し初期設定を行なってください。",
-					Toast.LENGTH_LONG).show();
+			Log.w(TAG,
+					"!SharedPreferences.getBoolean(SharedPreferencesKeys.INITIALIZED, false)");
+			new HandlerThread("") {
+				@Override
+				protected void onLooperPrepared() {
+					BigToast.makeText(
+							service.getApplicationContext(),
+							applicationContext
+									.getString(R.string.settings_are_not_initialized),
+							Toast.LENGTH_LONG).show();
+					Intent intent = new Intent();
+					intent.setAction(Intent.ACTION_MAIN);
+					intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+					String packageName = "com.kogasoftware.odt.invehicledevice.preference";
+					intent.setClassName(packageName, packageName
+							+ ".InVehicleDevicePreferenceActivity");
+					try {
+						applicationContext.startActivity(intent);
+					} catch (ActivityNotFoundException e) {
+						Log.w(TAG, e);
+					}
+					new Handler(getLooper()).postDelayed(new Runnable() {
+						@Override
+						public void run() {
+							quit();
+						}
+					}, ERROR_MESSAGE_THREAD_EXIT_MILLIS);
+				}
+			}.start();
 			myLooper.quit();
 			return;
 		}
