@@ -14,6 +14,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
@@ -99,12 +100,15 @@ public class LogService extends Service {
 
 		try {
 			logcatThread = new LogcatThread(logcatSplitFileOutputStream);
-			dropboxThread = new DropBoxThread(this,
-					dropboxSplitFileOutputStream);
 		} catch (IOException e) {
 			Log.wtf(TAG, e);
 			// ログが出力できない致命的なエラーのため、サービスをクラッシュさせ再起動させる
 			throw new RuntimeException("can't create log");
+		}
+		if (getPackageManager().checkPermission("android.permission.READ_LOGS",
+				getPackageName()) == PackageManager.PERMISSION_GRANTED) {
+			dropboxThread = new DropBoxThread(this,
+					dropboxSplitFileOutputStream);
 		}
 
 		logcatThread.start();
