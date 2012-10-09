@@ -171,12 +171,16 @@ public class BackgroundTask {
 					} catch (ActivityNotFoundException e) {
 						Log.w(TAG, e);
 					}
-					new Handler(getLooper()).postDelayed(new Runnable() {
+					Handler handler = new Handler(getLooper());
+					Boolean posted = handler.postDelayed(new Runnable() {
 						@Override
 						public void run() {
 							quit();
 						}
 					}, ERROR_MESSAGE_THREAD_EXIT_MILLIS);
+					if (!posted) {
+						quit();
+					}
 				}
 			}.start();
 			myLooper.quit();
