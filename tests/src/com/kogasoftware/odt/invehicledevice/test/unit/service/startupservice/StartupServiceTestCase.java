@@ -89,7 +89,11 @@ public class StartupServiceTestCase extends ServiceTestCase<StartupService> {
 	public void testIsDeviceReady_GPSが無効の場合() {
 		when(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
 				.thenReturn(false);
-		assertFalse(getService().isDeviceReady());
+		if (StartupService.isGpsRequired()) {
+			assertFalse(getService().isDeviceReady());
+		} else {
+			assertTrue(getService().isDeviceReady());
+		}
 	}
 
 	public void testIsDeviceReady_InVehicleDeviceActivityがすでに前面にある場合() {
@@ -111,4 +115,18 @@ public class StartupServiceTestCase extends ServiceTestCase<StartupService> {
 		getService().checkDeviceAndStartActivity();
 		TestUtil.assertShow(getSystemContext(), InVehicleDeviceActivity.class);
 	}
+
+	public void testIsGpsRequired() {
+		assertTrue(StartupService.isGpsRequired(true, "my android"));
+		assertTrue(StartupService.isGpsRequired(true, ""));
+
+		assertFalse(StartupService.isGpsRequired(true, "androVM for VirtualBox ('Phone' version)"));
+		assertTrue(StartupService.isGpsRequired(false, "androVM for VirtualBox ('Phone' version)"));
+		assertTrue(StartupService.isGpsRequired(true, "!androVM for VirtualBox ('Phone' version)"));
+
+		assertFalse(StartupService.isGpsRequired(true, "Buildroid for VirtualBox ('Tablet' version with phone caps)"));
+		assertTrue(StartupService.isGpsRequired(false, "Buildroid for VirtualBox ('Tablet' version with phone caps)"));
+		assertTrue(StartupService.isGpsRequired(true, "!Buildroid for VirtualBox ('Tablet' version with phone caps)"));
+	}
 }
+

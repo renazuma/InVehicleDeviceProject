@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
@@ -21,6 +22,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.kogasoftware.odt.invehicledevice.BuildConfig;
 import com.kogasoftware.odt.invehicledevice.ui.BigToast;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
@@ -102,7 +104,9 @@ public class StartupService extends Service {
 		}
 
 		LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+		if (isGpsRequired()
+				&& !locationManager
+						.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 			Log.e(TAG,
 					"!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)");
 			BigToast.makeText(this, "GPSの設定を有効にしてください", Toast.LENGTH_LONG)
@@ -125,6 +129,22 @@ public class StartupService extends Service {
 		}
 
 		return true;
+	}
+
+	public static Boolean isGpsRequired(Boolean isDebug, String buildModel) {
+		if (!isDebug) {
+			return true;
+		}
+		if (buildModel.startsWith("androVM for VirtualBox")) {
+			return false;
+		} else if (buildModel.startsWith("Buildroid for VirtualBox")) {
+			return false;
+		}
+		return true;
+	}
+
+	public static Boolean isGpsRequired() {
+		return isGpsRequired(BuildConfig.DEBUG, Build.MODEL);
 	}
 
 	public static class StartupBroadcastReceiver extends BroadcastReceiver {
