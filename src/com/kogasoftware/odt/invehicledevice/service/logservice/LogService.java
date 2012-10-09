@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.service.logservice;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -37,6 +38,7 @@ public class LogService extends Service {
 	private Thread dropboxThread = new EmptyThread();
 	private Thread compressThread = new EmptyThread();
 	private Thread uploadThread = new EmptyThread();
+	private List<Closeable> closeables = new LinkedList<Closeable>();
 
 	/**
 	 * シャットダウン時、可能な限りSDカードのマウントが解除される前に書込み中のログをフラッシュするため、
@@ -84,6 +86,9 @@ public class LogService extends Service {
 	 */
 	public Boolean startLog(SplitFileOutputStream logcatSplitFileOutputStream,
 			SplitFileOutputStream dropboxSplitFileOutputStream) {
+		closeables.add(logcatSplitFileOutputStream);
+		closeables.add(dropboxSplitFileOutputStream);
+
 		if (destroyed) {
 			Log.i(TAG, "destroyed=" + destroyed + " / startLog returned");
 			return false;
@@ -174,6 +179,9 @@ public class LogService extends Service {
 		dropboxThread.interrupt();
 		compressThread.interrupt();
 		uploadThread.interrupt();
+		for (Closeable closeable : closeables) {
+			Closeables.closeQuietly(closeable);
+		}
 		try {
 			unregisterReceiver(sendLogBroadcastReceiver);
 		} catch (IllegalArgumentException e) {
