@@ -221,9 +221,6 @@ public class InVehicleDeviceActivity extends Activity implements
 	public void onStart() {
 		super.onStart();
 		Log.i(TAG, "onStart()");
-		Settings.System.putInt(getContentResolver(),
-				Settings.System.ACCELEROMETER_ROTATION, 0);
-		fixUserRotation();
 	}
 
 	@Override
@@ -258,6 +255,7 @@ public class InVehicleDeviceActivity extends Activity implements
 		for (InVehicleDeviceService service : optionalService.asSet()) {
 			service.setActivityPaused();
 		}
+		fixUserRotation();
 	}
 
 	/**
@@ -278,12 +276,14 @@ public class InVehicleDeviceActivity extends Activity implements
 							+ configRotation + ")");
 					return;
 				}
+				Settings.System.putInt(contentResolver, USER_ROTATION,
+						currentRotation);
+				Log.i(TAG, "fixUserRotation() updated rotation="
+						+ currentRotation);
+				Settings.System.putInt(contentResolver,
+						Settings.System.ACCELEROMETER_ROTATION, 0);
 			} catch (SettingNotFoundException e) {
 			}
-			Settings.System.putInt(getContentResolver(), USER_ROTATION,
-					currentRotation);
-			Log.i(TAG, "fixUserRotation() updated rotation="
-					+ currentRotation);
 		}
 	}
 
