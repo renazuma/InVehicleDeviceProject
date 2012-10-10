@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.ArrivalCheckModalView;
@@ -36,10 +37,10 @@ import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
 
 public class InVehicleDeviceView extends FrameLayout implements
-		InVehicleDeviceService.OnEnterPhaseListener,
-		InVehicleDeviceService.OnAlertUpdatedOperationScheduleListener,
-		InVehicleDeviceService.OnAlertVehicleNotificationReceiveListener,
-		InVehicleDeviceService.OnChangeSignalStrengthListener {
+		EventDispatcher.OnEnterPhaseListener,
+		EventDispatcher.OnAlertUpdatedOperationScheduleListener,
+		EventDispatcher.OnAlertVehicleNotificationReceiveListener,
+		EventDispatcher.OnChangeSignalStrengthListener {
 	private static final String TAG = InVehicleDeviceView.class.getSimpleName();
 	private static final int UPDATE_TIME_INTERVAL_MILLIS = 3000;
 	private static final int ALERT_SHOW_INTERVAL_MILLIS = 500;
@@ -203,19 +204,19 @@ public class InVehicleDeviceView extends FrameLayout implements
 		super.onAttachedToWindow();
 		handler.post(updateTime);
 
-		service.addOnAlertUpdatedOperationScheduleListener(this);
-		service.addOnAlertVehicleNotificationReceiveListener(this);
-		service.addOnChangeSignalStrengthListener(this);
-		service.addOnEnterPhaseListener(this);
+		service.getEventDispatcher().addOnAlertUpdatedOperationScheduleListener(this);
+		service.getEventDispatcher().addOnAlertVehicleNotificationReceiveListener(this);
+		service.getEventDispatcher().addOnChangeSignalStrengthListener(this);
+		service.getEventDispatcher().addOnEnterPhaseListener(this);
 	}
 
 	@Override
 	protected void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
-		service.removeOnAlertUpdatedOperationScheduleListener(this);
-		service.removeOnAlertVehicleNotificationReceiveListener(this);
-		service.removeOnChangeSignalStrengthListener(this);
-		service.removeOnEnterPhaseListener(this);
+		service.getEventDispatcher().removeOnAlertUpdatedOperationScheduleListener(this);
+		service.getEventDispatcher().removeOnAlertVehicleNotificationReceiveListener(this);
+		service.getEventDispatcher().removeOnChangeSignalStrengthListener(this);
+		service.getEventDispatcher().removeOnEnterPhaseListener(this);
 
 		handler.removeCallbacks(updateTime);
 		handler.removeCallbacks(alertVehicleNotification);

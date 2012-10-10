@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.VehicleNotificationLogic;
@@ -15,7 +16,7 @@ import com.kogasoftware.odt.webapi.model.VehicleNotification;
 import com.kogasoftware.odt.webapi.model.VehicleNotification.NotificationKind;
 
 public class NotificationModalView extends ModalView implements
-		InVehicleDeviceService.OnAlertVehicleNotificationReceiveListener {
+		EventDispatcher.OnAlertVehicleNotificationReceiveListener {
 	private final Handler handler = new Handler();
 	private final VehicleNotificationLogic vehicleNotificationLogic;
 	private VehicleNotification currentVehicleNotification = new VehicleNotification();
@@ -48,13 +49,13 @@ public class NotificationModalView extends ModalView implements
 	@Override
 	protected void onAttachedToWindow() {
 		super.onAttachedToWindow();
-		service.addOnAlertVehicleNotificationReceiveListener(this);
+		service.getEventDispatcher().addOnAlertVehicleNotificationReceiveListener(this);
 	}
 
 	@Override
 	protected void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
-		service.removeOnAlertVehicleNotificationReceiveListener(this);
+		service.getEventDispatcher().removeOnAlertVehicleNotificationReceiveListener(this);
 	}
 
 	@Override

@@ -27,6 +27,7 @@ import android.widget.ToggleButton;
 import com.google.common.base.Optional;
 import com.google.common.collect.Iterables;
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.NavigationRenderer;
@@ -36,12 +37,12 @@ import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class NavigationModalView extends ModalView implements
-		InVehicleDeviceService.OnResumeActivityListener,
-		InVehicleDeviceService.OnPauseActivityListener,
-		InVehicleDeviceService.OnChangeLocationListener,
-		InVehicleDeviceService.OnChangeOrientationListener,
-		InVehicleDeviceService.OnEnterPhaseListener,
-		InVehicleDeviceService.OnMergeOperationSchedulesListener,
+		EventDispatcher.OnResumeActivityListener,
+		EventDispatcher.OnPauseActivityListener,
+		EventDispatcher.OnChangeLocationListener,
+		EventDispatcher.OnChangeOrientationListener,
+		EventDispatcher.OnEnterPhaseListener,
+		EventDispatcher.OnMergeOperationSchedulesListener,
 		NavigationRenderer.OnChangeMapZoomLevelListener {
 	private static final String TAG = NavigationModalView.class.getSimpleName();
 	private static final Integer GPS_ALERT_FLASH_MILLIS = 1000;
@@ -159,24 +160,24 @@ public class NavigationModalView extends ModalView implements
 		super.onAttachedToWindow();
 		handler.post(gpsAlert);
 
-		service.addOnResumeActivityListener(this);
-		service.addOnPauseActivityListener(this);
-		service.addOnChangeLocationListener(this);
-		service.addOnChangeOrientationListener(this);
-		service.addOnEnterPhaseListener(this);
-		service.addOnMergeOperationSchedulesListener(this);
+		service.getEventDispatcher().addOnResumeActivityListener(this);
+		service.getEventDispatcher().addOnPauseActivityListener(this);
+		service.getEventDispatcher().addOnChangeLocationListener(this);
+		service.getEventDispatcher().addOnChangeOrientationListener(this);
+		service.getEventDispatcher().addOnEnterPhaseListener(this);
+		service.getEventDispatcher().addOnMergeOperationSchedulesListener(this);
 	}
 
 	@Override
 	protected void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
 
-		service.removeOnResumeActivityListener(this);
-		service.removeOnPauseActivityListener(this);
-		service.removeOnChangeLocationListener(this);
-		service.removeOnChangeOrientationListener(this);
-		service.removeOnEnterPhaseListener(this);
-		service.removeOnMergeOperationSchedulesListener(this);
+		service.getEventDispatcher().removeOnResumeActivityListener(this);
+		service.getEventDispatcher().removeOnPauseActivityListener(this);
+		service.getEventDispatcher().removeOnChangeLocationListener(this);
+		service.getEventDispatcher().removeOnChangeOrientationListener(this);
+		service.getEventDispatcher().removeOnEnterPhaseListener(this);
+		service.getEventDispatcher().removeOnMergeOperationSchedulesListener(this);
 
 		tilePipeline.onExit();
 

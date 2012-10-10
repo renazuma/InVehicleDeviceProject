@@ -12,6 +12,7 @@ import android.test.AndroidTestCase;
 
 import com.google.common.collect.Lists;
 import com.google.common.io.Closeables;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
@@ -38,6 +39,7 @@ public class VehicleNotificationLogicTestCase extends AndroidTestCase {
 		});
 		s = mock(InVehicleDeviceService.class);
 		when(s.getLocalDataSource()).thenReturn(lds);
+		when(s.getEventDispatcher()).thenReturn(new EventDispatcher());
 		vnl = new VehicleNotificationLogic(s);
 	}
 

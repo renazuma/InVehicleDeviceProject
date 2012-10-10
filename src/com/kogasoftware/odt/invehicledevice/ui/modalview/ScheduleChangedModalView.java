@@ -12,9 +12,10 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.VehicleNotificationLogic;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 
 public class ScheduleChangedModalView extends ModalView implements
-		InVehicleDeviceService.OnMergeOperationSchedulesListener {
+		EventDispatcher.OnMergeOperationSchedulesListener {
 	protected final VehicleNotificationLogic vehicleNotificationLogic;
 	protected final TextView scheduleChangedTextView;
 	protected final ScheduleModalView scheduleModalView;
@@ -43,13 +44,13 @@ public class ScheduleChangedModalView extends ModalView implements
 	@Override
 	protected void onAttachedToWindow() {
 		super.onAttachedToWindow();
-		service.addOnMergeOperationSchedulesListener(this);
+		service.getEventDispatcher().addOnMergeOperationSchedulesListener(this);
 	}
 
 	@Override
 	protected void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
-		service.removeOnMergeOperationSchedulesListener(this);
+		service.getEventDispatcher().removeOnMergeOperationSchedulesListener(this);
 	}
 
 	@Override

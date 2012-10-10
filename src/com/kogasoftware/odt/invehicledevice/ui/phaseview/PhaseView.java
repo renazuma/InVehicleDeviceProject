@@ -7,10 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 
 public class PhaseView extends FrameLayout implements
-		InVehicleDeviceService.OnEnterPhaseListener {
+		EventDispatcher.OnEnterPhaseListener {
 	protected InVehicleDeviceService service;
 
 	public PhaseView(Context context, InVehicleDeviceService service) {
@@ -21,13 +22,13 @@ public class PhaseView extends FrameLayout implements
 	@Override
 	protected void onAttachedToWindow() {
 		super.onAttachedToWindow();
-		service.addOnEnterPhaseListener(this);
+		service.getEventDispatcher().addOnEnterPhaseListener(this);
 	}
 
 	@Override
 	protected void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
-		service.removeOnEnterPhaseListener(this);
+		service.getEventDispatcher().removeOnEnterPhaseListener(this);
 	}
 
 	@Override

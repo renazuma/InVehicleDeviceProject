@@ -16,11 +16,12 @@ import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.google.common.base.Optional;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.Textures;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipeline.PipeQueue.OnDropListener;
 
-public class TilePipeline implements InVehicleDeviceService.OnExitListener {
+public class TilePipeline implements EventDispatcher.OnExitListener {
 	private static final String TAG = TilePipeline.class.getSimpleName();
 	private static final Integer MAX_TEXTURE_TRANSFER_COUNT = 5;
 	private final Set<Tile> processingTiles = new CopyOnWriteArraySet<Tile>();
@@ -75,7 +76,7 @@ public class TilePipeline implements InVehicleDeviceService.OnExitListener {
 				onDropListener, outputDirectory);
 		fileTilePipe = new FileTilePipe(service, filePipeQueue,
 				bitmapPipeQueue, onDropListener);
-		service.addOnExitListener(this);
+		service.getEventDispatcher().addOnExitListener(this);
 	}
 
 	public void changeZoomLevel(int zoomLevel) {
@@ -97,7 +98,7 @@ public class TilePipeline implements InVehicleDeviceService.OnExitListener {
 	public void onExit() {
 		webTilePipe.close();
 		fileTilePipe.close();
-		service.removeOnExitListener(this);
+		service.getEventDispatcher().removeOnExitListener(this);
 	}
 
 	public Optional<Integer> pollOrStartLoad(Tile tile) {

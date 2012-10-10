@@ -1,11 +1,15 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.ui.phaseview;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import android.view.View;
 
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.test.util.datasource.DummyDataSource;
@@ -14,7 +18,6 @@ import com.kogasoftware.odt.invehicledevice.ui.modalview.MemoModalView;
 import com.kogasoftware.odt.invehicledevice.ui.phaseview.PlatformPhaseView;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
-import static org.mockito.Mockito.*;
 
 public class PlatformPhaseViewTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
@@ -24,6 +27,7 @@ public class PlatformPhaseViewTestCase extends
 	PlatformPhaseView pv;
 	InVehicleDeviceService s;
 	EmptyActivity a;
+	OperationScheduleLogic osl;
 
 	@Override
 	protected void setUp() throws Exception {
@@ -31,6 +35,8 @@ public class PlatformPhaseViewTestCase extends
 		TestUtil.setDataSource(new DummyDataSource());
 		a = getActivity();
 		s = mock(InVehicleDeviceService.class);
+		when(s.getEventDispatcher()).thenReturn(new EventDispatcher());
+		osl = new OperationScheduleLogic(s);
 		mmv = mock(MemoModalView.class);
 		sa = new LocalDataSource(a);
 		pv = new PlatformPhaseView(a, s, mmv);
@@ -41,9 +47,9 @@ public class PlatformPhaseViewTestCase extends
 				OperationSchedule os2 = new OperationSchedule();
 				os1.setPlatform(new Platform());
 				os2.setPlatform(new Platform());
-				status.remainingOperationSchedules.clear();
-				status.remainingOperationSchedules.add(os1);
-				status.remainingOperationSchedules.add(os2);
+				status.operationSchedules.clear();
+				status.operationSchedules.add(os1);
+				status.operationSchedules.add(os2);
 			}
 		});
 	}
@@ -56,7 +62,7 @@ public class PlatformPhaseViewTestCase extends
 	public void xtestEnterDrivePhaseEventで非表示() throws Exception {
 		xtestEnterPlatformPhaseEventで表示();
 
-		s.enterDrivePhase();
+		osl.enterDrivePhase();
 		getInstrumentation().waitForIdleSync();
 
 		assertFalse(pv.isShown());
@@ -66,7 +72,7 @@ public class PlatformPhaseViewTestCase extends
 	public void xtestEnterFinishPhaseEventで非表示() throws Exception {
 		xtestEnterPlatformPhaseEventで表示();
 
-		s.enterFinishPhase();
+		osl.enterFinishPhase();
 		getInstrumentation().waitForIdleSync();
 
 		assertFalse(pv.isShown());
@@ -81,7 +87,7 @@ public class PlatformPhaseViewTestCase extends
 			}
 		});
 
-		s.enterPlatformPhase();
+		osl.enterPlatformPhase();
 		getInstrumentation().waitForIdleSync();
 
 		assertTrue(pv.isShown());

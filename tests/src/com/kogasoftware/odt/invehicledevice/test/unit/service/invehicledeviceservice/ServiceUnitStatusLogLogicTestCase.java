@@ -8,6 +8,7 @@ import android.location.Location;
 import android.test.AndroidTestCase;
 
 import com.google.common.base.Optional;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
@@ -32,6 +33,7 @@ public class ServiceUnitStatusLogLogicTestCase extends AndroidTestCase {
 		});
 		s = mock(InVehicleDeviceService.class);
 		when(s.getLocalDataSource()).thenReturn(lds);
+		when(s.getEventDispatcher()).thenReturn(new EventDispatcher());
 		susll = new ServiceUnitStatusLogLogic(s);
 	}
 

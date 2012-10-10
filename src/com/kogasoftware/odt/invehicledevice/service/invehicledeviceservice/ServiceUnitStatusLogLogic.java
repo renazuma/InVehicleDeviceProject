@@ -21,7 +21,7 @@ public class ServiceUnitStatusLogLogic {
 	}
 
 	public void changeSignalStrength(final Integer signalStrengthPercentage) {
-		service.dispatchChangeSignalStrength(signalStrengthPercentage);
+		service.getEventDispatcher().dispatchChangeSignalStrength(signalStrengthPercentage);
 	}
 
 	public void changeLocation(final Location location,
@@ -35,7 +35,7 @@ public class ServiceUnitStatusLogLogic {
 						location.getLongitude()));
 			}
 		});
-		service.dispatchChangeLocation(location, gpsStatus);
+		service.getEventDispatcher().dispatchChangeLocation(location, gpsStatus);
 	}
 
 	public void changeOrientation(final Double orientationDegree) {
@@ -52,7 +52,7 @@ public class ServiceUnitStatusLogLogic {
 						.intValue());
 			}
 		});
-		service.dispatchChangeOrientation(orientationDegree);
+		service.getEventDispatcher().dispatchChangeOrientation(orientationDegree);
 	}
 
 	public void changeTemperature(final Double celciusTemperature) {
@@ -63,7 +63,7 @@ public class ServiceUnitStatusLogLogic {
 						.setTemperature(celciusTemperature.intValue());
 			}
 		});
-		service.dispatchChangeTemperature(celciusTemperature);
+		service.getEventDispatcher().dispatchChangeTemperature(celciusTemperature);
 	}
 
 	public ServiceUnitStatusLog getServiceUnitStatusLog() {

@@ -42,7 +42,7 @@ public class VehicleNotificationLogic {
 		// スケジュール変更通知の処理
 		if (setVehicleNotificationStatus(scheduleChangedVehicleNotifications,
 				VehicleNotificationStatus.UNHANDLED)) {
-			service.dispatchStartReceiveUpdatedOperationSchedule();
+			service.getEventDispatcher().dispatchStartReceiveUpdatedOperationSchedule();
 		}
 
 		// 一般通知の処理
@@ -52,12 +52,12 @@ public class VehicleNotificationLogic {
 			(new Thread() {
 				@Override
 				public void run() {
-					service.dispatchAlertVehicleNotificationReceive();
+					service.getEventDispatcher().dispatchAlertVehicleNotificationReceive();
 					service.speak("管理者から連絡があります");
 				}
 			}).start();
 		}
-		service.dispatchReceiveVehicleNotification(vehicleNotifications);
+		service.getEventDispatcher().dispatchReceiveVehicleNotification(vehicleNotifications);
 	}
 
 	public void replyUpdatedOperationScheduleVehicleNotifications(
@@ -70,7 +70,7 @@ public class VehicleNotificationLogic {
 		}
 		setVehicleNotificationStatus(vehicleNotifications,
 				VehicleNotificationStatus.REPLIED);
-		service.dispatchReplyUpdatedOperationScheduleVehicleNotifications(vehicleNotifications);
+		service.getEventDispatcher().dispatchReplyUpdatedOperationScheduleVehicleNotifications(vehicleNotifications);
 	}
 
 	/**
@@ -86,7 +86,7 @@ public class VehicleNotificationLogic {
 		}
 		setVehicleNotificationStatus(vehicleNotification,
 				VehicleNotificationStatus.REPLIED);
-		service.dispatchReplyVehicleNotification(vehicleNotification);
+		service.getEventDispatcher().dispatchReplyVehicleNotification(vehicleNotification);
 	}
 
 	public Boolean setVehicleNotificationStatus(

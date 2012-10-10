@@ -38,7 +38,7 @@ public class OperationScheduleLogic {
 			public void write(LocalData localData) {
 				List<OperationSchedule> remainingOperationSchedules = getRemainingOperationSchedules();
 				if (remainingOperationSchedules.isEmpty()) {
-					service.dispatchEnterFinishPhase();
+					service.getEventDispatcher().dispatchEnterFinishPhase();
 					return;
 				}
 				if (localData.phase == LocalData.Phase.PLATFORM) {
@@ -47,7 +47,7 @@ public class OperationScheduleLogic {
 				localData.phase = LocalData.Phase.DRIVE;
 			}
 		});
-		service.dispatchEnterDrivePhase();
+		service.getEventDispatcher().dispatchEnterDrivePhase();
 	}
 
 	/**
@@ -61,7 +61,7 @@ public class OperationScheduleLogic {
 				localData.phase = LocalData.Phase.FINISH;
 			}
 		});
-		service.dispatchEnterFinishPhase();
+		service.getEventDispatcher().dispatchEnterFinishPhase();
 	}
 
 	/**
@@ -73,7 +73,7 @@ public class OperationScheduleLogic {
 			public void write(LocalData localData) {
 				List<OperationSchedule> remainingOperationSchedules = getRemainingOperationSchedules();
 				if (remainingOperationSchedules.isEmpty()) {
-					service.dispatchEnterFinishPhase();
+					service.getEventDispatcher().dispatchEnterFinishPhase();
 					return;
 				}
 				if (localData.phase == LocalData.Phase.DRIVE) {
@@ -82,7 +82,7 @@ public class OperationScheduleLogic {
 				localData.phase = LocalData.Phase.PLATFORM;
 			}
 		});
-		service.dispatchEnterPlatformPhase();
+		service.getEventDispatcher().dispatchEnterPlatformPhase();
 	}
 
 	private void arrive() {
@@ -265,7 +265,7 @@ public class OperationScheduleLogic {
 			}
 		});
 		refreshPhase();
-		service.dispatchMergeOperationSchedules(operationSchedules,
+		service.getEventDispatcher().dispatchMergeOperationSchedules(operationSchedules,
 				triggerVehicleNotifications);
 	}
 
@@ -283,7 +283,7 @@ public class OperationScheduleLogic {
 				localData.passengerRecords.clear();
 			}
 		});
-		service.dispatchStartNewOperation();
+		service.getEventDispatcher().dispatchStartNewOperation();
 	}
 
 	/**

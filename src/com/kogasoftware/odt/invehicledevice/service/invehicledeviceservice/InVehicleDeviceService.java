@@ -1,15 +1,13 @@
 package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.WeakHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicReference;
@@ -17,8 +15,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import android.app.Activity;
 import android.app.Service;
 import android.content.Intent;
-import android.location.GpsStatus;
-import android.location.Location;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -26,9 +22,7 @@ import android.os.Looper;
 import android.util.Log;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.BuildConfig;
@@ -37,8 +31,6 @@ import com.kogasoftware.odt.invehicledevice.datasource.EmptyDataSource;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Reader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask.BackgroundTaskThread;
-import com.kogasoftware.odt.webapi.model.OperationSchedule;
-import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class InVehicleDeviceService extends Service {
 	public class LocalBinder extends Binder {
@@ -47,85 +39,9 @@ public class InVehicleDeviceService extends Service {
 		}
 	}
 
-	public interface OnAlertUpdatedOperationScheduleListener {
-		void onAlertUpdatedOperationSchedule();
-	}
-
-	public interface OnAlertVehicleNotificationReceiveListener {
-		void onAlertVehicleNotificationReceive();
-	}
-
-	public interface OnChangeLocationListener {
-		void onChangeLocation(Location location, Optional<GpsStatus> gpsStatus);
-	}
-
-	public interface OnChangeOrientationListener {
-		void onChangeOrientation(Double orientationDegree);
-	}
-
-	public interface OnChangeSignalStrengthListener {
-		void onChangeSignalStrength(Integer signalStrengthPercentage);
-	}
-
-	public interface OnChangeTemperatureListener {
-		void onChangeTemperature(Double celciusTemperature);
-	}
-
-	public interface OnOperationScheduleReceiveFailedListener {
-		void onOperationScheduleReceiveFailed();
-	}
-
-	public interface OnEnterPhaseListener {
-		void onEnterDrivePhase();
-
-		void onEnterFinishPhase();
-
-		void onEnterPlatformPhase();
-	}
-
-	public interface OnExitListener {
-		void onExit();
-	}
-
-	public interface OnMergeOperationSchedulesListener {
-		void onMergeOperationSchedules(
-				List<VehicleNotification> triggerVehicleNotifications);
-	}
-
-	public interface OnPauseActivityListener {
-		void onPauseActivity();
-	}
-
-	public interface OnReceiveUpdatedOperationScheduleListener {
-		void onReceiveUpdatedOperationSchedule(
-				List<OperationSchedule> operationSchedules,
-				List<VehicleNotification> triggerVehicleNotifications);
-	}
-
-	public interface OnReceiveVehicleNotificationListener {
-		void onReceiveVehicleNotification(
-				List<VehicleNotification> vehicleNotifications);
-	}
-
-	public interface OnReplyUpdatedOperationScheduleVehicleNotificationsListener {
-		void onReplyUpdatedOperationScheduleVehicleNotifications(
-				List<VehicleNotification> vehicleNotifications);
-	}
-
-	public interface OnReplyVehicleNotificationListener {
-		void onReplyVehicleNotification(VehicleNotification vehicleNotification);
-	}
-
-	public interface OnResumeActivityListener {
-		void onResumeActivity();
-	}
-
-	public interface OnStartNewOperationListener {
-		void onStartNewOperation();
-	}
-
-	public interface OnStartReceiveUpdatedOperationScheduleListener {
-		void onStartReceiveUpdatedOperationSchedule();
+	private final EventDispatcher eventDispatcher = new EventDispatcher();
+	public EventDispatcher getEventDispatcher() {
+		return eventDispatcher;
 	}
 
 	public static enum PayTiming {
@@ -139,6 +55,26 @@ public class InVehicleDeviceService extends Service {
 	public static final SortedMap<Date, List<CountDownLatch>> mockSleepStatus = new TreeMap<Date, List<CountDownLatch>>();
 	private static Boolean useMockDate = false;
 	private static Date mockDate = new Date();
+
+	private static final WeakHashMap<Thread, Handler> HANDLERS = new WeakHashMap<Thread, Handler>();
+	public static final Handler DEFAULT_HANDLER = new Handler(Looper.getMainLooper()); // TODO:メインスレッドではないHandlerを作る
+
+	public static Handler getThreadHandler() { // TODO: 共有場所に移動
+		synchronized (HANDLERS) {
+			Thread currentThread = Thread.currentThread();
+			if (HANDLERS.containsKey(currentThread)) {
+				return HANDLERS.get(currentThread);
+			}
+			Looper looper = Looper.myLooper();
+			if (looper == null) {
+				return DEFAULT_HANDLER;
+			} else {
+				Handler handler = new Handler(looper);
+				HANDLERS.put(currentThread, handler);
+				return handler;
+			}
+		}
+	}
 
 	private static final String TAG = InVehicleDeviceService.class
 			.getSimpleName();
@@ -212,32 +148,9 @@ public class InVehicleDeviceService extends Service {
 		}
 	}
 
-	protected static <T> Set<T> newListenerSet() {
-		// return Collections.newSetFromMap(new WeakHashMap<T, Boolean>());
-		return new CopyOnWriteArraySet<T>();
-	}
-
 	protected final IBinder binder = new LocalBinder();
 	protected final Handler handler = new Handler(Looper.getMainLooper());
 	protected final VoiceServiceConnector voiceServiceConnector;
-
-	protected final Set<OnEnterPhaseListener> onEnterPhaseListeners = newListenerSet();
-	protected final Set<OnAlertUpdatedOperationScheduleListener> onAlertUpdatedOperationScheduleListeners = newListenerSet();
-	protected final Set<OnAlertVehicleNotificationReceiveListener> onAlertVehicleNotificationReceiveListeners = newListenerSet();
-	protected final Set<OnChangeLocationListener> onChangeLocationListeners = newListenerSet();
-	protected final Set<OnChangeOrientationListener> onChangeOrientationListeners = newListenerSet();
-	protected final Set<OnChangeSignalStrengthListener> onChangeSignalStrengthListeners = newListenerSet();
-	protected final Set<OnChangeTemperatureListener> onChangeTemperatureListeners = newListenerSet();
-	protected final Set<OnExitListener> onExitListeners = newListenerSet();
-	protected final Set<OnMergeOperationSchedulesListener> onMergeOperationSchedulesListeners = newListenerSet();
-	protected final Set<OnReceiveVehicleNotificationListener> onReceiveVehicleNotificationListeners = newListenerSet();
-	protected final Set<OnReplyUpdatedOperationScheduleVehicleNotificationsListener> onReplyUpdatedOperationScheduleVehicleNotificationsListeners = newListenerSet();
-	protected final Set<OnReplyVehicleNotificationListener> onReplyVehicleNotificationListeners = newListenerSet();
-	protected final Set<OnStartNewOperationListener> onStartNewOperationListeners = newListenerSet();
-	protected final Set<OnStartReceiveUpdatedOperationScheduleListener> onStartReceiveUpdatedOperationScheduleListeners = newListenerSet();
-	protected final Set<OnPauseActivityListener> onPauseActivityListeners = newListenerSet();
-	protected final Set<OnResumeActivityListener> onResumeActivityListeners = newListenerSet();
-	protected final Set<OnOperationScheduleReceiveFailedListener> onOperationScheduleReceiveFailedListeners = newListenerSet();
 
 	protected volatile Thread backgroundThread = new EmptyThread();
 	protected volatile DataSource remoteDataSource = new EmptyDataSource();
@@ -248,294 +161,10 @@ public class InVehicleDeviceService extends Service {
 		voiceServiceConnector = new VoiceServiceConnector(this);
 	}
 
-	public void addOnAlertUpdatedOperationScheduleListener(
-			OnAlertUpdatedOperationScheduleListener listener) {
-		onAlertUpdatedOperationScheduleListeners.add(listener);
-	}
 
-	public void addOnAlertVehicleNotificationReceiveListener(
-			OnAlertVehicleNotificationReceiveListener listener) {
-		onAlertVehicleNotificationReceiveListeners.add(listener);
-	}
-
-	public void addOnChangeLocationListener(OnChangeLocationListener listener) {
-		onChangeLocationListeners.add(listener);
-	}
-
-	public void addOnChangeOrientationListener(
-			OnChangeOrientationListener listener) {
-		onChangeOrientationListeners.add(listener);
-	}
-
-	public void addOnChangeSignalStrengthListener(
-			OnChangeSignalStrengthListener listener) {
-		onChangeSignalStrengthListeners.add(listener);
-	}
-
-	public void addOnChangeTemperatureListener(
-			OnChangeTemperatureListener listener) {
-		onChangeTemperatureListeners.add(listener);
-	}
-
-	public void addOnEnterPhaseListener(OnEnterPhaseListener listener) {
-		onEnterPhaseListeners.add(listener);
-	}
-
-	public void addOnExitListener(OnExitListener listener) {
-		onExitListeners.add(listener);
-	}
-
-	public void addOnMergeOperationSchedulesListener(
-			OnMergeOperationSchedulesListener listener) {
-		onMergeOperationSchedulesListeners.add(listener);
-	}
-
-	public void addOnPauseActivityListener(OnPauseActivityListener listener) {
-		onPauseActivityListeners.add(listener);
-	}
-
-	public void addOnReceiveVehicleNotificationListener(
-			OnReceiveVehicleNotificationListener listener) {
-		onReceiveVehicleNotificationListeners.add(listener);
-	}
-
-	public void addOnReplyUpdatedOperationScheduleVehicleNotificationsListener(
-			OnReplyUpdatedOperationScheduleVehicleNotificationsListener listener) {
-		onReplyUpdatedOperationScheduleVehicleNotificationsListeners
-				.add(listener);
-	};
-
-	public void addOnReplyVehicleNotificationListener(
-			OnReplyVehicleNotificationListener listener) {
-		onReplyVehicleNotificationListeners.add(listener);
-	};
-
-	public void addOnResumeActivityListener(OnResumeActivityListener listener) {
-		onResumeActivityListeners.add(listener);
-	}
-
-	public void addOnStartNewOperationListener(
-			OnStartNewOperationListener listener) {
-		onStartNewOperationListeners.add(listener);
-	}
-
-	public void addOnStartReceiveUpdatedOperationScheduleListener(
-			OnStartReceiveUpdatedOperationScheduleListener listener) {
-		onStartReceiveUpdatedOperationScheduleListeners.add(listener);
-	}
-
-	public void addOnOperationScheduleReceiveFailedListener(
-			OnOperationScheduleReceiveFailedListener listener) {
-		onOperationScheduleReceiveFailedListeners.add(listener);
-	}
-
-	public void removeOnAlertUpdatedOperationScheduleListener(
-			OnAlertUpdatedOperationScheduleListener listener) {
-		onAlertUpdatedOperationScheduleListeners.remove(listener);
-	}
-
-	public void removeOnAlertVehicleNotificationReceiveListener(
-			OnAlertVehicleNotificationReceiveListener listener) {
-		onAlertVehicleNotificationReceiveListeners.remove(listener);
-	}
-
-	public void removeOnChangeLocationListener(OnChangeLocationListener listener) {
-		onChangeLocationListeners.remove(listener);
-	}
-
-	public void removeOnChangeOrientationListener(
-			OnChangeOrientationListener listener) {
-		onChangeOrientationListeners.remove(listener);
-	}
-
-	public void removeOnChangeSignalStrengthListener(
-			OnChangeSignalStrengthListener listener) {
-		onChangeSignalStrengthListeners.remove(listener);
-	}
-
-	public void removeOnChangeTemperatureListener(
-			OnChangeTemperatureListener listener) {
-		onChangeTemperatureListeners.remove(listener);
-	}
-
-	public void removeOnEnterPhaseListener(OnEnterPhaseListener listener) {
-		onEnterPhaseListeners.remove(listener);
-	}
-
-	public void removeOnExitListener(OnExitListener listener) {
-		onExitListeners.remove(listener);
-	}
-
-	public void removeOnMergeOperationSchedulesListener(
-			OnMergeOperationSchedulesListener listener) {
-		onMergeOperationSchedulesListeners.remove(listener);
-	}
-
-	public void removeOnPauseActivityListener(OnPauseActivityListener listener) {
-		onPauseActivityListeners.remove(listener);
-	}
-
-	public void removeOnReceiveVehicleNotificationListener(
-			OnReceiveVehicleNotificationListener listener) {
-		onReceiveVehicleNotificationListeners.remove(listener);
-	}
-
-	public void removeOnReplyUpdatedOperationScheduleVehicleNotificationsListener(
-			OnReplyUpdatedOperationScheduleVehicleNotificationsListener listener) {
-		onReplyUpdatedOperationScheduleVehicleNotificationsListeners
-				.remove(listener);
-	};
-
-	public void removeOnReplyVehicleNotificationListener(
-			OnReplyVehicleNotificationListener listener) {
-		onReplyVehicleNotificationListeners.remove(listener);
-	};
-
-	public void removeOnResumeActivityListener(OnResumeActivityListener listener) {
-		onResumeActivityListeners.remove(listener);
-	}
-
-	public void removeOnStartNewOperationListener(
-			OnStartNewOperationListener listener) {
-		onStartNewOperationListeners.remove(listener);
-	}
-
-	public void removeOnStartReceiveUpdatedOperationScheduleListener(
-			OnStartReceiveUpdatedOperationScheduleListener listener) {
-		onStartReceiveUpdatedOperationScheduleListeners.remove(listener);
-	}
-
-	public void removeOnOperationScheduleReceiveFailedListener(
-			OnOperationScheduleReceiveFailedListener listener) {
-		onOperationScheduleReceiveFailedListeners.remove(listener);
-	}
-
-	public void dispatchAlertUpdatedOperationSchedule() {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				for (OnAlertUpdatedOperationScheduleListener listener : Lists
-						.newArrayList(onAlertUpdatedOperationScheduleListeners)) {
-					listener.onAlertUpdatedOperationSchedule();
-				}
-			}
-		});
-	}
-
-	public void dispatchAlertVehicleNotificationReceive() {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				for (OnAlertVehicleNotificationReceiveListener listener : Lists
-						.newArrayList(onAlertVehicleNotificationReceiveListeners)) {
-					listener.onAlertVehicleNotificationReceive();
-				}
-			}
-		});
-	}
-
-	public void dispatchChangeLocation(final Location location,
-			final Optional<GpsStatus> gpsStatus) {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				for (OnChangeLocationListener listener : Lists
-						.newArrayList(onChangeLocationListeners)) {
-					listener.onChangeLocation(location, gpsStatus);
-				}
-			}
-		});
-	}
-
-	public void dispatchChangeOrientation(final Double degree) {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				for (OnChangeOrientationListener listener : Lists
-						.newArrayList(onChangeOrientationListeners)) {
-					listener.onChangeOrientation(degree);
-				}
-			}
-		});
-	}
-
-	public void dispatchChangeSignalStrength(final Integer signalStrengthPercentage) {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				for (OnChangeSignalStrengthListener listener : Lists
-						.newArrayList(onChangeSignalStrengthListeners)) {
-					listener.onChangeSignalStrength(signalStrengthPercentage);
-				}
-			}
-		});
-	}
-
-	public void dispatchChangeTemperature(final Double celciusTemperature) {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				for (OnChangeTemperatureListener listener : Lists
-						.newArrayList(onChangeTemperatureListeners)) {
-					listener.onChangeTemperature(celciusTemperature);
-				}
-			}
-		});
-	}
-
-	public void dispatchEnterDrivePhase() {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				for (OnEnterPhaseListener listener : Lists
-						.newArrayList(onEnterPhaseListeners)) {
-					listener.onEnterDrivePhase();
-				}
-			}
-		});
-	}
-
-	public void dispatchEnterFinishPhase() {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				for (OnEnterPhaseListener listener : Lists
-						.newArrayList(onEnterPhaseListeners)) {
-					listener.onEnterFinishPhase();
-				}
-			}
-		});
-	}
-
-	public void dispatchEnterPlatformPhase() {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				for (OnEnterPhaseListener listener : Lists
-						.newArrayList(onEnterPhaseListeners)) {
-					listener.onEnterPlatformPhase();
-				}
-			}
-		});
-	}
 
 	public void exit() {
-		// このメソッドが呼ばれた後に追加されたOnExitListenerを無視するため、
-		// handlerと同じスレッドで呼ばれた場合はpostせずそのままコールバックを行う
-		if (handler.getLooper().getThread().getId() != Thread.currentThread()
-				.getId()) {
-			handler.post(new Runnable() {
-				@Override
-				public void run() {
-					exit();
-				}
-			});
-			return;
-		}
-		for (OnExitListener listener : new ArrayList<OnExitListener>(
-				onExitListeners)) {
-			listener.onExit();
-		}
+		eventDispatcher.dispatchExit();
 	}
 
 	public DataSource getRemoteDataSource() {
@@ -590,8 +219,8 @@ public class InVehicleDeviceService extends Service {
 		backgroundThread = new BackgroundTaskThread(this);
 		backgroundThread.start();
 
-		addOnPauseActivityListener(voiceServiceConnector);
-		addOnResumeActivityListener(voiceServiceConnector);
+		getEventDispatcher().addOnPauseActivityListener(voiceServiceConnector);
+		getEventDispatcher().addOnResumeActivityListener(voiceServiceConnector);
 	}
 
 	@Override
@@ -601,27 +230,7 @@ public class InVehicleDeviceService extends Service {
 		backgroundThread.interrupt();
 		backgroundThread = new EmptyThread();
 
-		removeOnPauseActivityListener(voiceServiceConnector);
-		removeOnResumeActivityListener(voiceServiceConnector);
-
-		onEnterPhaseListeners.clear();
-		onAlertUpdatedOperationScheduleListeners.clear();
-		onAlertVehicleNotificationReceiveListeners.clear();
-		onChangeLocationListeners.clear();
-		onChangeOrientationListeners.clear();
-		onChangeSignalStrengthListeners.clear();
-		onChangeTemperatureListeners.clear();
-		onExitListeners.clear();
-		onMergeOperationSchedulesListeners.clear();
-		onPauseActivityListeners.clear();
-		onReceiveVehicleNotificationListeners.clear();
-		onReplyUpdatedOperationScheduleVehicleNotificationsListeners.clear();
-		onReplyVehicleNotificationListeners.clear();
-		onResumeActivityListeners.clear();
-		onStartNewOperationListeners.clear();
-		onStartReceiveUpdatedOperationScheduleListeners.clear();
-		onOperationScheduleReceiveFailedListeners.clear();
-
+		Closeables.closeQuietly(eventDispatcher);
 		Closeables.closeQuietly(remoteDataSource);
 		Closeables.closeQuietly(localDataSource);
 	}
@@ -629,83 +238,6 @@ public class InVehicleDeviceService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		return START_STICKY;
-	}
-
-	public void dispatchMergeOperationSchedules(
-			final List<OperationSchedule> operationSchedules,
-			final List<VehicleNotification> triggerVehicleNotifications) {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				for (OnMergeOperationSchedulesListener listener : Lists
-						.newArrayList(onMergeOperationSchedulesListeners)) {
-					listener.onMergeOperationSchedules(triggerVehicleNotifications);
-				}
-			}
-		});
-	}
-
-	public void dispatchReceiveVehicleNotification(
-			final List<VehicleNotification> vehicleNotifications) {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				for (OnReceiveVehicleNotificationListener listener : Lists
-						.newArrayList(onReceiveVehicleNotificationListeners)) {
-					listener.onReceiveVehicleNotification(vehicleNotifications);
-				}
-			}
-		});
-	}
-
-	public void dispatchReplyUpdatedOperationScheduleVehicleNotifications(
-			final List<VehicleNotification> vehicleNotifications) {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				for (OnReplyUpdatedOperationScheduleVehicleNotificationsListener listener : Lists
-						.newArrayList(onReplyUpdatedOperationScheduleVehicleNotificationsListeners)) {
-					listener.onReplyUpdatedOperationScheduleVehicleNotifications(vehicleNotifications);
-				}
-			}
-		});
-	}
-
-	public void dispatchReplyVehicleNotification(
-			final VehicleNotification vehicleNotification) {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				for (OnReplyVehicleNotificationListener listener : Lists
-						.newArrayList(onReplyVehicleNotificationListeners)) {
-					listener.onReplyVehicleNotification(vehicleNotification);
-				}
-			}
-		});
-	}
-
-	public void setActivityPaused() {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				for (OnPauseActivityListener listener : Lists
-						.newArrayList(onPauseActivityListeners)) {
-					listener.onPauseActivity();
-				}
-			}
-		});
-	}
-
-	public void setActivityResumed() {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				for (OnResumeActivityListener listener : Lists
-						.newArrayList(onResumeActivityListeners)) {
-					listener.onResumeActivity();
-				}
-			}
-		});
 	}
 
 	public void setLocalDataSource(LocalDataSource localDataSource) {
@@ -718,30 +250,6 @@ public class InVehicleDeviceService extends Service {
 
 	public void speak(String message) {
 		voiceServiceConnector.speak(message);
-	}
-
-	public void dispatchStartNewOperation() {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				for (OnStartNewOperationListener listener : Lists
-						.newArrayList(onStartNewOperationListeners)) {
-					listener.onStartNewOperation();
-				}
-			}
-		});
-	}
-
-	public void dispatchStartReceiveUpdatedOperationSchedule() {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				for (OnStartReceiveUpdatedOperationScheduleListener listener : Lists
-						.newArrayList(onStartReceiveUpdatedOperationScheduleListeners)) {
-					listener.onStartReceiveUpdatedOperationSchedule();
-				}
-			}
-		});
 	}
 
 	public void waitForOperationInitialize() throws InterruptedException {
@@ -764,17 +272,5 @@ public class InVehicleDeviceService extends Service {
 		operationScheduleInitializedSign.release();
 		serviceProviderInitializedSign.acquire();
 		serviceProviderInitializedSign.release();
-	}
-
-	public void dispatchNotifyOperationScheduleReceiveFailed() {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				for (OnOperationScheduleReceiveFailedListener listener : Lists
-						.newArrayList(onOperationScheduleReceiveFailedListeners)) {
-					listener.onOperationScheduleReceiveFailed();
-				}
-			}
-		});
 	}
 }
