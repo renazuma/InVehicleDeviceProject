@@ -6,7 +6,10 @@ import android.location.GpsStatus;
 import android.location.Location;
 
 import com.google.common.base.Optional;
+import com.kogasoftware.odt.invehicledevice.empty.EmptyWebAPICallback;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Reader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
+import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 
 public class ServiceUnitStatusLogLogic {
 	protected final InVehicleDeviceService service;
@@ -17,7 +20,12 @@ public class ServiceUnitStatusLogLogic {
 		this.service = service;
 	}
 
-	public void changeLocation(final Location location, Optional<GpsStatus> gpsStatus) {
+	public void changeSignalStrength(final Integer signalStrengthPercentage) {
+		service.dispatchChangeSignalStrength(signalStrengthPercentage);
+	}
+
+	public void changeLocation(final Location location,
+			Optional<GpsStatus> gpsStatus) {
 		service.getLocalDataSource().withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
@@ -27,6 +35,7 @@ public class ServiceUnitStatusLogLogic {
 						location.getLongitude()));
 			}
 		});
+		service.dispatchChangeLocation(location, gpsStatus);
 	}
 
 	public void changeOrientation(final Double orientationDegree) {
@@ -43,6 +52,7 @@ public class ServiceUnitStatusLogLogic {
 						.intValue());
 			}
 		});
+		service.dispatchChangeOrientation(orientationDegree);
 	}
 
 	public void changeTemperature(final Double celciusTemperature) {
@@ -53,5 +63,23 @@ public class ServiceUnitStatusLogLogic {
 						.setTemperature(celciusTemperature.intValue());
 			}
 		});
+		service.dispatchChangeTemperature(celciusTemperature);
+	}
+
+	public ServiceUnitStatusLog getServiceUnitStatusLog() {
+		return service.getLocalDataSource().withReadLock(
+				new Reader<ServiceUnitStatusLog>() {
+					@Override
+					public ServiceUnitStatusLog read(LocalData status) {
+						return status.serviceUnitStatusLog;
+					}
+				});
+	}
+
+	public void send() {
+		service.getRemoteDataSource()
+				.withSaveOnClose()
+				.sendServiceUnitStatusLog(getServiceUnitStatusLog(),
+						new EmptyWebAPICallback<ServiceUnitStatusLog>());
 	}
 }

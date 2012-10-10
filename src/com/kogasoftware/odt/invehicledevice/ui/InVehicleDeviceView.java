@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.ArrivalCheckModalView;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.DepartureCheckModalView;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.MemoModalView;
@@ -66,6 +67,7 @@ public class InVehicleDeviceView extends FrameLayout implements
 	private final TextView statusTextView;
 	private final TextView presentTimeTextView;
 	private final ViewGroup platformMemoButtonLayout;
+	private final OperationScheduleLogic operationScheduleLogic;
 
 	private final Handler handler = new Handler();
 
@@ -106,6 +108,7 @@ public class InVehicleDeviceView extends FrameLayout implements
 
 	public InVehicleDeviceView(Context context, InVehicleDeviceService service) {
 		super(context);
+		operationScheduleLogic = new OperationScheduleLogic(service);
 		this.service = service;
 
 		LayoutInflater layoutInflater = (LayoutInflater) getContext()
@@ -182,7 +185,7 @@ public class InVehicleDeviceView extends FrameLayout implements
 			}
 		}
 
-		service.refreshPhase();
+		operationScheduleLogic.refreshPhase();
 	}
 
 	@Override
@@ -248,7 +251,7 @@ public class InVehicleDeviceView extends FrameLayout implements
 		});
 
 		Integer platformMemoVisibility = GONE;
-		for (OperationSchedule operationSchedule : service
+		for (OperationSchedule operationSchedule : operationScheduleLogic
 				.getCurrentOperationSchedule().asSet()) {
 			for (Platform platform : operationSchedule.getPlatform().asSet()) {
 				if (!platform.getMemo().isEmpty()) {
@@ -269,10 +272,10 @@ public class InVehicleDeviceView extends FrameLayout implements
 
 	@Override
 	public void onEnterPlatformPhase() {
-		List<OperationSchedule> operationSchedules = service
+		List<OperationSchedule> operationSchedules = operationScheduleLogic
 				.getRemainingOperationSchedules();
 		if (operationSchedules.isEmpty()) {
-			service.enterFinishPhase();
+			operationScheduleLogic.enterFinishPhase();
 			return;
 		}
 

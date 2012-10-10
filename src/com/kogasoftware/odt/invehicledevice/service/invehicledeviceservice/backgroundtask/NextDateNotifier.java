@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
 
 public class NextDateNotifier implements Runnable {
 	protected static Date createNextUpdateDate() {
@@ -21,11 +22,11 @@ public class NextDateNotifier implements Runnable {
 		return calendar.getTime();
 	}
 
-	protected final InVehicleDeviceService service;
+	protected final OperationScheduleLogic operationScheduleLogic;
 	protected Date nextUpdateDate = createNextUpdateDate();
 
-	public NextDateNotifier(InVehicleDeviceService service) {
-		this.service = service;
+	public NextDateNotifier(OperationScheduleLogic operationScheduleLogic) {
+		this.operationScheduleLogic = operationScheduleLogic;
 	}
 
 	@Override
@@ -34,6 +35,6 @@ public class NextDateNotifier implements Runnable {
 			return;
 		}
 		nextUpdateDate = createNextUpdateDate();
-		service.startNewOperation();
+		operationScheduleLogic.startNewOperation();
 	}
 }

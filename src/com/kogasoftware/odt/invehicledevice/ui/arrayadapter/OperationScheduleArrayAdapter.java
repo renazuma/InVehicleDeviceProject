@@ -14,21 +14,26 @@ import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Reservation;
 
 public class OperationScheduleArrayAdapter extends
 		ArrayAdapter<OperationSchedule> {
-	private final LayoutInflater layoutInflater;
-	private final InVehicleDeviceService service;
 	private static final Integer RESOURCE_ID = R.layout.operation_schedule_list_row;
+	private final LayoutInflater layoutInflater;
+	private final OperationScheduleLogic operationScheduleLogic;
 
 	public OperationScheduleArrayAdapter(Context context,
 			InVehicleDeviceService service) {
-		super(context, RESOURCE_ID, service.getOperationSchedules());
-		this.service = service;
+		super(context, RESOURCE_ID);
+		operationScheduleLogic = new OperationScheduleLogic(service);
 		this.layoutInflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		for (OperationSchedule operationSchedule : operationScheduleLogic
+				.getOperationSchedules()) {
+			add(operationSchedule);
+		}
 	}
 
 	@Override
@@ -97,7 +102,7 @@ public class OperationScheduleArrayAdapter extends
 			}
 		}
 
-		if (service.getRemainingOperationSchedules()
+		if (operationScheduleLogic.getRemainingOperationSchedules()
 				.contains(operationSchedule)) {
 			convertView.setBackgroundColor(Color.TRANSPARENT);
 		} else {

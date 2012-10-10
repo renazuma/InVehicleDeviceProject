@@ -22,9 +22,11 @@ import com.kogasoftware.odt.webapi.model.VehicleNotification;
  */
 public class OperationScheduleLogic {
 	protected final InVehicleDeviceService service;
+	protected final VehicleNotificationLogic vehicleNotificationLogic;
 
 	public OperationScheduleLogic(InVehicleDeviceService service) {
 		this.service = service;
+		vehicleNotificationLogic = new VehicleNotificationLogic(service);
 	}
 
 	/**
@@ -36,7 +38,7 @@ public class OperationScheduleLogic {
 			public void write(LocalData localData) {
 				List<OperationSchedule> remainingOperationSchedules = getRemainingOperationSchedules();
 				if (remainingOperationSchedules.isEmpty()) {
-					service.enterFinishPhase();
+					service.dispatchEnterFinishPhase();
 					return;
 				}
 				if (localData.phase == LocalData.Phase.PLATFORM) {
@@ -45,6 +47,7 @@ public class OperationScheduleLogic {
 				localData.phase = LocalData.Phase.DRIVE;
 			}
 		});
+		service.dispatchEnterDrivePhase();
 	}
 
 	/**
@@ -58,6 +61,7 @@ public class OperationScheduleLogic {
 				localData.phase = LocalData.Phase.FINISH;
 			}
 		});
+		service.dispatchEnterFinishPhase();
 	}
 
 	/**
@@ -69,7 +73,7 @@ public class OperationScheduleLogic {
 			public void write(LocalData localData) {
 				List<OperationSchedule> remainingOperationSchedules = getRemainingOperationSchedules();
 				if (remainingOperationSchedules.isEmpty()) {
-					service.enterFinishPhase();
+					service.dispatchEnterFinishPhase();
 					return;
 				}
 				if (localData.phase == LocalData.Phase.DRIVE) {
@@ -78,6 +82,7 @@ public class OperationScheduleLogic {
 				localData.phase = LocalData.Phase.PLATFORM;
 			}
 		});
+		service.dispatchEnterPlatformPhase();
 	}
 
 	private void arrive() {
@@ -248,7 +253,8 @@ public class OperationScheduleLogic {
 			final List<VehicleNotification> triggerVehicleNotifications) {
 		LocalDataSource localDataSource = service.getLocalDataSource();
 		// 通知を受信済みリストに移動
-		service.setVehicleNotificationStatus(triggerVehicleNotifications,
+		vehicleNotificationLogic.setVehicleNotificationStatus(
+				triggerVehicleNotifications,
 				VehicleNotificationStatus.OPERATION_SCHEDULE_RECEIVED);
 		// マージ
 		localDataSource.withWriteLock(new Writer() {
@@ -258,7 +264,9 @@ public class OperationScheduleLogic {
 						operationSchedules);
 			}
 		});
-		service.refreshPhase();
+		refreshPhase();
+		service.dispatchMergeOperationSchedules(operationSchedules,
+				triggerVehicleNotifications);
 	}
 
 	/**
@@ -275,6 +283,7 @@ public class OperationScheduleLogic {
 				localData.passengerRecords.clear();
 			}
 		});
+		service.dispatchStartNewOperation();
 	}
 
 	/**
@@ -284,8 +293,8 @@ public class OperationScheduleLogic {
 		return service.getLocalDataSource().withReadLock(
 				new Reader<Optional<OperationSchedule>>() {
 					@Override
-					public Optional<OperationSchedule> read(LocalData status) {
-						for (OperationSchedule operationSchedule : status.operationSchedules) {
+					public Optional<OperationSchedule> read(LocalData localData) {
+						for (OperationSchedule operationSchedule : localData.operationSchedules) {
 							if (!operationSchedule.getOperationRecord()
 									.isPresent()
 									|| !operationSchedule.getOperationRecord()
@@ -302,10 +311,10 @@ public class OperationScheduleLogic {
 		return service.getLocalDataSource().withReadLock(
 				new Reader<List<OperationSchedule>>() {
 					@Override
-					public List<OperationSchedule> read(LocalData status) {
+					public List<OperationSchedule> read(LocalData localData) {
 						List<OperationSchedule> operationSchedules = Lists
 								.newLinkedList();
-						for (OperationSchedule operationSchedule : status.operationSchedules) {
+						for (OperationSchedule operationSchedule : localData.operationSchedules) {
 							for (OperationRecord operationRecord : operationSchedule
 									.getOperationRecord().asSet()) {
 								if (!operationRecord.getDepartedAt()
@@ -323,8 +332,8 @@ public class OperationScheduleLogic {
 		return service.getLocalDataSource().withReadLock(
 				new Reader<List<OperationSchedule>>() {
 					@Override
-					public List<OperationSchedule> read(LocalData status) {
-						return Lists.newLinkedList(status.operationSchedules);
+					public List<OperationSchedule> read(LocalData localData) {
+						return Lists.newLinkedList(localData.operationSchedules);
 					}
 				});
 	}
@@ -336,5 +345,22 @@ public class OperationScheduleLogic {
 				return status.phase;
 			}
 		});
+	}
+
+	public void refreshPhase() {
+		switch (getPhase()) {
+		case INITIAL:
+			enterDrivePhase();
+			break;
+		case DRIVE:
+			enterDrivePhase();
+			break;
+		case PLATFORM:
+			enterPlatformPhase();
+			break;
+		case FINISH:
+			enterFinishPhase();
+			break;
+		}
 	}
 }

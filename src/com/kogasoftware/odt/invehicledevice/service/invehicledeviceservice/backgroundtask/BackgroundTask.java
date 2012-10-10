@@ -18,13 +18,16 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
+import android.location.LocationManager;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.google.common.base.Optional;
@@ -34,6 +37,8 @@ import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
 import com.kogasoftware.odt.invehicledevice.datasource.WebAPIDataSource;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.ServiceUnitStatusLogLogic;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 import com.kogasoftware.odt.invehicledevice.ui.BigToast;
 
@@ -70,6 +75,11 @@ public class BackgroundTask {
 	private final Context applicationContext;
 	private final Handler handler;
 	private final AtomicBoolean loopStopped = new AtomicBoolean(false);
+	private final ServiceUnitStatusLogLogic serviceUnitStatusLogLogic;
+	private final OperationScheduleLogic operationScheduleLogic;
+	private final WindowManager windowManager;
+	private final LocationManager locationManager;
+	private final PowerManager powerManager;
 
 	public BackgroundTask(InVehicleDeviceService service) {
 		this.service = service;
@@ -79,6 +89,8 @@ public class BackgroundTask {
 		applicationContext = service.getApplicationContext();
 		myLooper = Looper.myLooper();
 		handler = new Handler();
+		operationScheduleLogic = new OperationScheduleLogic(service);
+		serviceUnitStatusLogLogic = new ServiceUnitStatusLogLogic(service);
 
 		sensorManager = (SensorManager) applicationContext
 				.getSystemService(Context.SENSOR_SERVICE);
@@ -101,19 +113,33 @@ public class BackgroundTask {
 		} catch (NullPointerException e) {
 			Log.w(TAG, e);
 		}
+
+		SharedPreferences preferences = PreferenceManager
+				.getDefaultSharedPreferences(service);
+		windowManager = (WindowManager) service
+				.getSystemService(Context.WINDOW_SERVICE);
+		locationManager = (LocationManager) service
+				.getSystemService(Context.LOCATION_SERVICE);
+		powerManager = (PowerManager) service
+				.getSystemService(Context.POWER_SERVICE);
+
 		optionalTelephonyManager = tempTelephonyManager;
 		exitBroadcastReceiver = new ExitBroadcastReceiver(service);
 		batteryBroadcastReceiver = new BatteryBroadcastReceiver();
-		serviceUnitStatusLogSender = new ServiceUnitStatusLogSender(service);
-		accMagSensorEventListener = new AccMagSensorEventListener(service);
+		serviceUnitStatusLogSender = new ServiceUnitStatusLogSender(
+				serviceUnitStatusLogLogic, operationScheduleLogic);
+		accMagSensorEventListener = new AccMagSensorEventListener(
+				serviceUnitStatusLogLogic, windowManager);
 		orientationSensorEventListener = new OrientationSensorEventListener(
-				service);
+				serviceUnitStatusLogLogic, windowManager);
 		vehicleNotificationReceiver = new VehicleNotificationReceiver(service);
-		nextDateChecker = new NextDateNotifier(service);
+		nextDateChecker = new NextDateNotifier(operationScheduleLogic);
 		temperatureSensorEventListener = new TemperatureSensorEventListener(
-				service);
-		signalStrengthListener = new SignalStrengthListener(service);
-		locationNotifier = new LocationNotifier(service);
+				serviceUnitStatusLogLogic);
+		signalStrengthListener = new SignalStrengthListener(
+				serviceUnitStatusLogLogic);
+		locationNotifier = new LocationNotifier(serviceUnitStatusLogLogic,
+				locationManager, powerManager, preferences);
 		operationScheduleReceiveThread = new OperationScheduleReceiveThread(
 				service);
 		serviceProviderReceiveThread = new ServiceProviderReceiveThread(service);
@@ -224,7 +250,7 @@ public class BackgroundTask {
 		serviceProviderReceiveThread.start();
 
 		if (!service.isOperationInitialized()) {
-			service.startNewOperation();
+			operationScheduleLogic.startNewOperation();
 			service.waitForOperationInitialize();
 		}
 

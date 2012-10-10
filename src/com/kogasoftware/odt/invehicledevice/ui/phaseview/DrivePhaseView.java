@@ -14,6 +14,8 @@ import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.PassengerRecordLogic;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Platform;
@@ -40,11 +42,14 @@ public class DrivePhaseView extends PhaseView {
 	private final View driveView1;
 	private final View driveView2;
 	private final Handler handler = new Handler();
+	private final OperationScheduleLogic operationScheduleLogic;
+	private final PassengerRecordLogic passengerRecordLogic;
 
 	public DrivePhaseView(Context context, InVehicleDeviceService service) {
 		super(context, service);
 		setContentView(R.layout.drive_phase_view);
-
+		operationScheduleLogic = new OperationScheduleLogic(service);
+		passengerRecordLogic = new PassengerRecordLogic(service);
 		nextPlatformNameTextView = (TextView) findViewById(R.id.next_platform_name_text_view);
 		nextPlatformNameRubyTextView = (TextView) findViewById(R.id.next_platform_name_ruby_text_view);
 		platformName1BeyondTextView = (TextView) findViewById(R.id.platform_name_1_beyond_text_view);
@@ -74,17 +79,17 @@ public class DrivePhaseView extends PhaseView {
 
 	@Override
 	public void onEnterDrivePhase() {
-		List<OperationSchedule> operationSchedules = service
+		List<OperationSchedule> operationSchedules = operationScheduleLogic
 				.getRemainingOperationSchedules();
 		if (operationSchedules.isEmpty()) {
-			service.enterFinishPhase();
+			operationScheduleLogic.enterFinishPhase();
 			return;
 		}
 
 		OperationSchedule operationSchedule = operationSchedules.get(0);
 		TextView totalPassengerCountTextView = (TextView) findViewById(R.id.total_passenger_count_text_view);
 		Integer totalPassengerCount = 0;
-		for (PassengerRecord passengerRecord : service.getPassengerRecords()) {
+		for (PassengerRecord passengerRecord : passengerRecordLogic.getPassengerRecords()) {
 			if (passengerRecord.isRiding()) {
 				totalPassengerCount += passengerRecord.getPassengerCount();
 			}

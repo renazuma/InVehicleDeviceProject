@@ -10,16 +10,19 @@ import android.widget.TextView;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.VehicleNotificationLogic;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 import com.kogasoftware.odt.webapi.model.VehicleNotification.NotificationKind;
 
 public class NotificationModalView extends ModalView implements
 		InVehicleDeviceService.OnAlertVehicleNotificationReceiveListener {
 	private final Handler handler = new Handler();
+	private final VehicleNotificationLogic vehicleNotificationLogic;
 	private VehicleNotification currentVehicleNotification = new VehicleNotification();
 
 	public NotificationModalView(Context context, InVehicleDeviceService service) {
 		super(context, service);
+		vehicleNotificationLogic = new VehicleNotificationLogic(service);
 		setContentView(R.layout.notification_modal_view);
 		findViewById(R.id.reply_yes_button).setOnClickListener(
 				new OnClickListener() {
@@ -66,7 +69,7 @@ public class NotificationModalView extends ModalView implements
 
 	private void reply() {
 		hide();
-		service.replyVehicleNotification(currentVehicleNotification);
+		vehicleNotificationLogic.replyVehicleNotification(currentVehicleNotification);
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
@@ -77,7 +80,7 @@ public class NotificationModalView extends ModalView implements
 
 	@Override
 	public void show() {
-		List<VehicleNotification> vehicleNotifications = service
+		List<VehicleNotification> vehicleNotifications = vehicleNotificationLogic
 				.getVehicleNotifications(NotificationKind.FROM_OPERATOR,
 						VehicleNotificationStatus.UNHANDLED);
 		if (vehicleNotifications.isEmpty()) {

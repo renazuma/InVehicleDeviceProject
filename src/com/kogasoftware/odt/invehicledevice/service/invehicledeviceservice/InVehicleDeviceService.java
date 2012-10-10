@@ -35,13 +35,9 @@ import com.kogasoftware.odt.invehicledevice.BuildConfig;
 import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.datasource.EmptyDataSource;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Reader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask.BackgroundTaskThread;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
-import com.kogasoftware.odt.webapi.model.PassengerRecord;
-import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class InVehicleDeviceService extends Service {
@@ -221,10 +217,6 @@ public class InVehicleDeviceService extends Service {
 		return new CopyOnWriteArraySet<T>();
 	}
 
-	protected final OperationScheduleLogic operationScheduleLogic;
-	protected final PassengerRecordLogic passengerRecordLogic;
-	protected final VehicleNotificationLogic vehicleNotificationLogic;
-	protected final ServiceUnitStatusLogLogic serviceUnitStatusLogLogic;
 	protected final IBinder binder = new LocalBinder();
 	protected final Handler handler = new Handler(Looper.getMainLooper());
 	protected final VoiceServiceConnector voiceServiceConnector;
@@ -251,27 +243,8 @@ public class InVehicleDeviceService extends Service {
 	protected volatile DataSource remoteDataSource = new EmptyDataSource();
 	protected volatile LocalDataSource localDataSource = new LocalDataSource();
 
-	@VisibleForTesting
-	public InVehicleDeviceService(
-			OperationScheduleLogic operationScheduleLogic,
-			PassengerRecordLogic passengerRecordLogic,
-			VehicleNotificationLogic vehicleNotificationLogic,
-			ServiceUnitStatusLogLogic serviceUnitStatusLogLogic,
-			VoiceServiceConnector voiceServiceConnector) {
-		super();
-		this.operationScheduleLogic = operationScheduleLogic;
-		this.passengerRecordLogic = passengerRecordLogic;
-		this.vehicleNotificationLogic = vehicleNotificationLogic;
-		this.serviceUnitStatusLogLogic = serviceUnitStatusLogLogic;
-		this.voiceServiceConnector = voiceServiceConnector;
-	}
-
 	public InVehicleDeviceService() {
 		super();
-		operationScheduleLogic = new OperationScheduleLogic(this);
-		passengerRecordLogic = new PassengerRecordLogic(this);
-		vehicleNotificationLogic = new VehicleNotificationLogic(this);
-		serviceUnitStatusLogLogic = new ServiceUnitStatusLogLogic(this);
 		voiceServiceConnector = new VoiceServiceConnector(this);
 	}
 
@@ -437,7 +410,7 @@ public class InVehicleDeviceService extends Service {
 		onOperationScheduleReceiveFailedListeners.remove(listener);
 	}
 
-	public void alertUpdatedOperationSchedule() {
+	public void dispatchAlertUpdatedOperationSchedule() {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
@@ -449,7 +422,7 @@ public class InVehicleDeviceService extends Service {
 		});
 	}
 
-	public void alertVehicleNotificationReceive() {
+	public void dispatchAlertVehicleNotificationReceive() {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
@@ -461,12 +434,11 @@ public class InVehicleDeviceService extends Service {
 		});
 	}
 
-	public void changeLocation(final Location location,
+	public void dispatchChangeLocation(final Location location,
 			final Optional<GpsStatus> gpsStatus) {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
-				serviceUnitStatusLogLogic.changeLocation(location, gpsStatus);
 				for (OnChangeLocationListener listener : Lists
 						.newArrayList(onChangeLocationListeners)) {
 					listener.onChangeLocation(location, gpsStatus);
@@ -475,11 +447,10 @@ public class InVehicleDeviceService extends Service {
 		});
 	}
 
-	public void changeOrientation(final Double degree) {
+	public void dispatchChangeOrientation(final Double degree) {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
-				serviceUnitStatusLogLogic.changeOrientation(degree);
 				for (OnChangeOrientationListener listener : Lists
 						.newArrayList(onChangeOrientationListeners)) {
 					listener.onChangeOrientation(degree);
@@ -488,7 +459,7 @@ public class InVehicleDeviceService extends Service {
 		});
 	}
 
-	public void changeSignalStrength(final Integer signalStrengthPercentage) {
+	public void dispatchChangeSignalStrength(final Integer signalStrengthPercentage) {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
@@ -500,11 +471,10 @@ public class InVehicleDeviceService extends Service {
 		});
 	}
 
-	public void changeTemperature(final Double celciusTemperature) {
+	public void dispatchChangeTemperature(final Double celciusTemperature) {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
-				serviceUnitStatusLogLogic.changeTemperature(celciusTemperature);
 				for (OnChangeTemperatureListener listener : Lists
 						.newArrayList(onChangeTemperatureListeners)) {
 					listener.onChangeTemperature(celciusTemperature);
@@ -513,11 +483,10 @@ public class InVehicleDeviceService extends Service {
 		});
 	}
 
-	public void enterDrivePhase() {
+	public void dispatchEnterDrivePhase() {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
-				operationScheduleLogic.enterDrivePhase();
 				for (OnEnterPhaseListener listener : Lists
 						.newArrayList(onEnterPhaseListeners)) {
 					listener.onEnterDrivePhase();
@@ -526,11 +495,10 @@ public class InVehicleDeviceService extends Service {
 		});
 	}
 
-	public void enterFinishPhase() {
+	public void dispatchEnterFinishPhase() {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
-				operationScheduleLogic.enterFinishPhase();
 				for (OnEnterPhaseListener listener : Lists
 						.newArrayList(onEnterPhaseListeners)) {
 					listener.onEnterFinishPhase();
@@ -539,11 +507,10 @@ public class InVehicleDeviceService extends Service {
 		});
 	}
 
-	public void enterPlatformPhase() {
+	public void dispatchEnterPlatformPhase() {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
-				operationScheduleLogic.enterPlatformPhase();
 				for (OnEnterPhaseListener listener : Lists
 						.newArrayList(onEnterPhaseListeners)) {
 					listener.onEnterPlatformPhase();
@@ -571,10 +538,6 @@ public class InVehicleDeviceService extends Service {
 		}
 	}
 
-	public Optional<OperationSchedule> getCurrentOperationSchedule() {
-		return operationScheduleLogic.getCurrentOperationSchedule();
-	}
-
 	public DataSource getRemoteDataSource() {
 		return remoteDataSource;
 	}
@@ -585,31 +548,6 @@ public class InVehicleDeviceService extends Service {
 
 	public EnumSet<PayTiming> getPayTiming() {
 		return EnumSet.of(PayTiming.GET_ON);
-	}
-
-	public Phase getPhase() {
-		return operationScheduleLogic.getPhase();
-	}
-
-	public List<OperationSchedule> getOperationSchedules() {
-		return operationScheduleLogic.getOperationSchedules();
-	}
-
-	public List<OperationSchedule> getRemainingOperationSchedules() {
-		return operationScheduleLogic.getRemainingOperationSchedules();
-	}
-
-	public List<PassengerRecord> getPassengerRecords() {
-		return passengerRecordLogic.getPassengerRecords();
-	}
-
-	public ServiceUnitStatusLog getServiceUnitStatusLog() {
-		return localDataSource.withReadLock(new Reader<ServiceUnitStatusLog>() {
-			@Override
-			public ServiceUnitStatusLog read(LocalData status) {
-				return status.serviceUnitStatusLog;
-			}
-		});
 	}
 
 	public String getToken() {
@@ -624,9 +562,9 @@ public class InVehicleDeviceService extends Service {
 	public Boolean isOperationInitialized() {
 		return localDataSource.withReadLock(new Reader<Boolean>() {
 			@Override
-			public Boolean read(LocalData status) {
-				return (status.operationScheduleInitializedSign
-						.availablePermits() > 0 && status.serviceProviderInitializedSign
+			public Boolean read(LocalData localData) {
+				return (localData.operationScheduleInitializedSign
+						.availablePermits() > 0 && localData.serviceProviderInitializedSign
 						.availablePermits() > 0);
 			}
 		});
@@ -693,14 +631,12 @@ public class InVehicleDeviceService extends Service {
 		return START_STICKY;
 	}
 
-	public void mergeOperationSchedules(
+	public void dispatchMergeOperationSchedules(
 			final List<OperationSchedule> operationSchedules,
 			final List<VehicleNotification> triggerVehicleNotifications) {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
-				operationScheduleLogic.mergeOperationSchedules(
-						operationSchedules, triggerVehicleNotifications);
 				for (OnMergeOperationSchedulesListener listener : Lists
 						.newArrayList(onMergeOperationSchedulesListeners)) {
 					listener.onMergeOperationSchedules(triggerVehicleNotifications);
@@ -709,13 +645,11 @@ public class InVehicleDeviceService extends Service {
 		});
 	}
 
-	public void receiveVehicleNotification(
+	public void dispatchReceiveVehicleNotification(
 			final List<VehicleNotification> vehicleNotifications) {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
-				vehicleNotificationLogic
-						.receiveVehicleNotification(vehicleNotifications);
 				for (OnReceiveVehicleNotificationListener listener : Lists
 						.newArrayList(onReceiveVehicleNotificationListeners)) {
 					listener.onReceiveVehicleNotification(vehicleNotifications);
@@ -724,30 +658,11 @@ public class InVehicleDeviceService extends Service {
 		});
 	}
 
-	public void refreshPhase() {
-		switch (getPhase()) {
-		case INITIAL:
-			enterDrivePhase();
-			break;
-		case DRIVE:
-			enterDrivePhase();
-			break;
-		case PLATFORM:
-			enterPlatformPhase();
-			break;
-		case FINISH:
-			enterFinishPhase();
-			break;
-		}
-	}
-
-	public void replyUpdatedOperationScheduleVehicleNotifications(
+	public void dispatchReplyUpdatedOperationScheduleVehicleNotifications(
 			final List<VehicleNotification> vehicleNotifications) {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
-				vehicleNotificationLogic
-						.replyUpdatedOperationScheduleVehicleNotifications(vehicleNotifications);
 				for (OnReplyUpdatedOperationScheduleVehicleNotificationsListener listener : Lists
 						.newArrayList(onReplyUpdatedOperationScheduleVehicleNotificationsListeners)) {
 					listener.onReplyUpdatedOperationScheduleVehicleNotifications(vehicleNotifications);
@@ -756,13 +671,11 @@ public class InVehicleDeviceService extends Service {
 		});
 	}
 
-	public void replyVehicleNotification(
+	public void dispatchReplyVehicleNotification(
 			final VehicleNotification vehicleNotification) {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
-				vehicleNotificationLogic
-						.replyVehicleNotification(vehicleNotification);
 				for (OnReplyVehicleNotificationListener listener : Lists
 						.newArrayList(onReplyVehicleNotificationListeners)) {
 					listener.onReplyVehicleNotification(vehicleNotification);
@@ -807,11 +720,10 @@ public class InVehicleDeviceService extends Service {
 		voiceServiceConnector.speak(message);
 	}
 
-	public void startNewOperation() {
+	public void dispatchStartNewOperation() {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
-				operationScheduleLogic.startNewOperation();
 				for (OnStartNewOperationListener listener : Lists
 						.newArrayList(onStartNewOperationListeners)) {
 					listener.onStartNewOperation();
@@ -820,7 +732,7 @@ public class InVehicleDeviceService extends Service {
 		});
 	}
 
-	public void startReceiveUpdatedOperationSchedule() {
+	public void dispatchStartReceiveUpdatedOperationSchedule() {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
@@ -854,60 +766,7 @@ public class InVehicleDeviceService extends Service {
 		serviceProviderInitializedSign.release();
 	}
 
-	public Boolean isSelected(PassengerRecord passengerRecord) {
-		return passengerRecordLogic.isSelected(passengerRecord);
-	}
-
-	public void unselect(PassengerRecord passengerRecord) {
-		passengerRecordLogic.unselect(passengerRecord);
-	}
-
-	public void select(PassengerRecord passengerRecord) {
-		passengerRecordLogic.select(passengerRecord);
-	}
-
-	public Boolean isGetOffScheduled(PassengerRecord passengerRecord) {
-		return passengerRecordLogic.isGetOffScheduled(passengerRecord);
-	}
-
-	public Boolean canGetOn(PassengerRecord passengerRecord) {
-		return passengerRecordLogic.canGetOn(passengerRecord);
-	}
-
-	public Boolean isGetOnScheduled(PassengerRecord passengerRecord) {
-		return passengerRecordLogic.isGetOnScheduled(passengerRecord);
-	}
-
-	public Boolean canGetOff(PassengerRecord passengerRecord) {
-		return passengerRecordLogic.canGetOff(passengerRecord);
-	}
-
-	public List<PassengerRecord> getNoGettingOnPassengerRecords() {
-		return passengerRecordLogic.getNoGettingOnPassengerRecords();
-	}
-
-	public List<PassengerRecord> getNoGettingOffPassengerRecords() {
-		return passengerRecordLogic.getNoGettingOffPassengerRecords();
-	}
-
-	public List<PassengerRecord> getNoPaymentPassengerRecords() {
-		return passengerRecordLogic.getNoPaymentPassengerRecords();
-	}
-
-	public List<VehicleNotification> getVehicleNotifications(
-			Integer notificationKind, VehicleNotificationStatus status) {
-		return vehicleNotificationLogic.getVehicleNotifications(
-				notificationKind, status);
-	}
-
-	public Boolean setVehicleNotificationStatus(
-			List<VehicleNotification> vehicleNotifications,
-			VehicleNotificationStatus status) {
-		return vehicleNotificationLogic.setVehicleNotificationStatus(
-				vehicleNotifications, status);
-	}
-
-	public void notifyOperationScheduleReceiveFailed() {
+	public void dispatchNotifyOperationScheduleReceiveFailed() {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {

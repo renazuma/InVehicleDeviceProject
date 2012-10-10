@@ -25,6 +25,8 @@ import android.util.Log;
 import com.google.common.base.Optional;
 import com.javadocmd.simplelatlng.LatLng;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.ServiceUnitStatusLogLogic;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.frametask.FrameTask;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.frametask.MapBuildFrameTask;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.frametask.NextPlatformFrameTask;
@@ -71,6 +73,8 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	protected final Queue<FrameTask> removedFrameTasks = new ConcurrentLinkedQueue<FrameTask>();
 	protected final NextPlatformFrameTask nextPlatformFrameTask;
 	protected final SelfFrameTask selfFrameTask;
+	protected final OperationScheduleLogic operationScheduleLogic;
+	protected final ServiceUnitStatusLogLogic serviceUnitStatusLogLogic;
 	protected long framesBy10seconds = 0l;
 	protected long lastReportMillis = 0l;
 	protected int width = 0;
@@ -89,6 +93,8 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 			TilePipeline tilePipeline, Handler uiHandler) {
 		this.service = service;
 		this.uiHandler = uiHandler;
+		operationScheduleLogic = new OperationScheduleLogic(service);
+		serviceUnitStatusLogLogic = new ServiceUnitStatusLogLogic(service);
 		tilePipeline.changeZoomLevel(zoomLevel);
 		addedFrameTasks.add(new MapBuildFrameTask(service, tilePipeline));
 		selfFrameTask = new SelfFrameTask(service.getResources());
@@ -115,7 +121,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		}
 		latitudeSmoother.addMotion(defaultLatitude);
 		longitudeSmoother.addMotion(defaultLongitude);
-		
+
 		updatePlatform();
 	}
 
@@ -395,7 +401,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	}
 
 	public void updateLocation() {
-		ServiceUnitStatusLog serviceUnitStatusLog = service
+		ServiceUnitStatusLog serviceUnitStatusLog = serviceUnitStatusLogLogic
 				.getServiceUnitStatusLog();
 		double latitude = serviceUnitStatusLog.getLatitude().doubleValue();
 		double longitude = serviceUnitStatusLog.getLongitude().doubleValue();
@@ -409,7 +415,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	}
 
 	public void updatePlatform() {
-		for (OperationSchedule operationSchedule : service
+		for (OperationSchedule operationSchedule : operationScheduleLogic
 				.getCurrentOperationSchedule().asSet()) {
 			for (Platform platform : operationSchedule.getPlatform().asSet()) {
 				nextPlatformFrameTask.setLatLng(new LatLng(platform

@@ -10,10 +10,12 @@ import android.widget.TextView;
 import com.google.common.base.Objects;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.VehicleNotificationLogic;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class ScheduleChangedModalView extends ModalView implements
 		InVehicleDeviceService.OnMergeOperationSchedulesListener {
+	protected final VehicleNotificationLogic vehicleNotificationLogic;
 	protected final TextView scheduleChangedTextView;
 	protected final ScheduleModalView scheduleModalView;
 
@@ -21,6 +23,7 @@ public class ScheduleChangedModalView extends ModalView implements
 			InVehicleDeviceService service,
 			final ScheduleModalView scheduleModalView) {
 		super(context, service);
+		vehicleNotificationLogic = new VehicleNotificationLogic(service);
 		this.scheduleModalView = scheduleModalView;
 		setContentView(R.layout.schedule_changed_modal_view);
 		setCloseOnClick(R.id.schedule_changed_close_button);
@@ -80,6 +83,7 @@ public class ScheduleChangedModalView extends ModalView implements
 			vehicleNotification.setResponse(VehicleNotification.Response.YES); // TODO
 		}
 
-		service.replyUpdatedOperationScheduleVehicleNotifications(vehicleNotifications);
+		vehicleNotificationLogic
+				.replyUpdatedOperationScheduleVehicleNotifications(vehicleNotifications);
 	}
 }
