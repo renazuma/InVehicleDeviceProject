@@ -8,6 +8,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
@@ -21,6 +24,7 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -35,6 +39,20 @@ import com.kogasoftware.odt.webapi.model.ServiceProvider;
  * LocalDataのアクセスに対し 書き込みがあったら自動で保存. 読み書き時にロックを実行を行う
  */
 public class LocalDataSource implements Closeable {
+	private static final int NUM_THREADS = 5;
+	private final ExecutorService executorService = Executors
+			.newFixedThreadPool(NUM_THREADS);
+
+	public interface BackgroundReader<T> {
+		T readInBackground(LocalData localData);
+		void onRead(T result);
+	}
+
+	public interface BackgroundWriter {
+		void writeInBackground(LocalData ld);
+		void onWrite();
+	}
+
 	public interface Reader<T> {
 		T read(LocalData localData);
 	}
@@ -64,7 +82,8 @@ public class LocalDataSource implements Closeable {
 				return;
 			} finally {
 				long elapsed = endTime - beginTime;
-				Log.d(TAG, "serialize() " + elapsed + "ms " + serialized.length + "bytes");
+				Log.d(TAG, "serialize() " + elapsed + "ms " + serialized.length
+						+ "bytes");
 			}
 
 			synchronized (FILE_ACCESS_LOCK) {
@@ -239,6 +258,7 @@ public class LocalDataSource implements Closeable {
 	@Override
 	public void close() {
 		saveThread.interrupt();
+		executorService.shutdownNow();
 	}
 
 	/**
@@ -285,5 +305,57 @@ public class LocalDataSource implements Closeable {
 		}
 
 		saveSemaphore.release();
+	}
+
+	public <T> void read(final BackgroundReader<T> backgroundReader) {
+		final Handler handler = InVehicleDeviceService.getThreadHandler();
+		Runnable task = new Runnable() {
+			@Override
+			public void run() {
+				final T result = withReadLock(new Reader<T>() {
+					@Override
+					public T read(LocalData localData) {
+						return backgroundReader.readInBackground(localData);
+					}
+				});
+				handler.post(new Runnable() {
+					@Override
+					public void run() {
+						backgroundReader.onRead(result);
+					}
+				});
+			}
+		};
+		try {
+			executorService.submit(task);
+		} catch (RejectedExecutionException e) {
+			Log.w(TAG, e);
+		}
+	}
+
+	public void write(final BackgroundWriter backgroundWriter) {
+		final Handler handler = InVehicleDeviceService.getThreadHandler();
+		Runnable task = new Runnable() {
+			@Override
+			public void run() {
+				withWriteLock(new Writer() {
+					@Override
+					public void write(LocalData localData) {
+						backgroundWriter.writeInBackground(localData);
+					}
+				});
+				handler.post(new Runnable() {
+					@Override
+					public void run() {
+						backgroundWriter.onWrite();
+					}
+				});
+			}
+		};
+		try {
+			executorService.submit(task);
+		} catch (RejectedExecutionException e) {
+			Log.w(TAG, e);
+		}
 	}
 }

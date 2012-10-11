@@ -3,21 +3,30 @@ package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledevicese
 import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+
+import junitx.framework.ComparableAssert;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.time.DateUtils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.preference.PreferenceManager;
 import android.test.AndroidTestCase;
 
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.BackgroundReader;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.BackgroundWriter;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Reader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.VoidReader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
@@ -72,8 +81,9 @@ public class LocalDataSourceTestCase extends AndroidTestCase {
 			public void write(LocalData ld) {
 				ld.passengerRecords.clear();
 				ld.passengerRecords.add(new PassengerRecord());
-				ld.repliedVehicleNotifications.clear();
-				ld.repliedVehicleNotifications.add(new VehicleNotification());
+				ld.vehicleNotifications.clear();
+				ld.vehicleNotifications.put(VehicleNotificationStatus.REPLIED,
+						new VehicleNotification());
 			}
 		});
 		lds1.close();
@@ -85,7 +95,10 @@ public class LocalDataSourceTestCase extends AndroidTestCase {
 			@Override
 			public void read(LocalData ld) {
 				assertEquals(1, ld.passengerRecords.size());
-				assertEquals(1, ld.repliedVehicleNotifications.size());
+				assertEquals(
+						1,
+						ld.vehicleNotifications.get(
+								VehicleNotificationStatus.REPLIED).size());
 			}
 		});
 		lds2.close();
@@ -97,7 +110,9 @@ public class LocalDataSourceTestCase extends AndroidTestCase {
 			@Override
 			public void read(LocalData ld) {
 				assertTrue(ld.passengerRecords.isEmpty());
-				assertTrue(ld.repliedVehicleNotifications.isEmpty());
+
+				assertTrue(ld.vehicleNotifications.get(
+						VehicleNotificationStatus.REPLIED).isEmpty());
 			}
 		});
 		lds3.close();
@@ -108,7 +123,8 @@ public class LocalDataSourceTestCase extends AndroidTestCase {
 			@Override
 			public void read(LocalData ld) {
 				assertTrue(ld.passengerRecords.isEmpty());
-				assertTrue(ld.repliedVehicleNotifications.isEmpty());
+				assertTrue(ld.vehicleNotifications.get(
+						VehicleNotificationStatus.REPLIED).isEmpty());
 			}
 		});
 		lds4.close();
@@ -126,7 +142,7 @@ public class LocalDataSourceTestCase extends AndroidTestCase {
 		lds1.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData ld) {
-				ld.remainingOperationSchedules.add(new OperationSchedule());
+				ld.operationSchedules.add(new OperationSchedule());
 			}
 		});
 		lds1.close();
@@ -137,7 +153,7 @@ public class LocalDataSourceTestCase extends AndroidTestCase {
 		lds2.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData ld) {
-				assertEquals(ld.remainingOperationSchedules.size(), 1);
+				assertEquals(ld.operationSchedules.size(), 1);
 			}
 		});
 		lds2.close();
@@ -152,7 +168,7 @@ public class LocalDataSourceTestCase extends AndroidTestCase {
 		lds3.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData ld) {
-				assertTrue(ld.remainingOperationSchedules.isEmpty());
+				assertTrue(ld.operationSchedules.isEmpty());
 			}
 		});
 		lds3.close();
@@ -166,7 +182,7 @@ public class LocalDataSourceTestCase extends AndroidTestCase {
 		lds4.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData ld) {
-				assertTrue(ld.remainingOperationSchedules.isEmpty());
+				assertTrue(ld.operationSchedules.isEmpty());
 			}
 		});
 		lds4.close();
@@ -310,7 +326,9 @@ public class LocalDataSourceTestCase extends AndroidTestCase {
 			@Override
 			public void write(LocalData localData) {
 				localData.vehicleNotifications.clear();
-				localData.vehicleNotifications.add(SerializationUtils.clone(vn));
+				localData.vehicleNotifications.put(
+						VehicleNotificationStatus.UNHANDLED,
+						SerializationUtils.clone(vn));
 			}
 		});
 		Thread.sleep(savePeriod / 5);
@@ -318,7 +336,9 @@ public class LocalDataSourceTestCase extends AndroidTestCase {
 		Integer id1 = read1.withReadLock(new Reader<Integer>() {
 			@Override
 			public Integer read(LocalData localData) {
-				return localData.vehicleNotifications.get(0).getId();
+				return localData.vehicleNotifications
+						.get(VehicleNotificationStatus.UNHANDLED).iterator()
+						.next().getId();
 			}
 		});
 		assertEquals(1, id1.intValue());
@@ -329,7 +349,9 @@ public class LocalDataSourceTestCase extends AndroidTestCase {
 			@Override
 			public void write(LocalData localData) {
 				localData.vehicleNotifications.clear();
-				localData.vehicleNotifications.add(SerializationUtils.clone(vn));
+				localData.vehicleNotifications.put(
+						VehicleNotificationStatus.UNHANDLED,
+						SerializationUtils.clone(vn));
 			}
 		});
 		Thread.sleep(savePeriod / 5);
@@ -337,7 +359,9 @@ public class LocalDataSourceTestCase extends AndroidTestCase {
 		Integer id2 = read2.withReadLock(new Reader<Integer>() {
 			@Override
 			public Integer read(LocalData localData) {
-				return localData.vehicleNotifications.get(0).getId();
+				return localData.vehicleNotifications
+						.get(VehicleNotificationStatus.UNHANDLED).iterator()
+						.next().getId();
 			}
 		});
 		assertEquals(1, id2.intValue());
@@ -348,7 +372,9 @@ public class LocalDataSourceTestCase extends AndroidTestCase {
 		Integer id3 = read3.withReadLock(new Reader<Integer>() {
 			@Override
 			public Integer read(LocalData localData) {
-				return localData.vehicleNotifications.get(0).getId();
+				return localData.vehicleNotifications
+						.get(VehicleNotificationStatus.UNHANDLED).iterator()
+						.next().getId();
 			}
 		});
 		assertEquals(2, id3.intValue());
@@ -410,5 +436,118 @@ public class LocalDataSourceTestCase extends AndroidTestCase {
 		lds.close();
 		Thread.sleep(s);
 		assertEquals(0, p2.intValue());
+	}
+
+	public void testReadInBackground() throws Exception {
+		final CountDownLatch cdl = new CountDownLatch(1);
+		final HandlerThread ht = new HandlerThread("") {
+			@Override
+			protected void onLooperPrepared() {
+				cdl.countDown();
+			}
+		};
+		ht.start();
+		cdl.await();
+		final OperationSchedule os = new OperationSchedule();
+		os.setId(12345);
+		final AtomicReference<OperationSchedule> resultOs = new AtomicReference<OperationSchedule>();
+		final LocalDataSource lds = new LocalDataSource(getContext());
+		lds.withWriteLock(new Writer() {
+			@Override
+			public void write(LocalData ld) {
+				ld.operationSchedules.clear();
+				ld.operationSchedules.add(os);
+			}
+		});
+
+		final Long threadId = Thread.currentThread().getId();
+		final BackgroundReader<OperationSchedule> br = new BackgroundReader<OperationSchedule>() {
+			@Override
+			public OperationSchedule readInBackground(LocalData ld) {
+				ComparableAssert.assertNotEquals(threadId, Thread
+						.currentThread().getId());
+				ComparableAssert.assertNotEquals(threadId, ht.getId());
+				return ld.operationSchedules.get(0);
+			}
+
+			@Override
+			public void onRead(OperationSchedule result) {
+				resultOs.set(result);
+				assertEquals(Thread.currentThread().getId(), ht.getId());
+				assertTrue(ht.quit());
+			}
+		};
+		Handler handler = new Handler(ht.getLooper());
+		handler.post(new Runnable() {
+			@Override
+			public void run() {
+				lds.read(br);
+			}
+		});
+		try {
+			ht.join(5000);
+		} finally {
+			lds.close();
+			ht.quit();
+		}
+		assertNotNull(resultOs.get());
+		assertEquals(os.getId(), resultOs.get().getId());
+	}
+
+	public void testWriteInBackground() throws Exception {
+		final CountDownLatch cdl = new CountDownLatch(1);
+		final HandlerThread ht = new HandlerThread("") {
+			@Override
+			protected void onLooperPrepared() {
+				cdl.countDown();
+			}
+		};
+		ht.start();
+		cdl.await();
+		final OperationSchedule os = new OperationSchedule();
+		os.setId(54321);
+		final LocalDataSource lds = new LocalDataSource(getContext());
+		lds.withWriteLock(new Writer() {
+			@Override
+			public void write(LocalData ld) {
+				ld.operationSchedules.clear();
+			}
+		});
+
+		final Long threadId = Thread.currentThread().getId();
+		final BackgroundWriter bw = new BackgroundWriter() {
+			@Override
+			public void writeInBackground(LocalData ld) {
+				ComparableAssert.assertNotEquals(threadId, Thread
+						.currentThread().getId());
+				ComparableAssert.assertNotEquals(threadId, ht.getId());
+				ld.operationSchedules.add(os);
+			}
+
+			@Override
+			public void onWrite() {
+				assertEquals(Thread.currentThread().getId(), ht.getId());
+				assertTrue(ht.quit());
+			}
+		};
+		Handler handler = new Handler(ht.getLooper());
+		handler.post(new Runnable() {
+			@Override
+			public void run() {
+				lds.write(bw);
+			}
+		});
+		try {
+			ht.join(5000);
+		} finally {
+			lds.close();
+			ht.quit();
+		}
+		OperationSchedule resultOs = lds.withReadLock(new Reader<OperationSchedule>(){
+			@Override
+			public OperationSchedule read(LocalData localData) {
+				return localData.operationSchedules.get(0);
+			}});
+		assertEquals(os.getId(), resultOs.getId());
 	}
 }
