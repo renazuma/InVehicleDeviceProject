@@ -1,8 +1,10 @@
 package com.kogasoftware.odt.invehicledevice.test.util;
 
-import com.kogasoftware.odt.invehicledevice.test.util.MockitoUsageTestCase.Warehouse;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import static org.mockito.Mockito.*;
+import com.kogasoftware.odt.invehicledevice.test.util.MockitoUsageTestCase.Warehouse;
 
 class Order {
 
@@ -39,10 +41,12 @@ public class MockitoUsageTestCase extends junit.framework.TestCase /* antでビ�
 		}
 	}
 
+	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 	}
 
+	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
 	}
@@ -63,7 +67,7 @@ public class MockitoUsageTestCase extends junit.framework.TestCase /* antでビ�
 			public void remove(String product, int quantity) {
 			}
 		};
-		
+
 		assertNotSame(10, mockWarehouse.add(2, 8));
 		assertEquals(10, implementedWarehouse.add(2, 8));
 	}

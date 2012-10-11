@@ -9,8 +9,8 @@ import android.content.Intent;
 import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
 
 public class VoiceServiceConnector implements
-		InVehicleDeviceService.OnPauseActivityListener,
-		InVehicleDeviceService.OnResumeActivityListener {
+		EventDispatcher.OnPauseActivityListener,
+		EventDispatcher.OnResumeActivityListener {
 	protected final InVehicleDeviceService service;
 	protected final List<String> voices = new LinkedList<String>();
 	protected Boolean paused = false;

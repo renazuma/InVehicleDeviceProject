@@ -1,6 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask;
 
-import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -10,20 +9,19 @@ import android.view.Display;
 import android.view.Surface;
 import android.view.WindowManager;
 
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.ServiceUnitStatusLogLogic;
 
 public class OrientationSensorEventListener implements SensorEventListener {
 	private static final Long SAVE_PERIOD_MILLIS = 500L;
 	private static final String TAG = OrientationSensorEventListener.class
 			.getSimpleName();
 	protected final WindowManager windowManager;
-	protected final InVehicleDeviceService service;
+	protected final ServiceUnitStatusLogLogic serviceUnitStatusLogLogic;
 	protected Long lastSavedMillis = System.currentTimeMillis();
 
-	public OrientationSensorEventListener(InVehicleDeviceService service) {
-		this.service = service;
-		this.windowManager = (WindowManager) service
-				.getSystemService(Context.WINDOW_SERVICE);
+	public OrientationSensorEventListener(ServiceUnitStatusLogLogic serviceUnitStatusLogLogic, WindowManager windowManager) {
+		this.serviceUnitStatusLogLogic = serviceUnitStatusLogLogic;
+		this.windowManager = windowManager;
 	}
 
 	@Override
@@ -64,6 +62,6 @@ public class OrientationSensorEventListener implements SensorEventListener {
 			break;
 		}
 
-		service.changeOrientation(360.0 - degree);
+		serviceUnitStatusLogLogic.changeOrientation(360.0 - degree);
 	}
 }

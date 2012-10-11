@@ -18,6 +18,8 @@ import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.PassengerRecordLogic;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.MemoModalView;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
@@ -44,6 +46,8 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 	protected final Boolean isLastOperationSchedule;
 	protected final MemoModalView memoModalView;
 	protected final InVehicleDeviceService service;
+	protected final PassengerRecordLogic passengerRecordLogic;
+	protected final OperationScheduleLogic operationScheduleLogic;
 	protected final OnClickListener onClickViewListener = new OnClickListener() {
 		@Override
 		public void onClick(View view) {
@@ -52,10 +56,10 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 				return;
 			}
 			PassengerRecord passengerRecord = (PassengerRecord) tag;
-			if (service.isSelected(passengerRecord)) {
-				service.unselect(passengerRecord);
+			if (passengerRecordLogic.isSelected(passengerRecord)) {
+				passengerRecordLogic.unselect(passengerRecord);
 			} else {
-				service.select(passengerRecord);
+				passengerRecordLogic.select(passengerRecord);
 			}
 			notifyDataSetChanged();
 		}
@@ -76,12 +80,14 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 	public PassengerRecordArrayAdapter(InVehicleDeviceService service,
 			MemoModalView memoModalView) {
 		super(service, RESOURCE_ID);
+		passengerRecordLogic = new PassengerRecordLogic(service);
+		operationScheduleLogic = new OperationScheduleLogic(service);
 		this.service = service;
 		this.memoModalView = memoModalView;
 		// payTiming = commonLogic.getPayTiming();
-		remainingOperationSchedules.addAll(service
+		remainingOperationSchedules.addAll(operationScheduleLogic
 				.getRemainingOperationSchedules());
-		passengerRecords.addAll(service.getPassengerRecords());
+		passengerRecords.addAll(passengerRecordLogic.getPassengerRecords());
 		isLastOperationSchedule = (remainingOperationSchedules.size() <= 1);
 		if (isLastOperationSchedule) {
 			visibleItemTypes.add(ItemType.RIDING_AND_NO_GET_OFF);
@@ -102,11 +108,11 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 				|| !passengerRecord.getUser().isPresent()) {
 			return;
 		}
-		if (service.isGetOnScheduled(passengerRecord)) {
+		if (passengerRecordLogic.isGetOnScheduled(passengerRecord)) {
 			super.add(passengerRecord);
 			return;
 		}
-		if (service.isGetOffScheduled(passengerRecord)) {
+		if (passengerRecordLogic.isGetOffScheduled(passengerRecord)) {
 			super.add(passengerRecord);
 			return;
 		}
@@ -154,11 +160,11 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 				+ " 様");
 
 		String text = "";
-		if (service.isGetOffScheduled(passengerRecord)) {
+		if (passengerRecordLogic.isGetOffScheduled(passengerRecord)) {
 			text += "[降]";
-		} else if (service.isGetOnScheduled(passengerRecord)) {
+		} else if (passengerRecordLogic.isGetOnScheduled(passengerRecord)) {
 			text += "[乗]";
-		} else if (service.canGetOff(passengerRecord)) {
+		} else if (passengerRecordLogic.canGetOff(passengerRecord)) {
 			text += "[*降]";
 		} else {
 			text += "[*乗]";
@@ -169,8 +175,8 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 				.findViewById(R.id.reservation_id);
 		reservationIdView.setText(text);
 
-		if (service.isSelected(passengerRecord)) {
-			if (service.isGetOnScheduled(passengerRecord)) {
+		if (passengerRecordLogic.isSelected(passengerRecord)) {
+			if (passengerRecordLogic.isGetOnScheduled(passengerRecord)) {
 				convertView.setBackgroundColor(Color.parseColor("#FF69B4")); // TODO
 																				// テーマ
 			} else {
@@ -178,7 +184,7 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 																				// テーマ
 			}
 		} else {
-			if (service.isGetOnScheduled(passengerRecord)) {
+			if (passengerRecordLogic.isGetOnScheduled(passengerRecord)) {
 				convertView.setBackgroundColor(Color.parseColor("#F9D9D8"));// TODO
 																			// テーマ
 			} else {

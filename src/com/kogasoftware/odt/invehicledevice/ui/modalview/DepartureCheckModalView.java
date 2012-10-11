@@ -10,11 +10,16 @@ import android.widget.Button;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.PassengerRecordLogic;
 import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.User;
 
 public class DepartureCheckModalView extends ModalView {
+	private final OperationScheduleLogic operationScheduleLogic;
+	private final PassengerRecordLogic passengerRecordLogic;
+
 	private static String getUserName(PassengerRecord passengerRecord) {
 		if (passengerRecord.getUser().isPresent()) {
 			User user = passengerRecord.getUser().get();
@@ -27,6 +32,8 @@ public class DepartureCheckModalView extends ModalView {
 	public DepartureCheckModalView(Context context,
 			InVehicleDeviceService service) {
 		super(context, service);
+		operationScheduleLogic = new OperationScheduleLogic(service);
+		passengerRecordLogic = new PassengerRecordLogic(service);
 		setContentView(R.layout.departure_check_modal_view);
 		setCloseOnClick(R.id.departure_check_close_button);
 	}
@@ -39,17 +46,17 @@ public class DepartureCheckModalView extends ModalView {
 		FlickUnneededListView errorUserListView = (FlickUnneededListView) findViewById(R.id.error_reservation_list_view);
 		List<String> messages = new LinkedList<String>();
 
-		for (PassengerRecord passengerRecord : service
+		for (PassengerRecord passengerRecord : passengerRecordLogic
 				.getNoGettingOnPassengerRecords()) {
 			messages.add(" ※ " + getUserName(passengerRecord) + "様が未乗車です");
 		}
 
-		for (PassengerRecord passengerRecord : service
+		for (PassengerRecord passengerRecord : passengerRecordLogic
 				.getNoGettingOffPassengerRecords()) {
 			messages.add(" ※ " + getUserName(passengerRecord) + "様が未降車です");
 		}
 
-		for (PassengerRecord passengerRecord : service
+		for (PassengerRecord passengerRecord : passengerRecordLogic
 				.getNoPaymentPassengerRecords()) {
 			messages.add(" ※ " + getUserName(passengerRecord) + "様が料金未払いです");
 		}
@@ -59,17 +66,17 @@ public class DepartureCheckModalView extends ModalView {
 						R.layout.error_user_list_row, messages));
 
 		String buttonMessage = "出発する";
-		if (service.getRemainingOperationSchedules().size() <= 1) {
+		if (operationScheduleLogic.getRemainingOperationSchedules().size() <= 1) {
 			buttonMessage = "確定する";
 		}
 
 		OnClickListener onClickDepartureButtonListener = new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				if (service.getRemainingOperationSchedules().size() <= 1) {
-					service.enterFinishPhase();
+				if (operationScheduleLogic.getRemainingOperationSchedules().size() <= 1) {
+					operationScheduleLogic.enterFinishPhase();
 				} else {
-					service.enterDrivePhase();
+					operationScheduleLogic.enterDrivePhase();
 				}
 				hide();
 			}

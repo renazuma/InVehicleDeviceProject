@@ -209,11 +209,11 @@ public class ScheduleModalViewTestCase extends
 	}
 
 	public void testAutoScroll1() throws Exception {
-		Platform p5 = new Platform();
+		Platform p4 = new Platform();
 		Platform p7 = new Platform();
-		p5.setName("スクロールして隠れる駅");
+		p4.setName("スクロールして隠れる駅");
 		p7.setName("スクロールして最上部に来る駅");
-		os5.setPlatform(p5);
+		os4.setPlatform(p4);
 		os7.setPlatform(p7);
 		or0.setDepartedAt(new Date());
 		or1.setDepartedAt(new Date());
@@ -236,7 +236,7 @@ public class ScheduleModalViewTestCase extends
 
 		assertShow();
 
-		assertFalse(solo.searchText(p5.getName(), true));
+		assertFalse(solo.searchText(p4.getName(), true));
 
 		runOnUiThreadSync(new Runnable() {
 			@Override
@@ -331,4 +331,3 @@ public class ScheduleModalViewTestCase extends
 		TestUtil.assertShow(mv);
 	}
 }
-

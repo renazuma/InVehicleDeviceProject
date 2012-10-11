@@ -1,12 +1,15 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.ui.phaseview;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.view.View;
 
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.ui.phaseview.FinishPhaseView;
-import static org.mockito.Mockito.*;
 
 public class FinishPhaseViewTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
@@ -14,12 +17,15 @@ public class FinishPhaseViewTestCase extends
 	Activity a;
 	InVehicleDeviceService s;
 	FinishPhaseView pv;
+	OperationScheduleLogic osl;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		a = getActivity();
 		s = mock(InVehicleDeviceService.class);
+		when(s.getEventDispatcher()).thenReturn(new EventDispatcher());
+		osl = new OperationScheduleLogic(s);
 		pv = new FinishPhaseView(a, s);
 	}
 
@@ -31,7 +37,7 @@ public class FinishPhaseViewTestCase extends
 	public void testEnterDrivePhaseEventで非表示() {
 		testEnterFinishPhaseEventで表示();
 
-		s.enterDrivePhase();
+		osl.enterDrivePhase();
 		getInstrumentation().waitForIdleSync();
 
 		assertFalse(pv.isShown());
@@ -41,7 +47,7 @@ public class FinishPhaseViewTestCase extends
 	public void testEnterFinishPhaseEventで表示() {
 		pv.setVisibility(View.GONE);
 
-		s.enterFinishPhase();
+		osl.enterFinishPhase();
 		getInstrumentation().waitForIdleSync();
 
 		assertTrue(pv.isShown());
@@ -51,7 +57,7 @@ public class FinishPhaseViewTestCase extends
 	public void testEnterPlatformPhaseEventで非表示() {
 		testEnterFinishPhaseEventで表示();
 
-		s.enterPlatformPhase();
+		osl.enterPlatformPhase();
 		getInstrumentation().waitForIdleSync();
 
 		assertFalse(pv.isShown());

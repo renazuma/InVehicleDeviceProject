@@ -11,7 +11,7 @@ import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 import com.kogasoftware.odt.invehicledevice.test.util.datasource.DummyDataSource;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
-import com.kogasoftware.odt.webapi.WebAPIException;
+import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 
 public class TestUtilWaitForStartUiTestCase extends
@@ -25,9 +25,10 @@ public class TestUtilWaitForStartUiTestCase extends
 		if (timeout) {
 			ds = new DummyDataSource() {
 				@Override
-				public List<OperationSchedule> getOperationSchedules()
-						throws WebAPIException {
-					throw new WebAPIException("test");
+				public int getOperationSchedules(
+						WebAPICallback<List<OperationSchedule>> callback) {
+					callback.onFailed(0, 401, "");
+					return 0;
 				}
 			};
 		}
@@ -37,7 +38,7 @@ public class TestUtilWaitForStartUiTestCase extends
 		editor.clear();
 		editor.putBoolean(SharedPreferencesKeys.INITIALIZED, true);
 		editor.apply();
-		
+
 		TestUtil.clearStatus();
 		TestUtil.setDataSource(ds);
 		a = getActivity();

@@ -1,6 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask;
 
-import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -9,9 +8,9 @@ import android.view.Display;
 import android.view.Surface;
 import android.view.WindowManager;
 
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.ServiceUnitStatusLogLogic;
 
-// original: 
+// original:
 // http://kamoland.com/wiki/wiki.cgi?TYPE_ORIENTATION%A4%F2%BB%C8%A4%EF%A4%BA%A4%CB%CA%FD%B0%CC%B3%D1%A4%F2%BC%E8%C6%C0
 public class AccMagSensorEventListener implements SensorEventListener {
 	private static final Long SAVE_PERIOD_MILLIS = 500L;
@@ -23,16 +22,15 @@ public class AccMagSensorEventListener implements SensorEventListener {
 
 	private Long lastSavedMillis = System.currentTimeMillis();
 	private final WindowManager windowManager;
-	private final InVehicleDeviceService service;
+	private final ServiceUnitStatusLogLogic serviceUnitStatusLogLogic;
 	private float[] accelerometerValues;
 	private float[] geomagneticMatrix;
 
 	private boolean sensorReady;
 
-	public AccMagSensorEventListener(InVehicleDeviceService service) {
-		this.service = service;
-		this.windowManager = (WindowManager) service
-				.getSystemService(Context.WINDOW_SERVICE);
+	public AccMagSensorEventListener(ServiceUnitStatusLogLogic serviceUnitStatusLogLogic, WindowManager windowManager) {
+		this.serviceUnitStatusLogLogic = serviceUnitStatusLogLogic;
+		this.windowManager = windowManager;
 	}
 
 	private void calcActualOrientation(float[] R, float[] out) {
@@ -120,7 +118,7 @@ public class AccMagSensorEventListener implements SensorEventListener {
 		}
 
 		if (degree != null) {
-			service.changeOrientation(360.0 - degree);
+			serviceUnitStatusLogLogic.changeOrientation(360.0 - degree);
 		}
 	}
 }

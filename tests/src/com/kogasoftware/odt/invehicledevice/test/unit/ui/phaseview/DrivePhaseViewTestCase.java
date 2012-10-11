@@ -1,20 +1,24 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.ui.phaseview;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import android.view.View;
 
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.ui.phaseview.DrivePhaseView;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
-import static org.mockito.Mockito.*;
 
 public class DrivePhaseViewTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
@@ -22,11 +26,14 @@ public class DrivePhaseViewTestCase extends
 	InVehicleDeviceService s;
 	LocalDataSource sa;
 	DrivePhaseView pv;
+	OperationScheduleLogic osl;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		s = mock(InVehicleDeviceService.class);
+		when(s.getEventDispatcher()).thenReturn(new EventDispatcher());
+		osl = new OperationScheduleLogic(s);
 		sa = new LocalDataSource(getActivity());
 		pv = new DrivePhaseView(null, s);
 		sa.withWriteLock(new Writer() { // TODO もっとスマートにする
@@ -37,9 +44,9 @@ public class DrivePhaseViewTestCase extends
 				OperationSchedule os2 = new OperationSchedule();
 				os1.setPlatform(new Platform());
 				os2.setPlatform(new Platform());
-				status.remainingOperationSchedules.clear();
-				status.remainingOperationSchedules.add(os1);
-				status.remainingOperationSchedules.add(os2);
+				status.operationSchedules.clear();
+				status.operationSchedules.add(os1);
+				status.operationSchedules.add(os2);
 			}
 		});
 	}
@@ -57,27 +64,27 @@ public class DrivePhaseViewTestCase extends
 			}
 		});
 
-		s.enterDrivePhase();
+		osl.enterDrivePhase();
 		getInstrumentation().waitForIdleSync();
 
 		assertTrue(pv.isShown());
 		assertEquals(pv.getVisibility(), View.VISIBLE);
 	}
 
-	public void testEnterFinishPhaseEventで非表示() throws Exception {
+	public void testEnterFinishPhaseで非表示() throws Exception {
 		testEnterDrivePhaseEventで表示();
 
-		s.enterFinishPhase();
+		osl.enterFinishPhase();
 		getInstrumentation().waitForIdleSync();
 
 		assertFalse(pv.isShown());
 		assertNotSame(pv.getVisibility(), View.VISIBLE);
 	}
 
-	public void testEnterPlatformPhaseEventで非表示() throws Exception {
+	public void testEnterPlatformPhaseで非表示() throws Exception {
 		testEnterDrivePhaseEventで表示();
 
-		s.enterPlatformPhase();
+		osl.enterPlatformPhase();
 		getInstrumentation().waitForIdleSync();
 
 		assertFalse(pv.isShown());
@@ -89,11 +96,11 @@ public class DrivePhaseViewTestCase extends
 		sa.withWriteLock(new Writer() { // TODO もっとスマートにする
 			@Override
 			public void write(LocalData status) {
-				status.remainingOperationSchedules.clear();
+				status.operationSchedules.clear();
 			}
 		});
 		final CountDownLatch cdl = new CountDownLatch(1);
-		s.enterDrivePhase();
+		osl.enterDrivePhase();
 		assertTrue(cdl.await(10, TimeUnit.SECONDS));
 		assertFalse(pv.isShown());
 	}
@@ -106,11 +113,11 @@ public class DrivePhaseViewTestCase extends
 				OperationSchedule os = new OperationSchedule();
 				os.setPlatform(new Platform());
 				status.phase = Phase.PLATFORM;
-				status.remainingOperationSchedules.clear();
-				status.remainingOperationSchedules.add(os);
+				status.operationSchedules.clear();
+				status.operationSchedules.add(os);
 			}
 		});
-		s.enterDrivePhase();
+		osl.enterDrivePhase();
 		assertFalse(pv.isShown());
 	}
 
@@ -122,12 +129,12 @@ public class DrivePhaseViewTestCase extends
 				OperationSchedule os2 = new OperationSchedule();
 				os1.setPlatform(new Platform());
 				os2.setPlatform(new Platform());
-				status.remainingOperationSchedules.clear();
-				status.remainingOperationSchedules.add(os1);
-				status.remainingOperationSchedules.add(os2);
+				status.operationSchedules.clear();
+				status.operationSchedules.add(os1);
+				status.operationSchedules.add(os2);
 			}
 		});
-		s.enterDrivePhase();
+		osl.enterDrivePhase();
 		getInstrumentation().waitForIdleSync();
 		assertTrue(pv.isShown());
 	}
@@ -140,12 +147,12 @@ public class DrivePhaseViewTestCase extends
 				OperationSchedule os2 = new OperationSchedule();
 				os1.setPlatform(new Platform());
 				os2.setPlatform(new Platform());
-				status.remainingOperationSchedules.clear();
-				status.remainingOperationSchedules.add(os1);
-				status.remainingOperationSchedules.add(os2);
+				status.operationSchedules.clear();
+				status.operationSchedules.add(os1);
+				status.operationSchedules.add(os2);
 			}
 		});
-		s.enterDrivePhase();
+		osl.enterDrivePhase();
 		getInstrumentation().waitForIdleSync();
 		fail("stub!");
 	}
@@ -160,13 +167,13 @@ public class DrivePhaseViewTestCase extends
 				os1.setPlatform(new Platform());
 				os2.setPlatform(new Platform());
 				os3.setPlatform(new Platform());
-				status.remainingOperationSchedules.clear();
-				status.remainingOperationSchedules.add(os1);
-				status.remainingOperationSchedules.add(os2);
-				status.remainingOperationSchedules.add(os3);
+				status.operationSchedules.clear();
+				status.operationSchedules.add(os1);
+				status.operationSchedules.add(os2);
+				status.operationSchedules.add(os3);
 			}
 		});
-		s.enterDrivePhase();
+		osl.enterDrivePhase();
 		getInstrumentation().waitForIdleSync();
 		fail("stub!");
 	}
@@ -183,14 +190,14 @@ public class DrivePhaseViewTestCase extends
 				os2.setPlatform(new Platform());
 				os3.setPlatform(new Platform());
 				os4.setPlatform(new Platform());
-				status.remainingOperationSchedules.clear();
-				status.remainingOperationSchedules.add(os1);
-				status.remainingOperationSchedules.add(os2);
-				status.remainingOperationSchedules.add(os3);
-				status.remainingOperationSchedules.add(os4);
+				status.operationSchedules.clear();
+				status.operationSchedules.add(os1);
+				status.operationSchedules.add(os2);
+				status.operationSchedules.add(os3);
+				status.operationSchedules.add(os4);
 			}
 		});
-		s.enterDrivePhase();
+		osl.enterDrivePhase();
 		getInstrumentation().waitForIdleSync();
 		fail("stub!");
 	}

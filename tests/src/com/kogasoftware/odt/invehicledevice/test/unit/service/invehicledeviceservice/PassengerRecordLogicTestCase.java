@@ -6,13 +6,8 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Date;
-import java.util.List;
 
 import junitx.framework.ListAssert;
-
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-
 import android.test.AndroidTestCase;
 import android.test.MoreAsserts;
 
@@ -24,9 +19,9 @@ import com.kogasoftware.odt.invehicledevice.datasource.EmptyDataSource;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Reader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.PassengerRecordLogic;
+import com.kogasoftware.odt.webapi.model.OperationRecord;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
@@ -43,34 +38,21 @@ public class PassengerRecordLogicTestCase extends AndroidTestCase {
 	public void setUp() throws Exception {
 		super.setUp();
 		os = new OperationSchedule();
+		os.setOperationRecord(new OperationRecord());
 		os.setId(12345);
 		rds = spy(new EmptyDataSource());
-		lds = spy(new LocalDataSource(getContext()));
+		lds = new LocalDataSource(getContext());
 		s = mock(InVehicleDeviceService.class);
 		when(s.getLocalDataSource()).thenReturn(lds);
 		when(s.getRemoteDataSource()).thenReturn(rds);
 		when(s.isOperationInitialized()).thenReturn(true);
-		when(s.getCurrentOperationSchedule()).thenReturn(Optional.of(os));
-		when(s.getPassengerRecords()).then(new Answer<List<PassengerRecord>>() {
-			@Override
-			public List<PassengerRecord> answer(InvocationOnMock invocation)
-					throws Throwable {
-				return lds.withReadLock(new Reader<List<PassengerRecord>>() {
-					@Override
-					public List<PassengerRecord> read(LocalData localData) {
-						return localData.passengerRecords;
-					}
-				});
-			}
-		});
-
 		prl = new PassengerRecordLogic(s);
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
-				localData.operationSchedules.add(os);
 				localData.passengerRecords.clear();
 				localData.operationSchedules.clear();
+				localData.operationSchedules.add(os);
 			}
 		});
 	}

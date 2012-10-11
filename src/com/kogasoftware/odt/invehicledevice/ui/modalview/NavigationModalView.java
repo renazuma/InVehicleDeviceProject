@@ -27,7 +27,9 @@ import android.widget.ToggleButton;
 import com.google.common.base.Optional;
 import com.google.common.collect.Iterables;
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.NavigationRenderer;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.navigation.tilepipeline.TilePipeline;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
@@ -35,18 +37,19 @@ import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class NavigationModalView extends ModalView implements
-		InVehicleDeviceService.OnResumeActivityListener,
-		InVehicleDeviceService.OnPauseActivityListener,
-		InVehicleDeviceService.OnChangeLocationListener,
-		InVehicleDeviceService.OnChangeOrientationListener,
-		InVehicleDeviceService.OnEnterPhaseListener,
-		InVehicleDeviceService.OnMergeOperationSchedulesListener,
+		EventDispatcher.OnResumeActivityListener,
+		EventDispatcher.OnPauseActivityListener,
+		EventDispatcher.OnChangeLocationListener,
+		EventDispatcher.OnChangeOrientationListener,
+		EventDispatcher.OnEnterPhaseListener,
+		EventDispatcher.OnMergeOperationSchedulesListener,
 		NavigationRenderer.OnChangeMapZoomLevelListener {
 	private static final String TAG = NavigationModalView.class.getSimpleName();
 	private static final Integer GPS_ALERT_FLASH_MILLIS = 1000;
 	private static final Integer GPS_EXPIRE_MILLIS = 20 * 1000;
 	private static final Integer LOCATION_EXPIRE_MILLIS = 20 * 1000;
 	private volatile Integer zoomLevel = 12;
+	private final OperationScheduleLogic operationScheduleLogic;
 	private final Button zoomInButton;
 	private final Button zoomOutButton;
 	private final LinearLayout gpsAlertLayout;
@@ -90,6 +93,7 @@ public class NavigationModalView extends ModalView implements
 
 	public NavigationModalView(Context context, InVehicleDeviceService service, final PlatformMemoModalView platformMemoModalView) {
 		super(context, service);
+		operationScheduleLogic = new OperationScheduleLogic(service);
 		this.platformMemoModalView = platformMemoModalView;
 		setContentView(R.layout.navigation_modal_view);
 		setCloseOnClick(R.id.navigation_close_button);
@@ -128,7 +132,7 @@ public class NavigationModalView extends ModalView implements
 				platformMemoModalView.show();
 			}
 		});
-		
+
 		autoZoomButton.setChecked(true);
 		gpsAlertLayout = (LinearLayout) findViewById(R.id.gps_alert_layout);
 		gpsAlertTextView = (TextView) findViewById(R.id.gps_alert_text_view);
@@ -156,25 +160,25 @@ public class NavigationModalView extends ModalView implements
 		super.onAttachedToWindow();
 		handler.post(gpsAlert);
 
-		service.addOnResumeActivityListener(this);
-		service.addOnPauseActivityListener(this);
-		service.addOnChangeLocationListener(this);
-		service.addOnChangeOrientationListener(this);
-		service.addOnEnterPhaseListener(this);
-		service.addOnMergeOperationSchedulesListener(this);
+		service.getEventDispatcher().addOnResumeActivityListener(this);
+		service.getEventDispatcher().addOnPauseActivityListener(this);
+		service.getEventDispatcher().addOnChangeLocationListener(this);
+		service.getEventDispatcher().addOnChangeOrientationListener(this);
+		service.getEventDispatcher().addOnEnterPhaseListener(this);
+		service.getEventDispatcher().addOnMergeOperationSchedulesListener(this);
 	}
 
 	@Override
 	protected void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
-		
-		service.removeOnResumeActivityListener(this);
-		service.removeOnPauseActivityListener(this);
-		service.removeOnChangeLocationListener(this);
-		service.removeOnChangeOrientationListener(this);
-		service.removeOnEnterPhaseListener(this);
-		service.removeOnMergeOperationSchedulesListener(this);
-		
+
+		service.getEventDispatcher().removeOnResumeActivityListener(this);
+		service.getEventDispatcher().removeOnPauseActivityListener(this);
+		service.getEventDispatcher().removeOnChangeLocationListener(this);
+		service.getEventDispatcher().removeOnChangeOrientationListener(this);
+		service.getEventDispatcher().removeOnEnterPhaseListener(this);
+		service.getEventDispatcher().removeOnMergeOperationSchedulesListener(this);
+
 		tilePipeline.onExit();
 
 		handler.removeCallbacks(gpsAlert);
@@ -221,9 +225,9 @@ public class NavigationModalView extends ModalView implements
 		if (navigationRenderer != null) {
 			navigationRenderer.updatePlatform();
 		}
-		
+
 		Integer platformMemoVisibility = GONE;
-		for (OperationSchedule operationSchedule : service
+		for (OperationSchedule operationSchedule : operationScheduleLogic
 				.getCurrentOperationSchedule().asSet()) {
 			for (Platform platform : operationSchedule.getPlatform().asSet()) {
 				if (!platform.getMemo().isEmpty()) {
@@ -330,10 +334,10 @@ public class NavigationModalView extends ModalView implements
 
 		// 次の乗降場表示
 		TextView titleTextView = (TextView) findViewById(R.id.next_platform_text_view);
-		List<OperationSchedule> operationSchedules = service
+		List<OperationSchedule> operationSchedules = operationScheduleLogic
 				.getRemainingOperationSchedules();
 		if (operationSchedules.isEmpty()) {
-			service.enterFinishPhase();
+			operationScheduleLogic.enterFinishPhase();
 			titleTextView.setText("");
 			return;
 		}
@@ -343,7 +347,7 @@ public class NavigationModalView extends ModalView implements
 		String titleTextFormat = "";
 		String timeTextFormat = "";
 		Optional<Date> displayDate = Optional.absent();
-		switch (service.getPhase()) {
+		switch (operationScheduleLogic.getPhase()) {
 		case DRIVE:
 			titleTextFormat = getResources().getString(
 					R.string.next_platform_is_html);

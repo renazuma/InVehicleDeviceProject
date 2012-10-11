@@ -1,58 +1,46 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledeviceservice;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 import android.location.GpsStatus;
 import android.location.Location;
-import android.test.ServiceTestCase;
+import android.test.AndroidTestCase;
 
 import com.google.common.base.Optional;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.VoidReader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.ServiceUnitStatusLogLogic;
-import static org.mockito.Mockito.*;
 
-public class ServiceUnitStatusLogLogicTestCase extends
-		ServiceTestCase<InVehicleDeviceService> {
-	public ServiceUnitStatusLogLogicTestCase() {
-		super(InVehicleDeviceService.class);
-	}
-
-	LocalDataSource sa;
+public class ServiceUnitStatusLogLogicTestCase extends AndroidTestCase {
+	LocalDataSource lds;
 	InVehicleDeviceService s;
+	ServiceUnitStatusLogLogic susll;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		setupService();
-		s = getService();
-		sa = new LocalDataSource(s);
-		sa.withWriteLock(new Writer() {
+		lds = new LocalDataSource(getContext());
+		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData status) {
 				status.vehicleNotifications.clear();
-				status.repliedVehicleNotifications.clear();
-				status.receivingOperationScheduleChangedVehicleNotifications
-						.clear();
-				status.receivedOperationScheduleChangedVehicleNotifications
-						.clear();
 			}
 		});
-	}
-
-	@Override
-	protected void tearDown() throws Exception {
-		shutdownService();
-		super.tearDown();
+		s = mock(InVehicleDeviceService.class);
+		when(s.getLocalDataSource()).thenReturn(lds);
+		when(s.getEventDispatcher()).thenReturn(new EventDispatcher());
+		susll = new ServiceUnitStatusLogLogic(s);
 	}
 
 	public void testConstructor_NoServiceInteractions() {
-		InVehicleDeviceService s = mock(InVehicleDeviceService.class);
-		new ServiceUnitStatusLogLogic(s);
 		verifyZeroInteractions(s);
 	}
-	
+
 	public void testSetLocation() {
 		String provider = "test";
 		for (Integer i = 0; i < 20; ++i) {
@@ -61,8 +49,8 @@ public class ServiceUnitStatusLogLogicTestCase extends
 			Location l = new Location(provider);
 			l.setLatitude(lat);
 			l.setLongitude(lon);
-			s.changeLocation(l, Optional.<GpsStatus> absent());
-			sa.withReadLock(new VoidReader() {
+			susll.changeLocation(l, Optional.<GpsStatus> absent());
+			lds.withReadLock(new VoidReader() {
 				@Override
 				public void read(LocalData status) {
 					assertEquals(status.serviceUnitStatusLog.getLatitude()
@@ -79,9 +67,9 @@ public class ServiceUnitStatusLogLogicTestCase extends
 		final Double f2 = 20.0;
 
 		Thread.sleep(ServiceUnitStatusLogLogic.ORIENTATION_SAVE_PERIOD_MILLIS);
-		s.changeOrientation(f1);
-		
-		sa.withReadLock(new VoidReader() {
+		susll.changeOrientation(f1);
+
+		lds.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData status) {
 				assertEquals(status.serviceUnitStatusLog.getOrientation().get()
@@ -90,8 +78,8 @@ public class ServiceUnitStatusLogLogicTestCase extends
 		});
 
 		Thread.sleep(ServiceUnitStatusLogLogic.ORIENTATION_SAVE_PERIOD_MILLIS);
-		s.changeOrientation(f2);
-		sa.withReadLock(new VoidReader() {
+		susll.changeOrientation(f2);
+		lds.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData status) {
 				assertEquals(status.serviceUnitStatusLog.getOrientation().get()
@@ -104,8 +92,8 @@ public class ServiceUnitStatusLogLogicTestCase extends
 		final Double f1 = 30.0;
 		final Double f2 = 40.0;
 
-		s.changeTemperature(f1);
-		sa.withReadLock(new VoidReader() {
+		susll.changeTemperature(f1);
+		lds.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData status) {
 				assertEquals(status.serviceUnitStatusLog.getTemperature().get()
@@ -113,8 +101,8 @@ public class ServiceUnitStatusLogLogicTestCase extends
 			}
 		});
 
-		s.changeTemperature(f2);
-		sa.withReadLock(new VoidReader() {
+		susll.changeTemperature(f2);
+		lds.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData status) {
 				assertEquals(status.serviceUnitStatusLog.getTemperature().get()

@@ -16,9 +16,11 @@ import com.kogasoftware.odt.webapi.model.User;
 
 public class PassengerRecordLogic {
 	public final InVehicleDeviceService service;
+	public final OperationScheduleLogic operationScheduleLogic;
 
 	public PassengerRecordLogic(InVehicleDeviceService service) {
 		this.service = service;
+		operationScheduleLogic = new OperationScheduleLogic(service);
 	}
 
 	public Boolean canGetOff(PassengerRecord passengerRecord) {
@@ -85,10 +87,10 @@ public class PassengerRecordLogic {
 	}
 
 	public Boolean isGetOffScheduled(PassengerRecord passengerRecord) {
-		if (!service.getCurrentOperationSchedule().isPresent()) {
+		if (!operationScheduleLogic.getCurrentOperationSchedule().isPresent()) {
 			return false;
 		}
-		OperationSchedule operationSchedule = service
+		OperationSchedule operationSchedule = operationScheduleLogic
 				.getCurrentOperationSchedule().get();
 
 		// 降車予定かどうか
@@ -101,10 +103,10 @@ public class PassengerRecordLogic {
 	}
 
 	public Boolean isGetOnScheduled(PassengerRecord passengerRecord) {
-		if (!service.getCurrentOperationSchedule().isPresent()) {
+		if (!operationScheduleLogic.getCurrentOperationSchedule().isPresent()) {
 			return false;
 		}
-		OperationSchedule operationSchedule = service
+		OperationSchedule operationSchedule = operationScheduleLogic
 				.getCurrentOperationSchedule().get();
 
 		// 乗車予定かどうか
@@ -117,10 +119,10 @@ public class PassengerRecordLogic {
 	}
 
 	public Boolean isSelected(PassengerRecord passengerRecord) {
-		if (!service.getCurrentOperationSchedule().isPresent()) {
+		if (!operationScheduleLogic.getCurrentOperationSchedule().isPresent()) {
 			return false;
 		}
-		OperationSchedule operationSchedule = service
+		OperationSchedule operationSchedule = operationScheduleLogic
 				.getCurrentOperationSchedule().get();
 
 		if (passengerRecord.isRiding()) {
@@ -134,10 +136,10 @@ public class PassengerRecordLogic {
 	}
 
 	public void select(PassengerRecord passengerRecord) {
-		if (!service.getCurrentOperationSchedule().isPresent()) {
+		if (!operationScheduleLogic.getCurrentOperationSchedule().isPresent()) {
 			return;
 		}
-		OperationSchedule operationSchedule = service
+		OperationSchedule operationSchedule = operationScheduleLogic
 				.getCurrentOperationSchedule().get();
 		if (!passengerRecord.getReservation().isPresent()
 				|| !passengerRecord.getUser().isPresent()) {
@@ -179,10 +181,10 @@ public class PassengerRecordLogic {
 	}
 
 	public void unselect(PassengerRecord passengerRecord) {
-		if (!service.getCurrentOperationSchedule().isPresent()) {
+		if (!operationScheduleLogic.getCurrentOperationSchedule().isPresent()) {
 			return;
 		}
-		OperationSchedule operationSchedule = service
+		OperationSchedule operationSchedule = operationScheduleLogic
 				.getCurrentOperationSchedule().get();
 
 		if (!passengerRecord.getReservation().isPresent()

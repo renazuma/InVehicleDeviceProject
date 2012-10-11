@@ -29,13 +29,14 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.compatibility.reflection.android.provider.SettingsReflection;
 import com.kogasoftware.odt.invehicledevice.compatibility.reflection.android.view.ViewReflection;
 import com.kogasoftware.odt.invehicledevice.compatibility.reflection.android.view.ViewReflection.OnSystemUiVisibilityChangeListenerReflection;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher.OnOperationScheduleReceiveFailedListener;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService.OnOperationScheduleReceiveFailedListener;
 import com.kogasoftware.odt.invehicledevice.ui.BigToast;
 import com.kogasoftware.odt.invehicledevice.ui.InVehicleDeviceView;
 
 public class InVehicleDeviceActivity extends Activity implements
-		InVehicleDeviceService.OnExitListener,
+		EventDispatcher.OnExitListener,
 		OnOperationScheduleReceiveFailedListener {
 	private static final String TAG = InVehicleDeviceActivity.class
 			.getSimpleName();
@@ -81,8 +82,8 @@ public class InVehicleDeviceActivity extends Activity implements
 			}
 			InVehicleDeviceService service = ((InVehicleDeviceService.LocalBinder) binder)
 					.getService();
-			service.addOnOperationScheduleReceiveFailedListener(InVehicleDeviceActivity.this);
-			service.addOnExitListener(InVehicleDeviceActivity.this);
+			service.getEventDispatcher().addOnOperationScheduleReceiveFailedListener(InVehicleDeviceActivity.this);
+			service.getEventDispatcher().addOnExitListener(InVehicleDeviceActivity.this);
 			optionalService = Optional.of(service);
 		}
 
@@ -141,8 +142,8 @@ public class InVehicleDeviceActivity extends Activity implements
 		super.onDestroy();
 		Log.i(TAG, "onDestroy()");
 		for (InVehicleDeviceService service : optionalService.asSet()) {
-			service.removeOnExitListener(this);
-			service.removeOnOperationScheduleReceiveFailedListener(this);
+			service.getEventDispatcher().removeOnExitListener(this);
+			service.getEventDispatcher().removeOnOperationScheduleReceiveFailedListener(this);
 		}
 		optionalService = Optional.absent();
 		unbindService(serviceConnection);
@@ -238,7 +239,7 @@ public class InVehicleDeviceActivity extends Activity implements
 		Log.i(TAG, "onResume()");
 		handler.removeCallbacks(pauseFinishTimeouter);
 		for (InVehicleDeviceService service : optionalService.asSet()) {
-			service.setActivityResumed();
+			service.getEventDispatcher().dispatchActivityResumed();
 		}
 		for (final Integer SYSTEM_UI_FLAG_LOW_PROFILE : ViewReflection.SYSTEM_UI_FLAG_LOW_PROFILE
 				.asSet()) {
@@ -253,7 +254,7 @@ public class InVehicleDeviceActivity extends Activity implements
 		Log.i(TAG, "onPause()");
 		handler.postDelayed(pauseFinishTimeouter, PAUSE_FINISH_TIMEOUT_MILLIS);
 		for (InVehicleDeviceService service : optionalService.asSet()) {
-			service.setActivityPaused();
+			service.getEventDispatcher().dispatchActivityPaused();
 		}
 		fixUserRotation();
 	}

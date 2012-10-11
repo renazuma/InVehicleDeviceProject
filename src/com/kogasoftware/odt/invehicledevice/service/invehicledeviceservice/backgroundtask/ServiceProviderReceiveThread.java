@@ -4,6 +4,7 @@ import java.util.concurrent.Semaphore;
 
 import android.content.Intent;
 
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
@@ -14,7 +15,7 @@ import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.ServiceProvider;
 
 public class ServiceProviderReceiveThread extends Thread implements
-		InVehicleDeviceService.OnStartNewOperationListener {
+		EventDispatcher.OnStartNewOperationListener {
 	private static final String TAG = ServiceProviderReceiveThread.class
 			.getSimpleName();
 	protected final InVehicleDeviceService service;
@@ -77,7 +78,7 @@ public class ServiceProviderReceiveThread extends Thread implements
 		// 最初の一度は必ず受信する
 		serviceProviderReceiveSemaphore.release();
 		try {
-			service.addOnStartNewOperationListener(this);
+			service.getEventDispatcher().addOnStartNewOperationListener(this);
 			while (true) {
 				// 受信通知があるまで待つ
 				serviceProviderReceiveSemaphore.acquire();
@@ -86,7 +87,7 @@ public class ServiceProviderReceiveThread extends Thread implements
 		} catch (InterruptedException e) {
 			// 正常終了
 		} finally {
-			service.removeOnStartNewOperationListener(this);
+			service.getEventDispatcher().removeOnStartNewOperationListener(this);
 		}
 	}
 }

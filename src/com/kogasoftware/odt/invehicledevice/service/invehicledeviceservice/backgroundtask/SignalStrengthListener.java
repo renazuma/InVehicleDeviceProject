@@ -4,16 +4,16 @@ import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
 
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.ServiceUnitStatusLogLogic;
 
 /**
  * onSignalStrengthsChangedを受け取り、現在の電波状況を100分率で表した数値をサービスへ通知
  */
 public class SignalStrengthListener extends PhoneStateListener {
-	private final InVehicleDeviceService service;
+	private final ServiceUnitStatusLogLogic serviceUnitStatusLogLogic;
 
-	public SignalStrengthListener(InVehicleDeviceService service) {
-		this.service = service;
+	public SignalStrengthListener(ServiceUnitStatusLogLogic serviceUnitStatusLogLogic) {
+		this.serviceUnitStatusLogLogic = serviceUnitStatusLogLogic;
 	}
 
 	/**
@@ -26,7 +26,7 @@ public class SignalStrengthListener extends PhoneStateListener {
 		if (!signalStrength.isGsm()) {
 			return Optional.absent();
 		}
-		
+
 		// GSMの場合は値を100分率に置き換え
 		Integer gsmSignalStrength = signalStrength.getGsmSignalStrength();
 		if (gsmSignalStrength.equals(99) || gsmSignalStrength <= 2) {
@@ -48,7 +48,7 @@ public class SignalStrengthListener extends PhoneStateListener {
 	public void onSignalStrengthsChanged(SignalStrength signalStrength) {
 		for (Integer percentage : convertSignalStrengthToPercentage(
 				signalStrength).asSet()) {
-			service.changeSignalStrength(percentage);
+			serviceUnitStatusLogLogic.changeSignalStrength(percentage);
 		}
 	};
 }

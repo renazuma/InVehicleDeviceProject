@@ -5,16 +5,16 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.util.Log;
 
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.ServiceUnitStatusLogLogic;
 
 public class TemperatureSensorEventListener implements SensorEventListener {
 	private static final String TAG = TemperatureSensorEventListener.class
 			.getSimpleName();
 
-	protected final InVehicleDeviceService service;
+	protected final ServiceUnitStatusLogLogic serviceUnitStatusLogLogic;
 
-	public TemperatureSensorEventListener(InVehicleDeviceService service) {
-		this.service = service;
+	public TemperatureSensorEventListener(ServiceUnitStatusLogLogic serviceUnitStatusLogLogic) {
+		this.serviceUnitStatusLogLogic = serviceUnitStatusLogLogic;
 	}
 
 	@Override
@@ -28,7 +28,7 @@ public class TemperatureSensorEventListener implements SensorEventListener {
 		}
 
 		float celsius = event.values[0];
-		service.changeTemperature((double) celsius);
+		serviceUnitStatusLogLogic.changeTemperature((double) celsius);
 		Log.v(TAG, "temperature changed=" + celsius);
 	}
 }

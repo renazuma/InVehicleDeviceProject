@@ -5,8 +5,11 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.util.concurrent.Uninterruptibles;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.VehicleNotificationLogic;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.WebAPIException;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
@@ -14,16 +17,20 @@ import com.kogasoftware.odt.webapi.model.VehicleNotification;
 import com.kogasoftware.odt.webapi.model.VehicleNotification.NotificationKind;
 
 public class OperationScheduleReceiveThread extends Thread implements
-		InVehicleDeviceService.OnStartNewOperationListener,
-		InVehicleDeviceService.OnStartReceiveUpdatedOperationScheduleListener {
+		EventDispatcher.OnStartNewOperationListener,
+		EventDispatcher.OnStartReceiveUpdatedOperationScheduleListener {
 	public static final Integer VOICE_DELAY_MILLIS = 5000;
 	public static final Integer RETRY_DELAY_MILLIS = 5000;
 	protected final InVehicleDeviceService service;
+	protected final OperationScheduleLogic operationScheduleLogic;
+	protected final VehicleNotificationLogic vehicleNotificationLogic;
 	protected final Semaphore startUpdatedOperationScheduleReceiveSemaphore = new Semaphore(
 			0);
 
 	public OperationScheduleReceiveThread(InVehicleDeviceService service) {
 		this.service = service;
+		operationScheduleLogic = new OperationScheduleLogic(service);
+		vehicleNotificationLogic = new VehicleNotificationLogic(service);
 	}
 
 	@Override
@@ -42,7 +49,7 @@ public class OperationScheduleReceiveThread extends Thread implements
 				new WebAPICallback<List<OperationSchedule>>() {
 					@Override
 					public void onException(int reqkey, WebAPIException ex) {
-						service.notifyOperationScheduleReceiveFailed();
+						service.getEventDispatcher().dispatchNotifyOperationScheduleReceiveFailed();
 						Uninterruptibles.sleepUninterruptibly(
 								RETRY_DELAY_MILLIS, TimeUnit.MILLISECONDS);
 					}
@@ -50,7 +57,7 @@ public class OperationScheduleReceiveThread extends Thread implements
 					@Override
 					public void onFailed(int reqkey, int statusCode,
 							String response) {
-						service.notifyOperationScheduleReceiveFailed();
+						service.getEventDispatcher().dispatchNotifyOperationScheduleReceiveFailed();
 						Uninterruptibles.sleepUninterruptibly(
 								RETRY_DELAY_MILLIS, TimeUnit.MILLISECONDS);
 					}
@@ -59,7 +66,7 @@ public class OperationScheduleReceiveThread extends Thread implements
 					public void onSucceed(int reqkey, int statusCode,
 							List<OperationSchedule> operationSchedules) {
 						if (!triggerVehicleNotifications.isEmpty()) {
-							service.alertUpdatedOperationSchedule();
+							service.getEventDispatcher().dispatchAlertUpdatedOperationSchedule();
 							try {
 								service.speak("運行予定が変更されました");
 								Thread.sleep(VOICE_DELAY_MILLIS);
@@ -67,7 +74,7 @@ public class OperationScheduleReceiveThread extends Thread implements
 								Thread.currentThread().interrupt();
 							}
 						}
-						service.mergeOperationSchedules(operationSchedules,
+						operationScheduleLogic.mergeOperationSchedules(operationSchedules,
 								triggerVehicleNotifications);
 					}
 				});
@@ -76,15 +83,15 @@ public class OperationScheduleReceiveThread extends Thread implements
 	@Override
 	public void run() {
 		try {
-			service.addOnStartNewOperationListener(this);
-			service.addOnStartReceiveUpdatedOperationScheduleListener(this);
+			service.getEventDispatcher().addOnStartNewOperationListener(this);
+			service.getEventDispatcher().addOnStartReceiveUpdatedOperationScheduleListener(this);
 
 			// 最初の一度は必ず受信する
 			startUpdatedOperationScheduleReceiveSemaphore.release();
 			while (true) {
 				// スケジュール変更通知があるまで待つ
 				startUpdatedOperationScheduleReceiveSemaphore.acquire();
-				receive(service.getVehicleNotifications(
+				receive(vehicleNotificationLogic.getVehicleNotifications(
 						NotificationKind.RESERVATION_CHANGED,
 						VehicleNotificationStatus.UNHANDLED));
 				Thread.sleep(10 * 1000);
@@ -92,8 +99,8 @@ public class OperationScheduleReceiveThread extends Thread implements
 		} catch (InterruptedException e) {
 			// 正常終了
 		} finally {
-			service.removeOnStartNewOperationListener(this);
-			service.removeOnStartReceiveUpdatedOperationScheduleListener(this);
+			service.getEventDispatcher().removeOnStartNewOperationListener(this);
+			service.getEventDispatcher().removeOnStartReceiveUpdatedOperationScheduleListener(this);
 		}
 	}
 

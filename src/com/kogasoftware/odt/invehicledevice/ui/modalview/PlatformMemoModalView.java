@@ -5,19 +5,23 @@ import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
 
 public class PlatformMemoModalView extends ModalView {
+	private final OperationScheduleLogic operationScheduleLogic;
+
 	public PlatformMemoModalView(Context context, InVehicleDeviceService service) {
 		super(context, service);
+		operationScheduleLogic = new OperationScheduleLogic(service);
 		setContentView(R.layout.platform_memo_modal_view);
 		setCloseOnClick(R.id.platform_memo_close_button);
 	}
 
 	@Override
 	public void show() {
-		for (OperationSchedule operationSchedule : service
+		for (OperationSchedule operationSchedule : operationScheduleLogic
 				.getCurrentOperationSchedule().asSet()) {
 			for (Platform platform : operationSchedule.getPlatform().asSet()) {
 				if (!platform.getMemo().isEmpty()) {

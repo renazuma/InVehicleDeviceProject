@@ -18,6 +18,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.datasource.EmptyDataSource;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
@@ -44,6 +45,7 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 		when(s.getLocalDataSource()).thenReturn(lds);
 		when(s.getRemoteDataSource()).thenReturn(new EmptyDataSource());
 		when(s.isOperationInitialized()).thenReturn(true);
+		when(s.getEventDispatcher()).thenReturn(new EventDispatcher());
 		osl = new OperationScheduleLogic(s);
 		lds.withWriteLock(new Writer() {
 			@Override

@@ -1,16 +1,18 @@
 package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask;
 
-import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
-import com.kogasoftware.odt.invehicledevice.empty.EmptyWebAPICallback;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
-import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.ServiceUnitStatusLogLogic;
 
 public class ServiceUnitStatusLogSender implements Runnable {
-	protected final InVehicleDeviceService service;
+	ServiceUnitStatusLogLogic serviceUnitStatusLogLogic;
+	OperationScheduleLogic operationScheduleLogic;
 
-	public ServiceUnitStatusLogSender(InVehicleDeviceService service) {
-		this.service = service;
+	public ServiceUnitStatusLogSender(
+			ServiceUnitStatusLogLogic serviceUnitStatusLogLogic,
+			OperationScheduleLogic operationScheduleLogic) {
+		this.serviceUnitStatusLogLogic = serviceUnitStatusLogLogic;
+		this.operationScheduleLogic = operationScheduleLogic;
 	}
 
 	/**
@@ -18,14 +20,9 @@ public class ServiceUnitStatusLogSender implements Runnable {
 	 */
 	@Override
 	public void run() {
-		if (service.getPhase() == Phase.FINISH) {
+		if (operationScheduleLogic.getPhase() == Phase.FINISH) {
 			return;
 		}
-		final ServiceUnitStatusLog serviceUnitStatusLog = service
-				.getServiceUnitStatusLog();
-		DataSource dataSource = service.getRemoteDataSource();
-		dataSource.withSaveOnClose().sendServiceUnitStatusLog(
-				serviceUnitStatusLog,
-				new EmptyWebAPICallback<ServiceUnitStatusLog>());
+		serviceUnitStatusLogLogic.send();
 	}
 }

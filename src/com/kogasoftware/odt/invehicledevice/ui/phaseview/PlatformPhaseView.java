@@ -22,6 +22,7 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordArrayAdapter;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordArrayAdapter.ItemType;
@@ -44,6 +45,7 @@ public class PlatformPhaseView extends PhaseView {
 	private final LinearLayout nextOperationScheduleLayout;
 	private final MemoModalView memoModalView;
 	private final Handler handler = new Handler();
+	private final OperationScheduleLogic operationScheduleLogic;
 	private Optional<AlertDialog> dialog = Optional.absent();
 	private Integer lastMinutesRemaining = Integer.MAX_VALUE;
 	private final Runnable updateMinutesRemaining = new Runnable() {
@@ -53,7 +55,7 @@ public class PlatformPhaseView extends PhaseView {
 					UPDATE_MINUTES_REMAINING_INTERVAL_MILLIS);
 			Date now = InVehicleDeviceService.getDate();
 			minutesRemainingTextView.setText("");
-			for (OperationSchedule operationSchedule : service
+			for (OperationSchedule operationSchedule : operationScheduleLogic
 					.getCurrentOperationSchedule().asSet()) {
 				if (!operationSchedule.getDepartureEstimate().isPresent()) {
 					return;
@@ -68,8 +70,8 @@ public class PlatformPhaseView extends PhaseView {
 						getResources().getString(
 								R.string.minutes_remaining_to_depart_html),
 						dateString, minutesRemaining)));
-				if (service.getPhase().equals(Phase.PLATFORM)
-						&& service.getRemainingOperationSchedules().size() > 1
+				if (operationScheduleLogic.getPhase().equals(Phase.PLATFORM)
+						&& operationScheduleLogic.getRemainingOperationSchedules().size() > 1
 						&& lastMinutesRemaining >= 3 && minutesRemaining == 2) {
 					service.speak("あと2分で出発時刻です");
 				}
@@ -81,6 +83,7 @@ public class PlatformPhaseView extends PhaseView {
 	public PlatformPhaseView(Context context, InVehicleDeviceService service,
 			MemoModalView memoModalView) {
 		super(context, service);
+		operationScheduleLogic = new OperationScheduleLogic(service);
 		setContentView(R.layout.platform_phase_view);
 
 		this.memoModalView = memoModalView;
@@ -133,10 +136,10 @@ public class PlatformPhaseView extends PhaseView {
 
 	@Override
 	public void onEnterPlatformPhase() {
-		List<OperationSchedule> operationSchedules = service
+		List<OperationSchedule> operationSchedules = operationScheduleLogic
 				.getRemainingOperationSchedules();
 		if (operationSchedules.isEmpty()) {
-			service.enterFinishPhase();
+			operationScheduleLogic.enterFinishPhase();
 			return;
 		}
 

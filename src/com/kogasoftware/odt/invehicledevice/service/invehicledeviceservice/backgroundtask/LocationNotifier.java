@@ -3,7 +3,6 @@ package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.back
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.GpsSatellite;
 import android.location.GpsStatus;
@@ -15,12 +14,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.ServiceUnitStatusLogLogic;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 
 /**
@@ -48,13 +45,13 @@ public class LocationNotifier implements LocationListener, GpsStatus.Listener,
 	protected final Handler handler = new Handler();
 	protected final long handlerThreadId = handler.getLooper().getThread()
 			.getId();
-	protected final InVehicleDeviceService service;
 	protected final LocationManager locationManager;
 	protected final PowerManager powerManager;
 	protected final WakeLock wakeLock;
 	protected final AtomicBoolean started = new AtomicBoolean(false);
 	protected final AtomicBoolean locationUpdatesStarted = new AtomicBoolean(
 			false);
+	protected final ServiceUnitStatusLogLogic serviceUnitStatusLogLogic;
 	protected final Runnable restartTimeouter = new Runnable() {
 		@Override
 		public void run() {
@@ -95,14 +92,14 @@ public class LocationNotifier implements LocationListener, GpsStatus.Listener,
 	protected Integer numSatellites = 0;
 	protected Integer numUsedInFixSatellites = 0;
 
-	public LocationNotifier(InVehicleDeviceService service,
+	public LocationNotifier(
+			ServiceUnitStatusLogLogic serviceUnitStatusLogLogic,
+			LocationManager locationManager, PowerManager powerManager,
 			SharedPreferences preferences, Integer restartCheckInterval) {
-		this.service = service;
+		this.serviceUnitStatusLogLogic = serviceUnitStatusLogLogic;
 		this.restartCheckInterval = restartCheckInterval;
-		locationManager = (LocationManager) service
-				.getSystemService(Context.LOCATION_SERVICE);
-		powerManager = (PowerManager) service
-				.getSystemService(Context.POWER_SERVICE);
+		this.locationManager = locationManager;
+		this.powerManager = powerManager;
 		wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
 				getClass().getName());
 
@@ -120,10 +117,12 @@ public class LocationNotifier implements LocationListener, GpsStatus.Listener,
 				+ " restartTimeout=" + restartTimeout);
 	}
 
-	@VisibleForTesting
-	public LocationNotifier(InVehicleDeviceService service) {
-		this(service, PreferenceManager.getDefaultSharedPreferences(service),
-				DEFAULT_RESTART_CHECK_INTERVAL);
+	public LocationNotifier(
+			ServiceUnitStatusLogLogic serviceUnitStatusLogLogic,
+			LocationManager locationManager, PowerManager powerManager,
+			SharedPreferences preferences) {
+		this(serviceUnitStatusLogLogic, locationManager, powerManager,
+				preferences, DEFAULT_RESTART_CHECK_INTERVAL);
 	}
 
 	@Override
@@ -167,7 +166,8 @@ public class LocationNotifier implements LocationListener, GpsStatus.Listener,
 				numSatellites = newNumSatellites;
 				numUsedInFixSatellites = newNumUsedInFixSatellites;
 				if (lastLocation.isPresent()) {
-					service.changeLocation(lastLocation.get(), gpsStatus);
+					serviceUnitStatusLogLogic.changeLocation(
+							lastLocation.get(), gpsStatus);
 				}
 			}
 		}
@@ -186,7 +186,7 @@ public class LocationNotifier implements LocationListener, GpsStatus.Listener,
 			nextRestartBaseTime = lastAccurateLocationTime;
 			Log.i(TAG, message + " / accurate location");
 			lastLocation = Optional.of(location);
-			service.changeLocation(location, gpsStatus);
+			serviceUnitStatusLogLogic.changeLocation(location, gpsStatus);
 		} else {
 			// 精度が低いデータを受信した場合
 			Log.i(TAG, message + " / coarse location. not updated.");

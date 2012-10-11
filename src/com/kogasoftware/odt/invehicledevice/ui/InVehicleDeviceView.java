@@ -19,7 +19,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.ArrivalCheckModalView;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.DepartureCheckModalView;
 import com.kogasoftware.odt.invehicledevice.ui.modalview.MemoModalView;
@@ -35,10 +37,10 @@ import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
 
 public class InVehicleDeviceView extends FrameLayout implements
-		InVehicleDeviceService.OnEnterPhaseListener,
-		InVehicleDeviceService.OnAlertUpdatedOperationScheduleListener,
-		InVehicleDeviceService.OnAlertVehicleNotificationReceiveListener,
-		InVehicleDeviceService.OnChangeSignalStrengthListener {
+		EventDispatcher.OnEnterPhaseListener,
+		EventDispatcher.OnAlertUpdatedOperationScheduleListener,
+		EventDispatcher.OnAlertVehicleNotificationReceiveListener,
+		EventDispatcher.OnChangeSignalStrengthListener {
 	private static final String TAG = InVehicleDeviceView.class.getSimpleName();
 	private static final int UPDATE_TIME_INTERVAL_MILLIS = 3000;
 	private static final int ALERT_SHOW_INTERVAL_MILLIS = 500;
@@ -66,6 +68,7 @@ public class InVehicleDeviceView extends FrameLayout implements
 	private final TextView statusTextView;
 	private final TextView presentTimeTextView;
 	private final ViewGroup platformMemoButtonLayout;
+	private final OperationScheduleLogic operationScheduleLogic;
 
 	private final Handler handler = new Handler();
 
@@ -106,6 +109,7 @@ public class InVehicleDeviceView extends FrameLayout implements
 
 	public InVehicleDeviceView(Context context, InVehicleDeviceService service) {
 		super(context);
+		operationScheduleLogic = new OperationScheduleLogic(service);
 		this.service = service;
 
 		LayoutInflater layoutInflater = (LayoutInflater) getContext()
@@ -182,7 +186,7 @@ public class InVehicleDeviceView extends FrameLayout implements
 			}
 		}
 
-		service.refreshPhase();
+		operationScheduleLogic.refreshPhase();
 	}
 
 	@Override
@@ -200,19 +204,19 @@ public class InVehicleDeviceView extends FrameLayout implements
 		super.onAttachedToWindow();
 		handler.post(updateTime);
 
-		service.addOnAlertUpdatedOperationScheduleListener(this);
-		service.addOnAlertVehicleNotificationReceiveListener(this);
-		service.addOnChangeSignalStrengthListener(this);
-		service.addOnEnterPhaseListener(this);
+		service.getEventDispatcher().addOnAlertUpdatedOperationScheduleListener(this);
+		service.getEventDispatcher().addOnAlertVehicleNotificationReceiveListener(this);
+		service.getEventDispatcher().addOnChangeSignalStrengthListener(this);
+		service.getEventDispatcher().addOnEnterPhaseListener(this);
 	}
 
 	@Override
 	protected void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
-		service.removeOnAlertUpdatedOperationScheduleListener(this);
-		service.removeOnAlertVehicleNotificationReceiveListener(this);
-		service.removeOnChangeSignalStrengthListener(this);
-		service.removeOnEnterPhaseListener(this);
+		service.getEventDispatcher().removeOnAlertUpdatedOperationScheduleListener(this);
+		service.getEventDispatcher().removeOnAlertVehicleNotificationReceiveListener(this);
+		service.getEventDispatcher().removeOnChangeSignalStrengthListener(this);
+		service.getEventDispatcher().removeOnEnterPhaseListener(this);
 
 		handler.removeCallbacks(updateTime);
 		handler.removeCallbacks(alertVehicleNotification);
@@ -248,7 +252,7 @@ public class InVehicleDeviceView extends FrameLayout implements
 		});
 
 		Integer platformMemoVisibility = GONE;
-		for (OperationSchedule operationSchedule : service
+		for (OperationSchedule operationSchedule : operationScheduleLogic
 				.getCurrentOperationSchedule().asSet()) {
 			for (Platform platform : operationSchedule.getPlatform().asSet()) {
 				if (!platform.getMemo().isEmpty()) {
@@ -269,10 +273,10 @@ public class InVehicleDeviceView extends FrameLayout implements
 
 	@Override
 	public void onEnterPlatformPhase() {
-		List<OperationSchedule> operationSchedules = service
+		List<OperationSchedule> operationSchedules = operationScheduleLogic
 				.getRemainingOperationSchedules();
 		if (operationSchedules.isEmpty()) {
-			service.enterFinishPhase();
+			operationScheduleLogic.enterFinishPhase();
 			return;
 		}
 
