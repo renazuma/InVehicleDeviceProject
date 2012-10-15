@@ -1,12 +1,12 @@
 package com.kogasoftware.odt.webapi.model;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import android.util.Log;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.kogasoftware.odt.webapi.model.base.OperationScheduleBase;
 
 public class OperationSchedule extends OperationScheduleBase {
@@ -63,31 +63,29 @@ public class OperationSchedule extends OperationScheduleBase {
 	/**
 	 * 降車予定なのに未降車の乗車実績を得る
 	 */
-	public List<PassengerRecord> getNoGettingOffPassengerRecords(
+	public List<PassengerRecord> getNoGetOffErrorPassengerRecords(
 			Iterable<PassengerRecord> passengerRecords) {
-		List<PassengerRecord> noGettingOffReservations = new LinkedList<PassengerRecord>();
-		for (PassengerRecord passengerRecord : passengerRecords) {
-			if (isGetOffScheduled(passengerRecord)
-					&& !passengerRecord.getGetOffTime().isPresent()) {
-				noGettingOffReservations.add(passengerRecord);
+		List<PassengerRecord> results = Lists.newLinkedList();
+		for (PassengerRecord passengerRecord : getGetOffScheduledPassengerRecords(passengerRecords)) {
+			if (!passengerRecord.getGetOffTime().isPresent()) {
+				results.add(passengerRecord);
 			}
 		}
-		return noGettingOffReservations;
+		return results;
 	}
 
 	/**
 	 * 乗車予定なのに未乗車の乗車実績を得る
 	 */
-	public List<PassengerRecord> getNoGettingOnPassengerRecords(
+	public List<PassengerRecord> getNoGetOnErrorPassengerRecords(
 			Iterable<PassengerRecord> passengerRecords) {
-		List<PassengerRecord> noGettingOnPassengerRecords = new LinkedList<PassengerRecord>();
-		for (PassengerRecord passengerRecord : passengerRecords) {
-			if (isGetOnScheduled(passengerRecord)
-					&& !passengerRecord.getGetOnTime().isPresent()) {
-				noGettingOnPassengerRecords.add(passengerRecord);
+		List<PassengerRecord> results = Lists.newLinkedList();
+		for (PassengerRecord passengerRecord : getGetOnScheduledPassengerRecords(passengerRecords)) {
+			if (!passengerRecord.getGetOnTime().isPresent()) {
+				results.add(passengerRecord);
 			}
 		}
-		return noGettingOnPassengerRecords;
+		return results;
 	}
 
 	/**
@@ -112,5 +110,33 @@ public class OperationSchedule extends OperationScheduleBase {
 		}
 		Log.e(TAG, "PassengerRecord has no Reservation " + passengerRecord);
 		return false;
+	}
+
+	/**
+	 * 乗車予定の乗車実績を得る
+	 */
+	public List<PassengerRecord> getGetOnScheduledPassengerRecords(
+			Iterable<PassengerRecord> passengerRecords) {
+		List<PassengerRecord> results = Lists.newLinkedList();
+		for (PassengerRecord passengerRecord : passengerRecords) {
+			if (isGetOnScheduled(passengerRecord)) {
+				results.add(passengerRecord);
+			}
+		}
+		return results;
+	}
+
+	/**
+	 * 降車予定の乗車実績を得る
+	 */
+	public List<PassengerRecord> getGetOffScheduledPassengerRecords(
+			Iterable<PassengerRecord> passengerRecords) {
+		List<PassengerRecord> results = Lists.newLinkedList();
+		for (PassengerRecord passengerRecord : passengerRecords) {
+			if (isGetOffScheduled(passengerRecord)) {
+				results.add(passengerRecord);
+			}
+		}
+		return results;
 	}
 }
