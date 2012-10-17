@@ -2,15 +2,13 @@
 	path = AndroidCommon
 	url = git@github.com:odt/AndroidCommon.git
 	ignore = all
-[submodule "InVehicleDeviceTestWeb"]
-	path = InVehicleDeviceTestWeb
-	url = git@github.com:odt/InVehicleDeviceTestWeb.git
-	ignore = all
 [submodule "OperatorWeb"]
 	path = OperatorWeb
 	url = git@github.com:odt/OperatorWeb.git
 	ignore = all
-[submodule "AndroidWebTestAPI"]
-	path = AndroidWebTestAPI
-	url = git@github.com:odt/AndroidWebTestAPI.git
-	ignore = all
+[submodule "InVehicleDeviceTestApiClient"]
+	path = InVehicleDeviceTestApiClient
+	url = git@github.com:odt/InVehicleDeviceTestApiClient.git
+[submodule "InVehicleDeviceTestApiServer"]
+	path = InVehicleDeviceTestApiServer
+	url = git@github.com:odt/InVehicleDeviceTestApiServer.git
