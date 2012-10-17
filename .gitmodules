@@ -9,6 +9,8 @@
 [submodule "InVehicleDeviceTestApiClient"]
 	path = InVehicleDeviceTestApiClient
 	url = git@github.com:odt/InVehicleDeviceTestApiClient.git
+	ignore = all
 [submodule "InVehicleDeviceTestApiServer"]
 	path = InVehicleDeviceTestApiServer
 	url = git@github.com:odt/InVehicleDeviceTestApiServer.git
+	ignore = all
