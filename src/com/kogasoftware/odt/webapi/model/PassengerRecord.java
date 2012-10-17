@@ -5,15 +5,26 @@ import com.kogasoftware.odt.webapi.model.base.PassengerRecordBase;
 public class PassengerRecord extends PassengerRecordBase {
 	private static final long serialVersionUID = -7618961978174467119L;
 
-	// 乗車降車エラーを無視するかどうか
-	private Boolean ignoreMiss = false;
+	// 乗車エラーを無視するかどうか
+	private Boolean ignoreGetOnMiss = false;
 
-	public Boolean getIgnoreMiss() {
-		return wrapNull(ignoreMiss);
+	// 降車エラーを無視するかどうか
+	private Boolean ignoreGetOffMiss = false;
+
+	public Boolean getIgnoreGetOnMiss() {
+		return wrapNull(ignoreGetOnMiss);
 	}
 
-	public void setIgnoreMiss(Boolean ignoreMiss) {
-		this.ignoreMiss = wrapNull(ignoreMiss);
+	public void setIgnoreGetOnMiss(Boolean ignoreGetOnMiss) {
+		this.ignoreGetOnMiss = wrapNull(ignoreGetOnMiss);
+	}
+
+	public Boolean getIgnoreGetOffMiss() {
+		return wrapNull(ignoreGetOffMiss);
+	}
+
+	public void setIgnoreGetOffMiss(Boolean ignoreGetOffMiss) {
+		this.ignoreGetOffMiss = wrapNull(ignoreGetOffMiss);
 	}
 
 	/**
