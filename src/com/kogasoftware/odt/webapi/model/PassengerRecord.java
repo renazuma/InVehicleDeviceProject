@@ -1,13 +1,31 @@
 package com.kogasoftware.odt.webapi.model;
 
-import org.json.JSONException;
-
-import android.util.Log;
-
 import com.kogasoftware.odt.webapi.model.base.PassengerRecordBase;
 
 public class PassengerRecord extends PassengerRecordBase {
 	private static final long serialVersionUID = -7618961978174467119L;
+
+	// 乗車エラーを無視するかどうか
+	private Boolean ignoreGetOnMiss = false;
+
+	// 降車エラーを無視するかどうか
+	private Boolean ignoreGetOffMiss = false;
+
+	public Boolean getIgnoreGetOnMiss() {
+		return wrapNull(ignoreGetOnMiss);
+	}
+
+	public void setIgnoreGetOnMiss(Boolean ignoreGetOnMiss) {
+		this.ignoreGetOnMiss = wrapNull(ignoreGetOnMiss);
+	}
+
+	public Boolean getIgnoreGetOffMiss() {
+		return wrapNull(ignoreGetOffMiss);
+	}
+
+	public void setIgnoreGetOffMiss(Boolean ignoreGetOffMiss) {
+		this.ignoreGetOffMiss = wrapNull(ignoreGetOffMiss);
+	}
 
 	/**
 	 * 降車済みかどうかを調べる
@@ -24,24 +42,26 @@ public class PassengerRecord extends PassengerRecordBase {
 	}
 
 	/**
-	 * 未乗車かどうかを調べる エラー状態。降車済みとして扱うと現在の車載器のUIで操作が不可能なため、未乗車として扱う。
+	 * 未乗車かどうかを調べる。
 	 */
 	public Boolean isUnhandled() {
-		if (getGetOnTime().isPresent()) {
-			return false;
+		return !getGetOnTime().isPresent();
+	}
+
+	/**
+	 * 乗車予定人数を調べる
+	 */
+	public Integer getScheduledPassengerCount() {
+		for (Reservation reservation : getReservation().asSet()) {
+			for (User headUser : reservation.getUser().asSet()) {
+				for (User user : getUser().asSet()) {
+					if (user.getId().equals(headUser.getId())) {
+						return reservation.getPassengerCount()
+								- reservation.getFellowUsers().size() + 1;
+					}
+				}
+			}
 		}
-		if (!getGetOffTime().isPresent()) {
-			return true;
-		}
-		String jsonString = "";
-		try {
-			jsonString = toJSONObject().toString();
-		} catch (JSONException e) {
-			Log.w(TAG, e);
-		}
-		Log.w(TAG,
-				"PassengerRecord (!getGetOnTime().isPresent() && getGetOffTime().isPresent()) : "
-						+ jsonString);
-		return true;
+		return 1;
 	}
 }
