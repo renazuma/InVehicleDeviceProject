@@ -36,4 +36,21 @@ public class PassengerRecord extends PassengerRecordBase {
 	public Boolean isUnhandled() {
 		return !getGetOnTime().isPresent();
 	}
+
+	/**
+	 * 乗車予定人数を調べる
+	 */
+	public Integer getScheduledPassengerCount() {
+		for (Reservation reservation : getReservation().asSet()) {
+			for (User headUser : reservation.getUser().asSet()) {
+				for (User user : getUser().asSet()) {
+					if (user.getId().equals(headUser.getId())) {
+						return reservation.getPassengerCount()
+								- reservation.getFellowUsers().size() + 1;
+					}
+				}
+			}
+		}
+		return 1;
+	}
 }
