@@ -9,4 +9,3 @@
 [submodule "InVehicleDeviceApiClient"]
 	path = InVehicleDeviceApiClient
 	url = git@github.com:odt/InVehicleDeviceApiClient.git
-	ignore = all
