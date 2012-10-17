@@ -6,7 +6,7 @@
 	path = AndroidOpenJTalk
 	url = git@github.com:odt/AndroidOpenJTalk.git
 	ignore = all
-[submodule "AndroidWebAPI"]
-	path = AndroidWebAPI
-	url = git@github.com:odt/AndroidWebAPI.git
+[submodule "InVehicleDeviceApiClient"]
+	path = InVehicleDeviceApiClient
+	url = git@github.com:odt/InVehicleDeviceApiClient.git
 	ignore = all
