@@ -59,9 +59,9 @@
     -->
     <target name="-pre-build">
       <replaceregexp
-          match="^(android\.library\.reference\.[1-9]=\.\.)/InVehicleDeviceApiClient$"
-          replace="\1"
-          file="AndroidWebTestAPI/project.properties"
+          match="^(android\.library\.reference\.[1-9])=\.\./InVehicleDeviceApiClient$"
+          replace="\1=.."
+          file="InVehicleDeviceTestApiClient/project.properties"
           byline="true"
           flags="g" />
     </target>
