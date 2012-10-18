@@ -19,7 +19,7 @@ import com.kogasoftware.odt.webapi.model.*;
 
 @SuppressWarnings("unused")
 public abstract class ReservationCandidateBase extends Model {
-	private static final long serialVersionUID = 4816283601371492968L;
+	private static final long serialVersionUID = 6717105935208408219L;
 	public static final ResponseConverter<ReservationCandidate> RESPONSE_CONVERTER = new ResponseConverter<ReservationCandidate>() {
 		@Override
 		public ReservationCandidate convert(byte[] rawResponse) throws JSONException {
@@ -41,6 +41,7 @@ public abstract class ReservationCandidateBase extends Model {
 		setArrivalLock(parseOptionalString(jsonObject, "arrival_lock"));
 		setArrivalPlatformId(parseInteger(jsonObject, "arrival_platform_id"));
 		setArrivalTime(parseDate(jsonObject, "arrival_time"));
+		setCharacteristic(parseOptionalString(jsonObject, "characteristic"));
 		setCreatedAt(parseDate(jsonObject, "created_at"));
 		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
 		setDemandId(parseOptionalInteger(jsonObject, "demand_id"));
@@ -108,6 +109,7 @@ public abstract class ReservationCandidateBase extends Model {
 		jsonObject.put("arrival_lock", toJSON(getArrivalLock()));
 		jsonObject.put("arrival_platform_id", toJSON(getArrivalPlatformId()));
 		jsonObject.put("arrival_time", toJSON(getArrivalTime()));
+		jsonObject.put("characteristic", toJSON(getCharacteristic()));
 		jsonObject.put("created_at", toJSON(getCreatedAt()));
 		jsonObject.put("deleted_at", toJSON(getDeletedAt()));
 		jsonObject.put("demand_id", toJSON(getDemandId()));
@@ -235,6 +237,25 @@ public abstract class ReservationCandidateBase extends Model {
 	public void setArrivalTime(Date arrivalTime) {
 		refreshUpdatedAt();
 		this.arrivalTime = wrapNull(arrivalTime);
+	}
+
+	private Optional<String> characteristic = Optional.absent();
+
+	public Optional<String> getCharacteristic() {
+		return wrapNull(characteristic);
+	}
+
+	public void setCharacteristic(Optional<String> characteristic) {
+		refreshUpdatedAt();
+		this.characteristic = wrapNull(characteristic);
+	}
+
+	public void setCharacteristic(String characteristic) {
+		setCharacteristic(Optional.fromNullable(characteristic));
+	}
+
+	public void clearCharacteristic() {
+		setCharacteristic(Optional.<String>absent());
 	}
 
 	private Date createdAt = new Date();
@@ -578,6 +599,7 @@ public abstract class ReservationCandidateBase extends Model {
 			.append(arrivalLock)
 			.append(arrivalPlatformId)
 			.append(arrivalTime)
+			.append(characteristic)
 			.append(createdAt)
 			.append(deletedAt)
 			.append(demandId)
@@ -613,6 +635,7 @@ public abstract class ReservationCandidateBase extends Model {
 			.append(arrivalLock, other.arrivalLock)
 			.append(arrivalPlatformId, other.arrivalPlatformId)
 			.append(arrivalTime, other.arrivalTime)
+			.append(characteristic, other.characteristic)
 			.append(createdAt, other.createdAt)
 			.append(deletedAt, other.deletedAt)
 			.append(demandId, other.demandId)
