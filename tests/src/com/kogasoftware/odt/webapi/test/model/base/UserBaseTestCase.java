@@ -42,7 +42,7 @@ public class UserBaseTestCase extends AndroidTestCase {
 		assertFalse(m1.equals(m2));
 
 		User m3 = m1.cloneByJSON();
-		assertEquals(m1, m3);
+		assertEquals(m1, SerializationUtils.clone(m3));
 	}
 
 	public void testSerialize() throws Exception {
@@ -58,11 +58,12 @@ public class UserBaseTestCase extends AndroidTestCase {
 
 		User m3 = SerializationUtils.clone(m1);
 		assertEquals(m1, m3);
+		assertEquals(m1, m3.cloneByJSON());
 	}
 
 	public void testEquals() throws Exception {
 		User l = new User();
-		User r = new User();
+		User r = l.cloneByJSON();
 		assertTrue(l.equals(r));
 		assertTrue(r.equals(l));
 

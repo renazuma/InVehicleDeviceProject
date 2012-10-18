@@ -44,7 +44,7 @@ public class ReservationUserBaseTestCase extends AndroidTestCase {
 		assertFalse(m1.equals(m2));
 
 		ReservationUser m3 = m1.cloneByJSON();
-		assertEquals(m1, m3);
+		assertEquals(m1, SerializationUtils.clone(m3));
 	}
 
 	public void testSerialize() throws Exception {
@@ -62,13 +62,14 @@ public class ReservationUserBaseTestCase extends AndroidTestCase {
 
 		ReservationUser m3 = SerializationUtils.clone(m1);
 		assertEquals(m1, m3);
+		assertEquals(m1, m3.cloneByJSON());
 	}
 
 	public void testEquals() throws Exception {
 		Integer s = 10;
 		Date ua = new Date();
 		ReservationUser l = new ReservationUser();
-		ReservationUser r = new ReservationUser();
+		ReservationUser r = l.cloneByJSON();
 
 		l.setUpdatedAt(ua);
 		r.setUpdatedAt(ua);

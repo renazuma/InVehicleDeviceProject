@@ -44,7 +44,7 @@ public class VehicleNotificationBaseTestCase extends AndroidTestCase {
 		assertFalse(m1.equals(m2));
 
 		VehicleNotification m3 = m1.cloneByJSON();
-		assertEquals(m1, m3);
+		assertEquals(m1, SerializationUtils.clone(m3));
 	}
 
 	public void testSerialize() throws Exception {
@@ -62,13 +62,14 @@ public class VehicleNotificationBaseTestCase extends AndroidTestCase {
 
 		VehicleNotification m3 = SerializationUtils.clone(m1);
 		assertEquals(m1, m3);
+		assertEquals(m1, m3.cloneByJSON());
 	}
 
 	public void testEquals() throws Exception {
 		Integer s = 10;
 		Date ua = new Date();
 		VehicleNotification l = new VehicleNotification();
-		VehicleNotification r = new VehicleNotification();
+		VehicleNotification r = l.cloneByJSON();
 
 		l.setUpdatedAt(ua);
 		r.setUpdatedAt(ua);
