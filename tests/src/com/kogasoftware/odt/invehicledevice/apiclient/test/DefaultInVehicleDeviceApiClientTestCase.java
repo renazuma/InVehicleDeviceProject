@@ -1381,7 +1381,7 @@ public class DefaultInVehicleDeviceApiClientTestCase extends AndroidTestCase {
 				.getAuthenticationToken().get());
 		latch = new CountDownLatch(1);
 		final AtomicReference<ServiceProvider> outputServiceProvider = new AtomicReference<ServiceProvider>();
-		api.getServicePrivider(new ApiClientCallback<ServiceProvider>() {
+		api.getServiceProvider(new ApiClientCallback<ServiceProvider>() {
 			@Override
 			public void onException(int reqkey, ApiClientException ex) {
 				latch.countDown();

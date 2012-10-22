@@ -122,7 +122,12 @@ public interface InVehicleDeviceApiClient extends Closeable {
 	/**
 	 * サービスプロバイダの取得
 	 */
-	int getServicePrivider(ApiClientCallback<ServiceProvider> callback);
+	int getServiceProvider(ApiClientCallback<ServiceProvider> callback);
+
+	/**
+	 * リクエストを中断する
+	 */
+	void abort(int reqkey);
 
 	/**
 	 * 地図画像を取得

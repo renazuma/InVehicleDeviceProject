@@ -93,6 +93,7 @@ public class DefaultApiClient implements ApiClient {
 		executorService.shutdownNow();
 	}
 
+	@Override
 	public <T> int delete(String path, ApiClientCallback<T> callback,
 			ResponseConverter<? extends T> conv) {
 		SerializableDeleteLoader loader = new SerializableDeleteLoader(
@@ -193,6 +194,7 @@ public class DefaultApiClient implements ApiClient {
 		return res;
 	}
 
+	@Override
 	public <T> int get(String path, Map<String, String> params,
 			String requestGroup, ApiClientCallback<T> callback,
 			ResponseConverter<? extends T> conv) {
@@ -211,6 +213,7 @@ public class DefaultApiClient implements ApiClient {
 		return serverHost;
 	}
 
+	@Override
 	public <T> int post(String path, JSONObject param,
 			JSONObject retryParam, String requestGroup,
 			ApiClientCallback<T> callback, ResponseConverter<? extends T> conv) {
@@ -224,16 +227,19 @@ public class DefaultApiClient implements ApiClient {
 		return request.getReqKey();
 	}
 
+	@Override
 	public <T> int post(String path, JSONObject param, String requestGroup,
 			ApiClientCallback<T> callback, ResponseConverter<? extends T> conv) {
 		return post(path, param, param, requestGroup, callback, conv);
 	}
 
+	@Override
 	public <T> int put(String path, JSONObject param, String requestGroup,
 			ApiClientCallback<T> callback, ResponseConverter<? extends T> conv) {
 		return put(path, param, param, requestGroup, callback, conv);
 	}
 
+	@Override
 	public <T> int put(String path, JSONObject param, JSONObject retryParam,
 			String requestGroup, ApiClientCallback<T> callback,
 			ResponseConverter<? extends T> conv) {
@@ -247,6 +253,7 @@ public class DefaultApiClient implements ApiClient {
 		return request.getReqKey();
 	}
 
+	@Override
 	public void abort(int reqkey) {
 		requests.abort(reqkey);
 	}
@@ -306,7 +313,7 @@ public class DefaultApiClient implements ApiClient {
 	public ApiClient withSaveOnClose(boolean saveOnClose) {
 		return withSaveOnClose(this, saveOnClose);
 	}
-	
+
 	@Override
 	public ApiClient withSaveOnClose() {
 		return withSaveOnClose(true);

@@ -90,7 +90,7 @@ public class EmptyInVehicleDeviceApiClient implements InVehicleDeviceApiClient {
 	}
 
 	@Override
-	public int getServicePrivider(ApiClientCallback<ServiceProvider> callback) {
+	public int getServiceProvider(ApiClientCallback<ServiceProvider> callback) {
 		return 0;
 	}
 
@@ -113,5 +113,9 @@ public class EmptyInVehicleDeviceApiClient implements InVehicleDeviceApiClient {
 	@Override
 	public InVehicleDeviceApiClient withRetry(boolean retry) {
 		return this;
+	}
+
+	@Override
+	public void abort(int reqkey) {
 	}
 }

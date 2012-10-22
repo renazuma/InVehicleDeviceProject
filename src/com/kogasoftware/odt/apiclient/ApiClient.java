@@ -2,6 +2,7 @@ package com.kogasoftware.odt.apiclient;
 
 import java.io.Closeable;
 import java.util.Map;
+
 import org.json.JSONObject;
 
 public interface ApiClient extends Closeable {

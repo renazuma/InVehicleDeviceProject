@@ -14,9 +14,9 @@ import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import com.javadocmd.simplelatlng.LatLng;
-import com.kogasoftware.odt.apiclient.DefaultApiClient;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.apiclient.ApiClientException;
+import com.kogasoftware.odt.apiclient.DefaultApiClient;
 import com.kogasoftware.odt.apiclient.DefaultApiClientRequest;
 import com.kogasoftware.odt.apiclient.DefaultApiClientRequestQueue;
 import com.kogasoftware.odt.apiclient.serializablerequestloader.SerializableGetLoader;
@@ -66,10 +66,11 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 
 	/**
 	 * 到着時のサーバへの通知
-	 * 
+	 *
 	 * @param os
 	 *            運行スケジュールオブジェクト
 	 */
+	@Override
 	public int arrivalOperationSchedule(final OperationSchedule os,
 			final ApiClientCallback<OperationSchedule> callback) {
 		try {
@@ -98,10 +99,11 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 
 	/**
 	 * 出発時のサーバへの通知
-	 * 
+	 *
 	 * @param os
 	 *            運行スケジュールオブジェクト @
 	 */
+	@Override
 	public int departureOperationSchedule(final OperationSchedule os,
 			final ApiClientCallback<OperationSchedule> callback) {
 		try {
@@ -128,10 +130,11 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 
 	/**
 	 * 降車のサーバへの通知
-	 * 
+	 *
 	 * @param operationSchedule
 	 *            運行スケジュールオブジェクト @
 	 */
+	@Override
 	public int getOffPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, User user,
 			PassengerRecord passengerRecord, ApiClientCallback<Void> callback) {
@@ -169,10 +172,11 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 
 	/**
 	 * 乗車のサーバへの通知
-	 * 
+	 *
 	 * @param operationSchedule
 	 *            運行スケジュールオブジェクト @
 	 */
+	@Override
 	public int getOnPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, User user,
 			PassengerRecord passengerRecord, ApiClientCallback<Void> callback) {
@@ -211,10 +215,11 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 
 	/**
 	 * 乗車のキャンセル
-	 * 
+	 *
 	 * @param operationSchedule
 	 *            運行スケジュールオブジェクト @
 	 */
+	@Override
 	public int cancelGetOnPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, User user, ApiClientCallback<Void> callback) {
 		try {
@@ -238,10 +243,11 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 
 	/**
 	 * 降車のキャンセル
-	 * 
+	 *
 	 * @param operationSchedule
 	 *            運行スケジュールオブジェクト @
 	 */
+	@Override
 	public int cancelGetOffPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, User user, ApiClientCallback<Void> callback) {
 		try {
@@ -266,6 +272,7 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	/**
 	 * 運行情報を取得する
 	 */
+	@Override
 	public int getOperationSchedules(
 			ApiClientCallback<List<OperationSchedule>> callback) {
 		return get(PATH_OPERATION_SCHEDULES, new TreeMap<String, String>(),
@@ -273,17 +280,19 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 				OperationSchedule.LIST_RESPONSE_CONVERTER);
 	}
 
+	@Override
 	protected String getServerHost() {
 		return serverHost;
 	}
 
 	/**
 	 * 自車への通知を取得
-	 * 
+	 *
 	 * @param callback
 	 * @return reqkey
 	 * @throws ApiClientException
 	 */
+	@Override
 	public int getVehicleNotifications(
 			ApiClientCallback<List<VehicleNotification>> callback) {
 		return get(PATH_VEHICLE_NOTIFICATIONS, new TreeMap<String, String>(),
@@ -293,13 +302,14 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 
 	/**
 	 * OperatorWebへログインしてauthorization_tokenを取得
-	 * 
+	 *
 	 * @param login
 	 *            　ログイン情報(login, password のみ設定必要)
 	 * @param callback
 	 *            処理完了時のコールバック
 	 * @return reqkey
 	 */
+	@Override
 	public int login(InVehicleDevice login,
 			final ApiClientCallback<InVehicleDevice> callback) {
 		try {
@@ -342,12 +352,13 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 
 	/**
 	 * 自車への通知への応答
-	 * 
+	 *
 	 * @param vn
 	 *            通知オブジェクト
 	 * @param response
 	 *            応答 @
 	 */
+	@Override
 	public int responseVehicleNotification(VehicleNotification vn,
 			int response, ApiClientCallback<VehicleNotification> callback) {
 		try {
@@ -377,6 +388,7 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	/**
 	 * 車載器状態の通知
 	 */
+	@Override
 	public int sendServiceUnitStatusLog(ServiceUnitStatusLog log,
 			ApiClientCallback<ServiceUnitStatusLog> callback) {
 		try {
@@ -405,7 +417,8 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	/**
 	 * サービスプロバイダの取得
 	 */
-	public int getServicePrivider(ApiClientCallback<ServiceProvider> callback) {
+	@Override
+	public int getServiceProvider(ApiClientCallback<ServiceProvider> callback) {
 		return get(PATH_SERVICE_PRIVIDER, new TreeMap<String, String>(),
 				UNIQUE_GROUP, callback, ServiceProvider.RESPONSE_CONVERTER);
 	}
@@ -476,6 +489,7 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	/**
 	 * 地図画像を取得
 	 */
+	@Override
 	public int getMapTile(LatLng center, Integer zoom,
 			ApiClientCallback<Bitmap> callback) {
 		ResponseConverter<Bitmap> responseConverter = new ResponseConverter<Bitmap>() {
@@ -505,10 +519,12 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 		return request.getReqKey();
 	}
 
+	@Override
 	public void setServerHost(String serverHost) {
 		this.serverHost = serverHost;
 	}
 
+	@Override
 	protected String getPassengerRecordGetOnOrOffGroup(
 			Integer operationScheduleId, Integer reservationId, Integer userId) {
 		return "PassengerRecordGetOnOrOffGroup/operationScheduleId="
@@ -516,14 +532,17 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 				+ "/userId=" + userId;
 	}
 
+	@Override
 	public DefaultInVehicleDeviceApiClient withSaveOnClose(boolean saveOnClose) {
 		return withSaveOnClose(this, saveOnClose);
 	}
 
+	@Override
 	public DefaultInVehicleDeviceApiClient withSaveOnClose() {
 		return withSaveOnClose(true);
 	}
 
+	@Override
 	public DefaultInVehicleDeviceApiClient withRetry(boolean retry) {
 		return withRetry(this, retry);
 	}

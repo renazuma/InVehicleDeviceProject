@@ -30,9 +30,9 @@ public class InVehicleDeviceApiClientFactory {
 				public InVehicleDeviceApiClient get() {
 					// 厳密にclose()する必要があるため、インスタンス生成を遅延させる
 					return new DefaultInVehicleDeviceApiClient(url, token, file);
-					// return new DummyDataSource();
-					// return new ScheduleChangedTestDataSource();
-					// return new EmptyDataSource();
+					// return new DummyApiClient();
+					// return new ScheduleChangedTestApiClient();
+					// return new InVehicleDeviceApiClient();
 				}
 			});
 		}
