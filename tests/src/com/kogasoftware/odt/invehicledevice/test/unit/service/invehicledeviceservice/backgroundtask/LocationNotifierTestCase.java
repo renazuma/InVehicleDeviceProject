@@ -25,7 +25,9 @@ import android.os.PowerManager.WakeLock;
 import android.preference.PreferenceManager;
 
 import com.google.common.base.Optional;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.ServiceUnitStatusLogLogic;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask.LocationNotifier;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
@@ -40,6 +42,8 @@ public class LocationNotifierTestCase extends
 	LocationNotifier ln;
 	SharedPreferences sp;
 	HandlerThread ht;
+	ServiceUnitStatusLogLogic susll;
+	EventDispatcher ed;
 
 	@Override
 	protected void setUp() throws Exception {
@@ -47,10 +51,13 @@ public class LocationNotifierTestCase extends
 		lm = mock(LocationManager.class);
 		wl = mock(WakeLock.class);
 		pm = mock(PowerManager.class);
+		ed = mock(EventDispatcher.class);
 		s = mock(InVehicleDeviceService.class);
 		when(pm.newWakeLock(anyInt(), anyString())).thenReturn(wl);
 		when(s.getSystemService(Context.LOCATION_SERVICE)).thenReturn(lm);
 		when(s.getSystemService(Context.POWER_SERVICE)).thenReturn(pm);
+		when(s.getEventDispatcher()).thenReturn(ed);
+		susll = new ServiceUnitStatusLogLogic(s);
 		sp = PreferenceManager.getDefaultSharedPreferences(getInstrumentation()
 				.getContext());
 		SharedPreferences.Editor e = sp.edit();
@@ -79,13 +86,13 @@ public class LocationNotifierTestCase extends
 		ht = new HandlerThread("") {
 			@Override
 			protected void onLooperPrepared() {
-				ln = new LocationNotifier(s, sp, 500);
+				ln = new LocationNotifier(susll, lm, pm, sp, 500);
 				ln.start();
 			}
 		};
 		ht.start();
 		Thread.sleep(rt / 2);
-		verify(s, times(0)).changeLocation(Matchers.<Location> any(),
+		verify(ed, times(0)).dispatchChangeLocation(Matchers.<Location> any(),
 				Matchers.<Optional<GpsStatus>> any());
 		verify(wl, times(0)).release();
 		verify(wl, times(1)).acquire();
@@ -95,7 +102,7 @@ public class LocationNotifierTestCase extends
 				anyFloat(), Matchers.<LocationListener> any());
 
 		Thread.sleep(rt / 2);
-		verify(s, times(0)).changeLocation(Matchers.<Location> any(),
+		verify(ed, times(0)).dispatchChangeLocation(Matchers.<Location> any(),
 				Matchers.<Optional<GpsStatus>> any());
 		verify(wl, times(1)).release();
 		verify(wl, times(2)).acquire();
@@ -109,7 +116,7 @@ public class LocationNotifierTestCase extends
 		ln.onLocationChanged(l);
 
 		Thread.sleep(rt / 2);
-		verify(s, times(1)).changeLocation(Matchers.<Location> any(),
+		verify(ed, times(1)).dispatchChangeLocation(Matchers.<Location> any(),
 				Matchers.<Optional<GpsStatus>> any());
 		verify(wl, times(1)).release();
 		verify(wl, times(2)).acquire();
@@ -121,7 +128,7 @@ public class LocationNotifierTestCase extends
 		l.setTime(new Date().getTime());
 		ln.onLocationChanged(l);
 		Thread.sleep(rt / 2);
-		verify(s, times(2)).changeLocation(Matchers.<Location> any(),
+		verify(ed, times(2)).dispatchChangeLocation(Matchers.<Location> any(),
 				Matchers.<Optional<GpsStatus>> any());
 		verify(wl, times(1)).release();
 		verify(wl, times(2)).acquire();
@@ -131,7 +138,7 @@ public class LocationNotifierTestCase extends
 				anyFloat(), Matchers.<LocationListener> any());
 
 		Thread.sleep(rt);
-		verify(s, times(2)).changeLocation(Matchers.<Location> any(),
+		verify(ed, times(2)).dispatchChangeLocation(Matchers.<Location> any(),
 				Matchers.<Optional<GpsStatus>> any());
 		verify(wl, times(2)).release();
 		verify(wl, times(3)).acquire();

@@ -8,7 +8,8 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Local
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask.BackgroundTask;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
-import com.kogasoftware.odt.invehicledevice.test.util.datasource.DummyDataSource;
+import com.kogasoftware.odt.invehicledevice.test.util.apiclient.DummyDataSource;
+
 import static org.mockito.Mockito.*;
 
 public class BackgroundTaskTestCase extends
