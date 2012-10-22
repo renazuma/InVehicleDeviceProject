@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.ui.modalview;
+package com.kogasoftware.odt.invehicledevice.test.unit.ui.fragment;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -16,13 +16,12 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.DepartureCheckModalView;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Platform;
 import com.kogasoftware.odt.webapi.model.User;
 
-public class DepartureCheckModalViewTestCase extends
+public class DepartureCheckFragmentTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 	InVehicleDeviceService s;
 	OperationSchedule os1;

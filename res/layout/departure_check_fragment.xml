@@ -1,21 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/ModalView.Layout" >
-
-    <com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView
-        android:id="@+id/error_reservation_list_view"
-        style="@style/ModalView.Content"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/departure_check_modal_buttons"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true" />
+    style="@style/ModalView.Layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
 
     <FrameLayout
         android:id="@+id/departure_button_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/departure_check_modal_buttons"
+        android:layout_above="@+id/check_fragment_buttons"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true" >
@@ -32,7 +25,7 @@
     </FrameLayout>
 
     <LinearLayout
-        android:id="@+id/departure_check_modal_buttons"
+        android:id="@+id/check_fragment_buttons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -44,9 +37,9 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="2"
+            android:enabled="false"
             android:paddingBottom="15sp"
             android:paddingTop="15sp"
-            android:text="@string/it_leaves"
             android:textSize="30sp" />
 
         <Button
