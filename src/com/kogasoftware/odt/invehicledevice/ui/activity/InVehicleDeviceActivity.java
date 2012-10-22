@@ -167,6 +167,18 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 	private Optional<LoadingDialogFragment> loadingDialogFragment = Optional
 			.absent();
 
+	private Boolean uiInitialized = false;
+
+	public Boolean isUIInitialized() {
+		return uiInitialized;
+	}
+
+	private Optional<InVehicleDeviceService> service = Optional.absent();
+
+	public Optional<InVehicleDeviceService> getService() {
+		return service;
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
