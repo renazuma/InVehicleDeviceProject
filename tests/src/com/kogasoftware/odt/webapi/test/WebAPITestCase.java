@@ -1173,8 +1173,8 @@ public class WebAPITestCase extends AndroidTestCase {
 		}
 	}
 
-	public void testRestoreRequest() throws Exception {
-		File backupFile = getContext().getFileStreamPath(
+	public void testWithSaveOnClose() throws Exception {
+		File backupFile = getContext().getFileStreamPath("backup.serialized");
 				"backup.serialized");
 		offline = true;
 		api = new OfflineTestWebAPI(SERVER_HOST, master.getInVehicleDevice()
