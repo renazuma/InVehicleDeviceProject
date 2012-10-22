@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="1.0" package="com.kogasoftware.odt.webapi.test">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="1.0" package="com.kogasoftware.odt.invehicledevice.apiclient.test">
   <uses-sdk android:minSdkVersion="4" android:targetSdkVersion="16"/>
   <uses-permission android:name="android.permission.INTERNET"/>
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-  <instrumentation android:name="android.test.InstrumentationTestRunner" android:targetPackage="com.kogasoftware.odt.webapi.test"/>
-  <instrumentation android:name="pl.polidea.instrumentation.PolideaInstrumentationTestRunner" android:targetPackage="com.kogasoftware.odt.webapi.test"/>
+  <instrumentation android:name="android.test.InstrumentationTestRunner" android:targetPackage="com.kogasoftware.odt.invehicledevice.apiclient.test"/>
+  <instrumentation android:name="pl.polidea.instrumentation.PolideaInstrumentationTestRunner" android:targetPackage="com.kogasoftware.odt.invehicledevice.apiclient.test"/>
   <application>
     <uses-library android:name="android.test.runner"/>
   </application>
