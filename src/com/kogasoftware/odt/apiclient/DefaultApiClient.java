@@ -1,7 +1,6 @@
 package com.kogasoftware.odt.apiclient;
 
 import java.io.File;
-import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
@@ -16,13 +15,11 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.util.Log;
 
-import com.google.common.base.Charsets;
 import com.kogasoftware.odt.apiclient.serializablerequestloader.SerializableDeleteLoader;
 import com.kogasoftware.odt.apiclient.serializablerequestloader.SerializableGetLoader;
 import com.kogasoftware.odt.apiclient.serializablerequestloader.SerializablePostLoader;
@@ -39,7 +36,7 @@ public class DefaultApiClient implements ApiClient {
 		}
 	}
 
-	private static final String TAG = DefaultApiClient.class.getSimpleName();
+	static final String TAG = DefaultApiClient.class.getSimpleName();
 
 	public static final Integer REQUEST_EXPIRE_DAYS = 3;
 	public static final ResponseConverter<Void> VOID_RESPONSE_CONVERTER = new ResponseConverter<Void>() {
@@ -51,11 +48,6 @@ public class DefaultApiClient implements ApiClient {
 
 	protected static final int NUM_THREADS = 5;
 	protected static final String UNIQUE_GROUP = DefaultApiClientRequestQueue.UNIQUE_GROUP;
-
-	protected static String decodeByteArray(byte[] byteArray) {
-		return Charsets.ISO_8859_1.decode(ByteBuffer.wrap(byteArray))
-				.toString();
-	}
 
 	protected final ScheduledExecutorService executorService = Executors
 			.newScheduledThreadPool(NUM_THREADS);
@@ -122,7 +114,7 @@ public class DefaultApiClient implements ApiClient {
 			if (entity != null) {
 				response = EntityUtils.toByteArray(entity);
 				if (response.length < 1024) {
-					responseString = decodeByteArray(response);
+					responseString = ApiClients.decodeByteArray(response);
 				} else {
 					responseString = "response length=" + response.length;
 				}
@@ -217,20 +209,6 @@ public class DefaultApiClient implements ApiClient {
 
 	protected String getServerHost() {
 		return serverHost;
-	}
-
-	public static JSONArray parseJSONArray(byte[] rawResponse)
-			throws JSONException {
-		String json = decodeByteArray(rawResponse);
-		Log.d(TAG + "#parseJSONArray", json);
-		return new JSONArray(json);
-	}
-
-	public static JSONObject parseJSONObject(byte[] rawResponse)
-			throws JSONException {
-		String json = decodeByteArray(rawResponse);
-		Log.d(TAG + "#parseJSONObject", json);
-		return new JSONObject(json);
 	}
 
 	public <T> int post(String path, JSONObject param,
