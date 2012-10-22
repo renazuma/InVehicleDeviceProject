@@ -19,7 +19,7 @@ import android.view.WindowManager;
 import com.google.common.base.Stopwatch;
 import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.apiclient.EmptyDataSource;
+import com.kogasoftware.odt.invehicledevice.apiclient.EmptyInVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.compatibility.reflection.android.provider.SettingsReflection;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 import com.kogasoftware.odt.invehicledevice.service.startupservice.StartupService;
@@ -64,7 +64,7 @@ public class InVehicleDeviceActivityTestCase extends
 				R.string.failed_to_connect_operator_tool);
 		TestUtil.disableAutoStart(getInstrumentation().getContext());
 		TestUtil.clearStatus();
-		TestUtil.setDataSource(new EmptyDataSource() {
+		TestUtil.setApiClient(new EmptyInVehicleDeviceApiClient() {
 			@Override
 			public int getOperationSchedules(
 					ApiClientCallback<List<OperationSchedule>> callback) {
@@ -85,7 +85,7 @@ public class InVehicleDeviceActivityTestCase extends
 		TestUtil.disableAutoStart(getInstrumentation().getContext());
 		TestUtil.clearStatus();
 		final AtomicBoolean fail = new AtomicBoolean(false);
-		TestUtil.setDataSource(new EmptyDataSource() {
+		TestUtil.setApiClient(new EmptyInVehicleDeviceApiClient() {
 			@Override
 			public int getServiceProvider(
 					ApiClientCallback<ServiceProvider> callback) {
@@ -132,7 +132,7 @@ public class InVehicleDeviceActivityTestCase extends
 				R.string.failed_to_connect_operator_tool);
 		TestUtil.disableAutoStart(getInstrumentation().getContext());
 		TestUtil.clearStatus();
-		TestUtil.setDataSource(new EmptyDataSource() {
+		TestUtil.setApiClient(new EmptyInVehicleDeviceApiClient() {
 			@Override
 			public int getOperationSchedules(
 					ApiClientCallback<List<OperationSchedule>> callback) {

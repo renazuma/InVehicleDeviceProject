@@ -14,8 +14,8 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Writer;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.VehicleNotificationLogic;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
@@ -28,12 +28,12 @@ public class VehicleNotificationFragmentTestCase extends
 	InVehicleDeviceService s;
 	NotificationModalView mv;
 	VehicleNotificationLogic vnl;
-	LocalDataSource lds;
+	LocalStorage lds;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		lds = new LocalDataSource(a);
+		lds = new LocalStorage(a);
 		lds.withWriteLock(new Writer(){
 			@Override
 			public void write(LocalData localData) {
@@ -41,7 +41,7 @@ public class VehicleNotificationFragmentTestCase extends
 			}
 		});
 		s = mock(InVehicleDeviceService.class);
-		when(s.getLocalDataSource()).thenReturn(lds);
+		when(s.getLocalStorage()).thenReturn(lds);
 		vnl = new VehicleNotificationLogic(s);
 		Answer<List<VehicleNotification>> answer = new Answer<List<VehicleNotification>>() {
 			@Override

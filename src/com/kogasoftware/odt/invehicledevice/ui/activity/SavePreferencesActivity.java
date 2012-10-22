@@ -17,10 +17,10 @@ import android.widget.Toast;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
-import com.kogasoftware.odt.invehicledevice.apiclient.WebAPIDataSource;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.InVehicleDevice;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask.Broadcasts;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.InVehicleDevice;
 
 public class SavePreferencesActivity extends Activity {
 	private static final String TAG = SavePreferencesActivity.class
@@ -61,7 +61,7 @@ public class SavePreferencesActivity extends Activity {
 		editor.putString(SharedPreferencesKeys.SERVER_URL, Objects
 				.firstNonNull(
 						bundle.getString(SharedPreferencesKeys.SERVER_URL),
-						WebAPIDataSource.DEFAULT_URL));
+						InVehicleDeviceService.DEFAULT_URL));
 		editor.putString(
 				SharedPreferencesKeys.SERVER_IN_VEHICLE_DEVICE_TOKEN,
 				Strings.nullToEmpty(bundle
@@ -87,7 +87,7 @@ public class SavePreferencesActivity extends Activity {
 		editor.commit();
 		return Pair.of(true, "");
 	}
-	
+
 	@Override
 	protected void onStart() {
 		super.onStart();
@@ -98,7 +98,7 @@ public class SavePreferencesActivity extends Activity {
 					finish();
 				}
 			}
-			
+
 			@Override
 			protected void onPostExecute(Pair<Boolean, String> result) {
 				if (!isFinishing()) {

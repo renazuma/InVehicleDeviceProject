@@ -24,19 +24,19 @@ import android.test.AndroidTestCase;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.BackgroundReader;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.BackgroundWriter;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Reader;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.VoidReader;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundReader;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundWriter;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Reader;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.VoidReader;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Writer;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 
-public class LocalDataSourceTestCase extends AndroidTestCase {
+public class LocalStorageTestCase extends AndroidTestCase {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -53,7 +53,7 @@ public class LocalDataSourceTestCase extends AndroidTestCase {
 	 * デフォルトコンストラクタ。非チェック例外が発生しないことのみ確認
 	 */
 	public void testConstructor_1() throws Exception {
-		LocalDataSource lds = new LocalDataSource();
+		LocalStorage lds = new LocalStorage();
 		lds.withReadLock(new Reader<Date>() {
 			@Override
 			public Date read(LocalData ld) {
@@ -75,7 +75,7 @@ public class LocalDataSourceTestCase extends AndroidTestCase {
 	public void testReadWriteClear1() throws Exception {
 		Context c = getContext();
 		// 保存
-		LocalDataSource lds1 = new LocalDataSource(c);
+		LocalStorage lds1 = new LocalStorage(c);
 		lds1.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData ld) {
@@ -90,7 +90,7 @@ public class LocalDataSourceTestCase extends AndroidTestCase {
 		Thread.sleep(500); // 保存されるのを待つ
 
 		// クリアされていないことを確認
-		LocalDataSource lds2 = new LocalDataSource(c);
+		LocalStorage lds2 = new LocalStorage(c);
 		lds2.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData ld) {
@@ -104,8 +104,8 @@ public class LocalDataSourceTestCase extends AndroidTestCase {
 		lds2.close();
 
 		// クリアされることを確認
-		LocalDataSource.clearSavedFile();
-		LocalDataSource lds3 = new LocalDataSource(c);
+		LocalStorage.clearSavedFile();
+		LocalStorage lds3 = new LocalStorage(c);
 		lds3.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData ld) {
@@ -118,7 +118,7 @@ public class LocalDataSourceTestCase extends AndroidTestCase {
 		lds3.close();
 
 		// 復活しないことを確認
-		LocalDataSource lds4 = new LocalDataSource(c);
+		LocalStorage lds4 = new LocalStorage(c);
 		lds4.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData ld) {
@@ -137,8 +137,8 @@ public class LocalDataSourceTestCase extends AndroidTestCase {
 		Context c = getContext();
 
 		// 保存
-		LocalDataSource.clearSavedFile();
-		LocalDataSource lds1 = new LocalDataSource(c);
+		LocalStorage.clearSavedFile();
+		LocalStorage lds1 = new LocalStorage(c);
 		lds1.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData ld) {
@@ -149,7 +149,7 @@ public class LocalDataSourceTestCase extends AndroidTestCase {
 		Thread.sleep(500); // 保存されるのを待つ
 
 		// クリアされていないことを確認
-		LocalDataSource lds2 = new LocalDataSource(c);
+		LocalStorage lds2 = new LocalStorage(c);
 		lds2.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData ld) {
@@ -164,7 +164,7 @@ public class LocalDataSourceTestCase extends AndroidTestCase {
 				.putBoolean(SharedPreferencesKeys.CLEAR_STATUS_BACKUP, true)
 				.commit();
 		// クリアされることを確認
-		LocalDataSource lds3 = new LocalDataSource(c);
+		LocalStorage lds3 = new LocalStorage(c);
 		lds3.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData ld) {
@@ -178,7 +178,7 @@ public class LocalDataSourceTestCase extends AndroidTestCase {
 				SharedPreferencesKeys.CLEAR_STATUS_BACKUP, true));
 
 		// データが復活しないことを確認
-		LocalDataSource lds4 = new LocalDataSource(c);
+		LocalStorage lds4 = new LocalStorage(c);
 		lds4.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData ld) {
@@ -193,7 +193,7 @@ public class LocalDataSourceTestCase extends AndroidTestCase {
 	 */
 	public void testReadWriteLock() throws Exception {
 		final CyclicBarrier cb = new CyclicBarrier(200);
-		final LocalDataSource lds = new LocalDataSource(getContext());
+		final LocalStorage lds = new LocalStorage(getContext());
 		final AtomicBoolean working = new AtomicBoolean(false);
 		final AtomicInteger numConcurrentAccesses = new AtomicInteger(0);
 		final AtomicBoolean error = new AtomicBoolean(false);
@@ -319,7 +319,7 @@ public class LocalDataSourceTestCase extends AndroidTestCase {
 		Integer savePeriod = 1000;
 
 		// 永続化されるかの確認
-		LocalDataSource lds = new LocalDataSource(getContext(), savePeriod);
+		LocalStorage lds = new LocalStorage(getContext(), savePeriod);
 		final VehicleNotification vn = new VehicleNotification();
 		vn.setId(1);
 		lds.withWriteLock(new Writer() {
@@ -332,7 +332,7 @@ public class LocalDataSourceTestCase extends AndroidTestCase {
 			}
 		});
 		Thread.sleep(savePeriod / 5);
-		LocalDataSource read1 = new LocalDataSource(getContext());
+		LocalStorage read1 = new LocalStorage(getContext());
 		Integer id1 = read1.withReadLock(new Reader<Integer>() {
 			@Override
 			public Integer read(LocalData localData) {
@@ -355,7 +355,7 @@ public class LocalDataSourceTestCase extends AndroidTestCase {
 			}
 		});
 		Thread.sleep(savePeriod / 5);
-		LocalDataSource read2 = new LocalDataSource(getContext());
+		LocalStorage read2 = new LocalStorage(getContext());
 		Integer id2 = read2.withReadLock(new Reader<Integer>() {
 			@Override
 			public Integer read(LocalData localData) {
@@ -368,7 +368,7 @@ public class LocalDataSourceTestCase extends AndroidTestCase {
 
 		// savePeriodが経過すると、永続化されることを確認
 		Thread.sleep(savePeriod);
-		LocalDataSource read3 = new LocalDataSource(getContext());
+		LocalStorage read3 = new LocalStorage(getContext());
 		Integer id3 = read3.withReadLock(new Reader<Integer>() {
 			@Override
 			public Integer read(LocalData localData) {
@@ -400,7 +400,7 @@ public class LocalDataSourceTestCase extends AndroidTestCase {
 		d = DateUtils.addSeconds(d, -10);
 		InVehicleDeviceService.setMockDate(d);
 
-		LocalDataSource lds = new LocalDataSource(getContext());
+		LocalStorage lds = new LocalStorage(getContext());
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
@@ -411,7 +411,7 @@ public class LocalDataSourceTestCase extends AndroidTestCase {
 		Thread.sleep(s);
 
 		// 新運行スケジュール受信時刻をまたいでいない場合はそのまま
-		lds = new LocalDataSource(getContext());
+		lds = new LocalStorage(getContext());
 		Integer p1 = lds.withReadLock(new Reader<Integer>() {
 			@Override
 			public Integer read(LocalData localData) {
@@ -425,7 +425,7 @@ public class LocalDataSourceTestCase extends AndroidTestCase {
 
 		// 新運行スケジュール受信時刻をまたいだばあいはクリアさせる
 		InVehicleDeviceService.setMockDate(DateUtils.addSeconds(d, 10));
-		lds = new LocalDataSource(getContext());
+		lds = new LocalStorage(getContext());
 		Integer p2 = lds.withReadLock(new Reader<Integer>() {
 			@Override
 			public Integer read(LocalData localData) {
@@ -451,7 +451,7 @@ public class LocalDataSourceTestCase extends AndroidTestCase {
 		final OperationSchedule os = new OperationSchedule();
 		os.setId(12345);
 		final AtomicReference<OperationSchedule> resultOs = new AtomicReference<OperationSchedule>();
-		final LocalDataSource lds = new LocalDataSource(getContext());
+		final LocalStorage lds = new LocalStorage(getContext());
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData ld) {
@@ -506,7 +506,7 @@ public class LocalDataSourceTestCase extends AndroidTestCase {
 		cdl.await();
 		final OperationSchedule os = new OperationSchedule();
 		os.setId(54321);
-		final LocalDataSource lds = new LocalDataSource(getContext());
+		final LocalStorage lds = new LocalStorage(getContext());
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData ld) {

@@ -7,7 +7,7 @@ import android.widget.TextView;
 import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
-import com.kogasoftware.odt.invehicledevice.test.util.apiclient.DummyDataSource;
+import com.kogasoftware.odt.invehicledevice.test.util.apiclient.DummyApiClient;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
 public class DriveTestCase extends
@@ -18,7 +18,7 @@ public class DriveTestCase extends
 	public DriveTestCase() {
 		super("com.kogasoftware.odt.invehicledevice.ui.activity",
 				InVehicleDeviceActivity.class);
-		TestUtil.setDataSource(new DummyDataSource());
+		TestUtil.setApiClient(new DummyApiClient());
 	}
 
 	@Override

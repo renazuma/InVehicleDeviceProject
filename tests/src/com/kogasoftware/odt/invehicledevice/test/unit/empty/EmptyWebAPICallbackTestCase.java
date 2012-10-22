@@ -1,6 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.empty;
 
-import com.kogasoftware.odt.invehicledevice.empty.EmptyApiClientCallback;
+import com.kogasoftware.odt.apiclient.EmptyApiClientCallback;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 
 import android.test.InstrumentationTestCase;

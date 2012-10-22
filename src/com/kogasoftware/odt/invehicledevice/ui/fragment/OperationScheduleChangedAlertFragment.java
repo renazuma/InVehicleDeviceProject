@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.BackgroundReader;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundReader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.VehicleNotificationLogic;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.OperationScheduleChangedAlertFragment.State;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
@@ -66,7 +66,7 @@ public class OperationScheduleChangedAlertFragment extends
 	}
 
 	private void showOperationScheduleChangedFragment() {
-		getService().getLocalDataSource().read(
+		getService().getLocalStorage().read(
 				new BackgroundReader<List<VehicleNotification>>() {
 					@Override
 					public List<VehicleNotification> readInBackground(

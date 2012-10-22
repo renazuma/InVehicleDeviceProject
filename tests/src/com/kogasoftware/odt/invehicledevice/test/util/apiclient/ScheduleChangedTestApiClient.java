@@ -9,19 +9,16 @@ import org.json.JSONObject;
 
 import android.util.Log;
 
-import com.kogasoftware.odt.invehicledevice.apiclient.EmptyDataSource;
+import com.kogasoftware.odt.invehicledevice.apiclient.EmptyInVehicleDeviceApiClient;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.apiclient.ApiClientException;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.Demand;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.ReservationCandidate;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceProvider;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 
-public class ScheduleChangedTestDataSource extends EmptyDataSource {
-	private static final String TAG = ScheduleChangedTestDataSource.class
+public class ScheduleChangedTestApiClient extends EmptyInVehicleDeviceApiClient {
+	private static final String TAG = ScheduleChangedTestApiClient.class
 			.getSimpleName();
 	private final AtomicInteger phase = new AtomicInteger(0);
 
@@ -162,20 +159,6 @@ public class ScheduleChangedTestDataSource extends EmptyDataSource {
 
 	@Override
 	public void close() {
-	}
-
-	@Override
-	public int searchReservationCandidate(Demand demand,
-			ApiClientCallback<List<ReservationCandidate>> callback) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int createReservation(ReservationCandidate reservationCandidate,
-			ApiClientCallback<Reservation> callback) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 
 	@Override

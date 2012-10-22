@@ -5,7 +5,7 @@ import android.test.ActivityInstrumentationTestCase2;
 import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
-import com.kogasoftware.odt.invehicledevice.test.util.apiclient.ScheduleChangedTestDataSource;
+import com.kogasoftware.odt.invehicledevice.test.util.apiclient.ScheduleChangedTestApiClient;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
 public class ScheduleChangedTestCase extends
@@ -16,7 +16,7 @@ public class ScheduleChangedTestCase extends
 	public ScheduleChangedTestCase() {
 		super("com.kogasoftware.odt.invehicledevice.ui.activity",
 				InVehicleDeviceActivity.class);
-		TestUtil.setDataSource(new ScheduleChangedTestDataSource());
+		TestUtil.setApiClient(new ScheduleChangedTestApiClient());
 		TestUtil.clearStatus();
 	}
 

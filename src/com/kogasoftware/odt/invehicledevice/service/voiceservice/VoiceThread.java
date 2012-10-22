@@ -114,7 +114,7 @@ public class VoiceThread extends Thread {
 			Log.w(TAG, "voice=\"" + voice + "\" is not present");
 			return;
 		}
-		
+
 		Log.i(TAG, "speak voice=" + voice);
 		audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,
 				audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);

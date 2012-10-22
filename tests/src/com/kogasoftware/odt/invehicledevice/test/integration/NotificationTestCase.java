@@ -9,7 +9,7 @@ import android.view.View;
 import com.google.common.collect.Lists;
 import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
-import com.kogasoftware.odt.invehicledevice.test.util.apiclient.MockDataSource;
+import com.kogasoftware.odt.invehicledevice.test.util.apiclient.MockApiClient;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.apiclient.ApiClientException;
@@ -20,7 +20,7 @@ public class NotificationTestCase extends
 
 	private Solo solo;
 
-	MockDataSource mdst = new MockDataSource();
+	MockApiClient mdst = new MockApiClient();
 
 	final Integer WAIT_MILLIS = 7000;
 
@@ -39,7 +39,7 @@ public class NotificationTestCase extends
 		mdst.setReservationCandidate(6, 1, 1, 1);
 
 		TestUtil.setDate("2012-01-01T09:00:00+09:00");
-		TestUtil.setDataSource(mdst);
+		TestUtil.setApiClient(mdst);
 		TestUtil.clearStatus();
 
 		solo = new Solo(getInstrumentation(), getActivity());

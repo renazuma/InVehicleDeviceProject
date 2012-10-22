@@ -4,12 +4,12 @@ import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage;
 import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceThread;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 
 public class VoiceThreadTestCase extends EmptyActivityInstrumentationTestCase2 {
-	LocalDataSource sa;
+	LocalStorage sa;
 	VoiceThread vt;
 	BlockingQueue<String> bq;
 
@@ -18,7 +18,7 @@ public class VoiceThreadTestCase extends EmptyActivityInstrumentationTestCase2 {
 		super.setUp();
 		bq = new LinkedBlockingQueue<String>();
 		vt = new VoiceThread(getInstrumentation().getTargetContext(), bq);
-		sa = new LocalDataSource(null);
+		sa = new LocalStorage(null);
 	}
 
 	@Override

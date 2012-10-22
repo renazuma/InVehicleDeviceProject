@@ -13,9 +13,9 @@ import org.json.JSONObject;
 import android.graphics.Bitmap;
 
 import com.javadocmd.simplelatlng.LatLng;
-import com.kogasoftware.odt.invehicledevice.apiclient.DataSource;
+import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.Demand;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.InVehicleDevice;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
@@ -25,8 +25,9 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceProvider;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.User;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
+import com.kogasoftware.odt.invehicledevice.apiclient.EmptyInVehicleDeviceApiClient;
 
-public class MockDataSource implements DataSource {
+public class MockApiClient extends EmptyInVehicleDeviceApiClient {
 
 	private List<OperationSchedule> lOperationSchedule = new LinkedList<OperationSchedule>();
 	private final List<ReservationCandidate> lReservationCandidate = new LinkedList<ReservationCandidate>();
@@ -445,37 +446,8 @@ public class MockDataSource implements DataSource {
 	}
 
 	@Override
-	public int searchReservationCandidate(Demand demand,
-			ApiClientCallback<List<ReservationCandidate>> callback) {
-		callback.onSucceed(0, 200, lReservationCandidate);
-		return 0;
-	}
-
-	@Override
-	public int createReservation(ReservationCandidate reservationCandidate,
-			ApiClientCallback<Reservation> callback) {
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-		}
-		callback.onSucceed(0, 200, new Reservation());
-		return 0;
-	}
-
-	@Override
-	public void cancel(int reqkey) {
-	}
-
-	@Override
 	public int getMapTile(LatLng center, Integer zoom,
 			ApiClientCallback<Bitmap> webAPICallback) {
-		return 0;
-	}
-
-	@Override
-	public int getServiceProvider(ApiClientCallback<ServiceProvider> callback) {
-		callback.onSucceed(0, 200, new ServiceProvider());
 		return 0;
 	}
 
@@ -492,7 +464,7 @@ public class MockDataSource implements DataSource {
 	}
 
 	@Override
-	public DataSource withSaveOnClose() {
+	public InVehicleDeviceApiClient withSaveOnClose() {
 		return this;
 	}
 
@@ -515,12 +487,6 @@ public class MockDataSource implements DataSource {
 		}
 		return 0;
 	}
-
-	@Override
-	public DataSource withRetry(Boolean retry) {
-		return this;
-	}
-
 	@Override
 	public int getOffPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, User user,
@@ -533,5 +499,27 @@ public class MockDataSource implements DataSource {
 			Reservation reservation, User user,
 			PassengerRecord passengerRecord, ApiClientCallback<Void> callback) {
 		return 0;
+	}
+
+	@Override
+	public int login(InVehicleDevice login,
+			ApiClientCallback<InVehicleDevice> callback) {
+		return 0;
+	}
+
+	@Override
+	public int getServiceProvider(ApiClientCallback<ServiceProvider> callback) {
+		callback.onSucceed(0, 200, new ServiceProvider());
+		return 0;
+	}
+
+	@Override
+	public InVehicleDeviceApiClient withSaveOnClose(boolean saveOnClose) {
+		return this;
+	}
+
+	@Override
+	public InVehicleDeviceApiClient withRetry(boolean retry) {
+		return this;
 	}
 }

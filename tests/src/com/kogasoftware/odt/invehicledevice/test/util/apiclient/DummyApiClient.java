@@ -10,36 +10,22 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.kogasoftware.odt.invehicledevice.apiclient.EmptyDataSource;
+import com.kogasoftware.odt.invehicledevice.apiclient.EmptyInVehicleDeviceApiClient;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.apiclient.ApiClientException;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Demand;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.ReservationCandidate;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceProvider;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 
-public class DummyDataSource extends EmptyDataSource {
+public class DummyApiClient extends EmptyInVehicleDeviceApiClient {
 
 	private Date nextNotifyDate = new Date(new Date().getTime() + 60 * 1000);
 
 	public List<ServiceUnitStatusLog> sendServiceUnitStatusLogArgs = new LinkedList<ServiceUnitStatusLog>();
-
-	@Override
-	public int arrivalOperationSchedule(OperationSchedule os,
-			ApiClientCallback<OperationSchedule> callback) {
-		return 0;
-	}
-
-	@Override
-	public int departureOperationSchedule(OperationSchedule os,
-			ApiClientCallback<OperationSchedule> callback) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 
 	public List<OperationSchedule> getOperationSchedules2()
 			throws ApiClientException {
@@ -150,24 +136,12 @@ public class DummyDataSource extends EmptyDataSource {
 	}
 
 	@Override
-	public int responseVehicleNotification(VehicleNotification vn,
-			int response, ApiClientCallback<VehicleNotification> callback) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
 	public int sendServiceUnitStatusLog(ServiceUnitStatusLog log,
 			ApiClientCallback<ServiceUnitStatusLog> callback) {
 		sendServiceUnitStatusLogArgs.add(log);
 		return 0;
 	}
 
-	@Override
-	public void close() {
-	}
-
-	@Override
 	public int searchReservationCandidate(Demand demand,
 			ApiClientCallback<List<ReservationCandidate>> callback) {
 
@@ -241,18 +215,6 @@ public class DummyDataSource extends EmptyDataSource {
 			e.printStackTrace();
 		}
 		callback.onSucceed(0, 200, l);
-		return 0;
-	}
-
-	@Override
-	public int createReservation(ReservationCandidate reservationCandidate,
-			ApiClientCallback<Reservation> callback) {
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-		}
-		callback.onSucceed(0, 200, new Reservation());
 		return 0;
 	}
 

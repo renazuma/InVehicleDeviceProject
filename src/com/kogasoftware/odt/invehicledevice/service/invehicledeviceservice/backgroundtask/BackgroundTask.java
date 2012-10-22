@@ -32,11 +32,10 @@ import android.widget.Toast;
 
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.apiclient.DataSource;
-import com.kogasoftware.odt.invehicledevice.apiclient.DataSourceFactory;
-import com.kogasoftware.odt.invehicledevice.apiclient.WebAPIDataSource;
+import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
+import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClientFactory;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.ServiceUnitStatusLogLogic;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
@@ -215,7 +214,7 @@ public class BackgroundTask {
 		}
 
 		String url = preferences.getString(SharedPreferencesKeys.SERVER_URL,
-				WebAPIDataSource.DEFAULT_URL);
+				InVehicleDeviceService.DEFAULT_URL);
 		String token = preferences.getString(
 				SharedPreferencesKeys.SERVER_IN_VEHICLE_DEVICE_TOKEN, "");
 		File webAPIBackupFile = service.getFileStreamPath("webapi.serialized");
@@ -228,11 +227,11 @@ public class BackgroundTask {
 			editor.putBoolean(SharedPreferencesKeys.CLEAR_WEBAPI_BACKUP, false);
 			editor.commit();
 		}
-		DataSource remoteDataSource = DataSourceFactory.newInstance(url, token,
-				webAPIBackupFile);
-		service.setRemoteDataSource(remoteDataSource);
-		LocalDataSource localDataSource = new LocalDataSource(service);
-		service.setLocalDataSource(localDataSource);
+		InVehicleDeviceApiClient apiClient = InVehicleDeviceApiClientFactory
+				.newInstance(url, token, webAPIBackupFile);
+		service.setApiClient(apiClient);
+		LocalStorage localStorage = new LocalStorage(service);
+		service.setLocalStorage(localStorage);
 
 		IntentFilter exitIntentFilter = new IntentFilter();
 		exitIntentFilter.addAction(Broadcasts.ACTION_EXIT);

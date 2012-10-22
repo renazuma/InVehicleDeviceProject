@@ -19,7 +19,7 @@ public class VehicleNotificationReceiver implements Runnable {
 
 	@Override
 	public void run() {
-		service.getRemoteDataSource()
+		service.getApiClient()
 				.withRetry(false)
 				.getVehicleNotifications(
 						new ApiClientCallback<List<VehicleNotification>>() {

@@ -7,8 +7,8 @@ import android.widget.Button;
 import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
-import com.kogasoftware.odt.invehicledevice.test.util.apiclient.DummyDataSource;
-import com.kogasoftware.odt.invehicledevice.test.util.apiclient.MockDataSource;
+import com.kogasoftware.odt.invehicledevice.test.util.apiclient.DummyApiClient;
+import com.kogasoftware.odt.invehicledevice.test.util.apiclient.MockApiClient;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
 public class ScheduleTestCase extends
@@ -19,15 +19,15 @@ public class ScheduleTestCase extends
 	public ScheduleTestCase() {
 		super("com.kogasoftware.odt.invehicledevice.ui.activity",
 				InVehicleDeviceActivity.class);
-		TestUtil.setDataSource(new DummyDataSource());
+		TestUtil.setApiClient(new DummyApiClient());
 	}
 
 	public void dataset(Integer i) {
 
-		MockDataSource mds = new MockDataSource();
+		MockApiClient mds = new MockApiClient();
 
 		mds.setOperationSchedules(i);
-		TestUtil.setDataSource(mds);
+		TestUtil.setApiClient(mds);
 
 	}
 

@@ -14,12 +14,12 @@ import android.test.MoreAsserts;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.io.Closeables;
-import com.kogasoftware.odt.invehicledevice.apiclient.DataSource;
-import com.kogasoftware.odt.invehicledevice.apiclient.EmptyDataSource;
+import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
+import com.kogasoftware.odt.invehicledevice.apiclient.EmptyInVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Writer;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.PassengerRecordLogic;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
@@ -28,8 +28,8 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.User;
 
 public class PassengerRecordLogicTestCase extends AndroidTestCase {
-	DataSource rds;
-	LocalDataSource lds;
+	InVehicleDeviceApiClient rds;
+	LocalStorage lds;
 	InVehicleDeviceService s;
 	PassengerRecordLogic prl;
 	OperationSchedule os;
@@ -40,11 +40,11 @@ public class PassengerRecordLogicTestCase extends AndroidTestCase {
 		os = new OperationSchedule();
 		os.setOperationRecord(new OperationRecord());
 		os.setId(12345);
-		rds = spy(new EmptyDataSource());
-		lds = new LocalDataSource(getContext());
+		rds = spy(new EmptyInVehicleDeviceApiClient());
+		lds = new LocalStorage(getContext());
 		s = mock(InVehicleDeviceService.class);
-		when(s.getLocalDataSource()).thenReturn(lds);
-		when(s.getRemoteDataSource()).thenReturn(rds);
+		when(s.getLocalStorage()).thenReturn(lds);
+		when(s.getApiClient()).thenReturn(rds);
 		when(s.isOperationInitialized()).thenReturn(true);
 		prl = new PassengerRecordLogic(s);
 		lds.withWriteLock(new Writer() {

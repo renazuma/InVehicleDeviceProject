@@ -7,12 +7,12 @@ import android.view.View;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Writer;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
-import com.kogasoftware.odt.invehicledevice.test.util.apiclient.DummyDataSource;
+import com.kogasoftware.odt.invehicledevice.test.util.apiclient.DummyApiClient;
 import com.kogasoftware.odt.invehicledevice.ui.activity.EmptyActivity;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
@@ -20,7 +20,7 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 public class PlatformPhaseFragmentTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 
-	LocalDataSource sa;
+	LocalStorage sa;
 	MemoModalView mmv;
 	PlatformPhaseFragment pv;
 	InVehicleDeviceService s;
@@ -30,13 +30,13 @@ public class PlatformPhaseFragmentTestCase extends
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		TestUtil.setDataSource(new DummyDataSource());
+		TestUtil.setApiClient(new DummyApiClient());
 		a = getActivity();
 		s = mock(InVehicleDeviceService.class);
 		when(s.getEventDispatcher()).thenReturn(new EventDispatcher());
 		osl = new OperationScheduleLogic(s);
 		mmv = mock(MemoModalView.class);
-		sa = new LocalDataSource(a);
+		sa = new LocalStorage(a);
 		pv = new PlatformPhaseFragment(a, s, mmv);
 		sa.withWriteLock(new Writer() { // TODO もっとスマートにする
 			@Override

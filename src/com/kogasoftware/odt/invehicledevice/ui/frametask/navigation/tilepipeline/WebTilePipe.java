@@ -37,7 +37,7 @@ public class WebTilePipe extends PipeExchanger<Tile, Null, TileBitmapFile> {
 		for (Tile tile : new HashSet<Tile>(loadingReqKeys.keySet())) {
 			Integer reqkey = loadingReqKeys.remove(tile);
 			if (reqkey != null) {
-				service.getRemoteDataSource().cancel(reqkey);
+				service.getApiClient().abort(reqkey);
 			}
 		}
 	}
@@ -53,11 +53,11 @@ public class WebTilePipe extends PipeExchanger<Tile, Null, TileBitmapFile> {
 		final CountDownLatch countDownLatch = new CountDownLatch(1);
 		final AtomicReference<Bitmap> outputBitmap = new AtomicReference<Bitmap>(
 				null);
-		int reqkey = service.getRemoteDataSource().getMapTile(tile.getCenter(),
+		int reqkey = service.getApiClient().getMapTile(tile.getCenter(),
 				tile.getZoom(), new ApiClientCallback<Bitmap>() {
 					@Override
 					public void onException(int reqkey, ApiClientException ex) {
-						service.getRemoteDataSource().cancel(reqkey);
+						service.getApiClient().abort(reqkey);
 						Log.i(TAG, "onException reqkey=" + reqkey, ex);
 						countDownLatch.countDown();
 					}
@@ -65,7 +65,7 @@ public class WebTilePipe extends PipeExchanger<Tile, Null, TileBitmapFile> {
 					@Override
 					public void onFailed(int reqkey, int statusCode,
 							String response) {
-						service.getRemoteDataSource().cancel(reqkey);
+						service.getApiClient().abort(reqkey);
 						Log.i(TAG, "onFailed reqkey=" + reqkey + " statusCode="
 								+ statusCode + " response=" + response);
 						countDownLatch.countDown();

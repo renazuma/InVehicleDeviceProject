@@ -17,12 +17,12 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.ListView;
 
-import com.kogasoftware.odt.invehicledevice.apiclient.DataSource;
-import com.kogasoftware.odt.invehicledevice.apiclient.EmptyDataSource;
+import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
+import com.kogasoftware.odt.invehicledevice.apiclient.EmptyInVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Writer;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyRunnable;
@@ -45,7 +45,7 @@ public class PassengerRecordArrayAdapterTestCase extends
 	OperationScheduleLogic osl;
 	MemoModalView mmv;
 	PassengerRecordArrayAdapter raa;
-	LocalDataSource sa;
+	LocalStorage sa;
 	CountDownLatch sccdl;
 	ServiceConnection sc = new ServiceConnection() {
 		@Override
@@ -64,7 +64,7 @@ public class PassengerRecordArrayAdapterTestCase extends
 	BlockingQueue<PassengerRecord> cancelGetOnPassengerRecords = new LinkedBlockingQueue<PassengerRecord>();
 	BlockingQueue<PassengerRecord> cancelGetOffPassengerRecords = new LinkedBlockingQueue<PassengerRecord>();
 
-	DataSource dataSource = new EmptyDataSource() {
+	ApiClient apiClient = new InVehicleDeviceApiClient() {
 		@Override
 		public int getOffPassenger(OperationSchedule operationSchedule,
 				Reservation reservation, User user,
@@ -103,7 +103,7 @@ public class PassengerRecordArrayAdapterTestCase extends
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		TestUtil.setDataSource(dataSource);
+		TestUtil.setApiClient(apiClient);
 		a = getActivity();
 		TestUtil.disableAutoStart(a);
 		sccdl = new CountDownLatch(1);
@@ -125,7 +125,7 @@ public class PassengerRecordArrayAdapterTestCase extends
 			fail();
 		}
 
-		sa = s.getLocalDataSource();
+		sa = s.getLocalStorage();
 
 		mmv = new MemoModalView(a, s);
 		getOnPassengerRecords.clear();

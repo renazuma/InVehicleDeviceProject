@@ -12,8 +12,8 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Event
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Writer;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
@@ -23,7 +23,7 @@ public class DrivePhaseFragmentTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 
 	InVehicleDeviceService s;
-	LocalDataSource sa;
+	LocalStorage sa;
 	DrivePhaseFragment pv;
 	OperationScheduleLogic osl;
 
@@ -33,7 +33,7 @@ public class DrivePhaseFragmentTestCase extends
 		s = mock(InVehicleDeviceService.class);
 		when(s.getEventDispatcher()).thenReturn(new EventDispatcher());
 		osl = new OperationScheduleLogic(s);
-		sa = new LocalDataSource(getActivity());
+		sa = new LocalStorage(getActivity());
 		pv = new DrivePhaseFragment(null, s);
 		sa.withWriteLock(new Writer() { // TODO もっとスマートにする
 			@Override

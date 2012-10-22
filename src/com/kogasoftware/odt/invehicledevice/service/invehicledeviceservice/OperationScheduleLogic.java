@@ -7,18 +7,18 @@ import android.util.Log;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import com.kogasoftware.odt.apiclient.EmptyApiClientCallback;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.User;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
-import com.kogasoftware.odt.invehicledevice.empty.EmptyApiClientCallback;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.BackgroundWriter;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Reader;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundWriter;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Reader;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Writer;
 
 /**
  * スケジュール関連のデータ処理
@@ -95,16 +95,6 @@ public class OperationScheduleLogic {
 	 * 乗降場フェーズへ移行
 	 */
 	public void enterPlatformPhase() {
-		throw new RuntimeException("method deleted");
-	}
-
-	@Deprecated
-	private void arrive2() {
-		throw new RuntimeException("method deleted");
-	}
-
-	@Deprecated
-	private void depart2() {
 		throw new RuntimeException("method deleted");
 	}
 
@@ -251,13 +241,13 @@ public class OperationScheduleLogic {
 			final List<VehicleNotification> triggerVehicleNotifications) {
 		Log.i("InVehicleDeviceActivity", "mergeOperationSchedules 1");
 
-		LocalDataSource localDataSource = service.getLocalDataSource();
+		LocalStorage localStorage = service.getLocalStorage();
 		// 通知を受信済みリストに移動
 		vehicleNotificationLogic.setVehicleNotificationStatus(
 				triggerVehicleNotifications,
 				VehicleNotificationStatus.OPERATION_SCHEDULE_RECEIVED);
 		// マージ
-		localDataSource.withWriteLock(new Writer() {
+		localStorage.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
 				mergeOperationSchedulesWithWriteLock(localData,
@@ -273,7 +263,7 @@ public class OperationScheduleLogic {
 	 * 現在の運行情報を破棄して新しい運行を開始する
 	 */
 	public void startNewOperation() {
-		service.getLocalDataSource().withWriteLock(new Writer() {
+		service.getLocalStorage().withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
 				localData.operationScheduleInitializedSign.drainPermits();
@@ -291,7 +281,7 @@ public class OperationScheduleLogic {
 	 */
 	@Deprecated
 	public Optional<OperationSchedule> getCurrentOperationSchedule() {
-		return service.getLocalDataSource().withReadLock(
+		return service.getLocalStorage().withReadLock(
 				new Reader<Optional<OperationSchedule>>() {
 					@Override
 					public Optional<OperationSchedule> read(LocalData localData) {
@@ -310,7 +300,7 @@ public class OperationScheduleLogic {
 
 	@Deprecated
 	public List<OperationSchedule> getRemainingOperationSchedules() {
-		return service.getLocalDataSource().withReadLock(
+		return service.getLocalStorage().withReadLock(
 				new Reader<List<OperationSchedule>>() {
 					@Override
 					public List<OperationSchedule> read(LocalData localData) {
@@ -332,7 +322,7 @@ public class OperationScheduleLogic {
 
 	@Deprecated
 	public List<OperationSchedule> getOperationSchedules() {
-		return service.getLocalDataSource().withReadLock(
+		return service.getLocalStorage().withReadLock(
 				new Reader<List<OperationSchedule>>() {
 					@Override
 					public List<OperationSchedule> read(LocalData localData) {
@@ -344,7 +334,7 @@ public class OperationScheduleLogic {
 
 	@Deprecated
 	public Phase getPhase() {
-		return service.getLocalDataSource().withReadLock(new Reader<Phase>() {
+		return service.getLocalStorage().withReadLock(new Reader<Phase>() {
 			@Override
 			public Phase read(LocalData status) {
 				return status.phase;
@@ -361,7 +351,7 @@ public class OperationScheduleLogic {
 			final Runnable callback) {
 		final Integer id = currentOperationSchedule.getId();
 		Log.i(TAG, "arrive id=" + id);
-		service.getLocalDataSource().write(new BackgroundWriter() {
+		service.getLocalStorage().write(new BackgroundWriter() {
 			@Override
 			public void writeInBackground(LocalData localData) {
 				localData.completeGetOff = false;
@@ -373,7 +363,7 @@ public class OperationScheduleLogic {
 							.getOperationRecord().asSet()) {
 						operationRecord.setArrivedAt(InVehicleDeviceService
 								.getDate());
-						service.getRemoteDataSource()
+						service.getApiClient()
 								.withSaveOnClose()
 								.arrivalOperationSchedule(
 										operationSchedule,
@@ -414,7 +404,7 @@ public class OperationScheduleLogic {
 			final Runnable callback) {
 		final Integer id = currentOperationSchedule.getId();
 		Log.i(TAG, "depart id=" + id);
-		service.getLocalDataSource().write(new BackgroundWriter() {
+		service.getLocalStorage().write(new BackgroundWriter() {
 			@Override
 			public void writeInBackground(LocalData localData) {
 				localData.completeGetOff = false;
@@ -426,7 +416,7 @@ public class OperationScheduleLogic {
 							.getOperationRecord().asSet()) {
 						operationRecord.setDepartedAt(InVehicleDeviceService
 								.getDate());
-						service.getRemoteDataSource()
+						service.getApiClient()
 								.withSaveOnClose()
 								.departureOperationSchedule(
 										operationSchedule,
@@ -462,7 +452,7 @@ public class OperationScheduleLogic {
 					handler.postDelayed(this, 500);
 					return;
 				}
-				service.getLocalDataSource().withWriteLock(new Writer() {
+				service.getLocalStorage().withWriteLock(new Writer() {
 					@Override
 					public void write(LocalData localData) {
 						updatePhaseInBackground(localData);

@@ -8,14 +8,14 @@ import android.util.Log;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import com.kogasoftware.odt.invehicledevice.apiclient.DataSource;
-import com.kogasoftware.odt.invehicledevice.empty.EmptyApiClientCallback;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.BackgroundWriter;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Reader;
+import com.kogasoftware.odt.apiclient.EmptyApiClientCallback;
+import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.User;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundWriter;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Reader;
 
 public class PassengerRecordLogic {
 	private static final String TAG = PassengerRecordLogic.class
@@ -66,7 +66,7 @@ public class PassengerRecordLogic {
 	}
 
 	public List<PassengerRecord> getPassengerRecords() {
-		return service.getLocalDataSource().withReadLock(
+		return service.getLocalStorage().withReadLock(
 				new Reader<List<PassengerRecord>>() {
 					@Override
 					public List<PassengerRecord> read(LocalData status) {
@@ -153,7 +153,7 @@ public class PassengerRecordLogic {
 		Reservation reservation = passengerRecord.getReservation().get();
 		User user = passengerRecord.getUser().get();
 		passengerRecord.setPassengerCount(reservation.getPassengerCount());
-		DataSource dataSource = service.getRemoteDataSource();
+		InVehicleDeviceApiClient apiClient = service.getApiClient();
 		Date now = InVehicleDeviceService.getDate();
 		if (isGetOffScheduled(passengerRecord) && passengerRecord.isUnhandled()) {
 			passengerRecord.setGetOnTime(now);
@@ -162,24 +162,24 @@ public class PassengerRecordLogic {
 					.getDepartureScheduleId());
 			passengerRecord.setArrivalOperationScheduleId(operationSchedule
 					.getId());
-			dataSource.withSaveOnClose().getOnPassenger(operationSchedule,
+			apiClient.withSaveOnClose().getOnPassenger(operationSchedule,
 					reservation, user, passengerRecord,
 					new EmptyApiClientCallback<Void>());
-			dataSource.withSaveOnClose().getOffPassenger(operationSchedule,
+			apiClient.withSaveOnClose().getOffPassenger(operationSchedule,
 					reservation, user, passengerRecord,
 					new EmptyApiClientCallback<Void>());
 		} else if (passengerRecord.isUnhandled()) {
 			passengerRecord.setGetOnTime(now);
 			passengerRecord.setDepartureOperationScheduleId(operationSchedule
 					.getId());
-			dataSource.withSaveOnClose().getOnPassenger(operationSchedule,
+			apiClient.withSaveOnClose().getOnPassenger(operationSchedule,
 					reservation, user, passengerRecord,
 					new EmptyApiClientCallback<Void>());
 		} else if (passengerRecord.isRiding() || passengerRecord.isGotOff()) {
 			passengerRecord.setGetOffTime(now);
 			passengerRecord.setArrivalOperationScheduleId(operationSchedule
 					.getId());
-			dataSource.withSaveOnClose().getOffPassenger(operationSchedule,
+			apiClient.withSaveOnClose().getOffPassenger(operationSchedule,
 					reservation, user, passengerRecord,
 					new EmptyApiClientCallback<Void>());
 		}
@@ -198,7 +198,7 @@ public class PassengerRecordLogic {
 		}
 		Reservation reservation = passengerRecord.getReservation().get();
 		User user = passengerRecord.getUser().get();
-		DataSource dataSource = service.getRemoteDataSource();
+		InVehicleDeviceApiClient apiClient = service.getApiClient();
 		if (isGetOffScheduled(passengerRecord)
 				&& passengerRecord.isGotOff()
 				&& passengerRecord.getGetOnTime().equals(
@@ -207,22 +207,22 @@ public class PassengerRecordLogic {
 			passengerRecord.clearGetOffTime();
 			passengerRecord.clearDepartureOperationScheduleId();
 			passengerRecord.clearArrivalOperationScheduleId();
-			dataSource.withSaveOnClose().cancelGetOffPassenger(
+			apiClient.withSaveOnClose().cancelGetOffPassenger(
 					operationSchedule, reservation, user,
 					new EmptyApiClientCallback<Void>());
-			dataSource.withSaveOnClose().cancelGetOnPassenger(
+			apiClient.withSaveOnClose().cancelGetOnPassenger(
 					operationSchedule, reservation, user,
 					new EmptyApiClientCallback<Void>());
 		} else if (passengerRecord.isUnhandled() || passengerRecord.isRiding()) {
 			passengerRecord.clearGetOnTime();
 			passengerRecord.clearDepartureOperationScheduleId();
-			dataSource.withSaveOnClose().cancelGetOnPassenger(
+			apiClient.withSaveOnClose().cancelGetOnPassenger(
 					operationSchedule, reservation, user,
 					new EmptyApiClientCallback<Void>());
 		} else if (passengerRecord.isGotOff()) {
 			passengerRecord.clearGetOffTime();
 			passengerRecord.clearArrivalOperationScheduleId();
-			dataSource.withSaveOnClose().cancelGetOffPassenger(
+			apiClient.withSaveOnClose().cancelGetOffPassenger(
 					operationSchedule, reservation, user,
 					new EmptyApiClientCallback<Void>());
 		}
@@ -248,7 +248,7 @@ public class PassengerRecordLogic {
 		passengerRecord
 				.setArrivalOperationScheduleId(operationSchedule.getId());
 		updateAsync(passengerRecord);
-		service.getRemoteDataSource()
+		service.getApiClient()
 				.withSaveOnClose()
 				.getOffPassenger(operationSchedule, reservation, user,
 						passengerRecord, new EmptyApiClientCallback<Void>());
@@ -272,7 +272,7 @@ public class PassengerRecordLogic {
 		passengerRecord.clearGetOffTime();
 		passengerRecord.clearArrivalOperationScheduleId();
 		updateAsync(passengerRecord);
-		service.getRemoteDataSource()
+		service.getApiClient()
 				.withSaveOnClose()
 				.cancelGetOffPassenger(operationSchedule, reservation, user,
 						new EmptyApiClientCallback<Void>());
@@ -298,7 +298,7 @@ public class PassengerRecordLogic {
 		passengerRecord.setDepartureOperationScheduleId(operationSchedule
 				.getId());
 		updateAsync(passengerRecord);
-		service.getRemoteDataSource()
+		service.getApiClient()
 				.withSaveOnClose()
 				.getOnPassenger(operationSchedule, reservation, user,
 						passengerRecord, new EmptyApiClientCallback<Void>());
@@ -322,14 +322,14 @@ public class PassengerRecordLogic {
 		passengerRecord.clearGetOnTime();
 		passengerRecord.clearDepartureOperationScheduleId();
 		updateAsync(passengerRecord);
-		service.getRemoteDataSource()
+		service.getApiClient()
 				.withSaveOnClose()
 				.cancelGetOnPassenger(operationSchedule, reservation, user,
 						new EmptyApiClientCallback<Void>());
 	}
 
 	private void updateAsync(final PassengerRecord passengerRecord) {
-		service.getLocalDataSource().write(new BackgroundWriter() {
+		service.getLocalStorage().write(new BackgroundWriter() {
 			@Override
 			public void writeInBackground(LocalData ld) {
 				for (PassengerRecord oldPassengerRecord : Lists

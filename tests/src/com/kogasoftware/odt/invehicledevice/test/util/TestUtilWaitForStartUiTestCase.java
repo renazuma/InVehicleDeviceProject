@@ -7,9 +7,9 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.test.ActivityInstrumentationTestCase2;
 
-import com.kogasoftware.odt.invehicledevice.apiclient.DataSource;
+import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
-import com.kogasoftware.odt.invehicledevice.test.util.apiclient.DummyDataSource;
+import com.kogasoftware.odt.invehicledevice.test.util.apiclient.DummyApiClient;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
@@ -21,9 +21,9 @@ public class TestUtilWaitForStartUiTestCase extends
 	Context tc;
 
 	public void callTestWaitForStartUi(Boolean timeout) throws Exception {
-		DataSource ds = new DummyDataSource();
+		InVehicleDeviceApiClient ds = new DummyApiClient();
 		if (timeout) {
-			ds = new DummyDataSource() {
+			ds = new DummyApiClient() {
 				@Override
 				public int getOperationSchedules(
 						ApiClientCallback<List<OperationSchedule>> callback) {
@@ -40,7 +40,7 @@ public class TestUtilWaitForStartUiTestCase extends
 		editor.apply();
 
 		TestUtil.clearStatus();
-		TestUtil.setDataSource(ds);
+		TestUtil.setApiClient(ds);
 		a = getActivity();
 		assertEquals(!timeout, TestUtil.waitForStartUI(a).booleanValue());
 	}

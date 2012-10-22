@@ -4,11 +4,11 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask.BackgroundTask;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
-import com.kogasoftware.odt.invehicledevice.test.util.apiclient.DummyDataSource;
+import com.kogasoftware.odt.invehicledevice.test.util.apiclient.DummyApiClient;
 
 import static org.mockito.Mockito.*;
 
@@ -16,15 +16,15 @@ public class BackgroundTaskTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 
 	InVehicleDeviceService s;
-	LocalDataSource sa;
+	LocalStorage sa;
 
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
 		Thread.sleep(10 * 1000);
 		s = mock(InVehicleDeviceService.class);
-		TestUtil.setDataSource(new DummyDataSource());
-		sa = new LocalDataSource(getActivity());
+		TestUtil.setApiClient(new DummyApiClient());
+		sa = new LocalStorage(getActivity());
 	}
 
 	@Override

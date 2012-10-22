@@ -17,14 +17,14 @@ import android.test.AndroidTestCase;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.io.Closeables;
-import com.kogasoftware.odt.invehicledevice.apiclient.EmptyDataSource;
+import com.kogasoftware.odt.invehicledevice.apiclient.EmptyInVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.VoidReader;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.VoidReader;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Writer;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
@@ -33,17 +33,17 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 public class OperationScheduleLogicTestCase extends AndroidTestCase {
 	InVehicleDeviceService s;
 	OperationScheduleLogic osl;
-	LocalDataSource lds;
+	LocalStorage lds;
 	List<OperationSchedule> remotes = Lists.newLinkedList();
 	List<VehicleNotification> vns = Lists.newLinkedList();
 
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		lds = new LocalDataSource(getContext());
+		lds = new LocalStorage(getContext());
 		s = mock(InVehicleDeviceService.class);
-		when(s.getLocalDataSource()).thenReturn(lds);
-		when(s.getRemoteDataSource()).thenReturn(new EmptyDataSource());
+		when(s.getLocalStorage()).thenReturn(lds);
+		when(s.getApiClient()).thenReturn(new EmptyInVehicleDeviceApiClient());
 		when(s.isOperationInitialized()).thenReturn(true);
 		when(s.getEventDispatcher()).thenReturn(new EventDispatcher());
 		osl = new OperationScheduleLogic(s);

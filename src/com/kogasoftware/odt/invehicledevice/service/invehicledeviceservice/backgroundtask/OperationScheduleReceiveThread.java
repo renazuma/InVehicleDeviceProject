@@ -45,7 +45,7 @@ public class OperationScheduleReceiveThread extends Thread implements
 
 	public void receive(
 			final List<VehicleNotification> triggerVehicleNotifications) {
-		service.getRemoteDataSource().getOperationSchedules(
+		service.getApiClient().getOperationSchedules(
 				new ApiClientCallback<List<OperationSchedule>>() {
 					@Override
 					public void onException(int reqkey, ApiClientException ex) {

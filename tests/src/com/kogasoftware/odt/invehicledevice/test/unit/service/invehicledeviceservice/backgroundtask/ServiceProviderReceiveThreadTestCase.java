@@ -10,10 +10,10 @@ import org.mockito.Mockito;
 import android.content.Intent;
 import android.test.AndroidTestCase;
 
-import com.kogasoftware.odt.invehicledevice.apiclient.DataSource;
-import com.kogasoftware.odt.invehicledevice.apiclient.EmptyDataSource;
+import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
+import com.kogasoftware.odt.invehicledevice.apiclient.EmptyInVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask.ServiceProviderReceiveThread;
 import com.kogasoftware.odt.invehicledevice.service.logservice.UploadThread;
@@ -43,7 +43,7 @@ public class ServiceProviderReceiveThreadTestCase extends AndroidTestCase {
 	}
 
 	public void testRun() throws Exception {
-		DataSource ds = new EmptyDataSource() {
+		InVehicleDeviceApiClient ds = new EmptyInVehicleDeviceApiClient() {
 			@Override
 			public int getServiceProvider(
 					ApiClientCallback<ServiceProvider> callback) {
@@ -52,8 +52,8 @@ public class ServiceProviderReceiveThreadTestCase extends AndroidTestCase {
 				return 0;
 			}
 		};
-		when(s.getRemoteDataSource()).thenReturn(ds);
-		when(s.getLocalDataSource()).thenReturn(new LocalDataSource());
+		when(s.getApiClient()).thenReturn(ds);
+		when(s.getLocalStorage()).thenReturn(new LocalStorage());
 
 		Integer m = 1000;
 		sprt.start();

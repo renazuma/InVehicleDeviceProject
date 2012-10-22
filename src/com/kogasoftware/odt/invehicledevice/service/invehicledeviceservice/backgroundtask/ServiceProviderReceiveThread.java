@@ -7,7 +7,7 @@ import android.content.Intent;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Writer;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 import com.kogasoftware.odt.invehicledevice.service.logservice.UploadThread;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
@@ -31,7 +31,7 @@ public class ServiceProviderReceiveThread extends Thread implements
 	}
 
 	private void onSucceed(final ServiceProvider serviceProvider) {
-		service.getLocalDataSource().withWriteLock(new Writer() {
+		service.getLocalStorage().withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
 				localData.serviceProvider = serviceProvider;
@@ -53,7 +53,7 @@ public class ServiceProviderReceiveThread extends Thread implements
 	}
 
 	private void receive() {
-		service.getRemoteDataSource().getServiceProvider(
+		service.getApiClient().getServiceProvider(
 				new ApiClientCallback<ServiceProvider>() {
 					@Override
 					public void onException(int reqkey, ApiClientException ex) {

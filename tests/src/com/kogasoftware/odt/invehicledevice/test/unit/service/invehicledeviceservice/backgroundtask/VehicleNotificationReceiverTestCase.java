@@ -6,7 +6,7 @@ import java.util.List;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask.VehicleNotificationReceiver;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
-import com.kogasoftware.odt.invehicledevice.test.util.apiclient.DummyDataSource;
+import com.kogasoftware.odt.invehicledevice.test.util.apiclient.DummyApiClient;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.apiclient.ApiClientException;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
@@ -28,7 +28,7 @@ public class VehicleNotificationReceiverTestCase extends
 			throws Exception {
 		final VehicleNotification vn0 = new VehicleNotification();
 		final VehicleNotification vn1 = new VehicleNotification();
-		class TestDataSource extends DummyDataSource {
+		class TestApiClient extends DummyApiClient {
 			@Override
 			public int getVehicleNotifications(
 					ApiClientCallback<List<VehicleNotification>> callback) {
@@ -39,7 +39,7 @@ public class VehicleNotificationReceiverTestCase extends
 				return 0;
 			}
 		}
-		TestUtil.setDataSource(new TestDataSource());
+		TestUtil.setApiClient(new TestApiClient());
 		VehicleNotificationReceiver vnr = new VehicleNotificationReceiver(null);
 		vnr.run();
 		Thread.sleep(5000);
@@ -48,7 +48,7 @@ public class VehicleNotificationReceiverTestCase extends
 
 	public void testRun_新しいVNがなければVehicleNotificationReceivedEvent通知は起きない_1()
 			throws Exception {
-		class TestDataSource extends DummyDataSource {
+		class TestApiClient extends DummyApiClient {
 			@Override
 			public int getVehicleNotifications(
 					ApiClientCallback<List<VehicleNotification>> callback) {
@@ -57,7 +57,7 @@ public class VehicleNotificationReceiverTestCase extends
 				return 0;
 			}
 		}
-		TestUtil.setDataSource(new TestDataSource());
+		TestUtil.setApiClient(new TestApiClient());
 		VehicleNotificationReceiver vnr = new VehicleNotificationReceiver(null);
 		vnr.run();
 		Thread.sleep(5000);
@@ -66,7 +66,7 @@ public class VehicleNotificationReceiverTestCase extends
 
 	public void testRun_新しいVNがなければVehicleNotificationReceivedEvent通知は起きない_2()
 			throws Exception {
-		class TestDataSource extends DummyDataSource {
+		class TestApiClient extends DummyApiClient {
 			@Override
 			public int getVehicleNotifications(
 					ApiClientCallback<List<VehicleNotification>> callback) {
@@ -74,7 +74,7 @@ public class VehicleNotificationReceiverTestCase extends
 				return 0;
 			}
 		}
-		TestUtil.setDataSource(new TestDataSource());
+		TestUtil.setApiClient(new TestApiClient());
 		VehicleNotificationReceiver vnr = new VehicleNotificationReceiver(null);
 		vnr.run();
 		Thread.sleep(5000);

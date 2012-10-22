@@ -14,8 +14,8 @@ import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Writer;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.OperationScheduleListFragment;
@@ -48,12 +48,12 @@ public class OperationScheduleListFragmentTestCase extends
 	OperationRecord or8 = new OperationRecord();
 	OperationRecord or9 = new OperationRecord();
 	List<OperationSchedule> oss;
-	LocalDataSource lds;
+	LocalStorage lds;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		lds = new LocalDataSource(getInstrumentation().getContext());
+		lds = new LocalStorage(getInstrumentation().getContext());
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
@@ -62,7 +62,7 @@ public class OperationScheduleListFragmentTestCase extends
 		});
 
 		s = mock(InVehicleDeviceService.class);
-		when(s.getLocalDataSource()).thenReturn(lds);
+		when(s.getLocalStorage()).thenReturn(lds);
 
 		os0.setId(100);
 		os1.setId(101);
@@ -94,7 +94,7 @@ public class OperationScheduleListFragmentTestCase extends
 			}
 		});
 
-		when(s.getLocalDataSource()).thenReturn(lds);
+		when(s.getLocalStorage()).thenReturn(lds);
 	}
 
 	@Override

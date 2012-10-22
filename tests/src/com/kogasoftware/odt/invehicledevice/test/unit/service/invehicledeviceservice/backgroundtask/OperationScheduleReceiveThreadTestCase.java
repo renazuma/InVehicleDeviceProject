@@ -14,11 +14,11 @@ import org.mockito.verification.VerificationWithTimeout;
 
 import android.test.AndroidTestCase;
 
-import com.kogasoftware.odt.invehicledevice.apiclient.DataSource;
-import com.kogasoftware.odt.invehicledevice.apiclient.EmptyDataSource;
+import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
+import com.kogasoftware.odt.invehicledevice.apiclient.EmptyInVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask.OperationScheduleReceiveThread;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.apiclient.ApiClientException;
@@ -53,7 +53,7 @@ public class OperationScheduleReceiveThreadTestCase extends AndroidTestCase {
 	public void testRun_NotifyOperationScheduleReceiveFailed() throws Exception {
 		VerificationWithTimeout t = timeout((int) (OperationScheduleReceiveThread.VOICE_DELAY_MILLIS * 1.2));
 		final AtomicBoolean fail = new AtomicBoolean(true);
-		DataSource ds = new EmptyDataSource() {
+		InVehicleDeviceApiClient ds = new EmptyInVehicleDeviceApiClient() {
 			@Override
 			public int getOperationSchedules(
 					ApiClientCallback<List<OperationSchedule>> callback) {
@@ -64,8 +64,8 @@ public class OperationScheduleReceiveThreadTestCase extends AndroidTestCase {
 				return 0;
 			}
 		};
-		when(s.getRemoteDataSource()).thenReturn(ds);
-		when(s.getLocalDataSource()).thenReturn(new LocalDataSource());
+		when(s.getApiClient()).thenReturn(ds);
+		when(s.getLocalStorage()).thenReturn(new LocalStorage());
 
 		osrt.start();
 
@@ -113,8 +113,8 @@ public class OperationScheduleReceiveThreadTestCase extends AndroidTestCase {
 	}
 
 	public void testRun() throws Exception {
-		when(s.getRemoteDataSource()).thenReturn(new EmptyDataSource());
-		when(s.getLocalDataSource()).thenReturn(new LocalDataSource());
+		when(s.getApiClient()).thenReturn(new EmptyInVehicleDeviceApiClient());
+		when(s.getLocalStorage()).thenReturn(new LocalStorage());
 
 		VerificationWithTimeout t = timeout((int) (OperationScheduleReceiveThread.VOICE_DELAY_MILLIS * 1.2));
 		osrt.start();

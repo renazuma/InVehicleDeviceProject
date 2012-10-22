@@ -20,7 +20,7 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.BackgroundReader;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundReader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.VehicleNotificationLogic;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.OperationScheduleChangedFragment.State;
@@ -117,7 +117,7 @@ public class OperationScheduleChangedFragment extends
 	}
 
 	private void showOperationScheduleFragment() {
-		getService().getLocalDataSource().read(
+		getService().getLocalStorage().read(
 				new BackgroundReader<List<OperationSchedule>>() {
 					@Override
 					public List<OperationSchedule> readInBackground(

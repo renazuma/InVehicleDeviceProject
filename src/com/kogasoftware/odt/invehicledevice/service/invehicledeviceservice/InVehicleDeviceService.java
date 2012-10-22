@@ -27,14 +27,14 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.BuildConfig;
-import com.kogasoftware.odt.invehicledevice.apiclient.DataSource;
-import com.kogasoftware.odt.invehicledevice.apiclient.EmptyDataSource;
-import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Reader;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask.BackgroundTaskThread;
+import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
+import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClientFactory;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
+import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Reader;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask.BackgroundTaskThread;
 
 public class InVehicleDeviceService extends Service {
 	public class LocalBinder extends Binder {
@@ -86,6 +86,7 @@ public class InVehicleDeviceService extends Service {
 
 	private static final String TAG = InVehicleDeviceService.class
 			.getSimpleName();
+	public static final String DEFAULT_URL = "http://127.0.0.1";
 
 	public static Handler getActivityHandler(Activity activity)
 			throws InterruptedException {
@@ -161,8 +162,9 @@ public class InVehicleDeviceService extends Service {
 	protected final VoiceServiceConnector voiceServiceConnector;
 
 	protected volatile Thread backgroundThread = new EmptyThread();
-	protected volatile DataSource remoteDataSource = new EmptyDataSource();
-	protected volatile LocalDataSource localDataSource = new LocalDataSource();
+	protected volatile InVehicleDeviceApiClient apiClient = InVehicleDeviceApiClientFactory
+			.newInstance();
+	protected volatile LocalStorage localStorage = new LocalStorage();
 
 	public InVehicleDeviceService() {
 		super();
@@ -173,12 +175,12 @@ public class InVehicleDeviceService extends Service {
 		eventDispatcher.dispatchExit();
 	}
 
-	public DataSource getRemoteDataSource() {
-		return remoteDataSource;
+	public InVehicleDeviceApiClient getApiClient() {
+		return apiClient;
 	}
 
-	public LocalDataSource getLocalDataSource() {
-		return localDataSource;
+	public LocalStorage getLocalStorage() {
+		return localStorage;
 	}
 
 	public EnumSet<PayTiming> getPayTiming() {
@@ -186,7 +188,7 @@ public class InVehicleDeviceService extends Service {
 	}
 
 	public String getToken() {
-		return localDataSource.withReadLock(new Reader<String>() {
+		return localStorage.withReadLock(new Reader<String>() {
 			@Override
 			public String read(LocalData status) {
 				return status.token;
@@ -195,7 +197,7 @@ public class InVehicleDeviceService extends Service {
 	}
 
 	public Boolean isOperationInitialized() {
-		return localDataSource.withReadLock(new Reader<Boolean>() {
+		return localStorage.withReadLock(new Reader<Boolean>() {
 			@Override
 			public Boolean read(LocalData localData) {
 				return isOperationInitialized(localData);
@@ -240,8 +242,8 @@ public class InVehicleDeviceService extends Service {
 		backgroundThread = new EmptyThread();
 
 		Closeables.closeQuietly(eventDispatcher);
-		Closeables.closeQuietly(remoteDataSource);
-		Closeables.closeQuietly(localDataSource);
+		Closeables.closeQuietly(apiClient);
+		Closeables.closeQuietly(localStorage);
 	}
 
 	@Override
@@ -249,12 +251,12 @@ public class InVehicleDeviceService extends Service {
 		return START_STICKY;
 	}
 
-	public void setLocalDataSource(LocalDataSource localDataSource) {
-		this.localDataSource = localDataSource;
+	public void setLocalStorage(LocalStorage localStorage) {
+		this.localStorage = localStorage;
 	}
 
-	public void setRemoteDataSource(DataSource remoteDataSource) {
-		this.remoteDataSource = remoteDataSource;
+	public void setApiClient(InVehicleDeviceApiClient apiClient) {
+		this.apiClient = apiClient;
 	}
 
 	public void speak(String message) {
@@ -262,14 +264,14 @@ public class InVehicleDeviceService extends Service {
 	}
 
 	public void waitForOperationInitialize() throws InterruptedException {
-		Semaphore operationScheduleInitializedSign = localDataSource
+		Semaphore operationScheduleInitializedSign = localStorage
 				.withReadLock(new Reader<Semaphore>() {
 					@Override
 					public Semaphore read(LocalData status) {
 						return status.operationScheduleInitializedSign;
 					}
 				});
-		Semaphore serviceProviderInitializedSign = localDataSource
+		Semaphore serviceProviderInitializedSign = localStorage
 				.withReadLock(new Reader<Semaphore>() {
 					@Override
 					public Semaphore read(LocalData status) {

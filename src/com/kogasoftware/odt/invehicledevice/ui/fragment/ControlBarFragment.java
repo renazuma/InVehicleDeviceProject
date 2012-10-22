@@ -18,8 +18,8 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.BackgroundReader;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.BackgroundWriter;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundReader;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundWriter;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.ui.ViewDisabler;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.ControlBarFragment.State;
@@ -64,7 +64,7 @@ public class ControlBarFragment extends ApplicationFragment<State> implements
 		});
 
 		getService().getEventDispatcher().addOnUpdatePhaseListener(this);
-		getService().getLocalDataSource().read(
+		getService().getLocalStorage().read(
 				new BackgroundReader<Pair<Phase, Boolean>>() {
 					@Override
 					public Pair<Phase, Boolean> readInBackground(
@@ -101,7 +101,7 @@ public class ControlBarFragment extends ApplicationFragment<State> implements
 			setCustomAnimation(getFragmentManager().beginTransaction()).remove(
 					old).commit();
 		}
-		getService().getLocalDataSource().read(
+		getService().getLocalStorage().read(
 				new BackgroundReader<Pair<Phase, List<OperationSchedule>>>() {
 					@Override
 					public Pair<Phase, List<OperationSchedule>> readInBackground(
@@ -126,7 +126,7 @@ public class ControlBarFragment extends ApplicationFragment<State> implements
 	}
 
 	public void showOperationScheduleListFragment() {
-		getService().getLocalDataSource().read(
+		getService().getLocalStorage().read(
 				new BackgroundReader<List<OperationSchedule>>() {
 					@Override
 					public List<OperationSchedule> readInBackground(
@@ -158,7 +158,7 @@ public class ControlBarFragment extends ApplicationFragment<State> implements
 	}
 
 	public void showArrivalCheckFragment() {
-		getService().getLocalDataSource().read(
+		getService().getLocalStorage().read(
 				new BackgroundReader<Optional<OperationSchedule>>() {
 					@Override
 					public Optional<OperationSchedule> readInBackground(
@@ -194,7 +194,7 @@ public class ControlBarFragment extends ApplicationFragment<State> implements
 
 	public void showDepartureCheckFragment() {
 		getService()
-				.getLocalDataSource()
+				.getLocalStorage()
 				.read(new BackgroundReader<Pair<Phase, Pair<List<OperationSchedule>, List<PassengerRecord>>>>() {
 					@Override
 					public Pair<Phase, Pair<List<OperationSchedule>, List<PassengerRecord>>> readInBackground(
@@ -241,7 +241,7 @@ public class ControlBarFragment extends ApplicationFragment<State> implements
 										operationSchedules))
 						.commitAllowingStateLoss();
 			} else {
-				getService().getLocalDataSource().write(new BackgroundWriter() {
+				getService().getLocalStorage().write(new BackgroundWriter() {
 					@Override
 					public void writeInBackground(LocalData ld) {
 						ld.completeGetOff = true;

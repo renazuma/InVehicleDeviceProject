@@ -9,7 +9,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
@@ -18,7 +18,7 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 public class OperationScheduleChangedFragmentTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 	InVehicleDeviceService s;
-	LocalDataSource sa;
+	LocalStorage sa;
 	ScheduleChangedModalView mv;
 	ScheduleModalView smv;
 
@@ -29,7 +29,7 @@ public class OperationScheduleChangedFragmentTestCase extends
 		when(s.getCurrentOperationSchedule()).thenReturn(
 				Optional.<OperationSchedule> absent());
 		smv = new ScheduleModalView(a, s);
-		sa = new LocalDataSource(a);
+		sa = new LocalStorage(a);
 		mv = new ScheduleChangedModalView(a, s, smv);
 
 		runOnUiThreadSync(new Runnable() {

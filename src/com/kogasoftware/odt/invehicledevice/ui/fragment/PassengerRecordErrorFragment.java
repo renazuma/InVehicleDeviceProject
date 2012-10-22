@@ -17,7 +17,7 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.BackgroundWriter;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundWriter;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordErrorArrayAdapter;
@@ -158,7 +158,7 @@ public class PassengerRecordErrorFragment extends ApplicationFragment<State>
 							operationSchedules)).commitAllowingStateLoss();
 			return;
 		}
-		getService().getLocalDataSource().write(new BackgroundWriter() {
+		getService().getLocalStorage().write(new BackgroundWriter() {
 			@Override
 			public void writeInBackground(LocalData ld) {
 				ld.completeGetOff = true;

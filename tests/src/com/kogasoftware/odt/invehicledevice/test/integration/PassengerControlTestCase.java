@@ -7,7 +7,7 @@ import android.widget.TextView;
 import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
-import com.kogasoftware.odt.invehicledevice.test.util.apiclient.MockDataSource;
+import com.kogasoftware.odt.invehicledevice.test.util.apiclient.MockApiClient;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
 public class PassengerControlTestCase extends
@@ -22,12 +22,12 @@ public class PassengerControlTestCase extends
 
 	public void dataset(Integer i) {
 
-		MockDataSource mds = new MockDataSource();
+		MockApiClient mds = new MockApiClient();
 
 		mds.setReservation(i);
 		mds.setReservationCandidate(6, 1, 1, 1);
 
-		TestUtil.setDataSource(mds);
+		TestUtil.setApiClient(mds);
 		TestUtil.setDate("2012-01-01T09:00:00+09:00");
 	}
 

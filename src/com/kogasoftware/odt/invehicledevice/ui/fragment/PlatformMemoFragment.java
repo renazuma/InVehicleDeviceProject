@@ -1,5 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.ui.fragment;
 
+import java.io.Serializable;
+
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -7,12 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
-
-import java.io.Serializable;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.PlatformMemoFragment.State;
 
 public class PlatformMemoFragment extends ApplicationFragment<State> {
@@ -41,7 +40,8 @@ public class PlatformMemoFragment extends ApplicationFragment<State> {
 				R.layout.platform_memo_fragment,
 				R.id.platform_memo_close_button);
 
-		for (Platform platform : getState().getOperationSchedule().getPlatform().asSet()) {
+		for (Platform platform : getState().getOperationSchedule()
+				.getPlatform().asSet()) {
 			TextView memoTextView = (TextView) view
 					.findViewById(R.id.platform_memo_text_view);
 			memoTextView.setText(platform.getMemo());

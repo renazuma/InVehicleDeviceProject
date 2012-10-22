@@ -11,20 +11,20 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.VoidReader;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.VoidReader;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Writer;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.ServiceUnitStatusLogLogic;
 
 public class ServiceUnitStatusLogLogicTestCase extends AndroidTestCase {
-	LocalDataSource lds;
+	LocalStorage lds;
 	InVehicleDeviceService s;
 	ServiceUnitStatusLogLogic susll;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		lds = new LocalDataSource(getContext());
+		lds = new LocalStorage(getContext());
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData status) {
@@ -32,7 +32,7 @@ public class ServiceUnitStatusLogLogicTestCase extends AndroidTestCase {
 			}
 		});
 		s = mock(InVehicleDeviceService.class);
-		when(s.getLocalDataSource()).thenReturn(lds);
+		when(s.getLocalStorage()).thenReturn(lds);
 		when(s.getEventDispatcher()).thenReturn(new EventDispatcher());
 		susll = new ServiceUnitStatusLogLogic(s);
 	}

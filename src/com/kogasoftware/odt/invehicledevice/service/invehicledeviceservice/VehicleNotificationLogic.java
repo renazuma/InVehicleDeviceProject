@@ -7,13 +7,13 @@ import java.util.Map.Entry;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import com.kogasoftware.odt.invehicledevice.apiclient.DataSource;
-import com.kogasoftware.odt.invehicledevice.empty.EmptyApiClientCallback;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Reader;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.VoidReader;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
+import com.kogasoftware.odt.apiclient.EmptyApiClientCallback;
+import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Reader;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.VoidReader;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Writer;
 
 /**
  * 通知に関する内部データ処理
@@ -59,9 +59,9 @@ public class VehicleNotificationLogic {
 
 	public void replyUpdatedOperationScheduleVehicleNotifications(
 			final List<VehicleNotification> vehicleNotifications) {
-		DataSource dataSource = service.getRemoteDataSource();
+		InVehicleDeviceApiClient apiClient = service.getApiClient();
 		for (VehicleNotification vehicleNotification : vehicleNotifications) {
-			dataSource.withSaveOnClose().responseVehicleNotification(
+			apiClient.withSaveOnClose().responseVehicleNotification(
 					vehicleNotification, VehicleNotification.Response.YES,
 					new EmptyApiClientCallback<VehicleNotification>());
 		}
@@ -77,9 +77,9 @@ public class VehicleNotificationLogic {
 	 */
 	public void replyVehicleNotification(
 			final VehicleNotification vehicleNotification) {
-		DataSource dataSource = service.getRemoteDataSource();
+		InVehicleDeviceApiClient apiClient = service.getApiClient();
 		for (Integer response : vehicleNotification.getResponse().asSet()) {
-			dataSource.withSaveOnClose().responseVehicleNotification(
+			apiClient.withSaveOnClose().responseVehicleNotification(
 					vehicleNotification, response,
 					new EmptyApiClientCallback<VehicleNotification>());
 		}
@@ -100,7 +100,7 @@ public class VehicleNotificationLogic {
 			final List<VehicleNotification> vehicleNotifications,
 			final VehicleNotificationStatus status) {
 		final List<VehicleNotification> updated = Lists.newLinkedList();
-		service.getLocalDataSource().withWriteLock(new Writer() {
+		service.getLocalStorage().withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
 				updated.addAll(setVehicleNotificationStatus(
@@ -144,7 +144,7 @@ public class VehicleNotificationLogic {
 			final VehicleNotificationStatus status) {
 		final List<VehicleNotification> vehicleNotifications = Lists
 				.newLinkedList();
-		service.getLocalDataSource().withReadLock(new VoidReader() {
+		service.getLocalStorage().withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData localData) {
 				for (VehicleNotification vehicleNotification : localData.vehicleNotifications
@@ -161,7 +161,7 @@ public class VehicleNotificationLogic {
 
 	public Multimap<VehicleNotificationStatus, VehicleNotification> getVehicleNotifications() {
 		return service
-				.getLocalDataSource()
+				.getLocalStorage()
 				.withReadLock(
 						new Reader<Multimap<VehicleNotificationStatus, VehicleNotification>>() {
 							@Override

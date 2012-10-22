@@ -6,9 +6,9 @@ import android.location.GpsStatus;
 import android.location.Location;
 
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.invehicledevice.empty.EmptyApiClientCallback;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Reader;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
+import com.kogasoftware.odt.apiclient.EmptyApiClientCallback;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Reader;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Writer;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnitStatusLog;
 
 public class ServiceUnitStatusLogLogic {
@@ -27,7 +27,7 @@ public class ServiceUnitStatusLogLogic {
 
 	public void changeLocation(final Location location,
 			Optional<GpsStatus> gpsStatus) {
-		service.getLocalDataSource().withWriteLock(new Writer() {
+		service.getLocalStorage().withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
 				localData.serviceUnitStatusLog.setLatitude(new BigDecimal(
@@ -47,7 +47,7 @@ public class ServiceUnitStatusLogLogic {
 		}
 		lastOrientationSavedMillis = now;
 
-		service.getLocalDataSource().withWriteLock(new Writer() {
+		service.getLocalStorage().withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
 				localData.serviceUnitStatusLog.setOrientation(orientationDegree
@@ -59,7 +59,7 @@ public class ServiceUnitStatusLogLogic {
 	}
 
 	public void changeTemperature(final Double celciusTemperature) {
-		service.getLocalDataSource().withWriteLock(new Writer() {
+		service.getLocalStorage().withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
 				localData.serviceUnitStatusLog
@@ -71,7 +71,7 @@ public class ServiceUnitStatusLogLogic {
 	}
 
 	public ServiceUnitStatusLog getServiceUnitStatusLog() {
-		return service.getLocalDataSource().withReadLock(
+		return service.getLocalStorage().withReadLock(
 				new Reader<ServiceUnitStatusLog>() {
 					@Override
 					public ServiceUnitStatusLog read(LocalData status) {
@@ -81,7 +81,7 @@ public class ServiceUnitStatusLogLogic {
 	}
 
 	public void send() {
-		service.getRemoteDataSource()
+		service.getApiClient()
 				.withSaveOnClose()
 				.sendServiceUnitStatusLog(getServiceUnitStatusLog(),
 						new EmptyApiClientCallback<ServiceUnitStatusLog>());

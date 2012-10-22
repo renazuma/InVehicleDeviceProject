@@ -30,16 +30,15 @@ import android.util.Log;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.io.Closeables;
-import com.kogasoftware.odt.invehicledevice.apiclient.WebAPIDataSource;
-import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.InVehicleDevice;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceProvider;
+import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 
 /**
  * LocalDataのアクセスに対し 書き込みがあったら自動で保存. 読み書き時にロックを実行を行う
  */
-public class LocalDataSource implements Closeable {
+public class LocalStorage implements Closeable {
 	private static final int NUM_THREADS = 5;
 	private final ExecutorService executorService = Executors
 			.newFixedThreadPool(NUM_THREADS);
@@ -137,7 +136,7 @@ public class LocalDataSource implements Closeable {
 	private static final AtomicBoolean WILL_CLEAR_SAVED_FILE = new AtomicBoolean(
 			false);
 
-	private static final String TAG = LocalDataSource.class.getSimpleName();
+	private static final String TAG = LocalStorage.class.getSimpleName();
 
 	public static void clearSavedFile() {
 		WILL_CLEAR_SAVED_FILE.set(true);
@@ -211,7 +210,7 @@ public class LocalDataSource implements Closeable {
 		localData.token = preferences.getString(
 				SharedPreferencesKeys.SERVER_IN_VEHICLE_DEVICE_TOKEN, "");
 		localData.url = preferences.getString(SharedPreferencesKeys.SERVER_URL,
-				WebAPIDataSource.DEFAULT_URL);
+				InVehicleDeviceService.DEFAULT_URL);
 		try {
 			localData.inVehicleDevice = InVehicleDevice.parse(new JSONObject(
 					preferences.getString(
@@ -239,17 +238,17 @@ public class LocalDataSource implements Closeable {
 	private final Integer savePeriodMillis;
 	private Thread saveThread = new EmptyThread();
 
-	public LocalDataSource() {
+	public LocalStorage() {
 		localData = new LocalData();
 		savePeriodMillis = DEFAULT_SAVE_PERIO_MILLIS;
 	}
 
-	public LocalDataSource(Context context) {
+	public LocalStorage(Context context) {
 		this(context, DEFAULT_SAVE_PERIO_MILLIS);
 	}
 
 	@VisibleForTesting
-	public LocalDataSource(Context context, Integer savePeriodMillis) {
+	public LocalStorage(Context context, Integer savePeriodMillis) {
 		this.savePeriodMillis = savePeriodMillis;
 		synchronized (FILE_ACCESS_LOCK) {
 			localData = newStatusInstanceFromFile(context);
