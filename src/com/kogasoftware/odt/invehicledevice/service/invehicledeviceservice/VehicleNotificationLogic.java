@@ -3,12 +3,11 @@ package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
+import com.kogasoftware.odt.invehicledevice.apiclient.DataSource;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyWebAPICallback;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Reader;
@@ -40,24 +39,22 @@ public class VehicleNotificationLogic {
 		}
 
 		// スケジュール変更通知の処理
-		if (setVehicleNotificationStatus(scheduleChangedVehicleNotifications,
-				VehicleNotificationStatus.UNHANDLED)) {
-			service.getEventDispatcher().dispatchStartReceiveUpdatedOperationSchedule();
+		if (!setVehicleNotificationStatus(scheduleChangedVehicleNotifications,
+				VehicleNotificationStatus.UNHANDLED).isEmpty()) {
+			service.getEventDispatcher()
+					.dispatchStartReceiveUpdatedOperationSchedule();
 		}
 
-		// 一般通知の処理
-		if (setVehicleNotificationStatus(normalVehicleNotifications,
-				VehicleNotificationStatus.UNHANDLED)) {
-			// 一般通知がマージされた場合別スレッドでUIに対して通知処理
-			(new Thread() {
-				@Override
-				public void run() {
-					service.getEventDispatcher().dispatchAlertVehicleNotificationReceive();
-					service.speak("管理者から連絡があります");
-				}
-			}).start();
+		{ // 一般通知の処理
+			List<VehicleNotification> updated = setVehicleNotificationStatus(
+					normalVehicleNotifications,
+					VehicleNotificationStatus.UNHANDLED);
+			if (!updated.isEmpty()) {
+				// 一般通知がマージされた場合
+				service.getEventDispatcher()
+						.dispatchAlertVehicleNotificationReceive(updated);
+			}
 		}
-		service.getEventDispatcher().dispatchReceiveVehicleNotification(vehicleNotifications);
 	}
 
 	public void replyUpdatedOperationScheduleVehicleNotifications(
@@ -70,7 +67,9 @@ public class VehicleNotificationLogic {
 		}
 		setVehicleNotificationStatus(vehicleNotifications,
 				VehicleNotificationStatus.REPLIED);
-		service.getEventDispatcher().dispatchReplyUpdatedOperationScheduleVehicleNotifications(vehicleNotifications);
+		service.getEventDispatcher()
+				.dispatchReplyUpdatedOperationScheduleVehicleNotifications(
+						vehicleNotifications);
 	}
 
 	/**
@@ -86,36 +85,37 @@ public class VehicleNotificationLogic {
 		}
 		setVehicleNotificationStatus(vehicleNotification,
 				VehicleNotificationStatus.REPLIED);
-		service.getEventDispatcher().dispatchReplyVehicleNotification(vehicleNotification);
+		service.getEventDispatcher().dispatchReplyVehicleNotification(
+				vehicleNotification);
 	}
 
-	public Boolean setVehicleNotificationStatus(
+	public List<VehicleNotification> setVehicleNotificationStatus(
 			VehicleNotification vehicleNotification,
 			VehicleNotificationStatus status) {
 		return setVehicleNotificationStatus(
 				Lists.newArrayList(vehicleNotification), status);
 	}
 
-	public Boolean setVehicleNotificationStatus(
+	public List<VehicleNotification> setVehicleNotificationStatus(
 			final List<VehicleNotification> vehicleNotifications,
 			final VehicleNotificationStatus status) {
-		final AtomicBoolean updated = new AtomicBoolean(false);
+		final List<VehicleNotification> updated = Lists.newLinkedList();
 		service.getLocalDataSource().withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
-				updated.set(setVehicleNotificationStatus(
+				updated.addAll(setVehicleNotificationStatus(
 						localData.vehicleNotifications, vehicleNotifications,
 						status));
 			}
 		});
-		return updated.get();
+		return updated;
 	}
 
-	private static Boolean setVehicleNotificationStatus(
+	private static List<VehicleNotification> setVehicleNotificationStatus(
 			Multimap<VehicleNotificationStatus, VehicleNotification> vehicleNotifications,
 			List<VehicleNotification> newVehicleNotifications,
 			VehicleNotificationStatus status) {
-		Boolean updated = false;
+		List<VehicleNotification> updated = Lists.newLinkedList();
 		for (VehicleNotification newVehicleNotification : newVehicleNotifications) {
 			Boolean hasNewer = false;
 			for (Entry<VehicleNotificationStatus, VehicleNotification> entry : Lists
@@ -133,7 +133,7 @@ public class VehicleNotificationLogic {
 			}
 			if (!hasNewer) {
 				vehicleNotifications.put(status, newVehicleNotification);
-				updated = true;
+				updated.add(newVehicleNotification);
 			}
 		}
 		return updated;
