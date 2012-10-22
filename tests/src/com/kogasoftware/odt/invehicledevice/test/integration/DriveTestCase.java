@@ -7,12 +7,8 @@ import android.widget.TextView;
 import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
-import com.kogasoftware.odt.invehicledevice.test.util.datasource.DummyDataSource;
+import com.kogasoftware.odt.invehicledevice.test.util.apiclient.DummyDataSource;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.DepartureCheckModalView;
-import com.kogasoftware.odt.invehicledevice.ui.phaseview.DrivePhaseView;
-import com.kogasoftware.odt.invehicledevice.ui.phaseview.FinishPhaseView;
-import com.kogasoftware.odt.invehicledevice.ui.phaseview.PlatformPhaseView;
 
 public class DriveTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
@@ -72,7 +68,7 @@ public class DriveTestCase extends
 		test04_停車中から出発しますボタンを押すと出発確認画面表示();
 
 		solo.clickOnView(solo.getView(R.id.departure_check_close_button));
-		assertNotNull(solo.getView(PlatformPhaseView.class, 0));
+		assertNotNull(solo.getView(PlatformPhaseFragment.class, 0));
 		assertTrue(solo.searchText("停車中", true));
 		assertFalse(solo.searchText("走行中", true));
 	}
@@ -82,7 +78,7 @@ public class DriveTestCase extends
 
 		solo.clickOnView(solo.getView(R.id.departure_button));
 
-		assertNotNull(solo.getView(DrivePhaseView.class, 0));
+		assertNotNull(solo.getView(DrivePhaseFragment.class, 0));
 		assertFalse(solo.searchText("停車中", true));
 		assertTrue(solo.searchText("走行中", true));
 	}
@@ -120,7 +116,7 @@ public class DriveTestCase extends
 
 		solo.clickOnView(solo.getView(R.id.departure_button));
 
-		assertNotNull(solo.getView(FinishPhaseView.class, 0));
+		assertNotNull(solo.getView(FinishPhaseFragment.class, 0));
 		TextView v = (TextView) solo.getView(R.id.phase_text_view);
 		assertEquals("", v.getText());
 	}

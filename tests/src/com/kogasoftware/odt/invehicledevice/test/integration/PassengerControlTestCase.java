@@ -7,9 +7,8 @@ import android.widget.TextView;
 import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
-import com.kogasoftware.odt.invehicledevice.test.util.datasource.MockDataSource;
+import com.kogasoftware.odt.invehicledevice.test.util.apiclient.MockDataSource;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.DepartureCheckModalView;
 
 public class PassengerControlTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {

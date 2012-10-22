@@ -4,11 +4,10 @@ import android.test.ActivityInstrumentationTestCase2;
 
 import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
+import com.kogasoftware.odt.invehicledevice.apiclient.DataSourceFactory;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
-import com.kogasoftware.odt.invehicledevice.test.util.datasource.DummyDataSource;
+import com.kogasoftware.odt.invehicledevice.test.util.apiclient.DummyDataSource;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.NavigationModalView;
 
 public class MapTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
