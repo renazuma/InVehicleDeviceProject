@@ -3,6 +3,7 @@ package com.kogasoftware.odt.invehicledevice.ui.arrayadapter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -13,8 +14,6 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Reservation;
 
@@ -22,18 +21,12 @@ public class OperationScheduleArrayAdapter extends
 		ArrayAdapter<OperationSchedule> {
 	private static final Integer RESOURCE_ID = R.layout.operation_schedule_list_row;
 	private final LayoutInflater layoutInflater;
-	private final OperationScheduleLogic operationScheduleLogic;
 
 	public OperationScheduleArrayAdapter(Context context,
-			InVehicleDeviceService service) {
-		super(context, RESOURCE_ID);
-		operationScheduleLogic = new OperationScheduleLogic(service);
+			List<OperationSchedule> operationSchedules) {
+		super(context, RESOURCE_ID, operationSchedules);
 		this.layoutInflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		for (OperationSchedule operationSchedule : operationScheduleLogic
-				.getOperationSchedules()) {
-			add(operationSchedule);
-		}
 	}
 
 	@Override
@@ -102,8 +95,7 @@ public class OperationScheduleArrayAdapter extends
 			}
 		}
 
-		if (operationScheduleLogic.getRemainingOperationSchedules()
-				.contains(operationSchedule)) {
+		if (!operationSchedule.isDeparted()) {
 			convertView.setBackgroundColor(Color.TRANSPARENT);
 		} else {
 			convertView.setBackgroundColor(Color.LTGRAY);
