@@ -5,9 +5,8 @@ import android.test.ActivityInstrumentationTestCase2;
 import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
-import com.kogasoftware.odt.invehicledevice.test.util.datasource.ScheduleChangedTestDataSource;
+import com.kogasoftware.odt.invehicledevice.test.util.apiclient.ScheduleChangedTestDataSource;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.DepartureCheckModalView;
 
 public class ScheduleChangedTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {

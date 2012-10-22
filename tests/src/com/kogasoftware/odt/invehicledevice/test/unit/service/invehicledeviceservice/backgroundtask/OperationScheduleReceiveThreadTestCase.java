@@ -14,8 +14,9 @@ import org.mockito.verification.VerificationWithTimeout;
 
 import android.test.AndroidTestCase;
 
-import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
-import com.kogasoftware.odt.invehicledevice.datasource.EmptyDataSource;
+import com.kogasoftware.odt.invehicledevice.apiclient.DataSource;
+import com.kogasoftware.odt.invehicledevice.apiclient.EmptyDataSource;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask.OperationScheduleReceiveThread;
@@ -27,11 +28,14 @@ import com.kogasoftware.odt.webapi.model.VehicleNotification;
 public class OperationScheduleReceiveThreadTestCase extends AndroidTestCase {
 	OperationScheduleReceiveThread osrt;
 	InVehicleDeviceService s;
+	EventDispatcher ed;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
+		ed = mock(EventDispatcher.class);
 		s = mock(InVehicleDeviceService.class);
+		when(s.getEventDispatcher()).thenReturn(ed);
 		osrt = new OperationScheduleReceiveThread(s);
 	}
 
@@ -66,42 +70,42 @@ public class OperationScheduleReceiveThreadTestCase extends AndroidTestCase {
 		osrt.start();
 
 		fail.set(true);
-		verify(s, t.never()).mergeOperationSchedules(
+		verify(ed, t.never()).dispatchMergeOperationSchedules(
 				Mockito.<List<OperationSchedule>> any(),
 				Mockito.<List<VehicleNotification>> any());
-		verify(s, times(1)).notifyOperationScheduleReceiveFailed();
+		verify(ed, times(1)).dispatchOperationScheduleReceiveFail();
 
 		fail.set(false);
-		verify(s, t.times(1)).mergeOperationSchedules(
+		verify(ed, t.times(1)).dispatchMergeOperationSchedules(
 				Mockito.<List<OperationSchedule>> any(),
 				Mockito.<List<VehicleNotification>> any());
-		verify(s, times(1)).notifyOperationScheduleReceiveFailed();
+		verify(ed, times(1)).dispatchOperationScheduleReceiveFail();
 
 		fail.set(true);
-		verify(s, t.times(1)).mergeOperationSchedules(
+		verify(ed, t.times(1)).dispatchMergeOperationSchedules(
 				Mockito.<List<OperationSchedule>> any(),
 				Mockito.<List<VehicleNotification>> any());
-		verify(s, times(2)).notifyOperationScheduleReceiveFailed();
+		verify(ed, times(2)).dispatchOperationScheduleReceiveFail();
 
 		fail.set(false);
-		verify(s, t.times(1)).mergeOperationSchedules(
+		verify(ed, t.times(1)).dispatchMergeOperationSchedules(
 				Mockito.<List<OperationSchedule>> any(),
 				Mockito.<List<VehicleNotification>> any());
-		verify(s, times(3)).notifyOperationScheduleReceiveFailed();
+		verify(ed, times(3)).dispatchOperationScheduleReceiveFail();
 
 		osrt.startNewOperationScheduleReceive();
 
 		fail.set(true);
-		verify(s, t.times(1)).mergeOperationSchedules(
+		verify(ed, t.times(1)).dispatchMergeOperationSchedules(
 				Mockito.<List<OperationSchedule>> any(),
 				Mockito.<List<VehicleNotification>> any());
-		verify(s, times(3)).notifyOperationScheduleReceiveFailed();
+		verify(ed, times(3)).dispatchOperationScheduleReceiveFail();
 
 		fail.set(false);
-		verify(s, t.times(2)).mergeOperationSchedules(
+		verify(ed, t.times(2)).dispatchMergeOperationSchedules(
 				Mockito.<List<OperationSchedule>> any(),
 				Mockito.<List<VehicleNotification>> any());
-		verify(s, times(4)).notifyOperationScheduleReceiveFailed();
+		verify(ed, times(4)).dispatchOperationScheduleReceiveFail();
 
 		osrt.interrupt();
 		osrt.join(5000);
@@ -114,16 +118,16 @@ public class OperationScheduleReceiveThreadTestCase extends AndroidTestCase {
 
 		VerificationWithTimeout t = timeout((int) (OperationScheduleReceiveThread.VOICE_DELAY_MILLIS * 1.2));
 		osrt.start();
-		verify(s, t.times(1)).mergeOperationSchedules(
+		verify(ed, t.times(1)).dispatchMergeOperationSchedules(
 				Mockito.<List<OperationSchedule>> any(),
 				Mockito.<List<VehicleNotification>> any());
 
-		verify(s, t.times(1)).mergeOperationSchedules(
+		verify(ed, t.times(1)).dispatchMergeOperationSchedules(
 				Mockito.<List<OperationSchedule>> any(),
 				Mockito.<List<VehicleNotification>> any());
 
 		osrt.startNewOperationScheduleReceive();
-		verify(s, t.times(2)).mergeOperationSchedules(
+		verify(ed, t.times(2)).dispatchMergeOperationSchedules(
 				Mockito.<List<OperationSchedule>> any(),
 				Mockito.<List<VehicleNotification>> any());
 
