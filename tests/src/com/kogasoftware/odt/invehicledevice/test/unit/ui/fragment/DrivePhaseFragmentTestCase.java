@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.ui.phaseview;
+package com.kogasoftware.odt.invehicledevice.test.unit.ui.fragment;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -16,16 +16,15 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Local
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
-import com.kogasoftware.odt.invehicledevice.ui.phaseview.DrivePhaseView;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
 
-public class DrivePhaseViewTestCase extends
+public class DrivePhaseFragmentTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 
 	InVehicleDeviceService s;
 	LocalDataSource sa;
-	DrivePhaseView pv;
+	DrivePhaseFragment pv;
 	OperationScheduleLogic osl;
 
 	@Override
@@ -35,7 +34,7 @@ public class DrivePhaseViewTestCase extends
 		when(s.getEventDispatcher()).thenReturn(new EventDispatcher());
 		osl = new OperationScheduleLogic(s);
 		sa = new LocalDataSource(getActivity());
-		pv = new DrivePhaseView(null, s);
+		pv = new DrivePhaseFragment(null, s);
 		sa.withWriteLock(new Writer() { // TODO もっとスマートにする
 			@Override
 			public void write(LocalData status) {

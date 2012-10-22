@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.ui.phaseview;
+package com.kogasoftware.odt.invehicledevice.test.unit.ui.fragment;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -9,14 +9,13 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Event
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
-import com.kogasoftware.odt.invehicledevice.ui.phaseview.FinishPhaseView;
 
-public class FinishPhaseViewTestCase extends
+public class FinishPhaseFragmentTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 
 	Activity a;
 	InVehicleDeviceService s;
-	FinishPhaseView pv;
+	FinishPhaseFragment pv;
 	OperationScheduleLogic osl;
 
 	@Override
@@ -26,7 +25,7 @@ public class FinishPhaseViewTestCase extends
 		s = mock(InVehicleDeviceService.class);
 		when(s.getEventDispatcher()).thenReturn(new EventDispatcher());
 		osl = new OperationScheduleLogic(s);
-		pv = new FinishPhaseView(a, s);
+		pv = new FinishPhaseFragment(a, s);
 	}
 
 	@Override

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <TextView
+        android:id="@+id/next_platform_is_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:padding="10sp"
+        android:text="@string/next_platform_is"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <LinearLayout
+        android:id="@+id/platform_arrival_time_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/next_platform_is_text_view"
+        android:layout_gravity="left|center_vertical"
+        android:layout_marginLeft="30sp"
+        android:orientation="horizontal"
+        android:padding="10sp" >
+
+        <TextView
+            android:id="@+id/platform_arrival_time_text_view2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/black"
+            android:paddingBottom="10sp"
+            android:paddingLeft="20sp"
+            android:paddingRight="20sp"
+            android:paddingTop="10sp"
+            android:textColor="@android:color/white"
+            android:textSize="50dip" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10sp"
+            android:text="@string/arrival_schedule"
+            android:textSize="50dip" />
+    </LinearLayout>
+
+    <com.kogasoftware.odt.invehicledevice.ui.AutoResizeTextView
+        android:id="@+id/next_platform_name_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/platform_name_1_beyond_text_view"
+        android:layout_below="@+id/platform_arrival_time_layout"
+        android:layout_marginLeft="30sp"
+        android:gravity="left|center"
+        android:paddingLeft="10sp"
+        android:textSize="50dip" />
+
+    <TextView
+        android:id="@+id/platform_name_1_beyond_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:ellipsize="end"
+        android:orientation="horizontal"
+        android:padding="10sp"
+        android:singleLine="true"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textSize="26sp" />
+
+</RelativeLayout>

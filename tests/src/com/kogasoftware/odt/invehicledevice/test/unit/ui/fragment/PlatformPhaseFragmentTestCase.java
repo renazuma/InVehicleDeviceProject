@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.ui.phaseview;
+package com.kogasoftware.odt.invehicledevice.test.unit.ui.fragment;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -12,19 +12,17 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Local
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
-import com.kogasoftware.odt.invehicledevice.test.util.datasource.DummyDataSource;
+import com.kogasoftware.odt.invehicledevice.test.util.apiclient.DummyDataSource;
 import com.kogasoftware.odt.invehicledevice.ui.activity.EmptyActivity;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.MemoModalView;
-import com.kogasoftware.odt.invehicledevice.ui.phaseview.PlatformPhaseView;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.Platform;
 
-public class PlatformPhaseViewTestCase extends
+public class PlatformPhaseFragmentTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 
 	LocalDataSource sa;
 	MemoModalView mmv;
-	PlatformPhaseView pv;
+	PlatformPhaseFragment pv;
 	InVehicleDeviceService s;
 	EmptyActivity a;
 	OperationScheduleLogic osl;
@@ -39,7 +37,7 @@ public class PlatformPhaseViewTestCase extends
 		osl = new OperationScheduleLogic(s);
 		mmv = mock(MemoModalView.class);
 		sa = new LocalDataSource(a);
-		pv = new PlatformPhaseView(a, s, mmv);
+		pv = new PlatformPhaseFragment(a, s, mmv);
 		sa.withWriteLock(new Writer() { // TODO もっとスマートにする
 			@Override
 			public void write(LocalData status) {
