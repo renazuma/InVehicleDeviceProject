@@ -4,10 +4,13 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import android.util.Log;
+
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
+import com.kogasoftware.odt.invehicledevice.apiclient.DataSource;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyWebAPICallback;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.BackgroundWriter;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Reader;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
@@ -15,6 +18,8 @@ import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.User;
 
 public class PassengerRecordLogic {
+	private static final String TAG = PassengerRecordLogic.class
+			.getSimpleName();
 	public final InVehicleDeviceService service;
 	public final OperationScheduleLogic operationScheduleLogic;
 
@@ -221,5 +226,137 @@ public class PassengerRecordLogic {
 					operationSchedule, reservation, user,
 					new EmptyWebAPICallback<Void>());
 		}
+	}
+
+	public void getOff(OperationSchedule operationSchedule,
+			PassengerRecord passengerRecord) {
+		if (!passengerRecord.getReservation().isPresent()) {
+			Log.e(TAG, "passengerRecord (" + passengerRecord
+					+ ") has no Reservation");
+			return;
+		}
+		Reservation reservation = passengerRecord.getReservation().get();
+
+		if (!passengerRecord.getUser().isPresent()) {
+			Log.e(TAG, "passengerRecord (" + passengerRecord + ") has no User");
+			return;
+		}
+		User user = passengerRecord.getUser().get();
+
+		passengerRecord.setGetOffTime(InVehicleDeviceService.getDate());
+		passengerRecord.setPassengerCount(reservation.getPassengerCount());
+		passengerRecord
+				.setArrivalOperationScheduleId(operationSchedule.getId());
+		updateAsync(passengerRecord);
+		service.getRemoteDataSource()
+				.withSaveOnClose()
+				.getOffPassenger(operationSchedule, reservation, user,
+						passengerRecord, new EmptyWebAPICallback<Void>());
+	}
+
+	public void cancelGetOff(OperationSchedule operationSchedule,
+			PassengerRecord passengerRecord) {
+		if (!passengerRecord.getReservation().isPresent()) {
+			Log.e(TAG, "passengerRecord (" + passengerRecord
+					+ ") has no Reservation");
+			return;
+		}
+		Reservation reservation = passengerRecord.getReservation().get();
+
+		if (!passengerRecord.getUser().isPresent()) {
+			Log.e(TAG, "passengerRecord (" + passengerRecord + ") has no User");
+			return;
+		}
+		User user = passengerRecord.getUser().get();
+
+		passengerRecord.clearGetOffTime();
+		passengerRecord.clearArrivalOperationScheduleId();
+		updateAsync(passengerRecord);
+		service.getRemoteDataSource()
+				.withSaveOnClose()
+				.cancelGetOffPassenger(operationSchedule, reservation, user,
+						new EmptyWebAPICallback<Void>());
+	}
+
+	public void getOn(OperationSchedule operationSchedule,
+			final PassengerRecord passengerRecord) {
+		if (!passengerRecord.getReservation().isPresent()) {
+			Log.e(TAG, "passengerRecord (" + passengerRecord
+					+ ") has no Reservation");
+			return;
+		}
+		Reservation reservation = passengerRecord.getReservation().get();
+
+		if (!passengerRecord.getUser().isPresent()) {
+			Log.e(TAG, "passengerRecord (" + passengerRecord + ") has no User");
+			return;
+		}
+		User user = passengerRecord.getUser().get();
+
+		passengerRecord.setGetOnTime(InVehicleDeviceService.getDate());
+		passengerRecord.setPassengerCount(reservation.getPassengerCount());
+		passengerRecord.setDepartureOperationScheduleId(operationSchedule
+				.getId());
+		updateAsync(passengerRecord);
+		service.getRemoteDataSource()
+				.withSaveOnClose()
+				.getOnPassenger(operationSchedule, reservation, user,
+						passengerRecord, new EmptyWebAPICallback<Void>());
+	}
+
+	public void cancelGetOn(OperationSchedule operationSchedule,
+			PassengerRecord passengerRecord) {
+		if (!passengerRecord.getReservation().isPresent()) {
+			Log.e(TAG, "passengerRecord (" + passengerRecord
+					+ ") has no Reservation");
+			return;
+		}
+		Reservation reservation = passengerRecord.getReservation().get();
+
+		if (!passengerRecord.getUser().isPresent()) {
+			Log.e(TAG, "passengerRecord (" + passengerRecord + ") has no User");
+			return;
+		}
+		User user = passengerRecord.getUser().get();
+
+		passengerRecord.clearGetOnTime();
+		passengerRecord.clearDepartureOperationScheduleId();
+		updateAsync(passengerRecord);
+		service.getRemoteDataSource()
+				.withSaveOnClose()
+				.cancelGetOnPassenger(operationSchedule, reservation, user,
+						new EmptyWebAPICallback<Void>());
+	}
+
+	private void updateAsync(final PassengerRecord passengerRecord) {
+		service.getLocalDataSource().write(new BackgroundWriter() {
+			@Override
+			public void writeInBackground(LocalData ld) {
+				for (PassengerRecord oldPassengerRecord : Lists
+						.newArrayList(ld.passengerRecords)) {
+					if (oldPassengerRecord.getId().equals(
+							passengerRecord.getId())) {
+						ld.passengerRecords.remove(oldPassengerRecord);
+						ld.passengerRecords.add(passengerRecord);
+					}
+				}
+			}
+
+			@Override
+			public void onWrite() {
+			}
+		});
+	}
+
+	public void setIgnoreGetOffMiss(PassengerRecord passengerRecord,
+			Boolean value) {
+		passengerRecord.setIgnoreGetOffMiss(value);
+		updateAsync(passengerRecord);
+	}
+
+	public void setIgnoreGetOnMiss(PassengerRecord passengerRecord,
+			Boolean value) {
+		passengerRecord.setIgnoreGetOnMiss(value);
+		updateAsync(passengerRecord);
 	}
 }
