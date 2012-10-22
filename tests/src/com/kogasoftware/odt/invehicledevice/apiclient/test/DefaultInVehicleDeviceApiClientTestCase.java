@@ -21,9 +21,9 @@ import android.util.Log;
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.apiclient.ApiClientException;
-import com.kogasoftware.odt.apiclient.ApiClientRequest;
+import com.kogasoftware.odt.apiclient.DefaultApiClientRequest;
 import com.kogasoftware.odt.apiclient.test.EmptyApiClientCallback;
-import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
+import com.kogasoftware.odt.invehicledevice.apiclient.DefaultInVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Demand;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.InVehicleDevice;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationRecord;
@@ -40,12 +40,12 @@ import com.kogasoftware.odt.invehicledevice.testapiclient.GenerateMaster;
 import com.kogasoftware.odt.invehicledevice.testapiclient.GenerateRecord;
 import com.kogasoftware.odt.invehicledevice.testapiclient.SyncCall;
 
-public class InVehicleDeviceApiClientTestCase extends AndroidTestCase {
+public class DefaultInVehicleDeviceApiClientTestCase extends AndroidTestCase {
 	public static final String SERVER_HOST = "http://10.0.2.2:3334";
 	public static final String TEST_SERVER_HOST = "http://10.0.2.2:3333";
-	private static final String TAG = InVehicleDeviceApiClientTestCase.class.getSimpleName();
+	private static final String TAG = DefaultInVehicleDeviceApiClientTestCase.class.getSimpleName();
 
-	class OfflineTestApiClient extends InVehicleDeviceApiClient {
+	class OfflineTestApiClient extends DefaultInVehicleDeviceApiClient {
 		public OfflineTestApiClient(String serverHost) {
 			super(serverHost);
 		}
@@ -60,7 +60,7 @@ public class InVehicleDeviceApiClientTestCase extends AndroidTestCase {
 		}
 
 		@Override
-		protected boolean runHttpSessionAndCallback(ApiClientRequest<?> request) {
+		protected boolean runHttpSessionAndCallback(DefaultApiClientRequest<?> request) {
 			if (offline) {
 				request.onException(new ApiClientException("offline test"));
 				return false;
@@ -70,7 +70,7 @@ public class InVehicleDeviceApiClientTestCase extends AndroidTestCase {
 		}
 	}
 
-	InVehicleDeviceApiClient api;
+	DefaultInVehicleDeviceApiClient api;
 	volatile boolean offline;
 	CountDownLatch latch;
 	CountDownLatch latch2;
@@ -108,7 +108,7 @@ public class InVehicleDeviceApiClientTestCase extends AndroidTestCase {
 	}
 
 	public void testPasswordLogin() throws Exception {
-		api = new InVehicleDeviceApiClient(SERVER_HOST);
+		api = new DefaultInVehicleDeviceApiClient(SERVER_HOST);
 		callTestPasswordLogin(false, true);
 	}
 
@@ -118,7 +118,7 @@ public class InVehicleDeviceApiClientTestCase extends AndroidTestCase {
 	}
 
 	public void testPasswordLoginFail() throws Exception {
-		api = new InVehicleDeviceApiClient(SERVER_HOST);
+		api = new DefaultInVehicleDeviceApiClient(SERVER_HOST);
 		callTestPasswordLogin(false, false);
 	}
 
@@ -178,7 +178,7 @@ public class InVehicleDeviceApiClientTestCase extends AndroidTestCase {
 	}
 
 	public void testGetVehicleNotifications() throws Exception {
-		api = new InVehicleDeviceApiClient(SERVER_HOST, master.getInVehicleDevice()
+		api = new DefaultInVehicleDeviceApiClient(SERVER_HOST, master.getInVehicleDevice()
 				.getAuthenticationToken().get());
 		latch = new CountDownLatch(1);
 		notifications = null;
@@ -216,7 +216,7 @@ public class InVehicleDeviceApiClientTestCase extends AndroidTestCase {
 	}
 
 	public void testResponseVehicleNotification() throws Exception {
-		api = new InVehicleDeviceApiClient(SERVER_HOST, master.getInVehicleDevice()
+		api = new DefaultInVehicleDeviceApiClient(SERVER_HOST, master.getInVehicleDevice()
 				.getAuthenticationToken().get());
 		callTestResponseVehicleNotification(false);
 	}
@@ -332,7 +332,7 @@ public class InVehicleDeviceApiClientTestCase extends AndroidTestCase {
 	}
 
 	public void testGetOperationSchedules() throws Exception {
-		api = new InVehicleDeviceApiClient(SERVER_HOST, master.getInVehicleDevice()
+		api = new DefaultInVehicleDeviceApiClient(SERVER_HOST, master.getInVehicleDevice()
 				.getAuthenticationToken().get());
 		callTestGetOperationSchedules(false);
 	}
@@ -512,7 +512,7 @@ public class InVehicleDeviceApiClientTestCase extends AndroidTestCase {
 	}
 
 	public void testPassengerGetOnAndOff() throws Exception {
-		api = new InVehicleDeviceApiClient(SERVER_HOST, master.getInVehicleDevice()
+		api = new DefaultInVehicleDeviceApiClient(SERVER_HOST, master.getInVehicleDevice()
 				.getAuthenticationToken().get());
 		callTestPassengerGetOnAndOff(false);
 	}
@@ -675,7 +675,7 @@ public class InVehicleDeviceApiClientTestCase extends AndroidTestCase {
 	}
 
 	public void testPassengerCancelGetOnAndOff() throws Exception {
-		api = new InVehicleDeviceApiClient(SERVER_HOST, master.getInVehicleDevice()
+		api = new DefaultInVehicleDeviceApiClient(SERVER_HOST, master.getInVehicleDevice()
 				.getAuthenticationToken().get());
 		schedules = null;
 		createTestOperationSchedules();
@@ -1066,7 +1066,7 @@ public class InVehicleDeviceApiClientTestCase extends AndroidTestCase {
 	}
 
 	public void testSendServiceUnitStatusLog() throws Exception {
-		api = new InVehicleDeviceApiClient(SERVER_HOST, master.getInVehicleDevice()
+		api = new DefaultInVehicleDeviceApiClient(SERVER_HOST, master.getInVehicleDevice()
 				.getAuthenticationToken().get());
 		callTestSendServiceUnitStatusLog(false);
 	}
@@ -1207,7 +1207,7 @@ public class InVehicleDeviceApiClientTestCase extends AndroidTestCase {
 		}.getResult();
 		assertTrue(serverServiceUnitStatusLogs.isEmpty());
 
-		api = new InVehicleDeviceApiClient(SERVER_HOST, master.getInVehicleDevice()
+		api = new DefaultInVehicleDeviceApiClient(SERVER_HOST, master.getInVehicleDevice()
 				.getAuthenticationToken().get(), backupFile);
 		Thread.sleep(10 * 1000);
 		serverServiceUnitStatusLogs = new SyncCall<List<ServiceUnitStatusLog>>() {
@@ -1306,7 +1306,7 @@ public class InVehicleDeviceApiClientTestCase extends AndroidTestCase {
 	}
 
 	public void testOnException() throws Exception {
-		api = new InVehicleDeviceApiClient("https://localhost:12345");
+		api = new DefaultInVehicleDeviceApiClient("https://localhost:12345");
 		final AtomicBoolean unexpected = new AtomicBoolean(false);
 		latch = new CountDownLatch(10);
 		api.getVehicleNotifications(new ApiClientCallback<List<VehicleNotification>>() {
@@ -1377,7 +1377,7 @@ public class InVehicleDeviceApiClientTestCase extends AndroidTestCase {
 	}
 
 	public void testGetServiceProvider() throws Exception {
-		api = new InVehicleDeviceApiClient(SERVER_HOST, master.getInVehicleDevice()
+		api = new DefaultInVehicleDeviceApiClient(SERVER_HOST, master.getInVehicleDevice()
 				.getAuthenticationToken().get());
 		latch = new CountDownLatch(1);
 		final AtomicReference<ServiceProvider> outputServiceProvider = new AtomicReference<ServiceProvider>();

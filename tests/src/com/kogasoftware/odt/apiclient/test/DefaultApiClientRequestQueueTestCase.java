@@ -5,21 +5,21 @@ import java.util.HashMap;
 
 import com.kogasoftware.odt.apiclient.ApiClient.ResponseConverter;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
-import com.kogasoftware.odt.apiclient.ApiClientRequest;
-import com.kogasoftware.odt.apiclient.ApiClientRequestConfig;
-import com.kogasoftware.odt.apiclient.ApiClientRequestQueue;
+import com.kogasoftware.odt.apiclient.DefaultApiClientRequest;
+import com.kogasoftware.odt.apiclient.DefaultApiClientRequestConfig;
+import com.kogasoftware.odt.apiclient.DefaultApiClientRequestQueue;
 import com.kogasoftware.odt.apiclient.serializablerequestloader.SerializableGetLoader;
 
 import android.test.AndroidTestCase;
 
-public class ApiClientRequestQueueTestCase extends
+public class DefaultApiClientRequestQueueTestCase extends
 		AndroidTestCase {
 
 	public void testSetSaveOnClose() throws InterruptedException {
 		final Thread mainThread = Thread.currentThread();
 		File backupFile = getContext().getFileStreamPath(
 				"foo");
-		ApiClientRequestConfig saveOnCloseConfig = new ApiClientRequestConfig();
+		DefaultApiClientRequestConfig saveOnCloseConfig = new DefaultApiClientRequestConfig();
 		saveOnCloseConfig.setSaveOnClose(true);
 		backupFile.deleteOnExit();
 		backupFile.delete();
@@ -34,19 +34,19 @@ public class ApiClientRequestQueueTestCase extends
 		};
 
 		{
-			ApiClientRequest<Object> r1 = new ApiClientRequest<Object>(c, rc, sgl);
-			ApiClientRequest<Object> r2 = new ApiClientRequest<Object>(c, rc, sgl);
-			ApiClientRequest<Object> r3 = new ApiClientRequest<Object>(c, rc, sgl);
+			DefaultApiClientRequest<Object> r1 = new DefaultApiClientRequest<Object>(c, rc, sgl);
+			DefaultApiClientRequest<Object> r2 = new DefaultApiClientRequest<Object>(c, rc, sgl);
+			DefaultApiClientRequest<Object> r3 = new DefaultApiClientRequest<Object>(c, rc, sgl);
 			{
-				ApiClientRequestQueue rq = new ApiClientRequestQueue(backupFile);
+				DefaultApiClientRequestQueue rq = new DefaultApiClientRequestQueue(backupFile);
 				r1.setConfig(saveOnCloseConfig);
 				rq.add(r1);
 				rq.add(r2);
 				rq.add(r3);
 			}
 			{
-				ApiClientRequestQueue rq = new ApiClientRequestQueue(backupFile);
-				ApiClientRequest<?> r1x = rq.take();
+				DefaultApiClientRequestQueue rq = new DefaultApiClientRequestQueue(backupFile);
+				DefaultApiClientRequest<?> r1x = rq.take();
 				assertEquals(r1.getReqKey(), r1x.getReqKey());
 				try {
 					new Thread() {
@@ -67,19 +67,19 @@ public class ApiClientRequestQueueTestCase extends
 		}
 		
 		{
-			ApiClientRequest<Object> r1 = new ApiClientRequest<Object>(c, rc, sgl);
-			ApiClientRequest<Object> r2 = new ApiClientRequest<Object>(c, rc, sgl);
-			ApiClientRequest<Object> r3 = new ApiClientRequest<Object>(c, rc, sgl);
+			DefaultApiClientRequest<Object> r1 = new DefaultApiClientRequest<Object>(c, rc, sgl);
+			DefaultApiClientRequest<Object> r2 = new DefaultApiClientRequest<Object>(c, rc, sgl);
+			DefaultApiClientRequest<Object> r3 = new DefaultApiClientRequest<Object>(c, rc, sgl);
 			{
-				ApiClientRequestQueue rq = new ApiClientRequestQueue(backupFile);
+				DefaultApiClientRequestQueue rq = new DefaultApiClientRequestQueue(backupFile);
 				r2.setConfig(saveOnCloseConfig);
 				rq.add(r1, "x");
 				rq.add(r2, "x");
 				rq.add(r3);
 			}
 			{
-				ApiClientRequestQueue rq = new ApiClientRequestQueue(backupFile);
-				ApiClientRequest<?> r2x = rq.take();
+				DefaultApiClientRequestQueue rq = new DefaultApiClientRequestQueue(backupFile);
+				DefaultApiClientRequest<?> r2x = rq.take();
 				assertEquals(r2.getReqKey(), r2x.getReqKey());
 				try {
 					new Thread() {
@@ -100,11 +100,11 @@ public class ApiClientRequestQueueTestCase extends
 		}
 		
 		{
-			ApiClientRequest<Object> r1 = new ApiClientRequest<Object>(c, rc, sgl);
-			ApiClientRequest<Object> r2 = new ApiClientRequest<Object>(c, rc, sgl);
-			ApiClientRequest<Object> r3 = new ApiClientRequest<Object>(c, rc, sgl);
+			DefaultApiClientRequest<Object> r1 = new DefaultApiClientRequest<Object>(c, rc, sgl);
+			DefaultApiClientRequest<Object> r2 = new DefaultApiClientRequest<Object>(c, rc, sgl);
+			DefaultApiClientRequest<Object> r3 = new DefaultApiClientRequest<Object>(c, rc, sgl);
 			{
-				ApiClientRequestQueue rq = new ApiClientRequestQueue(backupFile);
+				DefaultApiClientRequestQueue rq = new DefaultApiClientRequestQueue(backupFile);
 				r1.setConfig(saveOnCloseConfig);
 				r3.setConfig(saveOnCloseConfig);
 				rq.add(r1, "y");
@@ -112,9 +112,9 @@ public class ApiClientRequestQueueTestCase extends
 				rq.add(r3);
 			}
 			{
-				ApiClientRequestQueue rq = new ApiClientRequestQueue(backupFile);
-				ApiClientRequest<?> r3x = rq.take(); // グループが違う場合後勝ち
-				ApiClientRequest<?> r1x = rq.take();
+				DefaultApiClientRequestQueue rq = new DefaultApiClientRequestQueue(backupFile);
+				DefaultApiClientRequest<?> r3x = rq.take(); // グループが違う場合後勝ち
+				DefaultApiClientRequest<?> r1x = rq.take();
 				assertEquals(r1.getReqKey(), r1x.getReqKey());
 				assertEquals(r3.getReqKey(), r3x.getReqKey());
 				try {
@@ -136,11 +136,11 @@ public class ApiClientRequestQueueTestCase extends
 		}
 		
 		{
-			ApiClientRequest<Object> r1 = new ApiClientRequest<Object>(c, rc, sgl);
-			ApiClientRequest<Object> r2 = new ApiClientRequest<Object>(c, rc, sgl);
-			ApiClientRequest<Object> r3 = new ApiClientRequest<Object>(c, rc, sgl);
+			DefaultApiClientRequest<Object> r1 = new DefaultApiClientRequest<Object>(c, rc, sgl);
+			DefaultApiClientRequest<Object> r2 = new DefaultApiClientRequest<Object>(c, rc, sgl);
+			DefaultApiClientRequest<Object> r3 = new DefaultApiClientRequest<Object>(c, rc, sgl);
 			{
-				ApiClientRequestQueue rq = new ApiClientRequestQueue(backupFile);
+				DefaultApiClientRequestQueue rq = new DefaultApiClientRequestQueue(backupFile);
 				r1.setConfig(saveOnCloseConfig);
 				r3.setConfig(saveOnCloseConfig);
 				rq.add(r1, "z");
@@ -148,8 +148,8 @@ public class ApiClientRequestQueueTestCase extends
 				rq.add(r3, "z");
 			}
 			{
-				ApiClientRequestQueue rq = new ApiClientRequestQueue(backupFile);
-				ApiClientRequest<?> r1x = rq.take(); // グループが同じ場合先勝ち
+				DefaultApiClientRequestQueue rq = new DefaultApiClientRequestQueue(backupFile);
+				DefaultApiClientRequest<?> r1x = rq.take(); // グループが同じ場合先勝ち
 				assertEquals(r1.getReqKey(), r1x.getReqKey());
 				
 				try {
@@ -167,7 +167,7 @@ public class ApiClientRequestQueueTestCase extends
 				} catch (InterruptedException e) {
 				}
 				rq.remove(r1x);
-				ApiClientRequest<?> r3x = rq.take();
+				DefaultApiClientRequest<?> r3x = rq.take();
 				assertEquals(r3.getReqKey(), r3x.getReqKey());
 				
 				try {

@@ -26,17 +26,17 @@ import com.google.common.io.Closeables;
 /**
  * ApiClientRequestを管理するクラス
  */
-public class ApiClientRequestQueue {
-	private static final String TAG = ApiClientRequestQueue.class.getSimpleName();
+public class DefaultApiClientRequestQueue {
+	private static final String TAG = DefaultApiClientRequestQueue.class.getSimpleName();
 	private static final Object FILE_ACCESS_LOCK = new Object(); // ファイルアクセス中のスレッドを一つに制限するためのロック。将来的にはロックの粒度をファイル毎にする必要があるかもしれない。
 	public static final String UNIQUE_GROUP = "";
 
 	protected static class InstanceState implements Serializable {
 		protected static final long serialVersionUID = 672897944999498097L;
-		protected final LinkedList<Pair<String, List<ApiClientRequest<?>>>> requestsByGroup;
+		protected final LinkedList<Pair<String, List<DefaultApiClientRequest<?>>>> requestsByGroup;
 
 		public InstanceState(
-				LinkedList<Pair<String, List<ApiClientRequest<?>>>> requestsByGroup) {
+				LinkedList<Pair<String, List<DefaultApiClientRequest<?>>>> requestsByGroup) {
 			this.requestsByGroup = Lists.newLinkedList(requestsByGroup);
 		}
 	}
@@ -46,7 +46,7 @@ public class ApiClientRequestQueue {
 	// 作業中のグループ
 	protected final Set<String> processingGroups = new HashSet<String>();
 	// グループ毎作業待ちリクエスト
-	protected final LinkedList<Pair<String, List<ApiClientRequest<?>>>> requestsByGroup = Lists
+	protected final LinkedList<Pair<String, List<DefaultApiClientRequest<?>>>> requestsByGroup = Lists
 			.newLinkedList();
 	// 「グループ毎作業待ちリクエスト」の追加待ち処理を実装するためのセマフォ。パーミットの数は必ずrequestsByGroup内の作業中でないリクエストの数と同じか多くなるようにする。
 	protected final Semaphore waitingQueuePollPermissions = new Semaphore(0);
@@ -58,7 +58,7 @@ public class ApiClientRequestQueue {
 	/**
 	 * コンストラクタ
 	 */
-	public ApiClientRequestQueue() {
+	public DefaultApiClientRequestQueue() {
 		optionalBackupFile = Optional.absent();
 	}
 
@@ -68,7 +68,7 @@ public class ApiClientRequestQueue {
 	 * @param backupFile
 	 *            データを読み出すファイル
 	 */
-	public ApiClientRequestQueue(File backupFile) {
+	public DefaultApiClientRequestQueue(File backupFile) {
 		this.optionalBackupFile = Optional.of(backupFile);
 		if (!backupFile.exists()) {
 			return;
@@ -100,16 +100,16 @@ public class ApiClientRequestQueue {
 		}
 	}
 
-	protected List<ApiClientRequest<?>> findOrCreateGroup(String group) {
+	protected List<DefaultApiClientRequest<?>> findOrCreateGroup(String group) {
 		synchronized (queueLock) {
 			// 同名のグループを探す
-			for (Pair<String, List<ApiClientRequest<?>>> pair : requestsByGroup) {
+			for (Pair<String, List<DefaultApiClientRequest<?>>> pair : requestsByGroup) {
 				if (pair.getKey().equals(group)) {
 					return pair.getValue();
 				}
 			}
 			// ない場合新規作成
-			List<ApiClientRequest<?>> newList = Lists.newLinkedList();
+			List<DefaultApiClientRequest<?>> newList = Lists.newLinkedList();
 			requestsByGroup.addFirst(Pair.of(group, newList));
 			return newList;
 		}
@@ -120,7 +120,7 @@ public class ApiClientRequestQueue {
 	 * 
 	 * @param request
 	 */
-	public void add(ApiClientRequest<?> request, String group) {
+	public void add(DefaultApiClientRequest<?> request, String group) {
 		synchronized (queueLock) {
 			if (group.equals(UNIQUE_GROUP)) {
 				// ユニークなグループ名を作成
@@ -138,7 +138,7 @@ public class ApiClientRequestQueue {
 		}
 	}
 
-	public void add(ApiClientRequest<?> request) {
+	public void add(DefaultApiClientRequest<?> request) {
 		add(request, UNIQUE_GROUP);
 	}
 
@@ -152,13 +152,13 @@ public class ApiClientRequestQueue {
 	}
 
 	protected void backup(File backupFile) {
-		LinkedList<Pair<String, List<ApiClientRequest<?>>>> backupRequestsByGroup = Lists
+		LinkedList<Pair<String, List<DefaultApiClientRequest<?>>>> backupRequestsByGroup = Lists
 				.newLinkedList();
 		synchronized (queueLock) {
-			for (Pair<String, List<ApiClientRequest<?>>> pair : Lists
+			for (Pair<String, List<DefaultApiClientRequest<?>>> pair : Lists
 					.newLinkedList(requestsByGroup)) {
-				List<ApiClientRequest<?>> backupRequests = Lists.newLinkedList();
-				for (ApiClientRequest<?> request : pair.getValue()) {
+				List<DefaultApiClientRequest<?>> backupRequests = Lists.newLinkedList();
+				for (DefaultApiClientRequest<?> request : pair.getValue()) {
 					if (request.getConfig().getSaveOnClose()) {
 						backupRequests.add(request);
 					}
@@ -186,12 +186,12 @@ public class ApiClientRequestQueue {
 	 * 
 	 * @param request
 	 */
-	public void remove(ApiClientRequest<?> request) {
+	public void remove(DefaultApiClientRequest<?> request) {
 		synchronized (queueLock) {
-			for (Pair<String, List<ApiClientRequest<?>>> entry : Lists
+			for (Pair<String, List<DefaultApiClientRequest<?>>> entry : Lists
 					.newLinkedList(requestsByGroup)) {
 				String group = entry.getKey();
-				List<ApiClientRequest<?>> requests = entry.getValue();
+				List<DefaultApiClientRequest<?>> requests = entry.getValue();
 				if (!requests.remove(request)) {
 					continue;
 				}
@@ -213,11 +213,11 @@ public class ApiClientRequestQueue {
 	 * @param reqkey
 	 */
 	public void abort(int reqkey) {
-		ApiClientRequest<?> foundRequest = null;
+		DefaultApiClientRequest<?> foundRequest = null;
 		synchronized (queueLock) {
-			for (Pair<String, List<ApiClientRequest<?>>> entry : Lists
+			for (Pair<String, List<DefaultApiClientRequest<?>>> entry : Lists
 					.newLinkedList(requestsByGroup)) {
-				for (ApiClientRequest<?> request : entry.getValue()) {
+				for (DefaultApiClientRequest<?> request : entry.getValue()) {
 					if (request.getReqKey() == reqkey) {
 						foundRequest = request;
 						remove(request);
@@ -237,12 +237,12 @@ public class ApiClientRequestQueue {
 	 * @param request
 	 *            リトライ対象のリクエスト
 	 */
-	public void retry(ApiClientRequest<?> request) {
+	public void retry(DefaultApiClientRequest<?> request) {
 		synchronized (queueLock) {
-			for (Pair<String, List<ApiClientRequest<?>>> entry : Lists
+			for (Pair<String, List<DefaultApiClientRequest<?>>> entry : Lists
 					.newLinkedList(requestsByGroup)) {
 				String group = entry.getKey();
-				List<ApiClientRequest<?>> requests = entry.getValue();
+				List<DefaultApiClientRequest<?>> requests = entry.getValue();
 				if (!requests.contains(request)) {
 					continue;
 				}
@@ -251,7 +251,7 @@ public class ApiClientRequestQueue {
 				}
 				requestsByGroup.remove(entry);
 				requestsByGroup.addLast(entry);
-				for (ApiClientRequest<?> retryRequest : requests) {
+				for (DefaultApiClientRequest<?> retryRequest : requests) {
 					retryRequest.setRetry(true);
 				}
 				backup();
@@ -265,14 +265,14 @@ public class ApiClientRequestQueue {
 	 * @return リクエスト
 	 * @throws InterruptedException
 	 */
-	public ApiClientRequest<?> take() throws InterruptedException {
+	public DefaultApiClientRequest<?> take() throws InterruptedException {
 		while (true) {
 			waitingQueuePollPermissions.acquire(); // synchronizedの外で待つ
 			synchronized (queueLock) {
-				for (Pair<String, List<ApiClientRequest<?>>> entry : Lists
+				for (Pair<String, List<DefaultApiClientRequest<?>>> entry : Lists
 						.newLinkedList(requestsByGroup)) {
 					String group = entry.getKey();
-					List<ApiClientRequest<?>> requests = entry.getValue();
+					List<DefaultApiClientRequest<?>> requests = entry.getValue();
 					if (requests.isEmpty()) {
 						processingGroups.remove(group);
 						requestsByGroup.remove(entry);

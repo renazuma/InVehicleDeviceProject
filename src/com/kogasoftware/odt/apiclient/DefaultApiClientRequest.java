@@ -13,16 +13,16 @@ import android.util.Log;
 import com.kogasoftware.odt.apiclient.ApiClient.ResponseConverter;
 import com.kogasoftware.odt.apiclient.serializablerequestloader.SerializableRequestLoader;
 
-public class ApiClientRequest<T> implements Serializable {
+public class DefaultApiClientRequest<T> implements Serializable {
 	private static final long serialVersionUID = -8451453777378477195L;
-	private static final String TAG = ApiClientRequest.class.getSimpleName();
+	private static final String TAG = DefaultApiClientRequest.class.getSimpleName();
 	protected static final AtomicInteger REQ_KEY_COUNTER = new AtomicInteger(0);
 	protected final SerializableRequestLoader firstRequest;
 	protected final SerializableRequestLoader retryRequest;
 	protected final int reqkey = REQ_KEY_COUNTER.incrementAndGet();
 	protected final Date createdDate = new Date();
 
-	protected ApiClientRequestConfig config = new ApiClientRequestConfig();
+	protected DefaultApiClientRequestConfig config = new DefaultApiClientRequestConfig();
 	protected boolean retry;
 	protected transient ApiClientCallback<T> callback;
 	protected transient ResponseConverter<? extends T> responseConverter;
@@ -34,13 +34,13 @@ public class ApiClientRequest<T> implements Serializable {
 		responseConverter = null;
 	}
 
-	public ApiClientRequest(ApiClientCallback<T> callback,
+	public DefaultApiClientRequest(ApiClientCallback<T> callback,
 			ResponseConverter<? extends T> responseConverter,
 			SerializableRequestLoader request) {
 		this(callback, responseConverter, request, request);
 	}
 
-	protected ApiClientRequest(ApiClientCallback<T> callback,
+	protected DefaultApiClientRequest(ApiClientCallback<T> callback,
 			ResponseConverter<? extends T> responseConverter,
 			SerializableRequestLoader firstRequest,
 			SerializableRequestLoader retryRequest) {
@@ -99,11 +99,11 @@ public class ApiClientRequest<T> implements Serializable {
 		onException(new ApiClientException("Connection aborted by application"));
 	}
 	
-	public void setConfig(ApiClientRequestConfig config) {
+	public void setConfig(DefaultApiClientRequestConfig config) {
 		this.config = config;
 	}
 	
-	public ApiClientRequestConfig getConfig() {
+	public DefaultApiClientRequestConfig getConfig() {
 		return config;
 	}
 }

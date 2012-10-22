@@ -13,7 +13,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.apiclient.ApiClient;
+import com.kogasoftware.odt.apiclient.DefaultApiClient;
 import com.kogasoftware.odt.apiclient.ApiClient.ResponseConverter;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.*;
 
@@ -23,13 +23,13 @@ public abstract class ReservationCandidateBase extends Model {
 	public static final ResponseConverter<ReservationCandidate> RESPONSE_CONVERTER = new ResponseConverter<ReservationCandidate>() {
 		@Override
 		public ReservationCandidate convert(byte[] rawResponse) throws JSONException {
-			return parse(ApiClient.parseJSONObject(rawResponse));
+			return parse(DefaultApiClient.parseJSONObject(rawResponse));
 		}
 	};
 	public static final ResponseConverter<List<ReservationCandidate>> LIST_RESPONSE_CONVERTER = new ResponseConverter<List<ReservationCandidate>>() {
 		@Override
 		public List<ReservationCandidate> convert(byte[] rawResponse) throws JSONException {
-			return parseList(ApiClient.parseJSONArray(rawResponse));
+			return parseList(DefaultApiClient.parseJSONArray(rawResponse));
 		}
 	};
 	protected void refreshUpdatedAt() {
