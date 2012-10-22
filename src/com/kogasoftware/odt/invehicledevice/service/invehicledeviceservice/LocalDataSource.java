@@ -30,9 +30,10 @@ import android.util.Log;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.io.Closeables;
-import com.kogasoftware.odt.invehicledevice.datasource.WebAPIDataSource;
+import com.kogasoftware.odt.invehicledevice.apiclient.WebAPIDataSource;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
+import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.ServiceProvider;
 
 /**
@@ -45,11 +46,13 @@ public class LocalDataSource implements Closeable {
 
 	public interface BackgroundReader<T> {
 		T readInBackground(LocalData localData);
+
 		void onRead(T result);
 	}
 
 	public interface BackgroundWriter {
 		void writeInBackground(LocalData ld);
+
 		void onWrite();
 	}
 
@@ -144,7 +147,7 @@ public class LocalDataSource implements Closeable {
 	 * isClearがtrueか、
 	 * SharedPreferenceのCLEAR_REQUIRED_SHARED_PREFERENCE_KEYがtrueの場合
 	 * 新しいLocalDataオブジェクトを作る。それ以外の場合はファイルからLocalDataオブジェクトを作る。
-	 *
+	 * 
 	 * CLEAR_REQUIRED_SHARED_PREFERENCE_KEYにより新しいオブジェクトが作られた場合、
 	 * CLEAR_REQUIRED_SHARED_PREFERENCE_KEYはfalseに設定する
 	 */
@@ -263,7 +266,7 @@ public class LocalDataSource implements Closeable {
 
 	/**
 	 * 読み取りロックをした状態で、localDataにアクセスを行う
-	 *
+	 * 
 	 * @param reader
 	 */
 	public <T> T withReadLock(Reader<T> reader) {
@@ -271,13 +274,18 @@ public class LocalDataSource implements Closeable {
 		try {
 			return reader.read(localData);
 		} finally {
+			if (localData.operationSchedules.size() > 0) {
+				OperationSchedule os = localData.operationSchedules.get(0);
+				Log.i(TAG, "read lock id=" + os.getId() + " " + os.isArrived()
+						+ " " + os.isDeparted());
+			}
 			readLock.unlock();
 		}
 	}
 
 	/**
 	 * 読み取りロックをした状態で、localDataにアクセスを行う
-	 *
+	 * 
 	 * @param reader
 	 */
 	public void withReadLock(final VoidReader reader) {
@@ -293,9 +301,11 @@ public class LocalDataSource implements Closeable {
 	/**
 	 * 書き込みロックをした状態で、localDataにアクセスを行う。処理が完了したら、localDataを永続化する。
 	 * ただし、前回の永続化からsavePeriodMillis経過していない場合は、savePeriodMillisが経過するまで永続化は行わない。
-	 *
+	 * 
 	 * @param writer
 	 */
+	volatile boolean onceArrived = false;
+
 	public void withWriteLock(Writer writer) {
 		writeLock.lock();
 		try {
@@ -303,7 +313,6 @@ public class LocalDataSource implements Closeable {
 		} finally {
 			writeLock.unlock();
 		}
-
 		saveSemaphore.release();
 	}
 
