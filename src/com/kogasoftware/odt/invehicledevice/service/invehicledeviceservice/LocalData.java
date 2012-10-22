@@ -46,6 +46,7 @@ public class LocalData implements Serializable {
 	public ServiceUnit serviceUnit = new ServiceUnit();
 	public ServiceUnitStatusLog serviceUnitStatusLog = new ServiceUnitStatusLog();
 
+	public Boolean completeGetOff = false;
 	public final List<OperationSchedule> operationSchedules = Lists
 			.newLinkedList();
 	public final List<PassengerRecord> passengerRecords = Lists.newLinkedList();
