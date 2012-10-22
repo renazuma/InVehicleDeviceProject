@@ -1,4 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.ui;
+// "http://stackoverflow.com/questions/5033012/auto-scale-textview-text-to-fit-within-bounds"
 
 import android.content.Context;
 import android.text.Layout.Alignment;
@@ -192,8 +193,10 @@ public class AutoResizeTextView extends TextView {
 	 * Reset the text to the original size
 	 */
 	public void resetTextSize() {
-		super.setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextSize);
-		mMaxTextSize = mTextSize;
+		if (mTextSize > 0) {
+			super.setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextSize);
+			mMaxTextSize = mTextSize;
+		}
 	}
 
 	/**
