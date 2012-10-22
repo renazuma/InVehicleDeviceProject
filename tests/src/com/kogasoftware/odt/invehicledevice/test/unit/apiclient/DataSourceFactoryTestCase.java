@@ -1,9 +1,9 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.datasource;
+package com.kogasoftware.odt.invehicledevice.test.unit.apiclient;
 
 import android.test.AndroidTestCase;
 
-import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
-import com.kogasoftware.odt.invehicledevice.datasource.EmptyDataSource;
+import com.kogasoftware.odt.invehicledevice.apiclient.DataSourceFactory;
+import com.kogasoftware.odt.invehicledevice.apiclient.EmptyDataSource;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyFile;
 
 public class DataSourceFactoryTestCase extends AndroidTestCase {

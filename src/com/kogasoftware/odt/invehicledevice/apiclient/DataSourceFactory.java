@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.datasource;
+package com.kogasoftware.odt.invehicledevice.apiclient;
 
 import java.io.File;
 
@@ -31,7 +31,7 @@ public class DataSourceFactory {
 				public DataSource get() {
 					// 厳密にclose()する必要があるため、インスタンス生成を遅延させる
 					return new WebAPIDataSource(url, token, file);
-					// return new _GIT_IGNORE_DummyDataSource();
+					// return new DummyDataSource();
 					// return new ScheduleChangedTestDataSource();
 					// return new EmptyDataSource();
 				}

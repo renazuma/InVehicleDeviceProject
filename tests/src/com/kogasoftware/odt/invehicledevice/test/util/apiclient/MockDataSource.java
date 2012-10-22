@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.util.datasource;
+package com.kogasoftware.odt.invehicledevice.test.util.apiclient;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import android.graphics.Bitmap;
 
 import com.javadocmd.simplelatlng.LatLng;
-import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
+import com.kogasoftware.odt.invehicledevice.apiclient.DataSource;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
 import com.kogasoftware.odt.webapi.model.Demand;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
