@@ -3,11 +3,12 @@ package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice;
 import java.io.File;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.Semaphore;
 
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyFile;
 import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
@@ -19,16 +20,18 @@ import com.kogasoftware.odt.webapi.model.UnitAssignment;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 /**
- * 現在の状態を保存しておくクラス リストのメンバははSerializableであることをわかりやすくするためLinkedListにしておく
+ * 現在の状態を保存しておくクラス
  */
 public class LocalData implements Serializable {
 	public static enum Phase {
-		DRIVE, FINISH, INITIAL, PLATFORM
+		DRIVE, FINISH, INITIAL /* will delete */, PLATFORM, PLATFORM_GET_ON, PLATFORM_GET_OFF,
 	}
 
-	private static final long serialVersionUID = 17978801788121L;
+	private static final long serialVersionUID = 1797801788123L;
 
+	@Deprecated
 	public final Semaphore operationScheduleInitializedSign = new Semaphore(0); // パーミットが0以上の場合は初期化済み。0以上になるまで待つためにacquireしたら必ずreleaseする。CountDownLatchがSerializableではないためこれを使用
+	@Deprecated
 	public final Semaphore serviceProviderInitializedSign = new Semaphore(0); // パーミットが0以上の場合は初期化済み。0以上になるまで待つためにacquireしたら必ずreleaseする。CountDownLatchがSerializableではないためこれを使用
 
 	public Date updatedDate = InVehicleDeviceService.getDate();
@@ -43,15 +46,14 @@ public class LocalData implements Serializable {
 	public ServiceUnit serviceUnit = new ServiceUnit();
 	public ServiceUnitStatusLog serviceUnitStatusLog = new ServiceUnitStatusLog();
 
-	public final LinkedList<OperationSchedule> operationSchedules = Lists
+	public final List<OperationSchedule> operationSchedules = Lists
 			.newLinkedList();
-	public final LinkedList<PassengerRecord> passengerRecords = Lists
-			.newLinkedList();
+	public final List<PassengerRecord> passengerRecords = Lists.newLinkedList();
 
 	public static enum VehicleNotificationStatus {
 		UNHANDLED, OPERATION_SCHEDULE_RECEIVED, REPLIED,
 	}
 
-	public final LinkedHashMultimap<VehicleNotificationStatus, VehicleNotification> vehicleNotifications = LinkedHashMultimap
+	public final Multimap<VehicleNotificationStatus, VehicleNotification> vehicleNotifications = LinkedHashMultimap
 			.create();
 }
