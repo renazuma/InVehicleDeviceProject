@@ -29,7 +29,7 @@
     <receiver android:name=".service.logservice.LogService$ShutdownBroadcastReceiver">
       <intent-filter>
         <action android:name="android.intent.action.ACTION_SHUTDOWN"/>
-        <action android:name="android.intent.action.QUICKBOOT_POWEROFF" />
+        <action android:name="android.intent.action.QUICKBOOT_POWEROFF"/>
       </intent-filter>
     </receiver>
     <service android:name=".service.invehicledeviceservice.InVehicleDeviceService"/>
@@ -41,7 +41,6 @@
     </service>
     <service android:name=".service.voiceservice.VoiceService" android:process=":VoiceService"/>
   </application>
-
   <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
   <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
   <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"/>
