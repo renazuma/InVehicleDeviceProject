@@ -17,17 +17,19 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.ListView;
 
-import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
-import com.kogasoftware.odt.invehicledevice.datasource.EmptyDataSource;
+import com.kogasoftware.odt.invehicledevice.apiclient.DataSource;
+import com.kogasoftware.odt.invehicledevice.apiclient.EmptyDataSource;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
+import com.kogasoftware.odt.invehicledevice.test.util.EmptyRunnable;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordArrayAdapter;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.MemoModalView;
 import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
+import com.kogasoftware.odt.webapi.model.OperationRecord;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
@@ -40,6 +42,7 @@ public class PassengerRecordArrayAdapterTestCase extends
 			.getSimpleName();
 	Activity a;
 	InVehicleDeviceService s;
+	OperationScheduleLogic osl;
 	MemoModalView mmv;
 	PassengerRecordArrayAdapter raa;
 	LocalDataSource sa;
@@ -129,6 +132,7 @@ public class PassengerRecordArrayAdapterTestCase extends
 		getOffPassengerRecords.clear();
 		cancelGetOnPassengerRecords.clear();
 		cancelGetOffPassengerRecords.clear();
+		osl = new OperationScheduleLogic(s);
 	}
 
 	@Override
@@ -159,21 +163,29 @@ public class PassengerRecordArrayAdapterTestCase extends
 		final Integer T = 2000;
 		final List<OperationSchedule> oss = new LinkedList<OperationSchedule>();
 		final List<PassengerRecord> prs = new LinkedList<PassengerRecord>();
+		
+		OperationRecord finished = new OperationRecord();
+		finished.setArrivedAt(new Date());
+		finished.setDepartedAt(new Date());
+		OperationRecord remaining = new OperationRecord();
+		final OperationSchedule os0 = new OperationSchedule();
+		os0.setId(200);
+		os0.setOperationRecord(finished);
+		final OperationSchedule os1 = new OperationSchedule();
+		os1.setId(50);
+		os1.setOperationRecord(remaining);
+		final OperationSchedule os2 = new OperationSchedule();
+		os2.setId(100);
+		os2.setOperationRecord(remaining);
+
 		sa.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData status) {
 				status.passengerRecords.clear();
-				OperationSchedule os0 = new OperationSchedule();
-				os0.setId(200);
-				OperationSchedule os1 = new OperationSchedule();
-				os1.setId(50);
-				OperationSchedule os2 = new OperationSchedule();
-				os2.setId(100);
-				status.finishedOperationSchedules.clear();
-				status.finishedOperationSchedules.add(os0);
-				status.remainingOperationSchedules.clear();
-				status.remainingOperationSchedules.add(os1);
-				status.remainingOperationSchedules.add(os2);
+				status.operationSchedules.clear();
+				status.operationSchedules.add(os0);
+				status.operationSchedules.add(os1);
+				status.operationSchedules.add(os2);
 				{
 					PassengerRecord pr = new PassengerRecord();
 					Reservation r = new Reservation();
@@ -200,11 +212,12 @@ public class PassengerRecordArrayAdapterTestCase extends
 					status.passengerRecords.add(pr);
 				}
 
-				oss.addAll(status.remainingOperationSchedules);
+				oss.addAll(status.operationSchedules);
 				prs.addAll(status.passengerRecords);
 			}
 		});
-		s.enterPlatformPhase();
+		osl.arrive(os0, new EmptyRunnable());
+
 		raa = new PassengerRecordArrayAdapter(s, mmv);
 		sync();
 		assertEquals(raa.getCount(), 2);
@@ -263,8 +276,9 @@ public class PassengerRecordArrayAdapterTestCase extends
 		assertEquals(userName1, r.getUser().get().getLastName());
 
 		// 次の乗降場へ移動
-		s.enterDrivePhase();
-		s.enterPlatformPhase();
+		osl.depart(os0, new EmptyRunnable());
+		osl.arrive(os1, new EmptyRunnable());
+
 		Thread.sleep(2000);
 		raa = new PassengerRecordArrayAdapter(s, mmv);
 		sync();
