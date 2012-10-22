@@ -22,6 +22,7 @@ import android.os.Looper;
 import android.util.Log;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.io.Closeables;
@@ -29,8 +30,11 @@ import com.kogasoftware.odt.invehicledevice.BuildConfig;
 import com.kogasoftware.odt.invehicledevice.apiclient.DataSource;
 import com.kogasoftware.odt.invehicledevice.apiclient.EmptyDataSource;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Reader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask.BackgroundTaskThread;
+import com.kogasoftware.odt.webapi.model.OperationSchedule;
+import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class InVehicleDeviceService extends Service {
 	public class LocalBinder extends Binder {
@@ -40,6 +44,7 @@ public class InVehicleDeviceService extends Service {
 	}
 
 	private final EventDispatcher eventDispatcher = new EventDispatcher();
+
 	public EventDispatcher getEventDispatcher() {
 		return eventDispatcher;
 	}
@@ -57,7 +62,10 @@ public class InVehicleDeviceService extends Service {
 	private static Date mockDate = new Date();
 
 	private static final WeakHashMap<Thread, Handler> HANDLERS = new WeakHashMap<Thread, Handler>();
-	public static final Handler DEFAULT_HANDLER = new Handler(Looper.getMainLooper()); // TODO:メインスレッドではないHandlerを作る
+	public static final Handler DEFAULT_HANDLER = new Handler(
+			Looper.getMainLooper()); // TODO:メインスレッドではないHandlerを作る
+
+	public static final Integer EXECUTOR_SERVICE_THREADS = 3;
 
 	public static Handler getThreadHandler() { // TODO: 共有場所に移動
 		synchronized (HANDLERS) {
@@ -160,8 +168,6 @@ public class InVehicleDeviceService extends Service {
 		super();
 		voiceServiceConnector = new VoiceServiceConnector(this);
 	}
-
-
 
 	public void exit() {
 		eventDispatcher.dispatchExit();
@@ -294,5 +300,56 @@ public class InVehicleDeviceService extends Service {
 
 	public void setMapZoomLevel(Integer mapZoomLevel) {
 		this.mapZoomLevel = mapZoomLevel;
+	}
+
+	@Deprecated
+	public void enterPlatformPhase() {
+		throw new RuntimeException("method deleted");
+	}
+
+	@Deprecated
+	public Optional<OperationSchedule> getCurrentOperationSchedule() {
+		throw new RuntimeException("method deleted");
+	}
+
+	@Deprecated
+	public List<OperationSchedule> getOperationSchedules() {
+		throw new RuntimeException("method deleted");
+	}
+
+	@Deprecated
+	public List<OperationSchedule> getRemainingOperationSchedules() {
+		throw new RuntimeException("method deleted");
+	}
+
+	@Deprecated
+	public List<VehicleNotification> getVehicleNotifications(int anyInt,
+			VehicleNotificationStatus any) {
+		throw new RuntimeException("method deleted");
+	}
+
+	@Deprecated
+	public void enterDrivePhase() {
+		throw new RuntimeException("method deleted");
+	}
+
+	@Deprecated
+	public void enterFinishPhase() {
+		throw new RuntimeException("method deleted");
+	}
+
+	@Deprecated
+	public Object getNoGettingOffPassengerRecords() {
+		throw new RuntimeException("method deleted");
+	}
+
+	@Deprecated
+	public Object getNoGettingOnPassengerRecords() {
+		throw new RuntimeException("method deleted");
+	}
+
+	@Deprecated
+	public Object getNoPaymentPassengerRecords() {
+		throw new RuntimeException("method deleted");
 	}
 }
