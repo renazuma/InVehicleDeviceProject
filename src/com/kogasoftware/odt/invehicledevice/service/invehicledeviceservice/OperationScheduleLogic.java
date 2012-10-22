@@ -2,12 +2,16 @@ package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice;
 
 import java.util.List;
 
+import android.os.Handler;
+import android.util.Log;
+
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
+import com.kogasoftware.odt.invehicledevice.apiclient.DataSource;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyWebAPICallback;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.BackgroundWriter;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Reader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
 import com.kogasoftware.odt.webapi.model.OperationRecord;
@@ -21,12 +25,57 @@ import com.kogasoftware.odt.webapi.model.VehicleNotification;
  * スケジュール関連のデータ処理
  */
 public class OperationScheduleLogic {
+	protected static final String TAG = OperationScheduleLogic.class
+			.getSimpleName();
 	protected final InVehicleDeviceService service;
 	protected final VehicleNotificationLogic vehicleNotificationLogic;
 
 	public OperationScheduleLogic(InVehicleDeviceService service) {
 		this.service = service;
 		vehicleNotificationLogic = new VehicleNotificationLogic(service);
+	}
+
+	public static Phase getPhase(List<OperationSchedule> operationSchedules,
+			List<PassengerRecord> passengerRecords, Boolean completeGetOff) {
+		Log.i(TAG, "----- getPhase -----");
+		for (OperationSchedule operationSchedule : OperationSchedule
+				.getCurrentOperationSchedule(operationSchedules).asSet()) {
+			Log.i(TAG, "id = " + operationSchedule.getId());
+			if (!operationSchedule.isArrived()) {
+				Log.i(TAG, "no arrived");
+				Log.i(TAG, Phase.DRIVE.toString());
+				return Phase.DRIVE;
+			}
+			if (operationSchedule.isDeparted()) {
+				Log.i(TAG, "departed");
+				continue;
+			}
+			for (PassengerRecord passengerRecord : operationSchedule
+					.getNoGetOffErrorPassengerRecords(passengerRecords)) {
+				if (!passengerRecord.getIgnoreGetOffMiss()) {
+					Log.i(TAG, "no get off error found");
+					Log.i(TAG, Phase.PLATFORM_GET_OFF.toString());
+					return Phase.PLATFORM_GET_OFF;
+				}
+			}
+			if (operationSchedule.getGetOffScheduledPassengerRecords(
+					passengerRecords).isEmpty()) {
+				Log.i(TAG, "get off scheduled passengerRecords not found");
+				Log.i(TAG, Phase.PLATFORM_GET_ON.toString());
+				return Phase.PLATFORM_GET_ON;
+			}
+			if (completeGetOff) {
+				Log.i(TAG, "complete get off");
+				Log.i(TAG, Phase.PLATFORM_GET_ON.toString());
+				return Phase.PLATFORM_GET_ON;
+			} else {
+				Log.i(TAG, "no complete get off");
+				Log.i(TAG, Phase.PLATFORM_GET_OFF.toString());
+				return Phase.PLATFORM_GET_OFF;
+			}
+		}
+		Log.i(TAG, Phase.FINISH.toString());
+		return Phase.FINISH;
 	}
 
 	/**
@@ -42,7 +91,7 @@ public class OperationScheduleLogic {
 					return;
 				}
 				if (localData.phase == LocalData.Phase.PLATFORM) {
-					depart();
+					depart2();
 				}
 				localData.phase = LocalData.Phase.DRIVE;
 			}
@@ -57,7 +106,7 @@ public class OperationScheduleLogic {
 		service.getLocalDataSource().withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
-				depart();
+				depart2();
 				localData.phase = LocalData.Phase.FINISH;
 			}
 		});
@@ -77,7 +126,7 @@ public class OperationScheduleLogic {
 					return;
 				}
 				if (localData.phase == LocalData.Phase.DRIVE) {
-					arrive();
+					arrive2();
 				}
 				localData.phase = LocalData.Phase.PLATFORM;
 			}
@@ -85,7 +134,7 @@ public class OperationScheduleLogic {
 		service.getEventDispatcher().dispatchEnterPlatformPhase();
 	}
 
-	private void arrive() {
+	private void arrive2() {
 		for (OperationSchedule operationSchedule : getCurrentOperationSchedule()
 				.asSet()) {
 			OperationRecord operationRecord = operationSchedule
@@ -99,7 +148,7 @@ public class OperationScheduleLogic {
 		}
 	}
 
-	private void depart() {
+	private void depart2() {
 		for (OperationSchedule operationSchedule : getCurrentOperationSchedule()
 				.asSet()) {
 			OperationRecord operationRecord = operationSchedule
@@ -203,14 +252,17 @@ public class OperationScheduleLogic {
 
 		localData.updatedDate = InVehicleDeviceService.getDate();
 
-		if (!service.isOperationInitialized()) {
+		Log.i("InVehicleDeviceActivity", "mergeOperationSchedules 2");
+		if (localData.operationScheduleInitializedSign.availablePermits() == 0) {
 			localData.operationScheduleInitializedSign.release();
+			Log.i("InVehicleDeviceActivity", "mergeOperationSchedules 3");
 		}
+		Log.i("InVehicleDeviceActivity", "mergeOperationSchedules 4");
 	}
 
 	/**
 	 * PassengerRecordをマージする(LocalDataがロックされた状態内)
-	 *
+	 * 
 	 * @param reservation
 	 */
 	public void mergePassengerRecordsWithWriteLock(LocalData localData,
@@ -251,6 +303,8 @@ public class OperationScheduleLogic {
 	public void mergeOperationSchedules(
 			final List<OperationSchedule> operationSchedules,
 			final List<VehicleNotification> triggerVehicleNotifications) {
+		Log.i("InVehicleDeviceActivity", "mergeOperationSchedules 1");
+
 		LocalDataSource localDataSource = service.getLocalDataSource();
 		// 通知を受信済みリストに移動
 		vehicleNotificationLogic.setVehicleNotificationStatus(
@@ -265,8 +319,8 @@ public class OperationScheduleLogic {
 			}
 		});
 		refreshPhase();
-		service.getEventDispatcher().dispatchMergeOperationSchedules(operationSchedules,
-				triggerVehicleNotifications);
+		service.getEventDispatcher().dispatchMergeOperationSchedules(
+				operationSchedules, triggerVehicleNotifications);
 	}
 
 	/**
@@ -333,11 +387,13 @@ public class OperationScheduleLogic {
 				new Reader<List<OperationSchedule>>() {
 					@Override
 					public List<OperationSchedule> read(LocalData localData) {
-						return Lists.newLinkedList(localData.operationSchedules);
+						return Lists
+								.newLinkedList(localData.operationSchedules);
 					}
 				});
 	}
 
+	@Deprecated
 	public Phase getPhase() {
 		return service.getLocalDataSource().withReadLock(new Reader<Phase>() {
 			@Override
@@ -362,5 +418,120 @@ public class OperationScheduleLogic {
 			enterFinishPhase();
 			break;
 		}
+	}
+
+	public void arrive(OperationSchedule currentOperationSchedule,
+			final Runnable callback) {
+		final Integer id = currentOperationSchedule.getId();
+		Log.i(TAG, "arrive id=" + id);
+		service.getLocalDataSource().write(new BackgroundWriter() {
+			@Override
+			public void writeInBackground(LocalData localData) {
+				localData.completeGetOff = false;
+				for (OperationSchedule operationSchedule : localData.operationSchedules) {
+					if (!operationSchedule.getId().equals(id)) {
+						continue;
+					}
+					for (OperationRecord operationRecord : operationSchedule
+							.getOperationRecord().asSet()) {
+						operationRecord.setArrivedAt(InVehicleDeviceService
+								.getDate());
+						service.getRemoteDataSource()
+								.withSaveOnClose()
+								.arrivalOperationSchedule(
+										operationSchedule,
+										new EmptyWebAPICallback<OperationSchedule>());
+						Log.i(TAG,
+								"arrive -> "
+										+ getPhase(
+												localData.operationSchedules,
+												localData.passengerRecords,
+												localData.completeGetOff));
+						return;
+					}
+					Log.e(TAG, "OperationSchedule has no OperationRecord "
+							+ operationSchedule);
+				}
+				Log.e(TAG, "OperationSchedule id=" + id + " not found");
+			}
+
+			@Override
+			public void onWrite() {
+				callback.run();
+			}
+		});
+	}
+
+	public void updatePhaseInBackground(LocalData localData) {
+		Phase phase = getPhase(localData.operationSchedules,
+				localData.passengerRecords, localData.completeGetOff);
+		if (phase != Phase.PLATFORM_GET_ON) {
+			localData.completeGetOff = false;
+		}
+		service.getEventDispatcher().dispatchUpdatePhase(phase,
+				Lists.newArrayList(localData.operationSchedules),
+				Lists.newArrayList(localData.passengerRecords));
+	}
+
+	public void depart(OperationSchedule currentOperationSchedule,
+			final Runnable callback) {
+		final Integer id = currentOperationSchedule.getId();
+		Log.i(TAG, "depart id=" + id);
+		service.getLocalDataSource().write(new BackgroundWriter() {
+			@Override
+			public void writeInBackground(LocalData localData) {
+				localData.completeGetOff = false;
+				for (OperationSchedule operationSchedule : localData.operationSchedules) {
+					if (!operationSchedule.getId().equals(id)) {
+						continue;
+					}
+					for (OperationRecord operationRecord : operationSchedule
+							.getOperationRecord().asSet()) {
+						operationRecord.setDepartedAt(InVehicleDeviceService
+								.getDate());
+						service.getRemoteDataSource()
+								.withSaveOnClose()
+								.departureOperationSchedule(
+										operationSchedule,
+										new EmptyWebAPICallback<OperationSchedule>());
+						Log.i(TAG,
+								"depart -> "
+										+ getPhase(
+												localData.operationSchedules,
+												localData.passengerRecords,
+												localData.completeGetOff));
+						return;
+					}
+					Log.e(TAG, "OperationSchedule has no OperationRecord "
+							+ operationSchedule);
+				}
+				Log.e(TAG, "OperationSchedule id=" + id + " not found");
+			}
+
+			@Override
+			public void onWrite() {
+				callback.run();
+			}
+		});
+	}
+
+	public void requestUpdatePhase() {
+		final Handler handler = new Handler();
+		handler.post(new Runnable() {
+			@Override
+			public void run() {
+				Log.i(TAG, "waiting for update phase");
+				if (!service.isOperationInitialized()) {
+					handler.postDelayed(this, 500);
+					return;
+				}
+				service.getLocalDataSource().withWriteLock(new Writer() {
+					@Override
+					public void write(LocalData localData) {
+						updatePhaseInBackground(localData);
+					}
+				});
+			}
+		});
 	}
 }
