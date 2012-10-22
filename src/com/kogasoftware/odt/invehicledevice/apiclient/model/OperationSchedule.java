@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.webapi.model;
+package com.kogasoftware.odt.invehicledevice.apiclient.model;
 
 import java.util.List;
 
@@ -7,7 +7,7 @@ import android.util.Log;
 import com.google.common.base.Optional;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.kogasoftware.odt.webapi.model.base.OperationScheduleBase;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.base.OperationScheduleBase;
 
 public class OperationSchedule extends OperationScheduleBase {
 	private static final long serialVersionUID = 1040628741311146499L;

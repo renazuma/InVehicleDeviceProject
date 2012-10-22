@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.webapi.test.model.base;
+package com.kogasoftware.odt.invehicledevice.apiclient.test.model.base;
 
 import java.util.Date;
 
@@ -6,8 +6,8 @@ import android.test.AndroidTestCase;
 
 import org.apache.commons.lang3.SerializationUtils;
 
-import com.kogasoftware.odt.webapi.model.*;
-import com.kogasoftware.odt.webapi.model.base.*;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.*;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.base.*;
 
 /**
  * UserBaseのテスト

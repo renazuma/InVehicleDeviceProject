@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.webapi.test;
+package com.kogasoftware.odt.invehicledevice.apiclient.test.model.base;
 
 import java.util.LinkedList;
 
@@ -7,9 +7,9 @@ import junit.framework.TestCase;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.kogasoftware.odt.webapi.model.VehicleNotification;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.*;
 
-public class JSONTestCase extends TestCase {
+public class ModelTestCase extends TestCase {
 	 public void testVehicleNotificationParser() throws Exception {
 		 String json = "[{\"body\":\"\u30c6\u30b9\u30c8\u30e1\u30c3\u30bb\u30fc\u30b8\",\"created_at\":\"2012-04-04T15:41:18+09:00\"}]";
 		 JSONArray jsonArray = new JSONArray(json);

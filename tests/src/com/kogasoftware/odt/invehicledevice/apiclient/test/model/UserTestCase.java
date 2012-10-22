@@ -1,8 +1,8 @@
-package com.kogasoftware.odt.webapi.test.model;
+package com.kogasoftware.odt.invehicledevice.apiclient.test.model;
+
+import com.kogasoftware.odt.invehicledevice.apiclient.model.User;
 
 import junit.framework.TestCase;
-
-import com.kogasoftware.odt.webapi.model.User;
 
 public class UserTestCase extends TestCase {
 	public void testGetMemo() {

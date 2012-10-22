@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.webapi.model.base;
+package com.kogasoftware.odt.invehicledevice.apiclient.model.base;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -13,9 +13,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.webapi.WebAPI;
-import com.kogasoftware.odt.webapi.WebAPI.ResponseConverter;
-import com.kogasoftware.odt.webapi.model.*;
+import com.kogasoftware.odt.apiclient.ApiClient;
+import com.kogasoftware.odt.apiclient.ApiClient.ResponseConverter;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.*;
 
 @SuppressWarnings("unused")
 public abstract class OperatorBase extends Model {
@@ -23,13 +23,13 @@ public abstract class OperatorBase extends Model {
 	public static final ResponseConverter<Operator> RESPONSE_CONVERTER = new ResponseConverter<Operator>() {
 		@Override
 		public Operator convert(byte[] rawResponse) throws JSONException {
-			return parse(WebAPI.parseJSONObject(rawResponse));
+			return parse(ApiClient.parseJSONObject(rawResponse));
 		}
 	};
 	public static final ResponseConverter<List<Operator>> LIST_RESPONSE_CONVERTER = new ResponseConverter<List<Operator>>() {
 		@Override
 		public List<Operator> convert(byte[] rawResponse) throws JSONException {
-			return parseList(WebAPI.parseJSONArray(rawResponse));
+			return parseList(ApiClient.parseJSONArray(rawResponse));
 		}
 	};
 	@Override

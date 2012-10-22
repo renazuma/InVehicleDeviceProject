@@ -1,6 +1,6 @@
-package com.kogasoftware.odt.webapi.model;
+package com.kogasoftware.odt.invehicledevice.apiclient.model;
 
-import com.kogasoftware.odt.webapi.model.base.ServiceUnitStatusLogBase;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.base.ServiceUnitStatusLogBase;
 
 public class ServiceUnitStatusLog extends ServiceUnitStatusLogBase {
 	private static final long serialVersionUID = 7080599901211750798L;

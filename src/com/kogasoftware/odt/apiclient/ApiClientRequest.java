@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.webapi;
+package com.kogasoftware.odt.apiclient;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -10,22 +10,21 @@ import org.apache.http.client.methods.HttpRequestBase;
 
 import android.util.Log;
 
-import com.kogasoftware.odt.webapi.WebAPI.ResponseConverter;
-import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
-import com.kogasoftware.odt.webapi.serializablerequestloader.SerializableRequestLoader;
+import com.kogasoftware.odt.apiclient.ApiClient.ResponseConverter;
+import com.kogasoftware.odt.apiclient.serializablerequestloader.SerializableRequestLoader;
 
-public class WebAPIRequest<T> implements Serializable {
+public class ApiClientRequest<T> implements Serializable {
 	private static final long serialVersionUID = -8451453777378477195L;
-	private static final String TAG = WebAPIRequest.class.getSimpleName();
+	private static final String TAG = ApiClientRequest.class.getSimpleName();
 	protected static final AtomicInteger REQ_KEY_COUNTER = new AtomicInteger(0);
 	protected final SerializableRequestLoader firstRequest;
 	protected final SerializableRequestLoader retryRequest;
 	protected final int reqkey = REQ_KEY_COUNTER.incrementAndGet();
 	protected final Date createdDate = new Date();
 
-	protected WebAPIRequestConfig config = new WebAPIRequestConfig();
+	protected ApiClientRequestConfig config = new ApiClientRequestConfig();
 	protected boolean retry;
-	protected transient WebAPICallback<T> callback;
+	protected transient ApiClientCallback<T> callback;
 	protected transient ResponseConverter<? extends T> responseConverter;
 
 	private void readObject(ObjectInputStream objectInputStream)
@@ -35,13 +34,13 @@ public class WebAPIRequest<T> implements Serializable {
 		responseConverter = null;
 	}
 
-	public WebAPIRequest(WebAPICallback<T> callback,
+	public ApiClientRequest(ApiClientCallback<T> callback,
 			ResponseConverter<? extends T> responseConverter,
 			SerializableRequestLoader request) {
 		this(callback, responseConverter, request, request);
 	}
 
-	protected WebAPIRequest(WebAPICallback<T> callback,
+	protected ApiClientRequest(ApiClientCallback<T> callback,
 			ResponseConverter<? extends T> responseConverter,
 			SerializableRequestLoader firstRequest,
 			SerializableRequestLoader retryRequest) {
@@ -59,11 +58,11 @@ public class WebAPIRequest<T> implements Serializable {
 		return reqkey;
 	}
 
-	public HttpRequestBase getRequest() throws WebAPIException {
+	public HttpRequestBase getRequest() throws ApiClientException {
 		return retry ? retryRequest.load() : firstRequest.load();
 	}
 	
-	public void onException(WebAPIException e) {
+	public void onException(ApiClientException e) {
 		if (callback != null) {
 			callback.onException(reqkey, e);
 		}
@@ -89,22 +88,22 @@ public class WebAPIRequest<T> implements Serializable {
 	public void abort() {
 		try {
 			firstRequest.load().abort();
-		} catch (WebAPIException e) {
+		} catch (ApiClientException e) {
 			Log.w(TAG, e);
 		}
 		try {
 			retryRequest.load().abort();
-		} catch (WebAPIException e) {
+		} catch (ApiClientException e) {
 			Log.w(TAG, e);
 		}
-		onException(new WebAPIException("Connection aborted by application"));
+		onException(new ApiClientException("Connection aborted by application"));
 	}
 	
-	public void setConfig(WebAPIRequestConfig config) {
+	public void setConfig(ApiClientRequestConfig config) {
 		this.config = config;
 	}
 	
-	public WebAPIRequestConfig getConfig() {
+	public ApiClientRequestConfig getConfig() {
 		return config;
 	}
 }

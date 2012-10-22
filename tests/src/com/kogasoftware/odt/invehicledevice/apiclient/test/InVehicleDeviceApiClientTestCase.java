@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.webapi.test;
+package com.kogasoftware.odt.invehicledevice.apiclient.test;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -19,58 +19,58 @@ import android.test.AndroidTestCase;
 import android.util.Log;
 
 import com.google.common.io.Closeables;
-import com.kogasoftware.odt.webapi.WebAPI;
-import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
-import com.kogasoftware.odt.webapi.WebAPIException;
-import com.kogasoftware.odt.webapi.WebAPIRequest;
-import com.kogasoftware.odt.webapi.model.Demand;
-import com.kogasoftware.odt.webapi.model.InVehicleDevice;
-import com.kogasoftware.odt.webapi.model.OperationRecord;
-import com.kogasoftware.odt.webapi.model.OperationSchedule;
-import com.kogasoftware.odt.webapi.model.PassengerRecord;
-import com.kogasoftware.odt.webapi.model.Platform;
-import com.kogasoftware.odt.webapi.model.Reservation;
-import com.kogasoftware.odt.webapi.model.ReservationCandidate;
-import com.kogasoftware.odt.webapi.model.ServiceProvider;
-import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
-import com.kogasoftware.odt.webapi.model.UnitAssignment;
-import com.kogasoftware.odt.webapi.model.User;
-import com.kogasoftware.odt.webapi.model.VehicleNotification;
-import com.kogasoftware.odt.webtestapi.GenerateMaster;
-import com.kogasoftware.odt.webtestapi.GenerateRecord;
-import com.kogasoftware.odt.webtestapi.SyncCall;
+import com.kogasoftware.odt.apiclient.ApiClientCallback;
+import com.kogasoftware.odt.apiclient.ApiClientException;
+import com.kogasoftware.odt.apiclient.ApiClientRequest;
+import com.kogasoftware.odt.apiclient.test.EmptyApiClientCallback;
+import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.Demand;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.InVehicleDevice;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationRecord;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceProvider;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnitStatusLog;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.UnitAssignment;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.User;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
+import com.kogasoftware.odt.invehicledevice.testapiclient.GenerateMaster;
+import com.kogasoftware.odt.invehicledevice.testapiclient.GenerateRecord;
+import com.kogasoftware.odt.invehicledevice.testapiclient.SyncCall;
 
-public class WebAPITestCase extends AndroidTestCase {
+public class InVehicleDeviceApiClientTestCase extends AndroidTestCase {
 	public static final String SERVER_HOST = "http://10.0.2.2:3334";
 	public static final String TEST_SERVER_HOST = "http://10.0.2.2:3333";
-	private static final String TAG = WebAPITestCase.class.getSimpleName();
+	private static final String TAG = InVehicleDeviceApiClientTestCase.class.getSimpleName();
 
-	class OfflineTestWebAPI extends WebAPI {
-		public OfflineTestWebAPI(String serverHost) {
+	class OfflineTestApiClient extends InVehicleDeviceApiClient {
+		public OfflineTestApiClient(String serverHost) {
 			super(serverHost);
 		}
 
-		public OfflineTestWebAPI(String serverHost, String authenticationToken) {
+		public OfflineTestApiClient(String serverHost, String authenticationToken) {
 			super(serverHost, authenticationToken);
 		}
 
-		public OfflineTestWebAPI(String serverHost, String authenticationToken,
+		public OfflineTestApiClient(String serverHost, String authenticationToken,
 				File backupFile) {
 			super(serverHost, authenticationToken, backupFile);
 		}
 
 		@Override
-		protected boolean doHttpSessionAndCallback(WebAPIRequest<?> request) {
+		protected boolean runHttpSessionAndCallback(ApiClientRequest<?> request) {
 			if (offline) {
-				request.onException(new WebAPIException("offline test"));
+				request.onException(new ApiClientException("offline test"));
 				return false;
 			} else {
-				return super.doHttpSessionAndCallback(request);
+				return super.runHttpSessionAndCallback(request);
 			}
 		}
 	}
 
-	WebAPI api;
+	InVehicleDeviceApiClient api;
 	volatile boolean offline;
 	CountDownLatch latch;
 	CountDownLatch latch2;
@@ -108,17 +108,17 @@ public class WebAPITestCase extends AndroidTestCase {
 	}
 
 	public void testPasswordLogin() throws Exception {
-		api = new WebAPI(SERVER_HOST);
+		api = new InVehicleDeviceApiClient(SERVER_HOST);
 		callTestPasswordLogin(false, true);
 	}
 
 	public void testPasswordLoginRetry() throws Exception {
-		api = new OfflineTestWebAPI(SERVER_HOST);
+		api = new OfflineTestApiClient(SERVER_HOST);
 		callTestPasswordLogin(true, true);
 	}
 
 	public void testPasswordLoginFail() throws Exception {
-		api = new WebAPI(SERVER_HOST);
+		api = new InVehicleDeviceApiClient(SERVER_HOST);
 		callTestPasswordLogin(false, false);
 	}
 
@@ -139,7 +139,7 @@ public class WebAPITestCase extends AndroidTestCase {
 			offline = true;
 		}
 
-		api.login(ivd, new WebAPICallback<InVehicleDevice>() {
+		api.login(ivd, new ApiClientCallback<InVehicleDevice>() {
 			@Override
 			public void onSucceed(int reqkey, int statusCode,
 					InVehicleDevice result) {
@@ -153,7 +153,7 @@ public class WebAPITestCase extends AndroidTestCase {
 			}
 
 			@Override
-			public void onException(int reqkey, WebAPIException ex) {
+			public void onException(int reqkey, ApiClientException ex) {
 				semaphore.release();
 			}
 		});
@@ -178,7 +178,7 @@ public class WebAPITestCase extends AndroidTestCase {
 	}
 
 	public void testGetVehicleNotifications() throws Exception {
-		api = new WebAPI(SERVER_HOST, master.getInVehicleDevice()
+		api = new InVehicleDeviceApiClient(SERVER_HOST, master.getInVehicleDevice()
 				.getAuthenticationToken().get());
 		latch = new CountDownLatch(1);
 		notifications = null;
@@ -190,7 +190,7 @@ public class WebAPITestCase extends AndroidTestCase {
 		record.createVehicleNotification("テスト通知メッセージ1です。");
 		record.createVehicleNotification("テスト通知メッセージ2です。");
 
-		api.getVehicleNotifications(new WebAPICallback<List<VehicleNotification>>() {
+		api.getVehicleNotifications(new ApiClientCallback<List<VehicleNotification>>() {
 			@Override
 			public void onSucceed(int reqkey, int statusCode,
 					List<VehicleNotification> result) {
@@ -204,7 +204,7 @@ public class WebAPITestCase extends AndroidTestCase {
 			}
 
 			@Override
-			public void onException(int reqkey, WebAPIException ex) {
+			public void onException(int reqkey, ApiClientException ex) {
 				latch.countDown();
 			}
 		});
@@ -216,13 +216,13 @@ public class WebAPITestCase extends AndroidTestCase {
 	}
 
 	public void testResponseVehicleNotification() throws Exception {
-		api = new WebAPI(SERVER_HOST, master.getInVehicleDevice()
+		api = new InVehicleDeviceApiClient(SERVER_HOST, master.getInVehicleDevice()
 				.getAuthenticationToken().get());
 		callTestResponseVehicleNotification(false);
 	}
 
 	public void testResponseVehicleNotificationOffline() throws Exception {
-		api = new OfflineTestWebAPI(SERVER_HOST, master.getInVehicleDevice()
+		api = new OfflineTestApiClient(SERVER_HOST, master.getInVehicleDevice()
 				.getAuthenticationToken().get());
 		callTestResponseVehicleNotification(true);
 	}
@@ -240,7 +240,7 @@ public class WebAPITestCase extends AndroidTestCase {
 		record.createVehicleNotification("テスト通知メッセージ1です。");
 		record.createVehicleNotification("テスト通知メッセージ2です。");
 
-		api.getVehicleNotifications(new WebAPICallback<List<VehicleNotification>>() {
+		api.getVehicleNotifications(new ApiClientCallback<List<VehicleNotification>>() {
 			@Override
 			public void onSucceed(int reqkey, int statusCode,
 					List<VehicleNotification> result) {
@@ -254,7 +254,7 @@ public class WebAPITestCase extends AndroidTestCase {
 			}
 
 			@Override
-			public void onException(int reqkey, WebAPIException ex) {
+			public void onException(int reqkey, ApiClientException ex) {
 				latch.countDown();
 			}
 		});
@@ -269,7 +269,7 @@ public class WebAPITestCase extends AndroidTestCase {
 
 		latch = new CountDownLatch(1);
 		api.responseVehicleNotification(notifications.get(0), 1,
-				new WebAPICallback<VehicleNotification>() {
+				new ApiClientCallback<VehicleNotification>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
 							VehicleNotification result) {
@@ -282,7 +282,7 @@ public class WebAPITestCase extends AndroidTestCase {
 					}
 
 					@Override
-					public void onException(int reqkey, WebAPIException ex) {
+					public void onException(int reqkey, ApiClientException ex) {
 					}
 				});
 		if (offlineTest) {
@@ -306,7 +306,7 @@ public class WebAPITestCase extends AndroidTestCase {
 		}
 
 		latch = new CountDownLatch(1);
-		api.getVehicleNotifications(new WebAPICallback<List<VehicleNotification>>() {
+		api.getVehicleNotifications(new ApiClientCallback<List<VehicleNotification>>() {
 			@Override
 			public void onSucceed(int reqkey, int statusCode,
 					List<VehicleNotification> result) {
@@ -320,7 +320,7 @@ public class WebAPITestCase extends AndroidTestCase {
 			}
 
 			@Override
-			public void onException(int reqkey, WebAPIException ex) {
+			public void onException(int reqkey, ApiClientException ex) {
 				latch.countDown();
 			}
 		});
@@ -332,13 +332,13 @@ public class WebAPITestCase extends AndroidTestCase {
 	}
 
 	public void testGetOperationSchedules() throws Exception {
-		api = new WebAPI(SERVER_HOST, master.getInVehicleDevice()
+		api = new InVehicleDeviceApiClient(SERVER_HOST, master.getInVehicleDevice()
 				.getAuthenticationToken().get());
 		callTestGetOperationSchedules(false);
 	}
 
 	public void testGetOperationSchedulesOffline() throws Exception {
-		api = new OfflineTestWebAPI(SERVER_HOST, master.getInVehicleDevice()
+		api = new OfflineTestApiClient(SERVER_HOST, master.getInVehicleDevice()
 				.getAuthenticationToken().get());
 		callTestGetOperationSchedules(true);
 	}
@@ -377,7 +377,7 @@ public class WebAPITestCase extends AndroidTestCase {
 		assertNotNull(r);
 		assertNotNull(record.createReservationUser(r, user));
 
-		api.getOperationSchedules(new WebAPICallback<List<OperationSchedule>>() {
+		api.getOperationSchedules(new ApiClientCallback<List<OperationSchedule>>() {
 			@Override
 			public void onSucceed(int reqkey, int statusCode,
 					List<OperationSchedule> result) {
@@ -391,7 +391,7 @@ public class WebAPITestCase extends AndroidTestCase {
 			}
 
 			@Override
-			public void onException(int reqkey, WebAPIException ex) {
+			public void onException(int reqkey, ApiClientException ex) {
 				latch.countDown();
 			}
 		});
@@ -412,7 +412,7 @@ public class WebAPITestCase extends AndroidTestCase {
 
 		latch = new CountDownLatch(1);
 		api.departureOperationSchedule(schedules.get(0),
-				new WebAPICallback<OperationSchedule>() {
+				new ApiClientCallback<OperationSchedule>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
 							OperationSchedule result) {
@@ -426,7 +426,7 @@ public class WebAPITestCase extends AndroidTestCase {
 					}
 
 					@Override
-					public void onException(int reqkey, WebAPIException ex) {
+					public void onException(int reqkey, ApiClientException ex) {
 					}
 				});
 		if (offlineTest) {
@@ -461,7 +461,7 @@ public class WebAPITestCase extends AndroidTestCase {
 		}
 		latch = new CountDownLatch(1);
 		api.arrivalOperationSchedule(schedules.get(1),
-				new WebAPICallback<OperationSchedule>() {
+				new ApiClientCallback<OperationSchedule>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
 							OperationSchedule result) {
@@ -475,7 +475,7 @@ public class WebAPITestCase extends AndroidTestCase {
 					}
 
 					@Override
-					public void onException(int reqkey, WebAPIException ex) {
+					public void onException(int reqkey, ApiClientException ex) {
 					}
 				});
 		if (offlineTest) {
@@ -506,13 +506,13 @@ public class WebAPITestCase extends AndroidTestCase {
 	}
 
 	public void testPassengerGetOnAndOffOffline() throws Exception {
-		api = new OfflineTestWebAPI(SERVER_HOST, master.getInVehicleDevice()
+		api = new OfflineTestApiClient(SERVER_HOST, master.getInVehicleDevice()
 				.getAuthenticationToken().get());
 		callTestPassengerGetOnAndOff(true);
 	}
 
 	public void testPassengerGetOnAndOff() throws Exception {
-		api = new WebAPI(SERVER_HOST, master.getInVehicleDevice()
+		api = new InVehicleDeviceApiClient(SERVER_HOST, master.getInVehicleDevice()
 				.getAuthenticationToken().get());
 		callTestPassengerGetOnAndOff(false);
 	}
@@ -544,7 +544,7 @@ public class WebAPITestCase extends AndroidTestCase {
 			offline = true;
 		}
 		api.getOnPassenger(os1, res, res.getFellowUsers().get(0), prec,
-				new EmptyWebAPICallback<Void>() {
+				new EmptyApiClientCallback<Void>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
 							Void result) {
@@ -578,7 +578,7 @@ public class WebAPITestCase extends AndroidTestCase {
 
 		latch = new CountDownLatch(1);
 		api.departureOperationSchedule(schedules.get(0),
-				new WebAPICallback<OperationSchedule>() {
+				new ApiClientCallback<OperationSchedule>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
 							OperationSchedule result) {
@@ -593,7 +593,7 @@ public class WebAPITestCase extends AndroidTestCase {
 					}
 
 					@Override
-					public void onException(int reqkey, WebAPIException ex) {
+					public void onException(int reqkey, ApiClientException ex) {
 						latch.countDown();
 					}
 				});
@@ -605,7 +605,7 @@ public class WebAPITestCase extends AndroidTestCase {
 
 		latch = new CountDownLatch(1);
 		api.arrivalOperationSchedule(schedules.get(1),
-				new WebAPICallback<OperationSchedule>() {
+				new ApiClientCallback<OperationSchedule>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
 							OperationSchedule result) {
@@ -620,7 +620,7 @@ public class WebAPITestCase extends AndroidTestCase {
 					}
 
 					@Override
-					public void onException(int reqkey, WebAPIException ex) {
+					public void onException(int reqkey, ApiClientException ex) {
 						latch.countDown();
 					}
 				});
@@ -639,7 +639,7 @@ public class WebAPITestCase extends AndroidTestCase {
 			offline = true;
 		}
 		api.getOffPassenger(os2, res, res.getFellowUsers().get(0), prec,
-				new EmptyWebAPICallback<Void>() {
+				new EmptyApiClientCallback<Void>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
 							Void result) {
@@ -675,7 +675,7 @@ public class WebAPITestCase extends AndroidTestCase {
 	}
 
 	public void testPassengerCancelGetOnAndOff() throws Exception {
-		api = new WebAPI(SERVER_HOST, master.getInVehicleDevice()
+		api = new InVehicleDeviceApiClient(SERVER_HOST, master.getInVehicleDevice()
 				.getAuthenticationToken().get());
 		schedules = null;
 		createTestOperationSchedules();
@@ -697,9 +697,9 @@ public class WebAPITestCase extends AndroidTestCase {
 		latch = new CountDownLatch(1);
 
 		api.getOnPassenger(os1, res, res.getFellowUsers().get(0), prec,
-				new EmptyWebAPICallback<Void>());
+				new EmptyApiClientCallback<Void>());
 		api.cancelGetOnPassenger(os1, res, res.getFellowUsers().get(0),
-				new EmptyWebAPICallback<Void>() {
+				new EmptyApiClientCallback<Void>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
 							Void result) {
@@ -724,7 +724,7 @@ public class WebAPITestCase extends AndroidTestCase {
 
 		latch = new CountDownLatch(1);
 		api.getOnPassenger(os1, res, res.getFellowUsers().get(0), prec,
-				new EmptyWebAPICallback<Void>() {
+				new EmptyApiClientCallback<Void>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
 							Void result) {
@@ -735,7 +735,7 @@ public class WebAPITestCase extends AndroidTestCase {
 
 		latch = new CountDownLatch(1);
 		api.departureOperationSchedule(schedules.get(0),
-				new WebAPICallback<OperationSchedule>() {
+				new ApiClientCallback<OperationSchedule>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
 							OperationSchedule result) {
@@ -750,7 +750,7 @@ public class WebAPITestCase extends AndroidTestCase {
 					}
 
 					@Override
-					public void onException(int reqkey, WebAPIException ex) {
+					public void onException(int reqkey, ApiClientException ex) {
 						latch.countDown();
 					}
 				});
@@ -762,7 +762,7 @@ public class WebAPITestCase extends AndroidTestCase {
 
 		latch = new CountDownLatch(1);
 		api.arrivalOperationSchedule(schedules.get(1),
-				new WebAPICallback<OperationSchedule>() {
+				new ApiClientCallback<OperationSchedule>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
 							OperationSchedule result) {
@@ -777,7 +777,7 @@ public class WebAPITestCase extends AndroidTestCase {
 					}
 
 					@Override
-					public void onException(int reqkey, WebAPIException ex) {
+					public void onException(int reqkey, ApiClientException ex) {
 						latch.countDown();
 					}
 				});
@@ -793,9 +793,9 @@ public class WebAPITestCase extends AndroidTestCase {
 
 		latch = new CountDownLatch(1);
 		api.getOffPassenger(os2, res, res.getFellowUsers().get(0), prec,
-				new EmptyWebAPICallback<Void>());
+				new EmptyApiClientCallback<Void>());
 		api.cancelGetOffPassenger(os2, res, res.getFellowUsers().get(0),
-				new EmptyWebAPICallback<Void>() {
+				new EmptyApiClientCallback<Void>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
 							Void result) {
@@ -823,7 +823,7 @@ public class WebAPITestCase extends AndroidTestCase {
 	}
 
 	public void testPassengerCancelGetOffOrdered() throws Exception {
-		api = new OfflineTestWebAPI(SERVER_HOST, master.getInVehicleDevice()
+		api = new OfflineTestApiClient(SERVER_HOST, master.getInVehicleDevice()
 				.getAuthenticationToken().get());
 		schedules = null;
 		createTestOperationSchedules();
@@ -844,7 +844,7 @@ public class WebAPITestCase extends AndroidTestCase {
 
 		latch = new CountDownLatch(1);
 		api.getOnPassenger(os1, res, res.getFellowUsers().get(0), prec,
-				new EmptyWebAPICallback<Void>() {
+				new EmptyApiClientCallback<Void>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
 							Void result) {
@@ -855,7 +855,7 @@ public class WebAPITestCase extends AndroidTestCase {
 
 		latch = new CountDownLatch(1);
 		api.departureOperationSchedule(schedules.get(0),
-				new EmptyWebAPICallback<OperationSchedule>() {
+				new EmptyApiClientCallback<OperationSchedule>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
 							OperationSchedule result) {
@@ -867,7 +867,7 @@ public class WebAPITestCase extends AndroidTestCase {
 
 		latch = new CountDownLatch(1);
 		api.arrivalOperationSchedule(schedules.get(1),
-				new EmptyWebAPICallback<OperationSchedule>() {
+				new EmptyApiClientCallback<OperationSchedule>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
 							OperationSchedule result) {
@@ -895,7 +895,7 @@ public class WebAPITestCase extends AndroidTestCase {
 			final int fi = i;
 			if (i % 2 == 0) {
 				api.getOffPassenger(os2, res, res.getFellowUsers().get(0),
-						prec, new EmptyWebAPICallback<Void>() {
+						prec, new EmptyApiClientCallback<Void>() {
 							@Override
 							public void onSucceed(int reqkey, int statusCode,
 									Void result) {
@@ -906,7 +906,7 @@ public class WebAPITestCase extends AndroidTestCase {
 			} else {
 				api.cancelGetOffPassenger(os2, res,
 						res.getFellowUsers().get(0),
-						new EmptyWebAPICallback<Void>() {
+						new EmptyApiClientCallback<Void>() {
 							@Override
 							public void onSucceed(int reqkey, int statusCode,
 									Void result) {
@@ -916,7 +916,7 @@ public class WebAPITestCase extends AndroidTestCase {
 						});
 			}
 			if (i == max / 2) {
-				api.getVehicleNotifications(new EmptyWebAPICallback<List<VehicleNotification>>() {
+				api.getVehicleNotifications(new EmptyApiClientCallback<List<VehicleNotification>>() {
 					public void onSucceed(int reqkey, int statusCode,
 							List<VehicleNotification> result) {
 						latch.countDown();
@@ -934,7 +934,7 @@ public class WebAPITestCase extends AndroidTestCase {
 	}
 
 	public void testPassengerCancelGetOnOrdered() throws Exception {
-		api = new OfflineTestWebAPI(SERVER_HOST, master.getInVehicleDevice()
+		api = new OfflineTestApiClient(SERVER_HOST, master.getInVehicleDevice()
 				.getAuthenticationToken().get());
 		schedules = null;
 		createTestOperationSchedules();
@@ -960,7 +960,7 @@ public class WebAPITestCase extends AndroidTestCase {
 			final int fi = i;
 			if (i % 2 == 0) {
 				api.getOnPassenger(os1, res, res.getFellowUsers().get(0), prec,
-						new EmptyWebAPICallback<Void>() {
+						new EmptyApiClientCallback<Void>() {
 							@Override
 							public void onSucceed(int reqkey, int statusCode,
 									Void result) {
@@ -970,7 +970,7 @@ public class WebAPITestCase extends AndroidTestCase {
 						});
 			} else {
 				api.cancelGetOnPassenger(os1, res, res.getFellowUsers().get(0),
-						new EmptyWebAPICallback<Void>() {
+						new EmptyApiClientCallback<Void>() {
 							@Override
 							public void onSucceed(int reqkey, int statusCode,
 									Void result) {
@@ -981,7 +981,7 @@ public class WebAPITestCase extends AndroidTestCase {
 			}
 			if (i == max / 2) {
 				api.getOnPassenger(os1, res2, res2.getFellowUsers().get(0),
-						prec, new EmptyWebAPICallback<Void>() {
+						prec, new EmptyApiClientCallback<Void>() {
 							@Override
 							public void onSucceed(int reqkey, int statusCode,
 									Void result) {
@@ -1044,7 +1044,7 @@ public class WebAPITestCase extends AndroidTestCase {
 		passengerRecords.add(pr2);
 
 		latch = new CountDownLatch(1);
-		api.getOperationSchedules(new WebAPICallback<List<OperationSchedule>>() {
+		api.getOperationSchedules(new ApiClientCallback<List<OperationSchedule>>() {
 			@Override
 			public void onSucceed(int reqkey, int statusCode,
 					List<OperationSchedule> result) {
@@ -1058,7 +1058,7 @@ public class WebAPITestCase extends AndroidTestCase {
 			}
 
 			@Override
-			public void onException(int reqkey, WebAPIException ex) {
+			public void onException(int reqkey, ApiClientException ex) {
 				latch.countDown();
 			}
 		});
@@ -1066,13 +1066,13 @@ public class WebAPITestCase extends AndroidTestCase {
 	}
 
 	public void testSendServiceUnitStatusLog() throws Exception {
-		api = new WebAPI(SERVER_HOST, master.getInVehicleDevice()
+		api = new InVehicleDeviceApiClient(SERVER_HOST, master.getInVehicleDevice()
 				.getAuthenticationToken().get());
 		callTestSendServiceUnitStatusLog(false);
 	}
 
 	public void testSendServiceUnitStatusLogOffline() throws Exception {
-		api = new OfflineTestWebAPI(SERVER_HOST, master.getInVehicleDevice()
+		api = new OfflineTestApiClient(SERVER_HOST, master.getInVehicleDevice()
 				.getAuthenticationToken().get());
 		callTestSendServiceUnitStatusLog(true);
 	}
@@ -1096,7 +1096,7 @@ public class WebAPITestCase extends AndroidTestCase {
 		}
 
 		api.sendServiceUnitStatusLog(log,
-				new EmptyWebAPICallback<ServiceUnitStatusLog>() {
+				new EmptyApiClientCallback<ServiceUnitStatusLog>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
 							ServiceUnitStatusLog result) {
@@ -1128,7 +1128,7 @@ public class WebAPITestCase extends AndroidTestCase {
 	}
 
 	public void testSendServiceUnitStatusLogUseOnlyOneThread() throws Exception {
-		api = new OfflineTestWebAPI(SERVER_HOST, master.getInVehicleDevice()
+		api = new OfflineTestApiClient(SERVER_HOST, master.getInVehicleDevice()
 				.getAuthenticationToken().get());
 
 		UnitAssignment ua = record.createUnitAssignment("1号車");
@@ -1148,7 +1148,7 @@ public class WebAPITestCase extends AndroidTestCase {
 		offline = true;
 		for (Integer i = 0; i < MAX; ++i) {
 			int k = api.sendServiceUnitStatusLog(log,
-					new EmptyWebAPICallback<ServiceUnitStatusLog>() {
+					new EmptyApiClientCallback<ServiceUnitStatusLog>() {
 						@Override
 						public void onSucceed(int reqkey, int statusCode,
 								ServiceUnitStatusLog result) {
@@ -1157,7 +1157,7 @@ public class WebAPITestCase extends AndroidTestCase {
 					});
 			keys.add(k);
 			if (i.equals(MAX / 2) || i.equals(0)) {
-				api.getVehicleNotifications(new EmptyWebAPICallback<List<VehicleNotification>>() {
+				api.getVehicleNotifications(new EmptyApiClientCallback<List<VehicleNotification>>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
 							List<VehicleNotification> result) {
@@ -1180,7 +1180,7 @@ public class WebAPITestCase extends AndroidTestCase {
 	public void testWithSaveOnClose() throws Exception {
 		File backupFile = getContext().getFileStreamPath("backup.serialized");
 		offline = true;
-		api = new OfflineTestWebAPI(SERVER_HOST, master.getInVehicleDevice()
+		api = new OfflineTestApiClient(SERVER_HOST, master.getInVehicleDevice()
 				.getAuthenticationToken().get(), backupFile);
 		latch = new CountDownLatch(1);
 		schedules = null;
@@ -1207,7 +1207,7 @@ public class WebAPITestCase extends AndroidTestCase {
 		}.getResult();
 		assertTrue(serverServiceUnitStatusLogs.isEmpty());
 
-		api = new WebAPI(SERVER_HOST, master.getInVehicleDevice()
+		api = new InVehicleDeviceApiClient(SERVER_HOST, master.getInVehicleDevice()
 				.getAuthenticationToken().get(), backupFile);
 		Thread.sleep(10 * 1000);
 		serverServiceUnitStatusLogs = new SyncCall<List<ServiceUnitStatusLog>>() {
@@ -1223,50 +1223,8 @@ public class WebAPITestCase extends AndroidTestCase {
 				.get().intValue());
 	}
 
-	public void xtestSearchReservationCandidateAndCreateReservation()
-			throws Exception {
-		api = new WebAPI(TEST_SERVER_HOST, master.getInVehicleDevice()
-				.getAuthenticationToken().get());
-
-		final List<ReservationCandidate> rcs = new LinkedList<ReservationCandidate>();
-		latch = new CountDownLatch(1);
-		Demand d = new Demand();
-		d.setDepartureTime(new Date());
-		api.searchReservationCandidate(d,
-				new EmptyWebAPICallback<List<ReservationCandidate>>() {
-					@Override
-					public void onSucceed(int reqkey, int statusCode,
-							List<ReservationCandidate> result) {
-						rcs.addAll(result);
-						latch.countDown();
-					}
-				});
-		assertTrue(latch.await(20, TimeUnit.SECONDS));
-		assertTrue(rcs.size() > 0);
-		for (ReservationCandidate rc : rcs) {
-			assertTrue(rc.getArrivalPlatform().isPresent());
-			assertTrue(rc.getDeparturePlatform().isPresent());
-		}
-
-		final AtomicReference<Reservation> r = new AtomicReference<Reservation>();
-		latch = new CountDownLatch(1);
-		api.createReservation(rcs.get(0),
-				new EmptyWebAPICallback<Reservation>() {
-					@Override
-					public void onSucceed(int reqkey, int statusCode,
-							Reservation result) {
-						latch.countDown();
-						r.set(result);
-					}
-				});
-		assertTrue(latch.await(2000, TimeUnit.SECONDS));
-		assertNotNull(r.get());
-		assertTrue(r.get().getArrivalPlatform().isPresent());
-		assertTrue(r.get().getDeparturePlatform().isPresent());
-	}
-
 	public void testAbort() throws Exception {
-		api = new OfflineTestWebAPI(SERVER_HOST, master.getInVehicleDevice()
+		api = new OfflineTestApiClient(SERVER_HOST, master.getInVehicleDevice()
 				.getAuthenticationToken().get());
 		UnitAssignment ua = record.createUnitAssignment("1号車");
 		Calendar cal = Calendar.getInstance();
@@ -1279,9 +1237,9 @@ public class WebAPITestCase extends AndroidTestCase {
 		List<Integer> keys = new LinkedList<Integer>();
 		for (Integer i = 0; i < 10; ++i) {
 			int k = api.sendServiceUnitStatusLog(new ServiceUnitStatusLog(),
-					new WebAPICallback<ServiceUnitStatusLog>() {
+					new ApiClientCallback<ServiceUnitStatusLog>() {
 						@Override
-						public void onException(int reqkey, WebAPIException ex) {
+						public void onException(int reqkey, ApiClientException ex) {
 						}
 
 						@Override
@@ -1308,9 +1266,9 @@ public class WebAPITestCase extends AndroidTestCase {
 		offline = true;
 		final AtomicInteger i = new AtomicInteger(0);
 		api.sendServiceUnitStatusLog(new ServiceUnitStatusLog(),
-				new WebAPICallback<ServiceUnitStatusLog>() {
+				new ApiClientCallback<ServiceUnitStatusLog>() {
 					@Override
-					public void onException(int reqkey, WebAPIException ex) {
+					public void onException(int reqkey, ApiClientException ex) {
 					}
 
 					@Override
@@ -1325,9 +1283,9 @@ public class WebAPITestCase extends AndroidTestCase {
 					}
 				});
 		int k = api.sendServiceUnitStatusLog(new ServiceUnitStatusLog(),
-				new WebAPICallback<ServiceUnitStatusLog>() {
+				new ApiClientCallback<ServiceUnitStatusLog>() {
 					@Override
-					public void onException(int reqkey, WebAPIException ex) {
+					public void onException(int reqkey, ApiClientException ex) {
 					}
 
 					@Override
@@ -1348,12 +1306,12 @@ public class WebAPITestCase extends AndroidTestCase {
 	}
 
 	public void testOnException() throws Exception {
-		api = new WebAPI("https://localhost:12345");
+		api = new InVehicleDeviceApiClient("https://localhost:12345");
 		final AtomicBoolean unexpected = new AtomicBoolean(false);
 		latch = new CountDownLatch(10);
-		api.getVehicleNotifications(new WebAPICallback<List<VehicleNotification>>() {
+		api.getVehicleNotifications(new ApiClientCallback<List<VehicleNotification>>() {
 			@Override
-			public void onException(int reqkey, WebAPIException ex) {
+			public void onException(int reqkey, ApiClientException ex) {
 				latch.countDown();
 			}
 
@@ -1373,7 +1331,7 @@ public class WebAPITestCase extends AndroidTestCase {
 	}
 
 	public void testNewRequestIsPrior() throws Exception {
-		api = new OfflineTestWebAPI(SERVER_HOST, master.getInVehicleDevice()
+		api = new OfflineTestApiClient(SERVER_HOST, master.getInVehicleDevice()
 				.getAuthenticationToken().get());
 		UnitAssignment ua = record.createUnitAssignment("1号車");
 		Calendar cal = Calendar.getInstance();
@@ -1387,7 +1345,7 @@ public class WebAPITestCase extends AndroidTestCase {
 		for (Integer i = 0; i < MAX; ++i) {
 			if (i % 2 == 0) {
 				api.sendServiceUnitStatusLog(new ServiceUnitStatusLog(),
-						new EmptyWebAPICallback<ServiceUnitStatusLog>() {
+						new EmptyApiClientCallback<ServiceUnitStatusLog>() {
 							@Override
 							public void onSucceed(int reqkey, int statusCode,
 									ServiceUnitStatusLog result) {
@@ -1395,7 +1353,7 @@ public class WebAPITestCase extends AndroidTestCase {
 							}
 						});
 			} else {
-				api.getVehicleNotifications(new EmptyWebAPICallback<List<VehicleNotification>>() {
+				api.getVehicleNotifications(new EmptyApiClientCallback<List<VehicleNotification>>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
 							List<VehicleNotification> result) {
@@ -1406,7 +1364,7 @@ public class WebAPITestCase extends AndroidTestCase {
 		}
 		offline = false;
 		latch = new CountDownLatch(1);
-		api.getVehicleNotifications(new EmptyWebAPICallback<List<VehicleNotification>>() {
+		api.getVehicleNotifications(new EmptyApiClientCallback<List<VehicleNotification>>() {
 			@Override
 			public void onSucceed(int reqkey, int statusCode,
 					List<VehicleNotification> result) {
@@ -1419,13 +1377,13 @@ public class WebAPITestCase extends AndroidTestCase {
 	}
 
 	public void testGetServiceProvider() throws Exception {
-		api = new WebAPI(SERVER_HOST, master.getInVehicleDevice()
+		api = new InVehicleDeviceApiClient(SERVER_HOST, master.getInVehicleDevice()
 				.getAuthenticationToken().get());
 		latch = new CountDownLatch(1);
 		final AtomicReference<ServiceProvider> outputServiceProvider = new AtomicReference<ServiceProvider>();
-		api.getServicePrivider(new WebAPICallback<ServiceProvider>() {
+		api.getServicePrivider(new ApiClientCallback<ServiceProvider>() {
 			@Override
-			public void onException(int reqkey, WebAPIException ex) {
+			public void onException(int reqkey, ApiClientException ex) {
 				latch.countDown();
 			}
 

@@ -1,9 +1,9 @@
-package com.kogasoftware.odt.webapi.model;
+package com.kogasoftware.odt.invehicledevice.apiclient.model;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import com.kogasoftware.odt.webapi.model.base.UserBase;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.base.UserBase;
 
 public class User extends UserBase {
 	private static final long serialVersionUID = 8982613020419131854L;

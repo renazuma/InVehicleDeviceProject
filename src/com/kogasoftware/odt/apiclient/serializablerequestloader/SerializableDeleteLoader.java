@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.webapi.serializablerequestloader;
+package com.kogasoftware.odt.apiclient.serializablerequestloader;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -6,7 +6,7 @@ import java.util.TreeMap;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpRequestBase;
 
-import com.kogasoftware.odt.webapi.WebAPIException;
+import com.kogasoftware.odt.apiclient.ApiClientException;
 
 public class SerializableDeleteLoader extends SerializableRequestLoader {
 	private static final long serialVersionUID = -2445501098599698093L;
@@ -23,7 +23,7 @@ public class SerializableDeleteLoader extends SerializableRequestLoader {
 	}
 
 	@Override
-	public HttpRequestBase load() throws WebAPIException {
+	public HttpRequestBase load() throws ApiClientException {
 		HttpDelete request = new HttpDelete();
 		build(request);
 		return request;

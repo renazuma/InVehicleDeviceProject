@@ -1,6 +1,6 @@
-package com.kogasoftware.odt.webapi.model;
+package com.kogasoftware.odt.invehicledevice.apiclient.model;
 
-import com.kogasoftware.odt.webapi.model.base.PassengerRecordBase;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.base.PassengerRecordBase;
 
 public class PassengerRecord extends PassengerRecordBase {
 	private static final long serialVersionUID = -7618961978174467119L;

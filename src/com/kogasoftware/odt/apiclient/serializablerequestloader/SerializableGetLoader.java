@@ -1,11 +1,11 @@
-package com.kogasoftware.odt.webapi.serializablerequestloader;
+package com.kogasoftware.odt.apiclient.serializablerequestloader;
 
 import java.util.Map;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
 
-import com.kogasoftware.odt.webapi.WebAPIException;
+import com.kogasoftware.odt.apiclient.ApiClientException;
 
 public class SerializableGetLoader extends SerializableRequestLoader {
 	private static final long serialVersionUID = -3731243816173414925L;
@@ -22,7 +22,7 @@ public class SerializableGetLoader extends SerializableRequestLoader {
 	}
 
 	@Override
-	public HttpRequestBase load() throws WebAPIException {
+	public HttpRequestBase load() throws ApiClientException {
 		HttpGet request = new HttpGet();
 		build(request);
 		return request;

@@ -1,7 +1,7 @@
-package com.kogasoftware.odt.webapi.test.model;
+package com.kogasoftware.odt.invehicledevice.apiclient.test.model;
 
-import static com.kogasoftware.odt.webapi.model.OperationSchedule.getCurrentOperationSchedule;
-import static com.kogasoftware.odt.webapi.model.OperationSchedule.getRelativeOperationSchedule;
+import static com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule.getCurrentOperationSchedule;
+import static com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule.getRelativeOperationSchedule;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -9,8 +9,8 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.webapi.model.OperationRecord;
-import com.kogasoftware.odt.webapi.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationRecord;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 
 public class OperationScheduleTestCase extends TestCase {
 	public void testIsDeparted() {

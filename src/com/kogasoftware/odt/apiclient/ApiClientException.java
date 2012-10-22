@@ -1,13 +1,13 @@
-package com.kogasoftware.odt.webapi;
+package com.kogasoftware.odt.apiclient;
 
-public class WebAPIException extends Exception {
+public class ApiClientException extends Exception {
 	private static final long serialVersionUID = -6992514460783010534L;
 
-	public WebAPIException(Exception cause) {
+	public ApiClientException(Exception cause) {
 		super(cause);
 	}
 
-	public WebAPIException(String message) {
+	public ApiClientException(String message) {
 		super(message);
 	}
 }

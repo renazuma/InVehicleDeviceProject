@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.webapi.model.base;
+package com.kogasoftware.odt.invehicledevice.apiclient.model.base;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -23,9 +23,9 @@ import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.kogasoftware.odt.webapi.Identifiable;
+import com.kogasoftware.odt.apiclient.identifiable.Identifiable;
 
-public abstract class Model implements Serializable, Identifiable, Cloneable {
+public abstract class Model implements Serializable, Identifiable {
 	public static final String TAG = Model.class.getSimpleName();
 	public static final Integer MAX_RECURSE_DEPTH = 11;
 

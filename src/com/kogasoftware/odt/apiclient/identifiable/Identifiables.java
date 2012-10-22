@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.webapi;
+package com.kogasoftware.odt.apiclient.identifiable;
 
 import java.util.Collection;
 

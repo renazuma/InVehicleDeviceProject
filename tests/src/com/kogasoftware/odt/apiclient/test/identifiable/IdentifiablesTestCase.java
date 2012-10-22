@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.webapi.test;
+package com.kogasoftware.odt.apiclient.test.identifiable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,8 +8,8 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import com.google.common.collect.Lists;
-import com.kogasoftware.odt.webapi.Identifiable;
-import com.kogasoftware.odt.webapi.Identifiables;
+import com.kogasoftware.odt.apiclient.identifiable.Identifiable;
+import com.kogasoftware.odt.apiclient.identifiable.Identifiables;
 
 public class IdentifiablesTestCase extends TestCase {
 	static class Test implements Identifiable {

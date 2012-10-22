@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.webapi.serializablerequestloader;
+package com.kogasoftware.odt.apiclient.serializablerequestloader;
 
 import java.io.UnsupportedEncodingException;
 
@@ -8,7 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.base.Objects;
-import com.kogasoftware.odt.webapi.WebAPIException;
+import com.kogasoftware.odt.apiclient.ApiClientException;
 
 public abstract class SerializableEntityEnclosingRequestLoader extends
 		SerializableRequestLoader {
@@ -23,26 +23,26 @@ public abstract class SerializableEntityEnclosingRequestLoader extends
 	}
 
 	protected void build(HttpEntityEnclosingRequestBase request)
-			throws WebAPIException {
+			throws ApiClientException {
 		super.build(request);
 		try {
 			StringEntity entity = new StringEntity(entityString, "UTF-8");
 			entity.setContentType("application/json");
 			request.setEntity(entity);
 		} catch (UnsupportedEncodingException e) {
-			throw new WebAPIException(e);
+			throw new ApiClientException(e);
 		}
 	}
 
 	@Override
-	protected void registerAuthenticationToken() throws WebAPIException {
+	protected void registerAuthenticationToken() throws ApiClientException {
 		if (authenticationToken.length() > 0) {
 			try {
 				JSONObject entityJSON = new JSONObject(entityString);
 				entityJSON.put(AUTHENTICATION_TOKEN_KEY, authenticationToken);
 				entityString = entityJSON.toString();
 			} catch (JSONException e) {
-				throw new WebAPIException(e);
+				throw new ApiClientException(e);
 			}
 		}
 	}

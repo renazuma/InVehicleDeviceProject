@@ -1,15 +1,16 @@
-package com.kogasoftware.odt.webapi.test.model;
+package com.kogasoftware.odt.invehicledevice.apiclient.test.model;
 
 import org.json.JSONException;
 
-import com.kogasoftware.odt.webapi.model.ServiceProvider;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceProvider;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceProvider.ReservationTimeLimit;
 
 import junit.framework.TestCase;
 
 public class ServiceProviderTestCase extends TestCase {
 	public void testParse() throws Exception {
 		ServiceProvider sp = new ServiceProvider();
-		com.kogasoftware.odt.webapi.model.ServiceProvider.ReservationTimeLimit rtl;
+		ReservationTimeLimit rtl;
 		
 		try {
 			sp.setReservationTimeLimit("{foo: 'bar', android_app: 1234}");

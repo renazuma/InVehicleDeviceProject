@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.webapi.model.base;
+package com.kogasoftware.odt.invehicledevice.apiclient.model.base;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -13,9 +13,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.webapi.WebAPI;
-import com.kogasoftware.odt.webapi.WebAPI.ResponseConverter;
-import com.kogasoftware.odt.webapi.model.*;
+import com.kogasoftware.odt.apiclient.ApiClient;
+import com.kogasoftware.odt.apiclient.ApiClient.ResponseConverter;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.*;
 
 @SuppressWarnings("unused")
 public abstract class UnitAssignmentBase extends Model {
@@ -23,13 +23,13 @@ public abstract class UnitAssignmentBase extends Model {
 	public static final ResponseConverter<UnitAssignment> RESPONSE_CONVERTER = new ResponseConverter<UnitAssignment>() {
 		@Override
 		public UnitAssignment convert(byte[] rawResponse) throws JSONException {
-			return parse(WebAPI.parseJSONObject(rawResponse));
+			return parse(ApiClient.parseJSONObject(rawResponse));
 		}
 	};
 	public static final ResponseConverter<List<UnitAssignment>> LIST_RESPONSE_CONVERTER = new ResponseConverter<List<UnitAssignment>>() {
 		@Override
 		public List<UnitAssignment> convert(byte[] rawResponse) throws JSONException {
-			return parseList(WebAPI.parseJSONArray(rawResponse));
+			return parseList(ApiClient.parseJSONArray(rawResponse));
 		}
 	};
 	protected void refreshUpdatedAt() {

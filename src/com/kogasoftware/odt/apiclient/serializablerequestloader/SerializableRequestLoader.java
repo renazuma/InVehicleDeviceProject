@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.webapi.serializablerequestloader;
+package com.kogasoftware.odt.apiclient.serializablerequestloader;
 
 import java.io.Serializable;
 import java.net.URI;
@@ -14,7 +14,7 @@ import android.util.Log;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
-import com.kogasoftware.odt.webapi.WebAPIException;
+import com.kogasoftware.odt.apiclient.ApiClientException;
 
 public abstract class SerializableRequestLoader implements Serializable {
 	private static final String TAG = SerializableRequestLoader.class.getSimpleName();
@@ -43,7 +43,7 @@ public abstract class SerializableRequestLoader implements Serializable {
 		this(host, path, params, authenticationToken, ".json");
 	}
 
-	protected void build(HttpRequestBase request) throws WebAPIException {
+	protected void build(HttpRequestBase request) throws ApiClientException {
 		registerAuthenticationToken();
 
 		Uri.Builder uriBuilder = Uri.parse(host).buildUpon();
@@ -60,13 +60,13 @@ public abstract class SerializableRequestLoader implements Serializable {
 		try {
 			request.setURI(new URI(uri));
 		} catch (URISyntaxException e) {
-			throw new WebAPIException(e);
+			throw new ApiClientException(e);
 		}
 	}
 
-	public abstract HttpRequestBase load() throws WebAPIException;
+	public abstract HttpRequestBase load() throws ApiClientException;
 
-	protected void registerAuthenticationToken() throws WebAPIException {
+	protected void registerAuthenticationToken() throws ApiClientException {
 		if (authenticationToken.length() > 0) {
 			params.put(AUTHENTICATION_TOKEN_KEY, authenticationToken);
 		}

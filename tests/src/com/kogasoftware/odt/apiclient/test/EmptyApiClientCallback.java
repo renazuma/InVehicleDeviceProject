@@ -1,11 +1,11 @@
-package com.kogasoftware.odt.webapi.test;
+package com.kogasoftware.odt.apiclient.test;
 
-import com.kogasoftware.odt.webapi.WebAPIException;
-import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
+import com.kogasoftware.odt.apiclient.ApiClientCallback;
+import com.kogasoftware.odt.apiclient.ApiClientException;
 
-public class EmptyWebAPICallback<T> implements WebAPICallback<T> {
+public class EmptyApiClientCallback<T> implements ApiClientCallback<T> {
 	@Override
-	public void onException(int reqkey, WebAPIException ex) {
+	public void onException(int reqkey, ApiClientException ex) {
 	}
 
 	@Override

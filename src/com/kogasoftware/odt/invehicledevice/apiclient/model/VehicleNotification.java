@@ -1,6 +1,6 @@
-package com.kogasoftware.odt.webapi.model;
+package com.kogasoftware.odt.invehicledevice.apiclient.model;
 
-import com.kogasoftware.odt.webapi.model.base.VehicleNotificationBase;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.base.VehicleNotificationBase;
 
 public class VehicleNotification extends VehicleNotificationBase {
 	private static final long serialVersionUID = 2101852795125634906L;

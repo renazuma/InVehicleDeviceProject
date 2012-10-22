@@ -1,10 +1,10 @@
-package com.kogasoftware.odt.webapi.model;
+package com.kogasoftware.odt.invehicledevice.apiclient.model;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.kogasoftware.odt.webapi.model.base.Model;
-import com.kogasoftware.odt.webapi.model.base.ServiceProviderBase;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.base.Model;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.base.ServiceProviderBase;
 
 public class ServiceProvider extends ServiceProviderBase {
 	private static final long serialVersionUID = 8456722052053624083L;

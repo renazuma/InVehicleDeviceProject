@@ -1,13 +1,14 @@
-package com.kogasoftware.odt.webapi.test.model;
+package com.kogasoftware.odt.invehicledevice.apiclient.test.model;
 
 import java.util.Date;
 
 import junit.framework.TestCase;
 
 import com.google.common.collect.Lists;
-import com.kogasoftware.odt.webapi.model.PassengerRecord;
-import com.kogasoftware.odt.webapi.model.Reservation;
-import com.kogasoftware.odt.webapi.model.User;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.User;
+
 
 public class PassengerRecordTestCase extends TestCase {
 	public void testStatus() {

@@ -1,10 +1,10 @@
-package com.kogasoftware.odt.webapi.serializablerequestloader;
+package com.kogasoftware.odt.apiclient.serializablerequestloader;
 
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.json.JSONObject;
 
-import com.kogasoftware.odt.webapi.WebAPIException;
+import com.kogasoftware.odt.apiclient.ApiClientException;
 
 public class SerializablePutLoader extends SerializableEntityEnclosingRequestLoader {
 	private static final long serialVersionUID = -5259397660430434317L;
@@ -15,7 +15,7 @@ public class SerializablePutLoader extends SerializableEntityEnclosingRequestLoa
 	}
 
 	@Override
-	public HttpRequestBase load() throws WebAPIException {
+	public HttpRequestBase load() throws ApiClientException {
 		HttpPut request = new HttpPut();
 		build(request);
 		return request;

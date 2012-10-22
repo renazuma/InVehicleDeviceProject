@@ -1,8 +1,8 @@
-package com.kogasoftware.odt.webapi;
+package com.kogasoftware.odt.apiclient;
 
 import java.io.Serializable;
 
-public class WebAPIRequestConfig implements Serializable {
+public class ApiClientRequestConfig implements Serializable {
 	private static final long serialVersionUID = -7664904125371847081L;
 	private Boolean retry = true;
 	private Boolean saveOnClose = false;

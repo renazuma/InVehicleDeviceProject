@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.webapi;
+package com.kogasoftware.odt.apiclient;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,19 +24,19 @@ import com.google.common.collect.Lists;
 import com.google.common.io.Closeables;
 
 /**
- * WebAPIRequestを管理するクラス
+ * ApiClientRequestを管理するクラス
  */
-public class WebAPIRequestQueue {
-	private static final String TAG = WebAPIRequestQueue.class.getSimpleName();
+public class ApiClientRequestQueue {
+	private static final String TAG = ApiClientRequestQueue.class.getSimpleName();
 	private static final Object FILE_ACCESS_LOCK = new Object(); // ファイルアクセス中のスレッドを一つに制限するためのロック。将来的にはロックの粒度をファイル毎にする必要があるかもしれない。
 	public static final String UNIQUE_GROUP = "";
 
 	protected static class InstanceState implements Serializable {
 		protected static final long serialVersionUID = 672897944999498097L;
-		protected final LinkedList<Pair<String, List<WebAPIRequest<?>>>> requestsByGroup;
+		protected final LinkedList<Pair<String, List<ApiClientRequest<?>>>> requestsByGroup;
 
 		public InstanceState(
-				LinkedList<Pair<String, List<WebAPIRequest<?>>>> requestsByGroup) {
+				LinkedList<Pair<String, List<ApiClientRequest<?>>>> requestsByGroup) {
 			this.requestsByGroup = Lists.newLinkedList(requestsByGroup);
 		}
 	}
@@ -46,7 +46,7 @@ public class WebAPIRequestQueue {
 	// 作業中のグループ
 	protected final Set<String> processingGroups = new HashSet<String>();
 	// グループ毎作業待ちリクエスト
-	protected final LinkedList<Pair<String, List<WebAPIRequest<?>>>> requestsByGroup = Lists
+	protected final LinkedList<Pair<String, List<ApiClientRequest<?>>>> requestsByGroup = Lists
 			.newLinkedList();
 	// 「グループ毎作業待ちリクエスト」の追加待ち処理を実装するためのセマフォ。パーミットの数は必ずrequestsByGroup内の作業中でないリクエストの数と同じか多くなるようにする。
 	protected final Semaphore waitingQueuePollPermissions = new Semaphore(0);
@@ -58,7 +58,7 @@ public class WebAPIRequestQueue {
 	/**
 	 * コンストラクタ
 	 */
-	public WebAPIRequestQueue() {
+	public ApiClientRequestQueue() {
 		optionalBackupFile = Optional.absent();
 	}
 
@@ -68,7 +68,7 @@ public class WebAPIRequestQueue {
 	 * @param backupFile
 	 *            データを読み出すファイル
 	 */
-	public WebAPIRequestQueue(File backupFile) {
+	public ApiClientRequestQueue(File backupFile) {
 		this.optionalBackupFile = Optional.of(backupFile);
 		if (!backupFile.exists()) {
 			return;
@@ -100,16 +100,16 @@ public class WebAPIRequestQueue {
 		}
 	}
 
-	protected List<WebAPIRequest<?>> findOrCreateGroup(String group) {
+	protected List<ApiClientRequest<?>> findOrCreateGroup(String group) {
 		synchronized (queueLock) {
 			// 同名のグループを探す
-			for (Pair<String, List<WebAPIRequest<?>>> pair : requestsByGroup) {
+			for (Pair<String, List<ApiClientRequest<?>>> pair : requestsByGroup) {
 				if (pair.getKey().equals(group)) {
 					return pair.getValue();
 				}
 			}
 			// ない場合新規作成
-			List<WebAPIRequest<?>> newList = Lists.newLinkedList();
+			List<ApiClientRequest<?>> newList = Lists.newLinkedList();
 			requestsByGroup.addFirst(Pair.of(group, newList));
 			return newList;
 		}
@@ -120,7 +120,7 @@ public class WebAPIRequestQueue {
 	 * 
 	 * @param request
 	 */
-	public void add(WebAPIRequest<?> request, String group) {
+	public void add(ApiClientRequest<?> request, String group) {
 		synchronized (queueLock) {
 			if (group.equals(UNIQUE_GROUP)) {
 				// ユニークなグループ名を作成
@@ -138,7 +138,7 @@ public class WebAPIRequestQueue {
 		}
 	}
 
-	public void add(WebAPIRequest<?> request) {
+	public void add(ApiClientRequest<?> request) {
 		add(request, UNIQUE_GROUP);
 	}
 
@@ -152,13 +152,13 @@ public class WebAPIRequestQueue {
 	}
 
 	protected void backup(File backupFile) {
-		LinkedList<Pair<String, List<WebAPIRequest<?>>>> backupRequestsByGroup = Lists
+		LinkedList<Pair<String, List<ApiClientRequest<?>>>> backupRequestsByGroup = Lists
 				.newLinkedList();
 		synchronized (queueLock) {
-			for (Pair<String, List<WebAPIRequest<?>>> pair : Lists
+			for (Pair<String, List<ApiClientRequest<?>>> pair : Lists
 					.newLinkedList(requestsByGroup)) {
-				List<WebAPIRequest<?>> backupRequests = Lists.newLinkedList();
-				for (WebAPIRequest<?> request : pair.getValue()) {
+				List<ApiClientRequest<?>> backupRequests = Lists.newLinkedList();
+				for (ApiClientRequest<?> request : pair.getValue()) {
 					if (request.getConfig().getSaveOnClose()) {
 						backupRequests.add(request);
 					}
@@ -186,12 +186,12 @@ public class WebAPIRequestQueue {
 	 * 
 	 * @param request
 	 */
-	public void remove(WebAPIRequest<?> request) {
+	public void remove(ApiClientRequest<?> request) {
 		synchronized (queueLock) {
-			for (Pair<String, List<WebAPIRequest<?>>> entry : Lists
+			for (Pair<String, List<ApiClientRequest<?>>> entry : Lists
 					.newLinkedList(requestsByGroup)) {
 				String group = entry.getKey();
-				List<WebAPIRequest<?>> requests = entry.getValue();
+				List<ApiClientRequest<?>> requests = entry.getValue();
 				if (!requests.remove(request)) {
 					continue;
 				}
@@ -213,11 +213,11 @@ public class WebAPIRequestQueue {
 	 * @param reqkey
 	 */
 	public void abort(int reqkey) {
-		WebAPIRequest<?> foundRequest = null;
+		ApiClientRequest<?> foundRequest = null;
 		synchronized (queueLock) {
-			for (Pair<String, List<WebAPIRequest<?>>> entry : Lists
+			for (Pair<String, List<ApiClientRequest<?>>> entry : Lists
 					.newLinkedList(requestsByGroup)) {
-				for (WebAPIRequest<?> request : entry.getValue()) {
+				for (ApiClientRequest<?> request : entry.getValue()) {
 					if (request.getReqKey() == reqkey) {
 						foundRequest = request;
 						remove(request);
@@ -237,12 +237,12 @@ public class WebAPIRequestQueue {
 	 * @param request
 	 *            リトライ対象のリクエスト
 	 */
-	public void retry(WebAPIRequest<?> request) {
+	public void retry(ApiClientRequest<?> request) {
 		synchronized (queueLock) {
-			for (Pair<String, List<WebAPIRequest<?>>> entry : Lists
+			for (Pair<String, List<ApiClientRequest<?>>> entry : Lists
 					.newLinkedList(requestsByGroup)) {
 				String group = entry.getKey();
-				List<WebAPIRequest<?>> requests = entry.getValue();
+				List<ApiClientRequest<?>> requests = entry.getValue();
 				if (!requests.contains(request)) {
 					continue;
 				}
@@ -251,7 +251,7 @@ public class WebAPIRequestQueue {
 				}
 				requestsByGroup.remove(entry);
 				requestsByGroup.addLast(entry);
-				for (WebAPIRequest<?> retryRequest : requests) {
+				for (ApiClientRequest<?> retryRequest : requests) {
 					retryRequest.setRetry(true);
 				}
 				backup();
@@ -265,14 +265,14 @@ public class WebAPIRequestQueue {
 	 * @return リクエスト
 	 * @throws InterruptedException
 	 */
-	public WebAPIRequest<?> take() throws InterruptedException {
+	public ApiClientRequest<?> take() throws InterruptedException {
 		while (true) {
 			waitingQueuePollPermissions.acquire(); // synchronizedの外で待つ
 			synchronized (queueLock) {
-				for (Pair<String, List<WebAPIRequest<?>>> entry : Lists
+				for (Pair<String, List<ApiClientRequest<?>>> entry : Lists
 						.newLinkedList(requestsByGroup)) {
 					String group = entry.getKey();
-					List<WebAPIRequest<?>> requests = entry.getValue();
+					List<ApiClientRequest<?>> requests = entry.getValue();
 					if (requests.isEmpty()) {
 						processingGroups.remove(group);
 						requestsByGroup.remove(entry);
