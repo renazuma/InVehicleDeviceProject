@@ -25,8 +25,7 @@ public class SavePreferencesActivityTestCase extends
 	};
 
 	public SavePreferencesActivityTestCase() {
-		super("com.kogasoftware.odt.invehicledevice",
-				SavePreferencesActivity.class);
+		super(SavePreferencesActivity.class);
 	}
 
 	@Override
