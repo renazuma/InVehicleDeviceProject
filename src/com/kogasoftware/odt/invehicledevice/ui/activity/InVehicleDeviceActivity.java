@@ -1,6 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.ui.activity;
 
-import android.app.Activity;
+import java.util.List;
+
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
@@ -16,12 +17,16 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.common.base.Optional;
@@ -30,24 +35,38 @@ import com.kogasoftware.odt.invehicledevice.compatibility.reflection.android.pro
 import com.kogasoftware.odt.invehicledevice.compatibility.reflection.android.view.ViewReflection;
 import com.kogasoftware.odt.invehicledevice.compatibility.reflection.android.view.ViewReflection.OnSystemUiVisibilityChangeListenerReflection;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher.OnOperationScheduleReceiveFailedListener;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.ui.BigToast;
-import com.kogasoftware.odt.invehicledevice.ui.InVehicleDeviceView;
+import com.kogasoftware.odt.invehicledevice.ui.fragment.InVehicleDeviceFragment;
+import com.kogasoftware.odt.invehicledevice.ui.fragment.OperationScheduleChangedAlertFragment;
+import com.kogasoftware.odt.invehicledevice.ui.fragment.VehicleNotificationAlertFragment;
+import com.kogasoftware.odt.webapi.model.OperationSchedule;
+import com.kogasoftware.odt.webapi.model.PassengerRecord;
+import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
-public class InVehicleDeviceActivity extends Activity implements
+public class InVehicleDeviceActivity extends FragmentActivity implements
 		EventDispatcher.OnExitListener,
-		OnOperationScheduleReceiveFailedListener {
+		EventDispatcher.OnOperationScheduleReceiveFailListener,
+		EventDispatcher.OnUpdatePhaseListener,
+		EventDispatcher.OnAlertVehicleNotificationReceiveListener,
+		EventDispatcher.OnMergeOperationSchedulesListener {
 	private static final String TAG = InVehicleDeviceActivity.class
 			.getSimpleName();
-	private static final int WAIT_FOR_INITIALIZE_DIALOG_ID = 10;
-	private static final int WAIT_FOR_INITIALIZE_MILLIS = 1 * 1000;
+	public static final int ALERT_SHOW_INTERVAL_MILLIS = 500;
 	public static final int PAUSE_FINISH_TIMEOUT_MILLIS = 10 * 1000;
 	public static final int SYSTEM_UI_VISIBILITY_UPDATE_MILLIS = 2 * 1000;
+	public static final String LOADING_DIALOG_FRAGMENT_TAG = "LoadingDialogFragmentTag";
 	private final Handler handler = new Handler();
-	// Androidエミュレーターで、Activity起動後ESCキーを押してホーム画面に戻ると、Activityが見えていないのに
-	// onStopやonDestroyが呼ばれずRunningTaskInfo.topActivityがこのActivityを返すため、自動再起動ができないことがある。
-	// そのため、onPauseが呼ばれて一定時間が経ったらtaskを移動してfinishするようにした
+	private ImageView alertImageView;
+
+	/**
+	 * Androidエミュレーターで、Activity起動後ESCキーを押してホーム画面に戻ると、Activityが見えていないのに
+	 * onStopやonDestroyが呼ばれずRunningTaskInfo
+	 * .topActivityがこのActivityを返すため、自動再起動ができないことがある。
+	 * そのため、onPauseが呼ばれて一定時間が経ったらtaskを移動してfinishするようにした
+	 */
 	private final Runnable pauseFinishTimeouter = new Runnable() {
 		@Override
 		public void run() {
@@ -58,20 +77,10 @@ public class InVehicleDeviceActivity extends Activity implements
 			}
 		}
 	};
-	private final Runnable waitForInitialize = new Runnable() {
-		@Override
-		public void run() {
-			for (InVehicleDeviceService service : optionalService.asSet()) {
-				if (service.isOperationInitialized()) {
-					onInitialize(service);
-					handler.removeCallbacks(this);
-					return;
-				}
-			}
-			handler.postDelayed(this, WAIT_FOR_INITIALIZE_MILLIS);
-		}
-	};
 
+	/**
+	 * InVehicleDeviceServiceとの接続
+	 */
 	private final ServiceConnection serviceConnection = new ServiceConnection() {
 		@Override
 		public void onServiceConnected(ComponentName className, IBinder binder) {
@@ -80,21 +89,40 @@ public class InVehicleDeviceActivity extends Activity implements
 						+ " instanceof InVehicleDeviceService.LocalBinder)");
 				return;
 			}
+			if (isFinishing()) {
+				Log.w(TAG, "onServiceConnected(" + className + "," + binder
+						+ ") but finishing");
+				return;
+			}
 			InVehicleDeviceService service = ((InVehicleDeviceService.LocalBinder) binder)
 					.getService();
-			service.getEventDispatcher().addOnOperationScheduleReceiveFailedListener(InVehicleDeviceActivity.this);
-			service.getEventDispatcher().addOnExitListener(InVehicleDeviceActivity.this);
-			optionalService = Optional.of(service);
+			service.getEventDispatcher().addOnUpdatePhaseListener(
+					InVehicleDeviceActivity.this);
+			Log.i(TAG, "addOnUpdatePhaseListener()");
+			service.getEventDispatcher()
+					.addOnOperationScheduleReceiveFailedListener(
+							InVehicleDeviceActivity.this);
+			service.getEventDispatcher().addOnExitListener(
+					InVehicleDeviceActivity.this);
+			service.getEventDispatcher()
+					.addOnAlertVehicleNotificationReceiveListener(
+							InVehicleDeviceActivity.this);
+			service.getEventDispatcher().addOnMergeOperationSchedulesListener(
+					InVehicleDeviceActivity.this);
+			new OperationScheduleLogic(service).requestUpdatePhase();
+			InVehicleDeviceActivity.this.service = Optional.of(service);
 		}
 
 		@Override
 		public void onServiceDisconnected(ComponentName className) {
 			Log.e(TAG, "onServiceDisconnected(" + className + ")");
-			optionalService = Optional.absent();
 			onExit();
 		}
 	};
 
+	/**
+	 * SystemUiVisibilityが変更されたら、元に戻す
+	 */
 	private final OnSystemUiVisibilityChangeListenerReflection onSystemUiVisibilityChangeListener = new OnSystemUiVisibilityChangeListenerReflection() {
 		@Override
 		public void onSystemUiVisibilityChange(int visibility) {
@@ -115,8 +143,28 @@ public class InVehicleDeviceActivity extends Activity implements
 		}
 	};
 
-	private Boolean uiInitialized = false;
-	private Optional<InVehicleDeviceService> optionalService = Optional
+	/**
+	 * 読み込み中ダイアログ
+	 */
+	public static class LoadingDialogFragment extends DialogFragment {
+		@Override
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
+			ProgressDialog dialog = new ProgressDialog(getActivity());
+			dialog.setMessage(Html
+					.fromHtml(getString(R.string.operation_schedule_receiving_html)));
+			dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			dialog.setCanceledOnTouchOutside(true);
+			dialog.setOnCancelListener(new OnCancelListener() {
+				@Override
+				public void onCancel(DialogInterface dialog) {
+					getActivity().finish();
+				}
+			});
+			return dialog;
+		}
+	}
+
+	private Optional<LoadingDialogFragment> loadingDialogFragment = Optional
 			.absent();
 
 	@Override
@@ -127,12 +175,13 @@ public class InVehicleDeviceActivity extends Activity implements
 				WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
 						| WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
 						| WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
-		if (!isFinishing()) {
-			showDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
-		}
+
+		LoadingDialogFragment loadingDialogFragment = new LoadingDialogFragment();
+		loadingDialogFragment.show(getSupportFragmentManager(),
+				LOADING_DIALOG_FRAGMENT_TAG);
+		this.loadingDialogFragment = Optional.of(loadingDialogFragment);
 		bindService(new Intent(this, InVehicleDeviceService.class),
 				serviceConnection, Context.BIND_AUTO_CREATE);
-		handler.post(waitForInitialize);
 		ViewReflection.setOnSystemUiVisibilityChangeListener(getWindow()
 				.getDecorView(), onSystemUiVisibilityChangeListener);
 	}
@@ -141,39 +190,18 @@ public class InVehicleDeviceActivity extends Activity implements
 	public void onDestroy() {
 		super.onDestroy();
 		Log.i(TAG, "onDestroy()");
-		for (InVehicleDeviceService service : optionalService.asSet()) {
+		for (InVehicleDeviceService service : getService().asSet()) {
 			service.getEventDispatcher().removeOnExitListener(this);
-			service.getEventDispatcher().removeOnOperationScheduleReceiveFailedListener(this);
+			service.getEventDispatcher()
+					.removeOnOperationScheduleReceiveFailedListener(this);
+			service.getEventDispatcher()
+					.removeOnAlertVehicleNotificationReceiveListener(this);
+			service.getEventDispatcher()
+					.removeOnMergeOperationSchedulesListener(this);
 		}
-		optionalService = Optional.absent();
 		unbindService(serviceConnection);
 		getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-		handler.removeCallbacks(waitForInitialize);
 		handler.removeCallbacks(pauseFinishTimeouter);
-	}
-
-	@Override
-	protected Dialog onCreateDialog(int id) {
-		switch (id) {
-		case WAIT_FOR_INITIALIZE_DIALOG_ID: {
-			ProgressDialog dialog = new ProgressDialog(this);
-			dialog.setMessage(Html
-					.fromHtml(getString(R.string.operation_schedule_receiving_html)));
-			dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			dialog.setOnCancelListener(new OnCancelListener() {
-				@Override
-				public void onCancel(DialogInterface dialogInterface) {
-					if (!isFinishing()) {
-						finish();
-					}
-				}
-			});
-			return dialog;
-		}
-
-		default:
-			return null;
-		}
 	}
 
 	@Override
@@ -184,16 +212,26 @@ public class InVehicleDeviceActivity extends Activity implements
 		}
 	}
 
-	public void onInitialize(final InVehicleDeviceService service) {
-		Log.i(TAG, "onInitialize()");
-		if (isFinishing()) {
-			return;
-		}
+	public void initializeUi(Phase phase,
+			List<OperationSchedule> operationSchedules,
+			List<PassengerRecord> passengerRecords) {
+		Log.i(TAG, "initializeUi()");
 
-		final View view = new InVehicleDeviceView(this, service);
+		final View view = getLayoutInflater().inflate(
+				R.layout.in_vehicle_device_activity, null);
 		view.setBackgroundColor(Color.WHITE);
 		view.setVisibility(View.INVISIBLE);
 		setContentView(view);
+		alertImageView = (ImageView) findViewById(R.id.alert_image_view);
+
+		FragmentTransaction fragmentTransaction = getSupportFragmentManager()
+				.beginTransaction();
+		fragmentTransaction.add(R.id.modal_fragment_container,
+				InVehicleDeviceFragment.newInstance(phase, operationSchedules,
+						passengerRecords));
+		fragmentTransaction.commitAllowingStateLoss();
+
+		uiInitialized = true;
 
 		// データが割り当てられる前の状態の部品を表示させないため、表示を遅延させる。
 		handler.post(new Runnable() {
@@ -204,18 +242,17 @@ public class InVehicleDeviceActivity extends Activity implements
 						R.anim.show_in_vehicle_device_view);
 				view.startAnimation(animation);
 				view.setVisibility(View.VISIBLE);
-				try {
-					removeDialog(WAIT_FOR_INITIALIZE_DIALOG_ID);
-				} catch (IllegalArgumentException e) {
-					Log.w(TAG, e);
+				for (DialogFragment dialogFragment : loadingDialogFragment
+						.asSet()) {
+					try {
+						dialogFragment.dismiss();
+					} catch (IllegalStateException e) {
+						Log.e(TAG, e.toString(), e);
+					}
 				}
+				loadingDialogFragment = Optional.absent();
 			}
 		});
-		uiInitialized = true;
-	}
-
-	public Boolean isUIInitialized() {
-		return uiInitialized;
 	}
 
 	@Override
@@ -238,7 +275,7 @@ public class InVehicleDeviceActivity extends Activity implements
 		super.onResume();
 		Log.i(TAG, "onResume()");
 		handler.removeCallbacks(pauseFinishTimeouter);
-		for (InVehicleDeviceService service : optionalService.asSet()) {
+		for (InVehicleDeviceService service : getService().asSet()) {
 			service.getEventDispatcher().dispatchActivityResumed();
 		}
 		for (final Integer SYSTEM_UI_FLAG_LOW_PROFILE : ViewReflection.SYSTEM_UI_FLAG_LOW_PROFILE
@@ -253,7 +290,7 @@ public class InVehicleDeviceActivity extends Activity implements
 		super.onPause();
 		Log.i(TAG, "onPause()");
 		handler.postDelayed(pauseFinishTimeouter, PAUSE_FINISH_TIMEOUT_MILLIS);
-		for (InVehicleDeviceService service : optionalService.asSet()) {
+		for (InVehicleDeviceService service : getService().asSet()) {
 			service.getEventDispatcher().dispatchActivityPaused();
 		}
 		fixUserRotation();
@@ -289,8 +326,8 @@ public class InVehicleDeviceActivity extends Activity implements
 	}
 
 	@Override
-	public void onOperationScheduleReceiveFailed() {
-		for (InVehicleDeviceService service : optionalService.asSet()) {
+	public void onOperationScheduleReceiveFail() {
+		for (InVehicleDeviceService service : getService().asSet()) {
 			if (!service.isOperationInitialized()) {
 				BigToast.makeText(this,
 						getString(R.string.failed_to_connect_operator_tool),
@@ -298,4 +335,61 @@ public class InVehicleDeviceActivity extends Activity implements
 			}
 		}
 	}
+
+	@Override
+	public void onUpdatePhase(Phase phase,
+			List<OperationSchedule> operationSchedules,
+			List<PassengerRecord> passengerRecords) {
+		if (isFinishing()) {
+			return;
+		}
+		if (!uiInitialized) {
+			initializeUi(phase, operationSchedules, passengerRecords);
+		}
+	}
+
+	private final Runnable alertVehicleNotification = new Runnable() {
+		private Integer count = 0;
+
+		@Override
+		public void run() {
+			if (count > 10) { // TODO 定数
+				count = 0;
+				alertImageView.setVisibility(View.GONE);
+				return;
+			}
+			count++;
+			alertImageView.setVisibility(count % 2 == 0 ? View.VISIBLE
+					: View.GONE);
+			handler.postDelayed(this, ALERT_SHOW_INTERVAL_MILLIS);
+		}
+	};
+
+	@Override
+	public void onAlertVehicleNotificationReceive(
+			final List<VehicleNotification> vehicleNotifications) {
+		FragmentTransaction fragmentTransaction = getSupportFragmentManager()
+				.beginTransaction();
+		fragmentTransaction.add(R.id.modal_fragment_container,
+				VehicleNotificationAlertFragment
+						.newInstance(vehicleNotifications));
+		fragmentTransaction.commitAllowingStateLoss();
+	}
+
+	@Override
+	public void onMergeOperationSchedules(
+			List<VehicleNotification> triggerVehicleNotifications) {
+		if (triggerVehicleNotifications.isEmpty()) {
+			// BigToast.makeText(this, "[debug]: OperationScheduleがマージされた",
+			// Toast.LENGTH_LONG).show();
+			return;
+		}
+		FragmentTransaction fragmentTransaction = getSupportFragmentManager()
+				.beginTransaction();
+		fragmentTransaction.add(R.id.modal_fragment_container,
+				OperationScheduleChangedAlertFragment
+						.newInstance(triggerVehicleNotifications));
+		fragmentTransaction.commitAllowingStateLoss();
+	}
+
 }
