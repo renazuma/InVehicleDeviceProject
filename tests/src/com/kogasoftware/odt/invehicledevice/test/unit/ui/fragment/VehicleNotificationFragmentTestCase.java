@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.ui.modalview;
+package com.kogasoftware.odt.invehicledevice.test.unit.ui.fragment;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -19,12 +19,11 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Local
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.VehicleNotificationLogic;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.NotificationModalView;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 import com.kogasoftware.odt.webapi.model.VehicleNotification.NotificationKind;
 import com.kogasoftware.odt.webapi.model.VehicleNotification.Response;
 
-public class NotificationModalViewTestCase extends
+public class VehicleNotificationFragmentTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 	InVehicleDeviceService s;
 	NotificationModalView mv;
