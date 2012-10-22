@@ -29,7 +29,7 @@ class Order {
 	private int quantity;
 }
 
-public class MockitoUsageTestCase extends junit.framework.TestCase /* antでビルドする際にTestCaseのみだと失敗するのでパッケージ名も追記 */ {
+public class MockitoUsageTestCase extends junit.framework.TestCase /* antでビルドする際にTestCaseのみだと失敗するのでパッケージ名も追記 */{
 
 	public static abstract class Warehouse {
 		public abstract boolean hasInventory(String product, int quantity);
