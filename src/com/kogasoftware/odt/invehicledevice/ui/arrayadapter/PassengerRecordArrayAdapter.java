@@ -1,66 +1,82 @@
 package com.kogasoftware.odt.invehicledevice.ui.arrayadapter;
 
-import java.util.EnumSet;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.WeakHashMap;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.PassengerRecordLogic;
-import com.kogasoftware.odt.invehicledevice.ui.modalview.MemoModalView;
+import com.kogasoftware.odt.invehicledevice.ui.ViewDisabler;
+import com.kogasoftware.odt.invehicledevice.ui.fragment.ApplicationFragment;
+import com.kogasoftware.odt.invehicledevice.ui.fragment.PassengerRecordMemoFragment;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
 import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.Reservation;
 import com.kogasoftware.odt.webapi.model.User;
 
 public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
+	@Deprecated
 	public static enum ItemType {
-		RIDING_AND_NO_GET_OFF, FUTURE_GET_ON, MISSED,
-	}
+		RIDING_AND_NO_GET_OFF, FUTURE_GET_ON, MISSED
+
+	};
 
 	private static final String TAG = PassengerRecordArrayAdapter.class
 			.getSimpleName();
 	protected static final Integer RESOURCE_ID = R.layout.reservation_list_row;
+	protected final FragmentManager fragmentManager;
 	protected final LayoutInflater layoutInflater = (LayoutInflater) getContext()
 			.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-	protected final AlphaAnimation animation = new AlphaAnimation(1, 0.1f);
-	protected final List<PassengerRecord> passengerRecords = new LinkedList<PassengerRecord>();
-	protected final List<OperationSchedule> remainingOperationSchedules = new LinkedList<OperationSchedule>();
 	protected final OperationSchedule operationSchedule;
-	protected final EnumSet<ItemType> visibleItemTypes = EnumSet
-			.noneOf(ItemType.class);
-	// protected final EnumSet<PayTiming> payTiming;
-	protected final Boolean isLastOperationSchedule;
-	protected final MemoModalView memoModalView;
 	protected final InVehicleDeviceService service;
 	protected final PassengerRecordLogic passengerRecordLogic;
 	protected final OperationScheduleLogic operationScheduleLogic;
+	protected final WeakHashMap<View, Boolean> memoButtons = new WeakHashMap<View, Boolean>();
+	protected Boolean memoButtonsVisible = true;
 	protected final OnClickListener onClickViewListener = new OnClickListener() {
 		@Override
 		public void onClick(View view) {
 			Object tag = view.getTag();
 			if (!(tag instanceof PassengerRecord)) {
+				Log.e(TAG, "\"" + view + "\".getTag() (" + tag
+						+ ") is not instanceof PassengerRecord");
 				return;
 			}
 			PassengerRecord passengerRecord = (PassengerRecord) tag;
-			if (passengerRecordLogic.isSelected(passengerRecord)) {
-				passengerRecordLogic.unselect(passengerRecord);
-			} else {
-				passengerRecordLogic.select(passengerRecord);
+			if (operationSchedule.isGetOffScheduled(passengerRecord)) {
+				passengerRecord.setIgnoreGetOffMiss(false);
+				if (passengerRecord.getGetOffTime().isPresent()) {
+					passengerRecordLogic.cancelGetOff(operationSchedule,
+							passengerRecord);
+				} else {
+					passengerRecordLogic.getOff(operationSchedule,
+							passengerRecord);
+				}
+			} else if (operationSchedule.isGetOnScheduled(passengerRecord)) {
+				passengerRecord.setIgnoreGetOnMiss(false);
+				if (passengerRecord.getGetOnTime().isPresent()) {
+					passengerRecordLogic.cancelGetOn(operationSchedule,
+							passengerRecord);
+				} else {
+					passengerRecordLogic.getOn(operationSchedule,
+							passengerRecord);
+				}
 			}
+
 			notifyDataSetChanged();
 		}
 	};
@@ -68,54 +84,33 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 	protected final OnClickListener onClickMemoButtonListener = new OnClickListener() {
 		@Override
 		public void onClick(View view) {
+			ViewDisabler.disable(view);
 			Object tag = view.getTag();
 			if (!(tag instanceof PassengerRecord)) {
+				Log.e(TAG, "\"" + view + "\".getTag() (" + tag
+						+ ") is not instanceof PassengerRecord");
 				return;
 			}
 			PassengerRecord passengerRecord = (PassengerRecord) tag;
-			memoModalView.show(passengerRecord);
+			ApplicationFragment
+					.setCustomAnimation(fragmentManager.beginTransaction())
+					.add(R.id.modal_fragment_container,
+							PassengerRecordMemoFragment
+									.newInstance(passengerRecord)).commit();
 		}
 	};
 
-	public PassengerRecordArrayAdapter(InVehicleDeviceService service,
-			MemoModalView memoModalView) {
-		super(service, RESOURCE_ID);
+	public PassengerRecordArrayAdapter(Context context,
+			InVehicleDeviceService service, FragmentManager fragmentManager,
+			OperationSchedule operationSchedule,
+			List<PassengerRecord> passengerRecords) {
+		super(context, RESOURCE_ID, passengerRecords);
+		this.service = service;
+		this.fragmentManager = fragmentManager;
+		this.operationSchedule = operationSchedule;
+
 		passengerRecordLogic = new PassengerRecordLogic(service);
 		operationScheduleLogic = new OperationScheduleLogic(service);
-		this.service = service;
-		this.memoModalView = memoModalView;
-		// payTiming = commonLogic.getPayTiming();
-		remainingOperationSchedules.addAll(operationScheduleLogic
-				.getRemainingOperationSchedules());
-		passengerRecords.addAll(passengerRecordLogic.getPassengerRecords());
-		isLastOperationSchedule = (remainingOperationSchedules.size() <= 1);
-		if (isLastOperationSchedule) {
-			visibleItemTypes.add(ItemType.RIDING_AND_NO_GET_OFF);
-		}
-
-		if (remainingOperationSchedules.isEmpty()) {
-			operationSchedule = new OperationSchedule();
-		} else {
-			operationSchedule = remainingOperationSchedules.get(0);
-		}
-
-		updateDataSet();
-	}
-
-	@Override
-	public void add(PassengerRecord passengerRecord) {
-		if (!passengerRecord.getReservation().isPresent()
-				|| !passengerRecord.getUser().isPresent()) {
-			return;
-		}
-		if (passengerRecordLogic.isGetOnScheduled(passengerRecord)) {
-			super.add(passengerRecord);
-			return;
-		}
-		if (passengerRecordLogic.isGetOffScheduled(passengerRecord)) {
-			super.add(passengerRecord);
-			return;
-		}
 	}
 
 	@Override
@@ -124,92 +119,97 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 			convertView = layoutInflater.inflate(RESOURCE_ID, null);
 		}
 
+		// 予約取得
 		PassengerRecord passengerRecord = getItem(position);
-		if (!passengerRecord.getReservation().isPresent()
-				|| !passengerRecord.getUser().isPresent()) {
+		if (!passengerRecord.getReservation().isPresent()) {
+			Log.e(TAG, "passengerRecord (" + passengerRecord
+					+ ") has no Reservation");
 			return convertView;
 		}
-
 		Reservation reservation = passengerRecord.getReservation().get();
+
+		// ユーザー取得
+		if (!passengerRecord.getUser().isPresent()) {
+			Log.e(TAG, "passengerRecord (" + passengerRecord + ") has no User");
+			return convertView;
+		}
 		User user = passengerRecord.getUser().get();
 
+		// 人数表示
 		TextView passengerCountTextView = (TextView) convertView
 				.findViewById(R.id.passenger_count_text_view);
-		passengerCountTextView.setText(reservation.getPassengerCount() + "名");
+		passengerCountTextView.setText(passengerRecord
+				.getScheduledPassengerCount() + "名");
 
 		// メモボタン
-		Button memoButton = (Button) convertView.findViewById(R.id.memo_button);
+		View memoButton = convertView.findViewById(R.id.memo_button);
+		View memoButtonLayout = convertView
+				.findViewById(R.id.memo_button_layout);
 		memoButton.setTag(passengerRecord);
+		memoButtonLayout.setTag(passengerRecord);
 		memoButton.setOnClickListener(onClickMemoButtonListener);
+		memoButtonLayout.setOnClickListener(onClickMemoButtonListener);
+		memoButtons.put(memoButton, true);
 		if (!reservation.getMemo().or("").isEmpty()
 				|| !user.getNotes().isEmpty()) {
-			memoButton.setVisibility(View.VISIBLE);
-			animation.setDuration(1000);
-			animation.setRepeatCount(Animation.INFINITE);
-			memoButton.startAnimation(animation);
+			memoButtonLayout.setVisibility(View.VISIBLE);
 		} else {
-			memoButton.setVisibility(View.GONE);
+			memoButtonLayout.setVisibility(View.GONE);
 		}
 
 		// 行の表示
 		convertView.setTag(passengerRecord);
 		convertView.setOnClickListener(onClickViewListener);
+
+		ImageView selectMarkImageView = (ImageView) convertView
+				.findViewById(R.id.select_mark_image_view);
+
+		if (operationSchedule.isGetOffScheduled(passengerRecord)) {
+			selectMarkImageView.setImageResource(R.drawable.get_off);
+			if (passengerRecord.getGetOffTime().isPresent()) {
+				convertView.setBackgroundColor(Color.parseColor("#40E0D0")); // TODO
+			} else {
+				convertView.setBackgroundColor(Color.parseColor("#D5E9F6")); // TODO
+			}
+		} else if (operationSchedule.isGetOnScheduled(passengerRecord)) {
+			selectMarkImageView.setImageResource(R.drawable.get_on);
+			if (passengerRecord.getGetOnTime().isPresent()) {
+				convertView.setBackgroundColor(Color.parseColor("#FF69B4")); // TODO
+			} else {
+				convertView.setBackgroundColor(Color.parseColor("#F9D9D8")); // TODO
+			}
+		} else {
+			Log.e(TAG, "unexpected PassengerRecord: " + passengerRecord);
+		}
+
 		TextView userNameView = (TextView) convertView
 				.findViewById(R.id.user_name);
 		userNameView.setText(user.getLastName() + " " + user.getFirstName()
 				+ " 様");
 
-		String text = "";
-		if (passengerRecordLogic.isGetOffScheduled(passengerRecord)) {
-			text += "[降]";
-		} else if (passengerRecordLogic.isGetOnScheduled(passengerRecord)) {
-			text += "[乗]";
-		} else if (passengerRecordLogic.canGetOff(passengerRecord)) {
-			text += "[*降]";
-		} else {
-			text += "[*乗]";
-		}
-
-		text += " 予約番号 " + reservation.getId();
-		TextView reservationIdView = (TextView) convertView
-				.findViewById(R.id.reservation_id);
-		reservationIdView.setText(text);
-
-		if (passengerRecordLogic.isSelected(passengerRecord)) {
-			if (passengerRecordLogic.isGetOnScheduled(passengerRecord)) {
-				convertView.setBackgroundColor(Color.parseColor("#FF69B4")); // TODO
-																				// テーマ
-			} else {
-				convertView.setBackgroundColor(Color.parseColor("#40E0D0")); // TODO
-																				// テーマ
-			}
-		} else {
-			if (passengerRecordLogic.isGetOnScheduled(passengerRecord)) {
-				convertView.setBackgroundColor(Color.parseColor("#F9D9D8"));// TODO
-																			// テーマ
-			} else {
-				convertView.setBackgroundColor(Color.parseColor("#D5E9F6"));// TODO
-																			// テーマ
-			}
-		}
 		return convertView;
 	}
 
-	public void hide(ItemType itemType) {
-		visibleItemTypes.remove(itemType);
-		updateDataSet();
+	@Deprecated
+	public void show(ItemType ridingAndNoGetOff) {
 	}
 
-	public void show(ItemType itemType) {
-		visibleItemTypes.add(itemType);
-		updateDataSet();
+	@Deprecated
+	public void hide(ItemType ridingAndNoGetOff) {
 	}
 
-	private void updateDataSet() {
-		clear();
-		for (PassengerRecord passengerRecord : passengerRecords) {
-			add(passengerRecord);
+	public void toggleBlink() {
+		memoButtonsVisible = !memoButtonsVisible;
+		for (Entry<View, Boolean> entry : memoButtons.entrySet()) {
+			View memoButton = entry.getKey();
+			if (memoButton == null) {
+				continue;
+			}
+			if (memoButtonsVisible) {
+				memoButton.setVisibility(View.VISIBLE);
+			} else {
+				memoButton.setVisibility(View.INVISIBLE);
+			}
 		}
-		notifyDataSetChanged();
 	}
 }

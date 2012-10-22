@@ -10,8 +10,8 @@ import org.mockito.Mockito;
 import android.content.Intent;
 import android.test.AndroidTestCase;
 
-import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
-import com.kogasoftware.odt.invehicledevice.datasource.EmptyDataSource;
+import com.kogasoftware.odt.invehicledevice.apiclient.DataSource;
+import com.kogasoftware.odt.invehicledevice.apiclient.EmptyDataSource;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;

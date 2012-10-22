@@ -32,9 +32,9 @@ import android.widget.Toast;
 
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
-import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
-import com.kogasoftware.odt.invehicledevice.datasource.WebAPIDataSource;
+import com.kogasoftware.odt.invehicledevice.apiclient.DataSource;
+import com.kogasoftware.odt.invehicledevice.apiclient.DataSourceFactory;
+import com.kogasoftware.odt.invehicledevice.apiclient.WebAPIDataSource;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
@@ -44,7 +44,7 @@ import com.kogasoftware.odt.invehicledevice.ui.BigToast;
 
 /**
  * バックグランドでの処理を管理するクラス
- *
+ * 
  * 注意: quit以外のメソッドは全て同じスレッドで実行する
  */
 public class BackgroundTask {

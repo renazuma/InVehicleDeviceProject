@@ -1,43 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="2dip"
-    android:orientation="vertical" >
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_marginBottom="2dip" >
 
     <Button
         android:id="@+id/flick_unneeded_list_view_scroll_up_button"
         style="@style/ModalView.Button"
-        android:paddingTop="15sp"
-        android:paddingBottom="15sp"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:textSize="30sp"
-        android:text="@string/scroll_up" />
+        android:paddingBottom="15sp"
+        android:paddingTop="15sp"
+        android:text="@string/scroll_up"
+        android:textSize="30sp" />
 
-    <ListView
-        android:id="@+id/flick_unneeded_list_view_inner_list_view"
-        android:layout_width="fill_parent"
+    <FrameLayout
+        android:id="@+id/flick_unneeded_list_view_inner_list_view_container"
+        android:layout_width="match_parent"
         android:layout_height="0dip"
         android:layout_above="@+id/flick_unneeded_list_view_scroll_down_button"
         android:layout_below="@+id/flick_unneeded_list_view_scroll_up_button"
         android:layout_marginBottom="5dip"
         android:layout_marginLeft="1dip"
         android:layout_marginRight="1dip"
-        android:layout_marginTop="1dip" />
+        android:layout_marginTop="1dip" >
+
+        <ListView
+            android:id="@+id/flick_unneeded_list_view_inner_list_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
 
     <Button
         android:id="@+id/flick_unneeded_list_view_scroll_down_button"
         style="@style/ModalView.Button"
-        android:paddingTop="15sp"
-        android:paddingBottom="15sp"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:textSize="30sp"
-        android:text="@string/scroll_down" />
+        android:paddingBottom="15sp"
+        android:paddingTop="15sp"
+        android:text="@string/scroll_down"
+        android:textSize="30sp" />
 
 </RelativeLayout>

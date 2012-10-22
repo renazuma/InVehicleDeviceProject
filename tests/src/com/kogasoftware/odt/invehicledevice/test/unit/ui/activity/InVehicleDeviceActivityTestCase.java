@@ -19,8 +19,8 @@ import android.view.WindowManager;
 import com.google.common.base.Stopwatch;
 import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.apiclient.EmptyDataSource;
 import com.kogasoftware.odt.invehicledevice.compatibility.reflection.android.provider.SettingsReflection;
-import com.kogasoftware.odt.invehicledevice.datasource.EmptyDataSource;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 import com.kogasoftware.odt.invehicledevice.service.startupservice.StartupService;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
@@ -35,8 +35,7 @@ public class InVehicleDeviceActivityTestCase extends
 	Solo solo;
 
 	public InVehicleDeviceActivityTestCase() {
-		super("com.kogasoftware.odt.invehicledevice",
-				InVehicleDeviceActivity.class);
+		super(InVehicleDeviceActivity.class);
 	}
 
 	@Override
@@ -209,6 +208,7 @@ public class InVehicleDeviceActivityTestCase extends
 		assertTrue(sp.edit()
 				.putBoolean(SharedPreferencesKeys.INITIALIZED, false).commit());
 		solo = new Solo(getInstrumentation(), getActivity());
-		assertTrue(solo.waitForText(solo.getString(R.string.settings_are_not_initialized)));
+		assertTrue(solo.waitForText(solo
+				.getString(R.string.settings_are_not_initialized)));
 	}
 }

@@ -24,7 +24,7 @@ public class EmptyActivityInstrumentationTestCase2 extends
 	public EmptyActivity a;
 
 	public EmptyActivityInstrumentationTestCase2() {
-		super("com.kogasoftware.odt.invehicledevice", EmptyActivity.class);
+		super(EmptyActivity.class);
 	}
 
 	public Handler getActivityHandler() throws InterruptedException {

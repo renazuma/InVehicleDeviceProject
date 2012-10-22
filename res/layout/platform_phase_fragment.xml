@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <RelativeLayout
+        android:id="@+id/next_operation_schedule_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true" >
+
+        <com.kogasoftware.odt.invehicledevice.ui.AutoResizeTextView
+            android:id="@+id/now_platform_text_view"
+            android:layout_width="0dip"
+            android:layout_height="55sp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignWithParentIfMissing="true"
+            android:layout_toLeftOf="@+id/minutes_remaining_text_view"
+            android:gravity="bottom" />
+
+        <TextView
+            android:id="@+id/minutes_remaining_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="60sp"
+            android:layout_alignParentRight="true"
+            android:gravity="right"
+            android:textSize="22sp" />
+    </RelativeLayout>
+
+    <com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView
+        android:id="@+id/reservation_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/next_operation_schedule_layout" />
+
+</RelativeLayout>

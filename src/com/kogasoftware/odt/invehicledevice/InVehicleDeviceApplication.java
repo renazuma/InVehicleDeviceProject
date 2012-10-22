@@ -71,10 +71,6 @@ public class InVehicleDeviceApplication extends Application {
 		}
 
 		enableStrictMode();
-
-		startService(new Intent(this, StartupService.class));
-		startService(new Intent(this, VoiceService.class));
-		startService(new Intent(this, LogService.class));
 	}
 
 	protected void enableStrictMode() {
@@ -91,10 +87,6 @@ public class InVehicleDeviceApplication extends Application {
 	public void onTerminate() {
 		super.onTerminate();
 		Log.i(TAG, "onTerminate()");
-
-		stopService(new Intent(this, StartupService.class));
-		stopService(new Intent(this, VoiceService.class));
-		stopService(new Intent(this, LogService.class));
 
 		for (Entry<Date, List<CountDownLatch>> entry : InVehicleDeviceService.mockSleepStatus
 				.entrySet()) {

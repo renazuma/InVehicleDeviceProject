@@ -3,14 +3,26 @@ package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledevicese
 import android.telephony.SignalStrength;
 import android.test.AndroidTestCase;
 
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.ServiceUnitStatusLogLogic;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask.SignalStrengthListener;
 import static org.mockito.Mockito.*;
 
 public class SignalStrengthListenerTestCase extends AndroidTestCase {
+	InVehicleDeviceService s;
+	ServiceUnitStatusLogLogic susll;
+	SignalStrengthListener ssl;
+	EventDispatcher ed;
+
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
+		ed = mock(EventDispatcher.class);
+		s = mock(InVehicleDeviceService.class);
+		when(s.getEventDispatcher()).thenReturn(ed);
+		susll = new ServiceUnitStatusLogLogic(s);
+		ssl = new SignalStrengthListener(susll);
 	}
 
 	@Override
@@ -25,7 +37,7 @@ public class SignalStrengthListenerTestCase extends AndroidTestCase {
 		assertFalse(SignalStrengthListener.convertSignalStrengthToPercentage(
 				signalStrength).isPresent());
 	}
-	
+
 	public void testConvertSignalStrengthToPercentage_Gsm() throws Exception {
 		// GSMの場合は値を計算
 		SignalStrength signalStrength = mock(SignalStrength.class);
@@ -40,7 +52,7 @@ public class SignalStrengthListenerTestCase extends AndroidTestCase {
 		for (Integer[] rule : rules) {
 			Integer expected = rule[0];
 			Integer gsmSignalStrength = rule[1];
-			
+
 			when(signalStrength.isGsm()).thenReturn(true);
 			when(signalStrength.getGsmSignalStrength()).thenReturn(
 					gsmSignalStrength);
@@ -48,26 +60,20 @@ public class SignalStrengthListenerTestCase extends AndroidTestCase {
 					.convertSignalStrengthToPercentage(signalStrength).get());
 		}
 	}
-	
+
 	public void testOnSignalStrengthsChanged_NoGsm() throws Exception {
-		InVehicleDeviceService s = mock(InVehicleDeviceService.class);
-		SignalStrengthListener ssl = new SignalStrengthListener(s);
-		
 		// GSMでない場合は呼ばれない
 		SignalStrength ss = mock(SignalStrength.class);
 		when(ss.isGsm()).thenReturn(false);
 		ssl.onSignalStrengthsChanged(ss);
-		verify(s, never()).changeSignalStrength(anyInt());
+		verify(ed, never()).dispatchChangeSignalStrength(anyInt());
 	}
 
 	public void testOnSignalStrengthsChanged_Gsm() throws Exception {
-		InVehicleDeviceService s = mock(InVehicleDeviceService.class);
-		SignalStrengthListener ssl = new SignalStrengthListener(s);
-		
 		// GSMの場合
 		SignalStrength ss = mock(SignalStrength.class);
 		when(ss.isGsm()).thenReturn(true);
 		ssl.onSignalStrengthsChanged(ss);
-		verify(s, times(1)).changeSignalStrength(anyInt());
+		verify(ed, times(1)).dispatchChangeSignalStrength(anyInt());
 	}
 }

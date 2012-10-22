@@ -26,8 +26,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.BuildConfig;
-import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
-import com.kogasoftware.odt.invehicledevice.datasource.EmptyDataSource;
+import com.kogasoftware.odt.invehicledevice.apiclient.DataSource;
+import com.kogasoftware.odt.invehicledevice.apiclient.EmptyDataSource;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Reader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask.BackgroundTaskThread;
@@ -272,5 +272,24 @@ public class InVehicleDeviceService extends Service {
 		operationScheduleInitializedSign.release();
 		serviceProviderInitializedSign.acquire();
 		serviceProviderInitializedSign.release();
+	}
+
+	private Boolean mapAutoZoom = true;
+	private Integer mapZoomLevel = 12;
+
+	public Boolean getMapAutoZoom() {
+		return mapAutoZoom;
+	}
+
+	public Integer getMapZoomLevel() {
+		return mapZoomLevel;
+	}
+
+	public void setMapAutoZoom(Boolean mapAutoZoom) {
+		this.mapAutoZoom = mapAutoZoom;
+	}
+
+	public void setMapZoomLevel(Integer mapZoomLevel) {
+		this.mapZoomLevel = mapZoomLevel;
 	}
 }

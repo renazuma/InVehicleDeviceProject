@@ -28,14 +28,15 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.RemoteException;
 import android.os.StrictMode;
+import android.support.v4.app.Fragment;
 import android.view.KeyEvent;
 import android.view.View;
 
 import com.google.common.base.Stopwatch;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.jayway.android.robotium.solo.Solo;
-import com.kogasoftware.odt.invehicledevice.datasource.DataSource;
-import com.kogasoftware.odt.invehicledevice.datasource.DataSourceFactory;
+import com.kogasoftware.odt.invehicledevice.apiclient.DataSource;
+import com.kogasoftware.odt.invehicledevice.apiclient.DataSourceFactory;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
 import com.kogasoftware.odt.invehicledevice.service.startupservice.IStartupService;
@@ -133,7 +134,8 @@ public class TestUtil {
 	}
 
 	public static void runOnUiThreadSync(Activity activity,
-			final Runnable runnable, Integer timeoutSeconds) throws InterruptedException {
+			final Runnable runnable, Integer timeoutSeconds)
+			throws InterruptedException {
 		final CountDownLatch cdl = new CountDownLatch(1);
 		activity.runOnUiThread(new Runnable() {
 			@Override
@@ -371,5 +373,23 @@ public class TestUtil {
 	public static <T> void assertEmptyObject(Instrumentation instrumentation,
 			Class<T> c) throws Exception {
 		assertEmptyObject(instrumentation, c, false);
+	}
+
+	public static void assertShow(Fragment fragment) {
+		assertChangeVisibility(fragment, true);
+	}
+
+	private static void assertChangeVisibility(final Fragment fragment,
+			final Boolean visibility) {
+		assertChange(new Callable<Boolean>() {
+			@Override
+			public Boolean call() {
+				return visibility.equals(fragment.isVisible());
+			}
+		});
+	}
+
+	public static void assertHide(Fragment fragment) {
+		assertChangeVisibility(fragment, false);
 	}
 }

@@ -1,21 +1,42 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledeviceservice.backgroundtask;
 
+import android.hardware.SensorEvent;
+import android.view.WindowManager;
+
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.ServiceUnitStatusLogLogic;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask.OrientationSensorEventListener;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
-import com.kogasoftware.odt.invehicledevice.test.util.datasource.DummyDataSource;
+import com.kogasoftware.odt.invehicledevice.test.util.apiclient.DummyDataSource;
+
+import static org.mockito.Matchers.anyFloat;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 
 public class TemperatureSensorEventListenerTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
-	DummyDataSource dds;
+	InVehicleDeviceService s;
+	EventDispatcher ed;
+	ServiceUnitStatusLogLogic susll;
+	WindowManager wm;
 	OrientationSensorEventListener osel;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		dds = new DummyDataSource();
-		TestUtil.setDataSource(dds);
-		osel = new OrientationSensorEventListener(null);
+		s = mock(InVehicleDeviceService.class);
+		wm = mock(WindowManager.class);
+		ed = mock(EventDispatcher.class);
+		when(s.getEventDispatcher()).thenReturn(ed);
+		osel = new OrientationSensorEventListener(susll, wm);
 	}
 
 	@Override
@@ -23,8 +44,8 @@ public class TemperatureSensorEventListenerTestCase extends
 		super.tearDown();
 	}
 
-	public void xtestOnSensorChanged() throws Exception {
-		// 引数のクラスがnewできないのでstub
-		fail("stub!");
+	public void testOnSensorChanged() throws Exception {
+		SensorEvent se = mock(SensorEvent.class);
+		osel.onSensorChanged(se);
 	}
 }

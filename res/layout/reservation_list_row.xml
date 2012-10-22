@@ -3,64 +3,49 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:gravity="left|center"
-    android:paddingTop="5dp"
+    android:orientation="horizontal"
     android:paddingBottom="5dp"
-    android:orientation="horizontal" >
+    android:paddingTop="5dp" >
 
-    <LinearLayout
+    <ImageView
+        android:id="@+id/select_mark_image_view"
+        android:layout_width="40sp"
+        android:layout_height="fill_parent"
+        android:src="@drawable/get_off" />
+
+    <TextView
+        android:id="@+id/user_name"
         android:layout_width="0dip"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
         android:layout_weight="1"
         android:gravity="left|center"
-        android:orientation="vertical" >
+        android:textColor="@android:color/black"
+        android:textSize="40sp" />
 
-        <TextView
-            android:id="@+id/reservation_id"
-            android:textSize = "18sp"
-            android:textColor="@android:color/black"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent" />
+    <FrameLayout
+        android:id="@+id/memo_button_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent" >
 
-        <TextView
-            android:id="@+id/user_name"
+        <Button
+            android:id="@+id/memo_button"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
-            android:textSize ="30sp"
-            android:textColor="@android:color/black" />
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/memo_button"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:text="@string/memo"
-        android:background="#90e090"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:layout_marginRight="5dp"
-        android:textSize = "18sp"
-        android:visibility="invisible" />
-    <!--
-    <ToggleButton
-        android:id="@+id/paid_button"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:textOff="未払"
-        android:textOn="支払済" />
-    -->
+            android:layout_marginRight="5dp"
+            android:background="#90e090"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/memo"
+            android:textSize="18sp"
+            android:visibility="invisible" />
+    </FrameLayout>
 
     <TextView
         android:id="@+id/passenger_count_text_view"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:gravity="center_vertical"
-        android:textSize="25dip" 
-        android:textColor="@android:color/black"/>
-    <!--
-    <Spinner
-        android:id="@+id/change_passenger_count_spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent" />
-    -->
+        android:textColor="@android:color/black"
+        android:textSize="25dip" />
 
 </LinearLayout>
