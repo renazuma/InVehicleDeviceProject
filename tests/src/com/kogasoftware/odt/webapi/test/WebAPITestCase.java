@@ -13,6 +13,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.apache.commons.lang3.time.DateUtils;
+
 import android.test.AndroidTestCase;
 import android.util.Log;
 
@@ -183,7 +185,8 @@ public class WebAPITestCase extends AndroidTestCase {
 
 		UnitAssignment ua = record.createUnitAssignment("3号車");
 		record.createServiceUnit(master.getDriver(), master.getVehicle(),
-				master.getInVehicleDevice(), ua, new Date());
+				master.getInVehicleDevice(), ua,
+				DateUtils.addHours(new Date(), -1));
 		record.createVehicleNotification("テスト通知メッセージ1です。");
 		record.createVehicleNotification("テスト通知メッセージ2です。");
 
@@ -231,7 +234,8 @@ public class WebAPITestCase extends AndroidTestCase {
 
 		UnitAssignment ua = record.createUnitAssignment("3号車");
 		record.createServiceUnit(master.getDriver(), master.getVehicle(),
-				master.getInVehicleDevice(), ua, new Date());
+				master.getInVehicleDevice(), ua,
+				DateUtils.addHours(new Date(), -1));
 
 		record.createVehicleNotification("テスト通知メッセージ1です。");
 		record.createVehicleNotification("テスト通知メッセージ2です。");
@@ -563,7 +567,7 @@ public class WebAPITestCase extends AndroidTestCase {
 		assertTrue(serverPassengerRecord.getGetOnTime().isPresent());
 		// TODO:決められた乗車降車場以外で乗降した場合の処理が実装されたらコメントを外す
 		// assertEquals(os1.getId(), serverPassengerRecord
-		//		.getDepartureOperationScheduleId().get());
+		// .getDepartureOperationScheduleId().get());
 		assertTrue(serverPassengerRecord.getGetOnTime().isPresent());
 		assertTrue(serverPassengerRecord.isRiding());
 		if (offlineTest) {
@@ -715,7 +719,7 @@ public class WebAPITestCase extends AndroidTestCase {
 		assertFalse(serverPassengerRecord.getGetOnTime().isPresent());
 		// TODO:決められた乗車降車場以外で乗降した場合の処理が実装されたらコメントを外す
 		// assertFalse(serverPassengerRecord.getDepartureOperationScheduleId()
-		//		.isPresent());
+		// .isPresent());
 		assertTrue(serverPassengerRecord.isUnhandled());
 
 		latch = new CountDownLatch(1);
@@ -815,7 +819,7 @@ public class WebAPITestCase extends AndroidTestCase {
 				.getDepartureOperationScheduleId().get());
 		// TODO:決められた乗車降車場以外で乗降した場合の処理が実装されたらコメントを外す
 		// assertFalse(serverPassengerRecord.getArrivalOperationScheduleId()
-		//		.isPresent());
+		// .isPresent());
 	}
 
 	public void testPassengerCancelGetOffOrdered() throws Exception {
@@ -1175,7 +1179,6 @@ public class WebAPITestCase extends AndroidTestCase {
 
 	public void testWithSaveOnClose() throws Exception {
 		File backupFile = getContext().getFileStreamPath("backup.serialized");
-				"backup.serialized");
 		offline = true;
 		api = new OfflineTestWebAPI(SERVER_HOST, master.getInVehicleDevice()
 				.getAuthenticationToken().get(), backupFile);
