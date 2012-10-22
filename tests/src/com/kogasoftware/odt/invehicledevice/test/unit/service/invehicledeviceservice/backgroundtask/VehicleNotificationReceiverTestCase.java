@@ -7,9 +7,9 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backg
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.test.util.apiclient.DummyDataSource;
-import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
-import com.kogasoftware.odt.webapi.WebAPIException;
-import com.kogasoftware.odt.webapi.model.VehicleNotification;
+import com.kogasoftware.odt.apiclient.ApiClientCallback;
+import com.kogasoftware.odt.apiclient.ApiClientException;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 
 public class VehicleNotificationReceiverTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
@@ -31,7 +31,7 @@ public class VehicleNotificationReceiverTestCase extends
 		class TestDataSource extends DummyDataSource {
 			@Override
 			public int getVehicleNotifications(
-					WebAPICallback<List<VehicleNotification>> callback) {
+					ApiClientCallback<List<VehicleNotification>> callback) {
 				List<VehicleNotification> l = new LinkedList<VehicleNotification>();
 				l.add(vn0);
 				l.add(vn1);
@@ -51,7 +51,7 @@ public class VehicleNotificationReceiverTestCase extends
 		class TestDataSource extends DummyDataSource {
 			@Override
 			public int getVehicleNotifications(
-					WebAPICallback<List<VehicleNotification>> callback) {
+					ApiClientCallback<List<VehicleNotification>> callback) {
 				callback.onSucceed(0, 200,
 						new LinkedList<VehicleNotification>());
 				return 0;
@@ -69,8 +69,8 @@ public class VehicleNotificationReceiverTestCase extends
 		class TestDataSource extends DummyDataSource {
 			@Override
 			public int getVehicleNotifications(
-					WebAPICallback<List<VehicleNotification>> callback) {
-				callback.onException(0, new WebAPIException("not found"));
+					ApiClientCallback<List<VehicleNotification>> callback) {
+				callback.onException(0, new ApiClientException("not found"));
 				return 0;
 			}
 		}

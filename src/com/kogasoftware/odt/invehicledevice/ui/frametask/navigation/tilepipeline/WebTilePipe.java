@@ -13,10 +13,10 @@ import org.apache.commons.lang3.ObjectUtils.Null;
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import com.kogasoftware.odt.apiclient.ApiClientCallback;
+import com.kogasoftware.odt.apiclient.ApiClientException;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.ui.frametask.navigation.tilepipeline.PipeQueue.OnDropListener;
-import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
-import com.kogasoftware.odt.webapi.WebAPIException;
 
 public class WebTilePipe extends PipeExchanger<Tile, Null, TileBitmapFile> {
 	private static final String TAG = WebTilePipe.class.getSimpleName();
@@ -54,9 +54,9 @@ public class WebTilePipe extends PipeExchanger<Tile, Null, TileBitmapFile> {
 		final AtomicReference<Bitmap> outputBitmap = new AtomicReference<Bitmap>(
 				null);
 		int reqkey = service.getRemoteDataSource().getMapTile(tile.getCenter(),
-				tile.getZoom(), new WebAPICallback<Bitmap>() {
+				tile.getZoom(), new ApiClientCallback<Bitmap>() {
 					@Override
-					public void onException(int reqkey, WebAPIException ex) {
+					public void onException(int reqkey, ApiClientException ex) {
 						service.getRemoteDataSource().cancel(reqkey);
 						Log.i(TAG, "onException reqkey=" + reqkey, ex);
 						countDownLatch.countDown();

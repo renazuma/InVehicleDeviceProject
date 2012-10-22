@@ -42,9 +42,9 @@ import com.kogasoftware.odt.invehicledevice.ui.BigToast;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.InVehicleDeviceFragment;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.OperationScheduleChangedAlertFragment;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.VehicleNotificationAlertFragment;
-import com.kogasoftware.odt.webapi.model.OperationSchedule;
-import com.kogasoftware.odt.webapi.model.PassengerRecord;
-import com.kogasoftware.odt.webapi.model.VehicleNotification;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 
 public class InVehicleDeviceActivity extends FragmentActivity implements
 		EventDispatcher.OnExitListener,

@@ -9,8 +9,8 @@ import android.widget.TextView;
 
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.webapi.model.OperationSchedule;
-import com.kogasoftware.odt.webapi.model.Platform;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 
 import java.io.Serializable;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.PlatformMemoFragment.State;

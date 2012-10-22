@@ -28,12 +28,12 @@ import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentati
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyRunnable;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordArrayAdapter;
-import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
-import com.kogasoftware.odt.webapi.model.OperationRecord;
-import com.kogasoftware.odt.webapi.model.OperationSchedule;
-import com.kogasoftware.odt.webapi.model.PassengerRecord;
-import com.kogasoftware.odt.webapi.model.Reservation;
-import com.kogasoftware.odt.webapi.model.User;
+import com.kogasoftware.odt.apiclient.ApiClientCallback;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationRecord;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.User;
 
 public class PassengerRecordArrayAdapterTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
@@ -68,7 +68,7 @@ public class PassengerRecordArrayAdapterTestCase extends
 		@Override
 		public int getOffPassenger(OperationSchedule operationSchedule,
 				Reservation reservation, User user,
-				PassengerRecord passengerRecord, WebAPICallback<Void> callback) {
+				PassengerRecord passengerRecord, ApiClientCallback<Void> callback) {
 			getOffPassengerRecords.add(passengerRecord);
 			return 0;
 		}
@@ -76,7 +76,7 @@ public class PassengerRecordArrayAdapterTestCase extends
 		@Override
 		public int getOnPassenger(OperationSchedule operationSchedule,
 				Reservation reservation, User user,
-				PassengerRecord passengerRecord, WebAPICallback<Void> callback) {
+				PassengerRecord passengerRecord, ApiClientCallback<Void> callback) {
 			getOnPassengerRecords.add(passengerRecord);
 			return 0;
 		}
@@ -84,7 +84,7 @@ public class PassengerRecordArrayAdapterTestCase extends
 		@Override
 		public int cancelGetOffPassenger(OperationSchedule operationSchedule,
 				Reservation reservation, User user,
-				WebAPICallback<Void> callback) {
+				ApiClientCallback<Void> callback) {
 			cancelGetOffPassengerRecords.add(reservation.getPassengerRecords()
 					.get(0));
 			return 0;
@@ -93,7 +93,7 @@ public class PassengerRecordArrayAdapterTestCase extends
 		@Override
 		public int cancelGetOnPassenger(OperationSchedule operationSchedule,
 				Reservation reservation, User user,
-				WebAPICallback<Void> callback) {
+				ApiClientCallback<Void> callback) {
 			cancelGetOnPassengerRecords.add(reservation.getPassengerRecords()
 					.get(0));
 			return 0;

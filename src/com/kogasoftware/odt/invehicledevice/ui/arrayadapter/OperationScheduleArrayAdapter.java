@@ -14,8 +14,8 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.webapi.model.OperationSchedule;
-import com.kogasoftware.odt.webapi.model.Reservation;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
 
 public class OperationScheduleArrayAdapter extends
 		ArrayAdapter<OperationSchedule> {

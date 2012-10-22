@@ -11,9 +11,9 @@ import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.test.util.apiclient.MockDataSource;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
-import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
-import com.kogasoftware.odt.webapi.WebAPIException;
-import com.kogasoftware.odt.webapi.model.VehicleNotification;
+import com.kogasoftware.odt.apiclient.ApiClientCallback;
+import com.kogasoftware.odt.apiclient.ApiClientException;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 
 public class NotificationTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
@@ -69,9 +69,9 @@ public class NotificationTestCase extends
 		final List<VehicleNotification> vehicleNotifications = Lists
 				.newLinkedList();
 		final CountDownLatch cdl = new CountDownLatch(1);
-		mdst.getVehicleNotifications(new WebAPICallback<List<VehicleNotification>>() {
+		mdst.getVehicleNotifications(new ApiClientCallback<List<VehicleNotification>>() {
 			@Override
-			public void onException(int reqkey, WebAPIException ex) {
+			public void onException(int reqkey, ApiClientException ex) {
 				cdl.countDown();
 			}
 
@@ -142,7 +142,7 @@ public class NotificationTestCase extends
 	 * 
 	 * List<VehicleNotification> vehicleNotifications = null; try {
 	 * vehicleNotifications = mdst.getVehicleNotifications(); } catch
-	 * (WebAPIException e) { // TODO 自動生成された catch ブロック e.printStackTrace(); }
+	 * (ApiClientException e) { // TODO 自動生成された catch ブロック e.printStackTrace(); }
 	 * 
 	 * if (vehicleNotifications.isEmpty()) { return; }
 	 * 
@@ -187,7 +187,7 @@ public class NotificationTestCase extends
 	 * 
 	 * List<VehicleNotification> vehicleNotifications = null; try {
 	 * vehicleNotifications = mdst.getVehicleNotifications(); } catch
-	 * (WebAPIException e) { // TODO 自動生成された catch ブロック e.printStackTrace(); }
+	 * (ApiClientException e) { // TODO 自動生成された catch ブロック e.printStackTrace(); }
 	 * 
 	 * if (vehicleNotifications.isEmpty()) { return; }
 	 * 

@@ -32,9 +32,9 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.apiclient.WebAPIDataSource;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
-import com.kogasoftware.odt.webapi.model.InVehicleDevice;
-import com.kogasoftware.odt.webapi.model.OperationSchedule;
-import com.kogasoftware.odt.webapi.model.ServiceProvider;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.InVehicleDevice;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceProvider;
 
 /**
  * LocalDataのアクセスに対し 書き込みがあったら自動で保存. 読み書き時にロックを実行を行う

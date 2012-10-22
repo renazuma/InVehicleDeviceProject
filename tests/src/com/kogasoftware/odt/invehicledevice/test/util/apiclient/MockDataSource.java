@@ -14,17 +14,17 @@ import android.graphics.Bitmap;
 
 import com.javadocmd.simplelatlng.LatLng;
 import com.kogasoftware.odt.invehicledevice.apiclient.DataSource;
-import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
-import com.kogasoftware.odt.webapi.model.Demand;
-import com.kogasoftware.odt.webapi.model.OperationSchedule;
-import com.kogasoftware.odt.webapi.model.PassengerRecord;
-import com.kogasoftware.odt.webapi.model.Platform;
-import com.kogasoftware.odt.webapi.model.Reservation;
-import com.kogasoftware.odt.webapi.model.ReservationCandidate;
-import com.kogasoftware.odt.webapi.model.ServiceProvider;
-import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
-import com.kogasoftware.odt.webapi.model.User;
-import com.kogasoftware.odt.webapi.model.VehicleNotification;
+import com.kogasoftware.odt.apiclient.ApiClientCallback;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.Demand;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.ReservationCandidate;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceProvider;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnitStatusLog;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.User;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 
 public class MockDataSource implements DataSource {
 
@@ -35,25 +35,25 @@ public class MockDataSource implements DataSource {
 
 	@Override
 	public int arrivalOperationSchedule(OperationSchedule os,
-			WebAPICallback<OperationSchedule> callback) {
+			ApiClientCallback<OperationSchedule> callback) {
 		return 0;
 	}
 
 	@Override
 	public int departureOperationSchedule(OperationSchedule os,
-			WebAPICallback<OperationSchedule> callback) {
+			ApiClientCallback<OperationSchedule> callback) {
 		return 0;
 	}
 
 	@Override
 	public int responseVehicleNotification(VehicleNotification vn,
-			int response, WebAPICallback<VehicleNotification> callback) {
+			int response, ApiClientCallback<VehicleNotification> callback) {
 		return 0;
 	}
 
 	@Override
 	public int sendServiceUnitStatusLog(ServiceUnitStatusLog log,
-			WebAPICallback<ServiceUnitStatusLog> callback) {
+			ApiClientCallback<ServiceUnitStatusLog> callback) {
 		return 0;
 	}
 
@@ -446,14 +446,14 @@ public class MockDataSource implements DataSource {
 
 	@Override
 	public int searchReservationCandidate(Demand demand,
-			WebAPICallback<List<ReservationCandidate>> callback) {
+			ApiClientCallback<List<ReservationCandidate>> callback) {
 		callback.onSucceed(0, 200, lReservationCandidate);
 		return 0;
 	}
 
 	@Override
 	public int createReservation(ReservationCandidate reservationCandidate,
-			WebAPICallback<Reservation> callback) {
+			ApiClientCallback<Reservation> callback) {
 		try {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
@@ -469,25 +469,25 @@ public class MockDataSource implements DataSource {
 
 	@Override
 	public int getMapTile(LatLng center, Integer zoom,
-			WebAPICallback<Bitmap> webAPICallback) {
+			ApiClientCallback<Bitmap> webAPICallback) {
 		return 0;
 	}
 
 	@Override
-	public int getServiceProvider(WebAPICallback<ServiceProvider> callback) {
+	public int getServiceProvider(ApiClientCallback<ServiceProvider> callback) {
 		callback.onSucceed(0, 200, new ServiceProvider());
 		return 0;
 	}
 
 	@Override
 	public int cancelGetOffPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, User user, WebAPICallback<Void> callback) {
+			Reservation reservation, User user, ApiClientCallback<Void> callback) {
 		return 0;
 	}
 
 	@Override
 	public int cancelGetOnPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, User user, WebAPICallback<Void> callback) {
+			Reservation reservation, User user, ApiClientCallback<Void> callback) {
 		return 0;
 	}
 
@@ -498,14 +498,14 @@ public class MockDataSource implements DataSource {
 
 	@Override
 	public int getOperationSchedules(
-			WebAPICallback<List<OperationSchedule>> callback) {
+			ApiClientCallback<List<OperationSchedule>> callback) {
 		callback.onSucceed(0, 200, lOperationSchedule);
 		return 0;
 	}
 
 	@Override
 	public int getVehicleNotifications(
-			WebAPICallback<List<VehicleNotification>> callback) {
+			ApiClientCallback<List<VehicleNotification>> callback) {
 		List<VehicleNotification> l = new LinkedList<VehicleNotification>();
 		if (NotificationFlag) {
 			VehicleNotification n = new VehicleNotification();
@@ -524,14 +524,14 @@ public class MockDataSource implements DataSource {
 	@Override
 	public int getOffPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, User user,
-			PassengerRecord passengerRecord, WebAPICallback<Void> callback) {
+			PassengerRecord passengerRecord, ApiClientCallback<Void> callback) {
 		return 0;
 	}
 
 	@Override
 	public int getOnPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, User user,
-			PassengerRecord passengerRecord, WebAPICallback<Void> callback) {
+			PassengerRecord passengerRecord, ApiClientCallback<Void> callback) {
 		return 0;
 	}
 }

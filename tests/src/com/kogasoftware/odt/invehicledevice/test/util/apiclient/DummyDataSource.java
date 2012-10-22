@@ -11,16 +11,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.kogasoftware.odt.invehicledevice.apiclient.EmptyDataSource;
-import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
-import com.kogasoftware.odt.webapi.WebAPIException;
-import com.kogasoftware.odt.webapi.model.Demand;
-import com.kogasoftware.odt.webapi.model.OperationSchedule;
-import com.kogasoftware.odt.webapi.model.Platform;
-import com.kogasoftware.odt.webapi.model.Reservation;
-import com.kogasoftware.odt.webapi.model.ReservationCandidate;
-import com.kogasoftware.odt.webapi.model.ServiceProvider;
-import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
-import com.kogasoftware.odt.webapi.model.VehicleNotification;
+import com.kogasoftware.odt.apiclient.ApiClientCallback;
+import com.kogasoftware.odt.apiclient.ApiClientException;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.Demand;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.ReservationCandidate;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceProvider;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnitStatusLog;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 
 public class DummyDataSource extends EmptyDataSource {
 
@@ -30,19 +30,19 @@ public class DummyDataSource extends EmptyDataSource {
 
 	@Override
 	public int arrivalOperationSchedule(OperationSchedule os,
-			WebAPICallback<OperationSchedule> callback) {
+			ApiClientCallback<OperationSchedule> callback) {
 		return 0;
 	}
 
 	@Override
 	public int departureOperationSchedule(OperationSchedule os,
-			WebAPICallback<OperationSchedule> callback) {
+			ApiClientCallback<OperationSchedule> callback) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	public List<OperationSchedule> getOperationSchedules2()
-			throws WebAPIException {
+			throws ApiClientException {
 		List<OperationSchedule> l = new LinkedList<OperationSchedule>();
 		try {
 			String ru1 = "{user: {id: 1, last_name: 'ラストネーム', first_name: 'ファーストネーム', passenger_records: [{departure_operation_schedule_id: 1, get_on_time: '2000-01-01', updated_at: '2030-01-01'}, {updated_at: '1999-01-01'}]}}";
@@ -128,13 +128,13 @@ public class DummyDataSource extends EmptyDataSource {
 		return l;
 	}
 
-	public List<VehicleNotification> getVehicleNotifications2() throws WebAPIException {
+	public List<VehicleNotification> getVehicleNotifications2() throws ApiClientException {
 
 		try {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
-			throw new WebAPIException(e);
+			throw new ApiClientException(e);
 		}
 
 		List<VehicleNotification> l = new LinkedList<VehicleNotification>();
@@ -151,14 +151,14 @@ public class DummyDataSource extends EmptyDataSource {
 
 	@Override
 	public int responseVehicleNotification(VehicleNotification vn,
-			int response, WebAPICallback<VehicleNotification> callback) {
+			int response, ApiClientCallback<VehicleNotification> callback) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public int sendServiceUnitStatusLog(ServiceUnitStatusLog log,
-			WebAPICallback<ServiceUnitStatusLog> callback) {
+			ApiClientCallback<ServiceUnitStatusLog> callback) {
 		sendServiceUnitStatusLogArgs.add(log);
 		return 0;
 	}
@@ -169,7 +169,7 @@ public class DummyDataSource extends EmptyDataSource {
 
 	@Override
 	public int searchReservationCandidate(Demand demand,
-			WebAPICallback<List<ReservationCandidate>> callback) {
+			ApiClientCallback<List<ReservationCandidate>> callback) {
 
 		try {
 			Thread.sleep(5000);
@@ -246,7 +246,7 @@ public class DummyDataSource extends EmptyDataSource {
 
 	@Override
 	public int createReservation(ReservationCandidate reservationCandidate,
-			WebAPICallback<Reservation> callback) {
+			ApiClientCallback<Reservation> callback) {
 		try {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
@@ -257,7 +257,7 @@ public class DummyDataSource extends EmptyDataSource {
 	}
 
 	@Override
-	public int getServiceProvider(WebAPICallback<ServiceProvider> callback) {
+	public int getServiceProvider(ApiClientCallback<ServiceProvider> callback) {
 		callback.onSucceed(0, 200, new ServiceProvider());
 		return 0;
 	}

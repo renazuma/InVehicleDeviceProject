@@ -10,9 +10,9 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Local
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 import com.kogasoftware.odt.invehicledevice.service.logservice.UploadThread;
-import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
-import com.kogasoftware.odt.webapi.WebAPIException;
-import com.kogasoftware.odt.webapi.model.ServiceProvider;
+import com.kogasoftware.odt.apiclient.ApiClientCallback;
+import com.kogasoftware.odt.apiclient.ApiClientException;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceProvider;
 
 public class ServiceProviderReceiveThread extends Thread implements
 		EventDispatcher.OnStartNewOperationListener {
@@ -54,9 +54,9 @@ public class ServiceProviderReceiveThread extends Thread implements
 
 	private void receive() {
 		service.getRemoteDataSource().getServiceProvider(
-				new WebAPICallback<ServiceProvider>() {
+				new ApiClientCallback<ServiceProvider>() {
 					@Override
-					public void onException(int reqkey, WebAPIException ex) {
+					public void onException(int reqkey, ApiClientException ex) {
 					}
 
 					@Override

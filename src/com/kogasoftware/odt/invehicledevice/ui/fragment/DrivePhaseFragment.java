@@ -18,8 +18,8 @@ import android.widget.TextView;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.webapi.model.OperationSchedule;
-import com.kogasoftware.odt.webapi.model.Platform;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 
 public class DrivePhaseFragment extends ApplicationFragment<State> {
 	@SuppressWarnings("serial")

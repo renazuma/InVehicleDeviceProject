@@ -9,22 +9,22 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.collect.Lists;
-import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
-import com.kogasoftware.odt.webapi.WebAPIException;
-import com.kogasoftware.odt.webapi.model.OperationRecord;
-import com.kogasoftware.odt.webapi.model.OperationSchedule;
-import com.kogasoftware.odt.webapi.model.PassengerRecord;
-import com.kogasoftware.odt.webapi.model.Reservation;
-import com.kogasoftware.odt.webapi.model.ServiceProvider;
-import com.kogasoftware.odt.webapi.model.User;
-import com.kogasoftware.odt.webapi.model.VehicleNotification;
+import com.kogasoftware.odt.apiclient.ApiClientCallback;
+import com.kogasoftware.odt.apiclient.ApiClientException;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationRecord;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceProvider;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.User;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 
 public class DummyDataSource extends EmptyDataSource {
 	private final AtomicInteger state = new AtomicInteger(0);
 
 	@Override
 	public int getVehicleNotifications(
-			WebAPICallback<List<VehicleNotification>> callback) {
+			ApiClientCallback<List<VehicleNotification>> callback) {
 		// if (state.compareAndSet(0, 1)) {
 		// callback.onFailed(0, 400, "");
 		// return 0;
@@ -44,7 +44,7 @@ public class DummyDataSource extends EmptyDataSource {
 	}
 
 	@Override
-	public int getServiceProvider(WebAPICallback<ServiceProvider> callback) {
+	public int getServiceProvider(ApiClientCallback<ServiceProvider> callback) {
 		callback.onSucceed(0, 200, new ServiceProvider());
 		return 0;
 	}
@@ -52,7 +52,7 @@ public class DummyDataSource extends EmptyDataSource {
 	@Override
 	public int getOffPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, User user,
-			PassengerRecord passengerRecord, WebAPICallback<Void> callback) {
+			PassengerRecord passengerRecord, ApiClientCallback<Void> callback) {
 		callback.onSucceed(0, 200, null);
 		return 0;
 	}
@@ -60,42 +60,42 @@ public class DummyDataSource extends EmptyDataSource {
 	@Override
 	public int getOnPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, User user,
-			PassengerRecord passengerRecord, WebAPICallback<Void> callback) {
+			PassengerRecord passengerRecord, ApiClientCallback<Void> callback) {
 		callback.onSucceed(0, 200, null);
 		return 0;
 	}
 
 	@Override
 	public int cancelGetOffPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, User user, WebAPICallback<Void> callback) {
+			Reservation reservation, User user, ApiClientCallback<Void> callback) {
 		callback.onSucceed(0, 200, null);
 		return 0;
 	}
 
 	@Override
 	public int cancelGetOnPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, User user, WebAPICallback<Void> callback) {
+			Reservation reservation, User user, ApiClientCallback<Void> callback) {
 		callback.onSucceed(0, 200, null);
 		return 0;
 	}
 
 	@Override
 	public int departureOperationSchedule(OperationSchedule os,
-			WebAPICallback<OperationSchedule> callback) {
+			ApiClientCallback<OperationSchedule> callback) {
 		callback.onSucceed(0, 200, new OperationSchedule());
 		return 0;
 	}
 
 	@Override
 	public int arrivalOperationSchedule(OperationSchedule os,
-			WebAPICallback<OperationSchedule> callback) {
+			ApiClientCallback<OperationSchedule> callback) {
 		callback.onSucceed(0, 200, new OperationSchedule());
 		return 0;
 	}
 
 	@Override
 	public int getOperationSchedules(
-			WebAPICallback<List<OperationSchedule>> callback) {
+			ApiClientCallback<List<OperationSchedule>> callback) {
 		OperationRecord unhandled = new OperationRecord();
 		OperationRecord arrived = new OperationRecord();
 		arrived.setArrivedAt(new Date());
@@ -154,7 +154,7 @@ public class DummyDataSource extends EmptyDataSource {
 
 			callback.onSucceed(0, 200, l);
 		} catch (JSONException e) {
-			callback.onException(0, new WebAPIException(e));
+			callback.onException(0, new ApiClientException(e));
 		}
 		return 0;
 	}

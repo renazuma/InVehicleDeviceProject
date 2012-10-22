@@ -38,9 +38,9 @@ import com.kogasoftware.odt.invehicledevice.ui.fragment.NavigationFragment.State
 import com.kogasoftware.odt.invehicledevice.ui.fragment.navigation.NavigationRenderer;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.navigation.NavigationRenderer.OnChangeMapZoomLevelListener;
 import com.kogasoftware.odt.invehicledevice.ui.frametask.navigation.tilepipeline.TilePipeline;
-import com.kogasoftware.odt.webapi.model.OperationSchedule;
-import com.kogasoftware.odt.webapi.model.PassengerRecord;
-import com.kogasoftware.odt.webapi.model.Platform;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 
 public class NavigationFragment extends ApplicationFragment<State> implements
 		EventDispatcher.OnChangeLocationListener,

@@ -14,8 +14,8 @@ import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentati
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.test.util.apiclient.DummyDataSource;
 import com.kogasoftware.odt.invehicledevice.ui.activity.EmptyActivity;
-import com.kogasoftware.odt.webapi.model.OperationSchedule;
-import com.kogasoftware.odt.webapi.model.Platform;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 
 public class PlatformPhaseFragmentTestCase extends
 		EmptyActivityInstrumentationTestCase2 {

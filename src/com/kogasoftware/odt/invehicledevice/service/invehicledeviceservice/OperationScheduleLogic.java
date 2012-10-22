@@ -7,18 +7,18 @@ import android.util.Log;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import com.kogasoftware.odt.invehicledevice.empty.EmptyWebAPICallback;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationRecord;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.User;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
+import com.kogasoftware.odt.invehicledevice.empty.EmptyApiClientCallback;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.BackgroundWriter;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Reader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
-import com.kogasoftware.odt.webapi.model.OperationRecord;
-import com.kogasoftware.odt.webapi.model.OperationSchedule;
-import com.kogasoftware.odt.webapi.model.PassengerRecord;
-import com.kogasoftware.odt.webapi.model.Reservation;
-import com.kogasoftware.odt.webapi.model.User;
-import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 /**
  * スケジュール関連のデータ処理
@@ -377,7 +377,7 @@ public class OperationScheduleLogic {
 								.withSaveOnClose()
 								.arrivalOperationSchedule(
 										operationSchedule,
-										new EmptyWebAPICallback<OperationSchedule>());
+										new EmptyApiClientCallback<OperationSchedule>());
 						Log.i(TAG,
 								"arrive -> "
 										+ getPhase(
@@ -430,7 +430,7 @@ public class OperationScheduleLogic {
 								.withSaveOnClose()
 								.departureOperationSchedule(
 										operationSchedule,
-										new EmptyWebAPICallback<OperationSchedule>());
+										new EmptyApiClientCallback<OperationSchedule>());
 						Log.i(TAG,
 								"depart -> "
 										+ getPhase(

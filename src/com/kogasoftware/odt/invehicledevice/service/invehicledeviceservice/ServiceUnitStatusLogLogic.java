@@ -6,10 +6,10 @@ import android.location.GpsStatus;
 import android.location.Location;
 
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.invehicledevice.empty.EmptyWebAPICallback;
+import com.kogasoftware.odt.invehicledevice.empty.EmptyApiClientCallback;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Reader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
-import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnitStatusLog;
 
 public class ServiceUnitStatusLogLogic {
 	protected final InVehicleDeviceService service;
@@ -84,6 +84,6 @@ public class ServiceUnitStatusLogLogic {
 		service.getRemoteDataSource()
 				.withSaveOnClose()
 				.sendServiceUnitStatusLog(getServiceUnitStatusLog(),
-						new EmptyWebAPICallback<ServiceUnitStatusLog>());
+						new EmptyApiClientCallback<ServiceUnitStatusLog>());
 	}
 }

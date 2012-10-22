@@ -7,17 +7,16 @@ import android.graphics.Bitmap;
 
 import com.google.common.io.Closeables;
 import com.javadocmd.simplelatlng.LatLng;
-import com.kogasoftware.odt.webapi.WebAPI;
-import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
-import com.kogasoftware.odt.webapi.model.Demand;
-import com.kogasoftware.odt.webapi.model.OperationSchedule;
-import com.kogasoftware.odt.webapi.model.PassengerRecord;
-import com.kogasoftware.odt.webapi.model.Reservation;
-import com.kogasoftware.odt.webapi.model.ReservationCandidate;
-import com.kogasoftware.odt.webapi.model.ServiceProvider;
-import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
-import com.kogasoftware.odt.webapi.model.User;
-import com.kogasoftware.odt.webapi.model.VehicleNotification;
+import com.kogasoftware.odt.apiclient.ApiClientCallback;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.Demand;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.ReservationCandidate;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceProvider;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnitStatusLog;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.User;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 
 public class WebAPIDataSource implements DataSource {
 	public static final String DEFAULT_URL = "http://127.0.0.1";
@@ -33,27 +32,27 @@ public class WebAPIDataSource implements DataSource {
 
 	@Override
 	public int arrivalOperationSchedule(final OperationSchedule os,
-			final WebAPICallback<OperationSchedule> callback) {
+			final ApiClientCallback<OperationSchedule> callback) {
 		return api.arrivalOperationSchedule(os, callback);
 	}
 
 	@Override
 	public int departureOperationSchedule(final OperationSchedule os,
-			final WebAPICallback<OperationSchedule> callback) {
+			final ApiClientCallback<OperationSchedule> callback) {
 		return api.departureOperationSchedule(os, callback);
 	}
 
 	@Override
 	public int responseVehicleNotification(final VehicleNotification vn,
 			final int response,
-			final WebAPICallback<VehicleNotification> callback) {
+			final ApiClientCallback<VehicleNotification> callback) {
 		return api.responseVehicleNotification(vn, response, callback);
 	}
 
 	@Override
 	public int sendServiceUnitStatusLog(
 			final ServiceUnitStatusLog serviceUnitStatusLog,
-			final WebAPICallback<ServiceUnitStatusLog> callback) {
+			final ApiClientCallback<ServiceUnitStatusLog> callback) {
 		return api.sendServiceUnitStatusLog(serviceUnitStatusLog, callback);
 	}
 
@@ -65,7 +64,7 @@ public class WebAPIDataSource implements DataSource {
 	@Override
 	public int cancelGetOnPassenger(final OperationSchedule operationSchedule,
 			final Reservation reservation, final User user,
-			final WebAPICallback<Void> callback) {
+			final ApiClientCallback<Void> callback) {
 		return api.cancelGetOnPassenger(operationSchedule, reservation, user,
 				callback);
 	}
@@ -73,21 +72,21 @@ public class WebAPIDataSource implements DataSource {
 	@Override
 	public int cancelGetOffPassenger(final OperationSchedule operationSchedule,
 			final Reservation reservation, final User user,
-			final WebAPICallback<Void> callback) {
+			final ApiClientCallback<Void> callback) {
 		return api.cancelGetOffPassenger(operationSchedule, reservation, user,
 				callback);
 	}
 
 	@Override
 	public int searchReservationCandidate(final Demand demand,
-			final WebAPICallback<List<ReservationCandidate>> callback) {
+			final ApiClientCallback<List<ReservationCandidate>> callback) {
 		return api.searchReservationCandidate(demand, callback);
 	}
 
 	@Override
 	public int createReservation(
 			final ReservationCandidate reservationCandidate,
-			final WebAPICallback<Reservation> callback) {
+			final ApiClientCallback<Reservation> callback) {
 		return api.createReservation(reservationCandidate, callback);
 	}
 
@@ -98,7 +97,7 @@ public class WebAPIDataSource implements DataSource {
 
 	@Override
 	public int getMapTile(LatLng center, Integer zoom,
-			WebAPICallback<Bitmap> callback) {
+			ApiClientCallback<Bitmap> callback) {
 		return api.getMapTile(center, zoom, callback);
 	}
 
@@ -109,36 +108,36 @@ public class WebAPIDataSource implements DataSource {
 	}
 
 	@Override
-	public int getServiceProvider(final WebAPICallback<ServiceProvider> callback) {
+	public int getServiceProvider(
+			final ApiClientCallback<ServiceProvider> callback) {
 		return api.getServicePrivider(callback);
 	}
 
 	@Override
 	public int getOffPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, User user,
-			PassengerRecord passengerRecord,
-			WebAPICallback<Void> callback) {
-		return api.getOffPassenger(operationSchedule, reservation, user, passengerRecord, callback);
+			PassengerRecord passengerRecord, ApiClientCallback<Void> callback) {
+		return api.getOffPassenger(operationSchedule, reservation, user,
+				passengerRecord, callback);
 	}
 
 	@Override
 	public int getOnPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, User user,
-			PassengerRecord passengerRecord,
-			WebAPICallback<Void> callback) {
+			PassengerRecord passengerRecord, ApiClientCallback<Void> callback) {
 		return api.getOnPassenger(operationSchedule, reservation, user,
 				passengerRecord, callback);
 	}
 
 	@Override
 	public int getOperationSchedules(
-			WebAPICallback<List<OperationSchedule>> callback) {
+			ApiClientCallback<List<OperationSchedule>> callback) {
 		return api.getOperationSchedules(callback);
 	}
 
 	@Override
 	public int getVehicleNotifications(
-			WebAPICallback<List<VehicleNotification>> callback) {
+			ApiClientCallback<List<VehicleNotification>> callback) {
 		return api.getVehicleNotifications(callback);
 	}
 

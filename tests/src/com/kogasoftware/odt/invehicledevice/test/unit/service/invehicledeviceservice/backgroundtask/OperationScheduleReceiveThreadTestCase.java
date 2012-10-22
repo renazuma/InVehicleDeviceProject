@@ -20,10 +20,10 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Event
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask.OperationScheduleReceiveThread;
-import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
-import com.kogasoftware.odt.webapi.WebAPIException;
-import com.kogasoftware.odt.webapi.model.OperationSchedule;
-import com.kogasoftware.odt.webapi.model.VehicleNotification;
+import com.kogasoftware.odt.apiclient.ApiClientCallback;
+import com.kogasoftware.odt.apiclient.ApiClientException;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 
 public class OperationScheduleReceiveThreadTestCase extends AndroidTestCase {
 	OperationScheduleReceiveThread osrt;
@@ -56,9 +56,9 @@ public class OperationScheduleReceiveThreadTestCase extends AndroidTestCase {
 		DataSource ds = new EmptyDataSource() {
 			@Override
 			public int getOperationSchedules(
-					WebAPICallback<List<OperationSchedule>> callback) {
+					ApiClientCallback<List<OperationSchedule>> callback) {
 				if (fail.get()) {
-					callback.onException(0, new WebAPIException(
+					callback.onException(0, new ApiClientException(
 							new RuntimeException()));
 				}
 				return 0;

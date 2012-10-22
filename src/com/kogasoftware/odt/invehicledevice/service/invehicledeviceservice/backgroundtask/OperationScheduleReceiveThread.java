@@ -10,11 +10,11 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVeh
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.VehicleNotificationLogic;
-import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
-import com.kogasoftware.odt.webapi.WebAPIException;
-import com.kogasoftware.odt.webapi.model.OperationSchedule;
-import com.kogasoftware.odt.webapi.model.VehicleNotification;
-import com.kogasoftware.odt.webapi.model.VehicleNotification.NotificationKind;
+import com.kogasoftware.odt.apiclient.ApiClientCallback;
+import com.kogasoftware.odt.apiclient.ApiClientException;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification.NotificationKind;
 
 public class OperationScheduleReceiveThread extends Thread implements
 		EventDispatcher.OnStartNewOperationListener,
@@ -46,9 +46,9 @@ public class OperationScheduleReceiveThread extends Thread implements
 	public void receive(
 			final List<VehicleNotification> triggerVehicleNotifications) {
 		service.getRemoteDataSource().getOperationSchedules(
-				new WebAPICallback<List<OperationSchedule>>() {
+				new ApiClientCallback<List<OperationSchedule>>() {
 					@Override
-					public void onException(int reqkey, WebAPIException ex) {
+					public void onException(int reqkey, ApiClientException ex) {
 						service.getEventDispatcher()
 								.dispatchOperationScheduleReceiveFail();
 						Uninterruptibles.sleepUninterruptibly(

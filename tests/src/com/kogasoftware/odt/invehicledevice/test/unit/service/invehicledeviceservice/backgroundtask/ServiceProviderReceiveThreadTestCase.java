@@ -17,8 +17,8 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Local
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask.ServiceProviderReceiveThread;
 import com.kogasoftware.odt.invehicledevice.service.logservice.UploadThread;
-import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
-import com.kogasoftware.odt.webapi.model.ServiceProvider;
+import com.kogasoftware.odt.apiclient.ApiClientCallback;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceProvider;
 
 public class ServiceProviderReceiveThreadTestCase extends AndroidTestCase {
 	ServiceProviderReceiveThread sprt;
@@ -46,7 +46,7 @@ public class ServiceProviderReceiveThreadTestCase extends AndroidTestCase {
 		DataSource ds = new EmptyDataSource() {
 			@Override
 			public int getServiceProvider(
-					WebAPICallback<ServiceProvider> callback) {
+					ApiClientCallback<ServiceProvider> callback) {
 				ServiceProvider sp = new ServiceProvider();
 				callback.onSucceed(0, 200, sp);
 				return 0;

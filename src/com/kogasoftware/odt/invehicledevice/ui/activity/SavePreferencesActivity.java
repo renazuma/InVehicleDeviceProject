@@ -20,7 +20,7 @@ import com.google.common.base.Strings;
 import com.kogasoftware.odt.invehicledevice.apiclient.WebAPIDataSource;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask.Broadcasts;
-import com.kogasoftware.odt.webapi.model.InVehicleDevice;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.InVehicleDevice;
 
 public class SavePreferencesActivity extends Activity {
 	private static final String TAG = SavePreferencesActivity.class

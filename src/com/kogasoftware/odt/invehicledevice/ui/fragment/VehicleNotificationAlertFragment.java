@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.VehicleNotificationAlertFragment.State;
-import com.kogasoftware.odt.webapi.model.VehicleNotification;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 
 public class VehicleNotificationAlertFragment extends
 		ApplicationFragment<State> {

@@ -19,9 +19,9 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Local
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.VehicleNotificationLogic;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
-import com.kogasoftware.odt.webapi.model.VehicleNotification;
-import com.kogasoftware.odt.webapi.model.VehicleNotification.NotificationKind;
-import com.kogasoftware.odt.webapi.model.VehicleNotification.Response;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification.NotificationKind;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification.Response;
 
 public class VehicleNotificationFragmentTestCase extends
 		EmptyActivityInstrumentationTestCase2 {

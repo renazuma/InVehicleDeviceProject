@@ -4,7 +4,7 @@ import java.io.File;
 import org.apache.commons.lang3.SerializationUtils;
 import android.test.AndroidTestCase;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
-import com.kogasoftware.odt.webapi.model.ServiceProvider;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceProvider;
 
 public class LocalDataTestCase extends AndroidTestCase {
 	@Override

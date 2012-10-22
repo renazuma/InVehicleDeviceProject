@@ -12,7 +12,7 @@ import android.widget.TextView;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.VehicleNotificationLogic;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.VehicleNotificationFragment.State;
-import com.kogasoftware.odt.webapi.model.VehicleNotification;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 
 public class VehicleNotificationFragment extends ApplicationFragment<State> {
 	@SuppressWarnings("serial")

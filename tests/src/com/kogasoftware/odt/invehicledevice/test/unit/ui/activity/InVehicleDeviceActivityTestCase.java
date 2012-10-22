@@ -25,9 +25,9 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Share
 import com.kogasoftware.odt.invehicledevice.service.startupservice.StartupService;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
-import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
-import com.kogasoftware.odt.webapi.model.OperationSchedule;
-import com.kogasoftware.odt.webapi.model.ServiceProvider;
+import com.kogasoftware.odt.apiclient.ApiClientCallback;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceProvider;
 
 public class InVehicleDeviceActivityTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
@@ -67,7 +67,7 @@ public class InVehicleDeviceActivityTestCase extends
 		TestUtil.setDataSource(new EmptyDataSource() {
 			@Override
 			public int getOperationSchedules(
-					WebAPICallback<List<OperationSchedule>> callback) {
+					ApiClientCallback<List<OperationSchedule>> callback) {
 				callback.onFailed(0, 500, "");
 				return 0;
 			}
@@ -88,14 +88,14 @@ public class InVehicleDeviceActivityTestCase extends
 		TestUtil.setDataSource(new EmptyDataSource() {
 			@Override
 			public int getServiceProvider(
-					WebAPICallback<ServiceProvider> callback) {
+					ApiClientCallback<ServiceProvider> callback) {
 				callback.onSucceed(0, 200, new ServiceProvider());
 				return 0;
 			}
 
 			@Override
 			public int getOperationSchedules(
-					WebAPICallback<List<OperationSchedule>> callback) {
+					ApiClientCallback<List<OperationSchedule>> callback) {
 				if (fail.get()) {
 					callback.onFailed(0, 500, "");
 				} else {
@@ -135,7 +135,7 @@ public class InVehicleDeviceActivityTestCase extends
 		TestUtil.setDataSource(new EmptyDataSource() {
 			@Override
 			public int getOperationSchedules(
-					WebAPICallback<List<OperationSchedule>> callback) {
+					ApiClientCallback<List<OperationSchedule>> callback) {
 				callback.onSucceed(0, 200, new LinkedList<OperationSchedule>());
 				return 0;
 			}

@@ -8,9 +8,9 @@ import android.widget.TextView;
 
 import com.google.common.base.Joiner;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.webapi.model.PassengerRecord;
-import com.kogasoftware.odt.webapi.model.Reservation;
-import com.kogasoftware.odt.webapi.model.User;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.User;
 
 import java.io.Serializable;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.PassengerRecordMemoFragment.State;

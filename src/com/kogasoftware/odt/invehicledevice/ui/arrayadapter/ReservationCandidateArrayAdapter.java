@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.webapi.model.ReservationCandidate;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.ReservationCandidate;
 
 public class ReservationCandidateArrayAdapter extends
 		ArrayAdapter<ReservationCandidate> {

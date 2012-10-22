@@ -11,7 +11,7 @@ import android.widget.ListView;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.OperationScheduleArrayAdapter;
-import com.kogasoftware.odt.webapi.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 
 import java.io.Serializable;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.OperationScheduleListFragment.State;

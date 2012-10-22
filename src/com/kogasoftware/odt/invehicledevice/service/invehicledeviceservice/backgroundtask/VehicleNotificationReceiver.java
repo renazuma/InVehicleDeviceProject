@@ -4,9 +4,9 @@ import java.util.List;
 
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.VehicleNotificationLogic;
-import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
-import com.kogasoftware.odt.webapi.WebAPIException;
-import com.kogasoftware.odt.webapi.model.VehicleNotification;
+import com.kogasoftware.odt.apiclient.ApiClientCallback;
+import com.kogasoftware.odt.apiclient.ApiClientException;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 
 public class VehicleNotificationReceiver implements Runnable {
 	protected final InVehicleDeviceService service;
@@ -22,10 +22,10 @@ public class VehicleNotificationReceiver implements Runnable {
 		service.getRemoteDataSource()
 				.withRetry(false)
 				.getVehicleNotifications(
-						new WebAPICallback<List<VehicleNotification>>() {
+						new ApiClientCallback<List<VehicleNotification>>() {
 							@Override
 							public void onException(int reqkey,
-									WebAPIException ex) {
+									ApiClientException ex) {
 							}
 
 							@Override

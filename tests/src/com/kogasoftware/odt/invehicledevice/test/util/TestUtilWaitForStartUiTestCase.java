@@ -11,8 +11,8 @@ import com.kogasoftware.odt.invehicledevice.apiclient.DataSource;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 import com.kogasoftware.odt.invehicledevice.test.util.apiclient.DummyDataSource;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
-import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
-import com.kogasoftware.odt.webapi.model.OperationSchedule;
+import com.kogasoftware.odt.apiclient.ApiClientCallback;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 
 public class TestUtilWaitForStartUiTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
@@ -26,7 +26,7 @@ public class TestUtilWaitForStartUiTestCase extends
 			ds = new DummyDataSource() {
 				@Override
 				public int getOperationSchedules(
-						WebAPICallback<List<OperationSchedule>> callback) {
+						ApiClientCallback<List<OperationSchedule>> callback) {
 					callback.onFailed(0, 401, "");
 					return 0;
 				}

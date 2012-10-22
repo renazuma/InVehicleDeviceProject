@@ -8,12 +8,12 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.kogasoftware.odt.invehicledevice.apiclient.DataSource;
-import com.kogasoftware.odt.invehicledevice.empty.EmptyWebAPICallback;
+import com.kogasoftware.odt.invehicledevice.empty.EmptyApiClientCallback;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Reader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.VoidReader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalDataSource.Writer;
-import com.kogasoftware.odt.webapi.model.VehicleNotification;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 
 /**
  * 通知に関する内部データ処理
@@ -63,7 +63,7 @@ public class VehicleNotificationLogic {
 		for (VehicleNotification vehicleNotification : vehicleNotifications) {
 			dataSource.withSaveOnClose().responseVehicleNotification(
 					vehicleNotification, VehicleNotification.Response.YES,
-					new EmptyWebAPICallback<VehicleNotification>());
+					new EmptyApiClientCallback<VehicleNotification>());
 		}
 		setVehicleNotificationStatus(vehicleNotifications,
 				VehicleNotificationStatus.REPLIED);
@@ -81,7 +81,7 @@ public class VehicleNotificationLogic {
 		for (Integer response : vehicleNotification.getResponse().asSet()) {
 			dataSource.withSaveOnClose().responseVehicleNotification(
 					vehicleNotification, response,
-					new EmptyWebAPICallback<VehicleNotification>());
+					new EmptyApiClientCallback<VehicleNotification>());
 		}
 		setVehicleNotificationStatus(vehicleNotification,
 				VehicleNotificationStatus.REPLIED);
