@@ -15,8 +15,7 @@ public class StartBroadcastReceiverTestCase extends
 	StartupBroadcastReceiver sbr;
 
 	public StartBroadcastReceiverTestCase() {
-		super("com.kogasoftware.odt.invehicledevice",
-				InVehicleDeviceActivity.class);
+		super(InVehicleDeviceActivity.class);
 	}
 
 	@Override

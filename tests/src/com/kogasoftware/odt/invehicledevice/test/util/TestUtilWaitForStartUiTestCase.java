@@ -64,9 +64,7 @@ public class TestUtilWaitForStartUiTestCase extends
 	}
 
 	public TestUtilWaitForStartUiTestCase() {
-		super("com.kogasoftware.odt.invehicledevice",
-				InVehicleDeviceActivity.class);
-
+		super(InVehicleDeviceActivity.class);
 	}
 
 	public void testWaitForStartUi1() throws Exception {
