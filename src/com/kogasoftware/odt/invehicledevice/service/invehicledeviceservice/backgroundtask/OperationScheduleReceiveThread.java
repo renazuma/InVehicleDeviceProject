@@ -49,7 +49,8 @@ public class OperationScheduleReceiveThread extends Thread implements
 				new WebAPICallback<List<OperationSchedule>>() {
 					@Override
 					public void onException(int reqkey, WebAPIException ex) {
-						service.getEventDispatcher().dispatchNotifyOperationScheduleReceiveFailed();
+						service.getEventDispatcher()
+								.dispatchOperationScheduleReceiveFail();
 						Uninterruptibles.sleepUninterruptibly(
 								RETRY_DELAY_MILLIS, TimeUnit.MILLISECONDS);
 					}
@@ -57,7 +58,8 @@ public class OperationScheduleReceiveThread extends Thread implements
 					@Override
 					public void onFailed(int reqkey, int statusCode,
 							String response) {
-						service.getEventDispatcher().dispatchNotifyOperationScheduleReceiveFailed();
+						service.getEventDispatcher()
+								.dispatchOperationScheduleReceiveFail();
 						Uninterruptibles.sleepUninterruptibly(
 								RETRY_DELAY_MILLIS, TimeUnit.MILLISECONDS);
 					}
@@ -65,17 +67,9 @@ public class OperationScheduleReceiveThread extends Thread implements
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
 							List<OperationSchedule> operationSchedules) {
-						if (!triggerVehicleNotifications.isEmpty()) {
-							service.getEventDispatcher().dispatchAlertUpdatedOperationSchedule();
-							try {
-								service.speak("運行予定が変更されました");
-								Thread.sleep(VOICE_DELAY_MILLIS);
-							} catch (InterruptedException e) {
-								Thread.currentThread().interrupt();
-							}
-						}
-						operationScheduleLogic.mergeOperationSchedules(operationSchedules,
-								triggerVehicleNotifications);
+						operationScheduleLogic
+								.mergeOperationSchedules(operationSchedules,
+										triggerVehicleNotifications);
 					}
 				});
 	}
@@ -84,10 +78,8 @@ public class OperationScheduleReceiveThread extends Thread implements
 	public void run() {
 		try {
 			service.getEventDispatcher().addOnStartNewOperationListener(this);
-			service.getEventDispatcher().addOnStartReceiveUpdatedOperationScheduleListener(this);
-
-			// 最初の一度は必ず受信する
-			startUpdatedOperationScheduleReceiveSemaphore.release();
+			service.getEventDispatcher()
+					.addOnStartReceiveUpdatedOperationScheduleListener(this);
 			while (true) {
 				// スケジュール変更通知があるまで待つ
 				startUpdatedOperationScheduleReceiveSemaphore.acquire();
@@ -99,8 +91,10 @@ public class OperationScheduleReceiveThread extends Thread implements
 		} catch (InterruptedException e) {
 			// 正常終了
 		} finally {
-			service.getEventDispatcher().removeOnStartNewOperationListener(this);
-			service.getEventDispatcher().removeOnStartReceiveUpdatedOperationScheduleListener(this);
+			service.getEventDispatcher()
+					.removeOnStartNewOperationListener(this);
+			service.getEventDispatcher()
+					.removeOnStartReceiveUpdatedOperationScheduleListener(this);
 		}
 	}
 
