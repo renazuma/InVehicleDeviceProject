@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/ModalView.Layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/arrival_check_fragment_title_text_view"
+        style="@style/ModalView.Title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:text="@string/does_it_arrive"
+        android:textSize="36sp" />
+
+    <TextView
+        android:id="@+id/arrival_check_comment_text_view"
+        style="@style/ModalView.Content"
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_above="@+id/arrival_check_fragment_buttons"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/arrival_check_fragment_title_text_view"
+        android:layout_margin="5dip"
+        android:background="@drawable/border"
+        android:padding="15dip"
+        android:textSize="38sp" />
+
+    <LinearLayout
+        android:id="@+id/arrival_check_fragment_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true" >
+
+        <Button
+            android:id="@+id/arrival_button"
+            style="@style/ModalView.Button"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:paddingBottom="15sp"
+            android:paddingTop="15sp"
+            android:text="@string/it_arrives"
+            android:textSize="30sp" />
+
+        <Button
+            android:id="@+id/arrival_check_close_button"
+            style="@style/ModalView.Button"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:text="@string/cancel"
+            android:textSize="30sp" />
+    </LinearLayout>
+
+</RelativeLayout>

@@ -192,11 +192,14 @@ public class InVehicleDeviceService extends Service {
 		return localDataSource.withReadLock(new Reader<Boolean>() {
 			@Override
 			public Boolean read(LocalData localData) {
-				return (localData.operationScheduleInitializedSign
-						.availablePermits() > 0 && localData.serviceProviderInitializedSign
-						.availablePermits() > 0);
+				return isOperationInitialized(localData);
 			}
 		});
+	}
+
+	public Boolean isOperationInitialized(LocalData localData) {
+		return (localData.operationScheduleInitializedSign.availablePermits() > 0 && localData.serviceProviderInitializedSign
+				.availablePermits() > 0);
 	}
 
 	@Override
