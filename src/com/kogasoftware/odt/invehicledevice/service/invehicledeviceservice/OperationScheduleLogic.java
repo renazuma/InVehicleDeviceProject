@@ -7,7 +7,6 @@ import android.util.Log;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import com.kogasoftware.odt.invehicledevice.apiclient.DataSource;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyWebAPICallback;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
@@ -82,84 +81,31 @@ public class OperationScheduleLogic {
 	 * 走行フェーズへ移行
 	 */
 	public void enterDrivePhase() {
-		service.getLocalDataSource().withWriteLock(new Writer() {
-			@Override
-			public void write(LocalData localData) {
-				List<OperationSchedule> remainingOperationSchedules = getRemainingOperationSchedules();
-				if (remainingOperationSchedules.isEmpty()) {
-					service.getEventDispatcher().dispatchEnterFinishPhase();
-					return;
-				}
-				if (localData.phase == LocalData.Phase.PLATFORM) {
-					depart2();
-				}
-				localData.phase = LocalData.Phase.DRIVE;
-			}
-		});
-		service.getEventDispatcher().dispatchEnterDrivePhase();
+		throw new RuntimeException("method deleted");
 	}
 
 	/**
 	 * 終了フェーズへ移行
 	 */
 	public void enterFinishPhase() {
-		service.getLocalDataSource().withWriteLock(new Writer() {
-			@Override
-			public void write(LocalData localData) {
-				depart2();
-				localData.phase = LocalData.Phase.FINISH;
-			}
-		});
-		service.getEventDispatcher().dispatchEnterFinishPhase();
+		throw new RuntimeException("method deleted");
 	}
 
 	/**
 	 * 乗降場フェーズへ移行
 	 */
 	public void enterPlatformPhase() {
-		service.getLocalDataSource().withWriteLock(new Writer() {
-			@Override
-			public void write(LocalData localData) {
-				List<OperationSchedule> remainingOperationSchedules = getRemainingOperationSchedules();
-				if (remainingOperationSchedules.isEmpty()) {
-					service.getEventDispatcher().dispatchEnterFinishPhase();
-					return;
-				}
-				if (localData.phase == LocalData.Phase.DRIVE) {
-					arrive2();
-				}
-				localData.phase = LocalData.Phase.PLATFORM;
-			}
-		});
-		service.getEventDispatcher().dispatchEnterPlatformPhase();
+		throw new RuntimeException("method deleted");
 	}
 
+	@Deprecated
 	private void arrive2() {
-		for (OperationSchedule operationSchedule : getCurrentOperationSchedule()
-				.asSet()) {
-			OperationRecord operationRecord = operationSchedule
-					.getOperationRecord().or(new OperationRecord());
-			operationRecord.setArrivedAt(InVehicleDeviceService.getDate());
-			operationSchedule.setOperationRecord(operationRecord);
-			DataSource dataSource = service.getRemoteDataSource();
-			dataSource.withSaveOnClose().arrivalOperationSchedule(
-					operationSchedule,
-					new EmptyWebAPICallback<OperationSchedule>());
-		}
+		throw new RuntimeException("method deleted");
 	}
 
+	@Deprecated
 	private void depart2() {
-		for (OperationSchedule operationSchedule : getCurrentOperationSchedule()
-				.asSet()) {
-			OperationRecord operationRecord = operationSchedule
-					.getOperationRecord().or(new OperationRecord());
-			operationRecord.setDepartedAt(InVehicleDeviceService.getDate());
-			operationSchedule.setOperationRecord(operationRecord);
-			DataSource dataSource = service.getRemoteDataSource();
-			dataSource.withSaveOnClose().departureOperationSchedule(
-					operationSchedule,
-					new EmptyWebAPICallback<OperationSchedule>());
-		}
+		throw new RuntimeException("method deleted");
 	}
 
 	/**
@@ -343,6 +289,7 @@ public class OperationScheduleLogic {
 	/**
 	 * 現在の運行スケジュールを得る
 	 */
+	@Deprecated
 	public Optional<OperationSchedule> getCurrentOperationSchedule() {
 		return service.getLocalDataSource().withReadLock(
 				new Reader<Optional<OperationSchedule>>() {
@@ -361,6 +308,7 @@ public class OperationScheduleLogic {
 				});
 	}
 
+	@Deprecated
 	public List<OperationSchedule> getRemainingOperationSchedules() {
 		return service.getLocalDataSource().withReadLock(
 				new Reader<List<OperationSchedule>>() {
@@ -382,6 +330,7 @@ public class OperationScheduleLogic {
 				});
 	}
 
+	@Deprecated
 	public List<OperationSchedule> getOperationSchedules() {
 		return service.getLocalDataSource().withReadLock(
 				new Reader<List<OperationSchedule>>() {
@@ -403,21 +352,9 @@ public class OperationScheduleLogic {
 		});
 	}
 
+	@Deprecated
 	public void refreshPhase() {
-		switch (getPhase()) {
-		case INITIAL:
-			enterDrivePhase();
-			break;
-		case DRIVE:
-			enterDrivePhase();
-			break;
-		case PLATFORM:
-			enterPlatformPhase();
-			break;
-		case FINISH:
-			enterFinishPhase();
-			break;
-		}
+		throw new RuntimeException("method deleted");
 	}
 
 	public void arrive(OperationSchedule currentOperationSchedule,
