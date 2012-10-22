@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/ModalView.Layout"
+    tools:context=".ui.activity.EmptyActivity" >
+
+    <com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView
+        android:id="@+id/error_reservation_list_view"
+        style="@style/ModalView.Content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/check_fragment_buttons"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true" />
+
+    <LinearLayout
+        android:id="@+id/check_fragment_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true" >
+
+        <Button
+            android:id="@+id/complete_with_error_button"
+            style="@style/ModalView.Button"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="2"
+            android:paddingBottom="15sp"
+            android:paddingTop="15sp"
+            android:textSize="30sp" />
+
+        <Button
+            android:id="@+id/get_off_check_close_button"
+            style="@style/ModalView.Button"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:paddingBottom="15sp"
+            android:paddingTop="15sp"
+            android:text="@string/it_returns_to_platform_modal_view"
+            android:textSize="30sp" />
+    </LinearLayout>
+
+</RelativeLayout>
