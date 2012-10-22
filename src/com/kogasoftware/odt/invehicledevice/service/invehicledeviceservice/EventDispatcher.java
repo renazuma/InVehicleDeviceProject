@@ -7,14 +7,19 @@ import java.util.Map.Entry;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Handler;
+import android.util.Log;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
 import com.kogasoftware.odt.webapi.model.OperationSchedule;
+import com.kogasoftware.odt.webapi.model.PassengerRecord;
 import com.kogasoftware.odt.webapi.model.VehicleNotification;
 
 public class EventDispatcher implements Closeable {
+	private static final String TAG = EventDispatcher.class.getSimpleName();
+
 	protected static <T> Multimap<Handler, T> newListenerMultimap() {
 		return LinkedHashMultimap.create();
 	}
@@ -31,12 +36,9 @@ public class EventDispatcher implements Closeable {
 		void onAlertUpdatedOperationSchedule();
 	}
 
-	public interface OnOperationScheduleReceiveFailListener {
-		void onOperationScheduleReceiveFail();
-	}
-
 	public interface OnAlertVehicleNotificationReceiveListener {
-		void onAlertVehicleNotificationReceive();
+		void onAlertVehicleNotificationReceive(
+				List<VehicleNotification> vehicleNotifications);
 	}
 
 	public interface OnChangeLocationListener {
@@ -55,8 +57,14 @@ public class EventDispatcher implements Closeable {
 		void onChangeTemperature(Double celciusTemperature);
 	}
 
-	public interface OnOperationScheduleReceiveFailedListener {
-		void onOperationScheduleReceiveFailed();
+	public interface OnOperationScheduleReceiveFailListener {
+		void onOperationScheduleReceiveFail();
+	}
+
+	public interface OnUpdatePhaseListener {
+		void onUpdatePhase(Phase phase,
+				List<OperationSchedule> operationSchedules,
+				List<PassengerRecord> passengerRecords);
 	}
 
 	public interface OnEnterPhaseListener {
@@ -121,17 +129,16 @@ public class EventDispatcher implements Closeable {
 	protected final Multimap<Handler, OnChangeTemperatureListener> onChangeTemperatureListeners = newListenerMultimap();
 	protected final Multimap<Handler, OnExitListener> onExitListeners = newListenerMultimap();
 	protected final Multimap<Handler, OnMergeOperationSchedulesListener> onMergeOperationSchedulesListeners = newListenerMultimap();
-	protected final Multimap<Handler, OnReceiveVehicleNotificationListener> onReceiveVehicleNotificationListeners = newListenerMultimap();
 	protected final Multimap<Handler, OnReplyUpdatedOperationScheduleVehicleNotificationsListener> onReplyUpdatedOperationScheduleVehicleNotificationsListeners = newListenerMultimap();
 	protected final Multimap<Handler, OnReplyVehicleNotificationListener> onReplyVehicleNotificationListeners = newListenerMultimap();
 	protected final Multimap<Handler, OnStartNewOperationListener> onStartNewOperationListeners = newListenerMultimap();
 	protected final Multimap<Handler, OnStartReceiveUpdatedOperationScheduleListener> onStartReceiveUpdatedOperationScheduleListeners = newListenerMultimap();
 	protected final Multimap<Handler, OnPauseActivityListener> onPauseActivityListeners = newListenerMultimap();
 	protected final Multimap<Handler, OnResumeActivityListener> onResumeActivityListeners = newListenerMultimap();
-	protected final Multimap<Handler, OnOperationScheduleReceiveFailedListener> onOperationScheduleReceiveFailedListeners = newListenerMultimap();
-	protected final Multimap<Handler, OnOperationScheduleReceiveFailListener> onNotifyOperationScheduleReceiveFailListeners = newListenerMultimap();
+	protected final Multimap<Handler, OnOperationScheduleReceiveFailListener> onOperationScheduleReceiveFailListeners = newListenerMultimap();
 	protected final Multimap<Handler, OnActivityPauseListener> onActivityPauseListeners = newListenerMultimap();
 	protected final Multimap<Handler, OnActivityResumeListener> onActivityResumeListeners = newListenerMultimap();
+	protected final Multimap<Handler, OnUpdatePhaseListener> onUpdatePhaseListeners = newListenerMultimap();
 
 	private static interface Dispatcher<T> {
 		void dispatch(T listener);
@@ -164,15 +171,27 @@ public class EventDispatcher implements Closeable {
 
 	public <T> void removeListener(Multimap<Handler, T> multimap, T listener) {
 		synchronized (multimap) {
-			if (!multimap.remove(InVehicleDeviceService.getThreadHandler(), listener)) {
-				multimap.remove(InVehicleDeviceService.DEFAULT_HANDLER, listener);
+			if (!multimap.remove(InVehicleDeviceService.getThreadHandler(),
+					listener)) {
+				multimap.remove(InVehicleDeviceService.DEFAULT_HANDLER,
+						listener);
 			}
+		}
+	}
+
+	public <T> void clearListener(Multimap<Handler, T> multimap) {
+		synchronized (multimap) {
+			multimap.clear();
 		}
 	}
 
 	public void addOnAlertUpdatedOperationScheduleListener(
 			OnAlertUpdatedOperationScheduleListener listener) {
 		putListener(onAlertUpdatedOperationScheduleListeners, listener);
+	}
+
+	public void addOnUpdatePhaseListener(OnUpdatePhaseListener listener) {
+		putListener(onUpdatePhaseListeners, listener);
 	}
 
 	public void addOnAlertVehicleNotificationReceiveListener(
@@ -216,11 +235,6 @@ public class EventDispatcher implements Closeable {
 		putListener(onPauseActivityListeners, listener);
 	}
 
-	public void addOnReceiveVehicleNotificationListener(
-			OnReceiveVehicleNotificationListener listener) {
-		putListener(onReceiveVehicleNotificationListeners, listener);
-	}
-
 	public void addOnReplyUpdatedOperationScheduleVehicleNotificationsListener(
 			OnReplyUpdatedOperationScheduleVehicleNotificationsListener listener) {
 		putListener(
@@ -248,13 +262,17 @@ public class EventDispatcher implements Closeable {
 	}
 
 	public void addOnOperationScheduleReceiveFailedListener(
-			OnOperationScheduleReceiveFailedListener listener) {
-		putListener(onOperationScheduleReceiveFailedListeners, listener);
+			OnOperationScheduleReceiveFailListener listener) {
+		putListener(onOperationScheduleReceiveFailListeners, listener);
 	}
 
 	public void removeOnAlertUpdatedOperationScheduleListener(
 			OnAlertUpdatedOperationScheduleListener listener) {
 		removeListener(onAlertUpdatedOperationScheduleListeners, listener);
+	}
+
+	public void removeOnUpdatePhaseListener(OnUpdatePhaseListener listener) {
+		removeListener(onUpdatePhaseListeners, listener);
 	}
 
 	public void removeOnAlertVehicleNotificationReceiveListener(
@@ -298,11 +316,6 @@ public class EventDispatcher implements Closeable {
 		removeListener(onPauseActivityListeners, listener);
 	}
 
-	public void removeOnReceiveVehicleNotificationListener(
-			OnReceiveVehicleNotificationListener listener) {
-		removeListener(onReceiveVehicleNotificationListeners, listener);
-	}
-
 	public void removeOnReplyUpdatedOperationScheduleVehicleNotificationsListener(
 			OnReplyUpdatedOperationScheduleVehicleNotificationsListener listener) {
 		removeListener(
@@ -331,8 +344,8 @@ public class EventDispatcher implements Closeable {
 	}
 
 	public void removeOnOperationScheduleReceiveFailedListener(
-			OnOperationScheduleReceiveFailedListener listener) {
-		removeListener(onOperationScheduleReceiveFailedListeners, listener);
+			OnOperationScheduleReceiveFailListener listener) {
+		removeListener(onOperationScheduleReceiveFailListeners, listener);
 	}
 
 	public void dispatchEnterFinishPhase() {
@@ -341,6 +354,26 @@ public class EventDispatcher implements Closeable {
 					@Override
 					public void dispatch(OnEnterPhaseListener listener) {
 						listener.onEnterFinishPhase();
+					}
+				});
+	}
+
+	public void dispatchUpdatePhase(final Phase phase,
+			final List<OperationSchedule> operationSchedules,
+			final List<PassengerRecord> passengerRecords) {
+		String message = "dispatchUpdatePhase " + phase;
+		for (OperationSchedule os : OperationSchedule
+				.getCurrentOperationSchedule(operationSchedules).asSet()) {
+			message += " id=" + os.getId();
+		}
+
+		Log.i(TAG, message);
+		dispatchListener(onUpdatePhaseListeners,
+				new Dispatcher<OnUpdatePhaseListener>() {
+					@Override
+					public void dispatch(OnUpdatePhaseListener listener) {
+						listener.onUpdatePhase(phase, operationSchedules,
+								passengerRecords);
 					}
 				});
 	}
@@ -356,13 +389,14 @@ public class EventDispatcher implements Closeable {
 				});
 	}
 
-	public void dispatchAlertVehicleNotificationReceive() {
+	public void dispatchAlertVehicleNotificationReceive(
+			final List<VehicleNotification> vehicleNotifications) {
 		dispatchListener(onAlertVehicleNotificationReceiveListeners,
 				new Dispatcher<OnAlertVehicleNotificationReceiveListener>() {
 					@Override
 					public void dispatch(
 							OnAlertVehicleNotificationReceiveListener listener) {
-						listener.onAlertVehicleNotificationReceive();
+						listener.onAlertVehicleNotificationReceive(vehicleNotifications);
 					}
 				});
 	}
@@ -442,18 +476,6 @@ public class EventDispatcher implements Closeable {
 				});
 	}
 
-	public void dispatchReceiveVehicleNotification(
-			final List<VehicleNotification> vehicleNotifications) {
-		dispatchListener(onReceiveVehicleNotificationListeners,
-				new Dispatcher<OnReceiveVehicleNotificationListener>() {
-					@Override
-					public void dispatch(
-							OnReceiveVehicleNotificationListener listener) {
-						listener.onReceiveVehicleNotification(vehicleNotifications);
-					}
-				});
-	}
-
 	public void dispatchReplyUpdatedOperationScheduleVehicleNotifications(
 			final List<VehicleNotification> vehicleNotifications) {
 		dispatchListener(
@@ -501,8 +523,8 @@ public class EventDispatcher implements Closeable {
 				});
 	}
 
-	public void dispatchNotifyOperationScheduleReceiveFailed() {
-		dispatchListener(onNotifyOperationScheduleReceiveFailListeners,
+	public void dispatchOperationScheduleReceiveFail() {
+		dispatchListener(onOperationScheduleReceiveFailListeners,
 				new Dispatcher<OnOperationScheduleReceiveFailListener>() {
 					@Override
 					public void dispatch(
@@ -543,25 +565,23 @@ public class EventDispatcher implements Closeable {
 
 	@Override
 	public void close() {
-		onEnterPhaseListeners.clear();
-		onAlertUpdatedOperationScheduleListeners.clear();
-		onAlertVehicleNotificationReceiveListeners.clear();
-		onChangeLocationListeners.clear();
-		onChangeOrientationListeners.clear();
-		onChangeSignalStrengthListeners.clear();
-		onChangeTemperatureListeners.clear();
-		onExitListeners.clear();
-		onMergeOperationSchedulesListeners.clear();
-		onReceiveVehicleNotificationListeners.clear();
-		onReplyUpdatedOperationScheduleVehicleNotificationsListeners.clear();
-		onReplyVehicleNotificationListeners.clear();
-		onStartNewOperationListeners.clear();
-		onStartReceiveUpdatedOperationScheduleListeners.clear();
-		onPauseActivityListeners.clear();
-		onResumeActivityListeners.clear();
-		onOperationScheduleReceiveFailedListeners.clear();
-		onNotifyOperationScheduleReceiveFailListeners.clear();
-		onActivityPauseListeners.clear();
-		onActivityResumeListeners.clear();
+		clearListener(onEnterPhaseListeners);
+		clearListener(onAlertUpdatedOperationScheduleListeners);
+		clearListener(onAlertVehicleNotificationReceiveListeners);
+		clearListener(onChangeLocationListeners);
+		clearListener(onChangeOrientationListeners);
+		clearListener(onChangeSignalStrengthListeners);
+		clearListener(onChangeTemperatureListeners);
+		clearListener(onExitListeners);
+		clearListener(onMergeOperationSchedulesListeners);
+		clearListener(onReplyUpdatedOperationScheduleVehicleNotificationsListeners);
+		clearListener(onReplyVehicleNotificationListeners);
+		clearListener(onStartNewOperationListeners);
+		clearListener(onStartReceiveUpdatedOperationScheduleListeners);
+		clearListener(onPauseActivityListeners);
+		clearListener(onResumeActivityListeners);
+		clearListener(onOperationScheduleReceiveFailListeners);
+		clearListener(onActivityPauseListeners);
+		clearListener(onActivityResumeListeners);
 	}
 }
