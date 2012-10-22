@@ -10,8 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:textSize="30sp"
-        android:layout_alignParentTop="true" />
+        android:layout_alignParentTop="true"
+        android:textSize="30sp" />
 
     <LinearLayout
         android:id="@+id/memo_each_titles"
@@ -25,22 +25,22 @@
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textSize="24sp"
-            android:text="@string/reservation_memo" />
+            android:text="@string/reservation_memo"
+            android:textSize="24sp" />
 
         <TextView
             style="@style/ModalView.Title"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textSize="24sp"
-            android:text="@string/user_memo" />
+            android:text="@string/user_memo"
+            android:textSize="24sp" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:layout_above="@+id/memo_close_button"
+        android:layout_above="@+id/passenger_record_memo_close_button"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/memo_each_titles" >
 
@@ -51,8 +51,8 @@
             android:layout_height="fill_parent"
             android:layout_margin="1dip"
             android:layout_weight="1"
-            android:textSize="30sp"
-            android:background="@drawable/border" />
+            android:background="@drawable/border"
+            android:textSize="30sp" />
 
         <TextView
             android:id="@+id/user_memo_text_view"
@@ -61,20 +61,20 @@
             android:layout_height="fill_parent"
             android:layout_margin="1dip"
             android:layout_weight="1"
-            android:textSize="30sp"
-            android:background="@drawable/border" />
+            android:background="@drawable/border"
+            android:textSize="30sp" />
     </LinearLayout>
 
     <Button
-        android:id="@+id/memo_close_button"
+        android:id="@+id/passenger_record_memo_close_button"
         style="@style/ModalView.Button"
-        android:paddingTop="15sp"
-        android:paddingBottom="15sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:textSize="30sp"
-        android:text="@string/it_closes" />
+        android:paddingBottom="15sp"
+        android:paddingTop="15sp"
+        android:text="@string/it_closes"
+        android:textSize="30sp" />
 
 </RelativeLayout>
