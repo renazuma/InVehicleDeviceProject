@@ -273,4 +273,23 @@ public class InVehicleDeviceService extends Service {
 		serviceProviderInitializedSign.acquire();
 		serviceProviderInitializedSign.release();
 	}
+
+	private Boolean mapAutoZoom = true;
+	private Integer mapZoomLevel = 12;
+
+	public Boolean getMapAutoZoom() {
+		return mapAutoZoom;
+	}
+
+	public Integer getMapZoomLevel() {
+		return mapZoomLevel;
+	}
+
+	public void setMapAutoZoom(Boolean mapAutoZoom) {
+		this.mapAutoZoom = mapAutoZoom;
+	}
+
+	public void setMapZoomLevel(Integer mapZoomLevel) {
+		this.mapZoomLevel = mapZoomLevel;
+	}
 }
