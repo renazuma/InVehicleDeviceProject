@@ -6,13 +6,8 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVeh
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.ServiceUnitStatusLogLogic;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask.OrientationSensorEventListener;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
-import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
-import com.kogasoftware.odt.invehicledevice.test.util.apiclient.DummyDataSource;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 
 public class OrientationSensorEventListenerTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
