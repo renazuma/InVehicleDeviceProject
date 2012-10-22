@@ -17,7 +17,7 @@ import android.test.AndroidTestCase;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.io.Closeables;
-import com.kogasoftware.odt.invehicledevice.datasource.EmptyDataSource;
+import com.kogasoftware.odt.invehicledevice.apiclient.EmptyDataSource;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
@@ -131,11 +131,11 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 				assertTrue(localData.operationSchedules.get(0)
 						.getOperationRecord().isPresent());
 				assertEquals(1, localData.passengerRecords.size());
-				assertEquals(3, localData.passengerRecords.getFirst().getId()
+				assertEquals(3, localData.passengerRecords.get(0).getId()
 						.intValue());
 				assertEquals(
 						preferLocal ? Optional.of(200) : Optional.absent(),
-						localData.passengerRecords.getFirst().getPayment());
+						localData.passengerRecords.get(0).getPayment());
 			}
 		});
 	}
