@@ -13,7 +13,7 @@ import com.kogasoftware.odt.webapi.model.ServiceUnitStatusLog;
 
 public class ServiceUnitStatusLogLogic {
 	protected final InVehicleDeviceService service;
-	public static final Long ORIENTATION_SAVE_PERIOD_MILLIS = 5000L;
+	public static final Long ORIENTATION_SAVE_PERIOD_MILLIS = 500L;
 	protected Long lastOrientationSavedMillis = System.currentTimeMillis();
 
 	public ServiceUnitStatusLogLogic(InVehicleDeviceService service) {
@@ -21,7 +21,8 @@ public class ServiceUnitStatusLogLogic {
 	}
 
 	public void changeSignalStrength(final Integer signalStrengthPercentage) {
-		service.getEventDispatcher().dispatchChangeSignalStrength(signalStrengthPercentage);
+		service.getEventDispatcher().dispatchChangeSignalStrength(
+				signalStrengthPercentage);
 	}
 
 	public void changeLocation(final Location location,
@@ -35,7 +36,8 @@ public class ServiceUnitStatusLogLogic {
 						location.getLongitude()));
 			}
 		});
-		service.getEventDispatcher().dispatchChangeLocation(location, gpsStatus);
+		service.getEventDispatcher()
+				.dispatchChangeLocation(location, gpsStatus);
 	}
 
 	public void changeOrientation(final Double orientationDegree) {
@@ -52,7 +54,8 @@ public class ServiceUnitStatusLogLogic {
 						.intValue());
 			}
 		});
-		service.getEventDispatcher().dispatchChangeOrientation(orientationDegree);
+		service.getEventDispatcher().dispatchChangeOrientation(
+				orientationDegree);
 	}
 
 	public void changeTemperature(final Double celciusTemperature) {
@@ -63,7 +66,8 @@ public class ServiceUnitStatusLogLogic {
 						.setTemperature(celciusTemperature.intValue());
 			}
 		});
-		service.getEventDispatcher().dispatchChangeTemperature(celciusTemperature);
+		service.getEventDispatcher().dispatchChangeTemperature(
+				celciusTemperature);
 	}
 
 	public ServiceUnitStatusLog getServiceUnitStatusLog() {
