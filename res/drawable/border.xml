@@ -10,8 +10,6 @@
         android:left="2dip"
         android:right="2dip"
         android:top="2dip" />
-    
-    <corners android:radius="2dip" />
 
     <solid android:color="#ffffff" />
 
