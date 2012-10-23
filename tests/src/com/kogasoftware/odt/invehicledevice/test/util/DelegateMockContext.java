@@ -82,6 +82,7 @@ public class DelegateMockContext extends MockContext {
 				pid, uid, modeFlags);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void clearWallpaper() {
 		try {
@@ -264,16 +265,19 @@ public class DelegateMockContext extends MockContext {
 		return context.getTheme();
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public Drawable getWallpaper() {
 		return context.getWallpaper();
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public int getWallpaperDesiredMinimumHeight() {
 		return context.getWallpaperDesiredMinimumHeight();
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public int getWallpaperDesiredMinimumWidth() {
 		return context.getWallpaperDesiredMinimumWidth();
@@ -307,6 +311,7 @@ public class DelegateMockContext extends MockContext {
 		return context.openOrCreateDatabase(file, mode, factory);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public Drawable peekWallpaper() {
 		return context.peekWallpaper();
@@ -377,11 +382,13 @@ public class DelegateMockContext extends MockContext {
 		context.setTheme(resid);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void setWallpaper(Bitmap bitmap) throws IOException {
 		context.setWallpaper(bitmap);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void setWallpaper(InputStream data) throws IOException {
 		context.setWallpaper(data);
