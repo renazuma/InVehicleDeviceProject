@@ -118,4 +118,8 @@ public class EmptyInVehicleDeviceApiClient implements InVehicleDeviceApiClient {
 	@Override
 	public void abort(int reqkey) {
 	}
+
+	@Override
+	public void setServerHost(String serverHost) {
+	}
 }

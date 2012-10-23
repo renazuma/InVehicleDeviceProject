@@ -20,7 +20,7 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 public interface InVehicleDeviceApiClient extends Closeable {
 	/**
 	 * 到着時のサーバへの通知
-	 * 
+	 *
 	 * @param os
 	 *            運行スケジュールオブジェクト
 	 */
@@ -29,7 +29,7 @@ public interface InVehicleDeviceApiClient extends Closeable {
 
 	/**
 	 * 出発時のサーバへの通知
-	 * 
+	 *
 	 * @param os
 	 *            運行スケジュールオブジェクト @
 	 */
@@ -38,7 +38,7 @@ public interface InVehicleDeviceApiClient extends Closeable {
 
 	/**
 	 * 降車のサーバへの通知
-	 * 
+	 *
 	 * @param operationSchedule
 	 *            運行スケジュールオブジェクト @
 	 */
@@ -48,7 +48,7 @@ public interface InVehicleDeviceApiClient extends Closeable {
 
 	/**
 	 * 乗車のサーバへの通知
-	 * 
+	 *
 	 * @param operationSchedule
 	 *            運行スケジュールオブジェクト @
 	 */
@@ -58,7 +58,7 @@ public interface InVehicleDeviceApiClient extends Closeable {
 
 	/**
 	 * 乗車のキャンセル
-	 * 
+	 *
 	 * @param operationSchedule
 	 *            運行スケジュールオブジェクト @
 	 */
@@ -67,7 +67,7 @@ public interface InVehicleDeviceApiClient extends Closeable {
 
 	/**
 	 * 降車のキャンセル
-	 * 
+	 *
 	 * @param operationSchedule
 	 *            運行スケジュールオブジェクト @
 	 */
@@ -82,7 +82,7 @@ public interface InVehicleDeviceApiClient extends Closeable {
 
 	/**
 	 * 自車への通知を取得
-	 * 
+	 *
 	 * @param callback
 	 * @return reqkey
 	 * @throws ApiClientException
@@ -92,7 +92,7 @@ public interface InVehicleDeviceApiClient extends Closeable {
 
 	/**
 	 * OperatorWebへログインしてauthorization_tokenを取得
-	 * 
+	 *
 	 * @param login
 	 *            　ログイン情報(login, password のみ設定必要)
 	 * @param callback
@@ -104,7 +104,7 @@ public interface InVehicleDeviceApiClient extends Closeable {
 
 	/**
 	 * 自車への通知への応答
-	 * 
+	 *
 	 * @param vn
 	 *            通知オブジェクト
 	 * @param response
@@ -123,6 +123,11 @@ public interface InVehicleDeviceApiClient extends Closeable {
 	 * サービスプロバイダの取得
 	 */
 	int getServiceProvider(ApiClientCallback<ServiceProvider> callback);
+
+	/**
+	 * 接続先を変更する
+	 */
+	void setServerHost(String serverHost);
 
 	/**
 	 * リクエストを中断する
