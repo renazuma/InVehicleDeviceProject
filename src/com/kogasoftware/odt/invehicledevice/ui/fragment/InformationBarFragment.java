@@ -27,14 +27,14 @@ import android.widget.TextView;
 import com.google.common.base.Optional;
 import com.google.common.base.Stopwatch;
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
 import com.kogasoftware.odt.invehicledevice.ui.ViewDisabler;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.InformationBarFragment.State;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 
 public class InformationBarFragment extends ApplicationFragment<State>
 		implements EventDispatcher.OnUpdatePhaseListener,
@@ -203,10 +203,6 @@ public class InformationBarFragment extends ApplicationFragment<State>
 		case FINISH:
 			showPlatformMemo = false;
 			phaseTextView.setText("運行終了");
-			break;
-		case INITIAL:
-			showPlatformMemo = false;
-			phaseTextView.setText("");
 			break;
 		case PLATFORM_GET_OFF:
 			phaseTextView.setText("降車中");

@@ -9,7 +9,6 @@ import java.util.concurrent.Semaphore;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import com.kogasoftware.odt.invehicledevice.empty.EmptyFile;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.InVehicleDevice;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
@@ -18,13 +17,14 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnit;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.UnitAssignment;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
+import com.kogasoftware.odt.invehicledevice.empty.EmptyFile;
 
 /**
  * 現在の状態を保存しておくクラス
  */
 public class LocalData implements Serializable {
 	public static enum Phase {
-		DRIVE, FINISH, INITIAL /* will delete */, PLATFORM, PLATFORM_GET_ON, PLATFORM_GET_OFF,
+		DRIVE, FINISH, PLATFORM_GET_ON, PLATFORM_GET_OFF,
 	}
 
 	private static final long serialVersionUID = 1797801788123L;
@@ -36,7 +36,6 @@ public class LocalData implements Serializable {
 
 	public Date updatedDate = InVehicleDeviceService.getDate();
 	public File file = new EmptyFile();
-	public Phase phase = Phase.INITIAL;
 
 	public String token = "";
 	public String url = "";

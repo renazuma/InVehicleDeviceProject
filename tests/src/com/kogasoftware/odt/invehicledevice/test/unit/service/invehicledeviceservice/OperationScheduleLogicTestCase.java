@@ -50,7 +50,6 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
-				localData.phase = Phase.INITIAL;
 				localData.passengerRecords.clear();
 				localData.operationSchedules.clear();
 			}
@@ -330,7 +329,7 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 				localData.operationSchedules.addAll(oss);
 			}
 		});
-		assertEquals(Phase.INITIAL, osl.getPhase());
+		assertEquals(Phase.FINISH, osl.getPhase());
 		assertEquals(11, osl.getCurrentOperationSchedule().get().getId()
 				.intValue());
 		osl.enterDrivePhase();
@@ -338,7 +337,7 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 		assertEquals(11, osl.getCurrentOperationSchedule().get().getId()
 				.intValue());
 		osl.enterPlatformPhase();
-		assertEquals(Phase.PLATFORM, osl.getPhase());
+		assertEquals(Phase.PLATFORM_GET_OFF, osl.getPhase());
 		assertEquals(11, osl.getCurrentOperationSchedule().get().getId()
 				.intValue());
 
@@ -347,7 +346,7 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 		assertEquals(12, osl.getCurrentOperationSchedule().get().getId()
 				.intValue());
 		osl.enterPlatformPhase();
-		assertEquals(Phase.PLATFORM, osl.getPhase());
+		assertEquals(Phase.PLATFORM_GET_OFF, osl.getPhase());
 		assertEquals(12, osl.getCurrentOperationSchedule().get().getId()
 				.intValue());
 
@@ -356,7 +355,7 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 		assertEquals(13, osl.getCurrentOperationSchedule().get().getId()
 				.intValue());
 		osl.enterPlatformPhase();
-		assertEquals(Phase.PLATFORM, osl.getPhase());
+		assertEquals(Phase.PLATFORM_GET_OFF, osl.getPhase());
 		assertEquals(13, osl.getCurrentOperationSchedule().get().getId()
 				.intValue());
 

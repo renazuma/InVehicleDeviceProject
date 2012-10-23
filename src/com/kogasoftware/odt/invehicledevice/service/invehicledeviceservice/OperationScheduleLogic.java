@@ -169,20 +169,6 @@ public class OperationScheduleLogic {
 			}
 		}
 
-		if (newOperationSchedules.isEmpty()) {
-			localData.phase = Phase.FINISH;
-		} else {
-			Optional<OperationRecord> operationRecord = newOperationSchedules
-					.get(0).getOperationRecord();
-			if (!operationRecord.isPresent()) {
-				localData.phase = Phase.FINISH;
-			} else if (operationRecord.get().getArrivedAt().isPresent()) {
-				localData.phase = Phase.PLATFORM;
-			} else {
-				localData.phase = Phase.DRIVE;
-			}
-		}
-
 		localData.operationSchedules.clear();
 		localData.operationSchedules.addAll(newOperationSchedules);
 
@@ -269,7 +255,6 @@ public class OperationScheduleLogic {
 				localData.operationScheduleInitializedSign.drainPermits();
 				localData.operationSchedules.clear();
 				localData.vehicleNotifications.clear();
-				localData.phase = Phase.INITIAL;
 				localData.passengerRecords.clear();
 			}
 		});
@@ -334,12 +319,7 @@ public class OperationScheduleLogic {
 
 	@Deprecated
 	public Phase getPhase() {
-		return service.getLocalStorage().withReadLock(new Reader<Phase>() {
-			@Override
-			public Phase read(LocalData status) {
-				return status.phase;
-			}
-		});
+		throw new RuntimeException("method deleted");
 	}
 
 	@Deprecated

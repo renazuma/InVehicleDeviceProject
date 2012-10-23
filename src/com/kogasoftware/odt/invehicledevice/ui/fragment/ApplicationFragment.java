@@ -142,8 +142,6 @@ public class ApplicationFragment<S extends Serializable> extends Fragment {
 
 	protected static Integer getPhaseColor(Phase phase) {
 		switch (phase) {
-		case INITIAL:
-			return Color.WHITE;
 		case DRIVE:
 			return Color.rgb(0xAA, 0xFF, 0xAA);
 		case FINISH:
@@ -152,8 +150,6 @@ public class ApplicationFragment<S extends Serializable> extends Fragment {
 			return Color.rgb(0xAA, 0xAA, 0xFF);
 		case PLATFORM_GET_OFF:
 			return Color.rgb(0xAA, 0xAA, 0xFF);
-		case PLATFORM:
-			return Color.rgb(0x33, 0x33, 0xFF);
 		default:
 			break;
 		}

@@ -14,12 +14,12 @@ import android.view.ViewGroup;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
-import com.kogasoftware.odt.invehicledevice.ui.fragment.InVehicleDeviceFragment.State;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
+import com.kogasoftware.odt.invehicledevice.ui.fragment.InVehicleDeviceFragment.State;
 
 public class InVehicleDeviceFragment extends ApplicationFragment<State>
 		implements EventDispatcher.OnUpdatePhaseListener {
@@ -125,8 +125,6 @@ public class InVehicleDeviceFragment extends ApplicationFragment<State>
 		}
 
 		switch (getState().getPhase()) {
-		case INITIAL:
-			break;
 		case DRIVE:
 			fragmentTransaction.replace(R.id.phase_fragment_container,
 					DrivePhaseFragment.newInstance(getState()
