@@ -22,16 +22,18 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.common.io.Closeables;
+import com.kogasoftware.odt.apiclient.ApiClientCallback;
+import com.kogasoftware.odt.apiclient.ApiClientException;
+import com.kogasoftware.odt.invehicledevice.apiclient.DefaultInVehicleDeviceApiClient;
+import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
+import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClientFactory;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.InVehicleDevice;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask.Broadcasts;
 import com.kogasoftware.odt.invehicledevice.service.startupservice.IStartupService;
-import com.kogasoftware.odt.webapi.WebAPI;
-import com.kogasoftware.odt.webapi.WebAPI.WebAPICallback;
-import com.kogasoftware.odt.webapi.WebAPIException;
-import com.kogasoftware.odt.webapi.model.InVehicleDevice;
 
 public class InVehicleDevicePreferenceActivity extends PreferenceActivity
-		implements WebAPICallback<InVehicleDevice>,
+		implements ApiClientCallback<InVehicleDevice>,
 		OnSharedPreferenceChangeListener {
 	private static final int CONNECTING_DIALOG_ID = 100;
 	private static final String DEFAULT_URL = "http://127.0.0.1";
@@ -39,8 +41,8 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 	private static final String PASSWORD_KEY = "password";
 	private static final String TAG = InVehicleDevicePreferenceActivity.class
 			.getSimpleName();
-
-	private final WebAPI api = new WebAPI(DEFAULT_URL);
+	
+	private final InVehicleDeviceApiClient apiClient = new DefaultInVehicleDeviceApiClient(DEFAULT_URL);
 	private int latestReqKey = 0;
 
 	private SharedPreferences preferences = null;
@@ -124,11 +126,11 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		super.onDestroy();
 
 		preferences.unregisterOnSharedPreferenceChangeListener(this);
-		Closeables.closeQuietly(api);
+		Closeables.closeQuietly(apiClient);
 	}
 
 	@Override
-	public void onException(int reqKey, WebAPIException ex) {
+	public void onException(int reqKey, ApiClientException ex) {
 		if (reqKey != latestReqKey) {
 			return;
 		}
@@ -259,12 +261,12 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 			return;
 		}
 		showDialog(CONNECTING_DIALOG_ID);
-		api.setServerHost(preferences.getString(
+		apiClient.setServerHost(preferences.getString(
 				SharedPreferencesKeys.SERVER_URL, DEFAULT_URL));
 
 		InVehicleDevice ivd = new InVehicleDevice();
 		ivd.setLogin(preferences.getString(LOGIN_KEY, ""));
 		ivd.setPassword(preferences.getString(PASSWORD_KEY, ""));
-		latestReqKey = api.withRetry(false).login(ivd, this);
+		latestReqKey = apiClient.withRetry(false).login(ivd, this);
 	}
 }
