@@ -54,11 +54,17 @@ public class LocalDataTestCase extends AndroidTestCase {
 	 * シリアライズ速度が十分に早いかのチェック
 	 */
 	public void testSerializeSpeed() {
-		Integer numVehicleNotifications = 10;
-		Integer numOperationSchedules = 10;
-		Integer numReservations = 10;
-		Integer numUsers = 10;
-		Integer numPassengerRecords = 10;
+		for (Integer i = 0; i < 5; ++i) {
+			assertSerializeSpeed();
+		}
+	}
+
+	public void assertSerializeSpeed() {
+		Integer numVehicleNotifications = 5;
+		Integer numOperationSchedules = 5;
+		Integer numReservations = 5;
+		Integer numUsers = 5;
+		Integer numPassengerRecords = 5;
 
 		LocalData ld = new LocalData();
 		for (VehicleNotificationStatus vns : new VehicleNotificationStatus[] {
@@ -118,6 +124,6 @@ public class LocalDataTestCase extends AndroidTestCase {
 		sw.stop();
 		Long elapsedMillis = sw.elapsedMillis();
 		Log.i(TAG, "elapsed=" + elapsedMillis + "ms bytes=" + ba.length);
-		ComparableAssert.assertLesser(2000, elapsedMillis);
+		ComparableAssert.assertLesser(20 * 1000L, elapsedMillis);
 	}
 }
