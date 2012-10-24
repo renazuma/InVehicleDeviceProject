@@ -51,7 +51,7 @@ public class LocalDataTestCase extends AndroidTestCase {
 	}
 
 	/**
-	 * シリアライズ速度が十分に早いかのチェック
+	 * シリアライズ速度が常識的な範囲で収まるかのチェック
 	 */
 	public void testSerializeSpeed() {
 		for (Integer i = 0; i < 5; ++i) {
@@ -60,11 +60,11 @@ public class LocalDataTestCase extends AndroidTestCase {
 	}
 
 	public void assertSerializeSpeed() {
-		Integer numVehicleNotifications = 5;
-		Integer numOperationSchedules = 5;
-		Integer numReservations = 5;
-		Integer numUsers = 5;
-		Integer numPassengerRecords = 5;
+		Integer numVehicleNotifications = 10;
+		Integer numOperationSchedules = 10;
+		Integer numReservations = 10;
+		Integer numUsers = 10;
+		Integer numPassengerRecords = 10;
 
 		LocalData ld = new LocalData();
 		for (VehicleNotificationStatus vns : new VehicleNotificationStatus[] {
@@ -122,8 +122,9 @@ public class LocalDataTestCase extends AndroidTestCase {
 		Stopwatch sw = new Stopwatch().start();
 		byte[] ba = SerializationUtils.serialize(ld);
 		sw.stop();
+		
 		Long elapsedMillis = sw.elapsedMillis();
 		Log.i(TAG, "elapsed=" + elapsedMillis + "ms bytes=" + ba.length);
-		ComparableAssert.assertLesser(20 * 1000L, elapsedMillis);
+		ComparableAssert.assertLesser(3 * 60 * 1000L, elapsedMillis);
 	}
 }
