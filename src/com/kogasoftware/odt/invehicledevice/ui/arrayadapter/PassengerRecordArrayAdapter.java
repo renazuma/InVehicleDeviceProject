@@ -17,24 +17,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.PassengerRecordLogic;
-import com.kogasoftware.odt.invehicledevice.ui.ViewDisabler;
-import com.kogasoftware.odt.invehicledevice.ui.fragment.ApplicationFragment;
-import com.kogasoftware.odt.invehicledevice.ui.fragment.PassengerRecordMemoFragment;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.User;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.PassengerRecordLogic;
+import com.kogasoftware.odt.invehicledevice.ui.ViewDisabler;
+import com.kogasoftware.odt.invehicledevice.ui.fragment.ApplicationFragment;
+import com.kogasoftware.odt.invehicledevice.ui.fragment.PassengerRecordMemoFragment;
 
 public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
-	@Deprecated
-	public static enum ItemType {
-		RIDING_AND_NO_GET_OFF, FUTURE_GET_ON, MISSED
-
-	};
-
 	private static final String TAG = PassengerRecordArrayAdapter.class
 			.getSimpleName();
 	protected static final Integer RESOURCE_ID = R.layout.passenger_record_list_row;
@@ -188,14 +182,6 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 				+ " 様");
 
 		return convertView;
-	}
-
-	@Deprecated
-	public void show(ItemType ridingAndNoGetOff) {
-	}
-
-	@Deprecated
-	public void hide(ItemType ridingAndNoGetOff) {
 	}
 
 	public void toggleBlink() {

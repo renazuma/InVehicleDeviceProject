@@ -29,7 +29,7 @@ public class PlatformMemoModalViewTestCase extends
 	}
 
 	public void testShow_NoOperationSchedule() throws Exception {
-		when(s.getCurrentOperationSchedule()).thenReturn(
+		when(s.getCurrent()).thenReturn(
 				Optional.<OperationSchedule> absent());
 		runOnUiThreadSync(new Runnable() {
 			@Override
@@ -43,7 +43,7 @@ public class PlatformMemoModalViewTestCase extends
 
 	public void testShow_NoPlatform() throws Exception {
 		OperationSchedule os = new OperationSchedule();
-		when(s.getCurrentOperationSchedule()).thenReturn(Optional.of(os));
+		when(s.getCurrent()).thenReturn(Optional.of(os));
 		runOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
@@ -57,7 +57,7 @@ public class PlatformMemoModalViewTestCase extends
 	public void testShow_NoPlatformMemo() throws Exception {
 		OperationSchedule os = new OperationSchedule();
 		os.setPlatform(new Platform());
-		when(s.getCurrentOperationSchedule()).thenReturn(Optional.of(os));
+		when(s.getCurrent()).thenReturn(Optional.of(os));
 		runOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
@@ -73,7 +73,7 @@ public class PlatformMemoModalViewTestCase extends
 		Platform p = new Platform();
 		p.setMemo(memo);
 		os.setPlatform(p);
-		when(s.getCurrentOperationSchedule()).thenReturn(Optional.of(os));
+		when(s.getCurrent()).thenReturn(Optional.of(os));
 		runOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {

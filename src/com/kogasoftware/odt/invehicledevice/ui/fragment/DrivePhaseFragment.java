@@ -55,7 +55,7 @@ public class DrivePhaseFragment extends ApplicationFragment<State> {
 		view.setBackgroundColor(backgroundColor);
 
 		Optional<OperationSchedule> currentOperationSchedule = OperationSchedule
-				.getCurrentOperationSchedule(getState().getOperationSchedules());
+				.getCurrent(getState().getOperationSchedules());
 		for (OperationSchedule operationSchedule : currentOperationSchedule
 				.asSet()) {
 			nextPlatformNameTextView.setText("");
@@ -73,7 +73,7 @@ public class DrivePhaseFragment extends ApplicationFragment<State> {
 		}
 
 		Optional<OperationSchedule> nextOperationSchedule = OperationSchedule
-				.getRelativeOperationSchedule(getState()
+				.getRelative(getState()
 						.getOperationSchedules(), 1);
 		for (OperationSchedule operationSchedule : nextOperationSchedule
 				.asSet()) {

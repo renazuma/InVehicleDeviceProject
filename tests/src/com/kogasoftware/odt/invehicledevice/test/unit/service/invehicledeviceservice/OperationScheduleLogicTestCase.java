@@ -4,6 +4,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.List;
 
 import junitx.framework.ListAssert;
@@ -50,6 +51,7 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
+				localData.phase = Phase.INITIAL;
 				localData.passengerRecords.clear();
 				localData.operationSchedules.clear();
 			}
@@ -69,11 +71,11 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 		verifyZeroInteractions(s);
 	}
 
-	public void testMergeOperationSchedules() throws JSONException {
-		final OperationSchedule local = OperationSchedule.parse(new JSONObject(
-				"{id: 12345, updated_at: '2013-08-12'}"));
+	public void testMergeOperationSchedules() throws IOException {
+		final OperationSchedule local = OperationSchedule.parse(
+				"{id: 12345, updated_at: '2013-08-12'}");
 		final OperationSchedule remote = OperationSchedule
-				.parse(new JSONObject("{id: 12345, updated_at: '2000-08-10'}"));
+				.parse("{id: 12345, updated_at: '2000-08-10'}");
 		remotes.add(remote);
 		lds.withWriteLock(new Writer() {
 			@Override
@@ -215,10 +217,10 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 			}
 		});
 		if (id.isPresent()) {
-			assertEquals(id.get(), osl.getCurrentOperationSchedule().get()
+			assertEquals(id.get(), osl.getCurrent().get()
 					.getId());
 		} else {
-			assertFalse(osl.getCurrentOperationSchedule().isPresent());
+			assertFalse(osl.getCurrent().isPresent());
 		}
 	}
 
@@ -329,39 +331,39 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 				localData.operationSchedules.addAll(oss);
 			}
 		});
-		assertEquals(Phase.FINISH, osl.getPhase());
-		assertEquals(11, osl.getCurrentOperationSchedule().get().getId()
+		assertEquals(Phase.INITIAL, osl.getPhase());
+		assertEquals(11, osl.getCurrent().get().getId()
 				.intValue());
 		osl.enterDrivePhase();
 		assertEquals(Phase.DRIVE, osl.getPhase());
-		assertEquals(11, osl.getCurrentOperationSchedule().get().getId()
+		assertEquals(11, osl.getCurrent().get().getId()
 				.intValue());
 		osl.enterPlatformPhase();
-		assertEquals(Phase.PLATFORM_GET_OFF, osl.getPhase());
-		assertEquals(11, osl.getCurrentOperationSchedule().get().getId()
+		assertEquals(Phase.PLATFORM, osl.getPhase());
+		assertEquals(11, osl.getCurrent().get().getId()
 				.intValue());
 
 		osl.enterDrivePhase();
 		assertEquals(Phase.DRIVE, osl.getPhase());
-		assertEquals(12, osl.getCurrentOperationSchedule().get().getId()
+		assertEquals(12, osl.getCurrent().get().getId()
 				.intValue());
 		osl.enterPlatformPhase();
-		assertEquals(Phase.PLATFORM_GET_OFF, osl.getPhase());
-		assertEquals(12, osl.getCurrentOperationSchedule().get().getId()
+		assertEquals(Phase.PLATFORM, osl.getPhase());
+		assertEquals(12, osl.getCurrent().get().getId()
 				.intValue());
 
 		osl.enterDrivePhase();
 		assertEquals(Phase.DRIVE, osl.getPhase());
-		assertEquals(13, osl.getCurrentOperationSchedule().get().getId()
+		assertEquals(13, osl.getCurrent().get().getId()
 				.intValue());
 		osl.enterPlatformPhase();
-		assertEquals(Phase.PLATFORM_GET_OFF, osl.getPhase());
-		assertEquals(13, osl.getCurrentOperationSchedule().get().getId()
+		assertEquals(Phase.PLATFORM, osl.getPhase());
+		assertEquals(13, osl.getCurrent().get().getId()
 				.intValue());
 
 		osl.enterFinishPhase();
 		assertEquals(Phase.FINISH, osl.getPhase());
-		assertFalse(osl.getCurrentOperationSchedule().isPresent());
+		assertFalse(osl.getCurrent().isPresent());
 	}
 }
 

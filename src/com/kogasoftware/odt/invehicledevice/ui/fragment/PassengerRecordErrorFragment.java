@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.ui.fragment;
 
+import java.io.Serializable;
 import java.util.List;
 
 import android.graphics.Color;
@@ -14,17 +15,16 @@ import android.widget.Button;
 
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundWriter;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
+import com.kogasoftware.odt.invehicledevice.ui.ViewDisabler;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordErrorArrayAdapter;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
-
-import java.io.Serializable;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.PassengerRecordErrorFragment.State;
 
 public class PassengerRecordErrorFragment extends ApplicationFragment<State>
@@ -88,8 +88,7 @@ public class PassengerRecordErrorFragment extends ApplicationFragment<State>
 				.findViewById(R.id.error_reservation_list_view);
 
 		for (final OperationSchedule operationSchedule : OperationSchedule
-				.getCurrentOperationSchedule(getState().getOperationSchedules())
-				.asSet()) {
+				.getCurrent(getState().getOperationSchedules()).asSet()) {
 			List<PassengerRecord> errorPassengerRecords = Lists.newLinkedList();
 			if (getState().getPhase() == Phase.PLATFORM_GET_OFF) {
 				errorPassengerRecords.addAll(operationSchedule
@@ -122,6 +121,7 @@ public class PassengerRecordErrorFragment extends ApplicationFragment<State>
 			completeWithErrorButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View view) {
+					ViewDisabler.disable(view);
 					complete(getState().getPhase(), operationSchedule,
 							getState().getOperationSchedules(), getState()
 									.getPassengerRecords());

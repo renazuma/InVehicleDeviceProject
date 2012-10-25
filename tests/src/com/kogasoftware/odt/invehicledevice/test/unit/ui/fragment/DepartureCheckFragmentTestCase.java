@@ -37,7 +37,7 @@ public class DepartureCheckFragmentTestCase extends
 		os1.setPlatform(p);
 
 		s = mock(InVehicleDeviceService.class);
-		when(s.getCurrentOperationSchedule()).thenReturn(Optional.of(os1));
+		when(s.getCurrent()).thenReturn(Optional.of(os1));
 		when(s.getOperationSchedules())
 				.thenReturn(Lists.newArrayList(os1, os2));
 		when(s.getRemainingOperationSchedules()).thenReturn(

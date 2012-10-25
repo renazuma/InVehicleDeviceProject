@@ -15,13 +15,12 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.PassengerRecordLogic;
-import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordArrayAdapter.ItemType;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.User;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.PassengerRecordLogic;
 
 public class PassengerRecordErrorArrayAdapter extends
 		ArrayAdapter<PassengerRecord> {
@@ -139,14 +138,6 @@ public class PassengerRecordErrorArrayAdapter extends
 				.findViewById(R.id.passenger_record_error_message);
 		errorMessageTextView.setText(errorMessage);
 		return convertView;
-	}
-
-	@Deprecated
-	public void show(ItemType ridingAndNoGetOff) {
-	}
-
-	@Deprecated
-	public void hide(ItemType ridingAndNoGetOff) {
 	}
 
 	public Boolean hasError() {

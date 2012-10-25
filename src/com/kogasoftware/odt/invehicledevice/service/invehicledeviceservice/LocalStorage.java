@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.ExecutorService;
@@ -19,8 +20,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.apache.commons.lang3.SerializationException;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -29,10 +28,8 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Throwables;
 import com.google.common.io.Closeables;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.InVehicleDevice;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceProvider;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 
 /**
@@ -121,10 +118,6 @@ public class LocalStorage implements Closeable {
 		}
 	}
 
-	public interface VoidReader {
-		void read(LocalData localData);
-	}
-
 	public interface Writer {
 		void write(LocalData localData);
 	}
@@ -150,7 +143,7 @@ public class LocalStorage implements Closeable {
 	 * CLEAR_REQUIRED_SHARED_PREFERENCE_KEYにより新しいオブジェクトが作られた場合、
 	 * CLEAR_REQUIRED_SHARED_PREFERENCE_KEYはfalseに設定する
 	 */
-	private static LocalData newStatusInstanceFromFile(Context context) {
+	private static LocalData newLocalDataFromFile(Context context) {
 		Boolean isClear = WILL_CLEAR_SAVED_FILE.getAndSet(false);
 		LocalData localData = new LocalData();
 		File file = new File(context.getFilesDir() + File.separator
@@ -202,7 +195,7 @@ public class LocalStorage implements Closeable {
 					InVehicleDeviceService.NEW_SCHEDULE_DOWNLOAD_MINUTE);
 			Date startDate = startCalendar.getTime();
 			if (localData.updatedDate.before(startDate)) {
-				localData.operationScheduleInitializedSign.drainPermits();
+				localData.operationScheduleInitialized = false;
 			}
 		}
 
@@ -211,21 +204,6 @@ public class LocalStorage implements Closeable {
 				SharedPreferencesKeys.SERVER_IN_VEHICLE_DEVICE_TOKEN, "");
 		localData.url = preferences.getString(SharedPreferencesKeys.SERVER_URL,
 				InVehicleDeviceService.DEFAULT_URL);
-		try {
-			localData.inVehicleDevice = InVehicleDevice.parse(new JSONObject(
-					preferences.getString(
-							SharedPreferencesKeys.SERVICE_PROVIDER, "{}")));
-		} catch (JSONException e) {
-			Log.w(TAG, e);
-		}
-		try {
-			localData.serviceProvider = ServiceProvider.parse(new JSONObject(
-					preferences.getString(
-							SharedPreferencesKeys.IN_VEHICLE_DEVICE, "{}")));
-		} catch (JSONException e) {
-			Log.e(TAG, "parse JSON failed", e);
-		}
-
 		return localData;
 	}
 
@@ -251,7 +229,7 @@ public class LocalStorage implements Closeable {
 	public LocalStorage(Context context, Integer savePeriodMillis) {
 		this.savePeriodMillis = savePeriodMillis;
 		synchronized (FILE_ACCESS_LOCK) {
-			localData = newStatusInstanceFromFile(context);
+			localData = newLocalDataFromFile(context);
 		}
 		saveThread = new SaveThread(localData.file);
 		saveThread.start();
@@ -268,33 +246,28 @@ public class LocalStorage implements Closeable {
 	 * 
 	 * @param reader
 	 */
-	public <T> T withReadLock(Reader<T> reader) {
+	public <T extends Serializable> T withReadLock(Reader<T> reader) {
+		long beginTime = System.currentTimeMillis();
 		readLock.lock();
+		long lockTime = System.currentTimeMillis();
 		try {
-			return reader.read(localData);
+			return SerializationUtils.clone(reader.read(localData));
 		} finally {
-			if (localData.operationSchedules.size() > 0) {
-				OperationSchedule os = localData.operationSchedules.get(0);
-				Log.i(TAG, "read lock id=" + os.getId() + " " + os.isArrived()
-						+ " " + os.isDeparted());
-			}
 			readLock.unlock();
-		}
-	}
-
-	/**
-	 * 読み取りロックをした状態で、localDataにアクセスを行う
-	 * 
-	 * @param reader
-	 */
-	public void withReadLock(final VoidReader reader) {
-		withReadLock(new Reader<Void>() {
-			@Override
-			public Void read(LocalData status) {
-				reader.read(status);
-				return null;
+			long endTime = System.currentTimeMillis();
+			long lockPeriod = lockTime - beginTime;
+			if (lockPeriod > 2000) {
+				String message = "lock period=" + lockPeriod + "ms\n";
+				message += Throwables.getStackTraceAsString(new Throwable());
+				Log.v(TAG, message);
 			}
-		});
+			long readPeriod = endTime - lockTime;
+			if (readPeriod > 2000) {
+				String message = "read period=" + readPeriod + "ms\n";
+				message += Throwables.getStackTraceAsString(new Throwable());
+				Log.v(TAG, message);
+			}
+		}
 	}
 
 	/**
@@ -315,7 +288,8 @@ public class LocalStorage implements Closeable {
 		saveSemaphore.release();
 	}
 
-	public <T> void read(final BackgroundReader<T> backgroundReader) {
+	public <T extends Serializable> void read(
+			final BackgroundReader<T> backgroundReader) {
 		final Handler handler = InVehicleDeviceService.getThreadHandler();
 		Runnable task = new Runnable() {
 			@Override

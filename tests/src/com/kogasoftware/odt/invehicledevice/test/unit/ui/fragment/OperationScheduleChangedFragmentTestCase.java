@@ -26,7 +26,7 @@ public class OperationScheduleChangedFragmentTestCase extends
 	protected void setUp() throws Exception {
 		super.setUp();
 		s = mock(InVehicleDeviceService.class);
-		when(s.getCurrentOperationSchedule()).thenReturn(
+		when(s.getCurrent()).thenReturn(
 				Optional.<OperationSchedule> absent());
 		smv = new ScheduleModalView(a, s);
 		sa = new LocalStorage(a);

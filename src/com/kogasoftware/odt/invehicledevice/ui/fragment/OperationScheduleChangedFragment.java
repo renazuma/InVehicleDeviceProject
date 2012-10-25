@@ -1,6 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.ui.fragment;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.SystemUtils;
@@ -19,14 +20,16 @@ import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundReader;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.VehicleNotificationLogic;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.VehicleNotificationLogic;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.OperationScheduleChangedFragment.State;
 
 public class OperationScheduleChangedFragment extends
-		ApplicationFragment<State> {
+		ApplicationFragment<State> implements
+		EventDispatcher.OnMergeOperationSchedulesListener {
 	@SuppressWarnings("serial")
 	protected static class State implements Serializable {
 		private final List<VehicleNotification> vehicleNotifications;
@@ -50,37 +53,13 @@ public class OperationScheduleChangedFragment extends
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		final View view = inflater.inflate(
-				R.layout.operation_schedule_changed_fragment, container, false);
-		updateView(view);
-
-		final OperationScheduleLogic operationScheduleLogic = new OperationScheduleLogic(
-				getService());
-
-		Button scheduleConfirmButton = (Button) view
-				.findViewById(R.id.schedule_confirm_button);
-		scheduleConfirmButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				showOperationScheduleFragment();
-				operationScheduleLogic.requestUpdatePhase();
-			}
-		});
-		Button hideButton = (Button) view
-				.findViewById(R.id.schedule_changed_close_button);
-		hideButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				hide();
-				operationScheduleLogic.requestUpdatePhase();
-			}
-		});
-		return view;
+		return inflater.inflate(R.layout.operation_schedule_changed_fragment,
+				container, false);
 	}
 
-	private void updateView(View view) {
-		TextView textView = (TextView) view
-				.findViewById(R.id.schedule_changed_text_view);
+	private void updateView() {
+		TextView textView = (TextView) getView().findViewById(
+				R.id.schedule_changed_text_view);
 
 		StringBuilder message = new StringBuilder();
 		for (VehicleNotification vehicleNotification : getState()
@@ -118,16 +97,19 @@ public class OperationScheduleChangedFragment extends
 
 	private void showOperationScheduleFragment() {
 		getService().getLocalStorage().read(
-				new BackgroundReader<List<OperationSchedule>>() {
+				new BackgroundReader<ArrayList<OperationSchedule>>() {
 					@Override
-					public List<OperationSchedule> readInBackground(
+					public ArrayList<OperationSchedule> readInBackground(
 							LocalData localData) {
-						return localData.operationSchedules;
+						return Lists.newArrayList(localData.operationSchedules);
 					}
 
 					@Override
 					public void onRead(
-							List<OperationSchedule> operationSchedules) {
+							ArrayList<OperationSchedule> operationSchedules) {
+						if (isRemoving()) {
+							return;
+						}
 						setCustomAnimation(
 								getFragmentManager().beginTransaction())
 								.remove(OperationScheduleChangedFragment.this)
@@ -137,5 +119,52 @@ public class OperationScheduleChangedFragment extends
 								.commitAllowingStateLoss();
 					}
 				});
+	}
+
+	@Override
+	public void onMergeOperationSchedules(
+			List<VehicleNotification> triggerVehicleNotifications) {
+		List<VehicleNotification> vehicleNotifications = Lists.newLinkedList();
+		vehicleNotifications.addAll(getState().getVehicleNotifications());
+		vehicleNotifications.addAll(triggerVehicleNotifications);
+		setState(new State(vehicleNotifications));
+		updateView();
+	}
+
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+
+		final OperationScheduleLogic operationScheduleLogic = new OperationScheduleLogic(
+				getService());
+		Button scheduleConfirmButton = (Button) getView().findViewById(
+				R.id.schedule_confirm_button);
+		scheduleConfirmButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				showOperationScheduleFragment();
+				operationScheduleLogic.requestUpdatePhase();
+			}
+		});
+		Button hideButton = (Button) getView().findViewById(
+				R.id.schedule_changed_close_button);
+		hideButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				hide();
+				operationScheduleLogic.requestUpdatePhase();
+			}
+		});
+		updateView();
+
+		getService().getEventDispatcher().addOnMergeOperationSchedulesListener(
+				this);
+	}
+
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		getService().getEventDispatcher()
+				.removeOnMergeOperationSchedulesListener(this);
 	}
 }

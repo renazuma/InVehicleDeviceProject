@@ -22,7 +22,7 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordArrayAdapter;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.PlatformPhaseFragment.State;
@@ -90,7 +90,7 @@ public class PlatformPhaseFragment extends ApplicationFragment<State> implements
 			Date now = InVehicleDeviceService.getDate();
 			minutesRemainingTextView.setText("");
 			for (OperationSchedule operationSchedule : OperationSchedule
-					.getCurrentOperationSchedule(
+					.getCurrent(
 							getState().getOperationSchedules()).asSet()) {
 				if (!operationSchedule.getDepartureEstimate().isPresent()) {
 					return;
@@ -156,7 +156,7 @@ public class PlatformPhaseFragment extends ApplicationFragment<State> implements
 		FlickUnneededListView passengerRecordListView = ((FlickUnneededListView) view
 				.findViewById(R.id.reservation_list_view));
 
-		Boolean last = !OperationSchedule.getRelativeOperationSchedule(
+		Boolean last = !OperationSchedule.getRelative(
 				getState().getOperationSchedules(), 1).isPresent();
 		if (last) {
 			minutesRemainingTextView.setVisibility(View.GONE);
@@ -166,7 +166,7 @@ public class PlatformPhaseFragment extends ApplicationFragment<State> implements
 
 		currentPlatformNameTextView.setText("");
 		for (OperationSchedule currentOperationSchedule : OperationSchedule
-				.getCurrentOperationSchedule(getState().getOperationSchedules())
+				.getCurrent(getState().getOperationSchedules())
 				.asSet()) {
 			if (last) {
 				currentPlatformNameTextView.setText("現在最終乗降場です");
