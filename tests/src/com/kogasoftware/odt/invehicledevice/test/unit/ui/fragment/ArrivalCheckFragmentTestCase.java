@@ -29,7 +29,7 @@ public class ArrivalCheckFragmentTestCase extends
 		os.setPlatform(p);
 
 		s = mock(InVehicleDeviceService.class);
-		when(s.getCurrentOperationSchedule()).thenReturn(Optional.of(os));
+		when(s.getCurrent()).thenReturn(Optional.of(os));
 
 		mv = new ArrivalCheckModalView(a, s);
 

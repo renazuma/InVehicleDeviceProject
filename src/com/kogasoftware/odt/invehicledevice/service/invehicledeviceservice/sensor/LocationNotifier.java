@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask;
+package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.sensor;
 
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -17,8 +17,8 @@ import android.os.PowerManager.WakeLock;
 import android.util.Log;
 
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.ServiceUnitStatusLogLogic;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.ServiceUnitStatusLogLogic;
 
 /**
  * 位置情報を取得する

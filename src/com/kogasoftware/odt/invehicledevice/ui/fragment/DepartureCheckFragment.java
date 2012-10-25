@@ -14,7 +14,7 @@ import android.widget.Button;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 
 import com.kogasoftware.odt.invehicledevice.ui.fragment.DepartureCheckFragment.State;
@@ -64,7 +64,7 @@ public class DepartureCheckFragment extends ApplicationFragment<State> {
 			closeButton.setText("乗車一覧に戻る");
 		}
 
-		if (OperationSchedule.getRelativeOperationSchedule(
+		if (OperationSchedule.getRelative(
 				getState().getOperationSchedules(), 1).isPresent()) {
 			departureButton.setText("出発する");
 		} else {
@@ -73,7 +73,7 @@ public class DepartureCheckFragment extends ApplicationFragment<State> {
 		final OperationScheduleLogic operationScheduleLogic = new OperationScheduleLogic(
 				getService());
 		for (final OperationSchedule operationSchedule : OperationSchedule
-				.getCurrentOperationSchedule(getState().getOperationSchedules())
+				.getCurrent(getState().getOperationSchedules())
 				.asSet()) {
 			departureButton.setOnClickListener(new OnClickListener() {
 				@Override
