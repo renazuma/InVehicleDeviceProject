@@ -1,14 +1,12 @@
 package com.kogasoftware.odt.invehicledevice.test.util.apiclient;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.graphics.Bitmap;
 
@@ -106,12 +104,12 @@ public class MockApiClient extends EmptyInVehicleDeviceApiClient {
 						+ "reservations_as_arrival: [" + "],"
 						+ "reservations_as_departure: [" + r1 + "," + r2 + ","
 						+ r3 + "," + r4 + "," + r5 + ", ]}";
-				JSONObject j1 = new JSONObject(sOperationSchedule);
+				String j1 = new String(sOperationSchedule);
 				lOperationSchedule.add(OperationSchedule.parse(j1));
 			}
 
 			if (iOperationScheduleCount > 1) {
-				JSONObject j2 = new JSONObject(
+				String j2 = new String(
 						"{ id: 2,"
 								+ "arrival_estimate: '2012-01-01T09:30:00+09:00', "
 								+ "departure_estimate: '2012-01-01T10:05:00+09:00', "
@@ -121,7 +119,7 @@ public class MockApiClient extends EmptyInVehicleDeviceApiClient {
 			}
 
 			if (iOperationScheduleCount > 2) {
-				JSONObject j3 = new JSONObject(
+				String j3 = new String(
 						"{ id: 3,"
 								+ "arrival_estimate: '2012-01-01T10:30:00+09:00', "
 								+ "departure_estimate: '2012-01-01T10:33:00+09:00', "
@@ -131,7 +129,7 @@ public class MockApiClient extends EmptyInVehicleDeviceApiClient {
 			}
 
 			if (iOperationScheduleCount > 3) {
-				JSONObject j4 = new JSONObject(
+				String j4 = new String(
 						"{ id: 4,"
 								+ "arrival_estimate: '2012-01-01T11:10:00+09:00', "
 								+ "departure_estimate: '2012-01-01T11:15:00+09:00', "
@@ -142,7 +140,7 @@ public class MockApiClient extends EmptyInVehicleDeviceApiClient {
 			}
 
 			if (iOperationScheduleCount > 4) {
-				JSONObject j5 = new JSONObject(
+				String j5 = new String(
 						"{ id: 5,"
 								+ "arrival_estimate: '2012-01-01T12:00:00+09:00', "
 								+ "departure_estimate: '2012-01-01T12:05:00+09:00', "
@@ -151,7 +149,7 @@ public class MockApiClient extends EmptyInVehicleDeviceApiClient {
 			}
 
 			if (iOperationScheduleCount > 5) {
-				JSONObject j6 = new JSONObject(
+				String j6 = new String(
 						"{ id: 6,"
 								+ "arrival_estimate: '2012-01-01T13:03:00+09:00', "
 								+ "departure_estimate: '2012-01-01T13:10:30+09:00', "
@@ -161,7 +159,7 @@ public class MockApiClient extends EmptyInVehicleDeviceApiClient {
 				lOperationSchedule.add(OperationSchedule.parse(j6));
 			}
 
-		} catch (JSONException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
@@ -265,7 +263,7 @@ public class MockApiClient extends EmptyInVehicleDeviceApiClient {
 
 		try {
 
-			JSONObject j1 = new JSONObject(
+			String j1 = new String(
 					"{"
 							+ "id: 101, "
 							+ "arrival_estimate: '2012-01-01T09:00:00+09:00', "
@@ -277,7 +275,7 @@ public class MockApiClient extends EmptyInVehicleDeviceApiClient {
 							+ "]}");
 			lOperationSchedule.add(OperationSchedule.parse(j1));
 
-			JSONObject j2 = new JSONObject(
+			String j2 = new String(
 					"{"
 							+ "id: 102, "
 							+ "arrival_estimate: '2012-01-01T09:30:00+09:00', "
@@ -288,7 +286,7 @@ public class MockApiClient extends EmptyInVehicleDeviceApiClient {
 							+ "," + u1l + "]}");
 			lOperationSchedule.add(OperationSchedule.parse(j2));
 
-			JSONObject j3 = new JSONObject(
+			String j3 = new String(
 					"{"
 							+ "id: 103, "
 							+ "arrival_estimate: '2012-01-01T10:30:00+09:00', "
@@ -299,7 +297,7 @@ public class MockApiClient extends EmptyInVehicleDeviceApiClient {
 							+ u1h + "," + u1k + "," + u1m + "]}");
 			lOperationSchedule.add(OperationSchedule.parse(j3));
 
-			JSONObject j4 = new JSONObject(
+			String j4 = new String(
 					"{"
 							+ "id: 104, "
 							+ "arrival_estimate: '2012-01-01T11:10:00+09:00', "
@@ -311,7 +309,7 @@ public class MockApiClient extends EmptyInVehicleDeviceApiClient {
 							+ "," + u1o + "]}");
 			lOperationSchedule.add(OperationSchedule.parse(j4));
 
-			JSONObject j5 = new JSONObject(
+			String j5 = new String(
 					"{"
 							+ "id: 105, "
 							+ "arrival_estimate: '2012-01-01T12:00:00+09:00', "
@@ -322,7 +320,7 @@ public class MockApiClient extends EmptyInVehicleDeviceApiClient {
 							+ "reservations_as_departure: []}");
 			lOperationSchedule.add(OperationSchedule.parse(j5));
 
-			JSONObject j6 = new JSONObject(
+			String j6 = new String(
 					"{"
 							+ "id: 106, "
 							+ "arrival_estimate: '2012-01-01T13:03:00+09:00', "
@@ -333,7 +331,7 @@ public class MockApiClient extends EmptyInVehicleDeviceApiClient {
 							+ "reservations_as_departure: []}");
 			lOperationSchedule.add(OperationSchedule.parse(j6));
 
-		} catch (JSONException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
