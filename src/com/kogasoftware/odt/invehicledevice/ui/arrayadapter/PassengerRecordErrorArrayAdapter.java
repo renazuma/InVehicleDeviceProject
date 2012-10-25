@@ -113,9 +113,10 @@ public class PassengerRecordErrorArrayAdapter extends
 			// ignoreButton.setTextOff(text);
 			errorMessage += "未降車です";
 			if (passengerRecord.getIgnoreGetOffMiss()) {
-				ignoreButton.setBackgroundColor(Color.CYAN);
+				ignoreButton
+						.setBackgroundResource(R.drawable.ignore_button_pressed);
 			} else {
-				ignoreButton.setBackgroundColor(Color.LTGRAY);
+				ignoreButton.setBackgroundResource(R.drawable.ignore_button);
 			}
 		} else if (operationSchedule.isGetOnScheduled(passengerRecord)
 				&& !passengerRecord.getGetOnTime().isPresent()) {
@@ -126,9 +127,10 @@ public class PassengerRecordErrorArrayAdapter extends
 			// ignoreButton.setTextOff(text);
 			errorMessage += "未乗車です";
 			if (passengerRecord.getIgnoreGetOnMiss()) {
-				ignoreButton.setBackgroundColor(Color.CYAN);
+				ignoreButton
+						.setBackgroundResource(R.drawable.ignore_button_pressed);
 			} else {
-				ignoreButton.setBackgroundColor(Color.LTGRAY);
+				ignoreButton.setBackgroundResource(R.drawable.ignore_button);
 			}
 		} else {
 			Log.e(TAG, "unexpected PassengerRecord: " + passengerRecord);
