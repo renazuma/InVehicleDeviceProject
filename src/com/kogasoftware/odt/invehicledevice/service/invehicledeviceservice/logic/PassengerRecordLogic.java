@@ -1,5 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic;
 
+import java.util.Date;
+
 import android.util.Log;
 
 import com.google.common.collect.Lists;
@@ -30,6 +32,7 @@ public class PassengerRecordLogic {
 					+ ") has no Reservation");
 			return;
 		}
+		Date now = InVehicleDeviceService.getDate();
 		Reservation reservation = passengerRecord.getReservation().get();
 
 		if (!passengerRecord.getUser().isPresent()) {
@@ -37,16 +40,24 @@ public class PassengerRecordLogic {
 			return;
 		}
 		User user = passengerRecord.getUser().get();
-
-		passengerRecord.setGetOffTime(InVehicleDeviceService.getDate());
+		if (passengerRecord.getIgnoreGetOnMiss()) {
+			passengerRecord.setGetOnTime(now);
+			passengerRecord.setDepartureOperationScheduleId(reservation
+					.getDepartureScheduleId());
+			service.getApiClient()
+					.withSaveOnClose()
+					.getOnPassenger(operationSchedule, reservation, user,
+							passengerRecord, new EmptyApiClientCallback<Void>());
+		}
+		passengerRecord.setGetOffTime(now);
 		passengerRecord.setPassengerCount(reservation.getPassengerCount());
 		passengerRecord
 				.setArrivalOperationScheduleId(operationSchedule.getId());
-		updateAsync(passengerRecord);
 		service.getApiClient()
 				.withSaveOnClose()
 				.getOffPassenger(operationSchedule, reservation, user,
 						passengerRecord, new EmptyApiClientCallback<Void>());
+		updateAsync(passengerRecord);
 	}
 
 	public void cancelGetOff(OperationSchedule operationSchedule,
@@ -66,11 +77,21 @@ public class PassengerRecordLogic {
 
 		passengerRecord.clearGetOffTime();
 		passengerRecord.clearArrivalOperationScheduleId();
-		updateAsync(passengerRecord);
+		if (passengerRecord.getIgnoreGetOnMiss()) {
+			passengerRecord.clearGetOnTime();
+			passengerRecord.clearDepartureOperationScheduleId();
+		}
 		service.getApiClient()
 				.withSaveOnClose()
 				.cancelGetOffPassenger(operationSchedule, reservation, user,
 						new EmptyApiClientCallback<Void>());
+		if (passengerRecord.getIgnoreGetOnMiss()) {
+			service.getApiClient()
+					.withSaveOnClose()
+					.cancelGetOnPassenger(operationSchedule, reservation, user,
+							new EmptyApiClientCallback<Void>());
+		}
+		updateAsync(passengerRecord);
 	}
 
 	public void getOn(OperationSchedule operationSchedule,
