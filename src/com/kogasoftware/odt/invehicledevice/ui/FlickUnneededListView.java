@@ -20,6 +20,7 @@ import com.kogasoftware.odt.invehicledevice.R;
 
 public class FlickUnneededListView extends FrameLayout implements
 		OnScrollListener {
+	@SuppressWarnings("unused")
 	private static final String TAG = FlickUnneededListView.class
 			.getSimpleName();
 	protected static final Integer DISABLED_TEXT_COLOR = Color.GRAY;
