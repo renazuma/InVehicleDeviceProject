@@ -3,6 +3,7 @@ package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice;
 import java.io.Closeable;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.location.GpsStatus;
 import android.location.Location;
@@ -12,13 +13,14 @@ import android.util.Log;
 import com.google.common.base.Optional;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
 
 public class EventDispatcher implements Closeable {
 	private static final String TAG = EventDispatcher.class.getSimpleName();
+	private final AtomicBoolean closed = new AtomicBoolean(false);
 
 	protected static <T> Multimap<Handler, T> newListenerMultimap() {
 		return LinkedHashMultimap.create();
@@ -163,6 +165,10 @@ public class EventDispatcher implements Closeable {
 	}
 
 	public <T> void putListener(Multimap<Handler, T> multimap, T listener) {
+		if (closed.get()) {
+			Log.e(TAG, "\"" + this + "\" already closed listener=" + listener);
+			return;
+		}
 		Handler handler = InVehicleDeviceService.getThreadHandler();
 		synchronized (multimap) {
 			multimap.put(handler, listener);
@@ -222,7 +228,19 @@ public class EventDispatcher implements Closeable {
 		putListener(onEnterPhaseListeners, listener);
 	}
 
-	public void addOnExitListener(OnExitListener listener) {
+	public void addOnExitListener(final OnExitListener listener) {
+		// 既にcloseされていた場合は、登録せずにonExitを実行する
+		if (closed.get()) {
+			Log.w(TAG, "\"" + this + "\" already closed listener=" + listener
+					+ " call onExit() immediately");
+			InVehicleDeviceService.getThreadHandler().post(new Runnable() {
+				@Override
+				public void run() {
+					listener.onExit();
+				}
+			});
+			return;
+		}
 		putListener(onExitListeners, listener);
 	}
 
@@ -362,8 +380,8 @@ public class EventDispatcher implements Closeable {
 			final List<OperationSchedule> operationSchedules,
 			final List<PassengerRecord> passengerRecords) {
 		String message = "dispatchUpdatePhase " + phase;
-		for (OperationSchedule os : OperationSchedule
-				.getCurrentOperationSchedule(operationSchedules).asSet()) {
+		for (OperationSchedule os : OperationSchedule.getCurrent(
+				operationSchedules).asSet()) {
 			message += " id=" + os.getId();
 		}
 
