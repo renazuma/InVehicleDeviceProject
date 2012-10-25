@@ -10,6 +10,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:padding="10sp"
+        android:paddingBottom="2sp"
         android:text="@string/next_platform_is"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -21,7 +22,8 @@
         android:layout_gravity="left|center_vertical"
         android:layout_marginLeft="30sp"
         android:orientation="horizontal"
-        android:padding="10sp" >
+        android:padding="8sp"
+        android:paddingTop="2sp" >
 
         <TextView
             android:id="@+id/platform_arrival_time_text_view2"
@@ -42,7 +44,7 @@
             android:text="@string/arrival_schedule"
             android:textSize="50dip" />
     </LinearLayout>
-
+    <!--
     <com.kogasoftware.odt.invehicledevice.ui.AutoResizeTextView
         android:id="@+id/next_platform_name_text_view"
         android:layout_width="match_parent"
@@ -50,9 +52,27 @@
         android:layout_above="@+id/platform_name_1_beyond_text_view"
         android:layout_below="@+id/platform_arrival_time_layout"
         android:layout_marginLeft="30sp"
-        android:gravity="left|center"
+        android:singleLine="true"
+        android:background="#222222ff"
+        android:ellipsize="end"
         android:paddingLeft="10sp"
         android:textSize="50dip" />
+    -->
+
+    <TextView
+        android:id="@+id/next_platform_name_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/platform_name_1_beyond_text_view"
+        android:layout_below="@+id/platform_arrival_time_layout"
+        android:layout_marginLeft="30sp"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:lineSpacingMultiplier="1"
+        android:lines="2"
+        android:maxLines="2"
+        android:paddingLeft="10sp"
+        android:textSize="38sp" />
 
     <TextView
         android:id="@+id/platform_name_1_beyond_text_view"
@@ -63,7 +83,6 @@
         android:ellipsize="end"
         android:orientation="horizontal"
         android:padding="10sp"
-        android:singleLine="true"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textSize="26sp" />
 

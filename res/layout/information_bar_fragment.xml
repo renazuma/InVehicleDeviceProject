@@ -10,6 +10,8 @@
         android:layout_height="40sp"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
         android:src="@drawable/network_strength_0" />
 
     <ImageView
@@ -17,6 +19,8 @@
         android:layout_width="40sp"
         android:layout_height="40sp"
         android:layout_centerVertical="true"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
         android:layout_toRightOf="@+id/network_strength_image_view"
         android:src="@drawable/battery_alert"
         android:visibility="invisible" />
@@ -50,5 +54,14 @@
         android:background="@android:drawable/btn_default"
         android:text="@string/platform_memo"
         android:textSize="20sp" />
+
+    <FrameLayout
+        android:id="@+id/information_bar_shadow"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:background="#55555555" />
 
 </RelativeLayout>
