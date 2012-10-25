@@ -11,6 +11,7 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.base.OperationSchedu
 
 public class OperationSchedule extends OperationScheduleBase {
 	private static final long serialVersionUID = 1040628741311146499L;
+	private static final String TAG = OperationSchedule.class.getSimpleName();
 
 	/**
 	 * 出発済みか調べる
@@ -35,15 +36,15 @@ public class OperationSchedule extends OperationScheduleBase {
 	/**
 	 * 現在運行中の運行スケジュールを得る
 	 */
-	public static Optional<OperationSchedule> getCurrentOperationSchedule(
+	public static Optional<OperationSchedule> getCurrent(
 			Iterable<OperationSchedule> operationSchedules) {
-		return getRelativeOperationSchedule(operationSchedules, 0);
+		return getRelative(operationSchedules, 0);
 	}
 
 	/**
 	 * 現在運行中の運行スケジュールから、offset個進めた運行スケジュールを得る
 	 */
-	public static Optional<OperationSchedule> getRelativeOperationSchedule(
+	public static Optional<OperationSchedule> getRelative(
 			Iterable<OperationSchedule> operationSchedules, Integer offset) {
 		Integer currentIndex = 0;
 		for (OperationSchedule operationSchedule : operationSchedules) {

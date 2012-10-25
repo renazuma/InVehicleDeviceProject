@@ -1,8 +1,8 @@
 package com.kogasoftware.odt.apiclient;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.Executors;
@@ -15,11 +15,10 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.util.Log;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.kogasoftware.odt.apiclient.serializablerequestloader.SerializableDeleteLoader;
 import com.kogasoftware.odt.apiclient.serializablerequestloader.SerializableGetLoader;
 import com.kogasoftware.odt.apiclient.serializablerequestloader.SerializablePostLoader;
@@ -57,9 +56,10 @@ public class DefaultApiClient implements ApiClient {
 	protected final Object requestConfigsLock = new Object();
 	protected final WeakHashMap<Thread, DefaultApiClientRequestConfig> requestConfigs = new WeakHashMap<Thread, DefaultApiClientRequestConfig>();
 
-	protected <T> int handleJSONException(JSONException e,
+	protected <T> int handleIOException(IOException e,
 			ApiClientCallback<T> callback) {
 		int reqkey = -1;
+		Log.e(TAG, "fatal IOException", e);
 		callback.onException(reqkey, new ApiClientException(e));
 		return reqkey;
 	}
@@ -127,9 +127,15 @@ public class DefaultApiClient implements ApiClient {
 				return false;
 			}
 
-			request.onSucceed(statusCode, response);
-			return true;
+			try {
+				request.onSucceed(statusCode, response);
+				return true;
+			} catch (Exception e) {
+				Log.e(TAG, "request.onSucceed() failed", e);
+				throw e;
+			}
 		} catch (ApiClientException e) {
+			Log.e(TAG, "ApiClientException", e);// TODO:消す
 			request.onException(e);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
@@ -160,40 +166,6 @@ public class DefaultApiClient implements ApiClient {
 		}
 	}
 
-	protected JSONObject filterJSONKeys(JSONObject jsonObject, String[] keys) {
-		JSONObject res = new JSONObject();
-
-		for (String key : keys) {
-			try {
-				res.put(key, jsonObject.get(key));
-			} catch (JSONException e) {
-				Log.w(TAG, e);
-			}
-		}
-
-		return res;
-	}
-
-	protected JSONObject removeJSONKeys(JSONObject jsonObject, String[] keys) {
-		JSONObject res = new JSONObject();
-
-		Iterator<?> it = jsonObject.keys();
-		while (it.hasNext()) {
-			String key = (String) it.next();
-			try {
-				res.put(key, jsonObject.get(key));
-			} catch (JSONException e) {
-				Log.w(TAG, e);
-			}
-		}
-
-		for (String key : keys) {
-			res.remove(key);
-		}
-
-		return res;
-	}
-
 	@Override
 	public <T> int get(String path, Map<String, String> params,
 			String requestGroup, ApiClientCallback<T> callback,
@@ -214,8 +186,8 @@ public class DefaultApiClient implements ApiClient {
 	}
 
 	@Override
-	public <T> int post(String path, JSONObject param,
-			JSONObject retryParam, String requestGroup,
+	public <T> int post(String path, JsonNode param,
+			JsonNode retryParam, String requestGroup,
 			ApiClientCallback<T> callback, ResponseConverter<? extends T> conv) {
 		SerializablePostLoader first = new SerializablePostLoader(
 				getServerHost(), path, param, authenticationToken);
@@ -228,19 +200,19 @@ public class DefaultApiClient implements ApiClient {
 	}
 
 	@Override
-	public <T> int post(String path, JSONObject param, String requestGroup,
+	public <T> int post(String path, JsonNode param, String requestGroup,
 			ApiClientCallback<T> callback, ResponseConverter<? extends T> conv) {
 		return post(path, param, param, requestGroup, callback, conv);
 	}
 
 	@Override
-	public <T> int put(String path, JSONObject param, String requestGroup,
+	public <T> int put(String path, JsonNode param, String requestGroup,
 			ApiClientCallback<T> callback, ResponseConverter<? extends T> conv) {
 		return put(path, param, param, requestGroup, callback, conv);
 	}
 
 	@Override
-	public <T> int put(String path, JSONObject param, JSONObject retryParam,
+	public <T> int put(String path, JsonNode param, JsonNode retryParam,
 			String requestGroup, ApiClientCallback<T> callback,
 			ResponseConverter<? extends T> conv) {
 		SerializablePutLoader first = new SerializablePutLoader(

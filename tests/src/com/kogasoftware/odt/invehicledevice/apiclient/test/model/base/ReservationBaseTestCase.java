@@ -1,19 +1,20 @@
 package com.kogasoftware.odt.invehicledevice.apiclient.test.model.base;
 
 import java.util.Date;
+import java.util.LinkedList;
 
-import android.test.AndroidTestCase;
+import junit.framework.TestCase;
 
 import org.apache.commons.lang3.SerializationUtils;
 
+import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.*;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.base.*;
 
 /**
  * ReservationBaseのテスト
  */
-@SuppressWarnings("unused")
-public class ReservationBaseTestCase extends AndroidTestCase {
+public class ReservationBaseTestCase extends TestCase {
 	Reservation model;
 
 	@Override
@@ -30,25 +31,24 @@ public class ReservationBaseTestCase extends AndroidTestCase {
 		}
 	}
 
-	public void testCloneByJSON() throws Exception {
-		Date ua = new Date();
+	public void testClone() throws Exception {
 		Reservation m1 = new Reservation();
 		m1.setId(10);
-		Reservation m2 = m1.cloneByJSON();
+		Reservation m2 = m1.clone();
 		assertFalse(m1 == m2);
 		assertEquals(m1, m2);
 
 		m1.setId(11);
+		Date ua = new Date();
 		m1.setUpdatedAt(ua);
 		m2.setUpdatedAt(ua);
 		assertFalse(m1.equals(m2));
 
-		Reservation m3 = m1.cloneByJSON();
+		Reservation m3 = m1.clone();
 		assertEquals(m1, SerializationUtils.clone(m3));
 	}
 
-	public void testSerialize() throws Exception {
-		Date ua = new Date();
+	public void testSerializable() throws Exception {
 		Reservation m1 = new Reservation();
 		m1.setId(10);
 		Reservation m2 = SerializationUtils.clone(m1);
@@ -56,20 +56,21 @@ public class ReservationBaseTestCase extends AndroidTestCase {
 		assertEquals(m1, m2);
 
 		m1.setId(11);
+		Date ua = new Date();
 		m1.setUpdatedAt(ua);
 		m2.setUpdatedAt(ua);
 		assertFalse(m1.equals(m2));
 
 		Reservation m3 = SerializationUtils.clone(m1);
 		assertEquals(m1, m3);
-		assertEquals(m1, m3.cloneByJSON());
 	}
 
 	public void testEquals() throws Exception {
+		Reservation l = new Reservation();
+		Reservation r = l.clone();
+
 		Integer s = 10;
 		Date ua = new Date();
-		Reservation l = new Reservation();
-		Reservation r = l.cloneByJSON();
 
 		l.setUpdatedAt(ua);
 		r.setUpdatedAt(ua);
@@ -115,5 +116,36 @@ public class ReservationBaseTestCase extends AndroidTestCase {
 		Thread.sleep(s);
 		model.setUpdatedAt(ua);
 		assertEquals(ua, model.getUpdatedAt());
+	}
+
+	public void testCanSerializable() {
+		Model.getObjectMapper().canSerialize(ReservationBase.class);
+		Model.getObjectMapper().canSerialize(Reservation.class);
+	}
+
+	public void testIdentity() {
+		Reservation odd = new Reservation();
+		Reservation even = new Reservation();
+		LinkedList<Reservation> l1 = Lists.newLinkedList();
+		l1.add(even);
+		l1.add(odd);
+		l1.add(even);
+		l1.add(odd);
+		
+		LinkedList<Reservation> l2 = SerializationUtils.clone(l1);
+		assertEquals(l1, l2);
+		
+		assertEquals(l1.get(0), l2.get(0));
+		assertEquals(l1.get(1), l2.get(1));
+		assertEquals(l1.get(2), l2.get(2));
+		assertEquals(l1.get(3), l2.get(3));
+
+		assertFalse(l1.get(0) == l2.get(0));
+		assertFalse(l1.get(1) == l2.get(1));
+		assertFalse(l1.get(2) == l2.get(2));
+		assertFalse(l1.get(3) == l2.get(3));
+
+		assertTrue(l2.get(0) == l2.get(2));
+		assertTrue(l2.get(1) == l2.get(3));
 	}
 }

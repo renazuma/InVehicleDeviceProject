@@ -2,16 +2,17 @@ package com.kogasoftware.odt.apiclient.serializablerequestloader;
 
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.json.JSONObject;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.kogasoftware.odt.apiclient.ApiClientException;
 
-public class SerializablePutLoader extends SerializableEntityEnclosingRequestLoader {
+public class SerializablePutLoader extends
+		SerializableEntityEnclosingRequestLoader {
 	private static final long serialVersionUID = -5259397660430434317L;
 
-	public SerializablePutLoader(String host, String path,
-			JSONObject entityJSON, String authenticationToken) {
-		super(host, path, entityJSON, authenticationToken);
+	public SerializablePutLoader(String host, String path, JsonNode param,
+			String authenticationToken) {
+		super(host, path, param, authenticationToken);
 	}
 
 	@Override

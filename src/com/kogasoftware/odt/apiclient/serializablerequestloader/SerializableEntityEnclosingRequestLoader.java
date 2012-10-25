@@ -1,14 +1,17 @@
 package com.kogasoftware.odt.apiclient.serializablerequestloader;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Iterator;
+import java.util.TreeMap;
 
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.entity.StringEntity;
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import com.google.common.base.Objects;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kogasoftware.odt.apiclient.ApiClientException;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.base.Model;
 
 public abstract class SerializableEntityEnclosingRequestLoader extends
 		SerializableRequestLoader {
@@ -16,10 +19,16 @@ public abstract class SerializableEntityEnclosingRequestLoader extends
 	protected String entityString = "";
 
 	public SerializableEntityEnclosingRequestLoader(String host, String path,
-			JSONObject entityJSON, String authenticationToken) {
-		super(host, path, null, authenticationToken);
-		this.entityString = Objects.firstNonNull(entityJSON, new JSONObject())
-				.toString();
+			JsonNode param, String authenticationToken) {
+		super(host, path, new TreeMap<String, String>(), authenticationToken);
+		Iterator<JsonNode> iterator = param.iterator();
+		while (iterator.hasNext()) {
+			JsonNode jsonNode = iterator.next();
+			if (jsonNode instanceof ObjectNode) {
+				((ObjectNode) jsonNode).remove(Model.JACKSON_IDENTITY_INFO_PROPERTY);
+			}
+		}
+		this.entityString = param.toString();
 	}
 
 	protected void build(HttpEntityEnclosingRequestBase request)
@@ -38,10 +47,11 @@ public abstract class SerializableEntityEnclosingRequestLoader extends
 	protected void registerAuthenticationToken() throws ApiClientException {
 		if (authenticationToken.length() > 0) {
 			try {
-				JSONObject entityJSON = new JSONObject(entityString);
-				entityJSON.put(AUTHENTICATION_TOKEN_KEY, authenticationToken);
-				entityString = entityJSON.toString();
-			} catch (JSONException e) {
+				ObjectNode entity = Model.getObjectMapper().readValue(
+						entityString, ObjectNode.class);
+				entity.put(AUTHENTICATION_TOKEN_KEY, authenticationToken);
+				entityString = entity.toString();
+			} catch (IOException e) {
 				throw new ApiClientException(e);
 			}
 		}

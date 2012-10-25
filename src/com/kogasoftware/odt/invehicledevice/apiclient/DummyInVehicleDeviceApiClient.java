@@ -1,12 +1,9 @@
 package com.kogasoftware.odt.invehicledevice.apiclient;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
@@ -15,12 +12,19 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceProvider;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.User;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 
 public class DummyInVehicleDeviceApiClient extends
 		EmptyInVehicleDeviceApiClient {
-	private final AtomicInteger state = new AtomicInteger(0);
+	// private final AtomicInteger state = new AtomicInteger(0);
+
+	@Override
+	public int getServiceProvider(ApiClientCallback<ServiceProvider> callback) {
+		callback.onSucceed(0, 200, new ServiceProvider());
+		return 0;
+	}
 
 	@Override
 	public int getVehicleNotifications(
@@ -36,6 +40,7 @@ public class DummyInVehicleDeviceApiClient extends
 			e.printStackTrace();
 		}
 		VehicleNotification vn = new VehicleNotification();
+		vn.setId((int) (Math.random() * 10000000.0));
 		vn.setNotificationKind(VehicleNotification.NotificationKind.RESERVATION_CHANGED);
 		// vn.setNotificationKind(VehicleNotification.NotificationKind.FROM_OPERATOR);
 		vn.setBody("a");
@@ -127,7 +132,7 @@ public class DummyInVehicleDeviceApiClient extends
 						u6 + "," + u7, pr6 + "," + pr7);
 
 		String os1 = "{id:1, arrival_estimate: '2012-10-13T01:00:00+09:00', departure_estimate: '2012-10-13T02:00:00+09:00', "
-				+ "platform: {name: '乗降場A', name_ruby: 'のりおりばえー', latitude: 35.787996, longitude: 139.27583, memo: 'のりおりばめも'}, "
+				+ "platform: {name: '乗降場A123456789あいうえおかきくけこさしすせそたちつてとなにぬねの', name_ruby: 'のりおりばえー', latitude: 35.787996, longitude: 139.27583, memo: 'のりおりばめも'}, "
 				+ "reservations_as_departure: [" + r1 + "," + r2 + "]}";
 		String os2 = "{id:2, arrival_estimate: '2012-10-13T02:00:00+09:00', departure_estimate: '2012-10-13T02:00:00+09:00', "
 				+ "platform: {name: '乗降場B', name_ruby: 'のりおりばびー'}, "
@@ -138,16 +143,16 @@ public class DummyInVehicleDeviceApiClient extends
 		List<OperationSchedule> l = new LinkedList<OperationSchedule>();
 
 		try {
-			l.add(OperationSchedule.parse(new JSONObject(os1)));
-			l.add(OperationSchedule.parse(new JSONObject(os2)));
-			l.add(OperationSchedule.parse(new JSONObject(os3)));
+			l.add(OperationSchedule.parse(os1));
+			l.add(OperationSchedule.parse(os2));
+			l.add(OperationSchedule.parse(os3));
 
-			l.get(0).setOperationRecord(unhandled.cloneByJSON());
-			l.get(1).setOperationRecord(unhandled.cloneByJSON());
-			l.get(2).setOperationRecord(unhandled.cloneByJSON());
+			l.get(0).setOperationRecord(unhandled.clone());
+			l.get(1).setOperationRecord(unhandled.clone());
+			l.get(2).setOperationRecord(unhandled.clone());
 
 			callback.onSucceed(0, 200, l);
-		} catch (JSONException e) {
+		} catch (IOException e) {
 			callback.onException(0, new ApiClientException(e));
 		}
 		return 0;

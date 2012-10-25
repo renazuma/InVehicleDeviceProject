@@ -1,167 +1,86 @@
 package com.kogasoftware.odt.invehicledevice.apiclient.model.base;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.apiclient.ApiClients;
+import com.google.common.collect.Lists;
 import com.kogasoftware.odt.apiclient.ApiClient.ResponseConverter;
+import com.kogasoftware.odt.apiclient.ApiClients;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.*;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.base.jsondeserializer.*;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.base.jsonview.*;
 
+/**
+ * 時点号車
+ */
 @SuppressWarnings("unused")
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = Model.JACKSON_IDENTITY_INFO_PROPERTY)
 public abstract class ServiceUnitBase extends Model {
-	private static final long serialVersionUID = 376777390700395067L;
-	public static final ResponseConverter<ServiceUnit> RESPONSE_CONVERTER = new ResponseConverter<ServiceUnit>() {
-		@Override
-		public ServiceUnit convert(byte[] rawResponse) throws JSONException {
-			return parse(ApiClients.parseJSONObject(rawResponse));
-		}
-	};
-	public static final ResponseConverter<List<ServiceUnit>> LIST_RESPONSE_CONVERTER = new ResponseConverter<List<ServiceUnit>>() {
-		@Override
-		public List<ServiceUnit> convert(byte[] rawResponse) throws JSONException {
-			return parseList(ApiClients.parseJSONArray(rawResponse));
-		}
-	};
+	private static final long serialVersionUID = 3533304298123592042L;
+
+	// Columns
+	@JsonDeserialize(using=RailsOptionalDateDeserializer.class) @JsonSerialize(using=RailsOptionalDateSerializer.class)
+	@JsonProperty private Optional<Date> activatedAt = Optional.absent();
+	@JsonProperty private Date createdAt = new Date();
+	@JsonProperty private Optional<Date> deletedAt = Optional.absent();
+	@JsonProperty private Optional<Integer> driverId = Optional.absent();
+	@JsonProperty private Integer id = 0;
+	@JsonProperty private Optional<Integer> inVehicleDeviceId = Optional.absent();
+	@JsonProperty private Optional<Integer> serviceProviderId = Optional.absent();
+	@JsonProperty private Optional<Integer> unitAssignmentId = Optional.absent();
+	@JsonProperty private Date updatedAt = new Date();
+	@JsonProperty private Optional<Integer> vehicleId = Optional.absent();
+
+	// Associations
+	@JsonProperty @JsonView(AssociationView.class) private Optional<Driver> driver = Optional.absent();
+	@JsonProperty @JsonView(AssociationView.class) private Optional<InVehicleDevice> inVehicleDevice = Optional.absent();
+	@JsonProperty @JsonView(AssociationView.class) private List<OperationRecord> operationRecords = Lists.newLinkedList();
+	@JsonProperty @JsonView(AssociationView.class) private Optional<ServiceProvider> serviceProvider = Optional.absent();
+	@JsonProperty @JsonView(AssociationView.class) private Optional<UnitAssignment> unitAssignment = Optional.absent();
+	@JsonProperty @JsonView(AssociationView.class) private Optional<Vehicle> vehicle = Optional.absent();
+
+	public static final String UNDERSCORE = "service_unit";
+	public static final ResponseConverter<ServiceUnit> RESPONSE_CONVERTER = getResponseConverter(ServiceUnit.class);
+	public static final ResponseConverter<List<ServiceUnit>> LIST_RESPONSE_CONVERTER = getListResponseConverter(ServiceUnit.class);
+
 	protected void refreshUpdatedAt() {
 		setUpdatedAt(new Date());
 	}
-	@Override
-	public void fill(JSONObject jsonObject) throws JSONException {
-		setActivatedAt(parseOptionalDate(jsonObject, "activated_at"));
-		setCreatedAt(parseDate(jsonObject, "created_at"));
-		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
-		setDriverId(parseOptionalInteger(jsonObject, "driver_id"));
-		setId(parseInteger(jsonObject, "id"));
-		setInVehicleDeviceId(parseOptionalInteger(jsonObject, "in_vehicle_device_id"));
-		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
-		setUnitAssignmentId(parseOptionalInteger(jsonObject, "unit_assignment_id"));
-		setVehicleId(parseOptionalInteger(jsonObject, "vehicle_id"));
-		setDriver(Driver.parse(jsonObject, "driver"));
-		setInVehicleDevice(InVehicleDevice.parse(jsonObject, "in_vehicle_device"));
-		setOperationRecords(OperationRecord.parseList(jsonObject, "operation_records"));
-		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
-		setUnitAssignment(UnitAssignment.parse(jsonObject, "unit_assignment"));
-		setVehicle(Vehicle.parse(jsonObject, "vehicle"));
 
-		setUpdatedAt(parseDate(jsonObject, "updated_at"));
+	public static ServiceUnit parse(String jsonString) throws IOException {
+		return parse(jsonString, ServiceUnit.class);
 	}
 
-	public static Optional<ServiceUnit> parse(JSONObject jsonObject, String key) throws JSONException {
-		if (!jsonObject.has(key)) {
-			return Optional.absent();
-		}
-		return Optional.of(parse(jsonObject.getJSONObject(key)));
+	public static List<ServiceUnit> parseList(String jsonString) throws IOException {
+		return parseList(jsonString, ServiceUnit.class);
 	}
 
-	public static ServiceUnit parse(JSONObject jsonObject) throws JSONException {
-		ServiceUnit model = new ServiceUnit();
-		model.fill(jsonObject);
-		return model;
-	}
-
-	public static LinkedList<ServiceUnit> parseList(JSONObject jsonObject, String key) throws JSONException {
-		if (!jsonObject.has(key)) {
-			return new LinkedList<ServiceUnit>();
-		}
-		JSONArray jsonArray = jsonObject.getJSONArray(key);
-		return parseList(jsonArray);
-	}
-
-	public static LinkedList<ServiceUnit> parseList(JSONArray jsonArray) throws JSONException {
-		LinkedList<ServiceUnit> models = new LinkedList<ServiceUnit>();
-		for (Integer i = 0; i < jsonArray.length(); ++i) {
-			if (jsonArray.isNull(i)) {
-				continue;
-			}
-			models.add(parse(jsonArray.getJSONObject(i)));
-		}
-		return models;
-	}
-
-	@Override
-	protected JSONObject toJSONObject(Boolean recursive, Integer depth) throws JSONException {
-		if (depth > MAX_RECURSE_DEPTH) {
-			return new JSONObject();
-		}
-		Integer nextDepth = depth + 1;
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("activated_at", toJSON(getActivatedAt()));
-		jsonObject.put("created_at", toJSON(getCreatedAt()));
-		jsonObject.put("deleted_at", toJSON(getDeletedAt()));
-		jsonObject.put("driver_id", toJSON(getDriverId()));
-		jsonObject.put("id", toJSON(getId()));
-		jsonObject.put("in_vehicle_device_id", toJSON(getInVehicleDeviceId()));
-		jsonObject.put("service_provider_id", toJSON(getServiceProviderId()));
-		jsonObject.put("unit_assignment_id", toJSON(getUnitAssignmentId()));
-		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
-		jsonObject.put("vehicle_id", toJSON(getVehicleId()));
-		if (getDriver().isPresent()) {
-			if (recursive) {
-				jsonObject.put("driver", getDriver().get().toJSONObject(true, nextDepth));
-			} else {
-				jsonObject.put("driver_id", toJSON(getDriver().get().getId()));
-			}
-		}
-		if (getInVehicleDevice().isPresent()) {
-			if (recursive) {
-				jsonObject.put("in_vehicle_device", getInVehicleDevice().get().toJSONObject(true, nextDepth));
-			} else {
-				jsonObject.put("in_vehicle_device_id", toJSON(getInVehicleDevice().get().getId()));
-			}
-		}
-		if (getOperationRecords().size() > 0 && recursive) {
-			jsonObject.put("operation_records", toJSON(getOperationRecords(), true, nextDepth));
-		}
-		if (getServiceProvider().isPresent()) {
-			if (recursive) {
-				jsonObject.put("service_provider", getServiceProvider().get().toJSONObject(true, nextDepth));
-			} else {
-				jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
-			}
-		}
-		if (getUnitAssignment().isPresent()) {
-			if (recursive) {
-				jsonObject.put("unit_assignment", getUnitAssignment().get().toJSONObject(true, nextDepth));
-			} else {
-				jsonObject.put("unit_assignment_id", toJSON(getUnitAssignment().get().getId()));
-			}
-		}
-		if (getVehicle().isPresent()) {
-			if (recursive) {
-				jsonObject.put("vehicle", getVehicle().get().toJSONObject(true, nextDepth));
-			} else {
-				jsonObject.put("vehicle_id", toJSON(getVehicle().get().getId()));
-			}
-		}
-		return jsonObject;
-	}
-
-	@Override
-	public ServiceUnit cloneByJSON() throws JSONException {
-		return parse(toJSONObject(true));
-	}
-
-	private Optional<Date> activatedAt = Optional.absent();
-
+	@JsonIgnore
 	public Optional<Date> getActivatedAt() {
 		return wrapNull(activatedAt);
 	}
 
+	@JsonIgnore
 	public void setActivatedAt(Optional<Date> activatedAt) {
 		refreshUpdatedAt();
 		this.activatedAt = wrapNull(activatedAt);
 	}
 
+	@JsonIgnore
 	public void setActivatedAt(Date activatedAt) {
 		setActivatedAt(Optional.fromNullable(activatedAt));
 	}
@@ -170,28 +89,29 @@ public abstract class ServiceUnitBase extends Model {
 		setActivatedAt(Optional.<Date>absent());
 	}
 
-	private Date createdAt = new Date();
-
+	@JsonIgnore
 	public Date getCreatedAt() {
 		return wrapNull(createdAt);
 	}
 
+	@JsonIgnore
 	public void setCreatedAt(Date createdAt) {
 		refreshUpdatedAt();
 		this.createdAt = wrapNull(createdAt);
 	}
 
-	private Optional<Date> deletedAt = Optional.absent();
-
+	@JsonIgnore
 	public Optional<Date> getDeletedAt() {
 		return wrapNull(deletedAt);
 	}
 
+	@JsonIgnore
 	public void setDeletedAt(Optional<Date> deletedAt) {
 		refreshUpdatedAt();
 		this.deletedAt = wrapNull(deletedAt);
 	}
 
+	@JsonIgnore
 	public void setDeletedAt(Date deletedAt) {
 		setDeletedAt(Optional.fromNullable(deletedAt));
 	}
@@ -200,17 +120,23 @@ public abstract class ServiceUnitBase extends Model {
 		setDeletedAt(Optional.<Date>absent());
 	}
 
-	private Optional<Integer> driverId = Optional.absent();
-
+	@JsonIgnore
 	public Optional<Integer> getDriverId() {
 		return wrapNull(driverId);
 	}
 
+	@JsonIgnore
 	public void setDriverId(Optional<Integer> driverId) {
 		refreshUpdatedAt();
 		this.driverId = wrapNull(driverId);
+		for (Driver presentDriver : getDriver().asSet()) {
+			for (Integer presentDriverId : getDriverId().asSet()) {
+				presentDriver.setId(presentDriverId);
+			}
+		}
 	}
 
+	@JsonIgnore
 	public void setDriverId(Integer driverId) {
 		setDriverId(Optional.fromNullable(driverId));
 	}
@@ -219,28 +145,35 @@ public abstract class ServiceUnitBase extends Model {
 		setDriverId(Optional.<Integer>absent());
 	}
 
-	private Integer id = 0;
-
+	@Override
+	@JsonIgnore
 	public Integer getId() {
 		return wrapNull(id);
 	}
 
+	@JsonIgnore
 	public void setId(Integer id) {
 		refreshUpdatedAt();
 		this.id = wrapNull(id);
 	}
 
-	private Optional<Integer> inVehicleDeviceId = Optional.absent();
-
+	@JsonIgnore
 	public Optional<Integer> getInVehicleDeviceId() {
 		return wrapNull(inVehicleDeviceId);
 	}
 
+	@JsonIgnore
 	public void setInVehicleDeviceId(Optional<Integer> inVehicleDeviceId) {
 		refreshUpdatedAt();
 		this.inVehicleDeviceId = wrapNull(inVehicleDeviceId);
+		for (InVehicleDevice presentInVehicleDevice : getInVehicleDevice().asSet()) {
+			for (Integer presentInVehicleDeviceId : getInVehicleDeviceId().asSet()) {
+				presentInVehicleDevice.setId(presentInVehicleDeviceId);
+			}
+		}
 	}
 
+	@JsonIgnore
 	public void setInVehicleDeviceId(Integer inVehicleDeviceId) {
 		setInVehicleDeviceId(Optional.fromNullable(inVehicleDeviceId));
 	}
@@ -249,17 +182,23 @@ public abstract class ServiceUnitBase extends Model {
 		setInVehicleDeviceId(Optional.<Integer>absent());
 	}
 
-	private Optional<Integer> serviceProviderId = Optional.absent();
-
+	@JsonIgnore
 	public Optional<Integer> getServiceProviderId() {
 		return wrapNull(serviceProviderId);
 	}
 
+	@JsonIgnore
 	public void setServiceProviderId(Optional<Integer> serviceProviderId) {
 		refreshUpdatedAt();
 		this.serviceProviderId = wrapNull(serviceProviderId);
+		for (ServiceProvider presentServiceProvider : getServiceProvider().asSet()) {
+			for (Integer presentServiceProviderId : getServiceProviderId().asSet()) {
+				presentServiceProvider.setId(presentServiceProviderId);
+			}
+		}
 	}
 
+	@JsonIgnore
 	public void setServiceProviderId(Integer serviceProviderId) {
 		setServiceProviderId(Optional.fromNullable(serviceProviderId));
 	}
@@ -268,17 +207,23 @@ public abstract class ServiceUnitBase extends Model {
 		setServiceProviderId(Optional.<Integer>absent());
 	}
 
-	private Optional<Integer> unitAssignmentId = Optional.absent();
-
+	@JsonIgnore
 	public Optional<Integer> getUnitAssignmentId() {
 		return wrapNull(unitAssignmentId);
 	}
 
+	@JsonIgnore
 	public void setUnitAssignmentId(Optional<Integer> unitAssignmentId) {
 		refreshUpdatedAt();
 		this.unitAssignmentId = wrapNull(unitAssignmentId);
+		for (UnitAssignment presentUnitAssignment : getUnitAssignment().asSet()) {
+			for (Integer presentUnitAssignmentId : getUnitAssignmentId().asSet()) {
+				presentUnitAssignment.setId(presentUnitAssignmentId);
+			}
+		}
 	}
 
+	@JsonIgnore
 	public void setUnitAssignmentId(Integer unitAssignmentId) {
 		setUnitAssignmentId(Optional.fromNullable(unitAssignmentId));
 	}
@@ -287,27 +232,33 @@ public abstract class ServiceUnitBase extends Model {
 		setUnitAssignmentId(Optional.<Integer>absent());
 	}
 
-	private Date updatedAt = new Date();
-
+	@JsonIgnore
 	public Date getUpdatedAt() {
 		return wrapNull(updatedAt);
 	}
 
+	@JsonIgnore
 	public void setUpdatedAt(Date updatedAt) {
 		this.updatedAt = wrapNull(updatedAt);
 	}
 
-	private Optional<Integer> vehicleId = Optional.absent();
-
+	@JsonIgnore
 	public Optional<Integer> getVehicleId() {
 		return wrapNull(vehicleId);
 	}
 
+	@JsonIgnore
 	public void setVehicleId(Optional<Integer> vehicleId) {
 		refreshUpdatedAt();
 		this.vehicleId = wrapNull(vehicleId);
+		for (Vehicle presentVehicle : getVehicle().asSet()) {
+			for (Integer presentVehicleId : getVehicleId().asSet()) {
+				presentVehicle.setId(presentVehicleId);
+			}
+		}
 	}
 
+	@JsonIgnore
 	public void setVehicleId(Integer vehicleId) {
 		setVehicleId(Optional.fromNullable(vehicleId));
 	}
@@ -316,16 +267,21 @@ public abstract class ServiceUnitBase extends Model {
 		setVehicleId(Optional.<Integer>absent());
 	}
 
-	private Optional<Driver> driver = Optional.<Driver>absent();
-
+	@JsonIgnore
 	public Optional<Driver> getDriver() {
 		return wrapNull(driver);
 	}
 
+	@JsonIgnore
 	public void setDriver(Optional<Driver> driver) {
+		refreshUpdatedAt();
 		this.driver = wrapNull(driver);
+		for (Driver presentDriver : getDriver().asSet()) {
+			setDriverId(presentDriver.getId());
+		}
 	}
 
+	@JsonIgnore
 	public void setDriver(Driver driver) {
 		setDriver(Optional.fromNullable(driver));
 	}
@@ -334,16 +290,21 @@ public abstract class ServiceUnitBase extends Model {
 		setDriver(Optional.<Driver>absent());
 	}
 
-	private Optional<InVehicleDevice> inVehicleDevice = Optional.<InVehicleDevice>absent();
-
+	@JsonIgnore
 	public Optional<InVehicleDevice> getInVehicleDevice() {
 		return wrapNull(inVehicleDevice);
 	}
 
+	@JsonIgnore
 	public void setInVehicleDevice(Optional<InVehicleDevice> inVehicleDevice) {
+		refreshUpdatedAt();
 		this.inVehicleDevice = wrapNull(inVehicleDevice);
+		for (InVehicleDevice presentInVehicleDevice : getInVehicleDevice().asSet()) {
+			setInVehicleDeviceId(presentInVehicleDevice.getId());
+		}
 	}
 
+	@JsonIgnore
 	public void setInVehicleDevice(InVehicleDevice inVehicleDevice) {
 		setInVehicleDevice(Optional.fromNullable(inVehicleDevice));
 	}
@@ -352,12 +313,12 @@ public abstract class ServiceUnitBase extends Model {
 		setInVehicleDevice(Optional.<InVehicleDevice>absent());
 	}
 
-	private LinkedList<OperationRecord> operationRecords = new LinkedList<OperationRecord>();
-
+	@JsonIgnore
 	public List<OperationRecord> getOperationRecords() {
 		return wrapNull(operationRecords);
 	}
 
+	@JsonIgnore
 	public void setOperationRecords(Iterable<OperationRecord> operationRecords) {
 		this.operationRecords = wrapNull(operationRecords);
 	}
@@ -366,16 +327,21 @@ public abstract class ServiceUnitBase extends Model {
 		setOperationRecords(new LinkedList<OperationRecord>());
 	}
 
-	private Optional<ServiceProvider> serviceProvider = Optional.<ServiceProvider>absent();
-
+	@JsonIgnore
 	public Optional<ServiceProvider> getServiceProvider() {
 		return wrapNull(serviceProvider);
 	}
 
+	@JsonIgnore
 	public void setServiceProvider(Optional<ServiceProvider> serviceProvider) {
+		refreshUpdatedAt();
 		this.serviceProvider = wrapNull(serviceProvider);
+		for (ServiceProvider presentServiceProvider : getServiceProvider().asSet()) {
+			setServiceProviderId(presentServiceProvider.getId());
+		}
 	}
 
+	@JsonIgnore
 	public void setServiceProvider(ServiceProvider serviceProvider) {
 		setServiceProvider(Optional.fromNullable(serviceProvider));
 	}
@@ -384,16 +350,21 @@ public abstract class ServiceUnitBase extends Model {
 		setServiceProvider(Optional.<ServiceProvider>absent());
 	}
 
-	private Optional<UnitAssignment> unitAssignment = Optional.<UnitAssignment>absent();
-
+	@JsonIgnore
 	public Optional<UnitAssignment> getUnitAssignment() {
 		return wrapNull(unitAssignment);
 	}
 
+	@JsonIgnore
 	public void setUnitAssignment(Optional<UnitAssignment> unitAssignment) {
+		refreshUpdatedAt();
 		this.unitAssignment = wrapNull(unitAssignment);
+		for (UnitAssignment presentUnitAssignment : getUnitAssignment().asSet()) {
+			setUnitAssignmentId(presentUnitAssignment.getId());
+		}
 	}
 
+	@JsonIgnore
 	public void setUnitAssignment(UnitAssignment unitAssignment) {
 		setUnitAssignment(Optional.fromNullable(unitAssignment));
 	}
@@ -402,22 +373,32 @@ public abstract class ServiceUnitBase extends Model {
 		setUnitAssignment(Optional.<UnitAssignment>absent());
 	}
 
-	private Optional<Vehicle> vehicle = Optional.<Vehicle>absent();
-
+	@JsonIgnore
 	public Optional<Vehicle> getVehicle() {
 		return wrapNull(vehicle);
 	}
 
+	@JsonIgnore
 	public void setVehicle(Optional<Vehicle> vehicle) {
+		refreshUpdatedAt();
 		this.vehicle = wrapNull(vehicle);
+		for (Vehicle presentVehicle : getVehicle().asSet()) {
+			setVehicleId(presentVehicle.getId());
+		}
 	}
 
+	@JsonIgnore
 	public void setVehicle(Vehicle vehicle) {
 		setVehicle(Optional.fromNullable(vehicle));
 	}
 
 	public void clearVehicle() {
 		setVehicle(Optional.<Vehicle>absent());
+	}
+
+	@Override
+	public ServiceUnit clone() {
+		return super.clone(ServiceUnit.class);
 	}
 
 	@Override
