@@ -1,203 +1,120 @@
 package com.kogasoftware.odt.invehicledevice.apiclient.model.base;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.apiclient.ApiClients;
+import com.google.common.collect.Lists;
 import com.kogasoftware.odt.apiclient.ApiClient.ResponseConverter;
+import com.kogasoftware.odt.apiclient.ApiClients;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.*;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.base.jsondeserializer.*;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.base.jsonview.*;
 
+/**
+ * 乗降場
+ */
 @SuppressWarnings("unused")
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = Model.JACKSON_IDENTITY_INFO_PROPERTY)
 public abstract class PlatformBase extends Model {
-	private static final long serialVersionUID = 8662293665841722247L;
-	public static final ResponseConverter<Platform> RESPONSE_CONVERTER = new ResponseConverter<Platform>() {
-		@Override
-		public Platform convert(byte[] rawResponse) throws JSONException {
-			return parse(ApiClients.parseJSONObject(rawResponse));
-		}
-	};
-	public static final ResponseConverter<List<Platform>> LIST_RESPONSE_CONVERTER = new ResponseConverter<List<Platform>>() {
-		@Override
-		public List<Platform> convert(byte[] rawResponse) throws JSONException {
-			return parseList(ApiClients.parseJSONArray(rawResponse));
-		}
-	};
+	private static final long serialVersionUID = 5903286734249735506L;
+
+	// Columns
+	@JsonProperty private String address = "";
+	@JsonProperty private Date createdAt = new Date();
+	@JsonProperty private Optional<Date> deletedAt = Optional.absent();
+	@JsonProperty private Optional<Integer> demandAreaId = Optional.absent();
+	@JsonProperty private Optional<Date> endAt = Optional.absent();
+	@JsonProperty private Integer id = 0;
+	@JsonProperty private Optional<String> image = Optional.absent();
+	@JsonProperty private String keyword = "";
+	@JsonProperty private BigDecimal latitude = BigDecimal.ZERO;
+	@JsonProperty private BigDecimal longitude = BigDecimal.ZERO;
+	@JsonProperty private String memo = "";
+	@JsonProperty private String name = "";
+	@JsonProperty private String nameRuby = "";
+	@JsonProperty private Optional<Integer> platformCategoryId = Optional.absent();
+	@JsonProperty private Integer reportingRegionId = 0;
+	@JsonProperty private Optional<Integer> semiDemandAreaId = Optional.absent();
+	@JsonProperty private Optional<Integer> serviceProviderId = Optional.absent();
+	@JsonProperty private Optional<Date> startAt = Optional.absent();
+	@JsonProperty private Optional<Integer> typeOfDemand = Optional.absent();
+	@JsonProperty private Integer typeOfPlatform = 0;
+	@JsonProperty private Date updatedAt = new Date();
+
+	// Associations
+	@JsonProperty @JsonView(AssociationView.class) private List<Demand> demandsAsArrival = Lists.newLinkedList();
+	@JsonProperty @JsonView(AssociationView.class) private List<Demand> demandsAsDeparture = Lists.newLinkedList();
+	@JsonProperty @JsonView(AssociationView.class) private List<OperationSchedule> operationSchedules = Lists.newLinkedList();
+	@JsonProperty @JsonView(AssociationView.class) private List<ReservationCandidate> reservationCandidatesAsArrival = Lists.newLinkedList();
+	@JsonProperty @JsonView(AssociationView.class) private List<ReservationCandidate> reservationCandidatesAsDeparture = Lists.newLinkedList();
+	@JsonProperty @JsonView(AssociationView.class) private List<Reservation> reservationsAsArrival = Lists.newLinkedList();
+	@JsonProperty @JsonView(AssociationView.class) private List<Reservation> reservationsAsDeparture = Lists.newLinkedList();
+	@JsonProperty @JsonView(AssociationView.class) private Optional<ServiceProvider> serviceProvider = Optional.absent();
+
+	public static final String UNDERSCORE = "platform";
+	public static final ResponseConverter<Platform> RESPONSE_CONVERTER = getResponseConverter(Platform.class);
+	public static final ResponseConverter<List<Platform>> LIST_RESPONSE_CONVERTER = getListResponseConverter(Platform.class);
+
 	protected void refreshUpdatedAt() {
 		setUpdatedAt(new Date());
 	}
-	@Override
-	public void fill(JSONObject jsonObject) throws JSONException {
-		setAddress(parseString(jsonObject, "address"));
-		setCreatedAt(parseDate(jsonObject, "created_at"));
-		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
-		setDemandAreaId(parseOptionalInteger(jsonObject, "demand_area_id"));
-		setEndAt(parseOptionalDate(jsonObject, "end_at"));
-		setId(parseInteger(jsonObject, "id"));
-		setImage(parseOptionalString(jsonObject, "image"));
-		setKeyword(parseString(jsonObject, "keyword"));
-		setLatitude(parseBigDecimal(jsonObject, "latitude"));
-		setLongitude(parseBigDecimal(jsonObject, "longitude"));
-		setMemo(parseString(jsonObject, "memo"));
-		setName(parseString(jsonObject, "name"));
-		setNameRuby(parseString(jsonObject, "name_ruby"));
-		setPlatformCategoryId(parseOptionalInteger(jsonObject, "platform_category_id"));
-		setReportingRegionId(parseInteger(jsonObject, "reporting_region_id"));
-		setSemiDemandAreaId(parseOptionalInteger(jsonObject, "semi_demand_area_id"));
-		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
-		setStartAt(parseOptionalDate(jsonObject, "start_at"));
-		setTypeOfDemand(parseOptionalInteger(jsonObject, "type_of_demand"));
-		setTypeOfPlatform(parseInteger(jsonObject, "type_of_platform"));
-		setDemandsAsArrival(Demand.parseList(jsonObject, "demands_as_arrival"));
-		setDemandsAsDeparture(Demand.parseList(jsonObject, "demands_as_departure"));
-		setOperationSchedules(OperationSchedule.parseList(jsonObject, "operation_schedules"));
-		setReservationCandidatesAsArrival(ReservationCandidate.parseList(jsonObject, "reservation_candidates_as_arrival"));
-		setReservationCandidatesAsDeparture(ReservationCandidate.parseList(jsonObject, "reservation_candidates_as_departure"));
-		setReservationsAsArrival(Reservation.parseList(jsonObject, "reservations_as_arrival"));
-		setReservationsAsDeparture(Reservation.parseList(jsonObject, "reservations_as_departure"));
-		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
 
-		setUpdatedAt(parseDate(jsonObject, "updated_at"));
+	public static Platform parse(String jsonString) throws IOException {
+		return parse(jsonString, Platform.class);
 	}
 
-	public static Optional<Platform> parse(JSONObject jsonObject, String key) throws JSONException {
-		if (!jsonObject.has(key)) {
-			return Optional.absent();
-		}
-		return Optional.of(parse(jsonObject.getJSONObject(key)));
+	public static List<Platform> parseList(String jsonString) throws IOException {
+		return parseList(jsonString, Platform.class);
 	}
 
-	public static Platform parse(JSONObject jsonObject) throws JSONException {
-		Platform model = new Platform();
-		model.fill(jsonObject);
-		return model;
-	}
-
-	public static LinkedList<Platform> parseList(JSONObject jsonObject, String key) throws JSONException {
-		if (!jsonObject.has(key)) {
-			return new LinkedList<Platform>();
-		}
-		JSONArray jsonArray = jsonObject.getJSONArray(key);
-		return parseList(jsonArray);
-	}
-
-	public static LinkedList<Platform> parseList(JSONArray jsonArray) throws JSONException {
-		LinkedList<Platform> models = new LinkedList<Platform>();
-		for (Integer i = 0; i < jsonArray.length(); ++i) {
-			if (jsonArray.isNull(i)) {
-				continue;
-			}
-			models.add(parse(jsonArray.getJSONObject(i)));
-		}
-		return models;
-	}
-
-	@Override
-	protected JSONObject toJSONObject(Boolean recursive, Integer depth) throws JSONException {
-		if (depth > MAX_RECURSE_DEPTH) {
-			return new JSONObject();
-		}
-		Integer nextDepth = depth + 1;
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("address", toJSON(getAddress()));
-		jsonObject.put("created_at", toJSON(getCreatedAt()));
-		jsonObject.put("deleted_at", toJSON(getDeletedAt()));
-		jsonObject.put("demand_area_id", toJSON(getDemandAreaId()));
-		jsonObject.put("end_at", toJSON(getEndAt()));
-		jsonObject.put("id", toJSON(getId()));
-		jsonObject.put("image", toJSON(getImage()));
-		jsonObject.put("keyword", toJSON(getKeyword()));
-		jsonObject.put("latitude", toJSON(getLatitude()));
-		jsonObject.put("longitude", toJSON(getLongitude()));
-		jsonObject.put("memo", toJSON(getMemo()));
-		jsonObject.put("name", toJSON(getName()));
-		jsonObject.put("name_ruby", toJSON(getNameRuby()));
-		jsonObject.put("platform_category_id", toJSON(getPlatformCategoryId()));
-		jsonObject.put("reporting_region_id", toJSON(getReportingRegionId()));
-		jsonObject.put("semi_demand_area_id", toJSON(getSemiDemandAreaId()));
-		jsonObject.put("service_provider_id", toJSON(getServiceProviderId()));
-		jsonObject.put("start_at", toJSON(getStartAt()));
-		jsonObject.put("type_of_demand", toJSON(getTypeOfDemand()));
-		jsonObject.put("type_of_platform", toJSON(getTypeOfPlatform()));
-		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
-		if (getDemandsAsArrival().size() > 0 && recursive) {
-			jsonObject.put("demands_as_arrival", toJSON(getDemandsAsArrival(), true, nextDepth));
-		}
-		if (getDemandsAsDeparture().size() > 0 && recursive) {
-			jsonObject.put("demands_as_departure", toJSON(getDemandsAsDeparture(), true, nextDepth));
-		}
-		if (getOperationSchedules().size() > 0 && recursive) {
-			jsonObject.put("operation_schedules", toJSON(getOperationSchedules(), true, nextDepth));
-		}
-		if (getReservationCandidatesAsArrival().size() > 0 && recursive) {
-			jsonObject.put("reservation_candidates_as_arrival", toJSON(getReservationCandidatesAsArrival(), true, nextDepth));
-		}
-		if (getReservationCandidatesAsDeparture().size() > 0 && recursive) {
-			jsonObject.put("reservation_candidates_as_departure", toJSON(getReservationCandidatesAsDeparture(), true, nextDepth));
-		}
-		if (getReservationsAsArrival().size() > 0 && recursive) {
-			jsonObject.put("reservations_as_arrival", toJSON(getReservationsAsArrival(), true, nextDepth));
-		}
-		if (getReservationsAsDeparture().size() > 0 && recursive) {
-			jsonObject.put("reservations_as_departure", toJSON(getReservationsAsDeparture(), true, nextDepth));
-		}
-		if (getServiceProvider().isPresent()) {
-			if (recursive) {
-				jsonObject.put("service_provider", getServiceProvider().get().toJSONObject(true, nextDepth));
-			} else {
-				jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
-			}
-		}
-		return jsonObject;
-	}
-
-	@Override
-	public Platform cloneByJSON() throws JSONException {
-		return parse(toJSONObject(true));
-	}
-
-	private String address = "";
-
+	@JsonIgnore
 	public String getAddress() {
 		return wrapNull(address);
 	}
 
+	@JsonIgnore
 	public void setAddress(String address) {
 		refreshUpdatedAt();
 		this.address = wrapNull(address);
 	}
 
-	private Date createdAt = new Date();
-
+	@JsonIgnore
 	public Date getCreatedAt() {
 		return wrapNull(createdAt);
 	}
 
+	@JsonIgnore
 	public void setCreatedAt(Date createdAt) {
 		refreshUpdatedAt();
 		this.createdAt = wrapNull(createdAt);
 	}
 
-	private Optional<Date> deletedAt = Optional.absent();
-
+	@JsonIgnore
 	public Optional<Date> getDeletedAt() {
 		return wrapNull(deletedAt);
 	}
 
+	@JsonIgnore
 	public void setDeletedAt(Optional<Date> deletedAt) {
 		refreshUpdatedAt();
 		this.deletedAt = wrapNull(deletedAt);
 	}
 
+	@JsonIgnore
 	public void setDeletedAt(Date deletedAt) {
 		setDeletedAt(Optional.fromNullable(deletedAt));
 	}
@@ -206,17 +123,18 @@ public abstract class PlatformBase extends Model {
 		setDeletedAt(Optional.<Date>absent());
 	}
 
-	private Optional<Integer> demandAreaId = Optional.absent();
-
+	@JsonIgnore
 	public Optional<Integer> getDemandAreaId() {
 		return wrapNull(demandAreaId);
 	}
 
+	@JsonIgnore
 	public void setDemandAreaId(Optional<Integer> demandAreaId) {
 		refreshUpdatedAt();
 		this.demandAreaId = wrapNull(demandAreaId);
 	}
 
+	@JsonIgnore
 	public void setDemandAreaId(Integer demandAreaId) {
 		setDemandAreaId(Optional.fromNullable(demandAreaId));
 	}
@@ -225,17 +143,18 @@ public abstract class PlatformBase extends Model {
 		setDemandAreaId(Optional.<Integer>absent());
 	}
 
-	private Optional<Date> endAt = Optional.absent();
-
+	@JsonIgnore
 	public Optional<Date> getEndAt() {
 		return wrapNull(endAt);
 	}
 
+	@JsonIgnore
 	public void setEndAt(Optional<Date> endAt) {
 		refreshUpdatedAt();
 		this.endAt = wrapNull(endAt);
 	}
 
+	@JsonIgnore
 	public void setEndAt(Date endAt) {
 		setEndAt(Optional.fromNullable(endAt));
 	}
@@ -244,28 +163,30 @@ public abstract class PlatformBase extends Model {
 		setEndAt(Optional.<Date>absent());
 	}
 
-	private Integer id = 0;
-
+	@Override
+	@JsonIgnore
 	public Integer getId() {
 		return wrapNull(id);
 	}
 
+	@JsonIgnore
 	public void setId(Integer id) {
 		refreshUpdatedAt();
 		this.id = wrapNull(id);
 	}
 
-	private Optional<String> image = Optional.absent();
-
+	@JsonIgnore
 	public Optional<String> getImage() {
 		return wrapNull(image);
 	}
 
+	@JsonIgnore
 	public void setImage(Optional<String> image) {
 		refreshUpdatedAt();
 		this.image = wrapNull(image);
 	}
 
+	@JsonIgnore
 	public void setImage(String image) {
 		setImage(Optional.fromNullable(image));
 	}
@@ -274,83 +195,84 @@ public abstract class PlatformBase extends Model {
 		setImage(Optional.<String>absent());
 	}
 
-	private String keyword = "";
-
+	@JsonIgnore
 	public String getKeyword() {
 		return wrapNull(keyword);
 	}
 
+	@JsonIgnore
 	public void setKeyword(String keyword) {
 		refreshUpdatedAt();
 		this.keyword = wrapNull(keyword);
 	}
 
-	private BigDecimal latitude = BigDecimal.ZERO;
-
+	@JsonIgnore
 	public BigDecimal getLatitude() {
 		return wrapNull(latitude);
 	}
 
+	@JsonIgnore
 	public void setLatitude(BigDecimal latitude) {
 		refreshUpdatedAt();
 		this.latitude = wrapNull(latitude);
 	}
 
-	private BigDecimal longitude = BigDecimal.ZERO;
-
+	@JsonIgnore
 	public BigDecimal getLongitude() {
 		return wrapNull(longitude);
 	}
 
+	@JsonIgnore
 	public void setLongitude(BigDecimal longitude) {
 		refreshUpdatedAt();
 		this.longitude = wrapNull(longitude);
 	}
 
-	private String memo = "";
-
+	@JsonIgnore
 	public String getMemo() {
 		return wrapNull(memo);
 	}
 
+	@JsonIgnore
 	public void setMemo(String memo) {
 		refreshUpdatedAt();
 		this.memo = wrapNull(memo);
 	}
 
-	private String name = "";
-
+	@JsonIgnore
 	public String getName() {
 		return wrapNull(name);
 	}
 
+	@JsonIgnore
 	public void setName(String name) {
 		refreshUpdatedAt();
 		this.name = wrapNull(name);
 	}
 
-	private String nameRuby = "";
-
+	@JsonIgnore
 	public String getNameRuby() {
 		return wrapNull(nameRuby);
 	}
 
+	@JsonIgnore
 	public void setNameRuby(String nameRuby) {
 		refreshUpdatedAt();
 		this.nameRuby = wrapNull(nameRuby);
 	}
 
-	private Optional<Integer> platformCategoryId = Optional.absent();
-
+	@JsonIgnore
 	public Optional<Integer> getPlatformCategoryId() {
 		return wrapNull(platformCategoryId);
 	}
 
+	@JsonIgnore
 	public void setPlatformCategoryId(Optional<Integer> platformCategoryId) {
 		refreshUpdatedAt();
 		this.platformCategoryId = wrapNull(platformCategoryId);
 	}
 
+	@JsonIgnore
 	public void setPlatformCategoryId(Integer platformCategoryId) {
 		setPlatformCategoryId(Optional.fromNullable(platformCategoryId));
 	}
@@ -359,28 +281,29 @@ public abstract class PlatformBase extends Model {
 		setPlatformCategoryId(Optional.<Integer>absent());
 	}
 
-	private Integer reportingRegionId = 0;
-
+	@JsonIgnore
 	public Integer getReportingRegionId() {
 		return wrapNull(reportingRegionId);
 	}
 
+	@JsonIgnore
 	public void setReportingRegionId(Integer reportingRegionId) {
 		refreshUpdatedAt();
 		this.reportingRegionId = wrapNull(reportingRegionId);
 	}
 
-	private Optional<Integer> semiDemandAreaId = Optional.absent();
-
+	@JsonIgnore
 	public Optional<Integer> getSemiDemandAreaId() {
 		return wrapNull(semiDemandAreaId);
 	}
 
+	@JsonIgnore
 	public void setSemiDemandAreaId(Optional<Integer> semiDemandAreaId) {
 		refreshUpdatedAt();
 		this.semiDemandAreaId = wrapNull(semiDemandAreaId);
 	}
 
+	@JsonIgnore
 	public void setSemiDemandAreaId(Integer semiDemandAreaId) {
 		setSemiDemandAreaId(Optional.fromNullable(semiDemandAreaId));
 	}
@@ -389,17 +312,23 @@ public abstract class PlatformBase extends Model {
 		setSemiDemandAreaId(Optional.<Integer>absent());
 	}
 
-	private Optional<Integer> serviceProviderId = Optional.absent();
-
+	@JsonIgnore
 	public Optional<Integer> getServiceProviderId() {
 		return wrapNull(serviceProviderId);
 	}
 
+	@JsonIgnore
 	public void setServiceProviderId(Optional<Integer> serviceProviderId) {
 		refreshUpdatedAt();
 		this.serviceProviderId = wrapNull(serviceProviderId);
+		for (ServiceProvider presentServiceProvider : getServiceProvider().asSet()) {
+			for (Integer presentServiceProviderId : getServiceProviderId().asSet()) {
+				presentServiceProvider.setId(presentServiceProviderId);
+			}
+		}
 	}
 
+	@JsonIgnore
 	public void setServiceProviderId(Integer serviceProviderId) {
 		setServiceProviderId(Optional.fromNullable(serviceProviderId));
 	}
@@ -408,17 +337,18 @@ public abstract class PlatformBase extends Model {
 		setServiceProviderId(Optional.<Integer>absent());
 	}
 
-	private Optional<Date> startAt = Optional.absent();
-
+	@JsonIgnore
 	public Optional<Date> getStartAt() {
 		return wrapNull(startAt);
 	}
 
+	@JsonIgnore
 	public void setStartAt(Optional<Date> startAt) {
 		refreshUpdatedAt();
 		this.startAt = wrapNull(startAt);
 	}
 
+	@JsonIgnore
 	public void setStartAt(Date startAt) {
 		setStartAt(Optional.fromNullable(startAt));
 	}
@@ -427,17 +357,18 @@ public abstract class PlatformBase extends Model {
 		setStartAt(Optional.<Date>absent());
 	}
 
-	private Optional<Integer> typeOfDemand = Optional.absent();
-
+	@JsonIgnore
 	public Optional<Integer> getTypeOfDemand() {
 		return wrapNull(typeOfDemand);
 	}
 
+	@JsonIgnore
 	public void setTypeOfDemand(Optional<Integer> typeOfDemand) {
 		refreshUpdatedAt();
 		this.typeOfDemand = wrapNull(typeOfDemand);
 	}
 
+	@JsonIgnore
 	public void setTypeOfDemand(Integer typeOfDemand) {
 		setTypeOfDemand(Optional.fromNullable(typeOfDemand));
 	}
@@ -446,33 +377,33 @@ public abstract class PlatformBase extends Model {
 		setTypeOfDemand(Optional.<Integer>absent());
 	}
 
-	private Integer typeOfPlatform = 0;
-
+	@JsonIgnore
 	public Integer getTypeOfPlatform() {
 		return wrapNull(typeOfPlatform);
 	}
 
+	@JsonIgnore
 	public void setTypeOfPlatform(Integer typeOfPlatform) {
 		refreshUpdatedAt();
 		this.typeOfPlatform = wrapNull(typeOfPlatform);
 	}
 
-	private Date updatedAt = new Date();
-
+	@JsonIgnore
 	public Date getUpdatedAt() {
 		return wrapNull(updatedAt);
 	}
 
+	@JsonIgnore
 	public void setUpdatedAt(Date updatedAt) {
 		this.updatedAt = wrapNull(updatedAt);
 	}
 
-	private LinkedList<Demand> demandsAsArrival = new LinkedList<Demand>();
-
+	@JsonIgnore
 	public List<Demand> getDemandsAsArrival() {
 		return wrapNull(demandsAsArrival);
 	}
 
+	@JsonIgnore
 	public void setDemandsAsArrival(Iterable<Demand> demandsAsArrival) {
 		this.demandsAsArrival = wrapNull(demandsAsArrival);
 	}
@@ -481,12 +412,12 @@ public abstract class PlatformBase extends Model {
 		setDemandsAsArrival(new LinkedList<Demand>());
 	}
 
-	private LinkedList<Demand> demandsAsDeparture = new LinkedList<Demand>();
-
+	@JsonIgnore
 	public List<Demand> getDemandsAsDeparture() {
 		return wrapNull(demandsAsDeparture);
 	}
 
+	@JsonIgnore
 	public void setDemandsAsDeparture(Iterable<Demand> demandsAsDeparture) {
 		this.demandsAsDeparture = wrapNull(demandsAsDeparture);
 	}
@@ -495,12 +426,12 @@ public abstract class PlatformBase extends Model {
 		setDemandsAsDeparture(new LinkedList<Demand>());
 	}
 
-	private LinkedList<OperationSchedule> operationSchedules = new LinkedList<OperationSchedule>();
-
+	@JsonIgnore
 	public List<OperationSchedule> getOperationSchedules() {
 		return wrapNull(operationSchedules);
 	}
 
+	@JsonIgnore
 	public void setOperationSchedules(Iterable<OperationSchedule> operationSchedules) {
 		this.operationSchedules = wrapNull(operationSchedules);
 	}
@@ -509,12 +440,12 @@ public abstract class PlatformBase extends Model {
 		setOperationSchedules(new LinkedList<OperationSchedule>());
 	}
 
-	private LinkedList<ReservationCandidate> reservationCandidatesAsArrival = new LinkedList<ReservationCandidate>();
-
+	@JsonIgnore
 	public List<ReservationCandidate> getReservationCandidatesAsArrival() {
 		return wrapNull(reservationCandidatesAsArrival);
 	}
 
+	@JsonIgnore
 	public void setReservationCandidatesAsArrival(Iterable<ReservationCandidate> reservationCandidatesAsArrival) {
 		this.reservationCandidatesAsArrival = wrapNull(reservationCandidatesAsArrival);
 	}
@@ -523,12 +454,12 @@ public abstract class PlatformBase extends Model {
 		setReservationCandidatesAsArrival(new LinkedList<ReservationCandidate>());
 	}
 
-	private LinkedList<ReservationCandidate> reservationCandidatesAsDeparture = new LinkedList<ReservationCandidate>();
-
+	@JsonIgnore
 	public List<ReservationCandidate> getReservationCandidatesAsDeparture() {
 		return wrapNull(reservationCandidatesAsDeparture);
 	}
 
+	@JsonIgnore
 	public void setReservationCandidatesAsDeparture(Iterable<ReservationCandidate> reservationCandidatesAsDeparture) {
 		this.reservationCandidatesAsDeparture = wrapNull(reservationCandidatesAsDeparture);
 	}
@@ -537,12 +468,12 @@ public abstract class PlatformBase extends Model {
 		setReservationCandidatesAsDeparture(new LinkedList<ReservationCandidate>());
 	}
 
-	private LinkedList<Reservation> reservationsAsArrival = new LinkedList<Reservation>();
-
+	@JsonIgnore
 	public List<Reservation> getReservationsAsArrival() {
 		return wrapNull(reservationsAsArrival);
 	}
 
+	@JsonIgnore
 	public void setReservationsAsArrival(Iterable<Reservation> reservationsAsArrival) {
 		this.reservationsAsArrival = wrapNull(reservationsAsArrival);
 	}
@@ -551,12 +482,12 @@ public abstract class PlatformBase extends Model {
 		setReservationsAsArrival(new LinkedList<Reservation>());
 	}
 
-	private LinkedList<Reservation> reservationsAsDeparture = new LinkedList<Reservation>();
-
+	@JsonIgnore
 	public List<Reservation> getReservationsAsDeparture() {
 		return wrapNull(reservationsAsDeparture);
 	}
 
+	@JsonIgnore
 	public void setReservationsAsDeparture(Iterable<Reservation> reservationsAsDeparture) {
 		this.reservationsAsDeparture = wrapNull(reservationsAsDeparture);
 	}
@@ -565,22 +496,32 @@ public abstract class PlatformBase extends Model {
 		setReservationsAsDeparture(new LinkedList<Reservation>());
 	}
 
-	private Optional<ServiceProvider> serviceProvider = Optional.<ServiceProvider>absent();
-
+	@JsonIgnore
 	public Optional<ServiceProvider> getServiceProvider() {
 		return wrapNull(serviceProvider);
 	}
 
+	@JsonIgnore
 	public void setServiceProvider(Optional<ServiceProvider> serviceProvider) {
+		refreshUpdatedAt();
 		this.serviceProvider = wrapNull(serviceProvider);
+		for (ServiceProvider presentServiceProvider : getServiceProvider().asSet()) {
+			setServiceProviderId(presentServiceProvider.getId());
+		}
 	}
 
+	@JsonIgnore
 	public void setServiceProvider(ServiceProvider serviceProvider) {
 		setServiceProvider(Optional.fromNullable(serviceProvider));
 	}
 
 	public void clearServiceProvider() {
 		setServiceProvider(Optional.<ServiceProvider>absent());
+	}
+
+	@Override
+	public Platform clone() {
+		return super.clone(Platform.class);
 	}
 
 	@Override

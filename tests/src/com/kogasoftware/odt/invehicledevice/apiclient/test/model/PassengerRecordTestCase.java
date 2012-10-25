@@ -74,4 +74,18 @@ public class PassengerRecordTestCase extends TestCase {
 		assertEquals(1, fellowPassengerRecord2.getScheduledPassengerCount()
 				.intValue());
 	}
+	
+	public void testRecursiveSerialization() {
+		PassengerRecord pr = new PassengerRecord();
+		pr.setId(12345);
+		Reservation r = new Reservation();
+		r.setId(54321);
+		pr.setReservation(r);
+		r.setPassengerRecords(Lists.newArrayList(pr));
+		
+		Reservation r2 = r.clone();
+		assertEquals(r2, r2.getPassengerRecords().get(0).getReservation().get());
+		Reservation r3 = r2.getPassengerRecords().get(0).getReservation().get();
+		assertEquals(r3, r3.getPassengerRecords().get(0).getReservation().get());
+	}
 }

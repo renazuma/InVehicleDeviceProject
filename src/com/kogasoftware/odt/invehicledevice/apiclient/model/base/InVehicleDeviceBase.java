@@ -1,138 +1,78 @@
 package com.kogasoftware.odt.invehicledevice.apiclient.model.base;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.apiclient.ApiClients;
+import com.google.common.collect.Lists;
 import com.kogasoftware.odt.apiclient.ApiClient.ResponseConverter;
+import com.kogasoftware.odt.apiclient.ApiClients;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.*;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.base.jsondeserializer.*;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.base.jsonview.*;
 
+/**
+ * 車載器
+ */
 @SuppressWarnings("unused")
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = Model.JACKSON_IDENTITY_INFO_PROPERTY)
 public abstract class InVehicleDeviceBase extends Model {
-	private static final long serialVersionUID = 89181319512474502L;
-	public static final ResponseConverter<InVehicleDevice> RESPONSE_CONVERTER = new ResponseConverter<InVehicleDevice>() {
-		@Override
-		public InVehicleDevice convert(byte[] rawResponse) throws JSONException {
-			return parse(ApiClients.parseJSONObject(rawResponse));
-		}
-	};
-	public static final ResponseConverter<List<InVehicleDevice>> LIST_RESPONSE_CONVERTER = new ResponseConverter<List<InVehicleDevice>>() {
-		@Override
-		public List<InVehicleDevice> convert(byte[] rawResponse) throws JSONException {
-			return parseList(ApiClients.parseJSONArray(rawResponse));
-		}
-	};
-	@Override
-	public void fill(JSONObject jsonObject) throws JSONException {
-		setAuthenticationToken(parseOptionalString(jsonObject, "authentication_token"));
-		setId(parseInteger(jsonObject, "id"));
-		setLogin(parseString(jsonObject, "login"));
-		setModelName(parseString(jsonObject, "model_name"));
-		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
-		setTypeNumber(parseString(jsonObject, "type_number"));
-		setAuditComment(parseOptionalString(jsonObject, "audit_comment"));
-		setPassword(parseOptionalString(jsonObject, "password"));
-		setPasswordConfirmation(parseOptionalString(jsonObject, "password_confirmation"));
-		setRememberMe(parseOptionalString(jsonObject, "remember_me"));
-		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
-		setServiceUnits(ServiceUnit.parseList(jsonObject, "service_units"));
-		setUnitAssignments(UnitAssignment.parseList(jsonObject, "unit_assignments"));
-		setVehicleNotifications(VehicleNotification.parseList(jsonObject, "vehicle_notifications"));
+	private static final long serialVersionUID = 6553318018433220819L;
+
+	// Columns
+	@JsonProperty private Optional<String> authenticationToken = Optional.absent();
+	@JsonProperty private Integer id = 0;
+	@JsonProperty private String login = "";
+	@JsonProperty private String modelName = "";
+	@JsonProperty private Optional<Integer> serviceProviderId = Optional.absent();
+	@JsonProperty private String typeNumber = "";
+	@JsonProperty private Optional<String> auditComment = Optional.absent();
+	@JsonProperty private Optional<String> password = Optional.absent();
+	@JsonProperty private Optional<String> passwordConfirmation = Optional.absent();
+	@JsonProperty private Optional<String> rememberMe = Optional.absent();
+
+	// Associations
+	@JsonProperty @JsonView(AssociationView.class) private Optional<ServiceProvider> serviceProvider = Optional.absent();
+	@JsonProperty @JsonView(AssociationView.class) private List<ServiceUnit> serviceUnits = Lists.newLinkedList();
+	@JsonProperty @JsonView(AssociationView.class) private List<UnitAssignment> unitAssignments = Lists.newLinkedList();
+	@JsonProperty @JsonView(AssociationView.class) private List<VehicleNotification> vehicleNotifications = Lists.newLinkedList();
+
+	public static final String UNDERSCORE = "in_vehicle_device";
+	public static final ResponseConverter<InVehicleDevice> RESPONSE_CONVERTER = getResponseConverter(InVehicleDevice.class);
+	public static final ResponseConverter<List<InVehicleDevice>> LIST_RESPONSE_CONVERTER = getListResponseConverter(InVehicleDevice.class);
+
+	public static InVehicleDevice parse(String jsonString) throws IOException {
+		return parse(jsonString, InVehicleDevice.class);
 	}
 
-	public static Optional<InVehicleDevice> parse(JSONObject jsonObject, String key) throws JSONException {
-		if (!jsonObject.has(key)) {
-			return Optional.absent();
-		}
-		return Optional.of(parse(jsonObject.getJSONObject(key)));
+	public static List<InVehicleDevice> parseList(String jsonString) throws IOException {
+		return parseList(jsonString, InVehicleDevice.class);
 	}
 
-	public static InVehicleDevice parse(JSONObject jsonObject) throws JSONException {
-		InVehicleDevice model = new InVehicleDevice();
-		model.fill(jsonObject);
-		return model;
-	}
-
-	public static LinkedList<InVehicleDevice> parseList(JSONObject jsonObject, String key) throws JSONException {
-		if (!jsonObject.has(key)) {
-			return new LinkedList<InVehicleDevice>();
-		}
-		JSONArray jsonArray = jsonObject.getJSONArray(key);
-		return parseList(jsonArray);
-	}
-
-	public static LinkedList<InVehicleDevice> parseList(JSONArray jsonArray) throws JSONException {
-		LinkedList<InVehicleDevice> models = new LinkedList<InVehicleDevice>();
-		for (Integer i = 0; i < jsonArray.length(); ++i) {
-			if (jsonArray.isNull(i)) {
-				continue;
-			}
-			models.add(parse(jsonArray.getJSONObject(i)));
-		}
-		return models;
-	}
-
-	@Override
-	protected JSONObject toJSONObject(Boolean recursive, Integer depth) throws JSONException {
-		if (depth > MAX_RECURSE_DEPTH) {
-			return new JSONObject();
-		}
-		Integer nextDepth = depth + 1;
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("authentication_token", toJSON(getAuthenticationToken()));
-		jsonObject.put("id", toJSON(getId()));
-		jsonObject.put("login", toJSON(getLogin()));
-		jsonObject.put("model_name", toJSON(getModelName()));
-		jsonObject.put("service_provider_id", toJSON(getServiceProviderId()));
-		jsonObject.put("type_number", toJSON(getTypeNumber()));
-		jsonObject.put("audit_comment", toJSON(getAuditComment()));
-		jsonObject.put("password", toJSON(getPassword()));
-		jsonObject.put("password_confirmation", toJSON(getPasswordConfirmation()));
-		jsonObject.put("remember_me", toJSON(getRememberMe()));
-		if (getServiceProvider().isPresent()) {
-			if (recursive) {
-				jsonObject.put("service_provider", getServiceProvider().get().toJSONObject(true, nextDepth));
-			} else {
-				jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
-			}
-		}
-		if (getServiceUnits().size() > 0 && recursive) {
-			jsonObject.put("service_units", toJSON(getServiceUnits(), true, nextDepth));
-		}
-		if (getUnitAssignments().size() > 0 && recursive) {
-			jsonObject.put("unit_assignments", toJSON(getUnitAssignments(), true, nextDepth));
-		}
-		if (getVehicleNotifications().size() > 0 && recursive) {
-			jsonObject.put("vehicle_notifications", toJSON(getVehicleNotifications(), true, nextDepth));
-		}
-		return jsonObject;
-	}
-
-	@Override
-	public InVehicleDevice cloneByJSON() throws JSONException {
-		return parse(toJSONObject(true));
-	}
-
-	private Optional<String> authenticationToken = Optional.absent();
-
+	@JsonIgnore
 	public Optional<String> getAuthenticationToken() {
 		return wrapNull(authenticationToken);
 	}
 
+	@JsonIgnore
 	public void setAuthenticationToken(Optional<String> authenticationToken) {
 		this.authenticationToken = wrapNull(authenticationToken);
 	}
 
+	@JsonIgnore
 	public void setAuthenticationToken(String authenticationToken) {
 		setAuthenticationToken(Optional.fromNullable(authenticationToken));
 	}
@@ -141,46 +81,53 @@ public abstract class InVehicleDeviceBase extends Model {
 		setAuthenticationToken(Optional.<String>absent());
 	}
 
-	private Integer id = 0;
-
+	@Override
+	@JsonIgnore
 	public Integer getId() {
 		return wrapNull(id);
 	}
 
+	@JsonIgnore
 	public void setId(Integer id) {
 		this.id = wrapNull(id);
 	}
 
-	private String login = "";
-
+	@JsonIgnore
 	public String getLogin() {
 		return wrapNull(login);
 	}
 
+	@JsonIgnore
 	public void setLogin(String login) {
 		this.login = wrapNull(login);
 	}
 
-	private String modelName = "";
-
+	@JsonIgnore
 	public String getModelName() {
 		return wrapNull(modelName);
 	}
 
+	@JsonIgnore
 	public void setModelName(String modelName) {
 		this.modelName = wrapNull(modelName);
 	}
 
-	private Optional<Integer> serviceProviderId = Optional.absent();
-
+	@JsonIgnore
 	public Optional<Integer> getServiceProviderId() {
 		return wrapNull(serviceProviderId);
 	}
 
+	@JsonIgnore
 	public void setServiceProviderId(Optional<Integer> serviceProviderId) {
 		this.serviceProviderId = wrapNull(serviceProviderId);
+		for (ServiceProvider presentServiceProvider : getServiceProvider().asSet()) {
+			for (Integer presentServiceProviderId : getServiceProviderId().asSet()) {
+				presentServiceProvider.setId(presentServiceProviderId);
+			}
+		}
 	}
 
+	@JsonIgnore
 	public void setServiceProviderId(Integer serviceProviderId) {
 		setServiceProviderId(Optional.fromNullable(serviceProviderId));
 	}
@@ -189,26 +136,27 @@ public abstract class InVehicleDeviceBase extends Model {
 		setServiceProviderId(Optional.<Integer>absent());
 	}
 
-	private String typeNumber = "";
-
+	@JsonIgnore
 	public String getTypeNumber() {
 		return wrapNull(typeNumber);
 	}
 
+	@JsonIgnore
 	public void setTypeNumber(String typeNumber) {
 		this.typeNumber = wrapNull(typeNumber);
 	}
 
-	private Optional<String> auditComment = Optional.absent();
-
+	@JsonIgnore
 	public Optional<String> getAuditComment() {
 		return wrapNull(auditComment);
 	}
 
+	@JsonIgnore
 	public void setAuditComment(Optional<String> auditComment) {
 		this.auditComment = wrapNull(auditComment);
 	}
 
+	@JsonIgnore
 	public void setAuditComment(String auditComment) {
 		setAuditComment(Optional.fromNullable(auditComment));
 	}
@@ -217,16 +165,17 @@ public abstract class InVehicleDeviceBase extends Model {
 		setAuditComment(Optional.<String>absent());
 	}
 
-	private Optional<String> password = Optional.absent();
-
+	@JsonIgnore
 	public Optional<String> getPassword() {
 		return wrapNull(password);
 	}
 
+	@JsonIgnore
 	public void setPassword(Optional<String> password) {
 		this.password = wrapNull(password);
 	}
 
+	@JsonIgnore
 	public void setPassword(String password) {
 		setPassword(Optional.fromNullable(password));
 	}
@@ -235,16 +184,17 @@ public abstract class InVehicleDeviceBase extends Model {
 		setPassword(Optional.<String>absent());
 	}
 
-	private Optional<String> passwordConfirmation = Optional.absent();
-
+	@JsonIgnore
 	public Optional<String> getPasswordConfirmation() {
 		return wrapNull(passwordConfirmation);
 	}
 
+	@JsonIgnore
 	public void setPasswordConfirmation(Optional<String> passwordConfirmation) {
 		this.passwordConfirmation = wrapNull(passwordConfirmation);
 	}
 
+	@JsonIgnore
 	public void setPasswordConfirmation(String passwordConfirmation) {
 		setPasswordConfirmation(Optional.fromNullable(passwordConfirmation));
 	}
@@ -253,16 +203,17 @@ public abstract class InVehicleDeviceBase extends Model {
 		setPasswordConfirmation(Optional.<String>absent());
 	}
 
-	private Optional<String> rememberMe = Optional.absent();
-
+	@JsonIgnore
 	public Optional<String> getRememberMe() {
 		return wrapNull(rememberMe);
 	}
 
+	@JsonIgnore
 	public void setRememberMe(Optional<String> rememberMe) {
 		this.rememberMe = wrapNull(rememberMe);
 	}
 
+	@JsonIgnore
 	public void setRememberMe(String rememberMe) {
 		setRememberMe(Optional.fromNullable(rememberMe));
 	}
@@ -271,16 +222,20 @@ public abstract class InVehicleDeviceBase extends Model {
 		setRememberMe(Optional.<String>absent());
 	}
 
-	private Optional<ServiceProvider> serviceProvider = Optional.<ServiceProvider>absent();
-
+	@JsonIgnore
 	public Optional<ServiceProvider> getServiceProvider() {
 		return wrapNull(serviceProvider);
 	}
 
+	@JsonIgnore
 	public void setServiceProvider(Optional<ServiceProvider> serviceProvider) {
 		this.serviceProvider = wrapNull(serviceProvider);
+		for (ServiceProvider presentServiceProvider : getServiceProvider().asSet()) {
+			setServiceProviderId(presentServiceProvider.getId());
+		}
 	}
 
+	@JsonIgnore
 	public void setServiceProvider(ServiceProvider serviceProvider) {
 		setServiceProvider(Optional.fromNullable(serviceProvider));
 	}
@@ -289,12 +244,12 @@ public abstract class InVehicleDeviceBase extends Model {
 		setServiceProvider(Optional.<ServiceProvider>absent());
 	}
 
-	private LinkedList<ServiceUnit> serviceUnits = new LinkedList<ServiceUnit>();
-
+	@JsonIgnore
 	public List<ServiceUnit> getServiceUnits() {
 		return wrapNull(serviceUnits);
 	}
 
+	@JsonIgnore
 	public void setServiceUnits(Iterable<ServiceUnit> serviceUnits) {
 		this.serviceUnits = wrapNull(serviceUnits);
 	}
@@ -303,12 +258,12 @@ public abstract class InVehicleDeviceBase extends Model {
 		setServiceUnits(new LinkedList<ServiceUnit>());
 	}
 
-	private LinkedList<UnitAssignment> unitAssignments = new LinkedList<UnitAssignment>();
-
+	@JsonIgnore
 	public List<UnitAssignment> getUnitAssignments() {
 		return wrapNull(unitAssignments);
 	}
 
+	@JsonIgnore
 	public void setUnitAssignments(Iterable<UnitAssignment> unitAssignments) {
 		this.unitAssignments = wrapNull(unitAssignments);
 	}
@@ -317,18 +272,23 @@ public abstract class InVehicleDeviceBase extends Model {
 		setUnitAssignments(new LinkedList<UnitAssignment>());
 	}
 
-	private LinkedList<VehicleNotification> vehicleNotifications = new LinkedList<VehicleNotification>();
-
+	@JsonIgnore
 	public List<VehicleNotification> getVehicleNotifications() {
 		return wrapNull(vehicleNotifications);
 	}
 
+	@JsonIgnore
 	public void setVehicleNotifications(Iterable<VehicleNotification> vehicleNotifications) {
 		this.vehicleNotifications = wrapNull(vehicleNotifications);
 	}
 
 	public void clearVehicleNotifications() {
 		setVehicleNotifications(new LinkedList<VehicleNotification>());
+	}
+
+	@Override
+	public InVehicleDevice clone() {
+		return super.clone(InVehicleDevice.class);
 	}
 
 	@Override

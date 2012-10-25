@@ -1,142 +1,90 @@
 package com.kogasoftware.odt.invehicledevice.apiclient.model.base;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.apiclient.ApiClients;
+import com.google.common.collect.Lists;
 import com.kogasoftware.odt.apiclient.ApiClient.ResponseConverter;
+import com.kogasoftware.odt.apiclient.ApiClients;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.*;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.base.jsondeserializer.*;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.base.jsonview.*;
 
+/**
+ * 運転手
+ */
 @SuppressWarnings("unused")
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = Model.JACKSON_IDENTITY_INFO_PROPERTY)
 public abstract class DriverBase extends Model {
-	private static final long serialVersionUID = 7460559573780328528L;
-	public static final ResponseConverter<Driver> RESPONSE_CONVERTER = new ResponseConverter<Driver>() {
-		@Override
-		public Driver convert(byte[] rawResponse) throws JSONException {
-			return parse(ApiClients.parseJSONObject(rawResponse));
-		}
-	};
-	public static final ResponseConverter<List<Driver>> LIST_RESPONSE_CONVERTER = new ResponseConverter<List<Driver>>() {
-		@Override
-		public List<Driver> convert(byte[] rawResponse) throws JSONException {
-			return parseList(ApiClients.parseJSONArray(rawResponse));
-		}
-	};
+	private static final long serialVersionUID = 221008176444225965L;
+
+	// Columns
+	@JsonProperty private Date createdAt = new Date();
+	@JsonProperty private Optional<Date> deletedAt = Optional.absent();
+	@JsonProperty private String firstName = "";
+	@JsonProperty private Integer id = 0;
+	@JsonProperty private String lastName = "";
+	@JsonProperty private Optional<Integer> serviceProviderId = Optional.absent();
+	@JsonProperty private String telephoneNumber = "";
+	@JsonProperty private Date updatedAt = new Date();
+
+	// Associations
+	@JsonProperty @JsonView(AssociationView.class) private Optional<ServiceProvider> serviceProvider = Optional.absent();
+	@JsonProperty @JsonView(AssociationView.class) private List<ServiceUnit> serviceUnits = Lists.newLinkedList();
+
+	public static final String UNDERSCORE = "driver";
+	public static final ResponseConverter<Driver> RESPONSE_CONVERTER = getResponseConverter(Driver.class);
+	public static final ResponseConverter<List<Driver>> LIST_RESPONSE_CONVERTER = getListResponseConverter(Driver.class);
+
 	protected void refreshUpdatedAt() {
 		setUpdatedAt(new Date());
 	}
-	@Override
-	public void fill(JSONObject jsonObject) throws JSONException {
-		setCreatedAt(parseDate(jsonObject, "created_at"));
-		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
-		setFirstName(parseString(jsonObject, "first_name"));
-		setId(parseInteger(jsonObject, "id"));
-		setLastName(parseString(jsonObject, "last_name"));
-		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
-		setTelephoneNumber(parseString(jsonObject, "telephone_number"));
-		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
-		setServiceUnits(ServiceUnit.parseList(jsonObject, "service_units"));
 
-		setUpdatedAt(parseDate(jsonObject, "updated_at"));
+	public static Driver parse(String jsonString) throws IOException {
+		return parse(jsonString, Driver.class);
 	}
 
-	public static Optional<Driver> parse(JSONObject jsonObject, String key) throws JSONException {
-		if (!jsonObject.has(key)) {
-			return Optional.absent();
-		}
-		return Optional.of(parse(jsonObject.getJSONObject(key)));
+	public static List<Driver> parseList(String jsonString) throws IOException {
+		return parseList(jsonString, Driver.class);
 	}
 
-	public static Driver parse(JSONObject jsonObject) throws JSONException {
-		Driver model = new Driver();
-		model.fill(jsonObject);
-		return model;
-	}
-
-	public static LinkedList<Driver> parseList(JSONObject jsonObject, String key) throws JSONException {
-		if (!jsonObject.has(key)) {
-			return new LinkedList<Driver>();
-		}
-		JSONArray jsonArray = jsonObject.getJSONArray(key);
-		return parseList(jsonArray);
-	}
-
-	public static LinkedList<Driver> parseList(JSONArray jsonArray) throws JSONException {
-		LinkedList<Driver> models = new LinkedList<Driver>();
-		for (Integer i = 0; i < jsonArray.length(); ++i) {
-			if (jsonArray.isNull(i)) {
-				continue;
-			}
-			models.add(parse(jsonArray.getJSONObject(i)));
-		}
-		return models;
-	}
-
-	@Override
-	protected JSONObject toJSONObject(Boolean recursive, Integer depth) throws JSONException {
-		if (depth > MAX_RECURSE_DEPTH) {
-			return new JSONObject();
-		}
-		Integer nextDepth = depth + 1;
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("created_at", toJSON(getCreatedAt()));
-		jsonObject.put("deleted_at", toJSON(getDeletedAt()));
-		jsonObject.put("first_name", toJSON(getFirstName()));
-		jsonObject.put("id", toJSON(getId()));
-		jsonObject.put("last_name", toJSON(getLastName()));
-		jsonObject.put("service_provider_id", toJSON(getServiceProviderId()));
-		jsonObject.put("telephone_number", toJSON(getTelephoneNumber()));
-		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
-		if (getServiceProvider().isPresent()) {
-			if (recursive) {
-				jsonObject.put("service_provider", getServiceProvider().get().toJSONObject(true, nextDepth));
-			} else {
-				jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
-			}
-		}
-		if (getServiceUnits().size() > 0 && recursive) {
-			jsonObject.put("service_units", toJSON(getServiceUnits(), true, nextDepth));
-		}
-		return jsonObject;
-	}
-
-	@Override
-	public Driver cloneByJSON() throws JSONException {
-		return parse(toJSONObject(true));
-	}
-
-	private Date createdAt = new Date();
-
+	@JsonIgnore
 	public Date getCreatedAt() {
 		return wrapNull(createdAt);
 	}
 
+	@JsonIgnore
 	public void setCreatedAt(Date createdAt) {
 		refreshUpdatedAt();
 		this.createdAt = wrapNull(createdAt);
 	}
 
-	private Optional<Date> deletedAt = Optional.absent();
-
+	@JsonIgnore
 	public Optional<Date> getDeletedAt() {
 		return wrapNull(deletedAt);
 	}
 
+	@JsonIgnore
 	public void setDeletedAt(Optional<Date> deletedAt) {
 		refreshUpdatedAt();
 		this.deletedAt = wrapNull(deletedAt);
 	}
 
+	@JsonIgnore
 	public void setDeletedAt(Date deletedAt) {
 		setDeletedAt(Optional.fromNullable(deletedAt));
 	}
@@ -145,50 +93,57 @@ public abstract class DriverBase extends Model {
 		setDeletedAt(Optional.<Date>absent());
 	}
 
-	private String firstName = "";
-
+	@JsonIgnore
 	public String getFirstName() {
 		return wrapNull(firstName);
 	}
 
+	@JsonIgnore
 	public void setFirstName(String firstName) {
 		refreshUpdatedAt();
 		this.firstName = wrapNull(firstName);
 	}
 
-	private Integer id = 0;
-
+	@Override
+	@JsonIgnore
 	public Integer getId() {
 		return wrapNull(id);
 	}
 
+	@JsonIgnore
 	public void setId(Integer id) {
 		refreshUpdatedAt();
 		this.id = wrapNull(id);
 	}
 
-	private String lastName = "";
-
+	@JsonIgnore
 	public String getLastName() {
 		return wrapNull(lastName);
 	}
 
+	@JsonIgnore
 	public void setLastName(String lastName) {
 		refreshUpdatedAt();
 		this.lastName = wrapNull(lastName);
 	}
 
-	private Optional<Integer> serviceProviderId = Optional.absent();
-
+	@JsonIgnore
 	public Optional<Integer> getServiceProviderId() {
 		return wrapNull(serviceProviderId);
 	}
 
+	@JsonIgnore
 	public void setServiceProviderId(Optional<Integer> serviceProviderId) {
 		refreshUpdatedAt();
 		this.serviceProviderId = wrapNull(serviceProviderId);
+		for (ServiceProvider presentServiceProvider : getServiceProvider().asSet()) {
+			for (Integer presentServiceProviderId : getServiceProviderId().asSet()) {
+				presentServiceProvider.setId(presentServiceProviderId);
+			}
+		}
 	}
 
+	@JsonIgnore
 	public void setServiceProviderId(Integer serviceProviderId) {
 		setServiceProviderId(Optional.fromNullable(serviceProviderId));
 	}
@@ -197,37 +152,42 @@ public abstract class DriverBase extends Model {
 		setServiceProviderId(Optional.<Integer>absent());
 	}
 
-	private String telephoneNumber = "";
-
+	@JsonIgnore
 	public String getTelephoneNumber() {
 		return wrapNull(telephoneNumber);
 	}
 
+	@JsonIgnore
 	public void setTelephoneNumber(String telephoneNumber) {
 		refreshUpdatedAt();
 		this.telephoneNumber = wrapNull(telephoneNumber);
 	}
 
-	private Date updatedAt = new Date();
-
+	@JsonIgnore
 	public Date getUpdatedAt() {
 		return wrapNull(updatedAt);
 	}
 
+	@JsonIgnore
 	public void setUpdatedAt(Date updatedAt) {
 		this.updatedAt = wrapNull(updatedAt);
 	}
 
-	private Optional<ServiceProvider> serviceProvider = Optional.<ServiceProvider>absent();
-
+	@JsonIgnore
 	public Optional<ServiceProvider> getServiceProvider() {
 		return wrapNull(serviceProvider);
 	}
 
+	@JsonIgnore
 	public void setServiceProvider(Optional<ServiceProvider> serviceProvider) {
+		refreshUpdatedAt();
 		this.serviceProvider = wrapNull(serviceProvider);
+		for (ServiceProvider presentServiceProvider : getServiceProvider().asSet()) {
+			setServiceProviderId(presentServiceProvider.getId());
+		}
 	}
 
+	@JsonIgnore
 	public void setServiceProvider(ServiceProvider serviceProvider) {
 		setServiceProvider(Optional.fromNullable(serviceProvider));
 	}
@@ -236,18 +196,23 @@ public abstract class DriverBase extends Model {
 		setServiceProvider(Optional.<ServiceProvider>absent());
 	}
 
-	private LinkedList<ServiceUnit> serviceUnits = new LinkedList<ServiceUnit>();
-
+	@JsonIgnore
 	public List<ServiceUnit> getServiceUnits() {
 		return wrapNull(serviceUnits);
 	}
 
+	@JsonIgnore
 	public void setServiceUnits(Iterable<ServiceUnit> serviceUnits) {
 		this.serviceUnits = wrapNull(serviceUnits);
 	}
 
 	public void clearServiceUnits() {
 		setServiceUnits(new LinkedList<ServiceUnit>());
+	}
+
+	@Override
+	public Driver clone() {
+		return super.clone(Driver.class);
 	}
 
 	@Override

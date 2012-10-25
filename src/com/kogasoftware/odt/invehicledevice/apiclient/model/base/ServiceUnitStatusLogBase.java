@@ -1,175 +1,125 @@
 package com.kogasoftware.odt.invehicledevice.apiclient.model.base;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.apiclient.ApiClients;
+import com.google.common.collect.Lists;
 import com.kogasoftware.odt.apiclient.ApiClient.ResponseConverter;
+import com.kogasoftware.odt.apiclient.ApiClients;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.*;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.base.jsondeserializer.*;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.base.jsonview.*;
 
+/**
+ * 号車ログ
+ */
 @SuppressWarnings("unused")
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = Model.JACKSON_IDENTITY_INFO_PROPERTY)
 public abstract class ServiceUnitStatusLogBase extends Model {
-	private static final long serialVersionUID = 4166838134573111029L;
-	public static final ResponseConverter<ServiceUnitStatusLog> RESPONSE_CONVERTER = new ResponseConverter<ServiceUnitStatusLog>() {
-		@Override
-		public ServiceUnitStatusLog convert(byte[] rawResponse) throws JSONException {
-			return parse(ApiClients.parseJSONObject(rawResponse));
-		}
-	};
-	public static final ResponseConverter<List<ServiceUnitStatusLog>> LIST_RESPONSE_CONVERTER = new ResponseConverter<List<ServiceUnitStatusLog>>() {
-		@Override
-		public List<ServiceUnitStatusLog> convert(byte[] rawResponse) throws JSONException {
-			return parseList(ApiClients.parseJSONArray(rawResponse));
-		}
-	};
+	private static final long serialVersionUID = 5488621136488087102L;
+
+	// Columns
+	@JsonProperty private Date createdAt = new Date();
+	@JsonProperty private Integer id = 0;
+	@JsonProperty private BigDecimal latitude = BigDecimal.ZERO;
+	@JsonProperty private BigDecimal longitude = BigDecimal.ZERO;
+	@JsonProperty private Optional<Boolean> offline = Optional.absent();
+	@JsonProperty private Optional<Date> offlineTime = Optional.absent();
+	@JsonProperty private Optional<Integer> orientation = Optional.absent();
+	@JsonProperty private Optional<Integer> serviceUnitId = Optional.absent();
+	@JsonProperty private Optional<Integer> temperature = Optional.absent();
+	@JsonProperty private Date updatedAt = new Date();
+
+	// Associations
+	@JsonProperty @JsonView(AssociationView.class) private Optional<ServiceUnit> serviceUnit = Optional.absent();
+
+	public static final String UNDERSCORE = "service_unit_status_log";
+	public static final ResponseConverter<ServiceUnitStatusLog> RESPONSE_CONVERTER = getResponseConverter(ServiceUnitStatusLog.class);
+	public static final ResponseConverter<List<ServiceUnitStatusLog>> LIST_RESPONSE_CONVERTER = getListResponseConverter(ServiceUnitStatusLog.class);
+
 	protected void refreshUpdatedAt() {
 		setUpdatedAt(new Date());
 	}
-	@Override
-	public void fill(JSONObject jsonObject) throws JSONException {
-		setCreatedAt(parseDate(jsonObject, "created_at"));
-		setId(parseInteger(jsonObject, "id"));
-		setLatitude(parseBigDecimal(jsonObject, "latitude"));
-		setLongitude(parseBigDecimal(jsonObject, "longitude"));
-		setOffline(parseOptionalBoolean(jsonObject, "offline"));
-		setOfflineTime(parseOptionalDate(jsonObject, "offline_time"));
-		setOrientation(parseOptionalInteger(jsonObject, "orientation"));
-		setServiceUnitId(parseOptionalInteger(jsonObject, "service_unit_id"));
-		setTemperature(parseOptionalInteger(jsonObject, "temperature"));
-		setServiceUnit(ServiceUnit.parse(jsonObject, "service_unit"));
 
-		setUpdatedAt(parseDate(jsonObject, "updated_at"));
+	public static ServiceUnitStatusLog parse(String jsonString) throws IOException {
+		return parse(jsonString, ServiceUnitStatusLog.class);
 	}
 
-	public static Optional<ServiceUnitStatusLog> parse(JSONObject jsonObject, String key) throws JSONException {
-		if (!jsonObject.has(key)) {
-			return Optional.absent();
-		}
-		return Optional.of(parse(jsonObject.getJSONObject(key)));
+	public static List<ServiceUnitStatusLog> parseList(String jsonString) throws IOException {
+		return parseList(jsonString, ServiceUnitStatusLog.class);
 	}
 
-	public static ServiceUnitStatusLog parse(JSONObject jsonObject) throws JSONException {
-		ServiceUnitStatusLog model = new ServiceUnitStatusLog();
-		model.fill(jsonObject);
-		return model;
-	}
-
-	public static LinkedList<ServiceUnitStatusLog> parseList(JSONObject jsonObject, String key) throws JSONException {
-		if (!jsonObject.has(key)) {
-			return new LinkedList<ServiceUnitStatusLog>();
-		}
-		JSONArray jsonArray = jsonObject.getJSONArray(key);
-		return parseList(jsonArray);
-	}
-
-	public static LinkedList<ServiceUnitStatusLog> parseList(JSONArray jsonArray) throws JSONException {
-		LinkedList<ServiceUnitStatusLog> models = new LinkedList<ServiceUnitStatusLog>();
-		for (Integer i = 0; i < jsonArray.length(); ++i) {
-			if (jsonArray.isNull(i)) {
-				continue;
-			}
-			models.add(parse(jsonArray.getJSONObject(i)));
-		}
-		return models;
-	}
-
-	@Override
-	protected JSONObject toJSONObject(Boolean recursive, Integer depth) throws JSONException {
-		if (depth > MAX_RECURSE_DEPTH) {
-			return new JSONObject();
-		}
-		Integer nextDepth = depth + 1;
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("created_at", toJSON(getCreatedAt()));
-		jsonObject.put("id", toJSON(getId()));
-		jsonObject.put("latitude", toJSON(getLatitude()));
-		jsonObject.put("longitude", toJSON(getLongitude()));
-		jsonObject.put("offline", toJSON(getOffline()));
-		jsonObject.put("offline_time", toJSON(getOfflineTime()));
-		jsonObject.put("orientation", toJSON(getOrientation()));
-		jsonObject.put("service_unit_id", toJSON(getServiceUnitId()));
-		jsonObject.put("temperature", toJSON(getTemperature()));
-		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
-		if (getServiceUnit().isPresent()) {
-			if (recursive) {
-				jsonObject.put("service_unit", getServiceUnit().get().toJSONObject(true, nextDepth));
-			} else {
-				jsonObject.put("service_unit_id", toJSON(getServiceUnit().get().getId()));
-			}
-		}
-		return jsonObject;
-	}
-
-	@Override
-	public ServiceUnitStatusLog cloneByJSON() throws JSONException {
-		return parse(toJSONObject(true));
-	}
-
-	private Date createdAt = new Date();
-
+	@JsonIgnore
 	public Date getCreatedAt() {
 		return wrapNull(createdAt);
 	}
 
+	@JsonIgnore
 	public void setCreatedAt(Date createdAt) {
 		refreshUpdatedAt();
 		this.createdAt = wrapNull(createdAt);
 	}
 
-	private Integer id = 0;
-
+	@Override
+	@JsonIgnore
 	public Integer getId() {
 		return wrapNull(id);
 	}
 
+	@JsonIgnore
 	public void setId(Integer id) {
 		refreshUpdatedAt();
 		this.id = wrapNull(id);
 	}
 
-	private BigDecimal latitude = BigDecimal.ZERO;
-
+	@JsonIgnore
 	public BigDecimal getLatitude() {
 		return wrapNull(latitude);
 	}
 
+	@JsonIgnore
 	public void setLatitude(BigDecimal latitude) {
 		refreshUpdatedAt();
 		this.latitude = wrapNull(latitude);
 	}
 
-	private BigDecimal longitude = BigDecimal.ZERO;
-
+	@JsonIgnore
 	public BigDecimal getLongitude() {
 		return wrapNull(longitude);
 	}
 
+	@JsonIgnore
 	public void setLongitude(BigDecimal longitude) {
 		refreshUpdatedAt();
 		this.longitude = wrapNull(longitude);
 	}
 
-	private Optional<Boolean> offline = Optional.absent();
-
+	@JsonIgnore
 	public Optional<Boolean> getOffline() {
 		return wrapNull(offline);
 	}
 
+	@JsonIgnore
 	public void setOffline(Optional<Boolean> offline) {
 		refreshUpdatedAt();
 		this.offline = wrapNull(offline);
 	}
 
+	@JsonIgnore
 	public void setOffline(Boolean offline) {
 		setOffline(Optional.fromNullable(offline));
 	}
@@ -178,17 +128,18 @@ public abstract class ServiceUnitStatusLogBase extends Model {
 		setOffline(Optional.<Boolean>absent());
 	}
 
-	private Optional<Date> offlineTime = Optional.absent();
-
+	@JsonIgnore
 	public Optional<Date> getOfflineTime() {
 		return wrapNull(offlineTime);
 	}
 
+	@JsonIgnore
 	public void setOfflineTime(Optional<Date> offlineTime) {
 		refreshUpdatedAt();
 		this.offlineTime = wrapNull(offlineTime);
 	}
 
+	@JsonIgnore
 	public void setOfflineTime(Date offlineTime) {
 		setOfflineTime(Optional.fromNullable(offlineTime));
 	}
@@ -197,17 +148,18 @@ public abstract class ServiceUnitStatusLogBase extends Model {
 		setOfflineTime(Optional.<Date>absent());
 	}
 
-	private Optional<Integer> orientation = Optional.absent();
-
+	@JsonIgnore
 	public Optional<Integer> getOrientation() {
 		return wrapNull(orientation);
 	}
 
+	@JsonIgnore
 	public void setOrientation(Optional<Integer> orientation) {
 		refreshUpdatedAt();
 		this.orientation = wrapNull(orientation);
 	}
 
+	@JsonIgnore
 	public void setOrientation(Integer orientation) {
 		setOrientation(Optional.fromNullable(orientation));
 	}
@@ -216,17 +168,23 @@ public abstract class ServiceUnitStatusLogBase extends Model {
 		setOrientation(Optional.<Integer>absent());
 	}
 
-	private Optional<Integer> serviceUnitId = Optional.absent();
-
+	@JsonIgnore
 	public Optional<Integer> getServiceUnitId() {
 		return wrapNull(serviceUnitId);
 	}
 
+	@JsonIgnore
 	public void setServiceUnitId(Optional<Integer> serviceUnitId) {
 		refreshUpdatedAt();
 		this.serviceUnitId = wrapNull(serviceUnitId);
+		for (ServiceUnit presentServiceUnit : getServiceUnit().asSet()) {
+			for (Integer presentServiceUnitId : getServiceUnitId().asSet()) {
+				presentServiceUnit.setId(presentServiceUnitId);
+			}
+		}
 	}
 
+	@JsonIgnore
 	public void setServiceUnitId(Integer serviceUnitId) {
 		setServiceUnitId(Optional.fromNullable(serviceUnitId));
 	}
@@ -235,17 +193,18 @@ public abstract class ServiceUnitStatusLogBase extends Model {
 		setServiceUnitId(Optional.<Integer>absent());
 	}
 
-	private Optional<Integer> temperature = Optional.absent();
-
+	@JsonIgnore
 	public Optional<Integer> getTemperature() {
 		return wrapNull(temperature);
 	}
 
+	@JsonIgnore
 	public void setTemperature(Optional<Integer> temperature) {
 		refreshUpdatedAt();
 		this.temperature = wrapNull(temperature);
 	}
 
+	@JsonIgnore
 	public void setTemperature(Integer temperature) {
 		setTemperature(Optional.fromNullable(temperature));
 	}
@@ -254,32 +213,42 @@ public abstract class ServiceUnitStatusLogBase extends Model {
 		setTemperature(Optional.<Integer>absent());
 	}
 
-	private Date updatedAt = new Date();
-
+	@JsonIgnore
 	public Date getUpdatedAt() {
 		return wrapNull(updatedAt);
 	}
 
+	@JsonIgnore
 	public void setUpdatedAt(Date updatedAt) {
 		this.updatedAt = wrapNull(updatedAt);
 	}
 
-	private Optional<ServiceUnit> serviceUnit = Optional.<ServiceUnit>absent();
-
+	@JsonIgnore
 	public Optional<ServiceUnit> getServiceUnit() {
 		return wrapNull(serviceUnit);
 	}
 
+	@JsonIgnore
 	public void setServiceUnit(Optional<ServiceUnit> serviceUnit) {
+		refreshUpdatedAt();
 		this.serviceUnit = wrapNull(serviceUnit);
+		for (ServiceUnit presentServiceUnit : getServiceUnit().asSet()) {
+			setServiceUnitId(presentServiceUnit.getId());
+		}
 	}
 
+	@JsonIgnore
 	public void setServiceUnit(ServiceUnit serviceUnit) {
 		setServiceUnit(Optional.fromNullable(serviceUnit));
 	}
 
 	public void clearServiceUnit() {
 		setServiceUnit(Optional.<ServiceUnit>absent());
+	}
+
+	@Override
+	public ServiceUnitStatusLog clone() {
+		return super.clone(ServiceUnitStatusLog.class);
 	}
 
 	@Override

@@ -3,7 +3,7 @@ package com.kogasoftware.odt.apiclient;
 import java.io.Closeable;
 import java.util.Map;
 
-import org.json.JSONObject;
+import com.fasterxml.jackson.databind.JsonNode;
 
 public interface ApiClient extends Closeable {
 	interface ResponseConverter<T> {
@@ -25,26 +25,26 @@ public interface ApiClient extends Closeable {
 	/**
 	 * POSTリクエスト
 	 */
-	<T> int post(String path, JSONObject param, JSONObject retryParam,
+	<T> int post(String path, JsonNode param, JsonNode retryParam,
 			String requestGroup, ApiClientCallback<T> callback,
 			ResponseConverter<? extends T> conv);
 
 	/**
 	 * POSTリクエスト
 	 */
-	<T> int post(String path, JSONObject param, String requestGroup,
+	<T> int post(String path, JsonNode param, String requestGroup,
 			ApiClientCallback<T> callback, ResponseConverter<? extends T> conv);
 
 	/**
 	 * PUTリクエスト
 	 */
-	<T> int put(String path, JSONObject param, String requestGroup,
+	<T> int put(String path, JsonNode param, String requestGroup,
 			ApiClientCallback<T> callback, ResponseConverter<? extends T> conv);
 
 	/**
 	 * PUTリクエスト
 	 */
-	<T> int put(String path, JSONObject param, JSONObject retryParam,
+	<T> int put(String path, JsonNode param, JsonNode retryParam,
 			String requestGroup, ApiClientCallback<T> callback,
 			ResponseConverter<? extends T> conv);
 

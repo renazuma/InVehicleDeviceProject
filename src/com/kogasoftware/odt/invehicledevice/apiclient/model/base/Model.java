@@ -1,42 +1,78 @@
 package com.kogasoftware.odt.invehicledevice.apiclient.model.base;
 
+import java.io.Externalizable;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang3.SystemUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.apache.commons.lang3.SerializationUtils;
 
 import android.util.Log;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.kogasoftware.odt.apiclient.ApiClient.ResponseConverter;
+import com.kogasoftware.odt.apiclient.ApiClients;
 import com.kogasoftware.odt.apiclient.identifiable.Identifiable;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.base.externalizable.ExternalizableInput;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.base.externalizable.ExternalizableOutput;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.base.jsonview.AssociationView;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.base.jsonview.DefaultView;
 
-public abstract class Model implements Serializable, Identifiable {
-	public static final String TAG = Model.class.getSimpleName();
-	public static final Integer MAX_RECURSE_DEPTH = 11;
-
+public abstract class Model implements Externalizable, Identifiable, Cloneable {
+	private static final String TAG = Model.class.getSimpleName();
 	private static final long serialVersionUID = -5513333240346057624L;
+	private static final ObjectMapper OBJECT_MAPPER;
+	private static final ObjectWriter OBJECT_WRITER;
+	private static final ObjectWriter NO_ASSOCIATION_OBJECT_WRITER;
+	protected static final Date DEFAULT_DATE = new Date(0);
+	protected static final Date DEFAULT_DATE_TIME = DEFAULT_DATE;
+	public static final String JACKSON_IDENTITY_INFO_PROPERTY = "@jackson_identitiy_info";
 
-	protected static final DateTimeFormatter OUTPUT_DATE_TIME_FORMATTER = DateTimeFormat
-			.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ");
-	protected static final List<DateTimeFormatter> INPUT_DATE_TIME_FORMATTERS = Lists
-			.newArrayList(OUTPUT_DATE_TIME_FORMATTER,
-					DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ"),
-					DateTimeFormat.forPattern("yyyy-MM-dd"));
+	static {
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.registerModule(new GuavaModule());
+		objectMapper.disable(MapperFeature.AUTO_DETECT_GETTERS);
+		objectMapper.disable(MapperFeature.AUTO_DETECT_IS_GETTERS);
+		objectMapper.disable(MapperFeature.AUTO_DETECT_SETTERS);
+		objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+		objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+		objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES,
+				true);
+		objectMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+		objectMapper
+				.setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
+		OBJECT_WRITER = objectMapper.writer().withView(DefaultView.class)
+				.withView(AssociationView.class);
+		NO_ASSOCIATION_OBJECT_WRITER = objectMapper.writer().withView(
+				DefaultView.class);
+		OBJECT_MAPPER = objectMapper;
+	}
+
+	public static ObjectMapper getObjectMapper() {
+		return OBJECT_MAPPER;
+	}
+
+	public static ObjectWriter getObjectWriter(Boolean withAssociation) {
+		return withAssociation ? OBJECT_WRITER : NO_ASSOCIATION_OBJECT_WRITER;
+	}
 
 	protected static void errorIfNull(Object value) {
 		if (value != null) {
@@ -45,139 +81,6 @@ public abstract class Model implements Serializable, Identifiable {
 		NullPointerException e = new NullPointerException();
 		Log.e(TAG, "unexpected null", e);
 		// throw e;
-	}
-
-	protected static BigDecimal parseBigDecimal(JSONObject jsonObject,
-			String key) throws JSONException {
-		if (!jsonObject.has(key)) {
-			return BigDecimal.ZERO;
-		}
-		return new BigDecimal(jsonObject.getString(key));
-	}
-
-	protected static Boolean parseBoolean(JSONObject jsonObject, String key)
-			throws JSONException {
-		if (!jsonObject.has(key)) {
-			return false;
-		}
-		return jsonObject.getBoolean(key);
-	}
-
-	protected static Date parseDate(JSONObject jsonObject, String key)
-			throws JSONException {
-		if (!jsonObject.has(key)) {
-			return new Date();
-		}
-
-		String dateString = jsonObject.getString(key);
-		for (DateTimeFormatter dateTimeFormatter : INPUT_DATE_TIME_FORMATTERS) {
-			try {
-				return new Date(dateTimeFormatter.parseDateTime(dateString)
-						.getMillis());
-			} catch (IllegalArgumentException e) {
-			}
-		}
-
-		Log.e(TAG, "date string \"" + dateString + "\" can't parse");
-		return new Date();
-	}
-
-	protected static Float parseFloat(JSONObject jsonObject, String key)
-			throws JSONException {
-		if (!jsonObject.has(key)) {
-			return 0f;
-		}
-		return (float) jsonObject.getDouble(key);
-	}
-
-	protected static Integer parseInteger(JSONObject jsonObject, String key)
-			throws JSONException {
-		if (!jsonObject.has(key)) {
-			return 0;
-		}
-		return jsonObject.getInt(key);
-	}
-
-	protected static Optional<Boolean> parseOptionalBoolean(
-			JSONObject jsonObject, String key) throws JSONException {
-		if (jsonObject.isNull(key)) {
-			return Optional.absent();
-		}
-		return Optional.of(parseBoolean(jsonObject, key));
-	}
-
-	protected static Optional<Date> parseOptionalDate(JSONObject jsonObject,
-			String key) throws JSONException {
-		if (jsonObject.isNull(key)) {
-			return Optional.absent();
-		}
-		return Optional.of(parseDate(jsonObject, key));
-	}
-
-	protected static Optional<Float> parseOptionalFloat(JSONObject jsonObject,
-			String key) throws JSONException {
-		if (jsonObject.isNull(key)) {
-			return Optional.absent();
-		}
-		return Optional.of(parseFloat(jsonObject, key));
-	}
-
-	protected static Optional<Integer> parseOptionalInteger(
-			JSONObject jsonObject, String key) throws JSONException {
-		if (jsonObject.isNull(key)) {
-			return Optional.absent();
-		}
-		return Optional.of(parseInteger(jsonObject, key));
-	}
-
-	protected static Optional<String> parseOptionalString(
-			JSONObject jsonObject, String key) throws JSONException {
-		if (jsonObject.isNull(key)) {
-			return Optional.absent();
-		}
-		return Optional.of(parseString(jsonObject, key));
-	}
-
-	protected static String parseString(JSONObject jsonObject, String key)
-			throws JSONException {
-		if (!jsonObject.has(key)) {
-			return "";
-		}
-		return jsonObject.getString(key);
-	}
-
-	protected static Object toJSON(Object object) {
-		if (object instanceof Optional<?>) {
-			Optional<?> optional = (Optional<?>) object;
-			if (optional.isPresent()) {
-				return toJSON(optional.get());
-			} else {
-				return JSONObject.NULL;
-			}
-		} else if (object instanceof BigDecimal) {
-			return ((BigDecimal) object).toPlainString();
-		} else if (object instanceof Date) {
-			return OUTPUT_DATE_TIME_FORMATTER.print(((Date) object).getTime());
-		}
-		return object;
-	}
-
-	protected static Object toJSON(List<? extends Model> value,
-			Boolean recursive, Integer depth) throws JSONException {
-		JSONArray jsonArray = new JSONArray();
-		for (Model model : value) {
-			jsonArray.put(model.toJSONObject(recursive, depth));
-		}
-		return jsonArray;
-	}
-
-	protected static Object toJSON(Optional<? extends Model> value,
-			Boolean recursive, Integer depth) throws JSONException {
-		if (value.isPresent()) {
-			return value.get().toJSONObject(recursive, depth);
-		} else {
-			return JSONObject.NULL;
-		}
 	}
 
 	protected static BigDecimal wrapNull(BigDecimal value) {
@@ -196,6 +99,10 @@ public abstract class Model implements Serializable, Identifiable {
 		return Objects.firstNonNull(value, 0);
 	}
 
+	protected static String wrapNull(String value) {
+		return Objects.firstNonNull(value, "");
+	}
+
 	protected static <T extends Model> LinkedList<T> wrapNull(Iterable<T> value) {
 		return Lists.newLinkedList(Objects.firstNonNull(value,
 				new LinkedList<T>()));
@@ -206,48 +113,77 @@ public abstract class Model implements Serializable, Identifiable {
 		return Objects.firstNonNull(value, Optional.<T> absent());
 	}
 
-	protected static String wrapNull(String value) {
-		return Strings.nullToEmpty(value);
+	protected static <T> ResponseConverter<List<T>> getListResponseConverter(
+			final Class<T> responseClass) {
+		return new ResponseConverter<List<T>>() {
+			@Override
+			public List<T> convert(byte[] rawResponse) throws Exception {
+				return parseList(ApiClients.decodeByteArray(rawResponse),
+						responseClass);
+			}
+		};
 	}
 
-	public JSONObject toJSONObject() throws JSONException {
-		return toJSONObject(false, 0);
+	protected static <T> ResponseConverter<T> getResponseConverter(
+			final Class<T> responseClass) {
+		return new ResponseConverter<T>() {
+			@Override
+			public T convert(byte[] rawResponse) throws Exception {
+				return parse(ApiClients.decodeByteArray(rawResponse),
+						responseClass);
+			}
+		};
 	}
 
-	public JSONObject toJSONObject(Boolean recursive) throws JSONException {
-		return toJSONObject(recursive, 0);
-	}
-
-	protected abstract JSONObject toJSONObject(Boolean recursive, Integer depth)
-			throws JSONException;
-
-	protected abstract Model cloneByJSON() throws JSONException;
-
-	private void writeObject(ObjectOutputStream objectOutputStream)
+	protected static <T> T parse(String jsonString, Class<T> modelClass)
 			throws IOException {
-		try {
-			objectOutputStream.writeObject(toJSONObject(true).toString());
-		} catch (JSONException e) {
-			throw new IOException(e.toString() + SystemUtils.LINE_SEPARATOR
-					+ ExceptionUtils.getStackTrace(e));
-		}
+		return getObjectMapper().readValue(jsonString, modelClass);
 	}
 
-	private void readObject(ObjectInputStream objectInputStream)
-			throws IOException, ClassNotFoundException {
-		Object object = objectInputStream.readObject();
-		if (!(object instanceof String)) {
-			return;
+	protected static <T> List<T> parseList(String jsonString,
+			Class<T> modelClass) throws IOException {
+		List<T> list = Lists.newLinkedList();
+		ArrayNode arrayNode = getObjectMapper().readValue(jsonString,
+				ArrayNode.class);
+		for (JsonNode jsonNode : arrayNode) {
+			if (jsonNode.isObject()) {
+				list.add(getObjectMapper().readValue(jsonNode.toString(),
+						modelClass));
+			} else {
+				Log.e(TAG, "`" + jsonNode + "' is not ObjectNode");
+			}
 		}
-		String jsonString = (String) object;
-		try {
-			JSONObject jsonObject = new JSONObject(jsonString);
-			fill(jsonObject);
-		} catch (JSONException e) {
-			throw new IOException(e.toString() + SystemUtils.LINE_SEPARATOR
-					+ ExceptionUtils.getStackTrace(e));
-		}
+		return list;
 	}
 
-	public abstract void fill(JSONObject jsonObject) throws JSONException;
+	@Override
+	public abstract Model clone();
+
+	protected <T extends Model> T clone(Class<T> childClass) {
+		return SerializationUtils.clone(childClass.cast(this));
+	}
+
+	public ObjectNode toJsonNode(Boolean withAssociation) throws IOException {
+		String jsonString = getObjectWriter(withAssociation)
+				.writeValueAsString(this);
+		return getObjectMapper().readValue(jsonString, ObjectNode.class);
+	}
+
+	public ObjectNode toJsonNode() throws IOException {
+		return toJsonNode(false).remove(
+				Lists.newArrayList(JACKSON_IDENTITY_INFO_PROPERTY));
+	}
+
+	@Override
+	public void readExternal(ObjectInput objectInput) throws IOException,
+			ClassNotFoundException {
+		getObjectMapper().readerForUpdating(this).readValue(
+				new ExternalizableInput(objectInput));
+	}
+
+	@Override
+	public void writeExternal(ObjectOutput objectOutput) throws IOException {
+		getObjectWriter(true).writeValue(
+				new ExternalizableOutput(objectOutput), this);
+	}
 }

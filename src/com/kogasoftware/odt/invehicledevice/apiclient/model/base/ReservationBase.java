@@ -1,235 +1,106 @@
 package com.kogasoftware.odt.invehicledevice.apiclient.model.base;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.apiclient.ApiClients;
+import com.google.common.collect.Lists;
 import com.kogasoftware.odt.apiclient.ApiClient.ResponseConverter;
+import com.kogasoftware.odt.apiclient.ApiClients;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.*;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.base.jsondeserializer.*;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.base.jsonview.*;
 
+/**
+ * 予約
+ */
 @SuppressWarnings("unused")
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = Model.JACKSON_IDENTITY_INFO_PROPERTY)
 public abstract class ReservationBase extends Model {
-	private static final long serialVersionUID = 6221949246110673188L;
-	public static final ResponseConverter<Reservation> RESPONSE_CONVERTER = new ResponseConverter<Reservation>() {
-		@Override
-		public Reservation convert(byte[] rawResponse) throws JSONException {
-			return parse(ApiClients.parseJSONObject(rawResponse));
-		}
-	};
-	public static final ResponseConverter<List<Reservation>> LIST_RESPONSE_CONVERTER = new ResponseConverter<List<Reservation>>() {
-		@Override
-		public List<Reservation> convert(byte[] rawResponse) throws JSONException {
-			return parseList(ApiClients.parseJSONArray(rawResponse));
-		}
-	};
+	private static final long serialVersionUID = 540225908696305220L;
+
+	// Columns
+	@JsonProperty private Optional<String> arrivalLock = Optional.absent();
+	@JsonProperty private Optional<Integer> arrivalPlatformId = Optional.absent();
+	@JsonProperty private Optional<Integer> arrivalScheduleId = Optional.absent();
+	@JsonProperty private Date arrivalTime = DEFAULT_DATE_TIME;
+	@JsonProperty private Date createdAt = new Date();
+	@JsonProperty private Optional<Date> deletedAt = Optional.absent();
+	@JsonProperty private Optional<Integer> demandId = Optional.absent();
+	@JsonProperty private Optional<String> departureLock = Optional.absent();
+	@JsonProperty private Optional<Integer> departurePlatformId = Optional.absent();
+	@JsonProperty private Optional<Integer> departureScheduleId = Optional.absent();
+	@JsonProperty private Date departureTime = DEFAULT_DATE_TIME;
+	@JsonProperty private Optional<String> deviceName = Optional.absent();
+	@JsonProperty private Optional<Boolean> dummy = Optional.absent();
+	@JsonProperty private Integer id = 0;
+	@JsonProperty private Optional<String> memo = Optional.absent();
+	@JsonProperty private Optional<Integer> operatorId = Optional.absent();
+	@JsonProperty private Integer passengerCount = 0;
+	@JsonProperty private Integer payment = 0;
+	@JsonProperty private Optional<Integer> serviceProviderId = Optional.absent();
+	@JsonProperty private Integer status = 0;
+	@JsonProperty private Optional<Integer> stoppageTime = Optional.absent();
+	@JsonProperty private Optional<Date> transferredAt = Optional.absent();
+	@JsonProperty private Integer unitAssignmentId = 0;
+	@JsonProperty private Date updatedAt = new Date();
+	@JsonProperty private Optional<Integer> userId = Optional.absent();
+
+	// Associations
+	@JsonProperty @JsonView(AssociationView.class) private Optional<Platform> arrivalPlatform = Optional.absent();
+	@JsonProperty @JsonView(AssociationView.class) private Optional<OperationSchedule> arrivalSchedule = Optional.absent();
+	@JsonProperty @JsonView(AssociationView.class) private Optional<Demand> demand = Optional.absent();
+	@JsonProperty @JsonView(AssociationView.class) private Optional<Platform> departurePlatform = Optional.absent();
+	@JsonProperty @JsonView(AssociationView.class) private Optional<OperationSchedule> departureSchedule = Optional.absent();
+	@JsonProperty @JsonView(AssociationView.class) private List<User> fellowUsers = Lists.newLinkedList();
+	@JsonProperty @JsonView(AssociationView.class) private Optional<Operator> operator = Optional.absent();
+	@JsonProperty @JsonView(AssociationView.class) private List<PassengerRecord> passengerRecords = Lists.newLinkedList();
+	@JsonProperty @JsonView(AssociationView.class) private List<ReservationUser> reservationUsers = Lists.newLinkedList();
+	@JsonProperty @JsonView(AssociationView.class) private Optional<ServiceProvider> serviceProvider = Optional.absent();
+	@JsonProperty @JsonView(AssociationView.class) private Optional<UnitAssignment> unitAssignment = Optional.absent();
+	@JsonProperty @JsonView(AssociationView.class) private Optional<User> user = Optional.absent();
+
+	public static final String UNDERSCORE = "reservation";
+	public static final ResponseConverter<Reservation> RESPONSE_CONVERTER = getResponseConverter(Reservation.class);
+	public static final ResponseConverter<List<Reservation>> LIST_RESPONSE_CONVERTER = getListResponseConverter(Reservation.class);
+
 	protected void refreshUpdatedAt() {
 		setUpdatedAt(new Date());
 	}
-	@Override
-	public void fill(JSONObject jsonObject) throws JSONException {
-		setArrivalLock(parseOptionalString(jsonObject, "arrival_lock"));
-		setArrivalPlatformId(parseOptionalInteger(jsonObject, "arrival_platform_id"));
-		setArrivalScheduleId(parseOptionalInteger(jsonObject, "arrival_schedule_id"));
-		setArrivalTime(parseDate(jsonObject, "arrival_time"));
-		setCreatedAt(parseDate(jsonObject, "created_at"));
-		setDeletedAt(parseOptionalDate(jsonObject, "deleted_at"));
-		setDemandId(parseOptionalInteger(jsonObject, "demand_id"));
-		setDepartureLock(parseOptionalString(jsonObject, "departure_lock"));
-		setDeparturePlatformId(parseOptionalInteger(jsonObject, "departure_platform_id"));
-		setDepartureScheduleId(parseOptionalInteger(jsonObject, "departure_schedule_id"));
-		setDepartureTime(parseDate(jsonObject, "departure_time"));
-		setDummy(parseOptionalBoolean(jsonObject, "dummy"));
-		setId(parseInteger(jsonObject, "id"));
-		setMemo(parseOptionalString(jsonObject, "memo"));
-		setOperatorId(parseOptionalInteger(jsonObject, "operator_id"));
-		setPassengerCount(parseInteger(jsonObject, "passenger_count"));
-		setPayment(parseInteger(jsonObject, "payment"));
-		setServiceProviderId(parseOptionalInteger(jsonObject, "service_provider_id"));
-		setStatus(parseInteger(jsonObject, "status"));
-		setStoppageTime(parseOptionalInteger(jsonObject, "stoppage_time"));
-		setTransferredAt(parseOptionalDate(jsonObject, "transferred_at"));
-		setUnitAssignmentId(parseInteger(jsonObject, "unit_assignment_id"));
-		setUserId(parseOptionalInteger(jsonObject, "user_id"));
-		setArrivalPlatform(Platform.parse(jsonObject, "arrival_platform"));
-		setArrivalSchedule(OperationSchedule.parse(jsonObject, "arrival_schedule"));
-		setDemand(Demand.parse(jsonObject, "demand"));
-		setDeparturePlatform(Platform.parse(jsonObject, "departure_platform"));
-		setDepartureSchedule(OperationSchedule.parse(jsonObject, "departure_schedule"));
-		setFellowUsers(User.parseList(jsonObject, "fellow_users"));
-		setOperator(Operator.parse(jsonObject, "operator"));
-		setPassengerRecords(PassengerRecord.parseList(jsonObject, "passenger_records"));
-		setReservationUsers(ReservationUser.parseList(jsonObject, "reservation_users"));
-		setServiceProvider(ServiceProvider.parse(jsonObject, "service_provider"));
-		setUnitAssignment(UnitAssignment.parse(jsonObject, "unit_assignment"));
-		setUser(User.parse(jsonObject, "user"));
 
-		setUpdatedAt(parseDate(jsonObject, "updated_at"));
+	public static Reservation parse(String jsonString) throws IOException {
+		return parse(jsonString, Reservation.class);
 	}
 
-	public static Optional<Reservation> parse(JSONObject jsonObject, String key) throws JSONException {
-		if (!jsonObject.has(key)) {
-			return Optional.absent();
-		}
-		return Optional.of(parse(jsonObject.getJSONObject(key)));
+	public static List<Reservation> parseList(String jsonString) throws IOException {
+		return parseList(jsonString, Reservation.class);
 	}
 
-	public static Reservation parse(JSONObject jsonObject) throws JSONException {
-		Reservation model = new Reservation();
-		model.fill(jsonObject);
-		return model;
-	}
-
-	public static LinkedList<Reservation> parseList(JSONObject jsonObject, String key) throws JSONException {
-		if (!jsonObject.has(key)) {
-			return new LinkedList<Reservation>();
-		}
-		JSONArray jsonArray = jsonObject.getJSONArray(key);
-		return parseList(jsonArray);
-	}
-
-	public static LinkedList<Reservation> parseList(JSONArray jsonArray) throws JSONException {
-		LinkedList<Reservation> models = new LinkedList<Reservation>();
-		for (Integer i = 0; i < jsonArray.length(); ++i) {
-			if (jsonArray.isNull(i)) {
-				continue;
-			}
-			models.add(parse(jsonArray.getJSONObject(i)));
-		}
-		return models;
-	}
-
-	@Override
-	protected JSONObject toJSONObject(Boolean recursive, Integer depth) throws JSONException {
-		if (depth > MAX_RECURSE_DEPTH) {
-			return new JSONObject();
-		}
-		Integer nextDepth = depth + 1;
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("arrival_lock", toJSON(getArrivalLock()));
-		jsonObject.put("arrival_platform_id", toJSON(getArrivalPlatformId()));
-		jsonObject.put("arrival_schedule_id", toJSON(getArrivalScheduleId()));
-		jsonObject.put("arrival_time", toJSON(getArrivalTime()));
-		jsonObject.put("created_at", toJSON(getCreatedAt()));
-		jsonObject.put("deleted_at", toJSON(getDeletedAt()));
-		jsonObject.put("demand_id", toJSON(getDemandId()));
-		jsonObject.put("departure_lock", toJSON(getDepartureLock()));
-		jsonObject.put("departure_platform_id", toJSON(getDeparturePlatformId()));
-		jsonObject.put("departure_schedule_id", toJSON(getDepartureScheduleId()));
-		jsonObject.put("departure_time", toJSON(getDepartureTime()));
-		jsonObject.put("dummy", toJSON(getDummy()));
-		jsonObject.put("id", toJSON(getId()));
-		jsonObject.put("memo", toJSON(getMemo()));
-		jsonObject.put("operator_id", toJSON(getOperatorId()));
-		jsonObject.put("passenger_count", toJSON(getPassengerCount()));
-		jsonObject.put("payment", toJSON(getPayment()));
-		jsonObject.put("service_provider_id", toJSON(getServiceProviderId()));
-		jsonObject.put("status", toJSON(getStatus()));
-		jsonObject.put("stoppage_time", toJSON(getStoppageTime()));
-		jsonObject.put("transferred_at", toJSON(getTransferredAt()));
-		jsonObject.put("unit_assignment_id", toJSON(getUnitAssignmentId()));
-		jsonObject.put("updated_at", toJSON(getUpdatedAt()));
-		jsonObject.put("user_id", toJSON(getUserId()));
-		if (getArrivalPlatform().isPresent()) {
-			if (recursive) {
-				jsonObject.put("arrival_platform", getArrivalPlatform().get().toJSONObject(true, nextDepth));
-			} else {
-				jsonObject.put("arrival_platform_id", toJSON(getArrivalPlatform().get().getId()));
-			}
-		}
-		if (getArrivalSchedule().isPresent()) {
-			if (recursive) {
-				jsonObject.put("arrival_schedule", getArrivalSchedule().get().toJSONObject(true, nextDepth));
-			} else {
-				jsonObject.put("arrival_schedule_id", toJSON(getArrivalSchedule().get().getId()));
-			}
-		}
-		if (getDemand().isPresent()) {
-			if (recursive) {
-				jsonObject.put("demand", getDemand().get().toJSONObject(true, nextDepth));
-			} else {
-				jsonObject.put("demand_id", toJSON(getDemand().get().getId()));
-			}
-		}
-		if (getDeparturePlatform().isPresent()) {
-			if (recursive) {
-				jsonObject.put("departure_platform", getDeparturePlatform().get().toJSONObject(true, nextDepth));
-			} else {
-				jsonObject.put("departure_platform_id", toJSON(getDeparturePlatform().get().getId()));
-			}
-		}
-		if (getDepartureSchedule().isPresent()) {
-			if (recursive) {
-				jsonObject.put("departure_schedule", getDepartureSchedule().get().toJSONObject(true, nextDepth));
-			} else {
-				jsonObject.put("departure_schedule_id", toJSON(getDepartureSchedule().get().getId()));
-			}
-		}
-		if (getFellowUsers().size() > 0 && recursive) {
-			jsonObject.put("fellow_users", toJSON(getFellowUsers(), true, nextDepth));
-		}
-		if (getOperator().isPresent()) {
-			if (recursive) {
-				jsonObject.put("operator", getOperator().get().toJSONObject(true, nextDepth));
-			} else {
-				jsonObject.put("operator_id", toJSON(getOperator().get().getId()));
-			}
-		}
-		if (getPassengerRecords().size() > 0 && recursive) {
-			jsonObject.put("passenger_records", toJSON(getPassengerRecords(), true, nextDepth));
-		}
-		if (getReservationUsers().size() > 0 && recursive) {
-			jsonObject.put("reservation_users", toJSON(getReservationUsers(), true, nextDepth));
-		}
-		if (getServiceProvider().isPresent()) {
-			if (recursive) {
-				jsonObject.put("service_provider", getServiceProvider().get().toJSONObject(true, nextDepth));
-			} else {
-				jsonObject.put("service_provider_id", toJSON(getServiceProvider().get().getId()));
-			}
-		}
-		if (getUnitAssignment().isPresent()) {
-			if (recursive) {
-				jsonObject.put("unit_assignment", getUnitAssignment().get().toJSONObject(true, nextDepth));
-			} else {
-				jsonObject.put("unit_assignment_id", toJSON(getUnitAssignment().get().getId()));
-			}
-		}
-		if (getUser().isPresent()) {
-			if (recursive) {
-				jsonObject.put("user", getUser().get().toJSONObject(true, nextDepth));
-			} else {
-				jsonObject.put("user_id", toJSON(getUser().get().getId()));
-			}
-		}
-		return jsonObject;
-	}
-
-	@Override
-	public Reservation cloneByJSON() throws JSONException {
-		return parse(toJSONObject(true));
-	}
-
-	private Optional<String> arrivalLock = Optional.absent();
-
+	@JsonIgnore
 	public Optional<String> getArrivalLock() {
 		return wrapNull(arrivalLock);
 	}
 
+	@JsonIgnore
 	public void setArrivalLock(Optional<String> arrivalLock) {
 		refreshUpdatedAt();
 		this.arrivalLock = wrapNull(arrivalLock);
 	}
 
+	@JsonIgnore
 	public void setArrivalLock(String arrivalLock) {
 		setArrivalLock(Optional.fromNullable(arrivalLock));
 	}
@@ -238,17 +109,23 @@ public abstract class ReservationBase extends Model {
 		setArrivalLock(Optional.<String>absent());
 	}
 
-	private Optional<Integer> arrivalPlatformId = Optional.absent();
-
+	@JsonIgnore
 	public Optional<Integer> getArrivalPlatformId() {
 		return wrapNull(arrivalPlatformId);
 	}
 
+	@JsonIgnore
 	public void setArrivalPlatformId(Optional<Integer> arrivalPlatformId) {
 		refreshUpdatedAt();
 		this.arrivalPlatformId = wrapNull(arrivalPlatformId);
+		for (Platform presentArrivalPlatform : getArrivalPlatform().asSet()) {
+			for (Integer presentArrivalPlatformId : getArrivalPlatformId().asSet()) {
+				presentArrivalPlatform.setId(presentArrivalPlatformId);
+			}
+		}
 	}
 
+	@JsonIgnore
 	public void setArrivalPlatformId(Integer arrivalPlatformId) {
 		setArrivalPlatformId(Optional.fromNullable(arrivalPlatformId));
 	}
@@ -257,17 +134,23 @@ public abstract class ReservationBase extends Model {
 		setArrivalPlatformId(Optional.<Integer>absent());
 	}
 
-	private Optional<Integer> arrivalScheduleId = Optional.absent();
-
+	@JsonIgnore
 	public Optional<Integer> getArrivalScheduleId() {
 		return wrapNull(arrivalScheduleId);
 	}
 
+	@JsonIgnore
 	public void setArrivalScheduleId(Optional<Integer> arrivalScheduleId) {
 		refreshUpdatedAt();
 		this.arrivalScheduleId = wrapNull(arrivalScheduleId);
+		for (OperationSchedule presentArrivalSchedule : getArrivalSchedule().asSet()) {
+			for (Integer presentArrivalScheduleId : getArrivalScheduleId().asSet()) {
+				presentArrivalSchedule.setId(presentArrivalScheduleId);
+			}
+		}
 	}
 
+	@JsonIgnore
 	public void setArrivalScheduleId(Integer arrivalScheduleId) {
 		setArrivalScheduleId(Optional.fromNullable(arrivalScheduleId));
 	}
@@ -276,39 +159,40 @@ public abstract class ReservationBase extends Model {
 		setArrivalScheduleId(Optional.<Integer>absent());
 	}
 
-	private Date arrivalTime = new Date();
-
+	@JsonIgnore
 	public Date getArrivalTime() {
 		return wrapNull(arrivalTime);
 	}
 
+	@JsonIgnore
 	public void setArrivalTime(Date arrivalTime) {
 		refreshUpdatedAt();
 		this.arrivalTime = wrapNull(arrivalTime);
 	}
 
-	private Date createdAt = new Date();
-
+	@JsonIgnore
 	public Date getCreatedAt() {
 		return wrapNull(createdAt);
 	}
 
+	@JsonIgnore
 	public void setCreatedAt(Date createdAt) {
 		refreshUpdatedAt();
 		this.createdAt = wrapNull(createdAt);
 	}
 
-	private Optional<Date> deletedAt = Optional.absent();
-
+	@JsonIgnore
 	public Optional<Date> getDeletedAt() {
 		return wrapNull(deletedAt);
 	}
 
+	@JsonIgnore
 	public void setDeletedAt(Optional<Date> deletedAt) {
 		refreshUpdatedAt();
 		this.deletedAt = wrapNull(deletedAt);
 	}
 
+	@JsonIgnore
 	public void setDeletedAt(Date deletedAt) {
 		setDeletedAt(Optional.fromNullable(deletedAt));
 	}
@@ -317,17 +201,23 @@ public abstract class ReservationBase extends Model {
 		setDeletedAt(Optional.<Date>absent());
 	}
 
-	private Optional<Integer> demandId = Optional.absent();
-
+	@JsonIgnore
 	public Optional<Integer> getDemandId() {
 		return wrapNull(demandId);
 	}
 
+	@JsonIgnore
 	public void setDemandId(Optional<Integer> demandId) {
 		refreshUpdatedAt();
 		this.demandId = wrapNull(demandId);
+		for (Demand presentDemand : getDemand().asSet()) {
+			for (Integer presentDemandId : getDemandId().asSet()) {
+				presentDemand.setId(presentDemandId);
+			}
+		}
 	}
 
+	@JsonIgnore
 	public void setDemandId(Integer demandId) {
 		setDemandId(Optional.fromNullable(demandId));
 	}
@@ -336,17 +226,18 @@ public abstract class ReservationBase extends Model {
 		setDemandId(Optional.<Integer>absent());
 	}
 
-	private Optional<String> departureLock = Optional.absent();
-
+	@JsonIgnore
 	public Optional<String> getDepartureLock() {
 		return wrapNull(departureLock);
 	}
 
+	@JsonIgnore
 	public void setDepartureLock(Optional<String> departureLock) {
 		refreshUpdatedAt();
 		this.departureLock = wrapNull(departureLock);
 	}
 
+	@JsonIgnore
 	public void setDepartureLock(String departureLock) {
 		setDepartureLock(Optional.fromNullable(departureLock));
 	}
@@ -355,17 +246,23 @@ public abstract class ReservationBase extends Model {
 		setDepartureLock(Optional.<String>absent());
 	}
 
-	private Optional<Integer> departurePlatformId = Optional.absent();
-
+	@JsonIgnore
 	public Optional<Integer> getDeparturePlatformId() {
 		return wrapNull(departurePlatformId);
 	}
 
+	@JsonIgnore
 	public void setDeparturePlatformId(Optional<Integer> departurePlatformId) {
 		refreshUpdatedAt();
 		this.departurePlatformId = wrapNull(departurePlatformId);
+		for (Platform presentDeparturePlatform : getDeparturePlatform().asSet()) {
+			for (Integer presentDeparturePlatformId : getDeparturePlatformId().asSet()) {
+				presentDeparturePlatform.setId(presentDeparturePlatformId);
+			}
+		}
 	}
 
+	@JsonIgnore
 	public void setDeparturePlatformId(Integer departurePlatformId) {
 		setDeparturePlatformId(Optional.fromNullable(departurePlatformId));
 	}
@@ -374,17 +271,23 @@ public abstract class ReservationBase extends Model {
 		setDeparturePlatformId(Optional.<Integer>absent());
 	}
 
-	private Optional<Integer> departureScheduleId = Optional.absent();
-
+	@JsonIgnore
 	public Optional<Integer> getDepartureScheduleId() {
 		return wrapNull(departureScheduleId);
 	}
 
+	@JsonIgnore
 	public void setDepartureScheduleId(Optional<Integer> departureScheduleId) {
 		refreshUpdatedAt();
 		this.departureScheduleId = wrapNull(departureScheduleId);
+		for (OperationSchedule presentDepartureSchedule : getDepartureSchedule().asSet()) {
+			for (Integer presentDepartureScheduleId : getDepartureScheduleId().asSet()) {
+				presentDepartureSchedule.setId(presentDepartureScheduleId);
+			}
+		}
 	}
 
+	@JsonIgnore
 	public void setDepartureScheduleId(Integer departureScheduleId) {
 		setDepartureScheduleId(Optional.fromNullable(departureScheduleId));
 	}
@@ -393,28 +296,49 @@ public abstract class ReservationBase extends Model {
 		setDepartureScheduleId(Optional.<Integer>absent());
 	}
 
-	private Date departureTime = new Date();
-
+	@JsonIgnore
 	public Date getDepartureTime() {
 		return wrapNull(departureTime);
 	}
 
+	@JsonIgnore
 	public void setDepartureTime(Date departureTime) {
 		refreshUpdatedAt();
 		this.departureTime = wrapNull(departureTime);
 	}
 
-	private Optional<Boolean> dummy = Optional.absent();
+	@JsonIgnore
+	public Optional<String> getDeviceName() {
+		return wrapNull(deviceName);
+	}
 
+	@JsonIgnore
+	public void setDeviceName(Optional<String> deviceName) {
+		refreshUpdatedAt();
+		this.deviceName = wrapNull(deviceName);
+	}
+
+	@JsonIgnore
+	public void setDeviceName(String deviceName) {
+		setDeviceName(Optional.fromNullable(deviceName));
+	}
+
+	public void clearDeviceName() {
+		setDeviceName(Optional.<String>absent());
+	}
+
+	@JsonIgnore
 	public Optional<Boolean> getDummy() {
 		return wrapNull(dummy);
 	}
 
+	@JsonIgnore
 	public void setDummy(Optional<Boolean> dummy) {
 		refreshUpdatedAt();
 		this.dummy = wrapNull(dummy);
 	}
 
+	@JsonIgnore
 	public void setDummy(Boolean dummy) {
 		setDummy(Optional.fromNullable(dummy));
 	}
@@ -423,28 +347,30 @@ public abstract class ReservationBase extends Model {
 		setDummy(Optional.<Boolean>absent());
 	}
 
-	private Integer id = 0;
-
+	@Override
+	@JsonIgnore
 	public Integer getId() {
 		return wrapNull(id);
 	}
 
+	@JsonIgnore
 	public void setId(Integer id) {
 		refreshUpdatedAt();
 		this.id = wrapNull(id);
 	}
 
-	private Optional<String> memo = Optional.absent();
-
+	@JsonIgnore
 	public Optional<String> getMemo() {
 		return wrapNull(memo);
 	}
 
+	@JsonIgnore
 	public void setMemo(Optional<String> memo) {
 		refreshUpdatedAt();
 		this.memo = wrapNull(memo);
 	}
 
+	@JsonIgnore
 	public void setMemo(String memo) {
 		setMemo(Optional.fromNullable(memo));
 	}
@@ -453,17 +379,23 @@ public abstract class ReservationBase extends Model {
 		setMemo(Optional.<String>absent());
 	}
 
-	private Optional<Integer> operatorId = Optional.absent();
-
+	@JsonIgnore
 	public Optional<Integer> getOperatorId() {
 		return wrapNull(operatorId);
 	}
 
+	@JsonIgnore
 	public void setOperatorId(Optional<Integer> operatorId) {
 		refreshUpdatedAt();
 		this.operatorId = wrapNull(operatorId);
+		for (Operator presentOperator : getOperator().asSet()) {
+			for (Integer presentOperatorId : getOperatorId().asSet()) {
+				presentOperator.setId(presentOperatorId);
+			}
+		}
 	}
 
+	@JsonIgnore
 	public void setOperatorId(Integer operatorId) {
 		setOperatorId(Optional.fromNullable(operatorId));
 	}
@@ -472,39 +404,45 @@ public abstract class ReservationBase extends Model {
 		setOperatorId(Optional.<Integer>absent());
 	}
 
-	private Integer passengerCount = 0;
-
+	@JsonIgnore
 	public Integer getPassengerCount() {
 		return wrapNull(passengerCount);
 	}
 
+	@JsonIgnore
 	public void setPassengerCount(Integer passengerCount) {
 		refreshUpdatedAt();
 		this.passengerCount = wrapNull(passengerCount);
 	}
 
-	private Integer payment = 0;
-
+	@JsonIgnore
 	public Integer getPayment() {
 		return wrapNull(payment);
 	}
 
+	@JsonIgnore
 	public void setPayment(Integer payment) {
 		refreshUpdatedAt();
 		this.payment = wrapNull(payment);
 	}
 
-	private Optional<Integer> serviceProviderId = Optional.absent();
-
+	@JsonIgnore
 	public Optional<Integer> getServiceProviderId() {
 		return wrapNull(serviceProviderId);
 	}
 
+	@JsonIgnore
 	public void setServiceProviderId(Optional<Integer> serviceProviderId) {
 		refreshUpdatedAt();
 		this.serviceProviderId = wrapNull(serviceProviderId);
+		for (ServiceProvider presentServiceProvider : getServiceProvider().asSet()) {
+			for (Integer presentServiceProviderId : getServiceProviderId().asSet()) {
+				presentServiceProvider.setId(presentServiceProviderId);
+			}
+		}
 	}
 
+	@JsonIgnore
 	public void setServiceProviderId(Integer serviceProviderId) {
 		setServiceProviderId(Optional.fromNullable(serviceProviderId));
 	}
@@ -513,28 +451,29 @@ public abstract class ReservationBase extends Model {
 		setServiceProviderId(Optional.<Integer>absent());
 	}
 
-	private Integer status = 0;
-
+	@JsonIgnore
 	public Integer getStatus() {
 		return wrapNull(status);
 	}
 
+	@JsonIgnore
 	public void setStatus(Integer status) {
 		refreshUpdatedAt();
 		this.status = wrapNull(status);
 	}
 
-	private Optional<Integer> stoppageTime = Optional.absent();
-
+	@JsonIgnore
 	public Optional<Integer> getStoppageTime() {
 		return wrapNull(stoppageTime);
 	}
 
+	@JsonIgnore
 	public void setStoppageTime(Optional<Integer> stoppageTime) {
 		refreshUpdatedAt();
 		this.stoppageTime = wrapNull(stoppageTime);
 	}
 
+	@JsonIgnore
 	public void setStoppageTime(Integer stoppageTime) {
 		setStoppageTime(Optional.fromNullable(stoppageTime));
 	}
@@ -543,17 +482,18 @@ public abstract class ReservationBase extends Model {
 		setStoppageTime(Optional.<Integer>absent());
 	}
 
-	private Optional<Date> transferredAt = Optional.absent();
-
+	@JsonIgnore
 	public Optional<Date> getTransferredAt() {
 		return wrapNull(transferredAt);
 	}
 
+	@JsonIgnore
 	public void setTransferredAt(Optional<Date> transferredAt) {
 		refreshUpdatedAt();
 		this.transferredAt = wrapNull(transferredAt);
 	}
 
+	@JsonIgnore
 	public void setTransferredAt(Date transferredAt) {
 		setTransferredAt(Optional.fromNullable(transferredAt));
 	}
@@ -562,38 +502,47 @@ public abstract class ReservationBase extends Model {
 		setTransferredAt(Optional.<Date>absent());
 	}
 
-	private Integer unitAssignmentId = 0;
-
+	@JsonIgnore
 	public Integer getUnitAssignmentId() {
 		return wrapNull(unitAssignmentId);
 	}
 
+	@JsonIgnore
 	public void setUnitAssignmentId(Integer unitAssignmentId) {
 		refreshUpdatedAt();
 		this.unitAssignmentId = wrapNull(unitAssignmentId);
+		for (UnitAssignment presentUnitAssignment : getUnitAssignment().asSet()) {
+			presentUnitAssignment.setId(getUnitAssignmentId());
+		}
 	}
 
-	private Date updatedAt = new Date();
-
+	@JsonIgnore
 	public Date getUpdatedAt() {
 		return wrapNull(updatedAt);
 	}
 
+	@JsonIgnore
 	public void setUpdatedAt(Date updatedAt) {
 		this.updatedAt = wrapNull(updatedAt);
 	}
 
-	private Optional<Integer> userId = Optional.absent();
-
+	@JsonIgnore
 	public Optional<Integer> getUserId() {
 		return wrapNull(userId);
 	}
 
+	@JsonIgnore
 	public void setUserId(Optional<Integer> userId) {
 		refreshUpdatedAt();
 		this.userId = wrapNull(userId);
+		for (User presentUser : getUser().asSet()) {
+			for (Integer presentUserId : getUserId().asSet()) {
+				presentUser.setId(presentUserId);
+			}
+		}
 	}
 
+	@JsonIgnore
 	public void setUserId(Integer userId) {
 		setUserId(Optional.fromNullable(userId));
 	}
@@ -602,16 +551,21 @@ public abstract class ReservationBase extends Model {
 		setUserId(Optional.<Integer>absent());
 	}
 
-	private Optional<Platform> arrivalPlatform = Optional.<Platform>absent();
-
+	@JsonIgnore
 	public Optional<Platform> getArrivalPlatform() {
 		return wrapNull(arrivalPlatform);
 	}
 
+	@JsonIgnore
 	public void setArrivalPlatform(Optional<Platform> arrivalPlatform) {
+		refreshUpdatedAt();
 		this.arrivalPlatform = wrapNull(arrivalPlatform);
+		for (Platform presentArrivalPlatform : getArrivalPlatform().asSet()) {
+			setArrivalPlatformId(presentArrivalPlatform.getId());
+		}
 	}
 
+	@JsonIgnore
 	public void setArrivalPlatform(Platform arrivalPlatform) {
 		setArrivalPlatform(Optional.fromNullable(arrivalPlatform));
 	}
@@ -620,16 +574,21 @@ public abstract class ReservationBase extends Model {
 		setArrivalPlatform(Optional.<Platform>absent());
 	}
 
-	private Optional<OperationSchedule> arrivalSchedule = Optional.<OperationSchedule>absent();
-
+	@JsonIgnore
 	public Optional<OperationSchedule> getArrivalSchedule() {
 		return wrapNull(arrivalSchedule);
 	}
 
+	@JsonIgnore
 	public void setArrivalSchedule(Optional<OperationSchedule> arrivalSchedule) {
+		refreshUpdatedAt();
 		this.arrivalSchedule = wrapNull(arrivalSchedule);
+		for (OperationSchedule presentArrivalSchedule : getArrivalSchedule().asSet()) {
+			setArrivalScheduleId(presentArrivalSchedule.getId());
+		}
 	}
 
+	@JsonIgnore
 	public void setArrivalSchedule(OperationSchedule arrivalSchedule) {
 		setArrivalSchedule(Optional.fromNullable(arrivalSchedule));
 	}
@@ -638,16 +597,21 @@ public abstract class ReservationBase extends Model {
 		setArrivalSchedule(Optional.<OperationSchedule>absent());
 	}
 
-	private Optional<Demand> demand = Optional.<Demand>absent();
-
+	@JsonIgnore
 	public Optional<Demand> getDemand() {
 		return wrapNull(demand);
 	}
 
+	@JsonIgnore
 	public void setDemand(Optional<Demand> demand) {
+		refreshUpdatedAt();
 		this.demand = wrapNull(demand);
+		for (Demand presentDemand : getDemand().asSet()) {
+			setDemandId(presentDemand.getId());
+		}
 	}
 
+	@JsonIgnore
 	public void setDemand(Demand demand) {
 		setDemand(Optional.fromNullable(demand));
 	}
@@ -656,16 +620,21 @@ public abstract class ReservationBase extends Model {
 		setDemand(Optional.<Demand>absent());
 	}
 
-	private Optional<Platform> departurePlatform = Optional.<Platform>absent();
-
+	@JsonIgnore
 	public Optional<Platform> getDeparturePlatform() {
 		return wrapNull(departurePlatform);
 	}
 
+	@JsonIgnore
 	public void setDeparturePlatform(Optional<Platform> departurePlatform) {
+		refreshUpdatedAt();
 		this.departurePlatform = wrapNull(departurePlatform);
+		for (Platform presentDeparturePlatform : getDeparturePlatform().asSet()) {
+			setDeparturePlatformId(presentDeparturePlatform.getId());
+		}
 	}
 
+	@JsonIgnore
 	public void setDeparturePlatform(Platform departurePlatform) {
 		setDeparturePlatform(Optional.fromNullable(departurePlatform));
 	}
@@ -674,16 +643,21 @@ public abstract class ReservationBase extends Model {
 		setDeparturePlatform(Optional.<Platform>absent());
 	}
 
-	private Optional<OperationSchedule> departureSchedule = Optional.<OperationSchedule>absent();
-
+	@JsonIgnore
 	public Optional<OperationSchedule> getDepartureSchedule() {
 		return wrapNull(departureSchedule);
 	}
 
+	@JsonIgnore
 	public void setDepartureSchedule(Optional<OperationSchedule> departureSchedule) {
+		refreshUpdatedAt();
 		this.departureSchedule = wrapNull(departureSchedule);
+		for (OperationSchedule presentDepartureSchedule : getDepartureSchedule().asSet()) {
+			setDepartureScheduleId(presentDepartureSchedule.getId());
+		}
 	}
 
+	@JsonIgnore
 	public void setDepartureSchedule(OperationSchedule departureSchedule) {
 		setDepartureSchedule(Optional.fromNullable(departureSchedule));
 	}
@@ -692,12 +666,12 @@ public abstract class ReservationBase extends Model {
 		setDepartureSchedule(Optional.<OperationSchedule>absent());
 	}
 
-	private LinkedList<User> fellowUsers = new LinkedList<User>();
-
+	@JsonIgnore
 	public List<User> getFellowUsers() {
 		return wrapNull(fellowUsers);
 	}
 
+	@JsonIgnore
 	public void setFellowUsers(Iterable<User> fellowUsers) {
 		this.fellowUsers = wrapNull(fellowUsers);
 	}
@@ -706,16 +680,21 @@ public abstract class ReservationBase extends Model {
 		setFellowUsers(new LinkedList<User>());
 	}
 
-	private Optional<Operator> operator = Optional.<Operator>absent();
-
+	@JsonIgnore
 	public Optional<Operator> getOperator() {
 		return wrapNull(operator);
 	}
 
+	@JsonIgnore
 	public void setOperator(Optional<Operator> operator) {
+		refreshUpdatedAt();
 		this.operator = wrapNull(operator);
+		for (Operator presentOperator : getOperator().asSet()) {
+			setOperatorId(presentOperator.getId());
+		}
 	}
 
+	@JsonIgnore
 	public void setOperator(Operator operator) {
 		setOperator(Optional.fromNullable(operator));
 	}
@@ -724,12 +703,12 @@ public abstract class ReservationBase extends Model {
 		setOperator(Optional.<Operator>absent());
 	}
 
-	private LinkedList<PassengerRecord> passengerRecords = new LinkedList<PassengerRecord>();
-
+	@JsonIgnore
 	public List<PassengerRecord> getPassengerRecords() {
 		return wrapNull(passengerRecords);
 	}
 
+	@JsonIgnore
 	public void setPassengerRecords(Iterable<PassengerRecord> passengerRecords) {
 		this.passengerRecords = wrapNull(passengerRecords);
 	}
@@ -738,12 +717,12 @@ public abstract class ReservationBase extends Model {
 		setPassengerRecords(new LinkedList<PassengerRecord>());
 	}
 
-	private LinkedList<ReservationUser> reservationUsers = new LinkedList<ReservationUser>();
-
+	@JsonIgnore
 	public List<ReservationUser> getReservationUsers() {
 		return wrapNull(reservationUsers);
 	}
 
+	@JsonIgnore
 	public void setReservationUsers(Iterable<ReservationUser> reservationUsers) {
 		this.reservationUsers = wrapNull(reservationUsers);
 	}
@@ -752,16 +731,21 @@ public abstract class ReservationBase extends Model {
 		setReservationUsers(new LinkedList<ReservationUser>());
 	}
 
-	private Optional<ServiceProvider> serviceProvider = Optional.<ServiceProvider>absent();
-
+	@JsonIgnore
 	public Optional<ServiceProvider> getServiceProvider() {
 		return wrapNull(serviceProvider);
 	}
 
+	@JsonIgnore
 	public void setServiceProvider(Optional<ServiceProvider> serviceProvider) {
+		refreshUpdatedAt();
 		this.serviceProvider = wrapNull(serviceProvider);
+		for (ServiceProvider presentServiceProvider : getServiceProvider().asSet()) {
+			setServiceProviderId(presentServiceProvider.getId());
+		}
 	}
 
+	@JsonIgnore
 	public void setServiceProvider(ServiceProvider serviceProvider) {
 		setServiceProvider(Optional.fromNullable(serviceProvider));
 	}
@@ -770,16 +754,21 @@ public abstract class ReservationBase extends Model {
 		setServiceProvider(Optional.<ServiceProvider>absent());
 	}
 
-	private Optional<UnitAssignment> unitAssignment = Optional.<UnitAssignment>absent();
-
+	@JsonIgnore
 	public Optional<UnitAssignment> getUnitAssignment() {
 		return wrapNull(unitAssignment);
 	}
 
+	@JsonIgnore
 	public void setUnitAssignment(Optional<UnitAssignment> unitAssignment) {
+		refreshUpdatedAt();
 		this.unitAssignment = wrapNull(unitAssignment);
+		for (UnitAssignment presentUnitAssignment : getUnitAssignment().asSet()) {
+			setUnitAssignmentId(presentUnitAssignment.getId());
+		}
 	}
 
+	@JsonIgnore
 	public void setUnitAssignment(UnitAssignment unitAssignment) {
 		setUnitAssignment(Optional.fromNullable(unitAssignment));
 	}
@@ -788,22 +777,32 @@ public abstract class ReservationBase extends Model {
 		setUnitAssignment(Optional.<UnitAssignment>absent());
 	}
 
-	private Optional<User> user = Optional.<User>absent();
-
+	@JsonIgnore
 	public Optional<User> getUser() {
 		return wrapNull(user);
 	}
 
+	@JsonIgnore
 	public void setUser(Optional<User> user) {
+		refreshUpdatedAt();
 		this.user = wrapNull(user);
+		for (User presentUser : getUser().asSet()) {
+			setUserId(presentUser.getId());
+		}
 	}
 
+	@JsonIgnore
 	public void setUser(User user) {
 		setUser(Optional.fromNullable(user));
 	}
 
 	public void clearUser() {
 		setUser(Optional.<User>absent());
+	}
+
+	@Override
+	public Reservation clone() {
+		return super.clone(Reservation.class);
 	}
 
 	@Override
@@ -820,6 +819,7 @@ public abstract class ReservationBase extends Model {
 			.append(departurePlatformId)
 			.append(departureScheduleId)
 			.append(departureTime)
+			.append(deviceName)
 			.append(dummy)
 			.append(id)
 			.append(memo)
@@ -866,6 +866,7 @@ public abstract class ReservationBase extends Model {
 			.append(departurePlatformId, other.departurePlatformId)
 			.append(departureScheduleId, other.departureScheduleId)
 			.append(departureTime, other.departureTime)
+			.append(deviceName, other.deviceName)
 			.append(dummy, other.dummy)
 			.append(id, other.id)
 			.append(memo, other.memo)
