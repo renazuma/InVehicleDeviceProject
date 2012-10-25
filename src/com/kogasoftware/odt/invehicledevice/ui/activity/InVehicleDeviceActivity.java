@@ -360,23 +360,6 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 		}
 	}
 
-	private final Runnable alertVehicleNotification = new Runnable() {
-		private Integer count = 0;
-
-		@Override
-		public void run() {
-			if (count > 10) { // TODO 定数
-				count = 0;
-				alertImageView.setVisibility(View.GONE);
-				return;
-			}
-			count++;
-			alertImageView.setVisibility(count % 2 == 0 ? View.VISIBLE
-					: View.GONE);
-			handler.postDelayed(this, ALERT_SHOW_INTERVAL_MILLIS);
-		}
-	};
-
 	@Override
 	public void onAlertVehicleNotificationReceive(
 			final List<VehicleNotification> vehicleNotifications) {
