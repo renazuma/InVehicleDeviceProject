@@ -61,14 +61,16 @@ public class InVehicleDeviceFragment extends ApplicationFragment<State>
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		Optional<OperationSchedule> currentOperationSchedule = OperationSchedule
-				.getCurrentOperationSchedule(getState().getOperationSchedules());
+				.getCurrent(getState().getOperationSchedules());
 		FragmentTransaction fragmentTransaction = getFragmentManager()
 				.beginTransaction();
 		fragmentTransaction.add(R.id.information_fragment_container,
 				InformationBarFragment.newInstance(getState().getPhase(),
 						currentOperationSchedule));
 		fragmentTransaction.add(R.id.control_fragment_container,
-				ControlBarFragment.newInstance());
+				ControlBarFragment.newInstance(getState().getPhase(),
+						getState().getOperationSchedules(), getState()
+								.getPassengerRecords()));
 		fragmentTransaction.commitAllowingStateLoss();
 		getService().getEventDispatcher().addOnUpdatePhaseListener(this);
 		updateView(true);
@@ -96,7 +98,7 @@ public class InVehicleDeviceFragment extends ApplicationFragment<State>
 
 	public void updateView(Boolean first) {
 		Optional<OperationSchedule> currentOperationSchedule = OperationSchedule
-				.getCurrentOperationSchedule(getState().getOperationSchedules());
+				.getCurrent(getState().getOperationSchedules());
 		String tag = getPhaseFragmentTag(getState().getPhase(),
 				currentOperationSchedule);
 		FragmentManager fragmentManager = getFragmentManager();
@@ -157,6 +159,9 @@ public class InVehicleDeviceFragment extends ApplicationFragment<State>
 			List<OperationSchedule> operationSchedules,
 			List<PassengerRecord> passengerRecords) {
 		setState(new State(phase, operationSchedules, passengerRecords));
+		if (isRemoving()) {
+			return;
+		}
 		updateView(false);
 	}
 

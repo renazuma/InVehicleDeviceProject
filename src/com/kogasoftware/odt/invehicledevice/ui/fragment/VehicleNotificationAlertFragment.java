@@ -12,8 +12,8 @@ import android.view.ViewGroup;
 
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.ui.fragment.VehicleNotificationAlertFragment.State;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
+import com.kogasoftware.odt.invehicledevice.ui.fragment.VehicleNotificationAlertFragment.State;
 
 public class VehicleNotificationAlertFragment extends
 		ApplicationFragment<State> {
@@ -49,6 +49,9 @@ public class VehicleNotificationAlertFragment extends
 			public void run() {
 				if (count > 10) { // TODO 定数
 					count = 0;
+					if (isRemoving()) {
+						return;
+					}
 					FragmentTransaction fragmentTransaction = setCustomAnimation(getFragmentManager()
 							.beginTransaction());
 					for (VehicleNotification vehicleNotification : getState()

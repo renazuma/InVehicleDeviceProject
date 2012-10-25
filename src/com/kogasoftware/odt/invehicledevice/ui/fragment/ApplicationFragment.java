@@ -136,6 +136,9 @@ public class ApplicationFragment<S extends Serializable> extends Fragment {
 	}
 
 	protected void hide() {
+		if (isRemoving()) {
+			return;
+		}
 		setCustomAnimation(getFragmentManager().beginTransaction())
 				.remove(this).commitAllowingStateLoss();
 	}

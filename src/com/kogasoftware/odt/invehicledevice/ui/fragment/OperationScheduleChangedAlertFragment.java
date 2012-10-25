@@ -1,6 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.ui.fragment;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import android.os.Bundle;
@@ -11,13 +12,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundReader;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.VehicleNotificationLogic;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.VehicleNotificationLogic;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.OperationScheduleChangedAlertFragment.State;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 
 public class OperationScheduleChangedAlertFragment extends
 		ApplicationFragment<State> {
@@ -51,7 +53,6 @@ public class OperationScheduleChangedAlertFragment extends
 					return;
 				}
 				showOperationScheduleChangedFragment();
-				hide();
 			}
 		});
 		getService().speak("運行予定が変更されました");
@@ -67,19 +68,23 @@ public class OperationScheduleChangedAlertFragment extends
 
 	private void showOperationScheduleChangedFragment() {
 		getService().getLocalStorage().read(
-				new BackgroundReader<List<VehicleNotification>>() {
+				new BackgroundReader<ArrayList<VehicleNotification>>() {
 					@Override
-					public List<VehicleNotification> readInBackground(
+					public ArrayList<VehicleNotification> readInBackground(
 							LocalData localData) {
-						return new VehicleNotificationLogic(getService())
-								.getVehicleNotifications(
+						return Lists.newArrayList(new VehicleNotificationLogic(
+								getService())
+								.getVehicleNotificationsWithReadLock(
 										VehicleNotification.NotificationKind.RESERVATION_CHANGED,
-										VehicleNotificationStatus.OPERATION_SCHEDULE_RECEIVED);
+										VehicleNotificationStatus.OPERATION_SCHEDULE_RECEIVED));
 					}
 
 					@Override
 					public void onRead(
-							List<VehicleNotification> vehicleNotifications) {
+							ArrayList<VehicleNotification> vehicleNotifications) {
+						if (isRemoving()) {
+							return;
+						}
 						String tag = "tag:"
 								+ OperationScheduleChangedFragment.class
 										.getName();
@@ -98,6 +103,7 @@ public class OperationScheduleChangedAlertFragment extends
 												.newInstance(vehicleNotifications),
 										tag);
 						fragmentTransaction.commitAllowingStateLoss();
+						hide();
 					}
 				});
 	}
