@@ -50,17 +50,19 @@ public class DefaultInVehicleDeviceApiClientTestCase extends AndroidTestCase {
 			super(serverHost);
 		}
 
-		public OfflineTestApiClient(String serverHost, String authenticationToken) {
+		public OfflineTestApiClient(String serverHost,
+				String authenticationToken) {
 			super(serverHost, authenticationToken);
 		}
 
-		public OfflineTestApiClient(String serverHost, String authenticationToken,
-				File backupFile) {
+		public OfflineTestApiClient(String serverHost,
+				String authenticationToken, File backupFile) {
 			super(serverHost, authenticationToken, backupFile);
 		}
 
 		@Override
-		protected boolean runHttpSessionAndCallback(DefaultApiClientRequest<?> request) {
+		protected boolean runHttpSessionAndCallback(
+				DefaultApiClientRequest<?> request) {
 			if (offline) {
 				request.onException(new ApiClientException("offline test"));
 				return false;
@@ -178,8 +180,8 @@ public class DefaultInVehicleDeviceApiClientTestCase extends AndroidTestCase {
 	}
 
 	public void testGetVehicleNotifications() throws Exception {
-		api = new DefaultInVehicleDeviceApiClient(SERVER_HOST, master.getInVehicleDevice()
-				.getAuthenticationToken().get());
+		api = new DefaultInVehicleDeviceApiClient(SERVER_HOST, master
+				.getInVehicleDevice().getAuthenticationToken().get());
 		latch = new CountDownLatch(1);
 		notifications = null;
 
@@ -216,8 +218,8 @@ public class DefaultInVehicleDeviceApiClientTestCase extends AndroidTestCase {
 	}
 
 	public void testResponseVehicleNotification() throws Exception {
-		api = new DefaultInVehicleDeviceApiClient(SERVER_HOST, master.getInVehicleDevice()
-				.getAuthenticationToken().get());
+		api = new DefaultInVehicleDeviceApiClient(SERVER_HOST, master
+				.getInVehicleDevice().getAuthenticationToken().get());
 		callTestResponseVehicleNotification(false);
 	}
 
@@ -332,8 +334,8 @@ public class DefaultInVehicleDeviceApiClientTestCase extends AndroidTestCase {
 	}
 
 	public void testGetOperationSchedules() throws Exception {
-		api = new DefaultInVehicleDeviceApiClient(SERVER_HOST, master.getInVehicleDevice()
-				.getAuthenticationToken().get());
+		api = new DefaultInVehicleDeviceApiClient(SERVER_HOST, master
+				.getInVehicleDevice().getAuthenticationToken().get());
 		callTestGetOperationSchedules(false);
 	}
 
@@ -512,8 +514,8 @@ public class DefaultInVehicleDeviceApiClientTestCase extends AndroidTestCase {
 	}
 
 	public void testPassengerGetOnAndOff() throws Exception {
-		api = new DefaultInVehicleDeviceApiClient(SERVER_HOST, master.getInVehicleDevice()
-				.getAuthenticationToken().get());
+		api = new DefaultInVehicleDeviceApiClient(SERVER_HOST, master
+				.getInVehicleDevice().getAuthenticationToken().get());
 		callTestPassengerGetOnAndOff(false);
 	}
 
@@ -675,8 +677,8 @@ public class DefaultInVehicleDeviceApiClientTestCase extends AndroidTestCase {
 	}
 
 	public void testPassengerCancelGetOnAndOff() throws Exception {
-		api = new DefaultInVehicleDeviceApiClient(SERVER_HOST, master.getInVehicleDevice()
-				.getAuthenticationToken().get());
+		api = new DefaultInVehicleDeviceApiClient(SERVER_HOST, master
+				.getInVehicleDevice().getAuthenticationToken().get());
 		schedules = null;
 		createTestOperationSchedules();
 
@@ -917,6 +919,7 @@ public class DefaultInVehicleDeviceApiClientTestCase extends AndroidTestCase {
 			}
 			if (i == max / 2) {
 				api.getVehicleNotifications(new EmptyApiClientCallback<List<VehicleNotification>>() {
+					@Override
 					public void onSucceed(int reqkey, int statusCode,
 							List<VehicleNotification> result) {
 						latch.countDown();
@@ -1066,8 +1069,8 @@ public class DefaultInVehicleDeviceApiClientTestCase extends AndroidTestCase {
 	}
 
 	public void testSendServiceUnitStatusLog() throws Exception {
-		api = new DefaultInVehicleDeviceApiClient(SERVER_HOST, master.getInVehicleDevice()
-				.getAuthenticationToken().get());
+		api = new DefaultInVehicleDeviceApiClient(SERVER_HOST, master
+				.getInVehicleDevice().getAuthenticationToken().get());
 		callTestSendServiceUnitStatusLog(false);
 	}
 
@@ -1210,8 +1213,8 @@ public class DefaultInVehicleDeviceApiClientTestCase extends AndroidTestCase {
 		}.getResult();
 		assertTrue(serverServiceUnitStatusLogs.isEmpty());
 
-		api = new DefaultInVehicleDeviceApiClient(SERVER_HOST, master.getInVehicleDevice()
-				.getAuthenticationToken().get(), backupFile);
+		api = new DefaultInVehicleDeviceApiClient(SERVER_HOST, master
+				.getInVehicleDevice().getAuthenticationToken().get(),
 				backupFile);
 		Thread.sleep(10 * 1000);
 		serverServiceUnitStatusLogs = new SyncCall<List<ServiceUnitStatusLog>>() {
@@ -1243,7 +1246,7 @@ public class DefaultInVehicleDeviceApiClientTestCase extends AndroidTestCase {
 			int k = api.sendServiceUnitStatusLog(new ServiceUnitStatusLog(),
 					new ApiClientCallback<ServiceUnitStatusLog>() {
 						@Override
-						public void onException(int reqkey, ApiClientException ex) {
+						public void onException(int reqkey,
 								ApiClientException ex) {
 						}
 
@@ -1382,8 +1385,8 @@ public class DefaultInVehicleDeviceApiClientTestCase extends AndroidTestCase {
 	}
 
 	public void testGetServiceProvider() throws Exception {
-		api = new DefaultInVehicleDeviceApiClient(SERVER_HOST, master.getInVehicleDevice()
-				.getAuthenticationToken().get());
+		api = new DefaultInVehicleDeviceApiClient(SERVER_HOST, master
+				.getInVehicleDevice().getAuthenticationToken().get());
 		latch = new CountDownLatch(1);
 		final AtomicReference<ServiceProvider> outputServiceProvider = new AtomicReference<ServiceProvider>();
 		api.getServiceProvider(new ApiClientCallback<ServiceProvider>() {
@@ -1404,7 +1407,7 @@ public class DefaultInVehicleDeviceApiClientTestCase extends AndroidTestCase {
 				latch.countDown();
 			}
 		});
-		assertTrue(latch.await(20, TimeUnit.SECONDS));
+		assertTrue(latch.await(2000, TimeUnit.SECONDS));
 		assertNotNull(outputServiceProvider.get());
 		assertEquals(serviceProvider.getId(), outputServiceProvider.get()
 				.getId());
