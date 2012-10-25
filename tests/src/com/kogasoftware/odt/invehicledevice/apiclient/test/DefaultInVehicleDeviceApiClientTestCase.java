@@ -1110,7 +1110,10 @@ public class DefaultInVehicleDeviceApiClientTestCase extends AndroidTestCase {
 		}
 		assertTrue(latch.await(20, TimeUnit.SECONDS));
 		assertNotNull(serviceUnitStatusLog);
-		assertEquals(new BigDecimal(35.2), serviceUnitStatusLog.getLatitude());
+		Integer scale = 7;
+		Integer roundingMode = BigDecimal.ROUND_HALF_EVEN;
+		assertEquals(new BigDecimal(35.2).setScale(scale, roundingMode), serviceUnitStatusLog
+				.getLatitude().setScale(scale, roundingMode));
 		ServiceUnitStatusLog serverServiceUnitStatusLog = new SyncCall<ServiceUnitStatusLog>() {
 			@Override
 			public int run() throws Exception {
@@ -1209,6 +1212,7 @@ public class DefaultInVehicleDeviceApiClientTestCase extends AndroidTestCase {
 
 		api = new DefaultInVehicleDeviceApiClient(SERVER_HOST, master.getInVehicleDevice()
 				.getAuthenticationToken().get(), backupFile);
+				backupFile);
 		Thread.sleep(10 * 1000);
 		serverServiceUnitStatusLogs = new SyncCall<List<ServiceUnitStatusLog>>() {
 			@Override
@@ -1240,6 +1244,7 @@ public class DefaultInVehicleDeviceApiClientTestCase extends AndroidTestCase {
 					new ApiClientCallback<ServiceUnitStatusLog>() {
 						@Override
 						public void onException(int reqkey, ApiClientException ex) {
+								ApiClientException ex) {
 						}
 
 						@Override
