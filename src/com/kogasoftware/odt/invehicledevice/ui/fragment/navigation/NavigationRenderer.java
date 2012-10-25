@@ -26,17 +26,17 @@ import android.util.Log;
 
 import com.google.common.base.Optional;
 import com.javadocmd.simplelatlng.LatLng;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.ServiceUnitStatusLogLogic;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.ServiceUnitStatusLogLogic;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.navigation.frametask.FrameTask;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.navigation.frametask.MapBuildFrameTask;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.navigation.frametask.NextPlatformFrameTask;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.navigation.frametask.SelfFrameTask;
 import com.kogasoftware.odt.invehicledevice.ui.frametask.navigation.tilepipeline.TilePipeline;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnitStatusLog;
 
 public class NavigationRenderer implements GLSurfaceView.Renderer {
 	public interface OnChangeMapZoomLevelListener {
@@ -94,7 +94,8 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	protected final Handler uiHandler;
 
 	public NavigationRenderer(InVehicleDeviceService service,
-			TilePipeline tilePipeline, Handler uiHandler) {
+			TilePipeline tilePipeline, Handler uiHandler,
+			Optional<OperationSchedule> optionalOperationSchedule) {
 		this.service = service;
 		this.uiHandler = uiHandler;
 		operationScheduleLogic = new OperationScheduleLogic(service);
@@ -125,8 +126,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		}
 		latitudeSmoother.addMotion(defaultLatitude);
 		longitudeSmoother.addMotion(defaultLongitude);
-
-		updatePlatform();
+		updatePlatform(optionalOperationSchedule);
 	}
 
 	public void addOnChangeMapZoomLevelListener(
@@ -435,9 +435,10 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		longitudeSmoother.addMotion(longitude, millis);
 	}
 
-	public void updatePlatform() {
-		for (OperationSchedule operationSchedule : operationScheduleLogic
-				.getCurrentOperationSchedule().asSet()) {
+	public void updatePlatform(
+			Optional<OperationSchedule> optionalOperationSchedule) {
+		for (OperationSchedule operationSchedule : optionalOperationSchedule
+				.asSet()) {
 			for (Platform platform : operationSchedule.getPlatform().asSet()) {
 				nextPlatformFrameTask.setLatLng(new LatLng(platform
 						.getLatitude().doubleValue(), platform.getLongitude()

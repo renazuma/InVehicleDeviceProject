@@ -3,28 +3,29 @@ package com.kogasoftware.odt.invehicledevice.ui.fragment;
 import java.io.Serializable;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
+
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundReader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundWriter;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.ui.ViewDisabler;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.ControlBarFragment.State;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 
 public class ControlBarFragment extends ApplicationFragment<State> implements
 		EventDispatcher.OnUpdatePhaseListener {
@@ -33,10 +34,35 @@ public class ControlBarFragment extends ApplicationFragment<State> implements
 
 	@SuppressWarnings("serial")
 	protected static class State implements Serializable {
+		private final Phase phase;
+		private final List<OperationSchedule> operationSchedules;
+		private final List<PassengerRecord> passengerRecords;
+
+		public State(Phase phase, List<OperationSchedule> operationSchedules,
+				List<PassengerRecord> passengerRecords) {
+			this.phase = phase;
+			this.operationSchedules = operationSchedules;
+			this.passengerRecords = passengerRecords;
+		}
+
+		public Phase getPhase() {
+			return phase;
+		}
+
+		public List<PassengerRecord> getPassengerRecords() {
+			return passengerRecords;
+		}
+
+		public List<OperationSchedule> getOperationSchedules() {
+			return operationSchedules;
+		}
 	}
 
-	public static ControlBarFragment newInstance() {
-		return newInstance(new ControlBarFragment(), new State());
+	public static ControlBarFragment newInstance(Phase phase,
+			List<OperationSchedule> operationSchedules,
+			List<PassengerRecord> passengerRecords) {
+		return newInstance(new ControlBarFragment(), new State(phase,
+				operationSchedules, passengerRecords));
 	}
 
 	@Override
@@ -73,16 +99,14 @@ public class ControlBarFragment extends ApplicationFragment<State> implements
 								localData.operationSchedules,
 								localData.passengerRecords,
 								localData.completeGetOff);
-						Boolean isLast = !OperationSchedule
-								.getRelativeOperationSchedule(
-										localData.operationSchedules, 1)
-								.isPresent();
-						return Pair.create(phase, isLast);
+						Boolean isLast = !OperationSchedule.getRelative(
+								localData.operationSchedules, 1).isPresent();
+						return Pair.of(phase, isLast);
 					}
 
 					@Override
 					public void onRead(Pair<Phase, Boolean> result) {
-						updateView(result.first, result.second);
+						updateView(result.getLeft(), result.getRight());
 					}
 				});
 		return view;
@@ -95,138 +119,71 @@ public class ControlBarFragment extends ApplicationFragment<State> implements
 	}
 
 	public void showNavigationFragment() {
+		if (isRemoving()) {
+			return;
+		}
 		String tag = "tag:" + NavigationFragment.class.getSimpleName();
 		Fragment old = getFragmentManager().findFragmentByTag(tag);
 		if (old != null) {
 			setCustomAnimation(getFragmentManager().beginTransaction()).remove(
 					old).commit();
 		}
-		getService().getLocalStorage().read(
-				new BackgroundReader<Pair<Phase, List<OperationSchedule>>>() {
-					@Override
-					public Pair<Phase, List<OperationSchedule>> readInBackground(
-							LocalData localData) {
-						Phase phase = OperationScheduleLogic.getPhase(
-								localData.operationSchedules,
-								localData.passengerRecords,
-								localData.completeGetOff);
-						return Pair.create(phase, localData.operationSchedules);
-					}
-
-					@Override
-					public void onRead(
-							Pair<Phase, List<OperationSchedule>> result) {
-						setCustomAnimation(
-								getFragmentManager().beginTransaction()).add(
-								R.id.modal_fragment_container,
-								NavigationFragment.newInstance(result.first,
-										result.second)).commit();
-					}
-				});
+		setCustomAnimation(getFragmentManager().beginTransaction()).add(
+				R.id.modal_fragment_container,
+				NavigationFragment.newInstance(getState().getPhase(),
+						getState().getOperationSchedules())).commit();
 	}
 
 	public void showOperationScheduleListFragment() {
-		getService().getLocalStorage().read(
-				new BackgroundReader<List<OperationSchedule>>() {
-					@Override
-					public List<OperationSchedule> readInBackground(
-							LocalData localData) {
-						return localData.operationSchedules;
-					}
-
-					@Override
-					public void onRead(
-							List<OperationSchedule> operationSchedules) {
-						String tag = "tag:"
-								+ OperationScheduleListFragment.class
-										.getSimpleName();
-						Fragment old = getFragmentManager().findFragmentByTag(
-								tag);
-						if (old != null) {
-							setCustomAnimation(
-									getFragmentManager().beginTransaction())
-									.remove(old).commit();
-						}
-						setCustomAnimation(
-								getFragmentManager().beginTransaction()).add(
-								R.id.modal_fragment_container,
-								OperationScheduleListFragment
-										.newInstance(operationSchedules))
-								.commit();
-					}
-				});
+		if (isRemoving()) {
+			return;
+		}
+		String tag = "tag:"
+				+ OperationScheduleListFragment.class.getSimpleName();
+		Fragment old = getFragmentManager().findFragmentByTag(tag);
+		if (old != null) {
+			setCustomAnimation(getFragmentManager().beginTransaction()).remove(
+					old).commit();
+		}
+		setCustomAnimation(getFragmentManager().beginTransaction()).add(
+				R.id.modal_fragment_container,
+				OperationScheduleListFragment.newInstance(getState()
+						.getOperationSchedules())).commit();
 	}
 
 	public void showArrivalCheckFragment() {
-		getService().getLocalStorage().read(
-				new BackgroundReader<Optional<OperationSchedule>>() {
-					@Override
-					public Optional<OperationSchedule> readInBackground(
-							LocalData localData) {
-						return OperationSchedule
-								.getCurrentOperationSchedule(localData.operationSchedules);
-					}
-
-					@Override
-					public void onRead(Optional<OperationSchedule> result) {
-						for (OperationSchedule operationSchedule : result
-								.asSet()) {
-							String tag = "tag:"
-									+ ArrivalCheckFragment.class
-											.getSimpleName();
-							Fragment old = getFragmentManager()
-									.findFragmentByTag(tag);
-							if (old != null) {
-								setCustomAnimation(
-										getFragmentManager().beginTransaction())
-										.remove(old).commit();
-							}
-							setCustomAnimation(
-									getFragmentManager().beginTransaction())
-									.add(R.id.modal_fragment_container,
-											ArrivalCheckFragment
-													.newInstance(operationSchedule))
-									.commit();
-						}
-					}
-				});
+		for (OperationSchedule operationSchedule : OperationSchedule
+				.getCurrent(getState().getOperationSchedules()).asSet()) {
+			String tag = "tag:" + ArrivalCheckFragment.class.getSimpleName();
+			Fragment old = getFragmentManager().findFragmentByTag(tag);
+			if (old != null) {
+				setCustomAnimation(getFragmentManager().beginTransaction())
+						.remove(old).commit();
+			}
+			setCustomAnimation(getFragmentManager().beginTransaction()).add(
+					R.id.modal_fragment_container,
+					ArrivalCheckFragment.newInstance(operationSchedule))
+					.commit();
+		}
 	}
 
 	public void showDepartureCheckFragment() {
-		getService()
-				.getLocalStorage()
-				.read(new BackgroundReader<Pair<Phase, Pair<List<OperationSchedule>, List<PassengerRecord>>>>() {
-					@Override
-					public Pair<Phase, Pair<List<OperationSchedule>, List<PassengerRecord>>> readInBackground(
-							LocalData localData) {
-						Phase phase = OperationScheduleLogic.getPhase(
-								localData.operationSchedules,
-								localData.passengerRecords,
-								localData.completeGetOff);
-						return Pair.create(phase, Pair.create(
-								localData.operationSchedules,
-								localData.passengerRecords));
-					}
-
-					@Override
-					public void onRead(
-							Pair<Phase, Pair<List<OperationSchedule>, List<PassengerRecord>>> result) {
-						showDepartureCheckFragment(result.first,
-								result.second.first, result.second.second);
-					}
-				});
+		if (isRemoving()) {
+			return;
+		}
+		showDepartureCheckFragment(getState().getPhase(), getState()
+				.getOperationSchedules(), getState().getPassengerRecords());
 	}
 
 	public void showDepartureCheckFragment(Phase phase,
 			List<OperationSchedule> operationSchedules,
 			List<PassengerRecord> passengerRecords) {
-		if (!OperationSchedule.getCurrentOperationSchedule(operationSchedules)
-				.isPresent()) {
+		if (!OperationSchedule.getCurrent(operationSchedules).isPresent()) {
 			Log.e(TAG, "current operation schedule not found");
 			return;
 		}
-		OperationSchedule operationSchedule = OperationSchedule
-				.getCurrentOperationSchedule(operationSchedules).get();
+		OperationSchedule operationSchedule = OperationSchedule.getCurrent(
+				operationSchedules).get();
 		final OperationScheduleLogic operationScheduleLogic = new OperationScheduleLogic(
 				getService());
 
@@ -282,7 +239,11 @@ public class ControlBarFragment extends ApplicationFragment<State> implements
 	public void updateView(Phase phase, Boolean isLast) {
 		Button changePhaseButton = (Button) getView().findViewById(
 				R.id.change_phase_button);
-		getView().setBackgroundColor(getPhaseColor(phase));
+		// getView().setBackgroundColor(getPhaseColor(phase));
+		// getView().setBackgroundColor(Color.BLACK);
+		getView().setBackgroundColor(Color.WHITE);
+		// getView().setBackgroundColor(Color.GRAY);
+		// getView().setBackgroundColor(Color.LTGRAY);
 		switch (phase) {
 		case DRIVE:
 			changePhaseButton.setEnabled(true);
@@ -342,9 +303,8 @@ public class ControlBarFragment extends ApplicationFragment<State> implements
 	public void onUpdatePhase(Phase phase,
 			List<OperationSchedule> operationSchedules,
 			List<PassengerRecord> passengerRecords) {
-		updateView(
-				phase,
-				!OperationSchedule.getRelativeOperationSchedule(
-						operationSchedules, 1).isPresent());
+		setState(new State(phase, operationSchedules, passengerRecords));
+		updateView(phase, !OperationSchedule.getRelative(operationSchedules, 1)
+				.isPresent());
 	}
 }
