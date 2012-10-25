@@ -8,7 +8,7 @@ import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Color;
@@ -26,25 +26,24 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.compatibility.reflection.android.provider.SettingsReflection;
 import com.kogasoftware.odt.invehicledevice.compatibility.reflection.android.view.ViewReflection;
 import com.kogasoftware.odt.invehicledevice.compatibility.reflection.android.view.ViewReflection.OnSystemUiVisibilityChangeListenerReflection;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.ui.BigToast;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.InVehicleDeviceFragment;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.OperationScheduleChangedAlertFragment;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.VehicleNotificationAlertFragment;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 
 public class InVehicleDeviceActivity extends FragmentActivity implements
 		EventDispatcher.OnExitListener,
@@ -59,7 +58,6 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 	public static final int SYSTEM_UI_VISIBILITY_UPDATE_MILLIS = 2 * 1000;
 	public static final String LOADING_DIALOG_FRAGMENT_TAG = "LoadingDialogFragmentTag";
 	private final Handler handler = new Handler();
-	private ImageView alertImageView;
 
 	/**
 	 * Androidエミュレーターで、Activity起動後ESCキーを押してホーム画面に戻ると、Activityが見えていないのに
@@ -153,11 +151,14 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 			dialog.setMessage(Html
 					.fromHtml(getString(R.string.operation_schedule_receiving_html)));
 			dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			dialog.setCanceledOnTouchOutside(true);
-			dialog.setOnCancelListener(new OnCancelListener() {
+			dialog.setCanceledOnTouchOutside(false);
+			dialog.setOnDismissListener(new OnDismissListener() {
 				@Override
-				public void onCancel(DialogInterface dialog) {
-					getActivity().finish();
+				public void onDismiss(DialogInterface dialog) {
+					if (!((InVehicleDeviceActivity) getActivity())
+							.isUIInitialized()) {
+						getActivity().finish();
+					}
 				}
 			});
 			return dialog;
@@ -169,11 +170,13 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 
 	private Boolean uiInitialized = false;
 
+	@Deprecated
 	public Boolean isUIInitialized() {
 		return uiInitialized;
 	}
 
 	private Optional<InVehicleDeviceService> service = Optional.absent();
+	private View view;
 
 	public Optional<InVehicleDeviceService> getService() {
 		return service;
@@ -196,6 +199,12 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 				serviceConnection, Context.BIND_AUTO_CREATE);
 		ViewReflection.setOnSystemUiVisibilityChangeListener(getWindow()
 				.getDecorView(), onSystemUiVisibilityChangeListener);
+
+		view = getLayoutInflater().inflate(R.layout.in_vehicle_device_activity,
+				null);
+		view.setBackgroundColor(Color.WHITE);
+		view.setVisibility(View.INVISIBLE);
+		setContentView(view);
 	}
 
 	@Override
@@ -228,13 +237,6 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 			List<OperationSchedule> operationSchedules,
 			List<PassengerRecord> passengerRecords) {
 		Log.i(TAG, "initializeUi()");
-
-		final View view = getLayoutInflater().inflate(
-				R.layout.in_vehicle_device_activity, null);
-		view.setBackgroundColor(Color.WHITE);
-		view.setVisibility(View.INVISIBLE);
-		setContentView(view);
-		alertImageView = (ImageView) findViewById(R.id.alert_image_view);
 
 		FragmentTransaction fragmentTransaction = getSupportFragmentManager()
 				.beginTransaction();
