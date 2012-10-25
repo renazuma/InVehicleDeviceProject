@@ -8,8 +8,10 @@
     android:paddingTop="5dp" >
 
     <ImageView
+        android:paddingRight="5sp"
+        android:paddingLeft="2sp"
         android:id="@+id/select_mark_image_view"
-        android:layout_width="40sp"
+        android:layout_width="60sp"
         android:layout_height="fill_parent"
         android:src="@drawable/get_off" />
 

@@ -37,7 +37,7 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 
 	private static final String TAG = PassengerRecordArrayAdapter.class
 			.getSimpleName();
-	protected static final Integer RESOURCE_ID = R.layout.reservation_list_row;
+	protected static final Integer RESOURCE_ID = R.layout.passenger_record_list_row;
 	protected final FragmentManager fragmentManager;
 	protected final LayoutInflater layoutInflater = (LayoutInflater) getContext()
 			.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
