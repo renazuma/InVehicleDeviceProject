@@ -8,9 +8,6 @@ import java.util.List;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.DialogFragment;
@@ -25,7 +22,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Stopwatch;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
@@ -33,6 +29,7 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
+import com.kogasoftware.odt.invehicledevice.ui.BatteryAlerter;
 import com.kogasoftware.odt.invehicledevice.ui.ViewDisabler;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.InformationBarFragment.State;
 
@@ -60,10 +57,6 @@ public class InformationBarFragment extends ApplicationFragment<State>
 	}
 
 	private static final int UPDATE_TIME_INTERVAL_MILLIS = 3000;
-	public static final int BATTERY_ALERT_BLINK_MILLIS = 500;
-	public static final int CHECK_BATTERY_MILLIS = 10 * 1000;
-	public static final int BATTERY_DISCONNECTED_LIMIT_MILLIS = 10 * 60 * 1000;
-	public static final String BATTERY_ALERT_DIALOG_FRAGMENT_TAG = "BatteryAlertDialogFragmentTag";
 
 	private ImageView networkStrengthImageView;
 	private TextView presentTimeTextView;
@@ -105,49 +98,7 @@ public class InformationBarFragment extends ApplicationFragment<State>
 	/**
 	 * バッテリー状態を監視
 	 */
-	private final Runnable checkBattery = new Runnable() {
-		private final Stopwatch stopwatch = new Stopwatch();
-
-		@Override
-		public void run() {
-			handler.postDelayed(this, BATTERY_ALERT_BLINK_MILLIS);
-			View blinkView = getView().findViewById(
-					R.id.battery_alert_image_view);
-			// "http://developer.android.com/training/monitoring-device-state/battery-monitoring.html"
-			IntentFilter intentFilter = new IntentFilter(
-					Intent.ACTION_BATTERY_CHANGED);
-			Intent batteryStatus = getActivity().registerReceiver(null,
-					intentFilter);
-			// Are we charging / charged?
-			Integer status = batteryStatus.getIntExtra(
-					BatteryManager.EXTRA_STATUS, -1);
-			Boolean isCharging = status
-					.equals(BatteryManager.BATTERY_STATUS_CHARGING)
-					|| status.equals(BatteryManager.BATTERY_STATUS_FULL);
-			if (isCharging) {
-				stopwatch.reset().start();
-				if (blinkView.isShown()) {
-					blinkView.setVisibility(View.INVISIBLE);
-				}
-				return;
-			}
-			if (stopwatch.elapsedMillis() > BATTERY_DISCONNECTED_LIMIT_MILLIS
-					|| !stopwatch.isRunning()) {
-				stopwatch.reset().start();
-				if (getFragmentManager().findFragmentByTag(
-						BATTERY_ALERT_DIALOG_FRAGMENT_TAG) == null) {
-					BatteryAlertDialogFragment batteryAlertDialogFragment = new BatteryAlertDialogFragment();
-					batteryAlertDialogFragment.show(getFragmentManager(),
-							BATTERY_ALERT_DIALOG_FRAGMENT_TAG);
-				}
-			}
-			if (blinkView.isShown()) {
-				blinkView.setVisibility(View.INVISIBLE);
-			} else {
-				blinkView.setVisibility(View.VISIBLE);
-			}
-		}
-	};
+	private Runnable blinkBatteryAlert;
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -160,6 +111,10 @@ public class InformationBarFragment extends ApplicationFragment<State>
 				.findViewById(R.id.network_strength_image_view);
 		getService().getEventDispatcher().addOnUpdatePhaseListener(this);
 		updateView(view);
+		blinkBatteryAlert = new BatteryAlerter(getActivity()
+				.getApplicationContext(), handler, (ImageView) getView()
+				.findViewById(R.id.battery_alert_image_view),
+				getFragmentManager());
 	}
 
 	@Override
@@ -173,14 +128,14 @@ public class InformationBarFragment extends ApplicationFragment<State>
 	public void onPause() {
 		super.onPause();
 		handler.removeCallbacks(updateTime);
-		handler.removeCallbacks(checkBattery);
+		handler.removeCallbacks(blinkBatteryAlert);
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
 		handler.post(updateTime);
-		handler.post(checkBattery);
+		handler.post(blinkBatteryAlert);
 	}
 
 	@Override
@@ -226,6 +181,9 @@ public class InformationBarFragment extends ApplicationFragment<State>
 								.setOnClickListener(new OnClickListener() {
 									@Override
 									public void onClick(View v) {
+										if (isRemoving()) {
+											return;
+										}
 										ViewDisabler.disable(v);
 										showPlatformMemoFragment(operationSchedule);
 									}
@@ -254,8 +212,7 @@ public class InformationBarFragment extends ApplicationFragment<State>
 			List<OperationSchedule> operationSchedules,
 			List<PassengerRecord> passengerRecords) {
 		setState(new State(phase,
-				OperationSchedule
-						.getCurrentOperationSchedule(operationSchedules)));
+				OperationSchedule.getCurrent(operationSchedules)));
 		updateView(getView());
 	}
 

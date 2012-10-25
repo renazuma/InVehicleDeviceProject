@@ -24,6 +24,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
@@ -37,6 +38,8 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
+import com.kogasoftware.odt.invehicledevice.ui.BatteryAlerter;
+import com.kogasoftware.odt.invehicledevice.ui.ViewDisabler;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.NavigationFragment.State;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.navigation.NavigationRenderer;
 import com.kogasoftware.odt.invehicledevice.ui.frametask.navigation.tilepipeline.TilePipeline;
@@ -115,6 +118,7 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 	private TextView gpsSatellitesTextView;
 	private ToggleButton autoZoomButton;
 	private Button platformMemoButton;
+	private Runnable blinkBatteryAlert;
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -162,6 +166,11 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 				.findViewById(R.id.gps_alert_text_view);
 		gpsSatellitesTextView = (TextView) view
 				.findViewById(R.id.gps_satellites_text_view);
+
+		blinkBatteryAlert = new BatteryAlerter(getActivity()
+				.getApplicationContext(), handler,
+				(ImageView) view.findViewById(R.id.battery_alert_image_view),
+				getFragmentManager());
 
 		getService().getEventDispatcher().addOnChangeLocationListener(this);
 		getService().getEventDispatcher().addOnChangeOrientationListener(this);
@@ -229,14 +238,14 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 		NavigationRenderer navigationRenderer = navigationRendererWeakReference
 				.get();
 		if (navigationRenderer != null) {
-			navigationRenderer.updatePlatform();
+			navigationRenderer.updatePlatform(OperationSchedule
+					.getCurrent(getState().getOperationSchedules()));
 		}
 
 		// 現在の乗降場メモ表示
 		platformMemoButton.setVisibility(View.INVISIBLE);
 		for (final OperationSchedule operationSchedule : OperationSchedule
-				.getCurrentOperationSchedule(getState().getOperationSchedules())
-				.asSet()) {
+				.getCurrent(getState().getOperationSchedules()).asSet()) {
 			for (Platform platform : operationSchedule.getPlatform().asSet()) {
 				if (!platform.getMemo().isEmpty()) {
 					platformMemoButton.setVisibility(View.VISIBLE);
@@ -244,6 +253,10 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 							.setOnClickListener(new OnClickListener() {
 								@Override
 								public void onClick(View view) {
+									if (isRemoving()) {
+										return;
+									}
+									ViewDisabler.disable(view);
 									setCustomAnimation(
 											getFragmentManager()
 													.beginTransaction())
@@ -262,8 +275,8 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 				R.id.next_platform_text_view);
 		titleTextView.setText("");
 		for (OperationSchedule operationSchedule : ((getState().getPhase() == Phase.DRIVE) ? OperationSchedule
-				.getCurrentOperationSchedule(getState().getOperationSchedules())
-				: OperationSchedule.getRelativeOperationSchedule(getState()
+				.getCurrent(getState().getOperationSchedules())
+				: OperationSchedule.getRelative(getState()
 						.getOperationSchedules(), 1)).asSet()) {
 			String titleTextFormat = "";
 			String timeTextFormat = "";
@@ -294,6 +307,7 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 		super.onPause();
 		Log.i(TAG, "onPause()");
 		handler.removeCallbacks(gpsAlert);
+		handler.removeCallbacks(blinkBatteryAlert);
 		pauseGL();
 	}
 
@@ -302,6 +316,7 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 		super.onResume();
 		Log.i(TAG, "onResume()");
 		handler.post(gpsAlert);
+		handler.post(blinkBatteryAlert);
 		handler.postDelayed(new Runnable() {
 			@Override
 			public void run() {
@@ -318,7 +333,9 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 		// GLThreadが、Activity再構築などのタイミングで1/10程度の確率で循環参照でリークすることがある。
 		// それを防ぐために参照を極力減らしたFrameLayoutを間にはさむ
 		NavigationRenderer navigationRenderer = new NavigationRenderer(
-				getService(), tilePipeline, new Handler());
+				getService(), tilePipeline, new Handler(),
+				OperationSchedule
+						.getCurrent(getState().getOperationSchedules()));
 		navigationRenderer.addOnChangeMapZoomLevelListener(this);
 		navigationRenderer.setZoomLevel(getService().getMapZoomLevel());
 		navigationRenderer.setAutoZoomLevel(getService().getMapAutoZoom());
