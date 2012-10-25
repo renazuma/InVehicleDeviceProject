@@ -2,7 +2,7 @@
 <resources>
 
     <string name="alighting_number">降車人数</string>
-    <string name="operation_schedule_receiving_html">&lt;big&gt;&lt;big&gt;運行情報を取得しています&lt;/big&gt;&lt;/big&gt;</string>
+    <string name="operation_schedule_receiving_html">&lt;big&gt;&lt;big&gt;&lt;big&gt;運行情報を&lt;br&gt;取得しています&lt;/big&gt;&lt;/big&gt;&lt;/big&gt;</string>
     <string name="app_name">車載器</string>
     <string name="arrival_schedule">到着予定</string>
     <string name="departure_schedule">出発時刻</string>
