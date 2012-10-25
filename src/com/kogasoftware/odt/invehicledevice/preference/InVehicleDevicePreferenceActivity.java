@@ -26,10 +26,9 @@ import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.apiclient.ApiClientException;
 import com.kogasoftware.odt.invehicledevice.apiclient.DefaultInVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
-import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClientFactory;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.InVehicleDevice;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask.Broadcasts;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.broadcast.Broadcasts;
 import com.kogasoftware.odt.invehicledevice.service.startupservice.IStartupService;
 
 public class InVehicleDevicePreferenceActivity extends PreferenceActivity
@@ -41,8 +40,9 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 	private static final String PASSWORD_KEY = "password";
 	private static final String TAG = InVehicleDevicePreferenceActivity.class
 			.getSimpleName();
-	
-	private final InVehicleDeviceApiClient apiClient = new DefaultInVehicleDeviceApiClient(DEFAULT_URL);
+
+	private final InVehicleDeviceApiClient apiClient = new DefaultInVehicleDeviceApiClient(
+			DEFAULT_URL);
 	private int latestReqKey = 0;
 
 	private SharedPreferences preferences = null;
@@ -93,7 +93,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 
 		updateSummary();
 	}
-	
+
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
@@ -221,19 +221,16 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		intent.putExtra(SharedPreferencesKeys.SERVER_URL, url);
 		intent.putExtra(SharedPreferencesKeys.SERVER_IN_VEHICLE_DEVICE_TOKEN,
 				token);
-		intent.putExtra(SharedPreferencesKeys.IN_VEHICLE_DEVICE, inVehicleDevice);
-		intent.putExtra(SharedPreferencesKeys.SERVICE_PROVIDER,
-				inVehicleDevice.getServiceProvider());
-		intent.putExtra(
-				SharedPreferencesKeys.LOCATION_RECEIVE_MIN_DISTANCE,
-				Integer.parseInt(preference
-						.getString(
-								SharedPreferencesKeys.LOCATION_RECEIVE_MIN_DISTANCE,
-								"1")));
+		intent.putExtra(SharedPreferencesKeys.LOCATION_RECEIVE_MIN_DISTANCE,
+				Integer.parseInt(preference.getString(
+						SharedPreferencesKeys.LOCATION_RECEIVE_MIN_DISTANCE,
+						"1")));
 		intent.putExtra(
 				SharedPreferencesKeys.LOCATION_RECEIVE_MIN_TIME,
-				Integer.parseInt(preference.getString(
-						SharedPreferencesKeys.LOCATION_RECEIVE_MIN_TIME, "1000")));
+				Integer.parseInt(preference
+						.getString(
+								SharedPreferencesKeys.LOCATION_RECEIVE_MIN_TIME,
+								"1000")));
 		intent.putExtra(SharedPreferencesKeys.LOCATION_RECEIVE_RESTART_TIMEOUT,
 				Integer.parseInt(preference.getString(
 						SharedPreferencesKeys.LOCATION_RECEIVE_RESTART_TIMEOUT,
