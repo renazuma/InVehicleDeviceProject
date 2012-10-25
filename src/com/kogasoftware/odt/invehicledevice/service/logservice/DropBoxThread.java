@@ -31,7 +31,7 @@ public class DropBoxThread extends Thread {
 	private static final String SHARED_PREFERENCES_NAME = DropBoxThread.class
 			.getSimpleName() + ".sharedpreferences";
 	public static final Charset CHARSET = Charsets.UTF_8;
-	private static final String[] DROPBOX_TAGS = { "APANIC_CONSOLE",
+	public static final String[] DROPBOX_TAGS = { "APANIC_CONSOLE",
 			"APANIC_THREADS", "BATTERY_DISCHARGE_INFO", "SYSTEM_BOOT",
 			"SYSTEM_LAST_KMSG", "SYSTEM_RECOVERY_LOG", "SYSTEM_RESTART",
 			"SYSTEM_TOMBSTONE", "data_app_anr", "data_app_strictmode",
