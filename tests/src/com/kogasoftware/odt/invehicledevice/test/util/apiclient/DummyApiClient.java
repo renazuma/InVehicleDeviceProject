@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.test.util.apiclient;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -8,7 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import com.kogasoftware.odt.invehicledevice.apiclient.EmptyInVehicleDeviceApiClient;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
@@ -56,17 +56,17 @@ public class DummyApiClient extends EmptyInVehicleDeviceApiClient {
 			String r5 = "{id: 55, passenger_count: 1, departure_schedule_id: 4, arrival_schedule_id: 5, payment: 500, reservation_users: "
 					+ rus5 + "}";
 
-			JSONObject j1 = new JSONObject(
+			String j1 = 
 					"{id:1, arrival_estimate: '2012-06-21T09:00:00+09:00', departure_estimate: '2012-06-21T09:15:00+09:00', "
 							+ "platform: {name: '乗降場A', name_ruby: 'とくべつようごろうじんほーむあじさいのおかうしまどざいたくかいごしえんせんたーあじさい'}, "
 							+ "reservations_as_departure: ["
 							+ r1
 							+ ","
 							+ r3
-							+ "]}");
+							+ "]}";
 			l.add(OperationSchedule.parse(j1));
 
-			JSONObject j2 = new JSONObject(
+			String j2 = new String(
 					"{id:2, arrival_estimate: '2012-06-21T09:30:00+09:00', departure_estimate: '2012-06-21T09:35:00+09:00', "
 							+ "platform: {name: '乗降場B', name_ruby: 'おかやまけんうしまどよっとはーばーおかやまけんせーりんぐれんめい'}, reservations_as_arrival: [ "
 							+ r1
@@ -76,7 +76,7 @@ public class DummyApiClient extends EmptyInVehicleDeviceApiClient {
 							+ "]" + "}");
 			l.add(OperationSchedule.parse(j2));
 
-			JSONObject j3 = new JSONObject(
+			String j3 = new String(
 					"{id:3, arrival_estimate: '2012-06-21T10:15:00+09:00', departure_estimate: '2012-06-21T10:20:00+09:00', "
 							+ "platform: {name: '乗降場C', name_ruby: 'やきにくみらく'}, "
 							+ "reservations_as_arrival: ["
@@ -86,7 +86,7 @@ public class DummyApiClient extends EmptyInVehicleDeviceApiClient {
 							+ "]}");
 			l.add(OperationSchedule.parse(j3));
 
-			JSONObject j4 = new JSONObject(
+			String j4 = new String(
 					"{id:4, arrival_estimate: '2012-06-21T11:00:00+09:00', departure_estimate: '2012-06-21T11:05:00+09:00', "
 							+ "platform: {name: '27_横尾入口停留所（尾張方面行き）', name_ruby: 'よこおいりぐちていりゅうじょ（おわりほうめんゆき）'}, "
 							+ "reservations_as_departure: ["
@@ -96,7 +96,7 @@ public class DummyApiClient extends EmptyInVehicleDeviceApiClient {
 							+ "]}");
 			l.add(OperationSchedule.parse(j4));
 
-			JSONObject j5 = new JSONObject(
+			String j5 = new String(
 					"{id:5, arrival_estimate: '2012-06-21T03:00:00+09:00', departure_estimate: '2012-06-21T02:00:00+09:00', "
 							+ "platform: {name: '最終乗降場', name_ruby: 'せとうちしやくしょうしまどししょ、せとうちしりつびじゅつかん、せとうちしやくしょきょういくいいんかい'}, "
 							+ "reservations_as_arrival: ["
@@ -106,7 +106,7 @@ public class DummyApiClient extends EmptyInVehicleDeviceApiClient {
 							+ "]}");
 			l.add(OperationSchedule.parse(j5));
 
-		} catch (JSONException e) {
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

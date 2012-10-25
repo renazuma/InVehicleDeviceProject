@@ -1,11 +1,9 @@
 package com.kogasoftware.odt.invehicledevice.test.util.apiclient;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.util.Log;
 
@@ -45,7 +43,7 @@ public class ScheduleChangedTestApiClient extends EmptyInVehicleDeviceApiClient 
 		try {
 			if (phase.compareAndSet(0, 1)) {
 				// 変更前のスケジュール
-				JSONObject j1 = new JSONObject(
+				String j1 = new String(
 						"{id:1, arrival_estimate: '2012-01-01T01:00:00+09:00', departure_estimate: '2012-01-01T02:00:00+09:00', "
 								+ "platform: {name: '乗降場A', name_ruby: 'のりおりばえー', latitude: 90, longitude: 45}, "
 								+ "reservations_as_departure: ["
@@ -54,7 +52,7 @@ public class ScheduleChangedTestApiClient extends EmptyInVehicleDeviceApiClient 
 								+ r2 + "]}");
 				l.add(OperationSchedule.parse(j1));
 
-				JSONObject j2 = new JSONObject(
+				String j2 = new String(
 						"{id:2, arrival_estimate: '2012-01-01T02:00:00+09:00', departure_estimate: '2012-01-01T02:00:00+09:00', "
 								+ "platform: {name: '乗降場B', name_ruby: 'のりおりばびー'}, "
 								+ "reservations_as_arrival: ["
@@ -67,7 +65,7 @@ public class ScheduleChangedTestApiClient extends EmptyInVehicleDeviceApiClient 
 			} else if (phase.compareAndSet(2, 3)) {
 				Thread.sleep(10000);
 				// 変更後のスケジュール
-				JSONObject j1 = new JSONObject(
+				String j1 = new String(
 						"{id:1, arrival_estimate: '2012-01-01T01:00:00+09:00', departure_estimate: '2012-01-01T02:00:00+09:00', "
 								+ "platform: {name: '乗降場A', name_ruby: 'のりおりばえー', latitude: 43.064615, longitude: 141.346807}, "
 								+ "reservations_as_departure: ["
@@ -77,20 +75,20 @@ public class ScheduleChangedTestApiClient extends EmptyInVehicleDeviceApiClient 
 								+ "], operation_record: {arrived_at: '2012-01-01T01:00:01+09:00', departed_at: '2012-01-01T01:00:02+09:00'}}");
 				l.add(OperationSchedule.parse(j1));
 
-				JSONObject j2 = new JSONObject(
+				String j2 = new String(
 						"{id:3, arrival_estimate: '2012-01-01T02:00:00+09:00', departure_estimate: '2012-01-01T02:00:00+09:00', "
 								+ "platform: {name: '乗降場C', name_ruby: 'のりおりばしー', latitude: -9.189967, longitude: -75.015152}, reservations_as_arrival: [ "
 								+ r3 + " ]}");
 				l.add(OperationSchedule.parse(j2));
 
-				JSONObject j3 = new JSONObject(
+				String j3 = new String(
 						"{id:2, arrival_estimate: '2012-01-01T03:00:00+09:00', departure_estimate: '2012-01-01T02:00:00+09:00', "
 								+ "platform: {name: '乗降場B', name_ruby: 'のりおりばびー'}, "
 								+ "reservations_as_arrival: [" + r1 + "]}");
 				l.add(OperationSchedule.parse(j3));
 				return l;
 			}
-		} catch (JSONException e) {
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InterruptedException e) {
