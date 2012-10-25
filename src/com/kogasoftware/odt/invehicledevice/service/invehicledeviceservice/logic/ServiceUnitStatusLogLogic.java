@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice;
+package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic;
 
 import java.math.BigDecimal;
 
@@ -7,9 +7,11 @@ import android.location.Location;
 
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.apiclient.EmptyApiClientCallback;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnitStatusLog;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Reader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Writer;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnitStatusLog;
 
 public class ServiceUnitStatusLogLogic {
 	protected final InVehicleDeviceService service;

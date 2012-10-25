@@ -1,4 +1,6 @@
-package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask;
+package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.sensor;
+
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.ServiceUnitStatusLogLogic;
 
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -9,7 +11,6 @@ import android.view.Display;
 import android.view.Surface;
 import android.view.WindowManager;
 
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.ServiceUnitStatusLogLogic;
 
 public class OrientationSensorEventListener implements SensorEventListener {
 	private static final Long SAVE_PERIOD_MILLIS = 500L;

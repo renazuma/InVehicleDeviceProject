@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.VehicleNotificationLogic;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.VehicleNotificationLogic;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.VehicleNotificationFragment.State;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 

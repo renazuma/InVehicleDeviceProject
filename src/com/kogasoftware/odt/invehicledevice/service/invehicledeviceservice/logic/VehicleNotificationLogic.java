@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice;
+package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -10,9 +10,10 @@ import com.google.common.collect.Multimap;
 import com.kogasoftware.odt.apiclient.EmptyApiClientCallback;
 import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Reader;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.VoidReader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Writer;
 
 /**
@@ -139,33 +140,35 @@ public class VehicleNotificationLogic {
 		return updated;
 	}
 
-	public List<VehicleNotification> getVehicleNotifications(
+	public List<VehicleNotification> getVehicleNotificationsWithReadLock(
 			final Integer notificationKind,
 			final VehicleNotificationStatus status) {
-		final List<VehicleNotification> vehicleNotifications = Lists
-				.newLinkedList();
-		service.getLocalStorage().withReadLock(new VoidReader() {
-			@Override
-			public void read(LocalData localData) {
-				for (VehicleNotification vehicleNotification : localData.vehicleNotifications
-						.get(status)) {
-					if (vehicleNotification.getNotificationKind().equals(
-							notificationKind)) {
-						vehicleNotifications.add(vehicleNotification);
+		return service.getLocalStorage().withReadLock(
+				new Reader<LinkedList<VehicleNotification>>() {
+					@Override
+					public LinkedList<VehicleNotification> read(
+							LocalData localData) {
+						LinkedList<VehicleNotification> vehicleNotifications = Lists
+								.newLinkedList();
+						for (VehicleNotification vehicleNotification : localData.vehicleNotifications
+								.get(status)) {
+							if (vehicleNotification.getNotificationKind()
+									.equals(notificationKind)) {
+								vehicleNotifications.add(vehicleNotification);
+							}
+						}
+						return vehicleNotifications;
 					}
-				}
-			}
-		});
-		return vehicleNotifications;
+				});
 	}
 
 	public Multimap<VehicleNotificationStatus, VehicleNotification> getVehicleNotifications() {
 		return service
 				.getLocalStorage()
 				.withReadLock(
-						new Reader<Multimap<VehicleNotificationStatus, VehicleNotification>>() {
+						new Reader<LinkedHashMultimap<VehicleNotificationStatus, VehicleNotification>>() {
 							@Override
-							public Multimap<VehicleNotificationStatus, VehicleNotification> read(
+							public LinkedHashMultimap<VehicleNotificationStatus, VehicleNotification> read(
 									LocalData localData) {
 								return LinkedHashMultimap
 										.create(localData.vehicleNotifications);

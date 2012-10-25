@@ -1,11 +1,12 @@
-package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask;
+package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.sensor;
+
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.ServiceUnitStatusLogLogic;
 
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.util.Log;
 
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.ServiceUnitStatusLogLogic;
 
 public class TemperatureSensorEventListener implements SensorEventListener {
 	private static final String TAG = TemperatureSensorEventListener.class

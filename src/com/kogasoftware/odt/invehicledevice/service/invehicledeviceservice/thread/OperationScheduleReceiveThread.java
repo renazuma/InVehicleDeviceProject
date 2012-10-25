@@ -1,20 +1,20 @@
-package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask;
+package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.thread;
 
 import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.util.concurrent.Uninterruptibles;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.VehicleNotificationLogic;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.apiclient.ApiClientException;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification.NotificationKind;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.VehicleNotificationLogic;
 
 public class OperationScheduleReceiveThread extends Thread implements
 		EventDispatcher.OnStartNewOperationListener,
@@ -77,24 +77,17 @@ public class OperationScheduleReceiveThread extends Thread implements
 	@Override
 	public void run() {
 		try {
-			service.getEventDispatcher().addOnStartNewOperationListener(this);
-			service.getEventDispatcher()
-					.addOnStartReceiveUpdatedOperationScheduleListener(this);
 			while (true) {
 				// スケジュール変更通知があるまで待つ
 				startUpdatedOperationScheduleReceiveSemaphore.acquire();
-				receive(vehicleNotificationLogic.getVehicleNotifications(
-						NotificationKind.RESERVATION_CHANGED,
-						VehicleNotificationStatus.UNHANDLED));
+				receive(vehicleNotificationLogic
+						.getVehicleNotificationsWithReadLock(
+								NotificationKind.RESERVATION_CHANGED,
+								VehicleNotificationStatus.UNHANDLED));
 				Thread.sleep(10 * 1000);
 			}
 		} catch (InterruptedException e) {
 			// 正常終了
-		} finally {
-			service.getEventDispatcher()
-					.removeOnStartNewOperationListener(this);
-			service.getEventDispatcher()
-					.removeOnStartReceiveUpdatedOperationScheduleListener(this);
 		}
 	}
 

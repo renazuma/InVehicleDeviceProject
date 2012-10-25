@@ -1,12 +1,12 @@
-package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask;
+package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.scheduledtask;
 
 import java.util.List;
 
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.VehicleNotificationLogic;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.apiclient.ApiClientException;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.VehicleNotificationLogic;
 
 public class VehicleNotificationReceiver implements Runnable {
 	protected final InVehicleDeviceService service;

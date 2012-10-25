@@ -1,10 +1,10 @@
-package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask;
+package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.sensor;
 
 import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
 
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.ServiceUnitStatusLogLogic;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.ServiceUnitStatusLogLogic;
 
 /**
  * onSignalStrengthsChangedを受け取り、現在の電波状況を100分率で表した数値をサービスへ通知

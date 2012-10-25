@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice;
+package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic;
 
 import java.util.List;
 
@@ -14,8 +14,11 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.User;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundWriter;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Reader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Writer;
@@ -34,68 +37,36 @@ public class OperationScheduleLogic {
 		vehicleNotificationLogic = new VehicleNotificationLogic(service);
 	}
 
+	/**
+	 * 現在の状況を得る
+	 */
 	public static Phase getPhase(List<OperationSchedule> operationSchedules,
 			List<PassengerRecord> passengerRecords, Boolean completeGetOff) {
-		Log.i(TAG, "----- getPhase -----");
 		for (OperationSchedule operationSchedule : OperationSchedule
-				.getCurrentOperationSchedule(operationSchedules).asSet()) {
-			Log.i(TAG, "id = " + operationSchedule.getId());
+				.getCurrent(operationSchedules).asSet()) {
 			if (!operationSchedule.isArrived()) {
-				Log.i(TAG, "no arrived");
-				Log.i(TAG, Phase.DRIVE.toString());
 				return Phase.DRIVE;
 			}
 			if (operationSchedule.isDeparted()) {
-				Log.i(TAG, "departed");
 				continue;
 			}
 			for (PassengerRecord passengerRecord : operationSchedule
 					.getNoGetOffErrorPassengerRecords(passengerRecords)) {
 				if (!passengerRecord.getIgnoreGetOffMiss()) {
-					Log.i(TAG, "no get off error found");
-					Log.i(TAG, Phase.PLATFORM_GET_OFF.toString());
 					return Phase.PLATFORM_GET_OFF;
 				}
 			}
 			if (operationSchedule.getGetOffScheduledPassengerRecords(
 					passengerRecords).isEmpty()) {
-				Log.i(TAG, "get off scheduled passengerRecords not found");
-				Log.i(TAG, Phase.PLATFORM_GET_ON.toString());
 				return Phase.PLATFORM_GET_ON;
 			}
 			if (completeGetOff) {
-				Log.i(TAG, "complete get off");
-				Log.i(TAG, Phase.PLATFORM_GET_ON.toString());
 				return Phase.PLATFORM_GET_ON;
 			} else {
-				Log.i(TAG, "no complete get off");
-				Log.i(TAG, Phase.PLATFORM_GET_OFF.toString());
 				return Phase.PLATFORM_GET_OFF;
 			}
 		}
-		Log.i(TAG, Phase.FINISH.toString());
 		return Phase.FINISH;
-	}
-
-	/**
-	 * 走行フェーズへ移行
-	 */
-	public void enterDrivePhase() {
-		throw new RuntimeException("method deleted");
-	}
-
-	/**
-	 * 終了フェーズへ移行
-	 */
-	public void enterFinishPhase() {
-		throw new RuntimeException("method deleted");
-	}
-
-	/**
-	 * 乗降場フェーズへ移行
-	 */
-	public void enterPlatformPhase() {
-		throw new RuntimeException("method deleted");
 	}
 
 	/**
@@ -162,24 +133,15 @@ public class OperationScheduleLogic {
 						}
 					}
 				}
-				// 循環参照にならないようにする
-				// TODO:不要になる予定
-				reservation.clearFellowUsers();
-				reservation.clearPassengerRecords();
 			}
+			operationSchedule.clearReservationsAsArrival();
+			operationSchedule.clearReservationsAsDeparture();
 		}
 
 		localData.operationSchedules.clear();
 		localData.operationSchedules.addAll(newOperationSchedules);
-
 		localData.updatedDate = InVehicleDeviceService.getDate();
-
-		Log.i("InVehicleDeviceActivity", "mergeOperationSchedules 2");
-		if (localData.operationScheduleInitializedSign.availablePermits() == 0) {
-			localData.operationScheduleInitializedSign.release();
-			Log.i("InVehicleDeviceActivity", "mergeOperationSchedules 3");
-		}
-		Log.i("InVehicleDeviceActivity", "mergeOperationSchedules 4");
+		localData.operationScheduleInitialized = true;
 	}
 
 	/**
@@ -190,10 +152,6 @@ public class OperationScheduleLogic {
 	public void mergePassengerRecordsWithWriteLock(LocalData localData,
 			PassengerRecord serverPassengerRecord, Reservation reservation,
 			User user) {
-		// 循環参照を防ぐ
-		// TODO:不要になる予定
-		user.clearPassengerRecords();
-
 		// マージ対象を探す
 		for (PassengerRecord localPassengerRecord : Lists
 				.newArrayList(localData.passengerRecords)) {
@@ -240,7 +198,6 @@ public class OperationScheduleLogic {
 						operationSchedules);
 			}
 		});
-		refreshPhase();
 		service.getEventDispatcher().dispatchMergeOperationSchedules(
 				operationSchedules, triggerVehicleNotifications);
 	}
@@ -252,7 +209,7 @@ public class OperationScheduleLogic {
 		service.getLocalStorage().withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
-				localData.operationScheduleInitializedSign.drainPermits();
+				localData.operationScheduleInitialized = false;
 				localData.operationSchedules.clear();
 				localData.vehicleNotifications.clear();
 				localData.passengerRecords.clear();
@@ -262,71 +219,25 @@ public class OperationScheduleLogic {
 	}
 
 	/**
-	 * 現在の運行スケジュールを得る
+	 * 現在の状態を得る
 	 */
-	@Deprecated
-	public Optional<OperationSchedule> getCurrentOperationSchedule() {
-		return service.getLocalStorage().withReadLock(
-				new Reader<Optional<OperationSchedule>>() {
-					@Override
-					public Optional<OperationSchedule> read(LocalData localData) {
-						for (OperationSchedule operationSchedule : localData.operationSchedules) {
-							if (!operationSchedule.getOperationRecord()
-									.isPresent()
-									|| !operationSchedule.getOperationRecord()
-											.get().getDepartedAt().isPresent()) {
-								return Optional.of(operationSchedule);
-							}
-						}
-						return Optional.absent();
-					}
-				});
+	public Phase getPhaseWithReadLock(LocalData localData) {
+		return getPhase(localData.operationSchedules,
+				localData.passengerRecords, localData.completeGetOff);
 	}
 
-	@Deprecated
-	public List<OperationSchedule> getRemainingOperationSchedules() {
-		return service.getLocalStorage().withReadLock(
-				new Reader<List<OperationSchedule>>() {
-					@Override
-					public List<OperationSchedule> read(LocalData localData) {
-						List<OperationSchedule> operationSchedules = Lists
-								.newLinkedList();
-						for (OperationSchedule operationSchedule : localData.operationSchedules) {
-							for (OperationRecord operationRecord : operationSchedule
-									.getOperationRecord().asSet()) {
-								if (!operationRecord.getDepartedAt()
-										.isPresent()) {
-									operationSchedules.add(operationSchedule);
-								}
-							}
-						}
-						return operationSchedules;
-					}
-				});
+	public Phase getPhaseWithReadLock() {
+		return service.getLocalStorage().withReadLock(new Reader<Phase>() {
+			@Override
+			public Phase read(LocalData localData) {
+				return getPhaseWithReadLock(localData);
+			}
+		});
 	}
 
-	@Deprecated
-	public List<OperationSchedule> getOperationSchedules() {
-		return service.getLocalStorage().withReadLock(
-				new Reader<List<OperationSchedule>>() {
-					@Override
-					public List<OperationSchedule> read(LocalData localData) {
-						return Lists
-								.newLinkedList(localData.operationSchedules);
-					}
-				});
-	}
-
-	@Deprecated
-	public Phase getPhase() {
-		throw new RuntimeException("method deleted");
-	}
-
-	@Deprecated
-	public void refreshPhase() {
-		throw new RuntimeException("method deleted");
-	}
-
+	/**
+	 * 到着処理
+	 */
 	public void arrive(OperationSchedule currentOperationSchedule,
 			final Runnable callback) {
 		final Integer id = currentOperationSchedule.getId();
@@ -348,12 +259,8 @@ public class OperationScheduleLogic {
 								.arrivalOperationSchedule(
 										operationSchedule,
 										new EmptyApiClientCallback<OperationSchedule>());
-						Log.i(TAG,
-								"arrive -> "
-										+ getPhase(
-												localData.operationSchedules,
-												localData.passengerRecords,
-												localData.completeGetOff));
+						Log.i(TAG, "arrive -> "
+								+ getPhaseWithReadLock(localData));
 						return;
 					}
 					Log.e(TAG, "OperationSchedule has no OperationRecord "
@@ -380,6 +287,9 @@ public class OperationScheduleLogic {
 				Lists.newArrayList(localData.passengerRecords));
 	}
 
+	/**
+	 * 発車処理
+	 */
 	public void depart(OperationSchedule currentOperationSchedule,
 			final Runnable callback) {
 		final Integer id = currentOperationSchedule.getId();

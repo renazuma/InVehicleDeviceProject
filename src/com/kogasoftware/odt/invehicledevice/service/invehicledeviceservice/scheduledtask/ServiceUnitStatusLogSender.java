@@ -1,8 +1,8 @@
-package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask;
+package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.scheduledtask;
 
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.ServiceUnitStatusLogLogic;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.ServiceUnitStatusLogLogic;
 
 public class ServiceUnitStatusLogSender implements Runnable {
 	ServiceUnitStatusLogLogic serviceUnitStatusLogLogic;
@@ -20,7 +20,7 @@ public class ServiceUnitStatusLogSender implements Runnable {
 	 */
 	@Override
 	public void run() {
-		if (operationScheduleLogic.getPhase() == Phase.FINISH) {
+		if (operationScheduleLogic.getPhaseWithReadLock() == Phase.FINISH) {
 			return;
 		}
 		serviceUnitStatusLogLogic.send();
