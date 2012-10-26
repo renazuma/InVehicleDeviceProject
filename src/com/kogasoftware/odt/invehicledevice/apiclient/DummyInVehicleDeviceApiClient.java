@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
@@ -19,6 +20,7 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 public class DummyInVehicleDeviceApiClient extends
 		EmptyInVehicleDeviceApiClient {
 	// private final AtomicInteger state = new AtomicInteger(0);
+	private final Random random = new Random();
 
 	@Override
 	public int getServiceProvider(ApiClientCallback<ServiceProvider> callback) {
@@ -40,7 +42,7 @@ public class DummyInVehicleDeviceApiClient extends
 			e.printStackTrace();
 		}
 		VehicleNotification vn = new VehicleNotification();
-		vn.setId((int) (Math.random() * 10000000.0));
+		vn.setId(random.nextInt(1000000));
 		vn.setNotificationKind(VehicleNotification.NotificationKind.RESERVATION_CHANGED);
 		// vn.setNotificationKind(VehicleNotification.NotificationKind.FROM_OPERATOR);
 		vn.setBody("a");
