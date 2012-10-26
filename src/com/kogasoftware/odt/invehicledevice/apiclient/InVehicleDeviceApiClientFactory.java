@@ -30,9 +30,8 @@ public class InVehicleDeviceApiClientFactory {
 				@Override
 				public InVehicleDeviceApiClient get() {
 					// 厳密にclose()する必要があるため、インスタンス生成を遅延させる
-					// return new DefaultInVehicleDeviceApiClient(url, token,
-					// file);
-					return new DummyInVehicleDeviceApiClient();
+					return new DefaultInVehicleDeviceApiClient(url, token, file);
+					// return new DummyInVehicleDeviceApiClient();
 					// return new ScheduleChangedTestApiClient();
 					// return new InVehicleDeviceApiClient();
 				}
