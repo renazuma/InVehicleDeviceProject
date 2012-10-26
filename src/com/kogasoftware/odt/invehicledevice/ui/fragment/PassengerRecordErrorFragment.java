@@ -61,7 +61,7 @@ public class PassengerRecordErrorFragment extends ApplicationFragment<State>
 	private Button completeWithErrorButton;
 
 	public PassengerRecordErrorFragment() {
-		super(true);
+		setRemoveOnUpdatePhase(true);
 	}
 
 	public static PassengerRecordErrorFragment newInstance(Phase phase,

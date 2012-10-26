@@ -42,7 +42,7 @@ public class DepartureCheckFragment extends ApplicationFragment<State> {
 	}
 
 	public DepartureCheckFragment() {
-		super(true);
+		setRemoveOnUpdatePhase(true);
 	}
 
 	public static DepartureCheckFragment newInstance(Phase phase,

@@ -32,7 +32,7 @@ public class ArrivalCheckFragment extends ApplicationFragment<State> {
 	}
 
 	public ArrivalCheckFragment() {
-		super(true);
+		setRemoveOnUpdatePhase(true);
 	}
 
 	public static Fragment newInstance(OperationSchedule operationSchedule) {

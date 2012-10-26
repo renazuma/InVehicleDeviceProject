@@ -54,7 +54,7 @@ public class ApplicationFragment<S extends Serializable> extends Fragment {
 	/**
 	 * OnUpdatePhase時にFragmentを閉じるかどうか
 	 */
-	private final Boolean removeOnUpdatePhase;
+	private Boolean removeOnUpdatePhase = false;
 
 	/**
 	 * OnUpdatePhase時にFragmentを閉じる
@@ -70,11 +70,7 @@ public class ApplicationFragment<S extends Serializable> extends Fragment {
 		}
 	};
 
-	public ApplicationFragment() {
-		this(false);
-	}
-
-	public ApplicationFragment(Boolean removeOnUpdatePhase) {
+	protected void setRemoveOnUpdatePhase(Boolean removeOnUpdatePhase) {
 		this.removeOnUpdatePhase = removeOnUpdatePhase;
 	}
 
@@ -206,9 +202,7 @@ public class ApplicationFragment<S extends Serializable> extends Fragment {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		if (removeOnUpdatePhase) {
-			getService().getEventDispatcher().removeOnUpdatePhaseListener(
-					removeOnUpdatePhaseListener);
-		}
+		getService().getEventDispatcher().removeOnUpdatePhaseListener(
+				removeOnUpdatePhaseListener);
 	}
 }
