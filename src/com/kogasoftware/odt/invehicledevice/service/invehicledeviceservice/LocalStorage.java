@@ -52,6 +52,11 @@ public class LocalStorage implements Closeable {
 		void onWrite();
 	}
 
+	@Deprecated
+	public interface VoidReader {
+		void read(LocalData localData);
+	}
+
 	public interface Reader<T> {
 		T read(LocalData localData);
 	}
@@ -268,6 +273,17 @@ public class LocalStorage implements Closeable {
 				Log.v(TAG, message);
 			}
 		}
+	}
+
+	@Deprecated
+	public void withReadLock(final VoidReader reader) {
+		withReadLock(new Reader<Serializable>() {
+			@Override
+			public Serializable read(LocalData localData) {
+				reader.read(localData);
+				return 0;
+			}
+		});
 	}
 
 	/**
