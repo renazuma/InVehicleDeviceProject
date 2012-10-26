@@ -53,9 +53,12 @@ public class LocalDataTestCase extends AndroidTestCase {
 	/**
 	 * シリアライズ速度が常識的な範囲で収まるかのチェック
 	 */
-	public void testSerializeSpeed() {
+	public void testSerializeSpeed() throws Exception {
 		for (Integer i = 0; i < 5; ++i) {
 			assertSerializeSpeed();
+			Thread.sleep(1000);
+			System.gc();
+			Thread.sleep(1000);
 		}
 	}
 
