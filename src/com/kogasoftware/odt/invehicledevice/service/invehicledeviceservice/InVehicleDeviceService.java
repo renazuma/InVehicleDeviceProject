@@ -54,6 +54,7 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClientFactory;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Reader;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.broadcast.BatteryBroadcastReceiver;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.broadcast.Broadcasts;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.broadcast.ExitBroadcastReceiver;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
@@ -62,7 +63,6 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.sched
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.scheduledtask.ServiceUnitStatusLogSender;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.scheduledtask.VehicleNotificationReceiver;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.sensor.AccMagSensorEventListener;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.sensor.BatteryBroadcastReceiver;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.sensor.LocationNotifier;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.sensor.OrientationSensorEventListener;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.sensor.SignalStrengthListener;

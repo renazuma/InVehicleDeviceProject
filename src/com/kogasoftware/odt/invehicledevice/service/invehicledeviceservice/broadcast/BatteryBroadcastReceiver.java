@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.sensor;
+package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.broadcast;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
