@@ -9,6 +9,7 @@ public class ServiceProvider extends ServiceProviderBase {
 	private static final long serialVersionUID = 8456722052053624083L;
 
 	@JsonProperty JsonNode reservationTimeLimit = Model.getObjectMapper().createObjectNode();
+	@JsonProperty JsonNode timeBufferRatio = Model.getObjectMapper().createObjectNode();
 
 	public static class ReservationTimeLimit {
 		protected Integer operatorWeb = 0;
