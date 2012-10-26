@@ -43,8 +43,8 @@
     <string name="now_platform_is_html">Now platform is &lt;big&gt;&lt;big&gt;%s&lt;/big&gt;&lt;/big&gt;</string>
     <string name="next_platform_is_html">Next platform is &lt;big&gt;&lt;big&gt;%s&lt;/big&gt;&lt;/big&gt;</string>
     <string name="minutes_remaining_to_depart_html">%1$s出発&lt;br&gt;あと&lt;big&gt;&lt;font color=&quot;red&quot;&gt;%2$d&lt;/font&gt;&lt;/big&gt;分</string>
-    <string name="platform_arrival_time">Arrival HH:mm</string>
-    <string name="platform_depature_time">Departure HH:mm</string>
+    <string name="platform_arrival_time">HH:mm</string>
+    <string name="platform_depature_time">HH:mm</string>
     <string name="location_receiving">Location receiving</string>
     <string name="gps_satellites_format">GPS satellites %1d/4</string>
     <string name="crash_toast_text">Unexpected error occured</string>
