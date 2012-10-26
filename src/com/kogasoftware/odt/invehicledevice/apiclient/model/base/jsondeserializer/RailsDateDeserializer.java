@@ -17,8 +17,8 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 public class RailsDateDeserializer extends StdDeserializer<Date> {
 	private static final long serialVersionUID = 2088665151150582773L;
-	public static TimeZone TIME_ZONE = TimeZone.getDefault();
-	public static String DATE_FORMAT_STRING = "yyyy-MM-dd";
+	public static final TimeZone TIME_ZONE = TimeZone.getDefault();
+	public static final String DATE_FORMAT_STRING = "yyyy-MM-dd";
 	private final DateFormat dateFormat = new SimpleDateFormat(
 			DATE_FORMAT_STRING);
 
