@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.ui.fragment;
 
+import java.io.Serializable;
 import java.util.List;
 
 import android.os.Bundle;
@@ -9,11 +10,9 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.OperationScheduleArrayAdapter;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
-
-import java.io.Serializable;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.OperationScheduleListFragment.State;
 
 public class OperationScheduleListFragment extends ApplicationFragment<State> {
@@ -28,6 +27,10 @@ public class OperationScheduleListFragment extends ApplicationFragment<State> {
 		public List<OperationSchedule> getOperationSchedules() {
 			return operationSchedules;
 		}
+	}
+
+	public OperationScheduleListFragment() {
+		super(true);
 	}
 
 	public static OperationScheduleListFragment newInstance(

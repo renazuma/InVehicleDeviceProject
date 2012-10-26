@@ -1,6 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.ui.fragment;
 
 import java.io.Serializable;
+import java.util.List;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -15,6 +16,9 @@ import android.widget.Button;
 
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher.OnUpdatePhaseListener;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
@@ -47,6 +51,33 @@ public class ApplicationFragment<S extends Serializable> extends Fragment {
 				+ "/" + getClass().getName();
 	}
 
+	/**
+	 * OnUpdatePhase時にFragmentを閉じるかどうか
+	 */
+	private final Boolean removeOnUpdatePhase;
+
+	/**
+	 * OnUpdatePhase時にFragmentを閉じる
+	 */
+	private final OnUpdatePhaseListener removeOnUpdatePhaseListener = new OnUpdatePhaseListener() {
+		@Override
+		public void onUpdatePhase(Phase phase,
+				List<OperationSchedule> operationSchedules,
+				List<PassengerRecord> passengerRecords) {
+			if (!isRemoving()) {
+				hide();
+			}
+		}
+	};
+
+	public ApplicationFragment() {
+		this(false);
+	}
+
+	public ApplicationFragment(Boolean removeOnUpdatePhase) {
+		this.removeOnUpdatePhase = removeOnUpdatePhase;
+	}
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -70,6 +101,11 @@ public class ApplicationFragment<S extends Serializable> extends Fragment {
 		@SuppressWarnings("unchecked")
 		S castState = (S) arguments.getSerializable(key);
 		setState(castState);
+
+		if (removeOnUpdatePhase) {
+			getService().getEventDispatcher().addOnUpdatePhaseListener(
+					removeOnUpdatePhaseListener);
+		}
 	}
 
 	@Override
@@ -165,5 +201,14 @@ public class ApplicationFragment<S extends Serializable> extends Fragment {
 				R.anim.hide_modal_view, R.anim.show_modal_view,
 				R.anim.hide_modal_view);
 		return fragmentTransaction;
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		if (removeOnUpdatePhase) {
+			getService().getEventDispatcher().removeOnUpdatePhaseListener(
+					removeOnUpdatePhaseListener);
+		}
 	}
 }

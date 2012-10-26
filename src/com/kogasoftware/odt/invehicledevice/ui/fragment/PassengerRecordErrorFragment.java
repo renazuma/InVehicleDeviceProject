@@ -17,7 +17,6 @@ import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundWriter;
@@ -28,7 +27,7 @@ import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordError
 import com.kogasoftware.odt.invehicledevice.ui.fragment.PassengerRecordErrorFragment.State;
 
 public class PassengerRecordErrorFragment extends ApplicationFragment<State>
-		implements EventDispatcher.OnUpdatePhaseListener,
+		implements
 		PassengerRecordErrorArrayAdapter.OnPassengerRecordChangeListener {
 
 	@SuppressWarnings("serial")
@@ -61,6 +60,10 @@ public class PassengerRecordErrorFragment extends ApplicationFragment<State>
 			.getSimpleName();
 	private Button completeWithErrorButton;
 
+	public PassengerRecordErrorFragment() {
+		super(true);
+	}
+
 	public static PassengerRecordErrorFragment newInstance(Phase phase,
 			List<OperationSchedule> operationSchedules,
 			List<PassengerRecord> passengerRecords) {
@@ -69,15 +72,8 @@ public class PassengerRecordErrorFragment extends ApplicationFragment<State>
 	}
 
 	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
-		getService().getEventDispatcher().removeOnUpdatePhaseListener(this);
-	}
-
-	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		getService().getEventDispatcher().addOnUpdatePhaseListener(this);
 		View view = onCreateViewHelper(inflater, container,
 				R.layout.passenger_record_error_fragment,
 				R.id.get_off_check_close_button);
@@ -187,13 +183,5 @@ public class PassengerRecordErrorFragment extends ApplicationFragment<State>
 			completeWithErrorButton.setTextColor(Color.BLACK);
 			completeWithErrorButton.setEnabled(true);
 		}
-	}
-
-	@Override
-	public void onUpdatePhase(Phase phase,
-			List<OperationSchedule> operationSchedules,
-			List<PassengerRecord> passengerRecords) {
-		getFragmentManager().beginTransaction().remove(this)
-				.commitAllowingStateLoss();
 	}
 }
