@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.google.common.base.Optional;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.base.Model;
 
 public class RailsOptionalDateSerializer extends StdSerializer<Optional<Date>> {
 	private final DateFormat dateFormat = new SimpleDateFormat(
@@ -17,7 +18,7 @@ public class RailsOptionalDateSerializer extends StdSerializer<Optional<Date>> {
 
 	protected RailsOptionalDateSerializer() {
 		super(Optional.class, false);
-		dateFormat.setTimeZone(RailsDateDeserializer.TIME_ZONE);
+		dateFormat.setTimeZone(Model.TIME_ZONE);
 	}
 
 	@Override

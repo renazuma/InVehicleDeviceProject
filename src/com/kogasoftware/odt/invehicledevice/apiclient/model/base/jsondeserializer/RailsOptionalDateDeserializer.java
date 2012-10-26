@@ -11,6 +11,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.google.common.base.Optional;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.base.Model;
 
 public class RailsOptionalDateDeserializer extends
 		StdDeserializer<Optional<Date>> {
@@ -20,7 +21,7 @@ public class RailsOptionalDateDeserializer extends
 
 	protected RailsOptionalDateDeserializer() {
 		super(Optional.class);
-		dateFormat.setTimeZone(RailsDateDeserializer.TIME_ZONE);
+		dateFormat.setTimeZone(Model.TIME_ZONE);
 	}
 
 	@Override

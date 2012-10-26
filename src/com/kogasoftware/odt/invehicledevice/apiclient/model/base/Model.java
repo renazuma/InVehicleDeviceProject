@@ -6,9 +6,11 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.apache.commons.lang3.SerializationUtils;
 
@@ -42,11 +44,18 @@ public abstract class Model implements Externalizable, Identifiable, Cloneable {
 	private static final ObjectMapper OBJECT_MAPPER;
 	private static final ObjectWriter OBJECT_WRITER;
 	private static final ObjectWriter NO_ASSOCIATION_OBJECT_WRITER;
-	protected static final Date DEFAULT_DATE = new Date(0);
-	protected static final Date DEFAULT_DATE_TIME = DEFAULT_DATE;
+	protected static final Date DEFAULT_DATE;
+	protected static final Date DEFAULT_DATE_TIME;
+	public static final TimeZone TIME_ZONE = TimeZone.getDefault();
 	public static final String JACKSON_IDENTITY_INFO_PROPERTY = "@jackson_identitiy_info";
 
 	static {
+		Calendar defaultDateCalendar = Calendar.getInstance(TIME_ZONE);
+		defaultDateCalendar.clear();
+		defaultDateCalendar.set(1800, 1, 1);
+		DEFAULT_DATE = defaultDateCalendar.getTime();
+		DEFAULT_DATE_TIME = DEFAULT_DATE;
+
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.registerModule(new GuavaModule());
 		objectMapper.disable(MapperFeature.AUTO_DETECT_GETTERS);
