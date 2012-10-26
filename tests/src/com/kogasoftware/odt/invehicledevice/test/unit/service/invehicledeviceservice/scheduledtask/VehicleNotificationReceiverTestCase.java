@@ -1,9 +1,9 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledeviceservice.backgroundtask;
+package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledeviceservice.scheduledtask;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask.VehicleNotificationReceiver;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.scheduledtask.VehicleNotificationReceiver;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.test.util.apiclient.DummyApiClient;

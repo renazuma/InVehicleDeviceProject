@@ -4,7 +4,6 @@ import static org.mockito.Mockito.mock;
 
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
-import com.kogasoftware.odt.invehicledevice.test.util.TestModalView;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 
 public class InVehicleDeviceFragmentTestCase extends EmptyActivityInstrumentationTestCase2 {

@@ -1,12 +1,13 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledeviceservice.backgroundtask;
+package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledeviceservice.sensor;
 
 import android.telephony.SignalStrength;
 import android.test.AndroidTestCase;
 
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.ServiceUnitStatusLogLogic;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask.SignalStrengthListener;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.ServiceUnitStatusLogLogic;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.sensor.SignalStrengthListener;
+
 import static org.mockito.Mockito.*;
 
 public class SignalStrengthListenerTestCase extends AndroidTestCase {

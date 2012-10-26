@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledeviceservice;
+package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledeviceservice.logic;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -26,7 +26,7 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Local
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.VoidReader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Writer;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.OperationScheduleLogic;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
@@ -51,7 +51,6 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
-				localData.phase = Phase.INITIAL;
 				localData.passengerRecords.clear();
 				localData.operationSchedules.clear();
 			}
@@ -99,13 +98,13 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 	void callTestMergePassengerRecords(final Boolean preferLocal)
 			throws Exception {
 		final OperationSchedule remote = OperationSchedule
-				.parse(new JSONObject(
-						"{id: 1, reservations_as_departure: [{fellow_users: [{id: 2}], passenger_records: [{id: 3, user_id: 2, updated_at: '2000-01-01'}]}]}"));
+				.parse(
+						"{id: 1, reservations_as_departure: [{fellow_users: [{id: 2}], passenger_records: [{id: 3, user_id: 2, updated_at: '2000-01-01'}]}]}");
 		String ua = preferLocal ? "2030-12-31" : "1990-01-01";
 		final OperationSchedule local = OperationSchedule
-				.parse(new JSONObject(
+				.parse(
 						"{id: 1, reservations_as_departure: [{fellow_users: [{id: 2}], passenger_records: [{id: 3, user_id: 2, updated_at: '"
-								+ ua + "', payment: 200}]}]}"));
+								+ ua + "', payment: 200}]}]}");
 		final PassengerRecord localPR = local.getReservationsAsDeparture()
 				.get(0).getPassengerRecords().get(0);
 		final PassengerRecord remotePR = remote.getReservationsAsDeparture()
@@ -173,9 +172,9 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 				+ "]";
 
 		final List<OperationSchedule> locals = OperationSchedule
-				.parseList(new JSONArray(localsString));
+				.parseList(localsString);
 		remotes.addAll(OperationSchedule
-				.parseList(new JSONArray(remotesString)));
+				.parseList(remotesString));
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
@@ -208,7 +207,7 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 	public void callTestGetCurrentOperationSchedules(String jsonString,
 			Optional<Integer> id) throws Exception {
 		final List<OperationSchedule> locals = OperationSchedule
-				.parseList(new JSONArray(jsonString));
+				.parseList(jsonString);
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
@@ -247,7 +246,7 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 	public void callTestGetOperationSchedules(String jsonString)
 			throws Exception {
 		final List<OperationSchedule> locals = OperationSchedule
-				.parseList(new JSONArray(jsonString));
+				.parseList(jsonString);
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
@@ -281,9 +280,9 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 	public void callTestGetRemainingOperationSchedules(String expected,
 			String param) throws Exception {
 		final List<OperationSchedule> paramList = OperationSchedule
-				.parseList(new JSONArray(param));
+				.parseList(param);
 		final List<OperationSchedule> expectedList = OperationSchedule
-				.parseList(new JSONArray(expected));
+				.parseList(expected);
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
@@ -324,7 +323,7 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 	public void testPhase0() throws Exception {
 		String json = "[{id: 11, operation_record: {}}, {id: 12, operation_record: {}}, {id: 13, operation_record: {}}]";
 		final List<OperationSchedule> oss = OperationSchedule
-				.parseList(new JSONArray(json));
+				.parseList(json);
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
@@ -366,5 +365,3 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 		assertFalse(osl.getCurrent().isPresent());
 	}
 }
-
-
