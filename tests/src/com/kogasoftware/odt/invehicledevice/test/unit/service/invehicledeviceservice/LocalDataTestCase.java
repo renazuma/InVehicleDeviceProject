@@ -60,11 +60,11 @@ public class LocalDataTestCase extends AndroidTestCase {
 	}
 
 	public void assertSerializeSpeed() {
-		Integer numVehicleNotifications = 10;
-		Integer numOperationSchedules = 10;
-		Integer numReservations = 10;
-		Integer numUsers = 10;
-		Integer numPassengerRecords = 10;
+		Integer numVehicleNotifications = 5;
+		Integer numOperationSchedules = 5;
+		Integer numReservations = 5;
+		Integer numUsers = 5;
+		Integer numPassengerRecords = 5;
 
 		LocalData ld = new LocalData();
 		for (VehicleNotificationStatus vns : new VehicleNotificationStatus[] {
@@ -125,6 +125,6 @@ public class LocalDataTestCase extends AndroidTestCase {
 		
 		Long elapsedMillis = sw.elapsedMillis();
 		Log.i(TAG, "elapsed=" + elapsedMillis + "ms bytes=" + ba.length);
-		ComparableAssert.assertLesser(3 * 60 * 1000L, elapsedMillis);
+		ComparableAssert.assertLesser(60 * 1000L, elapsedMillis);
 	}
 }
