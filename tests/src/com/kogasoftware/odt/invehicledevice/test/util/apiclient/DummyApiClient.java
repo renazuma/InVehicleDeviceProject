@@ -8,8 +8,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.json.JSONException;
-
 import com.kogasoftware.odt.invehicledevice.apiclient.EmptyInVehicleDeviceApiClient;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.apiclient.ApiClientException;
