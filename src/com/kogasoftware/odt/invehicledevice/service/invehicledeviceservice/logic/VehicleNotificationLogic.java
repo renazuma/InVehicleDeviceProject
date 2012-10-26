@@ -162,7 +162,7 @@ public class VehicleNotificationLogic {
 				});
 	}
 
-	public Multimap<VehicleNotificationStatus, VehicleNotification> getVehicleNotifications() {
+	public Multimap<VehicleNotificationStatus, VehicleNotification> getVehicleNotificationsWithReadLock() {
 		return service
 				.getLocalStorage()
 				.withReadLock(
