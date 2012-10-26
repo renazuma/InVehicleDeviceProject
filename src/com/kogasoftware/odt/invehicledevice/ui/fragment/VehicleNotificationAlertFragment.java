@@ -32,7 +32,35 @@ public class VehicleNotificationAlertFragment extends
 	}
 
 	private static final Integer ALERT_SHOW_INTERVAL_MILLIS = 500;
+	private final Handler handler = new Handler();
 	private Integer count = 0;
+	private final Runnable blinkAlertAndShowNextFragment = new Runnable() {
+		@Override
+		public void run() {
+			if (count > 10) { // TODO 定数
+				count = 0;
+				if (isRemoving()) {
+					return;
+				}
+				FragmentTransaction fragmentTransaction = setCustomAnimation(getFragmentManager()
+						.beginTransaction());
+				for (VehicleNotification vehicleNotification : getState()
+						.getVehicleNotifications()) {
+					fragmentTransaction.add(R.id.modal_fragment_container,
+							VehicleNotificationFragment
+									.newInstance(vehicleNotification));
+				}
+				fragmentTransaction
+						.remove(VehicleNotificationAlertFragment.this);
+				fragmentTransaction.commitAllowingStateLoss();
+				return;
+			}
+			count++;
+			getView().findViewById(R.id.alert_image_view).setVisibility(
+					count % 2 == 0 ? View.VISIBLE : View.GONE);
+			handler.postDelayed(this, ALERT_SHOW_INTERVAL_MILLIS);
+		}
+	};
 
 	public static VehicleNotificationAlertFragment newInstance(
 			List<VehicleNotification> vehicleNotifications) {
@@ -43,34 +71,7 @@ public class VehicleNotificationAlertFragment extends
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		final Handler handler = new Handler();
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				if (count > 10) { // TODO 定数
-					count = 0;
-					if (isRemoving()) {
-						return;
-					}
-					FragmentTransaction fragmentTransaction = setCustomAnimation(getFragmentManager()
-							.beginTransaction());
-					for (VehicleNotification vehicleNotification : getState()
-							.getVehicleNotifications()) {
-						fragmentTransaction.add(R.id.modal_fragment_container,
-								VehicleNotificationFragment
-										.newInstance(vehicleNotification));
-					}
-					fragmentTransaction
-							.remove(VehicleNotificationAlertFragment.this);
-					fragmentTransaction.commitAllowingStateLoss();
-					return;
-				}
-				count++;
-				getView().findViewById(R.id.alert_image_view).setVisibility(
-						count % 2 == 0 ? View.VISIBLE : View.GONE);
-				handler.postDelayed(this, ALERT_SHOW_INTERVAL_MILLIS);
-			}
-		});
+		handler.post(blinkAlertAndShowNextFragment);
 		getService().speak("管理者から連絡があります");
 	}
 
@@ -79,5 +80,11 @@ public class VehicleNotificationAlertFragment extends
 			Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.vehicle_notification_alert_fragment,
 				container, false);
+	}
+
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		handler.removeCallbacks(blinkAlertAndShowNextFragment);
 	}
 }

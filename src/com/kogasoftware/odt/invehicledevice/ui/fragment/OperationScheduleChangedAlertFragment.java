@@ -28,7 +28,21 @@ public class OperationScheduleChangedAlertFragment extends
 	}
 
 	private static final Integer ALERT_SHOW_INTERVAL_MILLIS = 500;
+	private final Handler handler = new Handler();
 	private Integer count = 0;
+	private final Runnable blinkAlertAndShowNextFragment = new Runnable() {
+		@Override
+		public void run() {
+			if (count <= 10) { // TODO 定数
+				count++;
+				getView().findViewById(R.id.alert_image_view).setVisibility(
+						count % 2 == 0 ? View.VISIBLE : View.INVISIBLE);
+				handler.postDelayed(this, ALERT_SHOW_INTERVAL_MILLIS);
+				return;
+			}
+			showOperationScheduleChangedFragment();
+		}
+	};
 
 	public static OperationScheduleChangedAlertFragment newInstance(
 			List<VehicleNotification> vehicleNotifications) {
@@ -39,22 +53,7 @@ public class OperationScheduleChangedAlertFragment extends
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		final Handler handler = new Handler();
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				if (count <= 10) { // TODO 定数
-					count++;
-					getView().findViewById(R.id.alert_image_view)
-							.setVisibility(
-									count % 2 == 0 ? View.VISIBLE
-											: View.INVISIBLE);
-					handler.postDelayed(this, ALERT_SHOW_INTERVAL_MILLIS);
-					return;
-				}
-				showOperationScheduleChangedFragment();
-			}
-		});
+		handler.post(blinkAlertAndShowNextFragment);
 		getService().speak("運行予定が変更されました");
 	}
 
@@ -64,6 +63,12 @@ public class OperationScheduleChangedAlertFragment extends
 		return inflater.inflate(
 				R.layout.operation_schedule_changed_alert_fragment, container,
 				false);
+	}
+
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		handler.removeCallbacks(blinkAlertAndShowNextFragment);
 	}
 
 	private void showOperationScheduleChangedFragment() {
