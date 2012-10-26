@@ -2,6 +2,7 @@ package com.kogasoftware.odt.invehicledevice.test.unit.apiclient;
 
 import android.test.AndroidTestCase;
 
+import com.kogasoftware.odt.invehicledevice.apiclient.EmptyInVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClientFactory;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyFile;
@@ -18,8 +19,8 @@ public class InVehicleDeviceApiClientFactoryTestCase extends AndroidTestCase {
 	}
 
 	public void testNewInstance_1() throws Exception {
-		assertTrue(InVehicleDeviceApiClientFactory.newInstance() instanceof InVehicleDeviceApiClient);
-		assertFalse(InVehicleDeviceApiClientFactory.newInstance("http://localhost", "foo",
-				new EmptyFile()) instanceof InVehicleDeviceApiClient);
+		assertTrue(InVehicleDeviceApiClientFactory.newInstance() instanceof EmptyInVehicleDeviceApiClient);
+		assertTrue(InVehicleDeviceApiClientFactory.newInstance(
+				"http://localhost", "foo", new EmptyFile()) instanceof InVehicleDeviceApiClient);
 	}
 }
