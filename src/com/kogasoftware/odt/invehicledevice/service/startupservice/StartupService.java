@@ -8,6 +8,7 @@ import android.app.ActivityManager.RunningTaskInfo;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -61,6 +62,21 @@ public class StartupService extends Service {
 		}
 	};
 
+	public void disableAirplaneMode() {
+		ContentResolver contentResolver = getContentResolver();
+		Boolean airplaneModeOn = Settings.System.getInt(contentResolver,
+				Settings.System.AIRPLANE_MODE_ON, 0) == 1;
+		if (!airplaneModeOn) {
+			return;
+		}
+		Settings.System.putInt(contentResolver,
+				Settings.System.AIRPLANE_MODE_ON, 1);
+		// Post an intent to reload
+		Intent intent = new Intent(Intent.ACTION_AIRPLANE_MODE_CHANGED);
+		intent.putExtra("state", true);
+		sendBroadcast(intent);
+	}
+
 	public void checkDeviceAndStartActivity() {
 		if (!enabled.get()) {
 			Log.i(TAG, "waiting for startup enabled");
@@ -70,6 +86,9 @@ public class StartupService extends Service {
 		if (!isDeviceReady()) {
 			return;
 		}
+
+		// 機内モードは強制的にOFF
+		disableAirplaneMode();
 
 		Intent startIntent = new Intent(StartupService.this,
 				InVehicleDeviceActivity.class);
@@ -93,13 +112,6 @@ public class StartupService extends Service {
 		PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
 		if (!powerManager.isScreenOn()) {
 			Log.i(TAG, "screen off");
-			return false;
-		}
-
-		if (Settings.System.getInt(getContentResolver(),
-				Settings.System.AIRPLANE_MODE_ON, 0) != 0) {
-			BigToast.makeText(this, "機内モードが有効になっています。機内モードを無効にしてください。",
-					Toast.LENGTH_LONG).show();
 			return false;
 		}
 
