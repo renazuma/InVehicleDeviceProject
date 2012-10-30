@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
@@ -69,12 +70,14 @@ public class DefaultApiClient implements ApiClient {
 	}
 
 	public DefaultApiClient(String serverHost, String authenticationToken) {
-		this(serverHost, authenticationToken, new DefaultApiClientRequestQueue());
+		this(serverHost, authenticationToken,
+				new DefaultApiClientRequestQueue());
 	}
 
-	public DefaultApiClient(String serverHost, String authenticationToken, File backupFile) {
-		this(serverHost, authenticationToken,
-				new DefaultApiClientRequestQueue(backupFile));
+	public DefaultApiClient(String serverHost, String authenticationToken,
+			File backupFile) {
+		this(serverHost, authenticationToken, new DefaultApiClientRequestQueue(
+				backupFile));
 	}
 
 	protected DefaultApiClient(String serverHost, String authenticationToken,
@@ -83,8 +86,8 @@ public class DefaultApiClient implements ApiClient {
 		this.authenticationToken = authenticationToken;
 		setServerHost(serverHost);
 		for (int i = 0; i < NUM_THREADS; ++i) {
-			executorService.scheduleWithFixedDelay(new SessionRunner(),
-					0, 10, TimeUnit.SECONDS);
+			executorService.scheduleWithFixedDelay(new SessionRunner(), 0, 10,
+					TimeUnit.SECONDS);
 		}
 	}
 
@@ -98,12 +101,14 @@ public class DefaultApiClient implements ApiClient {
 			ResponseConverter<? extends T> conv) {
 		SerializableDeleteLoader loader = new SerializableDeleteLoader(
 				getServerHost(), path, authenticationToken);
-		DefaultApiClientRequest<?> request = new DefaultApiClientRequest<T>(callback, conv, loader);
+		DefaultApiClientRequest<?> request = new DefaultApiClientRequest<T>(
+				callback, conv, loader);
 		addRequest(request);
 		return request.getReqKey();
 	}
 
-	protected boolean runHttpSessionAndCallback(DefaultApiClientRequest<?> request) {
+	protected boolean runHttpSessionAndCallback(
+			DefaultApiClientRequest<?> request) {
 		try {
 			HttpClient httpClient = new DefaultHttpClient();
 			HttpResponse httpResponse = httpClient
@@ -114,7 +119,7 @@ public class DefaultApiClient implements ApiClient {
 			HttpEntity entity = httpResponse.getEntity();
 			if (entity != null) {
 				response = EntityUtils.toByteArray(entity);
-				if (response.length < 1024) {
+				if (response.length < 4096) {
 					responseString = ApiClients.decodeByteArray(response);
 				} else {
 					responseString = "response length=" + response.length;
@@ -123,24 +128,29 @@ public class DefaultApiClient implements ApiClient {
 			}
 
 			if (statusCode / 100 == 4 || statusCode / 100 == 5) {
+				Log.w(TAG, "request failed statusCode=" + statusCode);
 				request.onFailed(statusCode, responseString);
 				return false;
 			}
 
-			try {
-				request.onSucceed(statusCode, response);
-				return true;
-			} catch (Exception e) {
-				Log.e(TAG, "request.onSucceed() failed", e);
-				throw e;
-			}
+			Log.i(TAG, "request succeed statusCode=" + statusCode);
+			request.onSucceed(statusCode, response);
+			return true;
 		} catch (ApiClientException e) {
-			Log.e(TAG, "ApiClientException", e);// TODO:消す
+			Log.w(TAG, e);
 			request.onException(e);
+		} catch (ClientProtocolException e) {
+			Log.w(TAG, e);
+			request.onException(new ApiClientException(e));
+		} catch (IOException e) {
+			Log.i(TAG, "request failed by exception", e);
+			request.onException(new ApiClientException(e));
 		} catch (InterruptedException e) {
+			Log.i(TAG, "request interrupted", e);
 			Thread.currentThread().interrupt();
 			request.onException(new ApiClientException(e));
 		} catch (Exception e) {
+			Log.e(TAG, "unexpected exception", e);
 			request.onException(new ApiClientException(e));
 		}
 		return false;
@@ -148,13 +158,14 @@ public class DefaultApiClient implements ApiClient {
 
 	protected void runSession() throws InterruptedException {
 		DefaultApiClientRequest<?> request = requests.take();
+		Log.i(TAG, "runSession " + request);
+
 		boolean succeed = false;
 		Date now = new Date();
 		if (DateUtils.addDays(request.getCreatedDate(), REQUEST_EXPIRE_DAYS)
 				.before(now)) {
-			Log.i(TAG, "Request (" + request + ") is expired. createdDate: "
-					+ request.getCreatedDate());
 			requests.remove(request);
+			Log.i(TAG, "request " + request + " is expired");
 			return;
 		}
 
@@ -172,7 +183,8 @@ public class DefaultApiClient implements ApiClient {
 			ResponseConverter<? extends T> conv) {
 		SerializableGetLoader loader = new SerializableGetLoader(
 				getServerHost(), path, params, authenticationToken);
-		DefaultApiClientRequest<?> request = new DefaultApiClientRequest<T>(callback, conv, loader);
+		DefaultApiClientRequest<?> request = new DefaultApiClientRequest<T>(
+				callback, conv, loader);
 		addRequest(request, requestGroup);
 		return request.getReqKey();
 	}
@@ -186,15 +198,15 @@ public class DefaultApiClient implements ApiClient {
 	}
 
 	@Override
-	public <T> int post(String path, JsonNode param,
-			JsonNode retryParam, String requestGroup,
-			ApiClientCallback<T> callback, ResponseConverter<? extends T> conv) {
+	public <T> int post(String path, JsonNode param, JsonNode retryParam,
+			String requestGroup, ApiClientCallback<T> callback,
+			ResponseConverter<? extends T> conv) {
 		SerializablePostLoader first = new SerializablePostLoader(
 				getServerHost(), path, param, authenticationToken);
 		SerializablePostLoader retry = new SerializablePostLoader(
 				getServerHost(), path, retryParam, authenticationToken);
-		DefaultApiClientRequest<?> request = new DefaultApiClientRequest<T>(callback, conv, first,
-				retry);
+		DefaultApiClientRequest<?> request = new DefaultApiClientRequest<T>(
+				callback, conv, first, retry);
 		addRequest(request, requestGroup);
 		return request.getReqKey();
 	}
@@ -219,8 +231,8 @@ public class DefaultApiClient implements ApiClient {
 				getServerHost(), path, param, authenticationToken);
 		SerializablePutLoader retry = new SerializablePutLoader(
 				getServerHost(), path, retryParam, authenticationToken);
-		DefaultApiClientRequest<?> request = new DefaultApiClientRequest<T>(callback, conv, first,
-				retry);
+		DefaultApiClientRequest<?> request = new DefaultApiClientRequest<T>(
+				callback, conv, first, retry);
 		addRequest(request, requestGroup);
 		return request.getReqKey();
 	}
@@ -264,19 +276,22 @@ public class DefaultApiClient implements ApiClient {
 		addRequest(request, UNIQUE_GROUP);
 	}
 
-	protected void addRequest(DefaultApiClientRequest<?> request, String requestGroup) {
+	protected void addRequest(DefaultApiClientRequest<?> request,
+			String requestGroup) {
 		DefaultApiClientRequestConfig requestConfig = getRequestConfig();
 		clearRequestConfig();
 		request.setConfig(requestConfig);
 		requests.add(request, requestGroup);
 	}
 
-	protected static <T extends DefaultApiClient> T withSaveOnClose(T apiClient, boolean saveOnClose) {
+	protected static <T extends DefaultApiClient> T withSaveOnClose(
+			T apiClient, boolean saveOnClose) {
 		apiClient.getRequestConfig().setSaveOnClose(saveOnClose);
 		return apiClient;
 	}
 
-	protected static <T extends DefaultApiClient> T withRetry(T apiClient, boolean retry) {
+	protected static <T extends DefaultApiClient> T withRetry(T apiClient,
+			boolean retry) {
 		apiClient.getRequestConfig().setRetry(retry);
 		return apiClient;
 	}

@@ -27,7 +27,8 @@ import com.google.common.io.Closeables;
  * ApiClientRequestを管理するクラス
  */
 public class DefaultApiClientRequestQueue {
-	private static final String TAG = DefaultApiClientRequestQueue.class.getSimpleName();
+	private static final String TAG = DefaultApiClientRequestQueue.class
+			.getSimpleName();
 	private static final Object FILE_ACCESS_LOCK = new Object(); // ファイルアクセス中のスレッドを一つに制限するためのロック。将来的にはロックの粒度をファイル毎にする必要があるかもしれない。
 	public static final String UNIQUE_GROUP = "";
 
@@ -64,7 +65,7 @@ public class DefaultApiClientRequestQueue {
 
 	/**
 	 * コンストラクタ
-	 * 
+	 *
 	 * @param backupFile
 	 *            データを読み出すファイル
 	 */
@@ -77,8 +78,7 @@ public class DefaultApiClientRequestQueue {
 			InputStream inputStream = null;
 			try {
 				inputStream = new FileInputStream(backupFile);
-				Object object = SerializationUtils
-						.deserialize(inputStream);
+				Object object = SerializationUtils.deserialize(inputStream);
 				if (!(object instanceof InstanceState)) {
 					Log.w(TAG, "!(" + object + " instanceof InstanceState)");
 					return;
@@ -96,6 +96,12 @@ public class DefaultApiClientRequestQueue {
 			} finally {
 				waitingQueuePollPermissions.release(requestsByGroup.size());
 				Closeables.closeQuietly(inputStream);
+			}
+		}
+		for (Pair<String, List<DefaultApiClientRequest<?>>> entry : requestsByGroup) {
+			String group = entry.getKey();
+			for (DefaultApiClientRequest<?> request : entry.getValue()) {
+				Log.i(TAG, "restored: " + request + " group=" + group);
 			}
 		}
 	}
@@ -117,7 +123,7 @@ public class DefaultApiClientRequestQueue {
 
 	/**
 	 * リクエストを追加し、作業待ちリクエストの追加待ちをしているスレッドを一つ起こせるようにする
-	 * 
+	 *
 	 * @param request
 	 */
 	public void add(DefaultApiClientRequest<?> request, String group) {
@@ -157,21 +163,24 @@ public class DefaultApiClientRequestQueue {
 		synchronized (queueLock) {
 			for (Pair<String, List<DefaultApiClientRequest<?>>> pair : Lists
 					.newLinkedList(requestsByGroup)) {
-				List<DefaultApiClientRequest<?>> backupRequests = Lists.newLinkedList();
+				List<DefaultApiClientRequest<?>> backupRequests = Lists
+						.newLinkedList();
 				for (DefaultApiClientRequest<?> request : pair.getValue()) {
 					if (request.getConfig().getSaveOnClose()) {
 						backupRequests.add(request);
 					}
 				}
 				if (!backupRequests.isEmpty()) {
-					backupRequestsByGroup.add(Pair.of(pair.getKey(), backupRequests));
+					backupRequestsByGroup.add(Pair.of(pair.getKey(),
+							backupRequests));
 				}
 			}
 		}
 
 		synchronized (FILE_ACCESS_LOCK) {
 			try {
-				SerializationUtils.serialize(new InstanceState(backupRequestsByGroup),
+				SerializationUtils.serialize(new InstanceState(
+						backupRequestsByGroup),
 						new FileOutputStream(backupFile));
 			} catch (SerializationException e) {
 				Log.e(TAG, e.toString(), e);
@@ -183,7 +192,7 @@ public class DefaultApiClientRequestQueue {
 
 	/**
 	 * リクエストを削除
-	 * 
+	 *
 	 * @param request
 	 */
 	public void remove(DefaultApiClientRequest<?> request) {
@@ -209,7 +218,7 @@ public class DefaultApiClientRequestQueue {
 
 	/**
 	 * リクエストの中断
-	 * 
+	 *
 	 * @param reqkey
 	 */
 	public void abort(int reqkey) {
@@ -233,7 +242,7 @@ public class DefaultApiClientRequestQueue {
 
 	/**
 	 * 指定したリクエストに対応するグループを作業中から削除し、グループ全体の処理順を最後に移動。
-	 * 
+	 *
 	 * @param request
 	 *            リトライ対象のリクエスト
 	 */
@@ -261,7 +270,7 @@ public class DefaultApiClientRequestQueue {
 
 	/**
 	 * 作業中でないグループからリクエストを一つ取得し返す。またそのグループを作業中とする。 該当グループが存在しない場合は、存在するようになるまで待つ
-	 * 
+	 *
 	 * @return リクエスト
 	 * @throws InterruptedException
 	 */
@@ -272,7 +281,8 @@ public class DefaultApiClientRequestQueue {
 				for (Pair<String, List<DefaultApiClientRequest<?>>> entry : Lists
 						.newLinkedList(requestsByGroup)) {
 					String group = entry.getKey();
-					List<DefaultApiClientRequest<?>> requests = entry.getValue();
+					List<DefaultApiClientRequest<?>> requests = entry
+							.getValue();
 					if (requests.isEmpty()) {
 						processingGroups.remove(group);
 						requestsByGroup.remove(entry);

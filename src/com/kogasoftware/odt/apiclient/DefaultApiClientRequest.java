@@ -10,12 +10,14 @@ import org.apache.http.client.methods.HttpRequestBase;
 
 import android.util.Log;
 
+import com.google.common.base.Objects;
 import com.kogasoftware.odt.apiclient.ApiClient.ResponseConverter;
 import com.kogasoftware.odt.apiclient.serializablerequestloader.SerializableRequestLoader;
 
 public class DefaultApiClientRequest<T> implements Serializable {
 	private static final long serialVersionUID = -8451453777378477195L;
-	private static final String TAG = DefaultApiClientRequest.class.getSimpleName();
+	private static final String TAG = DefaultApiClientRequest.class
+			.getSimpleName();
 	protected static final AtomicInteger REQ_KEY_COUNTER = new AtomicInteger(0);
 	protected final SerializableRequestLoader firstRequest;
 	protected final SerializableRequestLoader retryRequest;
@@ -61,7 +63,7 @@ public class DefaultApiClientRequest<T> implements Serializable {
 	public HttpRequestBase getRequest() throws ApiClientException {
 		return retry ? retryRequest.load() : firstRequest.load();
 	}
-	
+
 	public void onException(ApiClientException e) {
 		if (callback != null) {
 			callback.onException(reqkey, e);
@@ -98,12 +100,20 @@ public class DefaultApiClientRequest<T> implements Serializable {
 		}
 		onException(new ApiClientException("Connection aborted by application"));
 	}
-	
+
 	public void setConfig(DefaultApiClientRequestConfig config) {
 		this.config = config;
 	}
-	
+
 	public DefaultApiClientRequestConfig getConfig() {
 		return config;
+	}
+
+	@Override
+	public String toString() {
+		return Objects.toStringHelper(this).add("reqkey", reqkey)
+				.add("retry", retry).add("config", config)
+				.add("firstRequest", firstRequest)
+				.add("retryRequest", retryRequest).toString();
 	}
 }

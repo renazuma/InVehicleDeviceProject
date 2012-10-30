@@ -10,6 +10,7 @@ import org.apache.http.entity.StringEntity;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Objects;
 import com.kogasoftware.odt.apiclient.ApiClientException;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.base.Model;
 
@@ -25,7 +26,8 @@ public abstract class SerializableEntityEnclosingRequestLoader extends
 		while (iterator.hasNext()) {
 			JsonNode jsonNode = iterator.next();
 			if (jsonNode instanceof ObjectNode) {
-				((ObjectNode) jsonNode).remove(Model.JACKSON_IDENTITY_INFO_PROPERTY);
+				((ObjectNode) jsonNode)
+						.remove(Model.JACKSON_IDENTITY_INFO_PROPERTY);
 			}
 		}
 		this.entityString = param.toString();
@@ -55,5 +57,11 @@ public abstract class SerializableEntityEnclosingRequestLoader extends
 				throw new ApiClientException(e);
 			}
 		}
+	}
+
+	@Override
+	public String toString() {
+		return Objects.toStringHelper(this).add("super", super.toString())
+				.add("entityString", entityString).toString();
 	}
 }

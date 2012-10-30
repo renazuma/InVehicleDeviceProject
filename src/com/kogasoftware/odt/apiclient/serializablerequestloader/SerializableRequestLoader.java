@@ -10,14 +10,12 @@ import java.util.TreeMap;
 import org.apache.http.client.methods.HttpRequestBase;
 
 import android.net.Uri;
-import android.util.Log;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import com.kogasoftware.odt.apiclient.ApiClientException;
 
 public abstract class SerializableRequestLoader implements Serializable {
-	private static final String TAG = SerializableRequestLoader.class.getSimpleName();
 	private static final long serialVersionUID = -7411970624771269698L;
 	protected static final String AUTHENTICATION_TOKEN_KEY = "authentication_token";
 
@@ -55,7 +53,6 @@ public abstract class SerializableRequestLoader implements Serializable {
 		}
 
 		String uri = uriBuilder.toString();
-		Log.d(TAG, uri);
 
 		try {
 			request.setURI(new URI(uri));
@@ -70,5 +67,12 @@ public abstract class SerializableRequestLoader implements Serializable {
 		if (authenticationToken.length() > 0) {
 			params.put(AUTHENTICATION_TOKEN_KEY, authenticationToken);
 		}
+	}
+
+	@Override
+	public String toString() {
+		return Objects.toStringHelper(this).add("host", host).add("path", path)
+				.add("extension", extension).add("params", params)
+				.add("authenticationToken", authenticationToken).toString();
 	}
 }
