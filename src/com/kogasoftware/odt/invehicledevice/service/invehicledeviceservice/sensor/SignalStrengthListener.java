@@ -2,6 +2,7 @@ package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.sens
 
 import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
+import android.util.Log;
 
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.ServiceUnitStatusLogLogic;
@@ -10,9 +11,12 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic
  * onSignalStrengthsChangedを受け取り、現在の電波状況を100分率で表した数値をサービスへ通知
  */
 public class SignalStrengthListener extends PhoneStateListener {
+	private static final String TAG = SignalStrengthListener.class
+			.getSimpleName();
 	private final ServiceUnitStatusLogLogic serviceUnitStatusLogLogic;
 
-	public SignalStrengthListener(ServiceUnitStatusLogLogic serviceUnitStatusLogLogic) {
+	public SignalStrengthListener(
+			ServiceUnitStatusLogLogic serviceUnitStatusLogLogic) {
 		this.serviceUnitStatusLogLogic = serviceUnitStatusLogLogic;
 	}
 
@@ -46,6 +50,19 @@ public class SignalStrengthListener extends PhoneStateListener {
 	 */
 	@Override
 	public void onSignalStrengthsChanged(SignalStrength signalStrength) {
+		StringBuilder message = new StringBuilder("onSignalStrengthChanged");
+		message.append(" isGsm=" + signalStrength.isGsm());
+		message.append(" cdmaDbm=" + signalStrength.getCdmaDbm());
+		message.append(" cdmaEcio=" + signalStrength.getCdmaEcio());
+		message.append(" evdoDbm=" + signalStrength.getEvdoDbm());
+		message.append(" evdoEcio=" + signalStrength.getEvdoEcio());
+		message.append(" evdoSnr=" + signalStrength.getEvdoSnr());
+		message.append(" gsmBitErrorRate="
+				+ signalStrength.getGsmBitErrorRate());
+		message.append(" gsmSignalStrength="
+				+ signalStrength.getGsmSignalStrength());
+		message.append(" describeContents=" + signalStrength.describeContents());
+		Log.i(TAG, message.toString());
 		for (Integer percentage : convertSignalStrengthToPercentage(
 				signalStrength).asSet()) {
 			serviceUnitStatusLogLogic.changeSignalStrength(percentage);
