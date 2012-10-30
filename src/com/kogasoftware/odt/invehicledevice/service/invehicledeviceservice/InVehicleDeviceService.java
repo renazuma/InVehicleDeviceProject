@@ -29,6 +29,7 @@ import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.Handler;
@@ -59,6 +60,7 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.broad
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.broadcast.ExitBroadcastReceiver;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.ServiceUnitStatusLogLogic;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.scheduledtask.NetworkStatusLogger;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.scheduledtask.NextDateNotifier;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.scheduledtask.ServiceUnitStatusLogSender;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.scheduledtask.VehicleNotificationReceiver;
@@ -90,7 +92,6 @@ public class InVehicleDeviceService extends Service {
 
 	public static final Integer NEW_SCHEDULE_DOWNLOAD_HOUR = 0;
 	public static final Integer NEW_SCHEDULE_DOWNLOAD_MINUTE = 5;
-	private static final long POLLING_PERIOD_MILLIS = 30 * 1000;
 	private static final Integer NUM_THREADS = 3;
 	private static final Integer ERROR_MESSAGE_THREAD_EXIT_MILLIS = 15 * 1000;
 
@@ -214,13 +215,11 @@ public class InVehicleDeviceService extends Service {
 	protected WindowManager windowManager;
 	protected LocationManager locationManager;
 	protected PowerManager powerManager;
+	protected ConnectivityManager connectivityManager;
 	protected ExitBroadcastReceiver exitBroadcastReceiver;
 	protected BatteryBroadcastReceiver batteryBroadcastReceiver;
-	protected ServiceUnitStatusLogSender serviceUnitStatusLogSender;
 	protected AccMagSensorEventListener accMagSensorEventListener;
 	protected OrientationSensorEventListener orientationSensorEventListener;
-	protected VehicleNotificationReceiver vehicleNotificationReceiver;
-	protected NextDateNotifier nextDateChecker;
 	protected TemperatureSensorEventListener temperatureSensorEventListener;
 	protected SignalStrengthListener signalStrengthListener;
 	protected LocationNotifier locationNotifier;
@@ -318,17 +317,14 @@ public class InVehicleDeviceService extends Service {
 		windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
 		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+		connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
 		exitBroadcastReceiver = new ExitBroadcastReceiver(this);
 		batteryBroadcastReceiver = new BatteryBroadcastReceiver();
-		serviceUnitStatusLogSender = new ServiceUnitStatusLogSender(
-				serviceUnitStatusLogLogic, operationScheduleLogic);
 		accMagSensorEventListener = new AccMagSensorEventListener(
 				serviceUnitStatusLogLogic, windowManager);
 		orientationSensorEventListener = new OrientationSensorEventListener(
 				serviceUnitStatusLogLogic, windowManager);
-		vehicleNotificationReceiver = new VehicleNotificationReceiver(this);
-		nextDateChecker = new NextDateNotifier(operationScheduleLogic);
 		temperatureSensorEventListener = new TemperatureSensorEventListener(
 				serviceUnitStatusLogLogic);
 		signalStrengthListener = new SignalStrengthListener(
@@ -492,13 +488,29 @@ public class InVehicleDeviceService extends Service {
 					PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
 		}
 
+		ServiceUnitStatusLogSender serviceUnitStatusLogSender = new ServiceUnitStatusLogSender(
+				serviceUnitStatusLogLogic, operationScheduleLogic);
+		VehicleNotificationReceiver vehicleNotificationReceiver = new VehicleNotificationReceiver(
+				this);
+		NextDateNotifier nextDateNotifier = new NextDateNotifier(
+				operationScheduleLogic);
+		NetworkStatusLogger networkStatusLogger = new NetworkStatusLogger(
+				connectivityManager, optionalTelephonyManager);
+
 		try {
 			executorService.scheduleWithFixedDelay(vehicleNotificationReceiver,
-					0, POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
-			executorService.scheduleWithFixedDelay(nextDateChecker, 0,
-					POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
+					0, VehicleNotificationReceiver.RUN_INTERVAL_MILLIS,
+					TimeUnit.MILLISECONDS);
+			executorService
+					.scheduleWithFixedDelay(nextDateNotifier, 0,
+							NextDateNotifier.RUN_INTERVAL_MILLIS,
+							TimeUnit.MILLISECONDS);
 			executorService.scheduleWithFixedDelay(serviceUnitStatusLogSender,
-					0, POLLING_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
+					0, ServiceUnitStatusLogSender.RUN_INTERVAL_MILLIS,
+					TimeUnit.MILLISECONDS);
+			executorService.scheduleWithFixedDelay(networkStatusLogger, 0,
+					NetworkStatusLogger.RUN_INTERVAL_MILLIS,
+					TimeUnit.MILLISECONDS);
 		} catch (RejectedExecutionException e) {
 			Log.w(TAG, e);
 			exit();

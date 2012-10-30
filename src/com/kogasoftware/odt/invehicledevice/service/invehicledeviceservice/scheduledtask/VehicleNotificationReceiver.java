@@ -9,6 +9,7 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVeh
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.VehicleNotificationLogic;
 
 public class VehicleNotificationReceiver implements Runnable {
+	public static final Integer RUN_INTERVAL_MILLIS = 30 * 1000;
 	protected final InVehicleDeviceService service;
 	protected final VehicleNotificationLogic vehicleNotificationLogic;
 

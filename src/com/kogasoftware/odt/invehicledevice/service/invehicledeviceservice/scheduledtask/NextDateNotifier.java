@@ -6,8 +6,9 @@ import java.util.Date;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
 
-
 public class NextDateNotifier implements Runnable {
+	public static final long RUN_INTERVAL_MILLIS = 60 * 1000;
+
 	protected static Date createNextUpdateDate() {
 		Calendar now = Calendar.getInstance();
 		now.setTime(InVehicleDeviceService.getDate());
