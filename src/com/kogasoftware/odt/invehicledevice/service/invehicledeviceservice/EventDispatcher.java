@@ -98,10 +98,6 @@ public class EventDispatcher implements Closeable {
 				List<VehicleNotification> vehicleNotifications);
 	}
 
-	public interface OnReplyVehicleNotificationListener {
-		void onReplyVehicleNotification(VehicleNotification vehicleNotification);
-	}
-
 	public interface OnResumeActivityListener {
 		void onResumeActivity();
 	}
@@ -122,8 +118,6 @@ public class EventDispatcher implements Closeable {
 	protected final Multimap<Handler, OnChangeTemperatureListener> onChangeTemperatureListeners = newListenerMultimap();
 	protected final Multimap<Handler, OnExitListener> onExitListeners = newListenerMultimap();
 	protected final Multimap<Handler, OnMergeOperationSchedulesListener> onMergeOperationSchedulesListeners = newListenerMultimap();
-	protected final Multimap<Handler, OnReplyUpdatedOperationScheduleVehicleNotificationsListener> onReplyUpdatedOperationScheduleVehicleNotificationsListeners = newListenerMultimap();
-	protected final Multimap<Handler, OnReplyVehicleNotificationListener> onReplyVehicleNotificationListeners = newListenerMultimap();
 	protected final Multimap<Handler, OnStartNewOperationListener> onStartNewOperationListeners = newListenerMultimap();
 	protected final Multimap<Handler, OnStartReceiveUpdatedOperationScheduleListener> onStartReceiveUpdatedOperationScheduleListeners = newListenerMultimap();
 	protected final Multimap<Handler, OnPauseActivityListener> onPauseActivityListeners = newListenerMultimap();
@@ -240,18 +234,6 @@ public class EventDispatcher implements Closeable {
 		putListener(onPauseActivityListeners, listener);
 	}
 
-	public void addOnReplyUpdatedOperationScheduleVehicleNotificationsListener(
-			OnReplyUpdatedOperationScheduleVehicleNotificationsListener listener) {
-		putListener(
-				onReplyUpdatedOperationScheduleVehicleNotificationsListeners,
-				listener);
-	}
-
-	public void addOnReplyVehicleNotificationListener(
-			OnReplyVehicleNotificationListener listener) {
-		putListener(onReplyVehicleNotificationListeners, listener);
-	}
-
 	public void addOnResumeActivityListener(OnResumeActivityListener listener) {
 		putListener(onResumeActivityListeners, listener);
 	}
@@ -316,18 +298,6 @@ public class EventDispatcher implements Closeable {
 	public void removeOnPauseActivityListener(OnPauseActivityListener listener) {
 		removeListener(onPauseActivityListeners, listener);
 	}
-
-	public void removeOnReplyUpdatedOperationScheduleVehicleNotificationsListener(
-			OnReplyUpdatedOperationScheduleVehicleNotificationsListener listener) {
-		removeListener(
-				onReplyUpdatedOperationScheduleVehicleNotificationsListeners,
-				listener);
-	};
-
-	public void removeOnReplyVehicleNotificationListener(
-			OnReplyVehicleNotificationListener listener) {
-		removeListener(onReplyVehicleNotificationListeners, listener);
-	};
 
 	public void removeOnResumeActivityListener(OnResumeActivityListener listener) {
 		removeListener(onResumeActivityListeners, listener);
@@ -448,31 +418,6 @@ public class EventDispatcher implements Closeable {
 				});
 	}
 
-	public void dispatchReplyUpdatedOperationScheduleVehicleNotifications(
-			final List<VehicleNotification> vehicleNotifications) {
-		dispatchListener(
-				onReplyUpdatedOperationScheduleVehicleNotificationsListeners,
-				new Dispatcher<OnReplyUpdatedOperationScheduleVehicleNotificationsListener>() {
-					@Override
-					public void dispatch(
-							OnReplyUpdatedOperationScheduleVehicleNotificationsListener listener) {
-						listener.onReplyUpdatedOperationScheduleVehicleNotifications(vehicleNotifications);
-					}
-				});
-	}
-
-	public void dispatchReplyVehicleNotification(
-			final VehicleNotification vehicleNotification) {
-		dispatchListener(onReplyVehicleNotificationListeners,
-				new Dispatcher<OnReplyVehicleNotificationListener>() {
-					@Override
-					public void dispatch(
-							OnReplyVehicleNotificationListener listener) {
-						listener.onReplyVehicleNotification(vehicleNotification);
-					}
-				});
-	}
-
 	public void dispatchStartNewOperation() {
 		dispatchListener(onStartNewOperationListeners,
 				new Dispatcher<OnStartNewOperationListener>() {
@@ -545,8 +490,6 @@ public class EventDispatcher implements Closeable {
 		clearListener(onChangeTemperatureListeners);
 		clearListener(onExitListeners);
 		clearListener(onMergeOperationSchedulesListeners);
-		clearListener(onReplyUpdatedOperationScheduleVehicleNotificationsListeners);
-		clearListener(onReplyVehicleNotificationListeners);
 		clearListener(onStartNewOperationListeners);
 		clearListener(onStartReceiveUpdatedOperationScheduleListeners);
 		clearListener(onPauseActivityListeners);
