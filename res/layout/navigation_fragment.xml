@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/ModalView.Layout"
-    android:background="@android:color/white"
-    android:padding="0dip" >
+    style="@style/ModalView.Layout">
 
     <FrameLayout
         android:id="@+id/navigation_surface_parent"
