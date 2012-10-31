@@ -144,7 +144,7 @@ public class TilePipeline implements EventDispatcher.OnExitListener {
 				Textures.delete(gl, droped.getValue());
 			}
 
-			i++;
+			++i;
 			if (i > MAX_TEXTURE_TRANSFER_COUNT) {
 				break;
 			}
