@@ -263,19 +263,7 @@ public class ControlBarFragment extends ApplicationFragment<State> implements
 			break;
 		case PLATFORM_GET_OFF:
 			changePhaseButton.setEnabled(true);
-			if (isLast) {
-				// changePhaseButton.setText("降車\n完了\n(終)");
-				changePhaseButton.setText("確認\nする");
-				// changePhaseButton
-				// .setText(getString(R.string.it_leaves_last_platform_button_text));
-			} else {
-				changePhaseButton.setText("確認\nする");
-				// changePhaseButton.setText("降車\n完了");
-				// changePhaseButton
-				// .setText(getString(R.string.it_leaves_button_text));
-			}
-			// changePhaseButton
-			// .setText(getString(R.string.it_leaves_last_platform_button_text));
+			changePhaseButton.setText("確認\nする");
 			changePhaseButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
