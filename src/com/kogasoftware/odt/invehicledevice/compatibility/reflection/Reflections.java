@@ -44,8 +44,7 @@ public class Reflections {
 			} catch (NoSuchMethodException e) {
 				// do nothing
 			} catch (IllegalArgumentException e) {
-				// TODO: この例外が発生する可能性調査
-				Log.w(TAG, e);
+				// do nothing
 			} catch (IllegalAccessException e) {
 				Log.w(TAG, e);
 			} catch (InvocationTargetException e) {
