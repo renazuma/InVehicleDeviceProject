@@ -6,7 +6,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.WeakHashMap;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -57,6 +59,7 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 	private static final Integer GPS_ALERT_FLASH_MILLIS = 1000;
 	private static final Integer GPS_EXPIRE_MILLIS = 20 * 1000;
 	private static final Integer LOCATION_EXPIRE_MILLIS = 20 * 1000;
+	private static final WeakHashMap<Activity, Boolean> ACTIVITY_FIRST_RESUME = new WeakHashMap<Activity, Boolean>();
 
 	@SuppressWarnings("serial")
 	protected static class State implements Serializable {
@@ -343,7 +346,8 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 		NavigationRenderer navigationRenderer = navigationRendererWeakReference
 				.get();
 		if (navigationRenderer != null) {
-			for (Bitmap bitmap : navigationRenderer.createBitmapAndPause().asSet()) {
+			for (Bitmap bitmap : navigationRenderer.createBitmapAndPause()
+					.asSet()) {
 				mask.setImageBitmap(bitmap);
 			}
 		}
@@ -373,10 +377,22 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 		dialogFragment.show(getFragmentManager(),
 				SurficeFlashMaskDialogFragment.class.getSimpleName());
 
-		getView().findViewById(R.id.navigation_surface_black_flash_mask)
-				.setVisibility(View.VISIBLE);
+		final View mask = getView().findViewById(
+				R.id.navigation_surface_black_flash_mask);
+		mask.setVisibility(View.VISIBLE);
 		handler.post(gpsAlert);
 		handler.post(blinkBatteryAlert);
+		Boolean first = false;
+		synchronized (ACTIVITY_FIRST_RESUME) {
+			Activity activity = getActivity();
+			if (!ACTIVITY_FIRST_RESUME.containsKey(activity)) {
+				ACTIVITY_FIRST_RESUME.put(activity, true);
+				first = true;
+			}
+		}
+		final Integer resumeGLDelay = first ? 800 : 100;
+		final Integer dismissDialogDelay = first ? 1000 : 750;
+		final Integer hideMaskDelay = first ? 750 : 500;
 		handler.postDelayed(new Runnable() {
 			@Override
 			public void run() {
@@ -384,11 +400,20 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 				handler.postDelayed(new Runnable() {
 					@Override
 					public void run() {
+						if (!isResumed()) {
+							return;
+						}
+						mask.setVisibility(View.GONE);
+					}
+				}, hideMaskDelay);
+				handler.postDelayed(new Runnable() {
+					@Override
+					public void run() {
 						dialogFragment.dismissAllowingStateLoss();
 					}
-				}, 700);
+				}, dismissDialogDelay);
 			}
-		}, 300);
+		}, resumeGLDelay);
 	}
 
 	public void resumeGL() {
@@ -434,17 +459,6 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 		} else {
 			setZoomLevel(getService().getMapZoomLevel());
 		}
-		handler.postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				if (!isResumed()) {
-					return;
-				}
-				getView()
-						.findViewById(R.id.navigation_surface_black_flash_mask)
-						.setVisibility(View.GONE);
-			}
-		}, 50);
 	}
 
 	public void pauseGL() {
