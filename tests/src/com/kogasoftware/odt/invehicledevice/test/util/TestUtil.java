@@ -14,8 +14,6 @@ import java.util.concurrent.TimeUnit;
 import junit.framework.Assert;
 import junitx.framework.AssertionFailedError;
 
-import org.joda.time.DateTime;
-
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
@@ -47,10 +45,6 @@ public class TestUtil {
 
 	public static void setApiClient(InVehicleDeviceApiClient ds) {
 		InVehicleDeviceApiClientFactory.setInstance(ds);
-	}
-
-	public static void setDate(DateTime date) {
-		InVehicleDeviceService.setMockDate(new Date(date.getMillis()));
 	}
 
 	public static void clearStatus() {
@@ -122,10 +116,6 @@ public class TestUtil {
 			return false;
 		}
 		return true;
-	}
-
-	public static void setDate(String string) {
-		setDate(DateTime.parse(string));
 	}
 
 	public static void runOnUiThreadSync(Activity activity,
