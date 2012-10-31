@@ -155,7 +155,7 @@ public class InVehicleDeviceService extends Service {
 		Date now = new Date();
 		synchronized (MOCK_DATE_LOCK) {
 			if (useMockDate) {
-				return mockDate;
+				return new Date(mockDate.getTime());
 			} else {
 				return now;
 			}
@@ -186,7 +186,7 @@ public class InVehicleDeviceService extends Service {
 		}
 		synchronized (MOCK_DATE_LOCK) {
 			useMockDate = true;
-			InVehicleDeviceService.mockDate = mockDate;
+			InVehicleDeviceService.mockDate = new Date(mockDate.getTime());
 			for (Entry<Date, List<CountDownLatch>> entry : Maps.newTreeMap(
 					mockSleepStatus).entrySet()) {
 				if (mockDate.before(entry.getKey())) {
