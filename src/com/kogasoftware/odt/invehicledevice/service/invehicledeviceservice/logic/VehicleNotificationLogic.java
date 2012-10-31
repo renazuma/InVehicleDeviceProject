@@ -63,7 +63,6 @@ public class VehicleNotificationLogic {
 	 * VehicleNotificationをReply用リストへ移動
 	 */
 	public void reply(final VehicleNotification vehicleNotification) {
-		reply(Lists.newArrayList(vehicleNotification));
 		InVehicleDeviceApiClient apiClient = service.getApiClient();
 		for (Integer response : vehicleNotification.getResponse().asSet()) {
 			apiClient.withSaveOnClose().responseVehicleNotification(
