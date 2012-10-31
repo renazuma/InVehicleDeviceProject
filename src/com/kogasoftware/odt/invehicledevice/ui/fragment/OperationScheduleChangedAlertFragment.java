@@ -33,6 +33,9 @@ public class OperationScheduleChangedAlertFragment extends
 	private final Runnable blinkAlertAndShowNextFragment = new Runnable() {
 		@Override
 		public void run() {
+			if (isRemoving()) {
+				return;
+			}
 			if (count <= 10) { // TODO 定数
 				count++;
 				getView().findViewById(R.id.alert_image_view).setVisibility(
