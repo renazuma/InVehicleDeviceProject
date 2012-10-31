@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledeviceservice.backgroundtask;
+package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledeviceservice.broadcast;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -8,8 +8,7 @@ import android.content.Intent;
 import android.test.AndroidTestCase;
 
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.backgroundtask.ExitBroadcastReceiver;
-
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.broadcast.ExitBroadcastReceiver;
 
 public class ExitBroadcastReceiverTestCase extends
 		AndroidTestCase {

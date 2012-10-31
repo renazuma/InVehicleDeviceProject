@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledeviceservice.backgroundtask;
+package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledeviceservice.broadcast;
 
 import android.test.AndroidTestCase;
 
