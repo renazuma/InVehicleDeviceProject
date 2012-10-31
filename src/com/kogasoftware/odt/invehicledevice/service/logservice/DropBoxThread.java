@@ -31,13 +31,6 @@ public class DropBoxThread extends Thread {
 	private static final String SHARED_PREFERENCES_NAME = DropBoxThread.class
 			.getSimpleName() + ".sharedpreferences";
 	public static final Charset CHARSET = Charsets.UTF_8;
-	public static final String[] DROPBOX_TAGS = { "APANIC_CONSOLE",
-			"APANIC_THREADS", "BATTERY_DISCHARGE_INFO", "SYSTEM_BOOT",
-			"SYSTEM_LAST_KMSG", "SYSTEM_RECOVERY_LOG", "SYSTEM_RESTART",
-			"SYSTEM_TOMBSTONE", "data_app_anr", "data_app_strictmode",
-			"data_app_wtf", "data_app_crash", "system_app_anr",
-			"system_app_crash", "system_app_wtf", "system_server_anr",
-			"system_server_crash", "system_server_wtf", };
 	public static final Integer LAST_CHECK_DATE_LIMIT_DAYS = 5;
 	public static final String DELIMITER = "\u0001";
 	private final DropBoxManager dropBoxManager;
