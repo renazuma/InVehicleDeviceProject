@@ -423,7 +423,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 
 	public void updateLocation() {
 		ServiceUnitStatusLog serviceUnitStatusLog = serviceUnitStatusLogLogic
-				.getServiceUnitStatusLog();
+				.getWithReadLock();
 		double latitude = serviceUnitStatusLog.getLatitude().doubleValue();
 		double longitude = serviceUnitStatusLog.getLongitude().doubleValue();
 		if (latitude == 0 && longitude == 0) {

@@ -160,14 +160,12 @@ public class OperationScheduleChangedFragment extends
 	private void reply(final Runnable postReply) {
 		final VehicleNotificationLogic logic = new VehicleNotificationLogic(
 				getService());
-		logic.setVehicleNotificationStatus(
-				getState().getVehicleNotifications(),
+		logic.setStatus(getState().getVehicleNotifications(),
 				VehicleNotificationStatus.OPERATION_SCHEDULE_RECEIVED,
 				new Runnable() {
 					@Override
 					public void run() {
-						logic.replyVehicleNotifications(getState()
-								.getVehicleNotifications());
+						logic.reply(getState().getVehicleNotifications());
 						postReply.run();
 					}
 				});

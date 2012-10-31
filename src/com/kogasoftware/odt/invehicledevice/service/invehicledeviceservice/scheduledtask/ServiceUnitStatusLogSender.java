@@ -24,6 +24,6 @@ public class ServiceUnitStatusLogSender implements Runnable {
 		if (operationScheduleLogic.getPhaseWithReadLock() == Phase.FINISH) {
 			return;
 		}
-		serviceUnitStatusLogLogic.send();
+		serviceUnitStatusLogLogic.sendWithReadLock();
 	}
 }

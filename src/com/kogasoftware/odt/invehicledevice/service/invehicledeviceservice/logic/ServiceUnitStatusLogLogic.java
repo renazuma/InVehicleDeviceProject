@@ -72,7 +72,7 @@ public class ServiceUnitStatusLogLogic {
 				celciusTemperature);
 	}
 
-	public ServiceUnitStatusLog getServiceUnitStatusLog() {
+	public ServiceUnitStatusLog getWithReadLock() {
 		return service.getLocalStorage().withReadLock(
 				new Reader<ServiceUnitStatusLog>() {
 					@Override
@@ -82,10 +82,10 @@ public class ServiceUnitStatusLogLogic {
 				});
 	}
 
-	public void send() {
+	public void sendWithReadLock() {
 		service.getApiClient()
 				.withSaveOnClose()
-				.sendServiceUnitStatusLog(getServiceUnitStatusLog(),
+				.sendServiceUnitStatusLog(getWithReadLock(),
 						new EmptyApiClientCallback<ServiceUnitStatusLog>());
 	}
 }

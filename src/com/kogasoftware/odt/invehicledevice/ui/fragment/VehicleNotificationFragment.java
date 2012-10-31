@@ -10,9 +10,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.VehicleNotificationLogic;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.VehicleNotificationFragment.State;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 
 public class VehicleNotificationFragment extends ApplicationFragment<State> {
 	@SuppressWarnings("serial")
@@ -73,7 +73,6 @@ public class VehicleNotificationFragment extends ApplicationFragment<State> {
 	private void reply(VehicleNotification vehicleNotification, Integer response) {
 		hide();
 		vehicleNotification.setResponse(response);
-		new VehicleNotificationLogic(getService())
-				.replyVehicleNotification(vehicleNotification);
+		new VehicleNotificationLogic(getService()).reply(vehicleNotification);
 	}
 }

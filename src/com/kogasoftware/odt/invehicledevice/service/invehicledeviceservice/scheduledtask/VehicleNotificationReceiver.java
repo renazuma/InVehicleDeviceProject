@@ -40,7 +40,7 @@ public class VehicleNotificationReceiver implements Runnable {
 									int statusCode,
 									List<VehicleNotification> vehicleNotifications) {
 								vehicleNotificationLogic
-										.receiveVehicleNotification(vehicleNotifications);
+										.receive(vehicleNotifications);
 							}
 						});
 	}

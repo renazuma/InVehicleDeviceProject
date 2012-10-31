@@ -72,7 +72,7 @@ public class OperationScheduleLogic {
 	/**
 	 * OperationScheduleをマージする(LocalDataがロックされた状態内)
 	 */
-	public void mergeOperationSchedulesWithWriteLock(LocalData localData,
+	public void mergeWithWriteLock(LocalData localData,
 			List<OperationSchedule> newOperationSchedules) {
 		// 新規の場合PassengerRecordはすべて削除
 		if (!service.isOperationInitialized()) {
@@ -180,22 +180,20 @@ public class OperationScheduleLogic {
 	/**
 	 * OperationScheduleをマージする
 	 */
-	public void mergeOperationSchedules(
-			final List<OperationSchedule> operationSchedules,
+	public void merge(final List<OperationSchedule> operationSchedules,
 			final List<VehicleNotification> triggerVehicleNotifications) {
 		Log.i("InVehicleDeviceActivity", "mergeOperationSchedules 1");
 
 		LocalStorage localStorage = service.getLocalStorage();
 		// 通知を受信済みリストに移動
-		vehicleNotificationLogic.setVehicleNotificationStatusWithWriteLock(
+		vehicleNotificationLogic.setStatusWithWriteLock(
 				triggerVehicleNotifications,
 				VehicleNotificationStatus.OPERATION_SCHEDULE_RECEIVED);
 		// マージ
 		localStorage.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
-				mergeOperationSchedulesWithWriteLock(localData,
-						operationSchedules);
+				mergeWithWriteLock(localData, operationSchedules);
 			}
 		});
 		service.getEventDispatcher().dispatchMergeOperationSchedules(

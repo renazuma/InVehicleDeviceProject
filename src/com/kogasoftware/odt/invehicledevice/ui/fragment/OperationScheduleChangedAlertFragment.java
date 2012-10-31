@@ -79,7 +79,7 @@ public class OperationScheduleChangedAlertFragment extends
 							LocalData localData) {
 						return Lists.newArrayList(new VehicleNotificationLogic(
 								getService())
-								.getVehicleNotificationsWithReadLock(
+								.getWithReadLock(
 										VehicleNotification.NotificationKind.RESERVATION_CHANGED,
 										VehicleNotificationStatus.OPERATION_SCHEDULE_RECEIVED));
 					}

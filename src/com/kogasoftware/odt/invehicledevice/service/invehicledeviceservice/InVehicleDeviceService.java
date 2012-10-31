@@ -521,8 +521,7 @@ public class InVehicleDeviceService extends Service {
 					public LinkedList<VehicleNotification> readInBackground(
 							LocalData localData) {
 						return VehicleNotificationLogic
-								.getVehicleNotifications(
-										VehicleNotification.NotificationKind.FROM_OPERATOR,
+								.get(VehicleNotification.NotificationKind.FROM_OPERATOR,
 										VehicleNotificationStatus.UNHANDLED,
 										localData.vehicleNotifications);
 					}

@@ -67,9 +67,8 @@ public class OperationScheduleReceiveThread extends Thread implements
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
 							List<OperationSchedule> operationSchedules) {
-						operationScheduleLogic
-								.mergeOperationSchedules(operationSchedules,
-										triggerVehicleNotifications);
+						operationScheduleLogic.merge(operationSchedules,
+								triggerVehicleNotifications);
 					}
 				});
 	}
@@ -80,10 +79,9 @@ public class OperationScheduleReceiveThread extends Thread implements
 			while (true) {
 				// スケジュール変更通知があるまで待つ
 				startUpdatedOperationScheduleReceiveSemaphore.acquire();
-				receive(vehicleNotificationLogic
-						.getVehicleNotificationsWithReadLock(
-								NotificationKind.RESERVATION_CHANGED,
-								VehicleNotificationStatus.UNHANDLED));
+				receive(vehicleNotificationLogic.getWithReadLock(
+						NotificationKind.RESERVATION_CHANGED,
+						VehicleNotificationStatus.UNHANDLED));
 				Thread.sleep(10 * 1000);
 			}
 		} catch (InterruptedException e) {

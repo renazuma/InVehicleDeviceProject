@@ -72,26 +72,26 @@ public class VehicleNotificationLogicTestCase extends AndroidTestCase {
 		vn2a.setNotificationKind(NotificationKind.RESERVATION_CHANGED);
 		vn2b.setNotificationKind(NotificationKind.RESERVATION_CHANGED);
 		vn2c.setNotificationKind(NotificationKind.RESERVATION_CHANGED);
-		vnl.setVehicleNotificationStatusWithWriteLock(Lists.newArrayList(vn1a, vn2a),
+		vnl.setStatusWithWriteLock(Lists.newArrayList(vn1a, vn2a),
 				VehicleNotificationStatus.UNHANDLED);
-		vnl.setVehicleNotificationStatusWithWriteLock(Lists.newArrayList(vn1b, vn2b),
+		vnl.setStatusWithWriteLock(Lists.newArrayList(vn1b, vn2b),
 				VehicleNotificationStatus.REPLIED);
-		vnl.setVehicleNotificationStatusWithWriteLock(Lists.newArrayList(vn2c),
+		vnl.setStatusWithWriteLock(Lists.newArrayList(vn2c),
 				VehicleNotificationStatus.OPERATION_SCHEDULE_RECEIVED);
 		ListAssert.assertEquals(Lists.newArrayList(vn1a), vnl
-				.getVehicleNotificationsWithReadLock(NotificationKind.FROM_OPERATOR,
+				.getWithReadLock(NotificationKind.FROM_OPERATOR,
 						VehicleNotificationStatus.UNHANDLED));
 		ListAssert.assertEquals(Lists.newArrayList(vn1b), vnl
-				.getVehicleNotificationsWithReadLock(NotificationKind.FROM_OPERATOR,
+				.getWithReadLock(NotificationKind.FROM_OPERATOR,
 						VehicleNotificationStatus.REPLIED));
 		ListAssert.assertEquals(Lists.newArrayList(vn2a), vnl
-				.getVehicleNotificationsWithReadLock(NotificationKind.RESERVATION_CHANGED,
+				.getWithReadLock(NotificationKind.RESERVATION_CHANGED,
 						VehicleNotificationStatus.UNHANDLED));
 		ListAssert.assertEquals(Lists.newArrayList(vn2b), vnl
-				.getVehicleNotificationsWithReadLock(NotificationKind.RESERVATION_CHANGED,
+				.getWithReadLock(NotificationKind.RESERVATION_CHANGED,
 						VehicleNotificationStatus.REPLIED));
 		ListAssert.assertEquals(Lists.newArrayList(vn2c), vnl
-				.getVehicleNotificationsWithReadLock(NotificationKind.RESERVATION_CHANGED,
+				.getWithReadLock(NotificationKind.RESERVATION_CHANGED,
 						VehicleNotificationStatus.OPERATION_SCHEDULE_RECEIVED));
 	}
 
@@ -101,11 +101,11 @@ public class VehicleNotificationLogicTestCase extends AndroidTestCase {
 		vn.setNotificationKind(NotificationKind.RESERVATION_CHANGED);
 		List<VehicleNotification> vns = new LinkedList<VehicleNotification>();
 		vns.add(vn);
-		vnl.receiveVehicleNotification(vns);
+		vnl.receive(vns);
 		ListAssert.assertEquals(Lists.newArrayList(vn), vnl
-				.getVehicleNotificationsWithReadLock(NotificationKind.RESERVATION_CHANGED,
+				.getWithReadLock(NotificationKind.RESERVATION_CHANGED,
 						VehicleNotificationStatus.UNHANDLED));
-		assertEquals(1, vnl.getVehicleNotificationsWithReadLock().size());
+		assertEquals(1, vnl.getWithReadLock().size());
 	}
 
 	public void testMergeVehicleNotification_RESERVATION_CHANGED同一IDがUNHANDLEDにある場合追加されない()
@@ -126,16 +126,16 @@ public class VehicleNotificationLogicTestCase extends AndroidTestCase {
 		vns.add(vn0a);
 		vns.add(vn1);
 		vns.add(vn2);
-		vnl.setVehicleNotificationStatusWithWriteLock(vn0b,
+		vnl.setStatusWithWriteLock(vn0b,
 				VehicleNotificationStatus.OPERATION_SCHEDULE_RECEIVED);
-		vnl.receiveVehicleNotification(vns);
+		vnl.receive(vns);
 		ListAssert.assertEquals(Lists.newArrayList(vn1, vn2), vnl
-				.getVehicleNotificationsWithReadLock(NotificationKind.RESERVATION_CHANGED,
+				.getWithReadLock(NotificationKind.RESERVATION_CHANGED,
 						VehicleNotificationStatus.UNHANDLED));
 		ListAssert.assertEquals(Lists.newArrayList(vn0b), vnl
-				.getVehicleNotificationsWithReadLock(NotificationKind.RESERVATION_CHANGED,
+				.getWithReadLock(NotificationKind.RESERVATION_CHANGED,
 						VehicleNotificationStatus.OPERATION_SCHEDULE_RECEIVED));
-		assertEquals(3, vnl.getVehicleNotificationsWithReadLock().size());
+		assertEquals(3, vnl.getWithReadLock().size());
 	}
 
 	public void testMergeVehicleNotification_RESERVATION_CHANGED同一IDがREPLIEDにある場合追加されない()
@@ -156,17 +156,17 @@ public class VehicleNotificationLogicTestCase extends AndroidTestCase {
 		vns.add(vn0);
 		vns.add(vn1);
 		vns.add(vn2a);
-		vnl.setVehicleNotificationStatusWithWriteLock(vn2b,
+		vnl.setStatusWithWriteLock(vn2b,
 				VehicleNotificationStatus.REPLIED);
-		vnl.receiveVehicleNotification(vns);
+		vnl.receive(vns);
 
 		ListAssert.assertEquals(Lists.newArrayList(vn0, vn1), vnl
-				.getVehicleNotificationsWithReadLock(NotificationKind.RESERVATION_CHANGED,
+				.getWithReadLock(NotificationKind.RESERVATION_CHANGED,
 						VehicleNotificationStatus.UNHANDLED));
 		ListAssert.assertEquals(Lists.newArrayList(vn2b), vnl
-				.getVehicleNotificationsWithReadLock(NotificationKind.RESERVATION_CHANGED,
+				.getWithReadLock(NotificationKind.RESERVATION_CHANGED,
 						VehicleNotificationStatus.REPLIED));
-		assertEquals(3, vnl.getVehicleNotificationsWithReadLock().size());
+		assertEquals(3, vnl.getWithReadLock().size());
 	}
 
 	public void testMergeVehicleNotification_RESERVATION_CHANGED同一IDがOPERATION_SCHEDULE_RECEIVEDは追加されない()
@@ -187,13 +187,13 @@ public class VehicleNotificationLogicTestCase extends AndroidTestCase {
 		vns.add(vn0);
 		vns.add(vn1a);
 		vns.add(vn2);
-		vnl.setVehicleNotificationStatusWithWriteLock(vn1b,
+		vnl.setStatusWithWriteLock(vn1b,
 				VehicleNotificationStatus.UNHANDLED);
-		vnl.receiveVehicleNotification(vns);
+		vnl.receive(vns);
 		ListAssert.assertEquals(Lists.newArrayList(vn1b, vn0, vn2), vnl
-				.getVehicleNotificationsWithReadLock(NotificationKind.RESERVATION_CHANGED,
+				.getWithReadLock(NotificationKind.RESERVATION_CHANGED,
 						VehicleNotificationStatus.UNHANDLED));
-		assertEquals(3, vnl.getVehicleNotificationsWithReadLock().size());
+		assertEquals(3, vnl.getWithReadLock().size());
 	}
 
 	public void testMergeVehicleNotification_FROM_OPERATOR追加() throws Exception {
@@ -201,11 +201,11 @@ public class VehicleNotificationLogicTestCase extends AndroidTestCase {
 		vn.setNotificationKind(NotificationKind.FROM_OPERATOR);
 		List<VehicleNotification> vns = new LinkedList<VehicleNotification>();
 		vns.add(vn);
-		vnl.receiveVehicleNotification(vns);
+		vnl.receive(vns);
 		ListAssert.assertEquals(Lists.newArrayList(vn), vnl
-				.getVehicleNotificationsWithReadLock(NotificationKind.FROM_OPERATOR,
+				.getWithReadLock(NotificationKind.FROM_OPERATOR,
 						VehicleNotificationStatus.UNHANDLED));
-		assertEquals(1, vnl.getVehicleNotificationsWithReadLock().size());
+		assertEquals(1, vnl.getWithReadLock().size());
 	}
 
 	public void testMergeVehicleNotification_FROM_OPERATOR同一IDがREPLIEDにあると追加されない()
@@ -227,17 +227,17 @@ public class VehicleNotificationLogicTestCase extends AndroidTestCase {
 		vns.add(vn1);
 		vns.add(vn2a);
 
-		vnl.setVehicleNotificationStatusWithWriteLock(vn2b,
+		vnl.setStatusWithWriteLock(vn2b,
 				VehicleNotificationStatus.REPLIED);
-		vnl.receiveVehicleNotification(vns);
+		vnl.receive(vns);
 
 		ListAssert.assertEquals(Lists.newArrayList(vn0, vn1), vnl
-				.getVehicleNotificationsWithReadLock(NotificationKind.FROM_OPERATOR,
+				.getWithReadLock(NotificationKind.FROM_OPERATOR,
 						VehicleNotificationStatus.UNHANDLED));
 		ListAssert.assertEquals(Lists.newArrayList(vn2b), vnl
-				.getVehicleNotificationsWithReadLock(NotificationKind.FROM_OPERATOR,
+				.getWithReadLock(NotificationKind.FROM_OPERATOR,
 						VehicleNotificationStatus.REPLIED));
-		assertEquals(3, vnl.getVehicleNotificationsWithReadLock().size());
+		assertEquals(3, vnl.getWithReadLock().size());
 	}
 
 	public void testMergeVehicleNotification_FROM_OPERATOR同一IDがUNHANDLEDにあると追加されない()
@@ -258,13 +258,13 @@ public class VehicleNotificationLogicTestCase extends AndroidTestCase {
 		vns.add(vn0);
 		vns.add(vn1a);
 		vns.add(vn2);
-		vnl.setVehicleNotificationStatusWithWriteLock(vn1b,
+		vnl.setStatusWithWriteLock(vn1b,
 				VehicleNotificationStatus.UNHANDLED);
-		vnl.receiveVehicleNotification(vns);
+		vnl.receive(vns);
 		ListAssert.assertEquals(Lists.newArrayList(vn1b, vn0, vn2), vnl
-				.getVehicleNotificationsWithReadLock(NotificationKind.FROM_OPERATOR,
+				.getWithReadLock(NotificationKind.FROM_OPERATOR,
 						VehicleNotificationStatus.UNHANDLED));
-		assertEquals(3, vnl.getVehicleNotificationsWithReadLock().size());
+		assertEquals(3, vnl.getWithReadLock().size());
 	}
 
 	/**
@@ -286,23 +286,24 @@ public class VehicleNotificationLogicTestCase extends AndroidTestCase {
 		});
 
 		ListAssert.assertEquals(Lists.newArrayList(vn1, vn2), vnl
-				.getVehicleNotificationsWithReadLock(NotificationKind.FROM_OPERATOR,
+				.getWithReadLock(NotificationKind.FROM_OPERATOR,
 						VehicleNotificationStatus.UNHANDLED));
-		assertEquals(2, vnl.getVehicleNotificationsWithReadLock().size());
+		assertEquals(2, vnl.getWithReadLock().size());
 
-		vnl.replyVehicleNotification(vn1);
+		vnl.reply(vn1);
 		ListAssert.assertEquals(Lists.newArrayList(vn2), vnl
-				.getVehicleNotificationsWithReadLock(NotificationKind.FROM_OPERATOR,
+				.getWithReadLock(NotificationKind.FROM_OPERATOR,
 						VehicleNotificationStatus.UNHANDLED));
 		ListAssert.assertEquals(Lists.newArrayList(vn1), vnl
-				.getVehicleNotificationsWithReadLock(NotificationKind.FROM_OPERATOR,
+				.getWithReadLock(NotificationKind.FROM_OPERATOR,
 						VehicleNotificationStatus.REPLIED));
-		assertEquals(2, vnl.getVehicleNotificationsWithReadLock().size());
+		assertEquals(2, vnl.getWithReadLock().size());
 
-		vnl.replyVehicleNotification(vn2);
+		vnl.reply(vn2);
 		ListAssert.assertEquals(Lists.newArrayList(vn1, vn2), vnl
-				.getVehicleNotificationsWithReadLock(NotificationKind.FROM_OPERATOR,
+				.getWithReadLock(NotificationKind.FROM_OPERATOR,
 						VehicleNotificationStatus.REPLIED));
-		assertEquals(2, vnl.getVehicleNotificationsWithReadLock().size());
+		assertEquals(2, vnl.getWithReadLock().size());
 	}
 }
+

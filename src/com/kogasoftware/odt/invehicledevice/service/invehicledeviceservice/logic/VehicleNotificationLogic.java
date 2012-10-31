@@ -28,8 +28,7 @@ public class VehicleNotificationLogic {
 		this.service = service;
 	}
 
-	public void receiveVehicleNotification(
-			List<VehicleNotification> vehicleNotifications) {
+	public void receive(List<VehicleNotification> vehicleNotifications) {
 		final List<VehicleNotification> scheduleChangedVehicleNotifications = new LinkedList<VehicleNotification>();
 		final List<VehicleNotification> normalVehicleNotifications = new LinkedList<VehicleNotification>();
 		for (VehicleNotification vehicleNotification : vehicleNotifications) {
@@ -42,15 +41,14 @@ public class VehicleNotificationLogic {
 		}
 
 		// スケジュール変更通知の処理
-		if (!setVehicleNotificationStatusWithWriteLock(
-				scheduleChangedVehicleNotifications,
+		if (!setStatusWithWriteLock(scheduleChangedVehicleNotifications,
 				VehicleNotificationStatus.UNHANDLED).isEmpty()) {
 			service.getEventDispatcher()
 					.dispatchStartReceiveUpdatedOperationSchedule();
 		}
 
 		{ // 一般通知の処理
-			List<VehicleNotification> updated = setVehicleNotificationStatusWithWriteLock(
+			List<VehicleNotification> updated = setStatusWithWriteLock(
 					normalVehicleNotifications,
 					VehicleNotificationStatus.UNHANDLED);
 			if (!updated.isEmpty()) {
@@ -64,34 +62,31 @@ public class VehicleNotificationLogic {
 	/**
 	 * VehicleNotificationをReply用リストへ移動
 	 */
-	public void replyVehicleNotification(
-			final VehicleNotification vehicleNotification) {
-		replyVehicleNotifications(Lists.newArrayList(vehicleNotification));
+	public void reply(final VehicleNotification vehicleNotification) {
+		reply(Lists.newArrayList(vehicleNotification));
 		InVehicleDeviceApiClient apiClient = service.getApiClient();
 		for (Integer response : vehicleNotification.getResponse().asSet()) {
 			apiClient.withSaveOnClose().responseVehicleNotification(
 					vehicleNotification, response,
 					new EmptyApiClientCallback<VehicleNotification>());
 		}
-		setVehicleNotificationStatus(Lists.newArrayList(vehicleNotification),
+		setStatus(Lists.newArrayList(vehicleNotification),
 				VehicleNotificationStatus.REPLIED, new EmptyRunnable());
 	}
 
-	public List<VehicleNotification> setVehicleNotificationStatusWithWriteLock(
+	public List<VehicleNotification> setStatusWithWriteLock(
 			VehicleNotification vehicleNotification,
 			VehicleNotificationStatus status) {
-		return setVehicleNotificationStatusWithWriteLock(
-				Lists.newArrayList(vehicleNotification), status);
+		return setStatusWithWriteLock(Lists.newArrayList(vehicleNotification),
+				status);
 	}
 
-	public void setVehicleNotificationStatus(
-			final List<VehicleNotification> vehicleNotifications,
+	public void setStatus(final List<VehicleNotification> vehicleNotifications,
 			final VehicleNotificationStatus status, final Runnable onComplete) {
 		service.getLocalStorage().write(new BackgroundWriter() {
 			@Override
 			public void writeInBackground(LocalData localData) {
-				setVehicleNotificationStatusWithWriteLock(vehicleNotifications,
-						status);
+				setStatusWithWriteLock(vehicleNotifications, status);
 			}
 
 			@Override
@@ -101,22 +96,21 @@ public class VehicleNotificationLogic {
 		});
 	}
 
-	public List<VehicleNotification> setVehicleNotificationStatusWithWriteLock(
+	public List<VehicleNotification> setStatusWithWriteLock(
 			final List<VehicleNotification> vehicleNotifications,
 			final VehicleNotificationStatus status) {
 		final List<VehicleNotification> updated = Lists.newLinkedList();
 		service.getLocalStorage().withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
-				updated.addAll(setVehicleNotificationStatus(
-						localData.vehicleNotifications, vehicleNotifications,
-						status));
+				updated.addAll(setStatus(localData.vehicleNotifications,
+						vehicleNotifications, status));
 			}
 		});
 		return updated;
 	}
 
-	private static List<VehicleNotification> setVehicleNotificationStatus(
+	private static List<VehicleNotification> setStatus(
 			Multimap<VehicleNotificationStatus, VehicleNotification> vehicleNotifications,
 			List<VehicleNotification> newVehicleNotifications,
 			VehicleNotificationStatus status) {
@@ -144,7 +138,7 @@ public class VehicleNotificationLogic {
 		return updated;
 	}
 
-	public List<VehicleNotification> getVehicleNotificationsWithReadLock(
+	public List<VehicleNotification> getWithReadLock(
 			final Integer notificationKind,
 			final VehicleNotificationStatus status) {
 		return service.getLocalStorage().withReadLock(
@@ -152,13 +146,13 @@ public class VehicleNotificationLogic {
 					@Override
 					public LinkedList<VehicleNotification> read(
 							LocalData localData) {
-						return getVehicleNotifications(notificationKind,
-								status, localData.vehicleNotifications);
+						return get(notificationKind, status,
+								localData.vehicleNotifications);
 					}
 				});
 	}
 
-	public static LinkedList<VehicleNotification> getVehicleNotifications(
+	public static LinkedList<VehicleNotification> get(
 			Integer notificationKind,
 			VehicleNotificationStatus status,
 			Multimap<VehicleNotificationStatus, VehicleNotification> vehicleNotifications) {
@@ -173,7 +167,7 @@ public class VehicleNotificationLogic {
 		return result;
 	}
 
-	public Multimap<VehicleNotificationStatus, VehicleNotification> getVehicleNotificationsWithReadLock() {
+	public Multimap<VehicleNotificationStatus, VehicleNotification> getWithReadLock() {
 		return service
 				.getLocalStorage()
 				.withReadLock(
@@ -187,10 +181,9 @@ public class VehicleNotificationLogic {
 						});
 	}
 
-	public void replyVehicleNotifications(
-			List<VehicleNotification> vehicleNotifications) {
+	public void reply(List<VehicleNotification> vehicleNotifications) {
 		for (VehicleNotification vehicleNotification : vehicleNotifications) {
-			replyVehicleNotification(vehicleNotification);
+			reply(vehicleNotification);
 		}
 	}
 }
