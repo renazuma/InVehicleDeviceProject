@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.apiclient.model;
 
+import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.base.PassengerRecordBase;
 
 public class PassengerRecord extends PassengerRecordBase {
@@ -53,12 +54,10 @@ public class PassengerRecord extends PassengerRecordBase {
 	 */
 	public Integer getScheduledPassengerCount() {
 		for (Reservation reservation : getReservation().asSet()) {
-			for (User headUser : reservation.getUser().asSet()) {
-				for (User user : getUser().asSet()) {
-					if (user.getId().equals(headUser.getId())) {
-						return reservation.getPassengerCount()
-								- reservation.getFellowUsers().size() + 1;
-					}
+			for (Integer headUserId : reservation.getUserId().asSet()) {
+				if (getUserId().equals(Optional.of(headUserId))) {
+					return reservation.getPassengerCount()
+							- reservation.getFellowUsers().size() + 1;
 				}
 			}
 		}
