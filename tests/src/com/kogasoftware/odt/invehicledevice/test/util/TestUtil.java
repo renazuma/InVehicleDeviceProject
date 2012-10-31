@@ -109,7 +109,7 @@ public class TestUtil {
 			public void run() {
 				while (!Thread.currentThread().isInterrupted()) {
 					Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
-					if (activity.isUIInitialized()) {
+					if (activity.isUiInitialized()) {
 						return;
 					}
 				}

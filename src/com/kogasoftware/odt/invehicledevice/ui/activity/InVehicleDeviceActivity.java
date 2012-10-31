@@ -156,7 +156,7 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 				@Override
 				public void onDismiss(DialogInterface dialog) {
 					if (!((InVehicleDeviceActivity) getActivity())
-							.isUIInitialized()) {
+							.isUiInitialized()) {
 						getActivity().finish();
 					}
 				}
@@ -171,7 +171,7 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 	private Boolean uiInitialized = false;
 
 	@Deprecated
-	public Boolean isUIInitialized() {
+	public Boolean isUiInitialized() {
 		return uiInitialized;
 	}
 
