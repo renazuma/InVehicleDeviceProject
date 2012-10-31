@@ -379,13 +379,14 @@ public class EventDispatcher implements Closeable {
 	public void dispatchUpdatePhase(final Phase phase,
 			final List<OperationSchedule> operationSchedules,
 			final List<PassengerRecord> passengerRecords) {
-		String message = "dispatchUpdatePhase " + phase;
+		StringBuilder message = new StringBuilder("dispatchUpdatePhase phase="
+				+ phase);
 		for (OperationSchedule os : OperationSchedule.getCurrent(
 				operationSchedules).asSet()) {
-			message += " id=" + os.getId();
+			message.append(" currentOperationScheduleId=" + os.getId());
 		}
 
-		Log.i(TAG, message);
+		Log.i(TAG, message.toString());
 		dispatchListener(onUpdatePhaseListeners,
 				new Dispatcher<OnUpdatePhaseListener>() {
 					@Override

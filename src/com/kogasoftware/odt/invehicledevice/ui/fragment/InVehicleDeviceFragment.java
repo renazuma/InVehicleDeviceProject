@@ -85,15 +85,15 @@ public class InVehicleDeviceFragment extends ApplicationFragment<State>
 
 	private static String getPhaseFragmentTag(Phase phase,
 			Optional<OperationSchedule> optionalOperationSchedule) {
-		String tag = "tag:" + phase;
+		StringBuilder tag = new StringBuilder("tag:" + phase);
 		for (OperationSchedule operationSchedule : optionalOperationSchedule
 				.asSet()) {
-			tag += ":" + operationSchedule.getId();
+			tag.append(":" + operationSchedule.getId());
 			for (Platform platform : operationSchedule.getPlatform().asSet()) {
-				tag += ":" + platform.getId();
+				tag.append(":" + platform.getId());
 			}
 		}
-		return tag;
+		return tag.toString();
 	}
 
 	public void updateView(Boolean first) {
