@@ -280,12 +280,11 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 						.getOperationSchedules(), 1)).asSet()) {
 			String titleTextFormat = "";
 			String timeTextFormat = "";
-			Optional<Date> displayDate = Optional.absent();
 			titleTextFormat = getResources().getString(
 					R.string.next_platform_is_html);
 			timeTextFormat = getResources().getString(
 					R.string.platform_arrival_time);
-			displayDate = operationSchedule.getArrivalEstimate();
+			Optional<Date> displayDate = operationSchedule.getArrivalEstimate();
 			for (Platform platform : operationSchedule.getPlatform().asSet()) {
 				titleTextView.setText(Html.fromHtml(String.format(
 						titleTextFormat, platform.getName())));
