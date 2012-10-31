@@ -10,9 +10,11 @@ import com.google.common.collect.Multimap;
 import com.kogasoftware.odt.apiclient.EmptyApiClientCallback;
 import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
+import com.kogasoftware.odt.invehicledevice.empty.EmptyRunnable;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundWriter;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Reader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Writer;
 
@@ -40,14 +42,15 @@ public class VehicleNotificationLogic {
 		}
 
 		// スケジュール変更通知の処理
-		if (!setVehicleNotificationStatus(scheduleChangedVehicleNotifications,
+		if (!setVehicleNotificationStatusWithWriteLock(
+				scheduleChangedVehicleNotifications,
 				VehicleNotificationStatus.UNHANDLED).isEmpty()) {
 			service.getEventDispatcher()
 					.dispatchStartReceiveUpdatedOperationSchedule();
 		}
 
 		{ // 一般通知の処理
-			List<VehicleNotification> updated = setVehicleNotificationStatus(
+			List<VehicleNotification> updated = setVehicleNotificationStatusWithWriteLock(
 					normalVehicleNotifications,
 					VehicleNotificationStatus.UNHANDLED);
 			if (!updated.isEmpty()) {
@@ -58,46 +61,47 @@ public class VehicleNotificationLogic {
 		}
 	}
 
-	public void replyUpdatedOperationScheduleVehicleNotifications(
-			final List<VehicleNotification> vehicleNotifications) {
-		InVehicleDeviceApiClient apiClient = service.getApiClient();
-		for (VehicleNotification vehicleNotification : vehicleNotifications) {
-			apiClient.withSaveOnClose().responseVehicleNotification(
-					vehicleNotification, VehicleNotification.Response.YES,
-					new EmptyApiClientCallback<VehicleNotification>());
-		}
-		setVehicleNotificationStatus(vehicleNotifications,
-				VehicleNotificationStatus.REPLIED);
-		service.getEventDispatcher()
-				.dispatchReplyUpdatedOperationScheduleVehicleNotifications(
-						vehicleNotifications);
-	}
-
 	/**
 	 * VehicleNotificationをReply用リストへ移動
 	 */
 	public void replyVehicleNotification(
 			final VehicleNotification vehicleNotification) {
+		replyVehicleNotifications(Lists.newArrayList(vehicleNotification));
 		InVehicleDeviceApiClient apiClient = service.getApiClient();
 		for (Integer response : vehicleNotification.getResponse().asSet()) {
 			apiClient.withSaveOnClose().responseVehicleNotification(
 					vehicleNotification, response,
 					new EmptyApiClientCallback<VehicleNotification>());
 		}
-		setVehicleNotificationStatus(vehicleNotification,
-				VehicleNotificationStatus.REPLIED);
-		service.getEventDispatcher().dispatchReplyVehicleNotification(
-				vehicleNotification);
+		setVehicleNotificationStatus(Lists.newArrayList(vehicleNotification),
+				VehicleNotificationStatus.REPLIED, new EmptyRunnable());
 	}
 
-	public List<VehicleNotification> setVehicleNotificationStatus(
+	public List<VehicleNotification> setVehicleNotificationStatusWithWriteLock(
 			VehicleNotification vehicleNotification,
 			VehicleNotificationStatus status) {
-		return setVehicleNotificationStatus(
+		return setVehicleNotificationStatusWithWriteLock(
 				Lists.newArrayList(vehicleNotification), status);
 	}
 
-	public List<VehicleNotification> setVehicleNotificationStatus(
+	public void setVehicleNotificationStatus(
+			final List<VehicleNotification> vehicleNotifications,
+			final VehicleNotificationStatus status, final Runnable onComplete) {
+		service.getLocalStorage().write(new BackgroundWriter() {
+			@Override
+			public void writeInBackground(LocalData localData) {
+				setVehicleNotificationStatusWithWriteLock(vehicleNotifications,
+						status);
+			}
+
+			@Override
+			public void onWrite() {
+				onComplete.run();
+			}
+		});
+	}
+
+	public List<VehicleNotification> setVehicleNotificationStatusWithWriteLock(
 			final List<VehicleNotification> vehicleNotifications,
 			final VehicleNotificationStatus status) {
 		final List<VehicleNotification> updated = Lists.newLinkedList();
@@ -181,5 +185,12 @@ public class VehicleNotificationLogic {
 										.create(localData.vehicleNotifications);
 							}
 						});
+	}
+
+	public void replyVehicleNotifications(
+			List<VehicleNotification> vehicleNotifications) {
+		for (VehicleNotification vehicleNotification : vehicleNotifications) {
+			replyVehicleNotification(vehicleNotification);
+		}
 	}
 }

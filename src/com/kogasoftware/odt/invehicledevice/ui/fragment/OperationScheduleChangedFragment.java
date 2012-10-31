@@ -20,16 +20,15 @@ import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundReader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.VehicleNotificationLogic;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.OperationScheduleChangedFragment.State;
 
 public class OperationScheduleChangedFragment extends
-		ApplicationFragment<State> implements
-		EventDispatcher.OnMergeOperationSchedulesListener {
+		ApplicationFragment<State> {
 	@SuppressWarnings("serial")
 	protected static class State implements Serializable {
 		private final List<VehicleNotification> vehicleNotifications;
@@ -76,12 +75,8 @@ public class OperationScheduleChangedFragment extends
 		// 表示したスケジュール変更通知にresponseを指定
 		for (VehicleNotification vehicleNotification : getState()
 				.getVehicleNotifications()) {
-			vehicleNotification.setResponse(VehicleNotification.Response.YES); // TODO
+			vehicleNotification.setResponse(VehicleNotification.Response.YES);
 		}
-
-		new VehicleNotificationLogic(getService())
-				.replyUpdatedOperationScheduleVehicleNotifications(getState()
-						.getVehicleNotifications());
 	}
 
 	public static void addIfNecessary(FragmentManager fragmentManager,
@@ -107,28 +102,22 @@ public class OperationScheduleChangedFragment extends
 					@Override
 					public void onRead(
 							ArrayList<OperationSchedule> operationSchedules) {
-						if (isRemoving()) {
-							return;
-						}
-						setCustomAnimation(
-								getFragmentManager().beginTransaction())
-								.remove(OperationScheduleChangedFragment.this)
-								.add(R.id.modal_fragment_container,
-										OperationScheduleListFragment
-												.newInstance(operationSchedules))
-								.commitAllowingStateLoss();
+						showOperationScheduleFragment(operationSchedules);
 					}
 				});
 	}
 
-	@Override
-	public void onMergeOperationSchedules(
-			List<VehicleNotification> triggerVehicleNotifications) {
-		List<VehicleNotification> vehicleNotifications = Lists.newLinkedList();
-		vehicleNotifications.addAll(getState().getVehicleNotifications());
-		vehicleNotifications.addAll(triggerVehicleNotifications);
-		setState(new State(vehicleNotifications));
-		updateView();
+	private void showOperationScheduleFragment(
+			List<OperationSchedule> operationSchedules) {
+		if (isRemoving()) {
+			return;
+		}
+		setCustomAnimation(getFragmentManager().beginTransaction())
+				.remove(this)
+				.add(R.id.modal_fragment_container,
+						OperationScheduleListFragment
+								.newInstance(operationSchedules))
+				.commitAllowingStateLoss();
 	}
 
 	@Override
@@ -142,8 +131,13 @@ public class OperationScheduleChangedFragment extends
 		scheduleConfirmButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				showOperationScheduleFragment();
-				operationScheduleLogic.requestUpdatePhase();
+				reply(new Runnable() {
+					@Override
+					public void run() {
+						showOperationScheduleFragment();
+						operationScheduleLogic.requestUpdatePhase();
+					}
+				});
 			}
 		});
 		Button hideButton = (Button) getView().findViewById(
@@ -151,20 +145,31 @@ public class OperationScheduleChangedFragment extends
 		hideButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				hide();
-				operationScheduleLogic.requestUpdatePhase();
+				reply(new Runnable() {
+					@Override
+					public void run() {
+						hide();
+						operationScheduleLogic.requestUpdatePhase();
+					}
+				});
 			}
 		});
 		updateView();
-
-		getService().getEventDispatcher().addOnMergeOperationSchedulesListener(
-				this);
 	}
 
-	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
-		getService().getEventDispatcher()
-				.removeOnMergeOperationSchedulesListener(this);
+	private void reply(final Runnable postReply) {
+		final VehicleNotificationLogic logic = new VehicleNotificationLogic(
+				getService());
+		logic.setVehicleNotificationStatus(
+				getState().getVehicleNotifications(),
+				VehicleNotificationStatus.OPERATION_SCHEDULE_RECEIVED,
+				new Runnable() {
+					@Override
+					public void run() {
+						logic.replyVehicleNotifications(getState()
+								.getVehicleNotifications());
+						postReply.run();
+					}
+				});
 	}
 }

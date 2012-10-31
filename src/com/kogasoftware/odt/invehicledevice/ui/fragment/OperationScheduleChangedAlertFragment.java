@@ -87,29 +87,29 @@ public class OperationScheduleChangedAlertFragment extends
 					@Override
 					public void onRead(
 							ArrayList<VehicleNotification> vehicleNotifications) {
-						if (isRemoving()) {
-							return;
-						}
-						String tag = "tag:"
-								+ OperationScheduleChangedFragment.class
-										.getName();
-						Fragment old = getFragmentManager().findFragmentByTag(
-								tag);
-						FragmentTransaction fragmentTransaction = getFragmentManager()
-								.beginTransaction();
-						if (old == null) {
-							setCustomAnimation(fragmentTransaction);
-						} else {
-							fragmentTransaction.remove(old);
-						}
-						fragmentTransaction
-								.add(R.id.modal_fragment_container,
-										OperationScheduleChangedFragment
-												.newInstance(vehicleNotifications),
-										tag);
-						fragmentTransaction.commitAllowingStateLoss();
-						hide();
+						showOperationScheduleChangedFragment(vehicleNotifications);
 					}
 				});
+	}
+
+	private void showOperationScheduleChangedFragment(
+			ArrayList<VehicleNotification> vehicleNotifications) {
+		if (isRemoving()) {
+			return;
+		}
+		String tag = "tag:" + OperationScheduleChangedFragment.class.getName();
+		Fragment old = getFragmentManager().findFragmentByTag(tag);
+		FragmentTransaction fragmentTransaction = getFragmentManager()
+				.beginTransaction();
+		if (old == null) {
+			setCustomAnimation(fragmentTransaction);
+		} else {
+			fragmentTransaction.remove(old);
+		}
+		fragmentTransaction.add(R.id.modal_fragment_container,
+				OperationScheduleChangedFragment
+						.newInstance(vehicleNotifications), tag);
+		fragmentTransaction.commitAllowingStateLoss();
+		hide();
 	}
 }
