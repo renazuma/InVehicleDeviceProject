@@ -430,8 +430,8 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 
 	protected void updateZoomButtons() {
 		Integer zoomLevel = getService().getMapZoomLevel();
+
 		if (zoomLevel <= NavigationRenderer.MIN_ZOOM_LEVEL) {
-			zoomLevel = NavigationRenderer.MIN_ZOOM_LEVEL;
 			zoomOutButton.setTextColor(Color.GRAY);
 			zoomOutButton.setEnabled(false);
 		} else {
@@ -440,7 +440,6 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 		}
 
 		if (zoomLevel >= NavigationRenderer.MAX_ZOOM_LEVEL) {
-			zoomLevel = NavigationRenderer.MAX_ZOOM_LEVEL;
 			zoomInButton.setTextColor(Color.GRAY);
 			zoomInButton.setEnabled(false);
 		} else {
