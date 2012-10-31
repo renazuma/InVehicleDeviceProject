@@ -4,11 +4,10 @@ import java.nio.ByteBuffer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.google.common.base.Charsets;
 
 import android.util.Log;
+
+import com.google.common.base.Charsets;
 
 public class ApiClients {
 	private static final String TAG = ApiClients.class.getSimpleName();
@@ -21,7 +20,7 @@ public class ApiClients {
 	}
 
 	public static String decodeByteArray(byte[] byteArray) {
-		return Charsets.ISO_8859_1.decode(ByteBuffer.wrap(byteArray))
+		return Charsets.UTF_8.decode(ByteBuffer.wrap(byteArray))
 				.toString();
 	}
 }
