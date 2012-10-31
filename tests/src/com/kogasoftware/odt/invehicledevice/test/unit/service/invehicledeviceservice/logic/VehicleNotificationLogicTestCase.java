@@ -72,11 +72,11 @@ public class VehicleNotificationLogicTestCase extends AndroidTestCase {
 		vn2a.setNotificationKind(NotificationKind.RESERVATION_CHANGED);
 		vn2b.setNotificationKind(NotificationKind.RESERVATION_CHANGED);
 		vn2c.setNotificationKind(NotificationKind.RESERVATION_CHANGED);
-		vnl.setVehicleNotificationStatus(Lists.newArrayList(vn1a, vn2a),
+		vnl.setVehicleNotificationStatusWithWriteLock(Lists.newArrayList(vn1a, vn2a),
 				VehicleNotificationStatus.UNHANDLED);
-		vnl.setVehicleNotificationStatus(Lists.newArrayList(vn1b, vn2b),
+		vnl.setVehicleNotificationStatusWithWriteLock(Lists.newArrayList(vn1b, vn2b),
 				VehicleNotificationStatus.REPLIED);
-		vnl.setVehicleNotificationStatus(Lists.newArrayList(vn2c),
+		vnl.setVehicleNotificationStatusWithWriteLock(Lists.newArrayList(vn2c),
 				VehicleNotificationStatus.OPERATION_SCHEDULE_RECEIVED);
 		ListAssert.assertEquals(Lists.newArrayList(vn1a), vnl
 				.getVehicleNotificationsWithReadLock(NotificationKind.FROM_OPERATOR,
@@ -126,7 +126,7 @@ public class VehicleNotificationLogicTestCase extends AndroidTestCase {
 		vns.add(vn0a);
 		vns.add(vn1);
 		vns.add(vn2);
-		vnl.setVehicleNotificationStatus(vn0b,
+		vnl.setVehicleNotificationStatusWithWriteLock(vn0b,
 				VehicleNotificationStatus.OPERATION_SCHEDULE_RECEIVED);
 		vnl.receiveVehicleNotification(vns);
 		ListAssert.assertEquals(Lists.newArrayList(vn1, vn2), vnl
@@ -156,7 +156,7 @@ public class VehicleNotificationLogicTestCase extends AndroidTestCase {
 		vns.add(vn0);
 		vns.add(vn1);
 		vns.add(vn2a);
-		vnl.setVehicleNotificationStatus(vn2b,
+		vnl.setVehicleNotificationStatusWithWriteLock(vn2b,
 				VehicleNotificationStatus.REPLIED);
 		vnl.receiveVehicleNotification(vns);
 
@@ -187,7 +187,7 @@ public class VehicleNotificationLogicTestCase extends AndroidTestCase {
 		vns.add(vn0);
 		vns.add(vn1a);
 		vns.add(vn2);
-		vnl.setVehicleNotificationStatus(vn1b,
+		vnl.setVehicleNotificationStatusWithWriteLock(vn1b,
 				VehicleNotificationStatus.UNHANDLED);
 		vnl.receiveVehicleNotification(vns);
 		ListAssert.assertEquals(Lists.newArrayList(vn1b, vn0, vn2), vnl
@@ -227,7 +227,7 @@ public class VehicleNotificationLogicTestCase extends AndroidTestCase {
 		vns.add(vn1);
 		vns.add(vn2a);
 
-		vnl.setVehicleNotificationStatus(vn2b,
+		vnl.setVehicleNotificationStatusWithWriteLock(vn2b,
 				VehicleNotificationStatus.REPLIED);
 		vnl.receiveVehicleNotification(vns);
 
@@ -258,7 +258,7 @@ public class VehicleNotificationLogicTestCase extends AndroidTestCase {
 		vns.add(vn0);
 		vns.add(vn1a);
 		vns.add(vn2);
-		vnl.setVehicleNotificationStatus(vn1b,
+		vnl.setVehicleNotificationStatusWithWriteLock(vn1b,
 				VehicleNotificationStatus.UNHANDLED);
 		vnl.receiveVehicleNotification(vns);
 		ListAssert.assertEquals(Lists.newArrayList(vn1b, vn0, vn2), vnl

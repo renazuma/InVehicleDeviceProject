@@ -187,7 +187,7 @@ public class OperationScheduleLogic {
 
 		LocalStorage localStorage = service.getLocalStorage();
 		// 通知を受信済みリストに移動
-		vehicleNotificationLogic.setVehicleNotificationStatus(
+		vehicleNotificationLogic.setVehicleNotificationStatusWithWriteLock(
 				triggerVehicleNotifications,
 				VehicleNotificationStatus.OPERATION_SCHEDULE_RECEIVED);
 		// マージ
