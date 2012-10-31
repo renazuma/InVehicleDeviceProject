@@ -86,7 +86,7 @@ public class LogServiceReportSenderTestCase extends AndroidTestCase {
 		assertEquals(jo.get("custom_data"), got.get("custom_data"));
 	}
 
-	public void testGetCrashReportJSONObject() throws Exception {
+	public void testGetCrashReportJsonNode() throws Exception {
 		CrashReportData crd = new CrashReportData();
 		String avc = "12345";
 		crd.put(ReportField.APP_VERSION_CODE, avc);
@@ -95,7 +95,7 @@ public class LogServiceReportSenderTestCase extends AndroidTestCase {
 
 		ObjectNode jo = LogServiceReportSender.getCrashReportJsonNode(crd);
 
-		assertEquals(avc, jo.get("app_version_code"));
-		assertEquals(cd, jo.get("custom_data"));
+		assertEquals(avc, jo.get("app_version_code").asText());
+		assertEquals(cd, jo.get("custom_data").asText());
 	}
 }
