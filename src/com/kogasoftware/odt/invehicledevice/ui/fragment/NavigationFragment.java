@@ -349,6 +349,7 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 			for (Bitmap bitmap : navigationRenderer.createBitmapAndPause()
 					.asSet()) {
 				mask.setImageBitmap(bitmap);
+				getService().setLastMapBitmap(bitmap);
 			}
 		}
 		handler.post(new Runnable() {
@@ -377,8 +378,11 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 		dialogFragment.show(getFragmentManager(),
 				SurficeFlashMaskDialogFragment.class.getSimpleName());
 
-		final View mask = getView().findViewById(
+		final ImageView mask = (ImageView) getView().findViewById(
 				R.id.navigation_surface_black_flash_mask);
+		for (Bitmap bitmap : getService().getLastMapBitmap().asSet()) {
+			mask.setImageBitmap(bitmap);
+		}
 		mask.setVisibility(View.VISIBLE);
 		handler.post(gpsAlert);
 		handler.post(blinkBatteryAlert);

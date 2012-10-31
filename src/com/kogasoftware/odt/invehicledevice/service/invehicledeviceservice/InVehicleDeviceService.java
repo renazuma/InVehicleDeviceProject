@@ -26,6 +26,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.location.LocationManager;
@@ -603,6 +604,7 @@ public class InVehicleDeviceService extends Service {
 
 	private Boolean mapAutoZoom = true;
 	private Integer mapZoomLevel = 12;
+	private Optional<Bitmap> lastMapBitmap = Optional.absent();
 
 	public Boolean getMapAutoZoom() {
 		return mapAutoZoom;
@@ -618,5 +620,16 @@ public class InVehicleDeviceService extends Service {
 
 	public void setMapZoomLevel(Integer mapZoomLevel) {
 		this.mapZoomLevel = mapZoomLevel;
+	}
+
+	public void setLastMapBitmap(Bitmap lastMapBitmap) {
+		for (Bitmap presentLastMapBitmap : getLastMapBitmap().asSet()) {
+			presentLastMapBitmap.recycle();
+		}
+		this.lastMapBitmap = Optional.of(lastMapBitmap);
+	}
+
+	public Optional<Bitmap> getLastMapBitmap() {
+		return lastMapBitmap;
 	}
 }
