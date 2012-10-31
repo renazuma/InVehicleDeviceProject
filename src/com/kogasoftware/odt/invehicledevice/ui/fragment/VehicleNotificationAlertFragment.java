@@ -37,28 +37,26 @@ public class VehicleNotificationAlertFragment extends
 	private final Runnable blinkAlertAndShowNextFragment = new Runnable() {
 		@Override
 		public void run() {
-			if (count > 10) { // TODO 定数
-				count = 0;
-				if (isRemoving()) {
-					return;
-				}
-				FragmentTransaction fragmentTransaction = setCustomAnimation(getFragmentManager()
-						.beginTransaction());
-				for (VehicleNotification vehicleNotification : getState()
-						.getVehicleNotifications()) {
-					fragmentTransaction.add(R.id.modal_fragment_container,
-							VehicleNotificationFragment
-									.newInstance(vehicleNotification));
-				}
-				fragmentTransaction
-						.remove(VehicleNotificationAlertFragment.this);
-				fragmentTransaction.commitAllowingStateLoss();
+			if (isRemoving()) {
 				return;
 			}
-			count++;
-			getView().findViewById(R.id.alert_image_view).setVisibility(
-					count % 2 == 0 ? View.VISIBLE : View.GONE);
-			handler.postDelayed(this, ALERT_SHOW_INTERVAL_MILLIS);
+			if (count <= 10) { // TODO 定数
+				count++;
+				getView().findViewById(R.id.alert_image_view).setVisibility(
+						count % 2 == 0 ? View.VISIBLE : View.GONE);
+				handler.postDelayed(this, ALERT_SHOW_INTERVAL_MILLIS);
+				return;
+			}
+			FragmentTransaction fragmentTransaction = setCustomAnimation(getFragmentManager()
+					.beginTransaction());
+			for (VehicleNotification vehicleNotification : getState()
+					.getVehicleNotifications()) {
+				fragmentTransaction.add(R.id.modal_fragment_container,
+						VehicleNotificationFragment
+								.newInstance(vehicleNotification));
+			}
+			fragmentTransaction.remove(VehicleNotificationAlertFragment.this);
+			fragmentTransaction.commitAllowingStateLoss();
 		}
 	};
 
