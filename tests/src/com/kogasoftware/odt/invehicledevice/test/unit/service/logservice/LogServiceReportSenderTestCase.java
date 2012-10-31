@@ -9,9 +9,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.acra.ReportField;
 import org.acra.collector.CrashReportData;
 import org.acra.sender.ReportSenderException;
-import org.json.JSONObject;
 
-import com.google.common.io.CharStreams;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.service.logservice.LogServiceReportSender;
 import com.kogasoftware.odt.invehicledevice.service.logservice.SendLogBroadcastReceiver;
@@ -73,15 +73,15 @@ public class LogServiceReportSenderTestCase extends AndroidTestCase {
 		String f = outputIntent.get().getStringExtra(SendLogBroadcastReceiver.EXTRAS_KEY_LOG_FILE_NAME);
 		assertNotNull(f);
 		FileReader fr = null;
-		JSONObject jo = new JSONObject();
+		ObjectNode jo;
 		try {
 			fr = new FileReader(new File(f));
-			jo = new JSONObject(CharStreams.toString(fr));
+			jo = (new ObjectMapper()).readValue(fr, ObjectNode.class);
 		} finally {
 			Closeables.closeQuietly(fr);
 		}
 		
-		JSONObject got = LogServiceReportSender.getCrashReportJSONObject(crd);
+		ObjectNode got = LogServiceReportSender.getCrashReportJsonNode(crd);
 		assertEquals(jo.get("app_version_code"), got.get("app_version_code"));
 		assertEquals(jo.get("custom_data"), got.get("custom_data"));
 	}
@@ -93,9 +93,9 @@ public class LogServiceReportSenderTestCase extends AndroidTestCase {
 		String cd = "abcde";
 		crd.put(ReportField.CUSTOM_DATA, cd);
 
-		JSONObject jo = LogServiceReportSender.getCrashReportJSONObject(crd);
+		ObjectNode jo = LogServiceReportSender.getCrashReportJsonNode(crd);
 
-		assertEquals(avc, jo.getString("app_version_code".toString()));
-		assertEquals(cd, jo.getString("custom_data".toString()));
+		assertEquals(avc, jo.get("app_version_code"));
+		assertEquals(cd, jo.get("custom_data"));
 	}
 }

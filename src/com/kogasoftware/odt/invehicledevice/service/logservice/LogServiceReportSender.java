@@ -12,22 +12,27 @@ import org.acra.ReportField;
 import org.acra.collector.CrashReportData;
 import org.acra.sender.ReportSender;
 import org.acra.sender.ReportSenderException;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Environment;
 import android.util.Log;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Charsets;
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyFile;
 
 public class LogServiceReportSender implements ReportSender {
 	private static final String TAG = LogServiceReportSender.class
 			.getSimpleName();
+	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+	private static ObjectMapper getObjectMapper() {
+		return OBJECT_MAPPER;
+	}
+
 	private final File dataDirectory;
 	private final Context context;
 
@@ -53,8 +58,8 @@ public class LogServiceReportSender implements ReportSender {
 			file = File
 					.createTempFile(format + "_acra_", ".log", dataDirectory);
 			fileOutputStream = new FileOutputStream(file);
-			fileOutputStream.write(getCrashReportJSONObject(crashReportData)
-					.toString().getBytes(Charsets.UTF_8));
+			getObjectMapper().writeValue(fileOutputStream,
+					getCrashReportJsonNode(crashReportData));
 		} catch (IOException e) {
 			throw new ReportSenderException("IOException file=" + file
 					+ " dataDirectory=" + dataDirectory, e);
@@ -70,17 +75,13 @@ public class LogServiceReportSender implements ReportSender {
 	}
 
 	@VisibleForTesting
-	public static JSONObject getCrashReportJSONObject(
+	public static ObjectNode getCrashReportJsonNode(
 			CrashReportData crashReportData) {
-		JSONObject jsonObject = new JSONObject();
+		ObjectNode objectNode = getObjectMapper().createObjectNode();
 		for (Entry<ReportField, String> entry : crashReportData.entrySet()) {
-			try {
-				jsonObject.put(entry.getKey().toString().toLowerCase(),
-						entry.getValue());
-			} catch (JSONException e) {
-				Log.w(TAG, e);
-			}
+			objectNode.put(entry.getKey().toString().toLowerCase(),
+					entry.getValue());
 		}
-		return jsonObject;
+		return objectNode;
 	}
 }
