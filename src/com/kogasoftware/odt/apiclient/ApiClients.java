@@ -20,13 +20,6 @@ public class ApiClients {
 		return new JSONArray(json);
 	}
 
-	public static JSONObject parseJSONObject(byte[] rawResponse)
-			throws JSONException {
-		String json = ApiClients.decodeByteArray(rawResponse);
-		Log.d(TAG + "#parseJSONObject", json);
-		return new JSONObject(json);
-	}
-
 	public static String decodeByteArray(byte[] byteArray) {
 		return Charsets.ISO_8859_1.decode(ByteBuffer.wrap(byteArray))
 				.toString();
