@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Map.Entry;
 
 import org.acra.ReportField;
@@ -79,8 +80,8 @@ public class LogServiceReportSender implements ReportSender {
 			CrashReportData crashReportData) {
 		ObjectNode objectNode = getObjectMapper().createObjectNode();
 		for (Entry<ReportField, String> entry : crashReportData.entrySet()) {
-			objectNode.put(entry.getKey().toString().toLowerCase(),
-					entry.getValue());
+			objectNode.put(entry.getKey().toString()
+					.toLowerCase(Locale.ENGLISH), entry.getValue());
 		}
 		return objectNode;
 	}
