@@ -390,7 +390,7 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 				first = true;
 			}
 		}
-		final Integer resumeGLDelay = first ? 800 : 100;
+		final Integer resumeGLDelay = first ? 800 : 300;
 		final Integer dismissDialogDelay = first ? 1000 : 750;
 		final Integer hideMaskDelay = first ? 750 : 500;
 		handler.postDelayed(new Runnable() {
