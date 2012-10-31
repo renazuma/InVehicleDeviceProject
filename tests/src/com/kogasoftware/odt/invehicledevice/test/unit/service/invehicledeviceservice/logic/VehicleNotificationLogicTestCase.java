@@ -270,7 +270,7 @@ public class VehicleNotificationLogicTestCase extends AndroidTestCase {
 	/**
 	 * 指定したVehicleNotificationがリプライ用のリストへ移動する
 	 */
-	public void testSetVehicleNotificationReplied() {
+	public void testSetVehicleNotificationReplied() throws Exception {
 		final VehicleNotification vn1 = new VehicleNotification();
 		vn1.setId(1);
 		final VehicleNotification vn2 = new VehicleNotification();
@@ -291,6 +291,7 @@ public class VehicleNotificationLogicTestCase extends AndroidTestCase {
 		assertEquals(2, vnl.getWithReadLock().size());
 
 		vnl.reply(vn1);
+		Thread.sleep(2000);
 		ListAssert.assertEquals(Lists.newArrayList(vn2), vnl
 				.getWithReadLock(NotificationKind.FROM_OPERATOR,
 						VehicleNotificationStatus.UNHANDLED));
@@ -300,6 +301,8 @@ public class VehicleNotificationLogicTestCase extends AndroidTestCase {
 		assertEquals(2, vnl.getWithReadLock().size());
 
 		vnl.reply(vn2);
+		Thread.sleep(2000);
+		
 		ListAssert.assertEquals(Lists.newArrayList(vn1, vn2), vnl
 				.getWithReadLock(NotificationKind.FROM_OPERATOR,
 						VehicleNotificationStatus.REPLIED));
