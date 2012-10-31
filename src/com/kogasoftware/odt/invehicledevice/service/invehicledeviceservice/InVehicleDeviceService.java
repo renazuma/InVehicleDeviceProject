@@ -54,12 +54,16 @@ import com.kogasoftware.odt.invehicledevice.BuildConfig;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClientFactory;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundReader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Reader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.broadcast.BatteryBroadcastReceiver;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.broadcast.Broadcasts;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.broadcast.ExitBroadcastReceiver;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.ServiceUnitStatusLogLogic;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.VehicleNotificationLogic;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.scheduledtask.NetworkStatusLogger;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.scheduledtask.NextDateNotifier;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.scheduledtask.ServiceUnitStatusLogSender;
@@ -490,17 +494,13 @@ public class InVehicleDeviceService extends Service {
 
 		ServiceUnitStatusLogSender serviceUnitStatusLogSender = new ServiceUnitStatusLogSender(
 				serviceUnitStatusLogLogic, operationScheduleLogic);
-		VehicleNotificationReceiver vehicleNotificationReceiver = new VehicleNotificationReceiver(
+		final VehicleNotificationReceiver vehicleNotificationReceiver = new VehicleNotificationReceiver(
 				this);
 		NextDateNotifier nextDateNotifier = new NextDateNotifier(
 				operationScheduleLogic);
 		NetworkStatusLogger networkStatusLogger = new NetworkStatusLogger(
 				connectivityManager, optionalTelephonyManager);
-
 		try {
-			executorService.scheduleWithFixedDelay(vehicleNotificationReceiver,
-					0, VehicleNotificationReceiver.RUN_INTERVAL_MILLIS,
-					TimeUnit.MILLISECONDS);
 			executorService
 					.scheduleWithFixedDelay(nextDateNotifier, 0,
 							NextDateNotifier.RUN_INTERVAL_MILLIS,
@@ -515,6 +515,37 @@ public class InVehicleDeviceService extends Service {
 			Log.w(TAG, e);
 			exit();
 		}
+		getLocalStorage().read(
+				new BackgroundReader<LinkedList<VehicleNotification>>() {
+					@Override
+					public LinkedList<VehicleNotification> readInBackground(
+							LocalData localData) {
+						return VehicleNotificationLogic
+								.getVehicleNotifications(
+										VehicleNotification.NotificationKind.FROM_OPERATOR,
+										VehicleNotificationStatus.UNHANDLED,
+										localData.vehicleNotifications);
+					}
+
+					@Override
+					public void onRead(LinkedList<VehicleNotification> result) {
+						if (!result.isEmpty()) {
+							getEventDispatcher()
+									.dispatchAlertVehicleNotificationReceive(
+											result);
+						}
+						try {
+							executorService
+									.scheduleWithFixedDelay(
+											vehicleNotificationReceiver,
+											0,
+											VehicleNotificationReceiver.RUN_INTERVAL_MILLIS,
+											TimeUnit.MILLISECONDS);
+						} catch (RejectedExecutionException e) {
+							Log.w(TAG, e);
+						}
+					}
+				});
 	}
 
 	@Override
