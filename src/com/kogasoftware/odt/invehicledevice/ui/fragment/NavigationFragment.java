@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import android.app.Dialog;
 import android.graphics.Color;
 import android.location.GpsStatus;
 import android.location.Location;
@@ -14,12 +15,15 @@ import android.location.LocationManager;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.DialogFragment;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.animation.AlphaAnimation;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -104,6 +108,32 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 		}
 	};
 
+	public static class SurficeFlashMaskDialogFragment extends DialogFragment {
+		@Override
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
+			Dialog dialog = new Dialog(getActivity());
+			dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+			dialog.setContentView(R.layout.navigation_fragment_loading_dialog);
+			dialog.getWindow().setBackgroundDrawableResource(
+					android.R.color.transparent);
+			return dialog;
+		}
+	}
+
+	public static class ExitDialogFragment extends DialogFragment {
+		@Override
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
+			Dialog dialog = new Dialog(getActivity());
+			dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+			View view = new View(getActivity());
+			view.setVisibility(View.INVISIBLE);
+			dialog.setContentView(view);
+			dialog.getWindow().setBackgroundDrawableResource(
+					android.R.color.transparent);
+			return dialog;
+		}
+	}
+
 	private WeakReference<GLSurfaceView> glSurfaceViewWeakReference = new WeakReference<GLSurfaceView>(
 			null);
 	private WeakReference<NavigationRenderer> navigationRendererWeakReference = new WeakReference<NavigationRenderer>(
@@ -123,6 +153,7 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+
 		tilePipeline = new TilePipeline(getService());
 
 		View view = getView();
@@ -302,6 +333,27 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 	}
 
 	@Override
+	public void hide() {
+		if (isRemoving()) {
+			return;
+		}
+		View mask = getView().findViewById(
+				R.id.navigation_surface_black_flash_mask);
+		Integer delay = 150;
+		AlphaAnimation animation = new AlphaAnimation(0.2f, 1.0f);
+		animation.setDuration(delay);
+		mask.startAnimation(animation);
+
+		handler.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				removeGL();
+				NavigationFragment.super.hide();
+			}
+		}, delay);
+	}
+
+	@Override
 	public void onPause() {
 		super.onPause();
 		Log.i(TAG, "onPause()");
@@ -314,12 +366,24 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 	public void onResume() {
 		super.onResume();
 		Log.i(TAG, "onResume()");
+		final DialogFragment dialogFragment = new SurficeFlashMaskDialogFragment();
+		dialogFragment.show(getFragmentManager(),
+				SurficeFlashMaskDialogFragment.class.getSimpleName());
+
+		getView().findViewById(R.id.navigation_surface_black_flash_mask)
+				.setVisibility(View.VISIBLE);
 		handler.post(gpsAlert);
 		handler.post(blinkBatteryAlert);
 		handler.postDelayed(new Runnable() {
 			@Override
 			public void run() {
 				resumeGL();
+				handler.postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						dialogFragment.dismissAllowingStateLoss();
+					}
+				}, 700);
 			}
 		}, 300);
 	}
@@ -367,9 +431,23 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 		} else {
 			setZoomLevel(getService().getMapZoomLevel());
 		}
+		handler.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				if (!isResumed()) {
+					return;
+				}
+				getView()
+						.findViewById(R.id.navigation_surface_black_flash_mask)
+						.setVisibility(View.GONE);
+			}
+		}, 50);
 	}
 
 	public void pauseGL() {
+		if (!isResumed()) {
+			return;
+		}
 		{
 			GLSurfaceView glSurfaceView = glSurfaceViewWeakReference.get();
 			if (glSurfaceView != null) {
@@ -383,12 +461,23 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 				navigationRenderer.onPause();
 			}
 		}
-		FrameLayout navigationSurfaceParent = (FrameLayout) getView()
-				.findViewById(R.id.navigation_surface_parent);
-		navigationSurfaceParent.removeAllViews();
+
+		removeGL();
+
 		glSurfaceViewWeakReference = new WeakReference<GLSurfaceView>(null);
 		navigationRendererWeakReference = new WeakReference<NavigationRenderer>(
 				null);
+	}
+
+	private void removeGL() {
+		View view = getView();
+		if (view != null) {
+			FrameLayout navigationSurfaceParent = (FrameLayout) view
+					.findViewById(R.id.navigation_surface_parent);
+			if (navigationSurfaceParent != null) {
+				navigationSurfaceParent.removeAllViews();
+			}
+		}
 	}
 
 	protected void setAutoZoom(Boolean autoZoom) {
