@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 import android.app.Dialog;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.GpsStatus;
 import android.location.Location;
@@ -23,7 +24,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.animation.AlphaAnimation;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -337,20 +337,23 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 		if (isRemoving()) {
 			return;
 		}
-		View mask = getView().findViewById(
+		ImageView mask = (ImageView) getView().findViewById(
 				R.id.navigation_surface_black_flash_mask);
-		Integer delay = 150;
-		AlphaAnimation animation = new AlphaAnimation(0.2f, 1.0f);
-		animation.setDuration(delay);
-		mask.startAnimation(animation);
-
-		handler.postDelayed(new Runnable() {
+		mask.setVisibility(View.VISIBLE);
+		NavigationRenderer navigationRenderer = navigationRendererWeakReference
+				.get();
+		if (navigationRenderer != null) {
+			for (Bitmap bitmap : navigationRenderer.createBitmapAndPause().asSet()) {
+				mask.setImageBitmap(bitmap);
+			}
+		}
+		handler.post(new Runnable() {
 			@Override
 			public void run() {
 				removeGL();
 				NavigationFragment.super.hide();
 			}
-		}, delay);
+		});
 	}
 
 	@Override

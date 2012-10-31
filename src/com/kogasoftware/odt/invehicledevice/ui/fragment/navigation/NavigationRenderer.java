@@ -1,6 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.ui.fragment.navigation;
 
 import java.lang.ref.WeakReference;
+import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -8,6 +9,8 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -15,9 +18,11 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.PointF;
 import android.location.Location;
 import android.location.LocationManager;
+import android.opengl.GLException;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
 import android.os.Handler;
@@ -153,6 +158,12 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		}
 
 		final long millis = System.currentTimeMillis();
+		if (saveBitmapRequestSemaphore.drainPermits() > 0) {
+			saveBitmapBuffer(gl);
+			resumed.set(false);
+			return;
+		}
+
 		float cameraZoom = 2f;
 		boolean zoomLevelChanged = false;
 
@@ -354,6 +365,14 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
 		this.width = width;
 		this.height = height;
+		synchronized (bitmapLock) {
+			bitmapWidth = width;
+			bitmapHeight = height;
+			bitmapBuffer = new short[bitmapWidth * bitmapHeight];
+			bitmapShortBuffer = ShortBuffer.wrap(bitmapBuffer);
+			bitmapShortBuffer.position(0);
+			bitmapSource = new int[bitmapWidth * bitmapHeight];
+		}
 
 		Log.i(TAG, "onSurfaceChanged() width=" + width + " height=" + height);
 
@@ -463,5 +482,58 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	public void onPause() {
 		Log.i(TAG, "onPause");
 		resumed.set(false);
+	}
+
+	protected final Semaphore saveBitmapRequestSemaphore = new Semaphore(0);
+	protected final Semaphore saveBitmapCompleteSemaphore = new Semaphore(0);
+	private final Object bitmapLock = new Object();
+	private int bitmapWidth = 0;
+	private int bitmapHeight = 0;
+	private short[] bitmapBuffer = new short[0];
+	private int bitmapSource[] = new int[0];
+	private ShortBuffer bitmapShortBuffer = ShortBuffer.allocate(0);
+
+	private void saveBitmapBuffer(GL10 gl) {
+		synchronized (bitmapLock) {
+			try {
+				gl.glReadPixels(0, 0, bitmapWidth, bitmapHeight, GL10.GL_RGB,
+						GL10.GL_UNSIGNED_SHORT_5_6_5, bitmapShortBuffer);
+				saveBitmapCompleteSemaphore.release();
+			} catch (GLException e) {
+				Log.w(TAG, e);
+			}
+		}
+	}
+
+	public Optional<Bitmap> createBitmapAndPause() {
+		saveBitmapRequestSemaphore.release();
+		try {
+			if (!saveBitmapCompleteSemaphore.tryAcquire(500,
+					TimeUnit.MILLISECONDS)) {
+				return Optional.absent();
+			}
+		} catch (InterruptedException e) {
+			return Optional.absent();
+		}
+		synchronized (bitmapLock) {
+			int h = bitmapHeight;
+			int w = bitmapWidth;
+
+			int offset1, offset2;
+			for (int i = 0; i < h; i++) {
+				offset1 = i * w;
+				offset2 = (h - i - 1) * w;
+				for (int j = 0; j < w; j++) {
+					short texturePixel = bitmapBuffer[offset1 + j];
+					int red = (texturePixel & 0x1f) << 3;
+					int green = ((texturePixel >> 5) & 0x3f) << 2;
+					int blue = ((texturePixel >> 11) & 0x1f) << 3;
+					int pixel = blue << 16 | green << 8 | red;
+					bitmapSource[offset2 + j] = pixel;
+				}
+			}
+			return Optional.of(Bitmap.createBitmap(bitmapSource, w, h,
+					Bitmap.Config.RGB_565));
+		}
 	}
 }
