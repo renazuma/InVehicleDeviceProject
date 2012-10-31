@@ -69,14 +69,6 @@ public class EventDispatcher implements Closeable {
 				List<PassengerRecord> passengerRecords);
 	}
 
-	public interface OnEnterPhaseListener {
-		void onEnterDrivePhase();
-
-		void onEnterFinishPhase();
-
-		void onEnterPlatformPhase();
-	}
-
 	public interface OnExitListener {
 		void onExit();
 	}
@@ -122,7 +114,6 @@ public class EventDispatcher implements Closeable {
 		void onStartReceiveUpdatedOperationSchedule();
 	}
 
-	protected final Multimap<Handler, OnEnterPhaseListener> onEnterPhaseListeners = newListenerMultimap();
 	protected final Multimap<Handler, OnAlertUpdatedOperationScheduleListener> onAlertUpdatedOperationScheduleListeners = newListenerMultimap();
 	protected final Multimap<Handler, OnAlertVehicleNotificationReceiveListener> onAlertVehicleNotificationReceiveListeners = newListenerMultimap();
 	protected final Multimap<Handler, OnChangeLocationListener> onChangeLocationListeners = newListenerMultimap();
@@ -224,10 +215,6 @@ public class EventDispatcher implements Closeable {
 		putListener(onChangeTemperatureListeners, listener);
 	}
 
-	public void addOnEnterPhaseListener(OnEnterPhaseListener listener) {
-		putListener(onEnterPhaseListeners, listener);
-	}
-
 	public void addOnExitListener(final OnExitListener listener) {
 		// 既にcloseされていた場合は、登録せずにonExitを実行する
 		if (closed.get()) {
@@ -317,10 +304,6 @@ public class EventDispatcher implements Closeable {
 		removeListener(onChangeTemperatureListeners, listener);
 	}
 
-	public void removeOnEnterPhaseListener(OnEnterPhaseListener listener) {
-		removeListener(onEnterPhaseListeners, listener);
-	}
-
 	public void removeOnExitListener(OnExitListener listener) {
 		removeListener(onExitListeners, listener);
 	}
@@ -364,16 +347,6 @@ public class EventDispatcher implements Closeable {
 	public void removeOnOperationScheduleReceiveFailedListener(
 			OnOperationScheduleReceiveFailListener listener) {
 		removeListener(onOperationScheduleReceiveFailListeners, listener);
-	}
-
-	public void dispatchEnterFinishPhase() {
-		dispatchListener(onEnterPhaseListeners,
-				new Dispatcher<OnEnterPhaseListener>() {
-					@Override
-					public void dispatch(OnEnterPhaseListener listener) {
-						listener.onEnterFinishPhase();
-					}
-				});
 	}
 
 	public void dispatchUpdatePhase(final Phase phase,
@@ -458,26 +431,6 @@ public class EventDispatcher implements Closeable {
 					@Override
 					public void dispatch(OnChangeTemperatureListener listener) {
 						listener.onChangeTemperature(celciusTemperature);
-					}
-				});
-	}
-
-	public void dispatchEnterDrivePhase() {
-		dispatchListener(onEnterPhaseListeners,
-				new Dispatcher<OnEnterPhaseListener>() {
-					@Override
-					public void dispatch(OnEnterPhaseListener listener) {
-						listener.onEnterDrivePhase();
-					}
-				});
-	}
-
-	public void dispatchEnterPlatformPhase() {
-		dispatchListener(onEnterPhaseListeners,
-				new Dispatcher<OnEnterPhaseListener>() {
-					@Override
-					public void dispatch(OnEnterPhaseListener listener) {
-						listener.onEnterPlatformPhase();
 					}
 				});
 	}
@@ -584,7 +537,6 @@ public class EventDispatcher implements Closeable {
 
 	@Override
 	public void close() {
-		clearListener(onEnterPhaseListeners);
 		clearListener(onAlertUpdatedOperationScheduleListeners);
 		clearListener(onAlertVehicleNotificationReceiveListeners);
 		clearListener(onChangeLocationListeners);
