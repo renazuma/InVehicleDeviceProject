@@ -70,7 +70,7 @@ public class StartupService extends Service {
 			return;
 		}
 		Settings.System.putInt(contentResolver,
-				Settings.System.AIRPLANE_MODE_ON, 1);
+				Settings.System.AIRPLANE_MODE_ON, 0);
 		// Post an intent to reload
 		Intent intent = new Intent(Intent.ACTION_AIRPLANE_MODE_CHANGED);
 		intent.putExtra("state", true);
@@ -78,6 +78,9 @@ public class StartupService extends Service {
 	}
 
 	public void checkDeviceAndStartActivity() {
+		// 機内モードは強制的にOFF
+		disableAirplaneMode();
+
 		if (!enabled.get()) {
 			Log.i(TAG, "waiting for startup enabled");
 			return;
@@ -86,9 +89,6 @@ public class StartupService extends Service {
 		if (!isDeviceReady()) {
 			return;
 		}
-
-		// 機内モードは強制的にOFF
-		disableAirplaneMode();
 
 		Intent startIntent = new Intent(StartupService.this,
 				InVehicleDeviceActivity.class);
