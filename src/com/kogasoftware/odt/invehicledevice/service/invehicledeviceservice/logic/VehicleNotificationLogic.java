@@ -148,18 +148,25 @@ public class VehicleNotificationLogic {
 					@Override
 					public LinkedList<VehicleNotification> read(
 							LocalData localData) {
-						LinkedList<VehicleNotification> vehicleNotifications = Lists
-								.newLinkedList();
-						for (VehicleNotification vehicleNotification : localData.vehicleNotifications
-								.get(status)) {
-							if (vehicleNotification.getNotificationKind()
-									.equals(notificationKind)) {
-								vehicleNotifications.add(vehicleNotification);
-							}
-						}
-						return vehicleNotifications;
+						return getVehicleNotifications(notificationKind,
+								status, localData.vehicleNotifications);
 					}
 				});
+	}
+
+	public static LinkedList<VehicleNotification> getVehicleNotifications(
+			Integer notificationKind,
+			VehicleNotificationStatus status,
+			Multimap<VehicleNotificationStatus, VehicleNotification> vehicleNotifications) {
+		LinkedList<VehicleNotification> result = Lists.newLinkedList();
+		for (VehicleNotification vehicleNotification : vehicleNotifications
+				.get(status)) {
+			if (vehicleNotification.getNotificationKind().equals(
+					notificationKind)) {
+				result.add(vehicleNotification);
+			}
+		}
+		return result;
 	}
 
 	public Multimap<VehicleNotificationStatus, VehicleNotification> getVehicleNotificationsWithReadLock() {
