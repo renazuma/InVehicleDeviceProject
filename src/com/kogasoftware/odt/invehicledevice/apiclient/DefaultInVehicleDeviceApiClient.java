@@ -7,10 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
@@ -20,7 +16,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.javadocmd.simplelatlng.LatLng;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.apiclient.ApiClientException;
-import com.kogasoftware.odt.apiclient.ApiClients;
 import com.kogasoftware.odt.apiclient.DefaultApiClient;
 import com.kogasoftware.odt.apiclient.DefaultApiClientRequest;
 import com.kogasoftware.odt.apiclient.DefaultApiClientRequestQueue;
@@ -352,20 +347,6 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 		} catch (IOException e) {
 			return handleIOException(e, callback);
 		}
-	}
-
-	public static JSONArray parseJSONArray(byte[] rawResponse)
-			throws JSONException {
-		String json = ApiClients.decodeByteArray(rawResponse);
-		Log.d(TAG + "#parseJSONArray", json);
-		return new JSONArray(json);
-	}
-
-	public static JSONObject parseJSONObject(byte[] rawResponse)
-			throws JSONException {
-		String json = ApiClients.decodeByteArray(rawResponse);
-		Log.d(TAG + "#parseJSONObject", json);
-		return new JSONObject(json);
 	}
 
 	/**
