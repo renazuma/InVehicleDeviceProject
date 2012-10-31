@@ -11,7 +11,6 @@ import android.content.Context;
 import android.location.LocationManager;
 import android.os.Environment;
 import android.os.PowerManager;
-import android.provider.Settings;
 import android.test.ServiceTestCase;
 
 import com.google.common.collect.Lists;
@@ -53,29 +52,10 @@ public class StartupServiceTestCase extends ServiceTestCase<StartupService> {
 
 		setContext(mockContext);
 		setupService();
-
-		Settings.System.putInt(getSystemContext().getContentResolver(),
-				Settings.System.AIRPLANE_MODE_ON, 0);
-	}
-
-	@Override
-	public void tearDown() throws Exception {
-		try {
-			Settings.System.putInt(getSystemContext().getContentResolver(),
-					Settings.System.AIRPLANE_MODE_ON, 0);
-		} finally {
-			super.tearDown();
-		}
 	}
 
 	public void testIsDeviceReady_スクリーンがOFFの場合() {
 		when(powerManager.isScreenOn()).thenReturn(false);
-		assertFalse(getService().isDeviceReady());
-	}
-
-	public void testIsDeviceReady_機内モードがONの場合() {
-		Settings.System.putInt(getSystemContext().getContentResolver(),
-				Settings.System.AIRPLANE_MODE_ON, 1);
 		assertFalse(getService().isDeviceReady());
 	}
 
@@ -120,13 +100,18 @@ public class StartupServiceTestCase extends ServiceTestCase<StartupService> {
 		assertTrue(StartupService.isGpsRequired(true, "my android"));
 		assertTrue(StartupService.isGpsRequired(true, ""));
 
-		assertFalse(StartupService.isGpsRequired(true, "androVM for VirtualBox ('Phone' version)"));
-		assertTrue(StartupService.isGpsRequired(false, "androVM for VirtualBox ('Phone' version)"));
-		assertTrue(StartupService.isGpsRequired(true, "!androVM for VirtualBox ('Phone' version)"));
+		assertFalse(StartupService.isGpsRequired(true,
+				"androVM for VirtualBox ('Phone' version)"));
+		assertTrue(StartupService.isGpsRequired(false,
+				"androVM for VirtualBox ('Phone' version)"));
+		assertTrue(StartupService.isGpsRequired(true,
+				"!androVM for VirtualBox ('Phone' version)"));
 
-		assertFalse(StartupService.isGpsRequired(true, "Buildroid for VirtualBox ('Tablet' version with phone caps)"));
-		assertTrue(StartupService.isGpsRequired(false, "Buildroid for VirtualBox ('Tablet' version with phone caps)"));
-		assertTrue(StartupService.isGpsRequired(true, "!Buildroid for VirtualBox ('Tablet' version with phone caps)"));
+		assertFalse(StartupService.isGpsRequired(true,
+				"Buildroid for VirtualBox ('Tablet' version with phone caps)"));
+		assertTrue(StartupService.isGpsRequired(false,
+				"Buildroid for VirtualBox ('Tablet' version with phone caps)"));
+		assertTrue(StartupService.isGpsRequired(true,
+				"!Buildroid for VirtualBox ('Tablet' version with phone caps)"));
 	}
 }
-
