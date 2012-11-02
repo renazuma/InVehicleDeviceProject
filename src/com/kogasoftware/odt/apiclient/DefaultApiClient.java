@@ -160,7 +160,6 @@ public class DefaultApiClient implements ApiClient {
 		DefaultApiClientRequest<?> request = requests.take();
 		Log.i(TAG, "runSession " + request);
 
-		boolean succeed = false;
 		Date now = new Date();
 		if (DateUtils.addDays(request.getCreatedDate(), REQUEST_EXPIRE_DAYS)
 				.before(now)) {
@@ -169,7 +168,7 @@ public class DefaultApiClient implements ApiClient {
 			return;
 		}
 
-		succeed = runHttpSessionAndCallback(request);
+		boolean succeed = runHttpSessionAndCallback(request);
 		if (succeed || !request.getConfig().getRetry()) {
 			requests.remove(request);
 		} else {
