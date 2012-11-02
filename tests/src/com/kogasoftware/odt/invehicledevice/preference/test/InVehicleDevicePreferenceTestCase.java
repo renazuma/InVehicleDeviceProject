@@ -22,8 +22,7 @@ public class InVehicleDevicePreferenceTestCase extends
 	private Solo solo;
 
 	public InVehicleDevicePreferenceTestCase() {
-		super("com.kogasoftware.odt.invehicledevice.preference",
-				InVehicleDevicePreferenceActivity.class);
+		super(InVehicleDevicePreferenceActivity.class);
 	}
 
 	@Override
