@@ -43,7 +43,6 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 
 	private final InVehicleDeviceApiClient apiClient = new DefaultInVehicleDeviceApiClient(
 			DEFAULT_URL);
-	private int latestReqKey = 0;
 
 	private SharedPreferences preferences = null;
 
@@ -131,9 +130,6 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 
 	@Override
 	public void onException(int reqKey, ApiClientException ex) {
-		if (reqKey != latestReqKey) {
-			return;
-		}
 		final String message = "onException: reqKey=" + reqKey + ", exception="
 				+ ex;
 		Log.w(TAG, message, ex);
@@ -155,9 +151,6 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 
 	@Override
 	public void onFailed(int reqKey, int statusCode, String response) {
-		if (reqKey != latestReqKey) {
-			return;
-		}
 		final String message = "onFailed: reqKey=" + reqKey + ", statusCode="
 				+ statusCode + " response=" + response;
 		Log.w(TAG, message);
@@ -186,9 +179,6 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 	@Override
 	public void onSucceed(int reqKey, int statusCode,
 			InVehicleDevice inVehicleDevice) {
-		if (reqKey != latestReqKey) {
-			return;
-		}
 		try {
 			dismissDialog(CONNECTING_DIALOG_ID);
 		} catch (IllegalArgumentException e) {
@@ -264,6 +254,6 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		InVehicleDevice ivd = new InVehicleDevice();
 		ivd.setLogin(preferences.getString(LOGIN_KEY, ""));
 		ivd.setPassword(preferences.getString(PASSWORD_KEY, ""));
-		latestReqKey = apiClient.withRetry(false).login(ivd, this);
+		apiClient.withRetry(false).login(ivd, this);
 	}
 }
