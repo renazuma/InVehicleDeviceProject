@@ -1,6 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.preference.test;
 
 import android.app.Activity;
+import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
 import android.test.ActivityInstrumentationTestCase2;
@@ -28,8 +29,19 @@ public class InVehicleDevicePreferenceTestCase extends
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
+		Instrumentation i = getInstrumentation();
 
-		solo = new Solo(getInstrumentation(), getActivity());
+		// すでに車載器Activityが起動していることがあるので、BACK,HOMEキーを送信して終了
+		try {
+			i.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
+		} catch (SecurityException e) {
+		}
+		try {
+			i.sendKeyDownUpSync(KeyEvent.KEYCODE_HOME);
+		} catch (SecurityException e) {
+		}
+
+		solo = new Solo(i, getActivity());
 	}
 	
 	private void setConnectionUrl(String url) throws Exception {
