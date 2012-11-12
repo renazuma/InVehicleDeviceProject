@@ -21,7 +21,8 @@ public class BatteryAlerter implements Runnable {
 	private final Handler handler;
 	private final Context context;
 	private final ImageView blinkView;
-	private final Stopwatch stopwatch = new Stopwatch();
+	private final Stopwatch dialogStopwatch = new Stopwatch();
+	private final Stopwatch blinkStopwatch = new Stopwatch();
 	private final FragmentManager fragmentManager;
 	private int resourceId = -1;
 
@@ -40,45 +41,69 @@ public class BatteryAlerter implements Runnable {
 		IntentFilter intentFilter = new IntentFilter(
 				Intent.ACTION_BATTERY_CHANGED);
 		Intent batteryStatus = context.registerReceiver(null, intentFilter);
-		// Are we charging / charged?
 		Integer status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS,
 				-1);
-		Integer level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL,
-				-1);
+		Integer plugged = batteryStatus.getIntExtra(
+				BatteryManager.EXTRA_PLUGGED, -1);
 		Boolean isCharging = status
 				.equals(BatteryManager.BATTERY_STATUS_CHARGING)
-				|| status.equals(BatteryManager.BATTERY_STATUS_FULL);
+				|| status.equals(BatteryManager.BATTERY_STATUS_FULL)
+				|| plugged.equals(BatteryManager.BATTERY_PLUGGED_AC)
+				|| plugged.equals(BatteryManager.BATTERY_PLUGGED_USB);
+
+		Integer level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL,
+				-1);
+
+		// チャージ中やfullの場合、何もしない
 		if (isCharging) {
+			if (blinkStopwatch.isRunning()) {
+				blinkStopwatch.stop().reset();
+			}
+			if (dialogStopwatch.isRunning()) {
+				dialogStopwatch.stop().reset();
+			}
 			int newResourceId = level > 95 ? R.drawable.battery_full
 					: R.drawable.battery_charging;
 			if (resourceId != newResourceId) {
 				resourceId = newResourceId;
 				blinkView.setImageResource(resourceId);
 			}
-			stopwatch.reset().start();
 			if (!blinkView.isShown()) {
 				blinkView.setVisibility(View.VISIBLE);
 			}
 			return;
 		}
+
+		// チャージ中やfullでない場合、ストップウォッチを開始し、しきい値以内の場合は何もしない
+		if (!blinkStopwatch.isRunning()) {
+			blinkStopwatch.start();
+			return;
+		}
+		if (blinkStopwatch.elapsedMillis() < 5000) {
+			return;
+		}
+
+		// しきい値を超えた場合、画像を点滅
 		if (resourceId != R.drawable.battery_alert) {
 			resourceId = R.drawable.battery_alert;
 			blinkView.setImageResource(resourceId);
 		}
-		if (stopwatch.elapsedMillis() > BATTERY_DISCONNECTED_LIMIT_MILLIS
-				|| !stopwatch.isRunning()) {
-			stopwatch.reset().start();
+		if (blinkView.isShown()) {
+			blinkView.setVisibility(View.INVISIBLE);
+		} else {
+			blinkView.setVisibility(View.VISIBLE);
+		}
+
+		// ダイアログの表示
+		if (dialogStopwatch.elapsedMillis() > BATTERY_DISCONNECTED_LIMIT_MILLIS
+				|| !dialogStopwatch.isRunning()) {
+			dialogStopwatch.reset().start();
 			if (fragmentManager
 					.findFragmentByTag(BATTERY_ALERT_DIALOG_FRAGMENT_TAG) == null) {
 				BatteryAlertDialogFragment batteryAlertDialogFragment = new BatteryAlertDialogFragment();
 				batteryAlertDialogFragment.show(fragmentManager,
 						BATTERY_ALERT_DIALOG_FRAGMENT_TAG);
 			}
-		}
-		if (blinkView.isShown()) {
-			blinkView.setVisibility(View.INVISIBLE);
-		} else {
-			blinkView.setVisibility(View.VISIBLE);
 		}
 	}
 }
