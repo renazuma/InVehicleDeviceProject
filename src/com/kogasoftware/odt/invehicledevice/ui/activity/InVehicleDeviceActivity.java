@@ -93,11 +93,11 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 						+ ") but finishing");
 				return;
 			}
+			Log.i(TAG, "onServiceConnected()");
 			InVehicleDeviceService service = ((InVehicleDeviceService.LocalBinder) binder)
 					.getService();
 			service.getEventDispatcher().addOnUpdatePhaseListener(
 					InVehicleDeviceActivity.this);
-			Log.i(TAG, "addOnUpdatePhaseListener()");
 			service.getEventDispatcher()
 					.addOnOperationScheduleReceiveFailedListener(
 							InVehicleDeviceActivity.this);
@@ -233,6 +233,7 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 
 	@Override
 	public void onExit() {
+		Log.i(TAG, "onExit()");
 		handler.postDelayed(pauseFinishTimeouter, PAUSE_FINISH_TIMEOUT_MILLIS);
 		if (!isFinishing()) {
 			finish();
@@ -394,5 +395,4 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 						.newInstance(triggerVehicleNotifications));
 		fragmentTransaction.commitAllowingStateLoss();
 	}
-
 }
