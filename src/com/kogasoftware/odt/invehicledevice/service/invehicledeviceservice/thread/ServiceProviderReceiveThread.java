@@ -76,8 +76,6 @@ public class ServiceProviderReceiveThread extends Thread implements
 
 	@Override
 	public void run() {
-		// 最初の一度は必ず受信する
-		serviceProviderReceiveSemaphore.release();
 		try {
 			while (true) {
 				// 受信通知があるまで待つ
