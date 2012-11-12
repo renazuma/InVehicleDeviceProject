@@ -1,8 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.service.logservice;
 
-import com.google.common.base.Strings;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -10,9 +7,13 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.google.common.base.Strings;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
+
 public class UpdateCredentialsBroadcastReceiver extends BroadcastReceiver {
-	private static final String TAG = UpdateCredentialsBroadcastReceiver.class.getSimpleName();
-	
+	private static final String TAG = UpdateCredentialsBroadcastReceiver.class
+			.getSimpleName();
+
 	@Override
 	public void onReceive(final Context context, Intent intent) {
 		if (intent == null) {
@@ -24,12 +25,13 @@ public class UpdateCredentialsBroadcastReceiver extends BroadcastReceiver {
 			Log.w(TAG, "onReceive intent.getExtras() == null");
 			return;
 		}
+		Log.i(TAG, "onReceive");
 		Thread saveThread = new Thread() {
 			@Override
 			public void run() {
-				SharedPreferences.Editor editor = context
-						.getSharedPreferences(UploadThread.SHARED_PREFERENCES_NAME,
-								Context.MODE_PRIVATE).edit();
+				SharedPreferences.Editor editor = context.getSharedPreferences(
+						UploadThread.SHARED_PREFERENCES_NAME,
+						Context.MODE_PRIVATE).edit();
 				editor.putString(
 						SharedPreferencesKeys.AWS_ACCESS_KEY_ID,
 						Strings.nullToEmpty(extras

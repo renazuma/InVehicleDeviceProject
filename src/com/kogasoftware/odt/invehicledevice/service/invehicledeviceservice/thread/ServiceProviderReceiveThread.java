@@ -3,6 +3,7 @@ package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.thre
 import java.util.concurrent.Semaphore;
 
 import android.content.Intent;
+import android.util.Log;
 
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.apiclient.ApiClientException;
@@ -45,6 +46,7 @@ public class ServiceProviderReceiveThread extends Thread implements
 
 	public void sendUpdateCredentialsBroadcast(ServiceProvider serviceProvider) {
 		// ログアップロード用のサービスに認証情報を送信
+		Log.i(TAG, "sendUpdateCredentialsBroadcast");
 		Intent intent = new Intent(UploadThread.ACTION_UPDATE_CREDENTIALS);
 		intent.putExtra(SharedPreferencesKeys.AWS_ACCESS_KEY_ID,
 				serviceProvider.getLogAccessKeyIdAws().or(""));
