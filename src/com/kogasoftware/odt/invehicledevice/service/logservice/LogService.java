@@ -15,6 +15,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Environment;
 import android.os.Handler;
@@ -23,6 +24,7 @@ import android.util.Log;
 
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 
 public class LogService extends Service {
 	private static final String TAG = LogService.class.getSimpleName();
@@ -50,6 +52,29 @@ public class LogService extends Service {
 			context.stopService(new Intent(context, LogService.class));
 		}
 	}
+
+	private final ILogService.Stub binder = new ILogService.Stub() {
+		@Override
+		public void setServerUploadCredentials(final String accessKeyId,
+				final String secretAccessKey) {
+			Thread saveThread = new Thread() {
+				@Override
+				public void run() {
+					SharedPreferences.Editor editor = LogService.this
+							.getSharedPreferences(
+									UploadThread.SHARED_PREFERENCES_NAME,
+									Context.MODE_PRIVATE).edit();
+					editor.putString(SharedPreferencesKeys.AWS_ACCESS_KEY_ID,
+							accessKeyId);
+					editor.putString(
+							SharedPreferencesKeys.AWS_SECRET_ACCESS_KEY,
+							secretAccessKey);
+					editor.apply();
+				}
+			};
+			saveThread.start();
+		}
+	};
 
 	public File getDataDirectory() {
 		return new File(Environment.getExternalStorageDirectory()
@@ -191,7 +216,7 @@ public class LogService extends Service {
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		return null;
+		return binder;
 	}
 
 	public static List<File> getCompressedLogFiles(File directory) {
