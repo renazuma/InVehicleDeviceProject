@@ -24,6 +24,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.kogasoftware.odt.invehicledevice.BuildConfig;
+import com.kogasoftware.odt.invehicledevice.service.logservice.LogService;
+import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
 import com.kogasoftware.odt.invehicledevice.ui.BigToast;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
@@ -212,6 +214,8 @@ public class StartupService extends Service {
 		super.onStartCommand(intent, flags, startId);
 		Log.i(TAG, "onStartCommand(" + intent + ", " + flags + ", " + startId
 				+ ")");
+		startService(new Intent(this, VoiceService.class));
+		startService(new Intent(this, LogService.class));
 		return Service.START_STICKY;
 	}
 }

@@ -4,9 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -29,12 +27,9 @@ public class UploadThread extends Thread {
 			.getSimpleName() + ".sharedpreferences";
 	public static final Integer SHARED_PREFERENCES_CHECK_INTERVAL_MILLIS = 5000;
 	public static final Integer UPLOAD_DELAY_MILLIS = 5000;
-	public static final String ACTION_UPDATE_CREDENTIALS = UploadThread.class
-			.getSimpleName() + ".ACTION_UPDATE_CREDENTIALS";
 	private final Context context;
 	private final BlockingQueue<File> uploadFiles;
 	private final String bucket = "odt-android";
-	private final BroadcastReceiver updateCredentialsBroadcastReceiver = new UpdateCredentialsBroadcastReceiver();
 	private Optional<AmazonS3Client> mockAmazonS3Client = Optional.absent();
 
 	public UploadThread(Context context, BlockingQueue<File> uploadFiles) {
@@ -53,6 +48,7 @@ public class UploadThread extends Thread {
 			String secretAccessKey = sharedPreferences.getString(
 					SharedPreferencesKeys.AWS_SECRET_ACCESS_KEY, "");
 			if (accessKeyId.isEmpty() || secretAccessKey.isEmpty()) {
+				Log.i(TAG, "waiting for AWS Credentials");
 				Thread.sleep(SHARED_PREFERENCES_CHECK_INTERVAL_MILLIS);
 				continue;
 			}
@@ -77,18 +73,26 @@ public class UploadThread extends Thread {
 				s3Client.putObject(putObjectRequest);
 			} catch (IllegalStateException e) {
 				// java.lang.IllegalStateException: Content has been consumed
-				// at org.apache.http.entity.BasicHttpEntity.getContent(BasicHttpEntity.java:84)
-				// at com.amazonaws.http.AmazonHttpClient.executeHelper(Unknown Source)
-				// at com.amazonaws.http.AmazonHttpClient.execute(Unknown Source)
-				// at com.amazonaws.services.s3.AmazonS3Client.invoke(Unknown Source)
-				// at com.amazonaws.services.s3.AmazonS3Client.putObject(Unknown Source)
-				// at com.kogasoftware.odt.invehicledevice.service.logservice.UploadThread.uploadOneFile(UploadThread.java:75)
-				// at com.kogasoftware.odt.invehicledevice.service.logservice.UploadThread.run(UploadThread.java:106)
+				// at
+				// org.apache.http.entity.BasicHttpEntity.getContent(BasicHttpEntity.java:84)
+				// at com.amazonaws.http.AmazonHttpClient.executeHelper(Unknown
+				// Source)
+				// at com.amazonaws.http.AmazonHttpClient.execute(Unknown
+				// Source)
+				// at com.amazonaws.services.s3.AmazonS3Client.invoke(Unknown
+				// Source)
+				// at com.amazonaws.services.s3.AmazonS3Client.putObject(Unknown
+				// Source)
+				// at
+				// com.kogasoftware.odt.invehicledevice.service.logservice.UploadThread.uploadOneFile(UploadThread.java:75)
+				// at
+				// com.kogasoftware.odt.invehicledevice.service.logservice.UploadThread.run(UploadThread.java:106)
 				throw new IOException(e);
 			}
 			succeed = true;
 		} finally {
 			if (succeed) {
+				Log.i(TAG, "\"" + uploadFile + "\" uploaded");
 				if (!uploadFile.delete()) {
 					Log.w(TAG, "!\"" + uploadFile + "\".delete()");
 				}
@@ -105,35 +109,28 @@ public class UploadThread extends Thread {
 				.getSystemService(Context.TELEPHONY_SERVICE);
 		String deviceId = Strings.nullToEmpty(telephonyManager.getDeviceId());
 
-		IntentFilter intentFilter = new IntentFilter();
-		intentFilter.addAction(ACTION_UPDATE_CREDENTIALS);
-		context.registerReceiver(updateCredentialsBroadcastReceiver,
-				intentFilter);
-		try {
-			while (true) {
+		while (true) {
+			try {
+				Thread.sleep(5000);
+				AmazonS3Client s3Client = getAmazonS3Client();
 				try {
-					Thread.sleep(5000);
-					AmazonS3Client s3Client = getAmazonS3Client();
-					try {
-						while (true) {
-							uploadOneFile(s3Client, deviceId);
-						}
-					} finally {
-						s3Client.shutdown();
+					while (true) {
+						uploadOneFile(s3Client, deviceId);
 					}
-				} catch (InterruptedException e) {
-					break;
-				} catch (AmazonServiceException e) {
-					Log.w(TAG, e);
-				} catch (AmazonClientException e) {
-					Log.w(TAG, e);
-				} catch (IOException e) {
-					Log.e(TAG, e.toString(), e);
+				} finally {
+					s3Client.shutdown();
 				}
+			} catch (InterruptedException e) {
+				break;
+			} catch (AmazonServiceException e) {
+				Log.w(TAG, e);
+			} catch (AmazonClientException e) {
+				Log.w(TAG, e);
+			} catch (IOException e) {
+				Log.e(TAG, e.toString(), e);
 			}
-		} finally {
-			context.unregisterReceiver(updateCredentialsBroadcastReceiver);
 		}
+
 		Log.i(TAG, "exit");
 	}
 

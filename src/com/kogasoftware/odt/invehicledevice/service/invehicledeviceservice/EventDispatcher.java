@@ -21,6 +21,7 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Local
 public class EventDispatcher implements Closeable {
 	private static final String TAG = EventDispatcher.class.getSimpleName();
 	private final AtomicBoolean closed = new AtomicBoolean(false);
+	private final AtomicBoolean exited = new AtomicBoolean(false);
 
 	protected static <T> Multimap<Handler, T> newListenerMultimap() {
 		return LinkedHashMultimap.create();
@@ -210,10 +211,11 @@ public class EventDispatcher implements Closeable {
 	}
 
 	public void addOnExitListener(final OnExitListener listener) {
-		// 既にcloseされていた場合は、登録せずにonExitを実行する
-		if (closed.get()) {
-			Log.w(TAG, "\"" + this + "\" already closed listener=" + listener
-					+ " call onExit() immediately");
+		// 既にcloseされているか、exitされている場合は、登録せずにonExitを実行する
+		if (closed.get() || exited.get()) {
+			Log.w(TAG, "\"" + this + "\" already "
+					+ (closed.get() ? "closed" : "exited") + " listener="
+					+ listener + " call onExit() immediately");
 			InVehicleDeviceService.getThreadHandler().post(new Runnable() {
 				@Override
 				public void run() {
@@ -472,6 +474,7 @@ public class EventDispatcher implements Closeable {
 	}
 
 	public void dispatchExit() {
+		exited.set(true);
 		dispatchListener(onExitListeners, new Dispatcher<OnExitListener>() {
 			@Override
 			public void dispatch(OnExitListener listener) {

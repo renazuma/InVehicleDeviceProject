@@ -2,7 +2,14 @@ package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.thre
 
 import java.util.concurrent.Semaphore;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.HandlerThread;
+import android.os.IBinder;
+import android.os.RemoteException;
+import android.util.Log;
 
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.apiclient.ApiClientException;
@@ -11,12 +18,10 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Event
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Writer;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
-import com.kogasoftware.odt.invehicledevice.service.logservice.UploadThread;
+import com.kogasoftware.odt.invehicledevice.service.logservice.ILogService;
 
 public class ServiceProviderReceiveThread extends Thread implements
 		EventDispatcher.OnStartNewOperationListener {
-	@SuppressWarnings("unused")
 	private static final String TAG = ServiceProviderReceiveThread.class
 			.getSimpleName();
 	protected final InVehicleDeviceService service;
@@ -40,17 +45,50 @@ public class ServiceProviderReceiveThread extends Thread implements
 			}
 		});
 
-		sendUpdateCredentialsBroadcast(serviceProvider);
+		setLogUploadServerCredentials(serviceProvider);
 	}
 
-	public void sendUpdateCredentialsBroadcast(ServiceProvider serviceProvider) {
+	public void setLogUploadServerCredentials(
+			final ServiceProvider serviceProvider) {
 		// ログアップロード用のサービスに認証情報を送信
-		Intent intent = new Intent(UploadThread.ACTION_UPDATE_CREDENTIALS);
-		intent.putExtra(SharedPreferencesKeys.AWS_ACCESS_KEY_ID,
-				serviceProvider.getLogAccessKeyIdAws().or(""));
-		intent.putExtra(SharedPreferencesKeys.AWS_SECRET_ACCESS_KEY,
-				serviceProvider.getLogSecretAccessKeyAws().or(""));
-		service.sendBroadcast(intent);
+		Log.i(TAG, "sendUpdateCredentialsBroadcast()");
+
+		HandlerThread handlerThread = new HandlerThread(
+				"setLogUploadServerCredentials") {
+			final ServiceConnection serviceConnection = new ServiceConnection() {
+				@Override
+				public void onServiceConnected(ComponentName componentName,
+						IBinder binder) {
+					Log.i(TAG, "onServiceConnected()");
+					ILogService logService = ILogService.Stub
+							.asInterface(binder);
+					try {
+						logService.setServerUploadCredentials(serviceProvider
+								.getLogAccessKeyIdAws().or(""), serviceProvider
+								.getLogSecretAccessKeyAws().or(""));
+					} catch (RemoteException e) {
+						Log.w(TAG, e);
+					}
+					service.unbindService(this);
+					quit();
+				}
+
+				@Override
+				public void onServiceDisconnected(ComponentName componentName) {
+					Log.i(TAG, "onServiceDisconnected()");
+					quit();
+				}
+			};
+
+			@Override
+			protected void onLooperPrepared() {
+				Log.i(TAG, "onLooperPrepared()");
+				service.bindService(new Intent(ILogService.class.getName()),
+						serviceConnection, Context.BIND_AUTO_CREATE);
+			}
+		};
+
+		handlerThread.start();
 	}
 
 	private void receive() {
@@ -76,8 +114,6 @@ public class ServiceProviderReceiveThread extends Thread implements
 
 	@Override
 	public void run() {
-		// 最初の一度は必ず受信する
-		serviceProviderReceiveSemaphore.release();
 		try {
 			while (true) {
 				// 受信通知があるまで待つ

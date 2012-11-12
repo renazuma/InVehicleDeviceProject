@@ -8,7 +8,7 @@ import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnDismissListener;
+import android.content.DialogInterface.OnKeyListener;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Color;
@@ -22,6 +22,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Html;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -92,11 +93,11 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 						+ ") but finishing");
 				return;
 			}
+			Log.i(TAG, "onServiceConnected()");
 			InVehicleDeviceService service = ((InVehicleDeviceService.LocalBinder) binder)
 					.getService();
 			service.getEventDispatcher().addOnUpdatePhaseListener(
 					InVehicleDeviceActivity.this);
-			Log.i(TAG, "addOnUpdatePhaseListener()");
 			service.getEventDispatcher()
 					.addOnOperationScheduleReceiveFailedListener(
 							InVehicleDeviceActivity.this);
@@ -152,13 +153,18 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 					.fromHtml(getString(R.string.operation_schedule_receiving_html)));
 			dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 			dialog.setCanceledOnTouchOutside(false);
-			dialog.setOnDismissListener(new OnDismissListener() {
+			dialog.setOnKeyListener(new OnKeyListener() {
 				@Override
-				public void onDismiss(DialogInterface dialog) {
-					if (!((InVehicleDeviceActivity) getActivity())
-							.isUiInitialized()) {
-						getActivity().finish();
+				public boolean onKey(DialogInterface dialog, int keyCode,
+						KeyEvent event) {
+					InVehicleDeviceActivity activity = (InVehicleDeviceActivity) getActivity();
+					if (!activity.isUiInitialized()) {
+						Log.i(TAG, "LoadingDialogFragment.onKey / finish");
+						activity.finish();
+					} else {
+						Log.i(TAG, "LoadingDialogFragment.onKey");
 					}
+					return false;
 				}
 			});
 			return dialog;
@@ -227,6 +233,7 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 
 	@Override
 	public void onExit() {
+		Log.i(TAG, "onExit()");
 		handler.postDelayed(pauseFinishTimeouter, PAUSE_FINISH_TIMEOUT_MILLIS);
 		if (!isFinishing()) {
 			finish();
@@ -388,5 +395,4 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 						.newInstance(triggerVehicleNotifications));
 		fragmentTransaction.commitAllowingStateLoss();
 	}
-
 }
