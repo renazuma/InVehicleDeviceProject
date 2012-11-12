@@ -89,6 +89,7 @@ public class UploadThread extends Thread {
 			succeed = true;
 		} finally {
 			if (succeed) {
+				Log.i(TAG, "\"" + uploadFile + "\" uploaded");
 				if (!uploadFile.delete()) {
 					Log.w(TAG, "!\"" + uploadFile + "\".delete()");
 				}
