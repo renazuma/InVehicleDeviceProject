@@ -104,7 +104,7 @@ public class InVehicleDeviceService extends Service {
 	public static final SortedMap<Date, List<CountDownLatch>> mockSleepStatus = new TreeMap<Date, List<CountDownLatch>>();
 	private static Boolean useMockDate = false;
 	private static Date mockDate = new Date();
-	private final ScheduledExecutorService executorService = Executors
+	private final ScheduledExecutorService scheduledExecutorService = Executors
 			.newScheduledThreadPool(NUM_THREADS);
 
 	private static final WeakHashMap<Thread, Handler> HANDLERS = new WeakHashMap<Thread, Handler>();
@@ -502,14 +502,15 @@ public class InVehicleDeviceService extends Service {
 		NetworkStatusLogger networkStatusLogger = new NetworkStatusLogger(
 				connectivityManager, optionalTelephonyManager);
 		try {
-			executorService
-					.scheduleWithFixedDelay(nextDateNotifier, 0,
-							NextDateNotifier.RUN_INTERVAL_MILLIS,
-							TimeUnit.MILLISECONDS);
-			executorService.scheduleWithFixedDelay(serviceUnitStatusLogSender,
-					0, ServiceUnitStatusLogSender.RUN_INTERVAL_MILLIS,
+			scheduledExecutorService.scheduleWithFixedDelay(nextDateNotifier,
+					0, NextDateNotifier.RUN_INTERVAL_MILLIS,
 					TimeUnit.MILLISECONDS);
-			executorService.scheduleWithFixedDelay(networkStatusLogger, 0,
+			scheduledExecutorService.scheduleWithFixedDelay(
+					serviceUnitStatusLogSender, 0,
+					ServiceUnitStatusLogSender.RUN_INTERVAL_MILLIS,
+					TimeUnit.MILLISECONDS);
+			scheduledExecutorService.scheduleWithFixedDelay(
+					networkStatusLogger, 0,
 					NetworkStatusLogger.RUN_INTERVAL_MILLIS,
 					TimeUnit.MILLISECONDS);
 		} catch (RejectedExecutionException e) {
@@ -535,7 +536,7 @@ public class InVehicleDeviceService extends Service {
 											result);
 						}
 						try {
-							executorService
+							scheduledExecutorService
 									.scheduleWithFixedDelay(
 											vehicleNotificationReceiver,
 											0,
@@ -586,7 +587,7 @@ public class InVehicleDeviceService extends Service {
 			telephonyManager.listen(signalStrengthListener,
 					PhoneStateListener.LISTEN_NONE);
 		}
-		executorService.shutdownNow();
+		scheduledExecutorService.shutdownNow();
 
 		Closeables.closeQuietly(eventDispatcher);
 		Closeables.closeQuietly(apiClient);
@@ -600,6 +601,10 @@ public class InVehicleDeviceService extends Service {
 
 	public void speak(String message) {
 		voiceServiceConnector.speak(message);
+	}
+
+	public ScheduledExecutorService getScheduledExecutorService() {
+		return scheduledExecutorService;
 	}
 
 	private Boolean mapAutoZoom = true;

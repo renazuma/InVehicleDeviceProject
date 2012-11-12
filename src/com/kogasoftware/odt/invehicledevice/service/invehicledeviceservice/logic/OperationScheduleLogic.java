@@ -1,8 +1,8 @@
 package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic;
 
 import java.util.List;
+import java.util.concurrent.RejectedExecutionException;
 
-import android.os.Handler;
 import android.util.Log;
 
 import com.google.common.base.Optional;
@@ -331,13 +331,15 @@ public class OperationScheduleLogic {
 	}
 
 	public void requestUpdatePhase() {
-		final Handler handler = new Handler();
-		handler.post(new Runnable() {
+		Runnable waitForOperationInitializedAndUpdatePhase = new Runnable() {
 			@Override
 			public void run() {
-				Log.i(TAG, "waiting for update phase");
-				if (!service.isOperationInitialized()) {
-					handler.postDelayed(this, 500);
+				try {
+					while (!service.isOperationInitialized()) {
+						Log.i(TAG, "waiting for update phase");
+						Thread.sleep(500);
+					}
+				} catch (InterruptedException e) {
 					return;
 				}
 				service.getLocalStorage().withWriteLock(new Writer() {
@@ -347,6 +349,12 @@ public class OperationScheduleLogic {
 					}
 				});
 			}
-		});
+		};
+		try {
+			service.getScheduledExecutorService().submit(
+					waitForOperationInitializedAndUpdatePhase);
+		} catch (RejectedExecutionException e) {
+			Log.w(TAG, e);
+		}
 	}
 }
