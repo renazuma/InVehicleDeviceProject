@@ -57,6 +57,7 @@ public class LogService extends Service {
 		@Override
 		public void setServerUploadCredentials(final String accessKeyId,
 				final String secretAccessKey) {
+			Log.i(TAG, "setServerUploadCredentials(" + accessKeyId + ")");
 			Thread saveThread = new Thread() {
 				@Override
 				public void run() {

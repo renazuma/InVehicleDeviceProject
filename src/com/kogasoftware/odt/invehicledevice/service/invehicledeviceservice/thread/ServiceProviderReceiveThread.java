@@ -51,7 +51,7 @@ public class ServiceProviderReceiveThread extends Thread implements
 	public void setLogUploadServerCredentials(
 			final ServiceProvider serviceProvider) {
 		// ログアップロード用のサービスに認証情報を送信
-		Log.i(TAG, "sendUpdateCredentialsBroadcast");
+		Log.i(TAG, "sendUpdateCredentialsBroadcast()");
 
 		HandlerThread handlerThread = new HandlerThread(
 				"setLogUploadServerCredentials") {
@@ -59,7 +59,7 @@ public class ServiceProviderReceiveThread extends Thread implements
 				@Override
 				public void onServiceConnected(ComponentName componentName,
 						IBinder binder) {
-					Log.i(TAG, "onServiceConnected");
+					Log.i(TAG, "onServiceConnected()");
 					ILogService logService = ILogService.Stub
 							.asInterface(binder);
 					try {
@@ -69,19 +69,20 @@ public class ServiceProviderReceiveThread extends Thread implements
 					} catch (RemoteException e) {
 						Log.w(TAG, e);
 					}
-					service.unbindService(serviceConnection);
+					service.unbindService(this);
 					quit();
 				}
 
 				@Override
 				public void onServiceDisconnected(ComponentName componentName) {
-					Log.i(TAG, "onServiceDisconnected");
+					Log.i(TAG, "onServiceDisconnected()");
 					quit();
 				}
 			};
 
 			@Override
 			protected void onLooperPrepared() {
+				Log.i(TAG, "onLooperPrepared()");
 				service.bindService(new Intent(ILogService.class.getName()),
 						serviceConnection, Context.BIND_AUTO_CREATE);
 			}
