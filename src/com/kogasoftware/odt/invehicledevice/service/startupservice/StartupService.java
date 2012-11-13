@@ -214,9 +214,12 @@ public class StartupService extends Service {
 		super.onStartCommand(intent, flags, startId);
 		Log.i(TAG, "onStartCommand(" + intent + ", " + flags + ", " + startId
 				+ ")");
-		Bundle extras = intent.getExtras();
-		if (extras != null && extras.containsKey(Intents.EXTRA_BOOLEAN_ENABLED)) {
-			enabled.set(extras.getBoolean(Intents.EXTRA_BOOLEAN_ENABLED));
+		if (intent != null) {
+			Bundle extras = intent.getExtras();
+			if (extras != null
+					&& extras.containsKey(Intents.EXTRA_BOOLEAN_ENABLED)) {
+				enabled.set(extras.getBoolean(Intents.EXTRA_BOOLEAN_ENABLED));
+			}
 		}
 		handler.post(checkDeviceAndShowActivityCallback);
 		startService(new Intent(this, VoiceService.class));
