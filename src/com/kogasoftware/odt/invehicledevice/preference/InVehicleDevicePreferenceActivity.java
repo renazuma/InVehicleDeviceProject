@@ -30,6 +30,7 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.InVehicleDevice;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.broadcast.Broadcasts;
 import com.kogasoftware.odt.invehicledevice.service.startupservice.IStartupService;
+import com.kogasoftware.odt.invehicledevice.service.startupservice.Intents;
 
 public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		implements ApiClientCallback<InVehicleDevice>,
@@ -74,7 +75,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		exitIntent.setAction(Broadcasts.ACTION_EXIT);
 		getApplicationContext().sendBroadcast(exitIntent);
 	}
-	
+
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -122,8 +123,9 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 	@Override
 	public void onStart() {
 		super.onStart();
-		bindService(new Intent(IStartupService.class.getName()),
-				serviceConnection, Context.BIND_AUTO_CREATE);
+		Intent intent = new Intent(IStartupService.class.getName());
+		intent.putExtra(Intents.EXTRA_BOOLEAN_ENABLED, false);
+		bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
 	}
 
 	@Override

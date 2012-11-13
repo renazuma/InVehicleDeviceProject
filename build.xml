@@ -63,6 +63,7 @@
           <include name="src/com/kogasoftware/odt/invehicledevice/service/invehicledeviceservice/SharedPreferencesKeys.java"/>
           <include name="src/com/kogasoftware/odt/invehicledevice/service/invehicledeviceservice/broadcast/Broadcasts.java"/>
           <include name="src/com/kogasoftware/odt/invehicledevice/service/startupservice/IStartupService.aidl"/>
+          <include name="src/com/kogasoftware/odt/invehicledevice/service/startupservice/Intents.java"/>
         </fileset>
       </copy>
     </target>
