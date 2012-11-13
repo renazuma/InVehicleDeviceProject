@@ -120,11 +120,6 @@ public class LogService extends Service {
 			return false;
 		}
 
-		File dataDirectory = getDataDirectory();
-
-		rawLogFiles.addAll(getRawLogFiles(dataDirectory));
-		compressedLogFiles.addAll(getCompressedLogFiles(dataDirectory));
-
 		compressThread = new CompressThread(this, rawLogFiles,
 				compressedLogFiles);
 		uploadThread = createUploadThread(compressedLogFiles);
@@ -160,6 +155,8 @@ public class LogService extends Service {
 				SendLogBroadcastReceiver.ACTION_SEND_LOG));
 
 		final Handler handler = new Handler();
+
+		// IOを子スレッドで行う
 		Thread thread = new Thread() {
 			@Override
 			public void run() {
@@ -167,7 +164,13 @@ public class LogService extends Service {
 					// ディレクトリ準備完了を別スレッドで待つ
 					final File dataDirectory = getDataDirectory();
 					waitForDataDirectory(dataDirectory);
-					// メインスレッドでのIOを避けるため、ディレクトリ準備完了後にストリームを準備する
+
+					// ディレクトリに最初から存在しているファイルを読み取る
+					rawLogFiles.addAll(getRawLogFiles(dataDirectory));
+					compressedLogFiles
+							.addAll(getCompressedLogFiles(dataDirectory));
+
+					// ディレクトリ準備完了後にストリームと出力ファイルを準備する
 					final SplitFileOutputStream logcatSplitFileOutputStream = new SplitFileOutputStream(
 							dataDirectory, LOGCAT_FILE_TAG, rawLogFiles);
 					final SplitFileOutputStream dropboxSplitFileOutputStream = new SplitFileOutputStream(
