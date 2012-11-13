@@ -86,13 +86,13 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 				or.setArrivedAt(new Date());
 			}
 			OperationRecord retryOr;
-			retryOr = or.clone();
+			retryOr = or.clone(false);
 			retryOr.setArrivedAtOffline(true);
 
 			String root = OperationRecord.UNDERSCORE;
-			JsonNode param = createObjectNode().set(root, or.toJsonNode());
+			JsonNode param = createObjectNode().set(root, or.toJsonNode(false));
 			JsonNode retryParam = createObjectNode().set(root,
-					retryOr.toJsonNode());
+					retryOr.toJsonNode(false));
 
 			return put(
 					PATH_OPERATION_SCHEDULES + "/" + os.getId() + "/arrival",
@@ -118,13 +118,13 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 			if (!or.getDepartedAt().isPresent()) {
 				or.setDepartedAt(new Date());
 			}
-			OperationRecord retryOr = or.clone();
+			OperationRecord retryOr = or.clone(false);
 			retryOr.setDepartedAtOffline(true);
 
 			String root = OperationRecord.UNDERSCORE;
-			JsonNode param = createObjectNode().set(root, or.toJsonNode());
+			JsonNode param = createObjectNode().set(root, or.toJsonNode(false));
 			JsonNode retryParam = createObjectNode().set(root,
-					retryOr.toJsonNode());
+					retryOr.toJsonNode(false));
 
 			return put(PATH_OPERATION_SCHEDULES + "/" + os.getId()
 					+ "/departure", param, retryParam, UNIQUE_GROUP, callback,
@@ -146,16 +146,16 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 			PassengerRecord passengerRecord, ApiClientCallback<Void> callback) {
 		try {
 			passengerRecord.setGetOffTime(new Date());
-			PassengerRecord retryPassengerRecord = passengerRecord.clone();
+			PassengerRecord retryPassengerRecord = passengerRecord.clone(false);
 			retryPassengerRecord.setGetOffTimeOffline(true);
 
 			String[] filter = new String[] { "id", "payment",
 					"passenger_count", "get_off_time", "get_off_time_offline" };
 			String root = PassengerRecord.UNDERSCORE;
 			JsonNode param = createObjectNode().set(root,
-					passengerRecord.toJsonNode().retain(filter));
+					passengerRecord.toJsonNode(false).retain(filter));
 			JsonNode retryParam = createObjectNode().set(root,
-					retryPassengerRecord.toJsonNode().retain(filter));
+					retryPassengerRecord.toJsonNode(false).retain(filter));
 
 			String group = getPassengerRecordGetOnOrOffGroup(
 					operationSchedule.getId(), reservation.getId(),
@@ -183,16 +183,16 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 			PassengerRecord passengerRecord, ApiClientCallback<Void> callback) {
 		try {
 			passengerRecord.setGetOnTime(new Date());
-			PassengerRecord retryPassengerRecord = passengerRecord.clone();
+			PassengerRecord retryPassengerRecord = passengerRecord.clone(false);
 			retryPassengerRecord.setGetOnTimeOffline(true);
 
 			String[] filter = new String[] { "id", "payment",
 					"passenger_count", "get_on_time", "get_on_time_offline" };
 			String root = PassengerRecord.UNDERSCORE;
 			JsonNode param = createObjectNode().set(root,
-					passengerRecord.toJsonNode().retain(filter));
+					passengerRecord.toJsonNode(false).retain(filter));
 			JsonNode retryParam = createObjectNode().set(root,
-					retryPassengerRecord.toJsonNode().retain(filter));
+					retryPassengerRecord.toJsonNode(false).retain(filter));
 
 			String group = getPassengerRecordGetOnOrOffGroup(
 					operationSchedule.getId(), reservation.getId(),
@@ -221,9 +221,8 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 			PassengerRecord passengerRecord = new PassengerRecord();
 			passengerRecord.setGetOnTime(new Date());
 			passengerRecord.clearGetOffTime();
-			JsonNode param = createObjectNode()
-					.set(PassengerRecord.UNDERSCORE,
-							passengerRecord.toJsonNode());
+			JsonNode param = createObjectNode().set(PassengerRecord.UNDERSCORE,
+					passengerRecord.toJsonNode(false));
 			String group = getPassengerRecordGetOnOrOffGroup(
 					operationSchedule.getId(), reservation.getId(),
 					user.getId());
@@ -251,9 +250,8 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 			PassengerRecord passengerRecord = new PassengerRecord();
 			passengerRecord.clearGetOnTime();
 			passengerRecord.setGetOffTime(new Date());
-			JsonNode param = createObjectNode()
-					.set(PassengerRecord.UNDERSCORE,
-							passengerRecord.toJsonNode());
+			JsonNode param = createObjectNode().set(PassengerRecord.UNDERSCORE,
+					passengerRecord.toJsonNode(false));
 			String group = getPassengerRecordGetOnOrOffGroup(
 					operationSchedule.getId(), reservation.getId(),
 					user.getId());
@@ -312,9 +310,8 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	public int login(InVehicleDevice login,
 			final ApiClientCallback<InVehicleDevice> callback) {
 		try {
-			JsonNode param = createObjectNode()
-					.set(InVehicleDevice.UNDERSCORE,
-							login.toJsonNode().retain("login", "password"));
+			JsonNode param = createObjectNode().set(InVehicleDevice.UNDERSCORE,
+					login.toJsonNode(false).retain("login", "password"));
 			return post(PATH_LOGIN, param, UNIQUE_GROUP,
 					new ApiClientCallback<InVehicleDevice>() {
 						@Override
@@ -363,7 +360,7 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 		try {
 			vn.setResponse(response);
 			vn.setReadAt(new Date());
-			VehicleNotification retryVn = vn.clone();
+			VehicleNotification retryVn = vn.clone(false);
 			retryVn.setOffline(true);
 
 			String[] filter = new String[] { "id", "response", "read_at",
@@ -371,9 +368,9 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 
 			String root = VehicleNotification.UNDERSCORE;
 			JsonNode param = createObjectNode().set(root,
-					vn.toJsonNode().retain(filter));
+					vn.toJsonNode(false).retain(filter));
 			JsonNode retryParam = createObjectNode().set(root,
-					retryVn.toJsonNode().retain(filter));
+					retryVn.toJsonNode(false).retain(filter));
 			return put(PATH_VEHICLE_NOTIFICATIONS + "/" + vn.getId(), param,
 					retryParam, UNIQUE_GROUP, callback,
 					VehicleNotification.RESPONSE_CONVERTER);
@@ -390,16 +387,16 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 			ApiClientCallback<ServiceUnitStatusLog> callback) {
 		try {
 			log.setOfflineTime(new Date());
-			ServiceUnitStatusLog retryLog = log.clone();
+			ServiceUnitStatusLog retryLog = log.clone(false);
 			retryLog.setOffline(true);
 
 			String[] filter = new String[] { "latitude", "longitude",
 					"offline", "offline_time", "orientation", "temperature" };
 			String root = ServiceUnitStatusLog.UNDERSCORE;
 			JsonNode param = createObjectNode().set(root,
-					log.toJsonNode().retain(filter));
+					log.toJsonNode(false).retain(filter));
 			JsonNode retryParam = createObjectNode().set(root,
-					retryLog.toJsonNode());
+					retryLog.toJsonNode(false));
 			return post(PATH_SERVICE_UNIT_STATUS_LOGS, param, retryParam,
 					"sendServiceUnitStatusLog", callback,
 					ServiceUnitStatusLog.RESPONSE_CONVERTER);

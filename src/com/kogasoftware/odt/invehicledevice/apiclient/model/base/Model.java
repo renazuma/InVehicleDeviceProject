@@ -1,9 +1,13 @@
 package com.kogasoftware.odt.invehicledevice.apiclient.model.base;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Calendar;
@@ -11,8 +15,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TimeZone;
-
-import org.apache.commons.lang3.SerializationUtils;
 
 import android.util.Log;
 
@@ -30,6 +32,7 @@ import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import com.google.common.io.Closeables;
 import com.kogasoftware.odt.apiclient.ApiClient.ResponseConverter;
 import com.kogasoftware.odt.apiclient.ApiClients;
 import com.kogasoftware.odt.apiclient.identifiable.Identifiable;
@@ -48,6 +51,13 @@ public abstract class Model implements Externalizable, Identifiable, Cloneable {
 	protected static final Date DEFAULT_DATE_TIME;
 	public static final TimeZone TIME_ZONE = TimeZone.getDefault();
 	public static final String JACKSON_IDENTITY_INFO_PROPERTY = "@jackson_identitiy_info";
+
+	public static class CloneException extends RuntimeException {
+		private static final long serialVersionUID = 2637422692046440762L;
+		public CloneException(Throwable cause) {
+			super(cause);
+		}
+	}
 
 	static {
 		Calendar defaultDateCalendar = Calendar.getInstance(TIME_ZONE);
@@ -168,8 +178,45 @@ public abstract class Model implements Externalizable, Identifiable, Cloneable {
 	@Override
 	public abstract Model clone();
 
-	protected <T extends Model> T clone(Class<T> childClass) {
-		return SerializationUtils.clone(childClass.cast(this));
+	public abstract Model clone(Boolean withAssociation);
+
+	protected <T extends Model> T clone(Class<T> childClass,
+			Boolean withAssociation) {
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		ObjectOutputStream objectOutputStream = null;
+		try {
+			objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+			writeExternal(objectOutputStream, withAssociation);
+		} catch (IOException e) {
+			throw new CloneException(e);
+		} finally {
+			Closeables.closeQuietly(objectOutputStream);
+			Closeables.closeQuietly(byteArrayOutputStream);
+		}
+		T model = null;
+		try {
+			model = childClass.cast(super.clone());
+		} catch (ClassCastException e) {
+			throw new CloneException(e);
+		} catch (CloneNotSupportedException e) {
+			throw new CloneException(e);
+		}
+		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(
+				byteArrayOutputStream.toByteArray());
+		byteArrayOutputStream = null; // GC
+		ObjectInputStream objectInputStream = null;
+		try {
+			objectInputStream = new ObjectInputStream(byteArrayInputStream);
+			model.readExternal(objectInputStream);
+			return model;
+		} catch (IOException e) {
+			throw new CloneException(e);
+		} catch (ClassNotFoundException e) {
+			throw new CloneException(e);
+		} finally {
+			Closeables.closeQuietly(objectInputStream);
+			Closeables.closeQuietly(byteArrayInputStream);
+		}
 	}
 
 	public ObjectNode toJsonNode(Boolean withAssociation) throws IOException {
@@ -179,7 +226,7 @@ public abstract class Model implements Externalizable, Identifiable, Cloneable {
 	}
 
 	public ObjectNode toJsonNode() throws IOException {
-		return toJsonNode(false).remove(
+		return toJsonNode(true).remove(
 				Lists.newArrayList(JACKSON_IDENTITY_INFO_PROPERTY));
 	}
 
@@ -190,9 +237,14 @@ public abstract class Model implements Externalizable, Identifiable, Cloneable {
 				new ExternalizableInput(objectInput));
 	}
 
+	public void writeExternal(ObjectOutput objectOutput, Boolean withAssociation)
+			throws IOException {
+		getObjectWriter(withAssociation).writeValue(
+				new ExternalizableOutput(objectOutput), this);
+	}
+
 	@Override
 	public void writeExternal(ObjectOutput objectOutput) throws IOException {
-		getObjectWriter(true).writeValue(
-				new ExternalizableOutput(objectOutput), this);
+		writeExternal(objectOutput, true);
 	}
 }
