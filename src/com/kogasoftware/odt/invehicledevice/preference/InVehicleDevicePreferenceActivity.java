@@ -45,22 +45,15 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 			DEFAULT_URL);
 
 	private SharedPreferences preferences = null;
+	private IStartupService startupService = null;
 
 	private ServiceConnection serviceConnection = new ServiceConnection() {
 		@Override
 		public void onServiceConnected(ComponentName componentName,
 				IBinder service) {
 			Log.i(TAG, "onServiceConnected");
-			IStartupService startupService = IStartupService.Stub
-					.asInterface(service);
-			try {
-				startupService.disable();
-			} catch (RemoteException e) {
-				Log.w(TAG, e);
-			}
-			Intent exitIntent = new Intent();
-			exitIntent.setAction(Broadcasts.ACTION_EXIT);
-			getApplicationContext().sendBroadcast(exitIntent);
+			startupService = IStartupService.Stub.asInterface(service);
+			disableMainApplication();
 		}
 
 		@Override
@@ -68,6 +61,25 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 			Log.i(TAG, "onServiceDisconnected");
 		}
 	};
+
+	private void disableMainApplication() {
+		if (startupService != null) {
+			try {
+				startupService.disable();
+			} catch (RemoteException e) {
+				Log.w(TAG, e);
+			}
+		}
+		Intent exitIntent = new Intent();
+		exitIntent.setAction(Broadcasts.ACTION_EXIT);
+		getApplicationContext().sendBroadcast(exitIntent);
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		disableMainApplication();
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
