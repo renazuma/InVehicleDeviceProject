@@ -200,7 +200,6 @@ public class StartupService extends Service {
 		Log.i(TAG, "onCreate()");
 		getApplicationContext().registerReceiver(screenOnBroadcastReceiver,
 				new IntentFilter(Intent.ACTION_SCREEN_ON));
-		handler.post(checkDeviceAndShowActivityCallback);
 	}
 
 	@Override
@@ -219,6 +218,7 @@ public class StartupService extends Service {
 		if (extras != null && extras.containsKey(Intents.EXTRA_BOOLEAN_ENABLED)) {
 			enabled.set(extras.getBoolean(Intents.EXTRA_BOOLEAN_ENABLED));
 		}
+		handler.post(checkDeviceAndShowActivityCallback);
 		startService(new Intent(this, VoiceService.class));
 		startService(new Intent(this, LogService.class));
 		return Service.START_STICKY;
