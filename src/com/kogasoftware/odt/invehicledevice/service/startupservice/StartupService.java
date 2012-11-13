@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.LocationManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
@@ -214,6 +215,10 @@ public class StartupService extends Service {
 		super.onStartCommand(intent, flags, startId);
 		Log.i(TAG, "onStartCommand(" + intent + ", " + flags + ", " + startId
 				+ ")");
+		Bundle extras = intent.getExtras();
+		if (extras != null && extras.containsKey(Intents.EXTRA_BOOLEAN_ENABLED)) {
+			enabled.set(extras.getBoolean(Intents.EXTRA_BOOLEAN_ENABLED));
+		}
 		startService(new Intent(this, VoiceService.class));
 		startService(new Intent(this, LogService.class));
 		return Service.START_STICKY;
