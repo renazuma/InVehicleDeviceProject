@@ -1,9 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.service.logservice;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -22,7 +20,6 @@ import android.util.Log;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyFile;
 
 public class LogServiceReportSender implements ReportSender {
@@ -54,20 +51,15 @@ public class LogServiceReportSender implements ReportSender {
 		String format = (new SimpleDateFormat("yyyyMMddHHmmss.SSS"))
 				.format(new Date());
 		File file = new EmptyFile();
-		OutputStream fileOutputStream = null;
 		try {
 			file = File
 					.createTempFile(format + "_acra_", ".log", dataDirectory);
-			fileOutputStream = new FileOutputStream(file);
-			getObjectMapper().writeValue(fileOutputStream,
+			getObjectMapper().writeValue(file,
 					getCrashReportJsonNode(crashReportData));
 		} catch (IOException e) {
 			throw new ReportSenderException("IOException file=" + file
 					+ " dataDirectory=" + dataDirectory, e);
-		} finally {
-			Closeables.closeQuietly(fileOutputStream);
 		}
-
 		Log.i(TAG, "\"" + file + "\" saved");
 		Intent intent = new Intent(SendLogBroadcastReceiver.ACTION_SEND_LOG);
 		intent.putExtra(SendLogBroadcastReceiver.EXTRAS_KEY_LOG_FILE_NAME,
