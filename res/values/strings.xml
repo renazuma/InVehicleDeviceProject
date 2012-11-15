@@ -33,7 +33,7 @@
     <string name="show_operation_schedule">Show operation schedule</string>
     <string name="today_operation_schedule">Today\'s operation schedule</string>
     <string name="platform_arrival_time_format">HH:mm</string>
-    <string name="todays_operation_was_finished">Todays operation was finished</string>
+    <string name="todays_operation_was_finished">Today\'s operation was finished</string>
     <string name="show_all_riding_passengers">Show all riding passengers</string>
     <string name="show_future_passengers">Show future passengers</string>
     <string name="show_missed_passengers">Show missed passengers</string>
@@ -47,7 +47,7 @@
     <string name="platform_depature_time">HH:mm</string>
     <string name="location_receiving">Location receiving</string>
     <string name="gps_satellites_format">GPS satellites %1d/4</string>
-    <string name="crash_toast_text">Unexpected error occured</string>
+    <string name="crash_toast_text">Unexpected error occurred</string>
     <string name="platform_memo">Platform memo</string>
     <string name="failed_to_connect_operator_tool">Failed to connect operator tool</string>
     <string name="settings_are_not_initialized">Settings are not initialized</string>
