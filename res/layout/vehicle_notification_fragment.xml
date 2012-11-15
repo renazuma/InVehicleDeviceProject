@@ -20,7 +20,7 @@
         android:layout_above="@+id/notification_modal_buttons"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/notification_modal_title_text_view"
-        android:layout_margin="5dip"
+        android:layout_margin="5dp"
         android:background="@drawable/border"
         android:textSize="30sp"
         android:textAppearance="?android:attr/textAppearanceLarge" />

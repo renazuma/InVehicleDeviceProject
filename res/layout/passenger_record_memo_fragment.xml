@@ -22,7 +22,7 @@
 
         <TextView
             style="@style/ModalView.Title"
-            android:layout_width="0dip"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/reservation_memo"
@@ -30,7 +30,7 @@
 
         <TextView
             style="@style/ModalView.Title"
-            android:layout_width="0dip"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/user_memo"
@@ -47,9 +47,9 @@
         <TextView
             android:id="@+id/reservation_memo_text_view"
             style="@style/ModalView.Content"
-            android:layout_width="0dip"
+            android:layout_width="0dp"
             android:layout_height="fill_parent"
-            android:layout_margin="1dip"
+            android:layout_margin="1dp"
             android:layout_weight="1"
             android:background="@drawable/border"
             android:textSize="30sp" />
@@ -57,9 +57,9 @@
         <TextView
             android:id="@+id/user_memo_text_view"
             style="@style/ModalView.Content"
-            android:layout_width="0dip"
+            android:layout_width="0dp"
             android:layout_height="fill_parent"
-            android:layout_margin="1dip"
+            android:layout_margin="1dp"
             android:layout_weight="1"
             android:background="@drawable/border"
             android:textSize="30sp" />

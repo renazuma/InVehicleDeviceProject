@@ -17,7 +17,7 @@
 
     <TextView
         android:id="@+id/user_name"
-        android:layout_width="0dip"
+        android:layout_width="0dp"
         android:layout_height="fill_parent"
         android:layout_weight="1"
         android:gravity="left|center"
@@ -48,6 +48,6 @@
         android:layout_height="fill_parent"
         android:gravity="center_vertical"
         android:textColor="@android:color/black"
-        android:textSize="25dip" />
+        android:textSize="25dp" />
 
 </LinearLayout>

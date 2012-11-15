@@ -8,10 +8,10 @@
         android:startColor="#eeeeee"
         android:type="linear" />
 
-    <corners android:radius="4dip" />
+    <corners android:radius="4dp" />
 
     <stroke
-        android:width="10dip"
+        android:width="10dp"
         android:color="#00ffff" />
 
 </shape>
