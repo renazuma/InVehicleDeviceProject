@@ -27,7 +27,7 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.base.jsonview.*;
 @SuppressWarnings("unused")
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = Model.JACKSON_IDENTITY_INFO_PROPERTY)
 public abstract class UserBase extends Model {
-	private static final long serialVersionUID = 6811642944127718688L;
+	private static final long serialVersionUID = 3508981572135013205L;
 
 	// Columns
 	@JsonProperty private String address = "";
@@ -45,13 +45,14 @@ public abstract class UserBase extends Model {
 	@JsonProperty private String login = "";
 	@JsonProperty private String memo = "";
 	@JsonProperty private Optional<Boolean> neededCare = Optional.absent();
+	@JsonProperty private Boolean passwordActive = false;
 	@JsonProperty private Optional<Boolean> recommendNotification = Optional.absent();
 	@JsonProperty private Optional<Boolean> recommendOk = Optional.absent();
 	@JsonProperty private Optional<Boolean> reserveNotification = Optional.absent();
-	@JsonProperty private Optional<Integer> serviceProviderId = Optional.absent();
 	@JsonProperty private Integer sex = 0;
 	@JsonProperty private String telephoneNumber = "";
 	@JsonProperty private Optional<String> telephoneNumber2 = Optional.absent();
+	@JsonProperty private Integer typeOfUser = 0;
 	@JsonProperty private Optional<Boolean> updateNotification = Optional.absent();
 	@JsonProperty private Optional<Boolean> wheelchair = Optional.absent();
 	@JsonProperty private Optional<String> zip = Optional.absent();
@@ -70,7 +71,6 @@ public abstract class UserBase extends Model {
 	@JsonProperty @JsonView(AssociationView.class) private List<ReservationUser> reservationUsers = Lists.newLinkedList();
 	@JsonProperty @JsonView(AssociationView.class) private List<Reservation> reservations = Lists.newLinkedList();
 	@JsonProperty @JsonView(AssociationView.class) private List<Reservation> reservationsAsFellow = Lists.newLinkedList();
-	@JsonProperty @JsonView(AssociationView.class) private Optional<ServiceProvider> serviceProvider = Optional.absent();
 
 	public static final String UNDERSCORE = "user";
 	public static final ResponseConverter<User> RESPONSE_CONVERTER = getResponseConverter(User.class);
@@ -271,6 +271,16 @@ public abstract class UserBase extends Model {
 	}
 
 	@JsonIgnore
+	public Boolean getPasswordActive() {
+		return wrapNull(passwordActive);
+	}
+
+	@JsonIgnore
+	public void setPasswordActive(Boolean passwordActive) {
+		this.passwordActive = wrapNull(passwordActive);
+	}
+
+	@JsonIgnore
 	public Optional<Boolean> getRecommendNotification() {
 		return wrapNull(recommendNotification);
 	}
@@ -328,30 +338,6 @@ public abstract class UserBase extends Model {
 	}
 
 	@JsonIgnore
-	public Optional<Integer> getServiceProviderId() {
-		return wrapNull(serviceProviderId);
-	}
-
-	@JsonIgnore
-	public void setServiceProviderId(Optional<Integer> serviceProviderId) {
-		this.serviceProviderId = wrapNull(serviceProviderId);
-		for (ServiceProvider presentServiceProvider : getServiceProvider().asSet()) {
-			for (Integer presentServiceProviderId : getServiceProviderId().asSet()) {
-				presentServiceProvider.setId(presentServiceProviderId);
-			}
-		}
-	}
-
-	@JsonIgnore
-	public void setServiceProviderId(Integer serviceProviderId) {
-		setServiceProviderId(Optional.fromNullable(serviceProviderId));
-	}
-
-	public void clearServiceProviderId() {
-		setServiceProviderId(Optional.<Integer>absent());
-	}
-
-	@JsonIgnore
 	public Integer getSex() {
 		return wrapNull(sex);
 	}
@@ -388,6 +374,16 @@ public abstract class UserBase extends Model {
 
 	public void clearTelephoneNumber2() {
 		setTelephoneNumber2(Optional.<String>absent());
+	}
+
+	@JsonIgnore
+	public Integer getTypeOfUser() {
+		return wrapNull(typeOfUser);
+	}
+
+	@JsonIgnore
+	public void setTypeOfUser(Integer typeOfUser) {
+		this.typeOfUser = wrapNull(typeOfUser);
 	}
 
 	@JsonIgnore
@@ -659,28 +655,6 @@ public abstract class UserBase extends Model {
 		setReservationsAsFellow(new LinkedList<Reservation>());
 	}
 
-	@JsonIgnore
-	public Optional<ServiceProvider> getServiceProvider() {
-		return wrapNull(serviceProvider);
-	}
-
-	@JsonIgnore
-	public void setServiceProvider(Optional<ServiceProvider> serviceProvider) {
-		this.serviceProvider = wrapNull(serviceProvider);
-		for (ServiceProvider presentServiceProvider : getServiceProvider().asSet()) {
-			setServiceProviderId(presentServiceProvider.getId());
-		}
-	}
-
-	@JsonIgnore
-	public void setServiceProvider(ServiceProvider serviceProvider) {
-		setServiceProvider(Optional.fromNullable(serviceProvider));
-	}
-
-	public void clearServiceProvider() {
-		setServiceProvider(Optional.<ServiceProvider>absent());
-	}
-
 	@Override
 	public User clone() {
 		return clone(true);
@@ -690,8 +664,8 @@ public abstract class UserBase extends Model {
 	public User clone(Boolean withAssociation) {
 		return super.clone(User.class, withAssociation);
 	}
-			.append(serviceProviderId)
-			.append(serviceProvider)
-			.append(serviceProviderId, other.serviceProviderId)
-			.append(serviceProvider, other.serviceProvider)
+			.append(passwordActive)
+			.append(typeOfUser)
+			.append(passwordActive, other.passwordActive)
+			.append(typeOfUser, other.typeOfUser)
 }
