@@ -1,10 +1,13 @@
 package com.kogasoftware.odt.invehicledevice.apiclient.model;
 
+import android.util.Log;
+
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.base.PassengerRecordBase;
 
 public class PassengerRecord extends PassengerRecordBase {
 	private static final long serialVersionUID = -7618961978174467119L;
+	private static final String TAG = PassengerRecord.class.getSimpleName();
 
 	// 乗車エラーを無視するかどうか
 	private Boolean ignoreGetOnMiss = false;
@@ -62,5 +65,43 @@ public class PassengerRecord extends PassengerRecordBase {
 			}
 		}
 		return 1;
+	}
+
+	/**
+	 * 表示名を組み立てて出力
+	 */
+	public String getDisplayName() {
+		for (User user : getUser().asSet()) {
+			// 居住者の場合、姓名をつなげて帰す
+			if (user.getTypeOfUser().equals(User.TypeOfUser.RESIDENT)) {
+				return user.getFirstName() + " " + user.getLastName() + " 様";
+			}
+			// 居住者以外の場合、姓名以外の情報をつなげて識別可能にする
+			StringBuilder displayName = new StringBuilder();
+			if (getReservationId().isPresent()) {
+				displayName.append(String.format("%04d ", getReservationId()
+						.get()));
+			} else {
+				Log.e(TAG, "No reservation_id found: " + this);
+				displayName.append("     ");
+			}
+			if (user.getAge() < 10) {
+				displayName.append("お子様");
+			} else if (user.getAge() >= 100) {
+				displayName.append("ご高齢");
+			} else {
+				displayName.append(user.getAge() / 10 * 10 + "代");
+			}
+			if (user.getSex().equals(User.Sex.MALE)) {
+				displayName.append(" 男性");
+			} else {
+				displayName.append(" 女性");
+			}
+			if (user.getTelephoneNumber().length() > 0) {
+				displayName.append("\n" + user.getTelephoneNumber());
+			}
+		}
+		Log.e(TAG, "No User found: " + this);
+		return "ID: " + getId();
 	}
 }
