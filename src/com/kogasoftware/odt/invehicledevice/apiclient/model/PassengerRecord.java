@@ -74,7 +74,7 @@ public class PassengerRecord extends PassengerRecordBase {
 		for (User user : getUser().asSet()) {
 			// 居住者の場合、姓名をつなげて帰す
 			if (user.getTypeOfUser().equals(User.TypeOfUser.RESIDENT)) {
-				return user.getFirstName() + " " + user.getLastName() + " 様";
+				return user.getLastName() + " " + user.getFirstName() + " 様";
 			}
 			// 居住者以外の場合、姓名以外の情報をつなげて識別可能にする
 			StringBuilder displayName = new StringBuilder();
@@ -100,6 +100,7 @@ public class PassengerRecord extends PassengerRecordBase {
 			if (user.getTelephoneNumber().length() > 0) {
 				displayName.append("\n" + user.getTelephoneNumber());
 			}
+			return displayName.toString();
 		}
 		Log.e(TAG, "No User found: " + this);
 		return "ID: " + getId();
