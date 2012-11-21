@@ -6,9 +6,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -521,80 +518,11 @@ public abstract class PlatformBase extends Model {
 
 	@Override
 	public Platform clone() {
-		return super.clone(Platform.class);
+		return clone(true);
 	}
 
 	@Override
-	public int hashCode() {
-		return new HashCodeBuilder()
-			.append(address)
-			.append(createdAt)
-			.append(deletedAt)
-			.append(demandAreaId)
-			.append(endAt)
-			.append(id)
-			.append(image)
-			.append(keyword)
-			.append(latitude)
-			.append(longitude)
-			.append(memo)
-			.append(name)
-			.append(nameRuby)
-			.append(platformCategoryId)
-			.append(reportingRegionId)
-			.append(semiDemandAreaId)
-			.append(serviceProviderId)
-			.append(startAt)
-			.append(typeOfDemand)
-			.append(typeOfPlatform)
-			.append(updatedAt)
-			.append(demandsAsArrival)
-			.append(demandsAsDeparture)
-			.append(operationSchedules)
-			.append(reservationCandidatesAsArrival)
-			.append(reservationCandidatesAsDeparture)
-			.append(reservationsAsArrival)
-			.append(reservationsAsDeparture)
-			.append(serviceProvider)
-			.toHashCode();
-	}
-	
-	@Override
-	public boolean equals(final Object obj) {
-		if(!(obj instanceof PlatformBase)) {
-			return false;
-		}
-		PlatformBase other = (PlatformBase) obj;
-		return new EqualsBuilder()
-			.append(address, other.address)
-			.append(createdAt, other.createdAt)
-			.append(deletedAt, other.deletedAt)
-			.append(demandAreaId, other.demandAreaId)
-			.append(endAt, other.endAt)
-			.append(id, other.id)
-			.append(image, other.image)
-			.append(keyword, other.keyword)
-			.append(latitude, other.latitude)
-			.append(longitude, other.longitude)
-			.append(memo, other.memo)
-			.append(name, other.name)
-			.append(nameRuby, other.nameRuby)
-			.append(platformCategoryId, other.platformCategoryId)
-			.append(reportingRegionId, other.reportingRegionId)
-			.append(semiDemandAreaId, other.semiDemandAreaId)
-			.append(serviceProviderId, other.serviceProviderId)
-			.append(startAt, other.startAt)
-			.append(typeOfDemand, other.typeOfDemand)
-			.append(typeOfPlatform, other.typeOfPlatform)
-			.append(updatedAt, other.updatedAt)
-			.append(demandsAsArrival, other.demandsAsArrival)
-			.append(demandsAsDeparture, other.demandsAsDeparture)
-			.append(operationSchedules, other.operationSchedules)
-			.append(reservationCandidatesAsArrival, other.reservationCandidatesAsArrival)
-			.append(reservationCandidatesAsDeparture, other.reservationCandidatesAsDeparture)
-			.append(reservationsAsArrival, other.reservationsAsArrival)
-			.append(reservationsAsDeparture, other.reservationsAsDeparture)
-			.append(serviceProvider, other.serviceProvider)
-			.isEquals();
+	public Platform clone(Boolean withAssociation) {
+		return super.clone(Platform.class, withAssociation);
 	}
 }

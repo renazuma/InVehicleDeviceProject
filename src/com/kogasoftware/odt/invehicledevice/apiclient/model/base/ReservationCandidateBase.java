@@ -6,9 +6,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -581,76 +578,11 @@ public abstract class ReservationCandidateBase extends Model {
 
 	@Override
 	public ReservationCandidate clone() {
-		return super.clone(ReservationCandidate.class);
+		return clone(true);
 	}
 
 	@Override
-	public int hashCode() {
-		return new HashCodeBuilder()
-			.append(accuracy)
-			.append(arrivalLock)
-			.append(arrivalPlatformId)
-			.append(arrivalTime)
-			.append(characteristic)
-			.append(createdAt)
-			.append(deletedAt)
-			.append(demandId)
-			.append(departureLock)
-			.append(departurePlatformId)
-			.append(departureTime)
-			.append(deviceName)
-			.append(id)
-			.append(passengerCount)
-			.append(serviceProviderId)
-			.append(stoppageTime)
-			.append(unitAssignmentId)
-			.append(updatedAt)
-			.append(userId)
-			.append(arrivalPlatform)
-			.append(demand)
-			.append(departurePlatform)
-			.append(fellowUsers)
-			.append(reservationUsers)
-			.append(serviceProvider)
-			.append(unitAssignment)
-			.append(user)
-			.toHashCode();
-	}
-	
-	@Override
-	public boolean equals(final Object obj) {
-		if(!(obj instanceof ReservationCandidateBase)) {
-			return false;
-		}
-		ReservationCandidateBase other = (ReservationCandidateBase) obj;
-		return new EqualsBuilder()
-			.append(accuracy, other.accuracy)
-			.append(arrivalLock, other.arrivalLock)
-			.append(arrivalPlatformId, other.arrivalPlatformId)
-			.append(arrivalTime, other.arrivalTime)
-			.append(characteristic, other.characteristic)
-			.append(createdAt, other.createdAt)
-			.append(deletedAt, other.deletedAt)
-			.append(demandId, other.demandId)
-			.append(departureLock, other.departureLock)
-			.append(departurePlatformId, other.departurePlatformId)
-			.append(departureTime, other.departureTime)
-			.append(deviceName, other.deviceName)
-			.append(id, other.id)
-			.append(passengerCount, other.passengerCount)
-			.append(serviceProviderId, other.serviceProviderId)
-			.append(stoppageTime, other.stoppageTime)
-			.append(unitAssignmentId, other.unitAssignmentId)
-			.append(updatedAt, other.updatedAt)
-			.append(userId, other.userId)
-			.append(arrivalPlatform, other.arrivalPlatform)
-			.append(demand, other.demand)
-			.append(departurePlatform, other.departurePlatform)
-			.append(fellowUsers, other.fellowUsers)
-			.append(reservationUsers, other.reservationUsers)
-			.append(serviceProvider, other.serviceProvider)
-			.append(unitAssignment, other.unitAssignment)
-			.append(user, other.user)
-			.isEquals();
+	public ReservationCandidate clone(Boolean withAssociation) {
+		return super.clone(ReservationCandidate.class, withAssociation);
 	}
 }

@@ -6,9 +6,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -686,98 +683,15 @@ public abstract class UserBase extends Model {
 
 	@Override
 	public User clone() {
-		return super.clone(User.class);
+		return clone(true);
 	}
 
 	@Override
-	public int hashCode() {
-		return new HashCodeBuilder()
-			.append(address)
-			.append(birthday)
-			.append(email)
-			.append(email2)
-			.append(felicaId)
-			.append(firstName)
-			.append(firstNameRuby)
-			.append(handicapped)
-			.append(id)
-			.append(lastName)
-			.append(lastNameRuby)
-			.append(login)
-			.append(memo)
-			.append(neededCare)
-			.append(recommendNotification)
-			.append(recommendOk)
-			.append(reserveNotification)
+	public User clone(Boolean withAssociation) {
+		return super.clone(User.class, withAssociation);
+	}
 			.append(serviceProviderId)
-			.append(sex)
-			.append(telephoneNumber)
-			.append(telephoneNumber2)
-			.append(updateNotification)
-			.append(wheelchair)
-			.append(zip)
-			.append(auditComment)
-			.append(fullname)
-			.append(fullnameRuby)
-			.append(password)
-			.append(passwordConfirmation)
-			.append(rememberMe)
-			.append(demands)
-			.append(passengerRecords)
-			.append(platforms)
-			.append(reservationCandidates)
-			.append(reservationUsers)
-			.append(reservations)
-			.append(reservationsAsFellow)
 			.append(serviceProvider)
-			.toHashCode();
-	}
-	
-	@Override
-	public boolean equals(final Object obj) {
-		if(!(obj instanceof UserBase)) {
-			return false;
-		}
-		UserBase other = (UserBase) obj;
-		return new EqualsBuilder()
-			.append(address, other.address)
-			.append(birthday, other.birthday)
-			.append(email, other.email)
-			.append(email2, other.email2)
-			.append(felicaId, other.felicaId)
-			.append(firstName, other.firstName)
-			.append(firstNameRuby, other.firstNameRuby)
-			.append(handicapped, other.handicapped)
-			.append(id, other.id)
-			.append(lastName, other.lastName)
-			.append(lastNameRuby, other.lastNameRuby)
-			.append(login, other.login)
-			.append(memo, other.memo)
-			.append(neededCare, other.neededCare)
-			.append(recommendNotification, other.recommendNotification)
-			.append(recommendOk, other.recommendOk)
-			.append(reserveNotification, other.reserveNotification)
 			.append(serviceProviderId, other.serviceProviderId)
-			.append(sex, other.sex)
-			.append(telephoneNumber, other.telephoneNumber)
-			.append(telephoneNumber2, other.telephoneNumber2)
-			.append(updateNotification, other.updateNotification)
-			.append(wheelchair, other.wheelchair)
-			.append(zip, other.zip)
-			.append(auditComment, other.auditComment)
-			.append(fullname, other.fullname)
-			.append(fullnameRuby, other.fullnameRuby)
-			.append(password, other.password)
-			.append(passwordConfirmation, other.passwordConfirmation)
-			.append(rememberMe, other.rememberMe)
-			.append(demands, other.demands)
-			.append(passengerRecords, other.passengerRecords)
-			.append(platforms, other.platforms)
-			.append(reservationCandidates, other.reservationCandidates)
-			.append(reservationUsers, other.reservationUsers)
-			.append(reservations, other.reservations)
-			.append(reservationsAsFellow, other.reservationsAsFellow)
 			.append(serviceProvider, other.serviceProvider)
-			.isEquals();
-	}
 }

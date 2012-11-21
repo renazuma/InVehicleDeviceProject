@@ -6,9 +6,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -245,46 +242,11 @@ public abstract class UnitAssignmentBase extends Model {
 
 	@Override
 	public UnitAssignment clone() {
-		return super.clone(UnitAssignment.class);
+		return clone(true);
 	}
 
 	@Override
-	public int hashCode() {
-		return new HashCodeBuilder()
-			.append(createdAt)
-			.append(deletedAt)
-			.append(id)
-			.append(name)
-			.append(serviceProviderId)
-			.append(updatedAt)
-			.append(working)
-			.append(operationSchedules)
-			.append(reservationCandidates)
-			.append(reservations)
-			.append(serviceProvider)
-			.append(serviceUnits)
-			.toHashCode();
-	}
-	
-	@Override
-	public boolean equals(final Object obj) {
-		if(!(obj instanceof UnitAssignmentBase)) {
-			return false;
-		}
-		UnitAssignmentBase other = (UnitAssignmentBase) obj;
-		return new EqualsBuilder()
-			.append(createdAt, other.createdAt)
-			.append(deletedAt, other.deletedAt)
-			.append(id, other.id)
-			.append(name, other.name)
-			.append(serviceProviderId, other.serviceProviderId)
-			.append(updatedAt, other.updatedAt)
-			.append(working, other.working)
-			.append(operationSchedules, other.operationSchedules)
-			.append(reservationCandidates, other.reservationCandidates)
-			.append(reservations, other.reservations)
-			.append(serviceProvider, other.serviceProvider)
-			.append(serviceUnits, other.serviceUnits)
-			.isEquals();
+	public UnitAssignment clone(Boolean withAssociation) {
+		return super.clone(UnitAssignment.class, withAssociation);
 	}
 }

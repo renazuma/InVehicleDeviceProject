@@ -6,9 +6,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -233,44 +230,11 @@ public abstract class VehicleBase extends Model {
 
 	@Override
 	public Vehicle clone() {
-		return super.clone(Vehicle.class);
+		return clone(true);
 	}
 
 	@Override
-	public int hashCode() {
-		return new HashCodeBuilder()
-			.append(capacity)
-			.append(createdAt)
-			.append(deletedAt)
-			.append(id)
-			.append(image)
-			.append(modelName)
-			.append(number)
-			.append(serviceProviderId)
-			.append(updatedAt)
-			.append(serviceProvider)
-			.append(serviceUnits)
-			.toHashCode();
-	}
-	
-	@Override
-	public boolean equals(final Object obj) {
-		if(!(obj instanceof VehicleBase)) {
-			return false;
-		}
-		VehicleBase other = (VehicleBase) obj;
-		return new EqualsBuilder()
-			.append(capacity, other.capacity)
-			.append(createdAt, other.createdAt)
-			.append(deletedAt, other.deletedAt)
-			.append(id, other.id)
-			.append(image, other.image)
-			.append(modelName, other.modelName)
-			.append(number, other.number)
-			.append(serviceProviderId, other.serviceProviderId)
-			.append(updatedAt, other.updatedAt)
-			.append(serviceProvider, other.serviceProvider)
-			.append(serviceUnits, other.serviceUnits)
-			.isEquals();
+	public Vehicle clone(Boolean withAssociation) {
+		return super.clone(Vehicle.class, withAssociation);
 	}
 }

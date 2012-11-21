@@ -6,9 +6,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -274,44 +271,11 @@ public abstract class OperationRecordBase extends Model {
 
 	@Override
 	public OperationRecord clone() {
-		return super.clone(OperationRecord.class);
+		return clone(true);
 	}
 
 	@Override
-	public int hashCode() {
-		return new HashCodeBuilder()
-			.append(arrivedAt)
-			.append(arrivedAtOffline)
-			.append(createdAt)
-			.append(departedAt)
-			.append(departedAtOffline)
-			.append(id)
-			.append(operationScheduleId)
-			.append(serviceUnitId)
-			.append(updatedAt)
-			.append(operationSchedule)
-			.append(serviceUnit)
-			.toHashCode();
-	}
-	
-	@Override
-	public boolean equals(final Object obj) {
-		if(!(obj instanceof OperationRecordBase)) {
-			return false;
-		}
-		OperationRecordBase other = (OperationRecordBase) obj;
-		return new EqualsBuilder()
-			.append(arrivedAt, other.arrivedAt)
-			.append(arrivedAtOffline, other.arrivedAtOffline)
-			.append(createdAt, other.createdAt)
-			.append(departedAt, other.departedAt)
-			.append(departedAtOffline, other.departedAtOffline)
-			.append(id, other.id)
-			.append(operationScheduleId, other.operationScheduleId)
-			.append(serviceUnitId, other.serviceUnitId)
-			.append(updatedAt, other.updatedAt)
-			.append(operationSchedule, other.operationSchedule)
-			.append(serviceUnit, other.serviceUnit)
-			.isEquals();
+	public OperationRecord clone(Boolean withAssociation) {
+		return super.clone(OperationRecord.class, withAssociation);
 	}
 }

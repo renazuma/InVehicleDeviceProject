@@ -6,9 +6,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -802,96 +799,11 @@ public abstract class ReservationBase extends Model {
 
 	@Override
 	public Reservation clone() {
-		return super.clone(Reservation.class);
+		return clone(true);
 	}
 
 	@Override
-	public int hashCode() {
-		return new HashCodeBuilder()
-			.append(arrivalLock)
-			.append(arrivalPlatformId)
-			.append(arrivalScheduleId)
-			.append(arrivalTime)
-			.append(createdAt)
-			.append(deletedAt)
-			.append(demandId)
-			.append(departureLock)
-			.append(departurePlatformId)
-			.append(departureScheduleId)
-			.append(departureTime)
-			.append(deviceName)
-			.append(dummy)
-			.append(id)
-			.append(memo)
-			.append(operatorId)
-			.append(passengerCount)
-			.append(payment)
-			.append(serviceProviderId)
-			.append(status)
-			.append(stoppageTime)
-			.append(transferredAt)
-			.append(unitAssignmentId)
-			.append(updatedAt)
-			.append(userId)
-			.append(arrivalPlatform)
-			.append(arrivalSchedule)
-			.append(demand)
-			.append(departurePlatform)
-			.append(departureSchedule)
-			.append(fellowUsers)
-			.append(operator)
-			.append(passengerRecords)
-			.append(reservationUsers)
-			.append(serviceProvider)
-			.append(unitAssignment)
-			.append(user)
-			.toHashCode();
-	}
-	
-	@Override
-	public boolean equals(final Object obj) {
-		if(!(obj instanceof ReservationBase)) {
-			return false;
-		}
-		ReservationBase other = (ReservationBase) obj;
-		return new EqualsBuilder()
-			.append(arrivalLock, other.arrivalLock)
-			.append(arrivalPlatformId, other.arrivalPlatformId)
-			.append(arrivalScheduleId, other.arrivalScheduleId)
-			.append(arrivalTime, other.arrivalTime)
-			.append(createdAt, other.createdAt)
-			.append(deletedAt, other.deletedAt)
-			.append(demandId, other.demandId)
-			.append(departureLock, other.departureLock)
-			.append(departurePlatformId, other.departurePlatformId)
-			.append(departureScheduleId, other.departureScheduleId)
-			.append(departureTime, other.departureTime)
-			.append(deviceName, other.deviceName)
-			.append(dummy, other.dummy)
-			.append(id, other.id)
-			.append(memo, other.memo)
-			.append(operatorId, other.operatorId)
-			.append(passengerCount, other.passengerCount)
-			.append(payment, other.payment)
-			.append(serviceProviderId, other.serviceProviderId)
-			.append(status, other.status)
-			.append(stoppageTime, other.stoppageTime)
-			.append(transferredAt, other.transferredAt)
-			.append(unitAssignmentId, other.unitAssignmentId)
-			.append(updatedAt, other.updatedAt)
-			.append(userId, other.userId)
-			.append(arrivalPlatform, other.arrivalPlatform)
-			.append(arrivalSchedule, other.arrivalSchedule)
-			.append(demand, other.demand)
-			.append(departurePlatform, other.departurePlatform)
-			.append(departureSchedule, other.departureSchedule)
-			.append(fellowUsers, other.fellowUsers)
-			.append(operator, other.operator)
-			.append(passengerRecords, other.passengerRecords)
-			.append(reservationUsers, other.reservationUsers)
-			.append(serviceProvider, other.serviceProvider)
-			.append(unitAssignment, other.unitAssignment)
-			.append(user, other.user)
-			.isEquals();
+	public Reservation clone(Boolean withAssociation) {
+		return super.clone(Reservation.class, withAssociation);
 	}
 }

@@ -6,9 +6,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -595,76 +592,11 @@ public abstract class DemandBase extends Model {
 
 	@Override
 	public Demand clone() {
-		return super.clone(Demand.class);
+		return clone(true);
 	}
 
 	@Override
-	public int hashCode() {
-		return new HashCodeBuilder()
-			.append(arrivalLock)
-			.append(arrivalPlatformId)
-			.append(arrivalTime)
-			.append(createdAt)
-			.append(deletedAt)
-			.append(departureLock)
-			.append(departurePlatformId)
-			.append(departureTime)
-			.append(deviceName)
-			.append(id)
-			.append(memo)
-			.append(passengerCount)
-			.append(repeat)
-			.append(serviceProviderId)
-			.append(stoppageTime)
-			.append(unitAssignmentId)
-			.append(updatedAt)
-			.append(userId)
-			.append(arrivalPlatform)
-			.append(departurePlatform)
-			.append(fellowUsers)
-			.append(reservation)
-			.append(reservationCandidates)
-			.append(reservationUsers)
-			.append(serviceProvider)
-			.append(unitAssignment)
-			.append(user)
-			.toHashCode();
-	}
-	
-	@Override
-	public boolean equals(final Object obj) {
-		if(!(obj instanceof DemandBase)) {
-			return false;
-		}
-		DemandBase other = (DemandBase) obj;
-		return new EqualsBuilder()
-			.append(arrivalLock, other.arrivalLock)
-			.append(arrivalPlatformId, other.arrivalPlatformId)
-			.append(arrivalTime, other.arrivalTime)
-			.append(createdAt, other.createdAt)
-			.append(deletedAt, other.deletedAt)
-			.append(departureLock, other.departureLock)
-			.append(departurePlatformId, other.departurePlatformId)
-			.append(departureTime, other.departureTime)
-			.append(deviceName, other.deviceName)
-			.append(id, other.id)
-			.append(memo, other.memo)
-			.append(passengerCount, other.passengerCount)
-			.append(repeat, other.repeat)
-			.append(serviceProviderId, other.serviceProviderId)
-			.append(stoppageTime, other.stoppageTime)
-			.append(unitAssignmentId, other.unitAssignmentId)
-			.append(updatedAt, other.updatedAt)
-			.append(userId, other.userId)
-			.append(arrivalPlatform, other.arrivalPlatform)
-			.append(departurePlatform, other.departurePlatform)
-			.append(fellowUsers, other.fellowUsers)
-			.append(reservation, other.reservation)
-			.append(reservationCandidates, other.reservationCandidates)
-			.append(reservationUsers, other.reservationUsers)
-			.append(serviceProvider, other.serviceProvider)
-			.append(unitAssignment, other.unitAssignment)
-			.append(user, other.user)
-			.isEquals();
+	public Demand clone(Boolean withAssociation) {
+		return super.clone(Demand.class, withAssociation);
 	}
 }

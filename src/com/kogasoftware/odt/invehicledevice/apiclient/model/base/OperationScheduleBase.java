@@ -6,9 +6,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -399,58 +396,11 @@ public abstract class OperationScheduleBase extends Model {
 
 	@Override
 	public OperationSchedule clone() {
-		return super.clone(OperationSchedule.class);
+		return clone(true);
 	}
 
 	@Override
-	public int hashCode() {
-		return new HashCodeBuilder()
-			.append(arrivalEstimate)
-			.append(createdAt)
-			.append(deletedAt)
-			.append(departureEstimate)
-			.append(id)
-			.append(operationDate)
-			.append(passengerCountChange)
-			.append(platformId)
-			.append(remain)
-			.append(serviceProviderId)
-			.append(unitAssignmentId)
-			.append(updatedAt)
-			.append(operationRecord)
-			.append(platform)
-			.append(reservationsAsArrival)
-			.append(reservationsAsDeparture)
-			.append(serviceProvider)
-			.append(unitAssignment)
-			.toHashCode();
-	}
-	
-	@Override
-	public boolean equals(final Object obj) {
-		if(!(obj instanceof OperationScheduleBase)) {
-			return false;
-		}
-		OperationScheduleBase other = (OperationScheduleBase) obj;
-		return new EqualsBuilder()
-			.append(arrivalEstimate, other.arrivalEstimate)
-			.append(createdAt, other.createdAt)
-			.append(deletedAt, other.deletedAt)
-			.append(departureEstimate, other.departureEstimate)
-			.append(id, other.id)
-			.append(operationDate, other.operationDate)
-			.append(passengerCountChange, other.passengerCountChange)
-			.append(platformId, other.platformId)
-			.append(remain, other.remain)
-			.append(serviceProviderId, other.serviceProviderId)
-			.append(unitAssignmentId, other.unitAssignmentId)
-			.append(updatedAt, other.updatedAt)
-			.append(operationRecord, other.operationRecord)
-			.append(platform, other.platform)
-			.append(reservationsAsArrival, other.reservationsAsArrival)
-			.append(reservationsAsDeparture, other.reservationsAsDeparture)
-			.append(serviceProvider, other.serviceProvider)
-			.append(unitAssignment, other.unitAssignment)
-			.isEquals();
+	public OperationSchedule clone(Boolean withAssociation) {
+		return super.clone(OperationSchedule.class, withAssociation);
 	}
 }

@@ -6,9 +6,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -511,66 +508,11 @@ public abstract class PassengerRecordBase extends Model {
 
 	@Override
 	public PassengerRecord clone() {
-		return super.clone(PassengerRecord.class);
+		return clone(true);
 	}
 
 	@Override
-	public int hashCode() {
-		return new HashCodeBuilder()
-			.append(age)
-			.append(arrivalOperationScheduleId)
-			.append(createdAt)
-			.append(deletedAt)
-			.append(departureOperationScheduleId)
-			.append(getOffTime)
-			.append(getOffTimeOffline)
-			.append(getOnTime)
-			.append(getOnTimeOffline)
-			.append(id)
-			.append(passengerCount)
-			.append(payment)
-			.append(reservationId)
-			.append(serviceProviderId)
-			.append(status)
-			.append(updatedAt)
-			.append(userId)
-			.append(arrivalOperationSchedule)
-			.append(departureOperationSchedule)
-			.append(reservation)
-			.append(serviceProvider)
-			.append(user)
-			.toHashCode();
-	}
-	
-	@Override
-	public boolean equals(final Object obj) {
-		if(!(obj instanceof PassengerRecordBase)) {
-			return false;
-		}
-		PassengerRecordBase other = (PassengerRecordBase) obj;
-		return new EqualsBuilder()
-			.append(age, other.age)
-			.append(arrivalOperationScheduleId, other.arrivalOperationScheduleId)
-			.append(createdAt, other.createdAt)
-			.append(deletedAt, other.deletedAt)
-			.append(departureOperationScheduleId, other.departureOperationScheduleId)
-			.append(getOffTime, other.getOffTime)
-			.append(getOffTimeOffline, other.getOffTimeOffline)
-			.append(getOnTime, other.getOnTime)
-			.append(getOnTimeOffline, other.getOnTimeOffline)
-			.append(id, other.id)
-			.append(passengerCount, other.passengerCount)
-			.append(payment, other.payment)
-			.append(reservationId, other.reservationId)
-			.append(serviceProviderId, other.serviceProviderId)
-			.append(status, other.status)
-			.append(updatedAt, other.updatedAt)
-			.append(userId, other.userId)
-			.append(arrivalOperationSchedule, other.arrivalOperationSchedule)
-			.append(departureOperationSchedule, other.departureOperationSchedule)
-			.append(reservation, other.reservation)
-			.append(serviceProvider, other.serviceProvider)
-			.append(user, other.user)
-			.isEquals();
+	public PassengerRecord clone(Boolean withAssociation) {
+		return super.clone(PassengerRecord.class, withAssociation);
 	}
 }

@@ -6,9 +6,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -358,54 +355,11 @@ public abstract class VehicleNotificationBase extends Model {
 
 	@Override
 	public VehicleNotification clone() {
-		return super.clone(VehicleNotification.class);
+		return clone(true);
 	}
 
 	@Override
-	public int hashCode() {
-		return new HashCodeBuilder()
-			.append(body)
-			.append(bodyRuby)
-			.append(createdAt)
-			.append(eventAt)
-			.append(id)
-			.append(inVehicleDeviceId)
-			.append(notificationKind)
-			.append(offline)
-			.append(operatorId)
-			.append(readAt)
-			.append(reservationId)
-			.append(response)
-			.append(updatedAt)
-			.append(inVehicleDevice)
-			.append(operator)
-			.append(reservation)
-			.toHashCode();
-	}
-	
-	@Override
-	public boolean equals(final Object obj) {
-		if(!(obj instanceof VehicleNotificationBase)) {
-			return false;
-		}
-		VehicleNotificationBase other = (VehicleNotificationBase) obj;
-		return new EqualsBuilder()
-			.append(body, other.body)
-			.append(bodyRuby, other.bodyRuby)
-			.append(createdAt, other.createdAt)
-			.append(eventAt, other.eventAt)
-			.append(id, other.id)
-			.append(inVehicleDeviceId, other.inVehicleDeviceId)
-			.append(notificationKind, other.notificationKind)
-			.append(offline, other.offline)
-			.append(operatorId, other.operatorId)
-			.append(readAt, other.readAt)
-			.append(reservationId, other.reservationId)
-			.append(response, other.response)
-			.append(updatedAt, other.updatedAt)
-			.append(inVehicleDevice, other.inVehicleDevice)
-			.append(operator, other.operator)
-			.append(reservation, other.reservation)
-			.isEquals();
+	public VehicleNotification clone(Boolean withAssociation) {
+		return super.clone(VehicleNotification.class, withAssociation);
 	}
 }

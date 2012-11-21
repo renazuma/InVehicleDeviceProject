@@ -6,9 +6,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -212,42 +209,11 @@ public abstract class DriverBase extends Model {
 
 	@Override
 	public Driver clone() {
-		return super.clone(Driver.class);
+		return clone(true);
 	}
 
 	@Override
-	public int hashCode() {
-		return new HashCodeBuilder()
-			.append(createdAt)
-			.append(deletedAt)
-			.append(firstName)
-			.append(id)
-			.append(lastName)
-			.append(serviceProviderId)
-			.append(telephoneNumber)
-			.append(updatedAt)
-			.append(serviceProvider)
-			.append(serviceUnits)
-			.toHashCode();
-	}
-	
-	@Override
-	public boolean equals(final Object obj) {
-		if(!(obj instanceof DriverBase)) {
-			return false;
-		}
-		DriverBase other = (DriverBase) obj;
-		return new EqualsBuilder()
-			.append(createdAt, other.createdAt)
-			.append(deletedAt, other.deletedAt)
-			.append(firstName, other.firstName)
-			.append(id, other.id)
-			.append(lastName, other.lastName)
-			.append(serviceProviderId, other.serviceProviderId)
-			.append(telephoneNumber, other.telephoneNumber)
-			.append(updatedAt, other.updatedAt)
-			.append(serviceProvider, other.serviceProvider)
-			.append(serviceUnits, other.serviceUnits)
-			.isEquals();
+	public Driver clone(Boolean withAssociation) {
+		return super.clone(Driver.class, withAssociation);
 	}
 }

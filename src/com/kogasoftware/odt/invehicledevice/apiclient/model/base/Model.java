@@ -180,8 +180,13 @@ public abstract class Model implements Externalizable, Identifiable, Cloneable {
 
 	public abstract Model clone(Boolean withAssociation);
 
+	protected <T extends Model> T clone(Class<T> childClass) {
+		return clone(childClass, true);
+	}
+
 	protected <T extends Model> T clone(Class<T> childClass,
 			Boolean withAssociation) {
+		// ByteArrayInputStreamへ変換
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		ObjectOutputStream objectOutputStream = null;
 		try {
@@ -193,6 +198,12 @@ public abstract class Model implements Externalizable, Identifiable, Cloneable {
 			Closeables.closeQuietly(objectOutputStream);
 			Closeables.closeQuietly(byteArrayOutputStream);
 		}
+		byte[] byteArray = byteArrayOutputStream.toByteArray();
+		byteArrayOutputStream = null; // enable GC
+		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArray);
+		byteArray = null; // enable GC
+
+		// 空のclone結果のオブジェクトを準備
 		T model = null;
 		try {
 			model = childClass.cast(super.clone());
@@ -201,9 +212,8 @@ public abstract class Model implements Externalizable, Identifiable, Cloneable {
 		} catch (CloneNotSupportedException e) {
 			throw new CloneException(e);
 		}
-		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(
-				byteArrayOutputStream.toByteArray());
-		byteArrayOutputStream = null; // GC
+
+		// clone結果のメンバを書き込み
 		ObjectInputStream objectInputStream = null;
 		try {
 			objectInputStream = new ObjectInputStream(byteArrayInputStream);

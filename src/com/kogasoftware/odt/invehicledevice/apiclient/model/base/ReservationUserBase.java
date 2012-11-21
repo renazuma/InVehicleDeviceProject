@@ -6,9 +6,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -180,38 +177,11 @@ public abstract class ReservationUserBase extends Model {
 
 	@Override
 	public ReservationUser clone() {
-		return super.clone(ReservationUser.class);
+		return clone(true);
 	}
 
 	@Override
-	public int hashCode() {
-		return new HashCodeBuilder()
-			.append(createdAt)
-			.append(id)
-			.append(likeReservationId)
-			.append(likeReservationType)
-			.append(updatedAt)
-			.append(userId)
-			.append(reservation)
-			.append(user)
-			.toHashCode();
-	}
-	
-	@Override
-	public boolean equals(final Object obj) {
-		if(!(obj instanceof ReservationUserBase)) {
-			return false;
-		}
-		ReservationUserBase other = (ReservationUserBase) obj;
-		return new EqualsBuilder()
-			.append(createdAt, other.createdAt)
-			.append(id, other.id)
-			.append(likeReservationId, other.likeReservationId)
-			.append(likeReservationType, other.likeReservationType)
-			.append(updatedAt, other.updatedAt)
-			.append(userId, other.userId)
-			.append(reservation, other.reservation)
-			.append(user, other.user)
-			.isEquals();
+	public ReservationUser clone(Boolean withAssociation) {
+		return super.clone(ReservationUser.class, withAssociation);
 	}
 }

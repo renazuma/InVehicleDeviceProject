@@ -6,9 +6,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -263,46 +260,11 @@ public abstract class OperatorBase extends Model {
 
 	@Override
 	public Operator clone() {
-		return super.clone(Operator.class);
+		return clone(true);
 	}
 
 	@Override
-	public int hashCode() {
-		return new HashCodeBuilder()
-			.append(authenticationToken)
-			.append(email)
-			.append(firstName)
-			.append(id)
-			.append(lastName)
-			.append(login)
-			.append(serviceProviderId)
-			.append(auditComment)
-			.append(password)
-			.append(passwordConfirmation)
-			.append(rememberMe)
-			.append(serviceProvider)
-			.toHashCode();
-	}
-	
-	@Override
-	public boolean equals(final Object obj) {
-		if(!(obj instanceof OperatorBase)) {
-			return false;
-		}
-		OperatorBase other = (OperatorBase) obj;
-		return new EqualsBuilder()
-			.append(authenticationToken, other.authenticationToken)
-			.append(email, other.email)
-			.append(firstName, other.firstName)
-			.append(id, other.id)
-			.append(lastName, other.lastName)
-			.append(login, other.login)
-			.append(serviceProviderId, other.serviceProviderId)
-			.append(auditComment, other.auditComment)
-			.append(password, other.password)
-			.append(passwordConfirmation, other.passwordConfirmation)
-			.append(rememberMe, other.rememberMe)
-			.append(serviceProvider, other.serviceProvider)
-			.isEquals();
+	public Operator clone(Boolean withAssociation) {
+		return super.clone(Operator.class, withAssociation);
 	}
 }

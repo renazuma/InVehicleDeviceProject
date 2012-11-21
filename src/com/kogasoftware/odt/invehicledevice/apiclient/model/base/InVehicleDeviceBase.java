@@ -6,9 +6,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -288,50 +285,11 @@ public abstract class InVehicleDeviceBase extends Model {
 
 	@Override
 	public InVehicleDevice clone() {
-		return super.clone(InVehicleDevice.class);
+		return clone(true);
 	}
 
 	@Override
-	public int hashCode() {
-		return new HashCodeBuilder()
-			.append(authenticationToken)
-			.append(id)
-			.append(login)
-			.append(modelName)
-			.append(serviceProviderId)
-			.append(typeNumber)
-			.append(auditComment)
-			.append(password)
-			.append(passwordConfirmation)
-			.append(rememberMe)
-			.append(serviceProvider)
-			.append(serviceUnits)
-			.append(unitAssignments)
-			.append(vehicleNotifications)
-			.toHashCode();
-	}
-	
-	@Override
-	public boolean equals(final Object obj) {
-		if(!(obj instanceof InVehicleDeviceBase)) {
-			return false;
-		}
-		InVehicleDeviceBase other = (InVehicleDeviceBase) obj;
-		return new EqualsBuilder()
-			.append(authenticationToken, other.authenticationToken)
-			.append(id, other.id)
-			.append(login, other.login)
-			.append(modelName, other.modelName)
-			.append(serviceProviderId, other.serviceProviderId)
-			.append(typeNumber, other.typeNumber)
-			.append(auditComment, other.auditComment)
-			.append(password, other.password)
-			.append(passwordConfirmation, other.passwordConfirmation)
-			.append(rememberMe, other.rememberMe)
-			.append(serviceProvider, other.serviceProvider)
-			.append(serviceUnits, other.serviceUnits)
-			.append(unitAssignments, other.unitAssignments)
-			.append(vehicleNotifications, other.vehicleNotifications)
-			.isEquals();
+	public InVehicleDevice clone(Boolean withAssociation) {
+		return super.clone(InVehicleDevice.class, withAssociation);
 	}
 }
