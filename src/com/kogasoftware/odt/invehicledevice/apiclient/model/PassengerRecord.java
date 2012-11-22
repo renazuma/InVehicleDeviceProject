@@ -106,23 +106,23 @@ public class PassengerRecord extends PassengerRecordBase {
 			// 居住者以外の場合、姓名以外の情報をつなげて識別可能にする
 			StringBuilder displayName = new StringBuilder();
 			if (getReservationId().isPresent()) {
-				displayName.append(String.format("%04d ", getReservationId()
+				displayName.append(String.format("%04d", getReservationId()
 						.get()));
 			} else {
 				Log.e(TAG, "No reservation_id found: " + this);
-				displayName.append("     ");
-			}
-			if (user.getAge() < 10) {
-				displayName.append("お子様");
-			} else if (user.getAge() >= 100) {
-				displayName.append("ご高齢");
-			} else {
-				displayName.append(user.getAge() / 10 * 10 + "代");
+				displayName.append("    ");
 			}
 			if (user.getSex().equals(User.Sex.MALE)) {
 				displayName.append(" 男性");
 			} else {
 				displayName.append(" 女性");
+			}
+			if (user.getAge() < 10) {
+				displayName.append(" お子様");
+			} else if (user.getAge() >= 100) {
+				displayName.append(" ご高齢");
+			} else {
+				displayName.append(user.getAge() / 10 * 10 + "代");
 			}
 			if (user.getTelephoneNumber().length() > 0) {
 				displayName.append("\n" + user.getTelephoneNumber());
