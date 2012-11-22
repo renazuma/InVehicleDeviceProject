@@ -2,6 +2,8 @@ package com.kogasoftware.odt.invehicledevice.ui.arrayadapter;
 
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Collections;
+import java.util.TreeSet;
 import java.util.WeakHashMap;
 
 import android.content.Context;
@@ -16,6 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
@@ -98,13 +101,18 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 			InVehicleDeviceService service, FragmentManager fragmentManager,
 			OperationSchedule operationSchedule,
 			List<PassengerRecord> passengerRecords) {
-		super(context, RESOURCE_ID, passengerRecords);
+		super(context, RESOURCE_ID);
 		this.service = service;
 		this.fragmentManager = fragmentManager;
 		this.operationSchedule = operationSchedule;
-
 		passengerRecordLogic = new PassengerRecordLogic(service);
 		operationScheduleLogic = new OperationScheduleLogic(service);
+		
+		List<PassengerRecord> sortedPassengerRecord = Lists.newArrayList(passengerRecords);
+		Collections.sort(sortedPassengerRecord, PassengerRecord.DEFAULT_COMPARATOR);
+		for (PassengerRecord passengerRecord : sortedPassengerRecord) {
+			add(passengerRecord);	
+		}
 	}
 
 	@Override
