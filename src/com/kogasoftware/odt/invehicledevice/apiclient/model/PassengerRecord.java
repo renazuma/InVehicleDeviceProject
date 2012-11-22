@@ -1,5 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.apiclient.model;
 
+import java.util.Comparator;
+
 import android.util.Log;
 
 import com.google.common.base.Optional;
@@ -8,6 +10,31 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.base.PassengerRecord
 public class PassengerRecord extends PassengerRecordBase {
 	private static final long serialVersionUID = -7618961978174467119L;
 	private static final String TAG = PassengerRecord.class.getSimpleName();
+	public static final Comparator<PassengerRecord> DEFAULT_COMPARATOR = new Comparator<PassengerRecord>() {
+		@Override
+		public int compare(PassengerRecord r, PassengerRecord l) {
+			int result = 0;
+			for (User rUser : r.getUser().asSet()) {
+				for (User lUser : l.getUser().asSet()) {
+					result = rUser.getTypeOfUser().compareTo(
+							lUser.getTypeOfUser());
+					if (result != 0) {
+						return result;
+					}
+				}
+			}
+			result = r.getReservationId().or(Integer.MAX_VALUE)
+					.compareTo(l.getReservationId().or(Integer.MAX_VALUE));
+			if (result != 0) {
+				return result;
+			}
+			result = r.getDisplayName().compareTo(l.getDisplayName());
+			if (result != 0) {
+				return result;
+			}
+			return r.getId().compareTo(l.getId());
+		}
+	};
 
 	// 乗車エラーを無視するかどうか
 	private Boolean ignoreGetOnMiss = false;
