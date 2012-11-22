@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.ui.arrayadapter;
 
+import java.util.Collections;
 import java.util.List;
 
 import android.content.Context;
@@ -14,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
@@ -69,7 +71,7 @@ public class PassengerRecordErrorArrayAdapter extends
 			OperationSchedule operationSchedule,
 			List<PassengerRecord> passengerRecords,
 			OnPassengerRecordChangeListener onPassengerRecordChangeListener) {
-		super(context, RESOURCE_ID, passengerRecords);
+		super(context, RESOURCE_ID);
 		this.service = service;
 		this.fragmentManager = fragmentManager;
 		this.operationSchedule = operationSchedule;
@@ -77,6 +79,14 @@ public class PassengerRecordErrorArrayAdapter extends
 
 		passengerRecordLogic = new PassengerRecordLogic(service);
 		operationScheduleLogic = new OperationScheduleLogic(service);
+
+		List<PassengerRecord> sortedPassengerRecord = Lists
+				.newArrayList(passengerRecords);
+		Collections.sort(sortedPassengerRecord,
+				PassengerRecord.DEFAULT_COMPARATOR);
+		for (PassengerRecord passengerRecord : sortedPassengerRecord) {
+			add(passengerRecord);
+		}
 	}
 
 	@Override
@@ -102,8 +112,7 @@ public class PassengerRecordErrorArrayAdapter extends
 		ignoreButton.setTextColor(Color.RED);
 
 		// 行の表示
-		String errorMessage = user.getLastName() + " " + user.getFirstName()
-				+ " 様が";
+		String errorMessage = passengerRecord.getDisplayName() + " が";
 		if (operationSchedule.isGetOffScheduled(passengerRecord)
 				&& !passengerRecord.getGetOffTime().isPresent()) {
 			ignoreButton.setChecked(passengerRecord.getIgnoreGetOffMiss());

@@ -2,6 +2,7 @@ package com.kogasoftware.odt.invehicledevice.ui;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -143,6 +144,12 @@ public class FlickUnneededListView extends FrameLayout implements
 		});
 	}
 
+	enum Adjust {
+		NONE, UPPER, LOWER,
+	}
+
+	Adjust adjust = Adjust.NONE;
+
 	public void scrollUp() {
 		Integer position = listView.getFirstVisiblePosition();
 		if (position == listView.getLastVisiblePosition()) {
@@ -151,7 +158,14 @@ public class FlickUnneededListView extends FrameLayout implements
 				return;
 			}
 		}
-		listView.smoothScrollToPosition(position);
+		if (Build.VERSION.SDK_INT >= 16 /* TODO きれいな実装にする */
+				&& adjust == Adjust.UPPER && position > 0) {
+			adjust = Adjust.NONE;
+			listView.smoothScrollToPosition(position - 1);
+		} else {
+			adjust = Adjust.UPPER;
+			listView.smoothScrollToPosition(position);
+		}
 	}
 
 	public void scrollDown() {
@@ -162,7 +176,14 @@ public class FlickUnneededListView extends FrameLayout implements
 				return;
 			}
 		}
-		listView.smoothScrollToPosition(position);
+		if (Build.VERSION.SDK_INT >= 16 /* TODO きれいな実装にする */
+				&& adjust == Adjust.LOWER && position + 1 < listView.getCount()) {
+			adjust = Adjust.NONE;
+			listView.smoothScrollToPosition(position + 1);
+		} else {
+			adjust = Adjust.LOWER;
+			listView.smoothScrollToPosition(position);
+		}
 	}
 
 	public ListView getListView() {

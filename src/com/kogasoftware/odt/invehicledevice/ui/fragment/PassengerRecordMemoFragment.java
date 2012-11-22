@@ -46,12 +46,8 @@ public class PassengerRecordMemoFragment extends ApplicationFragment<State> {
 				TextView titleTextView = (TextView) view
 						.findViewById(R.id.memo_title_text_view);
 				StringBuilder title = new StringBuilder();
-
-				title.append(user.getLastName() + " " + user.getFirstName()
-						+ " 様 ");
-
+				title.append(getState().getPassengerRecord().getDisplayName());
 				title.append("  予約番号：" + reservation.getId());
-
 				titleTextView.setText(title);
 
 				TextView reservationMemoTextView = (TextView) view
