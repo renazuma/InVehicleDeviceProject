@@ -178,8 +178,7 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 
 		TextView userNameView = (TextView) convertView
 				.findViewById(R.id.user_name);
-		userNameView.setText(user.getLastName() + " " + user.getFirstName()
-				+ " 様");
+		userNameView.setText(passengerRecord.getDisplayName());
 
 		return convertView;
 	}

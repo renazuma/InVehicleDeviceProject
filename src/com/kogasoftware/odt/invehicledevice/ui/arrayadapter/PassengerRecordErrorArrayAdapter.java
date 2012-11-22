@@ -102,8 +102,7 @@ public class PassengerRecordErrorArrayAdapter extends
 		ignoreButton.setTextColor(Color.RED);
 
 		// 行の表示
-		String errorMessage = user.getLastName() + " " + user.getFirstName()
-				+ " 様が";
+		String errorMessage = passengerRecord.getDisplayName() + " が";
 		if (operationSchedule.isGetOffScheduled(passengerRecord)
 				&& !passengerRecord.getGetOffTime().isPresent()) {
 			ignoreButton.setChecked(passengerRecord.getIgnoreGetOffMiss());
