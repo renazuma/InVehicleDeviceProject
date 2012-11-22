@@ -664,8 +664,4 @@ public abstract class UserBase extends Model {
 	public User clone(Boolean withAssociation) {
 		return super.clone(User.class, withAssociation);
 	}
-			.append(passwordActive)
-			.append(typeOfUser)
-			.append(passwordActive, other.passwordActive)
-			.append(typeOfUser, other.typeOfUser)
 }
