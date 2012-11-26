@@ -5,6 +5,7 @@ import java.util.Comparator;
 import android.util.Log;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ComparisonChain;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.base.PassengerRecordBase;
 
 public class PassengerRecord extends PassengerRecordBase {
@@ -13,26 +14,23 @@ public class PassengerRecord extends PassengerRecordBase {
 	public static final Comparator<PassengerRecord> DEFAULT_COMPARATOR = new Comparator<PassengerRecord>() {
 		@Override
 		public int compare(PassengerRecord r, PassengerRecord l) {
-			int result = 0;
 			for (User rUser : r.getUser().asSet()) {
 				for (User lUser : l.getUser().asSet()) {
-					result = rUser.getTypeOfUser().compareTo(
+					Integer result = rUser.getTypeOfUser().compareTo(
 							lUser.getTypeOfUser());
-					if (result != 0) {
+					if (!result.equals(0)) {
 						return result;
 					}
 				}
 			}
-			result = r.getReservationId().or(Integer.MAX_VALUE)
-					.compareTo(l.getReservationId().or(Integer.MAX_VALUE));
-			if (result != 0) {
-				return result;
-			}
-			result = r.getDisplayName().compareTo(l.getDisplayName());
-			if (result != 0) {
-				return result;
-			}
-			return r.getId().compareTo(l.getId());
+			return ComparisonChain
+					.start()
+					.compare(r.getReservationId().or(Integer.MAX_VALUE),
+							l.getReservationId().or(Integer.MAX_VALUE))
+					.compare(r.getDisplayName(), l.getDisplayName())
+					.compare(r.getUserId().or(Integer.MAX_VALUE),
+							l.getUserId().or(Integer.MAX_VALUE))
+					.compare(r.getId(), l.getId()).result();
 		}
 	};
 
