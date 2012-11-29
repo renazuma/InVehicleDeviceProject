@@ -140,4 +140,27 @@ public class OperationSchedule extends OperationScheduleBase {
 		}
 		return results;
 	}
+
+	/**
+	 * ReservationとUserをメンバに持つPassengerRecordを取得する
+	 */
+	public List<PassengerRecord> getPassengerRecordsWithReservationAndUser() {
+		List<PassengerRecord> passengerRecords = Lists.newLinkedList();
+		for (Reservation reservation : getReservationsAsDeparture()) {
+			for (PassengerRecord passengerRecord : reservation
+					.getPassengerRecords()) {
+				for (User user : reservation.getFellowUsers()) {
+					if (!passengerRecord.getUserId().equals(
+							Optional.of(user.getId()))) {
+						continue;
+					}
+					passengerRecord.setUser(user);
+					passengerRecord.setReservation(reservation);
+					passengerRecords.add(passengerRecord);
+					break;
+				}
+			}
+		}
+		return passengerRecords;
+	}
 }
