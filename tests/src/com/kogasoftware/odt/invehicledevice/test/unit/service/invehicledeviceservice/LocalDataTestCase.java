@@ -41,13 +41,13 @@ public class LocalDataTestCase extends AndroidTestCase {
 		ld1.url = "http://example.com/" + Math.random();
 		ld1.file = new File("foo" + Math.random());
 		ld1.serviceProvider = new ServiceProvider();
-		ld1.serviceProvider.setName("テストサービスプロバイダー");
+		ld1.serviceProvider.setId(138479134);
 		LocalData ld2 = SerializationUtils.clone(ld1);
 		assertEquals(ld1.url, ld2.url);
 		assertEquals(ld1.file, ld2.file);
 		assertFalse(ld1.file == ld2.file);
-		assertEquals(ld1.serviceProvider.getName(),
-				ld2.serviceProvider.getName());
+		assertEquals(ld1.serviceProvider.getId(),
+				ld2.serviceProvider.getId());
 	}
 
 	/**
@@ -98,7 +98,6 @@ public class LocalDataTestCase extends AndroidTestCase {
 				for (Integer o = 0; o < numUsers; ++o) {
 					User u = new User();
 					u.setId(o - 100);
-					r.setUser(u);
 
 					for (Integer p = 0; p < numPassengerRecords; ++p) {
 						// arrival
@@ -106,7 +105,6 @@ public class LocalDataTestCase extends AndroidTestCase {
 						a.setId(p);
 						List<PassengerRecord> as = Lists.newArrayList(a);
 						as.add(a);
-						u.setPassengerRecords(as);
 						ld.passengerRecords.add(a);
 
 						// departure
@@ -114,7 +112,6 @@ public class LocalDataTestCase extends AndroidTestCase {
 						d.setId(p + 100000);
 						List<PassengerRecord> ds = Lists.newArrayList(d);
 						ds.add(d);
-						u.setPassengerRecords(ds);
 						ld.passengerRecords.add(d);
 					}
 				}
