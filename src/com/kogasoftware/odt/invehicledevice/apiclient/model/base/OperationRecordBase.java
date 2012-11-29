@@ -27,22 +27,17 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.base.jsonview.*;
 @SuppressWarnings("unused")
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = Model.JACKSON_IDENTITY_INFO_PROPERTY)
 public abstract class OperationRecordBase extends Model {
-	private static final long serialVersionUID = 1563042771978939846L;
+	private static final long serialVersionUID = 6595288813113302312L;
 
 	// Columns
 	@JsonProperty private Optional<Date> arrivedAt = Optional.absent();
 	@JsonProperty private Optional<Boolean> arrivedAtOffline = Optional.absent();
-	@JsonProperty private Date createdAt = new Date();
 	@JsonProperty private Optional<Date> departedAt = Optional.absent();
 	@JsonProperty private Optional<Boolean> departedAtOffline = Optional.absent();
 	@JsonProperty private Integer id = 0;
-	@JsonProperty private Optional<Integer> operationScheduleId = Optional.absent();
-	@JsonProperty private Optional<Integer> serviceUnitId = Optional.absent();
 	@JsonProperty private Date updatedAt = new Date();
 
 	// Associations
-	@JsonProperty @JsonView(AssociationView.class) private Optional<OperationSchedule> operationSchedule = Optional.absent();
-	@JsonProperty @JsonView(AssociationView.class) private Optional<ServiceUnit> serviceUnit = Optional.absent();
 
 	public static final String UNDERSCORE = "operation_record";
 	public static final ResponseConverter<OperationRecord> RESPONSE_CONVERTER = getResponseConverter(OperationRecord.class);
@@ -101,17 +96,6 @@ public abstract class OperationRecordBase extends Model {
 	}
 
 	@JsonIgnore
-	public Date getCreatedAt() {
-		return wrapNull(createdAt);
-	}
-
-	@JsonIgnore
-	public void setCreatedAt(Date createdAt) {
-		refreshUpdatedAt();
-		this.createdAt = wrapNull(createdAt);
-	}
-
-	@JsonIgnore
 	public Optional<Date> getDepartedAt() {
 		return wrapNull(departedAt);
 	}
@@ -164,56 +148,6 @@ public abstract class OperationRecordBase extends Model {
 	}
 
 	@JsonIgnore
-	public Optional<Integer> getOperationScheduleId() {
-		return wrapNull(operationScheduleId);
-	}
-
-	@JsonIgnore
-	public void setOperationScheduleId(Optional<Integer> operationScheduleId) {
-		refreshUpdatedAt();
-		this.operationScheduleId = wrapNull(operationScheduleId);
-		for (OperationSchedule presentOperationSchedule : getOperationSchedule().asSet()) {
-			for (Integer presentOperationScheduleId : getOperationScheduleId().asSet()) {
-				presentOperationSchedule.setId(presentOperationScheduleId);
-			}
-		}
-	}
-
-	@JsonIgnore
-	public void setOperationScheduleId(Integer operationScheduleId) {
-		setOperationScheduleId(Optional.fromNullable(operationScheduleId));
-	}
-
-	public void clearOperationScheduleId() {
-		setOperationScheduleId(Optional.<Integer>absent());
-	}
-
-	@JsonIgnore
-	public Optional<Integer> getServiceUnitId() {
-		return wrapNull(serviceUnitId);
-	}
-
-	@JsonIgnore
-	public void setServiceUnitId(Optional<Integer> serviceUnitId) {
-		refreshUpdatedAt();
-		this.serviceUnitId = wrapNull(serviceUnitId);
-		for (ServiceUnit presentServiceUnit : getServiceUnit().asSet()) {
-			for (Integer presentServiceUnitId : getServiceUnitId().asSet()) {
-				presentServiceUnit.setId(presentServiceUnitId);
-			}
-		}
-	}
-
-	@JsonIgnore
-	public void setServiceUnitId(Integer serviceUnitId) {
-		setServiceUnitId(Optional.fromNullable(serviceUnitId));
-	}
-
-	public void clearServiceUnitId() {
-		setServiceUnitId(Optional.<Integer>absent());
-	}
-
-	@JsonIgnore
 	public Date getUpdatedAt() {
 		return wrapNull(updatedAt);
 	}
@@ -221,52 +155,6 @@ public abstract class OperationRecordBase extends Model {
 	@JsonIgnore
 	public void setUpdatedAt(Date updatedAt) {
 		this.updatedAt = wrapNull(updatedAt);
-	}
-
-	@JsonIgnore
-	public Optional<OperationSchedule> getOperationSchedule() {
-		return wrapNull(operationSchedule);
-	}
-
-	@JsonIgnore
-	public void setOperationSchedule(Optional<OperationSchedule> operationSchedule) {
-		refreshUpdatedAt();
-		this.operationSchedule = wrapNull(operationSchedule);
-		for (OperationSchedule presentOperationSchedule : getOperationSchedule().asSet()) {
-			setOperationScheduleId(presentOperationSchedule.getId());
-		}
-	}
-
-	@JsonIgnore
-	public void setOperationSchedule(OperationSchedule operationSchedule) {
-		setOperationSchedule(Optional.fromNullable(operationSchedule));
-	}
-
-	public void clearOperationSchedule() {
-		setOperationSchedule(Optional.<OperationSchedule>absent());
-	}
-
-	@JsonIgnore
-	public Optional<ServiceUnit> getServiceUnit() {
-		return wrapNull(serviceUnit);
-	}
-
-	@JsonIgnore
-	public void setServiceUnit(Optional<ServiceUnit> serviceUnit) {
-		refreshUpdatedAt();
-		this.serviceUnit = wrapNull(serviceUnit);
-		for (ServiceUnit presentServiceUnit : getServiceUnit().asSet()) {
-			setServiceUnitId(presentServiceUnit.getId());
-		}
-	}
-
-	@JsonIgnore
-	public void setServiceUnit(ServiceUnit serviceUnit) {
-		setServiceUnit(Optional.fromNullable(serviceUnit));
-	}
-
-	public void clearServiceUnit() {
-		setServiceUnit(Optional.<ServiceUnit>absent());
 	}
 
 	@Override

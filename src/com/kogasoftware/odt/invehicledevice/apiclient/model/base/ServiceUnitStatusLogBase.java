@@ -27,30 +27,22 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.base.jsonview.*;
 @SuppressWarnings("unused")
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = Model.JACKSON_IDENTITY_INFO_PROPERTY)
 public abstract class ServiceUnitStatusLogBase extends Model {
-	private static final long serialVersionUID = 5488621136488087102L;
+	private static final long serialVersionUID = 5520827379476516989L;
 
 	// Columns
-	@JsonProperty private Date createdAt = new Date();
 	@JsonProperty private Integer id = 0;
 	@JsonProperty private BigDecimal latitude = BigDecimal.ZERO;
 	@JsonProperty private BigDecimal longitude = BigDecimal.ZERO;
 	@JsonProperty private Optional<Boolean> offline = Optional.absent();
 	@JsonProperty private Optional<Date> offlineTime = Optional.absent();
 	@JsonProperty private Optional<Integer> orientation = Optional.absent();
-	@JsonProperty private Optional<Integer> serviceUnitId = Optional.absent();
 	@JsonProperty private Optional<Integer> temperature = Optional.absent();
-	@JsonProperty private Date updatedAt = new Date();
 
 	// Associations
-	@JsonProperty @JsonView(AssociationView.class) private Optional<ServiceUnit> serviceUnit = Optional.absent();
 
 	public static final String UNDERSCORE = "service_unit_status_log";
 	public static final ResponseConverter<ServiceUnitStatusLog> RESPONSE_CONVERTER = getResponseConverter(ServiceUnitStatusLog.class);
 	public static final ResponseConverter<List<ServiceUnitStatusLog>> LIST_RESPONSE_CONVERTER = getListResponseConverter(ServiceUnitStatusLog.class);
-
-	protected void refreshUpdatedAt() {
-		setUpdatedAt(new Date());
-	}
 
 	public static ServiceUnitStatusLog parse(String jsonString) throws IOException {
 		return parse(jsonString, ServiceUnitStatusLog.class);
@@ -58,17 +50,6 @@ public abstract class ServiceUnitStatusLogBase extends Model {
 
 	public static List<ServiceUnitStatusLog> parseList(String jsonString) throws IOException {
 		return parseList(jsonString, ServiceUnitStatusLog.class);
-	}
-
-	@JsonIgnore
-	public Date getCreatedAt() {
-		return wrapNull(createdAt);
-	}
-
-	@JsonIgnore
-	public void setCreatedAt(Date createdAt) {
-		refreshUpdatedAt();
-		this.createdAt = wrapNull(createdAt);
 	}
 
 	@Override
@@ -79,7 +60,6 @@ public abstract class ServiceUnitStatusLogBase extends Model {
 
 	@JsonIgnore
 	public void setId(Integer id) {
-		refreshUpdatedAt();
 		this.id = wrapNull(id);
 	}
 
@@ -90,7 +70,6 @@ public abstract class ServiceUnitStatusLogBase extends Model {
 
 	@JsonIgnore
 	public void setLatitude(BigDecimal latitude) {
-		refreshUpdatedAt();
 		this.latitude = wrapNull(latitude);
 	}
 
@@ -101,7 +80,6 @@ public abstract class ServiceUnitStatusLogBase extends Model {
 
 	@JsonIgnore
 	public void setLongitude(BigDecimal longitude) {
-		refreshUpdatedAt();
 		this.longitude = wrapNull(longitude);
 	}
 
@@ -112,7 +90,6 @@ public abstract class ServiceUnitStatusLogBase extends Model {
 
 	@JsonIgnore
 	public void setOffline(Optional<Boolean> offline) {
-		refreshUpdatedAt();
 		this.offline = wrapNull(offline);
 	}
 
@@ -132,7 +109,6 @@ public abstract class ServiceUnitStatusLogBase extends Model {
 
 	@JsonIgnore
 	public void setOfflineTime(Optional<Date> offlineTime) {
-		refreshUpdatedAt();
 		this.offlineTime = wrapNull(offlineTime);
 	}
 
@@ -152,7 +128,6 @@ public abstract class ServiceUnitStatusLogBase extends Model {
 
 	@JsonIgnore
 	public void setOrientation(Optional<Integer> orientation) {
-		refreshUpdatedAt();
 		this.orientation = wrapNull(orientation);
 	}
 
@@ -166,38 +141,12 @@ public abstract class ServiceUnitStatusLogBase extends Model {
 	}
 
 	@JsonIgnore
-	public Optional<Integer> getServiceUnitId() {
-		return wrapNull(serviceUnitId);
-	}
-
-	@JsonIgnore
-	public void setServiceUnitId(Optional<Integer> serviceUnitId) {
-		refreshUpdatedAt();
-		this.serviceUnitId = wrapNull(serviceUnitId);
-		for (ServiceUnit presentServiceUnit : getServiceUnit().asSet()) {
-			for (Integer presentServiceUnitId : getServiceUnitId().asSet()) {
-				presentServiceUnit.setId(presentServiceUnitId);
-			}
-		}
-	}
-
-	@JsonIgnore
-	public void setServiceUnitId(Integer serviceUnitId) {
-		setServiceUnitId(Optional.fromNullable(serviceUnitId));
-	}
-
-	public void clearServiceUnitId() {
-		setServiceUnitId(Optional.<Integer>absent());
-	}
-
-	@JsonIgnore
 	public Optional<Integer> getTemperature() {
 		return wrapNull(temperature);
 	}
 
 	@JsonIgnore
 	public void setTemperature(Optional<Integer> temperature) {
-		refreshUpdatedAt();
 		this.temperature = wrapNull(temperature);
 	}
 
@@ -208,39 +157,6 @@ public abstract class ServiceUnitStatusLogBase extends Model {
 
 	public void clearTemperature() {
 		setTemperature(Optional.<Integer>absent());
-	}
-
-	@JsonIgnore
-	public Date getUpdatedAt() {
-		return wrapNull(updatedAt);
-	}
-
-	@JsonIgnore
-	public void setUpdatedAt(Date updatedAt) {
-		this.updatedAt = wrapNull(updatedAt);
-	}
-
-	@JsonIgnore
-	public Optional<ServiceUnit> getServiceUnit() {
-		return wrapNull(serviceUnit);
-	}
-
-	@JsonIgnore
-	public void setServiceUnit(Optional<ServiceUnit> serviceUnit) {
-		refreshUpdatedAt();
-		this.serviceUnit = wrapNull(serviceUnit);
-		for (ServiceUnit presentServiceUnit : getServiceUnit().asSet()) {
-			setServiceUnitId(presentServiceUnit.getId());
-		}
-	}
-
-	@JsonIgnore
-	public void setServiceUnit(ServiceUnit serviceUnit) {
-		setServiceUnit(Optional.fromNullable(serviceUnit));
-	}
-
-	public void clearServiceUnit() {
-		setServiceUnit(Optional.<ServiceUnit>absent());
 	}
 
 	@Override

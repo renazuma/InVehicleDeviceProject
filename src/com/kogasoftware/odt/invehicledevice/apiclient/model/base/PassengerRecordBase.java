@@ -27,13 +27,10 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.base.jsonview.*;
 @SuppressWarnings("unused")
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = Model.JACKSON_IDENTITY_INFO_PROPERTY)
 public abstract class PassengerRecordBase extends Model {
-	private static final long serialVersionUID = 9013969978927692724L;
+	private static final long serialVersionUID = 8528574205238593648L;
 
 	// Columns
-	@JsonProperty private Optional<Integer> age = Optional.absent();
 	@JsonProperty private Optional<Integer> arrivalOperationScheduleId = Optional.absent();
-	@JsonProperty private Date createdAt = new Date();
-	@JsonProperty private Optional<Date> deletedAt = Optional.absent();
 	@JsonProperty private Optional<Integer> departureOperationScheduleId = Optional.absent();
 	@JsonProperty private Optional<Date> getOffTime = Optional.absent();
 	@JsonProperty private Optional<Boolean> getOffTimeOffline = Optional.absent();
@@ -41,18 +38,12 @@ public abstract class PassengerRecordBase extends Model {
 	@JsonProperty private Optional<Boolean> getOnTimeOffline = Optional.absent();
 	@JsonProperty private Integer id = 0;
 	@JsonProperty private Integer passengerCount = 0;
-	@JsonProperty private Optional<Integer> payment = Optional.absent();
 	@JsonProperty private Optional<Integer> reservationId = Optional.absent();
-	@JsonProperty private Optional<Integer> serviceProviderId = Optional.absent();
-	@JsonProperty private Integer status = 0;
 	@JsonProperty private Date updatedAt = new Date();
 	@JsonProperty private Optional<Integer> userId = Optional.absent();
 
 	// Associations
-	@JsonProperty @JsonView(AssociationView.class) private Optional<OperationSchedule> arrivalOperationSchedule = Optional.absent();
-	@JsonProperty @JsonView(AssociationView.class) private Optional<OperationSchedule> departureOperationSchedule = Optional.absent();
 	@JsonProperty @JsonView(AssociationView.class) private Optional<Reservation> reservation = Optional.absent();
-	@JsonProperty @JsonView(AssociationView.class) private Optional<ServiceProvider> serviceProvider = Optional.absent();
 	@JsonProperty @JsonView(AssociationView.class) private Optional<User> user = Optional.absent();
 
 	public static final String UNDERSCORE = "passenger_record";
@@ -72,26 +63,6 @@ public abstract class PassengerRecordBase extends Model {
 	}
 
 	@JsonIgnore
-	public Optional<Integer> getAge() {
-		return wrapNull(age);
-	}
-
-	@JsonIgnore
-	public void setAge(Optional<Integer> age) {
-		refreshUpdatedAt();
-		this.age = wrapNull(age);
-	}
-
-	@JsonIgnore
-	public void setAge(Integer age) {
-		setAge(Optional.fromNullable(age));
-	}
-
-	public void clearAge() {
-		setAge(Optional.<Integer>absent());
-	}
-
-	@JsonIgnore
 	public Optional<Integer> getArrivalOperationScheduleId() {
 		return wrapNull(arrivalOperationScheduleId);
 	}
@@ -100,11 +71,6 @@ public abstract class PassengerRecordBase extends Model {
 	public void setArrivalOperationScheduleId(Optional<Integer> arrivalOperationScheduleId) {
 		refreshUpdatedAt();
 		this.arrivalOperationScheduleId = wrapNull(arrivalOperationScheduleId);
-		for (OperationSchedule presentArrivalOperationSchedule : getArrivalOperationSchedule().asSet()) {
-			for (Integer presentArrivalOperationScheduleId : getArrivalOperationScheduleId().asSet()) {
-				presentArrivalOperationSchedule.setId(presentArrivalOperationScheduleId);
-			}
-		}
 	}
 
 	@JsonIgnore
@@ -117,37 +83,6 @@ public abstract class PassengerRecordBase extends Model {
 	}
 
 	@JsonIgnore
-	public Date getCreatedAt() {
-		return wrapNull(createdAt);
-	}
-
-	@JsonIgnore
-	public void setCreatedAt(Date createdAt) {
-		refreshUpdatedAt();
-		this.createdAt = wrapNull(createdAt);
-	}
-
-	@JsonIgnore
-	public Optional<Date> getDeletedAt() {
-		return wrapNull(deletedAt);
-	}
-
-	@JsonIgnore
-	public void setDeletedAt(Optional<Date> deletedAt) {
-		refreshUpdatedAt();
-		this.deletedAt = wrapNull(deletedAt);
-	}
-
-	@JsonIgnore
-	public void setDeletedAt(Date deletedAt) {
-		setDeletedAt(Optional.fromNullable(deletedAt));
-	}
-
-	public void clearDeletedAt() {
-		setDeletedAt(Optional.<Date>absent());
-	}
-
-	@JsonIgnore
 	public Optional<Integer> getDepartureOperationScheduleId() {
 		return wrapNull(departureOperationScheduleId);
 	}
@@ -156,11 +91,6 @@ public abstract class PassengerRecordBase extends Model {
 	public void setDepartureOperationScheduleId(Optional<Integer> departureOperationScheduleId) {
 		refreshUpdatedAt();
 		this.departureOperationScheduleId = wrapNull(departureOperationScheduleId);
-		for (OperationSchedule presentDepartureOperationSchedule : getDepartureOperationSchedule().asSet()) {
-			for (Integer presentDepartureOperationScheduleId : getDepartureOperationScheduleId().asSet()) {
-				presentDepartureOperationSchedule.setId(presentDepartureOperationScheduleId);
-			}
-		}
 	}
 
 	@JsonIgnore
@@ -276,26 +206,6 @@ public abstract class PassengerRecordBase extends Model {
 	}
 
 	@JsonIgnore
-	public Optional<Integer> getPayment() {
-		return wrapNull(payment);
-	}
-
-	@JsonIgnore
-	public void setPayment(Optional<Integer> payment) {
-		refreshUpdatedAt();
-		this.payment = wrapNull(payment);
-	}
-
-	@JsonIgnore
-	public void setPayment(Integer payment) {
-		setPayment(Optional.fromNullable(payment));
-	}
-
-	public void clearPayment() {
-		setPayment(Optional.<Integer>absent());
-	}
-
-	@JsonIgnore
 	public Optional<Integer> getReservationId() {
 		return wrapNull(reservationId);
 	}
@@ -318,42 +228,6 @@ public abstract class PassengerRecordBase extends Model {
 
 	public void clearReservationId() {
 		setReservationId(Optional.<Integer>absent());
-	}
-
-	@JsonIgnore
-	public Optional<Integer> getServiceProviderId() {
-		return wrapNull(serviceProviderId);
-	}
-
-	@JsonIgnore
-	public void setServiceProviderId(Optional<Integer> serviceProviderId) {
-		refreshUpdatedAt();
-		this.serviceProviderId = wrapNull(serviceProviderId);
-		for (ServiceProvider presentServiceProvider : getServiceProvider().asSet()) {
-			for (Integer presentServiceProviderId : getServiceProviderId().asSet()) {
-				presentServiceProvider.setId(presentServiceProviderId);
-			}
-		}
-	}
-
-	@JsonIgnore
-	public void setServiceProviderId(Integer serviceProviderId) {
-		setServiceProviderId(Optional.fromNullable(serviceProviderId));
-	}
-
-	public void clearServiceProviderId() {
-		setServiceProviderId(Optional.<Integer>absent());
-	}
-
-	@JsonIgnore
-	public Integer getStatus() {
-		return wrapNull(status);
-	}
-
-	@JsonIgnore
-	public void setStatus(Integer status) {
-		refreshUpdatedAt();
-		this.status = wrapNull(status);
 	}
 
 	@JsonIgnore
@@ -392,52 +266,6 @@ public abstract class PassengerRecordBase extends Model {
 	}
 
 	@JsonIgnore
-	public Optional<OperationSchedule> getArrivalOperationSchedule() {
-		return wrapNull(arrivalOperationSchedule);
-	}
-
-	@JsonIgnore
-	public void setArrivalOperationSchedule(Optional<OperationSchedule> arrivalOperationSchedule) {
-		refreshUpdatedAt();
-		this.arrivalOperationSchedule = wrapNull(arrivalOperationSchedule);
-		for (OperationSchedule presentArrivalOperationSchedule : getArrivalOperationSchedule().asSet()) {
-			setArrivalOperationScheduleId(presentArrivalOperationSchedule.getId());
-		}
-	}
-
-	@JsonIgnore
-	public void setArrivalOperationSchedule(OperationSchedule arrivalOperationSchedule) {
-		setArrivalOperationSchedule(Optional.fromNullable(arrivalOperationSchedule));
-	}
-
-	public void clearArrivalOperationSchedule() {
-		setArrivalOperationSchedule(Optional.<OperationSchedule>absent());
-	}
-
-	@JsonIgnore
-	public Optional<OperationSchedule> getDepartureOperationSchedule() {
-		return wrapNull(departureOperationSchedule);
-	}
-
-	@JsonIgnore
-	public void setDepartureOperationSchedule(Optional<OperationSchedule> departureOperationSchedule) {
-		refreshUpdatedAt();
-		this.departureOperationSchedule = wrapNull(departureOperationSchedule);
-		for (OperationSchedule presentDepartureOperationSchedule : getDepartureOperationSchedule().asSet()) {
-			setDepartureOperationScheduleId(presentDepartureOperationSchedule.getId());
-		}
-	}
-
-	@JsonIgnore
-	public void setDepartureOperationSchedule(OperationSchedule departureOperationSchedule) {
-		setDepartureOperationSchedule(Optional.fromNullable(departureOperationSchedule));
-	}
-
-	public void clearDepartureOperationSchedule() {
-		setDepartureOperationSchedule(Optional.<OperationSchedule>absent());
-	}
-
-	@JsonIgnore
 	public Optional<Reservation> getReservation() {
 		return wrapNull(reservation);
 	}
@@ -458,29 +286,6 @@ public abstract class PassengerRecordBase extends Model {
 
 	public void clearReservation() {
 		setReservation(Optional.<Reservation>absent());
-	}
-
-	@JsonIgnore
-	public Optional<ServiceProvider> getServiceProvider() {
-		return wrapNull(serviceProvider);
-	}
-
-	@JsonIgnore
-	public void setServiceProvider(Optional<ServiceProvider> serviceProvider) {
-		refreshUpdatedAt();
-		this.serviceProvider = wrapNull(serviceProvider);
-		for (ServiceProvider presentServiceProvider : getServiceProvider().asSet()) {
-			setServiceProviderId(presentServiceProvider.getId());
-		}
-	}
-
-	@JsonIgnore
-	public void setServiceProvider(ServiceProvider serviceProvider) {
-		setServiceProvider(Optional.fromNullable(serviceProvider));
-	}
-
-	public void clearServiceProvider() {
-		setServiceProvider(Optional.<ServiceProvider>absent());
 	}
 
 	@JsonIgnore

@@ -1,6 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.apiclient.test.model.base;
 
-import java.util.Date;
 import java.util.LinkedList;
 
 import junit.framework.TestCase;
@@ -39,9 +38,6 @@ public class PlatformBaseTestCase extends TestCase {
 		assertEquals(m1, m2);
 
 		m1.setId(11);
-		Date ua = new Date();
-		m1.setUpdatedAt(ua);
-		m2.setUpdatedAt(ua);
 		assertFalse(m1.equals(m2));
 
 		Platform m3 = m1.clone();
@@ -56,9 +52,6 @@ public class PlatformBaseTestCase extends TestCase {
 		assertEquals(m1, m2);
 
 		m1.setId(11);
-		Date ua = new Date();
-		m1.setUpdatedAt(ua);
-		m2.setUpdatedAt(ua);
 		assertFalse(m1.equals(m2));
 
 		Platform m3 = SerializationUtils.clone(m1);
@@ -69,53 +62,19 @@ public class PlatformBaseTestCase extends TestCase {
 		Platform l = new Platform();
 		Platform r = l.clone();
 
-		Integer s = 10;
-		Date ua = new Date();
-
-		l.setUpdatedAt(ua);
-		r.setUpdatedAt(ua);
 		assertTrue(l.equals(r));
 		assertTrue(r.equals(l));
 
 		l.setId(1);
-		Thread.sleep(s);
-		assertFalse(l.equals(r));
-		assertFalse(r.equals(l));
-		l.setUpdatedAt(ua);
-		r.setUpdatedAt(ua);
 		assertFalse(l.equals(r));
 		assertFalse(r.equals(l));
 
 		r.setId(1);
-		Thread.sleep(s);
-		assertFalse(l.equals(r));
-		assertFalse(r.equals(l));
-		l.setUpdatedAt(ua);
-		r.setUpdatedAt(ua);
 		assertTrue(l.equals(r));
 		assertTrue(r.equals(l));
 
 		assertFalse(l.equals(null));
 		assertFalse(l.equals(new Object()));
-	}
-
-	public void testUpdatedAt() throws Exception {
-		Integer s = 10;
-		Date ua = new Date();
-		model.setUpdatedAt(ua);
-		assertEquals(ua, model.getUpdatedAt());
-
-		Thread.sleep(s);
-		model.setId(model.getId() + 1);
-		assertTrue(ua.before(model.getUpdatedAt()));
-
-		Thread.sleep(s);
-		model.setId(model.getId());
-		assertTrue(ua.before(model.getUpdatedAt()));
-
-		Thread.sleep(s);
-		model.setUpdatedAt(ua);
-		assertEquals(ua, model.getUpdatedAt());
 	}
 
 	public void testCanSerializable() {
