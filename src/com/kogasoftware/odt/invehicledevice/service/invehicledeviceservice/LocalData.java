@@ -23,7 +23,7 @@ public class LocalData implements Serializable {
 		DRIVE, FINISH, PLATFORM_GET_ON, PLATFORM_GET_OFF,
 	}
 
-	private static final long serialVersionUID = 1797801788124L;
+	private static final long serialVersionUID = 1797801788125L;
 
 	public Boolean operationScheduleInitialized = false;
 	public Boolean serviceProviderInitialized = false;
