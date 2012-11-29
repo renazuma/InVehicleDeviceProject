@@ -115,13 +115,17 @@ public class PassengerRecord extends PassengerRecordBase {
 			} else {
 				displayName.append(" 女性");
 			}
-			if (user.getAge() < 10) {
-				displayName.append(" お子様");
-			} else if (user.getAge() >= 100) {
-				displayName.append(" ご高齢");
-			} else {
-				displayName.append(user.getAge() / 10 * 10 + "代");
+			String ageString = "       ";
+			for (Integer age : user.getAge().asSet()) {
+				if (age < 10) {
+					ageString = " お子様";
+				} else if (age >= 100) {
+					ageString = " ご高齢";
+				} else {
+					ageString = age / 10 * 10 + "代";
+				}
 			}
+			displayName.append(ageString);
 			if (user.getTelephoneNumber().length() > 0) {
 				displayName.append("\n" + user.getTelephoneNumber());
 			}

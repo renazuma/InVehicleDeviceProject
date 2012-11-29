@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.base.UserBase;
 
 public class User extends UserBase {
@@ -38,22 +39,28 @@ public class User extends UserBase {
 		return notes;
 	}
 
-	public Integer getAge(Date base) {
+	public Optional<Integer> getAge(Date base) {
 		Calendar now = Calendar.getInstance();
 		now.setTime(base);
 		Calendar birthday = Calendar.getInstance();
-		birthday.setTime(getBirthday());
+		if (getBirthday().isPresent()) {
+			birthday.setTime(getBirthday().get());
+		} else {
+			return Optional.absent();
+		}
 		if (birthday.get(Calendar.MONTH) < now.get(Calendar.MONTH)
 				|| (birthday.get(Calendar.MONTH) == now.get(Calendar.MONTH) && birthday
 						.get(Calendar.DAY_OF_MONTH) <= now
 						.get(Calendar.DAY_OF_MONTH))) {
-			return now.get(Calendar.YEAR) - birthday.get(Calendar.YEAR);
+			return Optional.of(now.get(Calendar.YEAR)
+					- birthday.get(Calendar.YEAR));
 		} else {
-			return now.get(Calendar.YEAR) - birthday.get(Calendar.YEAR) - 1;
+			return Optional.of(now.get(Calendar.YEAR)
+					- birthday.get(Calendar.YEAR) - 1);
 		}
 	}
 
-	public Integer getAge() {
+	public Optional<Integer> getAge() {
 		return getAge(new Date());
 	}
 }
