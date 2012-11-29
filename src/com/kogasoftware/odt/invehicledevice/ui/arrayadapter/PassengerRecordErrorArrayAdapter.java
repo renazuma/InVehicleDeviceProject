@@ -19,7 +19,6 @@ import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.User;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.PassengerRecordLogic;
@@ -102,7 +101,6 @@ public class PassengerRecordErrorArrayAdapter extends
 			Log.e(TAG, "passengerRecord (" + passengerRecord + ") has no User");
 			return convertView;
 		}
-		User user = passengerRecord.getUser().get();
 
 		// 無視ボタン
 		CheckBox ignoreButton = (CheckBox) convertView

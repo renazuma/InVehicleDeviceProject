@@ -3,7 +3,6 @@ package com.kogasoftware.odt.invehicledevice.ui.arrayadapter;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Collections;
-import java.util.TreeSet;
 import java.util.WeakHashMap;
 
 import android.content.Context;
