@@ -2,6 +2,7 @@ package com.kogasoftware.odt.invehicledevice.preference;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -242,7 +243,19 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		String packageName = "com.kogasoftware.odt.invehicledevice";
 		intent.setClassName(packageName, packageName
 				+ ".ui.activity.SavePreferencesActivity");
-		startActivity(intent);
+		try {
+			startActivity(intent);
+		} catch (ActivityNotFoundException e) {
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					Toast.makeText(getApplicationContext(),
+							"車載器アプリケーションがインストールされていません", Toast.LENGTH_LONG)
+							.show();
+				}
+			});
+			return;
+		}
 		finish();
 	}
 
