@@ -67,7 +67,7 @@ public class OperationScheduleReceiveThread extends Thread implements
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
 							List<OperationSchedule> operationSchedules) {
-						operationScheduleLogic.merge(operationSchedules,
+						operationScheduleLogic.mergeWithWriteLock(operationSchedules,
 								triggerVehicleNotifications);
 					}
 				});

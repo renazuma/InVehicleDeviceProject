@@ -177,14 +177,12 @@ public class OperationScheduleLogic {
 		serverPassengerRecord.setUser(user);
 		serverPassengerRecord.setReservation(reservation);
 	}
-
+	
 	/**
 	 * OperationScheduleをマージする
 	 */
-	public void merge(final List<OperationSchedule> operationSchedules,
+	public void mergeWithWriteLock(final List<OperationSchedule> operationSchedules,
 			final List<VehicleNotification> triggerVehicleNotifications) {
-		Log.i("InVehicleDeviceActivity", "mergeOperationSchedules 1");
-
 		LocalStorage localStorage = service.getLocalStorage();
 		// 通知を受信済みリストに移動
 		vehicleNotificationLogic.setStatusWithWriteLock(
