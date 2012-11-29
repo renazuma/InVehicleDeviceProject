@@ -11,10 +11,8 @@ import java.util.List;
 import com.kogasoftware.odt.invehicledevice.apiclient.EmptyInVehicleDeviceApiClient;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.apiclient.ApiClientException;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.Demand;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.ReservationCandidate;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceProvider;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
@@ -137,82 +135,6 @@ public class DummyApiClient extends EmptyInVehicleDeviceApiClient {
 	public int sendServiceUnitStatusLog(ServiceUnitStatusLog log,
 			ApiClientCallback<ServiceUnitStatusLog> callback) {
 		sendServiceUnitStatusLogArgs.add(log);
-		return 0;
-	}
-
-	public int searchReservationCandidate(Demand demand,
-			ApiClientCallback<List<ReservationCandidate>> callback) {
-
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-		}
-
-		DateFormat f = new SimpleDateFormat("HH:mm");
-		List<ReservationCandidate> l = new LinkedList<ReservationCandidate>();
-		try {
-			ReservationCandidate c1 = new ReservationCandidate();
-			c1.setDepartureTime(f.parse("12:35"));
-			c1.setArrivalTime(f.parse("13:34"));
-			Platform ap1 = new Platform();
-			ap1.setName("駅1");
-			Platform dp1 = new Platform();
-			dp1.setName("駅2");
-			c1.setArrivalPlatform(ap1);
-			c1.setDeparturePlatform(dp1);
-			l.add(c1);
-
-			ReservationCandidate c2 = new ReservationCandidate();
-			c2.setDepartureTime(f.parse("15:12"));
-			c2.setArrivalTime(f.parse("16:45"));
-			Platform ap2 = new Platform();
-			ap2.setName("駅3");
-			Platform dp2 = new Platform();
-			dp2.setName("駅4");
-			c2.setArrivalPlatform(ap2);
-			c2.setDeparturePlatform(dp2);
-			l.add(c2);
-
-			ReservationCandidate c3 = new ReservationCandidate();
-			c3.setDepartureTime(f.parse("17:39"));
-			c3.setArrivalTime(f.parse("18:01"));
-			Platform ap3 = new Platform();
-			ap3.setName("駅5");
-			Platform dp3 = new Platform();
-			dp3.setName("駅6");
-			c3.setArrivalPlatform(ap3);
-			c3.setDeparturePlatform(dp3);
-			l.add(c3);
-
-			ReservationCandidate c4 = new ReservationCandidate();
-			c4.setDepartureTime(f.parse("18:39"));
-			c4.setArrivalTime(f.parse("18:41"));
-			l.add(c4);
-
-			ReservationCandidate c5 = new ReservationCandidate();
-			c5.setDepartureTime(f.parse("19:01"));
-			c5.setArrivalTime(f.parse("20:39"));
-			l.add(c5);
-
-			ReservationCandidate c6 = new ReservationCandidate();
-			c6.setDepartureTime(f.parse("19:01"));
-			c6.setArrivalTime(f.parse("20:39"));
-			l.add(c6);
-
-			ReservationCandidate c7 = new ReservationCandidate();
-			c7.setDepartureTime(f.parse("19:01"));
-			c7.setArrivalTime(f.parse("20:39"));
-			l.add(c7);
-
-			ReservationCandidate c8 = new ReservationCandidate();
-			c8.setDepartureTime(f.parse("19:01"));
-			c8.setArrivalTime(f.parse("20:39"));
-			l.add(c8);
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		callback.onSucceed(0, 200, l);
 		return 0;
 	}
 
