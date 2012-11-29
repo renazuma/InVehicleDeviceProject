@@ -133,6 +133,7 @@ public class OperationScheduleLogic {
 						}
 					}
 				}
+				reservation.clearPassengerRecords();
 			}
 			operationSchedule.clearReservationsAsArrival();
 			operationSchedule.clearReservationsAsDeparture();
