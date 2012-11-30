@@ -230,16 +230,20 @@ public class OperationScheduleLogic {
 	 * 現在の運行情報を破棄して新しい運行を開始する
 	 */
 	public void startNewOperation() {
-		service.getLocalStorage().withWriteLock(new Writer() {
+		service.getLocalStorage().write(new BackgroundWriter() {
 			@Override
-			public void write(LocalData localData) {
+			public void writeInBackground(LocalData localData) {
 				localData.operationScheduleInitialized = false;
 				localData.operationSchedules.clear();
 				localData.vehicleNotifications.clear();
 				localData.passengerRecords.clear();
+				service.getEventDispatcher().dispatchStartNewOperation();
+			}
+
+			@Override
+			public void onWrite() {
 			}
 		});
-		service.getEventDispatcher().dispatchStartNewOperation();
 	}
 
 	/**
