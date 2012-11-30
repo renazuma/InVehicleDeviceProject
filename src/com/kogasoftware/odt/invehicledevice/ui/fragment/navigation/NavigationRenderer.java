@@ -1,6 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.ui.fragment.navigation;
 
 import java.lang.ref.WeakReference;
+import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -371,9 +372,15 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		synchronized (bitmapLock) {
 			bitmapWidth = width;
 			bitmapHeight = height;
-			bitmapBuffer = new short[bitmapWidth * bitmapHeight];
-			bitmapShortBuffer = ShortBuffer.wrap(bitmapBuffer);
-			bitmapShortBuffer.position(0);
+			if (useBitmapShortBuffer) {
+				bitmapShortPixels = new short[bitmapWidth * bitmapHeight];
+				bitmapShortBuffer = ShortBuffer.wrap(bitmapShortPixels);
+				bitmapShortBuffer.position(0);
+			} else {
+				bitmapIntPixels = new int[bitmapWidth * bitmapHeight];
+				bitmapIntBuffer = IntBuffer.wrap(bitmapIntPixels);
+				bitmapIntBuffer.position(0);
+			}
 			bitmapSource = new int[bitmapWidth * bitmapHeight];
 		}
 
@@ -389,6 +396,10 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	@Override
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		Log.i(TAG, "onSurfaceCreated()");
+
+		synchronized (bitmapLock) {
+			useBitmapShortBuffer = isBitmapShortBufferSupported(gl);
+		}
 
 		// ディザを無効化
 		gl.glDisable(GL10.GL_DITHER);
@@ -419,6 +430,20 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		// テクスチャの透明度の合成を有効にする
 		gl.glTexEnvx(GL10.GL_TEXTURE_ENV, GL10.GL_TEXTURE_ENV_MODE,
 				GL10.GL_MODULATE);
+	}
+
+	private Boolean isBitmapShortBufferSupported(GL10 gl) {
+		int[] colorReadFormat = new int[1];
+		gl.glGetIntegerv(GL10.GL_IMPLEMENTATION_COLOR_READ_FORMAT_OES,
+				colorReadFormat, 0);
+		int[] colorReadType = new int[1];
+		gl.glGetIntegerv(GL10.GL_IMPLEMENTATION_COLOR_READ_TYPE_OES,
+				colorReadType, 0);
+		if (colorReadFormat[0] == GL10.GL_RGB
+				&& colorReadType[0] == GL10.GL_UNSIGNED_SHORT_5_6_5) {
+			return true;
+		}
+		return false;
 	}
 
 	public void setAutoZoomLevel(boolean newAutoZoomLevel) {
@@ -492,20 +517,30 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	private final Object bitmapLock = new Object();
 	private int bitmapWidth = 0;
 	private int bitmapHeight = 0;
-	private short[] bitmapBuffer = new short[0];
+	private short[] bitmapShortPixels = new short[0];
+	private int[] bitmapIntPixels = new int[0];
 	private int bitmapSource[] = new int[0];
 	private ShortBuffer bitmapShortBuffer = ShortBuffer.allocate(0);
+	private IntBuffer bitmapIntBuffer = IntBuffer.allocate(0);
+	private Boolean useBitmapShortBuffer = false;
 
 	private void saveBitmapBuffer(GL10 gl) {
 		synchronized (bitmapLock) {
 			try {
-				gl.glReadPixels(0, 0, bitmapWidth, bitmapHeight, GL10.GL_RGB,
-						GL10.GL_UNSIGNED_SHORT_5_6_5, bitmapShortBuffer);
-				saveBitmapCompleteSemaphore.release();
+				if (useBitmapShortBuffer) {
+					gl.glReadPixels(0, 0, bitmapWidth, bitmapHeight,
+							GL10.GL_RGB, GL10.GL_UNSIGNED_SHORT_5_6_5,
+							bitmapShortBuffer);
+				} else {
+					gl.glReadPixels(0, 0, bitmapWidth, bitmapHeight,
+							GL10.GL_RGBA, GL10.GL_UNSIGNED_BYTE,
+							bitmapIntBuffer);
+				}
 			} catch (GLException e) {
 				Log.w(TAG, e);
 			}
 		}
+		saveBitmapCompleteSemaphore.release();
 	}
 
 	public Optional<Bitmap> createBitmapAndPause() {
@@ -519,24 +554,33 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 			return Optional.absent();
 		}
 		synchronized (bitmapLock) {
-			int h = bitmapHeight;
-			int w = bitmapWidth;
-
-			int offset1, offset2;
-			for (int i = 0; i < h; i++) {
-				offset1 = i * w;
-				offset2 = (h - i - 1) * w;
-				for (int j = 0; j < w; j++) {
-					short texturePixel = bitmapBuffer[offset1 + j];
-					int red = (texturePixel & 0x1f) << 3;
-					int green = ((texturePixel >> 5) & 0x3f) << 2;
-					int blue = ((texturePixel >> 11) & 0x1f) << 3;
-					int pixel = blue << 16 | green << 8 | red;
-					bitmapSource[offset2 + j] = pixel;
+			if (useBitmapShortBuffer) {
+				int offset1, offset2;
+				for (int i = 0; i < bitmapHeight; i++) {
+					offset1 = i * bitmapWidth;
+					offset2 = (bitmapHeight - i - 1) * bitmapWidth;
+					for (int j = 0; j < bitmapWidth; j++) {
+						short texturePixel = bitmapShortPixels[offset1 + j];
+						int red = (texturePixel & 0x1f) << 3;
+						int green = ((texturePixel >> 5) & 0x3f) << 2;
+						int blue = ((texturePixel >> 11) & 0x1f) << 3;
+						int pixel = blue << 16 | green << 8 | red;
+						bitmapSource[offset2 + j] = pixel;
+					}
+				}
+			} else {
+				for (int i = 0, k = 0; i < bitmapHeight; i++, k++) {
+					for (int j = 0; j < bitmapWidth; j++) {
+						int texturePixel = bitmapIntPixels[i * bitmapWidth + j];
+						int red = (texturePixel << 16) & 0x00ff0000;
+						int blue = (texturePixel >> 16) & 0xff;
+						int pixel = (texturePixel & 0xff00ff00) | red | blue;
+						bitmapSource[(bitmapHeight - k - 1) * bitmapWidth + j] = pixel;
+					}
 				}
 			}
-			return Optional.of(Bitmap.createBitmap(bitmapSource, w, h,
-					Bitmap.Config.RGB_565));
+			return Optional.of(Bitmap.createBitmap(bitmapSource, bitmapWidth,
+					bitmapHeight, Bitmap.Config.RGB_565));
 		}
 	}
 }
