@@ -202,9 +202,6 @@ public class OperationScheduleLogic {
 		localData.operationSchedules.addAll(remoteOperationSchedules);
 		localData.passengerRecords.clear();
 		localData.passengerRecords.addAll(remotePassengerRecords);
-
-		remoteOperationSchedules.get(0).getReservationsAsArrival().get(0)
-				.getPassengerRecords().get(0);
 	}
 
 	/**
