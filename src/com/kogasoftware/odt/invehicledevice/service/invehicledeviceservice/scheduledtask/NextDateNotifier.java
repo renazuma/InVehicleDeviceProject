@@ -37,6 +37,6 @@ public class NextDateNotifier implements Runnable {
 			return;
 		}
 		nextUpdateDate = createNextUpdateDate();
-		operationScheduleLogic.startNewOperation();
+		operationScheduleLogic.startNewOperation(true);
 	}
 }

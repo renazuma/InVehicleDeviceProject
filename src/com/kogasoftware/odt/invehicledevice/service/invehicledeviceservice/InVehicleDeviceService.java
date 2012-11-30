@@ -451,9 +451,7 @@ public class InVehicleDeviceService extends Service {
 		operationScheduleReceiveThread.start();
 		serviceProviderReceiveThread.start();
 
-		if (!isOperationInitialized()) {
-			operationScheduleLogic.startNewOperation();
-		}
+		operationScheduleLogic.startNewOperation(false);
 
 		List<Sensor> temperatureSensors = sensorManager
 				.getSensorList(Sensor.TYPE_TEMPERATURE);

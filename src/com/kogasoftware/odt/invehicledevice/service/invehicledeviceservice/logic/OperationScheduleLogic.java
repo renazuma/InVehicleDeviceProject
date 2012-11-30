@@ -229,10 +229,13 @@ public class OperationScheduleLogic {
 	/**
 	 * 現在の運行情報を破棄して新しい運行を開始する
 	 */
-	public void startNewOperation() {
+	public void startNewOperation(final Boolean always) {
 		service.getLocalStorage().write(new BackgroundWriter() {
 			@Override
 			public void writeInBackground(LocalData localData) {
+				if (!always && service.isOperationInitialized(localData)) {
+					return;
+				}
 				localData.operationScheduleInitialized = false;
 				localData.operationSchedules.clear();
 				localData.vehicleNotifications.clear();
