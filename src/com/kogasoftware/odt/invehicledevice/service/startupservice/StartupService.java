@@ -66,6 +66,9 @@ public class StartupService extends Service {
 	};
 
 	public void disableAirplaneMode() {
+		if (Build.VERSION.SDK_INT >= 17) {
+			return;
+		}
 		ContentResolver contentResolver = getContentResolver();
 		Boolean airplaneModeOn = Settings.System.getInt(contentResolver,
 				Settings.System.AIRPLANE_MODE_ON, 0) == 1;
