@@ -143,7 +143,7 @@ public class InVehicleDevicePreferenceTestCase extends
 		callTestAssertToast(getInstrumentation().getTargetContext(), Toast.LENGTH_LONG);
 	}
 
-	public void test不正なサーバーを入力() throws Exception {
+	public void testInvalidUrl() throws Exception {
 		setConnectionUrl("https://localhost:43123");
 		setLogin(LOGIN);
 		setPassword(PASSWORD);
@@ -154,7 +154,7 @@ public class InVehicleDevicePreferenceTestCase extends
 		assertFalse(getActivity().isFinishing());
 	}
 
-	public void test不正なログイン名を入力() throws Exception {
+	public void testInvalidLogin() throws Exception {
 		setConnectionUrl(URL);
 		setLogin("asdf");
 		setPassword(PASSWORD);
@@ -165,7 +165,7 @@ public class InVehicleDevicePreferenceTestCase extends
 		assertFalse(getActivity().isFinishing());
 	}
 
-	public void test不正なパスワードを入力() throws Exception {
+	public void testInvalidPassword() throws Exception {
 		setConnectionUrl(URL);
 		setLogin(LOGIN);
 		setPassword("hjkl");
@@ -181,7 +181,7 @@ public class InVehicleDevicePreferenceTestCase extends
 		assertFalse(getActivity().isFinishing());
 	}
 
-	public void test接続先URLの入力内容が表示される() throws Exception {
+	public void testShowUrl() throws Exception {
 		String url1 = "http://localhost:12345";
 		String url2 = "http://localhost:54321";
 
@@ -194,7 +194,7 @@ public class InVehicleDevicePreferenceTestCase extends
 		assertFalse(solo.searchText(url1, true));
 	}
 
-	public void testログイン名の入力内容が表示される() throws Exception {
+	public void testShowLogin() throws Exception {
 		String login1 = "Hello";
 		String login2 = "World";
 
@@ -207,7 +207,7 @@ public class InVehicleDevicePreferenceTestCase extends
 		assertFalse(solo.searchText(login1, true));
 	}
 
-	public void testパスワードの入力内容は表示されない() throws Exception {
+	public void testPasswordNotShown() throws Exception {
 		String password1 = "qawsedrftg";
 		String password2 = "abcde";
 
@@ -220,7 +220,7 @@ public class InVehicleDevicePreferenceTestCase extends
 		assertFalse(solo.searchText(password2, true));
 	}
 
-	public void test正しい設定を行うと終了する() throws Exception {
+	public void testExitIfSucceed() throws Exception {
 		setConnectionUrl(URL);
 		setLogin(LOGIN);
 		setPassword(PASSWORD);
@@ -234,10 +234,10 @@ public class InVehicleDevicePreferenceTestCase extends
 		assertTrue(getActivity().isFinishing());
 	}
 
-	public void xtest正しい設定を行うとSavePreferencesActivityへIntentを渡す()
+	public void xtestIntent()
 			throws Exception {
 
-		test正しい設定を行うと終了する();
+		testExitIfSucceed();
 
 		for (Activity a : solo.getAllOpenedActivities()) {
 			if (a.getClass()
@@ -256,7 +256,7 @@ public class InVehicleDevicePreferenceTestCase extends
 		fail();
 	}
 
-	public void testエラー内容が表示される() throws Exception {
+	public void testShowErrorDetail() throws Exception {
 		setConnectionUrl("%%%%");
 		setLogin("foo");
 		setPassword("bar");
