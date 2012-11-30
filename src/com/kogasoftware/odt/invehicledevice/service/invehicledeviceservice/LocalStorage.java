@@ -292,8 +292,6 @@ public class LocalStorage implements Closeable {
 	 * 
 	 * @param writer
 	 */
-	volatile boolean onceArrived = false;
-
 	public void withWriteLock(Writer writer) {
 		writeLock.lock();
 		try {
