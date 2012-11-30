@@ -131,13 +131,9 @@ public class OperationScheduleChangedFragment extends
 		scheduleConfirmButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				reply(new Runnable() {
-					@Override
-					public void run() {
-						showOperationScheduleFragment();
-						operationScheduleLogic.requestUpdatePhase();
-					}
-				});
+				showOperationScheduleFragment();
+				operationScheduleLogic.requestUpdatePhase();
+				reply();
 			}
 		});
 		Button hideButton = (Button) getView().findViewById(
@@ -145,28 +141,31 @@ public class OperationScheduleChangedFragment extends
 		hideButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				reply(new Runnable() {
-					@Override
-					public void run() {
-						hide();
-						operationScheduleLogic.requestUpdatePhase();
-					}
-				});
+				hide();
+				operationScheduleLogic.requestUpdatePhase();
+				reply();
 			}
 		});
 		updateView();
 	}
 
-	private void reply(final Runnable postReply) {
+	private void reply() {
 		final VehicleNotificationLogic logic = new VehicleNotificationLogic(
 				getService());
+		// VehicleNotificationが大量に溜まっている状態だと処理が重くなるため、
+		// VehicleNotificationLogic.replyの呼び出しは別スレッドで行う
+		final Thread postThread = new Thread() {
+			public void run() {
+				logic.reply(OperationScheduleChangedFragment.this.getState()
+						.getVehicleNotifications());
+			}
+		};
 		logic.setStatus(getState().getVehicleNotifications(),
 				VehicleNotificationStatus.OPERATION_SCHEDULE_RECEIVED,
 				new Runnable() {
 					@Override
 					public void run() {
-						logic.reply(getState().getVehicleNotifications());
-						postReply.run();
+						postThread.start();
 					}
 				});
 	}
