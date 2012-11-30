@@ -1,25 +1,25 @@
 package com.kogasoftware.odt.invehicledevice.preference.test;
 
-import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Context;
-import android.content.Intent;
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
 import com.jayway.android.robotium.solo.Solo;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 import com.kogasoftware.odt.invehicledevice.preference.InVehicleDevicePreferenceActivity;
 import com.kogasoftware.odt.invehicledevice.preference.R;
 
 public class InVehicleDevicePreferenceTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDevicePreferenceActivity> {
+	private static final String VALID_URL = "http://10.0.2.15:12345";
+	private static final String INVALID_URL = "http://127.0.0.1:12346";
+	private static final String VALID_LOGIN = "valid_login";
+	private static final String INVALID_LOGIN = "invalid_login";
+	private static final String VALID_PASSWORD = "valid_password";
+	private static final String INVALID_PASSWORD = "invalid_password";
 
-	private static final String URL = "http://10.1.10.161";
-	private static final String LOGIN = "test_login";
-	private static final String PASSWORD = "test_password";
-
+	private MockServer mockServer;
 	private Solo solo;
 
 	public InVehicleDevicePreferenceTestCase() {
@@ -42,54 +42,51 @@ public class InVehicleDevicePreferenceTestCase extends
 		}
 
 		solo = new Solo(i, getActivity());
+
+		mockServer = new MockServer();
+		mockServer.startAndWaitForBind();
 	}
-	
+
 	private void setConnectionUrl(String url) throws Exception {
 		solo.scrollToTop();
 		getInstrumentation().waitForIdleSync();
-		solo.clickOnText(getInstrumentation().getTargetContext().getString(
-				R.string.server_url));
+		solo.clickOnText(solo.getString(R.string.server_url));
 		solo.clearEditText(0);
 		solo.enterText(0, url);
-		solo.sendKey(KeyEvent.KEYCODE_ENTER);
-		solo.sendKey(KeyEvent.KEYCODE_ENTER);
+		solo.clickOnButton(solo.getString(R.string.ok));
 		getInstrumentation().waitForIdleSync();
 	}
 
 	private void setLogin(String login) throws Exception {
 		solo.scrollToTop();
 		getInstrumentation().waitForIdleSync();
-		solo.clickOnText(getInstrumentation().getTargetContext().getResources()
-				.getString(R.string.login));
+		solo.clickOnText(solo.getString(R.string.login));
 		solo.clearEditText(0);
 		solo.enterText(0, login);
-		solo.sendKey(KeyEvent.KEYCODE_ENTER);
-		solo.sendKey(KeyEvent.KEYCODE_ENTER);
+		solo.clickOnButton(solo.getString(R.string.ok));
 		getInstrumentation().waitForIdleSync();
 	}
 
 	private void setPassword(String password) throws Exception {
 		solo.scrollToTop();
 		getInstrumentation().waitForIdleSync();
-		solo.clickOnText(getInstrumentation().getTargetContext().getResources()
-				.getString(R.string.password));
+		solo.clickOnText(solo.getString(R.string.password));
 		solo.clearEditText(0);
 		solo.enterText(0, password);
-		solo.sendKey(KeyEvent.KEYCODE_ENTER);
-		solo.sendKey(KeyEvent.KEYCODE_ENTER);
+		solo.clickOnButton(solo.getString(R.string.ok));
 		getInstrumentation().waitForIdleSync();
 	}
 
 	private void assertToast(boolean expected, int resourceId) throws Exception {
-		assertToast(expected, getInstrumentation().getTargetContext()
-				.getResources().getString(resourceId));
+		assertToast(expected, solo.getString(resourceId));
 	}
 
-	private void assertToast(boolean show, String s) throws InterruptedException {
+	private void assertToast(boolean show, String s)
+			throws InterruptedException {
 		getInstrumentation().waitForIdleSync();
 		boolean actual = false;
 		int retry = 3;
-		
+
 		// searchTextの結果がshowと合うまで待つ
 		for (int i = 0; i < retry; ++i) {
 			actual = solo.searchText(s, true);
@@ -97,23 +94,24 @@ public class InVehicleDevicePreferenceTestCase extends
 				break;
 			}
 		}
-		
+
 		if (actual) {
 			// searchTextの結果がfalseになるまで待つ
 			for (int i = 0; i < retry; ++i) {
 				if (!solo.searchText(s, true)) {
 					break;
 				}
-			}	
+			}
 		}
-		
+
 		assertEquals(show, actual);
 		if (!show) {
 			return;
 		}
 	}
-	
-	public void callTestAssertToast(final Context context, final int duration) throws Exception {
+
+	public void callTestAssertToast(final Context context, final int duration)
+			throws Exception {
 		final String s1 = "あいうえお";
 		final String s2 = "かきくけこ";
 
@@ -137,44 +135,43 @@ public class InVehicleDevicePreferenceTestCase extends
 		assertToast(false, s2);
 		assertToast(false, s1);
 	}
-	
+
 	public void testAssertToast() throws Exception {
-		callTestAssertToast(getInstrumentation().getTargetContext(), Toast.LENGTH_SHORT);
-		callTestAssertToast(getInstrumentation().getTargetContext(), Toast.LENGTH_LONG);
+		callTestAssertToast(getInstrumentation().getTargetContext(),
+				Toast.LENGTH_SHORT);
+		callTestAssertToast(getInstrumentation().getTargetContext(),
+				Toast.LENGTH_LONG);
 	}
 
 	public void testInvalidUrl() throws Exception {
-		setConnectionUrl("https://localhost:43123");
-		setLogin(LOGIN);
-		setPassword(PASSWORD);
+		setConnectionUrl(INVALID_URL);
+		setLogin(VALID_LOGIN);
+		setPassword(VALID_PASSWORD);
 
-		solo.clickOnText(getInstrumentation().getTargetContext().getResources()
-				.getString(R.string.ok));
+		solo.clickOnButton(solo.getString(R.string.ok));
 		assertToast(true, R.string.an_error_occurred);
 		assertFalse(getActivity().isFinishing());
 	}
 
 	public void testInvalidLogin() throws Exception {
-		setConnectionUrl(URL);
-		setLogin("asdf");
-		setPassword(PASSWORD);
+		setConnectionUrl(VALID_URL);
+		setLogin(INVALID_LOGIN);
+		setPassword(VALID_PASSWORD);
 
-		solo.clickOnText(getInstrumentation().getTargetContext().getResources()
-				.getString(R.string.ok));
+		solo.clickOnButton(solo.getString(R.string.ok));
 		assertToast(true, R.string.an_error_occurred);
 		assertFalse(getActivity().isFinishing());
 	}
 
 	public void testInvalidPassword() throws Exception {
-		setConnectionUrl(URL);
-		setLogin(LOGIN);
-		setPassword("hjkl");
+		setConnectionUrl(VALID_URL);
+		setLogin(VALID_LOGIN);
+		setPassword(INVALID_PASSWORD);
 
-		solo.clickOnText(getInstrumentation().getTargetContext().getResources()
-				.getString(R.string.ok));
+		solo.clickOnButton(solo.getString(R.string.ok));
 		assertToast(true, R.string.an_error_occurred);
-		while (solo.searchText(getInstrumentation().getTargetContext()
-				.getResources().getString(R.string.an_error_occurred), true)) {
+		while (solo
+				.searchText(solo.getString(R.string.an_error_occurred), true)) {
 			// Toastが消えるのを待つ
 			Thread.sleep(1000);
 		}
@@ -221,57 +218,35 @@ public class InVehicleDevicePreferenceTestCase extends
 	}
 
 	public void testExitIfSucceed() throws Exception {
-		setConnectionUrl(URL);
-		setLogin(LOGIN);
-		setPassword(PASSWORD);
+		setConnectionUrl(VALID_URL);
+		setLogin(VALID_LOGIN);
+		setPassword(VALID_PASSWORD);
 
-		solo.clickOnText(getInstrumentation().getTargetContext().getResources()
-				.getString(R.string.ok));
-
+		solo.clickOnButton(solo.getString(R.string.ok));
 		assertToast(false, R.string.an_error_occurred);
-
-		Thread.sleep(1000);
 		assertTrue(getActivity().isFinishing());
 	}
 
-	public void xtestIntent()
-			throws Exception {
-
-		testExitIfSucceed();
-
-		for (Activity a : solo.getAllOpenedActivities()) {
-			if (a.getClass()
-					.getName()
-					.equals("com.kogasoftware.odt.invehicledevice.ui.activity.SavePreferencesActivity")) {
-				Intent intent = a.getIntent();
-				assertEquals(
-						intent.getStringExtra(SharedPreferencesKeys.SERVER_URL),
-						URL);
-				assertTrue(intent.getStringExtra(
-						SharedPreferencesKeys.SERVER_IN_VEHICLE_DEVICE_TOKEN)
-						.length() > 0);
-				return;
-			}
-		}
-		fail();
+	public void testSendBroadcast() throws Exception {
+		// testExitIfSucceed();
+		// TODO:Broadcastなどを使ってテスト可能なように再実装
 	}
 
 	public void testShowErrorDetail() throws Exception {
 		setConnectionUrl("%%%%");
 		setLogin("foo");
 		setPassword("bar");
-		solo.clickOnText(getInstrumentation().getTargetContext().getResources()
-				.getString(R.string.ok));
+		solo.clickOnButton(solo.getString(R.string.ok));
 		assertToast(true, "Target host must not be null");
-		
+
 		setConnectionUrl("http://127.0.0.1:5432");
-		solo.clickOnText(getInstrumentation().getTargetContext().getResources()
-				.getString(R.string.ok));
+		solo.clickOnButton(solo.getString(R.string.ok));
 		assertToast(true, "refused");
 	}
 
 	@Override
 	public void tearDown() throws Exception {
+		mockServer.interrupt();
 		solo.finishOpenedActivities();
 		super.tearDown();
 	}
