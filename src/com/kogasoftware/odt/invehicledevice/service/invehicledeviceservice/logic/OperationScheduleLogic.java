@@ -240,11 +240,11 @@ public class OperationScheduleLogic {
 				localData.operationSchedules.clear();
 				localData.vehicleNotifications.clear();
 				localData.passengerRecords.clear();
-				service.getEventDispatcher().dispatchStartNewOperation();
 			}
 
 			@Override
 			public void onWrite() {
+				service.getEventDispatcher().dispatchStartNewOperation();
 			}
 		});
 	}
