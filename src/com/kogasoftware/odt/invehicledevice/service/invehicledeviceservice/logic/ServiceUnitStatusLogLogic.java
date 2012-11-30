@@ -10,6 +10,7 @@ import com.kogasoftware.odt.apiclient.EmptyApiClientCallback;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundWriter;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Reader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Writer;
 
@@ -49,15 +50,18 @@ public class ServiceUnitStatusLogLogic {
 		}
 		lastOrientationSavedMillis = now;
 
-		service.getLocalStorage().withWriteLock(new Writer() {
+		service.getLocalStorage().write(new BackgroundWriter() {
 			@Override
-			public void write(LocalData localData) {
+			public void writeInBackground(LocalData localData) {
 				localData.serviceUnitStatusLog.setOrientation(orientationDegree
 						.intValue());
 			}
+
+			public void onWrite() {
+				service.getEventDispatcher().dispatchChangeOrientation(
+						orientationDegree);
+			}
 		});
-		service.getEventDispatcher().dispatchChangeOrientation(
-				orientationDegree);
 	}
 
 	public void changeTemperature(final Double celciusTemperature) {
