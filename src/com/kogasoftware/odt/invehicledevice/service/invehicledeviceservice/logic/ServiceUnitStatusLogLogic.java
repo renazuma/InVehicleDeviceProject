@@ -29,18 +29,22 @@ public class ServiceUnitStatusLogLogic {
 	}
 
 	public void changeLocation(final Location location,
-			Optional<GpsStatus> gpsStatus) {
-		service.getLocalStorage().withWriteLock(new Writer() {
+			final Optional<GpsStatus> gpsStatus) {
+		service.getLocalStorage().write(new BackgroundWriter() {
 			@Override
-			public void write(LocalData localData) {
+			public void writeInBackground(LocalData localData) {
 				localData.serviceUnitStatusLog.setLatitude(new BigDecimal(
 						location.getLatitude()));
 				localData.serviceUnitStatusLog.setLongitude(new BigDecimal(
 						location.getLongitude()));
 			}
+
+			@Override
+			public void onWrite() {
+				service.getEventDispatcher().dispatchChangeLocation(location,
+						gpsStatus);
+			}
 		});
-		service.getEventDispatcher()
-				.dispatchChangeLocation(location, gpsStatus);
 	}
 
 	public void changeOrientation(final Double orientationDegree) {
@@ -65,15 +69,19 @@ public class ServiceUnitStatusLogLogic {
 	}
 
 	public void changeTemperature(final Double celciusTemperature) {
-		service.getLocalStorage().withWriteLock(new Writer() {
+		service.getLocalStorage().write(new BackgroundWriter() {
 			@Override
-			public void write(LocalData localData) {
+			public void writeInBackground(LocalData localData) {
 				localData.serviceUnitStatusLog
 						.setTemperature(celciusTemperature.intValue());
 			}
+
+			@Override
+			public void onWrite() {
+				service.getEventDispatcher().dispatchChangeTemperature(
+						celciusTemperature);
+			}
 		});
-		service.getEventDispatcher().dispatchChangeTemperature(
-				celciusTemperature);
 	}
 
 	public ServiceUnitStatusLog getWithReadLock() {
