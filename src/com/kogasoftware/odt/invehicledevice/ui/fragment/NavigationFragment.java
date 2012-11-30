@@ -143,6 +143,7 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 			null);
 	private Date lastGpsUpdated = new Date(0);
 	private Integer numSatellites = 0;
+	private Double orientationDegree = 0.0;
 	private TilePipeline tilePipeline;
 	private Button zoomInButton;
 	private Button zoomOutButton;
@@ -266,6 +267,7 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 		if (navigationRenderer != null) {
 			navigationRenderer.changeOrientation(orientationDegree);
 		}
+		this.orientationDegree = orientationDegree;
 	}
 
 	protected void updatePlatform() {
@@ -430,7 +432,8 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 		NavigationRenderer navigationRenderer = new NavigationRenderer(
 				getService(), tilePipeline, new Handler(),
 				OperationSchedule
-						.getCurrent(getState().getOperationSchedules()));
+						.getCurrent(getState().getOperationSchedules()),
+				orientationDegree);
 		navigationRenderer.addOnChangeMapZoomLevelListener(this);
 		navigationRenderer.setZoomLevel(getService().getMapZoomLevel());
 		navigationRenderer.setAutoZoomLevel(getService().getMapAutoZoom());

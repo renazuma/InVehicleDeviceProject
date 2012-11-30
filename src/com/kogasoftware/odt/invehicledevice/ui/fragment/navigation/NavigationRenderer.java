@@ -70,8 +70,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	}
 
 	protected final Set<OnChangeMapZoomLevelListener> onChangeMapZoomLevelListeners = new CopyOnWriteArraySet<OnChangeMapZoomLevelListener>();
-	protected final MotionSmoother rotationSmoother = new LazyMotionSmoother(
-			500.0, 0.02, 0.00005);
+	protected final MotionSmoother rotationSmoother;
 	protected final MotionSmoother latitudeSmoother = new SimpleMotionSmoother();
 	protected final MotionSmoother longitudeSmoother = new SimpleMotionSmoother();
 	protected final List<FrameTask> backgroundFrameTasks = new LinkedList<FrameTask>();
@@ -100,9 +99,13 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 
 	public NavigationRenderer(InVehicleDeviceService service,
 			TilePipeline tilePipeline, Handler uiHandler,
-			Optional<OperationSchedule> optionalOperationSchedule) {
+			Optional<OperationSchedule> optionalOperationSchedule,
+			Double orientationDegree) {
 		this.service = service;
 		this.uiHandler = uiHandler;
+		rotationSmoother = new LazyMotionSmoother(500.0, 0.02, 0.00005,
+				Math.toRadians(orientationDegree));
+
 		operationScheduleLogic = new OperationScheduleLogic(service);
 		serviceUnitStatusLogLogic = new ServiceUnitStatusLogLogic(service);
 		tilePipeline.changeZoomLevel(zoomLevel);

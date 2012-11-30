@@ -17,18 +17,20 @@ public class LazyMotionSmoother extends MotionSmoother {
 	private final double minVelocity;
 
 	public LazyMotionSmoother() {
-		this(300.0, Double.MAX_VALUE, 0.0);
+		this(300.0, Double.MAX_VALUE, 0.0, 0.0);
 	}
 
 	public LazyMotionSmoother(double latency) {
-		this(latency, Double.MAX_VALUE, 0.0);
+		this(latency, Double.MAX_VALUE, 0.0, 0.0);
 	}
 
 	public LazyMotionSmoother(double latency, double maxVelocity,
-			Double minVelocity) {
+			double minVelocity, double defaultOrientation) {
 		this.maxVelocity = maxVelocity;
 		this.minVelocity = minVelocity;
 		this.latency = latency;
+		this.startOrientation = defaultOrientation;
+		this.targetOrientation = defaultOrientation;
 	}
 
 	@Override
