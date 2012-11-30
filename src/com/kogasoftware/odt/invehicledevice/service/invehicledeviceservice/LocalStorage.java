@@ -24,6 +24,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -252,6 +253,11 @@ public class LocalStorage implements Closeable {
 	 * @param reader
 	 */
 	public <T extends Serializable> T withReadLock(Reader<T> reader) {
+		if (Thread.currentThread().getId() == Looper.getMainLooper()
+				.getThread().getId()) {
+			String message = "withReadLock on main thread";
+			Log.e(TAG, message, new RuntimeException(message));
+		}
 		long beginTime = System.currentTimeMillis();
 		readLock.lock();
 		long lockTime = System.currentTimeMillis();
@@ -293,6 +299,11 @@ public class LocalStorage implements Closeable {
 	 * @param writer
 	 */
 	public void withWriteLock(Writer writer) {
+		if (Thread.currentThread().getId() == Looper.getMainLooper()
+				.getThread().getId()) {
+			String message = "withWriteLock on main thread";
+			Log.e(TAG, message, new RuntimeException(message));
+		}
 		writeLock.lock();
 		try {
 			writer.write(localData);
