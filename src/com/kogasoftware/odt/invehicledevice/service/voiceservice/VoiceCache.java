@@ -2,6 +2,7 @@ package com.kogasoftware.odt.invehicledevice.service.voiceservice;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
@@ -14,7 +15,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.SerializationException;
-import org.apache.commons.lang3.SerializationUtils;
+import com.kogasoftware.odt.apiclient.Serializations;
 
 import android.content.Context;
 import android.os.Environment;
@@ -50,7 +51,7 @@ public class VoiceCache {
 
 	/**
 	 * キャッシュの状態をファイルから読み取る。コンストラクタから使うため、staticメソッドにしておく。
-	 *
+	 * 
 	 * @param instanceStateFile
 	 * @param sequence
 	 * @return
@@ -61,21 +62,14 @@ public class VoiceCache {
 			return result;
 		}
 		Boolean succeed = false;
+		FileInputStream fileInputStream = null;
 		try {
-			Object object = SerializationUtils.deserialize(new FileInputStream(
-					instanceStateFile));
-			if (!(object instanceof InstanceState)) {
-				Log.w(TAG, "!(" + object + " instanceof InstanceState)");
-				return new InstanceState();
-			}
-			result = (InstanceState) object;
+			fileInputStream = new FileInputStream(instanceStateFile);
+			result = Serializations.deserialize(fileInputStream,
+					InstanceState.class);
 			succeed = true;
-		} catch (IllegalArgumentException e) {
+		} catch (FileNotFoundException e) {
 			Log.e(TAG, e.toString(), e);
-		} catch (IndexOutOfBoundsException e) {
-			Log.e(TAG, e.toString(), e);
-		} catch (IOException e) {
-			Log.w(TAG, e);
 		} catch (SerializationException e) {
 			Log.e(TAG, e.toString(), e);
 		}
@@ -144,7 +138,7 @@ public class VoiceCache {
 
 	/**
 	 * voiceに対応する音声ファイルを取得
-	 *
+	 * 
 	 * @param voice
 	 * @return
 	 * @throws ExecutionException
@@ -179,7 +173,7 @@ public class VoiceCache {
 		try {
 			InstanceState instanceState = new InstanceState(sequence,
 					cache.asMap());
-			SerializationUtils.serialize(instanceState, new FileOutputStream(
+			Serializations.serialize(instanceState, new FileOutputStream(
 					instanceStateFile));
 		} catch (IOException e) {
 			throw new ExecutionException(e);

@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice;
 
+import java.io.ByteArrayInputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
@@ -7,6 +8,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.ExecutorService;
@@ -18,7 +21,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.lang3.SerializationException;
-import org.apache.commons.lang3.SerializationUtils;
+import com.kogasoftware.odt.apiclient.Serializations;
 import org.apache.commons.lang3.time.DateUtils;
 
 import android.content.Context;
@@ -30,6 +33,7 @@ import android.util.Log;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Throwables;
+import com.google.common.io.ByteStreams;
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 
@@ -77,7 +81,7 @@ public class LocalStorage implements Closeable {
 				readLock.lock();
 				try {
 					beginTime = System.currentTimeMillis();
-					serialized = SerializationUtils.serialize(localData);
+					serialized = Serializations.serialize(localData);
 					endTime = System.currentTimeMillis();
 				} finally {
 					readLock.unlock();
@@ -174,20 +178,17 @@ public class LocalStorage implements Closeable {
 			}
 		} else {
 			Log.d(TAG, "\"" + file + "\" found ");
+			FileInputStream fileInputStream = null;
 			try {
-				Object object = SerializationUtils
-						.deserialize(new FileInputStream(file));
-				if (object instanceof LocalData) {
-					localData = (LocalData) object;
-				}
-			} catch (IllegalArgumentException e) {
-				Log.e(TAG, e.toString(), e);
-			} catch (IndexOutOfBoundsException e) {
-				Log.e(TAG, e.toString(), e);
+				fileInputStream = new FileInputStream(file);
+				localData = Serializations.deserialize(fileInputStream,
+						LocalData.class);
 			} catch (SerializationException e) {
 				Log.e(TAG, e.toString(), e);
-			} catch (IOException e) {
-				Log.w(TAG, e);
+			} catch (FileNotFoundException e) {
+				Log.e(TAG, e.toString(), e);
+			} finally {
+				Closeables.closeQuietly(fileInputStream);
 			}
 
 			Calendar startCalendar = Calendar.getInstance();
@@ -269,7 +270,7 @@ public class LocalStorage implements Closeable {
 		readLock.lock();
 		long lockTime = System.currentTimeMillis();
 		try {
-			return SerializationUtils.clone(reader.read(localData));
+			return Serializations.clone(reader.read(localData));
 		} finally {
 			readLock.unlock();
 			long endTime = System.currentTimeMillis();
