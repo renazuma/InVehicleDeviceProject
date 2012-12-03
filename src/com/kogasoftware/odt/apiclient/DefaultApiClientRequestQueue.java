@@ -2,6 +2,7 @@ package com.kogasoftware.odt.apiclient;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,7 +15,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.SerializationException;
-import org.apache.commons.lang3.SerializationUtils;
+import com.kogasoftware.odt.apiclient.Serializations;
 import org.apache.commons.lang3.tuple.Pair;
 
 import android.util.Log;
@@ -65,7 +66,7 @@ public class DefaultApiClientRequestQueue {
 
 	/**
 	 * コンストラクタ
-	 *
+	 * 
 	 * @param backupFile
 	 *            データを読み出すファイル
 	 */
@@ -78,18 +79,10 @@ public class DefaultApiClientRequestQueue {
 			InputStream inputStream = null;
 			try {
 				inputStream = new FileInputStream(backupFile);
-				Object object = SerializationUtils.deserialize(inputStream);
-				if (!(object instanceof InstanceState)) {
-					Log.w(TAG, "!(" + object + " instanceof InstanceState)");
-					return;
-				}
-				InstanceState instanceState = (InstanceState) object;
+				InstanceState instanceState = Serializations.deserialize(
+						inputStream, InstanceState.class);
 				requestsByGroup.addAll(instanceState.requestsByGroup);
-			} catch (IllegalArgumentException e) {
-				Log.e(TAG, e.toString(), e);
-			} catch (IndexOutOfBoundsException e) {
-				Log.e(TAG, e.toString(), e);
-			} catch (IOException e) {
+			} catch (FileNotFoundException e) {
 				Log.w(TAG, e);
 			} catch (SerializationException e) {
 				Log.e(TAG, e.toString(), e);
@@ -123,7 +116,7 @@ public class DefaultApiClientRequestQueue {
 
 	/**
 	 * リクエストを追加し、作業待ちリクエストの追加待ちをしているスレッドを一つ起こせるようにする
-	 *
+	 * 
 	 * @param request
 	 */
 	public void add(DefaultApiClientRequest<?> request, String group) {
@@ -179,7 +172,7 @@ public class DefaultApiClientRequestQueue {
 
 		synchronized (FILE_ACCESS_LOCK) {
 			try {
-				SerializationUtils.serialize(new InstanceState(
+				Serializations.serialize(new InstanceState(
 						backupRequestsByGroup),
 						new FileOutputStream(backupFile));
 			} catch (SerializationException e) {
@@ -192,7 +185,7 @@ public class DefaultApiClientRequestQueue {
 
 	/**
 	 * リクエストを削除
-	 *
+	 * 
 	 * @param request
 	 */
 	public void remove(DefaultApiClientRequest<?> request) {
@@ -218,7 +211,7 @@ public class DefaultApiClientRequestQueue {
 
 	/**
 	 * リクエストの中断
-	 *
+	 * 
 	 * @param reqkey
 	 */
 	public void abort(int reqkey) {
@@ -242,7 +235,7 @@ public class DefaultApiClientRequestQueue {
 
 	/**
 	 * 指定したリクエストに対応するグループを作業中から削除し、グループ全体の処理順を最後に移動。
-	 *
+	 * 
 	 * @param request
 	 *            リトライ対象のリクエスト
 	 */
@@ -270,7 +263,7 @@ public class DefaultApiClientRequestQueue {
 
 	/**
 	 * 作業中でないグループからリクエストを一つ取得し返す。またそのグループを作業中とする。 該当グループが存在しない場合は、存在するようになるまで待つ
-	 *
+	 * 
 	 * @return リクエスト
 	 * @throws InterruptedException
 	 */
