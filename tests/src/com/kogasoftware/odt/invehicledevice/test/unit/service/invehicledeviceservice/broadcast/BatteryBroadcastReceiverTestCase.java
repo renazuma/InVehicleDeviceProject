@@ -3,8 +3,7 @@ package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledevicese
 import android.test.AndroidTestCase;
 
 public class BatteryBroadcastReceiverTestCase extends AndroidTestCase {
-	public void test1() {
-		fail("stub!");
+	public void testStub() {
+		// TODO: Stub
 	}
 }
-

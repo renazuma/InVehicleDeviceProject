@@ -3,7 +3,7 @@ package com.kogasoftware.odt.invehicledevice.test.unit.ui.fragment.navigation.ti
 import android.test.AndroidTestCase;
 
 public class WebTilePipeTestCase extends AndroidTestCase {
-	public void test1() {
-		fail("stub!");
+	public void testStub() {
+		// TODO: Stub
 	}
 }

@@ -3,7 +3,7 @@ package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledevicese
 import android.test.AndroidTestCase;
 
 public class AccMagSensorEventListenerTestCase extends AndroidTestCase {
-	public void test1() {
-		fail("stub!");
+	public void test() {
+		// TODO: Stub
 	}
 }

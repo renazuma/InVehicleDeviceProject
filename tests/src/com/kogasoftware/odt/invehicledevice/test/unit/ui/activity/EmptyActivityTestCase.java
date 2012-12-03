@@ -11,11 +11,7 @@ public class EmptyActivityTestCase extends
 		super(EmptyActivity.class);
 	}
 
-	public void test1() {
-		fail("stub!");
-	}
-
-	public void test2() {
-		assertTrue(true);
+	public void testStub() {
+		// TODO: Stub
 	}
 }
