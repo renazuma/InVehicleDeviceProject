@@ -21,6 +21,7 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher.OnUpdatePhaseListener;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
+import com.kogasoftware.odt.invehicledevice.ui.activity.EmptyActivity;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
 public class ApplicationFragment<S extends Serializable> extends Fragment {
@@ -148,9 +149,11 @@ public class ApplicationFragment<S extends Serializable> extends Fragment {
 			}
 			throw new IllegalStateException(
 					"getActivity().getService() value is absent");
+		} else if (activity instanceof EmptyActivity) {
+			return ((EmptyActivity) activity).getService();
 		} else {
 			throw new ClassCastException("!(" + activity
-					+ " instanceof InVehicleDeviceActivity)");
+					+ " instanceof InVehicleDeviceActivity or EmptyActivity)");
 		}
 	}
 
