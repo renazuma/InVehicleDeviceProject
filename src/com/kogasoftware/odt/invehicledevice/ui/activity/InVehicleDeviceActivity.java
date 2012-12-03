@@ -12,6 +12,7 @@ import android.content.DialogInterface.OnKeyListener;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -348,12 +349,23 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 
 	@Override
 	public void onOperationScheduleReceiveFail() {
-		for (InVehicleDeviceService service : getService().asSet()) {
-			if (!service.isOperationInitialized()) {
-				BigToast.makeText(this,
-						getString(R.string.failed_to_connect_operator_tool),
-						Toast.LENGTH_LONG).show();
-			}
+		for (final InVehicleDeviceService service : getService().asSet()) {
+			new AsyncTask<Void, Void, Boolean>() {
+				@Override
+				protected Boolean doInBackground(Void... params) {
+					return service.isOperationInitialized();
+				}
+
+				@Override
+				protected void onPostExecute(Boolean operationInitialized) {
+					if (!operationInitialized) {
+						BigToast.makeText(
+								InVehicleDeviceActivity.this,
+								getString(R.string.failed_to_connect_operator_tool),
+								Toast.LENGTH_LONG).show();
+					}
+				}
+			}.execute();
 		}
 	}
 
