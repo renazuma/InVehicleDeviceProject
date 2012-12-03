@@ -128,10 +128,20 @@ public class ControlBarFragment extends ApplicationFragment<State> implements
 			setCustomAnimation(getFragmentManager().beginTransaction()).remove(
 					old).commit();
 		}
-		setCustomAnimation(getFragmentManager().beginTransaction()).add(
-				R.id.modal_fragment_container,
-				NavigationFragment.newInstance(getState().getPhase(),
-						getState().getOperationSchedules())).commit();
+		getService().getLocalStorage().read(new BackgroundReader<Integer>() {
+			@Override
+			public Integer readInBackground(LocalData localData) {
+				return localData.serviceUnitStatusLog.getOrientation().or(0);
+			}
+
+			@Override
+			public void onRead(Integer orientationDegree) {
+				setCustomAnimation(getFragmentManager().beginTransaction()).add(
+						R.id.modal_fragment_container,
+						NavigationFragment.newInstance(getState().getPhase(),
+								getState().getOperationSchedules(), orientationDegree.doubleValue())).commitAllowingStateLoss();
+			}
+		});
 	}
 
 	public void showOperationScheduleListFragment() {

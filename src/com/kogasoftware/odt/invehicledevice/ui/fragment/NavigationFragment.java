@@ -65,10 +65,12 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 	protected static class State implements Serializable {
 		private final List<OperationSchedule> operationSchedules;
 		private final Phase phase;
+		private final Double orientationDegree;
 
-		public State(Phase phase, List<OperationSchedule> operationSchedules) {
+		public State(Phase phase, List<OperationSchedule> operationSchedules, Double orientationDegree) {
 			this.phase = phase;
 			this.operationSchedules = Lists.newArrayList(operationSchedules);
+			this.orientationDegree = orientationDegree;
 		}
 
 		public List<OperationSchedule> getOperationSchedules() {
@@ -78,12 +80,16 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 		public Phase getPhase() {
 			return phase;
 		}
+
+		public Double getOrientationDegree() {
+			return orientationDegree;
+		}
 	}
 
 	public static NavigationFragment newInstance(Phase phase,
-			List<OperationSchedule> operationSchedules) {
+			List<OperationSchedule> operationSchedules, Double orientationDegree) {
 		return newInstance(new NavigationFragment(), new State(phase,
-				operationSchedules));
+				operationSchedules, orientationDegree));
 	}
 
 	private final Handler handler = new Handler();
@@ -143,7 +149,6 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 			null);
 	private Date lastGpsUpdated = new Date(0);
 	private Integer numSatellites = 0;
-	private Double orientationDegree = 0.0;
 	private TilePipeline tilePipeline;
 	private Button zoomInButton;
 	private Button zoomOutButton;
@@ -267,7 +272,7 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 		if (navigationRenderer != null) {
 			navigationRenderer.changeOrientation(orientationDegree);
 		}
-		this.orientationDegree = orientationDegree;
+		setState(new State(getState().getPhase(), getState().getOperationSchedules(), orientationDegree));
 	}
 
 	protected void updatePlatform() {
@@ -433,7 +438,7 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 				getService(), tilePipeline, new Handler(),
 				OperationSchedule
 						.getCurrent(getState().getOperationSchedules()),
-				orientationDegree);
+				getState().getOrientationDegree());
 		navigationRenderer.addOnChangeMapZoomLevelListener(this);
 		navigationRenderer.setZoomLevel(getService().getMapZoomLevel());
 		navigationRenderer.setAutoZoomLevel(getService().getMapAutoZoom());
@@ -572,7 +577,7 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 	public void onUpdatePhase(Phase phase,
 			List<OperationSchedule> operationSchedules,
 			List<PassengerRecord> passengerRecords) {
-		setState(new State(phase, operationSchedules));
+		setState(new State(phase, operationSchedules, getState().getOrientationDegree()));
 		updatePlatform();
 	}
 }

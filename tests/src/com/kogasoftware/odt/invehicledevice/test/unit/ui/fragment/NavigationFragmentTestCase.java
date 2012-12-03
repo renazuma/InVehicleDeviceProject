@@ -66,7 +66,7 @@ public class NavigationFragmentTestCase extends
 				FrameLayout fl = new FrameLayout(a);
 				fl.setId(id);
 				a.setContentView(fl);
-				f = NavigationFragment.newInstance(Phase.DRIVE, oss);
+				f = NavigationFragment.newInstance(Phase.DRIVE, oss, 0.0);
 				FragmentManager fm = a.getSupportFragmentManager();
 				fm.beginTransaction().add(id, f).commit();
 			}
