@@ -21,9 +21,9 @@ public class TestUtilWaitForStartUiTestCase extends
 	Context tc;
 
 	public void callTestWaitForStartUi(Boolean timeout) throws Exception {
-		InVehicleDeviceApiClient ds = new DummyApiClient();
+		InVehicleDeviceApiClient ac = new DummyApiClient();
 		if (timeout) {
-			ds = new DummyApiClient() {
+			ac = new DummyApiClient() {
 				@Override
 				public int getOperationSchedules(
 						ApiClientCallback<List<OperationSchedule>> callback) {
@@ -39,8 +39,8 @@ public class TestUtilWaitForStartUiTestCase extends
 		editor.putBoolean(SharedPreferencesKeys.INITIALIZED, true);
 		editor.apply();
 
-		TestUtil.clearStatus();
-		TestUtil.setApiClient(ds);
+		TestUtil.clearLocalStorage(getInstrumentation());
+		TestUtil.setApiClient(ac);
 		a = getActivity();
 		assertEquals(!timeout, TestUtil.waitForStartUI(a).booleanValue());
 	}
