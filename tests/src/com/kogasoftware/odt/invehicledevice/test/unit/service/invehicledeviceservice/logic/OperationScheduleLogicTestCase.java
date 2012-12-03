@@ -7,10 +7,6 @@ import java.util.List;
 
 import junitx.framework.ListAssert;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.test.AndroidTestCase;
 
 import com.google.common.base.Optional;
@@ -20,7 +16,6 @@ import com.kogasoftware.odt.invehicledevice.apiclient.EmptyInVehicleDeviceApiCli
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.VoidReader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Writer;

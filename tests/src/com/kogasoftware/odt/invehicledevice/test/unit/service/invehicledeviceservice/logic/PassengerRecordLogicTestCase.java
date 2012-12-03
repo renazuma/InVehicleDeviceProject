@@ -4,12 +4,10 @@ import static org.mockito.Mockito.*;
 
 import java.util.Date;
 
-import junitx.framework.ListAssert;
 import android.test.AndroidTestCase;
 import android.test.MoreAsserts;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.apiclient.EmptyInVehicleDeviceApiClient;

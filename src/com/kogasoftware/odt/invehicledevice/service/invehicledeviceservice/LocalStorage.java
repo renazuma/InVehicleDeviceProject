@@ -1,6 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice;
 
-import java.io.ByteArrayInputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,8 +7,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.ExecutorService;
@@ -33,7 +30,6 @@ import android.util.Log;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Throwables;
-import com.google.common.io.ByteStreams;
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 
