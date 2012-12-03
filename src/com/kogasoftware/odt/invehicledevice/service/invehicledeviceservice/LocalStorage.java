@@ -104,6 +104,7 @@ public class LocalStorage implements Closeable {
 				} finally {
 					Closeables.closeQuietly(fileOutputStream);
 				}
+				Log.d(TAG, "\"" + file + "\" written ");
 			}
 		}
 
@@ -172,6 +173,7 @@ public class LocalStorage implements Closeable {
 				Log.e(TAG, "!\"" + file + "\".delete()");
 			}
 		} else {
+			Log.d(TAG, "\"" + file + "\" found ");
 			try {
 				Object object = SerializationUtils
 						.deserialize(new FileInputStream(file));
