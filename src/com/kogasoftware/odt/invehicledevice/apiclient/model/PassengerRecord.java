@@ -97,13 +97,24 @@ public class PassengerRecord extends PassengerRecordBase {
 	 */
 	public String getDisplayName() {
 		for (User user : getUser().asSet()) {
-			// 居住者の場合、姓名をつなげて帰す
+			// 居住者の場合、姓名をつなげて返す
 			if (user.getTypeOfUser().equals(User.TypeOfUser.RESIDENT)) {
 				return user.getLastName().or("") + " "
 						+ user.getFirstName().or("") + " 様";
 			}
-			// 居住者以外の場合、姓名以外の情報をつなげて識別可能にする
+			// 居住者以外の場合
 			StringBuilder displayName = new StringBuilder();
+			// 姓名があれば、姓名と予約番号をつなげて返す
+			if (user.getFirstName().isPresent()
+					|| user.getLastName().isPresent()) {
+				displayName.append(user.getLastName().or("") + " ");
+				displayName.append(user.getFirstName().or("") + " 様");
+				for (Integer id : getReservationId().asSet()) {
+					displayName.append(String.format(" %04d", id));
+				}
+				return displayName.toString();
+			}
+			// 姓名以外の情報をつなげて識別可能にする
 			if (getReservationId().isPresent()) {
 				displayName.append(String.format("%04d", getReservationId()
 						.get()));
