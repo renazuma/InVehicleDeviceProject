@@ -8,8 +8,9 @@ import java.util.List;
 import android.graphics.Bitmap;
 
 import com.javadocmd.simplelatlng.LatLng;
-import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
+import com.kogasoftware.odt.invehicledevice.apiclient.EmptyInVehicleDeviceApiClient;
+import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.InVehicleDevice;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
@@ -18,12 +19,9 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceProvider;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.User;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
-import com.kogasoftware.odt.invehicledevice.apiclient.EmptyInVehicleDeviceApiClient;
 
 public class MockApiClient extends EmptyInVehicleDeviceApiClient {
-
 	private List<OperationSchedule> lOperationSchedule = new LinkedList<OperationSchedule>();
-
 	private boolean NotificationFlag = false;
 
 	@Override
@@ -377,6 +375,7 @@ public class MockApiClient extends EmptyInVehicleDeviceApiClient {
 		}
 		return 0;
 	}
+
 	@Override
 	public int getOffPassenger(OperationSchedule operationSchedule,
 			Reservation reservation, User user,

@@ -1,18 +1,14 @@
 package com.kogasoftware.odt.invehicledevice.test.util.apiclient;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.kogasoftware.odt.invehicledevice.apiclient.EmptyInVehicleDeviceApiClient;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.apiclient.ApiClientException;
+import com.kogasoftware.odt.invehicledevice.apiclient.EmptyInVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceProvider;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
@@ -52,14 +48,9 @@ public class DummyApiClient extends EmptyInVehicleDeviceApiClient {
 			String r5 = "{id: 55, passenger_count: 1, departure_schedule_id: 4, arrival_schedule_id: 5, payment: 500, reservation_users: "
 					+ rus5 + "}";
 
-			String j1 = 
-					"{id:1, arrival_estimate: '2012-06-21T09:00:00+09:00', departure_estimate: '2012-06-21T09:15:00+09:00', "
-							+ "platform: {name: '乗降場A', name_ruby: 'とくべつようごろうじんほーむあじさいのおかうしまどざいたくかいごしえんせんたーあじさい'}, "
-							+ "reservations_as_departure: ["
-							+ r1
-							+ ","
-							+ r3
-							+ "]}";
+			String j1 = "{id:1, arrival_estimate: '2012-06-21T09:00:00+09:00', departure_estimate: '2012-06-21T09:15:00+09:00', "
+					+ "platform: {name: '乗降場A', name_ruby: 'とくべつようごろうじんほーむあじさいのおかうしまどざいたくかいごしえんせんたーあじさい'}, "
+					+ "reservations_as_departure: [" + r1 + "," + r3 + "]}";
 			l.add(OperationSchedule.parse(j1));
 
 			String j2 = new String(
@@ -110,7 +101,8 @@ public class DummyApiClient extends EmptyInVehicleDeviceApiClient {
 		return l;
 	}
 
-	public List<VehicleNotification> getVehicleNotifications2() throws ApiClientException {
+	public List<VehicleNotification> getVehicleNotifications2()
+			throws ApiClientException {
 
 		try {
 			Thread.sleep(5000);
@@ -141,6 +133,13 @@ public class DummyApiClient extends EmptyInVehicleDeviceApiClient {
 	@Override
 	public int getServiceProvider(ApiClientCallback<ServiceProvider> callback) {
 		callback.onSucceed(0, 200, new ServiceProvider());
+		return 0;
+	}
+
+	@Override
+	public int getOperationSchedules(
+			ApiClientCallback<List<OperationSchedule>> callback) {
+		callback.onSucceed(0, 200, new LinkedList<OperationSchedule>());
 		return 0;
 	}
 }
