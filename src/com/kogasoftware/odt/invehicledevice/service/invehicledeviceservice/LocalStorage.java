@@ -48,7 +48,7 @@ public class LocalStorage implements Closeable {
 	}
 
 	public interface BackgroundWriter {
-		void writeInBackground(LocalData ld);
+		void writeInBackground(LocalData localData);
 
 		void onWrite();
 	}
