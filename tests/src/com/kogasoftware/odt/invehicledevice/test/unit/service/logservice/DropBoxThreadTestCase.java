@@ -10,6 +10,7 @@ import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.DropBoxManager;
 import android.test.AndroidTestCase;
 import android.util.Base64;
@@ -25,6 +26,10 @@ public class DropBoxThreadTestCase extends AndroidTestCase {
 	DropBoxThread dbt;
 	File d;
 	BlockingQueue<File> files;
+
+	public Boolean isNotSupported() {
+		return Build.VERSION.SDK_INT >= 16;
+	}
 
 	@Override
 	public void setUp() throws Exception {
@@ -69,6 +74,9 @@ public class DropBoxThreadTestCase extends AndroidTestCase {
 	}
 
 	public void testSplitBytes() throws Exception {
+		if (isNotSupported()) {
+			return;
+		}
 		Long splitBytes = 2000L;
 		Long timeoutMillis = 50000L;
 		Long checkIntervalMillis = 0L;
@@ -139,6 +147,9 @@ public class DropBoxThreadTestCase extends AndroidTestCase {
 	}
 
 	public void testSplitTimeout() throws Exception {
+		if (isNotSupported()) {
+			return;
+		}
 		Long splitBytes = 5000L;
 		Long timeoutMillis = 500L;
 		Long checkIntervalMillis = 5000L;
@@ -219,6 +230,9 @@ public class DropBoxThreadTestCase extends AndroidTestCase {
 	}
 
 	public void testSplitTimeoutCheckInterval() throws Exception {
+		if (isNotSupported()) {
+			return;
+		}
 		Long splitBytes = 2000L;
 		Long timeoutMillis = 200L;
 		Long checkIntervalMillis = 1000L;
@@ -261,6 +275,9 @@ public class DropBoxThreadTestCase extends AndroidTestCase {
 	}
 
 	public void testSplitBytesCheckInterval() throws Exception {
+		if (isNotSupported()) {
+			return;
+		}
 		Long splitBytes = 5000L;
 		Long timeoutMillis = 10000L;
 		Long checkIntervalMillis = 500L;
@@ -318,6 +335,9 @@ public class DropBoxThreadTestCase extends AndroidTestCase {
 	}
 
 	public void testInterrupt() throws Exception {
+		if (isNotSupported()) {
+			return;
+		}
 		Long splitBytes = 5000L;
 		Long timeoutMillis = 5000L;
 		Long checkIntervalMillis = 500L;
@@ -347,5 +367,3 @@ public class DropBoxThreadTestCase extends AndroidTestCase {
 		assertEquals("test1datab", decode(l.get(1).getString("contents")));
 	}
 }
-
-
