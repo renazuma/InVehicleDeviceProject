@@ -18,7 +18,7 @@ public class InVehicleDeviceApiClientFactoryTestCase extends AndroidTestCase {
 		super.tearDown();
 	}
 
-	public void testNewInstance_1() throws Exception {
+	public void testNewInstance() throws Exception {
 		assertTrue(InVehicleDeviceApiClientFactory.newInstance() instanceof EmptyInVehicleDeviceApiClient);
 		assertTrue(InVehicleDeviceApiClientFactory.newInstance(
 				"http://localhost", "foo", new EmptyFile()) instanceof InVehicleDeviceApiClient);
