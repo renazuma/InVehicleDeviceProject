@@ -1,6 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.test.util;
 
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
@@ -14,6 +15,8 @@ import java.util.concurrent.TimeUnit;
 import junit.framework.Assert;
 import junitx.framework.AssertionFailedError;
 
+import org.joda.time.DateTime;
+
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
@@ -22,6 +25,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.RemoteException;
@@ -47,8 +52,26 @@ public class TestUtil {
 		InVehicleDeviceApiClientFactory.setInstance(ds);
 	}
 
+	@Deprecated
 	public static void clearStatus() {
 		LocalStorage.clearSavedFile();
+	}
+
+	public static void clearLocalStorage() {
+		LocalStorage.clearSavedFile();
+	}
+
+	public static void clearLocalStorage(Context context) {
+		clearLocalStorage();
+		(new LocalStorage(context)).close();
+		clearLocalStorage();
+		Uninterruptibles.sleepUninterruptibly(getLocalStorageSaveMillis(),
+				TimeUnit.MILLISECONDS);
+	}
+
+	public static void clearLocalStorage(Instrumentation i) {
+		clearLocalStorage(i.getContext());
+		clearLocalStorage(i.getTargetContext());
 	}
 
 	public static void assertChange(Callable<Boolean> condition) {
@@ -381,5 +404,39 @@ public class TestUtil {
 
 	public static void assertHide(Fragment fragment) {
 		assertChangeVisibility(fragment, false);
+	}
+
+	public static void setDate(DateTime dateTime) {
+		InVehicleDeviceService.setMockDate(new Date(dateTime.getMillis()));
+	}
+
+	public static Closeable setTestThreadHandler() {
+		final CountDownLatch l = new CountDownLatch(1);
+		final Thread thread = Thread.currentThread();
+		final HandlerThread hs = new HandlerThread("") {
+			@Override
+			protected void onLooperPrepared() {
+				InVehicleDeviceService.putThreadHandler(thread, new Handler(
+						getLooper()));
+				l.countDown();
+			}
+		};
+		hs.start();
+		try {
+			Assert.assertTrue(l.await(10, TimeUnit.SECONDS));
+		} catch (InterruptedException e) {
+			Assert.fail();
+		}
+		return new Closeable() {
+			@Override
+			public void close() {
+				hs.quit();
+				hs.interrupt();
+			}
+		};
+	}
+
+	public static Long getLocalStorageSaveMillis() {
+		return 2000L;
 	}
 }
