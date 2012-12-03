@@ -2,9 +2,7 @@ package com.kogasoftware.odt.invehicledevice.test.util;
 
 import android.content.Context;
 import android.test.ActivityInstrumentationTestCase2;
-import android.view.KeyEvent;
 
-import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
 public class TestUtilAutoStartTestCase extends
@@ -27,6 +25,8 @@ public class TestUtilAutoStartTestCase extends
 	}
 
 	public void callTestDisableAutoStart() throws Exception {
+		// TODO: テスト可能な自動起動方式を作って再実装
+
 		// 自動起動をOFFにし、Activityを終了
 		TestUtil.disableAutoStart(c);
 		sendKeys(KeyEvent.KEYCODE_HOME, KeyEvent.KEYCODE_BACK);
@@ -46,14 +46,14 @@ public class TestUtilAutoStartTestCase extends
 	}
 
 	/**
-	 *  二度目以降の実行に失敗することがあるので、複数回実行する
+	 * 二度目以降の実行に失敗することがあるので、複数回実行する
 	 */
 	public void testDisableAutoStart2() throws Exception {
 		callTestDisableAutoStart();
 	}
 
 	/**
-	 *  二度目以降の実行に失敗することがあるので、複数回実行する
+	 * 二度目以降の実行に失敗することがあるので、複数回実行する
 	 */
 	public void testDisableAutoStart3() throws Exception {
 		callTestDisableAutoStart();
