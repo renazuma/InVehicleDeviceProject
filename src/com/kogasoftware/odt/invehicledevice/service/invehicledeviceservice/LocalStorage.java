@@ -225,12 +225,17 @@ public class LocalStorage implements Closeable {
 	private Thread saveThread = new EmptyThread();
 
 	public LocalStorage() {
-		localData = new LocalData();
-		savePeriodMillis = DEFAULT_SAVE_PERIO_MILLIS;
+		this(new LocalData());
 	}
 
 	public LocalStorage(Context context) {
 		this(context, DEFAULT_SAVE_PERIO_MILLIS);
+	}
+
+	@VisibleForTesting
+	public LocalStorage(LocalData localData) {
+		this.localData = localData;
+		savePeriodMillis = DEFAULT_SAVE_PERIO_MILLIS;
 	}
 
 	@VisibleForTesting
