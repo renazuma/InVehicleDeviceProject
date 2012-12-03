@@ -5,9 +5,8 @@ import java.util.LinkedList;
 
 import junit.framework.TestCase;
 
-import org.apache.commons.lang3.SerializationUtils;
-
 import com.google.common.collect.Lists;
+import com.kogasoftware.odt.apiclient.Serializations;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.*;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.base.*;
 
@@ -45,13 +44,13 @@ public class UnitAssignmentBaseTestCase extends TestCase {
 		assertFalse(m1.equals(m2));
 
 		UnitAssignment m3 = m1.clone();
-		assertEquals(m1, SerializationUtils.clone(m3));
+		assertEquals(m1, Serializations.clone(m3));
 	}
 
 	public void testSerializable() throws Exception {
 		UnitAssignment m1 = new UnitAssignment();
 		m1.setId(10);
-		UnitAssignment m2 = SerializationUtils.clone(m1);
+		UnitAssignment m2 = Serializations.clone(m1);
 		assertFalse(m1 == m2);
 		assertEquals(m1, m2);
 
@@ -61,7 +60,7 @@ public class UnitAssignmentBaseTestCase extends TestCase {
 		m2.setUpdatedAt(ua);
 		assertFalse(m1.equals(m2));
 
-		UnitAssignment m3 = SerializationUtils.clone(m1);
+		UnitAssignment m3 = Serializations.clone(m1);
 		assertEquals(m1, m3);
 	}
 
@@ -132,7 +131,7 @@ public class UnitAssignmentBaseTestCase extends TestCase {
 		l1.add(even);
 		l1.add(odd);
 		
-		LinkedList<UnitAssignment> l2 = SerializationUtils.clone(l1);
+		LinkedList<UnitAssignment> l2 = Serializations.clone(l1);
 		assertEquals(l1, l2);
 		
 		assertEquals(l1.get(0), l2.get(0));
