@@ -84,6 +84,20 @@ public class StartupService extends Service {
 	}
 
 	public void checkDeviceAndStartActivity() {
+		// テスト中は起動しない
+		if (BuildConfig.DEBUG) {
+			ActivityManager activityManager = (ActivityManager) getSystemService(Activity.ACTIVITY_SERVICE);
+			for (RunningAppProcessInfo info : Objects.firstNonNull(
+					activityManager.getRunningAppProcesses(),
+					new ArrayList<RunningAppProcessInfo>())) {
+				for (String pkg : info.pkgList) {
+					if (pkg.startsWith("com.kogasoftware.odt.invehicledevice.test")) {
+						Log.i(TAG, "pkg=" + pkg + " found. start canceled.");
+					}
+				}
+			}
+		}
+
 		// 機内モードは強制的にOFF
 		disableAirplaneMode();
 
