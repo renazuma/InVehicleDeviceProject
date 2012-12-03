@@ -1,9 +1,11 @@
 package com.kogasoftware.odt.invehicledevice.service.startupservice;
 
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -19,11 +21,11 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
-import android.os.RemoteException;
 import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.common.base.Objects;
 import com.kogasoftware.odt.invehicledevice.BuildConfig;
 import com.kogasoftware.odt.invehicledevice.service.logservice.LogService;
 import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
@@ -44,16 +46,13 @@ public class StartupService extends Service {
 	};
 	private final IStartupService.Stub binder = new IStartupService.Stub() {
 		@Override
-		public void disable() throws RemoteException {
-			enabled.set(false);
-			Log.i(TAG, "Startup disabled");
+		public void disable() {
+			setEnabled(false);
 		}
 
 		@Override
-		public void enable() throws RemoteException {
-			enabled.set(true);
-			Log.i(TAG, "Startup enabled");
-			handler.post(checkDeviceAndShowActivityCallback);
+		public void enable() {
+			setEnabled(true);
 		}
 	};
 	private final Runnable checkDeviceAndShowActivityCallback = new Runnable() {
@@ -235,12 +234,18 @@ public class StartupService extends Service {
 			Bundle extras = intent.getExtras();
 			if (extras != null
 					&& extras.containsKey(Intents.EXTRA_BOOLEAN_ENABLED)) {
-				enabled.set(extras.getBoolean(Intents.EXTRA_BOOLEAN_ENABLED));
+				setEnabled(extras.getBoolean(Intents.EXTRA_BOOLEAN_ENABLED));
 			}
 		}
 		handler.post(checkDeviceAndShowActivityCallback);
 		startService(new Intent(this, VoiceService.class));
 		startService(new Intent(this, LogService.class));
 		return Service.START_STICKY;
+	}
+
+	private void setEnabled(Boolean value) {
+		enabled.set(value);
+		Log.i(TAG, "Startup enabled=" + value);
+		handler.post(checkDeviceAndShowActivityCallback);
 	}
 }
