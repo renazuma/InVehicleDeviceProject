@@ -112,6 +112,13 @@ public class InVehicleDeviceService extends Service {
 			Looper.getMainLooper());
 
 	public static final Integer EXECUTOR_SERVICE_THREADS = 3;
+	
+	@VisibleForTesting
+	public static void putThreadHandler(Thread thread, Handler handler) {
+		synchronized (HANDLERS) {
+			HANDLERS.put(thread, handler);
+		}
+	}
 
 	public static Handler getThreadHandler() {
 		synchronized (HANDLERS) {
