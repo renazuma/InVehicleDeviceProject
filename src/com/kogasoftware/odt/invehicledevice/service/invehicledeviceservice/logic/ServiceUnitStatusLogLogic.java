@@ -12,7 +12,6 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVeh
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundWriter;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Reader;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Writer;
 
 public class ServiceUnitStatusLogLogic {
 	protected final InVehicleDeviceService service;
