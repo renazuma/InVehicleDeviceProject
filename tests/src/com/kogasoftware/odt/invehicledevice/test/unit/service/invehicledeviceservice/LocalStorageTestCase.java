@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import junitx.framework.ComparableAssert;
 
-import org.apache.commons.lang3.SerializationUtils;
+import com.kogasoftware.odt.apiclient.Serializations;
 import org.apache.commons.lang3.time.DateUtils;
 
 import android.content.Context;
@@ -28,6 +28,7 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Local
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundReader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundWriter;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Reader;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.VoidReader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Writer;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
@@ -36,46 +37,48 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 
 public class LocalStorageTestCase extends AndroidTestCase {
+	static final Long S = TestUtil.getLocalStorageSaveMillis();
+
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		TestUtil.clearStatus();
+		TestUtil.clearLocalStorage(getContext());
 	}
 
 	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
-		Thread.sleep(200); // 保存されるのを待つ
+		Thread.sleep(S); // 保存されるのを待つ
 	}
 
 	/**
 	 * デフォルトコンストラクタ。非チェック例外が発生しないことのみ確認
 	 */
-	public void testConstructor_1() throws Exception {
-		LocalStorage lds = new LocalStorage();
-		lds.withReadLock(new Reader<Date>() {
+	public void testConstructor() throws Exception {
+		LocalStorage ls = new LocalStorage();
+		ls.withReadLock(new Reader<Date>() {
 			@Override
 			public Date read(LocalData ld) {
 				return ld.updatedDate;
 			}
 		});
-		lds.withWriteLock(new Writer() {
+		ls.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData ld) {
 				ld.vehicleNotifications.clear();
 			}
 		});
-		lds.close();
+		ls.close();
 	}
 
 	/**
-	 * コンストラクタ。clearStatusFileが呼ばれたら内容をクリア
+	 * コンストラクタ。clearSavedFileが呼ばれたら内容をクリア
 	 */
-	public void testReadWriteClear1() throws Exception {
+	public void testClearSavedFile() throws Exception {
 		Context c = getContext();
 		// 保存
-		LocalStorage lds1 = new LocalStorage(c);
-		lds1.withWriteLock(new Writer() {
+		LocalStorage ls1 = new LocalStorage(c);
+		ls1.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData ld) {
 				ld.passengerRecords.clear();
@@ -85,12 +88,12 @@ public class LocalStorageTestCase extends AndroidTestCase {
 						new VehicleNotification());
 			}
 		});
-		lds1.close();
-		Thread.sleep(500); // 保存されるのを待つ
+		ls1.close();
+		Thread.sleep(S); // 保存されるのを待つ
 
 		// クリアされていないことを確認
-		LocalStorage lds2 = new LocalStorage(c);
-		lds2.withReadLock(new VoidReader() {
+		LocalStorage ls2 = new LocalStorage(c);
+		ls2.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData ld) {
 				assertEquals(1, ld.passengerRecords.size());
@@ -100,12 +103,13 @@ public class LocalStorageTestCase extends AndroidTestCase {
 								VehicleNotificationStatus.REPLIED).size());
 			}
 		});
-		lds2.close();
+		ls2.close();
+		Thread.sleep(S); // 保存されるのを待つ
 
 		// クリアされることを確認
 		LocalStorage.clearSavedFile();
-		LocalStorage lds3 = new LocalStorage(c);
-		lds3.withReadLock(new VoidReader() {
+		LocalStorage ls3 = new LocalStorage(c);
+		ls3.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData ld) {
 				assertTrue(ld.passengerRecords.isEmpty());
@@ -114,11 +118,12 @@ public class LocalStorageTestCase extends AndroidTestCase {
 						VehicleNotificationStatus.REPLIED).isEmpty());
 			}
 		});
-		lds3.close();
+		ls3.close();
+		Thread.sleep(S); // 保存されるのを待つ
 
 		// 復活しないことを確認
-		LocalStorage lds4 = new LocalStorage(c);
-		lds4.withReadLock(new VoidReader() {
+		LocalStorage ls4 = new LocalStorage(c);
+		ls4.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData ld) {
 				assertTrue(ld.passengerRecords.isEmpty());
@@ -126,36 +131,36 @@ public class LocalStorageTestCase extends AndroidTestCase {
 						VehicleNotificationStatus.REPLIED).isEmpty());
 			}
 		});
-		lds4.close();
+		ls4.close();
 	}
 
 	/**
 	 * コンストラクタ。SharedPreferencesKeyのCLEAR_REQUIREDがtrueの場合 内容をクリア
 	 */
-	public void testReadWriteClear() throws Exception {
+	public void testClearRequired() throws Exception {
 		Context c = getContext();
 
 		// 保存
 		LocalStorage.clearSavedFile();
-		LocalStorage lds1 = new LocalStorage(c);
-		lds1.withWriteLock(new Writer() {
+		LocalStorage ls1 = new LocalStorage(c);
+		ls1.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData ld) {
 				ld.operationSchedules.add(new OperationSchedule());
 			}
 		});
-		lds1.close();
-		Thread.sleep(500); // 保存されるのを待つ
+		ls1.close();
+		Thread.sleep(S); // 保存されるのを待つ
 
 		// クリアされていないことを確認
-		LocalStorage lds2 = new LocalStorage(c);
-		lds2.withReadLock(new VoidReader() {
+		LocalStorage ls2 = new LocalStorage(c);
+		ls2.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData ld) {
 				assertEquals(ld.operationSchedules.size(), 1);
 			}
 		});
-		lds2.close();
+		ls2.close();
 
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(c);
@@ -163,28 +168,28 @@ public class LocalStorageTestCase extends AndroidTestCase {
 				.putBoolean(SharedPreferencesKeys.CLEAR_STATUS_BACKUP, true)
 				.commit();
 		// クリアされることを確認
-		LocalStorage lds3 = new LocalStorage(c);
-		lds3.withReadLock(new VoidReader() {
+		LocalStorage ls3 = new LocalStorage(c);
+		ls3.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData ld) {
 				assertTrue(ld.operationSchedules.isEmpty());
 			}
 		});
-		lds3.close();
+		ls3.close();
 
 		// SharedPreferencesKey.CLEAR_REQUIREDがfalseになっていることを確認
 		assertFalse(preferences.getBoolean(
 				SharedPreferencesKeys.CLEAR_STATUS_BACKUP, true));
 
 		// データが復活しないことを確認
-		LocalStorage lds4 = new LocalStorage(c);
-		lds4.withReadLock(new VoidReader() {
+		LocalStorage ls4 = new LocalStorage(c);
+		ls4.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData ld) {
 				assertTrue(ld.operationSchedules.isEmpty());
 			}
 		});
-		lds4.close();
+		ls4.close();
 	}
 
 	/**
@@ -192,7 +197,7 @@ public class LocalStorageTestCase extends AndroidTestCase {
 	 */
 	public void testReadWriteLock() throws Exception {
 		final CyclicBarrier cb = new CyclicBarrier(200);
-		final LocalStorage lds = new LocalStorage(getContext());
+		final LocalStorage ls = new LocalStorage(getContext());
 		final AtomicBoolean working = new AtomicBoolean(false);
 		final AtomicInteger numConcurrentAccesses = new AtomicInteger(0);
 		final AtomicBoolean error = new AtomicBoolean(false);
@@ -224,7 +229,7 @@ public class LocalStorageTestCase extends AndroidTestCase {
 				} catch (BrokenBarrierException e) {
 					return;
 				}
-				lds.withReadLock(new Reader<Integer>() {
+				ls.withReadLock(new Reader<Integer>() {
 					@Override
 					public Integer read(LocalData localData) {
 						readAccess.run();
@@ -245,7 +250,7 @@ public class LocalStorageTestCase extends AndroidTestCase {
 				} catch (BrokenBarrierException e) {
 					return;
 				}
-				lds.withReadLock(new Reader<Integer>() {
+				ls.withReadLock(new Reader<Integer>() {
 					@Override
 					public Integer read(LocalData localData) {
 						readAccess.run();
@@ -268,7 +273,7 @@ public class LocalStorageTestCase extends AndroidTestCase {
 					error.set(true);
 					return;
 				}
-				lds.withWriteLock(new Writer() {
+				ls.withWriteLock(new Writer() {
 					@Override
 					public void write(LocalData localData) {
 						try {
@@ -302,7 +307,7 @@ public class LocalStorageTestCase extends AndroidTestCase {
 			threads[i].join();
 		}
 
-		lds.close();
+		ls.close();
 
 		// 同時アクセスが頻繁に発生しているか
 		assertTrue(threads.length * 0.7 + " < " + numConcurrentAccesses.get(),
@@ -318,16 +323,16 @@ public class LocalStorageTestCase extends AndroidTestCase {
 		Integer savePeriod = 1000;
 
 		// 永続化されるかの確認
-		LocalStorage lds = new LocalStorage(getContext(), savePeriod);
+		LocalStorage ls = new LocalStorage(getContext(), savePeriod);
 		final VehicleNotification vn = new VehicleNotification();
 		vn.setId(1);
-		lds.withWriteLock(new Writer() {
+		ls.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
 				localData.vehicleNotifications.clear();
 				localData.vehicleNotifications.put(
 						VehicleNotificationStatus.UNHANDLED,
-						SerializationUtils.clone(vn));
+						Serializations.clone(vn));
 			}
 		});
 		Thread.sleep(savePeriod / 5);
@@ -344,13 +349,13 @@ public class LocalStorageTestCase extends AndroidTestCase {
 
 		// savePeriod経過していない状態では、永続化されないことを確認
 		vn.setId(2);
-		lds.withWriteLock(new Writer() {
+		ls.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
 				localData.vehicleNotifications.clear();
 				localData.vehicleNotifications.put(
 						VehicleNotificationStatus.UNHANDLED,
-						SerializationUtils.clone(vn));
+						Serializations.clone(vn));
 			}
 		});
 		Thread.sleep(savePeriod / 5);
@@ -378,7 +383,7 @@ public class LocalStorageTestCase extends AndroidTestCase {
 		});
 		assertEquals(2, id3.intValue());
 
-		lds.close();
+		ls.close();
 		read1.close();
 		read2.close();
 		read3.close();
@@ -388,53 +393,50 @@ public class LocalStorageTestCase extends AndroidTestCase {
 	 * 新運行スケジュール受信時刻をまたいだらデータがクリアされるかのチェック
 	 */
 	public void testNewSchedule() throws Exception {
-		Integer s = 300;
-
 		// 日付を指定
 		Date d = DateUtils.truncate(new Date(), Calendar.DAY_OF_MONTH);
 		d = DateUtils.setHours(d,
 				InVehicleDeviceService.NEW_SCHEDULE_DOWNLOAD_HOUR);
 		d = DateUtils.setMinutes(d,
 				InVehicleDeviceService.NEW_SCHEDULE_DOWNLOAD_MINUTE);
-		d = DateUtils.addSeconds(d, -10);
+		d = DateUtils.addMilliseconds(d, (int) -S * 2);
 		InVehicleDeviceService.setMockDate(d);
 
-		LocalStorage lds = new LocalStorage(getContext());
-		lds.withWriteLock(new Writer() {
+		LocalStorage ls1 = new LocalStorage(getContext());
+		ls1.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
-				localData.operationScheduleInitializedSign.release();
+				localData.operationScheduleInitialized = true;
 			}
 		});
-		lds.close();
-		Thread.sleep(s);
+		ls1.close();
+		Thread.sleep(S);
 
 		// 新運行スケジュール受信時刻をまたいでいない場合はそのまま
-		lds = new LocalStorage(getContext());
-		Integer p1 = lds.withReadLock(new Reader<Integer>() {
+		LocalStorage ls2 = new LocalStorage(getContext());
+		Boolean b1 = ls2.withReadLock(new Reader<Boolean>() {
 			@Override
-			public Integer read(LocalData localData) {
-				return localData.operationScheduleInitializedSign
-						.availablePermits();
+			public Boolean read(LocalData localData) {
+				return localData.operationScheduleInitialized;
 			}
 		});
-		lds.close();
-		Thread.sleep(s);
-		assertEquals(1, p1.intValue());
+		assertTrue(b1.booleanValue());
 
 		// 新運行スケジュール受信時刻をまたいだばあいはクリアさせる
-		InVehicleDeviceService.setMockDate(DateUtils.addSeconds(d, 10));
-		lds = new LocalStorage(getContext());
-		Integer p2 = lds.withReadLock(new Reader<Integer>() {
+		InVehicleDeviceService.setMockDate(DateUtils.addMilliseconds(d,
+				(int) (S * 3)));
+		LocalStorage ls3 = new LocalStorage(getContext());
+		Boolean b2 = ls3.withReadLock(new Reader<Boolean>() {
 			@Override
-			public Integer read(LocalData localData) {
-				return localData.operationScheduleInitializedSign
-						.availablePermits();
+			public Boolean read(LocalData localData) {
+				return localData.operationScheduleInitialized;
 			}
 		});
-		lds.close();
-		Thread.sleep(s);
-		assertEquals(0, p2.intValue());
+		assertFalse(b2.booleanValue());
+
+		// 保存が走ることがあるのでcloseは最後
+		ls2.close();
+		ls3.close();
 	}
 
 	public void testReadInBackground() throws Exception {
@@ -450,8 +452,8 @@ public class LocalStorageTestCase extends AndroidTestCase {
 		final OperationSchedule os = new OperationSchedule();
 		os.setId(12345);
 		final AtomicReference<OperationSchedule> resultOs = new AtomicReference<OperationSchedule>();
-		final LocalStorage lds = new LocalStorage(getContext());
-		lds.withWriteLock(new Writer() {
+		final LocalStorage ls = new LocalStorage(getContext());
+		ls.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData ld) {
 				ld.operationSchedules.clear();
@@ -480,13 +482,13 @@ public class LocalStorageTestCase extends AndroidTestCase {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
-				lds.read(br);
+				ls.read(br);
 			}
 		});
 		try {
 			ht.join(5000);
 		} finally {
-			lds.close();
+			ls.close();
 			ht.quit();
 		}
 		assertNotNull(resultOs.get());
@@ -505,8 +507,8 @@ public class LocalStorageTestCase extends AndroidTestCase {
 		cdl.await();
 		final OperationSchedule os = new OperationSchedule();
 		os.setId(54321);
-		final LocalStorage lds = new LocalStorage(getContext());
-		lds.withWriteLock(new Writer() {
+		final LocalStorage ls = new LocalStorage(getContext());
+		ls.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData ld) {
 				ld.operationSchedules.clear();
@@ -533,20 +535,22 @@ public class LocalStorageTestCase extends AndroidTestCase {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
-				lds.write(bw);
+				ls.write(bw);
 			}
 		});
 		try {
 			ht.join(5000);
 		} finally {
-			lds.close();
+			ls.close();
 			ht.quit();
 		}
-		OperationSchedule resultOs = lds.withReadLock(new Reader<OperationSchedule>(){
-			@Override
-			public OperationSchedule read(LocalData localData) {
-				return localData.operationSchedules.get(0);
-			}});
+		OperationSchedule resultOs = ls
+				.withReadLock(new Reader<OperationSchedule>() {
+					@Override
+					public OperationSchedule read(LocalData localData) {
+						return localData.operationSchedules.get(0);
+					}
+				});
 		assertEquals(os.getId(), resultOs.getId());
 	}
 }

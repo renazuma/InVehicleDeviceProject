@@ -1,9 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledeviceservice.logic;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.Date;
 

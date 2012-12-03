@@ -1,10 +1,8 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.ui.fragment;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 import android.support.v4.app.FragmentManager;
@@ -12,10 +10,10 @@ import android.widget.FrameLayout;
 
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Writer;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.OperationScheduleListFragment;
@@ -26,7 +24,10 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 public class OperationScheduleListFragmentTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 	InVehicleDeviceService s;
-	OperationScheduleListFragment oslf;
+	LocalData ld;
+	EventDispatcher ed;
+	OperationScheduleListFragment f;
+
 	OperationSchedule os0 = new OperationSchedule();
 	OperationSchedule os1 = new OperationSchedule();
 	OperationSchedule os2 = new OperationSchedule();
@@ -48,21 +49,16 @@ public class OperationScheduleListFragmentTestCase extends
 	OperationRecord or8 = new OperationRecord();
 	OperationRecord or9 = new OperationRecord();
 	List<OperationSchedule> oss;
-	LocalStorage lds;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		lds = new LocalStorage(getInstrumentation().getContext());
-		lds.withWriteLock(new Writer() {
-			@Override
-			public void write(LocalData localData) {
-				localData.operationSchedules.clear();
-			}
-		});
-
+		ed = mock(EventDispatcher.class);
+		ld = new LocalData();
 		s = mock(InVehicleDeviceService.class);
-		when(s.getLocalStorage()).thenReturn(lds);
+		when(s.getLocalStorage()).thenReturn(new LocalStorage(ld));
+		when(s.getEventDispatcher()).thenReturn(ed);
+		a.setService(s);
 
 		os0.setId(100);
 		os1.setId(101);
@@ -87,14 +83,6 @@ public class OperationScheduleListFragmentTestCase extends
 		os9.setOperationRecord(or9);
 
 		oss = Lists.newLinkedList();
-		lds.withWriteLock(new Writer() {
-			@Override
-			public void write(LocalData ld) {
-				ld.operationSchedules.addAll(oss);
-			}
-		});
-
-		when(s.getLocalStorage()).thenReturn(lds);
 	}
 
 	@Override
@@ -246,16 +234,11 @@ public class OperationScheduleListFragmentTestCase extends
 		assertShow();
 		solo.clickOnButton(solo.getString(R.string.it_returns));
 
-		TestUtil.assertHide(oslf);
+		TestUtil.assertHide(f);
 	}
 
 	protected void assertShow() throws Throwable {
-		lds.withWriteLock(new Writer() {
-			@Override
-			public void write(LocalData localData) {
-				localData.operationSchedules.addAll(oss);
-			}
-		});
+		ld.operationSchedules.addAll(oss);
 		runTestOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -263,12 +246,11 @@ public class OperationScheduleListFragmentTestCase extends
 				FrameLayout fl = new FrameLayout(a);
 				fl.setId(id);
 				a.setContentView(fl);
-				oslf = OperationScheduleListFragment.newInstance(new LinkedList<OperationSchedule>());
+				f = OperationScheduleListFragment.newInstance(oss);
 				FragmentManager fm = a.getSupportFragmentManager();
-				fm.beginTransaction().add(id, oslf).commit();
+				fm.beginTransaction().add(id, f).commit();
 			}
 		});
-
-		TestUtil.assertShow(oslf);
+		TestUtil.assertShow(f);
 	}
 }

@@ -1,92 +1,115 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.ui.fragment;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-import com.google.common.base.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
+
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.widget.FrameLayout;
+
+import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
+import com.kogasoftware.odt.invehicledevice.ui.fragment.ArrivalCheckFragment;
+import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 
 public class ArrivalCheckFragmentTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 	InVehicleDeviceService s;
+	InVehicleDeviceApiClient ac;
+	LocalData ld;
+	EventDispatcher ed;
+	Fragment f;
+	ScheduledExecutorService ses;
+
 	OperationSchedule os;
-	ArrivalCheckModalView mv;
+	Platform p;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		os = new OperationSchedule();
-		Platform p = new Platform();
-		p.setName("乗降場X");
-		os.setPlatform(p);
-
+		ses = Executors.newScheduledThreadPool(1);
+		ld = new LocalData();
+		ed = mock(EventDispatcher.class);
+		ac = mock(InVehicleDeviceApiClient.class);
+		when(ac.withSaveOnClose()).thenReturn(ac);
 		s = mock(InVehicleDeviceService.class);
-		when(s.getCurrent()).thenReturn(Optional.of(os));
+		when(s.getLocalStorage()).thenReturn(new LocalStorage(ld));
+		when(s.getEventDispatcher()).thenReturn(ed);
+		when(s.getApiClient()).thenReturn(ac);
+		when(s.getScheduledExecutorService()).thenReturn(ses);
+		a.setService(s);
 
-		mv = new ArrivalCheckModalView(a, s);
-
-		runOnUiThreadSync(new Runnable() {
-			@Override
-			public void run() {
-				a.setContentView(mv);
-			}
-		});
+		os = new OperationSchedule();
+		p = new Platform();
+		os.setPlatform(p);
+		os.setOperationRecord(new OperationRecord());
+		ld.operationSchedules.add(os);
 	}
 
 	@Override
 	protected void tearDown() throws Exception {
+		ses.shutdownNow();
 		super.tearDown();
 	}
 
-	public void testShow1() throws Exception {
-		assertShow("乗降場K");
-	}
-
-	public void testShow2() throws Exception {
-		assertShow("乗降場L");
-	}
-
-	public void testShow3() throws Exception {
-		assertShow("乗降場M");
-	}
-
-	protected void assertShow(String platformName) throws Exception {
-		for (Platform p : os.getPlatform().asSet()) {
-			p.setName(platformName);
+	public void testShow() throws Throwable {
+		for (String name : new String[] { "乗降場A", "乗降場B", "乗降場C" }) {
+			assertShow(name);
 		}
+	}
 
-		assertFalse(mv.isShown());
-
-		runOnUiThreadSync(new Runnable() {
+	protected void assertShow(final String platformName) throws Throwable {
+		p.setName(platformName);
+		runTestOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				mv.show();
+				int id = 12345;
+				FrameLayout fl = new FrameLayout(a);
+				fl.setId(id);
+				a.setContentView(fl);
+				f = ArrivalCheckFragment.newInstance(os);
+				FragmentManager fm = a.getSupportFragmentManager();
+				fm.beginTransaction().add(id, f).commit();
 			}
 		});
-
-		TestUtil.assertShow(mv);
-		assertTrue(solo.searchText(platformName, true));
+		TestUtil.assertShow(f);
+		assertTrue(solo.searchText(platformName));
 	}
 
-	public void testArrive() throws Exception {
+	public void testArrive() throws Throwable {
+		os.setId(101);
 		assertShow("のりおりば");
 		solo.clickOnView(solo.getView(R.id.arrival_button));
-		TestUtil.assertHide(mv);
-		verify(s, times(1)).enterPlatformPhase();
+		TestUtil.assertHide(f);
+		ArgumentCaptor<OperationSchedule> a = ArgumentCaptor
+				.forClass(OperationSchedule.class);
+		verify(ac, timeout(1000).times(1)).arrivalOperationSchedule(
+				a.capture(),
+				Mockito.<ApiClientCallback<OperationSchedule>> any());
+		assertEquals(101, a.getValue().getId().intValue());
 	}
 
-	public void testBack() throws Exception {
+	public void testBack() throws Throwable {
+		os.setId(100);
 		assertShow("のりおりば");
 		solo.clickOnView(solo.getView(R.id.arrival_check_close_button));
-		TestUtil.assertHide(mv);
-		verify(s, never()).enterPlatformPhase();
+		TestUtil.assertHide(f);
+		verify(ac, timeout(1000).never()).arrivalOperationSchedule(
+				Mockito.<OperationSchedule> any(),
+				Mockito.<ApiClientCallback<OperationSchedule>> any());
 	}
 }

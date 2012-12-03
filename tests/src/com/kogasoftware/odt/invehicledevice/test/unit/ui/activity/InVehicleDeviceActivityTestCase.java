@@ -59,11 +59,12 @@ public class InVehicleDeviceActivityTestCase extends
 		}
 	}
 
-	public void test初回のスケジュール受信に失敗した場合の警告() throws Exception {
+	public void testAlertInitialOperationScheduleReceiveFailed()
+			throws Exception {
 		String message = getInstrumentation().getTargetContext().getString(
 				R.string.failed_to_connect_operator_tool);
 		TestUtil.disableAutoStart(getInstrumentation().getContext());
-		TestUtil.clearStatus();
+		TestUtil.clearLocalStorage(getInstrumentation());
 		TestUtil.setApiClient(new EmptyInVehicleDeviceApiClient() {
 			@Override
 			public int getOperationSchedules(
@@ -79,11 +80,12 @@ public class InVehicleDeviceActivityTestCase extends
 		}
 	}
 
-	public void test初回のスケジュール受信に失敗した場合の警告_初回でない場合は表示されない() throws Exception {
+	public void xtestNoAlertSecondOperationScheduleReceiveFailed()
+			throws Exception { // TODO: 自動起動テストができるようになったら再実装
 		String message = getInstrumentation().getTargetContext().getString(
 				R.string.failed_to_connect_operator_tool);
 		TestUtil.disableAutoStart(getInstrumentation().getContext());
-		TestUtil.clearStatus();
+		TestUtil.clearLocalStorage(getInstrumentation());
 		final AtomicBoolean fail = new AtomicBoolean(false);
 		TestUtil.setApiClient(new EmptyInVehicleDeviceApiClient() {
 			@Override
@@ -127,11 +129,12 @@ public class InVehicleDeviceActivityTestCase extends
 		}
 	}
 
-	public void test初回のスケジュール受信に失敗した場合の警告_成功した場合表示されない() throws Exception {
+	public void testNoAlertInitialOperationScheduleReceiveSucceed()
+			throws Exception {
 		String message = getInstrumentation().getTargetContext().getString(
 				R.string.failed_to_connect_operator_tool);
 		TestUtil.disableAutoStart(getInstrumentation().getContext());
-		TestUtil.clearStatus();
+		TestUtil.clearLocalStorage(getInstrumentation());
 		TestUtil.setApiClient(new EmptyInVehicleDeviceApiClient() {
 			@Override
 			public int getOperationSchedules(

@@ -18,7 +18,7 @@ public class VoiceThreadTestCase extends EmptyActivityInstrumentationTestCase2 {
 		super.setUp();
 		bq = new LinkedBlockingQueue<String>();
 		vt = new VoiceThread(getInstrumentation().getTargetContext(), bq);
-		sa = new LocalStorage(null);
+		sa = new LocalStorage();
 	}
 
 	@Override

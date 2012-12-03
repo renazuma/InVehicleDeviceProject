@@ -1,110 +1,95 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.ui.fragment;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.widget.FrameLayout;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.ui.fragment.OperationScheduleChangedFragment;
+import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification.NotificationKind;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification.Response;
 
 public class OperationScheduleChangedFragmentTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 	InVehicleDeviceService s;
-	LocalStorage sa;
-	ScheduleChangedModalView mv;
-	ScheduleModalView smv;
+	InVehicleDeviceApiClient ac;
+	LocalData ld;
+	EventDispatcher ed;
+	ScheduledExecutorService ses;
+	Fragment f;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		s = mock(InVehicleDeviceService.class);
-		when(s.getCurrent()).thenReturn(
-				Optional.<OperationSchedule> absent());
-		smv = new ScheduleModalView(a, s);
-		sa = new LocalStorage(a);
-		mv = new ScheduleChangedModalView(a, s, smv);
 
-		runOnUiThreadSync(new Runnable() {
-			@Override
-			public void run() {
-				a.setContentView(mv);
-			}
-		});
+		ld = new LocalData();
+		ses = Executors.newScheduledThreadPool(1);
+		ed = mock(EventDispatcher.class);
+		ac = mock(InVehicleDeviceApiClient.class);
+		when(ac.withSaveOnClose()).thenReturn(ac);
+		s = mock(InVehicleDeviceService.class);
+		when(s.getLocalStorage()).thenReturn(new LocalStorage(ld));
+		when(s.getEventDispatcher()).thenReturn(ed);
+		when(s.getApiClient()).thenReturn(ac);
+		when(s.getScheduledExecutorService()).thenReturn(ses);
+		a.setService(s);
 	}
 
 	@Override
 	protected void tearDown() throws Exception {
+		ses.shutdownNow();
 		super.tearDown();
 	}
 
-	public void testShow() throws Exception {
+	public void assertShow(final VehicleNotification vn) throws Throwable {
+		runTestOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				int id = 12345;
+				FrameLayout fl = new FrameLayout(a);
+				fl.setId(id);
+				a.setContentView(fl);
+				f = OperationScheduleChangedFragment.newInstance(Lists
+						.newArrayList(vn));
+				FragmentManager fm = a.getSupportFragmentManager();
+				fm.beginTransaction().add(id, f).commit();
+			}
+		});
+		TestUtil.assertShow(f);
+	}
+
+	public void testShow() throws Throwable {
+		for (String body : new String[] { "変更されました", "キャンセルされました" }) {
+			VehicleNotification vn = new VehicleNotification();
+			vn.setBody(body);
+			vn.setNotificationKind(NotificationKind.RESERVATION_CHANGED);
+			assertShow(vn);
+			assertTrue(solo.searchText(body, true));
+		}
+	}
+
+	public void testBack() throws Throwable {
+		String body = "キャンセルしました";
 		VehicleNotification vn = new VehicleNotification();
-		String body = "こんにちは";
 		vn.setBody(body);
-		assertShow(Lists.newArrayList(vn));
-		assertTrue(solo.searchText(body));
-	}
-
-	public void testAddMessage() throws Exception {
-		final VehicleNotification vn0 = new VehicleNotification();
-		final VehicleNotification vn1 = new VehicleNotification();
-		final VehicleNotification vn2 = new VehicleNotification();
-		String body0 = "おはよう";
-		String body1 = "こんにちは";
-		String body2 = "こんばんは";
-		vn0.setBody(body0);
-		vn1.setBody(body1);
-		vn2.setBody(body2);
-		assertShow(Lists.newArrayList(vn0, vn1));
-
-		assertTrue(solo.searchText(body0, true));
-		assertTrue(solo.searchText(body1, true));
-		assertFalse(solo.searchText(body2, true));
-
-		runOnUiThreadSync(new Runnable() {
-			@Override
-			public void run() {
-				mv.onMergeOperationSchedules(Lists.newArrayList(vn2));
-			}
-		});
-
-		assertTrue(solo.searchText(body0, true));
-		assertTrue(solo.searchText(body1, true));
-		assertTrue(solo.searchText(body2, true));
-	}
-
-	protected void assertShow(final List<VehicleNotification> vns)
-			throws Exception {
-		assertFalse(mv.isShown());
-		runOnUiThreadSync(new Runnable() {
-			@Override
-			public void run() {
-				mv.onMergeOperationSchedules(vns);
-			}
-		});
-		TestUtil.assertShow(mv);
-	}
-
-	public void testBack() throws Exception {
-		VehicleNotification vn = new VehicleNotification();
-		assertShow(Lists.newArrayList(vn));
+		assertShow(vn);
 		solo.clickOnView(solo.getView(R.id.schedule_changed_close_button));
-		TestUtil.assertHide(mv);
-	}
-
-	public void testScheduleConfirm() throws Exception {
-		VehicleNotification vn = new VehicleNotification();
-		assertShow(Lists.newArrayList(vn));
-		solo.clickOnView(solo.getView(R.id.schedule_confirm_button));
-		TestUtil.assertHide(mv);
-		TestUtil.assertShow(smv);
+		TestUtil.assertHide(f);
+		assertEquals(Optional.of(Response.YES), vn.getResponse());
 	}
 }

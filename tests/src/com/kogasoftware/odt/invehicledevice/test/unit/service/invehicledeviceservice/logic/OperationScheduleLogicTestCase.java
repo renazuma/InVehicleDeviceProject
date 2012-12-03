@@ -1,8 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledeviceservice.logic;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -71,8 +69,8 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 	}
 
 	public void testMergeOperationSchedules() throws IOException {
-		final OperationSchedule local = OperationSchedule.parse(
-				"{id: 12345, updated_at: '2013-08-12'}");
+		final OperationSchedule local = OperationSchedule
+				.parse("{id: 12345, updated_at: '2013-08-12'}");
 		final OperationSchedule remote = OperationSchedule
 				.parse("{id: 12345, updated_at: '2000-08-10'}");
 		remotes.add(remote);
@@ -98,13 +96,11 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 	void callTestMergePassengerRecords(final Boolean preferLocal)
 			throws Exception {
 		final OperationSchedule remote = OperationSchedule
-				.parse(
-						"{id: 1, reservations_as_departure: [{fellow_users: [{id: 2}], passenger_records: [{id: 3, user_id: 2, updated_at: '2000-01-01'}]}]}");
+				.parse("{id: 1, reservations_as_departure: [{fellow_users: [{id: 2}], passenger_records: [{id: 3, user_id: 2, updated_at: '2000-01-01'}]}]}");
 		String ua = preferLocal ? "2030-12-31" : "1990-01-01";
 		final OperationSchedule local = OperationSchedule
-				.parse(
-						"{id: 1, reservations_as_departure: [{fellow_users: [{id: 2}], passenger_records: [{id: 3, user_id: 2, updated_at: '"
-								+ ua + "', payment: 200}]}]}");
+				.parse("{id: 1, reservations_as_departure: [{fellow_users: [{id: 2}], passenger_records: [{id: 3, user_id: 2, updated_at: '"
+						+ ua + "', payment: 200}]}]}");
 		final PassengerRecord localPR = local.getReservationsAsDeparture()
 				.get(0).getPassengerRecords().get(0);
 		final PassengerRecord remotePR = remote.getReservationsAsDeparture()
@@ -173,8 +169,7 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 
 		final List<OperationSchedule> locals = OperationSchedule
 				.parseList(localsString);
-		remotes.addAll(OperationSchedule
-				.parseList(remotesString));
+		remotes.addAll(OperationSchedule.parseList(remotesString));
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
@@ -216,8 +211,7 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 			}
 		});
 		if (id.isPresent()) {
-			assertEquals(id.get(), osl.getCurrent().get()
-					.getId());
+			assertEquals(id.get(), osl.getCurrent().get().getId());
 		} else {
 			assertFalse(osl.getCurrent().isPresent());
 		}
@@ -322,8 +316,7 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 
 	public void testPhase0() throws Exception {
 		String json = "[{id: 11, operation_record: {}}, {id: 12, operation_record: {}}, {id: 13, operation_record: {}}]";
-		final List<OperationSchedule> oss = OperationSchedule
-				.parseList(json);
+		final List<OperationSchedule> oss = OperationSchedule.parseList(json);
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
@@ -331,34 +324,27 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 			}
 		});
 		assertEquals(Phase.INITIAL, osl.getPhase());
-		assertEquals(11, osl.getCurrent().get().getId()
-				.intValue());
+		assertEquals(11, osl.getCurrent().get().getId().intValue());
 		osl.enterDrivePhase();
 		assertEquals(Phase.DRIVE, osl.getPhase());
-		assertEquals(11, osl.getCurrent().get().getId()
-				.intValue());
+		assertEquals(11, osl.getCurrent().get().getId().intValue());
 		osl.enterPlatformPhase();
 		assertEquals(Phase.PLATFORM, osl.getPhase());
-		assertEquals(11, osl.getCurrent().get().getId()
-				.intValue());
+		assertEquals(11, osl.getCurrent().get().getId().intValue());
 
 		osl.enterDrivePhase();
 		assertEquals(Phase.DRIVE, osl.getPhase());
-		assertEquals(12, osl.getCurrent().get().getId()
-				.intValue());
+		assertEquals(12, osl.getCurrent().get().getId().intValue());
 		osl.enterPlatformPhase();
 		assertEquals(Phase.PLATFORM, osl.getPhase());
-		assertEquals(12, osl.getCurrent().get().getId()
-				.intValue());
+		assertEquals(12, osl.getCurrent().get().getId().intValue());
 
 		osl.enterDrivePhase();
 		assertEquals(Phase.DRIVE, osl.getPhase());
-		assertEquals(13, osl.getCurrent().get().getId()
-				.intValue());
+		assertEquals(13, osl.getCurrent().get().getId().intValue());
 		osl.enterPlatformPhase();
 		assertEquals(Phase.PLATFORM, osl.getPhase());
-		assertEquals(13, osl.getCurrent().get().getId()
-				.intValue());
+		assertEquals(13, osl.getCurrent().get().getId().intValue());
 
 		osl.enterFinishPhase();
 		assertEquals(Phase.FINISH, osl.getPhase());

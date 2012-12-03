@@ -1,56 +1,59 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.ui.fragment;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-import android.view.View;
+import java.util.List;
 
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.widget.FrameLayout;
+
+import com.google.common.collect.Lists;
+import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Writer;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
-import com.kogasoftware.odt.invehicledevice.test.util.apiclient.DummyApiClient;
-import com.kogasoftware.odt.invehicledevice.ui.activity.EmptyActivity;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
+import com.kogasoftware.odt.invehicledevice.ui.fragment.PlatformPhaseFragment;
 
 public class PlatformPhaseFragmentTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
-
-	LocalStorage sa;
-	MemoModalView mmv;
-	PlatformPhaseFragment pv;
 	InVehicleDeviceService s;
-	EmptyActivity a;
-	OperationScheduleLogic osl;
+	InVehicleDeviceApiClient ac;
+	LocalData ld;
+	EventDispatcher ed;
+	Fragment f;
+
+	List<OperationSchedule> oss;
+	OperationSchedule os0;
+	OperationSchedule os1;
+	List<PassengerRecord> prs;
+	PassengerRecord pr0;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		TestUtil.setApiClient(new DummyApiClient());
-		a = getActivity();
+
+		ld = new LocalData();
+		ed = mock(EventDispatcher.class);
+		ac = mock(InVehicleDeviceApiClient.class);
+		when(ac.withSaveOnClose()).thenReturn(ac);
 		s = mock(InVehicleDeviceService.class);
-		when(s.getEventDispatcher()).thenReturn(new EventDispatcher());
-		osl = new OperationScheduleLogic(s);
-		mmv = mock(MemoModalView.class);
-		sa = new LocalStorage(a);
-		pv = new PlatformPhaseFragment(a, s, mmv);
-		sa.withWriteLock(new Writer() { // TODO もっとスマートにする
-			@Override
-			public void write(LocalData status) {
-				OperationSchedule os1 = new OperationSchedule();
-				OperationSchedule os2 = new OperationSchedule();
-				os1.setPlatform(new Platform());
-				os2.setPlatform(new Platform());
-				status.operationSchedules.clear();
-				status.operationSchedules.add(os1);
-				status.operationSchedules.add(os2);
-			}
-		});
+		when(s.getLocalStorage()).thenReturn(new LocalStorage(ld));
+		when(s.getEventDispatcher()).thenReturn(ed);
+		when(s.getApiClient()).thenReturn(ac);
+		a.setService(s);
+
+		os0 = new OperationSchedule();
+		os1 = new OperationSchedule();
+		oss = Lists.newArrayList(os0, os1);
+		pr0 = new PassengerRecord();
+		prs = Lists.newArrayList(pr0);
 	}
 
 	@Override
@@ -58,38 +61,20 @@ public class PlatformPhaseFragmentTestCase extends
 		super.tearDown();
 	}
 
-	public void xtestEnterDrivePhaseEventで非表示() throws Exception {
-		xtestEnterPlatformPhaseEventで表示();
-
-		osl.enterDrivePhase();
-		getInstrumentation().waitForIdleSync();
-
-		assertFalse(pv.isShown());
-		assertNotSame(pv.getVisibility(), View.VISIBLE);
-	}
-
-	public void xtestEnterFinishPhaseEventで非表示() throws Exception {
-		xtestEnterPlatformPhaseEventで表示();
-
-		osl.enterFinishPhase();
-		getInstrumentation().waitForIdleSync();
-
-		assertFalse(pv.isShown());
-		assertNotSame(pv.getVisibility(), View.VISIBLE);
-	}
-
-	public void xtestEnterPlatformPhaseEventで表示() throws Exception {
-		runOnUiThreadSync(new Runnable() {
+	public void testShow() throws Throwable {
+		runTestOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				pv.setVisibility(View.GONE);
+				int id = 12345;
+				FrameLayout fl = new FrameLayout(a);
+				fl.setId(id);
+				a.setContentView(fl);
+				f = PlatformPhaseFragment.newInstance(Phase.PLATFORM_GET_ON,
+						oss, prs);
+				FragmentManager fm = a.getSupportFragmentManager();
+				fm.beginTransaction().add(id, f).commit();
 			}
 		});
-
-		osl.enterPlatformPhase();
-		getInstrumentation().waitForIdleSync();
-
-		assertTrue(pv.isShown());
-		assertEquals(pv.getVisibility(), View.VISIBLE);
+		TestUtil.assertShow(f);
 	}
 }

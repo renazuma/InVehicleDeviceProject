@@ -1,31 +1,40 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.ui.fragment;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import android.app.Activity;
-import android.view.View;
+import static org.mockito.Mockito.*;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.widget.FrameLayout;
 
+import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
+import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
+import com.kogasoftware.odt.invehicledevice.ui.fragment.FinishPhaseFragment;
 
 public class FinishPhaseFragmentTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
-
-	Activity a;
 	InVehicleDeviceService s;
-	FinishPhaseFragment pv;
-	OperationScheduleLogic osl;
+	InVehicleDeviceApiClient ac;
+	LocalData ld;
+	EventDispatcher ed;
+	Fragment f;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		a = getActivity();
+
+		ld = new LocalData();
+		ed = mock(EventDispatcher.class);
+		ac = mock(InVehicleDeviceApiClient.class);
+		when(ac.withSaveOnClose()).thenReturn(ac);
 		s = mock(InVehicleDeviceService.class);
-		when(s.getEventDispatcher()).thenReturn(new EventDispatcher());
-		osl = new OperationScheduleLogic(s);
-		pv = new FinishPhaseFragment(a, s);
+		when(s.getLocalStorage()).thenReturn(new LocalStorage(ld));
+		when(s.getEventDispatcher()).thenReturn(ed);
+		when(s.getApiClient()).thenReturn(ac);
+		a.setService(s);
 	}
 
 	@Override
@@ -33,33 +42,19 @@ public class FinishPhaseFragmentTestCase extends
 		super.tearDown();
 	}
 
-	public void testEnterDrivePhaseEventで非表示() {
-		testEnterFinishPhaseEventで表示();
-
-		osl.enterDrivePhase();
-		getInstrumentation().waitForIdleSync();
-
-		assertFalse(pv.isShown());
-		assertNotSame(pv.getVisibility(), View.VISIBLE);
-	}
-
-	public void testEnterFinishPhaseEventで表示() {
-		pv.setVisibility(View.GONE);
-
-		osl.enterFinishPhase();
-		getInstrumentation().waitForIdleSync();
-
-		assertTrue(pv.isShown());
-		assertEquals(pv.getVisibility(), View.VISIBLE);
-	}
-
-	public void testEnterPlatformPhaseEventで非表示() {
-		testEnterFinishPhaseEventで表示();
-
-		osl.enterPlatformPhase();
-		getInstrumentation().waitForIdleSync();
-
-		assertFalse(pv.isShown());
-		assertNotSame(pv.getVisibility(), View.VISIBLE);
+	public void testShow() throws Throwable {
+		runTestOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				int id = 12345;
+				FrameLayout fl = new FrameLayout(a);
+				fl.setId(id);
+				a.setContentView(fl);
+				f = FinishPhaseFragment.newInstance();
+				FragmentManager fm = a.getSupportFragmentManager();
+				fm.beginTransaction().add(id, f).commit();
+			}
+		});
+		TestUtil.assertShow(f);
 	}
 }

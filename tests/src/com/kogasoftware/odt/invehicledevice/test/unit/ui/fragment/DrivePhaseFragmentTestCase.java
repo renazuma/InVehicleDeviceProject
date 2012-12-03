@@ -1,53 +1,68 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.ui.fragment;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+import java.util.List;
 
-import android.view.View;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.widget.FrameLayout;
 
+import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Writer;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
+import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
+import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
+import com.kogasoftware.odt.invehicledevice.ui.fragment.DrivePhaseFragment;
 
 public class DrivePhaseFragmentTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
-
 	InVehicleDeviceService s;
-	LocalStorage sa;
-	DrivePhaseFragment pv;
-	OperationScheduleLogic osl;
+	InVehicleDeviceApiClient ac;
+	LocalData ld;
+	EventDispatcher ed;
+	Fragment f;
+
+	List<OperationSchedule> oss;
+	OperationSchedule os0;
+	OperationSchedule os1;
+	OperationSchedule os2;
+	Platform p0;
+	Platform p1;
+	Platform p2;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
+
+		ld = new LocalData();
+		ed = mock(EventDispatcher.class);
+		ac = mock(InVehicleDeviceApiClient.class);
+		when(ac.withSaveOnClose()).thenReturn(ac);
 		s = mock(InVehicleDeviceService.class);
-		when(s.getEventDispatcher()).thenReturn(new EventDispatcher());
-		osl = new OperationScheduleLogic(s);
-		sa = new LocalStorage(getActivity());
-		pv = new DrivePhaseFragment(null, s);
-		sa.withWriteLock(new Writer() { // TODO もっとスマートにする
-			@Override
-			public void write(LocalData status) {
-				status.phase = Phase.PLATFORM;
-				OperationSchedule os1 = new OperationSchedule();
-				OperationSchedule os2 = new OperationSchedule();
-				os1.setPlatform(new Platform());
-				os2.setPlatform(new Platform());
-				status.operationSchedules.clear();
-				status.operationSchedules.add(os1);
-				status.operationSchedules.add(os2);
-			}
-		});
+		when(s.getLocalStorage()).thenReturn(new LocalStorage(ld));
+		when(s.getEventDispatcher()).thenReturn(ed);
+		when(s.getApiClient()).thenReturn(ac);
+		a.setService(s);
+
+		p0 = new Platform();
+		p1 = new Platform();
+		p2 = new Platform();
+
+		os0 = new OperationSchedule();
+		os1 = new OperationSchedule();
+		os2 = new OperationSchedule();
+
+		os0.setPlatform(p0);
+		os1.setPlatform(p1);
+		os2.setPlatform(p2);
+
+		oss = Lists.newArrayList(os0, os1, os2);
 	}
 
 	@Override
@@ -55,153 +70,19 @@ public class DrivePhaseFragmentTestCase extends
 		super.tearDown();
 	}
 
-	public void testEnterDrivePhaseEventで表示() throws Exception {
-		runOnUiThreadSync(new Runnable() {
+	public void testShow() throws Throwable {
+		runTestOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				pv.setVisibility(View.GONE);
+				int id = 12345;
+				FrameLayout fl = new FrameLayout(a);
+				fl.setId(id);
+				a.setContentView(fl);
+				f = DrivePhaseFragment.newInstance(oss);
+				FragmentManager fm = a.getSupportFragmentManager();
+				fm.beginTransaction().add(id, f).commit();
 			}
 		});
-
-		osl.enterDrivePhase();
-		getInstrumentation().waitForIdleSync();
-
-		assertTrue(pv.isShown());
-		assertEquals(pv.getVisibility(), View.VISIBLE);
-	}
-
-	public void testEnterFinishPhaseで非表示() throws Exception {
-		testEnterDrivePhaseEventで表示();
-
-		osl.enterFinishPhase();
-		getInstrumentation().waitForIdleSync();
-
-		assertFalse(pv.isShown());
-		assertNotSame(pv.getVisibility(), View.VISIBLE);
-	}
-
-	public void testEnterPlatformPhaseで非表示() throws Exception {
-		testEnterDrivePhaseEventで表示();
-
-		osl.enterPlatformPhase();
-		getInstrumentation().waitForIdleSync();
-
-		assertFalse(pv.isShown());
-		assertNotSame(pv.getVisibility(), View.VISIBLE);
-	}
-
-	public void testOperationScheduleが0個の場合EnterFinishPhaseView発生()
-			throws Exception {
-		sa.withWriteLock(new Writer() { // TODO もっとスマートにする
-			@Override
-			public void write(LocalData status) {
-				status.operationSchedules.clear();
-			}
-		});
-		final CountDownLatch cdl = new CountDownLatch(1);
-		osl.enterDrivePhase();
-		assertTrue(cdl.await(10, TimeUnit.SECONDS));
-		assertFalse(pv.isShown());
-	}
-
-	public void testOperationScheduleが1個の場合EnterFinishPhaseView発生()
-			throws Exception {
-		sa.withWriteLock(new Writer() { // TODO もっとスマートにする
-			@Override
-			public void write(LocalData status) {
-				OperationSchedule os = new OperationSchedule();
-				os.setPlatform(new Platform());
-				status.phase = Phase.PLATFORM;
-				status.operationSchedules.clear();
-				status.operationSchedules.add(os);
-			}
-		});
-		osl.enterDrivePhase();
-		assertFalse(pv.isShown());
-	}
-
-	public void testOperationScheduleが2個の場合表示される() {
-		sa.withWriteLock(new Writer() { // TODO もっとスマートにする
-			@Override
-			public void write(LocalData status) {
-				OperationSchedule os1 = new OperationSchedule();
-				OperationSchedule os2 = new OperationSchedule();
-				os1.setPlatform(new Platform());
-				os2.setPlatform(new Platform());
-				status.operationSchedules.clear();
-				status.operationSchedules.add(os1);
-				status.operationSchedules.add(os2);
-			}
-		});
-		osl.enterDrivePhase();
-		getInstrumentation().waitForIdleSync();
-		assertTrue(pv.isShown());
-	}
-
-	public void xtestOperationScheduleが2個の場合次の駅が1つ表示() {
-		sa.withWriteLock(new Writer() { // TODO もっとスマートにする
-			@Override
-			public void write(LocalData status) {
-				OperationSchedule os1 = new OperationSchedule();
-				OperationSchedule os2 = new OperationSchedule();
-				os1.setPlatform(new Platform());
-				os2.setPlatform(new Platform());
-				status.operationSchedules.clear();
-				status.operationSchedules.add(os1);
-				status.operationSchedules.add(os2);
-			}
-		});
-		osl.enterDrivePhase();
-		getInstrumentation().waitForIdleSync();
-		fail("stub!");
-	}
-
-	public void xtestOperationScheduleが2個の場合次の駅が2つ表示() {
-		sa.withWriteLock(new Writer() { // TODO もっとスマートにする
-			@Override
-			public void write(LocalData status) {
-				OperationSchedule os1 = new OperationSchedule();
-				OperationSchedule os2 = new OperationSchedule();
-				OperationSchedule os3 = new OperationSchedule();
-				os1.setPlatform(new Platform());
-				os2.setPlatform(new Platform());
-				os3.setPlatform(new Platform());
-				status.operationSchedules.clear();
-				status.operationSchedules.add(os1);
-				status.operationSchedules.add(os2);
-				status.operationSchedules.add(os3);
-			}
-		});
-		osl.enterDrivePhase();
-		getInstrumentation().waitForIdleSync();
-		fail("stub!");
-	}
-
-	public void xtestOperationScheduleが2個の場合次の駅が3つ表示() {
-		sa.withWriteLock(new Writer() { // TODO もっとスマートにする
-			@Override
-			public void write(LocalData status) {
-				OperationSchedule os1 = new OperationSchedule();
-				OperationSchedule os2 = new OperationSchedule();
-				OperationSchedule os3 = new OperationSchedule();
-				OperationSchedule os4 = new OperationSchedule();
-				os1.setPlatform(new Platform());
-				os2.setPlatform(new Platform());
-				os3.setPlatform(new Platform());
-				os4.setPlatform(new Platform());
-				status.operationSchedules.clear();
-				status.operationSchedules.add(os1);
-				status.operationSchedules.add(os2);
-				status.operationSchedules.add(os3);
-				status.operationSchedules.add(os4);
-			}
-		});
-		osl.enterDrivePhase();
-		getInstrumentation().waitForIdleSync();
-		fail("stub!");
-	}
-
-	public void xtest表示が一定時間ごとに切り替わる() {
-		fail("stub!");
+		TestUtil.assertShow(f);
 	}
 }

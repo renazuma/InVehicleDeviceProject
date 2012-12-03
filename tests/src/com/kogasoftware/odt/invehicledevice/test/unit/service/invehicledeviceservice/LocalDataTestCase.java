@@ -1,11 +1,13 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledeviceservice;
 
 import java.io.File;
+import java.util.Iterator;
 import java.util.List;
+
+import com.kogasoftware.odt.apiclient.Serializations;
 
 import junitx.framework.ComparableAssert;
 
-import org.apache.commons.lang3.SerializationUtils;
 import android.test.AndroidTestCase;
 import android.util.Log;
 
@@ -40,14 +42,46 @@ public class LocalDataTestCase extends AndroidTestCase {
 		LocalData ld1 = new LocalData();
 		ld1.url = "http://example.com/" + Math.random();
 		ld1.file = new File("foo" + Math.random());
+
 		ld1.serviceProvider = new ServiceProvider();
 		ld1.serviceProvider.setId(138479134);
-		LocalData ld2 = SerializationUtils.clone(ld1);
+
+		ld1.passengerRecords.add(new PassengerRecord());
+		ld1.passengerRecords.add(new PassengerRecord());
+		ld1.passengerRecords.get(0).setId(10);
+		ld1.passengerRecords.get(1).setId(11);
+
+		ld1.vehicleNotifications.put(VehicleNotificationStatus.REPLIED,
+				new VehicleNotification());
+		ld1.vehicleNotifications.put(VehicleNotificationStatus.REPLIED,
+				new VehicleNotification());
+		ld1.vehicleNotifications.put(VehicleNotificationStatus.UNHANDLED,
+				new VehicleNotification());
+		Iterator<VehicleNotification> i1 = ld1.vehicleNotifications.get(
+				VehicleNotificationStatus.REPLIED).iterator();
+		i1.next().setId(100);
+		i1.next().setId(101);
+		ld1.vehicleNotifications.get(VehicleNotificationStatus.UNHANDLED)
+				.iterator().next().setId(200);
+
+		LocalData ld2 = Serializations.clone(ld1);
 		assertEquals(ld1.url, ld2.url);
 		assertEquals(ld1.file, ld2.file);
 		assertFalse(ld1.file == ld2.file);
-		assertEquals(ld1.serviceProvider.getId(),
-				ld2.serviceProvider.getId());
+		assertEquals(ld1.serviceProvider.getId(), ld2.serviceProvider.getId());
+		assertEquals(ld1.passengerRecords.get(0).getId(), ld2.passengerRecords
+				.get(0).getId());
+		assertEquals(ld1.passengerRecords.get(1).getId(), ld2.passengerRecords
+				.get(1).getId());
+		Iterator<VehicleNotification> i2 = ld2.vehicleNotifications.get(
+				VehicleNotificationStatus.REPLIED).iterator();
+		assertEquals(100, i2.next().getId().intValue());
+		assertEquals(101, i2.next().getId().intValue());
+		assertEquals(
+				200,
+				ld2.vehicleNotifications
+						.get(VehicleNotificationStatus.UNHANDLED).iterator()
+						.next().getId().intValue());
 	}
 
 	/**
@@ -120,9 +154,9 @@ public class LocalDataTestCase extends AndroidTestCase {
 		}
 
 		Stopwatch sw = new Stopwatch().start();
-		byte[] ba = SerializationUtils.serialize(ld);
+		byte[] ba = Serializations.serialize(ld);
 		sw.stop();
-		
+
 		Long elapsedMillis = sw.elapsedMillis();
 		Log.i(TAG, "elapsed=" + elapsedMillis + "ms bytes=" + ba.length);
 		ComparableAssert.assertLesser(60 * 1000L, elapsedMillis);

@@ -14,13 +14,13 @@ public class OperationScheduleArrayAdapterTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 
 	InVehicleDeviceService s;
-	OperationScheduleArrayAdapter osaa;
+	OperationScheduleArrayAdapter aa;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		s = mock(InVehicleDeviceService.class);
-		osaa = new OperationScheduleArrayAdapter(s,
+		aa = new OperationScheduleArrayAdapter(s,
 				new ArrayList<OperationSchedule>());
 	}
 
@@ -29,7 +29,7 @@ public class OperationScheduleArrayAdapterTestCase extends
 		super.tearDown();
 	}
 
-	public void testOperationScheduleのPlatformが表示される() throws Exception {
+	public void testShowOperationSchedules() throws Exception {
 		String platformName0 = "上野駅前";
 		String platformName1 = "御徒町駅前";
 		List<OperationSchedule> oss = new ArrayList<OperationSchedule>();
@@ -48,12 +48,12 @@ public class OperationScheduleArrayAdapterTestCase extends
 			oss.add(os);
 		}
 
-		osaa = new OperationScheduleArrayAdapter(s, oss);
+		aa = new OperationScheduleArrayAdapter(s, oss);
 
 		runOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
-				getActivity().setContentView(osaa.getView(0, null, null));
+				getActivity().setContentView(aa.getView(0, null, null));
 			}
 		});
 		assertTrue(solo.searchText(platformName0));
@@ -61,25 +61,9 @@ public class OperationScheduleArrayAdapterTestCase extends
 		runOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
-				getActivity().setContentView(osaa.getView(1, null, null));
+				getActivity().setContentView(aa.getView(1, null, null));
 			}
 		});
 		assertTrue(solo.searchText(platformName1));
-	}
-
-	public void xtestOperationScheduleが変更されたら変更後の表示になる() {
-		fail("stub!");
-	}
-
-	public void xtest最後のOperationScheduleの出発時刻は表示されない() {
-		fail("stub!");
-	}
-
-	public void xtest最初のOperationScheduleの到着時刻は表示されない() {
-		fail("stub!");
-	}
-
-	public void xtest終了したOperationScheduleは表示色が変更される() {
-		fail("stub!");
 	}
 }

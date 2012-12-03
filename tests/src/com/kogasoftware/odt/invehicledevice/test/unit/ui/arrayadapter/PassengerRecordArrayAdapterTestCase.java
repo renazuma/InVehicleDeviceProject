@@ -8,7 +8,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -27,7 +26,6 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordArrayAdapter;
-import com.kogasoftware.odt.apiclient.ApiClient;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
@@ -41,11 +39,9 @@ public class PassengerRecordArrayAdapterTestCase extends
 
 	private static final String TAG = PassengerRecordArrayAdapterTestCase.class
 			.getSimpleName();
-	Activity a;
 	InVehicleDeviceService s;
 	OperationScheduleLogic osl;
-	MemoModalView mmv;
-	PassengerRecordArrayAdapter raa;
+	PassengerRecordArrayAdapter aa;
 	LocalStorage sa;
 	CountDownLatch sccdl;
 	ServiceConnection sc = new ServiceConnection() {
@@ -69,7 +65,8 @@ public class PassengerRecordArrayAdapterTestCase extends
 		@Override
 		public int getOffPassenger(OperationSchedule operationSchedule,
 				Reservation reservation, User user,
-				PassengerRecord passengerRecord, ApiClientCallback<Void> callback) {
+				PassengerRecord passengerRecord,
+				ApiClientCallback<Void> callback) {
 			getOffPassengerRecords.add(passengerRecord);
 			return 0;
 		}
@@ -77,7 +74,8 @@ public class PassengerRecordArrayAdapterTestCase extends
 		@Override
 		public int getOnPassenger(OperationSchedule operationSchedule,
 				Reservation reservation, User user,
-				PassengerRecord passengerRecord, ApiClientCallback<Void> callback) {
+				PassengerRecord passengerRecord,
+				ApiClientCallback<Void> callback) {
 			getOnPassengerRecords.add(passengerRecord);
 			return 0;
 		}
@@ -128,7 +126,6 @@ public class PassengerRecordArrayAdapterTestCase extends
 
 		sa = s.getLocalStorage();
 
-		mmv = new MemoModalView(a, s);
 		getOnPassengerRecords.clear();
 		getOffPassengerRecords.clear();
 		cancelGetOnPassengerRecords.clear();
@@ -164,7 +161,7 @@ public class PassengerRecordArrayAdapterTestCase extends
 		final Integer T = 2000;
 		final List<OperationSchedule> oss = new LinkedList<OperationSchedule>();
 		final List<PassengerRecord> prs = new LinkedList<PassengerRecord>();
-		
+
 		OperationRecord finished = new OperationRecord();
 		finished.setArrivedAt(new Date());
 		finished.setDepartedAt(new Date());
@@ -219,15 +216,17 @@ public class PassengerRecordArrayAdapterTestCase extends
 		});
 		osl.arrive(os0, new EmptyRunnable());
 
-		raa = new PassengerRecordArrayAdapter(s, mmv);
+		aa = new PassengerRecordArrayAdapter(getInstrumentation().getContext(),
+				s, a.getSupportFragmentManager(), os0, prs);
+
 		sync();
-		assertEquals(raa.getCount(), 2);
+		assertEquals(aa.getCount(), 2);
 		runOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
 				ListView lv = new ListView(getInstrumentation()
 						.getTargetContext());
-				lv.setAdapter(raa);
+				lv.setAdapter(aa);
 				a.setContentView(lv);
 			}
 		});
@@ -281,15 +280,16 @@ public class PassengerRecordArrayAdapterTestCase extends
 		osl.arrive(os1, new EmptyRunnable());
 
 		Thread.sleep(2000);
-		raa = new PassengerRecordArrayAdapter(s, mmv);
+		aa = new PassengerRecordArrayAdapter(getInstrumentation().getContext(),
+				s, a.getSupportFragmentManager(), os1, prs);
 		sync();
-		assertEquals(1, raa.getCount());
+		assertEquals(1, aa.getCount());
 		runOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
 				ListView lv = new ListView(getInstrumentation()
 						.getTargetContext());
-				lv.setAdapter(raa);
+				lv.setAdapter(aa);
 				a.setContentView(lv);
 			}
 		});

@@ -14,16 +14,16 @@ import org.mockito.verification.VerificationWithTimeout;
 
 import android.test.AndroidTestCase;
 
-import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
+import com.kogasoftware.odt.apiclient.ApiClientCallback;
+import com.kogasoftware.odt.apiclient.ApiClientException;
 import com.kogasoftware.odt.invehicledevice.apiclient.EmptyInVehicleDeviceApiClient;
+import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.thread.OperationScheduleReceiveThread;
-import com.kogasoftware.odt.apiclient.ApiClientCallback;
-import com.kogasoftware.odt.apiclient.ApiClientException;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 
 public class OperationScheduleReceiveThreadTestCase extends AndroidTestCase {
 	OperationScheduleReceiveThread osrt;
