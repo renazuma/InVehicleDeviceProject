@@ -105,8 +105,8 @@ public class PassengerRecord extends PassengerRecordBase {
 			// 居住者以外の場合
 			StringBuilder displayName = new StringBuilder();
 			// 姓名があれば、姓名と予約番号をつなげて返す
-			if (user.getFirstName().isPresent()
-					|| user.getLastName().isPresent()) {
+			if (user.getLastName().or("").length() > 0
+					|| user.getFirstName().or("").length() > 0) {
 				displayName.append(user.getLastName().or("") + " ");
 				displayName.append(user.getFirstName().or("") + " 様");
 				for (Integer id : getReservationId().asSet()) {
