@@ -27,6 +27,7 @@ public class PassengerRecord extends PassengerRecordBase {
 					.start()
 					.compare(r.getReservationId().or(Integer.MAX_VALUE),
 							l.getReservationId().or(Integer.MAX_VALUE))
+					.compare(!r.isRepresentative(), !l.isRepresentative())
 					.compare(r.getDisplayName(), l.getDisplayName())
 					.compare(r.getUserId().or(Integer.MAX_VALUE),
 							l.getUserId().or(Integer.MAX_VALUE))
