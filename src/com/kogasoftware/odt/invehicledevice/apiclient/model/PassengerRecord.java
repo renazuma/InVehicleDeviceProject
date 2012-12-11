@@ -121,11 +121,11 @@ public class PassengerRecord extends PassengerRecordBase {
 			// 姓名があれば、姓名と予約番号をつなげて返す
 			if (user.getLastName().or("").length() > 0
 					|| user.getFirstName().or("").length() > 0) {
+				for (Integer id : getReservationId().asSet()) {
+					displayName.append(String.format("%04d ", id));
+				}
 				displayName.append(user.getLastName().or("") + " ");
 				displayName.append(user.getFirstName().or("") + " 様");
-				for (Integer id : getReservationId().asSet()) {
-					displayName.append(String.format(" %04d", id));
-				}
 				return displayName.toString();
 			}
 			// 姓名以外の情報をつなげて識別可能にする
