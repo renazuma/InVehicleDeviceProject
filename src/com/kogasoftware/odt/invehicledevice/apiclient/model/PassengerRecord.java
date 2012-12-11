@@ -78,16 +78,29 @@ public class PassengerRecord extends PassengerRecordBase {
 	}
 
 	/**
+	 * 代表者かどうかを調べる。
+	 */
+	public Boolean isRepresentative() {
+		for (Reservation reservation : getReservation().asSet()) {
+			for (Integer representativeUserId : reservation.getUserId().asSet()) {
+				if (getUserId().equals(Optional.of(representativeUserId))) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * 乗車予定人数を調べる
 	 */
 	public Integer getScheduledPassengerCount() {
+		if (!isRepresentative()) {
+			return 1;
+		}
 		for (Reservation reservation : getReservation().asSet()) {
-			for (Integer headUserId : reservation.getUserId().asSet()) {
-				if (getUserId().equals(Optional.of(headUserId))) {
-					return reservation.getPassengerCount()
-							- reservation.getFellowUsers().size() + 1;
-				}
-			}
+			return reservation.getPassengerCount()
+					- reservation.getFellowUsers().size() + 1;
 		}
 		return 1;
 	}
