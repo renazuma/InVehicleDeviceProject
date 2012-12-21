@@ -75,14 +75,19 @@ public class OperationScheduleLogic {
 	public static void mergeOperationSchedules(
 			List<OperationSchedule> remoteOperationSchedules,
 			List<OperationSchedule> localOperationSchedules) {
+		Log.i(TAG, "mergeOperationSchedules() start");
 		for (OperationSchedule localOperationSchedule : localOperationSchedules) {
 			for (OperationSchedule remoteOperationSchedule : remoteOperationSchedules) {
+				Log.i(TAG, "mergeOperationSchedules() localId="
+						+ localOperationSchedule.getId() + " remoteId="
+						+ remoteOperationSchedule.getId());
 				if (!localOperationSchedule.getId().equals(
 						remoteOperationSchedule.getId())) {
 					continue;
 				}
 				// localに無い場合、次へ進む
 				if (!localOperationSchedule.getOperationRecord().isPresent()) {
+					Log.i(TAG, "mergeOperationSchedules() localOperationSchedule.operationRecord not found");
 					break;
 				}
 				OperationRecord localOperationRecord = localOperationSchedule
@@ -90,6 +95,7 @@ public class OperationScheduleLogic {
 
 				// remoteに無い場合、localのを適用して、次へ進む
 				if (!remoteOperationSchedule.getOperationRecord().isPresent()) {
+					Log.i(TAG, "mergeOperationSchedules() remoteOperationSchedule.operationRecord not found / use localOperationRecord");
 					remoteOperationSchedule
 							.setOperationRecord(localOperationRecord);
 					break;
@@ -100,12 +106,13 @@ public class OperationScheduleLogic {
 				// どちらにも存在する場合、新しいほうを適用
 				if (localOperationRecord.getUpdatedAt().before(
 						remoteOperationRecord.getUpdatedAt())) {
+					Log.i(TAG, "mergeOperationSchedules() localUpdatedAt.before(remoteUpdatedAt)");
 					break;
 				}
 				remoteOperationSchedule
 						.setOperationRecord(localOperationRecord);
+				Log.i(TAG, "mergeOperationSchedules() !localUpdatedAt.before(remoteUpdatedAt) / use localOperationRecord");
 				break;
-
 			}
 		}
 
@@ -113,8 +120,11 @@ public class OperationScheduleLogic {
 		for (OperationSchedule operationSchedule : remoteOperationSchedules) {
 			if (!operationSchedule.getOperationRecord().isPresent()) {
 				operationSchedule.setOperationRecord(new OperationRecord());
+				Log.i(TAG, "mergeOperationSchedules() id=" + operationSchedule.getId() + " set new OperationRecord");
 			}
 		}
+
+		Log.i(TAG, "mergeOperationSchedules() complete");
 	}
 
 	/**
