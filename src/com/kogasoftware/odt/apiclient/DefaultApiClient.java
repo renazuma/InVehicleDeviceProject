@@ -119,7 +119,7 @@ public class DefaultApiClient implements ApiClient {
 			HttpEntity entity = httpResponse.getEntity();
 			if (entity != null) {
 				response = EntityUtils.toByteArray(entity);
-				if (response.length < 4096) {
+				if (response.length < 1024 * 1024) {
 					responseString = ApiClients.decodeByteArray(response);
 				} else {
 					responseString = "response length=" + response.length;
