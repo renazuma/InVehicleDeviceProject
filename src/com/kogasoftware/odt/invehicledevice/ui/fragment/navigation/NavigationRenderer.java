@@ -36,6 +36,8 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundReader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.ServiceUnitStatusLogLogic;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.navigation.frametask.FrameTask;
@@ -469,17 +471,30 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	}
 
 	public void updateLocation() {
-		ServiceUnitStatusLog serviceUnitStatusLog = serviceUnitStatusLogLogic
-				.getWithReadLock();
-		double latitude = serviceUnitStatusLog.getLatitude().doubleValue();
-		double longitude = serviceUnitStatusLog.getLongitude().doubleValue();
-		if (latitude == 0 && longitude == 0) {
-			return;
-		}
-		Log.i(TAG, "changeLocation lat=" + latitude + ", lon=" + longitude);
-		long millis = System.currentTimeMillis();
-		latitudeSmoother.addMotion(latitude, millis);
-		longitudeSmoother.addMotion(longitude, millis);
+		service.getLocalStorage().read(
+				new BackgroundReader<ServiceUnitStatusLog>() {
+					@Override
+					public ServiceUnitStatusLog readInBackground(
+							LocalData localData) {
+						return localData.serviceUnitStatusLog;
+					}
+
+					@Override
+					public void onRead(ServiceUnitStatusLog serviceUnitStatusLog) {
+						double latitude = serviceUnitStatusLog.getLatitude()
+								.doubleValue();
+						double longitude = serviceUnitStatusLog.getLongitude()
+								.doubleValue();
+						if (latitude == 0 && longitude == 0) {
+							return;
+						}
+						Log.i(TAG, "changeLocation lat=" + latitude + ", lon="
+								+ longitude);
+						long millis = System.currentTimeMillis();
+						latitudeSmoother.addMotion(latitude, millis);
+						longitudeSmoother.addMotion(longitude, millis);
+					}
+				});
 	}
 
 	public void updatePlatform(
