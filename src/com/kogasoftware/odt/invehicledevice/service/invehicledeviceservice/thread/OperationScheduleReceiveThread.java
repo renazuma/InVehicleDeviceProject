@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+import android.util.Log;
+
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.apiclient.ApiClientException;
@@ -19,8 +21,11 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic
 public class OperationScheduleReceiveThread extends Thread implements
 		EventDispatcher.OnStartNewOperationListener,
 		EventDispatcher.OnStartReceiveUpdatedOperationScheduleListener {
+	private static final String TAG = OperationScheduleReceiveThread.class
+			.getSimpleName();
 	public static final Integer VOICE_DELAY_MILLIS = 5000;
 	public static final Integer RETRY_DELAY_MILLIS = 5000;
+	public static final Long RECEIVE_INTERVAL_MINUTES = 3L;
 	protected final InVehicleDeviceService service;
 	protected final OperationScheduleLogic operationScheduleLogic;
 	protected final VehicleNotificationLogic vehicleNotificationLogic;
@@ -67,8 +72,9 @@ public class OperationScheduleReceiveThread extends Thread implements
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
 							List<OperationSchedule> operationSchedules) {
-						operationScheduleLogic.mergeWithWriteLock(operationSchedules,
-								triggerVehicleNotifications);
+						operationScheduleLogic
+								.mergeWithWriteLock(operationSchedules,
+										triggerVehicleNotifications);
 					}
 				});
 	}
@@ -76,9 +82,14 @@ public class OperationScheduleReceiveThread extends Thread implements
 	@Override
 	public void run() {
 		try {
+			// 起動時に一度受信する
+			startUpdatedOperationScheduleReceiveSemaphore.release();
 			while (true) {
 				// スケジュール変更通知があるまで待つ
-				startUpdatedOperationScheduleReceiveSemaphore.acquire();
+				if (!startUpdatedOperationScheduleReceiveSemaphore.tryAcquire(
+						RECEIVE_INTERVAL_MINUTES, TimeUnit.MINUTES)) {
+					Log.i(TAG, "tryAcquire timeout");
+				}
 				receive(vehicleNotificationLogic.getWithReadLock(
 						NotificationKind.RESERVATION_CHANGED,
 						VehicleNotificationStatus.UNHANDLED));
