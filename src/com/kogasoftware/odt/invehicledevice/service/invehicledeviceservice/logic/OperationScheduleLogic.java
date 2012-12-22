@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.RejectedExecutionException;
 
@@ -77,9 +78,10 @@ public class OperationScheduleLogic {
 			List<OperationSchedule> localOperationSchedules) {
 		Log.i(TAG, "mergeOperationSchedules() start");
 		for (OperationSchedule localOperationSchedule : localOperationSchedules) {
+			Log.i(TAG, "mergeOperationSchedules() localId="
+					+ localOperationSchedule.getId());
 			for (OperationSchedule remoteOperationSchedule : remoteOperationSchedules) {
-				Log.i(TAG, "mergeOperationSchedules() localId="
-						+ localOperationSchedule.getId() + " remoteId="
+				Log.i(TAG, "mergeOperationSchedules() remoteId="
 						+ remoteOperationSchedule.getId());
 				if (!localOperationSchedule.getId().equals(
 						remoteOperationSchedule.getId())) {
@@ -87,7 +89,8 @@ public class OperationScheduleLogic {
 				}
 				// localに無い場合、次へ進む
 				if (!localOperationSchedule.getOperationRecord().isPresent()) {
-					Log.i(TAG, "mergeOperationSchedules() localOperationSchedule.operationRecord not found");
+					Log.i(TAG,
+							"mergeOperationSchedules() localOperationSchedule.operationRecord not found");
 					break;
 				}
 				OperationRecord localOperationRecord = localOperationSchedule
@@ -95,7 +98,8 @@ public class OperationScheduleLogic {
 
 				// remoteに無い場合、localのを適用して、次へ進む
 				if (!remoteOperationSchedule.getOperationRecord().isPresent()) {
-					Log.i(TAG, "mergeOperationSchedules() remoteOperationSchedule.operationRecord not found / use localOperationRecord");
+					Log.i(TAG,
+							"mergeOperationSchedules() remoteOperationSchedule.operationRecord not found / use localOperationRecord");
 					remoteOperationSchedule
 							.setOperationRecord(localOperationRecord);
 					break;
@@ -106,12 +110,14 @@ public class OperationScheduleLogic {
 				// どちらにも存在する場合、新しいほうを適用
 				if (localOperationRecord.getUpdatedAt().before(
 						remoteOperationRecord.getUpdatedAt())) {
-					Log.i(TAG, "mergeOperationSchedules() localUpdatedAt.before(remoteUpdatedAt)");
+					Log.i(TAG,
+							"mergeOperationSchedules() localUpdatedAt.before(remoteUpdatedAt)");
 					break;
 				}
 				remoteOperationSchedule
 						.setOperationRecord(localOperationRecord);
-				Log.i(TAG, "mergeOperationSchedules() !localUpdatedAt.before(remoteUpdatedAt) / use localOperationRecord");
+				Log.i(TAG,
+						"mergeOperationSchedules() !localUpdatedAt.before(remoteUpdatedAt) / use localOperationRecord");
 				break;
 			}
 		}
@@ -120,11 +126,12 @@ public class OperationScheduleLogic {
 		for (OperationSchedule operationSchedule : remoteOperationSchedules) {
 			if (!operationSchedule.getOperationRecord().isPresent()) {
 				operationSchedule.setOperationRecord(new OperationRecord());
-				Log.i(TAG, "mergeOperationSchedules() id=" + operationSchedule.getId() + " set new OperationRecord");
+				Log.i(TAG,
+						"mergeOperationSchedules() id="
+								+ operationSchedule.getId()
+								+ " set new OperationRecord");
 			}
 		}
-
-		Log.i(TAG, "mergeOperationSchedules() complete");
 	}
 
 	/**
@@ -135,10 +142,15 @@ public class OperationScheduleLogic {
 	public static void mergePassengerRecords(
 			List<PassengerRecord> remotePassengerRecords,
 			List<PassengerRecord> localPassengerRecords) {
+		Log.i(TAG, "mergePassengerRecords() start");
 		// マージ対象を探す
 		for (PassengerRecord localPassengerRecord : localPassengerRecords) {
+			Log.i(TAG, "mergePassengerRecords() localId="
+					+ localPassengerRecord.getId());
 			for (PassengerRecord remotePassengerRecord : Lists // ループ内でリスト変更があるため、コピーする
 					.newArrayList(remotePassengerRecords)) {
+				Log.i(TAG, "mergePassengerRecords() remoteId="
+						+ remotePassengerRecord.getId());
 				// IDが一致しない場合、次のPassengerRecordで試す
 				if (!remotePassengerRecord.getId().equals(
 						localPassengerRecord.getId())) {
@@ -148,10 +160,14 @@ public class OperationScheduleLogic {
 				// remoteが新しい場合、そのまま
 				if (localPassengerRecord.getUpdatedAt().before(
 						remotePassengerRecord.getUpdatedAt())) {
+					Log.i(TAG,
+							"mergePassengerRecords() localUpdatedAt.before(remoteUpdatedAt)");
 					break;
 				}
 
 				// localが新しい場合、乗車実績はlocalを使い、関連はremoteのもので更新
+				Log.i(TAG,
+						"mergeOperationSchedules() !localUpdatedAt.before(remoteUpdatedAt) / use localPassengerRecord");
 				remotePassengerRecords.remove(remotePassengerRecord);
 				localPassengerRecord.setUser(remotePassengerRecord.getUser());
 				localPassengerRecord.setReservation(remotePassengerRecord
@@ -206,12 +222,28 @@ public class OperationScheduleLogic {
 		}
 		removeUnusedAssociations(remoteOperationSchedules,
 				remotePassengerRecords);
+		Collections.sort(remotePassengerRecords,
+				PassengerRecord.DEFAULT_COMPARATOR);
+
 		localData.updatedDate = InVehicleDeviceService.getDate();
 		localData.operationScheduleInitialized = true;
 		localData.operationSchedules.clear();
 		localData.operationSchedules.addAll(remoteOperationSchedules);
 		localData.passengerRecords.clear();
 		localData.passengerRecords.addAll(remotePassengerRecords);
+
+		Log.i(TAG, "mergeWithWriteLock operationSchedules:");
+		for (OperationSchedule operationSchedule : localData.operationSchedules) {
+			Log.i(TAG, "id=" + operationSchedule.getId() + " isArrived="
+					+ operationSchedule.isArrived() + " isDeparted="
+					+ operationSchedule.isDeparted());
+		}
+		Log.i(TAG, "mergeWithWriteLock passengerRecords:");
+		for (PassengerRecord passengerRecord : localData.passengerRecords) {
+			Log.i(TAG, "id=" + passengerRecord.getId() + " getOnTime="
+					+ passengerRecord.getGetOnTime() + " getOffTime="
+					+ passengerRecord.getGetOffTime());
+		}
 	}
 
 	/**
