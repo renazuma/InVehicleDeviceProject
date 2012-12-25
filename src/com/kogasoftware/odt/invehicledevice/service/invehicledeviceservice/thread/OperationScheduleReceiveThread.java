@@ -25,7 +25,7 @@ public class OperationScheduleReceiveThread extends Thread implements
 			.getSimpleName();
 	public static final Integer VOICE_DELAY_MILLIS = 5000;
 	public static final Integer RETRY_DELAY_MILLIS = 5000;
-	public static final Long RECEIVE_INTERVAL_MINUTES = 3L;
+	public static final Long RECEIVE_INTERVAL_MINUTES = 5L;
 	protected final InVehicleDeviceService service;
 	protected final OperationScheduleLogic operationScheduleLogic;
 	protected final VehicleNotificationLogic vehicleNotificationLogic;
