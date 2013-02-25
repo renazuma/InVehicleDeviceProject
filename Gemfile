@@ -33,6 +33,10 @@ gem "rails3_acts_as_paranoid",  "~>0.2.0"
 
 gem "database_cleaner"
 
+unless RUBY_ENGINE == "jruby"
+  gem "thin"
+end
+
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
 
