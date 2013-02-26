@@ -27,7 +27,6 @@ import android.opengl.GLException;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
 import android.os.Handler;
-import android.util.FloatMath;
 import android.util.Log;
 
 import com.google.common.base.Optional;
@@ -217,10 +216,10 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 			PointF nextPlatformPoint = getPoint(nextPlatformFrameTask
 					.getLatLng());
 			// 目的地が現在地より下にある場合、中心を下に修正して目的地が見やすいようにする
-			float vehicleRY = selfPoint.x * FloatMath.sin(angle) + selfPoint.y
-					* FloatMath.cos(angle);
-			float nextPlatformRY = nextPlatformPoint.x * FloatMath.sin(angle)
-					+ nextPlatformPoint.y * FloatMath.cos(angle);
+			double vehicleRY = selfPoint.x * Math.sin(angle) + selfPoint.y
+					* Math.cos(angle);
+			double nextPlatformRY = nextPlatformPoint.x * Math.sin(angle)
+					+ nextPlatformPoint.y * Math.cos(angle);
 
 			boolean hasExtraY = false;
 			try {
@@ -231,8 +230,8 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 						+ nextPlatformRY, e);
 			}
 			if (hasExtraY) {
-				float extraY = Math.min(vehicleRY - nextPlatformRY,
-						(float) height / 2 / totalZoom);
+				double extraY = Math.min(vehicleRY - nextPlatformRY,
+						(double) height / 2 / totalZoom);
 				centerPoint.y -= extraY;
 			}
 
