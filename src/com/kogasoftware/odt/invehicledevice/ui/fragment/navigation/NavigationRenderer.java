@@ -119,9 +119,9 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		nextPlatformFrameTask.setLatLng(new LatLng(0, 0));
 		addedFrameTasks.add(nextPlatformFrameTask);
 
-		// 〒701-4302 岡山県瀬戸内市牛窓町牛窓３９１１−３７ (東備バス（株）)
-		double defaultLatitude = 34.617781;
-		double defaultLongitude = 134.161429;
+		// 東京都台東区上野１丁目１７−６
+		double defaultLatitude = 35.7070879;
+		double defaultLongitude = 139.7717297;
 
 		LocationManager locationManager = (LocationManager) service
 				.getSystemService(Context.LOCATION_SERVICE);
