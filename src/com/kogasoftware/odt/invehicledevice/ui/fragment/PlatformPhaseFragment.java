@@ -5,6 +5,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -105,9 +106,13 @@ public class PlatformPhaseFragment extends ApplicationFragment<State> implements
 						getResources().getString(
 								R.string.minutes_remaining_to_depart_html),
 						dateString, minutesRemaining)));
-				if (lastMinutesRemaining >= 3 && minutesRemaining == 2) {
-					getService().speak("あと2分で出発時刻です");
+				if (lastMinutesRemaining >= 3 && minutesRemaining < 3) {
+					String message = minutesRemaining <= 0 ? "出発時刻になりました"
+							: String.format(Locale.JAPAN, "あと%d分で出発時刻です",
+									minutesRemaining);
+					getService().speak(message);
 				}
+				lastMinutesRemaining = minutesRemaining;
 			}
 		}
 	};
