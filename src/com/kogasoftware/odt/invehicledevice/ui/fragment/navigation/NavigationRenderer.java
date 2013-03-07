@@ -371,6 +371,15 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		this.width = width;
 		this.height = height;
 		synchronized (bitmapLock) {
+			// bitmapSourceにデータが残っている時に bitmapSource = new int[w*h]を実行すると、
+			// 古いものへの参照と新しいものへの参照が両方残る状態が一瞬発生しOOMが発生することがある。
+			// そのため、参照を先に全て外しておく。
+			bitmapSource = new int[0];
+			bitmapShortPixels = new short[0];
+			bitmapIntPixels = new int[0];
+			bitmapShortBuffer = ShortBuffer.wrap(bitmapShortPixels);
+			bitmapIntBuffer = IntBuffer.wrap(bitmapIntPixels);
+
 			bitmapWidth = width;
 			bitmapHeight = height;
 			if (useBitmapShortBuffer) {
