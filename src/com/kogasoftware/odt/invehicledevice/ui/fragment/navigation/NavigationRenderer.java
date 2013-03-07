@@ -302,7 +302,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		}
 
 		// 描画用バッファをクリア
-		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+		gl.glClear(GL10.GL_DEPTH_BUFFER_BIT);
 
 		// 射影行列を現在地にあわせて修正
 		gl.glMatrixMode(GL10.GL_PROJECTION);
@@ -408,7 +408,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		// gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_FASTEST);
 		gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_NICEST);
 		// バッファ初期化時のカラー情報をセット
-		gl.glClearColor(0, 0, 0, 0);
+		gl.glClearColor(0, 1f, 1f, 1f);
 		// 片面表示を有効に
 		gl.glEnable(GL10.GL_CULL_FACE);
 		// カリング設定をCCWに
@@ -431,6 +431,8 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		// テクスチャの透明度の合成を有効にする
 		gl.glTexEnvx(GL10.GL_TEXTURE_ENV, GL10.GL_TEXTURE_ENV_MODE,
 				GL10.GL_MODULATE);
+		// 描画用バッファをクリア
+		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 	}
 
 	private Boolean isBitmapShortBufferSupported(GL10 gl) {
