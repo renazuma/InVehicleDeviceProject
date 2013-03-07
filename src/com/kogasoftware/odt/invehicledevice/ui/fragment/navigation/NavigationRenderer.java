@@ -54,7 +54,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 
 	public static final int WORLD_WIDTH = 256;
 	public static final int WORLD_HEIGHT = 256;
-	public static final int MAX_ZOOM_LEVEL = 18;
+	public static final int MAX_ZOOM_LEVEL = 17;
 	public static final int MIN_ZOOM_LEVEL = 9;
 
 	public static PointF getDisplayPoint(LatLng latLng) {
