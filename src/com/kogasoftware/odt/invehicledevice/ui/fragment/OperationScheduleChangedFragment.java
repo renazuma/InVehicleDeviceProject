@@ -109,15 +109,14 @@ public class OperationScheduleChangedFragment extends
 
 	private void showOperationScheduleFragment(
 			List<OperationSchedule> operationSchedules) {
-		if (isRemoving()) {
-			return;
+		for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
+			setCustomAnimation(fragmentManager.beginTransaction())
+			.remove(this)
+			.add(R.id.modal_fragment_container,
+					OperationScheduleListFragment
+							.newInstance(operationSchedules))
+			.commitAllowingStateLoss();
 		}
-		setCustomAnimation(getFragmentManager().beginTransaction())
-				.remove(this)
-				.add(R.id.modal_fragment_container,
-						OperationScheduleListFragment
-								.newInstance(operationSchedules))
-				.commitAllowingStateLoss();
 	}
 
 	@Override

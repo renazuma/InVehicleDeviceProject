@@ -8,6 +8,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -123,57 +124,62 @@ public class ControlBarFragment extends ApplicationFragment<State> implements
 			return;
 		}
 		String tag = "tag:" + NavigationFragment.class.getSimpleName();
-		Fragment old = getFragmentManager().findFragmentByTag(tag);
-		if (old != null) {
-			setCustomAnimation(getFragmentManager().beginTransaction()).remove(
-					old).commit();
-		}
-		getService().getLocalStorage().read(new BackgroundReader<Integer>() {
-			@Override
-			public Integer readInBackground(LocalData localData) {
-				return localData.serviceUnitStatusLog.getOrientation().or(0);
+		for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
+			Fragment old = fragmentManager.findFragmentByTag(tag);
+			if (old != null) {
+				setCustomAnimation(fragmentManager.beginTransaction()).remove(
+						old).commit();
 			}
+			getService().getLocalStorage().read(new BackgroundReader<Integer>() {
+				@Override
+				public Integer readInBackground(LocalData localData) {
+					return localData.serviceUnitStatusLog.getOrientation().or(0);
+				}
 
-			@Override
-			public void onRead(Integer orientationDegree) {
-				setCustomAnimation(getFragmentManager().beginTransaction()).add(
-						R.id.modal_fragment_container,
-						NavigationFragment.newInstance(getState().getPhase(),
-								getState().getOperationSchedules(), orientationDegree.doubleValue())).commitAllowingStateLoss();
-			}
-		});
+				@Override
+				public void onRead(Integer orientationDegree) {
+					for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
+						setCustomAnimation(fragmentManager.beginTransaction()).add(
+								R.id.modal_fragment_container,
+								NavigationFragment.newInstance(getState().getPhase(),
+										getState().getOperationSchedules(), orientationDegree.doubleValue())).commitAllowingStateLoss();
+					}
+				}
+			});
+		}
 	}
 
 	public void showOperationScheduleListFragment() {
-		if (isRemoving()) {
-			return;
-		}
 		String tag = "tag:"
 				+ OperationScheduleListFragment.class.getSimpleName();
-		Fragment old = getFragmentManager().findFragmentByTag(tag);
-		if (old != null) {
-			setCustomAnimation(getFragmentManager().beginTransaction()).remove(
-					old).commit();
+		for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
+			Fragment old = fragmentManager.findFragmentByTag(tag);
+			if (old != null) {
+				setCustomAnimation(fragmentManager.beginTransaction()).remove(
+						old).commit();
+			}
+			setCustomAnimation(fragmentManager.beginTransaction()).add(
+					R.id.modal_fragment_container,
+					OperationScheduleListFragment.newInstance(getState()
+							.getOperationSchedules())).commit();
 		}
-		setCustomAnimation(getFragmentManager().beginTransaction()).add(
-				R.id.modal_fragment_container,
-				OperationScheduleListFragment.newInstance(getState()
-						.getOperationSchedules())).commit();
 	}
 
 	public void showArrivalCheckFragment() {
 		for (OperationSchedule operationSchedule : OperationSchedule
 				.getCurrent(getState().getOperationSchedules()).asSet()) {
-			String tag = "tag:" + ArrivalCheckFragment.class.getSimpleName();
-			Fragment old = getFragmentManager().findFragmentByTag(tag);
-			if (old != null) {
-				setCustomAnimation(getFragmentManager().beginTransaction())
+			for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
+				String tag = "tag:" + ArrivalCheckFragment.class.getSimpleName();
+				Fragment old = fragmentManager.findFragmentByTag(tag);
+				if (old != null) {
+					setCustomAnimation(fragmentManager.beginTransaction())
 						.remove(old).commit();
-			}
-			setCustomAnimation(getFragmentManager().beginTransaction()).add(
+				}
+				setCustomAnimation(fragmentManager.beginTransaction()).add(
 					R.id.modal_fragment_container,
 					ArrivalCheckFragment.newInstance(operationSchedule))
-					.commit();
+						.commit();
+			}
 		}
 	}
 
@@ -197,53 +203,55 @@ public class ControlBarFragment extends ApplicationFragment<State> implements
 		final OperationScheduleLogic operationScheduleLogic = new OperationScheduleLogic(
 				getService());
 
-		if (phase == Phase.PLATFORM_GET_OFF
-				&& operationSchedule.getNoGetOffErrorPassengerRecords(
+		for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
+			if (phase == Phase.PLATFORM_GET_OFF
+					&& operationSchedule.getNoGetOffErrorPassengerRecords(
+							passengerRecords).isEmpty()) {
+				if (operationSchedule.getGetOnScheduledPassengerRecords(
 						passengerRecords).isEmpty()) {
-			if (operationSchedule.getGetOnScheduledPassengerRecords(
-					passengerRecords).isEmpty()) {
-				setCustomAnimation(getFragmentManager().beginTransaction())
-						.add(R.id.modal_fragment_container,
-								DepartureCheckFragment.newInstance(phase,
-										operationSchedules))
-						.commitAllowingStateLoss();
-			} else {
-				getService().getLocalStorage().write(new BackgroundWriter() {
-					@Override
-					public void writeInBackground(LocalData ld) {
-						ld.completeGetOff = true;
-					}
+					setCustomAnimation(fragmentManager.beginTransaction())
+							.add(R.id.modal_fragment_container,
+									DepartureCheckFragment.newInstance(phase,
+											operationSchedules))
+							.commitAllowingStateLoss();
+				} else {
+					getService().getLocalStorage().write(new BackgroundWriter() {
+						@Override
+						public void writeInBackground(LocalData ld) {
+							ld.completeGetOff = true;
+						}
 
-					@Override
-					public void onWrite() {
-						operationScheduleLogic.requestUpdatePhase();
-					}
-				});
+						@Override
+						public void onWrite() {
+							operationScheduleLogic.requestUpdatePhase();
+						}
+					});
+				}
+				return;
+			} else if (phase == Phase.PLATFORM_GET_ON
+					&& operationSchedule.getNoGetOnErrorPassengerRecords(
+							passengerRecords).isEmpty()) {
+				setCustomAnimation(fragmentManager.beginTransaction()).add(
+						R.id.modal_fragment_container,
+						DepartureCheckFragment.newInstance(phase,
+								operationSchedules)).commitAllowingStateLoss();
+				return;
 			}
-			return;
-		} else if (phase == Phase.PLATFORM_GET_ON
-				&& operationSchedule.getNoGetOnErrorPassengerRecords(
-						passengerRecords).isEmpty()) {
-			setCustomAnimation(getFragmentManager().beginTransaction()).add(
-					R.id.modal_fragment_container,
-					DepartureCheckFragment.newInstance(phase,
-							operationSchedules)).commitAllowingStateLoss();
-			return;
-		}
 
-		// エラーがある場合
-		String tag = "tag:"
-				+ PassengerRecordErrorFragment.class.getSimpleName();
-		Fragment old = getFragmentManager().findFragmentByTag(tag);
-		if (old != null) {
-			setCustomAnimation(getFragmentManager().beginTransaction()).remove(
-					old).commitAllowingStateLoss();
+			// エラーがある場合
+			String tag = "tag:"
+					+ PassengerRecordErrorFragment.class.getSimpleName();
+			Fragment old = fragmentManager.findFragmentByTag(tag);
+			if (old != null) {
+				setCustomAnimation(fragmentManager.beginTransaction()).remove(
+						old).commitAllowingStateLoss();
+			}
+			setCustomAnimation(fragmentManager.beginTransaction()).add(
+					R.id.modal_fragment_container,
+					PassengerRecordErrorFragment.newInstance(phase,
+							operationSchedules, passengerRecords))
+					.commitAllowingStateLoss();
 		}
-		setCustomAnimation(getFragmentManager().beginTransaction()).add(
-				R.id.modal_fragment_container,
-				PassengerRecordErrorFragment.newInstance(phase,
-						operationSchedules, passengerRecords))
-				.commitAllowingStateLoss();
 	}
 
 	public void updateView(Phase phase, Boolean isLast) {

@@ -6,6 +6,7 @@ import java.util.List;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -124,11 +125,13 @@ public class PassengerRecordErrorFragment extends ApplicationFragment<State>
 				}
 			});
 
-			PassengerRecordErrorArrayAdapter adapter = new PassengerRecordErrorArrayAdapter(
-					getActivity(), getService(), getFragmentManager(),
-					operationSchedule, errorPassengerRecords, this);
-			errorUserListView.getListView().setAdapter(adapter);
-			onPassengerRecordChange(adapter);
+			for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
+				PassengerRecordErrorArrayAdapter adapter = new PassengerRecordErrorArrayAdapter(
+						getActivity(), getService(), fragmentManager,
+						operationSchedule, errorPassengerRecords, this);
+				errorUserListView.getListView().setAdapter(adapter);
+				onPassengerRecordChange(adapter);
+			}
 			return view;
 		}
 
@@ -148,10 +151,12 @@ public class PassengerRecordErrorFragment extends ApplicationFragment<State>
 		if (phase == Phase.PLATFORM_GET_ON
 				|| currentOperationSchedule.getGetOnScheduledPassengerRecords(
 						passengerRecords).isEmpty()) {
-			setCustomAnimation(getFragmentManager().beginTransaction()).add(
-					R.id.modal_fragment_container,
-					DepartureCheckFragment.newInstance(phase,
-							operationSchedules)).commitAllowingStateLoss();
+			for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
+				setCustomAnimation(fragmentManager.beginTransaction()).add(
+						R.id.modal_fragment_container,
+						DepartureCheckFragment.newInstance(phase,
+								operationSchedules)).commitAllowingStateLoss();
+			}
 			return;
 		}
 		getService().getLocalStorage().write(new BackgroundWriter() {

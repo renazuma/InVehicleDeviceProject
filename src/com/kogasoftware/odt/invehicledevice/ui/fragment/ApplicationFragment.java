@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -171,11 +172,10 @@ public class ApplicationFragment<S extends Serializable> extends Fragment {
 	}
 
 	protected void hide() {
-		if (isRemoving()) {
-			return;
-		}
-		setCustomAnimation(getFragmentManager().beginTransaction())
+		for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
+			setCustomAnimation(fragmentManager.beginTransaction())
 				.remove(this).commitAllowingStateLoss();
+		}
 	}
 
 	protected static Integer getPhaseColor(Phase phase) {
@@ -207,5 +207,9 @@ public class ApplicationFragment<S extends Serializable> extends Fragment {
 		super.onDestroy();
 		getService().getEventDispatcher().removeOnUpdatePhaseListener(
 				removeOnUpdatePhaseListener);
+	}
+
+	public Optional<FragmentManager> getOptionalFragmentManager() {
+		return Optional.fromNullable(getFragmentManager());
 	}
 }

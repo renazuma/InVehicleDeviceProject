@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,16 +48,18 @@ public class VehicleNotificationAlertFragment extends
 				handler.postDelayed(this, ALERT_SHOW_INTERVAL_MILLIS);
 				return;
 			}
-			FragmentTransaction fragmentTransaction = setCustomAnimation(getFragmentManager()
-					.beginTransaction());
-			for (VehicleNotification vehicleNotification : getState()
-					.getVehicleNotifications()) {
-				fragmentTransaction.add(R.id.modal_fragment_container,
-						VehicleNotificationFragment
-								.newInstance(vehicleNotification));
+			for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
+				FragmentTransaction fragmentTransaction = setCustomAnimation(fragmentManager
+						.beginTransaction());
+				for (VehicleNotification vehicleNotification : getState()
+						.getVehicleNotifications()) {
+					fragmentTransaction.add(R.id.modal_fragment_container,
+							VehicleNotificationFragment
+									.newInstance(vehicleNotification));
+				}
+				fragmentTransaction.remove(VehicleNotificationAlertFragment.this);
+				fragmentTransaction.commitAllowingStateLoss();
 			}
-			fragmentTransaction.remove(VehicleNotificationAlertFragment.this);
-			fragmentTransaction.commitAllowingStateLoss();
 		}
 	};
 

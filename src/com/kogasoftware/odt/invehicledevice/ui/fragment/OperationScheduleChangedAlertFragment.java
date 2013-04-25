@@ -7,6 +7,7 @@ import java.util.List;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -97,22 +98,21 @@ public class OperationScheduleChangedAlertFragment extends
 
 	private void showOperationScheduleChangedFragment(
 			ArrayList<VehicleNotification> vehicleNotifications) {
-		if (isRemoving()) {
-			return;
-		}
 		String tag = "tag:" + OperationScheduleChangedFragment.class.getName();
-		Fragment old = getFragmentManager().findFragmentByTag(tag);
-		FragmentTransaction fragmentTransaction = getFragmentManager()
-				.beginTransaction();
-		if (old == null) {
-			setCustomAnimation(fragmentTransaction);
-		} else {
-			fragmentTransaction.remove(old);
+		for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
+			Fragment old = fragmentManager.findFragmentByTag(tag);
+			FragmentTransaction fragmentTransaction = fragmentManager
+					.beginTransaction();
+			if (old == null) {
+				setCustomAnimation(fragmentTransaction);
+			} else {
+				fragmentTransaction.remove(old);
+			}
+			fragmentTransaction.add(R.id.modal_fragment_container,
+					OperationScheduleChangedFragment
+							.newInstance(vehicleNotifications), tag);
+			fragmentTransaction.commitAllowingStateLoss();
+			hide();
 		}
-		fragmentTransaction.add(R.id.modal_fragment_container,
-				OperationScheduleChangedFragment
-						.newInstance(vehicleNotifications), tag);
-		fragmentTransaction.commitAllowingStateLoss();
-		hide();
 	}
 }

@@ -62,18 +62,20 @@ public class InVehicleDeviceFragment extends ApplicationFragment<State>
 		super.onActivityCreated(savedInstanceState);
 		Optional<OperationSchedule> currentOperationSchedule = OperationSchedule
 				.getCurrent(getState().getOperationSchedules());
-		FragmentTransaction fragmentTransaction = getFragmentManager()
-				.beginTransaction();
-		fragmentTransaction.add(R.id.information_fragment_container,
-				InformationBarFragment.newInstance(getState().getPhase(),
-						currentOperationSchedule));
-		fragmentTransaction.add(R.id.control_fragment_container,
-				ControlBarFragment.newInstance(getState().getPhase(),
-						getState().getOperationSchedules(), getState()
-								.getPassengerRecords()));
-		fragmentTransaction.commitAllowingStateLoss();
-		getService().getEventDispatcher().addOnUpdatePhaseListener(this);
-		updateView(true);
+		for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
+			FragmentTransaction fragmentTransaction = fragmentManager
+					.beginTransaction();
+			fragmentTransaction.add(R.id.information_fragment_container,
+					InformationBarFragment.newInstance(getState().getPhase(),
+							currentOperationSchedule));
+			fragmentTransaction.add(R.id.control_fragment_container,
+					ControlBarFragment.newInstance(getState().getPhase(),
+							getState().getOperationSchedules(), getState()
+									.getPassengerRecords()));
+			fragmentTransaction.commitAllowingStateLoss();
+			getService().getEventDispatcher().addOnUpdatePhaseListener(this);
+			updateView(true);
+		}
 	}
 
 	@Override
@@ -97,11 +99,16 @@ public class InVehicleDeviceFragment extends ApplicationFragment<State>
 	}
 
 	public void updateView(Boolean first) {
+		for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
+			updateView(first, fragmentManager);
+		}
+	}
+
+	public void updateView(Boolean first, FragmentManager fragmentManager) {
 		Optional<OperationSchedule> currentOperationSchedule = OperationSchedule
 				.getCurrent(getState().getOperationSchedules());
 		String tag = getPhaseFragmentTag(getState().getPhase(),
 				currentOperationSchedule);
-		FragmentManager fragmentManager = getFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager
 				.beginTransaction();
 		Boolean speakPlatform = first;

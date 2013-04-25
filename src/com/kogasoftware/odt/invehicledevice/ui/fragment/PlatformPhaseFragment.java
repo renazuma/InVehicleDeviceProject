@@ -10,6 +10,7 @@ import java.util.Locale;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
@@ -74,11 +76,14 @@ public class PlatformPhaseFragment extends ApplicationFragment<State> implements
 	private Handler handler;
 	private TextView minutesRemainingTextView;
 	private Integer lastMinutesRemaining = Integer.MAX_VALUE;
+	private Optional<PassengerRecordArrayAdapter> optionalAdapter = Optional.absent();
 
 	private Runnable blink = new Runnable() {
 		@Override
 		public void run() {
-			adapter.toggleBlink();
+			for (PassengerRecordArrayAdapter adapter : optionalAdapter.asSet()) {
+				adapter.toggleBlink();
+			}
 			handler.postDelayed(this, BLINK_MILLIS);
 		}
 	};
@@ -116,7 +121,6 @@ public class PlatformPhaseFragment extends ApplicationFragment<State> implements
 			}
 		}
 	};
-	private PassengerRecordArrayAdapter adapter;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -185,24 +189,27 @@ public class PlatformPhaseFragment extends ApplicationFragment<State> implements
 				}
 			}
 
-			adapter = new PassengerRecordArrayAdapter(
-					getActivity(),
-					getService(),
-					getFragmentManager(),
-					currentOperationSchedule,
-					getState().getPhase() == Phase.PLATFORM_GET_OFF ? currentOperationSchedule
-							.getGetOffScheduledPassengerRecords(getState()
-									.getPassengerRecords())
-							: currentOperationSchedule
-									.getGetOnScheduledPassengerRecords(getState()
-											.getPassengerRecords()));
-			ListView listView = new ListView(getActivity());
-			listView.setAdapter(adapter);
-			handler.removeCallbacks(blink);
-			handler.postDelayed(blink, 500);
+			for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
+				PassengerRecordArrayAdapter adapter = new PassengerRecordArrayAdapter(
+						getActivity(),
+						getService(),
+						fragmentManager,
+						currentOperationSchedule,
+						getState().getPhase() == Phase.PLATFORM_GET_OFF ? currentOperationSchedule
+								.getGetOffScheduledPassengerRecords(getState()
+										.getPassengerRecords())
+								: currentOperationSchedule
+										.getGetOnScheduledPassengerRecords(getState()
+												.getPassengerRecords()));
+				optionalAdapter = Optional.of(adapter);
+				ListView listView = new ListView(getActivity());
+				listView.setAdapter(adapter);
+				handler.removeCallbacks(blink);
+				handler.postDelayed(blink, 500);
 
-			passengerRecordListView.replaceListView(listView);
-			return;
+				passengerRecordListView.replaceListView(listView);
+				return;
+			}
 		}
 
 		// error

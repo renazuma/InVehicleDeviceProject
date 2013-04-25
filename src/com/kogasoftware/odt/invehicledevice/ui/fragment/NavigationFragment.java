@@ -19,6 +19,7 @@ import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -42,6 +43,7 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
+import com.kogasoftware.odt.invehicledevice.empty.EmptyRunnable;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
 import com.kogasoftware.odt.invehicledevice.ui.BatteryAlerter;
@@ -207,10 +209,13 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 		gpsSatellitesTextView = (TextView) view
 				.findViewById(R.id.gps_satellites_text_view);
 
-		blinkBatteryAlert = new BatteryAlerter(getActivity()
-				.getApplicationContext(), handler,
-				(ImageView) view.findViewById(R.id.battery_alert_image_view),
-				getFragmentManager());
+		blinkBatteryAlert = new EmptyRunnable();
+		for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
+			blinkBatteryAlert = new BatteryAlerter(getActivity()
+					.getApplicationContext(), handler,
+					(ImageView) view.findViewById(R.id.battery_alert_image_view),
+					fragmentManager);
+		}
 
 		getService().getEventDispatcher().addOnChangeLocationListener(this);
 		getService().getEventDispatcher().addOnChangeOrientationListener(this);
@@ -294,17 +299,16 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 							.setOnClickListener(new OnClickListener() {
 								@Override
 								public void onClick(View view) {
-									if (isRemoving()) {
-										return;
-									}
 									ViewDisabler.disable(view);
-									setCustomAnimation(
-											getFragmentManager()
-													.beginTransaction())
-											.add(R.id.modal_fragment_container,
-													PlatformMemoFragment
-															.newInstance(operationSchedule))
-											.commitAllowingStateLoss();
+									for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
+										setCustomAnimation(
+												fragmentManager
+														.beginTransaction())
+												.add(R.id.modal_fragment_container,
+														PlatformMemoFragment
+																.newInstance(operationSchedule))
+												.commitAllowingStateLoss();
+									}
 								}
 							});
 				}
@@ -382,9 +386,10 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 		super.onResume();
 		Log.i(TAG, "onResume()");
 		final DialogFragment dialogFragment = new SurficeFlashMaskDialogFragment();
-		dialogFragment.show(getFragmentManager(),
-				SurficeFlashMaskDialogFragment.class.getSimpleName());
-
+		for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
+			dialogFragment.show(fragmentManager,
+					SurficeFlashMaskDialogFragment.class.getSimpleName());
+		}
 		final ImageView mask = (ImageView) getView().findViewById(
 				R.id.navigation_surface_black_flash_mask);
 		for (Bitmap bitmap : getService().getLastMapBitmap().asSet()) {

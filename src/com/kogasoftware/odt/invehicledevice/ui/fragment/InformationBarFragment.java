@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +27,7 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
+import com.kogasoftware.odt.invehicledevice.empty.EmptyRunnable;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
@@ -111,10 +113,13 @@ public class InformationBarFragment extends ApplicationFragment<State>
 				.findViewById(R.id.network_strength_image_view);
 		getService().getEventDispatcher().addOnUpdatePhaseListener(this);
 		updateView(view);
-		blinkBatteryAlert = new BatteryAlerter(getActivity()
-				.getApplicationContext(), handler, (ImageView) getView()
-				.findViewById(R.id.battery_alert_image_view),
-				getFragmentManager());
+		blinkBatteryAlert = new EmptyRunnable();
+		for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
+			blinkBatteryAlert = new BatteryAlerter(getActivity()
+					.getApplicationContext(), handler, (ImageView) getView()
+					.findViewById(R.id.battery_alert_image_view),
+					fragmentManager);
+		}
 	}
 
 	@Override
@@ -196,15 +201,16 @@ public class InformationBarFragment extends ApplicationFragment<State>
 
 	public void showPlatformMemoFragment(OperationSchedule operationSchedule) {
 		String tag = "tag:" + PlatformMemoFragment.class.getSimpleName();
-		Fragment old = getFragmentManager().findFragmentByTag(tag);
-		if (old != null) {
-			setCustomAnimation(getFragmentManager().beginTransaction()).remove(
-					old).commit();
+		for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
+			Fragment old = fragmentManager.findFragmentByTag(tag);
+			if (old != null) {
+				setCustomAnimation(fragmentManager.beginTransaction()).remove(
+						old).commit();
+			}
+			setCustomAnimation(fragmentManager.beginTransaction()).add(
+					R.id.modal_fragment_container,
+					PlatformMemoFragment.newInstance(operationSchedule)).commit();
 		}
-		setCustomAnimation(getFragmentManager().beginTransaction()).add(
-				R.id.modal_fragment_container,
-				PlatformMemoFragment.newInstance(operationSchedule)).commit();
-
 	}
 
 	@Override
