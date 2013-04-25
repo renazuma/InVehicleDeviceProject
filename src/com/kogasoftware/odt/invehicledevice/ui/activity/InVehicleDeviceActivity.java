@@ -20,6 +20,7 @@ import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Html;
 import android.util.Log;
@@ -199,8 +200,10 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 						| WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
 
 		LoadingDialogFragment loadingDialogFragment = new LoadingDialogFragment();
-		loadingDialogFragment.show(getSupportFragmentManager(),
-				LOADING_DIALOG_FRAGMENT_TAG);
+		for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
+			loadingDialogFragment.show(fragmentManager,
+					LOADING_DIALOG_FRAGMENT_TAG);
+		}
 		this.loadingDialogFragment = Optional.of(loadingDialogFragment);
 		bindService(new Intent(this, InVehicleDeviceService.class),
 				serviceConnection, Context.BIND_AUTO_CREATE);
@@ -246,12 +249,14 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 			List<PassengerRecord> passengerRecords) {
 		Log.i(TAG, "initializeUi()");
 
-		FragmentTransaction fragmentTransaction = getSupportFragmentManager()
-				.beginTransaction();
-		fragmentTransaction.add(R.id.modal_fragment_container,
-				InVehicleDeviceFragment.newInstance(phase, operationSchedules,
-						passengerRecords));
-		fragmentTransaction.commitAllowingStateLoss();
+		for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
+			FragmentTransaction fragmentTransaction = fragmentManager
+					.beginTransaction();
+			fragmentTransaction.add(R.id.modal_fragment_container,
+					InVehicleDeviceFragment.newInstance(phase, operationSchedules,
+							passengerRecords));
+			fragmentTransaction.commitAllowingStateLoss();
+		}
 
 		uiInitialized = true;
 
@@ -384,12 +389,14 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 	@Override
 	public void onAlertVehicleNotificationReceive(
 			final List<VehicleNotification> vehicleNotifications) {
-		FragmentTransaction fragmentTransaction = getSupportFragmentManager()
-				.beginTransaction();
-		fragmentTransaction.add(R.id.modal_fragment_container,
-				VehicleNotificationAlertFragment
-						.newInstance(vehicleNotifications));
-		fragmentTransaction.commitAllowingStateLoss();
+		for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
+			FragmentTransaction fragmentTransaction = fragmentManager
+					.beginTransaction();
+			fragmentTransaction.add(R.id.modal_fragment_container,
+					VehicleNotificationAlertFragment
+							.newInstance(vehicleNotifications));
+			fragmentTransaction.commitAllowingStateLoss();
+		}		
 	}
 
 	@Override
@@ -400,11 +407,17 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 			// Toast.LENGTH_LONG).show();
 			return;
 		}
-		FragmentTransaction fragmentTransaction = getSupportFragmentManager()
-				.beginTransaction();
-		fragmentTransaction.add(R.id.modal_fragment_container,
-				OperationScheduleChangedAlertFragment
-						.newInstance(triggerVehicleNotifications));
-		fragmentTransaction.commitAllowingStateLoss();
+		for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
+			FragmentTransaction fragmentTransaction = fragmentManager
+					.beginTransaction();
+			fragmentTransaction.add(R.id.modal_fragment_container,
+					OperationScheduleChangedAlertFragment
+							.newInstance(triggerVehicleNotifications));
+			fragmentTransaction.commitAllowingStateLoss();
+		}
+	}
+
+	public Optional<FragmentManager> getOptionalFragmentManager() {
+		return Optional.fromNullable(getSupportFragmentManager());
 	}
 }
