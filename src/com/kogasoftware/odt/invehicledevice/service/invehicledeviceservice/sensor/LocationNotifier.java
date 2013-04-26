@@ -288,7 +288,7 @@ public class LocationNotifier implements LocationListener, GpsStatus.Listener,
 			});
 		}
 		removeAllCallbacks();
-		if (!started.getAndSet(false)) {
+		if (!started.get()) {
 			return;
 		}
 		stopLocationUpdates();
