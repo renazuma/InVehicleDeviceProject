@@ -287,6 +287,7 @@ public class LocationNotifier implements LocationListener, GpsStatus.Listener,
 				}
 			});
 		}
+		removeAllCallbacks();
 		if (!started.getAndSet(false)) {
 			return;
 		}
@@ -299,6 +300,10 @@ public class LocationNotifier implements LocationListener, GpsStatus.Listener,
 		}
 		Log.d(TAG, "stopLocationUpdates()");
 		wakeLock.release();
+		removeAllCallbacks();
+	}
+
+	protected void removeAllCallbacks() {
 		locationManager.removeGpsStatusListener(this);
 		locationManager.removeNmeaListener(this);
 		locationManager.removeUpdates(this);
