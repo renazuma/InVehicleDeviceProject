@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -19,6 +22,7 @@ import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.apiclient.ApiClientException;
 import com.kogasoftware.odt.apiclient.DefaultApiClient;
 import com.kogasoftware.odt.apiclient.DefaultApiClientRequest;
+import com.kogasoftware.odt.apiclient.DefaultApiClientRequestConfig;
 import com.kogasoftware.odt.apiclient.DefaultApiClientRequestQueue;
 import com.kogasoftware.odt.apiclient.serializablerequestloader.SerializableGetLoader;
 import com.kogasoftware.odt.apiclient.serializablerequestloader.SerializableRequestLoader;
@@ -35,6 +39,10 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.base.Model;
 
 public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 		InVehicleDeviceApiClient {
+	public interface RequestCreator {
+		void create() throws IOException;
+	}
+
 	private static final String TAG = DefaultInVehicleDeviceApiClient.class
 			.getSimpleName();
 
@@ -50,6 +58,8 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 			+ "/reservations";
 	public static final String PATH_SERVICE_PRIVIDER = PATH_PREFIX
 			+ "/service_provider";
+
+	protected final ExecutorService newRequestExecutorService = Executors.newFixedThreadPool(1); // 処理順が変わらないようにするためサイズは1固定
 
 	protected static ObjectNode createObjectNode() {
 		return Model.getObjectMapper().createObjectNode();
@@ -70,6 +80,31 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 		super(serverHost, authenticationToken,
 				new DefaultApiClientRequestQueue(backupFile));
 	}
+	
+	/**
+	 * 新しいリクエストを生成する処理でModelからJSONへ変換する際に非常にコストがかかりUIを止めてしまうことが
+	 * あるため、その処理を裏のスレッドで行う。
+	 */
+	private int doInBackground(final ApiClientCallback<?> callback, final RequestCreator requestCreator) {
+		final DefaultApiClientRequestConfig callerRequestConfig = getRequestConfig();
+		clearRequestConfig();
+		try {
+			newRequestExecutorService.submit(new Runnable(){
+				@Override
+				public void run() {
+					try {
+						DefaultInVehicleDeviceApiClient.this.setRequestConfig(callerRequestConfig);
+						requestCreator.create();
+					} catch (IOException e) {
+						Log.e(TAG, "fatal IOException", e);
+						callback.onException(callerRequestConfig.getReqkey(), new ApiClientException(e));
+					}
+				}});
+		} catch (RejectedExecutionException e) {
+			Log.e(TAG, "fatal IOException", e);
+		}
+		return callerRequestConfig.getReqkey();
+	}
 
 	/**
 	 * 到着時のサーバへの通知
@@ -80,7 +115,8 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	@Override
 	public int arrivalOperationSchedule(final OperationSchedule os,
 			final ApiClientCallback<OperationSchedule> callback) {
-		try {
+		return doInBackground(callback, new RequestCreator() {
+			public void create() throws IOException {
 			OperationRecord or = os.getOperationRecord().or(
 					new OperationRecord());
 			if (!or.getArrivedAt().isPresent()) {
@@ -95,13 +131,12 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 			JsonNode retryParam = createObjectNode().set(root,
 					retryOr.toJsonNode(false));
 
-			return put(
+			put(
 					PATH_OPERATION_SCHEDULES + "/" + os.getId() + "/arrival",
 					param, retryParam, UNIQUE_GROUP, callback,
 					OperationSchedule.RESPONSE_CONVERTER);
-		} catch (IOException e) {
-			return handleIOException(e, callback);
-		}
+			}
+		});
 	}
 
 	/**
@@ -113,7 +148,8 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	@Override
 	public int departureOperationSchedule(final OperationSchedule os,
 			final ApiClientCallback<OperationSchedule> callback) {
-		try {
+		return doInBackground(callback, new RequestCreator() {
+			public void create() throws IOException {
 			OperationRecord or = os.getOperationRecord().or(
 					new OperationRecord());
 			if (!or.getDepartedAt().isPresent()) {
@@ -127,12 +163,11 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 			JsonNode retryParam = createObjectNode().set(root,
 					retryOr.toJsonNode(false));
 
-			return put(PATH_OPERATION_SCHEDULES + "/" + os.getId()
+			put(PATH_OPERATION_SCHEDULES + "/" + os.getId()
 					+ "/departure", param, retryParam, UNIQUE_GROUP, callback,
 					OperationSchedule.RESPONSE_CONVERTER);
-		} catch (IOException e) {
-			return handleIOException(e, callback);
-		}
+			}
+		});
 	}
 
 	/**
@@ -142,10 +177,11 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	 *            運行スケジュールオブジェクト @
 	 */
 	@Override
-	public int getOffPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, User user,
-			PassengerRecord passengerRecord, ApiClientCallback<Void> callback) {
-		try {
+	public int getOffPassenger(final OperationSchedule operationSchedule,
+			final Reservation reservation, final User user,
+			final PassengerRecord passengerRecord, final ApiClientCallback<Void> callback) {
+		return doInBackground(callback, new RequestCreator() {
+			public void create() throws IOException {
 			passengerRecord.setGetOffTime(new Date());
 			PassengerRecord retryPassengerRecord = passengerRecord.clone(false);
 			retryPassengerRecord.setGetOffTimeOffline(true);
@@ -162,14 +198,13 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 					operationSchedule.getId(), reservation.getId(),
 					user.getId());
 
-			return put(
+			put(
 					PATH_OPERATION_SCHEDULES + "/" + operationSchedule.getId()
 							+ "/reservations/" + reservation.getId()
 							+ "/users/" + user.getId() + "/passenger_record",
 					param, retryParam, group, callback, VOID_RESPONSE_CONVERTER);
-		} catch (IOException e) {
-			return handleIOException(e, callback);
-		}
+			}
+		});
 	}
 
 	/**
@@ -179,10 +214,11 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	 *            運行スケジュールオブジェクト @
 	 */
 	@Override
-	public int getOnPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, User user,
-			PassengerRecord passengerRecord, ApiClientCallback<Void> callback) {
-		try {
+	public int getOnPassenger(final OperationSchedule operationSchedule,
+			final Reservation reservation, final User user,
+			final PassengerRecord passengerRecord, final ApiClientCallback<Void> callback) {
+		return doInBackground(callback, new RequestCreator() {
+			public void create() throws IOException {
 			passengerRecord.setGetOnTime(new Date());
 			PassengerRecord retryPassengerRecord = passengerRecord.clone(false);
 			retryPassengerRecord.setGetOnTimeOffline(true);
@@ -199,14 +235,13 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 					operationSchedule.getId(), reservation.getId(),
 					user.getId());
 
-			return put(
+			put(
 					PATH_OPERATION_SCHEDULES + "/" + operationSchedule.getId()
 							+ "/reservations/" + reservation.getId()
 							+ "/users/" + user.getId() + "/passenger_record",
 					param, retryParam, group, callback, VOID_RESPONSE_CONVERTER);
-		} catch (IOException e) {
-			return handleIOException(e, callback);
-		}
+			}
+		});
 	}
 
 	/**
@@ -216,9 +251,10 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	 *            運行スケジュールオブジェクト @
 	 */
 	@Override
-	public int cancelGetOnPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, User user, ApiClientCallback<Void> callback) {
-		try {
+	public int cancelGetOnPassenger(final OperationSchedule operationSchedule,
+			final Reservation reservation, final User user, final ApiClientCallback<Void> callback) {
+		return doInBackground(callback, new RequestCreator() {
+			public void create() throws IOException {
 			PassengerRecord passengerRecord = new PassengerRecord();
 			passengerRecord.setGetOnTime(new Date());
 			passengerRecord.clearGetOffTime();
@@ -227,15 +263,14 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 			String group = getPassengerRecordGetOnOrOffGroup(
 					operationSchedule.getId(), reservation.getId(),
 					user.getId());
-			return put(
+			put(
 					PATH_OPERATION_SCHEDULES + "/" + operationSchedule.getId()
 							+ "/reservations/" + reservation.getId()
 							+ "/users/" + user.getId()
 							+ "/passenger_record/canceled", param, group,
 					callback, VOID_RESPONSE_CONVERTER);
-		} catch (IOException e) {
-			return handleIOException(e, callback);
-		}
+			}
+		});
 	}
 
 	/**
@@ -245,9 +280,10 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	 *            運行スケジュールオブジェクト @
 	 */
 	@Override
-	public int cancelGetOffPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, User user, ApiClientCallback<Void> callback) {
-		try {
+	public int cancelGetOffPassenger(final OperationSchedule operationSchedule,
+			final Reservation reservation, final User user, final ApiClientCallback<Void> callback) {
+		return doInBackground(callback, new RequestCreator() {
+			public void create() throws IOException {
 			PassengerRecord passengerRecord = new PassengerRecord();
 			passengerRecord.clearGetOnTime();
 			passengerRecord.setGetOffTime(new Date());
@@ -256,15 +292,14 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 			String group = getPassengerRecordGetOnOrOffGroup(
 					operationSchedule.getId(), reservation.getId(),
 					user.getId());
-			return put(
+			put(
 					PATH_OPERATION_SCHEDULES + "/" + operationSchedule.getId()
 							+ "/reservations/" + reservation.getId()
 							+ "/users/" + user.getId()
 							+ "/passenger_record/canceled", param, group,
 					callback, VOID_RESPONSE_CONVERTER);
-		} catch (IOException e) {
-			return handleIOException(e, callback);
-		}
+			}
+		});
 	}
 
 	/**
@@ -308,12 +343,13 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	 * @return reqkey
 	 */
 	@Override
-	public int login(InVehicleDevice login,
+	public int login(final InVehicleDevice login,
 			final ApiClientCallback<InVehicleDevice> callback) {
-		try {
+		return doInBackground(callback, new RequestCreator() {
+			public void create() throws IOException {
 			JsonNode param = createObjectNode().set(InVehicleDevice.UNDERSCORE,
 					login.toJsonNode(false).retain("login", "password"));
-			return post(PATH_LOGIN, param, UNIQUE_GROUP,
+			post(PATH_LOGIN, param, UNIQUE_GROUP,
 					new ApiClientCallback<InVehicleDevice>() {
 						@Override
 						public void onException(int reqkey,
@@ -342,9 +378,8 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 							Log.e(TAG, "onSucceed : no authentication_token");
 						}
 					}, InVehicleDevice.RESPONSE_CONVERTER);
-		} catch (IOException e) {
-			return handleIOException(e, callback);
-		}
+			}
+		});
 	}
 
 	/**
@@ -356,9 +391,10 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	 *            応答 @
 	 */
 	@Override
-	public int responseVehicleNotification(VehicleNotification vn,
-			int response, ApiClientCallback<VehicleNotification> callback) {
-		try {
+	public int responseVehicleNotification(final VehicleNotification vn,
+			final int response, final ApiClientCallback<VehicleNotification> callback) {
+		return doInBackground(callback, new RequestCreator() {
+			public void create() throws IOException {
 			vn.setResponse(response);
 			vn.setReadAt(new Date());
 			VehicleNotification retryVn = vn.clone(false);
@@ -372,21 +408,21 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 					vn.toJsonNode(false).retain(filter));
 			JsonNode retryParam = createObjectNode().set(root,
 					retryVn.toJsonNode(false).retain(filter));
-			return put(PATH_VEHICLE_NOTIFICATIONS + "/" + vn.getId(), param,
+			put(PATH_VEHICLE_NOTIFICATIONS + "/" + vn.getId(), param,
 					retryParam, UNIQUE_GROUP, callback,
 					VehicleNotification.RESPONSE_CONVERTER);
-		} catch (IOException e) {
-			return handleIOException(e, callback);
-		}
+			}
+		});
 	}
 
 	/**
 	 * 車載器状態の通知
 	 */
 	@Override
-	public int sendServiceUnitStatusLog(ServiceUnitStatusLog log,
-			ApiClientCallback<ServiceUnitStatusLog> callback) {
-		try {
+	public int sendServiceUnitStatusLog(final ServiceUnitStatusLog log,
+			final ApiClientCallback<ServiceUnitStatusLog> callback) {
+		return doInBackground(callback, new RequestCreator() {
+			public void create() throws IOException {
 			log.setOfflineTime(new Date());
 			ServiceUnitStatusLog retryLog = log.clone(false);
 			retryLog.setOffline(true);
@@ -398,12 +434,11 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 					log.toJsonNode(false).retain(filter));
 			JsonNode retryParam = createObjectNode().set(root,
 					retryLog.toJsonNode(false));
-			return post(PATH_SERVICE_UNIT_STATUS_LOGS, param, retryParam,
+			post(PATH_SERVICE_UNIT_STATUS_LOGS, param, retryParam,
 					"sendServiceUnitStatusLog", callback,
 					ServiceUnitStatusLog.RESPONSE_CONVERTER);
-		} catch (IOException e) {
-			return handleIOException(e, callback);
-		}
+			}
+		});
 	}
 
 	/**
@@ -537,5 +572,11 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	@Override
 	public DefaultInVehicleDeviceApiClient withRetry(boolean retry) {
 		return withRetry(this, retry);
+	}
+	
+	@Override
+	public void close() {
+		newRequestExecutorService.shutdownNow();
+		super.close();
 	}
 }

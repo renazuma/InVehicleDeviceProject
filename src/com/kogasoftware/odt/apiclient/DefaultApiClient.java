@@ -57,14 +57,6 @@ public class DefaultApiClient implements ApiClient {
 	protected final Object requestConfigsLock = new Object();
 	protected final WeakHashMap<Thread, DefaultApiClientRequestConfig> requestConfigs = new WeakHashMap<Thread, DefaultApiClientRequestConfig>();
 
-	protected <T> int handleIOException(IOException e,
-			ApiClientCallback<T> callback) {
-		int reqkey = -1;
-		Log.e(TAG, "fatal IOException", e);
-		callback.onException(reqkey, new ApiClientException(e));
-		return reqkey;
-	}
-
 	public DefaultApiClient(String serverHost) {
 		this(serverHost, "");
 	}
@@ -261,6 +253,13 @@ public class DefaultApiClient implements ApiClient {
 				requestConfigs.put(key, requestConfig);
 				return requestConfig;
 			}
+		}
+	}
+
+	protected void setRequestConfig(
+			DefaultApiClientRequestConfig requestConfig) {
+		synchronized (requestConfigsLock) {
+			requestConfigs.put(Thread.currentThread(), requestConfig);
 		}
 	}
 
