@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -492,8 +493,8 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 			}
 		};
 
-		String lat = String.format("%.6f", center.getLatitude());
-		String lon = String.format("%.6f", center.getLongitude());
+		String lat = String.format(Locale.US, "%.6f", center.getLatitude());
+		String lon = String.format(Locale.US, "%.6f", center.getLongitude());
 
 		// SerializableRequestLoader loader = getOJWOSMRequestloader(lat, lon,
 		// zoom);
