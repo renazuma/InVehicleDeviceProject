@@ -18,10 +18,8 @@ public class DefaultApiClientRequest<T> implements Serializable {
 	private static final long serialVersionUID = -8451453777378477195L;
 	private static final String TAG = DefaultApiClientRequest.class
 			.getSimpleName();
-	protected static final AtomicInteger REQ_KEY_COUNTER = new AtomicInteger(0);
 	protected final SerializableRequestLoader firstRequest;
 	protected final SerializableRequestLoader retryRequest;
-	protected final int reqkey = REQ_KEY_COUNTER.incrementAndGet();
 	protected final Date createdDate = new Date();
 
 	protected DefaultApiClientRequestConfig config = new DefaultApiClientRequestConfig();
@@ -57,7 +55,7 @@ public class DefaultApiClientRequest<T> implements Serializable {
 	}
 
 	public int getReqKey() {
-		return reqkey;
+		return config.getReqkey();
 	}
 
 	public HttpRequestBase getRequest() throws ApiClientException {
@@ -66,19 +64,19 @@ public class DefaultApiClientRequest<T> implements Serializable {
 
 	public void onException(ApiClientException e) {
 		if (callback != null) {
-			callback.onException(reqkey, e);
+			callback.onException(config.getReqkey(), e);
 		}
 	}
 
 	public void onFailed(int statusCode, String response) {
 		if (callback != null) {
-			callback.onFailed(reqkey, statusCode, response);
+			callback.onFailed(config.getReqkey(), statusCode, response);
 		}
 	}
 
 	public void onSucceed(int statusCode, byte[] rawResult) throws Exception {
 		if (responseConverter != null && callback != null) {
-			callback.onSucceed(reqkey, statusCode,
+			callback.onSucceed(config.getReqkey(), statusCode,
 					responseConverter.convert(rawResult));
 		}
 	}
@@ -111,7 +109,7 @@ public class DefaultApiClientRequest<T> implements Serializable {
 
 	@Override
 	public String toString() {
-		return Objects.toStringHelper(this).add("reqkey", reqkey)
+		return Objects.toStringHelper(this)
 				.add("retry", retry).add("config", config)
 				.add("firstRequest", firstRequest)
 				.add("retryRequest", retryRequest).toString();
