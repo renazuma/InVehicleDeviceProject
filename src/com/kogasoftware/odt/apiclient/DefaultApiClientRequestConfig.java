@@ -6,11 +6,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.google.common.base.Objects;
 
 public class DefaultApiClientRequestConfig implements Serializable {
-	private static final long serialVersionUID = -7664904125371847082L;
+	private static final long serialVersionUID = -7664904125371847083L;
 	protected static final AtomicInteger REQ_KEY_COUNTER = new AtomicInteger(0);
 	private final int reqkey = REQ_KEY_COUNTER.incrementAndGet();
-	private Boolean retry = true;
-	private Boolean saveOnClose = false;
+	private boolean retry = true;
+	private boolean saveOnClose = false;
 	
 	public int getReqkey() {
 		return reqkey;
@@ -20,7 +20,7 @@ public class DefaultApiClientRequestConfig implements Serializable {
 		return retry;
 	}
 
-	public void setRetry(Boolean retry) {
+	public void setRetry(boolean retry) {
 		this.retry = retry;
 	}
 
@@ -28,7 +28,7 @@ public class DefaultApiClientRequestConfig implements Serializable {
 		return saveOnClose;
 	}
 
-	public void setSaveOnClose(Boolean saveOnClose) {
+	public void setSaveOnClose(boolean saveOnClose) {
 		this.saveOnClose = saveOnClose;
 	}
 
