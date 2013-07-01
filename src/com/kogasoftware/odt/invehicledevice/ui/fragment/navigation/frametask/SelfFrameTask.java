@@ -46,7 +46,7 @@ public class SelfFrameTask extends FrameTask {
 	}
 
 	@Override
-	public void onDraw(FrameState frameState) {
+	public void draw(FrameState frameState) {
 		PointF point = NavigationRenderer.getPoint(latLng);
 		float scale = 1.5f / frameState.getTotalZoom();
 		float alpha = 0.4f;

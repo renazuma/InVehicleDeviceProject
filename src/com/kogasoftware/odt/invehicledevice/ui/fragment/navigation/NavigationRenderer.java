@@ -336,13 +336,13 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 			if (zoomLevelChanged) {
 				frameTask.onChangeZoom(frameState);
 			}
-			frameTask.onDraw(frameState);
+			frameTask.draw(frameState);
 		}
 		for (FrameTask frameTask : frameTasks) {
 			if (zoomLevelChanged) {
 				frameTask.onChangeZoom(frameState);
 			}
-			frameTask.onDraw(frameState);
+			frameTask.draw(frameState);
 		}
 	}
 

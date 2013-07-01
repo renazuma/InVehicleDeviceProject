@@ -38,7 +38,7 @@ public class MapFrameTask extends FrameTask {
 	}
 
 	@Override
-	public void onDraw(FrameState frameState) {
+	public void draw(FrameState frameState) {
 		GL10 gl = frameState.getGL();
 		tilePipeline.transferGL(gl);
 
