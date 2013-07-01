@@ -168,23 +168,27 @@ public class LocalStorage implements Closeable {
 
 		if (!file.exists()) {
 			Log.i(TAG, "\"" + file + "\" not found");
-		} else if (isClear) {
-			if (!file.delete()) {
-				Log.e(TAG, "!\"" + file + "\".delete()");
-			}
 		} else {
 			Log.d(TAG, "\"" + file + "\" found ");
 			FileInputStream fileInputStream = null;
 			try {
 				fileInputStream = new FileInputStream(file);
-				localData = Serializations.deserialize(fileInputStream,
+				LocalData readLocalData = Serializations.deserialize(fileInputStream,
 						LocalData.class);
+				if (isClear) {
+					localData.serviceUnitStatusLog = readLocalData.serviceUnitStatusLog;
+				} else {
+					localData = readLocalData;
+				}
 			} catch (SerializationException e) {
 				Log.e(TAG, e.toString(), e);
 			} catch (FileNotFoundException e) {
 				Log.e(TAG, e.toString(), e);
 			} finally {
 				Closeables.closeQuietly(fileInputStream);
+			}
+			if (isClear && !file.delete()) {
+				Log.e(TAG, "!\"" + file + "\".delete()");
 			}
 
 			Calendar startCalendar = Calendar.getInstance();
