@@ -2,6 +2,7 @@ package com.kogasoftware.odt.invehicledevice.ui.fragment;
 
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -43,6 +44,7 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyRunnable;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
@@ -68,11 +70,16 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 		private final List<OperationSchedule> operationSchedules;
 		private final Phase phase;
 		private final Double orientationDegree;
+		private final BigDecimal initialLatitude;
+		private final BigDecimal initialLongitude;
 
-		public State(Phase phase, List<OperationSchedule> operationSchedules, Double orientationDegree) {
+		public State(Phase phase, List<OperationSchedule> operationSchedules,
+				Double orientationDegree, BigDecimal initialLatitude, BigDecimal initialLongitude) {
 			this.phase = phase;
 			this.operationSchedules = Lists.newArrayList(operationSchedules);
 			this.orientationDegree = orientationDegree;
+			this.initialLatitude = initialLatitude;
+			this.initialLongitude = initialLongitude;
 		}
 
 		public List<OperationSchedule> getOperationSchedules() {
@@ -86,12 +93,20 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 		public Double getOrientationDegree() {
 			return orientationDegree;
 		}
+
+		public BigDecimal getInitialLatitude() {
+			return initialLatitude;
+		}
+
+		public BigDecimal getInitialLongitude() {
+			return initialLongitude;
+		}
 	}
 
 	public static NavigationFragment newInstance(Phase phase,
-			List<OperationSchedule> operationSchedules, Double orientationDegree) {
+			List<OperationSchedule> operationSchedules, ServiceUnitStatusLog serviceUnitStatusLog) {
 		return newInstance(new NavigationFragment(), new State(phase,
-				operationSchedules, orientationDegree));
+				operationSchedules, serviceUnitStatusLog.getOrientation().or(0).doubleValue(), serviceUnitStatusLog.getLatitude(), serviceUnitStatusLog.getLongitude()));
 	}
 
 	private final Handler handler = new Handler();
@@ -277,7 +292,8 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 		if (navigationRenderer != null) {
 			navigationRenderer.changeOrientation(orientationDegree);
 		}
-		setState(new State(getState().getPhase(), getState().getOperationSchedules(), orientationDegree));
+		setState(new State(getState().getPhase(), getState().getOperationSchedules(),
+				orientationDegree, getState().getInitialLatitude(), getState().getInitialLongitude()));
 	}
 
 	protected void updatePlatform() {
@@ -443,7 +459,7 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 				getService(), tilePipeline, new Handler(),
 				OperationSchedule
 						.getCurrent(getState().getOperationSchedules()),
-				getState().getOrientationDegree());
+				getState().getOrientationDegree(), getState().getInitialLatitude(), getState().getInitialLongitude());
 		navigationRenderer.addOnChangeMapZoomLevelListener(this);
 		navigationRenderer.setZoomLevel(getService().getMapZoomLevel());
 		navigationRenderer.setAutoZoomLevel(getService().getMapAutoZoom());
@@ -582,7 +598,8 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 	public void onUpdatePhase(Phase phase,
 			List<OperationSchedule> operationSchedules,
 			List<PassengerRecord> passengerRecords) {
-		setState(new State(phase, operationSchedules, getState().getOrientationDegree()));
+		setState(new State(phase, operationSchedules, getState().getOrientationDegree(),
+				getState().getInitialLatitude(), getState().getInitialLongitude()));
 		updatePlatform();
 	}
 }

@@ -19,6 +19,7 @@ import android.widget.Button;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
@@ -130,19 +131,19 @@ public class ControlBarFragment extends ApplicationFragment<State> implements
 				setCustomAnimation(fragmentManager.beginTransaction()).remove(
 						old).commit();
 			}
-			getService().getLocalStorage().read(new BackgroundReader<Integer>() {
+			getService().getLocalStorage().read(new BackgroundReader<ServiceUnitStatusLog>() {
 				@Override
-				public Integer readInBackground(LocalData localData) {
-					return localData.serviceUnitStatusLog.getOrientation().or(0);
+				public ServiceUnitStatusLog readInBackground(LocalData localData) {
+					return localData.serviceUnitStatusLog;
 				}
 
 				@Override
-				public void onRead(Integer orientationDegree) {
+				public void onRead(ServiceUnitStatusLog serviceUnitStatusLog) {
 					for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
 						setCustomAnimation(fragmentManager.beginTransaction()).add(
 								R.id.modal_fragment_container,
 								NavigationFragment.newInstance(getState().getPhase(),
-										getState().getOperationSchedules(), orientationDegree.doubleValue())).commitAllowingStateLoss();
+										getState().getOperationSchedules(), serviceUnitStatusLog)).commitAllowingStateLoss();
 					}
 				}
 			});

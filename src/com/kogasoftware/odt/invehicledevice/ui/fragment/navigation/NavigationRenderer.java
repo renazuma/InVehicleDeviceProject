@@ -1,6 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.ui.fragment.navigation;
 
 import java.lang.ref.WeakReference;
+import java.math.BigDecimal;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
@@ -102,7 +103,7 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 	public NavigationRenderer(InVehicleDeviceService service,
 			TilePipeline tilePipeline, Handler uiHandler,
 			Optional<OperationSchedule> optionalOperationSchedule,
-			Double orientationDegree) {
+			Double orientationDegree, BigDecimal initialLatitude, BigDecimal initialLongitude) {
 		this.service = service;
 		this.uiHandler = uiHandler;
 		rotationSmoother = new LazyMotionSmoother(500.0, 0.02, 0.00005,
@@ -119,9 +120,8 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 		nextPlatformFrameTask.setLatLng(new LatLng(0, 0));
 		addedFrameTasks.add(nextPlatformFrameTask);
 
-		// 東京都台東区上野１丁目１７−６
-		double defaultLatitude = 35.7070879;
-		double defaultLongitude = 139.7717297;
+		double defaultLatitude = initialLatitude.doubleValue();
+		double defaultLongitude = initialLongitude.doubleValue();
 
 		LocationManager locationManager = (LocationManager) service
 				.getSystemService(Context.LOCATION_SERVICE);
