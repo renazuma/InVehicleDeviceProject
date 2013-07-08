@@ -61,16 +61,16 @@
       </intent-filter>
     </receiver>
     <service android:name=".service.invehicledeviceservice.InVehicleDeviceService"/>
-    <service android:name=".service.logservice.LogService" android:process=":LogService">
+    <service android:name=".service.logservice.LogService" android:process=":LogService" android:exported="false">
       <intent-filter>
         <action android:name="com.kogasoftware.odt.invehicledevice.service.logservice.ILogService"/>
       </intent-filter>
     </service>
-    <service android:name=".service.startupservice.StartupService" android:process=":StartupService">
+    <service android:name=".service.startupservice.StartupService" android:process=":StartupService" android:exported="false">
       <intent-filter>
         <action android:name="com.kogasoftware.odt.invehicledevice.service.startupservice.IStartupService"/>
       </intent-filter>
     </service>
-    <service android:name=".service.voiceservice.VoiceService" android:process=":VoiceService"/>
+    <service android:name=".service.voiceservice.VoiceService" android:process=":VoiceService" android:exported="false" />
   </application>
 </manifest>
