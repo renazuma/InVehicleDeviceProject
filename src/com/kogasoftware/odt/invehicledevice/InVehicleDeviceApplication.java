@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.invehicledevice;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
@@ -10,11 +11,11 @@ import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
+import org.apache.commons.lang3.reflect.MethodUtils;
 
 import android.app.Application;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.os.StrictMode;
 import android.util.Log;
 
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
@@ -70,13 +71,65 @@ public class InVehicleDeviceApplication extends Application {
 	}
 
 	protected void enableStrictMode() {
-		if (BuildConfig.DEBUG) {
-			StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-					.detectAll().penaltyLog().penaltyDropBox().build());
-			StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-					.detectAll().penaltyLog().penaltyDropBox().build());
-			Log.i(TAG, "StrictMode enabled");
+		if (!BuildConfig.DEBUG) {
+			return;
 		}
+		
+        try {
+        	Boolean hard = true;
+        	
+            Class<?> strictModeClass = Class.forName("android.os.StrictMode");
+
+            Object threadPolicyBuilder = Class.forName(
+                    "android.os.StrictMode$ThreadPolicy$Builder").newInstance();
+            try {
+                threadPolicyBuilder = MethodUtils
+                        .invokeMethod(threadPolicyBuilder, "penaltyDialog");
+            } catch (NoSuchMethodException e) {
+            }
+            try {
+                threadPolicyBuilder = MethodUtils.invokeMethod(threadPolicyBuilder,
+                        "penaltyFlashScreen");
+            } catch (NoSuchMethodException e) {
+            }
+            if (hard) {
+                threadPolicyBuilder =
+                        MethodUtils.invokeMethod(threadPolicyBuilder, "detectAll");
+            } else {
+                threadPolicyBuilder =
+                        MethodUtils.invokeMethod(threadPolicyBuilder, "detectNetwork");
+            }
+            threadPolicyBuilder = MethodUtils.invokeMethod(threadPolicyBuilder, "penaltyLog");
+            Object threadPolicy = MethodUtils.invokeMethod(threadPolicyBuilder, "build");
+            MethodUtils.invokeStaticMethod(strictModeClass, "setThreadPolicy", threadPolicy);
+
+            Object vmPolicyBuilder = Class.forName(
+                    "android.os.StrictMode$VmPolicy$Builder").newInstance();
+            vmPolicyBuilder = MethodUtils.invokeMethod(vmPolicyBuilder, "detectAll");
+            vmPolicyBuilder = MethodUtils.invokeMethod(vmPolicyBuilder, "penaltyLog");
+            if (hard) {
+                vmPolicyBuilder = MethodUtils.invokeMethod(vmPolicyBuilder,
+                        "penaltyDeath");
+            }
+            Object vmPolicy = MethodUtils.invokeMethod(vmPolicyBuilder, "build");
+            MethodUtils.invokeStaticMethod(strictModeClass, "setVmPolicy", vmPolicy);
+
+            Log.d(TAG, "StrictMode enabled");
+        } catch (ClassNotFoundException e) {
+            // do nothing
+        } catch (IllegalArgumentException e) {
+            Log.w(TAG, e);
+        } catch (IllegalAccessException e) {
+            Log.w(TAG, e);
+        } catch (InvocationTargetException e) {
+            Log.w(TAG, e);
+        } catch (SecurityException e) {
+            Log.w(TAG, e);
+        } catch (NoSuchMethodException e) {
+            Log.w(TAG, e);
+        } catch (InstantiationException e) {
+            Log.w(TAG, e);
+        }
 	}
 
 	@Override
