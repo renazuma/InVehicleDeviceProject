@@ -71,6 +71,7 @@
         <action android:name="com.kogasoftware.odt.invehicledevice.service.startupservice.IStartupService"/>
       </intent-filter>
     </service>
+    <service android:name=".service.trackingservice.TrackingService" android:process=":TrackingService" android:exported="false" />
     <service android:name=".service.voiceservice.VoiceService" android:process=":VoiceService" android:exported="false" />
   </application>
 </manifest>
