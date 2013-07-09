@@ -1,4 +1,8 @@
 .settings/
+.project
+.classpath
+main/target/
+test/target/
 bin/
 coverage/
 gen/
@@ -21,8 +25,6 @@ findbugs_exclude.xml
 jni/*.xz
 jni/*/*.a
 local.properties
-release.keystore
-
 custom_rules.xml
-debug.keystore
 .sonar/
+*.iml

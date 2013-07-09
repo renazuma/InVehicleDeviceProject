@@ -1,7 +1,12 @@
 #!/bin/sh
+# -*- coding: utf-8-unix -*-
 
 for mysql_socket in \
-  /var/lib/mysql/mysql.sock /var/run/mysqld/mysqld.sock; do
+  /var/lib/mysql/mysql.sock \
+  /var/run/mysqld/mysqld.sock \
+  /tmp/mysql.sock \
+  /var/mysql/mysql.sock \
+  ; do
   if [ -e $mysql_socket ]; then
     break
   fi
@@ -18,22 +23,17 @@ development:
   socket: $mysql_socket
 EOF
 
-cd OperatorWeb
+(gem list --local | grep bundler) || gem install bundler
+(gem list --local | grep debugger-linecache) || gem install debugger-linecache -v '1.1.2' -- --with-ruby-include=$rvm_path/src/$RVM_RUBY_STRING/
+
+cd operatorweb
 cp ../database.yml config/database.yml
 bundle install
 bundle exec rake db:migrate:reset
-#bundle exec rake db:migrate
-bundle exec rake "java:model:create[true]"
 bundle exec rails server --daemon --environment=development --port=3334
 cd ..
 
-cp -fr InVehicleDeviceApiClient/tests/* tests
-d=src/com/kogasoftware/odt/invehicledevice/apiclient/model/base
-cp -fr InVehicleDeviceApiClient/$d/* $d
-d=src/com/kogasoftware/odt/invehicledevice/apiclient/model
-yes n | cp -ip InVehicleDeviceApiClient/$d/* $d/ 2> /dev/null
-
-cd InVehicleDeviceTestApiServer
+cd invehicledevice-testapiserver
 cp ../database.yml config/database.yml
 bundle install
 bundle exec rails server --daemon --environment=development --port=3333

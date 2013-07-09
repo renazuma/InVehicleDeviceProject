@@ -1,16 +1,9 @@
-[submodule "AndroidCommon"]
-	path = AndroidCommon
-	url = git@github.com:odt/AndroidCommon.git
-	ignore = all
-[submodule "OperatorWeb"]
-	path = OperatorWeb
-	url = git@github.com:odt/OperatorWeb.git
-	ignore = all
-[submodule "InVehicleDeviceTestApiClient"]
-	path = InVehicleDeviceTestApiClient
-	url = git@github.com:odt/InVehicleDeviceTestApiClient.git
-	ignore = all
-[submodule "InVehicleDeviceTestApiServer"]
-	path = InVehicleDeviceTestApiServer
+[submodule "invehicledevice-testapiserver"]
+	path = invehicledevice-testapiserver
 	url = git@github.com:odt/InVehicleDeviceTestApiServer.git
-	ignore = all
+[submodule "operatorweb"]
+	path = operatorweb
+	url = git@github.com:odt/OperatorWeb.git
+[submodule "android-maven-parent"]
+	path = android-maven-parent
+	url = git@github.com:odt/AndroidMavenParent.git

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.kogasoftware.odt.invehicledevice</groupId>
+		<artifactId>invehicledevice-apiclient-parent</artifactId>
+		<version>2.0</version>
+	</parent>
+	<artifactId>invehicledevice-apiclient-test</artifactId>
+	<packaging>apk</packaging>
+	<name>InVehicleDevice ApiClient - Test</name>
+	<dependencies>
+		<dependency>
+			<groupId>com.google.android</groupId>
+			<artifactId>android</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.android</groupId>
+			<artifactId>android-test</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.jayway.android.robotium</groupId>
+			<artifactId>robotium-solo</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+	</dependencies>
+	<profiles>
+		<profile>
+			<id>maven-without-ide</id>
+			<activation>
+				<property>
+					<name>!m2e.version</name>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>com.kogasoftware.odt.invehicledevice</groupId>
+					<artifactId>invehicledevice-apiclient</artifactId>
+					<type>apklib</type>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>emma</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.jayway.maven.plugins.android.generation2</groupId>
+						<artifactId>android-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>pull-coverage</id>
+								<phase>post-integration-test</phase>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>
