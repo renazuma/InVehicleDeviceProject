@@ -1,12 +1,6 @@
-[submodule "AndroidCommon"]
-	path = AndroidCommon
-	url = git@github.com:odt/AndroidCommon.git
-	ignore = all
-[submodule "InVehicleDevice"]
-	path = InVehicleDevice
+[submodule "invehicledevice"]
+	path = invehicledevice
 	url = git@github.com:odt/InVehicleDevice.git
-	ignore = all
-[submodule "InVehicleDeviceApiClient"]
-	path = InVehicleDeviceApiClient
-	url = git@github.com:odt/InVehicleDeviceApiClient.git
-	ignore = all
+[submodule "android-maven-parent"]
+	path = android-maven-parent
+	url = git@github.com:odt/AndroidMavenParent.git

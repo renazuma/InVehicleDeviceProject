@@ -1,4 +1,10 @@
 .settings/
+.classpath
+.project
+main/target/
+test/target/
+temp/
+target/
 bin/
 coverage/
 gen/
@@ -22,10 +28,9 @@ findbugs_exclude.xml
 jni/*.xz
 jni/*/*.a
 local.properties
-debug.keystore
-release.keystore
 
 src/com/kogasoftware/odt/invehicledevice/service
 
 open_jtalk
 *_GIT_IGNORE_*
+*.iml
