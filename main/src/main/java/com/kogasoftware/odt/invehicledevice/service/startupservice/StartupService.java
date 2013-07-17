@@ -92,6 +92,7 @@ public class StartupService extends Service {
 				for (String pkg : info.pkgList) {
 					if (pkg.startsWith("com.kogasoftware.odt.invehicledevice.test")) {
 						Log.i(TAG, "pkg=" + pkg + " found. start canceled.");
+						return;
 					}
 				}
 			}
