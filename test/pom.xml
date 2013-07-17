@@ -59,10 +59,6 @@
 			<artifactId>dexmaker-mockito</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>joda-time</groupId>
-			<artifactId>joda-time</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>junit-addons</groupId>
 			<artifactId>junit-addons</artifactId>
 			<exclusions>
@@ -75,11 +71,6 @@
 					<artifactId>xmlParserAPIs</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava-jdk5</artifactId>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.directory.studio</groupId>
