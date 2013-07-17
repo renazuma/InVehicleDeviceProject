@@ -1,12 +1,12 @@
-[submodule "AndroidCommon"]
-	path = AndroidCommon
-	url = git@github.com:odt/AndroidCommon.git
-	ignore = all
-[submodule "AndroidOpenJTalk"]
-	path = AndroidOpenJTalk
+[submodule "android-openjtalk"]
+	path = android-openjtalk
 	url = git@github.com:odt/AndroidOpenJTalk.git
-	ignore = all
-[submodule "InVehicleDeviceApiClient"]
-	path = InVehicleDeviceApiClient
+[submodule "invehicledevice-apiclient"]
+	path = invehicledevice-apiclient
 	url = git@github.com:odt/InVehicleDeviceApiClient.git
-	ignore = all
+[submodule "invehicledevice-preference"]
+	path = invehicledevice-preference
+	url = git@github.com:odt/InVehicleDevicePreference.git
+[submodule "android-maven-parent"]
+	path = android-maven-parent
+	url = git@github.com:odt/AndroidMavenParent.git
