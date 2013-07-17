@@ -27,4 +27,5 @@ temp/
 test/target/
 .idea/
 *.iml
-
+out/
+*/gen-external-apklibs/
