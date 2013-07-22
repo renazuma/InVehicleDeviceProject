@@ -5,8 +5,6 @@ import java.util.Date;
 import java.util.List;
 
 import android.content.Context;
-import android.test.AndroidTestCase;
-
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Demand;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Driver;

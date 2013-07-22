@@ -16,7 +16,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.apache.commons.lang3.time.DateUtils;
 
 import android.content.Context;
-import android.test.AndroidTestCase;
 import android.util.Log;
 
 import com.google.common.io.Closeables;
