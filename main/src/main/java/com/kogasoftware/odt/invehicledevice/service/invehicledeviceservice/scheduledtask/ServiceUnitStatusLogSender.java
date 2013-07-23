@@ -6,8 +6,8 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic
 
 public class ServiceUnitStatusLogSender implements Runnable {
 	public static final Integer RUN_INTERVAL_MILLIS = 30 * 1000;
-	ServiceUnitStatusLogLogic serviceUnitStatusLogLogic;
-	OperationScheduleLogic operationScheduleLogic;
+	private final ServiceUnitStatusLogLogic serviceUnitStatusLogLogic;
+	private final OperationScheduleLogic operationScheduleLogic;
 
 	public ServiceUnitStatusLogSender(
 			ServiceUnitStatusLogLogic serviceUnitStatusLogLogic,
