@@ -14,7 +14,7 @@ import com.kogasoftware.odt.apiclient.ApiClient.ResponseConverter;
 import com.kogasoftware.odt.apiclient.serializablerequestloader.SerializableRequestLoader;
 
 public class DefaultApiClientRequest<T> implements Serializable {
-	private static final long serialVersionUID = -8451453777378477195L;
+	private static final long serialVersionUID = -8451453777378477196L;
 	private static final String TAG = DefaultApiClientRequest.class
 			.getSimpleName();
 	protected final SerializableRequestLoader firstRequest;
