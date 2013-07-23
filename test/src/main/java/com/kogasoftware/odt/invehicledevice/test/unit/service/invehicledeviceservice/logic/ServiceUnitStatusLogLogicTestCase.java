@@ -1,6 +1,11 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledeviceservice.logic;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 import java.io.Closeable;
 import java.util.concurrent.Callable;
@@ -8,11 +13,9 @@ import java.util.concurrent.Callable;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
-import android.location.GpsStatus;
 import android.location.Location;
 import android.test.AndroidTestCase;
 
-import com.google.common.base.Optional;
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;

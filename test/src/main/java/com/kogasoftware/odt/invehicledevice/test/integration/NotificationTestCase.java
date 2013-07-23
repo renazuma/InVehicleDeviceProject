@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import android.test.ActivityInstrumentationTestCase2;
-import android.view.View;
-
 import com.google.common.collect.Lists;
 import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;

@@ -5,8 +5,6 @@ import static org.mockito.Mockito.*;
 import java.io.IOException;
 import java.util.List;
 
-import junitx.framework.ListAssert;
-
 import android.test.AndroidTestCase;
 
 import com.google.common.base.Optional;

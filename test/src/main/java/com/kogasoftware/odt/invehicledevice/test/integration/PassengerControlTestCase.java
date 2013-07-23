@@ -1,7 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.test.integration;
 
 import android.test.ActivityInstrumentationTestCase2;
-import android.view.View;
 import android.widget.TextView;
 
 import com.jayway.android.robotium.solo.Solo;
