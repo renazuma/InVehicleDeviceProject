@@ -163,7 +163,8 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 			final ApiClientCallback<Void> callback) {
 		int reqkey = getRequestConfig().getReqkey();
 		try {
-			passengerRecord.setGetOffTime(new Date());
+			Date getOffTime = new Date();
+			passengerRecord.setGetOffTime(getOffTime);
 			PassengerRecord retryPassengerRecord = passengerRecord.clone(false);
 			retryPassengerRecord.setGetOffTimeOffline(true);
 
@@ -202,7 +203,8 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 			final ApiClientCallback<Void> callback) {
 		int reqkey = getRequestConfig().getReqkey();
 		try {
-			passengerRecord.setGetOnTime(new Date());
+			Date getOnTime = new Date();
+			passengerRecord.setGetOnTime(getOnTime);
 			PassengerRecord retryPassengerRecord = passengerRecord.clone(false);
 			retryPassengerRecord.setGetOnTimeOffline(true);
 
