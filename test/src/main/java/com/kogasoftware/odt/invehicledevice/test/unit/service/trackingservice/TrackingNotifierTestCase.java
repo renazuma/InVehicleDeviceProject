@@ -28,7 +28,6 @@ import com.kogasoftware.odt.invehicledevice.service.trackingservice.TrackingNoti
 
 public class TrackingNotifierTestCase extends AndroidTestCase {
 	TrackingNotifier trackingNotifier;
-	Location initialLocation;
 	LocationManager mockLocationManager;
 	Long currentMillis = System.currentTimeMillis();
 	Boolean isGpsProviderEnabled = true;
@@ -75,7 +74,7 @@ public class TrackingNotifierTestCase extends AndroidTestCase {
 		@Override
 		protected void onLooperPrepared() {
 			getContext().registerReceiver(trackingBroadcastReceiver,
-					new IntentFilter(TrackingNotifier.ACTION_TRACKING));
+					new IntentFilter(TrackingIntent.ACTION_TRACKING));
 			handlerThreadIsReady.countDown();
 		}
 	};
@@ -103,11 +102,7 @@ public class TrackingNotifierTestCase extends AndroidTestCase {
 						return isGpsProviderEnabled;
 					}
 				});
-		initialLocation = new Location("");
-		initialLocation.setLatitude(100);
-		initialLocation.setLongitude(150);
-
-		trackingNotifier = new TrackingNotifier(mockContext, initialLocation);
+		trackingNotifier = new TrackingNotifier(mockContext);
 	}
 
 	private void assertRequestLocationUpdates(Integer times) {
@@ -142,18 +137,22 @@ public class TrackingNotifierTestCase extends AndroidTestCase {
 	}
 
 	public void test_定数時間内に位置を受信したら再起動しない() {
+		Location l = new Location("");
+		l.setLatitude(50);
+		l.setLongitude(100);
+
 		assertRequestLocationUpdates();
 
 		currentMillis += trackingNotifier.getRestartTimeout() / 2;
 		trackingNotifier.run();
-		trackingNotifier.onLocationChanged(initialLocation);
+		trackingNotifier.onLocationChanged(l);
 		trackingNotifier.run();
 		currentMillis += trackingNotifier.getRestartTimeout() / 10 * 9;
 		trackingNotifier.run();
 
 		assertRemoveUpdates(0);
 
-		trackingNotifier.onLocationChanged(initialLocation);
+		trackingNotifier.onLocationChanged(l);
 		trackingNotifier.run();
 		currentMillis += trackingNotifier.getRestartTimeout() / 10 * 9;
 		trackingNotifier.run();
@@ -178,8 +177,8 @@ public class TrackingNotifierTestCase extends AndroidTestCase {
 
 		trackingNotifier.onLocationChanged(l1);
 		TrackingIntent ti1 = getBroadcast();
-		assertEquals(l1.getLatitude(), ti1.getLocation().getLatitude());
-		assertEquals(l1.getLongitude(), ti1.getLocation().getLongitude());
+		assertEquals(l1.getLatitude(), ti1.getLocation().get().getLatitude());
+		assertEquals(l1.getLongitude(), ti1.getLocation().get().getLongitude());
 
 		Location l2 = new Location("");
 		l2.setLatitude(-50);
@@ -187,8 +186,8 @@ public class TrackingNotifierTestCase extends AndroidTestCase {
 
 		trackingNotifier.onLocationChanged(l2);
 		TrackingIntent ti2 = getBroadcast();
-		assertEquals(l2.getLatitude(), ti2.getLocation().getLatitude());
-		assertEquals(l2.getLongitude(), ti2.getLocation().getLongitude());
+		assertEquals(l2.getLatitude(), ti2.getLocation().get().getLatitude());
+		assertEquals(l2.getLongitude(), ti2.getLocation().get().getLongitude());
 	}
 
 	public void test_人工衛星の数を受信したらブロードキャストする() throws InterruptedException {
@@ -210,10 +209,7 @@ public class TrackingNotifierTestCase extends AndroidTestCase {
 
 		// 定数秒に達したのでここでブロードキャストが飛ぶ
 		TrackingIntent ti1 = getBroadcast();
-		assertEquals(initialLocation.getLatitude(), ti1.getLocation()
-				.getLatitude());
-		assertEquals(initialLocation.getLongitude(), ti1.getLocation()
-				.getLongitude());
+		assertFalse(ti1.getLocation().isPresent());
 
 		// 定数秒に達していないのでブロードキャストは飛ばない
 		trackingNotifier.run();
@@ -225,10 +221,7 @@ public class TrackingNotifierTestCase extends AndroidTestCase {
 
 		// 定数秒に達したのでここでブロードキャストが飛ぶ
 		TrackingIntent ti2 = getBroadcast();
-		assertEquals(initialLocation.getLatitude(), ti2.getLocation()
-				.getLatitude());
-		assertEquals(initialLocation.getLongitude(), ti2.getLocation()
-				.getLongitude());
+		assertFalse(ti2.getLocation().isPresent());
 	}
 
 	TrackingIntent getBroadcast() throws InterruptedException {

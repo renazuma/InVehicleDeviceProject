@@ -26,15 +26,17 @@ public class ServiceUnitStatusLogLogic {
 				signalStrengthPercentage);
 	}
 
-	public void changeLocation(final Location location,
+	public void changeLocation(final Optional<Location> location,
 			final Optional<Integer> satellitesCount) {
 		service.getLocalStorage().write(new BackgroundWriter() {
 			@Override
 			public void writeInBackground(LocalData localData) {
-				localData.serviceUnitStatusLog.setLatitude(new BigDecimal(
-						location.getLatitude()));
-				localData.serviceUnitStatusLog.setLongitude(new BigDecimal(
-						location.getLongitude()));
+				if (location.isPresent()) {
+					localData.serviceUnitStatusLog.setLatitude(new BigDecimal(
+							location.get().getLatitude()));
+					localData.serviceUnitStatusLog.setLongitude(new BigDecimal(
+							location.get().getLongitude()));
+				}
 			}
 
 			@Override

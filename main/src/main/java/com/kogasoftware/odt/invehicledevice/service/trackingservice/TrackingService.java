@@ -26,8 +26,7 @@ public class TrackingService extends Service implements Runnable {
 	public void onCreate() {
 		super.onCreate();
 		Log.i(TAG, "onCreate()");
-		Location location = new Location("");
-		trackingNotifier = new TrackingNotifier(this, location);
+		trackingNotifier = new TrackingNotifier(this);
 		handler.post(this);
 	}
 

@@ -1,5 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.service.trackingservice;
 
+import com.google.common.base.Optional;
+
 import android.content.Intent;
 import android.location.Location;
 
@@ -10,17 +12,23 @@ public class TrackingIntent extends Intent {
 	private final String SATELLITES_COUNT_KEY = "satellites_count";
 
 	public TrackingIntent() {
-		this(new Location(""));
+		this(0);
 	}
 
-	public TrackingIntent(Location location) {
-		this(location, 0);
-	}
-
-	public TrackingIntent(Location location, Integer satellitesCount) {
+	public TrackingIntent(Intent intent) {
 		setAction(ACTION_TRACKING);
-		setLocation(location);
+		putExtras(intent);
+	}
+
+	public TrackingIntent(Integer satellitesCount) {
+		setAction(ACTION_TRACKING);
 		setSatellitesCount(satellitesCount);
+	}
+
+	public TrackingIntent(Integer satellitesCount, Location location) {
+		setAction(ACTION_TRACKING);
+		setSatellitesCount(satellitesCount);
+		setLocation(location);
 	}
 
 	public void setSatellitesCount(Integer satellitesCount) {
@@ -31,13 +39,9 @@ public class TrackingIntent extends Intent {
 		putExtra(LOCATION_KEY, location);
 	}
 
-	public TrackingIntent(Intent intent) {
-		setAction(ACTION_TRACKING);
-		putExtras(intent);
-	}
-
-	public Location getLocation() {
-		return getExtras().getParcelable(LOCATION_KEY);
+	public Optional<Location> getLocation() {
+		return Optional.fromNullable((Location) getExtras().getParcelable(
+				LOCATION_KEY));
 	}
 
 	public Integer getSatellitesCount() {

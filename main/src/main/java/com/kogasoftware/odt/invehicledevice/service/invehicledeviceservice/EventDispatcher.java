@@ -44,7 +44,7 @@ public class EventDispatcher implements Closeable {
 	}
 
 	public interface OnChangeLocationListener {
-		void onChangeLocation(Location location,
+		void onChangeLocation(Optional<Location> location,
 				Optional<Integer> satelliteCount);
 	}
 
@@ -365,7 +365,7 @@ public class EventDispatcher implements Closeable {
 				});
 	}
 
-	public void dispatchChangeLocation(final Location location,
+	public void dispatchChangeLocation(final Optional<Location> location,
 			final Optional<Integer> satellitesCount) {
 		dispatchListener(onChangeLocationListeners,
 				new Dispatcher<OnChangeLocationListener>() {

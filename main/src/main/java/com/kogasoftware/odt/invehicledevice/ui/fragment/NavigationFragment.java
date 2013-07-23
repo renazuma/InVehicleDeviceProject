@@ -15,7 +15,6 @@ import android.app.Dialog;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Location;
-import android.location.LocationManager;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Handler;
@@ -61,7 +60,6 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 	private static final String TAG = NavigationFragment.class.getSimpleName();
 	private static final Integer GPS_ALERT_FLASH_MILLIS = 1000;
 	private static final Integer GPS_EXPIRE_MILLIS = 20 * 1000;
-	private static final Integer LOCATION_EXPIRE_MILLIS = 20 * 1000;
 	private static final WeakHashMap<Activity, Boolean> ACTIVITY_FIRST_RESUME = new WeakHashMap<Activity, Boolean>();
 
 	@SuppressWarnings("serial")
@@ -265,9 +263,11 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 	}
 
 	@Override
-	public void onChangeLocation(Location location,
+	public void onChangeLocation(Optional<Location> location,
 			Optional<Integer> satelliteCount) {
-		lastGpsUpdated = new Date();
+		if (location.isPresent()) {
+			lastGpsUpdated = new Date(location.get().getTime());
+		}
 		NavigationRenderer navigationRenderer = navigationRendererWeakReference
 				.get();
 		if (navigationRenderer != null) {

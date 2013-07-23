@@ -21,8 +21,6 @@ public class TrackingNotifier implements Runnable, LocationListener,
 	private static final Integer DEFAULT_RESTART_TIMEOUT = 90 * 1000;
 	private static final Integer DEFAULT_SLEEP_TIMEOUT = 20 * 1000;
 	public static final Integer BROADCAST_PERIOD_MILLIS = 5000;
-	public static final String ACTION_TRACKING = TrackingNotifier.class
-			.getName() + ".ACTION_TRACKING";
 	private static final String TAG = TrackingNotifier.class.getSimpleName();
 
 	private final Integer minTime = DEFAULT_MIN_TIME;
@@ -40,9 +38,9 @@ public class TrackingNotifier implements Runnable, LocationListener,
 	private Long lastRunTimeMillis = DateTimeUtils.currentTimeMillis();
 	private Long lastLocationReceivedTimeMillis = 0L;
 
-	public TrackingNotifier(Context context, Location location) {
+	public TrackingNotifier(Context context) {
 		this.context = context;
-		this.trackingIntent = new TrackingIntent(location);
+		this.trackingIntent = new TrackingIntent();
 		this.locationManager = (LocationManager) context
 				.getSystemService(Context.LOCATION_SERVICE);
 		start();
