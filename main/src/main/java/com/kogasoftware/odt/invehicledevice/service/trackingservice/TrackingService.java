@@ -10,7 +10,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 /**
- * 位置惱のトラヂ�ング処琂�行うサービス。「アンドロイド品質ガイドライン」�「FN-S1」に注意する忦�がある
+ * 位置情報のトラッキング処理を行うサービス「アンドロイド品質ガイドライン」の「FN-S1」に注意する必要がある
  */
 public class TrackingService extends Service implements Runnable {
 	private static final String TAG = TrackingService.class.getSimpleName();
