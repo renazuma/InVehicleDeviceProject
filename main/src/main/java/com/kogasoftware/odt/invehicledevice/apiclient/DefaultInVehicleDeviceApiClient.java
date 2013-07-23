@@ -34,6 +34,7 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnitStatusLog
 import com.kogasoftware.odt.invehicledevice.apiclient.model.User;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.base.Model;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.base.jsondeserializer.RailsDateSerializer;
 
 public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 		InVehicleDeviceApiClient {
@@ -121,7 +122,7 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	 * 出発時のサーバへの通知
 	 * 
 	 * @param os
-	 *            運行スケジュールオブジェクト 
+	 *            運行スケジュールオブジェクト
 	 */
 	@Override
 	public int departureOperationSchedule(final OperationSchedule os,
