@@ -7,13 +7,13 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.WeakHashMap;
 
 import android.app.Activity;
 import android.app.Dialog;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationManager;
 import android.opengl.GLSurfaceView;
@@ -38,7 +38,6 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
@@ -74,7 +73,8 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 		private final BigDecimal initialLongitude;
 
 		public State(Phase phase, List<OperationSchedule> operationSchedules,
-				Double orientationDegree, BigDecimal initialLatitude, BigDecimal initialLongitude) {
+				Double orientationDegree, BigDecimal initialLatitude,
+				BigDecimal initialLongitude) {
 			this.phase = phase;
 			this.operationSchedules = Lists.newArrayList(operationSchedules);
 			this.orientationDegree = orientationDegree;
@@ -104,9 +104,12 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 	}
 
 	public static NavigationFragment newInstance(Phase phase,
-			List<OperationSchedule> operationSchedules, ServiceUnitStatusLog serviceUnitStatusLog) {
+			List<OperationSchedule> operationSchedules,
+			ServiceUnitStatusLog serviceUnitStatusLog) {
 		return newInstance(new NavigationFragment(), new State(phase,
-				operationSchedules, serviceUnitStatusLog.getOrientation().or(0).doubleValue(), serviceUnitStatusLog.getLatitude(), serviceUnitStatusLog.getLongitude()));
+				operationSchedules, serviceUnitStatusLog.getOrientation().or(0)
+						.doubleValue(), serviceUnitStatusLog.getLatitude(),
+				serviceUnitStatusLog.getLongitude()));
 	}
 
 	private final Handler handler = new Handler();
@@ -225,10 +228,12 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 				.findViewById(R.id.gps_satellites_text_view);
 
 		blinkBatteryAlert = new EmptyRunnable();
-		for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
+		for (FragmentManager fragmentManager : getOptionalFragmentManager()
+				.asSet()) {
 			blinkBatteryAlert = new BatteryAlerter(getActivity()
 					.getApplicationContext(), handler,
-					(ImageView) view.findViewById(R.id.battery_alert_image_view),
+					(ImageView) view
+							.findViewById(R.id.battery_alert_image_view),
 					fragmentManager);
 		}
 
@@ -262,14 +267,6 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 	@Override
 	public void onChangeLocation(Location location,
 			Optional<Integer> satelliteCount) {
-		if (location.getProvider().equals(LocationManager.GPS_PROVIDER)) {
-			lastGpsUpdated = new Date(location.getTime());
-		}
-		numSatellites = satelliteCount.or(0);
-		Date now = new Date();
-		if (location.getTime() + LOCATION_EXPIRE_MILLIS < now.getTime()) {
-			return;
-		}
 		NavigationRenderer navigationRenderer = navigationRendererWeakReference
 				.get();
 		if (navigationRenderer != null) {
@@ -290,8 +287,9 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 		if (navigationRenderer != null) {
 			navigationRenderer.changeOrientation(orientationDegree);
 		}
-		setState(new State(getState().getPhase(), getState().getOperationSchedules(),
-				orientationDegree, getState().getInitialLatitude(), getState().getInitialLongitude()));
+		setState(new State(getState().getPhase(), getState()
+				.getOperationSchedules(), orientationDegree, getState()
+				.getInitialLatitude(), getState().getInitialLongitude()));
 	}
 
 	protected void updatePlatform() {
@@ -314,7 +312,8 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 								@Override
 								public void onClick(View view) {
 									ViewDisabler.disable(view);
-									for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
+									for (FragmentManager fragmentManager : getOptionalFragmentManager()
+											.asSet()) {
 										setCustomAnimation(
 												fragmentManager
 														.beginTransaction())
@@ -352,7 +351,8 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 			// 到着時刻表示
 			TextView platformArrivalTimeTextView = (TextView) getView()
 					.findViewById(R.id.platform_arrival_time_view);
-			DateFormat dateFormat = new SimpleDateFormat(timeTextFormat);
+			DateFormat dateFormat = new SimpleDateFormat(timeTextFormat,
+					Locale.US);
 			if (displayDate.isPresent()) {
 				platformArrivalTimeTextView.setText(dateFormat
 						.format(displayDate.get()));
@@ -400,7 +400,8 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 		super.onResume();
 		Log.i(TAG, "onResume()");
 		final DialogFragment dialogFragment = new SurficeFlashMaskDialogFragment();
-		for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
+		for (FragmentManager fragmentManager : getOptionalFragmentManager()
+				.asSet()) {
 			dialogFragment.show(fragmentManager,
 					SurficeFlashMaskDialogFragment.class.getSimpleName());
 		}
@@ -457,7 +458,8 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 				getService(), tilePipeline, new Handler(),
 				OperationSchedule
 						.getCurrent(getState().getOperationSchedules()),
-				getState().getOrientationDegree(), getState().getInitialLatitude(), getState().getInitialLongitude());
+				getState().getOrientationDegree(), getState()
+						.getInitialLatitude(), getState().getInitialLongitude());
 		navigationRenderer.addOnChangeMapZoomLevelListener(this);
 		navigationRenderer.setZoomLevel(getService().getMapZoomLevel());
 		navigationRenderer.setAutoZoomLevel(getService().getMapAutoZoom());
@@ -596,8 +598,9 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 	public void onUpdatePhase(Phase phase,
 			List<OperationSchedule> operationSchedules,
 			List<PassengerRecord> passengerRecords) {
-		setState(new State(phase, operationSchedules, getState().getOrientationDegree(),
-				getState().getInitialLatitude(), getState().getInitialLongitude()));
+		setState(new State(phase, operationSchedules, getState()
+				.getOrientationDegree(), getState().getInitialLatitude(),
+				getState().getInitialLongitude()));
 		updatePlatform();
 	}
 }

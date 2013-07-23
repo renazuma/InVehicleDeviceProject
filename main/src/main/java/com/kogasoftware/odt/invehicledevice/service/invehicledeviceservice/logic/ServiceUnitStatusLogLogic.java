@@ -2,7 +2,6 @@ package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logi
 
 import java.math.BigDecimal;
 
-import android.location.GpsStatus;
 import android.location.Location;
 
 import com.google.common.base.Optional;
@@ -27,24 +26,24 @@ public class ServiceUnitStatusLogLogic {
 				signalStrengthPercentage);
 	}
 
-//	public void changeLocation(final Location location,
-//			final Optional<GpsStatus> gpsStatus) {
-//		service.getLocalStorage().write(new BackgroundWriter() {
-//			@Override
-//			public void writeInBackground(LocalData localData) {
-//				localData.serviceUnitStatusLog.setLatitude(new BigDecimal(
-//						location.getLatitude()));
-//				localData.serviceUnitStatusLog.setLongitude(new BigDecimal(
-//						location.getLongitude()));
-//			}
-//
-//			@Override
-//			public void onWrite() {
-//				service.getEventDispatcher().dispatchChangeLocation(location,
-//						gpsStatus);
-//			}
-//		});
-//	}
+	public void changeLocation(final Location location,
+			final Optional<Integer> satellitesCount) {
+		service.getLocalStorage().write(new BackgroundWriter() {
+			@Override
+			public void writeInBackground(LocalData localData) {
+				localData.serviceUnitStatusLog.setLatitude(new BigDecimal(
+						location.getLatitude()));
+				localData.serviceUnitStatusLog.setLongitude(new BigDecimal(
+						location.getLongitude()));
+			}
+
+			@Override
+			public void onWrite() {
+				service.getEventDispatcher().dispatchChangeLocation(location,
+						satellitesCount);
+			}
+		});
+	}
 
 	public void changeOrientation(final Double orientationDegree) {
 		long now = System.currentTimeMillis();

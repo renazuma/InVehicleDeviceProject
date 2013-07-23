@@ -76,7 +76,7 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.senso
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.sensor.TemperatureSensorEventListener;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.thread.OperationScheduleReceiveThread;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.thread.ServiceProviderReceiveThread;
-import com.kogasoftware.odt.invehicledevice.service.trackingservice.LocationNotifier.TrackingIntent;
+import com.kogasoftware.odt.invehicledevice.service.trackingservice.TrackingIntent;
 import com.kogasoftware.odt.invehicledevice.ui.BigToast;
 
 public class InVehicleDeviceService extends Service {
@@ -231,21 +231,21 @@ public class InVehicleDeviceService extends Service {
 	protected ConnectivityManager connectivityManager;
 	protected ExitBroadcastReceiver exitBroadcastReceiver;
 	protected BatteryBroadcastReceiver batteryBroadcastReceiver;
+	protected final BroadcastReceiver trackingBroadcastReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			TrackingIntent trackingIntent = new TrackingIntent(intent);
+			serviceUnitStatusLogLogic.changeLocation(
+					trackingIntent.getLocation(),
+					Optional.of(trackingIntent.getSatellitesCount()));
+		}
+	};
 	protected AccMagSensorEventListener accMagSensorEventListener;
 	protected OrientationSensorEventListener orientationSensorEventListener;
 	protected TemperatureSensorEventListener temperatureSensorEventListener;
 	protected SignalStrengthListener signalStrengthListener;
 	protected OperationScheduleReceiveThread operationScheduleReceiveThread;
 	protected ServiceProviderReceiveThread serviceProviderReceiveThread;
-	protected BroadcastReceiver trackingBroadcastReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			TrackingIntent trackingIntent = new TrackingIntent(intent);
-			getEventDispatcher().dispatchChangeLocation(
-					trackingIntent.getLocation(),
-					trackingIntent.getSatellitesCount());
-		}
-	};
 
 	public InVehicleDeviceService() {
 		super();
@@ -333,8 +333,6 @@ public class InVehicleDeviceService extends Service {
 			Log.w(TAG, e);
 		}
 
-		SharedPreferences preferences = PreferenceManager
-				.getDefaultSharedPreferences(this);
 		windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
 		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
@@ -453,13 +451,14 @@ public class InVehicleDeviceService extends Service {
 		localStorage = result.getLeft();
 		apiClient = result.getRight();
 
-		IntentFilter exitIntentFilter = new IntentFilter();
-		exitIntentFilter.addAction(Broadcasts.ACTION_EXIT);
-		registerReceiver(exitBroadcastReceiver, exitIntentFilter);
+		registerReceiver(exitBroadcastReceiver, new IntentFilter(
+				Broadcasts.ACTION_EXIT));
 
-		IntentFilter batteryIntentFilter = new IntentFilter();
-		batteryIntentFilter.addAction(Intent.ACTION_BATTERY_CHANGED);
-		registerReceiver(batteryBroadcastReceiver, batteryIntentFilter);
+		registerReceiver(batteryBroadcastReceiver, new IntentFilter(
+				Intent.ACTION_BATTERY_CHANGED));
+
+		registerReceiver(trackingBroadcastReceiver, new IntentFilter(
+				TrackingIntent.ACTION_TRACKING));
 
 		operationScheduleReceiveThread.start();
 		serviceProviderReceiveThread.start();
@@ -591,6 +590,12 @@ public class InVehicleDeviceService extends Service {
 			unregisterReceiver(batteryBroadcastReceiver);
 		} catch (IllegalArgumentException e) {
 			Log.i(TAG, "unregisterReceiver(batteryBroadcastReceiver) failed", e);
+		}
+		try {
+			unregisterReceiver(trackingBroadcastReceiver);
+		} catch (IllegalArgumentException e) {
+			Log.i(TAG, "unregisterReceiver(trackingBroadcastReceiver) failed",
+					e);
 		}
 		for (TelephonyManager telephonyManager : optionalTelephonyManager
 				.asSet()) {

@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Handler;
 import android.util.Log;
@@ -367,12 +366,12 @@ public class EventDispatcher implements Closeable {
 	}
 
 	public void dispatchChangeLocation(final Location location,
-			final Optional<Integer> satelliteCount) {
+			final Optional<Integer> satellitesCount) {
 		dispatchListener(onChangeLocationListeners,
 				new Dispatcher<OnChangeLocationListener>() {
 					@Override
 					public void dispatch(OnChangeLocationListener listener) {
-						listener.onChangeLocation(location, satelliteCount);
+						listener.onChangeLocation(location, satellitesCount);
 					}
 				});
 	}
