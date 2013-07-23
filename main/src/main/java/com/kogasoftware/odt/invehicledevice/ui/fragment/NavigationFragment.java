@@ -267,6 +267,7 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 	@Override
 	public void onChangeLocation(Location location,
 			Optional<Integer> satelliteCount) {
+		lastGpsUpdated = new Date();
 		NavigationRenderer navigationRenderer = navigationRendererWeakReference
 				.get();
 		if (navigationRenderer != null) {
