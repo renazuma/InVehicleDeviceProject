@@ -121,7 +121,7 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	 * 出発時のサーバへの通知
 	 * 
 	 * @param os
-	 *            運行スケジュールオブジェクト @
+	 *            運行スケジュールオブジェクト 
 	 */
 	@Override
 	public int departureOperationSchedule(final OperationSchedule os,
@@ -154,7 +154,7 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	 * 降車のサーバへの通知
 	 * 
 	 * @param operationSchedule
-	 *            運行スケジュールオブジェクト @
+	 *            運行スケジュールオブジェクト
 	 */
 	@Override
 	public int getOffPassenger(final OperationSchedule operationSchedule,
@@ -193,7 +193,7 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	 * 乗車のサーバへの通知
 	 * 
 	 * @param operationSchedule
-	 *            運行スケジュールオブジェクト @
+	 *            運行スケジュールオブジェクト
 	 */
 	@Override
 	public int getOnPassenger(final OperationSchedule operationSchedule,
@@ -232,7 +232,7 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	 * 乗車のキャンセル
 	 * 
 	 * @param operationSchedule
-	 *            運行スケジュールオブジェクト @
+	 *            運行スケジュールオブジェクト
 	 */
 	@Override
 	public int cancelGetOnPassenger(final OperationSchedule operationSchedule,
@@ -262,7 +262,7 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	 * 降車のキャンセル
 	 * 
 	 * @param operationSchedule
-	 *            運行スケジュールオブジェクト @
+	 *            運行スケジュールオブジェクト
 	 */
 	@Override
 	public int cancelGetOffPassenger(final OperationSchedule operationSchedule,
@@ -376,7 +376,7 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	 * @param vn
 	 *            通知オブジェクト
 	 * @param response
-	 *            応答 @
+	 *            応答
 	 */
 	@Override
 	public int responseVehicleNotification(final VehicleNotification vn,
@@ -444,8 +444,7 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	}
 
 	/**
-	 * http://ojw.dev.openstreetmap.org/StaticMap/?lat=35.214478887245&lon=
-	 * 139.21875&z=5&mode=Export&show=1
+	 * "http://ojw.dev.openstreetmap.org/StaticMap/?lat=35.214478887245&lon=139.21875&z=5&mode=Export&show=1"
 	 */
 	protected SerializableGetLoader getOJWOSMRequestloader(String lat,
 			String lon, int zoom) {
@@ -462,8 +461,7 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	}
 
 	/**
-	 * http://open.mapquestapi.com/staticmap/v3/getmap?size=600,200&zoom=15&
-	 * center=41.862648,-87.615549
+	 * "http://open.mapquestapi.com/staticmap/v3/getmap?size=600,200&zoom=15&center=41.862648,-87.615549"
 	 */
 	protected SerializableGetLoader getMapQuestOSMRequestloader(String lat,
 			String lon, int zoom) {
@@ -476,8 +474,7 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	}
 
 	/**
-	 * http://dev.virtualearth.net/REST/v1/Imagery/Map/Road/47.610,-122.107/2?
-	 * key=key
+	 * "http://dev.virtualearth.net/REST/v1/Imagery/Map/Road/47.610,-122.107/2?key=key"
 	 */
 	protected SerializableGetLoader getBingMapsRequestloader(String lat,
 			String lon, int zoom) {
@@ -492,7 +489,7 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	}
 
 	/**
-	 * http://maps.google.com/maps/api/staticmap
+	 * "http://maps.google.com/maps/api/staticmap"
 	 */
 	protected SerializableGetLoader getGoogleMapsRequestloader(String lat,
 			String lon, int zoom) {
