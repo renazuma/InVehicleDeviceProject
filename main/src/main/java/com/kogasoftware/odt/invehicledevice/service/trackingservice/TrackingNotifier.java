@@ -1,11 +1,13 @@
 package com.kogasoftware.odt.invehicledevice.service.trackingservice;
 
 import java.io.Closeable;
+
 import org.joda.time.DateTimeUtils;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.Iterables;
+
 import android.content.Context;
+import android.location.GpsSatellite;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
@@ -22,6 +24,7 @@ public class TrackingNotifier implements Runnable, LocationListener,
 	private static final Integer DEFAULT_SLEEP_TIMEOUT = 20 * 1000;
 	public static final Integer BROADCAST_PERIOD_MILLIS = 5000;
 	private static final String TAG = TrackingNotifier.class.getSimpleName();
+	public static final Integer USED_SATELLITES_COUNT_FOR_UPDATE_LOCATION_TIME = 5;
 
 	private final Integer minTime = DEFAULT_MIN_TIME;
 	private final Integer minDistance = DEFAULT_MIN_DISTANCE;
@@ -153,11 +156,27 @@ public class TrackingNotifier implements Runnable, LocationListener,
 			break;
 		}
 		gpsStatus = locationManager.getGpsStatus(gpsStatus); // onGpsStatusChanged()以外で呼ばないように注意する
-		onSatellitesCountChanged(Iterables.size(gpsStatus.getSatellites()));
+		Integer satellitesCount = 0;
+		Integer usedSatellitesCount = 0;
+		for (GpsSatellite satellite : gpsStatus.getSatellites()) {
+			satellitesCount++;
+			if (satellite.usedInFix()) {
+				usedSatellitesCount++;
+			}
+		}
+		onSatellitesCountChanged(satellitesCount, usedSatellitesCount);
 	}
 
-	public void onSatellitesCountChanged(int satellitesCount) {
-		Log.d(TAG, "onSatellitesCountChanged(" + satellitesCount + ")");
+	public void onSatellitesCountChanged(Integer satellitesCount,
+			Integer usedSatellitesCount) {
+		Log.d(TAG, "onSatellitesCountChanged(" + satellitesCount + "/"
+				+ usedSatellitesCount + ")");
+		if (usedSatellitesCount >= USED_SATELLITES_COUNT_FOR_UPDATE_LOCATION_TIME) {
+			for (Location location : trackingIntent.getLocation().asSet()) {
+				location.setTime(DateTimeUtils.currentTimeMillis());
+				trackingIntent.setLocation(location);
+			}
+		}
 		trackingIntent.setSatellitesCount(satellitesCount);
 		sendBroadcast();
 	}

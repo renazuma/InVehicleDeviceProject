@@ -192,12 +192,12 @@ public class TrackingNotifierTestCase extends AndroidTestCase {
 
 	public void test_人工衛星の数を受信したらブロードキャストする() throws InterruptedException {
 		Integer s1 = 10;
-		trackingNotifier.onSatellitesCountChanged(s1);
+		trackingNotifier.onSatellitesCountChanged(s1, 0);
 		TrackingIntent ti1 = getBroadcast();
 		assertEquals(s1, ti1.getSatellitesCount());
 
 		Integer s2 = 0;
-		trackingNotifier.onSatellitesCountChanged(s2);
+		trackingNotifier.onSatellitesCountChanged(s2, 0);
 		TrackingIntent ti2 = getBroadcast();
 		assertEquals(s2, ti2.getSatellitesCount());
 	}
@@ -222,6 +222,46 @@ public class TrackingNotifierTestCase extends AndroidTestCase {
 		// 定数秒に達したのでここでブロードキャストが飛ぶ
 		TrackingIntent ti2 = getBroadcast();
 		assertFalse(ti2.getLocation().isPresent());
+	}
+
+	public void test_位置FIXに利用された人工衛星の数が一定以上の場合定期ブロードキャスト時のLocationの時刻を更新する()
+			throws InterruptedException {
+		trackingNotifier.run();
+		currentMillis += TrackingNotifier.BROADCAST_PERIOD_MILLIS;
+		trackingNotifier.run();
+
+		// Locationが存在しない場合
+		assertFalse(getBroadcast().getLocation().isPresent());
+
+		// Locationが存在する場合
+		Location l = new Location("");
+		l.setTime(12345);
+		trackingNotifier.onLocationChanged(l);
+		assertEquals(12345, getBroadcast().getLocation().get().getTime());
+		currentMillis += TrackingNotifier.BROADCAST_PERIOD_MILLIS;
+		trackingNotifier.run();
+		assertEquals(12345, getBroadcast().getLocation().get().getTime()); // 時刻は変わらない
+
+		final Integer USCFULT = TrackingNotifier.USED_SATELLITES_COUNT_FOR_UPDATE_LOCATION_TIME;
+		trackingNotifier.onSatellitesCountChanged(30, USCFULT / 2);
+		assertEquals(12345, getBroadcast().getLocation().get().getTime()); // 時刻は変わらない
+
+		trackingNotifier.onSatellitesCountChanged(30, USCFULT);
+		assertEquals(currentMillis.longValue(), getBroadcast().getLocation()
+				.get().getTime()); // 時刻が変更される
+
+		long t = currentMillis;
+		currentMillis += 100;
+		trackingNotifier.onSatellitesCountChanged(30, USCFULT - 1);
+		assertEquals(t, getBroadcast().getLocation().get().getTime()); // 時刻は変わらない
+
+		currentMillis += TrackingNotifier.BROADCAST_PERIOD_MILLIS;
+		trackingNotifier.run();
+		assertEquals(t, getBroadcast().getLocation().get().getTime()); // 時刻は変わらない
+
+		trackingNotifier.onSatellitesCountChanged(0, USCFULT);
+		assertEquals(currentMillis.longValue(), getBroadcast().getLocation()
+				.get().getTime()); // 時刻が変更される
 	}
 
 	TrackingIntent getBroadcast() throws InterruptedException {
