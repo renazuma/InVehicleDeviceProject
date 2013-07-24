@@ -225,7 +225,7 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 		super.onDestroy();
 		Log.i(TAG, "onDestroy()");
 		destroyed = true;
-		
+		dismissLoadingDialogFragment();
 		for (InVehicleDeviceService service : getService().asSet()) {
 			service.getEventDispatcher().removeOnExitListener(this);
 			service.getEventDispatcher()
@@ -280,17 +280,20 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 						R.anim.show_in_vehicle_device_view);
 				view.startAnimation(animation);
 				view.setVisibility(View.VISIBLE);
-				for (DialogFragment dialogFragment : loadingDialogFragment
-						.asSet()) {
-					try {
-						dialogFragment.dismiss();
-					} catch (IllegalStateException e) {
-						Log.e(TAG, e.toString(), e);
-					}
-				}
-				loadingDialogFragment = Optional.absent();
+				dismissLoadingDialogFragment();
 			}
 		});
+	}
+	
+	private void dismissLoadingDialogFragment() {
+		for (DialogFragment dialogFragment : loadingDialogFragment.asSet()) {
+			try {
+				dialogFragment.dismiss();
+			} catch (IllegalStateException e) {
+				Log.e(TAG, e.toString(), e);
+			}
+		}
+		loadingDialogFragment = Optional.absent();
 	}
 
 	@Override
