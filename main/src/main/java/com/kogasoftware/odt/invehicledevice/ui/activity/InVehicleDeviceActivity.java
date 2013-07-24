@@ -202,12 +202,11 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 						| WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
 						| WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
 
-		LoadingDialogFragment loadingDialogFragment = new LoadingDialogFragment();
+		loadingDialogFragment = Optional.of(new LoadingDialogFragment());
 		for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
-			loadingDialogFragment.show(fragmentManager,
+			loadingDialogFragment.get().show(fragmentManager,
 					LOADING_DIALOG_FRAGMENT_TAG);
 		}
-		this.loadingDialogFragment = Optional.of(loadingDialogFragment);
 		bindService(new Intent(this, InVehicleDeviceService.class),
 				serviceConnection, Context.BIND_AUTO_CREATE);
 		ViewReflection.setOnSystemUiVisibilityChangeListener(getWindow()
