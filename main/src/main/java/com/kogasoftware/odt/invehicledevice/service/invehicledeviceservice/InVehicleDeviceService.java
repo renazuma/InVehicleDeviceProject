@@ -246,6 +246,7 @@ public class InVehicleDeviceService extends Service {
 	protected SignalStrengthListener signalStrengthListener;
 	protected OperationScheduleReceiveThread operationScheduleReceiveThread;
 	protected ServiceProviderReceiveThread serviceProviderReceiveThread;
+	protected Boolean destroyed = false;
 
 	public InVehicleDeviceService() {
 		super();
@@ -307,6 +308,7 @@ public class InVehicleDeviceService extends Service {
 	public void onCreate() {
 		super.onCreate();
 		Log.i(TAG, "onCreate()");
+		destroyed = false; // onDestroy()後にインスタンスが再利用「されない」という記述が見当たらないため、いちおう再設定する。
 
 		ACRA.getErrorReporter().handleSilentException(
 				new Throwable("APPLICATION_START_LOG"));
@@ -448,6 +450,9 @@ public class InVehicleDeviceService extends Service {
 
 	protected void onPostInitialize(
 			Pair<LocalStorage, InVehicleDeviceApiClient> result) {
+		if (destroyed) {
+			return;
+		}
 		localStorage = result.getLeft();
 		apiClient = result.getRight();
 
@@ -540,6 +545,9 @@ public class InVehicleDeviceService extends Service {
 
 					@Override
 					public void onRead(LinkedList<VehicleNotification> result) {
+						if (destroyed) {
+							return;
+						}
 						if (!result.isEmpty()) {
 							getEventDispatcher()
 									.dispatchAlertVehicleNotificationReceive(
@@ -563,6 +571,7 @@ public class InVehicleDeviceService extends Service {
 	public void onDestroy() {
 		super.onDestroy();
 		Log.i(TAG, "onDestroy()");
+		destroyed  = true;
 
 		getEventDispatcher().removeOnPauseActivityListener(
 				voiceServiceConnector);

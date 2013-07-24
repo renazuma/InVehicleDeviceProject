@@ -90,7 +90,7 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 						+ " instanceof InVehicleDeviceService.LocalBinder)");
 				return;
 			}
-			if (isFinishing()) {
+			if (isFinishing() || destroyed) {
 				Log.w(TAG, "onServiceConnected(" + className + "," + binder
 						+ ") but finishing");
 				return;
@@ -185,6 +185,7 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 
 	private Optional<InVehicleDeviceService> service = Optional.absent();
 	private View view;
+	private Boolean destroyed;
 
 	public Optional<InVehicleDeviceService> getService() {
 		return service;
@@ -194,6 +195,8 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.i(TAG, "onCreate()");
+		destroyed = false;
+		
 		getWindow().addFlags(
 				WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
 						| WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
@@ -221,6 +224,8 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 	public void onDestroy() {
 		super.onDestroy();
 		Log.i(TAG, "onDestroy()");
+		destroyed = true;
+		
 		for (InVehicleDeviceService service : getService().asSet()) {
 			service.getEventDispatcher().removeOnExitListener(this);
 			service.getEventDispatcher()
@@ -247,6 +252,9 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 	public void initializeUi(Phase phase,
 			List<OperationSchedule> operationSchedules,
 			List<PassengerRecord> passengerRecords) {
+		if (uiInitialized || destroyed || isFinishing()) {
+			return;
+		}
 		Log.i(TAG, "initializeUi()");
 
 		for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
@@ -264,6 +272,9 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
+				if (destroyed) {
+					return;
+				}
 				Animation animation = AnimationUtils.loadAnimation(
 						InVehicleDeviceActivity.this,
 						R.anim.show_in_vehicle_device_view);
@@ -378,12 +389,7 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 	public void onUpdatePhase(Phase phase,
 			List<OperationSchedule> operationSchedules,
 			List<PassengerRecord> passengerRecords) {
-		if (isFinishing()) {
-			return;
-		}
-		if (!uiInitialized) {
-			initializeUi(phase, operationSchedules, passengerRecords);
-		}
+		initializeUi(phase, operationSchedules, passengerRecords);
 	}
 
 	@Override
