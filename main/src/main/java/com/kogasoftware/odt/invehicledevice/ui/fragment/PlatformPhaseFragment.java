@@ -106,7 +106,7 @@ public class PlatformPhaseFragment extends ApplicationFragment<State> implements
 						.getDepartureEstimate().get();
 				Integer minutesRemaining = (int) (departureEstimate.getTime() / 1000 / 60 - now
 						.getTime() / 1000 / 60);
-				DateFormat dateFormat = new SimpleDateFormat("HH:mm");
+				DateFormat dateFormat = new SimpleDateFormat("HH:mm", Locale.US);
 				String dateString = dateFormat.format(departureEstimate);
 				minutesRemainingTextView.setText(Html.fromHtml(String.format(
 						getResources().getString(
