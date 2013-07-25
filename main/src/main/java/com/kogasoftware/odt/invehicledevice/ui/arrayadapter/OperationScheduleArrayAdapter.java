@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -34,7 +35,7 @@ public class OperationScheduleArrayAdapter extends
 		if (convertView == null) {
 			convertView = layoutInflater.inflate(RESOURCE_ID, null);
 		}
-		DateFormat displayDateFormat = new SimpleDateFormat("HH:mm");
+		DateFormat displayDateFormat = new SimpleDateFormat("HH:mm", Locale.US);
 
 		OperationSchedule operationSchedule = getItem(position);
 		TextView platformNameView = (TextView) convertView

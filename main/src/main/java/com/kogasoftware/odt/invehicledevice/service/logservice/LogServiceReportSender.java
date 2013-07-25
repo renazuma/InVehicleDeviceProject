@@ -48,7 +48,7 @@ public class LogServiceReportSender implements ReportSender {
 	@Override
 	public void send(CrashReportData crashReportData)
 			throws ReportSenderException {
-		String format = (new SimpleDateFormat("yyyyMMddHHmmss.SSS"))
+		String format = (new SimpleDateFormat("yyyyMMddHHmmss.SSS", Locale.US))
 				.format(new Date());
 		File file = new EmptyFile();
 		try {

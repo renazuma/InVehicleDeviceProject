@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.BlockingQueue;
+
 import android.util.Log;
 
 import com.google.common.base.Stopwatch;
@@ -40,7 +42,7 @@ public class SplitFileOutputStream extends OutputStream {
 
 	private File getNewFile() throws IOException {
 		synchronized (memberAccessLock) {
-			String format = (new SimpleDateFormat("yyyyMMddHHmmss.SSS"))
+			String format = (new SimpleDateFormat("yyyyMMddHHmmss.SSS", Locale.US))
 					.format(new Date());
 			return File.createTempFile(format + baseFileName, ".log",
 					baseDirectory);

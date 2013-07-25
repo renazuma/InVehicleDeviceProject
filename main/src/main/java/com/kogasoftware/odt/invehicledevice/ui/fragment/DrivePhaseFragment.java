@@ -1,11 +1,14 @@
 package com.kogasoftware.odt.invehicledevice.ui.fragment;
 
 import java.io.Serializable;
+
 import com.kogasoftware.odt.invehicledevice.ui.fragment.DrivePhaseFragment.State;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -66,7 +69,7 @@ public class DrivePhaseFragment extends ApplicationFragment<State> {
 			for (Date arrivalEstimate : operationSchedule.getArrivalEstimate()
 					.asSet()) {
 				DateFormat dateFormat = new SimpleDateFormat(getResources()
-						.getString(R.string.platform_arrival_time_format));
+						.getString(R.string.platform_arrival_time_format), Locale.US);
 				platformArrivalTimeTextView2.setText(dateFormat
 						.format(arrivalEstimate));
 			}
