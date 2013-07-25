@@ -98,6 +98,7 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 			Log.i(TAG, "onServiceConnected()");
 			InVehicleDeviceService service = ((InVehicleDeviceService.LocalBinder) binder)
 					.getService();
+			InVehicleDeviceActivity.this.service = Optional.of(service);
 			service.getEventDispatcher().addOnUpdatePhaseListener(
 					InVehicleDeviceActivity.this);
 			service.getEventDispatcher()
@@ -111,7 +112,6 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 			service.getEventDispatcher().addOnMergeOperationSchedulesListener(
 					InVehicleDeviceActivity.this);
 			new OperationScheduleLogic(service).requestUpdatePhase();
-			InVehicleDeviceActivity.this.service = Optional.of(service);
 		}
 
 		@Override
@@ -251,7 +251,7 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 	public void initializeUi(Phase phase,
 			List<OperationSchedule> operationSchedules,
 			List<PassengerRecord> passengerRecords) {
-		if (uiInitialized || destroyed || isFinishing()) {
+		if (uiInitialized || destroyed || isFinishing() || !service.isPresent()) {
 			return;
 		}
 		Log.i(TAG, "initializeUi()");
