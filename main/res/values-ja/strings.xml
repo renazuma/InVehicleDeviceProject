@@ -14,13 +14,9 @@
     <string name="user_memo">ユーザーメモ</string>
     <string name="it_arrives">到着する</string>
     <string name="it_arrives_button_text">到着し\nました</string>
-    <string name="it_is_the_last_platform_now">現在最終乗降場です</string>
     <string name="it_leaves">出発する</string>
-    <string name="it_leaves_button_text"> 出発 \n する </string>
-    <string name="it_leaves_last_platform_button_text"> 確定 \n する </string>
     <string name="it_returns">戻る</string>
     <string name="it_returns_to_platform_modal_view">乗降一覧に戻る</string>
-    <string name="it_completes_getting_off">確定する</string>
     <string name="map">地図</string>
     <string name="memo">メモ</string>
     <string name="next_platform_is">次は</string>
@@ -35,9 +31,6 @@
     <string name="today_operation_schedule">運行\n予定</string>
     <string name="platform_arrival_time_format">HH:mm</string>
     <string name="todays_operation_was_finished">本日の運行は終了しました</string>
-    <string name="show_all_riding_passengers">乗車中の乗客全員を表示</string>
-    <string name="show_future_passengers">未来の乗客を表示</string>
-    <string name="show_missed_passengers">過去の乗降場で未乗車の乗客を表示</string>
     <string name="zoom_in">拡大</string>
     <string name="zoom_out">縮小</string>
     <string name="auto_zoom">自動調整</string>
@@ -45,7 +38,6 @@
     <string name="next_platform_is_html">次は&lt;big&gt;&lt;big&gt;%s&lt;/big&gt;&lt;/big&gt;</string>
     <string name="minutes_remaining_to_depart_html">%1$s出発&lt;br&gt;あと&lt;big&gt;&lt;font color=&quot;red&quot;&gt;%2$d&lt;/font&gt;&lt;/big&gt;分</string>
     <string name="platform_arrival_time">HH:mm着</string>
-    <string name="platform_depature_time">HH:mm発</string>
     <string name="location_receiving">位置情報を受信しています</string>
     <string name="gps_satellites_format">(人工衛星%1d/4)</string>
     <string name="crash_toast_text">車載器アプリケーションで予期しない不具合が発生しました。再起動します。</string>
