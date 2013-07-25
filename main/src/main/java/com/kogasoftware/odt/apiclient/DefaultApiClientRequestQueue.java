@@ -12,10 +12,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.SerializationException;
+
 import com.kogasoftware.odt.apiclient.Serializations;
+
 import org.apache.commons.lang3.tuple.Pair;
 
 import android.util.Log;
@@ -56,6 +59,8 @@ public class DefaultApiClientRequestQueue {
 	protected final Object queueLock = new Object();
 	// バックアップ先ファイル名
 	protected final Optional<File> optionalBackupFile;
+	// バックアップを行いたい場合true
+	protected final AtomicBoolean backupRequest = new AtomicBoolean(false);
 
 	/**
 	 * コンストラクタ
@@ -132,7 +137,7 @@ public class DefaultApiClientRequestQueue {
 				}
 			}
 			findOrCreateGroup(group).add(request);
-			backup();
+			backupRequest.set(true);
 			waitingQueuePollPermissions.release();
 		}
 	}
@@ -203,7 +208,7 @@ public class DefaultApiClientRequestQueue {
 				if (requests.isEmpty()) {
 					requestsByGroup.remove(entry);
 				}
-				backup();
+				backupRequest.set(true);
 				break;
 			}
 		}
@@ -256,7 +261,7 @@ public class DefaultApiClientRequestQueue {
 				for (DefaultApiClientRequest<?> retryRequest : requests) {
 					retryRequest.setRetry(true);
 				}
-				backup();
+				backupRequest.set(true);
 			}
 		}
 	}
@@ -271,6 +276,9 @@ public class DefaultApiClientRequestQueue {
 		while (true) {
 			waitingQueuePollPermissions.acquire(); // synchronizedの外で待つ
 			synchronized (queueLock) {
+				if (backupRequest.getAndSet(false)) {
+					backup();
+				}
 				for (Pair<String, List<DefaultApiClientRequest<?>>> entry : Lists
 						.newLinkedList(requestsByGroup)) {
 					String group = entry.getKey();
