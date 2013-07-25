@@ -1,6 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.LinkedList;
@@ -32,7 +33,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
-import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -214,6 +214,85 @@ public class InVehicleDeviceService extends Service {
 		}
 	}
 
+	/**
+	 * initializeInBackground()を裏のスレッドで実行し 結果オブジェクトを表のスレッドでonPostInitialize()に渡す
+	 * 
+	 * 何故か普通にAsyncTaskやThreadを使うと裏のスレッドから結果オブジェクトやサービスへの参照が消えずに残ることがある。これは
+	 * eclipseのMemory Analyzer Toolで確認できる。この現象の原因の解明がまだできていないため、次善策として防御的に
+	 * 上記処理を行う際にサービスとのお互いの参照を弱参照で保持しておき、可能な限り参照が残らないように配慮する。
+	 */
+	private static class InitializeThread extends Thread {
+		private static class PostInitializeCallback implements Runnable {
+			private final WeakReference<InVehicleDeviceService> serviceReference;
+			private final Pair<LocalStorage, InVehicleDeviceApiClient> result;
+			private final CountDownLatch initializeCompleted;
+
+			public PostInitializeCallback(
+					WeakReference<InVehicleDeviceService> serviceReference,
+					Pair<LocalStorage, InVehicleDeviceApiClient> result,
+					CountDownLatch initializeCompleted) {
+				this.serviceReference = serviceReference;
+				this.result = result;
+				this.initializeCompleted = initializeCompleted;
+			}
+
+			@Override
+			public void run() {
+				InVehicleDeviceService service = serviceReference.get();
+				if (service != null) {
+					service.onPostInitialize(result);
+				}
+				initializeCompleted.countDown();
+			}
+		}
+
+		private final Handler handler;
+		private final WeakReference<InVehicleDeviceService> serviceReference;
+
+		public InitializeThread(InVehicleDeviceService service, Handler handler) {
+			super("InitializeThread");
+			serviceReference = new WeakReference<InVehicleDeviceService>(
+					service);
+			this.handler = handler;
+		}
+
+		private Optional<Pair<LocalStorage, InVehicleDeviceApiClient>> initializeInBackground() {
+			InVehicleDeviceService service = serviceReference.get();
+			if (service != null) {
+				return service.initializeInBackground();
+			}
+			return Optional.absent();
+		}
+
+		private void exit() {
+			InVehicleDeviceService service = serviceReference.get();
+			if (service != null) {
+				service.exit();
+			}
+		}
+
+		@Override
+		public void run() {
+			for (Pair<LocalStorage, InVehicleDeviceApiClient> result : initializeInBackground()
+					.asSet()) {
+				CountDownLatch initializeCompleted = new CountDownLatch(1);
+				Runnable postInitializeCallback = new PostInitializeCallback(
+						serviceReference, result, initializeCompleted);
+				handler.post(postInitializeCallback);
+				try {
+					initializeCompleted.await();
+				} catch (InterruptedException e) {
+					Closeables.closeQuietly(result.getLeft());
+					Closeables.closeQuietly(result.getRight());
+				} finally {
+					handler.removeCallbacks(postInitializeCallback);
+				}
+				return;
+			}
+			exit();
+		}
+	}
+
 	protected final IBinder binder = new LocalBinder();
 	protected final Handler handler = new Handler(Looper.getMainLooper());
 	protected final VoiceServiceConnector voiceServiceConnector;
@@ -246,7 +325,9 @@ public class InVehicleDeviceService extends Service {
 	protected SignalStrengthListener signalStrengthListener;
 	protected OperationScheduleReceiveThread operationScheduleReceiveThread;
 	protected ServiceProviderReceiveThread serviceProviderReceiveThread;
+	protected WeakReference<InitializeThread> initializeThread;
 	protected Boolean destroyed = false;
+	private WeakReference<InitializeThread> initializeThreadReference;
 
 	public InVehicleDeviceService() {
 		super();
@@ -363,23 +444,13 @@ public class InVehicleDeviceService extends Service {
 		getEventDispatcher().addOnStartNewOperationListener(
 				serviceProviderReceiveThread);
 
-		new AsyncTask<Void, Void, Optional<Pair<LocalStorage, InVehicleDeviceApiClient>>>() {
-			@Override
-			protected Optional<Pair<LocalStorage, InVehicleDeviceApiClient>> doInBackground(
-					Void... args) {
-				return InVehicleDeviceService.this.initializeInBackground();
-			}
-
-			@Override
-			protected void onPostExecute(
-					Optional<Pair<LocalStorage, InVehicleDeviceApiClient>> result) {
-				if (result.isPresent()) {
-					onPostInitialize(result.get());
-				} else {
-					InVehicleDeviceService.this.exit();
-				}
-			}
-		}.execute();
+		{ // 弱参照から取り出した強参照の変数のスコープを限定
+			InitializeThread initializeThread = new InitializeThread(this,
+					new Handler());
+			initializeThreadReference = new WeakReference<InitializeThread>(
+					initializeThread);
+			initializeThread.start();
+		}
 	}
 
 	protected void showNotInitializedAlertInBackground(Looper looper) {
@@ -417,7 +488,7 @@ public class InVehicleDeviceService extends Service {
 		if (!initialized) {
 			Log.w(TAG,
 					"!SharedPreferences.getBoolean(SharedPreferencesKeys.INITIALIZED, false)");
-			new HandlerThread("") {
+			new HandlerThread("Show_not_initialized_alert") {
 				@Override
 				protected void onLooperPrepared() {
 					showNotInitializedAlertInBackground(getLooper());
@@ -573,7 +644,14 @@ public class InVehicleDeviceService extends Service {
 	public void onDestroy() {
 		super.onDestroy();
 		Log.i(TAG, "onDestroy()");
-		destroyed  = true;
+		destroyed = true;
+
+		{ // 弱参照から取り出した強参照の変数のスコープを限定
+			InitializeThread initializeThread = initializeThreadReference.get();
+			if (initializeThread != null) {
+				initializeThread.interrupt();
+			}
+		}
 
 		getEventDispatcher().removeOnPauseActivityListener(
 				voiceServiceConnector);
