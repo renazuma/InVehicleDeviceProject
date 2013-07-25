@@ -60,56 +60,54 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 						+ ") is not instanceof PassengerRecord");
 				return false;
 			}
+			
 			PassengerRecord passengerRecord = (PassengerRecord) tag;
-			Boolean invert = Lists.newArrayList(MotionEvent.ACTION_DOWN,
-					MotionEvent.ACTION_MOVE).contains(event.getAction());
-			if (operationSchedule.isGetOffScheduled(passengerRecord)) {
-				if (passengerRecord.getGetOffTime().isPresent() ^ invert) {
-					view.setBackgroundColor(SELECTED_GET_OFF_COLOR);
-				} else {
-					view.setBackgroundColor(GET_OFF_COLOR);
-				}
-			} else if (operationSchedule.isGetOnScheduled(passengerRecord)) {
-				if (passengerRecord.getGetOnTime().isPresent() ^ invert) {
-					view.setBackgroundColor(SELECTED_GET_ON_COLOR);
-				} else {
-					view.setBackgroundColor(GET_ON_COLOR);
-				}
-			}
-			return false;
-		}
-	};
-	protected final OnClickListener onClickViewListener = new OnClickListener() {
-		@Override
-		public void onClick(View view) {
-			Object tag = view.getTag();
-			if (!(tag instanceof PassengerRecord)) {
-				Log.e(TAG, "\"" + view + "\".getTag() (" + tag
-						+ ") is not instanceof PassengerRecord");
-				return;
-			}
-			PassengerRecord passengerRecord = (PassengerRecord) tag;
-			if (operationSchedule.isGetOffScheduled(passengerRecord)) {
-				passengerRecord.setIgnoreGetOffMiss(false);
-				if (passengerRecord.getGetOffTime().isPresent()) {
-					passengerRecordLogic.cancelGetOff(operationSchedule,
-							passengerRecord);
-				} else {
-					passengerRecordLogic.getOff(operationSchedule,
-							passengerRecord);
-				}
-			} else if (operationSchedule.isGetOnScheduled(passengerRecord)) {
-				passengerRecord.setIgnoreGetOnMiss(false);
-				if (passengerRecord.getGetOnTime().isPresent()) {
-					passengerRecordLogic.cancelGetOn(operationSchedule,
-							passengerRecord);
-				} else {
-					passengerRecordLogic.getOn(operationSchedule,
-							passengerRecord);
-				}
-			}
+			// 色を反転する
+			Boolean invertColor = event.getAction() == MotionEvent.ACTION_DOWN;
+			// 色を元に戻す
+			Boolean restoreColor = event.getAction() == MotionEvent.ACTION_CANCEL;
+			// 乗降を実行する
+			Boolean execute = event.getAction() == MotionEvent.ACTION_UP;
 
-			notifyDataSetChanged();
+			if (invertColor || restoreColor) {
+				if (operationSchedule.isGetOffScheduled(passengerRecord)) {
+					if (passengerRecord.getGetOffTime().isPresent()
+							^ invertColor) {
+						view.setBackgroundColor(SELECTED_GET_OFF_COLOR);
+					} else {
+						view.setBackgroundColor(GET_OFF_COLOR);
+					}
+				} else if (operationSchedule.isGetOnScheduled(passengerRecord)) {
+					if (passengerRecord.getGetOnTime().isPresent()
+							^ invertColor) {
+						view.setBackgroundColor(SELECTED_GET_ON_COLOR);
+					} else {
+						view.setBackgroundColor(GET_ON_COLOR);
+					}
+				}
+			} else if (execute) {
+				if (operationSchedule.isGetOffScheduled(passengerRecord)) {
+					passengerRecord.setIgnoreGetOffMiss(false);
+					if (passengerRecord.getGetOffTime().isPresent()) {
+						passengerRecordLogic.cancelGetOff(operationSchedule,
+								passengerRecord);
+					} else {
+						passengerRecordLogic.getOff(operationSchedule,
+								passengerRecord);
+					}
+				} else if (operationSchedule.isGetOnScheduled(passengerRecord)) {
+					passengerRecord.setIgnoreGetOnMiss(false);
+					if (passengerRecord.getGetOnTime().isPresent()) {
+						passengerRecordLogic.cancelGetOn(operationSchedule,
+								passengerRecord);
+					} else {
+						passengerRecordLogic.getOn(operationSchedule,
+								passengerRecord);
+					}
+				}
+				notifyDataSetChanged();
+			}
+			return true;
 		}
 	};
 
@@ -198,7 +196,6 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 
 		// 行の表示
 		convertView.setTag(passengerRecord);
-		convertView.setOnClickListener(onClickViewListener);
 		convertView.setOnTouchListener(onTouchListener);
 
 		ImageView selectMarkImageView = (ImageView) convertView
