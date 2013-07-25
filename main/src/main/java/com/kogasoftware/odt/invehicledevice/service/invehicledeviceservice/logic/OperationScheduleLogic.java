@@ -1,8 +1,11 @@
 package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.RejectedExecutionException;
+
+import org.joda.time.DateTimeUtils;
 
 import android.util.Log;
 
@@ -225,7 +228,7 @@ public class OperationScheduleLogic {
 		Collections.sort(remotePassengerRecords,
 				PassengerRecord.DEFAULT_COMPARATOR);
 
-		localData.updatedDate = InVehicleDeviceService.getDate();
+		localData.updatedDate = new Date(DateTimeUtils.currentTimeMillis());
 		localData.operationScheduleInitialized = true;
 		localData.operationSchedules.clear();
 		localData.operationSchedules.addAll(remoteOperationSchedules);
@@ -325,8 +328,7 @@ public class OperationScheduleLogic {
 					}
 					for (OperationRecord operationRecord : operationSchedule
 							.getOperationRecord().asSet()) {
-						operationRecord.setArrivedAt(InVehicleDeviceService
-								.getDate());
+						operationRecord.setArrivedAt(new Date(DateTimeUtils.currentTimeMillis()));
 						service.getApiClient()
 								.withSaveOnClose()
 								.arrivalOperationSchedule(
@@ -377,8 +379,7 @@ public class OperationScheduleLogic {
 					}
 					for (OperationRecord operationRecord : operationSchedule
 							.getOperationRecord().asSet()) {
-						operationRecord.setDepartedAt(InVehicleDeviceService
-								.getDate());
+						operationRecord.setDepartedAt(new Date(DateTimeUtils.currentTimeMillis()));
 						service.getApiClient()
 								.withSaveOnClose()
 								.departureOperationSchedule(

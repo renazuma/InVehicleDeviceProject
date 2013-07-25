@@ -2,13 +2,9 @@ package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
-import java.util.Date;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.WeakHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
@@ -49,10 +45,8 @@ import android.widget.Toast;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
 import com.google.common.io.Closeables;
 import com.google.common.util.concurrent.Uninterruptibles;
-import com.kogasoftware.odt.invehicledevice.BuildConfig;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClientFactory;
@@ -100,18 +94,11 @@ public class InVehicleDeviceService extends Service {
 	public static final Integer NEW_SCHEDULE_DOWNLOAD_MINUTE = 5;
 	private static final Integer NUM_THREADS = 3;
 	private static final Integer ERROR_MESSAGE_THREAD_EXIT_MILLIS = 15 * 1000;
-
-	private static final Object MOCK_DATE_LOCK = new Object();
-	public static final SortedMap<Date, List<CountDownLatch>> mockSleepStatus = new TreeMap<Date, List<CountDownLatch>>();
-	private static Boolean useMockDate = false;
-	private static Date mockDate = new Date();
 	private final ScheduledExecutorService scheduledExecutorService = Executors
 			.newScheduledThreadPool(NUM_THREADS);
-
 	private static final WeakHashMap<Thread, Handler> HANDLERS = new WeakHashMap<Thread, Handler>();
 	public static final Handler DEFAULT_HANDLER = new Handler(
 			Looper.getMainLooper());
-
 	public static final Integer EXECUTOR_SERVICE_THREADS = 3;
 
 	@VisibleForTesting
@@ -159,59 +146,6 @@ public class InVehicleDeviceService extends Service {
 		latch.await();
 		Preconditions.checkNotNull(handler.get());
 		return handler.get();
-	}
-
-	public static Date getDate() {
-		if (!BuildConfig.DEBUG) {
-			return new Date();
-		}
-		Date now = new Date();
-		synchronized (MOCK_DATE_LOCK) {
-			if (useMockDate) {
-				return new Date(mockDate.getTime());
-			} else {
-				return now;
-			}
-		}
-	}
-
-	public static void sleep(long time) throws InterruptedException {
-		if (!BuildConfig.DEBUG) {
-			Thread.sleep(time);
-			return;
-		}
-		CountDownLatch countDownLatch = new CountDownLatch(1);
-		synchronized (MOCK_DATE_LOCK) {
-			Date wakeUpDate = new Date(getDate().getTime() + time);
-			if (!mockSleepStatus.containsKey(wakeUpDate)) {
-				mockSleepStatus.put(wakeUpDate,
-						new LinkedList<CountDownLatch>());
-			}
-			mockSleepStatus.get(wakeUpDate).add(countDownLatch);
-		}
-		countDownLatch.await();
-	}
-
-	@VisibleForTesting
-	public static void setMockDate(Date mockDate) {
-		if (!BuildConfig.DEBUG) {
-			return;
-		}
-		synchronized (MOCK_DATE_LOCK) {
-			useMockDate = true;
-			InVehicleDeviceService.mockDate = new Date(mockDate.getTime());
-			for (Entry<Date, List<CountDownLatch>> entry : Maps.newTreeMap(
-					mockSleepStatus).entrySet()) {
-				if (mockDate.before(entry.getKey())) {
-					break;
-				}
-				for (CountDownLatch countDownLatch : entry.getValue()) {
-					countDownLatch.countDown();
-					Thread.yield();
-				}
-				mockSleepStatus.remove(entry.getKey());
-			}
-		}
 	}
 
 	/**

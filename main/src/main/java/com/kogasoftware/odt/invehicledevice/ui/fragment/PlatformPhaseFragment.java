@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import org.joda.time.DateTimeUtils;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -23,7 +25,6 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
@@ -93,7 +94,7 @@ public class PlatformPhaseFragment extends ApplicationFragment<State> implements
 		public void run() {
 			handler.postDelayed(updateMinutesRemaining,
 					UPDATE_MINUTES_REMAINING_INTERVAL_MILLIS);
-			Date now = InVehicleDeviceService.getDate();
+			Date now = new Date(DateTimeUtils.currentTimeMillis());
 			minutesRemainingTextView.setText("");
 			for (OperationSchedule operationSchedule : OperationSchedule
 					.getCurrent(

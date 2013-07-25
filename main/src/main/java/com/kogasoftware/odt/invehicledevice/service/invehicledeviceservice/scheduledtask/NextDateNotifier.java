@@ -3,6 +3,8 @@ package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.sche
 import java.util.Calendar;
 import java.util.Date;
 
+import org.joda.time.DateTimeUtils;
+
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
 
@@ -11,7 +13,7 @@ public class NextDateNotifier implements Runnable {
 
 	protected static Date createNextUpdateDate() {
 		Calendar now = Calendar.getInstance();
-		now.setTime(InVehicleDeviceService.getDate());
+		now.setTimeInMillis(DateTimeUtils.currentTimeMillis());
 		Calendar calendar = Calendar.getInstance();
 		calendar.clear();
 		calendar.set(now.get(Calendar.YEAR), now.get(Calendar.MONTH),
@@ -33,7 +35,7 @@ public class NextDateNotifier implements Runnable {
 
 	@Override
 	public void run() {
-		if (nextUpdateDate.after(InVehicleDeviceService.getDate())) {
+		if (nextUpdateDate.after(new Date(DateTimeUtils.currentTimeMillis()))) {
 			return;
 		}
 		nextUpdateDate = createNextUpdateDate();

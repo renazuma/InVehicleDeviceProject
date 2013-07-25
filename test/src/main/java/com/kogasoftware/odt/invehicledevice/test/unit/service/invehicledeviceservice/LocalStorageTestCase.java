@@ -12,7 +12,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import junitx.framework.ComparableAssert;
 
 import com.kogasoftware.odt.apiclient.Serializations;
+
 import org.apache.commons.lang3.time.DateUtils;
+import org.joda.time.DateTimeUtils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -400,7 +402,7 @@ public class LocalStorageTestCase extends AndroidTestCase {
 		d = DateUtils.setMinutes(d,
 				InVehicleDeviceService.NEW_SCHEDULE_DOWNLOAD_MINUTE);
 		d = DateUtils.addMilliseconds(d, (int) -S * 2);
-		InVehicleDeviceService.setMockDate(d);
+		DateTimeUtils.setCurrentMillisFixed(d.getTime());
 
 		LocalStorage ls1 = new LocalStorage(getContext());
 		ls1.withWriteLock(new Writer() {
@@ -423,8 +425,8 @@ public class LocalStorageTestCase extends AndroidTestCase {
 		assertTrue(b1.booleanValue());
 
 		// 新運行スケジュール受信時刻をまたいだばあいはクリアさせる
-		InVehicleDeviceService.setMockDate(DateUtils.addMilliseconds(d,
-				(int) (S * 3)));
+		DateTimeUtils.setCurrentMillisFixed(DateUtils.addMilliseconds(d,
+				(int) (S * 3)).getTime());
 		LocalStorage ls3 = new LocalStorage(getContext());
 		Boolean b2 = ls3.withReadLock(new Reader<Boolean>() {
 			@Override

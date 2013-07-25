@@ -18,8 +18,11 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.lang3.SerializationException;
+
 import com.kogasoftware.odt.apiclient.Serializations;
+
 import org.apache.commons.lang3.time.DateUtils;
+import org.joda.time.DateTimeUtils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -192,7 +195,7 @@ public class LocalStorage implements Closeable {
 			}
 
 			Calendar startCalendar = Calendar.getInstance();
-			startCalendar.setTime(InVehicleDeviceService.getDate());
+			startCalendar.setTimeInMillis(DateTimeUtils.currentTimeMillis());
 			startCalendar = DateUtils.truncate(startCalendar, Calendar.MINUTE);
 			startCalendar.add(Calendar.HOUR_OF_DAY,
 					-InVehicleDeviceService.NEW_SCHEDULE_DOWNLOAD_HOUR);

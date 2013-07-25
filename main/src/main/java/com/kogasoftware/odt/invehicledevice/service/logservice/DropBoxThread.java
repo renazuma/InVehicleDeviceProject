@@ -7,6 +7,7 @@ import java.nio.charset.Charset;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.joda.time.DateTimeUtils;
 import org.json.JSONObject;
 
 import android.content.Context;
@@ -20,7 +21,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Closeables;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 
 public class DropBoxThread extends Thread {
 	private static final String LAST_CHECKED_DATE_KEY = "last_checked_date_key";
@@ -107,7 +107,7 @@ public class DropBoxThread extends Thread {
 	@VisibleForTesting
 	public static Date getLastCheckDate(SharedPreferences sharedPreferences) {
 		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(InVehicleDeviceService.getDate());
+		calendar.setTimeInMillis(DateTimeUtils.currentTimeMillis());
 		calendar.add(Calendar.DAY_OF_MONTH, -LAST_CHECK_DATE_LIMIT_DAYS);
 		Date minLastCheckDate = calendar.getTime();
 		Date lastCheckDate = new Date(sharedPreferences.getLong(

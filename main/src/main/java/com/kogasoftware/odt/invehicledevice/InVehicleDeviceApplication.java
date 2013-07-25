@@ -1,10 +1,6 @@
 package com.kogasoftware.odt.invehicledevice;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Date;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.acra.ACRA;
@@ -18,7 +14,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.util.Log;
 
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.logservice.LogServiceReportSender;
 
 @ReportsCrashes(formKey = "dFp5SnVVbTRuem13WmJ0YlVUb2NjaXc6MQ", mode = ReportingInteractionMode.TOAST, resToastText = R.string.crash_toast_text, customReportContent = {
@@ -136,13 +131,5 @@ public class InVehicleDeviceApplication extends Application {
 	public void onTerminate() {
 		super.onTerminate();
 		Log.i(TAG, "onTerminate()");
-
-		for (Entry<Date, List<CountDownLatch>> entry : InVehicleDeviceService.mockSleepStatus
-				.entrySet()) {
-			for (CountDownLatch countDownLatch : entry.getValue()) {
-				countDownLatch.countDown();
-			}
-		}
-		InVehicleDeviceService.mockSleepStatus.clear();
 	}
 }

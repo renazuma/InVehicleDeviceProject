@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import org.joda.time.DateTimeUtils;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
@@ -30,7 +32,6 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyRunnable;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Phase;
 import com.kogasoftware.odt.invehicledevice.ui.BatteryAlerter;
 import com.kogasoftware.odt.invehicledevice.ui.ViewDisabler;
@@ -74,7 +75,7 @@ public class InformationBarFragment extends ApplicationFragment<State>
 	private final Runnable updateTime = new Runnable() {
 		@Override
 		public void run() {
-			Date now = InVehicleDeviceService.getDate();
+			Date now = new Date(DateTimeUtils.currentTimeMillis());
 			DateFormat f = new SimpleDateFormat(
 					getString(R.string.present_time_format), Locale.US);
 			presentTimeTextView.setText(f.format(now));

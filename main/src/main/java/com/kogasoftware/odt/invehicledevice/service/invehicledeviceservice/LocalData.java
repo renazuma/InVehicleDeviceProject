@@ -5,6 +5,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import org.joda.time.DateTimeUtils;
+
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
@@ -28,7 +30,7 @@ public class LocalData implements Serializable {
 	public Boolean operationScheduleInitialized = false;
 	public Boolean serviceProviderInitialized = false;
 
-	public Date updatedDate = InVehicleDeviceService.getDate();
+	public Date updatedDate = new Date(DateTimeUtils.currentTimeMillis());
 	public File file = new EmptyFile();
 
 	public String token = "";

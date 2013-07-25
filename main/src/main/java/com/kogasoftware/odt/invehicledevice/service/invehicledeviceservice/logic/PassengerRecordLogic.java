@@ -2,6 +2,8 @@ package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logi
 
 import java.util.Date;
 
+import org.joda.time.DateTimeUtils;
+
 import android.util.Log;
 
 import com.google.common.collect.Lists;
@@ -32,7 +34,7 @@ public class PassengerRecordLogic {
 					+ ") has no Reservation");
 			return;
 		}
-		Date now = InVehicleDeviceService.getDate();
+		Date now = new Date(DateTimeUtils.currentTimeMillis());
 		Reservation reservation = passengerRecord.getReservation().get();
 
 		if (!passengerRecord.getUser().isPresent()) {
@@ -109,7 +111,7 @@ public class PassengerRecordLogic {
 		}
 		User user = passengerRecord.getUser().get();
 
-		passengerRecord.setGetOnTime(InVehicleDeviceService.getDate());
+		passengerRecord.setGetOnTime(new Date(DateTimeUtils.currentTimeMillis()));
 		passengerRecord.setPassengerCount(reservation.getPassengerCount());
 		passengerRecord.setDepartureOperationScheduleId(operationSchedule
 				.getId());

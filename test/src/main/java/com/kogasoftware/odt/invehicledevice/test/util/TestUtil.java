@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.WeakHashMap;
@@ -16,6 +15,7 @@ import junit.framework.Assert;
 import junitx.framework.AssertionFailedError;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeUtils;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -374,15 +374,6 @@ public class TestUtil {
 		return byteArrayOutputStream.toByteArray();
 	}
 
-	public static void advanceDate(long millis) {
-		Date now = InVehicleDeviceService.getDate();
-		InVehicleDeviceService.setMockDate(new Date(now.getTime() + millis));
-	}
-
-	public static void advanceDate(double millis) {
-		advanceDate((long) millis);
-	}
-
 	public static <T> void assertEmptyObject(Instrumentation instrumentation,
 			Class<T> c) throws Exception {
 		assertEmptyObject(instrumentation, c, false);
@@ -407,7 +398,7 @@ public class TestUtil {
 	}
 
 	public static void setDate(DateTime dateTime) {
-		InVehicleDeviceService.setMockDate(new Date(dateTime.getMillis()));
+		DateTimeUtils.setCurrentMillisFixed(dateTime.getMillis());
 	}
 
 	public static Closeable setTestThreadHandler() {
