@@ -105,24 +105,26 @@ public class TrackingNotifierTestCase extends AndroidTestCase {
 		trackingNotifier = new TrackingNotifier(mockContext);
 	}
 
-	private void assertRequestLocationUpdates(Integer times) {
-		Mockito.verify(mockLocationManager, Mockito.times(times))
+	private void assertRequestLocationUpdates(Integer extra) {
+		startCount += extra;
+		Mockito.verify(mockLocationManager, Mockito.times(startCount))
 				.requestLocationUpdates(Mockito.anyString(), Mockito.anyLong(),
 						Mockito.anyFloat(), Mockito.<LocationListener> any());
 	}
 
 	private void assertRequestLocationUpdates() {
 		startCount++;
-		assertRequestLocationUpdates(startCount);
+		assertRequestLocationUpdates(0);
 	}
 
 	private void assertRemoveUpdates() {
 		stopCount++;
-		assertRemoveUpdates(stopCount);
+		assertRemoveUpdates(0);
 	}
 
-	private void assertRemoveUpdates(Integer times) {
-		Mockito.verify(mockLocationManager, Mockito.times(times))
+	private void assertRemoveUpdates(Integer extra) {
+		stopCount += extra;
+		Mockito.verify(mockLocationManager, Mockito.times(stopCount))
 				.removeUpdates(Mockito.<LocationListener> any());
 	}
 
@@ -136,32 +138,82 @@ public class TrackingNotifierTestCase extends AndroidTestCase {
 		assertRequestLocationUpdates();
 	}
 
-	public void test_定数時間内に位置を受信したら再起動しない() {
-		Location l = new Location("");
-		l.setLatitude(50);
-		l.setLongitude(100);
-
+	public void test_定数時間内に位置FIX人工衛星の数が定数個以上になる場合再起動しない() {
+		final Integer USCFULT = TrackingNotifier.USED_SATELLITES_COUNT_FOR_UPDATE_LOCATION_TIME;
 		assertRequestLocationUpdates();
 
+		// 一定以上受信で再起動しない
 		currentMillis += trackingNotifier.getRestartTimeout() / 2;
 		trackingNotifier.run();
-		trackingNotifier.onLocationChanged(l);
-		trackingNotifier.run();
-		currentMillis += trackingNotifier.getRestartTimeout() / 10 * 9;
-		trackingNotifier.run();
-
-		assertRemoveUpdates(0);
-
-		trackingNotifier.onLocationChanged(l);
+		trackingNotifier.onSatellitesCountChanged(1, USCFULT);
 		trackingNotifier.run();
 		currentMillis += trackingNotifier.getRestartTimeout() / 10 * 9;
 		trackingNotifier.run();
 		assertRemoveUpdates(0);
 
 		// 受信がなければ再起動
+		currentMillis += trackingNotifier.getRestartTimeout() / 2;
+		trackingNotifier.run();
 		currentMillis += trackingNotifier.getRestartTimeout() / 10 * 9;
 		trackingNotifier.run();
 		assertRemoveUpdates();
+		currentMillis += trackingNotifier.getSleepTimeout();
+		trackingNotifier.run();
+		assertRequestLocationUpdates();
+		
+		// 定数値以下なら再起動
+		currentMillis += trackingNotifier.getRestartTimeout() / 2;
+		trackingNotifier.run();
+		trackingNotifier.onSatellitesCountChanged(1, USCFULT - 1);
+		currentMillis += trackingNotifier.getRestartTimeout() / 10 * 9;
+		trackingNotifier.run();
+		assertRemoveUpdates();
+		currentMillis += trackingNotifier.getSleepTimeout();
+		trackingNotifier.run();
+		assertRequestLocationUpdates();
+		
+		// 一定以上受信で再起動しない
+		currentMillis += trackingNotifier.getRestartTimeout() / 2;
+		trackingNotifier.run();
+		trackingNotifier.onSatellitesCountChanged(1, USCFULT * 2);
+		currentMillis += trackingNotifier.getRestartTimeout() / 10 * 9;
+		trackingNotifier.run();
+		assertRemoveUpdates(0);
+	}
+
+	public void test_定数時間内に人工衛星を受信したら再起動しない() {
+		Location l = new Location("");
+		l.setLatitude(50);
+		l.setLongitude(100);
+
+		assertRequestLocationUpdates();
+
+		// 受信があったので再起動しない
+		currentMillis += trackingNotifier.getRestartTimeout() / 2;
+		trackingNotifier.run();
+		trackingNotifier.onLocationChanged(l);
+		trackingNotifier.run();
+		currentMillis += trackingNotifier.getRestartTimeout() / 10 * 9;
+		trackingNotifier.run();
+		assertRemoveUpdates(0);
+
+		// 受信がなければ停止
+		currentMillis += trackingNotifier.getRestartTimeout();
+		trackingNotifier.run();
+		assertRemoveUpdates();
+		
+		// 再起動
+		currentMillis += trackingNotifier.getSleepTimeout();
+		trackingNotifier.run();
+		assertRequestLocationUpdates();
+		
+		// 受信があったので再起動しない
+		currentMillis += trackingNotifier.getRestartTimeout() / 2;
+		trackingNotifier.run();
+		trackingNotifier.onLocationChanged(l);
+		currentMillis += trackingNotifier.getRestartTimeout() / 10 * 9;
+		trackingNotifier.run();
+		assertRemoveUpdates(0);
 	}
 
 	public void test_closeしたらRemoveUpdatesをする() {
@@ -235,29 +287,29 @@ public class TrackingNotifierTestCase extends AndroidTestCase {
 
 		// Locationが存在する場合
 		Location l = new Location("");
-		l.setTime(12345);
+		long t1 = currentMillis;
 		trackingNotifier.onLocationChanged(l);
-		assertEquals(12345, getBroadcast().getLocation().get().getTime());
+		assertEquals(t1, getBroadcast().getLocation().get().getTime());
 		currentMillis += TrackingNotifier.BROADCAST_PERIOD_MILLIS;
 		trackingNotifier.run();
-		assertEquals(12345, getBroadcast().getLocation().get().getTime()); // 時刻は変わらない
+		assertEquals(t1, getBroadcast().getLocation().get().getTime()); // 時刻は変わらない
 
 		final Integer USCFULT = TrackingNotifier.USED_SATELLITES_COUNT_FOR_UPDATE_LOCATION_TIME;
 		trackingNotifier.onSatellitesCountChanged(30, USCFULT / 2);
-		assertEquals(12345, getBroadcast().getLocation().get().getTime()); // 時刻は変わらない
+		assertEquals(t1, getBroadcast().getLocation().get().getTime()); // 時刻は変わらない
 
 		trackingNotifier.onSatellitesCountChanged(30, USCFULT);
 		assertEquals(currentMillis.longValue(), getBroadcast().getLocation()
 				.get().getTime()); // 時刻が変更される
 
-		long t = currentMillis;
+		long t2 = currentMillis;
 		currentMillis += 100;
 		trackingNotifier.onSatellitesCountChanged(30, USCFULT - 1);
-		assertEquals(t, getBroadcast().getLocation().get().getTime()); // 時刻は変わらない
+		assertEquals(t2, getBroadcast().getLocation().get().getTime()); // 時刻は変わらない
 
 		currentMillis += TrackingNotifier.BROADCAST_PERIOD_MILLIS;
 		trackingNotifier.run();
-		assertEquals(t, getBroadcast().getLocation().get().getTime()); // 時刻は変わらない
+		assertEquals(t2, getBroadcast().getLocation().get().getTime()); // 時刻は変わらない
 
 		trackingNotifier.onSatellitesCountChanged(0, USCFULT);
 		assertEquals(currentMillis.longValue(), getBroadcast().getLocation()

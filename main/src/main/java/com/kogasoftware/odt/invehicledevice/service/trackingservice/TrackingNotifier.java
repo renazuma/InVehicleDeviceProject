@@ -172,16 +172,17 @@ public class TrackingNotifier implements Runnable, LocationListener,
 		Log.d(TAG, "onSatellitesCountChanged(" + satellitesCount + "/"
 				+ usedSatellitesCount + ")");
 		if (usedSatellitesCount >= USED_SATELLITES_COUNT_FOR_UPDATE_LOCATION_TIME) {
-			for (Location location : trackingIntent.getLocation().asSet()) {
-				location.setTime(DateTimeUtils.currentTimeMillis());
-				trackingIntent.setLocation(location);
-			}
+			lastLocationReceivedTimeMillis = DateTimeUtils.currentTimeMillis();
 		}
 		trackingIntent.setSatellitesCount(satellitesCount);
 		sendBroadcast();
 	}
 
 	private void sendBroadcast() {
+		for (Location location : trackingIntent.getLocation().asSet()) {
+			location.setTime(lastLocationReceivedTimeMillis);
+			trackingIntent.setLocation(location);
+		}
 		context.sendBroadcast(trackingIntent);
 	}
 
