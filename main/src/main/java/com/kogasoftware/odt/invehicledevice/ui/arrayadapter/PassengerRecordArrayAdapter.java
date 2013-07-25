@@ -10,8 +10,10 @@ import android.graphics.Color;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -34,6 +36,12 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 	private static final String TAG = PassengerRecordArrayAdapter.class
 			.getSimpleName();
 	protected static final Integer RESOURCE_ID = R.layout.passenger_record_list_row;
+	protected static final int SELECTED_GET_OFF_COLOR = Color
+			.parseColor("#40E0D0");
+	protected static final int GET_OFF_COLOR = Color.parseColor("#D5E9F6");
+	protected static final int SELECTED_GET_ON_COLOR = Color
+			.parseColor("#FF69B4");
+	protected static final int GET_ON_COLOR = Color.parseColor("#F9D9D8");
 	protected final FragmentManager fragmentManager;
 	protected final LayoutInflater layoutInflater = (LayoutInflater) getContext()
 			.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -43,6 +51,34 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 	protected final OperationScheduleLogic operationScheduleLogic;
 	protected final WeakHashMap<View, Boolean> memoButtons = new WeakHashMap<View, Boolean>();
 	protected Boolean memoButtonsVisible = true;
+	protected final OnTouchListener onTouchListener = new OnTouchListener() {
+		@Override
+		public boolean onTouch(View view, MotionEvent event) {
+			Object tag = view.getTag();
+			if (!(tag instanceof PassengerRecord)) {
+				Log.e(TAG, "\"" + view + "\".getTag() (" + tag
+						+ ") is not instanceof PassengerRecord");
+				return false;
+			}
+			PassengerRecord passengerRecord = (PassengerRecord) tag;
+			Boolean invert = Lists.newArrayList(MotionEvent.ACTION_DOWN,
+					MotionEvent.ACTION_MOVE).contains(event.getAction());
+			if (operationSchedule.isGetOffScheduled(passengerRecord)) {
+				if (passengerRecord.getGetOffTime().isPresent() ^ invert) {
+					view.setBackgroundColor(SELECTED_GET_OFF_COLOR);
+				} else {
+					view.setBackgroundColor(GET_OFF_COLOR);
+				}
+			} else if (operationSchedule.isGetOnScheduled(passengerRecord)) {
+				if (passengerRecord.getGetOnTime().isPresent() ^ invert) {
+					view.setBackgroundColor(SELECTED_GET_ON_COLOR);
+				} else {
+					view.setBackgroundColor(GET_ON_COLOR);
+				}
+			}
+			return false;
+		}
+	};
 	protected final OnClickListener onClickViewListener = new OnClickListener() {
 		@Override
 		public void onClick(View view) {
@@ -106,11 +142,13 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 		this.operationSchedule = operationSchedule;
 		passengerRecordLogic = new PassengerRecordLogic(service);
 		operationScheduleLogic = new OperationScheduleLogic(service);
-		
-		List<PassengerRecord> sortedPassengerRecord = Lists.newArrayList(passengerRecords);
-		Collections.sort(sortedPassengerRecord, PassengerRecord.DEFAULT_COMPARATOR);
+
+		List<PassengerRecord> sortedPassengerRecord = Lists
+				.newArrayList(passengerRecords);
+		Collections.sort(sortedPassengerRecord,
+				PassengerRecord.DEFAULT_COMPARATOR);
 		for (PassengerRecord passengerRecord : sortedPassengerRecord) {
-			add(passengerRecord);	
+			add(passengerRecord);
 		}
 	}
 
@@ -161,6 +199,7 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 		// 行の表示
 		convertView.setTag(passengerRecord);
 		convertView.setOnClickListener(onClickViewListener);
+		convertView.setOnTouchListener(onTouchListener);
 
 		ImageView selectMarkImageView = (ImageView) convertView
 				.findViewById(R.id.select_mark_image_view);
@@ -168,16 +207,16 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 		if (operationSchedule.isGetOffScheduled(passengerRecord)) {
 			selectMarkImageView.setImageResource(R.drawable.get_off);
 			if (passengerRecord.getGetOffTime().isPresent()) {
-				convertView.setBackgroundColor(Color.parseColor("#40E0D0")); // TODO
+				convertView.setBackgroundColor(SELECTED_GET_OFF_COLOR);
 			} else {
-				convertView.setBackgroundColor(Color.parseColor("#D5E9F6")); // TODO
+				convertView.setBackgroundColor(GET_OFF_COLOR);
 			}
 		} else if (operationSchedule.isGetOnScheduled(passengerRecord)) {
 			selectMarkImageView.setImageResource(R.drawable.get_on);
 			if (passengerRecord.getGetOnTime().isPresent()) {
-				convertView.setBackgroundColor(Color.parseColor("#FF69B4")); // TODO
+				convertView.setBackgroundColor(SELECTED_GET_ON_COLOR);
 			} else {
-				convertView.setBackgroundColor(Color.parseColor("#F9D9D8")); // TODO
+				convertView.setBackgroundColor(GET_ON_COLOR);
 			}
 		} else {
 			Log.e(TAG, "unexpected PassengerRecord: " + passengerRecord);
