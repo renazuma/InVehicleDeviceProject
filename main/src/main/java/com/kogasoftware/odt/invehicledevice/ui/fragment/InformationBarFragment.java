@@ -5,6 +5,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -75,7 +76,7 @@ public class InformationBarFragment extends ApplicationFragment<State>
 		public void run() {
 			Date now = InVehicleDeviceService.getDate();
 			DateFormat f = new SimpleDateFormat(
-					getString(R.string.present_time_format));
+					getString(R.string.present_time_format), Locale.US);
 			presentTimeTextView.setText(f.format(now));
 			handler.postDelayed(this, UPDATE_TIME_INTERVAL_MILLIS);
 		}
