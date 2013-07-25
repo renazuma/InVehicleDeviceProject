@@ -138,12 +138,18 @@ public class EventDispatcher implements Closeable {
 		synchronized (rawMultimap) {
 			multimap.putAll(rawMultimap);
 		}
-		for (Entry<Handler, T> entry : multimap.entries()) {
+		for (final Entry<Handler, T> entry : multimap.entries()) {
 			Handler handler = entry.getKey();
 			final T listener = entry.getValue();
 			handler.post(new Runnable() {
 				@Override
 				public void run() {
+					synchronized (rawMultimap) {
+						if (!rawMultimap.containsEntry(entry.getKey(),
+								entry.getValue())) {
+							return;
+						}
+					}
 					dispatcher.dispatch(listener);
 				}
 			});
