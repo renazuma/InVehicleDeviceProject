@@ -223,7 +223,7 @@ public class LocalStorage implements Closeable {
 	private final LocalData localData;
 	private final Semaphore saveSemaphore = new Semaphore(0);
 	private final Integer savePeriodMillis;
-	private Thread saveThread = new EmptyThread();
+	private final Thread saveThread;
 
 	public LocalStorage() {
 		this(new LocalData());
@@ -236,6 +236,7 @@ public class LocalStorage implements Closeable {
 	@VisibleForTesting
 	public LocalStorage(LocalData localData) {
 		this.localData = localData;
+		this.saveThread = new EmptyThread();
 		savePeriodMillis = DEFAULT_SAVE_PERIO_MILLIS;
 	}
 
