@@ -287,7 +287,7 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 	private void dismissLoadingDialogFragment() {
 		for (DialogFragment dialogFragment : loadingDialogFragment.asSet()) {
 			try {
-				if (dialogFragment != null) {
+				if (dialogFragment != null && dialogFragment.isAdded()) {
 					try {
 						// ここでNullPointerExceptionが発生することがあるのを無理やりキャッチしてログに出力
 						dialogFragment.dismiss();
