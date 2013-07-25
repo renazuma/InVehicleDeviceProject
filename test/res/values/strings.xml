@@ -2,6 +2,5 @@
 <resources>
 
     <string name="app_name">InVehicleDeviceTest</string>
-    <string name="hello">hello InVehicleDeviceTest</string>
     
 </resources>
