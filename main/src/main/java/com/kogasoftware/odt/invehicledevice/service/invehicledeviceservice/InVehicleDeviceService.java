@@ -453,30 +453,46 @@ public class InVehicleDeviceService extends Service {
 		}
 	}
 
-	protected void showNotInitializedAlertInBackground(Looper looper) {
-		BigToast.makeText(this,
-				getString(R.string.settings_are_not_initialized),
-				Toast.LENGTH_LONG).show();
-		Intent intent = new Intent();
-		intent.setAction(Intent.ACTION_MAIN);
-		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		String packageName = "com.kogasoftware.odt.invehicledevice.preference";
-		intent.setClassName(packageName, packageName
-				+ ".InVehicleDevicePreferenceActivity");
-		try {
-			startActivity(intent);
-		} catch (ActivityNotFoundException e) {
-			Log.w(TAG, e);
-		}
-		Handler handler = new Handler(looper);
-		Boolean posted = handler.postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				stopSelf();
+	/**
+	 * 設定アプリによって設定が完了していない場合の警告を出力するスレッド
+	 */
+	private static class PreferencesNotInitializedAlertThread extends HandlerThread {
+		private final Context applicationContext; // Activityを起動する関係か参照を非常に長く保持するようなので、ApplicationContextを使う。
+
+		@Override
+		protected void onLooperPrepared() {
+			super.onLooperPrepared();
+			BigToast.makeText(
+					applicationContext,
+					applicationContext
+							.getString(R.string.settings_are_not_initialized),
+					Toast.LENGTH_LONG).show();
+			Intent intent = new Intent();
+			intent.setAction(Intent.ACTION_MAIN);
+			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			String packageName = "com.kogasoftware.odt.invehicledevice.preference";
+			intent.setClassName(packageName, packageName
+					+ ".InVehicleDevicePreferenceActivity");
+			try {
+				applicationContext.startActivity(intent);
+			} catch (ActivityNotFoundException e) {
+				Log.w(TAG, e);
 			}
-		}, ERROR_MESSAGE_THREAD_EXIT_MILLIS);
-		if (!posted) {
-			stopSelf();
+			Handler handler = new Handler();
+			Boolean posted = handler.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					quit();
+				}
+			}, ERROR_MESSAGE_THREAD_EXIT_MILLIS);
+			if (!posted) {
+				quit();
+			}
+		}
+
+		public PreferencesNotInitializedAlertThread(Context context) {
+			super(PreferencesNotInitializedAlertThread.class.getSimpleName());
+			applicationContext = context.getApplicationContext();
 		}
 	}
 
@@ -488,12 +504,7 @@ public class InVehicleDeviceService extends Service {
 		if (!initialized) {
 			Log.w(TAG,
 					"!SharedPreferences.getBoolean(SharedPreferencesKeys.INITIALIZED, false)");
-			new HandlerThread("Show_not_initialized_alert") {
-				@Override
-				protected void onLooperPrepared() {
-					showNotInitializedAlertInBackground(getLooper());
-				}
-			}.start();
+			new PreferencesNotInitializedAlertThread(this).start();
 			Uninterruptibles
 					.sleepUninterruptibly(ERROR_MESSAGE_THREAD_EXIT_MILLIS / 3,
 							TimeUnit.MILLISECONDS);
