@@ -445,12 +445,14 @@ public class InVehicleDeviceService extends Service {
 		InVehicleDeviceApiClient apiClient = InVehicleDeviceApiClientFactory
 				.newInstance(url, token, webAPIBackupFile);
 		LocalStorage localStorage = new LocalStorage(this);
-		return Optional.of(Pair.of(localStorage, apiClient));
+		return Optional.of(Pair.of(localStorage, apiClient)); // これらのオブジェクトは確実にclose()しなければならない
 	}
 
 	protected void onPostInitialize(
 			Pair<LocalStorage, InVehicleDeviceApiClient> result) {
 		if (destroyed) {
+			Closeables.closeQuietly(result.getLeft());
+			Closeables.closeQuietly(result.getRight());
 			return;
 		}
 		localStorage = result.getLeft();
