@@ -500,5 +500,6 @@ public class EventDispatcher implements Closeable {
 		clearListener(onOperationScheduleReceiveFailListeners);
 		clearListener(onActivityPauseListeners);
 		clearListener(onActivityResumeListeners);
+		clearListener(onUpdatePhaseListeners);
 	}
 }
