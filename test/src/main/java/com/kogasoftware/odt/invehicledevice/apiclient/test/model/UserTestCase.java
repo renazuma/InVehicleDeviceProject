@@ -2,6 +2,7 @@ package com.kogasoftware.odt.invehicledevice.apiclient.test.model;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.User;
@@ -69,7 +70,7 @@ public class UserTestCase extends TestCase {
 	}
 	
 	public void testGetAge() throws Exception {
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 		User u = new User();
 		
 		u.setBirthday(dateFormat.parse("1999-01-01"));
