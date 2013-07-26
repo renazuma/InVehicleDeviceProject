@@ -168,13 +168,19 @@ public class TrackingNotifier implements Runnable, LocationListener,
 	}
 
 	public void onSatellitesCountChanged(Integer satellitesCount,
-			Integer usedSatellitesCount) {
-		Log.d(TAG, "onSatellitesCountChanged(" + satellitesCount + "/"
-				+ usedSatellitesCount + ")");
-		if (usedSatellitesCount >= USED_SATELLITES_COUNT_FOR_UPDATE_LOCATION_TIME) {
+			Integer usedInFixSatellitesCount) {
+		Log.d(TAG, String.format("onSatellitesCountChanged(%d/%d)",
+				usedInFixSatellitesCount, satellitesCount));
+		if (usedInFixSatellitesCount >= USED_SATELLITES_COUNT_FOR_UPDATE_LOCATION_TIME) {
 			lastLocationReceivedTimeMillis = DateTimeUtils.currentTimeMillis();
 		}
+		if (satellitesCount.equals(trackingIntent.getSatellitesCount())
+				&& usedInFixSatellitesCount.equals(trackingIntent
+						.getUsedInFixSatellitesCount())) {
+			return;
+		}
 		trackingIntent.setSatellitesCount(satellitesCount);
+		trackingIntent.setUsedInFixSatellitesCount(usedInFixSatellitesCount);
 		sendBroadcast();
 	}
 
@@ -183,6 +189,7 @@ public class TrackingNotifier implements Runnable, LocationListener,
 			location.setTime(lastLocationReceivedTimeMillis);
 			trackingIntent.setLocation(location);
 		}
+		Log.d(TAG, "sendBroadcast() " + trackingIntent);
 		context.sendBroadcast(trackingIntent);
 	}
 

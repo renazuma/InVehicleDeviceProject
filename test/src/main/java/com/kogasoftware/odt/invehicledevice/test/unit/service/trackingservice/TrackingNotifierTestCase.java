@@ -254,6 +254,22 @@ public class TrackingNotifierTestCase extends AndroidTestCase {
 		assertEquals(s2, ti2.getSatellitesCount());
 	}
 
+	public void test_人工衛星の数が変わらない場合ブロードキャストしない() throws InterruptedException {
+		Integer s1 = 10;
+		trackingNotifier.onSatellitesCountChanged(s1, 0);
+		TrackingIntent ti1 = getBroadcast();
+		assertEquals(s1, ti1.getSatellitesCount());
+		
+		// ブロードキャストしない。tearDownで確認する
+		trackingNotifier.onSatellitesCountChanged(s1, 0);
+		trackingNotifier.onSatellitesCountChanged(s1, 0);
+
+		Integer s2 = 0;
+		trackingNotifier.onSatellitesCountChanged(s2, 0);
+		TrackingIntent ti2 = getBroadcast();
+		assertEquals(s2, ti2.getSatellitesCount());
+	}
+
 	public void test_定数秒に一度現在位置をブロードキャストする() throws InterruptedException {
 		trackingNotifier.run();
 		currentMillis += TrackingNotifier.BROADCAST_PERIOD_MILLIS;

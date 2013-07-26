@@ -10,7 +10,8 @@ public class TrackingIntentTestCase extends TestCase {
 		Location l = new Location("");
 		l.setLatitude(100.0);
 		l.setLongitude(90.0);
-		TrackingIntent ti1 = new TrackingIntent(2, l);
+		TrackingIntent ti1 = new TrackingIntent(l);
+		ti1.setSatellitesCount(2);
 		TrackingIntent ti2 = new TrackingIntent(ti1);
 
 		assertEquals(TrackingIntent.ACTION_TRACKING, ti1.getAction());
@@ -25,7 +26,7 @@ public class TrackingIntentTestCase extends TestCase {
 		assertEquals(3, ti1.getSatellitesCount().intValue());
 		assertEquals(2, ti2.getSatellitesCount().intValue());
 		
-		TrackingIntent ti3 = new TrackingIntent(1);
+		TrackingIntent ti3 = new TrackingIntent();
 		assertFalse(ti3.getLocation().isPresent());
 	}
 }
