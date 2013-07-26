@@ -58,10 +58,11 @@ public class TrackingIntent extends Intent {
 
 	@Override
 	public String toString() {
-		String locationString = "";
+		StringBuilder locationString = new StringBuilder();
 		for (Location location : getLocation().asSet()) {
-			locationString += String.format(Locale.US, "lat=%.8f, lon=%.8f",
-					location.getLatitude(), location.getLongitude());
+			locationString.append(String.format(Locale.US,
+					"lat=%.8f, lon=%.8f", location.getLatitude(),
+					location.getLongitude()));
 		}
 		return Objects
 				.toStringHelper(this)
