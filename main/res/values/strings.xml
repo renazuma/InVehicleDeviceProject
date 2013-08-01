@@ -44,5 +44,7 @@
     <string name="platform_memo">Platform memo</string>
     <string name="failed_to_connect_operator_tool">Failed to connect operator tool</string>
     <string name="settings_are_not_initialized">Settings are not initialized</string>
-
+    <string name="google_maps_api_key_debug">AIzaSyCbpmeImhPK1_cJzza68w5T8cBbxcfuS4Y</string>
+    <string name="google_maps_api_key_release">AIzaSyCbpmeImhPK1_cJzza68w5T8cBbxcfuS4Y</string>
+    
 </resources>

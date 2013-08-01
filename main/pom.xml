@@ -123,6 +123,18 @@
 					<artifactId>invehicledevice-apiclient</artifactId>
 					<type>apklib</type>
 				</dependency>
+				<dependency>
+				    <!-- ATTENTION! Do NOT use provided scope!! -->
+					<groupId>com.google.android.gms</groupId>
+					<artifactId>google-play-services</artifactId>
+					<type>apklib</type>
+				</dependency>
+				<dependency>
+		    		<!-- ATTENTION! Do NOT use provided scope!! -->
+					<groupId>com.google.android.gms</groupId>
+					<artifactId>google-play-services</artifactId>
+					<type>jar</type>
+				</dependency>
 			</dependencies>
 		</profile>
 	</profiles>

@@ -29,3 +29,4 @@ test/target/
 *.iml
 out/
 */gen-external-apklibs/
+google-play-services_lib/
