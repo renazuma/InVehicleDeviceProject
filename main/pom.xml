@@ -102,6 +102,37 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>com.google.code.maven-config-processor-plugin</groupId>
+				<artifactId>config-processor-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>change-google-maps-api-key</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>process</goal>
+						</goals>
+						<configuration>
+							<skip>${ksc.android.noRelease}</skip>
+							<transformations>
+								<transformation>
+									<type>xml</type>
+									<input>AndroidManifest.xml</input>
+									<rules>
+										<modify>
+											<name>/manifest/application/meta-data[@android:name='com.google.android.maps.v2.API_KEY']/@android:value</name>
+											<value>@string/google_maps_api_key_release</value>
+										</modify>
+									</rules>
+								</transformation>
+							</transformations>
+							<namespaceContexts>
+								<android>http://schemas.android.com/apk/res/android</android>
+							</namespaceContexts>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 	<profiles>
