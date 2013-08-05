@@ -21,7 +21,7 @@ public class TestUtilWaitForStartUiTestCase extends
 	Context tc;
 
 	public void callTestWaitForStartUi(Boolean timeout) throws Exception {
-		InVehicleDeviceApiClient ac = new DummyApiClient();
+		InVehicleDeviceApiClient ac;
 		if (timeout) {
 			ac = new DummyApiClient() {
 				@Override
@@ -31,6 +31,8 @@ public class TestUtilWaitForStartUiTestCase extends
 					return 0;
 				}
 			};
+		} else {
+			ac = new DummyApiClient();
 		}
 
 		SharedPreferences.Editor editor = PreferenceManager
