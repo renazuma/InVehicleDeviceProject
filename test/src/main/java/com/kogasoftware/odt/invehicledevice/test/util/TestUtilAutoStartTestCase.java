@@ -27,22 +27,19 @@ public class TestUtilAutoStartTestCase extends
 
 	public void callTestDisableAutoStart() throws Exception {
 		// TODO: テスト可能な自動起動方式を作って再実装
-		if (true) {
-			return;
-		}
 
 		// 自動起動をOFFにし、Activityを終了
-		TestUtil.disableAutoStart(c);
-		sendKeys(KeyEvent.KEYCODE_HOME, KeyEvent.KEYCODE_BACK);
-		
+		//TestUtil.disableAutoStart(c);
+		//sendKeys(KeyEvent.KEYCODE_HOME, KeyEvent.KEYCODE_BACK);
+		//
 		// 非表示になることを確認
-		TestUtil.assertHide(c, InVehicleDeviceActivity.class);
-		
+		//TestUtil.assertHide(c, InVehicleDeviceActivity.class);
+		//
 		// 自動起動をON
-		TestUtil.enableAutoStart(c);
-		
+		//TestUtil.enableAutoStart(c);
+		//
 		// 表示されることを確認
-		TestUtil.assertShow(c, InVehicleDeviceActivity.class);
+		//TestUtil.assertShow(c, InVehicleDeviceActivity.class);
 	}
 
 	public void testDisableAutoStart1() throws Exception {
