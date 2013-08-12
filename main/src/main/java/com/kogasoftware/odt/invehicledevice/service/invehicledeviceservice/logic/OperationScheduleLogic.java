@@ -80,12 +80,14 @@ public class OperationScheduleLogic {
 			List<OperationSchedule> remoteOperationSchedules,
 			List<OperationSchedule> localOperationSchedules) {
 		Log.i(TAG, "mergeOperationSchedules() start");
+		for (OperationSchedule operationSchedule : remoteOperationSchedules) {
+			Log.i(TAG, "mergeOperationSchedules() remoteId="
+					+ operationSchedule.getId());
+		}
 		for (OperationSchedule localOperationSchedule : localOperationSchedules) {
 			Log.i(TAG, "mergeOperationSchedules() localId="
 					+ localOperationSchedule.getId());
 			for (OperationSchedule remoteOperationSchedule : remoteOperationSchedules) {
-				Log.i(TAG, "mergeOperationSchedules() remoteId="
-						+ remoteOperationSchedule.getId());
 				if (!localOperationSchedule.getId().equals(
 						remoteOperationSchedule.getId())) {
 					continue;
