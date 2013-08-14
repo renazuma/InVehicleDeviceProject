@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.service.startupservice;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -10,7 +11,6 @@ import android.app.ActivityManager.RunningTaskInfo;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -21,7 +21,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
-import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -65,24 +64,6 @@ public class StartupService extends Service {
 		}
 	};
 
-	public void disableAirplaneMode() {
-		if (Build.VERSION.SDK_INT >= 17) {
-			return;
-		}
-		ContentResolver contentResolver = getContentResolver();
-		Boolean airplaneModeOn = Settings.System.getInt(contentResolver,
-				Settings.System.AIRPLANE_MODE_ON, 0) == 1;
-		if (!airplaneModeOn) {
-			return;
-		}
-		Settings.System.putInt(contentResolver,
-				Settings.System.AIRPLANE_MODE_ON, 0);
-		// Post an intent to reload
-		Intent intent = new Intent(Intent.ACTION_AIRPLANE_MODE_CHANGED);
-		intent.putExtra("state", true);
-		sendBroadcast(intent);
-	}
-
 	public void checkDeviceAndStartActivity() {
 		// テスト中は起動しない
 		if (BuildConfig.DEBUG) {
@@ -100,7 +81,14 @@ public class StartupService extends Service {
 		}
 
 		// 機内モードは強制的にOFF
-		disableAirplaneMode();
+		try {
+			AirplaneModeSetting.set(this, false);
+		} catch (IOException e) {
+			BigToast.makeText(this, "機内モードをOFFにしてください", Toast.LENGTH_LONG)
+					.show();
+			Log.w(TAG, e);
+			return;
+		}
 
 		if (!enabled.get()) {
 			Log.i(TAG, "waiting for startup enabled");
