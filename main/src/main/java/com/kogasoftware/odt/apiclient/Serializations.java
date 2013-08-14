@@ -13,6 +13,15 @@ import com.google.common.io.ByteStreams;
 import com.google.common.io.Closeables;
 
 public class Serializations {
+	/**
+	 * commons-langのSerializationUtils.deserializeのラッパーメソッド
+	 * 
+	 * SerializationUtils.deserialize()がAndroidで発生させた実績のある非チェック例外をキャッチし
+	 * SerializationExceptionでラップして再スローする。
+	 * 
+	 * @param inputStream デシリアライズされるストリーム。自動で閉じられる。
+	 * @return デシリアライズされたオブジェクト
+	 */
 	public static Object deserialize(InputStream inputStream) {
 		// TODO: 一度InputStreamを全読みしてからdeserializeしないと
 		// LocalStorageTestCase.testNewScheduleでEBADFが発生するのの原因を調査
@@ -33,6 +42,13 @@ public class Serializations {
 		}
 	}
 
+	/**
+	 * commons-langのSerializationUtils.serializeのラッパーメソッド
+	 *
+	 * @param serializable シリアライズされるオブジェクト
+	 * @param outputStream シリアライズされたオブジェクトを出力するストリーム。自動で閉じられる。
+	 * @return デシリアライズされたオブジェクト
+	 */
 	public static void serialize(Serializable serializable,
 			OutputStream outputStream) {
 		SerializationUtils.serialize(serializable, outputStream);
