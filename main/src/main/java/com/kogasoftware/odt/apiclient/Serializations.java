@@ -28,6 +28,7 @@ public class Serializations {
 		} catch (IOException e) {
 			throw new SerializationException(e);
 		} finally {
+			Closeables.closeQuietly(inputStream);
 			Closeables.closeQuietly(byteArrayInputStream);
 		}
 	}
