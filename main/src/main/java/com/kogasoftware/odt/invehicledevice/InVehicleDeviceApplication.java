@@ -62,7 +62,7 @@ public class InVehicleDeviceApplication extends Application {
 			Log.w(TAG, e);
 		}
 
-		// enableStrictMode();
+		enableStrictMode();
 	}
 
 	protected void enableStrictMode() {
@@ -71,7 +71,7 @@ public class InVehicleDeviceApplication extends Application {
 		}
 		
         try {
-        	Boolean hard = true;
+        	Boolean hard = false;
         	
             Class<?> strictModeClass = Class.forName("android.os.StrictMode");
 
