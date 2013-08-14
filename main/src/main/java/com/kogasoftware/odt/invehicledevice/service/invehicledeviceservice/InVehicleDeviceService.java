@@ -215,13 +215,13 @@ public class InVehicleDeviceService extends Service {
 				handler.post(postInitializeCallback);
 				try {
 					initializeCompleted.await();
+					return;
 				} catch (InterruptedException e) {
 					Closeables.closeQuietly(result.getLeft());
 					Closeables.closeQuietly(result.getRight());
 				} finally {
 					handler.removeCallbacks(postInitializeCallback);
 				}
-				return;
 			}
 			exit();
 		}
