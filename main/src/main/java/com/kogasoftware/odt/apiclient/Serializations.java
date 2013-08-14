@@ -51,7 +51,12 @@ public class Serializations {
 	 */
 	public static void serialize(Serializable serializable,
 			OutputStream outputStream) {
-		SerializationUtils.serialize(serializable, outputStream);
+		try {
+			SerializationUtils.serialize(serializable, outputStream);
+		} finally {
+			// SerializationUtils.serialize()内でcloseされるはずだが、防御的にcloseしておく
+			Closeables.closeQuietly(outputStream);
+		}
 	}
 
 	public static byte[] serialize(Serializable serializable) {
