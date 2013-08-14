@@ -2,7 +2,6 @@ package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice;
 
 import java.io.Closeable;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -173,10 +172,8 @@ public class LocalStorage implements Closeable {
 			Log.i(TAG, "\"" + file + "\" not found");
 		} else {
 			Log.d(TAG, "\"" + file + "\" found ");
-			FileInputStream fileInputStream = null;
 			try {
-				fileInputStream = new FileInputStream(file);
-				LocalData readLocalData = Serializations.deserialize(fileInputStream,
+				LocalData readLocalData = Serializations.deserialize(file,
 						LocalData.class);
 				if (isClear) {
 					localData.serviceUnitStatusLog = readLocalData.serviceUnitStatusLog;
@@ -187,8 +184,6 @@ public class LocalStorage implements Closeable {
 				Log.e(TAG, e.toString(), e);
 			} catch (FileNotFoundException e) {
 				Log.e(TAG, e.toString(), e);
-			} finally {
-				Closeables.closeQuietly(fileInputStream);
 			}
 			if (isClear && !file.delete()) {
 				Log.e(TAG, "!\"" + file + "\".delete()");

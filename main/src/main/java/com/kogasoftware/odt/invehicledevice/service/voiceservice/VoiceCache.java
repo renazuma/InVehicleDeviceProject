@@ -1,9 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.service.voiceservice;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
@@ -62,10 +60,8 @@ public class VoiceCache {
 			return result;
 		}
 		Boolean succeed = false;
-		FileInputStream fileInputStream = null;
 		try {
-			fileInputStream = new FileInputStream(instanceStateFile);
-			result = Serializations.deserialize(fileInputStream,
+			result = Serializations.deserialize(instanceStateFile,
 					InstanceState.class);
 			succeed = true;
 		} catch (FileNotFoundException e) {
@@ -173,11 +169,10 @@ public class VoiceCache {
 		try {
 			InstanceState instanceState = new InstanceState(sequence,
 					cache.asMap());
-			Serializations.serialize(instanceState, new FileOutputStream(
-					instanceStateFile));
-		} catch (IOException e) {
-			throw new ExecutionException(e);
+			Serializations.serialize(instanceState, instanceStateFile);
 		} catch (SerializationException e) {
+			throw new ExecutionException(e);
+		} catch (FileNotFoundException e) {
 			throw new ExecutionException(e);
 		}
 	}
