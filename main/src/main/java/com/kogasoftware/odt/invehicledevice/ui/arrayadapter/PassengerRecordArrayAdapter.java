@@ -141,11 +141,11 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 		passengerRecordLogic = new PassengerRecordLogic(service);
 		operationScheduleLogic = new OperationScheduleLogic(service);
 
-		List<PassengerRecord> sortedPassengerRecord = Lists
+		List<PassengerRecord> sortedPassengerRecords = Lists
 				.newArrayList(passengerRecords);
-		Collections.sort(sortedPassengerRecord,
+		Collections.sort(sortedPassengerRecords,
 				PassengerRecord.DEFAULT_COMPARATOR);
-		for (PassengerRecord passengerRecord : sortedPassengerRecord) {
+		for (PassengerRecord passengerRecord : sortedPassengerRecords) {
 			add(passengerRecord);
 		}
 	}
