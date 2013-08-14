@@ -1,6 +1,10 @@
 package com.kogasoftware.odt.apiclient;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -59,6 +63,11 @@ public class Serializations {
 		}
 	}
 
+	public static void serialize(Serializable serializable, File file)
+			throws FileNotFoundException {
+		serialize(serializable, new FileOutputStream(file));
+	}
+
 	public static byte[] serialize(Serializable serializable) {
 		return SerializationUtils.serialize(serializable);
 	}
@@ -75,5 +84,10 @@ public class Serializations {
 		}
 		throw new SerializationException(new ClassCastException("object["
 				+ object + "] is not instance of " + originalClass));
+	}
+
+	public static <T extends Serializable> T deserialize(File file,
+			Class<T> originalClass) throws FileNotFoundException {
+		return deserialize(new FileInputStream(file), originalClass);
 	}
 }
