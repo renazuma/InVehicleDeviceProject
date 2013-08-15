@@ -13,9 +13,8 @@ import com.google.common.base.Optional;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation.Phase;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation;
 
 public class EventDispatcher implements Closeable {
 	private static final String TAG = EventDispatcher.class.getSimpleName();
@@ -65,9 +64,7 @@ public class EventDispatcher implements Closeable {
 	}
 
 	public interface OnUpdateOperationListener {
-		void onUpdateOperation(Phase phase,
-				List<OperationSchedule> operationSchedules,
-				List<PassengerRecord> passengerRecords);
+		void onUpdateOperation(Operation operation);
 	}
 
 	public interface OnExitListener {
@@ -327,13 +324,11 @@ public class EventDispatcher implements Closeable {
 		removeListener(onOperationScheduleReceiveFailListeners, listener);
 	}
 
-	public void dispatchUpdateOperation(final Phase phase,
-			final List<OperationSchedule> operationSchedules,
-			final List<PassengerRecord> passengerRecords) {
+	public void dispatchUpdateOperation(final Operation operation) {
 		StringBuilder message = new StringBuilder("dispatchUpdateOperation phase="
-				+ phase);
+				+ operation.getPhase());
 		for (OperationSchedule os : OperationSchedule.getCurrent(
-				operationSchedules).asSet()) {
+				operation.operationSchedules).asSet()) {
 			message.append(" currentOperationScheduleId=" + os.getId());
 		}
 
@@ -342,8 +337,7 @@ public class EventDispatcher implements Closeable {
 				new Dispatcher<OnUpdateOperationListener>() {
 					@Override
 					public void dispatch(OnUpdateOperationListener listener) {
-						listener.onUpdateOperation(phase, operationSchedules,
-								passengerRecords);
+						listener.onUpdateOperation(operation);
 					}
 				});
 	}

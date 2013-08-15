@@ -15,7 +15,7 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation.Phase;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
@@ -69,8 +69,10 @@ public class InVehicleDeviceFragmentTestCase extends
 				FrameLayout fl = new FrameLayout(a);
 				fl.setId(id);
 				a.setContentView(fl);
-				f = InVehicleDeviceFragment.newInstance(Phase.PLATFORM_GET_ON,
-						oss, prs);
+				Operation o = new Operation();
+				o.operationSchedules.addAll(oss);
+				o.passengerRecords.addAll(prs);
+				f = InVehicleDeviceFragment.newInstance(o);
 				FragmentManager fm = a.getSupportFragmentManager();
 				fm.beginTransaction().add(id, f).commit();
 			}

@@ -33,15 +33,13 @@ import android.widget.Toast;
 
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.compatibility.reflection.android.provider.SettingsReflection;
 import com.kogasoftware.odt.invehicledevice.compatibility.reflection.android.view.ViewReflection;
 import com.kogasoftware.odt.invehicledevice.compatibility.reflection.android.view.ViewReflection.OnSystemUiVisibilityChangeListenerReflection;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation.Phase;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.ui.BigToast;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.InVehicleDeviceFragment;
@@ -248,9 +246,7 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 		}
 	}
 
-	public void initializeUi(Phase phase,
-			List<OperationSchedule> operationSchedules,
-			List<PassengerRecord> passengerRecords) {
+	public void initializeUi(Operation operation) {
 		if (uiInitialized || destroyed || isFinishing() || !service.isPresent()) {
 			return;
 		}
@@ -260,8 +256,7 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 			FragmentTransaction fragmentTransaction = fragmentManager
 					.beginTransaction();
 			fragmentTransaction.add(R.id.modal_fragment_container,
-					InVehicleDeviceFragment.newInstance(phase, operationSchedules,
-							passengerRecords));
+					InVehicleDeviceFragment.newInstance(operation));
 			fragmentTransaction.commitAllowingStateLoss();
 		}
 
@@ -397,10 +392,8 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 	}
 
 	@Override
-	public void onUpdateOperation(Phase phase,
-			List<OperationSchedule> operationSchedules,
-			List<PassengerRecord> passengerRecords) {
-		initializeUi(phase, operationSchedules, passengerRecords);
+	public void onUpdateOperation(Operation operation) {
+		initializeUi(operation);
 	}
 
 	@Override

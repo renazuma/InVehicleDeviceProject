@@ -25,6 +25,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation.Phase;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
@@ -39,35 +40,31 @@ public class PlatformPhaseFragment extends ApplicationFragment<State> implements
 
 	@SuppressWarnings("serial")
 	protected static class State implements Serializable {
-		private final List<OperationSchedule> operationSchedules;
-		private final List<PassengerRecord> passengerRecords;
-		private final Phase phase;
+		private final Operation operation;
 
-		public State(Phase phase, List<OperationSchedule> operationSchedules,
-				List<PassengerRecord> passengerRecords) {
-			this.phase = phase;
-			this.operationSchedules = Lists.newArrayList(operationSchedules);
-			this.passengerRecords = Lists.newArrayList(passengerRecords);
+		public State(Operation operation) {
+			this.operation = operation;
 		}
 
 		public List<OperationSchedule> getOperationSchedules() {
-			return Lists.newArrayList(operationSchedules);
+			return Lists.newArrayList(operation.operationSchedules);
 		}
 
 		public List<PassengerRecord> getPassengerRecords() {
-			return Lists.newArrayList(passengerRecords);
+			return Lists.newArrayList(operation.passengerRecords);
 		}
 
 		public Phase getPhase() {
-			return phase;
+			return operation.getPhase();
+		}
+
+		public Operation getOperation() {
+			return operation;
 		}
 	}
 
-	public static Fragment newInstance(Phase phase,
-			List<OperationSchedule> operationSchedules,
-			List<PassengerRecord> passengerRecords) {
-		return newInstance(new PlatformPhaseFragment(), new State(phase,
-				operationSchedules, passengerRecords));
+	public static Fragment newInstance(Operation operation) {
+		return newInstance(new PlatformPhaseFragment(), new State(operation));
 	}
 
 	private static final Integer BLINK_MILLIS = 500;
@@ -220,10 +217,9 @@ public class PlatformPhaseFragment extends ApplicationFragment<State> implements
 	}
 
 	@Override
-	public void onUpdateOperation(Phase phase,
-			List<OperationSchedule> operationSchedules,
-			List<PassengerRecord> passengerRecords) {
-		setState(new State(phase, operationSchedules, passengerRecords));
+	public void onUpdateOperation(Operation operation) {
+		setState(new State(operation));
+		Phase phase = operation.getPhase();
 		if (phase == Phase.PLATFORM_GET_OFF || phase == Phase.PLATFORM_GET_ON) {
 			updateView(getView());
 		}

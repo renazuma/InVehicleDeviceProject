@@ -1,7 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.ui.fragment;
 
 import java.io.Serializable;
-import java.util.List;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -17,10 +16,9 @@ import android.widget.Button;
 
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher.OnUpdateOperationListener;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation.Phase;
 import com.kogasoftware.odt.invehicledevice.ui.activity.EmptyActivity;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
@@ -63,9 +61,7 @@ public class ApplicationFragment<S extends Serializable> extends Fragment {
 	 */
 	private final OnUpdateOperationListener removeOnUpdateOperationListener = new OnUpdateOperationListener() {
 		@Override
-		public void onUpdateOperation(Phase phase,
-				List<OperationSchedule> operationSchedules,
-				List<PassengerRecord> passengerRecords) {
+		public void onUpdateOperation(Operation operation) {
 			if (!isRemoving()) {
 				hide();
 			}

@@ -12,12 +12,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation.Phase;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.InVehicleDeviceFragment.State;
 
@@ -26,35 +26,31 @@ public class InVehicleDeviceFragment extends ApplicationFragment<State>
 
 	@SuppressWarnings("serial")
 	protected static class State implements Serializable {
-		private final Phase phase;
-		private final List<OperationSchedule> operationSchedules;
-		private final List<PassengerRecord> passengerRecords;
+		private final Operation operation;
 
-		public State(Phase phase, List<OperationSchedule> operationSchedules,
-				List<PassengerRecord> passengerRecords) {
-			this.phase = phase;
-			this.operationSchedules = Lists.newArrayList(operationSchedules);
-			this.passengerRecords = Lists.newArrayList(passengerRecords);
+		public State(Operation operation) {
+			this.operation = operation;
 		}
 
 		public Phase getPhase() {
-			return phase;
+			return operation.getPhase();
 		}
 
 		public List<OperationSchedule> getOperationSchedules() {
-			return operationSchedules;
+			return operation.operationSchedules;
 		}
 
 		public List<PassengerRecord> getPassengerRecords() {
-			return passengerRecords;
+			return operation.passengerRecords;
+		}
+
+		public Operation getOperation() {
+			return operation;
 		}
 	}
 
-	public static Fragment newInstance(Phase phase,
-			List<OperationSchedule> operationSchedules,
-			List<PassengerRecord> passengerRecords) {
-		return newInstance(new InVehicleDeviceFragment(), new State(phase,
-				operationSchedules, passengerRecords));
+	public static Fragment newInstance(Operation operation) {
+		return newInstance(new InVehicleDeviceFragment(), new State(operation));
 	}
 
 	@Override
@@ -69,9 +65,7 @@ public class InVehicleDeviceFragment extends ApplicationFragment<State>
 					InformationBarFragment.newInstance(getState().getPhase(),
 							currentOperationSchedule));
 			fragmentTransaction.add(R.id.control_fragment_container,
-					ControlBarFragment.newInstance(getState().getPhase(),
-							getState().getOperationSchedules(), getState()
-									.getPassengerRecords()));
+					ControlBarFragment.newInstance(getState().getOperation()));
 			fragmentTransaction.commitAllowingStateLoss();
 			getService().getEventDispatcher().addOnUpdateOperationListener(this);
 			updateView(true);
@@ -153,19 +147,15 @@ public class InVehicleDeviceFragment extends ApplicationFragment<State>
 				break;
 			}
 			fragmentTransaction.replace(R.id.phase_fragment_container,
-					PlatformPhaseFragment.newInstance(getState().getPhase(),
-							getState().getOperationSchedules(), getState()
-									.getPassengerRecords()), tag);
+					PlatformPhaseFragment.newInstance(getState().getOperation()), tag);
 			break;
 		}
 		fragmentTransaction.commitAllowingStateLoss();
 	}
 
 	@Override
-	public void onUpdateOperation(Phase phase,
-			List<OperationSchedule> operationSchedules,
-			List<PassengerRecord> passengerRecords) {
-		setState(new State(phase, operationSchedules, passengerRecords));
+	public void onUpdateOperation(Operation operation) {
+		setState(new State(operation));
 		if (isRemoving()) {
 			return;
 		}

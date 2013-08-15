@@ -325,9 +325,7 @@ public class OperationScheduleLogic {
 		if (phase != Phase.PLATFORM_GET_ON) {
 			localData.operation.completeGetOff = false;
 		}
-		service.getEventDispatcher().dispatchUpdateOperation(phase,
-				Lists.newArrayList(localData.operation.operationSchedules),
-				Lists.newArrayList(localData.operation.passengerRecords));
+		service.getEventDispatcher().dispatchUpdateOperation(localData.operation);
 	}
 
 	/**

@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import org.joda.time.DateTimeUtils;
@@ -28,10 +27,10 @@ import android.widget.TextView;
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyRunnable;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation.Phase;
 import com.kogasoftware.odt.invehicledevice.ui.BatteryAlerter;
 import com.kogasoftware.odt.invehicledevice.ui.ViewDisabler;
@@ -216,11 +215,9 @@ public class InformationBarFragment extends ApplicationFragment<State>
 	}
 
 	@Override
-	public void onUpdateOperation(Phase phase,
-			List<OperationSchedule> operationSchedules,
-			List<PassengerRecord> passengerRecords) {
-		setState(new State(phase,
-				OperationSchedule.getCurrent(operationSchedules)));
+	public void onUpdateOperation(Operation operation) {
+		setState(new State(operation.getPhase(),
+				OperationSchedule.getCurrent(operation.operationSchedules)));
 		updateView(getView());
 	}
 

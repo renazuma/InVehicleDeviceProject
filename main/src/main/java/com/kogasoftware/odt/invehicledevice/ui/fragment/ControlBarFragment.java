@@ -22,6 +22,7 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation.Phase;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundReader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundWriter;
@@ -36,35 +37,27 @@ public class ControlBarFragment extends ApplicationFragment<State> implements
 
 	@SuppressWarnings("serial")
 	protected static class State implements Serializable {
-		private final Phase phase;
-		private final List<OperationSchedule> operationSchedules;
-		private final List<PassengerRecord> passengerRecords;
+		private final Operation operation;
 
-		public State(Phase phase, List<OperationSchedule> operationSchedules,
-				List<PassengerRecord> passengerRecords) {
-			this.phase = phase;
-			this.operationSchedules = operationSchedules;
-			this.passengerRecords = passengerRecords;
+		public State(Operation operation) {
+			this.operation = operation;
 		}
-
+		
 		public Phase getPhase() {
-			return phase;
+			return operation.getPhase();
 		}
 
 		public List<PassengerRecord> getPassengerRecords() {
-			return passengerRecords;
+			return operation.passengerRecords;
 		}
 
 		public List<OperationSchedule> getOperationSchedules() {
-			return operationSchedules;
+			return operation.operationSchedules;
 		}
 	}
 
-	public static ControlBarFragment newInstance(Phase phase,
-			List<OperationSchedule> operationSchedules,
-			List<PassengerRecord> passengerRecords) {
-		return newInstance(new ControlBarFragment(), new State(phase,
-				operationSchedules, passengerRecords));
+	public static ControlBarFragment newInstance(Operation operation) {
+		return newInstance(new ControlBarFragment(), new State(operation));
 	}
 
 	@Override
@@ -306,11 +299,9 @@ public class ControlBarFragment extends ApplicationFragment<State> implements
 	}
 
 	@Override
-	public void onUpdateOperation(Phase phase,
-			List<OperationSchedule> operationSchedules,
-			List<PassengerRecord> passengerRecords) {
-		setState(new State(phase, operationSchedules, passengerRecords));
-		updateView(phase, !OperationSchedule.getRelative(operationSchedules, 1)
+	public void onUpdateOperation(Operation operation) {
+		setState(new State(operation));
+		updateView(operation.getPhase(), !OperationSchedule.getRelative(operation.operationSchedules, 1)
 				.isPresent());
 	}
 }
