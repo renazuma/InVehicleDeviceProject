@@ -21,12 +21,12 @@ import com.kogasoftware.odt.invehicledevice.empty.EmptyFile;
  * 現在の状態を保存しておくクラス
  */
 public class LocalData implements Serializable {
-	public static enum Phase {
-		DRIVE, FINISH, PLATFORM_GET_ON, PLATFORM_GET_OFF,
-	}
-
 	public static class Operation implements Serializable {
 		private static final long serialVersionUID = ~LocalData.serialVersionUID;
+		public static enum Phase {
+			DRIVE, FINISH, PLATFORM_GET_ON, PLATFORM_GET_OFF,
+		}
+
 		public Boolean completeGetOff = false;
 		public Integer operationScheduleReceiveSequence = 0;
 		public final List<OperationSchedule> operationSchedules = Lists
