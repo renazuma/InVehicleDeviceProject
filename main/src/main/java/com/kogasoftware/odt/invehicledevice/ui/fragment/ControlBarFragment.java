@@ -97,10 +97,7 @@ public class ControlBarFragment extends ApplicationFragment<State> implements
 					@Override
 					public Pair<Phase, Boolean> readInBackground(
 							LocalData localData) {
-						Phase phase = OperationScheduleLogic.getPhase(
-								localData.operation.operationSchedules,
-								localData.operation.passengerRecords,
-								localData.operation.completeGetOff);
+						Phase phase = localData.operation.getPhase();
 						Boolean isLast = !OperationSchedule.getRelative(
 								localData.operation.operationSchedules, 1).isPresent();
 						return Pair.of(phase, isLast);
@@ -204,29 +201,31 @@ public class ControlBarFragment extends ApplicationFragment<State> implements
 		final OperationScheduleLogic operationScheduleLogic = new OperationScheduleLogic(
 				getService());
 
-		for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
+		for (FragmentManager fragmentManager : getOptionalFragmentManager()
+				.asSet()) {
 			if (phase == Phase.PLATFORM_GET_OFF
 					&& operationSchedule.getNoGetOffErrorPassengerRecords(
 							passengerRecords).isEmpty()) {
 				if (operationSchedule.getGetOnScheduledPassengerRecords(
 						passengerRecords).isEmpty()) {
-					setCustomAnimation(fragmentManager.beginTransaction())
-							.add(R.id.modal_fragment_container,
-									DepartureCheckFragment.newInstance(phase,
-											operationSchedules))
+					setCustomAnimation(fragmentManager.beginTransaction()).add(
+							R.id.modal_fragment_container,
+							DepartureCheckFragment.newInstance(phase,
+									operationSchedules))
 							.commitAllowingStateLoss();
 				} else {
-					getService().getLocalStorage().write(new BackgroundWriter() {
-						@Override
-						public void writeInBackground(LocalData ld) {
-							ld.operation.completeGetOff = true;
-						}
+					getService().getLocalStorage().write(
+							new BackgroundWriter() {
+								@Override
+								public void writeInBackground(LocalData ld) {
+									ld.operation.completeGetOff = true;
+								}
 
-						@Override
-						public void onWrite() {
-							operationScheduleLogic.requestUpdatePhase();
-						}
-					});
+								@Override
+								public void onWrite() {
+									operationScheduleLogic.requestUpdatePhase();
+								}
+							});
 				}
 				return;
 			} else if (phase == Phase.PLATFORM_GET_ON

@@ -40,38 +40,6 @@ public class OperationScheduleLogic {
 	}
 
 	/**
-	 * 現在の状況を得る
-	 */
-	public static Phase getPhase(List<OperationSchedule> operationSchedules,
-			List<PassengerRecord> passengerRecords, Boolean completeGetOff) {
-		for (OperationSchedule operationSchedule : OperationSchedule
-				.getCurrent(operationSchedules).asSet()) {
-			if (!operationSchedule.isArrived()) {
-				return Phase.DRIVE;
-			}
-			if (operationSchedule.isDeparted()) {
-				continue;
-			}
-			for (PassengerRecord passengerRecord : operationSchedule
-					.getNoGetOffErrorPassengerRecords(passengerRecords)) {
-				if (!passengerRecord.getIgnoreGetOffMiss()) {
-					return Phase.PLATFORM_GET_OFF;
-				}
-			}
-			if (operationSchedule.getGetOffScheduledPassengerRecords(
-					passengerRecords).isEmpty()) {
-				return Phase.PLATFORM_GET_ON;
-			}
-			if (completeGetOff) {
-				return Phase.PLATFORM_GET_ON;
-			} else {
-				return Phase.PLATFORM_GET_OFF;
-			}
-		}
-		return Phase.FINISH;
-	}
-
-	/**
 	 * remoteOperationSchedulesに、
 	 * localOperationSchedulesから対応するOperationRecordをマージする。 clone
 	 * はコストがかかるため、新しいリストを作らずremoteOperationSchedulesを直接書き換える実装にした。
@@ -300,8 +268,7 @@ public class OperationScheduleLogic {
 	 * 現在の状態を得る
 	 */
 	public Phase getPhaseWithReadLock(LocalData localData) {
-		return getPhase(localData.operation.operationSchedules,
-				localData.operation.passengerRecords, localData.operation.completeGetOff);
+		return localData.operation.getPhase();
 	}
 
 	public Phase getPhaseWithReadLock() {
@@ -354,8 +321,7 @@ public class OperationScheduleLogic {
 	}
 
 	public void updatePhaseInBackground(LocalData localData) {
-		Phase phase = getPhase(localData.operation.operationSchedules,
-				localData.operation.passengerRecords, localData.operation.completeGetOff);
+		Phase phase = localData.operation.getPhase();
 		if (phase != Phase.PLATFORM_GET_ON) {
 			localData.operation.completeGetOff = false;
 		}
@@ -387,12 +353,7 @@ public class OperationScheduleLogic {
 								.departureOperationSchedule(
 										operationSchedule,
 										new EmptyApiClientCallback<OperationSchedule>());
-						Log.i(TAG,
-								"depart -> "
-										+ getPhase(
-												localData.operation.operationSchedules,
-												localData.operation.passengerRecords,
-												localData.operation.completeGetOff));
+						Log.i(TAG, "depart -> " + localData.operation.getPhase());
 						return;
 					}
 					Log.e(TAG, "OperationSchedule has no OperationRecord "

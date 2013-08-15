@@ -33,6 +33,36 @@ public class LocalData implements Serializable {
 				.newLinkedList();
 		public final List<PassengerRecord> passengerRecords = Lists
 				.newLinkedList();
+		/**
+		 * 現在の状況を得る
+		 */
+		public Phase getPhase() {
+			for (OperationSchedule operationSchedule : OperationSchedule
+					.getCurrent(operationSchedules).asSet()) {
+				if (!operationSchedule.isArrived()) {
+					return Phase.DRIVE;
+				}
+				if (operationSchedule.isDeparted()) {
+					continue;
+				}
+				for (PassengerRecord passengerRecord : operationSchedule
+						.getNoGetOffErrorPassengerRecords(passengerRecords)) {
+					if (!passengerRecord.getIgnoreGetOffMiss()) {
+						return Phase.PLATFORM_GET_OFF;
+					}
+				}
+				if (operationSchedule.getGetOffScheduledPassengerRecords(
+						passengerRecords).isEmpty()) {
+					return Phase.PLATFORM_GET_ON;
+				}
+				if (completeGetOff) {
+					return Phase.PLATFORM_GET_ON;
+				} else {
+					return Phase.PLATFORM_GET_OFF;
+				}
+			}
+			return Phase.FINISH;
+		}
 	}
 
 	private static final long serialVersionUID = 1797801788127L;
