@@ -19,7 +19,7 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher.OnUpdatePhaseListener;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher.OnUpdateOperationListener;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation.Phase;
 import com.kogasoftware.odt.invehicledevice.ui.activity.EmptyActivity;
@@ -54,16 +54,16 @@ public class ApplicationFragment<S extends Serializable> extends Fragment {
 	}
 
 	/**
-	 * OnUpdatePhase時にFragmentを閉じるかどうか
+	 * OnUpdateOperation時にFragmentを閉じるかどうか
 	 */
-	private Boolean removeOnUpdatePhase = false;
+	private Boolean removeOnUpdateOperation = false;
 
 	/**
-	 * OnUpdatePhase時にFragmentを閉じる
+	 * OnUpdateOperation時にFragmentを閉じる
 	 */
-	private final OnUpdatePhaseListener removeOnUpdatePhaseListener = new OnUpdatePhaseListener() {
+	private final OnUpdateOperationListener removeOnUpdateOperationListener = new OnUpdateOperationListener() {
 		@Override
-		public void onUpdatePhase(Phase phase,
+		public void onUpdateOperation(Phase phase,
 				List<OperationSchedule> operationSchedules,
 				List<PassengerRecord> passengerRecords) {
 			if (!isRemoving()) {
@@ -72,8 +72,8 @@ public class ApplicationFragment<S extends Serializable> extends Fragment {
 		}
 	};
 
-	protected void setRemoveOnUpdatePhase(Boolean removeOnUpdatePhase) {
-		this.removeOnUpdatePhase = removeOnUpdatePhase;
+	protected void setRemoveOnUpdateOperation(Boolean removeOnUpdateOperation) {
+		this.removeOnUpdateOperation = removeOnUpdateOperation;
 	}
 
 	@Override
@@ -100,9 +100,9 @@ public class ApplicationFragment<S extends Serializable> extends Fragment {
 		S castState = (S) arguments.getSerializable(key);
 		setState(castState);
 
-		if (removeOnUpdatePhase) {
-			getService().getEventDispatcher().addOnUpdatePhaseListener(
-					removeOnUpdatePhaseListener);
+		if (removeOnUpdateOperation) {
+			getService().getEventDispatcher().addOnUpdateOperationListener(
+					removeOnUpdateOperationListener);
 		}
 	}
 
@@ -205,8 +205,8 @@ public class ApplicationFragment<S extends Serializable> extends Fragment {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		getService().getEventDispatcher().removeOnUpdatePhaseListener(
-				removeOnUpdatePhaseListener);
+		getService().getEventDispatcher().removeOnUpdateOperationListener(
+				removeOnUpdateOperationListener);
 	}
 
 	public Optional<FragmentManager> getOptionalFragmentManager() {

@@ -32,7 +32,7 @@ public class ArrivalCheckFragment extends ApplicationFragment<State> {
 	}
 
 	public ArrivalCheckFragment() {
-		setRemoveOnUpdatePhase(true);
+		setRemoveOnUpdateOperation(true);
 	}
 
 	public static Fragment newInstance(OperationSchedule operationSchedule) {
@@ -59,7 +59,7 @@ public class ArrivalCheckFragment extends ApplicationFragment<State> {
 							@Override
 							public void run() {
 								hide();
-								operationScheduleLogic.requestUpdatePhase();
+								operationScheduleLogic.requestUpdateOperation();
 							}
 						});
 			}

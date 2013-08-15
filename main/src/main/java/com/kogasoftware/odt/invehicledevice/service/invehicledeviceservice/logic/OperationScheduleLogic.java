@@ -320,12 +320,12 @@ public class OperationScheduleLogic {
 		});
 	}
 
-	public void updatePhaseInBackground(LocalData localData) {
+	public void updateOperationInBackground(LocalData localData) {
 		Phase phase = localData.operation.getPhase();
 		if (phase != Phase.PLATFORM_GET_ON) {
 			localData.operation.completeGetOff = false;
 		}
-		service.getEventDispatcher().dispatchUpdatePhase(phase,
+		service.getEventDispatcher().dispatchUpdateOperation(phase,
 				Lists.newArrayList(localData.operation.operationSchedules),
 				Lists.newArrayList(localData.operation.passengerRecords));
 	}
@@ -369,8 +369,8 @@ public class OperationScheduleLogic {
 		});
 	}
 
-	public void requestUpdatePhase() {
-		Runnable waitForOperationInitializedAndUpdatePhase = new Runnable() {
+	public void requestUpdateOperation() {
+		Runnable waitForOperationInitializedAndUpdateOperation = new Runnable() {
 			@Override
 			public void run() {
 				try {
@@ -384,14 +384,14 @@ public class OperationScheduleLogic {
 				service.getLocalStorage().withWriteLock(new Writer() {
 					@Override
 					public void write(LocalData localData) {
-						updatePhaseInBackground(localData);
+						updateOperationInBackground(localData);
 					}
 				});
 			}
 		};
 		try {
 			service.getScheduledExecutorService().submit(
-					waitForOperationInitializedAndUpdatePhase);
+					waitForOperationInitializedAndUpdateOperation);
 		} catch (RejectedExecutionException e) {
 			Log.w(TAG, e);
 		}

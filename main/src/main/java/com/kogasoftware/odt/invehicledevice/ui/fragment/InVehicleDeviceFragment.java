@@ -22,7 +22,7 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Local
 import com.kogasoftware.odt.invehicledevice.ui.fragment.InVehicleDeviceFragment.State;
 
 public class InVehicleDeviceFragment extends ApplicationFragment<State>
-		implements EventDispatcher.OnUpdatePhaseListener {
+		implements EventDispatcher.OnUpdateOperationListener {
 
 	@SuppressWarnings("serial")
 	protected static class State implements Serializable {
@@ -73,7 +73,7 @@ public class InVehicleDeviceFragment extends ApplicationFragment<State>
 							getState().getOperationSchedules(), getState()
 									.getPassengerRecords()));
 			fragmentTransaction.commitAllowingStateLoss();
-			getService().getEventDispatcher().addOnUpdatePhaseListener(this);
+			getService().getEventDispatcher().addOnUpdateOperationListener(this);
 			updateView(true);
 		}
 	}
@@ -162,7 +162,7 @@ public class InVehicleDeviceFragment extends ApplicationFragment<State>
 	}
 
 	@Override
-	public void onUpdatePhase(Phase phase,
+	public void onUpdateOperation(Phase phase,
 			List<OperationSchedule> operationSchedules,
 			List<PassengerRecord> passengerRecords) {
 		setState(new State(phase, operationSchedules, passengerRecords));
@@ -175,6 +175,6 @@ public class InVehicleDeviceFragment extends ApplicationFragment<State>
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
-		getService().getEventDispatcher().removeOnUpdatePhaseListener(this);
+		getService().getEventDispatcher().removeOnUpdateOperationListener(this);
 	}
 }

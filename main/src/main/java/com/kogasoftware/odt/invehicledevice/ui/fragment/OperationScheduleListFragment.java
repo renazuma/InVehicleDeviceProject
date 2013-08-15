@@ -30,7 +30,7 @@ public class OperationScheduleListFragment extends ApplicationFragment<State> {
 	}
 
 	public OperationScheduleListFragment() {
-		setRemoveOnUpdatePhase(true);
+		setRemoveOnUpdateOperation(true);
 	}
 
 	public static OperationScheduleListFragment newInstance(

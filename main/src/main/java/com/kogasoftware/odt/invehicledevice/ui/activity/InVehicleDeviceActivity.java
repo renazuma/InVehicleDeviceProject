@@ -51,7 +51,7 @@ import com.kogasoftware.odt.invehicledevice.ui.fragment.VehicleNotificationAlert
 public class InVehicleDeviceActivity extends FragmentActivity implements
 		EventDispatcher.OnExitListener,
 		EventDispatcher.OnOperationScheduleReceiveFailListener,
-		EventDispatcher.OnUpdatePhaseListener,
+		EventDispatcher.OnUpdateOperationListener,
 		EventDispatcher.OnAlertVehicleNotificationReceiveListener,
 		EventDispatcher.OnMergeOperationSchedulesListener {
 	private static final String TAG = InVehicleDeviceActivity.class
@@ -99,7 +99,7 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 			InVehicleDeviceService service = ((InVehicleDeviceService.LocalBinder) binder)
 					.getService();
 			InVehicleDeviceActivity.this.service = Optional.of(service);
-			service.getEventDispatcher().addOnUpdatePhaseListener(
+			service.getEventDispatcher().addOnUpdateOperationListener(
 					InVehicleDeviceActivity.this);
 			service.getEventDispatcher()
 					.addOnOperationScheduleReceiveFailedListener(
@@ -111,7 +111,7 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 							InVehicleDeviceActivity.this);
 			service.getEventDispatcher().addOnMergeOperationSchedulesListener(
 					InVehicleDeviceActivity.this);
-			new OperationScheduleLogic(service).requestUpdatePhase();
+			new OperationScheduleLogic(service).requestUpdateOperation();
 		}
 
 		@Override
@@ -397,7 +397,7 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 	}
 
 	@Override
-	public void onUpdatePhase(Phase phase,
+	public void onUpdateOperation(Phase phase,
 			List<OperationSchedule> operationSchedules,
 			List<PassengerRecord> passengerRecords) {
 		initializeUi(phase, operationSchedules, passengerRecords);

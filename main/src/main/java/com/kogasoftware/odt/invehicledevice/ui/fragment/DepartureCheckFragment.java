@@ -42,7 +42,7 @@ public class DepartureCheckFragment extends ApplicationFragment<State> {
 	}
 
 	public DepartureCheckFragment() {
-		setRemoveOnUpdatePhase(true);
+		setRemoveOnUpdateOperation(true);
 	}
 
 	public static DepartureCheckFragment newInstance(Phase phase,
@@ -84,7 +84,7 @@ public class DepartureCheckFragment extends ApplicationFragment<State> {
 							new Runnable() {
 								@Override
 								public void run() {
-									operationScheduleLogic.requestUpdatePhase();
+									operationScheduleLogic.requestUpdateOperation();
 									hide();
 								}
 							});
@@ -94,7 +94,7 @@ public class DepartureCheckFragment extends ApplicationFragment<State> {
 		}
 		// error
 		Log.e(TAG, "no current OperationSchedule");
-		new OperationScheduleLogic(getService()).requestUpdatePhase();
+		new OperationScheduleLogic(getService()).requestUpdateOperation();
 		hide();
 		return view;
 	}

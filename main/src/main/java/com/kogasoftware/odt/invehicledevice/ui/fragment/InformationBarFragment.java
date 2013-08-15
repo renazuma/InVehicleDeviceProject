@@ -38,7 +38,7 @@ import com.kogasoftware.odt.invehicledevice.ui.ViewDisabler;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.InformationBarFragment.State;
 
 public class InformationBarFragment extends ApplicationFragment<State>
-		implements EventDispatcher.OnUpdatePhaseListener,
+		implements EventDispatcher.OnUpdateOperationListener,
 		EventDispatcher.OnChangeSignalStrengthListener {
 
 	@SuppressWarnings("serial")
@@ -113,7 +113,7 @@ public class InformationBarFragment extends ApplicationFragment<State>
 				.findViewById(R.id.present_time_text_view);
 		networkStrengthImageView = (ImageView) view
 				.findViewById(R.id.network_strength_image_view);
-		getService().getEventDispatcher().addOnUpdatePhaseListener(this);
+		getService().getEventDispatcher().addOnUpdateOperationListener(this);
 		updateView(view);
 		blinkBatteryAlert = new EmptyRunnable();
 		for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
@@ -148,7 +148,7 @@ public class InformationBarFragment extends ApplicationFragment<State>
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
-		getService().getEventDispatcher().removeOnUpdatePhaseListener(this);
+		getService().getEventDispatcher().removeOnUpdateOperationListener(this);
 	}
 
 	public void updateView(View view) {
@@ -216,7 +216,7 @@ public class InformationBarFragment extends ApplicationFragment<State>
 	}
 
 	@Override
-	public void onUpdatePhase(Phase phase,
+	public void onUpdateOperation(Phase phase,
 			List<OperationSchedule> operationSchedules,
 			List<PassengerRecord> passengerRecords) {
 		setState(new State(phase,

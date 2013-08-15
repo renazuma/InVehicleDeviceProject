@@ -64,8 +64,8 @@ public class EventDispatcher implements Closeable {
 		void onOperationScheduleReceiveFail();
 	}
 
-	public interface OnUpdatePhaseListener {
-		void onUpdatePhase(Phase phase,
+	public interface OnUpdateOperationListener {
+		void onUpdateOperation(Phase phase,
 				List<OperationSchedule> operationSchedules,
 				List<PassengerRecord> passengerRecords);
 	}
@@ -126,7 +126,7 @@ public class EventDispatcher implements Closeable {
 	protected final Multimap<Handler, OnOperationScheduleReceiveFailListener> onOperationScheduleReceiveFailListeners = newListenerMultimap();
 	protected final Multimap<Handler, OnActivityPauseListener> onActivityPauseListeners = newListenerMultimap();
 	protected final Multimap<Handler, OnActivityResumeListener> onActivityResumeListeners = newListenerMultimap();
-	protected final Multimap<Handler, OnUpdatePhaseListener> onUpdatePhaseListeners = newListenerMultimap();
+	protected final Multimap<Handler, OnUpdateOperationListener> onUpdateOperationListeners = newListenerMultimap();
 
 	private static interface Dispatcher<T> {
 		void dispatch(T listener);
@@ -188,8 +188,8 @@ public class EventDispatcher implements Closeable {
 		putListener(onAlertUpdatedOperationScheduleListeners, listener);
 	}
 
-	public void addOnUpdatePhaseListener(OnUpdatePhaseListener listener) {
-		putListener(onUpdatePhaseListeners, listener);
+	public void addOnUpdateOperationListener(OnUpdateOperationListener listener) {
+		putListener(onUpdateOperationListeners, listener);
 	}
 
 	public void addOnAlertVehicleNotificationReceiveListener(
@@ -266,8 +266,8 @@ public class EventDispatcher implements Closeable {
 		removeListener(onAlertUpdatedOperationScheduleListeners, listener);
 	}
 
-	public void removeOnUpdatePhaseListener(OnUpdatePhaseListener listener) {
-		removeListener(onUpdatePhaseListeners, listener);
+	public void removeOnUpdateOperationListener(OnUpdateOperationListener listener) {
+		removeListener(onUpdateOperationListeners, listener);
 	}
 
 	public void removeOnAlertVehicleNotificationReceiveListener(
@@ -327,10 +327,10 @@ public class EventDispatcher implements Closeable {
 		removeListener(onOperationScheduleReceiveFailListeners, listener);
 	}
 
-	public void dispatchUpdatePhase(final Phase phase,
+	public void dispatchUpdateOperation(final Phase phase,
 			final List<OperationSchedule> operationSchedules,
 			final List<PassengerRecord> passengerRecords) {
-		StringBuilder message = new StringBuilder("dispatchUpdatePhase phase="
+		StringBuilder message = new StringBuilder("dispatchUpdateOperation phase="
 				+ phase);
 		for (OperationSchedule os : OperationSchedule.getCurrent(
 				operationSchedules).asSet()) {
@@ -338,11 +338,11 @@ public class EventDispatcher implements Closeable {
 		}
 
 		Log.i(TAG, message.toString());
-		dispatchListener(onUpdatePhaseListeners,
-				new Dispatcher<OnUpdatePhaseListener>() {
+		dispatchListener(onUpdateOperationListeners,
+				new Dispatcher<OnUpdateOperationListener>() {
 					@Override
-					public void dispatch(OnUpdatePhaseListener listener) {
-						listener.onUpdatePhase(phase, operationSchedules,
+					public void dispatch(OnUpdateOperationListener listener) {
+						listener.onUpdateOperation(phase, operationSchedules,
 								passengerRecords);
 					}
 				});
@@ -506,6 +506,6 @@ public class EventDispatcher implements Closeable {
 		clearListener(onOperationScheduleReceiveFailListeners);
 		clearListener(onActivityPauseListeners);
 		clearListener(onActivityResumeListeners);
-		clearListener(onUpdatePhaseListeners);
+		clearListener(onUpdateOperationListeners);
 	}
 }

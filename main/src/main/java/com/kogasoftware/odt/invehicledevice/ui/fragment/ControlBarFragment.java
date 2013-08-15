@@ -30,7 +30,7 @@ import com.kogasoftware.odt.invehicledevice.ui.ViewDisabler;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.ControlBarFragment.State;
 
 public class ControlBarFragment extends ApplicationFragment<State> implements
-		EventDispatcher.OnUpdatePhaseListener {
+		EventDispatcher.OnUpdateOperationListener {
 
 	private static final String TAG = ControlBarFragment.class.getSimpleName();
 
@@ -91,7 +91,7 @@ public class ControlBarFragment extends ApplicationFragment<State> implements
 			}
 		});
 
-		getService().getEventDispatcher().addOnUpdatePhaseListener(this);
+		getService().getEventDispatcher().addOnUpdateOperationListener(this);
 		getService().getLocalStorage().read(
 				new BackgroundReader<Pair<Phase, Boolean>>() {
 					@Override
@@ -114,7 +114,7 @@ public class ControlBarFragment extends ApplicationFragment<State> implements
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
-		getService().getEventDispatcher().removeOnUpdatePhaseListener(this);
+		getService().getEventDispatcher().removeOnUpdateOperationListener(this);
 	}
 
 	public void showNavigationFragment() {
@@ -223,7 +223,7 @@ public class ControlBarFragment extends ApplicationFragment<State> implements
 
 								@Override
 								public void onWrite() {
-									operationScheduleLogic.requestUpdatePhase();
+									operationScheduleLogic.requestUpdateOperation();
 								}
 							});
 				}
@@ -306,7 +306,7 @@ public class ControlBarFragment extends ApplicationFragment<State> implements
 	}
 
 	@Override
-	public void onUpdatePhase(Phase phase,
+	public void onUpdateOperation(Phase phase,
 			List<OperationSchedule> operationSchedules,
 			List<PassengerRecord> passengerRecords) {
 		setState(new State(phase, operationSchedules, passengerRecords));

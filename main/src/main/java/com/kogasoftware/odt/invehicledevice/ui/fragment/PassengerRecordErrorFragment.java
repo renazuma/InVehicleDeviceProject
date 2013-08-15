@@ -62,7 +62,7 @@ public class PassengerRecordErrorFragment extends ApplicationFragment<State>
 	private Button completeWithErrorButton;
 
 	public PassengerRecordErrorFragment() {
-		setRemoveOnUpdatePhase(true);
+		setRemoveOnUpdateOperation(true);
 	}
 
 	public static PassengerRecordErrorFragment newInstance(Phase phase,
@@ -137,7 +137,7 @@ public class PassengerRecordErrorFragment extends ApplicationFragment<State>
 
 		// error
 		Log.e(TAG, "no current OperationSchedule");
-		new OperationScheduleLogic(getService()).requestUpdatePhase();
+		new OperationScheduleLogic(getService()).requestUpdateOperation();
 		hide();
 		return view;
 	}
@@ -172,7 +172,7 @@ public class PassengerRecordErrorFragment extends ApplicationFragment<State>
 
 					@Override
 					public void run() {
-						operationScheduleLogic.requestUpdatePhase();
+						operationScheduleLogic.requestUpdateOperation();
 					}
 				}, 300);
 			}

@@ -55,7 +55,7 @@ import com.kogasoftware.odt.invehicledevice.ui.frametask.navigation.tilepipeline
 public class NavigationFragment extends ApplicationFragment<State> implements
 		EventDispatcher.OnChangeLocationListener,
 		EventDispatcher.OnChangeOrientationListener,
-		EventDispatcher.OnUpdatePhaseListener,
+		EventDispatcher.OnUpdateOperationListener,
 		NavigationRenderer.OnChangeMapZoomLevelListener {
 	private static final String TAG = NavigationFragment.class.getSimpleName();
 	private static final Integer GPS_ALERT_FLASH_MILLIS = 1000;
@@ -237,7 +237,7 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 
 		getService().getEventDispatcher().addOnChangeLocationListener(this);
 		getService().getEventDispatcher().addOnChangeOrientationListener(this);
-		getService().getEventDispatcher().addOnUpdatePhaseListener(this);
+		getService().getEventDispatcher().addOnUpdateOperationListener(this);
 
 		updateZoomButtons();
 		updatePlatform();
@@ -257,7 +257,7 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 		getService().getEventDispatcher().removeOnChangeLocationListener(this);
 		getService().getEventDispatcher().removeOnChangeOrientationListener(
 				this);
-		getService().getEventDispatcher().removeOnUpdatePhaseListener(this);
+		getService().getEventDispatcher().removeOnUpdateOperationListener(this);
 
 		tilePipeline.onExit();
 	}
@@ -596,7 +596,7 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 	}
 
 	@Override
-	public void onUpdatePhase(Phase phase,
+	public void onUpdateOperation(Phase phase,
 			List<OperationSchedule> operationSchedules,
 			List<PassengerRecord> passengerRecords) {
 		setState(new State(phase, operationSchedules, getState()

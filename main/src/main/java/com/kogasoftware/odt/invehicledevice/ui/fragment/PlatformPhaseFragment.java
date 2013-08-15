@@ -35,7 +35,7 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 
 public class PlatformPhaseFragment extends ApplicationFragment<State> implements
-		EventDispatcher.OnUpdatePhaseListener {
+		EventDispatcher.OnUpdateOperationListener {
 
 	@SuppressWarnings("serial")
 	protected static class State implements Serializable {
@@ -138,7 +138,7 @@ public class PlatformPhaseFragment extends ApplicationFragment<State> implements
 				R.id.minutes_remaining_text_view);
 
 		updateView(getView());
-		getService().getEventDispatcher().addOnUpdatePhaseListener(this);
+		getService().getEventDispatcher().addOnUpdateOperationListener(this);
 	}
 
 	@Override
@@ -157,7 +157,7 @@ public class PlatformPhaseFragment extends ApplicationFragment<State> implements
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
-		getService().getEventDispatcher().removeOnUpdatePhaseListener(this);
+		getService().getEventDispatcher().removeOnUpdateOperationListener(this);
 	}
 
 	private void updateView(View view) {
@@ -215,12 +215,12 @@ public class PlatformPhaseFragment extends ApplicationFragment<State> implements
 
 		// error
 		Log.e(TAG, "no current OperationSchedule");
-		new OperationScheduleLogic(getService()).requestUpdatePhase();
+		new OperationScheduleLogic(getService()).requestUpdateOperation();
 		hide();
 	}
 
 	@Override
-	public void onUpdatePhase(Phase phase,
+	public void onUpdateOperation(Phase phase,
 			List<OperationSchedule> operationSchedules,
 			List<PassengerRecord> passengerRecords) {
 		setState(new State(phase, operationSchedules, passengerRecords));

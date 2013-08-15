@@ -131,7 +131,7 @@ public class OperationScheduleChangedFragment extends
 			@Override
 			public void onClick(View v) {
 				showOperationScheduleFragment();
-				operationScheduleLogic.requestUpdatePhase();
+				operationScheduleLogic.requestUpdateOperation();
 				reply();
 			}
 		});
@@ -141,7 +141,7 @@ public class OperationScheduleChangedFragment extends
 			@Override
 			public void onClick(View v) {
 				hide();
-				operationScheduleLogic.requestUpdatePhase();
+				operationScheduleLogic.requestUpdateOperation();
 				reply();
 			}
 		});
