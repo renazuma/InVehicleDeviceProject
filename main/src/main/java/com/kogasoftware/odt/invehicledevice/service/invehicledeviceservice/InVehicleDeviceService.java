@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.acra.ACRA;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import android.app.Activity;
@@ -47,6 +48,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.io.Closeables;
 import com.google.common.util.concurrent.Uninterruptibles;
+import com.kogasoftware.odt.invehicledevice.BuildConfig;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClientFactory;
@@ -116,9 +118,11 @@ public class InVehicleDeviceService extends Service {
 			}
 			Looper looper = Looper.myLooper();
 			if (looper == null) {
-				// Log.w(TAG, "getThreadHandler() invoked no looper thread id="
-				// + currentThread.getId() + " " + currentThread + " "
-				// + ExceptionUtils.getStackTrace(new Throwable()));
+				if (BuildConfig.DEBUG) { 
+					Log.w(TAG, "getThreadHandler() invoked no looper thread id="
+							+ currentThread.getId() + " " + currentThread + " "
+							+ ExceptionUtils.getStackTrace(new Throwable()));
+				}
 				return DEFAULT_HANDLER;
 			} else {
 				Handler handler = new Handler(looper);
