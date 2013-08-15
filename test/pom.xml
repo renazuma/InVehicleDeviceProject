@@ -27,14 +27,8 @@
 			<type>apk</type>
 		</dependency>
 		<dependency>
-			<groupId>com.google.android</groupId>
+			<groupId>android</groupId>
 			<artifactId>android</artifactId>
-            <scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.google.android</groupId>
-			<artifactId>android-test</artifactId>
-            <scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.jayway.android.robotium</groupId>
