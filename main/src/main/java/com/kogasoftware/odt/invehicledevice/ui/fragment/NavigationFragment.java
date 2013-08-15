@@ -52,10 +52,9 @@ import com.kogasoftware.odt.invehicledevice.ui.fragment.NavigationFragment.State
 import com.kogasoftware.odt.invehicledevice.ui.fragment.navigation.NavigationRenderer;
 import com.kogasoftware.odt.invehicledevice.ui.frametask.navigation.tilepipeline.TilePipeline;
 
-public class NavigationFragment extends ApplicationFragment<State> implements
+public class NavigationFragment extends AutoUpdateOperationFragment<State> implements
 		EventDispatcher.OnChangeLocationListener,
 		EventDispatcher.OnChangeOrientationListener,
-		EventDispatcher.OnUpdateOperationListener,
 		NavigationRenderer.OnChangeMapZoomLevelListener {
 	private static final String TAG = NavigationFragment.class.getSimpleName();
 	private static final Integer GPS_ALERT_FLASH_MILLIS = 1000;
@@ -237,7 +236,6 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 
 		getService().getEventDispatcher().addOnChangeLocationListener(this);
 		getService().getEventDispatcher().addOnChangeOrientationListener(this);
-		getService().getEventDispatcher().addOnUpdateOperationListener(this);
 
 		updateZoomButtons();
 		updatePlatform();
@@ -257,7 +255,6 @@ public class NavigationFragment extends ApplicationFragment<State> implements
 		getService().getEventDispatcher().removeOnChangeLocationListener(this);
 		getService().getEventDispatcher().removeOnChangeOrientationListener(
 				this);
-		getService().getEventDispatcher().removeOnUpdateOperationListener(this);
 
 		tilePipeline.onExit();
 	}

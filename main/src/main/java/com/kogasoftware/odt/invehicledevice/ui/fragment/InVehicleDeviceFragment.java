@@ -16,13 +16,11 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation.Phase;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.InVehicleDeviceFragment.State;
 
-public class InVehicleDeviceFragment extends ApplicationFragment<State>
-		implements EventDispatcher.OnUpdateOperationListener {
+public class InVehicleDeviceFragment extends AutoUpdateOperationFragment<State> {
 
 	@SuppressWarnings("serial")
 	protected static class State implements Serializable {
@@ -67,7 +65,6 @@ public class InVehicleDeviceFragment extends ApplicationFragment<State>
 			fragmentTransaction.add(R.id.control_fragment_container,
 					ControlBarFragment.newInstance(getState().getOperation()));
 			fragmentTransaction.commitAllowingStateLoss();
-			getService().getEventDispatcher().addOnUpdateOperationListener(this);
 			updateView(true);
 		}
 	}
@@ -160,11 +157,5 @@ public class InVehicleDeviceFragment extends ApplicationFragment<State>
 			return;
 		}
 		updateView(false);
-	}
-
-	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
-		getService().getEventDispatcher().removeOnUpdateOperationListener(this);
 	}
 }

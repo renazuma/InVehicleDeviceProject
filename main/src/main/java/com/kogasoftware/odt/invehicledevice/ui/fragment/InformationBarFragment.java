@@ -36,9 +36,8 @@ import com.kogasoftware.odt.invehicledevice.ui.BatteryAlerter;
 import com.kogasoftware.odt.invehicledevice.ui.ViewDisabler;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.InformationBarFragment.State;
 
-public class InformationBarFragment extends ApplicationFragment<State>
-		implements EventDispatcher.OnUpdateOperationListener,
-		EventDispatcher.OnChangeSignalStrengthListener {
+public class InformationBarFragment extends AutoUpdateOperationFragment<State>
+		implements EventDispatcher.OnChangeSignalStrengthListener {
 
 	@SuppressWarnings("serial")
 	static class State implements Serializable {
@@ -112,7 +111,6 @@ public class InformationBarFragment extends ApplicationFragment<State>
 				.findViewById(R.id.present_time_text_view);
 		networkStrengthImageView = (ImageView) view
 				.findViewById(R.id.network_strength_image_view);
-		getService().getEventDispatcher().addOnUpdateOperationListener(this);
 		updateView(view);
 		blinkBatteryAlert = new EmptyRunnable();
 		for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
@@ -142,12 +140,6 @@ public class InformationBarFragment extends ApplicationFragment<State>
 		super.onResume();
 		handler.post(updateTime);
 		handler.post(blinkBatteryAlert);
-	}
-
-	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
-		getService().getEventDispatcher().removeOnUpdateOperationListener(this);
 	}
 
 	public void updateView(View view) {

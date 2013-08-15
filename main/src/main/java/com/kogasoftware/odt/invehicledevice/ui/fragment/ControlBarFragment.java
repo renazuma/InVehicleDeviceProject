@@ -20,7 +20,6 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnitStatusLog;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation.Phase;
@@ -30,9 +29,7 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic
 import com.kogasoftware.odt.invehicledevice.ui.ViewDisabler;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.ControlBarFragment.State;
 
-public class ControlBarFragment extends ApplicationFragment<State> implements
-		EventDispatcher.OnUpdateOperationListener {
-
+public class ControlBarFragment extends AutoUpdateOperationFragment<State> {
 	private static final String TAG = ControlBarFragment.class.getSimpleName();
 
 	@SuppressWarnings("serial")
@@ -84,7 +81,6 @@ public class ControlBarFragment extends ApplicationFragment<State> implements
 			}
 		});
 
-		getService().getEventDispatcher().addOnUpdateOperationListener(this);
 		getService().getLocalStorage().read(
 				new BackgroundReader<Pair<Phase, Boolean>>() {
 					@Override
@@ -102,12 +98,6 @@ public class ControlBarFragment extends ApplicationFragment<State> implements
 					}
 				});
 		return view;
-	}
-
-	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
-		getService().getEventDispatcher().removeOnUpdateOperationListener(this);
 	}
 
 	public void showNavigationFragment() {

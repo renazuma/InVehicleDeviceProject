@@ -24,7 +24,6 @@ import android.widget.TextView;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation.Phase;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
@@ -35,8 +34,7 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 
-public class PlatformPhaseFragment extends ApplicationFragment<State> implements
-		EventDispatcher.OnUpdateOperationListener {
+public class PlatformPhaseFragment extends AutoUpdateOperationFragment<State> {
 
 	@SuppressWarnings("serial")
 	protected static class State implements Serializable {
@@ -135,7 +133,6 @@ public class PlatformPhaseFragment extends ApplicationFragment<State> implements
 				R.id.minutes_remaining_text_view);
 
 		updateView(getView());
-		getService().getEventDispatcher().addOnUpdateOperationListener(this);
 	}
 
 	@Override
@@ -154,7 +151,6 @@ public class PlatformPhaseFragment extends ApplicationFragment<State> implements
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
-		getService().getEventDispatcher().removeOnUpdateOperationListener(this);
 	}
 
 	private void updateView(View view) {
