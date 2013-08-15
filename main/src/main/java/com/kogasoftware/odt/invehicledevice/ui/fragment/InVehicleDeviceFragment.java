@@ -54,14 +54,11 @@ public class InVehicleDeviceFragment extends AutoUpdateOperationFragment<State> 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		Optional<OperationSchedule> currentOperationSchedule = OperationSchedule
-				.getCurrent(getState().getOperationSchedules());
 		for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
 			FragmentTransaction fragmentTransaction = fragmentManager
 					.beginTransaction();
 			fragmentTransaction.add(R.id.information_fragment_container,
-					InformationBarFragment.newInstance(getState().getPhase(),
-							currentOperationSchedule));
+					InformationBarFragment.newInstance(getState().getOperation()));
 			fragmentTransaction.add(R.id.control_fragment_container,
 					ControlBarFragment.newInstance(getState().getOperation()));
 			fragmentTransaction.commitAllowingStateLoss();
@@ -157,5 +154,10 @@ public class InVehicleDeviceFragment extends AutoUpdateOperationFragment<State> 
 			return;
 		}
 		updateView(false);
+	}
+
+	@Override
+	protected Integer getOperationSchedulesReceiveSequence() {
+		return getState().getOperation().operationScheduleReceiveSequence;
 	}
 }

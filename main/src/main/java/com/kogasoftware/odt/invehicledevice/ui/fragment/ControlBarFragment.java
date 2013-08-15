@@ -51,6 +51,10 @@ public class ControlBarFragment extends AutoUpdateOperationFragment<State> {
 		public List<OperationSchedule> getOperationSchedules() {
 			return operation.operationSchedules;
 		}
+
+		public Operation getOperation() {
+			return operation;
+		}
 	}
 
 	public static ControlBarFragment newInstance(Operation operation) {
@@ -122,8 +126,7 @@ public class ControlBarFragment extends AutoUpdateOperationFragment<State> {
 					for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
 						setCustomAnimation(fragmentManager.beginTransaction()).add(
 								R.id.modal_fragment_container,
-								NavigationFragment.newInstance(getState().getPhase(),
-										getState().getOperationSchedules(), serviceUnitStatusLog)).commitAllowingStateLoss();
+								NavigationFragment.newInstance(getState().getOperation(), serviceUnitStatusLog)).commitAllowingStateLoss();
 					}
 				}
 			});
@@ -293,5 +296,10 @@ public class ControlBarFragment extends AutoUpdateOperationFragment<State> {
 		setState(new State(operation));
 		updateView(operation.getPhase(), !OperationSchedule.getRelative(operation.operationSchedules, 1)
 				.isPresent());
+	}
+
+	@Override
+	protected Integer getOperationSchedulesReceiveSequence() {
+		return getState().getOperation().operationScheduleReceiveSequence;
 	}
 }

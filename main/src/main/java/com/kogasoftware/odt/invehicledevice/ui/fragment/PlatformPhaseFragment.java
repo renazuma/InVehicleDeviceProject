@@ -220,4 +220,9 @@ public class PlatformPhaseFragment extends AutoUpdateOperationFragment<State> {
 			updateView(getView());
 		}
 	}
+
+	@Override
+	protected Integer getOperationSchedulesReceiveSequence() {
+		return getState().getOperation().operationScheduleReceiveSequence;
+	}
 }

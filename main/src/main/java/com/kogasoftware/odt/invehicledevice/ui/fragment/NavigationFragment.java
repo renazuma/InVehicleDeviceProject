@@ -63,28 +63,26 @@ public class NavigationFragment extends AutoUpdateOperationFragment<State> imple
 
 	@SuppressWarnings("serial")
 	protected static class State implements Serializable {
-		private final List<OperationSchedule> operationSchedules;
-		private final Phase phase;
+		private final Operation operation;
 		private final Double orientationDegree;
 		private final BigDecimal initialLatitude;
 		private final BigDecimal initialLongitude;
 
-		public State(Phase phase, List<OperationSchedule> operationSchedules,
+		public State(Operation operation,
 				Double orientationDegree, BigDecimal initialLatitude,
 				BigDecimal initialLongitude) {
-			this.phase = phase;
-			this.operationSchedules = Lists.newArrayList(operationSchedules);
+			this.operation = operation;
 			this.orientationDegree = orientationDegree;
 			this.initialLatitude = initialLatitude;
 			this.initialLongitude = initialLongitude;
 		}
 
 		public List<OperationSchedule> getOperationSchedules() {
-			return Lists.newArrayList(operationSchedules);
+			return Lists.newArrayList(operation.operationSchedules);
 		}
 
 		public Phase getPhase() {
-			return phase;
+			return operation.getPhase();
 		}
 
 		public Double getOrientationDegree() {
@@ -98,13 +96,15 @@ public class NavigationFragment extends AutoUpdateOperationFragment<State> imple
 		public BigDecimal getInitialLongitude() {
 			return initialLongitude;
 		}
+
+		public Operation getOperation() {
+			return operation;
+		}
 	}
 
-	public static NavigationFragment newInstance(Phase phase,
-			List<OperationSchedule> operationSchedules,
+	public static NavigationFragment newInstance(Operation operation,
 			ServiceUnitStatusLog serviceUnitStatusLog) {
-		return newInstance(new NavigationFragment(), new State(phase,
-				operationSchedules, serviceUnitStatusLog.getOrientation().or(0)
+		return newInstance(new NavigationFragment(), new State(operation, serviceUnitStatusLog.getOrientation().or(0)
 						.doubleValue(), serviceUnitStatusLog.getLatitude(),
 				serviceUnitStatusLog.getLongitude()));
 	}
@@ -285,8 +285,7 @@ public class NavigationFragment extends AutoUpdateOperationFragment<State> imple
 		if (navigationRenderer != null) {
 			navigationRenderer.changeOrientation(orientationDegree);
 		}
-		setState(new State(getState().getPhase(), getState()
-				.getOperationSchedules(), orientationDegree, getState()
+		setState(new State(getState().getOperation(), orientationDegree, getState()
 				.getInitialLatitude(), getState().getInitialLongitude()));
 	}
 
@@ -594,9 +593,14 @@ public class NavigationFragment extends AutoUpdateOperationFragment<State> imple
 
 	@Override
 	public void onUpdateOperation(Operation operation) {
-		setState(new State(operation.getPhase(), operation.operationSchedules, getState()
+		setState(new State(operation, getState()
 				.getOrientationDegree(), getState().getInitialLatitude(),
 				getState().getInitialLongitude()));
 		updatePlatform();
+	}
+
+	@Override
+	protected Integer getOperationSchedulesReceiveSequence() {
+		return getState().getOperation().operationScheduleReceiveSequence;
 	}
 }

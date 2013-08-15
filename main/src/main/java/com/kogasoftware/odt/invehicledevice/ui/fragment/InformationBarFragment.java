@@ -43,10 +43,16 @@ public class InformationBarFragment extends AutoUpdateOperationFragment<State>
 	static class State implements Serializable {
 		private final Optional<OperationSchedule> operationSchedule;
 		private final Phase phase;
+		private final Integer operationSchedulesReceivedSequence;
 
-		public State(Phase phase, Optional<OperationSchedule> operationSchedule) {
-			this.phase = phase;
-			this.operationSchedule = operationSchedule;
+		public State(Operation operation) {
+			this.phase = operation.getPhase();
+			this.operationSchedule = OperationSchedule.getCurrent(operation.operationSchedules);
+			this.operationSchedulesReceivedSequence = operation.operationScheduleReceiveSequence;
+		}
+
+		public Integer getOperationSchedulesReceivedSequence() {
+			return operationSchedulesReceivedSequence;
 		}
 
 		public Phase getPhase() {
@@ -64,10 +70,8 @@ public class InformationBarFragment extends AutoUpdateOperationFragment<State>
 	private TextView presentTimeTextView;
 	private Handler handler;
 
-	public static InformationBarFragment newInstance(Phase phase,
-			Optional<OperationSchedule> operationSchedule) {
-		return newInstance(new InformationBarFragment(), new State(phase,
-				operationSchedule));
+	public static InformationBarFragment newInstance(Operation operation) {
+		return newInstance(new InformationBarFragment(), new State(operation));
 	}
 
 	private final Runnable updateTime = new Runnable() {
@@ -208,8 +212,7 @@ public class InformationBarFragment extends AutoUpdateOperationFragment<State>
 
 	@Override
 	public void onUpdateOperation(Operation operation) {
-		setState(new State(operation.getPhase(),
-				OperationSchedule.getCurrent(operation.operationSchedules)));
+		setState(new State(operation));
 		updateView(getView());
 	}
 
@@ -226,5 +229,10 @@ public class InformationBarFragment extends AutoUpdateOperationFragment<State>
 			imageResourceId = R.drawable.network_strength_3;
 		}
 		networkStrengthImageView.setImageResource(imageResourceId);
+	}
+
+	@Override
+	protected Integer getOperationSchedulesReceiveSequence() {
+		return getState().getOperationSchedulesReceivedSequence();
 	}
 }
