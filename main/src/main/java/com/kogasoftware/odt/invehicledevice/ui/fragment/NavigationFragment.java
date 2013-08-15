@@ -290,6 +290,7 @@ public class NavigationFragment extends AutoUpdateOperationFragment<State> imple
 	}
 
 	protected void updatePlatform() {
+		Log.i(TAG, "updatePlatform");
 		NavigationRenderer navigationRenderer = navigationRendererWeakReference
 				.get();
 		if (navigationRenderer != null) {
@@ -341,6 +342,7 @@ public class NavigationFragment extends AutoUpdateOperationFragment<State> imple
 					R.string.platform_arrival_time);
 			Optional<Date> displayDate = operationSchedule.getArrivalEstimate();
 			for (Platform platform : operationSchedule.getPlatform().asSet()) {
+				Log.i(TAG, "next platform id=" + platform.getId() + " name=" + platform.getName());
 				titleTextView.setText(Html.fromHtml(String.format(
 						titleTextFormat, platform.getName())));
 			}

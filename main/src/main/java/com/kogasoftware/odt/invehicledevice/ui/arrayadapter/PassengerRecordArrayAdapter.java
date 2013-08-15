@@ -140,12 +140,17 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 		this.operationSchedule = operationSchedule;
 		passengerRecordLogic = new PassengerRecordLogic(service);
 		operationScheduleLogic = new OperationScheduleLogic(service);
-
+		
 		List<PassengerRecord> sortedPassengerRecords = Lists
 				.newArrayList(passengerRecords);
 		Collections.sort(sortedPassengerRecords,
 				PassengerRecord.DEFAULT_COMPARATOR);
+		Log.i(TAG, "PassengerRecords:");
 		for (PassengerRecord passengerRecord : sortedPassengerRecords) {
+			Log.i(TAG, "id=" + passengerRecord.getId() +
+					" representative=" + passengerRecord.isRepresentative() +
+					" getOnTime=" + passengerRecord.getGetOnTime() +
+					" getOffTime=" + passengerRecord.getGetOffTime());
 			add(passengerRecord);
 		}
 	}

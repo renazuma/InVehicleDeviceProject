@@ -13,6 +13,7 @@ import java.util.Locale;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +39,8 @@ public class DrivePhaseFragment extends ApplicationFragment<State> {
 		}
 	}
 
+	private static final String TAG = DrivePhaseFragment.class.getSimpleName();
+
 	public static DrivePhaseFragment newInstance(
 			List<OperationSchedule> operationSchedules) {
 		return newInstance(new DrivePhaseFragment(), new State(
@@ -45,6 +48,7 @@ public class DrivePhaseFragment extends ApplicationFragment<State> {
 	}
 
 	private void updateView(View view) {
+		Log.i(TAG, "updateView");
 		TextView nextPlatformNameTextView = (TextView) view
 				.findViewById(R.id.next_platform_name_text_view);
 		TextView platformArrivalTimeTextView2 = (TextView) view
@@ -63,6 +67,7 @@ public class DrivePhaseFragment extends ApplicationFragment<State> {
 				.asSet()) {
 			nextPlatformNameTextView.setText("");
 			for (Platform platform : operationSchedule.getPlatform().asSet()) {
+				Log.i(TAG, "next platform id=" + platform.getId() + " name=" + platform.getName());
 				nextPlatformNameTextView.setText(platform.getName());
 			}
 			platformArrivalTimeTextView2.setText("");

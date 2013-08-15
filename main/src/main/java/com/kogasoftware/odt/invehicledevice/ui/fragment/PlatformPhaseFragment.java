@@ -154,6 +154,8 @@ public class PlatformPhaseFragment extends AutoUpdateOperationFragment<State> {
 	}
 
 	private void updateView(View view) {
+		Log.i(TAG, "updateView");
+
 		TextView currentPlatformNameTextView = (TextView) view
 				.findViewById(R.id.now_platform_text_view);
 		FlickUnneededListView passengerRecordListView = ((FlickUnneededListView) view
@@ -173,9 +175,11 @@ public class PlatformPhaseFragment extends AutoUpdateOperationFragment<State> {
 				.asSet()) {
 			if (last) {
 				currentPlatformNameTextView.setText("現在最終乗降場です");
+				Log.i(TAG, "last platform");
 			} else {
 				for (Platform platform : currentOperationSchedule.getPlatform()
 						.asSet()) {
+					Log.i(TAG, "platform id=" + platform.getId() + " name=" + platform.getName());
 					currentPlatformNameTextView.setText(Html.fromHtml(String
 							.format(getResources().getString(
 									R.string.now_platform_is_html),
