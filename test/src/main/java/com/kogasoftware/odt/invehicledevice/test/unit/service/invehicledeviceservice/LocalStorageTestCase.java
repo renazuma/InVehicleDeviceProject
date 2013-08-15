@@ -408,7 +408,7 @@ public class LocalStorageTestCase extends AndroidTestCase {
 		ls1.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
-				localData.operationScheduleInitialized = true;
+				localData.operationScheduleReceiveSequence = 1;
 			}
 		});
 		ls1.close();
@@ -419,7 +419,7 @@ public class LocalStorageTestCase extends AndroidTestCase {
 		Boolean b1 = ls2.withReadLock(new Reader<Boolean>() {
 			@Override
 			public Boolean read(LocalData localData) {
-				return localData.operationScheduleInitialized;
+				return localData.operationScheduleReceiveSequence > 0;
 			}
 		});
 		assertTrue(b1.booleanValue());
@@ -431,7 +431,7 @@ public class LocalStorageTestCase extends AndroidTestCase {
 		Boolean b2 = ls3.withReadLock(new Reader<Boolean>() {
 			@Override
 			public Boolean read(LocalData localData) {
-				return localData.operationScheduleInitialized;
+				return localData.operationScheduleReceiveSequence > 0;
 			}
 		});
 		assertFalse(b2.booleanValue());

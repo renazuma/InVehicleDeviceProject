@@ -231,7 +231,7 @@ public class OperationScheduleLogic {
 				PassengerRecord.DEFAULT_COMPARATOR);
 
 		localData.updatedDate = new Date(DateTimeUtils.currentTimeMillis());
-		localData.operationScheduleInitialized = true;
+		localData.operationScheduleReceiveSequence += 1;
 		localData.operationSchedules.clear();
 		localData.operationSchedules.addAll(remoteOperationSchedules);
 		localData.passengerRecords.clear();
@@ -283,7 +283,7 @@ public class OperationScheduleLogic {
 				if (!always && service.isOperationInitialized(localData)) {
 					return;
 				}
-				localData.operationScheduleInitialized = false;
+				localData.operationScheduleReceiveSequence = 0;
 				localData.operationSchedules.clear();
 				localData.vehicleNotifications.clear();
 				localData.passengerRecords.clear();

@@ -25,9 +25,8 @@ public class LocalData implements Serializable {
 		DRIVE, FINISH, PLATFORM_GET_ON, PLATFORM_GET_OFF,
 	}
 
-	private static final long serialVersionUID = 1797801788125L;
+	private static final long serialVersionUID = 1797801788126L;
 
-	public Boolean operationScheduleInitialized = false;
 	public Boolean serviceProviderInitialized = false;
 
 	public Date updatedDate = new Date(DateTimeUtils.currentTimeMillis());
@@ -39,6 +38,7 @@ public class LocalData implements Serializable {
 	public ServiceUnitStatusLog serviceUnitStatusLog = new ServiceUnitStatusLog();
 
 	public Boolean completeGetOff = false;
+	public Integer operationScheduleReceiveSequence = 0;
 	public final List<OperationSchedule> operationSchedules = Lists
 			.newLinkedList();
 	public final List<PassengerRecord> passengerRecords = Lists.newLinkedList();
