@@ -2,7 +2,6 @@ package com.kogasoftware.odt.invehicledevice.test.util;
 
 import android.content.Context;
 import android.test.ActivityInstrumentationTestCase2;
-import android.view.KeyEvent;
 
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 

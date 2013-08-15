@@ -46,8 +46,6 @@ import com.kogasoftware.odt.invehicledevice.service.startupservice.IStartupServi
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
 public class TestUtil {
-	private static final String TAG = TestUtil.class.getSimpleName();
-
 	public static void setApiClient(InVehicleDeviceApiClient ds) {
 		InVehicleDeviceApiClientFactory.setInstance(ds);
 	}
