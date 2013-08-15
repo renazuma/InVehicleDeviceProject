@@ -83,8 +83,8 @@ public class LocalStorageTestCase extends AndroidTestCase {
 		ls1.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData ld) {
-				ld.passengerRecords.clear();
-				ld.passengerRecords.add(new PassengerRecord());
+				ld.operation.passengerRecords.clear();
+				ld.operation.passengerRecords.add(new PassengerRecord());
 				ld.vehicleNotifications.clear();
 				ld.vehicleNotifications.put(VehicleNotificationStatus.REPLIED,
 						new VehicleNotification());
@@ -98,7 +98,7 @@ public class LocalStorageTestCase extends AndroidTestCase {
 		ls2.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData ld) {
-				assertEquals(1, ld.passengerRecords.size());
+				assertEquals(1, ld.operation.passengerRecords.size());
 				assertEquals(
 						1,
 						ld.vehicleNotifications.get(
@@ -114,7 +114,7 @@ public class LocalStorageTestCase extends AndroidTestCase {
 		ls3.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData ld) {
-				assertTrue(ld.passengerRecords.isEmpty());
+				assertTrue(ld.operation.passengerRecords.isEmpty());
 
 				assertTrue(ld.vehicleNotifications.get(
 						VehicleNotificationStatus.REPLIED).isEmpty());
@@ -128,7 +128,7 @@ public class LocalStorageTestCase extends AndroidTestCase {
 		ls4.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData ld) {
-				assertTrue(ld.passengerRecords.isEmpty());
+				assertTrue(ld.operation.passengerRecords.isEmpty());
 				assertTrue(ld.vehicleNotifications.get(
 						VehicleNotificationStatus.REPLIED).isEmpty());
 			}
@@ -148,7 +148,7 @@ public class LocalStorageTestCase extends AndroidTestCase {
 		ls1.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData ld) {
-				ld.operationSchedules.add(new OperationSchedule());
+				ld.operation.operationSchedules.add(new OperationSchedule());
 			}
 		});
 		ls1.close();
@@ -159,7 +159,7 @@ public class LocalStorageTestCase extends AndroidTestCase {
 		ls2.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData ld) {
-				assertEquals(ld.operationSchedules.size(), 1);
+				assertEquals(ld.operation.operationSchedules.size(), 1);
 			}
 		});
 		ls2.close();
@@ -174,7 +174,7 @@ public class LocalStorageTestCase extends AndroidTestCase {
 		ls3.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData ld) {
-				assertTrue(ld.operationSchedules.isEmpty());
+				assertTrue(ld.operation.operationSchedules.isEmpty());
 			}
 		});
 		ls3.close();
@@ -188,7 +188,7 @@ public class LocalStorageTestCase extends AndroidTestCase {
 		ls4.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData ld) {
-				assertTrue(ld.operationSchedules.isEmpty());
+				assertTrue(ld.operation.operationSchedules.isEmpty());
 			}
 		});
 		ls4.close();
@@ -408,7 +408,7 @@ public class LocalStorageTestCase extends AndroidTestCase {
 		ls1.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
-				localData.operationScheduleReceiveSequence = 1;
+				localData.operation.operationScheduleReceiveSequence = 1;
 			}
 		});
 		ls1.close();
@@ -419,7 +419,7 @@ public class LocalStorageTestCase extends AndroidTestCase {
 		Boolean b1 = ls2.withReadLock(new Reader<Boolean>() {
 			@Override
 			public Boolean read(LocalData localData) {
-				return localData.operationScheduleReceiveSequence > 0;
+				return localData.operation.operationScheduleReceiveSequence > 0;
 			}
 		});
 		assertTrue(b1.booleanValue());
@@ -431,7 +431,7 @@ public class LocalStorageTestCase extends AndroidTestCase {
 		Boolean b2 = ls3.withReadLock(new Reader<Boolean>() {
 			@Override
 			public Boolean read(LocalData localData) {
-				return localData.operationScheduleReceiveSequence > 0;
+				return localData.operation.operationScheduleReceiveSequence > 0;
 			}
 		});
 		assertFalse(b2.booleanValue());
@@ -458,8 +458,8 @@ public class LocalStorageTestCase extends AndroidTestCase {
 		ls.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData ld) {
-				ld.operationSchedules.clear();
-				ld.operationSchedules.add(os);
+				ld.operation.operationSchedules.clear();
+				ld.operation.operationSchedules.add(os);
 			}
 		});
 
@@ -470,7 +470,7 @@ public class LocalStorageTestCase extends AndroidTestCase {
 				ComparableAssert.assertNotEquals(threadId, Thread
 						.currentThread().getId());
 				ComparableAssert.assertNotEquals(threadId, ht.getId());
-				return ld.operationSchedules.get(0);
+				return ld.operation.operationSchedules.get(0);
 			}
 
 			@Override
@@ -513,7 +513,7 @@ public class LocalStorageTestCase extends AndroidTestCase {
 		ls.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData ld) {
-				ld.operationSchedules.clear();
+				ld.operation.operationSchedules.clear();
 			}
 		});
 
@@ -524,7 +524,7 @@ public class LocalStorageTestCase extends AndroidTestCase {
 				ComparableAssert.assertNotEquals(threadId, Thread
 						.currentThread().getId());
 				ComparableAssert.assertNotEquals(threadId, ht.getId());
-				ld.operationSchedules.add(os);
+				ld.operation.operationSchedules.add(os);
 			}
 
 			@Override
@@ -550,7 +550,7 @@ public class LocalStorageTestCase extends AndroidTestCase {
 				.withReadLock(new Reader<OperationSchedule>() {
 					@Override
 					public OperationSchedule read(LocalData localData) {
-						return localData.operationSchedules.get(0);
+						return localData.operation.operationSchedules.get(0);
 					}
 				});
 		assertEquals(os.getId(), resultOs.getId());

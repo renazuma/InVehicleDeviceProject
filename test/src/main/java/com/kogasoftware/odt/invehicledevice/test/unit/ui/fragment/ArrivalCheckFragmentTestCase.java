@@ -57,7 +57,7 @@ public class ArrivalCheckFragmentTestCase extends
 		p = new Platform();
 		os.setPlatform(p);
 		os.setOperationRecord(new OperationRecord());
-		ld.operationSchedules.add(os);
+		ld.operation.operationSchedules.add(os);
 	}
 
 	@Override

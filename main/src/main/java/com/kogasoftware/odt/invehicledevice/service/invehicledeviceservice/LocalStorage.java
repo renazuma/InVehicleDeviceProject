@@ -202,7 +202,7 @@ public class LocalStorage implements Closeable {
 					InVehicleDeviceService.NEW_SCHEDULE_DOWNLOAD_MINUTE);
 			Date startDate = startCalendar.getTime();
 			if (localData.updatedDate.before(startDate)) {
-				localData.operationScheduleReceiveSequence = 0;
+				localData.operation.operationScheduleReceiveSequence = 0;
 			}
 		}
 

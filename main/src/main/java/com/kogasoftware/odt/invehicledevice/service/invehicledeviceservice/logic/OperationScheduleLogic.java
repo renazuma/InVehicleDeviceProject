@@ -219,11 +219,11 @@ public class OperationScheduleLogic {
 	public void mergeWithWriteLock(LocalData localData,
 			List<OperationSchedule> remoteOperationSchedules) {
 		mergeOperationSchedules(remoteOperationSchedules,
-				localData.operationSchedules);
+				localData.operation.operationSchedules);
 		List<PassengerRecord> remotePassengerRecords = getPassengerRecordsWithReservationAndUser(remoteOperationSchedules);
 		if (service.isOperationInitialized()) {
 			mergePassengerRecords(remotePassengerRecords,
-					localData.passengerRecords);
+					localData.operation.passengerRecords);
 		}
 		removeUnusedAssociations(remoteOperationSchedules,
 				remotePassengerRecords);
@@ -231,20 +231,20 @@ public class OperationScheduleLogic {
 				PassengerRecord.DEFAULT_COMPARATOR);
 
 		localData.updatedDate = new Date(DateTimeUtils.currentTimeMillis());
-		localData.operationScheduleReceiveSequence += 1;
-		localData.operationSchedules.clear();
-		localData.operationSchedules.addAll(remoteOperationSchedules);
-		localData.passengerRecords.clear();
-		localData.passengerRecords.addAll(remotePassengerRecords);
+		localData.operation.operationScheduleReceiveSequence += 1;
+		localData.operation.operationSchedules.clear();
+		localData.operation.operationSchedules.addAll(remoteOperationSchedules);
+		localData.operation.passengerRecords.clear();
+		localData.operation.passengerRecords.addAll(remotePassengerRecords);
 
 		Log.i(TAG, "mergeWithWriteLock operationSchedules:");
-		for (OperationSchedule operationSchedule : localData.operationSchedules) {
+		for (OperationSchedule operationSchedule : localData.operation.operationSchedules) {
 			Log.i(TAG, "id=" + operationSchedule.getId() + " isArrived="
 					+ operationSchedule.isArrived() + " isDeparted="
 					+ operationSchedule.isDeparted());
 		}
 		Log.i(TAG, "mergeWithWriteLock passengerRecords:");
-		for (PassengerRecord passengerRecord : localData.passengerRecords) {
+		for (PassengerRecord passengerRecord : localData.operation.passengerRecords) {
 			Log.i(TAG, "id=" + passengerRecord.getId() + " getOnTime="
 					+ passengerRecord.getGetOnTime() + " getOffTime="
 					+ passengerRecord.getGetOffTime());
@@ -283,10 +283,10 @@ public class OperationScheduleLogic {
 				if (!always && service.isOperationInitialized(localData)) {
 					return;
 				}
-				localData.operationScheduleReceiveSequence = 0;
-				localData.operationSchedules.clear();
+				localData.operation.operationScheduleReceiveSequence = 0;
+				localData.operation.operationSchedules.clear();
 				localData.vehicleNotifications.clear();
-				localData.passengerRecords.clear();
+				localData.operation.passengerRecords.clear();
 			}
 
 			@Override
@@ -300,8 +300,8 @@ public class OperationScheduleLogic {
 	 * 現在の状態を得る
 	 */
 	public Phase getPhaseWithReadLock(LocalData localData) {
-		return getPhase(localData.operationSchedules,
-				localData.passengerRecords, localData.completeGetOff);
+		return getPhase(localData.operation.operationSchedules,
+				localData.operation.passengerRecords, localData.operation.completeGetOff);
 	}
 
 	public Phase getPhaseWithReadLock() {
@@ -323,8 +323,8 @@ public class OperationScheduleLogic {
 		service.getLocalStorage().write(new BackgroundWriter() {
 			@Override
 			public void writeInBackground(LocalData localData) {
-				localData.completeGetOff = false;
-				for (OperationSchedule operationSchedule : localData.operationSchedules) {
+				localData.operation.completeGetOff = false;
+				for (OperationSchedule operationSchedule : localData.operation.operationSchedules) {
 					if (!operationSchedule.getId().equals(id)) {
 						continue;
 					}
@@ -354,14 +354,14 @@ public class OperationScheduleLogic {
 	}
 
 	public void updatePhaseInBackground(LocalData localData) {
-		Phase phase = getPhase(localData.operationSchedules,
-				localData.passengerRecords, localData.completeGetOff);
+		Phase phase = getPhase(localData.operation.operationSchedules,
+				localData.operation.passengerRecords, localData.operation.completeGetOff);
 		if (phase != Phase.PLATFORM_GET_ON) {
-			localData.completeGetOff = false;
+			localData.operation.completeGetOff = false;
 		}
 		service.getEventDispatcher().dispatchUpdatePhase(phase,
-				Lists.newArrayList(localData.operationSchedules),
-				Lists.newArrayList(localData.passengerRecords));
+				Lists.newArrayList(localData.operation.operationSchedules),
+				Lists.newArrayList(localData.operation.passengerRecords));
 	}
 
 	/**
@@ -374,8 +374,8 @@ public class OperationScheduleLogic {
 		service.getLocalStorage().write(new BackgroundWriter() {
 			@Override
 			public void writeInBackground(LocalData localData) {
-				localData.completeGetOff = false;
-				for (OperationSchedule operationSchedule : localData.operationSchedules) {
+				localData.operation.completeGetOff = false;
+				for (OperationSchedule operationSchedule : localData.operation.operationSchedules) {
 					if (!operationSchedule.getId().equals(id)) {
 						continue;
 					}
@@ -390,9 +390,9 @@ public class OperationScheduleLogic {
 						Log.i(TAG,
 								"depart -> "
 										+ getPhase(
-												localData.operationSchedules,
-												localData.passengerRecords,
-												localData.completeGetOff));
+												localData.operation.operationSchedules,
+												localData.operation.passengerRecords,
+												localData.operation.completeGetOff));
 						return;
 					}
 					Log.e(TAG, "OperationSchedule has no OperationRecord "

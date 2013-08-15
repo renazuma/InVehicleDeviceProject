@@ -179,11 +179,11 @@ public class PassengerRecordArrayAdapterTestCase extends
 		sa.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData status) {
-				status.passengerRecords.clear();
-				status.operationSchedules.clear();
-				status.operationSchedules.add(os0);
-				status.operationSchedules.add(os1);
-				status.operationSchedules.add(os2);
+				status.operation.passengerRecords.clear();
+				status.operation.operationSchedules.clear();
+				status.operation.operationSchedules.add(os0);
+				status.operation.operationSchedules.add(os1);
+				status.operation.operationSchedules.add(os2);
 				{
 					PassengerRecord pr = new PassengerRecord();
 					Reservation r = new Reservation();
@@ -193,7 +193,7 @@ public class PassengerRecordArrayAdapterTestCase extends
 					r.setArrivalScheduleId(os2.getId());
 					pr.setUser(u);
 					pr.setReservation(r);
-					status.passengerRecords.add(pr);
+					status.operation.passengerRecords.add(pr);
 				}
 
 				{
@@ -207,11 +207,11 @@ public class PassengerRecordArrayAdapterTestCase extends
 					pr.setReservation(r);
 					r.setDepartureScheduleId(os0.getId());
 					r.setArrivalScheduleId(os1.getId());
-					status.passengerRecords.add(pr);
+					status.operation.passengerRecords.add(pr);
 				}
 
-				oss.addAll(status.operationSchedules);
-				prs.addAll(status.passengerRecords);
+				oss.addAll(status.operation.operationSchedules);
+				prs.addAll(status.operation.passengerRecords);
 			}
 		});
 		osl.arrive(os0, new EmptyRunnable());

@@ -45,9 +45,9 @@ public class PassengerRecordLogicTestCase extends AndroidTestCase {
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
-				localData.passengerRecords.clear();
-				localData.operationSchedules.clear();
-				localData.operationSchedules.add(os);
+				localData.operation.passengerRecords.clear();
+				localData.operation.operationSchedules.clear();
+				localData.operation.operationSchedules.add(os);
 			}
 		});
 	}
@@ -76,7 +76,7 @@ public class PassengerRecordLogicTestCase extends AndroidTestCase {
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
-				localData.passengerRecords.add(pr);
+				localData.operation.passengerRecords.add(pr);
 			}
 		});
 		assertTrue(pr.isUnhandled());
@@ -112,7 +112,7 @@ public class PassengerRecordLogicTestCase extends AndroidTestCase {
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
-				localData.passengerRecords.add(pr);
+				localData.operation.passengerRecords.add(pr);
 			}
 		});
 		assertTrue(pr.isRiding());
@@ -147,7 +147,7 @@ public class PassengerRecordLogicTestCase extends AndroidTestCase {
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
-				localData.passengerRecords.add(pr);
+				localData.operation.passengerRecords.add(pr);
 			}
 		});
 		assertTrue(pr.isUnhandled());
@@ -212,7 +212,7 @@ public class PassengerRecordLogicTestCase extends AndroidTestCase {
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
-				localData.passengerRecords.add(pr1);
+				localData.operation.passengerRecords.add(pr1);
 			}
 		});
 
@@ -230,7 +230,7 @@ public class PassengerRecordLogicTestCase extends AndroidTestCase {
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
-				localData.passengerRecords.add(pr2);
+				localData.operation.passengerRecords.add(pr2);
 			}
 		});
 
@@ -258,7 +258,7 @@ public class PassengerRecordLogicTestCase extends AndroidTestCase {
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
-				localData.passengerRecords.add(pr1);
+				localData.operation.passengerRecords.add(pr1);
 			}
 		});
 
@@ -276,7 +276,7 @@ public class PassengerRecordLogicTestCase extends AndroidTestCase {
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
-				localData.passengerRecords.add(pr2);
+				localData.operation.passengerRecords.add(pr2);
 			}
 		});
 

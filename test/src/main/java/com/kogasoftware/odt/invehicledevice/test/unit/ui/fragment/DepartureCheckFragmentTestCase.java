@@ -59,7 +59,7 @@ public class DepartureCheckFragmentTestCase extends
 		p.setName("乗降場X");
 		os.setPlatform(p);
 		os.setOperationRecord(new OperationRecord());
-		ld.operationSchedules.add(os);
+		ld.operation.operationSchedules.add(os);
 	}
 
 	@Override

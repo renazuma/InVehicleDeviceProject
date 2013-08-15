@@ -42,8 +42,8 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
-				localData.passengerRecords.clear();
-				localData.operationSchedules.clear();
+				localData.operation.passengerRecords.clear();
+				localData.operation.operationSchedules.clear();
 			}
 		});
 	}
@@ -70,17 +70,17 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
-				localData.operationSchedules.add(local);
+				localData.operation.operationSchedules.add(local);
 			}
 		});
 		// osl.mergeOperationSchedules(remotes, vns);
 		lds.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData localData) {
-				assertEquals(1, localData.operationSchedules.size());
-				assertEquals(remote.getId(), localData.operationSchedules
+				assertEquals(1, localData.operation.operationSchedules.size());
+				assertEquals(remote.getId(), localData.operation.operationSchedules
 						.get(0).getId());
-				assertTrue(localData.operationSchedules.get(0)
+				assertTrue(localData.operation.operationSchedules.get(0)
 						.getOperationRecord().isPresent());
 			}
 		});
@@ -106,21 +106,21 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
-				localData.passengerRecords.add(localPR);
-				localData.operationSchedules.add(local);
+				localData.operation.passengerRecords.add(localPR);
+				localData.operation.operationSchedules.add(local);
 			}
 		});
 		// osl.mergeOperationSchedules(remotes, vns);
 		lds.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData localData) {
-				assertEquals(1, localData.operationSchedules.size());
-				assertEquals(remote.getId(), localData.operationSchedules
+				assertEquals(1, localData.operation.operationSchedules.size());
+				assertEquals(remote.getId(), localData.operation.operationSchedules
 						.get(0).getId());
-				assertTrue(localData.operationSchedules.get(0)
+				assertTrue(localData.operation.operationSchedules.get(0)
 						.getOperationRecord().isPresent());
-				assertEquals(1, localData.passengerRecords.size());
-				assertEquals(3, localData.passengerRecords.get(0).getId()
+				assertEquals(1, localData.operation.passengerRecords.size());
+				assertEquals(3, localData.operation.passengerRecords.get(0).getId()
 						.intValue());
 				// assertEquals(
 				// preferLocal ? Optional.of(200) : Optional.absent(),
@@ -166,27 +166,27 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
-				localData.operationSchedules.addAll(locals);
+				localData.operation.operationSchedules.addAll(locals);
 			}
 		});
 		// osl.mergeOperationSchedules(remotes, vns);
 		lds.withReadLock(new VoidReader() {
 			@Override
 			public void read(LocalData localData) {
-				assertEquals(3, localData.operationSchedules.size());
-				for (Integer i = 0; i < localData.operationSchedules.size(); ++i) {
+				assertEquals(3, localData.operation.operationSchedules.size());
+				for (Integer i = 0; i < localData.operation.operationSchedules.size(); ++i) {
 					assertEquals(remotes.get(i).getId(),
-							localData.operationSchedules.get(i).getId());
+							localData.operation.operationSchedules.get(i).getId());
 				}
 				assertEquals(preferLocal ? locals.get(0).getOperationRecord()
 						.get().getId() : remotes.get(0).getOperationRecord()
-						.get().getId(), localData.operationSchedules.get(0)
+						.get().getId(), localData.operation.operationSchedules.get(0)
 						.getOperationRecord().get().getId());
 				assertEquals(remotes.get(1).getOperationRecord().get().getId(),
-						localData.operationSchedules.get(1)
+						localData.operation.operationSchedules.get(1)
 								.getOperationRecord().get().getId());
 				assertEquals(remotes.get(2).getOperationRecord().get().getId(),
-						localData.operationSchedules.get(2)
+						localData.operation.operationSchedules.get(2)
 								.getOperationRecord().get().getId());
 			}
 		});
@@ -199,8 +199,8 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
-				localData.operationSchedules.clear();
-				localData.operationSchedules.addAll(locals);
+				localData.operation.operationSchedules.clear();
+				localData.operation.operationSchedules.addAll(locals);
 			}
 		});
 		if (id.isPresent()) {
@@ -237,8 +237,8 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
-				localData.operationSchedules.clear();
-				localData.operationSchedules.addAll(locals);
+				localData.operation.operationSchedules.clear();
+				localData.operation.operationSchedules.addAll(locals);
 			}
 		});
 		// ListAssert.assertEquals(locals, osl.getOperationSchedules());
@@ -273,8 +273,8 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
-				localData.operationSchedules.clear();
-				localData.operationSchedules.addAll(paramList);
+				localData.operation.operationSchedules.clear();
+				localData.operation.operationSchedules.addAll(paramList);
 			}
 		});
 
@@ -315,7 +315,7 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
-				localData.operationSchedules.addAll(oss);
+				localData.operation.operationSchedules.addAll(oss);
 			}
 		});
 		// assertEquals(Phase.INITIAL, osl.getPhase());

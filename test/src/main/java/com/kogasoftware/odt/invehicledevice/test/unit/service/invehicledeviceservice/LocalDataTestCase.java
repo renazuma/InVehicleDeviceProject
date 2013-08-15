@@ -46,10 +46,10 @@ public class LocalDataTestCase extends AndroidTestCase {
 		ld1.serviceProvider = new ServiceProvider();
 		ld1.serviceProvider.setId(138479134);
 
-		ld1.passengerRecords.add(new PassengerRecord());
-		ld1.passengerRecords.add(new PassengerRecord());
-		ld1.passengerRecords.get(0).setId(10);
-		ld1.passengerRecords.get(1).setId(11);
+		ld1.operation.passengerRecords.add(new PassengerRecord());
+		ld1.operation.passengerRecords.add(new PassengerRecord());
+		ld1.operation.passengerRecords.get(0).setId(10);
+		ld1.operation.passengerRecords.get(1).setId(11);
 
 		ld1.vehicleNotifications.put(VehicleNotificationStatus.REPLIED,
 				new VehicleNotification());
@@ -69,9 +69,9 @@ public class LocalDataTestCase extends AndroidTestCase {
 		assertEquals(ld1.file, ld2.file);
 		assertFalse(ld1.file == ld2.file);
 		assertEquals(ld1.serviceProvider.getId(), ld2.serviceProvider.getId());
-		assertEquals(ld1.passengerRecords.get(0).getId(), ld2.passengerRecords
+		assertEquals(ld1.operation.passengerRecords.get(0).getId(), ld2.operation.passengerRecords
 				.get(0).getId());
-		assertEquals(ld1.passengerRecords.get(1).getId(), ld2.passengerRecords
+		assertEquals(ld1.operation.passengerRecords.get(1).getId(), ld2.operation.passengerRecords
 				.get(1).getId());
 		Iterator<VehicleNotification> i2 = ld2.vehicleNotifications.get(
 				VehicleNotificationStatus.REPLIED).iterator();
@@ -139,18 +139,18 @@ public class LocalDataTestCase extends AndroidTestCase {
 						a.setId(p);
 						List<PassengerRecord> as = Lists.newArrayList(a);
 						as.add(a);
-						ld.passengerRecords.add(a);
+						ld.operation.passengerRecords.add(a);
 
 						// departure
 						PassengerRecord d = new PassengerRecord();
 						d.setId(p + 100000);
 						List<PassengerRecord> ds = Lists.newArrayList(d);
 						ds.add(d);
-						ld.passengerRecords.add(d);
+						ld.operation.passengerRecords.add(d);
 					}
 				}
 			}
-			ld.operationSchedules.add(os);
+			ld.operation.operationSchedules.add(os);
 		}
 
 		Stopwatch sw = new Stopwatch().start();

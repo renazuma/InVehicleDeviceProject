@@ -304,7 +304,7 @@ public class InVehicleDeviceService extends Service {
 	}
 
 	public Boolean isOperationInitialized(LocalData localData) {
-		return (!localData.operationScheduleReceiveSequence.equals(0) && localData.serviceProviderInitialized);
+		return (!localData.operation.operationScheduleReceiveSequence.equals(0) && localData.serviceProviderInitialized);
 	}
 
 	@Override

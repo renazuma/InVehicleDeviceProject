@@ -162,7 +162,7 @@ public class PassengerRecordErrorFragment extends ApplicationFragment<State>
 		getService().getLocalStorage().write(new BackgroundWriter() {
 			@Override
 			public void writeInBackground(LocalData ld) {
-				ld.completeGetOff = true;
+				ld.operation.completeGetOff = true;
 			}
 
 			@Override

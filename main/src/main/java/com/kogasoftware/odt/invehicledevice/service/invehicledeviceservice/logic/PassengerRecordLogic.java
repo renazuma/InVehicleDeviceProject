@@ -151,11 +151,11 @@ public class PassengerRecordLogic {
 			@Override
 			public void writeInBackground(LocalData ld) {
 				for (PassengerRecord oldPassengerRecord : Lists
-						.newArrayList(ld.passengerRecords)) {
+						.newArrayList(ld.operation.passengerRecords)) {
 					if (oldPassengerRecord.getId().equals(
 							passengerRecord.getId())) {
-						ld.passengerRecords.remove(oldPassengerRecord);
-						ld.passengerRecords.add(passengerRecord);
+						ld.operation.passengerRecords.remove(oldPassengerRecord);
+						ld.operation.passengerRecords.add(passengerRecord);
 					}
 				}
 			}

@@ -25,7 +25,17 @@ public class LocalData implements Serializable {
 		DRIVE, FINISH, PLATFORM_GET_ON, PLATFORM_GET_OFF,
 	}
 
-	private static final long serialVersionUID = 1797801788126L;
+	public static class Operation implements Serializable {
+		private static final long serialVersionUID = ~LocalData.serialVersionUID;
+		public Boolean completeGetOff = false;
+		public Integer operationScheduleReceiveSequence = 0;
+		public final List<OperationSchedule> operationSchedules = Lists
+				.newLinkedList();
+		public final List<PassengerRecord> passengerRecords = Lists
+				.newLinkedList();
+	}
+
+	private static final long serialVersionUID = 1797801788127L;
 
 	public Boolean serviceProviderInitialized = false;
 
@@ -37,11 +47,7 @@ public class LocalData implements Serializable {
 	public ServiceProvider serviceProvider = new ServiceProvider();
 	public ServiceUnitStatusLog serviceUnitStatusLog = new ServiceUnitStatusLog();
 
-	public Boolean completeGetOff = false;
-	public Integer operationScheduleReceiveSequence = 0;
-	public final List<OperationSchedule> operationSchedules = Lists
-			.newLinkedList();
-	public final List<PassengerRecord> passengerRecords = Lists.newLinkedList();
+	public final Operation operation = new Operation();
 
 	public static enum VehicleNotificationStatus {
 		UNHANDLED, OPERATION_SCHEDULE_RECEIVED, REPLIED,

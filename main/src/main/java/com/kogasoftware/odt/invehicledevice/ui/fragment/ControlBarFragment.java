@@ -98,11 +98,11 @@ public class ControlBarFragment extends ApplicationFragment<State> implements
 					public Pair<Phase, Boolean> readInBackground(
 							LocalData localData) {
 						Phase phase = OperationScheduleLogic.getPhase(
-								localData.operationSchedules,
-								localData.passengerRecords,
-								localData.completeGetOff);
+								localData.operation.operationSchedules,
+								localData.operation.passengerRecords,
+								localData.operation.completeGetOff);
 						Boolean isLast = !OperationSchedule.getRelative(
-								localData.operationSchedules, 1).isPresent();
+								localData.operation.operationSchedules, 1).isPresent();
 						return Pair.of(phase, isLast);
 					}
 
@@ -219,7 +219,7 @@ public class ControlBarFragment extends ApplicationFragment<State> implements
 					getService().getLocalStorage().write(new BackgroundWriter() {
 						@Override
 						public void writeInBackground(LocalData ld) {
-							ld.completeGetOff = true;
+							ld.operation.completeGetOff = true;
 						}
 
 						@Override

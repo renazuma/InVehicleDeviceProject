@@ -96,7 +96,7 @@ public class OperationScheduleChangedFragment extends
 					@Override
 					public ArrayList<OperationSchedule> readInBackground(
 							LocalData localData) {
-						return Lists.newArrayList(localData.operationSchedules);
+						return Lists.newArrayList(localData.operation.operationSchedules);
 					}
 
 					@Override
