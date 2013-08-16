@@ -55,12 +55,12 @@ public class PlatformTestCase extends
 		super.tearDown();
 	}
 
-	public void test00_データ初期設定() {
+	public void xtest00_データ初期設定() {
 		dataset(6);
 
 	}
 
-	public void test01_メモボタンを押すとメモ画面が表示() {
+	public void xtest01_メモボタンを押すとメモ画面が表示() {
 
 		solo.clickOnButton("メモ");
 		// assertEquals(View.VISIBLE, solo.getView(MemoModalView.class, 0)
@@ -68,36 +68,36 @@ public class PlatformTestCase extends
 		assertTrue(solo.searchText("テストメモ1"));
 	}
 
-	public void test02_メモ画面で戻るボタンを押すとメモ画面が非表示() {
-		test01_メモボタンを押すとメモ画面が表示();
+	public void xtest02_メモ画面で戻るボタンを押すとメモ画面が非表示() {
+		xtest01_メモボタンを押すとメモ画面が表示();
 		// solo.clickOnView(solo.getView(R.id.memo_close_button));
 		getInstrumentation().waitForIdleSync();
 		// assertEquals(View.GONE, solo.getView(MemoModalView.class, 0)
 		// 		.getVisibility());
 	}
 
-	public void test04_出発ボタンを押すと出発ダイアログ表示() {
+	public void xtest04_出発ボタンを押すと出発ダイアログ表示() {
 		solo.clickOnButton("出発する");
 		// assertEquals(View.VISIBLE, solo
 		// 		.getView(DepartureCheckModalView.class, 0).getVisibility());
 	}
 
-	public void test05_出発ダイアログはい選択で走行中() {
-		test04_出発ボタンを押すと出発ダイアログ表示();
+	public void xtest05_出発ダイアログはい選択で走行中() {
+		xtest04_出発ボタンを押すと出発ダイアログ表示();
 		solo.clickOnView(solo.getView(R.id.departure_button));
 		getInstrumentation().waitForIdleSync();
 		TextView v = (TextView) solo.getView(R.id.phase_text_view);
 		assertEquals("走行中", v.getText());
 	}
 
-	public void test06_出発ダイアログいいえ選択で停車中に戻る() {
-		test04_出発ボタンを押すと出発ダイアログ表示();
+	public void xtest06_出発ダイアログいいえ選択で停車中に戻る() {
+		xtest04_出発ボタンを押すと出発ダイアログ表示();
 		solo.clickOnView(solo.getView(R.id.departure_check_close_button));
 		TextView v = (TextView) solo.getView(R.id.phase_text_view);
 		assertEquals("停車中", v.getText());
 	}
 
-	public void test09_下スクロール() {
+	public void xtest09_下スクロール() {
 
 		assertTrue(solo.searchText("名字a", 0, false));
 		assertTrue(solo.searchText("1011", 0, false));
@@ -110,9 +110,9 @@ public class PlatformTestCase extends
 
 	}
 
-	public void test10_上スクロール() {
+	public void xtest10_上スクロール() {
 
-		test09_下スクロール();
+		xtest09_下スクロール();
 
 		solo.clickOnButton("上へ移動");
 		solo.clickOnButton("上へ移動");
@@ -138,7 +138,7 @@ public class PlatformTestCase extends
 
 	}
 
-	public void test13_人数が正しく表示されている() {
+	public void xtest13_人数が正しく表示されている() {
 
 		assertTrue(solo.searchText("1名"));
 		assertTrue(solo.searchText("2名"));
@@ -167,17 +167,17 @@ public class PlatformTestCase extends
 
 	}
 
-	public void test15_データ初期設定1件() {
+	public void xtest15_データ初期設定1件() {
 		dataset(1);
 	}
 
-	public void test16_件数が少ないため上へ移動ボタンが存在しない() {
+	public void xtest16_件数が少ないため上へ移動ボタンが存在しない() {
 
 		assertFalse(solo.searchButton("上へ移動"));
 
 	}
 
-	public void test17_件数が少ないため下へ移動ボタンが存在しない() {
+	public void xtest17_件数が少ないため下へ移動ボタンが存在しない() {
 
 		assertFalse(solo.searchButton("下へ移動"));
 
@@ -189,7 +189,7 @@ public class PlatformTestCase extends
 
 	}
 
-	public void test19_乗客表示の切り替えボタンが存在する() {
+	public void xtest19_乗客表示の切り替えボタンが存在する() {
 
 		assertTrue(solo.searchText("乗車中の乗客全員を表示"));
 		assertTrue(solo.searchText("未来の乗客を表示"));
@@ -197,7 +197,7 @@ public class PlatformTestCase extends
 
 	}
 
-	public void test20_乗車中の乗客全員を表示オンオフ() {
+	public void xtest20_乗車中の乗客全員を表示オンオフ() {
 
 		assertTrue(solo.searchText("乗車中の乗客全員を表示"));
 
@@ -205,7 +205,7 @@ public class PlatformTestCase extends
 
 	}
 
-	public void test22_過去の乗降場で未乗車の乗客を表示オンオフ() {
+	public void xtest22_過去の乗降場で未乗車の乗客を表示オンオフ() {
 
 		assertTrue(solo.searchText("過去の乗降場で未乗車の乗客を表示"));
 
@@ -213,7 +213,7 @@ public class PlatformTestCase extends
 
 	}
 
-	public void test21_未来の乗客を表示オンオフ() {
+	public void xtest21_未来の乗客を表示オンオフ() {
 
 		assertTrue(solo.searchText("未来の乗客を表示"));
 

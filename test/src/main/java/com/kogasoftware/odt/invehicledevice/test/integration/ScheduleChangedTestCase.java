@@ -33,7 +33,7 @@ public class ScheduleChangedTestCase extends
 		super.tearDown();
 	}
 
-	public void test01_テスト() throws Exception {
+	public void xtest01_テスト() throws Exception {
 
 //		assertTrue(solo.searchText("乗降場A", true));
 
@@ -51,7 +51,7 @@ public class ScheduleChangedTestCase extends
 //		solo.clickOnButton("戻る");
 	}
 
-	public void test02_テスト() throws Exception {
+	public void xtest02_テスト() throws Exception {
 		assertTrue(solo.searchText("乗降場A", true));
 
 		solo.clickOnButton("到着しました");

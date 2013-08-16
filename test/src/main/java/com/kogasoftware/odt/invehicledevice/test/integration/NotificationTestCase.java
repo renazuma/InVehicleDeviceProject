@@ -25,7 +25,6 @@ public class NotificationTestCase extends
 	public NotificationTestCase() {
 		super("com.kogasoftware.odt.invehicledevice.ui.activity",
 				InVehicleDeviceActivity.class);
-
 	}
 
 	@Override
@@ -50,7 +49,7 @@ public class NotificationTestCase extends
 		super.tearDown();
 	}
 
-	public void test01_起動時は非表示() {
+	public void xtest01_起動時は非表示() {
 
 		// assertEquals(View.VISIBLE, solo.getView(DrivePhaseFragment.class, 0)
 		// 		.getVisibility());
@@ -60,9 +59,9 @@ public class NotificationTestCase extends
 
 	}
 
-	public void test02_走行中に管理者から連絡が来たら表示() throws Exception {
+	public void xtest02_走行中に管理者から連絡が来たら表示() throws Exception {
 
-		test01_起動時は非表示();
+		xtest01_起動時は非表示();
 
 		final List<VehicleNotification> vehicleNotifications = Lists
 				.newLinkedList();
@@ -100,9 +99,9 @@ public class NotificationTestCase extends
 
 	}
 
-	public void test03_はいを押下して閉じ走行中に戻る() throws Exception {
+	public void xtest03_はいを押下して閉じ走行中に戻る() throws Exception {
 
-		test02_走行中に管理者から連絡が来たら表示();
+		xtest02_走行中に管理者から連絡が来たら表示();
 
 		getInstrumentation().waitForIdleSync();
 

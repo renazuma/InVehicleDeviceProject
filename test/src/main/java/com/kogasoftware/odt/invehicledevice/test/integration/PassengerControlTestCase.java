@@ -70,12 +70,12 @@ public class PassengerControlTestCase extends
 		return false;
 	}
 
-	public void test00_データ初期設定() {
+	public void xtest00_データ初期設定() {
 		dataset(6);
 
 	}
 
-	public void test01_乗車人数_全員乗車() throws Exception {
+	public void xtest01_乗車人数_全員乗車() throws Exception {
 		Thread.sleep(2 * 1000);
 
 		solo.clickOnText("名字a", 0, true);
@@ -101,7 +101,7 @@ public class PassengerControlTestCase extends
 
 	}
 
-	public void test02_乗車人数_１予約のみ乗車() throws Exception {
+	public void xtest02_乗車人数_１予約のみ乗車() throws Exception {
 		Thread.sleep(2 * 1000);
 		
 		solo.clickOnText("名字a", 0, true);
@@ -130,7 +130,7 @@ public class PassengerControlTestCase extends
 
 	public void xtest03_降車した人数が反映されている() throws Exception {
 
-		test01_乗車人数_全員乗車();
+		xtest01_乗車人数_全員乗車();
 
 		Thread.sleep(2 * 1000);
 
@@ -162,7 +162,7 @@ public class PassengerControlTestCase extends
 
 	public void xtest04_手前の乗降場で乗車() throws Exception {
 
-		test01_乗車人数_全員乗車();
+		xtest01_乗車人数_全員乗車();
 
 		getInstrumentation().waitForIdleSync();
 
@@ -197,7 +197,7 @@ public class PassengerControlTestCase extends
 
 	public void xtest05_手前の乗降場で降車() throws Exception {
 
-		test01_乗車人数_全員乗車();
+		xtest01_乗車人数_全員乗車();
 
 		getInstrumentation().waitForIdleSync();
 
@@ -237,7 +237,7 @@ public class PassengerControlTestCase extends
 
 	public void xtest06_後の乗降場から乗車() throws Exception {
 
-		test02_乗車人数_１予約のみ乗車();
+		xtest02_乗車人数_１予約のみ乗車();
 
 		getInstrumentation().waitForIdleSync();
 

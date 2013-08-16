@@ -42,18 +42,18 @@ public class ScheduleTestCase extends
 		super.tearDown();
 	}
 
-	public void test00_データ初期設定6件() {
+	public void xtest00_データ初期設定6件() {
 		dataset(6);
 	}
 
-	public void test01_起動時は非表示() {
+	public void xtest01_起動時は非表示() {
 //		assertEquals("運行\n予定",
 //				((Button) solo.getView(R.id.schedule_button)).getText());
 //		assertFalse(solo.waitForView(ScheduleModalView.class, 0, 500));
 	}
 
-	public void test02_予定ボタンを押したら表示() {
-		test01_起動時は非表示();
+	public void xtest02_予定ボタンを押したら表示() {
+		xtest01_起動時は非表示();
 //		solo.clickOnView(solo.getView(R.id.schedule_button));
 		getInstrumentation().waitForIdleSync();
 //		assertTrue(solo.waitForView(ScheduleModalView.class));
@@ -61,8 +61,8 @@ public class ScheduleTestCase extends
 		assertTrue(solo.searchText("テスト湯島天神前"));
 	}
 
-	public void test03_戻るボタンを押したら消える() {
-		test02_予定ボタンを押したら表示();
+	public void xtest03_戻るボタンを押したら消える() {
+		xtest02_予定ボタンを押したら表示();
 		solo.clickOnButton("戻る");
 
 		getInstrumentation().waitForIdleSync();
@@ -72,15 +72,15 @@ public class ScheduleTestCase extends
 		assertFalse(solo.searchText("テスト湯島天神前", true));
 	}
 
-	public void test04_一回閉じてからもう一度予定ボタンを押したら表示() {
-		test03_戻るボタンを押したら消える();
+	public void xtest04_一回閉じてからもう一度予定ボタンを押したら表示() {
+		xtest03_戻るボタンを押したら消える();
 //		solo.clickOnView(solo.getView(R.id.schedule_button));
 //		assertTrue(solo.waitForView(ScheduleModalView.class));
 	}
 
-	public void test05_予定を表示してから下スクロール() {
+	public void xtest05_予定を表示してから下スクロール() {
 
-		test02_予定ボタンを押したら表示();
+		xtest02_予定ボタンを押したら表示();
 
 		assertTrue(solo.searchText("コガソフト", 0, false));
 
@@ -94,9 +94,9 @@ public class ScheduleTestCase extends
 
 	}
 
-	public void test06_予定を表示してから上スクロール() {
+	public void xtest06_予定を表示してから上スクロール() {
 
-		test05_予定を表示してから下スクロール();
+		xtest05_予定を表示してから下スクロール();
 
 //		solo.clickOnView(solo.getView(R.id.schedule_button));
 //		assertTrue(solo.waitForView(ScheduleModalView.class));
@@ -107,12 +107,12 @@ public class ScheduleTestCase extends
 
 	}
 
-	public void test07_データ初期設定1件() {
+	public void xtest07_データ初期設定1件() {
 		dataset(1);
 	}
 
-	public void test08_件数が少ないため上へ移動ボタンが存在しない() {
-		test02_予定ボタンを押したら表示();
+	public void xtest08_件数が少ないため上へ移動ボタンが存在しない() {
+		xtest02_予定ボタンを押したら表示();
 
 //		solo.clickOnView(solo.getView(R.id.schedule_button));
 //		assertEquals(View.VISIBLE, solo.getView(ScheduleModalView.class, 0)
@@ -121,8 +121,8 @@ public class ScheduleTestCase extends
 		assertFalse(solo.searchButton("上へ移動"));
 	}
 
-	public void test09_件数が少ないため下へ移動ボタンが存在しない() {
-		test02_予定ボタンを押したら表示();
+	public void xtest09_件数が少ないため下へ移動ボタンが存在しない() {
+		xtest02_予定ボタンを押したら表示();
 
 //		solo.clickOnView(solo.getView(R.id.schedule_button));
 //		assertEquals(View.VISIBLE, solo.getView(ScheduleModalView.class, 0)

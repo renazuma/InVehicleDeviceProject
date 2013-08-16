@@ -36,36 +36,36 @@ public class MapTestCase extends
 		super.tearDown();
 	}
 
-	public void test01_起動時は非表示() {
+	public void xtest01_起動時は非表示() {
 		// assertFalse(solo.waitForView(NavigationModalView.class, 0, 500));
 	}
 
-	public void test02_地図ボタンを押したら表示() {
-		test01_起動時は非表示();
+	public void xtest02_地図ボタンを押したら表示() {
+		xtest01_起動時は非表示();
 		solo.clickOnView(solo.getView(R.id.map_button));
 		// assertTrue(solo.waitForView(NavigationModalView.class));
 	}
 
-	public void test03_戻るボタンを押したら消える() {
-		test02_地図ボタンを押したら表示();
+	public void xtest03_戻るボタンを押したら消える() {
+		xtest02_地図ボタンを押したら表示();
 		solo.clickOnButton("戻る");
 		getInstrumentation().waitForIdleSync();
 		// assertFalse(solo.waitForView(NavigationModalView.class));
 	}
 
-	public void test04_一回閉じてからもう地図ボタンを押したら表示() {
-		test03_戻るボタンを押したら消える();
+	public void xtest04_一回閉じてからもう地図ボタンを押したら表示() {
+		xtest03_戻るボタンを押したら消える();
 		solo.clickOnView(solo.getView(R.id.map_button));
 		// assertTrue(solo.waitForView(NavigationModalView.class));
 	}
 
-	public void test05_拡大ボタンを押下で地図が拡大する() {
-		test02_地図ボタンを押したら表示();
+	public void xtest05_拡大ボタンを押下で地図が拡大する() {
+		xtest02_地図ボタンを押したら表示();
 		solo.clickOnButton("拡大");
 	}
 
-	public void test06_縮小ボタンを押下で地図が縮小する() {
-		test02_地図ボタンを押したら表示();
+	public void xtest06_縮小ボタンを押下で地図が縮小する() {
+		xtest02_地図ボタンを押したら表示();
 		solo.clickOnButton("縮小");
 	}
 }
