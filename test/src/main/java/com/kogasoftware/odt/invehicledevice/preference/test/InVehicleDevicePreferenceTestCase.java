@@ -12,7 +12,7 @@ import com.kogasoftware.odt.invehicledevice.preference.R;
 
 public class InVehicleDevicePreferenceTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDevicePreferenceActivity> {
-	private static final String VALID_URL = "http://10.0.2.15:12345";
+	private static final String VALID_URL = "http://" + MockServer.getLocalServerHost() + ":12345";
 	private static final String INVALID_URL = "http://127.0.0.1:12346";
 	private static final String VALID_LOGIN = "valid_login";
 	private static final String INVALID_LOGIN = "invalid_login";

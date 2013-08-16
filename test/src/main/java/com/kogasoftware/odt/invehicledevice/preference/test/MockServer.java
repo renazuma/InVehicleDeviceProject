@@ -27,6 +27,8 @@ import org.apache.http.protocol.ResponseDate;
 import org.apache.http.protocol.ResponseServer;
 import org.apache.http.util.EntityUtils;
 
+import android.os.Build;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.InVehicleDevice;
@@ -89,7 +91,16 @@ public class MockServer extends Thread {
 				new DefaultHttpResponseFactory());
 		httpService.setHandlerResolver(registry);
 		serverSocket = new ServerSocket(12345, -1,
-				Inet4Address.getByName("10.0.2.15"));
+				Inet4Address.getByName(getLocalServerHost()));
+	}
+
+	public static String getLocalServerHost() {
+		if ("goldfish".equals(Build.HARDWARE)) {
+			// Androidエミュレーター
+			return "10.0.2.15";
+		} else {
+			return "127.0.0.1";
+		}
 	}
 
 	@Override
