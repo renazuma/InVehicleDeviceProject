@@ -1,34 +1,28 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledeviceservice.sensor;
 
-import android.hardware.SensorEvent;
-import android.view.WindowManager;
-
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.ServiceUnitStatusLogLogic;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.sensor.OrientationSensorEventListener;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.sensor.TemperatureSensorEventListener;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
 
 public class TemperatureSensorEventListenerTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 	InVehicleDeviceService s;
 	EventDispatcher ed;
 	ServiceUnitStatusLogLogic susll;
-	WindowManager wm;
-	OrientationSensorEventListener osel;
+	TemperatureSensorEventListener tsel;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		s = mock(InVehicleDeviceService.class);
-		wm = mock(WindowManager.class);
 		ed = mock(EventDispatcher.class);
 		when(s.getEventDispatcher()).thenReturn(ed);
-		osel = new OrientationSensorEventListener(susll, wm);
+		tsel = new TemperatureSensorEventListener(susll);
 	}
 
 	@Override
@@ -37,7 +31,7 @@ public class TemperatureSensorEventListenerTestCase extends
 	}
 
 	public void testOnSensorChanged() throws Exception {
-		SensorEvent se = mock(SensorEvent.class);
-		osel.onSensorChanged(se);
+		float[] values = new float[] { 0, 0, 0, 0 };
+		tsel.onSensorChanged(values);
 	}
 }
