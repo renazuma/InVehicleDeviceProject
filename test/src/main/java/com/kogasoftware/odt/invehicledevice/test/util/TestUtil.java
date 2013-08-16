@@ -50,11 +50,6 @@ public class TestUtil {
 		InVehicleDeviceApiClientFactory.setInstance(ds);
 	}
 
-	@Deprecated
-	public static void clearStatus() {
-		LocalStorage.clearSavedFile();
-	}
-
 	public static void clearLocalStorage() {
 		LocalStorage.clearSavedFile();
 	}

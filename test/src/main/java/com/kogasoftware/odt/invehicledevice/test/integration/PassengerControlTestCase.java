@@ -38,7 +38,7 @@ public class PassengerControlTestCase extends
 
 		dataset(6);
 
-		TestUtil.clearStatus();
+		TestUtil.clearLocalStorage(getInstrumentation());
 
 		solo = new Solo(getInstrumentation(), getActivity());
 		assertTrue(TestUtil.waitForStartUI(getActivity()));

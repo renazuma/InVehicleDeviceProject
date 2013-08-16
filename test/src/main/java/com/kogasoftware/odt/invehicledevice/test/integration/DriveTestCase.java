@@ -25,7 +25,7 @@ public class DriveTestCase extends
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		TestUtil.clearStatus();
+		TestUtil.clearLocalStorage(getInstrumentation());
 
 		solo = new Solo(getInstrumentation(), getActivity());
 		assertTrue(TestUtil.waitForStartUI(getActivity()));

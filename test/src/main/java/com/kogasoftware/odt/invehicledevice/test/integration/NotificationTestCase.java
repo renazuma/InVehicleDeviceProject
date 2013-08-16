@@ -39,7 +39,7 @@ public class NotificationTestCase extends
 
 		// TestUtil.setDate("2012-01-01T09:00:00+09:00");
 		TestUtil.setApiClient(mdst);
-		TestUtil.clearStatus();
+		TestUtil.clearLocalStorage(getInstrumentation());
 
 		solo = new Solo(getInstrumentation(), getActivity());
 		assertTrue(TestUtil.waitForStartUI(getActivity()));

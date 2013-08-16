@@ -18,7 +18,7 @@ public class ScheduleChangedTestCase extends
 		super("com.kogasoftware.odt.invehicledevice.ui.activity",
 				InVehicleDeviceActivity.class);
 		TestUtil.setApiClient(new ScheduleChangedTestApiClient());
-		TestUtil.clearStatus();
+		TestUtil.clearLocalStorage(getInstrumentation());
 	}
 
 	@Override
