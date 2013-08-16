@@ -31,6 +31,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
@@ -176,7 +177,7 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 
 	private Boolean uiInitialized = false;
 
-	@Deprecated
+	@VisibleForTesting
 	public Boolean isUiInitialized() {
 		return uiInitialized;
 	}
