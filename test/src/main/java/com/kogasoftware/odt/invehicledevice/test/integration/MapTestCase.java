@@ -14,6 +14,7 @@ public class MapTestCase extends
 
 	private Solo solo;
 
+	@SuppressWarnings("deprecation")
 	public MapTestCase() {
 		super("com.kogasoftware.odt.invehicledevice.ui.activity",
 				InVehicleDeviceActivity.class);

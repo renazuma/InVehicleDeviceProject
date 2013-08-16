@@ -13,6 +13,7 @@ public class ScheduleTestCase extends
 
 	private Solo solo;
 
+	@SuppressWarnings("deprecation")
 	public ScheduleTestCase() {
 		super("com.kogasoftware.odt.invehicledevice.ui.activity",
 				InVehicleDeviceActivity.class);

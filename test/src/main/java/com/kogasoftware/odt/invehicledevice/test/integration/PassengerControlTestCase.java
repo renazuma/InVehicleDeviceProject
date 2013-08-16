@@ -14,6 +14,7 @@ public class PassengerControlTestCase extends
 
 	private Solo solo;
 
+	@SuppressWarnings("deprecation")
 	public PassengerControlTestCase() {
 		super("com.kogasoftware.odt.invehicledevice.ui.activity",
 				InVehicleDeviceActivity.class);

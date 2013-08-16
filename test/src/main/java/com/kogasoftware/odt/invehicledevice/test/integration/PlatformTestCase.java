@@ -14,6 +14,7 @@ public class PlatformTestCase extends
 
 	private Solo solo;
 
+	@SuppressWarnings("deprecation")
 	public PlatformTestCase() {
 		super("com.kogasoftware.odt.invehicledevice.ui.activity",
 				InVehicleDeviceActivity.class);

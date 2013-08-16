@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import android.test.ActivityInstrumentationTestCase2;
+
 import com.google.common.collect.Lists;
 import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
@@ -22,6 +23,7 @@ public class NotificationTestCase extends
 
 	final Integer WAIT_MILLIS = 7000;
 
+	@SuppressWarnings("deprecation")
 	public NotificationTestCase() {
 		super("com.kogasoftware.odt.invehicledevice.ui.activity",
 				InVehicleDeviceActivity.class);

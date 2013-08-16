@@ -15,6 +15,7 @@ public class DriveTestCase extends
 
 	private Solo solo;
 
+	@SuppressWarnings("deprecation")
 	public DriveTestCase() {
 		super("com.kogasoftware.odt.invehicledevice.ui.activity",
 				InVehicleDeviceActivity.class);
