@@ -15,7 +15,7 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Event
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.VoidReader;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Reader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Writer;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
@@ -74,14 +74,15 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 			}
 		});
 		// osl.mergeOperationSchedules(remotes, vns);
-		lds.withReadLock(new VoidReader() {
+		lds.withReadLock(new Reader<Integer>() {
 			@Override
-			public void read(LocalData localData) {
+			public Integer read(LocalData localData) {
 				assertEquals(1, localData.operation.operationSchedules.size());
 				assertEquals(remote.getId(), localData.operation.operationSchedules
 						.get(0).getId());
 				assertTrue(localData.operation.operationSchedules.get(0)
 						.getOperationRecord().isPresent());
+				return 0;
 			}
 		});
 	}
@@ -111,9 +112,9 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 			}
 		});
 		// osl.mergeOperationSchedules(remotes, vns);
-		lds.withReadLock(new VoidReader() {
+		lds.withReadLock(new Reader<Integer>() {
 			@Override
-			public void read(LocalData localData) {
+			public Integer read(LocalData localData) {
 				assertEquals(1, localData.operation.operationSchedules.size());
 				assertEquals(remote.getId(), localData.operation.operationSchedules
 						.get(0).getId());
@@ -125,6 +126,7 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 				// assertEquals(
 				// preferLocal ? Optional.of(200) : Optional.absent(),
 				// localData.passengerRecords.get(0).getPayment());
+				return 0;
 			}
 		});
 	}
@@ -170,9 +172,9 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 			}
 		});
 		// osl.mergeOperationSchedules(remotes, vns);
-		lds.withReadLock(new VoidReader() {
+		lds.withReadLock(new Reader<Integer>() {
 			@Override
-			public void read(LocalData localData) {
+			public Integer read(LocalData localData) {
 				assertEquals(3, localData.operation.operationSchedules.size());
 				for (Integer i = 0; i < localData.operation.operationSchedules.size(); ++i) {
 					assertEquals(remotes.get(i).getId(),
@@ -188,6 +190,7 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 				assertEquals(remotes.get(2).getOperationRecord().get().getId(),
 						localData.operation.operationSchedules.get(2)
 								.getOperationRecord().get().getId());
+				return 0;
 			}
 		});
 	}

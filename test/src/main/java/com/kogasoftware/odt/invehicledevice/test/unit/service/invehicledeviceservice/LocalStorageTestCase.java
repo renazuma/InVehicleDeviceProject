@@ -30,7 +30,6 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Local
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundReader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundWriter;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Reader;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.VoidReader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Writer;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
@@ -95,14 +94,15 @@ public class LocalStorageTestCase extends AndroidTestCase {
 
 		// クリアされていないことを確認
 		LocalStorage ls2 = new LocalStorage(c);
-		ls2.withReadLock(new VoidReader() {
+		ls2.withReadLock(new Reader<Integer>() {
 			@Override
-			public void read(LocalData ld) {
+			public Integer read(LocalData ld) {
 				assertEquals(1, ld.operation.passengerRecords.size());
 				assertEquals(
 						1,
 						ld.vehicleNotifications.get(
 								VehicleNotificationStatus.REPLIED).size());
+				return 0;
 			}
 		});
 		ls2.close();
@@ -111,13 +111,14 @@ public class LocalStorageTestCase extends AndroidTestCase {
 		// クリアされることを確認
 		LocalStorage.clearSavedFile();
 		LocalStorage ls3 = new LocalStorage(c);
-		ls3.withReadLock(new VoidReader() {
+		ls3.withReadLock(new Reader<Integer>() {
 			@Override
-			public void read(LocalData ld) {
+			public Integer read(LocalData ld) {
 				assertTrue(ld.operation.passengerRecords.isEmpty());
 
 				assertTrue(ld.vehicleNotifications.get(
 						VehicleNotificationStatus.REPLIED).isEmpty());
+				return 0;
 			}
 		});
 		ls3.close();
@@ -125,12 +126,13 @@ public class LocalStorageTestCase extends AndroidTestCase {
 
 		// 復活しないことを確認
 		LocalStorage ls4 = new LocalStorage(c);
-		ls4.withReadLock(new VoidReader() {
+		ls4.withReadLock(new Reader<Integer>() {
 			@Override
-			public void read(LocalData ld) {
+			public Integer read(LocalData ld) {
 				assertTrue(ld.operation.passengerRecords.isEmpty());
 				assertTrue(ld.vehicleNotifications.get(
 						VehicleNotificationStatus.REPLIED).isEmpty());
+				return 0;
 			}
 		});
 		ls4.close();
@@ -156,10 +158,11 @@ public class LocalStorageTestCase extends AndroidTestCase {
 
 		// クリアされていないことを確認
 		LocalStorage ls2 = new LocalStorage(c);
-		ls2.withReadLock(new VoidReader() {
+		ls2.withReadLock(new Reader<Integer>() {
 			@Override
-			public void read(LocalData ld) {
+			public Integer read(LocalData ld) {
 				assertEquals(ld.operation.operationSchedules.size(), 1);
+				return 0;
 			}
 		});
 		ls2.close();
@@ -171,10 +174,11 @@ public class LocalStorageTestCase extends AndroidTestCase {
 				.commit();
 		// クリアされることを確認
 		LocalStorage ls3 = new LocalStorage(c);
-		ls3.withReadLock(new VoidReader() {
+		ls3.withReadLock(new Reader<Integer>() {
 			@Override
-			public void read(LocalData ld) {
+			public Integer read(LocalData ld) {
 				assertTrue(ld.operation.operationSchedules.isEmpty());
+				return 0;
 			}
 		});
 		ls3.close();
@@ -185,10 +189,11 @@ public class LocalStorageTestCase extends AndroidTestCase {
 
 		// データが復活しないことを確認
 		LocalStorage ls4 = new LocalStorage(c);
-		ls4.withReadLock(new VoidReader() {
+		ls4.withReadLock(new Reader<Integer>() {
 			@Override
-			public void read(LocalData ld) {
+			public Integer read(LocalData ld) {
 				assertTrue(ld.operation.operationSchedules.isEmpty());
+				return 0;
 			}
 		});
 		ls4.close();
@@ -222,27 +227,6 @@ public class LocalStorageTestCase extends AndroidTestCase {
 
 		// Reader<T>を使い同時アクセスを行うRunnable
 		final Runnable useReader = new Runnable() {
-			@Override
-			public void run() {
-				try {
-					cb.await();
-				} catch (InterruptedException e) {
-					return;
-				} catch (BrokenBarrierException e) {
-					return;
-				}
-				ls.withReadLock(new Reader<Integer>() {
-					@Override
-					public Integer read(LocalData localData) {
-						readAccess.run();
-						return 0;
-					}
-				});
-			}
-		};
-
-		// VoidReaderを使い同時アクセスを行うRunnable
-		final Runnable useVoidReader = new Runnable() {
 			@Override
 			public void run() {
 				try {
@@ -296,12 +280,10 @@ public class LocalStorageTestCase extends AndroidTestCase {
 		// 同時アクセス用にスレッド起動
 		Thread[] threads = new Thread[cb.getParties()];
 		for (Integer i = 0; i < threads.length; ++i) {
-			if (i % 15 == 0) {
+			if (i % 2 == 0) {
 				threads[i] = new Thread(useWriter);
-			} else if (i % 2 == 0) {
-				threads[i] = new Thread(useReader);
 			} else {
-				threads[i] = new Thread(useVoidReader);
+				threads[i] = new Thread(useReader);
 			}
 			threads[i].start();
 		}
