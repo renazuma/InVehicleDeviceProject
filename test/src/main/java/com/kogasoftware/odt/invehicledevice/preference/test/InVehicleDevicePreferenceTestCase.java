@@ -12,7 +12,7 @@ import com.kogasoftware.odt.invehicledevice.preference.R;
 
 public class InVehicleDevicePreferenceTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDevicePreferenceActivity> {
-	private static final String VALID_URL = "http://" + MockServer.getLocalServerHost() + ":12345";
+	private final String validUrl = "http://" + MockServer.getLocalServerHost() + ":12345"; // staticにすると、Androidエミュレーターでなぜか内容がnullになることがある。
 	private static final String INVALID_URL = "http://127.0.0.1:12346";
 	private static final String VALID_LOGIN = "valid_login";
 	private static final String INVALID_LOGIN = "invalid_login";
@@ -154,7 +154,7 @@ public class InVehicleDevicePreferenceTestCase extends
 	}
 
 	public void testInvalidLogin() throws Exception {
-		setConnectionUrl(VALID_URL);
+		setConnectionUrl(validUrl);
 		setLogin(INVALID_LOGIN);
 		setPassword(VALID_PASSWORD);
 
@@ -164,7 +164,7 @@ public class InVehicleDevicePreferenceTestCase extends
 	}
 
 	public void testInvalidPassword() throws Exception {
-		setConnectionUrl(VALID_URL);
+		setConnectionUrl(validUrl);
 		setLogin(VALID_LOGIN);
 		setPassword(INVALID_PASSWORD);
 
@@ -218,7 +218,7 @@ public class InVehicleDevicePreferenceTestCase extends
 	}
 
 	public void testExitIfSucceed() throws Exception {
-		setConnectionUrl(VALID_URL);
+		setConnectionUrl(validUrl);
 		setLogin(VALID_LOGIN);
 		setPassword(VALID_PASSWORD);
 
@@ -246,8 +246,14 @@ public class InVehicleDevicePreferenceTestCase extends
 
 	@Override
 	public void tearDown() throws Exception {
-		mockServer.interrupt();
-		solo.finishOpenedActivities();
-		super.tearDown();
+		try {
+			try {
+				mockServer.interrupt();
+			} finally {
+				solo.finishOpenedActivities();
+			}
+		} finally {
+			super.tearDown();
+		}
 	}
 }
