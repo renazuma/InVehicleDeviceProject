@@ -3,11 +3,16 @@ package com.kogasoftware.odt.invehicledevice.test.unit.ui.arrayadapter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.OperationScheduleArrayAdapter;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
+
 import static org.mockito.Mockito.*;
 
 public class OperationScheduleArrayAdapterTestCase extends
@@ -20,6 +25,14 @@ public class OperationScheduleArrayAdapterTestCase extends
 	protected void setUp() throws Exception {
 		super.setUp();
 		s = mock(InVehicleDeviceService.class);
+		when(s.getSystemService(Mockito.anyString())).thenAnswer(new Answer<Object>() {
+			@Override
+			public Object answer(InvocationOnMock invocation) throws Throwable {
+				return getInstrumentation()
+						.getTargetContext()
+						.getSystemService((String) invocation.getArguments()[0]);
+			}
+		});
 		aa = new OperationScheduleArrayAdapter(s,
 				new ArrayList<OperationSchedule>());
 	}
