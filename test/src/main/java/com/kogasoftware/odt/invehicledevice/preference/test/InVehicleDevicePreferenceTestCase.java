@@ -86,7 +86,7 @@ public class InVehicleDevicePreferenceTestCase extends
 
 	private void assertText(boolean expected, String s)
 			throws InterruptedException {
-		assertEquals(expected, solo.waitForText(s, 1, 10000, true));
+		assertEquals(expected, solo.waitForText(s, 1, 10000, true, true));
 	}
 
 	public void testInvalidUrl() throws Exception {
