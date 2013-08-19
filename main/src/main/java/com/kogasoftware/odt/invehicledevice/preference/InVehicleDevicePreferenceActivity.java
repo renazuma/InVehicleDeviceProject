@@ -190,9 +190,8 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 			return;
 		}
 		String token = inVehicleDevice.getAuthenticationToken().get();
-		SharedPreferences preference = PreferenceManager
-				.getDefaultSharedPreferences(InVehicleDevicePreferenceActivity.this);
-		String url = preference.getString(SharedPreferencesKeys.SERVER_URL, "");
+		String url = preferences
+				.getString(SharedPreferencesKeys.SERVER_URL, "");
 
 		Intent intent = new Intent();
 		intent.setAction(Intent.ACTION_SEND);
@@ -200,17 +199,17 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		intent.putExtra(SharedPreferencesKeys.SERVER_IN_VEHICLE_DEVICE_TOKEN,
 				token);
 		intent.putExtra(SharedPreferencesKeys.LOCATION_RECEIVE_MIN_DISTANCE,
-				Integer.parseInt(preference.getString(
+				Integer.parseInt(preferences.getString(
 						SharedPreferencesKeys.LOCATION_RECEIVE_MIN_DISTANCE,
 						"1")));
 		intent.putExtra(
 				SharedPreferencesKeys.LOCATION_RECEIVE_MIN_TIME,
-				Integer.parseInt(preference
+				Integer.parseInt(preferences
 						.getString(
 								SharedPreferencesKeys.LOCATION_RECEIVE_MIN_TIME,
 								"1000")));
 		intent.putExtra(SharedPreferencesKeys.LOCATION_RECEIVE_RESTART_TIMEOUT,
-				Integer.parseInt(preference.getString(
+				Integer.parseInt(preferences.getString(
 						SharedPreferencesKeys.LOCATION_RECEIVE_RESTART_TIMEOUT,
 						"90000")));
 		String packageName = "com.kogasoftware.odt.invehicledevice";
