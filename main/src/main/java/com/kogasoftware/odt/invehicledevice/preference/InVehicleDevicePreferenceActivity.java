@@ -1,6 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.preference;
 
 import java.util.List;
+import java.util.Locale;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -12,6 +13,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -24,6 +26,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
+import com.google.common.base.CharMatcher;
+import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
@@ -159,18 +164,22 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 	}
 
 	private void onExceptionOnUiThread(int reqKey, ApiClientException ex) {
-		String message = "onException: reqKey=" + reqKey + ", exception=" + ex;
+		String message = getString(R.string.error_connection) + "\n"
+				+ ex.getMessage();
 		Log.w(TAG, message, ex);
 		dismissAllDialogs();
 		showAlertDialog(message);
 	}
 
 	private void onFailedOnUiThread(int reqKey, int statusCode, String response) {
-		String message = "onFailed: reqKey=" + reqKey + ", statusCode="
-				+ statusCode + " response=" + response;
-		Log.w(TAG, message);
+		StringBuilder message = new StringBuilder(
+				getString(R.string.error_invalid_login_or_password));
+		if (statusCode != 401) {
+			message.append("\n---\n" + statusCode + ":" + response);
+		}
+		Log.w(TAG, message.toString());
 		dismissAllDialogs();
-		showAlertDialog(message);
+		showAlertDialog(message.toString());
 	}
 
 	@Override
@@ -218,7 +227,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		try {
 			startActivity(intent);
 		} catch (ActivityNotFoundException e) {
-			showAlertDialog("車載器アプリケーションがインストールされていません");
+			showAlertDialog(getString(R.string.error_invehicledevice_application_not_found));
 			return;
 		}
 		finish();
@@ -237,6 +246,12 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 
 	private void onSaveConfigButtonClick() {
 		if (isFinishing()) {
+			return;
+		}
+		List<String> errors = check();
+		if (!errors.isEmpty()) {
+			String li = errors.size() == 1 ? "" : "- ";
+			showAlertDialog(li + Joiner.on("\n" + li).join(errors));
 			return;
 		}
 		showProgressDialog();
@@ -292,5 +307,39 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 						});
 					}
 				});
+	}
+
+	private Boolean checkAscii(String value, Integer id, List<String> errors) {
+		if (Strings.isNullOrEmpty(value)) {
+			errors.add(String.format(Locale.US,
+					getString(R.string.error_null_or_empty), getString(id)));
+			return false;
+		} else if (!CharMatcher.ASCII.matchesAllOf(value)) {
+			errors.add(String.format(Locale.US,
+					getString(R.string.error_non_ascii), getString(id)));
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	private List<String> check() {
+		List<String> errors = Lists.newLinkedList();
+		String url = preferences
+				.getString(SharedPreferencesKeys.SERVER_URL, "");
+		if (checkAscii(url, R.string.server_url, errors)) {
+			Uri uri = Uri.parse(url);
+			if (Strings.isNullOrEmpty(uri.getScheme())
+					|| Strings.isNullOrEmpty(uri.getHost())) {
+				errors.add(String.format(Locale.US,
+						getString(R.string.error_invalid_uri),
+						getString(R.string.server_url)));
+			}
+		}
+
+		checkAscii(preferences.getString(LOGIN_KEY, ""), R.string.login, errors);
+		checkAscii(preferences.getString(PASSWORD_KEY, ""), R.string.password,
+				errors);
+		return errors;
 	}
 }

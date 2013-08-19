@@ -63,11 +63,14 @@ public class MockServer extends Thread {
 					&& passwordNode.isTextual()
 					&& passwordNode.asText().equals("valid_password")) {
 				// OK
+				response.setStatusCode(201);
+				response.setEntity(new StringEntity(
+						"{\"authentication_token\":\"token\"}"));
 			} else {
-				throw new IOException("authentication failed");
+				// NG
+				response.setStatusCode(401);
+				response.setEntity(new StringEntity("{}"));
 			}
-			response.setEntity(new StringEntity(
-					"{\"authentication_token\":\"token\"}"));
 		}
 	}
 

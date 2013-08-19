@@ -1,5 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.preference.test;
 
+import java.util.Locale;
+
 import android.app.Instrumentation;
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.KeyEvent;
@@ -12,7 +14,8 @@ public class InVehicleDevicePreferenceTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDevicePreferenceActivity> {
 	private final String validUrl = "http://" + MockServer.getLocalServerHost()
 			+ ":12345"; // staticにすると、Androidエミュレーターでなぜか内容がnullになることがある。
-	private static final String INVALID_URL = "http://127.0.0.1:12346";
+	private static final String NO_CONNECTABLE_URL = "http://127.0.0.1:12346";
+	private static final String INVALID_URL = "%%%%%";
 	private static final String VALID_LOGIN = "valid_login";
 	private static final String INVALID_LOGIN = "invalid_login";
 	private static final String VALID_PASSWORD = "valid_password";
@@ -80,7 +83,8 @@ public class InVehicleDevicePreferenceTestCase extends
 		assertText(expected, solo.getString(resourceId));
 	}
 
-	private void assertText(boolean expected, String s) throws InterruptedException {
+	private void assertText(boolean expected, String s)
+			throws InterruptedException {
 		assertEquals(expected, solo.waitForText(s, 1, 1000, true));
 	}
 
@@ -90,7 +94,21 @@ public class InVehicleDevicePreferenceTestCase extends
 		setPassword(VALID_PASSWORD);
 
 		solo.clickOnButton(solo.getString(R.string.ok));
-		assertText(true, R.string.an_error_occurred);
+		assertText(true, String.format(Locale.US,
+				getString(R.string.error_invalid_uri),
+				getString(R.string.server_url)));
+		assertFalse(getActivity().isFinishing());
+	}
+
+	public void testNoConnectableUrl() throws Exception {
+		setConnectionUrl(NO_CONNECTABLE_URL);
+		setLogin(VALID_LOGIN);
+		setPassword(VALID_PASSWORD);
+
+		solo.clickOnButton(solo.getString(R.string.ok));
+		assertText(true, String.format(Locale.US,
+				getString(R.string.error_connection),
+				getString(R.string.server_url)));
 		assertFalse(getActivity().isFinishing());
 	}
 
@@ -100,7 +118,9 @@ public class InVehicleDevicePreferenceTestCase extends
 		setPassword(VALID_PASSWORD);
 
 		solo.clickOnButton(solo.getString(R.string.ok));
-		assertText(true, R.string.an_error_occurred);
+		assertText(true, String.format(Locale.US,
+				getString(R.string.error_invalid_login_or_password),
+				getString(R.string.server_url)));
 		assertFalse(getActivity().isFinishing());
 	}
 
@@ -110,9 +130,86 @@ public class InVehicleDevicePreferenceTestCase extends
 		setPassword(INVALID_PASSWORD);
 
 		solo.clickOnButton(solo.getString(R.string.ok));
-		assertText(true, R.string.an_error_occurred);
+		assertText(true, String.format(Locale.US,
+				getString(R.string.error_invalid_login_or_password),
+				getString(R.string.server_url)));
 		solo.clickOnButton(solo.getString(R.string.ok));
 		assertFalse(getActivity().isFinishing());
+	}
+
+	public void testEmptyUrl() throws Exception {
+		setConnectionUrl("");
+		setLogin(VALID_LOGIN);
+		setPassword(VALID_PASSWORD);
+
+		solo.clickOnButton(solo.getString(R.string.ok));
+		assertText(true, String.format(Locale.US,
+				getString(R.string.error_null_or_empty),
+				getString(R.string.server_url)));
+		assertFalse(getActivity().isFinishing());
+	}
+
+	public void testEmptyLogin() throws Exception {
+		setConnectionUrl(validUrl);
+		setLogin("");
+		setPassword(VALID_PASSWORD);
+
+		solo.clickOnButton(solo.getString(R.string.ok));
+		assertText(true, String.format(Locale.US,
+				getString(R.string.error_null_or_empty),
+				getString(R.string.login)));
+		assertFalse(getActivity().isFinishing());
+	}
+
+	public void testEmptyPassword() throws Exception {
+		setConnectionUrl(validUrl);
+		setLogin(VALID_LOGIN);
+		setPassword("");
+
+		solo.clickOnButton(solo.getString(R.string.ok));
+		assertText(true, String.format(Locale.US,
+				getString(R.string.error_null_or_empty),
+				getString(R.string.password)));
+		assertFalse(getActivity().isFinishing());
+	}
+
+	public void testNonAsciiUrl() throws Exception {
+		setConnectionUrl("http://日本語");
+		setLogin(VALID_LOGIN);
+		setPassword(VALID_PASSWORD);
+
+		solo.clickOnButton(solo.getString(R.string.ok));
+		assertText(true, String.format(Locale.US,
+				getString(R.string.error_non_ascii),
+				getString(R.string.server_url)));
+		assertFalse(getActivity().isFinishing());
+	}
+
+	public void testNonAsciiLogin() throws Exception {
+		setConnectionUrl(validUrl);
+		setLogin("日本語");
+		setPassword(VALID_PASSWORD);
+
+		solo.clickOnButton(solo.getString(R.string.ok));
+		assertText(true, String.format(Locale.US,
+				getString(R.string.error_non_ascii), getString(R.string.login)));
+		assertFalse(getActivity().isFinishing());
+	}
+
+	public void testNonAsciiPassword() throws Exception {
+		setConnectionUrl(validUrl);
+		setLogin(VALID_LOGIN);
+		setPassword("日本語");
+
+		solo.clickOnButton(solo.getString(R.string.ok));
+		assertText(true, String.format(Locale.US,
+				getString(R.string.error_non_ascii),
+				getString(R.string.password)));
+		assertFalse(getActivity().isFinishing());
+	}
+
+	private String getString(int id) {
+		return getActivity().getString(id);
 	}
 
 	public void testShowUrl() throws Exception {
@@ -167,19 +264,6 @@ public class InVehicleDevicePreferenceTestCase extends
 	public void testSendBroadcast() throws Exception {
 		// testExitIfSucceed();
 		// TODO:Broadcastなどを使ってテスト可能なように再実装
-	}
-
-	public void testShowErrorDetail() throws Exception {
-		setConnectionUrl("%%%%");
-		setLogin("foo");
-		setPassword("bar");
-		solo.clickOnButton(solo.getString(R.string.ok));
-		assertText(true, "Target host must not be null");
-		solo.clickOnButton(solo.getString(R.string.ok));
-
-		setConnectionUrl("http://127.0.0.1:5432");
-		solo.clickOnButton(solo.getString(R.string.ok));
-		assertText(true, "refused");
 	}
 
 	@Override
