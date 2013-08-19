@@ -47,12 +47,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 	private final InVehicleDeviceApiClient apiClient = new DefaultInVehicleDeviceApiClient(
 			DEFAULT_URL);
 	private final List<Dialog> dialogs = Lists.newLinkedList();
-
-	private SharedPreferences preferences = null;
-	private IStartupService startupService = null;
-	private Boolean destroyed = false;
-
-	private ServiceConnection serviceConnection = new ServiceConnection() {
+	private final ServiceConnection serviceConnection = new ServiceConnection() {
 		@Override
 		public void onServiceConnected(ComponentName componentName,
 				IBinder service) {
@@ -66,6 +61,10 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 			Log.i(TAG, "onServiceDisconnected");
 		}
 	};
+
+	private SharedPreferences preferences = null;
+	private IStartupService startupService = null;
+	private Boolean destroyed = false;
 
 	private void disableMainApplication() {
 		if (startupService != null) {
