@@ -34,8 +34,7 @@ import com.kogasoftware.odt.invehicledevice.service.startupservice.IStartupServi
 import com.kogasoftware.odt.invehicledevice.service.startupservice.Intents;
 
 public class InVehicleDevicePreferenceActivity extends PreferenceActivity
-		implements ApiClientCallback<InVehicleDevice>,
-		OnSharedPreferenceChangeListener {
+		implements OnSharedPreferenceChangeListener {
 	private static final int CONNECTING_DIALOG_ID = 100;
 	private static final String DEFAULT_URL = "http://127.0.0.1";
 	private static final String LOGIN_KEY = "login";
@@ -143,8 +142,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		Closeables.closeQuietly(apiClient);
 	}
 
-	@Override
-	public void onException(int reqKey, ApiClientException ex) {
+	private void onExceptionOnUiThread(int reqKey, ApiClientException ex) {
 		final String message = "onException: reqKey=" + reqKey + ", exception="
 				+ ex;
 		Log.w(TAG, message, ex);
@@ -164,8 +162,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		});
 	}
 
-	@Override
-	public void onFailed(int reqKey, int statusCode, String response) {
+	private void onFailedOnUiThread(int reqKey, int statusCode, String response) {
 		final String message = "onFailed: reqKey=" + reqKey + ", statusCode="
 				+ statusCode + " response=" + response;
 		Log.w(TAG, message);
@@ -191,8 +188,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		updateSummary();
 	}
 
-	@Override
-	public void onSucceed(int reqKey, int statusCode,
+	private void onSucceedOnUiThread(int reqKey, int statusCode,
 			InVehicleDevice inVehicleDevice) {
 		try {
 			dismissDialog(CONNECTING_DIALOG_ID);
@@ -281,6 +277,41 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		InVehicleDevice ivd = new InVehicleDevice();
 		ivd.setLogin(preferences.getString(LOGIN_KEY, ""));
 		ivd.setPassword(preferences.getString(PASSWORD_KEY, ""));
-		apiClient.withRetry(false).login(ivd, this);
+		apiClient.withRetry(false).login(ivd,
+				new ApiClientCallback<InVehicleDevice>() {
+					@Override
+					public void onException(final int reqKey,
+							final ApiClientException exception) {
+						runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								onExceptionOnUiThread(reqKey, exception);
+							}
+						});
+					}
+
+					@Override
+					public void onFailed(final int reqKey,
+							final int statusCode, final String message) {
+						runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								onFailedOnUiThread(reqKey, statusCode, message);
+							}
+						});
+					}
+
+					@Override
+					public void onSucceed(final int reqKey,
+							final int statusCode,
+							final InVehicleDevice inVehicleDevice) {
+						runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								onSucceedOnUiThread(reqKey, statusCode, inVehicleDevice);
+							}
+						});
+					}
+				});
 	}
 }
