@@ -15,7 +15,7 @@
     <string name="location_receive_restart_timeout">受信できない際、切断し再接続するまでの時間(ミリ秒)</string>
     <string name="error_null_or_empty">%sを入力してください</string>
     <string name="error_non_ascii">%sは半角英数字で入力してください</string>
-    <string name="error_invalid_uri">%sの文法が正しくありません</string>
+    <string name="error_invalid_uri">%sの形式が誤っています</string>
     <string name="error_invalid_login_or_password">車載器の認証に失敗しました</string>
     <string name="error_connection">サーバーとの接続に失敗しました</string>
     <string name="error_invehicledevice_application_not_found">車載器アプリケーションがインストールされていません</string>
