@@ -143,43 +143,32 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 	}
 
 	private void onExceptionOnUiThread(int reqKey, ApiClientException ex) {
-		final String message = "onException: reqKey=" + reqKey + ", exception="
-				+ ex;
+		String message = "onException: reqKey=" + reqKey + ", exception=" + ex;
 		Log.w(TAG, message, ex);
-		runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					dismissDialog(CONNECTING_DIALOG_ID);
-				} catch (IllegalArgumentException e) {
-				}
-				Toast.makeText(InVehicleDevicePreferenceActivity.this,
-						getResources().getString(R.string.an_error_occurred),
-						Toast.LENGTH_LONG).show();
-				Toast.makeText(InVehicleDevicePreferenceActivity.this, message,
-						Toast.LENGTH_LONG).show();
-			}
-		});
+		try {
+			dismissDialog(CONNECTING_DIALOG_ID);
+		} catch (IllegalArgumentException e) {
+		}
+		Toast.makeText(InVehicleDevicePreferenceActivity.this,
+				getResources().getString(R.string.an_error_occurred),
+				Toast.LENGTH_LONG).show();
+		Toast.makeText(InVehicleDevicePreferenceActivity.this, message,
+				Toast.LENGTH_LONG).show();
 	}
 
 	private void onFailedOnUiThread(int reqKey, int statusCode, String response) {
-		final String message = "onFailed: reqKey=" + reqKey + ", statusCode="
+		String message = "onFailed: reqKey=" + reqKey + ", statusCode="
 				+ statusCode + " response=" + response;
 		Log.w(TAG, message);
-		runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					dismissDialog(CONNECTING_DIALOG_ID);
-				} catch (IllegalArgumentException e) {
-				}
-				Toast.makeText(InVehicleDevicePreferenceActivity.this,
-						getResources().getString(R.string.an_error_occurred),
-						Toast.LENGTH_LONG).show();
-				Toast.makeText(InVehicleDevicePreferenceActivity.this, message,
-						Toast.LENGTH_LONG).show();
-			}
-		});
+		try {
+			dismissDialog(CONNECTING_DIALOG_ID);
+		} catch (IllegalArgumentException e) {
+		}
+		Toast.makeText(InVehicleDevicePreferenceActivity.this,
+				getResources().getString(R.string.an_error_occurred),
+				Toast.LENGTH_LONG).show();
+		Toast.makeText(InVehicleDevicePreferenceActivity.this, message,
+				Toast.LENGTH_LONG).show();
 	}
 
 	@Override
@@ -197,18 +186,11 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		if (!inVehicleDevice.getAuthenticationToken().isPresent()) {
 			final String message = "token not found";
 			Log.e(TAG, message);
-			runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					Toast.makeText(
-							InVehicleDevicePreferenceActivity.this,
-							getResources()
-									.getString(R.string.an_error_occurred),
-							Toast.LENGTH_LONG).show();
-					Toast.makeText(InVehicleDevicePreferenceActivity.this,
-							message, Toast.LENGTH_LONG).show();
-				}
-			});
+			Toast.makeText(InVehicleDevicePreferenceActivity.this,
+					getResources().getString(R.string.an_error_occurred),
+					Toast.LENGTH_LONG).show();
+			Toast.makeText(InVehicleDevicePreferenceActivity.this, message,
+					Toast.LENGTH_LONG).show();
 			finish();
 			return;
 		}
@@ -242,14 +224,8 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		try {
 			startActivity(intent);
 		} catch (ActivityNotFoundException e) {
-			runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					Toast.makeText(getApplicationContext(),
-							"車載器アプリケーションがインストールされていません", Toast.LENGTH_LONG)
-							.show();
-				}
-			});
+			Toast.makeText(getApplicationContext(),
+					"車載器アプリケーションがインストールされていません", Toast.LENGTH_LONG).show();
 			return;
 		}
 		finish();
@@ -308,7 +284,8 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 						runOnUiThread(new Runnable() {
 							@Override
 							public void run() {
-								onSucceedOnUiThread(reqKey, statusCode, inVehicleDevice);
+								onSucceedOnUiThread(reqKey, statusCode,
+										inVehicleDevice);
 							}
 						});
 					}
