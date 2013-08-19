@@ -2,6 +2,7 @@ package com.kogasoftware.odt.invehicledevice.preference.test;
 
 import java.util.Locale;
 
+import android.app.Activity;
 import android.app.Instrumentation;
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.KeyEvent;
@@ -97,7 +98,8 @@ public class InVehicleDevicePreferenceTestCase extends
 		assertText(true, String.format(Locale.US,
 				getString(R.string.error_invalid_uri),
 				getString(R.string.server_url)));
-		assertFalse(getActivity().isFinishing());
+		solo.clickOnButton(solo.getString(R.string.ok));
+		assertFinishing(false);
 	}
 
 	public void testNoConnectableUrl() throws Exception {
@@ -109,7 +111,8 @@ public class InVehicleDevicePreferenceTestCase extends
 		assertText(true, String.format(Locale.US,
 				getString(R.string.error_connection),
 				getString(R.string.server_url)));
-		assertFalse(getActivity().isFinishing());
+		solo.clickOnButton(solo.getString(R.string.ok));
+		assertFinishing(false);
 	}
 
 	public void testInvalidLogin() throws Exception {
@@ -121,7 +124,8 @@ public class InVehicleDevicePreferenceTestCase extends
 		assertText(true, String.format(Locale.US,
 				getString(R.string.error_invalid_login_or_password),
 				getString(R.string.server_url)));
-		assertFalse(getActivity().isFinishing());
+		solo.clickOnButton(solo.getString(R.string.ok));
+		assertFinishing(false);
 	}
 
 	public void testInvalidPassword() throws Exception {
@@ -134,7 +138,7 @@ public class InVehicleDevicePreferenceTestCase extends
 				getString(R.string.error_invalid_login_or_password),
 				getString(R.string.server_url)));
 		solo.clickOnButton(solo.getString(R.string.ok));
-		assertFalse(getActivity().isFinishing());
+		assertFinishing(false);
 	}
 
 	public void testEmptyUrl() throws Exception {
@@ -146,7 +150,8 @@ public class InVehicleDevicePreferenceTestCase extends
 		assertText(true, String.format(Locale.US,
 				getString(R.string.error_null_or_empty),
 				getString(R.string.server_url)));
-		assertFalse(getActivity().isFinishing());
+		solo.clickOnButton(solo.getString(R.string.ok));
+		assertFinishing(false);
 	}
 
 	public void testEmptyLogin() throws Exception {
@@ -158,7 +163,8 @@ public class InVehicleDevicePreferenceTestCase extends
 		assertText(true, String.format(Locale.US,
 				getString(R.string.error_null_or_empty),
 				getString(R.string.login)));
-		assertFalse(getActivity().isFinishing());
+		solo.clickOnButton(solo.getString(R.string.ok));
+		assertFinishing(false);
 	}
 
 	public void testEmptyPassword() throws Exception {
@@ -170,7 +176,8 @@ public class InVehicleDevicePreferenceTestCase extends
 		assertText(true, String.format(Locale.US,
 				getString(R.string.error_null_or_empty),
 				getString(R.string.password)));
-		assertFalse(getActivity().isFinishing());
+		solo.clickOnButton(solo.getString(R.string.ok));
+		assertFinishing(false);
 	}
 
 	public void testNonAsciiUrl() throws Exception {
@@ -182,7 +189,8 @@ public class InVehicleDevicePreferenceTestCase extends
 		assertText(true, String.format(Locale.US,
 				getString(R.string.error_non_ascii),
 				getString(R.string.server_url)));
-		assertFalse(getActivity().isFinishing());
+		solo.clickOnButton(solo.getString(R.string.ok));
+		assertFinishing(false);
 	}
 
 	public void testNonAsciiLogin() throws Exception {
@@ -193,7 +201,8 @@ public class InVehicleDevicePreferenceTestCase extends
 		solo.clickOnButton(solo.getString(R.string.ok));
 		assertText(true, String.format(Locale.US,
 				getString(R.string.error_non_ascii), getString(R.string.login)));
-		assertFalse(getActivity().isFinishing());
+		solo.clickOnButton(solo.getString(R.string.ok));
+		assertFinishing(false);
 	}
 
 	public void testNonAsciiPassword() throws Exception {
@@ -205,7 +214,8 @@ public class InVehicleDevicePreferenceTestCase extends
 		assertText(true, String.format(Locale.US,
 				getString(R.string.error_non_ascii),
 				getString(R.string.password)));
-		assertFalse(getActivity().isFinishing());
+		solo.clickOnButton(solo.getString(R.string.ok));
+		assertFinishing(false);
 	}
 
 	private String getString(int id) {
@@ -258,7 +268,33 @@ public class InVehicleDevicePreferenceTestCase extends
 
 		solo.clickOnButton(solo.getString(R.string.ok));
 		assertText(false, R.string.an_error_occurred);
-		assertTrue(getActivity().isFinishing());
+		assertFinishing(true);
+	}
+
+	public void assertFinishing(Boolean finishing) throws InterruptedException {
+		// 一定時間後までに指定された条件になることを確認
+		Activity a = getActivity();
+		Boolean match = false;
+		for (int i = 0; i < 25; i++) {
+			if (finishing == a.isFinishing()) {
+				match = true;
+				break;
+			}
+			Thread.sleep(200);
+		}
+		assertTrue(match);
+
+		if (finishing) {
+			return;
+		}
+
+		// 一定時間待っても逆の値に変化しないことを確認
+		for (int i = 0; i < 25; i++) {
+			if (finishing != a.isFinishing()) {
+				fail();
+			}
+			Thread.sleep(200);
+		}
 	}
 
 	public void testSendBroadcast() throws Exception {
