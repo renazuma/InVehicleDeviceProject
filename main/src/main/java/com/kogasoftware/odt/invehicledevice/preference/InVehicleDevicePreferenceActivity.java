@@ -47,6 +47,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 
 	private SharedPreferences preferences = null;
 	private IStartupService startupService = null;
+	private Boolean destroyed = false;
 
 	private ServiceConnection serviceConnection = new ServiceConnection() {
 		@Override
@@ -85,6 +86,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		destroyed = false;
 
 		setContentView(R.layout.main);
 
@@ -137,6 +139,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		destroyed = true;
 
 		preferences.unregisterOnSharedPreferenceChangeListener(this);
 		Closeables.closeQuietly(apiClient);
@@ -261,6 +264,9 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 						runOnUiThread(new Runnable() {
 							@Override
 							public void run() {
+								if (destroyed) {
+									return;
+								}
 								onExceptionOnUiThread(reqKey, exception);
 							}
 						});
@@ -272,6 +278,9 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 						runOnUiThread(new Runnable() {
 							@Override
 							public void run() {
+								if (destroyed) {
+									return;
+								}
 								onFailedOnUiThread(reqKey, statusCode, message);
 							}
 						});
@@ -284,6 +293,9 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 						runOnUiThread(new Runnable() {
 							@Override
 							public void run() {
+								if (destroyed) {
+									return;
+								}
 								onSucceedOnUiThread(reqKey, statusCode,
 										inVehicleDevice);
 							}
