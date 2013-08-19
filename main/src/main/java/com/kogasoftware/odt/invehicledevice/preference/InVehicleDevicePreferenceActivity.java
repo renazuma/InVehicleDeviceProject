@@ -1,5 +1,8 @@
 package com.kogasoftware.odt.invehicledevice.preference;
 
+import java.util.List;
+
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
@@ -20,8 +23,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.Toast;
 
+import com.google.common.collect.Lists;
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.apiclient.ApiClientException;
@@ -35,7 +38,6 @@ import com.kogasoftware.odt.invehicledevice.service.startupservice.Intents;
 
 public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		implements OnSharedPreferenceChangeListener {
-	private static final int CONNECTING_DIALOG_ID = 100;
 	private static final String DEFAULT_URL = "http://127.0.0.1";
 	private static final String LOGIN_KEY = "login";
 	private static final String PASSWORD_KEY = "password";
@@ -44,6 +46,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 
 	private final InVehicleDeviceApiClient apiClient = new DefaultInVehicleDeviceApiClient(
 			DEFAULT_URL);
+	private final List<Dialog> dialogs = Lists.newLinkedList();
 
 	private SharedPreferences preferences = null;
 	private IStartupService startupService = null;
@@ -75,6 +78,30 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		Intent exitIntent = new Intent();
 		exitIntent.setAction(Broadcasts.ACTION_EXIT);
 		getApplicationContext().sendBroadcast(exitIntent);
+	}
+
+	private void dismissAllDialogs() {
+		for (Dialog dialog : dialogs) {
+			dialog.dismiss();
+		}
+		dialogs.clear();
+	}
+
+	private void showProgressDialog() {
+		ProgressDialog progressDialog = new ProgressDialog(this);
+		progressDialog.setMessage(Html
+				.fromHtml(getString(R.string.checking_connection_config)));
+		progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		progressDialog.show();
+		dialogs.add(progressDialog);
+	}
+
+	private void showAlertDialog(String message) {
+		AlertDialog alertDialog = new AlertDialog.Builder(this)
+				.setTitle(getString(R.string.an_error_occurred))
+				.setPositiveButton(android.R.string.ok, null)
+				.setMessage(message).show();
+		dialogs.add(alertDialog);
 	}
 
 	@Override
@@ -109,20 +136,6 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 	}
 
 	@Override
-	protected Dialog onCreateDialog(int id) {
-		switch (id) {
-		case CONNECTING_DIALOG_ID: {
-			ProgressDialog dialog = new ProgressDialog(this);
-			dialog.setMessage(Html
-					.fromHtml(getString(R.string.checking_connection_config)));
-			dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			return dialog;
-		}
-		}
-		return null;
-	}
-
-	@Override
 	public void onStart() {
 		super.onStart();
 		Intent intent = new Intent(IStartupService.class.getName());
@@ -140,6 +153,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 	public void onDestroy() {
 		super.onDestroy();
 		destroyed = true;
+		dismissAllDialogs();
 
 		preferences.unregisterOnSharedPreferenceChangeListener(this);
 		Closeables.closeQuietly(apiClient);
@@ -148,30 +162,16 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 	private void onExceptionOnUiThread(int reqKey, ApiClientException ex) {
 		String message = "onException: reqKey=" + reqKey + ", exception=" + ex;
 		Log.w(TAG, message, ex);
-		try {
-			dismissDialog(CONNECTING_DIALOG_ID);
-		} catch (IllegalArgumentException e) {
-		}
-		Toast.makeText(InVehicleDevicePreferenceActivity.this,
-				getResources().getString(R.string.an_error_occurred),
-				Toast.LENGTH_LONG).show();
-		Toast.makeText(InVehicleDevicePreferenceActivity.this, message,
-				Toast.LENGTH_LONG).show();
+		dismissAllDialogs();
+		showAlertDialog(message);
 	}
 
 	private void onFailedOnUiThread(int reqKey, int statusCode, String response) {
 		String message = "onFailed: reqKey=" + reqKey + ", statusCode="
 				+ statusCode + " response=" + response;
 		Log.w(TAG, message);
-		try {
-			dismissDialog(CONNECTING_DIALOG_ID);
-		} catch (IllegalArgumentException e) {
-		}
-		Toast.makeText(InVehicleDevicePreferenceActivity.this,
-				getResources().getString(R.string.an_error_occurred),
-				Toast.LENGTH_LONG).show();
-		Toast.makeText(InVehicleDevicePreferenceActivity.this, message,
-				Toast.LENGTH_LONG).show();
+		dismissAllDialogs();
+		showAlertDialog(message);
 	}
 
 	@Override
@@ -182,18 +182,11 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 
 	private void onSucceedOnUiThread(int reqKey, int statusCode,
 			InVehicleDevice inVehicleDevice) {
-		try {
-			dismissDialog(CONNECTING_DIALOG_ID);
-		} catch (IllegalArgumentException e) {
-		}
+		dismissAllDialogs();
 		if (!inVehicleDevice.getAuthenticationToken().isPresent()) {
-			final String message = "token not found";
+			String message = "token not found";
 			Log.e(TAG, message);
-			Toast.makeText(InVehicleDevicePreferenceActivity.this,
-					getResources().getString(R.string.an_error_occurred),
-					Toast.LENGTH_LONG).show();
-			Toast.makeText(InVehicleDevicePreferenceActivity.this, message,
-					Toast.LENGTH_LONG).show();
+			showAlertDialog(message);
 			finish();
 			return;
 		}
@@ -227,8 +220,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		try {
 			startActivity(intent);
 		} catch (ActivityNotFoundException e) {
-			Toast.makeText(getApplicationContext(),
-					"車載器アプリケーションがインストールされていません", Toast.LENGTH_LONG).show();
+			showAlertDialog("車載器アプリケーションがインストールされていません");
 			return;
 		}
 		finish();
@@ -249,7 +241,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		if (isFinishing()) {
 			return;
 		}
-		showDialog(CONNECTING_DIALOG_ID);
+		showProgressDialog();
 		apiClient.setServerHost(preferences.getString(
 				SharedPreferencesKeys.SERVER_URL, DEFAULT_URL));
 
