@@ -275,7 +275,7 @@ public class InVehicleDevicePreferenceTestCase extends
 		// 一定時間後までに指定された条件になることを確認
 		Activity a = getActivity();
 		Boolean match = false;
-		for (int i = 0; i < 25; i++) {
+		for (int i = 0; i < 50; i++) {
 			if (finishing == a.isFinishing()) {
 				match = true;
 				break;
