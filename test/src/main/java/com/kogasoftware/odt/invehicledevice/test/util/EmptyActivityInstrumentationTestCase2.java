@@ -49,26 +49,6 @@ public class EmptyActivityInstrumentationTestCase2 extends
 		return h;
 	}
 
-	/**
-	 * テストプロジェクト内のリソースIDからレイアウトを読み込みActivityへ配置する。読み込まれたレイアウトを返す。
-	 */
-	protected View inflateAndAddTestLayout(final int testLayoutResourceId)
-			throws InterruptedException {
-		final AtomicReference<View> v = new AtomicReference<View>();
-		runOnUiThreadSync(new Runnable() {
-			@Override
-			public void run() {
-				LayoutInflater li = a.getLayoutInflater(); // Activity用のLayoutInflaterを使う
-				XmlResourceParser p = getInstrumentation().getContext()
-						.getResources().getXml(testLayoutResourceId);
-				v.set(li.inflate(p, null));
-				ViewGroup vg = (ViewGroup) a.findViewById(android.R.id.content);
-				vg.addView(v.get());
-			}
-		});
-		return v.get();
-	}
-
 	public void runOnUiThreadSync(Runnable runnable, Integer timeoutSeconds)
 			throws InterruptedException {
 		TestUtil.runOnUiThreadSync(a, runnable, timeoutSeconds);
