@@ -135,10 +135,7 @@ public class UploadThread extends Thread {
 	}
 
 	private AmazonS3Client getAmazonS3Client() throws InterruptedException {
-		if (!BuildConfig.DEBUG) {
-			return new AmazonS3Client(getAWSCredentials(context));
-		}
-		if (mockAmazonS3Client.isPresent()) {
+		if (BuildConfig.DEBUG && mockAmazonS3Client.isPresent()) {
 			return mockAmazonS3Client.get();
 		}
 		return new AmazonS3Client(getAWSCredentials(context));
