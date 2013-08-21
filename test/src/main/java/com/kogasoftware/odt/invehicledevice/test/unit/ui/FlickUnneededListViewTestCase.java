@@ -4,6 +4,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 
 import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
+import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
 import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
 
 public class FlickUnneededListViewTestCase extends
@@ -14,7 +15,14 @@ public class FlickUnneededListViewTestCase extends
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		v = (FlickUnneededListView) inflateAndAddTestLayout(com.kogasoftware.odt.invehicledevice.test.R.layout.test_flick_unneeded_list_view);
+		TestUtil.runOnUiThreadSync(getActivity(), new Runnable() {
+			@Override
+			public void run() {
+				v = new FlickUnneededListView(getInstrumentation()
+						.getTargetContext(), null);
+				getActivity().setContentView(v);
+			}
+		});
 		assertNotNull(v);
 	}
 
