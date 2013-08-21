@@ -1,8 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.test.unit.ui.fragment;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.timeout;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.concurrent.BlockingQueue;
@@ -11,20 +9,13 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
-
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.FrameLayout;
 
-import com.kogasoftware.odt.apiclient.ApiClientCallback;
-import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;

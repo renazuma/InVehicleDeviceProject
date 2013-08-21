@@ -2,17 +2,10 @@ package com.kogasoftware.odt.invehicledevice.test.util;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
-
 import android.app.Instrumentation;
-import android.content.res.XmlResourceParser;
 import android.os.Handler;
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
 import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.ui.activity.EmptyActivity;
