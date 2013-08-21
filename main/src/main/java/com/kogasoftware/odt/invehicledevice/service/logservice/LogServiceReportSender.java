@@ -20,7 +20,6 @@ import android.util.Log;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.annotations.VisibleForTesting;
-import com.kogasoftware.odt.invehicledevice.empty.EmptyFile;
 
 public class LogServiceReportSender implements ReportSender {
 	private static final String TAG = LogServiceReportSender.class
@@ -50,7 +49,7 @@ public class LogServiceReportSender implements ReportSender {
 			throws ReportSenderException {
 		String format = (new SimpleDateFormat("yyyyMMddHHmmss.SSS", Locale.US))
 				.format(new Date());
-		File file = new EmptyFile();
+		File file = null;
 		try {
 			file = File
 					.createTempFile(format + "_acra_", ".log", dataDirectory);
