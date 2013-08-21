@@ -62,7 +62,7 @@ public class InVehicleDeviceApplication extends Application {
 			Log.w(TAG, e);
 		}
 
-		enableStrictMode();
+		// enableStrictMode();
 	}
 
 	protected void enableStrictMode() {
