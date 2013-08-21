@@ -164,10 +164,6 @@ public class InVehicleDeviceActivityTestCase extends
 		assertFixUserRotation(Surface.ROTATION_270);
 	}
 
-	protected Boolean isDefaultLandscape() {
-		return true;
-	}
-
 	public void assertFixUserRotation(Integer request) throws Exception {
 		TestUtil.disableAutoStart(getInstrumentation().getContext());
 		for (String USER_ROTATION : SettingsReflection.SystemReflection.USER_ROTATION
@@ -194,7 +190,7 @@ public class InVehicleDeviceActivityTestCase extends
 			Integer after = Settings.System.getInt(a.getContentResolver(),
 					USER_ROTATION);
 			assertEquals(changed.get(), after.intValue());
-			if (isDefaultLandscape()) {
+			if (TestUtil.isDefaultLandscape(a)) {
 				assertTrue(Surface.ROTATION_0 == changed.get()
 						|| Surface.ROTATION_180 == changed.get());
 			} else {

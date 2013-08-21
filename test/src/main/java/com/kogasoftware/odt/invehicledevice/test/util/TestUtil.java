@@ -32,8 +32,12 @@ import android.os.Looper;
 import android.os.RemoteException;
 import android.os.StrictMode;
 import android.support.v4.app.Fragment;
+import android.util.Log;
+import android.view.Display;
 import android.view.KeyEvent;
+import android.view.Surface;
 import android.view.View;
+import android.view.WindowManager;
 
 import com.google.common.base.Stopwatch;
 import com.google.common.util.concurrent.Uninterruptibles;
@@ -422,5 +426,17 @@ public class TestUtil {
 
 	public static Long getLocalStorageSaveMillis() {
 		return 2000L;
+	}
+
+	public static boolean isDefaultLandscape(Context c) {
+		WindowManager wm = (WindowManager) c
+				.getSystemService(Context.WINDOW_SERVICE);
+		Display d = wm.getDefaultDisplay();
+		Integer o = d.getOrientation();
+		Boolean defaultLandscape = (d.getWidth() > d.getHeight())
+				^ (o.equals(Surface.ROTATION_90) | o
+						.equals(Surface.ROTATION_270));
+		Log.e("DEFAULT_LANDSCAPE", "d=" + defaultLandscape);
+		return defaultLandscape;
 	}
 }
