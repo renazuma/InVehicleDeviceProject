@@ -32,7 +32,6 @@ import android.os.Looper;
 import android.os.RemoteException;
 import android.os.StrictMode;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.Surface;
@@ -436,7 +435,6 @@ public class TestUtil {
 		Boolean defaultLandscape = (d.getWidth() > d.getHeight())
 				^ (o.equals(Surface.ROTATION_90) | o
 						.equals(Surface.ROTATION_270));
-		Log.e("DEFAULT_LANDSCAPE", "d=" + defaultLandscape);
 		return defaultLandscape;
 	}
 }
