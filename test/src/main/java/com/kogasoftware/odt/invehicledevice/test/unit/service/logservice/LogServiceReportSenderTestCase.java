@@ -49,7 +49,7 @@ public class LogServiceReportSenderTestCase extends AndroidTestCase {
 	}
 
 	public void testSend_Success() throws Exception {
-		lsrs = new LogServiceReportSender(getContext());
+		lsrs = new LogServiceReportSender(getContext(), getContext().getFilesDir());
 		CrashReportData crd = new CrashReportData();
 		String avc = "51234";
 		crd.put(ReportField.APP_VERSION_CODE, avc);
