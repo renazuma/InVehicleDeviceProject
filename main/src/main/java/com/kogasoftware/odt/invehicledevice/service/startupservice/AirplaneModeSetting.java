@@ -21,8 +21,12 @@ public class AirplaneModeSetting {
 			success = Settings.System.putInt(context.getContentResolver(),
 					Settings.System.AIRPLANE_MODE_ON, value);
 		} else {
-			success = Settings.Global.putInt(context.getContentResolver(),
-					Settings.Global.AIRPLANE_MODE_ON, value);
+			try {
+				success = Settings.Global.putInt(context.getContentResolver(),
+						Settings.Global.AIRPLANE_MODE_ON, value);
+			} catch (SecurityException e) {
+				throw new IOException(e);
+			}
 		}
 		if (!success) {
 			throw new IOException("Airplane mode can't be changed");
