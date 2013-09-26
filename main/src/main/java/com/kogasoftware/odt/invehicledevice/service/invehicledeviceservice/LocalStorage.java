@@ -115,6 +115,8 @@ public class LocalStorage implements Closeable {
 					Thread.sleep(savePeriodMillis);
 				}
 			} catch (InterruptedException e) {
+				// 正常終了
+			} finally {
 				if (saveSemaphore.tryAcquire()) {
 					save(); // アプリ終了時、saveSemaphoreがacquire可能の場合は必ずsaveを行う
 				}
