@@ -12,6 +12,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -109,15 +110,19 @@ public class LocalStorage implements Closeable {
 		public void run() {
 			try {
 				while (true) {
-					saveSemaphore.acquire();
-					saveSemaphore.drainPermits();
+					periodicSaveSemaphore.acquire();
+					periodicSaveSemaphore.drainPermits();
 					save();
-					Thread.sleep(savePeriodMillis);
+					if (periodicSaveWaitSemaphore.tryAcquire(savePeriodMillis,
+							TimeUnit.MILLISECONDS)) {
+						periodicSaveWaitSemaphore.drainPermits();
+						Log.i(TAG, "Periodic save wait was cancelled");
+					}
 				}
 			} catch (InterruptedException e) {
 				// 正常終了
 			} finally {
-				if (saveSemaphore.tryAcquire()) {
+				if (periodicSaveSemaphore.tryAcquire()) {
 					save(); // アプリ終了時、saveSemaphoreがacquire可能の場合は必ずsaveを行う
 				}
 			}
@@ -216,7 +221,8 @@ public class LocalStorage implements Closeable {
 	private final Lock readLock = reentrantReadWriteLock.readLock();
 	private final Lock writeLock = reentrantReadWriteLock.writeLock();
 	private final LocalData localData;
-	private final Semaphore saveSemaphore = new Semaphore(0);
+	private final Semaphore periodicSaveSemaphore = new Semaphore(0);
+	private final Semaphore periodicSaveWaitSemaphore = new Semaphore(0);
 	private final Integer savePeriodMillis;
 	private final Thread saveThread;
 
@@ -303,7 +309,7 @@ public class LocalStorage implements Closeable {
 		} finally {
 			writeLock.unlock();
 		}
-		saveSemaphore.release();
+		periodicSaveSemaphore.release();
 	}
 
 	public <T extends Serializable> void read(
@@ -357,5 +363,10 @@ public class LocalStorage implements Closeable {
 		} catch (RejectedExecutionException e) {
 			Log.w(TAG, e);
 		}
+	}
+
+	public void flush() {
+		periodicSaveWaitSemaphore.release();
+		periodicSaveSemaphore.release();
 	}
 }

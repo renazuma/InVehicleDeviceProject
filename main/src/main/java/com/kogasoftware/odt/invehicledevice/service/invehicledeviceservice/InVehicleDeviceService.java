@@ -53,6 +53,7 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClientFactory;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher.OnPauseActivityListener;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundReader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Reader;
@@ -75,7 +76,8 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.threa
 import com.kogasoftware.odt.invehicledevice.service.trackingservice.TrackingIntent;
 import com.kogasoftware.odt.invehicledevice.ui.BigToast;
 
-public class InVehicleDeviceService extends Service {
+public class InVehicleDeviceService extends Service implements
+		OnPauseActivityListener {
 	public class LocalBinder extends Binder {
 		public InVehicleDeviceService getService() {
 			return InVehicleDeviceService.this;
@@ -157,7 +159,7 @@ public class InVehicleDeviceService extends Service {
 	 * 
 	 * 何故か普通にAsyncTaskやThreadを使うと裏のスレッドから結果オブジェクトやサービスへの参照が消えずに残ることがある。これは
 	 * eclipseのMemory Analyzer Toolで確認できる。この現象の原因の解明がまだできていないため、次善策として防御的に
-	 * 上記処理を行う際にサービスとのお互いの参照を弱参照で保持しておき、可能な限り参照が残らないように配慮する。
+	 * 上記処理を行う際にサービスとのお互いの参照を弱参照で保持しておき、可能な限り参照が残らないように配慮するThread
 	 */
 	private static class InitializeThread extends Thread {
 		private static class PostInitializeCallback implements Runnable {
@@ -381,6 +383,7 @@ public class InVehicleDeviceService extends Service {
 				operationScheduleReceiveThread);
 		getEventDispatcher().addOnStartNewOperationListener(
 				serviceProviderReceiveThread);
+		getEventDispatcher().addOnPauseActivityListener(this);
 
 		{ // 弱参照から取り出した強参照の変数のスコープを限定
 			InitializeThread initializeThread = new InitializeThread(this,
@@ -613,6 +616,7 @@ public class InVehicleDeviceService extends Service {
 						operationScheduleReceiveThread);
 		getEventDispatcher().removeOnStartNewOperationListener(
 				serviceProviderReceiveThread);
+		getEventDispatcher().removeOnPauseActivityListener(this);
 
 		operationScheduleReceiveThread.interrupt();
 		serviceProviderReceiveThread.interrupt();
@@ -689,5 +693,12 @@ public class InVehicleDeviceService extends Service {
 
 	public Optional<Bitmap> getLastMapBitmap() {
 		return lastMapBitmap;
+	}
+
+	@Override
+	public void onPauseActivity() {
+		// メモリ枯渇の際、onDestroyを呼ばれずにサービスが終了してしまうことがあるため、
+		// 必ず呼ばれるActivityのonPause時にデータを強制的に保存する
+		localStorage.flush();
 	}
 }
