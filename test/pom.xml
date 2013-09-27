@@ -14,29 +14,18 @@
 		<dependency>
 			<groupId>android</groupId>
 			<artifactId>android</artifactId>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.jayway.android.robotium</groupId>
 			<artifactId>robotium-solo</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.kogasoftware.odt.invehicledevice</groupId>
+			<artifactId>invehicledevice-apiclient</artifactId>
+			<type>apklib</type>
+		</dependency>
 	</dependencies>
 	<profiles>
-		<profile>
-			<id>maven-without-ide</id>
-			<activation>
-				<property>
-					<name>!m2e.version</name>
-				</property>
-			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>com.kogasoftware.odt.invehicledevice</groupId>
-					<artifactId>invehicledevice-apiclient</artifactId>
-					<type>apklib</type>
-				</dependency>
-			</dependencies>
-		</profile>
 		<profile>
 			<id>emma</id>
 			<build>
