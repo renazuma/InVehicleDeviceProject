@@ -321,7 +321,7 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 		Log.i(TAG, "onResume()");
 		handler.removeCallbacks(pauseFinishTimeouter);
 		for (InVehicleDeviceService service : getService().asSet()) {
-			service.getEventDispatcher().dispatchActivityResumed();
+			service.getEventDispatcher().dispatchResumeActivity();
 		}
 		for (final Integer SYSTEM_UI_FLAG_LOW_PROFILE : ViewReflection.SYSTEM_UI_FLAG_LOW_PROFILE
 				.asSet()) {
@@ -336,7 +336,7 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 		Log.i(TAG, "onPause()");
 		handler.postDelayed(pauseFinishTimeouter, PAUSE_FINISH_TIMEOUT_MILLIS);
 		for (InVehicleDeviceService service : getService().asSet()) {
-			service.getEventDispatcher().dispatchActivityPaused();
+			service.getEventDispatcher().dispatchPauseActivity();
 		}
 		fixUserRotation();
 	}

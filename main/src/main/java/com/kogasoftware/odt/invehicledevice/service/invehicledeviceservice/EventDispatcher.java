@@ -25,14 +25,6 @@ public class EventDispatcher implements Closeable {
 		return LinkedHashMultimap.create();
 	}
 
-	public interface OnActivityResumeListener {
-		void onActivityResume();
-	}
-
-	public interface OnActivityPauseListener {
-		void onActivityPause();
-	}
-
 	public interface OnAlertUpdatedOperationScheduleListener {
 		void onAlertUpdatedOperationSchedule();
 	}
@@ -121,8 +113,6 @@ public class EventDispatcher implements Closeable {
 	protected final Multimap<Handler, OnPauseActivityListener> onPauseActivityListeners = newListenerMultimap();
 	protected final Multimap<Handler, OnResumeActivityListener> onResumeActivityListeners = newListenerMultimap();
 	protected final Multimap<Handler, OnOperationScheduleReceiveFailListener> onOperationScheduleReceiveFailListeners = newListenerMultimap();
-	protected final Multimap<Handler, OnActivityPauseListener> onActivityPauseListeners = newListenerMultimap();
-	protected final Multimap<Handler, OnActivityResumeListener> onActivityResumeListeners = newListenerMultimap();
 	protected final Multimap<Handler, OnUpdateOperationListener> onUpdateOperationListeners = newListenerMultimap();
 
 	private static interface Dispatcher<T> {
@@ -134,7 +124,7 @@ public class EventDispatcher implements Closeable {
 		Multimap<Handler, T> multimap = LinkedHashMultimap.create();
 		synchronized (rawMultimap) {
 			multimap.putAll(rawMultimap);
-		}
+		}		
 		for (final Entry<Handler, T> entry : multimap.entries()) {
 			Handler handler = entry.getKey();
 			final T listener = entry.getValue();
@@ -453,22 +443,22 @@ public class EventDispatcher implements Closeable {
 				});
 	}
 
-	public void dispatchActivityPaused() {
-		dispatchListener(onActivityPauseListeners,
-				new Dispatcher<OnActivityPauseListener>() {
+	public void dispatchPauseActivity() {
+		dispatchListener(onPauseActivityListeners,
+				new Dispatcher<OnPauseActivityListener>() {
 					@Override
-					public void dispatch(OnActivityPauseListener listener) {
-						listener.onActivityPause();
+					public void dispatch(OnPauseActivityListener listener) {
+						listener.onPauseActivity();
 					}
 				});
 	}
 
-	public void dispatchActivityResumed() {
-		dispatchListener(onActivityResumeListeners,
-				new Dispatcher<OnActivityResumeListener>() {
+	public void dispatchResumeActivity() {
+		dispatchListener(onResumeActivityListeners,
+				new Dispatcher<OnResumeActivityListener>() {
 					@Override
-					public void dispatch(OnActivityResumeListener listener) {
-						listener.onActivityResume();
+					public void dispatch(OnResumeActivityListener listener) {
+						listener.onResumeActivity();
 					}
 				});
 	}
@@ -498,8 +488,6 @@ public class EventDispatcher implements Closeable {
 		clearListener(onPauseActivityListeners);
 		clearListener(onResumeActivityListeners);
 		clearListener(onOperationScheduleReceiveFailListeners);
-		clearListener(onActivityPauseListeners);
-		clearListener(onActivityResumeListeners);
 		clearListener(onUpdateOperationListeners);
 	}
 }
