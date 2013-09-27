@@ -243,7 +243,7 @@ public class EventDispatcher implements Closeable {
 		putListener(onStartReceiveUpdatedOperationScheduleListeners, listener);
 	}
 
-	public void addOnOperationScheduleReceiveFailedListener(
+	public void addOnOperationScheduleReceiveFailListener(
 			OnOperationScheduleReceiveFailListener listener) {
 		putListener(onOperationScheduleReceiveFailListeners, listener);
 	}
@@ -309,7 +309,7 @@ public class EventDispatcher implements Closeable {
 				listener);
 	}
 
-	public void removeOnOperationScheduleReceiveFailedListener(
+	public void removeOnOperationScheduleReceiveFailListener(
 			OnOperationScheduleReceiveFailListener listener) {
 		removeListener(onOperationScheduleReceiveFailListeners, listener);
 	}

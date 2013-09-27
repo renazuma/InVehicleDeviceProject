@@ -101,7 +101,7 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 			service.getEventDispatcher().addOnUpdateOperationListener(
 					InVehicleDeviceActivity.this);
 			service.getEventDispatcher()
-					.addOnOperationScheduleReceiveFailedListener(
+					.addOnOperationScheduleReceiveFailListener(
 							InVehicleDeviceActivity.this);
 			service.getEventDispatcher().addOnExitListener(
 					InVehicleDeviceActivity.this);
@@ -227,7 +227,7 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 		for (InVehicleDeviceService service : getService().asSet()) {
 			service.getEventDispatcher().removeOnExitListener(this);
 			service.getEventDispatcher()
-					.removeOnOperationScheduleReceiveFailedListener(this);
+					.removeOnOperationScheduleReceiveFailListener(this);
 			service.getEventDispatcher()
 					.removeOnAlertVehicleNotificationReceiveListener(this);
 			service.getEventDispatcher()
