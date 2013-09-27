@@ -135,7 +135,7 @@ public class LocalStorage implements Closeable {
 
 	private static final Object FILE_ACCESS_LOCK = new Object(); // ファイルアクセス中のスレッドを一つに制限するためのロック。将来的にはロックの粒度をファイル毎にする必要があるかもしれない。
 
-	private static final Integer DEFAULT_SAVE_PERIO_MILLIS = 5 * 60 * 1000;
+	private static final Integer DEFAULT_SAVE_PERIO_MILLIS = 30 * 1000;
 
 	private static final AtomicBoolean WILL_CLEAR_SAVED_FILE = new AtomicBoolean(
 			false);
