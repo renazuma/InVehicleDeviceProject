@@ -22,6 +22,11 @@
 			<groupId>android.support</groupId>
 			<artifactId>compatibility-v4</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.kogasoftware.odt.invehicledevice</groupId>
+			<artifactId>invehicledevice-apiclient</artifactId>
+			<type>apklib</type>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -32,21 +37,4 @@
 			</plugin>
 		</plugins>
 	</build>
-	<profiles>
-		<profile>
-			<id>maven-without-ide</id>
-			<activation>
-				<property>
-					<name>!m2e.version</name>
-				</property>
-			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>com.kogasoftware.odt.invehicledevice</groupId>
-					<artifactId>invehicledevice-apiclient</artifactId>
-					<type>apklib</type>
-				</dependency>
-			</dependencies>
-		</profile>
-	</profiles>
 </project>
