@@ -66,6 +66,30 @@
 			<groupId>com.amazonaws</groupId>
 			<artifactId>aws-android-sdk-s3</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.kogasoftware.openjtalk</groupId>
+			<artifactId>android-openjtalk</artifactId>
+			<type>apklib</type>
+		</dependency>
+		<dependency>
+			<groupId>com.kogasoftware.odt.invehicledevice</groupId>
+			<artifactId>invehicledevice-apiclient</artifactId>
+			<type>apklib</type>
+		</dependency>
+        <!--
+		<dependency>
+		    ATTENTION! Do NOT use provided scope!!
+			<groupId>com.google.android.gms</groupId>
+			<artifactId>google-play-services</artifactId>
+			<type>apklib</type>
+		</dependency>
+		<dependency>
+    		ATTENTION! Do NOT use provided scope!!
+			<groupId>com.google.android.gms</groupId>
+			<artifactId>google-play-services</artifactId>
+			<type>jar</type>
+		</dependency>
+        -->
 	</dependencies>
 	<build>
 		<plugins>
@@ -135,38 +159,4 @@
 			</plugin>
 		</plugins>
 	</build>
-	<profiles>
-		<profile>
-			<id>maven-without-ide</id>
-			<activation>
-				<property>
-					<name>!m2e.version</name>
-				</property>
-			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>com.kogasoftware.openjtalk</groupId>
-					<artifactId>android-openjtalk</artifactId>
-					<type>apklib</type>
-				</dependency>
-				<dependency>
-					<groupId>com.kogasoftware.odt.invehicledevice</groupId>
-					<artifactId>invehicledevice-apiclient</artifactId>
-					<type>apklib</type>
-				</dependency>
-				<dependency>
-				    <!-- ATTENTION! Do NOT use provided scope!! -->
-					<groupId>com.google.android.gms</groupId>
-					<artifactId>google-play-services</artifactId>
-					<type>apklib</type>
-				</dependency>
-				<dependency>
-		    		<!-- ATTENTION! Do NOT use provided scope!! -->
-					<groupId>com.google.android.gms</groupId>
-					<artifactId>google-play-services</artifactId>
-					<type>jar</type>
-				</dependency>
-			</dependencies>
-		</profile>
-	</profiles>
 </project>

@@ -73,14 +73,6 @@
 	</dependencies>
 	<profiles>
 		<profile>
-			<id>maven-without-ide</id>
-			<activation>
-				<property>
-					<name>!m2e.version</name>
-				</property>
-			</activation>
-		</profile>
-		<profile>
 			<id>emma</id>
 			<build>
 				<plugins>
