@@ -72,22 +72,6 @@ public class EventDispatcher implements Closeable {
 		void onPauseActivity();
 	}
 
-	public interface OnReceiveUpdatedOperationScheduleListener {
-		void onReceiveUpdatedOperationSchedule(
-				List<OperationSchedule> operationSchedules,
-				List<VehicleNotification> triggerVehicleNotifications);
-	}
-
-	public interface OnReceiveVehicleNotificationListener {
-		void onReceiveVehicleNotification(
-				List<VehicleNotification> vehicleNotifications);
-	}
-
-	public interface OnReplyUpdatedOperationScheduleVehicleNotificationsListener {
-		void onReplyUpdatedOperationScheduleVehicleNotifications(
-				List<VehicleNotification> vehicleNotifications);
-	}
-
 	public interface OnResumeActivityListener {
 		void onResumeActivity();
 	}
