@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:robobunny="http://robobunny.com" >
 
     <PreferenceCategory android:title="@string/connection_config" >
         <EditTextPreference
@@ -20,6 +21,21 @@
             android:key="password"
             android:maxLines="1"
             android:title="@string/password" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/map_config" >
+        <CheckBoxPreference
+            android:key="rotate_map"
+            android:title="@string/rotate_map" />
+
+        <com.robobunny.SeekBarPreference
+            android:defaultValue="0"
+            android:key="extra_rotation_degrees_clockwise"
+            android:max="360"
+            android:title="@string/extra_rotation_degrees_clockwise"
+            android:dependency="rotate_map"
+            robobunny:min="0"
+            robobunny:unitsLeft=""
+            robobunny:unitsRight="度" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/location_receive_config" >
         <EditTextPreference

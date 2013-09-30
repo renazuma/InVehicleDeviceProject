@@ -7,6 +7,8 @@ public class SharedPreferencesKeys {
 	public static final String CLEAR_TILE_CACHE = "clear_tile_cache";
 	public static final String SERVER_URL = "server_url";
 	public static final String SERVER_IN_VEHICLE_DEVICE_TOKEN = "server_in_vehicle_device_authentication_token";
+	public static final String ROTATE_MAP = "rotate_map";
+	public static final String EXTRA_ROTATION_DEGREES_CLOCKWISE = "extra_rotation_degrees_clockwise";
 	public static final String SERVICE_PROVIDER = "service_provider";
 	public static final String IN_VEHICLE_DEVICE = "in_vehicle_device";
 	public static final String LOCATION_RECEIVE_MIN_TIME = "location_receive_min_time";

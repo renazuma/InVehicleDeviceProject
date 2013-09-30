@@ -207,6 +207,12 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		intent.putExtra(SharedPreferencesKeys.SERVER_URL, url);
 		intent.putExtra(SharedPreferencesKeys.SERVER_IN_VEHICLE_DEVICE_TOKEN,
 				token);
+		intent.putExtra(SharedPreferencesKeys.ROTATE_MAP,
+				preferences.getBoolean(SharedPreferencesKeys.ROTATE_MAP, true));
+		intent.putExtra(SharedPreferencesKeys.EXTRA_ROTATION_DEGREES_CLOCKWISE,
+				preferences.getInt(
+						SharedPreferencesKeys.EXTRA_ROTATION_DEGREES_CLOCKWISE,
+						0));
 		intent.putExtra(SharedPreferencesKeys.LOCATION_RECEIVE_MIN_DISTANCE,
 				Integer.parseInt(preferences.getString(
 						SharedPreferencesKeys.LOCATION_RECEIVE_MIN_DISTANCE,
