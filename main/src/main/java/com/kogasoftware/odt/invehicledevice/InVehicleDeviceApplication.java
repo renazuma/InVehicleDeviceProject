@@ -1,7 +1,6 @@
 package com.kogasoftware.odt.invehicledevice;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,7 +18,6 @@ import android.util.Log;
 
 import com.google.common.base.Predicates;
 import com.google.common.collect.Iterables;
-import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage;
 import com.kogasoftware.odt.invehicledevice.service.logservice.LogServiceReportSender;
 
