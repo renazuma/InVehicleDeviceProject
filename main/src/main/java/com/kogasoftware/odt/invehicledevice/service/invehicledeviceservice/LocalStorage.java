@@ -218,6 +218,10 @@ public class LocalStorage implements Closeable {
 				SharedPreferencesKeys.SERVER_IN_VEHICLE_DEVICE_TOKEN, "");
 		localData.url = preferences.getString(SharedPreferencesKeys.SERVER_URL,
 				InVehicleDeviceService.DEFAULT_URL);
+		localData.rotateMap = preferences.getBoolean(
+				SharedPreferencesKeys.ROTATE_MAP, true);
+		localData.extraRotationDegreesClockwise = preferences.getInt(
+				SharedPreferencesKeys.EXTRA_ROTATION_DEGREES_CLOCKWISE, 0);
 		return localData;
 	}
 
@@ -254,7 +258,7 @@ public class LocalStorage implements Closeable {
 		}
 		saveThread = new SaveThread(localData.file);
 		saveThread.start();
-		
+
 		InVehicleDeviceApplication.VmShutdownHook.addLocalStorage(this);
 	}
 
@@ -376,7 +380,7 @@ public class LocalStorage implements Closeable {
 		periodicSaveWaitSemaphore.release();
 		periodicSaveSemaphore.release();
 	}
-	
+
 	public void joinUninterruptibly(long timeout, TimeUnit unit) {
 		Uninterruptibles.joinUninterruptibly(saveThread, timeout, unit);
 	}

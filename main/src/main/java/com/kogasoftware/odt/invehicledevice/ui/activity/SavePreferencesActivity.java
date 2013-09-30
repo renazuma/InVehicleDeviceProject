@@ -38,7 +38,12 @@ public class SavePreferencesActivity extends Activity {
 				SharedPreferencesKeys.SERVER_IN_VEHICLE_DEVICE_TOKEN,
 				Strings.nullToEmpty(bundle
 						.getString(SharedPreferencesKeys.SERVER_IN_VEHICLE_DEVICE_TOKEN)));
-
+		editor.putBoolean(SharedPreferencesKeys.ROTATE_MAP,
+				bundle.getBoolean(SharedPreferencesKeys.ROTATE_MAP, true));
+		editor.putInt(SharedPreferencesKeys.EXTRA_ROTATION_DEGREES_CLOCKWISE,
+				bundle.getInt(
+						SharedPreferencesKeys.EXTRA_ROTATION_DEGREES_CLOCKWISE,
+						0));
 		editor.putInt(
 				SharedPreferencesKeys.LOCATION_RECEIVE_MIN_DISTANCE,
 				bundle.getInt(SharedPreferencesKeys.LOCATION_RECEIVE_MIN_DISTANCE));

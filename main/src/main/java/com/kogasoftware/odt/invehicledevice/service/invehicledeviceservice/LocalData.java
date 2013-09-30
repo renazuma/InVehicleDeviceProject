@@ -74,6 +74,8 @@ public class LocalData implements Serializable {
 
 	public String token = "";
 	public String url = "";
+	public Boolean rotateMap = true;
+	public Integer extraRotationDegreesClockwise = 0;
 	public ServiceProvider serviceProvider = new ServiceProvider();
 	public ServiceUnitStatusLog serviceUnitStatusLog = new ServiceUnitStatusLog();
 
