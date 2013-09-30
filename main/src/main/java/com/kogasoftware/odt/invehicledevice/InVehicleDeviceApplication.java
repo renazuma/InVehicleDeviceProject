@@ -1,6 +1,9 @@
 package com.kogasoftware.odt.invehicledevice;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Set;
+import java.util.WeakHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.acra.ACRA;
@@ -14,6 +17,10 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.util.Log;
 
+import com.google.common.base.Predicates;
+import com.google.common.collect.Iterables;
+import com.google.common.io.Closeables;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage;
 import com.kogasoftware.odt.invehicledevice.service.logservice.LogServiceReportSender;
 
 @ReportsCrashes(formKey = "dFp5SnVVbTRuem13WmJ0YlVUb2NjaXc6MQ", mode = ReportingInteractionMode.TOAST, resToastText = R.string.crash_toast_text, customReportContent = {
@@ -36,6 +43,16 @@ public class InVehicleDeviceApplication extends Application {
 			.getSimpleName();
 	private static final AtomicInteger ACRA_INIT_ONCE_WORKAROUND = new AtomicInteger(
 			1);
+
+	static {
+		try {
+			Runtime.getRuntime().addShutdownHook(new VmShutdownHook());
+		} catch (IllegalStateException e) {
+			Log.e(TAG, "Adding shutdown hook was Failed", e);
+		} catch (IllegalArgumentException e) {
+			Log.e(TAG, "Adding shutdown hook was Failed", e);
+		}
+	}
 
 	@Override
 	public void onCreate() {
@@ -131,5 +148,37 @@ public class InVehicleDeviceApplication extends Application {
 	public void onTerminate() {
 		super.onTerminate();
 		Log.i(TAG, "onTerminate()");
+	}
+
+	/**
+	 * LocalStorageクラスで確実に終了処理を実行したいが、exit()が呼び出されている可能性がありfinally節が実行されない
+	 * ことがある疑いがあるため、shutdown hookを使う。この処理は、exit()が呼ばれていないことが確認できたら消す
+	 */
+	public static class VmShutdownHook extends Thread {
+		public static final String TAG = VmShutdownHook.class.getSimpleName();
+		private static final WeakHashMap<LocalStorage, Boolean> LOCAL_STORAGES = new WeakHashMap<LocalStorage, Boolean>();
+
+		public static void addLocalStorage(LocalStorage localStorage) {
+			synchronized (LOCAL_STORAGES) {
+				LOCAL_STORAGES.put(localStorage, true);
+			}
+		}
+
+		@Override
+		public void run() {
+			Log.i(TAG, "start");
+			synchronized (LOCAL_STORAGES) {
+				Iterable<LocalStorage> localStorages = Iterables.filter(
+						LOCAL_STORAGES.keySet(), Predicates.notNull());
+				LOCAL_STORAGES.clear();
+				for (LocalStorage localStorage : localStorages) {
+					localStorage.close();
+				}
+				for (LocalStorage localStorage : localStorages) {
+					localStorage.joinUninterruptibly(200, TimeUnit.MILLISECONDS);
+				}
+			}
+			Log.i(TAG, "complete");
+		}
 	}
 }
