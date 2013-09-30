@@ -294,10 +294,9 @@ public class NavigationFragment extends AutoUpdateOperationFragment<State> imple
 		NavigationRenderer navigationRenderer = navigationRendererWeakReference
 				.get();
 		if (navigationRenderer != null) {
-			navigationRenderer.updatePlatform(OperationSchedule
-					.getCurrent(getState().getOperationSchedules()));
+			navigationRenderer.updatePlatform(getTargetOperationSchedule());
 		}
-
+		
 		// 現在の乗降場メモ表示
 		platformMemoButton.setVisibility(View.INVISIBLE);
 		for (final OperationSchedule operationSchedule : OperationSchedule
@@ -330,10 +329,7 @@ public class NavigationFragment extends AutoUpdateOperationFragment<State> imple
 		TextView titleTextView = (TextView) getView().findViewById(
 				R.id.next_platform_text_view);
 		titleTextView.setText("");
-		for (OperationSchedule operationSchedule : ((getState().getPhase() == Phase.DRIVE) ? OperationSchedule
-				.getCurrent(getState().getOperationSchedules())
-				: OperationSchedule.getRelative(getState()
-						.getOperationSchedules(), 1)).asSet()) {
+		for (OperationSchedule operationSchedule : getTargetOperationSchedule().asSet()) {
 			String titleTextFormat = "";
 			String timeTextFormat = "";
 			titleTextFormat = getResources().getString(
@@ -356,6 +352,16 @@ public class NavigationFragment extends AutoUpdateOperationFragment<State> imple
 				platformArrivalTimeTextView.setText(dateFormat
 						.format(displayDate.get()));
 			}
+		}
+	}
+
+	private Optional<OperationSchedule> getTargetOperationSchedule() {
+		if (getState().getPhase() == Phase.DRIVE) {
+			return OperationSchedule
+					.getCurrent(getState().getOperationSchedules());
+		} else {
+			return OperationSchedule.getRelative(getState()
+					.getOperationSchedules(), 1);
 		}
 	}
 
