@@ -18,8 +18,9 @@ public class SelfFrameTask extends FrameTask {
 	private final int height;
 	private final LatLng latLng = new LatLng(0, 0);
 
-	public SelfFrameTask(Resources resources) {
-		bitmap = BitmapFactory.decodeResource(resources, R.drawable.self);
+	public SelfFrameTask(Resources resources, Boolean rotateMap) {
+		bitmap = BitmapFactory.decodeResource(resources,
+				rotateMap ? R.drawable.self : R.drawable.self_norotation);
 		width = bitmap.getWidth();
 		height = bitmap.getHeight();
 	}

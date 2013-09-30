@@ -52,8 +52,8 @@ import com.kogasoftware.odt.invehicledevice.ui.fragment.NavigationFragment.State
 import com.kogasoftware.odt.invehicledevice.ui.fragment.navigation.NavigationRenderer;
 import com.kogasoftware.odt.invehicledevice.ui.frametask.navigation.tilepipeline.TilePipeline;
 
-public class NavigationFragment extends AutoUpdateOperationFragment<State> implements
-		EventDispatcher.OnChangeLocationListener,
+public class NavigationFragment extends AutoUpdateOperationFragment<State>
+		implements EventDispatcher.OnChangeLocationListener,
 		EventDispatcher.OnChangeOrientationListener,
 		NavigationRenderer.OnChangeMapZoomLevelListener {
 	private static final String TAG = NavigationFragment.class.getSimpleName();
@@ -67,14 +67,18 @@ public class NavigationFragment extends AutoUpdateOperationFragment<State> imple
 		private final Double orientationDegree;
 		private final BigDecimal initialLatitude;
 		private final BigDecimal initialLongitude;
+		private final Boolean rotateMap;
+		private final Integer extraRotationDegreesClockwise;
 
-		public State(Operation operation,
-				Double orientationDegree, BigDecimal initialLatitude,
-				BigDecimal initialLongitude) {
+		public State(Operation operation, Double orientationDegree,
+				BigDecimal initialLatitude, BigDecimal initialLongitude,
+				Boolean rotateMap, Integer extraRotationDegreesClockwise) {
 			this.operation = operation;
 			this.orientationDegree = orientationDegree;
 			this.initialLatitude = initialLatitude;
 			this.initialLongitude = initialLongitude;
+			this.rotateMap = rotateMap;
+			this.extraRotationDegreesClockwise = extraRotationDegreesClockwise;
 		}
 
 		public List<OperationSchedule> getOperationSchedules() {
@@ -100,13 +104,25 @@ public class NavigationFragment extends AutoUpdateOperationFragment<State> imple
 		public Operation getOperation() {
 			return operation;
 		}
+
+		public Integer getExtraRotationDegreesClockwise() {
+			return extraRotationDegreesClockwise;
+		}
+
+		public Boolean getRotateMap() {
+			return rotateMap;
+		}
 	}
 
 	public static NavigationFragment newInstance(Operation operation,
-			ServiceUnitStatusLog serviceUnitStatusLog) {
-		return newInstance(new NavigationFragment(), new State(operation, serviceUnitStatusLog.getOrientation().or(0)
-						.doubleValue(), serviceUnitStatusLog.getLatitude(),
-				serviceUnitStatusLog.getLongitude()));
+			ServiceUnitStatusLog serviceUnitStatusLog, Boolean rotateMap,
+			Integer extraRotationDegreesClockwise) {
+		return newInstance(
+				new NavigationFragment(),
+				new State(operation, serviceUnitStatusLog.getOrientation()
+						.or(0).doubleValue(), serviceUnitStatusLog
+						.getLatitude(), serviceUnitStatusLog.getLongitude(),
+						rotateMap, extraRotationDegreesClockwise));
 	}
 
 	private final Handler handler = new Handler();
@@ -235,8 +251,10 @@ public class NavigationFragment extends AutoUpdateOperationFragment<State> imple
 		}
 
 		getService().getEventDispatcher().addOnChangeLocationListener(this);
-		getService().getEventDispatcher().addOnChangeOrientationListener(this);
-
+		if (getState().getRotateMap()) {
+			getService().getEventDispatcher().addOnChangeOrientationListener(
+					this);
+		}
 		updateZoomButtons();
 		updatePlatform();
 	}
@@ -283,10 +301,13 @@ public class NavigationFragment extends AutoUpdateOperationFragment<State> imple
 		NavigationRenderer navigationRenderer = navigationRendererWeakReference
 				.get();
 		if (navigationRenderer != null) {
-			navigationRenderer.changeOrientation(orientationDegree);
+			navigationRenderer.changeOrientation(orientationDegree
+					- getState().getExtraRotationDegreesClockwise());
 		}
-		setState(new State(getState().getOperation(), orientationDegree, getState()
-				.getInitialLatitude(), getState().getInitialLongitude()));
+		setState(new State(getState().getOperation(), orientationDegree,
+				getState().getInitialLatitude(), getState()
+						.getInitialLongitude(), getState().getRotateMap(),
+				getState().getExtraRotationDegreesClockwise()));
 	}
 
 	protected void updatePlatform() {
@@ -296,7 +317,7 @@ public class NavigationFragment extends AutoUpdateOperationFragment<State> imple
 		if (navigationRenderer != null) {
 			navigationRenderer.updatePlatform(getTargetOperationSchedule());
 		}
-		
+
 		// 現在の乗降場メモ表示
 		platformMemoButton.setVisibility(View.INVISIBLE);
 		for (final OperationSchedule operationSchedule : OperationSchedule
@@ -329,7 +350,8 @@ public class NavigationFragment extends AutoUpdateOperationFragment<State> imple
 		TextView titleTextView = (TextView) getView().findViewById(
 				R.id.next_platform_text_view);
 		titleTextView.setText("");
-		for (OperationSchedule operationSchedule : getTargetOperationSchedule().asSet()) {
+		for (OperationSchedule operationSchedule : getTargetOperationSchedule()
+				.asSet()) {
 			String titleTextFormat = "";
 			String timeTextFormat = "";
 			titleTextFormat = getResources().getString(
@@ -338,7 +360,8 @@ public class NavigationFragment extends AutoUpdateOperationFragment<State> imple
 					R.string.platform_arrival_time);
 			Optional<Date> displayDate = operationSchedule.getArrivalEstimate();
 			for (Platform platform : operationSchedule.getPlatform().asSet()) {
-				Log.i(TAG, "next platform id=" + platform.getId() + " name=" + platform.getName());
+				Log.i(TAG, "next platform id=" + platform.getId() + " name="
+						+ platform.getName());
 				titleTextView.setText(Html.fromHtml(String.format(
 						titleTextFormat, platform.getName())));
 			}
@@ -357,8 +380,8 @@ public class NavigationFragment extends AutoUpdateOperationFragment<State> imple
 
 	private Optional<OperationSchedule> getTargetOperationSchedule() {
 		if (getState().getPhase() == Phase.DRIVE) {
-			return OperationSchedule
-					.getCurrent(getState().getOperationSchedules());
+			return OperationSchedule.getCurrent(getState()
+					.getOperationSchedules());
 		} else {
 			return OperationSchedule.getRelative(getState()
 					.getOperationSchedules(), 1);
@@ -464,7 +487,8 @@ public class NavigationFragment extends AutoUpdateOperationFragment<State> imple
 				OperationSchedule
 						.getCurrent(getState().getOperationSchedules()),
 				getState().getOrientationDegree(), getState()
-						.getInitialLatitude(), getState().getInitialLongitude());
+						.getInitialLatitude(),
+				getState().getInitialLongitude(), getState().getRotateMap());
 		navigationRenderer.addOnChangeMapZoomLevelListener(this);
 		navigationRenderer.setZoomLevel(getService().getMapZoomLevel());
 		navigationRenderer.setAutoZoomLevel(getService().getMapAutoZoom());
@@ -601,9 +625,10 @@ public class NavigationFragment extends AutoUpdateOperationFragment<State> imple
 
 	@Override
 	public void onUpdateOperation(Operation operation) {
-		setState(new State(operation, getState()
-				.getOrientationDegree(), getState().getInitialLatitude(),
-				getState().getInitialLongitude()));
+		setState(new State(operation, getState().getOrientationDegree(),
+				getState().getInitialLatitude(), getState()
+						.getInitialLongitude(), getState().getRotateMap(),
+				getState().getExtraRotationDegreesClockwise()));
 		updatePlatform();
 	}
 

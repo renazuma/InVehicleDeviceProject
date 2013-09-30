@@ -99,21 +99,25 @@ public class NavigationRenderer implements GLSurfaceView.Renderer {
 			Optional.<Boolean> absent()); // 描画中にautoZoomの値が変更されないようにするための変数
 	protected final InVehicleDeviceService service;
 	protected final Handler uiHandler;
+	protected final Boolean rotateMap;
 
 	public NavigationRenderer(InVehicleDeviceService service,
 			TilePipeline tilePipeline, Handler uiHandler,
 			Optional<OperationSchedule> optionalOperationSchedule,
-			Double orientationDegree, BigDecimal initialLatitude, BigDecimal initialLongitude) {
+			Double orientationDegree, BigDecimal initialLatitude,
+			BigDecimal initialLongitude, Boolean rotateMap) {
 		this.service = service;
 		this.uiHandler = uiHandler;
+		this.rotateMap = rotateMap;
+
 		rotationSmoother = new LazyMotionSmoother(500.0, 0.02, 0.00005,
-				Math.toRadians(orientationDegree));
+				rotateMap ? Math.toRadians(orientationDegree) : 0);
 
 		operationScheduleLogic = new OperationScheduleLogic(service);
 		serviceUnitStatusLogLogic = new ServiceUnitStatusLogLogic(service);
 		tilePipeline.changeZoomLevel(zoomLevel);
 		addedFrameTasks.add(new MapBuildFrameTask(service, tilePipeline));
-		selfFrameTask = new SelfFrameTask(service.getResources());
+		selfFrameTask = new SelfFrameTask(service.getResources(), rotateMap);
 		addedFrameTasks.add(selfFrameTask);
 		nextPlatformFrameTask = new NextPlatformFrameTask(
 				service.getResources());

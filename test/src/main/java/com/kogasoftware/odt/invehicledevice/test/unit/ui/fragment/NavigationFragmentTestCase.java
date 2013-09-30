@@ -70,7 +70,7 @@ public class NavigationFragmentTestCase extends
 				a.setContentView(fl);
 				Operation o = new Operation();
 				o.operationSchedules.addAll(oss);
-				f = NavigationFragment.newInstance(o, new ServiceUnitStatusLog());
+				f = NavigationFragment.newInstance(o, new ServiceUnitStatusLog(), true, 0);
 				FragmentManager fm = a.getSupportFragmentManager();
 				fm.beginTransaction().add(id, f).commit();
 			}
