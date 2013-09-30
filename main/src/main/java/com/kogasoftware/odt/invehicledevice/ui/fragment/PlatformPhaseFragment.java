@@ -89,6 +89,10 @@ public class PlatformPhaseFragment extends AutoUpdateOperationFragment<State> {
 		public void run() {
 			handler.postDelayed(updateMinutesRemaining,
 					UPDATE_MINUTES_REMAINING_INTERVAL_MILLIS);
+			if (!OperationSchedule.getRelative(
+					getState().getOperationSchedules(), 1).isPresent()) {
+				return;
+			}
 			Date now = new Date(DateTimeUtils.currentTimeMillis());
 			minutesRemainingTextView.setText("");
 			for (OperationSchedule operationSchedule : OperationSchedule
