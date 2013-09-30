@@ -123,7 +123,10 @@ public class LocalStorage implements Closeable {
 				// 正常終了
 			} finally {
 				if (periodicSaveSemaphore.tryAcquire()) {
+					Log.i(TAG, "exit with saving");
 					save(); // アプリ終了時、saveSemaphoreがacquire可能の場合は必ずsaveを行う
+				} else {
+					Log.i(TAG, "exit without saving");
 				}
 			}
 		}
