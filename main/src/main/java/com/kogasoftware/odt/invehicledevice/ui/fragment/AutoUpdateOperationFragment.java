@@ -23,6 +23,11 @@ public abstract class AutoUpdateOperationFragment<S extends Serializable>
 		super.onActivityCreated(savedInstanceState);
 		getService().getEventDispatcher().addOnUpdateOperationListener(this);
 		updateOperationReady = true;
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
 		getService().getLocalStorage().read(
 				new BackgroundReader<Optional<Operation>>() {
 					@Override
