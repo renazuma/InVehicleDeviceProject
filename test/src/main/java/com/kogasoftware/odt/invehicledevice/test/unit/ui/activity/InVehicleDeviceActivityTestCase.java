@@ -75,8 +75,8 @@ public class InVehicleDeviceActivityTestCase extends
 		});
 
 		solo = new Solo(getInstrumentation(), getActivity());
-		assertTrue(solo.waitForText(message));
-		while (solo.waitForText(message)) {
+		assertTrue(solo.waitForText(message, 1, 5000, false, true));
+		while (solo.waitForText(message, 1, 5000, false, true)) {
 		}
 	}
 
