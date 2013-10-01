@@ -36,6 +36,7 @@ import com.google.common.base.Throwables;
 import com.google.common.io.Closeables;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.kogasoftware.odt.invehicledevice.InVehicleDeviceApplication;
+import com.kogasoftware.odt.invehicledevice.empty.EmptyFile;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 
 /**
@@ -57,57 +58,15 @@ public class LocalStorage implements Closeable {
 
 		void onWrite();
 	}
+	
+	public interface DeferredBackgroundWriter extends BackgroundWriter {
+	}
 
 	public interface Reader<T> {
 		T read(LocalData localData);
 	}
 
 	private class SaveThread extends Thread {
-		private final File file;
-
-		public SaveThread(File file) {
-			this.file = file;
-		}
-
-		private void save() {
-			byte[] serialized = new byte[0];
-			long beginTime = 0;
-			long endTime = 0;
-			try {
-				readLock.lock();
-				try {
-					beginTime = System.currentTimeMillis();
-					serialized = Serializations.serialize(localData);
-					endTime = System.currentTimeMillis();
-				} finally {
-					readLock.unlock();
-				}
-			} catch (SerializationException e) {
-				Log.e(TAG, e.toString(), e);
-				return;
-			} finally {
-				long elapsed = endTime - beginTime;
-				Log.d(TAG, "serialize() " + elapsed + "ms " + serialized.length
-						+ "bytes");
-			}
-
-			synchronized (FILE_ACCESS_LOCK) {
-				FileOutputStream fileOutputStream = null;
-				try {
-					fileOutputStream = new FileOutputStream(file);
-					fileOutputStream.getChannel().lock();
-					fileOutputStream.write(serialized);
-				} catch (FileNotFoundException e) {
-					Log.w(TAG, e);
-				} catch (IOException e) {
-					Log.w(TAG, e);
-				} finally {
-					Closeables.closeQuietly(fileOutputStream);
-				}
-				Log.d(TAG, "\"" + file + "\" written ");
-			}
-		}
-
 		@Override
 		public void run() {
 			try {
@@ -140,7 +99,7 @@ public class LocalStorage implements Closeable {
 
 	private static final Object FILE_ACCESS_LOCK = new Object(); // ファイルアクセス中のスレッドを一つに制限するためのロック。将来的にはロックの粒度をファイル毎にする必要があるかもしれない。
 
-	private static final Integer DEFAULT_SAVE_PERIO_MILLIS = 30 * 1000;
+	private static final Integer DEFAULT_SAVE_PERIO_MILLIS = 180 * 1000;
 
 	private static final AtomicBoolean WILL_CLEAR_SAVED_FILE = new AtomicBoolean(
 			false);
@@ -256,7 +215,7 @@ public class LocalStorage implements Closeable {
 		synchronized (FILE_ACCESS_LOCK) {
 			localData = newLocalDataFromFile(context);
 		}
-		saveThread = new SaveThread(localData.file);
+		saveThread = new SaveThread();
 		saveThread.start();
 
 		InVehicleDeviceApplication.VmShutdownHook.addLocalStorage(this);
@@ -309,6 +268,10 @@ public class LocalStorage implements Closeable {
 	 * @param writer
 	 */
 	public void withWriteLock(Writer writer) {
+		withWriteLock(writer, false);
+	}
+
+	private void withWriteLock(Writer writer, Boolean deferred) {
 		if (Thread.currentThread().getId() == Looper.getMainLooper()
 				.getThread().getId()) {
 			String message = "withWriteLock on main thread";
@@ -320,7 +283,11 @@ public class LocalStorage implements Closeable {
 		} finally {
 			writeLock.unlock();
 		}
-		periodicSaveSemaphore.release();
+		if (deferred) {
+			periodicSaveSemaphore.release();
+		} else {
+			save();
+		}
 	}
 
 	public <T extends Serializable> void read(
@@ -350,7 +317,15 @@ public class LocalStorage implements Closeable {
 		}
 	}
 
-	public void write(final BackgroundWriter backgroundWriter) {
+	public void write(DeferredBackgroundWriter backgroundWriter) {
+		write(backgroundWriter, true);
+	}
+
+	public void write(BackgroundWriter backgroundWriter) {
+		write(backgroundWriter, false);
+	}
+
+	private void write(final BackgroundWriter backgroundWriter, final Boolean deferred) {
 		final Handler handler = InVehicleDeviceService.getThreadHandler();
 		Runnable task = new Runnable() {
 			@Override
@@ -360,7 +335,7 @@ public class LocalStorage implements Closeable {
 					public void write(LocalData localData) {
 						backgroundWriter.writeInBackground(localData);
 					}
-				});
+				}, deferred);
 				handler.post(new Runnable() {
 					@Override
 					public void run() {
@@ -383,5 +358,47 @@ public class LocalStorage implements Closeable {
 
 	public void joinUninterruptibly(long timeout, TimeUnit unit) {
 		Uninterruptibles.joinUninterruptibly(saveThread, timeout, unit);
+	}
+	
+	private void save() {
+		byte[] serialized = new byte[0];
+		long beginTime = 0;
+		long endTime = 0;
+		File file = new EmptyFile();
+		try {
+			readLock.lock();
+			try {
+				file = localData.file;
+				beginTime = System.currentTimeMillis();
+				serialized = Serializations.serialize(localData);
+				endTime = System.currentTimeMillis();
+			} finally {
+				readLock.unlock();
+			}
+		} catch (SerializationException e) {
+			Log.e(TAG, e.toString(), e);
+			return;
+		} finally {
+			long elapsed = endTime - beginTime;
+			Log.d(TAG, "serialize() " + elapsed + "ms " + serialized.length
+					+ "bytes");
+		}
+
+		synchronized (FILE_ACCESS_LOCK) {
+			FileOutputStream fileOutputStream = null;
+			try {
+				fileOutputStream = new FileOutputStream(file);
+				fileOutputStream.getChannel().lock();
+				fileOutputStream.write(serialized);
+				fileOutputStream.flush();
+				Log.d(TAG, "written: " + file);
+			} catch (FileNotFoundException e) {
+				Log.w(TAG, e);
+			} catch (IOException e) {
+				Log.w(TAG, e);
+			} finally {
+				Closeables.closeQuietly(fileOutputStream);
+			}
+		}
 	}
 }
