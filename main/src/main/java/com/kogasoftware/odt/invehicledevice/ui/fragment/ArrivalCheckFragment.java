@@ -58,10 +58,10 @@ public class ArrivalCheckFragment extends ApplicationFragment<State> {
 						getState().getOperationSchedule(), new Runnable() {
 							@Override
 							public void run() {
-								hide();
 								operationScheduleLogic.requestUpdateOperation();
 							}
 						});
+				hide();
 			}
 		});
 		for (Platform platform : getState().getOperationSchedule()

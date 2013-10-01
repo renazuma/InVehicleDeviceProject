@@ -85,9 +85,9 @@ public class DepartureCheckFragment extends ApplicationFragment<State> {
 								@Override
 								public void run() {
 									operationScheduleLogic.requestUpdateOperation();
-									hide();
 								}
 							});
+					hide();
 				}
 			});
 			return view;
