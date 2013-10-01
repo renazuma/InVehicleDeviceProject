@@ -535,8 +535,6 @@ public class InVehicleDeviceService extends Service implements
 
 		ServiceUnitStatusLogSender serviceUnitStatusLogSender = new ServiceUnitStatusLogSender(
 				serviceUnitStatusLogLogic, operationScheduleLogic);
-		final VehicleNotificationReceiver vehicleNotificationReceiver = new VehicleNotificationReceiver(
-				this);
 		NextDateNotifier nextDateNotifier = new NextDateNotifier(
 				operationScheduleLogic);
 		NetworkStatusLogger networkStatusLogger = new NetworkStatusLogger(
@@ -557,6 +555,11 @@ public class InVehicleDeviceService extends Service implements
 			Log.w(TAG, e);
 			exit();
 		}
+
+		restoreUnhandledVehicleNotifications();
+	}
+
+	private void restoreUnhandledVehicleNotifications() {
 		getLocalStorage().read(
 				new BackgroundReader<LinkedList<VehicleNotification>>() {
 					@Override
@@ -581,7 +584,8 @@ public class InVehicleDeviceService extends Service implements
 						try {
 							scheduledExecutorService
 									.scheduleWithFixedDelay(
-											vehicleNotificationReceiver,
+											new VehicleNotificationReceiver(
+													InVehicleDeviceService.this),
 											0,
 											VehicleNotificationReceiver.RUN_INTERVAL_MILLIS,
 											TimeUnit.MILLISECONDS);
