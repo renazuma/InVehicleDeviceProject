@@ -10,6 +10,7 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnitStatusLog
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundWriter;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.DeferredBackgroundWriter;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Reader;
 
 public class ServiceUnitStatusLogLogic {
@@ -28,7 +29,7 @@ public class ServiceUnitStatusLogLogic {
 
 	public void changeLocation(final Optional<Location> location,
 			final Optional<Integer> satellitesCount) {
-		service.getLocalStorage().write(new BackgroundWriter() {
+		service.getLocalStorage().write(new DeferredBackgroundWriter() {
 			@Override
 			public void writeInBackground(LocalData localData) {
 				if (location.isPresent()) {
@@ -54,7 +55,7 @@ public class ServiceUnitStatusLogLogic {
 		}
 		lastOrientationSavedMillis = now;
 
-		service.getLocalStorage().write(new BackgroundWriter() {
+		service.getLocalStorage().write(new DeferredBackgroundWriter() {
 			@Override
 			public void writeInBackground(LocalData localData) {
 				localData.serviceUnitStatusLog.setOrientation(orientationDegree
@@ -69,7 +70,7 @@ public class ServiceUnitStatusLogLogic {
 	}
 
 	public void changeTemperature(final Double celciusTemperature) {
-		service.getLocalStorage().write(new BackgroundWriter() {
+		service.getLocalStorage().write(new DeferredBackgroundWriter() {
 			@Override
 			public void writeInBackground(LocalData localData) {
 				localData.serviceUnitStatusLog
