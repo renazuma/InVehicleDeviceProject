@@ -98,6 +98,9 @@ public class VehicleNotificationLogic {
 	public List<VehicleNotification> setStatusWithWriteLock(
 			final List<VehicleNotification> vehicleNotifications,
 			final VehicleNotificationStatus status) {
+		if (vehicleNotifications.isEmpty()) {
+			return Lists.newArrayList();
+		}
 		final List<VehicleNotification> updated = Lists.newLinkedList();
 		service.getLocalStorage().withWriteLock(new Writer() {
 			@Override
