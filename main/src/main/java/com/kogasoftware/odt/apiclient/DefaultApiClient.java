@@ -85,6 +85,7 @@ public class DefaultApiClient implements ApiClient {
 
 	@Override
 	public void close() {
+		requests.close();
 		executorService.shutdownNow();
 	}
 

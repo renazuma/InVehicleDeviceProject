@@ -43,6 +43,8 @@ public class DefaultApiClientRequestQueueTestCase extends
 				rq.add(r1);
 				rq.add(r2);
 				rq.add(r3);
+				rq.close();
+				rq.join();
 			}
 			{
 				DefaultApiClientRequestQueue rq = new DefaultApiClientRequestQueue(backupFile);
@@ -62,6 +64,8 @@ public class DefaultApiClientRequestQueueTestCase extends
 					fail();
 				} catch (InterruptedException e) {
 				}
+				rq.close();
+				rq.join();
 			}
 			backupFile.delete();
 		}
@@ -76,6 +80,8 @@ public class DefaultApiClientRequestQueueTestCase extends
 				rq.add(r1, "x");
 				rq.add(r2, "x");
 				rq.add(r3);
+				rq.close();
+				rq.join();
 			}
 			{
 				DefaultApiClientRequestQueue rq = new DefaultApiClientRequestQueue(backupFile);
@@ -95,6 +101,8 @@ public class DefaultApiClientRequestQueueTestCase extends
 					fail();
 				} catch (InterruptedException e) {
 				}
+				rq.close();
+				rq.join();
 			}
 			backupFile.delete();
 		}
@@ -110,6 +118,8 @@ public class DefaultApiClientRequestQueueTestCase extends
 				rq.add(r1, "y");
 				rq.add(r2);
 				rq.add(r3);
+				rq.close();
+				rq.join();
 			}
 			{
 				DefaultApiClientRequestQueue rq = new DefaultApiClientRequestQueue(backupFile);
@@ -131,6 +141,8 @@ public class DefaultApiClientRequestQueueTestCase extends
 					fail();
 				} catch (InterruptedException e) {
 				}
+				rq.close();
+				rq.join();
 			}
 			backupFile.delete();
 		}
@@ -146,6 +158,8 @@ public class DefaultApiClientRequestQueueTestCase extends
 				rq.add(r1, "z");
 				rq.add(r2);
 				rq.add(r3, "z");
+				rq.close();
+				rq.join();
 			}
 			{
 				DefaultApiClientRequestQueue rq = new DefaultApiClientRequestQueue(backupFile);
@@ -184,6 +198,8 @@ public class DefaultApiClientRequestQueueTestCase extends
 					fail();
 				} catch (InterruptedException e) {
 				}
+				rq.close();
+				rq.join();
 			}
 			backupFile.delete();
 		}

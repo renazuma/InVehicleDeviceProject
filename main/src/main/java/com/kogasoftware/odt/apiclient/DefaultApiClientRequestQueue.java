@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.apiclient;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.Serializable;
@@ -8,7 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.SerializationException;
@@ -19,13 +19,14 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import android.util.Log;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 
 /**
  * ApiClientRequestを管理するクラス
  */
-public class DefaultApiClientRequestQueue {
+public class DefaultApiClientRequestQueue implements Closeable {
 	private static final String TAG = DefaultApiClientRequestQueue.class
 			.getSimpleName();
 	private static final Object FILE_ACCESS_LOCK = new Object(); // ファイルアクセス中のスレッドを一つに制限するためのロック。将来的にはロックの粒度をファイル毎にする必要があるかもしれない。
@@ -55,7 +56,23 @@ public class DefaultApiClientRequestQueue {
 	// バックアップ先ファイル名
 	protected final Optional<File> optionalBackupFile;
 	// バックアップを行いたい場合true
-	protected final AtomicBoolean backupRequest = new AtomicBoolean(false);
+	protected final Semaphore backupRequest = new Semaphore(0);
+	// 裏でバックアップを実行するスレッド
+	protected final Thread backupThread = new Thread() {
+		@Override
+		public void run() {
+			try {
+				while (true) {
+					backupRequest.acquire();
+					backupRequest.drainPermits();
+					backup();
+				}
+			} catch (InterruptedException e) {
+			} finally {
+				backup();
+			}
+		}
+	};
 
 	/**
 	 * コンストラクタ
@@ -72,16 +89,13 @@ public class DefaultApiClientRequestQueue {
 	 */
 	public DefaultApiClientRequestQueue(File backupFile) {
 		this.optionalBackupFile = Optional.of(backupFile);
-		if (!backupFile.exists()) {
-			return;
-		}
 		synchronized (FILE_ACCESS_LOCK) {
 			try {
 				InstanceState instanceState = Serializations.deserialize(
 						backupFile, InstanceState.class);
 				requestsByGroup.addAll(instanceState.requestsByGroup);
 			} catch (FileNotFoundException e) {
-				Log.w(TAG, e);
+				// do nothing
 			} catch (SerializationException e) {
 				Log.e(TAG, e.toString(), e);
 			} finally {
@@ -94,6 +108,7 @@ public class DefaultApiClientRequestQueue {
 				Log.i(TAG, "restored: " + request + " group=" + group);
 			}
 		}
+		backupThread.start();
 	}
 
 	protected List<DefaultApiClientRequest<?>> findOrCreateGroup(String group) {
@@ -129,7 +144,7 @@ public class DefaultApiClientRequestQueue {
 				}
 			}
 			findOrCreateGroup(group).add(request);
-			backupRequest.set(true);
+			backupRequest.release();
 			waitingQueuePollPermissions.release();
 		}
 	}
@@ -199,7 +214,7 @@ public class DefaultApiClientRequestQueue {
 				if (requests.isEmpty()) {
 					requestsByGroup.remove(entry);
 				}
-				backupRequest.set(true);
+				backupRequest.release();
 				break;
 			}
 		}
@@ -252,7 +267,7 @@ public class DefaultApiClientRequestQueue {
 				for (DefaultApiClientRequest<?> retryRequest : requests) {
 					retryRequest.setRetry(true);
 				}
-				backupRequest.set(true);
+				backupRequest.release();
 			}
 		}
 	}
@@ -267,9 +282,6 @@ public class DefaultApiClientRequestQueue {
 		while (true) {
 			waitingQueuePollPermissions.acquire(); // synchronizedの外で待つ
 			synchronized (queueLock) {
-				if (backupRequest.getAndSet(false)) {
-					backup();
-				}
 				for (Pair<String, List<DefaultApiClientRequest<?>>> entry : Lists
 						.newLinkedList(requestsByGroup)) {
 					String group = entry.getKey();
@@ -288,5 +300,15 @@ public class DefaultApiClientRequestQueue {
 				}
 			}
 		}
+	}
+
+	@Override
+	public void close() {
+		backupThread.interrupt();
+	}
+	
+	@VisibleForTesting
+	public void join() throws InterruptedException {
+		backupThread.join();
 	}
 }
