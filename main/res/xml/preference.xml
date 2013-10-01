@@ -24,6 +24,7 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/map_config" >
         <CheckBoxPreference
+            android:defaultValue="true"
             android:key="rotate_map"
             android:title="@string/rotate_map" />
 

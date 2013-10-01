@@ -123,6 +123,9 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 
 		addPreferencesFromResource(R.xml.preference);
 
+		// see "http://stackoverflow.com/questions/3907830/android-checkboxpreference-default-value"
+		PreferenceManager.setDefaultValues(this, R.xml.preference, false);
+		
 		preferences = PreferenceManager
 				.getDefaultSharedPreferences(InVehicleDevicePreferenceActivity.this);
 
