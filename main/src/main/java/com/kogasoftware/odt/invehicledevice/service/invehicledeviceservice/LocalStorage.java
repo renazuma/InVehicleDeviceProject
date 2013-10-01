@@ -34,8 +34,6 @@ import android.util.Log;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Throwables;
 import com.google.common.io.Closeables;
-import com.google.common.util.concurrent.Uninterruptibles;
-import com.kogasoftware.odt.invehicledevice.InVehicleDeviceApplication;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyFile;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 
@@ -217,8 +215,6 @@ public class LocalStorage implements Closeable {
 		}
 		saveThread = new SaveThread();
 		saveThread.start();
-
-		InVehicleDeviceApplication.VmShutdownHook.addLocalStorage(this);
 	}
 
 	@Override
@@ -356,10 +352,6 @@ public class LocalStorage implements Closeable {
 		periodicSaveSemaphore.release();
 	}
 
-	public void joinUninterruptibly(long timeout, TimeUnit unit) {
-		Uninterruptibles.joinUninterruptibly(saveThread, timeout, unit);
-	}
-	
 	private void save() {
 		byte[] serialized = new byte[0];
 		long beginTime = 0;
