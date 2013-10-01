@@ -33,6 +33,7 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Event
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation.Phase;
 import com.kogasoftware.odt.invehicledevice.ui.BatteryAlerter;
+import com.kogasoftware.odt.invehicledevice.ui.BgColorTransitionDrawable;
 import com.kogasoftware.odt.invehicledevice.ui.ViewDisabler;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.InformationBarFragment.State;
 
@@ -66,6 +67,7 @@ public class InformationBarFragment extends AutoUpdateOperationFragment<State>
 
 	private static final int UPDATE_TIME_INTERVAL_MILLIS = 3000;
 
+	private BgColorTransitionDrawable bgColorTransitionDrawable;
 	private ImageView networkStrengthImageView;
 	private TextView presentTimeTextView;
 	private Handler handler;
@@ -106,6 +108,11 @@ public class InformationBarFragment extends AutoUpdateOperationFragment<State>
 	 */
 	private Runnable blinkBatteryAlert;
 
+	/**
+	 * 背景色を変更
+	 */
+	private Runnable changeBgColor;
+
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -115,6 +122,16 @@ public class InformationBarFragment extends AutoUpdateOperationFragment<State>
 				.findViewById(R.id.present_time_text_view);
 		networkStrengthImageView = (ImageView) view
 				.findViewById(R.id.network_strength_image_view);
+		bgColorTransitionDrawable = new BgColorTransitionDrawable(
+				getPhaseColor(getState().getPhase()));
+		changeBgColor = new Runnable() {
+			@Override
+			public void run() {
+				bgColorTransitionDrawable.changeColor(getPhaseColor(getState().getPhase()));
+			}
+		};
+		View bcwl = view.findViewById(R.id.background_color_workaround_layout);
+		bcwl.setBackgroundDrawable(bgColorTransitionDrawable);
 		updateView(view);
 		blinkBatteryAlert = new EmptyRunnable();
 		for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
@@ -137,6 +154,7 @@ public class InformationBarFragment extends AutoUpdateOperationFragment<State>
 		super.onPause();
 		handler.removeCallbacks(updateTime);
 		handler.removeCallbacks(blinkBatteryAlert);
+		handler.removeCallbacks(changeBgColor);
 	}
 
 	@Override
@@ -147,9 +165,8 @@ public class InformationBarFragment extends AutoUpdateOperationFragment<State>
 	}
 
 	public void updateView(View view) {
-		View bcwl = view.findViewById(R.id.background_color_workaround_layout);
-		bcwl.setBackgroundColor(getPhaseColor(getState().getPhase()));
-
+		handler.removeCallbacks(changeBgColor);
+		handler.postDelayed(changeBgColor, 400);
 		TextView phaseTextView = (TextView) view
 				.findViewById(R.id.phase_text_view);
 		Boolean showPlatformMemo = true;
