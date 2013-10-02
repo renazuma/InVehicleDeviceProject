@@ -225,18 +225,17 @@ public class OperationScheduleLogic {
 	public void mergeWithWriteLock(
 			final List<OperationSchedule> operationSchedules,
 			final List<VehicleNotification> triggerVehicleNotifications) {
-		LocalStorage localStorage = service.getLocalStorage();
-		// 通知を受信済みリストに移動
-		vehicleNotificationLogic.setStatusWithWriteLock(
-				triggerVehicleNotifications,
-				VehicleNotificationStatus.OPERATION_SCHEDULE_RECEIVED);
-		// マージ
-		localStorage.withWriteLock(new Writer() {
+		// 運行スケジュールをマージ
+		service.getLocalStorage().withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
 				mergeWithWriteLock(localData, operationSchedules);
 			}
 		});
+		// 運行スケジュール変更通知を処理済みリストに移動
+		vehicleNotificationLogic.setStatusWithWriteLock(
+				triggerVehicleNotifications,
+				VehicleNotificationStatus.OPERATION_SCHEDULE_RECEIVED);
 		service.getEventDispatcher().dispatchMergeOperationSchedules(
 				operationSchedules, triggerVehicleNotifications);
 	}
