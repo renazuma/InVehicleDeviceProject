@@ -37,6 +37,13 @@ public class Textures {
 	public static void draw(GL10 gl, int textureId, float x, float y,
 			int width, int height, float angle, float scaleX, float scaleY,
 			float alpha) {
+		draw(gl, textureId, x, y, width, height, angle, scaleX, scaleY, 1f, 1f,
+				1f, 1f);
+	}
+
+	public static void draw(GL10 gl, int textureId, float x, float y,
+			int width, int height, float angle, float scaleX, float scaleY,
+			float alpha, float red, float green, float blue) {
 
 		// 頂点座標
 		int vertices[] = { -width * ONE / 2, //
@@ -73,7 +80,8 @@ public class Textures {
 		// モデルを拡大縮小する行列を掛け合わせる
 		gl.glScalef(scaleX, scaleY, 1.0f);
 		// 色をセット
-		gl.glColor4x(0x10000, 0x10000, 0x10000, (int) (0x10000 * alpha));
+		gl.glColor4x((int) (0x10000 * red), (int) (0x10000 * green),
+				(int) (0x10000 * blue), (int) (0x10000 * alpha));
 		// 頂点座標配列をセット
 		gl.glVertexPointer(3, GL10.GL_FIXED, 0, wrapNativeIntBuffer(vertices));
 		// テクスチャ情報をセット
@@ -175,9 +183,9 @@ public class Textures {
 		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_T,
 				GL10.GL_CLAMP_TO_EDGE);
 
-		// バインドされているテクスチャに、テクスチャの色が下地の色を置き換えるよう指定(GL_REPLACE)
+		// テクスチャの色と下地の色の乗算を表示
 		gl.glTexEnvf(GL10.GL_TEXTURE_ENV, GL10.GL_TEXTURE_ENV_MODE,
-				GL10.GL_REPLACE);
+				GL10.GL_MODULATE);
 
 		// ビットマップからテクスチャを作成する
 		GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
