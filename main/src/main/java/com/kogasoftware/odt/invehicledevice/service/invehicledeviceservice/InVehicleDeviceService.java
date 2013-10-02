@@ -560,26 +560,40 @@ public class InVehicleDeviceService extends Service implements
 	}
 
 	private void restoreUnhandledVehicleNotifications() {
-		getLocalStorage().read(
-				new BackgroundReader<LinkedList<VehicleNotification>>() {
+		getLocalStorage()
+				.read(new BackgroundReader<Pair<LinkedList<VehicleNotification>, LinkedList<VehicleNotification>>>() {
 					@Override
-					public LinkedList<VehicleNotification> readInBackground(
+					public Pair<LinkedList<VehicleNotification>, LinkedList<VehicleNotification>> readInBackground(
 							LocalData localData) {
-						return VehicleNotificationLogic
+						LinkedList<VehicleNotification> fromOperator = VehicleNotificationLogic
 								.get(VehicleNotification.NotificationKind.FROM_OPERATOR,
 										VehicleNotificationStatus.UNHANDLED,
 										localData.vehicleNotifications);
+						LinkedList<VehicleNotification> reservationChanged = VehicleNotificationLogic
+								.get(VehicleNotification.NotificationKind.RESERVATION_CHANGED,
+										VehicleNotificationStatus.UNHANDLED,
+										localData.vehicleNotifications);
+						return Pair.of(fromOperator, reservationChanged);
 					}
 
 					@Override
-					public void onRead(LinkedList<VehicleNotification> result) {
+					public void onRead(
+							Pair<LinkedList<VehicleNotification>, LinkedList<VehicleNotification>> result) {
 						if (destroyed) {
 							return;
 						}
-						if (!result.isEmpty()) {
+						LinkedList<VehicleNotification> fromOperator = result
+								.getLeft();
+						LinkedList<VehicleNotification> reservationChanged = result
+								.getRight();
+						if (!fromOperator.isEmpty()) {
 							getEventDispatcher()
 									.dispatchAlertVehicleNotificationReceive(
-											result);
+											fromOperator);
+						}
+						if (!reservationChanged.isEmpty()) {
+							getEventDispatcher()
+									.dispatchStartReceiveUpdatedOperationSchedule();
 						}
 						try {
 							scheduledExecutorService
