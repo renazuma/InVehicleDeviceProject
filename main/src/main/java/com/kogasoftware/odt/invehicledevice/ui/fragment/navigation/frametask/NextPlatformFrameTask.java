@@ -58,8 +58,12 @@ public class NextPlatformFrameTask extends FrameTask {
 
 		PointF point = NavigationRenderer.getPoint(latLng);
 		float scale = 1f / frameState.getTotalZoom();
-		float alpha = 0.8f;
+		float alpha = 0.7f;
+		float red = gradient(frameState.getMilliSeconds(), 2000, 0, 1, 0);
+		float green = 1f;
+		float blue = 0;
 		Textures.draw(frameState.getGL(), textureId, point.x, point.y, width,
-				height, -frameState.getAngle(), scale, scale, alpha);
+				height, -frameState.getAngle(), scale, scale, alpha, red,
+				green, blue);
 	}
 }

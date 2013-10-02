@@ -24,4 +24,10 @@ public class FrameTask {
 
 	public void onAdd(FrameState frameState) {
 	}
+
+	protected static float gradient(long milliseconds, long period, double min, double max, double phase) {
+		double rate = (milliseconds % period) / (double) period;
+		double rad = 2 * Math.PI * (rate + phase);
+		return (float) ((Math.sin(rad) + 1d) / 2d * (max - min) + min);
+	}
 }
