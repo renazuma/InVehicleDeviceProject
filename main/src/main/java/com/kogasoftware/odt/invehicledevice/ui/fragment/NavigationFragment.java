@@ -468,12 +468,8 @@ public class NavigationFragment extends AutoUpdateOperationFragment<State>
 				handler.postDelayed(new Runnable() {
 					@Override
 					public void run() {
-						try {
-							if (dialogFragment != null) { // 外でNPEをcatchするため、防御的にここでnullチェックをする
-								dialogFragment.dismissAllowingStateLoss();
-							}
-						} catch (NullPointerException e) {
-							Log.e(TAG, "dismissAllowingStateLoss() threw NPE", e);
+						if (dialogFragment.isAdded()) {
+							dialogFragment.dismissAllowingStateLoss();
 						}
 					}
 				}, dismissDialogDelay);
