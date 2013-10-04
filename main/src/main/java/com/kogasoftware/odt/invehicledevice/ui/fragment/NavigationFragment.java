@@ -484,8 +484,7 @@ public class NavigationFragment extends AutoUpdateOperationFragment<State>
 		// それを防ぐために参照を極力減らしたFrameLayoutを間にはさむ
 		NavigationRenderer navigationRenderer = new NavigationRenderer(
 				getService(), tilePipeline, new Handler(),
-				OperationSchedule
-						.getCurrent(getState().getOperationSchedules()),
+				getTargetOperationSchedule(),
 				getState().getOrientationDegree(), getState()
 						.getInitialLatitude(),
 				getState().getInitialLongitude(), getState().getRotateMap());
