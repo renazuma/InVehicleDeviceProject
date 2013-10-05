@@ -236,6 +236,14 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 		unbindService(serviceConnection);
 		getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		handler.removeCallbacks(pauseFinishTimeouter);
+
+		// onCreate()時に各フラグメントが復活することがある。その際、InVehicleDeviceServiceがバインドされる前に
+		// それに依存しているフラグメントが起動しエラーになることがある。そのため、onCreate()でフラグメントが復活しないよう、
+		// ここで全て削除しておく。
+		FragmentManager fragmentManager = getSupportFragmentManager();
+		for (int i = 0; i < fragmentManager.getBackStackEntryCount(); i++) {
+			fragmentManager.popBackStack(); // popBackStack()しても、ループに戻るまでgetBackStackEntryCount()の値は変わらない
+		}
 	}
 
 	@Override
@@ -407,7 +415,7 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 					VehicleNotificationAlertFragment
 							.newInstance(vehicleNotifications));
 			fragmentTransaction.commitAllowingStateLoss();
-		}		
+		}
 	}
 
 	@Override
