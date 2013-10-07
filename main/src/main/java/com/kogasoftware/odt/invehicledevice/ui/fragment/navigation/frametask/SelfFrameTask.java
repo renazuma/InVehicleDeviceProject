@@ -50,9 +50,9 @@ public class SelfFrameTask extends FrameTask {
 	public void draw(FrameState frameState) {
 		PointF point = NavigationRenderer.getPoint(latLng);
 		float scale = 1f / frameState.getTotalZoom();
-		float alpha = 0.8f;
-		float red = 0.8f; //gradient(frameState.getMilliSeconds(), 2000, 0.5, 0.8, 0);
-		float green = 0.5f;
+		float alpha = 1f;
+		float red = 1f; //gradient(frameState.getMilliSeconds(), 2000, 0.5, 0.8, 0);
+		float green = 1f;
 		float blue = 1f;
 		Textures.draw(frameState.getGL(), textureId, point.x, point.y, width,
 				height, -frameState.getAngle(), scale, scale, alpha, red,
