@@ -6,7 +6,7 @@
 		<groupId>com.kogasoftware.android</groupId>
 		<artifactId>android-maven-parent</artifactId>
 		<version>1.0-SNAPSHOT</version>
-        <relativePath>android-maven-parent</relativePath>
+		<relativePath>android-maven-parent</relativePath>
 	</parent>
 	<groupId>com.kogasoftware.odt.invehicledevice</groupId>
 	<artifactId>invehicledevice-parent</artifactId>
