@@ -6,7 +6,7 @@
 		<groupId>com.kogasoftware.android</groupId>
 		<artifactId>android-maven-parent</artifactId>
 		<version>1.0-SNAPSHOT</version>
-        <relativePath>android-maven-parent</relativePath>
+		<relativePath>android-maven-parent</relativePath>
 	</parent>
 	<groupId>com.kogasoftware.odt.invehicledevice</groupId>
 	<artifactId>invehicledevice-preference-parent</artifactId>
@@ -28,7 +28,7 @@
 				<type>apklib</type>
 				<version>2.0-SNAPSHOT</version>
 			</dependency>
-		    <dependency>
+			<dependency>
 				<groupId>com.kogasoftware.odt.invehicledevice</groupId>
 				<artifactId>invehicledevice-preference</artifactId>
 				<type>apk</type>
@@ -73,11 +73,5 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
-		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>versions-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
 	</build>
 </project>
