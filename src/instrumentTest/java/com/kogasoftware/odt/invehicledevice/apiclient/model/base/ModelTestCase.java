@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.apiclient.test.model.base;
+package com.kogasoftware.odt.invehicledevice.apiclient.model.base;
 
 import java.util.List;
 

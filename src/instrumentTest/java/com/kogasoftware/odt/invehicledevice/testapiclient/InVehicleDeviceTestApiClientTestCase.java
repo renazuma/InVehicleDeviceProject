@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.testapiclient.test;
+package com.kogasoftware.odt.invehicledevice.testapiclient;
 
 import java.util.Calendar;
 import java.util.Date;

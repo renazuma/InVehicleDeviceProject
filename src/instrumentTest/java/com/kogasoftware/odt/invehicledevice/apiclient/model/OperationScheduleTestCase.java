@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.apiclient.test.model;
+package com.kogasoftware.odt.invehicledevice.apiclient.model;
 
 import static com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule.getCurrent;
 import static com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule.getRelative;

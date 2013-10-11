@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.apiclient.test;
+package com.kogasoftware.odt.invehicledevice.apiclient;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -22,7 +22,7 @@ import com.google.common.io.Closeables;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.apiclient.ApiClientException;
 import com.kogasoftware.odt.apiclient.DefaultApiClientRequest;
-import com.kogasoftware.odt.apiclient.test.EmptyApiClientCallback;
+import com.kogasoftware.odt.apiclient.EmptyApiClientCallback;
 import com.kogasoftware.odt.invehicledevice.apiclient.DefaultInVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Demand;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.InVehicleDevice;

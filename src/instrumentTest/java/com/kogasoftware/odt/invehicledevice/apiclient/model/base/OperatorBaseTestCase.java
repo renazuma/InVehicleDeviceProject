@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.apiclient.test.model.base;
+package com.kogasoftware.odt.invehicledevice.apiclient.model.base;
 
 import java.util.LinkedList;
 
@@ -7,7 +7,6 @@ import junit.framework.TestCase;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.apiclient.Serializations;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.*;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.base.*;
 
 /**
  * OperatorBaseのテスト

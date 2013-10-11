@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.apiclient.test;
+package com.kogasoftware.odt.apiclient;
 
 import java.io.File;
 import java.util.HashMap;

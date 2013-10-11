@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.apiclient.test.identifiable;
+package com.kogasoftware.odt.apiclient.identifiable;
 
 import java.util.ArrayList;
 import java.util.Collection;
