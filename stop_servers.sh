@@ -1,10 +1,10 @@
 #!/bin/sh
 # -*- coding: utf-8-unix -*-
 
-cd operatorweb
+cd OperatorWeb
 (kill -INT $(cat tmp/pids/server.pid)) || true
 cd ..
 
-cd invehicledevice-testapiserver
+cd InVehicleDeviceTestApiServer
 (kill -INT $(cat tmp/pids/server.pid)) || true
 cd ..
