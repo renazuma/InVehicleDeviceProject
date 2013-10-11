@@ -4,6 +4,3 @@
 [submodule "OperatorWeb"]
 	path = OperatorWeb
 	url = git@github.com:odt/OperatorWeb.git
-[submodule "android-maven-parent"]
-	path = android-maven-parent
-	url = git@github.com:odt/AndroidMavenParent.git
