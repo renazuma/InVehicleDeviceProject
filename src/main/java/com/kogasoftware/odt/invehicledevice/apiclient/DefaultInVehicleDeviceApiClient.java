@@ -477,6 +477,7 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 		params.put("size", "300x300");
 		params.put("sensor", "false");
 		params.put("language", "ja");
+		params.put("scale", "2");
 		return new SerializableGetLoader("http://maps.google.com",
 				"/maps/api/staticmap", params, "", "");
 	}
