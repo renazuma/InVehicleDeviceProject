@@ -1,37 +1,16 @@
-.settings/
-.project
-.classpath
-target/
-bin/
-coverage/
-gen/
-libs/armeabi/
-libs/armeabi-v7a/
-libs/x86/
-obj/
-.odt/
-.sonar/
+# Gradle
+/build/
+/.gradle/
 
-*-TEST.xml
-AndroidManifest.xml.old
-AndroidManifest.xml.release
-DATA_Preferences
-DATA_Tiles*
-custom_rules.xml
-coverage.ec
-coverage.em
-findbugs.xml
-findbugs_exclude.xml
-jni/*.xz
-jni/*/*.a
-local.properties
-debug.keystore
-release.keystore
+# Android Studio
+/.idea/
+/*.iml
+/local.properties
 
-src/com/kogasoftware/odt/invehicledevice/service
-
-open_jtalk
-*_GIT_IGNORE_*
-*.iml
-out/
-*/gen-external-apklibs/
+# eclispe
+/src/main/bin/
+/src/main/gen/
+/src/main/.settings/
+/src/instrumentTest/bin/
+/src/instrumentTest/gen/
+/src/instrumentTest/.settings/

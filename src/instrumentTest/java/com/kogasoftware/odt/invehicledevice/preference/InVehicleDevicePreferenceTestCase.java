@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.preference.test;
+package com.kogasoftware.odt.invehicledevice.preference;
 
 import java.util.Locale;
 
