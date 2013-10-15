@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.5.+'
+        classpath 'com.android.tools.build:gradle:0.6.1'
     }
 }
 
@@ -15,17 +15,34 @@ apply plugin: 'android-library'
 
 android {
     compileSdkVersion 18
-    buildToolsVersion "18.1.0"
+    buildToolsVersion '18.1.1'
 }
 
-def libDir = 'src/main/libs'
+def libDir = file('src/main/libs')
 
 dependencies {
     compile fileTree(dir: libDir, include: '*.jar')
+    instrumentTestCompile fileTree(dir: 'src/instrumentTest/libs', include: '*.jar')
     compile project(':AndroidOpenJTalk')
     compile project(':InVehicleDeviceApiClient')
 }
 
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
+/**
+ * 普通にビルドすると下記例外が発生するので、dexTestの直前でlibsディレクトリを退避する
+ *
+ * UNEXPECTED TOP-LEVEL EXCEPTION:
+ * java.lang.IllegalArgumentException: already added: Lcom/example/Foo;
+ */
+gradle.taskGraph.whenReady {taskGraph ->
+    def libBackupDir = file("${libDir}.gradle-workaround")
+    taskGraph.beforeTask {
+        if (it.name == "dexTest") {
+            libDir.renameTo(libBackupDir)
+        }
+    }
+    taskGraph.afterTask {
+        if (it.name == "assembleTest") {
+            libBackupDir.renameTo(libDir)
+        }
+    }
 }
