@@ -1,0 +1,3 @@
+[submodule "AndroidOpenJTalk"]
+	path = AndroidOpenJTalk
+	url = git@github.com:odt/AndroidOpenJTalk.git
