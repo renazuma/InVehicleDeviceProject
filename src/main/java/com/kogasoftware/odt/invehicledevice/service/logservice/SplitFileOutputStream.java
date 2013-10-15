@@ -12,7 +12,7 @@ import java.util.concurrent.BlockingQueue;
 import android.util.Log;
 
 import com.google.common.base.Stopwatch;
-import com.google.common.io.NullOutputStream;
+import com.google.common.io.ByteStreams;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyFile;
 
 /**
@@ -28,7 +28,7 @@ public class SplitFileOutputStream extends OutputStream {
 	private final Stopwatch stopwatch = new Stopwatch();
 	private volatile Long count = 0L;
 	private volatile File currentFile = new EmptyFile();
-	private volatile OutputStream currentOutputStream = new NullOutputStream();
+	private volatile OutputStream currentOutputStream = ByteStreams.nullOutputStream();
 
 	public SplitFileOutputStream(File baseDirectory, String baseFileName,
 			BlockingQueue<File> outputFiles) throws IOException {
