@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.service.startupservice;
+package com.kogasoftware.odt.invehicledevice.service.startupservice;
 
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
@@ -15,8 +15,8 @@ import android.test.ServiceTestCase;
 
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.service.startupservice.StartupService;
-import com.kogasoftware.odt.invehicledevice.test.util.DelegateMockContext;
-import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
+import com.kogasoftware.odt.invehicledevice.testutil.DelegateMockContext;
+import com.kogasoftware.odt.invehicledevice.testutil.TestUtil;
 import com.kogasoftware.odt.invehicledevice.ui.activity.EmptyActivity;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 

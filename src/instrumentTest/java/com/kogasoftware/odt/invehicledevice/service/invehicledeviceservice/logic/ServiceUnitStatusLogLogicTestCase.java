@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledeviceservice.logic;
+package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.timeout;
@@ -25,7 +25,7 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVeh
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.ServiceUnitStatusLogLogic;
-import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
+import com.kogasoftware.odt.invehicledevice.testutil.TestUtil;
 
 public class ServiceUnitStatusLogLogicTestCase extends AndroidTestCase {
 	LocalData ld = new LocalData();

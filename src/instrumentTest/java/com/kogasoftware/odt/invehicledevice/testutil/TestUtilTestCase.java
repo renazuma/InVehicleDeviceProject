@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.util;
+package com.kogasoftware.odt.invehicledevice.testutil;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -6,7 +6,7 @@ import java.io.InputStream;
 import android.test.AndroidTestCase;
 import android.test.MoreAsserts;
 
-import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
+import com.kogasoftware.odt.invehicledevice.testutil.TestUtil;
 
 public class TestUtilTestCase extends AndroidTestCase {
 

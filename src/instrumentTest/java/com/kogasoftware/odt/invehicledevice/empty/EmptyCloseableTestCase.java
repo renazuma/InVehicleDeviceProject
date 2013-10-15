@@ -1,7 +1,7 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.empty;
+package com.kogasoftware.odt.invehicledevice.empty;
 
 import com.kogasoftware.odt.invehicledevice.empty.EmptyCloseable;
-import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
+import com.kogasoftware.odt.invehicledevice.testutil.TestUtil;
 
 import android.test.InstrumentationTestCase;
 

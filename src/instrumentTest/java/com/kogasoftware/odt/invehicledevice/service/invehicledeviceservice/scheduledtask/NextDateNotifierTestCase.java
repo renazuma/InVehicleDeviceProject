@@ -1,11 +1,11 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledeviceservice.scheduledtask;
+package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.scheduledtask;
 
 import org.joda.time.DateTime;
 
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.scheduledtask.NextDateNotifier;
-import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
-import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
+import com.kogasoftware.odt.invehicledevice.testutil.EmptyActivityInstrumentationTestCase2;
+import com.kogasoftware.odt.invehicledevice.testutil.TestUtil;
 
 public class NextDateNotifierTestCase extends
 		EmptyActivityInstrumentationTestCase2 {

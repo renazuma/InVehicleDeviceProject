@@ -1,9 +1,9 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.empty;
+package com.kogasoftware.odt.invehicledevice.empty;
 
 import android.test.InstrumentationTestCase;
 
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
-import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
+import com.kogasoftware.odt.invehicledevice.testutil.TestUtil;
 
 public class EmptyThreadTestCase extends InstrumentationTestCase {
 	public void testSmallInstance() throws Exception {

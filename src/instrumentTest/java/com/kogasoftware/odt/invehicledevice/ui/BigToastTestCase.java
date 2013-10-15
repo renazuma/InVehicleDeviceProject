@@ -1,8 +1,8 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.ui;
+package com.kogasoftware.odt.invehicledevice.ui;
 
 import android.widget.Toast;
 
-import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
+import com.kogasoftware.odt.invehicledevice.testutil.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.ui.BigToast;
 
 public class BigToastTestCase extends EmptyActivityInstrumentationTestCase2 {

@@ -1,10 +1,10 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.ui;
+package com.kogasoftware.odt.invehicledevice.ui;
 
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 
-import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
-import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
+import com.kogasoftware.odt.invehicledevice.testutil.EmptyActivityInstrumentationTestCase2;
+import com.kogasoftware.odt.invehicledevice.testutil.TestUtil;
 import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
 
 public class FlickUnneededListViewTestCase extends

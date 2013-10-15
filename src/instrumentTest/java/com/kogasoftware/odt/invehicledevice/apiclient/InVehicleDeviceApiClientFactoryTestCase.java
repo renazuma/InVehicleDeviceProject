@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.apiclient;
+package com.kogasoftware.odt.invehicledevice.apiclient;
 
 import android.test.AndroidTestCase;
 

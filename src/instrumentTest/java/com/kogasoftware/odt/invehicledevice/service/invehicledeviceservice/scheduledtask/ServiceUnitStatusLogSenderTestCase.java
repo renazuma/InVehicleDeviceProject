@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledeviceservice.scheduledtask;
+package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.scheduledtask;
 
 import android.test.AndroidTestCase;
 

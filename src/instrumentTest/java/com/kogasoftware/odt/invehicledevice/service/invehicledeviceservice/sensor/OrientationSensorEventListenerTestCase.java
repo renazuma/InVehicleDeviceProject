@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledeviceservice.sensor;
+package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.sensor;
 
 import static org.mockito.Mockito.mock;
 import android.view.WindowManager;
@@ -6,7 +6,7 @@ import android.view.WindowManager;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.ServiceUnitStatusLogLogic;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.sensor.OrientationSensorEventListener;
-import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
+import com.kogasoftware.odt.invehicledevice.testutil.EmptyActivityInstrumentationTestCase2;
 
 public class OrientationSensorEventListenerTestCase extends
 		EmptyActivityInstrumentationTestCase2 {

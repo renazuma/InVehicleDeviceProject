@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.util;
+package com.kogasoftware.odt.invehicledevice.testutil;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -6,7 +6,7 @@ import junit.framework.AssertionFailedError;
 import android.app.Instrumentation;
 import android.test.InstrumentationTestCase;
 
-import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
+import com.kogasoftware.odt.invehicledevice.testutil.TestUtil;
 
 public class TestUtilEmptyObjectTestCase extends InstrumentationTestCase {
 	static List<NoGCTestClass> instances;

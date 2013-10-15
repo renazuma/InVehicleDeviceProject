@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.service.logservice;
+package com.kogasoftware.odt.invehicledevice.service.logservice;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

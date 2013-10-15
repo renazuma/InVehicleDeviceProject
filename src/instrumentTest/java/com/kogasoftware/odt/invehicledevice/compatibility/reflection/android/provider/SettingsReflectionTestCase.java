@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.compatibility.reflection.android.provider;
+package com.kogasoftware.odt.invehicledevice.compatibility.reflection.android.provider;
 
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.compatibility.reflection.android.provider.SettingsReflection.SystemReflection;

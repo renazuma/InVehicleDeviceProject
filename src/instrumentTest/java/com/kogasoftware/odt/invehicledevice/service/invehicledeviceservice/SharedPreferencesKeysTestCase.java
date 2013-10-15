@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledeviceservice;
+package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice;
 
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 

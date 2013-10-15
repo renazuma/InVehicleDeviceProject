@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.ui.fragment;
+package com.kogasoftware.odt.invehicledevice.ui.fragment;
 
 import static org.mockito.Mockito.*;
 
@@ -10,8 +10,8 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Event
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage;
-import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
-import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
+import com.kogasoftware.odt.invehicledevice.testutil.EmptyActivityInstrumentationTestCase2;
+import com.kogasoftware.odt.invehicledevice.testutil.TestUtil;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.PlatformMemoFragment;
 import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;

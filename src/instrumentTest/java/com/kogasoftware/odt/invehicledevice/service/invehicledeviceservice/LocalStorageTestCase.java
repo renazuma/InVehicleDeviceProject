@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledeviceservice;
+package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -32,7 +32,7 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Local
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Reader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Writer;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
-import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
+import com.kogasoftware.odt.invehicledevice.testutil.TestUtil;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;

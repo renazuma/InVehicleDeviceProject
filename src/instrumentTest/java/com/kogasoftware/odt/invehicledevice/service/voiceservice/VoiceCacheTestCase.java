@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.service.voiceservice;
+package com.kogasoftware.odt.invehicledevice.service.voiceservice;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,7 +10,7 @@ import android.preference.PreferenceManager;
 
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceCache;
-import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
+import com.kogasoftware.odt.invehicledevice.testutil.EmptyActivityInstrumentationTestCase2;
 
 public class VoiceCacheTestCase extends EmptyActivityInstrumentationTestCase2 {
 	AtomicBoolean once = new AtomicBoolean(true);

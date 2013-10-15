@@ -1,10 +1,10 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledeviceservice.sensor;
+package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.sensor;
 
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.ServiceUnitStatusLogLogic;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.sensor.TemperatureSensorEventListener;
-import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
+import com.kogasoftware.odt.invehicledevice.testutil.EmptyActivityInstrumentationTestCase2;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

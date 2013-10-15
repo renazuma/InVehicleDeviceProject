@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.service.trackingservice;
+package com.kogasoftware.odt.invehicledevice.service.trackingservice;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;

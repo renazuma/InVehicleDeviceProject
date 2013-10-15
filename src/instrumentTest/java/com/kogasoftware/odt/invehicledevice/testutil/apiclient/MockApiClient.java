@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.util.apiclient;
+package com.kogasoftware.odt.invehicledevice.testutil.apiclient;
 
 import java.io.IOException;
 import java.util.Date;

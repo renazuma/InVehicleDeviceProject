@@ -1,10 +1,10 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.ui.fragment.navigation;
+package com.kogasoftware.odt.invehicledevice.ui.fragment.navigation;
 
 import junit.framework.TestCase;
 import android.graphics.PointF;
 
 import com.javadocmd.simplelatlng.LatLng;
-import com.kogasoftware.odt.invehicledevice.test.unit.ui.fragment.navigation.tilepipeline.TileTestCase;
+import com.kogasoftware.odt.invehicledevice.ui.fragment.navigation.tilepipeline.TileTestCase;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.navigation.NavigationRenderer;
 
 public class NavigationRendererTestCase extends TestCase {

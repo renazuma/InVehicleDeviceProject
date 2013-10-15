@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.ui.activity;
+package com.kogasoftware.odt.invehicledevice.ui.activity;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -23,7 +23,7 @@ import com.kogasoftware.odt.invehicledevice.apiclient.EmptyInVehicleDeviceApiCli
 import com.kogasoftware.odt.invehicledevice.compatibility.reflection.android.provider.SettingsReflection;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 import com.kogasoftware.odt.invehicledevice.service.startupservice.StartupService;
-import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
+import com.kogasoftware.odt.invehicledevice.testutil.TestUtil;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;

@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.integration;
+package com.kogasoftware.odt.invehicledevice.integrationtest;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -7,8 +7,8 @@ import android.test.ActivityInstrumentationTestCase2;
 
 import com.google.common.collect.Lists;
 import com.jayway.android.robotium.solo.Solo;
-import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
-import com.kogasoftware.odt.invehicledevice.test.util.apiclient.MockApiClient;
+import com.kogasoftware.odt.invehicledevice.testutil.TestUtil;
+import com.kogasoftware.odt.invehicledevice.testutil.apiclient.MockApiClient;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.apiclient.ApiClientException;

@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.util;
+package com.kogasoftware.odt.invehicledevice.testutil;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ import android.test.ActivityInstrumentationTestCase2;
 
 import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
-import com.kogasoftware.odt.invehicledevice.test.util.apiclient.DummyApiClient;
+import com.kogasoftware.odt.invehicledevice.testutil.apiclient.DummyApiClient;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;

@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.ui.arrayadapter;
+package com.kogasoftware.odt.invehicledevice.ui.arrayadapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +8,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
-import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
+import com.kogasoftware.odt.invehicledevice.testutil.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.OperationScheduleArrayAdapter;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;

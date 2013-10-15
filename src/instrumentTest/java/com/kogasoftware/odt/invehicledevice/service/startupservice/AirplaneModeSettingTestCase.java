@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.service.startupservice;
+package com.kogasoftware.odt.invehicledevice.service.startupservice;
 
 import java.io.IOException;
 

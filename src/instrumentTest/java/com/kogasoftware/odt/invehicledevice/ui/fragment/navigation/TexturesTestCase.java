@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.ui.fragment.navigation;
+package com.kogasoftware.odt.invehicledevice.ui.fragment.navigation;
 
 import android.test.AndroidTestCase;
 

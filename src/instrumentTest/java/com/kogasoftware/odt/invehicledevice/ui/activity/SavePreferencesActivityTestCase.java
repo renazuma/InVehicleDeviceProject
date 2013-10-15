@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.ui.activity;
+package com.kogasoftware.odt.invehicledevice.ui.activity;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

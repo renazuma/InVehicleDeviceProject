@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.util;
+package com.kogasoftware.odt.invehicledevice.testutil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;

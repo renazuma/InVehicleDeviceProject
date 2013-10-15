@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.ui.arrayadapter;
+package com.kogasoftware.odt.invehicledevice.ui.arrayadapter;
 
 import java.util.Date;
 import java.util.LinkedList;
@@ -23,8 +23,8 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Local
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Writer;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
-import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
-import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
+import com.kogasoftware.odt.invehicledevice.testutil.EmptyActivityInstrumentationTestCase2;
+import com.kogasoftware.odt.invehicledevice.testutil.TestUtil;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordArrayAdapter;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationRecord;

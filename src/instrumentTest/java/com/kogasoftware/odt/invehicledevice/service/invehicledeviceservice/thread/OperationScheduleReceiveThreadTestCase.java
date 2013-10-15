@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledeviceservice.thread;
+package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.thread;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.timeout;

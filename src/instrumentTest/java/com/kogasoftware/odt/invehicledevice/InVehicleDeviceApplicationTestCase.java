@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit;
+package com.kogasoftware.odt.invehicledevice;
 
 import android.test.ApplicationTestCase;
 

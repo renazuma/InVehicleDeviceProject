@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.compatibility.reflection;
+package com.kogasoftware.odt.invehicledevice.compatibility.reflection;
 
 import java.lang.reflect.InvocationTargetException;
 

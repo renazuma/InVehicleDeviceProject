@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.service.logservice;
+package com.kogasoftware.odt.invehicledevice.service.logservice;
 
 import java.nio.charset.Charset;
 import java.util.Date;
@@ -8,7 +8,7 @@ import junitx.framework.StringAssert;
 import com.google.common.base.Charsets;
 import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.service.logservice.LogcatInputStream;
-import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
+import com.kogasoftware.odt.invehicledevice.testutil.TestUtil;
 
 import android.test.AndroidTestCase;
 import android.util.Log;

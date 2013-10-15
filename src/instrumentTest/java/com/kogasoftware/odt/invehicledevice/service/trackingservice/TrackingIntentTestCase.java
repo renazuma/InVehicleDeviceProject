@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.service.trackingservice;
+package com.kogasoftware.odt.invehicledevice.service.trackingservice;
 
 import junit.framework.TestCase;
 import android.location.Location;

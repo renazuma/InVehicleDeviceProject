@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.service.logservice;
+package com.kogasoftware.odt.invehicledevice.service.logservice;
 
 import java.io.File;
 import java.util.LinkedList;
@@ -59,7 +59,7 @@ public class DropBoxThreadTestCase extends AndroidTestCase {
 	List<JSONObject> read(File file) throws Exception {
 		assertNotNull(file);
 		List<JSONObject> l = new LinkedList<JSONObject>();
-		for (String s : FileUtils.readFileToString(file, DropBoxThread.CHARSET)
+		for (String s : FileUtils.readFileToString(file)
 				.split(DropBoxThread.DELIMITER)) {
 			if (s.replaceAll("^[\r\n\t ]+", "").isEmpty()) {
 				continue;

@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.integration;
+package com.kogasoftware.odt.invehicledevice.integrationtest;
 
 import junit.framework.AssertionFailedError;
 import android.test.ActivityInstrumentationTestCase2;
@@ -6,8 +6,8 @@ import android.widget.TextView;
 
 import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
-import com.kogasoftware.odt.invehicledevice.test.util.apiclient.DummyApiClient;
+import com.kogasoftware.odt.invehicledevice.testutil.TestUtil;
+import com.kogasoftware.odt.invehicledevice.testutil.apiclient.DummyApiClient;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
 public class DriveTestCase extends

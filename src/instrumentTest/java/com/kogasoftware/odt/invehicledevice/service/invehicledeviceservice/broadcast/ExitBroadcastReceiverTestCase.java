@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledeviceservice.broadcast;
+package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.broadcast;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;

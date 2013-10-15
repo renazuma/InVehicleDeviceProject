@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.service.invehicledeviceservice.sensor;
+package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.sensor;
 
 import android.telephony.SignalStrength;
 import android.test.AndroidTestCase;

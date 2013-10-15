@@ -1,10 +1,10 @@
-package com.kogasoftware.odt.invehicledevice.test.util;
+package com.kogasoftware.odt.invehicledevice.testutil;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.kogasoftware.odt.invehicledevice.test.util.MockitoUsageTestCase.Warehouse;
+import com.kogasoftware.odt.invehicledevice.testutil.MockitoUsageTestCase.Warehouse;
 
 class Order {
 

@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.service.voiceservice;
+package com.kogasoftware.odt.invehicledevice.service.voiceservice;
 
 import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
 

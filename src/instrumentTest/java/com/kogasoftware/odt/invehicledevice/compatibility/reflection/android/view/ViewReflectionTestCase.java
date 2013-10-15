@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.compatibility.reflection.android.view;
+package com.kogasoftware.odt.invehicledevice.compatibility.reflection.android.view;
 
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -15,8 +15,8 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.compatibility.reflection.android.view.ViewReflection;
 import com.kogasoftware.odt.invehicledevice.compatibility.reflection.android.view.ViewReflection.OnSystemUiVisibilityChangeListenerReflection;
-import com.kogasoftware.odt.invehicledevice.test.util.EmptyActivityInstrumentationTestCase2;
-import com.kogasoftware.odt.invehicledevice.test.util.TestUtil;
+import com.kogasoftware.odt.invehicledevice.testutil.EmptyActivityInstrumentationTestCase2;
+import com.kogasoftware.odt.invehicledevice.testutil.TestUtil;
 
 public class ViewReflectionTestCase extends
 		EmptyActivityInstrumentationTestCase2 {

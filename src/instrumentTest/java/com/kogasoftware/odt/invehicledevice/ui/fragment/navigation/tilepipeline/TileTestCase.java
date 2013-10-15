@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.test.unit.ui.fragment.navigation.tilepipeline;
+package com.kogasoftware.odt.invehicledevice.ui.fragment.navigation.tilepipeline;
 
 import junit.framework.TestCase;
 import android.graphics.PointF;
