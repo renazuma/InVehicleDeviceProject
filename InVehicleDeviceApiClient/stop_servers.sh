@@ -5,6 +5,6 @@ cd OperatorWeb
 (kill -INT $(cat tmp/pids/server.pid)) || true
 cd ..
 
-cd InVehicleDeviceTestApiServer
+cd TestApiServer
 (kill -INT $(cat tmp/pids/server.pid)) || true
 cd ..

@@ -33,7 +33,7 @@ bundle exec rake db:migrate:reset
 bundle exec rails server --daemon --environment=development --port=3334
 cd ..
 
-cd InVehicleDeviceTestApiServer
+cd TestApiServer
 cp ../database.yml config/database.yml
 bundle install
 bundle exec rails server --daemon --environment=development --port=3333
