@@ -1,0 +1,16 @@
+# Gradle
+/build/
+/.gradle/
+
+# Android Studio
+/.idea/
+/*.iml
+/local.properties
+
+# eclispe
+/src/main/bin/
+/src/main/gen/
+/src/main/.settings/
+/src/instrumentTest/bin/
+/src/instrumentTest/gen/
+/src/instrumentTest/.settings/
