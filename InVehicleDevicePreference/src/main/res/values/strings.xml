@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">車載器設定</string>
+    <string name="connection_config">接続設定</string>
+    <string name="server_url">接続先URL</string>
+    <string name="login">ログイン名</string>
+    <string name="password">パスワード</string>
+    <string name="ok">OK</string>
+    <string name="an_error_occurred">エラーが発生しました</string>
+    <string name="checking_connection_config">&lt;big&gt;&lt;big&gt;接続確認をしています&lt;/big&gt;&lt;/big&gt;</string>
+    <string name="map_config">地図設定</string>
+    <string name="rotate_map">地図を回転する</string>
+    <string name="extra_rotation_degrees_clockwise">回転する角度を調整（時計回り）</string>
+    <string name="degree">度</string>
+    <string name="location_receive_config">位置情報受信設定</string>
+    <string name="location_receive_min_distance">再受信する最小距離(メートル)</string>
+    <string name="location_receive_min_time">再受信する最小時間(ミリ秒)</string>
+    <string name="location_receive_restart_timeout">受信できない際、切断し再接続するまでの時間(ミリ秒)</string>
+    <string name="error_null_or_empty">%sを入力してください</string>
+    <string name="error_non_ascii">%sは半角英数字で入力してください</string>
+    <string name="error_invalid_uri">%sの形式が誤っています</string>
+    <string name="error_invalid_login_or_password">車載器の認証に失敗しました</string>
+    <string name="error_connection">サーバーとの接続に失敗しました</string>
+    <string name="error_invehicledevice_application_not_found">車載器アプリケーションがインストールされていません</string>
+
+</resources>
