@@ -4,3 +4,6 @@
 [submodule "OperatorWeb"]
 	path = OperatorWeb
 	url = git@github.com:odt/OperatorWeb.git
+[submodule "InVehicleDeviceApiClient/OperatorWeb"]
+	path = InVehicleDeviceApiClient/OperatorWeb
+	url = git@github.com:odt/OperatorWeb.git
