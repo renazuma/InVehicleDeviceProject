@@ -77,7 +77,7 @@ public class TestUtil {
 	public static void assertChange(Callable<Boolean> condition, long timeout) {
 		try {
 			Stopwatch stopwatch = new Stopwatch().start();
-			while (stopwatch.elapsedMillis() < timeout) {
+			while (stopwatch.elapsed(TimeUnit.MILLISECONDS) < timeout) {
 				if (condition.call()) {
 					return;
 				}
@@ -333,7 +333,7 @@ public class TestUtil {
 
 		// 自動でGCされるかを確認
 		Stopwatch sw = new Stopwatch().start();
-		while (sw.elapsedTime(TimeUnit.SECONDS) < 10) {
+		while (sw.elapsed(TimeUnit.SECONDS) < 10) {
 			if (whm.isEmpty()) {
 				return;
 			}
@@ -356,7 +356,7 @@ public class TestUtil {
 		while (true) {
 			int available = inputStream.available();
 			if (available <= 0) {
-				if (stopwatch.elapsedMillis() > timeout) {
+				if (stopwatch.elapsed(TimeUnit.MILLISECONDS) > timeout) {
 					break;
 				}
 				Thread.sleep(timeout / 10);

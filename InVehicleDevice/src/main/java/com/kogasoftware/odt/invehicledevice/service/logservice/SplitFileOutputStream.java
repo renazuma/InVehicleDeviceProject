@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import android.util.Log;
 
@@ -140,7 +141,7 @@ public class SplitFileOutputStream extends OutputStream {
 
 	public Long getElapsedMillisSinceFirstWrite() {
 		synchronized (memberAccessLock) {
-			return stopwatch.elapsedMillis();
+			return stopwatch.elapsed(TimeUnit.MILLISECONDS);
 		}
 	}
 }

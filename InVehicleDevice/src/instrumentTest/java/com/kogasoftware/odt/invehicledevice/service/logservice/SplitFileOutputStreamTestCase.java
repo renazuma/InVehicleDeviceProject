@@ -3,6 +3,7 @@ package com.kogasoftware.odt.invehicledevice.service.logservice;
 import java.io.File;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 
@@ -44,11 +45,11 @@ public class SplitFileOutputStreamTestCase extends AndroidTestCase {
 		
 		sw.start();
 		sfos.write(new byte[] { '1', '2', '3' });
-		assertEquals(sw.elapsedMillis() / unit, sfos.getElapsedMillisSinceFirstWrite() / unit);
+		assertEquals(sw.elapsed(TimeUnit.MILLISECONDS) / unit, sfos.getElapsedMillisSinceFirstWrite() / unit);
 		Thread.sleep(unit);
-		assertEquals(sw.elapsedMillis() / unit, sfos.getElapsedMillisSinceFirstWrite() / unit);
+		assertEquals(sw.elapsed(TimeUnit.MILLISECONDS) / unit, sfos.getElapsedMillisSinceFirstWrite() / unit);
 		Thread.sleep(unit);
-		assertEquals(sw.elapsedMillis() / unit, sfos.getElapsedMillisSinceFirstWrite() / unit);
+		assertEquals(sw.elapsed(TimeUnit.MILLISECONDS) / unit, sfos.getElapsedMillisSinceFirstWrite() / unit);
 		sw.reset();
 		
 		sfos.split();
@@ -58,9 +59,9 @@ public class SplitFileOutputStreamTestCase extends AndroidTestCase {
 		sw.start();
 		sfos.write('A');
 		sfos.write('B');
-		assertEquals(sw.elapsedMillis() / unit, sfos.getElapsedMillisSinceFirstWrite() / unit);
+		assertEquals(sw.elapsed(TimeUnit.MILLISECONDS) / unit, sfos.getElapsedMillisSinceFirstWrite() / unit);
 		Thread.sleep(unit);
-		assertEquals(sw.elapsedMillis() / unit, sfos.getElapsedMillisSinceFirstWrite() / unit);
+		assertEquals(sw.elapsed(TimeUnit.MILLISECONDS) / unit, sfos.getElapsedMillisSinceFirstWrite() / unit);
 		sw.reset();
 		
 		sfos.split();
@@ -68,9 +69,9 @@ public class SplitFileOutputStreamTestCase extends AndroidTestCase {
 		
 		sw.start();
 		sfos.write("foobar".getBytes(Charsets.UTF_8));
-		assertEquals(sw.elapsedMillis() / unit, sfos.getElapsedMillisSinceFirstWrite() / unit);
+		assertEquals(sw.elapsed(TimeUnit.MILLISECONDS) / unit, sfos.getElapsedMillisSinceFirstWrite() / unit);
 		Thread.sleep(unit);
-		assertEquals(sw.elapsedMillis() / unit, sfos.getElapsedMillisSinceFirstWrite() / unit);
+		assertEquals(sw.elapsed(TimeUnit.MILLISECONDS) / unit, sfos.getElapsedMillisSinceFirstWrite() / unit);
 	}
 
 	public void testSplit() throws Exception {

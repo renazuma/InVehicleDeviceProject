@@ -123,7 +123,7 @@ public class InVehicleDeviceActivityTestCase extends
 		Stopwatch sw = new Stopwatch().start();
 		while (solo.waitForText(message)) {
 			Thread.sleep(10);
-			if (sw.elapsedTime(TimeUnit.SECONDS) > 5) {
+			if (sw.elapsed(TimeUnit.SECONDS) > 5) {
 				break;
 			}
 		}

@@ -3,11 +3,11 @@ package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice;
 import java.io.File;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import com.kogasoftware.odt.apiclient.Serializations;
 
 import junitx.framework.ComparableAssert;
-
 import android.test.AndroidTestCase;
 import android.util.Log;
 
@@ -157,7 +157,7 @@ public class LocalDataTestCase extends AndroidTestCase {
 		byte[] ba = Serializations.serialize(ld);
 		sw.stop();
 
-		Long elapsedMillis = sw.elapsedMillis();
+		Long elapsedMillis = sw.elapsed(TimeUnit.MILLISECONDS);
 		Log.i(TAG, "elapsed=" + elapsedMillis + "ms bytes=" + ba.length);
 		ComparableAssert.assertLesser(60 * 1000L, elapsedMillis);
 	}

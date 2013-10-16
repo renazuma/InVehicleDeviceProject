@@ -1,5 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.ui;
 
+import java.util.concurrent.TimeUnit;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -79,7 +81,7 @@ public class BatteryAlerter implements Runnable {
 			blinkStopwatch.start();
 			return;
 		}
-		if (blinkStopwatch.elapsedMillis() < 5000) {
+		if (blinkStopwatch.elapsed(TimeUnit.MILLISECONDS) < 5000) {
 			return;
 		}
 
@@ -95,7 +97,7 @@ public class BatteryAlerter implements Runnable {
 		}
 
 		// ダイアログの表示
-		if (dialogStopwatch.elapsedMillis() > BATTERY_DISCONNECTED_LIMIT_MILLIS
+		if (dialogStopwatch.elapsed(TimeUnit.MILLISECONDS) > BATTERY_DISCONNECTED_LIMIT_MILLIS
 				|| !dialogStopwatch.isRunning()) {
 			dialogStopwatch.reset().start();
 			if (fragmentManager
