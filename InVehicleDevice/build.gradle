@@ -22,14 +22,17 @@ def libDir = file('src/main/libs')
 
 dependencies {
     compile fileTree(dir: libDir, include: '*.jar')
-    compile 'com.google.android.gms:play-services:3.2.65'
+    compile('com.google.android.gms:play-services:3.2.65') {
+        // eclipse用のlibsの中にあるsupport-v4と混ざり、"IAE: already added"が発生するため除外
+        exclude group: 'com.android.support', module: 'support-v4'
+    }
     instrumentTestCompile fileTree(dir: 'src/instrumentTest/libs', include: '*.jar')
     compile project(':AndroidOpenJTalk')
     compile project(':InVehicleDeviceApiClient')
 }
 
 /**
- * 普通にビルドすると下記例外が発生するので、dexTestの直前でlibsディレクトリを退避する
+ * 普通にビルドすると下記"IAE: already added"が発生するので、dexTestの直前でlibsディレクトリを退避する
  *
  * UNEXPECTED TOP-LEVEL EXCEPTION:
  * java.lang.IllegalArgumentException: already added: Lcom/example/Foo;
