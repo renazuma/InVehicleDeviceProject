@@ -22,6 +22,7 @@ def libDir = file('src/main/libs')
 
 dependencies {
     compile fileTree(dir: libDir, include: '*.jar')
+    compile 'com.google.android.gms:play-services:3.2.65'
     instrumentTestCompile fileTree(dir: 'src/instrumentTest/libs', include: '*.jar')
     compile project(':AndroidOpenJTalk')
     compile project(':InVehicleDeviceApiClient')
