@@ -7,6 +7,8 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import android.support.v4.app.FragmentActivity;
+
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.testutil.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.OperationScheduleArrayAdapter;
@@ -18,14 +20,16 @@ import static org.mockito.Mockito.*;
 public class OperationScheduleArrayAdapterTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 
+	FragmentActivity a;
 	InVehicleDeviceService s;
 	OperationScheduleArrayAdapter aa;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
+		a = mock(FragmentActivity.class);
 		s = mock(InVehicleDeviceService.class);
-		when(s.getSystemService(Mockito.anyString())).thenAnswer(new Answer<Object>() {
+		when(a.getSystemService(Mockito.anyString())).thenAnswer(new Answer<Object>() {
 			@Override
 			public Object answer(InvocationOnMock invocation) throws Throwable {
 				return getInstrumentation()
@@ -33,7 +37,7 @@ public class OperationScheduleArrayAdapterTestCase extends
 						.getSystemService((String) invocation.getArguments()[0]);
 			}
 		});
-		aa = new OperationScheduleArrayAdapter(s,
+		aa = new OperationScheduleArrayAdapter(a, s,
 				new ArrayList<OperationSchedule>());
 	}
 
@@ -61,7 +65,7 @@ public class OperationScheduleArrayAdapterTestCase extends
 			oss.add(os);
 		}
 
-		aa = new OperationScheduleArrayAdapter(s, oss);
+		aa = new OperationScheduleArrayAdapter(a, s, oss);
 
 		runOnUiThreadSync(new Runnable() {
 			@Override

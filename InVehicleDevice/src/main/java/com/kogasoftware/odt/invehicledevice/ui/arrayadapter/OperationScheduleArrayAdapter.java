@@ -8,8 +8,14 @@ import java.util.Locale;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
@@ -17,16 +23,88 @@ import android.widget.TextView;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnitStatusLog;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundReader;
+import com.kogasoftware.odt.invehicledevice.ui.fragment.ApplicationFragment;
+import com.kogasoftware.odt.invehicledevice.ui.fragment.PlatformNavigationFragment;
 
 public class OperationScheduleArrayAdapter extends
 		ArrayAdapter<OperationSchedule> {
+	private static final String TAG = OperationScheduleArrayAdapter.class
+			.getSimpleName();
+	private static final Integer SELECTED_COLOR = Color.parseColor("#D5E9F6");
+	private static final Integer DEFAULT_COLOR = Color.parseColor("#FFFFFF");
 	private static final Integer RESOURCE_ID = R.layout.operation_schedule_list_row;
 	private final LayoutInflater layoutInflater;
+	private final FragmentActivity activity;
+	private final InVehicleDeviceService service;
+	protected final OnTouchListener onTouchListener = new OnTouchListener() {
+		@Override
+		public boolean onTouch(View view, MotionEvent event) {
+			Object tag = view.getTag();
+			if (!(tag instanceof OperationSchedule)) {
+				Log.e(TAG, "\"" + view + "\".getTag() (" + tag
+						+ ") is not instanceof OperationSchedule");
+				return false;
+			}
 
-	public OperationScheduleArrayAdapter(Context context,
+			if (event.getAction() == MotionEvent.ACTION_DOWN) {
+				view.setBackgroundColor(SELECTED_COLOR);
+				return true;
+			}
+
+			if (event.getAction() == MotionEvent.ACTION_CANCEL) {
+				view.setBackgroundColor(DEFAULT_COLOR);
+				return true;
+			}
+
+			if (event.getAction() != MotionEvent.ACTION_UP) {
+				return false;
+			}
+
+			view.setBackgroundColor(DEFAULT_COLOR);
+			final OperationSchedule operationSchedule = (OperationSchedule) tag;
+			service.getLocalStorage().read(
+					new BackgroundReader<ServiceUnitStatusLog>() {
+						@Override
+						public ServiceUnitStatusLog readInBackground(
+								LocalData localData) {
+							return localData.serviceUnitStatusLog;
+						}
+
+						@Override
+						public void onRead(ServiceUnitStatusLog result) {
+							FragmentManager fragmentManager = activity
+									.getSupportFragmentManager();
+							if (fragmentManager == null) {
+								return;
+							}
+							FragmentTransaction fragmentTransaction = fragmentManager
+									.beginTransaction();
+							ApplicationFragment
+									.setCustomAnimation(fragmentTransaction);
+							fragmentTransaction.add(
+									R.id.modal_fragment_container,
+									PlatformNavigationFragment.newInstance(
+											operationSchedule,
+											result.getLatitude(),
+											result.getLongitude()));
+							fragmentTransaction.commitAllowingStateLoss();
+						}
+					});
+			return true;
+		}
+	};
+
+	public OperationScheduleArrayAdapter(FragmentActivity activity,
+			InVehicleDeviceService service,
 			List<OperationSchedule> operationSchedules) {
-		super(context, RESOURCE_ID, operationSchedules);
-		this.layoutInflater = (LayoutInflater) context
+		super(activity, RESOURCE_ID, operationSchedules);
+		this.activity = activity;
+		this.service = service;
+		this.layoutInflater = (LayoutInflater) activity
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
@@ -34,6 +112,8 @@ public class OperationScheduleArrayAdapter extends
 	public View getView(int position, View convertView, ViewGroup parent) {
 		if (convertView == null) {
 			convertView = layoutInflater.inflate(RESOURCE_ID, null);
+		} else {
+			convertView.setBackgroundColor(DEFAULT_COLOR);
 		}
 		DateFormat displayDateFormat = new SimpleDateFormat("HH:mm", Locale.US);
 
@@ -101,6 +181,8 @@ public class OperationScheduleArrayAdapter extends
 		} else {
 			convertView.setBackgroundColor(Color.LTGRAY);
 		}
+		convertView.setTag(operationSchedule);
+		convertView.setOnTouchListener(onTouchListener);
 		return convertView;
 	}
 }

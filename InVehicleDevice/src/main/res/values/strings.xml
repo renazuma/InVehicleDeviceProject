@@ -46,5 +46,7 @@
     <string name="settings_are_not_initialized">Settings are not initialized</string>
     <string name="google_maps_api_key_debug">AIzaSyCbpmeImhPK1_cJzza68w5T8cBbxcfuS4Y</string>
     <string name="google_maps_api_key_release">AIzaSyCbpmeImhPK1_cJzza68w5T8cBbxcfuS4Y</string>
+    <string name="google_maps_language">en</string>
+    <string name="google_maps_region">US</string>
     
 </resources>

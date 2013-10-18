@@ -3,6 +3,8 @@ package com.kogasoftware.odt.invehicledevice.ui.fragment;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.math.BigDecimal;
+
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.widget.FrameLayout;
@@ -67,7 +69,8 @@ public class PlatformNavigationFragmentTestCase extends
 				FrameLayout fl = new FrameLayout(a);
 				fl.setId(id);
 				a.setContentView(fl);
-				f = PlatformNavigationFragment.newInstance(os);
+				f = PlatformNavigationFragment.newInstance(os, BigDecimal.ZERO,
+						BigDecimal.ZERO);
 				FragmentManager fm = a.getSupportFragmentManager();
 				fm.beginTransaction().add(id, f).commit();
 			}

@@ -49,7 +49,7 @@ public class OperationScheduleListFragment extends ApplicationFragment<State> {
 				.findViewById(R.id.operation_schedule_list_view)).getListView();
 
 		OperationScheduleArrayAdapter adapter = new OperationScheduleArrayAdapter(
-				getActivity(), getState().getOperationSchedules());
+				getActivity(), getService(), getState().getOperationSchedules());
 		listView.setAdapter(adapter);
 
 		// 未運行の運行スケジュールまでスクロールする
