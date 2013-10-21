@@ -13,13 +13,12 @@
     </style>
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
     <script>
-var map;
 function initialize(platformLat, platformLng, selfLat, selfLng) {
-  var platformLatlng = new google.maps.LatLng(platformLat, platformLng);
-  var selfLatlng = new google.maps.LatLng(selfLat, selfLng);
+  var platformLatLng = new google.maps.LatLng(platformLat, platformLng);
+  var selfLatLng = new google.maps.LatLng(selfLat, selfLng);
   var centerLatLng = new google.maps.LatLng((platformLat + selfLat) / 2, (platformLng + selfLng) / 2);
   var mapOptions = {
-    zoom: 8,
+    zoom: 16,
     center: centerLatLng,
     mapTypeId: google.maps.MapTypeId.ROADMAP,
     mapTypeControl: false,
@@ -27,14 +26,14 @@ function initialize(platformLat, platformLng, selfLat, selfLng) {
     streetViewControl: false,
     scaleControl: false,
   };
-  map = new google.maps.Map(document.getElementById('map-canvas'),
-      mapOptions);
-  new google.maps.Marker({position: platformLatlng, map: map, icon: 'images/platform.png'});
-  new google.maps.Marker({position: selfLatlng, map: map, icon: 'images/self_norotation.png'});
+  var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+  var bounds = new google.maps.LatLngBounds();
+  bounds.extend(platformLatLng);
+  bounds.extend(selfLatLng);
+  map.fitBounds(bounds);
+  new google.maps.Marker({position: platformLatLng, map: map, icon: 'images/platform.png'});
+  new google.maps.Marker({position: selfLatLng, map: map, icon: 'images/self_norotation.png'});
 }
-
-// google.maps.event.addDomListener(window, 'load', initialize);
-
     </script>
   </head>
   <body>
