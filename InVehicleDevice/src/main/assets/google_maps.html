@@ -21,12 +21,16 @@ function initialize(platformLat, platformLng, selfLat, selfLng) {
   var mapOptions = {
     zoom: 8,
     center: centerLatLng,
-    mapTypeId: google.maps.MapTypeId.ROADMAP
+    mapTypeId: google.maps.MapTypeId.ROADMAP,
+    mapTypeControl: false,
+    rotateControl: false,
+    streetViewControl: false,
+    scaleControl: false,
   };
   map = new google.maps.Map(document.getElementById('map-canvas'),
       mapOptions);
-  new google.maps.Marker({position: platformLatlng, map: map, title: 'Hello World!'});
-  new google.maps.Marker({position: selfLatlng, map: map, title: 'Hello World!'});
+  new google.maps.Marker({position: platformLatlng, map: map, icon: 'images/platform.png'});
+  new google.maps.Marker({position: selfLatlng, map: map, icon: 'images/self_norotation.png'});
 }
 
 // google.maps.event.addDomListener(window, 'load', initialize);
