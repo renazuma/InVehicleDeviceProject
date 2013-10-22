@@ -65,18 +65,16 @@ public class TileBitmapFile {
 		Float top = (float) (alignedLength - bitmap.getHeight()) / 2;
 		new Canvas(alignedBitmap).drawBitmap(bitmap, left, top, new Paint());
 		bitmap.recycle();
-		bitmap = alignedBitmap;
 
 		synchronized (BITMAP_FILE_ACCESS_LOCK) {
 			FileOutputStream fileOutputStream = null;
 			try {
 				fileOutputStream = new FileOutputStream(file);
-				bitmap.compress(CompressFormat.PNG, 100, fileOutputStream);
+				alignedBitmap.compress(CompressFormat.PNG, 100, fileOutputStream);
 			} finally {
 				Closeables.closeQuietly(fileOutputStream);
-				bitmap.recycle();
 			}
 		}
-		return bitmap;
+		return alignedBitmap;
 	}
 }
