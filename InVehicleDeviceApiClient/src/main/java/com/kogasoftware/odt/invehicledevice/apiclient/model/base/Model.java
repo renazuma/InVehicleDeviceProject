@@ -54,6 +54,7 @@ public abstract class Model implements Externalizable, Identifiable, Cloneable {
 
 	public static class CloneException extends RuntimeException {
 		private static final long serialVersionUID = 2637422692046440762L;
+
 		public CloneException(Throwable cause) {
 			super(cause);
 		}
@@ -184,9 +185,7 @@ public abstract class Model implements Externalizable, Identifiable, Cloneable {
 		return clone(childClass, true);
 	}
 
-	protected <T extends Model> T clone(Class<T> childClass,
-			Boolean withAssociation) {
-		// ByteArrayInputStreamへ変換
+	protected ByteArrayInputStream toByteArrayInputStream(Boolean withAssociation) {
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		ObjectOutputStream objectOutputStream = null;
 		try {
@@ -202,6 +201,12 @@ public abstract class Model implements Externalizable, Identifiable, Cloneable {
 		byteArrayOutputStream = null; // enable GC
 		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArray);
 		byteArray = null; // enable GC
+		return byteArrayInputStream;
+	}
+
+	protected <T extends Model> T clone(Class<T> childClass,
+			Boolean withAssociation) {
+		ByteArrayInputStream byteArrayInputStream = toByteArrayInputStream(withAssociation);
 
 		// 空のclone結果のオブジェクトを準備
 		T model = null;
