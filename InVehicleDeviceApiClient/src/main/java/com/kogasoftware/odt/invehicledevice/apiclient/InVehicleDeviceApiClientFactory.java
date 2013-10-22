@@ -1,13 +1,18 @@
 package com.kogasoftware.odt.invehicledevice.apiclient;
 
+import java.io.Closeable;
 import java.io.File;
+import java.io.IOException;
+
+import android.util.Log;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Supplier;
-import com.google.common.io.Closeables;
 
 public class InVehicleDeviceApiClientFactory {
 	private static final Object API_CLIENT_LOCK = new Object();
+	private static final String TAG = InVehicleDeviceApiClientFactory.class
+			.getSimpleName();
 	private static Optional<InVehicleDeviceApiClient> apiClient = Optional
 			.absent();
 
@@ -44,8 +49,14 @@ public class InVehicleDeviceApiClientFactory {
 	 */
 	public static void setInstance(InVehicleDeviceApiClient newApiClient) {
 		synchronized (API_CLIENT_LOCK) {
-			Closeables.closeQuietly(InVehicleDeviceApiClientFactory.apiClient
-					.orNull());
+			try {
+				for (Closeable apiClient : InVehicleDeviceApiClientFactory.apiClient
+						.asSet()) {
+					apiClient.close();
+				}
+			} catch (IOException e) {
+				Log.w(TAG, e);
+			}
 			InVehicleDeviceApiClientFactory.apiClient = Optional
 					.of(newApiClient);
 		}

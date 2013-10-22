@@ -2,7 +2,6 @@ package com.kogasoftware.odt.invehicledevice.service.logservice;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.Calendar;
 import java.util.Date;
@@ -13,6 +12,7 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.DropBoxManager;
+import android.os.DropBoxManager.Entry;
 import android.util.Base64;
 import android.util.Base64OutputStream;
 import android.util.Log;
@@ -20,7 +20,7 @@ import android.util.Log;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.io.ByteStreams;
-import com.google.common.io.Closeables;
+import com.google.common.io.Closer;
 
 public class DropBoxThread extends Thread {
 	private static final String LAST_CHECKED_DATE_KEY = "last_checked_date_key";
@@ -64,8 +64,6 @@ public class DropBoxThread extends Thread {
 	 * 非常に大きくなる可能性のあるデータをストリームのまま扱わなければいけないため、直接JSONを組み立てる。
 	 */
 	private void write(DropBoxManager.Entry entry) {
-		Charset c = CHARSET;
-
 		StringBuilder json = new StringBuilder();
 		json.append("{");
 		json.append("\"time_millis\":" + entry.getTimeMillis() + ",");
@@ -73,31 +71,34 @@ public class DropBoxThread extends Thread {
 		json.append("\"flags\":" + entry.getFlags() + ",");
 		json.append("\"describe_contents\":" + entry.describeContents());
 
-		InputStream inputStream = null;
 		try {
-			splitFileOutputStream.write(json.toString().getBytes(c));
-			inputStream = entry.getInputStream(); // 非常に大きなデータの可能性があるため、一度に全て読み出さないようにする
-			if (inputStream != null) {
-				splitFileOutputStream.write(",\"contents\":\"".getBytes(c));
-				OutputStream base64OutputStream = null;
-				try {
-					base64OutputStream = new Base64OutputStream(
-							splitFileOutputStream, Base64.DEFAULT
-									| Base64.NO_CLOSE | Base64.NO_WRAP);
-					ByteStreams.copy(inputStream, base64OutputStream);
-				} catch (IOException e) {
-					Log.w(TAG, e);
-				} finally {
-					Closeables.closeQuietly(base64OutputStream);
-					splitFileOutputStream.write("\"".getBytes(c));
-				}
-			}
-			splitFileOutputStream.write(("}" + DELIMITER + "\n").getBytes(c));
+			splitFileOutputStream.write(json.toString().getBytes(CHARSET));
+			writeStream(entry);
+			splitFileOutputStream.write(("}" + DELIMITER + "\n").getBytes(CHARSET));
 			splitFileOutputStream.flush();
 		} catch (IOException e) {
 			Log.w(TAG, e);
+		}
+	}
+
+	private void writeStream(Entry entry) throws IOException {
+		Closer closer = Closer.create();
+		try {
+			// 非常に大きなデータの可能性があるため、一度に全て読み出さないようにする
+			InputStream inputStream = closer.register(entry.getInputStream());
+			if (inputStream == null) {
+				return;
+			}
+			splitFileOutputStream.write(",\"contents\":\"".getBytes(CHARSET));
+			Base64OutputStream base64OutputStream = closer
+					.register(new Base64OutputStream(splitFileOutputStream,
+							Base64.DEFAULT | Base64.NO_CLOSE | Base64.NO_WRAP));
+			ByteStreams.copy(inputStream, base64OutputStream);
+			splitFileOutputStream.write("\"".getBytes(CHARSET));
+		} catch (Throwable e) {
+			closer.rethrow(e);
 		} finally {
-			Closeables.closeQuietly(inputStream); // StrictModeの警告よけ
+			closer.close();
 		}
 	}
 
@@ -157,10 +158,10 @@ public class DropBoxThread extends Thread {
 			if (Thread.currentThread().isInterrupted()) {
 				return;
 			}
-			DropBoxManager.Entry entry = null;
+			Closer closer = Closer.create();
 			try {
-				entry = dropBoxManager.getNextEntry(
-				/* tag */null, lastEntryTimeMillis);
+				DropBoxManager.Entry entry = closer.register(dropBoxManager.getNextEntry(
+				/* tag */null, lastEntryTimeMillis));
 				if (entry == null) {
 					break;
 				}
@@ -169,8 +170,10 @@ public class DropBoxThread extends Thread {
 					splitFileOutputStream.split();
 				}
 				lastEntryTimeMillis = entry.getTimeMillis();
+			} catch (Throwable e) {
+				throw closer.rethrow(e);
 			} finally {
-				Closeables.closeQuietly(entry);
+				closer.close();
 			}
 		}
 		// }

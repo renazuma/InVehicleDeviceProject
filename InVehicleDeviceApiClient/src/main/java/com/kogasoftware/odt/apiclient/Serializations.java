@@ -14,7 +14,7 @@ import org.apache.commons.lang3.SerializationException;
 import org.apache.commons.lang3.SerializationUtils;
 
 import com.google.common.io.ByteStreams;
-import com.google.common.io.Closeables;
+import com.google.common.io.Closer;
 
 public class Serializations {
 	/**
@@ -29,20 +29,25 @@ public class Serializations {
 	public static Object deserialize(InputStream inputStream) {
 		// TODO: 一度InputStreamを全読みしてからdeserializeしないと
 		// LocalStorageTestCase.testNewScheduleでEBADFが発生するのの原因を調査
-		ByteArrayInputStream byteArrayInputStream = null;
 		try {
-			byteArrayInputStream = new ByteArrayInputStream(
-					ByteStreams.toByteArray(inputStream));
-			return SerializationUtils.deserialize(byteArrayInputStream);
+			Closer closer = Closer.create();
+			try {
+				closer.register(inputStream);
+				ByteArrayInputStream byteArrayInputStream = closer
+						.register(new ByteArrayInputStream(ByteStreams
+								.toByteArray(inputStream)));
+				return SerializationUtils.deserialize(byteArrayInputStream);
+			} catch (Throwable e) {
+				throw closer.rethrow(e);
+			} finally {
+				closer.close();
+			}
 		} catch (IllegalArgumentException e) {
 			throw new SerializationException(e);
 		} catch (IndexOutOfBoundsException e) {
 			throw new SerializationException(e);
 		} catch (IOException e) {
 			throw new SerializationException(e);
-		} finally {
-			Closeables.closeQuietly(inputStream);
-			Closeables.closeQuietly(byteArrayInputStream);
 		}
 	}
 
@@ -59,7 +64,10 @@ public class Serializations {
 			SerializationUtils.serialize(serializable, outputStream);
 		} finally {
 			// SerializationUtils.serialize()内でcloseされるはずだが、防御的にcloseしておく
-			Closeables.closeQuietly(outputStream);
+			try {
+				outputStream.close();
+			} catch (IOException e) {
+			}
 		}
 	}
 

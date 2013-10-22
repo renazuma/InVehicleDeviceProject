@@ -22,7 +22,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 
@@ -40,7 +39,7 @@ public class LogService extends Service {
 	private Thread dropboxThread = new EmptyThread();
 	private Thread compressThread = new EmptyThread();
 	private Thread uploadThread = new EmptyThread();
-	private List<Closeable> closeables = new LinkedList<Closeable>();
+	private final List<Closeable> closeables = new LinkedList<Closeable>();
 
 	/**
 	 * シャットダウン時、可能な限りSDカードのマウントが解除される前に書込み中のログをフラッシュするため、
@@ -185,8 +184,16 @@ public class LogService extends Service {
 						}
 					});
 					if (!posted) {
-						Closeables.closeQuietly(logcatSplitFileOutputStream);
-						Closeables.closeQuietly(dropboxSplitFileOutputStream);
+						try {
+							logcatSplitFileOutputStream.close();
+						} catch (IOException e) {
+							Log.w(TAG, e);
+						}
+						try {
+							dropboxSplitFileOutputStream.close();
+						} catch (IOException e) {
+							Log.w(TAG, e);
+						}
 					}
 				} catch (InterruptedException e) {
 				} catch (IOException e) {
@@ -209,7 +216,11 @@ public class LogService extends Service {
 		compressThread.interrupt();
 		uploadThread.interrupt();
 		for (Closeable closeable : closeables) {
-			Closeables.closeQuietly(closeable);
+			try {
+				closeable.close();
+			} catch (IOException e) {
+				Log.w(TAG, e);
+			}
 		}
 		try {
 			unregisterReceiver(sendLogBroadcastReceiver);

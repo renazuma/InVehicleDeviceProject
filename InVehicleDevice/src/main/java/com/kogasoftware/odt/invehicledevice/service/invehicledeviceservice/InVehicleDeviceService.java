@@ -1,6 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.EnumSet;
 import java.util.LinkedList;
@@ -46,7 +47,6 @@ import android.widget.Toast;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.io.Closeables;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.kogasoftware.odt.invehicledevice.BuildConfig;
 import com.kogasoftware.odt.invehicledevice.R;
@@ -222,9 +222,14 @@ public class InVehicleDeviceService extends Service implements
 				try {
 					initializeCompleted.await();
 					return;
-				} catch (InterruptedException e) {
-					Closeables.closeQuietly(result.getLeft());
-					Closeables.closeQuietly(result.getRight());
+				} catch (InterruptedException interruptedException) {
+					// 処理が中断された場合、結果オブジェクトをクローズして終了
+					result.getLeft().close();
+					try {
+						result.getRight().close();
+					} catch (IOException ioException) {
+						Log.w(TAG, ioException);
+					}
 				} finally {
 					handler.removeCallbacks(postInitializeCallback);
 				}
@@ -474,8 +479,12 @@ public class InVehicleDeviceService extends Service implements
 	protected void onPostInitialize(
 			Pair<LocalStorage, InVehicleDeviceApiClient> result) {
 		if (destroyed) {
-			Closeables.closeQuietly(result.getLeft());
-			Closeables.closeQuietly(result.getRight());
+			result.getLeft().close();
+			try {
+				result.getRight().close();
+			} catch (IOException e) {
+				Log.w(TAG, e);
+			}
 			return;
 		}
 		localStorage = result.getLeft();
@@ -664,9 +673,13 @@ public class InVehicleDeviceService extends Service implements
 		}
 		scheduledExecutorService.shutdownNow();
 
-		Closeables.closeQuietly(eventDispatcher);
-		Closeables.closeQuietly(apiClient);
-		Closeables.closeQuietly(localStorage);
+		eventDispatcher.close();
+		try {
+			apiClient.close();
+		} catch (IOException e) {
+			Log.w(TAG, e);
+		}
+		localStorage.close();
 	}
 
 	@Override

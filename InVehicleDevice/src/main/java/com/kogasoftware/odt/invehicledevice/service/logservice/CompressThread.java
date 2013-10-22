@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.concurrent.BlockingQueue;
 import java.util.zip.GZIPOutputStream;
 
@@ -13,7 +12,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.google.common.io.ByteStreams;
-import com.google.common.io.Closeables;
+import com.google.common.io.Closer;
 
 public class CompressThread extends Thread {
 	private static final String TAG = CompressThread.class.getSimpleName();
@@ -44,27 +43,16 @@ public class CompressThread extends Thread {
 				File compressedLogFile = new File(rawLogFile
 						+ COMPRESSED_FILE_SUFFIX);
 
-				FileInputStream fileInputStream = null;
-				OutputStream compressOutputStream = null;
-				FileOutputStream fileOutputStream = null;
 				Boolean succeed = false;
 				Boolean retry = false;
 				try {
-					fileInputStream = new FileInputStream(rawLogFile);
-					fileOutputStream = new FileOutputStream(compressedLogFile);
-					compressOutputStream = new GZIPOutputStream(
-							fileOutputStream);
-					ByteStreams.copy(fileInputStream, compressOutputStream);
+					compress(rawLogFile, compressedLogFile);
 					succeed = true;
 				} catch (FileNotFoundException e) {
 					Log.w(TAG, e);
 				} catch (IOException e) {
 					Log.w(TAG, e);
 					retry = true;
-				} finally {
-					Closeables.closeQuietly(fileInputStream);
-					Closeables.closeQuietly(compressOutputStream);
-					Closeables.closeQuietly(fileOutputStream);
 				}
 				if (succeed) {
 					compressedLogFiles.add(compressedLogFile);
@@ -78,5 +66,22 @@ public class CompressThread extends Thread {
 		} catch (InterruptedException e) {
 		}
 		Log.i(TAG, "exit");
+	}
+
+	private void compress(File rawLogFile, File compressedLogFile)
+			throws FileNotFoundException, IOException {
+		Closer closer = Closer.create();
+		try {
+			FileInputStream fileInputStream = closer.register(new FileInputStream(rawLogFile));
+			FileOutputStream fileOutputStream = closer.register(new FileOutputStream(
+					compressedLogFile));
+			GZIPOutputStream compressOutputStream = closer.register(new GZIPOutputStream(
+					fileOutputStream));
+			ByteStreams.copy(fileInputStream, compressOutputStream);
+		} catch (Throwable e) {
+			throw closer.rethrow(e);
+		} finally {
+			closer.close();
+		}
 	}
 }

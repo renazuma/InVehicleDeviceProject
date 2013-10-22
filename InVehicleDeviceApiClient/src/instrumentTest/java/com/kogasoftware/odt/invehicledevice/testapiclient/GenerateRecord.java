@@ -1,11 +1,9 @@
 package com.kogasoftware.odt.invehicledevice.testapiclient;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.util.Date;
 
 import com.google.common.collect.Lists;
-import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Demand;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Driver;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.InVehicleDevice;
@@ -22,8 +20,8 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.Vehicle;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 
 public class GenerateRecord implements Closeable {
-	private GenerateMaster master;
-	private InVehicleDeviceTestApiClient api;
+	private final GenerateMaster master;
+	private final InVehicleDeviceTestApiClient api;
 
 	public GenerateRecord(GenerateMaster master) {
 		this.master = master;
@@ -201,8 +199,8 @@ public class GenerateRecord implements Closeable {
 	}
 
 	@Override
-	public void close() throws IOException {
-		Closeables.closeQuietly(api);
-		Closeables.closeQuietly(master);
+	public void close() {
+		api.close();
+		master.close();
 	}
 }

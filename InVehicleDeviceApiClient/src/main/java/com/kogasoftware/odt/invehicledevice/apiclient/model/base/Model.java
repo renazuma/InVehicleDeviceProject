@@ -32,7 +32,7 @@ import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import com.google.common.io.Closeables;
+import com.google.common.io.Closer;
 import com.kogasoftware.odt.apiclient.ApiClient.ResponseConverter;
 import com.kogasoftware.odt.apiclient.ApiClients;
 import com.kogasoftware.odt.apiclient.identifiable.Identifiable;
@@ -185,29 +185,31 @@ public abstract class Model implements Externalizable, Identifiable, Cloneable {
 		return clone(childClass, true);
 	}
 
-	protected ByteArrayInputStream toByteArrayInputStream(Boolean withAssociation) {
-		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-		ObjectOutputStream objectOutputStream = null;
-		try {
-			objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
-			writeExternal(objectOutputStream, withAssociation);
-		} catch (IOException e) {
-			throw new CloneException(e);
-		} finally {
-			Closeables.closeQuietly(objectOutputStream);
-			Closeables.closeQuietly(byteArrayOutputStream);
+	protected ByteArrayInputStream toByteArrayInputStream(
+			Boolean withAssociation) throws IOException {
+		// メモリの最大使用量に十分注意する
+		byte[] byteArray;
+		{
+			Closer closer = Closer.create();
+			try {
+				ByteArrayOutputStream byteArrayOutputStream = closer
+						.register(new ByteArrayOutputStream());
+				ObjectOutputStream objectOutputStream = closer
+						.register(new ObjectOutputStream(byteArrayOutputStream));
+				writeExternal(objectOutputStream, withAssociation);
+				objectOutputStream.close();
+				byteArray = byteArrayOutputStream.toByteArray();
+			} catch (Throwable e) {
+				throw closer.rethrow(e);
+			} finally {
+				closer.close();
+			}
 		}
-		byte[] byteArray = byteArrayOutputStream.toByteArray();
-		byteArrayOutputStream = null; // enable GC
-		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArray);
-		byteArray = null; // enable GC
-		return byteArrayInputStream;
+		return new ByteArrayInputStream(byteArray);
 	}
 
 	protected <T extends Model> T clone(Class<T> childClass,
 			Boolean withAssociation) {
-		ByteArrayInputStream byteArrayInputStream = toByteArrayInputStream(withAssociation);
-
 		// 空のclone結果のオブジェクトを準備
 		T model = null;
 		try {
@@ -219,18 +221,24 @@ public abstract class Model implements Externalizable, Identifiable, Cloneable {
 		}
 
 		// clone結果のメンバを書き込み
-		ObjectInputStream objectInputStream = null;
 		try {
-			objectInputStream = new ObjectInputStream(byteArrayInputStream);
-			model.readExternal(objectInputStream);
-			return model;
+			Closer closer = Closer.create();
+			try {
+				ByteArrayInputStream byteArrayInputStream = closer
+						.register(toByteArrayInputStream(withAssociation));
+				ObjectInputStream objectInputStream = closer
+						.register(new ObjectInputStream(byteArrayInputStream));
+				model.readExternal(objectInputStream);
+				return model;
+			} catch (Throwable e) {
+				throw closer.rethrow(e, ClassNotFoundException.class);
+			} finally {
+				closer.close();
+			}
 		} catch (IOException e) {
 			throw new CloneException(e);
 		} catch (ClassNotFoundException e) {
 			throw new CloneException(e);
-		} finally {
-			Closeables.closeQuietly(objectInputStream);
-			Closeables.closeQuietly(byteArrayInputStream);
 		}
 	}
 

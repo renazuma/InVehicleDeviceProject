@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.preference;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
@@ -30,7 +31,6 @@ import com.google.common.base.CharMatcher;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.common.io.Closeables;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.apiclient.ApiClientException;
 import com.kogasoftware.odt.invehicledevice.apiclient.DefaultInVehicleDeviceApiClient;
@@ -163,7 +163,11 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		dismissAllDialogs();
 
 		preferences.unregisterOnSharedPreferenceChangeListener(this);
-		Closeables.closeQuietly(apiClient);
+		try {
+			apiClient.close();
+		} catch (IOException e) {
+			Log.w(TAG, e);
+		}
 	}
 
 	private void onExceptionOnUiThread(int reqKey, ApiClientException ex) {

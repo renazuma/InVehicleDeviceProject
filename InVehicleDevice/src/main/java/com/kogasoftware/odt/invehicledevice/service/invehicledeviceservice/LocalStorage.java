@@ -33,7 +33,7 @@ import android.util.Log;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Throwables;
-import com.google.common.io.Closeables;
+import com.google.common.io.Closer;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyFile;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
 
@@ -376,24 +376,26 @@ public class LocalStorage implements Closeable {
 					+ "bytes");
 		}
 
-		save(file, serialized);
+		try {
+			save(file, serialized);
+		} catch (IOException e) {
+			Log.w(TAG, e);
+		}
 	}
 
-	private void save(File file, byte[] serialized) {
+	private void save(File file, byte[] serialized) throws IOException {
+		Closer closer = Closer.create();
 		synchronized (FILE_ACCESS_LOCK) {
-			FileOutputStream fileOutputStream = null;
 			try {
-				fileOutputStream = new FileOutputStream(file);
+				FileOutputStream fileOutputStream = closer.register(new FileOutputStream(file));
 				fileOutputStream.getChannel().lock();
 				fileOutputStream.write(serialized);
 				fileOutputStream.flush();
 				Log.d(TAG, "written: " + file);
-			} catch (FileNotFoundException e) {
-				Log.w(TAG, e);
-			} catch (IOException e) {
-				Log.w(TAG, e);
+			} catch (Throwable e) {
+				throw closer.rethrow(e);
 			} finally {
-				Closeables.closeQuietly(fileOutputStream);
+				closer.close();
 			}
 		}
 	}

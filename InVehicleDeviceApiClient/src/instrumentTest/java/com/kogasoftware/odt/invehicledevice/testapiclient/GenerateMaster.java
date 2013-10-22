@@ -6,7 +6,6 @@ import java.util.concurrent.CountDownLatch;
 
 import android.util.Log;
 
-import com.google.common.io.Closeables;
 import com.kogasoftware.odt.apiclient.ApiClientException;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Driver;
@@ -18,7 +17,7 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.User;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Vehicle;
 
 public class GenerateMaster implements Closeable {
-	private InVehicleDeviceTestApiClient api;
+	private final InVehicleDeviceTestApiClient api;
 	private boolean succeed;
 	private ServiceProvider serviceProvider;
 	private Operator operator;
@@ -203,6 +202,6 @@ public class GenerateMaster implements Closeable {
 	
 	@Override
 	public void close() {
-		Closeables.closeQuietly(api);
+		api.close();
 	}
 }

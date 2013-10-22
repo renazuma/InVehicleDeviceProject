@@ -1,9 +1,9 @@
 package com.kogasoftware.odt.invehicledevice.ui.frametask.navigation.tilepipeline;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
@@ -11,7 +11,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
-import com.google.common.io.Closeables;
+import com.google.common.io.Closer;
 import com.google.common.math.DoubleMath;
 
 public class TileBitmapFile {
@@ -49,7 +49,7 @@ public class TileBitmapFile {
 	}
 
 	public Bitmap alignAndSaveBitmap(Bitmap bitmap, boolean alwaysSave)
-			throws FileNotFoundException {
+			throws IOException {
 		File file = getFile();
 		int alignedLength = (int) Math.pow(
 				2,
@@ -66,13 +66,15 @@ public class TileBitmapFile {
 		new Canvas(alignedBitmap).drawBitmap(bitmap, left, top, new Paint());
 		bitmap.recycle();
 
+		Closer closer = Closer.create();
 		synchronized (BITMAP_FILE_ACCESS_LOCK) {
-			FileOutputStream fileOutputStream = null;
 			try {
-				fileOutputStream = new FileOutputStream(file);
-				alignedBitmap.compress(CompressFormat.PNG, 100, fileOutputStream);
+				OutputStream outputStream = closer.register(new FileOutputStream(file));
+				alignedBitmap.compress(CompressFormat.PNG, 100, outputStream);
+			} catch (Throwable e) {
+				throw closer.rethrow(e);
 			} finally {
-				Closeables.closeQuietly(fileOutputStream);
+				closer.close();
 			}
 		}
 		return alignedBitmap;
