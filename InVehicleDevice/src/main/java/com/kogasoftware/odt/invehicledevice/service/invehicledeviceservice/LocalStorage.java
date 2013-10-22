@@ -376,6 +376,10 @@ public class LocalStorage implements Closeable {
 					+ "bytes");
 		}
 
+		save(file, serialized);
+	}
+
+	private void save(File file, byte[] serialized) {
 		synchronized (FILE_ACCESS_LOCK) {
 			FileOutputStream fileOutputStream = null;
 			try {
