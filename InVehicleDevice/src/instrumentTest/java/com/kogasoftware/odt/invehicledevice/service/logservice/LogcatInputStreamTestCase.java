@@ -40,7 +40,7 @@ public class LogcatInputStreamTestCase extends AndroidTestCase {
 
 	public void tearDown() throws Exception {
 		try {
-			Closeables.closeQuietly(lis);
+			Closeables.close(lis, false);
 		} finally {
 			super.tearDown();
 		}

@@ -78,7 +78,7 @@ public class LogServiceReportSenderTestCase extends AndroidTestCase {
 			fr = new FileReader(new File(f));
 			jo = (new ObjectMapper()).readValue(fr, ObjectNode.class);
 		} finally {
-			Closeables.closeQuietly(fr);
+			Closeables.close(fr, false);
 		}
 		
 		ObjectNode got = LogServiceReportSender.getCrashReportJsonNode(crd);

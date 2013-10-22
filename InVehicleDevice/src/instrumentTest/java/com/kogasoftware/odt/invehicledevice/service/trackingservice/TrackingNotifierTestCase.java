@@ -354,6 +354,6 @@ public class TrackingNotifierTestCase extends AndroidTestCase {
 		if (checkBroadcastsAreAllChecked) {
 			assertEquals(0, trackingBroadcasts.size());
 		}
-		Closeables.closeQuietly(trackingNotifier);
+		Closeables.close(trackingNotifier, false);
 	}
 }

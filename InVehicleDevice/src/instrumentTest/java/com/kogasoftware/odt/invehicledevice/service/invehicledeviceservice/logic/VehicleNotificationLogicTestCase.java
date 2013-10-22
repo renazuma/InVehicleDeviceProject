@@ -46,7 +46,7 @@ public class VehicleNotificationLogicTestCase extends AndroidTestCase {
 	@Override
 	protected void tearDown() throws Exception {
 		try {
-			Closeables.closeQuietly(lds);
+			Closeables.close(lds, false);
 		} finally {
 			super.tearDown();
 		}

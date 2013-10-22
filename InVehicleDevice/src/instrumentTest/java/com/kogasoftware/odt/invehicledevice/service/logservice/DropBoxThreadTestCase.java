@@ -48,9 +48,7 @@ public class DropBoxThreadTestCase extends AndroidTestCase {
 			if (dbt != null) {
 				dbt.interrupt();
 			}
-			if (sfos != null) {
-				Closeables.closeQuietly(sfos);
-			}
+			Closeables.close(sfos, false);
 		} finally {
 			super.tearDown();
 		}

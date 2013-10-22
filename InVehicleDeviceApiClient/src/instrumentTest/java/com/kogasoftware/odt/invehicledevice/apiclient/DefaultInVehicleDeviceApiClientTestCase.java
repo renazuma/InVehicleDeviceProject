@@ -118,8 +118,11 @@ public class DefaultInVehicleDeviceApiClientTestCase extends DummyAndroidTestCas
 
 	@Override
 	protected void tearDown() throws Exception {
-		Closeables.closeQuietly(api);
-		super.tearDown();
+		try {
+			Closeables.close(api, false);
+		} finally {
+			super.tearDown();
+		}
 	}
 
 	public void testPasswordLogin() throws Exception {

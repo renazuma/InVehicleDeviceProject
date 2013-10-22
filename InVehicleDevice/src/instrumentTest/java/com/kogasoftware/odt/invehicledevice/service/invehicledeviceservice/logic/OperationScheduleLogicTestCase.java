@@ -51,7 +51,7 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 	@Override
 	public void tearDown() throws Exception {
 		try {
-			Closeables.closeQuietly(lds);
+			Closeables.close(lds, false);
 		} finally {
 			super.tearDown();
 		}

@@ -1,6 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.service.logservice;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.util.concurrent.BlockingQueue;
@@ -37,8 +38,14 @@ public class LogcatThreadTestCase extends AndroidTestCase {
 			if (lt != null) {
 				lt.interrupt();
 			}
-			Closeables.closeQuietly(pos);
-			Closeables.closeQuietly(pis);
+			try {
+				Closeables.close(pos, false);
+			} catch (IOException e) {
+			}
+			try {
+				Closeables.close(pis, false);
+			} catch (IOException e) {
+			}
 		} finally {
 			super.tearDown();
 		}

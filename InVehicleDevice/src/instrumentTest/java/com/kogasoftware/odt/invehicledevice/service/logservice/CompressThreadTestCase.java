@@ -2,7 +2,6 @@ package com.kogasoftware.odt.invehicledevice.service.logservice;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -15,7 +14,7 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.ByteStreams;
-import com.google.common.io.Closeables;
+import com.google.common.io.Closer;
 import com.kogasoftware.odt.invehicledevice.service.logservice.CompressThread;
 
 import android.os.Environment;
@@ -85,20 +84,20 @@ public class CompressThreadTestCase extends AndroidTestCase {
 		ComparableAssert.assertLesser(f1Length, of1.length());
 		ComparableAssert.assertLesser(f2Length, of2.length());
 
-		InputStream is1 = null;
-		InputStream is2 = null;
+		Closer closer = Closer.create();
 		try {
-			is1 = new GZIPInputStream(new ByteArrayInputStream(
-					FileUtils.readFileToByteArray(of1)));
-			is2 = new GZIPInputStream(new ByteArrayInputStream(
-					FileUtils.readFileToByteArray(of2)));
+			GZIPInputStream is1 = closer.register(new GZIPInputStream(new ByteArrayInputStream(
+					FileUtils.readFileToByteArray(of1))));
+			GZIPInputStream is2 = closer.register(new GZIPInputStream(new ByteArrayInputStream(
+					FileUtils.readFileToByteArray(of2))));
 			MoreAsserts.assertEquals(d1.toString().getBytes(c),
 					ByteStreams.toByteArray(is1));
 			MoreAsserts.assertEquals(d2.toByteArray(),
 					ByteStreams.toByteArray(is2));
+		} catch (Throwable e) {
+			throw closer.rethrow(e);
 		} finally {
-			Closeables.closeQuietly(is1);
-			Closeables.closeQuietly(is2);
+			closer.close();
 		}
 	}
 }

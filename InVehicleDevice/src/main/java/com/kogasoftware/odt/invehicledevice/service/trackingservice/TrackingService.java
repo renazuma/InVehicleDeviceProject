@@ -1,7 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.service.trackingservice;
 
-import com.google.common.io.Closeables;
-
 import android.app.Service;
 import android.content.Intent;
 import android.os.Handler;
@@ -34,7 +32,7 @@ public class TrackingService extends Service implements Runnable {
 		Log.i(TAG, "onDestroy()");
 		super.onDestroy();
 		handler.removeCallbacks(this);
-		Closeables.closeQuietly(trackingNotifier);
+		trackingNotifier.close();
 	}
 
 	@Override

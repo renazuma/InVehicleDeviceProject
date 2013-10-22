@@ -52,7 +52,7 @@ public class ServiceUnitStatusLogLogicTestCase extends AndroidTestCase {
 
 	@Override
 	protected void tearDown() throws Exception {
-		Closeables.closeQuietly(th);
+		Closeables.close(th, false);
 		super.tearDown();
 	}
 

@@ -29,7 +29,7 @@ public class SplitFileOutputStreamTestCase extends AndroidTestCase {
 	@Override
 	public void tearDown() throws Exception {
 		try {
-			Closeables.closeQuietly(sfos);
+			Closeables.close(sfos, false);
 		} finally {
 			super.tearDown();
 		}
