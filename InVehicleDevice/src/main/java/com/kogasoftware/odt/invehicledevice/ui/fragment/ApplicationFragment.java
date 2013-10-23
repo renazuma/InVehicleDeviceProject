@@ -25,7 +25,7 @@ import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
 public class ApplicationFragment<S extends Serializable> extends Fragment {
 	/**
-	 * インスタンス状態をここへ変数に保存する。onSaveInstanceStateで自動保存され、onCreateで自動読み出しされる。
+	 * インスタンス状態を使わずここへ変数に保存する。onSaveInstanceStateで自動保存され、onCreateで自動読み出しされる。
 	 */
 	private S state;
 
@@ -51,10 +51,24 @@ public class ApplicationFragment<S extends Serializable> extends Fragment {
 				+ "/" + getClass().getName();
 	}
 
-	/**
-	 * OnUpdateOperation時にFragmentを閉じるかどうか
-	 */
-	private Boolean removeOnUpdateOperation = false;
+	private static class PrivateState implements Serializable {
+		private static final long serialVersionUID = 2820665608614198512L;
+
+		/**
+		 * PrivateStateをBundleに保存する際のキーを取得
+		 */
+		private static String getSavedInstanceStateKey() {
+			return "SavedInstanceStateKey:" + PrivateState.class.getName()
+					+ "/" + PrivateState.class.getName();
+		}
+
+		/**
+		 * OnUpdateOperation時にFragmentを閉じるかどうか
+		 */
+		private Boolean removeOnUpdateOperation = false;
+	}
+
+	private PrivateState privateState = new PrivateState();
 
 	/**
 	 * OnUpdateOperation時にFragmentを閉じる
@@ -69,14 +83,10 @@ public class ApplicationFragment<S extends Serializable> extends Fragment {
 	};
 
 	protected void setRemoveOnUpdateOperation(Boolean removeOnUpdateOperation) {
-		this.removeOnUpdateOperation = removeOnUpdateOperation;
+		this.privateState.removeOnUpdateOperation = removeOnUpdateOperation;
 	}
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
-		// stateメンバを復活させる
+	private void restoreState(Bundle savedInstanceState) {
 		String key = getSavedInstanceStateKey();
 		if (savedInstanceState != null) {
 			Object rawState = savedInstanceState.getSerializable(key);
@@ -95,8 +105,26 @@ public class ApplicationFragment<S extends Serializable> extends Fragment {
 		@SuppressWarnings("unchecked")
 		S castState = (S) arguments.getSerializable(key);
 		setState(castState);
+	}
 
-		if (removeOnUpdateOperation) {
+	private void restorePrivateState(Bundle savedInstanceState) {
+		if (savedInstanceState == null) {
+			return;
+		}
+		Object object = savedInstanceState.getSerializable(PrivateState
+				.getSavedInstanceStateKey());
+		if (object instanceof PrivateState) {
+			privateState = (PrivateState) object;
+			return;
+		}
+	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		restoreState(savedInstanceState);
+		restorePrivateState(savedInstanceState);
+		if (privateState.removeOnUpdateOperation) {
 			getService().getEventDispatcher().addOnUpdateOperationListener(
 					removeOnUpdateOperationListener);
 		}
@@ -105,8 +133,8 @@ public class ApplicationFragment<S extends Serializable> extends Fragment {
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		// stateメンバを保存
 		outState.putSerializable(getSavedInstanceStateKey(), getState());
+		outState.putSerializable(PrivateState.getSavedInstanceStateKey(), privateState);
 	}
 
 	@Override
