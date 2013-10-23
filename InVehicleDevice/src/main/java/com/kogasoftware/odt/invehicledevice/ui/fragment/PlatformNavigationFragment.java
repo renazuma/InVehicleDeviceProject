@@ -112,7 +112,7 @@ public class PlatformNavigationFragment extends ApplicationFragment<State>
 			final WebView webView = (WebView) getView().findViewById(
 					R.id.platform_navigation_web_view);
 			final AtomicInteger once = new AtomicInteger(1);
-			final String baseUrl = "file:///android_asset/";
+			final String baseUrl = "https://koko-bus.com/";
 			webView.setWebViewClient(new WebViewClient() {
 				@Override
 				public void onPageFinished(WebView view, String finishedUrl) {
