@@ -13,9 +13,23 @@ repositories {
 
 apply plugin: 'android'
 
+def computeVersionName() {
+    def versionCode = computeVersionCode()
+    def date = new java.text.SimpleDateFormat('yyyyMMddHHmmss', Locale.US).format(new Date())
+    "Build-$versionCode ($date)"
+}
+
+def computeVersionCode() {
+    (System.getMethod("getenv", String).invoke(null, "BUILD_NUMBER") ?: "0").toInteger()
+}
+
 android {
     compileSdkVersion 18
     buildToolsVersion '18.1.1'
+    defaultConfig {
+        versionCode computeVersionCode()
+        versionName computeVersionName()
+    }
     signingConfigs {
         release {
             storeFile file(System.properties["ksc.android.sign.keystore"] ?: ".")
