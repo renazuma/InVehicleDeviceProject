@@ -16,6 +16,19 @@ apply plugin: 'android'
 android {
     compileSdkVersion 18
     buildToolsVersion '18.1.1'
+    signingConfigs {
+        release {
+            storeFile file(System.properties["ksc.android.sign.keystore"] ?: ".")
+            storePassword System.properties["ksc.android.sign.storepass"]
+            keyAlias System.properties["ksc.android.sign.alias"]
+            keyPassword System.properties["ksc.android.sign.keypass"]
+        }
+    }
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+        }
+    }
 }
 
 def libDir = file('src/main/libs')
