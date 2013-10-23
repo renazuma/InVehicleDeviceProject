@@ -35,6 +35,7 @@ public class OperationScheduleArrayAdapter extends
 	private static final String TAG = OperationScheduleArrayAdapter.class
 			.getSimpleName();
 	private static final Integer SELECTED_COLOR = Color.parseColor("#D5E9F6");
+	private static final Integer DEPARTED_COLOR = Color.LTGRAY;
 	private static final Integer DEFAULT_COLOR = Color.parseColor("#FFFFFF");
 	private static final Integer RESOURCE_ID = R.layout.operation_schedule_list_row;
 	private final LayoutInflater layoutInflater;
@@ -50,22 +51,28 @@ public class OperationScheduleArrayAdapter extends
 				return false;
 			}
 
+			final OperationSchedule operationSchedule = (OperationSchedule) tag;
+
 			if (event.getAction() == MotionEvent.ACTION_DOWN) {
 				view.setBackgroundColor(SELECTED_COLOR);
 				return true;
 			}
 
-			if (event.getAction() == MotionEvent.ACTION_CANCEL) {
-				view.setBackgroundColor(DEFAULT_COLOR);
-				return true;
-			}
-
-			if (event.getAction() != MotionEvent.ACTION_UP) {
+			if (event.getAction() != MotionEvent.ACTION_UP
+					&& event.getAction() != MotionEvent.ACTION_CANCEL) {
 				return false;
 			}
 
-			view.setBackgroundColor(DEFAULT_COLOR);
-			final OperationSchedule operationSchedule = (OperationSchedule) tag;
+			if (!operationSchedule.isDeparted()) {
+				view.setBackgroundColor(DEPARTED_COLOR);
+			} else {
+				view.setBackgroundColor(DEFAULT_COLOR);
+			}
+
+			if (event.getAction() == MotionEvent.ACTION_CANCEL) {
+				return true;
+			}
+
 			service.getLocalStorage().read(
 					new BackgroundReader<ServiceUnitStatusLog>() {
 						@Override
@@ -177,9 +184,9 @@ public class OperationScheduleArrayAdapter extends
 		}
 
 		if (!operationSchedule.isDeparted()) {
-			convertView.setBackgroundColor(Color.TRANSPARENT);
+			convertView.setBackgroundColor(DEPARTED_COLOR);
 		} else {
-			convertView.setBackgroundColor(Color.LTGRAY);
+			convertView.setBackgroundColor(DEFAULT_COLOR);
 		}
 		convertView.setTag(operationSchedule);
 		convertView.setOnTouchListener(onTouchListener);
