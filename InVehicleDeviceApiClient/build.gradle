@@ -38,7 +38,7 @@ gradle.taskGraph.whenReady {taskGraph ->
         }
     }
     taskGraph.afterTask {
-        if (it.name == "assembleTest") {
+        if (it.name == "packageTest") {
             libBackupDir.renameTo(libDir)
         }
     }
