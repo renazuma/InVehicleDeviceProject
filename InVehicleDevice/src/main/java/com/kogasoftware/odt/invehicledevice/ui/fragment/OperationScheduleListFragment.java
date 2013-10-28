@@ -1,8 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.ui.fragment;
 
 import java.io.Serializable;
-import java.util.List;
-
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation;
 import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.OperationScheduleArrayAdapter;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.OperationScheduleListFragment.State;
@@ -18,14 +16,14 @@ import com.kogasoftware.odt.invehicledevice.ui.fragment.OperationScheduleListFra
 public class OperationScheduleListFragment extends ApplicationFragment<State> {
 	@SuppressWarnings("serial")
 	protected static class State implements Serializable {
-		private final List<OperationSchedule> operationSchedules;
+		private final Operation operation;
 
-		public State(List<OperationSchedule> operationSchedules) {
-			this.operationSchedules = operationSchedules;
+		public State(Operation operation) {
+			this.operation = operation;
 		}
 
-		public List<OperationSchedule> getOperationSchedules() {
-			return operationSchedules;
+		public Operation getOperation() {
+			return operation;
 		}
 	}
 
@@ -33,10 +31,9 @@ public class OperationScheduleListFragment extends ApplicationFragment<State> {
 		setRemoveOnUpdateOperation(true);
 	}
 
-	public static OperationScheduleListFragment newInstance(
-			List<OperationSchedule> operationSchedules) {
+	public static OperationScheduleListFragment newInstance(Operation operation) {
 		return newInstance(new OperationScheduleListFragment(), new State(
-				operationSchedules));
+				operation));
 	}
 
 	@Override
@@ -49,7 +46,9 @@ public class OperationScheduleListFragment extends ApplicationFragment<State> {
 				.findViewById(R.id.operation_schedule_list_view)).getListView();
 
 		OperationScheduleArrayAdapter adapter = new OperationScheduleArrayAdapter(
-				getActivity(), getService(), getState().getOperationSchedules());
+				getActivity(), getService(),
+				getState().getOperation().operationSchedules, getState()
+						.getOperation().passengerRecords);
 		listView.setAdapter(adapter);
 
 		// 未運行の運行スケジュールまでスクロールする

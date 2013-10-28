@@ -160,7 +160,7 @@ public class ControlBarFragment extends AutoUpdateOperationFragment<State> {
 			setCustomAnimation(fragmentManager.beginTransaction()).add(
 					R.id.modal_fragment_container,
 					OperationScheduleListFragment.newInstance(getState()
-							.getOperationSchedules())).commit();
+							.getOperation())).commit();
 		}
 	}
 

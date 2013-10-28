@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
@@ -107,7 +108,7 @@ public class OperationScheduleArrayAdapter extends
 
 	public OperationScheduleArrayAdapter(FragmentActivity activity,
 			InVehicleDeviceService service,
-			List<OperationSchedule> operationSchedules) {
+			List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
 		super(activity, RESOURCE_ID, operationSchedules);
 		this.activity = activity;
 		this.service = service;

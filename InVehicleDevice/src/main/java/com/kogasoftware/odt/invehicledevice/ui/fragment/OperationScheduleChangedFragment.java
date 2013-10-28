@@ -1,7 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.ui.fragment;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.SystemUtils;
@@ -18,9 +17,9 @@ import android.widget.TextView;
 
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundReader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
@@ -92,29 +91,29 @@ public class OperationScheduleChangedFragment extends
 
 	private void showOperationScheduleFragment() {
 		getService().getLocalStorage().read(
-				new BackgroundReader<ArrayList<OperationSchedule>>() {
+				new BackgroundReader<Operation>() {
 					@Override
-					public ArrayList<OperationSchedule> readInBackground(
+					public Operation readInBackground(
 							LocalData localData) {
-						return Lists.newArrayList(localData.operation.operationSchedules);
+						return localData.operation;
 					}
 
 					@Override
 					public void onRead(
-							ArrayList<OperationSchedule> operationSchedules) {
-						showOperationScheduleFragment(operationSchedules);
+							Operation operation) {
+						showOperationScheduleFragment(operation);
 					}
 				});
 	}
 
 	private void showOperationScheduleFragment(
-			List<OperationSchedule> operationSchedules) {
+			Operation operation) {
 		for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
 			setCustomAnimation(fragmentManager.beginTransaction())
 			.remove(this)
 			.add(R.id.modal_fragment_container,
 					OperationScheduleListFragment
-							.newInstance(operationSchedules))
+							.newInstance(operation))
 			.commitAllowingStateLoss();
 		}
 	}

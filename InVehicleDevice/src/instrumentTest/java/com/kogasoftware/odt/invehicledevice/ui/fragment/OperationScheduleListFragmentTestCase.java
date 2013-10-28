@@ -246,7 +246,7 @@ public class OperationScheduleListFragmentTestCase extends
 				FrameLayout fl = new FrameLayout(a);
 				fl.setId(id);
 				a.setContentView(fl);
-				f = OperationScheduleListFragment.newInstance(oss);
+				f = OperationScheduleListFragment.newInstance(ld.operation);
 				FragmentManager fm = a.getSupportFragmentManager();
 				fm.beginTransaction().add(id, f).commit();
 			}

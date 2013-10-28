@@ -38,7 +38,7 @@ public class OperationScheduleArrayAdapterTestCase extends
 			}
 		});
 		aa = new OperationScheduleArrayAdapter(a, s,
-				new ArrayList<OperationSchedule>());
+				new ArrayList<OperationSchedule>(), null);
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class OperationScheduleArrayAdapterTestCase extends
 			oss.add(os);
 		}
 
-		aa = new OperationScheduleArrayAdapter(a, s, oss);
+		aa = new OperationScheduleArrayAdapter(a, s, oss, null);
 
 		runOnUiThreadSync(new Runnable() {
 			@Override
