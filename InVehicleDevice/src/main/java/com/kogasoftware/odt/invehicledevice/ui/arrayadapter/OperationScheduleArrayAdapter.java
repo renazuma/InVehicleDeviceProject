@@ -46,6 +46,7 @@ public class OperationScheduleArrayAdapter extends
 	private final FragmentActivity activity;
 	private final InVehicleDeviceService service;
 	private final List<PassengerRecord> passengerRecords;
+	private Boolean showPassengerRecords = false;
 
 	static abstract class onRowTouchListener<T> implements OnTouchListener {
 		private final Class<T> rowClass;
@@ -205,8 +206,10 @@ public class OperationScheduleArrayAdapter extends
 					.asSet()) {
 				if (reservation.getDepartureScheduleId().equals(
 						Optional.of(operationSchedule.getId()))) {
-					passengerRecordsView.addView(createPassengerRecordRow(
-							passengerRecord, true));
+					if (showPassengerRecords) {
+						passengerRecordsView.addView(createPassengerRecordRow(
+								passengerRecord, true));
+					}
 					getOnPassengerCount += 1;
 				}
 			}
@@ -218,8 +221,10 @@ public class OperationScheduleArrayAdapter extends
 					.asSet()) {
 				if (reservation.getArrivalScheduleId().equals(
 						Optional.of(operationSchedule.getId()))) {
-					passengerRecordsView.addView(createPassengerRecordRow(
-							passengerRecord, false));
+					if (showPassengerRecords) {
+						passengerRecordsView.addView(createPassengerRecordRow(
+								passengerRecord, false));
+					}
 					getOffPassengerCount += 1;
 				}
 			}
@@ -287,5 +292,15 @@ public class OperationScheduleArrayAdapter extends
 		row.setTag(passengerRecord);
 		row.setOnTouchListener(onPassengerRecordTouchListener);
 		return row;
+	}
+	
+	public void showPassengerRecords() {
+		showPassengerRecords = true;
+		notifyDataSetChanged();
+	}
+	
+	public void hidePassengerRecords() {
+		showPassengerRecords = false;
+		notifyDataSetChanged();
 	}
 }

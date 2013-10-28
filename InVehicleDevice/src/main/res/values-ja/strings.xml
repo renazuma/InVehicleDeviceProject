@@ -45,6 +45,7 @@
     <string name="failed_to_connect_operator_tool">オペレーターツールとの通信に失敗しました。</string>
     <string name="settings_are_not_initialized">初期設定が見つかりません。設定アプリケーションを利用し初期設定を行なってください。</string>
     <string name="show_passengers">乗客も見る</string>
+    <string name="hide_passengers">戻る</string>
     <string name="google_maps_language">ja</string>
     <string name="google_maps_region">JP</string>
 

@@ -1,10 +1,13 @@
 package com.kogasoftware.odt.invehicledevice.ui.fragment;
 
 import java.io.Serializable;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
 
 import com.kogasoftware.odt.invehicledevice.R;
@@ -50,7 +53,7 @@ public class OperationScheduleListFragment extends ApplicationFragment<State> {
 		ListView listView = ((FlickUnneededListView) getView().findViewById(
 				R.id.operation_schedule_list_view)).getListView();
 
-		OperationScheduleArrayAdapter adapter = new OperationScheduleArrayAdapter(
+		final OperationScheduleArrayAdapter adapter = new OperationScheduleArrayAdapter(
 				getActivity(), getService(),
 				getState().getOperation().operationSchedules, getState()
 						.getOperation().passengerRecords);
@@ -69,5 +72,30 @@ public class OperationScheduleListFragment extends ApplicationFragment<State> {
 		if (!found && count >= 1) {
 			listView.setSelectionFromTop(count - 1, 0);
 		}
+
+		final Button showPassengersButton = (Button) getView().findViewById(
+				R.id.operation_schedule_list_show_passengers_button);
+		final Button hidePassengersButton = (Button) getView().findViewById(
+				R.id.operation_schedule_list_hide_passengers_button);
+		final Button closeButton = (Button) getView().findViewById(
+				R.id.operation_schedule_list_close_button);
+		showPassengersButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				hidePassengersButton.setVisibility(View.VISIBLE);
+				showPassengersButton.setVisibility(View.GONE);
+				closeButton.setVisibility(View.GONE);
+				adapter.showPassengerRecords();
+			}
+		});
+		hidePassengersButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				hidePassengersButton.setVisibility(View.GONE);
+				showPassengersButton.setVisibility(View.VISIBLE);
+				closeButton.setVisibility(View.VISIBLE);
+				adapter.hidePassengerRecords();
+			}
+		});
 	}
 }
