@@ -39,11 +39,16 @@ public class OperationScheduleListFragment extends ApplicationFragment<State> {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View view = onCreateViewHelper(inflater, container,
+		return onCreateViewHelper(inflater, container,
 				R.layout.operation_schedule_list_fragment,
 				R.id.operation_schedule_list_close_button);
-		ListView listView = ((FlickUnneededListView) view
-				.findViewById(R.id.operation_schedule_list_view)).getListView();
+	}
+
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		ListView listView = ((FlickUnneededListView) getView().findViewById(
+				R.id.operation_schedule_list_view)).getListView();
 
 		OperationScheduleArrayAdapter adapter = new OperationScheduleArrayAdapter(
 				getActivity(), getService(),
@@ -64,7 +69,5 @@ public class OperationScheduleListFragment extends ApplicationFragment<State> {
 		if (!found && count >= 1) {
 			listView.setSelectionFromTop(count - 1, 0);
 		}
-
-		return view;
 	}
 }
