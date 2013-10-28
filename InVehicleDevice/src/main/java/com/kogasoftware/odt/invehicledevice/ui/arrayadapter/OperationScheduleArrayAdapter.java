@@ -18,8 +18,10 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
@@ -29,6 +31,7 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVeh
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundReader;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.ApplicationFragment;
+import com.kogasoftware.odt.invehicledevice.ui.fragment.PassengerRecordMemoFragment;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.PlatformNavigationFragment;
 
 public class OperationScheduleArrayAdapter extends
@@ -42,20 +45,30 @@ public class OperationScheduleArrayAdapter extends
 	private final LayoutInflater layoutInflater;
 	private final FragmentActivity activity;
 	private final InVehicleDeviceService service;
-	protected final OnTouchListener onTouchListener = new OnTouchListener() {
+	private final List<PassengerRecord> passengerRecords;
+
+	static abstract class onRowTouchListener<T> implements OnTouchListener {
+		private final Class<T> rowClass;
+
+		public onRowTouchListener(Class<T> rowClass) {
+			this.rowClass = rowClass;
+		}
+
 		@Override
 		public boolean onTouch(View view, MotionEvent event) {
 			Object tag = view.getTag();
-			if (!(tag instanceof OperationSchedule)) {
+			if (rowClass.isInstance(tag)) {
+				return onTouch(view, event, rowClass.cast(tag));
+			} else {
 				Log.e(TAG, "\"" + view + "\".getTag() (" + tag
-						+ ") is not instanceof OperationSchedule");
-				return false;
+						+ ") is not instanceof " + rowClass);
 			}
+			return false;
+		}
 
-			final OperationSchedule operationSchedule = (OperationSchedule) tag;
-
+		private boolean onTouch(View view, MotionEvent event, T tag) {
 			if (event.getAction() == MotionEvent.ACTION_DOWN) {
-				view.setBackgroundColor(SELECTED_COLOR);
+				view.setBackgroundColor(getSelectedColor(tag));
 				return true;
 			}
 
@@ -64,16 +77,31 @@ public class OperationScheduleArrayAdapter extends
 				return false;
 			}
 
-			if (!operationSchedule.isDeparted()) {
-				view.setBackgroundColor(DEPARTED_COLOR);
-			} else {
-				view.setBackgroundColor(DEFAULT_COLOR);
-			}
+			view.setBackgroundColor(getDefaultColor(tag));
 
 			if (event.getAction() == MotionEvent.ACTION_CANCEL) {
 				return true;
 			}
 
+			return onTap(view, event, tag);
+		}
+
+		protected abstract boolean onTap(View view, MotionEvent event, T tag);
+
+		protected int getDefaultColor(T tag) {
+			return Color.TRANSPARENT;
+		}
+
+		protected int getSelectedColor(T tag) {
+			return SELECTED_COLOR;
+		}
+	}
+
+	protected final OnTouchListener onOperationScheduleTouchListener = new onRowTouchListener<OperationSchedule>(
+			OperationSchedule.class) {
+		@Override
+		protected boolean onTap(View view, MotionEvent event,
+				final OperationSchedule operationSchedule) {
 			service.getLocalStorage().read(
 					new BackgroundReader<ServiceUnitStatusLog>() {
 						@Override
@@ -104,14 +132,46 @@ public class OperationScheduleArrayAdapter extends
 					});
 			return true;
 		}
+
+		@Override
+		protected int getDefaultColor(OperationSchedule operationSchedule) {
+			if (operationSchedule.isDeparted()) {
+				return DEFAULT_COLOR;
+			} else {
+				return DEPARTED_COLOR;
+			}
+		}
+	};
+
+	protected final OnTouchListener onPassengerRecordTouchListener = new onRowTouchListener<PassengerRecord>(
+			PassengerRecord.class) {
+		@Override
+		protected boolean onTap(View view, MotionEvent event,
+				PassengerRecord passengerRecord) {
+			FragmentManager fragmentManager = activity
+					.getSupportFragmentManager();
+			if (fragmentManager == null) {
+				return true;
+			}
+			FragmentTransaction fragmentTransaction = fragmentManager
+					.beginTransaction();
+			ApplicationFragment.setCustomAnimation(fragmentTransaction);
+			fragmentTransaction.add(R.id.modal_fragment_container,
+					PassengerRecordMemoFragment.newInstance(passengerRecord));
+
+			fragmentTransaction.commitAllowingStateLoss();
+			return true;
+		}
 	};
 
 	public OperationScheduleArrayAdapter(FragmentActivity activity,
 			InVehicleDeviceService service,
-			List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
+			List<OperationSchedule> operationSchedules,
+			List<PassengerRecord> passengerRecords) {
 		super(activity, RESOURCE_ID, operationSchedules);
 		this.activity = activity;
 		this.service = service;
+		this.passengerRecords = passengerRecords;
 		this.layoutInflater = (LayoutInflater) activity
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
@@ -135,16 +195,34 @@ public class OperationScheduleArrayAdapter extends
 			platformNameView.setText("ID:" + operationSchedule.getId());
 		}
 
+		ViewGroup passengerRecordsView = (ViewGroup) convertView
+				.findViewById(R.id.operation_schedule_list_passenger_records);
+		passengerRecordsView.removeAllViews();
+
 		Integer getOnPassengerCount = 0;
-		for (Reservation reservation : operationSchedule
-				.getReservationsAsDeparture()) {
-			getOnPassengerCount += reservation.getPassengerCount();
+		for (PassengerRecord passengerRecord : passengerRecords) {
+			for (Reservation reservation : passengerRecord.getReservation()
+					.asSet()) {
+				if (reservation.getDepartureScheduleId().equals(
+						Optional.of(operationSchedule.getId()))) {
+					passengerRecordsView.addView(createPassengerRecordRow(
+							passengerRecord, true));
+					getOnPassengerCount += 1;
+				}
+			}
 		}
 
 		Integer getOffPassengerCount = 0;
-		for (Reservation reservation : operationSchedule
-				.getReservationsAsArrival()) {
-			getOffPassengerCount += reservation.getPassengerCount();
+		for (PassengerRecord passengerRecord : passengerRecords) {
+			for (Reservation reservation : passengerRecord.getReservation()
+					.asSet()) {
+				if (reservation.getArrivalScheduleId().equals(
+						Optional.of(operationSchedule.getId()))) {
+					passengerRecordsView.addView(createPassengerRecordRow(
+							passengerRecord, false));
+					getOffPassengerCount += 1;
+				}
+			}
 		}
 
 		TextView getOnPassengerCountTextView = (TextView) convertView
@@ -190,7 +268,24 @@ public class OperationScheduleArrayAdapter extends
 			convertView.setBackgroundColor(DEFAULT_COLOR);
 		}
 		convertView.setTag(operationSchedule);
-		convertView.setOnTouchListener(onTouchListener);
+		convertView.setOnTouchListener(onOperationScheduleTouchListener);
 		return convertView;
+	}
+
+	private View createPassengerRecordRow(PassengerRecord passengerRecord,
+			Boolean getOn) {
+		View row = layoutInflater.inflate(R.layout.passenger_record_list_row,
+				null);
+		ImageView selectMarkImageView = (ImageView) row
+				.findViewById(R.id.select_mark_image_view);
+		selectMarkImageView.setImageResource(getOn ? R.drawable.get_on
+				: R.drawable.get_off);
+
+		TextView userNameView = (TextView) row.findViewById(R.id.user_name);
+		userNameView.setText(passengerRecord.getDisplayName());
+
+		row.setTag(passengerRecord);
+		row.setOnTouchListener(onPassengerRecordTouchListener);
+		return row;
 	}
 }

@@ -1,81 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-
-    android:paddingTop="2sp"
     android:paddingBottom="2sp"
-
-    android:gravity="left|center"
-    android:orientation="horizontal" >
+    android:paddingTop="2sp" >
 
     <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="fill_parent"
-        android:layout_weight="2"
+        android:id="@+id/operation_schedule_list_arrival_departure"
+        android:layout_width="90sp"
+        android:layout_height="60sp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
         android:orientation="vertical" >
 
         <TextView
             android:id="@+id/operation_schedule_arrival_estimate_text_view"
-            android:layout_margin="0dp"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_margin="0dp"
             android:layout_weight="1"
-            android:textSize="22sp"
+            android:text="@string/departure_schedule"
             android:textColor="@android:color/black"
-            android:text="@string/departure_schedule" />
+            android:textSize="22sp" />
 
         <TextView
             android:id="@+id/operation_schedule_departure_estimate_text_view"
-            android:layout_width="fill_parent"
-            android:layout_margin="0dp"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_margin="0dp"
             android:layout_weight="1"
-            android:gravity="bottom"
-            android:textSize="22sp"
+            android:text="@string/arrival_schedule"
             android:textColor="@android:color/black"
-            android:text="@string/arrival_schedule" />
+            android:textSize="22sp" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/platform_name"
-        android:layout_width="0dp"
-        android:layout_height="fill_parent"
-        android:layout_margin="2dp"
-        android:layout_weight="8"
-        android:gravity="center_vertical"
-        android:textSize="28sp"
-        android:ellipsize="end"
-        android:singleLine="true"
-        android:textColor="@android:color/black"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
-
     <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="fill_parent"
-        android:layout_weight="2"
+        android:id="@+id/operation_schedule_list_passenger_count"
+        android:layout_width="100sp"
+        android:layout_height="60sp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
         android:orientation="vertical" >
 
         <TextView
             android:id="@+id/operation_schedule_get_off_passenger_count_text_view"
-            android:layout_margin="0dp"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_margin="0dp"
             android:layout_weight="1"
-            android:textSize="22sp"
+            android:text="@string/alighting_number"
             android:textColor="@android:color/black"
-            android:text="@string/alighting_number" />
+            android:textSize="22sp" />
 
         <TextView
             android:id="@+id/operation_schedule_get_on_passenger_count_text_view"
-            android:layout_margin="0dp"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_margin="0dp"
             android:layout_weight="1"
-            android:gravity="bottom"
-            android:textSize="22sp"
+            android:text="@string/entrainment_number"
             android:textColor="@android:color/black"
-            android:text="@string/entrainment_number" />
+            android:textSize="22sp" />
     </LinearLayout>
 
-</LinearLayout>
+    <TextView
+        android:id="@+id/platform_name"
+        android:layout_width="fill_parent"
+        android:layout_height="60sp"
+        android:layout_alignParentTop="true"
+        android:paddingLeft="100dp"
+        android:layout_toLeftOf="@+id/operation_schedule_list_passenger_count"
+        android:layout_toRightOf="@+id/operation_schedule_list_arrival_departure"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:singleLine="true"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@android:color/black"
+        android:textSize="28sp" />
+
+    <LinearLayout
+        android:id="@+id/operation_schedule_list_passenger_records"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/operation_schedule_list_arrival_departure"
+        android:orientation="vertical" />
+
+</RelativeLayout>
