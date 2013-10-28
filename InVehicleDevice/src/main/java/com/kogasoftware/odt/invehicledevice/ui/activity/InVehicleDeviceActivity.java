@@ -158,14 +158,7 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 				@Override
 				public boolean onKey(DialogInterface dialog, int keyCode,
 						KeyEvent event) {
-					InVehicleDeviceActivity activity = (InVehicleDeviceActivity) getActivity();
-					if (!activity.isUiInitialized()) {
-						Log.i(TAG, "LoadingDialogFragment.onKey / finish");
-						activity.finish();
-					} else {
-						Log.i(TAG, "LoadingDialogFragment.onKey");
-					}
-					return false;
+					return true;
 				}
 			});
 			return dialog;
