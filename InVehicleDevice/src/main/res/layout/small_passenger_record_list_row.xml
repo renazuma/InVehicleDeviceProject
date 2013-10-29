@@ -10,12 +10,12 @@
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:textColor="@android:color/black"
-        android:textSize="25sp" />
+        android:textSize="20sp" />
 
     <ImageView
         android:id="@+id/select_mark_image_view"
-        android:layout_width="60sp"
-        android:layout_height="60sp"
+        android:layout_width="35sp"
+        android:layout_height="35sp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_centerVertical="true"
@@ -23,33 +23,14 @@
         android:paddingRight="5sp"
         android:src="@drawable/get_off" />
 
-    <FrameLayout
-        android:id="@+id/memo_button_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toLeftOf="@+id/passenger_count_text_view" >
-
-        <Button
-            android:id="@+id/memo_button"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:layout_marginRight="5dp"
-            android:background="#90e090"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:text="@string/memo"
-            android:textSize="18sp" />
-    </FrameLayout>
-
     <TextView
         android:id="@+id/user_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_toLeftOf="@+id/memo_button_layout"
+        android:layout_toLeftOf="@+id/passenger_count_text_view"
         android:layout_toRightOf="@+id/select_mark_image_view"
         android:textColor="@android:color/black"
-        android:textSize="40sp" />
+        android:textSize="25sp" />
 
 </RelativeLayout>

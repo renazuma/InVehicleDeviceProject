@@ -137,9 +137,9 @@ public class OperationScheduleArrayAdapter extends
 		@Override
 		protected int getDefaultColor(OperationSchedule operationSchedule) {
 			if (operationSchedule.isDeparted()) {
-				return DEFAULT_COLOR;
-			} else {
 				return DEPARTED_COLOR;
+			} else {
+				return DEFAULT_COLOR;
 			}
 		}
 	};
@@ -267,7 +267,7 @@ public class OperationScheduleArrayAdapter extends
 			}
 		}
 
-		if (!operationSchedule.isDeparted()) {
+		if (operationSchedule.isDeparted()) {
 			convertView.setBackgroundColor(DEPARTED_COLOR);
 		} else {
 			convertView.setBackgroundColor(DEFAULT_COLOR);
@@ -279,8 +279,8 @@ public class OperationScheduleArrayAdapter extends
 
 	private View createPassengerRecordRow(PassengerRecord passengerRecord,
 			Boolean getOn) {
-		View row = layoutInflater.inflate(R.layout.passenger_record_list_row,
-				null);
+		View row = layoutInflater.inflate(
+				R.layout.small_passenger_record_list_row, null);
 		ImageView selectMarkImageView = (ImageView) row
 				.findViewById(R.id.select_mark_image_view);
 		selectMarkImageView.setImageResource(getOn ? R.drawable.get_on
@@ -291,14 +291,18 @@ public class OperationScheduleArrayAdapter extends
 
 		row.setTag(passengerRecord);
 		row.setOnTouchListener(onPassengerRecordTouchListener);
+
+		TextView countView = (TextView) row
+				.findViewById(R.id.passenger_count_text_view);
+		countView.setText(passengerRecord.getPassengerCount() + "名");
 		return row;
 	}
-	
+
 	public void showPassengerRecords() {
 		showPassengerRecords = true;
 		notifyDataSetChanged();
 	}
-	
+
 	public void hidePassengerRecords() {
 		showPassengerRecords = false;
 		notifyDataSetChanged();

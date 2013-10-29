@@ -7,7 +7,7 @@
 
     <LinearLayout
         android:id="@+id/operation_schedule_list_arrival_departure"
-        android:layout_width="90sp"
+        android:layout_width="105sp"
         android:layout_height="60sp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
@@ -36,7 +36,7 @@
 
     <LinearLayout
         android:id="@+id/operation_schedule_list_passenger_count"
-        android:layout_width="100sp"
+        android:layout_width="105sp"
         android:layout_height="60sp"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
@@ -68,7 +68,6 @@
         android:layout_width="fill_parent"
         android:layout_height="60sp"
         android:layout_alignParentTop="true"
-        android:paddingLeft="100dp"
         android:layout_toLeftOf="@+id/operation_schedule_list_passenger_count"
         android:layout_toRightOf="@+id/operation_schedule_list_arrival_departure"
         android:ellipsize="end"
@@ -82,8 +81,8 @@
         android:id="@+id/operation_schedule_list_passenger_records"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
+        android:paddingLeft="10sp"
         android:layout_below="@+id/operation_schedule_list_arrival_departure"
         android:orientation="vertical" />
 
