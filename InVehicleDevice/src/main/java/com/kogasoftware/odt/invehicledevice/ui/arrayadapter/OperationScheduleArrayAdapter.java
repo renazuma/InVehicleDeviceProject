@@ -200,21 +200,6 @@ public class OperationScheduleArrayAdapter extends
 				.findViewById(R.id.operation_schedule_list_passenger_records);
 		passengerRecordsView.removeAllViews();
 
-		Integer getOnPassengerCount = 0;
-		for (PassengerRecord passengerRecord : passengerRecords) {
-			for (Reservation reservation : passengerRecord.getReservation()
-					.asSet()) {
-				if (reservation.getDepartureScheduleId().equals(
-						Optional.of(operationSchedule.getId()))) {
-					if (showPassengerRecords) {
-						passengerRecordsView.addView(createPassengerRecordRow(
-								passengerRecord, true));
-					}
-					getOnPassengerCount += 1;
-				}
-			}
-		}
-
 		Integer getOffPassengerCount = 0;
 		for (PassengerRecord passengerRecord : passengerRecords) {
 			for (Reservation reservation : passengerRecord.getReservation()
@@ -226,6 +211,21 @@ public class OperationScheduleArrayAdapter extends
 								passengerRecord, false));
 					}
 					getOffPassengerCount += 1;
+				}
+			}
+		}
+
+		Integer getOnPassengerCount = 0;
+		for (PassengerRecord passengerRecord : passengerRecords) {
+			for (Reservation reservation : passengerRecord.getReservation()
+					.asSet()) {
+				if (reservation.getDepartureScheduleId().equals(
+						Optional.of(operationSchedule.getId()))) {
+					if (showPassengerRecords) {
+						passengerRecordsView.addView(createPassengerRecordRow(
+								passengerRecord, true));
+					}
+					getOnPassengerCount += 1;
 				}
 			}
 		}
