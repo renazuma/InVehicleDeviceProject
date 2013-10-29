@@ -184,6 +184,7 @@ public class OperationScheduleArrayAdapter extends
 		} else {
 			convertView.setBackgroundColor(DEFAULT_COLOR);
 		}
+
 		DateFormat displayDateFormat = new SimpleDateFormat("HH:mm", Locale.US);
 
 		OperationSchedule operationSchedule = getItem(position);
@@ -199,6 +200,8 @@ public class OperationScheduleArrayAdapter extends
 		ViewGroup passengerRecordsView = (ViewGroup) convertView
 				.findViewById(R.id.operation_schedule_list_passenger_records);
 		passengerRecordsView.removeAllViews();
+		passengerRecordsView.setVisibility(showPassengerRecords ? View.VISIBLE
+				: View.GONE);
 
 		Integer getOffPassengerCount = 0;
 		for (PassengerRecord passengerRecord : passengerRecords) {
