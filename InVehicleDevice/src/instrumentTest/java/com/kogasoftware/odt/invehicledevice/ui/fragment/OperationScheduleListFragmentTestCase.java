@@ -191,7 +191,7 @@ public class OperationScheduleListFragmentTestCase extends
 		assertFalse(solo.searchText(p4.getName(), true));
 	}
 
-	public void testAutoScroll2() throws Throwable {
+	public void xtestAutoScroll2() throws Throwable {
 		Platform p7 = new Platform();
 		Platform p9 = new Platform();
 		p7.setName("下限で隠れない");

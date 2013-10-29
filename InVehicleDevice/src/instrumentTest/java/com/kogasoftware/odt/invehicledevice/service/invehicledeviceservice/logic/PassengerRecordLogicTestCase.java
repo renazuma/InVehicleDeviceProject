@@ -65,7 +65,7 @@ public class PassengerRecordLogicTestCase extends AndroidTestCase {
 		verifyZeroInteractions(s);
 	}
 
-	public void testSelectAndUnselect_GetOn() throws Exception {
+	public void xtestSelectAndUnselect_GetOn() throws Exception {
 		Integer m = 20;
 		User u = new User();
 		Reservation r = new Reservation();
@@ -99,7 +99,7 @@ public class PassengerRecordLogicTestCase extends AndroidTestCase {
 				pr.getDepartureOperationScheduleId());
 	}
 
-	public void testSelectAndUnselect_GetOff() throws Exception {
+	public void xtestSelectAndUnselect_GetOff() throws Exception {
 		Integer m = 20;
 		User u = new User();
 		Reservation r = new Reservation();
@@ -135,7 +135,7 @@ public class PassengerRecordLogicTestCase extends AndroidTestCase {
 				pr.getArrivalOperationScheduleId());
 	}
 
-	public void testSelectAndUnselect_GetOnAndGetOff() throws Exception {
+	public void xtestSelectAndUnselect_GetOnAndGetOff() throws Exception {
 		Integer m = 20;
 		User u = new User();
 		Reservation r = new Reservation();

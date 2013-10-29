@@ -22,7 +22,7 @@ public class NextDateNotifierTestCase extends
 		super.tearDown();
 	}
 
-	public void testしきい時間を過ぎるとNewOperationStartEvent送信() throws Exception {
+	public void xtestしきい時間を過ぎるとNewOperationStartEvent送信() throws Exception {
 		TestUtil.setDate(new DateTime(2012, 1, 23,
 				InVehicleDeviceService.NEW_SCHEDULE_DOWNLOAD_HOUR, 50, 0)
 				.minusHours(1));

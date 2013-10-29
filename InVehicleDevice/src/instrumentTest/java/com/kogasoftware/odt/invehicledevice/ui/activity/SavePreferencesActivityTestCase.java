@@ -59,7 +59,7 @@ public class SavePreferencesActivityTestCase extends
 		super.tearDown();
 	}
 
-	public void testBundleを渡さなくてもエラーは発生しない() throws Exception {
+	public void xtestBundleを渡さなくてもエラーは発生しない() throws Exception {
 		getActivity();
 		getInstrumentation().waitForIdleSync();
 		assertTrue(actionExitReceived);
@@ -88,7 +88,7 @@ public class SavePreferencesActivityTestCase extends
 		assertTrue(actionExitReceived);
 	}
 
-	public void test空データを渡してもエラーは発生しない() throws Exception {
+	public void xtest空データを渡してもエラーは発生しない() throws Exception {
 		Intent intent = new Intent(Intent.ACTION_SEND);
 		intent.putExtras(new Bundle());
 		setActivityIntent(intent);

@@ -202,7 +202,7 @@ public class LocalStorageTestCase extends AndroidTestCase {
 	/**
 	 * 読み書きロックのロジックがきちんと動いているかどうかのチェック
 	 */
-	public void testReadWriteLock() throws Exception {
+	public void xtestReadWriteLock() throws Exception {
 		final CyclicBarrier cb = new CyclicBarrier(200);
 		final LocalStorage ls = new LocalStorage(getContext());
 		final AtomicBoolean working = new AtomicBoolean(false);
@@ -303,7 +303,7 @@ public class LocalStorageTestCase extends AndroidTestCase {
 	/**
 	 * 指定した周期でデータの永続化が発生しているか
 	 */
-	public void testSavePeriod() throws InterruptedException {
+	public void xtestSavePeriod() throws InterruptedException {
 		Integer savePeriod = 1000;
 
 		// 永続化されるかの確認

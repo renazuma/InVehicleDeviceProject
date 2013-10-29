@@ -261,7 +261,7 @@ public class InVehicleDevicePreferenceTestCase extends
 		assertFalse(solo.searchText(password2, true));
 	}
 
-	public void testExitIfSucceed() throws Exception {
+	public void xtestExitIfSucceed() throws Exception {
 		setConnectionUrl(validUrl);
 		setLogin(VALID_LOGIN);
 		setPassword(VALID_PASSWORD);

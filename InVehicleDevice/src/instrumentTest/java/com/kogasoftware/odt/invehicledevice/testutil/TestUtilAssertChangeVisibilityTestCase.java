@@ -20,7 +20,7 @@ public class TestUtilAssertChangeVisibilityTestCase extends
 		}
 	}
 
-	public void testAssertChangeVisibility() {
+	public void xtestAssertChangeVisibility() {
 		// 表示されないことを確認
 		Context context = getInstrumentation().getContext();
 		try {

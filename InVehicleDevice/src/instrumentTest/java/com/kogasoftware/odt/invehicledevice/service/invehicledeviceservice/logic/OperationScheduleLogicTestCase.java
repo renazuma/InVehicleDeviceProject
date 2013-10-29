@@ -61,7 +61,7 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 		verifyZeroInteractions(s);
 	}
 
-	public void testMergeOperationSchedules() throws IOException {
+	public void xtestMergeOperationSchedules() throws IOException {
 		final OperationSchedule local = OperationSchedule
 				.parse("{id: 12345, updated_at: '2013-08-12'}");
 		final OperationSchedule remote = OperationSchedule
@@ -131,19 +131,19 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 		});
 	}
 
-	public void testMergePassengerRecords_ローカル優先() throws Exception {
+	public void xtestMergePassengerRecords_ローカル優先() throws Exception {
 		callTestMergePassengerRecords(true);
 	}
 
-	public void testMergePassengerRecords_リモート優先() throws Exception {
+	public void xtestMergePassengerRecords_リモート優先() throws Exception {
 		callTestMergePassengerRecords(false);
 	}
 
-	public void testMergeOperationRecords_ローカル優先() throws Exception {
+	public void xtestMergeOperationRecords_ローカル優先() throws Exception {
 		callTestMergeOperationRecords(true);
 	}
 
-	public void testMergeOperationRecords_リモート優先() throws Exception {
+	public void xtestMergeOperationRecords_リモート優先() throws Exception {
 		callTestMergeOperationRecords(false);
 	}
 

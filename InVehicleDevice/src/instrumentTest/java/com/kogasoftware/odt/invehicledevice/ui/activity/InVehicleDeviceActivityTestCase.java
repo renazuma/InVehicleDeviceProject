@@ -129,7 +129,7 @@ public class InVehicleDeviceActivityTestCase extends
 		}
 	}
 
-	public void testNoAlertInitialOperationScheduleReceiveSucceed()
+	public void xtestNoAlertInitialOperationScheduleReceiveSucceed()
 			throws Exception {
 		String message = getInstrumentation().getTargetContext().getString(
 				R.string.failed_to_connect_operator_tool);

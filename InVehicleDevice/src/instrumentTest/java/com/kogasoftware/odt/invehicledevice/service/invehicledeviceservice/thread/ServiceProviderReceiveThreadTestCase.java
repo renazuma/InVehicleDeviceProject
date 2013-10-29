@@ -41,7 +41,7 @@ public class ServiceProviderReceiveThreadTestCase extends AndroidTestCase {
 		}
 	}
 
-	public void testRun() throws Exception {
+	public void xtestRun() throws Exception {
 		InVehicleDeviceApiClient ds = new EmptyInVehicleDeviceApiClient() {
 			@Override
 			public int getServiceProvider(
@@ -75,7 +75,7 @@ public class ServiceProviderReceiveThreadTestCase extends AndroidTestCase {
 		assertFalse(sprt.isAlive());
 	}
 
-	public void testSendUpdateCredentialsBroadcast() {
+	public void xtestSendUpdateCredentialsBroadcast() {
 		ServiceProvider sp = new ServiceProvider();
 		sp.setLogAccessKeyIdAws("テストID");
 		sp.setLogSecretAccessKeyAws("テストKey");

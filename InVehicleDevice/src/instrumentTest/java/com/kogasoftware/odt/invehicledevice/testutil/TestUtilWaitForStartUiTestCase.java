@@ -69,35 +69,35 @@ public class TestUtilWaitForStartUiTestCase extends
 		super(InVehicleDeviceActivity.class);
 	}
 
-	public void testWaitForStartUi1() throws Exception {
+	public void xtestWaitForStartUi1() throws Exception {
 		callTestWaitForStartUi(false);
 	}
 
-	public void testWaitForStartUi1Timeout() throws Exception {
+	public void xtestWaitForStartUi1Timeout() throws Exception {
 		callTestWaitForStartUi(true);
 	}
 
-	public void testWaitForStartUi2() throws Exception {
+	public void xtestWaitForStartUi2() throws Exception {
 		callTestWaitForStartUi(false);
 	}
 
-	public void testWaitForStartUi2Timeout() throws Exception {
+	public void xtestWaitForStartUi2Timeout() throws Exception {
 		callTestWaitForStartUi(true);
 	}
 
-	public void testWaitForStartUi3() throws Exception {
+	public void xtestWaitForStartUi3() throws Exception {
 		callTestWaitForStartUi(false);
 	}
 
-	public void testWaitForStartUi3Timeout() throws Exception {
+	public void xtestWaitForStartUi3Timeout() throws Exception {
 		callTestWaitForStartUi(true);
 	}
 
-	public void testWaitForStartUi4() throws Exception {
+	public void xtestWaitForStartUi4() throws Exception {
 		callTestWaitForStartUi(false);
 	}
 
-	public void testWaitForStartUi4Timeout() throws Exception {
+	public void xtestWaitForStartUi4Timeout() throws Exception {
 		callTestWaitForStartUi(true);
 	}
 }
