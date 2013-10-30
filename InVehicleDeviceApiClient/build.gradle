@@ -1,21 +1,8 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:0.6.1'
-    }
-}
-
-repositories {
-    mavenCentral()
-}
-
 apply plugin: 'android-library'
 
 android {
-    compileSdkVersion 18
-    buildToolsVersion '18.1.1'
+    compileSdkVersion getAndroidCompileSdkVersion()
+    buildToolsVersion getAndroidBuildToolsVersion()
 }
 
 def libDir = file('src/main/libs')

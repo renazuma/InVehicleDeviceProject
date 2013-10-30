@@ -1,31 +1,8 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:0.6.1'
-    }
-}
-
-repositories {
-    mavenCentral()
-}
-
 apply plugin: 'android'
 
-def computeVersionName() {
-    def versionCode = computeVersionCode()
-    def date = new java.text.SimpleDateFormat('yyyyMMddHHmmss', Locale.US).format(new Date())
-    "Build-$versionCode ($date)"
-}
-
-def computeVersionCode() {
-    (System.getMethod("getenv", String).invoke(null, "BUILD_NUMBER") ?: "0").toInteger()
-}
-
 android {
-    compileSdkVersion 18
-    buildToolsVersion '18.1.1'
+    compileSdkVersion getAndroidCompileSdkVersion()
+    buildToolsVersion getAndroidBuildToolsVersion()
     defaultConfig {
         versionCode computeVersionCode()
         versionName computeVersionName()
