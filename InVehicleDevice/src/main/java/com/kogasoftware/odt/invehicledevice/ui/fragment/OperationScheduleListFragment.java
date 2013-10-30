@@ -50,7 +50,7 @@ public class OperationScheduleListFragment extends ApplicationFragment<State> {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		ListView listView = ((FlickUnneededListView) getView().findViewById(
+		final ListView listView = ((FlickUnneededListView) getView().findViewById(
 				R.id.operation_schedule_list_view)).getListView();
 
 		final OperationScheduleArrayAdapter adapter = new OperationScheduleArrayAdapter(
@@ -64,7 +64,7 @@ public class OperationScheduleListFragment extends ApplicationFragment<State> {
 		Integer count = adapter.getCount();
 		for (Integer i = 0; i < count; ++i) {
 			if (!adapter.getItem(i).isDeparted()) {
-				listView.setSelectionFromTop(i, 0);
+				listView.setSelection(i);
 				found = true;
 				break;
 			}
@@ -82,19 +82,23 @@ public class OperationScheduleListFragment extends ApplicationFragment<State> {
 		showPassengersButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
+                Integer selection = listView.getFirstVisiblePosition();
 				hidePassengersButton.setVisibility(View.VISIBLE);
 				showPassengersButton.setVisibility(View.GONE);
 				closeButton.setVisibility(View.GONE);
 				adapter.showPassengerRecords();
+                listView.setSelection(selection);
 			}
 		});
 		hidePassengersButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				hidePassengersButton.setVisibility(View.GONE);
+                Integer selection = listView.getFirstVisiblePosition();
+                hidePassengersButton.setVisibility(View.GONE);
 				showPassengersButton.setVisibility(View.VISIBLE);
 				closeButton.setVisibility(View.VISIBLE);
 				adapter.hidePassengerRecords();
+                listView.setSelection(selection);
 			}
 		});
 	}
