@@ -90,7 +90,7 @@ public class OperationScheduleArrayAdapter extends
 		protected abstract boolean onTap(View view, MotionEvent event, T tag);
 
 		protected int getDefaultColor(T tag) {
-			return Color.TRANSPARENT;
+			return DEFAULT_COLOR;
 		}
 
 		protected int getSelectedColor(T tag) {
