@@ -160,11 +160,12 @@ public class DropBoxThread extends Thread {
 			}
 			Closer closer = Closer.create();
 			try {
-				DropBoxManager.Entry entry = closer.register(dropBoxManager.getNextEntry(
-				/* tag */null, lastEntryTimeMillis));
+				DropBoxManager.Entry entry = dropBoxManager.getNextEntry(
+				/* tag */null, lastEntryTimeMillis);
 				if (entry == null) {
 					break;
 				}
+				closer.register(entry);
 				write(entry);
 				if (splitFileOutputStream.getCount() > splitBytes) {
 					splitFileOutputStream.split();
