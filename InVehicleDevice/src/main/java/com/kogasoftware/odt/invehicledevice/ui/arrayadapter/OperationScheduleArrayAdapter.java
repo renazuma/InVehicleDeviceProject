@@ -284,6 +284,7 @@ public class OperationScheduleArrayAdapter extends
 			Boolean getOn) {
 		View row = layoutInflater.inflate(
 				R.layout.small_passenger_record_list_row, null);
+		row.setBackgroundColor(DEFAULT_COLOR);
 		ImageView selectMarkImageView = (ImageView) row
 				.findViewById(R.id.select_mark_image_view);
 		selectMarkImageView.setImageResource(getOn ? R.drawable.get_on
