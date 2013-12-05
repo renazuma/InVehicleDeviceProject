@@ -5,15 +5,18 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import android.content.Intent;
+import android.util.Log;
 
 import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
 
 public class VoiceServiceConnector implements
 		EventDispatcher.OnPauseActivityListener,
 		EventDispatcher.OnResumeActivityListener {
+	private static final String TAG = VoiceServiceConnector.class.getSimpleName();
 	protected final InVehicleDeviceService service;
 	protected final BlockingQueue<String> voices = new LinkedBlockingQueue<String>();
 	protected Boolean paused = false;
+	protected String lastMessage = ""; // 同じメッセージが複数連続で発生することがあるので、診断用
 
 	public VoiceServiceConnector(InVehicleDeviceService service) {
 		this.service = service;
@@ -43,6 +46,10 @@ public class VoiceServiceConnector implements
 	}
 
 	public void speak(String message) {
+		if (message.equals(lastMessage)) {
+			Log.w(TAG, new Exception("Duplicated speak request: " + message));
+		}
+		lastMessage = message;
 		voices.add(message);
 		if (paused) {
 			return;
