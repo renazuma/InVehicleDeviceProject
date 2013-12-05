@@ -1,8 +1,8 @@
 package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import android.content.Intent;
 
@@ -12,7 +12,7 @@ public class VoiceServiceConnector implements
 		EventDispatcher.OnPauseActivityListener,
 		EventDispatcher.OnResumeActivityListener {
 	protected final InVehicleDeviceService service;
-	protected final List<String> voices = new LinkedList<String>();
+	protected final BlockingQueue<String> voices = new LinkedBlockingQueue<String>();
 	protected Boolean paused = false;
 
 	public VoiceServiceConnector(InVehicleDeviceService service) {
@@ -31,11 +31,14 @@ public class VoiceServiceConnector implements
 	}
 
 	protected void send() {
+		ArrayList<CharSequence> sendVoices = new ArrayList<CharSequence>();
+		if (voices.drainTo(sendVoices) == 0) {
+			return;
+		}
 		Intent intent = new Intent(service, VoiceService.class);
 		intent.setAction(VoiceService.ACTION_VOICE);
 		intent.putCharSequenceArrayListExtra(VoiceService.MESSAGE_KEY,
-				new ArrayList<CharSequence>(voices));
-		voices.clear();
+				sendVoices);
 		service.startService(intent);
 	}
 
