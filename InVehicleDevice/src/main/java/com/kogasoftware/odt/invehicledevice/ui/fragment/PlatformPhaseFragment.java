@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
@@ -71,6 +72,8 @@ public class PlatformPhaseFragment extends AutoUpdateOperationFragment<State> {
 			.getSimpleName();
 	private Handler handler;
 	private TextView minutesRemainingTextView;
+	private TextView currentPlatformNameTextView;
+	private FlickUnneededListView passengerRecordListView;
 	private Integer lastMinutesRemaining = Integer.MAX_VALUE;
 	private Optional<PassengerRecordArrayAdapter> optionalAdapter = Optional.absent();
 
@@ -133,15 +136,20 @@ public class PlatformPhaseFragment extends AutoUpdateOperationFragment<State> {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		handler = new Handler();
-		minutesRemainingTextView = (TextView) getView().findViewById(
+		View view = getView();
+		minutesRemainingTextView = (TextView) view.findViewById(
 				R.id.minutes_remaining_text_view);
-
-		updateView(getView());
+		currentPlatformNameTextView = (TextView) view
+				.findViewById(R.id.now_platform_text_view);
+		passengerRecordListView = ((FlickUnneededListView) view
+				.findViewById(R.id.reservation_list_view));
+		updateView(view);
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
+		Log.i(TAG, "platform: " + Objects.firstNonNull(currentPlatformNameTextView.getText(), "(None)"));
 		handler.post(updateMinutesRemaining);
 	}
 
@@ -159,12 +167,6 @@ public class PlatformPhaseFragment extends AutoUpdateOperationFragment<State> {
 
 	private void updateView(View view) {
 		Log.i(TAG, "updateView");
-
-		TextView currentPlatformNameTextView = (TextView) view
-				.findViewById(R.id.now_platform_text_view);
-		FlickUnneededListView passengerRecordListView = ((FlickUnneededListView) view
-				.findViewById(R.id.reservation_list_view));
-
 		Boolean last = !OperationSchedule.getRelative(
 				getState().getOperationSchedules(), 1).isPresent();
 		if (last) {

@@ -36,6 +36,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
@@ -191,6 +192,7 @@ public class NavigationFragment extends AutoUpdateOperationFragment<State>
 	private ToggleButton autoZoomButton;
 	private Button platformMemoButton;
 	private Runnable blinkBatteryAlert;
+	private TextView titleTextView;
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -200,6 +202,8 @@ public class NavigationFragment extends AutoUpdateOperationFragment<State>
 
 		View view = getView();
 		view.setBackgroundColor(Color.WHITE);
+		titleTextView = (TextView) getView().findViewById(
+				R.id.next_platform_text_view);
 
 		zoomInButton = (Button) view
 				.findViewById(R.id.navigation_zoom_in_button);
@@ -347,8 +351,6 @@ public class NavigationFragment extends AutoUpdateOperationFragment<State>
 		}
 
 		// 次の乗降場表示
-		TextView titleTextView = (TextView) getView().findViewById(
-				R.id.next_platform_text_view);
 		titleTextView.setText("");
 		for (OperationSchedule operationSchedule : getTargetOperationSchedule()
 				.asSet()) {
@@ -417,7 +419,6 @@ public class NavigationFragment extends AutoUpdateOperationFragment<State>
 	@Override
 	public void onPause() {
 		super.onPause();
-		Log.i(TAG, "onPause()");
 		handler.removeCallbacks(gpsAlert);
 		handler.removeCallbacks(blinkBatteryAlert);
 		pauseGL();
@@ -426,7 +427,7 @@ public class NavigationFragment extends AutoUpdateOperationFragment<State>
 	@Override
 	public void onResume() {
 		super.onResume();
-		Log.i(TAG, "onResume()");
+		Log.i(TAG, "platform: " + Objects.firstNonNull(titleTextView.getText(), "(None)"));
 		final DialogFragment dialogFragment = new SurficeFlashMaskDialogFragment();
 		for (FragmentManager fragmentManager : getOptionalFragmentManager()
 				.asSet()) {

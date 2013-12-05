@@ -21,6 +21,7 @@ import android.webkit.WebViewClient;
 import android.widget.TextView;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Closer;
@@ -67,6 +68,8 @@ public class PlatformNavigationFragment extends ApplicationFragment<State>
 				operationSchedule, latitude, longitude));
 	}
 
+	private TextView titleTextView;
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -103,11 +106,11 @@ public class PlatformNavigationFragment extends ApplicationFragment<State>
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+		titleTextView = (TextView) getView().findViewById(
+				R.id.platform_navigation_modal_title_text_view);
 		getService().getEventDispatcher().addOnChangeLocationListener(this);
 		for (final Platform platform : getState().getOperationSchedule()
 				.getPlatform().asSet()) {
-			TextView titleTextView = (TextView) getView().findViewById(
-					R.id.platform_navigation_modal_title_text_view);
 			titleTextView.setText(platform.getName());
 			final WebView webView = (WebView) getView().findViewById(
 					R.id.platform_navigation_web_view);
@@ -166,5 +169,11 @@ public class PlatformNavigationFragment extends ApplicationFragment<State>
 					BigDecimal.valueOf(location.getLatitude()),
 					BigDecimal.valueOf(location.getLongitude())));
 		}
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		Log.i(TAG, "platform: " + Objects.firstNonNull(titleTextView.getText(), "(None)"));
 	}
 }

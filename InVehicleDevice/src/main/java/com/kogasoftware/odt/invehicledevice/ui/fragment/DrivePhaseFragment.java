@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
@@ -47,15 +48,12 @@ public class DrivePhaseFragment extends ApplicationFragment<State> {
 				operationSchedules));
 	}
 
+	private TextView nextPlatformNameTextView;
+	private TextView platformArrivalTimeTextView2;
+	private TextView platformName1BeyondTextView;
+
 	private void updateView(View view) {
 		Log.i(TAG, "updateView");
-		TextView nextPlatformNameTextView = (TextView) view
-				.findViewById(R.id.next_platform_name_text_view);
-		TextView platformArrivalTimeTextView2 = (TextView) view
-				.findViewById(R.id.platform_arrival_time_text_view2);
-		TextView platformName1BeyondTextView = (TextView) view
-				.findViewById(R.id.platform_name_1_beyond_text_view);
-
 		TypedArray typedArray = getActivity().obtainStyledAttributes(
 				new int[] { android.R.attr.background });
 		Integer backgroundColor = typedArray.getColor(0, Color.WHITE);
@@ -95,9 +93,26 @@ public class DrivePhaseFragment extends ApplicationFragment<State> {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.drive_phase_fragment, container,
+		return inflater.inflate(R.layout.drive_phase_fragment, container,
 				false);
+	}
+
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		View view = getView();
+		nextPlatformNameTextView = (TextView) view
+				.findViewById(R.id.next_platform_name_text_view);
+		platformArrivalTimeTextView2 = (TextView) view
+				.findViewById(R.id.platform_arrival_time_text_view2);
+		platformName1BeyondTextView = (TextView) view
+				.findViewById(R.id.platform_name_1_beyond_text_view);
 		updateView(view);
-		return view;
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		Log.i(TAG, "platform: " + Objects.firstNonNull(nextPlatformNameTextView.getText(), "(None)"));
 	}
 }

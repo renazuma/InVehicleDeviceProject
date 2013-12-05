@@ -1,6 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.ui.fragment;
 
 import java.io.Serializable;
+import java.util.concurrent.atomic.AtomicLong;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -8,12 +9,14 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher.OnUpdateOperationListener;
@@ -69,6 +72,8 @@ public class ApplicationFragment<S extends Serializable> extends Fragment {
 	}
 
 	private PrivateState privateState = new PrivateState();
+	private static final AtomicLong OBJECT_COUNTER = new AtomicLong(0);
+	private final Long objectCount = OBJECT_COUNTER.incrementAndGet(); // 診断用。onCreateからonDestroyの間は同じ値が保持されるはず。
 
 	/**
 	 * OnUpdateOperation時にFragmentを閉じる
@@ -122,6 +127,8 @@ public class ApplicationFragment<S extends Serializable> extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Log.i(getClass().getSimpleName(), "onCreate(" +
+				Objects.firstNonNull(savedInstanceState, "") + ") " + objectCount);
 		restoreState(savedInstanceState);
 		restorePrivateState(savedInstanceState);
 		if (privateState.removeOnUpdateOperation) {
@@ -140,6 +147,7 @@ public class ApplicationFragment<S extends Serializable> extends Fragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+		Log.i(getClass().getSimpleName(), "onActivityCreated() " + objectCount);
 		View view = getView();
 		if (view != null) {
 			view.setClickable(true);
@@ -227,10 +235,29 @@ public class ApplicationFragment<S extends Serializable> extends Fragment {
 	}
 
 	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		Log.i(getClass().getSimpleName(), "onDestroyView() " + objectCount);
+	}
+
+	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		Log.i(getClass().getSimpleName(), "onDestroy() " + objectCount);
 		getService().getEventDispatcher().removeOnUpdateOperationListener(
 				removeOnUpdateOperationListener);
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		Log.i(getClass().getSimpleName(), "onResume() " + objectCount);
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		Log.i(getClass().getSimpleName(), "onPause() " + objectCount);
 	}
 
 	public Optional<FragmentManager> getOptionalFragmentManager() {

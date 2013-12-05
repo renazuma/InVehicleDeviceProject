@@ -11,6 +11,8 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation;
 import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.OperationScheduleArrayAdapter;
@@ -29,6 +31,8 @@ public class OperationScheduleListFragment extends ApplicationFragment<State> {
 			return operation;
 		}
 	}
+
+	private ListView listView;
 
 	public OperationScheduleListFragment() {
 		setRemoveOnUpdateOperation(true);
@@ -50,7 +54,7 @@ public class OperationScheduleListFragment extends ApplicationFragment<State> {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		final ListView listView = ((FlickUnneededListView) getView().findViewById(
+		listView = ((FlickUnneededListView) getView().findViewById(
 				R.id.operation_schedule_list_view)).getListView();
 
 		final OperationScheduleArrayAdapter adapter = new OperationScheduleArrayAdapter(
@@ -101,5 +105,23 @@ public class OperationScheduleListFragment extends ApplicationFragment<State> {
                 listView.setSelection(selection);
 			}
 		});
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		StringBuilder message = new StringBuilder("OperationSchedule: ");
+		Object obj = listView.getAdapter();
+		if (!(obj instanceof OperationScheduleArrayAdapter)) {
+			return;
+		}
+		OperationScheduleArrayAdapter adapter = (OperationScheduleArrayAdapter) obj;
+		for (Integer i = 0; i < adapter.getCount(); i++) {
+			if (!i.equals(0)) {
+				message.append(",");
+			}
+			OperationSchedule item = adapter.getItem(i);
+			message.append(item.getPlatform().or(new Platform()).getName());
+		}
 	}
 }
