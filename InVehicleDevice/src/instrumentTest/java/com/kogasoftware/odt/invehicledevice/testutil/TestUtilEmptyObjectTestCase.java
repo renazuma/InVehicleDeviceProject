@@ -45,7 +45,7 @@ public class TestUtilEmptyObjectTestCase extends InstrumentationTestCase {
 		byte[] payload = new byte[50];
 	}
 
-	public void testAssertEmptyObject() throws Exception {
+	public void xtestAssertEmptyObject() throws Exception {
 		Instrumentation i = getInstrumentation();
 		TestUtil.assertEmptyObject(i, SmallTestClass.class);
 		TestUtil.assertEmptyObject(i, SmallTestClass.class, true);

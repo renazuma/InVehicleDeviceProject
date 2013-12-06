@@ -5,13 +5,8 @@ import java.io.File;
 import android.test.InstrumentationTestCase;
 
 import com.kogasoftware.odt.invehicledevice.empty.EmptyFile;
-import com.kogasoftware.odt.invehicledevice.testutil.TestUtil;
 
 public class EmptyFileTestCase extends InstrumentationTestCase {
-	public void testSmallInstance() throws Exception {
-		TestUtil.assertEmptyObject(getInstrumentation(), EmptyFile.class);
-	}
-
 	/**
 	 * 何もしない
 	 */
