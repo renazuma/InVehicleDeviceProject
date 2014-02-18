@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
@@ -14,9 +15,11 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Messenger;
 import android.os.RemoteException;
 import android.preference.EditTextPreference;
 import android.preference.PreferenceActivity;
@@ -27,6 +30,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
+import com.google.android.vending.expansion.downloader.DownloadProgressInfo;
+import com.google.android.vending.expansion.downloader.DownloaderClientMarshaller;
+import com.google.android.vending.expansion.downloader.DownloaderServiceMarshaller;
+import com.google.android.vending.expansion.downloader.Helpers;
+import com.google.android.vending.expansion.downloader.IDownloaderClient;
+import com.google.android.vending.expansion.downloader.IDownloaderService;
+import com.google.android.vending.expansion.downloader.IStub;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
@@ -40,9 +50,10 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Share
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.broadcast.Broadcasts;
 import com.kogasoftware.odt.invehicledevice.service.startupservice.IStartupService;
 import com.kogasoftware.odt.invehicledevice.service.startupservice.Intents;
+import com.kogasoftware.odt.invehicledevice.service.voicedownloaderservice.VoiceDownloaderService;
 
 public class InVehicleDevicePreferenceActivity extends PreferenceActivity
-		implements OnSharedPreferenceChangeListener {
+		implements OnSharedPreferenceChangeListener, IDownloaderClient {
 	private static final String DEFAULT_URL = "http://127.0.0.1";
 	private static final String LOGIN_KEY = "login";
 	private static final String PASSWORD_KEY = "password";
@@ -70,6 +81,8 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 	private SharedPreferences preferences = null;
 	private IStartupService startupService = null;
 	private Boolean destroyed = false;
+	private IDownloaderService downloaderService = null;
+	private IStub downloaderClientStub = null;
 
 	private void disableMainApplication() {
 		if (startupService != null) {
@@ -114,18 +127,42 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		disableMainApplication();
 	}
 
+	void startVoiceDownloaderServiceIfRequired() {
+		downloaderClientStub = DownloaderClientMarshaller.CreateStub(this,
+				VoiceDownloaderService.class);
+		downloaderClientStub.connect(this);
+
+		// Build an Intent to start this activity from the Notification
+		Intent notifierIntent = new Intent(this, getClass());
+		notifierIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+				| Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
+				notifierIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+		// Start the download service (if required)
+		try {
+			DownloaderClientMarshaller.startDownloadServiceIfRequired(this,
+					pendingIntent, VoiceDownloaderService.class);
+		} catch (NameNotFoundException e) {
+			throw new RuntimeException(e); // Fatal exception
+		}
+	}
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		startVoiceDownloaderServiceIfRequired();
 		destroyed = false;
 
 		setContentView(R.layout.main);
 
 		addPreferencesFromResource(R.xml.preference);
 
-		// see "http://stackoverflow.com/questions/3907830/android-checkboxpreference-default-value"
+		// see
+		// "http://stackoverflow.com/questions/3907830/android-checkboxpreference-default-value"
 		PreferenceManager.setDefaultValues(this, R.xml.preference, false);
-		
+
 		preferences = PreferenceManager
 				.getDefaultSharedPreferences(InVehicleDevicePreferenceActivity.this);
 
@@ -160,6 +197,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 	public void onDestroy() {
 		super.onDestroy();
 		destroyed = true;
+		downloaderClientStub.disconnect(this);
 		dismissAllDialogs();
 
 		preferences.unregisterOnSharedPreferenceChangeListener(this);
@@ -354,5 +392,61 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		checkAscii(preferences.getString(PASSWORD_KEY, ""), R.string.password,
 				errors);
 		return errors;
+	}
+
+	@Override
+	public void onServiceConnected(Messenger m) {
+		downloaderService = DownloaderServiceMarshaller.CreateProxy(m);
+		downloaderService.onClientUpdated(downloaderClientStub.getMessenger());
+		downloaderService
+				.setDownloadFlags(IDownloaderService.FLAGS_DOWNLOAD_OVER_CELLULAR);
+		downloaderService.requestContinueDownload();
+	}
+
+	@Override
+	public void onDownloadStateChanged(int newState) {
+		Log.e(TAG, "state: " + newState);
+		switch (newState) {
+		case IDownloaderClient.STATE_IDLE:
+			break;
+		case IDownloaderClient.STATE_CONNECTING:
+			break;
+		case IDownloaderClient.STATE_FETCHING_URL:
+			break;
+		case IDownloaderClient.STATE_DOWNLOADING:
+			break;
+		case IDownloaderClient.STATE_FAILED_CANCELED:
+			break;
+		case IDownloaderClient.STATE_FAILED:
+			break;
+		case IDownloaderClient.STATE_FAILED_FETCHING_URL:
+			break;
+		case IDownloaderClient.STATE_FAILED_UNLICENSED:
+			break;
+		case IDownloaderClient.STATE_PAUSED_NEED_CELLULAR_PERMISSION:
+			break;
+		case IDownloaderClient.STATE_PAUSED_WIFI_DISABLED_NEED_CELLULAR_PERMISSION:
+			break;
+		case IDownloaderClient.STATE_PAUSED_BY_REQUEST:
+			break;
+		case IDownloaderClient.STATE_PAUSED_ROAMING:
+			break;
+		case IDownloaderClient.STATE_PAUSED_SDCARD_UNAVAILABLE:
+			break;
+		case IDownloaderClient.STATE_COMPLETED:
+			break;
+		default:
+		}
+	}
+
+	@Override
+	public void onDownloadProgress(DownloadProgressInfo progress) {
+	}
+
+	boolean isVoiceFileDownloaded() {
+		String fileName = Helpers.getExpansionAPKFileName(this, true, 100);
+		if (!Helpers.doesFileExist(this, fileName, 12345, false))
+			return false;
+		return true;
 	}
 }
