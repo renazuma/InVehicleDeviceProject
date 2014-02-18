@@ -26,4 +26,5 @@ dependencies {
     instrumentTestCompile fileTree(dir: 'src/instrumentTest/libs', include: '*.jar')
     compile project(':AndroidOpenJTalk')
     compile project(':InVehicleDeviceApiClient')
+    compile project(':play_apk_expansion')
 }

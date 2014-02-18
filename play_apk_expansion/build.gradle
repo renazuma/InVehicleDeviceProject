@@ -1,0 +1,24 @@
+apply plugin: "android-library"
+
+android {
+    compileSdkVersion getAndroidCompileSdkVersion()
+    buildToolsVersion getAndroidBuildToolsVersion()
+
+    sourceSets {
+        main {
+            def dir = "project/downloader_library"
+            root = dir
+            manifest.srcFile "${dir}/AndroidManifest.xml"
+            java.srcDirs = ["${dir}/src"]
+            resources.srcDirs = ["${dir}/src"]
+            aidl.srcDirs = ["${dir}/src"]
+            renderscript.srcDirs = ["${dir}/src"]
+            res.srcDirs = ["${dir}/res"]
+            assets.srcDirs = ["${dir}/assets"]
+        }
+    }
+}
+
+dependencies {
+    compile project(":play_licensing")
+}

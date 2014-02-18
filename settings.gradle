@@ -1,1 +1,1 @@
-include ':AndroidOpenJTalk', ':InVehicleDevice', ':InVehicleDeviceApiClient', ':InVehicleDevicePreference'
+include ':AndroidOpenJTalk', ':InVehicleDevice', ':InVehicleDeviceApiClient', ':InVehicleDevicePreference', ':play_apk_expansion', ':play_licensing'
