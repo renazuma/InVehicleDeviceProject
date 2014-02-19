@@ -491,7 +491,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 
 	File getVoiceFile() throws IOException {
 		String fileName = Helpers.getExpansionAPKFileName(this, true, VOICE_EXPANSION_APK_VERSION);
-		return getExternalStorageFile("Android", "obb", fileName);
+		return getExternalStorageFile("Android", "obb", getPackageName(), fileName);
 	}
 
 	File getVoiceOutputDir() throws IOException {
