@@ -23,6 +23,7 @@ android {
 }
 
 dependencies {
+    compile fileTree(dir: 'src/main/libs', include: '*.jar')
     instrumentTestCompile fileTree(dir: 'src/instrumentTest/libs', include: '*.jar')
     compile project(':AndroidOpenJTalk')
     compile project(':InVehicleDeviceApiClient')
