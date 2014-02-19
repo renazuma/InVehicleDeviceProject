@@ -142,6 +142,8 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 				VoiceDownloaderService.class);
 		downloaderClientStub.connect(this);
 		if (isVoiceFileAccessible()) {
+			Log.v(TAG,
+					"startVoiceDownloaderServiceIfRequired() skipped by isVoiceFileAccessible()");
 			return;
 		}
 
@@ -420,7 +422,6 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 
 	@Override
 	public void onDownloadStateChanged(int newState) {
-		Log.e(TAG, "state: " + newState);
 		switch (newState) {
 		case IDownloaderClient.STATE_IDLE:
 			updateVoiceFileStateText("IDLE");
@@ -471,6 +472,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 	}
 
 	private void updateVoiceFileStateText(String text) {
+		Log.v(TAG, "updateVoiceFileStateText(\"" + text + "\")");
 		voiceFileStatePreference.setTitle(text);
 	}
 
@@ -503,14 +505,24 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 			File extractDir = getExternalStorageFile(".odt",
 					"open_jtalk.extract");
 			if (outputDir.isDirectory()) {
+				Log.v(TAG, "extractVoiceFileIfRequired() skipped by \""
+						+ outputDir.getAbsolutePath() + "\".isDirectory()");
 				return;
 			}
 			if (!isVoiceFileAccessible()) {
+				Log.v(TAG,
+						"extractVoiceFileIfRequired() skipped by !isVoiceFileAccessible()");
 				return;
 			}
+			File voiceFile = getVoiceFile();
+			Log.v(TAG,
+					"extractVoiceFileIfRequired() outputDir=\""
+							+ outputDir.getAbsolutePath() + " \"extractDir=\""
+							+ extractDir.getAbsolutePath() + " \"voiceFile=\""
+							+ voiceFile.getAbsolutePath() + "\"");
 			FileUtils.deleteDirectory(extractDir);
 			try {
-				ZipFile zipFile = new ZipFile(getVoiceFile().getAbsolutePath());
+				ZipFile zipFile = new ZipFile(voiceFile);
 				zipFile.extractAll(extractDir.getAbsolutePath());
 			} catch (ZipException e) {
 				throw new IOException(e);
@@ -521,8 +533,17 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 
 	boolean isVoiceFileAccessible() {
 		try {
-			return getVoiceFile().exists();
+			File voiceFile = getVoiceFile();
+			Log.v(TAG, "isVoiceFileAccessible() " + voiceFile.getAbsolutePath());
+			if (voiceFile.exists()) {
+				Log.v(TAG, "isVoiceFileAccessible() true");
+				return true;
+			} else {
+				Log.v(TAG, "isVoiceFileAccessible() false");
+				return false;
+			}
 		} catch (IOException e) {
+			Log.v(TAG, "isVoiceFileAccessible() false", e);
 		}
 		return false;
 	}
@@ -534,6 +555,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 				return;
 			}
 		} catch (IOException e) {
+			Log.v(TAG, "startExtractVoiceFileThreadIfRequired()", e);
 		}
 		new Thread() {
 			@Override
@@ -541,11 +563,14 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 				try {
 					extractVoiceFileIfRequired();
 				} catch (final IOException e) {
+					Log.v(TAG, "extractVoiceFileIfRequired()", e);
 					runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
-							showAlertDialog("音声ファイルの展開に失敗しました。\n"
-									+ e.getMessage());
+							String message = "音声ファイルの展開に失敗しました。\n"
+									+ e.getMessage();
+							updateVoiceFileStateText(message);
+							showAlertDialog(message);
 						}
 					});
 				}
