@@ -17,13 +17,13 @@ apply plugin: 'versions'
 
 def computeVersionName() {
     def versionCode = computeVersionCode()
-    // groovyのDate#formatではLocale.USが指定できないためSimpleDateFormatを使う
+    // Use SimpleDateFormat to set Locale
     def date = new java.text.SimpleDateFormat('yyyyMMddHHmmss', Locale.US).format(new Date())
     "Build-$versionCode ($date)"
 }
 
 def computeVersionCode() {
-    // System.getenvを直接書くとコンパイルエラーになるため、リフレクションを使う
+    // Using System.getenv directly causes compilation error !
     (System.getMethod("getenv", String).invoke(null, "BUILD_NUMBER") ?: "0").toInteger()
 }
 
