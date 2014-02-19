@@ -38,6 +38,9 @@
             robobunny:unitsLeft=""
             robobunny:unitsRight="度" />
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/voice_file" >
+        <Preference android:key="voice_file_state" />
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/location_receive_config" >
         <EditTextPreference
             android:defaultValue="1000"
