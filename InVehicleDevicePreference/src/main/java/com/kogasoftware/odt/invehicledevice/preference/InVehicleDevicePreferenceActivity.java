@@ -463,7 +463,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 			updateVoiceFileStateText("⚠ PAUSED_SDCARD_UNAVAILABLE");
 			break;
 		case IDownloaderClient.STATE_COMPLETED:
-			updateVoiceFileStateText("展開中");
+			updateVoiceFileStateText("音声ファイルの展開中");
 			startExtractVoiceFileThreadIfRequired();
 			break;
 		default:
@@ -562,6 +562,10 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 			public void run() {
 				try {
 					extractVoiceFileIfRequired();
+					File outputDirectory = getVoiceOutputDir();
+					if (!outputDirectory.isDirectory()) {
+						throw new IOException("!\"" + outputDirectory.getAbsolutePath() + "\".isDirectory()");
+					}
 				} catch (final IOException e) {
 					Log.v(TAG, "extractVoiceFileIfRequired()", e);
 					runOnUiThread(new Runnable() {
