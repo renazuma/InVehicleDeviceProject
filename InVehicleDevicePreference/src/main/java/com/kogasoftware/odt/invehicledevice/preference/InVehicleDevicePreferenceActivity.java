@@ -22,6 +22,7 @@ import android.os.IBinder;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.preference.EditTextPreference;
+import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.text.Html;
@@ -83,6 +84,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 	private Boolean destroyed = false;
 	private IDownloaderService downloaderService = null;
 	private IStub downloaderClientStub = null;
+	private Preference voiceFileStatePreference = null;
 
 	private void disableMainApplication() {
 		if (startupService != null) {
@@ -156,8 +158,8 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		destroyed = false;
 
 		setContentView(R.layout.main);
-
 		addPreferencesFromResource(R.xml.preference);
+		voiceFileStatePreference = findPreference("voice_file_state");
 
 		// see
 		// "http://stackoverflow.com/questions/3907830/android-checkboxpreference-default-value"
@@ -408,35 +410,54 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		Log.e(TAG, "state: " + newState);
 		switch (newState) {
 		case IDownloaderClient.STATE_IDLE:
+			updateVoiceFileStateText("IDLE");
 			break;
 		case IDownloaderClient.STATE_CONNECTING:
+			updateVoiceFileStateText("CONNECTING");
 			break;
 		case IDownloaderClient.STATE_FETCHING_URL:
+			updateVoiceFileStateText("FETCHING_URL");
 			break;
 		case IDownloaderClient.STATE_DOWNLOADING:
+			updateVoiceFileStateText("DOWNLOADING");
 			break;
 		case IDownloaderClient.STATE_FAILED_CANCELED:
+			updateVoiceFileStateText("⚠ CANCELED");
 			break;
 		case IDownloaderClient.STATE_FAILED:
+			updateVoiceFileStateText("⚠ FAILED");
 			break;
 		case IDownloaderClient.STATE_FAILED_FETCHING_URL:
+			updateVoiceFileStateText("⚠ FAILED_FETCHING_URL");
 			break;
 		case IDownloaderClient.STATE_FAILED_UNLICENSED:
+			updateVoiceFileStateText("⚠ FAILED_UNLICENSED");
 			break;
 		case IDownloaderClient.STATE_PAUSED_NEED_CELLULAR_PERMISSION:
+			updateVoiceFileStateText("⚠ PAUSED_NEED_CELLULAR_PERMISSION");
 			break;
 		case IDownloaderClient.STATE_PAUSED_WIFI_DISABLED_NEED_CELLULAR_PERMISSION:
+			updateVoiceFileStateText("⚠ PAUSED_WIFI_DISABLED_NEED_CELLULAR_PERMISSION");
 			break;
 		case IDownloaderClient.STATE_PAUSED_BY_REQUEST:
+			updateVoiceFileStateText("⚠ PAUSED_BY_REQUEST");
 			break;
 		case IDownloaderClient.STATE_PAUSED_ROAMING:
+			updateVoiceFileStateText("⚠ PAUSED_ROAMING");
 			break;
 		case IDownloaderClient.STATE_PAUSED_SDCARD_UNAVAILABLE:
+			updateVoiceFileStateText("⚠ PAUSED_SDCARD_UNAVAILABLE");
 			break;
 		case IDownloaderClient.STATE_COMPLETED:
+			updateVoiceFileStateText("展開中");
 			break;
 		default:
+			updateVoiceFileStateText("⚠ State: " + newState);
 		}
+	}
+
+	private void updateVoiceFileStateText(String text) {
+		voiceFileStatePreference.setTitle(text);
 	}
 
 	@Override
