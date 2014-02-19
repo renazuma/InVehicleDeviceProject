@@ -1,9 +1,14 @@
 package com.kogasoftware.odt.invehicledevice.preference;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.io.FileUtils;
+
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.PendingIntent;
@@ -18,6 +23,7 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.IBinder;
 import android.os.Messenger;
 import android.os.RemoteException;
@@ -60,9 +66,11 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 	private static final String PASSWORD_KEY = "password";
 	private static final String TAG = InVehicleDevicePreferenceActivity.class
 			.getSimpleName();
+	private static final Integer VOICE_EXPANSION_APK_VERSION = 9157;
 
 	private final InVehicleDeviceApiClient apiClient = new DefaultInVehicleDeviceApiClient(
 			DEFAULT_URL);
+	private final Object extractVoiceFileLock = new Object();
 	private final List<Dialog> dialogs = Lists.newLinkedList();
 	private final ServiceConnection serviceConnection = new ServiceConnection() {
 		@Override
@@ -133,6 +141,9 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		downloaderClientStub = DownloaderClientMarshaller.CreateStub(this,
 				VoiceDownloaderService.class);
 		downloaderClientStub.connect(this);
+		if (isVoiceFileAccessible()) {
+			return;
+		}
 
 		// Build an Intent to start this activity from the Notification
 		Intent notifierIntent = new Intent(this, getClass());
@@ -154,12 +165,14 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		startVoiceDownloaderServiceIfRequired();
 		destroyed = false;
 
 		setContentView(R.layout.main);
 		addPreferencesFromResource(R.xml.preference);
 		voiceFileStatePreference = findPreference("voice_file_state");
+
+		startVoiceDownloaderServiceIfRequired();
+		startExtractVoiceFileThreadIfRequired();
 
 		// see
 		// "http://stackoverflow.com/questions/3907830/android-checkboxpreference-default-value"
@@ -450,6 +463,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 			break;
 		case IDownloaderClient.STATE_COMPLETED:
 			updateVoiceFileStateText("展開中");
+			startExtractVoiceFileThreadIfRequired();
 			break;
 		default:
 			updateVoiceFileStateText("⚠ State: " + newState);
@@ -464,10 +478,78 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 	public void onDownloadProgress(DownloadProgressInfo progress) {
 	}
 
-	boolean isVoiceFileDownloaded() {
-		String fileName = Helpers.getExpansionAPKFileName(this, true, 100);
-		if (!Helpers.doesFileExist(this, fileName, 12345, false))
-			return false;
-		return true;
+	File getExternalStorageFile(String... paths) throws IOException {
+		String state = Environment.getExternalStorageState();
+		if (!state.equals(Environment.MEDIA_MOUNTED)) {
+			throw new IOException("ExternalStorageState: " + state);
+		}
+		return new File(Environment.getExternalStorageDirectory(), Joiner.on(
+				File.separator).join(paths));
+	}
+
+	File getVoiceFile() throws IOException {
+		String fileName = Helpers.getExpansionAPKFileName(this, true, VOICE_EXPANSION_APK_VERSION);
+		return getExternalStorageFile("Android", "obb", fileName);
+	}
+
+	File getVoiceOutputDir() throws IOException {
+		return getExternalStorageFile(".odt", "open_jtalk");
+	}
+
+	void extractVoiceFileIfRequired() throws IOException {
+		synchronized (extractVoiceFileLock) {
+			// 展開作業ディレクトリと出力ディレクトリを分ける。それにより、展開作業が中断したときのリカバリが簡単になると思う。
+			File outputDir = getVoiceOutputDir();
+			File extractDir = getExternalStorageFile(".odt",
+					"open_jtalk.extract");
+			if (outputDir.isDirectory()) {
+				return;
+			}
+			if (!isVoiceFileAccessible()) {
+				return;
+			}
+			FileUtils.deleteDirectory(extractDir);
+			try {
+				ZipFile zipFile = new ZipFile(getVoiceFile().getAbsolutePath());
+				zipFile.extractAll(extractDir.getAbsolutePath());
+			} catch (ZipException e) {
+				throw new IOException(e);
+			}
+			FileUtils.moveDirectory(extractDir, outputDir);
+		}
+	}
+
+	boolean isVoiceFileAccessible() {
+		try {
+			return getVoiceFile().exists();
+		} catch (IOException e) {
+		}
+		return false;
+	}
+
+	void startExtractVoiceFileThreadIfRequired() {
+		try {
+			if (getVoiceOutputDir().isDirectory()) {
+				updateVoiceFileStateText("インストール済");
+				return;
+			}
+		} catch (IOException e) {
+		}
+		new Thread() {
+			@Override
+			public void run() {
+				try {
+					extractVoiceFileIfRequired();
+				} catch (final IOException e) {
+					runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							showAlertDialog("音声ファイルの展開に失敗しました。\n"
+									+ e.getMessage());
+						}
+					});
+				}
+			}
+		}.start();
 	}
 }
