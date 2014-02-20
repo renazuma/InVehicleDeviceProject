@@ -5,28 +5,6 @@ android {
     buildToolsVersion getAndroidBuildToolsVersion()
 }
 
-def libDir = file('src/main/libs')
-
 dependencies {
-    compile fileTree(dir: libDir, include: '*.jar')
-}
-
-/**
- * 普通にビルドすると下記例外が発生するので、dexTestの直前でlibsディレクトリを退避する
- *
- * UNEXPECTED TOP-LEVEL EXCEPTION:
- * java.lang.IllegalArgumentException: already added: Lcom/example/Foo;
- */
-gradle.taskGraph.whenReady {taskGraph ->
-    def libBackupDir = file("${libDir}.gradle-workaround")
-    taskGraph.beforeTask {
-        if (it.name == "dexTest") {
-            libDir.renameTo(libBackupDir)
-        }
-    }
-    taskGraph.afterTask {
-        if (it.name == "packageTest") {
-            libBackupDir.renameTo(libDir)
-        }
-    }
+    compile fileTree(dir: 'src/main/libs', include: '*.jar')
 }

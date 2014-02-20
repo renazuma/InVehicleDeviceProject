@@ -4,16 +4,13 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.6.1'
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.4'
+        classpath 'com.android.tools.build:gradle:0.8.3'
     }
 }
 
 repositories {
     mavenCentral()
 }
-
-apply plugin: 'versions'
 
 def computeVersionName() {
     def versionCode = computeVersionCode()
@@ -28,9 +25,9 @@ def computeVersionCode() {
 }
 
 def getAndroidCompileSdkVersion() {
-    18
+    19
 }
 
 def getAndroidBuildToolsVersion() {
-    '18.1.1'
+    '19.0.1'
 }

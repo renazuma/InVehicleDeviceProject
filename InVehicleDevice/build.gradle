@@ -20,37 +20,21 @@ android {
             signingConfig signingConfigs.release
         }
     }
+    packagingOptions {
+        exclude 'META-INF/LICENSE' // TODO: Write these on library project and use array.
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+    }
 }
 
-def libDir = file('src/main/libs')
-
 dependencies {
-    compile fileTree(dir: libDir, include: '*.jar')
+    compile fileTree(dir: 'src/main/libs', include: '*.jar')
     compile('com.google.android.gms:play-services:3.2.65') {
-        // eclipse用のlibsの中にあるsupport-v4と混ざり、"IAE: already added"が発生するため除外
+        // To avoid conflicting it and lib/support-v4.*.jar for eclipse
         exclude group: 'com.android.support', module: 'support-v4'
     }
     instrumentTestCompile fileTree(dir: 'src/instrumentTest/libs', include: '*.jar')
     compile project(':AndroidOpenJTalk')
     compile project(':InVehicleDeviceApiClient')
-}
-
-/**
- * 普通にビルドすると下記"IAE: already added"が発生するので、dexTestの直前でlibsディレクトリを退避する
- *
- * UNEXPECTED TOP-LEVEL EXCEPTION:
- * java.lang.IllegalArgumentException: already added: Lcom/example/Foo;
- */
-gradle.taskGraph.whenReady {taskGraph ->
-    def libBackupDir = file("${libDir}.gradle-workaround")
-    taskGraph.beforeTask {
-        if (it.name == "dexTest") {
-            libDir.renameTo(libBackupDir)
-        }
-    }
-    taskGraph.afterTask {
-        if (it.name == "packageTest") {
-            libBackupDir.renameTo(libDir)
-        }
-    }
 }
