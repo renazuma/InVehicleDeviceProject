@@ -533,6 +533,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 			}
 			FileUtils.moveDirectory(extractDir, outputDir);
 		}
+		Log.v(TAG, "extractVoiceFileIfRequired() complete");
 	}
 
 	boolean isVoiceFileAccessible() {
