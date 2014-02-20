@@ -566,6 +566,12 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 			@Override
 			public void run() {
 				try {
+					runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							updateVoiceFileStateText("展開中");
+						}
+					});
 					extractVoiceFileIfRequired();
 					File outputDirectory = getVoiceOutputDir();
 					if (!outputDirectory.isDirectory()) {
