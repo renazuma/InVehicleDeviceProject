@@ -433,7 +433,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 			updateVoiceFileStateText("FETCHING_URL");
 			break;
 		case IDownloaderClient.STATE_DOWNLOADING:
-			updateVoiceFileStateText("DOWNLOADING");
+			updateVoiceFileStateText("ダウンロード中");
 			break;
 		case IDownloaderClient.STATE_FAILED_CANCELED:
 			updateVoiceFileStateText("⚠ CANCELED");
@@ -478,6 +478,8 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 
 	@Override
 	public void onDownloadProgress(DownloadProgressInfo progress) {
+		updateVoiceFileStateText(String.format("ダウンロード中 % 8d/%d",
+				progress.mOverallProgress, progress.mOverallTotal));
 	}
 
 	File getExternalStorageFile(String... paths) throws IOException {
