@@ -569,8 +569,16 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 					extractVoiceFileIfRequired();
 					File outputDirectory = getVoiceOutputDir();
 					if (!outputDirectory.isDirectory()) {
-						throw new IOException("!\"" + outputDirectory.getAbsolutePath() + "\".isDirectory()");
+						throw new IOException("!\""
+								+ outputDirectory.getAbsolutePath()
+								+ "\".isDirectory()");
 					}
+					runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							updateVoiceFileStateText("インストール済");
+						}
+					});
 				} catch (final IOException e) {
 					Log.v(TAG, "extractVoiceFileIfRequired()", e);
 					runOnUiThread(new Runnable() {
