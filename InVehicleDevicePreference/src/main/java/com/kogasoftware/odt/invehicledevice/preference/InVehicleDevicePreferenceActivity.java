@@ -490,8 +490,10 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 	}
 
 	File getVoiceFile() throws IOException {
-		String fileName = Helpers.getExpansionAPKFileName(this, true, VOICE_EXPANSION_APK_VERSION);
-		return getExternalStorageFile("Android", "obb", getPackageName(), fileName);
+		String fileName = Helpers.getExpansionAPKFileName(this, true,
+				VOICE_EXPANSION_APK_VERSION);
+		return getExternalStorageFile("Android", "obb", getPackageName(),
+				fileName);
 	}
 
 	File getVoiceOutputDir() throws IOException {
@@ -571,10 +573,9 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 					runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
-							String message = "音声ファイルの展開に失敗しました。\n"
-									+ e.getMessage();
+							String message = "音声ファイルの展開に失敗しました。";
 							updateVoiceFileStateText(message);
-							showAlertDialog(message);
+							showAlertDialog(message + "\n" + e.getMessage());
 						}
 					});
 				}
