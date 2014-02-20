@@ -478,7 +478,7 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 
 	@Override
 	public void onDownloadProgress(DownloadProgressInfo progress) {
-		updateVoiceFileStateText(String.format("ダウンロード中 % 8d/%d",
+		updateVoiceFileStateText(String.format("ダウンロード中 (%8d/%d)",
 				progress.mOverallProgress, progress.mOverallTotal));
 	}
 
