@@ -513,11 +513,6 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 						+ outputDir.getAbsolutePath() + "\".isDirectory()");
 				return;
 			}
-			if (!isVoiceFileAccessible()) {
-				Log.v(TAG,
-						"extractVoiceFileIfRequired() skipped by !isVoiceFileAccessible()");
-				return;
-			}
 			File voiceFile = getVoiceFile();
 			Log.v(TAG,
 					"extractVoiceFileIfRequired() outputDir=\""
