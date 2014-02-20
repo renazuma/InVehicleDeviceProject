@@ -9,6 +9,7 @@
     <string name="ok">OK</string>
     <string name="an_error_occurred">エラーが発生しました</string>
     <string name="checking_connection_config">&lt;big&gt;&lt;big&gt;接続確認をしています&lt;/big&gt;&lt;/big&gt;</string>
+    <string name="voice_file">音声ファイル</string>
     <string name="map_config">地図設定</string>
     <string name="rotate_map">地図を回転する</string>
     <string name="extra_rotation_degrees_clockwise">回転する角度を調整（時計回り）</string>

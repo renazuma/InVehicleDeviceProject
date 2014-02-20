@@ -4,8 +4,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.6.1'
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.4'
+        classpath 'com.android.tools.build:gradle:0.8.3'
     }
 }
 
@@ -13,24 +12,22 @@ repositories {
     mavenCentral()
 }
 
-apply plugin: 'versions'
-
 def computeVersionName() {
     def versionCode = computeVersionCode()
-    // groovyのDate#formatではLocale.USが指定できないためSimpleDateFormatを使う
+    // Use SimpleDateFormat to set Locale
     def date = new java.text.SimpleDateFormat('yyyyMMddHHmmss', Locale.US).format(new Date())
     "Build-$versionCode ($date)"
 }
 
 def computeVersionCode() {
-    // System.getenvを直接書くとコンパイルエラーになるため、リフレクションを使う
+    // Using System.getenv directly causes compilation error !
     (System.getMethod("getenv", String).invoke(null, "BUILD_NUMBER") ?: "0").toInteger()
 }
 
 def getAndroidCompileSdkVersion() {
-    18
+    19
 }
 
 def getAndroidBuildToolsVersion() {
-    '18.1.1'
+    '19.0.1'
 }
