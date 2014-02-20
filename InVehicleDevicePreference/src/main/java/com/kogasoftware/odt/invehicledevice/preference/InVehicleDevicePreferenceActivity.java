@@ -549,6 +549,10 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 	}
 
 	void startExtractVoiceFileThreadIfRequired() {
+		if (!isVoiceFileAccessible()) {
+			Log.v(TAG, "skip startExtractVoiceFileThreadIfRequired() by !isVoiceFileAccessible()");
+			return;
+		}
 		try {
 			if (getVoiceOutputDir().isDirectory()) {
 				updateVoiceFileStateText("インストール済");
