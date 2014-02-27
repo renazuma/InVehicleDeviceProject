@@ -29,5 +29,5 @@ def getAndroidCompileSdkVersion() {
 }
 
 def getAndroidBuildToolsVersion() {
-    '19.0.1'
+    '19.0.2'
 }
