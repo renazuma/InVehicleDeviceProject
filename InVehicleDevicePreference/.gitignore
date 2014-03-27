@@ -11,6 +11,6 @@
 /src/main/bin/
 /src/main/gen/
 /src/main/.settings/
-/src/instrumentTest/bin/
-/src/instrumentTest/gen/
-/src/instrumentTest/.settings/
+/src/androidTest/bin/
+/src/androidTest/gen/
+/src/androidTest/.settings/

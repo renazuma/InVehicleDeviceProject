@@ -37,7 +37,7 @@ dependencies {
         // To avoid conflicting it and lib/support-v4.*.jar for eclipse
         exclude group: 'com.android.support', module: 'support-v4'
     }
-    instrumentTestCompile fileTree(dir: 'src/instrumentTest/libs', include: '*.jar')
+    androidTestCompile fileTree(dir: 'src/androidTest/libs', include: '*.jar')
     compile project(':AndroidOpenJTalk')
     compile project(':InVehicleDeviceApiClient')
 }
