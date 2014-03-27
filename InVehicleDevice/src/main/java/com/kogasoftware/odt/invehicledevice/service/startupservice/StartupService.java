@@ -58,9 +58,8 @@ public class StartupService extends Service {
 	private final Runnable checkDeviceAndShowActivityCallback = new Runnable() {
 		@Override
 		public void run() {
-			checkDeviceAndStartActivity();
 			handler.removeCallbacks(this); // 重複を削除
-			handler.postDelayed(this, CHECK_DEVICE_INTERVAL_MILLIS);
+			checkDeviceAndStartActivity();
 		}
 	};
 
