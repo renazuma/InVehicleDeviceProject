@@ -34,13 +34,16 @@ import com.kogasoftware.odt.invehicledevice.service.logservice.LogServiceReportS
 public class InVehicleDeviceApplication extends Application {
 	private static final String TAG = InVehicleDeviceApplication.class
 			.getSimpleName();
+	public static final Boolean ENABLE_ACRA = true;
 	private static final AtomicInteger ACRA_INIT_ONCE_WORKAROUND = new AtomicInteger(
 			1);
 
 	@Override
 	public void onCreate() {
 		Log.i(TAG, "onCreate()");
-		if (ACRA_INIT_ONCE_WORKAROUND.getAndSet(0) != 0) {
+		if (!ENABLE_ACRA) {
+			super.onCreate();
+		} else if (ACRA_INIT_ONCE_WORKAROUND.getAndSet(0) != 0) {
 			ACRA.init(this);
 			super.onCreate();
 			ACRA.getErrorReporter().setReportSender(

@@ -49,6 +49,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.kogasoftware.odt.invehicledevice.BuildConfig;
+import com.kogasoftware.odt.invehicledevice.InVehicleDeviceApplication;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClientFactory;
@@ -336,8 +337,10 @@ public class InVehicleDeviceService extends Service implements
 		Log.i(TAG, "onCreate()");
 		destroyed = false; // onDestroy()後にインスタンスが再利用「されない」という記述が見当たらないため、いちおう再設定する。
 
-		ACRA.getErrorReporter().handleSilentException(
+		if (InVehicleDeviceApplication.ENABLE_ACRA) {
+			ACRA.getErrorReporter().handleSilentException(
 				new Throwable("APPLICATION_START_LOG"));
+		}
 
 		operationScheduleLogic = new OperationScheduleLogic(this);
 		serviceUnitStatusLogLogic = new ServiceUnitStatusLogLogic(this);
