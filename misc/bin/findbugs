@@ -1,0 +1,21 @@
+scriptDir=$(cd "$(dirname "$0")"; pwd)
+mkdir -p build
+v=2.0.3
+f=build/findbugs-$v
+findbugs=./$f/bin/findbugs
+if [ ! -e $findbugs ]; then
+  url="http://downloads.sourceforge.net/project/findbugs/findbugs/$v/findbugs-$v.tar.gz?r=&ts=1395966134&use_mirror=jaist"
+  wget $url --output-document=$f.tar.gz
+  tar -x -C build -f $f.tar.gz
+fi
+for dir in `find . -name build.gradle -exec dirname {} \;`; do
+  if [ $dir = "." ]; then
+    continue
+  fi
+  $findbugs -textui \
+    -xml \
+    -outputFile $dir/build/findbugs.xml \
+    -auxclasspath $dir/src/main/libs \
+    -exclude $scriptDir/../config/findbugs-exclusion.xml \
+    $dir/src/main/java $dir/build/classes/debug
+done
