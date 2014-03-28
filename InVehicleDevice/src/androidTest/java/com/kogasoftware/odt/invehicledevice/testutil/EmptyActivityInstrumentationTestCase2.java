@@ -6,9 +6,6 @@ import java.util.concurrent.TimeUnit;
 import android.app.Instrumentation;
 import android.os.Handler;
 import android.test.ActivityInstrumentationTestCase2;
-import android.view.KeyEvent;
-import android.view.View;
-
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.ui.activity.EmptyActivity;
 import com.robotium.solo.Solo;
@@ -57,20 +54,9 @@ public class EmptyActivityInstrumentationTestCase2 extends
 
 	@Override
 	protected void setUp() throws Exception {
+		EmptyActivity.USE_SAVED_INSTANCE_STATE.set(false);
 		super.setUp();
 		Instrumentation i = getInstrumentation();
-		TestUtil.disableAutoStart(i.getContext());
-
-		// すでに車載器Activityが起動していることがあるので、BACK,HOMEキーを送信して終了
-		try {
-			i.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
-		} catch (SecurityException e) {
-		}
-		try {
-			i.sendKeyDownUpSync(KeyEvent.KEYCODE_HOME);
-		} catch (SecurityException e) {
-		}
-
 		a = getActivity();
 		solo = new Solo(i, a);
 	}
@@ -81,11 +67,12 @@ public class EmptyActivityInstrumentationTestCase2 extends
 			if (solo != null) {
 				solo.finishOpenedActivities();
 			}
-			// Memory analyzer toolの参照表示を簡略化するため、nullで消しておく
-			solo = null;
-			a = null;
 		} finally {
-			super.tearDown();
+			try {
+				super.tearDown();
+			} finally {
+				EmptyActivity.USE_SAVED_INSTANCE_STATE.set(true);
+			}
 		}
 	}
 }
