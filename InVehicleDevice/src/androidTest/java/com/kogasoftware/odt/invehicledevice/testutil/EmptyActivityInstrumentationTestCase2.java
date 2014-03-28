@@ -7,6 +7,7 @@ import android.app.Instrumentation;
 import android.os.Handler;
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.KeyEvent;
+import android.view.View;
 
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.ui.activity.EmptyActivity;
@@ -80,9 +81,9 @@ public class EmptyActivityInstrumentationTestCase2 extends
 			if (solo != null) {
 				solo.finishOpenedActivities();
 			}
-			if (a != null) {
-				a.finish();
-			}
+			// Memory analyzer toolの参照表示を簡略化するため、nullで消しておく
+			solo = null;
+			a = null;
 		} finally {
 			super.tearDown();
 		}
