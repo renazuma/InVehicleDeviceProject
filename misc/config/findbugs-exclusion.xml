@@ -5,4 +5,7 @@
   <Match>
     <Class name="~.*.R\$.*" />
   </Match>
+  <Match>
+    <Class name="~com\.google\.android\..+" />
+  </Match>
 </FindBugsFilter>
