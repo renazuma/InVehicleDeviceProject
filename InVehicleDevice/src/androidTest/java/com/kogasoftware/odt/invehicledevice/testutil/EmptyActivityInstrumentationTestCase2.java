@@ -2,13 +2,15 @@ package com.kogasoftware.odt.invehicledevice.testutil;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+
 import android.app.Instrumentation;
 import android.os.Handler;
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.KeyEvent;
-import com.jayway.android.robotium.solo.Solo;
+
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.ui.activity.EmptyActivity;
+import com.robotium.solo.Solo;
 
 public class EmptyActivityInstrumentationTestCase2 extends
 		ActivityInstrumentationTestCase2<EmptyActivity> {

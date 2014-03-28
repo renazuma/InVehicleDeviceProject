@@ -7,9 +7,9 @@ import android.app.Instrumentation;
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.KeyEvent;
 
-import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.preference.InVehicleDevicePreferenceActivity;
 import com.kogasoftware.odt.invehicledevice.preference.R;
+import com.robotium.solo.Solo;
 
 public class InVehicleDevicePreferenceTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDevicePreferenceActivity> {

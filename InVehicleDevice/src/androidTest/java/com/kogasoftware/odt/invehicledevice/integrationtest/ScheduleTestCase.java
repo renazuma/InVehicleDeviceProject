@@ -2,11 +2,11 @@ package com.kogasoftware.odt.invehicledevice.integrationtest;
 
 import android.test.ActivityInstrumentationTestCase2;
 
-import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.testutil.TestUtil;
 import com.kogasoftware.odt.invehicledevice.testutil.apiclient.DummyApiClient;
 import com.kogasoftware.odt.invehicledevice.testutil.apiclient.MockApiClient;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
+import com.robotium.solo.Solo;
 
 public class ScheduleTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {

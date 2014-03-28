@@ -40,13 +40,13 @@ import android.view.WindowManager;
 
 import com.google.common.base.Stopwatch;
 import com.google.common.util.concurrent.Uninterruptibles;
-import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClientFactory;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage;
 import com.kogasoftware.odt.invehicledevice.service.startupservice.IStartupService;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
+import com.robotium.solo.Solo;
 
 public class TestUtil {
 	public static void setApiClient(InVehicleDeviceApiClient ds) {

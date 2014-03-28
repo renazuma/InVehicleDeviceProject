@@ -17,7 +17,6 @@ import android.view.Surface;
 import android.view.WindowManager;
 
 import com.google.common.base.Stopwatch;
-import com.jayway.android.robotium.solo.Solo;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.EmptyInVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.compatibility.reflection.android.provider.SettingsReflection;
@@ -28,6 +27,7 @@ import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceProvider;
+import com.robotium.solo.Solo;
 
 public class InVehicleDeviceActivityTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
