@@ -61,7 +61,7 @@ public class CompressThreadTestCase extends AndroidTestCase {
 		File f2 = getContext().getFileStreamPath("CompressThreadTestCase.foobar");
 
 		FileUtils.writeByteArrayToFile(f1, d1.toString().getBytes(c));
-		FileUtils.touch(fe);
+		fe.createNewFile();
 		FileUtils.writeByteArrayToFile(f2, d2.toByteArray());
 		Long f1Length = f1.length();
 		Long f2Length = f2.length();

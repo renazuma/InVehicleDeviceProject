@@ -32,8 +32,7 @@ public class LogServiceTestCase extends ServiceTestCase<LogService> {
 			FileUtils.deleteDirectory(d);
 		} catch (IOException e) {
 		}
-		d.mkdirs();
-		assertTrue(d.exists());
+		assertTrue(d.mkdirs());
 	}
 	
 	public void testStartLog() throws InterruptedException {
@@ -92,11 +91,11 @@ public class LogServiceTestCase extends ServiceTestCase<LogService> {
 		File f4 = new File(d, "dgz").getCanonicalFile();
 		File f5 = new File(d, "e.gz").getCanonicalFile();
 
-		FileUtils.touch(f1);
-		FileUtils.touch(f2);
-		FileUtils.touch(f3);
-		FileUtils.touch(f4);
-		FileUtils.touch(f5);
+		f1.createNewFile();
+		f2.createNewFile();
+		f3.createNewFile();
+		f4.createNewFile();
+		f5.createNewFile();
 
 		List<File> fs = LogService.getCompressedLogFiles(d);
 		List<File> cfs = new LinkedList<File>();
@@ -115,11 +114,11 @@ public class LogServiceTestCase extends ServiceTestCase<LogService> {
 		File f4 = new File(d, ".log").getCanonicalFile();
 		File f5 = new File(d, "e.xlog").getCanonicalFile();
 
-		FileUtils.touch(f1);
-		FileUtils.touch(f2);
-		FileUtils.touch(f3);
-		FileUtils.touch(f4);
-		FileUtils.touch(f5);
+		f1.createNewFile();
+		f2.createNewFile();
+		f3.createNewFile();
+		f4.createNewFile();
+		f5.createNewFile();
 
 		List<File> fs = LogService.getRawLogFiles(d);
 		List<File> cfs = new LinkedList<File>();
@@ -144,14 +143,14 @@ public class LogServiceTestCase extends ServiceTestCase<LogService> {
 		File f7 = new File(d, "0_dropbox_x.alog").getCanonicalFile();
 		File f8 = new File(d, "test.log").getCanonicalFile();
 
-		FileUtils.touch(f1);
-		FileUtils.touch(f2);
-		FileUtils.touch(f3);
-		FileUtils.touch(f4);
-		FileUtils.touch(f5);
-		FileUtils.touch(f6);
-		FileUtils.touch(f7);
-		FileUtils.touch(f8);
+		f1.createNewFile();
+		f2.createNewFile();
+		f3.createNewFile();
+		f4.createNewFile();
+		f5.createNewFile();
+		f6.createNewFile();
+		f7.createNewFile();
+		f8.createNewFile();
 
 		List<File> fs = LogService.getDropBoxLogFiles(d);
 		List<File> cfs = new LinkedList<File>();
