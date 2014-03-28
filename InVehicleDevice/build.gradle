@@ -18,6 +18,7 @@ android {
     buildTypes {
         release {
             signingConfig signingConfigs.release
+            proguardFile '../misc/config/proguard-rules.txt'
         }
     }
     packagingOptions {
