@@ -1,0 +1,17 @@
+userDir=`pwd`
+scriptDir=$(cd "$(dirname "$0")"; pwd)
+for dir in `find . -name build.gradle -exec dirname {} \;`; do
+  if [ $dir = "." ]; then
+    continue
+  fi
+  cd $dir
+  mkdir -p build src/main/res src/main/java build/classes/debug src/main/libs
+  $ANDROID_HOME/tools/lint \
+    --resources src/main/res \
+    --sources src/main/java \
+    --classpath build/classes/debug \
+    --libraries src/main/libs \
+    --xml build/lint-results.xml \
+    .
+  cd $userDir
+done
