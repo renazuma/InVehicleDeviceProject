@@ -67,7 +67,7 @@ public class OperationScheduleArrayAdapterTestCase extends
 
 		aa = new OperationScheduleArrayAdapter(a, s, oss, null);
 
-		runOnUiThreadSync(new Runnable() {
+		runTestOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
 				getActivity().setContentView(aa.getView(0, null, null));
@@ -75,7 +75,7 @@ public class OperationScheduleArrayAdapterTestCase extends
 		});
 		assertTrue(solo.searchText(platformName0));
 
-		runOnUiThreadSync(new Runnable() {
+		runTestOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
 				getActivity().setContentView(aa.getView(1, null, null));

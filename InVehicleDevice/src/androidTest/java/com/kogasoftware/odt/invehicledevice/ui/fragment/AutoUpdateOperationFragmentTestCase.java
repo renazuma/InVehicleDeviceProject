@@ -101,7 +101,7 @@ public class AutoUpdateOperationFragmentTestCase extends
 	}
 
 	public void testUpdateOperationIfArgumentIsOld() throws Throwable {
-		runTestOnUiThread(new Runnable() {
+		runTestOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
 				f = TestAutoUpdateOperationFragment.newInstance();
@@ -125,7 +125,7 @@ public class AutoUpdateOperationFragmentTestCase extends
 	}
 
 	public void testNotUpdateOperationIfArgumentIsNew() throws Throwable {
-		runTestOnUiThread(new Runnable() {
+		runTestOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
 				f = TestAutoUpdateOperationFragment.newInstance();

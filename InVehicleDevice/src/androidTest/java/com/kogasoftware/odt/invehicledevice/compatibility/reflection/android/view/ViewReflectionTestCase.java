@@ -154,7 +154,7 @@ public class ViewReflectionTestCase extends
 		int prevCount1 = 0;
 		int prevCount2 = 0;
 
-		runOnUiThreadSync(new Runnable() {
+		runTestOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
 				a.setContentView(v);
@@ -166,7 +166,7 @@ public class ViewReflectionTestCase extends
 
 		// LOW_PROFILEに変更
 		expectedVisibility.set(LOW_PROFILE);
-		runOnUiThreadSync(new Runnable() {
+		runTestOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
 				ViewReflection.setSystemUiVisibility(v, LOW_PROFILE);
@@ -183,7 +183,7 @@ public class ViewReflectionTestCase extends
 
 		// VISIBLEに変更
 		expectedVisibility.set(VISIBLE);
-		runOnUiThreadSync(new Runnable() {
+		runTestOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
 				ViewReflection.setSystemUiVisibility(v, VISIBLE);
@@ -200,7 +200,7 @@ public class ViewReflectionTestCase extends
 
 		// LOW_PROFILEに変更
 		expectedVisibility.set(LOW_PROFILE);
-		runOnUiThreadSync(new Runnable() {
+		runTestOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
 				ViewReflection.setSystemUiVisibility(v, LOW_PROFILE);
@@ -216,7 +216,7 @@ public class ViewReflectionTestCase extends
 		prevCount1 = count1.get();
 
 		// listenerを変更
-		runOnUiThreadSync(new Runnable() {
+		runTestOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
 				ViewReflection.setOnSystemUiVisibilityChangeListener(v,
@@ -226,7 +226,7 @@ public class ViewReflectionTestCase extends
 
 		// VISIBLEに変更
 		expectedVisibility.set(VISIBLE);
-		runOnUiThreadSync(new Runnable() {
+		runTestOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
 				ViewReflection.setSystemUiVisibility(v, VISIBLE);
@@ -243,7 +243,7 @@ public class ViewReflectionTestCase extends
 
 		// LOW_PROFILEに変更
 		expectedVisibility.set(LOW_PROFILE);
-		runOnUiThreadSync(new Runnable() {
+		runTestOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
 				ViewReflection.setSystemUiVisibility(v, LOW_PROFILE);
@@ -260,7 +260,7 @@ public class ViewReflectionTestCase extends
 
 		// VISIBLEに変更
 		expectedVisibility.set(VISIBLE);
-		runOnUiThreadSync(new Runnable() {
+		runTestOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
 				ViewReflection.setSystemUiVisibility(v, VISIBLE);

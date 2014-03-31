@@ -17,7 +17,7 @@ public class FlickUnneededListViewTestCase extends
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		TestUtil.runOnUiThreadSync(getActivity(), new Runnable() {
+		TestUtil.runTestOnUiThreadSync(getActivity(), new Runnable() {
 			@Override
 			public void run() {
 				v = new FlickUnneededListView(getInstrumentation()
@@ -34,7 +34,7 @@ public class FlickUnneededListViewTestCase extends
 	}
 
 	public void test表示() throws InterruptedException {
-		runOnUiThreadSync(new Runnable() {
+		runTestOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
 				v.getListView().setAdapter(
@@ -48,7 +48,7 @@ public class FlickUnneededListViewTestCase extends
 		assertTrue(solo.searchText("bar", true));
 		assertFalse(solo.searchText("baz", true));
 
-		runOnUiThreadSync(new Runnable() {
+		runTestOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
 				v.getListView().setAdapter(
@@ -74,7 +74,7 @@ public class FlickUnneededListViewTestCase extends
 		final String[] strings = new String[] { "bar", "baz", "baz", "baz",
 				"baz", "baz", "baz", "baz", "baz", "baz", "baz", "baz", "baz",
 				"baz", "baz", "baz", "foo" };
-		runOnUiThreadSync(new Runnable() {
+		runTestOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
 				v.getListView().setAdapter(

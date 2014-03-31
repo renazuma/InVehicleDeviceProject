@@ -27,7 +27,7 @@ public class BigToastTestCase extends EmptyActivityInstrumentationTestCase2 {
 	public void callTestMakeText(final String text, final int duration)
 			throws Exception {
 		assertFalse(solo.searchText(text, true));
-		runOnUiThreadSync(new Runnable() {
+		runTestOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
 				BigToast.makeText(getActivity(), text, duration).show();

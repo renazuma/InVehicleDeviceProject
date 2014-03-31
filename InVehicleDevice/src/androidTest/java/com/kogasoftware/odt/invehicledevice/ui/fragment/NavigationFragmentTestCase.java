@@ -61,7 +61,7 @@ public class NavigationFragmentTestCase extends
 
 	protected void assertShow(final String platformName) throws Throwable {
 		p.setName(platformName);
-		runTestOnUiThread(new Runnable() {
+		runTestOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
 				int id = 12345;

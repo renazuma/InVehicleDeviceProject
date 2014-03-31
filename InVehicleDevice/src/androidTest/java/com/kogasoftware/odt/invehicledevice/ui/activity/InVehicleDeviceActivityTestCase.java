@@ -176,7 +176,7 @@ public class InVehicleDeviceActivityTestCase extends
 			TestUtil.assertShow(a, a.getClass());
 			final AtomicInteger changed = new AtomicInteger(-1);
 			Thread.sleep(3 * 1000);
-			TestUtil.runOnUiThreadSync(a, new Runnable() {
+			TestUtil.runTestOnUiThreadSync(a, new Runnable() {
 				@Override
 				public void run() {
 					changed.set(((WindowManager) a

@@ -62,7 +62,7 @@ public class PlatformNavigationFragmentTestCase extends
 	public void assertShowAndHide(String name) throws Throwable {
 		p.setName(name);
 
-		runTestOnUiThread(new Runnable() {
+		runTestOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
 				int id = 12345;

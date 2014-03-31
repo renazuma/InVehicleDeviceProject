@@ -10,6 +10,7 @@ import java.util.WeakHashMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import junit.framework.Assert;
 import junitx.framework.AssertionFailedError;
@@ -137,20 +138,26 @@ public class TestUtil {
 		return true;
 	}
 
-	public static void runOnUiThreadSync(Activity activity,
+	public static void runTestOnUiThreadSync(Activity activity,
 			final Runnable runnable) throws InterruptedException {
-		runOnUiThreadSync(activity, runnable, 20);
+		runTestOnUiThreadSync(activity, runnable, 20);
 	}
 
-	public static void runOnUiThreadSync(Activity activity,
+	public static void runTestOnUiThreadSync(Activity activity,
 			final Runnable runnable, Integer timeoutSeconds)
 			throws InterruptedException {
 		final CountDownLatch cdl = new CountDownLatch(1);
+		final AtomicReference<Throwable> throwableReference = new AtomicReference<Throwable>();
 		activity.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				try {
 					runnable.run();
+				} catch (AssertionFailedError innerError) {
+					throwableReference.set(innerError);
+				} catch (Exception innerException) {
+					// kokode reigaiga okiruto subete sinunode
+					throwableReference.set(innerException);
 				} finally {
 					cdl.countDown();
 				}
@@ -158,6 +165,17 @@ public class TestUtil {
 		});
 		if (!cdl.await(timeoutSeconds, TimeUnit.SECONDS)) {
 			throw new RuntimeException("runOnUiThreadSync Timeout!");
+		}
+		if (throwableReference.get() == null) {
+			return;
+		}
+		Throwable throwable = throwableReference.get();
+		if (throwable instanceof RuntimeException) {
+			throw (RuntimeException) throwable;
+		} else if (throwable instanceof AssertionFailedError) {
+			throw (AssertionFailedError) throwable;
+		} else {
+			throw new RuntimeException(throwable);
 		}
 	}
 

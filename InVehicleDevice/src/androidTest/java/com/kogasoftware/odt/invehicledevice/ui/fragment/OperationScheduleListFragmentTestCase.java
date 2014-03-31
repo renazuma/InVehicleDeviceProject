@@ -239,7 +239,7 @@ public class OperationScheduleListFragmentTestCase extends
 
 	protected void assertShow() throws Throwable {
 		ld.operation.operationSchedules.addAll(oss);
-		runTestOnUiThread(new Runnable() {
+		runTestOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
 				int id = 12345;

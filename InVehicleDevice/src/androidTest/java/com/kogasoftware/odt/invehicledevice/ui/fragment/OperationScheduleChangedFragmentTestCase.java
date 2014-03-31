@@ -57,7 +57,7 @@ public class OperationScheduleChangedFragmentTestCase extends
 	}
 
 	public void assertShow(final VehicleNotification vn) throws Throwable {
-		runTestOnUiThread(new Runnable() {
+		runTestOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
 				int id = 12345;

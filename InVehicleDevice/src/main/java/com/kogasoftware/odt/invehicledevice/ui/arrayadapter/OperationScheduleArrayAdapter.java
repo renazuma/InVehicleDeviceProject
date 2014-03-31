@@ -30,6 +30,7 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnitStatusLog
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundReader;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.PassengerRecordLogic;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.ApplicationFragment;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.PassengerRecordMemoFragment;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.PlatformNavigationFragment;
@@ -47,6 +48,7 @@ public class OperationScheduleArrayAdapter extends
 	private final InVehicleDeviceService service;
 	private final List<PassengerRecord> passengerRecords;
 	private Boolean showPassengerRecords = false;
+	private final PassengerRecordLogic passengerRecordLogic;
 
 	static abstract class onRowTouchListener<T> implements OnTouchListener {
 		private final Class<T> rowClass;
@@ -172,6 +174,7 @@ public class OperationScheduleArrayAdapter extends
 		super(activity, RESOURCE_ID, operationSchedules);
 		this.activity = activity;
 		this.service = service;
+		this.passengerRecordLogic = new PassengerRecordLogic(service);
 		this.passengerRecords = passengerRecords;
 		this.layoutInflater = (LayoutInflater) activity
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

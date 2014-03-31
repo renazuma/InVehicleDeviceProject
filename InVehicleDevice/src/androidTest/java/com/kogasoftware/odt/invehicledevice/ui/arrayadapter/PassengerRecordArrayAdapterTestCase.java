@@ -221,7 +221,7 @@ public class PassengerRecordArrayAdapterTestCase extends
 
 		sync();
 		assertEquals(aa.getCount(), 2);
-		runOnUiThreadSync(new Runnable() {
+		runTestOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
 				ListView lv = new ListView(getInstrumentation()
@@ -284,7 +284,7 @@ public class PassengerRecordArrayAdapterTestCase extends
 				s, a.getFragmentManager(), os1, prs);
 		sync();
 		assertEquals(1, aa.getCount());
-		runOnUiThreadSync(new Runnable() {
+		runTestOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
 				ListView lv = new ListView(getInstrumentation()

@@ -42,14 +42,14 @@ public class EmptyActivityInstrumentationTestCase2 extends
 		return h;
 	}
 
-	public void runOnUiThreadSync(Runnable runnable, Integer timeoutSeconds)
+	public void runTestOnUiThreadSync(Runnable runnable, Integer timeoutSeconds)
 			throws InterruptedException {
-		TestUtil.runOnUiThreadSync(a, runnable, timeoutSeconds);
+		TestUtil.runTestOnUiThreadSync(a, runnable, timeoutSeconds);
 	}
 
-	public void runOnUiThreadSync(Runnable runnable)
+	public void runTestOnUiThreadSync(Runnable runnable)
 			throws InterruptedException {
-		runOnUiThreadSync(runnable, 20);
+		runTestOnUiThreadSync(runnable, 20);
 	}
 
 	@Override

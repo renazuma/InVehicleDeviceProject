@@ -62,7 +62,7 @@ public class InVehicleDeviceFragmentTestCase extends
 	}
 
 	public void testShow() throws Throwable {
-		runTestOnUiThread(new Runnable() {
+		runTestOnUiThreadSync(new Runnable() {
 			@Override
 			public void run() {
 				int id = 12345;
