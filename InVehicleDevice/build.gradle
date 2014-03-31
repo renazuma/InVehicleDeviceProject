@@ -6,6 +6,7 @@ android {
     defaultConfig {
         versionCode computeVersionCode()
         versionName computeVersionName()
+        testInstrumentationRunner "com.kogasoftware.odt.invehicledevice.testutil.DexMakerInstrumentationTestRunner"
     }
     signingConfigs {
         release {
