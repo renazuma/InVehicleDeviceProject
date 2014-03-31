@@ -217,7 +217,7 @@ public class PassengerRecordArrayAdapterTestCase extends
 		osl.arrive(os0, new EmptyRunnable());
 
 		aa = new PassengerRecordArrayAdapter(getInstrumentation().getContext(),
-				s, a.getSupportFragmentManager(), os0, prs);
+				s, a.getFragmentManager(), os0, prs);
 
 		sync();
 		assertEquals(aa.getCount(), 2);
@@ -281,7 +281,7 @@ public class PassengerRecordArrayAdapterTestCase extends
 
 		Thread.sleep(2000);
 		aa = new PassengerRecordArrayAdapter(getInstrumentation().getContext(),
-				s, a.getSupportFragmentManager(), os1, prs);
+				s, a.getFragmentManager(), os1, prs);
 		sync();
 		assertEquals(1, aa.getCount());
 		runOnUiThreadSync(new Runnable() {

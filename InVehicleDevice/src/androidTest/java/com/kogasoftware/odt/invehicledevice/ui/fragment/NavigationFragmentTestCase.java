@@ -5,9 +5,9 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.graphics.Bitmap;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.widget.FrameLayout;
 
 import com.google.common.base.Optional;
@@ -71,7 +71,7 @@ public class NavigationFragmentTestCase extends
 				Operation o = new Operation();
 				o.operationSchedules.addAll(oss);
 				f = NavigationFragment.newInstance(o, new ServiceUnitStatusLog(), true, 0);
-				FragmentManager fm = a.getSupportFragmentManager();
+				FragmentManager fm = a.getFragmentManager();
 				fm.beginTransaction().add(id, f).commit();
 			}
 		});

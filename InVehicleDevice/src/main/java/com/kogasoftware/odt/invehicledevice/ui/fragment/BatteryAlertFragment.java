@@ -2,7 +2,8 @@ package com.kogasoftware.odt.invehicledevice.ui.fragment;
 
 import java.io.Serializable;
 
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
+
 import com.kogasoftware.odt.invehicledevice.ui.fragment.BatteryAlertFragment.State;
 
 public class BatteryAlertFragment extends ApplicationFragment<State> {

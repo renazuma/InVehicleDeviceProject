@@ -3,9 +3,9 @@ package com.kogasoftware.odt.invehicledevice.ui.arrayadapter;
 import java.util.Collections;
 import java.util.List;
 
+import android.app.FragmentManager;
 import android.content.Context;
 import android.graphics.Color;
-import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;

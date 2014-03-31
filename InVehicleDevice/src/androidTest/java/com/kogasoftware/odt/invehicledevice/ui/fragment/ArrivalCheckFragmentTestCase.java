@@ -8,8 +8,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.widget.FrameLayout;
 
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
@@ -82,7 +82,7 @@ public class ArrivalCheckFragmentTestCase extends
 				fl.setId(id);
 				a.setContentView(fl);
 				f = ArrivalCheckFragment.newInstance(os);
-				FragmentManager fm = a.getSupportFragmentManager();
+				FragmentManager fm = a.getFragmentManager();
 				fm.beginTransaction().add(id, f).commit();
 			}
 		});

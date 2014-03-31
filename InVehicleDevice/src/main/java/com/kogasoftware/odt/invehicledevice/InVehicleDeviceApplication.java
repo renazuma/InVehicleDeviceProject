@@ -34,7 +34,7 @@ import com.kogasoftware.odt.invehicledevice.service.logservice.LogServiceReportS
 public class InVehicleDeviceApplication extends Application {
 	private static final String TAG = InVehicleDeviceApplication.class
 			.getSimpleName();
-	public static final Boolean ENABLE_ACRA = true;
+	public static final Boolean ENABLE_ACRA = false;
 	private static final AtomicInteger ACRA_INIT_ONCE_WORKAROUND = new AtomicInteger(
 			1);
 

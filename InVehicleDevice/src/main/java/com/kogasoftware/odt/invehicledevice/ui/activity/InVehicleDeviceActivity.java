@@ -2,7 +2,11 @@ package com.kogasoftware.odt.invehicledevice.ui.activity;
 
 import java.util.List;
 
+import android.app.Activity;
 import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.ContentResolver;
@@ -18,10 +22,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.text.Html;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -47,7 +47,7 @@ import com.kogasoftware.odt.invehicledevice.ui.fragment.InVehicleDeviceFragment;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.OperationScheduleChangedAlertFragment;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.VehicleNotificationAlertFragment;
 
-public class InVehicleDeviceActivity extends FragmentActivity implements
+public class InVehicleDeviceActivity extends Activity implements
 		EventDispatcher.OnExitListener,
 		EventDispatcher.OnOperationScheduleReceiveFailListener,
 		EventDispatcher.OnUpdateOperationListener,
@@ -233,7 +233,7 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 		// onCreate()時に各フラグメントが復活することがある。その際、InVehicleDeviceServiceがバインドされる前に
 		// それに依存しているフラグメントが起動しエラーになることがある。そのため、onCreate()でフラグメントが復活しないよう、
 		// ここで全て削除しておく。
-		FragmentManager fragmentManager = getSupportFragmentManager();
+		FragmentManager fragmentManager = getFragmentManager();
 		for (int i = 0; i < fragmentManager.getBackStackEntryCount(); i++) {
 			fragmentManager.popBackStack(); // popBackStack()しても、ループに戻るまでgetBackStackEntryCount()の値は変わらない
 		}
@@ -431,6 +431,6 @@ public class InVehicleDeviceActivity extends FragmentActivity implements
 	}
 
 	public Optional<FragmentManager> getOptionalFragmentManager() {
-		return Optional.fromNullable(getSupportFragmentManager());
+		return Optional.fromNullable(getFragmentManager());
 	}
 }

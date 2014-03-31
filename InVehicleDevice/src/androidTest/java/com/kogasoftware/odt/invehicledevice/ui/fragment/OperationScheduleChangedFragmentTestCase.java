@@ -5,8 +5,8 @@ import static org.mockito.Mockito.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.widget.FrameLayout;
 
 import com.google.common.base.Optional;
@@ -66,7 +66,7 @@ public class OperationScheduleChangedFragmentTestCase extends
 				a.setContentView(fl);
 				f = OperationScheduleChangedFragment.newInstance(Lists
 						.newArrayList(vn));
-				FragmentManager fm = a.getSupportFragmentManager();
+				FragmentManager fm = a.getFragmentManager();
 				fm.beginTransaction().add(id, f).commit();
 			}
 		});

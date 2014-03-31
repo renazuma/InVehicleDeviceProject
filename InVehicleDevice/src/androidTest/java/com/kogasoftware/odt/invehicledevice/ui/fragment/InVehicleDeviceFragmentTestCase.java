@@ -4,8 +4,8 @@ import static org.mockito.Mockito.*;
 
 import java.util.List;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.widget.FrameLayout;
 
 import com.google.common.collect.Lists;
@@ -73,7 +73,7 @@ public class InVehicleDeviceFragmentTestCase extends
 				o.operationSchedules.addAll(oss);
 				o.passengerRecords.addAll(prs);
 				f = InVehicleDeviceFragment.newInstance(o);
-				FragmentManager fm = a.getSupportFragmentManager();
+				FragmentManager fm = a.getFragmentManager();
 				fm.beginTransaction().add(id, f).commit();
 			}
 		});

@@ -3,7 +3,7 @@ package com.kogasoftware.odt.invehicledevice.ui.activity;
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 
-import android.support.v4.app.FragmentActivity;
+import android.app.Activity;
 
 /**
  * 単体テスト用の空Activity。テスト対象プロジェクトにテスト用Activityは入れたくないが、Viewなどの単体テスト用の
@@ -12,7 +12,7 @@ import android.support.v4.app.FragmentActivity;
  * ActivityUnitTestCaseを使う方法があるが、アニメーションが動かない
  * Robolectric使う方法があるが、Robotiumと二種類のテストフレームワークを使うのはよくないと考える
  */
-public class EmptyActivity extends FragmentActivity {
+public class EmptyActivity extends Activity {
 	private Optional<InVehicleDeviceService> service = Optional.absent();
 
 	public void setService(InVehicleDeviceService service) {

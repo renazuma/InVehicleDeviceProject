@@ -7,7 +7,7 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import android.support.v4.app.FragmentActivity;
+import android.app.Activity;
 
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.testutil.EmptyActivityInstrumentationTestCase2;
@@ -20,14 +20,14 @@ import static org.mockito.Mockito.*;
 public class OperationScheduleArrayAdapterTestCase extends
 		EmptyActivityInstrumentationTestCase2 {
 
-	FragmentActivity a;
+	Activity a;
 	InVehicleDeviceService s;
 	OperationScheduleArrayAdapter aa;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		a = mock(FragmentActivity.class);
+		a = mock(Activity.class);
 		s = mock(InVehicleDeviceService.class);
 		when(a.getSystemService(Mockito.anyString())).thenAnswer(new Answer<Object>() {
 			@Override

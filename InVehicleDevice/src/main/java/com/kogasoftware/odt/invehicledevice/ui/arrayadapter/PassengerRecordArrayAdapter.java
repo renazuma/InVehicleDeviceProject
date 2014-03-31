@@ -5,9 +5,9 @@ import java.util.Map.Entry;
 import java.util.Collections;
 import java.util.WeakHashMap;
 
+import android.app.FragmentManager;
 import android.content.Context;
 import android.graphics.Color;
-import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;

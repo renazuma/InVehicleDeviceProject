@@ -3,10 +3,10 @@ package com.kogasoftware.odt.invehicledevice.ui.fragment;
 import java.io.Serializable;
 import java.util.List;
 
+import android.app.FragmentManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;

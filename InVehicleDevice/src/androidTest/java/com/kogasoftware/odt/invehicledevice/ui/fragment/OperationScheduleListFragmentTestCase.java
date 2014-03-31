@@ -5,7 +5,7 @@ import static org.mockito.Mockito.*;
 import java.util.Date;
 import java.util.List;
 
-import android.support.v4.app.FragmentManager;
+import android.app.FragmentManager;
 import android.widget.FrameLayout;
 
 import com.google.common.collect.Lists;
@@ -247,7 +247,7 @@ public class OperationScheduleListFragmentTestCase extends
 				fl.setId(id);
 				a.setContentView(fl);
 				f = OperationScheduleListFragment.newInstance(ld.operation);
-				FragmentManager fm = a.getSupportFragmentManager();
+				FragmentManager fm = a.getFragmentManager();
 				fm.beginTransaction().add(id, f).commit();
 			}
 		});

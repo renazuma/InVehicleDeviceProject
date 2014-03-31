@@ -2,12 +2,12 @@ package com.kogasoftware.odt.invehicledevice.ui;
 
 import java.util.concurrent.TimeUnit;
 
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
 import android.os.Handler;
-import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.widget.ImageView;
 

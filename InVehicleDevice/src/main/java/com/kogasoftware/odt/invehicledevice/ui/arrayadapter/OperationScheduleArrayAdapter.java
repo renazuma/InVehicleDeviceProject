@@ -6,11 +6,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import android.app.Activity;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.graphics.Color;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -43,7 +43,7 @@ public class OperationScheduleArrayAdapter extends
 	private static final Integer DEFAULT_COLOR = Color.parseColor("#FFFFFF");
 	private static final Integer RESOURCE_ID = R.layout.operation_schedule_list_row;
 	private final LayoutInflater layoutInflater;
-	private final FragmentActivity activity;
+	private final Activity activity;
 	private final InVehicleDeviceService service;
 	private final List<PassengerRecord> passengerRecords;
 	private Boolean showPassengerRecords = false;
@@ -114,7 +114,7 @@ public class OperationScheduleArrayAdapter extends
 						@Override
 						public void onRead(ServiceUnitStatusLog result) {
 							FragmentManager fragmentManager = activity
-									.getSupportFragmentManager();
+									.getFragmentManager();
 							if (fragmentManager == null) {
 								return;
 							}
@@ -150,7 +150,7 @@ public class OperationScheduleArrayAdapter extends
 		protected boolean onTap(View view, MotionEvent event,
 				PassengerRecord passengerRecord) {
 			FragmentManager fragmentManager = activity
-					.getSupportFragmentManager();
+					.getFragmentManager();
 			if (fragmentManager == null) {
 				return true;
 			}
@@ -165,7 +165,7 @@ public class OperationScheduleArrayAdapter extends
 		}
 	};
 
-	public OperationScheduleArrayAdapter(FragmentActivity activity,
+	public OperationScheduleArrayAdapter(Activity activity,
 			InVehicleDeviceService service,
 			List<OperationSchedule> operationSchedules,
 			List<PassengerRecord> passengerRecords) {
