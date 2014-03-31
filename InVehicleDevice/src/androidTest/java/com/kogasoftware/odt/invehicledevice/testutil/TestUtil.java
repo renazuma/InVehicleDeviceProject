@@ -46,6 +46,7 @@ import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClientFa
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage;
 import com.kogasoftware.odt.invehicledevice.service.startupservice.IStartupService;
+import com.kogasoftware.odt.invehicledevice.ui.activity.EmptyActivity;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 import com.robotium.solo.Solo;
 
@@ -143,11 +144,19 @@ public class TestUtil {
 		runTestOnUiThreadSync(activity, runnable, 20);
 	}
 
-	public static void runTestOnUiThreadSync(Activity activity,
+	public static void runTestOnUiThreadSync(final Activity activity,
 			final Runnable runnable, Integer timeoutSeconds)
 			throws InterruptedException {
 		final CountDownLatch cdl = new CountDownLatch(1);
 		final AtomicReference<Throwable> throwableReference = new AtomicReference<Throwable>();
+		if (activity instanceof EmptyActivity) {
+			assertChange(new Callable<Boolean>() {
+				@Override
+				public Boolean call() throws Exception {
+					return ((EmptyActivity) activity).isBeforeSaveInstanceState();
+				}
+			});
+		}
 		activity.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -156,7 +165,6 @@ public class TestUtil {
 				} catch (AssertionFailedError innerError) {
 					throwableReference.set(innerError);
 				} catch (Exception innerException) {
-					// kokode reigaiga okiruto subete sinunode
 					throwableReference.set(innerException);
 				} finally {
 					cdl.countDown();

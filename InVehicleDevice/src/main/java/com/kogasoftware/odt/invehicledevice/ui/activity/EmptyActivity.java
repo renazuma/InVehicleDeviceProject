@@ -17,6 +17,24 @@ import android.util.Log;
  * Robolectric使う方法があるが、Robotiumと二種類のテストフレームワークを使うのはよくないと考える
  */
 public class EmptyActivity extends Activity {
+	private Boolean beforeSaveInstanceState = false;
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		beforeSaveInstanceState = true;
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		beforeSaveInstanceState = false;
+	}
+	
+	public Boolean isBeforeSaveInstanceState() {
+		return beforeSaveInstanceState;
+	}
+
 	private static final String TAG = EmptyActivity.class.getSimpleName();
 	public static final AtomicBoolean USE_SAVED_INSTANCE_STATE = new AtomicBoolean(true);
 	private Optional<InVehicleDeviceService> service = Optional.absent();
