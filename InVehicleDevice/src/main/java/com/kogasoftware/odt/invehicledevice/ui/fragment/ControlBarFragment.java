@@ -256,6 +256,10 @@ public class ControlBarFragment extends AutoUpdateOperationFragment<State> {
 	}
 
 	public void updateView(Phase phase, Boolean isLast) {
+		if (!isAdded()) {
+			Log.e(TAG, "UpdateView() called but isAdded() is false");
+			return;
+		}
 		Button changePhaseButton = (Button) getView().findViewById(
 				R.id.change_phase_button);
 		// getView().setBackgroundColor(getPhaseColor(phase));
