@@ -1,5 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.ui;
 
+import java.util.concurrent.Callable;
+
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 
@@ -85,20 +87,19 @@ public class FlickUnneededListViewTestCase extends
 		Button up = solo.getButton("△ 上へ移動");
 		Button down = solo.getButton("▽ 下へ移動");
 
-		assertFalse(up.isEnabled());
-		assertTrue(down.isEnabled());
+		assertEnabled(up, false);
+		assertEnabled(down, true);
 
 		solo.clickOnView(down);
-
-		assertTrue(up.isEnabled());
-		assertTrue(down.isEnabled());
+		assertEnabled(up, true);
+		assertEnabled(down, true);
 
 		solo.clickOnView(up);
 		solo.clickOnView(up);
 
 		assertTrue(solo.searchText("bar", true));
-		assertFalse(up.isEnabled());
-		assertTrue(down.isEnabled());
+		assertEnabled(up, false);
+		assertEnabled(down, true);
 
 		assertTrue(solo.searchText("bar", true));
 
@@ -114,8 +115,17 @@ public class FlickUnneededListViewTestCase extends
 		assertTrue(solo.searchText("bar", true));
 		assertTrue(solo.searchText("foo", true));
 
-		assertFalse(down.isEnabled());
+		assertEnabled(down, false);
 		solo.clickOnView(up);
-		assertTrue(down.isEnabled());
+		assertEnabled(down, true);
+	}
+
+	private void assertEnabled(final Button button, final boolean enabled) {
+		TestUtil.assertChange(new Callable<Boolean>() {
+			@Override
+			public Boolean call() throws Exception {
+				return button.isEnabled() == enabled;
+			}
+		});
 	}
 }
