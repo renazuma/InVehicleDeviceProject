@@ -101,9 +101,9 @@ public class InVehicleDeviceFragment extends AutoUpdateOperationFragment<State> 
 				.beginTransaction();
 		Boolean speakPlatform = first;
 		if (fragmentManager.findFragmentByTag(tag) == null && !first) {
-			fragmentTransaction.setCustomAnimations(R.anim.show_phase_fragment,
-					R.anim.hide_phase_fragment, R.anim.show_phase_fragment,
-					R.anim.hide_phase_fragment);
+			fragmentTransaction.setCustomAnimations(R.animator.show_phase_fragment,
+					R.animator.hide_phase_fragment, R.animator.show_phase_fragment,
+					R.animator.hide_phase_fragment);
 			speakPlatform = true;
 		}
 		if (getState().getPhase() != Phase.DRIVE) {

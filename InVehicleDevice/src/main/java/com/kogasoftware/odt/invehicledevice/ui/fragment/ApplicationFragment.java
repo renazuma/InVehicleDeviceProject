@@ -228,9 +228,9 @@ public class ApplicationFragment<S extends Serializable> extends Fragment {
 
 	public static FragmentTransaction setCustomAnimation(
 			FragmentTransaction fragmentTransaction) {
-		fragmentTransaction.setCustomAnimations(R.anim.show_modal_view,
-				R.anim.hide_modal_view, R.anim.show_modal_view,
-				R.anim.hide_modal_view);
+		fragmentTransaction.setCustomAnimations(R.animator.show_full_fragment,
+				R.animator.hide_full_fragment, R.animator.show_full_fragment,
+				R.animator.hide_full_fragment);
 		return fragmentTransaction;
 	}
 
