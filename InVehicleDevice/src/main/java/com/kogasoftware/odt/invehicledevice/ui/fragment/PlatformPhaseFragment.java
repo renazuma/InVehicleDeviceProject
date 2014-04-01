@@ -25,6 +25,7 @@ import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher.OnUpdatePassengerRecordListener;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation.Phase;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
@@ -35,7 +36,7 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 
-public class PlatformPhaseFragment extends AutoUpdateOperationFragment<State> {
+public class PlatformPhaseFragment extends AutoUpdateOperationFragment<State> implements OnUpdatePassengerRecordListener {
 
 	@SuppressWarnings("serial")
 	protected static class State implements Serializable {
@@ -144,6 +145,7 @@ public class PlatformPhaseFragment extends AutoUpdateOperationFragment<State> {
 		passengerRecordListView = ((FlickUnneededListView) view
 				.findViewById(R.id.reservation_list_view));
 		updateView(view);
+		getService().getEventDispatcher().addOnUpdatePassengerRecordListener(this);
 	}
 
 	@Override
@@ -163,6 +165,7 @@ public class PlatformPhaseFragment extends AutoUpdateOperationFragment<State> {
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
+		getService().getEventDispatcher().removeOnUpdatePassengerRecordListener(this);
 	}
 
 	private void updateView(View view) {
@@ -234,5 +237,12 @@ public class PlatformPhaseFragment extends AutoUpdateOperationFragment<State> {
 	@Override
 	protected Integer getOperationSchedulesReceiveSequence() {
 		return getState().getOperation().operationScheduleReceiveSequence;
+	}
+
+	@Override
+	public void onUpdatePassengerRecord(PassengerRecord passengerRecord) {
+		for (PassengerRecordArrayAdapter adapter : optionalAdapter.asSet()) {
+			adapter.updatePassengerRecord(passengerRecord);
+		}
 	}
 }

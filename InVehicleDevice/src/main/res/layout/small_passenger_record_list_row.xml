@@ -5,13 +5,21 @@
 
     <TextView
         android:id="@+id/passenger_count_text_view"
-        android:layout_width="wrap_content"
+        android:layout_width="50sp"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:textColor="@android:color/black"
         android:textSize="20sp" />
-
+    
+    <Button
+        android:id="@+id/user_memo_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/passenger_count_text_view"
+        android:text="@string/memo" />
+    
     <ImageView
         android:id="@+id/select_mark_image_view"
         android:layout_width="35sp"
@@ -28,7 +36,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_toLeftOf="@+id/passenger_count_text_view"
+        android:layout_toLeftOf="@+id/user_memo_button"
         android:layout_toRightOf="@+id/select_mark_image_view"
         android:textColor="@android:color/black"
         android:textSize="25sp" />

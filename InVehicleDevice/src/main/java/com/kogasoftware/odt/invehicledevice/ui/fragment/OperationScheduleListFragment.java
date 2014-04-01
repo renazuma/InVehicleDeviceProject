@@ -10,15 +10,20 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
 
+import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher.OnUpdateOperationListener;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher.OnUpdatePassengerRecordListener;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation;
 import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.OperationScheduleArrayAdapter;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.OperationScheduleListFragment.State;
 
-public class OperationScheduleListFragment extends ApplicationFragment<State> {
+public class OperationScheduleListFragment extends ApplicationFragment<State>
+		implements OnUpdatePassengerRecordListener {
 	@SuppressWarnings("serial")
 	protected static class State implements Serializable {
 		private final Operation operation;
@@ -33,10 +38,6 @@ public class OperationScheduleListFragment extends ApplicationFragment<State> {
 	}
 
 	private ListView listView;
-
-	public OperationScheduleListFragment() {
-		setRemoveOnUpdateOperation(true);
-	}
 
 	public static OperationScheduleListFragment newInstance(Operation operation) {
 		return newInstance(new OperationScheduleListFragment(), new State(
@@ -76,7 +77,7 @@ public class OperationScheduleListFragment extends ApplicationFragment<State> {
 		if (!found && count >= 1) {
 			listView.setSelectionFromTop(count - 1, 0);
 		}
-
+		getService().getEventDispatcher().addOnUpdatePassengerRecordListener(this);
 		final Button showPassengersButton = (Button) getView().findViewById(
 				R.id.operation_schedule_list_show_passengers_button);
 		final Button hidePassengersButton = (Button) getView().findViewById(
@@ -86,23 +87,23 @@ public class OperationScheduleListFragment extends ApplicationFragment<State> {
 		showPassengersButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-                Integer selection = listView.getFirstVisiblePosition();
+				Integer selection = listView.getFirstVisiblePosition();
 				hidePassengersButton.setVisibility(View.VISIBLE);
 				showPassengersButton.setVisibility(View.GONE);
 				closeButton.setVisibility(View.GONE);
 				adapter.showPassengerRecords();
-                listView.setSelection(selection);
+				listView.setSelection(selection);
 			}
 		});
 		hidePassengersButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-                Integer selection = listView.getFirstVisiblePosition();
-                hidePassengersButton.setVisibility(View.GONE);
+				Integer selection = listView.getFirstVisiblePosition();
+				hidePassengersButton.setVisibility(View.GONE);
 				showPassengersButton.setVisibility(View.VISIBLE);
 				closeButton.setVisibility(View.VISIBLE);
 				adapter.hidePassengerRecords();
-                listView.setSelection(selection);
+				listView.setSelection(selection);
 			}
 		});
 	}
@@ -111,17 +112,40 @@ public class OperationScheduleListFragment extends ApplicationFragment<State> {
 	public void onResume() {
 		super.onResume();
 		StringBuilder message = new StringBuilder("OperationSchedule: ");
+		for (OperationScheduleArrayAdapter adapter : getOperationScheduleArrayAdapter()
+				.asSet()) {
+			for (Integer i = 0; i < adapter.getCount(); i++) {
+				if (!i.equals(0)) {
+					message.append(",");
+				}
+				OperationSchedule item = adapter.getItem(i);
+				message.append(item.getPlatform().or(new Platform()).getName());
+			}
+		}
+	}
+
+	public Optional<OperationScheduleArrayAdapter> getOperationScheduleArrayAdapter() {
 		Object obj = listView.getAdapter();
-		if (!(obj instanceof OperationScheduleArrayAdapter)) {
+		if (obj instanceof OperationScheduleArrayAdapter) {
+			return Optional.of((OperationScheduleArrayAdapter) obj);
+		}
+		return Optional.absent();
+	}
+
+	@Override
+	public void onUpdatePassengerRecord(PassengerRecord passengerRecord) {
+		if (!isAdded()) {
 			return;
 		}
-		OperationScheduleArrayAdapter adapter = (OperationScheduleArrayAdapter) obj;
-		for (Integer i = 0; i < adapter.getCount(); i++) {
-			if (!i.equals(0)) {
-				message.append(",");
-			}
-			OperationSchedule item = adapter.getItem(i);
-			message.append(item.getPlatform().or(new Platform()).getName());
+		for (OperationScheduleArrayAdapter adapter : getOperationScheduleArrayAdapter()
+				.asSet()) {
+			adapter.updatePassengerRecord(passengerRecord);
 		}
+	}
+
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		getService().getEventDispatcher().removeOnUpdatePassengerRecordListener(this);
 	}
 }

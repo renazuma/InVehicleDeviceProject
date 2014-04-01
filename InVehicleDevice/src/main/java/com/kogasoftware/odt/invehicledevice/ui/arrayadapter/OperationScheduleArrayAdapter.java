@@ -15,9 +15,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -29,6 +31,7 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundReader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.PassengerRecordLogic;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.ApplicationFragment;
@@ -49,11 +52,11 @@ public class OperationScheduleArrayAdapter extends
 	private final List<PassengerRecord> passengerRecords;
 	private Boolean showPassengerRecords = false;
 	private final PassengerRecordLogic passengerRecordLogic;
-
-	static abstract class onRowTouchListener<T> implements OnTouchListener {
+	
+	static abstract class OnRowTouchListener<T> implements OnTouchListener {
 		private final Class<T> rowClass;
 
-		public onRowTouchListener(Class<T> rowClass) {
+		public OnRowTouchListener(Class<T> rowClass) {
 			this.rowClass = rowClass;
 		}
 
@@ -80,13 +83,10 @@ public class OperationScheduleArrayAdapter extends
 				return false;
 			}
 
+			Boolean result = event.getAction() == MotionEvent.ACTION_CANCEL ? true
+					: onTap(view, event, tag);
 			view.setBackgroundColor(getDefaultColor(tag));
-
-			if (event.getAction() == MotionEvent.ACTION_CANCEL) {
-				return true;
-			}
-
-			return onTap(view, event, tag);
+			return result;
 		}
 
 		protected abstract boolean onTap(View view, MotionEvent event, T tag);
@@ -100,7 +100,7 @@ public class OperationScheduleArrayAdapter extends
 		}
 	}
 
-	protected final OnTouchListener onOperationScheduleTouchListener = new onRowTouchListener<OperationSchedule>(
+	protected final OnTouchListener onOperationScheduleTouchListener = new OnRowTouchListener<OperationSchedule>(
 			OperationSchedule.class) {
 		@Override
 		protected boolean onTap(View view, MotionEvent event,
@@ -146,15 +146,77 @@ public class OperationScheduleArrayAdapter extends
 		}
 	};
 
-	protected final OnTouchListener onPassengerRecordTouchListener = new onRowTouchListener<PassengerRecord>(
-			PassengerRecord.class) {
+	static class PassengerRecordRowTag {
+		public final PassengerRecord passengerRecord;
+		public final OperationSchedule operationSchedule;
+		public final Boolean getOn;
+
+		public PassengerRecordRowTag(PassengerRecord passengerRecord,
+				OperationSchedule operationSchedule, Boolean getOn) {
+			this.passengerRecord = passengerRecord;
+			this.operationSchedule = operationSchedule;
+			this.getOn = getOn;
+		}
+	}
+
+	protected final OnRowTouchListener<PassengerRecordRowTag> onPassengerRecordTouchListener = new OnRowTouchListener<PassengerRecordRowTag>(
+			PassengerRecordRowTag.class) {
+		@Override
+		protected int getDefaultColor(
+				PassengerRecordRowTag passengerRecordRowTag) {
+			PassengerRecord passengerRecord = passengerRecordRowTag.passengerRecord;
+			if (passengerRecordRowTag.getOn) {
+				if (passengerRecord.getGetOnTime().isPresent()) {
+					return Color.RED;
+				} else {
+					return DEFAULT_COLOR;
+				}
+			} else {
+				if (passengerRecord.getGetOffTime().isPresent()) {
+					return Color.GREEN;
+				} else {
+					return DEFAULT_COLOR;
+				}
+			}
+		}
+
 		@Override
 		protected boolean onTap(View view, MotionEvent event,
-				PassengerRecord passengerRecord) {
-			FragmentManager fragmentManager = activity
-					.getFragmentManager();
+				PassengerRecordRowTag passengerRecordRowTag) {
+			OperationSchedule operationSchedule = passengerRecordRowTag.operationSchedule;
+			PassengerRecord passengerRecord = passengerRecordRowTag.passengerRecord;
+			if (passengerRecordRowTag.getOn) {
+				if (passengerRecord.getGetOnTime().isPresent()) {
+					passengerRecordLogic.cancelGetOn(operationSchedule,
+							passengerRecord);
+				} else {
+					passengerRecordLogic.getOn(operationSchedule,
+							passengerRecord);
+				}
+			} else {
+				if (passengerRecord.getGetOffTime().isPresent()) {
+					passengerRecordLogic.cancelGetOff(operationSchedule,
+							passengerRecord);
+				} else {
+					passengerRecordLogic.getOff(operationSchedule,
+							passengerRecord);
+				}
+			}
+			return false;
+		}
+	};
+
+	protected final OnClickListener onUserMemoButtonClickListener = new OnClickListener() {
+		@Override
+		public void onClick(View view) {
+			Object tag = view.getTag();
+			if (!(tag instanceof PassengerRecord)) {
+				return;
+			}
+			PassengerRecord passengerRecord = (PassengerRecord) tag;
+			FragmentManager fragmentManager = activity.getFragmentManager();
 			if (fragmentManager == null) {
-				return true;
+				return;
 			}
 			FragmentTransaction fragmentTransaction = fragmentManager
 					.beginTransaction();
@@ -163,7 +225,6 @@ public class OperationScheduleArrayAdapter extends
 					PassengerRecordMemoFragment.newInstance(passengerRecord));
 
 			fragmentTransaction.commitAllowingStateLoss();
-			return true;
 		}
 	};
 
@@ -214,7 +275,7 @@ public class OperationScheduleArrayAdapter extends
 						Optional.of(operationSchedule.getId()))) {
 					if (showPassengerRecords) {
 						passengerRecordsView.addView(createPassengerRecordRow(
-								passengerRecord, false));
+								operationSchedule, passengerRecord, false));
 					}
 					getOffPassengerCount += 1;
 				}
@@ -229,7 +290,7 @@ public class OperationScheduleArrayAdapter extends
 						Optional.of(operationSchedule.getId()))) {
 					if (showPassengerRecords) {
 						passengerRecordsView.addView(createPassengerRecordRow(
-								passengerRecord, true));
+								operationSchedule, passengerRecord, true));
 					}
 					getOnPassengerCount += 1;
 				}
@@ -283,8 +344,8 @@ public class OperationScheduleArrayAdapter extends
 		return convertView;
 	}
 
-	private View createPassengerRecordRow(PassengerRecord passengerRecord,
-			Boolean getOn) {
+	private View createPassengerRecordRow(OperationSchedule operationSchedule,
+			PassengerRecord passengerRecord, Boolean getOn) {
 		View row = layoutInflater.inflate(
 				R.layout.small_passenger_record_list_row, null);
 		row.setBackgroundColor(DEFAULT_COLOR);
@@ -295,13 +356,20 @@ public class OperationScheduleArrayAdapter extends
 
 		TextView userNameView = (TextView) row.findViewById(R.id.user_name);
 		userNameView.setText(passengerRecord.getDisplayName());
-
-		row.setTag(passengerRecord);
+		PassengerRecordRowTag tag = new PassengerRecordRowTag(passengerRecord,
+				operationSchedule, getOn);
+		row.setTag(tag);
 		row.setOnTouchListener(onPassengerRecordTouchListener);
 
 		TextView countView = (TextView) row
 				.findViewById(R.id.passenger_count_text_view);
 		countView.setText(passengerRecord.getPassengerCount() + "名");
+		Button userMemoButton = (Button) row
+				.findViewById(R.id.user_memo_button);
+		userMemoButton.setTag(passengerRecord);
+		userMemoButton.setOnClickListener(onUserMemoButtonClickListener);
+		row.setBackgroundColor(onPassengerRecordTouchListener
+				.getDefaultColor(tag));
 		return row;
 	}
 
@@ -313,5 +381,18 @@ public class OperationScheduleArrayAdapter extends
 	public void hidePassengerRecords() {
 		showPassengerRecords = false;
 		notifyDataSetChanged();
+	}
+
+	public void updatePassengerRecord(PassengerRecord passengerRecord) {
+		Boolean updated = false;
+		for (int i = 0; i < passengerRecords.size(); i++) {
+			if (passengerRecords.get(i).getId().equals(passengerRecord.getId())) {
+				passengerRecords.set(i, passengerRecord);
+				updated = true;
+			}
+		}
+		if (updated) {
+			notifyDataSetChanged();
+		}
 	}
 }
