@@ -135,10 +135,10 @@ public class DefaultApiClient implements ApiClient {
 			Log.w(TAG, e);
 			request.onException(new ApiClientException(e));
 		} catch (IOException e) {
-			Log.i(TAG, "request failed by exception", e);
+			Log.i(TAG, "request failed by IOException \"" + e.getMessage() + "\"");
 			request.onException(new ApiClientException(e));
 		} catch (InterruptedException e) {
-			Log.i(TAG, "request interrupted", e);
+			Log.i(TAG, "request interrupted");
 			Thread.currentThread().interrupt();
 			request.onException(new ApiClientException(e));
 		} catch (Exception e) {
