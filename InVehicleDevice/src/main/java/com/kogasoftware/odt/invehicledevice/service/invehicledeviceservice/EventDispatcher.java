@@ -13,6 +13,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation;
 
@@ -84,6 +85,10 @@ public class EventDispatcher implements Closeable {
 		void onStartReceiveUpdatedOperationSchedule();
 	}
 
+	public interface OnUpdatePassengerRecordListener {
+		void onUpdatePassengerRecord(PassengerRecord passengerRecord);
+	}
+
 	protected final Multimap<Handler, OnAlertUpdatedOperationScheduleListener> onAlertUpdatedOperationScheduleListeners = newListenerMultimap();
 	protected final Multimap<Handler, OnAlertVehicleNotificationReceiveListener> onAlertVehicleNotificationReceiveListeners = newListenerMultimap();
 	protected final Multimap<Handler, OnChangeLocationListener> onChangeLocationListeners = newListenerMultimap();
@@ -98,6 +103,7 @@ public class EventDispatcher implements Closeable {
 	protected final Multimap<Handler, OnResumeActivityListener> onResumeActivityListeners = newListenerMultimap();
 	protected final Multimap<Handler, OnOperationScheduleReceiveFailListener> onOperationScheduleReceiveFailListeners = newListenerMultimap();
 	protected final Multimap<Handler, OnUpdateOperationListener> onUpdateOperationListeners = newListenerMultimap();
+	protected final Multimap<Handler, OnUpdatePassengerRecordListener> onUpdatePassengerRecordListeners = newListenerMultimap();
 
 	private static interface Dispatcher<T> {
 		void dispatch(T listener);
@@ -161,6 +167,10 @@ public class EventDispatcher implements Closeable {
 
 	public void addOnUpdateOperationListener(OnUpdateOperationListener listener) {
 		putListener(onUpdateOperationListeners, listener);
+	}
+
+	public void addOnUpdatePassengerRecordListener(OnUpdatePassengerRecordListener listener) {
+		putListener(onUpdatePassengerRecordListeners, listener);
 	}
 
 	public void addOnAlertVehicleNotificationReceiveListener(
@@ -241,6 +251,10 @@ public class EventDispatcher implements Closeable {
 		removeListener(onUpdateOperationListeners, listener);
 	}
 
+	public void removeOnUpdatePassengerRecordListener(OnUpdatePassengerRecordListener listener) {
+		removeListener(onUpdatePassengerRecordListeners, listener);
+	}
+
 	public void removeOnAlertVehicleNotificationReceiveListener(
 			OnAlertVehicleNotificationReceiveListener listener) {
 		removeListener(onAlertVehicleNotificationReceiveListeners, listener);
@@ -312,6 +326,16 @@ public class EventDispatcher implements Closeable {
 					@Override
 					public void dispatch(OnUpdateOperationListener listener) {
 						listener.onUpdateOperation(operation);
+					}
+				});
+	}
+
+	public void dispatchUpdatePassengerRecord(final PassengerRecord passengerRecord) {
+		dispatchListener(onUpdatePassengerRecordListeners,
+				new Dispatcher<OnUpdatePassengerRecordListener>() {
+					@Override
+					public void dispatch(OnUpdatePassengerRecordListener listener) {
+						listener.onUpdatePassengerRecord(passengerRecord);
 					}
 				});
 	}
@@ -473,5 +497,6 @@ public class EventDispatcher implements Closeable {
 		clearListener(onResumeActivityListeners);
 		clearListener(onOperationScheduleReceiveFailListeners);
 		clearListener(onUpdateOperationListeners);
+		clearListener(onUpdatePassengerRecordListeners);
 	}
 }
