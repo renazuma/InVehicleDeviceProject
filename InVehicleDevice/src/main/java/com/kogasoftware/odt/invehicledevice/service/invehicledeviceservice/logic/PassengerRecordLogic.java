@@ -162,6 +162,7 @@ public class PassengerRecordLogic {
 
 			@Override
 			public void onWrite() {
+				service.getEventDispatcher().dispatchUpdatePassengerRecord(passengerRecord);
 			}
 		});
 	}
