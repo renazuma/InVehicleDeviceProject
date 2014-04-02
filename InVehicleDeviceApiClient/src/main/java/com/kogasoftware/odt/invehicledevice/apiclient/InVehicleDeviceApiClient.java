@@ -37,6 +37,15 @@ public interface InVehicleDeviceApiClient extends Closeable {
 			final ApiClientCallback<OperationSchedule> callback);
 
 	/**
+	 * 到着キャンセル時のサーバへの通知
+	 *
+	 * @param os
+	 *            運行スケジュールオブジェクト
+	 */
+	int cancelArrivalOperationSchedule(final OperationSchedule os,
+			final ApiClientCallback<OperationSchedule> callback);
+
+	/**
 	 * 降車のサーバへの通知
 	 *
 	 * @param operationSchedule

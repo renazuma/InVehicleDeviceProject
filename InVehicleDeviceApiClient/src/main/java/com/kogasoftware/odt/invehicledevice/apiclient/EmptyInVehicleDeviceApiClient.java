@@ -28,6 +28,12 @@ public class EmptyInVehicleDeviceApiClient implements InVehicleDeviceApiClient {
 	}
 
 	@Override
+	public int cancelArrivalOperationSchedule(OperationSchedule os,
+			ApiClientCallback<OperationSchedule> callback) {
+		return 0;
+	}
+
+	@Override
 	public int departureOperationSchedule(OperationSchedule os,
 			ApiClientCallback<OperationSchedule> callback) {
 		return 0;

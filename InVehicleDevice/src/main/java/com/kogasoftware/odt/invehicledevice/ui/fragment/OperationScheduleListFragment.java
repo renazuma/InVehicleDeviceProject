@@ -15,7 +15,6 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher.OnUpdateOperationListener;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher.OnUpdatePassengerRecordListener;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation;
 import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;

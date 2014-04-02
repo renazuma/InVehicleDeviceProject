@@ -110,8 +110,9 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 			JsonNode retryParam = createObjectNode().set(root,
 					retryOr.toJsonNode(false));
 
+			String group = getOperationScheduleArrivalOrDepartureGroup(os.getId());
 			put(PATH_OPERATION_SCHEDULES + "/" + os.getId() + "/arrival",
-					param, retryParam, UNIQUE_GROUP, callback,
+					param, retryParam, group, callback,
 					OperationSchedule.RESPONSE_CONVERTER);
 		} catch (IOException e) {
 			handleIOException(e, reqkey, callback);
@@ -143,8 +144,9 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 			JsonNode retryParam = createObjectNode().set(root,
 					retryOr.toJsonNode(false));
 
+			String group = getOperationScheduleArrivalOrDepartureGroup(os.getId());
 			put(PATH_OPERATION_SCHEDULES + "/" + os.getId() + "/departure",
-					param, retryParam, UNIQUE_GROUP, callback,
+					param, retryParam, group, callback,
 					OperationSchedule.RESPONSE_CONVERTER);
 		} catch (IOException e) {
 			handleIOException(e, reqkey, callback);
@@ -528,6 +530,10 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 				+ "/userId=" + userId;
 	}
 
+	protected String getOperationScheduleArrivalOrDepartureGroup(Integer operationScheduleId) {
+		return "OperationScheduleArrivalOrDepartureGroup/operationScheduleId=" + operationScheduleId;
+	}
+
 	@Override
 	public DefaultInVehicleDeviceApiClient withSaveOnClose(boolean saveOnClose) {
 		return withSaveOnClose(this, saveOnClose);
@@ -547,5 +553,28 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	public void close() {
 		newRequestExecutorService.shutdownNow();
 		super.close();
+	}
+
+	@Override
+	public int cancelArrivalOperationSchedule(OperationSchedule os,
+			ApiClientCallback<OperationSchedule> callback) {
+		int reqkey = getRequestConfig().getReqkey();
+		try {
+			OperationRecord or = os.getOperationRecord().or(
+					new OperationRecord());
+			or.clearArrivedAt();
+			or.clearArrivedAtOffline();
+			or.clearDepartedAt();
+			or.clearDepartedAtOffline();
+			JsonNode param = createObjectNode().set(OperationRecord.UNDERSCORE,
+					or.toJsonNode(false));
+			String group = getOperationScheduleArrivalOrDepartureGroup(os.getId());
+			put(PATH_OPERATION_SCHEDULES + "/" + os.getId() + "/cancel_arrival",
+					param, group, callback,
+					OperationSchedule.RESPONSE_CONVERTER);
+		} catch (IOException e) {
+			handleIOException(e, reqkey, callback);
+		}
+		return reqkey;
 	}
 }

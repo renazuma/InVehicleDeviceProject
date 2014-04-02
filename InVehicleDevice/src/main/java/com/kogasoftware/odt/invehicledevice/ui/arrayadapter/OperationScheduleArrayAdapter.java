@@ -31,7 +31,6 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundReader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.PassengerRecordLogic;
