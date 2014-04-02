@@ -38,7 +38,7 @@
         android:id="@+id/operation_schedule_list_passenger_count"
         android:layout_width="105sp"
         android:layout_height="60sp"
-        android:layout_alignParentRight="true"
+        android:layout_toLeftOf="@+id/operation_schedule_list_map_button"
         android:layout_alignParentTop="true"
         android:orientation="vertical" >
 
@@ -90,5 +90,13 @@
         android:orientation="vertical"
         android:visibility="gone"
          />
+
+    <Button
+        android:id="@+id/operation_schedule_list_map_button"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:text="@string/map" />
 
 </RelativeLayout>

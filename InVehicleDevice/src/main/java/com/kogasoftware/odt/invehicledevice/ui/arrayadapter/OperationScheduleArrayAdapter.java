@@ -33,6 +33,7 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVeh
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundReader;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.PassengerRecordLogic;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.ApplicationFragment;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.PassengerRecordMemoFragment;
@@ -52,7 +53,8 @@ public class OperationScheduleArrayAdapter extends
 	private final List<PassengerRecord> passengerRecords;
 	private Boolean showPassengerRecords = false;
 	private final PassengerRecordLogic passengerRecordLogic;
-	
+	private final OperationScheduleLogic operationScheduleLogic;
+
 	static abstract class OnRowTouchListener<T> implements OnTouchListener {
 		private final Class<T> rowClass;
 
@@ -105,34 +107,6 @@ public class OperationScheduleArrayAdapter extends
 		@Override
 		protected boolean onTap(View view, MotionEvent event,
 				final OperationSchedule operationSchedule) {
-			service.getLocalStorage().read(
-					new BackgroundReader<ServiceUnitStatusLog>() {
-						@Override
-						public ServiceUnitStatusLog readInBackground(
-								LocalData localData) {
-							return localData.serviceUnitStatusLog;
-						}
-
-						@Override
-						public void onRead(ServiceUnitStatusLog result) {
-							FragmentManager fragmentManager = activity
-									.getFragmentManager();
-							if (fragmentManager == null) {
-								return;
-							}
-							FragmentTransaction fragmentTransaction = fragmentManager
-									.beginTransaction();
-							ApplicationFragment
-									.setCustomAnimation(fragmentTransaction);
-							fragmentTransaction.add(
-									R.id.modal_fragment_container,
-									PlatformNavigationFragment.newInstance(
-											operationSchedule,
-											result.getLatitude(),
-											result.getLongitude()));
-							fragmentTransaction.commitAllowingStateLoss();
-						}
-					});
 			return true;
 		}
 
@@ -228,6 +202,45 @@ public class OperationScheduleArrayAdapter extends
 		}
 	};
 
+	protected final OnClickListener onOperationScheduleMapButtonClickListener = new OnClickListener() {
+		@Override
+		public void onClick(View view) {
+			Object tag = view.getTag();
+			if (!(tag instanceof OperationSchedule)) {
+				return;
+			}
+			final OperationSchedule operationSchedule = (OperationSchedule) tag;
+			service.getLocalStorage().read(
+					new BackgroundReader<ServiceUnitStatusLog>() {
+						@Override
+						public ServiceUnitStatusLog readInBackground(
+								LocalData localData) {
+							return localData.serviceUnitStatusLog;
+						}
+
+						@Override
+						public void onRead(ServiceUnitStatusLog result) {
+							FragmentManager fragmentManager = activity
+									.getFragmentManager();
+							if (fragmentManager == null) {
+								return;
+							}
+							FragmentTransaction fragmentTransaction = fragmentManager
+									.beginTransaction();
+							ApplicationFragment
+									.setCustomAnimation(fragmentTransaction);
+							fragmentTransaction.add(
+									R.id.modal_fragment_container,
+									PlatformNavigationFragment.newInstance(
+											operationSchedule,
+											result.getLatitude(),
+											result.getLongitude()));
+							fragmentTransaction.commitAllowingStateLoss();
+						}
+					});
+		}
+	};
+
 	public OperationScheduleArrayAdapter(Activity activity,
 			InVehicleDeviceService service,
 			List<OperationSchedule> operationSchedules,
@@ -236,6 +249,7 @@ public class OperationScheduleArrayAdapter extends
 		this.activity = activity;
 		this.service = service;
 		this.passengerRecordLogic = new PassengerRecordLogic(service);
+		this.operationScheduleLogic = new OperationScheduleLogic(service);
 		this.passengerRecords = passengerRecords;
 		this.layoutInflater = (LayoutInflater) activity
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -252,6 +266,10 @@ public class OperationScheduleArrayAdapter extends
 		DateFormat displayDateFormat = new SimpleDateFormat("HH:mm", Locale.US);
 
 		OperationSchedule operationSchedule = getItem(position);
+		Button mapButton = (Button) convertView
+				.findViewById(R.id.operation_schedule_list_map_button);
+		mapButton.setTag(operationSchedule);
+		mapButton.setOnClickListener(onOperationScheduleMapButtonClickListener);
 		TextView platformNameView = (TextView) convertView
 				.findViewById(R.id.platform_name);
 		if (operationSchedule.getPlatform().isPresent()) {
