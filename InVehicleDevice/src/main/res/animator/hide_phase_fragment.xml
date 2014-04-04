@@ -2,14 +2,7 @@
 <objectAnimator
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:duration="300"
-    android:propertyName="x"
+    android:propertyName="y"
     android:valueFrom="0"
-    android:valueTo="1000"
+    android:valueTo="-700"
     android:valueType="floatType" />
-<!--
-<translate xmlns:android="http://schemas.android.com/apk/res/android"
-    android:duration="500"
-    android:fromYDelta="0"
-    android:startOffset="300"
-    android:toYDelta="-100%p" />
--->

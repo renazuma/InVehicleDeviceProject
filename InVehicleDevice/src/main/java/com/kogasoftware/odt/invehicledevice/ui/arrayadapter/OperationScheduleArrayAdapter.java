@@ -29,6 +29,7 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnitStatusLog;
+import com.kogasoftware.odt.invehicledevice.empty.EmptyRunnable;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundReader;
@@ -51,6 +52,7 @@ public class OperationScheduleArrayAdapter extends
 	private final InVehicleDeviceService service;
 	private final List<PassengerRecord> passengerRecords;
 	private Boolean showPassengerRecords = false;
+	private Boolean operationScheduleArrivalDepartureChanged = false;
 	private final PassengerRecordLogic passengerRecordLogic;
 	private final OperationScheduleLogic operationScheduleLogic;
 
@@ -106,7 +108,17 @@ public class OperationScheduleArrayAdapter extends
 		@Override
 		protected boolean onTap(View view, MotionEvent event,
 				final OperationSchedule operationSchedule) {
-			return true;
+			Runnable nop = new EmptyRunnable();
+			operationScheduleArrivalDepartureChanged = true;
+			if (operationSchedule.isDeparted()) {
+				operationScheduleLogic.cancelArrive(operationSchedule, nop);
+			} else {
+				if (!operationSchedule.isArrived()) {
+					operationScheduleLogic.arrive(operationSchedule, nop);
+				}
+				operationScheduleLogic.depart(operationSchedule, nop);
+			}
+			return false;
 		}
 
 		@Override
@@ -411,5 +423,9 @@ public class OperationScheduleArrayAdapter extends
 		if (updated) {
 			notifyDataSetChanged();
 		}
+	}
+	
+	public Boolean isOperationScheduleArrivalDepartureChanged() {
+		return operationScheduleArrivalDepartureChanged;
 	}
 }

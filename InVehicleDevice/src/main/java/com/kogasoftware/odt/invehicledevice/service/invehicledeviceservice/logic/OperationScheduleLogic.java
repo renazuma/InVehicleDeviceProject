@@ -281,41 +281,34 @@ public class OperationScheduleLogic {
 	/**
 	 * 到着処理
 	 */
-	public void arrive(OperationSchedule currentOperationSchedule,
+	public void arrive(OperationSchedule operationSchedule,
 			final Runnable callback) {
-		final Integer id = currentOperationSchedule.getId();
-		Log.i(TAG, "arrive id=" + id);
-		service.getLocalStorage().write(new BackgroundWriter() {
-			@Override
-			public void writeInBackground(LocalData localData) {
-				localData.operation.completeGetOff = false;
-				for (OperationSchedule operationSchedule : localData.operation.operationSchedules) {
-					if (!operationSchedule.getId().equals(id)) {
-						continue;
-					}
-					for (OperationRecord operationRecord : operationSchedule
-							.getOperationRecord().asSet()) {
-						operationRecord.setArrivedAt(new Date(DateTimeUtils.currentTimeMillis()));
-						service.getApiClient()
-								.withSaveOnClose()
-								.arrivalOperationSchedule(
-										operationSchedule,
-										new EmptyApiClientCallback<OperationSchedule>());
-						Log.i(TAG, "arrive -> "
-								+ getPhaseWithReadLock(localData));
-						return;
-					}
-					Log.e(TAG, "OperationSchedule has no OperationRecord "
-							+ operationSchedule);
-				}
-				Log.e(TAG, "OperationSchedule id=" + id + " not found");
-			}
+		Log.i(TAG, "arrive id=" + operationSchedule.getId());
+		OperationRecord operationRecord = operationSchedule.getOperationRecord().or(new OperationRecord());
+		operationRecord.setArrivedAt(new Date(DateTimeUtils.currentTimeMillis()));
+		operationSchedule.setOperationRecord(operationRecord);
+		updateAsync(operationSchedule, callback);
+		service.getApiClient()
+				.withSaveOnClose()
+				.arrivalOperationSchedule(
+					operationSchedule,
+					new EmptyApiClientCallback<OperationSchedule>());
+	}
 
-			@Override
-			public void onWrite() {
-				callback.run();
-			}
-		});
+	public void cancelArrive(OperationSchedule operationSchedule, final Runnable callback) {
+		Log.i(TAG, "cancel arrive id=" + operationSchedule.getId());
+		OperationRecord operationRecord = operationSchedule.getOperationRecord().or(new OperationRecord());
+		operationRecord.clearArrivedAt();
+		operationRecord.clearArrivedAtOffline();
+		operationRecord.clearDepartedAt();
+		operationRecord.clearDepartedAtOffline();
+		operationSchedule.setOperationRecord(operationRecord);
+		updateAsync(operationSchedule, callback);
+		service.getApiClient()
+				.withSaveOnClose()
+				.cancelArrivalOperationSchedule(
+					operationSchedule,
+					new EmptyApiClientCallback<OperationSchedule>());
 	}
 
 	public void updateOperationInBackground(LocalData localData) {
@@ -329,33 +322,36 @@ public class OperationScheduleLogic {
 	/**
 	 * 発車処理
 	 */
-	public void depart(OperationSchedule currentOperationSchedule,
+	public void depart(OperationSchedule operationSchedule,
 			final Runnable callback) {
-		final Integer id = currentOperationSchedule.getId();
-		Log.i(TAG, "depart id=" + id);
+		Log.i(TAG, "depart id=" + operationSchedule.getId());
+		OperationRecord operationRecord = operationSchedule.getOperationRecord().or(new OperationRecord());
+		operationRecord.setDepartedAt(new Date(DateTimeUtils.currentTimeMillis()));
+		operationSchedule.setOperationRecord(operationRecord);
+		updateAsync(operationSchedule, callback);
+		service.getApiClient()
+				.withSaveOnClose()
+				.departureOperationSchedule(
+					operationSchedule,
+					new EmptyApiClientCallback<OperationSchedule>());
+	}
+
+	private void updateAsync(final OperationSchedule currentOperationSchedule,
+			final Runnable callback) {
 		service.getLocalStorage().write(new BackgroundWriter() {
 			@Override
 			public void writeInBackground(LocalData localData) {
 				localData.operation.completeGetOff = false;
-				for (OperationSchedule operationSchedule : localData.operation.operationSchedules) {
-					if (!operationSchedule.getId().equals(id)) {
+				for (int i = 0; i < localData.operation.operationSchedules.size(); i++) {
+					OperationSchedule operationSchedule = localData.operation.operationSchedules.get(i);
+					if (!operationSchedule.getId().equals(currentOperationSchedule.getId())) {
 						continue;
 					}
-					for (OperationRecord operationRecord : operationSchedule
-							.getOperationRecord().asSet()) {
-						operationRecord.setDepartedAt(new Date(DateTimeUtils.currentTimeMillis()));
-						service.getApiClient()
-								.withSaveOnClose()
-								.departureOperationSchedule(
-										operationSchedule,
-										new EmptyApiClientCallback<OperationSchedule>());
-						Log.i(TAG, "depart -> " + localData.operation.getPhase());
-						return;
-					}
-					Log.e(TAG, "OperationSchedule has no OperationRecord "
-							+ operationSchedule);
+					localData.operation.operationSchedules.set(i, currentOperationSchedule);
+					Log.i(TAG, "depart -> " + localData.operation.getPhase());
+					return;
 				}
-				Log.e(TAG, "OperationSchedule id=" + id + " not found");
+				Log.e(TAG, "OperationSchedule id=" + currentOperationSchedule.getId() + " not found");
 			}
 
 			@Override

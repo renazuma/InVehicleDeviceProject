@@ -16,7 +16,10 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher.OnUpdatePassengerRecordListener;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundReader;
 import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.OperationScheduleArrayAdapter;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.OperationScheduleListFragment.State;
@@ -76,7 +79,8 @@ public class OperationScheduleListFragment extends ApplicationFragment<State>
 		if (!found && count >= 1) {
 			listView.setSelectionFromTop(count - 1, 0);
 		}
-		getService().getEventDispatcher().addOnUpdatePassengerRecordListener(this);
+		getService().getEventDispatcher().addOnUpdatePassengerRecordListener(
+				this);
 		final Button showPassengersButton = (Button) getView().findViewById(
 				R.id.operation_schedule_list_show_passengers_button);
 		final Button hidePassengersButton = (Button) getView().findViewById(
@@ -145,6 +149,33 @@ public class OperationScheduleListFragment extends ApplicationFragment<State>
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
-		getService().getEventDispatcher().removeOnUpdatePassengerRecordListener(this);
+		getService().getEventDispatcher()
+				.removeOnUpdatePassengerRecordListener(this);
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		final InVehicleDeviceService service = getService();
+		for (OperationScheduleArrayAdapter adapter : getOperationScheduleArrayAdapter()
+				.asSet()) {
+			if (!adapter.isOperationScheduleArrivalDepartureChanged()) {
+				return;
+			}
+			getService().getLocalStorage().read(
+					new BackgroundReader<Operation>() {
+						@Override
+						public Operation readInBackground(
+								LocalData localData) {
+							return localData.operation;
+						}
+
+						@Override
+						public void onRead(Operation operation) {
+					service.getEventDispatcher()
+									.dispatchUpdateOperation(operation);
+						}
+					});
+		}
 	}
 }
