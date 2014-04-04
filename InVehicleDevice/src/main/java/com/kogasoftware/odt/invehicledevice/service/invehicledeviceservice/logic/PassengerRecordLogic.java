@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.joda.time.DateTimeUtils;
 
+import android.graphics.Color;
 import android.util.Log;
 
 import com.google.common.collect.Lists;
@@ -19,6 +20,11 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Local
 public class PassengerRecordLogic {
 	private static final String TAG = PassengerRecordLogic.class
 			.getSimpleName();
+	public static final int SELECTED_GET_OFF_COLOR = Color.parseColor("#40E0D0");
+	public static final int GET_OFF_COLOR = Color.parseColor("#D5E9F6");
+	public static final int SELECTED_GET_ON_COLOR = Color.parseColor("#FF69B4");
+	public static final int GET_ON_COLOR = Color.parseColor("#F9D9D8");
+
 	public final InVehicleDeviceService service;
 	public final OperationScheduleLogic operationScheduleLogic;
 

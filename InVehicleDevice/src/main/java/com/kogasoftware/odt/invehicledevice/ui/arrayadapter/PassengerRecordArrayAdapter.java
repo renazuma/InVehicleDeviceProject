@@ -36,12 +36,6 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 	private static final String TAG = PassengerRecordArrayAdapter.class
 			.getSimpleName();
 	protected static final Integer RESOURCE_ID = R.layout.passenger_record_list_row;
-	protected static final int SELECTED_GET_OFF_COLOR = Color
-			.parseColor("#40E0D0");
-	protected static final int GET_OFF_COLOR = Color.parseColor("#D5E9F6");
-	protected static final int SELECTED_GET_ON_COLOR = Color
-			.parseColor("#FF69B4");
-	protected static final int GET_ON_COLOR = Color.parseColor("#F9D9D8");
 	protected final FragmentManager fragmentManager;
 	protected final LayoutInflater layoutInflater = (LayoutInflater) getContext()
 			.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -73,16 +67,16 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 				if (operationSchedule.isGetOffScheduled(passengerRecord)) {
 					if (passengerRecord.getGetOffTime().isPresent()
 							^ invertColor) {
-						view.setBackgroundColor(SELECTED_GET_OFF_COLOR);
+						view.setBackgroundColor(PassengerRecordLogic.SELECTED_GET_OFF_COLOR);
 					} else {
-						view.setBackgroundColor(GET_OFF_COLOR);
+						view.setBackgroundColor(PassengerRecordLogic.GET_OFF_COLOR);
 					}
 				} else if (operationSchedule.isGetOnScheduled(passengerRecord)) {
 					if (passengerRecord.getGetOnTime().isPresent()
 							^ invertColor) {
-						view.setBackgroundColor(SELECTED_GET_ON_COLOR);
+						view.setBackgroundColor(PassengerRecordLogic.SELECTED_GET_ON_COLOR);
 					} else {
-						view.setBackgroundColor(GET_ON_COLOR);
+						view.setBackgroundColor(PassengerRecordLogic.GET_ON_COLOR);
 					}
 				}
 			} else if (execute) {
@@ -209,16 +203,16 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 		if (operationSchedule.isGetOffScheduled(passengerRecord)) {
 			selectMarkImageView.setImageResource(R.drawable.get_off);
 			if (passengerRecord.getGetOffTime().isPresent()) {
-				convertView.setBackgroundColor(SELECTED_GET_OFF_COLOR);
+				convertView.setBackgroundColor(PassengerRecordLogic.SELECTED_GET_OFF_COLOR);
 			} else {
-				convertView.setBackgroundColor(GET_OFF_COLOR);
+				convertView.setBackgroundColor(PassengerRecordLogic.GET_OFF_COLOR);
 			}
 		} else if (operationSchedule.isGetOnScheduled(passengerRecord)) {
 			selectMarkImageView.setImageResource(R.drawable.get_on);
 			if (passengerRecord.getGetOnTime().isPresent()) {
-				convertView.setBackgroundColor(SELECTED_GET_ON_COLOR);
+				convertView.setBackgroundColor(PassengerRecordLogic.SELECTED_GET_ON_COLOR);
 			} else {
-				convertView.setBackgroundColor(GET_ON_COLOR);
+				convertView.setBackgroundColor(PassengerRecordLogic.GET_ON_COLOR);
 			}
 		} else {
 			Log.e(TAG, "unexpected PassengerRecord: " + passengerRecord);

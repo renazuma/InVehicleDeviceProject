@@ -149,18 +149,27 @@ public class OperationScheduleArrayAdapter extends
 		@Override
 		protected int getDefaultColor(
 				PassengerRecordRowTag passengerRecordRowTag) {
+			return getColor(passengerRecordRowTag, false);
+		}
+
+		@Override
+		protected int getSelectedColor(PassengerRecordRowTag passengerRecordRowTag) {
+			return getColor(passengerRecordRowTag, true);
+		}
+
+		private int getColor(PassengerRecordRowTag passengerRecordRowTag, boolean invert) {
 			PassengerRecord passengerRecord = passengerRecordRowTag.passengerRecord;
 			if (passengerRecordRowTag.getOn) {
-				if (passengerRecord.getGetOnTime().isPresent()) {
-					return Color.RED;
+				if (passengerRecord.getGetOnTime().isPresent() ^ invert) {
+					return PassengerRecordLogic.SELECTED_GET_ON_COLOR;
 				} else {
-					return DEFAULT_COLOR;
+					return PassengerRecordLogic.GET_ON_COLOR;
 				}
 			} else {
-				if (passengerRecord.getGetOffTime().isPresent()) {
-					return Color.GREEN;
+				if (passengerRecord.getGetOffTime().isPresent() ^ invert) {
+					return PassengerRecordLogic.SELECTED_GET_OFF_COLOR;
 				} else {
-					return DEFAULT_COLOR;
+					return PassengerRecordLogic.GET_OFF_COLOR;
 				}
 			}
 		}
