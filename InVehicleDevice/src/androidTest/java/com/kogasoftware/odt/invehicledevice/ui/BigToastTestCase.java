@@ -17,7 +17,7 @@ public class BigToastTestCase extends EmptyActivityInstrumentationTestCase2 {
 		super.tearDown();
 	}
 
-	public void testMakeText() throws Exception {
+	public void testMakeText() throws Throwable {
 		callTestMakeText("hoge", Toast.LENGTH_SHORT);
 		callTestMakeText("ああああ", Toast.LENGTH_LONG);
 		callTestMakeText("いいいい", Toast.LENGTH_SHORT);
@@ -25,9 +25,9 @@ public class BigToastTestCase extends EmptyActivityInstrumentationTestCase2 {
 	}
 
 	public void callTestMakeText(final String text, final int duration)
-			throws Exception {
+			throws Throwable {
 		assertFalse(solo.searchText(text, true));
-		runTestOnUiThreadSync(new Runnable() {
+		runTestOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				BigToast.makeText(getActivity(), text, duration).show();

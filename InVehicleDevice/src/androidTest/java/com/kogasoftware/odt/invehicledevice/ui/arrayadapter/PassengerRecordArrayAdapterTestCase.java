@@ -155,7 +155,7 @@ public class PassengerRecordArrayAdapterTestCase extends
 		Log.i(TAG, "sync complete");
 	}
 
-	public void xtestPassengerRecordGetOnAndOff() throws Exception {
+	public void xtestPassengerRecordGetOnAndOff() throws Throwable {
 		final String userName0 = "上野駅前";
 		final String userName1 = "御徒町駅前";
 		final Integer T = 2000;
@@ -221,7 +221,7 @@ public class PassengerRecordArrayAdapterTestCase extends
 
 		sync();
 		assertEquals(aa.getCount(), 2);
-		runTestOnUiThreadSync(new Runnable() {
+		runTestOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				ListView lv = new ListView(getInstrumentation()
@@ -284,7 +284,7 @@ public class PassengerRecordArrayAdapterTestCase extends
 				s, a.getFragmentManager(), os1, prs);
 		sync();
 		assertEquals(1, aa.getCount());
-		runTestOnUiThreadSync(new Runnable() {
+		runTestOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				ListView lv = new ListView(getInstrumentation()

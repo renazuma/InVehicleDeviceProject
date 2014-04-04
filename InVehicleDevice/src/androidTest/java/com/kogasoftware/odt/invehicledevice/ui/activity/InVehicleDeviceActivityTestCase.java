@@ -148,23 +148,23 @@ public class InVehicleDeviceActivityTestCase extends
 		assertFalse(solo.waitForText(message));
 	}
 
-	public void testFixUserRotation_0() throws Exception {
+	public void testFixUserRotation_0() throws Throwable {
 		assertFixUserRotation(Surface.ROTATION_0);
 	}
 
-	public void testFixUserRotation_90() throws Exception {
+	public void testFixUserRotation_90() throws Throwable {
 		assertFixUserRotation(Surface.ROTATION_90);
 	}
 
-	public void testFixUserRotation_180() throws Exception {
+	public void testFixUserRotation_180() throws Throwable {
 		assertFixUserRotation(Surface.ROTATION_180);
 	}
 
-	public void testFixUserRotation_270() throws Exception {
+	public void testFixUserRotation_270() throws Throwable {
 		assertFixUserRotation(Surface.ROTATION_270);
 	}
 
-	public void assertFixUserRotation(Integer request) throws Exception {
+	public void assertFixUserRotation(Integer request) throws Throwable {
 		TestUtil.disableAutoStart(getInstrumentation().getContext());
 		for (String USER_ROTATION : SettingsReflection.SystemReflection.USER_ROTATION
 				.asSet()) {
@@ -176,7 +176,7 @@ public class InVehicleDeviceActivityTestCase extends
 			TestUtil.assertShow(a, a.getClass());
 			final AtomicInteger changed = new AtomicInteger(-1);
 			Thread.sleep(3 * 1000);
-			TestUtil.runTestOnUiThreadSync(a, new Runnable() {
+			runTestOnUiThread(new Runnable() {
 				@Override
 				public void run() {
 					changed.set(((WindowManager) a

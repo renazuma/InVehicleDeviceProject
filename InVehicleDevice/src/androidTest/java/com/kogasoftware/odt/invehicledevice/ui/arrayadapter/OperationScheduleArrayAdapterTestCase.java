@@ -46,7 +46,7 @@ public class OperationScheduleArrayAdapterTestCase extends
 		super.tearDown();
 	}
 
-	public void xtestShowOperationSchedules() throws Exception {
+	public void xtestShowOperationSchedules() throws Throwable {
 		String platformName0 = "上野駅前";
 		String platformName1 = "御徒町駅前";
 		List<OperationSchedule> oss = new ArrayList<OperationSchedule>();
@@ -67,7 +67,7 @@ public class OperationScheduleArrayAdapterTestCase extends
 
 		aa = new OperationScheduleArrayAdapter(a, s, oss, null);
 
-		runTestOnUiThreadSync(new Runnable() {
+		runTestOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				getActivity().setContentView(aa.getView(0, null, null));
@@ -75,7 +75,7 @@ public class OperationScheduleArrayAdapterTestCase extends
 		});
 		assertTrue(solo.searchText(platformName0));
 
-		runTestOnUiThreadSync(new Runnable() {
+		runTestOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				getActivity().setContentView(aa.getView(1, null, null));

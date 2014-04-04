@@ -47,7 +47,7 @@ public class VehicleNotificationFragmentTestCase extends
 	}
 
 	public void assertShow(final VehicleNotification vn) throws Throwable {
-		runTestOnUiThreadSync(new Runnable() {
+		runTestOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				int id = 12345;

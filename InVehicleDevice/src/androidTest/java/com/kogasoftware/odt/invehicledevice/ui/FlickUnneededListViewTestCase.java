@@ -5,6 +5,7 @@ import java.util.concurrent.Callable;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 
+import com.google.common.base.Throwables;
 import com.kogasoftware.odt.invehicledevice.testutil.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.testutil.TestUtil;
 import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
@@ -17,14 +18,18 @@ public class FlickUnneededListViewTestCase extends
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		TestUtil.runTestOnUiThreadSync(getActivity(), new Runnable() {
-			@Override
-			public void run() {
-				v = new FlickUnneededListView(getInstrumentation()
-						.getTargetContext(), null);
-				getActivity().setContentView(v);
-			}
-		});
+		try {
+			runTestOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					v = new FlickUnneededListView(getInstrumentation()
+							.getTargetContext(), null);
+					getActivity().setContentView(v);
+				}
+			});
+		} catch (Throwable t) {
+			Throwables.propagate(t);
+		}
 		assertNotNull(v);
 	}
 
@@ -33,8 +38,8 @@ public class FlickUnneededListViewTestCase extends
 		super.tearDown();
 	}
 
-	public void test表示() throws InterruptedException {
-		runTestOnUiThreadSync(new Runnable() {
+	public void test表示() throws Throwable {
+		runTestOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				v.getListView().setAdapter(
@@ -48,7 +53,7 @@ public class FlickUnneededListViewTestCase extends
 		assertTrue(solo.searchText("bar", true));
 		assertFalse(solo.searchText("baz", true));
 
-		runTestOnUiThreadSync(new Runnable() {
+		runTestOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				v.getListView().setAdapter(
@@ -70,11 +75,11 @@ public class FlickUnneededListViewTestCase extends
 		assertFalse(down.isEnabled());
 	}
 
-	public void testスクロール() throws Exception {
+	public void testスクロール() throws Throwable {
 		final String[] strings = new String[] { "bar", "baz", "baz", "baz",
 				"baz", "baz", "baz", "baz", "baz", "baz", "baz", "baz", "baz",
 				"baz", "baz", "baz", "foo" };
-		runTestOnUiThreadSync(new Runnable() {
+		runTestOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				v.getListView().setAdapter(

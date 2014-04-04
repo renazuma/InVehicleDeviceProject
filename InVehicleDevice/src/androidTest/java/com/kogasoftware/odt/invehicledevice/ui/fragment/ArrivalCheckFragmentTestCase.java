@@ -74,7 +74,7 @@ public class ArrivalCheckFragmentTestCase extends
 
 	protected void assertShow(final String platformName) throws Throwable {
 		p.setName(platformName);
-		runTestOnUiThreadSync(new Runnable() {
+		runTestOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				int id = 12345;

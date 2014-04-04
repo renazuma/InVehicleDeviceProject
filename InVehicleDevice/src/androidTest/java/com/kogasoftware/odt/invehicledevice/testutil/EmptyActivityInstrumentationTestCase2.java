@@ -42,19 +42,8 @@ public class EmptyActivityInstrumentationTestCase2 extends
 		return h;
 	}
 
-	public void runTestOnUiThreadSync(Runnable runnable, Integer timeoutSeconds)
-			throws InterruptedException {
-		TestUtil.runTestOnUiThreadSync(a, runnable, timeoutSeconds);
-	}
-
-	public void runTestOnUiThreadSync(Runnable runnable)
-			throws InterruptedException {
-		runTestOnUiThreadSync(runnable, 20);
-	}
-
 	@Override
 	protected void setUp() throws Exception {
-		EmptyActivity.USE_SAVED_INSTANCE_STATE.set(false);
 		super.setUp();
 		Instrumentation i = getInstrumentation();
 		a = getActivity();
@@ -68,11 +57,7 @@ public class EmptyActivityInstrumentationTestCase2 extends
 				solo.finishOpenedActivities();
 			}
 		} finally {
-			try {
-				super.tearDown();
-			} finally {
-				EmptyActivity.USE_SAVED_INSTANCE_STATE.set(true);
-			}
+			super.tearDown();
 		}
 	}
 }

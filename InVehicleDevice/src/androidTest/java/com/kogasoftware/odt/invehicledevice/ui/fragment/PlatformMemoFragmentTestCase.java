@@ -59,7 +59,7 @@ public class PlatformMemoFragmentTestCase extends
 	public void assertShowAndHide(String memo) throws Throwable {
 		p.setMemo(memo);
 
-		runTestOnUiThreadSync(new Runnable() {
+		runTestOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				int id = 12345;

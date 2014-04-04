@@ -10,10 +10,8 @@ import java.util.WeakHashMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
 import junit.framework.Assert;
-import junitx.framework.AssertionFailedError;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeUtils;
@@ -46,7 +44,6 @@ import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClientFa
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage;
 import com.kogasoftware.odt.invehicledevice.service.startupservice.IStartupService;
-import com.kogasoftware.odt.invehicledevice.ui.activity.EmptyActivity;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 import com.robotium.solo.Solo;
 
@@ -86,7 +83,7 @@ public class TestUtil {
 				Thread.sleep((long) (Math.log(timeout) * 20));
 			}
 		} catch (Exception e) {
-			throw new AssertionFailedError(e);
+			throw new junitx.framework.AssertionFailedError(e);
 		}
 		Assert.fail();
 	}
@@ -137,54 +134,6 @@ public class TestUtil {
 			return false;
 		}
 		return true;
-	}
-
-	public static void runTestOnUiThreadSync(Activity activity,
-			final Runnable runnable) throws InterruptedException {
-		runTestOnUiThreadSync(activity, runnable, 20);
-	}
-
-	public static void runTestOnUiThreadSync(final Activity activity,
-			final Runnable runnable, Integer timeoutSeconds)
-			throws InterruptedException {
-		final CountDownLatch cdl = new CountDownLatch(1);
-		final AtomicReference<Throwable> throwableReference = new AtomicReference<Throwable>();
-		if (activity instanceof EmptyActivity) {
-			assertChange(new Callable<Boolean>() {
-				@Override
-				public Boolean call() throws Exception {
-					return ((EmptyActivity) activity).isBeforeSaveInstanceState();
-				}
-			});
-		}
-		activity.runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					runnable.run();
-				} catch (AssertionFailedError innerError) {
-					throwableReference.set(innerError);
-				} catch (Exception innerException) {
-					throwableReference.set(innerException);
-				} finally {
-					cdl.countDown();
-				}
-			}
-		});
-		if (!cdl.await(timeoutSeconds, TimeUnit.SECONDS)) {
-			throw new RuntimeException("runOnUiThreadSync Timeout!");
-		}
-		if (throwableReference.get() == null) {
-			return;
-		}
-		Throwable throwable = throwableReference.get();
-		if (throwable instanceof RuntimeException) {
-			throw (RuntimeException) throwable;
-		} else if (throwable instanceof AssertionFailedError) {
-			throw (AssertionFailedError) throwable;
-		} else {
-			throw new RuntimeException(throwable);
-		}
 	}
 
 	public static void setAutoStart(final Context context, final Boolean enable)

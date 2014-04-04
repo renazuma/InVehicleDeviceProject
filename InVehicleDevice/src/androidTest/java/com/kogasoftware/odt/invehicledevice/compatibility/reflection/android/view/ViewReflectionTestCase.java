@@ -121,7 +121,7 @@ public class ViewReflectionTestCase extends
 		assertEquals(l.toString(), rl.toString());
 	}
 
-	public void testSetOnSystemUiVisibilityChangeListener() throws Exception {
+	public void testSetOnSystemUiVisibilityChangeListener() throws Throwable {
 		final View v = new View(getInstrumentation().getTargetContext());
 		final AtomicInteger count1 = new AtomicInteger(0);
 		final AtomicInteger count2 = new AtomicInteger(0);
@@ -154,7 +154,7 @@ public class ViewReflectionTestCase extends
 		int prevCount1 = 0;
 		int prevCount2 = 0;
 
-		runTestOnUiThreadSync(new Runnable() {
+		runTestOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				a.setContentView(v);
@@ -166,7 +166,7 @@ public class ViewReflectionTestCase extends
 
 		// LOW_PROFILEに変更
 		expectedVisibility.set(LOW_PROFILE);
-		runTestOnUiThreadSync(new Runnable() {
+		runTestOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				ViewReflection.setSystemUiVisibility(v, LOW_PROFILE);
@@ -183,7 +183,7 @@ public class ViewReflectionTestCase extends
 
 		// VISIBLEに変更
 		expectedVisibility.set(VISIBLE);
-		runTestOnUiThreadSync(new Runnable() {
+		runTestOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				ViewReflection.setSystemUiVisibility(v, VISIBLE);
@@ -200,7 +200,7 @@ public class ViewReflectionTestCase extends
 
 		// LOW_PROFILEに変更
 		expectedVisibility.set(LOW_PROFILE);
-		runTestOnUiThreadSync(new Runnable() {
+		runTestOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				ViewReflection.setSystemUiVisibility(v, LOW_PROFILE);
@@ -216,7 +216,7 @@ public class ViewReflectionTestCase extends
 		prevCount1 = count1.get();
 
 		// listenerを変更
-		runTestOnUiThreadSync(new Runnable() {
+		runTestOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				ViewReflection.setOnSystemUiVisibilityChangeListener(v,
@@ -226,7 +226,7 @@ public class ViewReflectionTestCase extends
 
 		// VISIBLEに変更
 		expectedVisibility.set(VISIBLE);
-		runTestOnUiThreadSync(new Runnable() {
+		runTestOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				ViewReflection.setSystemUiVisibility(v, VISIBLE);
@@ -243,7 +243,7 @@ public class ViewReflectionTestCase extends
 
 		// LOW_PROFILEに変更
 		expectedVisibility.set(LOW_PROFILE);
-		runTestOnUiThreadSync(new Runnable() {
+		runTestOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				ViewReflection.setSystemUiVisibility(v, LOW_PROFILE);
@@ -260,7 +260,7 @@ public class ViewReflectionTestCase extends
 
 		// VISIBLEに変更
 		expectedVisibility.set(VISIBLE);
-		runTestOnUiThreadSync(new Runnable() {
+		runTestOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				ViewReflection.setSystemUiVisibility(v, VISIBLE);

@@ -43,7 +43,7 @@ public class FinishPhaseFragmentTestCase extends
 	}
 
 	public void testShow() throws Throwable {
-		runTestOnUiThreadSync(new Runnable() {
+		runTestOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				int id = 12345;
