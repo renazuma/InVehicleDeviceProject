@@ -94,12 +94,12 @@ public class DropBoxThread extends Thread {
 					.register(new Base64OutputStream(splitFileOutputStream,
 							Base64.DEFAULT | Base64.NO_CLOSE | Base64.NO_WRAP));
 			ByteStreams.copy(inputStream, base64OutputStream);
-			splitFileOutputStream.write("\"".getBytes(CHARSET));
 		} catch (Throwable e) {
 			closer.rethrow(e);
 		} finally {
 			closer.close();
 		}
+		splitFileOutputStream.write("\"".getBytes(CHARSET));
 	}
 
 	/**
