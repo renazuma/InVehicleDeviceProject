@@ -4,6 +4,9 @@ import com.google.android.apps.common.testing.testrunner.GoogleInstrumentationTe
 
 import android.os.Bundle;
 
+/**
+ * "https://code.google.com/p/dexmaker/issues/detail?id=2"
+ */
 public class DexMakerInstrumentationTestRunner extends
 		GoogleInstrumentationTestRunner {
 	@Override
