@@ -16,7 +16,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
@@ -36,7 +35,6 @@ public class LogService extends Service {
 			rawLogFiles);
 	private Boolean destroyed = false;
 	private Thread logcatThread = new EmptyThread();
-	private Thread dropboxThread = new EmptyThread();
 	private Thread compressThread = new EmptyThread();
 	private Thread uploadThread = new EmptyThread();
 	private final List<Closeable> closeables = new LinkedList<Closeable>();
@@ -130,14 +128,8 @@ public class LogService extends Service {
 			// ログが出力できない致命的なエラーのため、サービスをクラッシュさせ再起動させる
 			throw new RuntimeException("can't create log");
 		}
-		if (getPackageManager().checkPermission("android.permission.READ_LOGS",
-				getPackageName()) == PackageManager.PERMISSION_GRANTED) {
-			dropboxThread = new DropBoxThread(this,
-					dropboxSplitFileOutputStream);
-		}
 
 		logcatThread.start();
-		dropboxThread.start();
 		compressThread.start();
 		uploadThread.start();
 
@@ -212,7 +204,6 @@ public class LogService extends Service {
 		super.onDestroy();
 		Log.i(TAG, "onDestroy()");
 		logcatThread.interrupt();
-		dropboxThread.interrupt();
 		compressThread.interrupt();
 		uploadThread.interrupt();
 		for (Closeable closeable : closeables) {
