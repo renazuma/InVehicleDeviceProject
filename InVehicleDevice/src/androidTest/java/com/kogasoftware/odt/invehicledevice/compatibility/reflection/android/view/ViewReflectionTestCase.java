@@ -36,25 +36,43 @@ public class ViewReflectionTestCase extends
 		assertEquals(Optional.of(0), ViewReflection.SYSTEM_UI_FLAG_VISIBLE);
 	}
 
+	public void testStatusBarVisible() {
+		if (Build.VERSION.SDK_INT < 11) {
+			assertFalse(ViewReflection.STATUS_BAR_VISIBLE.isPresent());
+			return;
+		}
+		assertEquals(Optional.of(0), ViewReflection.STATUS_BAR_VISIBLE);
+	}
+
+	public void testStatusBarHidden() {
+		if (Build.VERSION.SDK_INT < 11) {
+			assertFalse(ViewReflection.STATUS_BAR_HIDDEN.isPresent());
+			return;
+		}
+		assertEquals(Optional.of(1), ViewReflection.STATUS_BAR_HIDDEN);
+	}
+
 	public void testSetSystemUiVisibility() {
 		View v = new View(getInstrumentation().getTargetContext());
-		if (Build.VERSION.SDK_INT < 14) {
+		if (Build.VERSION.SDK_INT < 11) {
 			assertFalse(ViewReflection.setSystemUiVisibility(v, 0).isPresent());
 			return;
 		}
-		assertTrue(ViewReflection.setSystemUiVisibility(v,
-				ViewReflection.SYSTEM_UI_FLAG_LOW_PROFILE.get()).isPresent());
-		assertEquals(ViewReflection.SYSTEM_UI_FLAG_LOW_PROFILE,
-				ViewReflection.getSystemUiVisibility(v));
-		assertTrue(ViewReflection.setSystemUiVisibility(v,
-				ViewReflection.SYSTEM_UI_FLAG_VISIBLE.get()).isPresent());
-		assertEquals(ViewReflection.SYSTEM_UI_FLAG_VISIBLE,
-				ViewReflection.getSystemUiVisibility(v));
+		Integer VISIBLE = ViewReflection.SYSTEM_UI_FLAG_VISIBLE
+				.or(ViewReflection.STATUS_BAR_VISIBLE.get());
+		Integer LOW_PROFILE = ViewReflection.SYSTEM_UI_FLAG_LOW_PROFILE
+				.or(ViewReflection.STATUS_BAR_HIDDEN.get());
+
+		assertTrue(ViewReflection.setSystemUiVisibility(v, LOW_PROFILE)
+				.isPresent());
+		assertEquals(LOW_PROFILE, ViewReflection.getSystemUiVisibility(v).get());
+		assertTrue(ViewReflection.setSystemUiVisibility(v, VISIBLE).isPresent());
+		assertEquals(VISIBLE, ViewReflection.getSystemUiVisibility(v).get());
 	}
 
 	public void testGetSystemUiVisibility() {
 		View v = new View(getInstrumentation().getTargetContext());
-		if (Build.VERSION.SDK_INT < 14) {
+		if (Build.VERSION.SDK_INT < 11) {
 			assertFalse(ViewReflection.getSystemUiVisibility(v).isPresent());
 			return;
 		}
@@ -62,7 +80,7 @@ public class ViewReflectionTestCase extends
 	}
 
 	public void testNewOnSystemUiVisibilityChangeListener() throws Exception {
-		if (Build.VERSION.SDK_INT < 14) {
+		if (Build.VERSION.SDK_INT < 11) {
 			assertFalse(ViewReflection.newOnSystemUiVisibilityChangeListener(
 					new OnSystemUiVisibilityChangeListenerReflection() {
 						@Override
@@ -143,14 +161,16 @@ public class ViewReflectionTestCase extends
 				outputVisibility.set(visibility);
 			}
 		};
-		if (Build.VERSION.SDK_INT < 14) {
+		if (Build.VERSION.SDK_INT < 11) {
 			assertFalse(ViewReflection.setOnSystemUiVisibilityChangeListener(v,
 					listener1).isPresent());
 			return;
 		}
 
-		final int VISIBLE = ViewReflection.SYSTEM_UI_FLAG_VISIBLE.get();
-		final int LOW_PROFILE = ViewReflection.SYSTEM_UI_FLAG_LOW_PROFILE.get();
+		final int VISIBLE = ViewReflection.SYSTEM_UI_FLAG_VISIBLE
+				.or(ViewReflection.STATUS_BAR_VISIBLE.get());
+		final int LOW_PROFILE = ViewReflection.SYSTEM_UI_FLAG_LOW_PROFILE
+				.or(ViewReflection.STATUS_BAR_HIDDEN.get());
 		int prevCount1 = 0;
 		int prevCount2 = 0;
 

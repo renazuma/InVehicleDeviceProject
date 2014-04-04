@@ -27,6 +27,20 @@ public class ViewReflection {
 					Integer.class);
 
 	/**
+	 * "http://developer.android.com/reference/android/view/View.html#STATUS_BAR_VISIBLE"
+	 */
+	public static final Optional<Integer> STATUS_BAR_VISIBLE = Reflections
+			.readStaticField(View.class, "STATUS_BAR_VISIBLE",
+					Integer.class);
+
+	/**
+	 * "http://developer.android.com/reference/android/view/View.html#STATUS_BAR_HIDDEN"
+	 */
+	public static final Optional<Integer> STATUS_BAR_HIDDEN = Reflections
+			.readStaticField(View.class, "STATUS_BAR_HIDDEN",
+					Integer.class);
+
+	/**
 	 * "http://developer.android.com/reference/android/view/View.html#setSystemUiVisibility()"
 	 */
 	public static Optional<Object> setSystemUiVisibility(final View view,
