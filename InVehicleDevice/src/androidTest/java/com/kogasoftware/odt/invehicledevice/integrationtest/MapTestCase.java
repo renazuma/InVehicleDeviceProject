@@ -32,7 +32,6 @@ public class MapTestCase extends
 
 	@Override
 	public void tearDown() throws Exception {
-		TestUtil.disableAutoStart(getInstrumentation().getContext());
 		solo.finishOpenedActivities();
 		super.tearDown();
 	}

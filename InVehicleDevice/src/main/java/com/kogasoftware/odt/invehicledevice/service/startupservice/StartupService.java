@@ -2,7 +2,6 @@ package com.kogasoftware.odt.invehicledevice.service.startupservice;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -16,7 +15,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.LocationManager;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
@@ -36,49 +34,34 @@ public class StartupService extends Service {
 	private static final String TAG = StartupService.class.getSimpleName();
 	public static final long CHECK_DEVICE_INTERVAL_MILLIS = 10 * 1000;
 	private final Handler handler = new Handler();
-	private final AtomicBoolean enabled = new AtomicBoolean(true);
 	private final BroadcastReceiver screenOnBroadcastReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			Log.i(TAG, "screen on");
-			handler.post(checkDeviceAndShowActivityCallback);
+			handler.post(startActivityIfReadyCallback);
 		}
 	};
-	private final IStartupService.Stub binder = new IStartupService.Stub() {
-		@Override
-		public void disable() {
-			setEnabled(false);
-		}
 
-		@Override
-		public void enable() {
-			setEnabled(true);
-		}
-	};
-	private final Runnable checkDeviceAndShowActivityCallback = new Runnable() {
+	private final Runnable startActivityIfReadyCallback = new Runnable() {
 		@Override
 		public void run() {
 			handler.removeCallbacks(this); // 重複を削除
-			checkDeviceAndStartActivity();
+			if (startActivityIfReady()) {
+				handler.postDelayed(checkDeviceAndAlertCallback, CHECK_DEVICE_INTERVAL_MILLIS);
+			} else {
+				handler.postDelayed(this, CHECK_DEVICE_INTERVAL_MILLIS);
+			}
 		}
 	};
 
-	public void checkDeviceAndStartActivity() {
-		// テスト中は起動しない
-		if (BuildConfig.DEBUG) {
-			ActivityManager activityManager = (ActivityManager) getSystemService(Activity.ACTIVITY_SERVICE);
-			for (RunningAppProcessInfo info : Objects.firstNonNull(
-					activityManager.getRunningAppProcesses(),
-					new ArrayList<RunningAppProcessInfo>())) {
-				for (String pkg : info.pkgList) {
-					if (pkg.startsWith("com.kogasoftware.odt.invehicledevice.test")) {
-						Log.i(TAG, "pkg=" + pkg + " found. start canceled.");
-						return;
-					}
-				}
-			}
+	private final Runnable checkDeviceAndAlertCallback = new Runnable() {
+		@Override
+		public void run() {
+			checkDeviceAndAlert();
+			handler.postDelayed(this, CHECK_DEVICE_INTERVAL_MILLIS);
 		}
-
+	};
+	public Boolean checkDeviceAndAlert() {
 		// 機内モードは強制的にOFF
 		try {
 			AirplaneModeSetting.set(this, false);
@@ -86,23 +69,25 @@ public class StartupService extends Service {
 			BigToast.makeText(this, "機内モードをOFFにしてください", Toast.LENGTH_LONG)
 					.show();
 			Log.w(TAG, e);
-			return;
-		}
-
-		if (!enabled.get()) {
-			Log.i(TAG, "waiting for startup enabled");
-			return;
+			return false;
 		}
 
 		if (!isDeviceReady()) {
-			return;
+			return false;
 		}
-
+		return true;
+	}
+	
+	public Boolean startActivityIfReady() {
+		if (!checkDeviceAndAlert()) {
+			return false;
+		}
 		Intent startIntent = new Intent(StartupService.this,
 				InVehicleDeviceActivity.class);
 		startIntent.setAction(Intent.ACTION_DEFAULT);
 		startIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		startActivity(startIntent);
+		return true;
 	}
 
 	public Boolean isDeviceReady() {
@@ -197,7 +182,7 @@ public class StartupService extends Service {
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		return binder;
+		return null;
 	}
 
 	@Override
@@ -211,7 +196,8 @@ public class StartupService extends Service {
 	public void onDestroy() {
 		Log.i(TAG, "onDestroy()");
 		getApplicationContext().unregisterReceiver(screenOnBroadcastReceiver);
-		handler.removeCallbacks(checkDeviceAndShowActivityCallback);
+		handler.removeCallbacks(startActivityIfReadyCallback);
+		handler.removeCallbacks(checkDeviceAndAlertCallback);
 	}
 
 	@Override
@@ -219,23 +205,10 @@ public class StartupService extends Service {
 		super.onStartCommand(intent, flags, startId);
 		Log.i(TAG, "onStartCommand(" + intent + ", " + flags + ", " + startId
 				+ ")");
-		if (intent != null) {
-			Bundle extras = intent.getExtras();
-			if (extras != null
-					&& extras.containsKey(Intents.EXTRA_BOOLEAN_ENABLED)) {
-				setEnabled(extras.getBoolean(Intents.EXTRA_BOOLEAN_ENABLED));
-			}
-		}
-		handler.post(checkDeviceAndShowActivityCallback);
+		handler.post(startActivityIfReadyCallback);
 		startService(new Intent(this, VoiceService.class));
 		startService(new Intent(this, LogService.class));
 		startService(new Intent(this, TrackingService.class));
 		return Service.START_STICKY;
-	}
-
-	private void setEnabled(Boolean value) {
-		enabled.set(value);
-		Log.i(TAG, "Startup enabled=" + value);
-		handler.post(checkDeviceAndShowActivityCallback);
 	}
 }

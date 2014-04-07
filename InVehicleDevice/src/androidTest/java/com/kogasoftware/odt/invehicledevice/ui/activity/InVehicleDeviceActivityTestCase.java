@@ -63,7 +63,6 @@ public class InVehicleDeviceActivityTestCase extends
 			throws Exception {
 		String message = getInstrumentation().getTargetContext().getString(
 				R.string.failed_to_connect_operator_tool);
-		TestUtil.disableAutoStart(getInstrumentation().getContext());
 		TestUtil.clearLocalStorage(getInstrumentation());
 		TestUtil.setApiClient(new EmptyInVehicleDeviceApiClient() {
 			@Override
@@ -84,7 +83,6 @@ public class InVehicleDeviceActivityTestCase extends
 			throws Exception { // TODO: 自動起動テストができるようになったら再実装
 		String message = getInstrumentation().getTargetContext().getString(
 				R.string.failed_to_connect_operator_tool);
-		TestUtil.disableAutoStart(getInstrumentation().getContext());
 		TestUtil.clearLocalStorage(getInstrumentation());
 		final AtomicBoolean fail = new AtomicBoolean(false);
 		TestUtil.setApiClient(new EmptyInVehicleDeviceApiClient() {
@@ -115,7 +113,6 @@ public class InVehicleDeviceActivityTestCase extends
 		fail.set(true);
 
 		// Activityの再起動を待つ
-		TestUtil.enableAutoStart(getInstrumentation().getContext());
 		Thread.sleep((int) (StartupService.CHECK_DEVICE_INTERVAL_MILLIS));
 		TestUtil.assertShow(getInstrumentation().getTargetContext(),
 				InVehicleDeviceActivity.class);
@@ -133,7 +130,6 @@ public class InVehicleDeviceActivityTestCase extends
 			throws Exception {
 		String message = getInstrumentation().getTargetContext().getString(
 				R.string.failed_to_connect_operator_tool);
-		TestUtil.disableAutoStart(getInstrumentation().getContext());
 		TestUtil.clearLocalStorage(getInstrumentation());
 		TestUtil.setApiClient(new EmptyInVehicleDeviceApiClient() {
 			@Override
@@ -165,7 +161,6 @@ public class InVehicleDeviceActivityTestCase extends
 	}
 
 	public void assertFixUserRotation(Integer request) throws Throwable {
-		TestUtil.disableAutoStart(getInstrumentation().getContext());
 		for (String USER_ROTATION : SettingsReflection.SystemReflection.USER_ROTATION
 				.asSet()) {
 			final ContentResolver cr = getInstrumentation().getTargetContext()

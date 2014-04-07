@@ -104,7 +104,6 @@ public class PassengerRecordArrayAdapterTestCase extends
 		super.setUp();
 		TestUtil.setApiClient(apiClient);
 		a = getActivity();
-		TestUtil.disableAutoStart(a);
 		sccdl = new CountDownLatch(1);
 		a.runOnUiThread(new Runnable() {
 			@Override

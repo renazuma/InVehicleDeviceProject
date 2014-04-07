@@ -7,7 +7,6 @@ import java.util.WeakHashMap;
 
 import android.app.FragmentManager;
 import android.content.Context;
-import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;

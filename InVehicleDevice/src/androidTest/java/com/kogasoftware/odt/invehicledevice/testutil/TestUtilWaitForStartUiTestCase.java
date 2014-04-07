@@ -52,7 +52,6 @@ public class TestUtilWaitForStartUiTestCase extends
 		super.setUp();
 		c = getInstrumentation().getContext();
 		tc = getInstrumentation().getTargetContext();
-		TestUtil.disableAutoStart(c);
 	}
 
 	@Override

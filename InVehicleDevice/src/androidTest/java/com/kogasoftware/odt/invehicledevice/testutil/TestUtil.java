@@ -29,7 +29,6 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
-import android.os.RemoteException;
 import android.os.StrictMode;
 import android.view.Display;
 import android.view.KeyEvent;
@@ -43,7 +42,6 @@ import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClientFactory;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage;
-import com.kogasoftware.odt.invehicledevice.service.startupservice.IStartupService;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 import com.robotium.solo.Solo;
 
@@ -136,48 +134,6 @@ public class TestUtil {
 		return true;
 	}
 
-	public static void setAutoStart(final Context context, final Boolean enable)
-			throws InterruptedException {
-		Thread t = new Thread() {
-			@Override
-			public void run() {
-				Looper.prepare();
-				final Looper myLooper = Looper.myLooper();
-				ServiceConnection serviceConnection = new ServiceConnection() {
-					@Override
-					public void onServiceConnected(ComponentName componentName,
-							IBinder service) {
-						IStartupService startupService = IStartupService.Stub
-								.asInterface(service);
-						myLooper.quit();
-						try {
-							if (enable) {
-								startupService.enable();
-							} else {
-								startupService.disable();
-							}
-
-						} catch (RemoteException e) {
-						}
-					}
-
-					@Override
-					public void onServiceDisconnected(
-							ComponentName componentName) {
-						myLooper.quit();
-					}
-				};
-
-				context.bindService(
-						new Intent(IStartupService.class.getName()),
-						serviceConnection, Context.BIND_AUTO_CREATE);
-				Looper.loop();
-			}
-		};
-		t.start();
-		t.join();
-	}
-
 	public static ComponentName getTopActivity(Context c) {
 		ActivityManager activityManager = (ActivityManager) c
 				.getSystemService(Activity.ACTIVITY_SERVICE);
@@ -217,16 +173,6 @@ public class TestUtil {
 	public static void assertHide(Context context,
 			Class<? extends Activity> activityClass) {
 		assertChangeVisibility(context, activityClass, false);
-	}
-
-	public static void disableAutoStart(Context context)
-			throws InterruptedException {
-		setAutoStart(context, false);
-	}
-
-	public static void enableAutoStart(Context context)
-			throws InterruptedException {
-		setAutoStart(context, true);
 	}
 
 	public static void enableStrictMode() {
@@ -295,7 +241,6 @@ public class TestUtil {
 	public static <T> void assertEmptyObject(Instrumentation instrumentation,
 			Class<T> c, Boolean bigObject) throws Exception {
 		Context context = instrumentation.getContext();
-		TestUtil.disableAutoStart(context);
 		try {
 			instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
 			instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_HOME);

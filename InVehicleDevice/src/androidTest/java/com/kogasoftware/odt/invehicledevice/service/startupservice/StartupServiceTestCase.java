@@ -89,7 +89,7 @@ public class StartupServiceTestCase extends ServiceTestCase<StartupService> {
 	public void xtestIsDeviceReady_起動条件がそろっている場合() {
 		assertTrue(getService().isDeviceReady());
 		getService().onCreate();
-		getService().checkDeviceAndStartActivity();
+		assertTrue(getService().startActivityIfReady());
 		TestUtil.assertShow(getSystemContext(), InVehicleDeviceActivity.class);
 	}
 

@@ -67,11 +67,7 @@
         <action android:name="com.kogasoftware.odt.invehicledevice.service.logservice.ILogService"/>
       </intent-filter>
     </service>
-    <service android:name=".service.startupservice.StartupService" android:process=":StartupService" android:exported="true">
-      <intent-filter>
-        <action android:name="com.kogasoftware.odt.invehicledevice.service.startupservice.IStartupService"/>
-      </intent-filter>
-    </service>
+    <service android:name=".service.startupservice.StartupService" android:process=":StartupService" android:exported="false"/>
     <service android:name=".service.trackingservice.TrackingService" android:process=":TrackingService" android:exported="false" />
     <service android:name=".service.voiceservice.VoiceService" android:process=":VoiceService" android:exported="false" />
     <meta-data android:name="com.google.android.maps.v2.API_KEY" android:value="@string/google_maps_api_key_debug"/>

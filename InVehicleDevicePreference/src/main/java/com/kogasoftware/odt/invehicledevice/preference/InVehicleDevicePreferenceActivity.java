@@ -14,19 +14,14 @@ import android.app.Dialog;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.IBinder;
 import android.os.Messenger;
-import android.os.RemoteException;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -54,9 +49,6 @@ import com.kogasoftware.odt.invehicledevice.apiclient.DefaultInVehicleDeviceApiC
 import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.InVehicleDevice;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.broadcast.Broadcasts;
-import com.kogasoftware.odt.invehicledevice.service.startupservice.IStartupService;
-import com.kogasoftware.odt.invehicledevice.service.startupservice.Intents;
 import com.kogasoftware.odt.invehicledevice.service.voicedownloaderservice.VoiceDownloaderService;
 
 public class InVehicleDevicePreferenceActivity extends PreferenceActivity
@@ -72,40 +64,11 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 			DEFAULT_URL);
 	private final Object extractVoiceFileLock = new Object();
 	private final List<Dialog> dialogs = Lists.newLinkedList();
-	private final ServiceConnection serviceConnection = new ServiceConnection() {
-		@Override
-		public void onServiceConnected(ComponentName componentName,
-				IBinder service) {
-			Log.i(TAG, "onServiceConnected");
-			startupService = IStartupService.Stub.asInterface(service);
-			disableMainApplication();
-		}
-
-		@Override
-		public void onServiceDisconnected(ComponentName componentName) {
-			Log.i(TAG, "onServiceDisconnected");
-		}
-	};
-
 	private SharedPreferences preferences = null;
-	private IStartupService startupService = null;
 	private Boolean destroyed = false;
 	private IDownloaderService downloaderService = null;
 	private IStub downloaderClientStub = null;
 	private Preference voiceFileStatePreference = null;
-
-	private void disableMainApplication() {
-		if (startupService != null) {
-			try {
-				startupService.disable();
-			} catch (RemoteException e) {
-				Log.w(TAG, e);
-			}
-		}
-		Intent exitIntent = new Intent();
-		exitIntent.setAction(Broadcasts.ACTION_EXIT);
-		getApplicationContext().sendBroadcast(exitIntent);
-	}
 
 	private void dismissAllDialogs() {
 		for (Dialog dialog : dialogs) {
@@ -129,12 +92,6 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 				.setPositiveButton(android.R.string.ok, null)
 				.setMessage(message).show();
 		dialogs.add(alertDialog);
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-		disableMainApplication();
 	}
 
 	void startVoiceDownloaderServiceIfRequired() {
@@ -194,20 +151,6 @@ public class InVehicleDevicePreferenceActivity extends PreferenceActivity
 		});
 
 		updateSummary();
-	}
-
-	@Override
-	public void onStart() {
-		super.onStart();
-		Intent intent = new Intent(IStartupService.class.getName());
-		intent.putExtra(Intents.EXTRA_BOOLEAN_ENABLED, false);
-		bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-	}
-
-	@Override
-	public void onStop() {
-		super.onStop();
-		unbindService(serviceConnection);
 	}
 
 	@Override
