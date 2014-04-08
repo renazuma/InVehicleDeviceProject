@@ -9,7 +9,10 @@
         android:layout_height="fill_parent"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:text="@string/memo" />
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:text="@string/memo"
+        android:textSize="15sp" />
 
     <TextView
         android:id="@+id/passenger_count_text_view"

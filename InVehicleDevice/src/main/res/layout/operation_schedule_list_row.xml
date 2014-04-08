@@ -38,8 +38,8 @@
         android:id="@+id/operation_schedule_list_passenger_count"
         android:layout_width="105sp"
         android:layout_height="60sp"
-        android:layout_toLeftOf="@+id/operation_schedule_list_map_button"
         android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/operation_schedule_list_map_button"
         android:orientation="vertical" >
 
         <TextView
@@ -78,18 +78,17 @@
         android:textSize="28sp" />
 
     <LinearLayout
-        android:id="@+id/operation_schedule_list_passenger_records"	
+        android:id="@+id/operation_schedule_list_passenger_records"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
+        android:layout_below="@+id/operation_schedule_list_arrival_departure"
         android:layout_marginLeft="20sp"
         android:layout_marginRight="14sp"
-        android:padding="2sp"
-        android:layout_below="@+id/operation_schedule_list_arrival_departure"
         android:background="@drawable/operation_schedule_list_note_border"
         android:orientation="vertical"
-        android:visibility="gone"
-         />
+        android:padding="2sp"
+        android:visibility="gone" />
 
     <Button
         android:id="@+id/operation_schedule_list_map_button"
@@ -97,6 +96,9 @@
         android:layout_height="60sp"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:text="@string/map" />
+        android:paddingLeft="21dp"
+        android:paddingRight="21dp"
+        android:text="@string/map"
+        android:textSize="22sp" />
 
 </RelativeLayout>
