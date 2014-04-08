@@ -6,6 +6,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 
 import com.google.common.base.Throwables;
+import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.testutil.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.testutil.TestUtil;
 import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
@@ -68,8 +69,8 @@ public class FlickUnneededListViewTestCase extends
 		assertTrue(solo.searchText("bar", true));
 		assertTrue(solo.searchText("baz", true));
 
-		Button up = solo.getButton("△ 上へ移動");
-		Button down = solo.getButton("▽ 下へ移動");
+		Button up = solo.getButton(solo.getString(R.string.scroll_up));
+		Button down = solo.getButton(solo.getString(R.string.scroll_down));
 
 		assertFalse(up.isEnabled());
 		assertFalse(down.isEnabled());
@@ -89,8 +90,8 @@ public class FlickUnneededListViewTestCase extends
 			}
 		});
 
-		Button up = solo.getButton("△ 上へ移動");
-		Button down = solo.getButton("▽ 下へ移動");
+		Button up = solo.getButton(solo.getString(R.string.scroll_up));
+		Button down = solo.getButton(solo.getString(R.string.scroll_down));
 
 		assertEnabled(up, false);
 		assertEnabled(down, true);

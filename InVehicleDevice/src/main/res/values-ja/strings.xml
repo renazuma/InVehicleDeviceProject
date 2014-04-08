@@ -22,8 +22,8 @@
     <string name="next_platform_is">次は</string>
     <string name="no">いいえ</string>
     <string name="present_time_format">HH:mm</string>
-    <string name="scroll_down">▽ 下へ移動</string>
-    <string name="scroll_up">△ 上へ移動</string>
+    <string name="scroll_down">⇩</string>
+    <string name="scroll_up">⇧</string>
     <string name="yes">はい</string>
     <string name="operation_schedule_was_changed">運行予定が変更されました</string>
     <string name="cancel">やめる</string>
