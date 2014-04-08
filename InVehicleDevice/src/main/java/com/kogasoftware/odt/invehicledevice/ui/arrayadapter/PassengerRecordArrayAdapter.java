@@ -240,17 +240,14 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 	}
 
 	public void updatePassengerRecord(PassengerRecord passengerRecord) {
-		Boolean updated = false;
 		for (int i = 0; i < getCount(); i++) {
 			PassengerRecord oldPassengerRecord = getItem(i);
 			if (oldPassengerRecord.getId().equals(passengerRecord.getId())) {
 				remove(oldPassengerRecord);
 				insert(passengerRecord, i);
-				updated = true;
+				notifyDataSetChanged();
+				break;
 			}
-		}
-		if (updated) {
-			notifyDataSetChanged();
 		}
 	}
 }

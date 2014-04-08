@@ -422,15 +422,12 @@ public class OperationScheduleArrayAdapter extends
 	}
 
 	public void updatePassengerRecord(PassengerRecord passengerRecord) {
-		Boolean updated = false;
 		for (int i = 0; i < passengerRecords.size(); i++) {
 			if (passengerRecords.get(i).getId().equals(passengerRecord.getId())) {
 				passengerRecords.set(i, passengerRecord);
-				updated = true;
+				notifyDataSetChanged();
+				break;
 			}
-		}
-		if (updated) {
-			notifyDataSetChanged();
 		}
 	}
 	
