@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TreeSet;
 
 import android.app.Activity;
 import android.app.FragmentManager;
@@ -24,6 +25,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
@@ -50,7 +52,7 @@ public class OperationScheduleArrayAdapter extends
 	private final LayoutInflater layoutInflater;
 	private final Activity activity;
 	private final InVehicleDeviceService service;
-	private final List<PassengerRecord> passengerRecords;
+	private final TreeSet<PassengerRecord> passengerRecords = new TreeSet<PassengerRecord>(PassengerRecord.DEFAULT_COMPARATOR);
 	private Boolean showPassengerRecords = false;
 	private Boolean operationScheduleArrivalDepartureChanged = false;
 	private final PassengerRecordLogic passengerRecordLogic;
@@ -270,7 +272,7 @@ public class OperationScheduleArrayAdapter extends
 		this.service = service;
 		this.passengerRecordLogic = new PassengerRecordLogic(service);
 		this.operationScheduleLogic = new OperationScheduleLogic(service);
-		this.passengerRecords = passengerRecords;
+		this.passengerRecords.addAll(passengerRecords);
 		this.layoutInflater = (LayoutInflater) activity
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
@@ -421,10 +423,11 @@ public class OperationScheduleArrayAdapter extends
 		notifyDataSetChanged();
 	}
 
-	public void updatePassengerRecord(PassengerRecord passengerRecord) {
-		for (int i = 0; i < passengerRecords.size(); i++) {
-			if (passengerRecords.get(i).getId().equals(passengerRecord.getId())) {
-				passengerRecords.set(i, passengerRecord);
+	public void updatePassengerRecord(PassengerRecord newPassengerRecord) {
+		for (PassengerRecord oldPassengerRecord : Lists.newArrayList(passengerRecords)) {
+			if (oldPassengerRecord.getId().equals(newPassengerRecord.getId())) {
+				passengerRecords.remove(oldPassengerRecord);
+				passengerRecords.add(newPassengerRecord);
 				notifyDataSetChanged();
 				break;
 			}
