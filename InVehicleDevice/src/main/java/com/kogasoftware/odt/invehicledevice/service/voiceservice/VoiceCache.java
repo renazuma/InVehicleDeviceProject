@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -13,12 +14,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.SerializationException;
+
 import com.kogasoftware.odt.apiclient.Serializations;
 
 import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Objects;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;
@@ -31,6 +35,7 @@ import com.kogasoftware.openjtalk.OpenJTalk;
  */
 public class VoiceCache {
 	private static final String TAG = VoiceCache.class.getSimpleName();
+	private static final String EXT = ".wav";
 
 	private static class InstanceState implements Serializable {
 		public InstanceState() {
@@ -111,15 +116,7 @@ public class VoiceCache {
 		File voiceDirectory = new File(dataDirectory + s + "voice" + s
 				+ "mei_normal");
 		File dictionaryDirectory = new File(dataDirectory + s + "dictionary");
-		File outputDirectoryBase = context.getExternalFilesDir("open_jtalk");
-		if (outputDirectoryBase == null) {
-			throw new IOException(
-					"context.getExternalFilesDir(\"open_jtalk\") is null");
-		}
-		outputDirectory = new File(outputDirectoryBase, "output");
-		if (!outputDirectory.exists() && !outputDirectory.mkdirs()) {
-			throw new IOException("!\"" + outputDirectory + "\".mkdirs()");
-		}
+		outputDirectory = getOutputDirectory(context);
 		instanceStateFile = new File(outputDirectory + s + "index.serialized");
 
 		openJTalk = new OpenJTalk(voiceDirectory, dictionaryDirectory,
@@ -129,6 +126,42 @@ public class VoiceCache {
 		sequence.set(instanceState.sequence.get());
 		for (Entry<String, File> entry : instanceState.map.entrySet()) {
 			cache.put(entry.getKey(), entry.getValue());
+		}
+
+		removeNotIndexedFiles();
+	}
+
+	@VisibleForTesting
+	static File getOutputDirectory(Context context) throws IOException {
+		File outputDirectoryBase = context.getExternalFilesDir("open_jtalk");
+		if (outputDirectoryBase == null) {
+			throw new IOException(
+					"context.getExternalFilesDir(\"open_jtalk\") is null");
+		}
+		File outputDirectory = new File(outputDirectoryBase, "output");
+		if (!outputDirectory.exists() && !outputDirectory.mkdirs()) {
+			throw new IOException("!\"" + outputDirectory + "\".mkdirs()");
+		}
+		return outputDirectory;
+	}
+
+	/**
+	 * indexに入っていないファイルを削除
+	 */
+	void removeNotIndexedFiles() {
+		Collection<File> cachedFiles = cache.asMap().values();
+		for (File file : Objects.firstNonNull(outputDirectory.listFiles(),
+				new File[] {})) {
+			if (!file.isFile() || !file.getName().endsWith(EXT)) {
+				continue;
+			}
+			if (cachedFiles.contains(file)) {
+				continue;
+			}
+			Log.i(TAG, "\"" + file + "\" is not indexed, delete");
+			if (!file.delete()) {
+				Log.w(TAG, "!\"" + file + "\".delete()");
+			}
 		}
 	}
 
@@ -159,7 +192,7 @@ public class VoiceCache {
 
 	protected File load(String voice) throws IOException {
 		File file = new File(outputDirectory + File.separator
-				+ sequence.getAndIncrement() + ".wav");
+				+ sequence.getAndIncrement() + EXT);
 		openJTalk.synthesis(file, voice);
 		dirty.set(true);
 		return file;

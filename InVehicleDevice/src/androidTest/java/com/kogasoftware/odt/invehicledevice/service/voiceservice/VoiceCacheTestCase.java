@@ -2,18 +2,19 @@ package com.kogasoftware.odt.invehicledevice.service.voiceservice;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.apache.commons.io.FileUtils;
 
 import android.content.Context;
 import android.media.MediaPlayer;
-import android.preference.PreferenceManager;
+import android.test.AndroidTestCase;
 
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceCache;
-import com.kogasoftware.odt.invehicledevice.testutil.EmptyActivityInstrumentationTestCase2;
 
-public class VoiceCacheTestCase extends EmptyActivityInstrumentationTestCase2 {
-	AtomicBoolean once = new AtomicBoolean(true);
+public class VoiceCacheTestCase extends AndroidTestCase {
+	final AtomicBoolean once = new AtomicBoolean(true);
 	int bytes = -1;
 
 	protected void assertMediaFile(File wavFile) throws Exception,
@@ -29,8 +30,7 @@ public class VoiceCacheTestCase extends EmptyActivityInstrumentationTestCase2 {
 
 	public void callTestGet_キャッシュ境界x2(double b, int win, String s1, String s2)
 			throws Exception {
-		VoiceCache vc = new VoiceCache(getInstrumentation().getTargetContext(),
-				(int) b);
+		VoiceCache vc = new VoiceCache(getContext(), (int) b);
 
 		File f1 = vc.get(s1);
 		assertTrue(f1.exists());
@@ -66,8 +66,7 @@ public class VoiceCacheTestCase extends EmptyActivityInstrumentationTestCase2 {
 	}
 
 	protected void callTestGet_キャッシュ不可能(int bytes) throws Exception {
-		VoiceCache vc = new VoiceCache(getInstrumentation().getTargetContext(),
-				bytes);
+		VoiceCache vc = new VoiceCache(getContext(), bytes);
 		File f1 = vc.get("こんにちは");
 		assertFalse(f1.exists());
 
@@ -78,20 +77,13 @@ public class VoiceCacheTestCase extends EmptyActivityInstrumentationTestCase2 {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-
+		Context c = getContext();
 		if (once.getAndSet(false)) {
-			Context c = getInstrumentation().getTargetContext();
 			VoiceCache vc = new VoiceCache(c, Integer.MAX_VALUE);
 			File f = vc.get("こんにちは");
 			bytes = (int) f.length();
-			PreferenceManager
-					.getDefaultSharedPreferences(c)
-					.edit()
-					.putBoolean(
-							SharedPreferencesKeys.CLEAR_VOICE_CACHE,
-							true).commit();
-			new VoiceCache(c, Integer.MAX_VALUE);
 		}
+		FileUtils.deleteDirectory(VoiceCache.getOutputDirectory(c));
 	}
 
 	@Override
@@ -115,5 +107,18 @@ public class VoiceCacheTestCase extends EmptyActivityInstrumentationTestCase2 {
 
 		callTestGet_キャッシュ境界x2(bytes, 2, "ねぎ", "だいこんじゃがいも");
 		callTestGet_キャッシュ境界x2(bytes * 1.2, 2, "にんじん", "ハンバーガーデミグラスソース");
+	}
+
+	public void testRemoveNotIndexedFiles() throws IOException,
+			ExecutionException {
+		VoiceCache vc = new VoiceCache(getContext(), Integer.MAX_VALUE);
+		File wav1File = vc.get("あ");
+		File wav2File = new File(wav1File.getParentFile(), "dummy.wav");
+		FileUtils.copyFile(wav1File, wav2File);
+		assertTrue(wav1File.exists());
+		assertTrue(wav2File.exists());
+		vc.removeNotIndexedFiles();
+		assertTrue(wav1File.exists());
+		assertFalse(wav2File.exists());
 	}
 }
