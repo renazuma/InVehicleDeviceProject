@@ -48,9 +48,10 @@
     <Button
         android:id="@+id/platform_memo_button"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
+        android:layout_marginTop="10dp"
         android:background="@android:drawable/btn_default"
         android:text="@string/platform_memo"
         android:textSize="20sp" />
