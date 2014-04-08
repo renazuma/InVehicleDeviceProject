@@ -315,7 +315,7 @@ public class OperationScheduleArrayAdapter extends
 						passengerRecordsView.addView(createPassengerRecordRow(
 								operationSchedule, passengerRecord, false));
 					}
-					getOffPassengerCount += 1;
+					getOffPassengerCount += passengerRecord.getPassengerCount();
 				}
 			}
 		}
@@ -330,7 +330,7 @@ public class OperationScheduleArrayAdapter extends
 						passengerRecordsView.addView(createPassengerRecordRow(
 								operationSchedule, passengerRecord, true));
 					}
-					getOnPassengerCount += 1;
+					getOnPassengerCount += passengerRecord.getPassengerCount();
 				}
 			}
 		}
