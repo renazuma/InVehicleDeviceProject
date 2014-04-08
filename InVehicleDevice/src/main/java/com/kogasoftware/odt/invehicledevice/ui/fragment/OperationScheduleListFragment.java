@@ -46,6 +46,10 @@ public class OperationScheduleListFragment extends ApplicationFragment<State>
 				operation));
 	}
 
+	public OperationScheduleListFragment() {
+		setRemoveOnUpdateOperation(true);
+	}
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
