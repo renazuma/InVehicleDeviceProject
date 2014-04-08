@@ -14,8 +14,8 @@
 
     <ImageView
         android:id="@+id/select_mark_image_view"
-        android:layout_width="60sp"
-        android:layout_height="60sp"
+        android:layout_width="59sp"
+        android:layout_height="59sp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_centerVertical="true"
