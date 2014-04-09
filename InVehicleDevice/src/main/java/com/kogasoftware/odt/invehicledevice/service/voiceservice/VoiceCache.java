@@ -94,13 +94,18 @@ public class VoiceCache {
 		cache = CacheBuilder.newBuilder().weigher(new Weigher<String, File>() {
 			@Override
 			public int weigh(String voice, File file) {
-				return (int) file.length();
+				long length = file.length();
+				return (int) length;
 			}
 		}).removalListener(new RemovalListener<String, File>() {
 			@Override
 			public void onRemoval(RemovalNotification<String, File> notification) {
-				if (!notification.getValue().delete()) {
-					Log.w(TAG, "!\"" + notification.getValue() + "\".delete()");
+				File file = notification.getValue();
+				if (!file.delete()) {
+					Log.w(TAG, "!\"" + file + "\".delete()");
+				}
+				if (!new File(file.getAbsolutePath() + ".log").delete()) {
+					Log.w(TAG, "!\"" + file + ".log\".delete()");
 				}
 			}
 		}).maximumWeight(maxBytes).build();
@@ -161,6 +166,9 @@ public class VoiceCache {
 			Log.i(TAG, "\"" + file + "\" is not indexed, delete");
 			if (!file.delete()) {
 				Log.w(TAG, "!\"" + file + "\".delete()");
+			}
+			if (!new File(file.getAbsolutePath() + ".log").delete()) {
+				Log.w(TAG, "!\"" + file + ".log\".delete()");
 			}
 		}
 	}
