@@ -77,6 +77,7 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.threa
 import com.kogasoftware.odt.invehicledevice.service.startupservice.StartupService;
 import com.kogasoftware.odt.invehicledevice.service.trackingservice.TrackingIntent;
 import com.kogasoftware.odt.invehicledevice.ui.BigToast;
+import com.kogasoftware.odt.invehicledevice.ui.frametask.navigation.tilepipeline.TileBitmapCleaner;
 
 public class InVehicleDeviceService extends Service implements
 		OnPauseActivityListener {
@@ -563,6 +564,10 @@ public class InVehicleDeviceService extends Service implements
 			scheduledExecutorService.scheduleWithFixedDelay(
 					networkStatusLogger, 0,
 					NetworkStatusLogger.RUN_INTERVAL_MILLIS,
+					TimeUnit.MILLISECONDS);
+			scheduledExecutorService.scheduleWithFixedDelay(
+					new TileBitmapCleaner(this), 0,
+					TileBitmapCleaner.RUN_INTERVAL_MILLIS,
 					TimeUnit.MILLISECONDS);
 		} catch (RejectedExecutionException e) {
 			Log.w(TAG, e);

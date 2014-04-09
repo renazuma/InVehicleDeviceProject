@@ -12,6 +12,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.ObjectUtils.Null;
 import org.apache.commons.lang3.tuple.Pair;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
 
@@ -68,10 +69,14 @@ public class TilePipeline implements EventDispatcher.OnExitListener {
 	private final PipeExchanger<Tile, Null, TileBitmapFile> webTilePipe;
 	private final PipeExchanger<Tile, TileBitmapFile, Bitmap> fileTilePipe;
 	private final InVehicleDeviceService service;
+	
+	public static File getOutputDirectory(Context context) {
+		return context.getExternalFilesDir("tile");
+	}
 
 	public TilePipeline(InVehicleDeviceService service) {
 		this.service = service;
-		File outputDirectory = service.getExternalFilesDir("tile");
+		File outputDirectory = getOutputDirectory(service);
 		webTilePipe = new WebTilePipe(service, startPipeQueue, filePipeQueue,
 				onDropListener, outputDirectory);
 		fileTilePipe = new FileTilePipe(service, filePipeQueue,
