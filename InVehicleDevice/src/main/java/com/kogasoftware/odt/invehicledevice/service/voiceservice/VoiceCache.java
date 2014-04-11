@@ -36,6 +36,7 @@ import com.kogasoftware.openjtalk.OpenJTalk;
 public class VoiceCache {
 	private static final String TAG = VoiceCache.class.getSimpleName();
 	private static final String EXT = ".wav";
+	private static final String LOG_EXT = ".log";
 
 	private static class InstanceState implements Serializable {
 		public InstanceState() {
@@ -104,8 +105,8 @@ public class VoiceCache {
 				if (!file.delete()) {
 					Log.w(TAG, "!\"" + file + "\".delete()");
 				}
-				if (!new File(file.getAbsolutePath() + ".log").delete()) {
-					Log.w(TAG, "!\"" + file + ".log\".delete()");
+				if (!new File(file.getAbsolutePath() + LOG_EXT).delete()) {
+					Log.w(TAG, "!\"" + file + LOG_EXT + "\".delete()");
 				}
 			}
 		}).maximumWeight(maxBytes).build();
@@ -130,7 +131,10 @@ public class VoiceCache {
 		InstanceState instanceState = loadInstanceState(instanceStateFile);
 		sequence.set(instanceState.sequence.get());
 		for (Entry<String, File> entry : instanceState.map.entrySet()) {
-			cache.put(entry.getKey(), entry.getValue());
+			File file = entry.getValue();
+			if (file.exists()) {
+				cache.put(entry.getKey(), file);
+			}
 		}
 
 		removeNotIndexedFiles();
@@ -157,18 +161,15 @@ public class VoiceCache {
 		Collection<File> cachedFiles = cache.asMap().values();
 		for (File file : Objects.firstNonNull(outputDirectory.listFiles(),
 				new File[] {})) {
-			if (!file.isFile() || !file.getName().endsWith(EXT)) {
+			if (!file.isFile() || !(file.getName().endsWith(EXT) || file.getName().endsWith(LOG_EXT))) {
 				continue;
 			}
-			if (cachedFiles.contains(file)) {
+			if (cachedFiles.contains(file)) { // EXT_LOGのファイルは必ず削除されるが、気にしないこととする
 				continue;
 			}
 			Log.i(TAG, "\"" + file + "\" is not indexed, delete");
 			if (!file.delete()) {
 				Log.w(TAG, "!\"" + file + "\".delete()");
-			}
-			if (!new File(file.getAbsolutePath() + ".log").delete()) {
-				Log.w(TAG, "!\"" + file + ".log\".delete()");
 			}
 		}
 	}
