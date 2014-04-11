@@ -15,7 +15,7 @@ public class TileBitmapCleaner implements Runnable {
 	private final Integer limit;
 
 	public TileBitmapCleaner(Context context) {
-		this(TilePipeline.getOutputDirectory(context), 100 * 1024 * 1024);
+		this(TilePipeline.getOutputDirectory(context), 50 * 1024 * 1024);
 	}
 
 	public TileBitmapCleaner(File directory, Integer limit) {
@@ -41,7 +41,7 @@ public class TileBitmapCleaner implements Runnable {
 					Log.e(TAG, "!\"" + file + "\".delete()");
 				}
 			} else {
-				total = total += length;
+				total += length;
 			}
 		}
 	}
