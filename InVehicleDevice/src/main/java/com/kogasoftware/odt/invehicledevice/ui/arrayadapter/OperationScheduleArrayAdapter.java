@@ -29,6 +29,7 @@ import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyRunnable;
@@ -52,7 +53,8 @@ public class OperationScheduleArrayAdapter extends
 	private final LayoutInflater layoutInflater;
 	private final Activity activity;
 	private final InVehicleDeviceService service;
-	private final TreeSet<PassengerRecord> passengerRecords = new TreeSet<PassengerRecord>(PassengerRecord.DEFAULT_COMPARATOR);
+	private final TreeSet<PassengerRecord> passengerRecords = new TreeSet<PassengerRecord>(
+			PassengerRecord.DEFAULT_COMPARATOR);
 	private Boolean showPassengerRecords = false;
 	private Boolean operationScheduleArrivalDepartureChanged = false;
 	private final PassengerRecordLogic passengerRecordLogic;
@@ -155,11 +157,13 @@ public class OperationScheduleArrayAdapter extends
 		}
 
 		@Override
-		protected int getSelectedColor(PassengerRecordRowTag passengerRecordRowTag) {
+		protected int getSelectedColor(
+				PassengerRecordRowTag passengerRecordRowTag) {
 			return getColor(passengerRecordRowTag, true);
 		}
 
-		private int getColor(PassengerRecordRowTag passengerRecordRowTag, boolean invert) {
+		private int getColor(PassengerRecordRowTag passengerRecordRowTag,
+				boolean invert) {
 			PassengerRecord passengerRecord = passengerRecordRowTag.passengerRecord;
 			if (passengerRecordRowTag.getOn) {
 				if (passengerRecord.getGetOnTime().isPresent() ^ invert) {
@@ -410,6 +414,26 @@ public class OperationScheduleArrayAdapter extends
 		userMemoButton.setOnClickListener(onUserMemoButtonClickListener);
 		row.setBackgroundColor(onPassengerRecordTouchListener
 				.getDefaultColor(tag));
+
+		TextView arrivalPlatformView = (TextView) row
+				.findViewById(R.id.user_arrival_platform_name);
+		arrivalPlatformView.setVisibility(View.GONE);
+		if (getOn) {
+			for (Reservation reservation : passengerRecord.getReservation().asSet()) {
+				for (Integer id : reservation.getArrivalScheduleId().asSet()) {
+					for (Integer i = 0; i < getCount(); i++) {
+						OperationSchedule arrivalOperationSchedule = getItem(i);
+						if (arrivalOperationSchedule.getId().equals(id)) {
+							for (Platform platform : arrivalOperationSchedule.getPlatform().asSet()) {
+								arrivalPlatformView.setVisibility(View.VISIBLE);
+								arrivalPlatformView.setText("⇨" + platform.getName());
+							}
+						}
+					}
+				}
+			}
+		}
+
 		return row;
 	}
 
@@ -424,7 +448,8 @@ public class OperationScheduleArrayAdapter extends
 	}
 
 	public void updatePassengerRecord(PassengerRecord newPassengerRecord) {
-		for (PassengerRecord oldPassengerRecord : Lists.newArrayList(passengerRecords)) {
+		for (PassengerRecord oldPassengerRecord : Lists
+				.newArrayList(passengerRecords)) {
 			if (oldPassengerRecord.getId().equals(newPassengerRecord.getId())) {
 				passengerRecords.remove(oldPassengerRecord);
 				passengerRecords.add(newPassengerRecord);
@@ -433,7 +458,7 @@ public class OperationScheduleArrayAdapter extends
 			}
 		}
 	}
-	
+
 	public Boolean isOperationScheduleArrivalDepartureChanged() {
 		return operationScheduleArrivalDepartureChanged;
 	}

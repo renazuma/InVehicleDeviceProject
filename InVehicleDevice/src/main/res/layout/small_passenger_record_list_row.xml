@@ -34,14 +34,32 @@
         android:paddingRight="5sp"
         android:src="@drawable/get_off" />
 
-    <TextView
-        android:id="@+id/user_name"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_toLeftOf="@+id/user_memo_button"
-        android:layout_toRightOf="@+id/select_mark_image_view"
-        android:textColor="@android:color/black"
-        android:textSize="25sp" />
+        android:layout_toLeftOf="@+id/passenger_count_text_view"
+        android:layout_toRightOf="@+id/select_mark_image_view" >
+
+        <TextView
+            android:id="@+id/user_name"
+            android:layout_width="0sp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textColor="@android:color/black"
+            android:textSize="25sp" />
+
+        <TextView
+            android:id="@+id/user_arrival_platform_name"
+            android:layout_width="0sp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textColor="@android:color/black"
+            android:textSize="25sp" />
+    </LinearLayout>
 
 </RelativeLayout>
