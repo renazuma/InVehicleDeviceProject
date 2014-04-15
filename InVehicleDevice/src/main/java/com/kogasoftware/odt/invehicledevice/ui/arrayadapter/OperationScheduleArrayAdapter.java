@@ -321,7 +321,7 @@ public class OperationScheduleArrayAdapter extends
 						passengerRecordsView.addView(createPassengerRecordRow(
 								operationSchedule, passengerRecord, false));
 					}
-					getOffPassengerCount += passengerRecord.getPassengerCount();
+					getOffPassengerCount += passengerRecord.getScheduledPassengerCount();
 				}
 			}
 		}
@@ -336,7 +336,7 @@ public class OperationScheduleArrayAdapter extends
 						passengerRecordsView.addView(createPassengerRecordRow(
 								operationSchedule, passengerRecord, true));
 					}
-					getOnPassengerCount += passengerRecord.getPassengerCount();
+					getOnPassengerCount += passengerRecord.getScheduledPassengerCount();
 				}
 			}
 		}
@@ -407,7 +407,7 @@ public class OperationScheduleArrayAdapter extends
 
 		TextView countView = (TextView) row
 				.findViewById(R.id.passenger_count_text_view);
-		countView.setText(passengerRecord.getPassengerCount() + "名");
+		countView.setText(passengerRecord.getScheduledPassengerCount() + "名");
 		Button userMemoButton = (Button) row
 				.findViewById(R.id.user_memo_button);
 		userMemoButton.setTag(passengerRecord);
