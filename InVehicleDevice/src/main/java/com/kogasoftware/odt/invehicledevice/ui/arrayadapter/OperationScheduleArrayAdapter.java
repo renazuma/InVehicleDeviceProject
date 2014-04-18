@@ -10,8 +10,11 @@ import java.util.TreeSet;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -23,6 +26,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -31,16 +35,12 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyRunnable;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundReader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.PassengerRecordLogic;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.ApplicationFragment;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.PassengerRecordMemoFragment;
-import com.kogasoftware.odt.invehicledevice.ui.fragment.PlatformNavigationFragment;
 
 public class OperationScheduleArrayAdapter extends
 		ArrayAdapter<OperationSchedule> {
@@ -236,34 +236,23 @@ public class OperationScheduleArrayAdapter extends
 				return;
 			}
 			final OperationSchedule operationSchedule = (OperationSchedule) tag;
-			service.getLocalStorage().read(
-					new BackgroundReader<ServiceUnitStatusLog>() {
-						@Override
-						public ServiceUnitStatusLog readInBackground(
-								LocalData localData) {
-							return localData.serviceUnitStatusLog;
-						}
-
-						@Override
-						public void onRead(ServiceUnitStatusLog result) {
-							FragmentManager fragmentManager = activity
-									.getFragmentManager();
-							if (fragmentManager == null) {
-								return;
-							}
-							FragmentTransaction fragmentTransaction = fragmentManager
-									.beginTransaction();
-							ApplicationFragment
-									.setCustomAnimation(fragmentTransaction);
-							fragmentTransaction.add(
-									R.id.modal_fragment_container,
-									PlatformNavigationFragment.newInstance(
-											operationSchedule,
-											result.getLatitude(),
-											result.getLongitude()));
-							fragmentTransaction.commitAllowingStateLoss();
-						}
-					});
+			for (Platform platform : operationSchedule.getPlatform().asSet()) {
+				String uri = String.format(Locale.US,
+						"google.navigation:q=%f,%f", platform.getLatitude()
+								.doubleValue(), platform.getLongitude()
+								.doubleValue());
+				Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
+						Uri.parse(uri));
+				intent.setClassName("com.google.android.apps.maps",
+						"com.google.android.maps.MapsActivity");
+				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				try {
+					service.startActivity(intent);
+				} catch (ActivityNotFoundException e) {
+					Toast.makeText(service, "GoogleMapsが存在しないため、地図を表示できません",
+							Toast.LENGTH_LONG).show();
+				}
+			}
 		}
 	};
 
@@ -321,7 +310,8 @@ public class OperationScheduleArrayAdapter extends
 						passengerRecordsView.addView(createPassengerRecordRow(
 								operationSchedule, passengerRecord, false));
 					}
-					getOffPassengerCount += passengerRecord.getScheduledPassengerCount();
+					getOffPassengerCount += passengerRecord
+							.getScheduledPassengerCount();
 				}
 			}
 		}
@@ -336,7 +326,8 @@ public class OperationScheduleArrayAdapter extends
 						passengerRecordsView.addView(createPassengerRecordRow(
 								operationSchedule, passengerRecord, true));
 					}
-					getOnPassengerCount += passengerRecord.getScheduledPassengerCount();
+					getOnPassengerCount += passengerRecord
+							.getScheduledPassengerCount();
 				}
 			}
 		}
@@ -419,14 +410,17 @@ public class OperationScheduleArrayAdapter extends
 				.findViewById(R.id.user_arrival_platform_name);
 		arrivalPlatformView.setVisibility(View.GONE);
 		if (getOn) {
-			for (Reservation reservation : passengerRecord.getReservation().asSet()) {
+			for (Reservation reservation : passengerRecord.getReservation()
+					.asSet()) {
 				for (Integer id : reservation.getArrivalScheduleId().asSet()) {
 					for (Integer i = 0; i < getCount(); i++) {
 						OperationSchedule arrivalOperationSchedule = getItem(i);
 						if (arrivalOperationSchedule.getId().equals(id)) {
-							for (Platform platform : arrivalOperationSchedule.getPlatform().asSet()) {
+							for (Platform platform : arrivalOperationSchedule
+									.getPlatform().asSet()) {
 								arrivalPlatformView.setVisibility(View.VISIBLE);
-								arrivalPlatformView.setText("⇨" + platform.getName());
+								arrivalPlatformView.setText("⇨"
+										+ platform.getName());
 							}
 						}
 					}
