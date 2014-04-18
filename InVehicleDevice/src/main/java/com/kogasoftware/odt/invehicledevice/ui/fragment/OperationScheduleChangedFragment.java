@@ -70,12 +70,6 @@ public class OperationScheduleChangedFragment extends
 		}
 
 		textView.setText(message);
-
-		// 表示したスケジュール変更通知にresponseを指定
-		for (VehicleNotification vehicleNotification : getState()
-				.getVehicleNotifications()) {
-			vehicleNotification.setResponse(VehicleNotification.Response.YES);
-		}
 	}
 
 	public static void addIfNecessary(FragmentManager fragmentManager,

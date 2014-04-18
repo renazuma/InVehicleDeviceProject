@@ -64,11 +64,9 @@ public class VehicleNotificationLogic {
 	 */
 	public void reply(final VehicleNotification vehicleNotification) {
 		InVehicleDeviceApiClient apiClient = service.getApiClient();
-		for (Integer response : vehicleNotification.getResponse().asSet()) {
-			apiClient.withSaveOnClose().responseVehicleNotification(
-					vehicleNotification, response,
-					new EmptyApiClientCallback<VehicleNotification>());
-		}
+		apiClient.withSaveOnClose().responseVehicleNotification(
+				vehicleNotification,
+				new EmptyApiClientCallback<VehicleNotification>());
 		setStatus(Lists.newArrayList(vehicleNotification),
 				VehicleNotificationStatus.REPLIED, new EmptyRunnable());
 	}

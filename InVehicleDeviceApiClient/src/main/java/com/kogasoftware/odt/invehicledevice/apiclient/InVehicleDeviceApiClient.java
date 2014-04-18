@@ -119,7 +119,7 @@ public interface InVehicleDeviceApiClient extends Closeable {
 	 * @param response
 	 *            応答
 	 */
-	int responseVehicleNotification(VehicleNotification vn, int response,
+	int responseVehicleNotification(VehicleNotification vn,
 			ApiClientCallback<VehicleNotification> callback);
 
 	/**

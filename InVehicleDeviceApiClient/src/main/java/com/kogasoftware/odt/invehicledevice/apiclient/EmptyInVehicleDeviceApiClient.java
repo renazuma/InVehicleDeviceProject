@@ -85,7 +85,7 @@ public class EmptyInVehicleDeviceApiClient implements InVehicleDeviceApiClient {
 
 	@Override
 	public int responseVehicleNotification(VehicleNotification vn,
-			int response, ApiClientCallback<VehicleNotification> callback) {
+			ApiClientCallback<VehicleNotification> callback) {
 		return 0;
 	}
 

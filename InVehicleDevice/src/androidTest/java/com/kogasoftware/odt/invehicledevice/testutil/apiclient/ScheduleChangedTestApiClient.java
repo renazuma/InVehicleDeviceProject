@@ -142,7 +142,7 @@ public class ScheduleChangedTestApiClient extends EmptyInVehicleDeviceApiClient 
 
 	@Override
 	public int responseVehicleNotification(VehicleNotification vn,
-			int response, ApiClientCallback<VehicleNotification> callback) {
+			ApiClientCallback<VehicleNotification> callback) {
 		Log.w(TAG, "not implemented");
 		return 0;
 	}

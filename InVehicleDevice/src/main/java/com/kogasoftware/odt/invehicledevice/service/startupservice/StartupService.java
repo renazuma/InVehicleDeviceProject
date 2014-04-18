@@ -1,11 +1,9 @@
 package com.kogasoftware.odt.invehicledevice.service.startupservice;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -22,7 +20,6 @@ import android.os.PowerManager;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.google.common.base.Objects;
 import com.kogasoftware.odt.invehicledevice.BuildConfig;
 import com.kogasoftware.odt.invehicledevice.service.logservice.LogService;
 import com.kogasoftware.odt.invehicledevice.service.trackingservice.TrackingService;

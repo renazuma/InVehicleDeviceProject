@@ -286,7 +286,8 @@ public class DefaultInVehicleDeviceApiClientTestCase extends DummyAndroidTestCas
 		}
 
 		latch = new CountDownLatch(1);
-		api.responseVehicleNotification(notifications.get(0), 1,
+		notifications.get(0).setResponse(1);
+		api.responseVehicleNotification(notifications.get(0),
 				new ApiClientCallback<VehicleNotification>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,

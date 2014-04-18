@@ -360,11 +360,9 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	 */
 	@Override
 	public int responseVehicleNotification(final VehicleNotification vn,
-			final int response,
 			final ApiClientCallback<VehicleNotification> callback) {
 		int reqkey = getRequestConfig().getReqkey();
 		try {
-			vn.setResponse(response);
 			vn.setReadAt(new Date());
 			VehicleNotification retryVn = vn.clone(false);
 			retryVn.setOffline(true);
