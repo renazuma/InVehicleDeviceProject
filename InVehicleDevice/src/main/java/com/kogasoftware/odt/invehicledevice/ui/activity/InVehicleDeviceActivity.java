@@ -62,23 +62,6 @@ public class InVehicleDeviceActivity extends Activity implements
 	private final Handler handler = new Handler();
 
 	/**
-	 * Androidエミュレーターで、Activity起動後ESCキーを押してホーム画面に戻ると、Activityが見えていないのに
-	 * onStopやonDestroyが呼ばれずRunningTaskInfo
-	 * .topActivityがこのActivityを返すため、自動再起動ができないことがある。
-	 * そのため、onPauseが呼ばれて一定時間が経ったらtaskを移動してfinishするようにした
-	 */
-	private final Runnable pauseFinishTimeouter = new Runnable() {
-		@Override
-		public void run() {
-			Log.i(TAG, "pauseFinishTimeouter.run()");
-			moveTaskToBack(true);
-			if (!isFinishing()) {
-				finish();
-			}
-		}
-	};
-
-	/**
 	 * InVehicleDeviceServiceとの接続
 	 */
 	private final ServiceConnection serviceConnection = new ServiceConnection() {
@@ -228,7 +211,6 @@ public class InVehicleDeviceActivity extends Activity implements
 		}
 		unbindService(serviceConnection);
 		getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-		handler.removeCallbacks(pauseFinishTimeouter);
 
 		// onCreate()時に各フラグメントが復活することがある。その際、InVehicleDeviceServiceがバインドされる前に
 		// それに依存しているフラグメントが起動しエラーになることがある。そのため、onCreate()でフラグメントが復活しないよう、
@@ -242,7 +224,6 @@ public class InVehicleDeviceActivity extends Activity implements
 	@Override
 	public void onExit() {
 		Log.i(TAG, "onExit()");
-		handler.postDelayed(pauseFinishTimeouter, PAUSE_FINISH_TIMEOUT_MILLIS);
 		if (!isFinishing()) {
 			finish();
 		}
@@ -321,7 +302,6 @@ public class InVehicleDeviceActivity extends Activity implements
 	public void onResume() {
 		super.onResume();
 		Log.i(TAG, "onResume()");
-		handler.removeCallbacks(pauseFinishTimeouter);
 		for (InVehicleDeviceService service : getService().asSet()) {
 			service.getEventDispatcher().dispatchResumeActivity();
 		}
@@ -336,7 +316,6 @@ public class InVehicleDeviceActivity extends Activity implements
 	public void onPause() {
 		super.onPause();
 		Log.i(TAG, "onPause()");
-		handler.postDelayed(pauseFinishTimeouter, PAUSE_FINISH_TIMEOUT_MILLIS);
 		for (InVehicleDeviceService service : getService().asSet()) {
 			service.getEventDispatcher().dispatchPauseActivity();
 		}
