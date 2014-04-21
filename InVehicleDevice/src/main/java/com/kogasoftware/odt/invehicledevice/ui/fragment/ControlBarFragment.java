@@ -19,6 +19,7 @@ import android.widget.Button;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation;
@@ -39,7 +40,7 @@ public class ControlBarFragment extends AutoUpdateOperationFragment<State> {
 		public State(Operation operation) {
 			this.operation = operation;
 		}
-		
+
 		public Phase getPhase() {
 			return operation.getPhase();
 		}
@@ -71,7 +72,7 @@ public class ControlBarFragment extends AutoUpdateOperationFragment<State> {
 			@Override
 			public void onClick(View v) {
 				ViewDisabler.disable(v);
-				showNavigationFragment();
+				showNavigation();
 			}
 		});
 
@@ -85,45 +86,30 @@ public class ControlBarFragment extends AutoUpdateOperationFragment<State> {
 			}
 		});
 
-		getService().getLocalStorage().read(
-				new BackgroundReader<Pair<Phase, Boolean>>() {
-					@Override
-					public Pair<Phase, Boolean> readInBackground(
-							LocalData localData) {
-						Phase phase = localData.operation.getPhase();
-						Boolean isLast = !OperationSchedule.getRelative(
-								localData.operation.operationSchedules, 1).isPresent();
-						return Pair.of(phase, isLast);
-					}
-
-					@Override
-					public void onRead(Pair<Phase, Boolean> result) {
-						updateView(result.getLeft(), result.getRight());
-					}
-				});
 		return view;
 	}
 
-	public void showNavigationFragment() {
+	public void showNavigation() {
 		if (isRemoving()) {
 			return;
 		}
-		getService().getLocalStorage().read(new BackgroundReader<ServiceUnitStatusLog>() {
-			@Override
-			public ServiceUnitStatusLog readInBackground(LocalData localData) {
-				return localData.serviceUnitStatusLog;
+		Boolean driving = getState().operation.getPhase().equals(Phase.DRIVE);
+		List<OperationSchedule> operationSchedules = getState().operation.operationSchedules;
+		for (OperationSchedule operationSchedule : (driving ? OperationSchedule
+				.getCurrent(operationSchedules) : OperationSchedule
+				.getRelative(operationSchedules, 1)).asSet()) {
+			for (Platform platform : operationSchedule.getPlatform().asSet()) {
+				new OperationScheduleLogic(getService())
+						.startNavigation(platform);
 			}
-
-			@Override
-			public void onRead(ServiceUnitStatusLog ServiceUnitStatusLog) {
-			}
-		});
+		}
 	}
 
 	public void showOperationScheduleListFragment() {
 		String tag = "tag:"
 				+ OperationScheduleListFragment.class.getSimpleName();
-		for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
+		for (FragmentManager fragmentManager : getOptionalFragmentManager()
+				.asSet()) {
 			Fragment old = fragmentManager.findFragmentByTag(tag);
 			if (old != null) {
 				setCustomAnimation(fragmentManager.beginTransaction()).remove(
@@ -139,16 +125,18 @@ public class ControlBarFragment extends AutoUpdateOperationFragment<State> {
 	public void showArrivalCheckFragment() {
 		for (OperationSchedule operationSchedule : OperationSchedule
 				.getCurrent(getState().getOperationSchedules()).asSet()) {
-			for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
-				String tag = "tag:" + ArrivalCheckFragment.class.getSimpleName();
+			for (FragmentManager fragmentManager : getOptionalFragmentManager()
+					.asSet()) {
+				String tag = "tag:"
+						+ ArrivalCheckFragment.class.getSimpleName();
 				Fragment old = fragmentManager.findFragmentByTag(tag);
 				if (old != null) {
 					setCustomAnimation(fragmentManager.beginTransaction())
-						.remove(old).commit();
+							.remove(old).commit();
 				}
 				setCustomAnimation(fragmentManager.beginTransaction()).add(
-					R.id.modal_fragment_container,
-					ArrivalCheckFragment.newInstance(operationSchedule))
+						R.id.modal_fragment_container,
+						ArrivalCheckFragment.newInstance(operationSchedule))
 						.commit();
 			}
 		}
@@ -196,7 +184,8 @@ public class ControlBarFragment extends AutoUpdateOperationFragment<State> {
 
 								@Override
 								public void onWrite() {
-									operationScheduleLogic.requestUpdateOperation();
+									operationScheduleLogic
+											.requestUpdateOperation();
 								}
 							});
 				}
@@ -285,8 +274,9 @@ public class ControlBarFragment extends AutoUpdateOperationFragment<State> {
 	@Override
 	public void onUpdateOperation(Operation operation) {
 		setState(new State(operation));
-		updateView(operation.getPhase(), !OperationSchedule.getRelative(operation.operationSchedules, 1)
-				.isPresent());
+		updateView(operation.getPhase(),
+				!OperationSchedule.getRelative(operation.operationSchedules, 1)
+						.isPresent());
 	}
 
 	@Override

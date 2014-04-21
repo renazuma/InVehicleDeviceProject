@@ -10,11 +10,8 @@ import java.util.TreeSet;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
-import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -26,7 +23,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -52,7 +48,6 @@ public class OperationScheduleArrayAdapter extends
 	private static final Integer RESOURCE_ID = R.layout.operation_schedule_list_row;
 	private final LayoutInflater layoutInflater;
 	private final Activity activity;
-	private final InVehicleDeviceService service;
 	private final TreeSet<PassengerRecord> passengerRecords = new TreeSet<PassengerRecord>(
 			PassengerRecord.DEFAULT_COMPARATOR);
 	private Boolean showPassengerRecords = false;
@@ -237,21 +232,7 @@ public class OperationScheduleArrayAdapter extends
 			}
 			final OperationSchedule operationSchedule = (OperationSchedule) tag;
 			for (Platform platform : operationSchedule.getPlatform().asSet()) {
-				String uri = String.format(Locale.US,
-						"google.navigation:q=%f,%f", platform.getLatitude()
-								.doubleValue(), platform.getLongitude()
-								.doubleValue());
-				Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
-						Uri.parse(uri));
-				intent.setClassName("com.google.android.apps.maps",
-						"com.google.android.maps.MapsActivity");
-				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				try {
-					service.startActivity(intent);
-				} catch (ActivityNotFoundException e) {
-					Toast.makeText(service, "GoogleMapsが存在しないため、地図を表示できません",
-							Toast.LENGTH_LONG).show();
-				}
+				operationScheduleLogic.startNavigation(platform);
 			}
 		}
 	};
@@ -262,7 +243,6 @@ public class OperationScheduleArrayAdapter extends
 			List<PassengerRecord> passengerRecords) {
 		super(activity, RESOURCE_ID, operationSchedules);
 		this.activity = activity;
-		this.service = service;
 		this.passengerRecordLogic = new PassengerRecordLogic(service);
 		this.operationScheduleLogic = new OperationScheduleLogic(service);
 		this.passengerRecords.addAll(passengerRecords);

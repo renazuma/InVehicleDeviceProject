@@ -3,17 +3,23 @@ package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logi
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.RejectedExecutionException;
 
 import org.joda.time.DateTimeUtils;
 
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.apiclient.EmptyApiClientCallback;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
@@ -386,6 +392,23 @@ public class OperationScheduleLogic {
 					waitForOperationInitializedAndUpdateOperation);
 		} catch (RejectedExecutionException e) {
 			Log.w(TAG, e);
+		}
+	}
+
+	public void startNavigation(Platform platform) {
+		String uri = String.format(Locale.US, "google.navigation:q=%f,%f", platform.getLatitude()
+						.doubleValue(), platform.getLongitude()
+						.doubleValue());
+		Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
+				Uri.parse(uri));
+		intent.setClassName("com.google.android.apps.maps",
+				"com.google.android.maps.MapsActivity");
+		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		try {
+			service.startActivity(intent);
+		} catch (ActivityNotFoundException e) {
+			Toast.makeText(service, "GoogleMapsが存在しないため、地図を表示できません",
+					Toast.LENGTH_LONG).show();
 		}
 	}
 }
