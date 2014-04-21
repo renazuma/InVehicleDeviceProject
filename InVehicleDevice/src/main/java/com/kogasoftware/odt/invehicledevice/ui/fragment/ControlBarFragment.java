@@ -108,44 +108,16 @@ public class ControlBarFragment extends AutoUpdateOperationFragment<State> {
 		if (isRemoving()) {
 			return;
 		}
-		String tag = "tag:" + NavigationFragment.class.getSimpleName();
-		for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
-			Fragment old = fragmentManager.findFragmentByTag(tag);
-			if (old != null) {
-				setCustomAnimation(fragmentManager.beginTransaction()).remove(
-						old).commit();
+		getService().getLocalStorage().read(new BackgroundReader<ServiceUnitStatusLog>() {
+			@Override
+			public ServiceUnitStatusLog readInBackground(LocalData localData) {
+				return localData.serviceUnitStatusLog;
 			}
-			getService().getLocalStorage().read(new BackgroundReader<Pair<ServiceUnitStatusLog, Pair<Boolean, Integer>>>() {
-				@Override
-				public Pair<ServiceUnitStatusLog, Pair<Boolean, Integer>> readInBackground(LocalData localData) {
-					return Pair.of( // データが増えてきたら専用の型を作るようにする
-							localData.serviceUnitStatusLog,
-							Pair.of(localData.rotateMap,
-									localData.extraRotationDegreesClockwise));
-				}
 
-				@Override
-				public void onRead(
-						Pair<ServiceUnitStatusLog, Pair<Boolean, Integer>> read) {
-					ServiceUnitStatusLog serviceUnitStatusLog = read
-							.getLeft();
-					Boolean rotateMap = read.getRight().getLeft();
-					Integer extraRotationDegreesClockwise = read
-							.getRight().getRight();
-					for (FragmentManager fragmentManager : getOptionalFragmentManager()
-							.asSet()) {
-						setCustomAnimation(fragmentManager.beginTransaction())
-							.add(R.id.modal_fragment_container,
-									NavigationFragment.newInstance(
-											getState().getOperation(),
-											serviceUnitStatusLog,
-											rotateMap,
-											extraRotationDegreesClockwise))
-							.commitAllowingStateLoss();
-					}
-				}
-			});
-		}
+			@Override
+			public void onRead(ServiceUnitStatusLog ServiceUnitStatusLog) {
+			}
+		});
 	}
 
 	public void showOperationScheduleListFragment() {
