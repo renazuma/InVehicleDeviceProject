@@ -293,9 +293,6 @@ public class InVehicleDeviceActivity extends Activity implements
 	public void onStop() {
 		super.onStop();
 		Log.i(TAG, "onStop()");
-		if (!isFinishing()) {
-			finish();
-		}
 	}
 
 	@Override
