@@ -65,9 +65,14 @@ public class LocalData implements Serializable {
 		}
 	}
 
-	private static final long serialVersionUID = 1797801788127L;
+	private static final long serialVersionUID = 1797801788128L;
+
+	public static enum Display {
+		MAIN, OPERATION_SCHEDULES,
+	}
 
 	public Boolean serviceProviderInitialized = false;
+	public Display display = Display.MAIN;
 
 	public Date updatedDate = new Date(DateTimeUtils.currentTimeMillis());
 	public File file = new EmptyFile();
