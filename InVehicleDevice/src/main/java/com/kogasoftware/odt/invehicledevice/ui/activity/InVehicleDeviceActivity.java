@@ -40,11 +40,15 @@ import com.kogasoftware.odt.invehicledevice.compatibility.reflection.android.vie
 import com.kogasoftware.odt.invehicledevice.compatibility.reflection.android.view.ViewReflection.OnSystemUiVisibilityChangeListenerReflection;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Display;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundReader;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.ui.BigToast;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.InVehicleDeviceFragment;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.OperationScheduleChangedAlertFragment;
+import com.kogasoftware.odt.invehicledevice.ui.fragment.OperationScheduleListFragment;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.VehicleNotificationAlertFragment;
 
 public class InVehicleDeviceActivity extends Activity implements
@@ -171,14 +175,15 @@ public class InVehicleDeviceActivity extends Activity implements
 		super.onCreate(savedInstanceState);
 		Log.i(TAG, "onCreate()");
 		destroyed = false;
-		
+
 		getWindow().addFlags(
 				WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
 						| WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
 						| WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
 
 		loadingDialogFragment = Optional.of(new LoadingDialogFragment());
-		for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
+		for (FragmentManager fragmentManager : getOptionalFragmentManager()
+				.asSet()) {
 			loadingDialogFragment.get().show(fragmentManager,
 					LOADING_DIALOG_FRAGMENT_TAG);
 		}
@@ -229,13 +234,14 @@ public class InVehicleDeviceActivity extends Activity implements
 		}
 	}
 
-	public void initializeUi(Operation operation) {
+	public void initializeUi(final Operation operation) {
 		if (uiInitialized || destroyed || isFinishing() || !service.isPresent()) {
 			return;
 		}
 		Log.i(TAG, "initializeUi()");
 
-		for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
+		for (FragmentManager fragmentManager : getOptionalFragmentManager()
+				.asSet()) {
 			FragmentTransaction fragmentTransaction = fragmentManager
 					.beginTransaction();
 			fragmentTransaction.add(R.id.modal_fragment_container,
@@ -257,11 +263,39 @@ public class InVehicleDeviceActivity extends Activity implements
 						R.anim.show_in_vehicle_device_view);
 				view.startAnimation(animation);
 				view.setVisibility(View.VISIBLE);
-				dismissLoadingDialogFragment();
+				restoreFragment(operation);
 			}
 		});
 	}
-	
+
+	private void restoreFragment(final Operation operation) {
+		for (InVehicleDeviceService service : getService().asSet()) {
+			service.getLocalStorage().read(new BackgroundReader<Display>() {
+				@Override
+				public Display readInBackground(LocalData localData) {
+					return localData.display;
+				}
+
+				@Override
+				public void onRead(Display display) {
+					if (display.equals(Display.OPERATION_SCHEDULES)) {
+						FragmentManager fragmentManager = getFragmentManager();
+						if (fragmentManager == null) {
+							return;
+						}
+						fragmentManager
+								.beginTransaction()
+								.add(R.id.modal_fragment_container,
+										OperationScheduleListFragment
+												.newInstance(operation))
+								.commitAllowingStateLoss();
+					}
+				}
+			});
+		}
+		dismissLoadingDialogFragment();
+	}
+
 	private void dismissLoadingDialogFragment() {
 		for (DialogFragment dialogFragment : loadingDialogFragment.asSet()) {
 			try {
@@ -378,7 +412,8 @@ public class InVehicleDeviceActivity extends Activity implements
 	@Override
 	public void onAlertVehicleNotificationReceive(
 			final List<VehicleNotification> vehicleNotifications) {
-		for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
+		for (FragmentManager fragmentManager : getOptionalFragmentManager()
+				.asSet()) {
 			FragmentTransaction fragmentTransaction = fragmentManager
 					.beginTransaction();
 			fragmentTransaction.add(R.id.modal_fragment_container,
@@ -396,7 +431,8 @@ public class InVehicleDeviceActivity extends Activity implements
 			// Toast.LENGTH_LONG).show();
 			return;
 		}
-		for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
+		for (FragmentManager fragmentManager : getOptionalFragmentManager()
+				.asSet()) {
 			FragmentTransaction fragmentTransaction = fragmentManager
 					.beginTransaction();
 			fragmentTransaction.add(R.id.modal_fragment_container,

@@ -18,7 +18,9 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher.OnUpdatePassengerRecordListener;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Display;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation;
+import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundWriter;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundReader;
 import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.OperationScheduleArrayAdapter;
@@ -49,7 +51,7 @@ public class OperationScheduleListFragment extends ApplicationFragment<State>
 	public OperationScheduleListFragment() {
 		setRemoveOnUpdateOperation(true);
 	}
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -158,6 +160,21 @@ public class OperationScheduleListFragment extends ApplicationFragment<State>
 	}
 
 	@Override
+	public void onStart() {
+		super.onStart();
+		getService().getLocalStorage().write(new BackgroundWriter() {
+			@Override
+			public void writeInBackground(LocalData localData) {
+				localData.display = Display.OPERATION_SCHEDULES;
+			}
+
+			@Override
+			public void onWrite() {
+			}
+		});
+	}
+
+	@Override
 	public void onStop() {
 		super.onStop();
 		final InVehicleDeviceService service = getService();
@@ -169,17 +186,26 @@ public class OperationScheduleListFragment extends ApplicationFragment<State>
 			getService().getLocalStorage().read(
 					new BackgroundReader<Operation>() {
 						@Override
-						public Operation readInBackground(
-								LocalData localData) {
+						public Operation readInBackground(LocalData localData) {
 							return localData.operation;
 						}
 
 						@Override
 						public void onRead(Operation operation) {
-					service.getEventDispatcher()
+							service.getEventDispatcher()
 									.dispatchUpdateOperation(operation);
 						}
 					});
 		}
+		getService().getLocalStorage().write(new BackgroundWriter() {
+			@Override
+			public void writeInBackground(LocalData localData) {
+				localData.display = Display.MAIN;
+			}
+
+			@Override
+			public void onWrite() {
+			}
+		});
 	}
 }
