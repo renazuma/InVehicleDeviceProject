@@ -36,8 +36,6 @@ import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.compatibility.reflection.android.provider.SettingsReflection;
-import com.kogasoftware.odt.invehicledevice.compatibility.reflection.android.view.ViewReflection;
-import com.kogasoftware.odt.invehicledevice.compatibility.reflection.android.view.ViewReflection.OnSystemUiVisibilityChangeListenerReflection;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
@@ -108,29 +106,6 @@ public class InVehicleDeviceActivity extends Activity implements
 	};
 
 	/**
-	 * SystemUiVisibilityが変更されたら、元に戻す
-	 */
-	private final OnSystemUiVisibilityChangeListenerReflection onSystemUiVisibilityChangeListener = new OnSystemUiVisibilityChangeListenerReflection() {
-		@Override
-		public void onSystemUiVisibilityChange(int visibility) {
-			Log.w(TAG, "onSystemUiVisibilityChange(" + visibility + ")");
-			for (final Integer SYSTEM_UI_FLAG_LOW_PROFILE : ViewReflection.SYSTEM_UI_FLAG_LOW_PROFILE
-					.asSet()) {
-				if (SYSTEM_UI_FLAG_LOW_PROFILE.equals(visibility)) {
-					return;
-				}
-				handler.postDelayed(new Runnable() {
-					@Override
-					public void run() {
-						ViewReflection.setSystemUiVisibility(getWindow()
-								.getDecorView(), SYSTEM_UI_FLAG_LOW_PROFILE);
-					}
-				}, SYSTEM_UI_VISIBILITY_UPDATE_MILLIS);
-			}
-		}
-	};
-
-	/**
 	 * 読み込み中ダイアログ
 	 */
 	public static class LoadingDialogFragment extends DialogFragment {
@@ -189,8 +164,6 @@ public class InVehicleDeviceActivity extends Activity implements
 		}
 		bindService(new Intent(this, InVehicleDeviceService.class),
 				serviceConnection, Context.BIND_AUTO_CREATE);
-		ViewReflection.setOnSystemUiVisibilityChangeListener(getWindow()
-				.getDecorView(), onSystemUiVisibilityChangeListener);
 
 		view = getLayoutInflater().inflate(R.layout.in_vehicle_device_activity,
 				null);
@@ -335,11 +308,6 @@ public class InVehicleDeviceActivity extends Activity implements
 		Log.i(TAG, "onResume()");
 		for (InVehicleDeviceService service : getService().asSet()) {
 			service.getEventDispatcher().dispatchResumeActivity();
-		}
-		for (final Integer SYSTEM_UI_FLAG_LOW_PROFILE : ViewReflection.SYSTEM_UI_FLAG_LOW_PROFILE
-				.asSet()) {
-			ViewReflection.setSystemUiVisibility(getWindow().getDecorView(),
-					SYSTEM_UI_FLAG_LOW_PROFILE);
 		}
 	}
 
