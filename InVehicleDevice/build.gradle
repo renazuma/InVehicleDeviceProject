@@ -35,10 +35,6 @@ android {
 
 dependencies {
     compile fileTree(dir: 'src/main/libs', include: '*.jar')
-    compile('com.google.android.gms:play-services:3.2.65') {
-        // To avoid conflicting it and lib/support-v4.*.jar for eclipse
-        exclude group: 'com.android.support', module: 'support-v4'
-    }
     androidTestCompile fileTree(dir: 'src/androidTest/libs', include: '*.jar')
     compile project(':AndroidOpenJTalk')
     compile project(':InVehicleDeviceApiClient')

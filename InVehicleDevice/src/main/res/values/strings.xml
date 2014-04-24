@@ -46,9 +46,5 @@
     <string name="settings_are_not_initialized">※  Settings are not initialized</string>
     <string name="show_passengers">※  Show passengers</string>
     <string name="hide_passengers">※  Hide passengers</string>
-    <string name="google_maps_api_key_debug">AIzaSyCbpmeImhPK1_cJzza68w5T8cBbxcfuS4Y</string>
-    <string name="google_maps_api_key_release">AIzaSyCbpmeImhPK1_cJzza68w5T8cBbxcfuS4Y</string>
-    <string name="google_maps_language"></string>
-    <string name="google_maps_region"></string>
 
 </resources>
