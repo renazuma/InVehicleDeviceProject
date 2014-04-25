@@ -1,1 +1,2 @@
 include ':AndroidOpenJTalk', ':InVehicleDevice', ':InVehicleDeviceApiClient', ':InVehicleDevicePreference', ':play_apk_expansion', ':play_licensing'
+rootProject.name = 'InVehicleDeviceProject'
