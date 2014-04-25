@@ -84,7 +84,7 @@
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/operation_schedule_list_arrival_departure"
         android:layout_marginLeft="20sp"
-        android:layout_marginRight="14sp"
+        android:layout_marginRight="0sp"
         android:background="@drawable/operation_schedule_list_note_border"
         android:orientation="vertical"
         android:padding="2sp"
@@ -92,12 +92,11 @@
 
     <Button
         android:id="@+id/operation_schedule_list_map_button"
-        android:layout_width="wrap_content"
+        android:layout_width="100sp"
         android:layout_height="60sp"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:paddingLeft="21dp"
-        android:paddingRight="21dp"
+        android:layout_marginRight="2dp"
         android:text="@string/map"
         android:textSize="22sp" />
 

@@ -5,12 +5,10 @@
 
     <Button
         android:id="@+id/user_memo_button"
-        android:layout_width="wrap_content"
+        android:layout_width="100sp"
         android:layout_height="fill_parent"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
         android:text="@string/memo"
         android:textSize="15sp" />
 
