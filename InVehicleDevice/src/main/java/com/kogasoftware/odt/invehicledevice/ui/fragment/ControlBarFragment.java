@@ -61,9 +61,13 @@ public class ControlBarFragment extends AutoUpdateOperationFragment<State> {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.control_bar_fragment, container,
-				false);
-		Button mapButton = (Button) view.findViewById(R.id.map_button);
+		return inflater.inflate(R.layout.control_bar_fragment, container, false);
+	}
+
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		Button mapButton = (Button) getView().findViewById(R.id.map_button);
 		mapButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -72,7 +76,7 @@ public class ControlBarFragment extends AutoUpdateOperationFragment<State> {
 			}
 		});
 
-		Button operationScheduleListButton = (Button) view
+		Button operationScheduleListButton = (Button) getView()
 				.findViewById(R.id.operation_schedule_list_button);
 		operationScheduleListButton.setOnClickListener(new OnClickListener() {
 			@Override
@@ -82,7 +86,7 @@ public class ControlBarFragment extends AutoUpdateOperationFragment<State> {
 			}
 		});
 
-		return view;
+		updateView();
 	}
 
 	public void showNavigation() {
@@ -212,6 +216,11 @@ public class ControlBarFragment extends AutoUpdateOperationFragment<State> {
 		}
 	}
 
+	private void updateView() {
+		updateView(getState().operation.getPhase(), 
+			!OperationSchedule.getRelative(getState().operation.operationSchedules, 1).isPresent());
+	}
+
 	public void updateView(Phase phase, Boolean isLast) {
 		if (!isAdded()) {
 			Log.e(TAG, "UpdateView() called but isAdded() is false");
@@ -270,9 +279,7 @@ public class ControlBarFragment extends AutoUpdateOperationFragment<State> {
 	@Override
 	public void onUpdateOperation(Operation operation) {
 		setState(new State(operation));
-		updateView(operation.getPhase(),
-				!OperationSchedule.getRelative(operation.operationSchedules, 1)
-						.isPresent());
+		updateView();
 	}
 
 	@Override
