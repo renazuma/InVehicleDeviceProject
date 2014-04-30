@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TreeSet;
 
+import org.apache.commons.lang3.StringUtils;
+
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -267,11 +269,14 @@ public class OperationScheduleArrayAdapter extends
 		mapButton.setOnClickListener(onOperationScheduleMapButtonClickListener);
 		TextView platformNameView = (TextView) convertView
 				.findViewById(R.id.platform_name);
-		if (operationSchedule.getPlatform().isPresent()) {
-			platformNameView.setText(operationSchedule.getPlatform().get()
-					.getName());
-		} else {
-			platformNameView.setText("ID:" + operationSchedule.getId());
+		TextView platformAddressView = (TextView) convertView.findViewById(R.id.platform_address);
+		platformNameView.setText("ID:" + operationSchedule.getId());
+		for (Platform platform : operationSchedule.getPlatform().asSet()) {
+			platformNameView.setText(platform.getName());
+			platformAddressView.setText(platform.getAddress());
+		}
+		if (StringUtils.isBlank(platformAddressView.getText())) {
+			platformAddressView.setText("(住所登録なし)");
 		}
 
 		ViewGroup passengerRecordsView = (ViewGroup) convertView

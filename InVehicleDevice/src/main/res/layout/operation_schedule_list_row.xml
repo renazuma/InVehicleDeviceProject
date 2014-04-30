@@ -63,26 +63,40 @@
             android:textSize="22sp" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/platform_name"
+    <LinearLayout
+        android:id="@+id/platform_layout"
         android:layout_width="fill_parent"
-        android:layout_height="60sp"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_toLeftOf="@+id/operation_schedule_list_passenger_count"
         android:layout_toRightOf="@+id/operation_schedule_list_arrival_departure"
-        android:ellipsize="end"
-        android:gravity="center_vertical"
-        android:singleLine="true"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="@android:color/black"
-        android:textSize="28sp" />
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/platform_name"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@android:color/black"
+            android:textSize="32sp" />
+
+        <TextView
+            android:id="@+id/platform_address"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@android:color/black"
+            android:textSize="12sp" />
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/operation_schedule_list_passenger_records"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/operation_schedule_list_arrival_departure"
+        android:layout_below="@+id/platform_layout"
         android:layout_marginLeft="20sp"
         android:layout_marginRight="0sp"
         android:background="@drawable/operation_schedule_list_note_border"
