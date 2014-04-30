@@ -27,10 +27,11 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.base.jsonview.*;
 @SuppressWarnings("unused")
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = Model.JACKSON_IDENTITY_INFO_PROPERTY)
 public abstract class PlatformBase extends Model {
-	private static final long serialVersionUID = 1851324914633166932L;
+	private static final long serialVersionUID = 1851324914633166933L;
 
 	// Columns
 	@JsonProperty private Integer id = 0;
+	@JsonProperty private String address = "";
 	@JsonProperty private BigDecimal latitude = BigDecimal.ZERO;
 	@JsonProperty private BigDecimal longitude = BigDecimal.ZERO;
 	@JsonProperty private String memo = "";
@@ -60,6 +61,16 @@ public abstract class PlatformBase extends Model {
 	@JsonIgnore
 	public void setId(Integer id) {
 		this.id = wrapNull(id);
+	}
+
+	@JsonIgnore
+	public String getAddress() {
+		return wrapNull(address);
+	}
+
+	@JsonIgnore
+	public void setAddress(String address) {
+		this.address = wrapNull(address);
 	}
 
 	@JsonIgnore
