@@ -5,6 +5,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -16,7 +17,7 @@ public class RailsDateDeserializer extends StdDeserializer<Date> {
 	private static final long serialVersionUID = 2088665151150582773L;
 	public static final String DATE_FORMAT_STRING = "yyyy-MM-dd";
 	private final DateFormat dateFormat = new SimpleDateFormat(
-			DATE_FORMAT_STRING);
+			DATE_FORMAT_STRING, Locale.US);
 
 	protected RailsDateDeserializer() {
 		super(Date.class);
