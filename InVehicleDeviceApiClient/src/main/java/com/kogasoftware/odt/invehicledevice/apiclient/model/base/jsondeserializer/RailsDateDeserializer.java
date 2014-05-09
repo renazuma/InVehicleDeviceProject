@@ -6,9 +6,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.apache.commons.lang3.SystemUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -20,11 +17,6 @@ public class RailsDateDeserializer extends StdDeserializer<Date> {
 	public static final String DATE_FORMAT_STRING = "yyyy-MM-dd";
 	private final DateFormat dateFormat = new SimpleDateFormat(
 			DATE_FORMAT_STRING);
-
-	public static IOException newIOException(ParseException e) {
-		return new IOException(e.toString() + SystemUtils.LINE_SEPARATOR
-				+ ExceptionUtils.getStackTrace(e));
-	}
 
 	protected RailsDateDeserializer() {
 		super(Date.class);
@@ -42,7 +34,7 @@ public class RailsDateDeserializer extends StdDeserializer<Date> {
 				return date;
 			}
 		} catch (ParseException e) {
-			throw newIOException(e);
+			throw new IOException(e);
 		}
 	}
 }

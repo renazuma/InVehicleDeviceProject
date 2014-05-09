@@ -39,7 +39,7 @@ public class RailsOptionalDateDeserializer extends
 				return Optional.of(dateFormat.parse(dateString));
 			}
 		} catch (ParseException e) {
-			throw RailsDateDeserializer.newIOException(e);
+			throw new IOException(e);
 		}
 	}
 }
