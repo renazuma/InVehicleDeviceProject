@@ -243,7 +243,7 @@ public class OperationScheduleArrayAdapter extends
 			InVehicleDeviceService service,
 			List<OperationSchedule> operationSchedules,
 			List<PassengerRecord> passengerRecords) {
-		super(activity, RESOURCE_ID, operationSchedules);
+		super(activity, RESOURCE_ID, Lists.newArrayList(operationSchedules));
 		this.activity = activity;
 		this.passengerRecordLogic = new PassengerRecordLogic(service);
 		this.operationScheduleLogic = new OperationScheduleLogic(service);
