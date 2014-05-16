@@ -10,7 +10,7 @@ import com.google.common.collect.Lists;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.apiclient.ApiClientException;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationRecord;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.UnmergedOperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceProvider;
@@ -51,7 +51,7 @@ public class DummyInVehicleDeviceApiClient extends
 	}
 
 	@Override
-	public int getOffPassenger(OperationSchedule operationSchedule,
+	public int getOffPassenger(UnmergedOperationSchedule operationSchedule,
 			Reservation reservation, User user,
 			PassengerRecord passengerRecord, ApiClientCallback<Void> callback) {
 		callback.onSucceed(0, 200, null);
@@ -59,7 +59,7 @@ public class DummyInVehicleDeviceApiClient extends
 	}
 
 	@Override
-	public int getOnPassenger(OperationSchedule operationSchedule,
+	public int getOnPassenger(UnmergedOperationSchedule operationSchedule,
 			Reservation reservation, User user,
 			PassengerRecord passengerRecord, ApiClientCallback<Void> callback) {
 		callback.onSucceed(0, 200, null);
@@ -67,36 +67,36 @@ public class DummyInVehicleDeviceApiClient extends
 	}
 
 	@Override
-	public int cancelGetOffPassenger(OperationSchedule operationSchedule,
+	public int cancelGetOffPassenger(UnmergedOperationSchedule operationSchedule,
 			Reservation reservation, User user, ApiClientCallback<Void> callback) {
 		callback.onSucceed(0, 200, null);
 		return 0;
 	}
 
 	@Override
-	public int cancelGetOnPassenger(OperationSchedule operationSchedule,
+	public int cancelGetOnPassenger(UnmergedOperationSchedule operationSchedule,
 			Reservation reservation, User user, ApiClientCallback<Void> callback) {
 		callback.onSucceed(0, 200, null);
 		return 0;
 	}
 
 	@Override
-	public int departureOperationSchedule(OperationSchedule os,
-			ApiClientCallback<OperationSchedule> callback) {
-		callback.onSucceed(0, 200, new OperationSchedule());
+	public int departureOperationSchedule(UnmergedOperationSchedule os,
+			ApiClientCallback<UnmergedOperationSchedule> callback) {
+		callback.onSucceed(0, 200, new UnmergedOperationSchedule());
 		return 0;
 	}
 
 	@Override
-	public int arrivalOperationSchedule(OperationSchedule os,
-			ApiClientCallback<OperationSchedule> callback) {
-		callback.onSucceed(0, 200, new OperationSchedule());
+	public int arrivalOperationSchedule(UnmergedOperationSchedule os,
+			ApiClientCallback<UnmergedOperationSchedule> callback) {
+		callback.onSucceed(0, 200, new UnmergedOperationSchedule());
 		return 0;
 	}
 
 	@Override
 	public int getOperationSchedules(
-			ApiClientCallback<List<OperationSchedule>> callback) {
+			ApiClientCallback<List<UnmergedOperationSchedule>> callback) {
 		OperationRecord unhandled = new OperationRecord();
 		OperationRecord arrived = new OperationRecord();
 		arrived.setArrivedAt(new Date());
@@ -142,12 +142,12 @@ public class DummyInVehicleDeviceApiClient extends
 		String os3 = "{id:3, arrival_estimate: '2012-10-13T02:00:00+09:00', departure_estimate: '2012-10-13T02:00:00+09:00', "
 				+ "platform: {name: '乗降場C', name_ruby: 'のりおりばしー'}}";
 
-		List<OperationSchedule> l = new LinkedList<OperationSchedule>();
+		List<UnmergedOperationSchedule> l = new LinkedList<UnmergedOperationSchedule>();
 
 		try {
-			l.add(OperationSchedule.parse(os1));
-			l.add(OperationSchedule.parse(os2));
-			l.add(OperationSchedule.parse(os3));
+			l.add(UnmergedOperationSchedule.parse(os1));
+			l.add(UnmergedOperationSchedule.parse(os2));
+			l.add(UnmergedOperationSchedule.parse(os3));
 
 			l.get(0).setOperationRecord(unhandled.clone());
 			l.get(1).setOperationRecord(unhandled.clone());

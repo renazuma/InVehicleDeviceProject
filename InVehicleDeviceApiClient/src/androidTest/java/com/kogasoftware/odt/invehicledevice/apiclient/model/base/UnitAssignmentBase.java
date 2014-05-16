@@ -39,7 +39,7 @@ public abstract class UnitAssignmentBase extends Model {
 	@JsonProperty private Boolean working = false;
 
 	// Associations
-	@JsonProperty @JsonView(AssociationView.class) private List<OperationSchedule> operationSchedules = Lists.newLinkedList();
+	@JsonProperty @JsonView(AssociationView.class) private List<UnmergedOperationSchedule> operationSchedules = Lists.newLinkedList();
 	@JsonProperty @JsonView(AssociationView.class) private List<ReservationCandidate> reservationCandidates = Lists.newLinkedList();
 	@JsonProperty @JsonView(AssociationView.class) private List<Reservation> reservations = Lists.newLinkedList();
 	@JsonProperty @JsonView(AssociationView.class) private Optional<ServiceProvider> serviceProvider = Optional.absent();
@@ -162,17 +162,17 @@ public abstract class UnitAssignmentBase extends Model {
 	}
 
 	@JsonIgnore
-	public List<OperationSchedule> getOperationSchedules() {
+	public List<UnmergedOperationSchedule> getOperationSchedules() {
 		return wrapNull(operationSchedules);
 	}
 
 	@JsonIgnore
-	public void setOperationSchedules(Iterable<OperationSchedule> operationSchedules) {
+	public void setOperationSchedules(Iterable<UnmergedOperationSchedule> operationSchedules) {
 		this.operationSchedules = wrapNull(operationSchedules);
 	}
 
 	public void clearOperationSchedules() {
-		setOperationSchedules(new LinkedList<OperationSchedule>());
+		setOperationSchedules(new LinkedList<UnmergedOperationSchedule>());
 	}
 
 	@JsonIgnore

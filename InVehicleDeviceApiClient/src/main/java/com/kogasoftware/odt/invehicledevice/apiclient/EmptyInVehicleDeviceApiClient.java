@@ -8,7 +8,7 @@ import android.graphics.Bitmap;
 import com.javadocmd.simplelatlng.LatLng;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.InVehicleDevice;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.UnmergedOperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceProvider;
@@ -22,52 +22,52 @@ public class EmptyInVehicleDeviceApiClient implements InVehicleDeviceApiClient {
 	}
 
 	@Override
-	public int arrivalOperationSchedule(OperationSchedule os,
-			ApiClientCallback<OperationSchedule> callback) {
+	public int arrivalOperationSchedule(UnmergedOperationSchedule os,
+			ApiClientCallback<UnmergedOperationSchedule> callback) {
 		return 0;
 	}
 
 	@Override
-	public int cancelArrivalOperationSchedule(OperationSchedule os,
-			ApiClientCallback<OperationSchedule> callback) {
+	public int cancelArrivalOperationSchedule(UnmergedOperationSchedule os,
+			ApiClientCallback<UnmergedOperationSchedule> callback) {
 		return 0;
 	}
 
 	@Override
-	public int departureOperationSchedule(OperationSchedule os,
-			ApiClientCallback<OperationSchedule> callback) {
+	public int departureOperationSchedule(UnmergedOperationSchedule os,
+			ApiClientCallback<UnmergedOperationSchedule> callback) {
 		return 0;
 	}
 
 	@Override
-	public int getOffPassenger(OperationSchedule operationSchedule,
+	public int getOffPassenger(UnmergedOperationSchedule operationSchedule,
 			Reservation reservation, User user,
 			PassengerRecord passengerRecord, ApiClientCallback<Void> callback) {
 		return 0;
 	}
 
 	@Override
-	public int getOnPassenger(OperationSchedule operationSchedule,
+	public int getOnPassenger(UnmergedOperationSchedule operationSchedule,
 			Reservation reservation, User user,
 			PassengerRecord passengerRecord, ApiClientCallback<Void> callback) {
 		return 0;
 	}
 
 	@Override
-	public int cancelGetOnPassenger(OperationSchedule operationSchedule,
+	public int cancelGetOnPassenger(UnmergedOperationSchedule operationSchedule,
 			Reservation reservation, User user, ApiClientCallback<Void> callback) {
 		return 0;
 	}
 
 	@Override
-	public int cancelGetOffPassenger(OperationSchedule operationSchedule,
+	public int cancelGetOffPassenger(UnmergedOperationSchedule operationSchedule,
 			Reservation reservation, User user, ApiClientCallback<Void> callback) {
 		return 0;
 	}
 
 	@Override
 	public int getOperationSchedules(
-			ApiClientCallback<List<OperationSchedule>> callback) {
+			ApiClientCallback<List<UnmergedOperationSchedule>> callback) {
 		return 0;
 	}
 

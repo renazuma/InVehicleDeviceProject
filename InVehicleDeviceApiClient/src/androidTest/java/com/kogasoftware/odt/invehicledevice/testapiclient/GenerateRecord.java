@@ -8,7 +8,7 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.Demand;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Driver;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.InVehicleDevice;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationRecord;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.UnmergedOperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
@@ -42,13 +42,13 @@ public class GenerateRecord implements Closeable {
 		return sc.getResult();
 	}
 
-	public OperationSchedule createOperationSchedule(
+	public UnmergedOperationSchedule createOperationSchedule(
 			final UnitAssignment unitAssignment, final Platform platform,
 			final Date operationDate) throws Exception {
-		SyncCall<OperationSchedule> sc = new SyncCall<OperationSchedule>() {
+		SyncCall<UnmergedOperationSchedule> sc = new SyncCall<UnmergedOperationSchedule>() {
 			@Override
 			public int run() throws Exception {
-				OperationSchedule obj = new OperationSchedule();
+				UnmergedOperationSchedule obj = new UnmergedOperationSchedule();
 				obj.setPlatform(platform);
 
 				return api.createOperationSchedule(obj, this);
@@ -61,9 +61,9 @@ public class GenerateRecord implements Closeable {
 	public Reservation createReservation(final User user, final Demand demand,
 			final UnitAssignment unitAssignment,
 			final Platform departurePlatform,
-			final OperationSchedule departureSchedule,
+			final UnmergedOperationSchedule departureSchedule,
 			final Date departureTime, final Platform arrivalPlatform,
-			final OperationSchedule arrivalSchedule, final Date arrivalTime,
+			final UnmergedOperationSchedule arrivalSchedule, final Date arrivalTime,
 			final int payment) throws Exception {
 		SyncCall<Reservation> sc = new SyncCall<Reservation>() {
 			@Override
@@ -144,8 +144,8 @@ public class GenerateRecord implements Closeable {
 	}
 
 	public PassengerRecord createPassengerRecord(final Reservation res,
-			final User user, final OperationSchedule departureSchedule,
-			final OperationSchedule arrivalSchedule, final int payment)
+			final User user, final UnmergedOperationSchedule departureSchedule,
+			final UnmergedOperationSchedule arrivalSchedule, final int payment)
 			throws Exception {
 		SyncCall<PassengerRecord> sc = new SyncCall<PassengerRecord>() {
 			@Override
@@ -164,7 +164,7 @@ public class GenerateRecord implements Closeable {
 	}
 
 	public OperationRecord createOperationRecord(
-			final OperationSchedule operationSchedule, final Date arrivedAt,
+			final UnmergedOperationSchedule operationSchedule, final Date arrivedAt,
 			final boolean arrivedAtOffline, final Date departedAt,
 			final boolean departedAtOffline) throws Exception {
 		SyncCall<OperationRecord> sc = new SyncCall<OperationRecord>() {

@@ -41,15 +41,15 @@ public abstract class OperationScheduleBase extends Model {
 	@JsonProperty @JsonView(AssociationView.class) private List<Reservation> reservationsAsDeparture = Lists.newLinkedList();
 
 	public static final String UNDERSCORE = "operation_schedule";
-	public static final ResponseConverter<OperationSchedule> RESPONSE_CONVERTER = getResponseConverter(OperationSchedule.class);
-	public static final ResponseConverter<List<OperationSchedule>> LIST_RESPONSE_CONVERTER = getListResponseConverter(OperationSchedule.class);
+	public static final ResponseConverter<UnmergedOperationSchedule> RESPONSE_CONVERTER = getResponseConverter(UnmergedOperationSchedule.class);
+	public static final ResponseConverter<List<UnmergedOperationSchedule>> LIST_RESPONSE_CONVERTER = getListResponseConverter(UnmergedOperationSchedule.class);
 
-	public static OperationSchedule parse(String jsonString) throws IOException {
-		return parse(jsonString, OperationSchedule.class);
+	public static UnmergedOperationSchedule parse(String jsonString) throws IOException {
+		return parse(jsonString, UnmergedOperationSchedule.class);
 	}
 
-	public static List<OperationSchedule> parseList(String jsonString) throws IOException {
-		return parseList(jsonString, OperationSchedule.class);
+	public static List<UnmergedOperationSchedule> parseList(String jsonString) throws IOException {
+		return parseList(jsonString, UnmergedOperationSchedule.class);
 	}
 
 	@JsonIgnore
@@ -168,12 +168,12 @@ public abstract class OperationScheduleBase extends Model {
 	}
 
 	@Override
-	public OperationSchedule clone() {
+	public UnmergedOperationSchedule clone() {
 		return clone(true);
 	}
 
 	@Override
-	public OperationSchedule clone(Boolean withAssociation) {
-		return super.clone(OperationSchedule.class, withAssociation);
+	public UnmergedOperationSchedule clone(Boolean withAssociation) {
+		return super.clone(UnmergedOperationSchedule.class, withAssociation);
 	}
 }

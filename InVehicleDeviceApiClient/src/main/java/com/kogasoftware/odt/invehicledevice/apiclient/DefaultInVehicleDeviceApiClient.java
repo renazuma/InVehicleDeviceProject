@@ -28,7 +28,7 @@ import com.kogasoftware.odt.apiclient.serializablerequestloader.SerializableGetL
 import com.kogasoftware.odt.apiclient.serializablerequestloader.SerializableRequestLoader;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.InVehicleDevice;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationRecord;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.UnmergedOperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceProvider;
@@ -92,8 +92,8 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	 *            運行スケジュールオブジェクト
 	 */
 	@Override
-	public int arrivalOperationSchedule(final OperationSchedule os,
-			final ApiClientCallback<OperationSchedule> callback) {
+	public int arrivalOperationSchedule(final UnmergedOperationSchedule os,
+			final ApiClientCallback<UnmergedOperationSchedule> callback) {
 		int reqkey = getRequestConfig().getReqkey();
 		try {
 			OperationRecord or = os.getOperationRecord().or(
@@ -113,7 +113,7 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 			String group = getOperationScheduleArrivalOrDepartureGroup(os.getId());
 			put(PATH_OPERATION_SCHEDULES + "/" + os.getId() + "/arrival",
 					param, retryParam, group, callback,
-					OperationSchedule.RESPONSE_CONVERTER);
+					UnmergedOperationSchedule.RESPONSE_CONVERTER);
 		} catch (IOException e) {
 			handleIOException(e, reqkey, callback);
 		}
@@ -127,8 +127,8 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	 *            運行スケジュールオブジェクト
 	 */
 	@Override
-	public int departureOperationSchedule(final OperationSchedule os,
-			final ApiClientCallback<OperationSchedule> callback) {
+	public int departureOperationSchedule(final UnmergedOperationSchedule os,
+			final ApiClientCallback<UnmergedOperationSchedule> callback) {
 		int reqkey = getRequestConfig().getReqkey();
 		try {
 			OperationRecord or = os.getOperationRecord().or(
@@ -147,7 +147,7 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 			String group = getOperationScheduleArrivalOrDepartureGroup(os.getId());
 			put(PATH_OPERATION_SCHEDULES + "/" + os.getId() + "/departure",
 					param, retryParam, group, callback,
-					OperationSchedule.RESPONSE_CONVERTER);
+					UnmergedOperationSchedule.RESPONSE_CONVERTER);
 		} catch (IOException e) {
 			handleIOException(e, reqkey, callback);
 		}
@@ -161,7 +161,7 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	 *            運行スケジュールオブジェクト
 	 */
 	@Override
-	public int getOffPassenger(final OperationSchedule operationSchedule,
+	public int getOffPassenger(final UnmergedOperationSchedule operationSchedule,
 			final Reservation reservation, final User user,
 			final PassengerRecord passengerRecord,
 			final ApiClientCallback<Void> callback) {
@@ -195,7 +195,7 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	 *            運行スケジュールオブジェクト
 	 */
 	@Override
-	public int getOnPassenger(final OperationSchedule operationSchedule,
+	public int getOnPassenger(final UnmergedOperationSchedule operationSchedule,
 			final Reservation reservation, final User user,
 			final PassengerRecord passengerRecord,
 			final ApiClientCallback<Void> callback) {
@@ -229,7 +229,7 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	 *            運行スケジュールオブジェクト
 	 */
 	@Override
-	public int cancelGetOnPassenger(final OperationSchedule operationSchedule,
+	public int cancelGetOnPassenger(final UnmergedOperationSchedule operationSchedule,
 			final Reservation reservation, final User user,
 			final ApiClientCallback<Void> callback) {
 		String dummyGetOnTime = DateFormatUtils.ISO_DATETIME_TIME_ZONE_FORMAT
@@ -252,7 +252,7 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	 *            運行スケジュールオブジェクト
 	 */
 	@Override
-	public int cancelGetOffPassenger(final OperationSchedule operationSchedule,
+	public int cancelGetOffPassenger(final UnmergedOperationSchedule operationSchedule,
 			final Reservation reservation, final User user,
 			final ApiClientCallback<Void> callback) {
 		String dummyGetOffTime = DateFormatUtils.ISO_DATETIME_TIME_ZONE_FORMAT
@@ -273,10 +273,10 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	 */
 	@Override
 	public int getOperationSchedules(
-			ApiClientCallback<List<OperationSchedule>> callback) {
+			ApiClientCallback<List<UnmergedOperationSchedule>> callback) {
 		return get(PATH_OPERATION_SCHEDULES, new TreeMap<String, String>(),
 				UNIQUE_GROUP, callback,
-				OperationSchedule.LIST_RESPONSE_CONVERTER);
+				UnmergedOperationSchedule.LIST_RESPONSE_CONVERTER);
 	}
 
 	@Override
@@ -554,8 +554,8 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	}
 
 	@Override
-	public int cancelArrivalOperationSchedule(OperationSchedule os,
-			ApiClientCallback<OperationSchedule> callback) {
+	public int cancelArrivalOperationSchedule(UnmergedOperationSchedule os,
+			ApiClientCallback<UnmergedOperationSchedule> callback) {
 		int reqkey = getRequestConfig().getReqkey();
 		try {
 			OperationRecord or = os.getOperationRecord().or(
@@ -569,7 +569,7 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 			String group = getOperationScheduleArrivalOrDepartureGroup(os.getId());
 			put(PATH_OPERATION_SCHEDULES + "/" + os.getId() + "/cancel_arrival",
 					param, group, callback,
-					OperationSchedule.RESPONSE_CONVERTER);
+					UnmergedOperationSchedule.RESPONSE_CONVERTER);
 		} catch (IOException e) {
 			handleIOException(e, reqkey, callback);
 		}

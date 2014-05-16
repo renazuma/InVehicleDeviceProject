@@ -12,12 +12,12 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.*;
  * OperationScheduleBaseのテスト
  */
 public class OperationScheduleBaseTestCase extends TestCase {
-	OperationSchedule model;
+	UnmergedOperationSchedule model;
 
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		model = new OperationSchedule();
+		model = new UnmergedOperationSchedule();
 	}
 
 	@Override
@@ -29,36 +29,36 @@ public class OperationScheduleBaseTestCase extends TestCase {
 	}
 
 	public void xtestClone() throws Exception {
-		OperationSchedule m1 = new OperationSchedule();
+		UnmergedOperationSchedule m1 = new UnmergedOperationSchedule();
 		m1.setId(10);
-		OperationSchedule m2 = m1.clone();
+		UnmergedOperationSchedule m2 = m1.clone();
 		assertFalse(m1 == m2);
 		assertEquals(m1, m2);
 
 		m1.setId(11);
 		assertFalse(m1.equals(m2));
 
-		OperationSchedule m3 = m1.clone();
+		UnmergedOperationSchedule m3 = m1.clone();
 		assertEquals(m1, Serializations.clone(m3));
 	}
 
 	public void xtestSerializable() throws Exception {
-		OperationSchedule m1 = new OperationSchedule();
+		UnmergedOperationSchedule m1 = new UnmergedOperationSchedule();
 		m1.setId(10);
-		OperationSchedule m2 = Serializations.clone(m1);
+		UnmergedOperationSchedule m2 = Serializations.clone(m1);
 		assertFalse(m1 == m2);
 		assertEquals(m1, m2);
 
 		m1.setId(11);
 		assertFalse(m1.equals(m2));
 
-		OperationSchedule m3 = Serializations.clone(m1);
+		UnmergedOperationSchedule m3 = Serializations.clone(m1);
 		assertEquals(m1, m3);
 	}
 
 	public void xtestEquals() throws Exception {
-		OperationSchedule l = new OperationSchedule();
-		OperationSchedule r = l.clone();
+		UnmergedOperationSchedule l = new UnmergedOperationSchedule();
+		UnmergedOperationSchedule r = l.clone();
 
 		assertTrue(l.equals(r));
 		assertTrue(r.equals(l));
@@ -77,19 +77,19 @@ public class OperationScheduleBaseTestCase extends TestCase {
 
 	public void testCanSerializable() {
 		Model.getObjectMapper().canSerialize(OperationScheduleBase.class);
-		Model.getObjectMapper().canSerialize(OperationSchedule.class);
+		Model.getObjectMapper().canSerialize(UnmergedOperationSchedule.class);
 	}
 
 	public void xtestIdentity() {
-		OperationSchedule odd = new OperationSchedule();
-		OperationSchedule even = new OperationSchedule();
-		LinkedList<OperationSchedule> l1 = Lists.newLinkedList();
+		UnmergedOperationSchedule odd = new UnmergedOperationSchedule();
+		UnmergedOperationSchedule even = new UnmergedOperationSchedule();
+		LinkedList<UnmergedOperationSchedule> l1 = Lists.newLinkedList();
 		l1.add(even);
 		l1.add(odd);
 		l1.add(even);
 		l1.add(odd);
 		
-		LinkedList<OperationSchedule> l2 = Serializations.clone(l1);
+		LinkedList<UnmergedOperationSchedule> l2 = Serializations.clone(l1);
 		assertEquals(l1, l2);
 		
 		assertEquals(l1.get(0), l2.get(0));

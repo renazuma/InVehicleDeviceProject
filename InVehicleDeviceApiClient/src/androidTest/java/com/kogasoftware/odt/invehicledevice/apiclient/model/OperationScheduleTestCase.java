@@ -1,7 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.apiclient.model;
 
-import static com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule.getCurrent;
-import static com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule.getRelative;
+import static com.kogasoftware.odt.invehicledevice.apiclient.model.UnmergedOperationSchedule.getCurrent;
+import static com.kogasoftware.odt.invehicledevice.apiclient.model.UnmergedOperationSchedule.getRelative;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,11 +10,11 @@ import junit.framework.TestCase;
 
 import com.google.common.base.Optional;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationRecord;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.UnmergedOperationSchedule;
 
 public class OperationScheduleTestCase extends TestCase {
 	public void testIsDeparted() {
-		OperationSchedule os = new OperationSchedule();
+		UnmergedOperationSchedule os = new UnmergedOperationSchedule();
 		os.clearOperationRecord();
 		assertFalse(os.isDeparted());
 		
@@ -30,7 +30,7 @@ public class OperationScheduleTestCase extends TestCase {
 	}
 
 	public void testIsArrived() {
-		OperationSchedule os = new OperationSchedule();
+		UnmergedOperationSchedule os = new UnmergedOperationSchedule();
 		os.clearOperationRecord();
 		assertFalse(os.isArrived());
 		
@@ -51,14 +51,14 @@ public class OperationScheduleTestCase extends TestCase {
 		departed.setDepartedAt(new Date());
 
 		// 0件
-		List<OperationSchedule> oss = new LinkedList<OperationSchedule>();
+		List<UnmergedOperationSchedule> oss = new LinkedList<UnmergedOperationSchedule>();
 		assertFalse(getRelative(oss, -1).isPresent());
 		assertFalse(getRelative(oss, 0).isPresent());
 		assertFalse(getCurrent(oss).isPresent());
 		assertFalse(getRelative(oss, 1).isPresent());
 
 		// 1件
-		oss.add(new OperationSchedule());
+		oss.add(new UnmergedOperationSchedule());
 
 		oss.get(0).setOperationRecord(incomplete);
 		assertFalse(getRelative(oss, -1).isPresent());
@@ -76,7 +76,7 @@ public class OperationScheduleTestCase extends TestCase {
 		assertFalse(getRelative(oss, 1).isPresent());
 
 		// 2件
-		oss.add(new OperationSchedule());
+		oss.add(new UnmergedOperationSchedule());
 
 		oss.get(0).setOperationRecord(incomplete);
 		oss.get(1).setOperationRecord(incomplete);
@@ -107,7 +107,7 @@ public class OperationScheduleTestCase extends TestCase {
 		assertFalse(getRelative(oss, 1).isPresent());
 
 		// 3件
-		oss.add(new OperationSchedule());
+		oss.add(new UnmergedOperationSchedule());
 
 		oss.get(0).setOperationRecord(incomplete);
 		oss.get(1).setOperationRecord(incomplete);

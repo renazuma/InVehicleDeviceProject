@@ -27,7 +27,7 @@ import com.kogasoftware.odt.invehicledevice.apiclient.DefaultInVehicleDeviceApiC
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Demand;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.InVehicleDevice;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationRecord;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.UnmergedOperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
@@ -94,8 +94,8 @@ public class DefaultInVehicleDeviceApiClientTestCase extends DummyAndroidTestCas
 	GenerateRecord record;
 	ServiceProvider serviceProvider;
 	List<VehicleNotification> notifications;
-	List<OperationSchedule> schedules;
-	OperationSchedule schedule;
+	List<UnmergedOperationSchedule> schedules;
+	UnmergedOperationSchedule schedule;
 	List<PassengerRecord> passengerRecords = new LinkedList<PassengerRecord>();
 	ServiceUnitStatusLog serviceUnitStatusLog;
 
@@ -385,9 +385,9 @@ public class DefaultInVehicleDeviceApiClientTestCase extends DummyAndroidTestCas
 				master.getInVehicleDevice(), ua, cal.getTime());
 
 		Platform p1 = master.createPlatform("乗降場1", "じょうこうじょう1");
-		OperationSchedule os1 = record.createOperationSchedule(ua, p1, now);
+		UnmergedOperationSchedule os1 = record.createOperationSchedule(ua, p1, now);
 		Platform p2 = master.createPlatform("乗降場2", "じょうこうじょう2");
-		OperationSchedule os2 = record.createOperationSchedule(ua, p2, now);
+		UnmergedOperationSchedule os2 = record.createOperationSchedule(ua, p2, now);
 
 		Demand demand = record.createDemand(user, ua, p1, dtDeparture1, p2,
 				dtArrival2, 0);
@@ -396,10 +396,10 @@ public class DefaultInVehicleDeviceApiClientTestCase extends DummyAndroidTestCas
 		assertNotNull(r);
 		assertNotNull(record.createReservationUser(r, user));
 
-		api.getOperationSchedules(new ApiClientCallback<List<OperationSchedule>>() {
+		api.getOperationSchedules(new ApiClientCallback<List<UnmergedOperationSchedule>>() {
 			@Override
 			public void onSucceed(int reqkey, int statusCode,
-					List<OperationSchedule> result) {
+					List<UnmergedOperationSchedule> result) {
 				schedules = result;
 				latch.countDown();
 			}
@@ -431,10 +431,10 @@ public class DefaultInVehicleDeviceApiClientTestCase extends DummyAndroidTestCas
 
 		latch = new CountDownLatch(1);
 		api.departureOperationSchedule(schedules.get(0),
-				new ApiClientCallback<OperationSchedule>() {
+				new ApiClientCallback<UnmergedOperationSchedule>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
-							OperationSchedule result) {
+							UnmergedOperationSchedule result) {
 						schedule = result;
 						latch.countDown();
 					}
@@ -480,10 +480,10 @@ public class DefaultInVehicleDeviceApiClientTestCase extends DummyAndroidTestCas
 		}
 		latch = new CountDownLatch(1);
 		api.arrivalOperationSchedule(schedules.get(1),
-				new ApiClientCallback<OperationSchedule>() {
+				new ApiClientCallback<UnmergedOperationSchedule>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
-							OperationSchedule result) {
+							UnmergedOperationSchedule result) {
 						schedule = result;
 						latch.countDown();
 					}
@@ -545,8 +545,8 @@ public class DefaultInVehicleDeviceApiClientTestCase extends DummyAndroidTestCas
 		assertNotNull(schedules);
 		assertEquals(2, schedules.size());
 
-		OperationSchedule os1 = schedules.get(0);
-		OperationSchedule os2 = schedules.get(1);
+		UnmergedOperationSchedule os1 = schedules.get(0);
+		UnmergedOperationSchedule os2 = schedules.get(1);
 		Reservation res = os1.getReservationsAsDeparture().get(0);
 		User user = master.createUser("login2", "もぎ", "たろう");
 		assertNotNull(record.createReservationUser(res, user));
@@ -596,10 +596,10 @@ public class DefaultInVehicleDeviceApiClientTestCase extends DummyAndroidTestCas
 
 		latch = new CountDownLatch(1);
 		api.departureOperationSchedule(schedules.get(0),
-				new ApiClientCallback<OperationSchedule>() {
+				new ApiClientCallback<UnmergedOperationSchedule>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
-							OperationSchedule result) {
+							UnmergedOperationSchedule result) {
 						schedule = result;
 						latch.countDown();
 					}
@@ -623,10 +623,10 @@ public class DefaultInVehicleDeviceApiClientTestCase extends DummyAndroidTestCas
 
 		latch = new CountDownLatch(1);
 		api.arrivalOperationSchedule(schedules.get(1),
-				new ApiClientCallback<OperationSchedule>() {
+				new ApiClientCallback<UnmergedOperationSchedule>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
-							OperationSchedule result) {
+							UnmergedOperationSchedule result) {
 						schedule = result;
 						latch.countDown();
 					}
@@ -700,8 +700,8 @@ public class DefaultInVehicleDeviceApiClientTestCase extends DummyAndroidTestCas
 		assertNotNull(schedules);
 		assertEquals(2, schedules.size());
 
-		OperationSchedule os1 = schedules.get(0);
-		OperationSchedule os2 = schedules.get(1);
+		UnmergedOperationSchedule os1 = schedules.get(0);
+		UnmergedOperationSchedule os2 = schedules.get(1);
 		Reservation res = os1.getReservationsAsDeparture().get(0);
 
 		assertFalse(schedules.get(1).getReservationsAsArrival().get(0)
@@ -751,10 +751,10 @@ public class DefaultInVehicleDeviceApiClientTestCase extends DummyAndroidTestCas
 
 		latch = new CountDownLatch(1);
 		api.departureOperationSchedule(schedules.get(0),
-				new ApiClientCallback<OperationSchedule>() {
+				new ApiClientCallback<UnmergedOperationSchedule>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
-							OperationSchedule result) {
+							UnmergedOperationSchedule result) {
 						schedule = result;
 						latch.countDown();
 					}
@@ -778,10 +778,10 @@ public class DefaultInVehicleDeviceApiClientTestCase extends DummyAndroidTestCas
 
 		latch = new CountDownLatch(1);
 		api.arrivalOperationSchedule(schedules.get(1),
-				new ApiClientCallback<OperationSchedule>() {
+				new ApiClientCallback<UnmergedOperationSchedule>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
-							OperationSchedule result) {
+							UnmergedOperationSchedule result) {
 						schedule = result;
 						latch.countDown();
 					}
@@ -846,8 +846,8 @@ public class DefaultInVehicleDeviceApiClientTestCase extends DummyAndroidTestCas
 		assertNotNull(schedules);
 		assertEquals(2, schedules.size());
 
-		OperationSchedule os1 = schedules.get(0);
-		OperationSchedule os2 = schedules.get(1);
+		UnmergedOperationSchedule os1 = schedules.get(0);
+		UnmergedOperationSchedule os2 = schedules.get(1);
 		Reservation res = os1.getReservationsAsDeparture().get(0);
 
 		assertFalse(schedules.get(1).getReservationsAsArrival().get(0)
@@ -869,10 +869,10 @@ public class DefaultInVehicleDeviceApiClientTestCase extends DummyAndroidTestCas
 
 		latch = new CountDownLatch(1);
 		api.departureOperationSchedule(schedules.get(0),
-				new EmptyApiClientCallback<OperationSchedule>() {
+				new EmptyApiClientCallback<UnmergedOperationSchedule>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
-							OperationSchedule result) {
+							UnmergedOperationSchedule result) {
 						schedule = result;
 						latch.countDown();
 					}
@@ -881,10 +881,10 @@ public class DefaultInVehicleDeviceApiClientTestCase extends DummyAndroidTestCas
 
 		latch = new CountDownLatch(1);
 		api.arrivalOperationSchedule(schedules.get(1),
-				new EmptyApiClientCallback<OperationSchedule>() {
+				new EmptyApiClientCallback<UnmergedOperationSchedule>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
-							OperationSchedule result) {
+							UnmergedOperationSchedule result) {
 						schedule = result;
 						latch.countDown();
 					}
@@ -956,7 +956,7 @@ public class DefaultInVehicleDeviceApiClientTestCase extends DummyAndroidTestCas
 		assertNotNull(schedules);
 		assertEquals(2, schedules.size());
 
-		OperationSchedule os1 = schedules.get(0);
+		UnmergedOperationSchedule os1 = schedules.get(0);
 		Reservation res = os1.getReservationsAsDeparture().get(0);
 		Reservation res2 = os1.getReservationsAsDeparture().get(1);
 
@@ -1032,9 +1032,9 @@ public class DefaultInVehicleDeviceApiClientTestCase extends DummyAndroidTestCas
 				master.getInVehicleDevice(), ua, cal.getTime());
 
 		Platform p1 = master.createPlatform("乗降場1", "じょうこうじょう1");
-		OperationSchedule os1 = record.createOperationSchedule(ua, p1, now);
+		UnmergedOperationSchedule os1 = record.createOperationSchedule(ua, p1, now);
 		Platform p2 = master.createPlatform("乗降場2", "じょうこうじょう2");
-		OperationSchedule os2 = record.createOperationSchedule(ua, p2, now);
+		UnmergedOperationSchedule os2 = record.createOperationSchedule(ua, p2, now);
 
 		Demand demand = record.createDemand(user, ua, p1, dtDeparture, p2,
 				dtArrival, 0);
@@ -1058,10 +1058,10 @@ public class DefaultInVehicleDeviceApiClientTestCase extends DummyAndroidTestCas
 		passengerRecords.add(pr2);
 
 		latch = new CountDownLatch(1);
-		api.getOperationSchedules(new ApiClientCallback<List<OperationSchedule>>() {
+		api.getOperationSchedules(new ApiClientCallback<List<UnmergedOperationSchedule>>() {
 			@Override
 			public void onSucceed(int reqkey, int statusCode,
-					List<OperationSchedule> result) {
+					List<UnmergedOperationSchedule> result) {
 				schedules = result;
 				latch.countDown();
 			}

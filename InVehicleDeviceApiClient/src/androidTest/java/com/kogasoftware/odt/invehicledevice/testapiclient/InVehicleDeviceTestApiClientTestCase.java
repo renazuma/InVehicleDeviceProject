@@ -11,7 +11,7 @@ import com.google.common.io.Closeables;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Demand;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Driver;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.InVehicleDevice;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.UnmergedOperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.UnitAssignment;
@@ -166,7 +166,7 @@ public class InVehicleDeviceTestApiClientTestCase extends DummyAndroidTestCase {
 		Calendar cal = Calendar.getInstance();
 		cal.clear();
 		cal.set(2011, 1, 23);
-		OperationSchedule s = record.createOperationSchedule(u, p1,
+		UnmergedOperationSchedule s = record.createOperationSchedule(u, p1,
 				cal.getTime());
 
 		assertNotNull(s);
@@ -188,10 +188,10 @@ public class InVehicleDeviceTestApiClientTestCase extends DummyAndroidTestCase {
 		User user = master.createUser("login1", "もぎ", "たろう");
 		UnitAssignment ua = record.createUnitAssignment("1号車");
 		Platform p1 = master.createPlatform("乗降場1", "じょうこうじょう1");
-		OperationSchedule os1 = record.createOperationSchedule(ua, p1,
+		UnmergedOperationSchedule os1 = record.createOperationSchedule(ua, p1,
 				new Date());
 		Platform p2 = master.createPlatform("乗降場2", "じょうこうじょう2");
-		OperationSchedule os2 = record.createOperationSchedule(ua, p2,
+		UnmergedOperationSchedule os2 = record.createOperationSchedule(ua, p2,
 				new Date());
 
 		Demand demand = record.createDemand(user, ua, p1, dtDeparture, p2,
@@ -267,9 +267,9 @@ public class InVehicleDeviceTestApiClientTestCase extends DummyAndroidTestCase {
 		User user = master.createUser("login1", "もぎ", "たろう");
 		UnitAssignment ua = record.createUnitAssignment("1号車");
 		Platform p1 = master.createPlatform("乗降場1", "じょうこうじょう1");
-		OperationSchedule os1 = record.createOperationSchedule(ua, p1, now);
+		UnmergedOperationSchedule os1 = record.createOperationSchedule(ua, p1, now);
 		Platform p2 = master.createPlatform("乗降場2", "じょうこうじょう2");
-		OperationSchedule os2 = record.createOperationSchedule(ua, p2, now);
+		UnmergedOperationSchedule os2 = record.createOperationSchedule(ua, p2, now);
 
 		Demand demand = record.createDemand(user, ua, p1, dtDeparture, p2,
 				dtArrival, 0);
@@ -287,7 +287,7 @@ public class InVehicleDeviceTestApiClientTestCase extends DummyAndroidTestCase {
 		UnitAssignment u = record.createUnitAssignment("1号車");
 
 		Date dt = new Date();
-		OperationSchedule s = record.createOperationSchedule(u, p1, dt);
+		UnmergedOperationSchedule s = record.createOperationSchedule(u, p1, dt);
 
 		assertNotNull(record.createOperationRecord(s, dt, false, dt, true));
 	}

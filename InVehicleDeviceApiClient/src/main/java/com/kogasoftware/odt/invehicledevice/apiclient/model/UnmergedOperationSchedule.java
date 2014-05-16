@@ -9,9 +9,9 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.base.OperationScheduleBase;
 
-public class OperationSchedule extends OperationScheduleBase {
-	private static final long serialVersionUID = 1040628741311146499L;
-	private static final String TAG = OperationSchedule.class.getSimpleName();
+public class UnmergedOperationSchedule extends OperationScheduleBase {
+	private static final long serialVersionUID = 1040628741311146500L;
+	private static final String TAG = UnmergedOperationSchedule.class.getSimpleName();
 
 	/**
 	 * 出発済みか調べる
@@ -36,18 +36,18 @@ public class OperationSchedule extends OperationScheduleBase {
 	/**
 	 * 現在運行中の運行スケジュールを得る
 	 */
-	public static Optional<OperationSchedule> getCurrent(
-			Iterable<OperationSchedule> operationSchedules) {
+	public static Optional<UnmergedOperationSchedule> getCurrent(
+			Iterable<UnmergedOperationSchedule> operationSchedules) {
 		return getRelative(operationSchedules, 0);
 	}
 
 	/**
 	 * 現在運行中の運行スケジュールから、offset個進めた運行スケジュールを得る
 	 */
-	public static Optional<OperationSchedule> getRelative(
-			Iterable<OperationSchedule> operationSchedules, Integer offset) {
+	public static Optional<UnmergedOperationSchedule> getRelative(
+			Iterable<UnmergedOperationSchedule> operationSchedules, Integer offset) {
 		Integer currentIndex = 0;
-		for (OperationSchedule operationSchedule : operationSchedules) {
+		for (UnmergedOperationSchedule operationSchedule : operationSchedules) {
 			if (!operationSchedule.isDeparted()) {
 				break;
 			}

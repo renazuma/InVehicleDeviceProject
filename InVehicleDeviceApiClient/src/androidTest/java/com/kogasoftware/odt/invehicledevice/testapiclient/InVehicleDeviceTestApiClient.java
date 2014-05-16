@@ -15,7 +15,7 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.Demand;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Driver;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.InVehicleDevice;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationRecord;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.UnmergedOperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Operator;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
@@ -242,8 +242,8 @@ public class InVehicleDeviceTestApiClient extends DefaultApiClient {
 	 * @return reqkey
 	 * @throws ApiClientException
 	 */
-	public int getAllOperationSchedules(ApiClientCallback<List<OperationSchedule>> callback) throws ApiClientException {
-		return get(TEST_PATH_OPERATION_SCHEDULES, new TreeMap<String, String>(), UNIQUE_GROUP, callback, OperationSchedule.LIST_RESPONSE_CONVERTER);
+	public int getAllOperationSchedules(ApiClientCallback<List<UnmergedOperationSchedule>> callback) throws ApiClientException {
+		return get(TEST_PATH_OPERATION_SCHEDULES, new TreeMap<String, String>(), UNIQUE_GROUP, callback, UnmergedOperationSchedule.LIST_RESPONSE_CONVERTER);
 	}
 
 	/**
@@ -252,8 +252,8 @@ public class InVehicleDeviceTestApiClient extends DefaultApiClient {
 	 * @return reqkey
 	 * @throws ApiClientException
 	 */
-	public int getOperationSchedule(int id, ApiClientCallback<OperationSchedule> callback) throws ApiClientException {
-		return get(TEST_PATH_OPERATION_SCHEDULES + "/" + id, new TreeMap<String, String>(), UNIQUE_GROUP, callback, OperationSchedule.RESPONSE_CONVERTER);
+	public int getOperationSchedule(int id, ApiClientCallback<UnmergedOperationSchedule> callback) throws ApiClientException {
+		return get(TEST_PATH_OPERATION_SCHEDULES + "/" + id, new TreeMap<String, String>(), UNIQUE_GROUP, callback, UnmergedOperationSchedule.RESPONSE_CONVERTER);
 	}
 
 	/**
@@ -262,9 +262,9 @@ public class InVehicleDeviceTestApiClient extends DefaultApiClient {
 	 * @return reqkey
 	 * @throws ApiClientException
 	 */
-	public int createOperationSchedule(OperationSchedule obj, ApiClientCallback<OperationSchedule> callback) throws ApiClientException, IOException {
-		JsonNode param = createObjectNode().set(OperationSchedule.UNDERSCORE, obj.toJsonNode(false).without(COMMON_EXCLUDES));
-		return post(TEST_PATH_OPERATION_SCHEDULES, param, UNIQUE_GROUP, callback, OperationSchedule.RESPONSE_CONVERTER);
+	public int createOperationSchedule(UnmergedOperationSchedule obj, ApiClientCallback<UnmergedOperationSchedule> callback) throws ApiClientException, IOException {
+		JsonNode param = createObjectNode().set(UnmergedOperationSchedule.UNDERSCORE, obj.toJsonNode(false).without(COMMON_EXCLUDES));
+		return post(TEST_PATH_OPERATION_SCHEDULES, param, UNIQUE_GROUP, callback, UnmergedOperationSchedule.RESPONSE_CONVERTER);
 	}
 
 	/**
