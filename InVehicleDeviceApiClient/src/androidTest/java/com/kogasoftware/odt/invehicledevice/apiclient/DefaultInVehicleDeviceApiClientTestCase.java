@@ -561,7 +561,7 @@ public class DefaultInVehicleDeviceApiClientTestCase extends DummyAndroidTestCas
 		if (offlineTest) {
 			offline = true;
 		}
-		api.getOnPassenger(os1, res, res.getFellowUsers().get(0), prec,
+		api.getOnPassenger(res, res.getFellowUsers().get(0), prec,
 				new EmptyApiClientCallback<Void>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
@@ -655,7 +655,7 @@ public class DefaultInVehicleDeviceApiClientTestCase extends DummyAndroidTestCas
 		if (offlineTest) {
 			offline = true;
 		}
-		api.getOffPassenger(os2, res, res.getFellowUsers().get(0), prec,
+		api.getOffPassenger(res, res.getFellowUsers().get(0), prec,
 				new EmptyApiClientCallback<Void>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
@@ -701,7 +701,6 @@ public class DefaultInVehicleDeviceApiClientTestCase extends DummyAndroidTestCas
 		assertEquals(2, schedules.size());
 
 		UnmergedOperationSchedule os1 = schedules.get(0);
-		UnmergedOperationSchedule os2 = schedules.get(1);
 		Reservation res = os1.getReservationsAsDeparture().get(0);
 
 		assertFalse(schedules.get(1).getReservationsAsArrival().get(0)
@@ -712,9 +711,9 @@ public class DefaultInVehicleDeviceApiClientTestCase extends DummyAndroidTestCas
 
 		latch = new CountDownLatch(1);
 
-		api.getOnPassenger(os1, res, res.getFellowUsers().get(0), prec,
+		api.getOnPassenger(res, res.getFellowUsers().get(0), prec,
 				new EmptyApiClientCallback<Void>());
-		api.cancelGetOnPassenger(os1, res, res.getFellowUsers().get(0),
+		api.cancelGetOnPassenger(res, res.getFellowUsers().get(0),
 				new EmptyApiClientCallback<Void>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
@@ -739,7 +738,7 @@ public class DefaultInVehicleDeviceApiClientTestCase extends DummyAndroidTestCas
 		assertTrue(serverPassengerRecord.isUnhandled());
 
 		latch = new CountDownLatch(1);
-		api.getOnPassenger(os1, res, res.getFellowUsers().get(0), prec,
+		api.getOnPassenger(res, res.getFellowUsers().get(0), prec,
 				new EmptyApiClientCallback<Void>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
@@ -807,9 +806,9 @@ public class DefaultInVehicleDeviceApiClientTestCase extends DummyAndroidTestCas
 		prec.setPassengerCount(3);
 
 		latch = new CountDownLatch(1);
-		api.getOffPassenger(os2, res, res.getFellowUsers().get(0), prec,
+		api.getOffPassenger(res, res.getFellowUsers().get(0), prec,
 				new EmptyApiClientCallback<Void>());
-		api.cancelGetOffPassenger(os2, res, res.getFellowUsers().get(0),
+		api.cancelGetOffPassenger(res, res.getFellowUsers().get(0),
 				new EmptyApiClientCallback<Void>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
@@ -847,7 +846,6 @@ public class DefaultInVehicleDeviceApiClientTestCase extends DummyAndroidTestCas
 		assertEquals(2, schedules.size());
 
 		UnmergedOperationSchedule os1 = schedules.get(0);
-		UnmergedOperationSchedule os2 = schedules.get(1);
 		Reservation res = os1.getReservationsAsDeparture().get(0);
 
 		assertFalse(schedules.get(1).getReservationsAsArrival().get(0)
@@ -857,7 +855,7 @@ public class DefaultInVehicleDeviceApiClientTestCase extends DummyAndroidTestCas
 		prec.setPassengerCount(3);
 
 		latch = new CountDownLatch(1);
-		api.getOnPassenger(os1, res, res.getFellowUsers().get(0), prec,
+		api.getOnPassenger(res, res.getFellowUsers().get(0), prec,
 				new EmptyApiClientCallback<Void>() {
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
@@ -907,7 +905,7 @@ public class DefaultInVehicleDeviceApiClientTestCase extends DummyAndroidTestCas
 		for (int i = 0; i < max; ++i) {
 			final int fi = i;
 			if (i % 2 == 0) {
-				api.getOffPassenger(os2, res, res.getFellowUsers().get(0),
+				api.getOffPassenger(res, res.getFellowUsers().get(0),
 						prec, new EmptyApiClientCallback<Void>() {
 							@Override
 							public void onSucceed(int reqkey, int statusCode,
@@ -917,7 +915,7 @@ public class DefaultInVehicleDeviceApiClientTestCase extends DummyAndroidTestCas
 							}
 						});
 			} else {
-				api.cancelGetOffPassenger(os2, res,
+				api.cancelGetOffPassenger(res,
 						res.getFellowUsers().get(0),
 						new EmptyApiClientCallback<Void>() {
 							@Override
@@ -973,7 +971,7 @@ public class DefaultInVehicleDeviceApiClientTestCase extends DummyAndroidTestCas
 		for (int i = 0; i < max; ++i) {
 			final int fi = i;
 			if (i % 2 == 0) {
-				api.getOnPassenger(os1, res, res.getFellowUsers().get(0), prec,
+				api.getOnPassenger(res, res.getFellowUsers().get(0), prec,
 						new EmptyApiClientCallback<Void>() {
 							@Override
 							public void onSucceed(int reqkey, int statusCode,
@@ -983,7 +981,7 @@ public class DefaultInVehicleDeviceApiClientTestCase extends DummyAndroidTestCas
 							}
 						});
 			} else {
-				api.cancelGetOnPassenger(os1, res, res.getFellowUsers().get(0),
+				api.cancelGetOnPassenger(res, res.getFellowUsers().get(0),
 						new EmptyApiClientCallback<Void>() {
 							@Override
 							public void onSucceed(int reqkey, int statusCode,
@@ -994,7 +992,7 @@ public class DefaultInVehicleDeviceApiClientTestCase extends DummyAndroidTestCas
 						});
 			}
 			if (i == max / 2) {
-				api.getOnPassenger(os1, res2, res2.getFellowUsers().get(0),
+				api.getOnPassenger(res2, res2.getFellowUsers().get(0),
 						prec, new EmptyApiClientCallback<Void>() {
 							@Override
 							public void onSucceed(int reqkey, int statusCode,

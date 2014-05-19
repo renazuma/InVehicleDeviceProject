@@ -15,6 +15,7 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Local
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage;
 import com.kogasoftware.odt.invehicledevice.testutil.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.UnmergedOperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.testutil.TestUtil;
@@ -28,10 +29,10 @@ public class DrivePhaseFragmentTestCase extends
 	EventDispatcher ed;
 	Fragment f;
 
-	List<OperationSchedule> oss;
-	OperationSchedule os0;
-	OperationSchedule os1;
-	OperationSchedule os2;
+	List<UnmergedOperationSchedule> oss;
+	UnmergedOperationSchedule os0;
+	UnmergedOperationSchedule os1;
+	UnmergedOperationSchedule os2;
 	Platform p0;
 	Platform p1;
 	Platform p2;
@@ -54,9 +55,9 @@ public class DrivePhaseFragmentTestCase extends
 		p1 = new Platform();
 		p2 = new Platform();
 
-		os0 = new OperationSchedule();
-		os1 = new OperationSchedule();
-		os2 = new OperationSchedule();
+		os0 = new UnmergedOperationSchedule();
+		os1 = new UnmergedOperationSchedule();
+		os2 = new UnmergedOperationSchedule();
 
 		os0.setPlatform(p0);
 		os1.setPlatform(p1);
@@ -78,7 +79,7 @@ public class DrivePhaseFragmentTestCase extends
 				FrameLayout fl = new FrameLayout(a);
 				fl.setId(id);
 				a.setContentView(fl);
-				f = DrivePhaseFragment.newInstance(oss);
+				f = DrivePhaseFragment.newInstance(OperationSchedule.create(oss));
 				FragmentManager fm = a.getFragmentManager();
 				fm.beginTransaction().add(id, f).commit();
 			}

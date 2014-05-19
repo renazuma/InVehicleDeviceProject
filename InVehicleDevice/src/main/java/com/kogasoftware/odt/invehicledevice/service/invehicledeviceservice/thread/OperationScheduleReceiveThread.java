@@ -9,7 +9,7 @@ import android.util.Log;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.apiclient.ApiClientException;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.UnmergedOperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification.NotificationKind;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
@@ -51,7 +51,7 @@ public class OperationScheduleReceiveThread extends Thread implements
 	public void receive(
 			final List<VehicleNotification> triggerVehicleNotifications) {
 		service.getApiClient().getOperationSchedules(
-				new ApiClientCallback<List<OperationSchedule>>() {
+				new ApiClientCallback<List<UnmergedOperationSchedule>>() {
 					@Override
 					public void onException(int reqkey, ApiClientException ex) {
 						service.getEventDispatcher()
@@ -71,7 +71,7 @@ public class OperationScheduleReceiveThread extends Thread implements
 
 					@Override
 					public void onSucceed(int reqkey, int statusCode,
-							List<OperationSchedule> operationSchedules) {
+							List<UnmergedOperationSchedule> operationSchedules) {
 						operationScheduleLogic
 								.mergeWithWriteLock(operationSchedules,
 										triggerVehicleNotifications);

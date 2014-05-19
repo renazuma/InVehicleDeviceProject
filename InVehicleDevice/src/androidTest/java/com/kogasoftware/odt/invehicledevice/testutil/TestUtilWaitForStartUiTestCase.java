@@ -12,7 +12,7 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Share
 import com.kogasoftware.odt.invehicledevice.testutil.apiclient.DummyApiClient;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.UnmergedOperationSchedule;
 
 public class TestUtilWaitForStartUiTestCase extends
 		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
@@ -26,7 +26,7 @@ public class TestUtilWaitForStartUiTestCase extends
 			ac = new DummyApiClient() {
 				@Override
 				public int getOperationSchedules(
-						ApiClientCallback<List<OperationSchedule>> callback) {
+						ApiClientCallback<List<UnmergedOperationSchedule>> callback) {
 					callback.onFailed(0, 401, "");
 					return 0;
 				}

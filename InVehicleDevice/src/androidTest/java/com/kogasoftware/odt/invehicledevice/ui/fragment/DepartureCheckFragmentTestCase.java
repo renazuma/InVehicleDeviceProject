@@ -26,6 +26,7 @@ import com.kogasoftware.odt.invehicledevice.ui.fragment.DepartureCheckFragment;
 import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.UnmergedOperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 
 public class DepartureCheckFragmentTestCase extends
@@ -37,7 +38,7 @@ public class DepartureCheckFragmentTestCase extends
 	Fragment f;
 	ScheduledExecutorService ses;
 
-	OperationSchedule os;
+	UnmergedOperationSchedule os;
 
 	@Override
 	protected void setUp() throws Exception {
@@ -54,12 +55,12 @@ public class DepartureCheckFragmentTestCase extends
 		when(s.getScheduledExecutorService()).thenReturn(ses);
 		a.setService(s);
 
-		os = new OperationSchedule();
+		os = new UnmergedOperationSchedule();
 		Platform p = new Platform();
 		p.setName("乗降場X");
 		os.setPlatform(p);
 		os.setOperationRecord(new OperationRecord());
-		ld.operation.operationSchedules.add(os);
+		ld.operation.operationSchedules.add(os.toOperationSchedule());
 	}
 
 	@Override
@@ -82,8 +83,7 @@ public class DepartureCheckFragmentTestCase extends
 				FrameLayout fl = new FrameLayout(a);
 				fl.setId(id);
 				a.setContentView(fl);
-				f = DepartureCheckFragment.newInstance(Phase.PLATFORM_GET_ON,
-						Lists.newArrayList(os));
+				f = DepartureCheckFragment.newInstance(Phase.PLATFORM_GET_ON, OperationSchedule.create(Lists.newArrayList(os)));
 				FragmentManager fm = a.getFragmentManager();
 				fm.beginTransaction().add(id, f).commit();
 			}
@@ -96,11 +96,11 @@ public class DepartureCheckFragmentTestCase extends
 		assertShow("のりおりば");
 		solo.clickOnView(solo.getView(R.id.departure_button));
 		TestUtil.assertHide(f);
-		ArgumentCaptor<OperationSchedule> a = ArgumentCaptor
-				.forClass(OperationSchedule.class);
+		ArgumentCaptor<UnmergedOperationSchedule> a = ArgumentCaptor
+				.forClass(UnmergedOperationSchedule.class);
 		verify(ac, timeout(1000).times(1)).departureOperationSchedule(
 				a.capture(),
-				Mockito.<ApiClientCallback<OperationSchedule>> any());
+				Mockito.<ApiClientCallback<UnmergedOperationSchedule>> any());
 		assertEquals(101, a.getValue().getId().intValue());
 	}
 
@@ -110,7 +110,7 @@ public class DepartureCheckFragmentTestCase extends
 		solo.clickOnView(solo.getView(R.id.departure_check_close_button));
 		TestUtil.assertHide(f);
 		verify(ac, timeout(1000).never()).departureOperationSchedule(
-				Mockito.<OperationSchedule> any(),
-				Mockito.<ApiClientCallback<OperationSchedule>> any());
+				Mockito.<UnmergedOperationSchedule> any(),
+				Mockito.<ApiClientCallback<UnmergedOperationSchedule>> any());
 	}
 }

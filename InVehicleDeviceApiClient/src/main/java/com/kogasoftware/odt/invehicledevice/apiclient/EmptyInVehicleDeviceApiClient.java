@@ -40,28 +40,26 @@ public class EmptyInVehicleDeviceApiClient implements InVehicleDeviceApiClient {
 	}
 
 	@Override
-	public int getOffPassenger(UnmergedOperationSchedule operationSchedule,
-			Reservation reservation, User user,
+	public int getOnPassenger(Reservation reservation, User user,
 			PassengerRecord passengerRecord, ApiClientCallback<Void> callback) {
 		return 0;
 	}
 
 	@Override
-	public int getOnPassenger(UnmergedOperationSchedule operationSchedule,
-			Reservation reservation, User user,
+	public int getOffPassenger(Reservation reservation, User user,
 			PassengerRecord passengerRecord, ApiClientCallback<Void> callback) {
 		return 0;
 	}
 
 	@Override
-	public int cancelGetOnPassenger(UnmergedOperationSchedule operationSchedule,
-			Reservation reservation, User user, ApiClientCallback<Void> callback) {
+	public int cancelGetOnPassenger(Reservation reservation, User user,
+			ApiClientCallback<Void> callback) {
 		return 0;
 	}
 
 	@Override
-	public int cancelGetOffPassenger(UnmergedOperationSchedule operationSchedule,
-			Reservation reservation, User user, ApiClientCallback<Void> callback) {
+	public int cancelGetOffPassenger(Reservation reservation, User user,
+			ApiClientCallback<Void> callback) {
 		return 0;
 	}
 

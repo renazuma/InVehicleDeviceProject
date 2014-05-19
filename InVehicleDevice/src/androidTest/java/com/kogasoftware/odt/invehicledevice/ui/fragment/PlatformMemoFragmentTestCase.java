@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.widget.FrameLayout;
 
+import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
@@ -14,6 +15,7 @@ import com.kogasoftware.odt.invehicledevice.testutil.TestUtil;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.PlatformMemoFragment;
 import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.UnmergedOperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 import com.kogasoftware.odt.invehicledevice.R;
 
@@ -25,7 +27,7 @@ public class PlatformMemoFragmentTestCase extends
 	EventDispatcher ed;
 	Fragment f;
 	Platform p;
-	OperationSchedule os;
+	UnmergedOperationSchedule os;
 
 	@Override
 	protected void setUp() throws Exception {
@@ -41,7 +43,7 @@ public class PlatformMemoFragmentTestCase extends
 		a.setService(s);
 
 		p = new Platform();
-		os = new OperationSchedule();
+		os = new UnmergedOperationSchedule();
 		os.setPlatform(p);
 	}
 
@@ -66,7 +68,7 @@ public class PlatformMemoFragmentTestCase extends
 				FrameLayout fl = new FrameLayout(a);
 				fl.setId(id);
 				a.setContentView(fl);
-				f = PlatformMemoFragment.newInstance(os);
+				f = PlatformMemoFragment.newInstance(OperationSchedule.create(Lists.newArrayList(os)).get(0));
 				FragmentManager fm = a.getFragmentManager();
 				fm.beginTransaction().add(id, f).commit();
 			}

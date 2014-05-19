@@ -25,8 +25,8 @@ import com.kogasoftware.odt.invehicledevice.service.startupservice.StartupServic
 import com.kogasoftware.odt.invehicledevice.testutil.TestUtil;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceProvider;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.UnmergedOperationSchedule;
 import com.robotium.solo.Solo;
 
 public class InVehicleDeviceActivityTestCase extends
@@ -67,7 +67,7 @@ public class InVehicleDeviceActivityTestCase extends
 		TestUtil.setApiClient(new EmptyInVehicleDeviceApiClient() {
 			@Override
 			public int getOperationSchedules(
-					ApiClientCallback<List<OperationSchedule>> callback) {
+					ApiClientCallback<List<UnmergedOperationSchedule>> callback) {
 				callback.onFailed(0, 500, "");
 				return 0;
 			}
@@ -95,13 +95,13 @@ public class InVehicleDeviceActivityTestCase extends
 
 			@Override
 			public int getOperationSchedules(
-					ApiClientCallback<List<OperationSchedule>> callback) {
+					ApiClientCallback<List<UnmergedOperationSchedule>> callback) {
 				if (fail.get()) {
 					callback.onFailed(0, 500, "");
 				} else {
 					// 初回は成功する
 					callback.onSucceed(0, 200,
-							new LinkedList<OperationSchedule>());
+							new LinkedList<UnmergedOperationSchedule>());
 				}
 				return 0;
 			}
@@ -134,8 +134,8 @@ public class InVehicleDeviceActivityTestCase extends
 		TestUtil.setApiClient(new EmptyInVehicleDeviceApiClient() {
 			@Override
 			public int getOperationSchedules(
-					ApiClientCallback<List<OperationSchedule>> callback) {
-				callback.onSucceed(0, 200, new LinkedList<OperationSchedule>());
+					ApiClientCallback<List<UnmergedOperationSchedule>> callback) {
+				callback.onSucceed(0, 200, new LinkedList<UnmergedOperationSchedule>());
 				return 0;
 			}
 		});

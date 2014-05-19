@@ -161,7 +161,7 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	 *            運行スケジュールオブジェクト
 	 */
 	@Override
-	public int getOffPassenger(final UnmergedOperationSchedule operationSchedule,
+	public int getOffPassenger(
 			final Reservation reservation, final User user,
 			final PassengerRecord passengerRecord,
 			final ApiClientCallback<Void> callback) {
@@ -179,11 +179,9 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 		JsonNode param = createObjectNode().set(root, body);
 		JsonNode retryParam = createObjectNode().set(root,
 				body.deepCopy().put("get_off_time_offline", true));
-		String group = getPassengerRecordGetOnOrOffGroup(
-				operationSchedule.getId(), reservation.getId(), user.getId());
+		String group = getPassengerRecordGetOnOrOffGroup(reservation.getId(), user.getId());
 		return put(
-				PATH_OPERATION_SCHEDULES + "/" + operationSchedule.getId()
-						+ "/reservations/" + reservation.getId() + "/users/"
+				PATH_OPERATION_SCHEDULES + "/0/reservations/" + reservation.getId() + "/users/"
 						+ user.getId() + "/passenger_record", param,
 				retryParam, group, callback, VOID_RESPONSE_CONVERTER);
 	}
@@ -195,7 +193,7 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	 *            運行スケジュールオブジェクト
 	 */
 	@Override
-	public int getOnPassenger(final UnmergedOperationSchedule operationSchedule,
+	public int getOnPassenger(
 			final Reservation reservation, final User user,
 			final PassengerRecord passengerRecord,
 			final ApiClientCallback<Void> callback) {
@@ -213,11 +211,9 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 		JsonNode param = createObjectNode().set(root, body);
 		JsonNode retryParam = createObjectNode().set(root,
 				body.deepCopy().put("get_on_time_offline", true));
-		String group = getPassengerRecordGetOnOrOffGroup(
-				operationSchedule.getId(), reservation.getId(), user.getId());
+		String group = getPassengerRecordGetOnOrOffGroup(reservation.getId(), user.getId());
 		return put(
-				PATH_OPERATION_SCHEDULES + "/" + operationSchedule.getId()
-						+ "/reservations/" + reservation.getId() + "/users/"
+				PATH_OPERATION_SCHEDULES + "/0/reservations/" + reservation.getId() + "/users/"
 						+ user.getId() + "/passenger_record", param,
 				retryParam, group, callback, VOID_RESPONSE_CONVERTER);
 	}
@@ -229,18 +225,16 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	 *            運行スケジュールオブジェクト
 	 */
 	@Override
-	public int cancelGetOnPassenger(final UnmergedOperationSchedule operationSchedule,
+	public int cancelGetOnPassenger(
 			final Reservation reservation, final User user,
 			final ApiClientCallback<Void> callback) {
 		String dummyGetOnTime = DateFormatUtils.ISO_DATETIME_TIME_ZONE_FORMAT
 				.format(new Date());
 		JsonNode param = createObjectNode().set(PassengerRecord.UNDERSCORE,
 				createObjectNode().put("get_on_time", dummyGetOnTime));
-		String group = getPassengerRecordGetOnOrOffGroup(
-				operationSchedule.getId(), reservation.getId(), user.getId());
+		String group = getPassengerRecordGetOnOrOffGroup(reservation.getId(), user.getId());
 		return put(
-				PATH_OPERATION_SCHEDULES + "/" + operationSchedule.getId()
-						+ "/reservations/" + reservation.getId() + "/users/"
+				PATH_OPERATION_SCHEDULES + "/0/reservations/" + reservation.getId() + "/users/"
 						+ user.getId() + "/passenger_record/canceled", param,
 				group, callback, VOID_RESPONSE_CONVERTER);
 	}
@@ -252,18 +246,15 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 	 *            運行スケジュールオブジェクト
 	 */
 	@Override
-	public int cancelGetOffPassenger(final UnmergedOperationSchedule operationSchedule,
-			final Reservation reservation, final User user,
+	public int cancelGetOffPassenger(final Reservation reservation, final User user,
 			final ApiClientCallback<Void> callback) {
 		String dummyGetOffTime = DateFormatUtils.ISO_DATETIME_TIME_ZONE_FORMAT
 				.format(new Date());
 		JsonNode param = createObjectNode().set(PassengerRecord.UNDERSCORE,
 				createObjectNode().put("get_off_time", dummyGetOffTime));
-		String group = getPassengerRecordGetOnOrOffGroup(
-				operationSchedule.getId(), reservation.getId(), user.getId());
+		String group = getPassengerRecordGetOnOrOffGroup(reservation.getId(), user.getId());
 		return put(
-				PATH_OPERATION_SCHEDULES + "/" + operationSchedule.getId()
-						+ "/reservations/" + reservation.getId() + "/users/"
+				PATH_OPERATION_SCHEDULES + "/0/reservations/" + reservation.getId() + "/users/"
 						+ user.getId() + "/passenger_record/canceled", param,
 				group, callback, VOID_RESPONSE_CONVERTER);
 	}
@@ -520,11 +511,8 @@ public class DefaultInVehicleDeviceApiClient extends DefaultApiClient implements
 		this.serverHost = serverHost;
 	}
 
-	@Override
-	protected String getPassengerRecordGetOnOrOffGroup(
-			Integer operationScheduleId, Integer reservationId, Integer userId) {
-		return "PassengerRecordGetOnOrOffGroup/operationScheduleId="
-				+ operationScheduleId + "/reservationId=" + reservationId
+	protected String getPassengerRecordGetOnOrOffGroup(Integer reservationId, Integer userId) {
+		return "PassengerRecordGetOnOrOffGroup/reservationId=" + reservationId
 				+ "/userId=" + userId;
 	}
 

@@ -13,6 +13,7 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVeh
 import com.kogasoftware.odt.invehicledevice.testutil.EmptyActivityInstrumentationTestCase2;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.OperationScheduleArrayAdapter;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.UnmergedOperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 
 import static org.mockito.Mockito.*;
@@ -49,23 +50,23 @@ public class OperationScheduleArrayAdapterTestCase extends
 	public void xtestShowOperationSchedules() throws Throwable {
 		String platformName0 = "上野駅前";
 		String platformName1 = "御徒町駅前";
-		List<OperationSchedule> oss = new ArrayList<OperationSchedule>();
+		List<UnmergedOperationSchedule> oss = new ArrayList<UnmergedOperationSchedule>();
 		{
-			OperationSchedule os = new OperationSchedule();
+			UnmergedOperationSchedule os = new UnmergedOperationSchedule();
 			Platform p = new Platform();
 			p.setName(platformName0);
 			os.setPlatform(p);
 			oss.add(os);
 		}
 		{
-			OperationSchedule os = new OperationSchedule();
+			UnmergedOperationSchedule os = new UnmergedOperationSchedule();
 			Platform p = new Platform();
 			p.setName(platformName1);
 			os.setPlatform(p);
 			oss.add(os);
 		}
 
-		aa = new OperationScheduleArrayAdapter(a, s, oss, null);
+		aa = new OperationScheduleArrayAdapter(a, s, OperationSchedule.create(oss), null);
 
 		runTestOnUiThread(new Runnable() {
 			@Override

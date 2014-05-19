@@ -8,7 +8,7 @@ import java.util.List;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.apiclient.ApiClientException;
 import com.kogasoftware.odt.invehicledevice.apiclient.EmptyInVehicleDeviceApiClient;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.UnmergedOperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceProvider;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
@@ -19,9 +19,9 @@ public class DummyApiClient extends EmptyInVehicleDeviceApiClient {
 
 	public List<ServiceUnitStatusLog> sendServiceUnitStatusLogArgs = new LinkedList<ServiceUnitStatusLog>();
 
-	public List<OperationSchedule> getOperationSchedules2()
+	public List<UnmergedOperationSchedule> getOperationSchedules2()
 			throws ApiClientException {
-		List<OperationSchedule> l = new LinkedList<OperationSchedule>();
+		List<UnmergedOperationSchedule> l = new LinkedList<UnmergedOperationSchedule>();
 		try {
 			String ru1 = "{user: {id: 1, last_name: 'ラストネーム', first_name: 'ファーストネーム', passenger_records: [{departure_operation_schedule_id: 1, get_on_time: '2000-01-01', updated_at: '2030-01-01'}, {updated_at: '1999-01-01'}]}}";
 			String ru2 = "{user: {id: 2, last_name: '山田', first_name: '太郎'}}";
@@ -51,7 +51,7 @@ public class DummyApiClient extends EmptyInVehicleDeviceApiClient {
 			String j1 = "{id:1, arrival_estimate: '2012-06-21T09:00:00+09:00', departure_estimate: '2012-06-21T09:15:00+09:00', "
 					+ "platform: {name: '乗降場A', name_ruby: 'とくべつようごろうじんほーむあじさいのおかうしまどざいたくかいごしえんせんたーあじさい'}, "
 					+ "reservations_as_departure: [" + r1 + "," + r3 + "]}";
-			l.add(OperationSchedule.parse(j1));
+			l.add(UnmergedOperationSchedule.parse(j1));
 
 			String j2 = new String(
 					"{id:2, arrival_estimate: '2012-06-21T09:30:00+09:00', departure_estimate: '2012-06-21T09:35:00+09:00', "
@@ -61,7 +61,7 @@ public class DummyApiClient extends EmptyInVehicleDeviceApiClient {
 							+ "reservations_as_departure: ["
 							+ r2
 							+ "]" + "}");
-			l.add(OperationSchedule.parse(j2));
+			l.add(UnmergedOperationSchedule.parse(j2));
 
 			String j3 = new String(
 					"{id:3, arrival_estimate: '2012-06-21T10:15:00+09:00', departure_estimate: '2012-06-21T10:20:00+09:00', "
@@ -71,7 +71,7 @@ public class DummyApiClient extends EmptyInVehicleDeviceApiClient {
 							+ ","
 							+ r3
 							+ "]}");
-			l.add(OperationSchedule.parse(j3));
+			l.add(UnmergedOperationSchedule.parse(j3));
 
 			String j4 = new String(
 					"{id:4, arrival_estimate: '2012-06-21T11:00:00+09:00', departure_estimate: '2012-06-21T11:05:00+09:00', "
@@ -81,7 +81,7 @@ public class DummyApiClient extends EmptyInVehicleDeviceApiClient {
 							+ ","
 							+ r4
 							+ "]}");
-			l.add(OperationSchedule.parse(j4));
+			l.add(UnmergedOperationSchedule.parse(j4));
 
 			String j5 = new String(
 					"{id:5, arrival_estimate: '2012-06-21T03:00:00+09:00', departure_estimate: '2012-06-21T02:00:00+09:00', "
@@ -91,7 +91,7 @@ public class DummyApiClient extends EmptyInVehicleDeviceApiClient {
 							+ ","
 							+ r5
 							+ "]}");
-			l.add(OperationSchedule.parse(j5));
+			l.add(UnmergedOperationSchedule.parse(j5));
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -138,8 +138,8 @@ public class DummyApiClient extends EmptyInVehicleDeviceApiClient {
 
 	@Override
 	public int getOperationSchedules(
-			ApiClientCallback<List<OperationSchedule>> callback) {
-		callback.onSucceed(0, 200, new LinkedList<OperationSchedule>());
+			ApiClientCallback<List<UnmergedOperationSchedule>> callback) {
+		callback.onSucceed(0, 200, new LinkedList<UnmergedOperationSchedule>());
 		return 0;
 	}
 }

@@ -23,7 +23,7 @@ import com.kogasoftware.odt.invehicledevice.testutil.TestUtil;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.ArrivalCheckFragment;
 import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationRecord;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.UnmergedOperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 
 public class ArrivalCheckFragmentTestCase extends
@@ -35,7 +35,7 @@ public class ArrivalCheckFragmentTestCase extends
 	Fragment f;
 	ScheduledExecutorService ses;
 
-	OperationSchedule os;
+	UnmergedOperationSchedule os;
 	Platform p;
 
 	@Override
@@ -53,11 +53,11 @@ public class ArrivalCheckFragmentTestCase extends
 		when(s.getScheduledExecutorService()).thenReturn(ses);
 		a.setService(s);
 
-		os = new OperationSchedule();
+		os = new UnmergedOperationSchedule();
 		p = new Platform();
 		os.setPlatform(p);
 		os.setOperationRecord(new OperationRecord());
-		ld.operation.operationSchedules.add(os);
+		ld.operation.operationSchedules.add(os.toOperationSchedule());
 	}
 
 	@Override
@@ -81,7 +81,7 @@ public class ArrivalCheckFragmentTestCase extends
 				FrameLayout fl = new FrameLayout(a);
 				fl.setId(id);
 				a.setContentView(fl);
-				f = ArrivalCheckFragment.newInstance(os);
+				f = ArrivalCheckFragment.newInstance(os.toOperationSchedule());
 				FragmentManager fm = a.getFragmentManager();
 				fm.beginTransaction().add(id, f).commit();
 			}
@@ -95,11 +95,11 @@ public class ArrivalCheckFragmentTestCase extends
 		assertShow("のりおりば");
 		solo.clickOnView(solo.getView(R.id.arrival_button));
 		TestUtil.assertHide(f);
-		ArgumentCaptor<OperationSchedule> a = ArgumentCaptor
-				.forClass(OperationSchedule.class);
+		ArgumentCaptor<UnmergedOperationSchedule> a = ArgumentCaptor
+				.forClass(UnmergedOperationSchedule.class);
 		verify(ac, timeout(1000).times(1)).arrivalOperationSchedule(
 				a.capture(),
-				Mockito.<ApiClientCallback<OperationSchedule>> any());
+				Mockito.<ApiClientCallback<UnmergedOperationSchedule>> any());
 		assertEquals(101, a.getValue().getId().intValue());
 	}
 
@@ -109,7 +109,7 @@ public class ArrivalCheckFragmentTestCase extends
 		solo.clickOnView(solo.getView(R.id.arrival_check_close_button));
 		TestUtil.assertHide(f);
 		verify(ac, timeout(1000).never()).arrivalOperationSchedule(
-				Mockito.<OperationSchedule> any(),
-				Mockito.<ApiClientCallback<OperationSchedule>> any());
+				Mockito.<UnmergedOperationSchedule> any(),
+				Mockito.<ApiClientCallback<UnmergedOperationSchedule>> any());
 	}
 }

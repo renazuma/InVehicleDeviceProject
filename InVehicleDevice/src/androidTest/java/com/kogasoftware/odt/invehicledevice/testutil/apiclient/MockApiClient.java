@@ -12,27 +12,24 @@ import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.invehicledevice.apiclient.EmptyInVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.InVehicleDevice;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.UnmergedOperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceProvider;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnitStatusLog;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.User;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 
 public class MockApiClient extends EmptyInVehicleDeviceApiClient {
-	private List<OperationSchedule> lOperationSchedule = new LinkedList<OperationSchedule>();
+	private List<UnmergedOperationSchedule> lOperationSchedule = new LinkedList<UnmergedOperationSchedule>();
 	private boolean NotificationFlag = false;
 
 	@Override
-	public int arrivalOperationSchedule(OperationSchedule os,
-			ApiClientCallback<OperationSchedule> callback) {
+	public int arrivalOperationSchedule(UnmergedOperationSchedule os,
+			ApiClientCallback<UnmergedOperationSchedule> callback) {
 		return 0;
 	}
 
 	@Override
-	public int departureOperationSchedule(OperationSchedule os,
-			ApiClientCallback<OperationSchedule> callback) {
+	public int departureOperationSchedule(UnmergedOperationSchedule os,
+			ApiClientCallback<UnmergedOperationSchedule> callback) {
 		return 0;
 	}
 
@@ -58,7 +55,7 @@ public class MockApiClient extends EmptyInVehicleDeviceApiClient {
 
 		System.out.println("setOperationSchedules " + iOperationScheduleCount);
 
-		lOperationSchedule = new LinkedList<OperationSchedule>();
+		lOperationSchedule = new LinkedList<UnmergedOperationSchedule>();
 
 		String ru1 = "{user: {id: 1, last_name: '名字a', first_name: '名前a'}}";
 		String ru2 = "{user: {id: 2, last_name: '名字b', first_name: '名前b'}}";
@@ -97,7 +94,7 @@ public class MockApiClient extends EmptyInVehicleDeviceApiClient {
 						+ "reservations_as_departure: [" + r1 + "," + r2 + ","
 						+ r3 + "," + r4 + "," + r5 + ", ]}";
 				String j1 = new String(sOperationSchedule);
-				lOperationSchedule.add(OperationSchedule.parse(j1));
+				lOperationSchedule.add(UnmergedOperationSchedule.parse(j1));
 			}
 
 			if (iOperationScheduleCount > 1) {
@@ -107,7 +104,7 @@ public class MockApiClient extends EmptyInVehicleDeviceApiClient {
 								+ "departure_estimate: '2012-01-01T10:05:00+09:00', "
 								+ "platform: {name: '85_特別養護老人ホームあじさいのおか牛窓／在宅介護支援センターＡＪＩＳＡＩ',name_ruby: 'とくべつようごろうじんほーむあじさいのおかうしまどざいたくかいごしえんせんたーあじさい'}, "
 								+ "reservations_as_arrival: [{passenger_count: 5}]}");
-				lOperationSchedule.add(OperationSchedule.parse(j2));
+				lOperationSchedule.add(UnmergedOperationSchedule.parse(j2));
 			}
 
 			if (iOperationScheduleCount > 2) {
@@ -117,7 +114,7 @@ public class MockApiClient extends EmptyInVehicleDeviceApiClient {
 								+ "departure_estimate: '2012-01-01T10:33:00+09:00', "
 								+ "platform: {name: 'テスト上野動物園前', name_ruby: 'てすとうえのどうぶつえんまえ'}, "
 								+ "reservations_as_departure: [{passenger_count: 5}, {passenger_count: 6}, {passenger_count: 7}]}");
-				lOperationSchedule.add(OperationSchedule.parse(j3));
+				lOperationSchedule.add(UnmergedOperationSchedule.parse(j3));
 			}
 
 			if (iOperationScheduleCount > 3) {
@@ -128,7 +125,7 @@ public class MockApiClient extends EmptyInVehicleDeviceApiClient {
 								+ "platform: {name: 'テスト上野広小路前', name_ruby: 'てすとうえのひろこうじまえ'}, "
 								+ "reservations_as_arrival: [] ,"
 								+ "reservations_as_departure: [{passenger_count: 7}]}");
-				lOperationSchedule.add(OperationSchedule.parse(j4));
+				lOperationSchedule.add(UnmergedOperationSchedule.parse(j4));
 			}
 
 			if (iOperationScheduleCount > 4) {
@@ -137,7 +134,7 @@ public class MockApiClient extends EmptyInVehicleDeviceApiClient {
 								+ "arrival_estimate: '2012-01-01T12:00:00+09:00', "
 								+ "departure_estimate: '2012-01-01T12:05:00+09:00', "
 								+ "platform: {name: 'テスト湯島天神前', name_ruby: 'てすとゆしまてんじんまえ'}}");
-				lOperationSchedule.add(OperationSchedule.parse(j5));
+				lOperationSchedule.add(UnmergedOperationSchedule.parse(j5));
 			}
 
 			if (iOperationScheduleCount > 5) {
@@ -148,7 +145,7 @@ public class MockApiClient extends EmptyInVehicleDeviceApiClient {
 								+ "platform: {name: 'テストＪＲ御徒町駅前', name_ruby: 'てすとじぇいあーるおかちまちえきまえ'}, "
 								+ "reservations_as_arrival: [{passenger_count: 50}, {passenger_count: 60}, {passenger_count: 70}] ,"
 								+ "reservations_as_departure: [{passenger_count: 150}, {passenger_count: 160}, {passenger_count: 170}]}");
-				lOperationSchedule.add(OperationSchedule.parse(j6));
+				lOperationSchedule.add(UnmergedOperationSchedule.parse(j6));
 			}
 
 		} catch (IOException e) {
@@ -160,7 +157,7 @@ public class MockApiClient extends EmptyInVehicleDeviceApiClient {
 
 		System.out.println("setReservation " + iReservation);
 
-		lOperationSchedule = new LinkedList<OperationSchedule>();
+		lOperationSchedule = new LinkedList<UnmergedOperationSchedule>();
 
 		String ru1 = "{user: {id: 1, last_name: '名字a', first_name: '名前a'}}";
 		String ru2 = "{user: {id: 2, last_name: '名字b', first_name: '名前b'}}";
@@ -265,7 +262,7 @@ public class MockApiClient extends EmptyInVehicleDeviceApiClient {
 							+ "reservations_as_departure: [" + u1a + "," + u1b
 							+ "," + u1c + "," + u1d + "," + u1e + "," + u1f
 							+ "]}");
-			lOperationSchedule.add(OperationSchedule.parse(j1));
+			lOperationSchedule.add(UnmergedOperationSchedule.parse(j1));
 
 			String j2 = new String(
 					"{"
@@ -276,7 +273,7 @@ public class MockApiClient extends EmptyInVehicleDeviceApiClient {
 							+ "reservations_as_arrival: [" + u1d + "], "
 							+ "reservations_as_departure: [" + u1g + "," + u1j
 							+ "," + u1l + "]}");
-			lOperationSchedule.add(OperationSchedule.parse(j2));
+			lOperationSchedule.add(UnmergedOperationSchedule.parse(j2));
 
 			String j3 = new String(
 					"{"
@@ -287,7 +284,7 @@ public class MockApiClient extends EmptyInVehicleDeviceApiClient {
 							+ "reservations_as_arrival: [" + u1c + "," + u1g
 							+ "," + "], " + "reservations_as_departure: ["
 							+ u1h + "," + u1k + "," + u1m + "]}");
-			lOperationSchedule.add(OperationSchedule.parse(j3));
+			lOperationSchedule.add(UnmergedOperationSchedule.parse(j3));
 
 			String j4 = new String(
 					"{"
@@ -299,7 +296,7 @@ public class MockApiClient extends EmptyInVehicleDeviceApiClient {
 							+ "," + u1h + "," + u1k + "], "
 							+ "reservations_as_departure: [" + u1i + "," + u1n
 							+ "," + u1o + "]}");
-			lOperationSchedule.add(OperationSchedule.parse(j4));
+			lOperationSchedule.add(UnmergedOperationSchedule.parse(j4));
 
 			String j5 = new String(
 					"{"
@@ -310,7 +307,7 @@ public class MockApiClient extends EmptyInVehicleDeviceApiClient {
 							+ "reservations_as_arrival: [" + u1e + "," + u1j
 							+ "," + u1m + "," + u1o + "], "
 							+ "reservations_as_departure: []}");
-			lOperationSchedule.add(OperationSchedule.parse(j5));
+			lOperationSchedule.add(UnmergedOperationSchedule.parse(j5));
 
 			String j6 = new String(
 					"{"
@@ -321,7 +318,7 @@ public class MockApiClient extends EmptyInVehicleDeviceApiClient {
 							+ "reservations_as_arrival: [" + u1a + "," + u1i
 							+ "," + u1l + "," + u1n + "], "
 							+ "reservations_as_departure: []}");
-			lOperationSchedule.add(OperationSchedule.parse(j6));
+			lOperationSchedule.add(UnmergedOperationSchedule.parse(j6));
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -340,25 +337,13 @@ public class MockApiClient extends EmptyInVehicleDeviceApiClient {
 	}
 
 	@Override
-	public int cancelGetOffPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, User user, ApiClientCallback<Void> callback) {
-		return 0;
-	}
-
-	@Override
-	public int cancelGetOnPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, User user, ApiClientCallback<Void> callback) {
-		return 0;
-	}
-
-	@Override
 	public InVehicleDeviceApiClient withSaveOnClose() {
 		return this;
 	}
 
 	@Override
 	public int getOperationSchedules(
-			ApiClientCallback<List<OperationSchedule>> callback) {
+			ApiClientCallback<List<UnmergedOperationSchedule>> callback) {
 		callback.onSucceed(0, 200, lOperationSchedule);
 		return 0;
 	}
@@ -373,20 +358,6 @@ public class MockApiClient extends EmptyInVehicleDeviceApiClient {
 			l.add(n);
 			callback.onSucceed(0, 200, l);
 		}
-		return 0;
-	}
-
-	@Override
-	public int getOffPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, User user,
-			PassengerRecord passengerRecord, ApiClientCallback<Void> callback) {
-		return 0;
-	}
-
-	@Override
-	public int getOnPassenger(OperationSchedule operationSchedule,
-			Reservation reservation, User user,
-			PassengerRecord passengerRecord, ApiClientCallback<Void> callback) {
 		return 0;
 	}
 

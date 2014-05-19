@@ -54,16 +54,17 @@ public class PassengerRecordLogic {
 					.getDepartureScheduleId());
 			service.getApiClient()
 					.withSaveOnClose()
-					.getOnPassenger(operationSchedule, reservation, user,
+					.getOnPassenger(reservation, user,
 							passengerRecord, new EmptyApiClientCallback<Void>());
 		}
 		passengerRecord.setGetOffTime(now);
 		passengerRecord.setPassengerCount(reservation.getPassengerCount());
 		passengerRecord
-				.setArrivalOperationScheduleId(operationSchedule.getId());
+				.setArrivalOperationScheduleId(reservation
+						.getArrivalScheduleId());
 		service.getApiClient()
 				.withSaveOnClose()
-				.getOffPassenger(operationSchedule, reservation, user,
+				.getOffPassenger(reservation, user,
 						passengerRecord, new EmptyApiClientCallback<Void>());
 		updateAsync(passengerRecord);
 	}
@@ -91,12 +92,12 @@ public class PassengerRecordLogic {
 		}
 		service.getApiClient()
 				.withSaveOnClose()
-				.cancelGetOffPassenger(operationSchedule, reservation, user,
+				.cancelGetOffPassenger(reservation, user,
 						new EmptyApiClientCallback<Void>());
 		if (passengerRecord.getIgnoreGetOnMiss()) {
 			service.getApiClient()
 					.withSaveOnClose()
-					.cancelGetOnPassenger(operationSchedule, reservation, user,
+					.cancelGetOnPassenger(reservation, user,
 							new EmptyApiClientCallback<Void>());
 		}
 		updateAsync(passengerRecord);
@@ -119,12 +120,11 @@ public class PassengerRecordLogic {
 
 		passengerRecord.setGetOnTime(new Date(DateTimeUtils.currentTimeMillis()));
 		passengerRecord.setPassengerCount(reservation.getPassengerCount());
-		passengerRecord.setDepartureOperationScheduleId(operationSchedule
-				.getId());
+		passengerRecord.setDepartureOperationScheduleId(reservation.getDepartureScheduleId());
 		updateAsync(passengerRecord);
 		service.getApiClient()
 				.withSaveOnClose()
-				.getOnPassenger(operationSchedule, reservation, user,
+				.getOnPassenger(reservation, user,
 						passengerRecord, new EmptyApiClientCallback<Void>());
 	}
 
@@ -148,7 +148,7 @@ public class PassengerRecordLogic {
 		updateAsync(passengerRecord);
 		service.getApiClient()
 				.withSaveOnClose()
-				.cancelGetOnPassenger(operationSchedule, reservation, user,
+				.cancelGetOnPassenger(reservation, user,
 						new EmptyApiClientCallback<Void>());
 	}
 

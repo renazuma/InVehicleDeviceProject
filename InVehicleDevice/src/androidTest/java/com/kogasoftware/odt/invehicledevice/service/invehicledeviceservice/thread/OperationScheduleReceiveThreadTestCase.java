@@ -19,6 +19,7 @@ import com.kogasoftware.odt.apiclient.ApiClientException;
 import com.kogasoftware.odt.invehicledevice.apiclient.EmptyInVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.UnmergedOperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
@@ -56,7 +57,7 @@ public class OperationScheduleReceiveThreadTestCase extends AndroidTestCase {
 		InVehicleDeviceApiClient ds = new EmptyInVehicleDeviceApiClient() {
 			@Override
 			public int getOperationSchedules(
-					ApiClientCallback<List<OperationSchedule>> callback) {
+					ApiClientCallback<List<UnmergedOperationSchedule>> callback) {
 				if (fail.get()) {
 					callback.onException(0, new ApiClientException(
 							new RuntimeException()));

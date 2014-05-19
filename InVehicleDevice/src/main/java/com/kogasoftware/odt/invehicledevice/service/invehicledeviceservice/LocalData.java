@@ -65,7 +65,7 @@ public class LocalData implements Serializable {
 		}
 	}
 
-	private static final long serialVersionUID = 1797801788128L;
+	private static final long serialVersionUID = 1797801788129L;
 
 	public static enum Display {
 		MAIN, OPERATION_SCHEDULES,

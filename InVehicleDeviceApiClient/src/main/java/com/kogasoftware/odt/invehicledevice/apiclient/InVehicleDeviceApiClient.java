@@ -51,8 +51,7 @@ public interface InVehicleDeviceApiClient extends Closeable {
 	 * @param operationSchedule
 	 *            運行スケジュールオブジェクト
 	 */
-	int getOffPassenger(UnmergedOperationSchedule operationSchedule,
-			Reservation reservation, User user,
+	int getOffPassenger(Reservation reservation, User user,
 			PassengerRecord passengerRecord, ApiClientCallback<Void> callback);
 
 	/**
@@ -61,8 +60,7 @@ public interface InVehicleDeviceApiClient extends Closeable {
 	 * @param operationSchedule
 	 *            運行スケジュールオブジェクト
 	 */
-	int getOnPassenger(UnmergedOperationSchedule operationSchedule,
-			Reservation reservation, User user,
+	int getOnPassenger(Reservation reservation, User user,
 			PassengerRecord passengerRecord, ApiClientCallback<Void> callback);
 
 	/**
@@ -71,8 +69,7 @@ public interface InVehicleDeviceApiClient extends Closeable {
 	 * @param operationSchedule
 	 *            運行スケジュールオブジェクト
 	 */
-	int cancelGetOnPassenger(UnmergedOperationSchedule operationSchedule,
-			Reservation reservation, User user, ApiClientCallback<Void> callback);
+	int cancelGetOnPassenger(Reservation reservation, User user, ApiClientCallback<Void> callback);
 
 	/**
 	 * 降車のキャンセル
@@ -80,8 +77,7 @@ public interface InVehicleDeviceApiClient extends Closeable {
 	 * @param operationSchedule
 	 *            運行スケジュールオブジェクト
 	 */
-	int cancelGetOffPassenger(UnmergedOperationSchedule operationSchedule,
-			Reservation reservation, User user, ApiClientCallback<Void> callback);
+	int cancelGetOffPassenger(Reservation reservation, User user, ApiClientCallback<Void> callback);
 
 	/**
 	 * 運行情報を取得する

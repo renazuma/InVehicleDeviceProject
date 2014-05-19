@@ -10,7 +10,7 @@ import android.util.Log;
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.apiclient.ApiClientException;
 import com.kogasoftware.odt.invehicledevice.apiclient.EmptyInVehicleDeviceApiClient;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.UnmergedOperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceProvider;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceUnitStatusLog;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
@@ -21,25 +21,25 @@ public class ScheduleChangedTestApiClient extends EmptyInVehicleDeviceApiClient 
 	private final AtomicInteger phase = new AtomicInteger(0);
 
 	@Override
-	public int arrivalOperationSchedule(OperationSchedule os,
-			ApiClientCallback<OperationSchedule> callback) {
+	public int arrivalOperationSchedule(UnmergedOperationSchedule os,
+			ApiClientCallback<UnmergedOperationSchedule> callback) {
 		Log.w(TAG, "not implemented");
 		return 0;
 	}
 
 	@Override
-	public int departureOperationSchedule(OperationSchedule os,
-			ApiClientCallback<OperationSchedule> callback) {
+	public int departureOperationSchedule(UnmergedOperationSchedule os,
+			ApiClientCallback<UnmergedOperationSchedule> callback) {
 		Log.w(TAG, "not implemented");
 		return 0;
 	}
 
-	public List<OperationSchedule> getOperationSchedules2()
+	public List<UnmergedOperationSchedule> getOperationSchedules2()
 			throws ApiClientException {
 		String r1 = "{id: 51, passenger_count: 1, departure_schedule_id: 1, arrival_schedule_id: 2, payment: 100, user: {id: 1, last_name: 'ああああ', first_name: 'いちごう'}}";
 		String r2 = "{id: 52, passenger_count: 5, departure_schedule_id: 1, arrival_schedule_id: 2, payment:   0, user: {id: 2, last_name: 'いいいい', first_name: 'にごう'}}";
 		String r3 = "{id: 53, passenger_count: 0, departure_schedule_id: 1, arrival_schedule_id: 3, payment: 500, user: {id: 3, last_name: 'うううう', first_name: 'さんごう'}}";
-		List<OperationSchedule> l = new LinkedList<OperationSchedule>();
+		List<UnmergedOperationSchedule> l = new LinkedList<UnmergedOperationSchedule>();
 		try {
 			if (phase.compareAndSet(0, 1)) {
 				// 変更前のスケジュール
@@ -50,7 +50,7 @@ public class ScheduleChangedTestApiClient extends EmptyInVehicleDeviceApiClient 
 								+ r1
 								+ ","
 								+ r2 + "]}");
-				l.add(OperationSchedule.parse(j1));
+				l.add(UnmergedOperationSchedule.parse(j1));
 
 				String j2 = new String(
 						"{id:2, arrival_estimate: '2012-01-01T02:00:00+09:00', departure_estimate: '2012-01-01T02:00:00+09:00', "
@@ -60,7 +60,7 @@ public class ScheduleChangedTestApiClient extends EmptyInVehicleDeviceApiClient 
 								+ ","
 								+ r2
 								+ "]}");
-				l.add(OperationSchedule.parse(j2));
+				l.add(UnmergedOperationSchedule.parse(j2));
 				return l;
 			} else if (phase.compareAndSet(2, 3)) {
 				Thread.sleep(10000);
@@ -73,19 +73,19 @@ public class ScheduleChangedTestApiClient extends EmptyInVehicleDeviceApiClient 
 								+ ","
 								+ r3
 								+ "], operation_record: {arrived_at: '2012-01-01T01:00:01+09:00', departed_at: '2012-01-01T01:00:02+09:00'}}");
-				l.add(OperationSchedule.parse(j1));
+				l.add(UnmergedOperationSchedule.parse(j1));
 
 				String j2 = new String(
 						"{id:3, arrival_estimate: '2012-01-01T02:00:00+09:00', departure_estimate: '2012-01-01T02:00:00+09:00', "
 								+ "platform: {name: '乗降場C', name_ruby: 'のりおりばしー', latitude: -9.189967, longitude: -75.015152}, reservations_as_arrival: [ "
 								+ r3 + " ]}");
-				l.add(OperationSchedule.parse(j2));
+				l.add(UnmergedOperationSchedule.parse(j2));
 
 				String j3 = new String(
 						"{id:2, arrival_estimate: '2012-01-01T03:00:00+09:00', departure_estimate: '2012-01-01T02:00:00+09:00', "
 								+ "platform: {name: '乗降場B', name_ruby: 'のりおりばびー'}, "
 								+ "reservations_as_arrival: [" + r1 + "]}");
-				l.add(OperationSchedule.parse(j3));
+				l.add(UnmergedOperationSchedule.parse(j3));
 				return l;
 			}
 		} catch (IOException e) {

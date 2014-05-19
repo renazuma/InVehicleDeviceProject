@@ -26,13 +26,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
 import com.kogasoftware.odt.invehicledevice.empty.EmptyRunnable;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
@@ -269,8 +267,9 @@ public class OperationScheduleArrayAdapter extends
 		mapButton.setOnClickListener(onOperationScheduleMapButtonClickListener);
 		TextView platformNameView = (TextView) convertView
 				.findViewById(R.id.platform_name);
-		TextView platformAddressView = (TextView) convertView.findViewById(R.id.platform_address);
-		platformNameView.setText("ID:" + operationSchedule.getId());
+		TextView platformAddressView = (TextView) convertView
+				.findViewById(R.id.platform_address);
+		platformNameView.setText("ID:" + operationSchedule.dumpIds());
 		for (Platform platform : operationSchedule.getPlatform().asSet()) {
 			platformNameView.setText(platform.getName());
 			platformAddressView.setText(platform.getAddress());
@@ -287,33 +286,25 @@ public class OperationScheduleArrayAdapter extends
 
 		Integer getOffPassengerCount = 0;
 		for (PassengerRecord passengerRecord : passengerRecords) {
-			for (Reservation reservation : passengerRecord.getReservation()
-					.asSet()) {
-				if (reservation.getArrivalScheduleId().equals(
-						Optional.of(operationSchedule.getId()))) {
-					if (showPassengerRecords) {
-						passengerRecordsView.addView(createPassengerRecordRow(
-								operationSchedule, passengerRecord, false));
-					}
-					getOffPassengerCount += passengerRecord
-							.getScheduledPassengerCount();
+			if (operationSchedule.isGetOffScheduled(passengerRecord)) {
+				if (showPassengerRecords) {
+					passengerRecordsView.addView(createPassengerRecordRow(
+							operationSchedule, passengerRecord, false));
 				}
+				getOffPassengerCount += passengerRecord
+						.getScheduledPassengerCount();
 			}
 		}
 
 		Integer getOnPassengerCount = 0;
 		for (PassengerRecord passengerRecord : passengerRecords) {
-			for (Reservation reservation : passengerRecord.getReservation()
-					.asSet()) {
-				if (reservation.getDepartureScheduleId().equals(
-						Optional.of(operationSchedule.getId()))) {
-					if (showPassengerRecords) {
-						passengerRecordsView.addView(createPassengerRecordRow(
-								operationSchedule, passengerRecord, true));
-					}
-					getOnPassengerCount += passengerRecord
-							.getScheduledPassengerCount();
+			if (operationSchedule.isGetOnScheduled(passengerRecord)) {
+				if (showPassengerRecords) {
+					passengerRecordsView.addView(createPassengerRecordRow(
+							operationSchedule, passengerRecord, true));
 				}
+				getOnPassengerCount += passengerRecord
+						.getScheduledPassengerCount();
 			}
 		}
 
@@ -395,24 +386,17 @@ public class OperationScheduleArrayAdapter extends
 				.findViewById(R.id.user_arrival_platform_name);
 		arrivalPlatformView.setVisibility(View.GONE);
 		if (getOn) {
-			for (Reservation reservation : passengerRecord.getReservation()
-					.asSet()) {
-				for (Integer id : reservation.getArrivalScheduleId().asSet()) {
-					for (Integer i = 0; i < getCount(); i++) {
-						OperationSchedule arrivalOperationSchedule = getItem(i);
-						if (arrivalOperationSchedule.getId().equals(id)) {
-							for (Platform platform : arrivalOperationSchedule
-									.getPlatform().asSet()) {
-								arrivalPlatformView.setVisibility(View.VISIBLE);
-								arrivalPlatformView.setText("⇨"
-										+ platform.getName());
-							}
-						}
+			for (Integer i = 0; i < getCount(); i++) {
+				OperationSchedule arrivalOperationSchedule = getItem(i);
+				if (arrivalOperationSchedule.isGetOffScheduled(passengerRecord)) {
+					for (Platform platform : arrivalOperationSchedule
+							.getPlatform().asSet()) {
+						arrivalPlatformView.setVisibility(View.VISIBLE);
+						arrivalPlatformView.setText("⇨" + platform.getName());
 					}
 				}
 			}
 		}
-
 		return row;
 	}
 

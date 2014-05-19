@@ -317,7 +317,7 @@ public class EventDispatcher implements Closeable {
 				+ operation.getPhase());
 		for (OperationSchedule os : OperationSchedule.getCurrent(
 				operation.operationSchedules).asSet()) {
-			message.append(" currentOperationScheduleId=" + os.getId());
+			message.append(" currentOperationScheduleId=" + os.dumpIds());
 		}
 
 		Log.i(TAG, message.toString());

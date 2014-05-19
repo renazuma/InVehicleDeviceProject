@@ -18,7 +18,7 @@ import android.widget.FrameLayout;
 
 import com.kogasoftware.odt.invehicledevice.apiclient.InVehicleDeviceApiClient;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationRecord;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.UnmergedOperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
@@ -66,7 +66,7 @@ public class AutoUpdateOperationFragmentTestCase extends
 	TestAutoUpdateOperationFragment f;
 	ScheduledExecutorService ses;
 
-	OperationSchedule os;
+	UnmergedOperationSchedule os;
 	Platform p;
 
 	@Override
@@ -84,11 +84,11 @@ public class AutoUpdateOperationFragmentTestCase extends
 		when(s.getScheduledExecutorService()).thenReturn(ses);
 		a.setService(s);
 
-		os = new OperationSchedule();
+		os = new UnmergedOperationSchedule();
 		p = new Platform();
 		os.setPlatform(p);
 		os.setOperationRecord(new OperationRecord());
-		ld.operation.operationSchedules.add(os);
+		ld.operation.operationSchedules.add(os.toOperationSchedule());
 	}
 
 	@Override

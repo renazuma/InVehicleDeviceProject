@@ -17,7 +17,7 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Local
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Writer;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.PassengerRecordLogic;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationRecord;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.UnmergedOperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.User;
@@ -27,12 +27,12 @@ public class PassengerRecordLogicTestCase extends AndroidTestCase {
 	LocalStorage lds;
 	InVehicleDeviceService s;
 	PassengerRecordLogic prl;
-	OperationSchedule os;
+	UnmergedOperationSchedule os;
 
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		os = new OperationSchedule();
+		os = new UnmergedOperationSchedule();
 		os.setOperationRecord(new OperationRecord());
 		os.setId(12345);
 		rds = spy(new EmptyInVehicleDeviceApiClient());
@@ -47,7 +47,7 @@ public class PassengerRecordLogicTestCase extends AndroidTestCase {
 			public void write(LocalData localData) {
 				localData.operation.passengerRecords.clear();
 				localData.operation.operationSchedules.clear();
-				localData.operation.operationSchedules.add(os);
+				localData.operation.operationSchedules.add(os.toOperationSchedule());
 			}
 		});
 	}

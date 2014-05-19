@@ -1,9 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.apiclient.model;
 
 import java.util.List;
-
-import android.util.Log;
-
 import com.google.common.base.Optional;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -11,7 +8,6 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.base.OperationSchedu
 
 public class UnmergedOperationSchedule extends OperationScheduleBase {
 	private static final long serialVersionUID = 1040628741311146500L;
-	private static final String TAG = UnmergedOperationSchedule.class.getSimpleName();
 
 	/**
 	 * 出発済みか調べる
@@ -36,7 +32,7 @@ public class UnmergedOperationSchedule extends OperationScheduleBase {
 	/**
 	 * 現在運行中の運行スケジュールを得る
 	 */
-	public static Optional<UnmergedOperationSchedule> getCurrent(
+	static Optional<UnmergedOperationSchedule> getCurrent(
 			Iterable<UnmergedOperationSchedule> operationSchedules) {
 		return getRelative(operationSchedules, 0);
 	}
@@ -44,7 +40,7 @@ public class UnmergedOperationSchedule extends OperationScheduleBase {
 	/**
 	 * 現在運行中の運行スケジュールから、offset個進めた運行スケジュールを得る
 	 */
-	public static Optional<UnmergedOperationSchedule> getRelative(
+	static Optional<UnmergedOperationSchedule> getRelative(
 			Iterable<UnmergedOperationSchedule> operationSchedules, Integer offset) {
 		Integer currentIndex = 0;
 		for (UnmergedOperationSchedule operationSchedule : operationSchedules) {
@@ -59,86 +55,6 @@ public class UnmergedOperationSchedule extends OperationScheduleBase {
 			return Optional.of(Iterables.get(operationSchedules, resultIndex));
 		}
 		return Optional.absent();
-	}
-
-	/**
-	 * 降車予定なのに未降車の乗車実績を得る
-	 */
-	public List<PassengerRecord> getNoGetOffErrorPassengerRecords(
-			Iterable<PassengerRecord> passengerRecords) {
-		List<PassengerRecord> results = Lists.newLinkedList();
-		for (PassengerRecord passengerRecord : getGetOffScheduledPassengerRecords(passengerRecords)) {
-			if (!passengerRecord.getGetOffTime().isPresent()) {
-				results.add(passengerRecord);
-			}
-		}
-		return results;
-	}
-
-	/**
-	 * 乗車予定なのに未乗車の乗車実績を得る
-	 */
-	public List<PassengerRecord> getNoGetOnErrorPassengerRecords(
-			Iterable<PassengerRecord> passengerRecords) {
-		List<PassengerRecord> results = Lists.newLinkedList();
-		for (PassengerRecord passengerRecord : getGetOnScheduledPassengerRecords(passengerRecords)) {
-			if (!passengerRecord.getGetOnTime().isPresent()) {
-				results.add(passengerRecord);
-			}
-		}
-		return results;
-	}
-
-	/**
-	 * 乗車予定かどうかを調べる
-	 */
-	public Boolean isGetOnScheduled(PassengerRecord passengerRecord) {
-		for (Reservation reservation : passengerRecord.getReservation().asSet()) {
-			return reservation.getDepartureScheduleId().equals(
-					Optional.of(getId()));
-		}
-		Log.e(TAG, "PassengerRecord has no Reservation " + passengerRecord);
-		return false;
-	}
-
-	/**
-	 * 降車予定かどうかを調べる
-	 */
-	public Boolean isGetOffScheduled(PassengerRecord passengerRecord) {
-		for (Reservation reservation : passengerRecord.getReservation().asSet()) {
-			return reservation.getArrivalScheduleId().equals(
-					Optional.of(getId()));
-		}
-		Log.e(TAG, "PassengerRecord has no Reservation " + passengerRecord);
-		return false;
-	}
-
-	/**
-	 * 乗車予定の乗車実績を得る
-	 */
-	public List<PassengerRecord> getGetOnScheduledPassengerRecords(
-			Iterable<PassengerRecord> passengerRecords) {
-		List<PassengerRecord> results = Lists.newLinkedList();
-		for (PassengerRecord passengerRecord : passengerRecords) {
-			if (isGetOnScheduled(passengerRecord)) {
-				results.add(passengerRecord);
-			}
-		}
-		return results;
-	}
-
-	/**
-	 * 降車予定の乗車実績を得る
-	 */
-	public List<PassengerRecord> getGetOffScheduledPassengerRecords(
-			Iterable<PassengerRecord> passengerRecords) {
-		List<PassengerRecord> results = Lists.newLinkedList();
-		for (PassengerRecord passengerRecord : passengerRecords) {
-			if (isGetOffScheduled(passengerRecord)) {
-				results.add(passengerRecord);
-			}
-		}
-		return results;
 	}
 
 	/**
@@ -162,5 +78,9 @@ public class UnmergedOperationSchedule extends OperationScheduleBase {
 			}
 		}
 		return passengerRecords;
+	}
+
+	public OperationSchedule toOperationSchedule() {
+		return OperationSchedule.create(this);
 	}
 }

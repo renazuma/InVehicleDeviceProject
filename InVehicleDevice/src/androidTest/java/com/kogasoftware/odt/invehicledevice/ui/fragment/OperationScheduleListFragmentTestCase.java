@@ -19,6 +19,7 @@ import com.kogasoftware.odt.invehicledevice.testutil.TestUtil;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.OperationScheduleListFragment;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.UnmergedOperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 
 public class OperationScheduleListFragmentTestCase extends
@@ -28,16 +29,16 @@ public class OperationScheduleListFragmentTestCase extends
 	EventDispatcher ed;
 	OperationScheduleListFragment f;
 
-	OperationSchedule os0 = new OperationSchedule();
-	OperationSchedule os1 = new OperationSchedule();
-	OperationSchedule os2 = new OperationSchedule();
-	OperationSchedule os3 = new OperationSchedule();
-	OperationSchedule os4 = new OperationSchedule();
-	OperationSchedule os5 = new OperationSchedule();
-	OperationSchedule os6 = new OperationSchedule();
-	OperationSchedule os7 = new OperationSchedule();
-	OperationSchedule os8 = new OperationSchedule();
-	OperationSchedule os9 = new OperationSchedule();
+	UnmergedOperationSchedule os0 = new UnmergedOperationSchedule();
+	UnmergedOperationSchedule os1 = new UnmergedOperationSchedule();
+	UnmergedOperationSchedule os2 = new UnmergedOperationSchedule();
+	UnmergedOperationSchedule os3 = new UnmergedOperationSchedule();
+	UnmergedOperationSchedule os4 = new UnmergedOperationSchedule();
+	UnmergedOperationSchedule os5 = new UnmergedOperationSchedule();
+	UnmergedOperationSchedule os6 = new UnmergedOperationSchedule();
+	UnmergedOperationSchedule os7 = new UnmergedOperationSchedule();
+	UnmergedOperationSchedule os8 = new UnmergedOperationSchedule();
+	UnmergedOperationSchedule os9 = new UnmergedOperationSchedule();
 	OperationRecord or0 = new OperationRecord();
 	OperationRecord or1 = new OperationRecord();
 	OperationRecord or2 = new OperationRecord();
@@ -48,7 +49,7 @@ public class OperationScheduleListFragmentTestCase extends
 	OperationRecord or7 = new OperationRecord();
 	OperationRecord or8 = new OperationRecord();
 	OperationRecord or9 = new OperationRecord();
-	List<OperationSchedule> oss;
+	List<UnmergedOperationSchedule> oss;
 
 	@Override
 	protected void setUp() throws Exception {
@@ -238,7 +239,7 @@ public class OperationScheduleListFragmentTestCase extends
 	}
 
 	protected void assertShow() throws Throwable {
-		ld.operation.operationSchedules.addAll(oss);
+		ld.operation.operationSchedules.addAll(OperationSchedule.create(oss));
 		runTestOnUiThread(new Runnable() {
 			@Override
 			public void run() {

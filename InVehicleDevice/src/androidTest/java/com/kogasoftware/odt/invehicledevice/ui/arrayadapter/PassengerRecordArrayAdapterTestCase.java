@@ -29,6 +29,7 @@ import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordArray
 import com.kogasoftware.odt.apiclient.ApiClientCallback;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.UnmergedOperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.User;
@@ -63,7 +64,7 @@ public class PassengerRecordArrayAdapterTestCase extends
 
 	InVehicleDeviceApiClient apiClient = new EmptyInVehicleDeviceApiClient() {
 		@Override
-		public int getOffPassenger(OperationSchedule operationSchedule,
+		public int getOffPassenger(
 				Reservation reservation, User user,
 				PassengerRecord passengerRecord,
 				ApiClientCallback<Void> callback) {
@@ -72,7 +73,7 @@ public class PassengerRecordArrayAdapterTestCase extends
 		}
 
 		@Override
-		public int getOnPassenger(OperationSchedule operationSchedule,
+		public int getOnPassenger(
 				Reservation reservation, User user,
 				PassengerRecord passengerRecord,
 				ApiClientCallback<Void> callback) {
@@ -81,7 +82,7 @@ public class PassengerRecordArrayAdapterTestCase extends
 		}
 
 		@Override
-		public int cancelGetOffPassenger(OperationSchedule operationSchedule,
+		public int cancelGetOffPassenger(
 				Reservation reservation, User user,
 				ApiClientCallback<Void> callback) {
 			cancelGetOffPassengerRecords.add(reservation.getPassengerRecords()
@@ -90,7 +91,7 @@ public class PassengerRecordArrayAdapterTestCase extends
 		}
 
 		@Override
-		public int cancelGetOnPassenger(OperationSchedule operationSchedule,
+		public int cancelGetOnPassenger(
 				Reservation reservation, User user,
 				ApiClientCallback<Void> callback) {
 			cancelGetOnPassengerRecords.add(reservation.getPassengerRecords()
@@ -158,20 +159,20 @@ public class PassengerRecordArrayAdapterTestCase extends
 		final String userName0 = "上野駅前";
 		final String userName1 = "御徒町駅前";
 		final Integer T = 2000;
-		final List<OperationSchedule> oss = new LinkedList<OperationSchedule>();
+		final List<UnmergedOperationSchedule> oss = new LinkedList<UnmergedOperationSchedule>();
 		final List<PassengerRecord> prs = new LinkedList<PassengerRecord>();
 
 		OperationRecord finished = new OperationRecord();
 		finished.setArrivedAt(new Date());
 		finished.setDepartedAt(new Date());
 		OperationRecord remaining = new OperationRecord();
-		final OperationSchedule os0 = new OperationSchedule();
+		final UnmergedOperationSchedule os0 = new UnmergedOperationSchedule();
 		os0.setId(200);
 		os0.setOperationRecord(finished);
-		final OperationSchedule os1 = new OperationSchedule();
+		final UnmergedOperationSchedule os1 = new UnmergedOperationSchedule();
 		os1.setId(50);
 		os1.setOperationRecord(remaining);
-		final OperationSchedule os2 = new OperationSchedule();
+		final UnmergedOperationSchedule os2 = new UnmergedOperationSchedule();
 		os2.setId(100);
 		os2.setOperationRecord(remaining);
 
@@ -180,9 +181,9 @@ public class PassengerRecordArrayAdapterTestCase extends
 			public void write(LocalData status) {
 				status.operation.passengerRecords.clear();
 				status.operation.operationSchedules.clear();
-				status.operation.operationSchedules.add(os0);
-				status.operation.operationSchedules.add(os1);
-				status.operation.operationSchedules.add(os2);
+				status.operation.operationSchedules.add(os0.toOperationSchedule());
+				status.operation.operationSchedules.add(os1.toOperationSchedule());
+				status.operation.operationSchedules.add(os2.toOperationSchedule());
 				{
 					PassengerRecord pr = new PassengerRecord();
 					Reservation r = new Reservation();
@@ -209,14 +210,16 @@ public class PassengerRecordArrayAdapterTestCase extends
 					status.operation.passengerRecords.add(pr);
 				}
 
-				oss.addAll(status.operation.operationSchedules);
+				for (OperationSchedule os : status.operation.operationSchedules) {
+					oss.addAll(os.getSourceOperationSchedules());
+				}
 				prs.addAll(status.operation.passengerRecords);
 			}
 		});
-		osl.arrive(os0, new EmptyRunnable());
+		osl.arrive(os0.toOperationSchedule(), new EmptyRunnable());
 
 		aa = new PassengerRecordArrayAdapter(getInstrumentation().getContext(),
-				s, a.getFragmentManager(), os0, prs);
+				s, a.getFragmentManager(), os0.toOperationSchedule(), prs);
 
 		sync();
 		assertEquals(aa.getCount(), 2);
@@ -275,12 +278,12 @@ public class PassengerRecordArrayAdapterTestCase extends
 		assertEquals(userName1, r.getUser().get().getLastName());
 
 		// 次の乗降場へ移動
-		osl.depart(os0, new EmptyRunnable());
-		osl.arrive(os1, new EmptyRunnable());
+		osl.depart(os0.toOperationSchedule(), new EmptyRunnable());
+		osl.arrive(os1.toOperationSchedule(), new EmptyRunnable());
 
 		Thread.sleep(2000);
 		aa = new PassengerRecordArrayAdapter(getInstrumentation().getContext(),
-				s, a.getFragmentManager(), os1, prs);
+				s, a.getFragmentManager(), os1.toOperationSchedule(), prs);
 		sync();
 		assertEquals(1, aa.getCount());
 		runTestOnUiThread(new Runnable() {

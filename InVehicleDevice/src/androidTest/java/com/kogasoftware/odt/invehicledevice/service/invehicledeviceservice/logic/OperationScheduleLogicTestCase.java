@@ -19,6 +19,7 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Local
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.Writer;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.UnmergedOperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 
@@ -26,7 +27,7 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 	InVehicleDeviceService s;
 	OperationScheduleLogic osl;
 	LocalStorage lds;
-	List<OperationSchedule> remotes = Lists.newLinkedList();
+	List<UnmergedOperationSchedule> remotes = Lists.newLinkedList();
 	List<VehicleNotification> vns = Lists.newLinkedList();
 
 	@Override
@@ -62,15 +63,15 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 	}
 
 	public void xtestMergeOperationSchedules() throws IOException {
-		final OperationSchedule local = OperationSchedule
+		final UnmergedOperationSchedule local = UnmergedOperationSchedule
 				.parse("{id: 12345, updated_at: '2013-08-12'}");
-		final OperationSchedule remote = OperationSchedule
+		final UnmergedOperationSchedule remote = UnmergedOperationSchedule
 				.parse("{id: 12345, updated_at: '2000-08-10'}");
 		remotes.add(remote);
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
-				localData.operation.operationSchedules.add(local);
+				localData.operation.operationSchedules.addAll(OperationSchedule.create(Lists.newArrayList(local)));
 			}
 		});
 		// osl.mergeOperationSchedules(remotes, vns);
@@ -79,8 +80,8 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 			public Integer read(LocalData localData) {
 				assertEquals(1, localData.operation.operationSchedules.size());
 				assertEquals(remote.getId(), localData.operation.operationSchedules
-						.get(0).getId());
-				assertTrue(localData.operation.operationSchedules.get(0)
+						.get(0).getSourceOperationSchedules().get(0).getId());
+				assertTrue(localData.operation.operationSchedules.get(0).getSourceOperationSchedules().get(0)
 						.getOperationRecord().isPresent());
 				return 0;
 			}
@@ -89,10 +90,10 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 
 	void callTestMergePassengerRecords(final Boolean preferLocal)
 			throws Exception {
-		final OperationSchedule remote = OperationSchedule
+		final UnmergedOperationSchedule remote = UnmergedOperationSchedule
 				.parse("{id: 1, reservations_as_departure: [{fellow_users: [{id: 2}], passenger_records: [{id: 3, user_id: 2, updated_at: '2000-01-01'}]}]}");
 		String ua = preferLocal ? "2030-12-31" : "1990-01-01";
-		final OperationSchedule local = OperationSchedule
+		final UnmergedOperationSchedule local = UnmergedOperationSchedule
 				.parse("{id: 1, reservations_as_departure: [{fellow_users: [{id: 2}], passenger_records: [{id: 3, user_id: 2, updated_at: '"
 						+ ua + "', payment: 200}]}]}");
 		final PassengerRecord localPR = local.getReservationsAsDeparture()
@@ -108,7 +109,7 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 			@Override
 			public void write(LocalData localData) {
 				localData.operation.passengerRecords.add(localPR);
-				localData.operation.operationSchedules.add(local);
+				localData.operation.operationSchedules.add(local.toOperationSchedule());
 			}
 		});
 		// osl.mergeOperationSchedules(remotes, vns);
@@ -117,8 +118,8 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 			public Integer read(LocalData localData) {
 				assertEquals(1, localData.operation.operationSchedules.size());
 				assertEquals(remote.getId(), localData.operation.operationSchedules
-						.get(0).getId());
-				assertTrue(localData.operation.operationSchedules.get(0)
+						.get(0).getIds().get(0));
+				assertTrue(localData.operation.operationSchedules.get(0).getSourceOperationSchedules().get(0)
 						.getOperationRecord().isPresent());
 				assertEquals(1, localData.operation.passengerRecords.size());
 				assertEquals(3, localData.operation.passengerRecords.get(0).getId()
@@ -162,13 +163,13 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 				+ ",{id: 4, operation_record: {id: 23, updated_at: '2001-08-31'}}"
 				+ "]";
 
-		final List<OperationSchedule> locals = OperationSchedule
+		final List<UnmergedOperationSchedule> locals = UnmergedOperationSchedule
 				.parseList(localsString);
-		remotes.addAll(OperationSchedule.parseList(remotesString));
+		remotes.addAll(UnmergedOperationSchedule.parseList(remotesString));
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
-				localData.operation.operationSchedules.addAll(locals);
+				localData.operation.operationSchedules.addAll(OperationSchedule.create(locals));
 			}
 		});
 		// osl.mergeOperationSchedules(remotes, vns);
@@ -178,17 +179,17 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 				assertEquals(3, localData.operation.operationSchedules.size());
 				for (Integer i = 0; i < localData.operation.operationSchedules.size(); ++i) {
 					assertEquals(remotes.get(i).getId(),
-							localData.operation.operationSchedules.get(i).getId());
+							localData.operation.operationSchedules.get(i).getSourceOperationSchedules().get(0).getId());
 				}
 				assertEquals(preferLocal ? locals.get(0).getOperationRecord()
 						.get().getId() : remotes.get(0).getOperationRecord()
-						.get().getId(), localData.operation.operationSchedules.get(0)
+						.get().getId(), localData.operation.operationSchedules.get(0).getSourceOperationSchedules().get(0)
 						.getOperationRecord().get().getId());
 				assertEquals(remotes.get(1).getOperationRecord().get().getId(),
-						localData.operation.operationSchedules.get(1)
+						localData.operation.operationSchedules.get(1).getSourceOperationSchedules().get(0)
 								.getOperationRecord().get().getId());
 				assertEquals(remotes.get(2).getOperationRecord().get().getId(),
-						localData.operation.operationSchedules.get(2)
+						localData.operation.operationSchedules.get(2).getSourceOperationSchedules().get(0)
 								.getOperationRecord().get().getId());
 				return 0;
 			}
@@ -197,13 +198,13 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 
 	public void callTestGetCurrentOperationSchedules(String jsonString,
 			Optional<Integer> id) throws Exception {
-		final List<OperationSchedule> locals = OperationSchedule
+		final List<UnmergedOperationSchedule> locals = UnmergedOperationSchedule
 				.parseList(jsonString);
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
 				localData.operation.operationSchedules.clear();
-				localData.operation.operationSchedules.addAll(locals);
+				localData.operation.operationSchedules.addAll(OperationSchedule.create(locals));
 			}
 		});
 		if (id.isPresent()) {
@@ -235,13 +236,13 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 
 	public void callTestGetOperationSchedules(String jsonString)
 			throws Exception {
-		final List<OperationSchedule> locals = OperationSchedule
+		final List<UnmergedOperationSchedule> locals = UnmergedOperationSchedule
 				.parseList(jsonString);
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
 				localData.operation.operationSchedules.clear();
-				localData.operation.operationSchedules.addAll(locals);
+				localData.operation.operationSchedules.addAll(OperationSchedule.create(locals));
 			}
 		});
 		// ListAssert.assertEquals(locals, osl.getOperationSchedules());
@@ -269,19 +270,19 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 
 	public void callTestGetRemainingOperationSchedules(String expected,
 			String param) throws Exception {
-		final List<OperationSchedule> paramList = OperationSchedule
+		final List<UnmergedOperationSchedule> paramList = UnmergedOperationSchedule
 				.parseList(param);
-		final List<OperationSchedule> expectedList = OperationSchedule
+		final List<UnmergedOperationSchedule> expectedList = UnmergedOperationSchedule
 				.parseList(expected);
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
 				localData.operation.operationSchedules.clear();
-				localData.operation.operationSchedules.addAll(paramList);
+				localData.operation.operationSchedules.addAll(OperationSchedule.create(paramList));
 			}
 		});
 
-		// List<OperationSchedule> gotList =
+		// List<UnmergedOperationSchedule> gotList =
 		// osl.getRemainingOperationSchedules();
 		// assertEquals(expectedList.size(), gotList.size());
 		for (Integer i = 0; i < expectedList.size(); ++i) {
@@ -314,11 +315,11 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 
 	public void testPhase0() throws Exception {
 		String json = "[{id: 11, operation_record: {}}, {id: 12, operation_record: {}}, {id: 13, operation_record: {}}]";
-		final List<OperationSchedule> oss = OperationSchedule.parseList(json);
+		final List<UnmergedOperationSchedule> oss = UnmergedOperationSchedule.parseList(json);
 		lds.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData localData) {
-				localData.operation.operationSchedules.addAll(oss);
+				localData.operation.operationSchedules.addAll(OperationSchedule.create(oss));
 			}
 		});
 		// assertEquals(Phase.INITIAL, osl.getPhase());

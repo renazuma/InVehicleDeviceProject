@@ -34,6 +34,7 @@ import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.Local
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 import com.kogasoftware.odt.invehicledevice.testutil.TestUtil;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.UnmergedOperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 
@@ -433,30 +434,30 @@ public class LocalStorageTestCase extends AndroidTestCase {
 		};
 		ht.start();
 		cdl.await();
-		final OperationSchedule os = new OperationSchedule();
+		final UnmergedOperationSchedule os = new UnmergedOperationSchedule();
 		os.setId(12345);
-		final AtomicReference<OperationSchedule> resultOs = new AtomicReference<OperationSchedule>();
+		final AtomicReference<UnmergedOperationSchedule> resultOs = new AtomicReference<UnmergedOperationSchedule>();
 		final LocalStorage ls = new LocalStorage(getContext());
 		ls.withWriteLock(new Writer() {
 			@Override
 			public void write(LocalData ld) {
 				ld.operation.operationSchedules.clear();
-				ld.operation.operationSchedules.add(os);
+				ld.operation.operationSchedules.add(os.toOperationSchedule());
 			}
 		});
 
 		final Long threadId = Thread.currentThread().getId();
-		final BackgroundReader<OperationSchedule> br = new BackgroundReader<OperationSchedule>() {
+		final BackgroundReader<UnmergedOperationSchedule> br = new BackgroundReader<UnmergedOperationSchedule>() {
 			@Override
-			public OperationSchedule readInBackground(LocalData ld) {
+			public UnmergedOperationSchedule readInBackground(LocalData ld) {
 				ComparableAssert.assertNotEquals(threadId, Thread
 						.currentThread().getId());
 				ComparableAssert.assertNotEquals(threadId, ht.getId());
-				return ld.operation.operationSchedules.get(0);
+				return ld.operation.operationSchedules.get(0).getSourceOperationSchedules().get(0);
 			}
 
 			@Override
-			public void onRead(OperationSchedule result) {
+			public void onRead(UnmergedOperationSchedule result) {
 				resultOs.set(result);
 				assertEquals(Thread.currentThread().getId(), ht.getId());
 				assertTrue(ht.quit());
@@ -489,7 +490,7 @@ public class LocalStorageTestCase extends AndroidTestCase {
 		};
 		ht.start();
 		cdl.await();
-		final OperationSchedule os = new OperationSchedule();
+		final UnmergedOperationSchedule os = new UnmergedOperationSchedule();
 		os.setId(54321);
 		final LocalStorage ls = new LocalStorage(getContext());
 		ls.withWriteLock(new Writer() {
@@ -506,7 +507,7 @@ public class LocalStorageTestCase extends AndroidTestCase {
 				ComparableAssert.assertNotEquals(threadId, Thread
 						.currentThread().getId());
 				ComparableAssert.assertNotEquals(threadId, ht.getId());
-				ld.operation.operationSchedules.add(os);
+				ld.operation.operationSchedules.add(os.toOperationSchedule());
 			}
 
 			@Override
@@ -528,11 +529,11 @@ public class LocalStorageTestCase extends AndroidTestCase {
 			ls.close();
 			ht.quit();
 		}
-		OperationSchedule resultOs = ls
-				.withReadLock(new Reader<OperationSchedule>() {
+		UnmergedOperationSchedule resultOs = ls
+				.withReadLock(new Reader<UnmergedOperationSchedule>() {
 					@Override
-					public OperationSchedule read(LocalData localData) {
-						return localData.operation.operationSchedules.get(0);
+					public UnmergedOperationSchedule read(LocalData localData) {
+						return localData.operation.operationSchedules.get(0).getSourceOperationSchedules().get(0);
 					}
 				});
 		assertEquals(os.getId(), resultOs.getId());

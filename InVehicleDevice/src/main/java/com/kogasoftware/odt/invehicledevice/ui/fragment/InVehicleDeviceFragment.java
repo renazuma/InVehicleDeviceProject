@@ -78,7 +78,7 @@ public class InVehicleDeviceFragment extends AutoUpdateOperationFragment<State> 
 		StringBuilder tag = new StringBuilder("tag:" + phase);
 		for (OperationSchedule operationSchedule : optionalOperationSchedule
 				.asSet()) {
-			tag.append(":" + operationSchedule.getId());
+			tag.append(":" + operationSchedule.dumpIds());
 			for (Platform platform : operationSchedule.getPlatform().asSet()) {
 				tag.append(":" + platform.getId());
 			}

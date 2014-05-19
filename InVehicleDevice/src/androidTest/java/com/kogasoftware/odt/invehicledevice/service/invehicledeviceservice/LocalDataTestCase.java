@@ -15,7 +15,7 @@ import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.VehicleNotificationStatus;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.UnmergedOperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.ServiceProvider;
@@ -115,7 +115,7 @@ public class LocalDataTestCase extends AndroidTestCase {
 			}
 		}
 		for (Integer l = 0; l < numOperationSchedules; ++l) {
-			OperationSchedule os = new OperationSchedule();
+			UnmergedOperationSchedule os = new UnmergedOperationSchedule();
 			os.setId(l);
 			for (Integer n = 0; n < numReservations; ++n) {
 				Reservation r = new Reservation();
@@ -150,7 +150,7 @@ public class LocalDataTestCase extends AndroidTestCase {
 					}
 				}
 			}
-			ld.operation.operationSchedules.add(os);
+			ld.operation.operationSchedules.add(os.toOperationSchedule());
 		}
 
 		Stopwatch sw = new Stopwatch().start();

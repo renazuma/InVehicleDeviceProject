@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -21,6 +22,7 @@ import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.Reservation;
+import com.kogasoftware.odt.invehicledevice.apiclient.model.UnmergedOperationSchedule;
 import com.kogasoftware.odt.invehicledevice.apiclient.model.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.InVehicleDeviceService;
 import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
@@ -50,17 +52,17 @@ public class OperationScheduleLogic {
 	 * はコストがかかるため、新しいリストを作らずremoteOperationSchedulesを直接書き換える実装にした。
 	 */
 	public static void mergeOperationSchedules(
-			List<OperationSchedule> remoteOperationSchedules,
-			List<OperationSchedule> localOperationSchedules) {
+			List<UnmergedOperationSchedule> remoteOperationSchedules,
+			List<UnmergedOperationSchedule> localOperationSchedules) {
 		Log.i(TAG, "mergeOperationSchedules() start");
-		for (OperationSchedule operationSchedule : remoteOperationSchedules) {
+		for (UnmergedOperationSchedule operationSchedule : remoteOperationSchedules) {
 			Log.i(TAG, "mergeOperationSchedules() remoteId="
 					+ operationSchedule.getId());
 		}
-		for (OperationSchedule localOperationSchedule : localOperationSchedules) {
+		for (UnmergedOperationSchedule localOperationSchedule : localOperationSchedules) {
 			Log.i(TAG, "mergeOperationSchedules() localId="
 					+ localOperationSchedule.getId());
-			for (OperationSchedule remoteOperationSchedule : remoteOperationSchedules) {
+			for (UnmergedOperationSchedule remoteOperationSchedule : remoteOperationSchedules) {
 				if (!localOperationSchedule.getId().equals(
 						remoteOperationSchedule.getId())) {
 					continue;
@@ -101,7 +103,7 @@ public class OperationScheduleLogic {
 		}
 
 		// OperationRecordがマージ後に存在しない場合は新規作成
-		for (OperationSchedule operationSchedule : remoteOperationSchedules) {
+		for (UnmergedOperationSchedule operationSchedule : remoteOperationSchedules) {
 			if (!operationSchedule.getOperationRecord().isPresent()) {
 				operationSchedule.setOperationRecord(new OperationRecord());
 				Log.i(TAG,
@@ -159,9 +161,9 @@ public class OperationScheduleLogic {
 	 * ReservationとUserをメンバに持つPassengerRecordを取得する
 	 */
 	public static List<PassengerRecord> getPassengerRecordsWithReservationAndUser(
-			List<OperationSchedule> operationSchedules) {
+			List<UnmergedOperationSchedule> operationSchedules) {
 		List<PassengerRecord> passengerRecords = Lists.newLinkedList();
-		for (OperationSchedule operationSchedule : operationSchedules) {
+		for (UnmergedOperationSchedule operationSchedule : operationSchedules) {
 			passengerRecords.addAll(operationSchedule
 					.getPassengerRecordsWithReservationAndUser());
 		}
@@ -172,9 +174,9 @@ public class OperationScheduleLogic {
 	 * アプリ内で利用しない不要なアソシエーションを削除する
 	 */
 	public static void removeUnusedAssociations(
-			List<OperationSchedule> operationSchedules,
+			List<UnmergedOperationSchedule> operationSchedules,
 			List<PassengerRecord> passengerRecords) {
-		for (OperationSchedule operationSchedule : operationSchedules) {
+		for (UnmergedOperationSchedule operationSchedule : operationSchedules) {
 			operationSchedule.clearReservationsAsArrival();
 			operationSchedule.clearReservationsAsDeparture();
 		}
@@ -190,9 +192,15 @@ public class OperationScheduleLogic {
 	 * OperationScheduleをマージする(LocalDataがロックされた状態内)
 	 */
 	public void mergeWithWriteLock(LocalData localData,
-			List<OperationSchedule> remoteOperationSchedules) {
+			List<UnmergedOperationSchedule> remoteOperationSchedules) {
+		List<UnmergedOperationSchedule> localOperationSchedules = Lists
+				.newLinkedList();
+		for (OperationSchedule operationSchedule : localData.operation.operationSchedules) {
+			localOperationSchedules.addAll(operationSchedule
+					.getSourceOperationSchedules());
+		}
 		mergeOperationSchedules(remoteOperationSchedules,
-				localData.operation.operationSchedules);
+				localOperationSchedules);
 		List<PassengerRecord> remotePassengerRecords = getPassengerRecordsWithReservationAndUser(remoteOperationSchedules);
 		if (service.isOperationInitialized()) {
 			mergePassengerRecords(remotePassengerRecords,
@@ -206,13 +214,13 @@ public class OperationScheduleLogic {
 		localData.updatedDate = new Date(DateTimeUtils.currentTimeMillis());
 		localData.operation.operationScheduleReceiveSequence += 1;
 		localData.operation.operationSchedules.clear();
-		localData.operation.operationSchedules.addAll(remoteOperationSchedules);
+		localData.operation.operationSchedules.addAll(OperationSchedule.create(remoteOperationSchedules));
 		localData.operation.passengerRecords.clear();
 		localData.operation.passengerRecords.addAll(remotePassengerRecords);
 
 		Log.i(TAG, "mergeWithWriteLock operationSchedules:");
 		for (OperationSchedule operationSchedule : localData.operation.operationSchedules) {
-			Log.i(TAG, "id=" + operationSchedule.getId() + " isArrived="
+			Log.i(TAG, "id=" + operationSchedule.dumpIds() + " isArrived="
 					+ operationSchedule.isArrived() + " isDeparted="
 					+ operationSchedule.isDeparted());
 		}
@@ -228,7 +236,7 @@ public class OperationScheduleLogic {
 	 * OperationScheduleをマージする
 	 */
 	public void mergeWithWriteLock(
-			final List<OperationSchedule> operationSchedules,
+			final List<UnmergedOperationSchedule> operationSchedules,
 			final List<VehicleNotification> triggerVehicleNotifications) {
 		// 運行スケジュールをマージ
 		service.getLocalStorage().withWriteLock(new Writer() {
@@ -241,8 +249,16 @@ public class OperationScheduleLogic {
 		vehicleNotificationLogic.setStatusWithWriteLock(
 				triggerVehicleNotifications,
 				VehicleNotificationStatus.OPERATION_SCHEDULE_RECEIVED);
-		service.getEventDispatcher().dispatchMergeOperationSchedules(
-				operationSchedules, triggerVehicleNotifications);
+		List<OperationSchedule> result = service.getLocalStorage()
+				.withReadLock(new Reader<ArrayList<OperationSchedule>>() {
+					@Override
+					public ArrayList<OperationSchedule> read(LocalData localData) {
+						return Lists
+								.newArrayList(localData.operation.operationSchedules);
+					}
+				});
+		service.getEventDispatcher().dispatchMergeOperationSchedules(result,
+				triggerVehicleNotifications);
 	}
 
 	/**
@@ -289,32 +305,32 @@ public class OperationScheduleLogic {
 	 */
 	public void arrive(OperationSchedule operationSchedule,
 			final Runnable callback) {
-		Log.i(TAG, "arrive id=" + operationSchedule.getId());
-		OperationRecord operationRecord = operationSchedule.getOperationRecord().or(new OperationRecord());
-		operationRecord.setArrivedAt(new Date(DateTimeUtils.currentTimeMillis()));
-		operationSchedule.setOperationRecord(operationRecord);
+		Log.i(TAG, "arrive id=" + operationSchedule.dumpIds());
+		operationSchedule.arrive();
 		updateAsync(operationSchedule, callback);
-		service.getApiClient()
-				.withSaveOnClose()
-				.arrivalOperationSchedule(
-					operationSchedule,
-					new EmptyApiClientCallback<OperationSchedule>());
+		for (UnmergedOperationSchedule sourceOperationSchedule : operationSchedule
+				.getSourceOperationSchedules()) {
+			service.getApiClient()
+					.withSaveOnClose()
+					.arrivalOperationSchedule(
+							sourceOperationSchedule,
+							new EmptyApiClientCallback<UnmergedOperationSchedule>());
+		}
 	}
 
-	public void cancelArrive(OperationSchedule operationSchedule, final Runnable callback) {
-		Log.i(TAG, "cancel arrive id=" + operationSchedule.getId());
-		OperationRecord operationRecord = operationSchedule.getOperationRecord().or(new OperationRecord());
-		operationRecord.clearArrivedAt();
-		operationRecord.clearArrivedAtOffline();
-		operationRecord.clearDepartedAt();
-		operationRecord.clearDepartedAtOffline();
-		operationSchedule.setOperationRecord(operationRecord);
+	public void cancelArrive(OperationSchedule operationSchedule,
+			final Runnable callback) {
+		Log.i(TAG, "cancel arrive id=" + operationSchedule.dumpIds());
+		operationSchedule.cancelArrive();
 		updateAsync(operationSchedule, callback);
-		service.getApiClient()
-				.withSaveOnClose()
-				.cancelArrivalOperationSchedule(
-					operationSchedule,
-					new EmptyApiClientCallback<OperationSchedule>());
+		for (UnmergedOperationSchedule sourceOperationSchedule : operationSchedule
+				.getSourceOperationSchedules()) {
+			service.getApiClient()
+					.withSaveOnClose()
+					.cancelArrivalOperationSchedule(
+							sourceOperationSchedule,
+							new EmptyApiClientCallback<UnmergedOperationSchedule>());
+		}
 	}
 
 	public void updateOperationInBackground(LocalData localData) {
@@ -322,7 +338,8 @@ public class OperationScheduleLogic {
 		if (phase != Phase.PLATFORM_GET_ON) {
 			localData.operation.completeGetOff = false;
 		}
-		service.getEventDispatcher().dispatchUpdateOperation(localData.operation);
+		service.getEventDispatcher().dispatchUpdateOperation(
+				localData.operation);
 	}
 
 	/**
@@ -330,16 +347,17 @@ public class OperationScheduleLogic {
 	 */
 	public void depart(OperationSchedule operationSchedule,
 			final Runnable callback) {
-		Log.i(TAG, "depart id=" + operationSchedule.getId());
-		OperationRecord operationRecord = operationSchedule.getOperationRecord().or(new OperationRecord());
-		operationRecord.setDepartedAt(new Date(DateTimeUtils.currentTimeMillis()));
-		operationSchedule.setOperationRecord(operationRecord);
+		Log.i(TAG, "depart id=" + operationSchedule.dumpIds());
+		operationSchedule.depart();
 		updateAsync(operationSchedule, callback);
-		service.getApiClient()
-				.withSaveOnClose()
-				.departureOperationSchedule(
-					operationSchedule,
-					new EmptyApiClientCallback<OperationSchedule>());
+		for (UnmergedOperationSchedule sourceOperationSchedule : operationSchedule
+				.getSourceOperationSchedules()) {
+			service.getApiClient()
+					.withSaveOnClose()
+					.departureOperationSchedule(
+							sourceOperationSchedule,
+							new EmptyApiClientCallback<UnmergedOperationSchedule>());
+		}
 	}
 
 	private void updateAsync(final OperationSchedule currentOperationSchedule,
@@ -348,16 +366,23 @@ public class OperationScheduleLogic {
 			@Override
 			public void writeInBackground(LocalData localData) {
 				localData.operation.completeGetOff = false;
-				for (int i = 0; i < localData.operation.operationSchedules.size(); i++) {
-					OperationSchedule operationSchedule = localData.operation.operationSchedules.get(i);
-					if (!operationSchedule.getId().equals(currentOperationSchedule.getId())) {
+				for (int i = 0; i < localData.operation.operationSchedules
+						.size(); i++) {
+					OperationSchedule operationSchedule = localData.operation.operationSchedules
+							.get(i);
+					if (!operationSchedule.getIds().equals(
+							currentOperationSchedule.getIds())) {
 						continue;
 					}
-					localData.operation.operationSchedules.set(i, currentOperationSchedule);
+					localData.operation.operationSchedules.set(i,
+							currentOperationSchedule);
 					Log.i(TAG, "depart -> " + localData.operation.getPhase());
 					return;
 				}
-				Log.e(TAG, "OperationSchedule id=" + currentOperationSchedule.getId() + " not found");
+				Log.e(TAG,
+						"OperationSchedule id="
+								+ currentOperationSchedule.dumpIds()
+								+ " not found");
 			}
 
 			@Override
@@ -396,8 +421,8 @@ public class OperationScheduleLogic {
 	}
 
 	public void startNavigation(Platform platform) {
-		String uri = String.format(Locale.US, "google.navigation:q=%f,%f", platform.getLatitude()
-						.doubleValue(), platform.getLongitude()
+		String uri = String.format(Locale.US, "google.navigation:q=%f,%f",
+				platform.getLatitude().doubleValue(), platform.getLongitude()
 						.doubleValue());
 		Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
 				Uri.parse(uri));
