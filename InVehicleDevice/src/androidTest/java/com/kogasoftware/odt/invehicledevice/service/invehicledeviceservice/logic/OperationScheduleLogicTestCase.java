@@ -96,10 +96,10 @@ public class OperationScheduleLogicTestCase extends AndroidTestCase {
 		final UnmergedOperationSchedule local = UnmergedOperationSchedule
 				.parse("{id: 1, reservations_as_departure: [{fellow_users: [{id: 2}], passenger_records: [{id: 3, user_id: 2, updated_at: '"
 						+ ua + "', payment: 200}]}]}");
-		final PassengerRecord localPR = local.getReservationsAsDeparture()
-				.get(0).getPassengerRecords().get(0);
-		final PassengerRecord remotePR = remote.getReservationsAsDeparture()
-				.get(0).getPassengerRecords().get(0);
+		final PassengerRecord localPR = local.getDepartureReservation()
+				.get().getPassengerRecords().get(0);
+		final PassengerRecord remotePR = remote.getDepartureReservation()
+				.get().getPassengerRecords().get(0);
 		assertEquals(3, remotePR.getId().intValue());
 		assertEquals(3, localPR.getId().intValue());
 		// assertEquals(Optional.absent(), remotePR.getPayment());

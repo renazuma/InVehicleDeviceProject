@@ -62,7 +62,7 @@ public class UnmergedOperationSchedule extends OperationScheduleBase {
 	 */
 	public List<PassengerRecord> getPassengerRecordsWithReservationAndUser() {
 		List<PassengerRecord> passengerRecords = Lists.newLinkedList();
-		for (Reservation reservation : getReservationsAsDeparture()) {
+		for (Reservation reservation : getDepartureReservation().asSet()) {
 			for (PassengerRecord passengerRecord : reservation
 					.getPassengerRecords()) {
 				for (User user : reservation.getFellowUsers()) {

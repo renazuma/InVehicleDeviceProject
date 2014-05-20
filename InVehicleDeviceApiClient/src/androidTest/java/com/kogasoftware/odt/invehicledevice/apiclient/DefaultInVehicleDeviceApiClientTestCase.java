@@ -419,10 +419,10 @@ public class DefaultInVehicleDeviceApiClientTestCase extends DummyAndroidTestCas
 		assertNotNull(schedules);
 		assertEquals(2, schedules.size());
 
-		assertEquals(1, schedules.get(0).getReservationsAsDeparture().get(0)
+		assertEquals(1, schedules.get(0).getDepartureReservation().get()
 				.getFellowUsers().size());
 
-		assertEquals(1, schedules.get(1).getReservationsAsArrival().get(0)
+		assertEquals(1, schedules.get(1).getArrivalReservation().get()
 				.getFellowUsers().size());
 
 		if (offlineTest) {
@@ -547,11 +547,11 @@ public class DefaultInVehicleDeviceApiClientTestCase extends DummyAndroidTestCas
 
 		UnmergedOperationSchedule os1 = schedules.get(0);
 		UnmergedOperationSchedule os2 = schedules.get(1);
-		Reservation res = os1.getReservationsAsDeparture().get(0);
+		Reservation res = os1.getDepartureReservation().get();
 		User user = master.createUser("login2", "もぎ", "たろう");
 		assertNotNull(record.createReservationUser(res, user));
 
-		assertFalse(schedules.get(1).getReservationsAsArrival().get(0)
+		assertFalse(schedules.get(1).getArrivalReservation().get()
 				.getFellowUsers().isEmpty());
 
 		PassengerRecord prec = new PassengerRecord();
@@ -701,9 +701,9 @@ public class DefaultInVehicleDeviceApiClientTestCase extends DummyAndroidTestCas
 		assertEquals(2, schedules.size());
 
 		UnmergedOperationSchedule os1 = schedules.get(0);
-		Reservation res = os1.getReservationsAsDeparture().get(0);
+		Reservation res = os1.getDepartureReservation().get();
 
-		assertFalse(schedules.get(1).getReservationsAsArrival().get(0)
+		assertFalse(schedules.get(1).getArrivalReservation().get()
 				.getFellowUsers().isEmpty());
 
 		PassengerRecord prec = new PassengerRecord();
@@ -846,9 +846,9 @@ public class DefaultInVehicleDeviceApiClientTestCase extends DummyAndroidTestCas
 		assertEquals(2, schedules.size());
 
 		UnmergedOperationSchedule os1 = schedules.get(0);
-		Reservation res = os1.getReservationsAsDeparture().get(0);
+		Reservation res = os1.getDepartureReservation().get();
 
-		assertFalse(schedules.get(1).getReservationsAsArrival().get(0)
+		assertFalse(schedules.get(1).getArrivalReservation().get()
 				.getFellowUsers().isEmpty());
 
 		PassengerRecord prec = new PassengerRecord();
@@ -955,10 +955,10 @@ public class DefaultInVehicleDeviceApiClientTestCase extends DummyAndroidTestCas
 		assertEquals(2, schedules.size());
 
 		UnmergedOperationSchedule os1 = schedules.get(0);
-		Reservation res = os1.getReservationsAsDeparture().get(0);
-		Reservation res2 = os1.getReservationsAsDeparture().get(1);
+		Reservation res = os1.getDepartureReservation().get();
+		Reservation res2 = os1.getDepartureReservation().get();
 
-		assertFalse(schedules.get(1).getReservationsAsArrival().get(0)
+		assertFalse(schedules.get(1).getArrivalReservation().get()
 				.getFellowUsers().isEmpty());
 
 		PassengerRecord prec = new PassengerRecord();

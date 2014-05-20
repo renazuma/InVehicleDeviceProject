@@ -121,13 +121,8 @@ public class LocalDataTestCase extends AndroidTestCase {
 				Reservation r = new Reservation();
 				r.setId(n);
 
-				List<Reservation> ra = os.getReservationsAsArrival();
-				ra.add(r);
-				os.setReservationsAsArrival(ra);
-
-				List<Reservation> rd = os.getReservationsAsDeparture();
-				rd.add(r);
-				os.setReservationsAsDeparture(rd);
+				os.setArrivalReservation(r);
+				os.setDepartureReservation(r);
 
 				for (Integer o = 0; o < numUsers; ++o) {
 					User u = new User();

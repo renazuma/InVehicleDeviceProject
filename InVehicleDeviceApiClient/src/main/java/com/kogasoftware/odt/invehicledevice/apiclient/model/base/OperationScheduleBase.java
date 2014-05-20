@@ -37,8 +37,8 @@ public abstract class OperationScheduleBase extends Model {
 	// Associations
 	@JsonProperty @JsonView(AssociationView.class) private Optional<OperationRecord> operationRecord = Optional.absent();
 	@JsonProperty @JsonView(AssociationView.class) private Optional<Platform> platform = Optional.absent();
-	@JsonProperty @JsonView(AssociationView.class) private List<Reservation> reservationsAsArrival = Lists.newLinkedList();
-	@JsonProperty @JsonView(AssociationView.class) private List<Reservation> reservationsAsDeparture = Lists.newLinkedList();
+	@JsonProperty @JsonView(AssociationView.class) private Optional<Reservation> arrivalReservation = Optional.absent();
+	@JsonProperty @JsonView(AssociationView.class) private Optional<Reservation> departureReservation = Optional.absent();
 
 	public static final String UNDERSCORE = "operation_schedule";
 	public static final ResponseConverter<UnmergedOperationSchedule> RESPONSE_CONVERTER = getResponseConverter(UnmergedOperationSchedule.class);
@@ -140,31 +140,41 @@ public abstract class OperationScheduleBase extends Model {
 	}
 
 	@JsonIgnore
-	public List<Reservation> getReservationsAsArrival() {
-		return wrapNull(reservationsAsArrival);
+	public Optional<Reservation> getArrivalReservation() {
+		return arrivalReservation;
 	}
 
 	@JsonIgnore
-	public void setReservationsAsArrival(Iterable<Reservation> reservationsAsArrival) {
-		this.reservationsAsArrival = wrapNull(reservationsAsArrival);
-	}
-
-	public void clearReservationsAsArrival() {
-		setReservationsAsArrival(new LinkedList<Reservation>());
+	public void setArrivalReservation(Optional<Reservation> arrivalReservation) {
+		this.arrivalReservation = arrivalReservation;
 	}
 
 	@JsonIgnore
-	public List<Reservation> getReservationsAsDeparture() {
-		return wrapNull(reservationsAsDeparture);
+	public void setArrivalReservation(Reservation arrivalReservation) {
+		setArrivalReservation(Optional.fromNullable(arrivalReservation));
+	}
+
+	public void clearArrivalReservation() {
+		setArrivalReservation(Optional.<Reservation> absent());
 	}
 
 	@JsonIgnore
-	public void setReservationsAsDeparture(Iterable<Reservation> reservationsAsDeparture) {
-		this.reservationsAsDeparture = wrapNull(reservationsAsDeparture);
+	public Optional<Reservation> getDepartureReservation() {
+		return departureReservation;
 	}
 
-	public void clearReservationsAsDeparture() {
-		setReservationsAsDeparture(new LinkedList<Reservation>());
+	@JsonIgnore
+	public void setDepartureReservation(Optional<Reservation> departureReservation) {
+		this.departureReservation = departureReservation;
+	}
+
+	@JsonIgnore
+	public void setDepartureReservation(Reservation departureReservation) {
+		setDepartureReservation(Optional.fromNullable(departureReservation));
+	}
+
+	public void clearDepartureReservation() {
+		setDepartureReservation(Optional.<Reservation> absent());
 	}
 
 	@Override

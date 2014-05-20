@@ -174,7 +174,7 @@ public class OperationSchedule implements Serializable {
 		List<PassengerRecord> passengerRecords = Lists.newLinkedList();
 		for (UnmergedOperationSchedule sourceOperationSchedule : sourceOperationSchedules) {
 			for (Reservation reservation : sourceOperationSchedule
-					.getReservationsAsDeparture()) {
+					.getDepartureReservation().asSet()) {
 				for (PassengerRecord passengerRecord : reservation
 						.getPassengerRecords()) {
 					for (User user : reservation.getFellowUsers()) {
@@ -236,15 +236,15 @@ public class OperationSchedule implements Serializable {
 		return Optional.absent();
 	}
 
-	public void clearReservationsAsArrival() {
+	public void clearArrivalReservation() {
 		for (UnmergedOperationSchedule sourceOperationSchedule : sourceOperationSchedules) {
-			sourceOperationSchedule.clearReservationsAsArrival();
+			sourceOperationSchedule.clearArrivalReservation();
 		}
 	}
 
-	public void clearReservationsAsDeparture() {
+	public void clearDepartureReservation() {
 		for (UnmergedOperationSchedule sourceOperationSchedule : sourceOperationSchedules) {
-			sourceOperationSchedule.clearReservationsAsDeparture();
+			sourceOperationSchedule.clearDepartureReservation();
 		}
 	}
 

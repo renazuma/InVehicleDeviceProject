@@ -177,8 +177,8 @@ public class OperationScheduleLogic {
 			List<UnmergedOperationSchedule> operationSchedules,
 			List<PassengerRecord> passengerRecords) {
 		for (UnmergedOperationSchedule operationSchedule : operationSchedules) {
-			operationSchedule.clearReservationsAsArrival();
-			operationSchedule.clearReservationsAsDeparture();
+			operationSchedule.clearArrivalReservation();
+			operationSchedule.clearDepartureReservation();
 		}
 		for (PassengerRecord passengerRecord : passengerRecords) {
 			for (Reservation reservation : passengerRecord.getReservation()
