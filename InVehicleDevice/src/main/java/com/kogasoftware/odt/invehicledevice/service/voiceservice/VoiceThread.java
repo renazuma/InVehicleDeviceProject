@@ -18,7 +18,7 @@ import android.util.Log;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
-import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
+import com.kogasoftware.odt.invehicledevice.service.logservice.EmptyThread;
 
 public class VoiceThread extends Thread {
 

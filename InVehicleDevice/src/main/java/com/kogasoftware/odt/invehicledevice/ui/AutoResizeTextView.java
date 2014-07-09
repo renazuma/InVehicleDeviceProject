@@ -1,4 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.ui;
+
 // "http://stackoverflow.com/questions/5033012/auto-scale-textview-text-to-fit-within-bounds"
 
 import android.content.Context;

@@ -15,8 +15,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.SerializationException;
 
-import com.kogasoftware.odt.apiclient.Serializations;
-
 import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
@@ -28,6 +26,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
 import com.google.common.cache.Weigher;
+import com.kogasoftware.android.Serializations;
 import com.kogasoftware.openjtalk.OpenJTalk;
 
 /**
@@ -160,8 +159,10 @@ public class VoiceCache {
 	void removeNotIndexedFiles() {
 		Collection<File> cachedFiles = cache.asMap().values();
 		for (File file : Objects.firstNonNull(outputDirectory.listFiles(),
-				new File[] {})) {
-			if (!file.isFile() || !(file.getName().endsWith(EXT) || file.getName().endsWith(LOG_EXT))) {
+				new File[]{})) {
+			if (!file.isFile()
+					|| !(file.getName().endsWith(EXT) || file.getName()
+							.endsWith(LOG_EXT))) {
 				continue;
 			}
 			if (cachedFiles.contains(file)) { // EXT_LOGのファイルは必ず削除されるが、気にしないこととする

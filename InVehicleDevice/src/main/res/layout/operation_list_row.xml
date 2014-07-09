@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="2sp"
+    android:paddingTop="2sp" >
+
+    <LinearLayout
+        android:id="@+id/operation_list_arrival_departure"
+        android:layout_width="105sp"
+        android:layout_height="60sp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/operation_schedule_arrival_estimate_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_margin="0dp"
+            android:layout_weight="1"
+            android:text="@string/departure_schedule"
+            android:textColor="@android:color/black"
+            android:textSize="22sp" />
+
+        <TextView
+            android:id="@+id/operation_schedule_departure_estimate_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_margin="0dp"
+            android:layout_weight="1"
+            android:text="@string/arrival_schedule"
+            android:textColor="@android:color/black"
+            android:textSize="22sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/operation_list_passenger_count"
+        android:layout_width="105sp"
+        android:layout_height="60sp"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/operation_list_map_button"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/operation_schedule_get_off_passenger_count_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_margin="0dp"
+            android:layout_weight="1"
+            android:text="@string/alighting_number"
+            android:textColor="@android:color/black"
+            android:textSize="22sp" />
+
+        <TextView
+            android:id="@+id/operation_schedule_get_on_passenger_count_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_margin="0dp"
+            android:layout_weight="1"
+            android:text="@string/entrainment_number"
+            android:textColor="@android:color/black"
+            android:textSize="22sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/platform_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/operation_list_passenger_count"
+        android:layout_toRightOf="@+id/operation_list_arrival_departure"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/platform_name"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@android:color/black"
+            android:textSize="32sp" />
+
+        <TextView
+            android:id="@+id/platform_address"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@android:color/black"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/operation_list_passenger_records"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/platform_layout"
+        android:layout_marginLeft="20sp"
+        android:layout_marginRight="0sp"
+        android:background="@drawable/operation_list_note_border"
+        android:orientation="vertical"
+        android:padding="2sp"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/operation_list_map_button"
+        android:layout_width="100sp"
+        android:layout_height="60sp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="2dp"
+        android:text="@string/map"
+        android:textSize="22sp" />
+
+</RelativeLayout>

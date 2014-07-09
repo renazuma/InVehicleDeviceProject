@@ -1,21 +1,28 @@
 scriptDir=$(cd "$(dirname "$0")"; pwd)
 mkdir -p build
-v=2.0.3
+v=3.0.0
 f=build/findbugs-$v
 findbugs=./$f/bin/findbugs
 if [ ! -e $findbugs ]; then
-  url="http://downloads.sourceforge.net/project/findbugs/findbugs/$v/findbugs-$v.tar.gz?r=&ts=1395966134&use_mirror=jaist"
+  url="http://10.0.0.50:8080/odt-neojenkins/userContent/findbugs-$v.tar.gz"
+  #url="http://downloads.sourceforge.net/project/findbugs/findbugs/$v/findbugs-$v.tar.gz?r=&ts=1395966134&use_mirror=jaist"
   wget $url --output-document=$f.tar.gz
   tar -x -C build -f $f.tar.gz
 fi
 for dir in `find . -name build.gradle -exec dirname {} \;`; do
+  classesDir=$dir/build/intermediates/classes/debug
   if [ $dir = "." ]; then
     continue
   fi
+  if [ ! -d $classesDir ]; then
+    echo "classesDir: '$classesDir' not found"
+    continue
+  fi
+  mkdir -p $dir/build
   $findbugs -textui \
     -xml \
     -outputFile $dir/build/findbugs.xml \
     -auxclasspath $dir/src/main/libs \
     -exclude $scriptDir/../config/findbugs-exclusion.xml \
-    $dir/src/main/java $dir/build/classes/debug
+    $dir/src/main/java $classesDir
 done

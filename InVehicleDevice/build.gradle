@@ -1,12 +1,12 @@
-apply plugin: 'android'
+apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion getAndroidCompileSdkVersion()
-    buildToolsVersion getAndroidBuildToolsVersion()
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
     defaultConfig {
         versionCode computeVersionCode()
         versionName computeVersionName()
-        testInstrumentationRunner "com.kogasoftware.odt.invehicledevice.testutil.DexMakerInstrumentationTestRunner"
+        testInstrumentationRunner "com.kogasoftware.android.DexMakerInstrumentationTestRunner"
     }
     signingConfigs {
         release {
@@ -19,7 +19,6 @@ android {
     buildTypes {
         release {
             signingConfig signingConfigs.release
-            proguardFile '../misc/config/proguard-rules.txt'
         }
     }
     packagingOptions {
@@ -37,5 +36,21 @@ dependencies {
     compile fileTree(dir: 'src/main/libs', include: '*.jar')
     androidTestCompile fileTree(dir: 'src/androidTest/libs', include: '*.jar')
     compile project(':AndroidOpenJTalk')
-    compile project(':InVehicleDeviceApiClient')
+}
+
+def computeVersionName() {
+    def versionCode = computeVersionCode()
+    // Use SimpleDateFormat to set Locale
+    def date = new java.text.SimpleDateFormat('yyyyMMddHHmmss', Locale.US).format(new Date())
+    "Build-$versionCode ($date)"
+}
+
+def computeVersionCode() {
+    (System.getenv("BUILD_NUMBER") ?: "0").toInteger()
+}
+
+project.gradle.taskGraph.whenReady {
+    connectedAndroidTest {
+        ignoreFailures = System.env.containsKey("BUILD_NUMBER");
+    }
 }

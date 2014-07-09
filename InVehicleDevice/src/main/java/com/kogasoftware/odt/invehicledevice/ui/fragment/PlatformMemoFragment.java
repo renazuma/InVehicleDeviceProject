@@ -1,51 +1,53 @@
 package com.kogasoftware.odt.invehicledevice.ui.fragment;
 
-import java.io.Serializable;
-
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
-import com.kogasoftware.odt.invehicledevice.ui.fragment.PlatformMemoFragment.State;
+import com.kogasoftware.odt.invehicledevice.contentprovider.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.utils.FragmentUtils;
 
-public class PlatformMemoFragment extends ApplicationFragment<State> {
-	@SuppressWarnings("serial")
-	protected static class State implements Serializable {
-		private final OperationSchedule operationSchedule;
+public class PlatformMemoFragment extends Fragment {
+	private static final String OPERATION_SCHEDULE_KEY = "operation_schedule";
 
-		public State(OperationSchedule operationSchedule) {
-			this.operationSchedule = operationSchedule;
-		}
-
-		public OperationSchedule getOperationSchedule() {
-			return operationSchedule;
-		}
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		View view = getView();
+		OperationSchedule operationSchedule = (OperationSchedule) getArguments()
+				.getSerializable(OPERATION_SCHEDULE_KEY);
+		Button closeButton = (Button) view
+				.findViewById(R.id.platform_memo_close_button);
+		closeButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				FragmentUtils.hide(PlatformMemoFragment.this);
+			}
+		});
+		TextView platformMemoTextView = (TextView) view
+				.findViewById(R.id.platform_memo_text_view);
+		platformMemoTextView.setText(operationSchedule.memo);
 	}
 
-	public static Fragment newInstance(OperationSchedule operationSchedule) {
-		return newInstance(new PlatformMemoFragment(), new State(
-				operationSchedule));
+	public static PlatformMemoFragment newInstance(
+			OperationSchedule operationSchedule) {
+		PlatformMemoFragment fragment = new PlatformMemoFragment();
+		Bundle args = new Bundle();
+		args.putSerializable(OPERATION_SCHEDULE_KEY, operationSchedule);
+		fragment.setArguments(args);
+		return fragment;
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View view = onCreateViewHelper(inflater, container,
-				R.layout.platform_memo_fragment,
-				R.id.platform_memo_close_button);
-
-		for (Platform platform : getState().getOperationSchedule()
-				.getPlatform().asSet()) {
-			TextView memoTextView = (TextView) view
-					.findViewById(R.id.platform_memo_text_view);
-			memoTextView.setText(platform.getMemo());
-		}
-		return view;
+		return inflater.inflate(R.layout.platform_memo_fragment, container,
+				false);
 	}
 }

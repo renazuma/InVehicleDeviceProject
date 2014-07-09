@@ -15,8 +15,8 @@ public class BgColorTransitionDrawable extends TransitionDrawable {
 	}
 
 	public BgColorTransitionDrawable(int color, int interval) {
-		super(new ColorDrawable[] { new ColorDrawable(color),
-				new ColorDrawable(color) });
+		super(new ColorDrawable[]{new ColorDrawable(color),
+				new ColorDrawable(color)});
 		this.interval = interval;
 		setCrossFadeEnabled(true);
 		setId(0, 0);

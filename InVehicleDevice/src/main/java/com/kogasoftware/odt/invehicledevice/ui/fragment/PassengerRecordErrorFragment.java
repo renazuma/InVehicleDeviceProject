@@ -1,13 +1,11 @@
 package com.kogasoftware.odt.invehicledevice.ui.fragment;
 
-import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.List;
 
-import android.app.FragmentManager;
+import android.content.ContentResolver;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -16,171 +14,137 @@ import android.widget.Button;
 
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation.Phase;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalStorage.BackgroundWriter;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
+import com.kogasoftware.odt.invehicledevice.contentprovider.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.contentprovider.model.OperationSchedule.Phase;
+import com.kogasoftware.odt.invehicledevice.contentprovider.model.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedules;
 import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
-import com.kogasoftware.odt.invehicledevice.ui.ViewDisabler;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordErrorArrayAdapter;
-import com.kogasoftware.odt.invehicledevice.ui.fragment.PassengerRecordErrorFragment.State;
+import com.kogasoftware.odt.invehicledevice.utils.FragmentUtils;
+import com.kogasoftware.odt.invehicledevice.utils.ViewDisabler;
 
-public class PassengerRecordErrorFragment extends ApplicationFragment<State>
-		implements
-		PassengerRecordErrorArrayAdapter.OnPassengerRecordChangeListener {
-
-	@SuppressWarnings("serial")
-	protected static class State implements Serializable {
-		private final List<OperationSchedule> operationSchedules;
-		private final List<PassengerRecord> passengerRecords;
-		private final Phase phase;
-
-		public State(Phase phase, List<OperationSchedule> operationSchedules,
-				List<PassengerRecord> passengerRecords) {
-			this.phase = phase;
-			this.operationSchedules = operationSchedules;
-			this.passengerRecords = passengerRecords;
-		}
-
-		public List<OperationSchedule> getOperationSchedules() {
-			return operationSchedules;
-		}
-
-		public List<PassengerRecord> getPassengerRecords() {
-			return passengerRecords;
-		}
-
-		public Phase getPhase() {
-			return phase;
-		}
-	}
-
+public class PassengerRecordErrorFragment
+		extends
+			OperationSchedulesAndPassengerRecordsFragment {
 	private static final String TAG = PassengerRecordErrorFragment.class
 			.getSimpleName();
+	private static final String OPERATION_SCHEDULE_ID_KEY = "operation_schedule_id";
 	private Button completeWithErrorButton;
+	private ContentResolver contentResolver;
+	private Long operationScheduleId;
+	private Button closeButton;
+	private FlickUnneededListView errorUserListView;
+	private PassengerRecordErrorArrayAdapter adapter;
 
-	public PassengerRecordErrorFragment() {
-		setRemoveOnUpdateOperation(true);
-	}
-
-	public static PassengerRecordErrorFragment newInstance(Phase phase,
-			List<OperationSchedule> operationSchedules,
-			List<PassengerRecord> passengerRecords) {
-		return newInstance(new PassengerRecordErrorFragment(), new State(phase,
-				operationSchedules, passengerRecords));
+	public static PassengerRecordErrorFragment newInstance(
+			Long operationScheduleId) {
+		PassengerRecordErrorFragment fragment = new PassengerRecordErrorFragment();
+		Bundle args = new Bundle();
+		args.putSerializable(OPERATION_SCHEDULE_ID_KEY, operationScheduleId);
+		fragment.setArguments(args);
+		return fragment;
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View view = onCreateViewHelper(inflater, container,
-				R.layout.passenger_record_error_fragment,
-				R.id.get_off_check_close_button);
-
-		Button closeButton = (Button) view
-				.findViewById(R.id.get_off_check_close_button);
-		FlickUnneededListView errorUserListView = (FlickUnneededListView) view
-				.findViewById(R.id.error_reservation_list_view);
-
-		for (final OperationSchedule operationSchedule : OperationSchedule
-				.getCurrent(getState().getOperationSchedules()).asSet()) {
-			List<PassengerRecord> errorPassengerRecords = Lists.newLinkedList();
-			if (getState().getPhase() == Phase.PLATFORM_GET_OFF) {
-				errorPassengerRecords.addAll(operationSchedule
-						.getNoGetOffErrorPassengerRecords(getState()
-								.getPassengerRecords()));
-			} else {
-				errorPassengerRecords.addAll(operationSchedule
-						.getNoGetOnErrorPassengerRecords(getState()
-								.getPassengerRecords()));
-			}
-
-			completeWithErrorButton = (Button) view
-					.findViewById(R.id.complete_with_error_button);
-
-			if (getState().getPhase() == Phase.PLATFORM_GET_ON) {
-				// String caption = getString(R.string.it_leaves);
-				// completeWithErrorButton.setText(caption);
-				completeWithErrorButton.setText("次へ");
-				closeButton.setText("乗車一覧に戻る");
-			} else {
-				// String caption =
-				// getString(R.string.it_completes_getting_off);
-				// completeWithErrorButton.setText(caption);
-				completeWithErrorButton.setText("次へ");
-				closeButton.setText("降車一覧に戻る");
-			}
-
-			completeWithErrorButton.setTextColor(Color.GRAY);
-			completeWithErrorButton.setEnabled(false);
-			completeWithErrorButton.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View view) {
-					ViewDisabler.disable(view);
-					complete(getState().getPhase(), operationSchedule,
-							getState().getOperationSchedules(), getState()
-									.getPassengerRecords());
-				}
-			});
-
-			for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
-				PassengerRecordErrorArrayAdapter adapter = new PassengerRecordErrorArrayAdapter(
-						getActivity(), getService(), fragmentManager,
-						operationSchedule, errorPassengerRecords, this);
-				errorUserListView.getListView().setAdapter(adapter);
-				onPassengerRecordChange(adapter);
-			}
-			return view;
-		}
-
-		// error
-		Log.e(TAG, "no current OperationSchedule");
-		new OperationScheduleLogic(getService()).requestUpdateOperation();
-		hide();
-		return view;
-	}
-
-	private void complete(Phase phase,
-			OperationSchedule currentOperationSchedule,
-			List<OperationSchedule> operationSchedules,
-			List<PassengerRecord> passengerRecords) {
-		final OperationScheduleLogic operationScheduleLogic = new OperationScheduleLogic(
-				getService());
-		if (phase == Phase.PLATFORM_GET_ON
-				|| currentOperationSchedule.getGetOnScheduledPassengerRecords(
-						passengerRecords).isEmpty()) {
-			for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
-				setCustomAnimation(fragmentManager.beginTransaction()).add(
-						R.id.modal_fragment_container,
-						DepartureCheckFragment.newInstance(phase,
-								operationSchedules)).commitAllowingStateLoss();
-			}
-			return;
-		}
-		getService().getLocalStorage().write(new BackgroundWriter() {
-			@Override
-			public void writeInBackground(LocalData ld) {
-				ld.operation.completeGetOff = true;
-			}
-
-			@Override
-			public void onWrite() {
-				hide();
-				new Handler().postDelayed(new Runnable() {
-
-					@Override
-					public void run() {
-						operationScheduleLogic.requestUpdateOperation();
-					}
-				}, 300);
-			}
-		});
+		return inflater.inflate(R.layout.passenger_record_error_fragment,
+				container, false);
 	}
 
 	@Override
-	public void onPassengerRecordChange(PassengerRecordErrorArrayAdapter adapter) {
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		contentResolver = getActivity().getContentResolver();
+		Bundle args = getArguments();
+		operationScheduleId = args.getLong(OPERATION_SCHEDULE_ID_KEY);
+		View view = getView();
+		closeButton = (Button) view
+				.findViewById(R.id.get_off_check_close_button);
+		closeButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				FragmentUtils.hide(PassengerRecordErrorFragment.this);
+			}
+		});
+		errorUserListView = (FlickUnneededListView) view
+				.findViewById(R.id.error_reservation_list_view);
+		completeWithErrorButton = (Button) view
+				.findViewById(R.id.complete_with_error_button);
+		adapter = new PassengerRecordErrorArrayAdapter(getActivity(),
+				operationScheduleId);
+		errorUserListView.getListView().setAdapter(adapter);
+	}
+
+	private void complete(Phase phase,
+			final OperationSchedule currentOperationSchedule,
+			LinkedList<OperationSchedule> operationSchedules,
+			LinkedList<PassengerRecord> passengerRecords) {
+		if (!isAdded()) {
+			return;
+		}
+		if (phase == Phase.PLATFORM_GET_ON
+				|| currentOperationSchedule.getGetOnScheduledPassengerRecords(
+						passengerRecords).isEmpty()) {
+			getFragmentManager()
+					.beginTransaction()
+					.add(R.id.modal_fragment_container,
+							DepartureCheckFragment
+									.newInstance(currentOperationSchedule.id))
+					.commitAllowingStateLoss();
+			return;
+		}
+		new Thread() {
+			@Override
+			public void run() {
+				currentOperationSchedule.completeGetOff = true;
+				contentResolver.insert(OperationSchedules.CONTENT.URI,
+						currentOperationSchedule.toContentValues());
+			}
+		}.start();
+		FragmentUtils.hide(this);
+	}
+
+	@Override
+	protected void onOperationSchedulesAndPassengerRecordsLoadFinished(
+			final Phase phase,
+			final LinkedList<OperationSchedule> operationSchedules,
+			final LinkedList<PassengerRecord> passengerRecords) {
+		final OperationSchedule operationSchedule = OperationSchedule
+				.getCurrent(operationSchedules);
+		if (operationSchedule == null
+				|| !operationSchedule.id.equals(operationScheduleId)) {
+			FragmentUtils.hide(this);
+			return;
+		}
+		List<PassengerRecord> errorPassengerRecords = Lists.newLinkedList();
+		if (phase.equals(Phase.PLATFORM_GET_OFF)) {
+			errorPassengerRecords.addAll(operationSchedule
+					.getNoGetOffErrorPassengerRecords(passengerRecords));
+		} else {
+			errorPassengerRecords.addAll(operationSchedule
+					.getNoGetOnErrorPassengerRecords(passengerRecords));
+		}
+		adapter.update(errorPassengerRecords);
+
+		if (phase.equals(Phase.PLATFORM_GET_ON)) {
+			completeWithErrorButton.setText("次へ");
+			closeButton.setText("乗車一覧に戻る");
+		} else {
+			completeWithErrorButton.setText("次へ");
+			closeButton.setText("降車一覧に戻る");
+		}
+
+		completeWithErrorButton.setTextColor(Color.GRAY);
+		completeWithErrorButton.setEnabled(false);
+		completeWithErrorButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				ViewDisabler.disable(view);
+				complete(phase, operationSchedule, operationSchedules,
+						passengerRecords);
+			}
+		});
 		if (adapter.hasError()) {
 			completeWithErrorButton.setTextColor(Color.GRAY);
 			completeWithErrorButton.setEnabled(false);

@@ -1,18 +1,24 @@
 package com.kogasoftware.odt.invehicledevice.ui.fragment;
 
-import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTimeUtils;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.app.Fragment;
-import android.app.FragmentManager;
+import android.app.LoaderManager.LoaderCallbacks;
+import android.content.CursorLoader;
+import android.content.Loader;
+import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Html;
@@ -24,56 +30,66 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
-import com.kogasoftware.odt.invehicledevice.empty.EmptyRunnable;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation.Phase;
+import com.kogasoftware.odt.invehicledevice.contentprovider.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.contentprovider.model.OperationSchedule.Phase;
+import com.kogasoftware.odt.invehicledevice.contentprovider.model.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLogs;
 import com.kogasoftware.odt.invehicledevice.ui.BatteryAlerter;
 import com.kogasoftware.odt.invehicledevice.ui.BgColorTransitionDrawable;
-import com.kogasoftware.odt.invehicledevice.ui.ViewDisabler;
-import com.kogasoftware.odt.invehicledevice.ui.fragment.InformationBarFragment.State;
+import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
+import com.kogasoftware.odt.invehicledevice.utils.ViewDisabler;
 
-public class InformationBarFragment extends AutoUpdateOperationFragment<State>
-		implements EventDispatcher.OnChangeSignalStrengthListener {
-
-	@SuppressWarnings("serial")
-	static class State implements Serializable {
-		private final Optional<OperationSchedule> operationSchedule;
-		private final Phase phase;
-		private final Integer operationSchedulesReceivedSequence;
-
-		public State(Operation operation) {
-			this.phase = operation.getPhase();
-			this.operationSchedule = OperationSchedule.getCurrent(operation.operationSchedules);
-			this.operationSchedulesReceivedSequence = operation.operationScheduleReceiveSequence;
-		}
-
-		public Integer getOperationSchedulesReceivedSequence() {
-			return operationSchedulesReceivedSequence;
-		}
-
-		public Phase getPhase() {
-			return phase;
-		}
-
-		public Optional<OperationSchedule> getOperationSchedule() {
-			return operationSchedule;
-		}
-	}
-
+public class InformationBarFragment
+		extends
+			OperationSchedulesAndPassengerRecordsFragment {
 	private static final int UPDATE_TIME_INTERVAL_MILLIS = 3000;
+	private static final int OPEATION_SCHEDULES_LOADER_ID = 1;
+	private static final int PASSENGER_RECORDS_LOADER_ID = 2;
 
 	private BgColorTransitionDrawable bgColorTransitionDrawable;
 	private ImageView networkStrengthImageView;
 	private TextView presentTimeTextView;
 	private Handler handler;
 
-	public static InformationBarFragment newInstance(Operation operation) {
-		return newInstance(new InformationBarFragment(), new State(operation));
+	LoaderCallbacks<Cursor> serviceUnitStatusLogsLoaderCallbacks = new LoaderCallbacks<Cursor>() {
+		@Override
+		public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+			String order = ServiceUnitStatusLogs.Columns.CREATED_AT + " DESC";
+			return new CursorLoader(getActivity(),
+					ServiceUnitStatusLogs.CONTENT.URI, null, null, null, order);
+		}
+
+		@Override
+		public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+			if (!cursor.moveToFirst()) {
+				return;
+			}
+			Integer signalStrengthPercentage = cursor
+					.getInt(cursor
+							.getColumnIndexOrThrow(ServiceUnitStatusLogs.Columns.SIGNAL_STRENGTH));
+			int imageResourceId = R.drawable.network_strength_4;
+			if (signalStrengthPercentage.equals(0)) {
+				imageResourceId = R.drawable.network_strength_0;
+			} else if (signalStrengthPercentage <= 25) {
+				imageResourceId = R.drawable.network_strength_1;
+			} else if (signalStrengthPercentage <= 50) {
+				imageResourceId = R.drawable.network_strength_2;
+			} else if (signalStrengthPercentage <= 75) {
+				imageResourceId = R.drawable.network_strength_3;
+			}
+			networkStrengthImageView.setImageResource(imageResourceId);
+		}
+
+		@Override
+		public void onLoaderReset(Loader<Cursor> loader) {
+		}
+	};
+
+	public static InformationBarFragment newInstance() {
+		InformationBarFragment fragment = new InformationBarFragment();
+		return fragment;
 	}
 
 	private final Runnable updateTime = new Runnable() {
@@ -113,6 +129,11 @@ public class InformationBarFragment extends AutoUpdateOperationFragment<State>
 	 */
 	private Runnable changeBgColor;
 
+	private final List<PassengerRecord> passengerRecords = Lists
+			.newLinkedList();
+	private final List<OperationSchedule> operationSchedules = Lists
+			.newLinkedList();
+
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -122,26 +143,30 @@ public class InformationBarFragment extends AutoUpdateOperationFragment<State>
 				.findViewById(R.id.present_time_text_view);
 		networkStrengthImageView = (ImageView) view
 				.findViewById(R.id.network_strength_image_view);
-		bgColorTransitionDrawable = new BgColorTransitionDrawable(
-				getPhaseColor(getState().getPhase()));
+		networkStrengthImageView.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Activity activity = getActivity();
+				if (activity instanceof InVehicleDeviceActivity) {
+					((InVehicleDeviceActivity) activity).showLoginFragment();
+				}
+			}
+		});
+		bgColorTransitionDrawable = new BgColorTransitionDrawable(Color.WHITE,
+				0);
 		changeBgColor = new Runnable() {
 			@Override
 			public void run() {
-				bgColorTransitionDrawable.changeColor(getPhaseColor(getState().getPhase()));
+				bgColorTransitionDrawable.changeColor(getPhaseColor());
 			}
 		};
 		View bcwl = view.findViewById(R.id.background_color_workaround_layout);
 		bcwl.setBackgroundDrawable(bgColorTransitionDrawable);
-		updateView(view);
-		blinkBatteryAlert = new EmptyRunnable();
-		for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
-			blinkBatteryAlert = new BatteryAlerter(getActivity()
-					.getApplicationContext(), handler, (ImageView) getView()
-					.findViewById(R.id.battery_alert_image_view),
-					fragmentManager);
-		}
+		blinkBatteryAlert = new BatteryAlerter(getActivity()
+				.getApplicationContext(), handler, (ImageView) getView()
+				.findViewById(R.id.battery_alert_image_view),
+				getFragmentManager());
 	}
-
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -164,92 +189,89 @@ public class InformationBarFragment extends AutoUpdateOperationFragment<State>
 		handler.post(blinkBatteryAlert);
 	}
 
-	public void updateView(View view) {
+	public void updateView() {
 		handler.removeCallbacks(changeBgColor);
 		handler.postDelayed(changeBgColor, 400);
+		View view = getView();
 		TextView phaseTextView = (TextView) view
 				.findViewById(R.id.phase_text_view);
 		Boolean showPlatformMemo = true;
-		switch (getState().getPhase()) {
-		case DRIVE:
-			phaseTextView.setText("運行中");
-			break;
-		case FINISH:
-			showPlatformMemo = false;
-			phaseTextView.setText("運行終了");
-			break;
-		case PLATFORM_GET_OFF:
-			phaseTextView.setText("降車中");
-			break;
-		case PLATFORM_GET_ON:
-			phaseTextView.setText("乗車中");
-			break;
+		switch (OperationSchedule
+				.getPhase(operationSchedules, passengerRecords)) {
+			case DRIVE :
+				phaseTextView.setText("運行中");
+				break;
+			case FINISH :
+				showPlatformMemo = false;
+				phaseTextView.setText("運行終了");
+				break;
+			case PLATFORM_GET_OFF :
+				phaseTextView.setText("降車中");
+				break;
+			case PLATFORM_GET_ON :
+				phaseTextView.setText("乗車中");
+				break;
 		}
 
+		final OperationSchedule operationSchedule = OperationSchedule
+				.getCurrent(operationSchedules);
 		final Button platformMemoButton = (Button) view
 				.findViewById(R.id.platform_memo_button);
 		platformMemoButton.setVisibility(View.INVISIBLE);
-		if (showPlatformMemo) {
-			for (final OperationSchedule operationSchedule : getState()
-					.getOperationSchedule().asSet()) {
-				for (Platform platform : operationSchedule.getPlatform()
-						.asSet()) {
-					if (!platform.getMemo().isEmpty()) {
-						platformMemoButton.setVisibility(View.VISIBLE);
-						platformMemoButton
-								.setOnClickListener(new OnClickListener() {
-									@Override
-									public void onClick(View v) {
-										if (isRemoving()) {
-											return;
-										}
-										ViewDisabler.disable(v);
-										showPlatformMemoFragment(operationSchedule);
-									}
-								});
-					}
+		if (showPlatformMemo && operationSchedule != null
+				&& StringUtils.isNotBlank(operationSchedule.memo)) {
+			platformMemoButton.setVisibility(View.VISIBLE);
+			platformMemoButton.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					ViewDisabler.disable(v);
+					showPlatformMemoFragment(operationSchedule);
 				}
-			}
+			});
 		}
 	}
 
 	public void showPlatformMemoFragment(OperationSchedule operationSchedule) {
-		String tag = "tag:" + PlatformMemoFragment.class.getSimpleName();
-		for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
-			Fragment old = fragmentManager.findFragmentByTag(tag);
-			if (old != null) {
-				setCustomAnimation(fragmentManager.beginTransaction()).remove(
-						old).commit();
-			}
-			setCustomAnimation(fragmentManager.beginTransaction()).add(
-					R.id.modal_fragment_container,
-					PlatformMemoFragment.newInstance(operationSchedule)).commit();
+		if (!isAdded()) {
+			return;
 		}
+		getFragmentManager()
+				.beginTransaction()
+				.add(R.id.modal_fragment_container,
+						PlatformMemoFragment.newInstance(operationSchedule))
+				.commitAllowingStateLoss();
 	}
 
-	@Override
-	public void onUpdateOperation(Operation operation) {
-		setState(new State(operation));
-		updateView(getView());
-	}
-
-	@Override
-	public void onChangeSignalStrength(Integer signalStrengthPercentage) {
-		int imageResourceId = R.drawable.network_strength_4;
-		if (signalStrengthPercentage.intValue() == 0) {
-			imageResourceId = R.drawable.network_strength_0;
-		} else if (signalStrengthPercentage.intValue() <= 25) {
-			imageResourceId = R.drawable.network_strength_1;
-		} else if (signalStrengthPercentage.intValue() <= 50) {
-			imageResourceId = R.drawable.network_strength_2;
-		} else if (signalStrengthPercentage.intValue() <= 75) {
-			imageResourceId = R.drawable.network_strength_3;
+	private int getPhaseColor() {
+		switch (OperationSchedule
+				.getPhase(operationSchedules, passengerRecords)) {
+			case DRIVE :
+				return Color.GREEN;
+			case PLATFORM_GET_OFF :
+				return Color.BLUE;
+			case PLATFORM_GET_ON :
+				return Color.BLUE;
+			case FINISH :
+				return Color.GRAY;
 		}
-		networkStrengthImageView.setImageResource(imageResourceId);
+		return Color.WHITE;
 	}
 
 	@Override
-	protected Integer getOperationSchedulesReceiveSequence() {
-		return getState().getOperationSchedulesReceivedSequence();
+	public void onDestroyView() {
+		super.onDestroyView();
+		getLoaderManager().destroyLoader(PASSENGER_RECORDS_LOADER_ID);
+		getLoaderManager().destroyLoader(OPEATION_SCHEDULES_LOADER_ID);
+	}
+
+	@Override
+	protected void onOperationSchedulesAndPassengerRecordsLoadFinished(
+			Phase phase, LinkedList<OperationSchedule> operationSchedules,
+			LinkedList<PassengerRecord> passengerRecords) {
+		this.operationSchedules.clear();
+		this.passengerRecords.clear();
+		this.operationSchedules.addAll(operationSchedules);
+		this.passengerRecords.addAll(passengerRecords);
+		updateView();
 	}
 }

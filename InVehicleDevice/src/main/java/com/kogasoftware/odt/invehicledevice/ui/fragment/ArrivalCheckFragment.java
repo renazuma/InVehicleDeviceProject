@@ -1,8 +1,10 @@
 package com.kogasoftware.odt.invehicledevice.ui.fragment;
 
-import java.io.Serializable;
+import org.joda.time.DateTime;
 
 import android.app.Fragment;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,63 +14,63 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
-import com.kogasoftware.odt.invehicledevice.ui.fragment.ArrivalCheckFragment.State;
+import com.kogasoftware.odt.invehicledevice.contentprovider.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedules;
+import com.kogasoftware.odt.invehicledevice.utils.FragmentUtils;
 
-public class ArrivalCheckFragment extends ApplicationFragment<State> {
-	@SuppressWarnings("serial")
-	protected static class State implements Serializable {
-		private final OperationSchedule operationSchedule;
-
-		public State(OperationSchedule operationSchedule) {
-			this.operationSchedule = operationSchedule;
-		}
-
-		public OperationSchedule getOperationSchedule() {
-			return operationSchedule;
-		}
-	}
-
-	public ArrivalCheckFragment() {
-		setRemoveOnUpdateOperation(true);
-	}
+public class ArrivalCheckFragment extends Fragment {
+	private static final String OPERATION_SCHEDULE_KEY = "operation_schedule";
 
 	public static Fragment newInstance(OperationSchedule operationSchedule) {
-		return newInstance(new ArrivalCheckFragment(), new State(
-				operationSchedule));
+		ArrivalCheckFragment fragment = new ArrivalCheckFragment();
+		Bundle args = new Bundle();
+		args.putSerializable(OPERATION_SCHEDULE_KEY, operationSchedule);
+		fragment.setArguments(args);
+		return fragment;
+	}
+
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		View view = getView();
+		final ContentResolver contentResolver = getActivity()
+				.getContentResolver();
+		final OperationSchedule operationSchedule = (OperationSchedule) getArguments()
+				.getSerializable(OPERATION_SCHEDULE_KEY);
+		TextView commentTextView = (TextView) view
+				.findViewById(R.id.arrival_check_comment_text_view);
+		Button closeButton = (Button) view
+				.findViewById(R.id.arrival_check_close_button);
+		closeButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				FragmentUtils.hide(ArrivalCheckFragment.this);
+			}
+		});
+		Button arrivalButton = (Button) view.findViewById(R.id.arrival_button);
+		arrivalButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				FragmentUtils.hide(ArrivalCheckFragment.this);
+				new Thread() {
+					@Override
+					public void run() {
+						operationSchedule.arrivedAt = DateTime.now();
+						ContentValues values = operationSchedule
+								.toContentValues();
+						contentResolver.insert(OperationSchedules.CONTENT.URI,
+								values);
+					};
+				}.start();
+			}
+		});
+		commentTextView.setText(operationSchedule.name);
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		final OperationScheduleLogic operationScheduleLogic = new OperationScheduleLogic(
-				getService());
-		View view = onCreateViewHelper(inflater, container,
-				R.layout.arrival_check_fragment,
-				R.id.arrival_check_close_button);
-		TextView commentTextView = (TextView) view
-				.findViewById(R.id.arrival_check_comment_text_view);
-		Button arrivalButton = (Button) view.findViewById(R.id.arrival_button);
-		arrivalButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				operationScheduleLogic.arrive(
-						getState().getOperationSchedule(), new Runnable() {
-							@Override
-							public void run() {
-								operationScheduleLogic.requestUpdateOperation();
-							}
-						});
-				hide();
-			}
-		});
-		for (Platform platform : getState().getOperationSchedule()
-				.getPlatform().asSet()) {
-			commentTextView.setText(platform.getName());
-		}
-
-		return view;
+		return inflater.inflate(R.layout.arrival_check_fragment, container,
+				false);
 	}
 }

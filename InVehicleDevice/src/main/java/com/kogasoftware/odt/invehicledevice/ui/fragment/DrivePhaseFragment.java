@@ -1,15 +1,12 @@
 package com.kogasoftware.odt.invehicledevice.ui.fragment;
 
-import java.io.Serializable;
-
-import com.kogasoftware.odt.invehicledevice.ui.fragment.DrivePhaseFragment.State;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
+import android.app.Fragment;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -19,100 +16,75 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.google.common.base.Objects;
-import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
+import com.kogasoftware.odt.invehicledevice.contentprovider.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
 
-public class DrivePhaseFragment extends ApplicationFragment<State> {
-	@SuppressWarnings("serial")
-	protected static class State implements Serializable {
-		private final List<OperationSchedule> operationSchedules;
-
-		public State(List<OperationSchedule> operationSchedules) {
-			this.operationSchedules = Lists.newArrayList(operationSchedules);
-		}
-
-		public List<OperationSchedule> getOperationSchedules() {
-			return operationSchedules;
-		}
+public class DrivePhaseFragment extends Fragment {
+	@Override
+	public void onStart() {
+		super.onStart();
+		String message = "出発します 次は " + operationSchedule.name + " "
+				+ operationSchedule.name;
+		VoiceService.speak(getActivity(), message);
 	}
 
 	private static final String TAG = DrivePhaseFragment.class.getSimpleName();
+	private static final String OPERATION_SCHEDULES_KEY = "operation_schedules";
 
 	public static DrivePhaseFragment newInstance(
-			List<OperationSchedule> operationSchedules) {
-		return newInstance(new DrivePhaseFragment(), new State(
-				operationSchedules));
+			LinkedList<OperationSchedule> operationSchedules) {
+		DrivePhaseFragment fragment = new DrivePhaseFragment();
+		Bundle args = new Bundle();
+		args.putSerializable(OPERATION_SCHEDULES_KEY, operationSchedules);
+		fragment.setArguments(args);
+		return fragment;
 	}
 
-	private TextView nextPlatformNameTextView;
-	private TextView platformArrivalTimeTextView2;
-	private TextView platformName1BeyondTextView;
-
-	private void updateView(View view) {
-		Log.i(TAG, "updateView");
-		TypedArray typedArray = getActivity().obtainStyledAttributes(
-				new int[] { android.R.attr.background });
-		Integer backgroundColor = typedArray.getColor(0, Color.WHITE);
-		view.setBackgroundColor(backgroundColor);
-
-		Optional<OperationSchedule> currentOperationSchedule = OperationSchedule
-				.getCurrent(getState().getOperationSchedules());
-		for (OperationSchedule operationSchedule : currentOperationSchedule
-				.asSet()) {
-			nextPlatformNameTextView.setText("");
-			for (Platform platform : operationSchedule.getPlatform().asSet()) {
-				Log.i(TAG, "next platform id=" + platform.getId() + " name=" + platform.getName());
-				nextPlatformNameTextView.setText(platform.getName());
-			}
-			platformArrivalTimeTextView2.setText("");
-			for (Date arrivalEstimate : operationSchedule.getArrivalEstimate()
-					.asSet()) {
-				DateFormat dateFormat = new SimpleDateFormat(getResources()
-						.getString(R.string.platform_arrival_time_format), Locale.US);
-				platformArrivalTimeTextView2.setText(dateFormat
-						.format(arrivalEstimate));
-			}
-		}
-
-		Optional<OperationSchedule> nextOperationSchedule = OperationSchedule
-				.getRelative(getState()
-						.getOperationSchedules(), 1);
-		for (OperationSchedule operationSchedule : nextOperationSchedule
-				.asSet()) {
-			platformName1BeyondTextView.setText("");
-			for (Platform platform1 : operationSchedule.getPlatform().asSet()) {
-				platformName1BeyondTextView.setText("▼ " + platform1.getName());
-			}
-		}
-	}
+	private OperationSchedule operationSchedule;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.drive_phase_fragment, container,
-				false);
+		return inflater
+				.inflate(R.layout.drive_phase_fragment, container, false);
 	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		View view = getView();
-		nextPlatformNameTextView = (TextView) view
+		TextView nextPlatformNameTextView = (TextView) view
 				.findViewById(R.id.next_platform_name_text_view);
-		platformArrivalTimeTextView2 = (TextView) view
+		TextView platformArrivalTimeTextView2 = (TextView) view
 				.findViewById(R.id.platform_arrival_time_text_view2);
-		platformName1BeyondTextView = (TextView) view
+		TextView platformName1BeyondTextView = (TextView) view
 				.findViewById(R.id.platform_name_1_beyond_text_view);
-		updateView(view);
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-		Log.i(TAG, "platform: " + Objects.firstNonNull(nextPlatformNameTextView.getText(), "(None)"));
+		TypedArray typedArray = getActivity().obtainStyledAttributes(
+				new int[] { android.R.attr.background });
+		Integer backgroundColor = typedArray.getColor(0, Color.WHITE);
+		view.setBackgroundColor(backgroundColor);
+		Bundle args = getArguments();
+		List<OperationSchedule> operationSchedules = (List<OperationSchedule>) args
+				.getSerializable(OPERATION_SCHEDULES_KEY);
+		operationSchedule = OperationSchedule.getCurrent(operationSchedules);
+		if (operationSchedule != null) {
+			nextPlatformNameTextView.setText("");
+			Log.i(TAG, "next platform id=" + operationSchedule.platformId
+					+ " name=" + operationSchedule.name);
+			nextPlatformNameTextView.setText(operationSchedule.name);
+			platformArrivalTimeTextView2.setText("");
+			DateFormat dateFormat = new SimpleDateFormat(getResources()
+					.getString(R.string.platform_arrival_time_format),
+					Locale.US);
+			platformArrivalTimeTextView2.setText(dateFormat
+					.format(operationSchedule.arrivalEstimate.toDate()));
+		}
+		OperationSchedule nextOperationSchedule = OperationSchedule
+				.getCurrentOffset(operationSchedules, 1);
+		if (nextOperationSchedule != null) {
+			platformName1BeyondTextView.setText("▼ "
+					+ nextOperationSchedule.name);
+		}
 	}
 }

@@ -31,20 +31,26 @@
     <string name="today_operation_schedule">運行\n予定</string>
     <string name="platform_arrival_time_format">HH:mm</string>
     <string name="todays_operation_was_finished">本日の運行は終了しました</string>
-    <string name="zoom_in">拡大</string>
-    <string name="zoom_out">縮小</string>
-    <string name="auto_zoom">自動調整</string>
     <string name="now_platform_is_html">現在は&lt;big&gt;&lt;big&gt;%s&lt;/big&gt;&lt;/big&gt;</string>
     <string name="next_platform_is_html">次は&lt;big&gt;&lt;big&gt;%s&lt;/big&gt;&lt;/big&gt;</string>
     <string name="minutes_remaining_to_depart_html">%1$s出発&lt;br&gt;あと&lt;big&gt;&lt;font color=&quot;red&quot;&gt;%2$d&lt;/font&gt;&lt;/big&gt;分</string>
     <string name="platform_arrival_time">HH:mm着</string>
-    <string name="location_receiving">位置情報を受信しています</string>
-    <string name="gps_satellites_format">(人工衛星%1d/4)</string>
     <string name="crash_toast_text">車載器アプリケーションで予期しない不具合が発生しました。再起動します。</string>
     <string name="platform_memo">乗降場メモ</string>
     <string name="failed_to_connect_operator_tool">オペレーターツールとの通信に失敗しました。</string>
-    <string name="settings_are_not_initialized">初期設定が見つかりません。設定アプリケーションを利用し初期設定を行なってください。</string>
     <string name="show_passengers">乗客も見る</string>
     <string name="hide_passengers">戻る</string>
+    <string name="connection_config">接続設定</string>
+    <string name="server_url">接続先URL</string>
+    <string name="login">ログイン名</string>
+    <string name="password">パスワード</string>
+    <string name="ok">OK</string>
+    <string name="an_error_occurred">エラーが発生しました</string>
+    <string name="checking_connection_config">&lt;big&gt;&lt;big&gt;接続確認をしています&lt;/big&gt;&lt;/big&gt;</string>
+    <string name="error_null_or_empty">%sを入力してください</string>
+    <string name="error_non_ascii">%sは半角英数字で入力してください</string>
+    <string name="error_invalid_uri">%sの形式が誤っています</string>
+    <string name="error_invalid_login_or_password">車載器の認証に失敗しました</string>
+    <string name="error_connection">サーバーとの接続に失敗しました</string>
 
 </resources>

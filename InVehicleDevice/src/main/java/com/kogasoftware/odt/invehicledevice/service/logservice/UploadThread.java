@@ -5,7 +5,12 @@ import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.CursorLoader;
+import android.content.Loader;
+import android.content.Loader.OnLoadCompleteListener;
+import android.database.Cursor;
+import android.os.Looper;
+import android.os.MessageQueue.IdleHandler;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
@@ -16,51 +21,44 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Optional;
 import com.google.common.base.Strings;
-import com.kogasoftware.odt.invehicledevice.BuildConfig;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
+import com.kogasoftware.odt.invehicledevice.contentprovider.model.ServiceProvider;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceProviders;
 
-public class UploadThread extends Thread {
+public class UploadThread extends Thread
+		implements
+			OnLoadCompleteListener<Cursor>,
+			IdleHandler {
 	private static final String TAG = UploadThread.class.getSimpleName();
 	public static final String SHARED_PREFERENCES_NAME = UploadThread.class
 			.getSimpleName() + ".sharedpreferences";
 	public static final Integer SHARED_PREFERENCES_CHECK_INTERVAL_MILLIS = 5000;
 	public static final Integer UPLOAD_DELAY_MILLIS = 5000;
+	private static final int LOADER_ID = 0;
 	private final Context context;
 	private final BlockingQueue<File> uploadFiles;
 	private final String bucket = "odt-android";
-	private Optional<AmazonS3Client> mockAmazonS3Client = Optional.absent();
+	private final String deviceId;
+	private final Object awsCredentialsLock = new Object();
+	private AWSCredentials awsCredentials;
+	private AmazonS3Client s3Client;
 
 	public UploadThread(Context context, BlockingQueue<File> uploadFiles) {
 		this.context = context;
 		this.uploadFiles = uploadFiles;
-	}
-
-	@VisibleForTesting
-	public static AWSCredentials getAWSCredentials(Context context)
-			throws InterruptedException {
-		while (true) {
-			SharedPreferences sharedPreferences = context.getSharedPreferences(
-					SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
-			String accessKeyId = sharedPreferences.getString(
-					SharedPreferencesKeys.AWS_ACCESS_KEY_ID, "");
-			String secretAccessKey = sharedPreferences.getString(
-					SharedPreferencesKeys.AWS_SECRET_ACCESS_KEY, "");
-			if (accessKeyId.isEmpty() || secretAccessKey.isEmpty()) {
-				Log.i(TAG, "waiting for AWS Credentials");
-				Thread.sleep(SHARED_PREFERENCES_CHECK_INTERVAL_MILLIS);
-				continue;
-			}
-			return new BasicAWSCredentials(accessKeyId, secretAccessKey);
-		}
+		TelephonyManager telephonyManager = (TelephonyManager) context
+				.getSystemService(Context.TELEPHONY_SERVICE);
+		this.deviceId = Strings.nullToEmpty(telephonyManager.getDeviceId());
 	}
 
 	@VisibleForTesting
 	public void uploadOneFile(AmazonS3Client s3Client, String deviceId)
 			throws InterruptedException, IOException {
 		Thread.sleep(UPLOAD_DELAY_MILLIS);
-		File uploadFile = uploadFiles.take();
+		File uploadFile = uploadFiles.poll();
+		if (uploadFile == null) {
+			return;
+		}
 		if (!uploadFile.exists()) {
 			Log.w(TAG, "\"" + uploadFile + "\" not found");
 			return;
@@ -105,44 +103,76 @@ public class UploadThread extends Thread {
 	@Override
 	public void run() {
 		Log.i(TAG, "start");
-		TelephonyManager telephonyManager = (TelephonyManager) context
-				.getSystemService(Context.TELEPHONY_SERVICE);
-		String deviceId = Strings.nullToEmpty(telephonyManager.getDeviceId());
-
-		while (true) {
-			try {
-				Thread.sleep(5000);
-				AmazonS3Client s3Client = getAmazonS3Client();
-				try {
-					while (true) {
-						uploadOneFile(s3Client, deviceId);
-					}
-				} finally {
-					s3Client.shutdown();
-				}
-			} catch (InterruptedException e) {
-				break;
-			} catch (AmazonServiceException e) {
-				Log.w(TAG, e);
-			} catch (AmazonClientException e) {
-				Log.w(TAG, e);
-			} catch (IOException e) {
-				Log.e(TAG, e.toString(), e);
-			}
+		Looper.prepare();
+		CursorLoader cursorLoader = new CursorLoader(context,
+				ServiceProviders.CONTENT.URI, null, null, null, null);
+		cursorLoader.registerListener(LOADER_ID, this);
+		cursorLoader.startLoading();
+		try {
+			Looper.myQueue().addIdleHandler(this);
+			Looper.loop();
+		} finally {
+			cursorLoader.unregisterListener(this);
+			cursorLoader.cancelLoad();
+			cursorLoader.stopLoading();
 		}
-
 		Log.i(TAG, "exit");
 	}
 
-	private AmazonS3Client getAmazonS3Client() throws InterruptedException {
-		if (BuildConfig.DEBUG && mockAmazonS3Client.isPresent()) {
-			return mockAmazonS3Client.get();
+	private AmazonS3Client getAmazonS3Client() throws IOException {
+		synchronized (awsCredentialsLock) {
+			if (awsCredentials == null) {
+				throw new IOException("AWSCredentials not found");
+			}
+			return new AmazonS3Client(awsCredentials);
 		}
-		return new AmazonS3Client(getAWSCredentials(context));
 	}
 
-	@VisibleForTesting
-	public void setMockAmazonS3Client(AmazonS3Client amazonS3Client) {
-		mockAmazonS3Client = Optional.of(amazonS3Client);
+	@Override
+	public void onLoadComplete(Loader<Cursor> loader, Cursor cursor) {
+		if (!cursor.moveToFirst()) {
+			synchronized (awsCredentialsLock) {
+				awsCredentials = null;
+			}
+			return;
+		}
+		ServiceProvider serviceProvider = new ServiceProvider(cursor);
+		if (serviceProvider.logAccessKeyIdAws == null
+				|| serviceProvider.logSecretAccessKeyAws == null) {
+			return;
+		}
+		synchronized (awsCredentialsLock) {
+			awsCredentials = new BasicAWSCredentials(
+					serviceProvider.logAccessKeyIdAws,
+					serviceProvider.logSecretAccessKeyAws);
+		}
+	}
+
+	@Override
+	public boolean queueIdle() {
+		Boolean success = false;
+		try {
+			Thread.sleep(5000);
+			if (s3Client == null) {
+				s3Client = getAmazonS3Client();
+			}
+			uploadOneFile(s3Client, deviceId);
+			success = true;
+		} catch (InterruptedException e) {
+			Looper.myLooper().quit();
+			return false;
+		} catch (AmazonServiceException e) {
+			Log.w(TAG, e);
+		} catch (AmazonClientException e) {
+			Log.w(TAG, e);
+		} catch (IOException e) {
+			Log.e(TAG, e.toString(), e);
+		} finally {
+			if (s3Client != null && !success) {
+				s3Client.shutdown();
+				s3Client = null;
+			}
+		}
+		return true;
 	}
 }

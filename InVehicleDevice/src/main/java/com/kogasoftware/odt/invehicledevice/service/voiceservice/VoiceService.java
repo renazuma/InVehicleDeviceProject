@@ -1,26 +1,30 @@
 package com.kogasoftware.odt.invehicledevice.service.voiceservice;
 
-import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
-
 /**
- * OpenJTalkライブラリのプロセスを分離するためのサービス TODO: TTSとして書き直し
+ * OpenJTalkライブラリが完全に信頼できないため、プロセスを分離し、SEGVが発生してもメイン画面には 影響が出ないようにするためのサービス
+ * TODO: TTSとして書き直し
  */
 public class VoiceService extends Service {
-	public static final String ACTION_VOICE = VoiceService.class.getName()
-			+ ".ACTION_VOICE";
+	public static final String ACTION_SPEAK = VoiceService.class.getName()
+			+ ".ACTION_SPEAK";
+	public static final String ACTION_ENABLE = VoiceService.class.getName()
+			+ ".ACTION_ENABLE";
+	public static final String ACTION_DISABLE = VoiceService.class.getName()
+			+ ".ACTION_DISABLE";
 	public static final String MESSAGE_KEY = "MESSAGE_KEY";
 	private static final String TAG = VoiceService.class.getSimpleName();
 	private final BlockingQueue<String> voices = new LinkedBlockingQueue<String>();
-	private Thread voiceThread = new EmptyThread();
+	private Thread voiceThread;
+	private Boolean enabled = false;
 
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -39,22 +43,48 @@ public class VoiceService extends Service {
 		super.onStartCommand(intent, flags, startId);
 		Log.i(TAG, "onStartCommand(" + intent + ", " + flags + ", " + startId
 				+ ")");
-		if (intent != null && intent.getAction() != null
-				&& intent.getAction().equals(ACTION_VOICE)) {
-			List<CharSequence> messages = intent
-					.getCharSequenceArrayListExtra(MESSAGE_KEY);
-			if (messages != null) {
-				for (CharSequence message : messages) {
-					voices.add(message.toString());
+		if (intent == null) {
+			return Service.START_STICKY;
+		}
+		String action = intent.getAction();
+		if (action == null) {
+			return Service.START_STICKY;
+		}
+		if (action.equals(ACTION_SPEAK)) {
+			if (enabled) {
+				String message = intent.getStringExtra(MESSAGE_KEY);
+				if (message != null) {
+					voices.add(message);
 				}
 			}
+		} else if (action.equals(ACTION_ENABLE)) {
+			enabled = true;
+		} else if (action.equals(ACTION_DISABLE)) {
+			enabled = false;
+			voices.clear();
 		}
 		return Service.START_STICKY;
 	}
-
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
 		voiceThread.interrupt();
+	}
+
+	public static void speak(Context context, String message) {
+		Intent intent = new Intent(ACTION_SPEAK, null, context,
+				VoiceService.class);
+		intent.putExtra(MESSAGE_KEY, message);
+		context.startService(intent);
+	}
+
+	public static void enable(Context context) {
+		context.startService(new Intent(ACTION_ENABLE, null, context,
+				VoiceService.class));
+	}
+
+	public static void disable(Context context) {
+		context.startService(new Intent(ACTION_DISABLE, null, context,
+				VoiceService.class));
 	}
 }

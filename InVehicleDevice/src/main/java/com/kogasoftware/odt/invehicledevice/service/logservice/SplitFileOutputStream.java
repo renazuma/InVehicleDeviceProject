@@ -14,7 +14,6 @@ import android.util.Log;
 
 import com.google.common.base.Stopwatch;
 import com.google.common.io.ByteStreams;
-import com.kogasoftware.odt.invehicledevice.empty.EmptyFile;
 
 /**
  * writeされたデータをファイルに分割して保存するOutputStream
@@ -28,8 +27,9 @@ public class SplitFileOutputStream extends OutputStream {
 	private final BlockingQueue<File> outputFiles;
 	private final Stopwatch stopwatch = new Stopwatch();
 	private volatile Long count = 0L;
-	private volatile File currentFile = new EmptyFile();
-	private volatile OutputStream currentOutputStream = ByteStreams.nullOutputStream();
+	private volatile File currentFile;
+	private volatile OutputStream currentOutputStream = ByteStreams
+			.nullOutputStream();
 
 	public SplitFileOutputStream(File baseDirectory, String baseFileName,
 			BlockingQueue<File> outputFiles) throws IOException {
@@ -43,8 +43,8 @@ public class SplitFileOutputStream extends OutputStream {
 
 	private File getNewFile() throws IOException {
 		synchronized (memberAccessLock) {
-			String format = (new SimpleDateFormat("yyyyMMddHHmmss.SSS", Locale.US))
-					.format(new Date());
+			String format = (new SimpleDateFormat("yyyyMMddHHmmss.SSS",
+					Locale.US)).format(new Date());
 			return File.createTempFile(format + baseFileName, ".log",
 					baseDirectory);
 		}
@@ -145,5 +145,3 @@ public class SplitFileOutputStream extends OutputStream {
 		}
 	}
 }
-
-

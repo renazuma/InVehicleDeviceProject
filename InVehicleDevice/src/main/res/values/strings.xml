@@ -31,20 +31,17 @@
     <string name="today_operation_schedule">※ Today\'s operation schedule</string>
     <string name="platform_arrival_time_format">※ HH:mm</string>
     <string name="todays_operation_was_finished">※ Today\'s operation was finished</string>
-    <string name="zoom_in">※ Zoom in</string>
-    <string name="zoom_out">※ Zoom out</string>
-    <string name="auto_zoom">※ Auto zoom</string>
     <string name="now_platform_is_html">※ Now platform is &lt;big&gt;&lt;big&gt;%s&lt;/big&gt;&lt;/big&gt;</string>
     <string name="next_platform_is_html">※ Next platform is &lt;big&gt;&lt;big&gt;%s&lt;/big&gt;&lt;/big&gt;</string>
     <string name="minutes_remaining_to_depart_html">※ %1$s出発&lt;br&gt;あと&lt;big&gt;&lt;font color=&quot;red&quot;&gt;%2$d&lt;/font&gt;&lt;/big&gt;分</string>
     <string name="platform_arrival_time">※ HH:mm</string>
-    <string name="location_receiving">※ Location receiving</string>
-    <string name="gps_satellites_format">※ GPS satellites %1d/4</string>
     <string name="crash_toast_text">※ Unexpected error occurred</string>
     <string name="platform_memo">※ Platform memo</string>
-    <string name="failed_to_connect_operator_tool">※ Failed to connect operator tool</string>
-    <string name="settings_are_not_initialized">※  Settings are not initialized</string>
     <string name="show_passengers">※  Show passengers</string>
     <string name="hide_passengers">※  Hide passengers</string>
+    <string name="connection_config">※ Connection config</string>
+    <string name="server_url">※ Server url</string>
+    <string name="login">※ Login</string>
+    <string name="password">※ Password</string>
 
 </resources>

@@ -1,19 +1,29 @@
 package com.kogasoftware.odt.invehicledevice.ui;
 
+import android.test.ActivityInstrumentationTestCase2;
 import android.widget.Toast;
 
-import com.kogasoftware.odt.invehicledevice.testutil.EmptyActivityInstrumentationTestCase2;
-import com.kogasoftware.odt.invehicledevice.ui.BigToast;
+import com.kogasoftware.odt.invehicledevice.ui.activity.EmptyActivity;
+import com.robotium.solo.Solo;
 
-public class BigToastTestCase extends EmptyActivityInstrumentationTestCase2 {
+public class BigToastTestCase
+		extends
+			ActivityInstrumentationTestCase2<EmptyActivity> {
+	Solo solo;
+
+	public BigToastTestCase() {
+		super(EmptyActivity.class);
+	}
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
+		solo = new Solo(getInstrumentation(), getActivity());
 	}
 
 	@Override
 	protected void tearDown() throws Exception {
+		solo.finishOpenedActivities();
 		super.tearDown();
 	}
 
@@ -30,7 +40,8 @@ public class BigToastTestCase extends EmptyActivityInstrumentationTestCase2 {
 		runTestOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				BigToast.makeText(getActivity(), text, duration).show();
+				BigToast.makeText(solo.getCurrentActivity(), text, duration)
+						.show();
 			}
 		});
 		assertTrue(solo.searchText(text, true));

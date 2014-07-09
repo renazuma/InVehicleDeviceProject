@@ -1,8 +1,8 @@
-apply plugin: "android-library"
+apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion getAndroidCompileSdkVersion()
-    buildToolsVersion getAndroidBuildToolsVersion()
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     sourceSets {
         main {
@@ -16,6 +16,11 @@ android {
             res.srcDirs = ["${dir}/res"]
             assets.srcDirs = ["${dir}/assets"]
         }
+    }
+
+    lintOptions {
+        abortOnError false
+        xmlReport false
     }
 }
 

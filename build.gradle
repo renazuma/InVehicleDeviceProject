@@ -4,7 +4,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.10.1'
+        classpath 'com.android.tools.build:gradle:0.12.+'
     }
 }
 
@@ -12,22 +12,7 @@ repositories {
     mavenCentral()
 }
 
-def computeVersionName() {
-    def versionCode = computeVersionCode()
-    // Use SimpleDateFormat to set Locale
-    def date = new java.text.SimpleDateFormat('yyyyMMddHHmmss', Locale.US).format(new Date())
-    "Build-$versionCode ($date)"
-}
-
-def computeVersionCode() {
-    // Using System.getenv directly causes compilation error !
-    (System.getMethod("getenv", String).invoke(null, "BUILD_NUMBER") ?: "0").toInteger()
-}
-
-def getAndroidCompileSdkVersion() {
-    19
-}
-
-def getAndroidBuildToolsVersion() {
-    '19.1'
+ext {
+    compileSdkVersion = "android-20"
+    buildToolsVersion = "20.0.0"
 }

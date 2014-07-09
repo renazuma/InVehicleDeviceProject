@@ -1,0 +1,6 @@
+-dontoptimize
+-dontobfuscate
+-dontpreverify
+-ignorewarnings
+-keepattributes *Annotation*, EnclosingMethod
+-keep com.kogasoftware.** { *; }

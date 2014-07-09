@@ -1,16 +1,18 @@
 package com.kogasoftware.odt.invehicledevice.ui.fragment;
 
-import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
-import org.joda.time.DateTimeUtils;
+import org.joda.time.DateTime;
 
 import android.app.Fragment;
-import android.app.FragmentManager;
+import android.app.LoaderManager.LoaderCallbacks;
+import android.content.CursorLoader;
+import android.content.Loader;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Html;
@@ -22,109 +24,90 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.common.base.Objects;
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.EventDispatcher.OnUpdatePassengerRecordListener;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation.Phase;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
+import com.kogasoftware.odt.invehicledevice.contentprovider.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.contentprovider.model.OperationSchedule.Phase;
+import com.kogasoftware.odt.invehicledevice.contentprovider.model.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecords;
+import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
 import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordArrayAdapter;
-import com.kogasoftware.odt.invehicledevice.ui.fragment.PlatformPhaseFragment.State;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.PassengerRecord;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.Platform;
 
-public class PlatformPhaseFragment extends AutoUpdateOperationFragment<State> implements OnUpdatePassengerRecordListener {
+public class PlatformPhaseFragment extends Fragment
+		implements
+			LoaderCallbacks<Cursor> {
+	private static final String OPERATION_SCHEDULES_KEY = "operation_schedules";
 
-	@SuppressWarnings("serial")
-	protected static class State implements Serializable {
-		private final Operation operation;
-
-		public State(Operation operation) {
-			this.operation = operation;
-		}
-
-		public List<OperationSchedule> getOperationSchedules() {
-			return Lists.newArrayList(operation.operationSchedules);
-		}
-
-		public List<PassengerRecord> getPassengerRecords() {
-			return Lists.newArrayList(operation.passengerRecords);
-		}
-
-		public Phase getPhase() {
-			return operation.getPhase();
-		}
-
-		public Operation getOperation() {
-			return operation;
-		}
-	}
-
-	public static Fragment newInstance(Operation operation) {
-		return newInstance(new PlatformPhaseFragment(), new State(operation));
+	public static PlatformPhaseFragment newInstance(
+			LinkedList<OperationSchedule> operationSchedules) {
+		PlatformPhaseFragment fragment = new PlatformPhaseFragment();
+		Bundle args = new Bundle();
+		args.putSerializable(OPERATION_SCHEDULES_KEY, operationSchedules);
+		fragment.setArguments(args);
+		return fragment;
 	}
 
 	private static final Integer BLINK_MILLIS = 500;
 	private static final Integer UPDATE_MINUTES_REMAINING_INTERVAL_MILLIS = 2000;
 	private static final String TAG = PlatformPhaseFragment.class
 			.getSimpleName();
+	private static final int LOADER_ID = 1;
 	private Handler handler;
 	private TextView minutesRemainingTextView;
 	private TextView currentPlatformNameTextView;
 	private FlickUnneededListView passengerRecordListView;
 	private Integer lastMinutesRemaining = Integer.MAX_VALUE;
-	private Optional<PassengerRecordArrayAdapter> optionalAdapter = Optional.absent();
+	private PassengerRecordArrayAdapter adapter;
 
 	private Runnable blink = new Runnable() {
 		@Override
 		public void run() {
-			for (PassengerRecordArrayAdapter adapter : optionalAdapter.asSet()) {
+			if (adapter != null) {
 				adapter.toggleBlink();
 			}
 			handler.postDelayed(this, BLINK_MILLIS);
 		}
 	};
 
+	private List<OperationSchedule> operationSchedules;
+
 	private final Runnable updateMinutesRemaining = new Runnable() {
 		@Override
 		public void run() {
 			handler.postDelayed(updateMinutesRemaining,
 					UPDATE_MINUTES_REMAINING_INTERVAL_MILLIS);
-			if (!OperationSchedule.getRelative(
-					getState().getOperationSchedules(), 1).isPresent()) {
+			OperationSchedule nextOperationSchedule = OperationSchedule
+					.getCurrentOffset(operationSchedules, 1);
+			if (nextOperationSchedule == null) {
 				return;
 			}
-			Date now = new Date(DateTimeUtils.currentTimeMillis());
+			DateTime now = DateTime.now();
 			minutesRemainingTextView.setText("");
-			for (OperationSchedule operationSchedule : OperationSchedule
-					.getCurrent(
-							getState().getOperationSchedules()).asSet()) {
-				if (!operationSchedule.getDepartureEstimate().isPresent()) {
-					return;
-				}
-				Date departureEstimate = operationSchedule
-						.getDepartureEstimate().get();
-				Integer minutesRemaining = (int) (departureEstimate.getTime() / 1000 / 60 - now
-						.getTime() / 1000 / 60);
-				DateFormat dateFormat = new SimpleDateFormat("HH:mm", Locale.US);
-				String dateString = dateFormat.format(departureEstimate);
-				minutesRemainingTextView.setText(Html.fromHtml(String.format(
-						getResources().getString(
-								R.string.minutes_remaining_to_depart_html),
-						dateString, minutesRemaining)));
-				if (lastMinutesRemaining >= 3 && minutesRemaining < 3) {
-					String message = minutesRemaining <= 0 ? "出発時刻になりました"
-							: String.format(Locale.JAPAN, "あと%d分で出発時刻です",
-									minutesRemaining);
-					getService().speak(message);
-				}
-				lastMinutesRemaining = minutesRemaining;
+			OperationSchedule operationSchedule = OperationSchedule
+					.getCurrent(operationSchedules);
+			if (operationSchedule.departureEstimate == null) {
+				return;
 			}
+			Integer minutesRemaining = (int) (operationSchedule.departureEstimate
+					.getMillis() / 1000 / 60 - now.getMillis() / 1000 / 60);
+			DateFormat dateFormat = new SimpleDateFormat("HH:mm", Locale.US);
+			String dateString = dateFormat
+					.format(operationSchedule.departureEstimate.toDate());
+			minutesRemainingTextView.setText(Html.fromHtml(String.format(
+					getResources().getString(
+							R.string.minutes_remaining_to_depart_html),
+					dateString, minutesRemaining)));
+			if (lastMinutesRemaining >= 3 && minutesRemaining < 3) {
+				String message = minutesRemaining <= 0 ? "出発時刻になりました" : String
+						.format(Locale.JAPAN, "あと%d分で出発時刻です", minutesRemaining);
+				VoiceService.speak(getActivity(), message);
+			}
+			lastMinutesRemaining = minutesRemaining;
 		}
 	};
+	private final LinkedList<PassengerRecord> passengerRecords = Lists
+			.newLinkedList();
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -137,21 +120,32 @@ public class PlatformPhaseFragment extends AutoUpdateOperationFragment<State> im
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		handler = new Handler();
+		Bundle args = getArguments();
+		operationSchedules = (LinkedList<OperationSchedule>) args
+				.getSerializable(OPERATION_SCHEDULES_KEY);
 		View view = getView();
-		minutesRemainingTextView = (TextView) view.findViewById(
-				R.id.minutes_remaining_text_view);
+		minutesRemainingTextView = (TextView) view
+				.findViewById(R.id.minutes_remaining_text_view);
 		currentPlatformNameTextView = (TextView) view
 				.findViewById(R.id.now_platform_text_view);
 		passengerRecordListView = ((FlickUnneededListView) view
 				.findViewById(R.id.reservation_list_view));
-		updateView(view);
-		getService().getEventDispatcher().addOnUpdatePassengerRecordListener(this);
+		getLoaderManager().initLoader(LOADER_ID, null, this);
+	}
+
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		getLoaderManager().destroyLoader(LOADER_ID);
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		Log.i(TAG, "platform: " + Objects.firstNonNull(currentPlatformNameTextView.getText(), "(None)"));
+		Log.i(TAG,
+				"platform: "
+						+ Objects.firstNonNull(
+								currentPlatformNameTextView.getText(), "(None)"));
 		handler.post(updateMinutesRemaining);
 	}
 
@@ -162,16 +156,10 @@ public class PlatformPhaseFragment extends AutoUpdateOperationFragment<State> im
 		handler.removeCallbacks(blink);
 	}
 
-	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
-		getService().getEventDispatcher().removeOnUpdatePassengerRecordListener(this);
-	}
-
-	private void updateView(View view) {
+	private void updateView() {
 		Log.i(TAG, "updateView");
-		Boolean last = !OperationSchedule.getRelative(
-				getState().getOperationSchedules(), 1).isPresent();
+		Boolean last = OperationSchedule
+				.getCurrentOffset(operationSchedules, 1) == null;
 		if (last) {
 			minutesRemainingTextView.setVisibility(View.GONE);
 		} else {
@@ -179,70 +167,50 @@ public class PlatformPhaseFragment extends AutoUpdateOperationFragment<State> im
 		}
 
 		currentPlatformNameTextView.setText("");
-		for (OperationSchedule currentOperationSchedule : OperationSchedule
-				.getCurrent(getState().getOperationSchedules())
-				.asSet()) {
-			if (last) {
-				currentPlatformNameTextView.setText("現在最終乗降場です");
-				Log.i(TAG, "last platform");
-			} else {
-				for (Platform platform : currentOperationSchedule.getPlatform()
-						.asSet()) {
-					Log.i(TAG, "platform id=" + platform.getId() + " name=" + platform.getName());
-					currentPlatformNameTextView.setText(Html.fromHtml(String
-							.format(getResources().getString(
-									R.string.now_platform_is_html),
-									platform.getName())));
-				}
-			}
-
-			for (FragmentManager fragmentManager : getOptionalFragmentManager().asSet()) {
-				PassengerRecordArrayAdapter adapter = new PassengerRecordArrayAdapter(
-						getActivity(),
-						getService(),
-						fragmentManager,
-						currentOperationSchedule,
-						getState().getPhase() == Phase.PLATFORM_GET_OFF ? currentOperationSchedule
-								.getGetOffScheduledPassengerRecords(getState()
-										.getPassengerRecords())
-								: currentOperationSchedule
-										.getGetOnScheduledPassengerRecords(getState()
-												.getPassengerRecords()));
-				optionalAdapter = Optional.of(adapter);
-				ListView listView = new ListView(getActivity());
-				listView.setAdapter(adapter);
-				handler.removeCallbacks(blink);
-				handler.postDelayed(blink, 500);
-
-				passengerRecordListView.replaceListView(listView);
-				return;
-			}
+		OperationSchedule currentOperationSchedule = OperationSchedule
+				.getCurrent(operationSchedules);
+		if (last) {
+			currentPlatformNameTextView.setText("現在最終乗降場です");
+			Log.i(TAG, "last platform");
+		} else {
+			Log.i(TAG, "platform id=" + currentOperationSchedule.platformId
+					+ " name=" + currentOperationSchedule.name);
+			currentPlatformNameTextView.setText(Html.fromHtml(String.format(
+					getResources().getString(R.string.now_platform_is_html),
+					currentOperationSchedule.name)));
 		}
+		Phase phase = OperationSchedule.getPhase(operationSchedules,
+				passengerRecords);
+		adapter = new PassengerRecordArrayAdapter(
+				getActivity(),
+				currentOperationSchedule,
+				phase == Phase.PLATFORM_GET_OFF
+						? currentOperationSchedule
+								.getGetOffScheduledPassengerRecords(passengerRecords)
+						: currentOperationSchedule
+								.getGetOnScheduledPassengerRecords(passengerRecords));
+		ListView listView = new ListView(getActivity());
+		listView.setAdapter(adapter);
+		handler.removeCallbacks(blink);
+		handler.postDelayed(blink, 500);
 
-		// error
-		Log.e(TAG, "no current OperationSchedule");
-		new OperationScheduleLogic(getService()).requestUpdateOperation();
-		hide();
+		passengerRecordListView.replaceListView(listView);
+		return;
+	}
+	@Override
+	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+		return new CursorLoader(getActivity(), PassengerRecords.CONTENT.URI,
+				null, null, null, null);
 	}
 
 	@Override
-	public void onUpdateOperation(Operation operation) {
-		setState(new State(operation));
-		Phase phase = operation.getPhase();
-		if (phase == Phase.PLATFORM_GET_OFF || phase == Phase.PLATFORM_GET_ON) {
-			updateView(getView());
-		}
+	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+		passengerRecords.clear();
+		passengerRecords.addAll(PassengerRecord.getAll(cursor));
+		updateView();
 	}
 
 	@Override
-	protected Integer getOperationSchedulesReceiveSequence() {
-		return getState().getOperation().operationScheduleReceiveSequence;
-	}
-
-	@Override
-	public void onUpdatePassengerRecord(PassengerRecord passengerRecord) {
-		for (PassengerRecordArrayAdapter adapter : optionalAdapter.asSet()) {
-			adapter.updatePassengerRecord(passengerRecord);
-		}
+	public void onLoaderReset(Loader<Cursor> loader) {
 	}
 }

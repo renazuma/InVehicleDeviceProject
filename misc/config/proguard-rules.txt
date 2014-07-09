@@ -1,4 +1,0 @@
--dontshrink
--dontoptimize
--dontobfuscate
--dontpreverify

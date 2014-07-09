@@ -21,9 +21,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.kogasoftware.odt.invehicledevice.BuildConfig;
-import com.kogasoftware.odt.invehicledevice.service.logservice.LogService;
-import com.kogasoftware.odt.invehicledevice.service.trackingservice.TrackingService;
-import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
 import com.kogasoftware.odt.invehicledevice.ui.BigToast;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
@@ -44,7 +41,8 @@ public class StartupService extends Service {
 		public void run() {
 			handler.removeCallbacks(this); // 重複を削除
 			if (startActivityIfReady()) {
-				handler.postDelayed(checkDeviceAndAlertCallback, CHECK_DEVICE_INTERVAL_MILLIS);
+				handler.postDelayed(checkDeviceAndAlertCallback,
+						CHECK_DEVICE_INTERVAL_MILLIS);
 			} else {
 				handler.postDelayed(this, CHECK_DEVICE_INTERVAL_MILLIS);
 			}
@@ -58,6 +56,7 @@ public class StartupService extends Service {
 			handler.postDelayed(this, CHECK_DEVICE_INTERVAL_MILLIS);
 		}
 	};
+
 	public Boolean checkDeviceAndAlert() {
 		// 機内モードは強制的にOFF
 		try {
@@ -74,7 +73,7 @@ public class StartupService extends Service {
 		}
 		return true;
 	}
-	
+
 	public Boolean startActivityIfReady() {
 		if (!checkDeviceAndAlert()) {
 			return false;
@@ -203,9 +202,6 @@ public class StartupService extends Service {
 		Log.i(TAG, "onStartCommand(" + intent + ", " + flags + ", " + startId
 				+ ")");
 		handler.post(startActivityIfReadyCallback);
-		startService(new Intent(this, VoiceService.class));
-		startService(new Intent(this, LogService.class));
-		startService(new Intent(this, TrackingService.class));
 		return Service.START_STICKY;
 	}
 }

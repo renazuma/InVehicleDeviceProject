@@ -1,31 +1,39 @@
 package com.kogasoftware.odt.invehicledevice.ui;
 
-import java.util.concurrent.Callable;
-
+import android.test.ActivityInstrumentationTestCase2;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 
 import com.google.common.base.Throwables;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.testutil.EmptyActivityInstrumentationTestCase2;
-import com.kogasoftware.odt.invehicledevice.testutil.TestUtil;
-import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
+import com.kogasoftware.odt.invehicledevice.ui.activity.EmptyActivity;
+import com.kogasoftware.odt.invehicledevice.utils.SoloUtils;
+import com.robotium.solo.Condition;
+import com.robotium.solo.Solo;
 
-public class FlickUnneededListViewTestCase extends
-		EmptyActivityInstrumentationTestCase2 {
+public class FlickUnneededListViewTestCase
+		extends
+			ActivityInstrumentationTestCase2<EmptyActivity> {
+
+	public FlickUnneededListViewTestCase() {
+		super(EmptyActivity.class);
+	}
 
 	FlickUnneededListView v;
+	Solo solo;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
+		solo = new Solo(getInstrumentation(), SoloUtils.LONGER_TIMEOUT,
+				getActivity());
 		try {
 			runTestOnUiThread(new Runnable() {
 				@Override
 				public void run() {
 					v = new FlickUnneededListView(getInstrumentation()
 							.getTargetContext(), null);
-					getActivity().setContentView(v);
+					solo.getCurrentActivity().setContentView(v);
 				}
 			});
 		} catch (Throwable t) {
@@ -47,7 +55,7 @@ public class FlickUnneededListViewTestCase extends
 						new ArrayAdapter<String>(getInstrumentation()
 								.getTargetContext(),
 								android.R.layout.simple_list_item_1,
-								new String[] { "foo", "bar" }));
+								new String[]{"foo", "bar"}));
 			}
 		});
 		assertTrue(solo.searchText("foo", true));
@@ -61,7 +69,7 @@ public class FlickUnneededListViewTestCase extends
 						new ArrayAdapter<String>(getInstrumentation()
 								.getTargetContext(),
 								android.R.layout.simple_list_item_1,
-								new String[] { "bar", "baz" }));
+								new String[]{"bar", "baz"}));
 			}
 		});
 
@@ -77,9 +85,11 @@ public class FlickUnneededListViewTestCase extends
 	}
 
 	public void testスクロール() throws Throwable {
-		final String[] strings = new String[] { "bar", "baz", "baz", "baz",
+		final String[] strings = new String[]{"bar", "baz", "baz", "baz",
 				"baz", "baz", "baz", "baz", "baz", "baz", "baz", "baz", "baz",
-				"baz", "baz", "baz", "foo" };
+				"baz", "baz", "baz", "baz", "baz", "baz", "baz", "baz", "baz",
+				"baz", "baz", "baz", "baz", "baz", "baz", "baz", "baz", "baz",
+				"baz", "baz", "baz", "foo"};
 		runTestOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -127,11 +137,11 @@ public class FlickUnneededListViewTestCase extends
 	}
 
 	private void assertEnabled(final Button button, final boolean enabled) {
-		TestUtil.assertChange(new Callable<Boolean>() {
+		solo.waitForCondition(new Condition() {
 			@Override
-			public Boolean call() throws Exception {
+			public boolean isSatisfied() {
 				return button.isEnabled() == enabled;
 			}
-		});
+		}, 5000);
 	}
 }

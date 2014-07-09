@@ -2,8 +2,6 @@ package com.kogasoftware.odt.invehicledevice.service.startupservice;
 
 import java.io.IOException;
 
-import com.kogasoftware.odt.invehicledevice.service.startupservice.AirplaneModeSetting;
-
 import android.content.Context;
 import android.os.Build;
 import android.test.AndroidTestCase;

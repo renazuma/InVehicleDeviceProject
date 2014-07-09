@@ -3,10 +3,10 @@ package com.kogasoftware.odt.invehicledevice.service.logservice;
 import java.io.IOException;
 import java.io.InputStream;
 
+import android.util.Log;
+
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.primitives.Bytes;
-
-import android.util.Log;
 
 public class LogcatThread extends Thread {
 	private static final String TAG = LogcatThread.class.getSimpleName();
@@ -50,7 +50,8 @@ public class LogcatThread extends Thread {
 				inputStream.read(buffer);
 				Boolean written = false;
 				if (splitFileOutputStream.getCount() + buffer.length >= splitBytes) {
-					Integer newLineIndex = Bytes.lastIndexOf(buffer, (byte) '\n');
+					Integer newLineIndex = Bytes.lastIndexOf(buffer,
+							(byte) '\n');
 					if (newLineIndex >= 0) {
 						splitFileOutputStream
 								.write(buffer, 0, newLineIndex + 1);

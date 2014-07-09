@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string-array name="migration" translatable="false">
+    <item></item>
+    <item>
+      DROP TABLE IF EXISTS in_vehicle_devices
+    </item>
+    <item>
+      CREATE TABLE in_vehicle_devices (
+        $(id) INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT
+        , url TEXT NOT NULL
+        , login TEXT NOT NULL
+        , password TEXT NOT NULL
+        , authentication_token TEXT
+      )
+    </item>
+    <item>
+      DROP TABLE IF EXISTS vehicle_notifications
+    </item>
+    <item>
+      CREATE TABLE vehicle_notifications (
+        $(id) INTEGER NOT NULL PRIMARY KEY
+        , body TEXT NOT NULL
+        , body_ruby TEXT NOT NULL
+        , notification_kind INTEGER NOT NULL
+        , read_at INTEGER
+        , response INTEGER
+        , schedule_downloaded INTEGER NOT NULL DEFAULT 0
+      )
+    </item>
+    <item>
+      DROP TABLE IF EXISTS operation_schedules
+    </item>
+    <item>
+      CREATE TABLE operation_schedules (
+        $(id) INTEGER NOT NULL PRIMARY KEY
+        , arrival_estimate INTEGER
+        , departure_estimate INTEGER
+        , platform_id INTEGER NOT NULL
+        , arrived_at INTEGER
+        , departed_at INTEGER
+        , complete_get_off INTEGER NOT NULL DEFAULT 0
+        , operation_date INTEGER NOT NULL /* UNIXエポックからの経過ミリ秒数。UTCで時分秒は0にしておく。 */
+      )
+    </item>
+    <item>
+      DROP TABLE IF EXISTS passenger_records
+    </item>
+    <item>
+      CREATE TABLE passenger_records (
+        $(id) INTEGER NOT NULL PRIMARY KEY
+        , get_on_time INTEGER
+        , get_off_time INTEGER
+        , reservation_id INTEGER NOT NULL
+        , user_id INTEGER NOT NULL
+        , ignore_get_on_miss INTEGER NOT NULL DEFAULT 0
+        , ignore_get_off_miss INTEGER NOT NULL DEFAULT 0
+        , local_version INTEGER NOT NULL DEFAULT 1
+        , server_version INTEGER NOT NULL DEFAULT 1
+      )
+    </item>
+    <item>
+      DROP TABLE IF EXISTS operation_records
+    </item>
+    <item>
+      CREATE TABLE operation_records (
+        $(id) INTEGER NOT NULL PRIMARY KEY
+        , arrived_at INTEGER
+        , departed_at INTEGER
+        , operation_schedule_id INTEGER NOT NULL
+        , local_version INTEGER NOT NULL DEFAULT 1
+        , server_version INTEGER NOT NULL DEFAULT 1
+      )
+    </item>
+    <item>
+      DROP TABLE IF EXISTS reservations
+    </item>
+    <item>
+      CREATE TABLE reservations (
+        $(id) INTEGER NOT NULL PRIMARY KEY
+        , memo TEXT NOT NULL
+        , passenger_count INTEGER NOT NULL
+        , arrival_schedule_id INTEGER NOT NULL
+        , departure_schedule_id INTEGER NOT NULL
+        , user_id INTEGER NOT NULL /* 代表者ユーザー */
+      )
+    </item>
+    <item>
+      DROP TABLE IF EXISTS service_unit_status_logs
+    </item>
+    <item>
+      CREATE TABLE service_unit_status_logs (
+        $(id) INTEGER NOT NULL PRIMARY KEY
+        , latitude TEXT /* BigDecimal.toPlainString() */
+        , longitude TEXT /* BigDecimal.toPlainString() */
+        , orientation INTEGER
+        , temperature INTEGER
+        , signal_strength INTEGER
+        , created_at INTEGER NOT NULL
+      )
+    </item>
+    <item>
+      DROP TABLE IF EXISTS platforms
+    </item>
+    <item>
+      CREATE TABLE platforms (
+        $(id) INTEGER NOT NULL PRIMARY KEY
+        , address TEXT NOT NULL
+        , memo TEXT NOT NULL
+        , name TEXT NOT NULL
+        , name_ruby TEXT NOT NULL
+        , latitude TEXT NOT NULL /* BigDecimal.toPlainString() */
+        , longitude TEXT NOT NULL /* BigDecimal.toPlainString() */
+      )
+    </item>
+    <item>
+      DROP TABLE IF EXISTS users
+    </item>
+    <item>
+      CREATE TABLE users (
+        $(id) INTEGER NOT NULL PRIMARY KEY
+        , first_name TEXT NOT NULL
+        , last_name TEXT NOT NULL
+        , memo TEXT NOT NULL
+        , handicapped INTEGER NOT NULL
+        , needed_care INTEGER NOT NULL
+        , wheelchair INTEGER NOT NULL
+      )
+    </item>
+    <item>
+      DROP TABLE IF EXISTS service_providers
+    </item>
+    <item>
+      CREATE TABLE service_providers (
+        $(id) INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT
+        , name TEXT NOT NULL
+        , log_access_key_id_aws TEXT
+        , log_secret_access_key_aws TEXT
+      )
+    </item>
+  </string-array>
+</resources>

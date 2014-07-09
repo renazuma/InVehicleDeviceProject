@@ -15,14 +15,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
-
-import com.kogasoftware.odt.invehicledevice.empty.EmptyThread;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.SharedPreferencesKeys;
 
 public class LogService extends Service {
 	private static final String TAG = LogService.class.getSimpleName();
@@ -49,30 +45,6 @@ public class LogService extends Service {
 			context.stopService(new Intent(context, LogService.class));
 		}
 	}
-
-	private final ILogService.Stub binder = new ILogService.Stub() {
-		@Override
-		public void setServerUploadCredentials(final String accessKeyId,
-				final String secretAccessKey) {
-			Log.i(TAG, "setServerUploadCredentials(" + accessKeyId + ")");
-			Thread saveThread = new Thread() {
-				@Override
-				public void run() {
-					SharedPreferences.Editor editor = LogService.this
-							.getSharedPreferences(
-									UploadThread.SHARED_PREFERENCES_NAME,
-									Context.MODE_PRIVATE).edit();
-					editor.putString(SharedPreferencesKeys.AWS_ACCESS_KEY_ID,
-							accessKeyId);
-					editor.putString(
-							SharedPreferencesKeys.AWS_SECRET_ACCESS_KEY,
-							secretAccessKey);
-					editor.apply();
-				}
-			};
-			saveThread.start();
-		}
-	};
 
 	public File getDataDirectory() {
 		return new File(Environment.getExternalStorageDirectory()
@@ -107,10 +79,8 @@ public class LogService extends Service {
 	/**
 	 * スレッド開始。onDestroy()発生後に行われるのを防ぐためメインスレッドで実行する。
 	 */
-	public Boolean startLog(SplitFileOutputStream logcatSplitFileOutputStream,
-			SplitFileOutputStream dropboxSplitFileOutputStream) {
+	public Boolean startLog(SplitFileOutputStream logcatSplitFileOutputStream) {
 		closeables.add(logcatSplitFileOutputStream);
-		closeables.add(dropboxSplitFileOutputStream);
 
 		if (destroyed) {
 			Log.i(TAG, "destroyed=" + destroyed + " / startLog returned");
@@ -164,25 +134,17 @@ public class LogService extends Service {
 					// ディレクトリ準備完了後にストリームと出力ファイルを準備する
 					final SplitFileOutputStream logcatSplitFileOutputStream = new SplitFileOutputStream(
 							dataDirectory, LOGCAT_FILE_TAG, rawLogFiles);
-					final SplitFileOutputStream dropboxSplitFileOutputStream = new SplitFileOutputStream(
-							dataDirectory, DROPBOX_FILE_TAG, rawLogFiles);
 
 					// スレッド開始は、onDestroy()発生後に行われるのを防ぐためメインスレッドで行う。
 					Boolean posted = handler.post(new Runnable() {
 						@Override
 						public void run() {
-							startLog(logcatSplitFileOutputStream,
-									dropboxSplitFileOutputStream);
+							startLog(logcatSplitFileOutputStream);
 						}
 					});
 					if (!posted) {
 						try {
 							logcatSplitFileOutputStream.close();
-						} catch (IOException e) {
-							Log.w(TAG, e);
-						}
-						try {
-							dropboxSplitFileOutputStream.close();
 						} catch (IOException e) {
 							Log.w(TAG, e);
 						}
@@ -222,7 +184,7 @@ public class LogService extends Service {
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		return binder;
+		return null;
 	}
 
 	public static List<File> getCompressedLogFiles(File directory) {
@@ -245,21 +207,6 @@ public class LogService extends Service {
 			@Override
 			public boolean accept(File dir, String filename) {
 				return filename.endsWith(".log");
-			}
-		});
-		if (defaultFiles != null) {
-			files.addAll(Arrays.asList(defaultFiles));
-		}
-		return files;
-	}
-
-	public static List<File> getDropBoxLogFiles(File directory) {
-		List<File> files = new LinkedList<File>();
-		File[] defaultFiles = directory.listFiles(new FilenameFilter() {
-			@Override
-			public boolean accept(File dir, String filename) {
-				return filename.endsWith(".log")
-						&& filename.indexOf(DROPBOX_FILE_TAG) >= 0;
 			}
 		});
 		if (defaultFiles != null) {

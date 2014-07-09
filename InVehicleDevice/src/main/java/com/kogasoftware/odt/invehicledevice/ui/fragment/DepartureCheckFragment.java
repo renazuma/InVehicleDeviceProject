@@ -1,101 +1,96 @@
 package com.kogasoftware.odt.invehicledevice.ui.fragment;
 
-import java.io.Serializable;
-import java.util.List;
+import java.util.LinkedList;
 
+import org.joda.time.DateTime;
+
+import android.content.ContentResolver;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.apiclient.model.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.LocalData.Operation.Phase;
-import com.kogasoftware.odt.invehicledevice.service.invehicledeviceservice.logic.OperationScheduleLogic;
-import com.kogasoftware.odt.invehicledevice.ui.fragment.DepartureCheckFragment.State;
+import com.kogasoftware.odt.invehicledevice.contentprovider.model.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.contentprovider.model.OperationSchedule.Phase;
+import com.kogasoftware.odt.invehicledevice.contentprovider.model.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedules;
+import com.kogasoftware.odt.invehicledevice.utils.FragmentUtils;
 
-public class DepartureCheckFragment extends ApplicationFragment<State> {
+public class DepartureCheckFragment
+		extends
+			OperationSchedulesAndPassengerRecordsFragment {
 	private static final String TAG = DepartureCheckFragment.class
 			.getSimpleName();
+	private static final String OPERATION_SCHEDULE_ID_KEY = "operation_schedule_id";
 
-	@SuppressWarnings("serial")
-	protected static class State implements Serializable {
-		private final List<OperationSchedule> operationSchedules;
-		private final Phase phase;
-
-		public State(Phase phase, List<OperationSchedule> operationSchedules) {
-			this.phase = phase;
-			this.operationSchedules = Lists.newArrayList(operationSchedules);
-		}
-
-		public Phase getPhase() {
-			return phase;
-		}
-
-		public List<OperationSchedule> getOperationSchedules() {
-			return operationSchedules;
-		}
+	public static DepartureCheckFragment newInstance(Long operationScheduleId) {
+		DepartureCheckFragment fragment = new DepartureCheckFragment();
+		Bundle args = new Bundle();
+		args.putLong(OPERATION_SCHEDULE_ID_KEY, operationScheduleId);
+		fragment.setArguments(args);
+		return fragment;
 	}
 
-	public DepartureCheckFragment() {
-		setRemoveOnUpdateOperation(true);
-	}
-
-	public static DepartureCheckFragment newInstance(Phase phase,
-			List<OperationSchedule> operationSchedules) {
-		return newInstance(new DepartureCheckFragment(), new State(phase,
-				operationSchedules));
-	}
+	private ContentResolver contentResolver;
+	private Long operationScheduleId;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View view = onCreateViewHelper(inflater, container,
-				R.layout.departure_check_fragment,
-				R.id.departure_check_close_button);
+		return inflater.inflate(R.layout.departure_check_fragment, container,
+				false);
+	}
+
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		contentResolver = getActivity().getContentResolver();
+		Bundle args = getArguments();
+		operationScheduleId = args.getLong(OPERATION_SCHEDULE_ID_KEY);
+	}
+
+	@Override
+	protected void onOperationSchedulesAndPassengerRecordsLoadFinished(
+			Phase phase, LinkedList<OperationSchedule> operationSchedules,
+			LinkedList<PassengerRecord> passengerRecords) {
+		final OperationSchedule operationSchedule = OperationSchedule.getById(
+				operationSchedules, operationScheduleId);
+		if (operationSchedule == null) {
+			FragmentUtils.hide(this);
+			return;
+		}
+		View view = getView();
 		Button departureButton = (Button) view
 				.findViewById(R.id.departure_button);
 		Button closeButton = (Button) view
 				.findViewById(R.id.departure_check_close_button);
-		if (getState().getPhase() == Phase.PLATFORM_GET_OFF) {
+		closeButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				FragmentUtils.hide(DepartureCheckFragment.this);
+			}
+		});
+		if (phase == Phase.PLATFORM_GET_OFF) {
 			closeButton.setText("降車一覧に戻る");
 		} else {
 			closeButton.setText("乗車一覧に戻る");
 		}
-
-		if (OperationSchedule
-				.getRelative(getState().getOperationSchedules(), 1).isPresent()) {
-			departureButton.setText("出発する");
-		} else {
+		if (OperationSchedule.getCurrentOffset(operationSchedules, 1) == null) {
 			departureButton.setText("確定する");
+		} else {
+			departureButton.setText("出発する");
 		}
-		final OperationScheduleLogic operationScheduleLogic = new OperationScheduleLogic(
-				getService());
-		for (final OperationSchedule operationSchedule : OperationSchedule
-				.getCurrent(getState().getOperationSchedules()).asSet()) {
-			departureButton.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					operationScheduleLogic.depart(operationSchedule,
-							new Runnable() {
-								@Override
-								public void run() {
-									operationScheduleLogic.requestUpdateOperation();
-								}
-							});
-					hide();
-				}
-			});
-			return view;
-		}
-		// error
-		Log.e(TAG, "no current OperationSchedule");
-		new OperationScheduleLogic(getService()).requestUpdateOperation();
-		hide();
-		return view;
+		departureButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				operationSchedule.departedAt = DateTime.now();
+				contentResolver.insert(OperationSchedules.CONTENT.URI,
+						operationSchedule.toContentValues());
+				FragmentUtils.hide(DepartureCheckFragment.this);
+			}
+		});
 	}
 }
