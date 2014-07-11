@@ -87,9 +87,14 @@ public class DepartureCheckFragment
 			@Override
 			public void onClick(View v) {
 				operationSchedule.departedAt = DateTime.now();
-				contentResolver.insert(OperationSchedules.CONTENT.URI,
-						operationSchedule.toContentValues());
 				FragmentUtils.hide(DepartureCheckFragment.this);
+				new Thread() {
+					@Override
+					public void run() {
+						contentResolver.insert(OperationSchedules.CONTENT.URI,
+								operationSchedule.toContentValues());
+					}
+				}.start();
 			}
 		});
 	}
