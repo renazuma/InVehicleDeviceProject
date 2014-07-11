@@ -1,0 +1,22 @@
+#!/bin/sh
+
+device=$1
+cd `dirname $0`/../..
+device_ip=`echo $device | sed 's/.*@//'`
+adb=$ANDROID_HOME/platform-tools/adb
+$adb kill-server
+$adb connect $device_ip # このコマンドの成否は判定できない
+for i in `seq 1 10`; do # いきなりwait-for-deviceをしてしまうと、接続に失敗した際に無限に待つことになる
+  state=`$adb -s $device_ip:5555 get-state`
+  echo device state: $state
+  if [ "$state" = "device" ]; then
+    $adb wait-for-device
+    $adb logcat -v time > logcat.txt&
+    ./gradlew uninstallAll pushOpenJTalkFile connectedAndroidTest lint
+    $adb kill-server
+    misc/bin/findbugs
+    exit 0
+  fi
+  sleep 1
+done
+exit 1
