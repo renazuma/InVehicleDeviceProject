@@ -21,5 +21,7 @@
             android:maxLines="1"
             android:title="@string/password" />
     </PreferenceCategory>
-
+    <PreferenceCategory android:title="@string/voice_file" >
+        <Preference android:key="voice_download_state" />
+    </PreferenceCategory>
 </PreferenceScreen>

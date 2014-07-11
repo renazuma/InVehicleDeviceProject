@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.ui.fragment;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
@@ -25,6 +26,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
+import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.text.Html;
@@ -41,6 +43,8 @@ import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.InVehicleDevices;
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.SignInErrorBroadcastIntent;
+import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceDownloadStateBroadcastIntent;
+import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceDownloaderClientThread;
 import com.kogasoftware.odt.invehicledevice.utils.FragmentUtils;
 
 public class SignInFragment extends PreferenceFragment
@@ -61,17 +65,28 @@ public class SignInFragment extends PreferenceFragment
 		return inflater.inflate(R.layout.sign_in_fragment, container, false);
 	}
 
-	private BroadcastReceiver errorReceiver = new BroadcastReceiver() {
+	private final BroadcastReceiver errorReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			showAlertDialog(SignInErrorBroadcastIntent.of(intent).getMessage());
 		}
 	};
 
+	private final BroadcastReceiver voiceDownloadStateReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			voiceDownloadStatePreference
+					.setTitle(VoiceDownloadStateBroadcastIntent.of(intent)
+							.getMessage());
+		}
+	};
+
+	private Preference voiceDownloadStatePreference;
+
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		addPreferencesFromResource(R.xml.login_preference);
+		addPreferencesFromResource(R.xml.sign_in_preference);
 		if (savedInstanceState != null) {
 			firstLoad = savedInstanceState.getBoolean(FIRST_LOAD_KEY, true);
 		} else {
@@ -93,6 +108,18 @@ public class SignInFragment extends PreferenceFragment
 				onSaveConfigButtonClick();
 			}
 		});
+
+		voiceDownloadStatePreference = findPreference("voice_download_state");
+		voiceDownloadStatePreference.setTitle("未インストール");
+		try {
+			if (VoiceDownloaderClientThread.getVoiceOutputDir().isDirectory()) {
+				// FIXME: Broadcastのタイミングによっては「インストール済み」にならない
+				voiceDownloadStatePreference.setTitle("インストール済");
+			}
+		} catch (IOException e) {
+		}
+		getActivity().registerReceiver(voiceDownloadStateReceiver,
+				new IntentFilter(VoiceDownloadStateBroadcastIntent.ACTION));
 		updateSummary();
 	}
 
@@ -168,6 +195,7 @@ public class SignInFragment extends PreferenceFragment
 		loaderManager.destroyLoader(LOADER_ID);
 		executor.shutdownNow();
 		getActivity().unregisterReceiver(errorReceiver);
+		getActivity().unregisterReceiver(voiceDownloadStateReceiver);
 		dismissAllDialogs();
 	}
 

@@ -6,6 +6,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.HandlerThread;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -24,6 +25,7 @@ public class VoiceService extends Service {
 	private static final String TAG = VoiceService.class.getSimpleName();
 	private final BlockingQueue<String> voices = new LinkedBlockingQueue<String>();
 	private Thread voiceThread;
+	private HandlerThread voiceDownloaderClientThread;
 	private Boolean enabled = false;
 
 	@Override
@@ -34,8 +36,12 @@ public class VoiceService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		Log.i(TAG, "onCreate");
 		voiceThread = new VoiceThread(this, voices);
+		voiceDownloaderClientThread = new VoiceDownloaderClientThread(this,
+				"voiceDownloaderClientThread");
 		voiceThread.start();
+		voiceDownloaderClientThread.start();
 	}
 
 	@Override
@@ -65,10 +71,14 @@ public class VoiceService extends Service {
 		}
 		return Service.START_STICKY;
 	}
+
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		Log.i(TAG, "onDestroy");
 		voiceThread.interrupt();
+		voiceDownloaderClientThread.quit();
+		voiceDownloaderClientThread.interrupt();
 	}
 
 	public static void speak(Context context, String message) {

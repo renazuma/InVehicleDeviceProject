@@ -36,6 +36,7 @@ dependencies {
     compile fileTree(dir: 'src/main/libs', include: '*.jar')
     androidTestCompile fileTree(dir: 'src/androidTest/libs', include: '*.jar')
     compile project(':AndroidOpenJTalk')
+    compile project(':play_apk_expansion')
 }
 
 def computeVersionName() {
