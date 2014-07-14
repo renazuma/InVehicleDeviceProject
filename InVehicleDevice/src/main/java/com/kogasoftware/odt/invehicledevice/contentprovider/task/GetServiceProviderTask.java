@@ -63,10 +63,16 @@ public class GetServiceProviderTask extends SynchronizationTask {
 			values.put(ServiceProviders.Columns._ID, node.path("id").asInt());
 			values.put(ServiceProviders.Columns.NAME, node.path("name")
 					.asText());
-			values.put(ServiceProviders.Columns.LOG_ACCESS_KEY_ID_AWS, node
-					.path("log_access_key_id_aws").asText());
-			values.put(ServiceProviders.Columns.LOG_SECRET_ACCESS_KEY_AWS, node
-					.path("log_secret_access_key_aws").asText());
+			JsonNode accessKey = node.path("log_access_key_id_aws");
+			if (accessKey.isTextual()) {
+				values.put(ServiceProviders.Columns.LOG_ACCESS_KEY_ID_AWS,
+						accessKey.asText());
+			}
+			JsonNode secretAccessKey = node.path("log_secret_access_key_aws");
+			if (secretAccessKey.isTextual()) {
+				values.put(ServiceProviders.Columns.LOG_SECRET_ACCESS_KEY_AWS,
+						secretAccessKey.asText());
+			}
 			id = database.insertOrThrow(ServiceProviders.TABLE_NAME, null,
 					values);
 			database.setTransactionSuccessful();
