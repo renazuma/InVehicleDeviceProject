@@ -8,7 +8,8 @@ for restart_count in `seq 1 5`; do
   $adb kill-server
   for connect_count in `seq 1 5`; do
     $adb connect $device_ip # このコマンドの成否は判定できない
-    for get_state_count in `seq 1 5`; do # いきなりwait-for-deviceをしてしまうと、接続に失敗した際に無限に待つことになる
+    for get_state_count in `seq 1 5`; do
+      # connectしてすぐにget-stateをするとunknownが返ってくることがあるため何度かリトライする
       state=`$adb -s $device_ip:5555 get-state`
       echo device state: $state
       if [ "$state" = "device" ]; then
