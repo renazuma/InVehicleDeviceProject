@@ -24,8 +24,8 @@ public class DrivePhaseFragment extends Fragment {
 	@Override
 	public void onStart() {
 		super.onStart();
-		String message = "出発します 次は " + operationSchedule.name + " "
-				+ operationSchedule.name;
+		String message = "出発します 次は " + operationSchedule.nameRuby + " "
+				+ operationSchedule.nameRuby;
 		VoiceService.speak(getActivity(), message);
 	}
 
@@ -61,7 +61,7 @@ public class DrivePhaseFragment extends Fragment {
 		TextView platformName1BeyondTextView = (TextView) view
 				.findViewById(R.id.platform_name_1_beyond_text_view);
 		TypedArray typedArray = getActivity().obtainStyledAttributes(
-				new int[] { android.R.attr.background });
+				new int[]{android.R.attr.background});
 		Integer backgroundColor = typedArray.getColor(0, Color.WHITE);
 		view.setBackgroundColor(backgroundColor);
 		Bundle args = getArguments();
