@@ -22,7 +22,7 @@ public class SynchronizationTaskTestCase extends AndroidTestCase {
 		super.setUp();
 		databaseHelper = new DatabaseHelper(getContext());
 		database = databaseHelper.getWritableDatabase();
-		TestUtils.clean(database);
+		TestUtils.clear(database);
 
 		server = new MockServer(12345);
 		server.start();
@@ -30,7 +30,7 @@ public class SynchronizationTaskTestCase extends AndroidTestCase {
 
 	@Override
 	public void tearDown() throws Exception {
-		TestUtils.close(server, database, databaseHelper, executorService);
+		TestUtils.dispose(server, database, databaseHelper, executorService);
 		super.tearDown();
 	}
 

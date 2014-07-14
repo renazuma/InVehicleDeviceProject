@@ -21,6 +21,7 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.table.InVehicleDevic
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedules;
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.SignInErrorBroadcastIntent;
 import com.kogasoftware.odt.invehicledevice.mockserver.MockServer;
+import com.kogasoftware.odt.invehicledevice.utils.TestUtils;
 
 public class InVehicleDeviceContentProviderTestCase
 		extends
@@ -36,7 +37,7 @@ public class InVehicleDeviceContentProviderTestCase
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		getProvider().delete(InVehicleDevices.CONTENT.URI, null, null);
+		TestUtils.clear(getProvider().getDatabase());
 		server = new MockServer(12345);
 		server.start();
 	}
@@ -96,7 +97,7 @@ public class InVehicleDeviceContentProviderTestCase
 		insertInVehicleDevice(url, login, password);
 		Stopwatch stopwatch = new Stopwatch().start();
 		while (true) {
-			ComparableAssert.assertLesser(5L,
+			ComparableAssert.assertLesser(20L,
 					stopwatch.elapsed(TimeUnit.SECONDS));
 			for (Intent intent : getMockContext().getAndClearBroadcastIntents()) {
 				if (intent.getAction()
@@ -104,6 +105,7 @@ public class InVehicleDeviceContentProviderTestCase
 					return; // OK
 				}
 			}
+			Thread.sleep(200);
 		}
 	}
 

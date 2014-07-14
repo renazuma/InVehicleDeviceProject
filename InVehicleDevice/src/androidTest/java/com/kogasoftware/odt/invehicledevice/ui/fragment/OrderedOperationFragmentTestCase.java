@@ -32,7 +32,7 @@ public class OrderedOperationFragmentTestCase
 		Context tc = getInstrumentation().getTargetContext();
 		DatabaseHelper databaseHelper = new DatabaseHelper(tc);
 		database = databaseHelper.getWritableDatabase();
-		TestUtils.clean(database);
+		TestUtils.clear(database);
 
 		server = new MockServer(12346);
 		server.start();

@@ -37,7 +37,7 @@ public class PassengerRecordErrorFragmentTestCase
 		Context tc = getInstrumentation().getTargetContext();
 		DatabaseHelper databaseHelper = new DatabaseHelper(tc);
 		database = databaseHelper.getWritableDatabase();
-		TestUtils.clean(database);
+		TestUtils.clear(database);
 
 		server = new MockServer(12346);
 		server.start();
@@ -47,7 +47,7 @@ public class PassengerRecordErrorFragmentTestCase
 	@Override
 	public void tearDown() throws Exception {
 		try {
-			TestUtils.close(solo, server, database);
+			TestUtils.dispose(solo, server, database);
 		} finally {
 			super.tearDown();
 		}

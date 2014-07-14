@@ -21,7 +21,7 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotific
 import com.robotium.solo.Solo;
 
 public class TestUtils {
-	public static void close(Object... objects) throws Exception {
+	public static void dispose(Object... objects) throws Exception {
 		for (Object object : objects) {
 			if (object == null) {
 				continue;
@@ -33,13 +33,17 @@ public class TestUtils {
 			} else if (object instanceof Solo) {
 				((Solo) object).finishOpenedActivities();
 			} else if (object instanceof SQLiteDatabase) {
-				((SQLiteDatabase) object).close();
+				SQLiteDatabase database = (SQLiteDatabase) object;
+				clear(database);
+				database.close();
 			} else if (object instanceof SQLiteOpenHelper) {
 				((SQLiteOpenHelper) object).close();
 			} else if (object instanceof Closeable) {
 				((Closeable) object).close();
 			} else if (object instanceof ExecutorService) {
 				((ExecutorService) object).shutdownNow();
+			} else if (object instanceof SharedPreferences) {
+				clear(object);
 			} else {
 				throw new IllegalArgumentException("Unrecognized object: "
 						+ object);
@@ -47,7 +51,7 @@ public class TestUtils {
 		}
 	}
 
-	public static void clean(Object... objects) {
+	public static void clear(Object... objects) {
 		for (Object object : objects) {
 			if (object instanceof SQLiteDatabase) {
 				// TODO: もうすこし賢い方法

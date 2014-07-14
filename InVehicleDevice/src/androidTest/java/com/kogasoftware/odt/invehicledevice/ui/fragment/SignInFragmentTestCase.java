@@ -43,8 +43,8 @@ public class SignInFragmentTestCase
 		Context tc = getInstrumentation().getTargetContext();
 		DatabaseHelper databaseHelper = new DatabaseHelper(tc);
 		database = databaseHelper.getWritableDatabase();
-		TestUtils.clean(PreferenceManager.getDefaultSharedPreferences(tc));
-		TestUtils.clean(database);
+		TestUtils.clear(PreferenceManager.getDefaultSharedPreferences(tc));
+		TestUtils.clear(database);
 		server = new MockServer(12346);
 		server.start();
 		validUrl = server.getUrl();
