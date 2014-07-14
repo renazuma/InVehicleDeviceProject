@@ -13,7 +13,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
-import android.util.Log;
 
 import com.google.common.collect.Lists;
 import com.kogasoftware.android.CursorReader;
@@ -56,7 +55,6 @@ public class PassengerRecord implements Serializable {
 	public Boolean ignoreGetOffMiss;
 
 	public PassengerRecord(Cursor cursor) {
-		Log.v("TRACE", "3");
 		CursorReader reader = new CursorReader(cursor);
 		id = reader.readLong(PassengerRecords.Columns._ID);
 		getOnTime = reader.readDateTime(PassengerRecords.Columns.GET_ON_TIME);

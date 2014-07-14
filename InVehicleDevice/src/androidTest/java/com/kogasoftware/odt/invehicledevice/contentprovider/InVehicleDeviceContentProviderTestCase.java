@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.test.ProviderTestCase2;
-import android.util.Log;
 
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
@@ -141,7 +140,6 @@ public class InVehicleDeviceContentProviderTestCase
 					OperationSchedules.CONTENT.URI, null, null, null, null);
 			try { // MockContentResolver.notifyChangeが使えないので、ポーリングする
 				if (cursor.moveToFirst()) {
-					Log.v("TRACE", "2");
 					oss = OperationSchedule.getAll(cursor);
 					break;
 				}
