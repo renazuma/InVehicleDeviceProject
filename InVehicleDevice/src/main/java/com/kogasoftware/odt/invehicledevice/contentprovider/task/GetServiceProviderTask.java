@@ -44,6 +44,9 @@ public class GetServiceProviderTask extends SynchronizationTask {
 		request.setURI(uriBuilder.build());
 		HttpResponse response = client.execute(request);
 		int statusCode = response.getStatusLine().getStatusCode();
+		if (statusCode / 100 == 4 || statusCode / 100 == 5) {
+			throw new IOException("code=" + statusCode);
+		}
 		JsonNode node;
 		HttpEntity entity = response.getEntity();
 		if (entity != null) {
@@ -51,9 +54,6 @@ public class GetServiceProviderTask extends SynchronizationTask {
 					Charsets.UTF_8));
 		} else {
 			node = JSON.createObjectNode();
-		}
-		if (statusCode / 100 == 4 || statusCode / 100 == 5) {
-			throw new IOException("code=" + statusCode);
 		}
 		Long id;
 		try {
