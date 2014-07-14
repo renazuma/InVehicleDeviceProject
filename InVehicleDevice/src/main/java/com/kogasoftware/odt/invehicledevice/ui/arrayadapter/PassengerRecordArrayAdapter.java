@@ -82,7 +82,9 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 						.equals(passengerRecord.arrivalScheduleId)) {
 					passengerRecord.ignoreGetOffMiss = false;
 					if (passengerRecord.getOffTime == null) {
-						passengerRecord.getOnTime = now;
+						if (passengerRecord.getOnTime == null) {
+							passengerRecord.getOnTime = now;
+						}
 						passengerRecord.getOffTime = now;
 					} else {
 						passengerRecord.getOffTime = null;
