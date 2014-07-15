@@ -70,6 +70,7 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
 		}
 	}
 
+	private DatabaseHelper databaseHelper;
 	private SQLiteDatabase database;
 	private ScheduledExecutorService executorService = Executors
 			.newScheduledThreadPool(1); // 順番を保持したまま処理したい通信があるため、スレッドの数は1で固定
@@ -89,7 +90,8 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
 	@Override
 	public boolean onCreate() {
 		Context context = getContext();
-		database = new DatabaseHelper(context).getWritableDatabase();
+		databaseHelper = new DatabaseHelper(context);
+		database = databaseHelper.getWritableDatabase();
 		executorService.scheduleWithFixedDelay(new GetVehicleNotificationsTask(
 				context, database, executorService), 5,
 				GetVehicleNotificationsTask.INTERVAL_MILLIS,
@@ -239,6 +241,7 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
 		try {
 			executorService.shutdownNow();
 			database.close();
+			databaseHelper.close();
 		} finally {
 			super.shutdown();
 		}
