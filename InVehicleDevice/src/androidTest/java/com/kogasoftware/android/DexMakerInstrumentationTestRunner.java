@@ -1,14 +1,14 @@
 package com.kogasoftware.android;
 
-import com.google.android.apps.common.testing.testrunner.GoogleInstrumentationTestRunner;
-
 import android.os.Bundle;
+import android.test.InstrumentationTestRunner;
 
 /**
  * "https://code.google.com/p/dexmaker/issues/detail?id=2"
  */
-public class DexMakerInstrumentationTestRunner extends
-		GoogleInstrumentationTestRunner {
+public class DexMakerInstrumentationTestRunner
+		extends
+			InstrumentationTestRunner {
 	@Override
 	public void onCreate(Bundle arguments) {
 		super.onCreate(arguments);
