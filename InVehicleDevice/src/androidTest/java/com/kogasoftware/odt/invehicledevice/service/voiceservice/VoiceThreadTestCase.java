@@ -6,6 +6,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import android.test.AndroidTestCase;
 
+import com.kogasoftware.odt.invehicledevice.utils.TestUtils;
+
 public class VoiceThreadTestCase extends AndroidTestCase {
 	VoiceThread vt;
 	BlockingQueue<String> bq;
@@ -19,10 +21,11 @@ public class VoiceThreadTestCase extends AndroidTestCase {
 
 	@Override
 	protected void tearDown() throws Exception {
-		if (vt != null) {
-			vt.interrupt();
+		try {
+			TestUtils.dispose(vt);
+		} finally {
+			super.tearDown();
 		}
-		super.tearDown();
 	}
 
 	public void xtestVoiceThread_1() throws Exception {

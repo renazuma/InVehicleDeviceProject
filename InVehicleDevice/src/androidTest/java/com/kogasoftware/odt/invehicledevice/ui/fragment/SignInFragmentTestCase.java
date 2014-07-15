@@ -54,13 +54,8 @@ public class SignInFragmentTestCase
 	@Override
 	public void tearDown() throws Exception {
 		try {
-			solo.finishOpenedActivities();
-			server.interrupt();
-			server.join(5000);
-			assertFalse(server.isAlive());
-			database.close();
+			TestUtils.dispose(server, database, solo);
 		} finally {
-
 			super.tearDown();
 		}
 	}

@@ -8,6 +8,7 @@ import com.google.common.base.Throwables;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.ui.activity.EmptyActivity;
 import com.kogasoftware.odt.invehicledevice.utils.SoloUtils;
+import com.kogasoftware.odt.invehicledevice.utils.TestUtils;
 import com.robotium.solo.Condition;
 import com.robotium.solo.Solo;
 
@@ -44,7 +45,11 @@ public class FlickUnneededListViewTestCase
 
 	@Override
 	protected void tearDown() throws Exception {
-		super.tearDown();
+		try {
+			TestUtils.dispose(solo);
+		} finally {
+			super.tearDown();
+		}
 	}
 
 	public void test表示() throws Throwable {

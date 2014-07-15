@@ -43,11 +43,7 @@ public class OrderedOperationFragmentTestCase
 	@Override
 	public void tearDown() throws Exception {
 		try {
-			solo.finishOpenedActivities();
-			server.interrupt();
-			server.join(5000);
-			assertFalse(server.isAlive());
-			database.close();
+			TestUtils.dispose(solo, server, database);
 		} finally {
 			super.tearDown();
 		}

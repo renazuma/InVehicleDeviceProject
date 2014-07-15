@@ -43,9 +43,11 @@ public class InVehicleDeviceContentProviderTestCase
 
 	@Override
 	public void tearDown() throws Exception {
-		server.interrupt();
-		server.join();
-		super.tearDown();
+		try {
+			TestUtils.dispose(server);
+		} finally {
+			super.tearDown();
+		}
 	}
 
 	/**

@@ -4,6 +4,7 @@ import android.test.ActivityInstrumentationTestCase2;
 import android.widget.Toast;
 
 import com.kogasoftware.odt.invehicledevice.ui.activity.EmptyActivity;
+import com.kogasoftware.odt.invehicledevice.utils.TestUtils;
 import com.robotium.solo.Solo;
 
 public class BigToastTestCase
@@ -23,8 +24,11 @@ public class BigToastTestCase
 
 	@Override
 	protected void tearDown() throws Exception {
-		solo.finishOpenedActivities();
-		super.tearDown();
+		try {
+			TestUtils.dispose(solo);
+		} finally {
+			super.tearDown();
+		}
 	}
 
 	public void testMakeText() throws Throwable {

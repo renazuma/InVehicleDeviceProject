@@ -30,8 +30,12 @@ public class SynchronizationTaskTestCase extends AndroidTestCase {
 
 	@Override
 	public void tearDown() throws Exception {
-		TestUtils.dispose(server, database, databaseHelper, executorService);
-		super.tearDown();
+		try {
+			TestUtils
+					.dispose(server, database, databaseHelper, executorService);
+		} finally {
+			super.tearDown();
+		}
 	}
 
 	protected void signIn() {
