@@ -137,11 +137,11 @@ public class FlickUnneededListViewTestCase
 	}
 
 	private void assertEnabled(final Button button, final boolean enabled) {
-		solo.waitForCondition(new Condition() {
+		assertTrue(solo.waitForCondition(new Condition() {
 			@Override
 			public boolean isSatisfied() {
 				return button.isEnabled() == enabled;
 			}
-		}, 5000);
+		}, 5000));
 	}
 }

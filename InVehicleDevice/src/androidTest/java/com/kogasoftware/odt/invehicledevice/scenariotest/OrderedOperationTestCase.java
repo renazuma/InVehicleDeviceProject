@@ -82,12 +82,12 @@ public class OrderedOperationTestCase
 
 		assertTrue(solo.searchText("乗車中", true));
 		solo.clickOnText("マイクロ 次郎");
-		solo.waitForCondition(new Condition() {
+		assertTrue(solo.waitForCondition(new Condition() {
 			@Override
 			public boolean isSatisfied() {
 				return pr1.getOnTime != null;
 			}
-		}, 2000);
+		}, 5000));
 		Thread.sleep(3000);
 		solo.clickOnButton("確認\nする");
 		Thread.sleep(3000);
@@ -98,12 +98,12 @@ public class OrderedOperationTestCase
 		solo.clickOnButton(solo.getString(R.string.it_arrives_button_text));
 		solo.clickOnButton(solo.getString(R.string.it_arrives));
 		solo.clickOnText("マイクロ 次郎");
-		solo.waitForCondition(new Condition() {
+		assertTrue(solo.waitForCondition(new Condition() {
 			@Override
 			public boolean isSatisfied() {
 				return pr1.getOffTime != null;
 			}
-		}, 2000);
+		}, 5000));
 
 		Thread.sleep(3000);
 		solo.clickOnButton("確認\nする");
@@ -111,12 +111,12 @@ public class OrderedOperationTestCase
 		solo.clickOnText("はしもと ゆきなり");
 		solo.clickOnButton("確認\nする");
 		solo.clickOnButton("出発する");
-		solo.waitForCondition(new Condition() {
+		assertTrue(solo.waitForCondition(new Condition() {
 			@Override
 			public boolean isSatisfied() {
 				return pr2.getOnTime != null && pr3.getOnTime != null;
 			}
-		}, 2000);
+		}, 5000));
 
 		assertTrue(solo.searchText("運行中", true));
 		assertTrue(solo.searchText("東府中", true));
@@ -124,12 +124,12 @@ public class OrderedOperationTestCase
 		solo.clickOnButton(solo.getString(R.string.it_arrives));
 		solo.clickOnText("まつもと ゆきひろ");
 		solo.clickOnText("はしもと ゆきなり");
-		solo.waitForCondition(new Condition() {
+		assertTrue(solo.waitForCondition(new Condition() {
 			@Override
 			public boolean isSatisfied() {
 				return pr2.getOffTime != null && pr3.getOffTime != null;
 			}
-		}, 2000);
+		}, 5000));
 
 		Thread.sleep(3000);
 		solo.clickOnButton("確認\nする");

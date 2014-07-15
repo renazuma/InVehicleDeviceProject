@@ -69,7 +69,7 @@ public class SignInFragmentTestCase
 		solo.scrollToTop();
 		getInstrumentation().waitForIdleSync();
 		solo.clickOnText(solo.getString(R.string.server_url));
-		solo.waitForCondition(new Condition() {
+		assertTrue(solo.waitForCondition(new Condition() {
 			@Override
 			public boolean isSatisfied() {
 				try {
@@ -79,7 +79,7 @@ public class SignInFragmentTestCase
 					return false;
 				}
 			}
-		}, 30 * 1000);
+		}, 30 * 1000));
 		solo.enterText(0, url);
 		solo.clickOnButton(solo.getString(R.string.ok));
 		getInstrumentation().waitForIdleSync();

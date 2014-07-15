@@ -68,8 +68,12 @@ public class ScheduleVehicleNotificationFragmentTestCase
 		server.addOperationSchedule(p1, p2, users1, "09:00:00", "09:00:02", 50);
 		server.addOperationSchedule(p2, p3, users2, "10:00:00", "10:00:02", 50);
 		server.reservations.get(0).memo = "よやくメモ";
-		assertFalse(solo.searchText("南浦和"));
-
+		assertTrue(solo.waitForCondition(new Condition() {
+			@Override
+			public boolean isSatisfied() {
+				return !solo.searchText("南浦和");
+			}
+		}, 20 * 1000));
 		final VehicleNotificationJson vn = server.addVehicleNotification(
 				"変更されました", "へんこうされました",
 				VehicleNotification.NotificationKind.SCHEDULE);

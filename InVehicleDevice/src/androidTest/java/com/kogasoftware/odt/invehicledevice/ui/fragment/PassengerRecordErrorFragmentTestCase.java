@@ -87,11 +87,11 @@ public class PassengerRecordErrorFragmentTestCase
 		Thread.sleep(3000);
 		solo.clickOnText("マイクロ 次郎", 2);
 		Thread.sleep(3000);
-		solo.waitForCondition(new Condition() {
+		assertTrue(solo.waitForCondition(new Condition() {
 			@Override
 			public boolean isSatisfied() {
 				return Boolean.TRUE.equals(pr1.ignoreGetOnMiss);
 			}
-		}, 2000);
+		}, 2000));
 	}
 }
