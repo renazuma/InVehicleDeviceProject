@@ -10,7 +10,6 @@ import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -21,9 +20,11 @@ import android.widget.TextView;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.contentprovider.model.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotifications;
+import com.kogasoftware.odt.invehicledevice.utils.FragmentUtils;
 
-public class ScheduleVehicleNotificationFragment extends Fragment implements
-		LoaderCallbacks<Cursor> {
+public class ScheduleVehicleNotificationFragment extends Fragment
+		implements
+			LoaderCallbacks<Cursor> {
 	private static final Integer LOADER_ID = 1;
 	private static String OPERATION_LIST_BUTTON_VISIBLE_KEY = "operation_list_button_visible";
 	private TextView detailTextView;
@@ -134,17 +135,7 @@ public class ScheduleVehicleNotificationFragment extends Fragment implements
 				}
 			}
 		}.start();
-		new Handler().post(new Runnable() {
-			@Override
-			public void run() {
-				if (!isAdded()) {
-					return;
-				}
-				getFragmentManager().beginTransaction()
-						.remove(ScheduleVehicleNotificationFragment.this)
-						.commitAllowingStateLoss();
-			}
-		});
+		FragmentUtils.hide(this);
 	}
 
 	@Override

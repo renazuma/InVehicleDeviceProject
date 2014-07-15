@@ -5,7 +5,6 @@ import org.joda.time.DateTime;
 import android.app.Fragment;
 import android.content.ContentResolver;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -15,6 +14,7 @@ import android.widget.TextView;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.contentprovider.model.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotifications;
+import com.kogasoftware.odt.invehicledevice.utils.FragmentUtils;
 
 public class NormalVehicleNotificationFragment extends Fragment {
 	private static final String VEHICLE_NOTIFICATION_KEY = "vehicle_notification";
@@ -76,16 +76,6 @@ public class NormalVehicleNotificationFragment extends Fragment {
 						vehicleNotification.toContentValues());
 			}
 		}.start();
-		new Handler().post(new Runnable() {
-			@Override
-			public void run() {
-				if (!isAdded()) {
-					return;
-				}
-				getFragmentManager().beginTransaction()
-						.remove(NormalVehicleNotificationFragment.this)
-						.commitAllowingStateLoss();
-			}
-		});
+		FragmentUtils.hide(this);
 	}
 }
