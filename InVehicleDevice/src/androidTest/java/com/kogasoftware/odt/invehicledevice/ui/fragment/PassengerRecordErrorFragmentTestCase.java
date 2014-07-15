@@ -85,7 +85,7 @@ public class PassengerRecordErrorFragmentTestCase
 		Thread.sleep(3000);
 		solo.clickOnButton("確認\nする");
 		Thread.sleep(3000);
-		solo.clickOnText("マイクロ 次郎", 2);
+		solo.clickOnText("未乗車でよい", 1);
 		Thread.sleep(3000);
 		assertTrue(solo.waitForCondition(new Condition() {
 			@Override
