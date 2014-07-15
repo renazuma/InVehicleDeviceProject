@@ -3,6 +3,7 @@ package com.kogasoftware.odt.invehicledevice.ui.fragment;
 import java.util.List;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.test.ActivityInstrumentationTestCase2;
 
@@ -13,6 +14,7 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.json.OperationRecord
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.PassengerRecordJson;
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.PlatformJson;
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.UserJson;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecords;
 import com.kogasoftware.odt.invehicledevice.mockserver.MockServer;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.utils.TestUtils;
@@ -90,8 +92,21 @@ public class PassengerRecordErrorFragmentTestCase
 		assertTrue(solo.waitForCondition(new Condition() {
 			@Override
 			public boolean isSatisfied() {
-				return Boolean.TRUE.equals(pr1.ignoreGetOnMiss);
+				Cursor cursor = database
+						.query(PassengerRecords.TABLE_NAME,
+								new String[]{PassengerRecords.Columns.IGNORE_GET_ON_MISS},
+								PassengerRecords.Columns._ID + " = ?",
+								new String[]{pr1.id.toString()}, null, null,
+								null);
+				try {
+					if (cursor.moveToFirst()) {
+						return !cursor.isNull(0) && cursor.getInt(0) != 0;
+					}
+				} finally {
+					cursor.close();
+				}
+				return false;
 			}
-		}, 2000));
+		}, 20 * 1000));
 	}
 }
