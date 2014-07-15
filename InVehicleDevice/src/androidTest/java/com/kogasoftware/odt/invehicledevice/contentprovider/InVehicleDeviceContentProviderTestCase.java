@@ -136,7 +136,7 @@ public class InVehicleDeviceContentProviderTestCase
 		Stopwatch stopwatch = new Stopwatch().start();
 		List<OperationSchedule> oss;
 		while (true) {
-			ComparableAssert.assertLesser(5L,
+			ComparableAssert.assertLesser(20L,
 					stopwatch.elapsed(TimeUnit.SECONDS));
 			Cursor cursor = getMockContentResolver().query(
 					OperationSchedules.CONTENT.URI, null, null, null, null);
