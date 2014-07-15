@@ -78,6 +78,10 @@ public class StartupService extends Service {
 		if (!checkDeviceAndAlert()) {
 			return false;
 		}
+		if (BuildConfig.DEBUG) {
+			Log.i(TAG, "testing");
+			return true;
+		}
 		Intent startIntent = new Intent(StartupService.this,
 				InVehicleDeviceActivity.class);
 		startIntent.setAction(Intent.ACTION_DEFAULT);

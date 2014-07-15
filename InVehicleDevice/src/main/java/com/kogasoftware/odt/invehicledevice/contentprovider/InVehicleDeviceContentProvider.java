@@ -4,7 +4,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import android.app.ActivityManager;
 import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -129,9 +128,7 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
 					ServiceUnitStatusLogService.class));
 			context.startService(new Intent(context, VoiceService.class));
 			context.startService(new Intent(context, LogService.class));
-			if (!ActivityManager.isRunningInTestHarness()) {
-				context.startService(new Intent(context, StartupService.class));
-			}
+			context.startService(new Intent(context, StartupService.class));
 		} catch (UnsupportedOperationException e) {
 			// IsolatedContext
 		}
