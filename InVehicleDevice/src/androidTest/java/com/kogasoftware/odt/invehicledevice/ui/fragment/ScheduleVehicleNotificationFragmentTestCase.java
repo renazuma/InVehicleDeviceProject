@@ -71,7 +71,7 @@ public class ScheduleVehicleNotificationFragmentTestCase
 		assertTrue(solo.waitForCondition(new Condition() {
 			@Override
 			public boolean isSatisfied() {
-				return !solo.searchText("南浦和", true);
+				return !solo.searchText("東府中", true);
 			}
 		}, 20 * 1000));
 		final VehicleNotificationJson vn = server.addVehicleNotification(
@@ -88,7 +88,7 @@ public class ScheduleVehicleNotificationFragmentTestCase
 				+ GetVehicleNotificationsTask.INTERVAL_MILLIS * 3 / 2));
 
 		solo.clickOnButton(solo.getString(R.string.it_closes));
-		assertTrue(solo.searchText("南浦和", true));
+		assertTrue(solo.searchText("東府中", true));
 		assertTrue(solo.waitForCondition(new Condition() {
 			@Override
 			public boolean isSatisfied() {
