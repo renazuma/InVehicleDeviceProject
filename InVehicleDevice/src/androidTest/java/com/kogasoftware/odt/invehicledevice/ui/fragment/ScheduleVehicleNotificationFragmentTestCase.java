@@ -57,7 +57,7 @@ public class ScheduleVehicleNotificationFragmentTestCase
 	public void test() throws InterruptedException {
 		solo = new Solo(getInstrumentation(), getActivity());
 		solo.clickOnText(solo.getString(R.string.today_operation_schedule));
-		assertTrue(solo.searchText("乗客も見る"));
+		assertTrue(solo.searchText("乗客も見る", true));
 
 		List<UserJson> users1 = Lists.newArrayList(server.addUser("マイクロ 次郎"));
 		List<UserJson> users2 = Lists.newArrayList(server.addUser("まつもと ゆきひろ"),
@@ -71,7 +71,7 @@ public class ScheduleVehicleNotificationFragmentTestCase
 		assertTrue(solo.waitForCondition(new Condition() {
 			@Override
 			public boolean isSatisfied() {
-				return !solo.searchText("南浦和");
+				return !solo.searchText("南浦和", true);
 			}
 		}, 20 * 1000));
 		final VehicleNotificationJson vn = server.addVehicleNotification(
@@ -88,7 +88,7 @@ public class ScheduleVehicleNotificationFragmentTestCase
 				+ GetVehicleNotificationsTask.INTERVAL_MILLIS * 3 / 2));
 
 		solo.clickOnButton(solo.getString(R.string.it_closes));
-		assertTrue(solo.searchText("南浦和"));
+		assertTrue(solo.searchText("南浦和", true));
 		assertTrue(solo.waitForCondition(new Condition() {
 			@Override
 			public boolean isSatisfied() {
