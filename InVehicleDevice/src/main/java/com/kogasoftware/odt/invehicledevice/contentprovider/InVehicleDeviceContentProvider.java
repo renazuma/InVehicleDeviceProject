@@ -236,4 +236,14 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
 		executorService.execute(new GetOperationSchedulesTask(getContext(),
 				database, executorService));
 	}
+
+	@Override
+	public void shutdown() {
+		try {
+			executorService.shutdownNow();
+			database.close();
+		} finally {
+			super.shutdown();
+		}
+	}
 }
