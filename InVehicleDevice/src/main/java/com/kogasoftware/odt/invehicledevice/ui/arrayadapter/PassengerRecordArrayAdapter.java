@@ -137,25 +137,11 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 	};
 
 	public PassengerRecordArrayAdapter(Activity activity,
-			OperationSchedule operationSchedule,
-			List<PassengerRecord> passengerRecords) {
+			OperationSchedule operationSchedule) {
 		super(activity, RESOURCE_ID);
 		this.fragmentManager = activity.getFragmentManager();
 		this.contentResolver = activity.getContentResolver();
 		this.operationSchedule = operationSchedule;
-
-		List<PassengerRecord> sortedPassengerRecords = Lists
-				.newArrayList(passengerRecords);
-		Collections.sort(sortedPassengerRecords,
-				PassengerRecord.DEFAULT_COMPARATOR);
-		Log.i(TAG, "PassengerRecords:");
-		for (PassengerRecord passengerRecord : sortedPassengerRecords) {
-			// Log.i(TAG, "id=" + passengerRecord.getId() + " representative="
-			// + passengerRecord.isRepresentative() + " getOnTime="
-			// + passengerRecord.getGetOnTime() + " getOffTime="
-			// + passengerRecord.getGetOffTime());
-			add(passengerRecord);
-		}
 	}
 
 	@Override
@@ -234,5 +220,17 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 				memoButton.setVisibility(View.INVISIBLE);
 			}
 		}
+	}
+
+	public void update(List<PassengerRecord> passengerRecords) {
+		clear();
+		List<PassengerRecord> sortedPassengerRecords = Lists
+				.newArrayList(passengerRecords);
+		Collections.sort(sortedPassengerRecords,
+				PassengerRecord.DEFAULT_COMPARATOR);
+		for (PassengerRecord passengerRecord : sortedPassengerRecords) {
+			add(passengerRecord);
+		}
+		notifyDataSetChanged();
 	}
 }
