@@ -2,6 +2,8 @@ package com.kogasoftware.odt.invehicledevice.ui.fragment;
 
 import java.util.List;
 
+import org.joda.time.DateTime;
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.test.ActivityInstrumentationTestCase2;
@@ -10,12 +12,14 @@ import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.contentprovider.DatabaseHelper;
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.OperationRecordJson;
+import com.kogasoftware.odt.invehicledevice.contentprovider.json.OperationScheduleJson;
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.PassengerRecordJson;
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.PlatformJson;
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.UserJson;
 import com.kogasoftware.odt.invehicledevice.mockserver.MockServer;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.utils.TestUtils;
+import com.robotium.solo.Condition;
 import com.robotium.solo.Solo;
 
 public class OperationListFragmentTestCase
@@ -113,5 +117,37 @@ public class OperationListFragmentTestCase
 		Thread.sleep(3000);
 		assertNull(pr.getOnTime);
 		assertNull(pr.getOffTime);
+	}
+
+	public void test途中まで運行している場合() throws InterruptedException {
+		List<UserJson> users1 = Lists.newArrayList(server.addUser("マイクロ 次郎"));
+		List<UserJson> users2 = Lists.newArrayList(server.addUser("まつもと ゆきひろ"),
+				server.addUser("はしもと ゆきなり"));
+		PlatformJson p1 = server.addPlatform("南浦和");
+		PlatformJson p2 = server.addPlatform("東川口");
+		PlatformJson p3 = server.addPlatform("東府中");
+		OperationScheduleJson os1 = server.addOperationSchedule(p1, p2, users1,
+				"09:00:00", "09:00:02", 50).first;
+		os1.operationRecord.arrivedAt = DateTime.now();
+		server.addOperationSchedule(p2, p3, users2, "10:00:00", "10:00:02", 50);
+		server.reservations.get(0).memo = "よやくメモ";
+		solo = new Solo(getInstrumentation(), getActivity());
+		final OperationRecordJson or = server.operationRecords.get(0);
+		solo.waitForCondition(new Condition() {
+			@Override
+			public boolean isSatisfied() {
+				return or.arrivedAt != null;
+			}
+		}, 5000);
+		assertNull(or.departedAt);
+		solo.clickOnText(solo.getString(R.string.today_operation_schedule));
+		solo.clickOnText("南浦和", 2); // 裏の画面にも「南浦和」があるため
+		Thread.sleep(3000);
+		solo.waitForCondition(new Condition() {
+			@Override
+			public boolean isSatisfied() {
+				return or.arrivedAt == null;
+			}
+		}, 5000);
 	}
 }
