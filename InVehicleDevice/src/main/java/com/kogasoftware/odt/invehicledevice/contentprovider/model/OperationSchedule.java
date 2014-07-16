@@ -233,7 +233,7 @@ public class OperationSchedule implements Serializable {
 			// TODO: MAX(local_version)で書き直す
 			String where = OperationRecords.Columns.OPERATION_SCHEDULE_ID
 					+ " = ?";
-			String[] whereArgs = new String[] { id.toString() };
+			String[] whereArgs = new String[]{id.toString()};
 			Long maxVersion = 1L;
 			Cursor cursor = database.query(OperationRecords.TABLE_NAME, null,
 					where, whereArgs, null, null, null);
@@ -283,7 +283,7 @@ public class OperationSchedule implements Serializable {
 		sql.append(" , p.longitude");
 		sql.append(" from operation_schedules os");
 		sql.append(" inner join platforms p on os.platform_id = p._id");
-		sql.append(" order by _id;");
+		sql.append(" order by arrival_estimate;");
 		Cursor cursor = database.rawQuery(sql.toString(), null);
 		cursor.setNotificationUri(contentResolver,
 				OperationSchedules.CONTENT.URI);
