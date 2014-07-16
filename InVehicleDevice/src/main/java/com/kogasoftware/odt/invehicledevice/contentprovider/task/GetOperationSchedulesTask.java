@@ -15,7 +15,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.joda.time.DateTimeZone;
 import org.json.JSONException;
 
 import android.content.ContentUris;
@@ -29,8 +28,6 @@ import android.net.Uri;
 import com.amazonaws.org.apache.http.client.utils.URIBuilder;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Charsets;
-import com.google.common.base.Objects;
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.OperationRecordJson;
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.OperationScheduleJson;
@@ -65,198 +62,71 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
 
 	void insert(List<OperationScheduleJson> operationSchedules,
 			List<Long> scheduleVehidleNotificationIds) {
-		List<ContentValues> userValuesList = Lists.newLinkedList();
-		List<ContentValues> reservationValuesList = Lists.newLinkedList();
-		List<ContentValues> operationScheduleValuesList = Lists.newLinkedList();
-		List<ContentValues> passengerRecordValuesList = Lists.newLinkedList();
-		List<ContentValues> operationRecordValuesList = Lists.newLinkedList();
-		List<ContentValues> platformValuesList = Lists.newLinkedList();
+		List<UserJson> users = Lists.newLinkedList();
+		List<ReservationJson> reservations = Lists.newLinkedList();
+		List<OperationScheduleJson> operationScheduleValuesList = Lists
+				.newLinkedList();
+		List<PassengerRecordJson> passengerRecords = Lists.newLinkedList();
+		List<OperationRecordJson> operationRecords = Lists.newLinkedList();
+		List<PlatformJson> platforms = Lists.newLinkedList();
 
+		// 各モデルを配列に展開する
 		for (OperationScheduleJson operationSchedule : operationSchedules) {
-			ContentValues operationScheduleValues = new ContentValues();
-			operationScheduleValues.put(OperationSchedules.Columns._ID,
-					operationSchedule.id);
-
-			if (operationSchedule.arrivalEstimate != null) {
-				operationScheduleValues.put(
-						OperationSchedules.Columns.ARRIVAL_ESTIMATE,
-						operationSchedule.arrivalEstimate.getMillis());
-			}
-
-			if (operationSchedule.departureEstimate != null) {
-				operationScheduleValues.put(
-						OperationSchedules.Columns.DEPARTURE_ESTIMATE,
-						operationSchedule.departureEstimate.getMillis());
-			}
-
-			ContentValues operationRecordValues = new ContentValues();
 			OperationRecordJson operationRecord = operationSchedule.operationRecord;
-			operationRecordValues.put(OperationRecords.Columns._ID,
-					operationRecord.id);
-			operationRecordValues.put(
-					OperationRecords.Columns.OPERATION_SCHEDULE_ID,
-					operationRecord.operationScheduleId);
-			if (operationRecord.arrivedAt != null) {
-				operationScheduleValues.put(
-						OperationRecords.Columns.ARRIVED_AT,
-						operationRecord.arrivedAt.getMillis());
-			}
-			if (operationRecord.departedAt != null) {
-				operationScheduleValues.put(
-						OperationRecords.Columns.DEPARTED_AT,
-						operationRecord.departedAt.getMillis());
-			}
-			operationRecordValuesList.add(operationRecordValues);
-
-			operationScheduleValues.put(OperationSchedules.Columns.PLATFORM_ID,
-					operationSchedule.platform.id);
-			operationScheduleValues.put(
-					OperationSchedules.Columns.OPERATION_DATE,
-					operationSchedule.operationDate.toDateTimeAtStartOfDay(
-							DateTimeZone.UTC).getMillis());
-			operationScheduleValuesList.add(operationScheduleValues);
-
-			PlatformJson platform = operationSchedule.platform;
-			ContentValues platformValues = new ContentValues();
-			platformValues.put(Platforms.Columns._ID, platform.id);
-			platformValues.put(Platforms.Columns.NAME, platform.name);
-			platformValues.put(Platforms.Columns.NAME_RUBY,
-					Strings.nullToEmpty(platform.nameRuby));
-			platformValues.put(Platforms.Columns.ADDRESS,
-					Strings.nullToEmpty(platform.address));
-			platformValues.put(Platforms.Columns.MEMO,
-					Strings.nullToEmpty(platform.memo));
-			platformValues.put(Platforms.Columns.LATITUDE,
-					platform.latitude.toPlainString());
-			platformValues.put(Platforms.Columns.LONGITUDE,
-					platform.longitude.toPlainString());
-			platformValuesList.add(platformValues);
-
+			operationRecords.add(operationRecord);
+			operationScheduleValuesList.add(operationSchedule);
+			platforms.add(operationSchedule.platform);
 			ReservationJson reservation = operationSchedule.departureReservation;
 			if (reservation != null) {
-				ContentValues reservationValues = new ContentValues();
-				reservationValues.put(Reservations.Columns._ID, reservation.id);
-				reservationValues.put(Reservations.Columns.USER_ID,
-						reservation.userId);
-				reservationValues.put(Reservations.Columns.MEMO,
-						Strings.nullToEmpty(reservation.memo));
-				reservationValues.put(Reservations.Columns.PASSENGER_COUNT,
-						Objects.firstNonNull(reservation.passengerCount, 1));
-				reservationValues.put(
-						Reservations.Columns.DEPARTURE_SCHEDULE_ID,
-						reservation.departureScheduleId);
-				reservationValues.put(Reservations.Columns.ARRIVAL_SCHEDULE_ID,
-						reservation.arrivalScheduleId);
-				reservationValuesList.add(reservationValues);
-
+				reservations.add(reservation);
 				for (UserJson user : reservation.fellowUsers) {
-					ContentValues userValues = new ContentValues();
-					userValues.put(Users.Columns._ID, user.id);
-					userValues.put(Users.Columns.FIRST_NAME, user.firstName);
-					userValues.put(Users.Columns.LAST_NAME, user.lastName);
-					userValues.put(Users.Columns.MEMO,
-							Strings.nullToEmpty(user.memo));
-					userValues.put(Users.Columns.HANDICAPPED, user.handicapped);
-					userValues.put(Users.Columns.NEEDED_CARE, user.neededCare);
-					userValues.put(Users.Columns.WHEELCHAIR, user.wheelchair);
-					userValuesList.add(userValues);
+					users.add(user);
 				}
 
 				for (PassengerRecordJson passengerRecord : reservation.passengerRecords) {
-					ContentValues passengerRecordValues = new ContentValues();
-					passengerRecordValues.put(PassengerRecords.Columns._ID,
-							passengerRecord.id);
-					passengerRecordValues.put(
-							PassengerRecords.Columns.RESERVATION_ID,
-							passengerRecord.reservationId);
-					passengerRecordValues.put(PassengerRecords.Columns.USER_ID,
-							passengerRecord.userId);
-					passengerRecordValuesList.add(passengerRecordValues);
+					passengerRecords.add(passengerRecord);
 				}
 			}
 		}
 
-		Map<Long, Long> toMergedId = new HashMap<Long, Long>();
-		Map<Long, ContentValues> toMergedOperationSchedule = new HashMap<Long, ContentValues>();
-		LinkedList<ContentValues> mergedOperationScheduleValuesList = Lists
+		// 運行スケジュールをマージする
+		Map<Long, OperationScheduleJson> toMergedOperationSchedule = new HashMap<Long, OperationScheduleJson>();
+		LinkedList<OperationScheduleJson> mergedOperationSchedules = Lists
 				.newLinkedList();
-
 		if (!operationScheduleValuesList.isEmpty()) {
 			Boolean first = true;
-			ContentValues lastValues = null;
-			Long lastId = null;
-			Long lastPlatformId = null;
-			Long lastDepartureEstimate = null;
-			Long lastArrivalEstimate = null;
-			for (ContentValues values : operationScheduleValuesList) {
-				Long id = values.getAsLong(OperationSchedules.Columns._ID);
-				Long platformId = values
-						.getAsLong(OperationSchedules.Columns.PLATFORM_ID);
-				Long arrivalEstimate = values
-						.getAsLong(OperationSchedules.Columns.ARRIVAL_ESTIMATE);
-				Long departureEstimate = values
-						.getAsLong(OperationSchedules.Columns.DEPARTURE_ESTIMATE);
-				if (first || !platformId.equals(lastPlatformId)) {
-					lastValues = values;
-					lastId = id;
-					lastPlatformId = platformId;
-					lastArrivalEstimate = arrivalEstimate;
-					lastDepartureEstimate = departureEstimate;
-					mergedOperationScheduleValuesList.add(values);
+			OperationScheduleJson previous = null;
+			for (OperationScheduleJson current : operationScheduleValuesList) {
+				if (first || !current.platform.id.equals(previous.platform.id)) {
+					previous = current;
+					mergedOperationSchedules.add(current);
 					first = false;
 				} else {
-					if (lastArrivalEstimate > arrivalEstimate) {
-						lastArrivalEstimate = arrivalEstimate;
-						lastValues.put(
-								OperationSchedules.Columns.ARRIVAL_ESTIMATE,
-								arrivalEstimate);
+					if (previous.arrivalEstimate
+							.isAfter(current.arrivalEstimate)) {
+						previous.arrivalEstimate = current.arrivalEstimate;
 					}
-					if (lastDepartureEstimate < departureEstimate) {
-						lastDepartureEstimate = departureEstimate;
-						lastValues.put(
-								OperationSchedules.Columns.DEPARTURE_ESTIMATE,
-								departureEstimate);
+					if (previous.departureEstimate
+							.isBefore(current.departureEstimate)) {
+						previous.departureEstimate = current.departureEstimate;
 					}
 				}
-				toMergedId.put(id, lastId);
-				toMergedOperationSchedule.put(id, lastValues);
+				toMergedOperationSchedule.put(current.id, previous);
 			}
 		}
 
-		for (ContentValues values : reservationValuesList) {
-			Long departureId = values
-					.getAsLong(Reservations.Columns.DEPARTURE_SCHEDULE_ID);
-			values.put(Reservations.Columns.DEPARTURE_SCHEDULE_ID,
-					toMergedId.get(departureId));
-			Long arrivalId = values
-					.getAsLong(Reservations.Columns.ARRIVAL_SCHEDULE_ID);
-			values.put(Reservations.Columns.ARRIVAL_SCHEDULE_ID,
-					toMergedId.get(arrivalId));
+		// 予約が参照する運行スケジュールをつなぎかえる
+		for (ReservationJson reservation : reservations) {
+			reservation.departureScheduleId = toMergedOperationSchedule
+					.get(reservation.departureScheduleId).id;
+			reservation.arrivalScheduleId = toMergedOperationSchedule
+					.get(reservation.arrivalScheduleId).id;
 		}
 
-		for (ContentValues values : operationRecordValuesList) {
-			Long operationScheduleId = values
-					.getAsLong(OperationRecords.Columns.OPERATION_SCHEDULE_ID);
-			values.put(OperationRecords.Columns.OPERATION_SCHEDULE_ID,
-					toMergedId.get(operationScheduleId));
-			Long arrivedAt = values
-					.getAsLong(OperationRecords.Columns.ARRIVED_AT);
-			Long departedAt = values
-					.getAsLong(OperationRecords.Columns.DEPARTED_AT);
-			ContentValues osValues = toMergedOperationSchedule
-					.get(operationScheduleId);
-			if (arrivedAt == null) {
-				osValues.putNull(OperationSchedules.Columns.ARRIVED_AT);
-			} else if (!osValues
-					.containsKey(OperationSchedules.Columns.ARRIVED_AT)) {
-				osValues.put(OperationSchedules.Columns.ARRIVED_AT, arrivedAt);
-			}
-			if (departedAt == null) {
-				osValues.putNull(OperationSchedules.Columns.DEPARTED_AT);
-			} else if (!osValues
-					.containsKey(OperationSchedules.Columns.DEPARTED_AT)) {
-				osValues.put(OperationSchedules.Columns.DEPARTED_AT, departedAt);
-			}
+		// 運行実績が参照する運行スケジュールをつなぎかえる
+		for (OperationRecordJson operationRecord : operationRecords) {
+			operationRecord.operationScheduleId = toMergedOperationSchedule
+					.get(operationRecord.operationScheduleId).id;
 		}
 
 		try {
@@ -276,26 +146,55 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
 					Platforms.TABLE_NAME}) {
 				database.delete(table, null, null);
 			}
-			for (ContentValues values : userValuesList) {
-				database.replaceOrThrow(Users.TABLE_NAME, null, values);
+			for (UserJson user : users) {
+				database.replaceOrThrow(Users.TABLE_NAME, null,
+						user.toContentValues());
 			}
-			for (ContentValues values : passengerRecordValuesList) {
+			for (PassengerRecordJson passengerRecord : passengerRecords) {
 				database.replaceOrThrow(PassengerRecords.TABLE_NAME, null,
-						values);
+						passengerRecord.toContentValues());
 			}
-			for (ContentValues values : operationRecordValuesList) {
+			for (OperationRecordJson operationRecord : operationRecords) {
 				database.replaceOrThrow(OperationRecords.TABLE_NAME, null,
-						values);
+						operationRecord.toContentValues());
 			}
-			for (ContentValues values : platformValuesList) {
-				database.replaceOrThrow(Platforms.TABLE_NAME, null, values);
+			for (PlatformJson platform : platforms) {
+				database.replaceOrThrow(Platforms.TABLE_NAME, null,
+						platform.toContentValues());
 			}
-			for (ContentValues values : mergedOperationScheduleValuesList) {
+			for (OperationScheduleJson operationSchedule : mergedOperationSchedules) {
+				ContentValues values = operationSchedule.toContentValues();
+				// 乗り降り時刻を更新
+				Long arrivedAt = null;
+				Long departedAt = null;
+				for (OperationRecordJson operationRecord : operationRecords) {
+					if (!operationSchedule.id
+							.equals(operationRecord.operationScheduleId)) {
+						continue;
+					}
+					if (operationRecord.arrivedAt != null) {
+						Long nextArrivedAt = operationRecord.arrivedAt
+								.getMillis();
+						if (arrivedAt == null || arrivedAt > nextArrivedAt) {
+							arrivedAt = nextArrivedAt;
+						}
+					}
+					if (operationRecord.departedAt != null) {
+						Long nextDepartedAt = operationRecord.departedAt
+								.getMillis();
+						if (departedAt == null || departedAt < nextDepartedAt) {
+							departedAt = nextDepartedAt;
+						}
+					}
+				}
+				values.put(OperationSchedules.Columns.ARRIVED_AT, arrivedAt);
+				values.put(OperationSchedules.Columns.DEPARTED_AT, departedAt);
 				database.replaceOrThrow(OperationSchedules.TABLE_NAME, null,
 						values);
 			}
-			for (ContentValues values : reservationValuesList) {
-				database.replaceOrThrow(Reservations.TABLE_NAME, null, values);
+			for (ReservationJson reservation : reservations) {
+				database.replaceOrThrow(Reservations.TABLE_NAME, null,
+						reservation.toContentValues());
 			}
 			database.setTransactionSuccessful();
 		} finally {
