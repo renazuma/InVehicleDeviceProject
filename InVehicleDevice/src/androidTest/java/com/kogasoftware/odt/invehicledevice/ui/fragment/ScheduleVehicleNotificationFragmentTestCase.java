@@ -58,6 +58,12 @@ public class ScheduleVehicleNotificationFragmentTestCase
 		solo = new Solo(getInstrumentation(), getActivity());
 		solo.clickOnText(solo.getString(R.string.today_operation_schedule));
 		assertTrue(solo.searchText("乗客も見る", true));
+		assertTrue(solo.waitForCondition(new Condition() {
+			@Override
+			public boolean isSatisfied() {
+				return !solo.searchText("東府中", true);
+			}
+		}, 20 * 1000));
 
 		List<UserJson> users1 = Lists.newArrayList(server.addUser("マイクロ 次郎"));
 		List<UserJson> users2 = Lists.newArrayList(server.addUser("まつもと ゆきひろ"),
@@ -68,12 +74,6 @@ public class ScheduleVehicleNotificationFragmentTestCase
 		server.addOperationSchedule(p1, p2, users1, "09:00:00", "09:00:02", 50);
 		server.addOperationSchedule(p2, p3, users2, "10:00:00", "10:00:02", 50);
 		server.reservations.get(0).memo = "よやくメモ";
-		assertTrue(solo.waitForCondition(new Condition() {
-			@Override
-			public boolean isSatisfied() {
-				return !solo.searchText("東府中", true);
-			}
-		}, 20 * 1000));
 		final VehicleNotificationJson vn = server.addVehicleNotification(
 				"変更されました", "へんこうされました",
 				VehicleNotification.NotificationKind.SCHEDULE);
