@@ -89,7 +89,7 @@ public class InVehicleDeviceActivity extends Activity {
 			handler.post(new Runnable() {
 				@Override
 				public void run() {
-					showVehicleNotificationAlertFragment();
+					showVehicleNotificationAlertFragment("管理者から連絡があります");
 				}
 			});
 			handler.postDelayed(new Runnable() {
@@ -124,7 +124,7 @@ public class InVehicleDeviceActivity extends Activity {
 			handler.post(new Runnable() {
 				@Override
 				public void run() {
-					showVehicleNotificationAlertFragment();
+					showVehicleNotificationAlertFragment("運行予定が変更されました");
 				}
 			});
 			handler.postDelayed(new Runnable() {
@@ -361,19 +361,22 @@ public class InVehicleDeviceActivity extends Activity {
 				SCHEDULE_VEHICLE_NOTIFICATION_FRAGMENT_TAG);
 		fragmentTransaction.commitAllowingStateLoss();
 	}
-	private void showVehicleNotificationAlertFragment() {
+
+	private void showVehicleNotificationAlertFragment(String message) {
 		if (destroyed
 				|| serviceProvider == null
 				|| getFragmentManager().findFragmentByTag(
 						VEHICLE_NOTIFICATION_ALERT_FRAGMENT_TAG) != null) {
 			return;
 		}
-		getFragmentManager()
-				.beginTransaction()
-				.add(R.id.modal_fragment_container,
-						VehicleNotificationAlertFragment.newInstance(),
-						VEHICLE_NOTIFICATION_ALERT_FRAGMENT_TAG)
-				.commitAllowingStateLoss();
+		VoiceService.speak(this, message);
+		FragmentTransaction fragmentTransaction = getFragmentManager()
+				.beginTransaction();
+		FragmentUtils.setCustomAnimations(fragmentTransaction);
+		fragmentTransaction.add(R.id.modal_fragment_container,
+				VehicleNotificationAlertFragment.newInstance(),
+				VEHICLE_NOTIFICATION_ALERT_FRAGMENT_TAG);
+		fragmentTransaction.commitAllowingStateLoss();
 	}
 
 	@Override
