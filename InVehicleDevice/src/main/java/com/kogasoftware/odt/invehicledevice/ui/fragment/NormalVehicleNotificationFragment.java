@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.contentprovider.model.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotifications;
+import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
 import com.kogasoftware.odt.invehicledevice.utils.FragmentUtils;
 
 public class NormalVehicleNotificationFragment extends Fragment {
@@ -21,11 +22,17 @@ public class NormalVehicleNotificationFragment extends Fragment {
 	private VehicleNotification vehicleNotification;
 
 	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		vehicleNotification = (VehicleNotification) getArguments()
+				.getSerializable(VEHICLE_NOTIFICATION_KEY);
+		VoiceService.speak(getActivity(), vehicleNotification.bodyRuby);
+	}
+
+	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		View view = getView();
-		vehicleNotification = (VehicleNotification) getArguments()
-				.getSerializable(VEHICLE_NOTIFICATION_KEY);
 		TextView bodyTextView = (TextView) view
 				.findViewById(R.id.notification_text_view);
 		bodyTextView.setText(vehicleNotification.body);
