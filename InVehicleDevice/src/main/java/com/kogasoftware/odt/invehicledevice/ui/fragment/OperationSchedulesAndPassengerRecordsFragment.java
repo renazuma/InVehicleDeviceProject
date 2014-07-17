@@ -32,7 +32,7 @@ public abstract class OperationSchedulesAndPassengerRecordsFragment
 	protected ContentResolver contentResolver;
 	private final LinkedList<OperationSchedule> operationSchedules = Lists
 			.newLinkedList();
-	private OperationSchedule currentOperationScheduleId;
+	private Long currentOperationScheduleId;
 	private Phase currentPhase;
 
 	private final LoaderCallbacks<Cursor> operationSchedulesLoaderCallbacks = new LoaderCallbacks<Cursor>() {
@@ -115,13 +115,17 @@ public abstract class OperationSchedulesAndPassengerRecordsFragment
 								|| !phase.equals(currentPhase)) {
 							phaseChanged = true;
 						}
+						currentOperationScheduleId = null;
 					} else {
 						if (!phase.equals(currentPhase)
 								|| !operationSchedule.id
 										.equals(currentOperationScheduleId)) {
 							phaseChanged = true;
 						}
+						currentOperationScheduleId = operationSchedule.id;
 					}
+					currentPhase = phase;
+
 					onOperationSchedulesAndPassengerRecordsLoadFinished(phase,
 							operationSchedules, passengerRecords, phaseChanged);
 				}
