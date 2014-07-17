@@ -9,7 +9,6 @@ import android.test.ActivityInstrumentationTestCase2;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.contentprovider.DatabaseHelper;
-import com.kogasoftware.odt.invehicledevice.contentprovider.json.OperationRecordJson;
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.PassengerRecordJson;
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.PlatformJson;
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.UserJson;
@@ -63,9 +62,6 @@ public class OrderedOperationTestCase
 		server.addOperationSchedule(p2, p3, users2, "10:00:00", "10:00:02", 50);
 		server.reservations.get(0).memo = "よやくメモ";
 
-		final OperationRecordJson or1 = server.operationRecords.get(0);
-		final OperationRecordJson or2 = server.operationRecords.get(1);
-		final OperationRecordJson or3 = server.operationRecords.get(2);
 		final PassengerRecordJson pr1 = server.passengerRecords.get(0);
 		final PassengerRecordJson pr2 = server.passengerRecords.get(1);
 		final PassengerRecordJson pr3 = server.passengerRecords.get(2);
