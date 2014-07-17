@@ -16,8 +16,8 @@ public class FragmentUtils {
 		return fragmentTransaction;
 	}
 
-	public static void hide(final Fragment fragment) {
-		(new Handler()).post(new Runnable() {
+	public static void hide(final Fragment fragment, Handler handler) {
+		handler.post(new Runnable() {
 			@Override
 			public void run() {
 				if (!fragment.isAdded()) {
@@ -28,6 +28,10 @@ public class FragmentUtils {
 						.remove(fragment).commitAllowingStateLoss();
 			}
 		});
+	}
+
+	public static void hide(Fragment fragment) {
+		hide(fragment, new Handler());
 	}
 
 	public static void showModalFragment(FragmentManager fragmentManager,

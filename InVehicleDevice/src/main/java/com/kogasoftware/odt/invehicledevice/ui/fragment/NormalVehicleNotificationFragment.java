@@ -5,6 +5,7 @@ import org.joda.time.DateTime;
 import android.app.Fragment;
 import android.content.ContentResolver;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -78,12 +79,14 @@ public class NormalVehicleNotificationFragment extends Fragment {
 		}
 		final ContentResolver contentResolver = getActivity()
 				.getContentResolver();
+		final Handler handler = new Handler();
 		new Thread() {
 			@Override
 			public void run() {
 				contentResolver.insert(VehicleNotifications.CONTENT.URI,
 						vehicleNotification.toContentValues());
-				FragmentUtils.hide(NormalVehicleNotificationFragment.this);
+				FragmentUtils.hide(NormalVehicleNotificationFragment.this,
+						handler);
 			}
 		}.start();
 	}
