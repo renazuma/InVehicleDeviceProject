@@ -11,6 +11,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.common.base.Objects;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.contentprovider.model.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotifications;
@@ -26,7 +27,8 @@ public class NormalVehicleNotificationFragment extends Fragment {
 		super.onCreate(savedInstanceState);
 		vehicleNotification = (VehicleNotification) getArguments()
 				.getSerializable(VEHICLE_NOTIFICATION_KEY);
-		VoiceService.speak(getActivity(), vehicleNotification.bodyRuby);
+		VoiceService.speak(getActivity(), Objects.firstNonNull(
+				vehicleNotification.bodyRuby, vehicleNotification.body));
 	}
 
 	@Override
