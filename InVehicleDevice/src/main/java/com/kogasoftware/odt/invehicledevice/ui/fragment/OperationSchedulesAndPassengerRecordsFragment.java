@@ -32,6 +32,8 @@ public abstract class OperationSchedulesAndPassengerRecordsFragment
 	protected ContentResolver contentResolver;
 	private final LinkedList<OperationSchedule> operationSchedules = Lists
 			.newLinkedList();
+	private OperationSchedule currentOperationScheduleId;
+	private Phase currentPhase;
 
 	private final LoaderCallbacks<Cursor> operationSchedulesLoaderCallbacks = new LoaderCallbacks<Cursor>() {
 		@Override
@@ -47,6 +49,9 @@ public abstract class OperationSchedulesAndPassengerRecordsFragment
 			final Runnable task = new Runnable() {
 				@Override
 				public void run() {
+					if (!isAdded()) {
+						return;
+					}
 					operationSchedules.clear();
 					operationSchedules.addAll(newOperationSchedules);
 					getLoaderManager().initLoader(PASSENGER_RECORDS_LOADER_ID,
@@ -100,10 +105,25 @@ public abstract class OperationSchedulesAndPassengerRecordsFragment
 					if (!isAdded()) {
 						return;
 					}
-					onOperationSchedulesAndPassengerRecordsLoadFinished(
-							OperationSchedule.getPhase(operationSchedules,
-									passengerRecords), operationSchedules,
-							passengerRecords);
+					Phase phase = OperationSchedule.getPhase(
+							operationSchedules, passengerRecords);
+					OperationSchedule operationSchedule = OperationSchedule
+							.getCurrent(operationSchedules);
+					Boolean phaseChanged = false;
+					if (operationSchedule == null) {
+						if (currentOperationScheduleId != null
+								|| !phase.equals(currentPhase)) {
+							phaseChanged = true;
+						}
+					} else {
+						if (!phase.equals(currentPhase)
+								|| !operationSchedule.id
+										.equals(currentOperationScheduleId)) {
+							phaseChanged = true;
+						}
+					}
+					onOperationSchedulesAndPassengerRecordsLoadFinished(phase,
+							operationSchedules, passengerRecords, phaseChanged);
 				}
 			});
 		}
@@ -113,9 +133,17 @@ public abstract class OperationSchedulesAndPassengerRecordsFragment
 		}
 	};
 
-	protected abstract void onOperationSchedulesAndPassengerRecordsLoadFinished(
+	protected void onOperationSchedulesAndPassengerRecordsLoadFinished(
 			Phase phase, LinkedList<OperationSchedule> operationSchedules,
-			LinkedList<PassengerRecord> passengerRecords);
+			LinkedList<PassengerRecord> passengerRecords, Boolean phaseChanged) {
+		onOperationSchedulesAndPassengerRecordsLoadFinished(phase,
+				operationSchedules, passengerRecords);
+	}
+
+	protected void onOperationSchedulesAndPassengerRecordsLoadFinished(
+			Phase phase, LinkedList<OperationSchedule> operationSchedules,
+			LinkedList<PassengerRecord> passengerRecords) {
+	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {

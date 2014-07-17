@@ -96,8 +96,6 @@ public class PlatformPhaseFragment
 
 	private final List<OperationSchedule> operationSchedules = Lists
 			.newLinkedList();
-	private Long showingOperationScheduleId;
-	private Phase showingPhase;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -145,7 +143,8 @@ public class PlatformPhaseFragment
 	@Override
 	protected void onOperationSchedulesAndPassengerRecordsLoadFinished(
 			Phase phase, LinkedList<OperationSchedule> newOperationSchedules,
-			LinkedList<PassengerRecord> newPassengerRecords) {
+			LinkedList<PassengerRecord> newPassengerRecords,
+			Boolean phaseChanged) {
 		Boolean last = OperationSchedule.getCurrentOffset(
 				newOperationSchedules, 1) == null;
 		if (last) {
@@ -170,17 +169,13 @@ public class PlatformPhaseFragment
 					getResources().getString(R.string.now_platform_is_html),
 					operationSchedule.name)));
 		}
-		if (showingOperationScheduleId == null
-				|| !operationSchedule.id.equals(showingOperationScheduleId)
-				|| !phase.equals(showingPhase)) {
+		if (phaseChanged) {
 			adapter = new PassengerRecordArrayAdapter(getActivity(),
 					operationSchedule);
 			ListView listView = new ListView(getActivity());
 			listView.setAdapter(adapter);
 			passengerRecordListView.replaceListView(listView);
 		}
-		showingPhase = phase;
-		showingOperationScheduleId = operationSchedule.id;
 		operationSchedules.clear();
 		operationSchedules.addAll(newOperationSchedules);
 		if (phase.equals(Phase.PLATFORM_GET_OFF)) {

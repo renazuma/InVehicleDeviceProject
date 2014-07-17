@@ -43,7 +43,10 @@ public class OrderedOperationFragment
 	@Override
 	protected void onOperationSchedulesAndPassengerRecordsLoadFinished(
 			Phase phase, LinkedList<OperationSchedule> operationSchedules,
-			LinkedList<PassengerRecord> passengerRecords) {
+			LinkedList<PassengerRecord> passengerRecords, Boolean phaseChanged) {
+		if (!phaseChanged) {
+			return;
+		}
 		FragmentTransaction fragmentTransaction = getFragmentManager()
 				.beginTransaction();
 		switch (phase) {
