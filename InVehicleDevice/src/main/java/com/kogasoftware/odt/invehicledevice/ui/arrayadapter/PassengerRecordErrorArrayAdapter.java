@@ -3,7 +3,7 @@ package com.kogasoftware.odt.invehicledevice.ui.arrayadapter;
 import java.util.Collections;
 import java.util.List;
 
-import android.app.Activity;
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -62,11 +62,11 @@ public class PassengerRecordErrorArrayAdapter
 		}
 	};
 
-	public PassengerRecordErrorArrayAdapter(Activity activity,
+	public PassengerRecordErrorArrayAdapter(Fragment fragment,
 			Long operationScheduleId) {
-		super(activity, RESOURCE_ID);
-		this.fragmentManager = activity.getFragmentManager();
-		this.contentResolver = activity.getContentResolver();
+		super(fragment.getActivity(), RESOURCE_ID);
+		this.fragmentManager = fragment.getFragmentManager();
+		this.contentResolver = fragment.getActivity().getContentResolver();
 		this.operationScheduleId = operationScheduleId;
 	}
 

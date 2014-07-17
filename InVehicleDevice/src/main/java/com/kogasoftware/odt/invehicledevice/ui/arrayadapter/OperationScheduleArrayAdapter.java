@@ -9,9 +9,8 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import android.app.Activity;
+import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -47,11 +46,12 @@ public class OperationScheduleArrayAdapter
 	private static final Integer RESOURCE_ID = R.layout.operation_list_row;
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormat
 			.forPattern("HH時mm分");
-	private final LayoutInflater layoutInflater;
+	private final LayoutInflater layoutInflater = (LayoutInflater) getContext()
+			.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	private final TreeSet<PassengerRecord> passengerRecords = new TreeSet<PassengerRecord>(
 			PassengerRecord.DEFAULT_COMPARATOR);
-	private final Activity activity;
 	private final ContentResolver contentResolver;
+	private final FragmentManager fragmentManager;
 	private Boolean showPassengerRecords = false;
 
 	static abstract class OnRowTouchListener<T> implements OnTouchListener {
@@ -248,12 +248,11 @@ public class OperationScheduleArrayAdapter
 		}
 	};
 
-	public OperationScheduleArrayAdapter(Activity activity) {
-		super(activity, RESOURCE_ID, new LinkedList<OperationSchedule>());
-		this.activity = activity;
-		this.contentResolver = activity.getContentResolver();
-		this.layoutInflater = (LayoutInflater) activity
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	public OperationScheduleArrayAdapter(Fragment fragment) {
+		super(fragment.getActivity(), RESOURCE_ID,
+				new LinkedList<OperationSchedule>());
+		this.fragmentManager = fragment.getFragmentManager();
+		this.contentResolver = fragment.getActivity().getContentResolver();
 	}
 
 	@Override

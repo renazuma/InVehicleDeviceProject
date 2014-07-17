@@ -7,7 +7,7 @@ import java.util.WeakHashMap;
 
 import org.joda.time.DateTime;
 
-import android.app.Activity;
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -136,11 +136,11 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 		}
 	};
 
-	public PassengerRecordArrayAdapter(Activity activity,
+	public PassengerRecordArrayAdapter(Fragment fragment,
 			OperationSchedule operationSchedule) {
-		super(activity, RESOURCE_ID);
-		this.fragmentManager = activity.getFragmentManager();
-		this.contentResolver = activity.getContentResolver();
+		super(fragment.getActivity(), RESOURCE_ID);
+		this.fragmentManager = fragment.getFragmentManager();
+		this.contentResolver = fragment.getActivity().getContentResolver();
 		this.operationSchedule = operationSchedule;
 	}
 

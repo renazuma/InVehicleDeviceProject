@@ -131,7 +131,7 @@ public class OperationListFragment extends Fragment {
 		} else {
 			closeButton.setVisibility(View.GONE);
 		}
-		adapter = new OperationScheduleArrayAdapter(getActivity());
+		adapter = new OperationScheduleArrayAdapter(this);
 		((FlickUnneededListView) view.findViewById(R.id.operation_list_view))
 				.getListView().setAdapter(adapter);
 		final Button showPassengerButton = (Button) view

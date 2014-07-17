@@ -170,8 +170,7 @@ public class PlatformPhaseFragment
 					operationSchedule.name)));
 		}
 		if (phaseChanged) {
-			adapter = new PassengerRecordArrayAdapter(getActivity(),
-					operationSchedule);
+			adapter = new PassengerRecordArrayAdapter(this, operationSchedule);
 			ListView listView = new ListView(getActivity());
 			listView.setAdapter(adapter);
 			passengerRecordListView.replaceListView(listView);

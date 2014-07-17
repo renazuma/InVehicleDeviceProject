@@ -71,7 +71,7 @@ public class PassengerRecordErrorFragment
 				.findViewById(R.id.error_reservation_list_view);
 		completeWithErrorButton = (Button) view
 				.findViewById(R.id.complete_with_error_button);
-		adapter = new PassengerRecordErrorArrayAdapter(getActivity(),
+		adapter = new PassengerRecordErrorArrayAdapter(this,
 				operationScheduleId);
 		errorUserListView.getListView().setAdapter(adapter);
 	}
