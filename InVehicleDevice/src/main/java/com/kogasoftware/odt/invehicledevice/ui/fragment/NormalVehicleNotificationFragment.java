@@ -83,8 +83,8 @@ public class NormalVehicleNotificationFragment extends Fragment {
 			public void run() {
 				contentResolver.insert(VehicleNotifications.CONTENT.URI,
 						vehicleNotification.toContentValues());
+				FragmentUtils.hide(NormalVehicleNotificationFragment.this);
 			}
 		}.start();
-		FragmentUtils.hide(this);
 	}
 }
