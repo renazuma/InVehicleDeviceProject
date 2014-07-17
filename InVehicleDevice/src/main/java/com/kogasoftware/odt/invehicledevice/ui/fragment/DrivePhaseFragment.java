@@ -21,14 +21,6 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.model.OperationSched
 import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
 
 public class DrivePhaseFragment extends Fragment {
-	@Override
-	public void onStart() {
-		super.onStart();
-		String message = "出発します 次は " + operationSchedule.nameRuby + " "
-				+ operationSchedule.nameRuby;
-		VoiceService.speak(getActivity(), message);
-	}
-
 	private static final String TAG = DrivePhaseFragment.class.getSimpleName();
 	private static final String OPERATION_SCHEDULES_KEY = "operation_schedules";
 
@@ -79,6 +71,9 @@ public class DrivePhaseFragment extends Fragment {
 					Locale.US);
 			platformArrivalTimeTextView2.setText(dateFormat
 					.format(operationSchedule.arrivalEstimate.toDate()));
+			String message = "出発します 次は " + operationSchedule.nameRuby + " "
+					+ operationSchedule.nameRuby;
+			VoiceService.speak(getActivity(), message);
 		}
 		OperationSchedule nextOperationSchedule = OperationSchedule
 				.getCurrentOffset(operationSchedules, 1);
