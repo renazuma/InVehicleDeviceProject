@@ -21,7 +21,6 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
@@ -206,13 +205,6 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
 					scheduleVehicleNotificationId), null);
 		}
 		contentResolver.notifyChange(VehicleNotifications.CONTENT.URI, null);
-		Cursor c = database.query(VehicleNotifications.TABLE_NAME, null, null,
-				null, null, null, null);
-		try {
-			DatabaseUtils.dumpCursor(c);
-		} finally {
-			c.close();
-		}
 		for (Uri uri : new Uri[]{Users.CONTENT.URI, Reservations.CONTENT.URI,
 				OperationSchedules.CONTENT.URI, OperationRecords.CONTENT.URI,
 				PassengerRecords.CONTENT.URI, Platforms.CONTENT.URI}) {
