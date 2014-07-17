@@ -4,7 +4,6 @@ import org.apache.commons.lang3.SystemUtils;
 import org.joda.time.DateTime;
 
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.ContentResolver;
 import android.content.CursorLoader;
@@ -153,11 +152,7 @@ public class ScheduleVehicleNotificationFragment extends Fragment
 		if (!isAdded()) {
 			return;
 		}
-		FragmentTransaction fragmentTransaction = getFragmentManager()
-				.beginTransaction();
-		FragmentUtils.setCustomAnimations(fragmentTransaction);
-		fragmentTransaction.add(R.id.modal_fragment_container,
+		FragmentUtils.showModalFragment(getFragmentManager(),
 				OperationListFragment.newInstance(true));
-		fragmentTransaction.commitAllowingStateLoss();
 	}
 }

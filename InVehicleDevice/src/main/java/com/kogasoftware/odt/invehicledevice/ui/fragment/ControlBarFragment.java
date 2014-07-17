@@ -2,7 +2,6 @@ package com.kogasoftware.odt.invehicledevice.ui.fragment;
 
 import java.util.LinkedList;
 
-import android.app.FragmentTransaction;
 import android.content.ContentResolver;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -75,12 +74,8 @@ public class ControlBarFragment
 		if (!isAdded()) {
 			return;
 		}
-		FragmentTransaction fragmentTransaction = getFragmentManager()
-				.beginTransaction();
-		FragmentUtils.setCustomAnimations(fragmentTransaction);
-		fragmentTransaction.add(R.id.modal_fragment_container,
+		FragmentUtils.showModalFragment(getFragmentManager(),
 				OperationListFragment.newInstance(true));
-		fragmentTransaction.commitAllowingStateLoss();
 	}
 
 	public void showArrivalCheckFragment(Phase phase,
@@ -119,12 +114,9 @@ public class ControlBarFragment
 						passengerRecords).isEmpty()) {
 			if (operationSchedule.getGetOnScheduledPassengerRecords(
 					passengerRecords).isEmpty()) {
-				getFragmentManager()
-						.beginTransaction()
-						.add(R.id.modal_fragment_container,
-								DepartureCheckFragment
-										.newInstance(operationSchedule.id))
-						.commitAllowingStateLoss();
+				FragmentUtils.showModalFragment(getFragmentManager(),
+						DepartureCheckFragment
+								.newInstance(operationSchedule.id));
 			} else {
 				operationSchedule.completeGetOff = true;
 				new Thread() {
@@ -139,22 +131,14 @@ public class ControlBarFragment
 		} else if (phase.equals(Phase.PLATFORM_GET_ON)
 				&& operationSchedule.getNoGetOnErrorPassengerRecords(
 						passengerRecords).isEmpty()) {
-			getFragmentManager()
-					.beginTransaction()
-					.add(R.id.modal_fragment_container,
-							DepartureCheckFragment
-									.newInstance(operationSchedule.id))
-					.commitAllowingStateLoss();
+			FragmentUtils.showModalFragment(getFragmentManager(),
+					DepartureCheckFragment.newInstance(operationSchedule.id));
 			return;
 		}
 
 		// エラーがある場合
-		getFragmentManager()
-				.beginTransaction()
-				.add(R.id.modal_fragment_container,
-						PassengerRecordErrorFragment
-								.newInstance(operationSchedule.id))
-				.commitAllowingStateLoss();
+		FragmentUtils.showModalFragment(getFragmentManager(),
+				PassengerRecordErrorFragment.newInstance(operationSchedule.id));
 	}
 
 	@Override

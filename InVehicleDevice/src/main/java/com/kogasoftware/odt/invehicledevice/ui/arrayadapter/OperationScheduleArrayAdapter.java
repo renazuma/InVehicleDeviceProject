@@ -228,16 +228,11 @@ public class OperationScheduleArrayAdapter
 				return;
 			}
 			PassengerRecord passengerRecord = (PassengerRecord) tag;
-			FragmentManager fragmentManager = activity.getFragmentManager();
 			if (fragmentManager == null) {
 				return;
 			}
-			FragmentTransaction fragmentTransaction = fragmentManager
-					.beginTransaction();
-			FragmentUtils.setCustomAnimations(fragmentTransaction);
-			fragmentTransaction.add(R.id.modal_fragment_container,
+			FragmentUtils.showModalFragment(fragmentManager,
 					PassengerRecordMemoFragment.newInstance(passengerRecord));
-			fragmentTransaction.commitAllowingStateLoss();
 		}
 	};
 

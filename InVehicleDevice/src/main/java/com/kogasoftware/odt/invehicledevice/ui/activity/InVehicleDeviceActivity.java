@@ -286,12 +286,8 @@ public class InVehicleDeviceActivity extends Activity {
 		if (getFragmentManager().findFragmentByTag(SIGN_IN_FRAGMENT_TAG) != null) {
 			return;
 		}
-		FragmentTransaction fragmentTransaction = getFragmentManager()
-				.beginTransaction();
-		FragmentUtils.setCustomAnimations(fragmentTransaction);
-		fragmentTransaction.add(R.id.modal_fragment_container,
+		FragmentUtils.showModalFragment(getFragmentManager(),
 				SignInFragment.newInstance(), SIGN_IN_FRAGMENT_TAG);
-		fragmentTransaction.commitAllowingStateLoss();
 	}
 
 	private void showNormalVehicleNotificationsFragment(
@@ -305,13 +301,9 @@ public class InVehicleDeviceActivity extends Activity {
 			if (getFragmentManager().findFragmentByTag(tag) != null) {
 				return;
 			}
-			FragmentTransaction fragmentTransaction = getFragmentManager()
-					.beginTransaction();
-			FragmentUtils.setCustomAnimations(fragmentTransaction);
-			fragmentTransaction.add(R.id.modal_fragment_container,
+			FragmentUtils.showModalFragment(getFragmentManager(),
 					NormalVehicleNotificationFragment
 							.newInstance(vehicleNotification), tag);
-			fragmentTransaction.commitAllowingStateLoss();
 		}
 	}
 
@@ -352,14 +344,10 @@ public class InVehicleDeviceActivity extends Activity {
 						SCHEDULE_VEHICLE_NOTIFICATION_FRAGMENT_TAG) != null) {
 			return;
 		}
-		FragmentTransaction fragmentTransaction = getFragmentManager()
-				.beginTransaction();
-		FragmentUtils.setCustomAnimations(fragmentTransaction);
-		fragmentTransaction.add(R.id.modal_fragment_container,
+		FragmentUtils.showModalFragment(getFragmentManager(),
 				ScheduleVehicleNotificationFragment
 						.newInstance(!serviceProvider.operationListOnly),
 				SCHEDULE_VEHICLE_NOTIFICATION_FRAGMENT_TAG);
-		fragmentTransaction.commitAllowingStateLoss();
 	}
 
 	private void showVehicleNotificationAlertFragment(String message) {
@@ -370,13 +358,9 @@ public class InVehicleDeviceActivity extends Activity {
 			return;
 		}
 		VoiceService.speak(this, message);
-		FragmentTransaction fragmentTransaction = getFragmentManager()
-				.beginTransaction();
-		FragmentUtils.setCustomAnimations(fragmentTransaction);
-		fragmentTransaction.add(R.id.modal_fragment_container,
+		FragmentUtils.showModalFragment(getFragmentManager(),
 				VehicleNotificationAlertFragment.newInstance(),
 				VEHICLE_NOTIFICATION_ALERT_FRAGMENT_TAG);
-		fragmentTransaction.commitAllowingStateLoss();
 	}
 
 	@Override
