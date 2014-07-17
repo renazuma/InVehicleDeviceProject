@@ -15,16 +15,15 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 
 import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
 import com.amazonaws.org.apache.http.client.utils.URIBuilder;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
+import com.kogasoftware.odt.invehicledevice.contentprovider.json.VehicleNotificationJson;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotifications;
 
 public class GetVehicleNotificationsTask extends SynchronizationTask {
@@ -75,27 +74,17 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
 			} finally {
 				cursor.close();
 			}
-			for (JsonNode node : JSON.readValue(new String(responseEntity,
-					Charsets.UTF_8), JsonNode[].class)) {
-				ContentValues values = new ContentValues();
-				Long id = node.path("id").asLong();
-				if (ids.contains(id)) {
+			for (VehicleNotificationJson vehicleNotification : JSON.readValue(
+					new String(responseEntity, Charsets.UTF_8),
+					VehicleNotificationJson[].class)) {
+				if (ids.contains(vehicleNotification.id)) {
 					continue;
 				}
-				values.put(VehicleNotifications.Columns._ID, id);
-				values.put(VehicleNotifications.Columns.BODY, node.path("body")
-						.asText());
-				JsonNode bodyRuby = node.path("body_ruby");
-				if (bodyRuby.isTextual()) {
-					values.put(VehicleNotifications.Columns.BODY_RUBY, node
-							.path("body_ruby").asText());
-				}
-				values.put(VehicleNotifications.Columns.NOTIFICATION_KIND, node
-						.path("notification_kind").asLong());
 				database.insertOrThrow(VehicleNotifications.TABLE_NAME, null,
-						values);
+						vehicleNotification.toContentValues());
 				uris.add(ContentUris.withAppendedId(
-						VehicleNotifications.CONTENT.URI, id));
+						VehicleNotifications.CONTENT.URI,
+						vehicleNotification.id));
 			}
 			database.setTransactionSuccessful();
 			committedUris = uris;
