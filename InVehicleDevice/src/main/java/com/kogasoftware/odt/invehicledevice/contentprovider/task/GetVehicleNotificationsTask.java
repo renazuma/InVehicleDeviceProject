@@ -49,7 +49,7 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
 		request.setURI(uriBuilder.build());
 		HttpResponse response = client.execute(request);
 		int statusCode = response.getStatusLine().getStatusCode();
-		byte[] responseEntity = new byte[] {};
+		byte[] responseEntity = new byte[]{};
 		HttpEntity entity = response.getEntity();
 		if (entity != null) {
 			responseEntity = EntityUtils.toByteArray(entity);
@@ -63,8 +63,8 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
 			List<Long> ids = Lists.newLinkedList();
 			database.beginTransaction();
 			Cursor cursor = database.query(VehicleNotifications.TABLE_NAME,
-					new String[] { VehicleNotifications.Columns._ID }, null,
-					null, null, null, null);
+					new String[]{VehicleNotifications.Columns._ID}, null, null,
+					null, null, null);
 			try {
 				if (cursor.moveToFirst()) {
 					do {
@@ -85,8 +85,11 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
 				values.put(VehicleNotifications.Columns._ID, id);
 				values.put(VehicleNotifications.Columns.BODY, node.path("body")
 						.asText());
-				values.put(VehicleNotifications.Columns.BODY_RUBY,
-						node.path("body_ruby").asText());
+				JsonNode bodyRuby = node.path("body_ruby");
+				if (bodyRuby.isTextual()) {
+					values.put(VehicleNotifications.Columns.BODY_RUBY, node
+							.path("body_ruby").asText());
+				}
 				values.put(VehicleNotifications.Columns.NOTIFICATION_KIND, node
 						.path("notification_kind").asLong());
 				database.insertOrThrow(VehicleNotifications.TABLE_NAME, null,

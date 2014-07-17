@@ -21,7 +21,7 @@
       CREATE TABLE vehicle_notifications (
         $(id) INTEGER NOT NULL PRIMARY KEY
         , body TEXT NOT NULL
-        , body_ruby TEXT NOT NULL
+        , body_ruby TEXT
         , notification_kind INTEGER NOT NULL
         , read_at INTEGER
         , response INTEGER
