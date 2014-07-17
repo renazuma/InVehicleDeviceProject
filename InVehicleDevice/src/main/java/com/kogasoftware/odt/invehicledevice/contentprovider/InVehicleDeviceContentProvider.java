@@ -44,6 +44,7 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.task.NewDateCheckTas
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.PatchOperationRecordTask;
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.PatchPassengerRecordTask;
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.PatchVehicleNotificationTask;
+import com.kogasoftware.odt.invehicledevice.contentprovider.task.PostServiceUnitStatusLogTask;
 import com.kogasoftware.odt.invehicledevice.service.logservice.LogService;
 import com.kogasoftware.odt.invehicledevice.service.serviceunitstatuslogservice.ServiceUnitStatusLogService;
 import com.kogasoftware.odt.invehicledevice.service.startupservice.StartupService;
@@ -117,6 +118,11 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
 		executorService.scheduleWithFixedDelay(new NewDateCheckTask(context,
 				database, executorService), 10,
 				NewDateCheckTask.INTERVAL_MILLIS, TimeUnit.MILLISECONDS);
+		executorService.scheduleWithFixedDelay(
+				new PostServiceUnitStatusLogTask(context, database,
+						executorService), 500,
+				PostServiceUnitStatusLogTask.INTERVAL_MILLIS,
+				TimeUnit.MILLISECONDS);
 		startServices();
 		executorService.execute(new GetOperationSchedulesTask(getContext(),
 				database, executorService));
