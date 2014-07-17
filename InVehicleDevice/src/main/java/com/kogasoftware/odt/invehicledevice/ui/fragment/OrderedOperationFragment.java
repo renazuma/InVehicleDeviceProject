@@ -4,6 +4,7 @@ import java.util.LinkedList;
 
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,9 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.model.PassengerRecor
 public class OrderedOperationFragment
 		extends
 			OperationSchedulesAndPassengerRecordsFragment {
+	private static final String TAG = OrderedOperationFragment.class
+			.getSimpleName();
+
 	public static OrderedOperationFragment newInstance() {
 		OrderedOperationFragment fragment = new OrderedOperationFragment();
 		return fragment;
@@ -44,6 +48,7 @@ public class OrderedOperationFragment
 	protected void onOperationSchedulesAndPassengerRecordsLoadFinished(
 			Phase phase, LinkedList<OperationSchedule> operationSchedules,
 			LinkedList<PassengerRecord> passengerRecords, Boolean phaseChanged) {
+		Log.i(TAG, "phase=" + phase + " phaseChanged=" + phaseChanged);
 		if (!phaseChanged) {
 			return;
 		}
