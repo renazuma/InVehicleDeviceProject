@@ -11,6 +11,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.joda.time.DateTime;
 import org.json.JSONException;
 
@@ -25,6 +26,7 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitSta
 public class PostServiceUnitStatusLogTask extends SynchronizationTask {
 	static final String TAG = PostServiceUnitStatusLogTask.class
 			.getSimpleName();
+	public static final Integer INTERVAL_MILLIS = 30 * 1000;
 
 	public PostServiceUnitStatusLogTask(Context context,
 			SQLiteDatabase database, ScheduledExecutorService executorService) {
@@ -51,6 +53,15 @@ public class PostServiceUnitStatusLogTask extends SynchronizationTask {
 			throws IOException, JSONException, URISyntaxException {
 		for (ObjectNode node : getServiceUnitStatusLogs()) {
 			ObjectNode rootNode = JSON.createObjectNode();
+
+			// TODO: サーバー側を修正
+			if (node.path("latitude").isNull()) {
+				node.put("latitude", 0);
+			}
+			if (node.path("longitude").isNull()) {
+				node.put("longitude", 0);
+			}
+
 			Long id = node.get("id").asLong();
 			rootNode.put(AUTHENTICATION_TOKEN_KEY, authenticationToken);
 			rootNode.set("service_unit_status_log", node);
@@ -65,8 +76,11 @@ public class PostServiceUnitStatusLogTask extends SynchronizationTask {
 			HttpResponse response = client.execute(request);
 			int statusCode = response.getStatusLine().getStatusCode();
 			if (statusCode / 100 == 4 || statusCode / 100 == 5) {
-				Log.e(TAG, "POST " + uri + " " + node + " failed code="
-						+ statusCode);
+				String message = "POST " + uri + " " + node + " failed code="
+						+ statusCode + " entity=["
+						+ EntityUtils.toString(response.getEntity(), "UTF-8")
+						+ "]";
+				Log.e(TAG, message);
 				continue;
 			}
 			database.delete(ServiceUnitStatusLogs.TABLE_NAME,
