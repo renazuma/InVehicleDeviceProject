@@ -54,7 +54,8 @@
         android:layout_marginTop="10dp"
         android:background="@android:drawable/btn_default"
         android:text="@string/platform_memo"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        android:visibility="invisible" />
 
     <FrameLayout
         android:id="@+id/information_bar_shadow"
