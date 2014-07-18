@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.conn.HttpHostConnectException;
 
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -19,6 +20,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
+import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.InVehicleDevices;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationRecords;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedules;
@@ -109,7 +111,12 @@ public class SignInTask extends SynchronizationTask {
 
 			@Override
 			public void onException(IOException e) {
-				sendSignInFailureBroadcast(e);
+				if (e instanceof HttpHostConnectException) {
+					sendSignInFailureBroadcast(context
+							.getString(R.string.error_connection));
+				} else {
+					sendSignInFailureBroadcast(e);
+				}
 			}
 		});
 	}
