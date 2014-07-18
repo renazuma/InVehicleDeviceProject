@@ -1,6 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.service.serviceunitstatuslogservice;
 
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -9,6 +10,8 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Surface;
 import android.view.WindowManager;
+
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLogs;
 
 public class OrientationSensorEventListener implements SensorEventListener {
 	private static final Long SAVE_PERIOD_MILLIS = 500L;
@@ -47,22 +50,27 @@ public class OrientationSensorEventListener implements SensorEventListener {
 		Display display = windowManager.getDefaultDisplay();
 		int displayRotation = display.getRotation();
 		switch (displayRotation) {
-		case Surface.ROTATION_0:
-			break;
-		case Surface.ROTATION_90:
-			degree += 90f;
-			break;
-		case Surface.ROTATION_180:
-			degree += 180f;
-			break;
-		case Surface.ROTATION_270:
-			degree += 270f;
-			break;
-		default:
-			Log.w(TAG, "unexpected display.getRotation() " + displayRotation);
-			break;
+			case Surface.ROTATION_0 :
+				break;
+			case Surface.ROTATION_90 :
+				degree += 90f;
+				break;
+			case Surface.ROTATION_180 :
+				degree += 180f;
+				break;
+			case Surface.ROTATION_270 :
+				degree += 270f;
+				break;
+			default :
+				Log.w(TAG, "unexpected display.getRotation() "
+						+ displayRotation);
+				break;
 		}
 
-		// serviceUnitStatusLogLogic.changeOrientation(360.0 - degree);
+		ContentValues contentValues = new ContentValues();
+		contentValues.put(ServiceUnitStatusLogs.Columns.ORIENTATION,
+				360.0 - degree);
+		contentResolver.update(ServiceUnitStatusLogs.CONTENT.URI,
+				contentValues, null, null);
 	}
 }
