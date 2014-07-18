@@ -64,7 +64,6 @@ public class ServiceUnitStatusLogService extends Service implements Runnable {
 			Log.w(TAG, e);
 		}
 
-		batteryBroadcastReceiver = new BatteryBroadcastReceiver();
 		orientationSensorEventListener = new OrientationSensorEventListener(
 				getContentResolver(), windowManager);
 		temperatureSensorEventListener = new TemperatureSensorEventListener(
@@ -78,13 +77,19 @@ public class ServiceUnitStatusLogService extends Service implements Runnable {
 		registerReceiver(batteryBroadcastReceiver, new IntentFilter(
 				Intent.ACTION_BATTERY_CHANGED));
 
+		Boolean useBatteryTemperature;
 		List<Sensor> temperatureSensors = sensorManager
 				.getSensorList(Sensor.TYPE_TEMPERATURE);
 		if (temperatureSensors.size() > 0) {
 			Sensor sensor = temperatureSensors.get(0);
 			sensorManager.registerListener(temperatureSensorEventListener,
 					sensor, SensorManager.SENSOR_DELAY_UI);
+			useBatteryTemperature = false;
+		} else {
+			useBatteryTemperature = true;
 		}
+		batteryBroadcastReceiver = new BatteryBroadcastReceiver(
+				getContentResolver(), useBatteryTemperature);
 
 		List<Sensor> orientationSensors = sensorManager
 				.getSensorList(Sensor.TYPE_ORIENTATION);
@@ -103,7 +108,6 @@ public class ServiceUnitStatusLogService extends Service implements Runnable {
 				telephonyManager);
 		handler.post(networkStatusLogger);
 	}
-
 	@Override
 	public void onDestroy() {
 		Log.i(TAG, "onDestroy()");

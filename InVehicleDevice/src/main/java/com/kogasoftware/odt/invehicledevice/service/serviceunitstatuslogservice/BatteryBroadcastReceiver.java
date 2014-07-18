@@ -1,16 +1,27 @@
 package com.kogasoftware.odt.invehicledevice.service.serviceunitstatuslogservice;
 
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.os.BatteryManager;
 import android.util.Log;
 
 import com.google.common.base.Strings;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLogs;
 
 public class BatteryBroadcastReceiver extends BroadcastReceiver {
 	private static final String TAG = BatteryBroadcastReceiver.class
 			.getSimpleName();
+	private final Boolean useBatteryTemperature;
+	private final ContentResolver contentResolver;
+
+	public BatteryBroadcastReceiver(ContentResolver contentResolver,
+			Boolean useBatteryTemperature) {
+		this.useBatteryTemperature = useBatteryTemperature;
+		this.contentResolver = contentResolver;
+	}
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
@@ -35,63 +46,63 @@ public class BatteryBroadcastReceiver extends BroadcastReceiver {
 
 		String statusString = "";
 		switch (status) {
-		case BatteryManager.BATTERY_STATUS_UNKNOWN:
-			statusString = "unknown";
-			break;
-		case BatteryManager.BATTERY_STATUS_CHARGING:
-			statusString = "charging";
-			break;
-		case BatteryManager.BATTERY_STATUS_DISCHARGING:
-			statusString = "discharging";
-			break;
-		case BatteryManager.BATTERY_STATUS_NOT_CHARGING:
-			statusString = "not charging";
-			break;
-		case BatteryManager.BATTERY_STATUS_FULL:
-			statusString = "full";
-			break;
-		default:
-			statusString = "(default:" + status + ")";
-			break;
+			case BatteryManager.BATTERY_STATUS_UNKNOWN :
+				statusString = "unknown";
+				break;
+			case BatteryManager.BATTERY_STATUS_CHARGING :
+				statusString = "charging";
+				break;
+			case BatteryManager.BATTERY_STATUS_DISCHARGING :
+				statusString = "discharging";
+				break;
+			case BatteryManager.BATTERY_STATUS_NOT_CHARGING :
+				statusString = "not charging";
+				break;
+			case BatteryManager.BATTERY_STATUS_FULL :
+				statusString = "full";
+				break;
+			default :
+				statusString = "(default:" + status + ")";
+				break;
 		}
 
 		String healthString = "";
 		switch (health) {
-		case BatteryManager.BATTERY_HEALTH_UNKNOWN:
-			healthString = "unknown";
-			break;
-		case BatteryManager.BATTERY_HEALTH_GOOD:
-			healthString = "good";
-			break;
-		case BatteryManager.BATTERY_HEALTH_OVERHEAT:
-			healthString = "overheat";
-			break;
-		case BatteryManager.BATTERY_HEALTH_DEAD:
-			healthString = "dead";
-			break;
-		case BatteryManager.BATTERY_HEALTH_OVER_VOLTAGE:
-			healthString = "voltage";
-			break;
-		case BatteryManager.BATTERY_HEALTH_UNSPECIFIED_FAILURE:
-			healthString = "unspecified failure";
-			break;
-		default:
-			healthString = "(default:" + health + ")";
-			break;
+			case BatteryManager.BATTERY_HEALTH_UNKNOWN :
+				healthString = "unknown";
+				break;
+			case BatteryManager.BATTERY_HEALTH_GOOD :
+				healthString = "good";
+				break;
+			case BatteryManager.BATTERY_HEALTH_OVERHEAT :
+				healthString = "overheat";
+				break;
+			case BatteryManager.BATTERY_HEALTH_DEAD :
+				healthString = "dead";
+				break;
+			case BatteryManager.BATTERY_HEALTH_OVER_VOLTAGE :
+				healthString = "voltage";
+				break;
+			case BatteryManager.BATTERY_HEALTH_UNSPECIFIED_FAILURE :
+				healthString = "unspecified failure";
+				break;
+			default :
+				healthString = "(default:" + health + ")";
+				break;
 		}
 
 		String acString = "";
 		switch (plugged) {
-		case BatteryManager.BATTERY_PLUGGED_AC:
-			acString = "plugged ac";
-			break;
-		case BatteryManager.BATTERY_PLUGGED_USB:
-			acString = "plugged usb";
-			break;
-		default:
-			acString = "(default:" + plugged + ")";
-			;
-			break;
+			case BatteryManager.BATTERY_PLUGGED_AC :
+				acString = "plugged ac";
+				break;
+			case BatteryManager.BATTERY_PLUGGED_USB :
+				acString = "plugged usb";
+				break;
+			default :
+				acString = "(default:" + plugged + ")";
+				;
+				break;
 		}
 
 		String message = "status=" + statusString;
@@ -106,5 +117,12 @@ public class BatteryBroadcastReceiver extends BroadcastReceiver {
 		message += ", technology=" + technology;
 
 		Log.i(TAG, message);
+		if (useBatteryTemperature) {
+			ContentValues contentValues = new ContentValues();
+			contentValues.put(ServiceUnitStatusLogs.Columns.TEMPERATURE,
+					temperature);
+			contentResolver.update(ServiceUnitStatusLogs.CONTENT.URI,
+					contentValues, null, null);
+		}
 	}
 }
