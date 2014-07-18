@@ -68,9 +68,9 @@ public class PatchVehicleNotificationTask extends SynchronizationTask {
 		for (ObjectNode node : nodes) {
 			ObjectNode rootNode = JSON.createObjectNode();
 			final Long id = node.get("id").asLong();
-			rootNode.set("vehicle_notifications/" + id, node);
-			doHttpPatch(baseUri, "vehicle_notifications", authenticationToken,
-					rootNode, new LogCallback(TAG) {
+			rootNode.set("vehicle_notification", node);
+			doHttpPatch(baseUri, "vehicle_notifications/" + id,
+					authenticationToken, rootNode, new LogCallback(TAG) {
 						@Override
 						public void onSuccess(HttpResponse response,
 								byte[] entity) {
