@@ -77,7 +77,6 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
 		for (OperationScheduleJson operationSchedule : operationSchedules) {
 			OperationRecordJson operationRecord = operationSchedule.operationRecord;
 			operationRecords.add(operationRecord);
-			operationSchedules.add(operationSchedule);
 			platforms.add(operationSchedule.platform);
 			ReservationJson reservation = operationSchedule.departureReservation;
 			if (reservation != null) {
