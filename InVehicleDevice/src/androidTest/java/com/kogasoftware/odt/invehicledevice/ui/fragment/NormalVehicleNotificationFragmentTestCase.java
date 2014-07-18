@@ -16,8 +16,9 @@ import com.kogasoftware.odt.invehicledevice.utils.TestUtils;
 import com.robotium.solo.Condition;
 import com.robotium.solo.Solo;
 
-public class NormalVehicleNotificationFragmentTestCase extends
-		ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
+public class NormalVehicleNotificationFragmentTestCase
+		extends
+			ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 	MockServer server;
 	Solo solo;
 	SQLiteDatabase database;
@@ -66,6 +67,6 @@ public class NormalVehicleNotificationFragmentTestCase extends
 			public boolean isSatisfied() {
 				return Response.YES.equals(vn.response) && vn.readAt != null;
 			}
-		}, 8000000));
+		}, 5000));
 	}
 }
