@@ -7,6 +7,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -219,12 +220,15 @@ public class SynchronizationTask implements Runnable {
 			callback.onException(e);
 			return;
 		}
-		byte[] entity;
-		try {
-			entity = EntityUtils.toByteArray(response.getEntity());
-		} catch (IOException e) {
-			callback.onException(e);
-			return;
+		byte[] entity = new byte[0];
+		HttpEntity entityStream = response.getEntity();
+		if (entityStream != null) {
+			try {
+				entity = EntityUtils.toByteArray(entityStream);
+			} catch (IOException e) {
+				callback.onException(e);
+				return;
+			}
 		}
 		int statusCode = response.getStatusLine().getStatusCode();
 		if (statusCode / 100 == 4 || statusCode / 100 == 5) {
