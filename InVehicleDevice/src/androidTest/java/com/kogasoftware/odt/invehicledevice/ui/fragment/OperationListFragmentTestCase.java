@@ -119,33 +119,27 @@ public class OperationListFragmentTestCase
 		assertNull(pr.getOffTime);
 	}
 
-	public void testAlreadyArrived() throws InterruptedException {
+	public void testAlreadyDeparted() throws InterruptedException {
 		List<UserJson> users1 = Lists.newArrayList(server.addUser("マイクロ 次郎"));
 		List<UserJson> users2 = Lists.newArrayList(server.addUser("まつもと ゆきひろ"),
 				server.addUser("はしもと ゆきなり"));
 		PlatformJson p1 = server.addPlatform("南浦和");
 		PlatformJson p2 = server.addPlatform("東川口");
 		PlatformJson p3 = server.addPlatform("東府中");
-		OperationScheduleJson os1 = server.addOperationSchedule(p1, p2, users1,
-				"09:00:00", "09:00:02", 50).first;
-		os1.operationRecord.arrivedAt = DateTime.now();
-		server.addOperationSchedule(p2, p3, users2, "10:00:00", "10:00:02", 50);
+		server.addOperationSchedule(p1, p2, users1, "09:00:00", "09:00:02", 50);
+		OperationScheduleJson os3 = server.addOperationSchedule(p2, p3, users2,
+				"10:00:00", "10:00:02", 50).second;
+		final OperationRecordJson or3 = os3.operationRecord;
+		or3.arrivedAt = DateTime.now();
+		or3.departedAt = DateTime.now();
 		server.reservations.get(0).memo = "よやくメモ";
 		solo = new Solo(getInstrumentation(), getActivity());
-		final OperationRecordJson or = server.operationRecords.get(0);
-		assertTrue(solo.waitForCondition(new Condition() {
-			@Override
-			public boolean isSatisfied() {
-				return or.arrivedAt != null;
-			}
-		}, 5000));
-		assertNull(or.departedAt);
 		solo.clickOnText(solo.getString(R.string.today_operation_schedule));
-		solo.clickOnText("南浦和", 2); // 裏の画面にも「南浦和」があるため
+		solo.clickOnText("東府中");
 		assertTrue(solo.waitForCondition(new Condition() {
 			@Override
 			public boolean isSatisfied() {
-				return or.arrivedAt == null;
+				return or3.arrivedAt == null && or3.departedAt == null;
 			}
 		}, 5000));
 	}
