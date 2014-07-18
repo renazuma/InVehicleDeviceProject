@@ -1,28 +1,20 @@
 package com.kogasoftware.odt.invehicledevice.contentprovider.task;
 
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.joda.time.format.ISODateTimeFormat;
-import org.json.JSONException;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
-import com.kogasoftware.android.org.apache.http.client.methods.HttpPatch;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationRecords;
 
 public class PatchOperationRecordTask extends SynchronizationTask {
@@ -85,35 +77,29 @@ public class PatchOperationRecordTask extends SynchronizationTask {
 	}
 
 	@Override
-	protected void runSession(URI baseUri, String authenticationToken)
-			throws IOException, JSONException, URISyntaxException {
+	protected void runSession(URI baseUri, String authenticationToken) {
 		for (Pair<Long, ObjectNode> versionAndNode : getUpdatedOperationRecords()) {
-			Long version = versionAndNode.getLeft();
-			ObjectNode node = versionAndNode.getRight();
-			Long id = node.get("id").asLong();
+			final Long version = versionAndNode.getLeft();
+			final ObjectNode node = versionAndNode.getRight();
+			final Long id = node.get("id").asLong();
 			ObjectNode rootNode = JSON.createObjectNode();
-			rootNode.put(AUTHENTICATION_TOKEN_KEY, authenticationToken);
 			rootNode.set("operation_record", node);
-			HttpClient client = new DefaultHttpClient();
-			HttpPatch request = new HttpPatch();
-			request.addHeader("Content-Type", "application/json");
-			request.addHeader("Accept", "application/json");
-			URI uri = baseUri.resolve("in_vehicle_devices/operation_records/"
-					+ id);
-			request.setURI(uri);
-			request.setEntity(new StringEntity(rootNode.toString()));
-			HttpResponse response = client.execute(request);
-			int statusCode = response.getStatusLine().getStatusCode();
-			if (statusCode / 100 == 4 || statusCode / 100 == 5) {
-				Log.e(TAG, "PATCH " + uri + " " + node + " failed code="
-						+ statusCode);
-				continue;
-			}
-			ContentValues values = new ContentValues();
-			values.put(OperationRecords.Columns.SERVER_VERSION, version);
-			database.update(OperationRecords.TABLE_NAME, values,
-					OperationRecords.Columns._ID + " = ?",
-					new String[]{id.toString()});
+			doHttpPatch(baseUri, "operation_records/" + id,
+					authenticationToken, rootNode, new LogCallback(TAG) {
+						@Override
+						public void onSuccess(HttpResponse response,
+								byte[] entity) {
+							save(node, id, version);
+						}
+					});
 		}
+	}
+
+	private void save(ObjectNode node, Long id, Long version) {
+		ContentValues values = new ContentValues();
+		values.put(OperationRecords.Columns.SERVER_VERSION, version);
+		database.update(OperationRecords.TABLE_NAME, values,
+				OperationRecords.Columns._ID + " = ?",
+				new String[]{id.toString()});
 	}
 }

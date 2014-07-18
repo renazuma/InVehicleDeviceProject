@@ -2,29 +2,23 @@ package com.kogasoftware.odt.invehicledevice.contentprovider.task;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.concurrent.ScheduledExecutorService;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONException;
 
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
-import com.amazonaws.org.apache.http.client.utils.URIBuilder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Charsets;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceProviders;
 
 public class GetServiceProviderTask extends SynchronizationTask {
-	static final String TAG = GetServiceProviderTask.class.getSimpleName();
+	private static final String TAG = GetServiceProviderTask.class
+			.getSimpleName();
 
 	public GetServiceProviderTask(Context context, SQLiteDatabase database,
 			ScheduledExecutorService executorService) {
@@ -32,28 +26,36 @@ public class GetServiceProviderTask extends SynchronizationTask {
 	}
 
 	@Override
-	protected void runSession(URI baseUri, String authenticaitonToken)
-			throws IOException, JSONException, URISyntaxException {
-		HttpClient client = new DefaultHttpClient();
-		HttpGet request = new HttpGet();
-		request.addHeader("Content-Type", "application/json");
-		request.addHeader("Accept", "application/json");
-		URIBuilder uriBuilder = new URIBuilder(baseUri);
-		uriBuilder.setPath("/in_vehicle_devices/service_provider");
-		uriBuilder.addParameter(AUTHENTICATION_TOKEN_KEY, authenticaitonToken);
-		request.setURI(uriBuilder.build());
-		HttpResponse response = client.execute(request);
-		int statusCode = response.getStatusLine().getStatusCode();
-		if (statusCode / 100 == 4 || statusCode / 100 == 5) {
-			throw new IOException("code=" + statusCode);
-		}
+	protected void runSession(URI baseUri, String authenticationToken) {
+		doHttpGet(baseUri, "service_provider", authenticationToken,
+				new LogCallback(TAG) {
+					@Override
+					public void onSuccess(HttpResponse response, byte[] entity) {
+						save(new String(entity, Charsets.UTF_8));
+					}
+
+					@Override
+					public void onException(IOException e) {
+						super.onException(e);
+						submitRetry();
+					}
+
+					@Override
+					public void onFailure(HttpResponse response, byte[] entity) {
+						super.onFailure(response, entity);
+						submitRetry();
+					}
+				});
+	}
+
+	private void save(String entity) {
 		JsonNode node;
-		HttpEntity entity = response.getEntity();
-		if (entity != null) {
-			node = JSON.readTree(new String(EntityUtils.toByteArray(entity),
-					Charsets.UTF_8));
-		} else {
-			node = JSON.createObjectNode();
+		try {
+			node = JSON.readTree(entity);
+		} catch (IOException e) {
+			Log.e(TAG, "IOException while parsing entity: " + entity, e);
+			submitRetry();
+			return;
 		}
 		Long id;
 		try {

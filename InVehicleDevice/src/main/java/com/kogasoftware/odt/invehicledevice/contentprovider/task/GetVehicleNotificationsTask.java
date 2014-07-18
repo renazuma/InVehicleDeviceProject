@@ -2,25 +2,18 @@ package com.kogasoftware.odt.invehicledevice.contentprovider.task;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONException;
 
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.util.Log;
 
-import com.amazonaws.org.apache.http.client.utils.URIBuilder;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.VehicleNotificationJson;
@@ -36,25 +29,24 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
 	}
 
 	@Override
-	protected void runSession(URI baseUri, String authenticaitonToken)
-			throws IOException, JSONException, URISyntaxException {
-		HttpClient client = new DefaultHttpClient();
-		HttpGet request = new HttpGet();
-		URIBuilder uriBuilder = new URIBuilder(baseUri);
-		uriBuilder.setPath("/in_vehicle_devices/vehicle_notifications");
-		uriBuilder.addParameter(AUTHENTICATION_TOKEN_KEY, authenticaitonToken);
-		request.addHeader("Content-Type", "application/json");
-		request.addHeader("Accept", "application/json");
-		request.setURI(uriBuilder.build());
-		HttpResponse response = client.execute(request);
-		int statusCode = response.getStatusLine().getStatusCode();
-		byte[] responseEntity = new byte[]{};
-		HttpEntity entity = response.getEntity();
-		if (entity != null) {
-			responseEntity = EntityUtils.toByteArray(entity);
-		}
-		if (statusCode / 100 == 4 || statusCode / 100 == 5) {
-			throw new IOException("code=" + statusCode);
+	protected void runSession(URI baseUri, String authenticationToken) {
+		doHttpGet(baseUri, "vehicle_notifications", authenticationToken,
+				new LogCallback(TAG) {
+					@Override
+					public void onSuccess(HttpResponse response, byte[] entity) {
+						save(entity);
+					}
+				});
+	}
+
+	private void save(byte[] entity) {
+		VehicleNotificationJson[] vehicleNotifications;
+		try {
+			vehicleNotifications = JSON.readValue(new String(entity,
+					Charsets.UTF_8), VehicleNotificationJson[].class);
+		} catch (IOException e) {
+			Log.e(TAG, "ParseError: " + entity, e);
+			return;
 		}
 		List<Uri> committedUris;
 		try {
@@ -74,9 +66,7 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
 			} finally {
 				cursor.close();
 			}
-			for (VehicleNotificationJson vehicleNotification : JSON.readValue(
-					new String(responseEntity, Charsets.UTF_8),
-					VehicleNotificationJson[].class)) {
+			for (VehicleNotificationJson vehicleNotification : vehicleNotifications) {
 				if (ids.contains(vehicleNotification.id)) {
 					continue;
 				}

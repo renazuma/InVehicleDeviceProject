@@ -2,20 +2,13 @@ package com.kogasoftware.odt.invehicledevice.contentprovider.task;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONException;
 
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -23,8 +16,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.util.Log;
 
-import com.amazonaws.org.apache.http.client.utils.URIBuilder;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
@@ -213,59 +206,39 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
 	}
 
 	@Override
-	protected void runSession(URI baseUri, String authenticaitonToken)
-			throws IOException, JSONException, URISyntaxException {
+	protected void runSession(URI baseUri, String authenticationToken) {
 		if (isDirty()) {
 			submitRetry();
 			return;
 		}
-		List<Long> oldScheduleVehidleNotificationIds = getScheduleVehidleNotificationIds();
+		final List<Long> oldScheduleVehidleNotificationIds = getScheduleVehidleNotificationIds();
 		if (scheduleVehicleNotificationRequired
 				&& oldScheduleVehidleNotificationIds.isEmpty()) {
 			return;
 		}
-		HttpClient client = new DefaultHttpClient();
-		HttpGet request = new HttpGet();
-		request.addHeader("Content-Type", "application/json");
-		request.addHeader("Accept", "application/json");
-		URIBuilder uriBuilder = new URIBuilder(baseUri);
-		uriBuilder.setPath("/in_vehicle_devices/operation_schedules");
-		uriBuilder.addParameter(AUTHENTICATION_TOKEN_KEY, authenticaitonToken);
-		request.setURI(uriBuilder.build());
-		HttpResponse response;
-		Boolean networkError = true;
-		try {
-			response = client.execute(request);
-			networkError = false;
-		} finally {
-			if (networkError) {
-				submitRetry();
-			}
-		}
-		int statusCode = response.getStatusLine().getStatusCode();
-		byte[] responseEntity = new byte[]{};
-		HttpEntity entity = response.getEntity();
-		if (entity != null) {
-			responseEntity = EntityUtils.toByteArray(entity);
-		}
-		if (statusCode / 100 == 4 || statusCode / 100 == 5) {
-			throw new IOException("code=" + statusCode);
-		}
-		if (isDirty()) {
-			submitRetry();
-			return;
-		}
-		List<Long> newScheduleVehidleNotificationIds = getScheduleVehidleNotificationIds();
-		if (!oldScheduleVehidleNotificationIds
-				.equals(newScheduleVehidleNotificationIds)) {
-			submitRetry();
-			return;
-		}
-		List<OperationScheduleJson> operationScheduleJsons = JSON.readValue(
-				new String(responseEntity, Charsets.UTF_8),
-				new TypeReference<List<OperationScheduleJson>>() {
+		doHttpGet(baseUri, "operation_schedules", authenticationToken,
+				new Callback() {
+					@Override
+					public void onSuccess(HttpResponse response, byte[] entity) {
+						save(new String(entity, Charsets.UTF_8),
+								oldScheduleVehidleNotificationIds);
+					}
+
+					@Override
+					public void onFailure(HttpResponse response, byte[] entity) {
+						if (response.getStatusLine().getStatusCode() % 100 == 5) {
+							submitRetry();
+						} else {
+							Log.e(TAG, "onFailure: response=" + response
+									+ " entity=" + entity);
+						}
+					}
+
+					@Override
+					public void onException(IOException e) {
+						submitRetry();
+					}
 				});
-		insert(operationScheduleJsons, oldScheduleVehidleNotificationIds);
 	}
 
 	private List<Long> getScheduleVehidleNotificationIds() {
@@ -315,5 +288,28 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
 			prCursor.close();
 		}
 		return false;
+	}
+
+	public void save(String entity, List<Long> oldScheduleVehidleNotificationIds) {
+		if (isDirty()) {
+			submitRetry();
+			return;
+		}
+		List<Long> newScheduleVehidleNotificationIds = getScheduleVehidleNotificationIds();
+		if (!oldScheduleVehidleNotificationIds
+				.equals(newScheduleVehidleNotificationIds)) {
+			submitRetry();
+			return;
+		}
+		List<OperationScheduleJson> operationScheduleJsons;
+		try {
+			operationScheduleJsons = JSON.readValue(entity,
+					new TypeReference<List<OperationScheduleJson>>() {
+					});
+		} catch (IOException e) {
+			Log.e(TAG, "IOException while parsing entity: " + entity, e);
+			return;
+		}
+		insert(operationScheduleJsons, oldScheduleVehidleNotificationIds);
 	}
 }

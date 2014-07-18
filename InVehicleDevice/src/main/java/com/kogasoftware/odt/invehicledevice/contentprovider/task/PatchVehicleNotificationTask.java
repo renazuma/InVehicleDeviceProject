@@ -1,30 +1,23 @@
 package com.kogasoftware.odt.invehicledevice.contentprovider.task;
 
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.joda.time.format.ISODateTimeFormat;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
-import com.kogasoftware.android.org.apache.http.client.methods.HttpPatch;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotifications;
 
 public class PatchVehicleNotificationTask extends SynchronizationTask {
-	static final String TAG = PatchVehicleNotificationTask.class
+	private static final String TAG = PatchVehicleNotificationTask.class
 			.getSimpleName();
 	public static final Long INTERVAL_MILLIS = 60 * 1000L;
 
@@ -70,32 +63,22 @@ public class PatchVehicleNotificationTask extends SynchronizationTask {
 	}
 
 	@Override
-	protected void runSession(URI baseUri, String authenticationToken)
-			throws IOException, URISyntaxException {
+	protected void runSession(URI baseUri, String authenticationToken) {
 		List<ObjectNode> nodes = getNotRepliedVehicleNotifications();
 		for (ObjectNode node : nodes) {
 			ObjectNode rootNode = JSON.createObjectNode();
-			Long id = node.get("id").asLong();
-			rootNode.put(AUTHENTICATION_TOKEN_KEY, authenticationToken);
-			rootNode.set("vehicle_notification", node);
-			HttpClient client = new DefaultHttpClient();
-			HttpPatch request = new HttpPatch();
-			request.addHeader("Content-Type", "application/json");
-			request.addHeader("Accept", "application/json");
-			URI uri = baseUri
-					.resolve("in_vehicle_devices/vehicle_notifications/" + id);
-			request.setURI(uri);
-			request.setEntity(new StringEntity(rootNode.toString()));
-			HttpResponse response = client.execute(request);
-			int statusCode = response.getStatusLine().getStatusCode();
-			if (statusCode / 100 == 4 || statusCode / 100 == 5) {
-				Log.e(TAG, "PATCH " + uri + " " + node + " failed code="
-						+ statusCode);
-				continue;
-			}
-			database.delete(VehicleNotifications.TABLE_NAME,
-					VehicleNotifications.Columns._ID + " = ?",
-					new String[]{id.toString()});
+			final Long id = node.get("id").asLong();
+			rootNode.set("vehicle_notifications/" + id, node);
+			doHttpPatch(baseUri, "vehicle_notifications", authenticationToken,
+					rootNode, new LogCallback(TAG) {
+						@Override
+						public void onSuccess(HttpResponse response,
+								byte[] entity) {
+							database.delete(VehicleNotifications.TABLE_NAME,
+									VehicleNotifications.Columns._ID + " = ?",
+									new String[]{id.toString()});
+						}
+					});
 		}
 	}
 }
