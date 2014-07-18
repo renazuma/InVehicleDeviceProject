@@ -149,4 +149,28 @@ public class OperationListFragmentTestCase
 			}
 		}, 5000));
 	}
+
+	public void testAlreadyGetOn() throws InterruptedException {
+		List<UserJson> users1 = Lists.newArrayList(server.addUser("マイクロ 次郎"));
+		List<UserJson> users2 = Lists.newArrayList(server.addUser("まつもと ゆきひろ"),
+				server.addUser("はしもと ゆきなり"));
+		PlatformJson p1 = server.addPlatform("南浦和");
+		PlatformJson p2 = server.addPlatform("東川口");
+		PlatformJson p3 = server.addPlatform("東府中");
+		server.addOperationSchedule(p1, p2, users1, "09:00:00", "09:00:02", 50);
+		server.addOperationSchedule(p2, p3, users2, "10:00:00", "10:00:02", 50);
+		final PassengerRecordJson pr1 = server.passengerRecords.get(0);
+		pr1.getOnTime = DateTime.now();
+
+		solo = new Solo(getInstrumentation(), getActivity());
+		solo.clickOnText(solo.getString(R.string.today_operation_schedule));
+		solo.clickOnText("乗客も見る");
+		solo.clickOnText("マイクロ 次郎");
+		assertTrue(solo.waitForCondition(new Condition() {
+			@Override
+			public boolean isSatisfied() {
+				return pr1.getOnTime == null;
+			}
+		}, 5000));
+	}
 }
