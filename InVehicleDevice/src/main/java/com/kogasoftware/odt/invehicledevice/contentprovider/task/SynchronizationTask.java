@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -29,6 +32,8 @@ import android.util.Log;
 import com.amazonaws.org.apache.http.client.utils.URIBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Charsets;
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.kogasoftware.android.org.apache.http.client.methods.HttpPatch;
 import com.kogasoftware.odt.invehicledevice.contentprovider.InVehicleDeviceContentProvider;
@@ -51,13 +56,27 @@ public class SynchronizationTask implements Runnable {
 
 	public static class LogCallback implements Callback {
 		private final String tag;
+
 		public LogCallback(String tag) {
 			this.tag = tag;
 		}
 
+		private String parseEntity(byte[] entity) {
+			try {
+				return Charsets.UTF_8.newDecoder()
+						.decode(ByteBuffer.wrap(entity)).toString();
+			} catch (CharacterCodingException e) {
+			}
+			if (entity.length > 5000) {
+				entity = Arrays.copyOf(entity, 5000);
+			}
+			return "[" + Joiner.on(",").join(Arrays.asList(entity)) + "]";
+		}
+
 		@Override
 		public void onSuccess(HttpResponse response, byte[] entity) {
-			Log.i(tag, "onSuccess: response=" + response + " entity=" + entity);
+			Log.i(tag, "onSuccess: " + response.getStatusLine() + " entity="
+					+ parseEntity(entity));
 		}
 
 		@Override
@@ -67,7 +86,8 @@ public class SynchronizationTask implements Runnable {
 
 		@Override
 		public void onFailure(HttpResponse response, byte[] entity) {
-			Log.e(tag, "onFailure: response=" + response + " entity=" + entity);
+			Log.e(tag, "onFailure: " + response.getStatusLine() + " entity="
+					+ parseEntity(entity));
 		}
 	}
 
