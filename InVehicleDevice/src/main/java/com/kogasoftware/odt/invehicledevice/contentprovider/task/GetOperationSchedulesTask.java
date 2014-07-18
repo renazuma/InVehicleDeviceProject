@@ -2,6 +2,8 @@ package com.kogasoftware.odt.invehicledevice.contentprovider.task;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,6 +22,7 @@ import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Charsets;
+import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.OperationRecordJson;
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.OperationScheduleJson;
@@ -59,6 +62,16 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
 		List<PassengerRecordJson> passengerRecords = Lists.newLinkedList();
 		List<OperationRecordJson> operationRecords = Lists.newLinkedList();
 		List<PlatformJson> platforms = Lists.newLinkedList();
+		Collections.sort(operationSchedules,
+				new Comparator<OperationScheduleJson>() {
+					@Override
+					public int compare(OperationScheduleJson l,
+							OperationScheduleJson r) {
+						return ComparisonChain.start()
+								.compare(l.arrivalEstimate, r.arrivalEstimate)
+								.compare(l.id, r.id).result();
+					}
+				});
 
 		// 各モデルを配列に展開する
 		for (OperationScheduleJson operationSchedule : operationSchedules) {
@@ -92,10 +105,6 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
 					mergedOperationSchedules.add(current);
 					first = false;
 				} else {
-					if (previous.arrivalEstimate
-							.isAfter(current.arrivalEstimate)) {
-						previous.arrivalEstimate = current.arrivalEstimate;
-					}
 					if (previous.departureEstimate
 							.isBefore(current.departureEstimate)) {
 						previous.departureEstimate = current.departureEstimate;
