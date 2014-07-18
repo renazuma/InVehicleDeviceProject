@@ -6,29 +6,28 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.HttpHostConnectException;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.InVehicleDevices;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationRecords;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedules;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecords;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.Platforms;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.Reservations;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceProviders;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLogs;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.Users;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotifications;
 
 public class SignInTask extends SynchronizationTask {
@@ -45,60 +44,82 @@ public class SignInTask extends SynchronizationTask {
 	}
 
 	void writeAuthenticationToken(Long id, String authenticationToken) {
-		ContentValues contentValues = new ContentValues();
-		contentValues.put(InVehicleDevices.Columns.AUTHENTICATION_TOKEN,
-				authenticationToken);
-		String whereClause = InVehicleDevices.Columns._ID + " = ?";
-		String[] whereArgs = new String[] { id.toString() };
-		Integer affected = database.update(InVehicleDevices.TABLE_NAME,
-				contentValues, whereClause, whereArgs);
-		if (affected > 0) {
+		try {
+			database.beginTransaction();
+			ContentValues contentValues = new ContentValues();
+			contentValues.put(InVehicleDevices.Columns.AUTHENTICATION_TOKEN,
+					authenticationToken);
+			String whereClause = InVehicleDevices.Columns._ID + " = ?";
+			String[] whereArgs = new String[]{id.toString()};
+			Integer affected = database.update(InVehicleDevices.TABLE_NAME,
+					contentValues, whereClause, whereArgs);
+			if (affected == 0) {
+				return;
+			}
+			// TODO: More elegant way
+			for (String tableName : new String[]{
+					ServiceUnitStatusLogs.TABLE_NAME,
+					VehicleNotifications.TABLE_NAME, Reservations.TABLE_NAME,
+					Users.TABLE_NAME, PassengerRecords.TABLE_NAME,
+					OperationSchedules.TABLE_NAME, OperationRecords.TABLE_NAME,
+					ServiceProviders.TABLE_NAME, Platforms.TABLE_NAME}) {
+				database.delete(tableName, null, null);
+			}
 			contentResolver.notifyChange(ContentUris.withAppendedId(
 					InVehicleDevices.CONTENT.URI, id), null);
+			contentResolver.notifyChange(ServiceProviders.CONTENT.URI, null);
+			database.setTransactionSuccessful();
+		} finally {
+			database.endTransaction();
 		}
 	}
 
-	void runSession(Long id, URI baseUri, String login, String password)
-			throws IOException, JSONException {
-		HttpClient httpClient = new DefaultHttpClient();
-		JSONObject inVehicleDevice = new JSONObject();
-		inVehicleDevice.put(InVehicleDevices.Columns.LOGIN, login);
-		inVehicleDevice.put(InVehicleDevices.Columns.PASSWORD, password);
-		JSONObject root = new JSONObject();
-		root.put("in_vehicle_device", inVehicleDevice);
-		HttpPost request = new HttpPost();
-		request.addHeader("Content-Type", "application/json");
-		request.addHeader("Accept", "application/json");
-		URI uri = baseUri.resolve("in_vehicle_devices/sign_in");
-		request.setURI(uri);
-		request.setEntity(new StringEntity(root.toString(), "UTF-8"));
-		HttpResponse httpResponse = httpClient.execute(request);
-		int statusCode = httpResponse.getStatusLine().getStatusCode();
-		byte[] response = new byte[] {};
-		HttpEntity entity = httpResponse.getEntity();
-		if (entity != null) {
-			response = EntityUtils.toByteArray(entity);
+	void runSession(final Long id, String url, String login, String password) {
+		URI uri;
+		try {
+			uri = new URI(url);
+		} catch (URISyntaxException e) {
+			sendSignInFailureBroadcast(e);
+			return;
 		}
-		if (statusCode / 100 == 4) {
-			throw new IOException("車載器の認証に失敗しました。\ncode=" + statusCode);
-		} else if (statusCode / 100 == 5) {
-			throw new IOException("車載器の認証処理中にエラーが発生しました。\ncode=" + statusCode);
-		}
-		JSONObject responseJSON = new JSONObject(new String(response,
-				Charsets.UTF_8));
-		String authenticationToken = responseJSON
-				.getString("authentication_token");
-		if (authenticationToken != null) {
-			writeAuthenticationToken(id, authenticationToken);
-		}
+
+		ObjectNode node = JSON.createObjectNode();
+		node.put(InVehicleDevices.Columns.LOGIN, login);
+		node.put(InVehicleDevices.Columns.PASSWORD, password);
+		ObjectNode rootNode = JSON.createObjectNode();
+		rootNode.set("in_vehicle_device", node);
+
+		doHttpPost(uri, "sign_in", null, rootNode, new Callback() {
+			@Override
+			public void onSuccess(HttpResponse response, byte[] entity) {
+				complete(id, new String(entity, Charsets.UTF_8));
+			}
+
+			@Override
+			public void onFailure(HttpResponse response, byte[] entity) {
+				int statusCode = response.getStatusLine().getStatusCode();
+				if (statusCode / 100 == 4) {
+					sendSignInFailureBroadcast(new IOException(
+							"車載器の認証に失敗しました。\ncode=" + statusCode));
+				} else {
+					sendSignInFailureBroadcast(new IOException(
+							"車載器の認証処理中にエラーが発生しました。\ncode=" + statusCode));
+				}
+			}
+
+			@Override
+			public void onException(IOException e) {
+				sendSignInFailureBroadcast(e);
+			}
+		});
 	}
 
 	@Override
 	public void run() {
-		String[] columns = new String[] { InVehicleDevices.Columns._ID,
+		String[] columns = new String[]{InVehicleDevices.Columns._ID,
 				InVehicleDevices.Columns.URL, InVehicleDevices.Columns.LOGIN,
 				InVehicleDevices.Columns.PASSWORD,
-				InVehicleDevices.Columns.AUTHENTICATION_TOKEN, };
+				InVehicleDevices.Columns.AUTHENTICATION_TOKEN,};
 		Long id;
 		String url;
 		String login;
@@ -128,29 +149,7 @@ public class SignInTask extends SynchronizationTask {
 		if (authenticationToken != null) {
 			return;
 		}
-
-		// TODO: Remove all
-		database.delete(ServiceProviders.TABLE_NAME, null, null);
-		database.delete(OperationSchedules.TABLE_NAME, null, null);
-		database.delete(PassengerRecords.TABLE_NAME, null, null);
-		database.delete(VehicleNotifications.TABLE_NAME, null, null);
-		contentResolver.notifyChange(ServiceProviders.CONTENT.URI, null);
-
-		try {
-			runSession(id, new URI(url), login, password);
-		} catch (HttpHostConnectException e) {
-			sendSignInFailureBroadcast("サーバーとの接続に失敗しました");
-		} catch (IOException e) {
-			sendSignInFailureBroadcast(e);
-		} catch (URISyntaxException e) {
-			sendSignInFailureBroadcast(e);
-		} catch (JSONException e) {
-			sendSignInFailureBroadcast(e);
-		}
-
-		for (Runnable onCompleteListener : onCompleteListeners) {
-			onCompleteListener.run();
-		}
+		runSession(id, url, login, password);
 	}
 
 	void sendSignInFailureBroadcast(String message) {
@@ -160,5 +159,20 @@ public class SignInTask extends SynchronizationTask {
 	void sendSignInFailureBroadcast(Exception cause) {
 		sendSignInFailureBroadcast(cause.getClass().getSimpleName() + ":"
 				+ cause.getMessage());
+	}
+
+	private void complete(Long id, String entity) {
+		JsonNode node;
+		try {
+			node = JSON.readTree(entity);
+		} catch (IOException e) {
+			Log.e(TAG, "IOException while parsing entity: " + entity, e);
+			submitRetry();
+			return;
+		}
+		writeAuthenticationToken(id, node.path("authentication_token").asText());
+		for (Runnable onCompleteListener : onCompleteListeners) {
+			onCompleteListener.run();
+		}
 	}
 }
