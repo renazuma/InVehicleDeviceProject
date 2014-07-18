@@ -56,8 +56,6 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
 			List<Long> scheduleVehidleNotificationIds) {
 		List<UserJson> users = Lists.newLinkedList();
 		List<ReservationJson> reservations = Lists.newLinkedList();
-		List<OperationScheduleJson> operationScheduleValuesList = Lists
-				.newLinkedList();
 		List<PassengerRecordJson> passengerRecords = Lists.newLinkedList();
 		List<OperationRecordJson> operationRecords = Lists.newLinkedList();
 		List<PlatformJson> platforms = Lists.newLinkedList();
@@ -66,7 +64,7 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
 		for (OperationScheduleJson operationSchedule : operationSchedules) {
 			OperationRecordJson operationRecord = operationSchedule.operationRecord;
 			operationRecords.add(operationRecord);
-			operationScheduleValuesList.add(operationSchedule);
+			operationSchedules.add(operationSchedule);
 			platforms.add(operationSchedule.platform);
 			ReservationJson reservation = operationSchedule.departureReservation;
 			if (reservation != null) {
@@ -85,10 +83,10 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
 		Map<Long, OperationScheduleJson> toMergedOperationSchedule = new HashMap<Long, OperationScheduleJson>();
 		LinkedList<OperationScheduleJson> mergedOperationSchedules = Lists
 				.newLinkedList();
-		if (!operationScheduleValuesList.isEmpty()) {
+		if (!operationSchedules.isEmpty()) {
 			Boolean first = true;
 			OperationScheduleJson previous = null;
-			for (OperationScheduleJson current : operationScheduleValuesList) {
+			for (OperationScheduleJson current : operationSchedules) {
 				if (first || !current.platform.id.equals(previous.platform.id)) {
 					previous = current;
 					mergedOperationSchedules.add(current);
