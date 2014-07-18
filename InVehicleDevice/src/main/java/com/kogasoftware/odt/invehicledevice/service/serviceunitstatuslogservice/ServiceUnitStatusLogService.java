@@ -23,7 +23,7 @@ public class ServiceUnitStatusLogService extends Service implements Runnable {
 	private static final String TAG = ServiceUnitStatusLogService.class
 			.getSimpleName();
 	private final Handler handler = new Handler();
-	private GpsLogger gpsNotifier;
+	private GpsLogger gpsLogger;
 	private BatteryBroadcastReceiver batteryBroadcastReceiver;
 	private WindowManager windowManager;
 	private ConnectivityManager connectivityManager;
@@ -71,7 +71,7 @@ public class ServiceUnitStatusLogService extends Service implements Runnable {
 		signalStrengthListener = new SignalStrengthListener(
 				getContentResolver());
 
-		gpsNotifier = new GpsLogger(this);
+		gpsLogger = new GpsLogger(this);
 		handler.post(this);
 
 		registerReceiver(batteryBroadcastReceiver, new IntentFilter(
@@ -114,7 +114,7 @@ public class ServiceUnitStatusLogService extends Service implements Runnable {
 		super.onDestroy();
 		handler.removeCallbacks(this);
 		handler.removeCallbacks(networkStatusLogger);
-		gpsNotifier.close();
+		gpsLogger.close();
 
 		sensorManager.unregisterListener(temperatureSensorEventListener);
 		sensorManager.unregisterListener(orientationSensorEventListener);
@@ -131,7 +131,7 @@ public class ServiceUnitStatusLogService extends Service implements Runnable {
 
 	@Override
 	public void run() {
-		gpsNotifier.run();
+		gpsLogger.run();
 		handler.postDelayed(this, 500);
 	}
 

@@ -16,8 +16,8 @@ import android.os.HandlerThread;
 import android.test.AndroidTestCase;
 import android.test.mock.MockContext;
 
-public class GpsNotifierTestCase extends AndroidTestCase {
-	GpsLogger trackingNotifier;
+public class GpsLoggerTestCase extends AndroidTestCase {
+	GpsLogger gpsLogger;
 	LocationManager mockLocationManager;
 	Long currentMillis = System.currentTimeMillis();
 	Boolean isGpsProviderEnabled = true;
@@ -51,7 +51,7 @@ public class GpsNotifierTestCase extends AndroidTestCase {
 	};
 
 	HandlerThread handlerThread = new HandlerThread(
-			GpsNotifierTestCase.class.getSimpleName()) {
+			GpsLoggerTestCase.class.getSimpleName()) {
 		@Override
 		public void run() {
 			try {
@@ -120,11 +120,11 @@ public class GpsNotifierTestCase extends AndroidTestCase {
 
 	public void xtest_定数時間内に位置を受信しなかった場合再起動する() {
 		assertRequestLocationUpdates();
-		currentMillis += trackingNotifier.getRestartTimeout();
-		trackingNotifier.run();
+		currentMillis += gpsLogger.getRestartTimeout();
+		gpsLogger.run();
 		assertRemoveUpdates();
-		currentMillis += trackingNotifier.getSleepTimeout();
-		trackingNotifier.run();
+		currentMillis += gpsLogger.getSleepTimeout();
+		gpsLogger.run();
 		assertRequestLocationUpdates();
 	}
 
@@ -133,41 +133,41 @@ public class GpsNotifierTestCase extends AndroidTestCase {
 		assertRequestLocationUpdates();
 
 		// 一定以上受信で再起動しない
-		currentMillis += trackingNotifier.getRestartTimeout() / 2;
-		trackingNotifier.run();
-		trackingNotifier.onSatellitesCountChanged(1, USCFULT);
-		trackingNotifier.run();
-		currentMillis += trackingNotifier.getRestartTimeout() / 10 * 9;
-		trackingNotifier.run();
+		currentMillis += gpsLogger.getRestartTimeout() / 2;
+		gpsLogger.run();
+		gpsLogger.onSatellitesCountChanged(1, USCFULT);
+		gpsLogger.run();
+		currentMillis += gpsLogger.getRestartTimeout() / 10 * 9;
+		gpsLogger.run();
 		assertRemoveUpdates(0);
 
 		// 受信がなければ再起動
-		currentMillis += trackingNotifier.getRestartTimeout() / 2;
-		trackingNotifier.run();
-		currentMillis += trackingNotifier.getRestartTimeout() / 10 * 9;
-		trackingNotifier.run();
+		currentMillis += gpsLogger.getRestartTimeout() / 2;
+		gpsLogger.run();
+		currentMillis += gpsLogger.getRestartTimeout() / 10 * 9;
+		gpsLogger.run();
 		assertRemoveUpdates();
-		currentMillis += trackingNotifier.getSleepTimeout();
-		trackingNotifier.run();
+		currentMillis += gpsLogger.getSleepTimeout();
+		gpsLogger.run();
 		assertRequestLocationUpdates();
 
 		// 定数値以下なら再起動
-		currentMillis += trackingNotifier.getRestartTimeout() / 2;
-		trackingNotifier.run();
-		trackingNotifier.onSatellitesCountChanged(1, USCFULT - 1);
-		currentMillis += trackingNotifier.getRestartTimeout() / 10 * 9;
-		trackingNotifier.run();
+		currentMillis += gpsLogger.getRestartTimeout() / 2;
+		gpsLogger.run();
+		gpsLogger.onSatellitesCountChanged(1, USCFULT - 1);
+		currentMillis += gpsLogger.getRestartTimeout() / 10 * 9;
+		gpsLogger.run();
 		assertRemoveUpdates();
-		currentMillis += trackingNotifier.getSleepTimeout();
-		trackingNotifier.run();
+		currentMillis += gpsLogger.getSleepTimeout();
+		gpsLogger.run();
 		assertRequestLocationUpdates();
 
 		// 一定以上受信で再起動しない
-		currentMillis += trackingNotifier.getRestartTimeout() / 2;
-		trackingNotifier.run();
-		trackingNotifier.onSatellitesCountChanged(1, USCFULT * 2);
-		currentMillis += trackingNotifier.getRestartTimeout() / 10 * 9;
-		trackingNotifier.run();
+		currentMillis += gpsLogger.getRestartTimeout() / 2;
+		gpsLogger.run();
+		gpsLogger.onSatellitesCountChanged(1, USCFULT * 2);
+		currentMillis += gpsLogger.getRestartTimeout() / 10 * 9;
+		gpsLogger.run();
 		assertRemoveUpdates(0);
 	}
 
@@ -179,36 +179,36 @@ public class GpsNotifierTestCase extends AndroidTestCase {
 		assertRequestLocationUpdates();
 
 		// 受信があったので再起動しない
-		currentMillis += trackingNotifier.getRestartTimeout() / 2;
-		trackingNotifier.run();
-		trackingNotifier.onLocationChanged(l);
-		trackingNotifier.run();
-		currentMillis += trackingNotifier.getRestartTimeout() / 10 * 9;
-		trackingNotifier.run();
+		currentMillis += gpsLogger.getRestartTimeout() / 2;
+		gpsLogger.run();
+		gpsLogger.onLocationChanged(l);
+		gpsLogger.run();
+		currentMillis += gpsLogger.getRestartTimeout() / 10 * 9;
+		gpsLogger.run();
 		assertRemoveUpdates(0);
 
 		// 受信がなければ停止
-		currentMillis += trackingNotifier.getRestartTimeout();
-		trackingNotifier.run();
+		currentMillis += gpsLogger.getRestartTimeout();
+		gpsLogger.run();
 		assertRemoveUpdates();
 
 		// 再起動
-		currentMillis += trackingNotifier.getSleepTimeout();
-		trackingNotifier.run();
+		currentMillis += gpsLogger.getSleepTimeout();
+		gpsLogger.run();
 		assertRequestLocationUpdates();
 
 		// 受信があったので再起動しない
-		currentMillis += trackingNotifier.getRestartTimeout() / 2;
-		trackingNotifier.run();
-		trackingNotifier.onLocationChanged(l);
-		currentMillis += trackingNotifier.getRestartTimeout() / 10 * 9;
-		trackingNotifier.run();
+		currentMillis += gpsLogger.getRestartTimeout() / 2;
+		gpsLogger.run();
+		gpsLogger.onLocationChanged(l);
+		currentMillis += gpsLogger.getRestartTimeout() / 10 * 9;
+		gpsLogger.run();
 		assertRemoveUpdates(0);
 	}
 
 	public void xtest_closeしたらRemoveUpdatesをする() {
 		assertRequestLocationUpdates();
-		trackingNotifier.close();
+		gpsLogger.close();
 		assertRemoveUpdates();
 	}
 
@@ -217,7 +217,7 @@ public class GpsNotifierTestCase extends AndroidTestCase {
 		l1.setLatitude(50);
 		l1.setLongitude(100);
 
-		trackingNotifier.onLocationChanged(l1);
+		gpsLogger.onLocationChanged(l1);
 		// TrackingIntent ti1 = getBroadcast();
 		// assertEquals(l1.getLatitude(),
 		// ti1.getLocation().get().getLatitude());
@@ -228,7 +228,7 @@ public class GpsNotifierTestCase extends AndroidTestCase {
 		l2.setLatitude(-50);
 		l2.setLongitude(-90);
 
-		trackingNotifier.onLocationChanged(l2);
+		gpsLogger.onLocationChanged(l2);
 		// TrackingIntent ti2 = getBroadcast();
 		// assertEquals(l2.getLatitude(),
 		// ti2.getLocation().get().getLatitude());
@@ -238,48 +238,48 @@ public class GpsNotifierTestCase extends AndroidTestCase {
 
 	public void xtest_人工衛星の数を受信したらブロードキャストする() throws InterruptedException {
 		Integer s1 = 10;
-		trackingNotifier.onSatellitesCountChanged(s1, 0);
+		gpsLogger.onSatellitesCountChanged(s1, 0);
 		// TrackingIntent ti1 = getBroadcast();
 		// assertEquals(s1, ti1.getSatellitesCount());
 
 		Integer s2 = 0;
-		trackingNotifier.onSatellitesCountChanged(s2, 0);
+		gpsLogger.onSatellitesCountChanged(s2, 0);
 		// TrackingIntent ti2 = getBroadcast();
 		// assertEquals(s2, ti2.getSatellitesCount());
 	}
 
 	public void xtest_人工衛星の数が変わらない場合ブロードキャストしない() throws InterruptedException {
 		Integer s1 = 10;
-		trackingNotifier.onSatellitesCountChanged(s1, 0);
+		gpsLogger.onSatellitesCountChanged(s1, 0);
 		// TrackingIntent ti1 = getBroadcast();
 		// assertEquals(s1, ti1.getSatellitesCount());
 
 		// ブロードキャストしない。tearDownで確認する
-		trackingNotifier.onSatellitesCountChanged(s1, 0);
-		trackingNotifier.onSatellitesCountChanged(s1, 0);
+		gpsLogger.onSatellitesCountChanged(s1, 0);
+		gpsLogger.onSatellitesCountChanged(s1, 0);
 
 		Integer s2 = 0;
-		trackingNotifier.onSatellitesCountChanged(s2, 0);
+		gpsLogger.onSatellitesCountChanged(s2, 0);
 		// TrackingIntent ti2 = getBroadcast();
 		// assertEquals(s2, ti2.getSatellitesCount());
 	}
 
 	public void xtest_定数秒に一度現在位置をブロードキャストする() throws InterruptedException {
-		trackingNotifier.run();
+		gpsLogger.run();
 		currentMillis += GpsLogger.BROADCAST_PERIOD_MILLIS;
-		trackingNotifier.run();
+		gpsLogger.run();
 
 		// 定数秒に達したのでここでブロードキャストが飛ぶ
 		// TrackingIntent ti1 = getBroadcast();
 		// assertFalse(ti1.getLocation().isPresent());
 
 		// 定数秒に達していないのでブロードキャストは飛ばない
-		trackingNotifier.run();
-		trackingNotifier.run();
+		gpsLogger.run();
+		gpsLogger.run();
 		currentMillis += GpsLogger.BROADCAST_PERIOD_MILLIS / 2;
-		trackingNotifier.run();
+		gpsLogger.run();
 		currentMillis += GpsLogger.BROADCAST_PERIOD_MILLIS;
-		trackingNotifier.run();
+		gpsLogger.run();
 
 		// 定数秒に達したのでここでブロードキャストが飛ぶ
 		// TrackingIntent ti2 = getBroadcast();
@@ -288,9 +288,9 @@ public class GpsNotifierTestCase extends AndroidTestCase {
 
 	public void xtest_位置FIXに利用された人工衛星の数が一定以上の場合定期ブロードキャスト時のLocationの時刻を更新する()
 			throws InterruptedException {
-		trackingNotifier.run();
+		gpsLogger.run();
 		currentMillis += GpsLogger.BROADCAST_PERIOD_MILLIS;
-		trackingNotifier.run();
+		gpsLogger.run();
 
 		// Locationが存在しない場合
 		// assertFalse(getBroadcast().getLocation().isPresent());
@@ -298,34 +298,34 @@ public class GpsNotifierTestCase extends AndroidTestCase {
 		// Locationが存在する場合
 		Location l = new Location("");
 		// long t1 = currentMillis;
-		trackingNotifier.onLocationChanged(l);
+		gpsLogger.onLocationChanged(l);
 		// assertEquals(t1, getBroadcast().getLocation().get().getTime());
 		currentMillis += GpsLogger.BROADCAST_PERIOD_MILLIS;
-		trackingNotifier.run();
+		gpsLogger.run();
 		// assertEquals(t1, getBroadcast().getLocation().get().getTime()); //
 		// 時刻は変わらない
 
 		final Integer USCFULT = GpsLogger.USED_SATELLITES_COUNT_FOR_UPDATE_LOCATION_TIME;
-		trackingNotifier.onSatellitesCountChanged(30, USCFULT / 2);
+		gpsLogger.onSatellitesCountChanged(30, USCFULT / 2);
 		// assertEquals(t1, getBroadcast().getLocation().get().getTime()); //
 		// 時刻は変わらない
 
-		trackingNotifier.onSatellitesCountChanged(30, USCFULT);
+		gpsLogger.onSatellitesCountChanged(30, USCFULT);
 		// assertEquals(currentMillis.longValue(), getBroadcast().getLocation()
 		// .get().getTime()); // 時刻が変更される
 
 		// long t2 = currentMillis;
 		currentMillis += 100;
-		trackingNotifier.onSatellitesCountChanged(30, USCFULT - 1);
+		gpsLogger.onSatellitesCountChanged(30, USCFULT - 1);
 		// assertEquals(t2, getBroadcast().getLocation().get().getTime()); //
 		// 時刻は変わらない
 
 		currentMillis += GpsLogger.BROADCAST_PERIOD_MILLIS;
-		trackingNotifier.run();
+		gpsLogger.run();
 		// assertEquals(t2, getBroadcast().getLocation().get().getTime()); //
 		// 時刻は変わらない
 
-		trackingNotifier.onSatellitesCountChanged(0, USCFULT);
+		gpsLogger.onSatellitesCountChanged(0, USCFULT);
 		// assertEquals(currentMillis.longValue(), getBroadcast().getLocation()
 		// .get().getTime()); // 時刻が変更される
 	}
