@@ -119,7 +119,7 @@ public class OperationListFragmentTestCase
 		assertNull(pr.getOffTime);
 	}
 
-	public void test途中まで運行している場合() throws InterruptedException {
+	public void testAlreadyArrived() throws InterruptedException {
 		List<UserJson> users1 = Lists.newArrayList(server.addUser("マイクロ 次郎"));
 		List<UserJson> users2 = Lists.newArrayList(server.addUser("まつもと ゆきひろ"),
 				server.addUser("はしもと ゆきなり"));
@@ -133,21 +133,20 @@ public class OperationListFragmentTestCase
 		server.reservations.get(0).memo = "よやくメモ";
 		solo = new Solo(getInstrumentation(), getActivity());
 		final OperationRecordJson or = server.operationRecords.get(0);
-		solo.waitForCondition(new Condition() {
+		assertTrue(solo.waitForCondition(new Condition() {
 			@Override
 			public boolean isSatisfied() {
 				return or.arrivedAt != null;
 			}
-		}, 5000);
+		}, 5000));
 		assertNull(or.departedAt);
 		solo.clickOnText(solo.getString(R.string.today_operation_schedule));
 		solo.clickOnText("南浦和", 2); // 裏の画面にも「南浦和」があるため
-		Thread.sleep(3000);
-		solo.waitForCondition(new Condition() {
+		assertTrue(solo.waitForCondition(new Condition() {
 			@Override
 			public boolean isSatisfied() {
 				return or.arrivedAt == null;
 			}
-		}, 5000);
+		}, 5000));
 	}
 }
