@@ -28,6 +28,7 @@
 	<uses-permission android:name="android.permission.WRITE_PROFILE" />
 	<uses-permission android:name="android.permission.WRITE_SETTINGS" />
 	<uses-permission android:name="com.android.vending.CHECK_LICENSE" />
+
 	<uses-permission
 		android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
 
@@ -47,6 +48,7 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
+		<activity android:name=".ui.activity.EmptyActivity" />
 
 		<receiver
 			android:name=".service.startupservice.StartupService$StartupBroadcastReceiver">
@@ -69,14 +71,19 @@
 			</intent-filter>
 		</receiver>
 
-		<activity android:name=".ui.activity.EmptyActivity" />
+		<receiver
+			android:name="com.kogasoftware.odt.invehicledevice.service.voicedownloaderservice.VoiceDownloadAlarmReceiver" />
+
 		<service android:name=".service.voiceservice.VoiceService"
 			android:process=":VoiceService" android:exported="false" />
 		<service android:name=".service.logservice.LogService"
 			android:process=":LogService" android:exported="false" />
 		<service android:name=".service.startupservice.StartupService"
 			android:process=":StartupService" android:exported="false" />
-		<service android:name=".service.serviceunitstatuslogservice.ServiceUnitStatusLogService"
+		<service
+			android:name=".service.serviceunitstatuslogservice.ServiceUnitStatusLogService"
 			android:process=":ServiceUnitStatusLogService" android:exported="false" />
+		<service
+			android:name="com.kogasoftware.odt.invehicledevice.service.voicedownloaderservice.VoiceDownloaderService" />
 	</application>
 </manifest>
