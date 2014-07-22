@@ -93,9 +93,6 @@ public class GpsLogger implements Runnable, LocationListener,
 				start();
 			}
 		}
-		if (currentTimeMillis - lastRunTimeMillis >= BROADCAST_PERIOD_MILLIS) {
-			// sendBroadcast();
-		}
 		lastRunTimeMillis = currentTimeMillis;
 	}
 
