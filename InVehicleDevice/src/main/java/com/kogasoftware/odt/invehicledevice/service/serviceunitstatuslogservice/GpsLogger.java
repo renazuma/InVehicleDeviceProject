@@ -20,8 +20,12 @@ import android.util.Log;
 import com.google.common.annotations.VisibleForTesting;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLogs;
 
-public class GpsLogger implements Runnable, LocationListener,
-		GpsStatus.Listener, Closeable {
+public class GpsLogger
+		implements
+			Runnable,
+			LocationListener,
+			GpsStatus.Listener,
+			Closeable {
 	private static final Integer DEFAULT_MIN_TIME = 1000;
 	private static final Integer DEFAULT_MIN_DISTANCE = 1;
 	private static final Integer DEFAULT_RESTART_TIMEOUT = 90 * 1000;
@@ -41,7 +45,6 @@ public class GpsLogger implements Runnable, LocationListener,
 	private Boolean started = false;
 	private Long startedTimeMillis = DateTimeUtils.currentTimeMillis();
 	private Long stoppedTimeMillis = DateTimeUtils.currentTimeMillis();
-	private Long lastRunTimeMillis = DateTimeUtils.currentTimeMillis();
 	private Long lastLocationReceivedTimeMillis = 0L;
 
 	public GpsLogger(Context context) {
@@ -93,7 +96,6 @@ public class GpsLogger implements Runnable, LocationListener,
 				start();
 			}
 		}
-		lastRunTimeMillis = currentTimeMillis;
 	}
 
 	@Override
@@ -110,18 +112,18 @@ public class GpsLogger implements Runnable, LocationListener,
 	public void onStatusChanged(String provider, int status, Bundle extras) {
 		String message = "onStatusChanged(\"" + provider + "\", ";
 		switch (status) {
-		case LocationProvider.OUT_OF_SERVICE:
-			message += "OUT_OF_SERVICE";
-			break;
-		case LocationProvider.AVAILABLE:
-			message += "AVAILABLE";
-			break;
-		case LocationProvider.TEMPORARILY_UNAVAILABLE:
-			message += "TEMPORARILY_UNAVAILABLE";
-			break;
-		default:
-			message += "unknown:" + status;
-			break;
+			case LocationProvider.OUT_OF_SERVICE :
+				message += "OUT_OF_SERVICE";
+				break;
+			case LocationProvider.AVAILABLE :
+				message += "AVAILABLE";
+				break;
+			case LocationProvider.TEMPORARILY_UNAVAILABLE :
+				message += "TEMPORARILY_UNAVAILABLE";
+				break;
+			default :
+				message += "unknown:" + status;
+				break;
 		}
 		Log.d(TAG, message + ", " + extras + ")");
 	}
@@ -138,21 +140,21 @@ public class GpsLogger implements Runnable, LocationListener,
 	@Override
 	public void onGpsStatusChanged(int event) {
 		switch (event) {
-		case GpsStatus.GPS_EVENT_STARTED:
-			Log.d(TAG, "onGpsStatusChanged(STARTED)");
-			break;
-		case GpsStatus.GPS_EVENT_STOPPED:
-			Log.d(TAG, "onGpsStatusChanged(STOPPED)");
-			break;
-		case GpsStatus.GPS_EVENT_FIRST_FIX:
-			Log.d(TAG, "onGpsStatusChanged(FIRST_FIX)");
-			break;
-		case GpsStatus.GPS_EVENT_SATELLITE_STATUS:
-			// Log.d(TAG, "onGpsStatusChanged(SATELLITE_STATUS)");
-			break;
-		default:
-			Log.d(TAG, "onGpsStatusChanged(unknown:" + event + ")");
-			break;
+			case GpsStatus.GPS_EVENT_STARTED :
+				Log.d(TAG, "onGpsStatusChanged(STARTED)");
+				break;
+			case GpsStatus.GPS_EVENT_STOPPED :
+				Log.d(TAG, "onGpsStatusChanged(STOPPED)");
+				break;
+			case GpsStatus.GPS_EVENT_FIRST_FIX :
+				Log.d(TAG, "onGpsStatusChanged(FIRST_FIX)");
+				break;
+			case GpsStatus.GPS_EVENT_SATELLITE_STATUS :
+				// Log.d(TAG, "onGpsStatusChanged(SATELLITE_STATUS)");
+				break;
+			default :
+				Log.d(TAG, "onGpsStatusChanged(unknown:" + event + ")");
+				break;
 		}
 		gpsStatus = locationManager.getGpsStatus(gpsStatus); // onGpsStatusChanged()以外で呼ばないように注意する
 		Integer satellitesCount = 0;
