@@ -143,7 +143,9 @@ public class InformationBarFragment
 				.findViewById(R.id.present_time_text_view);
 		networkStrengthImageView = (ImageView) view
 				.findViewById(R.id.network_strength_image_view);
-		networkStrengthImageView.setOnClickListener(new OnClickListener() {
+		ImageView openLoginImageView = (ImageView) view
+				.findViewById(R.id.open_login_image_view);
+		openLoginImageView.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				Activity activity = getActivity();
