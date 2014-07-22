@@ -10,7 +10,6 @@ public class Reservations {
 	public static class Columns implements BaseColumns {
 		public static final String USER_ID = "user_id";
 		public static final String MEMO = "memo";
-		public static final String PASSENGER_COUNT = "passenger_count";
 		public static final String DEPARTURE_SCHEDULE_ID = "departure_schedule_id";
 		public static final String ARRIVAL_SCHEDULE_ID = "arrival_schedule_id";
 	}

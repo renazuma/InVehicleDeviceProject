@@ -149,8 +149,16 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
 						user.toContentValues());
 			}
 			for (PassengerRecordJson passengerRecord : passengerRecords) {
+				ContentValues values;
+				try {
+					values = passengerRecord.toContentValues(reservations);
+				} catch (IOException e) {
+					Log.e(TAG, "Can't create passenger_records values for id="
+							+ passengerRecord.id, e);
+					continue;
+				}
 				database.replaceOrThrow(PassengerRecords.TABLE_NAME, null,
-						passengerRecord.toContentValues());
+						values);
 			}
 			for (OperationRecordJson operationRecord : operationRecords) {
 				database.replaceOrThrow(OperationRecords.TABLE_NAME, null,
@@ -210,7 +218,6 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
 			contentResolver.notifyChange(uri, null);
 		}
 	}
-
 	@Override
 	protected void runSession(URI baseUri, String authenticationToken) {
 		if (isDirty()) {

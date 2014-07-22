@@ -4,7 +4,6 @@ import java.util.List;
 
 import android.content.ContentValues;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.Reservations;
@@ -24,8 +23,6 @@ public class ReservationJson {
 		reservationValues.put(Reservations.Columns.USER_ID, userId);
 		reservationValues.put(Reservations.Columns.MEMO,
 				Strings.nullToEmpty(memo));
-		reservationValues.put(Reservations.Columns.PASSENGER_COUNT,
-				Objects.firstNonNull(passengerCount, 1));
 		reservationValues.put(Reservations.Columns.DEPARTURE_SCHEDULE_ID,
 				departureScheduleId);
 		reservationValues.put(Reservations.Columns.ARRIVAL_SCHEDULE_ID,

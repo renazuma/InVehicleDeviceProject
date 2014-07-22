@@ -11,7 +11,6 @@ import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.PassengerRecordJson;
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.UserJson;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecords;
-import com.kogasoftware.odt.invehicledevice.contentprovider.task.PatchPassengerRecordTask;
 
 public class PatchPassengerRecordTaskTestCase
 		extends
@@ -43,6 +42,7 @@ public class PatchPassengerRecordTaskTestCase
 		values1.put(PassengerRecords.Columns.GET_OFF_TIME, now.getMillis());
 		values1.put(PassengerRecords.Columns.RESERVATION_ID, pr1.reservationId);
 		values1.put(PassengerRecords.Columns.USER_ID, pr1.userId);
+		values1.put(PassengerRecords.Columns.PASSENGER_COUNT, 1);
 		values1.put(PassengerRecords.Columns.SERVER_VERSION, 5);
 		values1.put(PassengerRecords.Columns.LOCAL_VERSION, 8);
 		database.insertOrThrow(PassengerRecords.TABLE_NAME, null, values1);
@@ -53,6 +53,7 @@ public class PatchPassengerRecordTaskTestCase
 		values2.put(PassengerRecords.Columns.GET_OFF_TIME, now.getMillis());
 		values2.put(PassengerRecords.Columns.RESERVATION_ID, pr2.reservationId);
 		values2.put(PassengerRecords.Columns.USER_ID, pr2.userId);
+		values2.put(PassengerRecords.Columns.PASSENGER_COUNT, 1);
 		values2.put(PassengerRecords.Columns.SERVER_VERSION, 2);
 		values2.put(PassengerRecords.Columns.LOCAL_VERSION, 2);
 		database.insertOrThrow(PassengerRecords.TABLE_NAME, null, values2);

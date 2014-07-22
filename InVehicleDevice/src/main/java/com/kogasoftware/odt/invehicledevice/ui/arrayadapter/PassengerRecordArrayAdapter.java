@@ -153,8 +153,7 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 		PassengerRecord passengerRecord = getItem(position);
 		TextView passengerCountTextView = (TextView) convertView
 				.findViewById(R.id.passenger_count_text_view);
-		passengerCountTextView.setText(passengerRecord.scheduledPassengerCount
-				+ "名");
+		passengerCountTextView.setText(passengerRecord.passengerCount + "名");
 
 		// メモボタン
 		View memoButton = convertView.findViewById(R.id.memo_button);

@@ -17,5 +17,6 @@ public class PassengerRecords {
 		public static final String SERVER_VERSION = "server_version";
 		public static final String IGNORE_GET_ON_MISS = "ignore_get_on_miss";
 		public static final String IGNORE_GET_OFF_MISS = "ignore_get_off_miss";
+		public static final String REPRESENTATIVE = "representative";
 	}
 }

@@ -14,6 +14,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 
+import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Lists;
 import com.kogasoftware.android.CursorReader;
 import com.kogasoftware.odt.invehicledevice.contentprovider.InVehicleDeviceContentProvider;
@@ -28,7 +29,11 @@ public class PassengerRecord implements Serializable {
 	public static final Comparator<PassengerRecord> DEFAULT_COMPARATOR = new Comparator<PassengerRecord>() {
 		@Override
 		public int compare(PassengerRecord l, PassengerRecord r) {
-			return l.id.compareTo(r.id);
+			return ComparisonChain.start()
+					.compare(r.reservationId, l.reservationId)
+					.compareTrueFirst(r.representative, l.representative)
+					.compare(r.getDisplayName(), l.getDisplayName())
+					.compare(r.userId, l.userId).compare(r.id, l.id).result();
 		}
 	};
 	public static final int SELECTED_GET_OFF_COLOR = Color
@@ -41,7 +46,6 @@ public class PassengerRecord implements Serializable {
 	public DateTime getOffTime;
 	public String firstName;
 	public String lastName;
-	public Integer scheduledPassengerCount;
 	public Long reservationId;
 	public Long userId;
 	public Long arrivalScheduleId;
@@ -53,6 +57,8 @@ public class PassengerRecord implements Serializable {
 	public Boolean neededCare;
 	public Boolean ignoreGetOnMiss;
 	public Boolean ignoreGetOffMiss;
+	public Boolean representative;
+	public Long passengerCount;
 
 	public PassengerRecord(Cursor cursor) {
 		CursorReader reader = new CursorReader(cursor);
@@ -77,7 +83,10 @@ public class PassengerRecord implements Serializable {
 		handicapped = reader.readBoolean(Users.Columns.HANDICAPPED);
 		wheelchair = reader.readBoolean(Users.Columns.WHEELCHAIR);
 		neededCare = reader.readBoolean(Users.Columns.NEEDED_CARE);
-		scheduledPassengerCount = 1;
+		representative = reader
+				.readBoolean(PassengerRecords.Columns.REPRESENTATIVE);
+		passengerCount = reader
+				.readLong(PassengerRecords.Columns.PASSENGER_COUNT);
 	}
 
 	public List<String> getUserNotes() {
@@ -181,7 +190,6 @@ public class PassengerRecord implements Serializable {
 		StringBuilder sql = new StringBuilder();
 		sql.append(" select pr.*");
 		sql.append(" , r.memo reservation_memo");
-		sql.append(" , r.passenger_count");
 		sql.append(" , r.arrival_schedule_id");
 		sql.append(" , r.departure_schedule_id");
 		sql.append(" , u.first_name");

@@ -286,18 +286,18 @@ public class OperationScheduleArrayAdapter
 				? View.VISIBLE
 				: View.GONE);
 
-		Integer getOffPassengerCount = 0;
+		Long getOffPassengerCount = 0L;
 		for (PassengerRecord passengerRecord : passengerRecords) {
 			if (operationSchedule.id.equals(passengerRecord.arrivalScheduleId)) {
 				if (showPassengerRecords) {
 					passengerRecordsView.addView(createPassengerRecordRow(
 							operationSchedule, passengerRecord, false));
 				}
-				getOffPassengerCount += passengerRecord.scheduledPassengerCount;
+				getOffPassengerCount += passengerRecord.passengerCount;
 			}
 		}
 
-		Integer getOnPassengerCount = 0;
+		Long getOnPassengerCount = 0L;
 		for (PassengerRecord passengerRecord : passengerRecords) {
 			if (operationSchedule.id
 					.equals(passengerRecord.departureScheduleId)) {
@@ -305,7 +305,7 @@ public class OperationScheduleArrayAdapter
 					passengerRecordsView.addView(createPassengerRecordRow(
 							operationSchedule, passengerRecord, true));
 				}
-				getOnPassengerCount += passengerRecord.scheduledPassengerCount;
+				getOnPassengerCount += passengerRecord.passengerCount;
 			}
 		}
 
@@ -371,7 +371,7 @@ public class OperationScheduleArrayAdapter
 
 		TextView countView = (TextView) row
 				.findViewById(R.id.passenger_count_text_view);
-		countView.setText(passengerRecord.scheduledPassengerCount + "名");
+		countView.setText(passengerRecord.passengerCount + "名");
 		Button userMemoButton = (Button) row
 				.findViewById(R.id.user_memo_button);
 		userMemoButton.setTag(passengerRecord);
