@@ -48,6 +48,18 @@ public class SynchronizationTask implements Runnable {
 	protected final SQLiteDatabase database;
 	protected final ScheduledExecutorService executorService;
 
+	public static String dumpEntity(byte[] entity) {
+		try {
+			return Charsets.UTF_8.newDecoder().decode(ByteBuffer.wrap(entity))
+					.toString();
+		} catch (CharacterCodingException e) {
+		}
+		if (entity.length > 5000) {
+			entity = Arrays.copyOf(entity, 5000);
+		}
+		return "[" + Joiner.on(",").join(Arrays.asList(entity)) + "]";
+	}
+
 	public static interface Callback {
 		void onSuccess(HttpResponse response, byte[] entity);
 		void onFailure(HttpResponse response, byte[] entity);
@@ -61,22 +73,10 @@ public class SynchronizationTask implements Runnable {
 			this.tag = tag;
 		}
 
-		private String parseEntity(byte[] entity) {
-			try {
-				return Charsets.UTF_8.newDecoder()
-						.decode(ByteBuffer.wrap(entity)).toString();
-			} catch (CharacterCodingException e) {
-			}
-			if (entity.length > 5000) {
-				entity = Arrays.copyOf(entity, 5000);
-			}
-			return "[" + Joiner.on(",").join(Arrays.asList(entity)) + "]";
-		}
-
 		@Override
 		public void onSuccess(HttpResponse response, byte[] entity) {
 			Log.i(tag, "onSuccess: " + response.getStatusLine() + " entity="
-					+ parseEntity(entity));
+					+ dumpEntity(entity));
 		}
 
 		@Override
@@ -87,7 +87,7 @@ public class SynchronizationTask implements Runnable {
 		@Override
 		public void onFailure(HttpResponse response, byte[] entity) {
 			Log.e(tag, "onFailure: " + response.getStatusLine() + " entity="
-					+ parseEntity(entity));
+					+ dumpEntity(entity));
 		}
 	}
 

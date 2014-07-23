@@ -242,8 +242,8 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
 						if (response.getStatusLine().getStatusCode() % 100 == 5) {
 							submitRetry();
 						} else {
-							Log.e(TAG, "onFailure: response=" + response
-									+ " entity=" + entity);
+							Log.e(TAG, "onFailure: " + response.getStatusLine()
+									+ " entity=" + dumpEntity(entity));
 						}
 					}
 
