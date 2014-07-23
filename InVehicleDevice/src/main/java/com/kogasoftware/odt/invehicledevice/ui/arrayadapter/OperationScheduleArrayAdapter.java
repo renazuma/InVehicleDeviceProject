@@ -313,16 +313,17 @@ public class OperationScheduleArrayAdapter
 				.findViewById(R.id.operation_schedule_get_on_passenger_count_text_view);
 		getOnPassengerCountTextView.setText("乗車"
 				+ String.format("%3d", getOnPassengerCount) + "名");
-		getOnPassengerCountTextView.setVisibility(getOnPassengerCount.equals(0)
-				? View.INVISIBLE
-				: View.VISIBLE);
+		getOnPassengerCountTextView.setVisibility(getOnPassengerCount > 0
+				? View.VISIBLE
+				: View.INVISIBLE);
 
 		TextView getOffPassengerCountTextView = (TextView) convertView
 				.findViewById(R.id.operation_schedule_get_off_passenger_count_text_view);
 		getOffPassengerCountTextView.setText("降車"
 				+ String.format("%3d", getOffPassengerCount) + "名");
-		getOffPassengerCountTextView.setVisibility(getOffPassengerCount
-				.equals(0) ? View.INVISIBLE : View.VISIBLE);
+		getOffPassengerCountTextView.setVisibility(getOffPassengerCount > 0
+				? View.VISIBLE
+				: View.INVISIBLE);
 
 		TextView arrivalEstimateTextView = (TextView) convertView
 				.findViewById(R.id.operation_schedule_arrival_estimate_text_view);
