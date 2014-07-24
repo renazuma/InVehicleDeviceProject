@@ -9,7 +9,6 @@ import org.joda.time.format.ISODateTimeFormat;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -36,7 +35,6 @@ public class PatchVehicleNotificationTask extends SynchronizationTask {
 				"response IS NOT NULL AND read_at IS NOT NULL", null, null,
 				null, null);
 		try {
-			DatabaseUtils.dumpCursor(cursor);
 			if (!cursor.moveToFirst()) {
 				return nodes;
 			}
