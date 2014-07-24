@@ -227,7 +227,6 @@ public class SynchronizationTask implements Runnable {
 	private void doSessionAndCallback(URIBuilder uriBuilder, String resource,
 			HttpRequestBase request, Callback callback) {
 		uriBuilder.setPath("/in_vehicle_devices/" + resource);
-		HttpClient client = new DefaultHttpClient();
 		URI uri;
 		try {
 			uri = uriBuilder.build();
@@ -238,6 +237,7 @@ public class SynchronizationTask implements Runnable {
 		request.addHeader("Accept", "application/json");
 		request.setURI(uri);
 		HttpResponse response;
+		HttpClient client = new DefaultHttpClient();
 		try {
 			response = client.execute(request);
 		} catch (ClientProtocolException e) {
@@ -246,6 +246,8 @@ public class SynchronizationTask implements Runnable {
 		} catch (IOException e) {
 			callback.onException(e);
 			return;
+		} finally {
+			client.getConnectionManager().shutdown();
 		}
 		byte[] entity = new byte[0];
 		HttpEntity entityStream = response.getEntity();
