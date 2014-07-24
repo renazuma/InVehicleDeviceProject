@@ -104,37 +104,44 @@ public class SynchronizationTask implements Runnable {
 
 	@Override
 	public void run() {
-		String[] columns = new String[]{InVehicleDevices.Columns.URL,
-				InVehicleDevices.Columns.AUTHENTICATION_TOKEN};
-		String url;
-		String authenticationToken;
-		Cursor cursor = database.query(InVehicleDevices.TABLE_NAME, columns,
-				null, null, null, null, null);
 		try {
-			if (!cursor.moveToFirst()) {
+			String[] columns = new String[]{InVehicleDevices.Columns.URL,
+					InVehicleDevices.Columns.AUTHENTICATION_TOKEN};
+			String url;
+			String authenticationToken;
+			Cursor cursor = database.query(InVehicleDevices.TABLE_NAME,
+					columns, null, null, null, null, null);
+			try {
+				if (!cursor.moveToFirst()) {
+					return;
+				}
+				url = cursor.getString(cursor
+						.getColumnIndexOrThrow(InVehicleDevices.Columns.URL));
+				authenticationToken = cursor
+						.getString(cursor
+								.getColumnIndexOrThrow(InVehicleDevices.Columns.AUTHENTICATION_TOKEN));
+			} finally {
+				cursor.close();
+			}
+
+			if (authenticationToken == null || url == null) {
 				return;
 			}
-			url = cursor.getString(cursor
-					.getColumnIndexOrThrow(InVehicleDevices.Columns.URL));
-			authenticationToken = cursor
-					.getString(cursor
-							.getColumnIndexOrThrow(InVehicleDevices.Columns.AUTHENTICATION_TOKEN));
-		} finally {
-			cursor.close();
-		}
 
-		if (authenticationToken == null || url == null) {
-			return;
+			URI uri;
+			try {
+				uri = new URI(url);
+			} catch (URISyntaxException e) {
+				Log.e(TAG,
+						"Syntax error: in_vehicle_devices.url (" + url + ")", e);
+				return;
+			}
+			runSession(uri, authenticationToken);
+		} catch (RuntimeException e) {
+			// ExecutorService上で例外が発生すると、どこにも表示されないためここでログに出しておく
+			Log.e(TAG, "Unexpected RuntimeException", e);
+			throw e;
 		}
-
-		URI uri;
-		try {
-			uri = new URI(url);
-		} catch (URISyntaxException e) {
-			Log.e(TAG, "Syntax error: in_vehicle_devices.url (" + url + ")", e);
-			return;
-		}
-		runSession(uri, authenticationToken);
 	}
 
 	protected List<ObjectNode> toObjectNodes(Cursor cursor) {
