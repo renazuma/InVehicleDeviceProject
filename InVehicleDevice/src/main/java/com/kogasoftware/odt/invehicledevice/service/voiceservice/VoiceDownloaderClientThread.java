@@ -163,8 +163,7 @@ public class VoiceDownloaderClientThread extends HandlerThread
 	File getVoiceFile() throws IOException {
 		String fileName = Helpers.getExpansionAPKFileName(context, true,
 				VOICE_EXPANSION_APK_VERSION);
-		return getExternalStorageFile("Android", "obb",
-				context.getPackageName(), fileName);
+		return new File(Helpers.generateSaveFileName(context, fileName));
 	}
 
 	public static File getVoiceOutputDir() throws IOException {
