@@ -33,7 +33,7 @@ public class VoiceDownloaderClientThread extends HandlerThread
 			IDownloaderClient {
 	private static final String TAG = VoiceDownloaderClientThread.class
 			.getSimpleName();
-	private static final Integer VOICE_EXPANSION_APK_VERSION = 9157;
+	private static final Integer VOICE_EXPANSION_APK_VERSION = 9224;
 	private IDownloaderService downloaderService;
 	private IStub downloaderClientStub;
 	private final Object extractVoiceFileLock = new Object();
