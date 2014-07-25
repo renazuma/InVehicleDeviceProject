@@ -250,4 +250,15 @@ public class VoiceDownloaderClientThread extends HandlerThread
 			}
 		}.start();
 	}
+
+	@Override
+	public void run() {
+		try {
+			super.run();
+		} finally {
+			if (downloaderClientStub != null) {
+				downloaderClientStub.disconnect(context);
+			}
+		}
+	}
 }
