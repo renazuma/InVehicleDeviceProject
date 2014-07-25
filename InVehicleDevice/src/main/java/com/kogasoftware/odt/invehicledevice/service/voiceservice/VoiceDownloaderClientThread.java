@@ -213,7 +213,7 @@ public class VoiceDownloaderClientThread extends HandlerThread
 				File dir = voiceFile.getParentFile();
 				if (dir == null) {
 					Log.v(TAG, "isVoiceFileAccessible() directory not found");
-				} else if (dir.isDirectory()) {
+				} else if (!dir.isDirectory()) {
 					Log.v(TAG, "isVoiceFileAccessible() !\"" + dir
 							+ "\".isDirectory()");
 				} else {
