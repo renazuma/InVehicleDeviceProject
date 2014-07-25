@@ -236,10 +236,15 @@ public class SynchronizationTask implements Runnable {
 		request.addHeader("Content-Type", "application/json");
 		request.addHeader("Accept", "application/json");
 		request.setURI(uri);
+		byte[] entity = new byte[0];
 		HttpResponse response;
 		HttpClient client = new DefaultHttpClient();
 		try {
 			response = client.execute(request);
+			HttpEntity entityStream = response.getEntity();
+			if (entityStream != null) {
+				entity = EntityUtils.toByteArray(entityStream);
+			}
 		} catch (ClientProtocolException e) {
 			callback.onException(e);
 			return;
@@ -248,16 +253,6 @@ public class SynchronizationTask implements Runnable {
 			return;
 		} finally {
 			client.getConnectionManager().shutdown();
-		}
-		byte[] entity = new byte[0];
-		HttpEntity entityStream = response.getEntity();
-		if (entityStream != null) {
-			try {
-				entity = EntityUtils.toByteArray(entityStream);
-			} catch (IOException e) {
-				callback.onException(e);
-				return;
-			}
 		}
 		int statusCode = response.getStatusLine().getStatusCode();
 		if (statusCode / 100 == 4 || statusCode / 100 == 5) {
