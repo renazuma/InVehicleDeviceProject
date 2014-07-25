@@ -41,7 +41,6 @@ public class UploadThread extends Thread
 	private final String deviceId;
 	private final Object awsCredentialsLock = new Object();
 	private AWSCredentials awsCredentials;
-	private AmazonS3Client s3Client;
 
 	public UploadThread(Context context, BlockingQueue<File> uploadFiles) {
 		this.context = context;
@@ -150,14 +149,22 @@ public class UploadThread extends Thread
 
 	@Override
 	public boolean queueIdle() {
-		Boolean success = false;
+		try {
+			AmazonS3Client s3Client = getAmazonS3Client();
+			try {
+				return queueIdle(s3Client);
+			} finally {
+				s3Client.shutdown();
+			}
+		} catch (IOException e) {
+			return true;
+		}
+	}
+
+	private boolean queueIdle(AmazonS3Client s3Client) {
 		try {
 			Thread.sleep(5000);
-			if (s3Client == null) {
-				s3Client = getAmazonS3Client();
-			}
 			uploadOneFile(s3Client, deviceId);
-			success = true;
 		} catch (InterruptedException e) {
 			Looper.myLooper().quit();
 			return false;
@@ -167,11 +174,6 @@ public class UploadThread extends Thread
 			Log.w(TAG, e);
 		} catch (IOException e) {
 			Log.e(TAG, e.toString(), e);
-		} finally {
-			if (s3Client != null && !success) {
-				s3Client.shutdown();
-				s3Client = null;
-			}
 		}
 		return true;
 	}
