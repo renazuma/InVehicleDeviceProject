@@ -129,8 +129,11 @@ public class VoiceDownloaderClientThread extends HandlerThread
 				updateVoiceFileStateText("⚠ PAUSED_SDCARD_UNAVAILABLE");
 				break;
 			case IDownloaderClient.STATE_COMPLETED :
-				updateVoiceFileStateText("音声ファイルの展開中");
-				startExtractVoiceFileThreadIfRequired();
+				if (isVoiceFileAccessible()) {
+					startExtractVoiceFileThreadIfRequired();
+				} else {
+					updateVoiceFileStateText("音声ファイルのダウンロードに失敗しました");
+				}
 				break;
 			default :
 				updateVoiceFileStateText("⚠ State: " + newState);
