@@ -235,7 +235,7 @@ public class VoiceDownloaderClientThread extends HandlerThread
 			@Override
 			public void run() {
 				try {
-					updateVoiceFileStateText("展開中");
+					updateVoiceFileStateText("音声ファイルの展開中");
 					extractVoiceFileIfRequired();
 					File outputDirectory = getVoiceOutputDir();
 					if (!outputDirectory.isDirectory()) {
