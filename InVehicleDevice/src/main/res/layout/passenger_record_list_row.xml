@@ -26,7 +26,7 @@
     <FrameLayout
         android:id="@+id/memo_button_layout"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="53sp"
         android:layout_centerVertical="true"
         android:layout_toLeftOf="@+id/passenger_count_text_view" >
 
