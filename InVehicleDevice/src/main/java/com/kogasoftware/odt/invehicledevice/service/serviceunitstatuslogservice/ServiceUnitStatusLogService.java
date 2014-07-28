@@ -74,9 +74,6 @@ public class ServiceUnitStatusLogService extends Service implements Runnable {
 		gpsLogger = new GpsLogger(this);
 		handler.post(this);
 
-		registerReceiver(batteryBroadcastReceiver, new IntentFilter(
-				Intent.ACTION_BATTERY_CHANGED));
-
 		Boolean useBatteryTemperature;
 		List<Sensor> temperatureSensors = sensorManager
 				.getSensorList(Sensor.TYPE_TEMPERATURE);
@@ -88,6 +85,7 @@ public class ServiceUnitStatusLogService extends Service implements Runnable {
 		} else {
 			useBatteryTemperature = true;
 		}
+		Log.i(TAG, "useBatteryTemperature=" + useBatteryTemperature);
 		batteryBroadcastReceiver = new BatteryBroadcastReceiver(
 				getContentResolver(), useBatteryTemperature);
 
@@ -107,6 +105,8 @@ public class ServiceUnitStatusLogService extends Service implements Runnable {
 		networkStatusLogger = new NetworkStatusLogger(connectivityManager,
 				telephonyManager);
 		handler.post(networkStatusLogger);
+		registerReceiver(batteryBroadcastReceiver, new IntentFilter(
+				Intent.ACTION_BATTERY_CHANGED));
 	}
 	@Override
 	public void onDestroy() {
