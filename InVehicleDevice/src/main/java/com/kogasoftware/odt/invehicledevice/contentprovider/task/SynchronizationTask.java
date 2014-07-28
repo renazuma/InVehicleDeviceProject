@@ -212,15 +212,18 @@ public class SynchronizationTask implements Runnable {
 		} catch (UnsupportedEncodingException e) {
 			throw new IllegalArgumentException(e); // fatal
 		}
-		doSessionAndCallback(new URIBuilder(baseUri), resource, request,
-				callback);
+		URIBuilder uriBuilder = new URIBuilder(baseUri);
+		Log.i(getClass().getSimpleName(), "HTTP " + request.getMethod() + " "
+				+ uriBuilder + " " + rootNode);
+		doSessionAndCallback(uriBuilder, resource, request, callback);
 	}
-
 	private void doHttpRequest(URI baseUri, String resource,
 			String authenticationToken, HttpRequestBase request,
 			Callback callback) {
 		URIBuilder uriBuilder = new URIBuilder(baseUri);
 		uriBuilder.addParameter(AUTHENTICATION_TOKEN_KEY, authenticationToken);
+		Log.i(getClass().getSimpleName(), "HTTP " + request.getMethod() + " "
+				+ uriBuilder);
 		doSessionAndCallback(uriBuilder, resource, request, callback);
 	}
 
