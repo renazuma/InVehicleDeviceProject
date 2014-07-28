@@ -3,7 +3,11 @@ package com.kogasoftware.odt.invehicledevice.ui.activity;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
@@ -16,6 +20,7 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Html;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.contentprovider.model.ServiceProvider;
@@ -24,6 +29,7 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.table.InVehicleDevic
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceProviders;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotifications;
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.SignInErrorBroadcastIntent;
+import com.kogasoftware.odt.invehicledevice.service.startupservice.AirplaneModeOnBroadcastIntent;
 import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.NormalVehicleNotificationFragment;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.OperationListFragment;
@@ -51,6 +57,22 @@ public class InVehicleDeviceActivity extends Activity {
 			+ "/" + OperationListFragment.class;
 	private static final String VEHICLE_NOTIFICATION_ALERT_FRAGMENT_TAG = InVehicleDeviceActivity.class
 			+ "/" + VehicleNotificationAlertFragment.class;
+	private static final String AIRPLANE_MODE_ALERT_DIALOG_FRAGMENT_TAG = InVehicleDeviceActivity.class
+			+ "/" + AirplaneModeAlertDialogFragment.class;
+
+	public static class AirplaneModeAlertDialogFragment extends DialogFragment {
+		@Override
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+			builder.setIcon(android.R.drawable.ic_dialog_info);
+			builder.setMessage(Html
+					.fromHtml("<big><big>機内モードをOFFにしてください</big></big>"));
+			builder.setPositiveButton(
+					Html.fromHtml("<big><big>確認</big></big>"), null);
+			return builder.create();
+		}
+	}
+
 	private LoaderManager loaderManager;
 	private Boolean destroyed = true;
 	private Handler handler;
@@ -63,6 +85,18 @@ public class InVehicleDeviceActivity extends Activity {
 				@Override
 				public void run() {
 					showLoginFragment();
+				}
+			});
+		}
+	};
+
+	private final BroadcastReceiver airplaneModeOnReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					showAirplaneModeAlertDialogFragment();
 				}
 			});
 		}
@@ -316,6 +350,8 @@ public class InVehicleDeviceActivity extends Activity {
 		loaderManager = getLoaderManager();
 		registerReceiver(signInErrorReceiver, new IntentFilter(
 				SignInErrorBroadcastIntent.ACTION));
+		registerReceiver(airplaneModeOnReceiver, new IntentFilter(
+				AirplaneModeOnBroadcastIntent.ACTION));
 		loaderManager.initLoader(IN_VEHICLE_DEVICE_LOADER_ID, null,
 				inVehicleDeviceLoaderCallbacks);
 		loaderManager.initLoader(SERVICE_PROVIDER_LOADER_ID, null,
@@ -334,6 +370,7 @@ public class InVehicleDeviceActivity extends Activity {
 		loaderManager.destroyLoader(NORMAL_VEHICLE_NOTIFICATION_LOADER_ID);
 		loaderManager.destroyLoader(SCHEDULE_VEHICLE_NOTIFICATION_LOADER_ID);
 		unregisterReceiver(signInErrorReceiver);
+		unregisterReceiver(airplaneModeOnReceiver);
 		destroyed = true;
 	}
 
@@ -361,6 +398,19 @@ public class InVehicleDeviceActivity extends Activity {
 		FragmentUtils.showModalFragment(getFragmentManager(),
 				VehicleNotificationAlertFragment.newInstance(),
 				VEHICLE_NOTIFICATION_ALERT_FRAGMENT_TAG);
+	}
+
+	private void showAirplaneModeAlertDialogFragment() {
+		if (destroyed) {
+			return;
+		}
+		FragmentManager fragmentManager = getFragmentManager();
+		if (fragmentManager
+				.findFragmentByTag(AIRPLANE_MODE_ALERT_DIALOG_FRAGMENT_TAG) == null) {
+			AirplaneModeAlertDialogFragment airplaneModeAlertDialogFragment = new AirplaneModeAlertDialogFragment();
+			airplaneModeAlertDialogFragment.show(fragmentManager,
+					AIRPLANE_MODE_ALERT_DIALOG_FRAGMENT_TAG);
+		}
 	}
 
 	@Override

@@ -62,8 +62,7 @@ public class StartupService extends Service {
 		try {
 			AirplaneModeSetting.set(this, false);
 		} catch (IOException e) {
-			BigToast.makeText(this, "機内モードをOFFにしてください", Toast.LENGTH_LONG)
-					.show();
+			sendBroadcast(new AirplaneModeOnBroadcastIntent());
 			Log.w(TAG, e);
 			return false;
 		}
