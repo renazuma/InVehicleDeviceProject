@@ -8,6 +8,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.util.Arrays;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -142,7 +143,7 @@ public class SynchronizationTask implements Runnable {
 	}
 
 	protected void submitRetry() {
-		executorService.submit(this);
+		executorService.schedule(this, 5, TimeUnit.SECONDS);
 	}
 
 	protected void doHttpGet(URI baseUri, String resource,
