@@ -40,7 +40,7 @@ public class BatteryBroadcastReceiver extends BroadcastReceiver {
 		Integer iconSmall = intent.getIntExtra("icon-small", 0);
 		Integer plugged = intent.getIntExtra("plugged", 0);
 		Integer voltage = intent.getIntExtra("voltage", 0);
-		Integer temperature = intent.getIntExtra("temperature", 0);
+		Double temperature = intent.getIntExtra("temperature", 0) / 10d;
 		String technology = Strings.nullToEmpty(intent
 				.getStringExtra("technology"));
 
@@ -101,7 +101,6 @@ public class BatteryBroadcastReceiver extends BroadcastReceiver {
 				break;
 			default :
 				acString = "(default:" + plugged + ")";
-				;
 				break;
 		}
 
@@ -120,7 +119,7 @@ public class BatteryBroadcastReceiver extends BroadcastReceiver {
 		if (useBatteryTemperature) {
 			ContentValues contentValues = new ContentValues();
 			contentValues.put(ServiceUnitStatusLogs.Columns.TEMPERATURE,
-					temperature);
+					Math.round(temperature));
 			contentResolver.update(ServiceUnitStatusLogs.CONTENT.URI,
 					contentValues, null, null);
 		}
