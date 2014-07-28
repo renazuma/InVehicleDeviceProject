@@ -221,12 +221,14 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
 	@Override
 	protected void runSession(URI baseUri, String authenticationToken) {
 		if (isDirty()) {
+			Log.i(TAG, "dirty, retry");
 			submitRetry();
 			return;
 		}
 		final List<Long> oldScheduleVehidleNotificationIds = getScheduleVehidleNotificationIds();
 		if (scheduleVehicleNotificationRequired
 				&& oldScheduleVehidleNotificationIds.isEmpty()) {
+			Log.i(TAG, "required VehicleNotifications not found, retry");
 			return;
 		}
 		doHttpGet(baseUri, "operation_schedules", authenticationToken,
@@ -240,6 +242,7 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
 					@Override
 					public void onFailure(HttpResponse response, byte[] entity) {
 						if (response.getStatusLine().getStatusCode() % 100 == 5) {
+							Log.i(TAG, "status 5xx, retry");
 							submitRetry();
 						} else {
 							Log.e(TAG, "onFailure: " + response.getStatusLine()
@@ -282,6 +285,7 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
 		try {
 			// TODO:count
 			if (orCursor.getCount() > 0) {
+				Log.i(TAG, "modified OperationRecord found");
 				return true;
 			}
 		} finally {
@@ -295,22 +299,26 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
 		try {
 			// TODO:count
 			if (prCursor.getCount() > 0) {
+				Log.i(TAG, "modified PassengerRecord found");
 				return true;
 			}
 		} finally {
 			prCursor.close();
 		}
+		Log.i(TAG, "clean");
 		return false;
 	}
 
 	public void save(String entity, List<Long> oldScheduleVehidleNotificationIds) {
 		if (isDirty()) {
+			Log.i(TAG, "dirty, retry");
 			submitRetry();
 			return;
 		}
 		List<Long> newScheduleVehidleNotificationIds = getScheduleVehidleNotificationIds();
 		if (!oldScheduleVehidleNotificationIds
 				.equals(newScheduleVehidleNotificationIds)) {
+			Log.i(TAG, "required VehicleNotification doesn't match, retry");
 			submitRetry();
 			return;
 		}
