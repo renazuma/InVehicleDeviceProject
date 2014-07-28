@@ -30,10 +30,10 @@ public class PassengerRecord implements Serializable {
 		@Override
 		public int compare(PassengerRecord l, PassengerRecord r) {
 			return ComparisonChain.start()
-					.compare(r.reservationId, l.reservationId)
-					.compareTrueFirst(r.representative, l.representative)
-					.compare(r.getDisplayName(), l.getDisplayName())
-					.compare(r.userId, l.userId).compare(r.id, l.id).result();
+					.compare(l.reservationId, r.reservationId)
+					.compareTrueFirst(l.representative, r.representative)
+					.compare(l.getDisplayName(), r.getDisplayName())
+					.compare(l.userId, r.userId).compare(l.id, r.id).result();
 		}
 	};
 	public static final int SELECTED_GET_OFF_COLOR = Color
