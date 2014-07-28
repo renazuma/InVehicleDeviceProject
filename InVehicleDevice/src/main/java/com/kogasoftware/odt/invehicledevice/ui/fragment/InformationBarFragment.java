@@ -11,9 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTimeUtils;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
 import android.content.Loader;
@@ -21,7 +18,6 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -102,22 +98,6 @@ public class InformationBarFragment
 			handler.postDelayed(this, UPDATE_TIME_INTERVAL_MILLIS);
 		}
 	};
-
-	/**
-	 * バッテリー警告ダイアログ
-	 */
-	public static class BatteryAlertDialogFragment extends DialogFragment {
-		@Override
-		public Dialog onCreateDialog(Bundle savedInstanceState) {
-			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-			builder.setIcon(android.R.drawable.ic_dialog_info);
-			builder.setMessage(Html
-					.fromHtml("<big><big>充電ケーブルを接続してください</big></big>"));
-			builder.setPositiveButton(
-					Html.fromHtml("<big><big>確認</big></big>"), null);
-			return builder.create();
-		}
-	}
 
 	/**
 	 * バッテリー状態を監視
