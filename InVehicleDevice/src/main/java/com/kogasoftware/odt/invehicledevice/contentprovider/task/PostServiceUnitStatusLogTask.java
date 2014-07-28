@@ -51,6 +51,7 @@ public class PostServiceUnitStatusLogTask extends SynchronizationTask {
 			if (node.path("longitude").isNull()) {
 				node.put("longitude", 0);
 			}
+			node.put("offline_time", node.path("created_at").asText());
 
 			final Long id = node.get("id").asLong();
 			rootNode.set("service_unit_status_log", node);
