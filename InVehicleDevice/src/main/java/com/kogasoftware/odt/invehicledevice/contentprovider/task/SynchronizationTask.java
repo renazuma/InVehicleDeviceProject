@@ -7,7 +7,6 @@ import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.apache.http.HttpEntity;
@@ -26,7 +25,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.provider.BaseColumns;
 import android.util.Log;
 
 import com.amazonaws.org.apache.http.client.utils.URIBuilder;
@@ -34,7 +32,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
 import com.kogasoftware.android.org.apache.http.client.methods.HttpPatch;
 import com.kogasoftware.odt.invehicledevice.contentprovider.InVehicleDeviceContentProvider;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.InVehicleDevices;
@@ -142,43 +139,6 @@ public class SynchronizationTask implements Runnable {
 			Log.e(TAG, "Unexpected RuntimeException", e);
 			throw e;
 		}
-	}
-
-	protected List<ObjectNode> toObjectNodes(Cursor cursor) {
-		List<ObjectNode> nodes = Lists.newLinkedList();
-		if (!cursor.moveToFirst()) {
-			return nodes;
-		}
-		do {
-			nodes.add(toObjectNode(cursor));
-		} while (cursor.moveToNext());
-		return nodes;
-	}
-
-	protected ObjectNode toObjectNode(Cursor cursor) {
-		ObjectNode node = JSON.createObjectNode();
-		for (String columnName : cursor.getColumnNames()) {
-			String key = columnName;
-			if (columnName.equals(BaseColumns._ID)) {
-				key = "id";
-			}
-			Integer index = cursor.getColumnIndexOrThrow(columnName);
-			switch (cursor.getType(index)) {
-				case Cursor.FIELD_TYPE_FLOAT :
-					node.put(key, cursor.getDouble(index));
-					break;
-				case Cursor.FIELD_TYPE_INTEGER :
-					node.put(key, cursor.getLong(index));
-					break;
-				case Cursor.FIELD_TYPE_NULL :
-					node.putNull(key);
-					break;
-				case Cursor.FIELD_TYPE_STRING :
-					node.put(key, cursor.getString(index));
-					break;
-			}
-		}
-		return node;
 	}
 
 	protected void submitRetry() {

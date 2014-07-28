@@ -12,7 +12,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.Lists;
+import com.kogasoftware.android.CursorReader;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLogs;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLogs.Columns;
 
 public class PostServiceUnitStatusLogTask extends SynchronizationTask {
 	static final String TAG = PostServiceUnitStatusLogTask.class
@@ -25,6 +28,7 @@ public class PostServiceUnitStatusLogTask extends SynchronizationTask {
 	}
 
 	List<ObjectNode> getServiceUnitStatusLogs() throws IllegalArgumentException {
+		List<ObjectNode> nodes = Lists.newLinkedList();
 		Long millis = DateTime.now()
 				.minusMillis(InsertServiceUnitStatusLogTask.INTERVAL_MILLIS)
 				.getMillis();
@@ -33,10 +37,32 @@ public class PostServiceUnitStatusLogTask extends SynchronizationTask {
 		Cursor cursor = database.query(ServiceUnitStatusLogs.TABLE_NAME, null,
 				where, null, null, null, null);
 		try {
-			return toObjectNodes(cursor);
+			if (!cursor.moveToFirst()) {
+				return nodes;
+			}
+			do {
+				ObjectNode node = JSON.createObjectNode();
+				CursorReader reader = new CursorReader(cursor);
+				node.put("id", reader.readLong(Columns._ID));
+				node.put(Columns.ORIENTATION,
+						reader.readLong(Columns.ORIENTATION));
+				node.put(Columns.TEMPERATURE,
+						reader.readLong(Columns.TEMPERATURE));
+				String createdAt = reader.readDateTime(Columns.CREATED_AT)
+						.toString();
+				node.put(Columns.CREATED_AT, createdAt);
+				node.put("offline_time", createdAt);
+				node.put(Columns.LATITUDE, reader.readString(Columns.LATITUDE));
+				node.put(Columns.LONGITUDE,
+						reader.readBigDecimal(Columns.LONGITUDE));
+				node.put(Columns.SIGNAL_STRENGTH,
+						reader.readLong(Columns.SIGNAL_STRENGTH));
+				nodes.add(node);
+			} while (cursor.moveToNext());
 		} finally {
 			cursor.close();
 		}
+		return nodes;
 	}
 
 	@Override
