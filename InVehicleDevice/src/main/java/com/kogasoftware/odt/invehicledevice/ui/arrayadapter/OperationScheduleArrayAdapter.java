@@ -45,7 +45,7 @@ public class OperationScheduleArrayAdapter
 	private static final Integer DEFAULT_COLOR = Color.parseColor("#FFFFFF");
 	private static final Integer RESOURCE_ID = R.layout.operation_list_row;
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormat
-			.forPattern("HH時mm分");
+			.forPattern("HH:mm");
 	private final LayoutInflater layoutInflater = (LayoutInflater) getContext()
 			.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	private final TreeSet<PassengerRecord> passengerRecords = new TreeSet<PassengerRecord>(
@@ -311,7 +311,7 @@ public class OperationScheduleArrayAdapter
 
 		TextView getOnPassengerCountTextView = (TextView) convertView
 				.findViewById(R.id.operation_schedule_get_on_passenger_count_text_view);
-		getOnPassengerCountTextView.setText("乗車"
+		getOnPassengerCountTextView.setText("乗"
 				+ String.format("%3d", getOnPassengerCount) + "名");
 		getOnPassengerCountTextView.setVisibility(getOnPassengerCount > 0
 				? View.VISIBLE
@@ -319,7 +319,7 @@ public class OperationScheduleArrayAdapter
 
 		TextView getOffPassengerCountTextView = (TextView) convertView
 				.findViewById(R.id.operation_schedule_get_off_passenger_count_text_view);
-		getOffPassengerCountTextView.setText("降車"
+		getOffPassengerCountTextView.setText("降"
 				+ String.format("%3d", getOffPassengerCount) + "名");
 		getOffPassengerCountTextView.setVisibility(getOffPassengerCount > 0
 				? View.VISIBLE
@@ -342,10 +342,14 @@ public class OperationScheduleArrayAdapter
 							.toString(DATE_TIME_FORMATTER) + " 発");
 		}
 
+		TextView checkMarkTextView = (TextView) convertView
+				.findViewById(R.id.check_mark_text_view);
 		if (operationSchedule.departedAt == null) {
 			convertView.setBackgroundColor(DEFAULT_COLOR);
+			checkMarkTextView.setVisibility(View.INVISIBLE);
 		} else {
 			convertView.setBackgroundColor(DEPARTED_COLOR);
+			checkMarkTextView.setVisibility(View.VISIBLE);
 		}
 		convertView.setTag(operationSchedule);
 		convertView.setOnTouchListener(onOperationScheduleTouchListener);

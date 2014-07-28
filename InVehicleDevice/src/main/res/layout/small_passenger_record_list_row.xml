@@ -5,7 +5,7 @@
 
     <Button
         android:id="@+id/user_memo_button"
-        android:layout_width="100sp"
+        android:layout_width="70sp"
         android:layout_height="fill_parent"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"

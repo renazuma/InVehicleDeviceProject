@@ -5,12 +5,22 @@
     android:paddingBottom="2sp"
     android:paddingTop="2sp" >
 
+    <TextView
+        android:id="@+id/check_mark_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="60sp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:gravity="center_vertical"
+        android:text="✅"
+        android:textSize="35sp" />
+
     <LinearLayout
         android:id="@+id/operation_list_arrival_departure"
         android:layout_width="105sp"
         android:layout_height="60sp"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/check_mark_text_view"
         android:orientation="vertical" >
 
         <TextView
@@ -36,7 +46,7 @@
 
     <LinearLayout
         android:id="@+id/operation_list_passenger_count"
-        android:layout_width="105sp"
+        android:layout_width="75sp"
         android:layout_height="60sp"
         android:layout_alignParentTop="true"
         android:layout_toLeftOf="@+id/operation_list_map_button"
@@ -76,11 +86,9 @@
             android:id="@+id/platform_name"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:singleLine="true"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@android:color/black"
-            android:textSize="32sp" />
+            android:textSize="28sp" />
 
         <TextView
             android:id="@+id/platform_address"
@@ -106,7 +114,7 @@
 
     <Button
         android:id="@+id/operation_list_map_button"
-        android:layout_width="100sp"
+        android:layout_width="70sp"
         android:layout_height="60sp"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
