@@ -42,7 +42,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		String url = preferences.getString("server_url", null);
 		String authenticationToken = preferences.getString(
 				"server_in_vehicle_device_authentication_token", null);
-		preferences.edit().clear().apply();
+		preferences.edit().clear().putString(InVehicleDevices.Columns.URL, url)
+				.apply();
 		if (url == null || authenticationToken == null) {
 			return;
 		}
