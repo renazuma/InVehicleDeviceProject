@@ -135,8 +135,8 @@ public class InformationBarFragment
 				}
 			}
 		});
-		bgColorTransitionDrawable = new BgColorTransitionDrawable(Color.WHITE,
-				0);
+		bgColorTransitionDrawable = new BgColorTransitionDrawable(
+				getPhaseColor());
 		changeBgColor = new Runnable() {
 			@Override
 			public void run() {
@@ -226,13 +226,15 @@ public class InformationBarFragment
 		switch (OperationSchedule
 				.getPhase(operationSchedules, passengerRecords)) {
 			case DRIVE :
-				return Color.GREEN;
-			case PLATFORM_GET_OFF :
-				return Color.BLUE;
-			case PLATFORM_GET_ON :
-				return Color.BLUE;
+				return Color.rgb(0xAA, 0xFF, 0xAA);
 			case FINISH :
-				return Color.GRAY;
+				return Color.rgb(0xAA, 0xAA, 0xAA);
+			case PLATFORM_GET_ON :
+				return Color.rgb(0xAA, 0xAA, 0xFF);
+			case PLATFORM_GET_OFF :
+				return Color.rgb(0xAA, 0xAA, 0xFF);
+			default :
+				break;
 		}
 		return Color.WHITE;
 	}
