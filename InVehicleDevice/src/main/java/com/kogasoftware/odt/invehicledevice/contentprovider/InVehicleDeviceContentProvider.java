@@ -126,6 +126,24 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
 		startServices();
 		executorService.execute(new GetOperationSchedulesTask(getContext(),
 				database, executorService));
+
+		// 旧バージョンからのアップグレード用。車載器情報が存在してもサービスプロバイダー情報が存在しない場合がある。
+		new Thread() {
+			@Override
+			public void run() {
+				Cursor cursor = database.query(ServiceProviders.TABLE_NAME,
+						null, null, null, null, null, null);
+				try {
+					if (cursor.moveToFirst()) {
+						return;
+					}
+				} finally {
+					cursor.close();
+				}
+				executorService.execute(new GetServiceProviderTask(
+						getContext(), database, executorService));
+			}
+		}.start();
 		return true;
 	}
 
