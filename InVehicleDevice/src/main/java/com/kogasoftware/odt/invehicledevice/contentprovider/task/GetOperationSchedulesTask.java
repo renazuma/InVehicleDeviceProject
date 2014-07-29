@@ -228,7 +228,7 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
 		final List<Long> oldScheduleVehidleNotificationIds = getScheduleVehidleNotificationIds();
 		if (scheduleVehicleNotificationRequired
 				&& oldScheduleVehidleNotificationIds.isEmpty()) {
-			Log.i(TAG, "required VehicleNotifications not found, retry");
+			Log.i(TAG, "required VehicleNotifications not found");
 			return;
 		}
 		doHttpGet(baseUri, "operation_schedules", authenticationToken,
