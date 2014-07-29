@@ -11,7 +11,7 @@ public class BgColorTransitionDrawable extends TransitionDrawable {
 	private final int interval;
 
 	public BgColorTransitionDrawable(int color) {
-		this(color, 500);
+		this(color, 50);
 	}
 
 	public BgColorTransitionDrawable(int color, int interval) {
