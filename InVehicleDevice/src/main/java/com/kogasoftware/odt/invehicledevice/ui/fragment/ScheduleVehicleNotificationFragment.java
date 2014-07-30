@@ -21,6 +21,7 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.contentprovider.model.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotifications;
 import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
+import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 
 public class ScheduleVehicleNotificationFragment extends Fragment
@@ -56,7 +57,7 @@ public class ScheduleVehicleNotificationFragment extends Fragment
 		closeButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				hide();
+				onCloseButtonClick();
 			}
 		});
 		detailTextView = (TextView) view
@@ -154,5 +155,18 @@ public class ScheduleVehicleNotificationFragment extends Fragment
 		}
 		Fragments.showModalFragment(getFragmentManager(),
 				OperationListFragment.newInstance(true));
+	}
+
+	private void onCloseButtonClick() {
+		if (!isAdded()) {
+			return;
+		}
+		hide();
+		Fragment fragment = getFragmentManager().findFragmentByTag(
+				InVehicleDeviceActivity.OPERATION_LIST_FRAGMENT_TAG);
+		if (fragment != null) {
+			((OperationListFragment) fragment)
+					.scrollToUnhandledOperationSchedule();
+		}
 	}
 }

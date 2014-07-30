@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ListView;
 
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.kogasoftware.odt.invehicledevice.R;
@@ -43,6 +44,7 @@ public class OperationListFragment extends Fragment {
 
 	private LoaderManager loaderManager;
 	private OperationScheduleArrayAdapter adapter;
+	private ListView listView;
 
 	private LoaderCallbacks<Cursor> operationScheduleLoaderCallbacks = new LoaderCallbacks<Cursor>() {
 		@Override
@@ -76,7 +78,11 @@ public class OperationListFragment extends Fragment {
 
 		@Override
 		public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+			Boolean scroll = (adapter.getCount() == 0);
 			adapter.setOperationSchedules(OperationSchedule.getAll(cursor));
+			if (scroll) {
+				scrollToUnhandledOperationSchedule();
+			}
 		}
 
 		@Override
@@ -132,8 +138,9 @@ public class OperationListFragment extends Fragment {
 			closeButton.setVisibility(View.GONE);
 		}
 		adapter = new OperationScheduleArrayAdapter(this);
-		((FlickUnneededListView) view.findViewById(R.id.operation_list_view))
-				.getListView().setAdapter(adapter);
+		listView = ((FlickUnneededListView) view
+				.findViewById(R.id.operation_list_view)).getListView();
+		listView.setAdapter(adapter);
 		final Button showPassengerButton = (Button) view
 				.findViewById(R.id.operation_list_show_passengers_button);
 		final Button hidePassengerButton = (Button) view
@@ -165,5 +172,22 @@ public class OperationListFragment extends Fragment {
 		super.onDestroyView();
 		loaderManager.destroyLoader(OPERATION_SCHEDULE_LOADER_ID);
 		loaderManager.destroyLoader(PASSENGER_RECORD_LOADER_ID);
+	}
+
+	public void scrollToUnhandledOperationSchedule() {
+		// 未運行の運行スケジュールまでスクロールする
+		Integer count = adapter.getCount();
+		for (Integer i = 0; i < count; ++i) {
+			if (adapter.getItem(i).departedAt == null) {
+				listView.setSelection(i);
+				if (i >= 1) {
+					listView.scrollBy(0, -1);
+				}
+				return;
+			}
+		}
+		if (count >= 1) {
+			listView.setSelectionFromTop(count - 1, 0);
+		}
 	}
 }

@@ -19,8 +19,9 @@ import android.widget.ListView;
 
 import com.kogasoftware.odt.invehicledevice.R;
 
-public class FlickUnneededListView extends FrameLayout implements
-		OnScrollListener {
+public class FlickUnneededListView extends FrameLayout
+		implements
+			OnScrollListener {
 	@SuppressWarnings("unused")
 	private static final String TAG = FlickUnneededListView.class
 			.getSimpleName();
@@ -148,7 +149,7 @@ public class FlickUnneededListView extends FrameLayout implements
 		NONE, UPPER, LOWER,
 	}
 
-	Adjust adjust = Adjust.NONE;
+	Adjust adjust = Adjust.UPPER;
 
 	public void scrollUp() {
 		Integer position = listView.getFirstVisiblePosition();
