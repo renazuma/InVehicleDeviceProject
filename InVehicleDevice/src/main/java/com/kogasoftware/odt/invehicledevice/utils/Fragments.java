@@ -7,7 +7,7 @@ import android.os.Handler;
 
 import com.kogasoftware.odt.invehicledevice.R;
 
-public class FragmentUtils {
+public class Fragments {
 	private static FragmentTransaction setCustomAnimations(
 			FragmentTransaction fragmentTransaction) {
 		fragmentTransaction.setCustomAnimations(R.animator.show_full_fragment,

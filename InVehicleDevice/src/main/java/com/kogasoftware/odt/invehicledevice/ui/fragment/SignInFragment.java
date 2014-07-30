@@ -45,7 +45,7 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.table.InVehicleDevic
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.SignInErrorBroadcastIntent;
 import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceDownloadStateBroadcastIntent;
 import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceDownloaderClientThread;
-import com.kogasoftware.odt.invehicledevice.utils.FragmentUtils;
+import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 
 public class SignInFragment extends PreferenceFragment
 		implements
@@ -219,7 +219,7 @@ public class SignInFragment extends PreferenceFragment
 		if (cursor.getString(cursor
 				.getColumnIndexOrThrow("authentication_token")) != null
 				&& !firstLoad) {
-			FragmentUtils.hide(this);
+			Fragments.hide(this);
 		}
 		firstLoad = false;
 		Editor editor = preferences.edit();

@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.contentprovider.model.PassengerRecord;
-import com.kogasoftware.odt.invehicledevice.utils.FragmentUtils;
+import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 
 public class PassengerRecordMemoFragment extends Fragment {
 	private static final String PASSENGER_RECORD_KEY = "passenger_record";
@@ -30,7 +30,7 @@ public class PassengerRecordMemoFragment extends Fragment {
 		closeButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				FragmentUtils.hide(PassengerRecordMemoFragment.this);
+				Fragments.hide(PassengerRecordMemoFragment.this);
 			}
 		});
 		TextView titleTextView = (TextView) view

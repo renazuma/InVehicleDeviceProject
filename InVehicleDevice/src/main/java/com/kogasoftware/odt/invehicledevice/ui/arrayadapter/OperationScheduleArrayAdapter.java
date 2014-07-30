@@ -33,7 +33,7 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.model.PassengerRecor
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedules;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecords;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.PassengerRecordMemoFragment;
-import com.kogasoftware.odt.invehicledevice.utils.FragmentUtils;
+import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 
 public class OperationScheduleArrayAdapter
 		extends
@@ -231,7 +231,7 @@ public class OperationScheduleArrayAdapter
 			if (fragmentManager == null) {
 				return;
 			}
-			FragmentUtils.showModalFragment(fragmentManager,
+			Fragments.showModalFragment(fragmentManager,
 					PassengerRecordMemoFragment.newInstance(passengerRecord));
 		}
 	};

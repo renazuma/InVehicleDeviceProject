@@ -20,7 +20,7 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.model.PassengerRecor
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedules;
 import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordErrorArrayAdapter;
-import com.kogasoftware.odt.invehicledevice.utils.FragmentUtils;
+import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 import com.kogasoftware.odt.invehicledevice.utils.ViewDisabler;
 
 public class PassengerRecordErrorFragment
@@ -64,7 +64,7 @@ public class PassengerRecordErrorFragment
 		closeButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				FragmentUtils.hide(PassengerRecordErrorFragment.this);
+				Fragments.hide(PassengerRecordErrorFragment.this);
 			}
 		});
 		errorUserListView = (FlickUnneededListView) view
@@ -102,7 +102,7 @@ public class PassengerRecordErrorFragment
 						currentOperationSchedule.toContentValues());
 			}
 		}.start();
-		FragmentUtils.hide(this);
+		Fragments.hide(this);
 	}
 
 	@Override
@@ -114,7 +114,7 @@ public class PassengerRecordErrorFragment
 				.getCurrent(operationSchedules);
 		if (operationSchedule == null
 				|| !operationSchedule.id.equals(operationScheduleId)) {
-			FragmentUtils.hide(this);
+			Fragments.hide(this);
 			return;
 		}
 		List<PassengerRecord> errorPassengerRecords = Lists.newLinkedList();

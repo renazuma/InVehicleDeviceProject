@@ -21,7 +21,7 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.contentprovider.model.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotifications;
 import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
-import com.kogasoftware.odt.invehicledevice.utils.FragmentUtils;
+import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 
 public class ScheduleVehicleNotificationFragment extends Fragment
 		implements
@@ -141,7 +141,7 @@ public class ScheduleVehicleNotificationFragment extends Fragment
 				}
 			}
 		}.start();
-		FragmentUtils.hide(this);
+		Fragments.hide(this);
 	}
 
 	@Override
@@ -152,7 +152,7 @@ public class ScheduleVehicleNotificationFragment extends Fragment
 		if (!isAdded()) {
 			return;
 		}
-		FragmentUtils.showModalFragment(getFragmentManager(),
+		Fragments.showModalFragment(getFragmentManager(),
 				OperationListFragment.newInstance(true));
 	}
 }

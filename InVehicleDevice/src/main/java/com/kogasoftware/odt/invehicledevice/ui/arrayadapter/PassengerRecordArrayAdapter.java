@@ -29,7 +29,7 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.model.OperationSched
 import com.kogasoftware.odt.invehicledevice.contentprovider.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecords;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.PassengerRecordMemoFragment;
-import com.kogasoftware.odt.invehicledevice.utils.FragmentUtils;
+import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 import com.kogasoftware.odt.invehicledevice.utils.ViewDisabler;
 
 public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
@@ -128,7 +128,7 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 				return;
 			}
 			PassengerRecord passengerRecord = (PassengerRecord) tag;
-			FragmentUtils.showModalFragment(fragmentManager,
+			Fragments.showModalFragment(fragmentManager,
 					PassengerRecordMemoFragment.newInstance(passengerRecord));
 		}
 	};

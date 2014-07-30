@@ -35,7 +35,7 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitSta
 import com.kogasoftware.odt.invehicledevice.ui.BatteryAlerter;
 import com.kogasoftware.odt.invehicledevice.ui.BgColorTransitionDrawable;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
-import com.kogasoftware.odt.invehicledevice.utils.FragmentUtils;
+import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 import com.kogasoftware.odt.invehicledevice.utils.ViewDisabler;
 
 public class InformationBarFragment
@@ -218,7 +218,7 @@ public class InformationBarFragment
 		if (!isAdded()) {
 			return;
 		}
-		FragmentUtils.showModalFragment(getFragmentManager(),
+		Fragments.showModalFragment(getFragmentManager(),
 				PlatformMemoFragment.newInstance(operationSchedule));
 	}
 

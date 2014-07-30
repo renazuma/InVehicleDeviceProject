@@ -17,7 +17,7 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.contentprovider.model.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotifications;
 import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
-import com.kogasoftware.odt.invehicledevice.utils.FragmentUtils;
+import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 
 public class NormalVehicleNotificationFragment extends Fragment {
 	private static final String VEHICLE_NOTIFICATION_KEY = "vehicle_notification";
@@ -85,7 +85,7 @@ public class NormalVehicleNotificationFragment extends Fragment {
 			public void run() {
 				contentResolver.insert(VehicleNotifications.CONTENT.URI,
 						vehicleNotification.toContentValues());
-				FragmentUtils.hide(NormalVehicleNotificationFragment.this,
+				Fragments.hide(NormalVehicleNotificationFragment.this,
 						handler);
 			}
 		}.start();

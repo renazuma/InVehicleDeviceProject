@@ -16,7 +16,7 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.model.OperationSched
 import com.kogasoftware.odt.invehicledevice.contentprovider.model.OperationSchedule.Phase;
 import com.kogasoftware.odt.invehicledevice.contentprovider.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedules;
-import com.kogasoftware.odt.invehicledevice.utils.FragmentUtils;
+import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 import com.kogasoftware.odt.invehicledevice.utils.ViewDisabler;
 
 public class ControlBarFragment
@@ -74,7 +74,7 @@ public class ControlBarFragment
 		if (!isAdded()) {
 			return;
 		}
-		FragmentUtils.showModalFragment(getFragmentManager(),
+		Fragments.showModalFragment(getFragmentManager(),
 				OperationListFragment.newInstance(true));
 	}
 
@@ -114,7 +114,7 @@ public class ControlBarFragment
 						passengerRecords).isEmpty()) {
 			if (operationSchedule.getGetOnScheduledPassengerRecords(
 					passengerRecords).isEmpty()) {
-				FragmentUtils.showModalFragment(getFragmentManager(),
+				Fragments.showModalFragment(getFragmentManager(),
 						DepartureCheckFragment
 								.newInstance(operationSchedule.id));
 			} else {
@@ -131,13 +131,13 @@ public class ControlBarFragment
 		} else if (phase.equals(Phase.PLATFORM_GET_ON)
 				&& operationSchedule.getNoGetOnErrorPassengerRecords(
 						passengerRecords).isEmpty()) {
-			FragmentUtils.showModalFragment(getFragmentManager(),
+			Fragments.showModalFragment(getFragmentManager(),
 					DepartureCheckFragment.newInstance(operationSchedule.id));
 			return;
 		}
 
 		// エラーがある場合
-		FragmentUtils.showModalFragment(getFragmentManager(),
+		Fragments.showModalFragment(getFragmentManager(),
 				PassengerRecordErrorFragment.newInstance(operationSchedule.id));
 	}
 

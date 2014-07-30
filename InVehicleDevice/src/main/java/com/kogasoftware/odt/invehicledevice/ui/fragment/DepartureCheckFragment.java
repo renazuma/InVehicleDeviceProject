@@ -17,7 +17,7 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.model.OperationSched
 import com.kogasoftware.odt.invehicledevice.contentprovider.model.OperationSchedule.Phase;
 import com.kogasoftware.odt.invehicledevice.contentprovider.model.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedules;
-import com.kogasoftware.odt.invehicledevice.utils.FragmentUtils;
+import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 
 public class DepartureCheckFragment
 		extends
@@ -59,7 +59,7 @@ public class DepartureCheckFragment
 		final OperationSchedule operationSchedule = OperationSchedule.getById(
 				operationSchedules, operationScheduleId);
 		if (operationSchedule == null) {
-			FragmentUtils.hide(this);
+			Fragments.hide(this);
 			return;
 		}
 		View view = getView();
@@ -70,7 +70,7 @@ public class DepartureCheckFragment
 		closeButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				FragmentUtils.hide(DepartureCheckFragment.this);
+				Fragments.hide(DepartureCheckFragment.this);
 			}
 		});
 		if (phase == Phase.PLATFORM_GET_OFF) {
@@ -87,7 +87,7 @@ public class DepartureCheckFragment
 			@Override
 			public void onClick(View v) {
 				operationSchedule.departedAt = DateTime.now();
-				FragmentUtils.hide(DepartureCheckFragment.this);
+				Fragments.hide(DepartureCheckFragment.this);
 				new Thread() {
 					@Override
 					public void run() {

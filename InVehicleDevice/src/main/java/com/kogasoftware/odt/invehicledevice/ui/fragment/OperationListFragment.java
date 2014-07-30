@@ -26,7 +26,7 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotific
 import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.OperationScheduleArrayAdapter;
-import com.kogasoftware.odt.invehicledevice.utils.FragmentUtils;
+import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 
 public class OperationListFragment extends Fragment {
 	private static final String CLOSEABLE_KEY = "closeable";
@@ -123,7 +123,7 @@ public class OperationListFragment extends Fragment {
 		closeButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				FragmentUtils.hide(OperationListFragment.this);
+				Fragments.hide(OperationListFragment.this);
 			}
 		});
 		if (closeable) {

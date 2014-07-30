@@ -37,7 +37,7 @@ import com.kogasoftware.odt.invehicledevice.ui.fragment.OrderedOperationFragment
 import com.kogasoftware.odt.invehicledevice.ui.fragment.ScheduleVehicleNotificationFragment;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.SignInFragment;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.VehicleNotificationAlertFragment;
-import com.kogasoftware.odt.invehicledevice.utils.FragmentUtils;
+import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 
 public class InVehicleDeviceActivity extends Activity {
 	public static final Integer VEHICLE_NOTIFICATION_ALERT_DELAY_MILLIS = 5000;
@@ -320,7 +320,7 @@ public class InVehicleDeviceActivity extends Activity {
 		if (getFragmentManager().findFragmentByTag(SIGN_IN_FRAGMENT_TAG) != null) {
 			return;
 		}
-		FragmentUtils.showModalFragment(getFragmentManager(),
+		Fragments.showModalFragment(getFragmentManager(),
 				SignInFragment.newInstance(), SIGN_IN_FRAGMENT_TAG);
 	}
 
@@ -335,7 +335,7 @@ public class InVehicleDeviceActivity extends Activity {
 			if (getFragmentManager().findFragmentByTag(tag) != null) {
 				return;
 			}
-			FragmentUtils.showModalFragment(getFragmentManager(),
+			Fragments.showModalFragment(getFragmentManager(),
 					NormalVehicleNotificationFragment
 							.newInstance(vehicleNotification), tag);
 		}
@@ -381,7 +381,7 @@ public class InVehicleDeviceActivity extends Activity {
 						SCHEDULE_VEHICLE_NOTIFICATION_FRAGMENT_TAG) != null) {
 			return;
 		}
-		FragmentUtils.showModalFragment(getFragmentManager(),
+		Fragments.showModalFragment(getFragmentManager(),
 				ScheduleVehicleNotificationFragment
 						.newInstance(!serviceProvider.operationListOnly),
 				SCHEDULE_VEHICLE_NOTIFICATION_FRAGMENT_TAG);
@@ -395,7 +395,7 @@ public class InVehicleDeviceActivity extends Activity {
 			return;
 		}
 		VoiceService.speak(this, message);
-		FragmentUtils.showModalFragment(getFragmentManager(),
+		Fragments.showModalFragment(getFragmentManager(),
 				VehicleNotificationAlertFragment.newInstance(),
 				VEHICLE_NOTIFICATION_ALERT_FRAGMENT_TAG);
 	}

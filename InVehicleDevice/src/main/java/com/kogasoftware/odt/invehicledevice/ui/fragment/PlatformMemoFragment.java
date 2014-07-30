@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.contentprovider.model.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.utils.FragmentUtils;
+import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 
 public class PlatformMemoFragment extends Fragment {
 	private static final String OPERATION_SCHEDULE_KEY = "operation_schedule";
@@ -27,7 +27,7 @@ public class PlatformMemoFragment extends Fragment {
 		closeButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				FragmentUtils.hide(PlatformMemoFragment.this);
+				Fragments.hide(PlatformMemoFragment.this);
 			}
 		});
 		TextView platformMemoTextView = (TextView) view
