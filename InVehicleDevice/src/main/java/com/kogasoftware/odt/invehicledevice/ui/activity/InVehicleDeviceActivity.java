@@ -53,7 +53,7 @@ public class InVehicleDeviceActivity extends Activity {
 			+ "/" + OrderedOperationFragment.class;
 	private static final String VEHICLE_NOTIFICATION_FRAGMENT_TAG = InVehicleDeviceActivity.class
 			+ "/" + NormalVehicleNotificationFragment.class + "/%d";
-	private static final String OPERATION_SCHEDULE_LIST_FRAGMENT_TAG = InVehicleDeviceActivity.class
+	public static final String OPERATION_LIST_FRAGMENT_TAG = InVehicleDeviceActivity.class
 			+ "/" + OperationListFragment.class;
 	private static final String VEHICLE_NOTIFICATION_ALERT_FRAGMENT_TAG = InVehicleDeviceActivity.class
 			+ "/" + VehicleNotificationAlertFragment.class;
@@ -255,15 +255,14 @@ public class InVehicleDeviceActivity extends Activity {
 		if (destroyed) {
 			return;
 		}
-		if (getFragmentManager().findFragmentByTag(
-				OPERATION_SCHEDULE_LIST_FRAGMENT_TAG) != null) {
+		if (getFragmentManager().findFragmentByTag(OPERATION_LIST_FRAGMENT_TAG) != null) {
 			return;
 		}
 		FragmentTransaction fragmentTransaction = getFragmentManager()
 				.beginTransaction();
 		fragmentTransaction.add(R.id.modal_fragment_container,
 				OperationListFragment.newInstance(false),
-				OPERATION_SCHEDULE_LIST_FRAGMENT_TAG);
+				OPERATION_LIST_FRAGMENT_TAG);
 		fragmentTransaction.commitAllowingStateLoss();
 	}
 
@@ -272,7 +271,7 @@ public class InVehicleDeviceActivity extends Activity {
 			return;
 		}
 		Fragment fragment = getFragmentManager().findFragmentByTag(
-				OPERATION_SCHEDULE_LIST_FRAGMENT_TAG);
+				OPERATION_LIST_FRAGMENT_TAG);
 		if (fragment == null) {
 			return;
 		}

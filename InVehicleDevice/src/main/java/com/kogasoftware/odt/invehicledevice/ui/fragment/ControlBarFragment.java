@@ -23,6 +23,8 @@ public class ControlBarFragment
 		extends
 			OperationSchedulesAndPassengerRecordsFragment {
 	private static final String TAG = ControlBarFragment.class.getSimpleName();
+	public static final String OPERATION_LIST_FRAGMENT_TAG = ControlBarFragment.class
+			+ "/" + OperationSchedulesAndPassengerRecordsFragment.class;
 	private ContentResolver contentResolver;
 	private Button mapButton;
 
@@ -75,7 +77,8 @@ public class ControlBarFragment
 			return;
 		}
 		Fragments.showModalFragment(getFragmentManager(),
-				OperationListFragment.newInstance(true));
+				OperationListFragment.newInstance(true),
+				OPERATION_LIST_FRAGMENT_TAG);
 	}
 
 	public void showArrivalCheckFragment(Phase phase,

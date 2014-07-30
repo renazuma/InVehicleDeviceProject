@@ -4,6 +4,7 @@ import org.apache.commons.lang3.SystemUtils;
 import org.joda.time.DateTime;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.ContentResolver;
 import android.content.CursorLoader;
@@ -48,8 +49,7 @@ public class ScheduleVehicleNotificationFragment extends Fragment
 		showOperationListButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				showOperationListFragment();
-				hide();
+				onShowOperationListButtonClick();
 			}
 		});
 		Button closeButton = (Button) view
@@ -149,12 +149,20 @@ public class ScheduleVehicleNotificationFragment extends Fragment
 	public void onLoaderReset(Loader<Cursor> loader) {
 	}
 
-	private void showOperationListFragment() {
+	private void onShowOperationListButtonClick() {
 		if (!isAdded()) {
 			return;
 		}
-		Fragments.showModalFragment(getFragmentManager(),
-				OperationListFragment.newInstance(true));
+		hide();
+		FragmentManager fragmentManager = getFragmentManager();
+		Fragment oldFragment = fragmentManager
+				.findFragmentByTag(ControlBarFragment.OPERATION_LIST_FRAGMENT_TAG);
+		if (oldFragment != null) {
+			Fragments.hide(oldFragment);
+		}
+		Fragments.showModalFragment(fragmentManager,
+				OperationListFragment.newInstance(true),
+				ControlBarFragment.OPERATION_LIST_FRAGMENT_TAG);
 	}
 
 	private void onCloseButtonClick() {
