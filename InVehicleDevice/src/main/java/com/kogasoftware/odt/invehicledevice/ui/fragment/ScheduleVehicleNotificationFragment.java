@@ -11,6 +11,7 @@ import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -96,7 +97,11 @@ public class ScheduleVehicleNotificationFragment extends Fragment
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 		if (!cursor.moveToFirst()) {
-			hide();
+			hide(new Runnable() {
+				@Override
+				public void run() {
+				}
+			});
 			return;
 		}
 		StringBuilder content = new StringBuilder();
@@ -113,9 +118,10 @@ public class ScheduleVehicleNotificationFragment extends Fragment
 		VoiceService.speak(getActivity(), speakContent.toString());
 	}
 
-	private void hide() {
+	private void hide(final Runnable onComplete) {
 		final ContentResolver contentResolver = getActivity()
 				.getContentResolver();
+		final Handler handler = new Handler();
 		new Thread() {
 			@Override
 			public void run() {
@@ -140,41 +146,57 @@ public class ScheduleVehicleNotificationFragment extends Fragment
 				} finally {
 					cursor.close();
 				}
+				handler.post(new Runnable() {
+					@Override
+					public void run() {
+						onComplete.run();
+						if (isAdded()) {
+							Fragments
+									.hide(ScheduleVehicleNotificationFragment.this);
+						}
+					}
+				});
 			}
 		}.start();
-		Fragments.hide(this);
 	}
-
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
 	}
 
 	private void onShowOperationListButtonClick() {
-		if (!isAdded()) {
-			return;
-		}
-		hide();
-		FragmentManager fragmentManager = getFragmentManager();
-		Fragment oldFragment = fragmentManager
-				.findFragmentByTag(ControlBarFragment.OPERATION_LIST_FRAGMENT_TAG);
-		if (oldFragment != null) {
-			Fragments.hide(oldFragment);
-		}
-		Fragments.showModalFragment(fragmentManager,
-				OperationListFragment.newInstance(true),
-				ControlBarFragment.OPERATION_LIST_FRAGMENT_TAG);
+		hide(new Runnable() {
+			@Override
+			public void run() {
+				if (!isAdded()) {
+					return;
+				}
+				FragmentManager fragmentManager = getFragmentManager();
+				Fragment oldFragment = fragmentManager
+						.findFragmentByTag(ControlBarFragment.OPERATION_LIST_FRAGMENT_TAG);
+				if (oldFragment != null) {
+					Fragments.hide(oldFragment);
+				}
+				Fragments.showModalFragment(fragmentManager,
+						OperationListFragment.newInstance(true),
+						ControlBarFragment.OPERATION_LIST_FRAGMENT_TAG);
+			}
+		});
 	}
 
 	private void onCloseButtonClick() {
-		if (!isAdded()) {
-			return;
-		}
-		hide();
-		Fragment fragment = getFragmentManager().findFragmentByTag(
-				InVehicleDeviceActivity.OPERATION_LIST_FRAGMENT_TAG);
-		if (fragment != null) {
-			((OperationListFragment) fragment)
-					.scrollToUnhandledOperationSchedule();
-		}
+		hide(new Runnable() {
+			@Override
+			public void run() {
+				if (!isAdded()) {
+					return;
+				}
+				Fragment fragment = getFragmentManager().findFragmentByTag(
+						InVehicleDeviceActivity.OPERATION_LIST_FRAGMENT_TAG);
+				if (fragment != null) {
+					((OperationListFragment) fragment)
+							.scrollToUnhandledOperationSchedule();
+				}
+			}
+		});
 	}
 }
