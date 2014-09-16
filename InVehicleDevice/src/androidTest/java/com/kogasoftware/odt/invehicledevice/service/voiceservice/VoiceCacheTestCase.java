@@ -9,6 +9,7 @@ import org.apache.commons.io.FileUtils;
 
 import android.content.Context;
 import android.media.MediaPlayer;
+import android.os.Environment;
 import android.test.AndroidTestCase;
 
 public class VoiceCacheTestCase extends AndroidTestCase {
@@ -75,6 +76,14 @@ public class VoiceCacheTestCase extends AndroidTestCase {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
+
+		File dataDirectory = new File(Environment.getExternalStorageDirectory()
+				+ File.separator + ".odt" + File.separator + "open_jtalk");
+		if (!dataDirectory.isDirectory()) {
+			throw new IOException("音声データが存在しません。 "
+					+ "'gradlew pushOpenJTalkFile' コマンドを実行して、音声データを配置して下さい。");
+		}
+
 		Context c = getContext();
 		if (once.getAndSet(false)) {
 			VoiceCache vc = new VoiceCache(c, Integer.MAX_VALUE);
