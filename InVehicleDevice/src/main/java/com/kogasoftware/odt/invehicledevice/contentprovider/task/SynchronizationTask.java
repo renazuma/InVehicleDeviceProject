@@ -7,6 +7,7 @@ import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.util.Arrays;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -22,6 +23,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
+import android.app.ActivityManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
@@ -143,7 +145,16 @@ public class SynchronizationTask implements Runnable {
 	}
 
 	protected void submitRetry() {
-		executorService.schedule(this, 5, TimeUnit.SECONDS);
+		try {
+			executorService.schedule(this, 5, TimeUnit.SECONDS);
+		} catch (RejectedExecutionException e) {
+			// executorService.shutdown()がテスト中のみ実行されることがあり、RejectedExecutionExceptionを
+			// 発生させるため、テスト中はこの例外は許可する
+			if (ActivityManager.isRunningInTestHarness()) {
+				return;
+			}
+			throw e;
+		}
 	}
 
 	protected void doHttpGet(URI baseUri, String resource,
