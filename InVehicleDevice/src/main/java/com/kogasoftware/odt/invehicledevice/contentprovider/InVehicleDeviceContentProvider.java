@@ -254,6 +254,12 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
 				database, executorService));
 	}
 
+	/**
+	 * Implement this to shut down the ContentProvider instance. You can then
+	 * invoke this method in unit tests.
+	 * 
+	 * @see "http://developer.android.com/reference/android/content/ContentProvider.html#shutdown%28%29"
+	 */
 	@Override
 	public void shutdown() {
 		try {
