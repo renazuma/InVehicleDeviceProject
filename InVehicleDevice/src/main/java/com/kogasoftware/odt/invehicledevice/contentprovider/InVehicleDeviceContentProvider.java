@@ -4,6 +4,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import junit.framework.Assert;
 import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -57,10 +58,9 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
 
 		for (Content content : new Content[]{InVehicleDevice.CONTENT,
 				OperationRecord.CONTENT, OperationSchedule.CONTENT,
-				PassengerRecord.CONTENT, Platform.CONTENT,
-				Reservation.CONTENT, ServiceProvider.CONTENT,
-				ServiceUnitStatusLog.CONTENT, User.CONTENT,
-				VehicleNotification.CONTENT}) {
+				PassengerRecord.CONTENT, Platform.CONTENT, Reservation.CONTENT,
+				ServiceProvider.CONTENT, ServiceUnitStatusLog.CONTENT,
+				User.CONTENT, VehicleNotification.CONTENT}) {
 			content.addTo(MATCHER);
 		}
 	}
@@ -257,17 +257,26 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
 	/**
 	 * Implement this to shut down the ContentProvider instance. You can then
 	 * invoke this method in unit tests.
-	 * 
+	 *
 	 * @see "http://developer.android.com/reference/android/content/ContentProvider.html#shutdown%28%29"
 	 */
 	@Override
 	public void shutdown() {
 		try {
 			executorService.shutdownNow();
-			database.close();
-			databaseHelper.close();
+			try {
+				Assert.assertTrue(executorService.awaitTermination(30,
+						TimeUnit.SECONDS));
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
 		} finally {
-			super.shutdown();
+			try {
+				database.close();
+				databaseHelper.close();
+			} finally {
+				super.shutdown();
+			}
 		}
 	}
 }
