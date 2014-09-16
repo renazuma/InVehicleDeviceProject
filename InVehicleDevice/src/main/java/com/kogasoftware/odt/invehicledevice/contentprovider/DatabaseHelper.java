@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
+import android.util.Log;
 
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
@@ -17,6 +18,7 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.table.InVehicleDevic
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 	static final Integer DATABASE_VERSION = 20;
+	private static final String TAG = DatabaseHelper.class.getSimpleName();
 	final List<String> migrationSqls = Lists.newArrayList();
 	final Context context;
 
@@ -36,9 +38,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		upgradeOldVersionInVehicleDevice(db);
 	}
 
+	/**
+	 * データベースを使っていないバージョンからのアップグレード用メソッド。 すべてのデバイス上でアップグレードが完了したら削除する。
+	 */
 	private void upgradeOldVersionInVehicleDevice(SQLiteDatabase db) {
-		SharedPreferences preferences = PreferenceManager
-				.getDefaultSharedPreferences(context);
+		SharedPreferences preferences;
+		try {
+			preferences = PreferenceManager
+					.getDefaultSharedPreferences(context);
+		} catch (UnsupportedOperationException e) {
+			Log.i(TAG,
+					"PreferenceManager.getDefaultSharedPreferences(context) "
+							+ "threw UnsupportedOperationException");
+			return;
+		}
 		String url = preferences.getString("server_url", null);
 		String authenticationToken = preferences.getString(
 				"server_in_vehicle_device_authentication_token", null);
