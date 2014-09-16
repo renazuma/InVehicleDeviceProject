@@ -14,10 +14,9 @@ import android.widget.Button;
 
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.contentprovider.model.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.contentprovider.model.OperationSchedule.Phase;
-import com.kogasoftware.odt.invehicledevice.contentprovider.model.PassengerRecord;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedules;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedule.Phase;
 import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordErrorArrayAdapter;
 import com.kogasoftware.odt.invehicledevice.utils.Fragments;
@@ -98,7 +97,7 @@ public class PassengerRecordErrorFragment
 			@Override
 			public void run() {
 				currentOperationSchedule.completeGetOff = true;
-				contentResolver.insert(OperationSchedules.CONTENT.URI,
+				contentResolver.insert(OperationSchedule.CONTENT.URI,
 						currentOperationSchedule.toContentValues());
 			}
 		}.start();

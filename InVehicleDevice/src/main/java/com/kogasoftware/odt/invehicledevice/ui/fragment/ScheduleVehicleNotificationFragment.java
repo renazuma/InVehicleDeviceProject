@@ -20,8 +20,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.contentprovider.model.VehicleNotification;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotifications;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.utils.Fragments;
@@ -88,7 +87,7 @@ public class ScheduleVehicleNotificationFragment extends Fragment
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		return new CursorLoader(
 				getActivity(),
-				VehicleNotifications.CONTENT.URI,
+				VehicleNotification.CONTENT.URI,
 				null,
 				VehicleNotification.WHERE_SCHEDULE_VEHICLE_NOTIFICATION_FRAGMENT_CONTENT,
 				null, null);
@@ -127,7 +126,7 @@ public class ScheduleVehicleNotificationFragment extends Fragment
 			public void run() {
 				Cursor cursor = getActivity()
 						.getContentResolver()
-						.query(VehicleNotifications.CONTENT.URI,
+						.query(VehicleNotification.CONTENT.URI,
 								null,
 								VehicleNotification.WHERE_SCHEDULE_VEHICLE_NOTIFICATION_FRAGMENT_CONTENT,
 								null, null);
@@ -139,7 +138,7 @@ public class ScheduleVehicleNotificationFragment extends Fragment
 							vehicleNotification.response = VehicleNotification.Response.YES;
 							vehicleNotification.readAt = DateTime.now();
 							contentResolver.insert(
-									VehicleNotifications.CONTENT.URI,
+									VehicleNotification.CONTENT.URI,
 									vehicleNotification.toContentValues());
 						} while (cursor.moveToNext());
 					}

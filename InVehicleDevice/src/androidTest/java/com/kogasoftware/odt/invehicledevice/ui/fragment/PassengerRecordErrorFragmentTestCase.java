@@ -13,7 +13,7 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.DatabaseHelper;
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.PassengerRecordJson;
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.PlatformJson;
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.UserJson;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecords;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.mockserver.MockServer;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.utils.TestUtils;
@@ -92,9 +92,9 @@ public class PassengerRecordErrorFragmentTestCase
 			@Override
 			public boolean isSatisfied() {
 				Cursor cursor = database
-						.query(PassengerRecords.TABLE_NAME,
-								new String[]{PassengerRecords.Columns.IGNORE_GET_ON_MISS},
-								PassengerRecords.Columns._ID + " = ?",
+						.query(PassengerRecord.TABLE_NAME,
+								new String[]{PassengerRecord.Columns.IGNORE_GET_ON_MISS},
+								PassengerRecord.Columns._ID + " = ?",
 								new String[]{pr1.id.toString()}, null, null,
 								null);
 				try {

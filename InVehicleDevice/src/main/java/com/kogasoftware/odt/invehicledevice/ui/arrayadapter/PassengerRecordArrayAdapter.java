@@ -25,9 +25,8 @@ import android.widget.TextView;
 
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.contentprovider.model.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.contentprovider.model.PassengerRecord;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecords;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.PassengerRecordMemoFragment;
 import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 import com.kogasoftware.odt.invehicledevice.utils.ViewDisabler;
@@ -101,13 +100,13 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 					}
 				}
 				final ContentValues values = passengerRecord.toContentValues();
-				final String where = PassengerRecords.Columns._ID + " = ?";
+				final String where = PassengerRecord.Columns._ID + " = ?";
 				final String[] whereArgs = new String[]{passengerRecord.id
 						.toString()};
 				new Thread() {
 					@Override
 					public void run() {
-						contentResolver.update(PassengerRecords.CONTENT.URI,
+						contentResolver.update(PassengerRecord.CONTENT.URI,
 								values, where, whereArgs);
 					}
 				}.start();

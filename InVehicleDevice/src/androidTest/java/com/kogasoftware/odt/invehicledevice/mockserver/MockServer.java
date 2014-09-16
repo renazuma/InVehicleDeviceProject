@@ -41,8 +41,8 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.json.ReservationJson
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.ServiceProviderJson;
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.UserJson;
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.VehicleNotificationJson;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.InVehicleDevices;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceProviders;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.InVehicleDevice;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceProvider;
 
 public class MockServer extends Thread {
 	final BasicHttpProcessor httpProcessor;
@@ -262,16 +262,16 @@ public class MockServer extends Thread {
 		}
 		ServiceProviderJson sp = serviceProviders.get(0);
 		ContentValues spValues = new ContentValues();
-		spValues.put(ServiceProviders.Columns.NAME, sp.name);
-		database.insertOrThrow(ServiceProviders.TABLE_NAME, null, spValues);
+		spValues.put(ServiceProvider.Columns.NAME, sp.name);
+		database.insertOrThrow(ServiceProvider.TABLE_NAME, null, spValues);
 
 		ContentValues ivdValues = new ContentValues();
-		ivdValues.put(InVehicleDevices.Columns.URL, getUrl());
-		ivdValues.put(InVehicleDevices.Columns.AUTHENTICATION_TOKEN,
+		ivdValues.put(InVehicleDevice.Columns.URL, getUrl());
+		ivdValues.put(InVehicleDevice.Columns.AUTHENTICATION_TOKEN,
 				authenticationToken);
-		ivdValues.put(InVehicleDevices.Columns.LOGIN, "l");
-		ivdValues.put(InVehicleDevices.Columns.PASSWORD, "p");
-		database.insertOrThrow(InVehicleDevices.TABLE_NAME, null, ivdValues);
+		ivdValues.put(InVehicleDevice.Columns.LOGIN, "l");
+		ivdValues.put(InVehicleDevice.Columns.PASSWORD, "p");
+		database.insertOrThrow(InVehicleDevice.TABLE_NAME, null, ivdValues);
 	}
 
 	public void signIn(ContentResolver contentResolver) {
@@ -279,9 +279,9 @@ public class MockServer extends Thread {
 			addServiceProvider("S市");
 		}
 		ContentValues values = new ContentValues();
-		values.put(InVehicleDevices.Columns.URL, getUrl());
-		values.put(InVehicleDevices.Columns.LOGIN, "valid_login");
-		values.put(InVehicleDevices.Columns.PASSWORD, "valid_password");
-		contentResolver.insert(InVehicleDevices.CONTENT.URI, values);
+		values.put(InVehicleDevice.Columns.URL, getUrl());
+		values.put(InVehicleDevice.Columns.LOGIN, "valid_login");
+		values.put(InVehicleDevice.Columns.PASSWORD, "valid_password");
+		contentResolver.insert(InVehicleDevice.CONTENT.URI, values);
 	}
 }

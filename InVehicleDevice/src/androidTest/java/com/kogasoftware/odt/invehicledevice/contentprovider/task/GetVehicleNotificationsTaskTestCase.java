@@ -2,8 +2,8 @@ package com.kogasoftware.odt.invehicledevice.contentprovider.task;
 
 import android.database.Cursor;
 
-import com.kogasoftware.odt.invehicledevice.contentprovider.model.VehicleNotification.NotificationKind;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotifications;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotification;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotification.NotificationKind;
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.GetVehicleNotificationsTask;
 
 public class GetVehicleNotificationsTaskTestCase extends
@@ -20,7 +20,7 @@ public class GetVehicleNotificationsTaskTestCase extends
 		GetVehicleNotificationsTask task = new GetVehicleNotificationsTask(
 				mContext, database, executorService);
 		task.run();
-		Cursor cursor = database.query(VehicleNotifications.TABLE_NAME, null,
+		Cursor cursor = database.query(VehicleNotification.TABLE_NAME, null,
 				null, null, null, null, null);
 		try {
 			assertTrue(cursor.moveToFirst());

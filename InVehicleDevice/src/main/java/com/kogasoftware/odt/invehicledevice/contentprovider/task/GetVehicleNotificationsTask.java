@@ -17,7 +17,7 @@ import android.util.Log;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.VehicleNotificationJson;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotifications;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotification;
 
 public class GetVehicleNotificationsTask extends SynchronizationTask {
 	static final String TAG = GetVehicleNotificationsTask.class.getSimpleName();
@@ -53,14 +53,14 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
 			List<Uri> uris = Lists.newLinkedList();
 			List<Long> ids = Lists.newLinkedList();
 			database.beginTransaction();
-			Cursor cursor = database.query(VehicleNotifications.TABLE_NAME,
-					new String[]{VehicleNotifications.Columns._ID}, null, null,
+			Cursor cursor = database.query(VehicleNotification.TABLE_NAME,
+					new String[]{VehicleNotification.Columns._ID}, null, null,
 					null, null, null);
 			try {
 				if (cursor.moveToFirst()) {
 					do {
 						ids.add(cursor.getLong(cursor
-								.getColumnIndexOrThrow(VehicleNotifications.Columns._ID)));
+								.getColumnIndexOrThrow(VehicleNotification.Columns._ID)));
 					} while (cursor.moveToNext());
 				}
 			} finally {
@@ -70,10 +70,10 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
 				if (ids.contains(vehicleNotification.id)) {
 					continue;
 				}
-				database.insertOrThrow(VehicleNotifications.TABLE_NAME, null,
+				database.insertOrThrow(VehicleNotification.TABLE_NAME, null,
 						vehicleNotification.toContentValues());
 				uris.add(ContentUris.withAppendedId(
-						VehicleNotifications.CONTENT.URI,
+						VehicleNotification.CONTENT.URI,
 						vehicleNotification.id));
 			}
 			database.setTransactionSuccessful();
@@ -86,7 +86,7 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
 		}
 		if (!committedUris.isEmpty()) {
 			contentResolver
-					.notifyChange(VehicleNotifications.CONTENT.URI, null);
+					.notifyChange(VehicleNotification.CONTENT.URI, null);
 		}
 		executorService.execute(new GetOperationSchedulesTask(context,
 				database, executorService, true));

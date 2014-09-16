@@ -5,7 +5,7 @@ import org.joda.time.DateTimeUtils;
 
 import android.content.ContentValues;
 
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLogs;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLog;
 
 public class PostServiceUnitStatusLogTaskTestCase
 		extends
@@ -25,19 +25,19 @@ public class PostServiceUnitStatusLogTaskTestCase
 		Long t3 = now;
 
 		ContentValues values1 = new ContentValues();
-		values1.put(ServiceUnitStatusLogs.Columns._ID, 1);
-		values1.put(ServiceUnitStatusLogs.Columns.CREATED_AT, t1);
-		database.insertOrThrow(ServiceUnitStatusLogs.TABLE_NAME, null, values1);
+		values1.put(ServiceUnitStatusLog.Columns._ID, 1);
+		values1.put(ServiceUnitStatusLog.Columns.CREATED_AT, t1);
+		database.insertOrThrow(ServiceUnitStatusLog.TABLE_NAME, null, values1);
 
 		ContentValues values2 = new ContentValues();
-		values2.put(ServiceUnitStatusLogs.Columns._ID, 2);
-		values2.put(ServiceUnitStatusLogs.Columns.CREATED_AT, t2);
-		database.insertOrThrow(ServiceUnitStatusLogs.TABLE_NAME, null, values2);
+		values2.put(ServiceUnitStatusLog.Columns._ID, 2);
+		values2.put(ServiceUnitStatusLog.Columns.CREATED_AT, t2);
+		database.insertOrThrow(ServiceUnitStatusLog.TABLE_NAME, null, values2);
 
 		ContentValues values3 = new ContentValues();
-		values3.put(ServiceUnitStatusLogs.Columns._ID, 3);
-		values3.put(ServiceUnitStatusLogs.Columns.CREATED_AT, t3);
-		database.insertOrThrow(ServiceUnitStatusLogs.TABLE_NAME, null, values3);
+		values3.put(ServiceUnitStatusLog.Columns._ID, 3);
+		values3.put(ServiceUnitStatusLog.Columns.CREATED_AT, t3);
+		database.insertOrThrow(ServiceUnitStatusLog.TABLE_NAME, null, values3);
 
 		Runnable task = new PostServiceUnitStatusLogTask(mContext, database,
 				executorService);

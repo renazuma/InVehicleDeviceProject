@@ -21,16 +21,16 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.InVehicleDevices;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationRecords;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedules;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecords;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.Platforms;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.Reservations;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceProviders;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLogs;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.Users;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotifications;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.InVehicleDevice;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationRecord;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.Platform;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.Reservation;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceProvider;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLog;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.User;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotification;
 
 public class SignInTask extends SynchronizationTask {
 	static final String TAG = SignInTask.class.getSimpleName();
@@ -49,27 +49,27 @@ public class SignInTask extends SynchronizationTask {
 		try {
 			database.beginTransaction();
 			ContentValues contentValues = new ContentValues();
-			contentValues.put(InVehicleDevices.Columns.AUTHENTICATION_TOKEN,
+			contentValues.put(InVehicleDevice.Columns.AUTHENTICATION_TOKEN,
 					authenticationToken);
-			String whereClause = InVehicleDevices.Columns._ID + " = ?";
+			String whereClause = InVehicleDevice.Columns._ID + " = ?";
 			String[] whereArgs = new String[]{id.toString()};
-			Integer affected = database.update(InVehicleDevices.TABLE_NAME,
+			Integer affected = database.update(InVehicleDevice.TABLE_NAME,
 					contentValues, whereClause, whereArgs);
 			if (affected == 0) {
 				return;
 			}
 			// TODO: More elegant way
 			for (String tableName : new String[]{
-					ServiceUnitStatusLogs.TABLE_NAME,
-					VehicleNotifications.TABLE_NAME, Reservations.TABLE_NAME,
-					Users.TABLE_NAME, PassengerRecords.TABLE_NAME,
-					OperationSchedules.TABLE_NAME, OperationRecords.TABLE_NAME,
-					ServiceProviders.TABLE_NAME, Platforms.TABLE_NAME}) {
+					ServiceUnitStatusLog.TABLE_NAME,
+					VehicleNotification.TABLE_NAME, Reservation.TABLE_NAME,
+					User.TABLE_NAME, PassengerRecord.TABLE_NAME,
+					OperationSchedule.TABLE_NAME, OperationRecord.TABLE_NAME,
+					ServiceProvider.TABLE_NAME, Platform.TABLE_NAME}) {
 				database.delete(tableName, null, null);
 			}
 			contentResolver.notifyChange(ContentUris.withAppendedId(
-					InVehicleDevices.CONTENT.URI, id), null);
-			contentResolver.notifyChange(ServiceProviders.CONTENT.URI, null);
+					InVehicleDevice.CONTENT.URI, id), null);
+			contentResolver.notifyChange(ServiceProvider.CONTENT.URI, null);
 			database.setTransactionSuccessful();
 		} finally {
 			database.endTransaction();
@@ -86,8 +86,8 @@ public class SignInTask extends SynchronizationTask {
 		}
 
 		ObjectNode node = JSON.createObjectNode();
-		node.put(InVehicleDevices.Columns.LOGIN, login);
-		node.put(InVehicleDevices.Columns.PASSWORD, password);
+		node.put(InVehicleDevice.Columns.LOGIN, login);
+		node.put(InVehicleDevice.Columns.PASSWORD, password);
 		ObjectNode rootNode = JSON.createObjectNode();
 		rootNode.set("in_vehicle_device", node);
 
@@ -123,32 +123,32 @@ public class SignInTask extends SynchronizationTask {
 
 	@Override
 	public void run() {
-		String[] columns = new String[]{InVehicleDevices.Columns._ID,
-				InVehicleDevices.Columns.URL, InVehicleDevices.Columns.LOGIN,
-				InVehicleDevices.Columns.PASSWORD,
-				InVehicleDevices.Columns.AUTHENTICATION_TOKEN,};
+		String[] columns = new String[]{InVehicleDevice.Columns._ID,
+				InVehicleDevice.Columns.URL, InVehicleDevice.Columns.LOGIN,
+				InVehicleDevice.Columns.PASSWORD,
+				InVehicleDevice.Columns.AUTHENTICATION_TOKEN,};
 		Long id;
 		String url;
 		String login;
 		String password;
 		String authenticationToken;
-		Cursor cursor = database.query(InVehicleDevices.TABLE_NAME, columns,
+		Cursor cursor = database.query(InVehicleDevice.TABLE_NAME, columns,
 				null, null, null, null, null);
 		try {
 			if (!cursor.moveToFirst()) {
 				return;
 			}
 			id = cursor.getLong(cursor
-					.getColumnIndexOrThrow(InVehicleDevices.Columns._ID));
+					.getColumnIndexOrThrow(InVehicleDevice.Columns._ID));
 			url = cursor.getString(cursor
-					.getColumnIndexOrThrow(InVehicleDevices.Columns.URL));
+					.getColumnIndexOrThrow(InVehicleDevice.Columns.URL));
 			login = cursor.getString(cursor
-					.getColumnIndexOrThrow(InVehicleDevices.Columns.LOGIN));
+					.getColumnIndexOrThrow(InVehicleDevice.Columns.LOGIN));
 			password = cursor.getString(cursor
-					.getColumnIndexOrThrow(InVehicleDevices.Columns.PASSWORD));
+					.getColumnIndexOrThrow(InVehicleDevice.Columns.PASSWORD));
 			authenticationToken = cursor
 					.getString(cursor
-							.getColumnIndexOrThrow(InVehicleDevices.Columns.AUTHENTICATION_TOKEN));
+							.getColumnIndexOrThrow(InVehicleDevice.Columns.AUTHENTICATION_TOKEN));
 		} finally {
 			cursor.close();
 		}

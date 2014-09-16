@@ -41,7 +41,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.InVehicleDevices;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.InVehicleDevice;
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.SignInErrorBroadcastIntent;
 import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceDownloadStateBroadcastIntent;
 import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceDownloaderClientThread;
@@ -145,7 +145,7 @@ public class SignInFragment extends PreferenceFragment
 
 	private List<String> check() {
 		List<String> errors = Lists.newLinkedList();
-		String url = preferences.getString(InVehicleDevices.Columns.URL, "");
+		String url = preferences.getString(InVehicleDevice.Columns.URL, "");
 		if (checkAscii(url, R.string.server_url, errors)) {
 			Uri uri = Uri.parse(url);
 			if (Strings.isNullOrEmpty(uri.getScheme())
@@ -155,10 +155,10 @@ public class SignInFragment extends PreferenceFragment
 						getString(R.string.server_url)));
 			}
 		}
-		checkAscii(preferences.getString(InVehicleDevices.Columns.LOGIN, ""),
+		checkAscii(preferences.getString(InVehicleDevice.Columns.LOGIN, ""),
 				R.string.login, errors);
 		checkAscii(
-				preferences.getString(InVehicleDevices.Columns.PASSWORD, ""),
+				preferences.getString(InVehicleDevice.Columns.PASSWORD, ""),
 				R.string.password, errors);
 		return errors;
 	}
@@ -178,13 +178,13 @@ public class SignInFragment extends PreferenceFragment
 			@Override
 			public void run() {
 				ContentValues values = new ContentValues();
-				for (String key : new String[]{InVehicleDevices.Columns._ID,
-						InVehicleDevices.Columns.URL,
-						InVehicleDevices.Columns.LOGIN,
-						InVehicleDevices.Columns.PASSWORD}) {
+				for (String key : new String[]{InVehicleDevice.Columns._ID,
+						InVehicleDevice.Columns.URL,
+						InVehicleDevice.Columns.LOGIN,
+						InVehicleDevice.Columns.PASSWORD}) {
 					values.put(key, preferences.getString(key, null));
 				}
-				contentResolver.insert(InVehicleDevices.CONTENT.URI, values);
+				contentResolver.insert(InVehicleDevice.CONTENT.URI, values);
 			}
 		});
 	}
@@ -206,7 +206,7 @@ public class SignInFragment extends PreferenceFragment
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		return new CursorLoader(getActivity(), InVehicleDevices.CONTENT.URI,
+		return new CursorLoader(getActivity(), InVehicleDevice.CONTENT.URI,
 				null, null, null, null);
 	}
 
@@ -223,9 +223,9 @@ public class SignInFragment extends PreferenceFragment
 		}
 		firstLoad = false;
 		Editor editor = preferences.edit();
-		for (String key : new String[]{InVehicleDevices.Columns._ID,
-				InVehicleDevices.Columns.URL, InVehicleDevices.Columns.LOGIN,
-				InVehicleDevices.Columns.PASSWORD}) {
+		for (String key : new String[]{InVehicleDevice.Columns._ID,
+				InVehicleDevice.Columns.URL, InVehicleDevice.Columns.LOGIN,
+				InVehicleDevice.Columns.PASSWORD}) {
 			String value = cursor.getString(cursor.getColumnIndexOrThrow(key));
 			editor.putString(key, value);
 		}

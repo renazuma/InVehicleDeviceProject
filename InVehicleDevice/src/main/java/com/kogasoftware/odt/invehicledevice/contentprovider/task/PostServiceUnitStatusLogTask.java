@@ -14,8 +14,8 @@ import android.database.sqlite.SQLiteDatabase;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
 import com.kogasoftware.android.CursorReader;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLogs;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLogs.Columns;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLog;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLog.Columns;
 
 public class PostServiceUnitStatusLogTask extends SynchronizationTask {
 	static final String TAG = PostServiceUnitStatusLogTask.class
@@ -32,9 +32,9 @@ public class PostServiceUnitStatusLogTask extends SynchronizationTask {
 		Long millis = DateTime.now()
 				.minusMillis(InsertServiceUnitStatusLogTask.INTERVAL_MILLIS)
 				.getMillis();
-		String where = ServiceUnitStatusLogs.Columns.CREATED_AT + " < "
+		String where = ServiceUnitStatusLog.Columns.CREATED_AT + " < "
 				+ millis;
-		Cursor cursor = database.query(ServiceUnitStatusLogs.TABLE_NAME, null,
+		Cursor cursor = database.query(ServiceUnitStatusLog.TABLE_NAME, null,
 				where, null, null, null, null);
 		try {
 			if (!cursor.moveToFirst()) {
@@ -86,8 +86,8 @@ public class PostServiceUnitStatusLogTask extends SynchronizationTask {
 						@Override
 						public void onSuccess(HttpResponse response,
 								byte[] entity) {
-							database.delete(ServiceUnitStatusLogs.TABLE_NAME,
-									ServiceUnitStatusLogs.Columns._ID + " = ?",
+							database.delete(ServiceUnitStatusLog.TABLE_NAME,
+									ServiceUnitStatusLog.Columns._ID + " = ?",
 									new String[]{id.toString()});
 						}
 					});

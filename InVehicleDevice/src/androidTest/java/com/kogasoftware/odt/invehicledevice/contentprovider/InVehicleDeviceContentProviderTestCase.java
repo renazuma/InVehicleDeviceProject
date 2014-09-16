@@ -15,9 +15,8 @@ import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.PlatformJson;
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.UserJson;
-import com.kogasoftware.odt.invehicledevice.contentprovider.model.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.InVehicleDevices;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedules;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.InVehicleDevice;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.SignInErrorBroadcastIntent;
 import com.kogasoftware.odt.invehicledevice.mockserver.MockServer;
 import com.kogasoftware.odt.invehicledevice.utils.TestUtils;
@@ -61,12 +60,12 @@ public class InVehicleDeviceContentProviderTestCase
 			ComparableAssert.assertLesser(5L,
 					stopwatch.elapsed(TimeUnit.SECONDS));
 			Cursor cursor = getMockContentResolver().query(
-					InVehicleDevices.CONTENT.URI, null, null, null, null);
+					InVehicleDevice.CONTENT.URI, null, null, null, null);
 			try { // MockContentResolver.notifyChangeが使えないので、ポーリングする
 				if (cursor.moveToFirst()) {
 					String token = cursor
 							.getString(cursor
-									.getColumnIndexOrThrow(InVehicleDevices.Columns.AUTHENTICATION_TOKEN));
+									.getColumnIndexOrThrow(InVehicleDevice.Columns.AUTHENTICATION_TOKEN));
 					if (server.authenticationToken.equals(token)) {
 						break;
 					}
@@ -112,10 +111,10 @@ public class InVehicleDeviceContentProviderTestCase
 
 	void insertInVehicleDevice(String url, String login, String password) {
 		ContentValues values = new ContentValues();
-		values.put(InVehicleDevices.Columns.URL, url);
-		values.put(InVehicleDevices.Columns.LOGIN, login);
-		values.put(InVehicleDevices.Columns.PASSWORD, password);
-		Uri uri = InVehicleDevices.CONTENT.URI;
+		values.put(InVehicleDevice.Columns.URL, url);
+		values.put(InVehicleDevice.Columns.LOGIN, login);
+		values.put(InVehicleDevice.Columns.PASSWORD, password);
+		Uri uri = InVehicleDevice.CONTENT.URI;
 		ContentResolver resolver = getMockContentResolver();
 		uri = resolver.insert(uri, values);
 	}
@@ -139,7 +138,7 @@ public class InVehicleDeviceContentProviderTestCase
 			ComparableAssert.assertLesser(20L,
 					stopwatch.elapsed(TimeUnit.SECONDS));
 			Cursor cursor = getMockContentResolver().query(
-					OperationSchedules.CONTENT.URI, null, null, null, null);
+					OperationSchedule.CONTENT.URI, null, null, null, null);
 			try { // MockContentResolver.notifyChangeが使えないので、ポーリングする
 				if (cursor.moveToFirst()) {
 					oss = OperationSchedule.getAll(cursor);

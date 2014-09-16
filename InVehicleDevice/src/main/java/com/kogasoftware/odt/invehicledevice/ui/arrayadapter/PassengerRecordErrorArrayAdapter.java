@@ -19,8 +19,7 @@ import android.widget.TextView;
 
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.contentprovider.model.PassengerRecord;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecords;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecord;
 
 public class PassengerRecordErrorArrayAdapter
 		extends
@@ -54,9 +53,9 @@ public class PassengerRecordErrorArrayAdapter
 			} else {
 				passengerRecord.ignoreGetOnMiss = !passengerRecord.ignoreGetOnMiss;
 			}
-			String where = PassengerRecords.Columns._ID + " = ?";
+			String where = PassengerRecord.Columns._ID + " = ?";
 			String[] whereArgs = new String[]{passengerRecord.id.toString()};
-			contentResolver.update(PassengerRecords.CONTENT.URI,
+			contentResolver.update(PassengerRecord.CONTENT.URI,
 					passengerRecord.toContentValues(), where, whereArgs);
 			notifyDataSetChanged();
 		}

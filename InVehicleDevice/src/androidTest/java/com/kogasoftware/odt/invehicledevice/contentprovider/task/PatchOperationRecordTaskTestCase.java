@@ -10,7 +10,7 @@ import android.database.Cursor;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.OperationRecordJson;
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.UserJson;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationRecords;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationRecord;
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.PatchOperationRecordTask;
 
 public class PatchOperationRecordTaskTestCase
@@ -37,24 +37,24 @@ public class PatchOperationRecordTaskTestCase
 		DateTime now = DateTime.now();
 
 		ContentValues values1 = new ContentValues();
-		values1.put(OperationRecords.Columns._ID, or1.id);
-		values1.put(OperationRecords.Columns.OPERATION_SCHEDULE_ID,
+		values1.put(OperationRecord.Columns._ID, or1.id);
+		values1.put(OperationRecord.Columns.OPERATION_SCHEDULE_ID,
 				or1.operationScheduleId);
-		values1.put(OperationRecords.Columns.ARRIVED_AT, now.getMillis());
-		values1.put(OperationRecords.Columns.DEPARTED_AT, now.getMillis());
-		values1.put(OperationRecords.Columns.SERVER_VERSION, 3);
-		values1.put(OperationRecords.Columns.LOCAL_VERSION, 3);
-		database.insertOrThrow(OperationRecords.TABLE_NAME, null, values1);
+		values1.put(OperationRecord.Columns.ARRIVED_AT, now.getMillis());
+		values1.put(OperationRecord.Columns.DEPARTED_AT, now.getMillis());
+		values1.put(OperationRecord.Columns.SERVER_VERSION, 3);
+		values1.put(OperationRecord.Columns.LOCAL_VERSION, 3);
+		database.insertOrThrow(OperationRecord.TABLE_NAME, null, values1);
 
 		ContentValues values2 = new ContentValues();
-		values2.put(OperationRecords.Columns._ID, or2.id);
-		values2.put(OperationRecords.Columns.OPERATION_SCHEDULE_ID,
+		values2.put(OperationRecord.Columns._ID, or2.id);
+		values2.put(OperationRecord.Columns.OPERATION_SCHEDULE_ID,
 				or2.operationScheduleId);
-		values2.put(OperationRecords.Columns.ARRIVED_AT, now.getMillis());
-		values2.put(OperationRecords.Columns.DEPARTED_AT, now.getMillis());
-		values2.put(OperationRecords.Columns.SERVER_VERSION, 1);
-		values2.put(OperationRecords.Columns.LOCAL_VERSION, 2);
-		database.insertOrThrow(OperationRecords.TABLE_NAME, null, values2);
+		values2.put(OperationRecord.Columns.ARRIVED_AT, now.getMillis());
+		values2.put(OperationRecord.Columns.DEPARTED_AT, now.getMillis());
+		values2.put(OperationRecord.Columns.SERVER_VERSION, 1);
+		values2.put(OperationRecord.Columns.LOCAL_VERSION, 2);
+		database.insertOrThrow(OperationRecord.TABLE_NAME, null, values2);
 
 		Runnable task = new PatchOperationRecordTask(mContext, database,
 				executorService);
@@ -65,19 +65,19 @@ public class PatchOperationRecordTaskTestCase
 		assertEquals(now, or2.arrivedAt);
 		assertEquals(now, or2.departedAt);
 
-		Cursor c = database.query(OperationRecords.TABLE_NAME, null, null,
-				null, null, null, OperationRecords.Columns._ID, null);
+		Cursor c = database.query(OperationRecord.TABLE_NAME, null, null,
+				null, null, null, OperationRecord.Columns._ID, null);
 		try {
 			assertTrue(c.moveToFirst());
 			assertEquals(
 					3,
 					c.getLong(c
-							.getColumnIndexOrThrow(OperationRecords.Columns.SERVER_VERSION)));
+							.getColumnIndexOrThrow(OperationRecord.Columns.SERVER_VERSION)));
 			assertTrue(c.moveToNext());
 			assertEquals(
 					2,
 					c.getLong(c
-							.getColumnIndexOrThrow(OperationRecords.Columns.SERVER_VERSION)));
+							.getColumnIndexOrThrow(OperationRecord.Columns.SERVER_VERSION)));
 		} finally {
 			c.close();
 		}

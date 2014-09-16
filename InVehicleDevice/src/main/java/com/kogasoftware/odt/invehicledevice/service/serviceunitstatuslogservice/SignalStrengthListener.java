@@ -7,7 +7,7 @@ import android.telephony.SignalStrength;
 import android.util.Log;
 
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLogs;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLog;
 
 /**
  * onSignalStrengthsChangedを受け取り、現在の電波状況を100分率で表した数値をサービスへ通知
@@ -67,12 +67,12 @@ public class SignalStrengthListener extends PhoneStateListener {
 		for (Integer percentage : convertSignalStrengthToPercentage(
 				signalStrength).asSet()) {
 			final ContentValues values = new ContentValues();
-			values.put(ServiceUnitStatusLogs.Columns.SIGNAL_STRENGTH,
+			values.put(ServiceUnitStatusLog.Columns.SIGNAL_STRENGTH,
 					percentage);
 			new Thread() {
 				@Override
 				public void run() {
-					contentResolver.update(ServiceUnitStatusLogs.CONTENT.URI,
+					contentResolver.update(ServiceUnitStatusLog.CONTENT.URI,
 							values, null, null);
 				}
 			}.start();

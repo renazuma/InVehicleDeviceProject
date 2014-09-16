@@ -14,8 +14,7 @@ import android.widget.TextView;
 
 import com.google.common.base.Objects;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.contentprovider.model.VehicleNotification;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotifications;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
 import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 
@@ -83,7 +82,7 @@ public class NormalVehicleNotificationFragment extends Fragment {
 		new Thread() {
 			@Override
 			public void run() {
-				contentResolver.insert(VehicleNotifications.CONTENT.URI,
+				contentResolver.insert(VehicleNotification.CONTENT.URI,
 						vehicleNotification.toContentValues());
 				Fragments.hide(NormalVehicleNotificationFragment.this,
 						handler);

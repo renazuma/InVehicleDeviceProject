@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.contentprovider.model;
+package com.kogasoftware.odt.invehicledevice.contentprovider.table;
 
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -8,14 +8,25 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.provider.BaseColumns;
 
 import com.kogasoftware.odt.invehicledevice.contentprovider.InVehicleDeviceContentProvider;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.InVehicleDevices;
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.GetOperationSchedulesTask;
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.GetServiceProviderTask;
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.SignInTask;
 
 public class InVehicleDevice {
+	public static final int TABLE_CODE = 1;
+	public static final String TABLE_NAME = "in_vehicle_devices";
+	public static final Content CONTENT = new Content(TABLE_CODE, TABLE_NAME);
+
+	public static class Columns implements BaseColumns {
+		public static final String LOGIN = "login";
+		public static final String PASSWORD = "password";
+		public static final String URL = "url";
+		public static final String AUTHENTICATION_TOKEN = "authentication_token";
+	}
+
 	public static Uri replaceLoginAndPassword(ContentValues values,
 			InVehicleDeviceContentProvider contentProvider,
 			Runnable onCompleteListener) {
@@ -28,15 +39,15 @@ public class InVehicleDevice {
 		Long id;
 		try {
 			database.beginTransaction();
-			database.delete(InVehicleDevices.TABLE_NAME, null, null);
-			id = database.replaceOrThrow(InVehicleDevices.TABLE_NAME, null,
+			database.delete(InVehicleDevice.TABLE_NAME, null, null);
+			id = database.replaceOrThrow(InVehicleDevice.TABLE_NAME, null,
 					values);
-			uri = ContentUris.withAppendedId(InVehicleDevices.CONTENT.URI, id);
+			uri = ContentUris.withAppendedId(InVehicleDevice.CONTENT.URI, id);
 			database.setTransactionSuccessful();
 		} finally {
 			database.endTransaction();
 		}
-		contentResolver.notifyChange(InVehicleDevices.CONTENT.URI, null);
+		contentResolver.notifyChange(InVehicleDevice.CONTENT.URI, null);
 		SignInTask signInTask = new SignInTask(contentProvider.getContext(),
 				database, executorService);
 		signInTask.addOnCompleteListener(onCompleteListener);
@@ -52,16 +63,16 @@ public class InVehicleDevice {
 			String[] projection, String selection, String[] selectionArgs,
 			String sortOrder) {
 		Cursor cursor = contentProvider.getDatabase().query(
-				InVehicleDevices.TABLE_NAME, projection, selection,
+				InVehicleDevice.TABLE_NAME, projection, selection,
 				selectionArgs, null, null, sortOrder);
 		cursor.setNotificationUri(contentProvider.getContext()
-				.getContentResolver(), InVehicleDevices.CONTENT.URI);
+				.getContentResolver(), InVehicleDevice.CONTENT.URI);
 		return cursor;
 	}
 
 	public static int delete(InVehicleDeviceContentProvider contentProvider,
 			String selection, String[] selectionArgs) {
-		return contentProvider.getDatabase().delete(
-				InVehicleDevices.TABLE_NAME, selection, selectionArgs);
+		return contentProvider.getDatabase().delete(InVehicleDevice.TABLE_NAME,
+				selection, selectionArgs);
 	}
 }

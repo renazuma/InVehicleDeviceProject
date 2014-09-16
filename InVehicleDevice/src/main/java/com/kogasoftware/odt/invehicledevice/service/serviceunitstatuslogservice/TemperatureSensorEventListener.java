@@ -8,7 +8,7 @@ import android.hardware.SensorEventListener;
 import android.util.Log;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLogs;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLog;
 
 public class TemperatureSensorEventListener implements SensorEventListener {
 	private static final String TAG = TemperatureSensorEventListener.class
@@ -35,8 +35,8 @@ public class TemperatureSensorEventListener implements SensorEventListener {
 		float celsius = values[0];
 		Log.v(TAG, "temperature changed=" + celsius);
 		ContentValues contentValues = new ContentValues();
-		contentValues.put(ServiceUnitStatusLogs.Columns.TEMPERATURE, celsius);
-		contentResolver.update(ServiceUnitStatusLogs.CONTENT.URI,
+		contentValues.put(ServiceUnitStatusLog.Columns.TEMPERATURE, celsius);
+		contentResolver.update(ServiceUnitStatusLog.CONTENT.URI,
 				contentValues, null, null);
 	}
 }

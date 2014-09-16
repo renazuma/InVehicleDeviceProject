@@ -14,7 +14,7 @@ import android.util.Log;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Charsets;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceProviders;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceProvider;
 
 public class GetServiceProviderTask extends SynchronizationTask {
 	private static final String TAG = GetServiceProviderTask.class
@@ -60,29 +60,29 @@ public class GetServiceProviderTask extends SynchronizationTask {
 		Long id;
 		try {
 			database.beginTransaction();
-			database.delete(ServiceProviders.TABLE_NAME, null, null);
+			database.delete(ServiceProvider.TABLE_NAME, null, null);
 			ContentValues values = new ContentValues();
-			values.put(ServiceProviders.Columns._ID, node.path("id").asInt());
-			values.put(ServiceProviders.Columns.NAME, node.path("name")
+			values.put(ServiceProvider.Columns._ID, node.path("id").asInt());
+			values.put(ServiceProvider.Columns.NAME, node.path("name")
 					.asText());
 			JsonNode accessKey = node.path("log_access_key_id_aws");
 			if (accessKey.isTextual()) {
-				values.put(ServiceProviders.Columns.LOG_ACCESS_KEY_ID_AWS,
+				values.put(ServiceProvider.Columns.LOG_ACCESS_KEY_ID_AWS,
 						accessKey.asText());
 			}
 			JsonNode secretAccessKey = node.path("log_secret_access_key_aws");
 			if (secretAccessKey.isTextual()) {
-				values.put(ServiceProviders.Columns.LOG_SECRET_ACCESS_KEY_AWS,
+				values.put(ServiceProvider.Columns.LOG_SECRET_ACCESS_KEY_AWS,
 						secretAccessKey.asText());
 			}
-			id = database.insertOrThrow(ServiceProviders.TABLE_NAME, null,
+			id = database.insertOrThrow(ServiceProvider.TABLE_NAME, null,
 					values);
 			database.setTransactionSuccessful();
 		} finally {
 			database.endTransaction();
 		}
 		contentResolver.notifyChange(
-				ContentUris.withAppendedId(ServiceProviders.CONTENT.URI, id),
+				ContentUris.withAppendedId(ServiceProvider.CONTENT.URI, id),
 				null);
 	}
 }

@@ -15,7 +15,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecords;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecord;
 
 public class PatchPassengerRecordTask extends SynchronizationTask {
 	static final String TAG = PatchPassengerRecordTask.class.getSimpleName();
@@ -29,13 +29,13 @@ public class PatchPassengerRecordTask extends SynchronizationTask {
 	List<Pair<Long, ObjectNode>> getUpdatedPassengerRecords()
 			throws IllegalArgumentException {
 		List<Pair<Long, ObjectNode>> nodes = Lists.newLinkedList();
-		Cursor cursor = database.query(PassengerRecords.TABLE_NAME,
-				new String[]{PassengerRecords.Columns._ID,
-						PassengerRecords.Columns.GET_ON_TIME,
-						PassengerRecords.Columns.GET_OFF_TIME,
-						PassengerRecords.Columns.LOCAL_VERSION},
-				PassengerRecords.Columns.LOCAL_VERSION + " > "
-						+ PassengerRecords.Columns.SERVER_VERSION, null, null,
+		Cursor cursor = database.query(PassengerRecord.TABLE_NAME,
+				new String[]{PassengerRecord.Columns._ID,
+						PassengerRecord.Columns.GET_ON_TIME,
+						PassengerRecord.Columns.GET_OFF_TIME,
+						PassengerRecord.Columns.LOCAL_VERSION},
+				PassengerRecord.Columns.LOCAL_VERSION + " > "
+						+ PassengerRecord.Columns.SERVER_VERSION, null, null,
 				null, null);
 		try {
 			if (!cursor.moveToFirst()) {
@@ -44,10 +44,10 @@ public class PatchPassengerRecordTask extends SynchronizationTask {
 			do {
 				ObjectNode node = JSON.createObjectNode();
 				node.put("id", cursor.getLong(cursor
-						.getColumnIndexOrThrow(PassengerRecords.Columns._ID)));
+						.getColumnIndexOrThrow(PassengerRecord.Columns._ID)));
 
 				Integer getOnTimeIndex = cursor
-						.getColumnIndexOrThrow(PassengerRecords.Columns.GET_ON_TIME);
+						.getColumnIndexOrThrow(PassengerRecord.Columns.GET_ON_TIME);
 				if (cursor.isNull(getOnTimeIndex)) {
 					node.putNull("get_on_time");
 				} else {
@@ -57,7 +57,7 @@ public class PatchPassengerRecordTask extends SynchronizationTask {
 				}
 
 				Integer getOffTimeIndex = cursor
-						.getColumnIndexOrThrow(PassengerRecords.Columns.GET_OFF_TIME);
+						.getColumnIndexOrThrow(PassengerRecord.Columns.GET_OFF_TIME);
 				if (cursor.isNull(getOffTimeIndex)) {
 					node.putNull("get_off_time");
 				} else {
@@ -68,7 +68,7 @@ public class PatchPassengerRecordTask extends SynchronizationTask {
 
 				Long localVersion = cursor
 						.getLong(cursor
-								.getColumnIndexOrThrow(PassengerRecords.Columns.LOCAL_VERSION));
+								.getColumnIndexOrThrow(PassengerRecord.Columns.LOCAL_VERSION));
 				nodes.add(Pair.of(localVersion, node));
 			} while (cursor.moveToNext());
 		} finally {
@@ -98,9 +98,9 @@ public class PatchPassengerRecordTask extends SynchronizationTask {
 
 	private void save(ObjectNode node, Long id, Long version) {
 		ContentValues values = new ContentValues();
-		values.put(PassengerRecords.Columns.SERVER_VERSION, version);
-		database.update(PassengerRecords.TABLE_NAME, values,
-				PassengerRecords.Columns._ID + " = ?",
+		values.put(PassengerRecord.Columns.SERVER_VERSION, version);
+		database.update(PassengerRecord.TABLE_NAME, values,
+				PassengerRecord.Columns._ID + " = ?",
 				new String[]{id.toString()});
 	}
 }

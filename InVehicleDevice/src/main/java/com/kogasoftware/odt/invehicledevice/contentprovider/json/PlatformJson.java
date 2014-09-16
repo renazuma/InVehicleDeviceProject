@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import android.content.ContentValues;
 
 import com.google.common.base.Strings;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.Platforms;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.Platform;
 
 public class PlatformJson {
 	public Long id;
@@ -17,13 +17,13 @@ public class PlatformJson {
 	public String memo;
 	public ContentValues toContentValues() {
 		ContentValues values = new ContentValues();
-		values.put(Platforms.Columns._ID, id);
-		values.put(Platforms.Columns.NAME, name);
-		values.put(Platforms.Columns.NAME_RUBY, Strings.nullToEmpty(nameRuby));
-		values.put(Platforms.Columns.ADDRESS, Strings.nullToEmpty(address));
-		values.put(Platforms.Columns.MEMO, Strings.nullToEmpty(memo));
-		values.put(Platforms.Columns.LATITUDE, latitude.toPlainString());
-		values.put(Platforms.Columns.LONGITUDE, longitude.toPlainString());
+		values.put(Platform.Columns._ID, id);
+		values.put(Platform.Columns.NAME, name);
+		values.put(Platform.Columns.NAME_RUBY, Strings.nullToEmpty(nameRuby));
+		values.put(Platform.Columns.ADDRESS, Strings.nullToEmpty(address));
+		values.put(Platform.Columns.MEMO, Strings.nullToEmpty(memo));
+		values.put(Platform.Columns.LATITUDE, latitude.toPlainString());
+		values.put(Platform.Columns.LONGITUDE, longitude.toPlainString());
 		return values;
 	}
 }

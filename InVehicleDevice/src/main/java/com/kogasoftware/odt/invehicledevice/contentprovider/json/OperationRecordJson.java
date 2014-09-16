@@ -4,7 +4,7 @@ import org.joda.time.DateTime;
 
 import android.content.ContentValues;
 
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationRecords;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationRecord;
 
 public class OperationRecordJson {
 	public Long id;
@@ -13,15 +13,15 @@ public class OperationRecordJson {
 	public Long operationScheduleId;
 	public ContentValues toContentValues() {
 		ContentValues values = new ContentValues();
-		values.put(OperationRecords.Columns._ID, id);
-		values.put(OperationRecords.Columns.OPERATION_SCHEDULE_ID,
+		values.put(OperationRecord.Columns._ID, id);
+		values.put(OperationRecord.Columns.OPERATION_SCHEDULE_ID,
 				operationScheduleId);
 		if (arrivedAt != null) {
-			values.put(OperationRecords.Columns.ARRIVED_AT,
+			values.put(OperationRecord.Columns.ARRIVED_AT,
 					arrivedAt.getMillis());
 		}
 		if (departedAt != null) {
-			values.put(OperationRecords.Columns.DEPARTED_AT,
+			values.put(OperationRecord.Columns.DEPARTED_AT,
 					departedAt.getMillis());
 		}
 		return values;

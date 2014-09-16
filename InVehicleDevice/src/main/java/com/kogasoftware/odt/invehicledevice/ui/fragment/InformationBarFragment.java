@@ -28,10 +28,10 @@ import android.widget.TextView;
 
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.contentprovider.model.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.contentprovider.model.OperationSchedule.Phase;
-import com.kogasoftware.odt.invehicledevice.contentprovider.model.PassengerRecord;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLogs;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLog;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedule.Phase;
 import com.kogasoftware.odt.invehicledevice.ui.BatteryAlerter;
 import com.kogasoftware.odt.invehicledevice.ui.BgColorTransitionDrawable;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
@@ -53,9 +53,9 @@ public class InformationBarFragment
 	LoaderCallbacks<Cursor> serviceUnitStatusLogsLoaderCallbacks = new LoaderCallbacks<Cursor>() {
 		@Override
 		public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-			String order = ServiceUnitStatusLogs.Columns.CREATED_AT + " DESC";
+			String order = ServiceUnitStatusLog.Columns.CREATED_AT + " DESC";
 			return new CursorLoader(getActivity(),
-					ServiceUnitStatusLogs.CONTENT.URI, null, null, null, order);
+					ServiceUnitStatusLog.CONTENT.URI, null, null, null, order);
 		}
 
 		@Override
@@ -65,7 +65,7 @@ public class InformationBarFragment
 			}
 			Integer signalStrengthPercentage = cursor
 					.getInt(cursor
-							.getColumnIndexOrThrow(ServiceUnitStatusLogs.Columns.SIGNAL_STRENGTH));
+							.getColumnIndexOrThrow(ServiceUnitStatusLog.Columns.SIGNAL_STRENGTH));
 			int imageResourceId = R.drawable.network_strength_4;
 			if (signalStrengthPercentage.equals(0)) {
 				imageResourceId = R.drawable.network_strength_0;

@@ -4,7 +4,7 @@ import org.joda.time.DateTime;
 
 import android.content.ContentValues;
 
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotifications;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotification;
 
 public class VehicleNotificationJson {
 	public Long id;
@@ -15,18 +15,18 @@ public class VehicleNotificationJson {
 	public DateTime readAt;
 	public ContentValues toContentValues() {
 		ContentValues values = new ContentValues();
-		values.put(VehicleNotifications.Columns._ID, id);
-		values.put(VehicleNotifications.Columns.BODY, body);
+		values.put(VehicleNotification.Columns._ID, id);
+		values.put(VehicleNotification.Columns.BODY, body);
 		if (bodyRuby != null) {
-			values.put(VehicleNotifications.Columns.BODY_RUBY, bodyRuby);
+			values.put(VehicleNotification.Columns.BODY_RUBY, bodyRuby);
 		}
-		values.put(VehicleNotifications.Columns.NOTIFICATION_KIND,
+		values.put(VehicleNotification.Columns.NOTIFICATION_KIND,
 				notificationKind);
 		if (response != null) {
-			values.put(VehicleNotifications.Columns.RESPONSE, response);
+			values.put(VehicleNotification.Columns.RESPONSE, response);
 		}
 		if (readAt != null) {
-			values.put(VehicleNotifications.Columns.READ_AT, readAt.getMillis());
+			values.put(VehicleNotification.Columns.READ_AT, readAt.getMillis());
 		}
 		return values;
 	}

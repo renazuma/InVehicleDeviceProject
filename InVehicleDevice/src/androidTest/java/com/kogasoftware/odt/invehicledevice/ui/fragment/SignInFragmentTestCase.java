@@ -11,7 +11,7 @@ import android.test.ActivityInstrumentationTestCase2;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.contentprovider.DatabaseHelper;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.InVehicleDevices;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.InVehicleDevice;
 import com.kogasoftware.odt.invehicledevice.mockserver.MockServer;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.utils.TestUtils;
@@ -277,14 +277,14 @@ public class SignInFragmentTestCase
 
 		solo.clickOnButton(solo.getString(R.string.ok));
 		assertText(false, R.string.an_error_occurred);
-		Cursor cursor = database.query(InVehicleDevices.TABLE_NAME, null, null,
+		Cursor cursor = database.query(InVehicleDevice.TABLE_NAME, null, null,
 				null, null, null, null);
 		try {
 			assertEquals(1, cursor.getCount());
 			cursor.moveToFirst();
 			assertNotNull(cursor
 					.getString(cursor
-							.getColumnIndexOrThrow(InVehicleDevices.Columns.AUTHENTICATION_TOKEN)));
+							.getColumnIndexOrThrow(InVehicleDevice.Columns.AUTHENTICATION_TOKEN)));
 		} finally {
 			cursor.close();
 		}

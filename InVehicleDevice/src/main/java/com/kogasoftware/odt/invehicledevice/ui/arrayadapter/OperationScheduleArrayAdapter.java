@@ -28,10 +28,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.contentprovider.model.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.contentprovider.model.PassengerRecord;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedules;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecords;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.PassengerRecordMemoFragment;
 import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 
@@ -119,7 +117,7 @@ public class OperationScheduleArrayAdapter
 			new Thread() {
 				@Override
 				public void run() {
-					contentResolver.insert(OperationSchedules.CONTENT.URI,
+					contentResolver.insert(OperationSchedule.CONTENT.URI,
 							values);
 				}
 			}.start();
@@ -205,13 +203,13 @@ public class OperationScheduleArrayAdapter
 				}
 			}
 			final ContentValues values = passengerRecord.toContentValues();
-			final String where = PassengerRecords.Columns._ID + " = ?";
+			final String where = PassengerRecord.Columns._ID + " = ?";
 			final String[] whereArgs = new String[]{passengerRecord.id
 					.toString()};
 			new Thread() {
 				@Override
 				public void run() {
-					contentResolver.update(PassengerRecords.CONTENT.URI,
+					contentResolver.update(PassengerRecord.CONTENT.URI,
 							values, where, whereArgs);
 				}
 			}.start();

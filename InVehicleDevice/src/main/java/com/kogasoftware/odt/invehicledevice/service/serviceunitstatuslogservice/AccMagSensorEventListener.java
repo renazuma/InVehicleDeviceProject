@@ -10,7 +10,7 @@ import android.view.Display;
 import android.view.Surface;
 import android.view.WindowManager;
 
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLogs;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLog;
 
 // original:
 // http://kamoland.com/wiki/wiki.cgi?TYPE_ORIENTATION%A4%F2%BB%C8%A4%EF%A4%BA%A4%CB%CA%FD%B0%CC%B3%D1%A4%F2%BC%E8%C6%C0
@@ -115,9 +115,9 @@ public class AccMagSensorEventListener implements SensorEventListener {
 			degree += 360;
 		}
 		ContentValues contentValues = new ContentValues();
-		contentValues.put(ServiceUnitStatusLogs.Columns.ORIENTATION,
+		contentValues.put(ServiceUnitStatusLog.Columns.ORIENTATION,
 				360.0 - degree);
-		contentResolver.update(ServiceUnitStatusLogs.CONTENT.URI,
+		contentResolver.update(ServiceUnitStatusLog.CONTENT.URI,
 				contentValues, null, null);
 	}
 }

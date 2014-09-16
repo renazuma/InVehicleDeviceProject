@@ -14,8 +14,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.contentprovider.model.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedules;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 
 public class ArrivalCheckFragment extends Fragment {
@@ -58,7 +57,7 @@ public class ArrivalCheckFragment extends Fragment {
 						operationSchedule.arrivedAt = DateTime.now();
 						ContentValues values = operationSchedule
 								.toContentValues();
-						contentResolver.insert(OperationSchedules.CONTENT.URI,
+						contentResolver.insert(OperationSchedule.CONTENT.URI,
 								values);
 					};
 				}.start();

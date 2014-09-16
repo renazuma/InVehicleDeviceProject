@@ -9,7 +9,7 @@ import android.os.BatteryManager;
 import android.util.Log;
 
 import com.google.common.base.Strings;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLogs;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLog;
 
 public class BatteryBroadcastReceiver extends BroadcastReceiver {
 	private static final String TAG = BatteryBroadcastReceiver.class
@@ -118,9 +118,9 @@ public class BatteryBroadcastReceiver extends BroadcastReceiver {
 		Log.i(TAG, message);
 		if (useBatteryTemperature) {
 			ContentValues contentValues = new ContentValues();
-			contentValues.put(ServiceUnitStatusLogs.Columns.TEMPERATURE,
+			contentValues.put(ServiceUnitStatusLog.Columns.TEMPERATURE,
 					Math.round(temperature));
-			contentResolver.update(ServiceUnitStatusLogs.CONTENT.URI,
+			contentResolver.update(ServiceUnitStatusLog.CONTENT.URI,
 					contentValues, null, null);
 		}
 	}

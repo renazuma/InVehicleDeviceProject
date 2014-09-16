@@ -22,8 +22,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
-import com.kogasoftware.odt.invehicledevice.contentprovider.model.ServiceProvider;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceProviders;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceProvider;
 
 public class UploadThread extends Thread
 		implements
@@ -104,7 +103,7 @@ public class UploadThread extends Thread
 		Log.i(TAG, "start");
 		Looper.prepare();
 		CursorLoader cursorLoader = new CursorLoader(context,
-				ServiceProviders.CONTENT.URI, null, null, null, null);
+				ServiceProvider.CONTENT.URI, null, null, null, null);
 		cursorLoader.registerListener(LOADER_ID, this);
 		cursorLoader.startLoading();
 		try {

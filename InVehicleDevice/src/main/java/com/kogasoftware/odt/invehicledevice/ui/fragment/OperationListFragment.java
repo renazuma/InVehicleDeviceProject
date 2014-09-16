@@ -18,12 +18,9 @@ import android.widget.ListView;
 
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.contentprovider.model.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.contentprovider.model.PassengerRecord;
-import com.kogasoftware.odt.invehicledevice.contentprovider.model.VehicleNotification;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedules;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecords;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotifications;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.OperationScheduleArrayAdapter;
@@ -50,13 +47,13 @@ public class OperationListFragment extends Fragment {
 		@Override
 		public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 			return new CursorLoader(getActivity(),
-					OperationSchedules.CONTENT.URI, null, null, null, null) {
+					OperationSchedule.CONTENT.URI, null, null, null, null) {
 				@Override
 				public Cursor loadInBackground() {
 					// 運行予定変更の通知がある場合、「運行予定変更」フラグメントが表示されるまで更新を遅らせる
 					Cursor cursor = getActivity()
 							.getContentResolver()
-							.query(VehicleNotifications.CONTENT.URI,
+							.query(VehicleNotification.CONTENT.URI,
 									null,
 									VehicleNotification.WHERE_SCHEDULE_VEHICLE_NOTIFICATION_FRAGMENT_CONTENT,
 									null, null);
@@ -94,7 +91,7 @@ public class OperationListFragment extends Fragment {
 		@Override
 		public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 			return new CursorLoader(getActivity(),
-					PassengerRecords.CONTENT.URI, null, null, null, null);
+					PassengerRecord.CONTENT.URI, null, null, null, null);
 		}
 
 		@Override

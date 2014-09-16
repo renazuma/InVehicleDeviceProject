@@ -14,13 +14,10 @@ import android.os.Handler;
 
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.Uninterruptibles;
-import com.kogasoftware.odt.invehicledevice.contentprovider.model.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.contentprovider.model.OperationSchedule.Phase;
-import com.kogasoftware.odt.invehicledevice.contentprovider.model.PassengerRecord;
-import com.kogasoftware.odt.invehicledevice.contentprovider.model.VehicleNotification;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedules;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecords;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotifications;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotification;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedule.Phase;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
 public abstract class OperationSchedulesAndPassengerRecordsFragment
@@ -39,7 +36,7 @@ public abstract class OperationSchedulesAndPassengerRecordsFragment
 		@Override
 		public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 			return new CursorLoader(getActivity(),
-					OperationSchedules.CONTENT.URI, null, null, null, null);
+					OperationSchedule.CONTENT.URI, null, null, null, null);
 		}
 
 		@Override
@@ -63,7 +60,7 @@ public abstract class OperationSchedulesAndPassengerRecordsFragment
 				public void run() {
 					// 運行予定変更の通知がある場合、「運行予定変更」フラグメントが表示されるまで更新を遅らせる
 					Cursor cursor = contentResolver
-							.query(VehicleNotifications.CONTENT.URI,
+							.query(VehicleNotification.CONTENT.URI,
 									null,
 									VehicleNotification.WHERE_SCHEDULE_VEHICLE_NOTIFICATION_FRAGMENT_CONTENT,
 									null, null);
@@ -92,7 +89,7 @@ public abstract class OperationSchedulesAndPassengerRecordsFragment
 		@Override
 		public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 			return new CursorLoader(getActivity(),
-					PassengerRecords.CONTENT.URI, null, null, null, null);
+					PassengerRecord.CONTENT.URI, null, null, null, null);
 		}
 
 		@Override

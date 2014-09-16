@@ -12,10 +12,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.contentprovider.model.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.contentprovider.model.OperationSchedule.Phase;
-import com.kogasoftware.odt.invehicledevice.contentprovider.model.PassengerRecord;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedules;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedule.Phase;
 import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 import com.kogasoftware.odt.invehicledevice.utils.ViewDisabler;
 
@@ -125,7 +124,7 @@ public class ControlBarFragment
 				new Thread() {
 					@Override
 					public void run() {
-						contentResolver.insert(OperationSchedules.CONTENT.URI,
+						contentResolver.insert(OperationSchedule.CONTENT.URI,
 								operationSchedule.toContentValues());
 					}
 				}.start();

@@ -18,7 +18,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLogs;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLog;
 
 public class GpsLogger
 		implements
@@ -183,9 +183,9 @@ public class GpsLogger
 				.toPlainString();
 		String longitude = new BigDecimal(location.getLongitude())
 				.toPlainString();
-		values.put(ServiceUnitStatusLogs.Columns.LATITUDE, latitude);
-		values.put(ServiceUnitStatusLogs.Columns.LONGITUDE, longitude);
-		contentResolver.update(ServiceUnitStatusLogs.CONTENT.URI, values, null,
+		values.put(ServiceUnitStatusLog.Columns.LATITUDE, latitude);
+		values.put(ServiceUnitStatusLog.Columns.LONGITUDE, longitude);
+		contentResolver.update(ServiceUnitStatusLog.CONTENT.URI, values, null,
 				null);
 	}
 

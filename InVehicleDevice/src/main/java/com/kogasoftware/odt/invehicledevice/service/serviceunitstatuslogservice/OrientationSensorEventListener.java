@@ -11,7 +11,7 @@ import android.view.Display;
 import android.view.Surface;
 import android.view.WindowManager;
 
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLogs;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLog;
 
 public class OrientationSensorEventListener implements SensorEventListener {
 	private static final Long SAVE_PERIOD_MILLIS = 500L;
@@ -68,9 +68,9 @@ public class OrientationSensorEventListener implements SensorEventListener {
 		}
 
 		ContentValues contentValues = new ContentValues();
-		contentValues.put(ServiceUnitStatusLogs.Columns.ORIENTATION,
+		contentValues.put(ServiceUnitStatusLog.Columns.ORIENTATION,
 				360.0 - degree);
-		contentResolver.update(ServiceUnitStatusLogs.CONTENT.URI,
+		contentResolver.update(ServiceUnitStatusLog.CONTENT.URI,
 				contentValues, null, null);
 	}
 }

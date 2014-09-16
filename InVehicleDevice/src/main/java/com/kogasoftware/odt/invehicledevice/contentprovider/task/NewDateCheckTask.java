@@ -10,7 +10,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedules;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedule;
 
 public class NewDateCheckTask implements Runnable {
 	public static final Long INTERVAL_MILLIS = 300 * 1000L;
@@ -27,14 +27,14 @@ public class NewDateCheckTask implements Runnable {
 
 	@Override
 	public void run() {
-		Cursor cursor = database.query(OperationSchedules.TABLE_NAME,
-				new String[]{OperationSchedules.Columns.OPERATION_DATE}, null,
-				null, null, null, OperationSchedules.Columns._ID, "1");
+		Cursor cursor = database.query(OperationSchedule.TABLE_NAME,
+				new String[]{OperationSchedule.Columns.OPERATION_DATE}, null,
+				null, null, null, OperationSchedule.Columns._ID, "1");
 		try {
 			if (cursor.moveToFirst()) {
 				Long lastMillis = cursor
 						.getLong(cursor
-								.getColumnIndexOrThrow(OperationSchedules.Columns.OPERATION_DATE));
+								.getColumnIndexOrThrow(OperationSchedule.Columns.OPERATION_DATE));
 				LocalDate lastDate = new LocalDate(lastMillis, DateTimeZone.UTC);
 				if (Days.daysBetween(lastDate, LocalDate.now()).getDays() >= 1) {
 					executorService.execute(new GetOperationSchedulesTask(

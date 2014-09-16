@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.contentprovider.model;
+package com.kogasoftware.odt.invehicledevice.contentprovider.table;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -18,14 +18,12 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.provider.BaseColumns;
 import android.widget.Toast;
 
 import com.google.common.collect.Lists;
 import com.kogasoftware.android.CursorReader;
 import com.kogasoftware.odt.invehicledevice.contentprovider.InVehicleDeviceContentProvider;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationRecords;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedules;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.Platforms;
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.PatchOperationRecordTask;
 import com.kogasoftware.odt.invehicledevice.ui.BigToast;
 import com.kogasoftware.odt.invehicledevice.utils.ContentValuesUtils;
@@ -36,6 +34,20 @@ public class OperationSchedule implements Serializable {
 	public static enum Phase {
 		DRIVE, FINISH, PLATFORM_GET_OFF, PLATFORM_GET_ON,
 	};
+
+	public static final int TABLE_CODE = 3;
+	public static final String TABLE_NAME = "operation_schedules";
+	public static final Content CONTENT = new Content(TABLE_CODE, TABLE_NAME);
+
+	public static class Columns implements BaseColumns {
+		public static final String ARRIVAL_ESTIMATE = "arrival_estimate";
+		public static final String DEPARTURE_ESTIMATE = "departure_estimate";
+		public static final String PLATFORM_ID = "platform_id";
+		public static final String ARRIVED_AT = "arrived_at";
+		public static final String DEPARTED_AT = "departed_at";
+		public static final String COMPLETE_GET_OFF = "complete_get_off";
+		public static final String OPERATION_DATE = "operation_date";
+	}
 
 	public Long id;
 	public DateTime arrivalEstimate;
@@ -54,24 +66,24 @@ public class OperationSchedule implements Serializable {
 
 	public OperationSchedule(Cursor cursor_) {
 		CursorReader reader = new CursorReader(cursor_);
-		id = reader.readLong(OperationSchedules.Columns._ID);
+		id = reader.readLong(OperationSchedule.Columns._ID);
 		arrivalEstimate = reader
-				.readDateTime(OperationSchedules.Columns.ARRIVAL_ESTIMATE);
+				.readDateTime(OperationSchedule.Columns.ARRIVAL_ESTIMATE);
 		departureEstimate = reader
-				.readDateTime(OperationSchedules.Columns.DEPARTURE_ESTIMATE);
-		arrivedAt = reader.readDateTime(OperationRecords.Columns.ARRIVED_AT);
-		departedAt = reader.readDateTime(OperationRecords.Columns.DEPARTED_AT);
-		platformId = reader.readLong(OperationSchedules.Columns.PLATFORM_ID);
+				.readDateTime(OperationSchedule.Columns.DEPARTURE_ESTIMATE);
+		arrivedAt = reader.readDateTime(OperationRecord.Columns.ARRIVED_AT);
+		departedAt = reader.readDateTime(OperationRecord.Columns.DEPARTED_AT);
+		platformId = reader.readLong(OperationSchedule.Columns.PLATFORM_ID);
 		completeGetOff = reader
-				.readBoolean(OperationSchedules.Columns.COMPLETE_GET_OFF);
-		name = reader.readString(Platforms.Columns.NAME);
-		nameRuby = reader.readString(Platforms.Columns.NAME_RUBY);
-		memo = reader.readString(Platforms.Columns.MEMO);
-		address = reader.readString(Platforms.Columns.ADDRESS);
-		latitude = reader.readBigDecimal(Platforms.Columns.LATITUDE);
-		longitude = reader.readBigDecimal(Platforms.Columns.LONGITUDE);
+				.readBoolean(OperationSchedule.Columns.COMPLETE_GET_OFF);
+		name = reader.readString(Platform.Columns.NAME);
+		nameRuby = reader.readString(Platform.Columns.NAME_RUBY);
+		memo = reader.readString(Platform.Columns.MEMO);
+		address = reader.readString(Platform.Columns.ADDRESS);
+		latitude = reader.readBigDecimal(Platform.Columns.LATITUDE);
+		longitude = reader.readBigDecimal(Platform.Columns.LONGITUDE);
 		operationDate = reader
-				.readDateTime(OperationSchedules.Columns.OPERATION_DATE);
+				.readDateTime(OperationSchedule.Columns.OPERATION_DATE);
 	}
 
 	public static LinkedList<OperationSchedule> getAll(Cursor cursor) {
@@ -106,20 +118,21 @@ public class OperationSchedule implements Serializable {
 
 	public ContentValues toContentValues() {
 		ContentValues values = new ContentValues();
-		values.put(OperationSchedules.Columns._ID, id);
+		values.put(OperationSchedule.Columns._ID, id);
 		ContentValuesUtils.putDateTime(values,
-				OperationSchedules.Columns.ARRIVAL_ESTIMATE, arrivalEstimate);
+				OperationSchedule.Columns.ARRIVAL_ESTIMATE, arrivalEstimate);
+		ContentValuesUtils
+				.putDateTime(values,
+						OperationSchedule.Columns.DEPARTURE_ESTIMATE,
+						departureEstimate);
 		ContentValuesUtils.putDateTime(values,
-				OperationSchedules.Columns.DEPARTURE_ESTIMATE,
-				departureEstimate);
+				OperationSchedule.Columns.ARRIVED_AT, arrivedAt);
 		ContentValuesUtils.putDateTime(values,
-				OperationSchedules.Columns.ARRIVED_AT, arrivedAt);
+				OperationSchedule.Columns.DEPARTED_AT, departedAt);
+		values.put(OperationSchedule.Columns.PLATFORM_ID, platformId);
+		values.put(OperationSchedule.Columns.COMPLETE_GET_OFF, completeGetOff);
 		ContentValuesUtils.putDateTime(values,
-				OperationSchedules.Columns.DEPARTED_AT, departedAt);
-		values.put(OperationSchedules.Columns.PLATFORM_ID, platformId);
-		values.put(OperationSchedules.Columns.COMPLETE_GET_OFF, completeGetOff);
-		ContentValuesUtils.putDateTime(values,
-				OperationSchedules.Columns.OPERATION_DATE, operationDate);
+				OperationSchedule.Columns.OPERATION_DATE, operationDate);
 		return values;
 	}
 
@@ -220,29 +233,29 @@ public class OperationSchedule implements Serializable {
 				.getExecutorService();
 		database.beginTransaction();
 		try {
-			Long id = database.replaceOrThrow(OperationSchedules.TABLE_NAME,
+			Long id = database.replaceOrThrow(OperationSchedule.TABLE_NAME,
 					null, values);
-			Uri uri = ContentUris.withAppendedId(
-					OperationSchedules.CONTENT.URI, id);
+			Uri uri = ContentUris.withAppendedId(OperationSchedule.CONTENT.URI,
+					id);
 			ContentValues operationRecordValues = new ContentValues();
-			operationRecordValues.put(OperationRecords.Columns.ARRIVED_AT,
-					values.getAsLong(OperationSchedules.Columns.ARRIVED_AT));
-			operationRecordValues.put(OperationRecords.Columns.DEPARTED_AT,
-					values.getAsLong(OperationSchedules.Columns.DEPARTED_AT));
+			operationRecordValues.put(OperationRecord.Columns.ARRIVED_AT,
+					values.getAsLong(OperationSchedule.Columns.ARRIVED_AT));
+			operationRecordValues.put(OperationRecord.Columns.DEPARTED_AT,
+					values.getAsLong(OperationSchedule.Columns.DEPARTED_AT));
 
 			// TODO: MAX(local_version)で書き直す
-			String where = OperationRecords.Columns.OPERATION_SCHEDULE_ID
+			String where = OperationRecord.Columns.OPERATION_SCHEDULE_ID
 					+ " = ?";
 			String[] whereArgs = new String[]{id.toString()};
 			Long maxVersion = 1L;
-			Cursor cursor = database.query(OperationRecords.TABLE_NAME, null,
+			Cursor cursor = database.query(OperationRecord.TABLE_NAME, null,
 					where, whereArgs, null, null, null);
 			try {
 				if (cursor.moveToFirst()) {
 					do {
 						Long version = cursor
 								.getLong(cursor
-										.getColumnIndexOrThrow(OperationRecords.Columns.LOCAL_VERSION));
+										.getColumnIndexOrThrow(OperationRecord.Columns.LOCAL_VERSION));
 						if (version > maxVersion) {
 							maxVersion = version;
 						}
@@ -251,13 +264,13 @@ public class OperationSchedule implements Serializable {
 			} finally {
 				cursor.close();
 			}
-			operationRecordValues.put(OperationRecords.Columns.LOCAL_VERSION,
+			operationRecordValues.put(OperationRecord.Columns.LOCAL_VERSION,
 					maxVersion + 1);
-			database.update(OperationRecords.TABLE_NAME, operationRecordValues,
+			database.update(OperationRecord.TABLE_NAME, operationRecordValues,
 					where, whereArgs);
 			executorService.execute(new PatchOperationRecordTask(
 					contentProvider.getContext(), database, executorService));
-			contentResolver.notifyChange(OperationSchedules.CONTENT.URI, null);
+			contentResolver.notifyChange(OperationSchedule.CONTENT.URI, null);
 			contentResolver.notifyChange(uri, null);
 			database.setTransactionSuccessful();
 			return uri;
@@ -286,7 +299,7 @@ public class OperationSchedule implements Serializable {
 		sql.append(" order by arrival_estimate;");
 		Cursor cursor = database.rawQuery(sql.toString(), null);
 		cursor.setNotificationUri(contentResolver,
-				OperationSchedules.CONTENT.URI);
+				OperationSchedule.CONTENT.URI);
 		return cursor;
 	}
 }

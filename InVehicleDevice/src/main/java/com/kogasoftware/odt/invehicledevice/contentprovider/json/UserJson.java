@@ -3,7 +3,7 @@ package com.kogasoftware.odt.invehicledevice.contentprovider.json;
 import android.content.ContentValues;
 
 import com.google.common.base.Strings;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.Users;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.User;
 
 public class UserJson {
 	public Long id;
@@ -15,13 +15,13 @@ public class UserJson {
 	public Boolean wheelchair;
 	public ContentValues toContentValues() {
 		ContentValues values = new ContentValues();
-		values.put(Users.Columns._ID, id);
-		values.put(Users.Columns.FIRST_NAME, firstName);
-		values.put(Users.Columns.LAST_NAME, lastName);
-		values.put(Users.Columns.MEMO, Strings.nullToEmpty(memo));
-		values.put(Users.Columns.HANDICAPPED, handicapped);
-		values.put(Users.Columns.NEEDED_CARE, neededCare);
-		values.put(Users.Columns.WHEELCHAIR, wheelchair);
+		values.put(User.Columns._ID, id);
+		values.put(User.Columns.FIRST_NAME, firstName);
+		values.put(User.Columns.LAST_NAME, lastName);
+		values.put(User.Columns.MEMO, Strings.nullToEmpty(memo));
+		values.put(User.Columns.HANDICAPPED, handicapped);
+		values.put(User.Columns.NEEDED_CARE, neededCare);
+		values.put(User.Columns.WHEELCHAIR, wheelchair);
 		return values;
 	}
 }

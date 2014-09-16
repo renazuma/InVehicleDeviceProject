@@ -7,7 +7,7 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLogs;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLog;
 
 public class InsertServiceUnitStatusLogTask implements Runnable {
 	public static final Integer INTERVAL_MILLIS = 30 * 1000;
@@ -20,19 +20,19 @@ public class InsertServiceUnitStatusLogTask implements Runnable {
 	@Override
 	public void run() {
 		ContentValues values = new ContentValues();
-		Cursor cursor = database.query(ServiceUnitStatusLogs.TABLE_NAME, null,
+		Cursor cursor = database.query(ServiceUnitStatusLog.TABLE_NAME, null,
 				null, null, null, null,
-				ServiceUnitStatusLogs.Columns.CREATED_AT + " DESC");
+				ServiceUnitStatusLog.Columns.CREATED_AT + " DESC");
 		try {
 			if (cursor.moveToFirst()) {
 				DatabaseUtils.cursorRowToContentValues(cursor, values);
-				values.remove(ServiceUnitStatusLogs.Columns._ID);
+				values.remove(ServiceUnitStatusLog.Columns._ID);
 			}
 		} finally {
 			cursor.close();
 		}
-		values.put(ServiceUnitStatusLogs.Columns.CREATED_AT, DateTime.now()
+		values.put(ServiceUnitStatusLog.Columns.CREATED_AT, DateTime.now()
 				.getMillis());
-		database.insert(ServiceUnitStatusLogs.TABLE_NAME, null, values);
+		database.insert(ServiceUnitStatusLog.TABLE_NAME, null, values);
 	}
 }

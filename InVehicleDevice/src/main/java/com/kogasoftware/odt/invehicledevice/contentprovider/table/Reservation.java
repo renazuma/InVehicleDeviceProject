@@ -2,7 +2,7 @@ package com.kogasoftware.odt.invehicledevice.contentprovider.table;
 
 import android.provider.BaseColumns;
 
-public class Reservations {
+public class Reservation {
 	public static final int TABLE_CODE = 6;
 	public static final String TABLE_NAME = "reservations";
 	public static final Content CONTENT = new Content(TABLE_CODE, TABLE_NAME);

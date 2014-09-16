@@ -15,7 +15,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationRecords;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationRecord;
 
 public class PatchOperationRecordTask extends SynchronizationTask {
 	static final String TAG = PatchOperationRecordTask.class.getSimpleName();
@@ -29,13 +29,13 @@ public class PatchOperationRecordTask extends SynchronizationTask {
 	List<Pair<Long, ObjectNode>> getUpdatedOperationRecords()
 			throws IllegalArgumentException {
 		List<Pair<Long, ObjectNode>> nodes = Lists.newLinkedList();
-		Cursor cursor = database.query(OperationRecords.TABLE_NAME,
-				new String[]{OperationRecords.Columns._ID,
-						OperationRecords.Columns.ARRIVED_AT,
-						OperationRecords.Columns.DEPARTED_AT,
-						OperationRecords.Columns.LOCAL_VERSION},
-				OperationRecords.Columns.LOCAL_VERSION + " > "
-						+ OperationRecords.Columns.SERVER_VERSION, null, null,
+		Cursor cursor = database.query(OperationRecord.TABLE_NAME,
+				new String[]{OperationRecord.Columns._ID,
+						OperationRecord.Columns.ARRIVED_AT,
+						OperationRecord.Columns.DEPARTED_AT,
+						OperationRecord.Columns.LOCAL_VERSION},
+				OperationRecord.Columns.LOCAL_VERSION + " > "
+						+ OperationRecord.Columns.SERVER_VERSION, null, null,
 				null, null);
 		try {
 			if (!cursor.moveToFirst()) {
@@ -44,10 +44,10 @@ public class PatchOperationRecordTask extends SynchronizationTask {
 			do {
 				ObjectNode node = JSON.createObjectNode();
 				node.put("id", cursor.getLong(cursor
-						.getColumnIndexOrThrow(OperationRecords.Columns._ID)));
+						.getColumnIndexOrThrow(OperationRecord.Columns._ID)));
 
 				Integer arrivedAtIndex = cursor
-						.getColumnIndexOrThrow(OperationRecords.Columns.ARRIVED_AT);
+						.getColumnIndexOrThrow(OperationRecord.Columns.ARRIVED_AT);
 				if (cursor.isNull(arrivedAtIndex)) {
 					node.putNull("arrived_at");
 				} else {
@@ -57,7 +57,7 @@ public class PatchOperationRecordTask extends SynchronizationTask {
 				}
 
 				Integer departedAtIndex = cursor
-						.getColumnIndexOrThrow(OperationRecords.Columns.DEPARTED_AT);
+						.getColumnIndexOrThrow(OperationRecord.Columns.DEPARTED_AT);
 				if (cursor.isNull(departedAtIndex)) {
 					node.putNull("departed_at");
 				} else {
@@ -67,7 +67,7 @@ public class PatchOperationRecordTask extends SynchronizationTask {
 				}
 				Long localVersion = cursor
 						.getLong(cursor
-								.getColumnIndexOrThrow(OperationRecords.Columns.LOCAL_VERSION));
+								.getColumnIndexOrThrow(OperationRecord.Columns.LOCAL_VERSION));
 				nodes.add(Pair.of(localVersion, node));
 			} while (cursor.moveToNext());
 		} finally {
@@ -97,9 +97,9 @@ public class PatchOperationRecordTask extends SynchronizationTask {
 
 	private void save(ObjectNode node, Long id, Long version) {
 		ContentValues values = new ContentValues();
-		values.put(OperationRecords.Columns.SERVER_VERSION, version);
-		database.update(OperationRecords.TABLE_NAME, values,
-				OperationRecords.Columns._ID + " = ?",
+		values.put(OperationRecord.Columns.SERVER_VERSION, version);
+		database.update(OperationRecord.TABLE_NAME, values,
+				OperationRecord.Columns._ID + " = ?",
 				new String[]{id.toString()});
 	}
 }

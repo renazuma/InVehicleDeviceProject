@@ -5,9 +5,9 @@ import android.database.Cursor;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.PlatformJson;
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.UserJson;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedules;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.Platforms;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.Users;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.Platform;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.User;
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.GetOperationSchedulesTask;
 
 public class GetOperationSchedulesTaskTestCase
@@ -32,7 +32,7 @@ public class GetOperationSchedulesTaskTestCase
 				executorService);
 		task.run();
 
-		Cursor osCursor = database.query(OperationSchedules.TABLE_NAME, null,
+		Cursor osCursor = database.query(OperationSchedule.TABLE_NAME, null,
 				null, null, null, null, null);
 		try {
 			assertEquals(3, osCursor.getCount()); // 御徒町が1件マージされて3件になる
@@ -40,25 +40,25 @@ public class GetOperationSchedulesTaskTestCase
 			osCursor.close();
 		}
 
-		Cursor pCursor = database.query(Platforms.TABLE_NAME, null, null, null,
-				null, null, Platforms.Columns._ID);
+		Cursor pCursor = database.query(Platform.TABLE_NAME, null, null, null,
+				null, null, Platform.Columns._ID);
 		try {
 			assertEquals(3, pCursor.getCount());
 			pCursor.moveToFirst();
 			assertEquals(p1.name, pCursor.getString(pCursor
-					.getColumnIndexOrThrow(Platforms.Columns.NAME)));
+					.getColumnIndexOrThrow(Platform.Columns.NAME)));
 			pCursor.moveToNext();
 			assertEquals(p2.name, pCursor.getString(pCursor
-					.getColumnIndexOrThrow(Platforms.Columns.NAME)));
+					.getColumnIndexOrThrow(Platform.Columns.NAME)));
 			pCursor.moveToNext();
 			assertEquals(p3.name, pCursor.getString(pCursor
-					.getColumnIndexOrThrow(Platforms.Columns.NAME)));
+					.getColumnIndexOrThrow(Platform.Columns.NAME)));
 
 		} finally {
 			pCursor.close();
 		}
 
-		Cursor uCursor = database.query(Users.TABLE_NAME, null, null, null,
+		Cursor uCursor = database.query(User.TABLE_NAME, null, null, null,
 				null, null, null);
 		try {
 			assertEquals(1, uCursor.getCount());

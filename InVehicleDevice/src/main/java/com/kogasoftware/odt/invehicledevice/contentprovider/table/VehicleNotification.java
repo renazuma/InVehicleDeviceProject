@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.contentprovider.model;
+package com.kogasoftware.odt.invehicledevice.contentprovider.table;
 
 import java.io.Serializable;
 import java.util.List;
@@ -13,12 +13,11 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.provider.BaseColumns;
 
 import com.google.common.collect.Lists;
 import com.kogasoftware.android.CursorReader;
 import com.kogasoftware.odt.invehicledevice.contentprovider.InVehicleDeviceContentProvider;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.InVehicleDevices;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotifications;
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.PatchVehicleNotificationTask;
 import com.kogasoftware.odt.invehicledevice.utils.ContentValuesUtils;
 
@@ -26,10 +25,23 @@ public class VehicleNotification implements Serializable {
 	private static final long serialVersionUID = -295331215588438885L;
 	public static final String WHERE_SCHEDULE_VEHICLE_NOTIFICATION_FRAGMENT_CONTENT = String
 			.format(Locale.US, "%s = %d AND %s IS NULL AND %s > 0",
-					VehicleNotifications.Columns.NOTIFICATION_KIND,
+					VehicleNotification.Columns.NOTIFICATION_KIND,
 					NotificationKind.SCHEDULE,
-					VehicleNotifications.Columns.RESPONSE,
-					VehicleNotifications.Columns.SCHEDULE_DOWNLOADED);
+					VehicleNotification.Columns.RESPONSE,
+					VehicleNotification.Columns.SCHEDULE_DOWNLOADED);
+
+	public static final int TABLE_CODE = 2;
+	public static final String TABLE_NAME = "vehicle_notifications";
+	public static final Content CONTENT = new Content(TABLE_CODE, TABLE_NAME);
+
+	public static class Columns implements BaseColumns {
+		public static final String BODY = "body";
+		public static final String BODY_RUBY = "body_ruby";
+		public static final String NOTIFICATION_KIND = "notification_kind";
+		public static final String READ_AT = "read_at";
+		public static final String RESPONSE = "response";
+		public static final String SCHEDULE_DOWNLOADED = "schedule_downloaded";
+	}
 
 	public static class Response {
 		public static final Long YES = 0L;
@@ -51,15 +63,15 @@ public class VehicleNotification implements Serializable {
 
 	public VehicleNotification(Cursor cursor) {
 		CursorReader reader = new CursorReader(cursor);
-		id = reader.readLong(VehicleNotifications.Columns._ID);
-		body = reader.readString(VehicleNotifications.Columns.BODY);
-		bodyRuby = reader.readString(VehicleNotifications.Columns.BODY_RUBY);
+		id = reader.readLong(VehicleNotification.Columns._ID);
+		body = reader.readString(VehicleNotification.Columns.BODY);
+		bodyRuby = reader.readString(VehicleNotification.Columns.BODY_RUBY);
 		notificationKind = reader
-				.readLong(VehicleNotifications.Columns.NOTIFICATION_KIND);
-		response = reader.readLong(VehicleNotifications.Columns.RESPONSE);
-		readAt = reader.readDateTime(VehicleNotifications.Columns.READ_AT);
+				.readLong(VehicleNotification.Columns.NOTIFICATION_KIND);
+		response = reader.readLong(VehicleNotification.Columns.RESPONSE);
+		readAt = reader.readDateTime(VehicleNotification.Columns.READ_AT);
 		scheduleDownloaded = reader
-				.readLong(VehicleNotifications.Columns.SCHEDULE_DOWNLOADED);
+				.readLong(VehicleNotification.Columns.SCHEDULE_DOWNLOADED);
 	}
 
 	public static List<VehicleNotification> getAll(Cursor cursor) {
@@ -78,16 +90,16 @@ public class VehicleNotification implements Serializable {
 
 	public ContentValues toContentValues() {
 		ContentValues values = new ContentValues();
-		values.put(VehicleNotifications.Columns._ID, id);
-		values.put(VehicleNotifications.Columns.BODY, body);
-		values.put(VehicleNotifications.Columns.BODY_RUBY, bodyRuby);
-		values.put(VehicleNotifications.Columns.NOTIFICATION_KIND,
+		values.put(VehicleNotification.Columns._ID, id);
+		values.put(VehicleNotification.Columns.BODY, body);
+		values.put(VehicleNotification.Columns.BODY_RUBY, bodyRuby);
+		values.put(VehicleNotification.Columns.NOTIFICATION_KIND,
 				notificationKind);
-		values.put(VehicleNotifications.Columns.RESPONSE, response);
-		values.put(VehicleNotifications.Columns.SCHEDULE_DOWNLOADED,
+		values.put(VehicleNotification.Columns.RESPONSE, response);
+		values.put(VehicleNotification.Columns.SCHEDULE_DOWNLOADED,
 				scheduleDownloaded);
 		ContentValuesUtils.putDateTime(values,
-				VehicleNotifications.Columns.READ_AT, readAt);
+				VehicleNotification.Columns.READ_AT, readAt);
 		return values;
 	}
 
@@ -98,12 +110,12 @@ public class VehicleNotification implements Serializable {
 				.getContentResolver();
 		ScheduledExecutorService executorService = contentProvider
 				.getExecutorService();
-		Long id = database.replaceOrThrow(VehicleNotifications.TABLE_NAME,
-				null, values);
-		Uri uri = ContentUris.withAppendedId(InVehicleDevices.CONTENT.URI, id);
+		Long id = database.replaceOrThrow(VehicleNotification.TABLE_NAME, null,
+				values);
+		Uri uri = ContentUris.withAppendedId(InVehicleDevice.CONTENT.URI, id);
 		executorService.execute(new PatchVehicleNotificationTask(
 				contentProvider.getContext(), database, executorService));
-		contentResolver.notifyChange(VehicleNotifications.CONTENT.URI, null);
+		contentResolver.notifyChange(VehicleNotification.CONTENT.URI, null);
 		contentResolver.notifyChange(uri, null);
 		return uri;
 	}
@@ -112,10 +124,10 @@ public class VehicleNotification implements Serializable {
 			String[] projection, String selection, String[] selectionArgs,
 			String sortOrder) {
 		Cursor cursor = contentProvider.getDatabase().query(
-				VehicleNotifications.TABLE_NAME, projection, selection,
+				VehicleNotification.TABLE_NAME, projection, selection,
 				selectionArgs, null, null, sortOrder);
 		cursor.setNotificationUri(contentProvider.getContext()
-				.getContentResolver(), VehicleNotifications.CONTENT.URI);
+				.getContentResolver(), VehicleNotification.CONTENT.URI);
 		return cursor;
 	}
 }

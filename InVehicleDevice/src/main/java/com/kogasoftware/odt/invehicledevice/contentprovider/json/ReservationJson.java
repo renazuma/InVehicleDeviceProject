@@ -6,7 +6,7 @@ import android.content.ContentValues;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.Reservations;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.Reservation;
 
 public class ReservationJson {
 	public Long id;
@@ -19,13 +19,13 @@ public class ReservationJson {
 	public Integer passengerCount;
 	public ContentValues toContentValues() {
 		ContentValues reservationValues = new ContentValues();
-		reservationValues.put(Reservations.Columns._ID, id);
-		reservationValues.put(Reservations.Columns.USER_ID, userId);
-		reservationValues.put(Reservations.Columns.MEMO,
+		reservationValues.put(Reservation.Columns._ID, id);
+		reservationValues.put(Reservation.Columns.USER_ID, userId);
+		reservationValues.put(Reservation.Columns.MEMO,
 				Strings.nullToEmpty(memo));
-		reservationValues.put(Reservations.Columns.DEPARTURE_SCHEDULE_ID,
+		reservationValues.put(Reservation.Columns.DEPARTURE_SCHEDULE_ID,
 				departureScheduleId);
-		reservationValues.put(Reservations.Columns.ARRIVAL_SCHEDULE_ID,
+		reservationValues.put(Reservation.Columns.ARRIVAL_SCHEDULE_ID,
 				arrivalScheduleId);
 		return reservationValues;
 	}

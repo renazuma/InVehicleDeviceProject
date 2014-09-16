@@ -30,14 +30,13 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.json.PassengerRecord
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.PlatformJson;
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.ReservationJson;
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.UserJson;
-import com.kogasoftware.odt.invehicledevice.contentprovider.model.VehicleNotification;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationRecords;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedules;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecords;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.Platforms;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.Reservations;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.Users;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotifications;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationRecord;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.Platform;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.Reservation;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.User;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotification;
 
 public class GetOperationSchedulesTask extends SynchronizationTask {
 	static final String TAG = GetOperationSchedulesTask.class.getSimpleName();
@@ -131,21 +130,21 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
 			database.beginTransaction();
 			for (Long vehicleNotificationId : scheduleVehidleNotificationIds) {
 				ContentValues values = new ContentValues();
-				values.put(VehicleNotifications.Columns.SCHEDULE_DOWNLOADED, 1);
-				String where = VehicleNotifications.Columns._ID + " = ?";
+				values.put(VehicleNotification.Columns.SCHEDULE_DOWNLOADED, 1);
+				String where = VehicleNotification.Columns._ID + " = ?";
 				String[] whereArgs = new String[]{vehicleNotificationId
 						.toString()};
-				database.update(VehicleNotifications.TABLE_NAME, values, where,
+				database.update(VehicleNotification.TABLE_NAME, values, where,
 						whereArgs);
 			}
-			for (String table : new String[]{Users.TABLE_NAME,
-					Reservations.TABLE_NAME, OperationSchedules.TABLE_NAME,
-					OperationRecords.TABLE_NAME, PassengerRecords.TABLE_NAME,
-					Platforms.TABLE_NAME}) {
+			for (String table : new String[]{User.TABLE_NAME,
+					Reservation.TABLE_NAME, OperationSchedule.TABLE_NAME,
+					OperationRecord.TABLE_NAME, PassengerRecord.TABLE_NAME,
+					Platform.TABLE_NAME}) {
 				database.delete(table, null, null);
 			}
 			for (UserJson user : users) {
-				database.replaceOrThrow(Users.TABLE_NAME, null,
+				database.replaceOrThrow(User.TABLE_NAME, null,
 						user.toContentValues());
 			}
 			for (PassengerRecordJson passengerRecord : passengerRecords) {
@@ -157,15 +156,15 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
 							+ passengerRecord.id, e);
 					continue;
 				}
-				database.replaceOrThrow(PassengerRecords.TABLE_NAME, null,
+				database.replaceOrThrow(PassengerRecord.TABLE_NAME, null,
 						values);
 			}
 			for (OperationRecordJson operationRecord : operationRecords) {
-				database.replaceOrThrow(OperationRecords.TABLE_NAME, null,
+				database.replaceOrThrow(OperationRecord.TABLE_NAME, null,
 						operationRecord.toContentValues());
 			}
 			for (PlatformJson platform : platforms) {
-				database.replaceOrThrow(Platforms.TABLE_NAME, null,
+				database.replaceOrThrow(Platform.TABLE_NAME, null,
 						platform.toContentValues());
 			}
 			for (OperationScheduleJson operationSchedule : mergedOperationSchedules) {
@@ -193,13 +192,13 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
 						}
 					}
 				}
-				values.put(OperationSchedules.Columns.ARRIVED_AT, arrivedAt);
-				values.put(OperationSchedules.Columns.DEPARTED_AT, departedAt);
-				database.replaceOrThrow(OperationSchedules.TABLE_NAME, null,
+				values.put(OperationSchedule.Columns.ARRIVED_AT, arrivedAt);
+				values.put(OperationSchedule.Columns.DEPARTED_AT, departedAt);
+				database.replaceOrThrow(OperationSchedule.TABLE_NAME, null,
 						values);
 			}
 			for (ReservationJson reservation : reservations) {
-				database.replaceOrThrow(Reservations.TABLE_NAME, null,
+				database.replaceOrThrow(Reservation.TABLE_NAME, null,
 						reservation.toContentValues());
 			}
 			database.setTransactionSuccessful();
@@ -208,13 +207,13 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
 		}
 		for (Long scheduleVehicleNotificationId : scheduleVehidleNotificationIds) {
 			contentResolver.notifyChange(ContentUris.withAppendedId(
-					VehicleNotifications.CONTENT.URI,
+					VehicleNotification.CONTENT.URI,
 					scheduleVehicleNotificationId), null);
 		}
-		contentResolver.notifyChange(VehicleNotifications.CONTENT.URI, null);
-		for (Uri uri : new Uri[]{Users.CONTENT.URI, Reservations.CONTENT.URI,
-				OperationSchedules.CONTENT.URI, OperationRecords.CONTENT.URI,
-				PassengerRecords.CONTENT.URI, Platforms.CONTENT.URI}) {
+		contentResolver.notifyChange(VehicleNotification.CONTENT.URI, null);
+		for (Uri uri : new Uri[]{User.CONTENT.URI, Reservation.CONTENT.URI,
+				OperationSchedule.CONTENT.URI, OperationRecord.CONTENT.URI,
+				PassengerRecord.CONTENT.URI, Platform.CONTENT.URI}) {
 			contentResolver.notifyChange(uri, null);
 		}
 	}
@@ -259,16 +258,16 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
 
 	private List<Long> getScheduleVehidleNotificationIds() {
 		List<Long> ids = Lists.newLinkedList();
-		String where = VehicleNotifications.Columns.NOTIFICATION_KIND + " = "
+		String where = VehicleNotification.Columns.NOTIFICATION_KIND + " = "
 				+ VehicleNotification.NotificationKind.SCHEDULE + " AND "
-				+ VehicleNotifications.Columns.SCHEDULE_DOWNLOADED + " = 0 ";
-		Cursor cursor = database.query(VehicleNotifications.TABLE_NAME, null,
+				+ VehicleNotification.Columns.SCHEDULE_DOWNLOADED + " = 0 ";
+		Cursor cursor = database.query(VehicleNotification.TABLE_NAME, null,
 				where, null, null, null, null);
 		try {
 			if (cursor.moveToFirst()) {
 				do {
 					ids.add(cursor.getLong(cursor
-							.getColumnIndexOrThrow(VehicleNotifications.Columns._ID)));
+							.getColumnIndexOrThrow(VehicleNotification.Columns._ID)));
 				} while (cursor.moveToNext());
 			}
 		} finally {
@@ -278,9 +277,9 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
 	}
 
 	private Boolean isDirty() {
-		Cursor orCursor = database.query(OperationRecords.TABLE_NAME, null,
-				OperationRecords.Columns.LOCAL_VERSION + " > "
-						+ OperationRecords.Columns.SERVER_VERSION, null, null,
+		Cursor orCursor = database.query(OperationRecord.TABLE_NAME, null,
+				OperationRecord.Columns.LOCAL_VERSION + " > "
+						+ OperationRecord.Columns.SERVER_VERSION, null, null,
 				null, null);
 		try {
 			// TODO:count
@@ -292,9 +291,9 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
 			orCursor.close();
 		}
 
-		Cursor prCursor = database.query(PassengerRecords.TABLE_NAME, null,
-				PassengerRecords.Columns.LOCAL_VERSION + " > "
-						+ PassengerRecords.Columns.SERVER_VERSION, null, null,
+		Cursor prCursor = database.query(PassengerRecord.TABLE_NAME, null,
+				PassengerRecord.Columns.LOCAL_VERSION + " > "
+						+ PassengerRecord.Columns.SERVER_VERSION, null, null,
 				null, null);
 		try {
 			// TODO:count

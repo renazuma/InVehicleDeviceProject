@@ -13,7 +13,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotifications;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotification;
 
 public class PatchVehicleNotificationTask extends SynchronizationTask {
 	private static final String TAG = PatchVehicleNotificationTask.class
@@ -28,10 +28,10 @@ public class PatchVehicleNotificationTask extends SynchronizationTask {
 	List<ObjectNode> getNotRepliedVehicleNotifications()
 			throws IllegalArgumentException {
 		List<ObjectNode> nodes = Lists.newLinkedList();
-		Cursor cursor = database.query(VehicleNotifications.TABLE_NAME,
-				new String[]{VehicleNotifications.Columns._ID,
-						VehicleNotifications.Columns.RESPONSE,
-						VehicleNotifications.Columns.READ_AT},
+		Cursor cursor = database.query(VehicleNotification.TABLE_NAME,
+				new String[]{VehicleNotification.Columns._ID,
+						VehicleNotification.Columns.RESPONSE,
+						VehicleNotification.Columns.READ_AT},
 				"response IS NOT NULL AND read_at IS NOT NULL", null, null,
 				null, null);
 		try {
@@ -43,14 +43,14 @@ public class PatchVehicleNotificationTask extends SynchronizationTask {
 				node.put(
 						"id",
 						cursor.getLong(cursor
-								.getColumnIndexOrThrow(VehicleNotifications.Columns._ID)));
+								.getColumnIndexOrThrow(VehicleNotification.Columns._ID)));
 				node.put(
 						"response",
 						cursor.getLong(cursor
-								.getColumnIndexOrThrow(VehicleNotifications.Columns.RESPONSE)));
+								.getColumnIndexOrThrow(VehicleNotification.Columns.RESPONSE)));
 				Long readAt = cursor
 						.getLong(cursor
-								.getColumnIndexOrThrow(VehicleNotifications.Columns.READ_AT));
+								.getColumnIndexOrThrow(VehicleNotification.Columns.READ_AT));
 				node.put("read_at", ISODateTimeFormat.dateTime().print(readAt));
 				nodes.add(node);
 			} while (cursor.moveToNext());
@@ -72,8 +72,8 @@ public class PatchVehicleNotificationTask extends SynchronizationTask {
 						@Override
 						public void onSuccess(HttpResponse response,
 								byte[] entity) {
-							database.delete(VehicleNotifications.TABLE_NAME,
-									VehicleNotifications.Columns._ID + " = ?",
+							database.delete(VehicleNotification.TABLE_NAME,
+									VehicleNotification.Columns._ID + " = ?",
 									new String[]{id.toString()});
 						}
 					});

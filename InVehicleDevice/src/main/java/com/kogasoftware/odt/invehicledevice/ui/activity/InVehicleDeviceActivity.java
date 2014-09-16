@@ -23,11 +23,9 @@ import android.os.Handler;
 import android.text.Html;
 
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.contentprovider.model.ServiceProvider;
-import com.kogasoftware.odt.invehicledevice.contentprovider.model.VehicleNotification;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.InVehicleDevices;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceProviders;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotifications;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.InVehicleDevice;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceProvider;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.SignInErrorBroadcastIntent;
 import com.kogasoftware.odt.invehicledevice.service.startupservice.AirplaneModeOnBroadcastIntent;
 import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
@@ -105,12 +103,12 @@ public class InVehicleDeviceActivity extends Activity {
 	private final LoaderCallbacks<Cursor> normalVehicleNotificationLoaderCallbacks = new LoaderCallbacks<Cursor>() {
 		@Override
 		public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-			String where = VehicleNotifications.Columns.NOTIFICATION_KIND
+			String where = VehicleNotification.Columns.NOTIFICATION_KIND
 					+ " = " + VehicleNotification.NotificationKind.NORMAL
-					+ " AND " + VehicleNotifications.Columns.RESPONSE
+					+ " AND " + VehicleNotification.Columns.RESPONSE
 					+ " IS NULL";
 			return new CursorLoader(InVehicleDeviceActivity.this,
-					VehicleNotifications.CONTENT.URI, null, where, null, null);
+					VehicleNotification.CONTENT.URI, null, where, null, null);
 		}
 
 		@Override
@@ -144,7 +142,7 @@ public class InVehicleDeviceActivity extends Activity {
 		public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 			return new CursorLoader(
 					InVehicleDeviceActivity.this,
-					VehicleNotifications.CONTENT.URI,
+					VehicleNotification.CONTENT.URI,
 					null,
 					VehicleNotification.WHERE_SCHEDULE_VEHICLE_NOTIFICATION_FRAGMENT_CONTENT,
 					null, null);
@@ -178,7 +176,7 @@ public class InVehicleDeviceActivity extends Activity {
 		@Override
 		public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 			return new CursorLoader(InVehicleDeviceActivity.this,
-					InVehicleDevices.CONTENT.URI, null, null, null, null);
+					InVehicleDevice.CONTENT.URI, null, null, null, null);
 		}
 
 		@Override
@@ -203,7 +201,7 @@ public class InVehicleDeviceActivity extends Activity {
 		@Override
 		public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 			return new CursorLoader(InVehicleDeviceActivity.this,
-					ServiceProviders.CONTENT.URI, null, null, null, null);
+					ServiceProvider.CONTENT.URI, null, null, null, null);
 		}
 
 		@Override

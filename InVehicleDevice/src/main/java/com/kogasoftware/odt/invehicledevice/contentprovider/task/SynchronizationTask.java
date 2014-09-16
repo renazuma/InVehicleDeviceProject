@@ -35,7 +35,7 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.kogasoftware.android.org.apache.http.client.methods.HttpPatch;
 import com.kogasoftware.odt.invehicledevice.contentprovider.InVehicleDeviceContentProvider;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.InVehicleDevices;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.InVehicleDevice;
 
 public class SynchronizationTask implements Runnable {
 	private static final String TAG = SynchronizationTask.class.getSimpleName();
@@ -103,21 +103,21 @@ public class SynchronizationTask implements Runnable {
 	@Override
 	public void run() {
 		try {
-			String[] columns = new String[]{InVehicleDevices.Columns.URL,
-					InVehicleDevices.Columns.AUTHENTICATION_TOKEN};
+			String[] columns = new String[]{InVehicleDevice.Columns.URL,
+					InVehicleDevice.Columns.AUTHENTICATION_TOKEN};
 			String url;
 			String authenticationToken;
-			Cursor cursor = database.query(InVehicleDevices.TABLE_NAME,
+			Cursor cursor = database.query(InVehicleDevice.TABLE_NAME,
 					columns, null, null, null, null, null);
 			try {
 				if (!cursor.moveToFirst()) {
 					return;
 				}
 				url = cursor.getString(cursor
-						.getColumnIndexOrThrow(InVehicleDevices.Columns.URL));
+						.getColumnIndexOrThrow(InVehicleDevice.Columns.URL));
 				authenticationToken = cursor
 						.getString(cursor
-								.getColumnIndexOrThrow(InVehicleDevices.Columns.AUTHENTICATION_TOKEN));
+								.getColumnIndexOrThrow(InVehicleDevice.Columns.AUTHENTICATION_TOKEN));
 			} finally {
 				cursor.close();
 			}

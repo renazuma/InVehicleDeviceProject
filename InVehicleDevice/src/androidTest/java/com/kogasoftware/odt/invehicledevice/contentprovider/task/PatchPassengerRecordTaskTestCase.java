@@ -10,7 +10,7 @@ import android.database.Cursor;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.PassengerRecordJson;
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.UserJson;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecords;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecord;
 
 public class PatchPassengerRecordTaskTestCase
 		extends
@@ -37,26 +37,26 @@ public class PatchPassengerRecordTaskTestCase
 		DateTime now = DateTime.now();
 
 		ContentValues values1 = new ContentValues();
-		values1.put(PassengerRecords.Columns._ID, pr1.id);
-		values1.put(PassengerRecords.Columns.GET_ON_TIME, now.getMillis());
-		values1.put(PassengerRecords.Columns.GET_OFF_TIME, now.getMillis());
-		values1.put(PassengerRecords.Columns.RESERVATION_ID, pr1.reservationId);
-		values1.put(PassengerRecords.Columns.USER_ID, pr1.userId);
-		values1.put(PassengerRecords.Columns.PASSENGER_COUNT, 1);
-		values1.put(PassengerRecords.Columns.SERVER_VERSION, 5);
-		values1.put(PassengerRecords.Columns.LOCAL_VERSION, 8);
-		database.insertOrThrow(PassengerRecords.TABLE_NAME, null, values1);
+		values1.put(PassengerRecord.Columns._ID, pr1.id);
+		values1.put(PassengerRecord.Columns.GET_ON_TIME, now.getMillis());
+		values1.put(PassengerRecord.Columns.GET_OFF_TIME, now.getMillis());
+		values1.put(PassengerRecord.Columns.RESERVATION_ID, pr1.reservationId);
+		values1.put(PassengerRecord.Columns.USER_ID, pr1.userId);
+		values1.put(PassengerRecord.Columns.PASSENGER_COUNT, 1);
+		values1.put(PassengerRecord.Columns.SERVER_VERSION, 5);
+		values1.put(PassengerRecord.Columns.LOCAL_VERSION, 8);
+		database.insertOrThrow(PassengerRecord.TABLE_NAME, null, values1);
 
 		ContentValues values2 = new ContentValues();
-		values2.put(PassengerRecords.Columns._ID, pr2.id);
-		values2.put(PassengerRecords.Columns.GET_ON_TIME, now.getMillis());
-		values2.put(PassengerRecords.Columns.GET_OFF_TIME, now.getMillis());
-		values2.put(PassengerRecords.Columns.RESERVATION_ID, pr2.reservationId);
-		values2.put(PassengerRecords.Columns.USER_ID, pr2.userId);
-		values2.put(PassengerRecords.Columns.PASSENGER_COUNT, 1);
-		values2.put(PassengerRecords.Columns.SERVER_VERSION, 2);
-		values2.put(PassengerRecords.Columns.LOCAL_VERSION, 2);
-		database.insertOrThrow(PassengerRecords.TABLE_NAME, null, values2);
+		values2.put(PassengerRecord.Columns._ID, pr2.id);
+		values2.put(PassengerRecord.Columns.GET_ON_TIME, now.getMillis());
+		values2.put(PassengerRecord.Columns.GET_OFF_TIME, now.getMillis());
+		values2.put(PassengerRecord.Columns.RESERVATION_ID, pr2.reservationId);
+		values2.put(PassengerRecord.Columns.USER_ID, pr2.userId);
+		values2.put(PassengerRecord.Columns.PASSENGER_COUNT, 1);
+		values2.put(PassengerRecord.Columns.SERVER_VERSION, 2);
+		values2.put(PassengerRecord.Columns.LOCAL_VERSION, 2);
+		database.insertOrThrow(PassengerRecord.TABLE_NAME, null, values2);
 
 		Runnable task = new PatchPassengerRecordTask(mContext, database,
 				executorService);
@@ -67,19 +67,19 @@ public class PatchPassengerRecordTaskTestCase
 		assertNull(pr2.getOnTime);
 		assertNull(pr2.getOffTime);
 
-		Cursor c = database.query(PassengerRecords.TABLE_NAME, null, null,
-				null, null, null, PassengerRecords.Columns._ID, null);
+		Cursor c = database.query(PassengerRecord.TABLE_NAME, null, null,
+				null, null, null, PassengerRecord.Columns._ID, null);
 		try {
 			assertTrue(c.moveToFirst());
 			assertEquals(
 					8,
 					c.getLong(c
-							.getColumnIndexOrThrow(PassengerRecords.Columns.SERVER_VERSION)));
+							.getColumnIndexOrThrow(PassengerRecord.Columns.SERVER_VERSION)));
 			assertTrue(c.moveToNext());
 			assertEquals(
 					2,
 					c.getLong(c
-							.getColumnIndexOrThrow(PassengerRecords.Columns.SERVER_VERSION)));
+							.getColumnIndexOrThrow(PassengerRecord.Columns.SERVER_VERSION)));
 		} finally {
 			c.close();
 		}

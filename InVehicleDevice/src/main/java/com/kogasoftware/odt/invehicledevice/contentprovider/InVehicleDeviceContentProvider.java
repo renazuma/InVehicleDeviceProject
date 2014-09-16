@@ -19,23 +19,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
-import com.kogasoftware.odt.invehicledevice.contentprovider.model.InVehicleDevice;
-import com.kogasoftware.odt.invehicledevice.contentprovider.model.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.contentprovider.model.PassengerRecord;
-import com.kogasoftware.odt.invehicledevice.contentprovider.model.ServiceProvider;
-import com.kogasoftware.odt.invehicledevice.contentprovider.model.ServiceUnitStatusLog;
-import com.kogasoftware.odt.invehicledevice.contentprovider.model.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.Content;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.InVehicleDevices;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationRecords;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedules;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecords;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.Platforms;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.Reservations;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceProviders;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLogs;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.Users;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotifications;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.InVehicleDevice;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationRecord;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.Platform;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.Reservation;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceProvider;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLog;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.User;
+import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.GetOperationSchedulesTask;
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.GetServiceProviderTask;
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.GetVehicleNotificationsTask;
@@ -61,12 +55,12 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
 		JSON.setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
 		JSON.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-		for (Content content : new Content[]{InVehicleDevices.CONTENT,
-				OperationRecords.CONTENT, OperationSchedules.CONTENT,
-				PassengerRecords.CONTENT, Platforms.CONTENT,
-				Reservations.CONTENT, ServiceProviders.CONTENT,
-				ServiceUnitStatusLogs.CONTENT, Users.CONTENT,
-				VehicleNotifications.CONTENT}) {
+		for (Content content : new Content[]{InVehicleDevice.CONTENT,
+				OperationRecord.CONTENT, OperationSchedule.CONTENT,
+				PassengerRecord.CONTENT, Platform.CONTENT,
+				Reservation.CONTENT, ServiceProvider.CONTENT,
+				ServiceUnitStatusLog.CONTENT, User.CONTENT,
+				VehicleNotification.CONTENT}) {
 			content.addTo(MATCHER);
 		}
 	}
@@ -131,7 +125,7 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
 		new Thread() {
 			@Override
 			public void run() {
-				Cursor cursor = database.query(ServiceProviders.TABLE_NAME,
+				Cursor cursor = database.query(ServiceProvider.TABLE_NAME,
 						null, null, null, null, null, null);
 				try {
 					if (cursor.moveToFirst()) {
@@ -164,7 +158,7 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
 	public Uri insert(Uri uri, ContentValues values) {
 		int code = MATCHER.match(uri);
 		switch (code) {
-			case InVehicleDevices.TABLE_CODE :
+			case InVehicleDevice.TABLE_CODE :
 				return InVehicleDevice.replaceLoginAndPassword(values, this,
 						new Runnable() {
 							@Override
@@ -172,9 +166,9 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
 								onUpdateAuthenticationToken();
 							}
 						});
-			case VehicleNotifications.TABLE_CODE :
+			case VehicleNotification.TABLE_CODE :
 				return VehicleNotification.replace(values, this);
-			case OperationSchedules.TABLE_CODE :
+			case OperationSchedule.TABLE_CODE :
 				return OperationSchedule.replace(values, this);
 			default :
 				throw new IllegalArgumentException("Unknown uri: " + uri);
@@ -186,19 +180,19 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
 			String[] selectionArgs, String sortOrder) {
 		Integer match = MATCHER.match(uri);
 		switch (match) {
-			case ServiceProviders.TABLE_CODE :
+			case ServiceProvider.TABLE_CODE :
 				return ServiceProvider.query(this, projection, selection,
 						selectionArgs, sortOrder);
-			case InVehicleDevices.TABLE_CODE :
+			case InVehicleDevice.TABLE_CODE :
 				return InVehicleDevice.query(this, projection, selection,
 						selectionArgs, sortOrder);
-			case VehicleNotifications.TABLE_CODE :
+			case VehicleNotification.TABLE_CODE :
 				return VehicleNotification.query(this, projection, selection,
 						selectionArgs, sortOrder);
-			case OperationSchedules.TABLE_CODE :
+			case OperationSchedule.TABLE_CODE :
 				return OperationSchedule.query(this, projection, selection,
 						selectionArgs, sortOrder);
-			case PassengerRecords.TABLE_CODE :
+			case PassengerRecord.TABLE_CODE :
 				return PassengerRecord.query(this, projection, selection,
 						selectionArgs, sortOrder);
 			default :
@@ -210,7 +204,7 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
 		Integer match = MATCHER.match(uri);
 		switch (match) {
-			case InVehicleDevices.TABLE_CODE :
+			case InVehicleDevice.TABLE_CODE :
 				return InVehicleDevice.delete(this, selection, selectionArgs);
 			default :
 				throw new IllegalArgumentException("Unknown uri: " + uri);
@@ -227,10 +221,10 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
 			String[] selectionArgs) {
 		Integer match = MATCHER.match(uri);
 		switch (match) {
-			case PassengerRecords.TABLE_CODE :
+			case PassengerRecord.TABLE_CODE :
 				return PassengerRecord.update(this, values, selection,
 						selectionArgs);
-			case ServiceUnitStatusLogs.TABLE_CODE :
+			case ServiceUnitStatusLog.TABLE_CODE :
 				return ServiceUnitStatusLog.update(this, values, selection,
 						selectionArgs);
 			default :
@@ -239,15 +233,15 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
 	}
 
 	private void onUpdateAuthenticationToken() {
-		database.delete(ServiceProviders.TABLE_NAME, null, null);
-		Cursor cursor = database.query(InVehicleDevices.TABLE_NAME, null, null,
+		database.delete(ServiceProvider.TABLE_NAME, null, null);
+		Cursor cursor = database.query(InVehicleDevice.TABLE_NAME, null, null,
 				null, null, null, null);
 		try {
 			if (!cursor.moveToFirst()) {
 				return;
 			}
 			Integer authenticationTokenIndex = cursor
-					.getColumnIndexOrThrow(InVehicleDevices.Columns.AUTHENTICATION_TOKEN);
+					.getColumnIndexOrThrow(InVehicleDevice.Columns.AUTHENTICATION_TOKEN);
 			if (cursor.isNull(authenticationTokenIndex)) {
 				return;
 			}
