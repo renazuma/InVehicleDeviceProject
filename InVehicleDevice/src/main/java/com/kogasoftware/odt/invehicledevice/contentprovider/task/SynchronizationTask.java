@@ -23,11 +23,11 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
-import android.app.ActivityManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.test.IsolatedContext;
 import android.util.Log;
 
 import com.amazonaws.org.apache.http.client.utils.URIBuilder;
@@ -109,8 +109,8 @@ public class SynchronizationTask implements Runnable {
 					InVehicleDevice.Columns.AUTHENTICATION_TOKEN};
 			String url;
 			String authenticationToken;
-			Cursor cursor = database.query(InVehicleDevice.TABLE_NAME,
-					columns, null, null, null, null, null);
+			Cursor cursor = database.query(InVehicleDevice.TABLE_NAME, columns,
+					null, null, null, null, null);
 			try {
 				if (!cursor.moveToFirst()) {
 					return;
@@ -150,7 +150,7 @@ public class SynchronizationTask implements Runnable {
 		} catch (RejectedExecutionException e) {
 			// executorService.shutdown()がテスト中のみ実行されることがあり、RejectedExecutionExceptionを
 			// 発生させるため、テスト中はこの例外は許可する
-			if (ActivityManager.isRunningInTestHarness()) {
+			if (context instanceof IsolatedContext) {
 				return;
 			}
 			throw e;
