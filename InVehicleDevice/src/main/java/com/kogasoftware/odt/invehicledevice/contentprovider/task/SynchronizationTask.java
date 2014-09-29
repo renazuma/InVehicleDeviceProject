@@ -11,6 +11,7 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -57,7 +58,7 @@ public class SynchronizationTask implements Runnable {
 		if (entity.length > 5000) {
 			entity = Arrays.copyOf(entity, 5000);
 		}
-		return "[" + Joiner.on(",").join(Arrays.asList(entity)) + "]";
+		return "[" + Joiner.on(",").join(ArrayUtils.toObject(entity)) + "]";
 	}
 
 	public static interface Callback {
