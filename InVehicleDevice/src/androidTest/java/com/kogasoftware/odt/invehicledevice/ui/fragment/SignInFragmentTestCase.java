@@ -17,6 +17,7 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.DatabaseHelper;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.InVehicleDevice;
 import com.kogasoftware.odt.invehicledevice.mockserver.MockServer;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
+import com.kogasoftware.odt.invehicledevice.utils.SoloUtils;
 import com.kogasoftware.odt.invehicledevice.utils.TestUtils;
 import com.robotium.solo.Condition;
 import com.robotium.solo.Solo;
@@ -51,7 +52,8 @@ public class SignInFragmentTestCase
 		server = new MockServer(12346);
 		server.start();
 		validUrl = server.getUrl();
-		solo = new Solo(getInstrumentation(), getActivity());
+		solo = new Solo(getInstrumentation(), SoloUtils.LONGER_TIMEOUT,
+				getActivity());
 	}
 
 	@Override
