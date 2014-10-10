@@ -3,7 +3,6 @@ package com.kogasoftware.odt.invehicledevice.ui.fragment;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import junit.framework.AssertionFailedError;
 import junitx.framework.ComparableAssert;
 import android.content.Context;
 import android.database.Cursor;
@@ -19,7 +18,6 @@ import com.kogasoftware.odt.invehicledevice.mockserver.MockServer;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.utils.SoloUtils;
 import com.kogasoftware.odt.invehicledevice.utils.TestUtils;
-import com.robotium.solo.Condition;
 import com.robotium.solo.Solo;
 
 public class SignInFragmentTestCase
@@ -69,17 +67,7 @@ public class SignInFragmentTestCase
 		solo.scrollToTop();
 		getInstrumentation().waitForIdleSync();
 		solo.clickOnText(solo.getString(R.string.server_url));
-		assertTrue(solo.waitForCondition(new Condition() {
-			@Override
-			public boolean isSatisfied() {
-				try {
-					solo.clearEditText(0);
-					return true;
-				} catch (AssertionFailedError e) {
-					return false;
-				}
-			}
-		}, 30 * 1000));
+		solo.clearEditText(0);
 		solo.enterText(0, url);
 		solo.clickOnButton(solo.getString(R.string.ok));
 		getInstrumentation().waitForIdleSync();
