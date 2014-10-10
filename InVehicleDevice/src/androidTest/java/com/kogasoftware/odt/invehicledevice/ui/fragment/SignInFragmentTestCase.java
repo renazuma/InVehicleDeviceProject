@@ -285,7 +285,7 @@ public class SignInFragmentTestCase
 		try {
 			Stopwatch stopwatch = new Stopwatch().start();
 			while (1 != cursor.getCount()) {
-				ComparableAssert.assertLesser(20,
+				ComparableAssert.assertLesser(20L,
 						stopwatch.elapsed(TimeUnit.SECONDS));
 				Thread.sleep(500);
 			}
