@@ -2,6 +2,7 @@ package com.kogasoftware.odt.invehicledevice.utils;
 
 import java.io.Closeable;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import junitx.framework.Assert;
 import android.content.SharedPreferences;
@@ -41,7 +42,9 @@ public class TestUtils {
 			} else if (object instanceof Closeable) {
 				((Closeable) object).close();
 			} else if (object instanceof ExecutorService) {
-				((ExecutorService) object).shutdownNow();
+                ExecutorService executorService = (ExecutorService) object;
+                executorService.shutdownNow();
+                Assert.assertTrue(executorService.awaitTermination(20, TimeUnit.SECONDS));
 			} else if (object instanceof SharedPreferences) {
 				clear(object);
 			} else {
