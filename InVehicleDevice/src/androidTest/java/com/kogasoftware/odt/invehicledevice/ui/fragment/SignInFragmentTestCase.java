@@ -1,14 +1,17 @@
 package com.kogasoftware.odt.invehicledevice.ui.fragment;
 
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import junit.framework.AssertionFailedError;
+import junitx.framework.ComparableAssert;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.test.ActivityInstrumentationTestCase2;
 
+import com.google.common.base.Stopwatch;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.contentprovider.DatabaseHelper;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.InVehicleDevice;
@@ -280,7 +283,12 @@ public class SignInFragmentTestCase
 		Cursor cursor = database.query(InVehicleDevice.TABLE_NAME, null, null,
 				null, null, null, null);
 		try {
-			assertEquals(1, cursor.getCount());
+			Stopwatch stopwatch = new Stopwatch().start();
+			while (1 != cursor.getCount()) {
+				ComparableAssert.assertLesser(20,
+						stopwatch.elapsed(TimeUnit.SECONDS));
+				Thread.sleep(500);
+			}
 			cursor.moveToFirst();
 			assertNotNull(cursor
 					.getString(cursor
