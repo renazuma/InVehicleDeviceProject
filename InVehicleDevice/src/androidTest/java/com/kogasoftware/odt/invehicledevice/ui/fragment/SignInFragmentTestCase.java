@@ -108,7 +108,7 @@ public class SignInFragmentTestCase
 	}
 
 	void assertText(boolean expected, String s) throws InterruptedException {
-		assertEquals(expected, solo.waitForText(s, 1, 10000, true, true));
+		assertEquals(expected, solo.waitForText(s, 1, 20 * 1000, true, true));
 	}
 
 	public void testInvalidUrl() throws Exception {
