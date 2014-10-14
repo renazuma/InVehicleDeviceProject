@@ -47,16 +47,24 @@ public class PassengerRecordErrorArrayAdapter
 						+ ") is not instanceof PassengerRecord");
 				return;
 			}
-			PassengerRecord passengerRecord = (PassengerRecord) tag;
+			final PassengerRecord passengerRecord = (PassengerRecord) tag;
 			if (operationScheduleId.equals(passengerRecord.arrivalScheduleId)) {
 				passengerRecord.ignoreGetOffMiss = !passengerRecord.ignoreGetOffMiss;
 			} else {
 				passengerRecord.ignoreGetOnMiss = !passengerRecord.ignoreGetOnMiss;
 			}
-			String where = PassengerRecord.Columns._ID + " = ?";
-			String[] whereArgs = new String[]{passengerRecord.id.toString()};
-			contentResolver.update(PassengerRecord.CONTENT.URI,
-					passengerRecord.toContentValues(), where, whereArgs);
+			final String where = PassengerRecord.Columns._ID + " = ?";
+			final String[] whereArgs = new String[]{passengerRecord.id
+					.toString()};
+			new Thread() {
+				@Override
+				public void run() {
+					contentResolver
+							.update(PassengerRecord.CONTENT.URI,
+									passengerRecord.toContentValues(), where,
+									whereArgs);
+				}
+			}.start();
 			notifyDataSetChanged();
 		}
 	};

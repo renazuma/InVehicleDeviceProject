@@ -116,12 +116,18 @@ public class BatteryBroadcastReceiver extends BroadcastReceiver {
 		message += ", technology=" + technology;
 
 		Log.i(TAG, message);
-		if (useBatteryTemperature) {
-			ContentValues contentValues = new ContentValues();
-			contentValues.put(ServiceUnitStatusLog.Columns.TEMPERATURE,
-					Math.round(temperature));
-			contentResolver.update(ServiceUnitStatusLog.CONTENT.URI,
-					contentValues, null, null);
+		if (!useBatteryTemperature) {
+			return;
 		}
+		final ContentValues contentValues = new ContentValues();
+		contentValues.put(ServiceUnitStatusLog.Columns.TEMPERATURE,
+				Math.round(temperature));
+		new Thread() {
+			@Override
+			public void run() {
+				contentResolver.update(ServiceUnitStatusLog.CONTENT.URI,
+						contentValues, null, null);
+			}
+		}.start();
 	}
 }

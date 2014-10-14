@@ -114,10 +114,15 @@ public class AccMagSensorEventListener implements SensorEventListener {
 		while (degree < 0) {
 			degree += 360;
 		}
-		ContentValues contentValues = new ContentValues();
+		final ContentValues contentValues = new ContentValues();
 		contentValues.put(ServiceUnitStatusLog.Columns.ORIENTATION,
 				360.0 - degree);
-		contentResolver.update(ServiceUnitStatusLog.CONTENT.URI,
-				contentValues, null, null);
+		new Thread() {
+			@Override
+			public void run() {
+				contentResolver.update(ServiceUnitStatusLog.CONTENT.URI,
+						contentValues, null, null);
+			}
+		}.start();
 	}
 }

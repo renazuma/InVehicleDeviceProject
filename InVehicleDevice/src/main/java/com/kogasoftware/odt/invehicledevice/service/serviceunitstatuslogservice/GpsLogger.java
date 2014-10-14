@@ -178,15 +178,20 @@ public class GpsLogger
 	}
 
 	private void update(Location location) {
-		ContentValues values = new ContentValues();
+		final ContentValues values = new ContentValues();
 		String latitude = new BigDecimal(location.getLatitude())
 				.toPlainString();
 		String longitude = new BigDecimal(location.getLongitude())
 				.toPlainString();
 		values.put(ServiceUnitStatusLog.Columns.LATITUDE, latitude);
 		values.put(ServiceUnitStatusLog.Columns.LONGITUDE, longitude);
-		contentResolver.update(ServiceUnitStatusLog.CONTENT.URI, values, null,
-				null);
+		new Thread() {
+			@Override
+			public void run() {
+				contentResolver.update(ServiceUnitStatusLog.CONTENT.URI,
+						values, null, null);
+			}
+		}.start();
 	}
 
 	@Override

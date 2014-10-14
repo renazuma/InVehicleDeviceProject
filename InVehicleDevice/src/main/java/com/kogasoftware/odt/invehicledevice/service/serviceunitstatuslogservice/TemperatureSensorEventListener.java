@@ -34,9 +34,14 @@ public class TemperatureSensorEventListener implements SensorEventListener {
 	public void onSensorChanged(float[] values) {
 		float celsius = values[0];
 		Log.v(TAG, "temperature changed=" + celsius);
-		ContentValues contentValues = new ContentValues();
+		final ContentValues contentValues = new ContentValues();
 		contentValues.put(ServiceUnitStatusLog.Columns.TEMPERATURE, celsius);
-		contentResolver.update(ServiceUnitStatusLog.CONTENT.URI,
-				contentValues, null, null);
+		new Thread() {
+			@Override
+			public void run() {
+				contentResolver.update(ServiceUnitStatusLog.CONTENT.URI,
+						contentValues, null, null);
+			}
+		}.start();
 	}
 }
