@@ -1,6 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.ui.fragment;
 
 import java.util.Locale;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import junitx.framework.ComparableAssert;
@@ -63,13 +64,26 @@ public class SignInFragmentTestCase
 		}
 	}
 
+	void acceptDialog() throws InterruptedException {
+		final CountDownLatch cdl = new CountDownLatch(1);
+		getActivity().runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				solo.getButton(solo.getString(R.string.ok), true)
+						.performClick();
+				cdl.countDown();
+			}
+		});
+		assertTrue(cdl.await(20, TimeUnit.SECONDS));
+	}
+
 	void setConnectionUrl(String url) throws Exception {
 		solo.scrollToTop();
 		getInstrumentation().waitForIdleSync();
 		solo.clickOnText(solo.getString(R.string.server_url));
 		solo.clearEditText(0);
 		solo.enterText(0, url);
-		solo.clickOnButton(solo.getString(R.string.ok));
+		acceptDialog();
 		getInstrumentation().waitForIdleSync();
 	}
 
@@ -79,7 +93,7 @@ public class SignInFragmentTestCase
 		solo.clickOnText(solo.getString(R.string.login));
 		solo.clearEditText(0);
 		solo.enterText(0, login);
-		solo.clickOnButton(solo.getString(R.string.ok));
+		acceptDialog();
 		getInstrumentation().waitForIdleSync();
 	}
 
@@ -89,7 +103,7 @@ public class SignInFragmentTestCase
 		solo.clickOnText(solo.getString(R.string.password));
 		solo.clearEditText(0);
 		solo.enterText(0, password);
-		solo.clickOnButton(solo.getString(R.string.ok));
+		acceptDialog();
 		getInstrumentation().waitForIdleSync();
 	}
 
