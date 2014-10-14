@@ -69,8 +69,7 @@ public class OrderedOperationTestCase
 
 		solo = new Solo(getInstrumentation(), SoloUtils.LONGER_TIMEOUT,
 				getActivity());
-
-		assertTrue(solo.searchText("運行中", true));
+		assertTrue(solo.waitForText("運行中", 1, 180 * 1000, false, true)); // 初回起動時なので長く待つ
 		assertTrue(solo.searchText("南浦和", true));
 		Thread.sleep(3000);
 		solo.clickOnButton(solo.getString(R.string.it_arrives_button_text));
