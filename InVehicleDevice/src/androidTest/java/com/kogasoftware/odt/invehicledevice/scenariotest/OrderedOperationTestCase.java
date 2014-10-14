@@ -87,7 +87,7 @@ public class OrderedOperationTestCase
 		}, 5000));
 		Thread.sleep(3000);
 		solo.clickOnButton("確認\nする");
-		Thread.sleep(3000);
+		Thread.sleep(5000);
 		solo.clickOnButton("出発する");
 
 		assertTrue(solo.searchText("運行中", true));
@@ -107,6 +107,7 @@ public class OrderedOperationTestCase
 		solo.clickOnText("まつもと ゆきひろ");
 		solo.clickOnText("はしもと ゆきなり");
 		solo.clickOnButton("確認\nする");
+		Thread.sleep(5000);
 		solo.clickOnButton("出発する");
 		assertTrue(solo.waitForCondition(new Condition() {
 			@Override
@@ -130,6 +131,7 @@ public class OrderedOperationTestCase
 
 		Thread.sleep(3000);
 		solo.clickOnButton("確認\nする");
+		Thread.sleep(5000);
 		solo.clickOnButton("確定する");
 		assertTrue(solo.searchText("運行終了", true));
 	}
