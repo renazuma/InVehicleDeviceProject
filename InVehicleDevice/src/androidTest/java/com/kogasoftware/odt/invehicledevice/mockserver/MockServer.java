@@ -29,6 +29,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
+import android.util.Log;
 import android.util.Pair;
 
 import com.google.common.base.Splitter;
@@ -45,6 +46,7 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.table.InVehicleDevic
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceProvider;
 
 public class MockServer extends Thread {
+	private static final String TAG = MockServer.class.getSimpleName();
 	final BasicHttpProcessor httpProcessor;
 	final BasicHttpContext httpContext;
 	final HttpService httpService;
@@ -232,26 +234,31 @@ public class MockServer extends Thread {
 
 	@Override
 	public void run() {
-		try {
-			while (!Thread.currentThread().isInterrupted()) {
-				Socket socket = serverSocket.accept();
-				try {
-					DefaultHttpServerConnection serverConnection = new PatchReadyHttpServerConnection();
-					serverConnection.bind(socket, new BasicHttpParams());
-					httpService.handleRequest(serverConnection, httpContext);
-					serverConnection.shutdown();
-				} catch (HttpException e) {
-					e.printStackTrace();
-				} finally {
-					socket.close();
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
+		while (!Thread.currentThread().isInterrupted()) {
+			Socket socket;
 			try {
-				serverSocket.close();
+				socket = serverSocket.accept();
 			} catch (IOException e) {
+				if (!Thread.currentThread().isInterrupted()) {
+					Log.e(TAG, "Unexpected exception", e);
+				}
+				return;
+			}
+			DefaultHttpServerConnection serverConnection = new PatchReadyHttpServerConnection();
+			try {
+				serverConnection.bind(socket, new BasicHttpParams());
+				httpService.handleRequest(serverConnection, httpContext);
+				serverConnection.shutdown();
+			} catch (IOException e) {
+				Log.e(TAG, "Unexpected exception", e);
+			} catch (HttpException e) {
+				Log.e(TAG, "Unexpected exception", e);
+			} finally {
+				try {
+					socket.close();
+				} catch (IOException e) {
+					Log.e(TAG, "Unexpected exception", e);
+				}
 			}
 		}
 	}
