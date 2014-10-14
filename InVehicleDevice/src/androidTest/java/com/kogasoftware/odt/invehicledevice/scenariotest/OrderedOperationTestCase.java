@@ -14,6 +14,7 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.json.PlatformJson;
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.UserJson;
 import com.kogasoftware.odt.invehicledevice.mockserver.MockServer;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
+import com.kogasoftware.odt.invehicledevice.utils.SoloUtils;
 import com.kogasoftware.odt.invehicledevice.utils.TestUtils;
 import com.robotium.solo.Condition;
 import com.robotium.solo.Solo;
@@ -66,7 +67,8 @@ public class OrderedOperationTestCase
 		final PassengerRecordJson pr2 = server.passengerRecords.get(1);
 		final PassengerRecordJson pr3 = server.passengerRecords.get(2);
 
-		solo = new Solo(getInstrumentation(), getActivity());
+		solo = new Solo(getInstrumentation(), SoloUtils.LONGER_TIMEOUT,
+				getActivity());
 
 		assertTrue(solo.searchText("運行中", true));
 		assertTrue(solo.searchText("南浦和", true));
