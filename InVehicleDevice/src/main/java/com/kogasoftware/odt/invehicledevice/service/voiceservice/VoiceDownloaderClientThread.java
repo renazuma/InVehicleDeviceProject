@@ -271,7 +271,7 @@ public class VoiceDownloaderClientThread extends HandlerThread
 					String message = "音声ファイルの展開に失敗しました。";
 					updateVoiceFileStateText(message);
 				} finally {
-                    VoiceDownloaderClientThread.this.quitSafely();
+                    VoiceDownloaderClientThread.this.quit();
                 }
 			}
 		}.start();
