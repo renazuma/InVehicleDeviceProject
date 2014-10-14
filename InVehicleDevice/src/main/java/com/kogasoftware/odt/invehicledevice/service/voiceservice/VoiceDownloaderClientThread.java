@@ -47,7 +47,15 @@ public class VoiceDownloaderClientThread extends HandlerThread
 	@Override
 	protected void onLooperPrepared() {
 		super.onLooperPrepared();
-		startVoiceDownloaderServiceIfRequired();
+        try {
+            if (getVoiceOutputDir().isDirectory()) {
+                updateVoiceFileStateText("インストール済");
+                quit();
+                return;
+            }
+        } catch (IOException e) {
+        }
+        startVoiceDownloaderServiceIfRequired();
 		startExtractVoiceFileThreadIfRequired();
 	}
 
@@ -262,14 +270,16 @@ public class VoiceDownloaderClientThread extends HandlerThread
 					Log.v(TAG, "extractVoiceFileIfRequired()", e);
 					String message = "音声ファイルの展開に失敗しました。";
 					updateVoiceFileStateText(message);
-				}
+				} finally {
+                    VoiceDownloaderClientThread.this.quitSafely();
+                }
 			}
 		}.start();
 	}
 
 	@Override
 	public void run() {
-		try {
+        try {
 			super.run();
 		} finally {
 			if (downloaderClientStub != null) {
