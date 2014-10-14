@@ -20,7 +20,8 @@ public class SynchronizationTaskTestCase extends AndroidTestCase {
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		databaseHelper = new DatabaseHelper(getContext());
+		databaseHelper = new DatabaseHelper(getContext(), getClass()
+				.getSimpleName() + ".test.db");
 		database = databaseHelper.getWritableDatabase();
 		TestUtils.clear(database);
 
