@@ -22,14 +22,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	final List<String> migrationSqls = Lists.newArrayList();
 	final Context context;
 
-	public DatabaseHelper(Context context) {
-		super(context, "InVehicleDeviceContent.db", null, DATABASE_VERSION);
+	public DatabaseHelper(Context context, String fileName) {
+		super(context, fileName, null, DATABASE_VERSION);
 		this.context = context;
 		for (String sql : Lists.newArrayList(context.getResources()
 				.getStringArray(R.array.migration))) {
 			migrationSqls.add(sql.replaceAll(Pattern.quote("$(id)"),
 					BaseColumns._ID));
 		}
+	}
+
+	public DatabaseHelper(Context context) {
+		this(context, "InVehicleDeviceContent.db");
 	}
 
 	@Override
