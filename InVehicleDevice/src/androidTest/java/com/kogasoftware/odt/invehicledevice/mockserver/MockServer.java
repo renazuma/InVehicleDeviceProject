@@ -5,15 +5,24 @@ import java.math.BigDecimal;
 import java.net.Inet4Address;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+
+import junit.framework.Assert;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.http.HttpException;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpHead;
 import org.apache.http.impl.DefaultConnectionReuseStrategy;
 import org.apache.http.impl.DefaultHttpResponseFactory;
 import org.apache.http.impl.DefaultHttpServerConnection;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.BasicHttpProcessor;
@@ -33,6 +42,7 @@ import android.util.Log;
 import android.util.Pair;
 
 import com.google.common.base.Splitter;
+import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.OperationRecordJson;
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.OperationScheduleJson;
@@ -229,6 +239,39 @@ public class MockServer extends Thread {
 		try {
 			serverSocket.close();
 		} catch (IOException e) {
+		}
+	}
+
+	@Override
+	public void start() {
+		super.start();
+		Stopwatch stopwatch = new Stopwatch().start();
+		while (true) {
+			if (stopwatch.elapsed(TimeUnit.SECONDS) > 30) {
+				Assert.fail(getClass().getSimpleName() + "を起動できません");
+			}
+			HttpHead request = new HttpHead();
+			try {
+				request.setURI(new URI(getUrl()));
+			} catch (URISyntaxException e) {
+				throw new RuntimeException(e);
+			}
+			HttpClient client = new DefaultHttpClient();
+			try {
+				client.execute(request);
+			} catch (ClientProtocolException e) {
+				continue;
+			} catch (IOException e) {
+				continue;
+			} finally {
+				client.getConnectionManager().shutdown();
+			}
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
+			break;
 		}
 	}
 
