@@ -116,6 +116,7 @@ public class FlickUnneededListViewTestCase
 		assertEnabled(down, true);
 
 		solo.clickOnView(up);
+		getInstrumentation().waitForIdleSync();
 		solo.clickOnView(up);
 
 		assertTrue(solo.searchText("bar", true));
@@ -125,12 +126,14 @@ public class FlickUnneededListViewTestCase
 		assertTrue(solo.searchText("bar", true));
 
 		solo.clickOnView(down);
+		getInstrumentation().waitForIdleSync();
 		solo.clickOnView(down);
 
 		assertFalse(solo.searchText("bar", true));
 
 		for (Integer i = 0; i < strings.length; ++i) {
 			solo.clickOnView(up);
+			getInstrumentation().waitForIdleSync();
 		}
 
 		assertTrue(solo.searchText("bar", true));
