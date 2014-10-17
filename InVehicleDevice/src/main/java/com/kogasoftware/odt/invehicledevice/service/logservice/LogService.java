@@ -30,9 +30,9 @@ public class LogService extends Service {
 	private final SendLogBroadcastReceiver sendLogBroadcastReceiver = new SendLogBroadcastReceiver(
 			rawLogFiles);
 	private Boolean destroyed = false;
-	private Thread logcatThread = new EmptyThread();
-	private Thread compressThread = new EmptyThread();
-	private Thread uploadThread = new EmptyThread();
+	private Thread logcatThread = new Thread();
+	private Thread compressThread = new Thread();
+	private Thread uploadThread = new Thread();
 	private final List<Closeable> closeables = new LinkedList<Closeable>();
 
 	/**

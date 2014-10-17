@@ -18,7 +18,6 @@ import android.util.Log;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
-import com.kogasoftware.odt.invehicledevice.service.logservice.EmptyThread;
 
 public class VoiceThread extends Thread {
 
@@ -64,7 +63,7 @@ public class VoiceThread extends Thread {
 
 	@Override
 	public void run() {
-		Thread speakThread = new EmptyThread();
+		Thread speakThread = new Thread();
 		try {
 			final VoiceCache voiceCache = new VoiceCache(context,
 					MAX_CACHE_BYTES);
