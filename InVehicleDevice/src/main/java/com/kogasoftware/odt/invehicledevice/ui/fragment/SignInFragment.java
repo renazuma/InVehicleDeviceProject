@@ -47,6 +47,9 @@ import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceDownloadSt
 import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceDownloaderClientThread;
 import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 
+/**
+ * サインイン情報の入力画面
+ */
 public class SignInFragment extends PreferenceFragment
 		implements
 			LoaderCallbacks<Cursor>,

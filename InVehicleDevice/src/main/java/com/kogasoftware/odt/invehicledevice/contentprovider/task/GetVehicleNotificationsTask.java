@@ -19,6 +19,9 @@ import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.VehicleNotificationJson;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotification;
 
+/**
+ * 車載器通知の取得APIとの通信
+ */
 public class GetVehicleNotificationsTask extends SynchronizationTask {
 	static final String TAG = GetVehicleNotificationsTask.class.getSimpleName();
 	public static final Integer INTERVAL_MILLIS = 20 * 1000;

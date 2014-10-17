@@ -15,6 +15,9 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.task.GetOperationSch
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.GetServiceProviderTask;
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.SignInTask;
 
+/**
+ * 車載器テーブル
+ */
 public class InVehicleDevice {
 	public static final int TABLE_CODE = 1;
 	public static final String TABLE_NAME = "in_vehicle_devices";

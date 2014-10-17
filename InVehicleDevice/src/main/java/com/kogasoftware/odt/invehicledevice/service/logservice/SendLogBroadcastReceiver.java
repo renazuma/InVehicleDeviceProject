@@ -9,6 +9,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+/**
+ * クラッシュログをLogServiceReportSenderから受信
+ */
 public class SendLogBroadcastReceiver extends BroadcastReceiver {
 	private static final String TAG = SendLogBroadcastReceiver.class
 			.getSimpleName();

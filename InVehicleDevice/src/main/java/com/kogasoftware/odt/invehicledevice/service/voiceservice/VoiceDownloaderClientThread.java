@@ -28,6 +28,9 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 import com.kogasoftware.odt.invehicledevice.service.voicedownloaderservice.VoiceDownloaderService;
 
+/**
+ * VoiceDownloaderServiceを操作する
+ */
 public class VoiceDownloaderClientThread extends HandlerThread
 		implements
 			IDownloaderClient {

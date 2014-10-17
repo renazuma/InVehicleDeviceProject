@@ -5,6 +5,9 @@ import android.net.Uri;
 
 import com.kogasoftware.odt.invehicledevice.contentprovider.InVehicleDeviceContentProvider;
 
+/**
+ * Content URI関連処理
+ */
 public class Content {
 	public final Uri URI;
 	private final String name;

@@ -13,6 +13,9 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 
+/**
+ * 乗降場メモ表示画面
+ */
 public class PlatformMemoFragment extends Fragment {
 	private static final String OPERATION_SCHEDULE_KEY = "operation_schedule";
 

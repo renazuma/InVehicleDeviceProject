@@ -14,6 +14,9 @@ import android.util.Log;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Closer;
 
+/**
+ * ログの圧縮を行うスレッド
+ */
 public class CompressThread extends Thread {
 	private static final String TAG = CompressThread.class.getSimpleName();
 	public static final String COMPRESSED_FILE_SUFFIX = ".gz";

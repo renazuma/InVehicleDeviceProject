@@ -6,6 +6,9 @@ import android.content.ContentValues;
 
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationRecord;
 
+/**
+ * 運行実績のJSON
+ */
 public class OperationRecordJson {
 	public Long id;
 	public DateTime departedAt;

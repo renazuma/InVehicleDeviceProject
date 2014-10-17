@@ -11,6 +11,9 @@ import android.util.Log;
 import com.google.common.base.Strings;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLog;
 
+/**
+ * バッテリーの状況をログ
+ */
 public class BatteryBroadcastReceiver extends BroadcastReceiver {
 	private static final String TAG = BatteryBroadcastReceiver.class
 			.getSimpleName();

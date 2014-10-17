@@ -28,6 +28,9 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.task.PatchOperationR
 import com.kogasoftware.odt.invehicledevice.ui.BigToast;
 import com.kogasoftware.odt.invehicledevice.utils.ContentValuesUtils;
 
+/**
+ * 運行スケジュールテーブル
+ */
 public class OperationSchedule implements Serializable {
 	private static final long serialVersionUID = -2332224258753742183L;
 

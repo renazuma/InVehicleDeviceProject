@@ -10,6 +10,9 @@ import android.content.ContentValues;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.utils.ContentValuesUtils;
 
+/**
+ * 乗車実績のJSON
+ */
 public class PassengerRecordJson {
 	public Long id;
 	public Long reservationId;

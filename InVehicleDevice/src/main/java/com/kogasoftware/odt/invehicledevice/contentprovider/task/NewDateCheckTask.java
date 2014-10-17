@@ -12,6 +12,9 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedule;
 
+/**
+ * 日付変更を調べる
+ */
 public class NewDateCheckTask implements Runnable {
 	public static final Long INTERVAL_MILLIS = 300 * 1000L;
 	private final SQLiteDatabase database;

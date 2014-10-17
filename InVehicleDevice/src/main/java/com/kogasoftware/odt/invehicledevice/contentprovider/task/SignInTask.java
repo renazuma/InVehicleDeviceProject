@@ -32,6 +32,9 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitSta
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.User;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotification;
 
+/**
+ * サインインAPIとの通信
+ */
 public class SignInTask extends SynchronizationTask {
 	static final String TAG = SignInTask.class.getSimpleName();
 	private List<Runnable> onCompleteListeners = Lists.newLinkedList();

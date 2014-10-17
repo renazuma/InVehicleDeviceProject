@@ -17,6 +17,9 @@ import com.kogasoftware.android.CursorReader;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLog;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLog.Columns;
 
+/**
+ * ServiceUnitStatusLogの新規作成APIとの通信
+ */
 public class PostServiceUnitStatusLogTask extends SynchronizationTask {
 	static final String TAG = PostServiceUnitStatusLogTask.class
 			.getSimpleName();

@@ -31,6 +31,9 @@ import com.kogasoftware.odt.invehicledevice.ui.fragment.PassengerRecordMemoFragm
 import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 import com.kogasoftware.odt.invehicledevice.utils.ViewDisabler;
 
+/**
+ * 乗客一覧
+ */
 public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 	private static final String TAG = PassengerRecordArrayAdapter.class
 			.getSimpleName();

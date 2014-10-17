@@ -7,6 +7,9 @@ import android.provider.BaseColumns;
 
 import com.kogasoftware.odt.invehicledevice.contentprovider.InVehicleDeviceContentProvider;
 
+/**
+ * ServiceUnitStatusLogテーブル
+ */
 public class ServiceUnitStatusLog {
 	public static final int TABLE_CODE = 7;
 	public static final String TABLE_NAME = "service_unit_status_logs";

@@ -21,6 +21,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.annotations.VisibleForTesting;
 
+/**
+ * クラッシュログをLogService(SendLogBroadcastReceiver)へ送信
+ */
 public class LogServiceReportSender implements ReportSender {
 	private static final String TAG = LogServiceReportSender.class
 			.getSimpleName();

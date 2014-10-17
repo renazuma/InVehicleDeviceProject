@@ -20,6 +20,9 @@ import android.util.Log;
 import com.google.common.annotations.VisibleForTesting;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLog;
 
+/**
+ * GPSの状況をログ
+ */
 public class GpsLogger
 		implements
 			Runnable,

@@ -10,6 +10,9 @@ import android.util.Log;
 import com.google.common.annotations.VisibleForTesting;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLog;
 
+/**
+ * 温度センサー
+ */
 public class TemperatureSensorEventListener implements SensorEventListener {
 	private static final String TAG = TemperatureSensorEventListener.class
 			.getSimpleName();

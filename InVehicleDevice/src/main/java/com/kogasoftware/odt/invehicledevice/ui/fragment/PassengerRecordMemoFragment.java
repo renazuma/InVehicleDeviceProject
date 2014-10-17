@@ -16,6 +16,9 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 
+/**
+ * ユーザーメモと予約メモ表示画面
+ */
 public class PassengerRecordMemoFragment extends Fragment {
 	private static final String PASSENGER_RECORD_KEY = "passenger_record";
 

@@ -2,6 +2,9 @@ package com.kogasoftware.odt.invehicledevice.service.voicedownloaderservice;
 
 import com.google.android.vending.expansion.downloader.impl.DownloaderService;
 
+/**
+ * 音声合成用ファイルのダウンロードを行うサービス
+ */
 public class VoiceDownloaderService extends DownloaderService {
 	private static final String BASE64_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQE"
 			+ "AiMMUe8MimZLACpdJ4SCFNHj29PUBMIut2PJv+6jOY968IRPSTy0gjmiyoT4w41VF+OF+6OtEGf6KMVI"

@@ -12,8 +12,10 @@ import android.view.WindowManager;
 
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLog;
 
-// original:
-// http://kamoland.com/wiki/wiki.cgi?TYPE_ORIENTATION%A4%F2%BB%C8%A4%EF%A4%BA%A4%CB%CA%FD%B0%CC%B3%D1%A4%F2%BC%E8%C6%C0
+/**
+ * 方向センサー
+ * "http://kamoland.com/wiki/wiki.cgi?TYPE_ORIENTATION%A4%F2%BB%C8%A4%EF%A4%BA%A4%CB%CA%FD%B0%CC%B3%D1%A4%F2%BC%E8%C6%C0"
+ */
 public class AccMagSensorEventListener implements SensorEventListener {
 	private static final Long SAVE_PERIOD_MILLIS = 500L;
 

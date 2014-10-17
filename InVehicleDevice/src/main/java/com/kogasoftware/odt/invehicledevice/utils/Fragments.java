@@ -7,6 +7,9 @@ import android.os.Handler;
 
 import com.kogasoftware.odt.invehicledevice.R;
 
+/**
+ * フラグメント用の共通処理
+ */
 public class Fragments {
 	private static FragmentTransaction setCustomAnimations(
 			FragmentTransaction fragmentTransaction) {

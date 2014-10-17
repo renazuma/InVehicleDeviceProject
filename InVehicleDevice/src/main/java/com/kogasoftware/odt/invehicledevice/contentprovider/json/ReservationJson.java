@@ -8,6 +8,9 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.Reservation;
 
+/**
+ * 予約のJSON
+ */
 public class ReservationJson {
 	public Long id;
 	public Long userId;

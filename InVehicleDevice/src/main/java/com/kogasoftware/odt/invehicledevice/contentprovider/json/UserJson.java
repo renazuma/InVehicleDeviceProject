@@ -5,6 +5,9 @@ import android.content.ContentValues;
 import com.google.common.base.Strings;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.User;
 
+/**
+ * ユーザーのJSON
+ */
 public class UserJson {
 	public Long id;
 	public String firstName;

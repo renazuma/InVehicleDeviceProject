@@ -15,6 +15,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotification;
 
+/**
+ * 車載器通知の更新APIとの通信
+ */
 public class PatchVehicleNotificationTask extends SynchronizationTask {
 	private static final String TAG = PatchVehicleNotificationTask.class
 			.getSimpleName();

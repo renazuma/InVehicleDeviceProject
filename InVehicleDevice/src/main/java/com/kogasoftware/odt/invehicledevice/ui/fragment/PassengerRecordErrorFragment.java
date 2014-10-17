@@ -22,6 +22,9 @@ import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordError
 import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 import com.kogasoftware.odt.invehicledevice.utils.ViewDisabler;
 
+/**
+ * 乗車予定なのに乗ってないor降車予定なのに降りてない人の確認画面
+ */
 public class PassengerRecordErrorFragment
 		extends
 			OperationSchedulesAndPassengerRecordsFragment {

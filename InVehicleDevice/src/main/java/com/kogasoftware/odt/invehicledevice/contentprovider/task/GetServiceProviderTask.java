@@ -16,6 +16,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Charsets;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceProvider;
 
+/**
+ * サービスプロバイダーの取得APIとの通信
+ */
 public class GetServiceProviderTask extends SynchronizationTask {
 	private static final String TAG = GetServiceProviderTask.class
 			.getSimpleName();

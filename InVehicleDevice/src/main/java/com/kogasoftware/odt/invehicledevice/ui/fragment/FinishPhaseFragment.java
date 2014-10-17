@@ -9,6 +9,9 @@ import android.view.ViewGroup;
 
 import com.kogasoftware.odt.invehicledevice.R;
 
+/**
+ * 運行終了画面
+ */
 public class FinishPhaseFragment extends Fragment {
 	private static final String TAG = FinishPhaseFragment.class.getSimpleName();
 

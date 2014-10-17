@@ -14,6 +14,9 @@ import android.util.Log;
 import com.kogasoftware.android.StrictModes;
 import com.kogasoftware.odt.invehicledevice.service.logservice.LogServiceReportSender;
 
+/**
+ * 車載器アプリケーション
+ */
 @ReportsCrashes(formKey = "dFp5SnVVbTRuem13WmJ0YlVUb2NjaXc6MQ", mode = ReportingInteractionMode.TOAST, resToastText = R.string.crash_toast_text, customReportContent = {
 		ReportField.ANDROID_VERSION, ReportField.APP_VERSION_CODE,
 		ReportField.APP_VERSION_NAME, ReportField.AVAILABLE_MEM_SIZE,

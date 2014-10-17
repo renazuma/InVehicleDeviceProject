@@ -25,6 +25,9 @@ import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 
+/**
+ * 運行スケジュール変更通知表示画面
+ */
 public class ScheduleVehicleNotificationFragment extends Fragment
 		implements
 			LoaderCallbacks<Cursor> {
@@ -39,6 +42,7 @@ public class ScheduleVehicleNotificationFragment extends Fragment
 		Boolean operationListButtonVisible = args
 				.getBoolean(OPERATION_LIST_BUTTON_VISIBLE_KEY);
 		View view = getView();
+		view.setClickable(false);
 		Button showOperationListButton = (Button) view
 				.findViewById(R.id.schedule_vehicle_notification_operation_list_button);
 		if (operationListButtonVisible) {

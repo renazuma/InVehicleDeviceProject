@@ -8,6 +8,9 @@ import android.widget.Toast;
 
 import com.kogasoftware.odt.invehicledevice.R;
 
+/**
+ * 大きいToast
+ */
 public class BigToast {
 	public static Toast makeText(Context context, CharSequence text, int duration) {
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

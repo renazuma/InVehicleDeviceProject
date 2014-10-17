@@ -40,6 +40,9 @@ import com.kogasoftware.android.org.apache.http.client.methods.HttpPatch;
 import com.kogasoftware.odt.invehicledevice.contentprovider.InVehicleDeviceContentProvider;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.InVehicleDevice;
 
+/**
+ * ODT Web APIとの通信用共通処理
+ */
 public class SynchronizationTask implements Runnable {
 	private static final String TAG = SynchronizationTask.class.getSimpleName();
 	public static final ObjectMapper JSON = InVehicleDeviceContentProvider.JSON;

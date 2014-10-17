@@ -8,6 +8,9 @@ import android.content.Intent;
 import android.os.Build;
 import android.provider.Settings;
 
+/**
+ * 機内モードの設定
+ */
 public class AirplaneModeSetting {
 	@SuppressWarnings("deprecation")
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)

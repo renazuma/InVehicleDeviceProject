@@ -7,6 +7,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 
+/**
+ * 音声合成用ファイルダウンロードを開始する
+ */
 public class VoiceDownloadAlarmReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {

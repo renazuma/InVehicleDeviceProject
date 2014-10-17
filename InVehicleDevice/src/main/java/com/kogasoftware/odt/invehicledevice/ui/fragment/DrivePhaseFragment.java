@@ -20,6 +20,9 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
 
+/**
+ * 運行中画面
+ */
 public class DrivePhaseFragment extends Fragment {
 	private static final String TAG = DrivePhaseFragment.class.getSimpleName();
 	private static final String OPERATION_SCHEDULES_KEY = "operation_schedules";

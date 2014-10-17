@@ -17,6 +17,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationRecord;
 
+/**
+ * 運行実績の更新APIとの通信
+ */
 public class PatchOperationRecordTask extends SynchronizationTask {
 	static final String TAG = PatchOperationRecordTask.class.getSimpleName();
 	public static final Long INTERVAL_MILLIS = 60 * 1000L;

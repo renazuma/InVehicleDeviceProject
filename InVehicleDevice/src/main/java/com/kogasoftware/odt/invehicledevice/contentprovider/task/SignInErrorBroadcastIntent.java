@@ -2,6 +2,9 @@ package com.kogasoftware.odt.invehicledevice.contentprovider.task;
 
 import android.content.Intent;
 
+/**
+ * サインイン失敗通知
+ */
 public class SignInErrorBroadcastIntent extends Intent {
 	public static final String ACTION = SignInErrorBroadcastIntent.class
 			.getName();

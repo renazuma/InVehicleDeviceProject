@@ -2,6 +2,9 @@ package com.kogasoftware.odt.invehicledevice.contentprovider.table;
 
 import android.provider.BaseColumns;
 
+/**
+ * 予約テーブル
+ */
 public class Reservation {
 	public static final int TABLE_CODE = 6;
 	public static final String TABLE_NAME = "reservations";

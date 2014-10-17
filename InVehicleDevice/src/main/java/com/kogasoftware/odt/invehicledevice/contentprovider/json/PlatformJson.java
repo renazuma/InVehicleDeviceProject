@@ -7,6 +7,9 @@ import android.content.ContentValues;
 import com.google.common.base.Strings;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.Platform;
 
+/**
+ * 乗降場のJSON
+ */
 public class PlatformJson {
 	public Long id;
 	public String name;

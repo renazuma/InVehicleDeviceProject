@@ -3,6 +3,9 @@ package com.kogasoftware.odt.invehicledevice.service.logservice;
 import java.io.FilterInputStream;
 import java.io.IOException;
 
+/**
+ * logcatを読み取るInputStream
+ */
 public class LogcatInputStream extends FilterInputStream {
 	private final Process process;
 	

@@ -20,6 +20,9 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
+/**
+ * ログの管理
+ */
 public class LogService extends Service {
 	private static final String TAG = LogService.class.getSimpleName();
 	public static final long CHECK_DEVICE_INTERVAL_MILLIS = 10 * 1000;

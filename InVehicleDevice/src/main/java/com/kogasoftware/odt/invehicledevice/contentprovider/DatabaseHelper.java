@@ -16,6 +16,9 @@ import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.InVehicleDevice;
 
+/**
+ * DB管理
+ */
 public class DatabaseHelper extends SQLiteOpenHelper {
 	static final Integer DATABASE_VERSION = 20;
 	private static final String TAG = DatabaseHelper.class.getSimpleName();

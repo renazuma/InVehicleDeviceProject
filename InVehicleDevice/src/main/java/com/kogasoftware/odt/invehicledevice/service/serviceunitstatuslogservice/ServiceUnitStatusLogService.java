@@ -17,6 +17,8 @@ import android.util.Log;
 import android.view.WindowManager;
 
 /**
+ * ServiceUnitStatusLogを生成して保存するサービス
+ * 
  * 「アンドロイド品質ガイドライン」の「FN-S1」に注意する必要がある
  */
 public class ServiceUnitStatusLogService extends Service implements Runnable {
@@ -108,6 +110,7 @@ public class ServiceUnitStatusLogService extends Service implements Runnable {
 		registerReceiver(batteryBroadcastReceiver, new IntentFilter(
 				Intent.ACTION_BATTERY_CHANGED));
 	}
+
 	@Override
 	public void onDestroy() {
 		Log.i(TAG, "onDestroy()");

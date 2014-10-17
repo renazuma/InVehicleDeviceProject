@@ -6,6 +6,9 @@ import org.apache.commons.lang3.reflect.MethodUtils;
 
 import android.util.Log;
 
+/**
+ * StrictMode関連処理
+ */
 public class StrictModes {
 	private static final String TAG = StrictModes.class.getSimpleName();
 

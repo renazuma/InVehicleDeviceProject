@@ -2,6 +2,9 @@ package com.kogasoftware.odt.invehicledevice.service.voiceservice;
 
 import android.content.Intent;
 
+/**
+ * 音声合成用ファイルのダウンロード状況の通知
+ */
 public class VoiceDownloadStateBroadcastIntent extends Intent {
 	public static final String ACTION = VoiceDownloadStateBroadcastIntent.class
 			.getName();

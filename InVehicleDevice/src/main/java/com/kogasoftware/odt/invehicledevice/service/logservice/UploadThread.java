@@ -24,6 +24,9 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceProvider;
 
+/**
+ * ログをAmazon S3にアップロードするスレッド
+ */
 public class UploadThread extends Thread
 		implements
 			OnLoadCompleteListener<Cursor>,

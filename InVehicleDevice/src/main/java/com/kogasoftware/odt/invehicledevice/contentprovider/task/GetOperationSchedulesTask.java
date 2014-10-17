@@ -38,6 +38,9 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.table.Reservation;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.User;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotification;
 
+/**
+ * 運行スケジュールの取得APIとの通信
+ */
 public class GetOperationSchedulesTask extends SynchronizationTask {
 	static final String TAG = GetOperationSchedulesTask.class.getSimpleName();
 	private final Boolean scheduleVehicleNotificationRequired;

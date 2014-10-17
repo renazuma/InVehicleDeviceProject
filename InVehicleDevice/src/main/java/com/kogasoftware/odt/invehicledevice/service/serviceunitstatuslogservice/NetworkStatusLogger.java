@@ -5,6 +5,9 @@ import android.net.NetworkInfo;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+/**
+ * ネットワークの状況をログ
+ */
 public class NetworkStatusLogger implements Runnable {
 	private static final String TAG = NetworkStatusLogger.class.getSimpleName();
 	public static final Integer RUN_INTERVAL_MILLIS = 2 * 60 * 1000;

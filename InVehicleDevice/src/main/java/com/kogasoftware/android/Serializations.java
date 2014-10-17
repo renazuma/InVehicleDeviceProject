@@ -16,6 +16,9 @@ import org.apache.commons.lang3.SerializationUtils;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Closer;
 
+/**
+ * シリアライズ関連処理
+ */
 public class Serializations {
 	/**
 	 * commons-langのSerializationUtils.deserializeのラッパーメソッド

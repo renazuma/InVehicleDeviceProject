@@ -18,6 +18,9 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecor
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedule.Phase;
 import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 
+/**
+ * 出発チェック画面
+ */
 public class DepartureCheckFragment
 		extends
 			OperationSchedulesAndPassengerRecordsFragment {

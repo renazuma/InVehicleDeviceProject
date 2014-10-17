@@ -19,6 +19,9 @@ import android.widget.ListView;
 
 import com.kogasoftware.odt.invehicledevice.R;
 
+/**
+ * フリックする必要のないListView 右側に大きくスクロールボタンがある
+ */
 public class FlickUnneededListView extends FrameLayout
 		implements
 			OnScrollListener {

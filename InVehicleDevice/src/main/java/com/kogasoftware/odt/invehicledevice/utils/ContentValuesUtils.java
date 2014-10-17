@@ -4,6 +4,9 @@ import org.joda.time.DateTime;
 
 import android.content.ContentValues;
 
+/**
+ * ContentValues用の共通処理
+ */
 public class ContentValuesUtils {
 	public static void putDateTime(ContentValues values, String key,
 			DateTime dateTime) {

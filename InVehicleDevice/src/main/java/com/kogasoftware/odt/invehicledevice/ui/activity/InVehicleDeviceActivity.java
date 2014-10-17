@@ -37,6 +37,9 @@ import com.kogasoftware.odt.invehicledevice.ui.fragment.SignInFragment;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.VehicleNotificationAlertFragment;
 import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 
+/**
+ * 全体の大枠。サインイン前はSignInFragmentを表示し、サインイン後は、自治体に依存して「運行予定一覧画面」か「順番に運行を進める画面」を表示する
+ */
 public class InVehicleDeviceActivity extends Activity {
 	public static final Integer VEHICLE_NOTIFICATION_ALERT_DELAY_MILLIS = 5000;
 	private static final Integer IN_VEHICLE_DEVICE_LOADER_ID = 1;

@@ -33,6 +33,9 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecor
 import com.kogasoftware.odt.invehicledevice.ui.fragment.PassengerRecordMemoFragment;
 import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 
+/**
+ * 運行予定一覧
+ */
 public class OperationScheduleArrayAdapter
 		extends
 			ArrayAdapter<OperationSchedule> {

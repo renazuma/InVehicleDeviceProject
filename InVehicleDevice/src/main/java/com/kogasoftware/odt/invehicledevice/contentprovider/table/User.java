@@ -2,6 +2,9 @@ package com.kogasoftware.odt.invehicledevice.contentprovider.table;
 
 import android.provider.BaseColumns;
 
+/**
+ * ユーザーテーブル
+ */
 public class User {
 	public static final int TABLE_CODE = 9;
 	public static final String TABLE_NAME = "users";

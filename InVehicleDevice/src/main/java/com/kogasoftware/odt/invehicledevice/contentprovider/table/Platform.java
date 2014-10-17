@@ -2,6 +2,9 @@ package com.kogasoftware.odt.invehicledevice.contentprovider.table;
 
 import android.provider.BaseColumns;
 
+/**
+ * 乗降場テーブル
+ */
 public class Platform {
 	public static final int TABLE_CODE = 8;
 	public static final String TABLE_NAME = "platforms";

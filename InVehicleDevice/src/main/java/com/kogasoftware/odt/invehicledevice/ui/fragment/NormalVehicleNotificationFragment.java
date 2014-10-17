@@ -18,6 +18,9 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotific
 import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
 import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 
+/**
+ * 車載器への通知表示画面
+ */
 public class NormalVehicleNotificationFragment extends Fragment {
 	private static final String VEHICLE_NOTIFICATION_KEY = "vehicle_notification";
 	private VehicleNotification vehicleNotification;
@@ -35,6 +38,7 @@ public class NormalVehicleNotificationFragment extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		View view = getView();
+		view.setClickable(false);
 		TextView bodyTextView = (TextView) view
 				.findViewById(R.id.notification_text_view);
 		bodyTextView.setText(vehicleNotification.body);

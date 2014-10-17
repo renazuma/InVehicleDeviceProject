@@ -26,6 +26,9 @@ import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.OperationScheduleArrayAdapter;
 import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 
+/**
+ * 運行予定一覧画面
+ */
 public class OperationListFragment extends Fragment {
 	private static final String CLOSEABLE_KEY = "closeable";
 	private static final Integer OPERATION_SCHEDULE_LOADER_ID = 1;

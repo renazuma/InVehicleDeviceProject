@@ -45,6 +45,9 @@ import com.kogasoftware.odt.invehicledevice.service.serviceunitstatuslogservice.
 import com.kogasoftware.odt.invehicledevice.service.startupservice.StartupService;
 import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
 
+/**
+ * 車載器内部データの管理とサーバーとの同期を行うContentProvider
+ */
 public class InVehicleDeviceContentProvider extends ContentProvider {
 	public static final String AUTHORITY = "com.kogasoftware.odt.invehicledevice.contentprovider";
 	private static final UriMatcher MATCHER = new UriMatcher(

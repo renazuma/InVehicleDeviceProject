@@ -20,6 +20,9 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotific
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedule.Phase;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
+/**
+ * 運行スケジュールと運行実績を扱うFragmentの親クラス
+ */
 public abstract class OperationSchedulesAndPassengerRecordsFragment
 		extends
 			Fragment {

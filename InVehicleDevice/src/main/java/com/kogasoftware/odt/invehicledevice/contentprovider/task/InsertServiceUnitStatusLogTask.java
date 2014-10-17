@@ -9,6 +9,9 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLog;
 
+/**
+ * ServiceUnitStatusLogのデータをローカルのDBに事前に用意する
+ */
 public class InsertServiceUnitStatusLogTask implements Runnable {
 	public static final Integer INTERVAL_MILLIS = 30 * 1000;
 	private final SQLiteDatabase database;
@@ -32,7 +35,7 @@ public class InsertServiceUnitStatusLogTask implements Runnable {
 			cursor.close();
 		}
 		values.put(ServiceUnitStatusLog.Columns.CREATED_AT, DateTime.now()
-				.getMillis());
+				.getMillis() + INTERVAL_MILLIS);
 		database.insert(ServiceUnitStatusLog.TABLE_NAME, null, values);
 	}
 }

@@ -28,6 +28,9 @@ import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
 import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordArrayAdapter;
 
+/**
+ * 停車中画面
+ */
 public class PlatformPhaseFragment
 		extends
 			OperationSchedulesAndPassengerRecordsFragment {

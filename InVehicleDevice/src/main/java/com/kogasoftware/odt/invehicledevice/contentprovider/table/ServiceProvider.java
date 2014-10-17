@@ -6,6 +6,9 @@ import android.provider.BaseColumns;
 import com.kogasoftware.android.CursorReader;
 import com.kogasoftware.odt.invehicledevice.contentprovider.InVehicleDeviceContentProvider;
 
+/**
+ * サービスプロバイダーテーブル
+ */
 public class ServiceProvider {
 	public static final int TABLE_CODE = 10;
 	public static final String TABLE_NAME = "service_providers";

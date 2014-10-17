@@ -19,8 +19,10 @@ import android.util.Log;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
 
+/**
+ * 音声出力を行うスレッド
+ */
 public class VoiceThread extends Thread {
-
 	private static final String TAG = VoiceThread.class.getSimpleName();
 	private static final Integer MAX_CACHE_BYTES = 100 * 1024 * 1024;
 	private static final Integer MAX_MESSAGE_LENGTH = 200;

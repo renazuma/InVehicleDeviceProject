@@ -13,6 +13,9 @@ import android.view.WindowManager;
 
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLog;
 
+/**
+ * 方向センサー。古い実装。
+ */
 public class OrientationSensorEventListener implements SensorEventListener {
 	private static final Long SAVE_PERIOD_MILLIS = 500L;
 	private static final String TAG = OrientationSensorEventListener.class

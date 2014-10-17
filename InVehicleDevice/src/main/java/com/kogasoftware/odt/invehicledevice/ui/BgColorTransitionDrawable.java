@@ -7,6 +7,9 @@ package com.kogasoftware.odt.invehicledevice.ui;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.TransitionDrawable;
 
+/**
+ * 背景色を変更可能なDrawable
+ */
 public class BgColorTransitionDrawable extends TransitionDrawable {
 	private final int interval;
 

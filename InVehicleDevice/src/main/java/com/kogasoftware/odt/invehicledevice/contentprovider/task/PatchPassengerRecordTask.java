@@ -17,6 +17,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecord;
 
+/**
+ * 乗車実績の更新APIとの通信
+ */
 public class PatchPassengerRecordTask extends SynchronizationTask {
 	static final String TAG = PatchPassengerRecordTask.class.getSimpleName();
 	public static final Long INTERVAL_MILLIS = 60 * 1000L;

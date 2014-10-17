@@ -22,6 +22,9 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.InVehicleDeviceConte
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.PatchPassengerRecordTask;
 import com.kogasoftware.odt.invehicledevice.utils.ContentValuesUtils;
 
+/**
+ * 乗車実績テーブル
+ */
 public class PassengerRecord implements Serializable {
 	private static final long serialVersionUID = -8083144283252736834L;
 

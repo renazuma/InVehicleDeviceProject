@@ -6,6 +6,9 @@ import android.content.ContentValues;
 
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotification;
 
+/**
+ * 車載器通知のJSON
+ */
 public class VehicleNotificationJson {
 	public Long id;
 	public String body;

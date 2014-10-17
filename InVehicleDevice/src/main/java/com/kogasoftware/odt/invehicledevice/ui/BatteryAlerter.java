@@ -19,6 +19,9 @@ import android.widget.ImageView;
 import com.google.common.base.Stopwatch;
 import com.kogasoftware.odt.invehicledevice.R;
 
+/**
+ * バッテリー状況を表示する部品
+ */
 public class BatteryAlerter implements Runnable {
 	public static final int BATTERY_ALERT_BLINK_MILLIS = 500;
 	public static final int CHECK_BATTERY_MILLIS = 10 * 1000;

@@ -8,6 +8,9 @@ import android.content.ContentValues;
 
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedule;
 
+/**
+ * 運行スケジュールのJSON
+ */
 public class OperationScheduleJson {
 	public Long id;
 	public PlatformJson platform;

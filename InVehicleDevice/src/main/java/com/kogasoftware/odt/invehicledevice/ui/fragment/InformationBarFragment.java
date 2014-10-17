@@ -38,6 +38,9 @@ import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 import com.kogasoftware.odt.invehicledevice.utils.ViewDisabler;
 
+/**
+ * 時刻やバッテリー状況などを表示する領域
+ */
 public class InformationBarFragment
 		extends
 			OperationSchedulesAndPassengerRecordsFragment {

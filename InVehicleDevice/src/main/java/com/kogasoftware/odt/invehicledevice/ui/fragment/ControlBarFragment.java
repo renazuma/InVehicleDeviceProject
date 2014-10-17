@@ -18,6 +18,9 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSched
 import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 import com.kogasoftware.odt.invehicledevice.utils.ViewDisabler;
 
+/**
+ * 到着ボタン、地図ボタン、運行予定ボタンを表示する領域
+ */
 public class ControlBarFragment
 		extends
 			OperationSchedulesAndPassengerRecordsFragment {

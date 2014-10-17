@@ -17,6 +17,9 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 
+/**
+ * 到着チェック画面
+ */
 public class ArrivalCheckFragment extends Fragment {
 	private static final String OPERATION_SCHEDULE_KEY = "operation_schedule";
 

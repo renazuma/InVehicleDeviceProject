@@ -7,6 +7,9 @@ import org.joda.time.DateTime;
 import android.database.Cursor;
 import android.util.Log;
 
+/**
+ * カーソル読み込み用クラス
+ */
 public class CursorReader {
 	private static final String TAG = CursorReader.class.getSimpleName();
 	private final Cursor cursor;

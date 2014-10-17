@@ -9,6 +9,9 @@ import android.view.ViewGroup;
 
 import com.kogasoftware.odt.invehicledevice.R;
 
+/**
+ * 通知受信時のびっくりマーク
+ */
 public class VehicleNotificationAlertFragment extends Fragment {
 	private static final Integer ALERT_SHOW_INTERVAL_MILLIS = 500;
 	private final Handler handler = new Handler();

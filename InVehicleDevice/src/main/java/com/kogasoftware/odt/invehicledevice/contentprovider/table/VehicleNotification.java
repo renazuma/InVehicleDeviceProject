@@ -21,6 +21,9 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.InVehicleDeviceConte
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.PatchVehicleNotificationTask;
 import com.kogasoftware.odt.invehicledevice.utils.ContentValuesUtils;
 
+/**
+ * 車載器通知テーブル
+ */
 public class VehicleNotification implements Serializable {
 	private static final long serialVersionUID = -295331215588438885L;
 	public static final String WHERE_SCHEDULE_VEHICLE_NOTIFICATION_FRAGMENT_CONTENT = String

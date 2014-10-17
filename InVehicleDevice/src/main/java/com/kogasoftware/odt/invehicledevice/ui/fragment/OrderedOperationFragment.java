@@ -14,6 +14,9 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSched
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedule.Phase;
 
+/**
+ * 順番に運行を進める画面。上部に「InformationBarFragment」右部に「ControlBarFragment」中心に「**PhaseFragment」を配置する
+ */
 public class OrderedOperationFragment
 		extends
 			OperationSchedulesAndPassengerRecordsFragment {

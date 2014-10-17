@@ -8,6 +8,9 @@ import android.util.Log;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.primitives.Bytes;
 
+/**
+ * logcatを受信するスレッド
+ */
 public class LogcatThread extends Thread {
 	private static final String TAG = LogcatThread.class.getSimpleName();
 	public static final Long DEFAULT_SPLIT_BYTES = 2 * 1024 * 1024L;

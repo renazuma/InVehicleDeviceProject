@@ -24,6 +24,9 @@ import com.kogasoftware.odt.invehicledevice.BuildConfig;
 import com.kogasoftware.odt.invehicledevice.ui.BigToast;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
+/**
+ * 自動起動処理
+ */
 public class StartupService extends Service {
 	private static final String TAG = StartupService.class.getSimpleName();
 	public static final long CHECK_DEVICE_INTERVAL_MILLIS = 10 * 1000;

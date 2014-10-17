@@ -3,6 +3,9 @@ package com.kogasoftware.odt.invehicledevice.utils;
 import android.os.Handler;
 import android.view.View;
 
+/**
+ * ボタンなどの多重操作の防止
+ */
 public class ViewDisabler {
 	public static void disable(final View view) {
 		disable(view, 400);
