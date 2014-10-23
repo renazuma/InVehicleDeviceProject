@@ -42,7 +42,6 @@ public class ScheduleVehicleNotificationFragment extends Fragment
 		Boolean operationListButtonVisible = args
 				.getBoolean(OPERATION_LIST_BUTTON_VISIBLE_KEY);
 		View view = getView();
-		view.setClickable(false);
 		Button showOperationListButton = (Button) view
 				.findViewById(R.id.schedule_vehicle_notification_operation_list_button);
 		if (operationListButtonVisible) {

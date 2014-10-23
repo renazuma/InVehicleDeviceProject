@@ -38,7 +38,6 @@ public class NormalVehicleNotificationFragment extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		View view = getView();
-		view.setClickable(false);
 		TextView bodyTextView = (TextView) view
 				.findViewById(R.id.notification_text_view);
 		bodyTextView.setText(vehicleNotification.body);
