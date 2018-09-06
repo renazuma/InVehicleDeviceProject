@@ -19,7 +19,6 @@ public class OperationScheduleJson {
 	public DateTime departureEstimate;
 	public DateTime arrivalEstimate;
 	public OperationRecordJson operationRecord;
-	public LocalDate operationDate;
 
 	public ContentValues toContentValues() {
 		ContentValues operationScheduleValues = new ContentValues();
@@ -38,9 +37,6 @@ public class OperationScheduleJson {
 		}
 		operationScheduleValues.put(OperationSchedule.Columns.PLATFORM_ID,
 				platform.id);
-		operationScheduleValues.put(OperationSchedule.Columns.OPERATION_DATE,
-				operationDate.toDateTimeAtStartOfDay(DateTimeZone.UTC)
-						.getMillis());
 		return operationScheduleValues;
 	}
 }

@@ -40,7 +40,6 @@
         , arrived_at INTEGER
         , departed_at INTEGER
         , complete_get_off INTEGER NOT NULL DEFAULT 0
-        , operation_date INTEGER NOT NULL /* UNIXエポックからの経過ミリ秒数。UTCで時分秒は0にしておく。 */
       )
     </item>
     <item>

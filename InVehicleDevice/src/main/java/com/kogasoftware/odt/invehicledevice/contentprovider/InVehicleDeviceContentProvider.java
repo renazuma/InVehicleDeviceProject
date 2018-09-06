@@ -35,7 +35,6 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.task.GetOperationSch
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.GetServiceProviderTask;
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.GetVehicleNotificationsTask;
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.InsertServiceUnitStatusLogTask;
-import com.kogasoftware.odt.invehicledevice.contentprovider.task.NewDateCheckTask;
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.PatchOperationRecordTask;
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.PatchPassengerRecordTask;
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.PatchVehicleNotificationTask;
@@ -112,15 +111,11 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
 						database, executorService), 10,
 						PatchPassengerRecordTask.INTERVAL_MILLIS,
 						TimeUnit.MILLISECONDS);
-		executorService.scheduleWithFixedDelay(new NewDateCheckTask(context,
-				database, executorService), 10,
-				NewDateCheckTask.INTERVAL_MILLIS, TimeUnit.MILLISECONDS);
 		executorService.scheduleWithFixedDelay(
 				new PostServiceUnitStatusLogTask(context, database,
 						executorService), 500,
 				PostServiceUnitStatusLogTask.INTERVAL_MILLIS,
 				TimeUnit.MILLISECONDS);
-		startServices();
 		executorService.execute(new GetOperationSchedulesTask(getContext(),
 				database, executorService));
 
@@ -142,19 +137,6 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
 			}
 		}.start();
 		return true;
-	}
-
-	private void startServices() {
-		Context context = getContext();
-		try {
-			context.startService(new Intent(context,
-					ServiceUnitStatusLogService.class));
-			context.startService(new Intent(context, VoiceService.class));
-			context.startService(new Intent(context, LogService.class));
-			context.startService(new Intent(context, StartupService.class));
-		} catch (UnsupportedOperationException e) {
-			// IsolatedContext
-		}
 	}
 
 	@Override

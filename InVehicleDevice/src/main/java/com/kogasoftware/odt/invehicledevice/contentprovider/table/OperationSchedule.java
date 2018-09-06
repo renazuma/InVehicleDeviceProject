@@ -65,7 +65,6 @@ public class OperationSchedule implements Serializable {
 	public BigDecimal longitude;
 	public String memo;
 	public Boolean completeGetOff;
-	public DateTime operationDate;
 
 	public OperationSchedule(Cursor cursor_) {
 		CursorReader reader = new CursorReader(cursor_);
@@ -85,8 +84,6 @@ public class OperationSchedule implements Serializable {
 		address = reader.readString(Platform.Columns.ADDRESS);
 		latitude = reader.readBigDecimal(Platform.Columns.LATITUDE);
 		longitude = reader.readBigDecimal(Platform.Columns.LONGITUDE);
-		operationDate = reader
-				.readDateTime(OperationSchedule.Columns.OPERATION_DATE);
 	}
 
 	public static LinkedList<OperationSchedule> getAll(Cursor cursor) {
@@ -134,8 +131,6 @@ public class OperationSchedule implements Serializable {
 				OperationSchedule.Columns.DEPARTED_AT, departedAt);
 		values.put(OperationSchedule.Columns.PLATFORM_ID, platformId);
 		values.put(OperationSchedule.Columns.COMPLETE_GET_OFF, completeGetOff);
-		ContentValuesUtils.putDateTime(values,
-				OperationSchedule.Columns.OPERATION_DATE, operationDate);
 		return values;
 	}
 

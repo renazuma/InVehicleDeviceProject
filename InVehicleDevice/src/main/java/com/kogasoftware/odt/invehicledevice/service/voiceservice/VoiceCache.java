@@ -27,7 +27,7 @@ import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
 import com.google.common.cache.Weigher;
 import com.kogasoftware.android.Serializations;
-import com.kogasoftware.openjtalk.OpenJTalk;
+// import com.kogasoftware.openjtalk.OpenJTalk;
 
 /**
  * 音声データをキャッシュするクラス
@@ -83,7 +83,7 @@ public class VoiceCache {
 		return result;
 	}
 
-	private final OpenJTalk openJTalk;
+	// private final OpenJTalk openJTalk;
 	private final AtomicInteger sequence = new AtomicInteger(0);
 	private final File outputDirectory;
 	private final File instanceStateFile;
@@ -124,8 +124,8 @@ public class VoiceCache {
 		outputDirectory = getOutputDirectory(context);
 		instanceStateFile = new File(outputDirectory + s + "index.serialized");
 
-		openJTalk = new OpenJTalk(voiceDirectory, dictionaryDirectory,
-				libraryDirectory);
+		// openJTalk = new OpenJTalk(voiceDirectory, dictionaryDirectory,
+		// 		libraryDirectory);
 
 		InstanceState instanceState = loadInstanceState(instanceStateFile);
 		sequence.set(instanceState.sequence.get());
@@ -203,7 +203,7 @@ public class VoiceCache {
 	protected File load(String voice) throws IOException {
 		File file = new File(outputDirectory + File.separator
 				+ sequence.getAndIncrement() + EXT);
-		openJTalk.synthesis(file, voice);
+		// openJTalk.synthesis(file, voice);
 		dirty.set(true);
 		return file;
 	}

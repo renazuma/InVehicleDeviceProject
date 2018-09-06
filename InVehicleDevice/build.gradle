@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
+    compileSdkVersion 24
+    buildToolsVersion '27.0.3'
     defaultConfig {
         versionCode computeVersionCode()
         versionName computeVersionName()
@@ -30,13 +30,14 @@ android {
     lintOptions {
         abortOnError false
     }
+    useLibrary 'org.apache.http.legacy'
 }
 
 dependencies {
-    compile fileTree(dir: 'src/main/libs', include: '*.jar')
-    androidTestCompile fileTree(dir: 'src/androidTest/libs', include: '*.jar')
-    compile project(':AndroidOpenJTalk')
-    compile project(':play_apk_expansion')
+    implementation fileTree(include: '*.jar', dir: 'src/main/libs')
+    androidTestImplementation fileTree(include: '*.jar', dir: 'src/androidTest/libs')
+    implementation project(':play_apk_expansion')
+    implementation 'com.android.support:support-compat:24.2.0'
 }
 
 def computeVersionName() {
@@ -52,6 +53,5 @@ def computeVersionCode() {
 
 project.gradle.taskGraph.whenReady {
     connectedAndroidTest {
-        ignoreFailures = System.env.containsKey("BUILD_NUMBER");
     }
 }

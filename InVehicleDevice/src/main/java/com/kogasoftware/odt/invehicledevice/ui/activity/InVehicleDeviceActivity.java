@@ -2,6 +2,7 @@ package com.kogasoftware.odt.invehicledevice.ui.activity;
 
 import java.util.List;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -17,9 +18,12 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.Loader;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.Html;
 
 import com.kogasoftware.odt.invehicledevice.R;
@@ -27,7 +31,10 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.table.InVehicleDevic
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceProvider;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.SignInErrorBroadcastIntent;
+import com.kogasoftware.odt.invehicledevice.service.logservice.LogService;
+import com.kogasoftware.odt.invehicledevice.service.serviceunitstatuslogservice.ServiceUnitStatusLogService;
 import com.kogasoftware.odt.invehicledevice.service.startupservice.AirplaneModeOnBroadcastIntent;
+import com.kogasoftware.odt.invehicledevice.service.startupservice.StartupService;
 import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.NormalVehicleNotificationFragment;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.OperationListFragment;
@@ -60,6 +67,13 @@ public class InVehicleDeviceActivity extends Activity {
 			+ "/" + VehicleNotificationAlertFragment.class;
 	private static final String AIRPLANE_MODE_ALERT_DIALOG_FRAGMENT_TAG = InVehicleDeviceActivity.class
 			+ "/" + AirplaneModeAlertDialogFragment.class;
+
+	// 権限の許可が必要なパーミッション
+	private static final String[] MUST_GRANT_PERMISSIONS = new String[] {
+			Manifest.permission.ACCESS_FINE_LOCATION,   // GPS
+			Manifest.permission.WRITE_EXTERNAL_STORAGE, // SDカードへの書き込み
+			Manifest.permission.READ_PHONE_STATE
+    };
 
 	public static class AirplaneModeAlertDialogFragment extends DialogFragment {
 		@Override
@@ -345,6 +359,10 @@ public class InVehicleDeviceActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		destroyed = false;
 		super.onCreate(savedInstanceState);
+
+		requestPermission(); // GPS, SD カードへの書き込み権限の許可
+
+		startServices();
 		handler = new Handler();
 		setContentView(R.layout.in_vehicle_device_activity);
 		loaderManager = getLoaderManager();
@@ -373,6 +391,34 @@ public class InVehicleDeviceActivity extends Activity {
 		unregisterReceiver(airplaneModeOnReceiver);
 		destroyed = true;
 	}
+
+	private void requestPermission() {
+		if (!this.checkAllPermissoinsGranted()) {
+			ActivityCompat.requestPermissions(this, MUST_GRANT_PERMISSIONS, 1000);
+		}
+	}
+
+	private boolean checkAllPermissoinsGranted() {
+		for (String permission : MUST_GRANT_PERMISSIONS) {
+			if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private void startServices() {
+		try {
+			startService(new Intent(this,
+					ServiceUnitStatusLogService.class));
+			startService(new Intent(this, VoiceService.class));
+			startService(new Intent(this, LogService.class));
+			startService(new Intent(this, StartupService.class));
+		} catch (UnsupportedOperationException e) {
+			// IsolatedContext
+		}
+	}
+
 
 	private void showScheduleVehicleNotificationsFragment() {
 		if (destroyed
