@@ -34,6 +34,7 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitSta
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedule.Phase;
 import com.kogasoftware.odt.invehicledevice.ui.BatteryAlerter;
 import com.kogasoftware.odt.invehicledevice.ui.BgColorTransitionDrawable;
+import com.kogasoftware.odt.invehicledevice.ui.NetworkAlerter;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 import com.kogasoftware.odt.invehicledevice.utils.ViewDisabler;
@@ -109,6 +110,11 @@ public class InformationBarFragment
 	private Runnable blinkBatteryAlert;
 
 	/**
+	 * ネットワーク状態を監視
+	 */
+	private Runnable networkAlert;
+
+	/**
 	 * 背景色を変更
 	 */
 	private Runnable changeBgColor;
@@ -152,6 +158,12 @@ public class InformationBarFragment
 				.getApplicationContext(), handler, (ImageView) getView()
 				.findViewById(R.id.battery_alert_image_view),
 				getFragmentManager());
+		networkAlert = new NetworkAlerter(
+				getActivity().getApplicationContext(),
+				handler,
+				networkStrengthImageView,
+				getFragmentManager()
+		);
 	}
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -166,6 +178,7 @@ public class InformationBarFragment
 		handler.removeCallbacks(updateTime);
 		handler.removeCallbacks(blinkBatteryAlert);
 		handler.removeCallbacks(changeBgColor);
+		handler.removeCallbacks(networkAlert);
 	}
 
 	@Override
@@ -173,6 +186,7 @@ public class InformationBarFragment
 		super.onResume();
 		handler.post(updateTime);
 		handler.post(blinkBatteryAlert);
+		handler.post(networkAlert);
 	}
 
 	public void updateView() {
