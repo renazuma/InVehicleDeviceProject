@@ -24,4 +24,7 @@
     <PreferenceCategory android:title="@string/voice_file" >
         <Preference android:key="voice_download_state" />
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/misc" >
+        <Preference android:key="privacy_policy_link" android:title="@string/privacy_policy"/>
+    </PreferenceCategory>
 </PreferenceScreen>

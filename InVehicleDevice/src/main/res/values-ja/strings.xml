@@ -53,5 +53,6 @@
     <string name="error_invalid_login_or_password">車載器の認証に失敗しました</string>
     <string name="error_connection">サーバーとの接続に失敗しました</string>
     <string name="voice_file">音声ファイル</string>
-    
+    <string name="misc">その他</string>
+    <string name="privacy_policy">プライバシーポリシー</string>
 </resources>

@@ -16,6 +16,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.Loader;
@@ -61,6 +62,7 @@ public class SignInFragment extends PreferenceFragment
 	private SharedPreferences preferences;
 	private ExecutorService executor;
 	private Boolean firstLoad;
+	private Preference policyLink;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -124,6 +126,32 @@ public class SignInFragment extends PreferenceFragment
 		getActivity().registerReceiver(voiceDownloadStateReceiver,
 				new IntentFilter(VoiceDownloadStateBroadcastIntent.ACTION));
 		updateSummary();
+
+		policyLink = (Preference) findPreference("privacy_policy_link");
+		policyLink.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				final String policySiteUri = "https://www.kogasoftware.com/privacy-policy/";
+				new AlertDialog.Builder(getActivity())
+						.setTitle("プライバシーポリシー")
+						.setMessage("外部ブラウザでページを表示します。よろしいですか？")
+						.setPositiveButton("OK", new DialogInterface.OnClickListener(){
+							public void onClick(DialogInterface dialog, int which) {
+								Uri uri = Uri.parse(policySiteUri);
+								Intent i = new Intent(Intent.ACTION_VIEW, uri);
+								startActivity(i);
+							}
+
+						})
+						.setNegativeButton("キャンセル", new DialogInterface.OnClickListener(){
+							public void onClick(DialogInterface dialog, int which) {
+								// do nothing
+							}
+						})
+						.show();
+				return true;
+			}
+		});
 	}
 
 	@Override
