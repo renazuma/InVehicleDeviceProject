@@ -35,7 +35,11 @@ import com.kogasoftware.odt.invehicledevice.service.logservice.LogService;
 import com.kogasoftware.odt.invehicledevice.service.serviceunitstatuslogservice.ServiceUnitStatusLogService;
 import com.kogasoftware.odt.invehicledevice.service.startupservice.AirplaneModeOnBroadcastIntent;
 import com.kogasoftware.odt.invehicledevice.service.startupservice.StartupService;
-import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
+import com.kogasoftware.odt.invehicledevice.service.staticvoiceplayservice.StaticVoicePlayService;
+import com.kogasoftware.odt.invehicledevice.service.staticvoiceplayservice.voice.AdminNotificationVoice;
+import com.kogasoftware.odt.invehicledevice.service.staticvoiceplayservice.voice.ChimeVoice;
+import com.kogasoftware.odt.invehicledevice.service.staticvoiceplayservice.voice.ScheduleChangeVoice;
+import com.kogasoftware.odt.invehicledevice.service.staticvoiceplayservice.voice.Voice;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.NormalVehicleNotificationFragment;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.OperationListFragment;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.OrderedOperationFragment;
@@ -138,6 +142,7 @@ public class InVehicleDeviceActivity extends Activity {
 			handler.post(new Runnable() {
 				@Override
 				public void run() {
+					playAdminNotificationVoice();
 					showVehicleNotificationAlertFragment("管理者から連絡があります");
 				}
 			});
@@ -173,6 +178,7 @@ public class InVehicleDeviceActivity extends Activity {
 			handler.post(new Runnable() {
 				@Override
 				public void run() {
+					playScheduleChangeVoice();
 					showVehicleNotificationAlertFragment("運行予定が変更されました");
 				}
 			});
@@ -411,7 +417,7 @@ public class InVehicleDeviceActivity extends Activity {
 		try {
 			startService(new Intent(this,
 					ServiceUnitStatusLogService.class));
-			startService(new Intent(this, VoiceService.class));
+			startService(new Intent(this, StaticVoicePlayService.class));
 			startService(new Intent(this, LogService.class));
 			startService(new Intent(this, StartupService.class));
 		} catch (UnsupportedOperationException e) {
@@ -440,7 +446,6 @@ public class InVehicleDeviceActivity extends Activity {
 						VEHICLE_NOTIFICATION_ALERT_FRAGMENT_TAG) != null) {
 			return;
 		}
-		VoiceService.speak(this, message);
 		Fragments.showModalFragment(getFragmentManager(),
 				VehicleNotificationAlertFragment.newInstance(),
 				VEHICLE_NOTIFICATION_ALERT_FRAGMENT_TAG);
@@ -459,15 +464,31 @@ public class InVehicleDeviceActivity extends Activity {
 		}
 	}
 
+	private void playAdminNotificationVoice() {
+		Voice chimeVoice = new ChimeVoice();
+		Voice adminNotificationVoice = new AdminNotificationVoice();
+		StaticVoicePlayService.playVoice(this, chimeVoice);
+		StaticVoicePlayService.playVoice(this, adminNotificationVoice);
+		StaticVoicePlayService.playVoice(this, chimeVoice);
+		StaticVoicePlayService.playVoice(this,adminNotificationVoice);
+	}
+
+	private void playScheduleChangeVoice() {
+		Voice chimeVoice = new ChimeVoice();
+		Voice scheduleChange = new ScheduleChangeVoice();
+		StaticVoicePlayService.playVoice(this, chimeVoice);
+		StaticVoicePlayService.playVoice(this, scheduleChange);
+		StaticVoicePlayService.playVoice(this, chimeVoice);
+		StaticVoicePlayService.playVoice(this,scheduleChange);
+	}
+
 	@Override
 	protected void onStart() {
 		super.onStart();
-		VoiceService.enable(this);
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
-		VoiceService.disable(this);
 	}
 }

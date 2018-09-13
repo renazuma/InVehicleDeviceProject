@@ -71,11 +71,6 @@
 			</intent-filter>
 		</receiver>
 
-		<receiver
-			android:name="com.kogasoftware.odt.invehicledevice.service.voicedownloaderservice.VoiceDownloadAlarmReceiver" />
-
-		<service android:name=".service.voiceservice.VoiceService"
-			android:process=":VoiceService" android:exported="false" />
 		<service android:name=".service.logservice.LogService"
 			android:process=":LogService" android:exported="false" />
 		<service android:name=".service.startupservice.StartupService"
@@ -83,6 +78,7 @@
 		<service
 			android:name=".service.serviceunitstatuslogservice.ServiceUnitStatusLogService"
 			android:process=":ServiceUnitStatusLogService" android:exported="false" />
-		<service android:name=".service.voicedownloaderservice.VoiceDownloaderService" />
+		<service android:name=".service.staticvoiceplayservice.StaticVoicePlayService"
+			android:process=":StaticVoicePlayService" android:exported="false" />
 	</application>
 </manifest>

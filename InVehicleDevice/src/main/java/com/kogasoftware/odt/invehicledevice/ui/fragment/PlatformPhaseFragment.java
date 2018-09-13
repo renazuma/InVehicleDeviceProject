@@ -24,7 +24,6 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedule.Phase;
-import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
 import com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.ui.arrayadapter.PassengerRecordArrayAdapter;
 
@@ -88,11 +87,6 @@ public class PlatformPhaseFragment
 					getResources().getString(
 							R.string.minutes_remaining_to_depart_html),
 					dateString, minutesRemaining)));
-			if (lastMinutesRemaining >= 3 && minutesRemaining < 3) {
-				String message = minutesRemaining <= 0 ? "出発時刻になりました" : String
-						.format(Locale.JAPAN, "あと%d分で出発時刻です", minutesRemaining);
-				VoiceService.speak(getActivity(), message);
-			}
 			lastMinutesRemaining = minutesRemaining;
 		}
 	};

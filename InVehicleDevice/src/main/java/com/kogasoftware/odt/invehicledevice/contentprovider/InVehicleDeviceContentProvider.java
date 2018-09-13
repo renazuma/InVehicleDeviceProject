@@ -39,10 +39,6 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.task.PatchOperationR
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.PatchPassengerRecordTask;
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.PatchVehicleNotificationTask;
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.PostServiceUnitStatusLogTask;
-import com.kogasoftware.odt.invehicledevice.service.logservice.LogService;
-import com.kogasoftware.odt.invehicledevice.service.serviceunitstatuslogservice.ServiceUnitStatusLogService;
-import com.kogasoftware.odt.invehicledevice.service.startupservice.StartupService;
-import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
 
 /**
  * 車載器内部データの管理とサーバーとの同期を行うContentProvider

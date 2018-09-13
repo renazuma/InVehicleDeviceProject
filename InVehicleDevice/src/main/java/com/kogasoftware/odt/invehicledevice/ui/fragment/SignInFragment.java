@@ -1,6 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.ui.fragment;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
@@ -44,8 +43,6 @@ import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.InVehicleDevice;
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.SignInErrorBroadcastIntent;
-import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceDownloadStateBroadcastIntent;
-import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceDownloaderClientThread;
 import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 
 /**
@@ -77,17 +74,6 @@ public class SignInFragment extends PreferenceFragment
 		}
 	};
 
-	private final BroadcastReceiver voiceDownloadStateReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			voiceDownloadStatePreference
-					.setTitle(VoiceDownloadStateBroadcastIntent.of(intent)
-							.getMessage());
-		}
-	};
-
-	private Preference voiceDownloadStatePreference;
-
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -114,17 +100,6 @@ public class SignInFragment extends PreferenceFragment
 			}
 		});
 
-		voiceDownloadStatePreference = findPreference("voice_download_state");
-		voiceDownloadStatePreference.setTitle("未インストール");
-		try {
-			if (VoiceDownloaderClientThread.getVoiceOutputDir().isDirectory()) {
-				// FIXME: Broadcastのタイミングによっては「インストール済み」にならない
-				voiceDownloadStatePreference.setTitle("インストール済");
-			}
-		} catch (IOException e) {
-		}
-		getActivity().registerReceiver(voiceDownloadStateReceiver,
-				new IntentFilter(VoiceDownloadStateBroadcastIntent.ACTION));
 		updateSummary();
 
 		policyLink = (Preference) findPreference("privacy_policy_link");
@@ -226,7 +201,6 @@ public class SignInFragment extends PreferenceFragment
 		loaderManager.destroyLoader(LOADER_ID);
 		executor.shutdownNow();
 		getActivity().unregisterReceiver(errorReceiver);
-		getActivity().unregisterReceiver(voiceDownloadStateReceiver);
 		dismissAllDialogs();
 	}
 

@@ -190,7 +190,7 @@ public class SynchronizationTask implements Runnable {
 		}
 		Uri.Builder uriBuilder = new Uri.Builder();
 		uriBuilder.scheme(baseUri.getScheme());
-		uriBuilder.authority(baseUri.getAuthority());
+		uriBuilder.encodedAuthority(baseUri.getAuthority());
 		Log.i(getClass().getSimpleName(), "HTTP " + request.getMethod() + " "
 				+ uriBuilder + " " + rootNode);
 		doSessionAndCallback(uriBuilder, resource, request, callback);
@@ -200,7 +200,7 @@ public class SynchronizationTask implements Runnable {
 			Callback callback) {
 		Uri.Builder uriBuilder = new Uri.Builder();
 		uriBuilder.scheme(baseUri.getScheme());
-		uriBuilder.authority(baseUri.getAuthority());
+		uriBuilder.encodedAuthority(baseUri.getAuthority());
 		uriBuilder.appendQueryParameter(AUTHENTICATION_TOKEN_KEY, authenticationToken);
 		Log.i(getClass().getSimpleName(), "HTTP " + request.getMethod() + " "
 				+ uriBuilder);
