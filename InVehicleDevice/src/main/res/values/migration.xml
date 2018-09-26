@@ -125,6 +125,7 @@
         , handicapped INTEGER NOT NULL
         , needed_care INTEGER NOT NULL
         , wheelchair INTEGER NOT NULL
+        , license_returned INTEGER NOT NULL default 0
       )
     </item>
     <item>
