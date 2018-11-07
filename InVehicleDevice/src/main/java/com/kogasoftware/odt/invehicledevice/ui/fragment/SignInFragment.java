@@ -106,7 +106,7 @@ public class SignInFragment extends PreferenceFragment
 		policyLink.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				final String policySiteUri = "https://www.kogasoftware.com/privacy-policy/";
+				final String policySiteUri = getString(R.string.privacy_policy_url);
 				new AlertDialog.Builder(getActivity())
 						.setTitle("プライバシーポリシー")
 						.setMessage("外部ブラウザでページを表示します。よろしいですか？")
