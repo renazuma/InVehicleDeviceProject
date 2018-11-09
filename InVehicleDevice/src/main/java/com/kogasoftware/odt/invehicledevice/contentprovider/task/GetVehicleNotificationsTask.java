@@ -1,12 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.contentprovider.task;
 
-import java.io.IOException;
-import java.net.URI;
-import java.util.List;
-import java.util.concurrent.ScheduledExecutorService;
-
-import org.apache.http.HttpResponse;
-
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
@@ -18,6 +11,18 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.contentprovider.json.VehicleNotificationJson;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotification;
+import com.kogasoftware.odt.invehicledevice.service.staticvoiceplayservice.StaticVoicePlayService;
+import com.kogasoftware.odt.invehicledevice.service.staticvoiceplayservice.voice.AdminNotificationVoice;
+import com.kogasoftware.odt.invehicledevice.service.staticvoiceplayservice.voice.ChimeVoice;
+import com.kogasoftware.odt.invehicledevice.service.staticvoiceplayservice.voice.ScheduleChangeVoice;
+import com.kogasoftware.odt.invehicledevice.service.staticvoiceplayservice.voice.Voice;
+
+import org.apache.http.HttpResponse;
+
+import java.io.IOException;
+import java.net.URI;
+import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * 車載器通知の取得APIとの通信
@@ -27,7 +32,7 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
 	public static final Integer INTERVAL_MILLIS = 20 * 1000;
 
 	public GetVehicleNotificationsTask(Context context,
-			SQLiteDatabase database, ScheduledExecutorService executorService) {
+									   SQLiteDatabase database, ScheduledExecutorService executorService) {
 		super(context, database, executorService);
 	}
 
@@ -45,8 +50,7 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
 	private void save(byte[] entity) {
 		VehicleNotificationJson[] vehicleNotifications;
 		try {
-			vehicleNotifications = JSON.readValue(new String(entity,
-					Charsets.UTF_8), VehicleNotificationJson[].class);
+			vehicleNotifications = JSON.readValue(new String(entity, Charsets.UTF_8), VehicleNotificationJson[].class);
 		} catch (IOException e) {
 			Log.e(TAG, "ParseError: " + entity, e);
 			return;
@@ -62,23 +66,34 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
 			try {
 				if (cursor.moveToFirst()) {
 					do {
-						ids.add(cursor.getLong(cursor
-								.getColumnIndexOrThrow(VehicleNotification.Columns._ID)));
+						ids.add(cursor.getLong(cursor.getColumnIndexOrThrow(VehicleNotification.Columns._ID)));
 					} while (cursor.moveToNext());
 				}
 			} finally {
 				cursor.close();
 			}
+			boolean contactTabChangeFlg = false;
+			boolean scheduleChangeFlg = false;
 			for (VehicleNotificationJson vehicleNotification : vehicleNotifications) {
 				if (ids.contains(vehicleNotification.id)) {
 					continue;
 				}
-				database.insertOrThrow(VehicleNotification.TABLE_NAME, null,
-						vehicleNotification.toContentValues());
-				uris.add(ContentUris.withAppendedId(
-						VehicleNotification.CONTENT.URI,
-						vehicleNotification.id));
+				database.insertOrThrow(VehicleNotification.TABLE_NAME, null, vehicleNotification.toContentValues());
+				uris.add(ContentUris.withAppendedId(VehicleNotification.CONTENT.URI, vehicleNotification.id));
+
+				switch (String.valueOf(vehicleNotification.notificationKind)) {
+					case "0":
+						contactTabChangeFlg = true;
+						break;
+					case "1":
+						scheduleChangeFlg = true;
+						break;
+				}
 			}
+
+			playAdminNotificationVoice(contactTabChangeFlg);
+			playScheduleNotificationVoice(scheduleChangeFlg);
+
 			database.setTransactionSuccessful();
 			committedUris = uris;
 		} finally {
@@ -88,10 +103,32 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
 			contentResolver.notifyChange(changedUri, null);
 		}
 		if (!committedUris.isEmpty()) {
-			contentResolver
-					.notifyChange(VehicleNotification.CONTENT.URI, null);
+			contentResolver.notifyChange(VehicleNotification.CONTENT.URI, null);
 		}
-		executorService.execute(new GetOperationSchedulesTask(context,
-				database, executorService, true));
+		executorService.execute(new GetOperationSchedulesTask(context, database, executorService, true));
+	}
+
+	private void playAdminNotificationVoice(boolean contactTabChangeFlg) {
+		if (!contactTabChangeFlg) {
+			return;
+		}
+		Voice chimeVoice = new ChimeVoice();
+		Voice adminNotificationVoice = new AdminNotificationVoice();
+		StaticVoicePlayService.playVoice(context, chimeVoice);
+		StaticVoicePlayService.playVoice(context, adminNotificationVoice);
+		StaticVoicePlayService.playVoice(context, chimeVoice);
+		StaticVoicePlayService.playVoice(context, adminNotificationVoice);
+	}
+
+	private void playScheduleNotificationVoice(boolean scheduleChangeFlg) {
+		if (!scheduleChangeFlg) {
+			return;
+		}
+		Voice chimeVoice = new ChimeVoice();
+		Voice scheduleChange = new ScheduleChangeVoice();
+		StaticVoicePlayService.playVoice(context, chimeVoice);
+		StaticVoicePlayService.playVoice(context, scheduleChange);
+		StaticVoicePlayService.playVoice(context, chimeVoice);
+		StaticVoicePlayService.playVoice(context, scheduleChange);
 	}
 }

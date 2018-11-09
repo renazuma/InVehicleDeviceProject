@@ -1,12 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.contentprovider.table;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.ScheduledExecutorService;
-
-import org.joda.time.DateTime;
-
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -21,6 +14,13 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.InVehicleDeviceConte
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.PatchVehicleNotificationTask;
 import com.kogasoftware.odt.invehicledevice.utils.ContentValuesUtils;
 
+import org.joda.time.DateTime;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.ScheduledExecutorService;
+
 /**
  * 車載器通知テーブル
  */
@@ -32,6 +32,12 @@ public class VehicleNotification implements Serializable {
 					NotificationKind.SCHEDULE,
 					VehicleNotification.Columns.RESPONSE,
 					VehicleNotification.Columns.SCHEDULE_DOWNLOADED);
+
+	public static final String WHERE_ADMIN_NOTIFICATION_FRAGMENT_CONTENT = String
+			.format(Locale.US, "%s = %s AND %s IS NULL",
+					VehicleNotification.Columns.NOTIFICATION_KIND,
+					NotificationKind.NORMAL,
+					VehicleNotification.Columns.RESPONSE);
 
 	public static final int TABLE_CODE = 2;
 	public static final String TABLE_NAME = "vehicle_notifications";
@@ -107,7 +113,7 @@ public class VehicleNotification implements Serializable {
 	}
 
 	public static Uri replace(ContentValues values,
-			InVehicleDeviceContentProvider contentProvider) {
+							  InVehicleDeviceContentProvider contentProvider) {
 		SQLiteDatabase database = contentProvider.getDatabase();
 		ContentResolver contentResolver = contentProvider.getContext()
 				.getContentResolver();
@@ -124,8 +130,8 @@ public class VehicleNotification implements Serializable {
 	}
 
 	public static Cursor query(InVehicleDeviceContentProvider contentProvider,
-			String[] projection, String selection, String[] selectionArgs,
-			String sortOrder) {
+							   String[] projection, String selection, String[] selectionArgs,
+							   String sortOrder) {
 		Cursor cursor = contentProvider.getDatabase().query(
 				VehicleNotification.TABLE_NAME, projection, selection,
 				selectionArgs, null, null, sortOrder);
