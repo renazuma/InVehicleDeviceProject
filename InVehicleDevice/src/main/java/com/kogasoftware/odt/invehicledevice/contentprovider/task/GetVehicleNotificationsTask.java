@@ -42,63 +42,44 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
 				new LogCallback(TAG) {
 					@Override
 					public void onSuccess(HttpResponse response, byte[] entity) {
-						save(entity);
+						VehicleNotificationJson[] vehicleNotifications;
+						// TODO: レスポンスのjson化と例外を拾うだけのチェックなので、親クラスの共通処理にした方が良いかも
+						try {
+							vehicleNotifications = JSON.readValue(new String(entity, Charsets.UTF_8), VehicleNotificationJson[].class);
+						} catch (IOException e) {
+							Log.e(TAG, "ParseError: " + entity, e);
+							return;
+						}
+						save(vehicleNotifications);
 					}
 				});
 	}
 
-	private void save(byte[] entity) {
-		VehicleNotificationJson[] vehicleNotifications;
+	private void save(VehicleNotificationJson[] pulledJson) {
+		List<Uri> committedUris = Lists.newLinkedList();
+		boolean existAdminNotification = false;
+		boolean existScheduleNotification = false;
+
 		try {
-			vehicleNotifications = JSON.readValue(new String(entity, Charsets.UTF_8), VehicleNotificationJson[].class);
-		} catch (IOException e) {
-			Log.e(TAG, "ParseError: " + entity, e);
-			return;
-		}
-		List<Uri> committedUris;
-		try {
-			List<Uri> uris = Lists.newLinkedList();
-			List<Long> ids = Lists.newLinkedList();
 			database.beginTransaction();
-			Cursor cursor = database.query(VehicleNotification.TABLE_NAME,
-					new String[]{VehicleNotification.Columns._ID}, null, null,
-					null, null, null);
-			try {
-				if (cursor.moveToFirst()) {
-					do {
-						ids.add(cursor.getLong(cursor.getColumnIndexOrThrow(VehicleNotification.Columns._ID)));
-					} while (cursor.moveToNext());
-				}
-			} finally {
-				cursor.close();
-			}
-			boolean contactTabChangeFlg = false;
-			boolean scheduleChangeFlg = false;
-			for (VehicleNotificationJson vehicleNotification : vehicleNotifications) {
-				if (ids.contains(vehicleNotification.id)) {
-					continue;
-				}
-				database.insertOrThrow(VehicleNotification.TABLE_NAME, null, vehicleNotification.toContentValues());
-				uris.add(ContentUris.withAppendedId(VehicleNotification.CONTENT.URI, vehicleNotification.id));
+			for (VehicleNotificationJson json : selectTargetJson(pulledJson)) {
+				database.insertOrThrow(VehicleNotification.TABLE_NAME, null, json.toContentValues());
+				committedUris.add(ContentUris.withAppendedId(VehicleNotification.CONTENT.URI, json.id));
 
-				switch (String.valueOf(vehicleNotification.notificationKind)) {
-					case "0":
-						contactTabChangeFlg = true;
-						break;
-					case "1":
-						scheduleChangeFlg = true;
-						break;
+				if (json.isAdminNotification()) {
+					existAdminNotification = true;
+				} else if (json.isScheduleNotification()) {
+					existScheduleNotification = true;
 				}
 			}
-
-			playAdminNotificationVoice(contactTabChangeFlg);
-			playScheduleNotificationVoice(scheduleChangeFlg);
-
 			database.setTransactionSuccessful();
-			committedUris = uris;
 		} finally {
 			database.endTransaction();
 		}
+
+		if (existAdminNotification) playAdminNotificationVoice();
+		if (existScheduleNotification) playScheduleNotificationVoice();
+
 		for (Uri changedUri : committedUris) {
 			contentResolver.notifyChange(changedUri, null);
 		}
@@ -108,10 +89,35 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
 		executorService.execute(new GetOperationSchedulesTask(context, database, executorService, true));
 	}
 
-	private void playAdminNotificationVoice(boolean contactTabChangeFlg) {
-		if (!contactTabChangeFlg) {
-			return;
+	private List<VehicleNotificationJson> selectTargetJson(VehicleNotificationJson[] pulledJson) {
+		List<VehicleNotificationJson> writeTargetJson = Lists.newLinkedList();
+		List<Long> existIds = getExistIds();
+		for (VehicleNotificationJson json : pulledJson) {
+			if (existIds.contains(json.id)) continue;
+			writeTargetJson.add(json);
 		}
+		return writeTargetJson;
+	}
+
+	private List<Long> getExistIds() {
+		List<Long> existIds = Lists.newLinkedList();
+		Cursor cursor = database.query(VehicleNotification.TABLE_NAME,
+				new String[]{VehicleNotification.Columns._ID}, null, null,
+				null, null, null);
+		try {
+			if (cursor.moveToFirst()) {
+				do {
+					existIds.add(cursor.getLong(cursor.getColumnIndexOrThrow(VehicleNotification.Columns._ID)));
+				} while (cursor.moveToNext());
+			}
+		} finally {
+			cursor.close();
+		}
+		return existIds;
+	}
+
+	// TODO: 音声再生の細かい処理は本来はcontentProviderにあるべきではないので、クラスを分けるべきかも
+	private void playAdminNotificationVoice() {
 		Voice chimeVoice = new ChimeVoice();
 		Voice adminNotificationVoice = new AdminNotificationVoice();
 		StaticVoicePlayService.playVoice(context, chimeVoice);
@@ -120,10 +126,8 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
 		StaticVoicePlayService.playVoice(context, adminNotificationVoice);
 	}
 
-	private void playScheduleNotificationVoice(boolean scheduleChangeFlg) {
-		if (!scheduleChangeFlg) {
-			return;
-		}
+	// TODO: 音声再生の細かい処理は本来はcontentProviderにあるべきではないので、クラスを分けるべきかも
+	private void playScheduleNotificationVoice() {
 		Voice chimeVoice = new ChimeVoice();
 		Voice scheduleChange = new ScheduleChangeVoice();
 		StaticVoicePlayService.playVoice(context, chimeVoice);
