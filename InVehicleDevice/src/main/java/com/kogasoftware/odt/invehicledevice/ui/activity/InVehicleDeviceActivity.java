@@ -1,7 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.ui.activity;
 
-import java.util.List;
-
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -36,10 +34,6 @@ import com.kogasoftware.odt.invehicledevice.service.serviceunitstatuslogservice.
 import com.kogasoftware.odt.invehicledevice.service.startupservice.AirplaneModeOnBroadcastIntent;
 import com.kogasoftware.odt.invehicledevice.service.startupservice.StartupService;
 import com.kogasoftware.odt.invehicledevice.service.staticvoiceplayservice.StaticVoicePlayService;
-import com.kogasoftware.odt.invehicledevice.service.staticvoiceplayservice.voice.AdminNotificationVoice;
-import com.kogasoftware.odt.invehicledevice.service.staticvoiceplayservice.voice.ChimeVoice;
-import com.kogasoftware.odt.invehicledevice.service.staticvoiceplayservice.voice.ScheduleChangeVoice;
-import com.kogasoftware.odt.invehicledevice.service.staticvoiceplayservice.voice.Voice;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.NormalVehicleNotificationFragment;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.OperationListFragment;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.OrderedOperationFragment;
@@ -47,6 +41,8 @@ import com.kogasoftware.odt.invehicledevice.ui.fragment.ScheduleVehicleNotificat
 import com.kogasoftware.odt.invehicledevice.ui.fragment.SignInFragment;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.VehicleNotificationAlertFragment;
 import com.kogasoftware.odt.invehicledevice.utils.Fragments;
+
+import java.util.List;
 
 /**
  * 全体の大枠。サインイン前はSignInFragmentを表示し、サインイン後は、自治体に依存して「運行予定一覧画面」か「順番に運行を進める画面」を表示する
@@ -73,11 +69,11 @@ public class InVehicleDeviceActivity extends Activity {
 			+ "/" + AirplaneModeAlertDialogFragment.class;
 
 	// 権限の許可が必要なパーミッション
-	private static final String[] MUST_GRANT_PERMISSIONS = new String[] {
+	private static final String[] MUST_GRANT_PERMISSIONS = new String[]{
 			Manifest.permission.ACCESS_FINE_LOCATION,   // GPS
 			Manifest.permission.WRITE_EXTERNAL_STORAGE, // SDカードへの書き込み
 			Manifest.permission.READ_PHONE_STATE
-    };
+	};
 
 	public static class AirplaneModeAlertDialogFragment extends DialogFragment {
 		@Override
@@ -124,12 +120,13 @@ public class InVehicleDeviceActivity extends Activity {
 	private final LoaderCallbacks<Cursor> normalVehicleNotificationLoaderCallbacks = new LoaderCallbacks<Cursor>() {
 		@Override
 		public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-			String where = VehicleNotification.Columns.NOTIFICATION_KIND
-					+ " = " + VehicleNotification.NotificationKind.NORMAL
-					+ " AND " + VehicleNotification.Columns.RESPONSE
-					+ " IS NULL";
-			return new CursorLoader(InVehicleDeviceActivity.this,
-					VehicleNotification.CONTENT.URI, null, where, null, null);
+			return new CursorLoader(
+					InVehicleDeviceActivity.this,
+					VehicleNotification.CONTENT.URI,
+					null,
+					VehicleNotification.WHERE_ADMIN_NOTIFICATION_FRAGMENT_CONTENT,
+					null,
+					null);
 		}
 
 		@Override
@@ -142,7 +139,6 @@ public class InVehicleDeviceActivity extends Activity {
 			handler.post(new Runnable() {
 				@Override
 				public void run() {
-					playAdminNotificationVoice();
 					showVehicleNotificationAlertFragment("管理者から連絡があります");
 				}
 			});
@@ -178,7 +174,6 @@ public class InVehicleDeviceActivity extends Activity {
 			handler.post(new Runnable() {
 				@Override
 				public void run() {
-					playScheduleChangeVoice();
 					showVehicleNotificationAlertFragment("運行予定が変更されました");
 				}
 			});
@@ -430,7 +425,7 @@ public class InVehicleDeviceActivity extends Activity {
 		if (destroyed
 				|| serviceProvider == null
 				|| getFragmentManager().findFragmentByTag(
-						SCHEDULE_VEHICLE_NOTIFICATION_FRAGMENT_TAG) != null) {
+				SCHEDULE_VEHICLE_NOTIFICATION_FRAGMENT_TAG) != null) {
 			return;
 		}
 		Fragments.showModalFragment(getFragmentManager(),
@@ -443,7 +438,7 @@ public class InVehicleDeviceActivity extends Activity {
 		if (destroyed
 				|| serviceProvider == null
 				|| getFragmentManager().findFragmentByTag(
-						VEHICLE_NOTIFICATION_ALERT_FRAGMENT_TAG) != null) {
+				VEHICLE_NOTIFICATION_ALERT_FRAGMENT_TAG) != null) {
 			return;
 		}
 		Fragments.showModalFragment(getFragmentManager(),
@@ -462,24 +457,6 @@ public class InVehicleDeviceActivity extends Activity {
 			airplaneModeAlertDialogFragment.show(fragmentManager,
 					AIRPLANE_MODE_ALERT_DIALOG_FRAGMENT_TAG);
 		}
-	}
-
-	private void playAdminNotificationVoice() {
-		Voice chimeVoice = new ChimeVoice();
-		Voice adminNotificationVoice = new AdminNotificationVoice();
-		StaticVoicePlayService.playVoice(this, chimeVoice);
-		StaticVoicePlayService.playVoice(this, adminNotificationVoice);
-		StaticVoicePlayService.playVoice(this, chimeVoice);
-		StaticVoicePlayService.playVoice(this,adminNotificationVoice);
-	}
-
-	private void playScheduleChangeVoice() {
-		Voice chimeVoice = new ChimeVoice();
-		Voice scheduleChange = new ScheduleChangeVoice();
-		StaticVoicePlayService.playVoice(this, chimeVoice);
-		StaticVoicePlayService.playVoice(this, scheduleChange);
-		StaticVoicePlayService.playVoice(this, chimeVoice);
-		StaticVoicePlayService.playVoice(this,scheduleChange);
 	}
 
 	@Override
