@@ -23,8 +23,7 @@ public class VehicleNotificationJson {
 		if (bodyRuby != null) {
 			values.put(VehicleNotification.Columns.BODY_RUBY, bodyRuby);
 		}
-		values.put(VehicleNotification.Columns.NOTIFICATION_KIND,
-				notificationKind);
+		values.put(VehicleNotification.Columns.NOTIFICATION_KIND, notificationKind);
 		if (response != null) {
 			values.put(VehicleNotification.Columns.RESPONSE, response);
 		}
@@ -33,4 +32,12 @@ public class VehicleNotificationJson {
 		}
 		return values;
 	}
+
+	public boolean isAdminNotification() {
+		return notificationKind == 0L;
+	}
+	public boolean isScheduleNotification() {
+		return notificationKind == 1L;
+	}
+
 }

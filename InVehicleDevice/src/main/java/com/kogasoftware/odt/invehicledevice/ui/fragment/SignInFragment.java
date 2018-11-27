@@ -1,6 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.ui.fragment;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
@@ -16,6 +15,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.Loader;
@@ -43,8 +43,6 @@ import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.InVehicleDevice;
 import com.kogasoftware.odt.invehicledevice.contentprovider.task.SignInErrorBroadcastIntent;
-import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceDownloadStateBroadcastIntent;
-import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceDownloaderClientThread;
 import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 
 /**
@@ -61,6 +59,7 @@ public class SignInFragment extends PreferenceFragment
 	private SharedPreferences preferences;
 	private ExecutorService executor;
 	private Boolean firstLoad;
+	private Preference policyLink;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -74,17 +73,6 @@ public class SignInFragment extends PreferenceFragment
 			showAlertDialog(SignInErrorBroadcastIntent.of(intent).getMessage());
 		}
 	};
-
-	private final BroadcastReceiver voiceDownloadStateReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			voiceDownloadStatePreference
-					.setTitle(VoiceDownloadStateBroadcastIntent.of(intent)
-							.getMessage());
-		}
-	};
-
-	private Preference voiceDownloadStatePreference;
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -112,18 +100,33 @@ public class SignInFragment extends PreferenceFragment
 			}
 		});
 
-		voiceDownloadStatePreference = findPreference("voice_download_state");
-		voiceDownloadStatePreference.setTitle("未インストール");
-		try {
-			if (VoiceDownloaderClientThread.getVoiceOutputDir().isDirectory()) {
-				// FIXME: Broadcastのタイミングによっては「インストール済み」にならない
-				voiceDownloadStatePreference.setTitle("インストール済");
-			}
-		} catch (IOException e) {
-		}
-		getActivity().registerReceiver(voiceDownloadStateReceiver,
-				new IntentFilter(VoiceDownloadStateBroadcastIntent.ACTION));
 		updateSummary();
+
+		policyLink = (Preference) findPreference("privacy_policy_link");
+		policyLink.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				final String policySiteUri = getString(R.string.privacy_policy_url);
+				new AlertDialog.Builder(getActivity())
+						.setTitle("プライバシーポリシー")
+						.setMessage("外部ブラウザでページを表示します。よろしいですか？")
+						.setPositiveButton("OK", new DialogInterface.OnClickListener(){
+							public void onClick(DialogInterface dialog, int which) {
+								Uri uri = Uri.parse(policySiteUri);
+								Intent i = new Intent(Intent.ACTION_VIEW, uri);
+								startActivity(i);
+							}
+
+						})
+						.setNegativeButton("キャンセル", new DialogInterface.OnClickListener(){
+							public void onClick(DialogInterface dialog, int which) {
+								// do nothing
+							}
+						})
+						.show();
+				return true;
+			}
+		});
 	}
 
 	@Override
@@ -198,7 +201,6 @@ public class SignInFragment extends PreferenceFragment
 		loaderManager.destroyLoader(LOADER_ID);
 		executor.shutdownNow();
 		getActivity().unregisterReceiver(errorReceiver);
-		getActivity().unregisterReceiver(voiceDownloadStateReceiver);
 		dismissAllDialogs();
 	}
 

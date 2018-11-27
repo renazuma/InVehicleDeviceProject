@@ -2,7 +2,6 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
 
     sourceSets {
         main {
@@ -22,4 +21,5 @@ android {
         abortOnError false
         xmlReport false
     }
+    buildToolsVersion '27.0.3'
 }

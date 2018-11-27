@@ -16,6 +16,7 @@ public class UserJson {
 	public Boolean handicapped;
 	public Boolean neededCare;
 	public Boolean wheelchair;
+	public Boolean licenseReturned;
 	public ContentValues toContentValues() {
 		ContentValues values = new ContentValues();
 		values.put(User.Columns._ID, id);
@@ -25,6 +26,7 @@ public class UserJson {
 		values.put(User.Columns.HANDICAPPED, handicapped);
 		values.put(User.Columns.NEEDED_CARE, neededCare);
 		values.put(User.Columns.WHEELCHAIR, wheelchair);
+		values.put(User.Columns.LICENSE_RETURNED, licenseReturned);
 		return values;
 	}
 }

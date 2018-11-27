@@ -21,7 +21,7 @@ import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotification;
-import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
+import com.kogasoftware.odt.invehicledevice.service.staticvoiceplayservice.StaticVoicePlayService;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 
@@ -117,7 +117,6 @@ public class ScheduleVehicleNotificationFragment extends Fragment
 			speakContent.append(SystemUtils.LINE_SEPARATOR);
 		} while (cursor.moveToNext());
 		detailTextView.setText(content);
-		VoiceService.speak(getActivity(), speakContent.toString());
 	}
 
 	private void hide(final Runnable onComplete) {

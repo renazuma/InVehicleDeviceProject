@@ -53,6 +53,7 @@ public class PassengerRecordMemoFragmentTestCase
 		UserJson user1 = server.addUser("マイクロ 次郎");
 		user1.memo = "ゆーざーメモ";
 		user1.neededCare = true;
+		user1.licenseReturned = true;
 		List<UserJson> users1 = Lists.newArrayList(user1);
 		List<UserJson> users2 = Lists.newArrayList(server.addUser("まつもと ゆきひろ"),
 				server.addUser("はしもと ゆきなり"));
@@ -68,6 +69,7 @@ public class PassengerRecordMemoFragmentTestCase
 		solo.clickOnButton("メモ");
 		assertTrue(solo.searchText("ゆーざーメモ", true));
 		assertTrue(solo.searchText("要介護", true));
+		assertTrue(solo.searchText("免許返納", true));
 		assertTrue(solo.searchText("よやくメモ", true));
 		solo.clickOnButton("戻る");
 		assertFalse(solo.searchText("よやくメモ", true));

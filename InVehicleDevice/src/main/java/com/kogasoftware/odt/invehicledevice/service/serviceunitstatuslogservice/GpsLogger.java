@@ -5,9 +5,11 @@ import java.math.BigDecimal;
 
 import org.joda.time.DateTimeUtils;
 
+import android.Manifest;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.location.GpsSatellite;
 import android.location.GpsStatus;
 import android.location.Location;
@@ -15,6 +17,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -66,13 +69,16 @@ public class GpsLogger
 					"start(): failed by !locationManager.isProviderEnabled()");
 			return;
 		}
-		Log.d(TAG, "start()");
 
-		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-				minTime, minDistance, this);
-		locationManager.addGpsStatusListener(this);
-		started = true;
-		startedTimeMillis = DateTimeUtils.currentTimeMillis();
+		try {
+			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+					minTime, minDistance, this);
+			locationManager.addGpsStatusListener(this);
+			started = true;
+			startedTimeMillis = DateTimeUtils.currentTimeMillis();
+		} catch (SecurityException e) {
+			Log.w(TAG, "ACCESS_FINE_LOCATION is not granted.");
+		}
 	}
 
 	private void stop() {

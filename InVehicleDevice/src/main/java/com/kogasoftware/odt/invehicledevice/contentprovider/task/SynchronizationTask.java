@@ -28,10 +28,10 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.test.IsolatedContext;
 import android.util.Log;
 
-import com.amazonaws.org.apache.http.client.utils.URIBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Charsets;
@@ -188,7 +188,9 @@ public class SynchronizationTask implements Runnable {
 		} catch (UnsupportedEncodingException e) {
 			throw new IllegalArgumentException(e); // fatal
 		}
-		URIBuilder uriBuilder = new URIBuilder(baseUri);
+		Uri.Builder uriBuilder = new Uri.Builder();
+		uriBuilder.scheme(baseUri.getScheme());
+		uriBuilder.encodedAuthority(baseUri.getAuthority());
 		Log.i(getClass().getSimpleName(), "HTTP " + request.getMethod() + " "
 				+ uriBuilder + " " + rootNode);
 		doSessionAndCallback(uriBuilder, resource, request, callback);
@@ -196,19 +198,21 @@ public class SynchronizationTask implements Runnable {
 	private void doHttpRequest(URI baseUri, String resource,
 			String authenticationToken, HttpRequestBase request,
 			Callback callback) {
-		URIBuilder uriBuilder = new URIBuilder(baseUri);
-		uriBuilder.addParameter(AUTHENTICATION_TOKEN_KEY, authenticationToken);
+		Uri.Builder uriBuilder = new Uri.Builder();
+		uriBuilder.scheme(baseUri.getScheme());
+		uriBuilder.encodedAuthority(baseUri.getAuthority());
+		uriBuilder.appendQueryParameter(AUTHENTICATION_TOKEN_KEY, authenticationToken);
 		Log.i(getClass().getSimpleName(), "HTTP " + request.getMethod() + " "
 				+ uriBuilder);
 		doSessionAndCallback(uriBuilder, resource, request, callback);
 	}
 
-	private void doSessionAndCallback(URIBuilder uriBuilder, String resource,
+	private void doSessionAndCallback(Uri.Builder uriBuilder, String resource,
 			HttpRequestBase request, Callback callback) {
-		uriBuilder.setPath("/in_vehicle_devices/" + resource);
+		uriBuilder.path("/in_vehicle_devices/" + resource);
 		URI uri;
 		try {
-			uri = uriBuilder.build();
+			uri = new URI(uriBuilder.build().toString());
 		} catch (URISyntaxException e) {
 			throw new IllegalStateException(e); // fatal exception
 		}

@@ -17,5 +17,6 @@ public class User {
 		public static final String HANDICAPPED = "handicapped";
 		public static final String NEEDED_CARE = "needed_care";
 		public static final String WHEELCHAIR = "wheelchair";
+		public static final String LICENSE_RETURNED = "license_returned";
 	}
 }

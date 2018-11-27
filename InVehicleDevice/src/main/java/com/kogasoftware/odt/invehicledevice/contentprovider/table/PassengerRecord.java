@@ -74,6 +74,7 @@ public class PassengerRecord implements Serializable {
 	public Boolean handicapped;
 	public Boolean wheelchair;
 	public Boolean neededCare;
+	public Boolean licenseReturned;
 	public Boolean ignoreGetOnMiss;
 	public Boolean ignoreGetOffMiss;
 	public Boolean representative;
@@ -101,6 +102,7 @@ public class PassengerRecord implements Serializable {
 		handicapped = reader.readBoolean(User.Columns.HANDICAPPED);
 		wheelchair = reader.readBoolean(User.Columns.WHEELCHAIR);
 		neededCare = reader.readBoolean(User.Columns.NEEDED_CARE);
+		licenseReturned = reader.readBoolean(User.Columns.LICENSE_RETURNED);
 		representative = reader
 				.readBoolean(PassengerRecord.Columns.REPRESENTATIVE);
 		passengerCount = reader
@@ -120,6 +122,9 @@ public class PassengerRecord implements Serializable {
 		}
 		if (neededCare) {
 			notes.add("※要介護");
+		}
+		if (licenseReturned) {
+			notes.add("※免許返納");
 		}
 		return notes;
 	}
@@ -216,6 +221,7 @@ public class PassengerRecord implements Serializable {
 		sql.append(" , u.handicapped");
 		sql.append(" , u.needed_care");
 		sql.append(" , u.wheelchair");
+		sql.append(" , u.license_returned");
 		sql.append(" from passenger_records pr");
 		sql.append(" inner join reservations r on pr.reservation_id = r._id");
 		sql.append(" inner join users u on pr.user_id = u._id");

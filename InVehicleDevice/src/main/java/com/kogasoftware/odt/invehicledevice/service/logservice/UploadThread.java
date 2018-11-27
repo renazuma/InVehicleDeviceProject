@@ -40,7 +40,7 @@ public class UploadThread extends Thread
 	private final Context context;
 	private final BlockingQueue<File> uploadFiles;
 	private final String bucket = "odt-android";
-	private final String deviceId;
+	private String deviceId;
 	private final Object awsCredentialsLock = new Object();
 	private AWSCredentials awsCredentials;
 
@@ -49,7 +49,11 @@ public class UploadThread extends Thread
 		this.uploadFiles = uploadFiles;
 		TelephonyManager telephonyManager = (TelephonyManager) context
 				.getSystemService(Context.TELEPHONY_SERVICE);
-		this.deviceId = Strings.nullToEmpty(telephonyManager.getDeviceId());
+		try {
+			this.deviceId = Strings.nullToEmpty(telephonyManager.getDeviceId());
+		} catch (SecurityException e) {
+			Log.w(TAG, "READ_PHONE_STATE is not granted.");
+		}
 	}
 
 	@VisibleForTesting

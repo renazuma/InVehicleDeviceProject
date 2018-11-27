@@ -18,7 +18,6 @@ import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.service.voiceservice.VoiceService;
 
 /**
  * 運行中画面
@@ -74,9 +73,6 @@ public class DrivePhaseFragment extends Fragment {
 					Locale.US);
 			platformArrivalTimeTextView2.setText(dateFormat
 					.format(operationSchedule.arrivalEstimate.toDate()));
-			String message = "出発します 次は " + operationSchedule.nameRuby + " "
-					+ operationSchedule.nameRuby;
-			VoiceService.speak(getActivity(), message);
 		}
 		OperationSchedule nextOperationSchedule = OperationSchedule
 				.getCurrentOffset(operationSchedules, 1);

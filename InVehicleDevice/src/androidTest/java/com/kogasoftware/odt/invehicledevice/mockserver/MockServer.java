@@ -165,8 +165,6 @@ public class MockServer extends Thread {
 				"2000-01-01T" + departureEstimate).withDayOfYear(dayOfYear);
 		aos.arrivalEstimate = dos.arrivalEstimate.plusMinutes(minutes);
 		aos.departureEstimate = dos.departureEstimate.plusMinutes(minutes);
-		dos.operationDate = dos.departureEstimate.toLocalDate();
-		aos.operationDate = dos.operationDate;
 		ReservationJson r = new ReservationJson();
 		r.id = reservationIdSeq.incrementAndGet();
 		reservations.add(r);
