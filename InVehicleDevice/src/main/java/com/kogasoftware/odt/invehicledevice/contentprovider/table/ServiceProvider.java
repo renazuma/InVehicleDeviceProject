@@ -3,6 +3,7 @@ package com.kogasoftware.odt.invehicledevice.contentprovider.table;
 import android.database.Cursor;
 import android.provider.BaseColumns;
 
+import com.amazonaws.auth.BasicAWSCredentials;
 import com.kogasoftware.android.CursorReader;
 import com.kogasoftware.odt.invehicledevice.contentprovider.InVehicleDeviceContentProvider;
 
@@ -46,5 +47,13 @@ public class ServiceProvider {
 		cursor.setNotificationUri(contentProvider.getContext()
 				.getContentResolver(), ServiceProvider.CONTENT.URI);
 		return cursor;
+	}
+
+	public boolean existAwsKeys() {
+		return logAccessKeyIdAws != null && logSecretAccessKeyAws != null;
+	}
+
+	public BasicAWSCredentials getBasicAWSCredentials() {
+		return new BasicAWSCredentials(logAccessKeyIdAws, logSecretAccessKeyAws);
 	}
 }
