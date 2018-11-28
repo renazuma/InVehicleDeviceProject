@@ -28,13 +28,9 @@ import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceProvide
  * ログをAmazon S3にアップロードするスレッド
  */
 public class UploadThread extends Thread
-		implements
-			OnLoadCompleteListener<Cursor>,
-			IdleHandler {
+		implements IdleHandler {
 	private static final String TAG = UploadThread.class.getSimpleName();
-	public static final String SHARED_PREFERENCES_NAME = UploadThread.class
-			.getSimpleName() + ".sharedpreferences";
-	public static final Integer SHARED_PREFERENCES_CHECK_INTERVAL_MILLIS = 5000;
+	public static final Integer SERVICE_PROVIDER_TABLE_CHECK_INTERVAL = 5000;
 	public static final Integer UPLOAD_DELAY_MILLIS = 5000;
 	private static final int LOADER_ID = 0;
 	private final Context context;
@@ -108,19 +104,36 @@ public class UploadThread extends Thread
 	@Override
 	public void run() {
 		Log.i(TAG, "start");
-		Looper.prepare();
-		CursorLoader cursorLoader = new CursorLoader(context,
-				ServiceProvider.CONTENT.URI, null, null, null, null);
-		cursorLoader.registerListener(LOADER_ID, this);
-		cursorLoader.startLoading();
-		try {
-			Looper.myQueue().addIdleHandler(this);
-			Looper.loop();
-		} finally {
-			cursorLoader.unregisterListener(this);
-			cursorLoader.cancelLoad();
-			cursorLoader.stopLoading();
+
+		while (awsCredentials == null) {
+			Cursor cursor = context.getContentResolver().query(ServiceProvider.CONTENT.URI, null, null, null, null);
+			try {
+				Thread.sleep(SERVICE_PROVIDER_TABLE_CHECK_INTERVAL);
+
+				if (!cursor.moveToFirst()) {
+					Log.i(TAG, "waiting for AWS Credentials");
+					continue;
+				}
+
+				ServiceProvider serviceProvider = new ServiceProvider(cursor);
+				if (!serviceProvider.existAwsKeys()) {
+					Log.i(TAG, "waiting for AWS Credentials");
+					continue;
+				}
+
+				synchronized (awsCredentialsLock) {
+					awsCredentials = serviceProvider.getBasicAWSCredentials();
+				}
+			} catch (InterruptedException e) {
+				break;
+			} finally {
+				cursor.close();
+			}
 		}
+
+		Looper.prepare();
+		Looper.myQueue().addIdleHandler(this);
+		Looper.loop();
 		Log.i(TAG, "exit");
 	}
 
@@ -130,26 +143,6 @@ public class UploadThread extends Thread
 				throw new IOException("AWSCredentials not found");
 			}
 			return new AmazonS3Client(awsCredentials);
-		}
-	}
-
-	@Override
-	public void onLoadComplete(Loader<Cursor> loader, Cursor cursor) {
-		if (!cursor.moveToFirst()) {
-			synchronized (awsCredentialsLock) {
-				awsCredentials = null;
-			}
-			return;
-		}
-		ServiceProvider serviceProvider = new ServiceProvider(cursor);
-		if (serviceProvider.logAccessKeyIdAws == null
-				|| serviceProvider.logSecretAccessKeyAws == null) {
-			return;
-		}
-		synchronized (awsCredentialsLock) {
-			awsCredentials = new BasicAWSCredentials(
-					serviceProvider.logAccessKeyIdAws,
-					serviceProvider.logSecretAccessKeyAws);
 		}
 	}
 
