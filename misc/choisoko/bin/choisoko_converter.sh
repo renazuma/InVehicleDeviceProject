@@ -24,8 +24,13 @@ function overwrite_icons {
   cp -rf ./misc/choisoko/res ./InVehicleDevice/src/main
 }
 
+function overwrite_keystore {
+  cp -rf ./misc/choisoko/keystore/release.keystore ./misc/keystore
+}
+
 
 ### 実行 ###
 convert_strings
 rename_dirs
 overwrite_icons
+overwrite_keystore
