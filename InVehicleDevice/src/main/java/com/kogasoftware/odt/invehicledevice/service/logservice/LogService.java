@@ -1,5 +1,22 @@
 package com.kogasoftware.odt.invehicledevice.service.logservice;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Build;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
+import android.util.Log;
+
+import com.kogasoftware.odt.invehicledevice.R;
+
 import java.io.Closeable;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -9,16 +26,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-
-import android.app.Service;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.IBinder;
-import android.util.Log;
 
 /**
  * ログの管理
@@ -221,8 +228,28 @@ public class LogService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		super.onStartCommand(intent, flags, startId);
-		Log.i(TAG, "onStartCommand(" + intent + ", " + flags + ", " + startId
-				+ ")");
+		Log.i(TAG, "onStartCommand(" + intent + ", " + flags + ", " + startId + ")");
+
+		// TODO: OS8.0以降は、サービスをバックグラウンドで動かし続けるために、通知の実装とフォアグラウンドの偽装が必須になる。
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			// TODO: idはアプリ内で一意である必要がある。管理まで手が回らないので重複しない様に固定としている。
+			String channelId = "log_channel";
+			String channelName = "log_channel";
+			String notificationTitle = "ログ保存サービス";
+			String notificationText = "アプリケーションのログを保存しています";
+			// TODO: idはアプリ内で一意である必要がある。管理まで手が回らないので重複しない様に固定としている。
+			int notificationId = 2;
+
+			NotificationChannel channel = new NotificationChannel(channelId, channelName, 3);
+			((NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE)).createNotificationChannel(channel);
+			Notification notification = new NotificationCompat.Builder(this, channelId)
+							                  .setSmallIcon(R.mipmap.ic_launcher)
+							                  .setContentTitle(notificationTitle)
+							                  .setContentText(notificationText)
+							                  .build();
+			startForeground(notificationId, notification);
+		}
+
 		return Service.START_STICKY;
 	}
 }

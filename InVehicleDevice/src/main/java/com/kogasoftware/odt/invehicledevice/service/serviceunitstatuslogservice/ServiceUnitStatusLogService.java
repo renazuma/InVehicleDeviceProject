@@ -1,7 +1,8 @@
 package com.kogasoftware.odt.invehicledevice.service.serviceunitstatuslogservice;
 
-import java.util.List;
-
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -9,12 +10,18 @@ import android.content.IntentFilter;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.WindowManager;
+
+import com.kogasoftware.odt.invehicledevice.R;
+
+import java.util.List;
 
 /**
  * ServiceUnitStatusLogを生成して保存するサービス
@@ -130,6 +137,7 @@ public class ServiceUnitStatusLogService extends Service implements Runnable {
 			telephonyManager.listen(signalStrengthListener,
 					PhoneStateListener.LISTEN_NONE);
 		}
+		stopForeground(true);
 	}
 
 	@Override
@@ -141,8 +149,28 @@ public class ServiceUnitStatusLogService extends Service implements Runnable {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		super.onStartCommand(intent, flags, startId);
-		Log.i(TAG, "onStartCommand(" + intent + ", " + flags + ", " + startId
-				+ ")");
+		Log.i(TAG, "onStartCommand(" + intent + ", " + flags + ", " + startId + ")");
+
+		// TODO: OS8.0以降は、サービスをバックグラウンドで動かし続けるために、通知の実装とフォアグラウンドの偽装が必須になる。
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			// TODO: idはアプリ内で一意である必要がある。管理まで手が回らないので重複しない様に固定としている。
+			String channelId = "status_log_channel";
+			String channelName = "status_log_channel";
+			String notificationTitle = "端末情報取得サービス";
+			String notificationText = "端末の情報をサーバと連携しています";
+			// TODO: idはアプリ内で一意である必要がある。管理まで手が回らないので重複しない様に固定としている。
+			int notificationId = 1;
+
+			NotificationChannel channel = new NotificationChannel(channelId, channelName, 3);
+			((NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE)).createNotificationChannel(channel);
+			Notification notification = new NotificationCompat.Builder(this, channelId)
+							                  .setSmallIcon(R.mipmap.ic_launcher)
+							                  .setContentTitle(notificationTitle)
+							                  .setContentText(notificationText)
+							                  .build();
+			startForeground(notificationId, notification);
+		}
+
 		return Service.START_STICKY;
 	}
 }

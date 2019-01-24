@@ -33,7 +33,6 @@ import com.kogasoftware.odt.invehicledevice.service.logservice.LogService;
 import com.kogasoftware.odt.invehicledevice.service.serviceunitstatuslogservice.ServiceUnitStatusLogService;
 import com.kogasoftware.odt.invehicledevice.service.startupservice.AirplaneModeOnBroadcastIntent;
 import com.kogasoftware.odt.invehicledevice.service.startupservice.StartupService;
-import com.kogasoftware.odt.invehicledevice.service.staticvoiceplayservice.StaticVoicePlayService;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.NormalVehicleNotificationFragment;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.OperationListFragment;
 import com.kogasoftware.odt.invehicledevice.ui.fragment.OrderedOperationFragment;
@@ -390,6 +389,7 @@ public class InVehicleDeviceActivity extends Activity {
 		loaderManager.destroyLoader(SCHEDULE_VEHICLE_NOTIFICATION_LOADER_ID);
 		unregisterReceiver(signInErrorReceiver);
 		unregisterReceiver(airplaneModeOnReceiver);
+		stopServices();
 		destroyed = true;
 	}
 
@@ -410,16 +410,20 @@ public class InVehicleDeviceActivity extends Activity {
 
 	private void startServices() {
 		try {
-			startService(new Intent(this,
-					ServiceUnitStatusLogService.class));
-			startService(new Intent(this, StaticVoicePlayService.class));
-			startService(new Intent(this, LogService.class));
+			ContextCompat.startForegroundService(this, new Intent(this, ServiceUnitStatusLogService.class));
+			ContextCompat.startForegroundService(this, new Intent(this, LogService.class));
+			// TODO: StartupServiceについては、バックグラウンドで動き続けるべきかの判断が出来なかったため、据え置きとしている
+			// ※8.0以降はバックグラウンドでは動かない
 			startService(new Intent(this, StartupService.class));
 		} catch (UnsupportedOperationException e) {
 			// IsolatedContext
 		}
 	}
 
+	private void stopServices() {
+		stopService(new Intent(this, ServiceUnitStatusLogService.class));
+		stopService(new Intent(this, LogService.class));
+	}
 
 	private void showScheduleVehicleNotificationsFragment() {
 		if (destroyed
