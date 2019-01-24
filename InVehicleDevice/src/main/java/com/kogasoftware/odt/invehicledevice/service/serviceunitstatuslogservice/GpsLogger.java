@@ -1,53 +1,43 @@
 package com.kogasoftware.odt.invehicledevice.service.serviceunitstatuslogservice;
 
-import java.io.Closeable;
-import java.math.BigDecimal;
-
-import org.joda.time.DateTimeUtils;
-
-import android.Manifest;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.location.GpsSatellite;
-import android.location.GpsStatus;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.location.LocationProvider;
-import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
+import android.net.TrafficStats;
 import android.util.Log;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.common.annotations.VisibleForTesting;
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLog;
+
+import org.joda.time.DateTimeUtils;
+
+import java.io.Closeable;
+import java.math.BigDecimal;
 
 /**
  * GPSの状況をログ
  */
-public class GpsLogger
+public class GpsLogger extends LocationCallback
 		implements
 			Runnable,
-			LocationListener,
-			GpsStatus.Listener,
 			Closeable {
-	private static final Integer DEFAULT_MIN_TIME = 1000;
-	private static final Integer DEFAULT_MIN_DISTANCE = 1;
+	private static final Integer DEFAULT_MIN_TIME = 5000;
 	private static final Integer DEFAULT_RESTART_TIMEOUT = 90 * 1000;
 	private static final Integer DEFAULT_SLEEP_TIMEOUT = 20 * 1000;
 	public static final Integer BROADCAST_PERIOD_MILLIS = 5000;
 	private static final String TAG = GpsLogger.class.getSimpleName();
-	public static final Integer USED_SATELLITES_COUNT_FOR_UPDATE_LOCATION_TIME = 5;
 
-	private final Integer minTime = DEFAULT_MIN_TIME;
-	private final Integer minDistance = DEFAULT_MIN_DISTANCE;
 	private final Integer restartTimeout = DEFAULT_RESTART_TIMEOUT;
 	private final Integer sleepTimeout = DEFAULT_SLEEP_TIMEOUT;
 	private final ContentResolver contentResolver;
-	private final LocationManager locationManager;
+	private final FusedLocationProviderClient fusedLocationProviderClient;
 
-	private GpsStatus gpsStatus = null;
 	private Boolean started = false;
 	private Long startedTimeMillis = DateTimeUtils.currentTimeMillis();
 	private Long stoppedTimeMillis = DateTimeUtils.currentTimeMillis();
@@ -55,150 +45,69 @@ public class GpsLogger
 
 	public GpsLogger(Context context) {
 		this.contentResolver = context.getContentResolver();
-		this.locationManager = (LocationManager) context
-				.getSystemService(Context.LOCATION_SERVICE);
+		this.fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
 		start();
 	}
 
 	private void start() {
-		if (started) {
-			return;
-		}
-		if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-			Log.d(TAG,
-					"start(): failed by !locationManager.isProviderEnabled()");
-			return;
-		}
-
+		if (started) return;
 		try {
-			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-					minTime, minDistance, this);
-			locationManager.addGpsStatusListener(this);
-			started = true;
+			LocationRequest request = new LocationRequest();
+			request.setInterval(DEFAULT_MIN_TIME);
+			request.setFastestInterval(DEFAULT_MIN_TIME);
+			request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+			fusedLocationProviderClient.requestLocationUpdates(request,this, null);
 			startedTimeMillis = DateTimeUtils.currentTimeMillis();
+			started = true;
 		} catch (SecurityException e) {
 			Log.w(TAG, "ACCESS_FINE_LOCATION is not granted.");
 		}
 	}
 
 	private void stop() {
-		if (!started) {
-			return;
-		}
+		if (!started) return;
 		Log.d(TAG, "stop()");
-		locationManager.removeGpsStatusListener(this);
-		locationManager.removeUpdates(this);
+		fusedLocationProviderClient.removeLocationUpdates(this);
 		stoppedTimeMillis = DateTimeUtils.currentTimeMillis();
 		started = false;
 	}
 
 	@Override
+	public void onLocationResult(LocationResult locationResult) {
+		Log.d(TAG, "onLocationResult");
+	    super.onLocationResult(locationResult);
+	    lastLocationReceivedTimeMillis = DateTimeUtils.currentTimeMillis();
+	    update(locationResult.getLastLocation());
+	}
+
+	@Override
 	public void run() {
 		Long currentTimeMillis = DateTimeUtils.currentTimeMillis();
-		if (started) {
-			if (currentTimeMillis - lastLocationReceivedTimeMillis >= restartTimeout
-					&& currentTimeMillis - startedTimeMillis >= restartTimeout) {
-				stop();
-			}
-		} else {
-			if (currentTimeMillis - stoppedTimeMillis >= sleepTimeout) {
-				start();
-			}
-		}
+		if (to_stop_status(currentTimeMillis)) stop();
+		if (to_start_status(currentTimeMillis)) start();
 	}
 
-	@Override
-	public void onProviderDisabled(String provider) {
-		Log.d(TAG, "onProviderDisabled(\"" + provider + "\")");
+	private boolean to_stop_status(Long currentTimeMillis) {
+		return (started && currentTimeMillis - lastLocationReceivedTimeMillis >= restartTimeout
+						&& currentTimeMillis - startedTimeMillis >= restartTimeout);
 	}
 
-	@Override
-	public void onProviderEnabled(String provider) {
-		Log.d(TAG, "onProviderEnabled(\"" + provider + "\")");
-	}
-
-	@Override
-	public void onStatusChanged(String provider, int status, Bundle extras) {
-		String message = "onStatusChanged(\"" + provider + "\", ";
-		switch (status) {
-			case LocationProvider.OUT_OF_SERVICE :
-				message += "OUT_OF_SERVICE";
-				break;
-			case LocationProvider.AVAILABLE :
-				message += "AVAILABLE";
-				break;
-			case LocationProvider.TEMPORARILY_UNAVAILABLE :
-				message += "TEMPORARILY_UNAVAILABLE";
-				break;
-			default :
-				message += "unknown:" + status;
-				break;
-		}
-		Log.d(TAG, message + ", " + extras + ")");
-	}
-
-	@Override
-	public void onLocationChanged(Location location) {
-		Log.d(TAG, "onLocationChanged() provider=" + location.getProvider()
-				+ " hasAccuracy=" + location.hasAccuracy() + " accuracy="
-				+ location.getAccuracy());
-		lastLocationReceivedTimeMillis = DateTimeUtils.currentTimeMillis();
-		update(location);
-	}
-
-	@Override
-	public void onGpsStatusChanged(int event) {
-		switch (event) {
-			case GpsStatus.GPS_EVENT_STARTED :
-				Log.d(TAG, "onGpsStatusChanged(STARTED)");
-				break;
-			case GpsStatus.GPS_EVENT_STOPPED :
-				Log.d(TAG, "onGpsStatusChanged(STOPPED)");
-				break;
-			case GpsStatus.GPS_EVENT_FIRST_FIX :
-				Log.d(TAG, "onGpsStatusChanged(FIRST_FIX)");
-				break;
-			case GpsStatus.GPS_EVENT_SATELLITE_STATUS :
-				// Log.d(TAG, "onGpsStatusChanged(SATELLITE_STATUS)");
-				break;
-			default :
-				Log.d(TAG, "onGpsStatusChanged(unknown:" + event + ")");
-				break;
-		}
-		gpsStatus = locationManager.getGpsStatus(gpsStatus); // onGpsStatusChanged()以外で呼ばないように注意する
-		Integer satellitesCount = 0;
-		Integer usedSatellitesCount = 0;
-		for (GpsSatellite satellite : gpsStatus.getSatellites()) {
-			satellitesCount++;
-			if (satellite.usedInFix()) {
-				usedSatellitesCount++;
-			}
-		}
-		onSatellitesCountChanged(satellitesCount, usedSatellitesCount);
-	}
-
-	public void onSatellitesCountChanged(Integer satellitesCount,
-			Integer usedInFixSatellitesCount) {
-		if (usedInFixSatellitesCount >= USED_SATELLITES_COUNT_FOR_UPDATE_LOCATION_TIME) {
-			lastLocationReceivedTimeMillis = DateTimeUtils.currentTimeMillis();
-		}
-		Log.d(TAG, String.format("onSatellitesCountChanged(%d/%d)",
-				usedInFixSatellitesCount, satellitesCount));
+	private boolean to_start_status(Long currentTimeMillis) {
+		return !started && currentTimeMillis - stoppedTimeMillis >= sleepTimeout;
 	}
 
 	private void update(Location location) {
 		final ContentValues values = new ContentValues();
-		String latitude = new BigDecimal(location.getLatitude())
-				.toPlainString();
-		String longitude = new BigDecimal(location.getLongitude())
-				.toPlainString();
+		String latitude = new BigDecimal(location.getLatitude()).toPlainString();
+		String longitude = new BigDecimal(location.getLongitude()).toPlainString();
 		values.put(ServiceUnitStatusLog.Columns.LATITUDE, latitude);
 		values.put(ServiceUnitStatusLog.Columns.LONGITUDE, longitude);
 		new Thread() {
 			@Override
 			public void run() {
-				contentResolver.update(ServiceUnitStatusLog.CONTENT.URI,
-						values, null, null);
+				//TODO: 大量エラーが発生するための処置。何のためにやっているか不明なので調べること
+			    TrafficStats.setThreadStatsTag(1000);
+				contentResolver.update(ServiceUnitStatusLog.CONTENT.URI, values, null, null);
 			}
 		}.start();
 	}
