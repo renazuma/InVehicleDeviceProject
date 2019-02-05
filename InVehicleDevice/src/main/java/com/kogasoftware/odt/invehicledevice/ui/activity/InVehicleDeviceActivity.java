@@ -6,6 +6,8 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
+// TODO: app.Fragmentにはバグ有りという情報がある。support.v4のFragmentに差し替えたい
+//import android.support.v4.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.LoaderManager;
@@ -43,29 +45,31 @@ import com.kogasoftware.odt.invehicledevice.utils.Fragments;
 
 import java.util.List;
 
+//import android.app.Fragment;
+
 /**
  * 全体の大枠。サインイン前はSignInFragmentを表示し、サインイン後は、自治体に依存して「運行予定一覧画面」か「順番に運行を進める画面」を表示する
  */
 public class InVehicleDeviceActivity extends Activity {
+
+    // 通知遅延秒数
 	public static final Integer VEHICLE_NOTIFICATION_ALERT_DELAY_MILLIS = 5000;
+
+	// LOADERのID
 	private static final Integer IN_VEHICLE_DEVICE_LOADER_ID = 1;
 	private static final Integer SERVICE_PROVIDER_LOADER_ID = 2;
 	private static final Integer NORMAL_VEHICLE_NOTIFICATION_LOADER_ID = 3;
 	private static final Integer SCHEDULE_VEHICLE_NOTIFICATION_LOADER_ID = 4;
-	private static final String SCHEDULE_VEHICLE_NOTIFICATION_FRAGMENT_TAG = InVehicleDeviceActivity.class
-			+ "/" + ScheduleVehicleNotificationFragment.class;
-	private static final String SIGN_IN_FRAGMENT_TAG = InVehicleDeviceActivity.class
-			+ "/" + SignInFragment.class;
-	private static final String ORDERED_OPERATION_FRAGMENT_TAG = InVehicleDeviceActivity.class
-			+ "/" + OrderedOperationFragment.class;
-	private static final String VEHICLE_NOTIFICATION_FRAGMENT_TAG = InVehicleDeviceActivity.class
-			+ "/" + NormalVehicleNotificationFragment.class + "/%d";
-	public static final String OPERATION_LIST_FRAGMENT_TAG = InVehicleDeviceActivity.class
-			+ "/" + OperationListFragment.class;
-	private static final String VEHICLE_NOTIFICATION_ALERT_FRAGMENT_TAG = InVehicleDeviceActivity.class
-			+ "/" + VehicleNotificationAlertFragment.class;
-	private static final String AIRPLANE_MODE_ALERT_DIALOG_FRAGMENT_TAG = InVehicleDeviceActivity.class
-			+ "/" + AirplaneModeAlertDialogFragment.class;
+
+	// 各FragmentのTAG（各フラグメントのクラスで管理するべきでは？）
+	private static final String TAG_BASE = InVehicleDeviceActivity.class + "/";
+	private static final String SCHEDULE_VEHICLE_NOTIFICATION_FRAGMENT_TAG = TAG_BASE + ScheduleVehicleNotificationFragment.class;
+	private static final String SIGN_IN_FRAGMENT_TAG = TAG_BASE + SignInFragment.class;
+	private static final String ORDERED_OPERATION_FRAGMENT_TAG = TAG_BASE + OrderedOperationFragment.class;
+	private static final String VEHICLE_NOTIFICATION_FRAGMENT_TAG = TAG_BASE + NormalVehicleNotificationFragment.class + "/%d";
+	public static final String OPERATION_LIST_FRAGMENT_TAG = TAG_BASE + OperationListFragment.class;
+	private static final String VEHICLE_NOTIFICATION_ALERT_FRAGMENT_TAG = TAG_BASE + VehicleNotificationAlertFragment.class;
+	private static final String AIRPLANE_MODE_ALERT_DIALOG_FRAGMENT_TAG = TAG_BASE + AirplaneModeAlertDialogFragment.class;
 
 	// 権限の許可が必要なパーミッション
 	private static final String[] MUST_GRANT_PERMISSIONS = new String[]{
@@ -79,10 +83,8 @@ public class InVehicleDeviceActivity extends Activity {
 		public Dialog onCreateDialog(Bundle savedInstanceState) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 			builder.setIcon(android.R.drawable.ic_dialog_info);
-			builder.setMessage(Html
-					.fromHtml("<big><big>機内モードをOFFにしてください</big></big>"));
-			builder.setPositiveButton(
-					Html.fromHtml("<big><big>確認</big></big>"), null);
+			builder.setMessage(Html.fromHtml("<big><big>機内モードをOFFにしてください</big></big>"));
+			builder.setPositiveButton(Html.fromHtml("<big><big>確認</big></big>"), null);
 			return builder.create();
 		}
 	}
@@ -97,9 +99,7 @@ public class InVehicleDeviceActivity extends Activity {
 		public void onReceive(Context context, Intent intent) {
 			handler.post(new Runnable() {
 				@Override
-				public void run() {
-					showLoginFragment();
-				}
+				public void run() { showLoginFragment(); }
 			});
 		}
 	};
@@ -109,14 +109,12 @@ public class InVehicleDeviceActivity extends Activity {
 		public void onReceive(Context context, Intent intent) {
 			handler.post(new Runnable() {
 				@Override
-				public void run() {
-					showAirplaneModeAlertDialogFragment();
-				}
+				public void run() { showAirplaneModeAlertDialogFragment(); }
 			});
 		}
 	};
 
-	private final LoaderCallbacks<Cursor> normalVehicleNotificationLoaderCallbacks = new LoaderCallbacks<Cursor>() {
+	private final LoaderCallbacks<Cursor> adminNotificationLoaderCallbacks = new LoaderCallbacks<Cursor>() {
 		@Override
 		public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 			return new CursorLoader(
@@ -130,22 +128,18 @@ public class InVehicleDeviceActivity extends Activity {
 
 		@Override
 		public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-			if (data.getCount() == 0) {
-				return;
-			}
-			final List<VehicleNotification> vehicleNotifications = VehicleNotification
-					.getAll(data);
+			if (data.getCount() == 0) { return; }
+
 			handler.post(new Runnable() {
 				@Override
-				public void run() {
-					showVehicleNotificationAlertFragment("管理者から連絡があります");
-				}
+				public void run() {	showNotificationAlertFragment(); }
 			});
+
+			// finalをした変数じゃないとpostDelayed内で使用出来ないので、先に作成している
+			final List<VehicleNotification> vehicleNotifications = VehicleNotification.getAll(data);
 			handler.postDelayed(new Runnable() {
 				@Override
-				public void run() {
-					showNormalVehicleNotificationsFragment(vehicleNotifications);
-				}
+				public void run() {	showAdminNotificationsFragment(vehicleNotifications); }
 			}, VEHICLE_NOTIFICATION_ALERT_DELAY_MILLIS);
 		}
 
@@ -154,7 +148,7 @@ public class InVehicleDeviceActivity extends Activity {
 		}
 	};
 
-	private final LoaderCallbacks<Cursor> scheduleVehicleNotificationLoaderCallbacks = new LoaderCallbacks<Cursor>() {
+	private final LoaderCallbacks<Cursor> scheduleNotificationLoaderCallbacks = new LoaderCallbacks<Cursor>() {
 		@Override
 		public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 			return new CursorLoader(
@@ -167,20 +161,16 @@ public class InVehicleDeviceActivity extends Activity {
 
 		@Override
 		public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-			if (cursor.getCount() == 0) {
-				return;
-			}
+			if (cursor.getCount() == 0) { return; }
+
 			handler.post(new Runnable() {
 				@Override
-				public void run() {
-					showVehicleNotificationAlertFragment("運行予定が変更されました");
-				}
+				public void run() {	showNotificationAlertFragment(); }
 			});
+
 			handler.postDelayed(new Runnable() {
 				@Override
-				public void run() {
-					showScheduleVehicleNotificationsFragment();
-				}
+				public void run() {	showScheduleNotificationsFragment(); }
 			}, VEHICLE_NOTIFICATION_ALERT_DELAY_MILLIS);
 		}
 
@@ -198,14 +188,10 @@ public class InVehicleDeviceActivity extends Activity {
 
 		@Override
 		public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-			if (data.moveToFirst()) {
-				return;
-			}
+			if (data.moveToFirst()) { return; }
 			handler.post(new Runnable() {
 				@Override
-				public void run() {
-					showLoginFragment();
-				}
+				public void run() {	showLoginFragment(); }
 			});
 		}
 
@@ -225,27 +211,19 @@ public class InVehicleDeviceActivity extends Activity {
 		public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 			Runnable showOperationListFragmentTask = new Runnable() {
 				@Override
-				public void run() {
-					showOperationListFragment();
-				}
+				public void run() {	showOperationListFragment(); }
 			};
 			Runnable hideOperationListFragmentTask = new Runnable() {
 				@Override
-				public void run() {
-					hideOperationListFragment();
-				}
+				public void run() { hideOperationListFragment(); }
 			};
 			Runnable showOrderedOperationFragmentTask = new Runnable() {
 				@Override
-				public void run() {
-					showOrderedOperationFragment();
-				}
+				public void run() {	showOrderedOperationFragment();	}
 			};
 			Runnable hideOrderedOperationFragmentTask = new Runnable() {
 				@Override
-				public void run() {
-					hideOrderedOperationFragment();
-				}
+				public void run() {	hideOrderedOperationFragment();	}
 			};
 			if (cursor.moveToFirst()) {
 				serviceProvider = new ServiceProvider(cursor);
@@ -267,14 +245,9 @@ public class InVehicleDeviceActivity extends Activity {
 	};
 
 	private void showOperationListFragment() {
-		if (destroyed) {
-			return;
-		}
-		if (getFragmentManager().findFragmentByTag(OPERATION_LIST_FRAGMENT_TAG) != null) {
-			return;
-		}
-		FragmentTransaction fragmentTransaction = getFragmentManager()
-				.beginTransaction();
+		if (destroyed) { return; }
+		if (getFragmentManager().findFragmentByTag(OPERATION_LIST_FRAGMENT_TAG) != null) { return; }
+		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
 		fragmentTransaction.add(R.id.modal_fragment_container,
 				OperationListFragment.newInstance(false),
 				OPERATION_LIST_FRAGMENT_TAG);
@@ -282,30 +255,18 @@ public class InVehicleDeviceActivity extends Activity {
 	}
 
 	private void hideOperationListFragment() {
-		if (destroyed) {
-			return;
-		}
-		Fragment fragment = getFragmentManager().findFragmentByTag(
-				OPERATION_LIST_FRAGMENT_TAG);
-		if (fragment == null) {
-			return;
-		}
-		FragmentTransaction fragmentTransaction = getFragmentManager()
-				.beginTransaction();
+		if (destroyed) { return; }
+		Fragment fragment = getFragmentManager().findFragmentByTag(OPERATION_LIST_FRAGMENT_TAG);
+		if (fragment == null) { return; }
+		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
 		fragmentTransaction.remove(fragment);
 		fragmentTransaction.commitAllowingStateLoss();
 	}
 
 	private void showOrderedOperationFragment() {
-		if (destroyed) {
-			return;
-		}
-		if (getFragmentManager().findFragmentByTag(
-				ORDERED_OPERATION_FRAGMENT_TAG) != null) {
-			return;
-		}
-		FragmentTransaction fragmentTransaction = getFragmentManager()
-				.beginTransaction();
+		if (destroyed) { return; }
+		if (getFragmentManager().findFragmentByTag(ORDERED_OPERATION_FRAGMENT_TAG) != null) { return; }
+		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
 		fragmentTransaction.add(R.id.modal_fragment_container,
 				OrderedOperationFragment.newInstance(),
 				ORDERED_OPERATION_FRAGMENT_TAG);
@@ -313,45 +274,30 @@ public class InVehicleDeviceActivity extends Activity {
 	}
 
 	private void hideOrderedOperationFragment() {
-		if (destroyed) {
-			return;
-		}
-		Fragment fragment = getFragmentManager().findFragmentByTag(
-				ORDERED_OPERATION_FRAGMENT_TAG);
-		if (fragment == null) {
-			return;
-		}
-		FragmentTransaction fragmentTransaction = getFragmentManager()
-				.beginTransaction();
+		if (destroyed) { return; }
+		Fragment fragment = getFragmentManager().findFragmentByTag(ORDERED_OPERATION_FRAGMENT_TAG);
+		if (fragment == null) { return; }
+		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
 		fragmentTransaction.remove(fragment);
 		fragmentTransaction.commitAllowingStateLoss();
 	}
 
 	public void showLoginFragment() {
-		if (destroyed) {
-			return;
-		}
-		if (getFragmentManager().findFragmentByTag(SIGN_IN_FRAGMENT_TAG) != null) {
-			return;
-		}
-		Fragments.showModalFragment(getFragmentManager(),
-				SignInFragment.newInstance(), SIGN_IN_FRAGMENT_TAG);
+		if (destroyed) { return; }
+		if (getFragmentManager().findFragmentByTag(SIGN_IN_FRAGMENT_TAG) != null) { return; }
+		Fragments.showModalFragment(getFragmentManager(), SignInFragment.newInstance(), SIGN_IN_FRAGMENT_TAG);
 	}
 
-	private void showNormalVehicleNotificationsFragment(
+	private void showAdminNotificationsFragment(
 			List<VehicleNotification> VehicleNotifications) {
-		if (destroyed) {
-			return;
-		}
+		if (destroyed) { return; }
 		for (final VehicleNotification vehicleNotification : VehicleNotifications) {
-			final String tag = String.format(VEHICLE_NOTIFICATION_FRAGMENT_TAG,
-					vehicleNotification.id);
-			if (getFragmentManager().findFragmentByTag(tag) != null) {
-				return;
-			}
-			Fragments.showModalFragment(getFragmentManager(),
-					NormalVehicleNotificationFragment
-							.newInstance(vehicleNotification), tag);
+			final String tag = String.format(VEHICLE_NOTIFICATION_FRAGMENT_TAG,	vehicleNotification.id);
+			if (getFragmentManager().findFragmentByTag(tag) != null) { return; }
+			Fragments.showModalFragment(
+							getFragmentManager(),
+							NormalVehicleNotificationFragment.newInstance(vehicleNotification),
+							tag);
 		}
 	}
 
@@ -363,21 +309,19 @@ public class InVehicleDeviceActivity extends Activity {
 		requestPermission(); // GPS, SD カードへの書き込み権限の許可
 
 		startServices();
+
 		handler = new Handler();
+
 		setContentView(R.layout.in_vehicle_device_activity);
+
+		registerReceiver(signInErrorReceiver, new IntentFilter(SignInErrorBroadcastIntent.ACTION));
+		registerReceiver(airplaneModeOnReceiver, new IntentFilter(AirplaneModeOnBroadcastIntent.ACTION));
+
 		loaderManager = getLoaderManager();
-		registerReceiver(signInErrorReceiver, new IntentFilter(
-				SignInErrorBroadcastIntent.ACTION));
-		registerReceiver(airplaneModeOnReceiver, new IntentFilter(
-				AirplaneModeOnBroadcastIntent.ACTION));
-		loaderManager.initLoader(IN_VEHICLE_DEVICE_LOADER_ID, null,
-				inVehicleDeviceLoaderCallbacks);
-		loaderManager.initLoader(SERVICE_PROVIDER_LOADER_ID, null,
-				serviceProviderLoaderCallbacks);
-		loaderManager.initLoader(NORMAL_VEHICLE_NOTIFICATION_LOADER_ID, null,
-				normalVehicleNotificationLoaderCallbacks);
-		loaderManager.initLoader(SCHEDULE_VEHICLE_NOTIFICATION_LOADER_ID, null,
-				scheduleVehicleNotificationLoaderCallbacks);
+		loaderManager.initLoader(IN_VEHICLE_DEVICE_LOADER_ID, null, inVehicleDeviceLoaderCallbacks);
+		loaderManager.initLoader(SERVICE_PROVIDER_LOADER_ID, null, serviceProviderLoaderCallbacks);
+		loaderManager.initLoader(NORMAL_VEHICLE_NOTIFICATION_LOADER_ID, null, adminNotificationLoaderCallbacks);
+		loaderManager.initLoader(SCHEDULE_VEHICLE_NOTIFICATION_LOADER_ID, null, scheduleNotificationLoaderCallbacks);
 	}
 
 	@Override
@@ -425,24 +369,23 @@ public class InVehicleDeviceActivity extends Activity {
 		stopService(new Intent(this, LogService.class));
 	}
 
-	private void showScheduleVehicleNotificationsFragment() {
+	private void showScheduleNotificationsFragment() {
 		if (destroyed
 				|| serviceProvider == null
 				|| getFragmentManager().findFragmentByTag(
-				SCHEDULE_VEHICLE_NOTIFICATION_FRAGMENT_TAG) != null) {
+								SCHEDULE_VEHICLE_NOTIFICATION_FRAGMENT_TAG) != null) {
 			return;
 		}
 		Fragments.showModalFragment(getFragmentManager(),
-				ScheduleVehicleNotificationFragment
-						.newInstance(!serviceProvider.operationListOnly),
+				ScheduleVehicleNotificationFragment.newInstance(!serviceProvider.operationListOnly),
 				SCHEDULE_VEHICLE_NOTIFICATION_FRAGMENT_TAG);
 	}
 
-	private void showVehicleNotificationAlertFragment(String message) {
+	private void showNotificationAlertFragment() {
 		if (destroyed
 				|| serviceProvider == null
 				|| getFragmentManager().findFragmentByTag(
-				VEHICLE_NOTIFICATION_ALERT_FRAGMENT_TAG) != null) {
+								VEHICLE_NOTIFICATION_ALERT_FRAGMENT_TAG) != null) {
 			return;
 		}
 		Fragments.showModalFragment(getFragmentManager(),
@@ -451,12 +394,9 @@ public class InVehicleDeviceActivity extends Activity {
 	}
 
 	private void showAirplaneModeAlertDialogFragment() {
-		if (destroyed) {
-			return;
-		}
+		if (destroyed) { return; }
 		FragmentManager fragmentManager = getFragmentManager();
-		if (fragmentManager
-				.findFragmentByTag(AIRPLANE_MODE_ALERT_DIALOG_FRAGMENT_TAG) == null) {
+		if (fragmentManager.findFragmentByTag(AIRPLANE_MODE_ALERT_DIALOG_FRAGMENT_TAG) == null) {
 			AirplaneModeAlertDialogFragment airplaneModeAlertDialogFragment = new AirplaneModeAlertDialogFragment();
 			airplaneModeAlertDialogFragment.show(fragmentManager,
 					AIRPLANE_MODE_ALERT_DIALOG_FRAGMENT_TAG);
