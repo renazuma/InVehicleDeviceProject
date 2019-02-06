@@ -44,7 +44,7 @@ import java.util.List;
  */
 public class InVehicleDeviceActivity extends Activity {
 
-  // 通知遅延秒数
+  // 通知表示遅延秒数
   public static final Integer VEHICLE_NOTIFICATION_ALERT_DELAY_MILLIS = 5000;
 
   // Activityで一意になる、Fragment用のTAG
@@ -65,25 +65,14 @@ public class InVehicleDeviceActivity extends Activity {
           Manifest.permission.READ_PHONE_STATE
   };
 
-  public static class AirplaneModeAlertDialogFragment extends DialogFragment {
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-      AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-      builder.setIcon(android.R.drawable.ic_dialog_info);
-      builder.setMessage(Html.fromHtml("<big><big>機内モードをOFFにしてください</big></big>"));
-      builder.setPositiveButton(Html.fromHtml("<big><big>確認</big></big>"), null);
-      return builder.create();
-    }
-  }
-
-  // LoaderManagerはActivityに一つなので、ここで管理する
-  private LoaderManager loaderManager;
+  // インスタンス変数
   private Boolean destroyed = true;
-  // Handlerはメインスレッドでインスタンス化して持つ必要があるため、ここで管理する
-  private Handler handler;
   private ServiceProvider serviceProvider;
+  private LoaderManager loaderManager; // LoaderManagerはActivityに一つなので、ここで管理する
+  private Handler handler; // Handlerはメインスレッドでインスタンス化して持つ必要があるため、ここで管理する
   private LoaderFacade loaderFacade;
 
+  // setter/getter
   // TODO: 以下、setter/getterを使わずに上手く連携する方法(contextから取得等）があれば、そうしたい。
   public LoaderManager getActivityLoaderManager() {
     return loaderManager;
@@ -97,30 +86,17 @@ public class InVehicleDeviceActivity extends Activity {
     return handler;
   }
 
+
+  // Activityのcallback
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    destroyed = false;
     super.onCreate(savedInstanceState);
-
-    // GPS, SD カードへの書き込み権限の許可
-    requestPermission();
-
-    // サービス開始
-    startServices();
-
-    // 共通インスタンスの作成
-    handler = new Handler();
-    loaderManager = getLoaderManager();
-    loaderFacade = new LoaderFacade(this);
-
-    // 表示開始
+    destroyed = false;
+    requestPermissions();
+    startServiceComponents();
+    init_activity_instances();
     setContentView(R.layout.in_vehicle_device_activity);
-
-    // BroadcastReceiver作成
-    registerReceiver(signInErrorReceiver, new IntentFilter(SignInErrorBroadcastIntent.ACTION));
-    registerReceiver(airplaneModeOnReceiver, new IntentFilter(AirplaneModeOnBroadcastIntent.ACTION));
-
-    // データ連携開始
+    registerReceiverComponents();
     loaderFacade.initLoaders();
   }
 
@@ -128,9 +104,8 @@ public class InVehicleDeviceActivity extends Activity {
   protected void onDestroy() {
     super.onDestroy();
     loaderFacade.destroyLoaders();
-    unregisterReceiver(signInErrorReceiver);
-    unregisterReceiver(airplaneModeOnReceiver);
-    stopServices();
+    unregisterReceiverComponents();
+    stopServiceComponents();
     destroyed = true;
   }
 
@@ -144,13 +119,27 @@ public class InVehicleDeviceActivity extends Activity {
     super.onStop();
   }
 
-  private void requestPermission() {
-    if (!this.checkAllPermissoinsGranted()) {
+
+  // fragment表示メソッド、その他privateメソッド
+  // TODO: Fragment表示用のメソッドは、Activityクラスに置かず、各Fragmentクラス等に分けた方が良い？
+  public static class AirplaneModeAlertDialogFragment extends DialogFragment {
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+      AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+      builder.setIcon(android.R.drawable.ic_dialog_info);
+      builder.setMessage(Html.fromHtml("<big><big>機内モードをOFFにしてください</big></big>"));
+      builder.setPositiveButton(Html.fromHtml("<big><big>確認</big></big>"), null);
+      return builder.create();
+    }
+  }
+
+  private void requestPermissions() {
+    if (!this.isGrantedPermissions()) {
       ActivityCompat.requestPermissions(this, MUST_GRANT_PERMISSIONS, 1000);
     }
   }
 
-  private boolean checkAllPermissoinsGranted() {
+  private boolean isGrantedPermissions() {
     for (String permission : MUST_GRANT_PERMISSIONS) {
       if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
         return false;
@@ -159,7 +148,7 @@ public class InVehicleDeviceActivity extends Activity {
     return true;
   }
 
-  private void startServices() {
+  private void startServiceComponents() {
     try {
       ContextCompat.startForegroundService(this, new Intent(this, ServiceUnitStatusLogService.class));
       ContextCompat.startForegroundService(this, new Intent(this, LogService.class));
@@ -171,9 +160,20 @@ public class InVehicleDeviceActivity extends Activity {
     }
   }
 
-  private void stopServices() {
+  private void stopServiceComponents() {
     stopService(new Intent(this, ServiceUnitStatusLogService.class));
     stopService(new Intent(this, LogService.class));
+  }
+
+  private void init_activity_instances() {
+    handler = new Handler();
+    loaderManager = getLoaderManager();
+    loaderFacade = new LoaderFacade(this);
+  }
+
+  private void registerReceiverComponents() {
+    registerReceiver(signInErrorReceiver, new IntentFilter(SignInErrorBroadcastIntent.ACTION));
+    registerReceiver(airplaneModeOnReceiver, new IntentFilter(AirplaneModeOnBroadcastIntent.ACTION));
   }
 
   private final BroadcastReceiver signInErrorReceiver = new BroadcastReceiver() {
@@ -196,17 +196,24 @@ public class InVehicleDeviceActivity extends Activity {
     }
   };
 
-  public void showLoginFragment() {
+  private void unregisterReceiverComponents() {
+    unregisterReceiver(signInErrorReceiver);
+    unregisterReceiver(airplaneModeOnReceiver);
+  }
 
+  public void showLoginFragment() {
     if (destroyed) { return; }
 
     if (getFragmentManager().findFragmentByTag(SIGN_IN_FRAGMENT_TAG) != null) { return; }
+
     Fragments.showModalFragment(getFragmentManager(), SignInFragment.newInstance(), SIGN_IN_FRAGMENT_TAG);
   }
 
   private void showAirplaneModeAlertDialogFragment() {
     if (destroyed) { return; }
+
     FragmentManager fragmentManager = getFragmentManager();
+
     if (fragmentManager.findFragmentByTag(AIRPLANE_MODE_ALERT_DIALOG_FRAGMENT_TAG) == null) {
       AirplaneModeAlertDialogFragment airplaneModeAlertDialogFragment = new AirplaneModeAlertDialogFragment();
       airplaneModeAlertDialogFragment.show(fragmentManager,
@@ -231,7 +238,9 @@ public class InVehicleDeviceActivity extends Activity {
 
     for (final VehicleNotification vehicleNotification : VehicleNotifications) {
       final String tag = String.format(VEHICLE_NOTIFICATION_FRAGMENT_TAG, vehicleNotification.id);
+
       if (getFragmentManager().findFragmentByTag(tag) != null) { return; }
+
       Fragments.showModalFragment(
               getFragmentManager(),
               NormalVehicleNotificationFragment.newInstance(vehicleNotification),
@@ -296,6 +305,7 @@ public class InVehicleDeviceActivity extends Activity {
     Fragment fragment = getFragmentManager().findFragmentByTag(ORDERED_OPERATION_FRAGMENT_TAG);
 
     if (fragment == null) { return; }
+
     FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
     fragmentTransaction.remove(fragment);
     fragmentTransaction.commitAllowingStateLoss();
