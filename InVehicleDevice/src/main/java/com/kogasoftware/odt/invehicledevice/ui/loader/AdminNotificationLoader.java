@@ -53,14 +53,14 @@ public class AdminNotificationLoader {
 
       inVehicleDeviceActivity.getActivityHandler().post(new Runnable() {
         @Override
-        public void run() {	inVehicleDeviceActivity.showNotificationAlertFragment(); }
+        public void run() { inVehicleDeviceActivity.showNotificationAlertFragment(); }
       });
 
       // finalをした変数じゃないとpostDelayed内で使用出来ないので、先に作成している
       final List<VehicleNotification> vehicleNotifications = VehicleNotification.getAll(data);
       inVehicleDeviceActivity.getActivityHandler().postDelayed(new Runnable() {
         @Override
-        public void run() {	inVehicleDeviceActivity.showAdminNotificationsFragment(vehicleNotifications); }
+        public void run() { inVehicleDeviceActivity.showAdminNotificationsFragment(vehicleNotifications); }
       }, inVehicleDeviceActivity.VEHICLE_NOTIFICATION_ALERT_DELAY_MILLIS);
     }
 

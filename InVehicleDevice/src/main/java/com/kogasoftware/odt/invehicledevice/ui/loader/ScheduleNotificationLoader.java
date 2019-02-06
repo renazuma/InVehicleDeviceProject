@@ -50,12 +50,12 @@ public class ScheduleNotificationLoader {
 
       inVehicleDeviceActivity.getActivityHandler().post(new Runnable() {
         @Override
-        public void run() {	inVehicleDeviceActivity.showNotificationAlertFragment(); }
+        public void run() { inVehicleDeviceActivity.showNotificationAlertFragment(); }
       });
 
       inVehicleDeviceActivity.getActivityHandler().postDelayed(new Runnable() {
         @Override
-        public void run() {	inVehicleDeviceActivity.showScheduleNotificationsFragment(); }
+        public void run() { inVehicleDeviceActivity.showScheduleNotificationsFragment(); }
       }, inVehicleDeviceActivity.VEHICLE_NOTIFICATION_ALERT_DELAY_MILLIS);
     }
 

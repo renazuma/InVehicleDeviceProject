@@ -46,7 +46,7 @@ public class InVehicleDeviceLoader {
 
       inVehicleDeviceActivity.getActivityHandler().post(new Runnable() {
         @Override
-        public void run() {	inVehicleDeviceActivity.showLoginFragment(); }
+        public void run() { inVehicleDeviceActivity.showLoginFragment(); }
       });
     }
 

@@ -44,7 +44,7 @@ public class ServiceProviderLoader {
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
       Runnable showOperationListFragmentTask = new Runnable() {
         @Override
-        public void run() {	inVehicleDeviceActivity.showOperationListFragment(); }
+        public void run() { inVehicleDeviceActivity.showOperationListFragment(); }
       };
       Runnable hideOperationListFragmentTask = new Runnable() {
         @Override
@@ -52,11 +52,11 @@ public class ServiceProviderLoader {
       };
       Runnable showOrderedOperationFragmentTask = new Runnable() {
         @Override
-        public void run() {	inVehicleDeviceActivity.showOrderedOperationFragment();	}
+        public void run() { inVehicleDeviceActivity.showOrderedOperationFragment(); }
       };
       Runnable hideOrderedOperationFragmentTask = new Runnable() {
         @Override
-        public void run() {	inVehicleDeviceActivity.hideOrderedOperationFragment();	}
+        public void run() { inVehicleDeviceActivity.hideOrderedOperationFragment(); }
       };
 
       if (cursor.moveToFirst()) {
