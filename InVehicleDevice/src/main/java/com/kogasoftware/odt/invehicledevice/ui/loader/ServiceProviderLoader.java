@@ -5,12 +5,14 @@ import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceProvider;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
 /**
- * ServiceProviderの同期用Loaderを操作するクラス
+ * ServiceProvider情報を購読し、オペレーション画面を操作するLoaderを操作するクラス
  */
 
 public class ServiceProviderLoader {
@@ -26,11 +28,11 @@ public class ServiceProviderLoader {
   }
 
   public void initLoader() {
-    inVehicleDeviceActivity.getActivityLoaderManager().initLoader(LOADER_ID, null, callbacks);
+    inVehicleDeviceActivity.getLoaderManager().initLoader(LOADER_ID, null, callbacks);
   }
 
   public void destroyLoader() {
-    inVehicleDeviceActivity.getActivityLoaderManager().destroyLoader(LOADER_ID);
+    inVehicleDeviceActivity.getLoaderManager().destroyLoader(LOADER_ID);
   }
 
   private final LoaderManager.LoaderCallbacks<Cursor> callbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
@@ -59,18 +61,20 @@ public class ServiceProviderLoader {
         public void run() { inVehicleDeviceActivity.hideOrderedOperationFragment(); }
       };
 
+      Handler mainUIHandler = new Handler(Looper.getMainLooper());
+
       if (cursor.moveToFirst()) {
         ServiceProvider serviceProvider = new ServiceProvider(cursor);
         inVehicleDeviceActivity.setServiceProvider(serviceProvider);
         if (serviceProvider.operationListOnly) {
-          inVehicleDeviceActivity.getActivityHandler().post(showOperationListFragmentTask);
+          mainUIHandler.post(showOperationListFragmentTask);
         } else {
-          inVehicleDeviceActivity.getActivityHandler().post(showOrderedOperationFragmentTask);
+          mainUIHandler.post(showOrderedOperationFragmentTask);
         }
       } else {
         inVehicleDeviceActivity.setServiceProvider(null);
-        inVehicleDeviceActivity.getActivityHandler().post(hideOrderedOperationFragmentTask);
-        inVehicleDeviceActivity.getActivityHandler().post(hideOperationListFragmentTask);
+        mainUIHandler.post(hideOrderedOperationFragmentTask);
+        mainUIHandler.post(hideOperationListFragmentTask);
       }
     }
 

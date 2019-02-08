@@ -8,7 +8,6 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.app.LoaderManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +15,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
@@ -68,24 +68,32 @@ public class InVehicleDeviceActivity extends Activity {
   // インスタンス変数
   private Boolean destroyed = true;
   private ServiceProvider serviceProvider;
-  private LoaderManager loaderManager; // LoaderManagerはActivityに一つなので、ここで管理する
-  private Handler handler; // Handlerはメインスレッドでインスタンス化して持つ必要があるため、ここで管理する
   private LoaderFacade loaderFacade;
 
-  // setter/getter
-  // TODO: 以下、setter/getterを使わずに上手く連携する方法(contextから取得等）があれば、そうしたい。
-  public LoaderManager getActivityLoaderManager() {
-    return loaderManager;
-  }
+  // BroadcastReceiverの定義
+  private final BroadcastReceiver signInErrorReceiver = new BroadcastReceiver() {
+    @Override
+    public void onReceive(Context context, Intent intent) {
+      new Handler(Looper.getMainLooper()).post(new Runnable() {
+        @Override
+        public void run() { showLoginFragment(); }
+      });
+    }
+  };
+
+  private final BroadcastReceiver airplaneModeOnReceiver = new BroadcastReceiver() {
+    @Override
+    public void onReceive(Context context, Intent intent) {
+      new Handler(Looper.getMainLooper()).post(new Runnable() {
+        @Override
+        public void run() { showAirplaneModeAlertDialogFragment(); }
+      });
+    }
+  };
 
   public void setServiceProvider(ServiceProvider serviceProvider) {
     this.serviceProvider = serviceProvider;
   }
-
-  public Handler getActivityHandler() {
-    return handler;
-  }
-
 
   // Activityのcallback
   @Override
@@ -166,8 +174,8 @@ public class InVehicleDeviceActivity extends Activity {
   }
 
   private void init_activity_instances() {
-    handler = new Handler();
-    loaderManager = getLoaderManager();
+    // Loaderを使用するためには、onStartより前の時点で、一度getLoaderManagerを実行しておく必要がある。
+    getLoaderManager();
     loaderFacade = new LoaderFacade(this);
   }
 
@@ -176,25 +184,6 @@ public class InVehicleDeviceActivity extends Activity {
     registerReceiver(airplaneModeOnReceiver, new IntentFilter(AirplaneModeOnBroadcastIntent.ACTION));
   }
 
-  private final BroadcastReceiver signInErrorReceiver = new BroadcastReceiver() {
-    @Override
-    public void onReceive(Context context, Intent intent) {
-      handler.post(new Runnable() {
-        @Override
-        public void run() { showLoginFragment(); }
-      });
-    }
-  };
-
-  private final BroadcastReceiver airplaneModeOnReceiver = new BroadcastReceiver() {
-    @Override
-    public void onReceive(Context context, Intent intent) {
-      handler.post(new Runnable() {
-        @Override
-        public void run() { showAirplaneModeAlertDialogFragment(); }
-      });
-    }
-  };
 
   private void unregisterReceiverComponents() {
     unregisterReceiver(signInErrorReceiver);

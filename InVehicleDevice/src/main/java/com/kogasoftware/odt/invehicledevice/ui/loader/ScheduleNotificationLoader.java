@@ -5,12 +5,19 @@ import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
 
 /**
- * スケジュール通知を同期するLoaderを操作するクラス
+ * スケジュール通知を購読し、通知を行うLoaderを操作するクラス
+ * スケジュール通知の仕様は以下
+ * VehicleNotificationテーブルが同期された際に、新規スケジュール通知が追加される。
+ * スケジュール通知追加を受けて、OperationScheduleテーブルが同期が開始される。
+ * その際に紐づくOperationScheduleが更新された場合、VehicleNotificationテーブルのScheduleDownloadedも同時に更新される。
+ * この時点で更新情報がpublishされ、定義済みCursorLoaderでのデータ取得が走り、onLoadFinishedが実行される。
  */
 
 public class ScheduleNotificationLoader {
@@ -26,16 +33,17 @@ public class ScheduleNotificationLoader {
   }
 
   public void initLoader() {
-    inVehicleDeviceActivity.getActivityLoaderManager().initLoader(LOADER_ID, null, callbacks);
+    inVehicleDeviceActivity.getLoaderManager().initLoader(LOADER_ID, null, callbacks);
   }
 
   public void destroyLoader() {
-    inVehicleDeviceActivity.getActivityLoaderManager().destroyLoader(LOADER_ID);
+    inVehicleDeviceActivity.getLoaderManager().destroyLoader(LOADER_ID);
   }
 
   private final LoaderManager.LoaderCallbacks<Cursor> callbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+
       return new CursorLoader(
               inVehicleDeviceActivity,
               VehicleNotification.CONTENT.URI,
@@ -48,12 +56,14 @@ public class ScheduleNotificationLoader {
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
       if (cursor.getCount() == 0) { return; }
 
-      inVehicleDeviceActivity.getActivityHandler().post(new Runnable() {
+      Handler mainUIHandler = new Handler(Looper.getMainLooper());
+
+      mainUIHandler.post(new Runnable() {
         @Override
         public void run() { inVehicleDeviceActivity.showNotificationAlertFragment(); }
       });
 
-      inVehicleDeviceActivity.getActivityHandler().postDelayed(new Runnable() {
+      mainUIHandler.postDelayed(new Runnable() {
         @Override
         public void run() { inVehicleDeviceActivity.showScheduleNotificationsFragment(); }
       }, inVehicleDeviceActivity.VEHICLE_NOTIFICATION_ALERT_DELAY_MILLIS);
