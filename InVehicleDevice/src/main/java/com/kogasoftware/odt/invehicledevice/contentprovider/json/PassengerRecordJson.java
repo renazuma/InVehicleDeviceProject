@@ -1,14 +1,14 @@
 package com.kogasoftware.odt.invehicledevice.contentprovider.json;
 
-import java.io.IOException;
-import java.util.List;
-
-import org.joda.time.DateTime;
-
 import android.content.ContentValues;
 
 import com.kogasoftware.odt.invehicledevice.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.utils.ContentValuesUtils;
+
+import org.joda.time.DateTime;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * 乗車実績のJSON
@@ -44,11 +44,13 @@ public class PassengerRecordJson {
 		values.put(PassengerRecord.Columns.REPRESENTATIVE, representative
 				? 1
 				: 0);
-		Integer passengerCount = 1;
-		if (representative && reservation.fellowUsers.size() > 2) {
-			passengerCount = reservation.passengerCount
-					- reservation.fellowUsers.size() + 1;
+		Integer passengerCount;
+		if (representative) {
+			passengerCount = reservation.passengerCount - (reservation.fellowUsers.size() - 1);
+		} else {
+			passengerCount = 1;
 		}
+
 		values.put(PassengerRecord.Columns.PASSENGER_COUNT, passengerCount);
 		return values;
 	}
