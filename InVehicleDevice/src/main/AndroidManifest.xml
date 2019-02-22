@@ -40,12 +40,12 @@
 		android:label="@string/app_name">
 
 		<provider
-			android:name=".contentprovider.InVehicleDeviceContentProvider"
-			android:authorities="com.kogasoftware.odt.invehicledevice.contentprovider"
+			android:name=".model.contentprovider.InVehicleDeviceContentProvider"
+			android:authorities="com.kogasoftware.odt.invehicledevice.model.contentprovider"
 			android:exported="false" />
 
 		<activity
-			android:name=".ui.activity.InVehicleDeviceActivity"
+			android:name=".view.activity.InVehicleDeviceActivity"
 			android:label="@string/app_name" android:launchMode="singleTop"
 			android:screenOrientation="sensorLandscape" android:theme="@style/InVehicleDeviceActivity.Theme">
 
@@ -55,9 +55,9 @@
 			</intent-filter>
 		</activity>
 
-		<activity android:name=".ui.activity.EmptyActivity" />
+		<activity android:name=".view.activity.EmptyActivity" />
 
-		<receiver android:name=".service.startupservice.StartupService$StartupBroadcastReceiver">
+		<receiver android:name=".presenter.service.startupservice.StartupService$StartupBroadcastReceiver">
 			<intent-filter>
 				<action android:name="android.intent.action.POWER_CONNECTED" />
 				<action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
@@ -70,7 +70,7 @@
 			</intent-filter>
 		</receiver>
 
-		<receiver android:name=".service.logservice.LogService$ShutdownBroadcastReceiver">
+		<receiver android:name=".presenter.service.logservice.LogService$ShutdownBroadcastReceiver">
 			<intent-filter>
 				<action android:name="android.intent.action.ACTION_SHUTDOWN" />
 				<action android:name="android.intent.action.QUICKBOOT_POWEROFF" />
@@ -78,19 +78,19 @@
 		</receiver>
 
 		<service
-			android:name=".service.logservice.LogService"
+			android:name=".presenter.service.logservice.LogService"
 			android:process=":LogService"
 			android:exported="false" />
 		<service
-			android:name=".service.startupservice.StartupService"
+			android:name=".presenter.service.startupservice.StartupService"
 			android:process=":StartupService"
 			android:exported="false" />
 		<service
-			android:name=".service.serviceunitstatuslogservice.ServiceUnitStatusLogService"
+			android:name=".presenter.service.serviceunitstatuslogservice.ServiceUnitStatusLogService"
 			android:process=":ServiceUnitStatusLogService"
 			android:exported="false" />
 		<service
-			android:name=".service.staticvoiceplayservice.StaticVoicePlayService"
+			android:name=".presenter.service.staticvoiceplayservice.StaticVoicePlayService"
 			android:process=":StaticVoicePlayService"
 			android:exported="false" />
 	</application>

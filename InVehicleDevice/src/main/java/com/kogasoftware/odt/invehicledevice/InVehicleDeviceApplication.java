@@ -12,7 +12,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.util.Log;
 
 import com.kogasoftware.android.StrictModes;
-import com.kogasoftware.odt.invehicledevice.service.logservice.LogServiceReportSender;
+import com.kogasoftware.odt.invehicledevice.presenter.service.logservice.LogServiceReportSender;
 
 /**
  * 車載器アプリケーション

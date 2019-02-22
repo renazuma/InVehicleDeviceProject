@@ -2,9 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/ModalView.Layout"
-    tools:context=".ui.activity.EmptyActivity" >
+    tools:context=".view.activity.EmptyActivity" >
 
-    <com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView
+    <com.kogasoftware.odt.invehicledevice.view.fragment.utils.FlickUnneededListView
         android:id="@+id/error_reservation_list_view"
         style="@style/ModalView.Content"
         android:layout_width="match_parent"

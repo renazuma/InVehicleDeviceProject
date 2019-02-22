@@ -6,9 +6,10 @@ import android.widget.Button;
 
 import com.google.common.base.Throwables;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.ui.activity.EmptyActivity;
-import com.kogasoftware.odt.invehicledevice.utils.SoloUtils;
-import com.kogasoftware.odt.invehicledevice.utils.TestUtils;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.FlickUnneededListView;
+import com.kogasoftware.odt.invehicledevice.view.activity.EmptyActivity;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.SoloUtils;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.TestUtils;
 import com.robotium.solo.Condition;
 import com.robotium.solo.Solo;
 
