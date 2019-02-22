@@ -1,8 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.view.fragment;
 
-import org.apache.commons.lang3.SystemUtils;
-import org.joda.time.DateTime;
-
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.LoaderManager.LoaderCallbacks;
@@ -20,9 +17,13 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.ServiceProvider;
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
+
+import org.apache.commons.lang3.SystemUtils;
+import org.joda.time.DateTime;
 
 /**
  * 運行スケジュール変更通知表示画面
@@ -32,6 +33,8 @@ public class ScheduleVehicleNotificationFragment extends Fragment
 			LoaderCallbacks<Cursor> {
 	private static final Integer LOADER_ID = 1;
 	private static String OPERATION_LIST_BUTTON_VISIBLE_KEY = "operation_list_button_visible";
+	// TODO: Activityは一つしかないので、InVehicleDeviceActivityの指定は不要では？
+	private static final String FRAGMENT_TAG = InVehicleDeviceActivity.class + "/" + ScheduleVehicleNotificationFragment.class;
 	private TextView detailTextView;
 
 	@Override
@@ -187,16 +190,20 @@ public class ScheduleVehicleNotificationFragment extends Fragment
 		hide(new Runnable() {
 			@Override
 			public void run() {
-				if (!isAdded()) {
-					return;
-				}
-				Fragment fragment = getFragmentManager().findFragmentByTag(
-						InVehicleDeviceActivity.OPERATION_LIST_FRAGMENT_TAG);
-				if (fragment != null) {
-					((OperationListFragment) fragment)
-							.scrollToUnhandledOperationSchedule();
-				}
+				if (!isAdded()) { return; }
+				Fragment fragment = getFragmentManager().findFragmentByTag(OperationListFragment.FRAGMENT_TAG);
+				if (getFragmentManager().findFragmentByTag(OperationListFragment.FRAGMENT_TAG)== null) { return; }
+				((OperationListFragment) fragment).scrollToUnhandledOperationSchedule();
 			}
 		});
+	}
+
+	// TODO: 既存に合わせるためにstaticにしている。出来れば変えたい。
+	public static void showModal(FragmentManager fragmentManager, ServiceProvider serviceProvider) {
+		if (fragmentManager.findFragmentByTag(FRAGMENT_TAG) != null) { return; }
+
+		Fragments.showModalFragment(fragmentManager,
+				ScheduleVehicleNotificationFragment.newInstance(!serviceProvider.operationListOnly),
+				FRAGMENT_TAG);
 	}
 }

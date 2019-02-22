@@ -1,6 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.view.fragment;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -8,12 +9,18 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
 
 /**
  * 通知受信時のびっくりマーク
  */
 public class VehicleNotificationAlertFragment extends Fragment {
 	private static final Integer ALERT_SHOW_INTERVAL_MILLIS = 500;
+
+	// TODO: Activityは一つしかないので、InVehicleDeviceActivityの指定は不要では？
+	private static final String FRAGMENT_TAG = InVehicleDeviceActivity.class + "/" + VehicleNotificationAlertFragment.class;
+
 	private final Handler handler = new Handler();
 	private Integer count;
 	private final Runnable blinkAlertTask = new Runnable() {
@@ -58,5 +65,12 @@ public class VehicleNotificationAlertFragment extends Fragment {
 	public void onDestroyView() {
 		super.onDestroyView();
 		handler.removeCallbacks(blinkAlertTask);
+	}
+
+	// TODO: 既存に合わせるためにstaticにしている。出来れば変えたい。
+	public static void showModal(FragmentManager fragmentManager) {
+		if (fragmentManager.findFragmentByTag(FRAGMENT_TAG) != null) { return; }
+
+		Fragments.showModalFragment(fragmentManager, VehicleNotificationAlertFragment.newInstance(), FRAGMENT_TAG);
 	}
 }

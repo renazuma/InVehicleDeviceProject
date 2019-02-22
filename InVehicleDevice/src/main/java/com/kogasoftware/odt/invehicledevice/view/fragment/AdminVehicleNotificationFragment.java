@@ -1,8 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.view.fragment;
 
-import org.joda.time.DateTime;
-
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.ContentResolver;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,14 +13,22 @@ import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.VehicleNotification;
+import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
+
+import org.joda.time.DateTime;
+
+import java.util.List;
 
 /**
  * 車載器への通知表示画面
  */
-public class NormalVehicleNotificationFragment extends Fragment {
+public class AdminVehicleNotificationFragment extends Fragment {
 	private static final String VEHICLE_NOTIFICATION_KEY = "vehicle_notification";
 	private VehicleNotification vehicleNotification;
+
+	// TODO: Activityは一つしかないので、InVehicleDeviceActivityの指定は不要では？
+	private static final String FRAGMENT_TAG = InVehicleDeviceActivity.class + "/" + AdminVehicleNotificationFragment.class + "/%d";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -53,9 +60,9 @@ public class NormalVehicleNotificationFragment extends Fragment {
 				});
 	}
 
-	public static NormalVehicleNotificationFragment newInstance(
+	public static AdminVehicleNotificationFragment newInstance(
 			VehicleNotification vehicleNotification) {
-		NormalVehicleNotificationFragment fragment = new NormalVehicleNotificationFragment();
+		AdminVehicleNotificationFragment fragment = new AdminVehicleNotificationFragment();
 		Bundle args = new Bundle();
 		args.putSerializable(VEHICLE_NOTIFICATION_KEY, vehicleNotification);
 		fragment.setArguments(args);
@@ -83,9 +90,23 @@ public class NormalVehicleNotificationFragment extends Fragment {
 			public void run() {
 				contentResolver.insert(VehicleNotification.CONTENT.URI,
 						vehicleNotification.toContentValues());
-				Fragments.hide(NormalVehicleNotificationFragment.this,
+				Fragments.hide(AdminVehicleNotificationFragment.this,
 						handler);
 			}
 		}.start();
+	}
+
+	// TODO: 既存に合わせるためにstaticにしている。出来れば変えたい。
+	public static void showModal(FragmentManager fragmentManager, List<VehicleNotification> vehicleNotifications) {
+		for (final VehicleNotification vehicleNotification : vehicleNotifications) {
+			final String tag = String.format(FRAGMENT_TAG, vehicleNotification.id);
+
+			if (fragmentManager.findFragmentByTag(tag) != null) { return; }
+
+			Fragments.showModalFragment(
+							fragmentManager,
+							AdminVehicleNotificationFragment.newInstance(vehicleNotification),
+							tag);
+		}
 	}
 }

@@ -6,7 +6,7 @@ import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivit
  * Activityで扱うLoaderを操作するクラス
  */
 
-public class LoaderFacade {
+public class LoaderPresenter {
 
   // 管理対象Loader
   private AdminNotificationLoader adminNotificationLoader;
@@ -14,21 +14,21 @@ public class LoaderFacade {
   private ServiceProviderLoader serviceProviderLoader;
   private InVehicleDeviceLoader inVehicleDeviceLoader;
 
-  public LoaderFacade(InVehicleDeviceActivity inVehicleDeviceActivity) {
+  public LoaderPresenter(InVehicleDeviceActivity inVehicleDeviceActivity) {
     this.inVehicleDeviceLoader = new InVehicleDeviceLoader(inVehicleDeviceActivity);
     this.serviceProviderLoader = new ServiceProviderLoader(inVehicleDeviceActivity);
     this.adminNotificationLoader = new AdminNotificationLoader(inVehicleDeviceActivity);
     this.scheduleNotificationLoader = new ScheduleNotificationLoader(inVehicleDeviceActivity);
   }
 
-  public void initLoaders() {
+  public void onCreate() {
     inVehicleDeviceLoader.initLoader();
     serviceProviderLoader.initLoader();
     adminNotificationLoader.initLoader();
     scheduleNotificationLoader.initLoader();
   }
 
-  public void destroyLoaders() {
+  public void onDestroy() {
     inVehicleDeviceLoader.destroyLoader();
     serviceProviderLoader.destroyLoader();
     adminNotificationLoader.destroyLoader();

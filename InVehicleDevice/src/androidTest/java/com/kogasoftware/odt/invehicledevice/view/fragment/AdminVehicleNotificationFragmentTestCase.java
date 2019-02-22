@@ -16,14 +16,14 @@ import com.kogasoftware.odt.invehicledevice.view.fragment.utils.TestUtils;
 import com.robotium.solo.Condition;
 import com.robotium.solo.Solo;
 
-public class NormalVehicleNotificationFragmentTestCase
+public class AdminVehicleNotificationFragmentTestCase
 		extends
 			ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 	MockServer server;
 	Solo solo;
 	SQLiteDatabase database;
 
-	public NormalVehicleNotificationFragmentTestCase() {
+	public AdminVehicleNotificationFragmentTestCase() {
 		super(InVehicleDeviceActivity.class);
 	}
 

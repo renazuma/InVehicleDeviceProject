@@ -1,8 +1,8 @@
 package com.kogasoftware.odt.invehicledevice.view.fragment;
 
-import java.util.concurrent.TimeUnit;
-
 import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
@@ -21,10 +21,12 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.VehicleNotification;
-import com.kogasoftware.odt.invehicledevice.view.fragment.utils.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
-import com.kogasoftware.odt.invehicledevice.view.util.arrayadapter.OperationScheduleArrayAdapter;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
+import com.kogasoftware.odt.invehicledevice.view.util.arrayadapter.OperationScheduleArrayAdapter;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * 運行予定一覧画面
@@ -33,6 +35,8 @@ public class OperationListFragment extends Fragment {
 	private static final String CLOSEABLE_KEY = "closeable";
 	private static final Integer OPERATION_SCHEDULE_LOADER_ID = 1;
 	private static final Integer PASSENGER_RECORD_LOADER_ID = 2;
+	// TODO: Activityは一つしかないので、InVehicleDeviceActivityの指定は不要では？
+	public static final String FRAGMENT_TAG = InVehicleDeviceActivity.class + "/" + OperationListFragment.class;
 
 	public static OperationListFragment newInstance(Boolean closeable) {
 		OperationListFragment fragment = new OperationListFragment();
@@ -50,16 +54,16 @@ public class OperationListFragment extends Fragment {
 		@Override
 		public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 			return new CursorLoader(getActivity(),
-					OperationSchedule.CONTENT.URI, null, null, null, null) {
+							OperationSchedule.CONTENT.URI, null, null, null, null) {
 				@Override
 				public Cursor loadInBackground() {
 					// 運行予定変更の通知がある場合、「運行予定変更」フラグメントが表示されるまで更新を遅らせる
 					Cursor cursor = getActivity()
-							.getContentResolver()
-							.query(VehicleNotification.CONTENT.URI,
-									null,
-									VehicleNotification.WHERE_SCHEDULE_VEHICLE_NOTIFICATION_FRAGMENT_CONTENT,
-									null, null);
+									.getContentResolver()
+									.query(VehicleNotification.CONTENT.URI,
+													null,
+													VehicleNotification.WHERE_SCHEDULE_VEHICLE_NOTIFICATION_FRAGMENT_CONTENT,
+													null, null);
 					Boolean delayRequired;
 					try {
 						delayRequired = cursor.getCount() > 0;
@@ -69,7 +73,7 @@ public class OperationListFragment extends Fragment {
 					if (delayRequired) {
 						Integer delayMillis = InVehicleDeviceActivity.VEHICLE_NOTIFICATION_ALERT_DELAY_MILLIS + 1000;
 						Uninterruptibles.sleepUninterruptibly(delayMillis,
-								TimeUnit.MILLISECONDS);
+										TimeUnit.MILLISECONDS);
 					}
 					return super.loadInBackground();
 				}
@@ -94,7 +98,7 @@ public class OperationListFragment extends Fragment {
 		@Override
 		public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 			return new CursorLoader(getActivity(),
-					PassengerRecord.CONTENT.URI, null, null, null, null);
+							PassengerRecord.CONTENT.URI, null, null, null, null);
 		}
 
 		@Override
@@ -109,9 +113,9 @@ public class OperationListFragment extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+							 Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.operation_list_fragment, container,
-				false);
+						false);
 	}
 
 	@Override
@@ -120,12 +124,12 @@ public class OperationListFragment extends Fragment {
 		final Boolean closeable = getArguments().getBoolean(CLOSEABLE_KEY);
 		loaderManager = getLoaderManager();
 		loaderManager.initLoader(OPERATION_SCHEDULE_LOADER_ID, null,
-				operationScheduleLoaderCallbacks);
+						operationScheduleLoaderCallbacks);
 		loaderManager.initLoader(PASSENGER_RECORD_LOADER_ID, null,
-				passengerRecordLoaderCallbacks);
+						passengerRecordLoaderCallbacks);
 		View view = getView();
 		final Button closeButton = (Button) view
-				.findViewById(R.id.operation_list_close_button);
+						.findViewById(R.id.operation_list_close_button);
 		closeButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -139,12 +143,12 @@ public class OperationListFragment extends Fragment {
 		}
 		adapter = new OperationScheduleArrayAdapter(this);
 		listView = ((FlickUnneededListView) view
-				.findViewById(R.id.operation_list_view)).getListView();
+						.findViewById(R.id.operation_list_view)).getListView();
 		listView.setAdapter(adapter);
 		final Button showPassengerButton = (Button) view
-				.findViewById(R.id.operation_list_show_passengers_button);
+						.findViewById(R.id.operation_list_show_passengers_button);
 		final Button hidePassengerButton = (Button) view
-				.findViewById(R.id.operation_list_hide_passengers_button);
+						.findViewById(R.id.operation_list_hide_passengers_button);
 		showPassengerButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -189,5 +193,27 @@ public class OperationListFragment extends Fragment {
 		if (count >= 1) {
 			listView.setSelectionFromTop(count - 1, 0);
 		}
+	}
+
+	// TODO: 共通処理のshowModalFragmentと、customAnimation以外は変わらない。共通処理を使っていないのはそこが理由なのかを確認。
+	// TODO: 既存に合わせるためにstaticにしている。出来れば変えたい。
+	public static void showModal(FragmentManager fragmentManager) {
+		if (fragmentManager.findFragmentByTag(FRAGMENT_TAG) != null) { return; }
+
+		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+		fragmentTransaction.add(R.id.modal_fragment_container,
+						OperationListFragment.newInstance(false),
+						FRAGMENT_TAG);
+		fragmentTransaction.commitAllowingStateLoss();
+    }
+
+	// TODO: 共通処理のhideは使えない？確認する。
+	// TODO: 既存に合わせるためにstaticにしている。出来れば変えたい。
+    public static void hideModal(FragmentManager fragmentManager) {
+		if (fragmentManager.findFragmentByTag(FRAGMENT_TAG) == null) { return; }
+
+		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+		fragmentTransaction.remove(fragmentManager.findFragmentByTag(FRAGMENT_TAG));
+		fragmentTransaction.commitAllowingStateLoss();
 	}
 }

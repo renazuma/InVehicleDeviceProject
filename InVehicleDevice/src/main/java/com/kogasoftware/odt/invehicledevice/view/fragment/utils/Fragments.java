@@ -37,17 +37,14 @@ public class Fragments {
 		hide(fragment, new Handler());
 	}
 
-	public static void showModalFragment(FragmentManager fragmentManager,
-			Fragment fragment, String tag) {
-		FragmentTransaction fragmentTransaction = fragmentManager
-				.beginTransaction();
+	public static void showModalFragment(FragmentManager fragmentManager, Fragment fragment, String tag) {
+		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 		setCustomAnimations(fragmentTransaction);
 		fragmentTransaction.add(R.id.modal_fragment_container, fragment, tag);
 		fragmentTransaction.commitAllowingStateLoss();
 	}
 
-	public static void showModalFragment(FragmentManager fragmentManager,
-			Fragment fragment) {
+	public static void showModalFragment(FragmentManager fragmentManager, Fragment fragment) {
 		showModalFragment(fragmentManager, fragment, null);
 	}
 }

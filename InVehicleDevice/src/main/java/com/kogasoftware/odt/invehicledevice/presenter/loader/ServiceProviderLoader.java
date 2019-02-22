@@ -63,8 +63,10 @@ public class ServiceProviderLoader {
 
       Handler mainUIHandler = new Handler(Looper.getMainLooper());
 
+      // TODO: この場合、スケジュールの更新通知がすぐに出るので、ここでわざわざリスト表示をさせなくても良いのでは？不要なら削除したい。
       if (cursor.moveToFirst()) {
         ServiceProvider serviceProvider = new ServiceProvider(cursor);
+        // TODO: Fragment表示が不要だとしても、ServiceProvider取得の完了設定は必要。
         inVehicleDeviceActivity.setServiceProvider(serviceProvider);
         if (serviceProvider.operationListOnly) {
           mainUIHandler.post(showOperationListFragmentTask);

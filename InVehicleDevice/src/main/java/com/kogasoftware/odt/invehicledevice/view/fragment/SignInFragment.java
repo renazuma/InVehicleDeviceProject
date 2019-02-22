@@ -1,12 +1,8 @@
 package com.kogasoftware.odt.invehicledevice.view.fragment;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.FragmentManager;
 import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.app.ProgressDialog;
@@ -43,7 +39,13 @@ import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.InVehicleDevice;
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.task.SignInErrorBroadcastIntent;
+import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
+
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * サインイン情報の入力画面
@@ -54,6 +56,10 @@ public class SignInFragment extends PreferenceFragment
 			OnSharedPreferenceChangeListener {
 	private static final int LOADER_ID = 1;
 	private static final String FIRST_LOAD_KEY = "first_load";
+
+	// TODO: Activityは一つしかないので、InVehicleDeviceActivityの指定は不要では？
+	private static final String FRAGMENT_TAG = InVehicleDeviceActivity.class + "/" + SignInFragment.class;
+
 	private final List<Dialog> dialogs = Lists.newLinkedList();
 	private LoaderManager loaderManager;
 	private SharedPreferences preferences;
@@ -284,5 +290,12 @@ public class SignInFragment extends PreferenceFragment
 			dialog.dismiss();
 		}
 		dialogs.clear();
+	}
+
+	// TODO: 既存に合わせるためにstaticにしている。出来れば変えたい。
+	public static void showModal(FragmentManager fragmentManager) {
+	  if (fragmentManager.findFragmentByTag(FRAGMENT_TAG) != null) { return; }
+
+	  Fragments.showModalFragment(fragmentManager, SignInFragment.newInstance(), FRAGMENT_TAG);
 	}
 }
