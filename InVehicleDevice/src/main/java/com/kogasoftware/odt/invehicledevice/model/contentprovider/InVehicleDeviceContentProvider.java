@@ -1,10 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.model.contentprovider;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
-import junit.framework.Assert;
 import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -38,6 +33,12 @@ import com.kogasoftware.odt.invehicledevice.model.contentprovider.task.PatchOper
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.task.PatchPassengerRecordTask;
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.task.PatchVehicleNotificationTask;
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.task.PostServiceUnitStatusLogTask;
+
+import junit.framework.Assert;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 車載器内部データの管理とサーバーとの同期を行うContentProvider
@@ -82,38 +83,59 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
 	@Override
 	public boolean onCreate() {
 		Context context = getContext();
+
 		databaseHelper = new DatabaseHelper(context);
 		database = databaseHelper.getWritableDatabase();
-		executorService.scheduleWithFixedDelay(new GetVehicleNotificationsTask(
-				context, database, executorService), 5,
-				GetVehicleNotificationsTask.INTERVAL_MILLIS,
-				TimeUnit.MILLISECONDS);
-		executorService.scheduleAtFixedRate(new InsertServiceUnitStatusLogTask(
-				database), 500, InsertServiceUnitStatusLogTask.INTERVAL_MILLIS,
-				TimeUnit.MILLISECONDS);
+
+		// 一定間隔で、未読通知をサーバから取得
 		executorService.scheduleWithFixedDelay(
-				new PatchVehicleNotificationTask(context, database,
-						executorService), 10,
-				PatchVehicleNotificationTask.INTERVAL_MILLIS,
-				TimeUnit.MILLISECONDS);
-		executorService
-				.scheduleWithFixedDelay(new PatchOperationRecordTask(context,
-						database, executorService), 10,
+						new GetVehicleNotificationsTask(context, database, executorService),
+						5,
+						GetVehicleNotificationsTask.INTERVAL_MILLIS,
+						TimeUnit.MILLISECONDS);
+
+		// 一定間隔（固定）で、内部DBの最新のUnitStatusLogのデータをコピーして、created_atを現在時刻にしてinsert
+        // ↓の更新/削除では、現在時刻 - この処理のIntervalDelay秒以降の処理は対象にはならないため、1件は必ず残っている想定？
+		// TODO: 仕様がややこしい。シンプルに出来るなら変えたい。
+		executorService.scheduleAtFixedRate(
+						new InsertServiceUnitStatusLogTask(database),
+						500,
+						InsertServiceUnitStatusLogTask.INTERVAL_MILLIS,
+						TimeUnit.MILLISECONDS);
+
+		// 一定間隔で、現在時刻 - ↑のタスクのインターバル秒よりも以前に更新された、内部DBのUnitStatusLogのデータを、サーバ側に送信、DBより削除
+		// TODO: 仕様がややこしい。シンプルに出来るなら変えたい。
+		executorService.scheduleWithFixedDelay(
+						new PostServiceUnitStatusLogTask(context, database,	executorService),
+						500,
+						PostServiceUnitStatusLogTask.INTERVAL_MILLIS,
+						TimeUnit.MILLISECONDS);
+
+		// 一定間隔で、既読かつサーバ側と同期前の通知データを、サーバ側に送信
+		executorService.scheduleWithFixedDelay(
+				        new PatchVehicleNotificationTask(context, database, executorService),
+						10,
+						PatchVehicleNotificationTask.INTERVAL_MILLIS,
+						TimeUnit.MILLISECONDS);
+
+		// 一定間隔で、更新のあった運行履歴を、サーバ側に送信
+		executorService.scheduleWithFixedDelay(
+						new PatchOperationRecordTask(context, database, executorService),
+						10,
 						PatchOperationRecordTask.INTERVAL_MILLIS,
 						TimeUnit.MILLISECONDS);
-		executorService
-				.scheduleWithFixedDelay(new PatchPassengerRecordTask(context,
-						database, executorService), 10,
+
+		// 一定間隔で、更新のあった乗降情報を、サーバ側に送信
+		executorService.scheduleWithFixedDelay(
+						new PatchPassengerRecordTask(context, database, executorService),
+						10,
 						PatchPassengerRecordTask.INTERVAL_MILLIS,
 						TimeUnit.MILLISECONDS);
-		executorService.scheduleWithFixedDelay(
-				new PostServiceUnitStatusLogTask(context, database,
-						executorService), 500,
-				PostServiceUnitStatusLogTask.INTERVAL_MILLIS,
-				TimeUnit.MILLISECONDS);
-		executorService.execute(new GetOperationSchedulesTask(getContext(),
-				database, executorService));
 
+		// 起動時に一度だけ、運行情報ををサーバ側から取得
+		executorService.execute(new GetOperationSchedulesTask(context, database, executorService));
+
+		// 起動時に一度だけ、サービスプロバイダーをサーバ側から取得
 		// 旧バージョンからのアップグレード用。車載器情報が存在してもサービスプロバイダー情報が存在しない場合がある。
 		new Thread() {
 			@Override
@@ -121,14 +143,11 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
 				Cursor cursor = database.query(ServiceProvider.TABLE_NAME,
 						null, null, null, null, null, null);
 				try {
-					if (cursor.moveToFirst()) {
-						return;
-					}
+					if (cursor.moveToFirst()) { return; }
 				} finally {
 					cursor.close();
 				}
-				executorService.execute(new GetServiceProviderTask(
-						getContext(), database, executorService));
+				executorService.execute(new GetServiceProviderTask(getContext(), database, executorService));
 			}
 		}.start();
 		return true;

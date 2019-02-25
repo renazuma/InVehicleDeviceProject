@@ -73,14 +73,12 @@ public class ServiceUnitStatusLogService extends Service implements Runnable {
 			Log.w(TAG, e);
 		}
 
-		orientationSensorEventListener = new OrientationSensorEventListener(
-				getContentResolver(), windowManager);
-		temperatureSensorEventListener = new TemperatureSensorEventListener(
-				getContentResolver());
-		signalStrengthListener = new SignalStrengthListener(
-				getContentResolver());
-
+		// TODO: 現在orientationとtemperatureのデータは使用されていないので、不要かもしれない。
+		orientationSensorEventListener = new OrientationSensorEventListener(getContentResolver(), windowManager);
+		temperatureSensorEventListener = new TemperatureSensorEventListener(getContentResolver());
+		signalStrengthListener = new SignalStrengthListener(getContentResolver());
 		gpsLogger = new GpsLogger(this);
+
 		handler.post(this);
 
 		Boolean useBatteryTemperature;
