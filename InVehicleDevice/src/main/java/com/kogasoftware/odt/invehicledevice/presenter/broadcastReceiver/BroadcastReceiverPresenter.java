@@ -10,6 +10,8 @@ import android.os.Looper;
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.task.SignInErrorBroadcastIntent;
 import com.kogasoftware.odt.invehicledevice.presenter.service.startupservice.AirplaneModeOnBroadcastIntent;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
+import com.kogasoftware.odt.invehicledevice.view.fragment.AirplaneModeAlertDialogFragment;
+import com.kogasoftware.odt.invehicledevice.view.fragment.SignInFragment;
 
 /**
  * Created by ksc on 2019/02/22.
@@ -29,7 +31,7 @@ public class BroadcastReceiverPresenter {
     public void onReceive(Context context, Intent intent) {
       new Handler(Looper.getMainLooper()).post(new Runnable() {
         @Override
-        public void run() { inVehicleDeviceActivity.showLoginFragment(); }
+        public void run() { SignInFragment.showModal(inVehicleDeviceActivity); }
       });
     }
   };
@@ -39,7 +41,7 @@ public class BroadcastReceiverPresenter {
     public void onReceive(Context context, Intent intent) {
       new Handler(Looper.getMainLooper()).post(new Runnable() {
         @Override
-        public void run() { inVehicleDeviceActivity.showAirplaneModeAlertDialogFragment(); }
+        public void run() { AirplaneModeAlertDialogFragment.showDialog(inVehicleDeviceActivity);}
       });
     }
   };

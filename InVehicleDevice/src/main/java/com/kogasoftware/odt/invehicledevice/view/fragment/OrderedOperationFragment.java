@@ -83,7 +83,11 @@ public class OrderedOperationFragment extends OperationSchedulesAndPassengerReco
 
 	// TODO: 共通処理のshowModalFragmentと、customAnimation以外は変わらない。共通処理を使っていないのはそこが理由なのかを確認。
 	// TODO: 既存に合わせるためにstaticにしている。出来れば変えたい。
-	public static void showModal(FragmentManager fragmentManager) {
+	public static void showModal(InVehicleDeviceActivity inVehicleDeviceActivity) {
+		if (inVehicleDeviceActivity.destroyed) { return; }
+
+		FragmentManager fragmentManager = inVehicleDeviceActivity.getFragmentManager();
+
 		if (fragmentManager.findFragmentByTag(FRAGMENT_TAG) != null) { return; }
 
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -95,7 +99,11 @@ public class OrderedOperationFragment extends OperationSchedulesAndPassengerReco
 
 	// TODO: 共通処理のhideは使えない？確認する。
 	// TODO: 既存に合わせるためにstaticにしている。出来れば変えたい。
-	public static void hideModal(FragmentManager fragmentManager) {
+	public static void hideModal(InVehicleDeviceActivity inVehicleDeviceActivity) {
+		if (inVehicleDeviceActivity.destroyed) { return; }
+
+		FragmentManager fragmentManager = inVehicleDeviceActivity.getFragmentManager();
+
 		if (fragmentManager.findFragmentByTag(FRAGMENT_TAG) == null) { return; }
 
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

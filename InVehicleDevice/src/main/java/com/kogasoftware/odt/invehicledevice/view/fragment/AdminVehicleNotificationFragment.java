@@ -97,7 +97,9 @@ public class AdminVehicleNotificationFragment extends Fragment {
 	}
 
 	// TODO: 既存に合わせるためにstaticにしている。出来れば変えたい。
-	public static void showModal(FragmentManager fragmentManager, List<VehicleNotification> vehicleNotifications) {
+	public static void showModal(InVehicleDeviceActivity inVehicleDeviceActivity, List<VehicleNotification> vehicleNotifications) {
+		if (inVehicleDeviceActivity.destroyed) { return; }
+		FragmentManager fragmentManager = inVehicleDeviceActivity.getFragmentManager();
 		for (final VehicleNotification vehicleNotification : vehicleNotifications) {
 			final String tag = String.format(FRAGMENT_TAG, vehicleNotification.id);
 

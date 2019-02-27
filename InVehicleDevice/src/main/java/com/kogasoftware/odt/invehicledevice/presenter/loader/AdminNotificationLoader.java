@@ -10,6 +10,8 @@ import android.os.Looper;
 
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
+import com.kogasoftware.odt.invehicledevice.view.fragment.AdminVehicleNotificationFragment;
+import com.kogasoftware.odt.invehicledevice.view.fragment.VehicleNotificationAlertFragment;
 
 import java.util.List;
 
@@ -57,14 +59,14 @@ public class AdminNotificationLoader {
 
       mainUIHandler.post(new Runnable() {
         @Override
-        public void run() { inVehicleDeviceActivity.showNotificationAlertFragment(); }
+        public void run() { VehicleNotificationAlertFragment.showModal(inVehicleDeviceActivity); }
       });
 
       // finalをした変数じゃないとpostDelayed内で使用出来ないので、先に作成している
       final List<VehicleNotification> vehicleNotifications = VehicleNotification.getAll(data);
       mainUIHandler.postDelayed(new Runnable() {
         @Override
-        public void run() { inVehicleDeviceActivity.showAdminNotificationsFragment(vehicleNotifications); }
+        public void run() { AdminVehicleNotificationFragment.showModal(inVehicleDeviceActivity, vehicleNotifications); }
       }, inVehicleDeviceActivity.VEHICLE_NOTIFICATION_ALERT_DELAY_MILLIS);
     }
 

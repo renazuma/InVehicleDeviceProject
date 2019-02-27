@@ -68,7 +68,11 @@ public class VehicleNotificationAlertFragment extends Fragment {
 	}
 
 	// TODO: 既存に合わせるためにstaticにしている。出来れば変えたい。
-	public static void showModal(FragmentManager fragmentManager) {
+	public static void showModal(InVehicleDeviceActivity inVehicleDeviceActivity) {
+		if (inVehicleDeviceActivity.destroyed || inVehicleDeviceActivity.serviceProvider == null) { return; }
+
+		FragmentManager fragmentManager = inVehicleDeviceActivity.getFragmentManager();
+
 		if (fragmentManager.findFragmentByTag(FRAGMENT_TAG) != null) { return; }
 
 		Fragments.showModalFragment(fragmentManager, VehicleNotificationAlertFragment.newInstance(), FRAGMENT_TAG);

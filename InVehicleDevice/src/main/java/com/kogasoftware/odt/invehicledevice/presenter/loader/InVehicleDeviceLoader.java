@@ -10,6 +10,7 @@ import android.os.Looper;
 
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.InVehicleDevice;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
+import com.kogasoftware.odt.invehicledevice.view.fragment.SignInFragment;
 
 /**
  * 車載器情報を購読し、ログイン画面を管理するLoaderを操作するクラス
@@ -50,7 +51,7 @@ public class InVehicleDeviceLoader {
 
       mainUIHandler.post(new Runnable() {
         @Override
-        public void run() { inVehicleDeviceActivity.showLoginFragment(); }
+        public void run() { SignInFragment.showModal(inVehicleDeviceActivity); }
       });
     }
 

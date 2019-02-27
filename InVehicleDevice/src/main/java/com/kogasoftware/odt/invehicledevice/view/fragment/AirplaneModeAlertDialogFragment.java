@@ -28,7 +28,12 @@ public class AirplaneModeAlertDialogFragment extends DialogFragment {
   }
 
   // TODO: 既存に合わせるためにstaticにしている。出来れば変えたい。
-  public static void showDialog(FragmentManager fragmentManager) {
+  public static void showDialog(InVehicleDeviceActivity inVehicleDeviceActivity) {
+    // TODO: Activityの状態確認をここで行うべき？
+    if (inVehicleDeviceActivity.destroyed) { return; }
+
+    FragmentManager fragmentManager = inVehicleDeviceActivity.getFragmentManager();
+
     if (fragmentManager.findFragmentByTag(FRAGMENT_TAG) != null) { return; }
 
     (new AirplaneModeAlertDialogFragment()).show(fragmentManager, FRAGMENT_TAG);

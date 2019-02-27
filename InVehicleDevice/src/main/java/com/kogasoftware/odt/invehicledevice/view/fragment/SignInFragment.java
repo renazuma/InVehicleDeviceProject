@@ -293,7 +293,11 @@ public class SignInFragment extends PreferenceFragment
 	}
 
 	// TODO: 既存に合わせるためにstaticにしている。出来れば変えたい。
-	public static void showModal(FragmentManager fragmentManager) {
+	public static void showModal(InVehicleDeviceActivity inVehicleDeviceActivity) {
+	  if (inVehicleDeviceActivity.destroyed) { return; }
+
+	  FragmentManager fragmentManager = inVehicleDeviceActivity.getFragmentManager();
+
 	  if (fragmentManager.findFragmentByTag(FRAGMENT_TAG) != null) { return; }
 
 	  Fragments.showModalFragment(fragmentManager, SignInFragment.newInstance(), FRAGMENT_TAG);

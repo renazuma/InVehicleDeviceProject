@@ -1,15 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.view.fragment;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-
-import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTimeUtils;
-
 import android.app.Activity;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
@@ -29,15 +19,25 @@ import android.widget.TextView;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.OperationSchedule.Phase;
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.ServiceUnitStatusLog;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.OperationSchedule.Phase;
+import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.view.fragment.informationBarFragment.BatteryAlerter;
 import com.kogasoftware.odt.invehicledevice.view.fragment.informationBarFragment.BgColorTransitionDrawable;
 import com.kogasoftware.odt.invehicledevice.view.fragment.informationBarFragment.NetworkAlerter;
-import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
 import com.kogasoftware.odt.invehicledevice.view.util.ViewDisabler;
+
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTimeUtils;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * 時刻やバッテリー状況などを表示する領域
@@ -140,7 +140,7 @@ public class InformationBarFragment
 			public void onClick(View v) {
 				Activity activity = getActivity();
 				if (activity instanceof InVehicleDeviceActivity) {
-					((InVehicleDeviceActivity) activity).showLoginFragment();
+		             SignInFragment.showModal((InVehicleDeviceActivity)activity);
 				}
 			}
 		});

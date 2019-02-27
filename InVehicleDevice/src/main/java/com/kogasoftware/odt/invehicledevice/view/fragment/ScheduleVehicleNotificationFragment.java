@@ -17,7 +17,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.ServiceProvider;
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
@@ -199,11 +198,15 @@ public class ScheduleVehicleNotificationFragment extends Fragment
 	}
 
 	// TODO: 既存に合わせるためにstaticにしている。出来れば変えたい。
-	public static void showModal(FragmentManager fragmentManager, ServiceProvider serviceProvider) {
+	public static void showModal(InVehicleDeviceActivity inVehicleDeviceActivity) {
+		if (inVehicleDeviceActivity.destroyed || inVehicleDeviceActivity.serviceProvider == null) { return; }
+
+		FragmentManager fragmentManager = inVehicleDeviceActivity.getFragmentManager();
+
 		if (fragmentManager.findFragmentByTag(FRAGMENT_TAG) != null) { return; }
 
 		Fragments.showModalFragment(fragmentManager,
-				ScheduleVehicleNotificationFragment.newInstance(!serviceProvider.operationListOnly),
+				ScheduleVehicleNotificationFragment.newInstance(!inVehicleDeviceActivity.serviceProvider.operationListOnly),
 				FRAGMENT_TAG);
 	}
 }

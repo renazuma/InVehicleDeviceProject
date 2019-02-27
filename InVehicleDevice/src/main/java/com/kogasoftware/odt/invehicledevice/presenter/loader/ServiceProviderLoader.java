@@ -10,6 +10,8 @@ import android.os.Looper;
 
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.ServiceProvider;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
+import com.kogasoftware.odt.invehicledevice.view.fragment.OperationListFragment;
+import com.kogasoftware.odt.invehicledevice.view.fragment.OrderedOperationFragment;
 
 /**
  * ServiceProvider情報を購読し、オペレーション画面を操作するLoaderを操作するクラス
@@ -46,19 +48,19 @@ public class ServiceProviderLoader {
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
       Runnable showOperationListFragmentTask = new Runnable() {
         @Override
-        public void run() { inVehicleDeviceActivity.showOperationListFragment(); }
+        public void run() { OperationListFragment.showModal(inVehicleDeviceActivity); }
       };
       Runnable hideOperationListFragmentTask = new Runnable() {
         @Override
-        public void run() { inVehicleDeviceActivity.hideOperationListFragment(); }
+        public void run() { OperationListFragment.hideModal(inVehicleDeviceActivity); }
       };
       Runnable showOrderedOperationFragmentTask = new Runnable() {
         @Override
-        public void run() { inVehicleDeviceActivity.showOrderedOperationFragment(); }
+        public void run() { OrderedOperationFragment.showModal(inVehicleDeviceActivity); }
       };
       Runnable hideOrderedOperationFragmentTask = new Runnable() {
         @Override
-        public void run() { inVehicleDeviceActivity.hideOrderedOperationFragment(); }
+        public void run() { OrderedOperationFragment.hideModal(inVehicleDeviceActivity); }
       };
 
       Handler mainUIHandler = new Handler(Looper.getMainLooper());

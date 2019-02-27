@@ -10,6 +10,8 @@ import android.os.Looper;
 
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
+import com.kogasoftware.odt.invehicledevice.view.fragment.ScheduleVehicleNotificationFragment;
+import com.kogasoftware.odt.invehicledevice.view.fragment.VehicleNotificationAlertFragment;
 
 /**
  * スケジュール通知を購読し、通知を行うLoaderを操作するクラス
@@ -60,12 +62,12 @@ public class ScheduleNotificationLoader {
 
       mainUIHandler.post(new Runnable() {
         @Override
-        public void run() { inVehicleDeviceActivity.showNotificationAlertFragment(); }
+        public void run() { VehicleNotificationAlertFragment.showModal(inVehicleDeviceActivity); }
       });
 
       mainUIHandler.postDelayed(new Runnable() {
         @Override
-        public void run() { inVehicleDeviceActivity.showScheduleNotificationsFragment(); }
+        public void run() { ScheduleVehicleNotificationFragment.showModal(inVehicleDeviceActivity); }
       }, inVehicleDeviceActivity.VEHICLE_NOTIFICATION_ALERT_DELAY_MILLIS);
     }
 
