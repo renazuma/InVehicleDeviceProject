@@ -56,7 +56,7 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
 	}
 
 	private void save(VehicleNotificationJson[] pulledJson) {
-		List<Uri> committedUris = Lists.newLinkedList();
+		List<Uri> committedAdminNotificationUris = Lists.newLinkedList();
 		boolean existAdminNotification = false;
 		boolean existScheduleNotification = false;
 
@@ -64,10 +64,10 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
 			database.beginTransaction();
 			for (VehicleNotificationJson json : selectTargetJson(pulledJson)) {
 				database.insertOrThrow(VehicleNotification.TABLE_NAME, null, json.toContentValues());
-				committedUris.add(ContentUris.withAppendedId(VehicleNotification.CONTENT.URI, json.id));
 
 				if (json.isAdminNotification()) {
 					existAdminNotification = true;
+					committedAdminNotificationUris.add(ContentUris.withAppendedId(VehicleNotification.CONTENT.URI, json.id));
 				} else if (json.isScheduleNotification()) {
 					existScheduleNotification = true;
 				}
@@ -80,12 +80,12 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
 		if (existAdminNotification) playAdminNotificationVoice();
 		if (existScheduleNotification) playScheduleNotificationVoice();
 
-		for (Uri changedUri : committedUris) {
-			contentResolver.notifyChange(changedUri, null);
-		}
-		if (!committedUris.isEmpty()) {
+		// 管理者通知が存在する場合に、ローダーを起動するためのpublish。
+		// スケジュール通知はこの時点では表示対象ではない（スケジュール自体の同期が終わっていない）ため、ここではpublishされない。
+		if (!committedAdminNotificationUris.isEmpty()) {
 			contentResolver.notifyChange(VehicleNotification.CONTENT.URI, null);
 		}
+
 		executorService.execute(new GetOperationSchedulesTask(context, database, executorService, true));
 	}
 
