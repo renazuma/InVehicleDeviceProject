@@ -1,13 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.model.contentprovider.table;
 
-import java.io.Serializable;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.ScheduledExecutorService;
-
-import org.joda.time.DateTime;
-
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -21,6 +13,14 @@ import com.kogasoftware.android.CursorReader;
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.InVehicleDeviceContentProvider;
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.task.PatchPassengerRecordTask;
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.util.ContentValuesUtils;
+
+import org.joda.time.DateTime;
+
+import java.io.Serializable;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * 乗車実績テーブル
@@ -55,8 +55,9 @@ public class PassengerRecord implements Serializable {
 					.compare(l.userId, r.userId).compare(l.id, r.id).result();
 		}
 	};
-	public static final int SELECTED_GET_OFF_COLOR = Color
-			.parseColor("#40E0D0");
+
+	// 運行予定画面、乗降画面の、乗客行の背景色
+	public static final int SELECTED_GET_OFF_COLOR = Color.parseColor("#40E0D0");
 	public static final int GET_OFF_COLOR = Color.parseColor("#D5E9F6");
 	public static final int SELECTED_GET_ON_COLOR = Color.parseColor("#FF69B4");
 	public static final int GET_ON_COLOR = Color.parseColor("#F9D9D8");

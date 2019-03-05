@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!-- 予約メモ画面設定 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/ModalView.Layout"
     android:layout_width="match_parent"
