@@ -34,19 +34,15 @@ public class OrderedOperationFragment extends OperationSchedulesAndPassengerReco
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.ordered_operation_fragment, container,
-				false);
+		return inflater.inflate(R.layout.ordered_operation_fragment, container,	false);
 	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		FragmentTransaction fragmentTransaction = getFragmentManager()
-				.beginTransaction();
-		fragmentTransaction.add(R.id.control_fragment_container,
-				ControlBarFragment.newInstance());
-		fragmentTransaction.add(R.id.information_fragment_container,
-				InformationBarFragment.newInstance());
+		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+		fragmentTransaction.add(R.id.control_fragment_container, ControlBarFragment.newInstance());
+		fragmentTransaction.add(R.id.information_fragment_container, InformationBarFragment.newInstance());
 		fragmentTransaction.commitAllowingStateLoss();
 	}
 
@@ -55,29 +51,26 @@ public class OrderedOperationFragment extends OperationSchedulesAndPassengerReco
 			Phase phase, LinkedList<OperationSchedule> operationSchedules,
 			LinkedList<PassengerRecord> passengerRecords, Boolean phaseChanged) {
 		Log.i(LOGGING_TAG, "phase=" + phase + " phaseChanged=" + phaseChanged);
-		if (!phaseChanged) {
-			return;
-		}
-		FragmentTransaction fragmentTransaction = getFragmentManager()
-				.beginTransaction();
+
+		if (!phaseChanged) { return; }
+
+		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+
 		switch (phase) {
 			case FINISH :
-				fragmentTransaction.replace(R.id.phase_fragment_container,
-						FinishPhaseFragment.newInstance());
+				fragmentTransaction.replace(R.id.phase_fragment_container, FinishPhaseFragment.newInstance());
 				break;
 			case DRIVE :
-				fragmentTransaction.replace(R.id.phase_fragment_container,
-						DrivePhaseFragment.newInstance(operationSchedules));
+				fragmentTransaction.replace(R.id.phase_fragment_container, DrivePhaseFragment.newInstance(operationSchedules));
 				break;
 			case PLATFORM_GET_ON :
-				fragmentTransaction.replace(R.id.phase_fragment_container,
-						PlatformPhaseFragment.newInstance(operationSchedules));
+				fragmentTransaction.replace(R.id.phase_fragment_container, PlatformPhaseFragment.newInstance(operationSchedules));
 				break;
 			case PLATFORM_GET_OFF :
-				fragmentTransaction.replace(R.id.phase_fragment_container,
-						PlatformPhaseFragment.newInstance(operationSchedules));
+				fragmentTransaction.replace(R.id.phase_fragment_container, PlatformPhaseFragment.newInstance(operationSchedules));
 				break;
 		}
+
 		fragmentTransaction.commitAllowingStateLoss();
 	}
 
@@ -91,9 +84,7 @@ public class OrderedOperationFragment extends OperationSchedulesAndPassengerReco
 		if (fragmentManager.findFragmentByTag(FRAGMENT_TAG) != null) { return; }
 
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-		fragmentTransaction.add(R.id.modal_fragment_container,
-						OrderedOperationFragment.newInstance(),
-						FRAGMENT_TAG);
+		fragmentTransaction.add(R.id.modal_fragment_container, OrderedOperationFragment.newInstance(), FRAGMENT_TAG);
 		fragmentTransaction.commitAllowingStateLoss();
 	}
 

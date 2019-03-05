@@ -31,21 +31,17 @@ public class ServiceProvider {
 		CursorReader reader = new CursorReader(cursor);
 		id = reader.readLong(ServiceProvider.Columns._ID);
 		name = reader.readString(ServiceProvider.Columns.NAME);
-		logAccessKeyIdAws = reader
-				.readString(ServiceProvider.Columns.LOG_ACCESS_KEY_ID_AWS);
-		logSecretAccessKeyAws = reader
-				.readString(ServiceProvider.Columns.LOG_SECRET_ACCESS_KEY_AWS);
+		logAccessKeyIdAws = reader.readString(ServiceProvider.Columns.LOG_ACCESS_KEY_ID_AWS);
+		logSecretAccessKeyAws = reader.readString(ServiceProvider.Columns.LOG_SECRET_ACCESS_KEY_AWS);
+		// TODO: falseしか無い？不要なのでは。
 		operationListOnly = false;
 	}
 
 	public static Cursor query(InVehicleDeviceContentProvider contentProvider,
-			String[] projection, String selection, String[] selectionArgs,
-			String sortOrder) {
-		Cursor cursor = contentProvider.getDatabase().query(
-				ServiceProvider.TABLE_NAME, projection, selection,
-				selectionArgs, null, null, sortOrder);
-		cursor.setNotificationUri(contentProvider.getContext()
-				.getContentResolver(), ServiceProvider.CONTENT.URI);
+			String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+		Cursor cursor = contentProvider.getDatabase()
+						    .query(ServiceProvider.TABLE_NAME, projection, selection,selectionArgs, null, null, sortOrder);
+		cursor.setNotificationUri(contentProvider.getContext().getContentResolver(), ServiceProvider.CONTENT.URI);
 		return cursor;
 	}
 

@@ -1,10 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.view.fragment;
 
 import android.app.Activity;
-import android.app.LoaderManager.LoaderCallbacks;
-import android.content.CursorLoader;
-import android.content.Loader;
-import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,7 +17,6 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.OperationSchedule.Phase;
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.PassengerRecord;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.ServiceUnitStatusLog;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.view.fragment.informationBarFragment.BatteryAlerter;
 import com.kogasoftware.odt.invehicledevice.view.fragment.informationBarFragment.BgColorTransitionDrawable;
@@ -42,51 +37,15 @@ import java.util.Locale;
 /**
  * 時刻やバッテリー状況などを表示する領域
  */
-public class InformationBarFragment
-		extends
-			OperationSchedulesAndPassengerRecordsFragment {
+public class InformationBarFragment	extends OperationSchedulesAndPassengerRecordsFragment {
 	private static final int UPDATE_TIME_INTERVAL_MILLIS = 3000;
-	private static final int OPEATION_SCHEDULES_LOADER_ID = 1;
+	private static final int OPERATION_SCHEDULES_LOADER_ID = 1;
 	private static final int PASSENGER_RECORDS_LOADER_ID = 2;
 
 	private BgColorTransitionDrawable bgColorTransitionDrawable;
 	private ImageView networkStrengthImageView;
 	private TextView presentTimeTextView;
 	private Handler handler;
-
-	LoaderCallbacks<Cursor> serviceUnitStatusLogsLoaderCallbacks = new LoaderCallbacks<Cursor>() {
-		@Override
-		public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-			String order = ServiceUnitStatusLog.Columns.CREATED_AT + " DESC";
-			return new CursorLoader(getActivity(),
-					ServiceUnitStatusLog.CONTENT.URI, null, null, null, order);
-		}
-
-		@Override
-		public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-			if (!cursor.moveToFirst()) {
-				return;
-			}
-			Integer signalStrengthPercentage = cursor
-					.getInt(cursor
-							.getColumnIndexOrThrow(ServiceUnitStatusLog.Columns.SIGNAL_STRENGTH));
-			int imageResourceId = R.drawable.network_strength_4;
-			if (signalStrengthPercentage.equals(0)) {
-				imageResourceId = R.drawable.network_strength_0;
-			} else if (signalStrengthPercentage <= 25) {
-				imageResourceId = R.drawable.network_strength_1;
-			} else if (signalStrengthPercentage <= 50) {
-				imageResourceId = R.drawable.network_strength_2;
-			} else if (signalStrengthPercentage <= 75) {
-				imageResourceId = R.drawable.network_strength_3;
-			}
-			networkStrengthImageView.setImageResource(imageResourceId);
-		}
-
-		@Override
-		public void onLoaderReset(Loader<Cursor> loader) {
-		}
-	};
 
 	public static InformationBarFragment newInstance() {
 		InformationBarFragment fragment = new InformationBarFragment();
@@ -97,8 +56,7 @@ public class InformationBarFragment
 		@Override
 		public void run() {
 			Date now = new Date(DateTimeUtils.currentTimeMillis());
-			DateFormat f = new SimpleDateFormat(
-					getString(R.string.present_time_format), Locale.US);
+			DateFormat f = new SimpleDateFormat(getString(R.string.present_time_format), Locale.US);
 			presentTimeTextView.setText(f.format(now));
 			handler.postDelayed(this, UPDATE_TIME_INTERVAL_MILLIS);
 		}
@@ -119,22 +77,17 @@ public class InformationBarFragment
 	 */
 	private Runnable changeBgColor;
 
-	private final List<PassengerRecord> passengerRecords = Lists
-			.newLinkedList();
-	private final List<OperationSchedule> operationSchedules = Lists
-			.newLinkedList();
+	private final List<PassengerRecord> passengerRecords = Lists.newLinkedList();
+	private final List<OperationSchedule> operationSchedules = Lists.newLinkedList();
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		View view = getView();
 		handler = new Handler();
-		presentTimeTextView = (TextView) view
-				.findViewById(R.id.present_time_text_view);
-		networkStrengthImageView = (ImageView) view
-				.findViewById(R.id.network_strength_image_view);
-		ImageView openLoginImageView = (ImageView) view
-				.findViewById(R.id.open_login_image_view);
+		presentTimeTextView = (TextView) view.findViewById(R.id.present_time_text_view);
+		networkStrengthImageView = (ImageView) view.findViewById(R.id.network_strength_image_view);
+		ImageView openLoginImageView = (ImageView) view.findViewById(R.id.open_login_image_view);
 		openLoginImageView.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -144,8 +97,7 @@ public class InformationBarFragment
 				}
 			}
 		});
-		bgColorTransitionDrawable = new BgColorTransitionDrawable(
-				getPhaseColor());
+		bgColorTransitionDrawable = new BgColorTransitionDrawable(getPhaseColor());
 		changeBgColor = new Runnable() {
 			@Override
 			public void run() {
@@ -154,9 +106,10 @@ public class InformationBarFragment
 		};
 		View bcwl = view.findViewById(R.id.background_color_workaround_layout);
 		bcwl.setBackgroundDrawable(bgColorTransitionDrawable);
-		blinkBatteryAlert = new BatteryAlerter(getActivity()
-				.getApplicationContext(), handler, (ImageView) getView()
-				.findViewById(R.id.battery_alert_image_view),
+		blinkBatteryAlert = new BatteryAlerter(
+				getActivity().getApplicationContext(),
+				handler,
+				(ImageView) getView().findViewById(R.id.battery_alert_image_view),
 				getFragmentManager());
 		networkAlert = new NetworkAlerter(
 				getActivity().getApplicationContext(),
@@ -166,10 +119,8 @@ public class InformationBarFragment
 		);
 	}
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.information_bar_fragment, container,
-				false);
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		return inflater.inflate(R.layout.information_bar_fragment, container,false);
 	}
 
 	@Override
@@ -193,11 +144,9 @@ public class InformationBarFragment
 		handler.removeCallbacks(changeBgColor);
 		handler.postDelayed(changeBgColor, 400);
 		View view = getView();
-		TextView phaseTextView = (TextView) view
-				.findViewById(R.id.phase_text_view);
+		TextView phaseTextView = (TextView) view.findViewById(R.id.phase_text_view);
 		Boolean showPlatformMemo = true;
-		switch (OperationSchedule
-				.getPhase(operationSchedules, passengerRecords)) {
+		switch (OperationSchedule.getPhase(operationSchedules, passengerRecords)) {
 			case DRIVE :
 				phaseTextView.setText("運行中");
 				break;
@@ -213,13 +162,10 @@ public class InformationBarFragment
 				break;
 		}
 
-		final OperationSchedule operationSchedule = OperationSchedule
-				.getCurrent(operationSchedules);
-		final Button platformMemoButton = (Button) view
-				.findViewById(R.id.platform_memo_button);
+		final OperationSchedule operationSchedule = OperationSchedule.getCurrent(operationSchedules);
+		final Button platformMemoButton = (Button) view.findViewById(R.id.platform_memo_button);
 		platformMemoButton.setVisibility(View.INVISIBLE);
-		if (showPlatformMemo && operationSchedule != null
-				&& StringUtils.isNotBlank(operationSchedule.memo)) {
+		if (showPlatformMemo && operationSchedule != null && StringUtils.isNotBlank(operationSchedule.memo)) {
 			platformMemoButton.setVisibility(View.VISIBLE);
 			platformMemoButton.setOnClickListener(new OnClickListener() {
 				@Override
@@ -232,16 +178,13 @@ public class InformationBarFragment
 	}
 
 	public void showPlatformMemoFragment(OperationSchedule operationSchedule) {
-		if (!isAdded()) {
-			return;
-		}
-		Fragments.showModalFragment(getFragmentManager(),
-				PlatformMemoFragment.newInstance(operationSchedule));
+		if (!isAdded()) { return; }
+
+		Fragments.showModalFragment(getFragmentManager(), PlatformMemoFragment.newInstance(operationSchedule));
 	}
 
 	private int getPhaseColor() {
-		switch (OperationSchedule
-				.getPhase(operationSchedules, passengerRecords)) {
+		switch (OperationSchedule.getPhase(operationSchedules, passengerRecords)) {
 			case DRIVE :
 				return Color.rgb(0xAA, 0xFF, 0xAA);
 			case FINISH :
@@ -260,7 +203,7 @@ public class InformationBarFragment
 	public void onDestroyView() {
 		super.onDestroyView();
 		getLoaderManager().destroyLoader(PASSENGER_RECORDS_LOADER_ID);
-		getLoaderManager().destroyLoader(OPEATION_SCHEDULES_LOADER_ID);
+		getLoaderManager().destroyLoader(OPERATION_SCHEDULES_LOADER_ID);
 	}
 
 	@Override
