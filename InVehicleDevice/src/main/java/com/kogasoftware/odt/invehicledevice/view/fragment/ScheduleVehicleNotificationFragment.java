@@ -205,8 +205,6 @@ public class ScheduleVehicleNotificationFragment extends Fragment
 
 		if (fragmentManager.findFragmentByTag(FRAGMENT_TAG) != null) { return; }
 
-		Fragments.showModalFragment(fragmentManager,
-				ScheduleVehicleNotificationFragment.newInstance(!inVehicleDeviceActivity.serviceProvider.operationListOnly),
-				FRAGMENT_TAG);
+		Fragments.showModalFragment(fragmentManager, ScheduleVehicleNotificationFragment.newInstance(true), FRAGMENT_TAG);
 	}
 }

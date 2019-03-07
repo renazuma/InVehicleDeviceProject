@@ -1,12 +1,12 @@
 package com.kogasoftware.odt.invehicledevice.presenter.service;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.ContextCompat;
 
 import com.kogasoftware.odt.invehicledevice.presenter.service.logservice.LogService;
 import com.kogasoftware.odt.invehicledevice.presenter.service.serviceunitstatuslogservice.ServiceUnitStatusLogService;
 import com.kogasoftware.odt.invehicledevice.presenter.service.startupservice.StartupService;
-import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 
 /**
  * Created by ksc on 2019/02/22.
@@ -14,28 +14,26 @@ import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivit
 
 public class ServicePresenter {
 
-  private InVehicleDeviceActivity inVehicleDeviceActivity;
+  private Context context;
 
-  public ServicePresenter(InVehicleDeviceActivity inVehicleDeviceActivity) {
-    this.inVehicleDeviceActivity = inVehicleDeviceActivity;
+  public ServicePresenter(Context context) {
+    this.context = context;
   }
 
   public void onCreate() {
     try {
-      ContextCompat.startForegroundService(inVehicleDeviceActivity, new Intent(inVehicleDeviceActivity, ServiceUnitStatusLogService.class));
-      ContextCompat.startForegroundService(inVehicleDeviceActivity, new Intent(inVehicleDeviceActivity, LogService.class));
+      ContextCompat.startForegroundService(context, new Intent(context, ServiceUnitStatusLogService.class));
+      ContextCompat.startForegroundService(context, new Intent(context, LogService.class));
       // TODO: StartupServiceについては、バックグラウンドで動き続けるべきかの判断が出来なかったため、据え置きとしている
       // ※8.0以降はバックグラウンドでは動かない
-      inVehicleDeviceActivity.startService(new Intent(inVehicleDeviceActivity, StartupService.class));
+      context.startService(new Intent(context, StartupService.class));
     } catch (UnsupportedOperationException e) {
       // IsolatedContext
     }
   }
 
   public void onDestroy() {
-    inVehicleDeviceActivity.stopService(new Intent(inVehicleDeviceActivity, ServiceUnitStatusLogService.class));
-    inVehicleDeviceActivity.stopService(new Intent(inVehicleDeviceActivity, LogService.class));
+    context.stopService(new Intent(context, ServiceUnitStatusLogService.class));
+    context.stopService(new Intent(context, LogService.class));
   }
-
-
 }

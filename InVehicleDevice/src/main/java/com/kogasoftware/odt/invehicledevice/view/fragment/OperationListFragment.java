@@ -1,8 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.view.fragment;
 
 import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
@@ -193,35 +191,5 @@ public class OperationListFragment extends Fragment {
 		if (count >= 1) {
 			listView.setSelectionFromTop(count - 1, 0);
 		}
-	}
-
-	// TODO: 共通処理のshowModalFragmentと、customAnimation以外は変わらない。共通処理を使っていないのはそこが理由なのかを確認。
-	// TODO: 既存に合わせるためにstaticにしている。出来れば変えたい。
-	public static void showModal(InVehicleDeviceActivity inVehicleDeviceActivity) {
-		if (inVehicleDeviceActivity.destroyed) { return; }
-
-		FragmentManager fragmentManager = inVehicleDeviceActivity.getFragmentManager();
-
-		if (fragmentManager.findFragmentByTag(FRAGMENT_TAG) != null) { return; }
-
-		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-		fragmentTransaction.add(R.id.modal_fragment_container,
-						OperationListFragment.newInstance(false),
-						FRAGMENT_TAG);
-		fragmentTransaction.commitAllowingStateLoss();
-    }
-
-	// TODO: 共通処理のhideは使えない？確認する。
-	// TODO: 既存に合わせるためにstaticにしている。出来れば変えたい。
-    public static void hideModal(InVehicleDeviceActivity inVehicleDeviceActivity) {
-		if (inVehicleDeviceActivity.destroyed) { return; }
-
-		FragmentManager fragmentManager = inVehicleDeviceActivity.getFragmentManager();
-
-		if (fragmentManager.findFragmentByTag(FRAGMENT_TAG) == null) { return; }
-
-		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-		fragmentTransaction.remove(fragmentManager.findFragmentByTag(FRAGMENT_TAG));
-		fragmentTransaction.commitAllowingStateLoss();
 	}
 }

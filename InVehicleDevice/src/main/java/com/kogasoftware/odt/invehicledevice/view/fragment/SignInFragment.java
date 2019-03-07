@@ -50,10 +50,10 @@ import java.util.concurrent.Executors;
 /**
  * サインイン情報の入力画面
  */
-public class SignInFragment extends PreferenceFragment
-		implements
-			LoaderCallbacks<Cursor>,
-			OnSharedPreferenceChangeListener {
+public class SignInFragment
+				extends PreferenceFragment
+				implements LoaderCallbacks<Cursor>, OnSharedPreferenceChangeListener {
+
 	private static final int LOADER_ID = 1;
 	private static final String FIRST_LOAD_KEY = "first_load";
 
@@ -68,8 +68,7 @@ public class SignInFragment extends PreferenceFragment
 	private Preference policyLink;
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.sign_in_fragment, container, false);
 	}
 
@@ -91,14 +90,11 @@ public class SignInFragment extends PreferenceFragment
 		}
 		loaderManager = getLoaderManager();
 		executor = Executors.newFixedThreadPool(1);
-		preferences = PreferenceManager
-				.getDefaultSharedPreferences(getActivity());
+		preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		preferences.registerOnSharedPreferenceChangeListener(this);
-		getActivity().registerReceiver(errorReceiver,
-				new IntentFilter(SignInErrorBroadcastIntent.ACTION));
+		getActivity().registerReceiver(errorReceiver, new IntentFilter(SignInErrorBroadcastIntent.ACTION));
 		loaderManager.initLoader(LOADER_ID, null, this);
-		Button saveConfigButton = (Button) getView().findViewById(
-				R.id.save_config_button);
+		Button saveConfigButton = (Button) getView().findViewById(R.id.save_config_button);
 		saveConfigButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -184,8 +180,7 @@ public class SignInFragment extends PreferenceFragment
 		}
 		showProgressDialog();
 
-		final ContentResolver contentResolver = getActivity()
-				.getContentResolver();
+		final ContentResolver contentResolver = getActivity().getContentResolver();
 		executor.submit(new Runnable() {
 			@Override
 			public void run() {
@@ -215,6 +210,9 @@ public class SignInFragment extends PreferenceFragment
 		return fragment;
 	}
 
+
+	// TODO: Loaderは同じqueryを見るものを、activity起動時にも定義している。（そちらは初期表示用）
+	// TODO: 纏めてしまって良いのでは？
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		return new CursorLoader(getActivity(), InVehicleDevice.CONTENT.URI,
@@ -223,19 +221,23 @@ public class SignInFragment extends PreferenceFragment
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+		// 0取得結果が無い場合
 		if (!cursor.moveToFirst()) {
 			firstLoad = false;
 			return;
 		}
-		if (cursor.getString(cursor
-				.getColumnIndexOrThrow("authentication_token")) != null
-				&& !firstLoad) {
+
+		// トークンが取得済みかつfirstLoadではない場合に、画面を隠す
+		if (cursor.getString(cursor.getColumnIndexOrThrow("authentication_token")) != null && !firstLoad) {
 			Fragments.hide(this);
 		}
+
+		// データが存在する場合の初期表示
 		firstLoad = false;
 		Editor editor = preferences.edit();
 		for (String key : new String[]{InVehicleDevice.Columns._ID,
-				InVehicleDevice.Columns.URL, InVehicleDevice.Columns.LOGIN,
+				InVehicleDevice.Columns.URL,
+				InVehicleDevice.Columns.LOGIN,
 				InVehicleDevice.Columns.PASSWORD}) {
 			String value = cursor.getString(cursor.getColumnIndexOrThrow(key));
 			editor.putString(key, value);

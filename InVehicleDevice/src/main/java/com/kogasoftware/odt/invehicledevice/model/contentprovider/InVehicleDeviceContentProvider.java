@@ -45,8 +45,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class InVehicleDeviceContentProvider extends ContentProvider {
 	public static final String AUTHORITY = "com.kogasoftware.odt.invehicledevice.model.contentprovider";
-	private static final UriMatcher MATCHER = new UriMatcher(
-			UriMatcher.NO_MATCH);
+	private static final UriMatcher MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
 	public static final ObjectMapper JSON = new ObjectMapper();
 	static {
 		JSON.registerModule(new JodaModule());
@@ -65,8 +64,9 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
 
 	private DatabaseHelper databaseHelper;
 	private SQLiteDatabase database;
-	private ScheduledExecutorService executorService = Executors
-			.newScheduledThreadPool(1); // 順番を保持したまま処理したい通信があるため、スレッドの数は1で固定
+
+	// 順番を保持したまま処理したい通信があるため、スレッドの数は1で固定
+	private ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
 
 	public SQLiteDatabase getDatabase() {
 		return database;
@@ -86,6 +86,10 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
 
 		databaseHelper = new DatabaseHelper(context);
 		database = databaseHelper.getWritableDatabase();
+
+		// TODO: 定期処理はここで良い？ContentProviderはあくまでDBとのやり取りを担う機能としておいて、定期処理はMainActivityで開始するべきでは？
+        // TODO: おそらく、Activityがバックグラウンドに入っても連携はし続ける必要があるので、ContentProviderに入っているのだと考えられる。
+		// TODO: それであれば、別途serviceに切り出したりした方が良いかも。
 
 		// 一定間隔で、未読通知をサーバから取得
 		executorService.scheduleWithFixedDelay(
@@ -132,7 +136,7 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
 						PatchPassengerRecordTask.INTERVAL_MILLIS,
 						TimeUnit.MILLISECONDS);
 
-		// 起動時に一度だけ、運行情報ををサーバ側から取得
+		// 起動時に一度だけ、運行情報をサーバ側から取得
 		executorService.execute(new GetOperationSchedulesTask(context, database, executorService));
 
 		// 起動時に一度だけ、サービスプロバイダーをサーバ側から取得
@@ -216,16 +220,13 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
 	}
 
 	@Override
-	public int update(Uri uri, ContentValues values, String selection,
-			String[] selectionArgs) {
+	public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
 		Integer match = MATCHER.match(uri);
 		switch (match) {
 			case PassengerRecord.TABLE_CODE :
-				return PassengerRecord.update(this, values, selection,
-						selectionArgs);
+				return PassengerRecord.update(this, values, selection,	selectionArgs);
 			case ServiceUnitStatusLog.TABLE_CODE :
-				return ServiceUnitStatusLog.update(this, values, selection,
-						selectionArgs);
+				return ServiceUnitStatusLog.update(this, values, selection, selectionArgs);
 			default :
 				throw new IllegalArgumentException("Unknown uri: " + uri);
 		}
@@ -236,21 +237,17 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
 		Cursor cursor = database.query(InVehicleDevice.TABLE_NAME, null, null,
 				null, null, null, null);
 		try {
-			if (!cursor.moveToFirst()) {
-				return;
-			}
-			Integer authenticationTokenIndex = cursor
-					.getColumnIndexOrThrow(InVehicleDevice.Columns.AUTHENTICATION_TOKEN);
-			if (cursor.isNull(authenticationTokenIndex)) {
-				return;
-			}
+			if (!cursor.moveToFirst()) { return; }
+
+			Integer authenticationTokenIndex = cursor.getColumnIndexOrThrow(InVehicleDevice.Columns.AUTHENTICATION_TOKEN);
+
+			if (cursor.isNull(authenticationTokenIndex)) { return; }
+
 		} finally {
 			cursor.close();
 		}
-		executorService.execute(new GetServiceProviderTask(getContext(),
-				database, executorService));
-		executorService.execute(new GetOperationSchedulesTask(getContext(),
-				database, executorService));
+		executorService.execute(new GetServiceProviderTask(getContext(), database, executorService));
+		executorService.execute(new GetOperationSchedulesTask(getContext(),	database, executorService));
 	}
 
 	/**
@@ -264,8 +261,7 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
 		try {
 			executorService.shutdownNow();
 			try {
-				Assert.assertTrue(executorService.awaitTermination(30,
-						TimeUnit.SECONDS));
+				Assert.assertTrue(executorService.awaitTermination(30, TimeUnit.SECONDS));
 			} catch (InterruptedException e) {
 				throw new RuntimeException(e);
 			}

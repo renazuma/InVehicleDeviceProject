@@ -36,6 +36,8 @@ public class InVehicleDeviceActivity extends Activity {
     super.onCreate(savedInstanceState);
     this.destroyed = false;
     (new PermissionChecker(this)).check();
+
+    // このActivityは固有の表示を持たず、コンテナのみを提供しており、具体的な表示はFragmentが行う。
     setContentView(R.layout.in_vehicle_device_activity);
 
     // Loaderを使用するためには、onStartより前の時点で、一度getLoaderManagerを実行しておく必要がある。

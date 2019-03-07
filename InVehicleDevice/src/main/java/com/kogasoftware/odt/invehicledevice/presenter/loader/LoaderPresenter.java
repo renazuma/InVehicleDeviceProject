@@ -3,33 +3,33 @@ package com.kogasoftware.odt.invehicledevice.presenter.loader;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 
 /**
- * Activityで扱うLoaderを操作するクラス
+ * Activityで扱う必要があるLoaderを操作するクラス
  */
 
 public class LoaderPresenter {
 
   // 管理対象Loader
+  private onCreateInVehicleDeviceLoader onCreateInVehicleDeviceLoader;
+  private ServiceProviderLoader serviceProviderLoader;
   private AdminNotificationLoader adminNotificationLoader;
   private ScheduleNotificationLoader scheduleNotificationLoader;
-  private ServiceProviderLoader serviceProviderLoader;
-  private InVehicleDeviceLoader inVehicleDeviceLoader;
 
   public LoaderPresenter(InVehicleDeviceActivity inVehicleDeviceActivity) {
-    this.inVehicleDeviceLoader = new InVehicleDeviceLoader(inVehicleDeviceActivity);
+    this.onCreateInVehicleDeviceLoader = new onCreateInVehicleDeviceLoader(inVehicleDeviceActivity);
     this.serviceProviderLoader = new ServiceProviderLoader(inVehicleDeviceActivity);
     this.adminNotificationLoader = new AdminNotificationLoader(inVehicleDeviceActivity);
     this.scheduleNotificationLoader = new ScheduleNotificationLoader(inVehicleDeviceActivity);
   }
 
   public void onCreate() {
-    inVehicleDeviceLoader.initLoader();
+    onCreateInVehicleDeviceLoader.initLoader();
     serviceProviderLoader.initLoader();
     adminNotificationLoader.initLoader();
     scheduleNotificationLoader.initLoader();
   }
 
   public void onDestroy() {
-    inVehicleDeviceLoader.destroyLoader();
+    onCreateInVehicleDeviceLoader.destroyLoader();
     serviceProviderLoader.destroyLoader();
     adminNotificationLoader.destroyLoader();
     scheduleNotificationLoader.destroyLoader();

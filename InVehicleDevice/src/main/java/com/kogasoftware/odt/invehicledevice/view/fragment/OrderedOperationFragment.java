@@ -19,7 +19,7 @@ import java.util.LinkedList;
 /**
  * 順番に運行を進める画面。上部に「InformationBarFragment」右部に「ControlBarFragment」中心に「**PhaseFragment」を配置する
  */
-public class OrderedOperationFragment extends OperationSchedulesAndPassengerRecordsFragment {
+public class OrderedOperationFragment extends OperationSchedulesSyncFragmentAbstract {
 
 	private static final String LOGGING_TAG = OrderedOperationFragment.class.getSimpleName();
 
@@ -27,25 +27,29 @@ public class OrderedOperationFragment extends OperationSchedulesAndPassengerReco
 	private static final String FRAGMENT_TAG = InVehicleDeviceActivity.class + "/" + OrderedOperationFragment.class;
 
 	public static OrderedOperationFragment newInstance() {
-		OrderedOperationFragment fragment = new OrderedOperationFragment();
-		return fragment;
+		return new OrderedOperationFragment();
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		// トップ画面の空白のコンテナフラグメントに、実運用画面のフレームフラグメントを渡す（中身は別途設定される）
 		return inflater.inflate(R.layout.ordered_operation_fragment, container,	false);
 	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+
+		// トップ画面の右部分のボタンのコンテナフラグメント、ヘッダフラグメントを設定
 		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
 		fragmentTransaction.add(R.id.control_fragment_container, ControlBarFragment.newInstance());
 		fragmentTransaction.add(R.id.information_fragment_container, InformationBarFragment.newInstance());
 		fragmentTransaction.commitAllowingStateLoss();
 	}
 
+
+	// 運行スケジュールが新しく同期される度に、運行メイン画面を最新化する
+	// TODO: control_fragmentやinformation_fragmentに合わせるのであれば、phase_fragmentを別クラスで用意し、ここはコンテナに徹するべきでは？
 	@Override
 	protected void onOperationSchedulesAndPassengerRecordsLoadFinished(
 			Phase phase, LinkedList<OperationSchedule> operationSchedules,
@@ -54,6 +58,7 @@ public class OrderedOperationFragment extends OperationSchedulesAndPassengerReco
 
 		if (!phaseChanged) { return; }
 
+		// スケジュール同期後に、phase（運行中、運行終了等）フラグメントを設定
 		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
 
 		switch (phase) {
@@ -74,6 +79,7 @@ public class OrderedOperationFragment extends OperationSchedulesAndPassengerReco
 		fragmentTransaction.commitAllowingStateLoss();
 	}
 
+	// 実運用画面の表示
 	// TODO: 共通処理のshowModalFragmentと、customAnimation以外は変わらない。共通処理を使っていないのはそこが理由なのかを確認。
 	// TODO: 既存に合わせるためにstaticにしている。出来れば変えたい。
 	public static void showModal(InVehicleDeviceActivity inVehicleDeviceActivity) {

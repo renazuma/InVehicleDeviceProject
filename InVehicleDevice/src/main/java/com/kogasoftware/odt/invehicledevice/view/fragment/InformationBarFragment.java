@@ -37,7 +37,7 @@ import java.util.Locale;
 /**
  * 時刻やバッテリー状況などを表示する領域
  */
-public class InformationBarFragment	extends OperationSchedulesAndPassengerRecordsFragment {
+public class InformationBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 	private static final int UPDATE_TIME_INTERVAL_MILLIS = 3000;
 	private static final int OPERATION_SCHEDULES_LOADER_ID = 1;
 	private static final int PASSENGER_RECORDS_LOADER_ID = 2;

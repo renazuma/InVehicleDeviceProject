@@ -17,9 +17,10 @@ import com.kogasoftware.odt.invehicledevice.view.fragment.VehicleNotificationAle
  * スケジュール通知を購読し、通知を行うLoaderを操作するクラス
  * スケジュール通知の仕様は以下
  * VehicleNotificationテーブルが同期された際に、新規スケジュール通知が追加される。
- * スケジュール通知追加を受けて、OperationScheduleテーブルが同期が開始される。
+ * スケジュール通知追加を受けて、OperationScheduleテーブルが同期開始される。
  * その際に紐づくOperationScheduleが更新された場合、VehicleNotificationテーブルのScheduleDownloadedも同時に更新される。
  * この時点で更新情報がpublishされ、定義済みCursorLoaderでのデータ取得が走り、onLoadFinishedが実行される。
+ * TODO: 画面に従属するLoaderなので、Fragmentに扱わせても良い？ライフサイクルを確認する事
  */
 
 public class ScheduleNotificationLoader {

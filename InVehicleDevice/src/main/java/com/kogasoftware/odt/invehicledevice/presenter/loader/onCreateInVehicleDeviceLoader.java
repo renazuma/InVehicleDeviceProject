@@ -13,17 +13,19 @@ import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivit
 import com.kogasoftware.odt.invehicledevice.view.fragment.SignInFragment;
 
 /**
- * 車載器情報を購読し、ログイン画面を管理するLoaderを操作するクラス
- */
+ * インストール直後に、ログイン画面を表示するためのLoaderを操作するクラス
+ * 車載器情報は誤ったデータでもDBに保存されるため、このローダは、インストール直後のデータが空の場合にしか通らない。
+ **/
 
-public class InVehicleDeviceLoader {
+public class onCreateInVehicleDeviceLoader {
 
   // TODO:InVehicleDeviceActivity配下で一意である必要がある。Activityクラスで管理した方が良い？
+  // TODO: SignInFragmentとLOADER_IDが同じ。という事は、これはActivityクラスで起動derでSignInj
   public static final Integer LOADER_ID = 1;
 
   private InVehicleDeviceActivity inVehicleDeviceActivity;
 
-  public InVehicleDeviceLoader(InVehicleDeviceActivity inVehicleDeviceActivity) {
+  public onCreateInVehicleDeviceLoader(InVehicleDeviceActivity inVehicleDeviceActivity) {
     // TODO:Activityを使いまわすのは良くない気がする。別の方法があれば変えたい。
     this.inVehicleDeviceActivity = inVehicleDeviceActivity;
   }
@@ -51,9 +53,10 @@ public class InVehicleDeviceLoader {
 
       mainUIHandler.post(new Runnable() {
         @Override
-        public void run() { SignInFragment.showModal(inVehicleDeviceActivity); }
+        public void run() {SignInFragment.showModal(inVehicleDeviceActivity); }
       });
     }
+
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {

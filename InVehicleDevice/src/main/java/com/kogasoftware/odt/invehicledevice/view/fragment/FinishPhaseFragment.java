@@ -21,10 +21,8 @@ public class FinishPhaseFragment extends Fragment {
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		Log.i(TAG, "onCreateView");
-		return inflater.inflate(R.layout.finish_phase_fragment, container,
-				false);
+		return inflater.inflate(R.layout.finish_phase_fragment, container, false);
 	}
 }

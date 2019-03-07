@@ -1,13 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.view.fragment;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-
-import org.joda.time.DateTime;
-
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Html;
@@ -22,17 +14,25 @@ import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.OperationSchedule.Phase;
+import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.view.util.arrayadapter.PassengerRecordArrayAdapter;
+
+import org.joda.time.DateTime;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * 停車中画面
  */
 public class PlatformPhaseFragment
 		extends
-			OperationSchedulesAndPassengerRecordsFragment {
+        OperationSchedulesSyncFragmentAbstract {
 	public static PlatformPhaseFragment newInstance(
 			LinkedList<OperationSchedule> operationSchedules) {
 		PlatformPhaseFragment fragment = new PlatformPhaseFragment();

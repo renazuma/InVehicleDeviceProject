@@ -23,7 +23,6 @@ public class ServiceProvider {
 
 	public Long id;
 	public String name;
-	public Boolean operationListOnly;
 	public String logSecretAccessKeyAws;
 	public String logAccessKeyIdAws;
 
@@ -33,14 +32,10 @@ public class ServiceProvider {
 		name = reader.readString(ServiceProvider.Columns.NAME);
 		logAccessKeyIdAws = reader.readString(ServiceProvider.Columns.LOG_ACCESS_KEY_ID_AWS);
 		logSecretAccessKeyAws = reader.readString(ServiceProvider.Columns.LOG_SECRET_ACCESS_KEY_AWS);
-		// TODO: falseしか無い？不要なのでは。
-		operationListOnly = false;
 	}
 
-	public static Cursor query(InVehicleDeviceContentProvider contentProvider,
-			String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-		Cursor cursor = contentProvider.getDatabase()
-						    .query(ServiceProvider.TABLE_NAME, projection, selection,selectionArgs, null, null, sortOrder);
+	public static Cursor query(InVehicleDeviceContentProvider contentProvider, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+		Cursor cursor = contentProvider.getDatabase().query(ServiceProvider.TABLE_NAME, projection, selection,selectionArgs, null, null, sortOrder);
 		cursor.setNotificationUri(contentProvider.getContext().getContentResolver(), ServiceProvider.CONTENT.URI);
 		return cursor;
 	}

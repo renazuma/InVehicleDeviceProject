@@ -21,10 +21,10 @@ import java.util.LinkedList;
 /**
  * 到着ボタン、地図ボタン、運行予定ボタンを表示する領域
  */
-public class ControlBarFragment	extends	OperationSchedulesAndPassengerRecordsFragment {
+public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 	private static final String TAG = ControlBarFragment.class.getSimpleName();
 	public static final String OPERATION_LIST_FRAGMENT_TAG = ControlBarFragment.class
-			+ "/" + OperationSchedulesAndPassengerRecordsFragment.class;
+			+ "/" + OperationSchedulesSyncFragmentAbstract.class;
 	private ContentResolver contentResolver;
 	private Button mapButton;
 
@@ -44,6 +44,8 @@ public class ControlBarFragment	extends	OperationSchedulesAndPassengerRecordsFra
 		contentResolver = getActivity().getContentResolver();
 		mapButton = (Button) getView().findViewById(R.id.map_button);
 		Button operationScheduleListButton = (Button) getView().findViewById(R.id.operation_schedule_list_button);
+
+		// TODO: 運行予定ボタンの定義。地図やphaseボタンと異なり、特別な引数や文字の変更が無いから、ここで定義されているが、わかりにくい。
 		operationScheduleListButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -70,9 +72,7 @@ public class ControlBarFragment	extends	OperationSchedulesAndPassengerRecordsFra
 	public void showOperationScheduleListFragment() {
 		if (!isAdded()) { return; }
 
-		Fragments.showModalFragment(getFragmentManager(),
-				OperationListFragment.newInstance(true),
-				OPERATION_LIST_FRAGMENT_TAG);
+		Fragments.showModalFragment(getFragmentManager(), OperationListFragment.newInstance(true), OPERATION_LIST_FRAGMENT_TAG);
 	}
 
 	public void showArrivalCheckFragment(Phase phase, LinkedList<OperationSchedule> operationSchedules, LinkedList<PassengerRecord> passengerRecords) {
@@ -121,11 +121,13 @@ public class ControlBarFragment	extends	OperationSchedulesAndPassengerRecordsFra
 		Fragments.showModalFragment(getFragmentManager(), PassengerRecordErrorFragment.newInstance(operationSchedule.id));
 	}
 
+	// 画面右部のボタンの、地図ボタン、phase変更ボタン（到着しました等）を定義する
 	@Override
 	protected void onOperationSchedulesAndPassengerRecordsLoadFinished(
 			final Phase phase,
 			final LinkedList<OperationSchedule> operationSchedules,
 			final LinkedList<PassengerRecord> passengerRecords) {
+
 		mapButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -133,6 +135,7 @@ public class ControlBarFragment	extends	OperationSchedulesAndPassengerRecordsFra
 				showNavigation(phase, operationSchedules, passengerRecords);
 			}
 		});
+
 		Button changePhaseButton = (Button) getView().findViewById(R.id.change_phase_button);
 		getView().setBackgroundColor(Color.WHITE);
 		switch (OperationSchedule.getPhase(operationSchedules, passengerRecords)) {

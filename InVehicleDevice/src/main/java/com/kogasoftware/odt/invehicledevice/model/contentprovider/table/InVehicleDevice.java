@@ -1,7 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.model.contentprovider.table;
 
-import java.util.concurrent.ScheduledExecutorService;
-
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -14,6 +12,8 @@ import com.kogasoftware.odt.invehicledevice.model.contentprovider.InVehicleDevic
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.task.GetOperationSchedulesTask;
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.task.GetServiceProviderTask;
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.task.SignInTask;
+
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * 車載器テーブル
@@ -31,34 +31,27 @@ public class InVehicleDevice {
 	}
 
 	public static Uri replaceLoginAndPassword(ContentValues values,
-			InVehicleDeviceContentProvider contentProvider,
-			Runnable onCompleteListener) {
+			InVehicleDeviceContentProvider contentProvider,	Runnable onCompleteListener) {
 		SQLiteDatabase database = contentProvider.getDatabase();
-		ContentResolver contentResolver = contentProvider.getContext()
-				.getContentResolver();
-		ScheduledExecutorService executorService = contentProvider
-				.getExecutorService();
+		ContentResolver contentResolver = contentProvider.getContext().getContentResolver();
+		ScheduledExecutorService executorService = contentProvider.getExecutorService();
 		Uri uri;
 		Long id;
 		try {
 			database.beginTransaction();
 			database.delete(InVehicleDevice.TABLE_NAME, null, null);
-			id = database.replaceOrThrow(InVehicleDevice.TABLE_NAME, null,
-					values);
+			id = database.replaceOrThrow(InVehicleDevice.TABLE_NAME, null, values);
 			uri = ContentUris.withAppendedId(InVehicleDevice.CONTENT.URI, id);
 			database.setTransactionSuccessful();
 		} finally {
 			database.endTransaction();
 		}
 		contentResolver.notifyChange(InVehicleDevice.CONTENT.URI, null);
-		SignInTask signInTask = new SignInTask(contentProvider.getContext(),
-				database, executorService);
+		SignInTask signInTask = new SignInTask(contentProvider.getContext(), database, executorService);
 		signInTask.addOnCompleteListener(onCompleteListener);
 		executorService.execute(signInTask);
-		executorService.execute(new GetServiceProviderTask(contentProvider
-				.getContext(), database, executorService));
-		executorService.execute(new GetOperationSchedulesTask(contentProvider
-				.getContext(), database, executorService));
+		executorService.execute(new GetServiceProviderTask(contentProvider.getContext(), database, executorService));
+		executorService.execute(new GetOperationSchedulesTask(contentProvider.getContext(), database, executorService));
 		return uri;
 	}
 

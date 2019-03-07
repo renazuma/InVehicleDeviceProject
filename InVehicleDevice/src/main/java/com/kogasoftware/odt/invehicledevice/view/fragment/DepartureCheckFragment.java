@@ -1,9 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.view.fragment;
 
-import java.util.LinkedList;
-
-import org.joda.time.DateTime;
-
 import android.content.ContentResolver;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,16 +10,20 @@ import android.widget.Button;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.OperationSchedule.Phase;
+import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
+
+import org.joda.time.DateTime;
+
+import java.util.LinkedList;
 
 /**
  * 出発チェック画面
  */
 public class DepartureCheckFragment
 		extends
-			OperationSchedulesAndPassengerRecordsFragment {
+        OperationSchedulesSyncFragmentAbstract {
 	private static final String TAG = DepartureCheckFragment.class
 			.getSimpleName();
 	private static final String OPERATION_SCHEDULE_ID_KEY = "operation_schedule_id";

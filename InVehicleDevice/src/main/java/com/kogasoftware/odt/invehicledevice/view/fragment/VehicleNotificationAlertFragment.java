@@ -31,8 +31,7 @@ public class VehicleNotificationAlertFragment extends Fragment {
 			}
 			if (count <= 10) { // TODO 定数
 				count++;
-				getView().findViewById(R.id.alert_image_view).setVisibility(
-						count % 2 == 0 ? View.VISIBLE : View.GONE);
+				getView().findViewById(R.id.alert_image_view).setVisibility(count % 2 == 0 ? View.VISIBLE : View.GONE);
 				handler.postDelayed(this, ALERT_SHOW_INTERVAL_MILLIS);
 				return;
 			}
@@ -48,10 +47,8 @@ public class VehicleNotificationAlertFragment extends Fragment {
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.vehicle_notification_alert_fragment,
-				container, false);
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		return inflater.inflate(R.layout.vehicle_notification_alert_fragment, container, false);
 	}
 
 	@Override
@@ -75,6 +72,7 @@ public class VehicleNotificationAlertFragment extends Fragment {
 
 		if (fragmentManager.findFragmentByTag(FRAGMENT_TAG) != null) { return; }
 
+		// TODO: 画面上に表示するだけなので、Modalではないのでは？
 		Fragments.showModalFragment(fragmentManager, VehicleNotificationAlertFragment.newInstance(), FRAGMENT_TAG);
 	}
 }

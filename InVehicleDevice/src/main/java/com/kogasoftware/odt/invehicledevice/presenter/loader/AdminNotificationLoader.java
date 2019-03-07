@@ -17,6 +17,7 @@ import java.util.List;
 
 /**
  * 管理者通知をを購読し、通知を行うLoaderを操作するクラス
+ * TODO: 画面に従属するLoaderなので、Fragmentに扱わせても良い？ライフサイクルを確認する事
  */
 
 public class AdminNotificationLoader {

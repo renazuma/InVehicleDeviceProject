@@ -86,6 +86,7 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
 			contentResolver.notifyChange(VehicleNotification.CONTENT.URI, null);
 		}
 
+		// TODO: スケジュールの新規通知が無い場合、スケジュール取得タスクは実行しなくても良いのでは？
 		executorService.execute(new GetOperationSchedulesTask(context, database, executorService, true));
 	}
 

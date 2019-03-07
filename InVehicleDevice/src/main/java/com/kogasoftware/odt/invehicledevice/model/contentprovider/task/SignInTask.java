@@ -1,14 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.model.contentprovider.task;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.concurrent.ScheduledExecutorService;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.conn.HttpHostConnectException;
-
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -32,6 +23,15 @@ import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.ServiceU
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.User;
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.VehicleNotification;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.conn.HttpHostConnectException;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
+
 /**
  * サインインAPIとの通信
  */
@@ -52,15 +52,13 @@ public class SignInTask extends SynchronizationTask {
 		try {
 			database.beginTransaction();
 			ContentValues contentValues = new ContentValues();
-			contentValues.put(InVehicleDevice.Columns.AUTHENTICATION_TOKEN,
-					authenticationToken);
+			contentValues.put(InVehicleDevice.Columns.AUTHENTICATION_TOKEN,	authenticationToken);
 			String whereClause = InVehicleDevice.Columns._ID + " = ?";
 			String[] whereArgs = new String[]{id.toString()};
-			Integer affected = database.update(InVehicleDevice.TABLE_NAME,
-					contentValues, whereClause, whereArgs);
-			if (affected == 0) {
-				return;
-			}
+			Integer affected = database.update(InVehicleDevice.TABLE_NAME, contentValues, whereClause, whereArgs);
+
+			if (affected == 0) { return; }
+
 			// TODO: More elegant way
 			for (String tableName : new String[]{
 					ServiceUnitStatusLog.TABLE_NAME,
@@ -70,8 +68,7 @@ public class SignInTask extends SynchronizationTask {
 					ServiceProvider.TABLE_NAME, Platform.TABLE_NAME}) {
 				database.delete(tableName, null, null);
 			}
-			contentResolver.notifyChange(ContentUris.withAppendedId(
-					InVehicleDevice.CONTENT.URI, id), null);
+			contentResolver.notifyChange(ContentUris.withAppendedId(InVehicleDevice.CONTENT.URI, id), null);
 			contentResolver.notifyChange(ServiceProvider.CONTENT.URI, null);
 			database.setTransactionSuccessful();
 		} finally {
@@ -138,9 +135,7 @@ public class SignInTask extends SynchronizationTask {
 		Cursor cursor = database.query(InVehicleDevice.TABLE_NAME, columns,
 				null, null, null, null, null);
 		try {
-			if (!cursor.moveToFirst()) {
-				return;
-			}
+			if (!cursor.moveToFirst()) { return; }
 			id = cursor.getLong(cursor
 					.getColumnIndexOrThrow(InVehicleDevice.Columns._ID));
 			url = cursor.getString(cursor
@@ -156,9 +151,7 @@ public class SignInTask extends SynchronizationTask {
 			cursor.close();
 		}
 
-		if (authenticationToken != null) {
-			return;
-		}
+		if (authenticationToken != null) { return; }
 		runSession(id, url, login, password);
 	}
 

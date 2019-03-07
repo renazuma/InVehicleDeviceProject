@@ -1,13 +1,13 @@
 package com.kogasoftware.odt.invehicledevice.model.contentprovider.json;
 
-import org.joda.time.DateTime;
-
 import android.content.ContentValues;
 
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.OperationSchedule;
 
+import org.joda.time.DateTime;
+
 /**
- * 運行スケジュールのJSON
+ * 運行スケジュールのJSON（OperationScheduleという名前だが、実態はスケジュールおよび関連全データのセット）
  */
 public class OperationScheduleJson {
 	public Long id;
@@ -24,17 +24,16 @@ public class OperationScheduleJson {
 
 		if (arrivalEstimate != null) {
 			operationScheduleValues.put(
-					OperationSchedule.Columns.ARRIVAL_ESTIMATE,
-					arrivalEstimate.getMillis());
+					OperationSchedule.Columns.ARRIVAL_ESTIMATE, arrivalEstimate.getMillis());
 		}
 
 		if (departureEstimate != null) {
 			operationScheduleValues.put(
-					OperationSchedule.Columns.DEPARTURE_ESTIMATE,
-					departureEstimate.getMillis());
+					OperationSchedule.Columns.DEPARTURE_ESTIMATE, departureEstimate.getMillis());
 		}
-		operationScheduleValues.put(OperationSchedule.Columns.PLATFORM_ID,
-				platform.id);
+
+		operationScheduleValues.put(OperationSchedule.Columns.PLATFORM_ID, platform.id);
+
 		return operationScheduleValues;
 	}
 }

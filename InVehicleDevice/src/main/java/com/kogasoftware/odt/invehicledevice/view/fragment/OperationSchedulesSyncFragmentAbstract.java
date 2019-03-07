@@ -21,9 +21,11 @@ import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 運行スケジュールと運行実績を扱うFragmentの親クラス
+ * 運行スケジュール同期時に処理が必要なFragmentの抽象クラス
+ * 継承先クラスがインスタンス化された段階で、OperatorSchedulesとPassengerRecordsを順次のLoaderを順次用意し、継承先で実装されたメソッドを実行する。
+ * その後は継承先が表示中であれば、OperationSchedulesが更新される度に同様の処理が行われる。
  */
-public abstract class OperationSchedulesAndPassengerRecordsFragment extends	Fragment {
+public abstract class OperationSchedulesSyncFragmentAbstract extends Fragment {
 
 	private static final int PASSENGER_RECORDS_LOADER_ID = 5000;
 	private static final int OPERATION_SCHEDULES_LOADER_ID = 5001;
@@ -32,7 +34,6 @@ public abstract class OperationSchedulesAndPassengerRecordsFragment extends	Frag
 	private final LinkedList<OperationSchedule> operationSchedules = Lists.newLinkedList();
 	private Long currentOperationScheduleId;
 	private Phase currentPhase;
-
 
 	private final LoaderCallbacks<Cursor> operationSchedulesLoaderCallbacks = new LoaderCallbacks<Cursor>() {
 		@Override
@@ -43,6 +44,7 @@ public abstract class OperationSchedulesAndPassengerRecordsFragment extends	Frag
 		@Override
 		public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 			final LinkedList<OperationSchedule> newOperationSchedules = OperationSchedule.getAll(cursor);
+
 			final Runnable task = new Runnable() {
 				@Override
 				public void run() {
@@ -52,24 +54,28 @@ public abstract class OperationSchedulesAndPassengerRecordsFragment extends	Frag
 					getLoaderManager().initLoader(PASSENGER_RECORDS_LOADER_ID,null, passengerRecordsLoaderCallbacks);
 				}
 			};
+
 			new Thread() {
 				@Override
 				public void run() {
-					// 運行予定変更の通知がある場合、「運行予定変更」フラグメントが表示されるまで更新を遅らせる
+					// 新規に運行予定変更の通知がある場合、「運行予定変更」フラグメントが表示されるまで更新を遅らせる
 					Cursor cursor = contentResolver.query(VehicleNotification.CONTENT.URI,
 									null,
 									VehicleNotification.WHERE_SCHEDULE_VEHICLE_NOTIFICATION_FRAGMENT_CONTENT,
 									null, null);
+
 					Boolean delayRequired;
 					try {
 						delayRequired = cursor.getCount() > 0;
 					} finally {
 						cursor.close();
 					}
+
 					if (delayRequired) {
 						Integer delayMillis = InVehicleDeviceActivity.VEHICLE_NOTIFICATION_ALERT_DELAY_MILLIS + 1000;
 						Uninterruptibles.sleepUninterruptibly(delayMillis, TimeUnit.MILLISECONDS);
 					}
+
 					handler.post(task);
 				}
 			}.start();
@@ -80,7 +86,6 @@ public abstract class OperationSchedulesAndPassengerRecordsFragment extends	Frag
 		}
 	};
 
-
 	private final LoaderCallbacks<Cursor> passengerRecordsLoaderCallbacks = new LoaderCallbacks<Cursor>() {
 		@Override
 		public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -90,11 +95,14 @@ public abstract class OperationSchedulesAndPassengerRecordsFragment extends	Frag
 		@Override
 		public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 			final LinkedList<PassengerRecord> passengerRecords = Lists.newLinkedList(PassengerRecord.getAll(cursor));
+
 			handler.post(new Runnable() {
 				@Override
 				public void run() {
 					if (!isAdded()) { return; }
+
 					Phase phase = OperationSchedule.getPhase(operationSchedules, passengerRecords);
+
 					OperationSchedule operationSchedule = OperationSchedule.getCurrent(operationSchedules);
 					Boolean phaseChanged = false;
 					if (operationSchedule == null) {
@@ -110,6 +118,7 @@ public abstract class OperationSchedulesAndPassengerRecordsFragment extends	Frag
 					}
 					currentPhase = phase;
 
+					// 継承先のクラスで実装される、operation_schedule/passenger_record同期後の動作
 					onOperationSchedulesAndPassengerRecordsLoadFinished(phase,	operationSchedules, passengerRecords, phaseChanged);
 				}
 			});
@@ -120,8 +129,7 @@ public abstract class OperationSchedulesAndPassengerRecordsFragment extends	Frag
 		}
 	};
 
-	// override用？
-	//　TODO: 直下のメソッドを呼び出しているだけで、overrideはしていない？それであれば、このメソッドは不要なのでは？
+	// override用
 	protected void onOperationSchedulesAndPassengerRecordsLoadFinished(
 			Phase phase, LinkedList<OperationSchedule> operationSchedules,
 			LinkedList<PassengerRecord> passengerRecords, Boolean phaseChanged) {
