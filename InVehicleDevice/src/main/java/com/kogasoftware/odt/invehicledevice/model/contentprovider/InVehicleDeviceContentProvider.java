@@ -28,11 +28,9 @@ import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.VehicleN
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.task.GetOperationSchedulesTask;
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.task.GetServiceProviderTask;
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.task.GetVehicleNotificationsTask;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.task.InsertServiceUnitStatusLogTask;
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.task.PatchOperationRecordTask;
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.task.PatchPassengerRecordTask;
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.task.PatchVehicleNotificationTask;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.task.PostServiceUnitStatusLogTask;
 
 import junit.framework.Assert;
 
@@ -96,23 +94,6 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
 						new GetVehicleNotificationsTask(context, database, executorService),
 						5,
 						GetVehicleNotificationsTask.INTERVAL_MILLIS,
-						TimeUnit.MILLISECONDS);
-
-		// 一定間隔（固定）で、内部DBの最新のUnitStatusLogのデータをコピーして、created_atを現在時刻にしてinsert
-        // ↓の更新/削除では、現在時刻 - この処理のIntervalDelay秒以降の処理は対象にはならないため、1件は必ず残っている想定？
-		// TODO: 仕様がややこしい。シンプルに出来るなら変えたい。
-		executorService.scheduleAtFixedRate(
-						new InsertServiceUnitStatusLogTask(database),
-						500,
-						InsertServiceUnitStatusLogTask.INTERVAL_MILLIS,
-						TimeUnit.MILLISECONDS);
-
-		// 一定間隔で、現在時刻 - ↑のタスクのインターバル秒よりも以前に更新された、内部DBのUnitStatusLogのデータを、サーバ側に送信、DBより削除
-		// TODO: 仕様がややこしい。シンプルに出来るなら変えたい。
-		executorService.scheduleWithFixedDelay(
-						new PostServiceUnitStatusLogTask(context, database,	executorService),
-						500,
-						PostServiceUnitStatusLogTask.INTERVAL_MILLIS,
 						TimeUnit.MILLISECONDS);
 
 		// 一定間隔で、既読かつサーバ側と同期前の通知データを、サーバ側に送信
