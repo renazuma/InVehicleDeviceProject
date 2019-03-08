@@ -8,23 +8,24 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.ServiceProvider;
+import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.InVehicleDevice;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
-import com.kogasoftware.odt.invehicledevice.view.fragment.OrderedOperationFragment;
+import com.kogasoftware.odt.invehicledevice.view.fragment.SignInFragment;
 
 /**
- * ServiceProvider情報を購読し、オペレーション画面を操作するLoaderを操作するクラス
- * 想定実行タイミング：　アプリ起動時、サインイン後のSP再取得時
- */
+ * インストール直後に、ログイン画面を表示するためのLoaderを操作するクラス
+ * 車載器情報は誤ったデータでもDBに保存されるため、このローダは、インストール直後のデータが空の場合にしか通らない。
+ **/
 
-public class ServiceProviderLoader {
+public class onCreateSignInLoader {
 
   // TODO:InVehicleDeviceActivity配下で一意である必要がある。Activityクラスで管理した方が良い？
-  private static final Integer LOADER_ID = 2;
+  // TODO: SignInFragmentとLOADER_IDが同じ。という事は、これはActivityクラスで起動derでSignInj
+  public static final Integer LOADER_ID = 1;
 
   private InVehicleDeviceActivity inVehicleDeviceActivity;
 
-  public ServiceProviderLoader(InVehicleDeviceActivity inVehicleDeviceActivity) {
+  public onCreateSignInLoader(InVehicleDeviceActivity inVehicleDeviceActivity) {
     // TODO:Activityを使いまわすのは良くない気がする。別の方法があれば変えたい。
     this.inVehicleDeviceActivity = inVehicleDeviceActivity;
   }
@@ -40,31 +41,25 @@ public class ServiceProviderLoader {
   private final LoaderManager.LoaderCallbacks<Cursor> callbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-      return new CursorLoader(inVehicleDeviceActivity, ServiceProvider.CONTENT.URI, null, null, null, null);
+      return new CursorLoader(inVehicleDeviceActivity,
+              InVehicleDevice.CONTENT.URI, null, null, null, null);
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+      if (data.moveToFirst()) { return; }
+
       Handler mainUIHandler = new Handler(Looper.getMainLooper());
 
-      if (cursor.moveToFirst()) {
-        inVehicleDeviceActivity.setServiceProvider(new ServiceProvider(cursor));
-        mainUIHandler.post(new Runnable() {
-          @Override
-          public void run() { OrderedOperationFragment.showModal(inVehicleDeviceActivity); }
-        });
-      } else {
-        inVehicleDeviceActivity.setServiceProvider(null);
-        mainUIHandler.post(new Runnable() {
-          @Override
-          public void run() { OrderedOperationFragment.hideModal(inVehicleDeviceActivity); }
-        });
-      }
+      mainUIHandler.post(new Runnable() {
+        @Override
+        public void run() {SignInFragment.showModal(inVehicleDeviceActivity); }
+      });
     }
+
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
     }
   };
-
 }

@@ -5,12 +5,12 @@ import android.os.Bundle;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.ServiceProvider;
-import com.kogasoftware.odt.invehicledevice.presenter.PermissionChecker;
-import com.kogasoftware.odt.invehicledevice.presenter.LogSyncPresenter;
-import com.kogasoftware.odt.invehicledevice.presenter.UnitStatusLogSyncPresenter;
-import com.kogasoftware.odt.invehicledevice.presenter.broadcastReceiver.BroadcastReceiverPresenter;
-import com.kogasoftware.odt.invehicledevice.presenter.loader.LoaderPresenter;
 import com.kogasoftware.odt.invehicledevice.presenter.AutoRestartPresenter;
+import com.kogasoftware.odt.invehicledevice.presenter.InterruptUiPresenter;
+import com.kogasoftware.odt.invehicledevice.presenter.LogSyncPresenter;
+import com.kogasoftware.odt.invehicledevice.presenter.MainUiPresenter;
+import com.kogasoftware.odt.invehicledevice.presenter.PermissionChecker;
+import com.kogasoftware.odt.invehicledevice.presenter.UnitStatusLogSyncPresenter;
 
 /**
  * 全体の大枠。サインイン前はSignInFragmentを表示し、サインイン後は、自治体に依存して「運行予定一覧画面」か「順番に運行を進める画面」を表示する
@@ -23,18 +23,17 @@ public class InVehicleDeviceActivity extends Activity {
   // インスタンス変数
   public Boolean destroyed = true; // TODO: 変数でライフサイクル管理をするのをやめたい。
   public ServiceProvider serviceProvider; // TODO: ServiceProviderの同期状態を変素で管理するのをやめたい。
-  private LoaderPresenter loaderPresenter;
-  private BroadcastReceiverPresenter broadcastReceiverPresenter;
+
+  private InterruptUiPresenter interruptUiPresenter;
+  private UnitStatusLogSyncPresenter unitStatusLogSyncPresenter;
+  private LogSyncPresenter logSyncPresenter;
+  private AutoRestartPresenter autoRestartPresenter;
+  private MainUiPresenter mainUiPresenter;
 
   // TODO: 不要にしたい
   public void setServiceProvider(ServiceProvider serviceProvider) {
     this.serviceProvider = serviceProvider;
   }
-
-
-  private UnitStatusLogSyncPresenter unitStatusLogSyncPresenter;
-  private LogSyncPresenter logSyncPresenter;
-  private AutoRestartPresenter autoRestartPresenter;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +48,6 @@ public class InVehicleDeviceActivity extends Activity {
     getLoaderManager();
 
 
-    // 実験的に書き換え中
-
     unitStatusLogSyncPresenter = new UnitStatusLogSyncPresenter(this);
     unitStatusLogSyncPresenter.onCreate();
 
@@ -60,34 +57,28 @@ public class InVehicleDeviceActivity extends Activity {
     autoRestartPresenter= new AutoRestartPresenter(this);
     autoRestartPresenter.onCreate();
 
+    // TODO: スケジュール同期は、画面をバックグラウンドにしても動き続けなければならないため、
+    // TODO: contentProviderでジョブを開始している。
+    // TODO: 出来れば動かし続ける方法を検討した上で、こちらに移す。
+    // ScheduleSyncPresenter scheduleSyncPresenter = new ScheduleSyncPresenter(this);
+    // scheduleSyncPresenter.onCreate();
 
-//    ScheduleSyncPresenter scheduleSyncPresenter = new ScheduleSyncPresenter(this);
-//    scheduleSyncPresenter.onCreate();
+    mainUiPresenter = new MainUiPresenter(this);
+    mainUiPresenter.onCreate();
 
-//    MainUiPresenter mainUiPresenter = new MainUiPresenter(this);
-//    mainUiPresenter.onCreate();
-//
-//    InterruptUiPresenter interruptUiPresenter = new InterruptUiPresenter(this);
-//    interruptUiPresenter.onCreate();
+    interruptUiPresenter = new InterruptUiPresenter(this);
+    interruptUiPresenter.onCreate();
 
-
-    // TODO: 各presenterに渡すのは、InVehicleDeviceActivityではなく、context等にしておいた方が良いのでは？
-    loaderPresenter = new LoaderPresenter(this);
-    loaderPresenter.onCreate();
-
-    broadcastReceiverPresenter = new BroadcastReceiverPresenter(this);
-    broadcastReceiverPresenter.onCreate();
   }
 
   @Override
   protected void onDestroy() {
     super.onDestroy();
-    loaderPresenter.onDestroy();
-    broadcastReceiverPresenter.onDestroy();
-
+    interruptUiPresenter.onDestroy();
+    mainUiPresenter.onDestroy();
+    //scheduleSyncPresenter.onDestroy();
     unitStatusLogSyncPresenter.onDestroy();
     logSyncPresenter.onDestroy();
-
     destroyed = true;
   }
 
