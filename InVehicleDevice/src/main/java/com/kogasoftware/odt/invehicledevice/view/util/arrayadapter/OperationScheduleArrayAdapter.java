@@ -1,14 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.view.util.arrayadapter;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.TreeSet;
-
-import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.ContentResolver;
@@ -28,10 +19,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.view.fragment.PassengerRecordMemoFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
+
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.TreeSet;
 
 /**
  * 運行予定一覧

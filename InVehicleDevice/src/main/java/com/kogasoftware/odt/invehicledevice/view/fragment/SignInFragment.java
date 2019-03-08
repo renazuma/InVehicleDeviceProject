@@ -37,8 +37,8 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.InVehicleDevice;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.task.SignInErrorBroadcastIntent;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.InVehicleDevice;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.task.SignInErrorBroadcastIntent;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
 

@@ -5,11 +5,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.test.ActivityInstrumentationTestCase2;
 
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.DatabaseHelper;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.json.VehicleNotificationJson;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.VehicleNotification;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.VehicleNotification.Response;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.task.GetVehicleNotificationsTask;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.DatabaseHelper;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.json.VehicleNotificationJson;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.VehicleNotification;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.VehicleNotification.Response;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.task.GetVehicleNotificationsTask;
 import com.kogasoftware.odt.invehicledevice.mockserver.MockServer;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.TestUtils;

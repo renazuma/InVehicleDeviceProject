@@ -3,7 +3,7 @@ package com.kogasoftware.odt.invehicledevice.presenter;
 import android.content.Context;
 import android.content.Intent;
 
-import com.kogasoftware.odt.invehicledevice.presenter.service.startupservice.StartupService;
+import com.kogasoftware.odt.invehicledevice.service.startupservice.StartupService;
 
 /**
  * Created by ksc on 2019/02/22.

@@ -19,7 +19,7 @@ import android.widget.TextView;
 
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 
 /**
  * 乗車予定なのに乗ってないor降車予定なのに降りてない乗客一覧

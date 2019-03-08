@@ -9,7 +9,7 @@ import org.joda.time.format.ISODateTimeFormat;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.json.OperationRecordJson;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.json.OperationRecordJson;
 
 public class OperationRecordsHandler extends MockServerRequestHandler {
 	public static String PATH = "/in_vehicle_devices/operation_records/*";

@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.ContextCompat;
 
-import com.kogasoftware.odt.invehicledevice.presenter.service.serviceunitstatuslogservice.ServiceUnitStatusLogService;
+import com.kogasoftware.odt.invehicledevice.service.serviceunitstatuslogservice.ServiceUnitStatusLogService;
 
 /**
  * 車載器データをサーバと同期

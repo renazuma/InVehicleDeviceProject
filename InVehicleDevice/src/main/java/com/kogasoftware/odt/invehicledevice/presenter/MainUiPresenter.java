@@ -1,7 +1,8 @@
 package com.kogasoftware.odt.invehicledevice.presenter;
 
-import com.kogasoftware.odt.invehicledevice.presenter.loader.MainViewLoader;
-import com.kogasoftware.odt.invehicledevice.presenter.loader.onCreateSignInLoader;
+import com.kogasoftware.odt.invehicledevice.infra.loader.MainViewLoader;
+import com.kogasoftware.odt.invehicledevice.infra.loader.onCreateSignInLoader;
+import com.kogasoftware.odt.invehicledevice.presenter.mainui.OnCreateDataSync;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 
 /**
@@ -12,13 +13,16 @@ public class MainUiPresenter {
 
   private onCreateSignInLoader onCreateSignInLoader;
   private MainViewLoader mainViewLoader;
+  private OnCreateDataSync onCreateDataSync;
 
   public MainUiPresenter(InVehicleDeviceActivity inVehicleDeviceActivity) {
     this.onCreateSignInLoader = new onCreateSignInLoader(inVehicleDeviceActivity);
     this.mainViewLoader = new MainViewLoader(inVehicleDeviceActivity);
+    this.onCreateDataSync = new OnCreateDataSync(inVehicleDeviceActivity);
   }
 
   public void onCreate() {
+    onCreateDataSync.execute();
 
     // loaderによるアプリ起動時の画面表示のロジックは以下
     // * アプリ起動時にDB内の車載器データが無い場合、SignIn画面を表示（この場合SPも無いため、mainViewLoaderは画面を描画しない）

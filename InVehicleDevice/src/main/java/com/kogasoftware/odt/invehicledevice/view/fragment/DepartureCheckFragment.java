@@ -9,9 +9,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.OperationSchedule.Phase;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule.Phase;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
 
 import org.joda.time.DateTime;

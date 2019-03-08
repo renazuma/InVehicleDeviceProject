@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.ServiceProvider;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ServiceProvider;
 import com.kogasoftware.odt.invehicledevice.presenter.AutoRestartPresenter;
 import com.kogasoftware.odt.invehicledevice.presenter.InterruptUiPresenter;
 import com.kogasoftware.odt.invehicledevice.presenter.LogSyncPresenter;
@@ -57,11 +57,9 @@ public class InVehicleDeviceActivity extends Activity {
     autoRestartPresenter= new AutoRestartPresenter(this);
     autoRestartPresenter.onCreate();
 
-    // TODO: スケジュール同期は、画面をバックグラウンドにしても動き続けなければならないため、
+    // TODO: スケジュール関連のサーバとの定期同期は、画面をバックグラウンドにしても動き続けなければならないため、
     // TODO: contentProviderでジョブを開始している。
-    // TODO: 出来れば動かし続ける方法を検討した上で、こちらに移す。
-    // ScheduleSyncPresenter scheduleSyncPresenter = new ScheduleSyncPresenter(this);
-    // scheduleSyncPresenter.onCreate();
+    // TODO: 本来はこちらで管理するべき情報なので、出来れば動かし続ける方法を検討した上で、こちらで開始出来る様にする。
 
     mainUiPresenter = new MainUiPresenter(this);
     mainUiPresenter.onCreate();
@@ -76,7 +74,6 @@ public class InVehicleDeviceActivity extends Activity {
     super.onDestroy();
     interruptUiPresenter.onDestroy();
     mainUiPresenter.onDestroy();
-    //scheduleSyncPresenter.onDestroy();
     unitStatusLogSyncPresenter.onDestroy();
     logSyncPresenter.onDestroy();
     destroyed = true;

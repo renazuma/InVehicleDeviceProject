@@ -1,26 +1,26 @@
 package com.kogasoftware.odt.invehicledevice.view.fragment;
 
-import java.util.List;
-
-import org.joda.time.DateTime;
-
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.test.ActivityInstrumentationTestCase2;
 
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.DatabaseHelper;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.json.OperationRecordJson;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.json.OperationScheduleJson;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.json.PassengerRecordJson;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.json.PlatformJson;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.json.UserJson;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.DatabaseHelper;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.json.OperationRecordJson;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.json.OperationScheduleJson;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.json.PassengerRecordJson;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.json.PlatformJson;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.json.UserJson;
 import com.kogasoftware.odt.invehicledevice.mockserver.MockServer;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.TestUtils;
 import com.robotium.solo.Condition;
 import com.robotium.solo.Solo;
+
+import org.joda.time.DateTime;
+
+import java.util.List;
 
 public class OperationListFragmentTestCase
 		extends

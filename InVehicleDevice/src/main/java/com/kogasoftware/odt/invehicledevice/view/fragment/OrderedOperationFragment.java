@@ -9,9 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.OperationSchedule.Phase;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule.Phase;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 
 import java.util.LinkedList;

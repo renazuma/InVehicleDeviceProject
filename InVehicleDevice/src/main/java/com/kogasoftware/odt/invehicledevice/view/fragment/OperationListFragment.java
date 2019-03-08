@@ -16,9 +16,9 @@ import android.widget.ListView;
 
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.PassengerRecord;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.VehicleNotification;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;

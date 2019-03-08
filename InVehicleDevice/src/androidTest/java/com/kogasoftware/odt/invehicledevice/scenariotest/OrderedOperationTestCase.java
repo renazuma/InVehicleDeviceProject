@@ -8,10 +8,10 @@ import android.test.ActivityInstrumentationTestCase2;
 
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.DatabaseHelper;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.json.PassengerRecordJson;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.json.PlatformJson;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.json.UserJson;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.DatabaseHelper;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.json.PassengerRecordJson;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.json.PlatformJson;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.json.UserJson;
 import com.kogasoftware.odt.invehicledevice.mockserver.MockServer;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.SoloUtils;

@@ -13,8 +13,8 @@ import android.test.ActivityInstrumentationTestCase2;
 
 import com.google.common.base.Stopwatch;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.DatabaseHelper;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.InVehicleDevice;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.DatabaseHelper;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.InVehicleDevice;
 import com.kogasoftware.odt.invehicledevice.mockserver.MockServer;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.SoloUtils;

@@ -11,10 +11,10 @@ import android.os.Handler;
 
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.Uninterruptibles;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.OperationSchedule.Phase;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.PassengerRecord;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.VehicleNotification;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule.Phase;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 
 import java.util.LinkedList;

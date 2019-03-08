@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.InVehicleDeviceContentProvider;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.InVehicleDeviceContentProvider;
 
 public class MockServerRequestHandler implements HttpRequestHandler {
 	final String authenticationToken;

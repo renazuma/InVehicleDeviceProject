@@ -1,9 +1,9 @@
 package com.kogasoftware.odt.invehicledevice.presenter;
 
-import com.kogasoftware.odt.invehicledevice.presenter.broadcastReceiver.AirPlaneModeOnReceiver;
-import com.kogasoftware.odt.invehicledevice.presenter.broadcastReceiver.SignInErrorReceiver;
-import com.kogasoftware.odt.invehicledevice.presenter.loader.AdminNotificationLoader;
-import com.kogasoftware.odt.invehicledevice.presenter.loader.ScheduleNotificationLoader;
+import com.kogasoftware.odt.invehicledevice.infra.broadcastReceiver.AirPlaneModeOnReceiver;
+import com.kogasoftware.odt.invehicledevice.infra.broadcastReceiver.SignInErrorReceiver;
+import com.kogasoftware.odt.invehicledevice.infra.loader.AdminNotificationLoader;
+import com.kogasoftware.odt.invehicledevice.infra.loader.ScheduleNotificationLoader;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 
 /**

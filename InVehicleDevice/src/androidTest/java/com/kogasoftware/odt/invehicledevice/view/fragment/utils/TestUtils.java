@@ -9,16 +9,16 @@ import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.InVehicleDevice;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.OperationRecord;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.PassengerRecord;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.Platform;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.Reservation;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.ServiceProvider;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.ServiceUnitStatusLog;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.User;
-import com.kogasoftware.odt.invehicledevice.model.contentprovider.table.VehicleNotification;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.InVehicleDevice;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationRecord;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.Platform;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.Reservation;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ServiceProvider;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ServiceUnitStatusLog;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.User;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.VehicleNotification;
 import com.robotium.solo.Solo;
 
 public class TestUtils {
