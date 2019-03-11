@@ -121,13 +121,15 @@ public class OperationListFragment extends Fragment {
 		super.onActivityCreated(savedInstanceState);
 		final Boolean closeable = getArguments().getBoolean(CLOSEABLE_KEY);
 		loaderManager = getLoaderManager();
-		loaderManager.initLoader(OPERATION_SCHEDULE_LOADER_ID, null,
-						operationScheduleLoaderCallbacks);
-		loaderManager.initLoader(PASSENGER_RECORD_LOADER_ID, null,
-						passengerRecordLoaderCallbacks);
+
+		// リアルタイム同期
+		loaderManager.initLoader(OPERATION_SCHEDULE_LOADER_ID, null, operationScheduleLoaderCallbacks);
+		loaderManager.initLoader(PASSENGER_RECORD_LOADER_ID, null, passengerRecordLoaderCallbacks);
+
 		View view = getView();
-		final Button closeButton = (Button) view
-						.findViewById(R.id.operation_list_close_button);
+
+		// 戻るボタン（スケジュールのみ）
+		final Button closeButton = (Button) view.findViewById(R.id.operation_list_close_button);
 		closeButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -139,14 +141,18 @@ public class OperationListFragment extends Fragment {
 		} else {
 			closeButton.setVisibility(View.GONE);
 		}
+
+		// 各行
 		adapter = new OperationScheduleArrayAdapter(this);
-		listView = ((FlickUnneededListView) view
-						.findViewById(R.id.operation_list_view)).getListView();
+		listView = ((FlickUnneededListView) view.findViewById(R.id.operation_list_view)).getListView();
 		listView.setAdapter(adapter);
-		final Button showPassengerButton = (Button) view
-						.findViewById(R.id.operation_list_show_passengers_button);
-		final Button hidePassengerButton = (Button) view
-						.findViewById(R.id.operation_list_hide_passengers_button);
+
+		// 乗客も見るボタン
+		final Button showPassengerButton = (Button) view.findViewById(R.id.operation_list_show_passengers_button);
+
+		// 戻るボタン（ユーザー表示時）
+		final Button hidePassengerButton = (Button) view.findViewById(R.id.operation_list_hide_passengers_button);
+
 		showPassengerButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {

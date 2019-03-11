@@ -1,11 +1,11 @@
 package com.kogasoftware.odt.invehicledevice.view.util.arrayadapter;
 
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -37,23 +37,26 @@ import java.util.TreeSet;
  * 運行予定一覧
  */
 public class OperationScheduleArrayAdapter
-		extends
-			ArrayAdapter<OperationSchedule> {
-	private static final String TAG = OperationScheduleArrayAdapter.class
-			.getSimpleName();
+		extends	ArrayAdapter<OperationSchedule> {
+	private static final String TAG = OperationScheduleArrayAdapter.class.getSimpleName();
 	private static final Integer SELECTED_COLOR = Color.parseColor("#D5E9F6");
 	private static final Integer DEPARTED_COLOR = Color.LTGRAY;
 	private static final Integer DEFAULT_COLOR = Color.parseColor("#FFFFFF");
 	private static final Integer RESOURCE_ID = R.layout.operation_list_row;
-	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormat
-			.forPattern("HH:mm");
-	private final LayoutInflater layoutInflater = (LayoutInflater) getContext()
-			.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-	private final TreeSet<PassengerRecord> passengerRecords = new TreeSet<PassengerRecord>(
-			PassengerRecord.DEFAULT_COMPARATOR);
+	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormat.forPattern("HH:mm");
+	private final LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	private final TreeSet<PassengerRecord> passengerRecords = new TreeSet<PassengerRecord>(PassengerRecord.DEFAULT_COMPARATOR);
 	private final ContentResolver contentResolver;
-	private final FragmentManager fragmentManager;
 	private Boolean showPassengerRecords = false;
+
+
+
+	private Fragment fragment;
+	public OperationScheduleArrayAdapter(Fragment fragment) {
+		super(fragment.getActivity(), RESOURCE_ID, new LinkedList<OperationSchedule>());
+		this.fragment = fragment;
+		this.contentResolver = fragment.getActivity().getContentResolver();
+	}
 
 	static abstract class OnRowTouchListener<T> implements OnTouchListener {
 		private final Class<T> rowClass;
@@ -154,8 +157,7 @@ public class OperationScheduleArrayAdapter
 	protected final OnRowTouchListener<PassengerRecordRowTag> onPassengerRecordTouchListener = new OnRowTouchListener<PassengerRecordRowTag>(
 			PassengerRecordRowTag.class) {
 		@Override
-		protected int getDefaultColor(
-				PassengerRecordRowTag passengerRecordRowTag) {
+		protected int getDefaultColor(PassengerRecordRowTag passengerRecordRowTag) {
 			return getColor(passengerRecordRowTag, false);
 		}
 
@@ -165,20 +167,19 @@ public class OperationScheduleArrayAdapter
 			return getColor(passengerRecordRowTag, true);
 		}
 
-		private int getColor(PassengerRecordRowTag passengerRecordRowTag,
-				boolean invert) {
+		private int getColor(PassengerRecordRowTag passengerRecordRowTag, boolean invert) {
 			PassengerRecord passengerRecord = passengerRecordRowTag.passengerRecord;
 			if (passengerRecordRowTag.getOn) {
 				if ((passengerRecord.getOnTime != null) ^ invert) {
-					return PassengerRecord.SELECTED_GET_ON_COLOR;
+					return ContextCompat.getColor(fragment.getContext(), R.color.selected_get_on_row);
 				} else {
-					return PassengerRecord.GET_ON_COLOR;
+					return ContextCompat.getColor(fragment.getContext(), R.color.get_on_row);
 				}
 			} else {
 				if ((passengerRecord.getOffTime != null) ^ invert) {
-					return PassengerRecord.SELECTED_GET_OFF_COLOR;
+					return ContextCompat.getColor(fragment.getContext(), R.color.selected_get_off_row);
 				} else {
-					return PassengerRecord.GET_OFF_COLOR;
+					return ContextCompat.getColor(fragment.getContext(), R.color.get_off_row);
 				}
 			}
 		}
@@ -229,10 +230,8 @@ public class OperationScheduleArrayAdapter
 				return;
 			}
 			PassengerRecord passengerRecord = (PassengerRecord) tag;
-			if (fragmentManager == null) {
-				return;
-			}
-			Fragments.showModalFragment(fragmentManager,
+			if (fragment.getFragmentManager() == null) { return; }
+			Fragments.showModalFragment(fragment.getFragmentManager(),
 					PassengerRecordMemoFragment.newInstance(passengerRecord));
 		}
 	};
@@ -249,12 +248,6 @@ public class OperationScheduleArrayAdapter
 		}
 	};
 
-	public OperationScheduleArrayAdapter(Fragment fragment) {
-		super(fragment.getActivity(), RESOURCE_ID,
-				new LinkedList<OperationSchedule>());
-		this.fragmentManager = fragment.getFragmentManager();
-		this.contentResolver = fragment.getActivity().getContentResolver();
-	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
@@ -265,14 +258,11 @@ public class OperationScheduleArrayAdapter
 		}
 
 		OperationSchedule operationSchedule = getItem(position);
-		Button mapButton = (Button) convertView
-				.findViewById(R.id.operation_list_map_button);
+		Button mapButton = (Button) convertView.findViewById(R.id.operation_list_map_button);
 		mapButton.setTag(operationSchedule);
 		mapButton.setOnClickListener(onMapButtonClickListener);
-		TextView platformNameView = (TextView) convertView
-				.findViewById(R.id.platform_name);
-		TextView platformAddressView = (TextView) convertView
-				.findViewById(R.id.platform_address);
+		TextView platformNameView = (TextView) convertView.findViewById(R.id.platform_name);
+		TextView platformAddressView = (TextView) convertView.findViewById(R.id.platform_address);
 		platformNameView.setText(operationSchedule.name);
 		platformAddressView.setText(operationSchedule.address);
 
@@ -280,19 +270,15 @@ public class OperationScheduleArrayAdapter
 			platformAddressView.setText("(住所登録なし)");
 		}
 
-		ViewGroup passengerRecordsView = (ViewGroup) convertView
-				.findViewById(R.id.operation_list_passenger_records);
+		ViewGroup passengerRecordsView = (ViewGroup) convertView.findViewById(R.id.operation_list_passenger_records);
 		passengerRecordsView.removeAllViews();
-		passengerRecordsView.setVisibility(showPassengerRecords
-				? View.VISIBLE
-				: View.GONE);
+		passengerRecordsView.setVisibility(showPassengerRecords	? View.VISIBLE : View.GONE);
 
 		Long getOffPassengerCount = 0L;
 		for (PassengerRecord passengerRecord : passengerRecords) {
 			if (operationSchedule.id.equals(passengerRecord.arrivalScheduleId)) {
 				if (showPassengerRecords) {
-					passengerRecordsView.addView(createPassengerRecordRow(
-							operationSchedule, passengerRecord, false));
+					passengerRecordsView.addView(createPassengerRecordRow(operationSchedule, passengerRecord, false));
 				}
 				getOffPassengerCount += passengerRecord.passengerCount;
 			}
@@ -300,51 +286,36 @@ public class OperationScheduleArrayAdapter
 
 		Long getOnPassengerCount = 0L;
 		for (PassengerRecord passengerRecord : passengerRecords) {
-			if (operationSchedule.id
-					.equals(passengerRecord.departureScheduleId)) {
+			if (operationSchedule.id.equals(passengerRecord.departureScheduleId)) {
 				if (showPassengerRecords) {
-					passengerRecordsView.addView(createPassengerRecordRow(
-							operationSchedule, passengerRecord, true));
+					passengerRecordsView.addView(createPassengerRecordRow(operationSchedule, passengerRecord, true));
 				}
 				getOnPassengerCount += passengerRecord.passengerCount;
 			}
 		}
 
-		TextView getOnPassengerCountTextView = (TextView) convertView
-				.findViewById(R.id.operation_schedule_get_on_passenger_count_text_view);
-		getOnPassengerCountTextView.setText("乗"
-				+ String.format("%3d", getOnPassengerCount) + "名");
-		getOnPassengerCountTextView.setVisibility(getOnPassengerCount > 0
-				? View.VISIBLE
-				: View.INVISIBLE);
+		TextView getOnPassengerCountTextView = (TextView) convertView.findViewById(R.id.operation_schedule_get_on_passenger_count_text_view);
+		getOnPassengerCountTextView.setText("乗" 	+ String.format("%3d", getOnPassengerCount) + "名");
+		getOnPassengerCountTextView.setVisibility(getOnPassengerCount > 0 ? View.VISIBLE : View.INVISIBLE);
 
-		TextView getOffPassengerCountTextView = (TextView) convertView
-				.findViewById(R.id.operation_schedule_get_off_passenger_count_text_view);
+		TextView getOffPassengerCountTextView = (TextView) convertView.findViewById(R.id.operation_schedule_get_off_passenger_count_text_view);
 		getOffPassengerCountTextView.setText("降"
 				+ String.format("%3d", getOffPassengerCount) + "名");
-		getOffPassengerCountTextView.setVisibility(getOffPassengerCount > 0
-				? View.VISIBLE
-				: View.INVISIBLE);
+		getOffPassengerCountTextView.setVisibility(getOffPassengerCount > 0 ? View.VISIBLE : View.INVISIBLE);
 
-		TextView arrivalEstimateTextView = (TextView) convertView
-				.findViewById(R.id.operation_schedule_arrival_estimate_text_view);
-		TextView departureEstimateTextView = (TextView) convertView
-				.findViewById(R.id.operation_schedule_departure_estimate_text_view);
+		TextView arrivalEstimateTextView = (TextView) convertView.findViewById(R.id.operation_schedule_arrival_estimate_text_view);
+		TextView departureEstimateTextView = (TextView) convertView.findViewById(R.id.operation_schedule_departure_estimate_text_view);
 
 		arrivalEstimateTextView.setText("");
 		departureEstimateTextView.setText("");
 
-		arrivalEstimateTextView.setText(operationSchedule.arrivalEstimate
-				.toString(DATE_TIME_FORMATTER) + " 着");
+		arrivalEstimateTextView.setText(operationSchedule.arrivalEstimate.toString(DATE_TIME_FORMATTER) + " 着");
 
 		if (getCount() != position + 1) {
-			departureEstimateTextView
-					.setText(operationSchedule.departureEstimate
-							.toString(DATE_TIME_FORMATTER) + " 発");
+			departureEstimateTextView.setText(operationSchedule.departureEstimate.toString(DATE_TIME_FORMATTER) + " 発");
 		}
 
-		TextView checkMarkTextView = (TextView) convertView
-				.findViewById(R.id.check_mark_text_view);
+		TextView checkMarkTextView = (TextView) convertView.findViewById(R.id.check_mark_text_view);
 		if (operationSchedule.departedAt == null) {
 			convertView.setBackgroundColor(DEFAULT_COLOR);
 			checkMarkTextView.setVisibility(View.INVISIBLE);
@@ -357,45 +328,47 @@ public class OperationScheduleArrayAdapter
 		return convertView;
 	}
 
-	private View createPassengerRecordRow(OperationSchedule operationSchedule,
-			PassengerRecord passengerRecord, Boolean getOn) {
-		View row = layoutInflater.inflate(
-				R.layout.small_passenger_record_list_row, null);
-		row.setBackgroundColor(DEFAULT_COLOR);
-		ImageView selectMarkImageView = (ImageView) row
-				.findViewById(R.id.select_mark_image_view);
-		selectMarkImageView.setImageResource(getOn
-				? R.drawable.get_on
-				: R.drawable.get_off);
+	private View createPassengerRecordRow(OperationSchedule operationSchedule, PassengerRecord passengerRecord, Boolean getOn) {
 
+		View row = layoutInflater.inflate(R.layout.small_passenger_record_list_row, null);
+
+		// 行のデフォルト背景色
+		row.setBackgroundColor(DEFAULT_COLOR);
+
+		// 乗降画像
+		ImageView selectMarkImageView = (ImageView) row.findViewById(R.id.select_mark_image_view);
+		selectMarkImageView.setImageResource(getOn ? R.drawable.get_on : R.drawable.get_off);
+
+		// ユーザー名
 		TextView userNameView = (TextView) row.findViewById(R.id.user_name);
 		userNameView.setText(passengerRecord.getDisplayName());
-		PassengerRecordRowTag tag = new PassengerRecordRowTag(passengerRecord,
-				operationSchedule, getOn);
+
+		// 行タッチ時の動作を定義
+		PassengerRecordRowTag tag = new PassengerRecordRowTag(passengerRecord, operationSchedule, getOn);
 		row.setTag(tag);
 		row.setOnTouchListener(onPassengerRecordTouchListener);
 
-		TextView countView = (TextView) row
-				.findViewById(R.id.passenger_count_text_view);
+		//乗降人数
+		TextView countView = (TextView) row.findViewById(R.id.passenger_count_text_view);
 		countView.setText(passengerRecord.passengerCount + "名");
-		Button userMemoButton = (Button) row
-				.findViewById(R.id.user_memo_button);
+
+		// メモボタン
+		Button userMemoButton = (Button) row.findViewById(R.id.user_memo_button);
 		userMemoButton.setTag(passengerRecord);
 		userMemoButton.setOnClickListener(onUserMemoButtonClickListener);
-		row.setBackgroundColor(onPassengerRecordTouchListener
-				.getDefaultColor(tag));
 
-		TextView arrivalPlatformView = (TextView) row
-				.findViewById(R.id.user_arrival_platform_name);
+		// 乗降者行背景色
+		row.setBackgroundColor(onPassengerRecordTouchListener.getDefaultColor(tag));
+
+		// 乗車行に到着乗降場名を追加
+		TextView arrivalPlatformView = (TextView) row.findViewById(R.id.user_arrival_platform_name);
 		arrivalPlatformView.setVisibility(View.GONE);
 		if (getOn) {
 			for (Integer i = 0; i < getCount(); i++) {
 				OperationSchedule arrivalOperationSchedule = getItem(i);
-				if (arrivalOperationSchedule.id
-						.equals(passengerRecord.arrivalScheduleId)) {
+				if (arrivalOperationSchedule.id.equals(passengerRecord.arrivalScheduleId)) {
 					arrivalPlatformView.setVisibility(View.VISIBLE);
-					arrivalPlatformView.setText("⇨"
-							+ arrivalOperationSchedule.name);
+					arrivalPlatformView.setText("⇨"	+ arrivalOperationSchedule.name);
 				}
 			}
 		}

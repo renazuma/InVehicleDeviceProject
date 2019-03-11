@@ -1,17 +1,10 @@
 package com.kogasoftware.odt.invehicledevice.view.util.arrayadapter;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.WeakHashMap;
-
-import org.joda.time.DateTime;
-
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -31,27 +24,39 @@ import com.kogasoftware.odt.invehicledevice.view.fragment.PassengerRecordMemoFra
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
 import com.kogasoftware.odt.invehicledevice.view.util.ViewDisabler;
 
+import org.joda.time.DateTime;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.WeakHashMap;
+
 /**
  * 乗客一覧
  */
 public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
-	private static final String TAG = PassengerRecordArrayAdapter.class
-			.getSimpleName();
+	private static final String TAG = PassengerRecordArrayAdapter.class.getSimpleName();
 	private static final Integer RESOURCE_ID = R.layout.passenger_record_list_row;
-	private final FragmentManager fragmentManager;
-	private final LayoutInflater layoutInflater = (LayoutInflater) getContext()
-			.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	private final LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	private final OperationSchedule operationSchedule;
 	private final WeakHashMap<View, Boolean> memoButtons = new WeakHashMap<View, Boolean>();
 	private final ContentResolver contentResolver;
 	private Boolean memoButtonsVisible = true;
+	private Fragment fragment;
+
+	public PassengerRecordArrayAdapter(Fragment fragment, OperationSchedule operationSchedule) {
+		super(fragment.getActivity(), RESOURCE_ID);
+		this.fragment = fragment;
+		this.contentResolver = fragment.getActivity().getContentResolver();
+		this.operationSchedule = operationSchedule;
+	}
+
 	private final OnTouchListener onTouchListener = new OnTouchListener() {
 		@Override
 		public boolean onTouch(View view, MotionEvent event) {
 			Object tag = view.getTag();
 			if (!(tag instanceof PassengerRecord)) {
-				Log.e(TAG, "\"" + view + "\".getTag() (" + tag
-						+ ") is not instanceof PassengerRecord");
+				Log.e(TAG, "\"" + view + "\".getTag() (" + tag	+ ") is not instanceof PassengerRecord");
 				return false;
 			}
 
@@ -64,25 +69,24 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 			Boolean execute = event.getAction() == MotionEvent.ACTION_UP;
 
 			if (invertColor || restoreColor) {
-				if (operationSchedule.id
-						.equals(passengerRecord.arrivalScheduleId)) {
+				int color_code = 0; // TODO: デフォルトで0を入れているが、必ず上書きされるため使われない。明示せずに済むようにしたい。
+				if (operationSchedule.id.equals(passengerRecord.arrivalScheduleId)) {
 					if ((passengerRecord.getOffTime != null) ^ invertColor) {
-						view.setBackgroundColor(PassengerRecord.SELECTED_GET_OFF_COLOR);
+						color_code = ContextCompat.getColor(fragment.getContext(), R.color.selected_get_off_row);
 					} else {
-						view.setBackgroundColor(PassengerRecord.GET_OFF_COLOR);
+						color_code = ContextCompat.getColor(fragment.getContext(), R.color.get_off_row);
 					}
-				} else if (operationSchedule.id
-						.equals(passengerRecord.departureScheduleId)) {
+				} else if (operationSchedule.id.equals(passengerRecord.departureScheduleId)) {
 					if (passengerRecord.getOnTime != null ^ invertColor) {
-						view.setBackgroundColor(PassengerRecord.SELECTED_GET_ON_COLOR);
+						color_code = ContextCompat.getColor(fragment.getContext(), R.color.selected_get_on_row);
 					} else {
-						view.setBackgroundColor(PassengerRecord.GET_ON_COLOR);
+						color_code = ContextCompat.getColor(fragment.getContext(), R.color.get_on_row);
 					}
 				}
+				view.setBackgroundColor(color_code);
 			} else if (execute) {
 				DateTime now = DateTime.now();
-				if (operationSchedule.id
-						.equals(passengerRecord.arrivalScheduleId)) {
+				if (operationSchedule.id.equals(passengerRecord.arrivalScheduleId)) {
 					passengerRecord.ignoreGetOffMiss = false;
 					if (passengerRecord.getOffTime == null) {
 						if (passengerRecord.getOnTime == null) {
@@ -92,8 +96,7 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 					} else {
 						passengerRecord.getOffTime = null;
 					}
-				} else if (operationSchedule.id
-						.equals(passengerRecord.departureScheduleId)) {
+				} else if (operationSchedule.id.equals(passengerRecord.departureScheduleId)) {
 					passengerRecord.ignoreGetOnMiss = false;
 					if (passengerRecord.getOnTime == null) {
 						passengerRecord.getOnTime = now;
@@ -104,13 +107,11 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 				}
 				final ContentValues values = passengerRecord.toContentValues();
 				final String where = PassengerRecord.Columns._ID + " = ?";
-				final String[] whereArgs = new String[]{passengerRecord.id
-						.toString()};
+				final String[] whereArgs = new String[]{passengerRecord.id.toString()};
 				new Thread() {
 					@Override
 					public void run() {
-						contentResolver.update(PassengerRecord.CONTENT.URI,
-								values, where, whereArgs);
+						contentResolver.update(PassengerRecord.CONTENT.URI,	values, where, whereArgs);
 					}
 				}.start();
 				notifyDataSetChanged();
@@ -130,18 +131,11 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 				return;
 			}
 			PassengerRecord passengerRecord = (PassengerRecord) tag;
-			Fragments.showModalFragment(fragmentManager,
+			Fragments.showModalFragment(fragment.getFragmentManager(),
 					PassengerRecordMemoFragment.newInstance(passengerRecord));
 		}
 	};
 
-	public PassengerRecordArrayAdapter(Fragment fragment,
-			OperationSchedule operationSchedule) {
-		super(fragment.getActivity(), RESOURCE_ID);
-		this.fragmentManager = fragment.getFragmentManager();
-		this.contentResolver = fragment.getActivity().getContentResolver();
-		this.operationSchedule = operationSchedule;
-	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
@@ -150,14 +144,12 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 		}
 
 		PassengerRecord passengerRecord = getItem(position);
-		TextView passengerCountTextView = (TextView) convertView
-				.findViewById(R.id.passenger_count_text_view);
+		TextView passengerCountTextView = (TextView) convertView.findViewById(R.id.passenger_count_text_view);
 		passengerCountTextView.setText(passengerRecord.passengerCount + "名");
 
 		// メモボタン
 		View memoButton = convertView.findViewById(R.id.memo_button);
-		View memoButtonLayout = convertView
-				.findViewById(R.id.memo_button_layout);
+		View memoButtonLayout = convertView.findViewById(R.id.memo_button_layout);
 		memoButton.setTag(passengerRecord);
 		memoButtonLayout.setTag(passengerRecord);
 		memoButton.setOnClickListener(onClickMemoButtonListener);
@@ -174,29 +166,29 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 		convertView.setTag(passengerRecord);
 		convertView.setOnTouchListener(onTouchListener);
 
-		ImageView selectMarkImageView = (ImageView) convertView
-				.findViewById(R.id.select_mark_image_view);
+		ImageView selectMarkImageView = (ImageView) convertView.findViewById(R.id.select_mark_image_view);
 
+		// 行のデフォルト色指定
+		int color_code = 0;
 		if (operationSchedule.id.equals(passengerRecord.arrivalScheduleId)) {
 			selectMarkImageView.setImageResource(R.drawable.get_off);
 			if (passengerRecord.getOffTime != null) {
-				convertView
-						.setBackgroundColor(PassengerRecord.SELECTED_GET_OFF_COLOR);
+			    color_code = ContextCompat.getColor(fragment.getContext(), R.color.selected_get_off_row);
 			} else {
-				convertView.setBackgroundColor(PassengerRecord.GET_OFF_COLOR);
+				color_code = ContextCompat.getColor(fragment.getContext(), R.color.get_off_row);
 			}
-		} else if (operationSchedule.id
-				.equals(passengerRecord.departureScheduleId)) {
+		} else if (operationSchedule.id.equals(passengerRecord.departureScheduleId)) {
 			selectMarkImageView.setImageResource(R.drawable.get_on);
 			if (passengerRecord.getOnTime != null) {
-				convertView
-						.setBackgroundColor(PassengerRecord.SELECTED_GET_ON_COLOR);
+				color_code = ContextCompat.getColor(fragment.getContext(), R.color.selected_get_on_row);
 			} else {
-				convertView.setBackgroundColor(PassengerRecord.GET_ON_COLOR);
+				color_code = ContextCompat.getColor(fragment.getContext(), R.color.get_on_row);
 			}
 		} else {
 			Log.e(TAG, "unexpected PassengerRecord: " + passengerRecord);
 		}
+		convertView.setBackgroundColor(color_code);
+
 
 		TextView userNameView = (TextView) convertView
 				.findViewById(R.id.user_name);

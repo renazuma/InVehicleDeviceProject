@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+colors.xmlは本来はカラーパレットとして使用する事が推奨されているが、SP毎の差し替えがある場合色自体が変わってしまうため、ここでは使用目的を名前としている
+量が多くなってきたら、styles.xmlの方でまとめることも考える
+ -->
+<resources>
+
+    <!-- row -->
+    <color name="get_on_row">#f9d9d8</color>
+    <color name="selected_get_on_row">#ff69b4</color>
+    <color name="get_off_row">#d5e9f6</color>
+    <color name="selected_get_off_row">#40e0d0</color>
+
+    <!-- phase -->
+    <color name="drive_phase_header">#aaffaa</color>
+    <color name="finish_phase_header">#aaaaaa</color>
+    <color name="get_on_phase_header">#aaaaff</color>
+    <color name="get_off_phase_header">#aaaaff</color>
+
+</resources>

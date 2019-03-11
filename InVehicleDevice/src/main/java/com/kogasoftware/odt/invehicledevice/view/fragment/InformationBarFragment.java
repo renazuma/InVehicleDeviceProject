@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -186,13 +187,13 @@ public class InformationBarFragment	extends OperationSchedulesSyncFragmentAbstra
 	private int getPhaseColor() {
 		switch (OperationSchedule.getPhase(operationSchedules, passengerRecords)) {
 			case DRIVE :
-				return Color.rgb(0xAA, 0xFF, 0xAA);
+			    return ContextCompat.getColor(getContext(), R.color.drive_phase_header);
 			case FINISH :
-				return Color.rgb(0xAA, 0xAA, 0xAA);
+                return ContextCompat.getColor(getContext(), R.color.finish_phase_header);
 			case PLATFORM_GET_ON :
-				return Color.rgb(0xAA, 0xAA, 0xFF);
+				return ContextCompat.getColor(getContext(), R.color.get_on_phase_header);
 			case PLATFORM_GET_OFF :
-				return Color.rgb(0xAA, 0xAA, 0xFF);
+			    return ContextCompat.getColor(getContext(), R.color.get_off_phase_header);
 			default :
 				break;
 		}

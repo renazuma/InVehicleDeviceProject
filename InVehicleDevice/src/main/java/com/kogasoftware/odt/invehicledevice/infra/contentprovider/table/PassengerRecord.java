@@ -4,7 +4,6 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
 import android.provider.BaseColumns;
 
 import com.google.common.collect.ComparisonChain;
@@ -57,10 +56,6 @@ public class PassengerRecord implements Serializable {
 	};
 
 	// 運行予定画面、乗降画面の、乗客行の背景色
-	public static final int SELECTED_GET_OFF_COLOR = Color.parseColor("#40E0D0");
-	public static final int GET_OFF_COLOR = Color.parseColor("#D5E9F6");
-	public static final int SELECTED_GET_ON_COLOR = Color.parseColor("#FF69B4");
-	public static final int GET_ON_COLOR = Color.parseColor("#F9D9D8");
 	public Long id;
 	public DateTime getOnTime;
 	public DateTime getOffTime;
