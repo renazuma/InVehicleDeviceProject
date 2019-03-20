@@ -13,27 +13,33 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.Operatio
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule.Phase;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
+import com.kogasoftware.odt.invehicledevice.view.fragment.controlbar.ControlBarFragment;
+import com.kogasoftware.odt.invehicledevice.view.fragment.informationbar.DrivePhaseFragment;
+import com.kogasoftware.odt.invehicledevice.view.fragment.informationbar.FinishPhaseFragment;
+import com.kogasoftware.odt.invehicledevice.view.fragment.informationbar.InformationBarFragment;
+import com.kogasoftware.odt.invehicledevice.view.fragment.informationbar.PlatformPhaseFragment;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationSchedulesSyncFragmentAbstract;
 
 import java.util.LinkedList;
 
 /**
  * 順番に運行を進める画面。上部に「InformationBarFragment」右部に「ControlBarFragment」中心に「**PhaseFragment」を配置する
  */
-public class OrderedOperationFragment extends OperationSchedulesSyncFragmentAbstract {
+public class MainLayoutFragment extends OperationSchedulesSyncFragmentAbstract {
 
-	private static final String LOGGING_TAG = OrderedOperationFragment.class.getSimpleName();
+	private static final String LOGGING_TAG = MainLayoutFragment.class.getSimpleName();
 
 	// TODO: Activityは一つしかないので、InVehicleDeviceActivityの指定は不要では？
-	private static final String FRAGMENT_TAG = InVehicleDeviceActivity.class + "/" + OrderedOperationFragment.class;
+	private static final String FRAGMENT_TAG = InVehicleDeviceActivity.class + "/" + MainLayoutFragment.class;
 
-	public static OrderedOperationFragment newInstance() {
-		return new OrderedOperationFragment();
+	public static MainLayoutFragment newInstance() {
+		return new MainLayoutFragment();
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// トップ画面の空白のコンテナフラグメントに、実運用画面のフレームフラグメントを渡す（中身は別途設定される）
-		return inflater.inflate(R.layout.ordered_operation_fragment, container,	false);
+		return inflater.inflate(R.layout.main_layout_fragment, container,	false);
 	}
 
 	@Override
@@ -90,7 +96,7 @@ public class OrderedOperationFragment extends OperationSchedulesSyncFragmentAbst
 		if (fragmentManager.findFragmentByTag(FRAGMENT_TAG) != null) { return; }
 
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-		fragmentTransaction.add(R.id.modal_fragment_container, OrderedOperationFragment.newInstance(), FRAGMENT_TAG);
+		fragmentTransaction.add(R.id.modal_fragment_container, MainLayoutFragment.newInstance(), FRAGMENT_TAG);
 		fragmentTransaction.commitAllowingStateLoss();
 	}
 

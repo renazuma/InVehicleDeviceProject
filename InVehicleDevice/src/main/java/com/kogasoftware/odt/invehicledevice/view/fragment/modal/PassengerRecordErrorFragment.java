@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.view.fragment;
+package com.kogasoftware.odt.invehicledevice.view.fragment.modal;
 
 import android.content.ContentResolver;
 import android.graphics.Color;
@@ -16,8 +16,9 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.Operatio
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
-import com.kogasoftware.odt.invehicledevice.view.util.ViewDisabler;
-import com.kogasoftware.odt.invehicledevice.view.util.arrayadapter.PassengerRecordErrorArrayAdapter;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationSchedulesSyncFragmentAbstract;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.ViewDisabler;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.arrayadapter.PassengerRecordErrorArrayAdapter;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -27,7 +28,7 @@ import java.util.List;
  */
 public class PassengerRecordErrorFragment
 		extends
-        OperationSchedulesSyncFragmentAbstract {
+				OperationSchedulesSyncFragmentAbstract {
 	private static final String TAG = PassengerRecordErrorFragment.class
 			.getSimpleName();
 	private static final String OPERATION_SCHEDULE_ID_KEY = "operation_schedule_id";

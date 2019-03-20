@@ -9,7 +9,7 @@ import android.os.Looper;
 
 import com.kogasoftware.odt.invehicledevice.service.startupservice.AirplaneModeOnBroadcastIntent;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
-import com.kogasoftware.odt.invehicledevice.view.fragment.AirplaneModeAlertDialogFragment;
+import com.kogasoftware.odt.invehicledevice.view.fragment.modal.AirplaneModeAlertDialogFragment;
 
 /**
  * 機内モードを検知した際に、アラートダイアログを表示

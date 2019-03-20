@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.view.fragment;
+package com.kogasoftware.odt.invehicledevice.view.fragment.informationbar;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -19,10 +19,11 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.Operatio
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule.Phase;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
-import com.kogasoftware.odt.invehicledevice.view.fragment.informationBarFragment.BatteryAlerter;
-import com.kogasoftware.odt.invehicledevice.view.fragment.informationBarFragment.NetworkAlerter;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationSchedulesSyncFragmentAbstract;
+import com.kogasoftware.odt.invehicledevice.view.fragment.modal.PlatformMemoFragment;
+import com.kogasoftware.odt.invehicledevice.view.fragment.modal.SignInFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
-import com.kogasoftware.odt.invehicledevice.view.util.ViewDisabler;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.ViewDisabler;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTimeUtils;

@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.view.fragment;
+package com.kogasoftware.odt.invehicledevice.view.fragment.modal;
 
 import android.app.Fragment;
 import android.os.Bundle;

@@ -10,7 +10,7 @@ import android.os.Looper;
 
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.InVehicleDevice;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
-import com.kogasoftware.odt.invehicledevice.view.fragment.SignInFragment;
+import com.kogasoftware.odt.invehicledevice.view.fragment.modal.SignInFragment;
 
 /**
  * インストール直後に、ログイン画面を表示するためのLoaderを操作するクラス

@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.view.fragment;
+package com.kogasoftware.odt.invehicledevice.view.fragment.utils;
 
 import android.app.Fragment;
 import android.app.LoaderManager.LoaderCallbacks;

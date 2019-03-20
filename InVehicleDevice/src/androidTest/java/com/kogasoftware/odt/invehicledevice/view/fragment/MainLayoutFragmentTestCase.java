@@ -15,14 +15,14 @@ import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivit
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.TestUtils;
 import com.robotium.solo.Solo;
 
-public class OrderedOperationFragmentTestCase
+public class MainLayoutFragmentTestCase
 		extends
 			ActivityInstrumentationTestCase2<InVehicleDeviceActivity> {
 	MockServer server;
 	Solo solo;
 	SQLiteDatabase database;
 
-	public OrderedOperationFragmentTestCase() {
+	public MainLayoutFragmentTestCase() {
 		super(InVehicleDeviceActivity.class);
 	}
 

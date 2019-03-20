@@ -9,7 +9,7 @@ import android.os.Looper;
 
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.task.SignInErrorBroadcastIntent;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
-import com.kogasoftware.odt.invehicledevice.view.fragment.SignInFragment;
+import com.kogasoftware.odt.invehicledevice.view.fragment.modal.SignInFragment;
 
 /**
  * サインインエラーを検知した際に、サインイン画面を表示

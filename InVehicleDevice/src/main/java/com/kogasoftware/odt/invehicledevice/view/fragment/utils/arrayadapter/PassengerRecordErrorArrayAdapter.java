@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.view.util.arrayadapter;
+package com.kogasoftware.odt.invehicledevice.view.fragment.utils.arrayadapter;
 
 import java.util.Collections;
 import java.util.List;

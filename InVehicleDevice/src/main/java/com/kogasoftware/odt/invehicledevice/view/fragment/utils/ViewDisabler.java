@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.view.util;
+package com.kogasoftware.odt.invehicledevice.view.fragment.utils;
 
 import android.os.Handler;
 import android.view.View;

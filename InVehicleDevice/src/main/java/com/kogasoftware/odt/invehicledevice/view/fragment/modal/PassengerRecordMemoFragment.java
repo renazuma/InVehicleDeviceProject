@@ -1,7 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.view.fragment;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.SystemUtils;
+package com.kogasoftware.odt.invehicledevice.view.fragment.modal;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -15,6 +12,9 @@ import android.widget.TextView;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 
 /**
  * ユーザーメモと予約メモ表示画面

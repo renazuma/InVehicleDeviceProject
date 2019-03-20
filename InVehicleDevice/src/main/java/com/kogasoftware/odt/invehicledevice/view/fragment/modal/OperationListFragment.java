@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.view.fragment;
+package com.kogasoftware.odt.invehicledevice.view.fragment.modal;
 
 import android.app.Fragment;
 import android.app.LoaderManager;
@@ -22,7 +22,7 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.VehicleN
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
-import com.kogasoftware.odt.invehicledevice.view.util.arrayadapter.OperationScheduleArrayAdapter;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.arrayadapter.OperationScheduleArrayAdapter;
 
 import java.util.concurrent.TimeUnit;
 

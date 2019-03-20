@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.view.util.arrayadapter;
+package com.kogasoftware.odt.invehicledevice.view.fragment.utils.arrayadapter;
 
 import android.app.Fragment;
 import android.content.ContentResolver;
@@ -20,9 +20,9 @@ import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
-import com.kogasoftware.odt.invehicledevice.view.fragment.PassengerRecordMemoFragment;
+import com.kogasoftware.odt.invehicledevice.view.fragment.modal.PassengerRecordMemoFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
-import com.kogasoftware.odt.invehicledevice.view.util.ViewDisabler;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.ViewDisabler;
 
 import org.joda.time.DateTime;
 

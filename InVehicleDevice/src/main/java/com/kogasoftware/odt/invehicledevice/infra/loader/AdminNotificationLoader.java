@@ -10,8 +10,8 @@ import android.os.Looper;
 
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
-import com.kogasoftware.odt.invehicledevice.view.fragment.AdminVehicleNotificationFragment;
-import com.kogasoftware.odt.invehicledevice.view.fragment.VehicleNotificationAlertFragment;
+import com.kogasoftware.odt.invehicledevice.view.fragment.modal.notification.AdminVehicleNotificationFragment;
+import com.kogasoftware.odt.invehicledevice.view.fragment.modal.notification.VehicleNotificationAlertFragment;
 
 import java.util.List;
 
