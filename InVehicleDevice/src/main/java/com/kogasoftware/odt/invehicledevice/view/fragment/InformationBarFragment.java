@@ -20,7 +20,6 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.Operatio
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.view.fragment.informationBarFragment.BatteryAlerter;
-import com.kogasoftware.odt.invehicledevice.view.fragment.informationBarFragment.BgColorTransitionDrawable;
 import com.kogasoftware.odt.invehicledevice.view.fragment.informationBarFragment.NetworkAlerter;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
 import com.kogasoftware.odt.invehicledevice.view.util.ViewDisabler;
@@ -43,9 +42,6 @@ public class InformationBarFragment	extends OperationSchedulesSyncFragmentAbstra
 	private static final int OPERATION_SCHEDULES_LOADER_ID = 1;
 	private static final int PASSENGER_RECORDS_LOADER_ID = 2;
 
-	private BgColorTransitionDrawable bgColorTransitionDrawable;
-	private ImageView networkStrengthImageView;
-	private TextView presentTimeTextView;
 	private Handler handler;
 
 	public static InformationBarFragment newInstance() {
@@ -58,7 +54,7 @@ public class InformationBarFragment	extends OperationSchedulesSyncFragmentAbstra
 		public void run() {
 			Date now = new Date(DateTimeUtils.currentTimeMillis());
 			DateFormat f = new SimpleDateFormat(getString(R.string.present_time_format), Locale.US);
-			presentTimeTextView.setText(f.format(now));
+			((TextView) getView().findViewById(R.id.present_time_text_view)).setText(f.format(now));
 			handler.postDelayed(this, UPDATE_TIME_INTERVAL_MILLIS);
 		}
 	};
@@ -73,23 +69,15 @@ public class InformationBarFragment	extends OperationSchedulesSyncFragmentAbstra
 	 */
 	private Runnable networkAlert;
 
-	/**
-	 * 背景色を変更
-	 */
-	private Runnable changeBgColor;
-
 	private final List<PassengerRecord> passengerRecords = Lists.newLinkedList();
 	private final List<OperationSchedule> operationSchedules = Lists.newLinkedList();
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		View view = getView();
 		handler = new Handler();
-		presentTimeTextView = (TextView) view.findViewById(R.id.present_time_text_view);
-		networkStrengthImageView = (ImageView) view.findViewById(R.id.network_strength_image_view);
-		ImageView openLoginImageView = (ImageView) view.findViewById(R.id.open_login_image_view);
-		openLoginImageView.setOnClickListener(new OnClickListener() {
+
+		((ImageView) getView().findViewById(R.id.open_login_image_view)).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				Activity activity = getActivity();
@@ -98,15 +86,8 @@ public class InformationBarFragment	extends OperationSchedulesSyncFragmentAbstra
 				}
 			}
 		});
-		bgColorTransitionDrawable = new BgColorTransitionDrawable(getPhaseColor());
-		changeBgColor = new Runnable() {
-			@Override
-			public void run() {
-				bgColorTransitionDrawable.changeColor(getPhaseColor());
-			}
-		};
-		View bcwl = view.findViewById(R.id.background_color_workaround_layout);
-		bcwl.setBackgroundDrawable(bgColorTransitionDrawable);
+
+		// 各ライフサイクルで適宜使用されるRunnableの定義だが、getViewが必要なのでここで初期化している。
 		blinkBatteryAlert = new BatteryAlerter(
 				getActivity().getApplicationContext(),
 				handler,
@@ -115,10 +96,11 @@ public class InformationBarFragment	extends OperationSchedulesSyncFragmentAbstra
 		networkAlert = new NetworkAlerter(
 				getActivity().getApplicationContext(),
 				handler,
-				networkStrengthImageView,
+				(ImageView) getView().findViewById(R.id.network_strength_image_view),
 				getFragmentManager()
 		);
 	}
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.information_bar_fragment, container,false);
@@ -129,7 +111,6 @@ public class InformationBarFragment	extends OperationSchedulesSyncFragmentAbstra
 		super.onPause();
 		handler.removeCallbacks(updateTime);
 		handler.removeCallbacks(blinkBatteryAlert);
-		handler.removeCallbacks(changeBgColor);
 		handler.removeCallbacks(networkAlert);
 	}
 
@@ -142,40 +123,32 @@ public class InformationBarFragment	extends OperationSchedulesSyncFragmentAbstra
 	}
 
 	public void updateView() {
-		handler.removeCallbacks(changeBgColor);
-		handler.postDelayed(changeBgColor, 400);
 		View view = getView();
-		TextView phaseTextView = (TextView) view.findViewById(R.id.phase_text_view);
-		Boolean showPlatformMemo = true;
-		switch (OperationSchedule.getPhase(operationSchedules, passengerRecords)) {
-			case DRIVE :
-				phaseTextView.setText("運行中");
-				break;
-			case FINISH :
-				showPlatformMemo = false;
-				phaseTextView.setText("運行終了");
-				break;
-			case PLATFORM_GET_OFF :
-				phaseTextView.setText("降車中");
-				break;
-			case PLATFORM_GET_ON :
-				phaseTextView.setText("乗車中");
-				break;
-		}
 
-		final OperationSchedule operationSchedule = OperationSchedule.getCurrent(operationSchedules);
+		view.setBackgroundColor(getPhaseColor());
+
+		((TextView)view.findViewById(R.id.phase_text_view)).setText(getPhaseText());
+
+		// フェーズに合わせてメモボタンを設定
 		final Button platformMemoButton = (Button) view.findViewById(R.id.platform_memo_button);
 		platformMemoButton.setVisibility(View.INVISIBLE);
-		if (showPlatformMemo && operationSchedule != null && StringUtils.isNotBlank(operationSchedule.memo)) {
+		if (isShowMemoButtonPattern()) {
 			platformMemoButton.setVisibility(View.VISIBLE);
 			platformMemoButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					ViewDisabler.disable(v);
-					showPlatformMemoFragment(operationSchedule);
+					showPlatformMemoFragment(OperationSchedule.getCurrent(operationSchedules));
 				}
 			});
 		}
+	}
+
+	private Boolean isShowMemoButtonPattern() {
+		final OperationSchedule operationSchedule = OperationSchedule.getCurrent(operationSchedules);
+		return (OperationSchedule.getPhase(operationSchedules, passengerRecords) != Phase.FINISH
+						&& operationSchedule != null
+						&& StringUtils.isNotBlank(operationSchedule.memo));
 	}
 
 	public void showPlatformMemoFragment(OperationSchedule operationSchedule) {
@@ -186,18 +159,32 @@ public class InformationBarFragment	extends OperationSchedulesSyncFragmentAbstra
 
 	private int getPhaseColor() {
 		switch (OperationSchedule.getPhase(operationSchedules, passengerRecords)) {
-			case DRIVE :
+			case DRIVE:
 			    return ContextCompat.getColor(getContext(), R.color.drive_phase_header);
-			case FINISH :
+			case FINISH:
                 return ContextCompat.getColor(getContext(), R.color.finish_phase_header);
-			case PLATFORM_GET_ON :
+			case PLATFORM_GET_ON:
 				return ContextCompat.getColor(getContext(), R.color.get_on_phase_header);
-			case PLATFORM_GET_OFF :
+			case PLATFORM_GET_OFF:
 			    return ContextCompat.getColor(getContext(), R.color.get_off_phase_header);
-			default :
+			default:
 				break;
 		}
 		return Color.WHITE;
+	}
+
+	private String getPhaseText() {
+		switch (OperationSchedule.getPhase(operationSchedules, passengerRecords)) {
+			case DRIVE:
+				return "運行中";
+			case FINISH:
+				return "運行終了";
+			case PLATFORM_GET_OFF:
+				return "降車中";
+			case PLATFORM_GET_ON:
+				return "乗車中";
+		}
+		return "";
 	}
 
 	@Override
