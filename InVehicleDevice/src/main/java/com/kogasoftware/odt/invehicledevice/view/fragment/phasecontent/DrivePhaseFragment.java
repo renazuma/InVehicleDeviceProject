@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.view.fragment.informationbar;
+package com.kogasoftware.odt.invehicledevice.view.fragment.phasecontent;
 
 import android.app.Fragment;
 import android.content.res.TypedArray;

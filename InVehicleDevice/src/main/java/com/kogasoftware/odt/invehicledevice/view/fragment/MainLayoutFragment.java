@@ -14,10 +14,10 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.Operatio
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.view.fragment.controlbar.ControlBarFragment;
-import com.kogasoftware.odt.invehicledevice.view.fragment.informationbar.DrivePhaseFragment;
-import com.kogasoftware.odt.invehicledevice.view.fragment.informationbar.FinishPhaseFragment;
+import com.kogasoftware.odt.invehicledevice.view.fragment.phasecontent.DrivePhaseFragment;
+import com.kogasoftware.odt.invehicledevice.view.fragment.phasecontent.FinishPhaseFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.informationbar.InformationBarFragment;
-import com.kogasoftware.odt.invehicledevice.view.fragment.informationbar.PlatformPhaseFragment;
+import com.kogasoftware.odt.invehicledevice.view.fragment.phasecontent.PlatformPhaseFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationSchedulesSyncFragmentAbstract;
 
 import java.util.LinkedList;
@@ -48,14 +48,16 @@ public class MainLayoutFragment extends OperationSchedulesSyncFragmentAbstract {
 
 		// トップ画面の右部分のボタンのコンテナフラグメント、ヘッダフラグメントを設定
 		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-		fragmentTransaction.add(R.id.control_fragment_container, ControlBarFragment.newInstance());
-		fragmentTransaction.add(R.id.information_fragment_container, InformationBarFragment.newInstance());
+		fragmentTransaction.add(R.id.control_bar_fragment_container, ControlBarFragment.newInstance());
+		fragmentTransaction.add(R.id.information_bar_fragment_container, InformationBarFragment.newInstance());
 		fragmentTransaction.commitAllowingStateLoss();
 	}
 
 
 	// 運行スケジュールが新しく同期される度に、運行メイン画面を最新化する
-	// TODO: control_fragmentやinformation_fragmentに合わせるのであれば、phase_fragmentを別クラスで用意し、ここはコンテナに徹するべきでは？
+	// TODO: control_fragmentやinformation_fragmentに合わせるのであれば、phase表示をコントロールする別クラスで用意し、ここはコンテナに徹するべきでは？
+    // TODO: もしくは、fragmentTransactionのメソッドは、コンテナを管理するこのクラスで実行するという方針？
+	// TODO: phaseコンテナがメインコンテンツ部分だという事が分かりにくいので、名前を変えたい。
 	@Override
 	protected void onOperationSchedulesAndPassengerRecordsLoadFinished(
 			Phase phase, LinkedList<OperationSchedule> operationSchedules,
@@ -68,17 +70,17 @@ public class MainLayoutFragment extends OperationSchedulesSyncFragmentAbstract {
 		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
 
 		switch (phase) {
-			case FINISH :
-				fragmentTransaction.replace(R.id.phase_fragment_container, FinishPhaseFragment.newInstance());
+			case FINISH:
+				fragmentTransaction.replace(R.id.phase_content_fragment_container, FinishPhaseFragment.newInstance());
 				break;
-			case DRIVE :
-				fragmentTransaction.replace(R.id.phase_fragment_container, DrivePhaseFragment.newInstance(operationSchedules));
+			case DRIVE:
+				fragmentTransaction.replace(R.id.phase_content_fragment_container, DrivePhaseFragment.newInstance(operationSchedules));
 				break;
-			case PLATFORM_GET_ON :
-				fragmentTransaction.replace(R.id.phase_fragment_container, PlatformPhaseFragment.newInstance(operationSchedules));
+			case PLATFORM_GET_ON:
+				fragmentTransaction.replace(R.id.phase_content_fragment_container, PlatformPhaseFragment.newInstance(operationSchedules));
 				break;
-			case PLATFORM_GET_OFF :
-				fragmentTransaction.replace(R.id.phase_fragment_container, PlatformPhaseFragment.newInstance(operationSchedules));
+			case PLATFORM_GET_OFF:
+				fragmentTransaction.replace(R.id.phase_content_fragment_container, PlatformPhaseFragment.newInstance(operationSchedules));
 				break;
 		}
 
