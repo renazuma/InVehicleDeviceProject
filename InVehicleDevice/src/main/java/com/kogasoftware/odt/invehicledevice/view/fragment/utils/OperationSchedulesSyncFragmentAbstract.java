@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * 運行スケジュール同期時に処理が必要なFragmentの抽象クラス
- * 継承先クラスがインスタンス化された段階で、OperatorSchedulesとPassengerRecordsを順次のLoaderを順次用意し、継承先で実装されたメソッドを実行する。
+ * 継承先クラスがインスタンス化された段階で、OperatorSchedulesとPassengerRecordsのLoaderを順次用意し、継承先で実装されたメソッドを実行する。
  * その後は継承先が表示中であれば、OperationSchedulesが更新される度に同様の処理が行われる。
  */
 public abstract class OperationSchedulesSyncFragmentAbstract extends Fragment {

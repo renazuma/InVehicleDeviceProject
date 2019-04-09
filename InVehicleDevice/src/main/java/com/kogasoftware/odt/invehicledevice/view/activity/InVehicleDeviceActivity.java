@@ -22,7 +22,7 @@ public class InVehicleDeviceActivity extends Activity {
 
   // インスタンス変数
   public Boolean destroyed = true; // TODO: 変数でライフサイクル管理をするのをやめたい。
-  public ServiceProvider serviceProvider; // TODO: ServiceProviderの同期状態を変素で管理するのをやめたい。
+  public ServiceProvider serviceProvider; // TODO: ServiceProviderの同期状態を変数で管理するのをやめたい。
 
   private InterruptUiPresenter interruptUiPresenter;
   private UnitStatusLogSyncPresenter unitStatusLogSyncPresenter;
@@ -47,7 +47,6 @@ public class InVehicleDeviceActivity extends Activity {
     // Loaderを使用するためには、onStartより前の時点で、一度getLoaderManagerを実行しておく必要がある。
     getLoaderManager();
 
-
     unitStatusLogSyncPresenter = new UnitStatusLogSyncPresenter(this);
     unitStatusLogSyncPresenter.onCreate();
 
@@ -66,7 +65,6 @@ public class InVehicleDeviceActivity extends Activity {
 
     interruptUiPresenter = new InterruptUiPresenter(this);
     interruptUiPresenter.onCreate();
-
   }
 
   @Override

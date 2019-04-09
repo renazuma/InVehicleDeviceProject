@@ -66,5 +66,4 @@ public class MainViewLoader {
     public void onLoaderReset(Loader<Cursor> loader) {
     }
   };
-
 }

@@ -123,7 +123,7 @@ public class InformationBarFragment	extends OperationSchedulesSyncFragmentAbstra
 		handler.post(networkAlert);
 	}
 
-	public void updateView() {
+	private void updateView() {
 		View view = getView();
 
 		view.setBackgroundColor(getPhaseColor());
@@ -152,7 +152,7 @@ public class InformationBarFragment	extends OperationSchedulesSyncFragmentAbstra
 						&& StringUtils.isNotBlank(operationSchedule.memo));
 	}
 
-	public void showPlatformMemoFragment(OperationSchedule operationSchedule) {
+	private void showPlatformMemoFragment(OperationSchedule operationSchedule) {
 		if (!isAdded()) { return; }
 
 		Fragments.showModalFragment(getFragmentManager(), PlatformMemoFragment.newInstance(operationSchedule));

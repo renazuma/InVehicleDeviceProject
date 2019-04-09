@@ -60,7 +60,6 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 		});
 	}
 
-
 	// 表示メソッド
 	public void showNavigation(Phase phase,	LinkedList<OperationSchedule> operationSchedules, LinkedList<PassengerRecord> passengerRecords) {
 		if (!isAdded()) { return; }
