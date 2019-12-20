@@ -1,10 +1,5 @@
 package com.kogasoftware.odt.invehicledevice;
 
-import org.acra.ACRA;
-import org.acra.ReportField;
-import org.acra.ReportingInteractionMode;
-import org.acra.annotation.ReportsCrashes;
-
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.pm.PackageInfo;
@@ -13,6 +8,11 @@ import android.util.Log;
 
 import com.kogasoftware.android.StrictModes;
 import com.kogasoftware.odt.invehicledevice.service.logservice.LogServiceReportSender;
+
+import org.acra.ACRA;
+import org.acra.ReportField;
+import org.acra.ReportingInteractionMode;
+import org.acra.annotation.ReportsCrashes;
 
 /**
  * 車載器アプリケーション

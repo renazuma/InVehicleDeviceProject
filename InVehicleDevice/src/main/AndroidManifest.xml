@@ -40,12 +40,12 @@
 		android:label="@string/app_name">
 
 		<provider
-			android:name=".contentprovider.InVehicleDeviceContentProvider"
-			android:authorities="com.kogasoftware.odt.invehicledevice.contentprovider"
+			android:name=".infra.contentprovider.InVehicleDeviceContentProvider"
+			android:authorities="com.kogasoftware.odt.invehicledevice.infra.contentprovider"
 			android:exported="false" />
 
 		<activity
-			android:name=".ui.activity.InVehicleDeviceActivity"
+			android:name=".view.activity.InVehicleDeviceActivity"
 			android:label="@string/app_name" android:launchMode="singleTop"
 			android:screenOrientation="sensorLandscape" android:theme="@style/InVehicleDeviceActivity.Theme">
 
@@ -55,7 +55,7 @@
 			</intent-filter>
 		</activity>
 
-		<activity android:name=".ui.activity.EmptyActivity" />
+		<activity android:name=".view.activity.EmptyActivity" />
 
 		<receiver android:name=".service.startupservice.StartupService$StartupBroadcastReceiver">
 			<intent-filter>

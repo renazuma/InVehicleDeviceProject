@@ -1,7 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.service.startupservice;
 
-import java.io.IOException;
-
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
@@ -21,8 +19,10 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.kogasoftware.odt.invehicledevice.BuildConfig;
-import com.kogasoftware.odt.invehicledevice.ui.BigToast;
-import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
+import com.kogasoftware.odt.invehicledevice.view.BigToast;
+import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
+
+import java.io.IOException;
 
 /**
  * 自動起動処理

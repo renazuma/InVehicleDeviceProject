@@ -9,7 +9,7 @@ import android.os.BatteryManager;
 import android.util.Log;
 
 import com.google.common.base.Strings;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLog;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ServiceUnitStatusLog;
 
 /**
  * バッテリーの状況をログ

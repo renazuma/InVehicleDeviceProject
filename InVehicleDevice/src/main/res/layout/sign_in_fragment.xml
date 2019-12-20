@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!-- sign_in画面？sign_in_preferenceがあるので、何に使うのかがわからない -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/ModalView.Layout"
     android:layout_width="fill_parent"

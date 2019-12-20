@@ -3,8 +3,9 @@ package com.kogasoftware.odt.invehicledevice.ui;
 import android.test.ActivityInstrumentationTestCase2;
 import android.widget.Toast;
 
-import com.kogasoftware.odt.invehicledevice.ui.activity.EmptyActivity;
-import com.kogasoftware.odt.invehicledevice.utils.TestUtils;
+import com.kogasoftware.odt.invehicledevice.view.BigToast;
+import com.kogasoftware.odt.invehicledevice.view.activity.EmptyActivity;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.TestUtils;
 import com.robotium.solo.Solo;
 
 public class BigToastTestCase

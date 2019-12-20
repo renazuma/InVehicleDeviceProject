@@ -14,8 +14,8 @@ import android.os.PowerManager;
 import android.test.ServiceTestCase;
 
 import com.google.common.collect.Lists;
-import com.kogasoftware.odt.invehicledevice.ui.activity.EmptyActivity;
-import com.kogasoftware.odt.invehicledevice.ui.activity.InVehicleDeviceActivity;
+import com.kogasoftware.odt.invehicledevice.view.activity.EmptyActivity;
+import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 
 public class StartupServiceTestCase extends ServiceTestCase<StartupService> {
 	PowerManager powerManager;

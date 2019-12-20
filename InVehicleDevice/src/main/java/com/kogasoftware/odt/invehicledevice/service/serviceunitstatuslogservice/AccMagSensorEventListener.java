@@ -10,7 +10,7 @@ import android.view.Display;
 import android.view.Surface;
 import android.view.WindowManager;
 
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLog;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ServiceUnitStatusLog;
 
 /**
  * 方向センサー

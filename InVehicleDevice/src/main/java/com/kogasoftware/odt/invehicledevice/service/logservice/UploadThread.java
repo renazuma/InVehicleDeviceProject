@@ -1,13 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.service.logservice;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.concurrent.BlockingQueue;
-
 import android.content.Context;
-import android.content.CursorLoader;
-import android.content.Loader;
-import android.content.Loader.OnLoadCompleteListener;
 import android.database.Cursor;
 import android.os.Looper;
 import android.os.MessageQueue.IdleHandler;
@@ -17,12 +10,15 @@ import android.util.Log;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceProvider;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ServiceProvider;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * ログをAmazon S3にアップロードするスレッド

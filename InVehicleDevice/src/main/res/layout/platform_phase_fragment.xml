@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!-- 乗降中設定 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
@@ -10,7 +12,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true" >
 
-        <com.kogasoftware.odt.invehicledevice.ui.AutoResizeTextView
+        <com.kogasoftware.odt.invehicledevice.view.fragment.informationbar.AutoResizeTextView
             android:id="@+id/now_platform_text_view"
             android:layout_width="0dp"
             android:layout_height="55sp"
@@ -28,7 +30,7 @@
             android:textSize="22sp" />
     </RelativeLayout>
 
-    <com.kogasoftware.odt.invehicledevice.ui.FlickUnneededListView
+    <com.kogasoftware.odt.invehicledevice.view.fragment.utils.FlickUnneededListView
         android:id="@+id/reservation_list_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"

@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!-- アンテナ強度、時刻などの情報バー設定 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/background_color_workaround_layout"
     android:layout_width="match_parent"

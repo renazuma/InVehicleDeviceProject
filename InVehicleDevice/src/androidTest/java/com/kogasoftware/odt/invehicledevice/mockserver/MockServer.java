@@ -44,16 +44,16 @@ import android.util.Pair;
 import com.google.common.base.Splitter;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
-import com.kogasoftware.odt.invehicledevice.contentprovider.json.OperationRecordJson;
-import com.kogasoftware.odt.invehicledevice.contentprovider.json.OperationScheduleJson;
-import com.kogasoftware.odt.invehicledevice.contentprovider.json.PassengerRecordJson;
-import com.kogasoftware.odt.invehicledevice.contentprovider.json.PlatformJson;
-import com.kogasoftware.odt.invehicledevice.contentprovider.json.ReservationJson;
-import com.kogasoftware.odt.invehicledevice.contentprovider.json.ServiceProviderJson;
-import com.kogasoftware.odt.invehicledevice.contentprovider.json.UserJson;
-import com.kogasoftware.odt.invehicledevice.contentprovider.json.VehicleNotificationJson;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.InVehicleDevice;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceProvider;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.json.OperationRecordJson;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.json.OperationScheduleJson;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.json.PassengerRecordJson;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.json.PlatformJson;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.json.ReservationJson;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.json.ServiceProviderJson;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.json.UserJson;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.json.VehicleNotificationJson;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.InVehicleDevice;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ServiceProvider;
 
 public class MockServer extends Thread {
 	private static final String TAG = MockServer.class.getSimpleName();

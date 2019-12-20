@@ -7,6 +7,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.sqlite.SQLiteDatabase;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
@@ -20,8 +21,14 @@ import android.util.Log;
 import android.view.WindowManager;
 
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.DatabaseHelper;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.task.InsertServiceUnitStatusLogTask;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.task.PostServiceUnitStatusLogTask;
 
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * ServiceUnitStatusLogを生成して保存するサービス
@@ -29,8 +36,7 @@ import java.util.List;
  * 「アンドロイド品質ガイドライン」の「FN-S1」に注意する必要がある
  */
 public class ServiceUnitStatusLogService extends Service implements Runnable {
-	private static final String TAG = ServiceUnitStatusLogService.class
-			.getSimpleName();
+	private static final String TAG = ServiceUnitStatusLogService.class.getSimpleName();
 	private final Handler handler = new Handler();
 	private GpsLogger gpsLogger;
 	private BatteryBroadcastReceiver batteryBroadcastReceiver;
@@ -53,6 +59,8 @@ public class ServiceUnitStatusLogService extends Service implements Runnable {
 		super.onCreate();
 		Log.i(TAG, "onCreate()");
 
+		startDBAsyncTasks();
+
 		sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 		windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
 		connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -73,23 +81,19 @@ public class ServiceUnitStatusLogService extends Service implements Runnable {
 			Log.w(TAG, e);
 		}
 
-		orientationSensorEventListener = new OrientationSensorEventListener(
-				getContentResolver(), windowManager);
-		temperatureSensorEventListener = new TemperatureSensorEventListener(
-				getContentResolver());
-		signalStrengthListener = new SignalStrengthListener(
-				getContentResolver());
-
+		// TODO: 現在orientationとtemperatureのデータは使用されていないので、不要かもしれない。
+		orientationSensorEventListener = new OrientationSensorEventListener(getContentResolver(), windowManager);
+		temperatureSensorEventListener = new TemperatureSensorEventListener(getContentResolver());
+		signalStrengthListener = new SignalStrengthListener(getContentResolver());
 		gpsLogger = new GpsLogger(this);
+
 		handler.post(this);
 
 		Boolean useBatteryTemperature;
-		List<Sensor> temperatureSensors = sensorManager
-				.getSensorList(Sensor.TYPE_TEMPERATURE);
+		List<Sensor> temperatureSensors = sensorManager.getSensorList(Sensor.TYPE_TEMPERATURE);
 		if (temperatureSensors.size() > 0) {
 			Sensor sensor = temperatureSensors.get(0);
-			sensorManager.registerListener(temperatureSensorEventListener,
-					sensor, SensorManager.SENSOR_DELAY_UI);
+			sensorManager.registerListener(temperatureSensorEventListener, sensor, SensorManager.SENSOR_DELAY_UI);
 			useBatteryTemperature = false;
 		} else {
 			useBatteryTemperature = true;
@@ -98,24 +102,19 @@ public class ServiceUnitStatusLogService extends Service implements Runnable {
 		batteryBroadcastReceiver = new BatteryBroadcastReceiver(
 				getContentResolver(), useBatteryTemperature);
 
-		List<Sensor> orientationSensors = sensorManager
-				.getSensorList(Sensor.TYPE_ORIENTATION);
+		List<Sensor> orientationSensors = sensorManager.getSensorList(Sensor.TYPE_ORIENTATION);
 		if (orientationSensors.size() > 0) {
 			Sensor sensor = orientationSensors.get(0);
-			sensorManager.registerListener(orientationSensorEventListener,
-					sensor, SensorManager.SENSOR_DELAY_UI);
+			sensorManager.registerListener(orientationSensorEventListener, sensor, SensorManager.SENSOR_DELAY_UI);
 		}
 
 		if (telephonyManager != null) {
-			telephonyManager.listen(signalStrengthListener,
-					PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
+			telephonyManager.listen(signalStrengthListener,	PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
 		}
 
-		networkStatusLogger = new NetworkStatusLogger(connectivityManager,
-				telephonyManager);
+		networkStatusLogger = new NetworkStatusLogger(connectivityManager, telephonyManager);
 		handler.post(networkStatusLogger);
-		registerReceiver(batteryBroadcastReceiver, new IntentFilter(
-				Intent.ACTION_BATTERY_CHANGED));
+		registerReceiver(batteryBroadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 	}
 
 	@Override
@@ -173,4 +172,29 @@ public class ServiceUnitStatusLogService extends Service implements Runnable {
 
 		return Service.START_STICKY;
 	}
+
+	private void startDBAsyncTasks() {
+		ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+
+		DatabaseHelper databaseHelper = new DatabaseHelper(getBaseContext());
+		SQLiteDatabase database = databaseHelper.getWritableDatabase();
+
+		// 一定間隔（固定）で、内部DBの最新のUnitStatusLogのデータをコピーして、created_atを現在時刻にしてinsert
+		// ↓の更新/削除では、現在時刻 - この処理のIntervalDelay秒以降の処理は対象にはならないため、1件は必ず残っている想定？
+		// TODO: 仕様がややこしい。シンプルに出来るなら変えたい。
+		executorService.scheduleAtFixedRate(
+						new InsertServiceUnitStatusLogTask(database),
+						500,
+						InsertServiceUnitStatusLogTask.INTERVAL_MILLIS,
+						TimeUnit.MILLISECONDS);
+
+		// 一定間隔で、現在時刻 - ↑のタスクのインターバル秒よりも以前に更新された、内部DBのUnitStatusLogのデータを、サーバ側に送信、DBより削除
+		// TODO: 仕様がややこしい。シンプルに出来るなら変えたい。
+		executorService.scheduleWithFixedDelay(
+						new PostServiceUnitStatusLogTask(getBaseContext(), database,	executorService),
+						500,
+						PostServiceUnitStatusLogTask.INTERVAL_MILLIS,
+						TimeUnit.MILLISECONDS);
+	}
+
 }

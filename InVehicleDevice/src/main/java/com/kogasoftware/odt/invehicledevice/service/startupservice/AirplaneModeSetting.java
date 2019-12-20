@@ -1,12 +1,12 @@
 package com.kogasoftware.odt.invehicledevice.service.startupservice;
 
-import java.io.IOException;
-
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.provider.Settings;
+
+import java.io.IOException;
 
 /**
  * 機内モードの設定

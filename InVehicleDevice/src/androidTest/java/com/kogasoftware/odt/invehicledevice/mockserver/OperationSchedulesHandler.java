@@ -12,7 +12,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HttpContext;
 
 import com.google.common.collect.ComparisonChain;
-import com.kogasoftware.odt.invehicledevice.contentprovider.json.OperationScheduleJson;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.json.OperationScheduleJson;
 
 public class OperationSchedulesHandler extends MockServerRequestHandler {
 	public static String PATH = "/in_vehicle_devices/operation_schedules";

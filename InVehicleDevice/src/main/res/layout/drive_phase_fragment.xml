@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!-- 運行中設定 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
@@ -44,20 +46,6 @@
             android:text="@string/arrival_schedule"
             android:textSize="50dp" />
     </LinearLayout>
-    <!--
-    <com.kogasoftware.odt.invehicledevice.ui.AutoResizeTextView
-        android:id="@+id/next_platform_name_text_view"
-        android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:layout_above="@+id/platform_name_1_beyond_text_view"
-        android:layout_below="@+id/platform_arrival_time_layout"
-        android:layout_marginLeft="30sp"
-        android:singleLine="true"
-        android:background="#222222ff"
-        android:ellipsize="end"
-        android:paddingLeft="10sp"
-        android:textSize="50dp" />
-    -->
 
     <TextView
         android:id="@+id/next_platform_name_text_view"

@@ -13,7 +13,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.common.annotations.VisibleForTesting;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLog;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ServiceUnitStatusLog;
 
 import org.joda.time.DateTimeUtils;
 
@@ -107,6 +107,7 @@ public class GpsLogger extends LocationCallback
 			public void run() {
 				//TODO: 大量エラーが発生するための処置。何のためにやっているか不明なので調べること
 			    TrafficStats.setThreadStatsTag(1000);
+				// 全データを最新状態に更新しているが、サーバと同期済みデータは削除されているので、これで良い想定っぽい。
 				contentResolver.update(ServiceUnitStatusLog.CONTENT.URI, values, null, null);
 			}
 		}.start();

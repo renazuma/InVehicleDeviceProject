@@ -8,7 +8,7 @@ import android.hardware.SensorEventListener;
 import android.util.Log;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLog;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ServiceUnitStatusLog;
 
 /**
  * 温度センサー

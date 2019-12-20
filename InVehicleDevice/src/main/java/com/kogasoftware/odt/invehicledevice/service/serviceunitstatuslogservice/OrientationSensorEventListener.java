@@ -11,10 +11,11 @@ import android.view.Display;
 import android.view.Surface;
 import android.view.WindowManager;
 
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLog;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ServiceUnitStatusLog;
 
 /**
  * 方向センサー。古い実装。
+ * TODO: 現在センサーのデータは使われていないので、削除しても良いかも。
  */
 public class OrientationSensorEventListener implements SensorEventListener {
 	private static final Long SAVE_PERIOD_MILLIS = 500L;
@@ -75,6 +76,7 @@ public class OrientationSensorEventListener implements SensorEventListener {
 		new Thread() {
 			@Override
 			public void run() {
+			    // 全データを最新状態に更新しているが、サーバと同期済みデータは削除されているので、これで良い想定っぽい。
 				contentResolver.update(ServiceUnitStatusLog.CONTENT.URI,
 						contentValues, null, null);
 			}

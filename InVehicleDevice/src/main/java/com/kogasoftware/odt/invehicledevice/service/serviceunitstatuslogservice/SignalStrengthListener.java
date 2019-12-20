@@ -7,7 +7,7 @@ import android.telephony.SignalStrength;
 import android.util.Log;
 
 import com.google.common.base.Optional;
-import com.kogasoftware.odt.invehicledevice.contentprovider.table.ServiceUnitStatusLog;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ServiceUnitStatusLog;
 
 /**
  * 電波強度を受け取り、現在の電波状況を100分率で表した数値をサービスへ通知
