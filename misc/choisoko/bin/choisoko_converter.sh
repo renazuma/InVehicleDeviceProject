@@ -20,7 +20,7 @@ function rename_dirs {
   fi
 }
 
-function overwrite_icons {
+function overwrite_diffs {
   cp -rf ./misc/choisoko/res ./InVehicleDevice/src/main
 }
 
@@ -32,5 +32,5 @@ function overwrite_keystore {
 ### 実行 ###
 convert_strings
 rename_dirs
-overwrite_icons
+overwrite_diffs
 overwrite_keystore

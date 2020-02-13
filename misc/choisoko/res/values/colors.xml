@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+colors.xmlは本来はカラーパレットとして使用する事が推奨されているが、SP毎の差し替えがある場合色自体が変わってしまうため、ここでは使用目的を名前としている
+量が多くなってきたら、styles.xmlの方でまとめることも考える
+ -->
+<resources>
+
+    <!-- row -->
+    <color name="get_on_row">#fbeab7</color>
+    <color name="selected_get_on_row">#f2bb16</color>
+    <color name="get_off_row">#b2e1ff</color>
+    <color name="selected_get_off_row">#089fff</color>
+
+    <!-- phase -->
+    <color name="drive_phase_header">#123491</color>
+    <color name="finish_phase_header">#123491</color>
+    <color name="get_on_phase_header">#123491</color>
+    <color name="get_off_phase_header">#123491</color>
+    <color name="phase_header_text_color">#FFFFFF</color>
+
+    <!-- custom_button -->
+    <color name="custom_btn_background">#123491</color>
+    <color name="custom_btn_background_disable">#f0f0f0</color>
+    <color name="custom_btn_background_pressed">#fea50a</color>
+    <color name="custom_btn_background_selected">#f07204</color>
+    <color name="custom_btn_background_disable_focused">#337ab7</color>
+    <color name="custom_btn_text_color">#ffffff</color>
+    <color name="custom_btn_text_color_disable">#aaaaaa</color>
+
+    <!-- memo_button -->
+    <color name="memo_btn_background">#123491</color>
+    <color name="memo_btn_text_color">#ffffff</color>
+</resources>
