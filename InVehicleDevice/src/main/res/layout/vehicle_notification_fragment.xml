@@ -42,7 +42,10 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
+            android:layout_margin="5dp"
             android:textSize="30sp"
+            android:background="@drawable/custom_button"
+            android:textColor="@color/custom_btn_text_color"
             android:text="@string/yes" />
 
         <Button
@@ -53,7 +56,10 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
+            android:layout_margin="5dp"
             android:textSize="30sp"
+            android:background="@drawable/custom_button"
+            android:textColor="@color/custom_btn_text_color"
             android:text="@string/no" />
     </LinearLayout>
 

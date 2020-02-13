@@ -17,5 +17,18 @@ colors.xmlは本来はカラーパレットとして使用する事が推奨さ�
     <color name="finish_phase_header">#aaaaaa</color>
     <color name="get_on_phase_header">#aaaaff</color>
     <color name="get_off_phase_header">#aaaaff</color>
+    <color name="phase_header_text_color">#000000</color>
 
+    <!-- custom_button -->
+    <color name="custom_btn_background">#d9d9d9</color>
+    <color name="custom_btn_background_disable">#f0f0f0</color>
+    <color name="custom_btn_background_pressed">#fea50a</color>
+    <color name="custom_btn_background_selected">#f07204</color>
+    <color name="custom_btn_background_disable_focused">#f07204</color>
+    <color name="custom_btn_text_color">#000000</color>
+    <color name="custom_btn_text_color_disable">#aaaaaa</color>
+
+    <!-- memo_button -->
+    <color name="memo_btn_background">#90e090</color>
+    <color name="memo_btn_text_color">#000000</color>
 </resources>

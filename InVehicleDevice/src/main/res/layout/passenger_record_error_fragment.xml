@@ -28,8 +28,12 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="2"
+            android:layout_margin="5dp"
             android:paddingBottom="15sp"
             android:paddingTop="15sp"
+            android:background="@drawable/custom_button"
+            android:text="@string/it_go_to_next_view"
+            android:textColor="@drawable/custom_button_text_color"
             android:textSize="30sp" />
 
         <Button
@@ -38,9 +42,12 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
+            android:layout_margin="5dp"
             android:paddingBottom="15sp"
             android:paddingTop="15sp"
+            android:background="@drawable/custom_button"
             android:text="@string/it_returns_to_platform_modal_view"
+            android:textColor="@color/custom_btn_text_color"
             android:textSize="30sp" />
     </LinearLayout>
 

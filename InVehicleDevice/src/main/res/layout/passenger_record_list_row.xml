@@ -37,9 +37,10 @@
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:layout_marginRight="5dp"
-            android:background="#90e090"
+            android:background="@color/memo_btn_background"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
+            android:textColor="@color/memo_btn_text_color"
             android:text="@string/memo"
             android:textSize="18sp" />
     </FrameLayout>

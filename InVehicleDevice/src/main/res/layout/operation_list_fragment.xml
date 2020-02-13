@@ -29,9 +29,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_margin="5dp"
             android:paddingBottom="15sp"
             android:paddingTop="15sp"
             android:text="@string/show_passengers"
+            android:background="@drawable/custom_button"
+            android:textColor="@color/custom_btn_text_color"
             android:textSize="30sp" />
 
         <Button
@@ -40,10 +43,13 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_margin="5dp"
             android:paddingBottom="15sp"
             android:paddingTop="15sp"
             android:text="@string/hide_passengers"
             android:textSize="30sp"
+            android:background="@drawable/custom_button"
+            android:textColor="@color/custom_btn_text_color"
             android:visibility="gone" />
 
         <Button
@@ -52,9 +58,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_margin="5dp"
             android:paddingBottom="15sp"
             android:paddingTop="15sp"
             android:text="@string/it_returns"
+            android:background="@drawable/custom_button"
+            android:textColor="@color/custom_btn_text_color"
             android:textSize="30sp" />
     </LinearLayout>
 

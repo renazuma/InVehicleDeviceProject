@@ -14,7 +14,7 @@
 
     <FrameLayout
         android:id="@+id/information_bar_fragment_container"
-        android:layout_width="0sp"
+        android:layout_width="match_parent"
         android:layout_height="60sp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"

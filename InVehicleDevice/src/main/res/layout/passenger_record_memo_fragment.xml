@@ -76,6 +76,8 @@
         android:layout_alignParentLeft="true"
         android:paddingBottom="15sp"
         android:paddingTop="15sp"
+        android:background="@drawable/custom_button"
+        android:textColor="@drawable/custom_button_text_color"
         android:text="@string/it_closes"
         android:textSize="30sp" />
 

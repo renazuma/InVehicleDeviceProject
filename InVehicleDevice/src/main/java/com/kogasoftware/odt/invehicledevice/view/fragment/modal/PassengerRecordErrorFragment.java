@@ -1,7 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.view.fragment.modal;
 
 import android.content.ContentResolver;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -131,15 +130,11 @@ public class PassengerRecordErrorFragment
 		adapter.update(errorPassengerRecords);
 
 		if (phase.equals(Phase.PLATFORM_GET_ON)) {
-			completeWithErrorButton.setText("次へ");
 			closeButton.setText("乗車一覧に戻る");
 		} else {
-			completeWithErrorButton.setText("次へ");
 			closeButton.setText("降車一覧に戻る");
 		}
 
-		completeWithErrorButton.setTextColor(Color.GRAY);
-		completeWithErrorButton.setEnabled(false);
 		completeWithErrorButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -149,10 +144,8 @@ public class PassengerRecordErrorFragment
 			}
 		});
 		if (adapter.hasError()) {
-			completeWithErrorButton.setTextColor(Color.GRAY);
 			completeWithErrorButton.setEnabled(false);
 		} else {
-			completeWithErrorButton.setTextColor(Color.BLACK);
 			completeWithErrorButton.setEnabled(true);
 		}
 	}

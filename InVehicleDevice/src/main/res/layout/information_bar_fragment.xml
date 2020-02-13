@@ -45,7 +45,8 @@
         android:layout_toLeftOf="@+id/present_time_text_view"
         android:layout_toRightOf="@+id/battery_alert_image_view"
         android:gravity="center"
-        android:textSize="30sp" />
+        android:textSize="30sp"
+        android:textColor="@color/phase_header_text_color"/>
 
     <TextView
         android:id="@+id/present_time_text_view"
@@ -55,7 +56,8 @@
         android:layout_centerVertical="true"
         android:layout_toLeftOf="@+id/platform_memo_button"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textSize="30sp" />
+        android:textSize="30sp"
+        android:textColor="@color/phase_header_text_color"/>
 
     <Button
         android:id="@+id/platform_memo_button"
@@ -64,6 +66,7 @@
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginTop="10dp"
+        android:layout_marginHorizontal="10dp"
         android:background="@android:drawable/btn_default"
         android:text="@string/platform_memo"
         android:textSize="20sp"
