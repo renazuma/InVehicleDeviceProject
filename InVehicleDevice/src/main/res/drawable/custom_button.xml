@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:state_window_focused="false"
+        android:state_enabled="true">
+        <shape android:shape="rectangle" >
+            <solid android:color="@color/custom_btn_background" />
+        </shape>
+    </item>
+
+    <item
+        android:state_window_focused="false"
+        android:state_enabled="false">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/custom_btn_background_disable" />
+        </shape>
+    </item>
+
+    <item
+        android:state_pressed="true">
+        <shape android:shape="rectangle" >
+            <solid android:color="@color/custom_btn_background_pressed" />
+        </shape>
+    </item>
+
+    <item
+        android:state_focused="true"
+        android:state_enabled="true">
+        <shape android:shape="rectangle" >
+            <solid android:color="@color/custom_btn_background_selected" />
+        </shape>
+    </item>
+
+    <item
+        android:state_enabled="true">
+        <shape android:shape="rectangle" >
+            <solid android:color="@color/custom_btn_background" />
+        </shape>
+    </item>
+
+    <item
+        android:state_focused="true">
+        <shape android:shape="rectangle" >
+            <solid android:color="@color/custom_btn_background_disable_focused" />
+        </shape>
+    </item>
+
+    <item
+        android:visibility="gone">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/custom_btn_background_disable" />
+        </shape>
+    </item>
+</selector>

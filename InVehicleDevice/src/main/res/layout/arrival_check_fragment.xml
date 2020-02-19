@@ -42,9 +42,12 @@
             android:layout_width="0dp"
             android:layout_height="fill_parent"
             android:layout_weight="1"
+            android:layout_margin="5dp"
             android:paddingBottom="15sp"
             android:paddingTop="15sp"
             android:text="@string/it_arrives"
+            android:background="@drawable/custom_button"
+            android:textColor="@drawable/custom_button_text_color"
             android:textSize="30sp" />
 
         <Button
@@ -53,7 +56,10 @@
             android:layout_width="0dp"
             android:layout_height="fill_parent"
             android:layout_weight="1"
+            android:layout_margin="5dp"
             android:text="@string/cancel"
+            android:background="@drawable/custom_button"
+            android:textColor="@drawable/custom_button_text_color"
             android:textSize="30sp" />
     </LinearLayout>
 

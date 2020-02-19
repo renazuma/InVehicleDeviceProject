@@ -4,7 +4,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:layout_marginLeft="5dp">
 
     <Button
         android:id="@+id/map_button"
@@ -12,7 +13,9 @@
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
-        android:background="@android:drawable/btn_default"
+        android:layout_marginBottom="2dp"
+        android:background="@drawable/custom_button"
+        android:textColor="@drawable/custom_button_text_color"
         android:text="@string/map" />
 
     <Button
@@ -21,7 +24,10 @@
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
-        android:background="@android:drawable/btn_default"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        android:background="@drawable/custom_button"
+        android:textColor="@drawable/custom_button_text_color"
         android:text="@string/today_operation_schedule" />
 
     <Button
@@ -30,7 +36,9 @@
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
-        android:background="@android:drawable/btn_default"
+        android:layout_marginTop="2dp"
+        android:background="@drawable/custom_button"
+        android:textColor="@drawable/custom_button_text_color"
         android:text="@string/it_arrives_button_text" />
 
 </LinearLayout>

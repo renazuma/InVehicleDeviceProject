@@ -16,6 +16,7 @@
     <string name="it_arrives_button_text">到着し\nました</string>
     <string name="it_leaves">出発する</string>
     <string name="it_returns">戻る</string>
+    <string name="it_go_to_next_view">次へ</string>
     <string name="it_returns_to_platform_modal_view">乗降一覧に戻る</string>
     <string name="map">地図</string>
     <string name="memo">メモ</string>

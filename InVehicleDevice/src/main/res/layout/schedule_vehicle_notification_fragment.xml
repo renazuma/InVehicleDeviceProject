@@ -39,9 +39,12 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
+            android:layout_margin="5sp"
             android:paddingBottom="15sp"
             android:paddingTop="15sp"
             android:text="@string/show_operation_schedule"
+            android:background="@drawable/custom_button"
+            android:textColor="@color/custom_btn_text_color"
             android:textSize="30sp" />
 
         <Button
@@ -50,9 +53,12 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
+            android:layout_margin="5sp"
             android:paddingBottom="15sp"
             android:paddingTop="15sp"
             android:text="@string/it_returns"
+            android:background="@drawable/custom_button"
+            android:textColor="@color/custom_btn_text_color"
             android:textSize="30sp" />
     </LinearLayout>
 
