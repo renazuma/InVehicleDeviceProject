@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
     defaultConfig {
         versionCode computeVersionCode()
         versionName computeVersionName()
@@ -31,6 +31,8 @@ android {
         abortOnError false
     }
     useLibrary 'org.apache.http.legacy'
+    useLibrary 'android.test.base'
+    useLibrary 'android.test.runner'
 }
 
 dependencies {

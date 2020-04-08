@@ -16,6 +16,7 @@
     <string name="it_arrives_button_text">@string/it_arrives</string>
     <string name="it_leaves">※ Leave</string>
     <string name="it_returns">※ Return</string>
+    <string name="it_go_to_next_view">※ Go to next view</string>
     <string name="it_returns_to_platform_modal_view">※ Return to platform view</string>
     <string name="map">※ Map</string>
     <string name="memo">※ Memo</string>
@@ -37,12 +38,24 @@
     <string name="platform_arrival_time">※ HH:mm</string>
     <string name="crash_toast_text">※ Unexpected error occurred</string>
     <string name="platform_memo">※ Platform memo</string>
+    <string name="failed_to_connect_operator_tool">※ Failed_to_connect_operator_tool</string>
     <string name="show_passengers">※  Show passengers</string>
     <string name="hide_passengers">※  Hide passengers</string>
     <string name="connection_config">※ Connection config</string>
     <string name="server_url">※ Server url</string>
     <string name="login">※ Login</string>
     <string name="password">※ Password</string>
+    <string name="ok">※ OK</string>
+    <string name="an_error_occurred">※ An error occurred</string>
+    <string name="checking_connection_config">※ Checking connection config</string>
+    <string name="error_null_or_empty">※ Error null or empty</string>
+    <string name="error_non_ascii">※ Error non ascii</string>
+    <string name="error_invalid_uri">※ Error invalid uri</string>
+    <string name="error_invalid_login_or_password">※ Error invalid login or password</string>
+    <string name="error_connection">※ Error connection</string>
+    <string name="voice_file">※ Voice file</string>
+    <string name="misc">※ Misc</string>
+    <string name="privacy_policy">※ Privacy policy</string>
     <string name="privacy_policy_url">https://www.kogasoftware.com/privacy-policy/</string>
 
 </resources>
