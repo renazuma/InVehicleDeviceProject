@@ -94,8 +94,6 @@ public class PassengerRecordErrorArrayAdapter extends ArrayAdapter<PassengerReco
 			ignoreButton.setChecked(passengerRecord.ignoreGetOffMiss);
 			String text = "未降車でよい";
 			ignoreButton.setText(text);
-			// ignoreButton.setTextOn(text);
-			// ignoreButton.setTextOff(text);
 			errorMessage += "未降車です";
 			if (passengerRecord.ignoreGetOffMiss) {
 				ignoreButton.setBackgroundResource(R.drawable.ignore_button_pressed);
@@ -107,8 +105,6 @@ public class PassengerRecordErrorArrayAdapter extends ArrayAdapter<PassengerReco
 			ignoreButton.setChecked(passengerRecord.ignoreGetOnMiss);
 			String text = "未乗車でよい";
 			ignoreButton.setText(text);
-			// ignoreButton.setTextOn(text);
-			// ignoreButton.setTextOff(text);
 			errorMessage += "未乗車です";
 			if (passengerRecord.ignoreGetOnMiss) {
 				ignoreButton.setBackgroundResource(R.drawable.ignore_button_pressed);
