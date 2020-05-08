@@ -1,8 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.view.fragment.utils.arrayadapter;
 
-import java.util.Collections;
-import java.util.List;
-
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.ContentResolver;
@@ -21,19 +18,19 @@ import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * 乗車予定なのに乗ってないor降車予定なのに降りてない乗客一覧
  */
-public class PassengerRecordErrorArrayAdapter
-		extends
-			ArrayAdapter<PassengerRecord> {
+public class PassengerRecordErrorArrayAdapter extends ArrayAdapter<PassengerRecord> {
 
 	public static interface OnPassengerRecordChangeListener {
 		void onPassengerRecordChange(PassengerRecordErrorArrayAdapter adapter);
 	}
 
-	private static final String TAG = PassengerRecordErrorArrayAdapter.class
-			.getSimpleName();
+	private static final String TAG = PassengerRecordErrorArrayAdapter.class.getSimpleName();
 	protected static final Integer RESOURCE_ID = R.layout.passenger_record_error_list_row;
 	protected final FragmentManager fragmentManager;
 	protected final LayoutInflater layoutInflater = (LayoutInflater) getContext()
@@ -46,8 +43,7 @@ public class PassengerRecordErrorArrayAdapter
 		public void onClick(View view) {
 			Object tag = view.getTag();
 			if (!(tag instanceof PassengerRecord)) {
-				Log.e(TAG, "\"" + view + "\".getTag() (" + tag
-						+ ") is not instanceof PassengerRecord");
+				Log.e(TAG, "\"" + view + "\".getTag() (" + tag	+ ") is not instanceof PassengerRecord");
 				return;
 			}
 			final PassengerRecord passengerRecord = (PassengerRecord) tag;
@@ -57,23 +53,21 @@ public class PassengerRecordErrorArrayAdapter
 				passengerRecord.ignoreGetOnMiss = !passengerRecord.ignoreGetOnMiss;
 			}
 			final String where = PassengerRecord.Columns._ID + " = ?";
-			final String[] whereArgs = new String[]{passengerRecord.id
-					.toString()};
+			final String[] whereArgs = new String[]{passengerRecord.id.toString()};
 			new Thread() {
 				@Override
 				public void run() {
-					contentResolver
-							.update(PassengerRecord.CONTENT.URI,
-									passengerRecord.toContentValues(), where,
-									whereArgs);
+					contentResolver.update(PassengerRecord.CONTENT.URI,
+									       passengerRecord.toContentValues(),
+									       where,
+									       whereArgs);
 				}
 			}.start();
 			notifyDataSetChanged();
 		}
 	};
 
-	public PassengerRecordErrorArrayAdapter(Fragment fragment,
-			Long operationScheduleId) {
+	public PassengerRecordErrorArrayAdapter(Fragment fragment, Long operationScheduleId) {
 		super(fragment.getActivity(), RESOURCE_ID);
 		this.fragmentManager = fragment.getFragmentManager();
 		this.contentResolver = fragment.getActivity().getContentResolver();
@@ -89,16 +83,14 @@ public class PassengerRecordErrorArrayAdapter
 		PassengerRecord passengerRecord = getItem(position);
 
 		// 無視ボタン
-		CheckBox ignoreButton = (CheckBox) convertView
-				.findViewById(R.id.passenger_record_error_ignore_button);
+		CheckBox ignoreButton = (CheckBox) convertView.findViewById(R.id.passenger_record_error_ignore_button);
 		ignoreButton.setTag(passengerRecord);
 		ignoreButton.setOnClickListener(onClickIgnoreButtonListener);
 		ignoreButton.setTextColor(Color.RED);
 
 		// 行の表示
 		String errorMessage = passengerRecord.getDisplayName() + " が";
-		if (operationScheduleId.equals(passengerRecord.arrivalScheduleId)
-				&& passengerRecord.getOffTime == null) {
+		if (operationScheduleId.equals(passengerRecord.arrivalScheduleId) && passengerRecord.getOffTime == null) {
 			ignoreButton.setChecked(passengerRecord.ignoreGetOffMiss);
 			String text = "未降車でよい";
 			ignoreButton.setText(text);
@@ -106,13 +98,11 @@ public class PassengerRecordErrorArrayAdapter
 			// ignoreButton.setTextOff(text);
 			errorMessage += "未降車です";
 			if (passengerRecord.ignoreGetOffMiss) {
-				ignoreButton
-						.setBackgroundResource(R.drawable.ignore_button_pressed);
+				ignoreButton.setBackgroundResource(R.drawable.ignore_button_pressed);
 			} else {
 				ignoreButton.setBackgroundResource(R.drawable.ignore_button);
 			}
-		} else if (operationScheduleId
-				.equals(passengerRecord.departureScheduleId)
+		} else if (operationScheduleId.equals(passengerRecord.departureScheduleId)
 				&& passengerRecord.getOnTime == null) {
 			ignoreButton.setChecked(passengerRecord.ignoreGetOnMiss);
 			String text = "未乗車でよい";
@@ -121,8 +111,7 @@ public class PassengerRecordErrorArrayAdapter
 			// ignoreButton.setTextOff(text);
 			errorMessage += "未乗車です";
 			if (passengerRecord.ignoreGetOnMiss) {
-				ignoreButton
-						.setBackgroundResource(R.drawable.ignore_button_pressed);
+				ignoreButton.setBackgroundResource(R.drawable.ignore_button_pressed);
 			} else {
 				ignoreButton.setBackgroundResource(R.drawable.ignore_button);
 			}
@@ -130,18 +119,15 @@ public class PassengerRecordErrorArrayAdapter
 			Log.e(TAG, "unexpected PassengerRecord: " + passengerRecord);
 		}
 
-		TextView errorMessageTextView = (TextView) convertView
-				.findViewById(R.id.passenger_record_error_message);
+		TextView errorMessageTextView = (TextView) convertView.findViewById(R.id.passenger_record_error_message);
 		errorMessageTextView.setText(errorMessage);
 		return convertView;
 	}
 
 	public void update(List<PassengerRecord> passengerRecords) {
 		clear();
-		List<PassengerRecord> sortedPassengerRecord = Lists
-				.newArrayList(passengerRecords);
-		Collections.sort(sortedPassengerRecord,
-				PassengerRecord.DEFAULT_COMPARATOR);
+		List<PassengerRecord> sortedPassengerRecord = Lists.newArrayList(passengerRecords);
+		Collections.sort(sortedPassengerRecord,	PassengerRecord.DEFAULT_COMPARATOR);
 		for (PassengerRecord passengerRecord : sortedPassengerRecord) {
 			add(passengerRecord);
 		}

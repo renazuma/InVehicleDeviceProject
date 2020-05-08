@@ -20,8 +20,7 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ServiceP
  * サービスプロバイダーの取得APIとの通信
  */
 public class GetServiceProviderTask extends SynchronizationTask {
-	private static final String TAG = GetServiceProviderTask.class
-			.getSimpleName();
+	private static final String TAG = GetServiceProviderTask.class.getSimpleName();
 
 	public GetServiceProviderTask(Context context, SQLiteDatabase database,
 			ScheduledExecutorService executorService) {
@@ -66,26 +65,21 @@ public class GetServiceProviderTask extends SynchronizationTask {
 			database.delete(ServiceProvider.TABLE_NAME, null, null);
 			ContentValues values = new ContentValues();
 			values.put(ServiceProvider.Columns._ID, node.path("id").asInt());
-			values.put(ServiceProvider.Columns.NAME, node.path("name")
-					.asText());
+			values.put(ServiceProvider.Columns.NAME, node.path("name").asText());
 			JsonNode accessKey = node.path("log_access_key_id_aws");
 			if (accessKey.isTextual()) {
-				values.put(ServiceProvider.Columns.LOG_ACCESS_KEY_ID_AWS,
-						accessKey.asText());
+				values.put(ServiceProvider.Columns.LOG_ACCESS_KEY_ID_AWS, accessKey.asText());
 			}
 			JsonNode secretAccessKey = node.path("log_secret_access_key_aws");
 			if (secretAccessKey.isTextual()) {
-				values.put(ServiceProvider.Columns.LOG_SECRET_ACCESS_KEY_AWS,
-						secretAccessKey.asText());
+				values.put(ServiceProvider.Columns.LOG_SECRET_ACCESS_KEY_AWS, secretAccessKey.asText());
 			}
-			id = database.insertOrThrow(ServiceProvider.TABLE_NAME, null,
-					values);
+			id = database.insertOrThrow(ServiceProvider.TABLE_NAME, null, values);
 			database.setTransactionSuccessful();
 		} finally {
 			database.endTransaction();
 		}
 		contentResolver.notifyChange(
-				ContentUris.withAppendedId(ServiceProvider.CONTENT.URI, id),
-				null);
+				ContentUris.withAppendedId(ServiceProvider.CONTENT.URI, id), null);
 	}
 }
