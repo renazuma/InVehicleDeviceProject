@@ -89,7 +89,7 @@ public class PassengerRecordErrorArrayAdapter extends ArrayAdapter<PassengerReco
 		ignoreButton.setTextColor(Color.RED);
 
 		//出発／到着差分
-		String errorMessage = passengerRecord.getDisplayName() + " が";
+		String errorMessage = passengerRecord.getDisplayName() + " 様が";
 		if (operationScheduleId.equals(passengerRecord.arrivalScheduleId) && passengerRecord.getOffTime == null) {
 			ignoreButton.setChecked(passengerRecord.ignoreGetOffMiss);
 			ignoreButton.setText("未降車でよい");
