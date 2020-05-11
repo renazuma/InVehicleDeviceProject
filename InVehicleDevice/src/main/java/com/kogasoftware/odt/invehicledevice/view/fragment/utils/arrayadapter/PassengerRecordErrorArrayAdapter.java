@@ -92,8 +92,7 @@ public class PassengerRecordErrorArrayAdapter extends ArrayAdapter<PassengerReco
 		String errorMessage = passengerRecord.getDisplayName() + " が";
 		if (operationScheduleId.equals(passengerRecord.arrivalScheduleId) && passengerRecord.getOffTime == null) {
 			ignoreButton.setChecked(passengerRecord.ignoreGetOffMiss);
-			String text = "未降車でよい";
-			ignoreButton.setText(text);
+			ignoreButton.setText("未降車でよい");
 			errorMessage += "未降車です";
 			if (passengerRecord.ignoreGetOffMiss) {
 				ignoreButton.setBackgroundResource(R.drawable.ignore_button_pressed);
@@ -103,8 +102,7 @@ public class PassengerRecordErrorArrayAdapter extends ArrayAdapter<PassengerReco
 		} else if (operationScheduleId.equals(passengerRecord.departureScheduleId)
 				&& passengerRecord.getOnTime == null) {
 			ignoreButton.setChecked(passengerRecord.ignoreGetOnMiss);
-			String text = "未乗車でよい";
-			ignoreButton.setText(text);
+			ignoreButton.setText("未乗車でよい");
 			errorMessage += "未乗車です";
 			if (passengerRecord.ignoreGetOnMiss) {
 				ignoreButton.setBackgroundResource(R.drawable.ignore_button_pressed);
