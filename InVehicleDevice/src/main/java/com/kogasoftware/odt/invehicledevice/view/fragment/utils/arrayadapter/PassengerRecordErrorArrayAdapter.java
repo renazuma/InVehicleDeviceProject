@@ -88,7 +88,7 @@ public class PassengerRecordErrorArrayAdapter extends ArrayAdapter<PassengerReco
 		ignoreButton.setOnClickListener(onClickIgnoreButtonListener);
 		ignoreButton.setTextColor(Color.RED);
 
-		// 行の表示
+		//出発／到着差分
 		String errorMessage = passengerRecord.getDisplayName() + " が";
 		if (operationScheduleId.equals(passengerRecord.arrivalScheduleId) && passengerRecord.getOffTime == null) {
 			ignoreButton.setChecked(passengerRecord.ignoreGetOffMiss);
@@ -113,8 +113,10 @@ public class PassengerRecordErrorArrayAdapter extends ArrayAdapter<PassengerReco
 			Log.e(TAG, "unexpected PassengerRecord: " + passengerRecord);
 		}
 
+		// エラーメッセージ
 		TextView errorMessageTextView = (TextView) convertView.findViewById(R.id.passenger_record_error_message);
 		errorMessageTextView.setText(errorMessage);
+
 		return convertView;
 	}
 
