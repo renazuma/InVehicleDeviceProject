@@ -36,7 +36,8 @@ public class PatchPassengerRecordTask extends SynchronizationTask {
 				new String[]{PassengerRecord.Columns._ID,
 						PassengerRecord.Columns.GET_ON_TIME,
 						PassengerRecord.Columns.GET_OFF_TIME,
-						PassengerRecord.Columns.LOCAL_VERSION},
+						PassengerRecord.Columns.LOCAL_VERSION,
+						PassengerRecord.Columns.PAID_CHARGE},
 				PassengerRecord.Columns.LOCAL_VERSION + " > "
 						+ PassengerRecord.Columns.SERVER_VERSION, null, null,
 				null, null);
@@ -67,6 +68,14 @@ public class PatchPassengerRecordTask extends SynchronizationTask {
 					String getOffTime = ISODateTimeFormat.dateTime().print(
 							cursor.getLong(getOffTimeIndex));
 					node.put("get_off_time", getOffTime);
+				}
+
+				Integer paidChargeIndex = cursor
+								.getColumnIndexOrThrow(PassengerRecord.Columns.PAID_CHARGE);
+				if (cursor.isNull(paidChargeIndex)) {
+					node.putNull("paid_charge");
+				} else {
+					node.put("paid_charge", cursor.getLong(paidChargeIndex));
 				}
 
 				Long localVersion = cursor

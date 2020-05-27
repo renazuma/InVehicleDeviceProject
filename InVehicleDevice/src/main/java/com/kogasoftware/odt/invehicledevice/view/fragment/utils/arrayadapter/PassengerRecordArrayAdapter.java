@@ -18,12 +18,15 @@ import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
+import com.kogasoftware.odt.invehicledevice.view.fragment.modal.ChargeEditFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.modal.PassengerRecordMemoFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.ViewDisabler;
 
 import org.joda.time.DateTime;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
@@ -58,6 +61,16 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 			}
 			PassengerRecord passengerRecord = (PassengerRecord) tag;
 
+			int defaultChargeCnt = ((ArrayList)(((InVehicleDeviceActivity)getContext()).defaultCharges)).size();
+
+			// 料金設定ページに遷移するパターン。他のケースと動きが大きく異なるのでこのパターンだけ別扱いにしている。
+			// HACK: その他のパターンも整理し直して、シンプルに直すべき。
+			if (defaultChargeCnt > 0 && passengerRecord.getOnTime == null) {
+				Fragments.showModalFragment(fragment.getFragmentManager(),
+								ChargeEditFragment.newInstance(operationSchedule.id, passengerRecord.id));
+				return;
+			}
+
 			DateTime now = DateTime.now();
 
 			if (operationSchedule.id.equals(passengerRecord.arrivalScheduleId)) {
@@ -73,6 +86,7 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 				if (passengerRecord.getOnTime != null) {
 					passengerRecord.getOnTime = null;
 					passengerRecord.getOffTime = null;
+					passengerRecord.paidCharge = null;
 				} else {
 					passengerRecord.getOnTime = now;
 				}
@@ -165,6 +179,14 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 		TextView userNameView = (TextView) convertView
 				.findViewById(R.id.user_name);
 		userNameView.setText(passengerRecord.getDisplayName());
+
+		// 料金表示
+		TextView chargeText = (TextView) convertView.findViewById(R.id.charge_edit_text_view);
+		if (passengerRecord.paidCharge != null) {
+			chargeText.setText(passengerRecord.paidCharge.toString() + "円");
+		} else {
+			chargeText.setText("");
+		}
 
 		return convertView;
 	}
