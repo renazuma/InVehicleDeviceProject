@@ -148,5 +148,8 @@
         , value INTEGER NOT NULL
       )
     </item>
+    <item>
+      ALTER TABLE passenger_records ADD paid_charge INTEGER
+    </item>
   </string-array>
 </resources>
