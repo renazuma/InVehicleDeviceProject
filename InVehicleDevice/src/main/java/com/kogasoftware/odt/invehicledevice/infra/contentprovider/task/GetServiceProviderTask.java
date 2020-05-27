@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Charsets;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.DefaultCharge;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ServiceProvider;
 
 import org.apache.http.HttpResponse;
@@ -75,11 +76,25 @@ public class GetServiceProviderTask extends SynchronizationTask {
 				values.put(ServiceProvider.Columns.LOG_SECRET_ACCESS_KEY_AWS, secretAccessKey.asText());
 			}
 			id = database.insertOrThrow(ServiceProvider.TABLE_NAME, null, values);
+
+			database.delete(DefaultCharge.TABLE_NAME, null, null);
+            JsonNode default_charges_node = node.path("default_charges");
+            if (default_charges_node.isArray()) {
+				for (JsonNode default_charge_node : node.path("default_charges")) {
+					ContentValues default_charge_values = new ContentValues();
+					default_charge_values.put(DefaultCharge.Columns._ID, default_charge_node.path("id").asInt());
+					default_charge_values.put(DefaultCharge.Columns.VALUE, default_charge_node.path("value").asInt());
+					database.insertOrThrow(DefaultCharge.TABLE_NAME, null, default_charge_values);
+				}
+			}
+
 			database.setTransactionSuccessful();
 		} finally {
 			database.endTransaction();
 		}
 		contentResolver.notifyChange(
 				ContentUris.withAppendedId(ServiceProvider.CONTENT.URI, id), null);
+		contentResolver.notifyChange(
+				ContentUris.withAppendedId(DefaultCharge.CONTENT.URI, id), null);
 	}
 }

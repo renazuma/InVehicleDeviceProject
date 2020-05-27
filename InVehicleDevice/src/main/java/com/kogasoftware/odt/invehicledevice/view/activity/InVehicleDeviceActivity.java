@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.DefaultCharge;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ServiceProvider;
 import com.kogasoftware.odt.invehicledevice.presenter.AutoRestartPresenter;
 import com.kogasoftware.odt.invehicledevice.presenter.InterruptUiPresenter;
@@ -11,6 +12,8 @@ import com.kogasoftware.odt.invehicledevice.presenter.LogSyncPresenter;
 import com.kogasoftware.odt.invehicledevice.presenter.MainUiPresenter;
 import com.kogasoftware.odt.invehicledevice.presenter.PermissionChecker;
 import com.kogasoftware.odt.invehicledevice.presenter.UnitStatusLogSyncPresenter;
+
+import java.util.List;
 
 /**
  * 全体の大枠。サインイン前はSignInFragmentを表示し、サインイン後は、自治体に依存して「運行予定一覧画面」か「順番に運行を進める画面」を表示する
@@ -23,6 +26,7 @@ public class InVehicleDeviceActivity extends Activity {
   // インスタンス変数
   public Boolean destroyed = true; // TODO: 変数でライフサイクル管理をするのをやめたい。
   public ServiceProvider serviceProvider; // TODO: ServiceProviderの同期状態を変数で管理するのをやめたい。
+  public List<DefaultCharge> defaultCharges; // HACK: DefaultChargesの同期状態を変数で管理するのをやめたい。
 
   private InterruptUiPresenter interruptUiPresenter;
   private UnitStatusLogSyncPresenter unitStatusLogSyncPresenter;
@@ -33,6 +37,11 @@ public class InVehicleDeviceActivity extends Activity {
   // TODO: 不要にしたい
   public void setServiceProvider(ServiceProvider serviceProvider) {
     this.serviceProvider = serviceProvider;
+  }
+
+  // HACK: 不要にしたい
+  public void setDefaultCharges(List<DefaultCharge> defaultCharges) {
+    this.defaultCharges = defaultCharges;
   }
 
   @Override

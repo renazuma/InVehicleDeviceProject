@@ -139,5 +139,14 @@
         , log_secret_access_key_aws TEXT
       )
     </item>
+    <item>
+      DROP TABLE IF EXISTS default_charges
+    </item>
+    <item>
+      CREATE TABLE default_charges (
+        $(id) INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT
+        , value INTEGER NOT NULL
+      )
+    </item>
   </string-array>
 </resources>

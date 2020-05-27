@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.Content;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.DefaultCharge;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.InVehicleDevice;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationRecord;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
@@ -55,7 +56,8 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
 				OperationRecord.CONTENT, OperationSchedule.CONTENT,
 				PassengerRecord.CONTENT, Platform.CONTENT, Reservation.CONTENT,
 				ServiceProvider.CONTENT, ServiceUnitStatusLog.CONTENT,
-				User.CONTENT, VehicleNotification.CONTENT}) {
+				User.CONTENT, VehicleNotification.CONTENT,
+		        DefaultCharge.CONTENT}) {
 			content.addTo(MATCHER);
 		}
 	}
@@ -163,6 +165,9 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
 						selectionArgs, sortOrder);
 			case PassengerRecord.TABLE_CODE :
 				return PassengerRecord.query(this, projection, selection,
+						selectionArgs, sortOrder);
+			case DefaultCharge.TABLE_CODE :
+				return DefaultCharge.query(this, projection, selection,
 						selectionArgs, sortOrder);
 			default :
 				throw new IllegalArgumentException("Unknown uri: " + uri);
