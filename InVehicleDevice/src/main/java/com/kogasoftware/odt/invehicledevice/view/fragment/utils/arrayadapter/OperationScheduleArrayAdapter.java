@@ -21,6 +21,8 @@ import android.widget.TextView;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
+import com.kogasoftware.odt.invehicledevice.view.fragment.modal.ChargeEditFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.modal.PassengerRecordMemoFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
 
@@ -29,6 +31,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
@@ -188,13 +191,27 @@ public class OperationScheduleArrayAdapter
 		protected boolean onTap(View view, MotionEvent event,
 				PassengerRecordRowTag passengerRecordRowTag) {
 			PassengerRecord passengerRecord = passengerRecordRowTag.passengerRecord;
+			OperationSchedule operationSchedule = passengerRecordRowTag.operationSchedule;
+
+			int defaultChargeCnt = ((ArrayList)(((InVehicleDeviceActivity)getContext()).defaultCharges)).size();
+
+			// 料金設定ページに遷移するパターン。他のケースと動きが大きく異なるのでこのパターンだけ別扱いにしている。
+			// HACK: その他のパターンも整理し直して、シンプルに直すべき。
+			if (defaultChargeCnt > 0 && passengerRecord.getOnTime == null) {
+				Fragments.showModalFragment(fragment.getFragmentManager(),
+								ChargeEditFragment.newInstance(operationSchedule.id, passengerRecord.id));
+				return false;
+			}
+
 			DateTime now = DateTime.now();
+
 			if (passengerRecordRowTag.getOn) {
 				if (passengerRecord.getOnTime == null) {
 					passengerRecord.getOnTime = now;
 				} else {
 					passengerRecord.getOnTime = null;
 					passengerRecord.getOffTime = null;
+					passengerRecord.paidCharge = null;
 				}
 			} else {
 				if (passengerRecord.getOffTime == null) {
@@ -356,6 +373,12 @@ public class OperationScheduleArrayAdapter
 		Button userMemoButton = (Button) row.findViewById(R.id.user_memo_button);
 		userMemoButton.setTag(passengerRecord);
 		userMemoButton.setOnClickListener(onUserMemoButtonClickListener);
+
+		// 料金
+		if (passengerRecord.paidCharge != null) {
+			TextView chargeView = (TextView) row.findViewById(R.id.paid_charge);
+			chargeView.setText(passengerRecord.paidCharge.toString() + "円");
+		}
 
 		// 乗降者行背景色
 		row.setBackgroundColor(onPassengerRecordTouchListener.getDefaultColor(tag));
