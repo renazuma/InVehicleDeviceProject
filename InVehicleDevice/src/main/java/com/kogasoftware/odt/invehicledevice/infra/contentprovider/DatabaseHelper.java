@@ -1,8 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.infra.contentprovider;
 
-import java.util.List;
-import java.util.regex.Pattern;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -15,6 +12,10 @@ import android.util.Log;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.InVehicleDevice;
+
+import java.util.List;
+import java.util.regex.Pattern;
+
 
 /**
  * DB管理

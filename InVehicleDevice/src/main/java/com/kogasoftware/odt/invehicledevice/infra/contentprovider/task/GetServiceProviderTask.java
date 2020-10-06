@@ -1,11 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.infra.contentprovider.task;
 
-import java.io.IOException;
-import java.net.URI;
-import java.util.concurrent.ScheduledExecutorService;
-
-import org.apache.http.HttpResponse;
-
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -15,6 +9,12 @@ import android.util.Log;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Charsets;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ServiceProvider;
+
+import org.apache.http.HttpResponse;
+
+import java.io.IOException;
+import java.net.URI;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * サービスプロバイダーの取得APIとの通信
