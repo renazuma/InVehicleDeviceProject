@@ -42,6 +42,7 @@ public class PassengerRecord implements Serializable {
 		public static final String IGNORE_GET_ON_MISS = "ignore_get_on_miss";
 		public static final String IGNORE_GET_OFF_MISS = "ignore_get_off_miss";
 		public static final String REPRESENTATIVE = "representative";
+		public static final String EXPECTED_CHARGE = "expected_charge";
 		public static final String PAID_CHARGE = "paid_charge";
 	}
 
@@ -76,6 +77,7 @@ public class PassengerRecord implements Serializable {
 	public Boolean ignoreGetOffMiss;
 	public Boolean representative;
 	public Long passengerCount;
+	public Long expectedCharge;
 	public Long paidCharge;
 
 	public PassengerRecord(Cursor cursor) {
@@ -105,6 +107,7 @@ public class PassengerRecord implements Serializable {
 				.readBoolean(PassengerRecord.Columns.REPRESENTATIVE);
 		passengerCount = reader
 				.readLong(PassengerRecord.Columns.PASSENGER_COUNT);
+		expectedCharge = reader.readLong(Columns.EXPECTED_CHARGE);
 		paidCharge = reader.readLong(Columns.PAID_CHARGE);
 	}
 
@@ -154,6 +157,7 @@ public class PassengerRecord implements Serializable {
 				PassengerRecord.Columns.GET_ON_TIME, getOnTime);
 		ContentValuesUtils.putDateTime(values,
 				PassengerRecord.Columns.GET_OFF_TIME, getOffTime);
+		values.put(Columns.EXPECTED_CHARGE, expectedCharge);
 		values.put(Columns.PAID_CHARGE, paidCharge);
 		return values;
 	}

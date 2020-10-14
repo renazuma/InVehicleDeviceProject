@@ -19,6 +19,7 @@ public class PassengerRecordJson {
 	public DateTime getOnTime;
 	public DateTime getOffTime;
 	public Long userId;
+	public Long expectedCharge;
 
 	public ContentValues toContentValues(List<ReservationJson> reservations)
 			throws IOException {
@@ -52,6 +53,7 @@ public class PassengerRecordJson {
 		}
 
 		values.put(PassengerRecord.Columns.PASSENGER_COUNT, passengerCount);
+		values.put(PassengerRecord.Columns.EXPECTED_CHARGE, expectedCharge);
 		return values;
 	}
 }

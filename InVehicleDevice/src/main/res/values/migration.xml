@@ -151,5 +151,8 @@
     <item>
       ALTER TABLE passenger_records ADD paid_charge INTEGER
     </item>
+    <item>
+      ALTER TABLE passenger_records ADD expected_charge INTEGER
+    </item>
   </string-array>
 </resources>

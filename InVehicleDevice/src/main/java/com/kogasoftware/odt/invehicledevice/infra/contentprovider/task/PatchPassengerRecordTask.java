@@ -37,6 +37,7 @@ public class PatchPassengerRecordTask extends SynchronizationTask {
 						PassengerRecord.Columns.GET_ON_TIME,
 						PassengerRecord.Columns.GET_OFF_TIME,
 						PassengerRecord.Columns.LOCAL_VERSION,
+						PassengerRecord.Columns.EXPECTED_CHARGE,
 						PassengerRecord.Columns.PAID_CHARGE},
 				PassengerRecord.Columns.LOCAL_VERSION + " > "
 						+ PassengerRecord.Columns.SERVER_VERSION, null, null,
