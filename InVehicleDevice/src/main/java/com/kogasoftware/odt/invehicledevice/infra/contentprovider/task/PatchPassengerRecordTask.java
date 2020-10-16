@@ -1,13 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.infra.contentprovider.task;
 
-import java.net.URI;
-import java.util.List;
-import java.util.concurrent.ScheduledExecutorService;
-
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.http.HttpResponse;
-import org.joda.time.format.ISODateTimeFormat;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -16,6 +8,14 @@ import android.database.sqlite.SQLiteDatabase;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
+
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.http.HttpResponse;
+import org.joda.time.format.ISODateTimeFormat;
+
+import java.net.URI;
+import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * 乗車実績の更新APIとの通信

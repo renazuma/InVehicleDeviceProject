@@ -1,10 +1,10 @@
 package com.kogasoftware.odt.invehicledevice.infra.contentprovider.json;
 
-import org.joda.time.DateTime;
-
 import android.content.ContentValues;
 
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.VehicleNotification;
+
+import org.joda.time.DateTime;
 
 /**
  * 車載器通知のJSON
