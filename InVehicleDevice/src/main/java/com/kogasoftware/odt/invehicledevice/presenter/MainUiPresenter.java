@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.presenter;
 
+import com.kogasoftware.odt.invehicledevice.infra.loader.DefaultChargeLoader;
 import com.kogasoftware.odt.invehicledevice.infra.loader.MainViewLoader;
 import com.kogasoftware.odt.invehicledevice.infra.loader.onCreateSignInLoader;
 import com.kogasoftware.odt.invehicledevice.presenter.mainui.OnCreateDataSync;
@@ -13,11 +14,13 @@ public class MainUiPresenter {
 
   private onCreateSignInLoader onCreateSignInLoader;
   private MainViewLoader mainViewLoader;
+  private DefaultChargeLoader defaultChargeLoader;
   private OnCreateDataSync onCreateDataSync;
 
   public MainUiPresenter(InVehicleDeviceActivity inVehicleDeviceActivity) {
     this.onCreateSignInLoader = new onCreateSignInLoader(inVehicleDeviceActivity);
     this.mainViewLoader = new MainViewLoader(inVehicleDeviceActivity);
+    this.defaultChargeLoader = new DefaultChargeLoader(inVehicleDeviceActivity);
     this.onCreateDataSync = new OnCreateDataSync(inVehicleDeviceActivity);
   }
 
@@ -30,10 +33,12 @@ public class MainUiPresenter {
     // * アプリ起動時にDB内にSPがある場合、そのままメイン画面を表示（この場合既に車載器データはある前提）
     onCreateSignInLoader.initLoader();
     mainViewLoader.initLoader();
+    defaultChargeLoader.initLoader();
   }
 
   public void onDestroy() {
     onCreateSignInLoader.destroyLoader();
     mainViewLoader.destroyLoader();
+    defaultChargeLoader.destroyLoader();
   }
 }

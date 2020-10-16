@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- 料金設定設定 -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/ModalView.Layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/charger_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="15dp"
+        android:paddingHorizontal="15dp"
+        android:textSize="30sp"
+        android:text="test" />
+
+    <LinearLayout
+        android:id="@+id/default_charge_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="20dp"
+        android:paddingHorizontal="100dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/charger_name" >
+
+        <Button
+            android:id="@+id/first_default_charge_button"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="15dp"
+            android:background="@drawable/custom_button"
+            android:padding="10dp"
+            android:textColor="@drawable/custom_button_text_color"
+            android:textSize="40sp"
+            android:layout_weight="1"
+            android:enabled="false" />
+
+        <Button
+            android:id="@+id/second_default_charge_button"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="15dp"
+            android:background="@drawable/custom_button"
+            android:padding="10dp"
+            android:textColor="@drawable/custom_button_text_color"
+            android:layout_weight="1"
+            android:textSize="40sp"
+            android:enabled="false" />
+
+        <Button
+            android:id="@+id/third_default_charge_button"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="15dp"
+            android:background="@drawable/custom_button"
+            android:padding="10dp"
+            android:textColor="@drawable/custom_button_text_color"
+            android:textSize="40sp"
+            android:layout_weight="1"
+            android:enabled="false" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/charge_field"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:paddingVertical="20dp"
+        android:layout_below="@id/default_charge_buttons" >
+
+        <TextView
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:textSize="40sp"
+           android:text="@string/received_charge" />
+
+        <EditText
+           android:id="@+id/charge_edit_text"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_marginHorizontal="15dp"
+           android:width="300dp"
+           android:textSize="40sp"
+           android:singleLine="true"
+           android:inputType="number"
+           android:digits="0123456789"/>
+
+        <TextView
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:textSize="40sp"
+           android:text="@string/monetary_unit" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/charge_edit_fragment_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" >
+
+        <Button
+            android:id="@+id/charge_and_get_on_button"
+            style="@style/ModalView.Button"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:layout_margin="5dp"
+            android:paddingBottom="15dp"
+            android:paddingTop="15dp"
+            android:background="@drawable/custom_button"
+            android:text="@string/get_on"
+            android:textColor="@drawable/custom_button_text_color"
+            android:textSize="30sp" />
+
+        <Button
+            android:id="@+id/quit_charge_button"
+            style="@style/ModalView.Button"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:layout_margin="5dp"
+            android:paddingBottom="15dp"
+            android:paddingTop="15dp"
+            android:background="@drawable/custom_button"
+            android:text="@string/cancel"
+            android:textColor="@drawable/custom_button_text_color"
+            android:textSize="30sp" />
+    </LinearLayout>
+
+</RelativeLayout>

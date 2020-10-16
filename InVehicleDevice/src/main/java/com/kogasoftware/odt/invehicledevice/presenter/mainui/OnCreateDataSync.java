@@ -1,11 +1,9 @@
 package com.kogasoftware.odt.invehicledevice.presenter.mainui;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.DatabaseHelper;
-import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ServiceProvider;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.task.GetOperationSchedulesTask;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.task.GetServiceProviderTask;
 
@@ -28,21 +26,7 @@ public class OnCreateDataSync {
   }
 
   public void execute() {
+	executorService.execute(new GetServiceProviderTask(context, database, executorService));
     executorService.execute(new GetOperationSchedulesTask(context, database, executorService));
-
-    // 旧バージョンからのアップグレード用。車載器情報が存在してもサービスプロバイダー情報が存在しない場合がある。
-	new Thread() {
-		@Override
-		public void run() {
-			Cursor cursor = database.query(ServiceProvider.TABLE_NAME,
-					null, null, null, null, null, null);
-			try {
-				if (cursor.moveToFirst()) { return; }
-			} finally {
-				cursor.close();
-			}
-			executorService.execute(new GetServiceProviderTask(context, database, executorService));
-		}
-	}.start();
   }
 }

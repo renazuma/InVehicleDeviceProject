@@ -5,46 +5,25 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content" >
 
-    <Button
-        android:id="@+id/user_memo_button"
-        android:layout_width="70sp"
-        android:layout_height="fill_parent"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:text="@string/memo"
-        android:textSize="15sp" />
-
-    <TextView
-        android:id="@+id/passenger_count_text_view"
-        android:layout_width="50sp"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toLeftOf="@+id/user_memo_button"
-        android:textColor="@android:color/black"
-        android:textSize="20sp" />
-
-    <ImageView
-        android:id="@+id/select_mark_image_view"
-        android:layout_width="35sp"
-        android:layout_height="35sp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_centerVertical="true"
-        android:paddingLeft="2sp"
-        android:paddingRight="5sp"
-        android:src="@drawable/get_off" />
-
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toLeftOf="@+id/passenger_count_text_view"
-        android:layout_toRightOf="@+id/select_mark_image_view" >
+        android:id="@+id/above_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <ImageView
+            android:id="@+id/select_mark_image_view"
+            android:layout_width="35sp"
+            android:layout_height="35sp"
+            android:layout_gravity="left|center_vertical"
+            android:paddingLeft="2sp"
+            android:paddingRight="5sp"
+            android:src="@drawable/get_off" />
 
         <TextView
             android:id="@+id/user_name"
             android:layout_width="0sp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="left|center_vertical"
             android:layout_weight="1"
             android:ellipsize="end"
             android:singleLine="true"
@@ -52,14 +31,42 @@
             android:textSize="25sp" />
 
         <TextView
-            android:id="@+id/user_arrival_platform_name"
-            android:layout_width="0sp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ellipsize="end"
-            android:singleLine="true"
+            android:id="@+id/paid_charge"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="right|center_vertical"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
             android:textColor="@android:color/black"
-            android:textSize="25sp" />
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/passenger_count_text_view"
+            android:layout_width="50sp"
+            android:layout_height="match_parent"
+            android:layout_gravity="right|center_vertical"
+            android:textColor="@android:color/black"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/user_memo_button"
+            android:layout_width="70sp"
+            android:layout_height="match_parent"
+            android:layout_gravity="right|center_vertical"
+            android:text="@string/memo"
+            android:textSize="15sp" />
+
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/user_arrival_platform_name"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/above_layout"
+        android:layout_marginLeft="50dp"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:textColor="@android:color/black"
+        android:textSize="25sp" />
 
 </RelativeLayout>
