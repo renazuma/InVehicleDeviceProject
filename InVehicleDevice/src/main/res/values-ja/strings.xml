@@ -60,4 +60,5 @@
     <string name="get_on">乗車する</string>
     <string name="received_charge">収受料金</string>
     <string name="monetary_unit">円</string>
+    <string name="expected_charge">予定料金</string>
 </resources>
