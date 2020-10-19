@@ -70,27 +70,27 @@
         android:layout_below="@id/default_charge_buttons" >
 
         <TextView
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:textSize="40sp"
-           android:text="@string/received_charge" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="40sp"
+            android:text="@string/received_charge" />
 
         <EditText
-           android:id="@+id/charge_edit_text"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:layout_marginHorizontal="15dp"
-           android:width="300dp"
-           android:textSize="40sp"
-           android:singleLine="true"
-           android:inputType="number"
-           android:digits="0123456789"/>
+            android:id="@+id/charge_edit_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="15dp"
+            android:width="300dp"
+            android:textSize="40sp"
+            android:singleLine="true"
+            android:inputType="number"
+            android:digits="0123456789"/>
 
         <TextView
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:textSize="40sp"
-           android:text="@string/monetary_unit" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="40sp"
+            android:text="@string/monetary_unit" />
     </LinearLayout>
 
     <LinearLayout
