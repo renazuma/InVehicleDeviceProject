@@ -2,7 +2,7 @@
 
 <!-- 運行予定画面の乗客行設定 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content" >
 
     <LinearLayout
@@ -14,39 +14,97 @@
             android:id="@+id/select_mark_image_view"
             android:layout_width="35sp"
             android:layout_height="35sp"
-            android:layout_gravity="left|center_vertical"
+            android:layout_gravity="left"
             android:paddingLeft="2sp"
             android:paddingRight="5sp"
             android:src="@drawable/get_off" />
 
-        <TextView
-            android:id="@+id/user_name"
-            android:layout_width="0sp"
-            android:layout_height="match_parent"
-            android:layout_gravity="left|center_vertical"
-            android:layout_weight="1"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:textColor="@android:color/black"
-            android:textSize="25sp" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/paid_charge"
+            <TextView
+                android:id="@+id/user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center_vertical"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textColor="@android:color/black"
+                android:textFontWeight="1"
+                android:textSize="25sp" />
+
+            <TextView
+                android:id="@+id/user_arrival_platform_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center_vertical"
+                android:layout_weight="1"
+                android:textFontWeight="1"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textColor="@android:color/black"
+                android:textSize="25sp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_gravity="right|center_vertical"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
-            android:textColor="@android:color/black"
-            android:textSize="20sp" />
+            android:layout_gravity="center_vertical"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/passenger_count_text_view"
-            android:layout_width="50sp"
+            <TextView
+                android:id="@+id/paid_charge"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_gravity="right|center_vertical"
+                android:gravity="center_vertical"
+                android:textColor="@android:color/black"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/expected_charge"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_gravity="right|center_vertical"
+                android:gravity="center_vertical"
+                android:textColor="@android:color/black"
+                android:textSize="20sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_gravity="right|center_vertical"
-            android:textColor="@android:color/black"
-            android:textSize="20sp" />
+            android:layout_gravity="center_vertical"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/passenger_count_text_view"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:textColor="@android:color/black"
+                android:textSize="20sp" />
+
+            <View
+                android:id="@+id/passenger_count_space_view"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:visibility="invisible"
+                android:layout_weight="1" />
+        </LinearLayout>
 
         <Button
             android:id="@+id/user_memo_button"
@@ -57,16 +115,5 @@
             android:textSize="15sp" />
 
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/user_arrival_platform_name"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/above_layout"
-        android:layout_marginLeft="50dp"
-        android:ellipsize="end"
-        android:singleLine="true"
-        android:textColor="@android:color/black"
-        android:textSize="25sp" />
 
 </RelativeLayout>

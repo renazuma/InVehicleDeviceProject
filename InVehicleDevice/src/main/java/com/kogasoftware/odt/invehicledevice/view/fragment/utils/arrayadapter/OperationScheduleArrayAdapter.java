@@ -380,6 +380,20 @@ public class OperationScheduleArrayAdapter
 			chargeView.setText(passengerRecord.paidCharge.toString() + "円");
 		}
 
+		// 予定料金
+		TextView expectedChargeView = (TextView) row.findViewById(R.id.expected_charge);
+		View passengerSpaceView = (View) row.findViewById(R.id.passenger_count_space_view);
+		if (getOn) {
+			if (passengerRecord.expectedCharge != null) {
+				expectedChargeView.setText(passengerRecord.expectedCharge.toString() + "円");
+			} else {
+				expectedChargeView.setText("");
+			}
+		} else {
+			expectedChargeView.setVisibility(View.GONE);
+			passengerSpaceView.setVisibility(View.GONE);
+		}
+
 		// 乗降者行背景色
 		row.setBackgroundColor(onPassengerRecordTouchListener.getDefaultColor(tag));
 
