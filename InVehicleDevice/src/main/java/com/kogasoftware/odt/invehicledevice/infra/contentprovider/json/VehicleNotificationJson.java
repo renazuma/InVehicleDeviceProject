@@ -39,5 +39,8 @@ public class VehicleNotificationJson {
 	public boolean isScheduleNotification() {
 		return notificationKind == 1L;
 	}
+	public boolean isExpectedChargeChangedNotification() {
+		return notificationKind == 2L;
+	}
 
 }
