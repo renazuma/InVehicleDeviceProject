@@ -5,80 +5,91 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content" >
 
-    <ImageView
-        android:id="@+id/select_mark_image_view"
-        android:layout_width="59sp"
-        android:layout_height="59sp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_centerVertical="true"
-        android:paddingLeft="2sp"
-        android:paddingRight="5sp"
-        android:src="@drawable/get_off" />
-
-    <TextView
-        android:id="@+id/user_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/select_mark_image_view"
-        android:textColor="@android:color/black"
-        android:textSize="40sp" />
-
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:layout_toLeftOf="@+id/memo_button_layout"
-        android:gravity="right"
-        android:orientation="vertical" >
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <ImageView
+            android:id="@+id/select_mark_image_view"
+            android:layout_width="59sp"
+            android:layout_height="59sp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_centerVertical="true"
+            android:paddingLeft="2sp"
+            android:paddingRight="5sp"
+            android:src="@drawable/get_off" />
 
         <TextView
-            android:id="@+id/charge_edit_text_view"
+            android:id="@+id/user_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
             android:textColor="@android:color/black"
-            android:textSize="20sp" />
+            android:textSize="40sp" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:gravity="right"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/charge_edit_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_weight="1"
+                android:textColor="@android:color/black"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/expected_charge_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_weight="1"
+                android:textColor="@android:color/black"
+                android:textSize="20sp" />
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/expected_charge_text_view"
+            android:id="@+id/passenger_count_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
             android:textColor="@android:color/black"
-            android:textSize="20sp" />
-    </LinearLayout>
+            android:textSize="25sp" />
 
-    <TextView
-        android:id="@+id/passenger_count_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:textColor="@android:color/black"
-        android:textSize="25sp" />
-
-    <FrameLayout
-        android:id="@+id/memo_button_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="53sp"
-        android:layout_centerVertical="true"
-        android:layout_toLeftOf="@+id/passenger_count_text_view" >
-
-        <Button
-            android:id="@+id/memo_button"
+        <FrameLayout
+            android:id="@+id/memo_button_layout"
             android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:layout_marginRight="5dp"
-            android:background="@color/memo_btn_background"
+            android:layout_height="53sp"
             android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:textColor="@color/memo_btn_text_color"
-            android:text="@string/memo"
-            android:textSize="18sp" />
-    </FrameLayout>
+            android:layout_marginRight="5dp"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical">
+
+            <Button
+                android:id="@+id/memo_button"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:background="@color/memo_btn_background"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:textColor="@color/memo_btn_text_color"
+                android:text="@string/memo"
+                android:textSize="18sp" />
+        </FrameLayout>
+    </LinearLayout>
 </RelativeLayout>
