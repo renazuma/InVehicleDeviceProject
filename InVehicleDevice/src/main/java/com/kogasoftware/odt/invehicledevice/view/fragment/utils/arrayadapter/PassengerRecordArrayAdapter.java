@@ -188,6 +188,13 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 			chargeText.setText("");
 		}
 
+		TextView expectedChargeText = (TextView) convertView.findViewById(R.id.expected_charge_text_view);
+		if (passengerRecord.expectedCharge != null) {
+			expectedChargeText.setText(passengerRecord.expectedCharge.toString() + "円");
+		} else {
+			expectedChargeText.setText("");
+		}
+
 		return convertView;
 	}
 

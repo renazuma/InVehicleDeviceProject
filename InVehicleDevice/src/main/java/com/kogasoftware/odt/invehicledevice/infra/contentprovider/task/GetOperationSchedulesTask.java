@@ -259,7 +259,11 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
 	// 通知は受け取ったがサーバからスケジュールの実態をまだ受け取っていない状態の、スケジュール通知のリストを返す
 	private List<Long> queryBeforeSyncScheduleVehicleNotificationIds() {
 		List<Long> ids = Lists.newLinkedList();
-		String where = VehicleNotification.Columns.NOTIFICATION_KIND + " = " + VehicleNotification.NotificationKind.SCHEDULE
+		String where = "("
+				+ VehicleNotification.Columns.NOTIFICATION_KIND + " = " + VehicleNotification.NotificationKind.SCHEDULE
+				+ " OR "
+				+ VehicleNotification.Columns.NOTIFICATION_KIND + " = " + VehicleNotification.NotificationKind.EXPECTED_CHARGE_CHANGED
+				+ ")"
 				+ " AND " + VehicleNotification.Columns.SCHEDULE_DOWNLOADED + " = 0 ";
 		Cursor cursor = database.query(VehicleNotification.TABLE_NAME, null, where, null, null, null, null);
 		try {

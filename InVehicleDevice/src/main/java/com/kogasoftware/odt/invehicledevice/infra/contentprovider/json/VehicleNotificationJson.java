@@ -1,10 +1,10 @@
 package com.kogasoftware.odt.invehicledevice.infra.contentprovider.json;
 
-import org.joda.time.DateTime;
-
 import android.content.ContentValues;
 
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.VehicleNotification;
+
+import org.joda.time.DateTime;
 
 /**
  * 車載器通知のJSON
@@ -38,6 +38,9 @@ public class VehicleNotificationJson {
 	}
 	public boolean isScheduleNotification() {
 		return notificationKind == 1L;
+	}
+	public boolean isExpectedChargeChangedNotification() {
+		return notificationKind == 2L;
 	}
 
 }

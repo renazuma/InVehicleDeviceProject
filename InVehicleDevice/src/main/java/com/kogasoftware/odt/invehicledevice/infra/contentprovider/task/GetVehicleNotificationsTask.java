@@ -57,6 +57,7 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
 	private void save(VehicleNotificationJson[] pulledJson) {
 		boolean existAdminNotification = false;
 		boolean existScheduleNotification = false;
+		boolean existExpectedChargeChangedNotification = false;
 
 		try {
 			database.beginTransaction();
@@ -67,6 +68,8 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
 					existAdminNotification = true;
 				} else if (json.isScheduleNotification()) {
 					existScheduleNotification = true;
+				} else if (json.isExpectedChargeChangedNotification()){
+				    existExpectedChargeChangedNotification = true;
 				}
 			}
 			database.setTransactionSuccessful();
@@ -81,10 +84,12 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
 
 		if (existScheduleNotification) {
 			playScheduleNotificationVoice();
+		}
+
+		if (existScheduleNotification || existExpectedChargeChangedNotification) {
 			// スケジュール通知はこの時点では新しい通知を表示しない（スケジュール自体の同期が終わっていない）ため、ここではpublishされない。
 			executorService.execute(new GetOperationSchedulesTask(context, database, executorService, true));
 		}
-
 	}
 
 	private List<VehicleNotificationJson> selectTargetJson(VehicleNotificationJson[] pulledJson) {

@@ -60,4 +60,5 @@
     <string name="get_on">※ Get on</string>
     <string name="received_charge">※ Received charge</string>
     <string name="monetary_unit">※ Monetary unit</string>
+    <string name="expected_charge">※ Expected charge</string>
 </resources>
