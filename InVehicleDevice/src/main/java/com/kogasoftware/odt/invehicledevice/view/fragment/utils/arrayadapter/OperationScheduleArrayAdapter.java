@@ -374,24 +374,37 @@ public class OperationScheduleArrayAdapter
 		userMemoButton.setTag(passengerRecord);
 		userMemoButton.setOnClickListener(onUserMemoButtonClickListener);
 
-		// 料金
+		// 料金系
+		TextView chargeView = (TextView) row.findViewById(R.id.paid_charge);
+		TextView expectedChargeView = (TextView) row.findViewById(R.id.expected_charge);
+		if (!getOn) {
+			View passengerCountSpaceView = (View) row.findViewById(R.id.passenger_count_space_view);
+			passengerCountSpaceView.setVisibility(View.GONE);
+		}
+
+		int defaultChargeCnt = ((ArrayList) (((InVehicleDeviceActivity) getContext()).defaultCharges)).size();
+		if (defaultChargeCnt > 0) {
+			chargeView.setVisibility(View.INVISIBLE);
+			expectedChargeView.setVisibility(View.INVISIBLE);
+		} else {
+			chargeView.setVisibility(View.GONE);
+			expectedChargeView.setVisibility(View.GONE);
+		}
+
+		// 支払料金
 		if (passengerRecord.paidCharge != null) {
-			TextView chargeView = (TextView) row.findViewById(R.id.paid_charge);
 			chargeView.setText(passengerRecord.paidCharge.toString() + "円");
+			chargeView.setVisibility(View.VISIBLE);
 		}
 
 		// 予定料金
-		TextView expectedChargeView = (TextView) row.findViewById(R.id.expected_charge);
-		View passengerSpaceView = (View) row.findViewById(R.id.passenger_count_space_view);
 		if (getOn) {
 			if (passengerRecord.expectedCharge != null) {
 				expectedChargeView.setText(passengerRecord.expectedCharge.toString() + "円");
-			} else {
-				expectedChargeView.setText("");
+				expectedChargeView.setVisibility(View.VISIBLE);
 			}
 		} else {
 			expectedChargeView.setVisibility(View.GONE);
-			passengerSpaceView.setVisibility(View.GONE);
 		}
 
 		// 乗降者行背景色
