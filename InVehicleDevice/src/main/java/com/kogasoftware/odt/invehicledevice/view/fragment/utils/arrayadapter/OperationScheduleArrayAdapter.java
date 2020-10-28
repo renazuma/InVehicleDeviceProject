@@ -375,7 +375,7 @@ public class OperationScheduleArrayAdapter
 		userMemoButton.setOnClickListener(onUserMemoButtonClickListener);
 
 		// 料金系
-		TextView chargeView = (TextView) row.findViewById(R.id.paid_charge);
+		TextView paidChargeView = (TextView) row.findViewById(R.id.paid_charge);
 		TextView expectedChargeView = (TextView) row.findViewById(R.id.expected_charge);
 		if (!getOn) {
 			View passengerCountSpaceView = (View) row.findViewById(R.id.passenger_count_space_view);
@@ -384,17 +384,17 @@ public class OperationScheduleArrayAdapter
 
 		int defaultChargeCnt = ((ArrayList) (((InVehicleDeviceActivity) getContext()).defaultCharges)).size();
 		if (defaultChargeCnt > 0) {
-			chargeView.setVisibility(View.INVISIBLE);
+			paidChargeView.setVisibility(View.INVISIBLE);
 			expectedChargeView.setVisibility(View.INVISIBLE);
 		} else {
-			chargeView.setVisibility(View.GONE);
+			paidChargeView.setVisibility(View.GONE);
 			expectedChargeView.setVisibility(View.GONE);
 		}
 
 		// 支払料金
 		if (passengerRecord.paidCharge != null) {
-			chargeView.setText(passengerRecord.paidCharge.toString() + "円");
-			chargeView.setVisibility(View.VISIBLE);
+			paidChargeView.setText(passengerRecord.paidCharge.toString() + "円");
+			paidChargeView.setVisibility(View.VISIBLE);
 		}
 
 		// 予定料金
