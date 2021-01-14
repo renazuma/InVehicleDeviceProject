@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 // リリース用APIを作る際に、バージョンコードをインクリメントするコミットを積むこと
-def VERSION_CODE = 20001
+def VERSION_CODE = 20002
 
 android {
     compileSdkVersion 29
