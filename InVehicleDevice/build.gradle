@@ -1,11 +1,14 @@
 apply plugin: 'com.android.application'
 
+// リリース用APIを作る際に、バージョンコードをインクリメントするコミットを積むこと
+def VERSION_CODE = 20001
+
 android {
     compileSdkVersion 28
     buildToolsVersion '28.0.3'
     defaultConfig {
-        versionCode computeVersionCode()
-        versionName computeVersionName()
+        versionCode VERSION_CODE
+        versionName computeVersionName(VERSION_CODE)
         testInstrumentationRunner "com.kogasoftware.android.DexMakerInstrumentationTestRunner"
     }
     signingConfigs {
@@ -43,15 +46,11 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:16.0.0'
 }
 
-def computeVersionName() {
-    def versionCode = computeVersionCode()
+def computeVersionName(int versionCode) {
+    def versionCodeVal = versionCode.toString()
     // Use SimpleDateFormat to set Locale
     def date = new java.text.SimpleDateFormat('yyyyMMddHHmmss', Locale.US).format(new Date())
-    "Build-$versionCode ($date)"
-}
-
-def computeVersionCode() {
-    (System.getenv("BUILD_NUMBER") ?: "0").toInteger()
+    "Build-$versionCodeVal ($date)"
 }
 
 project.gradle.taskGraph.whenReady {
