@@ -42,5 +42,8 @@ public class VehicleNotificationJson {
 	public boolean isExpectedChargeChangedNotification() {
 		return notificationKind == 2L;
 	}
+	public boolean isMemoChangedNotification() {
+		return notificationKind == 3L;
+	}
 
 }

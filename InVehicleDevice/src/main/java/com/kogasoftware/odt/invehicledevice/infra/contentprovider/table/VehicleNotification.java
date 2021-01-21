@@ -46,6 +46,13 @@ public class VehicleNotification implements Serializable {
 									VehicleNotification.Columns.RESPONSE,
 									VehicleNotification.Columns.SCHEDULE_DOWNLOADED);
 
+	public static final String WHERE_MEMO_CHANGED_VEHICLE_NOTIFICATION_FRAGMENT_CONTENT = String
+					.format(Locale.US, "%s = %d AND %s IS NULL AND %s > 0",
+									VehicleNotification.Columns.NOTIFICATION_KIND,
+									NotificationKind.MEMO_CHANGED,
+									VehicleNotification.Columns.RESPONSE,
+									VehicleNotification.Columns.SCHEDULE_DOWNLOADED);
+
 	public static final int TABLE_CODE = 2;
 	public static final String TABLE_NAME = "vehicle_notifications";
 	public static final Content CONTENT = new Content(TABLE_CODE, TABLE_NAME);
@@ -68,6 +75,7 @@ public class VehicleNotification implements Serializable {
 		public static final Long NORMAL = 0L;
 		public static final Long SCHEDULE = 1L;
 		public static final Long EXPECTED_CHARGE_CHANGED = 2L;
+		public static final Long MEMO_CHANGED = 3L;
 	}
 
 	public Long id;
