@@ -61,4 +61,5 @@
     <string name="received_charge">※ Received charge</string>
     <string name="monetary_unit">※ Monetary unit</string>
     <string name="expected_charge">※ Expected charge</string>
+    <string name="location_description">※ location description</string>
 </resources>
