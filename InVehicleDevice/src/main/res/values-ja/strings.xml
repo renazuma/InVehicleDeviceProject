@@ -61,4 +61,5 @@
     <string name="received_charge">収受料金</string>
     <string name="monetary_unit">円</string>
     <string name="expected_charge">予定料金</string>
+    <string name="location_description">本アプリは、管理者が運行状況を把握・トレースするために、また乗客が乗車前に車両位置を確認するために、アプリが閉じている場合や使用されていない場合でも位置情報を収集します。</string>
 </resources>
