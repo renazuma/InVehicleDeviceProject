@@ -1,6 +1,6 @@
 apply plugin: 'com.android.application'
 
-// リリース用APIを作る際に、バージョンコードをインクリメントするコミットを積むこと
+// リリース用APKを作る際に、バージョンコードをインクリメントするコミットを積むこと
 def VERSION_CODE = 20004
 
 android {
