@@ -274,10 +274,19 @@ public class OperationScheduleArrayAdapter
 			convertView.setBackgroundColor(DEFAULT_COLOR);
 		}
 
-		OperationSchedule operationSchedule = getItem(position);
+		setOperationScheduleRowView(position, convertView);
+		setPassengerRecordRowViews(convertView, getItem(position));
+
+		return convertView;
+	}
+
+	private void setOperationScheduleRowView(int position, View convertView) {
+	    OperationSchedule operationSchedule = getItem(position);
+
 		Button mapButton = (Button) convertView.findViewById(R.id.operation_list_map_button);
 		mapButton.setTag(operationSchedule);
 		mapButton.setOnClickListener(onMapButtonClickListener);
+
 		TextView platformNameView = (TextView) convertView.findViewById(R.id.platform_name);
 		TextView platformAddressView = (TextView) convertView.findViewById(R.id.platform_address);
 		platformNameView.setText(operationSchedule.name);
@@ -287,6 +296,31 @@ public class OperationScheduleArrayAdapter
 			platformAddressView.setText("(住所登録なし)");
 		}
 
+		TextView arrivalEstimateTextView = (TextView) convertView.findViewById(R.id.operation_schedule_arrival_estimate_text_view);
+		TextView departureEstimateTextView = (TextView) convertView.findViewById(R.id.operation_schedule_departure_estimate_text_view);
+
+		arrivalEstimateTextView.setText("");
+		departureEstimateTextView.setText("");
+
+		arrivalEstimateTextView.setText(operationSchedule.arrivalEstimate.toString(DATE_TIME_FORMATTER) + " 着");
+
+		if (getCount() != position + 1) {
+			departureEstimateTextView.setText(operationSchedule.departureEstimate.toString(DATE_TIME_FORMATTER) + " 発");
+		}
+
+		TextView checkMarkTextView = (TextView) convertView.findViewById(R.id.check_mark_text_view);
+		if (operationSchedule.departedAt == null) {
+			convertView.setBackgroundColor(DEFAULT_COLOR);
+			checkMarkTextView.setVisibility(View.INVISIBLE);
+		} else {
+			convertView.setBackgroundColor(DEPARTED_COLOR);
+			checkMarkTextView.setVisibility(View.VISIBLE);
+		}
+		convertView.setTag(operationSchedule);
+		convertView.setOnTouchListener(onOperationScheduleTouchListener);
+	}
+
+	private void setPassengerRecordRowViews(View convertView, OperationSchedule operationSchedule) {
 		ViewGroup passengerRecordsViewGroup = (ViewGroup) convertView.findViewById(R.id.operation_list_passenger_records);
 		passengerRecordsViewGroup.removeAllViews();
 		passengerRecordsViewGroup.setVisibility(showPassengerRecords	? View.VISIBLE : View.GONE);
@@ -313,30 +347,6 @@ public class OperationScheduleArrayAdapter
 		TextView getOffPassengerCountTextView = (TextView) convertView.findViewById(R.id.operation_schedule_get_off_passenger_count_text_view);
 		getOffPassengerCountTextView.setText("降" + String.format("%3d", getOffPassengerCount) + "名");
 		getOffPassengerCountTextView.setVisibility(getOffPassengerCount > 0 ? View.VISIBLE : View.INVISIBLE);
-
-		TextView arrivalEstimateTextView = (TextView) convertView.findViewById(R.id.operation_schedule_arrival_estimate_text_view);
-		TextView departureEstimateTextView = (TextView) convertView.findViewById(R.id.operation_schedule_departure_estimate_text_view);
-
-		arrivalEstimateTextView.setText("");
-		departureEstimateTextView.setText("");
-
-		arrivalEstimateTextView.setText(operationSchedule.arrivalEstimate.toString(DATE_TIME_FORMATTER) + " 着");
-
-		if (getCount() != position + 1) {
-			departureEstimateTextView.setText(operationSchedule.departureEstimate.toString(DATE_TIME_FORMATTER) + " 発");
-		}
-
-		TextView checkMarkTextView = (TextView) convertView.findViewById(R.id.check_mark_text_view);
-		if (operationSchedule.departedAt == null) {
-			convertView.setBackgroundColor(DEFAULT_COLOR);
-			checkMarkTextView.setVisibility(View.INVISIBLE);
-		} else {
-			convertView.setBackgroundColor(DEPARTED_COLOR);
-			checkMarkTextView.setVisibility(View.VISIBLE);
-		}
-		convertView.setTag(operationSchedule);
-		convertView.setOnTouchListener(onOperationScheduleTouchListener);
-		return convertView;
 	}
 
 	private View createPassengerRecordRow(OperationSchedule operationSchedule, PassengerRecord passengerRecord, Boolean getOn) {
