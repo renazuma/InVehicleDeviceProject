@@ -287,37 +287,31 @@ public class OperationScheduleArrayAdapter
 			platformAddressView.setText("(住所登録なし)");
 		}
 
-		ViewGroup passengerRecordsView = (ViewGroup) convertView.findViewById(R.id.operation_list_passenger_records);
-		passengerRecordsView.removeAllViews();
-		passengerRecordsView.setVisibility(showPassengerRecords	? View.VISIBLE : View.GONE);
+		ViewGroup passengerRecordsViewGroup = (ViewGroup) convertView.findViewById(R.id.operation_list_passenger_records);
+		passengerRecordsViewGroup.removeAllViews();
+		passengerRecordsViewGroup.setVisibility(showPassengerRecords	? View.VISIBLE : View.GONE);
 
 		Long getOffPassengerCount = 0L;
-		for (PassengerRecord passengerRecord : passengerRecords) {
-			if (operationSchedule.id.equals(passengerRecord.arrivalScheduleId)) {
-				if (showPassengerRecords) {
-					passengerRecordsView.addView(createPassengerRecordRow(operationSchedule, passengerRecord, false));
-				}
-				getOffPassengerCount += passengerRecord.passengerCount;
-			}
-		}
-
 		Long getOnPassengerCount = 0L;
 		for (PassengerRecord passengerRecord : passengerRecords) {
-			if (operationSchedule.id.equals(passengerRecord.departureScheduleId)) {
-				if (showPassengerRecords) {
-					passengerRecordsView.addView(createPassengerRecordRow(operationSchedule, passengerRecord, true));
+			if (showPassengerRecords) {
+				if (operationSchedule.id.equals(passengerRecord.arrivalScheduleId)) {
+					passengerRecordsViewGroup.addView(createPassengerRecordRow(operationSchedule, passengerRecord, false));
+					getOffPassengerCount += passengerRecord.passengerCount;
 				}
-				getOnPassengerCount += passengerRecord.passengerCount;
+				if (operationSchedule.id.equals(passengerRecord.departureScheduleId)) {
+					passengerRecordsViewGroup.addView(createPassengerRecordRow(operationSchedule, passengerRecord, true));
+					getOnPassengerCount += passengerRecord.passengerCount;
+				}
 			}
 		}
 
 		TextView getOnPassengerCountTextView = (TextView) convertView.findViewById(R.id.operation_schedule_get_on_passenger_count_text_view);
-		getOnPassengerCountTextView.setText("乗" 	+ String.format("%3d", getOnPassengerCount) + "名");
+		getOnPassengerCountTextView.setText("乗" + String.format("%3d", getOnPassengerCount) + "名");
 		getOnPassengerCountTextView.setVisibility(getOnPassengerCount > 0 ? View.VISIBLE : View.INVISIBLE);
 
 		TextView getOffPassengerCountTextView = (TextView) convertView.findViewById(R.id.operation_schedule_get_off_passenger_count_text_view);
-		getOffPassengerCountTextView.setText("降"
-				+ String.format("%3d", getOffPassengerCount) + "名");
+		getOffPassengerCountTextView.setText("降" + String.format("%3d", getOffPassengerCount) + "名");
 		getOffPassengerCountTextView.setVisibility(getOffPassengerCount > 0 ? View.VISIBLE : View.INVISIBLE);
 
 		TextView arrivalEstimateTextView = (TextView) convertView.findViewById(R.id.operation_schedule_arrival_estimate_text_view);
