@@ -90,6 +90,7 @@ public class OperationScheduleArrayAdapter
 
 			Boolean result = currentEvent.getAction() == MotionEvent.ACTION_CANCEL ? true : onTap();
 			operationScheduleRowView.setBackgroundColor(getOperationScheduleRowNormalColor(operationScheduleRowView));
+
 			return result;
 		}
 
@@ -104,14 +105,18 @@ public class OperationScheduleArrayAdapter
 				operationSchedule.arrivedAt = null;
 				operationSchedule.departedAt = null;
 			}
+
 			final ContentValues values = operationSchedule.toContentValues();
+
 			new Thread() {
 				@Override
 				public void run() {
 					contentResolver.insert(OperationSchedule.CONTENT.URI, values);
 				}
 			}.start();
+
 			notifyDataSetChanged();
+
 			return false;
 		}
 	};
@@ -157,6 +162,7 @@ public class OperationScheduleArrayAdapter
 			} else {
 				Log.e(TAG, "\"" + view + "\".getTag() (" + passengerRecordRowTag + ") is not instanceof " + PassengerRecordRowTag.class);
 			}
+
 			return false;
 		}
 
@@ -172,6 +178,7 @@ public class OperationScheduleArrayAdapter
 
 			Boolean result = currentEvent.getAction() == MotionEvent.ACTION_CANCEL ? true : onTap();
 			passengerRecordRowView.setBackgroundColor(getPassengerRecordRowNormalColor(passengerRecordRowView));
+
 			return result;
 		}
 
@@ -211,16 +218,20 @@ public class OperationScheduleArrayAdapter
 					passengerRecord.getOffTime = null;
 				}
 			}
+
 			final ContentValues values = passengerRecord.toContentValues();
 			final String where = PassengerRecord.Columns._ID + " = ?";
 			final String[] whereArgs = new String[]{passengerRecord.id.toString()};
+
 			new Thread() {
 				@Override
 				public void run() {
 					contentResolver.update(PassengerRecord.CONTENT.URI,	values, where, whereArgs);
 				}
 			}.start();
+
 			notifyDataSetChanged();
+
 			return false;
 		}
 	};
@@ -236,6 +247,7 @@ public class OperationScheduleArrayAdapter
 	private int getPassengerRecordRowColor(View passengerRecordRowView, boolean invert) {
 		PassengerRecordRowTag passengerRecordRowTag = (PassengerRecordRowTag)passengerRecordRowView.getTag();
 		PassengerRecord passengerRecord = passengerRecordRowTag.passengerRecord;
+
 		if (passengerRecordRowTag.getOn) {
 			if ((passengerRecord.getOnTime != null) ^ invert) {
 				return ContextCompat.getColor(fragment.getContext(), R.color.selected_get_on_row);
@@ -327,6 +339,7 @@ public class OperationScheduleArrayAdapter
 			convertView.setBackgroundColor(DEPARTED_COLOR);
 			checkMarkTextView.setVisibility(View.VISIBLE);
 		}
+
 		convertView.setTag(operationSchedule);
 		convertView.setOnTouchListener(onOperationScheduleTouchListener);
 	}
@@ -435,6 +448,7 @@ public class OperationScheduleArrayAdapter
 				}
 			}
 		}
+
 		return row;
 	}
 
