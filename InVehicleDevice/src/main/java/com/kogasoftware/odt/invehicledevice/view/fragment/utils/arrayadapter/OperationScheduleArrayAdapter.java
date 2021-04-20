@@ -42,9 +42,9 @@ import java.util.TreeSet;
 public class OperationScheduleArrayAdapter
 		extends	ArrayAdapter<OperationSchedule> {
 	private static final String TAG = OperationScheduleArrayAdapter.class.getSimpleName();
-	private static final Integer SELECTED_COLOR = Color.parseColor("#D5E9F6");
+	private static final Integer SELECTING_COLOR = Color.parseColor("#D5E9F6");
 	private static final Integer DEPARTED_COLOR = Color.LTGRAY;
-	private static final Integer DEFAULT_COLOR = Color.parseColor("#FFFFFF");
+	private static final Integer NOT_YET_DEPARTED_COLOR = Color.parseColor("#FFFFFF");
 	private static final Integer RESOURCE_ID = R.layout.operation_list_row;
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormat.forPattern("HH:mm");
 	private final LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -75,7 +75,7 @@ public class OperationScheduleArrayAdapter
 
 		private boolean onTouch(View view, MotionEvent event, OperationSchedule operationSchedule) {
 			if (event.getAction() == MotionEvent.ACTION_DOWN) {
-				view.setBackgroundColor(getOperationScheduleRowSelectedColor());
+				view.setBackgroundColor(getOperationScheduleRowSelectingColor());
 				return true;
 			}
 
@@ -84,7 +84,7 @@ public class OperationScheduleArrayAdapter
 			}
 
 			Boolean result = event.getAction() == MotionEvent.ACTION_CANCEL ? true : onTap(view, event, operationSchedule);
-			view.setBackgroundColor(getOperationScheduleRowDefaultColor(operationSchedule));
+			view.setBackgroundColor(getOperationScheduleRowNormalColor(operationSchedule));
 			return result;
 		}
 
@@ -109,13 +109,13 @@ public class OperationScheduleArrayAdapter
 		}
 	};
 
-	private int getOperationScheduleRowSelectedColor() {
-		return SELECTED_COLOR;
+	private int getOperationScheduleRowSelectingColor() {
+		return SELECTING_COLOR;
 	}
 
-	private int getOperationScheduleRowDefaultColor(OperationSchedule operationSchedule) {
+	private int getOperationScheduleRowNormalColor(OperationSchedule operationSchedule) {
 		if (operationSchedule.departedAt == null) {
-			return DEFAULT_COLOR;
+			return NOT_YET_DEPARTED_COLOR;
 		} else {
 			return DEPARTED_COLOR;
 		}
@@ -147,7 +147,7 @@ public class OperationScheduleArrayAdapter
 
 		private boolean onTouch(View view, MotionEvent event, PassengerRecordRowTag passengerRecordRowTag) {
 			if (event.getAction() == MotionEvent.ACTION_DOWN) {
-				view.setBackgroundColor(getPassengerRecordRowSelectedColor(passengerRecordRowTag));
+				view.setBackgroundColor(getPassengerRecordRowSelectingColor(passengerRecordRowTag));
 				return true;
 			}
 
@@ -156,7 +156,7 @@ public class OperationScheduleArrayAdapter
 			}
 
 			Boolean result = event.getAction() == MotionEvent.ACTION_CANCEL ? true : onTap(view, event, passengerRecordRowTag);
-			view.setBackgroundColor(getPassengerRecordRowDefaultColor(passengerRecordRowTag));
+			view.setBackgroundColor(getPassengerRecordRowNormalColor(passengerRecordRowTag));
 			return result;
 		}
 
@@ -208,11 +208,11 @@ public class OperationScheduleArrayAdapter
 		}
 	};
 
-	private int getPassengerRecordRowDefaultColor(PassengerRecordRowTag passengerRecordRowTag) {
+	private int getPassengerRecordRowNormalColor(PassengerRecordRowTag passengerRecordRowTag) {
 		return getPassengerRecordRowColor(passengerRecordRowTag, false);
 	}
 
-	protected int getPassengerRecordRowSelectedColor(PassengerRecordRowTag passengerRecordRowTag) {
+	protected int getPassengerRecordRowSelectingColor(PassengerRecordRowTag passengerRecordRowTag) {
 		return getPassengerRecordRowColor(passengerRecordRowTag, true);
 	}
 
@@ -264,7 +264,7 @@ public class OperationScheduleArrayAdapter
 		if (convertView == null) {
 			convertView = layoutInflater.inflate(RESOURCE_ID, null);
 		} else {
-			convertView.setBackgroundColor(DEFAULT_COLOR);
+			convertView.setBackgroundColor(NOT_YET_DEPARTED_COLOR);
 		}
 
 		setOperationScheduleRowView(position, convertView);
@@ -303,7 +303,7 @@ public class OperationScheduleArrayAdapter
 
 		TextView checkMarkTextView = (TextView) convertView.findViewById(R.id.check_mark_text_view);
 		if (operationSchedule.departedAt == null) {
-			convertView.setBackgroundColor(DEFAULT_COLOR);
+			convertView.setBackgroundColor(NOT_YET_DEPARTED_COLOR);
 			checkMarkTextView.setVisibility(View.INVISIBLE);
 		} else {
 			convertView.setBackgroundColor(DEPARTED_COLOR);
@@ -346,7 +346,7 @@ public class OperationScheduleArrayAdapter
 		View row = layoutInflater.inflate(R.layout.small_passenger_record_list_row, null);
 
 		// 行のデフォルト背景色
-		row.setBackgroundColor(DEFAULT_COLOR);
+		row.setBackgroundColor(NOT_YET_DEPARTED_COLOR);
 
 		// 乗降画像
 		ImageView selectMarkImageView = (ImageView) row.findViewById(R.id.select_mark_image_view);
@@ -404,7 +404,7 @@ public class OperationScheduleArrayAdapter
 		}
 
 		// 乗降者行背景色
-        row.setBackgroundColor(getPassengerRecordRowDefaultColor(tag));
+        row.setBackgroundColor(getPassengerRecordRowNormalColor(tag));
 
 		// 乗車行に到着乗降場名を追加
 		TextView arrivalPlatformView = (TextView) row.findViewById(R.id.user_arrival_platform_name);
