@@ -62,15 +62,13 @@ public class OperationScheduleArrayAdapter
 	}
 
 	protected final OnTouchListener onOperationScheduleTouchListener = new View.OnTouchListener() {
-
 		@Override
 		public boolean onTouch(View view, MotionEvent event) {
 			Object operationSchedule = view.getTag();
 			if (OperationSchedule.class.isInstance(operationSchedule)) {
 				return onTouch(view, event, OperationSchedule.class.cast(operationSchedule));
 			} else {
-				Log.e(TAG, "\"" + view + "\".getTag() (" + operationSchedule
-								+ ") is not instanceof " + OperationSchedule.class);
+				Log.e(TAG, "\"" + view + "\".getTag() (" + operationSchedule + ") is not instanceof " + OperationSchedule.class);
 			}
 			return false;
 		}
@@ -81,20 +79,16 @@ public class OperationScheduleArrayAdapter
 				return true;
 			}
 
-			if (event.getAction() != MotionEvent.ACTION_UP
-							&& event.getAction() != MotionEvent.ACTION_CANCEL) {
+			if (event.getAction() != MotionEvent.ACTION_UP && event.getAction() != MotionEvent.ACTION_CANCEL) {
 				return false;
 			}
 
-			Boolean result = event.getAction() == MotionEvent.ACTION_CANCEL
-							? true
-							: onTap(view, event, operationSchedule);
+			Boolean result = event.getAction() == MotionEvent.ACTION_CANCEL ? true : onTap(view, event, operationSchedule);
 			view.setBackgroundColor(getOperationScheduleRowDefaultColor(operationSchedule));
 			return result;
 		}
 
-		protected boolean onTap(View view, MotionEvent event,
-								final OperationSchedule operationSchedule) {
+		protected boolean onTap(View view, MotionEvent event, final OperationSchedule operationSchedule) {
 			if (operationSchedule.departedAt == null) {
 				DateTime now = DateTime.now();
 				operationSchedule.arrivedAt = now;
@@ -107,8 +101,7 @@ public class OperationScheduleArrayAdapter
 			new Thread() {
 				@Override
 				public void run() {
-					contentResolver.insert(OperationSchedule.CONTENT.URI,
-									values);
+					contentResolver.insert(OperationSchedule.CONTENT.URI, values);
 				}
 			}.start();
 			notifyDataSetChanged();
@@ -133,8 +126,7 @@ public class OperationScheduleArrayAdapter
 		public final OperationSchedule operationSchedule;
 		public final Boolean getOn;
 
-		public PassengerRecordRowTag(PassengerRecord passengerRecord,
-				OperationSchedule operationSchedule, Boolean getOn) {
+		public PassengerRecordRowTag(PassengerRecord passengerRecord, OperationSchedule operationSchedule, Boolean getOn) {
 			this.passengerRecord = passengerRecord;
 			this.operationSchedule = operationSchedule;
 			this.getOn = getOn;
@@ -142,15 +134,13 @@ public class OperationScheduleArrayAdapter
 	}
 
 	protected final OnTouchListener onPassengerRecordTouchListener = new View.OnTouchListener() {
-
 		@Override
 		public boolean onTouch(View view, MotionEvent event) {
 			Object passengerRecordRowTag = view.getTag();
 			if (PassengerRecordRowTag.class.isInstance(passengerRecordRowTag)) {
 				return onTouch(view, event, PassengerRecordRowTag.class.cast(passengerRecordRowTag));
 			} else {
-				Log.e(TAG, "\"" + view + "\".getTag() (" + passengerRecordRowTag
-								+ ") is not instanceof " + PassengerRecordRowTag.class);
+				Log.e(TAG, "\"" + view + "\".getTag() (" + passengerRecordRowTag + ") is not instanceof " + PassengerRecordRowTag.class);
 			}
 			return false;
 		}
@@ -161,20 +151,16 @@ public class OperationScheduleArrayAdapter
 				return true;
 			}
 
-			if (event.getAction() != MotionEvent.ACTION_UP
-							&& event.getAction() != MotionEvent.ACTION_CANCEL) {
+			if (event.getAction() != MotionEvent.ACTION_UP && event.getAction() != MotionEvent.ACTION_CANCEL) {
 				return false;
 			}
 
-			Boolean result = event.getAction() == MotionEvent.ACTION_CANCEL
-							? true
-							: onTap(view, event, passengerRecordRowTag);
+			Boolean result = event.getAction() == MotionEvent.ACTION_CANCEL ? true : onTap(view, event, passengerRecordRowTag);
 			view.setBackgroundColor(getPassengerRecordRowDefaultColor(passengerRecordRowTag));
 			return result;
 		}
 
-		protected boolean onTap(View view, MotionEvent event,
-								PassengerRecordRowTag passengerRecordRowTag) {
+		protected boolean onTap(View view, MotionEvent event, PassengerRecordRowTag passengerRecordRowTag) {
 			PassengerRecord passengerRecord = passengerRecordRowTag.passengerRecord;
 			OperationSchedule operationSchedule = passengerRecordRowTag.operationSchedule;
 
@@ -210,13 +196,11 @@ public class OperationScheduleArrayAdapter
 			}
 			final ContentValues values = passengerRecord.toContentValues();
 			final String where = PassengerRecord.Columns._ID + " = ?";
-			final String[] whereArgs = new String[]{passengerRecord.id
-							.toString()};
+			final String[] whereArgs = new String[]{passengerRecord.id.toString()};
 			new Thread() {
 				@Override
 				public void run() {
-					contentResolver.update(PassengerRecord.CONTENT.URI,
-									values, where, whereArgs);
+					contentResolver.update(PassengerRecord.CONTENT.URI,	values, where, whereArgs);
 				}
 			}.start();
 			notifyDataSetChanged();
@@ -258,8 +242,7 @@ public class OperationScheduleArrayAdapter
 			}
 			PassengerRecord passengerRecord = (PassengerRecord) tag;
 			if (fragment.getFragmentManager() == null) { return; }
-			Fragments.showModalFragment(fragment.getFragmentManager(),
-					PassengerRecordMemoFragment.newInstance(passengerRecord));
+			Fragments.showModalFragment(fragment.getFragmentManager(), PassengerRecordMemoFragment.newInstance(passengerRecord));
 		}
 	};
 
@@ -360,7 +343,6 @@ public class OperationScheduleArrayAdapter
 	}
 
 	private View createPassengerRecordRow(OperationSchedule operationSchedule, PassengerRecord passengerRecord, Boolean getOn) {
-
 		View row = layoutInflater.inflate(R.layout.small_passenger_record_list_row, null);
 
 		// 行のデフォルト背景色
