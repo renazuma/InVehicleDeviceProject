@@ -61,10 +61,10 @@ public class OperationScheduleArrayAdapter
 		this.contentResolver = fragment.getActivity().getContentResolver();
 	}
 
-	static abstract class OnRowTouchListener<T> implements OnTouchListener {
+	static abstract class OnOperationScheduleRowTouchListener<T> implements OnTouchListener {
 		private final Class<T> rowClass;
 
-		public OnRowTouchListener(Class<T> rowClass) {
+		public OnOperationScheduleRowTouchListener(Class<T> rowClass) {
 			this.rowClass = rowClass;
 		}
 
@@ -109,7 +109,8 @@ public class OperationScheduleArrayAdapter
 		}
 	}
 
-	protected final OnTouchListener onOperationScheduleTouchListener = new OnRowTouchListener<OperationSchedule>(
+
+	protected final OnTouchListener onOperationScheduleTouchListener = new OnOperationScheduleRowTouchListener<OperationSchedule>(
 			OperationSchedule.class) {
 		@Override
 		protected boolean onTap(View view, MotionEvent event,
@@ -157,7 +158,55 @@ public class OperationScheduleArrayAdapter
 		}
 	}
 
-	protected final OnRowTouchListener<PassengerRecordRowTag> onPassengerRecordTouchListener = new OnRowTouchListener<PassengerRecordRowTag>(
+	static abstract class OnPassengerRecordRowTouchListener<T> implements OnTouchListener {
+		private final Class<T> rowClass;
+
+		public OnPassengerRecordRowTouchListener(Class<T> rowClass) {
+			this.rowClass = rowClass;
+		}
+
+		@Override
+		public boolean onTouch(View view, MotionEvent event) {
+			Object tag = view.getTag();
+			if (rowClass.isInstance(tag)) {
+				return onTouch(view, event, rowClass.cast(tag));
+			} else {
+				Log.e(TAG, "\"" + view + "\".getTag() (" + tag
+								+ ") is not instanceof " + rowClass);
+			}
+			return false;
+		}
+
+		private boolean onTouch(View view, MotionEvent event, T tag) {
+			if (event.getAction() == MotionEvent.ACTION_DOWN) {
+				view.setBackgroundColor(getSelectedColor(tag));
+				return true;
+			}
+
+			if (event.getAction() != MotionEvent.ACTION_UP
+							&& event.getAction() != MotionEvent.ACTION_CANCEL) {
+				return false;
+			}
+
+			Boolean result = event.getAction() == MotionEvent.ACTION_CANCEL
+							? true
+							: onTap(view, event, tag);
+			view.setBackgroundColor(getDefaultColor(tag));
+			return result;
+		}
+
+		protected abstract boolean onTap(View view, MotionEvent event, T tag);
+
+		protected int getDefaultColor(T tag) {
+			return DEFAULT_COLOR;
+		}
+
+		protected int getSelectedColor(T tag) {
+			return SELECTED_COLOR;
+		}
+	}
+
+	protected final OnPassengerRecordRowTouchListener<PassengerRecordRowTag> onPassengerRecordTouchListener = new OnPassengerRecordRowTouchListener<PassengerRecordRowTag>(
 			PassengerRecordRowTag.class) {
 		@Override
 		protected int getDefaultColor(PassengerRecordRowTag passengerRecordRowTag) {
