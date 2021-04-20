@@ -82,12 +82,12 @@ public class OperationScheduleArrayAdapter
 				return false;
 			}
 
-			Boolean result = event.getAction() == MotionEvent.ACTION_CANCEL ? true : onTap(view, event, operationSchedule);
+			Boolean result = event.getAction() == MotionEvent.ACTION_CANCEL ? true : onTap(operationSchedule);
 			view.setBackgroundColor(getOperationScheduleRowNormalColor(operationSchedule));
 			return result;
 		}
 
-		protected boolean onTap(View view, MotionEvent event, final OperationSchedule operationSchedule) {
+		protected boolean onTap(final OperationSchedule operationSchedule) {
 			if (operationSchedule.departedAt == null) {
 				DateTime now = DateTime.now();
 				operationSchedule.arrivedAt = now;
@@ -154,12 +154,12 @@ public class OperationScheduleArrayAdapter
 				return false;
 			}
 
-			Boolean result = event.getAction() == MotionEvent.ACTION_CANCEL ? true : onTap(view, event, passengerRecordRowTag);
+			Boolean result = event.getAction() == MotionEvent.ACTION_CANCEL ? true : onTap(passengerRecordRowTag);
 			view.setBackgroundColor(getPassengerRecordRowNormalColor(passengerRecordRowTag));
 			return result;
 		}
 
-		protected boolean onTap(View view, MotionEvent event, PassengerRecordRowTag passengerRecordRowTag) {
+		protected boolean onTap(PassengerRecordRowTag passengerRecordRowTag) {
 			PassengerRecord passengerRecord = passengerRecordRowTag.passengerRecord;
 			OperationSchedule operationSchedule = passengerRecordRowTag.operationSchedule;
 
