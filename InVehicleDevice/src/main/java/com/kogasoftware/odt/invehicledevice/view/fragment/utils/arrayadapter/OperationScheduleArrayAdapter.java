@@ -77,7 +77,7 @@ public class OperationScheduleArrayAdapter
 
 		private boolean onTouch(View view, MotionEvent event, OperationSchedule operationSchedule) {
 			if (event.getAction() == MotionEvent.ACTION_DOWN) {
-				view.setBackgroundColor(getSelectedColor(operationSchedule));
+				view.setBackgroundColor(getOperationScheduleRowSelectedColor());
 				return true;
 			}
 
@@ -89,7 +89,7 @@ public class OperationScheduleArrayAdapter
 			Boolean result = event.getAction() == MotionEvent.ACTION_CANCEL
 							? true
 							: onTap(view, event, operationSchedule);
-			view.setBackgroundColor(getDefaultColor(operationSchedule));
+			view.setBackgroundColor(getOperationScheduleRowDefaultColor(operationSchedule));
 			return result;
 		}
 
@@ -114,19 +114,19 @@ public class OperationScheduleArrayAdapter
 			notifyDataSetChanged();
 			return false;
 		}
-
-		protected int getSelectedColor(OperationSchedule operationSchedule) {
-			return SELECTED_COLOR;
-		}
-
-		protected int getDefaultColor(OperationSchedule operationSchedule) {
-			if (operationSchedule.departedAt == null) {
-				return DEFAULT_COLOR;
-			} else {
-				return DEPARTED_COLOR;
-			}
-		}
 	};
+
+	private int getOperationScheduleRowSelectedColor() {
+		return SELECTED_COLOR;
+	}
+
+	private int getOperationScheduleRowDefaultColor(OperationSchedule operationSchedule) {
+		if (operationSchedule.departedAt == null) {
+			return DEFAULT_COLOR;
+		} else {
+			return DEPARTED_COLOR;
+		}
+	}
 
 	static class PassengerRecordRowTag {
 		public final PassengerRecord passengerRecord;
@@ -157,7 +157,7 @@ public class OperationScheduleArrayAdapter
 
 		private boolean onTouch(View view, MotionEvent event, PassengerRecordRowTag passengerRecordRowTag) {
 			if (event.getAction() == MotionEvent.ACTION_DOWN) {
-				view.setBackgroundColor(getSelectedColor(passengerRecordRowTag));
+				view.setBackgroundColor(getPassengerRecordRowSelectedColor(passengerRecordRowTag));
 				return true;
 			}
 
@@ -169,7 +169,7 @@ public class OperationScheduleArrayAdapter
 			Boolean result = event.getAction() == MotionEvent.ACTION_CANCEL
 							? true
 							: onTap(view, event, passengerRecordRowTag);
-			view.setBackgroundColor(getDefaultColor(passengerRecordRowTag));
+			view.setBackgroundColor(getPassengerRecordRowDefaultColor(passengerRecordRowTag));
 			return result;
 		}
 
@@ -222,33 +222,15 @@ public class OperationScheduleArrayAdapter
 			notifyDataSetChanged();
 			return false;
 		}
-
-		protected int getDefaultColor(PassengerRecordRowTag passengerRecordRowTag) {
-			return getColor(passengerRecordRowTag, false);
-		}
-
-		protected int getSelectedColor(
-						PassengerRecordRowTag passengerRecordRowTag) {
-			return getColor(passengerRecordRowTag, true);
-		}
-
-		private int getColor(PassengerRecordRowTag passengerRecordRowTag, boolean invert) {
-			PassengerRecord passengerRecord = passengerRecordRowTag.passengerRecord;
-			if (passengerRecordRowTag.getOn) {
-				if ((passengerRecord.getOnTime != null) ^ invert) {
-					return ContextCompat.getColor(fragment.getContext(), R.color.selected_get_on_row);
-				} else {
-					return ContextCompat.getColor(fragment.getContext(), R.color.get_on_row);
-				}
-			} else {
-				if ((passengerRecord.getOffTime != null) ^ invert) {
-					return ContextCompat.getColor(fragment.getContext(), R.color.selected_get_off_row);
-				} else {
-					return ContextCompat.getColor(fragment.getContext(), R.color.get_off_row);
-				}
-			}
-		}
 	};
+
+	private int getPassengerRecordRowDefaultColor(PassengerRecordRowTag passengerRecordRowTag) {
+		return getPassengerRecordRowColor(passengerRecordRowTag, false);
+	}
+
+	protected int getPassengerRecordRowSelectedColor(PassengerRecordRowTag passengerRecordRowTag) {
+		return getPassengerRecordRowColor(passengerRecordRowTag, true);
+	}
 
 	private int getPassengerRecordRowColor(PassengerRecordRowTag passengerRecordRowTag, boolean invert) {
 		PassengerRecord passengerRecord = passengerRecordRowTag.passengerRecord;
@@ -440,7 +422,7 @@ public class OperationScheduleArrayAdapter
 		}
 
 		// 乗降者行背景色
-        row.setBackgroundColor(getPassengerRecordRowColor(tag, false));
+        row.setBackgroundColor(getPassengerRecordRowDefaultColor(tag));
 
 		// 乗車行に到着乗降場名を追加
 		TextView arrivalPlatformView = (TextView) row.findViewById(R.id.user_arrival_platform_name);
