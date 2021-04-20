@@ -86,10 +86,7 @@ public class OperationScheduleArrayAdapter
 			} else if (isNotTargetEvent()) {
 				return false;
 			} else {
-				Boolean result = currentEvent.getAction() == MotionEvent.ACTION_CANCEL ? true : onTap();
-				setOperationScheduleRowBackground(operationScheduleRowView);
-
-				return result;
+				return (currentEvent.getAction() == MotionEvent.ACTION_CANCEL ? true : onTap());
 			}
 		}
 
@@ -121,6 +118,9 @@ public class OperationScheduleArrayAdapter
 					contentResolver.insert(OperationSchedule.CONTENT.URI, values);
 				}
 			}.start();
+
+			// insertを検知して画面更新はされるが、タップ時と若干のラグが出るため、手動で対象行だけの修正を入れている。
+			setOperationScheduleRowBackground(operationScheduleRowView);
 
 			return false;
 		}
@@ -180,10 +180,7 @@ public class OperationScheduleArrayAdapter
 			} else if (isNotTargetEvent()) {
 				return false;
 			} else {
-				Boolean result = currentEvent.getAction() == MotionEvent.ACTION_CANCEL ? true : onTap();
-				setPassengerRecordsRowBackground(passengerRecordRowView);
-
-				return result;
+				return (currentEvent.getAction() == MotionEvent.ACTION_CANCEL ? true : onTap());
 			}
 		}
 
@@ -243,6 +240,9 @@ public class OperationScheduleArrayAdapter
 					contentResolver.update(PassengerRecord.CONTENT.URI,	values, where, whereArgs);
 				}
 			}.start();
+
+			// updateを検知して画面更新はされるが、タップ時と若干のラグが出るため、手動で対象行だけの修正を入れている。
+			setPassengerRecordsRowBackground(passengerRecordRowView);
 
 			return false;
 		}
