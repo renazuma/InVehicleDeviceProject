@@ -121,8 +121,6 @@ public class OperationScheduleArrayAdapter
 				}
 			}.start();
 
-			notifyDataSetChanged();
-
 			return false;
 		}
 	};
@@ -241,8 +239,6 @@ public class OperationScheduleArrayAdapter
 					contentResolver.update(PassengerRecord.CONTENT.URI,	values, where, whereArgs);
 				}
 			}.start();
-
-			notifyDataSetChanged();
 
 			return false;
 		}
