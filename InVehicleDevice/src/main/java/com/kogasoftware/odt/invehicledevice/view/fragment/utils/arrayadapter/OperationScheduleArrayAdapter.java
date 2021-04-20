@@ -79,10 +79,10 @@ public class OperationScheduleArrayAdapter
 		}
 
 		private boolean onTouch() {
-			if (currentEvent.getAction() == MotionEvent.ACTION_DOWN) {
+			if (isSelectingEvent()) {
 				operationScheduleRowView.setBackgroundColor(getOperationScheduleRowSelectingColor());
 				return true;
-			} else if (currentEvent.getAction() != MotionEvent.ACTION_UP && currentEvent.getAction() != MotionEvent.ACTION_CANCEL) {
+			} else if (isNotTargetEvent()) {
 				return false;
 			} else {
 				Boolean result = currentEvent.getAction() == MotionEvent.ACTION_CANCEL ? true : onTap();
@@ -90,6 +90,14 @@ public class OperationScheduleArrayAdapter
 
 				return result;
 			}
+		}
+
+		private boolean isSelectingEvent() {
+			return currentEvent.getAction() == MotionEvent.ACTION_DOWN;
+		}
+
+		private boolean isNotTargetEvent() {
+            return (currentEvent.getAction() != MotionEvent.ACTION_UP && currentEvent.getAction() != MotionEvent.ACTION_CANCEL);
 		}
 
 		protected boolean onTap() {
@@ -164,10 +172,10 @@ public class OperationScheduleArrayAdapter
 		}
 
 		private boolean onTouch() {
-			if (currentEvent.getAction() == MotionEvent.ACTION_DOWN) {
+			if (isSelectingEvent()) {
 				passengerRecordRowView.setBackgroundColor(getPassengerRecordRowSelectingColor(passengerRecordRowView));
 				return true;
-			} else if (currentEvent.getAction() != MotionEvent.ACTION_UP && currentEvent.getAction() != MotionEvent.ACTION_CANCEL) {
+			} else if (isNotTargetEvent()) {
 				return false;
 			} else {
 				Boolean result = currentEvent.getAction() == MotionEvent.ACTION_CANCEL ? true : onTap();
@@ -176,6 +184,15 @@ public class OperationScheduleArrayAdapter
 				return result;
 			}
 		}
+
+		private boolean isSelectingEvent() {
+			return currentEvent.getAction() == MotionEvent.ACTION_DOWN;
+		}
+
+		private boolean isNotTargetEvent() {
+			return (currentEvent.getAction() != MotionEvent.ACTION_UP && currentEvent.getAction() != MotionEvent.ACTION_CANCEL);
+		}
+
 
 		protected boolean onTap() {
 			PassengerRecordRowTag passengerRecordRowTag = (PassengerRecordRowTag)passengerRecordRowView.getTag();
