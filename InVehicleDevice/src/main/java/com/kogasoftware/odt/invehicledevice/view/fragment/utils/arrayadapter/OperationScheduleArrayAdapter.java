@@ -74,24 +74,22 @@ public class OperationScheduleArrayAdapter
 				return onTouch();
 			} else {
 				Log.e(TAG, "\"" + view + "\".getTag() (" + operationSchedule + ") is not instanceof " + OperationSchedule.class);
+				return false;
 			}
-			return false;
 		}
 
 		private boolean onTouch() {
 			if (currentEvent.getAction() == MotionEvent.ACTION_DOWN) {
 				operationScheduleRowView.setBackgroundColor(getOperationScheduleRowSelectingColor());
 				return true;
-			}
-
-			if (currentEvent.getAction() != MotionEvent.ACTION_UP && currentEvent.getAction() != MotionEvent.ACTION_CANCEL) {
+			} else if (currentEvent.getAction() != MotionEvent.ACTION_UP && currentEvent.getAction() != MotionEvent.ACTION_CANCEL) {
 				return false;
+			} else {
+				Boolean result = currentEvent.getAction() == MotionEvent.ACTION_CANCEL ? true : onTap();
+				operationScheduleRowView.setBackgroundColor(getOperationScheduleRowNormalColor(operationScheduleRowView));
+
+				return result;
 			}
-
-			Boolean result = currentEvent.getAction() == MotionEvent.ACTION_CANCEL ? true : onTap();
-			operationScheduleRowView.setBackgroundColor(getOperationScheduleRowNormalColor(operationScheduleRowView));
-
-			return result;
 		}
 
 		protected boolean onTap() {
@@ -161,25 +159,22 @@ public class OperationScheduleArrayAdapter
 				return onTouch();
 			} else {
 				Log.e(TAG, "\"" + view + "\".getTag() (" + passengerRecordRowTag + ") is not instanceof " + PassengerRecordRowTag.class);
+				return false;
 			}
-
-			return false;
 		}
 
 		private boolean onTouch() {
 			if (currentEvent.getAction() == MotionEvent.ACTION_DOWN) {
 				passengerRecordRowView.setBackgroundColor(getPassengerRecordRowSelectingColor(passengerRecordRowView));
 				return true;
-			}
-
-			if (currentEvent.getAction() != MotionEvent.ACTION_UP && currentEvent.getAction() != MotionEvent.ACTION_CANCEL) {
+			} else if (currentEvent.getAction() != MotionEvent.ACTION_UP && currentEvent.getAction() != MotionEvent.ACTION_CANCEL) {
 				return false;
+			} else {
+				Boolean result = currentEvent.getAction() == MotionEvent.ACTION_CANCEL ? true : onTap();
+				passengerRecordRowView.setBackgroundColor(getPassengerRecordRowNormalColor(passengerRecordRowView));
+
+				return result;
 			}
-
-			Boolean result = currentEvent.getAction() == MotionEvent.ACTION_CANCEL ? true : onTap();
-			passengerRecordRowView.setBackgroundColor(getPassengerRecordRowNormalColor(passengerRecordRowView));
-
-			return result;
 		}
 
 		protected boolean onTap() {
