@@ -61,29 +61,36 @@ public class OperationScheduleArrayAdapter
 	}
 
 	protected final OnTouchListener onOperationScheduleTouchListener = new View.OnTouchListener() {
+		private View operationScheduleRowView;
+		private MotionEvent currentEvent;
+
 		@Override
 		public boolean onTouch(View view, MotionEvent event) {
-			Object operationSchedule = view.getTag();
+			this.operationScheduleRowView = view;
+			this.currentEvent = event;
+
+			Object operationSchedule = this.operationScheduleRowView.getTag();
 			if (OperationSchedule.class.isInstance(operationSchedule)) {
-				return onTouch(view, event, OperationSchedule.class.cast(operationSchedule));
+				return onTouch();
 			} else {
 				Log.e(TAG, "\"" + view + "\".getTag() (" + operationSchedule + ") is not instanceof " + OperationSchedule.class);
 			}
 			return false;
 		}
 
-		private boolean onTouch(View view, MotionEvent event, OperationSchedule operationSchedule) {
-			if (event.getAction() == MotionEvent.ACTION_DOWN) {
-				view.setBackgroundColor(getOperationScheduleRowSelectingColor());
+		private boolean onTouch() {
+			if (currentEvent.getAction() == MotionEvent.ACTION_DOWN) {
+				operationScheduleRowView.setBackgroundColor(getOperationScheduleRowSelectingColor());
 				return true;
 			}
 
-			if (event.getAction() != MotionEvent.ACTION_UP && event.getAction() != MotionEvent.ACTION_CANCEL) {
+			if (currentEvent.getAction() != MotionEvent.ACTION_UP && currentEvent.getAction() != MotionEvent.ACTION_CANCEL) {
 				return false;
 			}
 
-			Boolean result = event.getAction() == MotionEvent.ACTION_CANCEL ? true : onTap(operationSchedule);
-			view.setBackgroundColor(getOperationScheduleRowNormalColor(operationSchedule));
+			OperationSchedule operationSchedule = (OperationSchedule)operationScheduleRowView.getTag();
+			Boolean result = currentEvent.getAction() == MotionEvent.ACTION_CANCEL ? true : onTap(operationSchedule);
+			operationScheduleRowView.setBackgroundColor(getOperationScheduleRowNormalColor(operationSchedule));
 			return result;
 		}
 
@@ -133,33 +140,43 @@ public class OperationScheduleArrayAdapter
 	}
 
 	protected final OnTouchListener onPassengerRecordTouchListener = new View.OnTouchListener() {
+	    private View passengerRecordRowView;
+	    private MotionEvent currentEvent;
+
 		@Override
 		public boolean onTouch(View view, MotionEvent event) {
+			this.passengerRecordRowView = view;
+			this.currentEvent = event;
+
 			Object passengerRecordRowTag = view.getTag();
 			if (PassengerRecordRowTag.class.isInstance(passengerRecordRowTag)) {
-				return onTouch(view, event, PassengerRecordRowTag.class.cast(passengerRecordRowTag));
+				return onTouch();
 			} else {
 				Log.e(TAG, "\"" + view + "\".getTag() (" + passengerRecordRowTag + ") is not instanceof " + PassengerRecordRowTag.class);
 			}
 			return false;
 		}
 
-		private boolean onTouch(View view, MotionEvent event, PassengerRecordRowTag passengerRecordRowTag) {
-			if (event.getAction() == MotionEvent.ACTION_DOWN) {
-				view.setBackgroundColor(getPassengerRecordRowSelectingColor(passengerRecordRowTag));
+		private boolean onTouch() {
+			PassengerRecordRowTag passengerRecordRowTag = (PassengerRecordRowTag)passengerRecordRowView.getTag();
+
+			if (currentEvent.getAction() == MotionEvent.ACTION_DOWN) {
+				passengerRecordRowView.setBackgroundColor(getPassengerRecordRowSelectingColor(passengerRecordRowTag));
 				return true;
 			}
 
-			if (event.getAction() != MotionEvent.ACTION_UP && event.getAction() != MotionEvent.ACTION_CANCEL) {
+			if (currentEvent.getAction() != MotionEvent.ACTION_UP && currentEvent.getAction() != MotionEvent.ACTION_CANCEL) {
 				return false;
 			}
 
-			Boolean result = event.getAction() == MotionEvent.ACTION_CANCEL ? true : onTap(passengerRecordRowTag);
-			view.setBackgroundColor(getPassengerRecordRowNormalColor(passengerRecordRowTag));
+			Boolean result = currentEvent.getAction() == MotionEvent.ACTION_CANCEL ? true : onTap();
+			passengerRecordRowView.setBackgroundColor(getPassengerRecordRowNormalColor(passengerRecordRowTag));
 			return result;
 		}
 
-		protected boolean onTap(PassengerRecordRowTag passengerRecordRowTag) {
+		protected boolean onTap() {
+			PassengerRecordRowTag passengerRecordRowTag = (PassengerRecordRowTag)passengerRecordRowView.getTag();
+
 			PassengerRecord passengerRecord = passengerRecordRowTag.passengerRecord;
 			OperationSchedule operationSchedule = passengerRecordRowTag.operationSchedule;
 
