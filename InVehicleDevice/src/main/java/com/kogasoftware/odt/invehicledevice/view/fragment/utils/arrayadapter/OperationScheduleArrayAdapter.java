@@ -62,23 +62,22 @@ public class OperationScheduleArrayAdapter
 	}
 
 	protected final OnTouchListener onOperationScheduleTouchListener = new View.OnTouchListener() {
-		private final Class<OperationSchedule> rowClass = OperationSchedule.class;
 
 		@Override
 		public boolean onTouch(View view, MotionEvent event) {
-			Object tag = view.getTag();
-			if (rowClass.isInstance(tag)) {
-				return onTouch(view, event, rowClass.cast(tag));
+			Object operationSchedule = view.getTag();
+			if (OperationSchedule.class.isInstance(operationSchedule)) {
+				return onTouch(view, event, OperationSchedule.class.cast(operationSchedule));
 			} else {
-				Log.e(TAG, "\"" + view + "\".getTag() (" + tag
-								+ ") is not instanceof " + rowClass);
+				Log.e(TAG, "\"" + view + "\".getTag() (" + operationSchedule
+								+ ") is not instanceof " + OperationSchedule.class);
 			}
 			return false;
 		}
 
-		private boolean onTouch(View view, MotionEvent event, OperationSchedule tag) {
+		private boolean onTouch(View view, MotionEvent event, OperationSchedule operationSchedule) {
 			if (event.getAction() == MotionEvent.ACTION_DOWN) {
-				view.setBackgroundColor(getSelectedColor(tag));
+				view.setBackgroundColor(getSelectedColor(operationSchedule));
 				return true;
 			}
 
@@ -89,8 +88,8 @@ public class OperationScheduleArrayAdapter
 
 			Boolean result = event.getAction() == MotionEvent.ACTION_CANCEL
 							? true
-							: onTap(view, event, tag);
-			view.setBackgroundColor(getDefaultColor(tag));
+							: onTap(view, event, operationSchedule);
+			view.setBackgroundColor(getDefaultColor(operationSchedule));
 			return result;
 		}
 
@@ -116,7 +115,7 @@ public class OperationScheduleArrayAdapter
 			return false;
 		}
 
-		protected int getSelectedColor(OperationSchedule tag) {
+		protected int getSelectedColor(OperationSchedule operationSchedule) {
 			return SELECTED_COLOR;
 		}
 
@@ -143,23 +142,22 @@ public class OperationScheduleArrayAdapter
 	}
 
 	protected final OnTouchListener onPassengerRecordTouchListener = new View.OnTouchListener() {
-		private final Class<PassengerRecordRowTag> rowClass = PassengerRecordRowTag.class;
 
 		@Override
 		public boolean onTouch(View view, MotionEvent event) {
-			Object tag = view.getTag();
-			if (rowClass.isInstance(tag)) {
-				return onTouch(view, event, rowClass.cast(tag));
+			Object passengerRecordRowTag = view.getTag();
+			if (PassengerRecordRowTag.class.isInstance(passengerRecordRowTag)) {
+				return onTouch(view, event, PassengerRecordRowTag.class.cast(passengerRecordRowTag));
 			} else {
-				Log.e(TAG, "\"" + view + "\".getTag() (" + tag
-								+ ") is not instanceof " + rowClass);
+				Log.e(TAG, "\"" + view + "\".getTag() (" + passengerRecordRowTag
+								+ ") is not instanceof " + PassengerRecordRowTag.class);
 			}
 			return false;
 		}
 
-		private boolean onTouch(View view, MotionEvent event, PassengerRecordRowTag tag) {
+		private boolean onTouch(View view, MotionEvent event, PassengerRecordRowTag passengerRecordRowTag) {
 			if (event.getAction() == MotionEvent.ACTION_DOWN) {
-				view.setBackgroundColor(getSelectedColor(tag));
+				view.setBackgroundColor(getSelectedColor(passengerRecordRowTag));
 				return true;
 			}
 
@@ -170,8 +168,8 @@ public class OperationScheduleArrayAdapter
 
 			Boolean result = event.getAction() == MotionEvent.ACTION_CANCEL
 							? true
-							: onTap(view, event, tag);
-			view.setBackgroundColor(getDefaultColor(tag));
+							: onTap(view, event, passengerRecordRowTag);
+			view.setBackgroundColor(getDefaultColor(passengerRecordRowTag));
 			return result;
 		}
 
