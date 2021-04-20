@@ -87,6 +87,8 @@ public class OperationScheduleArrayAdapter
 			} else {
 				Boolean result = currentEvent.getAction() == MotionEvent.ACTION_CANCEL ? true : onTap();
 				operationScheduleRowView.setBackgroundColor(getOperationScheduleRowNormalColor(operationScheduleRowView));
+				operationScheduleRowView.findViewById(R.id.check_mark_text_view)
+								.setVisibility(getOperationScheduleRowCheckMarkCode(operationScheduleRowView));
 
 				return result;
 			}
@@ -136,6 +138,16 @@ public class OperationScheduleArrayAdapter
 			return NOT_YET_DEPARTED_COLOR;
 		} else {
 			return DEPARTED_COLOR;
+		}
+	}
+
+	private int getOperationScheduleRowCheckMarkCode(View operationScheduleRowView) {
+		OperationSchedule operationSchedule = (OperationSchedule)operationScheduleRowView.getTag();
+
+		if (operationSchedule.departedAt == null) {
+			return View.INVISIBLE;
+        } else {
+			return View.VISIBLE;
 		}
 	}
 
