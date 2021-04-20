@@ -31,7 +31,6 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
@@ -164,7 +163,7 @@ public class OperationScheduleArrayAdapter
 			PassengerRecord passengerRecord = passengerRecordRowTag.passengerRecord;
 			OperationSchedule operationSchedule = passengerRecordRowTag.operationSchedule;
 
-			int defaultChargeCnt = ((ArrayList)(((InVehicleDeviceActivity)getContext()).defaultCharges)).size();
+			int defaultChargeCnt = (((InVehicleDeviceActivity)getContext()).defaultCharges).size();
 
 			// 料金設定ページに遷移するパターン。他のケースと動きが大きく異なるのでこのパターンだけ別扱いにしている。
 			// HACK: その他のパターンも整理し直して、シンプルに直すべき。
@@ -276,12 +275,12 @@ public class OperationScheduleArrayAdapter
 	private void setOperationScheduleRowView(int position, View convertView) {
 	    OperationSchedule operationSchedule = getItem(position);
 
-		Button mapButton = (Button) convertView.findViewById(R.id.operation_list_map_button);
+		Button mapButton = convertView.findViewById(R.id.operation_list_map_button);
 		mapButton.setTag(operationSchedule);
 		mapButton.setOnClickListener(onMapButtonClickListener);
 
-		TextView platformNameView = (TextView) convertView.findViewById(R.id.platform_name);
-		TextView platformAddressView = (TextView) convertView.findViewById(R.id.platform_address);
+		TextView platformNameView = convertView.findViewById(R.id.platform_name);
+		TextView platformAddressView = convertView.findViewById(R.id.platform_address);
 		platformNameView.setText(operationSchedule.name);
 		platformAddressView.setText(operationSchedule.address);
 
@@ -289,8 +288,8 @@ public class OperationScheduleArrayAdapter
 			platformAddressView.setText("(住所登録なし)");
 		}
 
-		TextView arrivalEstimateTextView = (TextView) convertView.findViewById(R.id.operation_schedule_arrival_estimate_text_view);
-		TextView departureEstimateTextView = (TextView) convertView.findViewById(R.id.operation_schedule_departure_estimate_text_view);
+		TextView arrivalEstimateTextView = convertView.findViewById(R.id.operation_schedule_arrival_estimate_text_view);
+		TextView departureEstimateTextView = convertView.findViewById(R.id.operation_schedule_departure_estimate_text_view);
 
 		arrivalEstimateTextView.setText("");
 		departureEstimateTextView.setText("");
@@ -301,7 +300,7 @@ public class OperationScheduleArrayAdapter
 			departureEstimateTextView.setText(operationSchedule.departureEstimate.toString(DATE_TIME_FORMATTER) + " 発");
 		}
 
-		TextView checkMarkTextView = (TextView) convertView.findViewById(R.id.check_mark_text_view);
+		TextView checkMarkTextView = convertView.findViewById(R.id.check_mark_text_view);
 		if (operationSchedule.departedAt == null) {
 			convertView.setBackgroundColor(NOT_YET_DEPARTED_COLOR);
 			checkMarkTextView.setVisibility(View.INVISIBLE);
@@ -314,7 +313,7 @@ public class OperationScheduleArrayAdapter
 	}
 
 	private void setPassengerRecordRowViews(View convertView, OperationSchedule operationSchedule) {
-		ViewGroup passengerRecordsViewGroup = (ViewGroup) convertView.findViewById(R.id.operation_list_passenger_records);
+		ViewGroup passengerRecordsViewGroup = convertView.findViewById(R.id.operation_list_passenger_records);
 		passengerRecordsViewGroup.removeAllViews();
 		passengerRecordsViewGroup.setVisibility(showPassengerRecords	? View.VISIBLE : View.GONE);
 
@@ -333,11 +332,11 @@ public class OperationScheduleArrayAdapter
 			}
 		}
 
-		TextView getOnPassengerCountTextView = (TextView) convertView.findViewById(R.id.operation_schedule_get_on_passenger_count_text_view);
+		TextView getOnPassengerCountTextView = convertView.findViewById(R.id.operation_schedule_get_on_passenger_count_text_view);
 		getOnPassengerCountTextView.setText("乗" + String.format("%3d", getOnPassengerCount) + "名");
 		getOnPassengerCountTextView.setVisibility(getOnPassengerCount > 0 ? View.VISIBLE : View.INVISIBLE);
 
-		TextView getOffPassengerCountTextView = (TextView) convertView.findViewById(R.id.operation_schedule_get_off_passenger_count_text_view);
+		TextView getOffPassengerCountTextView = convertView.findViewById(R.id.operation_schedule_get_off_passenger_count_text_view);
 		getOffPassengerCountTextView.setText("降" + String.format("%3d", getOffPassengerCount) + "名");
 		getOffPassengerCountTextView.setVisibility(getOffPassengerCount > 0 ? View.VISIBLE : View.INVISIBLE);
 	}
@@ -349,11 +348,11 @@ public class OperationScheduleArrayAdapter
 		row.setBackgroundColor(NOT_YET_DEPARTED_COLOR);
 
 		// 乗降画像
-		ImageView selectMarkImageView = (ImageView) row.findViewById(R.id.select_mark_image_view);
+		ImageView selectMarkImageView = row.findViewById(R.id.select_mark_image_view);
 		selectMarkImageView.setImageResource(getOn ? R.drawable.get_on : R.drawable.get_off);
 
 		// ユーザー名
-		TextView userNameView = (TextView) row.findViewById(R.id.user_name);
+		TextView userNameView = row.findViewById(R.id.user_name);
 		userNameView.setText(passengerRecord.getDisplayName());
 
 		// 行タッチ時の動作を定義
@@ -362,23 +361,23 @@ public class OperationScheduleArrayAdapter
 		row.setOnTouchListener(onPassengerRecordTouchListener);
 
 		//乗降人数
-		TextView countView = (TextView) row.findViewById(R.id.passenger_count_text_view);
+		TextView countView = row.findViewById(R.id.passenger_count_text_view);
 		countView.setText(passengerRecord.passengerCount + "名");
 
 		// メモボタン
-		Button userMemoButton = (Button) row.findViewById(R.id.user_memo_button);
+		Button userMemoButton = row.findViewById(R.id.user_memo_button);
 		userMemoButton.setTag(passengerRecord);
 		userMemoButton.setOnClickListener(onUserMemoButtonClickListener);
 
 		// 料金系
-		TextView paidChargeView = (TextView) row.findViewById(R.id.paid_charge);
-		TextView expectedChargeView = (TextView) row.findViewById(R.id.expected_charge);
+		TextView paidChargeView = row.findViewById(R.id.paid_charge);
+		TextView expectedChargeView = row.findViewById(R.id.expected_charge);
 		if (!getOn) {
-			View passengerCountSpaceView = (View) row.findViewById(R.id.passenger_count_space_view);
+			View passengerCountSpaceView = row.findViewById(R.id.passenger_count_space_view);
 			passengerCountSpaceView.setVisibility(View.GONE);
 		}
 
-		int defaultChargeCnt = ((ArrayList) (((InVehicleDeviceActivity) getContext()).defaultCharges)).size();
+		int defaultChargeCnt = (((InVehicleDeviceActivity) getContext()).defaultCharges).size();
 		if (defaultChargeCnt > 0) {
 			paidChargeView.setVisibility(View.INVISIBLE);
 			expectedChargeView.setVisibility(View.INVISIBLE);
@@ -407,7 +406,7 @@ public class OperationScheduleArrayAdapter
         row.setBackgroundColor(getPassengerRecordRowNormalColor(tag));
 
 		// 乗車行に到着乗降場名を追加
-		TextView arrivalPlatformView = (TextView) row.findViewById(R.id.user_arrival_platform_name);
+		TextView arrivalPlatformView = row.findViewById(R.id.user_arrival_platform_name);
 		arrivalPlatformView.setVisibility(View.GONE);
 		if (getOn) {
 			for (Integer i = 0; i < getCount(); i++) {
