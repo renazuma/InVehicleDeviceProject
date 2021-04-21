@@ -101,7 +101,7 @@ public class OperationScheduleArrayAdapter
 		protected boolean onTap() {
 			final OperationSchedule operationSchedule = (OperationSchedule)operationScheduleRowView.getTag();
 
-			if (operationSchedule.departedAt == null) {
+			if (isNotDeparted()) {
 				DateTime now = DateTime.now();
 				operationSchedule.arrivedAt = now;
 				operationSchedule.departedAt = now;
@@ -123,6 +123,10 @@ public class OperationScheduleArrayAdapter
 			setOperationScheduleRowBackground(operationScheduleRowView);
 
 			return false;
+		}
+
+		private boolean isNotDeparted() {
+			return OperationSchedule.class.cast(operationScheduleRowView.getTag()).departedAt != null;
 		}
 	};
 
@@ -152,6 +156,18 @@ public class OperationScheduleArrayAdapter
 			this.passengerRecord = passengerRecord;
 			this.operationSchedule = operationSchedule;
 			this.getOn = getOn;
+		}
+
+		public boolean isGetOnEvent() {
+			return getOn;
+		}
+
+		public boolean isGotOn() {
+			return passengerRecord.getOnTime != null;
+		}
+
+		public boolean isGotOff() {
+			return passengerRecord.getOffTime != null;
 		}
 	}
 
@@ -211,8 +227,8 @@ public class OperationScheduleArrayAdapter
 
 			DateTime now = DateTime.now();
 
-			if (passengerRecordRowTag.getOn) {
-				if (passengerRecord.getOnTime == null) {
+			if (passengerRecordRowTag.isGetOnEvent()) {
+				if (!passengerRecordRowTag.isGotOn()) {
 					passengerRecord.getOnTime = now;
 				} else {
 					passengerRecord.getOnTime = null;
@@ -220,8 +236,8 @@ public class OperationScheduleArrayAdapter
 					passengerRecord.paidCharge = null;
 				}
 			} else {
-				if (passengerRecord.getOffTime == null) {
-					if (passengerRecord.getOnTime == null) {
+				if (!passengerRecordRowTag.isGotOff()) {
+					if (!passengerRecordRowTag.isGotOn()) {
 						passengerRecord.getOnTime = now;
 					}
 					passengerRecord.getOffTime = now;
