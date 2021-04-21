@@ -81,7 +81,14 @@ public class OperationListFragment extends Fragment {
 		@Override
 		public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 			Boolean scroll = (adapter.getCount() == 0);
+
+			Cursor passengerRecordsCursor = getActivity()
+							.getContentResolver()
+							.query(PassengerRecord.CONTENT.URI, null, null, null, null);
+
+			adapter.setPassengerRecords(PassengerRecord.getAll(passengerRecordsCursor));
 			adapter.setOperationSchedules(OperationSchedule.getAll(cursor));
+
 			if (scroll) {
 				scrollToUnhandledOperationSchedule();
 			}
@@ -101,7 +108,12 @@ public class OperationListFragment extends Fragment {
 
 		@Override
 		public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+			Cursor operationScheduleCursor = getActivity()
+							.getContentResolver()
+							.query(OperationSchedule.CONTENT.URI, null, null, null, null);
+
 			adapter.setPassengerRecords(PassengerRecord.getAll(cursor));
+			adapter.setOperationSchedules(OperationSchedule.getAll(operationScheduleCursor));
 		}
 
 		@Override
