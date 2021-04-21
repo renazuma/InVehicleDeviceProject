@@ -186,7 +186,7 @@ public class OperationListFragment extends Fragment {
 		// 未運行の運行スケジュールまでスクロールする
 		Integer count = adapter.getCount();
 		for (Integer i = 0; i < count; ++i) {
-			if (adapter.getItem(i).departedAt == null) {
+			if (!adapter.isDeparted(i)) {
 				listView.setSelection(i);
 				if (i >= 1) {
 					listView.scrollBy(0, -1);

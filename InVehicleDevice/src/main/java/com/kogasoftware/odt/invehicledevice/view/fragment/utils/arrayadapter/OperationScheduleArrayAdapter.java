@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
@@ -39,7 +40,7 @@ import java.util.TreeSet;
  * 運行予定一覧
  */
 public class OperationScheduleArrayAdapter
-		extends	ArrayAdapter<OperationSchedule> {
+		extends	ArrayAdapter<List> {
 	private static final String TAG = OperationScheduleArrayAdapter.class.getSimpleName();
 	private static final Integer SELECTING_COLOR = Color.parseColor("#D5E9F6");
 	private static final Integer DEPARTED_COLOR = Color.LTGRAY;
@@ -48,6 +49,7 @@ public class OperationScheduleArrayAdapter
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormat.forPattern("HH:mm");
 	private final LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	private final TreeSet<PassengerRecord> passengerRecords = new TreeSet<PassengerRecord>(PassengerRecord.DEFAULT_COMPARATOR);
+	private List<OperationSchedule> originalOperationSchedules;
 	private final ContentResolver contentResolver;
 	private Boolean showPassengerRecords = false;
 
@@ -55,7 +57,7 @@ public class OperationScheduleArrayAdapter
 
 	private Fragment fragment;
 	public OperationScheduleArrayAdapter(Fragment fragment) {
-		super(fragment.getActivity(), RESOURCE_ID, new LinkedList<OperationSchedule>());
+		super(fragment.getActivity(), RESOURCE_ID, new LinkedList<List>());
 		this.fragment = fragment;
 		this.contentResolver = fragment.getActivity().getContentResolver();
 	}
@@ -69,11 +71,11 @@ public class OperationScheduleArrayAdapter
 			this.operationScheduleRowView = view;
 			this.currentEvent = event;
 
-			Object operationSchedule = operationScheduleRowView.getTag();
-			if (OperationSchedule.class.isInstance(operationSchedule)) {
+			Object operationSchedules = operationScheduleRowView.getTag();
+			if (List.class.isInstance(operationSchedules)) {
 				return onTouch();
 			} else {
-				Log.e(TAG, "\"" + view + "\".getTag() (" + operationSchedule + ") is not instanceof " + OperationSchedule.class);
+				Log.e(TAG, "\"" + view + "\".getTag() (" + operationSchedules + ") is not instanceof " + List.class);
 				return false;
 			}
 		}
@@ -99,34 +101,39 @@ public class OperationScheduleArrayAdapter
 		}
 
 		protected boolean onTap() {
-			final OperationSchedule operationSchedule = (OperationSchedule)operationScheduleRowView.getTag();
+			final List<OperationSchedule> operationSchedules = (List)operationScheduleRowView.getTag();
 
-			if (isNotDeparted()) {
-				DateTime now = DateTime.now();
-				operationSchedule.arrivedAt = now;
-				operationSchedule.departedAt = now;
-			} else {
-				operationSchedule.arrivedAt = null;
-				operationSchedule.departedAt = null;
+			DateTime targetDateTime = null;
+			if (!isDeparted(operationScheduleRowView)) {
+				targetDateTime = DateTime.now();
 			}
 
-			final ContentValues values = operationSchedule.toContentValues();
+			for (OperationSchedule operationSchedule : operationSchedules) {
+				operationSchedule.arrivedAt = targetDateTime;
+				operationSchedule.departedAt = targetDateTime;
+			}
 
-			new Thread() {
+			Thread tt = new Thread() {
 				@Override
 				public void run() {
-					contentResolver.insert(OperationSchedule.CONTENT.URI, values);
+					for (OperationSchedule operationSchedule : operationSchedules) {
+						ContentValues values = operationSchedule.toContentValues();
+						contentResolver.insert(OperationSchedule.CONTENT.URI, values);
+					}
 				}
-			}.start();
+			};
+
+			tt.start();
+			try {
+				tt.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 
 			// insertを検知して画面更新はされるが、タップ時と若干のラグが出るため、手動で対象行だけの修正を入れている。
 			setOperationScheduleRowBackground(operationScheduleRowView);
 
 			return false;
-		}
-
-		private boolean isNotDeparted() {
-			return OperationSchedule.class.cast(operationScheduleRowView.getTag()).departedAt != null;
 		}
 	};
 
@@ -135,16 +142,33 @@ public class OperationScheduleArrayAdapter
 	}
 
 	private void setOperationScheduleRowBackground(View operationScheduleRowView) {
-		OperationSchedule operationSchedule = (OperationSchedule)operationScheduleRowView.getTag();
 		TextView checkMarkTextView = operationScheduleRowView.findViewById(R.id.check_mark_text_view);
 
-		if (operationSchedule.departedAt == null) {
+		if (!isDeparted(operationScheduleRowView)) {
 		    operationScheduleRowView.setBackgroundColor(NOT_YET_DEPARTED_COLOR);
 			checkMarkTextView.setVisibility(View.INVISIBLE);
 		} else {
 			operationScheduleRowView.setBackgroundColor(DEPARTED_COLOR);
 			checkMarkTextView.setVisibility(View.VISIBLE);
 		}
+	}
+
+	private boolean isDeparted(View operationScheduleRowView) {
+		return isDeparted((List<OperationSchedule>)(operationScheduleRowView.getTag()));
+	}
+
+	public boolean isDeparted(int position) {
+		return isDeparted(getItem(position));
+	}
+
+	private boolean isDeparted(List<OperationSchedule> operationSchedules) {
+		boolean isDeparted = true;
+		for (OperationSchedule operationSchedule : operationSchedules) {
+			if (operationSchedule.departedAt == null) {
+				isDeparted = false;
+			}
+		}
+		return isDeparted;
 	}
 
 	static class PassengerRecordRowTag {
@@ -326,23 +350,25 @@ public class OperationScheduleArrayAdapter
 		}
 
 		setOperationScheduleRowView(position, convertView);
-		setPassengerRecordRowViews(convertView, getItem(position));
+		setPassengerRecordRowViews(position, convertView);
 
 		return convertView;
 	}
 
 	private void setOperationScheduleRowView(int position, View convertView) {
-	    OperationSchedule operationSchedule = getItem(position);
-		convertView.setTag(operationSchedule);
+	    List<OperationSchedule> operationSchedules = getItem(position);
+	    OperationSchedule representativeOS = OperationSchedule.class.cast(operationSchedules.get(0));
+
+		convertView.setTag(operationSchedules);
 
 		Button mapButton = convertView.findViewById(R.id.operation_list_map_button);
-		mapButton.setTag(operationSchedule);
+		mapButton.setTag(representativeOS);
 		mapButton.setOnClickListener(onMapButtonClickListener);
 
 		TextView platformNameView = convertView.findViewById(R.id.platform_name);
 		TextView platformAddressView = convertView.findViewById(R.id.platform_address);
-		platformNameView.setText(operationSchedule.name);
-		platformAddressView.setText(operationSchedule.address);
+		platformNameView.setText(representativeOS.name);
+		platformAddressView.setText(representativeOS.address);
 
 		if (StringUtils.isBlank(platformAddressView.getText())) {
 			platformAddressView.setText("(住所登録なし)");
@@ -354,10 +380,24 @@ public class OperationScheduleArrayAdapter
 		arrivalEstimateTextView.setText("");
 		departureEstimateTextView.setText("");
 
-		arrivalEstimateTextView.setText(operationSchedule.arrivalEstimate.toString(DATE_TIME_FORMATTER) + " 着");
+		if (isArrivalEstimateViewEnable(position)) {
+			OperationSchedule arrivalOS = null;
+			for (OperationSchedule operationSchedule : operationSchedules) {
+				if (null == arrivalOS || arrivalOS.departureEstimate.isAfter(operationSchedule.departureEstimate)) {
+					arrivalOS = operationSchedule;
+				}
+			}
+			arrivalEstimateTextView.setText(arrivalOS.arrivalEstimate.toString(DATE_TIME_FORMATTER) + "着");
+		}
 
-		if (getCount() != position + 1) {
-			departureEstimateTextView.setText(operationSchedule.departureEstimate.toString(DATE_TIME_FORMATTER) + " 発");
+		if (isDepartureEstimateViewEnable(position)) {
+		    OperationSchedule departureOS = null;
+		    for (OperationSchedule operationSchedule : operationSchedules) {
+		    	if (null == departureOS || departureOS.departureEstimate.isBefore(operationSchedule.departureEstimate)) {
+		    		departureOS = operationSchedule;
+				}
+			}
+		    departureEstimateTextView.setText(departureOS.departureEstimate.toString(DATE_TIME_FORMATTER) + "発");
 		}
 
 		setOperationScheduleRowBackground(convertView);
@@ -365,22 +405,42 @@ public class OperationScheduleArrayAdapter
 		convertView.setOnTouchListener(onOperationScheduleTouchListener);
 	}
 
-	private void setPassengerRecordRowViews(View convertView, OperationSchedule operationSchedule) {
+	private boolean isArrivalEstimateViewEnable(int position) {
+		if (position == 0) { return true; }
+
+		OperationSchedule previousOS = OperationSchedule.class.cast(List.class.cast(getItem(position -1)).get(0));
+		OperationSchedule currentOS = OperationSchedule.class.cast(List.class.cast(getItem(position)).get(0));
+
+		return currentOS.platformId.equals(previousOS.platformId) ? false : true;
+	}
+
+	private boolean isDepartureEstimateViewEnable(int position) {
+		if (position == getCount() - 1) { return false; }
+
+		OperationSchedule currentOS = OperationSchedule.class.cast(List.class.cast(getItem(position)).get(0));
+		OperationSchedule nextOS = OperationSchedule.class.cast(List.class.cast(getItem(position + 1)).get(0));
+
+		return currentOS.platformId.equals(nextOS.platformId) ? false : true;
+	}
+
+	private void setPassengerRecordRowViews(int position, View convertView) {
 		ViewGroup passengerRecordsViewGroup = convertView.findViewById(R.id.operation_list_passenger_records);
 		passengerRecordsViewGroup.removeAllViews();
 		passengerRecordsViewGroup.setVisibility(showPassengerRecords	? View.VISIBLE : View.GONE);
 
 		Long getOffPassengerCount = 0L;
 		Long getOnPassengerCount = 0L;
-		for (PassengerRecord passengerRecord : passengerRecords) {
-			if (showPassengerRecords) {
-				if (operationSchedule.id.equals(passengerRecord.arrivalScheduleId)) {
-					passengerRecordsViewGroup.addView(createPassengerRecordRow(operationSchedule, passengerRecord, false));
-					getOffPassengerCount += passengerRecord.passengerCount;
-				}
-				if (operationSchedule.id.equals(passengerRecord.departureScheduleId)) {
-					passengerRecordsViewGroup.addView(createPassengerRecordRow(operationSchedule, passengerRecord, true));
-					getOnPassengerCount += passengerRecord.passengerCount;
+
+		if (showPassengerRecords) {
+			for (PassengerRecord passengerRecord : passengerRecords) {
+			    for (OperationSchedule operationSchedule : (List<OperationSchedule>)getItem(position)) {
+					if (passengerRecord.arrivalScheduleId.equals(operationSchedule.id)) {
+						passengerRecordsViewGroup.addView(createPassengerRecordRow(operationSchedule, passengerRecord, false));
+						getOffPassengerCount += passengerRecord.passengerCount;
+					} else if (passengerRecord.departureScheduleId.equals(operationSchedule.id)) {
+						passengerRecordsViewGroup.addView(createPassengerRecordRow(operationSchedule, passengerRecord, true));
+						getOnPassengerCount += passengerRecord.passengerCount;
+					}
 				}
 			}
 		}
@@ -461,16 +521,25 @@ public class OperationScheduleArrayAdapter
 		TextView arrivalPlatformView = row.findViewById(R.id.user_arrival_platform_name);
 		arrivalPlatformView.setVisibility(View.GONE);
 		if (getOn) {
-			for (Integer i = 0; i < getCount(); i++) {
-				OperationSchedule arrivalOperationSchedule = getItem(i);
-				if (arrivalOperationSchedule.id.equals(passengerRecord.arrivalScheduleId)) {
-					arrivalPlatformView.setVisibility(View.VISIBLE);
-					arrivalPlatformView.setText("⇨"	+ arrivalOperationSchedule.name);
-				}
+		    OperationSchedule arrivalOperationSchedule = getOperationScheduleFromId(passengerRecord.arrivalScheduleId.longValue());
+		    if ( null != arrivalOperationSchedule) {
+		    	arrivalPlatformView.setVisibility(View.VISIBLE);
+		    	arrivalPlatformView.setText("⇨"	+ arrivalOperationSchedule.name);
 			}
 		}
 
 		return row;
+	}
+
+	private OperationSchedule getOperationScheduleFromId(Long requestId) {
+		OperationSchedule operationSchedule = null;
+
+		for (OperationSchedule tmpOperationSchedule : originalOperationSchedules) {
+			if (tmpOperationSchedule.id.equals(requestId)) {
+				operationSchedule = tmpOperationSchedule;
+			}
+		}
+		return operationSchedule;
 	}
 
 	public void showPassengerRecords() {
@@ -484,9 +553,58 @@ public class OperationScheduleArrayAdapter
 	}
 
 	public void setOperationSchedules(List<OperationSchedule> OperationSchedules) {
+		originalOperationSchedules = OperationSchedules;
 		clear();
-		addAll(OperationSchedules);
+		addAll(getOperationScheduleListChunk(originalOperationSchedules));
 		notifyDataSetChanged();
+	}
+
+	private List<List> getOperationScheduleListChunk(List<OperationSchedule> operationSchedules) {
+		List<List> operationScheduleListChunk = Lists.newLinkedList();
+
+		for (List<OperationSchedule> samePlatformOperationSchedules : getOperationScheduleListSamePlatformChunk(operationSchedules)) {
+		    List<OperationSchedule> arrivalOperationSchedules = Lists.newArrayList();
+			List<OperationSchedule> departureOperationSchedules = Lists.newArrayList();
+
+			for (OperationSchedule operationSchedule : samePlatformOperationSchedules) {
+				for (PassengerRecord passengerRecord : passengerRecords) {
+					if (passengerRecord.departureScheduleId.equals(operationSchedule.id) && !departureOperationSchedules.contains((operationSchedule))) {
+						departureOperationSchedules.add(operationSchedule);
+					} else if (passengerRecord.arrivalScheduleId.equals(operationSchedule.id) && !arrivalOperationSchedules.contains((operationSchedule))) {
+						arrivalOperationSchedules.add(operationSchedule);
+					}
+				}
+			}
+
+			if (arrivalOperationSchedules.size() > 0) {
+			 	operationScheduleListChunk.add(arrivalOperationSchedules);
+			}
+			if (departureOperationSchedules.size() > 0) {
+			   	operationScheduleListChunk.add(departureOperationSchedules);
+			}
+		}
+		return operationScheduleListChunk;
+	}
+
+	private LinkedList<List> getOperationScheduleListSamePlatformChunk(List<OperationSchedule> operationSchedules) {
+
+		boolean first = true;
+		OperationSchedule previousOS = null;
+
+		LinkedList<List> platformOrderOperationScheduleLists = Lists.newLinkedList();
+
+		for (OperationSchedule currentOS : operationSchedules) {
+			if (first || !previousOS.platformId.equals(currentOS.platformId)) {
+			    List<OperationSchedule> samePlatformOperationSchedules = Lists.newArrayList();
+			    samePlatformOperationSchedules.add(currentOS);
+			    platformOrderOperationScheduleLists.add(samePlatformOperationSchedules);
+			    first = false;}
+			 else {
+			 	platformOrderOperationScheduleLists.getLast().add(currentOS);
+			}
+			 previousOS = currentOS;
+		}
+		return platformOrderOperationScheduleLists;
 	}
 
 	public void setPassengerRecords(List<PassengerRecord> newPassengerRecords) {
