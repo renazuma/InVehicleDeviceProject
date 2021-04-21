@@ -552,10 +552,14 @@ public class OperationScheduleArrayAdapter
 		notifyDataSetChanged();
 	}
 
-	public void setOperationSchedules(List<OperationSchedule> OperationSchedules) {
-		originalOperationSchedules = OperationSchedules;
+	public void setData(List<OperationSchedule> newOperationSchedules, List<PassengerRecord> newPassengerRecords) {
+		originalOperationSchedules = newOperationSchedules;
+
+		passengerRecords.clear();
+		passengerRecords.addAll(newPassengerRecords);
 		clear();
 		addAll(getOperationScheduleListChunk(originalOperationSchedules));
+
 		notifyDataSetChanged();
 	}
 
@@ -605,11 +609,5 @@ public class OperationScheduleArrayAdapter
 			 previousOS = currentOS;
 		}
 		return platformOrderOperationScheduleLists;
-	}
-
-	public void setPassengerRecords(List<PassengerRecord> newPassengerRecords) {
-		passengerRecords.clear();
-		passengerRecords.addAll(newPassengerRecords);
-		notifyDataSetChanged();
 	}
 }

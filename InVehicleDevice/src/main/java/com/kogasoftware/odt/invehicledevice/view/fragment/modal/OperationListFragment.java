@@ -86,8 +86,7 @@ public class OperationListFragment extends Fragment {
 							.getContentResolver()
 							.query(PassengerRecord.CONTENT.URI, null, null, null, null);
 
-			adapter.setPassengerRecords(PassengerRecord.getAll(passengerRecordsCursor));
-			adapter.setOperationSchedules(OperationSchedule.getAll(cursor));
+			adapter.setData(OperationSchedule.getAll(cursor), PassengerRecord.getAll(passengerRecordsCursor));
 
 			if (scroll) {
 				scrollToUnhandledOperationSchedule();
@@ -112,8 +111,7 @@ public class OperationListFragment extends Fragment {
 							.getContentResolver()
 							.query(OperationSchedule.CONTENT.URI, null, null, null, null);
 
-			adapter.setPassengerRecords(PassengerRecord.getAll(cursor));
-			adapter.setOperationSchedules(OperationSchedule.getAll(operationScheduleCursor));
+			adapter.setData(OperationSchedule.getAll(operationScheduleCursor), PassengerRecord.getAll(cursor));
 		}
 
 		@Override
