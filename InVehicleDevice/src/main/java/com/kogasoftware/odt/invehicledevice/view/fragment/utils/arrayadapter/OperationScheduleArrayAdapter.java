@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Color;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,6 +33,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
@@ -380,35 +382,68 @@ public class OperationScheduleArrayAdapter
 		}
 
 		TextView arrivalEstimateTextView = convertView.findViewById(R.id.operation_schedule_arrival_estimate_text_view);
-		TextView departureEstimateTextView = convertView.findViewById(R.id.operation_schedule_departure_estimate_text_view);
-
 		arrivalEstimateTextView.setText("");
-		departureEstimateTextView.setText("");
 
 		if (isArrivalEstimateViewEnable(position)) {
-			OperationSchedule arrivalOS = null;
-			for (OperationSchedule operationSchedule : operationSchedules) {
-				if (null == arrivalOS || arrivalOS.departureEstimate.isAfter(operationSchedule.departureEstimate)) {
-					arrivalOS = operationSchedule;
-				}
-			}
-			arrivalEstimateTextView.setText(arrivalOS.arrivalEstimate.toString(DATE_TIME_FORMATTER) + "着");
+			arrivalEstimateTextView.setText(getArrivalEstimateForView(position, operationSchedules));
 		}
 
+		TextView departureEstimateTextView = convertView.findViewById(R.id.operation_schedule_departure_estimate_text_view);
+		departureEstimateTextView.setText("");
+
 		if (isDepartureEstimateViewEnable(position)) {
-		    OperationSchedule departureOS = null;
-		    for (OperationSchedule operationSchedule : operationSchedules) {
-		    	if (null == departureOS || departureOS.departureEstimate.isBefore(operationSchedule.departureEstimate)) {
-		    		departureOS = operationSchedule;
-				}
-			}
-		    departureEstimateTextView.setText(departureOS.departureEstimate.toString(DATE_TIME_FORMATTER) + "発");
+			departureEstimateTextView.setText(getDepartureEstimateForView(position, operationSchedules));
 		}
 
 		setOperationScheduleRowBackground(convertView);
 
 		convertView.setOnTouchListener(onOperationScheduleTouchListener);
 	}
+
+	@Nullable
+	private String getArrivalEstimateForView(int position, List<OperationSchedule> operationSchedules) {
+		List<OperationSchedule> targetOperationSchedules = new ArrayList(operationSchedules);
+		List<OperationSchedule> nextOperationSchedules = Lists.newArrayList();
+
+		if (position != getCount() - 1) {
+			nextOperationSchedules = getItem(position + 1);
+		}
+
+		if (!nextOperationSchedules.isEmpty() && nextOperationSchedules.get(0).platformId.equals(operationSchedules.get(0).platformId)) {
+			targetOperationSchedules.addAll(nextOperationSchedules);
+		}
+
+		OperationSchedule arrivalOS = null;
+		for (OperationSchedule operationSchedule : targetOperationSchedules) {
+			if (null == arrivalOS || arrivalOS.arrivalEstimate.isAfter(operationSchedule.arrivalEstimate)) {
+				arrivalOS = operationSchedule;
+			}
+		}
+		return arrivalOS.arrivalEstimate.toString(DATE_TIME_FORMATTER) + "着";
+	}
+
+	@Nullable
+	private String getDepartureEstimateForView(int position, List<OperationSchedule> operationSchedules) {
+		List<OperationSchedule> targetOperationSchedules = new ArrayList(operationSchedules);
+		List<OperationSchedule> prevOperationSchedules = Lists.newArrayList();
+
+		if (position != 0) {
+			prevOperationSchedules = getItem(position - 1);
+		}
+
+		if (!prevOperationSchedules.isEmpty() && prevOperationSchedules.get(0).platformId.equals(operationSchedules.get(0).platformId)) {
+			targetOperationSchedules.addAll(prevOperationSchedules);
+		}
+
+		OperationSchedule departureOS = null;
+		for (OperationSchedule operationSchedule : targetOperationSchedules) {
+			if (null == departureOS || departureOS.departureEstimate.isBefore(operationSchedule.departureEstimate)) {
+				departureOS = operationSchedule;
+			}
+		}
+		return departureOS.departureEstimate.toString(DATE_TIME_FORMATTER) + "発";
+	}
+
 
 	private boolean isArrivalEstimateViewEnable(int position) {
 		if (position == 0) { return true; }
