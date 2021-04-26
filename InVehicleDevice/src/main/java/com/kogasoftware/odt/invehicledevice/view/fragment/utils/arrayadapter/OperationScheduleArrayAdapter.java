@@ -81,15 +81,20 @@ public class OperationScheduleArrayAdapter
 		}
 
 		private boolean onTouch() {
+		    boolean isEventComplete;
+
 			if (isSelectingEvent()) {
 				setOnOperationScheduleRowSelecting(operationScheduleRowView);
-
-				return true;
+				isEventComplete = true;
 			} else if (isNotTargetEvent()) {
-				return false;
+				isEventComplete = false;
 			} else {
-				return (currentEvent.getAction() == MotionEvent.ACTION_CANCEL ? true : onTap());
+				isEventComplete = currentEvent.getAction() == MotionEvent.ACTION_CANCEL ? true : onTap();
+				// updateを検知して画面更新はされるが、タップ時と若干のラグが出るため、手動で対象行だけの修正を入れている。
+				setOperationScheduleRowBackground(operationScheduleRowView);
 			}
+
+			return isEventComplete;
 		}
 
 		private boolean isSelectingEvent() {
@@ -129,9 +134,6 @@ public class OperationScheduleArrayAdapter
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-
-			// insertを検知して画面更新はされるが、タップ時と若干のラグが出るため、手動で対象行だけの修正を入れている。
-			setOperationScheduleRowBackground(operationScheduleRowView);
 
 			return false;
 		}
@@ -214,14 +216,20 @@ public class OperationScheduleArrayAdapter
 		}
 
 		private boolean onTouch() {
+			boolean isEventComplete;
+
 			if (isSelectingEvent()) {
 				setPassengerRecordsRowSelecting(passengerRecordRowView);
-				return true;
+				isEventComplete = true;
 			} else if (isNotTargetEvent()) {
-				return false;
+				isEventComplete = false;
 			} else {
-				return (currentEvent.getAction() == MotionEvent.ACTION_CANCEL ? true : onTap());
+				isEventComplete = currentEvent.getAction() == MotionEvent.ACTION_CANCEL ? true : onTap();
+				// updateを検知して画面更新はされるが、タップ時と若干のラグが出るため、手動で対象行だけの修正を入れている。
+				setPassengerRecordsRowBackground(passengerRecordRowView);
 			}
+
+			return isEventComplete;
 		}
 
 		private boolean isSelectingEvent() {
@@ -280,9 +288,6 @@ public class OperationScheduleArrayAdapter
 					contentResolver.update(PassengerRecord.CONTENT.URI,	values, where, whereArgs);
 				}
 			}.start();
-
-			// updateを検知して画面更新はされるが、タップ時と若干のラグが出るため、手動で対象行だけの修正を入れている。
-			setPassengerRecordsRowBackground(passengerRecordRowView);
 
 			return false;
 		}
