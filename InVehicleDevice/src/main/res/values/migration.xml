@@ -154,5 +154,8 @@
     <item>
       ALTER TABLE passenger_records ADD expected_charge INTEGER
     </item>
+    <item>
+      ALTER TABLE service_providers ADD car_navigation_app TEXT
+    </item>
   </string-array>
 </resources>
