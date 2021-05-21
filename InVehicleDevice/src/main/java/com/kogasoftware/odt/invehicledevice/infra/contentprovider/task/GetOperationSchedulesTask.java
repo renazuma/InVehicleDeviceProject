@@ -32,7 +32,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 
 /**
@@ -88,6 +91,37 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
 			}
 		}
 
+		// 運行スケジュールをマージする
+		Map<Long, OperationScheduleJson> toMergedOperationSchedule = new HashMap<Long, OperationScheduleJson>();
+		LinkedList<OperationScheduleJson> mergedOperationSchedules = Lists.newLinkedList();
+		if (!operationSchedules.isEmpty()) {
+			Boolean first = true;
+			OperationScheduleJson previous = null;
+			for (OperationScheduleJson current : operationSchedules) {
+				if (first || !current.platform.id.equals(previous.platform.id)) {
+					previous = current;
+					mergedOperationSchedules.add(current);
+					first = false;
+				} else {
+					if (previous.departureEstimate.isBefore(current.departureEstimate)) {
+						previous.departureEstimate = current.departureEstimate;
+					}
+				}
+				toMergedOperationSchedule.put(current.id, previous);
+			}
+		}
+
+		// 予約が参照する運行スケジュールをつなぎかえる
+		for (ReservationJson reservation : reservations) {
+			reservation.departureScheduleId = toMergedOperationSchedule.get(reservation.departureScheduleId).id;
+			reservation.arrivalScheduleId = toMergedOperationSchedule.get(reservation.arrivalScheduleId).id;
+		}
+
+		// 運行実績が参照する運行スケジュールをつなぎかえる
+		for (OperationRecordJson operationRecord : operationRecords) {
+			operationRecord.operationScheduleId = toMergedOperationSchedule.get(operationRecord.operationScheduleId).id;
+		}
+
 		// insert実行
 		try {
 			database.beginTransaction();
@@ -137,7 +171,7 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
 			}
 
 			// operation_schedulesテーブルinsert
-			for (OperationScheduleJson operationSchedule : operationSchedules) {
+			for (OperationScheduleJson operationSchedule : mergedOperationSchedules) {
 				ContentValues values = operationSchedule.toContentValues();
 				// 乗り降り時刻を更新
 				Long arrivedAt = null;
