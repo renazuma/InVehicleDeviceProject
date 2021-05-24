@@ -32,7 +32,7 @@ import java.util.Locale;
  * 停車中画面
  */
 public class PlatformPhaseFragment extends OperationSchedulesSyncFragmentAbstract {
-	public static PlatformPhaseFragment newInstance(LinkedList<OperationSchedule> operationSchedules) {
+	public static PlatformPhaseFragment newInstance() {
 		PlatformPhaseFragment fragment = new PlatformPhaseFragment();
 		return fragment;
 	}

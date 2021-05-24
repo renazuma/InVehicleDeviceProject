@@ -79,7 +79,7 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 		Fragments.showModalFragment(getFragmentManager(), OperationListFragment.newInstance(true), OPERATION_LIST_FRAGMENT_TAG);
 	}
 
-	public void showArrivalCheckFragment(Phase phase, LinkedList<OperationSchedule> operationSchedules, LinkedList<PassengerRecord> passengerRecords) {
+	public void showArrivalCheckFragment(LinkedList<OperationSchedule> operationSchedules, LinkedList<PassengerRecord> passengerRecords) {
 
 		if (!isAdded()) { return; }
 
@@ -150,7 +150,7 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 					@Override
 					public void onClick(View v) {
 						ViewDisabler.disable(v);
-						showArrivalCheckFragment(phase, operationSchedules,	passengerRecords);
+						showArrivalCheckFragment(operationSchedules, passengerRecords);
 					}
 				});
 				break;
