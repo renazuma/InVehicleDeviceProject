@@ -59,6 +59,7 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 			if (!(tag instanceof PassengerRecord)) {
 				Log.e(TAG, "\"" + view + "\".getTag() (" + tag	+ ") is not instanceof PassengerRecord");
 			}
+
 			PassengerRecord passengerRecord = (PassengerRecord) tag;
 
 			int defaultChargeCnt = ((ArrayList)(((InVehicleDeviceActivity)getContext()).defaultCharges)).size();
@@ -110,14 +111,14 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 		public void onClick(View view) {
 			ViewDisabler.disable(view);
 			Object tag = view.getTag();
+
 			if (!(tag instanceof PassengerRecord)) {
-				Log.e(TAG, "\"" + view + "\".getTag() (" + tag
-						+ ") is not instanceof PassengerRecord");
+				Log.e(TAG, "\"" + view + "\".getTag() (" + tag	+ ") is not instanceof PassengerRecord");
 				return;
 			}
+
 			PassengerRecord passengerRecord = (PassengerRecord) tag;
-			Fragments.showModalFragment(fragment.getFragmentManager(),
-					PassengerRecordMemoFragment.newInstance(passengerRecord));
+			Fragments.showModalFragment(fragment.getFragmentManager(), PassengerRecordMemoFragment.newInstance(passengerRecord));
 		}
 	};
 
@@ -130,6 +131,7 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 
 		PassengerRecord passengerRecord = getItem(position);
 		TextView passengerCountTextView = (TextView) convertView.findViewById(R.id.passenger_count_text_view);
+
 		passengerCountTextView.setText(passengerRecord.passengerCount + "名");
 
 		// メモボタン
@@ -140,13 +142,11 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 		memoButton.setOnClickListener(onClickMemoButtonListener);
 		memoButtonLayout.setOnClickListener(onClickMemoButtonListener);
 		memoButtons.put(memoButton, true);
-		if (!passengerRecord.reservationMemo.isEmpty()
-				|| !passengerRecord.userMemo.isEmpty()) {
+		if (!passengerRecord.reservationMemo.isEmpty() || !passengerRecord.userMemo.isEmpty()) {
 			memoButtonLayout.setVisibility(View.VISIBLE);
 		} else {
 			memoButtonLayout.setVisibility(View.GONE);
 		}
-
 
 		// 行の表示
 		convertView.setTag(passengerRecord);
@@ -176,8 +176,7 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 		convertView.setBackgroundColor(color_code);
 
 
-		TextView userNameView = (TextView) convertView
-				.findViewById(R.id.user_name);
+		TextView userNameView = (TextView) convertView.findViewById(R.id.user_name);
 		userNameView.setText(passengerRecord.getDisplayName());
 
 		// 料金表示
@@ -215,10 +214,8 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 
 	public void update(List<PassengerRecord> passengerRecords) {
 		clear();
-		List<PassengerRecord> sortedPassengerRecords = Lists
-				.newArrayList(passengerRecords);
-		Collections.sort(sortedPassengerRecords,
-				PassengerRecord.DEFAULT_COMPARATOR);
+		List<PassengerRecord> sortedPassengerRecords = Lists.newArrayList(passengerRecords);
+		Collections.sort(sortedPassengerRecords, PassengerRecord.DEFAULT_COMPARATOR);
 		for (PassengerRecord passengerRecord : sortedPassengerRecords) {
 			add(passengerRecord);
 		}

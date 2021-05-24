@@ -31,19 +31,15 @@ import java.util.Locale;
 /**
  * 停車中画面
  */
-public class PlatformPhaseFragment
-		extends
-        OperationSchedulesSyncFragmentAbstract {
-	public static PlatformPhaseFragment newInstance(
-			LinkedList<OperationSchedule> operationSchedules) {
+public class PlatformPhaseFragment extends OperationSchedulesSyncFragmentAbstract {
+	public static PlatformPhaseFragment newInstance(LinkedList<OperationSchedule> operationSchedules) {
 		PlatformPhaseFragment fragment = new PlatformPhaseFragment();
 		return fragment;
 	}
 
 	private static final Integer BLINK_MILLIS = 500;
 	private static final Integer UPDATE_MINUTES_REMAINING_INTERVAL_MILLIS = 2000;
-	private static final String TAG = PlatformPhaseFragment.class
-			.getSimpleName();
+	private static final String TAG = PlatformPhaseFragment.class.getSimpleName();
 	private static final int LOADER_ID = 1;
 	private Handler handler;
 	private TextView minutesRemainingTextView;
@@ -65,41 +61,39 @@ public class PlatformPhaseFragment
 	private final Runnable updateMinutesRemaining = new Runnable() {
 		@Override
 		public void run() {
-			handler.postDelayed(updateMinutesRemaining,
-					UPDATE_MINUTES_REMAINING_INTERVAL_MILLIS);
-			OperationSchedule nextOperationSchedule = OperationSchedule
-					.getCurrentOffset(operationSchedules, 1);
+			handler.postDelayed(updateMinutesRemaining, UPDATE_MINUTES_REMAINING_INTERVAL_MILLIS);
+
+			OperationSchedule nextOperationSchedule = OperationSchedule.getCurrentOffset(operationSchedules, 1);
 			if (nextOperationSchedule == null) {
 				return;
 			}
+
 			DateTime now = DateTime.now();
 			minutesRemainingTextView.setText("");
-			OperationSchedule operationSchedule = OperationSchedule
-					.getCurrent(operationSchedules);
+
+			OperationSchedule operationSchedule = OperationSchedule.getCurrent(operationSchedules);
 			if (operationSchedule.departureEstimate == null) {
 				return;
 			}
-			Integer minutesRemaining = (int) (operationSchedule.departureEstimate
-					.getMillis() / 1000 / 60 - now.getMillis() / 1000 / 60);
+
+			Integer minutesRemaining = (int) (operationSchedule.departureEstimate.getMillis() / 1000 / 60 - now.getMillis() / 1000 / 60);
 			DateFormat dateFormat = new SimpleDateFormat("HH:mm", Locale.US);
-			String dateString = dateFormat
-					.format(operationSchedule.departureEstimate.toDate());
-			minutesRemainingTextView.setText(Html.fromHtml(String.format(
-					getResources().getString(
-							R.string.minutes_remaining_to_depart_html),
-					dateString, minutesRemaining)));
+			String dateString = dateFormat.format(operationSchedule.departureEstimate.toDate());
+
+			minutesRemainingTextView.setText(Html.fromHtml(
+							String.format(getResources().getString(R.string.minutes_remaining_to_depart_html),
+							dateString,
+							minutesRemaining)));
+
 			lastMinutesRemaining = minutesRemaining;
 		}
 	};
 
-	private final List<OperationSchedule> operationSchedules = Lists
-			.newLinkedList();
+	private final List<OperationSchedule> operationSchedules = Lists.newLinkedList();
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.platform_phase_fragment, container,
-				false);
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		return inflater.inflate(R.layout.platform_phase_fragment, container, false);
 	}
 
 	@Override
@@ -107,12 +101,9 @@ public class PlatformPhaseFragment
 		super.onActivityCreated(savedInstanceState);
 		handler = new Handler();
 		View view = getView();
-		minutesRemainingTextView = (TextView) view
-				.findViewById(R.id.minutes_remaining_text_view);
-		currentPlatformNameTextView = (TextView) view
-				.findViewById(R.id.now_platform_text_view);
-		passengerRecordListView = ((FlickUnneededListView) view
-				.findViewById(R.id.reservation_list_view));
+		minutesRemainingTextView = (TextView) view.findViewById(R.id.minutes_remaining_text_view);
+		currentPlatformNameTextView = (TextView) view.findViewById(R.id.now_platform_text_view);
+		passengerRecordListView = ((FlickUnneededListView) view.findViewById(R.id.reservation_list_view));
 	}
 
 	@Override
@@ -124,10 +115,7 @@ public class PlatformPhaseFragment
 	@Override
 	public void onResume() {
 		super.onResume();
-		Log.i(TAG,
-				"platform: "
-						+ Objects.firstNonNull(
-								currentPlatformNameTextView.getText(), "(None)"));
+		Log.i(TAG,"platform: " + Objects.firstNonNull(currentPlatformNameTextView.getText(), "(None)"));
 		handler.post(updateMinutesRemaining);
 	}
 
@@ -143,45 +131,47 @@ public class PlatformPhaseFragment
 			Phase phase, LinkedList<OperationSchedule> newOperationSchedules,
 			LinkedList<PassengerRecord> newPassengerRecords,
 			Boolean phaseChanged) {
-		Boolean last = OperationSchedule.getCurrentOffset(
-				newOperationSchedules, 1) == null;
+		Boolean last = OperationSchedule.getCurrentOffset(newOperationSchedules, 1) == null;
+
 		if (last) {
 			minutesRemainingTextView.setVisibility(View.GONE);
 		} else {
 			minutesRemainingTextView.setVisibility(View.VISIBLE);
 		}
 
-		OperationSchedule operationSchedule = OperationSchedule
-				.getCurrent(newOperationSchedules);
+		OperationSchedule operationSchedule = OperationSchedule.getCurrent(newOperationSchedules);
+
 		if (operationSchedule == null) {
 			currentPlatformNameTextView.setText("");
 			return;
 		}
+
 		if (last) {
 			currentPlatformNameTextView.setText("現在最終乗降場です");
 			Log.i(TAG, "last platform");
 		} else {
-			Log.i(TAG, "platform id=" + operationSchedule.platformId + " name="
-					+ operationSchedule.name);
+			Log.i(TAG, "platform id=" + operationSchedule.platformId + " name=" + operationSchedule.name);
 			currentPlatformNameTextView.setText(Html.fromHtml(String.format(
 					getResources().getString(R.string.now_platform_is_html),
 					operationSchedule.name)));
 		}
+
 		if (phaseChanged) {
 			adapter = new PassengerRecordArrayAdapter(this, operationSchedule);
 			ListView listView = new ListView(getActivity());
 			listView.setAdapter(adapter);
 			passengerRecordListView.replaceListView(listView);
 		}
+
 		operationSchedules.clear();
 		operationSchedules.addAll(newOperationSchedules);
+
 		if (phase.equals(Phase.PLATFORM_GET_OFF)) {
-			adapter.update(operationSchedule
-					.getGetOffScheduledPassengerRecords(newPassengerRecords));
+			adapter.update(operationSchedule.getGetOffScheduledPassengerRecords(newPassengerRecords));
 		} else {
-			adapter.update(operationSchedule
-					.getGetOnScheduledPassengerRecords(newPassengerRecords));
+			adapter.update(operationSchedule.getGetOnScheduledPassengerRecords(newPassengerRecords));
 		}
+
 		handler.removeCallbacks(blink);
 		handler.postDelayed(blink, 500);
 	}

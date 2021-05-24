@@ -22,11 +22,8 @@ import java.util.LinkedList;
 /**
  * 出発チェック画面
  */
-public class DepartureCheckFragment
-		extends
-        OperationSchedulesSyncFragmentAbstract {
-	private static final String TAG = DepartureCheckFragment.class
-			.getSimpleName();
+public class DepartureCheckFragment extends OperationSchedulesSyncFragmentAbstract {
+	private static final String TAG = DepartureCheckFragment.class.getSimpleName();
 	private static final String OPERATION_SCHEDULE_ID_KEY = "operation_schedule_id";
 
 	public static DepartureCheckFragment newInstance(Long operationScheduleId) {
@@ -41,10 +38,8 @@ public class DepartureCheckFragment
 	private Long operationScheduleId;
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.departure_check_fragment, container,
-				false);
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		return inflater.inflate(R.layout.departure_check_fragment, container, false);
 	}
 
 	@Override
@@ -59,17 +54,14 @@ public class DepartureCheckFragment
 	protected void onOperationSchedulesAndPassengerRecordsLoadFinished(
 			Phase phase, LinkedList<OperationSchedule> operationSchedules,
 			LinkedList<PassengerRecord> passengerRecords) {
-		final OperationSchedule operationSchedule = OperationSchedule.getById(
-				operationSchedules, operationScheduleId);
+		final OperationSchedule operationSchedule = OperationSchedule.getById(operationSchedules, operationScheduleId);
 		if (operationSchedule == null) {
 			Fragments.hide(this);
 			return;
 		}
 		View view = getView();
-		Button departureButton = (Button) view
-				.findViewById(R.id.departure_button);
-		Button closeButton = (Button) view
-				.findViewById(R.id.departure_check_close_button);
+		Button departureButton = (Button) view.findViewById(R.id.departure_button);
+		Button closeButton = (Button) view.findViewById(R.id.departure_check_close_button);
 		closeButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -94,8 +86,7 @@ public class DepartureCheckFragment
 				new Thread() {
 					@Override
 					public void run() {
-						contentResolver.insert(OperationSchedule.CONTENT.URI,
-								operationSchedule.toContentValues());
+						contentResolver.insert(OperationSchedule.CONTENT.URI, operationSchedule.toContentValues());
 					}
 				}.start();
 			}
