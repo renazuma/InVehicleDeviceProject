@@ -598,56 +598,8 @@ public class OperationScheduleArrayAdapter
 		passengerRecords.clear();
 		passengerRecords.addAll(newPassengerRecords);
 		clear();
-		addAll(getOperationScheduleListChunk(originalOperationSchedules));
+		addAll(OperationSchedule.getOperationSchedulePhaseChunkList(newOperationSchedules, newPassengerRecords));
 
 		notifyDataSetChanged();
-	}
-
-	private List<List> getOperationScheduleListChunk(List<OperationSchedule> operationSchedules) {
-		List<List> operationScheduleListChunk = Lists.newLinkedList();
-
-		for (List<OperationSchedule> samePlatformOperationSchedules : getOperationScheduleListSamePlatformChunk(operationSchedules)) {
-		    List<OperationSchedule> arrivalOperationSchedules = Lists.newArrayList();
-			List<OperationSchedule> departureOperationSchedules = Lists.newArrayList();
-
-			for (OperationSchedule operationSchedule : samePlatformOperationSchedules) {
-				for (PassengerRecord passengerRecord : passengerRecords) {
-					if (passengerRecord.departureScheduleId.equals(operationSchedule.id) && !departureOperationSchedules.contains((operationSchedule))) {
-						departureOperationSchedules.add(operationSchedule);
-					} else if (passengerRecord.arrivalScheduleId.equals(operationSchedule.id) && !arrivalOperationSchedules.contains((operationSchedule))) {
-						arrivalOperationSchedules.add(operationSchedule);
-					}
-				}
-			}
-
-			if (arrivalOperationSchedules.size() > 0) {
-			 	operationScheduleListChunk.add(arrivalOperationSchedules);
-			}
-			if (departureOperationSchedules.size() > 0) {
-			   	operationScheduleListChunk.add(departureOperationSchedules);
-			}
-		}
-		return operationScheduleListChunk;
-	}
-
-	private LinkedList<List> getOperationScheduleListSamePlatformChunk(List<OperationSchedule> operationSchedules) {
-
-		boolean first = true;
-		OperationSchedule previousOS = null;
-
-		LinkedList<List> platformOrderOperationScheduleLists = Lists.newLinkedList();
-
-		for (OperationSchedule currentOS : operationSchedules) {
-			if (first || !previousOS.platformId.equals(currentOS.platformId)) {
-			    List<OperationSchedule> samePlatformOperationSchedules = Lists.newArrayList();
-			    samePlatformOperationSchedules.add(currentOS);
-			    platformOrderOperationScheduleLists.add(samePlatformOperationSchedules);
-			    first = false;}
-			 else {
-			 	platformOrderOperationScheduleLists.getLast().add(currentOS);
-			}
-			 previousOS = currentOS;
-		}
-		return platformOrderOperationScheduleLists;
 	}
 }
