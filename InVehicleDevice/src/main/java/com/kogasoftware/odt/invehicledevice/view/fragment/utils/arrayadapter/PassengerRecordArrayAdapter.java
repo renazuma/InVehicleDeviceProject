@@ -62,16 +62,33 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 
 			PassengerRecord passengerRecord = (PassengerRecord) tag;
 
-			int defaultChargeCnt = ((ArrayList)(((InVehicleDeviceActivity)getContext()).defaultCharges)).size();
-
 			// 料金設定ページに遷移するパターン。他のケースと動きが大きく異なるのでこのパターンだけ別扱いにしている。
 			// HACK: その他のパターンも整理し直して、シンプルに直すべき。
-			if (defaultChargeCnt > 0 && passengerRecord.getOnTime == null) {
+			if (isChargeEditPattern(passengerRecord)) {
 				Fragments.showModalFragment(fragment.getFragmentManager(),
 								ChargeEditFragment.newInstance(operationSchedule.id, passengerRecord.id));
 				return;
 			}
 
+			setPassengerRecordOperateTime(passengerRecord);
+
+			updatePassengerRecordOperateTime(passengerRecord);
+		}
+
+		private void updatePassengerRecordOperateTime(PassengerRecord passengerRecord) {
+			final ContentValues values = passengerRecord.toContentValues();
+			final String where = PassengerRecord.Columns._ID + " = ?";
+			final String[] whereArgs = new String[]{passengerRecord.id.toString()};
+			new Thread() {
+				@Override
+				public void run() {
+					contentResolver.update(PassengerRecord.CONTENT.URI,	values, where, whereArgs);
+				}
+			}.start();
+			notifyDataSetChanged();
+		}
+
+		private void setPassengerRecordOperateTime(PassengerRecord passengerRecord) {
 			DateTime now = DateTime.now();
 
 			if (operationSchedule.id.equals(passengerRecord.arrivalScheduleId)) {
@@ -92,17 +109,15 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 					passengerRecord.getOnTime = now;
 				}
 			}
+		}
 
-			final ContentValues values = passengerRecord.toContentValues();
-			final String where = PassengerRecord.Columns._ID + " = ?";
-			final String[] whereArgs = new String[]{passengerRecord.id.toString()};
-			new Thread() {
-				@Override
-				public void run() {
-					contentResolver.update(PassengerRecord.CONTENT.URI,	values, where, whereArgs);
-				}
-			}.start();
-			notifyDataSetChanged();
+		private boolean isChargeEditPattern(PassengerRecord passengerRecord) {
+			int defaultChargeCnt = ((ArrayList) (((InVehicleDeviceActivity) getContext()).defaultCharges)).size();
+			if (defaultChargeCnt > 0 && passengerRecord.getOnTime == null) {
+				return true;
+			} else {
+				return false;
+			}
 		}
 	};
 
@@ -130,55 +145,28 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 		}
 
 		PassengerRecord passengerRecord = getItem(position);
-		TextView passengerCountTextView = (TextView) convertView.findViewById(R.id.passenger_count_text_view);
 
+		TextView passengerCountTextView = (TextView) convertView.findViewById(R.id.passenger_count_text_view);
 		passengerCountTextView.setText(passengerRecord.passengerCount + "名");
 
-		// メモボタン
-		View memoButton = convertView.findViewById(R.id.memo_button);
-		View memoButtonLayout = convertView.findViewById(R.id.memo_button_layout);
-		memoButton.setTag(passengerRecord);
-		memoButtonLayout.setTag(passengerRecord);
-		memoButton.setOnClickListener(onClickMemoButtonListener);
-		memoButtonLayout.setOnClickListener(onClickMemoButtonListener);
-		memoButtons.put(memoButton, true);
-		if (!passengerRecord.reservationMemo.isEmpty() || !passengerRecord.userMemo.isEmpty()) {
-			memoButtonLayout.setVisibility(View.VISIBLE);
-		} else {
-			memoButtonLayout.setVisibility(View.GONE);
-		}
+		setMemoButtonView(convertView, passengerRecord);
 
-		// 行の表示
 		convertView.setTag(passengerRecord);
 		convertView.setOnClickListener(onClickListenerForPassengerRecord);
 
-		ImageView selectMarkImageView = (ImageView) convertView.findViewById(R.id.select_mark_image_view);
-
-		// 行のデフォルト色指定
-		int color_code = 0;
-		if (operationSchedule.id.equals(passengerRecord.arrivalScheduleId)) {
-			selectMarkImageView.setImageResource(R.drawable.get_off);
-			if (passengerRecord.getOffTime != null) {
-			    color_code = ContextCompat.getColor(fragment.getContext(), R.color.selected_get_off_row);
-			} else {
-				color_code = ContextCompat.getColor(fragment.getContext(), R.color.get_off_row);
-			}
-		} else if (operationSchedule.id.equals(passengerRecord.departureScheduleId)) {
-			selectMarkImageView.setImageResource(R.drawable.get_on);
-			if (passengerRecord.getOnTime != null) {
-				color_code = ContextCompat.getColor(fragment.getContext(), R.color.selected_get_on_row);
-			} else {
-				color_code = ContextCompat.getColor(fragment.getContext(), R.color.get_on_row);
-			}
-		} else {
-			Log.e(TAG, "unexpected PassengerRecord: " + passengerRecord);
-		}
-		convertView.setBackgroundColor(color_code);
-
+		setMarkImageView(convertView, passengerRecord);
 
 		TextView userNameView = (TextView) convertView.findViewById(R.id.user_name);
 		userNameView.setText(passengerRecord.getDisplayName());
 
+		setRowDefaultBackgroundColor(convertView, passengerRecord);
+
+		setChargeTextView(convertView, passengerRecord);
+
+		return convertView;
+	}
+
+	private void setChargeTextView(View convertView, PassengerRecord passengerRecord) {
 		// 料金表示
 		TextView chargeText = (TextView) convertView.findViewById(R.id.charge_edit_text_view);
 		if (passengerRecord.paidCharge != null) {
@@ -193,8 +181,51 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 		} else {
 			expectedChargeText.setText("");
 		}
+	}
 
-		return convertView;
+	private void setMarkImageView(View convertView, PassengerRecord passengerRecord) {
+		ImageView selectMarkImageView = (ImageView) convertView.findViewById(R.id.select_mark_image_view);
+		if (operationSchedule.id.equals(passengerRecord.arrivalScheduleId)) {
+			selectMarkImageView.setImageResource(R.drawable.get_off);
+		} else if (operationSchedule.id.equals(passengerRecord.departureScheduleId)) {
+			selectMarkImageView.setImageResource(R.drawable.get_on);
+
+		}
+	}
+
+	private void setRowDefaultBackgroundColor(View convertView, PassengerRecord passengerRecord) {
+		int color_code = 0;
+		if (operationSchedule.id.equals(passengerRecord.arrivalScheduleId)) {
+			if (passengerRecord.getOffTime != null) {
+			    color_code = ContextCompat.getColor(fragment.getContext(), R.color.selected_get_off_row);
+			} else {
+				color_code = ContextCompat.getColor(fragment.getContext(), R.color.get_off_row);
+			}
+		} else if (operationSchedule.id.equals(passengerRecord.departureScheduleId)) {
+			if (passengerRecord.getOnTime != null) {
+				color_code = ContextCompat.getColor(fragment.getContext(), R.color.selected_get_on_row);
+			} else {
+				color_code = ContextCompat.getColor(fragment.getContext(), R.color.get_on_row);
+			}
+		} else {
+			Log.e(TAG, "unexpected PassengerRecord: " + passengerRecord);
+		}
+		convertView.setBackgroundColor(color_code);
+	}
+
+	private void setMemoButtonView(View convertView, PassengerRecord passengerRecord) {
+		View memoButton = convertView.findViewById(R.id.memo_button);
+		View memoButtonLayout = convertView.findViewById(R.id.memo_button_layout);
+		memoButton.setTag(passengerRecord);
+		memoButtonLayout.setTag(passengerRecord);
+		memoButton.setOnClickListener(onClickMemoButtonListener);
+		memoButtonLayout.setOnClickListener(onClickMemoButtonListener);
+		memoButtons.put(memoButton, true);
+		if (!passengerRecord.reservationMemo.isEmpty() || !passengerRecord.userMemo.isEmpty()) {
+			memoButtonLayout.setVisibility(View.VISIBLE);
+		} else {
+			memoButtonLayout.setVisibility(View.GONE);
+		}
 	}
 
 	public void toggleBlink() {

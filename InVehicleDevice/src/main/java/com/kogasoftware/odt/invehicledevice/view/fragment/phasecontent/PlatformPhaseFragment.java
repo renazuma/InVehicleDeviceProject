@@ -2,6 +2,7 @@ package com.kogasoftware.odt.invehicledevice.view.fragment.phasecontent;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -131,20 +132,43 @@ public class PlatformPhaseFragment extends OperationSchedulesSyncFragmentAbstrac
 			Phase phase, LinkedList<OperationSchedule> newOperationSchedules,
 			LinkedList<PassengerRecord> newPassengerRecords,
 			Boolean phaseChanged) {
-		Boolean last = OperationSchedule.getCurrentOffset(newOperationSchedules, 1) == null;
 
-		if (last) {
-			minutesRemainingTextView.setVisibility(View.GONE);
-		} else {
-			minutesRemainingTextView.setVisibility(View.VISIBLE);
-		}
+		setMinutesRemainingTextView(newOperationSchedules);
 
 		OperationSchedule operationSchedule = OperationSchedule.getCurrent(newOperationSchedules);
-
 		if (operationSchedule == null) {
 			currentPlatformNameTextView.setText("");
 			return;
 		}
+
+		setPlatformNameTextView(newOperationSchedules);
+		setPassengerList(phase, newPassengerRecords, phaseChanged, operationSchedule);
+
+		operationSchedules.clear();
+		operationSchedules.addAll(newOperationSchedules);
+
+		handler.removeCallbacks(blink);
+		handler.postDelayed(blink, 500);
+	}
+
+	private void setPassengerList(Phase phase, LinkedList<PassengerRecord> newPassengerRecords, Boolean phaseChanged, OperationSchedule operationSchedule) {
+		if (phaseChanged) {
+			adapter = new PassengerRecordArrayAdapter(this, operationSchedule);
+			ListView listView = new ListView(getActivity());
+			listView.setAdapter(adapter);
+			passengerRecordListView.replaceListView(listView);
+		}
+
+		if (phase.equals(Phase.PLATFORM_GET_OFF)) {
+			adapter.update(operationSchedule.getGetOffScheduledPassengerRecords(newPassengerRecords));
+		} else {
+			adapter.update(operationSchedule.getGetOnScheduledPassengerRecords(newPassengerRecords));
+		}
+	}
+
+	private void setPlatformNameTextView(LinkedList<OperationSchedule> newOperationSchedules) {
+		Boolean last = OperationSchedule.getCurrentOffset(newOperationSchedules, 1) == null;
+		OperationSchedule operationSchedule = OperationSchedule.getCurrent(newOperationSchedules);
 
 		if (last) {
 			currentPlatformNameTextView.setText("現在最終乗降場です");
@@ -155,24 +179,16 @@ public class PlatformPhaseFragment extends OperationSchedulesSyncFragmentAbstrac
 					getResources().getString(R.string.now_platform_is_html),
 					operationSchedule.name)));
 		}
+	}
 
-		if (phaseChanged) {
-			adapter = new PassengerRecordArrayAdapter(this, operationSchedule);
-			ListView listView = new ListView(getActivity());
-			listView.setAdapter(adapter);
-			passengerRecordListView.replaceListView(listView);
-		}
+	@NonNull
+	private void setMinutesRemainingTextView(LinkedList<OperationSchedule> newOperationSchedules) {
+		Boolean last = OperationSchedule.getCurrentOffset(newOperationSchedules, 1) == null;
 
-		operationSchedules.clear();
-		operationSchedules.addAll(newOperationSchedules);
-
-		if (phase.equals(Phase.PLATFORM_GET_OFF)) {
-			adapter.update(operationSchedule.getGetOffScheduledPassengerRecords(newPassengerRecords));
+		if (last) {
+			minutesRemainingTextView.setVisibility(View.GONE);
 		} else {
-			adapter.update(operationSchedule.getGetOnScheduledPassengerRecords(newPassengerRecords));
+			minutesRemainingTextView.setVisibility(View.VISIBLE);
 		}
-
-		handler.removeCallbacks(blink);
-		handler.postDelayed(blink, 500);
 	}
 }
