@@ -101,25 +101,25 @@ public abstract class OperationSchedulesSyncFragmentAbstract extends Fragment {
 				public void run() {
 					if (!isAdded()) { return; }
 
-					Phase phase = OperationSchedule.getPhase(operationSchedules, passengerRecords);
+					Phase newPhase = OperationSchedule.getPhase(operationSchedules, passengerRecords);
 
-					OperationSchedule operationSchedule = OperationSchedule.getCurrent(operationSchedules);
+					OperationSchedule newOperationSchedule = OperationSchedule.getCurrent(operationSchedules);
 					Boolean phaseChanged = false;
-					if (operationSchedule == null) {
-						if (currentOperationScheduleId != null || !phase.equals(currentPhase)) {
+					if (newOperationSchedule == null) {
+						if (currentOperationScheduleId != null || !newPhase.equals(currentPhase)) {
 							phaseChanged = true;
 						}
 						currentOperationScheduleId = null;
 					} else {
-						if (!phase.equals(currentPhase)	|| !operationSchedule.id.equals(currentOperationScheduleId)) {
+						if (!newPhase.equals(currentPhase)	|| !newOperationSchedule.id.equals(currentOperationScheduleId)) {
 							phaseChanged = true;
 						}
-						currentOperationScheduleId = operationSchedule.id;
+						currentOperationScheduleId = newOperationSchedule.id;
 					}
-					currentPhase = phase;
+					currentPhase = newPhase;
 
 					// 継承先のクラスで実装される、operation_schedule/passenger_record同期後の動作
-					onOperationSchedulesAndPassengerRecordsLoadFinished(phase,	operationSchedules, passengerRecords, phaseChanged);
+					onOperationSchedulesAndPassengerRecordsLoadFinished(newPhase,	operationSchedules, passengerRecords, phaseChanged);
 				}
 			});
 		}
