@@ -93,7 +93,7 @@ public abstract class OperationSchedulesSyncFragmentAbstract extends Fragment {
 		}
 
 		@Override
-		public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+		public void onLoadFinished(Loader<Cursor> loader, final Cursor cursor) {
 			final LinkedList<PassengerRecord> passengerRecords = Lists.newLinkedList(PassengerRecord.getAll(cursor));
 
 			handler.post(new Runnable() {
@@ -102,24 +102,25 @@ public abstract class OperationSchedulesSyncFragmentAbstract extends Fragment {
 					if (!isAdded()) { return; }
 
 					Phase newPhase = OperationSchedule.getPhase(operationSchedules, passengerRecords);
-
 					OperationSchedule newOperationSchedule = OperationSchedule.getCurrent(operationSchedules);
-					Boolean phaseChanged = false;
+					Boolean phaseChanged = isPhaseChangedPattern(newPhase, newOperationSchedule);
+
+					currentPhase = newPhase;
 					if (newOperationSchedule == null) {
-						if (currentOperationScheduleId != null || !newPhase.equals(currentPhase)) {
-							phaseChanged = true;
-						}
 						currentOperationScheduleId = null;
 					} else {
-						if (!newPhase.equals(currentPhase)	|| !newOperationSchedule.id.equals(currentOperationScheduleId)) {
-							phaseChanged = true;
-						}
 						currentOperationScheduleId = newOperationSchedule.id;
 					}
-					currentPhase = newPhase;
 
 					// 継承先のクラスで実装される、operation_schedule/passenger_record同期後の動作
-					onOperationSchedulesAndPassengerRecordsLoadFinished(newPhase,	operationSchedules, passengerRecords, phaseChanged);
+					onOperationSchedulesAndPassengerRecordsLoadFinished(newPhase, operationSchedules, passengerRecords, phaseChanged);
+				}
+
+				private boolean isPhaseChangedPattern(Phase newPhase, OperationSchedule newOperationSchedule) {
+					boolean changeToFinishPhase = newOperationSchedule == null && currentOperationScheduleId != null;
+					boolean operationScheduleChanged = newOperationSchedule != null && !newOperationSchedule.id.equals(currentOperationScheduleId);
+
+					return !newPhase.equals(currentPhase) || changeToFinishPhase || operationScheduleChanged;
 				}
 			});
 		}
