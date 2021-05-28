@@ -79,7 +79,7 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
 				|| currentOperationSchedule.getGetOnScheduledPassengerRecords(passengerRecords).isEmpty()) {
 			getFragmentManager()
 					.beginTransaction()
-					.add(R.id.modal_fragment_container, DepartureCheckFragment.newInstance(currentOperationSchedule.id))
+					.add(R.id.modal_fragment_container, DepartureCheckFragment.newInstance(phase, operationSchedules, currentOperationSchedule.id))
 					.commitAllowingStateLoss();
 			return;
 		}

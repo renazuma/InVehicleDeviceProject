@@ -13,15 +13,16 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule.Phase;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
-import com.kogasoftware.odt.invehicledevice.view.fragment.modal.OperationListFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.modal.ArrivalCheckFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.modal.DepartureCheckFragment;
-import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationSchedulesSyncFragmentAbstract;
+import com.kogasoftware.odt.invehicledevice.view.fragment.modal.OperationListFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.modal.PassengerRecordErrorFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationSchedulesSyncFragmentAbstract;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.ViewDisabler;
 
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * 到着ボタン、地図ボタン、運行予定ボタンを表示する領域
@@ -104,7 +105,7 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 		if (phase.equals(Phase.PLATFORM_GET_OFF)
 				&& operationSchedule.getNoGetOffErrorPassengerRecords(passengerRecords).isEmpty()) {
 			if (operationSchedule.getGetOnScheduledPassengerRecords(passengerRecords).isEmpty()) {
-				Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(operationSchedule.id));
+				Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(phase, operationSchedules, operationSchedule.id));
 			} else {
 				operationSchedule.completeGetOff = true;
 				new Thread() {
@@ -117,7 +118,7 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 			return;
 		} else if (phase.equals(Phase.PLATFORM_GET_ON)
 				&& operationSchedule.getNoGetOnErrorPassengerRecords(passengerRecords).isEmpty()) {
-			Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(operationSchedule.id));
+			Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(phase, operationSchedules, operationSchedule.id));
 			return;
 		}
 
