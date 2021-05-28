@@ -12,6 +12,7 @@ import android.widget.Button;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule.Phase;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
 
 import org.joda.time.DateTime;
@@ -26,14 +27,14 @@ public class DepartureCheckFragment extends Fragment {
 	private static final String TAG = DepartureCheckFragment.class.getSimpleName();
 	private static final String PHASE_KEY = "phase";
 	private static final String OPERATION_SCHEDULES_KEY = "operation_schedules";
-	private static final String OPERATION_SCHEDULE_ID_KEY = "operation_schedule_id";
+	private static final String PASSENGER_RECORDS_KEY = "passenger_records";
 
-	public static Fragment newInstance(Phase phase, List<OperationSchedule> operationSchedules, Long operationScheduleId) {
+	public static Fragment newInstance(Phase phase, List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
 		DepartureCheckFragment fragment = new DepartureCheckFragment();
 		Bundle args = new Bundle();
 		args.putSerializable(PHASE_KEY, phase);
 		args.putSerializable(OPERATION_SCHEDULES_KEY, (Serializable) operationSchedules);
-		args.putLong(OPERATION_SCHEDULE_ID_KEY, operationScheduleId);
+		args.putSerializable(PASSENGER_RECORDS_KEY, (Serializable) passengerRecords);
 		fragment.setArguments(args);
 		return fragment;
 	}
@@ -51,13 +52,20 @@ public class DepartureCheckFragment extends Fragment {
 		contentResolver = getActivity().getContentResolver();
 
 		Bundle args = getArguments();
-		Phase phase = (Phase) args.getSerializable(PHASE_KEY);
-		List<OperationSchedule> operationSchedules = (List<OperationSchedule>) args.getSerializable(OPERATION_SCHEDULES_KEY);
-		Long operationScheduleId = args.getLong(OPERATION_SCHEDULE_ID_KEY);
+		final Phase phase = (Phase) args.getSerializable(PHASE_KEY);
+
+		final List<OperationSchedule> operationSchedules = (List<OperationSchedule>) args.getSerializable(OPERATION_SCHEDULES_KEY);
+		final List<PassengerRecord> passengerRecords = (List<PassengerRecord>) args.getSerializable(PASSENGER_RECORDS_KEY);
+		final List<OperationSchedule> currentChunk = OperationSchedule.getCurrentChunk(operationSchedules, passengerRecords);
 
 		View view = getView();
 
 		Button departureButton = (Button) view.findViewById(R.id.departure_button);
+		if (OperationSchedule.isExistNextChunk(operationSchedules, passengerRecords) ) {
+			departureButton.setText("出発する");
+		} else {
+			departureButton.setText("確定する");
+		}
 
 		Button closeButton = (Button) view.findViewById(R.id.departure_check_close_button);
 		closeButton.setOnClickListener(new OnClickListener() {
@@ -66,31 +74,31 @@ public class DepartureCheckFragment extends Fragment {
 				Fragments.hide(DepartureCheckFragment.this);
 			}
 		});
-
 		if (phase == Phase.PLATFORM_GET_OFF) {
 			closeButton.setText("降車一覧に戻る");
 		} else {
 			closeButton.setText("乗車一覧に戻る");
 		}
 
-		if (OperationSchedule.getCurrentOffset(operationSchedules, 1) == null) {
-			departureButton.setText("確定する");
-		} else {
-			departureButton.setText("出発する");
-		}
-
-		final OperationSchedule operationSchedule = OperationSchedule.getById(operationSchedules, operationScheduleId);
 		departureButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				operationSchedule.departedAt = DateTime.now();
 				Fragments.hide(DepartureCheckFragment.this);
-				new Thread() {
+				Thread tt = new Thread() {
 					@Override
 					public void run() {
-						contentResolver.insert(OperationSchedule.CONTENT.URI, operationSchedule.toContentValues());
+						for (OperationSchedule operationSchedule : currentChunk) {
+							operationSchedule.departedAt = DateTime.now();
+							contentResolver.insert(OperationSchedule.CONTENT.URI, operationSchedule.toContentValues());
+						}
 					}
-				}.start();
+				};
+				tt.start();
+				try {
+					tt.join();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 		});
 	}

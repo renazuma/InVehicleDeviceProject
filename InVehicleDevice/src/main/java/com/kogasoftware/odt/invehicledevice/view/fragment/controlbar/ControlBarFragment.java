@@ -9,6 +9,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule.Phase;
@@ -22,6 +23,7 @@ import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationSchedul
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.ViewDisabler;
 
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * 到着ボタン、地図ボタン、運行予定ボタンを表示する領域
@@ -64,13 +66,15 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 	public void showNavigation(Phase phase,	LinkedList<OperationSchedule> operationSchedules, LinkedList<PassengerRecord> passengerRecords) {
 		if (!isAdded()) { return; }
 
-		// 停車中の場合、次の運行を選択
-		Boolean driving = phase.equals(Phase.DRIVE);
-		OperationSchedule operationSchedule = (driving ? OperationSchedule
-				.getCurrent(operationSchedules) : OperationSchedule
-				.getCurrentOffset(operationSchedules, 1));
-
-		if (operationSchedule != null) { operationSchedule.startNavigation(getActivity()); }
+		if (phase.equals(Phase.DRIVE)) {
+			if (OperationSchedule.isExistCurrentChunk(operationSchedules, passengerRecords)) {
+				OperationSchedule.getCurrentChunkRepresentativeOS(operationSchedules, passengerRecords).startNavigation(getActivity());
+			}
+		} else {
+			if (OperationSchedule.isExistNextChunk(operationSchedules, passengerRecords)) {
+				OperationSchedule.getNextChunkRepresentativeOS(operationSchedules, passengerRecords).startNavigation(getActivity());
+			}
+		}
 	}
 
 	public void showOperationScheduleListFragment() {
@@ -83,65 +87,78 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 
 		if (!isAdded()) { return; }
 
-		OperationSchedule operationSchedule = OperationSchedule.getCurrent(operationSchedules);
-
-		if (operationSchedule == null) { return; }
+		if (!OperationSchedule.isExistCurrentChunk(operationSchedules, passengerRecords)) { return; }
 
 		getFragmentManager()
 			.beginTransaction()
-			.add(R.id.modal_fragment_container, ArrivalCheckFragment.newInstance(operationSchedule))
+			.add(R.id.modal_fragment_container, ArrivalCheckFragment.newInstance(operationSchedules, passengerRecords))
 			.commitAllowingStateLoss();
 	}
 
-	public void showDepartureCheckFragment(Phase phase,	LinkedList<OperationSchedule> operationSchedules, LinkedList<PassengerRecord> passengerRecords) {
+	public void showDepartureCheckFragment(Phase phase, final LinkedList<OperationSchedule> operationSchedules, final LinkedList<PassengerRecord> passengerRecords) {
 		if (!isAdded()) { return; }
 
-		final OperationSchedule operationSchedule = OperationSchedule.getCurrent(operationSchedules);
+		if (!OperationSchedule.isExistCurrentChunk(operationSchedules, passengerRecords)) { return; }
 
-		if (operationSchedule == null) { return; }
-
-		if (existPassengerRecordError(phase, operationSchedule, passengerRecords)) {
-			Fragments.showModalFragment(getFragmentManager(), PassengerRecordErrorFragment.newInstance(operationSchedule.id));
+		if (existPassengerRecordError(phase, operationSchedules, passengerRecords)) {
+			Fragments.showModalFragment(getFragmentManager(),
+							PassengerRecordErrorFragment.newInstance(
+											OperationSchedule.getCurrentChunk(operationSchedules, passengerRecords)));
 		} else if (phase.equals(Phase.PLATFORM_GET_OFF)) {
-			// 引数で渡した乗客リストに乗車客が存在しない場合
-			if (operationSchedule.getGetOnScheduledPassengerRecords(passengerRecords).isEmpty()) {
-				Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(phase, operationSchedules, operationSchedule.id));
+			List<PassengerRecord> getOnPassengerRecords = Lists.newArrayList();
+			for (OperationSchedule operationSchedule : OperationSchedule.getCurrentChunk(operationSchedules, passengerRecords)) {
+				getOnPassengerRecords.addAll(operationSchedule.getGetOnScheduledPassengerRecords(passengerRecords));
+			}
+
+			if (getOnPassengerRecords.isEmpty()) {
+				Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(phase, operationSchedules, passengerRecords));
 			} else {
-				operationSchedule.completeGetOff = true;
+				for (OperationSchedule operationSchedule : OperationSchedule.getCurrentChunk(operationSchedules, passengerRecords)) {
+					operationSchedule.completeGetOff = true;
+				}
 				new Thread() {
 					@Override
 					public void run() {
-						contentResolver.insert(OperationSchedule.CONTENT.URI, operationSchedule.toContentValues());
+						for (OperationSchedule operationSchedule : OperationSchedule.getCurrentChunk(operationSchedules, passengerRecords)) {
+							contentResolver.insert(OperationSchedule.CONTENT.URI, operationSchedule.toContentValues());
+						}
 					}
 				}.start();
 			}
 		} else {
-			Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(phase, operationSchedules, operationSchedule.id));
+			Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(phase, operationSchedules, passengerRecords));
 		}
 	}
 
-	private boolean existPassengerRecordError(Phase phase, OperationSchedule operationSchedule, LinkedList<PassengerRecord> passengerRecords) {
-		return existGetOffPassengerError(phase, operationSchedule, passengerRecords) || existGetOnPassengerError(phase, operationSchedule, passengerRecords);
+	private boolean existPassengerRecordError(Phase phase, LinkedList<OperationSchedule> operationSchedules, LinkedList<PassengerRecord> passengerRecords) {
+		return (existGetOffPassengerError(phase, operationSchedules, passengerRecords) || existGetOnPassengerError(phase, operationSchedules, passengerRecords));
 	}
 
-	private boolean existGetOffPassengerError(Phase phase, OperationSchedule operationSchedule, LinkedList<PassengerRecord> passengerRecords) {
+	private boolean existGetOffPassengerError(Phase phase, LinkedList<OperationSchedule> operationSchedules, LinkedList<PassengerRecord> passengerRecords) {
 		if (!phase.equals(Phase.PLATFORM_GET_OFF)) {
 			return false;
-		} else if (operationSchedule.getNoGetOffErrorPassengerRecords(passengerRecords).isEmpty()) {
-			return false;
-		} else {
-			return true;
 		}
+
+		for (OperationSchedule operationSchedule : OperationSchedule.getCurrentChunk(operationSchedules, passengerRecords)) {
+			if (!operationSchedule.getNoGetOffErrorPassengerRecords(passengerRecords).isEmpty()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
-	private boolean existGetOnPassengerError(Phase phase, OperationSchedule operationSchedule, LinkedList<PassengerRecord> passengerRecords) {
+	private boolean existGetOnPassengerError(Phase phase, LinkedList<OperationSchedule> operationSchedules, LinkedList<PassengerRecord> passengerRecords) {
 		if (!phase.equals(Phase.PLATFORM_GET_ON)) {
 			return false;
-		} else if (operationSchedule.getNoGetOnErrorPassengerRecords(passengerRecords).isEmpty()) {
-			return false;
-		} else {
-			return true;
 		}
+
+		boolean existError = false;
+		for (OperationSchedule operationSchedule : OperationSchedule.getCurrentChunk(operationSchedules, passengerRecords)) {
+			if (!operationSchedule.getNoGetOnErrorPassengerRecords(passengerRecords).isEmpty()) {
+				existError = true;
+			}
+		}
+		return existError;
 	}
 
 	// 画面右部のボタンの、地図ボタン、phase変更ボタン（到着しました等）を定義する

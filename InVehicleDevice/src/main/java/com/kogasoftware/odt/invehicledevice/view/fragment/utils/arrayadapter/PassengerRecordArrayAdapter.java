@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +22,7 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.Passenge
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.view.fragment.modal.ChargeEditFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.modal.PassengerRecordMemoFragment;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule.Phase;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.ViewDisabler;
 
@@ -39,17 +41,19 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 	private static final String TAG = PassengerRecordArrayAdapter.class.getSimpleName();
 	private static final Integer RESOURCE_ID = R.layout.passenger_record_list_row;
 	private final LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-	private final OperationSchedule operationSchedule;
+	private final Phase phase;
+	private final List<OperationSchedule> chunkOperationSchedules;
 	private final WeakHashMap<View, Boolean> memoButtons = new WeakHashMap<View, Boolean>();
 	private final ContentResolver contentResolver;
 	private Boolean memoButtonsVisible = true;
 	private Fragment fragment;
 
-	public PassengerRecordArrayAdapter(Fragment fragment, OperationSchedule operationSchedule) {
+	public PassengerRecordArrayAdapter(Fragment fragment, Phase phase, List<OperationSchedule> operationSchedules) {
 		super(fragment.getActivity(), RESOURCE_ID);
 		this.fragment = fragment;
 		this.contentResolver = fragment.getActivity().getContentResolver();
-		this.operationSchedule = operationSchedule;
+		this.phase = phase;
+		this.chunkOperationSchedules = operationSchedules;
 	}
 
 	private final OnClickListener onClickListenerForPassengerRecord = new OnClickListener() {
@@ -61,6 +65,8 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 			}
 
 			PassengerRecord passengerRecord = (PassengerRecord) tag;
+
+			OperationSchedule operationSchedule = getTargetOperationSchedule(passengerRecord);
 
 			// 料金設定ページに遷移するパターン。他のケースと動きが大きく異なるのでこのパターンだけ別扱いにしている。
 			// HACK: その他のパターンも整理し直して、シンプルに直すべき。
@@ -89,8 +95,9 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 		}
 
 		private void setPassengerRecordOperateTime(PassengerRecord passengerRecord) {
-			DateTime now = DateTime.now();
+			OperationSchedule operationSchedule = getTargetOperationSchedule(passengerRecord);
 
+			DateTime now = DateTime.now();
 			if (operationSchedule.id.equals(passengerRecord.arrivalScheduleId)) {
 				passengerRecord.ignoreGetOffMiss = false;
 				if (passengerRecord.getOffTime != null) {
@@ -120,6 +127,28 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 			}
 		}
 	};
+
+	@Nullable
+	private OperationSchedule getTargetOperationSchedule(PassengerRecord passengerRecord) {
+		OperationSchedule operationSchedule = null;
+
+		if (phase.equals(Phase.PLATFORM_GET_OFF)) {
+			for (OperationSchedule tmpOperationSchedule : chunkOperationSchedules) {
+				if (tmpOperationSchedule.id.equals(passengerRecord.arrivalScheduleId)) {
+					operationSchedule = tmpOperationSchedule;
+					break;
+				}
+			}
+		} else {
+			for (OperationSchedule tmpOperationSchedule : chunkOperationSchedules) {
+				if (tmpOperationSchedule.id.equals(passengerRecord.departureScheduleId)) {
+					operationSchedule = tmpOperationSchedule;
+					break;
+				}
+			}
+		}
+		return operationSchedule;
+	}
 
 	protected final OnClickListener onClickMemoButtonListener = new OnClickListener() {
 		@Override
@@ -184,16 +213,18 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 	}
 
 	private void setMarkImageView(View convertView, PassengerRecord passengerRecord) {
+		OperationSchedule operationSchedule = getTargetOperationSchedule(passengerRecord);
 		ImageView selectMarkImageView = (ImageView) convertView.findViewById(R.id.select_mark_image_view);
 		if (operationSchedule.id.equals(passengerRecord.arrivalScheduleId)) {
 			selectMarkImageView.setImageResource(R.drawable.get_off);
 		} else if (operationSchedule.id.equals(passengerRecord.departureScheduleId)) {
 			selectMarkImageView.setImageResource(R.drawable.get_on);
-
 		}
 	}
 
 	private void setRowDefaultBackgroundColor(View convertView, PassengerRecord passengerRecord) {
+		OperationSchedule operationSchedule = getTargetOperationSchedule(passengerRecord);
+
 		int color_code = 0;
 		if (operationSchedule.id.equals(passengerRecord.arrivalScheduleId)) {
 			if (passengerRecord.getOffTime != null) {

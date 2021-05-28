@@ -18,6 +18,7 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.VehicleN
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -32,7 +33,7 @@ public abstract class OperationSchedulesSyncFragmentAbstract extends Fragment {
 	protected Handler handler;
 	protected ContentResolver contentResolver;
 	private final LinkedList<OperationSchedule> operationSchedules = Lists.newLinkedList();
-	private Long currentOperationScheduleId;
+	private List<OperationSchedule> currentOperationSchedules = Lists.newArrayList();
 	private Phase currentPhase;
 
 	private final LoaderCallbacks<Cursor> operationSchedulesLoaderCallbacks = new LoaderCallbacks<Cursor>() {
@@ -102,25 +103,40 @@ public abstract class OperationSchedulesSyncFragmentAbstract extends Fragment {
 					if (!isAdded()) { return; }
 
 					Phase newPhase = OperationSchedule.getPhase(operationSchedules, passengerRecords);
-					OperationSchedule newOperationSchedule = OperationSchedule.getCurrent(operationSchedules);
-					Boolean phaseChanged = isPhaseChangedPattern(newPhase, newOperationSchedule);
+
+					List<OperationSchedule> currentChunk = OperationSchedule.getCurrentChunk(operationSchedules, passengerRecords);
+
+					Boolean phaseChanged = isPhaseChangedPattern(newPhase, currentChunk);
 
 					currentPhase = newPhase;
-					if (newOperationSchedule == null) {
-						currentOperationScheduleId = null;
-					} else {
-						currentOperationScheduleId = newOperationSchedule.id;
-					}
+					currentOperationSchedules = currentChunk;
 
 					// 継承先のクラスで実装される、operation_schedule/passenger_record同期後の動作
 					onOperationSchedulesAndPassengerRecordsLoadFinished(newPhase, operationSchedules, passengerRecords, phaseChanged);
 				}
 
-				private boolean isPhaseChangedPattern(Phase newPhase, OperationSchedule newOperationSchedule) {
-					boolean changeToFinishPhase = newOperationSchedule == null && currentOperationScheduleId != null;
-					boolean operationScheduleChanged = newOperationSchedule != null && !newOperationSchedule.id.equals(currentOperationScheduleId);
+				private boolean isPhaseChangedPattern(Phase newPhase, List<OperationSchedule> newOperationSchedules) {
+					boolean changeToFinishPhase = newOperationSchedules.isEmpty() && !currentOperationSchedules.isEmpty();
+					boolean operationSchedulesChanged =
+									!newOperationSchedules.isEmpty() && !isSameOperationSchedules(newOperationSchedules);
 
-					return !newPhase.equals(currentPhase) || changeToFinishPhase || operationScheduleChanged;
+					return !newPhase.equals(currentPhase) || changeToFinishPhase || operationSchedulesChanged;
+				}
+
+				private boolean isSameOperationSchedules(List<OperationSchedule> targetOperationSchedules) {
+					for (OperationSchedule baseOperationSchedule : currentOperationSchedules) {
+						boolean existSameOS = false;
+						for (OperationSchedule targetOperationSchedule : targetOperationSchedules) {
+							if (baseOperationSchedule.id.equals(targetOperationSchedule.id)) {
+								existSameOS = true;
+								break;
+							}
+						}
+						if (!existSameOS) {
+							return false;
+						}
+					}
+					return true;
 				}
 			});
 		}
