@@ -22,7 +22,6 @@ import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationSchedul
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.ViewDisabler;
 
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * 到着ボタン、地図ボタン、運行予定ボタンを表示する領域
@@ -101,9 +100,10 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 
 		if (operationSchedule == null) { return; }
 
-		// エラーがない場合
-		if (phase.equals(Phase.PLATFORM_GET_OFF)
-				&& operationSchedule.getNoGetOffErrorPassengerRecords(passengerRecords).isEmpty()) {
+		if (existPassengerRecordError(phase, operationSchedule, passengerRecords)) {
+			Fragments.showModalFragment(getFragmentManager(), PassengerRecordErrorFragment.newInstance(operationSchedule.id));
+		} else if (phase.equals(Phase.PLATFORM_GET_OFF)) {
+			// 引数で渡した乗客リストに乗車客が存在しない場合
 			if (operationSchedule.getGetOnScheduledPassengerRecords(passengerRecords).isEmpty()) {
 				Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(phase, operationSchedules, operationSchedule.id));
 			} else {
@@ -115,15 +115,33 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 					}
 				}.start();
 			}
-			return;
-		} else if (phase.equals(Phase.PLATFORM_GET_ON)
-				&& operationSchedule.getNoGetOnErrorPassengerRecords(passengerRecords).isEmpty()) {
+		} else {
 			Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(phase, operationSchedules, operationSchedule.id));
-			return;
 		}
+	}
 
-		// エラーがある場合
-		Fragments.showModalFragment(getFragmentManager(), PassengerRecordErrorFragment.newInstance(operationSchedule.id));
+	private boolean existPassengerRecordError(Phase phase, OperationSchedule operationSchedule, LinkedList<PassengerRecord> passengerRecords) {
+		return existGetOffPassengerError(phase, operationSchedule, passengerRecords) || existGetOnPassengerError(phase, operationSchedule, passengerRecords);
+	}
+
+	private boolean existGetOffPassengerError(Phase phase, OperationSchedule operationSchedule, LinkedList<PassengerRecord> passengerRecords) {
+		if (!phase.equals(Phase.PLATFORM_GET_OFF)) {
+			return false;
+		} else if (operationSchedule.getNoGetOffErrorPassengerRecords(passengerRecords).isEmpty()) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	private boolean existGetOnPassengerError(Phase phase, OperationSchedule operationSchedule, LinkedList<PassengerRecord> passengerRecords) {
+		if (!phase.equals(Phase.PLATFORM_GET_ON)) {
+			return false;
+		} else if (operationSchedule.getNoGetOnErrorPassengerRecords(passengerRecords).isEmpty()) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	// 画面右部のボタンの、地図ボタン、phase変更ボタン（到着しました等）を定義する
