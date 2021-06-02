@@ -34,8 +34,6 @@ public class DrivePhaseFragment extends Fragment {
 		return fragment;
 	}
 
-	private OperationSchedule operationSchedule;
-
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.drive_phase_fragment, container, false);
@@ -58,7 +56,7 @@ public class DrivePhaseFragment extends Fragment {
 
 		Bundle args = getArguments();
 		List<OperationSchedule> operationSchedules = (List<OperationSchedule>) args.getSerializable(OPERATION_SCHEDULES_KEY);
-		operationSchedule = OperationSchedule.getCurrent(operationSchedules);
+		OperationSchedule operationSchedule = OperationSchedule.getCurrent(operationSchedules);
 
 		if (operationSchedule != null) {
 			nextPlatformNameTextView.setText("");
