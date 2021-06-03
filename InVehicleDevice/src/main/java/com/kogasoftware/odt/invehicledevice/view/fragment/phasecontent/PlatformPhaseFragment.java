@@ -133,19 +133,19 @@ public class PlatformPhaseFragment extends OperationSchedulesSyncFragmentAbstrac
 			LinkedList<PassengerRecord> newPassengerRecords,
 			Boolean phaseChanged) {
 
-		setMinutesRemainingTextView(newOperationSchedules);
+		operationSchedules.clear();
+		operationSchedules.addAll(newOperationSchedules);
 
-		OperationSchedule operationSchedule = OperationSchedule.getCurrent(newOperationSchedules);
+		setMinutesRemainingTextView();
+
+		OperationSchedule operationSchedule = OperationSchedule.getCurrent(operationSchedules);
 		if (operationSchedule == null) {
 			currentPlatformNameTextView.setText("");
 			return;
 		}
 
-		setPlatformNameTextView(newOperationSchedules);
+		setPlatformNameTextView();
 		setPassengerList(phase, newPassengerRecords, phaseChanged, operationSchedule);
-
-		operationSchedules.clear();
-		operationSchedules.addAll(newOperationSchedules);
 
 		handler.removeCallbacks(blink);
 		handler.postDelayed(blink, 500);
@@ -166,11 +166,10 @@ public class PlatformPhaseFragment extends OperationSchedulesSyncFragmentAbstrac
 		}
 	}
 
-	private void setPlatformNameTextView(LinkedList<OperationSchedule> newOperationSchedules) {
-		Boolean last = OperationSchedule.getCurrentOffset(newOperationSchedules, 1) == null;
-		OperationSchedule operationSchedule = OperationSchedule.getCurrent(newOperationSchedules);
+	private void setPlatformNameTextView() {
+		OperationSchedule operationSchedule = OperationSchedule.getCurrent(operationSchedules);
 
-		if (last) {
+		if (isLastOperationSchedule()) {
 			currentPlatformNameTextView.setText("現在最終乗降場です");
 			Log.i(TAG, "last platform");
 		} else {
@@ -182,13 +181,15 @@ public class PlatformPhaseFragment extends OperationSchedulesSyncFragmentAbstrac
 	}
 
 	@NonNull
-	private void setMinutesRemainingTextView(LinkedList<OperationSchedule> newOperationSchedules) {
-		Boolean last = OperationSchedule.getCurrentOffset(newOperationSchedules, 1) == null;
-
-		if (last) {
+	private void setMinutesRemainingTextView() {
+		if (isLastOperationSchedule()) {
 			minutesRemainingTextView.setVisibility(View.GONE);
 		} else {
 			minutesRemainingTextView.setVisibility(View.VISIBLE);
 		}
+	}
+
+	private boolean isLastOperationSchedule() {
+		return OperationSchedule.getCurrentOffset(operationSchedules, 1) == null;
 	}
 }
