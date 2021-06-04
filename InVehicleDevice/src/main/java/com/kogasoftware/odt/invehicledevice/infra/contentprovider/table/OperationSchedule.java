@@ -19,6 +19,7 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.task.PatchOper
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.util.ContentValuesUtils;
 import com.kogasoftware.odt.invehicledevice.view.BigToast;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationScheduleChunk;
 
 import org.joda.time.DateTime;
 
@@ -31,7 +32,6 @@ import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * 運行スケジュールテーブル
- * HACK: FatModelになりつつある。chunkクラスを作るか、adapterかdecoratorパターンで、view用の関数を分けたい
  */
 public class OperationSchedule implements Serializable {
 	private static final long serialVersionUID = -2332224258753742183L;
@@ -138,7 +138,7 @@ public class OperationSchedule implements Serializable {
 	}
 
 	public static Phase getPhase(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
-		List<OperationSchedule> currentChunk = getCurrentChunk(operationSchedules, passengerRecords);
+		List<OperationSchedule> currentChunk = OperationScheduleChunk.getCurrentChunk(operationSchedules, passengerRecords);
 
 		if (currentChunk.isEmpty()) {
 			return Phase.FINISH;
@@ -154,68 +154,6 @@ public class OperationSchedule implements Serializable {
 		}
 	}
 
-	public static List<OperationSchedule> getCurrentChunk(List<OperationSchedule> operationSchedules ,List<PassengerRecord> passengerRecords) {
-		List<List> chunkList = getOperationSchedulePhaseChunkList(operationSchedules, passengerRecords);
-		List<OperationSchedule> currentChunk = Lists.newArrayList();
-
-		for (List<OperationSchedule> chunkOperationSchedules : chunkList) {
-			for (OperationSchedule operationSchedule : chunkOperationSchedules) {
-				if (operationSchedule.arrivedAt == null || operationSchedule.departedAt == null) {
-					currentChunk = chunkOperationSchedules;
-					break;
-				}
-			}
-			if (!currentChunk.isEmpty()) {
-				break;
-			}
-		}
-
-		return currentChunk;
-	}
-
-	public static OperationSchedule getCurrentChunkRepresentativeOS(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
-		if (isExistCurrentChunk(operationSchedules, passengerRecords)) {
-			return getCurrentChunk(operationSchedules, passengerRecords).get(0);
-		} else {
-			return null;
-		}
-	}
-
-	public static boolean isExistCurrentChunk(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
-		return !getCurrentChunk(operationSchedules, passengerRecords).isEmpty();
-	}
-
-	public static List<OperationSchedule> getNextChunk(List<OperationSchedule> operationSchedules ,List<PassengerRecord> passengerRecords) {
-		List<List> chunkList = getOperationSchedulePhaseChunkList(operationSchedules, passengerRecords);
-		List<OperationSchedule> nextChunk = Lists.newArrayList();
-
-		for (int i = 0; i < chunkList.size() - 1; i++) {
-			List<OperationSchedule> chunkOperationSchedules = chunkList.get(i);
-			for (OperationSchedule operationSchedule : chunkOperationSchedules) {
-				if (operationSchedule.arrivedAt == null || operationSchedule.departedAt == null) {
-					nextChunk = chunkList.get(i + 1);
-					break;
-				}
-			}
-			if (!nextChunk.isEmpty()) {
-				break;
-			}
-		}
-
-		return nextChunk;
-	}
-
-	public static OperationSchedule getNextChunkRepresentativeOS(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
-		if (isExistNextChunk(operationSchedules, passengerRecords)) {
-			return getNextChunk(operationSchedules, passengerRecords).get(0);
-		} else {
-			return null;
-		}
-	}
-
-	public static boolean isExistNextChunk(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
-		return !getNextChunk(operationSchedules, passengerRecords).isEmpty();
-	}
 	public List<PassengerRecord> getNoGetOffErrorPassengerRecords(List<PassengerRecord> passengerRecords) {
 		List<PassengerRecord> results = Lists.newLinkedList();
 		for (PassengerRecord passengerRecord : getGetOffScheduledPassengerRecords(passengerRecords)) {
@@ -314,54 +252,6 @@ public class OperationSchedule implements Serializable {
 		Cursor cursor = database.rawQuery(sql.toString(), null);
 		cursor.setNotificationUri(contentResolver, OperationSchedule.CONTENT.URI);
 		return cursor;
-	}
-
-	public static List<List> getOperationSchedulePhaseChunkList(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
-		List<List> operationScheduleListChunk = Lists.newLinkedList();
-
-		for (List<OperationSchedule> samePlatformOperationSchedules : getOperationScheduleListSamePlatformChunk(operationSchedules)) {
-			List<OperationSchedule> arrivalOperationSchedules = Lists.newArrayList();
-			List<OperationSchedule> departureOperationSchedules = Lists.newArrayList();
-
-			for (OperationSchedule operationSchedule : samePlatformOperationSchedules) {
-				for (PassengerRecord passengerRecord : passengerRecords) {
-					if (passengerRecord.departureScheduleId.equals(operationSchedule.id) && !departureOperationSchedules.contains((operationSchedule))) {
-						departureOperationSchedules.add(operationSchedule);
-					} else if (passengerRecord.arrivalScheduleId.equals(operationSchedule.id) && !arrivalOperationSchedules.contains((operationSchedule))) {
-						arrivalOperationSchedules.add(operationSchedule);
-					}
-				}
-			}
-
-			if (arrivalOperationSchedules.size() > 0) {
-				operationScheduleListChunk.add(arrivalOperationSchedules);
-			}
-			if (departureOperationSchedules.size() > 0) {
-				operationScheduleListChunk.add(departureOperationSchedules);
-			}
-		}
-		return operationScheduleListChunk;
-	}
-
-	private static LinkedList<List> getOperationScheduleListSamePlatformChunk(List<OperationSchedule> operationSchedules) {
-
-		boolean first = true;
-		OperationSchedule previousOS = null;
-
-		LinkedList<List> platformOrderOperationScheduleLists = Lists.newLinkedList();
-
-		for (OperationSchedule currentOS : operationSchedules) {
-			if (first || !previousOS.platformId.equals(currentOS.platformId)) {
-				List<OperationSchedule> samePlatformOperationSchedules = Lists.newArrayList();
-				samePlatformOperationSchedules.add(currentOS);
-				platformOrderOperationScheduleLists.add(samePlatformOperationSchedules);
-				first = false;}
-			else {
-				platformOrderOperationScheduleLists.getLast().add(currentOS);
-			}
-			previousOS = currentOS;
-		}
-		return platformOrderOperationScheduleLists;
 	}
 
 }

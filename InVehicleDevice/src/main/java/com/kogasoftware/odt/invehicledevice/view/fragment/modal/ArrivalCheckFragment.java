@@ -15,6 +15,7 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationScheduleChunk;
 
 import org.joda.time.DateTime;
 
@@ -60,11 +61,10 @@ public class ArrivalCheckFragment extends Fragment {
 			@Override
 			public void onClick(View view) {
 				Fragments.hide(ArrivalCheckFragment.this);
-				final List<OperationSchedule> currentChunk = OperationSchedule.getCurrentChunk(operationSchedules, passengerRecords);
 				Thread tt = new Thread() {
 					@Override
 					public void run() {
-						for (OperationSchedule operationSchedule : currentChunk) {
+						for (OperationSchedule operationSchedule : OperationScheduleChunk.getCurrentChunk(operationSchedules, passengerRecords)) {
 							operationSchedule.arrivedAt = DateTime.now();
 							ContentValues values = operationSchedule.toContentValues();
 							contentResolver.insert(OperationSchedule.CONTENT.URI, values);
@@ -80,7 +80,7 @@ public class ArrivalCheckFragment extends Fragment {
 			}
 		});
 
-		commentTextView.setText(OperationSchedule.getCurrentChunkRepresentativeOS(operationSchedules, passengerRecords).name);
+		commentTextView.setText(OperationScheduleChunk.getCurrentChunkRepresentativeOS(operationSchedules, passengerRecords).name);
 	}
 
 	@Override

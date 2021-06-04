@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationScheduleChunk;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -62,8 +63,8 @@ public class DrivePhaseFragment extends Fragment {
 		List<OperationSchedule> operationSchedules = (List<OperationSchedule>) args.getSerializable(OPERATION_SCHEDULES_KEY);
 		List<PassengerRecord> passengerRecords = (List<PassengerRecord>) args.getSerializable(PASSENGER_RECORDS_KEY);
 
-		if (OperationSchedule.isExistCurrentChunk(operationSchedules, passengerRecords)) {
-			OperationSchedule representativeOS = OperationSchedule.getCurrentChunkRepresentativeOS(operationSchedules, passengerRecords);
+		if (OperationScheduleChunk.isExistCurrentChunk(operationSchedules, passengerRecords)) {
+			OperationSchedule representativeOS = OperationScheduleChunk.getCurrentChunkRepresentativeOS(operationSchedules, passengerRecords);
 			nextPlatformNameTextView.setText("");
 			Log.i(TAG, "next platform id=" + representativeOS.platformId + " name=" + representativeOS.name);
 			nextPlatformNameTextView.setText(representativeOS.name);
@@ -71,20 +72,20 @@ public class DrivePhaseFragment extends Fragment {
 			platformArrivalTimeTextView2.setText(getEstimateTimeForView(operationSchedules, passengerRecords));
 		}
 
-		if (OperationSchedule.isExistNextChunk(operationSchedules, passengerRecords)) {
-			platformName1BeyondTextView.setText("▼ " + OperationSchedule.getNextChunkRepresentativeOS(operationSchedules, passengerRecords).name);
+		if (OperationScheduleChunk.isExistNextChunk(operationSchedules, passengerRecords)) {
+			platformName1BeyondTextView.setText("▼ " + OperationScheduleChunk.getNextChunkRepresentativeOS(operationSchedules, passengerRecords).name);
 		}
 	}
 
 	@Nullable
 	private String getEstimateTimeForView(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
-		List<OperationSchedule> targetOperationSchedules = OperationSchedule.getCurrentChunk(operationSchedules, passengerRecords);
+		List<OperationSchedule> targetOperationSchedules = OperationScheduleChunk.getCurrentChunk(operationSchedules, passengerRecords);
 
-		OperationSchedule currentOS = OperationSchedule.getCurrentChunkRepresentativeOS(operationSchedules, passengerRecords);
-		OperationSchedule nextOS = OperationSchedule.getNextChunkRepresentativeOS(operationSchedules, passengerRecords);
+		OperationSchedule currentOS = OperationScheduleChunk.getCurrentChunkRepresentativeOS(operationSchedules, passengerRecords);
+		OperationSchedule nextOS = OperationScheduleChunk.getNextChunkRepresentativeOS(operationSchedules, passengerRecords);
 
-		if (OperationSchedule.isExistNextChunk(operationSchedules, passengerRecords) && nextOS.platformId.equals(currentOS.platformId)) {
-			targetOperationSchedules.addAll(OperationSchedule.getNextChunk(operationSchedules, passengerRecords));
+		if (OperationScheduleChunk.isExistNextChunk(operationSchedules, passengerRecords) && nextOS.platformId.equals(currentOS.platformId)) {
+			targetOperationSchedules.addAll(OperationScheduleChunk.getNextChunk(operationSchedules, passengerRecords));
 		}
 
 		OperationSchedule estimateOS = null;

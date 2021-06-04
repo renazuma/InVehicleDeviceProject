@@ -15,6 +15,7 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.Operatio
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationScheduleChunk;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationSchedulesSyncFragmentAbstract;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.ViewDisabler;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.arrayadapter.PassengerRecordErrorArrayAdapter;
@@ -75,7 +76,7 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
 		}
 
 		List<PassengerRecord> getOnSchedulePassengerRecords = Lists.newArrayList();
-		for (OperationSchedule operationSchedule : OperationSchedule.getCurrentChunk(operationSchedules, passengerRecords)) {
+		for (OperationSchedule operationSchedule : OperationScheduleChunk.getCurrentChunk(operationSchedules, passengerRecords)) {
 			getOnSchedulePassengerRecords.addAll(operationSchedule.getGetOnScheduledPassengerRecords(passengerRecords));
 		}
 
@@ -91,7 +92,7 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
 		new Thread() {
 			@Override
 			public void run() {
-				for (OperationSchedule operationSchedule : OperationSchedule.getCurrentChunk(operationSchedules, passengerRecords)) {
+				for (OperationSchedule operationSchedule : OperationScheduleChunk.getCurrentChunk(operationSchedules, passengerRecords)) {
 					operationSchedule.completeGetOff = true;
 					contentResolver.insert(OperationSchedule.CONTENT.URI, operationSchedule.toContentValues());
 				}
@@ -108,7 +109,7 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
 			final LinkedList<PassengerRecord> passengerRecords) {
 
 		boolean existSameId = false;
-		for (OperationSchedule currentOS : OperationSchedule.getCurrentChunk(operationSchedules, passengerRecords)) {
+		for (OperationSchedule currentOS : OperationScheduleChunk.getCurrentChunk(operationSchedules, passengerRecords)) {
 			for (OperationSchedule containOS : this.operationSchedules) {
 				if (currentOS.id.equals(containOS.id)) {
 					existSameId = true;
@@ -116,18 +117,18 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
 				}
 			}
 		}
-		if (!OperationSchedule.isExistCurrentChunk(operationSchedules, passengerRecords) || !existSameId) {
+		if (!OperationScheduleChunk.isExistCurrentChunk(operationSchedules, passengerRecords) || !existSameId) {
 			Fragments.hide(this);
 			return;
 		}
 
 		List<PassengerRecord> errorPassengerRecords = Lists.newLinkedList();
 		if (phase.equals(Phase.PLATFORM_GET_OFF)) {
-			for (OperationSchedule operationSchedule : OperationSchedule.getCurrentChunk(operationSchedules, passengerRecords)) {
+			for (OperationSchedule operationSchedule : OperationScheduleChunk.getCurrentChunk(operationSchedules, passengerRecords)) {
 				errorPassengerRecords.addAll(operationSchedule.getNoGetOffErrorPassengerRecords(passengerRecords));
 			}
 		} else {
-			for (OperationSchedule operationSchedule : OperationSchedule.getCurrentChunk(operationSchedules, passengerRecords)) {
+			for (OperationSchedule operationSchedule : OperationScheduleChunk.getCurrentChunk(operationSchedules, passengerRecords)) {
 				errorPassengerRecords.addAll(operationSchedule.getNoGetOnErrorPassengerRecords(passengerRecords));
 			}
 		}
