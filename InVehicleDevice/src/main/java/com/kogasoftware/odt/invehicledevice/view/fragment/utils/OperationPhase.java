@@ -17,7 +17,7 @@ public class OperationPhase implements Serializable {
     this.passengerRecords = passengerRecords;
   }
 
-  public static OperationSchedule.Phase getPhase(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
+  public OperationSchedule.Phase getPhase() {
         OperationPhase operationPhase = new OperationPhase(operationSchedules, passengerRecords);
         List<OperationSchedule> currentPhaseOperationSchedules = operationPhase.getCurrentOperationSchedules();
 

@@ -124,7 +124,7 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
 			return;
 		}
 
-		final Phase phase = OperationPhase.getPhase(operationSchedules, passengerRecords);
+		final Phase phase = newOperationPhase.getPhase();
 		List<PassengerRecord> errorPassengerRecords = Lists.newLinkedList();
 		if (phase.equals(Phase.PLATFORM_GET_OFF)) {
 			for (OperationSchedule operationSchedule : newOperationPhase.getCurrentOperationSchedules()) {

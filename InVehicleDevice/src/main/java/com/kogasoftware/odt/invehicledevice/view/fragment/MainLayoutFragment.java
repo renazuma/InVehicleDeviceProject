@@ -63,7 +63,8 @@ public class MainLayoutFragment extends OperationSchedulesSyncFragmentAbstract {
 	protected void onOperationSchedulesAndPassengerRecordsLoadFinished(
 			LinkedList<OperationSchedule> operationSchedules,
 			LinkedList<PassengerRecord> passengerRecords, Boolean phaseChanged) {
-		Phase phase = OperationPhase.getPhase(operationSchedules, passengerRecords);
+		OperationPhase operationPhase = new OperationPhase(operationSchedules, passengerRecords);
+		Phase phase = operationPhase.getPhase();
 		Log.i(LOGGING_TAG, "phase=" + phase + " phaseChanged=" + phaseChanged);
 
 		if (!phaseChanged) { return; }
@@ -76,7 +77,7 @@ public class MainLayoutFragment extends OperationSchedulesSyncFragmentAbstract {
 				fragmentTransaction.replace(R.id.phase_content_fragment_container, FinishPhaseFragment.newInstance());
 				break;
 			case DRIVE:
-				fragmentTransaction.replace(R.id.phase_content_fragment_container, DrivePhaseFragment.newInstance(new OperationPhase(operationSchedules, passengerRecords)));
+				fragmentTransaction.replace(R.id.phase_content_fragment_container, DrivePhaseFragment.newInstance(operationPhase));
 				break;
 			case PLATFORM_GET_ON:
 				fragmentTransaction.replace(R.id.phase_content_fragment_container, PlatformPhaseFragment.newInstance());

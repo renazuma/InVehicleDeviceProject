@@ -165,8 +165,8 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 	protected void onOperationSchedulesAndPassengerRecordsLoadFinished(
 			final LinkedList<OperationSchedule> operationSchedules,
 			final LinkedList<PassengerRecord> passengerRecords) {
-		final Phase phase = OperationPhase.getPhase(operationSchedules, passengerRecords);
 		this.operationPhase = new OperationPhase(operationSchedules, passengerRecords);
+		final Phase phase = operationPhase.getPhase();
 
 		mapButton.setOnClickListener(new OnClickListener() {
 			@Override
@@ -178,7 +178,7 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 
 		Button changePhaseButton = (Button) getView().findViewById(R.id.change_phase_button);
 		getView().setBackgroundColor(Color.WHITE);
-		switch (OperationPhase.getPhase(operationSchedules, passengerRecords)) {
+		switch (operationPhase.getPhase()) {
 			case DRIVE :
 				changePhaseButton.setEnabled(true);
 				changePhaseButton.setText(getString(R.string.it_arrives_button_text));
