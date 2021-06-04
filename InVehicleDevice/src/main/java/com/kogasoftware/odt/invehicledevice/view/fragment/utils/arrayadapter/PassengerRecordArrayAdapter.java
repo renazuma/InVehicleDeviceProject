@@ -42,7 +42,7 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 	private static final Integer RESOURCE_ID = R.layout.passenger_record_list_row;
 	private final LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	private final Phase phase;
-	private final List<OperationSchedule> chunkOperationSchedules;
+	private final List<OperationSchedule> currentOperationSchedules;
 	private final WeakHashMap<View, Boolean> memoButtons = new WeakHashMap<View, Boolean>();
 	private final ContentResolver contentResolver;
 	private Boolean memoButtonsVisible = true;
@@ -53,7 +53,7 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 		this.fragment = fragment;
 		this.contentResolver = fragment.getActivity().getContentResolver();
 		this.phase = phase;
-		this.chunkOperationSchedules = operationSchedules;
+		this.currentOperationSchedules = operationSchedules;
 	}
 
 	private final OnClickListener onClickListenerForPassengerRecord = new OnClickListener() {
@@ -133,14 +133,14 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 		OperationSchedule operationSchedule = null;
 
 		if (phase.equals(Phase.PLATFORM_GET_OFF)) {
-			for (OperationSchedule tmpOperationSchedule : chunkOperationSchedules) {
+			for (OperationSchedule tmpOperationSchedule : currentOperationSchedules) {
 				if (tmpOperationSchedule.id.equals(passengerRecord.arrivalScheduleId)) {
 					operationSchedule = tmpOperationSchedule;
 					break;
 				}
 			}
 		} else {
-			for (OperationSchedule tmpOperationSchedule : chunkOperationSchedules) {
+			for (OperationSchedule tmpOperationSchedule : currentOperationSchedules) {
 				if (tmpOperationSchedule.id.equals(passengerRecord.departureScheduleId)) {
 					operationSchedule = tmpOperationSchedule;
 					break;

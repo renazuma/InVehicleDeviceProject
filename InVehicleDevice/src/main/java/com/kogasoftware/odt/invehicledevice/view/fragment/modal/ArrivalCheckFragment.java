@@ -24,12 +24,12 @@ import java.io.Serializable;
  * 到着チェック画面
  */
 public class ArrivalCheckFragment extends Fragment {
-	private static final String OPERATION_SCHEDULE_CHUNK_KEY = "operation_schedule_chunk";
+	private static final String OPERATION_PHASE_KEY = "operation_phase";
 
 	public static Fragment newInstance(OperationPhase operationPhase) {
 		ArrivalCheckFragment fragment = new ArrivalCheckFragment();
 		Bundle args = new Bundle();
-		args.putSerializable(OPERATION_SCHEDULE_CHUNK_KEY, (Serializable) operationPhase);
+		args.putSerializable(OPERATION_PHASE_KEY, (Serializable) operationPhase);
 		fragment.setArguments(args);
 		return fragment;
 	}
@@ -39,7 +39,7 @@ public class ArrivalCheckFragment extends Fragment {
 		super.onActivityCreated(savedInstanceState);
 		View view = getView();
 		final ContentResolver contentResolver = getActivity().getContentResolver();
-		final OperationPhase operationPhase = (OperationPhase) getArguments().getSerializable(OPERATION_SCHEDULE_CHUNK_KEY);
+		final OperationPhase operationPhase = (OperationPhase) getArguments().getSerializable(OPERATION_PHASE_KEY);
 
 		TextView commentTextView = (TextView) view.findViewById(R.id.arrival_check_comment_text_view);
 

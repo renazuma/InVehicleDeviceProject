@@ -25,12 +25,12 @@ import java.io.Serializable;
 public class DepartureCheckFragment extends Fragment {
 	private static final String TAG = DepartureCheckFragment.class.getSimpleName();
 	private static final String PHASE_KEY = "phase";
-	private static final String OPERATION_SCHEDULE_CHUNK_KEY = "operation_schedule_chunk";
+	private static final String OPERATION_PHASE_KEY = "operation_phase";
 
 	public static Fragment newInstance(OperationPhase operationPhase) {
 		DepartureCheckFragment fragment = new DepartureCheckFragment();
 		Bundle args = new Bundle();
-		args.putSerializable(OPERATION_SCHEDULE_CHUNK_KEY, (Serializable) operationPhase);
+		args.putSerializable(OPERATION_PHASE_KEY, (Serializable) operationPhase);
 		fragment.setArguments(args);
 		return fragment;
 	}
@@ -48,7 +48,7 @@ public class DepartureCheckFragment extends Fragment {
 		contentResolver = getActivity().getContentResolver();
 
 		Bundle args = getArguments();
-		final OperationPhase operationPhase = (OperationPhase) args.getSerializable(OPERATION_SCHEDULE_CHUNK_KEY);
+		final OperationPhase operationPhase = (OperationPhase) args.getSerializable(OPERATION_PHASE_KEY);
 		Phase phase = OperationSchedule.getPhase(operationPhase.operationSchedules, operationPhase.passengerRecords);
 
 		View view = getView();

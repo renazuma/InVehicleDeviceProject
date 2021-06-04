@@ -138,12 +138,12 @@ public class OperationSchedule implements Serializable {
 	}
 
 	public static Phase getPhase(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
-		List<OperationSchedule> currentChunk = OperationPhase.getCurrentOperationSchedules(operationSchedules, passengerRecords);
+		List<OperationSchedule> currentPhaseOperationSchedules = OperationPhase.getCurrentOperationSchedules(operationSchedules, passengerRecords);
 
-		if (currentChunk.isEmpty()) {
+		if (currentPhaseOperationSchedules.isEmpty()) {
 			return Phase.FINISH;
 		} else {
-			OperationSchedule representativeOS = currentChunk.get(0);
+			OperationSchedule representativeOS = currentPhaseOperationSchedules.get(0);
 			if (representativeOS.arrivedAt == null && representativeOS.departedAt == null) {
 				return Phase.DRIVE;
 			} else if (representativeOS.completeGetOff || representativeOS.getGetOffScheduledPassengerRecords(passengerRecords).isEmpty()) {

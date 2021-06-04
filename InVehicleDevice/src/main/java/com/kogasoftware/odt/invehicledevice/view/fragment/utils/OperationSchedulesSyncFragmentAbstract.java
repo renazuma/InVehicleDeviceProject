@@ -104,12 +104,12 @@ public abstract class OperationSchedulesSyncFragmentAbstract extends Fragment {
 
 					Phase newPhase = OperationSchedule.getPhase(operationSchedules, passengerRecords);
 
-					List<OperationSchedule> currentChunk = OperationPhase.getCurrentOperationSchedules(operationSchedules, passengerRecords);
+					List<OperationSchedule> currentOperationSchedules = OperationPhase.getCurrentOperationSchedules(operationSchedules, passengerRecords);
 
-					Boolean phaseChanged = isPhaseChangedPattern(newPhase, currentChunk);
+					Boolean phaseChanged = isPhaseChangedPattern(newPhase, currentOperationSchedules);
 
 					currentPhase = newPhase;
-					currentOperationSchedules = currentChunk;
+					OperationSchedulesSyncFragmentAbstract.this.currentOperationSchedules = operationSchedules;
 
 					// 継承先のクラスで実装される、operation_schedule/passenger_record同期後の動作
 					onOperationSchedulesAndPassengerRecordsLoadFinished(operationSchedules, passengerRecords, phaseChanged);
