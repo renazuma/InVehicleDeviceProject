@@ -152,7 +152,7 @@ public class PlatformPhaseFragment extends OperationSchedulesSyncFragmentAbstrac
 	}
 
 	private void setPassengerList(Boolean phaseChanged) {
-		Phase phase = OperationSchedule.getPhase(operationPhase.operationSchedules, operationPhase.passengerRecords);
+		Phase phase = OperationPhase.getPhase(operationPhase.operationSchedules, operationPhase.passengerRecords);
 
 		if (phaseChanged) {
 			adapter = new PassengerRecordArrayAdapter(this, phase, operationPhase.getCurrentOperationSchedules());

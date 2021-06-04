@@ -102,7 +102,7 @@ public abstract class OperationSchedulesSyncFragmentAbstract extends Fragment {
 				public void run() {
 					if (!isAdded()) { return; }
 
-					Phase newPhase = OperationSchedule.getPhase(operationSchedules, passengerRecords);
+					Phase newPhase = OperationPhase.getPhase(operationSchedules, passengerRecords);
 
 					OperationPhase operationPhase = new OperationPhase(operationSchedules, passengerRecords);
 					List<OperationSchedule> currentOperationSchedules = operationPhase.getCurrentOperationSchedules();

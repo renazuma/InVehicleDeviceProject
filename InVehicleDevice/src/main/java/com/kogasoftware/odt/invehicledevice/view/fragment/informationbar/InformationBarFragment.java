@@ -144,7 +144,7 @@ public class InformationBarFragment	extends OperationSchedulesSyncFragmentAbstra
 	}
 
 	private Boolean isShowMemoButtonPattern() {
-		return (OperationSchedule.getPhase(operationPhase.operationSchedules, operationPhase.passengerRecords) != Phase.FINISH
+		return (OperationPhase.getPhase(operationPhase.operationSchedules, operationPhase.passengerRecords) != Phase.FINISH
 						&& operationPhase.isExistCurrent()
 						&& StringUtils.isNotBlank(operationPhase.getCurrentRepresentativeOS().memo));
 	}
@@ -158,7 +158,7 @@ public class InformationBarFragment	extends OperationSchedulesSyncFragmentAbstra
 	}
 
 	private int getPhaseColor() {
-		switch (OperationSchedule.getPhase(operationPhase.operationSchedules, operationPhase.passengerRecords)) {
+		switch (OperationPhase.getPhase(operationPhase.operationSchedules, operationPhase.passengerRecords)) {
 			case DRIVE:
 			    return ContextCompat.getColor(getContext(), R.color.drive_phase_header);
 			case FINISH:
@@ -174,7 +174,7 @@ public class InformationBarFragment	extends OperationSchedulesSyncFragmentAbstra
 	}
 
 	private String getPhaseText() {
-		switch (OperationSchedule.getPhase(operationPhase.operationSchedules, operationPhase.passengerRecords)) {
+		switch (OperationPhase.getPhase(operationPhase.operationSchedules, operationPhase.passengerRecords)) {
 			case DRIVE:
 				return "運行中";
 			case FINISH:

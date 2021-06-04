@@ -137,24 +137,6 @@ public class OperationSchedule implements Serializable {
 		return values;
 	}
 
-	public static Phase getPhase(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
-		OperationPhase operationPhase = new OperationPhase(operationSchedules, passengerRecords);
-		List<OperationSchedule> currentPhaseOperationSchedules = operationPhase.getCurrentOperationSchedules();
-
-		if (currentPhaseOperationSchedules.isEmpty()) {
-			return Phase.FINISH;
-		} else {
-			OperationSchedule representativeOS = operationPhase.getCurrentRepresentativeOS();
-			if (representativeOS.arrivedAt == null && representativeOS.departedAt == null) {
-				return Phase.DRIVE;
-			} else if (representativeOS.completeGetOff || representativeOS.getGetOffScheduledPassengerRecords(passengerRecords).isEmpty()) {
-				return Phase.PLATFORM_GET_ON;
-			} else {
-				return Phase.PLATFORM_GET_OFF;
-			}
-		}
-	}
-
 	public List<PassengerRecord> getNoGetOffErrorPassengerRecords(List<PassengerRecord> passengerRecords) {
 		List<PassengerRecord> results = Lists.newLinkedList();
 		for (PassengerRecord passengerRecord : getGetOffScheduledPassengerRecords(passengerRecords)) {

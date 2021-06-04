@@ -17,6 +17,24 @@ public class OperationPhase implements Serializable {
     this.passengerRecords = passengerRecords;
   }
 
+  public static OperationSchedule.Phase getPhase(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
+        OperationPhase operationPhase = new OperationPhase(operationSchedules, passengerRecords);
+        List<OperationSchedule> currentPhaseOperationSchedules = operationPhase.getCurrentOperationSchedules();
+
+        if (currentPhaseOperationSchedules.isEmpty()) {
+            return OperationSchedule.Phase.FINISH;
+        } else {
+            OperationSchedule representativeOS = operationPhase.getCurrentRepresentativeOS();
+            if (representativeOS.arrivedAt == null && representativeOS.departedAt == null) {
+                return OperationSchedule.Phase.DRIVE;
+            } else if (representativeOS.completeGetOff || representativeOS.getGetOffScheduledPassengerRecords(passengerRecords).isEmpty()) {
+                return OperationSchedule.Phase.PLATFORM_GET_ON;
+            } else {
+                return OperationSchedule.Phase.PLATFORM_GET_OFF;
+            }
+        }
+    }
+
   public List<List> getAllPhaseOperationSchedules() {
         List<List> phaseOperationSchedulesList = Lists.newLinkedList();
 

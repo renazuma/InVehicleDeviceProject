@@ -63,7 +63,7 @@ public class MainLayoutFragment extends OperationSchedulesSyncFragmentAbstract {
 	protected void onOperationSchedulesAndPassengerRecordsLoadFinished(
 			LinkedList<OperationSchedule> operationSchedules,
 			LinkedList<PassengerRecord> passengerRecords, Boolean phaseChanged) {
-		Phase phase = OperationSchedule.getPhase(operationSchedules, passengerRecords);
+		Phase phase = OperationPhase.getPhase(operationSchedules, passengerRecords);
 		Log.i(LOGGING_TAG, "phase=" + phase + " phaseChanged=" + phaseChanged);
 
 		if (!phaseChanged) { return; }

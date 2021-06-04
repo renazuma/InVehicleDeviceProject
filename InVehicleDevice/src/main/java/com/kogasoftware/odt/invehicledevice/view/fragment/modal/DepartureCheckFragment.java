@@ -49,7 +49,7 @@ public class DepartureCheckFragment extends Fragment {
 
 		Bundle args = getArguments();
 		final OperationPhase operationPhase = (OperationPhase) args.getSerializable(OPERATION_PHASE_KEY);
-		Phase phase = OperationSchedule.getPhase(operationPhase.operationSchedules, operationPhase.passengerRecords);
+		Phase phase = OperationPhase.getPhase(operationPhase.operationSchedules, operationPhase.passengerRecords);
 
 		View view = getView();
 
