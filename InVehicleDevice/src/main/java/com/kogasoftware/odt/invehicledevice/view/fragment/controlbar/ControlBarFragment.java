@@ -103,7 +103,7 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 		if (!operationScheduleChunk.isExistCurrentChunk()) { return; }
 
 		if (existPassengerRecordError(phase)) {
-			Fragments.showModalFragment(getFragmentManager(), PassengerRecordErrorFragment.newInstance(operationScheduleChunk.getCurrentChunk()));
+			Fragments.showModalFragment(getFragmentManager(), PassengerRecordErrorFragment.newInstance(operationScheduleChunk));
 		} else if (phase.equals(Phase.PLATFORM_GET_OFF)) {
 			List<PassengerRecord> getOnPassengerRecords = Lists.newArrayList();
 			for (OperationSchedule operationSchedule : operationScheduleChunk.getCurrentChunk()) {
