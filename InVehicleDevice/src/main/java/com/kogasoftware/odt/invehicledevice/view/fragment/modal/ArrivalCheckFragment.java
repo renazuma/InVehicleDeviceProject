@@ -13,27 +13,23 @@ import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationScheduleChunk;
 
 import org.joda.time.DateTime;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * 到着チェック画面
  */
 public class ArrivalCheckFragment extends Fragment {
-	private static final String OPERATION_SCHEDULES_KEY = "operation_schedules";
-	private static final String PASSENGER_RECORDS_KEY = "passenger_records";
+	private static final String OPERATION_SCHEDULE_CHUNK_KEY = "operation_schedule_chunk";
 
-	public static Fragment newInstance(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
+	public static Fragment newInstance(OperationScheduleChunk operationScheduleChunk) {
 		ArrivalCheckFragment fragment = new ArrivalCheckFragment();
 		Bundle args = new Bundle();
-		args.putSerializable(OPERATION_SCHEDULES_KEY, (Serializable) operationSchedules);
-		args.putSerializable(PASSENGER_RECORDS_KEY, (Serializable) passengerRecords);
+		args.putSerializable(OPERATION_SCHEDULE_CHUNK_KEY, (Serializable) operationScheduleChunk);
 		fragment.setArguments(args);
 		return fragment;
 	}
@@ -43,8 +39,7 @@ public class ArrivalCheckFragment extends Fragment {
 		super.onActivityCreated(savedInstanceState);
 		View view = getView();
 		final ContentResolver contentResolver = getActivity().getContentResolver();
-		final List<OperationSchedule> operationSchedules = (List<OperationSchedule>) getArguments().getSerializable(OPERATION_SCHEDULES_KEY);
-		final List<PassengerRecord> passengerRecords = (List<PassengerRecord>) getArguments().getSerializable(PASSENGER_RECORDS_KEY);
+		final OperationScheduleChunk operationScheduleChunk = (OperationScheduleChunk) getArguments().getSerializable(OPERATION_SCHEDULE_CHUNK_KEY);
 
 		TextView commentTextView = (TextView) view.findViewById(R.id.arrival_check_comment_text_view);
 
@@ -64,7 +59,7 @@ public class ArrivalCheckFragment extends Fragment {
 				Thread tt = new Thread() {
 					@Override
 					public void run() {
-						for (OperationSchedule operationSchedule : OperationScheduleChunk.getCurrentChunk(operationSchedules, passengerRecords)) {
+						for (OperationSchedule operationSchedule : operationScheduleChunk.getCurrentChunk()) {
 							operationSchedule.arrivedAt = DateTime.now();
 							ContentValues values = operationSchedule.toContentValues();
 							contentResolver.insert(OperationSchedule.CONTENT.URI, values);
@@ -80,7 +75,7 @@ public class ArrivalCheckFragment extends Fragment {
 			}
 		});
 
-		commentTextView.setText(OperationScheduleChunk.getCurrentChunkRepresentativeOS(operationSchedules, passengerRecords).name);
+		commentTextView.setText(operationScheduleChunk.getCurrentChunkRepresentativeOS().name);
 	}
 
 	@Override

@@ -93,8 +93,7 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 
 		getFragmentManager()
 			.beginTransaction()
-			.add(R.id.modal_fragment_container, ArrivalCheckFragment.newInstance(
-							operationScheduleChunk.operationSchedules, operationScheduleChunk.passengerRecords))
+			.add(R.id.modal_fragment_container, ArrivalCheckFragment.newInstance(operationScheduleChunk))
 			.commitAllowingStateLoss();
 	}
 
