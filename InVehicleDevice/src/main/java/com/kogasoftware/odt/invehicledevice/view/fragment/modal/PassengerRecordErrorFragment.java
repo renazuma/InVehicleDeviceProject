@@ -15,7 +15,7 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.Operatio
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
-import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationScheduleChunk;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationPhase;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationSchedulesSyncFragmentAbstract;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.ViewDisabler;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.arrayadapter.PassengerRecordErrorArrayAdapter;
@@ -32,16 +32,16 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
 	private static final String OPERATION_SCHEDULE_CHUNK_KEY = "operation_schedule_chunk";
 	private Button completeWithErrorButton;
 	private ContentResolver contentResolver;
-	private OperationScheduleChunk operationScheduleChunk;
+	private OperationPhase operationPhase;
 	private List<OperationSchedule> operationSchedules;
 	private Button closeButton;
 	private FlickUnneededListView errorUserListView;
 	private PassengerRecordErrorArrayAdapter adapter;
 
-	public static PassengerRecordErrorFragment newInstance(OperationScheduleChunk operationScheduleChunk) {
+	public static PassengerRecordErrorFragment newInstance(OperationPhase operationPhase) {
 		PassengerRecordErrorFragment fragment = new PassengerRecordErrorFragment();
 		Bundle args = new Bundle();
-		args.putSerializable(OPERATION_SCHEDULE_CHUNK_KEY, (Serializable) operationScheduleChunk);
+		args.putSerializable(OPERATION_SCHEDULE_CHUNK_KEY, (Serializable) operationPhase);
 		fragment.setArguments(args);
 		return fragment;
 	}
@@ -56,8 +56,8 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
 		super.onActivityCreated(savedInstanceState);
 		contentResolver = getActivity().getContentResolver();
 		Bundle args = getArguments();
-		operationScheduleChunk = (OperationScheduleChunk)args.getSerializable(OPERATION_SCHEDULE_CHUNK_KEY);
-		operationSchedules = operationScheduleChunk.getCurrentChunk();
+		operationPhase = (OperationPhase)args.getSerializable(OPERATION_SCHEDULE_CHUNK_KEY);
+		operationSchedules = operationPhase.getCurrentOperationSchedules();
 		View view = getView();
 		closeButton = (Button) view.findViewById(R.id.get_off_check_close_button);
 		closeButton.setOnClickListener(new OnClickListener() {
@@ -72,20 +72,20 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
 		errorUserListView.getListView().setAdapter(adapter);
 	}
 
-	private void complete(Phase phase, final OperationScheduleChunk newOperationScheduleChunk) {
+	private void complete(Phase phase, final OperationPhase newOperationPhase) {
 		if (!isAdded()) {
 			return;
 		}
 
 		List<PassengerRecord> getOnSchedulePassengerRecords = Lists.newArrayList();
-		for (OperationSchedule operationSchedule : newOperationScheduleChunk.getCurrentChunk()) {
-			getOnSchedulePassengerRecords.addAll(operationSchedule.getGetOnScheduledPassengerRecords(newOperationScheduleChunk.passengerRecords));
+		for (OperationSchedule operationSchedule : newOperationPhase.getCurrentOperationSchedules()) {
+			getOnSchedulePassengerRecords.addAll(operationSchedule.getGetOnScheduledPassengerRecords(newOperationPhase.passengerRecords));
 		}
 
 		if (phase == Phase.PLATFORM_GET_ON || getOnSchedulePassengerRecords.isEmpty()) {
 			getFragmentManager()
 					.beginTransaction()
-					.add(R.id.modal_fragment_container, DepartureCheckFragment.newInstance(newOperationScheduleChunk))
+					.add(R.id.modal_fragment_container, DepartureCheckFragment.newInstance(newOperationPhase))
 					.commitAllowingStateLoss();
 			return;
 		}
@@ -93,7 +93,7 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
 		new Thread() {
 			@Override
 			public void run() {
-				for (OperationSchedule operationSchedule : newOperationScheduleChunk.getCurrentChunk()) {
+				for (OperationSchedule operationSchedule : newOperationPhase.getCurrentOperationSchedules()) {
 					operationSchedule.completeGetOff = true;
 					contentResolver.insert(OperationSchedule.CONTENT.URI, operationSchedule.toContentValues());
 				}
@@ -108,10 +108,10 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
 			final LinkedList<OperationSchedule> operationSchedules,
 			final LinkedList<PassengerRecord> passengerRecords) {
 
-		final OperationScheduleChunk newOperationScheduleChunk = new OperationScheduleChunk(operationSchedules, passengerRecords);
+		final OperationPhase newOperationPhase = new OperationPhase(operationSchedules, passengerRecords);
 
 		boolean existSameId = false;
-		for (OperationSchedule currentOS : newOperationScheduleChunk.getCurrentChunk()) {
+		for (OperationSchedule currentOS : newOperationPhase.getCurrentOperationSchedules()) {
 			for (OperationSchedule containOS : this.operationSchedules) {
 				if (currentOS.id.equals(containOS.id)) {
 					existSameId = true;
@@ -119,7 +119,7 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
 				}
 			}
 		}
-		if (!newOperationScheduleChunk.isExistCurrentChunk() || !existSameId) {
+		if (!newOperationPhase.isExistCurrent() || !existSameId) {
 			Fragments.hide(this);
 			return;
 		}
@@ -127,11 +127,11 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
 		final Phase phase = OperationSchedule.getPhase(operationSchedules, passengerRecords);
 		List<PassengerRecord> errorPassengerRecords = Lists.newLinkedList();
 		if (phase.equals(Phase.PLATFORM_GET_OFF)) {
-			for (OperationSchedule operationSchedule : newOperationScheduleChunk.getCurrentChunk()) {
+			for (OperationSchedule operationSchedule : newOperationPhase.getCurrentOperationSchedules()) {
 				errorPassengerRecords.addAll(operationSchedule.getNoGetOffErrorPassengerRecords(passengerRecords));
 			}
 		} else {
-			for (OperationSchedule operationSchedule : newOperationScheduleChunk.getCurrentChunk()) {
+			for (OperationSchedule operationSchedule : newOperationPhase.getCurrentOperationSchedules()) {
 				errorPassengerRecords.addAll(operationSchedule.getNoGetOnErrorPassengerRecords(passengerRecords));
 			}
 		}
@@ -147,7 +147,7 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
 			@Override
 			public void onClick(View view) {
 				ViewDisabler.disable(view);
-				complete(phase, newOperationScheduleChunk);
+				complete(phase, newOperationPhase);
 			}
 		});
 		if (adapter.hasError()) {

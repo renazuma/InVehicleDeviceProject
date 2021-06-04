@@ -104,7 +104,7 @@ public abstract class OperationSchedulesSyncFragmentAbstract extends Fragment {
 
 					Phase newPhase = OperationSchedule.getPhase(operationSchedules, passengerRecords);
 
-					List<OperationSchedule> currentChunk = OperationScheduleChunk.getCurrentChunk(operationSchedules, passengerRecords);
+					List<OperationSchedule> currentChunk = OperationPhase.getCurrentOperationSchedules(operationSchedules, passengerRecords);
 
 					Boolean phaseChanged = isPhaseChangedPattern(newPhase, currentChunk);
 

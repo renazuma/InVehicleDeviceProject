@@ -13,7 +13,7 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule.Phase;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
-import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationScheduleChunk;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationPhase;
 
 import org.joda.time.DateTime;
 
@@ -27,10 +27,10 @@ public class DepartureCheckFragment extends Fragment {
 	private static final String PHASE_KEY = "phase";
 	private static final String OPERATION_SCHEDULE_CHUNK_KEY = "operation_schedule_chunk";
 
-	public static Fragment newInstance(OperationScheduleChunk operationScheduleChunk) {
+	public static Fragment newInstance(OperationPhase operationPhase) {
 		DepartureCheckFragment fragment = new DepartureCheckFragment();
 		Bundle args = new Bundle();
-		args.putSerializable(OPERATION_SCHEDULE_CHUNK_KEY, (Serializable) operationScheduleChunk);
+		args.putSerializable(OPERATION_SCHEDULE_CHUNK_KEY, (Serializable) operationPhase);
 		fragment.setArguments(args);
 		return fragment;
 	}
@@ -48,14 +48,13 @@ public class DepartureCheckFragment extends Fragment {
 		contentResolver = getActivity().getContentResolver();
 
 		Bundle args = getArguments();
-		final OperationScheduleChunk operationScheduleChunk = (OperationScheduleChunk) args.getSerializable(OPERATION_SCHEDULE_CHUNK_KEY);
-		Phase phase = OperationSchedule.getPhase(operationScheduleChunk.operationSchedules, operationScheduleChunk.passengerRecords);
-
+		final OperationPhase operationPhase = (OperationPhase) args.getSerializable(OPERATION_SCHEDULE_CHUNK_KEY);
+		Phase phase = OperationSchedule.getPhase(operationPhase.operationSchedules, operationPhase.passengerRecords);
 
 		View view = getView();
 
 		Button departureButton = (Button) view.findViewById(R.id.departure_button);
-		if (operationScheduleChunk.isExistNextChunk() ) {
+		if (operationPhase.isExistNext() ) {
 			departureButton.setText("出発する");
 		} else {
 			departureButton.setText("確定する");
@@ -81,7 +80,7 @@ public class DepartureCheckFragment extends Fragment {
 				Thread tt = new Thread() {
 					@Override
 					public void run() {
-						for (OperationSchedule operationSchedule : operationScheduleChunk.getCurrentChunk()) {
+						for (OperationSchedule operationSchedule : operationPhase.getCurrentOperationSchedules()) {
 							operationSchedule.departedAt = DateTime.now();
 							contentResolver.insert(OperationSchedule.CONTENT.URI, operationSchedule.toContentValues());
 						}

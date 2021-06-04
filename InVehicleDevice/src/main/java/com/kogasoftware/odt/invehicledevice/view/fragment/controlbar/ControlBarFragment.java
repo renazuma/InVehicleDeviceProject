@@ -19,7 +19,7 @@ import com.kogasoftware.odt.invehicledevice.view.fragment.modal.DepartureCheckFr
 import com.kogasoftware.odt.invehicledevice.view.fragment.modal.OperationListFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.modal.PassengerRecordErrorFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
-import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationScheduleChunk;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationPhase;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationSchedulesSyncFragmentAbstract;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.ViewDisabler;
 
@@ -35,7 +35,7 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 			+ "/" + OperationSchedulesSyncFragmentAbstract.class;
 	private ContentResolver contentResolver;
 	private Button mapButton;
-	private OperationScheduleChunk operationScheduleChunk;
+	private OperationPhase operationPhase;
 
 	public static ControlBarFragment newInstance() {
 		ControlBarFragment fragment = new ControlBarFragment();
@@ -69,12 +69,12 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 		if (!isAdded()) { return; }
 
 		if (phase.equals(Phase.DRIVE)) {
-			if (operationScheduleChunk.isExistCurrentChunk()) {
-				operationScheduleChunk.getCurrentChunkRepresentativeOS().startNavigation(getActivity());
+			if (operationPhase.isExistCurrent()) {
+				operationPhase.getCurrentRepresentativeOS().startNavigation(getActivity());
 			}
 		} else {
-			if (operationScheduleChunk.isExistNextChunk()) {
-				operationScheduleChunk.getNextChunkRepresentativeOS().startNavigation(getActivity());
+			if (operationPhase.isExistNext()) {
+				operationPhase.getNextRepresentativeOS().startNavigation(getActivity());
 			}
 		}
 	}
@@ -89,44 +89,44 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 
 		if (!isAdded()) { return; }
 
-		if (!operationScheduleChunk.isExistCurrentChunk()) { return; }
+		if (!operationPhase.isExistCurrent()) { return; }
 
 		getFragmentManager()
 			.beginTransaction()
-			.add(R.id.modal_fragment_container, ArrivalCheckFragment.newInstance(operationScheduleChunk))
+			.add(R.id.modal_fragment_container, ArrivalCheckFragment.newInstance(operationPhase))
 			.commitAllowingStateLoss();
 	}
 
 	public void showDepartureCheckFragment(Phase phase) {
 		if (!isAdded()) { return; }
 
-		if (!operationScheduleChunk.isExistCurrentChunk()) { return; }
+		if (!operationPhase.isExistCurrent()) { return; }
 
 		if (existPassengerRecordError(phase)) {
-			Fragments.showModalFragment(getFragmentManager(), PassengerRecordErrorFragment.newInstance(operationScheduleChunk));
+			Fragments.showModalFragment(getFragmentManager(), PassengerRecordErrorFragment.newInstance(operationPhase));
 		} else if (phase.equals(Phase.PLATFORM_GET_OFF)) {
 			List<PassengerRecord> getOnPassengerRecords = Lists.newArrayList();
-			for (OperationSchedule operationSchedule : operationScheduleChunk.getCurrentChunk()) {
-				getOnPassengerRecords.addAll(operationSchedule.getGetOnScheduledPassengerRecords(operationScheduleChunk.passengerRecords));
+			for (OperationSchedule operationSchedule : operationPhase.getCurrentOperationSchedules()) {
+				getOnPassengerRecords.addAll(operationSchedule.getGetOnScheduledPassengerRecords(operationPhase.passengerRecords));
 			}
 
 			if (getOnPassengerRecords.isEmpty()) {
-				Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(operationScheduleChunk));
+				Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(operationPhase));
 			} else {
-				for (OperationSchedule operationSchedule : operationScheduleChunk.getCurrentChunk()) {
+				for (OperationSchedule operationSchedule : operationPhase.getCurrentOperationSchedules()) {
 					operationSchedule.completeGetOff = true;
 				}
 				new Thread() {
 					@Override
 					public void run() {
-						for (OperationSchedule operationSchedule : operationScheduleChunk.getCurrentChunk()) {
+						for (OperationSchedule operationSchedule : operationPhase.getCurrentOperationSchedules()) {
 							contentResolver.insert(OperationSchedule.CONTENT.URI, operationSchedule.toContentValues());
 						}
 					}
 				}.start();
 			}
 		} else {
-			Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(operationScheduleChunk));
+			Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(operationPhase));
 		}
 	}
 
@@ -139,8 +139,8 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 			return false;
 		}
 
-		for (OperationSchedule operationSchedule : operationScheduleChunk.getCurrentChunk()) {
-			if (!operationSchedule.getNoGetOffErrorPassengerRecords(operationScheduleChunk.passengerRecords).isEmpty()) {
+		for (OperationSchedule operationSchedule : operationPhase.getCurrentOperationSchedules()) {
+			if (!operationSchedule.getNoGetOffErrorPassengerRecords(operationPhase.passengerRecords).isEmpty()) {
 				return true;
 			}
 		}
@@ -152,8 +152,8 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 			return false;
 		}
 
-		for (OperationSchedule operationSchedule : operationScheduleChunk.getCurrentChunk()) {
-			if (!operationSchedule.getNoGetOnErrorPassengerRecords(operationScheduleChunk.passengerRecords).isEmpty()) {
+		for (OperationSchedule operationSchedule : operationPhase.getCurrentOperationSchedules()) {
+			if (!operationSchedule.getNoGetOnErrorPassengerRecords(operationPhase.passengerRecords).isEmpty()) {
 				return true;
 			}
 		}
@@ -166,7 +166,7 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 			final LinkedList<OperationSchedule> operationSchedules,
 			final LinkedList<PassengerRecord> passengerRecords) {
 		final Phase phase = OperationSchedule.getPhase(operationSchedules, passengerRecords);
-		this.operationScheduleChunk = new OperationScheduleChunk(operationSchedules, passengerRecords);
+		this.operationPhase = new OperationPhase(operationSchedules, passengerRecords);
 
 		mapButton.setOnClickListener(new OnClickListener() {
 			@Override

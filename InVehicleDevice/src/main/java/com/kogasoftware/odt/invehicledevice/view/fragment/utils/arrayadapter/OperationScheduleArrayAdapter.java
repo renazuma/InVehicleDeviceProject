@@ -27,7 +27,7 @@ import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivit
 import com.kogasoftware.odt.invehicledevice.view.fragment.modal.ChargeEditFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.modal.PassengerRecordMemoFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
-import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationScheduleChunk;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationPhase;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -626,7 +626,7 @@ public class OperationScheduleArrayAdapter
 		passengerRecords.clear();
 		passengerRecords.addAll(newPassengerRecords);
 		clear();
-		addAll(OperationScheduleChunk.getOperationSchedulePhaseChunkList(newOperationSchedules, newPassengerRecords));
+		addAll(OperationPhase.getAllPhaseOperationSchedules(newOperationSchedules, newPassengerRecords));
 
 		notifyDataSetChanged();
 	}

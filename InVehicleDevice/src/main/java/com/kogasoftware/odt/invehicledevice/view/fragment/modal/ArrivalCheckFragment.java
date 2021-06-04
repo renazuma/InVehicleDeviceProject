@@ -14,7 +14,7 @@ import android.widget.TextView;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
-import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationScheduleChunk;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationPhase;
 
 import org.joda.time.DateTime;
 
@@ -26,10 +26,10 @@ import java.io.Serializable;
 public class ArrivalCheckFragment extends Fragment {
 	private static final String OPERATION_SCHEDULE_CHUNK_KEY = "operation_schedule_chunk";
 
-	public static Fragment newInstance(OperationScheduleChunk operationScheduleChunk) {
+	public static Fragment newInstance(OperationPhase operationPhase) {
 		ArrivalCheckFragment fragment = new ArrivalCheckFragment();
 		Bundle args = new Bundle();
-		args.putSerializable(OPERATION_SCHEDULE_CHUNK_KEY, (Serializable) operationScheduleChunk);
+		args.putSerializable(OPERATION_SCHEDULE_CHUNK_KEY, (Serializable) operationPhase);
 		fragment.setArguments(args);
 		return fragment;
 	}
@@ -39,7 +39,7 @@ public class ArrivalCheckFragment extends Fragment {
 		super.onActivityCreated(savedInstanceState);
 		View view = getView();
 		final ContentResolver contentResolver = getActivity().getContentResolver();
-		final OperationScheduleChunk operationScheduleChunk = (OperationScheduleChunk) getArguments().getSerializable(OPERATION_SCHEDULE_CHUNK_KEY);
+		final OperationPhase operationPhase = (OperationPhase) getArguments().getSerializable(OPERATION_SCHEDULE_CHUNK_KEY);
 
 		TextView commentTextView = (TextView) view.findViewById(R.id.arrival_check_comment_text_view);
 
@@ -59,7 +59,7 @@ public class ArrivalCheckFragment extends Fragment {
 				Thread tt = new Thread() {
 					@Override
 					public void run() {
-						for (OperationSchedule operationSchedule : operationScheduleChunk.getCurrentChunk()) {
+						for (OperationSchedule operationSchedule : operationPhase.getCurrentOperationSchedules()) {
 							operationSchedule.arrivedAt = DateTime.now();
 							ContentValues values = operationSchedule.toContentValues();
 							contentResolver.insert(OperationSchedule.CONTENT.URI, values);
@@ -75,7 +75,7 @@ public class ArrivalCheckFragment extends Fragment {
 			}
 		});
 
-		commentTextView.setText(operationScheduleChunk.getCurrentChunkRepresentativeOS().name);
+		commentTextView.setText(operationPhase.getCurrentRepresentativeOS().name);
 	}
 
 	@Override

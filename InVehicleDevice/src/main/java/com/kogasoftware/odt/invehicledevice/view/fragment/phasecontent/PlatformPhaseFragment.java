@@ -18,7 +18,7 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.Operatio
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule.Phase;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.FlickUnneededListView;
-import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationScheduleChunk;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationPhase;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationSchedulesSyncFragmentAbstract;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.arrayadapter.PassengerRecordArrayAdapter;
 
@@ -65,14 +65,14 @@ public class PlatformPhaseFragment extends OperationSchedulesSyncFragmentAbstrac
 		public void run() {
 			handler.postDelayed(updateMinutesRemaining, UPDATE_MINUTES_REMAINING_INTERVAL_MILLIS);
 
-			if (operationScheduleChunk == null || !operationScheduleChunk.isExistNextChunk()) {
+			if (operationPhase == null || !operationPhase.isExistNext()) {
 				return;
 			}
 
 			DateTime now = DateTime.now();
 			minutesRemainingTextView.setText("");
 
-			OperationSchedule representativeOS = operationScheduleChunk.getCurrentChunkRepresentativeOS();
+			OperationSchedule representativeOS = operationPhase.getCurrentRepresentativeOS();
 
 			if (representativeOS == null || representativeOS.departureEstimate == null) {
 				return;
@@ -91,7 +91,7 @@ public class PlatformPhaseFragment extends OperationSchedulesSyncFragmentAbstrac
 		}
 	};
 
-	private OperationScheduleChunk operationScheduleChunk;
+	private OperationPhase operationPhase;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -135,11 +135,11 @@ public class PlatformPhaseFragment extends OperationSchedulesSyncFragmentAbstrac
 			Boolean phaseChanged) {
 
 
-		operationScheduleChunk = new OperationScheduleChunk(newOperationSchedules, newPassengerRecords);
+		operationPhase = new OperationPhase(newOperationSchedules, newPassengerRecords);
 
 		setMinutesRemainingTextView();
 
-		if (!operationScheduleChunk.isExistCurrentChunk()) {
+		if (!operationPhase.isExistCurrent()) {
 			currentPlatformNameTextView.setText("");
 			return;
 		}
@@ -152,10 +152,10 @@ public class PlatformPhaseFragment extends OperationSchedulesSyncFragmentAbstrac
 	}
 
 	private void setPassengerList(Boolean phaseChanged) {
-		Phase phase = OperationSchedule.getPhase(operationScheduleChunk.operationSchedules, operationScheduleChunk.passengerRecords);
+		Phase phase = OperationSchedule.getPhase(operationPhase.operationSchedules, operationPhase.passengerRecords);
 
 		if (phaseChanged) {
-			adapter = new PassengerRecordArrayAdapter(this, phase, operationScheduleChunk.getCurrentChunk());
+			adapter = new PassengerRecordArrayAdapter(this, phase, operationPhase.getCurrentOperationSchedules());
 			ListView listView = new ListView(getActivity());
 			listView.setAdapter(adapter);
 			passengerRecordListView.replaceListView(listView);
@@ -163,14 +163,14 @@ public class PlatformPhaseFragment extends OperationSchedulesSyncFragmentAbstrac
 
 		if (phase.equals(Phase.PLATFORM_GET_OFF)) {
 			List<PassengerRecord> get_off_passenger_records = Lists.newArrayList();
-			for (OperationSchedule operationSchedule : operationScheduleChunk.getCurrentChunk()) {
-				get_off_passenger_records.addAll(operationSchedule.getGetOffScheduledPassengerRecords(operationScheduleChunk.passengerRecords));
+			for (OperationSchedule operationSchedule : operationPhase.getCurrentOperationSchedules()) {
+				get_off_passenger_records.addAll(operationSchedule.getGetOffScheduledPassengerRecords(operationPhase.passengerRecords));
 			}
 			adapter.update(get_off_passenger_records);
 		} else {
 			List<PassengerRecord> get_on_passenger_records = Lists.newArrayList();
-			for (OperationSchedule operationSchedule : operationScheduleChunk.getCurrentChunk()) {
-				get_on_passenger_records.addAll(operationSchedule.getGetOnScheduledPassengerRecords(operationScheduleChunk.passengerRecords));
+			for (OperationSchedule operationSchedule : operationPhase.getCurrentOperationSchedules()) {
+				get_on_passenger_records.addAll(operationSchedule.getGetOnScheduledPassengerRecords(operationPhase.passengerRecords));
 			}
 			adapter.update(get_on_passenger_records);
 		}
@@ -181,7 +181,7 @@ public class PlatformPhaseFragment extends OperationSchedulesSyncFragmentAbstrac
 			currentPlatformNameTextView.setText("現在最終乗降場です");
 			Log.i(TAG, "last platform");
 		} else {
-			OperationSchedule representativeOS = operationScheduleChunk.getCurrentChunkRepresentativeOS();
+			OperationSchedule representativeOS = operationPhase.getCurrentRepresentativeOS();
 			Log.i(TAG, "platform id=" + representativeOS.platformId + " name=" + representativeOS.name);
 			currentPlatformNameTextView.setText(Html.fromHtml(String.format(
 					getResources().getString(R.string.now_platform_is_html), representativeOS.name)));
@@ -198,6 +198,6 @@ public class PlatformPhaseFragment extends OperationSchedulesSyncFragmentAbstrac
 	}
 
 	private boolean isLastOperationSchedules() {
-		return !operationScheduleChunk.isExistNextChunk();
+		return !operationPhase.isExistNext();
 	}
 }
