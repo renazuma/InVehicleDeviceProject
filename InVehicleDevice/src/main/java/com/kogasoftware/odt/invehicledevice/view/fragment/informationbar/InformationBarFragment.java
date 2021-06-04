@@ -137,7 +137,7 @@ public class InformationBarFragment	extends OperationSchedulesSyncFragmentAbstra
 				@Override
 				public void onClick(View v) {
 					ViewDisabler.disable(v);
-					showPlatformMemoFragment(operationScheduleChunk.getCurrentChunkRepresentativeOS());
+					showPlatformMemoFragment();
 				}
 			});
 		}
@@ -149,10 +149,12 @@ public class InformationBarFragment	extends OperationSchedulesSyncFragmentAbstra
 						&& StringUtils.isNotBlank(operationScheduleChunk.getCurrentChunkRepresentativeOS().memo));
 	}
 
-	private void showPlatformMemoFragment(OperationSchedule operationSchedule) {
+	private void showPlatformMemoFragment() {
 		if (!isAdded()) { return; }
 
-		Fragments.showModalFragment(getFragmentManager(), PlatformMemoFragment.newInstance(operationSchedule));
+		Fragments.showModalFragment(
+						getFragmentManager(),
+						PlatformMemoFragment.newInstance(operationScheduleChunk.getCurrentChunkRepresentativeOS()));
 	}
 
 	private int getPhaseColor() {
