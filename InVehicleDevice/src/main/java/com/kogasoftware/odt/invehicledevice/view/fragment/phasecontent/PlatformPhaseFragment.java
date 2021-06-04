@@ -130,7 +130,7 @@ public class PlatformPhaseFragment extends OperationSchedulesSyncFragmentAbstrac
 
 	@Override
 	protected void onOperationSchedulesAndPassengerRecordsLoadFinished(
-			Phase phase, LinkedList<OperationSchedule> newOperationSchedules,
+			LinkedList<OperationSchedule> newOperationSchedules,
 			LinkedList<PassengerRecord> newPassengerRecords,
 			Boolean phaseChanged) {
 
@@ -145,13 +145,15 @@ public class PlatformPhaseFragment extends OperationSchedulesSyncFragmentAbstrac
 		}
 
 		setPlatformNameTextView();
-		setPassengerList(phase, phaseChanged);
+		setPassengerList(phaseChanged);
 
 		handler.removeCallbacks(blink);
 		handler.postDelayed(blink, 500);
 	}
 
-	private void setPassengerList(Phase phase, Boolean phaseChanged) {
+	private void setPassengerList(Boolean phaseChanged) {
+		Phase phase = OperationSchedule.getPhase(operationScheduleChunk.operationSchedules, operationScheduleChunk.passengerRecords);
+
 		if (phaseChanged) {
 			adapter = new PassengerRecordArrayAdapter(this, phase, operationScheduleChunk.getCurrentChunk());
 			ListView listView = new ListView(getActivity());

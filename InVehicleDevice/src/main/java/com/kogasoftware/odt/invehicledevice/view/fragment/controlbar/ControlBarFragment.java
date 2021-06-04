@@ -111,7 +111,7 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 			}
 
 			if (getOnPassengerRecords.isEmpty()) {
-				Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(phase, operationScheduleChunk));
+				Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(operationScheduleChunk));
 			} else {
 				for (OperationSchedule operationSchedule : operationScheduleChunk.getCurrentChunk()) {
 					operationSchedule.completeGetOff = true;
@@ -126,7 +126,7 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 				}.start();
 			}
 		} else {
-			Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(phase, operationScheduleChunk));
+			Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(operationScheduleChunk));
 		}
 	}
 
@@ -163,10 +163,9 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 	// 画面右部のボタンの、地図ボタン、phase変更ボタン（到着しました等）を定義する
 	@Override
 	protected void onOperationSchedulesAndPassengerRecordsLoadFinished(
-			final Phase phase,
 			final LinkedList<OperationSchedule> operationSchedules,
 			final LinkedList<PassengerRecord> passengerRecords) {
-
+		final Phase phase = OperationSchedule.getPhase(operationSchedules, passengerRecords);
 		this.operationScheduleChunk = new OperationScheduleChunk(operationSchedules, passengerRecords);
 
 		mapButton.setOnClickListener(new OnClickListener() {

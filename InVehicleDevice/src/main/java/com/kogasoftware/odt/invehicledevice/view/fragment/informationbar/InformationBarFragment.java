@@ -196,7 +196,7 @@ public class InformationBarFragment	extends OperationSchedulesSyncFragmentAbstra
 
 	@Override
 	protected void onOperationSchedulesAndPassengerRecordsLoadFinished(
-			Phase phase, LinkedList<OperationSchedule> operationSchedules,
+			LinkedList<OperationSchedule> operationSchedules,
 			LinkedList<PassengerRecord> passengerRecords) {
 
 		this.operationScheduleChunk = new OperationScheduleChunk(operationSchedules, passengerRecords);

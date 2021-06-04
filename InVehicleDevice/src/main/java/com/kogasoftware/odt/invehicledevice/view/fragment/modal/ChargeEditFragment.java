@@ -16,7 +16,6 @@ import android.widget.TextView;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.DefaultCharge;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule.Phase;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
@@ -66,7 +65,6 @@ public class ChargeEditFragment extends OperationSchedulesSyncFragmentAbstract {
 
 	@Override
 	protected void onOperationSchedulesAndPassengerRecordsLoadFinished(
-			Phase phase,
 			LinkedList<OperationSchedule> operationSchedules,
 			LinkedList<PassengerRecord> passengerRecords) {
 

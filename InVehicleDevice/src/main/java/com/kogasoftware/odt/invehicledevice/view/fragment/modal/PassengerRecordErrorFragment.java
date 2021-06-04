@@ -85,7 +85,7 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
 		if (phase == Phase.PLATFORM_GET_ON || getOnSchedulePassengerRecords.isEmpty()) {
 			getFragmentManager()
 					.beginTransaction()
-					.add(R.id.modal_fragment_container, DepartureCheckFragment.newInstance(phase, newOperationScheduleChunk))
+					.add(R.id.modal_fragment_container, DepartureCheckFragment.newInstance(newOperationScheduleChunk))
 					.commitAllowingStateLoss();
 			return;
 		}
@@ -105,7 +105,6 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
 
 	@Override
 	protected void onOperationSchedulesAndPassengerRecordsLoadFinished(
-			final Phase phase,
 			final LinkedList<OperationSchedule> operationSchedules,
 			final LinkedList<PassengerRecord> passengerRecords) {
 
@@ -125,6 +124,7 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
 			return;
 		}
 
+		final Phase phase = OperationSchedule.getPhase(operationSchedules, passengerRecords);
 		List<PassengerRecord> errorPassengerRecords = Lists.newLinkedList();
 		if (phase.equals(Phase.PLATFORM_GET_OFF)) {
 			for (OperationSchedule operationSchedule : newOperationScheduleChunk.getCurrentChunk()) {

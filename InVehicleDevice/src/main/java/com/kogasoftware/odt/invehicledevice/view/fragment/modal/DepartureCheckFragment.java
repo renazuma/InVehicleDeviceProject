@@ -27,10 +27,9 @@ public class DepartureCheckFragment extends Fragment {
 	private static final String PHASE_KEY = "phase";
 	private static final String OPERATION_SCHEDULE_CHUNK_KEY = "operation_schedule_chunk";
 
-	public static Fragment newInstance(Phase phase, OperationScheduleChunk operationScheduleChunk) {
+	public static Fragment newInstance(OperationScheduleChunk operationScheduleChunk) {
 		DepartureCheckFragment fragment = new DepartureCheckFragment();
 		Bundle args = new Bundle();
-		args.putSerializable(PHASE_KEY, phase);
 		args.putSerializable(OPERATION_SCHEDULE_CHUNK_KEY, (Serializable) operationScheduleChunk);
 		fragment.setArguments(args);
 		return fragment;
@@ -49,9 +48,9 @@ public class DepartureCheckFragment extends Fragment {
 		contentResolver = getActivity().getContentResolver();
 
 		Bundle args = getArguments();
-		final Phase phase = (Phase) args.getSerializable(PHASE_KEY);
-
 		final OperationScheduleChunk operationScheduleChunk = (OperationScheduleChunk) args.getSerializable(OPERATION_SCHEDULE_CHUNK_KEY);
+		Phase phase = OperationSchedule.getPhase(operationScheduleChunk.operationSchedules, operationScheduleChunk.passengerRecords);
+
 
 		View view = getView();
 
