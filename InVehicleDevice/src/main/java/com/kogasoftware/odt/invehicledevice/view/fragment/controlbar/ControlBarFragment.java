@@ -111,7 +111,7 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 			}
 
 			if (getOnPassengerRecords.isEmpty()) {
-				Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(phase, operationScheduleChunk.operationSchedules, operationScheduleChunk.passengerRecords));
+				Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(phase, operationScheduleChunk));
 			} else {
 				for (OperationSchedule operationSchedule : operationScheduleChunk.getCurrentChunk()) {
 					operationSchedule.completeGetOff = true;
@@ -126,7 +126,7 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 				}.start();
 			}
 		} else {
-			Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(phase, operationScheduleChunk.operationSchedules, operationScheduleChunk.passengerRecords));
+			Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(phase, operationScheduleChunk));
 		}
 	}
 
