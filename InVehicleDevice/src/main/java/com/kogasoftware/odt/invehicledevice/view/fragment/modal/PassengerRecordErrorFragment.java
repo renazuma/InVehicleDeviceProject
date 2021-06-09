@@ -79,8 +79,7 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
 				|| currentOperationSchedule.getGetOnScheduledPassengerRecords(passengerRecords).isEmpty()) {
 			getFragmentManager()
 					.beginTransaction()
-					.add(R.id.modal_fragment_container,
-									DepartureCheckFragment.newInstance(currentOperationSchedule.id))
+					.add(R.id.modal_fragment_container, DepartureCheckFragment.newInstance(phase, operationSchedules, currentOperationSchedule.id))
 					.commitAllowingStateLoss();
 			return;
 		}
@@ -122,8 +121,7 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
 			@Override
 			public void onClick(View view) {
 				ViewDisabler.disable(view);
-				complete(phase, operationSchedule, operationSchedules,
-						passengerRecords);
+				complete(phase, operationSchedule, operationSchedules, passengerRecords);
 			}
 		});
 		if (adapter.hasError()) {

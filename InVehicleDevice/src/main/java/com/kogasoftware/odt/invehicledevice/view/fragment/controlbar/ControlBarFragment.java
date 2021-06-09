@@ -13,12 +13,12 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule.Phase;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
-import com.kogasoftware.odt.invehicledevice.view.fragment.modal.OperationListFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.modal.ArrivalCheckFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.modal.DepartureCheckFragment;
-import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationSchedulesSyncFragmentAbstract;
+import com.kogasoftware.odt.invehicledevice.view.fragment.modal.OperationListFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.modal.PassengerRecordErrorFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationSchedulesSyncFragmentAbstract;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.ViewDisabler;
 
 import java.util.LinkedList;
@@ -79,7 +79,7 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 		Fragments.showModalFragment(getFragmentManager(), OperationListFragment.newInstance(true), OPERATION_LIST_FRAGMENT_TAG);
 	}
 
-	public void showArrivalCheckFragment(Phase phase, LinkedList<OperationSchedule> operationSchedules, LinkedList<PassengerRecord> passengerRecords) {
+	public void showArrivalCheckFragment(LinkedList<OperationSchedule> operationSchedules, LinkedList<PassengerRecord> passengerRecords) {
 
 		if (!isAdded()) { return; }
 
@@ -100,11 +100,12 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 
 		if (operationSchedule == null) { return; }
 
-		// エラーがない場合
-		if (phase.equals(Phase.PLATFORM_GET_OFF)
-				&& operationSchedule.getNoGetOffErrorPassengerRecords(passengerRecords).isEmpty()) {
+		if (existPassengerRecordError(phase, operationSchedule, passengerRecords)) {
+			Fragments.showModalFragment(getFragmentManager(), PassengerRecordErrorFragment.newInstance(operationSchedule.id));
+		} else if (phase.equals(Phase.PLATFORM_GET_OFF)) {
+			// 引数で渡した乗客リストに乗車客が存在しない場合
 			if (operationSchedule.getGetOnScheduledPassengerRecords(passengerRecords).isEmpty()) {
-				Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(operationSchedule.id));
+				Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(phase, operationSchedules, operationSchedule.id));
 			} else {
 				operationSchedule.completeGetOff = true;
 				new Thread() {
@@ -114,15 +115,33 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 					}
 				}.start();
 			}
-			return;
-		} else if (phase.equals(Phase.PLATFORM_GET_ON)
-				&& operationSchedule.getNoGetOnErrorPassengerRecords(passengerRecords).isEmpty()) {
-			Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(operationSchedule.id));
-			return;
+		} else {
+			Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(phase, operationSchedules, operationSchedule.id));
 		}
+	}
 
-		// エラーがある場合
-		Fragments.showModalFragment(getFragmentManager(), PassengerRecordErrorFragment.newInstance(operationSchedule.id));
+	private boolean existPassengerRecordError(Phase phase, OperationSchedule operationSchedule, LinkedList<PassengerRecord> passengerRecords) {
+		return existGetOffPassengerError(phase, operationSchedule, passengerRecords) || existGetOnPassengerError(phase, operationSchedule, passengerRecords);
+	}
+
+	private boolean existGetOffPassengerError(Phase phase, OperationSchedule operationSchedule, LinkedList<PassengerRecord> passengerRecords) {
+		if (!phase.equals(Phase.PLATFORM_GET_OFF)) {
+			return false;
+		} else if (operationSchedule.getNoGetOffErrorPassengerRecords(passengerRecords).isEmpty()) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	private boolean existGetOnPassengerError(Phase phase, OperationSchedule operationSchedule, LinkedList<PassengerRecord> passengerRecords) {
+		if (!phase.equals(Phase.PLATFORM_GET_ON)) {
+			return false;
+		} else if (operationSchedule.getNoGetOnErrorPassengerRecords(passengerRecords).isEmpty()) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	// 画面右部のボタンの、地図ボタン、phase変更ボタン（到着しました等）を定義する
@@ -150,7 +169,7 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 					@Override
 					public void onClick(View v) {
 						ViewDisabler.disable(v);
-						showArrivalCheckFragment(phase, operationSchedules,	passengerRecords);
+						showArrivalCheckFragment(operationSchedules, passengerRecords);
 					}
 				});
 				break;

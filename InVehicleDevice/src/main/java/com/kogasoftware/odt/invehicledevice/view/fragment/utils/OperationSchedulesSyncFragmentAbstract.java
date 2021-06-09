@@ -93,7 +93,7 @@ public abstract class OperationSchedulesSyncFragmentAbstract extends Fragment {
 		}
 
 		@Override
-		public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+		public void onLoadFinished(Loader<Cursor> loader, final Cursor cursor) {
 			final LinkedList<PassengerRecord> passengerRecords = Lists.newLinkedList(PassengerRecord.getAll(cursor));
 
 			handler.post(new Runnable() {
@@ -101,25 +101,26 @@ public abstract class OperationSchedulesSyncFragmentAbstract extends Fragment {
 				public void run() {
 					if (!isAdded()) { return; }
 
-					Phase phase = OperationSchedule.getPhase(operationSchedules, passengerRecords);
+					Phase newPhase = OperationSchedule.getPhase(operationSchedules, passengerRecords);
+					OperationSchedule newOperationSchedule = OperationSchedule.getCurrent(operationSchedules);
+					Boolean phaseChanged = isPhaseChangedPattern(newPhase, newOperationSchedule);
 
-					OperationSchedule operationSchedule = OperationSchedule.getCurrent(operationSchedules);
-					Boolean phaseChanged = false;
-					if (operationSchedule == null) {
-						if (currentOperationScheduleId != null || !phase.equals(currentPhase)) {
-							phaseChanged = true;
-						}
+					currentPhase = newPhase;
+					if (newOperationSchedule == null) {
 						currentOperationScheduleId = null;
 					} else {
-						if (!phase.equals(currentPhase)	|| !operationSchedule.id.equals(currentOperationScheduleId)) {
-							phaseChanged = true;
-						}
-						currentOperationScheduleId = operationSchedule.id;
+						currentOperationScheduleId = newOperationSchedule.id;
 					}
-					currentPhase = phase;
 
 					// 継承先のクラスで実装される、operation_schedule/passenger_record同期後の動作
-					onOperationSchedulesAndPassengerRecordsLoadFinished(phase,	operationSchedules, passengerRecords, phaseChanged);
+					onOperationSchedulesAndPassengerRecordsLoadFinished(newPhase, operationSchedules, passengerRecords, phaseChanged);
+				}
+
+				private boolean isPhaseChangedPattern(Phase newPhase, OperationSchedule newOperationSchedule) {
+					boolean changeToFinishPhase = newOperationSchedule == null && currentOperationScheduleId != null;
+					boolean operationScheduleChanged = newOperationSchedule != null && !newOperationSchedule.id.equals(currentOperationScheduleId);
+
+					return !newPhase.equals(currentPhase) || changeToFinishPhase || operationScheduleChanged;
 				}
 			});
 		}

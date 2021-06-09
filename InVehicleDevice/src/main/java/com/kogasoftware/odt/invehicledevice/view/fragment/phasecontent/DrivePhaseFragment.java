@@ -34,8 +34,6 @@ public class DrivePhaseFragment extends Fragment {
 		return fragment;
 	}
 
-	private OperationSchedule operationSchedule;
-
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.drive_phase_fragment, container, false);
@@ -55,9 +53,11 @@ public class DrivePhaseFragment extends Fragment {
 		TextView nextPlatformNameTextView = (TextView) view.findViewById(R.id.next_platform_name_text_view);
 		TextView platformArrivalTimeTextView2 = (TextView) view.findViewById(R.id.platform_arrival_time_text_view2);
 		TextView platformName1BeyondTextView = (TextView) view.findViewById(R.id.platform_name_1_beyond_text_view);
+
 		Bundle args = getArguments();
 		List<OperationSchedule> operationSchedules = (List<OperationSchedule>) args.getSerializable(OPERATION_SCHEDULES_KEY);
-		operationSchedule = OperationSchedule.getCurrent(operationSchedules);
+		OperationSchedule operationSchedule = OperationSchedule.getCurrent(operationSchedules);
+
 		if (operationSchedule != null) {
 			nextPlatformNameTextView.setText("");
 			Log.i(TAG, "next platform id=" + operationSchedule.platformId + " name=" + operationSchedule.name);
@@ -67,6 +67,7 @@ public class DrivePhaseFragment extends Fragment {
 					.getString(R.string.platform_arrival_time_format), Locale.US);
 			platformArrivalTimeTextView2.setText(dateFormat.format(operationSchedule.arrivalEstimate.toDate()));
 		}
+
 		OperationSchedule nextOperationSchedule = OperationSchedule.getCurrentOffset(operationSchedules, 1);
 		if (nextOperationSchedule != null) {
 			platformName1BeyondTextView.setText("▼ " + nextOperationSchedule.name);

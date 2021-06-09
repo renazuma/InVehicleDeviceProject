@@ -81,7 +81,13 @@ public class OperationListFragment extends Fragment {
 		@Override
 		public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 			Boolean scroll = (adapter.getCount() == 0);
-			adapter.setOperationSchedules(OperationSchedule.getAll(cursor));
+
+			Cursor passengerRecordsCursor = getActivity()
+							.getContentResolver()
+							.query(PassengerRecord.CONTENT.URI, null, null, null, null);
+
+			adapter.setData(OperationSchedule.getAll(cursor), PassengerRecord.getAll(passengerRecordsCursor));
+
 			if (scroll) {
 				scrollToUnhandledOperationSchedule();
 			}
@@ -101,7 +107,11 @@ public class OperationListFragment extends Fragment {
 
 		@Override
 		public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-			adapter.setPassengerRecords(PassengerRecord.getAll(cursor));
+			Cursor operationScheduleCursor = getActivity()
+							.getContentResolver()
+							.query(OperationSchedule.CONTENT.URI, null, null, null, null);
+
+			adapter.setData(OperationSchedule.getAll(operationScheduleCursor), PassengerRecord.getAll(cursor));
 		}
 
 		@Override
@@ -186,7 +196,7 @@ public class OperationListFragment extends Fragment {
 		// 未運行の運行スケジュールまでスクロールする
 		Integer count = adapter.getCount();
 		for (Integer i = 0; i < count; ++i) {
-			if (adapter.getItem(i).departedAt == null) {
+			if (!adapter.isDeparted(i)) {
 				listView.setSelection(i);
 				if (i >= 1) {
 					listView.scrollBy(0, -1);
