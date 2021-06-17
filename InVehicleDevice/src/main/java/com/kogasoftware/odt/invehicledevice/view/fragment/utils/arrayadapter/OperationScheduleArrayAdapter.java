@@ -370,9 +370,9 @@ public class OperationScheduleArrayAdapter
 
 		setMapButtonView(convertView, representativeOS);
 
-		TextView platformNameView = convertView.findViewById(R.id.platform_name);
+		((TextView)convertView.findViewById(R.id.platform_name)).setText(representativeOS.name);
+
 		TextView platformAddressView = convertView.findViewById(R.id.platform_address);
-		platformNameView.setText(representativeOS.name);
 		platformAddressView.setText(representativeOS.address);
 
 		if (StringUtils.isBlank(platformAddressView.getText())) {
