@@ -368,15 +368,14 @@ public class OperationScheduleArrayAdapter
 
 		convertView.setTag(operationSchedules);
 
-		setMapButtonView(convertView, representativeOS);
+		setArrivalEstimateTextView(position, convertView, operationSchedules);
+		setDepartureEstimateTextView(position, convertView, operationSchedules);
 
 		((TextView)convertView.findViewById(R.id.platform_name)).setText(representativeOS.name);
 
 		setPlatformAddressView(convertView, representativeOS);
 
-		setArrivalEstimateTextView(position, convertView, operationSchedules);
-
-		setDepartureEstimateTextView(position, convertView, operationSchedules);
+		setMapButtonView(convertView, representativeOS);
 
 		setOperationScheduleRowBackground(convertView);
 
