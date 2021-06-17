@@ -468,23 +468,30 @@ public class OperationScheduleArrayAdapter
 		passengerRecordsViewGroup.removeAllViews();
 		passengerRecordsViewGroup.setVisibility(showPassengerRecords	? View.VISIBLE : View.GONE);
 
-		Long getOffPassengerCount = 0L;
-		Long getOnPassengerCount = 0L;
-
 		if (showPassengerRecords) {
 			for (PassengerRecord passengerRecord : passengerRecords) {
 			    for (OperationSchedule operationSchedule : (List<OperationSchedule>)getItem(position)) {
 					if (passengerRecord.arrivalScheduleId.equals(operationSchedule.id)) {
 						passengerRecordsViewGroup.addView(createPassengerRecordRow(operationSchedule, passengerRecord, false));
-						getOffPassengerCount += passengerRecord.passengerCount;
 					} else if (passengerRecord.departureScheduleId.equals(operationSchedule.id)) {
 						passengerRecordsViewGroup.addView(createPassengerRecordRow(operationSchedule, passengerRecord, true));
-						getOnPassengerCount += passengerRecord.passengerCount;
 					}
 				}
 			}
 		}
 
+		Long getOffPassengerCount = 0L;
+		Long getOnPassengerCount = 0L;
+
+		for (PassengerRecord passengerRecord : passengerRecords) {
+			for (OperationSchedule operationSchedule : (List<OperationSchedule>)getItem(position)) {
+				if (passengerRecord.arrivalScheduleId.equals(operationSchedule.id)) {
+					getOffPassengerCount += passengerRecord.passengerCount;
+				} else if (passengerRecord.departureScheduleId.equals(operationSchedule.id)) {
+					getOnPassengerCount += passengerRecord.passengerCount;
+				}
+			}
+		}
 		TextView getOnPassengerCountTextView = convertView.findViewById(R.id.operation_schedule_get_on_passenger_count_text_view);
 		getOnPassengerCountTextView.setText("乗" + String.format("%3d", getOnPassengerCount) + "名");
 		getOnPassengerCountTextView.setVisibility(getOnPassengerCount > 0 ? View.VISIBLE : View.INVISIBLE);
