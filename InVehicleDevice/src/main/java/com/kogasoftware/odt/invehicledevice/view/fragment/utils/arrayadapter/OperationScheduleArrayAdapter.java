@@ -368,9 +368,7 @@ public class OperationScheduleArrayAdapter
 
 		convertView.setTag(operationSchedules);
 
-		Button mapButton = convertView.findViewById(R.id.operation_list_map_button);
-		mapButton.setTag(representativeOS);
-		mapButton.setOnClickListener(onMapButtonClickListener);
+		setMapButtonView(convertView, representativeOS);
 
 		TextView platformNameView = convertView.findViewById(R.id.platform_name);
 		TextView platformAddressView = convertView.findViewById(R.id.platform_address);
@@ -400,6 +398,12 @@ public class OperationScheduleArrayAdapter
 		setOperationRowPassengerCount(position, convertView);
 
 		convertView.setOnTouchListener(onOperationScheduleTouchListener);
+	}
+
+	private void setMapButtonView(View convertView, OperationSchedule representativeOS) {
+		Button mapButton = convertView.findViewById(R.id.operation_list_map_button);
+		mapButton.setTag(representativeOS);
+		mapButton.setOnClickListener(onMapButtonClickListener);
 	}
 
 	@Nullable
