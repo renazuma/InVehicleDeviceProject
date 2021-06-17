@@ -372,12 +372,7 @@ public class OperationScheduleArrayAdapter
 
 		((TextView)convertView.findViewById(R.id.platform_name)).setText(representativeOS.name);
 
-		TextView platformAddressView = convertView.findViewById(R.id.platform_address);
-		platformAddressView.setText(representativeOS.address);
-
-		if (StringUtils.isBlank(platformAddressView.getText())) {
-			platformAddressView.setText("(住所登録なし)");
-		}
+		setPlatformAddressView(convertView, representativeOS);
 
 		TextView arrivalEstimateTextView = convertView.findViewById(R.id.operation_schedule_arrival_estimate_text_view);
 		arrivalEstimateTextView.setText("");
@@ -398,6 +393,15 @@ public class OperationScheduleArrayAdapter
 		setOperationRowPassengerCount(position, convertView);
 
 		convertView.setOnTouchListener(onOperationScheduleTouchListener);
+	}
+
+	private void setPlatformAddressView(View convertView, OperationSchedule representativeOS) {
+		TextView platformAddressView = convertView.findViewById(R.id.platform_address);
+		platformAddressView.setText(representativeOS.address);
+
+		if (StringUtils.isBlank(platformAddressView.getText())) {
+			platformAddressView.setText("(住所登録なし)");
+		}
 	}
 
 	private void setMapButtonView(View convertView, OperationSchedule representativeOS) {
