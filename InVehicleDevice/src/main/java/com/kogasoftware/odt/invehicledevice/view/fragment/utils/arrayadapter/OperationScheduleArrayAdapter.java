@@ -374,12 +374,7 @@ public class OperationScheduleArrayAdapter
 
 		setPlatformAddressView(convertView, representativeOS);
 
-		TextView arrivalEstimateTextView = convertView.findViewById(R.id.operation_schedule_arrival_estimate_text_view);
-		arrivalEstimateTextView.setText("");
-
-		if (isArrivalEstimateViewEnable(position)) {
-			arrivalEstimateTextView.setText(getArrivalEstimateForView(position, operationSchedules));
-		}
+		setArrivalEstimateTextView(position, convertView, operationSchedules);
 
 		TextView departureEstimateTextView = convertView.findViewById(R.id.operation_schedule_departure_estimate_text_view);
 		departureEstimateTextView.setText("");
@@ -393,6 +388,16 @@ public class OperationScheduleArrayAdapter
 		setOperationRowPassengerCount(position, convertView);
 
 		convertView.setOnTouchListener(onOperationScheduleTouchListener);
+	}
+
+	private void setArrivalEstimateTextView(int position, View convertView, List<OperationSchedule> operationSchedules) {
+		TextView arrivalEstimateTextView = convertView.findViewById(R.id.operation_schedule_arrival_estimate_text_view);
+
+		arrivalEstimateTextView.setText("");
+
+		if (isArrivalEstimateViewEnable(position)) {
+			arrivalEstimateTextView.setText(getArrivalEstimateForView(position, operationSchedules));
+		}
 	}
 
 	private void setPlatformAddressView(View convertView, OperationSchedule representativeOS) {
