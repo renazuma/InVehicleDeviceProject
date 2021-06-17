@@ -397,6 +397,8 @@ public class OperationScheduleArrayAdapter
 
 		setOperationScheduleRowBackground(convertView);
 
+		setOperationRowPassengerCount(position, convertView);
+
 		convertView.setOnTouchListener(onOperationScheduleTouchListener);
 	}
 
@@ -463,23 +465,7 @@ public class OperationScheduleArrayAdapter
 		return currentOS.platformId.equals(nextOS.platformId) ? false : true;
 	}
 
-	private void setPassengerRecordRowViews(int position, View convertView) {
-		ViewGroup passengerRecordsViewGroup = convertView.findViewById(R.id.operation_list_passenger_records);
-		passengerRecordsViewGroup.removeAllViews();
-		passengerRecordsViewGroup.setVisibility(showPassengerRecords	? View.VISIBLE : View.GONE);
-
-		if (showPassengerRecords) {
-			for (PassengerRecord passengerRecord : passengerRecords) {
-			    for (OperationSchedule operationSchedule : (List<OperationSchedule>)getItem(position)) {
-					if (passengerRecord.arrivalScheduleId.equals(operationSchedule.id)) {
-						passengerRecordsViewGroup.addView(createPassengerRecordRow(operationSchedule, passengerRecord, false));
-					} else if (passengerRecord.departureScheduleId.equals(operationSchedule.id)) {
-						passengerRecordsViewGroup.addView(createPassengerRecordRow(operationSchedule, passengerRecord, true));
-					}
-				}
-			}
-		}
-
+	private void setOperationRowPassengerCount(int position, View convertView) {
 		Long getOffPassengerCount = 0L;
 		Long getOnPassengerCount = 0L;
 
@@ -499,6 +485,24 @@ public class OperationScheduleArrayAdapter
 		TextView getOffPassengerCountTextView = convertView.findViewById(R.id.operation_schedule_get_off_passenger_count_text_view);
 		getOffPassengerCountTextView.setText("降" + String.format("%3d", getOffPassengerCount) + "名");
 		getOffPassengerCountTextView.setVisibility(getOffPassengerCount > 0 ? View.VISIBLE : View.INVISIBLE);
+	}
+
+	private void setPassengerRecordRowViews(int position, View convertView) {
+		ViewGroup passengerRecordsViewGroup = convertView.findViewById(R.id.operation_list_passenger_records);
+		passengerRecordsViewGroup.removeAllViews();
+		passengerRecordsViewGroup.setVisibility(showPassengerRecords	? View.VISIBLE : View.GONE);
+
+		if (showPassengerRecords) {
+			for (PassengerRecord passengerRecord : passengerRecords) {
+			    for (OperationSchedule operationSchedule : (List<OperationSchedule>)getItem(position)) {
+					if (passengerRecord.arrivalScheduleId.equals(operationSchedule.id)) {
+						passengerRecordsViewGroup.addView(createPassengerRecordRow(operationSchedule, passengerRecord, false));
+					} else if (passengerRecord.departureScheduleId.equals(operationSchedule.id)) {
+						passengerRecordsViewGroup.addView(createPassengerRecordRow(operationSchedule, passengerRecord, true));
+					}
+				}
+			}
+		}
 	}
 
 	private View createPassengerRecordRow(OperationSchedule operationSchedule, PassengerRecord passengerRecord, Boolean getOn) {
