@@ -13,20 +13,26 @@ import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
 
 import org.joda.time.DateTime;
+
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * 到着チェック画面
  */
 public class ArrivalCheckFragment extends Fragment {
-	private static final String OPERATION_SCHEDULE_KEY = "operation_schedule";
+	private static final String OPERATION_SCHEDULES_KEY = "operation_schedules";
+	private static final String PASSENGER_RECORDS_KEY = "passenger_records";
 
-	public static Fragment newInstance(OperationSchedule operationSchedule) {
+	public static Fragment newInstance(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
 		ArrivalCheckFragment fragment = new ArrivalCheckFragment();
 		Bundle args = new Bundle();
-		args.putSerializable(OPERATION_SCHEDULE_KEY, operationSchedule);
+		args.putSerializable(OPERATION_SCHEDULES_KEY, (Serializable) operationSchedules);
+		args.putSerializable(PASSENGER_RECORDS_KEY, (Serializable) passengerRecords);
 		fragment.setArguments(args);
 		return fragment;
 	}
@@ -36,7 +42,8 @@ public class ArrivalCheckFragment extends Fragment {
 		super.onActivityCreated(savedInstanceState);
 		View view = getView();
 		final ContentResolver contentResolver = getActivity().getContentResolver();
-		final OperationSchedule operationSchedule = (OperationSchedule) getArguments().getSerializable(OPERATION_SCHEDULE_KEY);
+		final List<OperationSchedule> operationSchedules = (List<OperationSchedule>) getArguments().getSerializable(OPERATION_SCHEDULES_KEY);
+		final List<PassengerRecord> passengerRecords = (List<PassengerRecord>) getArguments().getSerializable(PASSENGER_RECORDS_KEY);
 
 		TextView commentTextView = (TextView) view.findViewById(R.id.arrival_check_comment_text_view);
 
@@ -53,18 +60,27 @@ public class ArrivalCheckFragment extends Fragment {
 			@Override
 			public void onClick(View view) {
 				Fragments.hide(ArrivalCheckFragment.this);
-				new Thread() {
+				final List<OperationSchedule> currentChunk = OperationSchedule.getCurrentChunk(operationSchedules, passengerRecords);
+				Thread tt = new Thread() {
 					@Override
 					public void run() {
-						operationSchedule.arrivedAt = DateTime.now();
-						ContentValues values = operationSchedule.toContentValues();
-						contentResolver.insert(OperationSchedule.CONTENT.URI, values);
+						for (OperationSchedule operationSchedule : currentChunk) {
+							operationSchedule.arrivedAt = DateTime.now();
+							ContentValues values = operationSchedule.toContentValues();
+							contentResolver.insert(OperationSchedule.CONTENT.URI, values);
+						}
 					};
-				}.start();
+				};
+				tt.start();
+				try {
+					tt.join();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 		});
-		
-		commentTextView.setText(operationSchedule.name);
+
+		commentTextView.setText(OperationSchedule.getCurrentChunkRepresentativeOS(operationSchedules, passengerRecords).name);
 	}
 
 	@Override

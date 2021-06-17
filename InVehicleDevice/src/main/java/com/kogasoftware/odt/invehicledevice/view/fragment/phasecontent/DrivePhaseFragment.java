@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -25,11 +27,13 @@ import java.util.Locale;
 public class DrivePhaseFragment extends Fragment {
 	private static final String TAG = DrivePhaseFragment.class.getSimpleName();
 	private static final String OPERATION_SCHEDULES_KEY = "operation_schedules";
+	private static final String PASSENGER_RECORDS_KEY = "passenger_records";
 
-	public static DrivePhaseFragment newInstance(LinkedList<OperationSchedule> operationSchedules) {
+	public static DrivePhaseFragment newInstance(LinkedList<OperationSchedule> operationSchedules, LinkedList<PassengerRecord> passengerRecords) {
 		DrivePhaseFragment fragment = new DrivePhaseFragment();
 		Bundle args = new Bundle();
 		args.putSerializable(OPERATION_SCHEDULES_KEY, operationSchedules);
+		args.putSerializable(PASSENGER_RECORDS_KEY, passengerRecords);
 		fragment.setArguments(args);
 		return fragment;
 	}
@@ -56,21 +60,41 @@ public class DrivePhaseFragment extends Fragment {
 
 		Bundle args = getArguments();
 		List<OperationSchedule> operationSchedules = (List<OperationSchedule>) args.getSerializable(OPERATION_SCHEDULES_KEY);
-		OperationSchedule operationSchedule = OperationSchedule.getCurrent(operationSchedules);
+		List<PassengerRecord> passengerRecords = (List<PassengerRecord>) args.getSerializable(PASSENGER_RECORDS_KEY);
 
-		if (operationSchedule != null) {
+		if (OperationSchedule.isExistCurrentChunk(operationSchedules, passengerRecords)) {
+			OperationSchedule representativeOS = OperationSchedule.getCurrentChunkRepresentativeOS(operationSchedules, passengerRecords);
 			nextPlatformNameTextView.setText("");
-			Log.i(TAG, "next platform id=" + operationSchedule.platformId + " name=" + operationSchedule.name);
-			nextPlatformNameTextView.setText(operationSchedule.name);
+			Log.i(TAG, "next platform id=" + representativeOS.platformId + " name=" + representativeOS.name);
+			nextPlatformNameTextView.setText(representativeOS.name);
 			platformArrivalTimeTextView2.setText("");
-			DateFormat dateFormat = new SimpleDateFormat(getResources()
-					.getString(R.string.platform_arrival_time_format), Locale.US);
-			platformArrivalTimeTextView2.setText(dateFormat.format(operationSchedule.arrivalEstimate.toDate()));
+			platformArrivalTimeTextView2.setText(getEstimateTimeForView(operationSchedules, passengerRecords));
 		}
 
-		OperationSchedule nextOperationSchedule = OperationSchedule.getCurrentOffset(operationSchedules, 1);
-		if (nextOperationSchedule != null) {
-			platformName1BeyondTextView.setText("▼ " + nextOperationSchedule.name);
+		if (OperationSchedule.isExistNextChunk(operationSchedules, passengerRecords)) {
+			platformName1BeyondTextView.setText("▼ " + OperationSchedule.getNextChunkRepresentativeOS(operationSchedules, passengerRecords).name);
 		}
+	}
+
+	@Nullable
+	private String getEstimateTimeForView(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
+		List<OperationSchedule> targetOperationSchedules = OperationSchedule.getCurrentChunk(operationSchedules, passengerRecords);
+
+		OperationSchedule currentOS = OperationSchedule.getCurrentChunkRepresentativeOS(operationSchedules, passengerRecords);
+		OperationSchedule nextOS = OperationSchedule.getNextChunkRepresentativeOS(operationSchedules, passengerRecords);
+
+		if (OperationSchedule.isExistNextChunk(operationSchedules, passengerRecords) && nextOS.platformId.equals(currentOS.platformId)) {
+			targetOperationSchedules.addAll(OperationSchedule.getNextChunk(operationSchedules, passengerRecords));
+		}
+
+		OperationSchedule estimateOS = null;
+		for (OperationSchedule operationSchedule : targetOperationSchedules) {
+			if (null == estimateOS || operationSchedule.arrivalEstimate.isBefore(estimateOS.arrivalEstimate)) {
+				estimateOS = operationSchedule;
+			}
+		}
+
+		DateFormat dateFormat = new SimpleDateFormat(getResources().getString(R.string.platform_arrival_time_format), Locale.US);
+		return dateFormat.format(estimateOS.arrivalEstimate.toDate());
 	}
 }

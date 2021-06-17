@@ -17,8 +17,8 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule.Phase;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
-import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationSchedulesSyncFragmentAbstract;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.FlickUnneededListView;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationSchedulesSyncFragmentAbstract;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.arrayadapter.PassengerRecordArrayAdapter;
 
 import org.joda.time.DateTime;
@@ -64,22 +64,22 @@ public class PlatformPhaseFragment extends OperationSchedulesSyncFragmentAbstrac
 		public void run() {
 			handler.postDelayed(updateMinutesRemaining, UPDATE_MINUTES_REMAINING_INTERVAL_MILLIS);
 
-			OperationSchedule nextOperationSchedule = OperationSchedule.getCurrentOffset(operationSchedules, 1);
-			if (nextOperationSchedule == null) {
+			if (!OperationSchedule.isExistNextChunk(operationSchedules, passengerRecords)) {
 				return;
 			}
 
 			DateTime now = DateTime.now();
 			minutesRemainingTextView.setText("");
 
-			OperationSchedule operationSchedule = OperationSchedule.getCurrent(operationSchedules);
-			if (operationSchedule.departureEstimate == null) {
+			OperationSchedule representativeOS = OperationSchedule.getCurrentChunkRepresentativeOS(operationSchedules, passengerRecords);
+
+			if (representativeOS == null || representativeOS.departureEstimate == null) {
 				return;
 			}
 
-			Integer minutesRemaining = (int) (operationSchedule.departureEstimate.getMillis() / 1000 / 60 - now.getMillis() / 1000 / 60);
+			Integer minutesRemaining = (int) (representativeOS.departureEstimate.getMillis() / 1000 / 60 - now.getMillis() / 1000 / 60);
 			DateFormat dateFormat = new SimpleDateFormat("HH:mm", Locale.US);
-			String dateString = dateFormat.format(operationSchedule.departureEstimate.toDate());
+			String dateString = dateFormat.format(representativeOS.departureEstimate.toDate());
 
 			minutesRemainingTextView.setText(Html.fromHtml(
 							String.format(getResources().getString(R.string.minutes_remaining_to_depart_html),
@@ -91,6 +91,7 @@ public class PlatformPhaseFragment extends OperationSchedulesSyncFragmentAbstrac
 	};
 
 	private final List<OperationSchedule> operationSchedules = Lists.newLinkedList();
+	private final List<PassengerRecord> passengerRecords = Lists.newLinkedList();
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -135,61 +136,69 @@ public class PlatformPhaseFragment extends OperationSchedulesSyncFragmentAbstrac
 
 		operationSchedules.clear();
 		operationSchedules.addAll(newOperationSchedules);
+		passengerRecords.clear();
+		passengerRecords.addAll(newPassengerRecords);
 
 		setMinutesRemainingTextView();
 
-		OperationSchedule operationSchedule = OperationSchedule.getCurrent(operationSchedules);
-		if (operationSchedule == null) {
+		if (!OperationSchedule.isExistCurrentChunk(operationSchedules, passengerRecords)) {
 			currentPlatformNameTextView.setText("");
 			return;
 		}
 
 		setPlatformNameTextView();
-		setPassengerList(phase, newPassengerRecords, phaseChanged, operationSchedule);
+		setPassengerList(phase, phaseChanged);
 
 		handler.removeCallbacks(blink);
 		handler.postDelayed(blink, 500);
 	}
 
-	private void setPassengerList(Phase phase, LinkedList<PassengerRecord> newPassengerRecords, Boolean phaseChanged, OperationSchedule operationSchedule) {
+	private void setPassengerList(Phase phase, Boolean phaseChanged) {
+		List<OperationSchedule> currentChunk = OperationSchedule.getCurrentChunk(operationSchedules, passengerRecords);
 		if (phaseChanged) {
-			adapter = new PassengerRecordArrayAdapter(this, operationSchedule);
+			adapter = new PassengerRecordArrayAdapter(this, phase, currentChunk);
 			ListView listView = new ListView(getActivity());
 			listView.setAdapter(adapter);
 			passengerRecordListView.replaceListView(listView);
 		}
 
 		if (phase.equals(Phase.PLATFORM_GET_OFF)) {
-			adapter.update(operationSchedule.getGetOffScheduledPassengerRecords(newPassengerRecords));
+			List<PassengerRecord> get_off_passenger_records = Lists.newArrayList();
+			for (OperationSchedule operationSchedule : currentChunk) {
+				get_off_passenger_records.addAll(operationSchedule.getGetOffScheduledPassengerRecords(passengerRecords));
+			}
+			adapter.update(get_off_passenger_records);
 		} else {
-			adapter.update(operationSchedule.getGetOnScheduledPassengerRecords(newPassengerRecords));
+			List<PassengerRecord> get_on_passenger_records = Lists.newArrayList();
+			for (OperationSchedule operationSchedule : currentChunk) {
+				get_on_passenger_records.addAll(operationSchedule.getGetOnScheduledPassengerRecords(passengerRecords));
+			}
+			adapter.update(get_on_passenger_records);
 		}
 	}
 
 	private void setPlatformNameTextView() {
-		OperationSchedule operationSchedule = OperationSchedule.getCurrent(operationSchedules);
-
-		if (isLastOperationSchedule()) {
+		if (isLastOperationSchedules()) {
 			currentPlatformNameTextView.setText("現在最終乗降場です");
 			Log.i(TAG, "last platform");
 		} else {
-			Log.i(TAG, "platform id=" + operationSchedule.platformId + " name=" + operationSchedule.name);
+			OperationSchedule representativeOS = OperationSchedule.getCurrentChunkRepresentativeOS(operationSchedules, passengerRecords);
+			Log.i(TAG, "platform id=" + representativeOS.platformId + " name=" + representativeOS.name);
 			currentPlatformNameTextView.setText(Html.fromHtml(String.format(
-					getResources().getString(R.string.now_platform_is_html),
-					operationSchedule.name)));
+					getResources().getString(R.string.now_platform_is_html), representativeOS.name)));
 		}
 	}
 
 	@NonNull
 	private void setMinutesRemainingTextView() {
-		if (isLastOperationSchedule()) {
+		if (isLastOperationSchedules()) {
 			minutesRemainingTextView.setVisibility(View.GONE);
 		} else {
 			minutesRemainingTextView.setVisibility(View.VISIBLE);
 		}
 	}
 
-	private boolean isLastOperationSchedule() {
-		return OperationSchedule.getCurrentOffset(operationSchedules, 1) == null;
+	private boolean isLastOperationSchedules() {
+		return !OperationSchedule.isExistNextChunk(operationSchedules, passengerRecords);
 	}
 }

@@ -139,17 +139,17 @@ public class InformationBarFragment	extends OperationSchedulesSyncFragmentAbstra
 				@Override
 				public void onClick(View v) {
 					ViewDisabler.disable(v);
-					showPlatformMemoFragment(OperationSchedule.getCurrent(operationSchedules));
+					OperationSchedule representativeOS = OperationSchedule.getCurrentChunkRepresentativeOS(operationSchedules, passengerRecords);
+					showPlatformMemoFragment(representativeOS);
 				}
 			});
 		}
 	}
 
 	private Boolean isShowMemoButtonPattern() {
-		final OperationSchedule operationSchedule = OperationSchedule.getCurrent(operationSchedules);
 		return (OperationSchedule.getPhase(operationSchedules, passengerRecords) != Phase.FINISH
-						&& operationSchedule != null
-						&& StringUtils.isNotBlank(operationSchedule.memo));
+						&& OperationSchedule.isExistCurrentChunk(operationSchedules, passengerRecords)
+						&& StringUtils.isNotBlank(OperationSchedule.getCurrentChunkRepresentativeOS(operationSchedules, passengerRecords).memo));
 	}
 
 	private void showPlatformMemoFragment(OperationSchedule operationSchedule) {

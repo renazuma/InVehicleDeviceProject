@@ -30,6 +30,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * 運行スケジュールテーブル
+ * HACK: FatModelになりつつある。chunkクラスを作るか、adapterかdecoratorパターンで、view用の関数を分けたい
  */
 public class OperationSchedule implements Serializable {
 	private static final long serialVersionUID = -2332224258753742183L;
@@ -120,33 +121,85 @@ public class OperationSchedule implements Serializable {
 		return values;
 	}
 
-	public static OperationSchedule getCurrent(List<OperationSchedule> operationSchedules) {
-		return getCurrentOffset(operationSchedules, 0);
-	}
+	public static Phase getPhase(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
+		List<OperationSchedule> currentChunk = getCurrentChunk(operationSchedules, passengerRecords);
 
-	public static OperationSchedule getCurrentOffset(List<OperationSchedule> operationSchedules, Integer offset) {
-		for (Integer i = 0; i < operationSchedules.size() - offset; i++) {
-			if (operationSchedules.get(i).arrivedAt == null	|| operationSchedules.get(i).departedAt == null) {
-				return operationSchedules.get(i + offset);
+		if (currentChunk.isEmpty()) {
+			return Phase.FINISH;
+		} else {
+			OperationSchedule representativeOS = currentChunk.get(0);
+			if (representativeOS.arrivedAt == null && representativeOS.departedAt == null) {
+				return Phase.DRIVE;
+			} else if (representativeOS.completeGetOff || representativeOS.getGetOffScheduledPassengerRecords(passengerRecords).isEmpty()) {
+				return Phase.PLATFORM_GET_ON;
+			} else {
+				return Phase.PLATFORM_GET_OFF;
 			}
 		}
-		return null;
 	}
 
-	public static Phase getPhase(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
-		OperationSchedule operationSchedule = OperationSchedule.getCurrent(operationSchedules);
-		if (operationSchedule == null) {
-			return Phase.FINISH;
-		} else if (operationSchedule.arrivedAt == null && operationSchedule.departedAt == null) {
-			return Phase.DRIVE;
-		} else if (operationSchedule.completeGetOff
-				|| operationSchedule.getGetOffScheduledPassengerRecords(passengerRecords).isEmpty()) {
-			return Phase.PLATFORM_GET_ON;
+	public static List<OperationSchedule> getCurrentChunk(List<OperationSchedule> operationSchedules ,List<PassengerRecord> passengerRecords) {
+		List<List> chunkList = getOperationSchedulePhaseChunkList(operationSchedules, passengerRecords);
+		List<OperationSchedule> currentChunk = Lists.newArrayList();
+
+		for (List<OperationSchedule> chunkOperationSchedules : chunkList) {
+			for (OperationSchedule operationSchedule : chunkOperationSchedules) {
+				if (operationSchedule.arrivedAt == null || operationSchedule.departedAt == null) {
+					currentChunk = chunkOperationSchedules;
+					break;
+				}
+			}
+			if (!currentChunk.isEmpty()) {
+				break;
+			}
+		}
+
+		return currentChunk;
+	}
+
+	public static OperationSchedule getCurrentChunkRepresentativeOS(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
+		if (isExistCurrentChunk(operationSchedules, passengerRecords)) {
+			return getCurrentChunk(operationSchedules, passengerRecords).get(0);
 		} else {
-			return Phase.PLATFORM_GET_OFF;
+			return null;
 		}
 	}
 
+	public static boolean isExistCurrentChunk(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
+		return !getCurrentChunk(operationSchedules, passengerRecords).isEmpty();
+	}
+
+	public static List<OperationSchedule> getNextChunk(List<OperationSchedule> operationSchedules ,List<PassengerRecord> passengerRecords) {
+		List<List> chunkList = getOperationSchedulePhaseChunkList(operationSchedules, passengerRecords);
+		List<OperationSchedule> nextChunk = Lists.newArrayList();
+
+		for (int i = 0; i < chunkList.size() - 1; i++) {
+			List<OperationSchedule> chunkOperationSchedules = chunkList.get(i);
+			for (OperationSchedule operationSchedule : chunkOperationSchedules) {
+				if (operationSchedule.arrivedAt == null || operationSchedule.departedAt == null) {
+					nextChunk = chunkList.get(i + 1);
+					break;
+				}
+			}
+			if (!nextChunk.isEmpty()) {
+				break;
+			}
+		}
+
+		return nextChunk;
+	}
+
+	public static OperationSchedule getNextChunkRepresentativeOS(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
+		if (isExistNextChunk(operationSchedules, passengerRecords)) {
+			return getNextChunk(operationSchedules, passengerRecords).get(0);
+		} else {
+			return null;
+		}
+	}
+
+	public static boolean isExistNextChunk(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
+		return !getNextChunk(operationSchedules, passengerRecords).isEmpty();
+	}
 	public List<PassengerRecord> getNoGetOffErrorPassengerRecords(List<PassengerRecord> passengerRecords) {
 		List<PassengerRecord> results = Lists.newLinkedList();
 		for (PassengerRecord passengerRecord : getGetOffScheduledPassengerRecords(passengerRecords)) {

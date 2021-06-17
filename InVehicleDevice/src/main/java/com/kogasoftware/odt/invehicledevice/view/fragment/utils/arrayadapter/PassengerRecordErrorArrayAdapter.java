@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 
 import java.util.Collections;
@@ -35,7 +36,7 @@ public class PassengerRecordErrorArrayAdapter extends ArrayAdapter<PassengerReco
 	protected final FragmentManager fragmentManager;
 	protected final LayoutInflater layoutInflater = (LayoutInflater) getContext()
 			.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-	protected final Long operationScheduleId;
+	protected final List<OperationSchedule> operationSchedules;
 	protected final ContentResolver contentResolver;
 
 	protected final OnClickListener onClickIgnoreButtonListener = new OnClickListener() {
@@ -47,11 +48,22 @@ public class PassengerRecordErrorArrayAdapter extends ArrayAdapter<PassengerReco
 				return;
 			}
 			final PassengerRecord passengerRecord = (PassengerRecord) tag;
-			if (operationScheduleId.equals(passengerRecord.arrivalScheduleId)) {
+
+			// chunk全件とpassengerRecordのidを比較する事で過不足無く対応出来ているかを調べる
+			OperationSchedule operationSchedule = null;
+			for (OperationSchedule tmpOS : operationSchedules) {
+				if (tmpOS.id.equals(passengerRecord.arrivalScheduleId) || tmpOS.id.equals(passengerRecord.departureScheduleId)) {
+					operationSchedule = tmpOS;
+					break;
+				}
+			}
+
+			if (operationSchedule.id.equals(passengerRecord.arrivalScheduleId)) {
 				passengerRecord.ignoreGetOffMiss = !passengerRecord.ignoreGetOffMiss;
 			} else {
 				passengerRecord.ignoreGetOnMiss = !passengerRecord.ignoreGetOnMiss;
 			}
+
 			final String where = PassengerRecord.Columns._ID + " = ?";
 			final String[] whereArgs = new String[]{passengerRecord.id.toString()};
 			new Thread() {
@@ -67,11 +79,11 @@ public class PassengerRecordErrorArrayAdapter extends ArrayAdapter<PassengerReco
 		}
 	};
 
-	public PassengerRecordErrorArrayAdapter(Fragment fragment, Long operationScheduleId) {
+	public PassengerRecordErrorArrayAdapter(Fragment fragment, List<OperationSchedule> operationSchedules) {
 		super(fragment.getActivity(), RESOURCE_ID);
 		this.fragmentManager = fragment.getFragmentManager();
 		this.contentResolver = fragment.getActivity().getContentResolver();
-		this.operationScheduleId = operationScheduleId;
+		this.operationSchedules = operationSchedules;
 	}
 
 	@Override
@@ -88,9 +100,17 @@ public class PassengerRecordErrorArrayAdapter extends ArrayAdapter<PassengerReco
 		ignoreButton.setOnClickListener(onClickIgnoreButtonListener);
 		ignoreButton.setTextColor(Color.RED);
 
+
+		OperationSchedule operationSchedule = null;
+		for (OperationSchedule tmpOS : operationSchedules) {
+			if (passengerRecord.arrivalScheduleId.equals(tmpOS.id) || passengerRecord.departureScheduleId.equals(tmpOS.id)) {
+				operationSchedule = tmpOS;
+			}
+		}
+
 		//出発／到着差分
 		String errorMessage = passengerRecord.getDisplayName() + " 様が";
-		if (operationScheduleId.equals(passengerRecord.arrivalScheduleId) && passengerRecord.getOffTime == null) {
+		if (operationSchedule.id.equals(passengerRecord.arrivalScheduleId) && passengerRecord.getOffTime == null) {
 			ignoreButton.setChecked(passengerRecord.ignoreGetOffMiss);
 			ignoreButton.setText("未降車でよい");
 			errorMessage += "未降車です";
@@ -99,7 +119,7 @@ public class PassengerRecordErrorArrayAdapter extends ArrayAdapter<PassengerReco
 			} else {
 				ignoreButton.setBackgroundResource(R.drawable.ignore_button);
 			}
-		} else if (operationScheduleId.equals(passengerRecord.departureScheduleId)
+		} else if (operationSchedule.id.equals(passengerRecord.departureScheduleId)
 				&& passengerRecord.getOnTime == null) {
 			ignoreButton.setChecked(passengerRecord.ignoreGetOnMiss);
 			ignoreButton.setText("未乗車でよい");
@@ -131,17 +151,24 @@ public class PassengerRecordErrorArrayAdapter extends ArrayAdapter<PassengerReco
 	}
 
 	public Boolean hasError() {
+		// chunk全件とpassengerRecordのidを比較する事で過不足無く対応出来ているかを調べる
 		for (Integer count = 0; count < getCount(); ++count) {
 			PassengerRecord passengerRecord = getItem(count);
-			if (operationScheduleId.equals(passengerRecord.arrivalScheduleId)
-					&& passengerRecord.getOffTime == null
-					&& !passengerRecord.ignoreGetOffMiss) {
-				return true;
+
+			for (OperationSchedule operationSchedule : operationSchedules) {
+				if (operationSchedule.id.equals(passengerRecord.arrivalScheduleId)
+								&& passengerRecord.getOffTime == null
+								&& !passengerRecord.ignoreGetOffMiss) {
+					return true;
+				}
 			}
-			if (operationScheduleId.equals(passengerRecord.departureScheduleId)
-					&& passengerRecord.getOnTime == null
-					&& !passengerRecord.ignoreGetOnMiss) {
-				return true;
+
+			for (OperationSchedule operationSchedule : operationSchedules) {
+				if (operationSchedule.id.equals(passengerRecord.departureScheduleId)
+								&& passengerRecord.getOnTime == null
+								&& !passengerRecord.ignoreGetOnMiss) {
+					return true;
+				}
 			}
 		}
 		return false;

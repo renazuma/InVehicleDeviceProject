@@ -19,6 +19,7 @@ import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationSchedul
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.ViewDisabler;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.arrayadapter.PassengerRecordErrorArrayAdapter;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -27,18 +28,18 @@ import java.util.List;
  */
 public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragmentAbstract {
 	private static final String TAG = PassengerRecordErrorFragment.class.getSimpleName();
-	private static final String OPERATION_SCHEDULE_ID_KEY = "operation_schedule_id";
+	private static final String OPERATION_SCHEDULES_KEY = "operation_schedules";
 	private Button completeWithErrorButton;
 	private ContentResolver contentResolver;
-	private Long operationScheduleId;
+	private List<OperationSchedule> operationSchedules;
 	private Button closeButton;
 	private FlickUnneededListView errorUserListView;
 	private PassengerRecordErrorArrayAdapter adapter;
 
-	public static PassengerRecordErrorFragment newInstance(Long operationScheduleId) {
+	public static PassengerRecordErrorFragment newInstance(List<OperationSchedule> operationSchedules) {
 		PassengerRecordErrorFragment fragment = new PassengerRecordErrorFragment();
 		Bundle args = new Bundle();
-		args.putSerializable(OPERATION_SCHEDULE_ID_KEY, operationScheduleId);
+		args.putSerializable(OPERATION_SCHEDULES_KEY, (Serializable) operationSchedules);
 		fragment.setArguments(args);
 		return fragment;
 	}
@@ -53,7 +54,7 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
 		super.onActivityCreated(savedInstanceState);
 		contentResolver = getActivity().getContentResolver();
 		Bundle args = getArguments();
-		operationScheduleId = args.getLong(OPERATION_SCHEDULE_ID_KEY);
+		operationSchedules = (List<OperationSchedule>)args.getSerializable(OPERATION_SCHEDULES_KEY);
 		View view = getView();
 		closeButton = (Button) view.findViewById(R.id.get_off_check_close_button);
 		closeButton.setOnClickListener(new OnClickListener() {
@@ -64,32 +65,39 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
 		});
 		errorUserListView = (FlickUnneededListView) view.findViewById(R.id.error_reservation_list_view);
 		completeWithErrorButton = (Button) view.findViewById(R.id.complete_with_error_button);
-		adapter = new PassengerRecordErrorArrayAdapter(this, operationScheduleId);
+		adapter = new PassengerRecordErrorArrayAdapter(this, operationSchedules);
 		errorUserListView.getListView().setAdapter(adapter);
 	}
 
-	private void complete(Phase phase,
-			final OperationSchedule currentOperationSchedule,
-			LinkedList<OperationSchedule> operationSchedules,
-			LinkedList<PassengerRecord> passengerRecords) {
+	private void complete(Phase phase, final LinkedList<OperationSchedule> operationSchedules, final LinkedList<PassengerRecord> passengerRecords) {
 		if (!isAdded()) {
 			return;
 		}
-		if (phase == Phase.PLATFORM_GET_ON
-				|| currentOperationSchedule.getGetOnScheduledPassengerRecords(passengerRecords).isEmpty()) {
+
+		List<PassengerRecord> getOnSchedulePassengerRecords = Lists.newArrayList();
+		for (OperationSchedule operationSchedule : OperationSchedule.getCurrentChunk(operationSchedules, passengerRecords)) {
+			getOnSchedulePassengerRecords.addAll(operationSchedule.getGetOnScheduledPassengerRecords(passengerRecords));
+		}
+
+
+		if (phase == Phase.PLATFORM_GET_ON || getOnSchedulePassengerRecords.isEmpty()) {
 			getFragmentManager()
 					.beginTransaction()
-					.add(R.id.modal_fragment_container, DepartureCheckFragment.newInstance(phase, operationSchedules, currentOperationSchedule.id))
+					.add(R.id.modal_fragment_container, DepartureCheckFragment.newInstance(phase, operationSchedules, passengerRecords))
 					.commitAllowingStateLoss();
 			return;
 		}
+
 		new Thread() {
 			@Override
 			public void run() {
-				currentOperationSchedule.completeGetOff = true;
-				contentResolver.insert(OperationSchedule.CONTENT.URI, currentOperationSchedule.toContentValues());
+				for (OperationSchedule operationSchedule : OperationSchedule.getCurrentChunk(operationSchedules, passengerRecords)) {
+					operationSchedule.completeGetOff = true;
+					contentResolver.insert(OperationSchedule.CONTENT.URI, operationSchedule.toContentValues());
+				}
 			}
 		}.start();
+
 		Fragments.hide(this);
 	}
 
@@ -98,16 +106,30 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
 			final Phase phase,
 			final LinkedList<OperationSchedule> operationSchedules,
 			final LinkedList<PassengerRecord> passengerRecords) {
-		final OperationSchedule operationSchedule = OperationSchedule.getCurrent(operationSchedules);
-		if (operationSchedule == null || !operationSchedule.id.equals(operationScheduleId)) {
+
+		boolean existSameId = false;
+		for (OperationSchedule currentOS : OperationSchedule.getCurrentChunk(operationSchedules, passengerRecords)) {
+			for (OperationSchedule containOS : this.operationSchedules) {
+				if (currentOS.id.equals(containOS.id)) {
+					existSameId = true;
+					break;
+				}
+			}
+		}
+		if (!OperationSchedule.isExistCurrentChunk(operationSchedules, passengerRecords) || !existSameId) {
 			Fragments.hide(this);
 			return;
 		}
+
 		List<PassengerRecord> errorPassengerRecords = Lists.newLinkedList();
 		if (phase.equals(Phase.PLATFORM_GET_OFF)) {
-			errorPassengerRecords.addAll(operationSchedule.getNoGetOffErrorPassengerRecords(passengerRecords));
+			for (OperationSchedule operationSchedule : OperationSchedule.getCurrentChunk(operationSchedules, passengerRecords)) {
+				errorPassengerRecords.addAll(operationSchedule.getNoGetOffErrorPassengerRecords(passengerRecords));
+			}
 		} else {
-			errorPassengerRecords.addAll(operationSchedule.getNoGetOnErrorPassengerRecords(passengerRecords));
+			for (OperationSchedule operationSchedule : OperationSchedule.getCurrentChunk(operationSchedules, passengerRecords)) {
+				errorPassengerRecords.addAll(operationSchedule.getNoGetOnErrorPassengerRecords(passengerRecords));
+			}
 		}
 		adapter.update(errorPassengerRecords);
 
@@ -121,7 +143,7 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
 			@Override
 			public void onClick(View view) {
 				ViewDisabler.disable(view);
-				complete(phase, operationSchedule, operationSchedules, passengerRecords);
+				complete(phase, operationSchedules, passengerRecords);
 			}
 		});
 		if (adapter.hasError()) {
