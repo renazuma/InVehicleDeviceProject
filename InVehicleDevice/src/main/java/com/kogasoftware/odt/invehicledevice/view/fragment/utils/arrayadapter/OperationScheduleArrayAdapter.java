@@ -376,12 +376,7 @@ public class OperationScheduleArrayAdapter
 
 		setArrivalEstimateTextView(position, convertView, operationSchedules);
 
-		TextView departureEstimateTextView = convertView.findViewById(R.id.operation_schedule_departure_estimate_text_view);
-		departureEstimateTextView.setText("");
-
-		if (isDepartureEstimateViewEnable(position)) {
-			departureEstimateTextView.setText(getDepartureEstimateForView(position, operationSchedules));
-		}
+		setDepartureEstimateTextView(position, convertView, operationSchedules);
 
 		setOperationScheduleRowBackground(convertView);
 
@@ -397,6 +392,15 @@ public class OperationScheduleArrayAdapter
 
 		if (isArrivalEstimateViewEnable(position)) {
 			arrivalEstimateTextView.setText(getArrivalEstimateForView(position, operationSchedules));
+		}
+	}
+
+	private void setDepartureEstimateTextView(int position, View convertView, List<OperationSchedule> operationSchedules) {
+		TextView departureEstimateTextView = convertView.findViewById(R.id.operation_schedule_departure_estimate_text_view);
+		departureEstimateTextView.setText("");
+
+		if (isDepartureEstimateViewEnable(position)) {
+			departureEstimateTextView.setText(getDepartureEstimateForView(position, operationSchedules));
 		}
 	}
 
