@@ -368,36 +368,54 @@ public class OperationScheduleArrayAdapter
 
 		convertView.setTag(operationSchedules);
 
-		Button mapButton = convertView.findViewById(R.id.operation_list_map_button);
-		mapButton.setTag(representativeOS);
-		mapButton.setOnClickListener(onMapButtonClickListener);
+		setArrivalEstimateTextView(position, convertView, operationSchedules);
+		setDepartureEstimateTextView(position, convertView, operationSchedules);
 
-		TextView platformNameView = convertView.findViewById(R.id.platform_name);
-		TextView platformAddressView = convertView.findViewById(R.id.platform_address);
-		platformNameView.setText(representativeOS.name);
-		platformAddressView.setText(representativeOS.address);
+		((TextView)convertView.findViewById(R.id.platform_name)).setText(representativeOS.name);
 
-		if (StringUtils.isBlank(platformAddressView.getText())) {
-			platformAddressView.setText("(住所登録なし)");
-		}
+		setPlatformAddressView(convertView, representativeOS);
 
+		setMapButtonView(convertView, representativeOS);
+
+		setOperationScheduleRowBackground(convertView);
+
+		setOperationRowPassengerCount(position, convertView);
+
+		convertView.setOnTouchListener(onOperationScheduleTouchListener);
+	}
+
+	private void setArrivalEstimateTextView(int position, View convertView, List<OperationSchedule> operationSchedules) {
 		TextView arrivalEstimateTextView = convertView.findViewById(R.id.operation_schedule_arrival_estimate_text_view);
+
 		arrivalEstimateTextView.setText("");
 
 		if (isArrivalEstimateViewEnable(position)) {
 			arrivalEstimateTextView.setText(getArrivalEstimateForView(position, operationSchedules));
 		}
+	}
 
+	private void setDepartureEstimateTextView(int position, View convertView, List<OperationSchedule> operationSchedules) {
 		TextView departureEstimateTextView = convertView.findViewById(R.id.operation_schedule_departure_estimate_text_view);
 		departureEstimateTextView.setText("");
 
 		if (isDepartureEstimateViewEnable(position)) {
 			departureEstimateTextView.setText(getDepartureEstimateForView(position, operationSchedules));
 		}
+	}
 
-		setOperationScheduleRowBackground(convertView);
+	private void setPlatformAddressView(View convertView, OperationSchedule representativeOS) {
+		TextView platformAddressView = convertView.findViewById(R.id.platform_address);
+		platformAddressView.setText(representativeOS.address);
 
-		convertView.setOnTouchListener(onOperationScheduleTouchListener);
+		if (StringUtils.isBlank(platformAddressView.getText())) {
+			platformAddressView.setText("(住所登録なし)");
+		}
+	}
+
+	private void setMapButtonView(View convertView, OperationSchedule representativeOS) {
+		Button mapButton = convertView.findViewById(R.id.operation_list_map_button);
+		mapButton.setTag(representativeOS);
+		mapButton.setOnClickListener(onMapButtonClickListener);
 	}
 
 	@Nullable
@@ -463,28 +481,19 @@ public class OperationScheduleArrayAdapter
 		return currentOS.platformId.equals(nextOS.platformId) ? false : true;
 	}
 
-	private void setPassengerRecordRowViews(int position, View convertView) {
-		ViewGroup passengerRecordsViewGroup = convertView.findViewById(R.id.operation_list_passenger_records);
-		passengerRecordsViewGroup.removeAllViews();
-		passengerRecordsViewGroup.setVisibility(showPassengerRecords	? View.VISIBLE : View.GONE);
-
+	private void setOperationRowPassengerCount(int position, View convertView) {
 		Long getOffPassengerCount = 0L;
 		Long getOnPassengerCount = 0L;
 
-		if (showPassengerRecords) {
-			for (PassengerRecord passengerRecord : passengerRecords) {
-			    for (OperationSchedule operationSchedule : (List<OperationSchedule>)getItem(position)) {
-					if (passengerRecord.arrivalScheduleId.equals(operationSchedule.id)) {
-						passengerRecordsViewGroup.addView(createPassengerRecordRow(operationSchedule, passengerRecord, false));
-						getOffPassengerCount += passengerRecord.passengerCount;
-					} else if (passengerRecord.departureScheduleId.equals(operationSchedule.id)) {
-						passengerRecordsViewGroup.addView(createPassengerRecordRow(operationSchedule, passengerRecord, true));
-						getOnPassengerCount += passengerRecord.passengerCount;
-					}
+		for (PassengerRecord passengerRecord : passengerRecords) {
+			for (OperationSchedule operationSchedule : (List<OperationSchedule>)getItem(position)) {
+				if (passengerRecord.arrivalScheduleId.equals(operationSchedule.id)) {
+					getOffPassengerCount += passengerRecord.passengerCount;
+				} else if (passengerRecord.departureScheduleId.equals(operationSchedule.id)) {
+					getOnPassengerCount += passengerRecord.passengerCount;
 				}
 			}
 		}
-
 		TextView getOnPassengerCountTextView = convertView.findViewById(R.id.operation_schedule_get_on_passenger_count_text_view);
 		getOnPassengerCountTextView.setText("乗" + String.format("%3d", getOnPassengerCount) + "名");
 		getOnPassengerCountTextView.setVisibility(getOnPassengerCount > 0 ? View.VISIBLE : View.INVISIBLE);
@@ -492,6 +501,24 @@ public class OperationScheduleArrayAdapter
 		TextView getOffPassengerCountTextView = convertView.findViewById(R.id.operation_schedule_get_off_passenger_count_text_view);
 		getOffPassengerCountTextView.setText("降" + String.format("%3d", getOffPassengerCount) + "名");
 		getOffPassengerCountTextView.setVisibility(getOffPassengerCount > 0 ? View.VISIBLE : View.INVISIBLE);
+	}
+
+	private void setPassengerRecordRowViews(int position, View convertView) {
+		ViewGroup passengerRecordsViewGroup = convertView.findViewById(R.id.operation_list_passenger_records);
+		passengerRecordsViewGroup.removeAllViews();
+		passengerRecordsViewGroup.setVisibility(showPassengerRecords	? View.VISIBLE : View.GONE);
+
+		if (showPassengerRecords) {
+			for (PassengerRecord passengerRecord : passengerRecords) {
+			    for (OperationSchedule operationSchedule : (List<OperationSchedule>)getItem(position)) {
+					if (passengerRecord.arrivalScheduleId.equals(operationSchedule.id)) {
+						passengerRecordsViewGroup.addView(createPassengerRecordRow(operationSchedule, passengerRecord, false));
+					} else if (passengerRecord.departureScheduleId.equals(operationSchedule.id)) {
+						passengerRecordsViewGroup.addView(createPassengerRecordRow(operationSchedule, passengerRecord, true));
+					}
+				}
+			}
+		}
 	}
 
 	private View createPassengerRecordRow(OperationSchedule operationSchedule, PassengerRecord passengerRecord, Boolean getOn) {
