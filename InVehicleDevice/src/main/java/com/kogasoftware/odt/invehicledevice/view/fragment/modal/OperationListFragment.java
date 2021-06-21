@@ -36,6 +36,8 @@ public class OperationListFragment extends Fragment {
 	// TODO: Activityは一つしかないので、InVehicleDeviceActivityの指定は不要では？
 	public static final String FRAGMENT_TAG = InVehicleDeviceActivity.class + "/" + OperationListFragment.class;
 
+	private boolean isEnablePassengerRecordSync = false;
+
 	public static OperationListFragment newInstance(Boolean closeable) {
 		OperationListFragment fragment = new OperationListFragment();
 		Bundle args = new Bundle();
@@ -91,6 +93,7 @@ public class OperationListFragment extends Fragment {
 			if (scroll) {
 				scrollToUnhandledOperationSchedule();
 			}
+			isEnablePassengerRecordSync = true;
 		}
 
 		@Override
@@ -107,6 +110,8 @@ public class OperationListFragment extends Fragment {
 
 		@Override
 		public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+			if (!isEnablePassengerRecordSync) { return; }
+
 			Cursor operationScheduleCursor = getActivity()
 							.getContentResolver()
 							.query(OperationSchedule.CONTENT.URI, null, null, null, null);
