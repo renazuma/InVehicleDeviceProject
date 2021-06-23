@@ -19,6 +19,7 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.Operatio
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule.Phase;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationScheduleChunk;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationSchedulesSyncFragmentAbstract;
 import com.kogasoftware.odt.invehicledevice.view.fragment.modal.PlatformMemoFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.modal.SignInFragment;
@@ -139,7 +140,7 @@ public class InformationBarFragment	extends OperationSchedulesSyncFragmentAbstra
 				@Override
 				public void onClick(View v) {
 					ViewDisabler.disable(v);
-					OperationSchedule representativeOS = OperationSchedule.getCurrentChunkRepresentativeOS(operationSchedules, passengerRecords);
+					OperationSchedule representativeOS = OperationScheduleChunk.getCurrentChunkRepresentativeOS(operationSchedules, passengerRecords);
 					showPlatformMemoFragment(representativeOS);
 				}
 			});
@@ -148,8 +149,8 @@ public class InformationBarFragment	extends OperationSchedulesSyncFragmentAbstra
 
 	private Boolean isShowMemoButtonPattern() {
 		return (OperationSchedule.getPhase(operationSchedules, passengerRecords) != Phase.FINISH
-						&& OperationSchedule.isExistCurrentChunk(operationSchedules, passengerRecords)
-						&& StringUtils.isNotBlank(OperationSchedule.getCurrentChunkRepresentativeOS(operationSchedules, passengerRecords).memo));
+						&& OperationScheduleChunk.isExistCurrentChunk(operationSchedules, passengerRecords)
+						&& StringUtils.isNotBlank(OperationScheduleChunk.getCurrentChunkRepresentativeOS(operationSchedules, passengerRecords).memo));
 	}
 
 	private void showPlatformMemoFragment(OperationSchedule operationSchedule) {

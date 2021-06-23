@@ -19,6 +19,7 @@ import com.kogasoftware.odt.invehicledevice.view.fragment.modal.DepartureCheckFr
 import com.kogasoftware.odt.invehicledevice.view.fragment.modal.OperationListFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.modal.PassengerRecordErrorFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationScheduleChunk;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationSchedulesSyncFragmentAbstract;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.ViewDisabler;
 
@@ -67,12 +68,12 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 		if (!isAdded()) { return; }
 
 		if (phase.equals(Phase.DRIVE)) {
-			if (OperationSchedule.isExistCurrentChunk(operationSchedules, passengerRecords)) {
-				OperationSchedule.getCurrentChunkRepresentativeOS(operationSchedules, passengerRecords).startNavigation(getActivity());
+			if (OperationScheduleChunk.isExistCurrentChunk(operationSchedules, passengerRecords)) {
+				OperationScheduleChunk.getCurrentChunkRepresentativeOS(operationSchedules, passengerRecords).startNavigation(getActivity());
 			}
 		} else {
-			if (OperationSchedule.isExistNextChunk(operationSchedules, passengerRecords)) {
-				OperationSchedule.getNextChunkRepresentativeOS(operationSchedules, passengerRecords).startNavigation(getActivity());
+			if (OperationScheduleChunk.isExistNextChunk(operationSchedules, passengerRecords)) {
+				OperationScheduleChunk.getNextChunkRepresentativeOS(operationSchedules, passengerRecords).startNavigation(getActivity());
 			}
 		}
 	}
@@ -87,7 +88,7 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 
 		if (!isAdded()) { return; }
 
-		if (!OperationSchedule.isExistCurrentChunk(operationSchedules, passengerRecords)) { return; }
+		if (!OperationScheduleChunk.isExistCurrentChunk(operationSchedules, passengerRecords)) { return; }
 
 		getFragmentManager()
 			.beginTransaction()
@@ -98,28 +99,28 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 	public void showDepartureCheckFragment(Phase phase, final LinkedList<OperationSchedule> operationSchedules, final LinkedList<PassengerRecord> passengerRecords) {
 		if (!isAdded()) { return; }
 
-		if (!OperationSchedule.isExistCurrentChunk(operationSchedules, passengerRecords)) { return; }
+		if (!OperationScheduleChunk.isExistCurrentChunk(operationSchedules, passengerRecords)) { return; }
 
 		if (existPassengerRecordError(phase, operationSchedules, passengerRecords)) {
 			Fragments.showModalFragment(getFragmentManager(),
 							PassengerRecordErrorFragment.newInstance(
-											OperationSchedule.getCurrentChunk(operationSchedules, passengerRecords)));
+											OperationScheduleChunk.getCurrentChunk(operationSchedules, passengerRecords)));
 		} else if (phase.equals(Phase.PLATFORM_GET_OFF)) {
 			List<PassengerRecord> getOnPassengerRecords = Lists.newArrayList();
-			for (OperationSchedule operationSchedule : OperationSchedule.getCurrentChunk(operationSchedules, passengerRecords)) {
+			for (OperationSchedule operationSchedule : OperationScheduleChunk.getCurrentChunk(operationSchedules, passengerRecords)) {
 				getOnPassengerRecords.addAll(operationSchedule.getGetOnScheduledPassengerRecords(passengerRecords));
 			}
 
 			if (getOnPassengerRecords.isEmpty()) {
 				Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(phase, operationSchedules, passengerRecords));
 			} else {
-				for (OperationSchedule operationSchedule : OperationSchedule.getCurrentChunk(operationSchedules, passengerRecords)) {
+				for (OperationSchedule operationSchedule : OperationScheduleChunk.getCurrentChunk(operationSchedules, passengerRecords)) {
 					operationSchedule.completeGetOff = true;
 				}
 				new Thread() {
 					@Override
 					public void run() {
-						for (OperationSchedule operationSchedule : OperationSchedule.getCurrentChunk(operationSchedules, passengerRecords)) {
+						for (OperationSchedule operationSchedule : OperationScheduleChunk.getCurrentChunk(operationSchedules, passengerRecords)) {
 							contentResolver.insert(OperationSchedule.CONTENT.URI, operationSchedule.toContentValues());
 						}
 					}
@@ -139,7 +140,7 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 			return false;
 		}
 
-		for (OperationSchedule operationSchedule : OperationSchedule.getCurrentChunk(operationSchedules, passengerRecords)) {
+		for (OperationSchedule operationSchedule : OperationScheduleChunk.getCurrentChunk(operationSchedules, passengerRecords)) {
 			if (!operationSchedule.getNoGetOffErrorPassengerRecords(passengerRecords).isEmpty()) {
 				return true;
 			}
@@ -153,7 +154,7 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 		}
 
 		boolean existError = false;
-		for (OperationSchedule operationSchedule : OperationSchedule.getCurrentChunk(operationSchedules, passengerRecords)) {
+		for (OperationSchedule operationSchedule : OperationScheduleChunk.getCurrentChunk(operationSchedules, passengerRecords)) {
 			if (!operationSchedule.getNoGetOnErrorPassengerRecords(passengerRecords).isEmpty()) {
 				existError = true;
 			}

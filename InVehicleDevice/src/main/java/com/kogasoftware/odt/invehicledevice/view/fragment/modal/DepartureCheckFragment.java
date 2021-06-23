@@ -14,6 +14,7 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.Operatio
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule.Phase;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationScheduleChunk;
 
 import org.joda.time.DateTime;
 
@@ -54,14 +55,14 @@ public class DepartureCheckFragment extends Fragment {
 		Bundle args = getArguments();
 		final Phase phase = (Phase) args.getSerializable(PHASE_KEY);
 
-		final List<OperationSchedule> operationSchedules = (List<OperationSchedule>) args.getSerializable(OPERATION_SCHEDULES_KEY);
-		final List<PassengerRecord> passengerRecords = (List<PassengerRecord>) args.getSerializable(PASSENGER_RECORDS_KEY);
-		final List<OperationSchedule> currentChunk = OperationSchedule.getCurrentChunk(operationSchedules, passengerRecords);
+		List<OperationSchedule> operationSchedules = (List<OperationSchedule>) args.getSerializable(OPERATION_SCHEDULES_KEY);
+		List<PassengerRecord> passengerRecords = (List<PassengerRecord>) args.getSerializable(PASSENGER_RECORDS_KEY);
+		final List<OperationSchedule> currentChunk = OperationScheduleChunk.getCurrentChunk(operationSchedules, passengerRecords);
 
 		View view = getView();
 
 		Button departureButton = (Button) view.findViewById(R.id.departure_button);
-		if (OperationSchedule.isExistNextChunk(operationSchedules, passengerRecords) ) {
+		if (OperationScheduleChunk.isExistNextChunk(operationSchedules, passengerRecords) ) {
 			departureButton.setText("出発する");
 		} else {
 			departureButton.setText("確定する");
