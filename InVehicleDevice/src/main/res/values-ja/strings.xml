@@ -61,4 +61,6 @@
     <string name="monetary_unit">円</string>
     <string name="expected_charge">予定料金</string>
     <string name="location_description">"このアプリでは、管理者が運行状況を把握・トレースするために、また乗客が乗車前に車両位置を確認するために、現在地のデータが収集されます。\nアプリを閉じているときや、使用していないときにも収集されます。"</string>
+    <string name="google_navigation_app_name">Google マップ</string>
+    <string name="yahoo_navigation_app_name">Yahoo!カーナビ</string>
 </resources>

@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
  * DB管理
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
-	static final Integer DATABASE_VERSION = 24;
+	static final Integer DATABASE_VERSION = 25;
 	private static final String TAG = DatabaseHelper.class.getSimpleName();
 	final List<String> migrationSqls = Lists.newArrayList();
 	final Context context;

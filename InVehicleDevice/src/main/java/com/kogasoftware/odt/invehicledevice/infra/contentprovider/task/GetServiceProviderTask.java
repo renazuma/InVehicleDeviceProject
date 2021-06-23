@@ -75,6 +75,7 @@ public class GetServiceProviderTask extends SynchronizationTask {
 			if (secretAccessKey.isTextual()) {
 				values.put(ServiceProvider.Columns.LOG_SECRET_ACCESS_KEY_AWS, secretAccessKey.asText());
 			}
+			values.put(ServiceProvider.Columns.CAR_NAVIGATION_APP, node.path("car_navigation_app").asText());
 			id = database.insertOrThrow(ServiceProvider.TABLE_NAME, null, values);
 
 			database.delete(DefaultCharge.TABLE_NAME, null, null);

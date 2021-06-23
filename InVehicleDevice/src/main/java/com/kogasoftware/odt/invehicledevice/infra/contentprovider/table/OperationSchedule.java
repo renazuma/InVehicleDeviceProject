@@ -18,6 +18,7 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.InVehicleDevic
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.task.PatchOperationRecordTask;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.util.ContentValuesUtils;
 import com.kogasoftware.odt.invehicledevice.view.BigToast;
+import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 
 import org.joda.time.DateTime;
 
@@ -97,15 +98,30 @@ public class OperationSchedule implements Serializable {
 	}
 
 	public void startNavigation(Context context) {
-		String uri = String.format(Locale.US, "google.navigation:q=%f,%f",
-				latitude.doubleValue(), longitude.doubleValue());
-		Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
-		intent.setClassName("com.google.android.apps.maps","com.google.android.maps.MapsActivity");
+		ServiceProvider serviceProvider = ((InVehicleDeviceActivity)context).serviceProvider;
+
+		Intent intent;
+
+		if (serviceProvider.carNavigationApp.equals("yahoo_carnavi")) {
+			String uriFormatStr = "yjcarnavi://navi/select?point=current&point=%f,%f";
+			Uri uri = Uri.parse(String.format(Locale.US, uriFormatStr, latitude, longitude));
+			intent = new Intent(android.content.Intent.ACTION_VIEW, uri);
+			// setClassNameは、Yahoo!カーナビのpackageNameとclassNameが分からないので未指定。無くても動作はしている。
+		} else {
+			String uriFormatStr = "google.navigation:q=%f,%f";
+			Uri uri = Uri.parse(String.format(Locale.US, uriFormatStr, latitude, longitude));
+			intent = new Intent(android.content.Intent.ACTION_VIEW, uri);
+			intent.setClassName("com.google.android.apps.maps","com.google.android.maps.MapsActivity");
+		}
+
 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
 		try {
 			context.startActivity(intent);
 		} catch (ActivityNotFoundException e) {
-			BigToast.makeText(context, "GoogleMapsが存在しないため、地図を表示できません", Toast.LENGTH_LONG).show();
+			BigToast.makeText(context,
+				serviceProvider.carNavigationApp + "が存在しないため、地図を表示できません",
+				Toast.LENGTH_LONG).show();
 		}
 	}
 

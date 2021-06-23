@@ -61,4 +61,6 @@
     <string name="monetary_unit">※ Monetary unit</string>
     <string name="expected_charge">※ Expected charge</string>
     <string name="location_description">※ location description</string>
+    <string name="google_navigation_app_name">※ google navigation app name</string>
+    <string name="yahoo_navigation_app_name">※ yahoo navigation app name</string>
 </resources>
