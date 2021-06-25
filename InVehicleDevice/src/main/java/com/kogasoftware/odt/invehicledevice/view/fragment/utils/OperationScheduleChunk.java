@@ -8,8 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class OperationScheduleChunk {
-  List<OperationSchedule> operationSchedules;
-  List<PassengerRecord> passengerRecords;
+  public List<OperationSchedule> operationSchedules;
+  public List<PassengerRecord> passengerRecords;
 
   public OperationScheduleChunk(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
     this.operationSchedules = operationSchedules;
