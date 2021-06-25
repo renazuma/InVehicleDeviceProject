@@ -65,6 +65,10 @@ public class OperationScheduleChunk {
         return platformOrderOperationScheduleLists;
     }
 
+  public List<OperationSchedule> getCurrentChunk() {
+      return getCurrentChunk(operationSchedules, passengerRecords);
+  }
+
   public static List<OperationSchedule> getCurrentChunk(List<OperationSchedule> operationSchedules ,List<PassengerRecord> passengerRecords) {
         List<List> chunkList = getOperationSchedulePhaseChunkList(operationSchedules, passengerRecords);
         List<OperationSchedule> currentChunk = Lists.newArrayList();
