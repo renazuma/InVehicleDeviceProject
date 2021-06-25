@@ -73,7 +73,7 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 				operationScheduleChunk.getCurrentChunkRepresentativeOS().startNavigation(getActivity());
 			}
 		} else {
-			if (OperationScheduleChunk.isExistNextChunk(operationSchedules, passengerRecords)) {
+			if (operationScheduleChunk.isExistNextChunk()) {
 				OperationScheduleChunk.getNextChunkRepresentativeOS(operationSchedules, passengerRecords).startNavigation(getActivity());
 			}
 		}
