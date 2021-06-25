@@ -88,6 +88,10 @@ public class OperationScheduleChunk {
         return currentChunk;
     }
 
+  public OperationSchedule getCurrentChunkRepresentativeOS() {
+    return getCurrentChunkRepresentativeOS(operationSchedules, passengerRecords);
+  }
+
   public static OperationSchedule getCurrentChunkRepresentativeOS(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
         if (isExistCurrentChunk(operationSchedules, passengerRecords)) {
             return getCurrentChunk(operationSchedules, passengerRecords).get(0);
