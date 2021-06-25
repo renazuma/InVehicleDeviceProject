@@ -65,7 +65,7 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 	}
 
 	// 表示メソッド
-	public void showNavigation(Phase phase,	LinkedList<OperationSchedule> operationSchedules, LinkedList<PassengerRecord> passengerRecords) {
+	public void showNavigation(Phase phase) {
 		if (!isAdded()) { return; }
 
 		if (phase.equals(Phase.DRIVE)) {
@@ -175,7 +175,7 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 			@Override
 			public void onClick(View v) {
 				ViewDisabler.disable(v);
-				showNavigation(phase, operationSchedules, passengerRecords);
+				showNavigation(phase);
 			}
 		});
 
