@@ -85,7 +85,7 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 		Fragments.showModalFragment(getFragmentManager(), OperationListFragment.newInstance(true), OPERATION_LIST_FRAGMENT_TAG);
 	}
 
-	public void showArrivalCheckFragment(LinkedList<OperationSchedule> operationSchedules, LinkedList<PassengerRecord> passengerRecords) {
+	public void showArrivalCheckFragment() {
 
 		if (!isAdded()) { return; }
 
@@ -93,7 +93,8 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 
 		getFragmentManager()
 			.beginTransaction()
-			.add(R.id.modal_fragment_container, ArrivalCheckFragment.newInstance(operationSchedules, passengerRecords))
+			.add(R.id.modal_fragment_container, ArrivalCheckFragment.newInstance(
+							operationScheduleChunk.operationSchedules, operationScheduleChunk.passengerRecords))
 			.commitAllowingStateLoss();
 	}
 
@@ -188,7 +189,7 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 					@Override
 					public void onClick(View v) {
 						ViewDisabler.disable(v);
-						showArrivalCheckFragment(operationSchedules, passengerRecords);
+						showArrivalCheckFragment();
 					}
 				});
 				break;
