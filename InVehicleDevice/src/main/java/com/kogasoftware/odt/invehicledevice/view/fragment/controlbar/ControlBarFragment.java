@@ -69,7 +69,7 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 		if (!isAdded()) { return; }
 
 		if (phase.equals(Phase.DRIVE)) {
-			if (OperationScheduleChunk.isExistCurrentChunk(operationSchedules, passengerRecords)) {
+			if (operationScheduleChunk.isExistCurrentChunk()) {
 				OperationScheduleChunk.getCurrentChunkRepresentativeOS(operationSchedules, passengerRecords).startNavigation(getActivity());
 			}
 		} else {
@@ -89,7 +89,7 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 
 		if (!isAdded()) { return; }
 
-		if (!OperationScheduleChunk.isExistCurrentChunk(operationSchedules, passengerRecords)) { return; }
+		if (!operationScheduleChunk.isExistCurrentChunk()) { return; }
 
 		getFragmentManager()
 			.beginTransaction()
@@ -100,7 +100,7 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 	public void showDepartureCheckFragment(Phase phase, final LinkedList<OperationSchedule> operationSchedules, final LinkedList<PassengerRecord> passengerRecords) {
 		if (!isAdded()) { return; }
 
-		if (!OperationScheduleChunk.isExistCurrentChunk(operationSchedules, passengerRecords)) { return; }
+		if (!operationScheduleChunk.isExistCurrentChunk()) { return; }
 
 		if (existPassengerRecordError(phase, operationSchedules, passengerRecords)) {
 			Fragments.showModalFragment(getFragmentManager(), PassengerRecordErrorFragment.newInstance(operationScheduleChunk.getCurrentChunk()));
