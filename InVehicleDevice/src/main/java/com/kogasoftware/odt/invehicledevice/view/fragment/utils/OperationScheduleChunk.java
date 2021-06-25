@@ -136,6 +136,10 @@ public class OperationScheduleChunk {
         }
     }
 
+  public boolean isExistNextChunk() {
+    return isExistNextChunk(operationSchedules, passengerRecords);
+  }
+
   public static boolean isExistNextChunk(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
         return !getNextChunk(operationSchedules, passengerRecords).isEmpty();
     }
