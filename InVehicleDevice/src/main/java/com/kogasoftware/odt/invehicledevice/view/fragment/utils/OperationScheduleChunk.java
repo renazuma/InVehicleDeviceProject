@@ -96,6 +96,10 @@ public class OperationScheduleChunk {
         }
     }
 
+  public boolean isExistCurrentChunk() {
+    return isExistCurrentChunk(operationSchedules, passengerRecords);
+  }
+
   public static boolean isExistCurrentChunk(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
         return !getCurrentChunk(operationSchedules, passengerRecords).isEmpty();
     }
