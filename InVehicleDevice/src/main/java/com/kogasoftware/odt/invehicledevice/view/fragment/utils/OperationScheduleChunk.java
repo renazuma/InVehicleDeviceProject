@@ -128,6 +128,10 @@ public class OperationScheduleChunk {
         return nextChunk;
     }
 
+  public OperationSchedule getNextChunkRepresentativeOS() {
+    return getNextChunkRepresentativeOS(operationSchedules, passengerRecords);
+  }
+
   public static OperationSchedule getNextChunkRepresentativeOS(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
         if (isExistNextChunk(operationSchedules, passengerRecords)) {
             return getNextChunk(operationSchedules, passengerRecords).get(0);
