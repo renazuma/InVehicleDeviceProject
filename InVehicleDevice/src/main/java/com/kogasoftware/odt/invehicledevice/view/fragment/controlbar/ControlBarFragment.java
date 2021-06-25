@@ -153,13 +153,12 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 			return false;
 		}
 
-		boolean existError = false;
 		for (OperationSchedule operationSchedule : operationScheduleChunk.getCurrentChunk()) {
 			if (!operationSchedule.getNoGetOnErrorPassengerRecords(operationScheduleChunk.passengerRecords).isEmpty()) {
-				existError = true;
+				return true;
 			}
 		}
-		return existError;
+		return false;
 	}
 
 	// 画面右部のボタンの、地図ボタン、phase変更ボタン（到着しました等）を定義する
