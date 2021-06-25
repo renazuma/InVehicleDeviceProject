@@ -98,21 +98,21 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 			.commitAllowingStateLoss();
 	}
 
-	public void showDepartureCheckFragment(Phase phase, final LinkedList<OperationSchedule> operationSchedules, final LinkedList<PassengerRecord> passengerRecords) {
+	public void showDepartureCheckFragment(Phase phase) {
 		if (!isAdded()) { return; }
 
 		if (!operationScheduleChunk.isExistCurrentChunk()) { return; }
 
-		if (existPassengerRecordError(phase, operationSchedules, passengerRecords)) {
+		if (existPassengerRecordError(phase)) {
 			Fragments.showModalFragment(getFragmentManager(), PassengerRecordErrorFragment.newInstance(operationScheduleChunk.getCurrentChunk()));
 		} else if (phase.equals(Phase.PLATFORM_GET_OFF)) {
 			List<PassengerRecord> getOnPassengerRecords = Lists.newArrayList();
 			for (OperationSchedule operationSchedule : operationScheduleChunk.getCurrentChunk()) {
-				getOnPassengerRecords.addAll(operationSchedule.getGetOnScheduledPassengerRecords(passengerRecords));
+				getOnPassengerRecords.addAll(operationSchedule.getGetOnScheduledPassengerRecords(operationScheduleChunk.passengerRecords));
 			}
 
 			if (getOnPassengerRecords.isEmpty()) {
-				Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(phase, operationSchedules, passengerRecords));
+				Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(phase, operationScheduleChunk.operationSchedules, operationScheduleChunk.passengerRecords));
 			} else {
 				for (OperationSchedule operationSchedule : operationScheduleChunk.getCurrentChunk()) {
 					operationSchedule.completeGetOff = true;
@@ -127,35 +127,35 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 				}.start();
 			}
 		} else {
-			Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(phase, operationSchedules, passengerRecords));
+			Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(phase, operationScheduleChunk.operationSchedules, operationScheduleChunk.passengerRecords));
 		}
 	}
 
-	private boolean existPassengerRecordError(Phase phase, LinkedList<OperationSchedule> operationSchedules, LinkedList<PassengerRecord> passengerRecords) {
-		return (existGetOffPassengerError(phase, operationSchedules, passengerRecords) || existGetOnPassengerError(phase, operationSchedules, passengerRecords));
+	private boolean existPassengerRecordError(Phase phase) {
+		return (existGetOffPassengerError(phase) || existGetOnPassengerError(phase));
 	}
 
-	private boolean existGetOffPassengerError(Phase phase, LinkedList<OperationSchedule> operationSchedules, LinkedList<PassengerRecord> passengerRecords) {
+	private boolean existGetOffPassengerError(Phase phase) {
 		if (!phase.equals(Phase.PLATFORM_GET_OFF)) {
 			return false;
 		}
 
 		for (OperationSchedule operationSchedule : operationScheduleChunk.getCurrentChunk()) {
-			if (!operationSchedule.getNoGetOffErrorPassengerRecords(passengerRecords).isEmpty()) {
+			if (!operationSchedule.getNoGetOffErrorPassengerRecords(operationScheduleChunk.passengerRecords).isEmpty()) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	private boolean existGetOnPassengerError(Phase phase, LinkedList<OperationSchedule> operationSchedules, LinkedList<PassengerRecord> passengerRecords) {
+	private boolean existGetOnPassengerError(Phase phase) {
 		if (!phase.equals(Phase.PLATFORM_GET_ON)) {
 			return false;
 		}
 
 		boolean existError = false;
 		for (OperationSchedule operationSchedule : operationScheduleChunk.getCurrentChunk()) {
-			if (!operationSchedule.getNoGetOnErrorPassengerRecords(passengerRecords).isEmpty()) {
+			if (!operationSchedule.getNoGetOnErrorPassengerRecords(operationScheduleChunk.passengerRecords).isEmpty()) {
 				existError = true;
 			}
 		}
@@ -204,7 +204,7 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 					@Override
 					public void onClick(View v) {
 						ViewDisabler.disable(v);
-						showDepartureCheckFragment(phase, operationSchedules, passengerRecords);
+						showDepartureCheckFragment(phase);
 					}
 				});
 				break;
@@ -215,7 +215,7 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 					@Override
 					public void onClick(View v) {
 						ViewDisabler.disable(v);
-						showDepartureCheckFragment(phase, operationSchedules, passengerRecords);
+						showDepartureCheckFragment(phase);
 					}
 				});
 				break;
