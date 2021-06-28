@@ -8,8 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class OperationScheduleChunk {
-  List<OperationSchedule> operationSchedules;
-  List<PassengerRecord> passengerRecords;
+  public List<OperationSchedule> operationSchedules;
+  public List<PassengerRecord> passengerRecords;
 
   public OperationScheduleChunk(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
     this.operationSchedules = operationSchedules;
@@ -65,6 +65,10 @@ public class OperationScheduleChunk {
         return platformOrderOperationScheduleLists;
     }
 
+  public List<OperationSchedule> getCurrentChunk() {
+      return getCurrentChunk(operationSchedules, passengerRecords);
+  }
+
   public static List<OperationSchedule> getCurrentChunk(List<OperationSchedule> operationSchedules ,List<PassengerRecord> passengerRecords) {
         List<List> chunkList = getOperationSchedulePhaseChunkList(operationSchedules, passengerRecords);
         List<OperationSchedule> currentChunk = Lists.newArrayList();
@@ -84,6 +88,10 @@ public class OperationScheduleChunk {
         return currentChunk;
     }
 
+  public OperationSchedule getCurrentChunkRepresentativeOS() {
+    return getCurrentChunkRepresentativeOS(operationSchedules, passengerRecords);
+  }
+
   public static OperationSchedule getCurrentChunkRepresentativeOS(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
         if (isExistCurrentChunk(operationSchedules, passengerRecords)) {
             return getCurrentChunk(operationSchedules, passengerRecords).get(0);
@@ -91,6 +99,10 @@ public class OperationScheduleChunk {
             return null;
         }
     }
+
+  public boolean isExistCurrentChunk() {
+    return isExistCurrentChunk(operationSchedules, passengerRecords);
+  }
 
   public static boolean isExistCurrentChunk(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
         return !getCurrentChunk(operationSchedules, passengerRecords).isEmpty();
@@ -116,6 +128,10 @@ public class OperationScheduleChunk {
         return nextChunk;
     }
 
+  public OperationSchedule getNextChunkRepresentativeOS() {
+    return getNextChunkRepresentativeOS(operationSchedules, passengerRecords);
+  }
+
   public static OperationSchedule getNextChunkRepresentativeOS(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
         if (isExistNextChunk(operationSchedules, passengerRecords)) {
             return getNextChunk(operationSchedules, passengerRecords).get(0);
@@ -123,6 +139,10 @@ public class OperationScheduleChunk {
             return null;
         }
     }
+
+  public boolean isExistNextChunk() {
+    return isExistNextChunk(operationSchedules, passengerRecords);
+  }
 
   public static boolean isExistNextChunk(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
         return !getNextChunk(operationSchedules, passengerRecords).isEmpty();

@@ -35,6 +35,7 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 			+ "/" + OperationSchedulesSyncFragmentAbstract.class;
 	private ContentResolver contentResolver;
 	private Button mapButton;
+	private OperationScheduleChunk operationScheduleChunk;
 
 	public static ControlBarFragment newInstance() {
 		ControlBarFragment fragment = new ControlBarFragment();
@@ -64,16 +65,16 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 	}
 
 	// 表示メソッド
-	public void showNavigation(Phase phase,	LinkedList<OperationSchedule> operationSchedules, LinkedList<PassengerRecord> passengerRecords) {
+	public void showNavigation(Phase phase) {
 		if (!isAdded()) { return; }
 
 		if (phase.equals(Phase.DRIVE)) {
-			if (OperationScheduleChunk.isExistCurrentChunk(operationSchedules, passengerRecords)) {
-				OperationScheduleChunk.getCurrentChunkRepresentativeOS(operationSchedules, passengerRecords).startNavigation(getActivity());
+			if (operationScheduleChunk.isExistCurrentChunk()) {
+				operationScheduleChunk.getCurrentChunkRepresentativeOS().startNavigation(getActivity());
 			}
 		} else {
-			if (OperationScheduleChunk.isExistNextChunk(operationSchedules, passengerRecords)) {
-				OperationScheduleChunk.getNextChunkRepresentativeOS(operationSchedules, passengerRecords).startNavigation(getActivity());
+			if (operationScheduleChunk.isExistNextChunk()) {
+				operationScheduleChunk.getNextChunkRepresentativeOS().startNavigation(getActivity());
 			}
 		}
 	}
@@ -84,82 +85,80 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 		Fragments.showModalFragment(getFragmentManager(), OperationListFragment.newInstance(true), OPERATION_LIST_FRAGMENT_TAG);
 	}
 
-	public void showArrivalCheckFragment(LinkedList<OperationSchedule> operationSchedules, LinkedList<PassengerRecord> passengerRecords) {
+	public void showArrivalCheckFragment() {
 
 		if (!isAdded()) { return; }
 
-		if (!OperationScheduleChunk.isExistCurrentChunk(operationSchedules, passengerRecords)) { return; }
+		if (!operationScheduleChunk.isExistCurrentChunk()) { return; }
 
 		getFragmentManager()
 			.beginTransaction()
-			.add(R.id.modal_fragment_container, ArrivalCheckFragment.newInstance(operationSchedules, passengerRecords))
+			.add(R.id.modal_fragment_container, ArrivalCheckFragment.newInstance(
+							operationScheduleChunk.operationSchedules, operationScheduleChunk.passengerRecords))
 			.commitAllowingStateLoss();
 	}
 
-	public void showDepartureCheckFragment(Phase phase, final LinkedList<OperationSchedule> operationSchedules, final LinkedList<PassengerRecord> passengerRecords) {
+	public void showDepartureCheckFragment(Phase phase) {
 		if (!isAdded()) { return; }
 
-		if (!OperationScheduleChunk.isExistCurrentChunk(operationSchedules, passengerRecords)) { return; }
+		if (!operationScheduleChunk.isExistCurrentChunk()) { return; }
 
-		if (existPassengerRecordError(phase, operationSchedules, passengerRecords)) {
-			Fragments.showModalFragment(getFragmentManager(),
-							PassengerRecordErrorFragment.newInstance(
-											OperationScheduleChunk.getCurrentChunk(operationSchedules, passengerRecords)));
+		if (existPassengerRecordError(phase)) {
+			Fragments.showModalFragment(getFragmentManager(), PassengerRecordErrorFragment.newInstance(operationScheduleChunk.getCurrentChunk()));
 		} else if (phase.equals(Phase.PLATFORM_GET_OFF)) {
 			List<PassengerRecord> getOnPassengerRecords = Lists.newArrayList();
-			for (OperationSchedule operationSchedule : OperationScheduleChunk.getCurrentChunk(operationSchedules, passengerRecords)) {
-				getOnPassengerRecords.addAll(operationSchedule.getGetOnScheduledPassengerRecords(passengerRecords));
+			for (OperationSchedule operationSchedule : operationScheduleChunk.getCurrentChunk()) {
+				getOnPassengerRecords.addAll(operationSchedule.getGetOnScheduledPassengerRecords(operationScheduleChunk.passengerRecords));
 			}
 
 			if (getOnPassengerRecords.isEmpty()) {
-				Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(phase, operationSchedules, passengerRecords));
+				Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(phase, operationScheduleChunk.operationSchedules, operationScheduleChunk.passengerRecords));
 			} else {
-				for (OperationSchedule operationSchedule : OperationScheduleChunk.getCurrentChunk(operationSchedules, passengerRecords)) {
+				for (OperationSchedule operationSchedule : operationScheduleChunk.getCurrentChunk()) {
 					operationSchedule.completeGetOff = true;
 				}
 				new Thread() {
 					@Override
 					public void run() {
-						for (OperationSchedule operationSchedule : OperationScheduleChunk.getCurrentChunk(operationSchedules, passengerRecords)) {
+						for (OperationSchedule operationSchedule : operationScheduleChunk.getCurrentChunk()) {
 							contentResolver.insert(OperationSchedule.CONTENT.URI, operationSchedule.toContentValues());
 						}
 					}
 				}.start();
 			}
 		} else {
-			Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(phase, operationSchedules, passengerRecords));
+			Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(phase, operationScheduleChunk.operationSchedules, operationScheduleChunk.passengerRecords));
 		}
 	}
 
-	private boolean existPassengerRecordError(Phase phase, LinkedList<OperationSchedule> operationSchedules, LinkedList<PassengerRecord> passengerRecords) {
-		return (existGetOffPassengerError(phase, operationSchedules, passengerRecords) || existGetOnPassengerError(phase, operationSchedules, passengerRecords));
+	private boolean existPassengerRecordError(Phase phase) {
+		return (existGetOffPassengerError(phase) || existGetOnPassengerError(phase));
 	}
 
-	private boolean existGetOffPassengerError(Phase phase, LinkedList<OperationSchedule> operationSchedules, LinkedList<PassengerRecord> passengerRecords) {
+	private boolean existGetOffPassengerError(Phase phase) {
 		if (!phase.equals(Phase.PLATFORM_GET_OFF)) {
 			return false;
 		}
 
-		for (OperationSchedule operationSchedule : OperationScheduleChunk.getCurrentChunk(operationSchedules, passengerRecords)) {
-			if (!operationSchedule.getNoGetOffErrorPassengerRecords(passengerRecords).isEmpty()) {
+		for (OperationSchedule operationSchedule : operationScheduleChunk.getCurrentChunk()) {
+			if (!operationSchedule.getNoGetOffErrorPassengerRecords(operationScheduleChunk.passengerRecords).isEmpty()) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	private boolean existGetOnPassengerError(Phase phase, LinkedList<OperationSchedule> operationSchedules, LinkedList<PassengerRecord> passengerRecords) {
+	private boolean existGetOnPassengerError(Phase phase) {
 		if (!phase.equals(Phase.PLATFORM_GET_ON)) {
 			return false;
 		}
 
-		boolean existError = false;
-		for (OperationSchedule operationSchedule : OperationScheduleChunk.getCurrentChunk(operationSchedules, passengerRecords)) {
-			if (!operationSchedule.getNoGetOnErrorPassengerRecords(passengerRecords).isEmpty()) {
-				existError = true;
+		for (OperationSchedule operationSchedule : operationScheduleChunk.getCurrentChunk()) {
+			if (!operationSchedule.getNoGetOnErrorPassengerRecords(operationScheduleChunk.passengerRecords).isEmpty()) {
+				return true;
 			}
 		}
-		return existError;
+		return false;
 	}
 
 	// 画面右部のボタンの、地図ボタン、phase変更ボタン（到着しました等）を定義する
@@ -169,11 +168,13 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 			final LinkedList<OperationSchedule> operationSchedules,
 			final LinkedList<PassengerRecord> passengerRecords) {
 
+		this.operationScheduleChunk = new OperationScheduleChunk(operationSchedules, passengerRecords);
+
 		mapButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				ViewDisabler.disable(v);
-				showNavigation(phase, operationSchedules, passengerRecords);
+				showNavigation(phase);
 			}
 		});
 
@@ -187,7 +188,7 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 					@Override
 					public void onClick(View v) {
 						ViewDisabler.disable(v);
-						showArrivalCheckFragment(operationSchedules, passengerRecords);
+						showArrivalCheckFragment();
 					}
 				});
 				break;
@@ -202,7 +203,7 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 					@Override
 					public void onClick(View v) {
 						ViewDisabler.disable(v);
-						showDepartureCheckFragment(phase, operationSchedules, passengerRecords);
+						showDepartureCheckFragment(phase);
 					}
 				});
 				break;
@@ -213,7 +214,7 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 					@Override
 					public void onClick(View v) {
 						ViewDisabler.disable(v);
-						showDepartureCheckFragment(phase, operationSchedules, passengerRecords);
+						showDepartureCheckFragment(phase);
 					}
 				});
 				break;
