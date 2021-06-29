@@ -4,10 +4,11 @@ import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
-public class OperationScheduleChunk {
+public class OperationScheduleChunk implements Serializable {
   public List<OperationSchedule> operationSchedules;
   public List<PassengerRecord> passengerRecords;
 

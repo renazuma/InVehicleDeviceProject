@@ -65,14 +65,14 @@ public class PlatformPhaseFragment extends OperationSchedulesSyncFragmentAbstrac
 		public void run() {
 			handler.postDelayed(updateMinutesRemaining, UPDATE_MINUTES_REMAINING_INTERVAL_MILLIS);
 
-			if (!OperationScheduleChunk.isExistNextChunk(operationSchedules, passengerRecords)) {
+			if (operationScheduleChunk == null || !operationScheduleChunk.isExistNextChunk()) {
 				return;
 			}
 
 			DateTime now = DateTime.now();
 			minutesRemainingTextView.setText("");
 
-			OperationSchedule representativeOS = OperationScheduleChunk.getCurrentChunkRepresentativeOS(operationSchedules, passengerRecords);
+			OperationSchedule representativeOS = operationScheduleChunk.getCurrentChunkRepresentativeOS();
 
 			if (representativeOS == null || representativeOS.departureEstimate == null) {
 				return;
@@ -91,8 +91,7 @@ public class PlatformPhaseFragment extends OperationSchedulesSyncFragmentAbstrac
 		}
 	};
 
-	private final List<OperationSchedule> operationSchedules = Lists.newLinkedList();
-	private final List<PassengerRecord> passengerRecords = Lists.newLinkedList();
+	private OperationScheduleChunk operationScheduleChunk;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -135,14 +134,12 @@ public class PlatformPhaseFragment extends OperationSchedulesSyncFragmentAbstrac
 			LinkedList<PassengerRecord> newPassengerRecords,
 			Boolean phaseChanged) {
 
-		operationSchedules.clear();
-		operationSchedules.addAll(newOperationSchedules);
-		passengerRecords.clear();
-		passengerRecords.addAll(newPassengerRecords);
+
+		operationScheduleChunk = new OperationScheduleChunk(newOperationSchedules, newPassengerRecords);
 
 		setMinutesRemainingTextView();
 
-		if (!OperationScheduleChunk.isExistCurrentChunk(operationSchedules, passengerRecords)) {
+		if (!operationScheduleChunk.isExistCurrentChunk()) {
 			currentPlatformNameTextView.setText("");
 			return;
 		}
@@ -156,7 +153,7 @@ public class PlatformPhaseFragment extends OperationSchedulesSyncFragmentAbstrac
 
 	private void setPassengerList(Phase phase, Boolean phaseChanged) {
 		if (phaseChanged) {
-			adapter = new PassengerRecordArrayAdapter(this, phase, OperationScheduleChunk.getCurrentChunk(operationSchedules, passengerRecords));
+			adapter = new PassengerRecordArrayAdapter(this, phase, operationScheduleChunk.getCurrentChunk());
 			ListView listView = new ListView(getActivity());
 			listView.setAdapter(adapter);
 			passengerRecordListView.replaceListView(listView);
@@ -164,14 +161,14 @@ public class PlatformPhaseFragment extends OperationSchedulesSyncFragmentAbstrac
 
 		if (phase.equals(Phase.PLATFORM_GET_OFF)) {
 			List<PassengerRecord> get_off_passenger_records = Lists.newArrayList();
-			for (OperationSchedule operationSchedule : OperationScheduleChunk.getCurrentChunk(operationSchedules, passengerRecords)) {
-				get_off_passenger_records.addAll(operationSchedule.getGetOffScheduledPassengerRecords(passengerRecords));
+			for (OperationSchedule operationSchedule : operationScheduleChunk.getCurrentChunk()) {
+				get_off_passenger_records.addAll(operationSchedule.getGetOffScheduledPassengerRecords(operationScheduleChunk.passengerRecords));
 			}
 			adapter.update(get_off_passenger_records);
 		} else {
 			List<PassengerRecord> get_on_passenger_records = Lists.newArrayList();
-			for (OperationSchedule operationSchedule : OperationScheduleChunk.getCurrentChunk(operationSchedules, passengerRecords)) {
-				get_on_passenger_records.addAll(operationSchedule.getGetOnScheduledPassengerRecords(passengerRecords));
+			for (OperationSchedule operationSchedule : operationScheduleChunk.getCurrentChunk()) {
+				get_on_passenger_records.addAll(operationSchedule.getGetOnScheduledPassengerRecords(operationScheduleChunk.passengerRecords));
 			}
 			adapter.update(get_on_passenger_records);
 		}
@@ -179,12 +176,10 @@ public class PlatformPhaseFragment extends OperationSchedulesSyncFragmentAbstrac
 
 	private void setPlatformNameTextView() {
 		if (isLastOperationSchedules()) {
-			OperationSchedule representativeOS = OperationScheduleChunk.getNextChunkRepresentativeOS(operationSchedules, passengerRecords);
-
 			currentPlatformNameTextView.setText("現在最終乗降場です");
 			Log.i(TAG, "last platform");
 		} else {
-			OperationSchedule representativeOS = OperationScheduleChunk.getCurrentChunkRepresentativeOS(operationSchedules, passengerRecords);
+			OperationSchedule representativeOS = operationScheduleChunk.getCurrentChunkRepresentativeOS();
 			Log.i(TAG, "platform id=" + representativeOS.platformId + " name=" + representativeOS.name);
 			currentPlatformNameTextView.setText(Html.fromHtml(String.format(
 					getResources().getString(R.string.now_platform_is_html), representativeOS.name)));
@@ -201,6 +196,6 @@ public class PlatformPhaseFragment extends OperationSchedulesSyncFragmentAbstrac
 	}
 
 	private boolean isLastOperationSchedules() {
-		return !OperationScheduleChunk.isExistNextChunk(operationSchedules, passengerRecords);
+		return !operationScheduleChunk.isExistNextChunk();
 	}
 }

@@ -13,12 +13,11 @@ import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationScheduleChunk;
 
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
@@ -27,14 +26,12 @@ import java.util.Locale;
  */
 public class DrivePhaseFragment extends Fragment {
 	private static final String TAG = DrivePhaseFragment.class.getSimpleName();
-	private static final String OPERATION_SCHEDULES_KEY = "operation_schedules";
-	private static final String PASSENGER_RECORDS_KEY = "passenger_records";
+	private static final String OPERATION_SCHEDULE_CHUNK_KEY = "operation_schedule_chunk";
 
-	public static DrivePhaseFragment newInstance(LinkedList<OperationSchedule> operationSchedules, LinkedList<PassengerRecord> passengerRecords) {
+	public static DrivePhaseFragment newInstance(OperationScheduleChunk operationScheduleChunk) {
 		DrivePhaseFragment fragment = new DrivePhaseFragment();
 		Bundle args = new Bundle();
-		args.putSerializable(OPERATION_SCHEDULES_KEY, operationSchedules);
-		args.putSerializable(PASSENGER_RECORDS_KEY, passengerRecords);
+		args.putSerializable(OPERATION_SCHEDULE_CHUNK_KEY, (Serializable) operationScheduleChunk);
 		fragment.setArguments(args);
 		return fragment;
 	}
@@ -60,32 +57,34 @@ public class DrivePhaseFragment extends Fragment {
 		TextView platformName1BeyondTextView = (TextView) view.findViewById(R.id.platform_name_1_beyond_text_view);
 
 		Bundle args = getArguments();
-		List<OperationSchedule> operationSchedules = (List<OperationSchedule>) args.getSerializable(OPERATION_SCHEDULES_KEY);
-		List<PassengerRecord> passengerRecords = (List<PassengerRecord>) args.getSerializable(PASSENGER_RECORDS_KEY);
+		OperationScheduleChunk operationScheduleChunk = (OperationScheduleChunk) args.getSerializable(OPERATION_SCHEDULE_CHUNK_KEY);
 
-		if (OperationScheduleChunk.isExistCurrentChunk(operationSchedules, passengerRecords)) {
-			OperationSchedule representativeOS = OperationScheduleChunk.getCurrentChunkRepresentativeOS(operationSchedules, passengerRecords);
+		if (operationScheduleChunk.isExistCurrentChunk()) {
+			OperationSchedule representativeOS = operationScheduleChunk.getCurrentChunkRepresentativeOS();
 			nextPlatformNameTextView.setText("");
 			Log.i(TAG, "next platform id=" + representativeOS.platformId + " name=" + representativeOS.name);
 			nextPlatformNameTextView.setText(representativeOS.name);
 			platformArrivalTimeTextView2.setText("");
-			platformArrivalTimeTextView2.setText(getEstimateTimeForView(operationSchedules, passengerRecords));
+			platformArrivalTimeTextView2.setText(getEstimateTimeForView(operationScheduleChunk));
 		}
 
-		if (OperationScheduleChunk.isExistNextChunk(operationSchedules, passengerRecords)) {
-			platformName1BeyondTextView.setText("▼ " + OperationScheduleChunk.getNextChunkRepresentativeOS(operationSchedules, passengerRecords).name);
+		if (operationScheduleChunk.isExistNextChunk()) {
+			platformName1BeyondTextView.setText("▼ " + operationScheduleChunk.getNextChunkRepresentativeOS().name);
 		}
 	}
 
 	@Nullable
-	private String getEstimateTimeForView(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
-		List<OperationSchedule> targetOperationSchedules = OperationScheduleChunk.getCurrentChunk(operationSchedules, passengerRecords);
+	private String getEstimateTimeForView(OperationScheduleChunk operationScheduleChunk) {
+		List<OperationSchedule> targetOperationSchedules = operationScheduleChunk.getCurrentChunk();
 
-		OperationSchedule currentOS = OperationScheduleChunk.getCurrentChunkRepresentativeOS(operationSchedules, passengerRecords);
-		OperationSchedule nextOS = OperationScheduleChunk.getNextChunkRepresentativeOS(operationSchedules, passengerRecords);
+		OperationSchedule currentOS = operationScheduleChunk.getCurrentChunkRepresentativeOS();
+		OperationSchedule nextOS = operationScheduleChunk.getNextChunkRepresentativeOS();
 
-		if (OperationScheduleChunk.isExistNextChunk(operationSchedules, passengerRecords) && nextOS.platformId.equals(currentOS.platformId)) {
-			targetOperationSchedules.addAll(OperationScheduleChunk.getNextChunk(operationSchedules, passengerRecords));
+		if (operationScheduleChunk.isExistNextChunk() && nextOS.platformId.equals(currentOS.platformId)) {
+			targetOperationSchedules.addAll(operationScheduleChunk.getNextChunk(
+							operationScheduleChunk.operationSchedules,
+							operationScheduleChunk.passengerRecords
+			));
 		}
 
 		OperationSchedule estimateOS = null;

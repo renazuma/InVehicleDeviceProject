@@ -18,6 +18,7 @@ import com.kogasoftware.odt.invehicledevice.view.fragment.phasecontent.DrivePhas
 import com.kogasoftware.odt.invehicledevice.view.fragment.phasecontent.FinishPhaseFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.informationbar.InformationBarFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.phasecontent.PlatformPhaseFragment;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationScheduleChunk;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationSchedulesSyncFragmentAbstract;
 
 import java.util.LinkedList;
@@ -74,7 +75,7 @@ public class MainLayoutFragment extends OperationSchedulesSyncFragmentAbstract {
 				fragmentTransaction.replace(R.id.phase_content_fragment_container, FinishPhaseFragment.newInstance());
 				break;
 			case DRIVE:
-				fragmentTransaction.replace(R.id.phase_content_fragment_container, DrivePhaseFragment.newInstance(operationSchedules, passengerRecords));
+				fragmentTransaction.replace(R.id.phase_content_fragment_container, DrivePhaseFragment.newInstance(new OperationScheduleChunk(operationSchedules, passengerRecords)));
 				break;
 			case PLATFORM_GET_ON:
 				fragmentTransaction.replace(R.id.phase_content_fragment_container, PlatformPhaseFragment.newInstance());
