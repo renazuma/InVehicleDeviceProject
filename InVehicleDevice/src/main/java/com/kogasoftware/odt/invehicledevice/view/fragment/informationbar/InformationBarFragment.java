@@ -18,11 +18,11 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.Operatio
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule.Phase;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
-import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationScheduleChunk;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationSchedulesSyncFragmentAbstract;
 import com.kogasoftware.odt.invehicledevice.view.fragment.modal.PlatformMemoFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.modal.SignInFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationPhase;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.ViewDisabler;
 
 import org.apache.commons.lang3.StringUtils;
@@ -69,7 +69,7 @@ public class InformationBarFragment	extends OperationSchedulesSyncFragmentAbstra
 	 */
 	private Runnable networkAlert;
 
-	private OperationScheduleChunk operationScheduleChunk;
+	private OperationPhase operationPhase;
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -144,9 +144,9 @@ public class InformationBarFragment	extends OperationSchedulesSyncFragmentAbstra
 	}
 
 	private Boolean isShowMemoButtonPattern() {
-		return (OperationSchedule.getPhase(operationScheduleChunk.operationSchedules, operationScheduleChunk.passengerRecords) != Phase.FINISH
-						&& operationScheduleChunk.isExistCurrentChunk()
-						&& StringUtils.isNotBlank(operationScheduleChunk.getCurrentChunkRepresentativeOS().memo));
+		return (OperationSchedule.getPhase(operationPhase.operationSchedules, operationPhase.passengerRecords) != Phase.FINISH
+						&& operationPhase.isExistCurrent()
+						&& StringUtils.isNotBlank(operationPhase.getCurrentRepresentativeOS().memo));
 	}
 
 	private void showPlatformMemoFragment() {
@@ -154,11 +154,11 @@ public class InformationBarFragment	extends OperationSchedulesSyncFragmentAbstra
 
 		Fragments.showModalFragment(
 						getFragmentManager(),
-						PlatformMemoFragment.newInstance(operationScheduleChunk.getCurrentChunkRepresentativeOS()));
+						PlatformMemoFragment.newInstance(operationPhase.getCurrentRepresentativeOS()));
 	}
 
 	private int getPhaseColor() {
-		switch (OperationSchedule.getPhase(operationScheduleChunk.operationSchedules, operationScheduleChunk.passengerRecords)) {
+		switch (OperationSchedule.getPhase(operationPhase.operationSchedules, operationPhase.passengerRecords)) {
 			case DRIVE:
 			    return ContextCompat.getColor(getContext(), R.color.drive_phase_header);
 			case FINISH:
@@ -174,7 +174,7 @@ public class InformationBarFragment	extends OperationSchedulesSyncFragmentAbstra
 	}
 
 	private String getPhaseText() {
-		switch (OperationSchedule.getPhase(operationScheduleChunk.operationSchedules, operationScheduleChunk.passengerRecords)) {
+		switch (OperationSchedule.getPhase(operationPhase.operationSchedules, operationPhase.passengerRecords)) {
 			case DRIVE:
 				return "運行中";
 			case FINISH:
@@ -199,7 +199,7 @@ public class InformationBarFragment	extends OperationSchedulesSyncFragmentAbstra
 			LinkedList<OperationSchedule> operationSchedules,
 			LinkedList<PassengerRecord> passengerRecords) {
 
-		this.operationScheduleChunk = new OperationScheduleChunk(operationSchedules, passengerRecords);
+		this.operationPhase = new OperationPhase(operationSchedules, passengerRecords);
 
 		updateView();
 	}

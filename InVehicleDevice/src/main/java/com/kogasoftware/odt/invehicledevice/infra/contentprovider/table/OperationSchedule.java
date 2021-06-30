@@ -19,7 +19,7 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.task.PatchOper
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.util.ContentValuesUtils;
 import com.kogasoftware.odt.invehicledevice.view.BigToast;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
-import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationScheduleChunk;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationPhase;
 
 import org.joda.time.DateTime;
 
@@ -138,7 +138,7 @@ public class OperationSchedule implements Serializable {
 	}
 
 	public static Phase getPhase(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
-		List<OperationSchedule> currentChunk = OperationScheduleChunk.getCurrentChunk(operationSchedules, passengerRecords);
+		List<OperationSchedule> currentChunk = OperationPhase.getCurrentOperationSchedules(operationSchedules, passengerRecords);
 
 		if (currentChunk.isEmpty()) {
 			return Phase.FINISH;

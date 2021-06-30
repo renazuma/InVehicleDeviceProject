@@ -8,17 +8,17 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
-public class OperationScheduleChunk implements Serializable {
+public class OperationPhase implements Serializable {
   public List<OperationSchedule> operationSchedules;
   public List<PassengerRecord> passengerRecords;
 
-  public OperationScheduleChunk(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
+  public OperationPhase(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
     this.operationSchedules = operationSchedules;
     this.passengerRecords = passengerRecords;
   }
 
 
-  public static List<List> getOperationSchedulePhaseChunkList(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
+  public static List<List> getAllPhaseOperationSchedules(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
         List<List> operationScheduleListChunk = Lists.newLinkedList();
 
         for (List<OperationSchedule> samePlatformOperationSchedules : getOperationScheduleListSamePlatformChunk(operationSchedules)) {
@@ -66,12 +66,12 @@ public class OperationScheduleChunk implements Serializable {
         return platformOrderOperationScheduleLists;
     }
 
-  public List<OperationSchedule> getCurrentChunk() {
-      return getCurrentChunk(operationSchedules, passengerRecords);
+  public List<OperationSchedule> getCurrentOperationSchedules() {
+    return getCurrentOperationSchedules(operationSchedules, passengerRecords);
   }
 
-  public static List<OperationSchedule> getCurrentChunk(List<OperationSchedule> operationSchedules ,List<PassengerRecord> passengerRecords) {
-        List<List> chunkList = getOperationSchedulePhaseChunkList(operationSchedules, passengerRecords);
+  public static List<OperationSchedule> getCurrentOperationSchedules(List<OperationSchedule> operationSchedules , List<PassengerRecord> passengerRecords) {
+        List<List> chunkList = getAllPhaseOperationSchedules(operationSchedules, passengerRecords);
         List<OperationSchedule> currentChunk = Lists.newArrayList();
 
         for (List<OperationSchedule> chunkOperationSchedules : chunkList) {
@@ -89,28 +89,28 @@ public class OperationScheduleChunk implements Serializable {
         return currentChunk;
     }
 
-  public OperationSchedule getCurrentChunkRepresentativeOS() {
-    return getCurrentChunkRepresentativeOS(operationSchedules, passengerRecords);
+  public OperationSchedule getCurrentRepresentativeOS() {
+      return getCurrentRepresentativeOS(operationSchedules, passengerRecords);
   }
 
-  public static OperationSchedule getCurrentChunkRepresentativeOS(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
-        if (isExistCurrentChunk(operationSchedules, passengerRecords)) {
-            return getCurrentChunk(operationSchedules, passengerRecords).get(0);
+  public static OperationSchedule getCurrentRepresentativeOS(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
+        if (isExistCurrent(operationSchedules, passengerRecords)) {
+            return getCurrentOperationSchedules(operationSchedules, passengerRecords).get(0);
         } else {
             return null;
         }
     }
 
-  public boolean isExistCurrentChunk() {
-    return isExistCurrentChunk(operationSchedules, passengerRecords);
+  public boolean isExistCurrent() {
+    return isExistCurrent(operationSchedules, passengerRecords);
   }
 
-  public static boolean isExistCurrentChunk(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
-        return !getCurrentChunk(operationSchedules, passengerRecords).isEmpty();
+  public static boolean isExistCurrent(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
+        return !getCurrentOperationSchedules(operationSchedules, passengerRecords).isEmpty();
     }
 
-  public static List<OperationSchedule> getNextChunk(List<OperationSchedule> operationSchedules , List<PassengerRecord> passengerRecords) {
-        List<List> chunkList = getOperationSchedulePhaseChunkList(operationSchedules, passengerRecords);
+  public static List<OperationSchedule> getNextOperationSchedules(List<OperationSchedule> operationSchedules , List<PassengerRecord> passengerRecords) {
+        List<List> chunkList = getAllPhaseOperationSchedules(operationSchedules, passengerRecords);
         List<OperationSchedule> nextChunk = Lists.newArrayList();
 
         for (int i = 0; i < chunkList.size() - 1; i++) {
@@ -129,23 +129,23 @@ public class OperationScheduleChunk implements Serializable {
         return nextChunk;
     }
 
-  public OperationSchedule getNextChunkRepresentativeOS() {
-    return getNextChunkRepresentativeOS(operationSchedules, passengerRecords);
+  public OperationSchedule getNextRepresentativeOS() {
+    return getNextRepresentativeOS(operationSchedules, passengerRecords);
   }
 
-  public static OperationSchedule getNextChunkRepresentativeOS(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
-        if (isExistNextChunk(operationSchedules, passengerRecords)) {
-            return getNextChunk(operationSchedules, passengerRecords).get(0);
+  public static OperationSchedule getNextRepresentativeOS(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
+        if (isExistNext(operationSchedules, passengerRecords)) {
+            return getNextOperationSchedules(operationSchedules, passengerRecords).get(0);
         } else {
             return null;
         }
     }
 
-  public boolean isExistNextChunk() {
-    return isExistNextChunk(operationSchedules, passengerRecords);
+  public boolean isExistNext() {
+    return isExistNext(operationSchedules, passengerRecords);
   }
 
-  public static boolean isExistNextChunk(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
-        return !getNextChunk(operationSchedules, passengerRecords).isEmpty();
+  public static boolean isExistNext(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
+        return !getNextOperationSchedules(operationSchedules, passengerRecords).isEmpty();
     }
 }
