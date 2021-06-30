@@ -93,8 +93,7 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 
 		getFragmentManager()
 			.beginTransaction()
-			.add(R.id.modal_fragment_container, ArrivalCheckFragment.newInstance(
-							operationScheduleChunk.operationSchedules, operationScheduleChunk.passengerRecords))
+			.add(R.id.modal_fragment_container, ArrivalCheckFragment.newInstance(operationScheduleChunk))
 			.commitAllowingStateLoss();
 	}
 
@@ -104,7 +103,7 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 		if (!operationScheduleChunk.isExistCurrentChunk()) { return; }
 
 		if (existPassengerRecordError(phase)) {
-			Fragments.showModalFragment(getFragmentManager(), PassengerRecordErrorFragment.newInstance(operationScheduleChunk.getCurrentChunk()));
+			Fragments.showModalFragment(getFragmentManager(), PassengerRecordErrorFragment.newInstance(operationScheduleChunk));
 		} else if (phase.equals(Phase.PLATFORM_GET_OFF)) {
 			List<PassengerRecord> getOnPassengerRecords = Lists.newArrayList();
 			for (OperationSchedule operationSchedule : operationScheduleChunk.getCurrentChunk()) {
@@ -112,7 +111,7 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 			}
 
 			if (getOnPassengerRecords.isEmpty()) {
-				Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(phase, operationScheduleChunk.operationSchedules, operationScheduleChunk.passengerRecords));
+				Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(operationScheduleChunk));
 			} else {
 				for (OperationSchedule operationSchedule : operationScheduleChunk.getCurrentChunk()) {
 					operationSchedule.completeGetOff = true;
@@ -127,7 +126,7 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 				}.start();
 			}
 		} else {
-			Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(phase, operationScheduleChunk.operationSchedules, operationScheduleChunk.passengerRecords));
+			Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(operationScheduleChunk));
 		}
 	}
 
@@ -164,10 +163,9 @@ public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
 	// 画面右部のボタンの、地図ボタン、phase変更ボタン（到着しました等）を定義する
 	@Override
 	protected void onOperationSchedulesAndPassengerRecordsLoadFinished(
-			final Phase phase,
 			final LinkedList<OperationSchedule> operationSchedules,
 			final LinkedList<PassengerRecord> passengerRecords) {
-
+		final Phase phase = OperationSchedule.getPhase(operationSchedules, passengerRecords);
 		this.operationScheduleChunk = new OperationScheduleChunk(operationSchedules, passengerRecords);
 
 		mapButton.setOnClickListener(new OnClickListener() {

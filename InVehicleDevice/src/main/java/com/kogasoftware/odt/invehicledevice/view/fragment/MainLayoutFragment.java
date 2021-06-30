@@ -61,8 +61,9 @@ public class MainLayoutFragment extends OperationSchedulesSyncFragmentAbstract {
 	// TODO: phaseコンテナがメインコンテンツ部分だという事が分かりにくいので、名前を変えたい。
 	@Override
 	protected void onOperationSchedulesAndPassengerRecordsLoadFinished(
-			Phase phase, LinkedList<OperationSchedule> operationSchedules,
+			LinkedList<OperationSchedule> operationSchedules,
 			LinkedList<PassengerRecord> passengerRecords, Boolean phaseChanged) {
+		Phase phase = OperationSchedule.getPhase(operationSchedules, passengerRecords);
 		Log.i(LOGGING_TAG, "phase=" + phase + " phaseChanged=" + phaseChanged);
 
 		if (!phaseChanged) { return; }

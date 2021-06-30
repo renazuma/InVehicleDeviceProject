@@ -29,18 +29,19 @@ import java.util.List;
  */
 public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragmentAbstract {
 	private static final String TAG = PassengerRecordErrorFragment.class.getSimpleName();
-	private static final String OPERATION_SCHEDULES_KEY = "operation_schedules";
+	private static final String OPERATION_SCHEDULE_CHUNK_KEY = "operation_schedule_chunk";
 	private Button completeWithErrorButton;
 	private ContentResolver contentResolver;
+	private OperationScheduleChunk operationScheduleChunk;
 	private List<OperationSchedule> operationSchedules;
 	private Button closeButton;
 	private FlickUnneededListView errorUserListView;
 	private PassengerRecordErrorArrayAdapter adapter;
 
-	public static PassengerRecordErrorFragment newInstance(List<OperationSchedule> operationSchedules) {
+	public static PassengerRecordErrorFragment newInstance(OperationScheduleChunk operationScheduleChunk) {
 		PassengerRecordErrorFragment fragment = new PassengerRecordErrorFragment();
 		Bundle args = new Bundle();
-		args.putSerializable(OPERATION_SCHEDULES_KEY, (Serializable) operationSchedules);
+		args.putSerializable(OPERATION_SCHEDULE_CHUNK_KEY, (Serializable) operationScheduleChunk);
 		fragment.setArguments(args);
 		return fragment;
 	}
@@ -55,7 +56,8 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
 		super.onActivityCreated(savedInstanceState);
 		contentResolver = getActivity().getContentResolver();
 		Bundle args = getArguments();
-		operationSchedules = (List<OperationSchedule>)args.getSerializable(OPERATION_SCHEDULES_KEY);
+		operationScheduleChunk = (OperationScheduleChunk)args.getSerializable(OPERATION_SCHEDULE_CHUNK_KEY);
+		operationSchedules = operationScheduleChunk.getCurrentChunk();
 		View view = getView();
 		closeButton = (Button) view.findViewById(R.id.get_off_check_close_button);
 		closeButton.setOnClickListener(new OnClickListener() {
@@ -70,21 +72,20 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
 		errorUserListView.getListView().setAdapter(adapter);
 	}
 
-	private void complete(Phase phase, final LinkedList<OperationSchedule> operationSchedules, final LinkedList<PassengerRecord> passengerRecords) {
+	private void complete(Phase phase, final OperationScheduleChunk newOperationScheduleChunk) {
 		if (!isAdded()) {
 			return;
 		}
 
 		List<PassengerRecord> getOnSchedulePassengerRecords = Lists.newArrayList();
-		for (OperationSchedule operationSchedule : OperationScheduleChunk.getCurrentChunk(operationSchedules, passengerRecords)) {
-			getOnSchedulePassengerRecords.addAll(operationSchedule.getGetOnScheduledPassengerRecords(passengerRecords));
+		for (OperationSchedule operationSchedule : newOperationScheduleChunk.getCurrentChunk()) {
+			getOnSchedulePassengerRecords.addAll(operationSchedule.getGetOnScheduledPassengerRecords(newOperationScheduleChunk.passengerRecords));
 		}
-
 
 		if (phase == Phase.PLATFORM_GET_ON || getOnSchedulePassengerRecords.isEmpty()) {
 			getFragmentManager()
 					.beginTransaction()
-					.add(R.id.modal_fragment_container, DepartureCheckFragment.newInstance(phase, operationSchedules, passengerRecords))
+					.add(R.id.modal_fragment_container, DepartureCheckFragment.newInstance(newOperationScheduleChunk))
 					.commitAllowingStateLoss();
 			return;
 		}
@@ -92,7 +93,7 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
 		new Thread() {
 			@Override
 			public void run() {
-				for (OperationSchedule operationSchedule : OperationScheduleChunk.getCurrentChunk(operationSchedules, passengerRecords)) {
+				for (OperationSchedule operationSchedule : newOperationScheduleChunk.getCurrentChunk()) {
 					operationSchedule.completeGetOff = true;
 					contentResolver.insert(OperationSchedule.CONTENT.URI, operationSchedule.toContentValues());
 				}
@@ -104,12 +105,13 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
 
 	@Override
 	protected void onOperationSchedulesAndPassengerRecordsLoadFinished(
-			final Phase phase,
 			final LinkedList<OperationSchedule> operationSchedules,
 			final LinkedList<PassengerRecord> passengerRecords) {
 
+		final OperationScheduleChunk newOperationScheduleChunk = new OperationScheduleChunk(operationSchedules, passengerRecords);
+
 		boolean existSameId = false;
-		for (OperationSchedule currentOS : OperationScheduleChunk.getCurrentChunk(operationSchedules, passengerRecords)) {
+		for (OperationSchedule currentOS : newOperationScheduleChunk.getCurrentChunk()) {
 			for (OperationSchedule containOS : this.operationSchedules) {
 				if (currentOS.id.equals(containOS.id)) {
 					existSameId = true;
@@ -117,18 +119,19 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
 				}
 			}
 		}
-		if (!OperationScheduleChunk.isExistCurrentChunk(operationSchedules, passengerRecords) || !existSameId) {
+		if (!newOperationScheduleChunk.isExistCurrentChunk() || !existSameId) {
 			Fragments.hide(this);
 			return;
 		}
 
+		final Phase phase = OperationSchedule.getPhase(operationSchedules, passengerRecords);
 		List<PassengerRecord> errorPassengerRecords = Lists.newLinkedList();
 		if (phase.equals(Phase.PLATFORM_GET_OFF)) {
-			for (OperationSchedule operationSchedule : OperationScheduleChunk.getCurrentChunk(operationSchedules, passengerRecords)) {
+			for (OperationSchedule operationSchedule : newOperationScheduleChunk.getCurrentChunk()) {
 				errorPassengerRecords.addAll(operationSchedule.getNoGetOffErrorPassengerRecords(passengerRecords));
 			}
 		} else {
-			for (OperationSchedule operationSchedule : OperationScheduleChunk.getCurrentChunk(operationSchedules, passengerRecords)) {
+			for (OperationSchedule operationSchedule : newOperationScheduleChunk.getCurrentChunk()) {
 				errorPassengerRecords.addAll(operationSchedule.getNoGetOnErrorPassengerRecords(passengerRecords));
 			}
 		}
@@ -144,7 +147,7 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
 			@Override
 			public void onClick(View view) {
 				ViewDisabler.disable(view);
-				complete(phase, operationSchedules, passengerRecords);
+				complete(phase, newOperationScheduleChunk);
 			}
 		});
 		if (adapter.hasError()) {

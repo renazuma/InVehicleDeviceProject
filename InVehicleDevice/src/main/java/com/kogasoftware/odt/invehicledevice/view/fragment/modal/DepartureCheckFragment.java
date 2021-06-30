@@ -12,14 +12,12 @@ import android.widget.Button;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule.Phase;
-import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationScheduleChunk;
 
 import org.joda.time.DateTime;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * 出発チェック画面
@@ -27,15 +25,12 @@ import java.util.List;
 public class DepartureCheckFragment extends Fragment {
 	private static final String TAG = DepartureCheckFragment.class.getSimpleName();
 	private static final String PHASE_KEY = "phase";
-	private static final String OPERATION_SCHEDULES_KEY = "operation_schedules";
-	private static final String PASSENGER_RECORDS_KEY = "passenger_records";
+	private static final String OPERATION_SCHEDULE_CHUNK_KEY = "operation_schedule_chunk";
 
-	public static Fragment newInstance(Phase phase, List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
+	public static Fragment newInstance(OperationScheduleChunk operationScheduleChunk) {
 		DepartureCheckFragment fragment = new DepartureCheckFragment();
 		Bundle args = new Bundle();
-		args.putSerializable(PHASE_KEY, phase);
-		args.putSerializable(OPERATION_SCHEDULES_KEY, (Serializable) operationSchedules);
-		args.putSerializable(PASSENGER_RECORDS_KEY, (Serializable) passengerRecords);
+		args.putSerializable(OPERATION_SCHEDULE_CHUNK_KEY, (Serializable) operationScheduleChunk);
 		fragment.setArguments(args);
 		return fragment;
 	}
@@ -53,16 +48,14 @@ public class DepartureCheckFragment extends Fragment {
 		contentResolver = getActivity().getContentResolver();
 
 		Bundle args = getArguments();
-		final Phase phase = (Phase) args.getSerializable(PHASE_KEY);
+		final OperationScheduleChunk operationScheduleChunk = (OperationScheduleChunk) args.getSerializable(OPERATION_SCHEDULE_CHUNK_KEY);
+		Phase phase = OperationSchedule.getPhase(operationScheduleChunk.operationSchedules, operationScheduleChunk.passengerRecords);
 
-		List<OperationSchedule> operationSchedules = (List<OperationSchedule>) args.getSerializable(OPERATION_SCHEDULES_KEY);
-		List<PassengerRecord> passengerRecords = (List<PassengerRecord>) args.getSerializable(PASSENGER_RECORDS_KEY);
-		final List<OperationSchedule> currentChunk = OperationScheduleChunk.getCurrentChunk(operationSchedules, passengerRecords);
 
 		View view = getView();
 
 		Button departureButton = (Button) view.findViewById(R.id.departure_button);
-		if (OperationScheduleChunk.isExistNextChunk(operationSchedules, passengerRecords) ) {
+		if (operationScheduleChunk.isExistNextChunk() ) {
 			departureButton.setText("出発する");
 		} else {
 			departureButton.setText("確定する");
@@ -88,7 +81,7 @@ public class DepartureCheckFragment extends Fragment {
 				Thread tt = new Thread() {
 					@Override
 					public void run() {
-						for (OperationSchedule operationSchedule : currentChunk) {
+						for (OperationSchedule operationSchedule : operationScheduleChunk.getCurrentChunk()) {
 							operationSchedule.departedAt = DateTime.now();
 							contentResolver.insert(OperationSchedule.CONTENT.URI, operationSchedule.toContentValues());
 						}

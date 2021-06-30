@@ -112,7 +112,7 @@ public abstract class OperationSchedulesSyncFragmentAbstract extends Fragment {
 					currentOperationSchedules = currentChunk;
 
 					// 継承先のクラスで実装される、operation_schedule/passenger_record同期後の動作
-					onOperationSchedulesAndPassengerRecordsLoadFinished(newPhase, operationSchedules, passengerRecords, phaseChanged);
+					onOperationSchedulesAndPassengerRecordsLoadFinished(operationSchedules, passengerRecords, phaseChanged);
 				}
 
 				private boolean isPhaseChangedPattern(Phase newPhase, List<OperationSchedule> newOperationSchedules) {
@@ -148,14 +148,14 @@ public abstract class OperationSchedulesSyncFragmentAbstract extends Fragment {
 
 	// override用
 	protected void onOperationSchedulesAndPassengerRecordsLoadFinished(
-			Phase phase, LinkedList<OperationSchedule> operationSchedules,
+			LinkedList<OperationSchedule> operationSchedules,
 			LinkedList<PassengerRecord> passengerRecords, Boolean phaseChanged) {
-		onOperationSchedulesAndPassengerRecordsLoadFinished(phase, operationSchedules, passengerRecords);
+		onOperationSchedulesAndPassengerRecordsLoadFinished(operationSchedules, passengerRecords);
 	}
 
 	// override用
 	protected void onOperationSchedulesAndPassengerRecordsLoadFinished(
-			Phase phase, LinkedList<OperationSchedule> operationSchedules,
+			LinkedList<OperationSchedule> operationSchedules,
 			LinkedList<PassengerRecord> passengerRecords) {
 	}
 
