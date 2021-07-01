@@ -81,7 +81,7 @@ public class DrivePhaseFragment extends Fragment {
 		OperationSchedule nextOS = operationPhase.getNextRepresentativeOS();
 
 		if (operationPhase.isExistNext() && nextOS.platformId.equals(currentOS.platformId)) {
-			targetOperationSchedules.addAll(operationPhase.getNextOperationSchedules(operationPhase.operationSchedules, operationPhase.passengerRecords));
+			targetOperationSchedules.addAll(operationPhase.getNextOperationSchedules());
 		}
 
 		OperationSchedule estimateOS = null;
