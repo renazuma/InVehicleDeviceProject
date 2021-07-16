@@ -29,7 +29,7 @@ import java.util.List;
  */
 public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragmentAbstract {
 	private static final String TAG = PassengerRecordErrorFragment.class.getSimpleName();
-	private static final String OPERATION_SCHEDULE_CHUNK_KEY = "operation_schedule_chunk";
+	private static final String OPERATION_PHASE_KEY = "operation_phase";
 	private Button completeWithErrorButton;
 	private ContentResolver contentResolver;
 	private OperationPhase operationPhase;
@@ -41,7 +41,7 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
 	public static PassengerRecordErrorFragment newInstance(OperationPhase operationPhase) {
 		PassengerRecordErrorFragment fragment = new PassengerRecordErrorFragment();
 		Bundle args = new Bundle();
-		args.putSerializable(OPERATION_SCHEDULE_CHUNK_KEY, (Serializable) operationPhase);
+		args.putSerializable(OPERATION_PHASE_KEY, (Serializable) operationPhase);
 		fragment.setArguments(args);
 		return fragment;
 	}
@@ -56,7 +56,7 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
 		super.onActivityCreated(savedInstanceState);
 		contentResolver = getActivity().getContentResolver();
 		Bundle args = getArguments();
-		operationPhase = (OperationPhase)args.getSerializable(OPERATION_SCHEDULE_CHUNK_KEY);
+		operationPhase = (OperationPhase)args.getSerializable(OPERATION_PHASE_KEY);
 		operationSchedules = operationPhase.getCurrentOperationSchedules();
 		View view = getView();
 		closeButton = (Button) view.findViewById(R.id.get_off_check_close_button);
@@ -124,7 +124,7 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
 			return;
 		}
 
-		final Phase phase = OperationSchedule.getPhase(operationSchedules, passengerRecords);
+		final Phase phase = newOperationPhase.getPhase();
 		List<PassengerRecord> errorPassengerRecords = Lists.newLinkedList();
 		if (phase.equals(Phase.PLATFORM_GET_OFF)) {
 			for (OperationSchedule operationSchedule : newOperationPhase.getCurrentOperationSchedules()) {

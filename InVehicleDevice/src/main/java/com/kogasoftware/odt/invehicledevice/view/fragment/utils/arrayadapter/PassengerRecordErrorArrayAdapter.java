@@ -49,7 +49,7 @@ public class PassengerRecordErrorArrayAdapter extends ArrayAdapter<PassengerReco
 			}
 			final PassengerRecord passengerRecord = (PassengerRecord) tag;
 
-			// chunk全件とpassengerRecordのidを比較する事で過不足無く対応出来ているかを調べる
+			// phaseのoperationSchedulesとpassengerRecordのidを比較する事で過不足無く対応出来ているかを調べる
 			OperationSchedule operationSchedule = null;
 			for (OperationSchedule tmpOS : operationSchedules) {
 				if (tmpOS.id.equals(passengerRecord.arrivalScheduleId) || tmpOS.id.equals(passengerRecord.departureScheduleId)) {
@@ -151,7 +151,7 @@ public class PassengerRecordErrorArrayAdapter extends ArrayAdapter<PassengerReco
 	}
 
 	public Boolean hasError() {
-		// chunk全件とpassengerRecordのidを比較する事で過不足無く対応出来ているかを調べる
+		// phaseのoperationSchedulesとpassengerRecordのidを比較する事で過不足無く対応出来ているかを調べる
 		for (Integer count = 0; count < getCount(); ++count) {
 			PassengerRecord passengerRecord = getItem(count);
 

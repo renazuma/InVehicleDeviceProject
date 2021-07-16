@@ -626,7 +626,9 @@ public class OperationScheduleArrayAdapter
 		passengerRecords.clear();
 		passengerRecords.addAll(newPassengerRecords);
 		clear();
-		addAll(OperationPhase.getAllPhaseOperationSchedules(newOperationSchedules, newPassengerRecords));
+
+		OperationPhase operationPhase = new OperationPhase(newOperationSchedules, newPassengerRecords);
+		addAll(operationPhase.getAllPhaseOperationSchedules());
 
 		notifyDataSetChanged();
 	}

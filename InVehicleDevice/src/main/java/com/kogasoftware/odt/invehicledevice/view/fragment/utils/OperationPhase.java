@@ -17,11 +17,28 @@ public class OperationPhase implements Serializable {
     this.passengerRecords = passengerRecords;
   }
 
+  public OperationSchedule.Phase getPhase() {
+        OperationPhase operationPhase = new OperationPhase(operationSchedules, passengerRecords);
+        List<OperationSchedule> currentPhaseOperationSchedules = operationPhase.getCurrentOperationSchedules();
 
-  public static List<List> getAllPhaseOperationSchedules(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
-        List<List> operationScheduleListChunk = Lists.newLinkedList();
+        if (currentPhaseOperationSchedules.isEmpty()) {
+            return OperationSchedule.Phase.FINISH;
+        } else {
+            OperationSchedule representativeOS = operationPhase.getCurrentRepresentativeOS();
+            if (representativeOS.arrivedAt == null && representativeOS.departedAt == null) {
+                return OperationSchedule.Phase.DRIVE;
+            } else if (representativeOS.completeGetOff || representativeOS.getGetOffScheduledPassengerRecords(passengerRecords).isEmpty()) {
+                return OperationSchedule.Phase.PLATFORM_GET_ON;
+            } else {
+                return OperationSchedule.Phase.PLATFORM_GET_OFF;
+            }
+        }
+    }
 
-        for (List<OperationSchedule> samePlatformOperationSchedules : getOperationScheduleListSamePlatformChunk(operationSchedules)) {
+  public List<List> getAllPhaseOperationSchedules() {
+        List<List> phaseOperationSchedulesList = Lists.newLinkedList();
+
+        for (List<OperationSchedule> samePlatformOperationSchedules : getOperationScheduleListSamePlatformChunk()) {
             List<OperationSchedule> arrivalOperationSchedules = Lists.newArrayList();
             List<OperationSchedule> departureOperationSchedules = Lists.newArrayList();
 
@@ -36,16 +53,16 @@ public class OperationPhase implements Serializable {
             }
 
             if (arrivalOperationSchedules.size() > 0) {
-                operationScheduleListChunk.add(arrivalOperationSchedules);
+                phaseOperationSchedulesList.add(arrivalOperationSchedules);
             }
             if (departureOperationSchedules.size() > 0) {
-                operationScheduleListChunk.add(departureOperationSchedules);
+                phaseOperationSchedulesList.add(departureOperationSchedules);
             }
         }
-        return operationScheduleListChunk;
+        return phaseOperationSchedulesList;
     }
 
-  private static LinkedList<List> getOperationScheduleListSamePlatformChunk(List<OperationSchedule> operationSchedules) {
+  private LinkedList<List> getOperationScheduleListSamePlatformChunk() {
 
         boolean first = true;
         OperationSchedule previousOS = null;
@@ -67,85 +84,65 @@ public class OperationPhase implements Serializable {
     }
 
   public List<OperationSchedule> getCurrentOperationSchedules() {
-    return getCurrentOperationSchedules(operationSchedules, passengerRecords);
-  }
+        List<List> phaseOperationSchedulesList = getAllPhaseOperationSchedules();
+        List<OperationSchedule> currentPhaseOperationSchedules = Lists.newArrayList();
 
-  public static List<OperationSchedule> getCurrentOperationSchedules(List<OperationSchedule> operationSchedules , List<PassengerRecord> passengerRecords) {
-        List<List> chunkList = getAllPhaseOperationSchedules(operationSchedules, passengerRecords);
-        List<OperationSchedule> currentChunk = Lists.newArrayList();
-
-        for (List<OperationSchedule> chunkOperationSchedules : chunkList) {
-            for (OperationSchedule operationSchedule : chunkOperationSchedules) {
+        for (List<OperationSchedule> phaseOperationSchedules : phaseOperationSchedulesList) {
+            for (OperationSchedule operationSchedule : phaseOperationSchedules) {
                 if (operationSchedule.arrivedAt == null || operationSchedule.departedAt == null) {
-                    currentChunk = chunkOperationSchedules;
+                    currentPhaseOperationSchedules = phaseOperationSchedules;
                     break;
                 }
             }
-            if (!currentChunk.isEmpty()) {
+            if (!currentPhaseOperationSchedules.isEmpty()) {
                 break;
             }
         }
 
-        return currentChunk;
+        return currentPhaseOperationSchedules;
     }
 
   public OperationSchedule getCurrentRepresentativeOS() {
-      return getCurrentRepresentativeOS(operationSchedules, passengerRecords);
+     if (isExistCurrent()) {
+         return getCurrentOperationSchedules().get(0);
+     } else {
+         return null;
+     }
   }
-
-  public static OperationSchedule getCurrentRepresentativeOS(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
-        if (isExistCurrent(operationSchedules, passengerRecords)) {
-            return getCurrentOperationSchedules(operationSchedules, passengerRecords).get(0);
-        } else {
-            return null;
-        }
-    }
 
   public boolean isExistCurrent() {
-    return isExistCurrent(operationSchedules, passengerRecords);
-  }
-
-  public static boolean isExistCurrent(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
-        return !getCurrentOperationSchedules(operationSchedules, passengerRecords).isEmpty();
+        return !getCurrentOperationSchedules().isEmpty();
     }
 
-  public static List<OperationSchedule> getNextOperationSchedules(List<OperationSchedule> operationSchedules , List<PassengerRecord> passengerRecords) {
-        List<List> chunkList = getAllPhaseOperationSchedules(operationSchedules, passengerRecords);
-        List<OperationSchedule> nextChunk = Lists.newArrayList();
+  public List<OperationSchedule> getNextOperationSchedules() {
+        List<List> phaseOperationSchedulesList = getAllPhaseOperationSchedules();
+        List<OperationSchedule> nextPhaseOperationSchedules = Lists.newArrayList();
 
-        for (int i = 0; i < chunkList.size() - 1; i++) {
-            List<OperationSchedule> chunkOperationSchedules = chunkList.get(i);
-            for (OperationSchedule operationSchedule : chunkOperationSchedules) {
+        for (int i = 0; i < phaseOperationSchedulesList.size() - 1; i++) {
+            List<OperationSchedule> phaseOperationSchedules = phaseOperationSchedulesList.get(i);
+            for (OperationSchedule operationSchedule : phaseOperationSchedules) {
                 if (operationSchedule.arrivedAt == null || operationSchedule.departedAt == null) {
-                    nextChunk = chunkList.get(i + 1);
+                    nextPhaseOperationSchedules = phaseOperationSchedulesList.get(i + 1);
                     break;
                 }
             }
-            if (!nextChunk.isEmpty()) {
+            if (!nextPhaseOperationSchedules.isEmpty()) {
                 break;
             }
         }
 
-        return nextChunk;
+        return nextPhaseOperationSchedules;
     }
 
   public OperationSchedule getNextRepresentativeOS() {
-    return getNextRepresentativeOS(operationSchedules, passengerRecords);
-  }
-
-  public static OperationSchedule getNextRepresentativeOS(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
-        if (isExistNext(operationSchedules, passengerRecords)) {
-            return getNextOperationSchedules(operationSchedules, passengerRecords).get(0);
-        } else {
-            return null;
-        }
+    if (isExistNext()) {
+      return getNextOperationSchedules().get(0);
+    } else {
+      return null;
     }
+  }
 
   public boolean isExistNext() {
-    return isExistNext(operationSchedules, passengerRecords);
+    return !getNextOperationSchedules().isEmpty();
   }
-
-  public static boolean isExistNext(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
-        return !getNextOperationSchedules(operationSchedules, passengerRecords).isEmpty();
-    }
 }

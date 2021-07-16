@@ -26,12 +26,12 @@ import java.util.Locale;
  */
 public class DrivePhaseFragment extends Fragment {
 	private static final String TAG = DrivePhaseFragment.class.getSimpleName();
-	private static final String OPERATION_SCHEDULE_CHUNK_KEY = "operation_schedule_chunk";
+	private static final String OPERATION_PHASE_KEY = "operation_phase";
 
 	public static DrivePhaseFragment newInstance(OperationPhase operationPhase) {
 		DrivePhaseFragment fragment = new DrivePhaseFragment();
 		Bundle args = new Bundle();
-		args.putSerializable(OPERATION_SCHEDULE_CHUNK_KEY, (Serializable) operationPhase);
+		args.putSerializable(OPERATION_PHASE_KEY, (Serializable) operationPhase);
 		fragment.setArguments(args);
 		return fragment;
 	}
@@ -57,7 +57,7 @@ public class DrivePhaseFragment extends Fragment {
 		TextView platformName1BeyondTextView = (TextView) view.findViewById(R.id.platform_name_1_beyond_text_view);
 
 		Bundle args = getArguments();
-		OperationPhase operationPhase = (OperationPhase) args.getSerializable(OPERATION_SCHEDULE_CHUNK_KEY);
+		OperationPhase operationPhase = (OperationPhase) args.getSerializable(OPERATION_PHASE_KEY);
 
 		if (operationPhase.isExistCurrent()) {
 			OperationSchedule representativeOS = operationPhase.getCurrentRepresentativeOS();
@@ -81,7 +81,7 @@ public class DrivePhaseFragment extends Fragment {
 		OperationSchedule nextOS = operationPhase.getNextRepresentativeOS();
 
 		if (operationPhase.isExistNext() && nextOS.platformId.equals(currentOS.platformId)) {
-			targetOperationSchedules.addAll(operationPhase.getNextOperationSchedules(operationPhase.operationSchedules, operationPhase.passengerRecords));
+			targetOperationSchedules.addAll(operationPhase.getNextOperationSchedules());
 		}
 
 		OperationSchedule estimateOS = null;
