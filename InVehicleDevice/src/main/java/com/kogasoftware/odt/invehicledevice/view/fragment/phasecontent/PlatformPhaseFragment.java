@@ -2,7 +2,7 @@ package com.kogasoftware.odt.invehicledevice.view.fragment.phasecontent;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;

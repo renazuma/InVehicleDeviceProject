@@ -12,7 +12,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
-import android.support.v4.app.NotificationCompat;
+import androidx.core.app.NotificationCompat;
 import android.util.Log;
 
 import com.kogasoftware.odt.invehicledevice.R;
@@ -240,7 +240,7 @@ public class LogService extends Service {
 			// TODO: idはアプリ内で一意である必要がある。管理まで手が回らないので重複しない様に固定としている。
 			int notificationId = 2;
 
-			NotificationChannel channel = new NotificationChannel(channelId, channelName, 3);
+			NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT );
 			((NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE)).createNotificationChannel(channel);
 			Notification notification = new NotificationCompat.Builder(this, channelId)
 							                  .setSmallIcon(R.mipmap.ic_launcher)

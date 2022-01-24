@@ -2,7 +2,7 @@ package com.kogasoftware.odt.invehicledevice.presenter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.ContextCompat;
 
 import com.kogasoftware.odt.invehicledevice.service.serviceunitstatuslogservice.ServiceUnitStatusLogService;
 

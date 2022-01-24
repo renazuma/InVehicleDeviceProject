@@ -14,7 +14,7 @@ import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
-import android.support.v4.app.NotificationCompat;
+import androidx.core.app.NotificationCompat;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -160,7 +160,9 @@ public class ServiceUnitStatusLogService extends Service implements Runnable {
 			// TODO: idはアプリ内で一意である必要がある。管理まで手が回らないので重複しない様に固定としている。
 			int notificationId = 1;
 
-			NotificationChannel channel = new NotificationChannel(channelId, channelName, 3);
+			NotificationChannel channel = new NotificationChannel(channelId,
+					channelName,
+					NotificationManager.IMPORTANCE_DEFAULT );
 			((NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE)).createNotificationChannel(channel);
 			Notification notification = new NotificationCompat.Builder(this, channelId)
 							                  .setSmallIcon(R.mipmap.ic_launcher)
@@ -180,6 +182,7 @@ public class ServiceUnitStatusLogService extends Service implements Runnable {
 		SQLiteDatabase database = databaseHelper.getWritableDatabase();
 
 		// 一定間隔（固定）で、内部DBの最新のUnitStatusLogのデータをコピーして、created_atを現在時刻にしてinsert
+
 		// ↓の更新/削除では、現在時刻 - この処理のIntervalDelay秒以降の処理は対象にはならないため、1件は必ず残っている想定？
 		// TODO: 仕様がややこしい。シンプルに出来るなら変えたい。
 		executorService.scheduleAtFixedRate(
