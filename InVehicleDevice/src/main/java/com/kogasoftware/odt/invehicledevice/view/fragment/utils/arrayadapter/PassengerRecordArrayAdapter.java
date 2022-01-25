@@ -44,7 +44,7 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
     private final LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     private final Phase phase;
     private final List<OperationSchedule> currentOperationSchedules;
-    private final WeakHashMap<View, Boolean> memoButtons = new WeakHashMap<View, Boolean>();
+    private final WeakHashMap<View, Boolean> memoButtons = new WeakHashMap<>();
     private final ContentResolver contentResolver;
     private Boolean memoButtonsVisible = true;
     private final Fragment fragment;

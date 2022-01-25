@@ -112,7 +112,7 @@ public class PassengerRecord implements Serializable {
     }
 
     public List<String> getUserNotes() {
-        List<String> notes = new LinkedList<String>();
+        List<String> notes = new LinkedList<>();
         if (!userMemo.isEmpty()) {
             notes.add(userMemo);
         }

@@ -22,7 +22,7 @@ public class StaticVoicePlayService extends Service {
     private final String TAG = StaticVoicePlayService.class.getSimpleName();
 
     private Thread playThread;
-    private final BlockingQueue<Voice> playFiles = new LinkedBlockingQueue<Voice>();
+    private final BlockingQueue<Voice> playFiles = new LinkedBlockingQueue<>();
 
     @Override
     public IBinder onBind(Intent intent) {

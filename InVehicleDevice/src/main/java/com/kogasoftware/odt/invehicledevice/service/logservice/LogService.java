@@ -36,15 +36,15 @@ public class LogService extends Service {
     public static final long CHECK_DEVICE_INTERVAL_MILLIS = 10 * 1000;
     public static final String LOGCAT_FILE_TAG = "_logcat_";
     public static final String DROPBOX_FILE_TAG = "_dropbox_";
-    private final BlockingQueue<File> rawLogFiles = new LinkedBlockingQueue<File>();
-    private final BlockingQueue<File> compressedLogFiles = new LinkedBlockingQueue<File>();
+    private final BlockingQueue<File> rawLogFiles = new LinkedBlockingQueue<>();
+    private final BlockingQueue<File> compressedLogFiles = new LinkedBlockingQueue<>();
     private final SendLogBroadcastReceiver sendLogBroadcastReceiver = new SendLogBroadcastReceiver(
             rawLogFiles);
     private Boolean destroyed = false;
     private Thread logcatThread = new Thread();
     private Thread compressThread = new Thread();
     private Thread uploadThread = new Thread();
-    private final List<Closeable> closeables = new LinkedList<Closeable>();
+    private final List<Closeable> closeables = new LinkedList<>();
 
     /**
      * シャットダウン時、可能な限りSDカードのマウントが解除される前に書込み中のログをフラッシュするため、
@@ -199,7 +199,7 @@ public class LogService extends Service {
     }
 
     public static List<File> getCompressedLogFiles(File directory) {
-        List<File> files = new LinkedList<File>();
+        List<File> files = new LinkedList<>();
         File[] defaultFiles = directory.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String filename) {
@@ -213,7 +213,7 @@ public class LogService extends Service {
     }
 
     public static List<File> getRawLogFiles(File directory) {
-        List<File> files = new LinkedList<File>();
+        List<File> files = new LinkedList<>();
         File[] defaultFiles = directory.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String filename) {
