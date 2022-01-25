@@ -42,8 +42,7 @@ public class VehicleNotificationAlertFragment extends Fragment {
     };
 
     public static VehicleNotificationAlertFragment newInstance() {
-        VehicleNotificationAlertFragment fragment = new VehicleNotificationAlertFragment();
-        return fragment;
+        return new VehicleNotificationAlertFragment();
     }
 
     @Override

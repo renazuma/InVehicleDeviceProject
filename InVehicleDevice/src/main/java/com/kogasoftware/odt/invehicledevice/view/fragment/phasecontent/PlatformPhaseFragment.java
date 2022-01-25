@@ -36,8 +36,7 @@ import java.util.Locale;
  */
 public class PlatformPhaseFragment extends OperationSchedulesSyncFragmentAbstract {
     public static PlatformPhaseFragment newInstance() {
-        PlatformPhaseFragment fragment = new PlatformPhaseFragment();
-        return fragment;
+        return new PlatformPhaseFragment();
     }
 
     private static final Integer BLINK_MILLIS = 500;

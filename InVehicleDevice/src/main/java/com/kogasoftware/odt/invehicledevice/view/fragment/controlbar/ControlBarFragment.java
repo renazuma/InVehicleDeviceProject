@@ -38,8 +38,7 @@ public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
     private OperationPhase operationPhase;
 
     public static ControlBarFragment newInstance() {
-        ControlBarFragment fragment = new ControlBarFragment();
-        return fragment;
+        return new ControlBarFragment();
     }
 
     @Override

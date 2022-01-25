@@ -16,8 +16,7 @@ public class FinishPhaseFragment extends Fragment {
     private static final String TAG = FinishPhaseFragment.class.getSimpleName();
 
     public static FinishPhaseFragment newInstance() {
-        FinishPhaseFragment fragment = new FinishPhaseFragment();
-        return fragment;
+        return new FinishPhaseFragment();
     }
 
     @Override

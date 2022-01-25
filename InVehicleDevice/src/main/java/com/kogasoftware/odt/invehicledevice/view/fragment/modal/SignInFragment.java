@@ -189,8 +189,7 @@ public class SignInFragment
     }
 
     public static SignInFragment newInstance() {
-        SignInFragment fragment = new SignInFragment();
-        return fragment;
+        return new SignInFragment();
     }
 
 

@@ -46,8 +46,7 @@ public class InformationBarFragment extends OperationSchedulesSyncFragmentAbstra
     private Handler handler;
 
     public static InformationBarFragment newInstance() {
-        InformationBarFragment fragment = new InformationBarFragment();
-        return fragment;
+        return new InformationBarFragment();
     }
 
     private final Runnable updateTime = new Runnable() {
