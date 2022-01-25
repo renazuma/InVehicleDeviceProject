@@ -19,6 +19,7 @@ import org.apache.http.HttpResponse;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -46,7 +47,7 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
             try {
                 vehicleNotifications = JSON.readValue(new String(entity, Charsets.UTF_8), VehicleNotificationJson[].class);
             } catch (IOException e) {
-                Log.e(TAG, "ParseError: " + entity, e);
+                Log.e(TAG, "ParseError: " + Arrays.toString(entity), e);
                 return;
             }
             save(vehicleNotifications);
