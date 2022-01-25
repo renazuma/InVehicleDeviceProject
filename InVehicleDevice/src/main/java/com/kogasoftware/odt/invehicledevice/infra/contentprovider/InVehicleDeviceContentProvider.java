@@ -173,12 +173,10 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         int match = MATCHER.match(uri);
-        switch (match) {
-            case InVehicleDevice.TABLE_CODE:
-                return InVehicleDevice.delete(this, selection, selectionArgs);
-            default:
-                throw new IllegalArgumentException("Unknown uri: " + uri);
+        if (match == InVehicleDevice.TABLE_CODE) {
+            return InVehicleDevice.delete(this, selection, selectionArgs);
         }
+        throw new IllegalArgumentException("Unknown uri: " + uri);
     }
 
     @Override
