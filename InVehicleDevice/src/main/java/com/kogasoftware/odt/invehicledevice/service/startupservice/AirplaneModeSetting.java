@@ -12,7 +12,6 @@ import java.io.IOException;
  * 機内モードの設定
  */
 public class AirplaneModeSetting {
-    @SuppressWarnings("deprecation")
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     public static void set(Context context, Boolean enable) throws IOException {
         if (get(context).equals(enable)) {
@@ -39,7 +38,6 @@ public class AirplaneModeSetting {
         context.sendBroadcast(intent);
     }
 
-    @SuppressWarnings("deprecation")
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     public static Boolean get(Context context) {
         Integer value;

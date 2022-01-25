@@ -184,7 +184,6 @@ public class PlatformPhaseFragment extends OperationSchedulesSyncFragmentAbstrac
         }
     }
 
-    @NonNull
     private void setMinutesRemainingTextView() {
         if (isLastOperationSchedules()) {
             minutesRemainingTextView.setVisibility(View.GONE);
