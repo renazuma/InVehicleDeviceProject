@@ -98,8 +98,8 @@ public class GpsLogger extends LocationCallback
 
     private void update(Location location) {
         final ContentValues values = new ContentValues();
-        String latitude = new BigDecimal(location.getLatitude()).toPlainString();
-        String longitude = new BigDecimal(location.getLongitude()).toPlainString();
+        String latitude = BigDecimal.valueOf(location.getLatitude()).toPlainString();
+        String longitude = BigDecimal.valueOf(location.getLongitude()).toPlainString();
         values.put(ServiceUnitStatusLog.Columns.LATITUDE, latitude);
         values.put(ServiceUnitStatusLog.Columns.LONGITUDE, longitude);
         new Thread() {
