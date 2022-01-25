@@ -23,7 +23,4 @@ public class AutoRestartPresenter {
         context.startService(new Intent(context, StartupService.class));
     }
 
-    public void onDestroy() {
-        // 停止させないためのサービスなので、停止処理は無い
-    }
 }

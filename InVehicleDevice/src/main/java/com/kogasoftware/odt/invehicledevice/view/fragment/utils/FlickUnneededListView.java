@@ -189,8 +189,4 @@ public class FlickUnneededListView extends FrameLayout
         super.onRestoreInstanceState(state);
     }
 
-    @Override
-    protected Parcelable onSaveInstanceState() {
-        return super.onSaveInstanceState();
-    }
 }

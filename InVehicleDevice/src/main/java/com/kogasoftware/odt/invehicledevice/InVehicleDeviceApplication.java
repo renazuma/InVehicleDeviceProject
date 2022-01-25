@@ -62,8 +62,4 @@ public class InVehicleDeviceApplication extends Application {
         }
     }
 
-    @Override
-    public void onTerminate() {
-        super.onTerminate();
-    }
 }
