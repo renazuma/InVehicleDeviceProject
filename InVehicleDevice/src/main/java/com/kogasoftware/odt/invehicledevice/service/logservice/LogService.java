@@ -93,7 +93,7 @@ public class LogService extends Service {
         closeables.add(logcatSplitFileOutputStream);
 
         if (destroyed) {
-            Log.i(TAG, "destroyed=" + destroyed + " / startLog returned");
+            Log.i(TAG, "destroyed=true / startLog returned");
             return;
         }
 
