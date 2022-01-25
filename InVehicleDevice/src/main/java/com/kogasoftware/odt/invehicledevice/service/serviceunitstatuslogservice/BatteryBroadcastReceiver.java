@@ -47,7 +47,7 @@ public class BatteryBroadcastReceiver extends BroadcastReceiver {
         String technology = Strings.nullToEmpty(intent
                 .getStringExtra("technology"));
 
-        String statusString = "";
+        String statusString;
         switch (status) {
             case BatteryManager.BATTERY_STATUS_UNKNOWN:
                 statusString = "unknown";
@@ -69,7 +69,7 @@ public class BatteryBroadcastReceiver extends BroadcastReceiver {
                 break;
         }
 
-        String healthString = "";
+        String healthString;
         switch (health) {
             case BatteryManager.BATTERY_HEALTH_UNKNOWN:
                 healthString = "unknown";
@@ -94,7 +94,7 @@ public class BatteryBroadcastReceiver extends BroadcastReceiver {
                 break;
         }
 
-        String acString = "";
+        String acString;
         switch (plugged) {
             case BatteryManager.BATTERY_PLUGGED_AC:
                 acString = "plugged ac";

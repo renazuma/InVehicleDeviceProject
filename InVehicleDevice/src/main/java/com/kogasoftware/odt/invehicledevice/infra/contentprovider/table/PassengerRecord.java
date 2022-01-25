@@ -168,7 +168,7 @@ public class PassengerRecord implements Serializable {
                 .getContentResolver();
         ScheduledExecutorService executorService = contentProvider
                 .getExecutorService();
-        int affected = 0;
+        int affected;
         String table = PassengerRecord.TABLE_NAME;
         database.beginTransaction();
         try {

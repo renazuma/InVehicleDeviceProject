@@ -19,7 +19,7 @@ public class AirplaneModeSetting {
             return;
         }
         int value = enable ? 1 : 0;
-        boolean success = false;
+        boolean success;
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
             success = Settings.System.putInt(context.getContentResolver(),
                     Settings.System.AIRPLANE_MODE_ON, value);
@@ -42,7 +42,7 @@ public class AirplaneModeSetting {
     @SuppressWarnings("deprecation")
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     public static Boolean get(Context context) {
-        Integer value = 0;
+        Integer value;
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
             value = Settings.System.getInt(context.getContentResolver(),
                     Settings.System.AIRPLANE_MODE_ON, 0);

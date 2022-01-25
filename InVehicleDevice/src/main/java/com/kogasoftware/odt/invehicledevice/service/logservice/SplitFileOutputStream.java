@@ -28,8 +28,7 @@ public class SplitFileOutputStream extends OutputStream {
     private final Stopwatch stopwatch = new Stopwatch();
     private volatile Long count = 0L;
     private volatile File currentFile;
-    private volatile OutputStream currentOutputStream = ByteStreams
-            .nullOutputStream();
+    private volatile OutputStream currentOutputStream;
 
     public SplitFileOutputStream(File baseDirectory, String baseFileName,
                                  BlockingQueue<File> outputFiles) throws IOException {
