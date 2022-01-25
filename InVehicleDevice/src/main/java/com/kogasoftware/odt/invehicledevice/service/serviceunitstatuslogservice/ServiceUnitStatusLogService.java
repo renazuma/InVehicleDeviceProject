@@ -42,8 +42,6 @@ public class ServiceUnitStatusLogService extends Service implements Runnable {
     private final Handler handler = new Handler();
     private GpsLogger gpsLogger;
     private BatteryBroadcastReceiver batteryBroadcastReceiver;
-    private WindowManager windowManager;
-    private ConnectivityManager connectivityManager;
     private OrientationSensorEventListener orientationSensorEventListener;
     private TemperatureSensorEventListener temperatureSensorEventListener;
     private SignalStrengthListener signalStrengthListener;
@@ -64,8 +62,8 @@ public class ServiceUnitStatusLogService extends Service implements Runnable {
         startDBAsyncTasks();
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-        connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
         // TODO:内容精査
         // TelephonyManagerはNullPointerExceptionを発生させる

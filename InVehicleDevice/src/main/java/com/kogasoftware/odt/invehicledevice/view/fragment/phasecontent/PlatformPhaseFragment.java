@@ -48,7 +48,6 @@ public class PlatformPhaseFragment extends OperationSchedulesSyncFragmentAbstrac
     private TextView minutesRemainingTextView;
     private TextView currentPlatformNameTextView;
     private FlickUnneededListView passengerRecordListView;
-    private Integer lastMinutesRemaining = Integer.MAX_VALUE;
     private PassengerRecordArrayAdapter adapter;
 
     private final Runnable blink = new Runnable() {
@@ -88,7 +87,6 @@ public class PlatformPhaseFragment extends OperationSchedulesSyncFragmentAbstrac
                             dateString,
                             minutesRemaining)));
 
-            lastMinutesRemaining = minutesRemaining;
         }
     };
 

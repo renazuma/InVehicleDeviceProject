@@ -65,7 +65,6 @@ public class SignInFragment
     private SharedPreferences preferences;
     private ExecutorService executor;
     private Boolean firstLoad;
-    private Preference policyLink;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -99,7 +98,7 @@ public class SignInFragment
 
         updateSummary();
 
-        policyLink = (Preference) findPreference("privacy_policy_link");
+        Preference policyLink = (Preference) findPreference("privacy_policy_link");
         policyLink.setOnPreferenceClickListener(preference -> {
             final String policySiteUri = getString(R.string.privacy_policy_url);
             new AlertDialog.Builder(getActivity())

@@ -31,7 +31,6 @@ public class UploadThread extends Thread
     private static final int LOADER_ID = 0;
     private final Context context;
     private final BlockingQueue<File> uploadFiles;
-    private final String bucket = "odt-android";
     private String deviceId;
     private final Object awsCredentialsLock = new Object();
     private AWSCredentials awsCredentials;
@@ -62,6 +61,7 @@ public class UploadThread extends Thread
         }
         boolean succeed = false;
         try {
+            String bucket = "odt-android";
             PutObjectRequest putObjectRequest = new PutObjectRequest(bucket,
                     "log/" + deviceId + "_" + uploadFile.getName(), uploadFile);
             try {

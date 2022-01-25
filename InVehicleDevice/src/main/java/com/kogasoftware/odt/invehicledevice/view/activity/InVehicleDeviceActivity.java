@@ -31,7 +31,6 @@ public class InVehicleDeviceActivity extends Activity {
     private InterruptUiPresenter interruptUiPresenter;
     private UnitStatusLogSyncPresenter unitStatusLogSyncPresenter;
     private LogSyncPresenter logSyncPresenter;
-    private AutoRestartPresenter autoRestartPresenter;
     private MainUiPresenter mainUiPresenter;
 
     // TODO: 不要にしたい
@@ -62,7 +61,7 @@ public class InVehicleDeviceActivity extends Activity {
         logSyncPresenter = new LogSyncPresenter(this);
         logSyncPresenter.onCreate();
 
-        autoRestartPresenter = new AutoRestartPresenter(this);
+        AutoRestartPresenter autoRestartPresenter = new AutoRestartPresenter(this);
         autoRestartPresenter.onCreate();
 
         // TODO: スケジュール関連のサーバとの定期同期は、画面をバックグラウンドにしても動き続けなければならないため、
