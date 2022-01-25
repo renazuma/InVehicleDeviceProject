@@ -109,7 +109,7 @@ public class AccMagSensorEventListener implements SensorEventListener {
         calcActualOrientation(R, actualOrientation);
 
         // 求まった方位角．ラジアンなので度に変換する
-        Float degree = (float) Math.toDegrees(actualOrientation[0]);
+        float degree = (float) Math.toDegrees(actualOrientation[0]);
         while (degree >= 360) {
             degree -= 360;
         }

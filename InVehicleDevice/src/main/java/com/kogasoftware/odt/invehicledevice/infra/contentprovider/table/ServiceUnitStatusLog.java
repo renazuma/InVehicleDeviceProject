@@ -33,7 +33,7 @@ public class ServiceUnitStatusLog {
         }
         int affected;
         try {
-            Long id;
+            long id;
             database.beginTransaction();
             Cursor cursor = database.query(ServiceUnitStatusLog.TABLE_NAME,
                     null, null, null, null, null,
@@ -48,7 +48,7 @@ public class ServiceUnitStatusLog {
                 cursor.close();
             }
             String where = ServiceUnitStatusLog.Columns._ID + " = ?";
-            String[] whereArgs = new String[]{id.toString()};
+            String[] whereArgs = new String[]{Long.toString(id)};
             affected = database.update(ServiceUnitStatusLog.TABLE_NAME, values,
                     where, whereArgs);
             database.setTransactionSuccessful();

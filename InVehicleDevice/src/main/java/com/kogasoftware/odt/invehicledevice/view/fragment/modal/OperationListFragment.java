@@ -64,14 +64,14 @@ public class OperationListFragment extends Fragment {
                                     null,
                                     VehicleNotification.WHERE_SCHEDULE_VEHICLE_NOTIFICATION_FRAGMENT_CONTENT,
                                     null, null);
-                    Boolean delayRequired;
+                    boolean delayRequired;
                     try {
                         delayRequired = cursor.getCount() > 0;
                     } finally {
                         cursor.close();
                     }
                     if (delayRequired) {
-                        Integer delayMillis = InVehicleDeviceActivity.VEHICLE_NOTIFICATION_ALERT_DELAY_MILLIS + 1000;
+                        int delayMillis = InVehicleDeviceActivity.VEHICLE_NOTIFICATION_ALERT_DELAY_MILLIS + 1000;
                         Uninterruptibles.sleepUninterruptibly(delayMillis,
                                 TimeUnit.MILLISECONDS);
                     }
@@ -82,7 +82,7 @@ public class OperationListFragment extends Fragment {
 
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-            Boolean scroll = (adapter.getCount() == 0);
+            boolean scroll = (adapter.getCount() == 0);
 
             Cursor passengerRecordsCursor = getActivity()
                     .getContentResolver()
@@ -136,7 +136,7 @@ public class OperationListFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        final Boolean closeable = getArguments().getBoolean(CLOSEABLE_KEY);
+        final boolean closeable = getArguments().getBoolean(CLOSEABLE_KEY);
         loaderManager = getLoaderManager();
 
         // リアルタイム同期
@@ -201,8 +201,8 @@ public class OperationListFragment extends Fragment {
 
     public void scrollToUnhandledOperationSchedule() {
         // 未運行の運行スケジュールまでスクロールする
-        Integer count = adapter.getCount();
-        for (Integer i = 0; i < count; ++i) {
+        int count = adapter.getCount();
+        for (int i = 0; i < count; ++i) {
             if (!adapter.isDeparted(i)) {
                 listView.setSelection(i);
                 if (i >= 1) {

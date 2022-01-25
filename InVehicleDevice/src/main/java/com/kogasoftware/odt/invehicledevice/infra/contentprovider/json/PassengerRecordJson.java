@@ -42,11 +42,11 @@ public class PassengerRecordJson {
                 PassengerRecord.Columns.GET_ON_TIME, getOnTime);
         ContentValuesUtils.putDateTime(values,
                 PassengerRecord.Columns.GET_OFF_TIME, getOffTime);
-        Boolean representative = userId.equals(reservation.userId);
+        boolean representative = userId.equals(reservation.userId);
         values.put(PassengerRecord.Columns.REPRESENTATIVE, representative
                 ? 1
                 : 0);
-        Integer passengerCount;
+        int passengerCount;
         if (representative) {
             passengerCount = reservation.passengerCount - (reservation.fellowUsers.size() - 1);
         } else {

@@ -49,7 +49,7 @@ public class DrivePhaseFragment extends Fragment {
 
         // style修正
         TypedArray typedArray = getActivity().obtainStyledAttributes(new int[]{android.R.attr.background});
-        Integer backgroundColor = typedArray.getColor(0, Color.WHITE);
+        int backgroundColor = typedArray.getColor(0, Color.WHITE);
         view.setBackgroundColor(backgroundColor);
 
         //文言表示

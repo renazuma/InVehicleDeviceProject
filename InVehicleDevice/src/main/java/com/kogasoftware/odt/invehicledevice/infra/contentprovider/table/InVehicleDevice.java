@@ -36,7 +36,7 @@ public class InVehicleDevice {
         ContentResolver contentResolver = contentProvider.getContext().getContentResolver();
         ScheduledExecutorService executorService = contentProvider.getExecutorService();
         Uri uri;
-        Long id;
+        long id;
         try {
             database.beginTransaction();
             database.delete(InVehicleDevice.TABLE_NAME, null, null);

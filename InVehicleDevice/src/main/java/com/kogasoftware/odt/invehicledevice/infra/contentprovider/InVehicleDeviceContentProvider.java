@@ -150,7 +150,7 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection,
                         String[] selectionArgs, String sortOrder) {
-        Integer match = MATCHER.match(uri);
+        int match = MATCHER.match(uri);
         switch (match) {
             case ServiceProvider.TABLE_CODE:
                 return ServiceProvider.query(this, projection, selection,
@@ -177,7 +177,7 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        Integer match = MATCHER.match(uri);
+        int match = MATCHER.match(uri);
         switch (match) {
             case InVehicleDevice.TABLE_CODE:
                 return InVehicleDevice.delete(this, selection, selectionArgs);
@@ -193,7 +193,7 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        Integer match = MATCHER.match(uri);
+        int match = MATCHER.match(uri);
         switch (match) {
             case PassengerRecord.TABLE_CODE:
                 return PassengerRecord.update(this, values, selection, selectionArgs);
@@ -213,7 +213,7 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
                 return;
             }
 
-            Integer authenticationTokenIndex = cursor.getColumnIndexOrThrow(InVehicleDevice.Columns.AUTHENTICATION_TOKEN);
+            int authenticationTokenIndex = cursor.getColumnIndexOrThrow(InVehicleDevice.Columns.AUTHENTICATION_TOKEN);
 
             if (cursor.isNull(authenticationTokenIndex)) {
                 return;

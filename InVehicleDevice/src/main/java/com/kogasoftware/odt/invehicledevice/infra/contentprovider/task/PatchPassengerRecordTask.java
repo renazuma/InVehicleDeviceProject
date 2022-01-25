@@ -51,7 +51,7 @@ public class PatchPassengerRecordTask extends SynchronizationTask {
                 node.put("id", cursor.getLong(cursor
                         .getColumnIndexOrThrow(PassengerRecord.Columns._ID)));
 
-                Integer getOnTimeIndex = cursor
+                int getOnTimeIndex = cursor
                         .getColumnIndexOrThrow(PassengerRecord.Columns.GET_ON_TIME);
                 if (cursor.isNull(getOnTimeIndex)) {
                     node.putNull("get_on_time");
@@ -61,7 +61,7 @@ public class PatchPassengerRecordTask extends SynchronizationTask {
                     node.put("get_on_time", getOnTime);
                 }
 
-                Integer getOffTimeIndex = cursor
+                int getOffTimeIndex = cursor
                         .getColumnIndexOrThrow(PassengerRecord.Columns.GET_OFF_TIME);
                 if (cursor.isNull(getOffTimeIndex)) {
                     node.putNull("get_off_time");
@@ -71,7 +71,7 @@ public class PatchPassengerRecordTask extends SynchronizationTask {
                     node.put("get_off_time", getOffTime);
                 }
 
-                Integer paidChargeIndex = cursor
+                int paidChargeIndex = cursor
                         .getColumnIndexOrThrow(PassengerRecord.Columns.PAID_CHARGE);
                 if (cursor.isNull(paidChargeIndex)) {
                     node.putNull("paid_charge");
@@ -95,7 +95,7 @@ public class PatchPassengerRecordTask extends SynchronizationTask {
         for (Pair<Long, ObjectNode> versionAndNode : getUpdatedPassengerRecords()) {
             final Long version = versionAndNode.getLeft();
             final ObjectNode node = versionAndNode.getRight();
-            final Long id = node.get("id").asLong();
+            final long id = node.get("id").asLong();
             ObjectNode rootNode = JSON.createObjectNode();
             rootNode.set("passenger_record", node);
             doHttpPatch(baseUri, "passenger_records/" + id,

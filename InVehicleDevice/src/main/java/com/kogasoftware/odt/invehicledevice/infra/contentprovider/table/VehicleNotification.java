@@ -104,7 +104,7 @@ public class VehicleNotification implements Serializable {
         if (cursor.getCount() == 0) {
             return results;
         }
-        Integer position = cursor.getPosition();
+        int position = cursor.getPosition();
         cursor.moveToFirst();
         do {
             results.add(new VehicleNotification(cursor));
@@ -135,7 +135,7 @@ public class VehicleNotification implements Serializable {
                 .getContentResolver();
         ScheduledExecutorService executorService = contentProvider
                 .getExecutorService();
-        Long id = database.replaceOrThrow(VehicleNotification.TABLE_NAME, null,
+        long id = database.replaceOrThrow(VehicleNotification.TABLE_NAME, null,
                 values);
         Uri uri = ContentUris.withAppendedId(InVehicleDevice.CONTENT.URI, id);
         executorService.execute(new PatchVehicleNotificationTask(

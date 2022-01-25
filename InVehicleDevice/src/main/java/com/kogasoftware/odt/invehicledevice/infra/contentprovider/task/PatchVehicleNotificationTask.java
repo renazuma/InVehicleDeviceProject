@@ -51,7 +51,7 @@ public class PatchVehicleNotificationTask extends SynchronizationTask {
                         "response",
                         cursor.getLong(cursor
                                 .getColumnIndexOrThrow(VehicleNotification.Columns.RESPONSE)));
-                Long readAt = cursor
+                long readAt = cursor
                         .getLong(cursor
                                 .getColumnIndexOrThrow(VehicleNotification.Columns.READ_AT));
                 node.put("read_at", ISODateTimeFormat.dateTime().print(readAt));
@@ -68,7 +68,7 @@ public class PatchVehicleNotificationTask extends SynchronizationTask {
         List<ObjectNode> nodes = getNotRepliedVehicleNotifications();
         for (ObjectNode node : nodes) {
             ObjectNode rootNode = JSON.createObjectNode();
-            final Long id = node.get("id").asLong();
+            final long id = node.get("id").asLong();
             rootNode.set("vehicle_notification", node);
             doHttpPatch(baseUri, "vehicle_notifications/" + id,
                     authenticationToken, rootNode, new LogCallback(TAG) {
@@ -77,7 +77,7 @@ public class PatchVehicleNotificationTask extends SynchronizationTask {
                                               byte[] entity) {
                             database.delete(VehicleNotification.TABLE_NAME,
                                     VehicleNotification.Columns._ID + " = ?",
-                                    new String[]{id.toString()});
+                                    new String[]{Long.toString(id)});
                         }
                     });
         }

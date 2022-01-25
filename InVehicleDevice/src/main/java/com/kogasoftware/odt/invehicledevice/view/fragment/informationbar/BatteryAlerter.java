@@ -71,13 +71,13 @@ public class BatteryAlerter implements Runnable {
                 -1);
         Integer plugged = batteryStatus.getIntExtra(
                 BatteryManager.EXTRA_PLUGGED, -1);
-        Boolean isCharging = status
+        boolean isCharging = status
                 .equals(BatteryManager.BATTERY_STATUS_CHARGING)
                 || status.equals(BatteryManager.BATTERY_STATUS_FULL)
                 || plugged.equals(BatteryManager.BATTERY_PLUGGED_AC)
                 || plugged.equals(BatteryManager.BATTERY_PLUGGED_USB);
 
-        Integer level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL,
+        int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL,
                 -1);
 
         // チャージ中やfullの場合、何もしない

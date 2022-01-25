@@ -82,7 +82,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        for (Integer version = oldVersion + 1; version <= newVersion; version++) {
+        for (int version = oldVersion + 1; version <= newVersion; version++) {
             db.execSQL(migrationSqls.get(version));
         }
         if (oldVersion < 21) {

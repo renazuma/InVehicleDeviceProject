@@ -136,7 +136,7 @@ public class PassengerRecord implements Serializable {
         if (cursor.getCount() == 0) {
             return results;
         }
-        Integer position = cursor.getPosition();
+        int position = cursor.getPosition();
         cursor.moveToFirst();
         do {
             results.add(new PassengerRecord(cursor));
@@ -177,14 +177,14 @@ public class PassengerRecord implements Serializable {
         String table = PassengerRecord.TABLE_NAME;
         database.beginTransaction();
         try {
-            Long maxVersion = 1L;
+            long maxVersion = 1L;
             Cursor cursor = database.query(table, null, selection,
                     selectionArgs, null, null, null);
             try {
                 // TODO: MAX(local_version)で書き直す
                 if (cursor.moveToFirst()) {
                     do {
-                        Long version = cursor
+                        long version = cursor
                                 .getLong(cursor
                                         .getColumnIndexOrThrow(PassengerRecord.Columns.LOCAL_VERSION));
                         if (version > maxVersion) {

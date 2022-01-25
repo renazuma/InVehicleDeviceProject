@@ -44,16 +44,16 @@ public class LogcatThread extends Thread {
                 if (splitFileOutputStream.getElapsedMillisSinceFirstWrite() > timeoutMillis) {
                     splitFileOutputStream.split();
                 }
-                Integer available = inputStream.available();
+                int available = inputStream.available();
                 if (available <= 0) {
                     Thread.sleep(WAIT_FOR_AVAILABLE_MILLIS);
                     continue;
                 }
                 byte[] buffer = new byte[available];
                 inputStream.read(buffer);
-                Boolean written = false;
+                boolean written = false;
                 if (splitFileOutputStream.getCount() + buffer.length >= splitBytes) {
-                    Integer newLineIndex = Bytes.lastIndexOf(buffer,
+                    int newLineIndex = Bytes.lastIndexOf(buffer,
                             (byte) '\n');
                     if (newLineIndex >= 0) {
                         splitFileOutputStream

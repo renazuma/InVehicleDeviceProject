@@ -67,7 +67,7 @@ public abstract class OperationSchedulesSyncFragmentAbstract extends Fragment {
                             VehicleNotification.WHERE_SCHEDULE_VEHICLE_NOTIFICATION_FRAGMENT_CONTENT,
                             null, null);
 
-                    Boolean delayRequired;
+                    boolean delayRequired;
                     try {
                         delayRequired = cursor.getCount() > 0;
                     } finally {
@@ -75,7 +75,7 @@ public abstract class OperationSchedulesSyncFragmentAbstract extends Fragment {
                     }
 
                     if (delayRequired) {
-                        Integer delayMillis = InVehicleDeviceActivity.VEHICLE_NOTIFICATION_ALERT_DELAY_MILLIS + 1000;
+                        int delayMillis = InVehicleDeviceActivity.VEHICLE_NOTIFICATION_ALERT_DELAY_MILLIS + 1000;
                         Uninterruptibles.sleepUninterruptibly(delayMillis, TimeUnit.MILLISECONDS);
                     }
 

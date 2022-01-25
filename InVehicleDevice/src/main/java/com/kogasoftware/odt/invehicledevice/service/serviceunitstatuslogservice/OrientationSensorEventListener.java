@@ -44,7 +44,7 @@ public class OrientationSensorEventListener implements SensorEventListener {
 
         // 方位から回転角を設定
         float[] values = event.values;
-        Float degree = values[SensorManager.DATA_X];
+        float degree = values[SensorManager.DATA_X];
         long now = System.currentTimeMillis();
         if (lastSavedMillis + SAVE_PERIOD_MILLIS > now) {
             return;

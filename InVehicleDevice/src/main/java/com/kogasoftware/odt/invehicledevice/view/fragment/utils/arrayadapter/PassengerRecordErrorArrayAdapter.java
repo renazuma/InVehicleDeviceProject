@@ -152,7 +152,7 @@ public class PassengerRecordErrorArrayAdapter extends ArrayAdapter<PassengerReco
 
     public Boolean hasError() {
         // phaseのoperationSchedulesとpassengerRecordのidを比較する事で過不足無く対応出来ているかを調べる
-        for (Integer count = 0; count < getCount(); ++count) {
+        for (int count = 0; count < getCount(); ++count) {
             PassengerRecord passengerRecord = getItem(count);
 
             for (OperationSchedule operationSchedule : operationSchedules) {

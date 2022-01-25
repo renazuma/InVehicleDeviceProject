@@ -46,8 +46,8 @@ public class CompressThread extends Thread {
                 File compressedLogFile = new File(rawLogFile
                         + COMPRESSED_FILE_SUFFIX);
 
-                Boolean succeed = false;
-                Boolean retry = false;
+                boolean succeed = false;
+                boolean retry = false;
                 try {
                     compress(rawLogFile, compressedLogFile);
                     succeed = true;

@@ -42,7 +42,7 @@ public class ScheduleVehicleNotificationFragment extends Fragment
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         Bundle args = getArguments();
-        Boolean operationListButtonVisible = args
+        boolean operationListButtonVisible = args
                 .getBoolean(OPERATION_LIST_BUTTON_VISIBLE_KEY);
         View view = getView();
         Button showOperationListButton = (Button) view

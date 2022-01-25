@@ -19,7 +19,7 @@ public class AirplaneModeSetting {
             return;
         }
         int value = enable ? 1 : 0;
-        Boolean success = false;
+        boolean success = false;
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
             success = Settings.System.putInt(context.getContentResolver(),
                     Settings.System.AIRPLANE_MODE_ON, value);

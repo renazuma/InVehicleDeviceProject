@@ -35,15 +35,15 @@ public class BatteryBroadcastReceiver extends BroadcastReceiver {
             return;
         }
 
-        Integer status = intent.getIntExtra("status", 0);
-        Integer health = intent.getIntExtra("health", 0);
-        Boolean present = intent.getBooleanExtra("present", false);
-        Integer level = intent.getIntExtra("level", 0);
-        Integer scale = intent.getIntExtra("scale", 0);
-        Integer iconSmall = intent.getIntExtra("icon-small", 0);
-        Integer plugged = intent.getIntExtra("plugged", 0);
-        Integer voltage = intent.getIntExtra("voltage", 0);
-        Double temperature = intent.getIntExtra("temperature", 0) / 10d;
+        int status = intent.getIntExtra("status", 0);
+        int health = intent.getIntExtra("health", 0);
+        boolean present = intent.getBooleanExtra("present", false);
+        int level = intent.getIntExtra("level", 0);
+        int scale = intent.getIntExtra("scale", 0);
+        int iconSmall = intent.getIntExtra("icon-small", 0);
+        int plugged = intent.getIntExtra("plugged", 0);
+        int voltage = intent.getIntExtra("voltage", 0);
+        double temperature = intent.getIntExtra("temperature", 0) / 10d;
         String technology = Strings.nullToEmpty(intent
                 .getStringExtra("technology"));
 

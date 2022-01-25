@@ -35,7 +35,7 @@ public class PostServiceUnitStatusLogTask extends SynchronizationTask {
     // TODO: 仕様が複雑すぎるので変えたい。
     List<ObjectNode> getServiceUnitStatusLogs() throws IllegalArgumentException {
         List<ObjectNode> nodes = Lists.newLinkedList();
-        Long millis = DateTime.now().minusMillis(InsertServiceUnitStatusLogTask.INTERVAL_MILLIS).getMillis();
+        long millis = DateTime.now().minusMillis(InsertServiceUnitStatusLogTask.INTERVAL_MILLIS).getMillis();
         String where = ServiceUnitStatusLog.Columns.CREATED_AT + " < " + millis;
         Cursor cursor = database.query(ServiceUnitStatusLog.TABLE_NAME, null,
                 where, null, null, null, null);

@@ -90,7 +90,7 @@ public class OperationSchedule implements Serializable {
             return results;
         }
         cursor.moveToFirst();
-        Integer position = cursor.getPosition();
+        int position = cursor.getPosition();
         do {
             results.add(new OperationSchedule(cursor));
         } while (cursor.moveToNext());
@@ -193,7 +193,7 @@ public class OperationSchedule implements Serializable {
         ScheduledExecutorService executorService = contentProvider.getExecutorService();
         database.beginTransaction();
         try {
-            Long id = database.replaceOrThrow(OperationSchedule.TABLE_NAME, null, values);
+            long id = database.replaceOrThrow(OperationSchedule.TABLE_NAME, null, values);
             Uri uri = ContentUris.withAppendedId(OperationSchedule.CONTENT.URI, id);
             ContentValues operationRecordValues = new ContentValues();
             operationRecordValues.put(OperationRecord.Columns.ARRIVED_AT, values.getAsLong(OperationSchedule.Columns.ARRIVED_AT));
@@ -201,14 +201,14 @@ public class OperationSchedule implements Serializable {
 
             // TODO: MAX(local_version)で書き直す
             String where = OperationRecord.Columns.OPERATION_SCHEDULE_ID + " = ?";
-            String[] whereArgs = new String[]{id.toString()};
-            Long maxVersion = 1L;
+            String[] whereArgs = new String[]{Long.toString(id)};
+            long maxVersion = 1L;
             Cursor cursor = database.query(OperationRecord.TABLE_NAME, null,
                     where, whereArgs, null, null, null);
             try {
                 if (cursor.moveToFirst()) {
                     do {
-                        Long version = cursor.getLong(cursor.getColumnIndexOrThrow(OperationRecord.Columns.LOCAL_VERSION));
+                        long version = cursor.getLong(cursor.getColumnIndexOrThrow(OperationRecord.Columns.LOCAL_VERSION));
                         if (version > maxVersion) {
                             maxVersion = version;
                         }

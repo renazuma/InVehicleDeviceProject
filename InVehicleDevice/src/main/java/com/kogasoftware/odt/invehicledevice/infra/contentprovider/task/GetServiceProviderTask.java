@@ -60,7 +60,7 @@ public class GetServiceProviderTask extends SynchronizationTask {
             submitRetry();
             return;
         }
-        Long id;
+        long id;
         try {
             database.beginTransaction();
             database.delete(ServiceProvider.TABLE_NAME, null, null);

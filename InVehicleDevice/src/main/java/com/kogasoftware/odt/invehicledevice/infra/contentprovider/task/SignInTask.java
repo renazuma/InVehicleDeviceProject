@@ -55,7 +55,7 @@ public class SignInTask extends SynchronizationTask {
             contentValues.put(InVehicleDevice.Columns.AUTHENTICATION_TOKEN, authenticationToken);
             String whereClause = InVehicleDevice.Columns._ID + " = ?";
             String[] whereArgs = new String[]{id.toString()};
-            Integer affected = database.update(InVehicleDevice.TABLE_NAME, contentValues, whereClause, whereArgs);
+            int affected = database.update(InVehicleDevice.TABLE_NAME, contentValues, whereClause, whereArgs);
 
             if (affected == 0) {
                 return;
@@ -129,7 +129,7 @@ public class SignInTask extends SynchronizationTask {
                 InVehicleDevice.Columns.URL, InVehicleDevice.Columns.LOGIN,
                 InVehicleDevice.Columns.PASSWORD,
                 InVehicleDevice.Columns.AUTHENTICATION_TOKEN,};
-        Long id;
+        long id;
         String url;
         String login;
         String password;

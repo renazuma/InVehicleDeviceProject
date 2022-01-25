@@ -49,7 +49,7 @@ public class PatchOperationRecordTask extends SynchronizationTask {
                 node.put("id", cursor.getLong(cursor
                         .getColumnIndexOrThrow(OperationRecord.Columns._ID)));
 
-                Integer arrivedAtIndex = cursor
+                int arrivedAtIndex = cursor
                         .getColumnIndexOrThrow(OperationRecord.Columns.ARRIVED_AT);
                 if (cursor.isNull(arrivedAtIndex)) {
                     node.putNull("arrived_at");
@@ -59,7 +59,7 @@ public class PatchOperationRecordTask extends SynchronizationTask {
                     node.put("arrived_at", arrivedAt);
                 }
 
-                Integer departedAtIndex = cursor
+                int departedAtIndex = cursor
                         .getColumnIndexOrThrow(OperationRecord.Columns.DEPARTED_AT);
                 if (cursor.isNull(departedAtIndex)) {
                     node.putNull("departed_at");
@@ -84,7 +84,7 @@ public class PatchOperationRecordTask extends SynchronizationTask {
         for (Pair<Long, ObjectNode> versionAndNode : getUpdatedOperationRecords()) {
             final Long version = versionAndNode.getLeft();
             final ObjectNode node = versionAndNode.getRight();
-            final Long id = node.get("id").asLong();
+            final long id = node.get("id").asLong();
             ObjectNode rootNode = JSON.createObjectNode();
             rootNode.set("operation_record", node);
             doHttpPatch(baseUri, "operation_records/" + id,

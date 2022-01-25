@@ -148,13 +148,13 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
                     }
 
                     if (operationRecord.arrivedAt != null) {
-                        Long nextArrivedAt = operationRecord.arrivedAt.getMillis();
+                        long nextArrivedAt = operationRecord.arrivedAt.getMillis();
                         if (arrivedAt == null || arrivedAt > nextArrivedAt) {
                             arrivedAt = nextArrivedAt;
                         }
                     }
                     if (operationRecord.departedAt != null) {
-                        Long nextDepartedAt = operationRecord.departedAt.getMillis();
+                        long nextDepartedAt = operationRecord.departedAt.getMillis();
                         if (departedAt == null || departedAt < nextDepartedAt) {
                             departedAt = nextDepartedAt;
                         }

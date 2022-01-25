@@ -91,7 +91,7 @@ public class ServiceUnitStatusLogService extends Service implements Runnable {
 
         handler.post(this);
 
-        Boolean useBatteryTemperature;
+        boolean useBatteryTemperature;
         List<Sensor> temperatureSensors = sensorManager.getSensorList(Sensor.TYPE_TEMPERATURE);
         if (temperatureSensors.size() > 0) {
             Sensor sensor = temperatureSensors.get(0);

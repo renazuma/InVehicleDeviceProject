@@ -147,7 +147,7 @@ public class LogService extends Service {
                             dataDirectory, LOGCAT_FILE_TAG, rawLogFiles);
 
                     // スレッド開始は、onDestroy()発生後に行われるのを防ぐためメインスレッドで行う。
-                    Boolean posted = handler.post(new Runnable() {
+                    boolean posted = handler.post(new Runnable() {
                         @Override
                         public void run() {
                             startLog(logcatSplitFileOutputStream);

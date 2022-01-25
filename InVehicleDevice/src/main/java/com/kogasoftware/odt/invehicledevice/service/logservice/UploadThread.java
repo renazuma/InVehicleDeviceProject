@@ -60,7 +60,7 @@ public class UploadThread extends Thread
             Log.w(TAG, "\"" + uploadFile + "\" not found");
             return;
         }
-        Boolean succeed = false;
+        boolean succeed = false;
         try {
             PutObjectRequest putObjectRequest = new PutObjectRequest(bucket,
                     "log/" + deviceId + "_" + uploadFile.getName(), uploadFile);

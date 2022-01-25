@@ -37,7 +37,7 @@ public class FlickUnneededListView extends FrameLayout
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem,
                          int visibleItemCount, int totalItemCount) {
-        Boolean scrollUpButtonEnabled = false;
+        boolean scrollUpButtonEnabled = false;
         if (firstVisibleItem > 0) {
             scrollUpButtonEnabled = true;
         } else {
@@ -47,7 +47,7 @@ public class FlickUnneededListView extends FrameLayout
             }
         }
         int lastVisibleItem = listView.getLastVisiblePosition();
-        Boolean scrollDownButtonEnabled = false;
+        boolean scrollDownButtonEnabled = false;
         if (lastVisibleItem < listView.getCount() - 1) {
             scrollDownButtonEnabled = true;
         } else {
@@ -155,7 +155,7 @@ public class FlickUnneededListView extends FrameLayout
     Adjust adjust = Adjust.UPPER;
 
     public void scrollUp() {
-        Integer position = listView.getFirstVisiblePosition();
+        int position = listView.getFirstVisiblePosition();
         if (position == listView.getLastVisiblePosition()) {
             position -= 1;
             if (position < 0) {
@@ -173,7 +173,7 @@ public class FlickUnneededListView extends FrameLayout
     }
 
     public void scrollDown() {
-        Integer position = listView.getLastVisiblePosition();
+        int position = listView.getLastVisiblePosition();
         if (position == listView.getFirstVisiblePosition()) {
             position += 1;
             if (position >= listView.getCount()) {
