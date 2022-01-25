@@ -58,7 +58,7 @@ public class OperationScheduleArrayAdapter
     private Boolean showPassengerRecords = false;
 
 
-    private Fragment fragment;
+    private final Fragment fragment;
 
     public OperationScheduleArrayAdapter(Fragment fragment) {
         super(fragment.getActivity(), RESOURCE_ID, new LinkedList<List>());

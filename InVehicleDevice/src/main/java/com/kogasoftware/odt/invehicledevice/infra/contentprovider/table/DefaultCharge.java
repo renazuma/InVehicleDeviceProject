@@ -18,8 +18,8 @@ public class DefaultCharge {
         public static final String VALUE = "value";
     }
 
-    public Long id;
-    public Long value;
+    public final Long id;
+    public final Long value;
 
     public DefaultCharge(Cursor cursor) {
         CursorReader reader = new CursorReader(cursor);

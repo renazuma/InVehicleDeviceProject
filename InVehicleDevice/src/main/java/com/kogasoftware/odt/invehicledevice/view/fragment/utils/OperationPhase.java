@@ -9,8 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class OperationPhase implements Serializable {
-    public List<OperationSchedule> operationSchedules;
-    public List<PassengerRecord> passengerRecords;
+    public final List<OperationSchedule> operationSchedules;
+    public final List<PassengerRecord> passengerRecords;
 
     public OperationPhase(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
         this.operationSchedules = operationSchedules;

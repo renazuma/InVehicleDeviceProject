@@ -22,11 +22,11 @@ public class ServiceProvider {
         public static final String CAR_NAVIGATION_APP = "car_navigation_app";
     }
 
-    public Long id;
-    public String name;
-    public String logSecretAccessKeyAws;
-    public String logAccessKeyIdAws;
-    public String carNavigationApp;
+    public final Long id;
+    public final String name;
+    public final String logSecretAccessKeyAws;
+    public final String logAccessKeyIdAws;
+    public final String carNavigationApp;
 
     public ServiceProvider(Cursor cursor) {
         CursorReader reader = new CursorReader(cursor);

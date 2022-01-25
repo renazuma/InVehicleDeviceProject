@@ -78,13 +78,13 @@ public class VehicleNotification implements Serializable {
         public static final Long MEMO_CHANGED = 3L;
     }
 
-    public Long id;
-    public String bodyRuby;
-    public String body;
+    public final Long id;
+    public final String bodyRuby;
+    public final String body;
     public Long response;
     public DateTime readAt;
-    public Long notificationKind;
-    public Long scheduleDownloaded;
+    public final Long notificationKind;
+    public final Long scheduleDownloaded;
 
     public VehicleNotification(Cursor cursor) {
         CursorReader reader = new CursorReader(cursor);

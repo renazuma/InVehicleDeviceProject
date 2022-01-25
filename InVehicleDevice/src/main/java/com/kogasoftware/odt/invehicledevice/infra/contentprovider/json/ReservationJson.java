@@ -16,8 +16,8 @@ public class ReservationJson {
     public Long userId;
     public Long arrivalScheduleId;
     public Long departureScheduleId;
-    public List<UserJson> fellowUsers = Lists.newLinkedList();
-    public List<PassengerRecordJson> passengerRecords = Lists.newLinkedList();
+    public final List<UserJson> fellowUsers = Lists.newLinkedList();
+    public final List<PassengerRecordJson> passengerRecords = Lists.newLinkedList();
     public String memo;
     public Integer passengerCount;
 

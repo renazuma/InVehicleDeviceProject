@@ -16,9 +16,9 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public class OnCreateDataSync {
 
-    Context context;
-    ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-    SQLiteDatabase database;
+    final Context context;
+    final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+    final SQLiteDatabase database;
 
     public OnCreateDataSync(Context context) {
         this.context = context;

@@ -53,26 +53,26 @@ public class PassengerRecord implements Serializable {
             .compare(l.userId, r.userId).compare(l.id, r.id).result();
 
     // 運行予定画面、乗降画面の、乗客行の背景色
-    public Long id;
+    public final Long id;
     public DateTime getOnTime;
     public DateTime getOffTime;
-    public String firstName;
-    public String lastName;
-    public Long reservationId;
-    public Long userId;
-    public Long arrivalScheduleId;
-    public Long departureScheduleId;
-    public String reservationMemo;
-    public String userMemo;
-    public Boolean handicapped;
-    public Boolean wheelchair;
-    public Boolean neededCare;
-    public Boolean licenseReturned;
+    public final String firstName;
+    public final String lastName;
+    public final Long reservationId;
+    public final Long userId;
+    public final Long arrivalScheduleId;
+    public final Long departureScheduleId;
+    public final String reservationMemo;
+    public final String userMemo;
+    public final Boolean handicapped;
+    public final Boolean wheelchair;
+    public final Boolean neededCare;
+    public final Boolean licenseReturned;
     public Boolean ignoreGetOnMiss;
     public Boolean ignoreGetOffMiss;
-    public Boolean representative;
-    public Long passengerCount;
-    public Long expectedCharge;
+    public final Boolean representative;
+    public final Long passengerCount;
+    public final Long expectedCharge;
     public Long paidCharge;
 
     public PassengerRecord(Cursor cursor) {

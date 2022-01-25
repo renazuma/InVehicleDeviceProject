@@ -53,18 +53,18 @@ public class OperationSchedule implements Serializable {
         public static final String OPERATION_DATE = "operation_date";
     }
 
-    public Long id;
-    public DateTime arrivalEstimate;
-    public DateTime departureEstimate;
+    public final Long id;
+    public final DateTime arrivalEstimate;
+    public final DateTime departureEstimate;
     public DateTime arrivedAt;
     public DateTime departedAt;
-    public String name;
-    public String nameRuby;
-    public String address;
-    public Long platformId;
-    public BigDecimal latitude;
-    public BigDecimal longitude;
-    public String memo;
+    public final String name;
+    public final String nameRuby;
+    public final String address;
+    public final Long platformId;
+    public final BigDecimal latitude;
+    public final BigDecimal longitude;
+    public final String memo;
     public Boolean completeGetOff;
 
     public OperationSchedule(Cursor cursor_) {

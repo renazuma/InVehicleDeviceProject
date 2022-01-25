@@ -39,7 +39,7 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
         doHttpGet(baseUri, "vehicle_notifications", authenticationToken, logCallback);
     }
 
-    LogCallback logCallback = new LogCallback(TAG) {
+    final LogCallback logCallback = new LogCallback(TAG) {
         @Override
         public void onSuccess(HttpResponse response, byte[] entity) {
             VehicleNotificationJson[] vehicleNotifications;
