@@ -196,13 +196,6 @@ public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
                 changePhaseButton.setText("");
                 break;
             case PLATFORM_GET_OFF:
-                changePhaseButton.setEnabled(true);
-                changePhaseButton.setText("確認\nする");
-                changePhaseButton.setOnClickListener(v -> {
-                    ViewDisabler.disable(v);
-                    showDepartureCheckFragment(phase);
-                });
-                break;
             case PLATFORM_GET_ON:
                 changePhaseButton.setEnabled(true);
                 changePhaseButton.setText("確認\nする");

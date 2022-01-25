@@ -82,8 +82,6 @@ public class MainLayoutFragment extends OperationSchedulesSyncFragmentAbstract {
                 fragmentTransaction.replace(R.id.phase_content_fragment_container, DrivePhaseFragment.newInstance(operationPhase));
                 break;
             case PLATFORM_GET_ON:
-                fragmentTransaction.replace(R.id.phase_content_fragment_container, PlatformPhaseFragment.newInstance());
-                break;
             case PLATFORM_GET_OFF:
                 fragmentTransaction.replace(R.id.phase_content_fragment_container, PlatformPhaseFragment.newInstance());
                 break;
