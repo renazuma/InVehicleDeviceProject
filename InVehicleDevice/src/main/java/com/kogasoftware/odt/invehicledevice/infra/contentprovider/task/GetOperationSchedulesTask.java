@@ -73,13 +73,9 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
             ReservationJson reservation = operationSchedule.departureReservation;
             if (reservation != null) {
                 reservations.add(reservation);
-                for (UserJson user : reservation.fellowUsers) {
-                    users.add(user);
-                }
+                users.addAll(reservation.fellowUsers);
 
-                for (PassengerRecordJson passengerRecord : reservation.passengerRecords) {
-                    passengerRecords.add(passengerRecord);
-                }
+                passengerRecords.addAll(reservation.passengerRecords);
             }
         }
 
