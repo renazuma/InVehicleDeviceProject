@@ -4,9 +4,6 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-
-import androidx.core.content.ContextCompat;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -15,16 +12,18 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
+
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule.Phase;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
-import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationSchedulesSyncFragmentAbstract;
 import com.kogasoftware.odt.invehicledevice.view.fragment.modal.PlatformMemoFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.modal.SignInFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationPhase;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationSchedulesSyncFragmentAbstract;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.ViewDisabler;
 
 import org.apache.commons.lang3.StringUtils;

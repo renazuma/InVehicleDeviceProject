@@ -14,10 +14,9 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.InVehicleDevice;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.task.GetServiceProviderTask;
 
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-
-import java.util.List;
 import java.util.regex.Pattern;
 
 

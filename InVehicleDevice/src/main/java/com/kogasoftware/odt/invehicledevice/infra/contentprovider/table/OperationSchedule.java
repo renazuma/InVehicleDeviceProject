@@ -19,7 +19,6 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.task.PatchOper
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.util.ContentValuesUtils;
 import com.kogasoftware.odt.invehicledevice.view.BigToast;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
-import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationPhase;
 
 import org.joda.time.DateTime;
 

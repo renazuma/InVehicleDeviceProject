@@ -1,10 +1,10 @@
 package com.kogasoftware.odt.invehicledevice.infra.contentprovider.json;
 
-import org.joda.time.DateTime;
-
 import android.content.ContentValues;
 
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationRecord;
+
+import org.joda.time.DateTime;
 
 /**
  * 運行実績のJSON

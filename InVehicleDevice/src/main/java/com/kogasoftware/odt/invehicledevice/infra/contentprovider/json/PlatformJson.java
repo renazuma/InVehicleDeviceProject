@@ -1,11 +1,11 @@
 package com.kogasoftware.odt.invehicledevice.infra.contentprovider.json;
 
-import java.math.BigDecimal;
-
 import android.content.ContentValues;
 
 import com.google.common.base.Strings;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.Platform;
+
+import java.math.BigDecimal;
 
 /**
  * 乗降場のJSON

@@ -1,5 +1,11 @@
 package com.kogasoftware.odt.invehicledevice.service.logservice;
 
+import android.content.Context;
+import android.util.Log;
+
+import com.google.common.io.ByteStreams;
+import com.google.common.io.Closer;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -7,12 +13,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.zip.GZIPOutputStream;
-
-import android.content.Context;
-import android.util.Log;
-
-import com.google.common.io.ByteStreams;
-import com.google.common.io.Closer;
 
 /**
  * ログの圧縮を行うスレッド

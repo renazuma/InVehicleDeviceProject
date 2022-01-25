@@ -4,10 +4,6 @@ import android.app.Fragment;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
-
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,14 +13,17 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule.Phase;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.view.fragment.modal.ChargeEditFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.modal.PassengerRecordMemoFragment;
-import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule.Phase;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.ViewDisabler;
 

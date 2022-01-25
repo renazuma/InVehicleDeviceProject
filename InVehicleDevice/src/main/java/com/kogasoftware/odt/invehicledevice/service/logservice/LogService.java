@@ -12,10 +12,9 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
+import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
-
-import android.util.Log;
 
 import com.kogasoftware.odt.invehicledevice.R;
 

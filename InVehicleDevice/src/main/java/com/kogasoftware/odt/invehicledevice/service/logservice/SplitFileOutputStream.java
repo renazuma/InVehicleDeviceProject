@@ -1,5 +1,10 @@
 package com.kogasoftware.odt.invehicledevice.service.logservice;
 
+import android.util.Log;
+
+import com.google.common.base.Stopwatch;
+import com.google.common.io.ByteStreams;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,11 +14,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
-
-import android.util.Log;
-
-import com.google.common.base.Stopwatch;
-import com.google.common.io.ByteStreams;
 
 /**
  * writeされたデータをファイルに分割して保存するOutputStream

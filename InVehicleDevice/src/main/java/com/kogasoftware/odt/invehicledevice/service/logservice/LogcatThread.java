@@ -1,12 +1,12 @@
 package com.kogasoftware.odt.invehicledevice.service.logservice;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import android.util.Log;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.primitives.Bytes;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * logcatを受信するスレッド

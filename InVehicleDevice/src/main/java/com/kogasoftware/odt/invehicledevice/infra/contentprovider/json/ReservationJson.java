@@ -1,12 +1,12 @@
 package com.kogasoftware.odt.invehicledevice.infra.contentprovider.json;
 
-import java.util.List;
-
 import android.content.ContentValues;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.Reservation;
+
+import java.util.List;
 
 /**
  * 予約のJSON

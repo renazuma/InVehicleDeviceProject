@@ -1,13 +1,13 @@
 package com.kogasoftware.odt.invehicledevice.service.logservice;
 
-import java.io.File;
-import java.util.concurrent.BlockingQueue;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+
+import java.io.File;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * クラッシュログをLogServiceReportSenderから受信
