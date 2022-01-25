@@ -231,18 +231,17 @@ public class OperationSchedule implements Serializable {
         SQLiteDatabase database = contentProvider.getDatabase();
         ContentResolver contentResolver = contentProvider.getContext().getContentResolver();
         // TODO:
-        StringBuilder sql = new StringBuilder();
-        sql.append(" select os.*");
-        sql.append(" , p.name");
-        sql.append(" , p.name_ruby");
-        sql.append(" , p.memo");
-        sql.append(" , p.address");
-        sql.append(" , p.latitude");
-        sql.append(" , p.longitude");
-        sql.append(" from operation_schedules os");
-        sql.append(" inner join platforms p on os.platform_id = p._id");
-        sql.append(" order by arrival_estimate;");
-        Cursor cursor = database.rawQuery(sql.toString(), null);
+        String sql = " select os.*" +
+                " , p.name" +
+                " , p.name_ruby" +
+                " , p.memo" +
+                " , p.address" +
+                " , p.latitude" +
+                " , p.longitude" +
+                " from operation_schedules os" +
+                " inner join platforms p on os.platform_id = p._id" +
+                " order by arrival_estimate;";
+        Cursor cursor = database.rawQuery(sql, null);
         cursor.setNotificationUri(contentResolver, OperationSchedule.CONTENT.URI);
         return cursor;
     }

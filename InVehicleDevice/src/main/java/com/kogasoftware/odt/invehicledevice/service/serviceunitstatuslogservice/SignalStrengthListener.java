@@ -51,19 +51,18 @@ public class SignalStrengthListener extends PhoneStateListener {
      */
     @Override
     public void onSignalStrengthsChanged(SignalStrength signalStrength) {
-        StringBuilder message = new StringBuilder("onSignalStrengthChanged");
-        message.append(" isGsm=" + signalStrength.isGsm());
-        message.append(" cdmaDbm=" + signalStrength.getCdmaDbm());
-        message.append(" cdmaEcio=" + signalStrength.getCdmaEcio());
-        message.append(" evdoDbm=" + signalStrength.getEvdoDbm());
-        message.append(" evdoEcio=" + signalStrength.getEvdoEcio());
-        message.append(" evdoSnr=" + signalStrength.getEvdoSnr());
-        message.append(" gsmBitErrorRate="
-                + signalStrength.getGsmBitErrorRate());
-        message.append(" gsmSignalStrength="
-                + signalStrength.getGsmSignalStrength());
-        message.append(" describeContents=" + signalStrength.describeContents());
-        Log.i(TAG, message.toString());
+        String message = "onSignalStrengthChanged" + " isGsm=" + signalStrength.isGsm() +
+                " cdmaDbm=" + signalStrength.getCdmaDbm() +
+                " cdmaEcio=" + signalStrength.getCdmaEcio() +
+                " evdoDbm=" + signalStrength.getEvdoDbm() +
+                " evdoEcio=" + signalStrength.getEvdoEcio() +
+                " evdoSnr=" + signalStrength.getEvdoSnr() +
+                " gsmBitErrorRate="
+                + signalStrength.getGsmBitErrorRate() +
+                " gsmSignalStrength="
+                + signalStrength.getGsmSignalStrength() +
+                " describeContents=" + signalStrength.describeContents();
+        Log.i(TAG, message);
         for (Integer percentage : convertSignalStrengthToPercentage(
                 signalStrength).asSet()) {
             final ContentValues values = new ContentValues();

@@ -206,23 +206,22 @@ public class PassengerRecord implements Serializable {
         ContentResolver contentResolver = contentProvider.getContext()
                 .getContentResolver();
         // TODO:
-        StringBuilder sql = new StringBuilder();
-        sql.append(" select pr.*");
-        sql.append(" , r.memo reservation_memo");
-        sql.append(" , r.arrival_schedule_id");
-        sql.append(" , r.departure_schedule_id");
-        sql.append(" , u.first_name");
-        sql.append(" , u.last_name");
-        sql.append(" , u.memo user_memo");
-        sql.append(" , u.handicapped");
-        sql.append(" , u.needed_care");
-        sql.append(" , u.wheelchair");
-        sql.append(" , u.license_returned");
-        sql.append(" from passenger_records pr");
-        sql.append(" inner join reservations r on pr.reservation_id = r._id");
-        sql.append(" inner join users u on pr.user_id = u._id");
-        sql.append(" order by _id");
-        Cursor cursor = database.rawQuery(sql.toString(), null);
+        String sql = " select pr.*" +
+                " , r.memo reservation_memo" +
+                " , r.arrival_schedule_id" +
+                " , r.departure_schedule_id" +
+                " , u.first_name" +
+                " , u.last_name" +
+                " , u.memo user_memo" +
+                " , u.handicapped" +
+                " , u.needed_care" +
+                " , u.wheelchair" +
+                " , u.license_returned" +
+                " from passenger_records pr" +
+                " inner join reservations r on pr.reservation_id = r._id" +
+                " inner join users u on pr.user_id = u._id" +
+                " order by _id";
+        Cursor cursor = database.rawQuery(sql, null);
         cursor.setNotificationUri(contentResolver, PassengerRecord.CONTENT.URI);
         return cursor;
     }
