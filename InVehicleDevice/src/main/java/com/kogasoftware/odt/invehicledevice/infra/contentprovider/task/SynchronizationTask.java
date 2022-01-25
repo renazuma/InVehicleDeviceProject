@@ -115,9 +115,8 @@ public class SynchronizationTask implements Runnable {
                     InVehicleDevice.Columns.AUTHENTICATION_TOKEN};
             String url;
             String authenticationToken;
-            Cursor cursor = database.query(InVehicleDevice.TABLE_NAME, columns,
-                    null, null, null, null, null);
-            try {
+            try (Cursor cursor = database.query(InVehicleDevice.TABLE_NAME, columns,
+                    null, null, null, null, null)) {
                 if (!cursor.moveToFirst()) {
                     return;
                 }
@@ -126,8 +125,6 @@ public class SynchronizationTask implements Runnable {
                 authenticationToken = cursor
                         .getString(cursor
                                 .getColumnIndexOrThrow(InVehicleDevice.Columns.AUTHENTICATION_TOKEN));
-            } finally {
-                cursor.close();
             }
 
             if (authenticationToken == null || url == null) {

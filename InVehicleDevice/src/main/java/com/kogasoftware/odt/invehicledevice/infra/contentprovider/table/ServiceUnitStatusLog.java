@@ -35,17 +35,14 @@ public class ServiceUnitStatusLog {
         try {
             long id;
             database.beginTransaction();
-            Cursor cursor = database.query(ServiceUnitStatusLog.TABLE_NAME,
+            try (Cursor cursor = database.query(ServiceUnitStatusLog.TABLE_NAME,
                     null, null, null, null, null,
-                    ServiceUnitStatusLog.Columns.CREATED_AT + " DESC", "1");
-            try {
+                    Columns.CREATED_AT + " DESC", "1")) {
                 if (!cursor.moveToFirst()) {
                     return 0;
                 }
                 id = cursor.getLong(cursor
-                        .getColumnIndex(ServiceUnitStatusLog.Columns._ID));
-            } finally {
-                cursor.close();
+                        .getColumnIndex(Columns._ID));
             }
             String where = ServiceUnitStatusLog.Columns._ID + " = ?";
             String[] whereArgs = new String[]{Long.toString(id)};

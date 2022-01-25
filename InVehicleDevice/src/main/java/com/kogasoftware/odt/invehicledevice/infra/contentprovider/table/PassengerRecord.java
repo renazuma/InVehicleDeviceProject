@@ -178,22 +178,19 @@ public class PassengerRecord implements Serializable {
         database.beginTransaction();
         try {
             long maxVersion = 1L;
-            Cursor cursor = database.query(table, null, selection,
-                    selectionArgs, null, null, null);
-            try {
+            try (Cursor cursor = database.query(table, null, selection,
+                    selectionArgs, null, null, null)) {
                 // TODO: MAX(local_version)で書き直す
                 if (cursor.moveToFirst()) {
                     do {
                         long version = cursor
                                 .getLong(cursor
-                                        .getColumnIndexOrThrow(PassengerRecord.Columns.LOCAL_VERSION));
+                                        .getColumnIndexOrThrow(Columns.LOCAL_VERSION));
                         if (version > maxVersion) {
                             maxVersion = version;
                         }
                     } while (cursor.moveToNext());
                 }
-            } finally {
-                cursor.close();
             }
             values.put(PassengerRecord.Columns.LOCAL_VERSION, maxVersion + 1);
             affected = database.update(table, values, selection, selectionArgs);

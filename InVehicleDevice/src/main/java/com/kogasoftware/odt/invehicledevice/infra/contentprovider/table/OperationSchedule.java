@@ -203,9 +203,8 @@ public class OperationSchedule implements Serializable {
             String where = OperationRecord.Columns.OPERATION_SCHEDULE_ID + " = ?";
             String[] whereArgs = new String[]{Long.toString(id)};
             long maxVersion = 1L;
-            Cursor cursor = database.query(OperationRecord.TABLE_NAME, null,
-                    where, whereArgs, null, null, null);
-            try {
+            try (Cursor cursor = database.query(OperationRecord.TABLE_NAME, null,
+                    where, whereArgs, null, null, null)) {
                 if (cursor.moveToFirst()) {
                     do {
                         long version = cursor.getLong(cursor.getColumnIndexOrThrow(OperationRecord.Columns.LOCAL_VERSION));
@@ -214,8 +213,6 @@ public class OperationSchedule implements Serializable {
                         }
                     } while (cursor.moveToNext());
                 }
-            } finally {
-                cursor.close();
             }
             operationRecordValues.put(OperationRecord.Columns.LOCAL_VERSION, maxVersion + 1);
             database.update(OperationRecord.TABLE_NAME, operationRecordValues, where, whereArgs);

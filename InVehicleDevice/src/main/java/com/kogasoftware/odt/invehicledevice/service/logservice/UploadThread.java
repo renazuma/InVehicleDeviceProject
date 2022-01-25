@@ -102,8 +102,7 @@ public class UploadThread extends Thread
         Log.i(TAG, "start");
 
         while (awsCredentials == null) {
-            Cursor cursor = context.getContentResolver().query(ServiceProvider.CONTENT.URI, null, null, null, null);
-            try {
+            try (Cursor cursor = context.getContentResolver().query(ServiceProvider.CONTENT.URI, null, null, null, null)) {
                 Thread.sleep(SERVICE_PROVIDER_TABLE_CHECK_INTERVAL);
 
                 if (!cursor.moveToFirst()) {
@@ -122,8 +121,6 @@ public class UploadThread extends Thread
                 }
             } catch (InterruptedException e) {
                 break;
-            } finally {
-                cursor.close();
             }
         }
 

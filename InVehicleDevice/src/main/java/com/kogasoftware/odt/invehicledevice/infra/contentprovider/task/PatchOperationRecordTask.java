@@ -32,15 +32,14 @@ public class PatchOperationRecordTask extends SynchronizationTask {
     List<Pair<Long, ObjectNode>> getUpdatedOperationRecords()
             throws IllegalArgumentException {
         List<Pair<Long, ObjectNode>> nodes = Lists.newLinkedList();
-        Cursor cursor = database.query(OperationRecord.TABLE_NAME,
+        try (Cursor cursor = database.query(OperationRecord.TABLE_NAME,
                 new String[]{OperationRecord.Columns._ID,
                         OperationRecord.Columns.ARRIVED_AT,
                         OperationRecord.Columns.DEPARTED_AT,
                         OperationRecord.Columns.LOCAL_VERSION},
                 OperationRecord.Columns.LOCAL_VERSION + " > "
                         + OperationRecord.Columns.SERVER_VERSION, null, null,
-                null, null);
-        try {
+                null, null)) {
             if (!cursor.moveToFirst()) {
                 return nodes;
             }
@@ -73,8 +72,6 @@ public class PatchOperationRecordTask extends SynchronizationTask {
                                 .getColumnIndexOrThrow(OperationRecord.Columns.LOCAL_VERSION));
                 nodes.add(Pair.of(localVersion, node));
             } while (cursor.moveToNext());
-        } finally {
-            cursor.close();
         }
         return nodes;
     }

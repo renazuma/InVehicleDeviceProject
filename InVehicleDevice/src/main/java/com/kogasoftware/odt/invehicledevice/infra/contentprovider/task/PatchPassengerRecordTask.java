@@ -32,7 +32,7 @@ public class PatchPassengerRecordTask extends SynchronizationTask {
     List<Pair<Long, ObjectNode>> getUpdatedPassengerRecords()
             throws IllegalArgumentException {
         List<Pair<Long, ObjectNode>> nodes = Lists.newLinkedList();
-        Cursor cursor = database.query(PassengerRecord.TABLE_NAME,
+        try (Cursor cursor = database.query(PassengerRecord.TABLE_NAME,
                 new String[]{PassengerRecord.Columns._ID,
                         PassengerRecord.Columns.GET_ON_TIME,
                         PassengerRecord.Columns.GET_OFF_TIME,
@@ -41,8 +41,7 @@ public class PatchPassengerRecordTask extends SynchronizationTask {
                         PassengerRecord.Columns.PAID_CHARGE},
                 PassengerRecord.Columns.LOCAL_VERSION + " > "
                         + PassengerRecord.Columns.SERVER_VERSION, null, null,
-                null, null);
-        try {
+                null, null)) {
             if (!cursor.moveToFirst()) {
                 return nodes;
             }
@@ -84,8 +83,6 @@ public class PatchPassengerRecordTask extends SynchronizationTask {
                                 .getColumnIndexOrThrow(PassengerRecord.Columns.LOCAL_VERSION));
                 nodes.add(Pair.of(localVersion, node));
             } while (cursor.moveToNext());
-        } finally {
-            cursor.close();
         }
         return nodes;
     }

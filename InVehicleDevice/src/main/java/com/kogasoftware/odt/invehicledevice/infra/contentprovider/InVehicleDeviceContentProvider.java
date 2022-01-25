@@ -206,9 +206,8 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
 
     private void onUpdateAuthenticationToken() {
         database.delete(ServiceProvider.TABLE_NAME, null, null);
-        Cursor cursor = database.query(InVehicleDevice.TABLE_NAME, null, null,
-                null, null, null, null);
-        try {
+        try (Cursor cursor = database.query(InVehicleDevice.TABLE_NAME, null, null,
+                null, null, null, null)) {
             if (!cursor.moveToFirst()) {
                 return;
             }
@@ -219,8 +218,6 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
                 return;
             }
 
-        } finally {
-            cursor.close();
         }
         executorService.execute(new GetServiceProviderTask(getContext(), database, executorService));
         executorService.execute(new GetOperationSchedulesTask(getContext(), database, executorService));

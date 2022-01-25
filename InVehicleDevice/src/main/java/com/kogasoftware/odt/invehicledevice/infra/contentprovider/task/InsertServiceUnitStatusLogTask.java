@@ -28,16 +28,13 @@ public class InsertServiceUnitStatusLogTask implements Runnable {
         ContentValues values = new ContentValues();
         // 全データを取得しているが、同期済みのものは既に削除されている。
         // 同期対象のデータはこのクラスのINTERVAL_MILLIS時間分だけ同期対象に入らないため、必ず1件は残っている想定
-        Cursor cursor = database.query(ServiceUnitStatusLog.TABLE_NAME, null,
+        try (Cursor cursor = database.query(ServiceUnitStatusLog.TABLE_NAME, null,
                 null, null, null, null,
-                ServiceUnitStatusLog.Columns.CREATED_AT + " DESC");
-        try {
+                ServiceUnitStatusLog.Columns.CREATED_AT + " DESC")) {
             if (cursor.moveToFirst()) {
                 DatabaseUtils.cursorRowToContentValues(cursor, values);
                 values.remove(ServiceUnitStatusLog.Columns._ID);
             }
-        } finally {
-            cursor.close();
         }
         values.put(ServiceUnitStatusLog.Columns.CREATED_AT, DateTime.now().getMillis() + INTERVAL_MILLIS);
         database.insert(ServiceUnitStatusLog.TABLE_NAME, null, values);

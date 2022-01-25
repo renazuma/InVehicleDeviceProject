@@ -31,13 +31,12 @@ public class PatchVehicleNotificationTask extends SynchronizationTask {
     List<ObjectNode> getNotRepliedVehicleNotifications()
             throws IllegalArgumentException {
         List<ObjectNode> nodes = Lists.newLinkedList();
-        Cursor cursor = database.query(VehicleNotification.TABLE_NAME,
+        try (Cursor cursor = database.query(VehicleNotification.TABLE_NAME,
                 new String[]{VehicleNotification.Columns._ID,
                         VehicleNotification.Columns.RESPONSE,
                         VehicleNotification.Columns.READ_AT},
                 "response IS NOT NULL AND read_at IS NOT NULL", null, null,
-                null, null);
-        try {
+                null, null)) {
             if (!cursor.moveToFirst()) {
                 return nodes;
             }
@@ -57,8 +56,6 @@ public class PatchVehicleNotificationTask extends SynchronizationTask {
                 node.put("read_at", ISODateTimeFormat.dateTime().print(readAt));
                 nodes.add(node);
             } while (cursor.moveToNext());
-        } finally {
-            cursor.close();
         }
         return nodes;
     }

@@ -129,13 +129,12 @@ public class ScheduleVehicleNotificationFragment extends Fragment
         new Thread() {
             @Override
             public void run() {
-                Cursor cursor = getActivity()
+                try (Cursor cursor = getActivity()
                         .getContentResolver()
                         .query(VehicleNotification.CONTENT.URI,
                                 null,
                                 VehicleNotification.WHERE_SCHEDULE_VEHICLE_NOTIFICATION_FRAGMENT_CONTENT,
-                                null, null);
-                try {
+                                null, null)) {
                     if (cursor.moveToFirst()) {
                         do {
                             VehicleNotification vehicleNotification = new VehicleNotification(
@@ -147,8 +146,6 @@ public class ScheduleVehicleNotificationFragment extends Fragment
                                     vehicleNotification.toContentValues());
                         } while (cursor.moveToNext());
                     }
-                } finally {
-                    cursor.close();
                 }
                 handler.post(new Runnable() {
                     @Override

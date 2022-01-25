@@ -107,17 +107,14 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
 
     private List<Long> getExistIds() {
         List<Long> existIds = Lists.newLinkedList();
-        Cursor cursor = database.query(VehicleNotification.TABLE_NAME,
+        try (Cursor cursor = database.query(VehicleNotification.TABLE_NAME,
                 new String[]{VehicleNotification.Columns._ID}, null, null,
-                null, null, null);
-        try {
+                null, null, null)) {
             if (cursor.moveToFirst()) {
                 do {
                     existIds.add(cursor.getLong(cursor.getColumnIndexOrThrow(VehicleNotification.Columns._ID)));
                 } while (cursor.moveToNext());
             }
-        } finally {
-            cursor.close();
         }
         return existIds;
     }

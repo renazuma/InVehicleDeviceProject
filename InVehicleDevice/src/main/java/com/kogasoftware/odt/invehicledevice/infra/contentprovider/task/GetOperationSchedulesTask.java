@@ -241,32 +241,26 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
                 + VehicleNotification.Columns.NOTIFICATION_KIND + " = " + VehicleNotification.NotificationKind.MEMO_CHANGED
                 + ")"
                 + " AND " + VehicleNotification.Columns.SCHEDULE_DOWNLOADED + " = 0 ";
-        Cursor cursor = database.query(VehicleNotification.TABLE_NAME, null, where, null, null, null, null);
-        try {
+        try (Cursor cursor = database.query(VehicleNotification.TABLE_NAME, null, where, null, null, null, null)) {
             if (cursor.moveToFirst()) {
                 do {
                     ids.add(cursor.getLong(cursor.getColumnIndexOrThrow(VehicleNotification.Columns._ID)));
                 } while (cursor.moveToNext());
             }
-        } finally {
-            cursor.close();
         }
         return ids;
     }
 
     private Boolean isOperationRecordNotYetSync() {
-        Cursor orCursor = database.query(OperationRecord.TABLE_NAME, null,
+        try (Cursor orCursor = database.query(OperationRecord.TABLE_NAME, null,
                 OperationRecord.Columns.LOCAL_VERSION + " > "
                         + OperationRecord.Columns.SERVER_VERSION, null, null,
-                null, null);
-        try {
+                null, null)) {
             // TODO:count
             if (orCursor.getCount() > 0) {
                 Log.i(TAG, "modified OperationRecord found");
                 return true;
             }
-        } finally {
-            orCursor.close();
         }
 
         Log.i(TAG, "operation records are clean");
@@ -274,18 +268,15 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
     }
 
     private Boolean isPassengerRecordNotYetSync() {
-        Cursor prCursor = database.query(PassengerRecord.TABLE_NAME, null,
+        try (Cursor prCursor = database.query(PassengerRecord.TABLE_NAME, null,
                 PassengerRecord.Columns.LOCAL_VERSION + " > "
                         + PassengerRecord.Columns.SERVER_VERSION, null, null,
-                null, null);
-        try {
+                null, null)) {
             // TODO:count
             if (prCursor.getCount() > 0) {
                 Log.i(TAG, "modified PassengerRecord found");
                 return true;
             }
-        } finally {
-            prCursor.close();
         }
         Log.i(TAG, "passenger records are clean");
         return false;

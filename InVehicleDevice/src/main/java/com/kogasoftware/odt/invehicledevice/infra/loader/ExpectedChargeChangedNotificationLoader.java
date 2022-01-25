@@ -60,12 +60,11 @@ public class ExpectedChargeChangedNotificationLoader {
             mainUIHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    Cursor cursor = inVehicleDeviceActivity.getContentResolver()
+                    try (Cursor cursor = inVehicleDeviceActivity.getContentResolver()
                             .query(VehicleNotification.CONTENT.URI,
                                     null,
                                     VehicleNotification.WHERE_EXPECTED_CHARGE_CHANGED_VEHICLE_NOTIFICATION_FRAGMENT_CONTENT,
-                                    null, null);
-                    try {
+                                    null, null)) {
                         if (cursor.moveToFirst()) {
                             do {
                                 VehicleNotification vehicleNotification = new VehicleNotification(cursor);
@@ -76,8 +75,6 @@ public class ExpectedChargeChangedNotificationLoader {
                                         vehicleNotification.toContentValues());
                             } while (cursor.moveToNext());
                         }
-                    } finally {
-                        cursor.close();
                     }
                 }
             });

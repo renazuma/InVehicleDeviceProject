@@ -134,9 +134,8 @@ public class SignInTask extends SynchronizationTask {
         String login;
         String password;
         String authenticationToken;
-        Cursor cursor = database.query(InVehicleDevice.TABLE_NAME, columns,
-                null, null, null, null, null);
-        try {
+        try (Cursor cursor = database.query(InVehicleDevice.TABLE_NAME, columns,
+                null, null, null, null, null)) {
             if (!cursor.moveToFirst()) {
                 return;
             }
@@ -151,8 +150,6 @@ public class SignInTask extends SynchronizationTask {
             authenticationToken = cursor
                     .getString(cursor
                             .getColumnIndexOrThrow(InVehicleDevice.Columns.AUTHENTICATION_TOKEN));
-        } finally {
-            cursor.close();
         }
 
         if (authenticationToken != null) {

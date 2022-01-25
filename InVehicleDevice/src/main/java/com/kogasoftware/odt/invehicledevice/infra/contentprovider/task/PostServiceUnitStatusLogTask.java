@@ -37,9 +37,8 @@ public class PostServiceUnitStatusLogTask extends SynchronizationTask {
         List<ObjectNode> nodes = Lists.newLinkedList();
         long millis = DateTime.now().minusMillis(InsertServiceUnitStatusLogTask.INTERVAL_MILLIS).getMillis();
         String where = ServiceUnitStatusLog.Columns.CREATED_AT + " < " + millis;
-        Cursor cursor = database.query(ServiceUnitStatusLog.TABLE_NAME, null,
-                where, null, null, null, null);
-        try {
+        try (Cursor cursor = database.query(ServiceUnitStatusLog.TABLE_NAME, null,
+                where, null, null, null, null)) {
             if (!cursor.moveToFirst()) {
                 return nodes;
             }
@@ -57,8 +56,6 @@ public class PostServiceUnitStatusLogTask extends SynchronizationTask {
                 node.put(Columns.SIGNAL_STRENGTH, reader.readLong(Columns.SIGNAL_STRENGTH));
                 nodes.add(node);
             } while (cursor.moveToNext());
-        } finally {
-            cursor.close();
         }
         return nodes;
     }
