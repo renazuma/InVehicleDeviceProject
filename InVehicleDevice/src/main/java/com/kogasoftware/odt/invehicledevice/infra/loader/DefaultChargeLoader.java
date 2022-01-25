@@ -26,7 +26,7 @@ public class DefaultChargeLoader {
     private final InVehicleDeviceActivity inVehicleDeviceActivity;
 
     public DefaultChargeLoader(InVehicleDeviceActivity inVehicleDeviceActivity) {
-        // HAKC: Activityを使いまわすのは良くない気がする。別の方法があれば変えたい。
+        // HACK: Activityを使いまわすのは良くない気がする。別の方法があれば変えたい。
         this.inVehicleDeviceActivity = inVehicleDeviceActivity;
     }
 

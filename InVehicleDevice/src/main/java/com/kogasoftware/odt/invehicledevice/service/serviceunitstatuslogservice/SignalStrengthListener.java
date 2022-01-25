@@ -47,7 +47,7 @@ public class SignalStrengthListener extends PhoneStateListener {
     }
 
     /**
-     * SignalStrenghを受け取り、現在の電波状況を100分率で表した数値への変換に成功した場合サービスに通知
+     * SignalStrengthを受け取り、現在の電波状況を100分率で表した数値への変換に成功した場合サービスに通知
      */
     @Override
     public void onSignalStrengthsChanged(SignalStrength signalStrength) {
