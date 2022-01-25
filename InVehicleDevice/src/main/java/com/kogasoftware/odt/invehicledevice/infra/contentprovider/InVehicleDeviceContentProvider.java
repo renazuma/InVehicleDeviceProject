@@ -193,7 +193,7 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
             case PassengerRecord.TABLE_CODE:
                 return PassengerRecord.update(this, values, selection, selectionArgs);
             case ServiceUnitStatusLog.TABLE_CODE:
-                return ServiceUnitStatusLog.update(this, values, selection, selectionArgs);
+                return ServiceUnitStatusLog.update(this, values, selection);
             default:
                 throw new IllegalArgumentException("Unknown uri: " + uri);
         }

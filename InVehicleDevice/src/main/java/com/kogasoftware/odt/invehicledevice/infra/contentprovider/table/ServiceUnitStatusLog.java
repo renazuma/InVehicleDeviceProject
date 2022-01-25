@@ -25,7 +25,7 @@ public class ServiceUnitStatusLog {
     }
 
     public static int update(InVehicleDeviceContentProvider contentProvider,
-                             ContentValues values, String selection, String[] selectionArgs) {
+                             ContentValues values, String selection) {
         SQLiteDatabase database = contentProvider.getDatabase();
         if (selection != null) {
             throw new IllegalArgumentException(

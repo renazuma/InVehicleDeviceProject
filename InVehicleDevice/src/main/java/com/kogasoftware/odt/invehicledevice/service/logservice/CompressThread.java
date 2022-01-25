@@ -1,6 +1,5 @@
 package com.kogasoftware.odt.invehicledevice.service.logservice;
 
-import android.content.Context;
 import android.util.Log;
 
 import com.google.common.io.ByteStreams;
@@ -23,7 +22,7 @@ public class CompressThread extends Thread {
     private final BlockingQueue<File> rawLogFiles;
     private final BlockingQueue<File> compressedLogFiles;
 
-    public CompressThread(Context context, BlockingQueue<File> rawLogFiles,
+    public CompressThread(BlockingQueue<File> rawLogFiles,
                           BlockingQueue<File> compressedLogFiles) {
         this.rawLogFiles = rawLogFiles;
         this.compressedLogFiles = compressedLogFiles;

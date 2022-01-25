@@ -98,7 +98,7 @@ public class LogService extends Service {
             return false;
         }
 
-        compressThread = new CompressThread(this, rawLogFiles,
+        compressThread = new CompressThread(rawLogFiles,
                 compressedLogFiles);
         uploadThread = createUploadThread(compressedLogFiles);
 

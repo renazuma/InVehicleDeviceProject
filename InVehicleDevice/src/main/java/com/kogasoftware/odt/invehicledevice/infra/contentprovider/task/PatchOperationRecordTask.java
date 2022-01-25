@@ -89,13 +89,13 @@ public class PatchOperationRecordTask extends SynchronizationTask {
                         @Override
                         public void onSuccess(HttpResponse response,
                                               byte[] entity) {
-                            save(node, id, version);
+                            save(id, version);
                         }
                     });
         }
     }
 
-    private void save(ObjectNode node, Long id, Long version) {
+    private void save(Long id, Long version) {
         ContentValues values = new ContentValues();
         values.put(OperationRecord.Columns.SERVER_VERSION, version);
         database.update(OperationRecord.TABLE_NAME, values,
