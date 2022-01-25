@@ -147,12 +147,7 @@ public class LogService extends Service {
                             dataDirectory, LOGCAT_FILE_TAG, rawLogFiles);
 
                     // スレッド開始は、onDestroy()発生後に行われるのを防ぐためメインスレッドで行う。
-                    boolean posted = handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            startLog(logcatSplitFileOutputStream);
-                        }
-                    });
+                    boolean posted = handler.post(() -> startLog(logcatSplitFileOutputStream));
                     if (!posted) {
                         try {
                             logcatSplitFileOutputStream.close();
@@ -200,12 +195,7 @@ public class LogService extends Service {
 
     public static List<File> getCompressedLogFiles(File directory) {
         List<File> files = new LinkedList<>();
-        File[] defaultFiles = directory.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String filename) {
-                return filename.endsWith(".gz");
-            }
-        });
+        File[] defaultFiles = directory.listFiles((dir, filename) -> filename.endsWith(".gz"));
         if (defaultFiles != null) {
             files.addAll(Arrays.asList(defaultFiles));
         }
@@ -214,12 +204,7 @@ public class LogService extends Service {
 
     public static List<File> getRawLogFiles(File directory) {
         List<File> files = new LinkedList<>();
-        File[] defaultFiles = directory.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String filename) {
-                return filename.endsWith(".log");
-            }
-        });
+        File[] defaultFiles = directory.listFiles((dir, filename) -> filename.endsWith(".log"));
         if (defaultFiles != null) {
             files.addAll(Arrays.asList(defaultFiles));
         }

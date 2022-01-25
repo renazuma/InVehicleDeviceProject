@@ -45,19 +45,9 @@ public class AdminVehicleNotificationFragment extends Fragment {
                 .findViewById(R.id.notification_text_view);
         bodyTextView.setText(vehicleNotification.body);
         view.findViewById(R.id.reply_yes_button).setOnClickListener(
-                new OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        submit(VehicleNotification.Response.YES);
-                    }
-                });
+                view12 -> submit(VehicleNotification.Response.YES));
         view.findViewById(R.id.reply_no_button).setOnClickListener(
-                new OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        submit(VehicleNotification.Response.NO);
-                    }
-                });
+                view1 -> submit(VehicleNotification.Response.NO));
     }
 
     public static AdminVehicleNotificationFragment newInstance(

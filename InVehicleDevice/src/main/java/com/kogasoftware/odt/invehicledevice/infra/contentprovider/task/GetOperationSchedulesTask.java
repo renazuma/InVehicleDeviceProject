@@ -61,14 +61,9 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
         List<OperationRecordJson> operationRecords = Lists.newLinkedList();
         List<PlatformJson> platforms = Lists.newLinkedList();
         Collections.sort(operationSchedules,
-                new Comparator<OperationScheduleJson>() {
-                    @Override
-                    public int compare(OperationScheduleJson l, OperationScheduleJson r) {
-                        return ComparisonChain.start()
-                                .compare(l.arrivalEstimate, r.arrivalEstimate)
-                                .compare(l.id, r.id).result();
-                    }
-                });
+                (l, r) -> ComparisonChain.start()
+                        .compare(l.arrivalEstimate, r.arrivalEstimate)
+                        .compare(l.id, r.id).result());
 
         // 各モデルを配列に展開する
         for (OperationScheduleJson operationSchedule : operationSchedules) {

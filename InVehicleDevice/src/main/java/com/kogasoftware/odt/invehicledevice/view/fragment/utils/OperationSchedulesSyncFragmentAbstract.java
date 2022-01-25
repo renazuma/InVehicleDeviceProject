@@ -46,16 +46,13 @@ public abstract class OperationSchedulesSyncFragmentAbstract extends Fragment {
         public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
             final LinkedList<OperationSchedule> newOperationSchedules = OperationSchedule.getAll(cursor);
 
-            final Runnable task = new Runnable() {
-                @Override
-                public void run() {
-                    if (!isAdded()) {
-                        return;
-                    }
-                    operationSchedules.clear();
-                    operationSchedules.addAll(newOperationSchedules);
-                    getLoaderManager().initLoader(PASSENGER_RECORDS_LOADER_ID, null, passengerRecordsLoaderCallbacks);
+            final Runnable task = () -> {
+                if (!isAdded()) {
+                    return;
                 }
+                operationSchedules.clear();
+                operationSchedules.addAll(newOperationSchedules);
+                getLoaderManager().initLoader(PASSENGER_RECORDS_LOADER_ID, null, passengerRecordsLoaderCallbacks);
             };
 
             new Thread() {

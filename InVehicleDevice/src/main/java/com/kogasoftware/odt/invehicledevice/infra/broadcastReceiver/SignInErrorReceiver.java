@@ -30,12 +30,7 @@ public class SignInErrorReceiver {
             // キャストしてfinalをしないと、runにinVehicleActivityを渡せない
             final InVehicleDeviceActivity inVehicleDeviceActivity = (InVehicleDeviceActivity) context;
 
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    SignInFragment.showModal(inVehicleDeviceActivity);
-                }
-            });
+            new Handler(Looper.getMainLooper()).post(() -> SignInFragment.showModal(inVehicleDeviceActivity));
         }
     };
 

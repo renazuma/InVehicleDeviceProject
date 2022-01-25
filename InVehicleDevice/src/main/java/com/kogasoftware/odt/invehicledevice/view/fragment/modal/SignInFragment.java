@@ -95,39 +95,26 @@ public class SignInFragment
         getActivity().registerReceiver(errorReceiver, new IntentFilter(SignInErrorBroadcastIntent.ACTION));
         loaderManager.initLoader(LOADER_ID, null, this);
         Button saveConfigButton = (Button) getView().findViewById(R.id.save_config_button);
-        saveConfigButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onSaveConfigButtonClick();
-            }
-        });
+        saveConfigButton.setOnClickListener(view -> onSaveConfigButtonClick());
 
         updateSummary();
 
         policyLink = (Preference) findPreference("privacy_policy_link");
-        policyLink.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                final String policySiteUri = getString(R.string.privacy_policy_url);
-                new AlertDialog.Builder(getActivity())
-                        .setTitle("プライバシーポリシー")
-                        .setMessage("外部ブラウザでページを表示します。よろしいですか？")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                Uri uri = Uri.parse(policySiteUri);
-                                Intent i = new Intent(Intent.ACTION_VIEW, uri);
-                                startActivity(i);
-                            }
-
-                        })
-                        .setNegativeButton("キャンセル", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                // do nothing
-                            }
-                        })
-                        .show();
-                return true;
-            }
+        policyLink.setOnPreferenceClickListener(preference -> {
+            final String policySiteUri = getString(R.string.privacy_policy_url);
+            new AlertDialog.Builder(getActivity())
+                    .setTitle("プライバシーポリシー")
+                    .setMessage("外部ブラウザでページを表示します。よろしいですか？")
+                    .setPositiveButton("OK", (dialog, which) -> {
+                        Uri uri = Uri.parse(policySiteUri);
+                        Intent i = new Intent(Intent.ACTION_VIEW, uri);
+                        startActivity(i);
+                    })
+                    .setNegativeButton("キャンセル", (dialog, which) -> {
+                        // do nothing
+                    })
+                    .show();
+            return true;
         });
     }
 
@@ -181,18 +168,15 @@ public class SignInFragment
         showProgressDialog();
 
         final ContentResolver contentResolver = getActivity().getContentResolver();
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                ContentValues values = new ContentValues();
-                for (String key : new String[]{InVehicleDevice.Columns._ID,
-                        InVehicleDevice.Columns.URL,
-                        InVehicleDevice.Columns.LOGIN,
-                        InVehicleDevice.Columns.PASSWORD}) {
-                    values.put(key, preferences.getString(key, null));
-                }
-                contentResolver.insert(InVehicleDevice.CONTENT.URI, values);
+        executor.submit(() -> {
+            ContentValues values = new ContentValues();
+            for (String key : new String[]{InVehicleDevice.Columns._ID,
+                    InVehicleDevice.Columns.URL,
+                    InVehicleDevice.Columns.LOGIN,
+                    InVehicleDevice.Columns.PASSWORD}) {
+                values.put(key, preferences.getString(key, null));
             }
+            contentResolver.insert(InVehicleDevice.CONTENT.URI, values);
         });
     }
 

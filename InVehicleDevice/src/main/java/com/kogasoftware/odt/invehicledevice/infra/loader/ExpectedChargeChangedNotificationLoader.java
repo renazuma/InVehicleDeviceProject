@@ -57,24 +57,21 @@ public class ExpectedChargeChangedNotificationLoader {
 
             Handler mainUIHandler = new Handler(Looper.getMainLooper());
 
-            mainUIHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    try (Cursor cursor = inVehicleDeviceActivity.getContentResolver()
-                            .query(VehicleNotification.CONTENT.URI,
-                                    null,
-                                    VehicleNotification.WHERE_EXPECTED_CHARGE_CHANGED_VEHICLE_NOTIFICATION_FRAGMENT_CONTENT,
-                                    null, null)) {
-                        if (cursor.moveToFirst()) {
-                            do {
-                                VehicleNotification vehicleNotification = new VehicleNotification(cursor);
-                                vehicleNotification.response = VehicleNotification.Response.YES;
-                                vehicleNotification.readAt = DateTime.now();
-                                inVehicleDeviceActivity.getContentResolver().insert(
-                                        VehicleNotification.CONTENT.URI,
-                                        vehicleNotification.toContentValues());
-                            } while (cursor.moveToNext());
-                        }
+            mainUIHandler.post(() -> {
+                try (Cursor cursor1 = inVehicleDeviceActivity.getContentResolver()
+                        .query(VehicleNotification.CONTENT.URI,
+                                null,
+                                VehicleNotification.WHERE_EXPECTED_CHARGE_CHANGED_VEHICLE_NOTIFICATION_FRAGMENT_CONTENT,
+                                null, null)) {
+                    if (cursor1.moveToFirst()) {
+                        do {
+                            VehicleNotification vehicleNotification = new VehicleNotification(cursor1);
+                            vehicleNotification.response = VehicleNotification.Response.YES;
+                            vehicleNotification.readAt = DateTime.now();
+                            inVehicleDeviceActivity.getContentResolver().insert(
+                                    VehicleNotification.CONTENT.URI,
+                                    vehicleNotification.toContentValues());
+                        } while (cursor1.moveToNext());
                     }
                 }
             });

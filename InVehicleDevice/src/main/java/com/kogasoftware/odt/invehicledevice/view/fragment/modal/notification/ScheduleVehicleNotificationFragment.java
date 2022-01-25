@@ -52,20 +52,10 @@ public class ScheduleVehicleNotificationFragment extends Fragment
         } else {
             showOperationListButton.setVisibility(View.GONE);
         }
-        showOperationListButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onShowOperationListButtonClick();
-            }
-        });
+        showOperationListButton.setOnClickListener(view12 -> onShowOperationListButtonClick());
         Button closeButton = (Button) view
                 .findViewById(R.id.schedule_vehicle_notification_close_button);
-        closeButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onCloseButtonClick();
-            }
-        });
+        closeButton.setOnClickListener(view1 -> onCloseButtonClick());
         detailTextView = (TextView) view
                 .findViewById(R.id.schedule_vehicle_notification_detail_text_view);
         getLoaderManager().initLoader(LOADER_ID, null, this);
@@ -102,10 +92,7 @@ public class ScheduleVehicleNotificationFragment extends Fragment
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         if (!cursor.moveToFirst()) {
-            hide(new Runnable() {
-                @Override
-                public void run() {
-                }
+            hide(() -> {
             });
             return;
         }
@@ -147,14 +134,11 @@ public class ScheduleVehicleNotificationFragment extends Fragment
                         } while (cursor.moveToNext());
                     }
                 }
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        onComplete.run();
-                        if (isAdded()) {
-                            Fragments
-                                    .hide(ScheduleVehicleNotificationFragment.this);
-                        }
+                handler.post(() -> {
+                    onComplete.run();
+                    if (isAdded()) {
+                        Fragments
+                                .hide(ScheduleVehicleNotificationFragment.this);
                     }
                 });
             }
@@ -166,38 +150,32 @@ public class ScheduleVehicleNotificationFragment extends Fragment
     }
 
     private void onShowOperationListButtonClick() {
-        hide(new Runnable() {
-            @Override
-            public void run() {
-                if (!isAdded()) {
-                    return;
-                }
-                FragmentManager fragmentManager = getFragmentManager();
-                Fragment oldFragment = fragmentManager
-                        .findFragmentByTag(ControlBarFragment.OPERATION_LIST_FRAGMENT_TAG);
-                if (oldFragment != null) {
-                    Fragments.hide(oldFragment);
-                }
-                Fragments.showModalFragment(fragmentManager,
-                        OperationListFragment.newInstance(true),
-                        ControlBarFragment.OPERATION_LIST_FRAGMENT_TAG);
+        hide(() -> {
+            if (!isAdded()) {
+                return;
             }
+            FragmentManager fragmentManager = getFragmentManager();
+            Fragment oldFragment = fragmentManager
+                    .findFragmentByTag(ControlBarFragment.OPERATION_LIST_FRAGMENT_TAG);
+            if (oldFragment != null) {
+                Fragments.hide(oldFragment);
+            }
+            Fragments.showModalFragment(fragmentManager,
+                    OperationListFragment.newInstance(true),
+                    ControlBarFragment.OPERATION_LIST_FRAGMENT_TAG);
         });
     }
 
     private void onCloseButtonClick() {
-        hide(new Runnable() {
-            @Override
-            public void run() {
-                if (!isAdded()) {
-                    return;
-                }
-                Fragment fragment = getFragmentManager().findFragmentByTag(OperationListFragment.FRAGMENT_TAG);
-                if (getFragmentManager().findFragmentByTag(OperationListFragment.FRAGMENT_TAG) == null) {
-                    return;
-                }
-                ((OperationListFragment) fragment).scrollToUnhandledOperationSchedule();
+        hide(() -> {
+            if (!isAdded()) {
+                return;
             }
+            Fragment fragment = getFragmentManager().findFragmentByTag(OperationListFragment.FRAGMENT_TAG);
+            if (getFragmentManager().findFragmentByTag(OperationListFragment.FRAGMENT_TAG) == null) {
+                return;
+            }
+            ((OperationListFragment) fragment).scrollToUnhandledOperationSchedule();
         });
     }
 

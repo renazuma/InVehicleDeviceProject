@@ -53,12 +53,7 @@ public class onCreateSignInLoader {
 
             Handler mainUIHandler = new Handler(Looper.getMainLooper());
 
-            mainUIHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    SignInFragment.showModal(inVehicleDeviceActivity);
-                }
-            });
+            mainUIHandler.post(() -> SignInFragment.showModal(inVehicleDeviceActivity));
         }
 
 

@@ -49,20 +49,10 @@ public class MainViewLoader {
 
             if (cursor.moveToFirst()) {
                 inVehicleDeviceActivity.setServiceProvider(new ServiceProvider(cursor));
-                mainUIHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        MainLayoutFragment.showModal(inVehicleDeviceActivity);
-                    }
-                });
+                mainUIHandler.post(() -> MainLayoutFragment.showModal(inVehicleDeviceActivity));
             } else {
                 inVehicleDeviceActivity.setServiceProvider(null);
-                mainUIHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        MainLayoutFragment.hideModal(inVehicleDeviceActivity);
-                    }
-                });
+                mainUIHandler.post(() -> MainLayoutFragment.hideModal(inVehicleDeviceActivity));
             }
         }
 

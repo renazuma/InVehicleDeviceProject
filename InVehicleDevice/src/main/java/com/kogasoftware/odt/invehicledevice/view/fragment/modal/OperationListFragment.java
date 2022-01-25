@@ -147,12 +147,7 @@ public class OperationListFragment extends Fragment {
 
         // 戻るボタン（スケジュールのみ）
         final Button closeButton = (Button) view.findViewById(R.id.operation_list_close_button);
-        closeButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Fragments.hide(OperationListFragment.this);
-            }
-        });
+        closeButton.setOnClickListener(v -> Fragments.hide(OperationListFragment.this));
         if (closeable) {
             closeButton.setVisibility(View.VISIBLE);
         } else {
@@ -170,24 +165,18 @@ public class OperationListFragment extends Fragment {
         // 戻るボタン（ユーザー表示時）
         final Button hidePassengerButton = (Button) view.findViewById(R.id.operation_list_hide_passengers_button);
 
-        showPassengerButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                adapter.showPassengerRecords();
-                showPassengerButton.setVisibility(View.GONE);
-                hidePassengerButton.setVisibility(View.VISIBLE);
-                closeButton.setVisibility(View.GONE);
-            }
+        showPassengerButton.setOnClickListener(view1 -> {
+            adapter.showPassengerRecords();
+            showPassengerButton.setVisibility(View.GONE);
+            hidePassengerButton.setVisibility(View.VISIBLE);
+            closeButton.setVisibility(View.GONE);
         });
-        hidePassengerButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                adapter.hidePassengerRecords();
-                hidePassengerButton.setVisibility(View.GONE);
-                showPassengerButton.setVisibility(View.VISIBLE);
-                if (closeable) {
-                    closeButton.setVisibility(View.VISIBLE);
-                }
+        hidePassengerButton.setOnClickListener(v -> {
+            adapter.hidePassengerRecords();
+            hidePassengerButton.setVisibility(View.GONE);
+            showPassengerButton.setVisibility(View.VISIBLE);
+            if (closeable) {
+                closeButton.setVisibility(View.VISIBLE);
             }
         });
     }

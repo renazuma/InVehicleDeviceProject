@@ -77,13 +77,10 @@ public class InformationBarFragment extends OperationSchedulesSyncFragmentAbstra
         super.onActivityCreated(savedInstanceState);
         handler = new Handler();
 
-        ((ImageView) getView().findViewById(R.id.open_login_image_view)).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Activity activity = getActivity();
-                if (activity instanceof InVehicleDeviceActivity) {
-                    SignInFragment.showModal((InVehicleDeviceActivity) activity);
-                }
+        ((ImageView) getView().findViewById(R.id.open_login_image_view)).setOnClickListener(v -> {
+            Activity activity = getActivity();
+            if (activity instanceof InVehicleDeviceActivity) {
+                SignInFragment.showModal((InVehicleDeviceActivity) activity);
             }
         });
 
@@ -134,12 +131,9 @@ public class InformationBarFragment extends OperationSchedulesSyncFragmentAbstra
         platformMemoButton.setVisibility(View.INVISIBLE);
         if (isShowMemoButtonPattern()) {
             platformMemoButton.setVisibility(View.VISIBLE);
-            platformMemoButton.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ViewDisabler.disable(v);
-                    showPlatformMemoFragment();
-                }
+            platformMemoButton.setOnClickListener(v -> {
+                ViewDisabler.disable(v);
+                showPlatformMemoFragment();
             });
         }
     }

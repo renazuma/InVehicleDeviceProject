@@ -30,12 +30,7 @@ public class AirPlaneModeOnReceiver {
             // キャストしてfinalをしないと、runにinVehicleActivityを渡せない
             final InVehicleDeviceActivity inVehicleDeviceActivity = (InVehicleDeviceActivity) context;
 
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    AirplaneModeAlertDialogFragment.showDialog(inVehicleDeviceActivity);
-                }
-            });
+            new Handler(Looper.getMainLooper()).post(() -> AirplaneModeAlertDialogFragment.showDialog(inVehicleDeviceActivity));
         }
     };
 

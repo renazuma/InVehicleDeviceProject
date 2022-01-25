@@ -61,37 +61,29 @@ public class DepartureCheckFragment extends Fragment {
         }
 
         Button closeButton = (Button) view.findViewById(R.id.departure_check_close_button);
-        closeButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Fragments.hide(DepartureCheckFragment.this);
-            }
-        });
+        closeButton.setOnClickListener(v -> Fragments.hide(DepartureCheckFragment.this));
         if (phase == Phase.PLATFORM_GET_OFF) {
             closeButton.setText("降車一覧に戻る");
         } else {
             closeButton.setText("乗車一覧に戻る");
         }
 
-        departureButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Fragments.hide(DepartureCheckFragment.this);
-                Thread tt = new Thread() {
-                    @Override
-                    public void run() {
-                        for (OperationSchedule operationSchedule : operationPhase.getCurrentOperationSchedules()) {
-                            operationSchedule.departedAt = DateTime.now();
-                            contentResolver.insert(OperationSchedule.CONTENT.URI, operationSchedule.toContentValues());
-                        }
+        departureButton.setOnClickListener(v -> {
+            Fragments.hide(DepartureCheckFragment.this);
+            Thread tt = new Thread() {
+                @Override
+                public void run() {
+                    for (OperationSchedule operationSchedule : operationPhase.getCurrentOperationSchedules()) {
+                        operationSchedule.departedAt = DateTime.now();
+                        contentResolver.insert(OperationSchedule.CONTENT.URI, operationSchedule.toContentValues());
                     }
-                };
-                tt.start();
-                try {
-                    tt.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
                 }
+            };
+            tt.start();
+            try {
+                tt.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         });
     }

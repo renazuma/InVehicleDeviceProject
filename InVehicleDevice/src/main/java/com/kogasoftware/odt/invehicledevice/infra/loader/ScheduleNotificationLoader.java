@@ -63,19 +63,9 @@ public class ScheduleNotificationLoader {
 
             Handler mainUIHandler = new Handler(Looper.getMainLooper());
 
-            mainUIHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    VehicleNotificationAlertFragment.showModal(inVehicleDeviceActivity);
-                }
-            });
+            mainUIHandler.post(() -> VehicleNotificationAlertFragment.showModal(inVehicleDeviceActivity));
 
-            mainUIHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    ScheduleVehicleNotificationFragment.showModal(inVehicleDeviceActivity);
-                }
-            }, InVehicleDeviceActivity.VEHICLE_NOTIFICATION_ALERT_DELAY_MILLIS);
+            mainUIHandler.postDelayed(() -> ScheduleVehicleNotificationFragment.showModal(inVehicleDeviceActivity), InVehicleDeviceActivity.VEHICLE_NOTIFICATION_ALERT_DELAY_MILLIS);
         }
 
         @Override

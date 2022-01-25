@@ -55,12 +55,9 @@ public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
         Button operationScheduleListButton = (Button) getView().findViewById(R.id.operation_schedule_list_button);
 
         // TODO: 運行予定ボタンの定義。地図やphaseボタンと異なり、特別な引数や文字の変更が無いから、ここで定義されているが、わかりにくい。
-        operationScheduleListButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ViewDisabler.disable(v);
-                showOperationScheduleListFragment();
-            }
+        operationScheduleListButton.setOnClickListener(v -> {
+            ViewDisabler.disable(v);
+            showOperationScheduleListFragment();
         });
     }
 
@@ -180,12 +177,9 @@ public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
         this.operationPhase = new OperationPhase(operationSchedules, passengerRecords);
         final Phase phase = operationPhase.getPhase();
 
-        mapButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ViewDisabler.disable(v);
-                showNavigation(phase);
-            }
+        mapButton.setOnClickListener(v -> {
+            ViewDisabler.disable(v);
+            showNavigation(phase);
         });
 
         Button changePhaseButton = (Button) getView().findViewById(R.id.change_phase_button);
@@ -194,12 +188,9 @@ public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
             case DRIVE:
                 changePhaseButton.setEnabled(true);
                 changePhaseButton.setText(getString(R.string.it_arrives_button_text));
-                changePhaseButton.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ViewDisabler.disable(v);
-                        showArrivalCheckFragment();
-                    }
+                changePhaseButton.setOnClickListener(v -> {
+                    ViewDisabler.disable(v);
+                    showArrivalCheckFragment();
                 });
                 break;
             case FINISH:
@@ -209,23 +200,17 @@ public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
             case PLATFORM_GET_OFF:
                 changePhaseButton.setEnabled(true);
                 changePhaseButton.setText("確認\nする");
-                changePhaseButton.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ViewDisabler.disable(v);
-                        showDepartureCheckFragment(phase);
-                    }
+                changePhaseButton.setOnClickListener(v -> {
+                    ViewDisabler.disable(v);
+                    showDepartureCheckFragment(phase);
                 });
                 break;
             case PLATFORM_GET_ON:
                 changePhaseButton.setEnabled(true);
                 changePhaseButton.setText("確認\nする");
-                changePhaseButton.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ViewDisabler.disable(v);
-                        showDepartureCheckFragment(phase);
-                    }
+                changePhaseButton.setOnClickListener(v -> {
+                    ViewDisabler.disable(v);
+                    showDepartureCheckFragment(phase);
                 });
                 break;
         }

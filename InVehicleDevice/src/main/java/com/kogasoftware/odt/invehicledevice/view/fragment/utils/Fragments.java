@@ -20,16 +20,13 @@ public class Fragments {
     }
 
     public static void hide(final Fragment fragment, Handler handler) {
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (!fragment.isAdded()) {
-                    return;
-                }
-                setCustomAnimations(
-                        fragment.getFragmentManager().beginTransaction())
-                        .remove(fragment).commitAllowingStateLoss();
+        handler.post(() -> {
+            if (!fragment.isAdded()) {
+                return;
             }
+            setCustomAnimations(
+                    fragment.getFragmentManager().beginTransaction())
+                    .remove(fragment).commitAllowingStateLoss();
         });
     }
 

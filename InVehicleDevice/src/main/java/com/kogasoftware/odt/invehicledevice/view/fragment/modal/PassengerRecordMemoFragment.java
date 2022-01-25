@@ -30,12 +30,7 @@ public class PassengerRecordMemoFragment extends Fragment {
                 .getSerializable(PASSENGER_RECORD_KEY);
         Button closeButton = (Button) view
                 .findViewById(R.id.passenger_record_memo_close_button);
-        closeButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Fragments.hide(PassengerRecordMemoFragment.this);
-            }
-        });
+        closeButton.setOnClickListener(v -> Fragments.hide(PassengerRecordMemoFragment.this));
         TextView titleTextView = (TextView) view
                 .findViewById(R.id.memo_title_text_view);
         StringBuilder title = new StringBuilder();

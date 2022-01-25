@@ -90,13 +90,10 @@ public class ChargeEditFragment extends OperationSchedulesSyncFragmentAbstract {
 
         chargerNameView.setText(passengerRecord.getDisplayName() + " 様");
 
-        chargeEditTextView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean hasFocus) {
-                if (!hasFocus) {
-                    InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                }
+        chargeEditTextView.setOnFocusChangeListener((view1, hasFocus) -> {
+            if (!hasFocus) {
+                InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view1.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
             }
         });
 
@@ -115,26 +112,11 @@ public class ChargeEditFragment extends OperationSchedulesSyncFragmentAbstract {
             thirdDefaultChargeButtonView.setEnabled(true);
         }
 
-        firstDefaultChargeButtonView.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                chargeEditTextView.setText(((DefaultCharge) (defaultCharges.get(0))).value.toString());
-            }
-        });
+        firstDefaultChargeButtonView.setOnClickListener(v -> chargeEditTextView.setText(((DefaultCharge) (defaultCharges.get(0))).value.toString()));
 
-        secondDefaultChargeButtonView.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                chargeEditTextView.setText(((DefaultCharge) (defaultCharges.get(1))).value.toString());
-            }
-        });
+        secondDefaultChargeButtonView.setOnClickListener(v -> chargeEditTextView.setText(((DefaultCharge) (defaultCharges.get(1))).value.toString()));
 
-        thirdDefaultChargeButtonView.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                chargeEditTextView.setText(((DefaultCharge) (defaultCharges.get(2))).value.toString());
-            }
-        });
+        thirdDefaultChargeButtonView.setOnClickListener(v -> chargeEditTextView.setText(((DefaultCharge) (defaultCharges.get(2))).value.toString()));
 
         if (passengerRecord.expectedCharge == null) {
             expectedChargeTextView.setText("登録なし");
@@ -144,41 +126,33 @@ public class ChargeEditFragment extends OperationSchedulesSyncFragmentAbstract {
             expectedChargeTextView.setText(passengerRecord.expectedCharge.toString());
         }
 
-        chargeAndGetOnButtonView.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                passengerRecord.getOnTime = DateTime.now();
-                if (operationScheduleId.equals(passengerRecord.departureScheduleId)) {
-                    passengerRecord.ignoreGetOnMiss = false;
-                } else {
-                    passengerRecord.ignoreGetOffMiss = false;
-                    passengerRecord.getOffTime = DateTime.now();
-                }
-
-                if (!StringUtils.isEmpty(chargeEditTextView.getText().toString())) {
-                    passengerRecord.paidCharge = (long) Integer.parseInt(chargeEditTextView.getText().toString());
-                }
-
-                final ContentValues values = passengerRecord.toContentValues();
-                final String where = PassengerRecord.Columns._ID + " = ?";
-                final String[] whereArgs = new String[]{passengerRecord.id.toString()};
-                new Thread() {
-                    @Override
-                    public void run() {
-                        contentResolver.update(PassengerRecord.CONTENT.URI, values, where, whereArgs);
-                    }
-                }.start();
-                contentResolver.notifyChange(PassengerRecord.CONTENT.URI, null);
-                Fragments.hide(ChargeEditFragment.this);
+        chargeAndGetOnButtonView.setOnClickListener(v -> {
+            passengerRecord.getOnTime = DateTime.now();
+            if (operationScheduleId.equals(passengerRecord.departureScheduleId)) {
+                passengerRecord.ignoreGetOnMiss = false;
+            } else {
+                passengerRecord.ignoreGetOffMiss = false;
+                passengerRecord.getOffTime = DateTime.now();
             }
+
+            if (!StringUtils.isEmpty(chargeEditTextView.getText().toString())) {
+                passengerRecord.paidCharge = (long) Integer.parseInt(chargeEditTextView.getText().toString());
+            }
+
+            final ContentValues values = passengerRecord.toContentValues();
+            final String where = PassengerRecord.Columns._ID + " = ?";
+            final String[] whereArgs = new String[]{passengerRecord.id.toString()};
+            new Thread() {
+                @Override
+                public void run() {
+                    contentResolver.update(PassengerRecord.CONTENT.URI, values, where, whereArgs);
+                }
+            }.start();
+            contentResolver.notifyChange(PassengerRecord.CONTENT.URI, null);
+            Fragments.hide(ChargeEditFragment.this);
         });
 
-        quitChargeButtonView.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Fragments.hide(ChargeEditFragment.this);
-            }
-        });
+        quitChargeButtonView.setOnClickListener(v -> Fragments.hide(ChargeEditFragment.this));
     }
 
     private static PassengerRecord getById(List<PassengerRecord> passengerRecords, Long id) {

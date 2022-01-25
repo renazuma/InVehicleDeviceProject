@@ -132,12 +132,7 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
         switch (code) {
             case InVehicleDevice.TABLE_CODE:
                 return InVehicleDevice.replaceLoginAndPassword(values, this,
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                onUpdateAuthenticationToken();
-                            }
-                        });
+                        () -> onUpdateAuthenticationToken());
             case VehicleNotification.TABLE_CODE:
                 return VehicleNotification.replace(values, this);
             case OperationSchedule.TABLE_CODE:

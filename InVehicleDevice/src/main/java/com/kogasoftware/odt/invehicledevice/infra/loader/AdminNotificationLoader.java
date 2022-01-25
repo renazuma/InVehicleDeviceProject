@@ -60,21 +60,11 @@ public class AdminNotificationLoader {
 
             Handler mainUIHandler = new Handler(Looper.getMainLooper());
 
-            mainUIHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    VehicleNotificationAlertFragment.showModal(inVehicleDeviceActivity);
-                }
-            });
+            mainUIHandler.post(() -> VehicleNotificationAlertFragment.showModal(inVehicleDeviceActivity));
 
             // finalをした変数じゃないとpostDelayed内で使用出来ないので、先に作成している
             final List<VehicleNotification> vehicleNotifications = VehicleNotification.getAll(data);
-            mainUIHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    AdminVehicleNotificationFragment.showModal(inVehicleDeviceActivity, vehicleNotifications);
-                }
-            }, InVehicleDeviceActivity.VEHICLE_NOTIFICATION_ALERT_DELAY_MILLIS);
+            mainUIHandler.postDelayed(() -> AdminVehicleNotificationFragment.showModal(inVehicleDeviceActivity, vehicleNotifications), InVehicleDeviceActivity.VEHICLE_NOTIFICATION_ALERT_DELAY_MILLIS);
         }
 
         @Override

@@ -60,12 +60,7 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
         operationSchedules = operationPhase.getCurrentOperationSchedules();
         View view = getView();
         closeButton = (Button) view.findViewById(R.id.get_off_check_close_button);
-        closeButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Fragments.hide(PassengerRecordErrorFragment.this);
-            }
-        });
+        closeButton.setOnClickListener(v -> Fragments.hide(PassengerRecordErrorFragment.this));
         errorUserListView = (FlickUnneededListView) view.findViewById(R.id.error_reservation_list_view);
         completeWithErrorButton = (Button) view.findViewById(R.id.complete_with_error_button);
         adapter = new PassengerRecordErrorArrayAdapter(this, operationSchedules);
@@ -143,12 +138,9 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
             closeButton.setText("降車一覧に戻る");
         }
 
-        completeWithErrorButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ViewDisabler.disable(view);
-                complete(phase, newOperationPhase);
-            }
+        completeWithErrorButton.setOnClickListener(view -> {
+            ViewDisabler.disable(view);
+            complete(phase, newOperationPhase);
         });
         completeWithErrorButton.setEnabled(!adapter.hasError());
     }

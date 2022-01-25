@@ -46,16 +46,11 @@ public class PassengerRecord implements Serializable {
         public static final String PAID_CHARGE = "paid_charge";
     }
 
-    public static final Comparator<PassengerRecord> DEFAULT_COMPARATOR = new Comparator<PassengerRecord>() {
-        @Override
-        public int compare(PassengerRecord l, PassengerRecord r) {
-            return ComparisonChain.start()
-                    .compare(l.reservationId, r.reservationId)
-                    .compareTrueFirst(l.representative, r.representative)
-                    .compare(l.getDisplayName(), r.getDisplayName())
-                    .compare(l.userId, r.userId).compare(l.id, r.id).result();
-        }
-    };
+    public static final Comparator<PassengerRecord> DEFAULT_COMPARATOR = (l, r) -> ComparisonChain.start()
+            .compare(l.reservationId, r.reservationId)
+            .compareTrueFirst(l.representative, r.representative)
+            .compare(l.getDisplayName(), r.getDisplayName())
+            .compare(l.userId, r.userId).compare(l.id, r.id).result();
 
     // 運行予定画面、乗降画面の、乗客行の背景色
     public Long id;

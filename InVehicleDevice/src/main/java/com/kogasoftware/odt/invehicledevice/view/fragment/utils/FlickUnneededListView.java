@@ -134,18 +134,8 @@ public class FlickUnneededListView extends FrameLayout
             return;
         }
         listView.setOnScrollListener(this);
-        scrollUpButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                scrollUp();
-            }
-        });
-        scrollDownButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                scrollDown();
-            }
-        });
+        scrollUpButton.setOnClickListener(view -> scrollUp());
+        scrollDownButton.setOnClickListener(view -> scrollDown());
     }
 
     enum Adjust {

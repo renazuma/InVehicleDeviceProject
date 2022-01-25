@@ -28,12 +28,7 @@ public class PermissionChecker {
             if (ContextCompat.checkSelfPermission(inVehicleDeviceActivity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(inVehicleDeviceActivity);
                 builder.setMessage(inVehicleDeviceActivity.getString(R.string.location_description))
-                        .setPositiveButton("次へ", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                ActivityCompat.requestPermissions(inVehicleDeviceActivity, MUST_GRANT_PERMISSIONS, 1000);
-                            }
-                        });
+                        .setPositiveButton("次へ", (dialog, which) -> ActivityCompat.requestPermissions(inVehicleDeviceActivity, MUST_GRANT_PERMISSIONS, 1000));
                 builder.show();
             } else {
                 ActivityCompat.requestPermissions(inVehicleDeviceActivity, MUST_GRANT_PERMISSIONS, 1000);

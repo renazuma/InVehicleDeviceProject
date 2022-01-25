@@ -13,11 +13,6 @@ public class ViewDisabler {
 
     public static void disable(final View view, Integer timeoutMillis) {
         view.setEnabled(false);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                view.setEnabled(true);
-            }
-        }, timeoutMillis);
+        new Handler().postDelayed(() -> view.setEnabled(true), timeoutMillis);
     }
 }

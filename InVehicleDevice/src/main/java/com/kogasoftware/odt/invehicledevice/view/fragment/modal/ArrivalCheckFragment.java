@@ -44,35 +44,27 @@ public class ArrivalCheckFragment extends Fragment {
         TextView commentTextView = (TextView) view.findViewById(R.id.arrival_check_comment_text_view);
 
         Button closeButton = (Button) view.findViewById(R.id.arrival_check_close_button);
-        closeButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Fragments.hide(ArrivalCheckFragment.this);
-            }
-        });
+        closeButton.setOnClickListener(v -> Fragments.hide(ArrivalCheckFragment.this));
 
         Button arrivalButton = (Button) view.findViewById(R.id.arrival_button);
-        arrivalButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Fragments.hide(ArrivalCheckFragment.this);
-                Thread tt = new Thread() {
-                    @Override
-                    public void run() {
-                        for (OperationSchedule operationSchedule : operationPhase.getCurrentOperationSchedules()) {
-                            operationSchedule.arrivedAt = DateTime.now();
-                            ContentValues values = operationSchedule.toContentValues();
-                            contentResolver.insert(OperationSchedule.CONTENT.URI, values);
-                        }
+        arrivalButton.setOnClickListener(view1 -> {
+            Fragments.hide(ArrivalCheckFragment.this);
+            Thread tt = new Thread() {
+                @Override
+                public void run() {
+                    for (OperationSchedule operationSchedule : operationPhase.getCurrentOperationSchedules()) {
+                        operationSchedule.arrivedAt = DateTime.now();
+                        ContentValues values = operationSchedule.toContentValues();
+                        contentResolver.insert(OperationSchedule.CONTENT.URI, values);
                     }
-
-                };
-                tt.start();
-                try {
-                    tt.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
                 }
+
+            };
+            tt.start();
+            try {
+                tt.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         });
 
