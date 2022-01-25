@@ -89,12 +89,12 @@ public class LogService extends Service {
     /**
      * スレッド開始。onDestroy()発生後に行われるのを防ぐためメインスレッドで実行する。
      */
-    public Boolean startLog(SplitFileOutputStream logcatSplitFileOutputStream) {
+    public void startLog(SplitFileOutputStream logcatSplitFileOutputStream) {
         closeables.add(logcatSplitFileOutputStream);
 
         if (destroyed) {
             Log.i(TAG, "destroyed=" + destroyed + " / startLog returned");
-            return false;
+            return;
         }
 
         compressThread = new CompressThread(rawLogFiles,
@@ -113,8 +113,7 @@ public class LogService extends Service {
         compressThread.start();
         uploadThread.start();
 
-        return true;
-    }
+	}
 
     @Override
     public void onCreate() {
