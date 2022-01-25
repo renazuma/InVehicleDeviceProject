@@ -12,24 +12,25 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.Reservat
  * 予約のJSON
  */
 public class ReservationJson {
-	public Long id;
-	public Long userId;
-	public Long arrivalScheduleId;
-	public Long departureScheduleId;
-	public List<UserJson> fellowUsers = Lists.newLinkedList();
-	public List<PassengerRecordJson> passengerRecords = Lists.newLinkedList();
-	public String memo;
-	public Integer passengerCount;
-	public ContentValues toContentValues() {
-		ContentValues reservationValues = new ContentValues();
-		reservationValues.put(Reservation.Columns._ID, id);
-		reservationValues.put(Reservation.Columns.USER_ID, userId);
-		reservationValues.put(Reservation.Columns.MEMO,
-				Strings.nullToEmpty(memo));
-		reservationValues.put(Reservation.Columns.DEPARTURE_SCHEDULE_ID,
-				departureScheduleId);
-		reservationValues.put(Reservation.Columns.ARRIVAL_SCHEDULE_ID,
-				arrivalScheduleId);
-		return reservationValues;
-	}
+    public Long id;
+    public Long userId;
+    public Long arrivalScheduleId;
+    public Long departureScheduleId;
+    public List<UserJson> fellowUsers = Lists.newLinkedList();
+    public List<PassengerRecordJson> passengerRecords = Lists.newLinkedList();
+    public String memo;
+    public Integer passengerCount;
+
+    public ContentValues toContentValues() {
+        ContentValues reservationValues = new ContentValues();
+        reservationValues.put(Reservation.Columns._ID, id);
+        reservationValues.put(Reservation.Columns.USER_ID, userId);
+        reservationValues.put(Reservation.Columns.MEMO,
+                Strings.nullToEmpty(memo));
+        reservationValues.put(Reservation.Columns.DEPARTURE_SCHEDULE_ID,
+                departureScheduleId);
+        reservationValues.put(Reservation.Columns.ARRIVAL_SCHEDULE_ID,
+                arrivalScheduleId);
+        return reservationValues;
+    }
 }

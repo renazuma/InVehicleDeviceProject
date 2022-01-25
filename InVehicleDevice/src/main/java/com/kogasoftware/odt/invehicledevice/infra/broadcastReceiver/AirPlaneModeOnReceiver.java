@@ -17,32 +17,34 @@ import com.kogasoftware.odt.invehicledevice.view.fragment.modal.AirplaneModeAler
 
 public class AirPlaneModeOnReceiver {
 
-  private Context context;
+    private final Context context;
 
-  public AirPlaneModeOnReceiver(Context context) {
-    this.context = context;
-  }
-
-  private final BroadcastReceiver airplaneModeOnReceiver = new BroadcastReceiver() {
-    @Override
-    public void onReceive(Context context, Intent intent) {
-
-      // キャストしてfinalをしないと、runにinVehicleActivityを渡せない
-      final InVehicleDeviceActivity inVehicleDeviceActivity = (InVehicleDeviceActivity)context;
-
-      new Handler(Looper.getMainLooper()).post(new Runnable() {
-        @Override
-        public void run() { AirplaneModeAlertDialogFragment.showDialog(inVehicleDeviceActivity);}
-      });
+    public AirPlaneModeOnReceiver(Context context) {
+        this.context = context;
     }
-  };
 
-  public void registerReceiver() {
-    context.registerReceiver(airplaneModeOnReceiver, new IntentFilter(AirplaneModeOnBroadcastIntent.ACTION));
-  }
+    private final BroadcastReceiver airplaneModeOnReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
 
-  public void unregisterReceiver() {
-    context.unregisterReceiver(airplaneModeOnReceiver);
-  }
+            // キャストしてfinalをしないと、runにinVehicleActivityを渡せない
+            final InVehicleDeviceActivity inVehicleDeviceActivity = (InVehicleDeviceActivity) context;
+
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    AirplaneModeAlertDialogFragment.showDialog(inVehicleDeviceActivity);
+                }
+            });
+        }
+    };
+
+    public void registerReceiver() {
+        context.registerReceiver(airplaneModeOnReceiver, new IntentFilter(AirplaneModeOnBroadcastIntent.ACTION));
+    }
+
+    public void unregisterReceiver() {
+        context.unregisterReceiver(airplaneModeOnReceiver);
+    }
 
 }

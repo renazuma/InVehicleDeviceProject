@@ -19,51 +19,55 @@ import com.kogasoftware.odt.invehicledevice.view.fragment.MainLayoutFragment;
 
 public class MainViewLoader {
 
-  // TODO:InVehicleDeviceActivity配下で一意である必要がある。Activityクラスで管理した方が良い？
-  private static final Integer LOADER_ID = 2;
+    // TODO:InVehicleDeviceActivity配下で一意である必要がある。Activityクラスで管理した方が良い？
+    private static final Integer LOADER_ID = 2;
 
-  private InVehicleDeviceActivity inVehicleDeviceActivity;
+    private final InVehicleDeviceActivity inVehicleDeviceActivity;
 
-  public MainViewLoader(InVehicleDeviceActivity inVehicleDeviceActivity) {
-    // TODO:Activityを使いまわすのは良くない気がする。別の方法があれば変えたい。
-    this.inVehicleDeviceActivity = inVehicleDeviceActivity;
-  }
-
-  public void initLoader() {
-    inVehicleDeviceActivity.getLoaderManager().initLoader(LOADER_ID, null, callbacks);
-  }
-
-  public void destroyLoader() {
-    inVehicleDeviceActivity.getLoaderManager().destroyLoader(LOADER_ID);
-  }
-
-  private final LoaderManager.LoaderCallbacks<Cursor> callbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-      return new CursorLoader(inVehicleDeviceActivity, ServiceProvider.CONTENT.URI, null, null, null, null);
+    public MainViewLoader(InVehicleDeviceActivity inVehicleDeviceActivity) {
+        // TODO:Activityを使いまわすのは良くない気がする。別の方法があれば変えたい。
+        this.inVehicleDeviceActivity = inVehicleDeviceActivity;
     }
 
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-      Handler mainUIHandler = new Handler(Looper.getMainLooper());
-
-      if (cursor.moveToFirst()) {
-        inVehicleDeviceActivity.setServiceProvider(new ServiceProvider(cursor));
-        mainUIHandler.post(new Runnable() {
-          @Override
-          public void run() { MainLayoutFragment.showModal(inVehicleDeviceActivity); }
-        });
-      } else {
-        inVehicleDeviceActivity.setServiceProvider(null);
-        mainUIHandler.post(new Runnable() {
-          @Override
-          public void run() { MainLayoutFragment.hideModal(inVehicleDeviceActivity); }
-        });
-      }
+    public void initLoader() {
+        inVehicleDeviceActivity.getLoaderManager().initLoader(LOADER_ID, null, callbacks);
     }
 
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
+    public void destroyLoader() {
+        inVehicleDeviceActivity.getLoaderManager().destroyLoader(LOADER_ID);
     }
-  };
+
+    private final LoaderManager.LoaderCallbacks<Cursor> callbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            return new CursorLoader(inVehicleDeviceActivity, ServiceProvider.CONTENT.URI, null, null, null, null);
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+            Handler mainUIHandler = new Handler(Looper.getMainLooper());
+
+            if (cursor.moveToFirst()) {
+                inVehicleDeviceActivity.setServiceProvider(new ServiceProvider(cursor));
+                mainUIHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        MainLayoutFragment.showModal(inVehicleDeviceActivity);
+                    }
+                });
+            } else {
+                inVehicleDeviceActivity.setServiceProvider(null);
+                mainUIHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        MainLayoutFragment.hideModal(inVehicleDeviceActivity);
+                    }
+                });
+            }
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+        }
+    };
 }

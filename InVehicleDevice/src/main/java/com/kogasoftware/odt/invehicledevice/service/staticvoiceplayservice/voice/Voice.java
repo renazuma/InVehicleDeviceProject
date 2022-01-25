@@ -8,6 +8,7 @@ import java.io.Serializable;
  */
 
 public interface Voice extends Serializable {
-    public int getVoiceFileResId();
-    public float getVolume();
+    int getVoiceFileResId();
+
+    float getVolume();
 }

@@ -14,39 +14,39 @@ import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivit
 
 public class InterruptUiPresenter {
 
-  private AdminNotificationLoader adminNotificationLoader;
-  private ScheduleNotificationLoader scheduleNotificationLoader;
-  private SignInErrorReceiver signInErrorReceiver;
-  private AirPlaneModeOnReceiver airplaneModeOnReceiver;
+    private final AdminNotificationLoader adminNotificationLoader;
+    private final ScheduleNotificationLoader scheduleNotificationLoader;
+    private final SignInErrorReceiver signInErrorReceiver;
+    private final AirPlaneModeOnReceiver airplaneModeOnReceiver;
 
-  // HACK: 予定料金やメモの同期は割り込みUIではないが、他の割り込み機能と合わせてここで呼び出している。このクラス名自体からUIを取ってしまってもいいかもしれない。
-  private ExpectedChargeChangedNotificationLoader expectedChargeChangedNotificationLoader;
-  private MemoChangedNotificationLoader memoChangedNotificationLoader;
+    // HACK: 予定料金やメモの同期は割り込みUIではないが、他の割り込み機能と合わせてここで呼び出している。このクラス名自体からUIを取ってしまってもいいかもしれない。
+    private final ExpectedChargeChangedNotificationLoader expectedChargeChangedNotificationLoader;
+    private final MemoChangedNotificationLoader memoChangedNotificationLoader;
 
-  public InterruptUiPresenter(InVehicleDeviceActivity inVehicleDeviceActivity) {
-    this.adminNotificationLoader = new AdminNotificationLoader(inVehicleDeviceActivity);
-    this.scheduleNotificationLoader = new ScheduleNotificationLoader(inVehicleDeviceActivity);
-    this.signInErrorReceiver = new SignInErrorReceiver(inVehicleDeviceActivity);
-    this.airplaneModeOnReceiver = new AirPlaneModeOnReceiver(inVehicleDeviceActivity);
-    this.expectedChargeChangedNotificationLoader = new ExpectedChargeChangedNotificationLoader(inVehicleDeviceActivity);
-    this.memoChangedNotificationLoader = new MemoChangedNotificationLoader(inVehicleDeviceActivity);
-  }
+    public InterruptUiPresenter(InVehicleDeviceActivity inVehicleDeviceActivity) {
+        this.adminNotificationLoader = new AdminNotificationLoader(inVehicleDeviceActivity);
+        this.scheduleNotificationLoader = new ScheduleNotificationLoader(inVehicleDeviceActivity);
+        this.signInErrorReceiver = new SignInErrorReceiver(inVehicleDeviceActivity);
+        this.airplaneModeOnReceiver = new AirPlaneModeOnReceiver(inVehicleDeviceActivity);
+        this.expectedChargeChangedNotificationLoader = new ExpectedChargeChangedNotificationLoader(inVehicleDeviceActivity);
+        this.memoChangedNotificationLoader = new MemoChangedNotificationLoader(inVehicleDeviceActivity);
+    }
 
-  public void onCreate() {
-    adminNotificationLoader.initLoader();
-    scheduleNotificationLoader.initLoader();
-    signInErrorReceiver.registerReceiver();
-    airplaneModeOnReceiver.registerReceiver();
-    expectedChargeChangedNotificationLoader.initLoader();
-    memoChangedNotificationLoader.initLoader();
-  }
+    public void onCreate() {
+        adminNotificationLoader.initLoader();
+        scheduleNotificationLoader.initLoader();
+        signInErrorReceiver.registerReceiver();
+        airplaneModeOnReceiver.registerReceiver();
+        expectedChargeChangedNotificationLoader.initLoader();
+        memoChangedNotificationLoader.initLoader();
+    }
 
-  public void onDestroy() {
-    adminNotificationLoader.destroyLoader();
-    scheduleNotificationLoader.destroyLoader();
-    signInErrorReceiver.unregisterReceiver();
-    airplaneModeOnReceiver.unregisterReceiver();
-    expectedChargeChangedNotificationLoader.destroyLoader();
-    memoChangedNotificationLoader.destroyLoader();
-  }
+    public void onDestroy() {
+        adminNotificationLoader.destroyLoader();
+        scheduleNotificationLoader.destroyLoader();
+        signInErrorReceiver.unregisterReceiver();
+        airplaneModeOnReceiver.unregisterReceiver();
+        expectedChargeChangedNotificationLoader.destroyLoader();
+        memoChangedNotificationLoader.destroyLoader();
+    }
 }

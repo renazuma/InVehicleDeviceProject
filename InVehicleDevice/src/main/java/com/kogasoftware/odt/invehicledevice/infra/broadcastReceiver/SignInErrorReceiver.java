@@ -17,32 +17,34 @@ import com.kogasoftware.odt.invehicledevice.view.fragment.modal.SignInFragment;
 
 public class SignInErrorReceiver {
 
-  private Context context;
+    private final Context context;
 
-  public SignInErrorReceiver(Context context) {
-    this.context = context;
-  }
-
-  private final BroadcastReceiver signInErrorReceiver = new BroadcastReceiver() {
-    @Override
-    public void onReceive(Context context, Intent intent) {
-
-      // キャストしてfinalをしないと、runにinVehicleActivityを渡せない
-      final InVehicleDeviceActivity inVehicleDeviceActivity = (InVehicleDeviceActivity)context;
-
-      new Handler(Looper.getMainLooper()).post(new Runnable() {
-        @Override
-        public void run() { SignInFragment.showModal(inVehicleDeviceActivity); }
-      });
+    public SignInErrorReceiver(Context context) {
+        this.context = context;
     }
-  };
 
-  public void registerReceiver() {
-    context.registerReceiver(signInErrorReceiver, new IntentFilter(SignInErrorBroadcastIntent.ACTION));
-  }
+    private final BroadcastReceiver signInErrorReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
 
-  public void unregisterReceiver() {
-    context.unregisterReceiver(signInErrorReceiver);
-  }
+            // キャストしてfinalをしないと、runにinVehicleActivityを渡せない
+            final InVehicleDeviceActivity inVehicleDeviceActivity = (InVehicleDeviceActivity) context;
+
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    SignInFragment.showModal(inVehicleDeviceActivity);
+                }
+            });
+        }
+    };
+
+    public void registerReceiver() {
+        context.registerReceiver(signInErrorReceiver, new IntentFilter(SignInErrorBroadcastIntent.ACTION));
+    }
+
+    public void unregisterReceiver() {
+        context.unregisterReceiver(signInErrorReceiver);
+    }
 
 }

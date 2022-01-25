@@ -20,79 +20,79 @@ import java.util.List;
  */
 public class InVehicleDeviceActivity extends Activity {
 
-  // 通知表示遅延秒数
-  public static final Integer VEHICLE_NOTIFICATION_ALERT_DELAY_MILLIS = 5000;
+    // 通知表示遅延秒数
+    public static final Integer VEHICLE_NOTIFICATION_ALERT_DELAY_MILLIS = 5000;
 
-  // インスタンス変数
-  public Boolean destroyed = true; // TODO: 変数でライフサイクル管理をするのをやめたい。
-  public ServiceProvider serviceProvider; // TODO: ServiceProviderの同期状態を変数で管理するのをやめたい。
-  public List<DefaultCharge> defaultCharges; // HACK: DefaultChargesの同期状態を変数で管理するのをやめたい。
+    // インスタンス変数
+    public Boolean destroyed = true; // TODO: 変数でライフサイクル管理をするのをやめたい。
+    public ServiceProvider serviceProvider; // TODO: ServiceProviderの同期状態を変数で管理するのをやめたい。
+    public List<DefaultCharge> defaultCharges; // HACK: DefaultChargesの同期状態を変数で管理するのをやめたい。
 
-  private InterruptUiPresenter interruptUiPresenter;
-  private UnitStatusLogSyncPresenter unitStatusLogSyncPresenter;
-  private LogSyncPresenter logSyncPresenter;
-  private AutoRestartPresenter autoRestartPresenter;
-  private MainUiPresenter mainUiPresenter;
+    private InterruptUiPresenter interruptUiPresenter;
+    private UnitStatusLogSyncPresenter unitStatusLogSyncPresenter;
+    private LogSyncPresenter logSyncPresenter;
+    private AutoRestartPresenter autoRestartPresenter;
+    private MainUiPresenter mainUiPresenter;
 
-  // TODO: 不要にしたい
-  public void setServiceProvider(ServiceProvider serviceProvider) {
-    this.serviceProvider = serviceProvider;
-  }
+    // TODO: 不要にしたい
+    public void setServiceProvider(ServiceProvider serviceProvider) {
+        this.serviceProvider = serviceProvider;
+    }
 
-  // HACK: 不要にしたい
-  public void setDefaultCharges(List<DefaultCharge> defaultCharges) {
-    this.defaultCharges = defaultCharges;
-  }
+    // HACK: 不要にしたい
+    public void setDefaultCharges(List<DefaultCharge> defaultCharges) {
+        this.defaultCharges = defaultCharges;
+    }
 
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    this.destroyed = false;
-    (new PermissionChecker(this)).check();
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        this.destroyed = false;
+        (new PermissionChecker(this)).check();
 
-    // このActivityは固有の表示を持たず、コンテナのみを提供しており、具体的な表示はFragmentが行う。
-    setContentView(R.layout.in_vehicle_device_activity);
+        // このActivityは固有の表示を持たず、コンテナのみを提供しており、具体的な表示はFragmentが行う。
+        setContentView(R.layout.in_vehicle_device_activity);
 
-    // Loaderを使用するためには、onStartより前の時点で、一度getLoaderManagerを実行しておく必要がある。
-    getLoaderManager();
+        // Loaderを使用するためには、onStartより前の時点で、一度getLoaderManagerを実行しておく必要がある。
+        getLoaderManager();
 
-    unitStatusLogSyncPresenter = new UnitStatusLogSyncPresenter(this);
-    unitStatusLogSyncPresenter.onCreate();
+        unitStatusLogSyncPresenter = new UnitStatusLogSyncPresenter(this);
+        unitStatusLogSyncPresenter.onCreate();
 
-    logSyncPresenter = new LogSyncPresenter(this);
-    logSyncPresenter.onCreate();
+        logSyncPresenter = new LogSyncPresenter(this);
+        logSyncPresenter.onCreate();
 
-    autoRestartPresenter= new AutoRestartPresenter(this);
-    autoRestartPresenter.onCreate();
+        autoRestartPresenter = new AutoRestartPresenter(this);
+        autoRestartPresenter.onCreate();
 
-    // TODO: スケジュール関連のサーバとの定期同期は、画面をバックグラウンドにしても動き続けなければならないため、
-    // TODO: contentProviderでジョブを開始している。
-    // TODO: 本来はこちらで管理するべき情報なので、出来れば動かし続ける方法を検討した上で、こちらで開始出来る様にする。
+        // TODO: スケジュール関連のサーバとの定期同期は、画面をバックグラウンドにしても動き続けなければならないため、
+        // TODO: contentProviderでジョブを開始している。
+        // TODO: 本来はこちらで管理するべき情報なので、出来れば動かし続ける方法を検討した上で、こちらで開始出来る様にする。
 
-    mainUiPresenter = new MainUiPresenter(this);
-    mainUiPresenter.onCreate();
+        mainUiPresenter = new MainUiPresenter(this);
+        mainUiPresenter.onCreate();
 
-    interruptUiPresenter = new InterruptUiPresenter(this);
-    interruptUiPresenter.onCreate();
-  }
+        interruptUiPresenter = new InterruptUiPresenter(this);
+        interruptUiPresenter.onCreate();
+    }
 
-  @Override
-  protected void onDestroy() {
-    super.onDestroy();
-    interruptUiPresenter.onDestroy();
-    mainUiPresenter.onDestroy();
-    unitStatusLogSyncPresenter.onDestroy();
-    logSyncPresenter.onDestroy();
-    destroyed = true;
-  }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        interruptUiPresenter.onDestroy();
+        mainUiPresenter.onDestroy();
+        unitStatusLogSyncPresenter.onDestroy();
+        logSyncPresenter.onDestroy();
+        destroyed = true;
+    }
 
-  @Override
-  protected void onStart() {
-    super.onStart();
-  }
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
 
-  @Override
-  protected void onStop() {
-    super.onStop();
-  }
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
 }

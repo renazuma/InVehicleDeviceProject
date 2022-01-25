@@ -12,14 +12,14 @@ import java.util.concurrent.Semaphore;
 
 /**
  * 静的な音声ファイル再生を直列に行うためのスレッドクラス
- *
+ * <p>
  * Created by tnoda on 2017/06/12.
  */
 
 public class StaticVoicePlayThread extends Thread {
     private final static String TAG = StaticVoicePlayThread.class.getSimpleName();
 
-    private Context context;
+    private final Context context;
     private final BlockingQueue<Voice> playFiles;
     private final AudioManager audioManager;
 
