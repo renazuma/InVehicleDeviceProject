@@ -113,7 +113,7 @@ public class OperationScheduleArrayAdapter
             final List<OperationSchedule> operationSchedules = (List) operationScheduleRowView.getTag();
 
             DateTime targetDateTime = null;
-            if (!isDeparted(operationScheduleRowView)) {
+            if (isNotYetDeparted(operationScheduleRowView)) {
                 targetDateTime = DateTime.now();
             }
 
@@ -150,7 +150,7 @@ public class OperationScheduleArrayAdapter
     private void setOperationScheduleRowBackground(View operationScheduleRowView) {
         TextView checkMarkTextView = operationScheduleRowView.findViewById(R.id.check_mark_text_view);
 
-        if (!isDeparted(operationScheduleRowView)) {
+        if (isNotYetDeparted(operationScheduleRowView)) {
             operationScheduleRowView.setBackgroundColor(NOT_YET_DEPARTED_COLOR);
             checkMarkTextView.setVisibility(View.INVISIBLE);
         } else {
@@ -159,22 +159,22 @@ public class OperationScheduleArrayAdapter
         }
     }
 
-    private boolean isDeparted(View operationScheduleRowView) {
-        return isDeparted((List<OperationSchedule>) (operationScheduleRowView.getTag()));
+    private boolean isNotYetDeparted(View operationScheduleRowView) {
+        return isNotYetDeparted((List<OperationSchedule>) (operationScheduleRowView.getTag()));
     }
 
-    public boolean isDeparted(int position) {
-        return isDeparted(getItem(position));
+    public boolean isNotYetDeparted(int position) {
+        return isNotYetDeparted(getItem(position));
     }
 
-    private boolean isDeparted(List<OperationSchedule> operationSchedules) {
+    private boolean isNotYetDeparted(List<OperationSchedule> operationSchedules) {
         boolean isDeparted = true;
         for (OperationSchedule operationSchedule : operationSchedules) {
             if (operationSchedule.departedAt == null) {
                 isDeparted = false;
             }
         }
-        return isDeparted;
+        return !isDeparted;
     }
 
     static class PassengerRecordRowTag {
@@ -192,12 +192,12 @@ public class OperationScheduleArrayAdapter
             return getOn;
         }
 
-        public boolean isGotOn() {
-            return passengerRecord.getOnTime != null;
+        public boolean isNotYetGotOn() {
+            return passengerRecord.getOnTime == null;
         }
 
-        public boolean isGotOff() {
-            return passengerRecord.getOffTime != null;
+        public boolean isNotYetGotOff() {
+            return passengerRecord.getOffTime == null;
         }
     }
 
@@ -264,7 +264,7 @@ public class OperationScheduleArrayAdapter
             DateTime now = DateTime.now();
 
             if (passengerRecordRowTag.isGetOnEvent()) {
-                if (!passengerRecordRowTag.isGotOn()) {
+                if (passengerRecordRowTag.isNotYetGotOn()) {
                     passengerRecord.getOnTime = now;
                 } else {
                     passengerRecord.getOnTime = null;
@@ -272,8 +272,8 @@ public class OperationScheduleArrayAdapter
                     passengerRecord.paidCharge = null;
                 }
             } else {
-                if (!passengerRecordRowTag.isGotOff()) {
-                    if (!passengerRecordRowTag.isGotOn()) {
+                if (passengerRecordRowTag.isNotYetGotOff()) {
+                    if (passengerRecordRowTag.isNotYetGotOn()) {
                         passengerRecord.getOnTime = now;
                     }
                     passengerRecord.getOffTime = now;
