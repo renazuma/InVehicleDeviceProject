@@ -5,7 +5,6 @@ import android.content.ContentResolver;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 
@@ -16,8 +15,6 @@ import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationPhase;
 
 import org.joda.time.DateTime;
-
-import java.io.Serializable;
 
 /**
  * 出発チェック画面

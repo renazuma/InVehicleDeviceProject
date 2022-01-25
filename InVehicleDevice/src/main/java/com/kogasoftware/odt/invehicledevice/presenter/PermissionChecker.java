@@ -2,7 +2,6 @@ package com.kogasoftware.odt.invehicledevice.presenter;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 
 import androidx.core.app.ActivityCompat;

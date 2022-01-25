@@ -14,19 +14,18 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
-import androidx.core.app.NotificationCompat;
-
 import com.kogasoftware.odt.invehicledevice.R;
 
 import java.io.Closeable;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import androidx.core.app.NotificationCompat;
 
 /**
  * ログの管理

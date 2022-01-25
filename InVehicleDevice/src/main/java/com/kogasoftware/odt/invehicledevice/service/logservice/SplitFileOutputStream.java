@@ -3,7 +3,6 @@ package com.kogasoftware.odt.invehicledevice.service.logservice;
 import android.util.Log;
 
 import com.google.common.base.Stopwatch;
-import com.google.common.io.ByteStreams;
 
 import java.io.File;
 import java.io.FileOutputStream;
