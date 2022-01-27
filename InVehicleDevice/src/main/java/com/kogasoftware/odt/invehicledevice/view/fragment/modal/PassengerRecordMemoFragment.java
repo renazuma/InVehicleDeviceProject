@@ -27,21 +27,21 @@ public class PassengerRecordMemoFragment extends Fragment {
         View view = getView();
         PassengerRecord passengerRecord = (PassengerRecord) getArguments()
                 .getSerializable(PASSENGER_RECORD_KEY);
-        Button closeButton = (Button) view
+        Button closeButton = view
                 .findViewById(R.id.passenger_record_memo_close_button);
         closeButton.setOnClickListener(v -> Fragments.hide(PassengerRecordMemoFragment.this));
-        TextView titleTextView = (TextView) view
+        TextView titleTextView = view
                 .findViewById(R.id.memo_title_text_view);
         StringBuilder title = new StringBuilder();
         title.append(passengerRecord.getDisplayName());
         title.append("  予約番号：" + passengerRecord.reservationId);
         titleTextView.setText(title);
 
-        TextView userMemoTextView = (TextView) view
+        TextView userMemoTextView = view
                 .findViewById(R.id.user_memo_text_view);
         userMemoTextView.setText(StringUtils.join(
                 passengerRecord.getUserNotes(), SystemUtils.LINE_SEPARATOR));
-        TextView reservationMemoTextView = (TextView) view
+        TextView reservationMemoTextView = view
                 .findViewById(R.id.reservation_memo_text_view);
         reservationMemoTextView.setText(passengerRecord.reservationMemo);
     }

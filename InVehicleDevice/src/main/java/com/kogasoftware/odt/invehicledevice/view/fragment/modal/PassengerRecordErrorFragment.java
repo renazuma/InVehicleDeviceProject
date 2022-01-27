@@ -37,7 +37,7 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
     public static PassengerRecordErrorFragment newInstance(OperationPhase operationPhase) {
         PassengerRecordErrorFragment fragment = new PassengerRecordErrorFragment();
         Bundle args = new Bundle();
-        args.putSerializable(OPERATION_PHASE_KEY, (Serializable) operationPhase);
+        args.putSerializable(OPERATION_PHASE_KEY, operationPhase);
         fragment.setArguments(args);
         return fragment;
     }
@@ -55,10 +55,10 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
         OperationPhase operationPhase = (OperationPhase) args.getSerializable(OPERATION_PHASE_KEY);
         operationSchedules = operationPhase.getCurrentOperationSchedules();
         View view = getView();
-        closeButton = (Button) view.findViewById(R.id.get_off_check_close_button);
+        closeButton = view.findViewById(R.id.get_off_check_close_button);
         closeButton.setOnClickListener(v -> Fragments.hide(PassengerRecordErrorFragment.this));
-        FlickUnneededListView errorUserListView = (FlickUnneededListView) view.findViewById(R.id.error_reservation_list_view);
-        completeWithErrorButton = (Button) view.findViewById(R.id.complete_with_error_button);
+        FlickUnneededListView errorUserListView = view.findViewById(R.id.error_reservation_list_view);
+        completeWithErrorButton = view.findViewById(R.id.complete_with_error_button);
         adapter = new PassengerRecordErrorArrayAdapter(this, operationSchedules);
         errorUserListView.getListView().setAdapter(adapter);
     }

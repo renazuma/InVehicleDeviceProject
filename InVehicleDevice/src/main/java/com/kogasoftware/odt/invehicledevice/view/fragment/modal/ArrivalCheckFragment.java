@@ -26,7 +26,7 @@ public class ArrivalCheckFragment extends Fragment {
     public static Fragment newInstance(OperationPhase operationPhase) {
         ArrivalCheckFragment fragment = new ArrivalCheckFragment();
         Bundle args = new Bundle();
-        args.putSerializable(OPERATION_PHASE_KEY, (Serializable) operationPhase);
+        args.putSerializable(OPERATION_PHASE_KEY, operationPhase);
         fragment.setArguments(args);
         return fragment;
     }
@@ -38,12 +38,12 @@ public class ArrivalCheckFragment extends Fragment {
         final ContentResolver contentResolver = getActivity().getContentResolver();
         final OperationPhase operationPhase = (OperationPhase) getArguments().getSerializable(OPERATION_PHASE_KEY);
 
-        TextView commentTextView = (TextView) view.findViewById(R.id.arrival_check_comment_text_view);
+        TextView commentTextView = view.findViewById(R.id.arrival_check_comment_text_view);
 
-        Button closeButton = (Button) view.findViewById(R.id.arrival_check_close_button);
+        Button closeButton = view.findViewById(R.id.arrival_check_close_button);
         closeButton.setOnClickListener(v -> Fragments.hide(ArrivalCheckFragment.this));
 
-        Button arrivalButton = (Button) view.findViewById(R.id.arrival_button);
+        Button arrivalButton = view.findViewById(R.id.arrival_button);
         arrivalButton.setOnClickListener(view1 -> {
             Fragments.hide(ArrivalCheckFragment.this);
             Thread tt = new Thread() {

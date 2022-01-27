@@ -44,7 +44,7 @@ public class ScheduleVehicleNotificationFragment extends Fragment
         boolean operationListButtonVisible = args
                 .getBoolean(OPERATION_LIST_BUTTON_VISIBLE_KEY);
         View view = getView();
-        Button showOperationListButton = (Button) view
+        Button showOperationListButton = view
                 .findViewById(R.id.schedule_vehicle_notification_operation_list_button);
         if (operationListButtonVisible) {
             showOperationListButton.setVisibility(View.VISIBLE);
@@ -52,10 +52,10 @@ public class ScheduleVehicleNotificationFragment extends Fragment
             showOperationListButton.setVisibility(View.GONE);
         }
         showOperationListButton.setOnClickListener(view12 -> onShowOperationListButtonClick());
-        Button closeButton = (Button) view
+        Button closeButton = view
                 .findViewById(R.id.schedule_vehicle_notification_close_button);
         closeButton.setOnClickListener(view1 -> onCloseButtonClick());
-        detailTextView = (TextView) view
+        detailTextView = view
                 .findViewById(R.id.schedule_vehicle_notification_detail_text_view);
         getLoaderManager().initLoader(LOADER_ID, null, this);
     }

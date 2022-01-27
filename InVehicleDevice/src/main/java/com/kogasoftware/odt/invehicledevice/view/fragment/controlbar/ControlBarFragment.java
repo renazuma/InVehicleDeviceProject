@@ -49,8 +49,8 @@ public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         contentResolver = getActivity().getContentResolver();
-        mapButton = (Button) getView().findViewById(R.id.map_button);
-        Button operationScheduleListButton = (Button) getView().findViewById(R.id.operation_schedule_list_button);
+        mapButton = getView().findViewById(R.id.map_button);
+        Button operationScheduleListButton = getView().findViewById(R.id.operation_schedule_list_button);
 
         // TODO: 運行予定ボタンの定義。地図やphaseボタンと異なり、特別な引数や文字の変更が無いから、ここで定義されているが、わかりにくい。
         operationScheduleListButton.setOnClickListener(v -> {
@@ -180,7 +180,7 @@ public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
             showNavigation(phase);
         });
 
-        Button changePhaseButton = (Button) getView().findViewById(R.id.change_phase_button);
+        Button changePhaseButton = getView().findViewById(R.id.change_phase_button);
         getView().setBackgroundColor(Color.WHITE);
         switch (operationPhase.getPhase()) {
             case DRIVE:

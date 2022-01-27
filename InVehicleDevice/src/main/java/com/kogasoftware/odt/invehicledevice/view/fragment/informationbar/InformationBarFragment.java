@@ -74,7 +74,7 @@ public class InformationBarFragment extends OperationSchedulesSyncFragmentAbstra
         super.onActivityCreated(savedInstanceState);
         handler = new Handler();
 
-        ((ImageView) getView().findViewById(R.id.open_login_image_view)).setOnClickListener(v -> {
+        getView().findViewById(R.id.open_login_image_view).setOnClickListener(v -> {
             Activity activity = getActivity();
             if (activity instanceof InVehicleDeviceActivity) {
                 SignInFragment.showModal((InVehicleDeviceActivity) activity);
@@ -85,12 +85,12 @@ public class InformationBarFragment extends OperationSchedulesSyncFragmentAbstra
         blinkBatteryAlert = new BatteryAlerter(
                 getActivity().getApplicationContext(),
                 handler,
-                (ImageView) getView().findViewById(R.id.battery_alert_image_view),
+                getView().findViewById(R.id.battery_alert_image_view),
                 getFragmentManager());
         networkAlert = new NetworkAlerter(
                 getActivity().getApplicationContext(),
                 handler,
-                (ImageView) getView().findViewById(R.id.network_strength_image_view),
+                getView().findViewById(R.id.network_strength_image_view),
                 getFragmentManager()
         );
     }
@@ -124,7 +124,7 @@ public class InformationBarFragment extends OperationSchedulesSyncFragmentAbstra
         ((TextView) view.findViewById(R.id.phase_text_view)).setText(getPhaseText());
 
         // フェーズに合わせてメモボタンを設定
-        final Button platformMemoButton = (Button) view.findViewById(R.id.platform_memo_button);
+        final Button platformMemoButton = view.findViewById(R.id.platform_memo_button);
         platformMemoButton.setVisibility(View.INVISIBLE);
         if (isShowMemoButtonPattern()) {
             platformMemoButton.setVisibility(View.VISIBLE);

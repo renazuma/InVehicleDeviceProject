@@ -99,9 +99,9 @@ public class PlatformPhaseFragment extends OperationSchedulesSyncFragmentAbstrac
         super.onActivityCreated(savedInstanceState);
         handler = new Handler();
         View view = getView();
-        minutesRemainingTextView = (TextView) view.findViewById(R.id.minutes_remaining_text_view);
-        currentPlatformNameTextView = (TextView) view.findViewById(R.id.now_platform_text_view);
-        passengerRecordListView = ((FlickUnneededListView) view.findViewById(R.id.reservation_list_view));
+        minutesRemainingTextView = view.findViewById(R.id.minutes_remaining_text_view);
+        currentPlatformNameTextView = view.findViewById(R.id.now_platform_text_view);
+        passengerRecordListView = view.findViewById(R.id.reservation_list_view);
     }
 
     @Override

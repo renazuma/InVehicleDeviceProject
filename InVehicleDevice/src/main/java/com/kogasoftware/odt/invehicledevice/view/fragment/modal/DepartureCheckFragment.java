@@ -27,7 +27,7 @@ public class DepartureCheckFragment extends Fragment {
     public static Fragment newInstance(OperationPhase operationPhase) {
         DepartureCheckFragment fragment = new DepartureCheckFragment();
         Bundle args = new Bundle();
-        args.putSerializable(OPERATION_PHASE_KEY, (Serializable) operationPhase);
+        args.putSerializable(OPERATION_PHASE_KEY, operationPhase);
         fragment.setArguments(args);
         return fragment;
     }
@@ -50,14 +50,14 @@ public class DepartureCheckFragment extends Fragment {
 
         View view = getView();
 
-        Button departureButton = (Button) view.findViewById(R.id.departure_button);
+        Button departureButton = view.findViewById(R.id.departure_button);
         if (operationPhase.isExistNext()) {
             departureButton.setText("出発する");
         } else {
             departureButton.setText("確定する");
         }
 
-        Button closeButton = (Button) view.findViewById(R.id.departure_check_close_button);
+        Button closeButton = view.findViewById(R.id.departure_check_close_button);
         closeButton.setOnClickListener(v -> Fragments.hide(DepartureCheckFragment.this));
         if (phase == Phase.PLATFORM_GET_OFF) {
             closeButton.setText("降車一覧に戻る");

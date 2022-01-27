@@ -40,7 +40,7 @@ public class AdminVehicleNotificationFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         View view = getView();
-        TextView bodyTextView = (TextView) view
+        TextView bodyTextView = view
                 .findViewById(R.id.notification_text_view);
         bodyTextView.setText(vehicleNotification.body);
         view.findViewById(R.id.reply_yes_button).setOnClickListener(

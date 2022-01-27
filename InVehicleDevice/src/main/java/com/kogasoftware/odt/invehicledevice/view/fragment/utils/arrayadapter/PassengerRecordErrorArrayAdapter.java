@@ -95,7 +95,7 @@ public class PassengerRecordErrorArrayAdapter extends ArrayAdapter<PassengerReco
         PassengerRecord passengerRecord = getItem(position);
 
         // 無視ボタン
-        CheckBox ignoreButton = (CheckBox) convertView.findViewById(R.id.passenger_record_error_ignore_button);
+        CheckBox ignoreButton = convertView.findViewById(R.id.passenger_record_error_ignore_button);
         ignoreButton.setTag(passengerRecord);
         ignoreButton.setOnClickListener(onClickIgnoreButtonListener);
         ignoreButton.setTextColor(Color.RED);
@@ -134,7 +134,7 @@ public class PassengerRecordErrorArrayAdapter extends ArrayAdapter<PassengerReco
         }
 
         // エラーメッセージ
-        TextView errorMessageTextView = (TextView) convertView.findViewById(R.id.passenger_record_error_message);
+        TextView errorMessageTextView = convertView.findViewById(R.id.passenger_record_error_message);
         errorMessageTextView.setText(errorMessage);
 
         return convertView;

@@ -83,7 +83,7 @@ public class FlickUnneededListView extends FrameLayout
         final ListView oldListView = listView;
         listView = newListView;
         listView.setOnScrollListener(this);
-        final ViewGroup container = (ViewGroup) findViewById(R.id.flick_unneeded_list_view_inner_list_view_container);
+        final ViewGroup container = findViewById(R.id.flick_unneeded_list_view_inner_list_view_container);
         container.addView(newListView, 0);
         if (oldListView.getCount() == 0) {
             container.removeView(oldListView);
@@ -127,9 +127,9 @@ public class FlickUnneededListView extends FrameLayout
                 new FlickUnneededListView.LayoutParams(
                         FlickUnneededListView.LayoutParams.MATCH_PARENT,
                         FlickUnneededListView.LayoutParams.MATCH_PARENT));
-        listView = (ListView) findViewById(R.id.flick_unneeded_list_view_inner_list_view);
-        scrollUpButton = (Button) findViewById(R.id.flick_unneeded_list_view_scroll_up_button);
-        scrollDownButton = (Button) findViewById(R.id.flick_unneeded_list_view_scroll_down_button);
+        listView = findViewById(R.id.flick_unneeded_list_view_inner_list_view);
+        scrollUpButton = findViewById(R.id.flick_unneeded_list_view_scroll_up_button);
+        scrollDownButton = findViewById(R.id.flick_unneeded_list_view_scroll_down_button);
         if (isInEditMode()) {
             return;
         }

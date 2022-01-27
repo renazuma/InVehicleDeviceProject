@@ -16,7 +16,7 @@ public class BigToast {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View layout = inflater.inflate(R.layout.big_toast_layout, null);
 
-        TextView textView = (TextView) layout.findViewById(R.id.text);
+        TextView textView = layout.findViewById(R.id.text);
         textView.setText(text);
 
         Toast toast = new Toast(context);

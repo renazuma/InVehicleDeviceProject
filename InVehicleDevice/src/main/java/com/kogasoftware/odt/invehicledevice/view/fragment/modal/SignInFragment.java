@@ -91,12 +91,12 @@ public class SignInFragment
         preferences.registerOnSharedPreferenceChangeListener(this);
         getActivity().registerReceiver(errorReceiver, new IntentFilter(SignInErrorBroadcastIntent.ACTION));
         loaderManager.initLoader(LOADER_ID, null, this);
-        Button saveConfigButton = (Button) getView().findViewById(R.id.save_config_button);
+        Button saveConfigButton = getView().findViewById(R.id.save_config_button);
         saveConfigButton.setOnClickListener(view -> onSaveConfigButtonClick());
 
         updateSummary();
 
-        Preference policyLink = (Preference) findPreference("privacy_policy_link");
+        Preference policyLink = findPreference("privacy_policy_link");
         policyLink.setOnPreferenceClickListener(preference -> {
             final String policySiteUri = getString(R.string.privacy_policy_url);
             new AlertDialog.Builder(getActivity())

@@ -31,7 +31,7 @@ public class DrivePhaseFragment extends Fragment {
     public static DrivePhaseFragment newInstance(OperationPhase operationPhase) {
         DrivePhaseFragment fragment = new DrivePhaseFragment();
         Bundle args = new Bundle();
-        args.putSerializable(OPERATION_PHASE_KEY, (Serializable) operationPhase);
+        args.putSerializable(OPERATION_PHASE_KEY, operationPhase);
         fragment.setArguments(args);
         return fragment;
     }
@@ -52,9 +52,9 @@ public class DrivePhaseFragment extends Fragment {
         view.setBackgroundColor(backgroundColor);
 
         //文言表示
-        TextView nextPlatformNameTextView = (TextView) view.findViewById(R.id.next_platform_name_text_view);
-        TextView platformArrivalTimeTextView2 = (TextView) view.findViewById(R.id.platform_arrival_time_text_view2);
-        TextView platformName1BeyondTextView = (TextView) view.findViewById(R.id.platform_name_1_beyond_text_view);
+        TextView nextPlatformNameTextView = view.findViewById(R.id.next_platform_name_text_view);
+        TextView platformArrivalTimeTextView2 = view.findViewById(R.id.platform_arrival_time_text_view2);
+        TextView platformName1BeyondTextView = view.findViewById(R.id.platform_name_1_beyond_text_view);
 
         Bundle args = getArguments();
         OperationPhase operationPhase = (OperationPhase) args.getSerializable(OPERATION_PHASE_KEY);

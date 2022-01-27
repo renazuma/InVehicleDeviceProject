@@ -145,7 +145,7 @@ public class OperationListFragment extends Fragment {
         View view = getView();
 
         // 戻るボタン（スケジュールのみ）
-        final Button closeButton = (Button) view.findViewById(R.id.operation_list_close_button);
+        final Button closeButton = view.findViewById(R.id.operation_list_close_button);
         closeButton.setOnClickListener(v -> Fragments.hide(OperationListFragment.this));
         if (closeable) {
             closeButton.setVisibility(View.VISIBLE);
@@ -159,10 +159,10 @@ public class OperationListFragment extends Fragment {
         listView.setAdapter(adapter);
 
         // 乗客も見るボタン
-        final Button showPassengerButton = (Button) view.findViewById(R.id.operation_list_show_passengers_button);
+        final Button showPassengerButton = view.findViewById(R.id.operation_list_show_passengers_button);
 
         // 戻るボタン（ユーザー表示時）
-        final Button hidePassengerButton = (Button) view.findViewById(R.id.operation_list_hide_passengers_button);
+        final Button hidePassengerButton = view.findViewById(R.id.operation_list_hide_passengers_button);
 
         showPassengerButton.setOnClickListener(view1 -> {
             adapter.showPassengerRecords();

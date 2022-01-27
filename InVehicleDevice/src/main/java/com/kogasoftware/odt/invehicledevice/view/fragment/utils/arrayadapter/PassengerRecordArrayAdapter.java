@@ -121,7 +121,7 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
         }
 
         private boolean isChargeEditPattern(PassengerRecord passengerRecord) {
-            int defaultChargeCnt = ((ArrayList) (((InVehicleDeviceActivity) getContext()).defaultCharges)).size();
+            int defaultChargeCnt = ((InVehicleDeviceActivity) getContext()).defaultCharges.size();
             return defaultChargeCnt > 0 && passengerRecord.getOnTime == null;
         }
     };
@@ -173,7 +173,7 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 
         PassengerRecord passengerRecord = getItem(position);
 
-        TextView passengerCountTextView = (TextView) convertView.findViewById(R.id.passenger_count_text_view);
+        TextView passengerCountTextView = convertView.findViewById(R.id.passenger_count_text_view);
         passengerCountTextView.setText(passengerRecord.passengerCount + "名");
 
         setMemoButtonView(convertView, passengerRecord);
@@ -183,7 +183,7 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 
         setMarkImageView(convertView, passengerRecord);
 
-        TextView userNameView = (TextView) convertView.findViewById(R.id.user_name);
+        TextView userNameView = convertView.findViewById(R.id.user_name);
         userNameView.setText(passengerRecord.getDisplayName());
 
         setRowDefaultBackgroundColor(convertView, passengerRecord);
@@ -195,14 +195,14 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 
     private void setChargeTextView(View convertView, PassengerRecord passengerRecord) {
         // 料金表示
-        TextView chargeText = (TextView) convertView.findViewById(R.id.charge_edit_text_view);
+        TextView chargeText = convertView.findViewById(R.id.charge_edit_text_view);
         if (passengerRecord.paidCharge != null) {
             chargeText.setText(passengerRecord.paidCharge.toString() + "円");
         } else {
             chargeText.setText("");
         }
 
-        TextView expectedChargeText = (TextView) convertView.findViewById(R.id.expected_charge_text_view);
+        TextView expectedChargeText = convertView.findViewById(R.id.expected_charge_text_view);
         if (passengerRecord.expectedCharge != null) {
             expectedChargeText.setText(passengerRecord.expectedCharge.toString() + "円");
         } else {
@@ -212,7 +212,7 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 
     private void setMarkImageView(View convertView, PassengerRecord passengerRecord) {
         OperationSchedule operationSchedule = getTargetOperationSchedule(passengerRecord);
-        ImageView selectMarkImageView = (ImageView) convertView.findViewById(R.id.select_mark_image_view);
+        ImageView selectMarkImageView = convertView.findViewById(R.id.select_mark_image_view);
         if (operationSchedule.id.equals(passengerRecord.arrivalScheduleId)) {
             selectMarkImageView.setImageResource(R.drawable.get_off);
         } else if (operationSchedule.id.equals(passengerRecord.departureScheduleId)) {

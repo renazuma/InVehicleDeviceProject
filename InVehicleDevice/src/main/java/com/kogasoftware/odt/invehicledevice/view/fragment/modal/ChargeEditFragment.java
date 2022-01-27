@@ -75,15 +75,15 @@ public class ChargeEditFragment extends OperationSchedulesSyncFragmentAbstract {
 
         View view = getView();
 
-        final TextView chargerNameView = (TextView) view.findViewById(R.id.charger_name);
-        final Button firstDefaultChargeButtonView = (Button) view.findViewById(R.id.first_default_charge_button);
-        final Button secondDefaultChargeButtonView = (Button) view.findViewById(R.id.second_default_charge_button);
-        final Button thirdDefaultChargeButtonView = (Button) view.findViewById(R.id.third_default_charge_button);
-        final EditText chargeEditTextView = (EditText) view.findViewById(R.id.charge_edit_text);
-        final Button chargeAndGetOnButtonView = (Button) view.findViewById(R.id.charge_and_get_on_button);
-        final Button quitChargeButtonView = (Button) view.findViewById(R.id.quit_charge_button);
-        final TextView expectedChargeTextView = (TextView) view.findViewById(R.id.expected_charge_text);
-        final TextView expectedChargeMonetaryUnitView = (TextView) view.findViewById(R.id.expected_charge_monetary_unit);
+        final TextView chargerNameView = view.findViewById(R.id.charger_name);
+        final Button firstDefaultChargeButtonView = view.findViewById(R.id.first_default_charge_button);
+        final Button secondDefaultChargeButtonView = view.findViewById(R.id.second_default_charge_button);
+        final Button thirdDefaultChargeButtonView = view.findViewById(R.id.third_default_charge_button);
+        final EditText chargeEditTextView = view.findViewById(R.id.charge_edit_text);
+        final Button chargeAndGetOnButtonView = view.findViewById(R.id.charge_and_get_on_button);
+        final Button quitChargeButtonView = view.findViewById(R.id.quit_charge_button);
+        final TextView expectedChargeTextView = view.findViewById(R.id.expected_charge_text);
+        final TextView expectedChargeMonetaryUnitView = view.findViewById(R.id.expected_charge_monetary_unit);
 
         final ArrayList<DefaultCharge> defaultCharges = (ArrayList) (((InVehicleDeviceActivity) getContext()).defaultCharges);
 
@@ -97,25 +97,25 @@ public class ChargeEditFragment extends OperationSchedulesSyncFragmentAbstract {
         });
 
         if (defaultCharges.size() >= 1) {
-            firstDefaultChargeButtonView.setText(((DefaultCharge) (defaultCharges.get(0))).value.toString());
+            firstDefaultChargeButtonView.setText(defaultCharges.get(0).value.toString());
             firstDefaultChargeButtonView.setEnabled(true);
             // expectedChargeがある場合は、あとで上書きされる
-            chargeEditTextView.setText(((DefaultCharge) (defaultCharges.get(0))).value.toString());
+            chargeEditTextView.setText(defaultCharges.get(0).value.toString());
         }
         if (defaultCharges.size() >= 2) {
-            secondDefaultChargeButtonView.setText(((DefaultCharge) (defaultCharges.get(1))).value.toString());
+            secondDefaultChargeButtonView.setText(defaultCharges.get(1).value.toString());
             secondDefaultChargeButtonView.setEnabled(true);
         }
         if (defaultCharges.size() >= 3) {
-            thirdDefaultChargeButtonView.setText(((DefaultCharge) (defaultCharges.get(2))).value.toString());
+            thirdDefaultChargeButtonView.setText(defaultCharges.get(2).value.toString());
             thirdDefaultChargeButtonView.setEnabled(true);
         }
 
-        firstDefaultChargeButtonView.setOnClickListener(v -> chargeEditTextView.setText(((DefaultCharge) (defaultCharges.get(0))).value.toString()));
+        firstDefaultChargeButtonView.setOnClickListener(v -> chargeEditTextView.setText(defaultCharges.get(0).value.toString()));
 
-        secondDefaultChargeButtonView.setOnClickListener(v -> chargeEditTextView.setText(((DefaultCharge) (defaultCharges.get(1))).value.toString()));
+        secondDefaultChargeButtonView.setOnClickListener(v -> chargeEditTextView.setText(defaultCharges.get(1).value.toString()));
 
-        thirdDefaultChargeButtonView.setOnClickListener(v -> chargeEditTextView.setText(((DefaultCharge) (defaultCharges.get(2))).value.toString()));
+        thirdDefaultChargeButtonView.setOnClickListener(v -> chargeEditTextView.setText(defaultCharges.get(2).value.toString()));
 
         if (passengerRecord.expectedCharge == null) {
             expectedChargeTextView.setText("登録なし");

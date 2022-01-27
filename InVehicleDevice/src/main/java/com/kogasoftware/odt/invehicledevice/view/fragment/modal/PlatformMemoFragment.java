@@ -24,10 +24,10 @@ public class PlatformMemoFragment extends Fragment {
         View view = getView();
         OperationSchedule operationSchedule = (OperationSchedule) getArguments()
                 .getSerializable(OPERATION_SCHEDULE_KEY);
-        Button closeButton = (Button) view
+        Button closeButton = view
                 .findViewById(R.id.platform_memo_close_button);
         closeButton.setOnClickListener(v -> Fragments.hide(PlatformMemoFragment.this));
-        TextView platformMemoTextView = (TextView) view
+        TextView platformMemoTextView = view
                 .findViewById(R.id.platform_memo_text_view);
         platformMemoTextView.setText(operationSchedule.memo);
     }
