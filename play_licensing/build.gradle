@@ -22,4 +22,8 @@ android {
         xmlReport false
     }
     buildToolsVersion '30.0.2'
+    defaultConfig {
+        targetSdkVersion 26
+        minSdkVersion 3
+    }
 }
