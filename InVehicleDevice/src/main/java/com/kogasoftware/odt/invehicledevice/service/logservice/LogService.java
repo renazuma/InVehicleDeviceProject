@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.service.logservice;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -224,7 +225,9 @@ public class LogService extends Service {
             // TODO: idはアプリ内で一意である必要がある。管理まで手が回らないので重複しない様に固定としている。
             int notificationId = 2;
 
-            NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT);
+            @SuppressLint("WrongConstant") NotificationChannel channel = new NotificationChannel(channelId,
+                    channelName,
+                    NotificationManager.IMPORTANCE_DEFAULT);
             ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).createNotificationChannel(channel);
             Notification notification = new NotificationCompat.Builder(this, channelId)
                     .setSmallIcon(R.mipmap.ic_launcher)
