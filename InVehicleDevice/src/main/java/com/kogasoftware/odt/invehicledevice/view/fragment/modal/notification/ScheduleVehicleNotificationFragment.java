@@ -9,6 +9,7 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -106,6 +107,8 @@ public class ScheduleVehicleNotificationFragment extends Fragment
             speakContent.append(SystemUtils.LINE_SEPARATOR);
         } while (cursor.moveToNext());
         detailTextView.setText(content);
+
+        Log.i(ScheduleVehicleNotificationFragment.class.getSimpleName(), "Schedule Notification fragment display appended.");
     }
 
     private void hide(final Runnable onComplete) {
@@ -149,6 +152,7 @@ public class ScheduleVehicleNotificationFragment extends Fragment
     }
 
     private void onShowOperationListButtonClick() {
+        Log.i(ScheduleVehicleNotificationFragment.class.getSimpleName(), "Operation List button clicked.");
         hide(() -> {
             if (!isAdded()) {
                 return;
@@ -166,6 +170,7 @@ public class ScheduleVehicleNotificationFragment extends Fragment
     }
 
     private void onCloseButtonClick() {
+        Log.i(ScheduleVehicleNotificationFragment.class.getSimpleName(), "Close button clicked.");
         hide(() -> {
             if (!isAdded()) {
                 return;
@@ -191,5 +196,7 @@ public class ScheduleVehicleNotificationFragment extends Fragment
         }
 
         Fragments.showModalFragment(fragmentManager, ScheduleVehicleNotificationFragment.newInstance(true), FRAGMENT_TAG);
+
+        Log.i(ScheduleVehicleNotificationFragment.class.getSimpleName(), "Schedule Notification fragment displayed.");
     }
 }

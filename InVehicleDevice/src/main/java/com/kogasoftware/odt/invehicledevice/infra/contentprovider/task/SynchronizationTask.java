@@ -148,8 +148,10 @@ public class SynchronizationTask implements Runnable {
     }
 
     protected void submitRetry() {
+        Log.i(TAG, "Start retry schedule sync");
         try {
             executorService.schedule(this, 5, TimeUnit.SECONDS);
+            Log.i(TAG, "Schedule sync retry executor set.");
         } catch (RejectedExecutionException e) {
             // executorService.shutdown()がテスト中のみ実行されることがあり、RejectedExecutionExceptionを
             // 発生させるため、テスト中はこの例外は許可する

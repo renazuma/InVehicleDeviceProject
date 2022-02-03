@@ -36,7 +36,9 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
 
     @Override
     protected void runSession(URI baseUri, String authenticationToken) {
+        Log.i(TAG, "Start schedule sync.");
         doHttpGet(baseUri, "vehicle_notifications", authenticationToken, logCallback);
+        Log.i(TAG, "Finish schedule sync.");
     }
 
     final LogCallback logCallback = new LogCallback(TAG) {
@@ -60,6 +62,7 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
         boolean existExpectedChargeChangedNotification = false;
         boolean existMemoChangedNotification = false;
 
+        Log.i(TAG, "Start Notification Data Insert.");
         try {
             database.beginTransaction();
             for (VehicleNotificationJson json : selectTargetJson(pulledJson)) {
@@ -79,6 +82,7 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
         } finally {
             database.endTransaction();
         }
+        Log.i(TAG, "Finish Notification Data Insert.");
 
         if (existAdminNotification) {
             playAdminNotificationVoice();
@@ -87,11 +91,13 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
 
         if (existScheduleNotification) {
             playScheduleNotificationVoice();
+            Log.i(TAG, "Schedule Notification voice has been played.");
         }
 
         if (existScheduleNotification || existExpectedChargeChangedNotification || existMemoChangedNotification) {
             // スケジュール通知はこの時点では新しい通知を表示しない（スケジュール自体の同期が終わっていない）ため、ここではpublishされない。
             executorService.execute(new GetOperationSchedulesTask(context, database, executorService, true));
+            Log.i(TAG, "Schedule sync executor set.");
         }
     }
 

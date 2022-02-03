@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
@@ -57,6 +58,8 @@ public class ScheduleNotificationLoader {
 
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+            String tag = ScheduleNotificationLoader.class.getSimpleName();
+            Log.i(tag, "onLoadFinish and start process.");
             if (cursor.getCount() == 0) {
                 return;
             }
@@ -64,8 +67,10 @@ public class ScheduleNotificationLoader {
             Handler mainUIHandler = new Handler(Looper.getMainLooper());
 
             mainUIHandler.post(() -> VehicleNotificationAlertFragment.showModal(inVehicleDeviceActivity));
+            Log.i(tag, "Notification alert fragment modal set.");
 
             mainUIHandler.postDelayed(() -> ScheduleVehicleNotificationFragment.showModal(inVehicleDeviceActivity), InVehicleDeviceActivity.VEHICLE_NOTIFICATION_ALERT_DELAY_MILLIS);
+            Log.i(tag, "Notification schedule fragment modal set.");
         }
 
         @Override

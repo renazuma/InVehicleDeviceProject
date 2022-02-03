@@ -54,6 +54,8 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
 
     // operationSchedulesという名前だが、userやreservationといった関連データもすべて持っている。
     void insert(List<OperationScheduleJson> operationSchedules, List<Long> scheduleVehicleNotificationIds) {
+        Log.i(TAG, "Start schedule insert.");
+
         List<UserJson> users = Lists.newLinkedList();
         List<ReservationJson> reservations = Lists.newLinkedList();
         List<PassengerRecordJson> passengerRecords = Lists.newLinkedList();
@@ -82,7 +84,7 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
         try {
             database.beginTransaction();
 
-            // スケジュール通知update
+            Log.i(TAG, "Start vehicle notifications update.");
             for (Long vehicleNotificationId : scheduleVehicleNotificationIds) {
                 ContentValues values = new ContentValues();
                 values.put(VehicleNotification.Columns.SCHEDULE_DOWNLOADED, 1);
@@ -90,21 +92,24 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
                 String[] whereArgs = new String[]{vehicleNotificationId.toString()};
                 database.update(VehicleNotification.TABLE_NAME, values, where, whereArgs);
             }
+            Log.i(TAG, "Finish vehicle notifications update.");
 
-            // 既存データ削除
+            Log.i(TAG, "Start exist data delete.");
             for (String table : new String[]{User.TABLE_NAME,
                     Reservation.TABLE_NAME, OperationSchedule.TABLE_NAME,
                     OperationRecord.TABLE_NAME, PassengerRecord.TABLE_NAME,
                     Platform.TABLE_NAME}) {
                 database.delete(table, null, null);
             }
+            Log.i(TAG, "Finish exist data delete.");
 
-            // usersテーブルinsert
+            Log.i(TAG, "Start users insert.");
             for (UserJson user : users) {
                 database.replaceOrThrow(User.TABLE_NAME, null, user.toContentValues());
             }
+            Log.i(TAG, "Finish users insert.");
 
-            // passenger_recordsテーブルinsert
+            Log.i(TAG, "Start passenger records insert.");
             for (PassengerRecordJson passengerRecord : passengerRecords) {
                 ContentValues values;
                 try {
@@ -115,18 +120,21 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
                 }
                 database.replaceOrThrow(PassengerRecord.TABLE_NAME, null, values);
             }
+            Log.i(TAG, "Finish passenger records insert.");
 
-            // operation_recordsテーブルinsert
+            Log.i(TAG, "Start operation records insert.");
             for (OperationRecordJson operationRecord : operationRecords) {
                 database.replaceOrThrow(OperationRecord.TABLE_NAME, null, operationRecord.toContentValues());
             }
+            Log.i(TAG, "Finish operation records insert.");
 
-            // platformsテーブルinsert
+            Log.i(TAG, "Start platforms insert.");
             for (PlatformJson platform : platforms) {
                 database.replaceOrThrow(Platform.TABLE_NAME, null, platform.toContentValues());
             }
+            Log.i(TAG, "Finish platforms insert.");
 
-            // operation_schedulesテーブルinsert
+            Log.i(TAG, "Start operation schedules insert.");
             for (OperationScheduleJson operationSchedule : operationSchedules) {
                 ContentValues values = operationSchedule.toContentValues();
                 // 乗り降り時刻を更新
@@ -154,8 +162,9 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
                 values.put(OperationSchedule.Columns.DEPARTED_AT, departedAt);
                 database.replaceOrThrow(OperationSchedule.TABLE_NAME, null, values);
             }
+            Log.i(TAG, "Finish operation schedules insert.");
 
-            // reservationsテーブルinsert
+            Log.i(TAG, "Start reservations insert.");
             for (ReservationJson reservation : reservations) {
                 database.replaceOrThrow(Reservation.TABLE_NAME, null, reservation.toContentValues());
             }
@@ -163,14 +172,16 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
         } finally {
             database.endTransaction();
         }
+        Log.i(TAG, "Finish reservations insert.");
 
-        // cursorLoader用の更新通知処理
         for (Long scheduleVehicleNotificationId : scheduleVehicleNotificationIds) {
             Uri notifyUri = ContentUris.withAppendedId(VehicleNotification.CONTENT.URI, scheduleVehicleNotificationId);
             contentResolver.notifyChange(notifyUri, null);
+            Log.i(TAG, "Notify change: " + notifyUri.toString());
         }
 
         contentResolver.notifyChange(VehicleNotification.CONTENT.URI, null);
+        Log.i(TAG, "Notify change: " + VehicleNotification.CONTENT.URI.toString());
 
         Uri[] notifyUris = new Uri[]{
                 User.CONTENT.URI, Reservation.CONTENT.URI,
@@ -179,11 +190,15 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
         };
         for (Uri uri : notifyUris) {
             contentResolver.notifyChange(uri, null);
+            Log.i(TAG, "Notify change: " + uri.toString());
         }
+
+        Log.i(TAG, "Finish  schedule insert.");
     }
 
     @Override
     protected void runSession(URI baseUri, String authenticationToken) {
+        Log.i(TAG, "Start schedule sync.");
         if (isOperationRecordNotYetSync() || isPassengerRecordNotYetSync()) {
             Log.i(TAG, "dirty, retry");
             submitRetry();
@@ -215,9 +230,12 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
 
                     @Override
                     public void onException(IOException e) {
+                        Log.e(TAG, "onException: " , e);
                         submitRetry();
                     }
                 });
+
+        Log.i(TAG, "Finish schedule sync.");
     }
 
     // 通知は受け取ったがサーバからスケジュールの実態をまだ受け取っていない状態の、スケジュール通知のリストを返す
