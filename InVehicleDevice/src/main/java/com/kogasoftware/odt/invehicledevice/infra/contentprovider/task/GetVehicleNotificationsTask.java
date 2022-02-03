@@ -43,7 +43,6 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
         @Override
         public void onSuccess(HttpResponse response, byte[] entity) {
             VehicleNotificationJson[] vehicleNotifications;
-            // TODO: レスポンスのjson化と例外を拾うだけのチェックなので、親クラスの共通処理にした方が良いかも
             try {
                 vehicleNotifications = JSON.readValue(new String(entity, Charsets.UTF_8), VehicleNotificationJson[].class);
             } catch (IOException e) {
@@ -51,7 +50,7 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
                 return;
             }
             save(vehicleNotifications);
-        }
+        };
     };
 
 
